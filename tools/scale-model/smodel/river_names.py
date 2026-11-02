@@ -588,16 +588,29 @@ def _rid_num(rid):
         return abs(hash(s)) % 100000
 
 
-def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None):
-    """Assign culturally and linguistically authentic names across all 26 tongues to `rivers_exp`."""
+def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None, old_rivers=None):
+    """Assign culturally and linguistically authentic names across all 27 tongues to `rivers_exp`."""
     t_grid, id_to_t = build_tongue_grid(regs_exp, shape=(1723, 1821))
+
+    old_name_by_id = {}
+    if old_rivers:
+        for orv in old_rivers:
+            old_name_by_id[str(orv.get('id'))] = (orv.get('name') or '').strip()
 
     used_names = set()
     id_to_river = {str(r['id']): r for r in rivers_exp}
 
-    # Pass 1: Normalize metadata (`length_km`, `kind`) and lock in all canon / fixed rivers first
+    # Pass 1: Normalize metadata (`length_km`, `kind`), record `old_name`, and lock in all canon / fixed rivers first
     canon_ids = set()
     for r in rivers_exp:
+        rid_str_0 = str(r['id'])
+        if 'old_name' not in r:
+            if rid_str_0 in old_name_by_id:
+                r['old_name'] = old_name_by_id[rid_str_0]
+            elif _rid_num(r['id']) >= 9100:
+                r['old_name'] = '(5.1 expansion)'
+            else:
+                r['old_name'] = (r.get('name') or '').strip()
         if r.get('length_km') is None and r.get('len_km') is not None:
             r['length_km'] = float(r['len_km'])
         elif r.get('length_km') is None:
@@ -795,8 +808,8 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
             '',
             '## Major Rivers & Wadis (`>= 120 km` or Canon/Expansion)',
             '',
-            '| ID | Name | Tongue | Kind | Length (km) | Source -> Mouth (m) | Drains To | Gloss |',
-            '| ---: | :--- | :--- | :--- | ---: | :--- | :--- | :--- |',
+            '| ID | 4.21/4.23 Old Name | 5.1 New Name | Tongue | Kind | Length (km) | Source -> Mouth (m) | Drains To | Gloss |',
+            '| ---: | :--- | :--- | :--- | :--- | ---: | :--- | :--- | :--- |',
         ])
         major = [
             r for r in rivers_exp
@@ -806,12 +819,31 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         for r in major:
             to_d = r.get('to') or {}
             to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            old_nm = r.get('old_name') or '—'
             lines.append(
-                f"| `{r['id']}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
+                f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
                 f"| {float(r.get('length_km') or 0.0):.0f} | `{r.get('source_m', 0):.0f} -> {r.get('mouth_m', 0):.0f}` "
                 f"| {to_str} | {r.get('gloss', '')} |"
             )
-        with open(markdown_out_path, 'w', encoding='utf-8') as f:
+
+        lines.extend([
+            '',
+            '## Complete Cross-Reference Table (All Courses by ID)',
+            '',
+            '| ID | 4.21/4.23 Old Name | 5.1 New Name | Tongue | Kind | Length (km) | Source -> Mouth (m) | Drains To | Gloss |',
+            '| ---: | :--- | :--- | :--- | :--- | ---: | :--- | :--- | :--- |',
+        ])
+        all_sorted = sorted(rivers_exp, key=lambda r: _rid_num(r['id']))
+        for r in all_sorted:
+            to_d = r.get('to') or {}
+            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            old_nm = r.get('old_name') or '—'
+            lines.append(
+                f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
+                f"| {float(r.get('length_km') or 0.0):.0f} | `{r.get('source_m', 0):.0f} -> {r.get('mouth_m', 0):.0f}` "
+                f"| {to_str} | {r.get('gloss', '')} |"
+            )
+        with open(markdown_out_path, 'w', encoding='utf-8', newline='\n') as f:
             f.write('\n'.join(lines) + '\n')
 
     return rivers_exp, tongue_counts

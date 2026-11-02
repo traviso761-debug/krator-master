@@ -25,7 +25,7 @@ import edit_heights as H, edit_422 as E422, edit_rivers as ER, edit_423 as E423 
 
 LIFTED = {  # smodel module: [(history module, [functions]), ...]
     G: [(H, ['sstep', 'poly', 'chaikin', 'meander']), (E422, ['strokes'])],
-    T: [(H, ['lakes', 'ridged', 'mountains', 'hump', 'cut', 'level']), (E423, ['weather'])],
+    T: [(H, ['lakes', 'ridged', 'mountains', 'hump', 'cut', 'level'])],
     PA: [(H, ['ramp', 'repaint', 'relight', 'paint_river']), (E422, ['retint', 'desert', 'by_climate']),
          (ER, ['inpaint', 'lake_style'])],
     C: [(H, ['reclimate']), (ER, ['lake_rain'])],
@@ -34,7 +34,7 @@ LIFTED = {  # smodel module: [(history module, [functions]), ...]
 CONSTS = {T: [(H, ['SPILL_SLACK']), (E423, ['WEATHER'])], PA: [(H, ['RAIN_RAMP'])],
           RV: [(ER, ['RIVER_RGB', 'BARRIER_M', 'IMPORT_KM', 'ICE_T', 'CLOSED_M', 'Q_RIVER', 'A_WADI', 'MIN_CELLS',
                      'Q_KEEP', 'BREACH_M', 'SETTLE_KM', 'TOOL_REGIONS'])]}
-CHANGED = {'grid_fields', 'carve_river', 'region_mask'}
+CHANGED = {'grid_fields', 'carve_river', 'region_mask', 'weather'}
 ok = 0
 
 
@@ -95,13 +95,15 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'north-basin', 'source', 'regions.json'))
+R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
 En, mk = T.mountains(E, su, sv, pts, 2200.0, 600.0, 7)
 check('mountains', same((En, mk), H.mountains(E, su, sv, pts, 2200.0, 600.0, 7)))
 check('mountains moved ground', mk.sum() > 20)
+Ew = T.weather(En, mk)
+check('weather', Ew.shape == En.shape and not np.array_equal(Ew, En) and np.array_equal(Ew[~mk], En[~mk]))
 check('relight', same(PA.relight(D, E, En), H.relight(D, E, En)))
 forced = np.zeros((D['fullH'], D['fullW']), bool)
 a, b = C.reclimate(D, E, En, whas, forced), H.reclimate(D, E, En, whas, forced)
@@ -121,8 +123,9 @@ gf, gh = RV.grid_fields(D), ER.grid_fields(D)
 check('grid_fields (with the data\'s lo/hi)', same({k: v for k, v in gf.items() if k != 'h'}, {k: v for k, v in gh.items() if k != 'h'}))
 check('setup', same({k: v for k, v in RV.setup(gf).items() if k != 'bodies'}, {k: v for k, v in ER.setup(gh).items() if k != 'bodies'}))
 goal = whas & (np.nan_to_num(wlev, nan=9e9) < -1000)
-path = RV.route_river(En, su, sv, (330, 120), goal)
-check('route_river', path == H.route_river(En, su, sv, (330, 120), goal))
+riv_start = P.legacy_px(330, 120, D) if (D['fullW'], D['fullH']) == (1821, 1723) else (330, 120)
+path = RV.route_river(En, su, sv, riv_start, goal)
+check('route_river', path == H.route_river(En, su, sv, riv_start, goal))
 check('carve_river', same(RV.carve_river(En, path, 40.0, D['lo']), H.carve_river(En, path, 40.0)))
 check('strokes', all(G.strokes(r) == E422.strokes(r) for r in D['rivers'][:40]))
 # the temperatures' lapse: smodel.climate.lapse against history/edit_heights.py main()'s own lines (4.19)
@@ -136,4 +139,16 @@ for k in C.TEMPS:
     v2 = np.where((v > -89) & (np.abs(DS) > 1), np.round(v - 6.5 * DS / 1000), v)
     ref = H.b64(Image.fromarray(np.clip(v2 + 90, 0, 255).astype(np.uint8), 'L'), optimize=True)
     check('lapse ' + k, lap[k] == ref)
+
+# ---- 4. vent peaks (every vent with `peak` and `volc` has ground within 400 m inside 12 km; 40 km for the 77-km Godthrone caldera)
+for v in [D.get('volc', {})] + list(D.get('vents', [])):
+    if 'peak' not in v:
+        continue
+    r_cells = (20.0 if float(v['peak']) >= 20000.0 else 6.0) * su
+    vx, vy = v['px'][0] * su, v['px'][1] * sv
+    j0, j1 = max(0, int(vy - r_cells - 1)), min(E.shape[0], int(vy + r_cells + 2))
+    i0, i1 = max(0, int(vx - r_cells - 1)), min(E.shape[1], int(vx + r_cells + 2))
+    yy, xx = np.mgrid[j0:j1, i0:i1]
+    in_disc = np.hypot(xx - vx, yy - vy) <= r_cells
+    check('vent peak near %s' % v['px'], float(E[j0:j1, i0:i1][in_disc].max()) >= float(v['peak']) - 400.0)
 print('%d checks passed' % ok)

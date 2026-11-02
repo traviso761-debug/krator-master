@@ -7,32 +7,16 @@
     "dx": 272,
     "dy": 330
   },
-  "auto_moved_settlements": [
-    {
-      "name": "Hub 01",
-      "from_px": [
-        1344,
-        1409
-      ],
-      "to_px": [
-        1344,
-        1409
-      ],
-      "move_km": 0.0,
-      "reason": "elev_delta=1053m",
-      "elev_m": 4350.5,
-      "climate": "ET"
-    }
-  ],
+  "auto_moved_settlements": [],
   "worse_problems": [],
   "settlements_total": 117,
-  "regions_total": 116,
+  "regions_total": 118,
   "rivers_total": 885,
   "river_tongue_counts": {
     "islander": 3,
     "dalab": 41,
     "republic": 17,
-    "yuni": 104,
+    "yuni": 108,
     "islanderw": 1,
     "izani": 80,
     "vothic": 32,
@@ -43,7 +27,7 @@
     "scyvoi": 7,
     "tungang": 83,
     "eternian": 73,
-    "hum": 87,
+    "hum": 83,
     "khaay": 19,
     "vrivolci": 30,
     "yusar": 56,
@@ -178,7 +162,7 @@
         766,
         404
       ],
-      "elev_m": 765.5,
+      "elev_m": 764.6,
       "old_elev_m": 768.5,
       "wet": false,
       "climate": "BSh",
@@ -206,12 +190,12 @@
         568,
         841
       ],
-      "elev_m": 2714.3,
+      "elev_m": 2715.1,
       "old_elev_m": 2793.7,
       "wet": false,
       "climate": "Cfb",
       "old_climate": "Cfb",
-      "slope_m_km": 25.9
+      "slope_m_km": 25.7
     },
     {
       "name": "Chimes",
@@ -399,15 +383,15 @@
       "name": "Farport",
       "type": "city",
       "px": [
-        299,
-        590
+        294,
+        588
       ],
-      "elev_m": 548.2,
-      "old_elev_m": 359.2,
+      "elev_m": 212.0,
+      "old_elev_m": 44.7,
       "wet": false,
-      "climate": "Af",
+      "climate": "Am",
       "old_climate": "Af",
-      "slope_m_km": 101.3
+      "slope_m_km": 7.5
     },
     {
       "name": "Flooded Tower",
@@ -430,12 +414,12 @@
         560,
         767
       ],
-      "elev_m": 3103.5,
+      "elev_m": 3095.0,
       "old_elev_m": 3103.5,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 11.6
+      "slope_m_km": 8.4
     },
     {
       "name": "Fort Ebon",
@@ -570,12 +554,12 @@
         1039,
         869
       ],
-      "elev_m": -1396.2,
+      "elev_m": -1384.3,
       "old_elev_m": -1378.6,
       "wet": false,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 14.5
+      "slope_m_km": 17.2
     },
     {
       "name": "Glaive",
@@ -584,12 +568,12 @@
         599,
         734
       ],
-      "elev_m": 3042.7,
+      "elev_m": 3048.7,
       "old_elev_m": 3146.6,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 33.7
+      "slope_m_km": 32.8
     },
     {
       "name": "Henge",
@@ -738,7 +722,7 @@
         490,
         554
       ],
-      "elev_m": 4488.5,
+      "elev_m": 4485.1,
       "old_elev_m": 4503.0,
       "wet": false,
       "climate": "Dsc",
@@ -850,12 +834,12 @@
         350,
         726
       ],
-      "elev_m": 3125.3,
+      "elev_m": 3124.8,
       "old_elev_m": 3074.9,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 88.3
+      "slope_m_km": 88.6
     },
     {
       "name": "Mungo",
@@ -1214,7 +1198,7 @@
         800,
         1017
       ],
-      "elev_m": 1371.2,
+      "elev_m": 1371.1,
       "old_elev_m": 1400.9,
       "wet": false,
       "climate": "Af",
@@ -1354,12 +1338,12 @@
         1408,
         414
       ],
-      "elev_m": 8007.5,
+      "elev_m": 8002.3,
       "old_elev_m": 7730.6,
       "wet": false,
       "climate": "HF",
       "old_climate": "HF",
-      "slope_m_km": 37.6
+      "slope_m_km": 37.9
     },
     {
       "name": "The Tubes",
@@ -1508,7 +1492,7 @@
         685,
         479
       ],
-      "elev_m": 693.9,
+      "elev_m": 693.8,
       "old_elev_m": 693.8,
       "wet": false,
       "climate": "BSh",

@@ -139,6 +139,38 @@
   {
    "key": "tubes",
    "file": "tubes.json"
+  },
+  {
+   "key": "legacy_shift",
+   "value": {
+    "dx": 272,
+    "dy": 330,
+    "old_fullW": 1549,
+    "old_fullH": 1393
+   }
+  },
+  {
+   "key": "tsunami_farside",
+   "value": {
+    "crest_m": 50.0,
+    "crest_range_m": [
+     35.0,
+     55.0
+    ],
+    "scour_bench_m": 65.0,
+    "chevron_m": 38.0,
+    "max_runup_ceiling_m": 100.0,
+    "farport_px": [
+     294,
+     588
+    ],
+    "farport_elev_m": 212.0,
+    "harbour_px": [
+     290,
+     588
+    ],
+    "harbour_wlev_m": 0.0
+   }
   }
  ]
 }

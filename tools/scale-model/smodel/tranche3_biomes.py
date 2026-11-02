@@ -56,18 +56,18 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
     mask_sh = G.region_mask(regs_list, 's highlands', su, sv, (VH, VW))
     mask_eh = G.region_mask(regs_list, 'e inner wall', su, sv, (VH, VW))
 
-    # --- 1A. Northern Highlands (`n highlands`): Alpine Cirques, Yosemite Granite Domes, & NW Crag Steps ---
+    # --- 1A. Northern Highlands (`n highlands`): Peak-Ring Granitic Batholith, Listric Rim Scarps, Suevite Caprock, & Yosemite Domes ---
     if mask_nh.any():
         d_in_nh = nd.distance_transform_edt(mask_nh)
         d_water_nh = nd.distance_transform_edt(~(whas & mask_nh))
         w_nh = G.sstep(0.0, 5.5, d_in_nh) * G.sstep(1.5, 4.2, d_water_nh) * (~whas) * sett_guard
 
-        # Alpine ridge-and-cirque dissection (>3,800 m)
+        # Alpine ridge-and-cirque dissection (>3,800 m) on uplifted peak-ring horsts
         w_nh_alp = G.sstep(3600.0, 4300.0, En)
         arete_f = np.clip(1.0 - np.abs(_norm_gauss(rs, (VH, VW), 1.8)), 0.0, 1.0)
         dh_nh_alp = w_nh_alp * (310.0 * ((arete_f ** 1.4) - 0.42))
 
-        # U-shaped glacial valley troughs along Republican rivers
+        # U-shaped glacial valley troughs along radial impact-fracture Republican rivers
         nh_rivs = [
             rv['px'] for rv in (rivers_list or ())
             if any(260 <= p[0] <= 720 and 220 <= p[1] <= 480 for p in rv.get('px', []))
@@ -80,16 +80,20 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         dome_raw = 0.65 * _norm_gauss(rs, (VH, VW), 5.0) + 0.35 * _norm_gauss(rs, (VH, VW), 2.8)
         dh_domes = w_dome_belt * (185.0 * (np.clip(dome_raw - 0.35, 0.0, 1.2) / 1.2) ** 0.9)
 
-        # 2 concentric crag-step waterfall scarps (+1,400 m and +2,300 m) on the wet NW flank
+        # Concentric impact peak-ring listric slump benches (+1,400 m, +2,300 m, and +3,150 m suevite caprock bench)
         dh_crag_steps = np.zeros((VH, VW), dtype=float)
-        for c_elev in (1400.0, 2300.0):
+        for c_elev, c_w in ((1400.0, 220.0), (2300.0, 220.0), (3150.0, 240.0)):
             de = En - c_elev
-            w_c = np.exp(-((de / 220.0) ** 2))
-            dh_crag_steps -= 0.55 * w_c * de
+            w_c = np.exp(-((de / c_w) ** 2))
+            dh_crag_steps -= 0.58 * w_c * de
 
-        En = En + w_nh * (dh_nh_alp + dh_domes + dh_crag_steps - 175.0 * w_nh_uval)
+        # Remnant impact-melt sheet (suevite/tagamite) caprock ledges (+85 m) on back-tilted upper peak-ring interfluves
+        w_suevite_cap = G.sstep(2950.0, 3300.0, En) * (1.0 - G.sstep(3650.0, 3950.0, En)) * (1.0 - w_nh_uval)
+        dh_suevite = 85.0 * w_suevite_cap * np.clip(dome_raw + 0.15, 0.0, 1.0)
 
-    # --- 1B. Southern Highlands (`s highlands`): +1,120 m Cloud-Deck Scarp, Paramo Bog-and-Tor Table, & Spiral Peaks ---
+        En = En + w_nh * (dh_nh_alp + dh_domes + dh_crag_steps + dh_suevite - 175.0 * w_nh_uval)
+
+    # --- 1B. Southern Highlands (`s highlands`): Peak-Ring Listric Cloud-Scarp, Shock-Breccia Whorl-Stone Tors, & Spiral Peaks ---
     if mask_sh.any():
         d_in_sh = nd.distance_transform_edt(mask_sh)
         d_water_sh = nd.distance_transform_edt(~(whas & mask_sh))
@@ -97,33 +101,43 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         # Protect Daridel (528, 687)
         w_sh = w_sh * G.sstep(2.5, 6.0, np.hypot(px - 528.0, py - 687.0))
 
-        # Northern cloud-deck escarpment around +1,120 m (`py ~ 610..685`): steepen scarp & cut north-draining ravines
+        # Northern inner-crater-facing listric fault escarpment around +1,120 m & +1,820 m (`py ~ 610..695`):
+        # steepen concentric impact-slump scarps & cut radial trans-rim fracture ravines
         de_cloud = En - 1120.0
         w_cloud_scarp = np.exp(-((de_cloud / 380.0) ** 2)) * (1.0 - G.sstep(675.0, 710.0, py))
         ravine_wave = _norm_gauss(rs, (VH, VW), 2.8)
-        dh_ravines = -125.0 * w_cloud_scarp * (np.clip(ravine_wave - 0.45, 0.0, 1.2) / 1.2) ** 1.3
+        dh_ravines = -135.0 * w_cloud_scarp * (np.clip(ravine_wave - 0.42, 0.0, 1.2) / 1.2) ** 1.3
 
-        # Rolling Afroalpine/Andean paramo bog-and-tor tableland (+1,500..+2,750 m) with natural granite tors
+        # Back-tilted concentric peak-ring terrace steps at +1,850 m and +2,450 m
+        dh_sh_terraces = np.zeros((VH, VW), dtype=float)
+        for t_elev in (1850.0, 2450.0):
+            de_t = En - t_elev
+            dh_sh_terraces -= 0.48 * np.exp(-((de_t / 210.0) ** 2)) * de_t
+
+        # Rolling Afroalpine/Andean paramo bog-and-tor tableland (+1,500..+2,750 m) with shatter-coned / suevite Whorl-Stone tors
         w_paramo = G.sstep(1450.0, 1750.0, En) * (1.0 - G.sstep(2650.0, 3050.0, En))
         Eo_sh_s = nd.gaussian_filter(En, sigma=4.5)
         tor_whorl = 0.65 * _norm_gauss(rs, (VH, VW), 4.8) + 0.35 * _norm_gauss(rs, (VH, VW), 2.5)
-        dh_tors = 135.0 * (np.clip(tor_whorl - 0.48, 0.0, 1.2) / 1.2) ** 1.15
-        dh_bogs = -42.0 * (np.clip(-tor_whorl - 0.40, 0.0, 1.2) / 1.2)
+        dh_tors = 148.0 * (np.clip(tor_whorl - 0.45, 0.0, 1.2) / 1.2) ** 1.15
+        dh_bogs = -46.0 * (np.clip(-tor_whorl - 0.38, 0.0, 1.2) / 1.2)
         dh_paramo = w_paramo * (0.58 * (Eo_sh_s - En) + dh_tors + dh_bogs)
 
-        # Glaciated spiral-peak massifs (>3,800 m)
+        # Glaciated spiral-peak central-uplift massifs (>3,800 m)
         w_sh_peaks = G.sstep(3650.0, 4300.0, En)
-        dh_sh_peaks = w_sh_peaks * (210.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.2)) - 0.40))
+        dh_sh_peaks = w_sh_peaks * (225.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.2)) - 0.40))
 
-        En = En + w_sh * (dh_ravines + dh_paramo + dh_sh_peaks)
+        En = En + w_sh * (dh_ravines + dh_sh_terraces + dh_paramo + dh_sh_peaks)
 
-    # --- 1C. Eastern Inner Wall (`e inner wall`): West-Shifted Escarpment V-Gorges & Dry East Cushion Altiplano ---
+    # --- 1C. Eastern Inner Wall (`e inner wall`): Listric Terrace-Wall Megablock, Trans-Rim V-Gorges, & Back-Tilted Altiplano ---
     if mask_eh.any():
         d_in_eh = nd.distance_transform_edt(mask_eh)
         d_water_eh = nd.distance_transform_edt(~(whas & mask_eh))
-        w_eh = G.sstep(0.0, 5.5, d_in_eh) * G.sstep(1.5, 4.0, d_water_eh) * (~whas) * sett_guard
+        # Protect Lesser Throne stratocone & ESE ignimbrite fan at (858, 524) so its 6,880 m rim and 6,070 m crater floor stay intact!
+        r_lesser_km = np.hypot((px - 858.0) * 2.0, (py - 524.0) * 2.0)
+        lesser_guard = G.sstep(34.0, 52.0, r_lesser_km)
+        w_eh = G.sstep(0.0, 5.5, d_in_eh) * G.sstep(1.5, 4.0, d_water_eh) * (~whas) * sett_guard * lesser_guard
 
-        # Deep V-gorges along the wet western windward face (`px < 828`) for Rrivar Falz, Isguifta, Grin, Loña
+        # Deep radial fracture V-gorges along the wet western crater-facing scarp (`px < 828`) for Rrivar Falz, Isguifta, Grin, Loña
         eh_rivs = [
             rv['px'] for rv in (rivers_list or ())
             if any(740 <= p[0] <= 845 and 380 <= p[1] <= 660 for p in rv.get('px', []))
@@ -132,18 +146,25 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         w_vgorge = (1.0 - G.sstep(0.9, 3.2, d_ehriv)) * (1.0 - G.sstep(818.0, 842.0, px))
         dh_vgorge = -245.0 * w_vgorge
 
-        # High wind-scoured Puna/Altiplano cushion tableland (+3,600..+4,600 m) on the dry east side (`px >= 815`)
+        # 3-tier concentric listric normal-fault slump staircase (+1,900 m, +2,650 m, +3,350 m) on the inward-facing crater wall
+        dh_eh_listric = np.zeros((VH, VW), dtype=float)
+        w_west_scarp = (1.0 - G.sstep(812.0, 838.0, px)) * (1.0 - w_vgorge)
+        for l_elev in (1900.0, 2650.0, 3350.0):
+            de_l = En - l_elev
+            dh_eh_listric -= 0.52 * w_west_scarp * np.exp(-((de_l / 210.0) ** 2)) * de_l
+
+        # High wind-scoured Puna/Altiplano back-tilted rotational slump bench (+3,600..+4,600 m) on the dry east side (`px >= 815`)
         w_altiplano = G.sstep(805.0, 832.0, px) * G.sstep(3200.0, 3650.0, En) * (1.0 - G.sstep(4750.0, 5200.0, En))
         Eo_eh_s = np.clip(nd.gaussian_filter(En, sigma=5.5), 3650.0, 4550.0)
         cushion_hills = 48.0 * _norm_gauss(rs, (VH, VW), 4.5)
         dh_alti = w_altiplano * (0.68 * (Eo_eh_s + cushion_hills - En))
 
-        # Flat geothermal geyser & cushion-bog basin at `(858, 524)` (+3,850 m)
-        r_geyser_km = np.hypot((px - 858.0) * 2.0, (py - 524.0) * 2.0)
-        w_geyser = 1.0 - G.sstep(10.0, 20.0, r_geyser_km)
+        # Small geothermal cushion-bog basin far north of Lesser Throne at `(824, 456)` (+3,850 m)
+        r_geyser_km = np.hypot((px - 824.0) * 2.0, (py - 456.0) * 2.0)
+        w_geyser = 1.0 - G.sstep(8.0, 16.0, r_geyser_km)
         dh_geyser = w_geyser * (3850.0 + 0.15 * (En - 3850.0) - En)
 
-        En = En + w_eh * (dh_vgorge + dh_alti * (1.0 - w_geyser) + dh_geyser)
+        En = En + w_eh * (dh_vgorge + dh_eh_listric + dh_alti * (1.0 - w_geyser) + dh_geyser)
 
     return En
 

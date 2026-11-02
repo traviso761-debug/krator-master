@@ -1,12 +1,14 @@
 # Spider Lake Biome Kit — Plan
 
+> **Status: Parked for Expansion Pack.** The `spider lake` biome kit is parked for the expansion pack (`rmvspiderlake` / `rmvyj4v2ozgb1`). All `px, py` (`X, Y`) coordinates in this document are on the **Scale Model `5.1` (`1821 × 1723`, `2 km/px`)** canvas.
+
 This document specifies `biomes/spiderlake/` — the highland-lacustrine, eusocial-arachnid silk-forest kit for **Spider Lake** (`id: "rmvyj4v2ozgb1"`, **72,928 km²** on the `1821×1723` `2 km/px` master grid). It follows the same architectural contract as `biomes/abyssal-savannah/PLAN.md` and `biomes/nwouterwall/PLAN.md`, grounding the region's terrain, hydrology, atmospheric physics, trophic ecology, and silk-harvesting economy in the planetary constants of `biomes/WORLD.md`.
 
 ---
 
 ## 0. What the Kit Is
 
-`biomes/spiderlake/` is a self-contained browser biome kit exposing `window.SPIDERLAKE` (`id: 'spiderlake'`), designed to plug into the unified engine (`biomes/engine/`) and the scale-model biome-kit registry.
+`biomes/spiderlake/` is a self-contained browser biome kit exposing `window.SPIDERLAKE` (`id: 'spiderlake'`), designed to plug into the unified `core/` engine (`core/biome`, `core/terrain`, `core/water`, `core/atmos`, `core/host`) and the scale-model biome-kit registry.
 
 ### Kit Contract
 - **`SPIDERLAKE.id`**: `'spiderlake'`
@@ -130,4 +132,4 @@ When the interactive 3D/2.5D biome viewer kit is instantiated in `biomes/spiderl
 - `biomes/spiderlake/silk-architecture.js` — Catmull-Rom / catenary suspension solver for multi-tier bridge-curtains, branch-fork brood-pavilions, and timber silk-weir reeling frames.
 - `biomes/spiderlake/foliage.js` — Spindle-willow, buttressed crown-cypress, amber-mulberry, and hydrothermal sedge placement.
 - `biomes/spiderlake/atmosphere.js` — Morning lake-fog, warm hydrothermal steam plumes, and dusk "lake-smoke" chironomid swarm particle systems.
-- `biomes/spiderlake/index.html` — Standalone station preview harness loading `biomes/engine/`.
+- `biomes/spiderlake/index.html` — Standalone station preview harness loading `core/` (`core/biome`, `core/terrain`, `core/water`, `core/atmos`, `core/host`).

@@ -340,13 +340,20 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
         # Protect Leng (218, 224) and Yeti capital Qoold Lheek
         w_yw = w_yw * G.sstep(2.0, 5.0, np.hypot(px - 218.0, py - 224.0))
 
-        # Two-step permafrost bench:
-        # Step 1: +4,200 m forest-steppe bench around Leng
-        # Step 2: +5,100 m alas taiga bench (`px 185..340, py 140..215`) separated by a 400 m structural scarp
-        for b_elev, b_width in ((4200.0, 420.0), (5100.0, 460.0)):
+        # Concentric megacrater listric slump steps & permafrost benches:
+        # Step 0: +3,350 m lower listric fault-scarp bench above NW Lowlands
+        # Step 1: +4,200 m back-tilted forest-steppe rotational slump bench around Leng
+        # Step 2: +5,100 m alas taiga rotational slump bench (`px 185..340, py 140..215`) separated by a 400 m pseudotachylite fault scarp
+        # Step 3: +6,050 m upper impact-megabreccia headwall terrace
+        for b_elev, b_width in ((3350.0, 320.0), (4200.0, 420.0), (5100.0, 460.0), (6050.0, 380.0)):
             de = En - b_elev
             w_b = np.exp(-((de / b_width) ** 2)) * w_yw
-            En = En - w_b * (0.55 * de)
+            En = En - w_b * (0.56 * de)
+
+        # Antislope sackung trenches (-32 m) along the back-tilted listric slump hinges (+3,800 m & +4,750 m)
+        for s_elev in (3800.0, 4750.0):
+            w_sack = np.exp(-(((En - s_elev) / 95.0) ** 2)) * w_yw
+            En = En - 32.0 * w_sack
 
         # Shallow thermokarst *alas* depressions (`-35..-55 m`) on the +4,600..+5,500 m bench
         w_alas_belt = G.sstep(4450.0, 4750.0, En) * (1.0 - G.sstep(5450.0, 5800.0, En)) * w_yw

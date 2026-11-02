@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut one region of the Krator Scale Model out as the data an open-world build reads (Option C Super-Resolution).
 
-    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth]
+    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px]
 
 <page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
                    or model/dist/scale-model.html), whose DATA object holds the rasters
@@ -129,6 +129,8 @@ KITS = {
     'tiers': 'outlands',
     'stalker range': 'outlands',
     'stalker gate': 'outlands',
+    'outland gate': 'outlandgate',
+    'ne outer wall': 'neouterwall',
     'mid basin': 'outlands',
     'steaming seamounts': 'geyser',
 }
@@ -143,7 +145,7 @@ RING_M = 30.0        # m: the bathtub ring under a dam lake's full level, its ye
 PALAEO_PAD = 2       # 4-km height cells round an old lake's bed in palaeo.png
 DAM_R = 5            # 4-km height cells: a dam's body, for the lake held behind it (as edit_dams.py stands it)
 DIST_PAD = 128       # map pixels (256 km) past the box that dist.png's polygons are drawn in: every reach is shorter
-EXPAND_DX, EXPAND_DY = 272, 330   # 5.0/5.1 N/W canvas expansion shift (1549x1393 -> 1821x1723)
+EXPAND_DX, EXPAND_DY = smodel.page.LEGACY_SHIFT  # 5.0/5.1 N/W canvas expansion shift (1549x1393 -> 1821x1723)
 AUTO_UPSAMPLE_MAX_PX = 180000     # map px threshold: <= 180k px uses 4x (500 m/cell), > 180k px uses 2x (1,000 m/cell)
 
 
@@ -255,37 +257,30 @@ def load_collection(path, kind):
     return docs(path)
 
 
-def auto_shift_collections(D, R, S, added, target_name=''):
-    """If the model is on the 5.0/5.1 expanded 1821x1723 canvas but R, S, or added are in legacy 1549x1393 coordinates,
-    shift them deterministically by (+272, +330) so legacy region cuts work seamlessly."""
+def auto_shift_collections(D, R, S, added, target_name='', legacy_px_flag=False):
+    """Ensure R, S, and added are on the 5.1 (1821x1723) canvas.
+    If `--legacy-px` is passed, shift 4.23/4.24 (1549x1393) coordinates explicitly via `smodel.page.legacy_px`.
+    If `--legacy-px` is NOT passed and the collection is in 4.23/4.24 coordinates, raise a clear error instead of silently guessing."""
     if (D.get('fullW'), D.get('fullH')) != (1821, 1723):
         return R, S, added
-    # Check a canonical region ('Throne/Volcano' or 'sedesert') to detect unshifted 1549x1393 coordinates
-    need_shift_r = False
-    found_ref_r = False
+    is_legacy_r = False
     for r in R:
         nm = r.get('name', '').strip().lower()
         if nm == 'throne/volcano' and r.get('points'):
             cx_r = sum(p[0] for p in r['points']) / len(r['points'])
-            need_shift_r = (cx_r < 680)
-            found_ref_r = True
+            is_legacy_r = (cx_r < 680)
             break
-        if nm == 'sedesert' and r.get('points'):
-            cx_r = sum(p[0] for p in r['points']) / len(r['points'])
-            need_shift_r = (cx_r < 1000)
-            found_ref_r = True
-            break
-    if not found_ref_r and R:
-        max_x = max((p[0] for r in R for p in r.get('points', [])), default=0)
-        max_y = max((p[1] for r in R for p in r.get('points', [])), default=0)
-        if max_x <= 1555 and max_y <= 1400:
-            need_shift_r = True
-    if need_shift_r:
+    if not legacy_px_flag and is_legacy_r:
+        raise ValueError(
+            'Regions collection is in 4.23/4.24 (1549x1393) coordinates while model is 5.1 (1821x1723); '
+            'pass --legacy-px to shift by (+272, +330) or use a 5.1 regions file.'
+        )
+    if legacy_px_flag:
         R_new = []
         for r in R:
             r2 = copy.deepcopy(r)
             if 'points' in r2:
-                r2['points'] = [[p[0] + EXPAND_DX, p[1] + EXPAND_DY] for p in r2['points']]
+                r2['points'] = [smodel.page.legacy_px(p, D=D) for p in r2['points']]
             R_new.append(r2)
         R = R_new
         if added:
@@ -293,37 +288,30 @@ def auto_shift_collections(D, R, S, added, target_name=''):
             for a in added:
                 a2 = copy.deepcopy(a)
                 if 'map_px' in a2:
-                    a2['map_px'] = [[p[0] + EXPAND_DX, p[1] + EXPAND_DY] for p in a2['map_px']]
+                    a2['map_px'] = [smodel.page.legacy_px(p, D=D) for p in a2['map_px']]
                 added_new.append(a2)
             added = added_new
-    # If the requested region name is a 5.0/5.1 region not present in a legacy regions.json, augment R from 51-region-store.js
     if target_name and not any(r.get('name', '').lower() == target_name.lower() for r in R):
         known_ids = {r.get('id') for r in R}
         for r_def in load_model_defaults('regions'):
             if r_def.get('id') not in known_ids:
                 R.append(r_def)
-    need_shift_s = False
-    found_ref_s = False
+    is_legacy_s = False
     for s in S:
         if s.get('name') == 'Iziz' and s.get('px') is not None:
-            need_shift_s = (s['px'] < 750)
-            found_ref_s = True
+            is_legacy_s = (s['px'] < 750)
             break
-        if s.get('name') == 'Pinnacle Rock' and s.get('px') is not None:
-            need_shift_s = (s['px'] < 850)
-            found_ref_s = True
-            break
-    if not found_ref_s and S and need_shift_r:
-        max_sx = max((s.get('px', 0) for s in S if s.get('px') is not None), default=0)
-        if max_sx <= 1555:
-            need_shift_s = True
-    if need_shift_s:
+    if not legacy_px_flag and is_legacy_s:
+        raise ValueError(
+            'Settlements collection is in 4.23/4.24 (1549x1393) coordinates while model is 5.1 (1821x1723); '
+            'pass --legacy-px to shift by (+272, +330) or use a 5.1 settlements file.'
+        )
+    if legacy_px_flag:
         S_new = []
         for s in S:
             s2 = copy.deepcopy(s)
             if s2.get('px') is not None:
-                s2['px'] = s2['px'] + EXPAND_DX
-                s2['py'] = s2['py'] + EXPAND_DY
+                s2['px'], s2['py'] = smodel.page.legacy_px(s2['px'], s2['py'], D=D)
             S_new.append(s2)
         S = S_new
     return R, S, added
@@ -1005,7 +993,8 @@ def main():
     added = []
     upsample_arg = 'auto'
     do_synth = True
-    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv:
+    legacy_px_flag = False
+    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv:
         if '--add' in argv:
             k = argv.index('--add')
             added = json.load(open(argv[k + 1], encoding='utf-8'))
@@ -1018,13 +1007,17 @@ def main():
             k = argv.index('--no-synth')
             do_synth = False
             argv = argv[:k] + argv[k + 1:]
+        elif '--legacy-px' in argv:
+            k = argv.index('--legacy-px')
+            legacy_px_flag = True
+            argv = argv[:k] + argv[k + 1:]
     if len(argv) != 5:
         sys.exit(__doc__)
     page, rdir, sdir, name, out = argv
     D = load_page(page)
     R = load_collection(rdir, 'regions')
     S = load_collection(sdir, 'settlements')
-    R, S, added = auto_shift_collections(D, R, S, added, target_name=name)
+    R, S, added = auto_shift_collections(D, R, S, added, target_name=name, legacy_px_flag=legacy_px_flag)
     reg = [r for r in R if r.get('name') == name]
     if not reg:
         reg = [r for r in R if r.get('name', '').lower() == name.lower()]
@@ -1366,7 +1359,7 @@ def main():
         meta['overlays'] = overlays
     if palaeo:
         meta['palaeo'] = palaeo
-    json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8'), separators=(',', ':'))
+    json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (
         nx, ny, 2000.0 / su, su, bool(do_synth and su >= 1.5), len(lines), sum(len(l) for l in lines), spilled))

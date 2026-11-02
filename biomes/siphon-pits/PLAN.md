@@ -1,5 +1,7 @@
 # The Siphon Pits & Ostrukh Terraces of Region 98 (Plan)
 
+> **Coordinate Frame:** All `px, py` (`X, Y`) coordinates in this document and in `biomes/siphon-pits/*/station.json` are on the **Scale Model `5.1` (`1821 × 1723`, `2 km/px`)** canvas.
+
 The owner's polygon `Region 98` (2026-10-27; `regions` doc `rmvra9zogfm9t`; kind: `biome`; color `#6fb5a8`) on the Krator Scale Model: a vast regional biome in the far south-east ($626\text{ km} \times 482\text{ km}$, $\sim 174,756\text{ km}^2$), lying immediately east of the towering Stalker Peaks (`rmvkknh1am4fw`) and south-east of Hub 01.
 
 **Owner's briefs** (2026-10-27):
@@ -11,18 +13,18 @@ The owner's polygon `Region 98` (2026-10-27; `regions` doc `rmvra9zogfm9t`; kind
 
 ---
 
-## 1. Regional Geography & Survey (Scale Model 4.22)
+## 1. Regional Geography & Survey (Scale Model 5.1)
 
 One pixel on the Krator Scale Model is $2\text{ km}$ ($4\text{ km}^2/\text{px}$).
 
 | Metric | Model Coordinate / Value | Physical Equivalent |
 |---|---|---|
 | **Doc ID** | `rmvra9zogfm9t` | Region 98 |
-| **Bounding Box** | $X \in [1184, 1497]$, $Y \in [1057, 1298]$ | $626\text{ km}$ wide $\times 482\text{ km}$ tall |
-| **Centroid** | $(1345.8, 1163.6)\text{ px}$ | $+905.6\text{ km}$ East, $+1227.2\text{ km}$ South of datum $[893, 550]$ |
+| **Bounding Box** | $X \in [1456, 1769]$, $Y \in [1387, 1628]$ | $626\text{ km}$ wide $\times 482\text{ km}$ tall |
+| **Centroid** | $(1617.8, 1493.6)\text{ px}$ | $+905.6\text{ km}$ East, $+1227.2\text{ km}$ South of datum $[1165, 880]$ |
 | **Polygon Area** | $43,689\text{ px}^2$ | **$\sim 174,756\text{ km}^2$** ($\sim 1.38\times$ The Catch) |
-| **NW Arable Sector** | $X \in [1184, 1285]$, $Y \in [1057, 1155]$ | $\sim 39,000\text{ km}^2$ (cool-temperate piedmont basin) |
-| **SE Siphon Sector** | $X \in [1310, 1497]$, $Y \in [1140, 1298]$ | $\sim 115,000\text{ km}^2$ (frozen plateau & maar-pit swarm) |
+| **NW Arable Sector** | $X \in [1456, 1557]$, $Y \in [1387, 1485]$ | $\sim 39,000\text{ km}^2$ (cool-temperate piedmont basin) |
+| **SE Siphon Sector** | $X \in [1582, 1769]$, $Y \in [1470, 1628]$ | $\sim 115,000\text{ km}^2$ (frozen plateau & maar-pit swarm) |
 
 ```
                         REGION 98: NW-TO-SE TERRAIN PROFILE
@@ -47,14 +49,14 @@ One pixel on the Krator Scale Model is $2\text{ km}$ ($4\text{ km}^2/\text{px}$)
 
 To physically deliver the owner's brief, three targeted terrain edits are proposed for the Scale Model pipeline (`tools/scale-model/`):
 
-1. **The NW Piedmont Graben Carve ($X \in [1184, 1285], Y \in [1057, 1155]$):**
+1. **The NW Piedmont Graben Carve ($X \in [1456, 1557], Y \in [1387, 1485]$):**
    * Carve a down-dropped tectonic half-graben stepping down from the default $+4,200\text{ m}$ rim down to **$+1,950\text{ to }+2,300\text{ m}$**.
    * **The Physical Mechanism:** The $2,000\text{ m}$ elevation reduction increases atmospheric pressure to **$1.28\text{--}1.35\text{ atm}$**. By Krator's lapse rate ($5.5^\circ\text{C}/\text{km}$), mean annual temperature rises by $+11^\circ\text{C}$ to **$+3.5^\circ\text{C}\text{ to }+5.0^\circ\text{C}$** (Summer $+16.5^\circ\text{C}$), transforming the NW from Arctic tundra into a fertile **Dfb / Cfb arable highland** (Station 1).
    * **Hydrology:** Author braided meltwater stream channels carrying glacial discharge and mineral-rich volcanic silt from the eastern canyons of the Stalker Peaks across the terraces.
-2. **The Central Fault Escarpment ($[1260, 1175]\text{ to }[1310, 1057]$):**
+2. **The Central Fault Escarpment ($[1532, 1505]\text{ to }[1582, 1387]$):**
    * A $1,500\text{--}1,800\text{ m}$ stepped columnar basalt cliff separating the warm NW lowlands from the high SE plateau.
-   * A scree-ramp caravan notch at $[1285, 1125]$ ($+3,350\text{ m}$) hosting the Scarp Pass (Station 2).
-3. **The SE High Plateau & Maar Swarm ($X \in [1310, 1497], Y \in [1140, 1298]$):**
+   * A scree-ramp caravan notch at $[1557, 1455]$ ($+3,350\text{ m}$) hosting the Scarp Pass (Station 2).
+3. **The SE High Plateau & Maar Swarm ($X \in [1582, 1769], Y \in [1470, 1628]$):**
    * Plateau surface remains elevated at **$+4,200\text{ to }+4,500\text{ m}$** (freezing subpolar plateau, $-17.5^\circ\text{C}$ mean, katabatic blizzards).
    * Carve $35\text{--}50$ circular/elliptical negative crater stamps ($D = 2.5\text{--}5\text{ km}$, vertical drop $380\text{--}450\text{ m}$) along the volcanic fissure corridor.
    * Preserve $5\text{--}10\text{ m}$ wide knife-edge basalt bridges (The Arête Way, Station 4) between overlapping stamps, while their floors host the warm geothermal groves (Station 3).
@@ -64,25 +66,25 @@ To physically deliver the owner's brief, three targeted terrain edits are propos
 ## 3. The 4 Stations
 
 ### Station 1: Ostrukh Terraces (The Cold Arable Basin — NW)
-* **Metadata:** `stations/terraces/station.json` (`px: 1225, 1088`, elev $+2,150\text{ m}$, $1.31\text{ atm}$, mean $+4.2^\circ\text{C}$, rain $340\text{ mm}$, Dfb).
+* **Metadata:** `stations/terraces/station.json` (`px: 1497, 1418`, elev $+2,150\text{ m}$, $1.31\text{ atm}$, mean $+4.2^\circ\text{C}$, rain $340\text{ mm}$, Dfb).
 * **Landscape:** Fertile loess terraces stepping down to braided meltwater streams fed by Stalker glaciers; dry-stone retaining walls, sod-roofed basalt farmhouses, communal grain elevators.
 * **Agriculture & Ecology:** Highland frost-barley, frost-wheat, cold-hardy black tubers (`kits/crops` `terrace` zone); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
 * **Role:** The agricultural breadbasket of the south-east, feeding the mining and wax-harvesting camps of the higher zones.
 
 ### Station 2: The Scarp Pass (The Central Dividing Fault)
-* **Metadata:** `stations/scarp/station.json` (`px: 1285, 1125`, elev $+3,350\text{ m}$, $1.12\text{ atm}$, mean $-4.8^\circ\text{C}$, rain $180\text{ mm}$, Dsc).
+* **Metadata:** `stations/scarp/station.json` (`px: 1557, 1455`, elev $+3,350\text{ m}$, $1.12\text{ atm}$, mean $-4.8^\circ\text{C}$, rain $180\text{ mm}$, Dsc).
 * **Landscape:** Sheer hexagonal basalt columns rising $1,600\text{ m}$; switchback road cut into jointed rock; permafrost stone nets and frost circles (`42-core-frost.js`).
 * **Settlement & Transit:** Fortified stone tollhouse and caravansary sheltered under a basalt overhang; iron beacon baskets and windbreaks; freight exchange for pack beasts.
 
 ### Station 3: Siphon Maar Floor (The Sunken Geothermal Sink — SE)
-* **Metadata:** `stations/pitfloor/station.json` (`px: 1415, 1225`, floor elev $+3,800\text{ m}$, depth $420\text{ m}$, $1.46\text{ atm}$, mean $+18.5^\circ\text{C}$, rain $620\text{ mm}$, Cfa-thermal).
+* **Metadata:** `stations/pitfloor/station.json` (`px: 1687, 1555`, floor elev $+3,800\text{ m}$, depth $420\text{ m}$, $1.46\text{ atm}$, mean $+18.5^\circ\text{C}$, rain $620\text{ mm}$, Cfa-thermal).
 * **Landscape:** Circular flat basin floor completely enclosed by vertical $400\text{ m}$ columnar basalt cliffs; boiling diatreme vents, mud pots, and subterranean lava tube portals.
 * **Inversion Trap:** Amber inversion fog deck sealed at $+4,100\text{ m}$ ($100\text{ m}$ above the floor, $-320\text{ m}$ below the plain); dead-calm $+18.5^\circ\text{C}$ microclimate.
 * **Ecology:** Communal groves of **Woolly Siphon trees** (`woolly_siphon`, $20\text{--}30\text{ m}$ tall), venting steam through flared lips and wrapped in $15\text{ cm}$ lanolin-wax pelts; springy **Siphon-Felt turf** (`siphon_felt` / `kground`); bulbous **Suture-Galls**; burrowing **Basalt Pipe-Borers**.
 * **Human Presence:** Roper base camp (*Pit-Head 04*): canvas huts, copper rendering kettles melting raw machine-wax into ingots.
 
 ### Station 4: The Arête Way (The Knife-Edge Bridges — SE Rim)
-* **Metadata:** `stations/arete/station.json` (`px: 1395, 1210`, elev $+4,220\text{ m}$, $0.94\text{ atm}$, mean $-17.5^\circ\text{C}$, wind $35\text{ m/s}$, ET).
+* **Metadata:** `stations/arete/station.json` (`px: 1667, 1540`, elev $+4,220\text{ m}$, $0.94\text{ atm}$, mean $-17.5^\circ\text{C}$, wind $35\text{ m/s}$, ET).
 * **Landscape:** A terrifying $5\text{ to }8\text{ m}$ wide basalt knife-edge ridge between two coalescing $420\text{ m}$ deep pits; shattered phreatic explosion breccia; black rime ice.
 * **Hazard & Ecology:** Ambush lairs of the **Flenser-Hound** (`flenser_hound`), crouching along the fog rim in blizzards to strike crossing caravans.
 * **Human Infrastructure:** The Arête Way caravan trail with iron guide stanchions and safety chains; heavy rim windlass gantries lowering ropers into the abyss.

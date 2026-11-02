@@ -65,9 +65,8 @@ import smodel.biome_transitions as BT    # noqa: E402
 import smodel.river_names as RN          # noqa: E402
 import smodel.nw_expansion as NW         # noqa: E402
 
-DX = 272
-DY = 330
-OLD_OH, OLD_OW = 1393, 1549
+DX, DY = P.LEGACY_SHIFT
+OLD_OW, OLD_OH = P.LEGACY_FULL_SIZE
 NEW_OH, NEW_OW = 1723, 1821
 SEED = 425
 
@@ -203,6 +202,7 @@ def main():
         Eo_1393, whas0_1393, np.nan_to_num(wlev0_1393, nan=0.0),
         regs_1393, copy.deepcopy(D_old['vents']), copy.deepcopy(D_old['volc'])
     )
+    En1_volc = En1.copy()
     wlev1_nan = np.where(whas1, wlev1, np.nan)
     del wlev1
     gc.collect()
@@ -253,6 +253,25 @@ def main():
     del En3c, whas3c_1393, wlev3c_1393_num
     gc.collect()
     print(f'  Biome boundary transitions sculpted: {int(ch_bt.sum()):,} cells changed on 1393x1549')
+
+    # Re-assert volcanic summit edifices (Lesser Throne, Throne, Godthrone, Godstep Head Vent, Twin Cones, Parasitic Cones)
+    # from En1_volc so no subsequent interior pass can ever flatten a vent cone or crater rim:
+    Yv_1393, Xv_1393 = np.indices((OLD_OH, OLD_OW), dtype=float)
+    w_volc_reassert = np.zeros((OLD_OH, OLD_OW), dtype=float)
+    for vx_c, vy_c, r_in_c, r_out_c in [
+        (858.0, 524.0, 14.0, 22.0),   # Lesser Throne
+        (788.0, 524.0, 22.0, 32.0),   # Throne
+        (696.0, 682.0, 26.0, 38.0),   # Godthrone
+        (620.8, 815.2, 6.0, 10.0),    # Godstep Head Vent
+        (716.0, 1128.0, 14.0, 22.0),  # West Catch/Xanadu Twin Cone
+        (770.0, 1168.0, 14.0, 22.0),  # East Catch/Xanadu Twin Cone
+        (735.0, 1142.0, 7.0, 12.0),   # West Saddle Parasitic Cone
+        (752.0, 1155.0, 7.0, 12.0),   # East Saddle Parasitic Cone
+    ]:
+        rv_c = np.hypot(Xv_1393 - vx_c, Yv_1393 - vy_c)
+        w_volc_reassert = np.maximum(w_volc_reassert, 1.0 - G.sstep(r_in_c, r_out_c, rv_c))
+    En3 = En3 * (1.0 - w_volc_reassert) + En1_volc * w_volc_reassert
+    ch_volc |= (w_volc_reassert > 0.05)
 
     # Protect the completed 5-region SE complex (`Region 99`, `Siphon Pits`, `Mid Basin`, `Stalker Gate`, `High Rift`)
     # so its terrain, water levels, and climate stay 100% intact
@@ -528,12 +547,20 @@ def main():
     w_silent_vales = meta_nw['w_silent_vales']
     w_tsunami_scour = meta_nw['w_tsunami_scour']
     w_tsunami_chevron = meta_nw['w_tsunami_chevron']
+    w_ne_outer_wall = meta_nw['w_ne_outer_wall']
+    w_ne_dike_rib = meta_nw['w_ne_dike_rib']
+    w_ne_cauldron = meta_nw['w_ne_cauldron']
+    w_ne_skarn = meta_nw['w_ne_skarn']
+    w_nw_crater_scarp = meta_nw['w_nw_crater_scarp']
 
-    # Ensure the sheltered cool-temperate `Silent Vales` (`w_silent_vales > 0.25`) have mild maritime-montane
-    # temperatures (`tw = 16.5..20.5 C`, `tc = 3.2..6.5 C`) on their +1,135..+2,150 m valley floors
-    w_sv_temp = np.clip(w_silent_vales * (1.0 - G.sstep(1950.0, 2650.0, En_exp)), 0.0, 1.0)
-    tw_sv_target = 20.2 - 0.0032 * np.maximum(0.0, En_exp - 1100.0)
-    tc_sv_target = 6.2 - 0.0028 * np.maximum(0.0, En_exp - 1100.0)
+    # Ensure the sheltered cool-temperate `Silent Vales` (`w_silent_vales > 0.25`) and the geothermally heated
+    # `ne outer wall` Boxwork Dike-Cauldrons (`w_ne_cauldron > 0.25`) have mild temperatures on their basin floors!
+    w_sv_temp = np.clip(
+        np.maximum(w_silent_vales * (1.0 - G.sstep(1950.0, 2650.0, En_exp)), w_ne_cauldron * (1.0 - G.sstep(3150.0, 3550.0, En_exp))),
+        0.0, 1.0
+    )
+    tw_sv_target = 20.2 - 0.0028 * np.maximum(0.0, En_exp - 1100.0)
+    tc_sv_target = 6.2 - 0.0022 * np.maximum(0.0, En_exp - 1100.0)
     tw_exp = tw_exp * (1.0 - w_sv_temp) + tw_sv_target * w_sv_temp
     tc_exp = tc_exp * (1.0 - w_sv_temp) + tc_sv_target * w_sv_temp
     tm_exp = tm_exp * (1.0 - w_sv_temp) + (0.5 * (tw_sv_target + tc_sv_target)) * w_sv_temp
@@ -558,17 +585,19 @@ def main():
         + 240.0 * w_ne_connector
         + 220.0 * w_sw_connector
         + 420.0 * w_silent_vales
+        + 340.0 * w_ne_cauldron
+        + 180.0 * w_ne_outer_wall
         + 240.0 * w_ozark_dolomite
         - 520.0 * w_tharn
         - 580.0 * w_sw_outer
-        - 220.0 * G.sstep(850.0, 1350.0, X_exp) * G.sstep(210.0, 480.0, Y_exp) * (1.0 - w_canyon)
+        - 220.0 * G.sstep(850.0, 1350.0, X_exp) * G.sstep(210.0, 480.0, Y_exp) * (1.0 - w_canyon) * (1.0 - w_ne_cauldron)
     )
     rain_nw_syn = nd.gaussian_filter(rain_nw_syn, sigma=2.2)
     rain_nw_syn = np.where(En_exp >= 8800.0, 0.0, np.clip(rain_nw_syn, 75.0, 3400.0))
 
     d_into_new = nd.distance_transform_edt(is_new_area)
     w_batch5_clim = np.maximum(
-        np.maximum(w_silent_vales, w_sasquatch_vales),
+        np.maximum(np.maximum(w_silent_vales, w_sasquatch_vales), w_ne_outer_wall),
         np.maximum(w_ozark_dolomite, w_tsunami_scour),
     )
     w_trans_clim = np.maximum(
@@ -631,12 +660,17 @@ def main():
     c_nw[in_sasq_vales & (En_exp < 5960.0)] = idx['Dsc']
     c_nw[in_sasq_vales & (En_exp >= 5960.0) & (En_exp < 6420.0)] = idx['ET']
 
+    # 3. `ne outer wall` Boxwork Dike-Cauldrons (`w_ne_cauldron > 0.30`): geothermal cloud-forest pockets (`Cfb` / `Dfb`)
+    in_ne_cauldrons = (w_ne_cauldron > 0.30) & ~whas_exp
+    c_nw[in_ne_cauldrons & (En_exp < 3250.0)] = idx['Cfb']
+    c_nw[in_ne_cauldrons & (En_exp >= 3250.0) & (En_exp < 3850.0)] = idx['Dfb']
+
     # Water classes in the new territory:
     c_nw[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0)) | (w_tsunami_scour > 0.05)) & whas_exp] = idx['WS']
     c_nw[
         (is_high_lake & whas_exp)
         | is_copper_tarn
-        | (whas_exp & (wlev_exp >= 1000.0) & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05)))
+        | (whas_exp & (wlev_exp >= 1000.0) & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05) | (w_ne_outer_wall > 0.05)))
     ] = idx['WH']
     cls_exp = c_nw
 
@@ -646,7 +680,7 @@ def main():
     zon_exp[nw_edit_land & (En_exp >= 4500.0) & (En_exp < 8200.0)] = 3
     zon_exp[nw_edit_land & (En_exp >= 8200.0)] = 2
     zon_exp[in_copper_glacier & (En_exp >= 2350.0)] = 3
-    zon_exp[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0)) | (w_silent_vales > 0.1) | (w_sasquatch_vales > 0.1)) & whas_exp] = 4
+    zon_exp[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0)) | (w_silent_vales > 0.1) | (w_sasquatch_vales > 0.1) | (w_ne_outer_wall > 0.1)) & whas_exp] = 4
 
     # =========================================================================
     # STEP 5B: Shift Rivers, Soften Legacy D8 Staircases into Natural Meanders,
@@ -746,6 +780,20 @@ def main():
         new_y = np.where(hit_water | pinned, arr_p[:, 1], new_y)
         r['px'] = [[round(float(x_), 2), round(float(y_), 2)] for x_, y_ in zip(new_x, new_y)]
 
+    # Route the mouth of Līng-Mā (`r['id'] == 2`, Farside) into the 0.0 m sea-level estuary under Farport's bluff plateau:
+    for r in rivers_exp:
+        pts_r = r.get('px') or []
+        if len(pts_r) >= 4:
+            mx, my = pts_r[-1]
+            if r.get('id') == 2 or (278.0 <= mx <= 302.0 and 580.0 <= my <= 596.0):
+                # Trim any duplicate tail points in the harbour box and append the clean estuary mouth trajectory
+                while len(pts_r) > 4 and pts_r[-1][0] <= 296.0 and 582.0 <= pts_r[-1][1] <= 594.0:
+                    pts_r.pop()
+                pts_r.extend([[292.0, 588.0], [290.0, 588.0], [285.0, 587.5], [280.0, 587.0]])
+                r['px'] = pts_r
+                if isinstance(r.get('to'), dict):
+                    r['to']['at_px'] = [280.0, 587.0]
+
     # Global Anti-Porcupine Despiking & Coastal Cliff Moderation Pass on `En_exp`
     # (Run BEFORE river channel incision so median filtering never fills in narrow canyon river floors!):
     vent_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
@@ -753,7 +801,7 @@ def main():
         vx_i, vy_i = v_item['px']
         if v_item in vents_1393:
             vx_i, vy_i = vx_i + DX, vy_i + DY
-        vent_guard |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 7.0)
+        vent_guard |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 8.0)
 
     med3_e = nd.median_filter(En_exp, size=3)
     med5_e = nd.median_filter(En_exp, size=5)
@@ -809,7 +857,7 @@ def main():
         for (dx_, dy_), e_ref in zip(dense_pts, ref_els):
             iy = min(NEW_OH - 1, max(0, int(round(dy_))))
             ix = min(NEW_OW - 1, max(0, int(round(dx_))))
-            if whas_exp[iy, ix]:
+            if whas_exp[iy, ix] or vent_guard[iy, ix]:
                 continue
             target_bed = e_ref - depth_r
             if not riv_seed_mask[iy, ix] or target_bed < riv_bed_grid[iy, ix]:
@@ -826,8 +874,8 @@ def main():
     bed_near = nd.gaussian_filter(riv_bed_grid[r_iy, r_ix], sigma=1.0)
 
     u_riv = d_to_riv_all / np.maximum(hw_near, 1.5)
-    # Taper river carving smoothly within 2 px of lake/sea shorelines (`d_to_water_px`) so lake rims stay intact
-    w_water_taper = G.sstep(0.0, 2.2, d_to_water_px) * (~whas_exp).astype(float)
+    # Taper river carving smoothly within 2 px of lake/sea shorelines (`d_to_water_px`) and exclude `vent_guard`
+    w_water_taper = G.sstep(0.0, 2.2, d_to_water_px) * (~whas_exp).astype(float) * (~vent_guard).astype(float)
     w_riv_carve = ((1.0 - G.sstep(0.0, 1.0, u_riv)) ** 1.25) * w_water_taper
 
     # Safe lower bound on dry land so positive-elevation land never drops below 1.8 m or below adjacent lake level
@@ -843,28 +891,50 @@ def main():
     dry_new_final = is_new_area & ~whas_exp
     En_exp = np.where(dry_new_final, np.maximum(En_exp, 1.8), En_exp)
 
+    # Re-assert volcanic summit edifices on En_exp[DY:, DX:] so no river-channel blur touches a cone rim or crater floor:
+    En_exp[DY:, DX:] = En_exp[DY:, DX:] * (1.0 - w_volc_reassert) + En1_volc * w_volc_reassert
+    del En1_volc
+
+    # Grade the final coastal reach of Līng-Mā (`r002`) into the 0.0 m sea-level estuary and pin Farport's bluff plateau:
+    whas_exp[587:589, 278:291] = True
+    wlev_exp[587:589, 278:291] = 0.0
+    En_exp[587:589, 278:291] = np.minimum(En_exp[587:589, 278:291], -8.5)
+    whas_exp[587:590, 293:296] = False
+    wlev_exp[587:590, 293:296] = np.nan
+    En_exp[588, 294] = 212.0
+
     # Enforce strict monotonic downhill terrain on `En_exp` along every river centerline and record `bed_m`!
     climbing_fixed = 0
     for r in rivers_exp:
         pts_r = r.get('px') or []
         if not pts_r:
             continue
+        is_ling_ma = (r.get('id') == 2) or (len(pts_r) >= 2 and 278.0 <= pts_r[-1][0] <= 292.0 and 585.0 <= pts_r[-1][1] <= 590.0)
         beds = []
         for px_, py_ in pts_r:
             iy = min(NEW_OH - 1, max(0, int(round(py_))))
             ix = min(NEW_OW - 1, max(0, int(round(px_))))
-            # Use water surface elevation if vertex is in a high lake/tarn, else terrain elevation
+            # Use water surface elevation if vertex is in a lake/sea, else terrain elevation
             if whas_exp[iy, ix] and not np.isnan(wlev_exp[iy, ix]):
                 beds.append(round(float(max(En_exp[iy, ix], wlev_exp[iy, ix])), 1))
             else:
                 beds.append(round(float(En_exp[iy, ix]), 1))
+        if is_ling_ma and len(beds) >= 6:
+            # Smoothly grade the last 6 vertices of Līng-Mā down to 0.0 m sea level in the drowned estuary
+            top_g = min(float(beds[-6]), 48.0)
+            for k_g, frac_g in enumerate([0.75, 0.50, 0.25, 0.08, 0.0, 0.0], start=len(beds) - 6):
+                beds[k_g] = round(top_g * frac_g, 1)
+                iy_g = min(NEW_OH - 1, max(0, int(round(pts_r[k_g][1]))))
+                ix_g = min(NEW_OW - 1, max(0, int(round(pts_r[k_g][0]))))
+                if not whas_exp[iy_g, ix_g] and (ix_g, iy_g) != (294, 588):
+                    En_exp[iy_g, ix_g] = max(1.8, float(beds[k_g]))
         for i in range(1, len(beds)):
             if beds[i] > beds[i - 1]:
                 beds[i] = beds[i - 1]
                 climbing_fixed += 1
                 iy = min(NEW_OH - 1, max(0, int(round(pts_r[i][1]))))
                 ix = min(NEW_OW - 1, max(0, int(round(pts_r[i][0]))))
-                if not whas_exp[iy, ix]:
+                if not whas_exp[iy, ix] and not vent_guard[iy, ix] and (ix, iy) != (294, 588):
                     En_exp[iy, ix] = min(float(En_exp[iy, ix]), max(1.8, float(beds[i])))
         r['bed_m'] = beds
         r['source_m'] = beds[0]
@@ -892,7 +962,7 @@ def main():
         for r_i in range(5):
             arr_i[r_i, :, :] = arr_i[5, :, :]
         for r_i in range(8):
-            dx_s = int(round((8 - r_i) * 1.75))
+            dx_s = int(round((8 - r_i) * 0.65))
             arr_i[r_i, 140:255, :] = arr_i[8, 140 - dx_s:255 - dx_s, :]
         for c_i in range(5):
             arr_i[:, c_i, :] = arr_i[:, 5, :]
@@ -945,7 +1015,7 @@ def main():
         np.maximum(np.clip(ch_2g_exp * 1.15, 0.0, 1.0), np.maximum(w_sout_pass_exp, w_sg_repaint)),
     )
     w_batch5_paint = np.maximum(
-        np.maximum(w_silent_vales, w_sasquatch_vales),
+        np.maximum(np.maximum(w_silent_vales, w_sasquatch_vales), np.maximum(w_ne_outer_wall, w_nw_crater_scarp)),
         np.maximum(np.maximum(w_ozark_dolomite, w_porphyry_vein), w_tsunami_scour),
     )
     w_exp_paint = np.maximum(
@@ -1110,6 +1180,26 @@ def main():
     tsu_chev_rgb = np.array([186.0, 176.0, 152.0]) * shade_exp
     st_clim_exp = st_clim_exp * (1.0 - 0.72 * w_tsu_chev[..., None]) + tsu_chev_rgb * (0.72 * w_tsu_chev[..., None])
 
+    # 5G. `ne outer wall` (`rmvymakpc0pft`) — *The Glass-Skarn Bastion* & Impact-Crater Pseudotachylite Scarps:
+    #   - Geothermal Boxwork Cauldron cloud-forests (`[52, 108, 56]`),
+    #   - Contact-metamorphic Epidote-Green (`[92, 134, 82]`) & Grossular-Garnet Red (`[158, 68, 60]`) skarn banding,
+    #   - Dark columnar basalt dike-walls & obsidian pseudotachylite fault mirrors (`[54, 52, 58]`) across `ne outer wall` & `NW outer wall`!
+    w_ne_cauld_st = np.clip(w_ne_cauldron * (1.0 - G.sstep(3450.0, 4050.0, En_exp)), 0.0, 1.0) * (~whas_exp).astype(float)
+    cauld_forest_rgb = np.array([54.0, 110.0, 58.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.78 * w_ne_cauld_st[..., None]) + cauld_forest_rgb * (0.78 * w_ne_cauld_st[..., None])
+
+    skarn_band_phase = 0.5 + 0.5 * np.sin((X_exp * 0.18 - Y_exp * 0.24) + 3.5 * meta_nw['fbm1'])
+    skarn_rgb = (
+        np.array([92.0, 134.0, 82.0]) * (1.0 - skarn_band_phase[..., None])
+        + np.array([158.0, 68.0, 60.0]) * skarn_band_phase[..., None]
+    ) * shade_exp
+    w_skarn_st = np.clip(w_ne_skarn * 0.85, 0.0, 1.0) * (~whas_exp).astype(float)
+    st_clim_exp = st_clim_exp * (1.0 - 0.74 * w_skarn_st[..., None]) + skarn_rgb * (0.74 * w_skarn_st[..., None])
+
+    w_pseudo_scarp = np.clip(np.maximum(w_ne_dike_rib * 0.92, w_nw_crater_scarp * 0.68), 0.0, 1.0) * (~whas_exp).astype(float)
+    pseudo_rgb = np.array([56.0, 54.0, 62.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.76 * w_pseudo_scarp[..., None]) + pseudo_rgb * (0.76 * w_pseudo_scarp[..., None])
+
     # 6. High Alpine Snow & Glaciers (`4,150 m <= En_exp < 8,200 m`) & Airless Dark Rust-Red Outer Plateau (`En_exp >= 7,600 m`):
     # Smoothly continuous `snow_thresh` so there is zero boolean jump ring around `sasquatch tribes` or `Silent Vales`!
     snow_thresh = (
@@ -1125,6 +1215,7 @@ def main():
         * (1.0 - 0.88 * w_sout_pass_exp)
         * (1.0 - 0.92 * w_sv_st)
         * (1.0 - 0.90 * w_sq_st)
+        * (1.0 - 0.88 * w_ne_cauld_st)
     )
     st_clim_exp = st_clim_exp * (1.0 - 0.88 * w_snow_exp[..., None]) + (np.array([238.0, 240.0, 244.0]) * np.clip(shade_exp, 0.74, 1.16)) * (0.88 * w_snow_exp[..., None])
 
@@ -1141,8 +1232,10 @@ def main():
     w_sm_plume = (meta_nw['is_seamount'] & whas_exp)[..., None] * G.sstep(-320.0, -10.0, En_exp)[..., None]
     st_sea_col = st_sea_col * (1.0 - 0.68 * w_sm_plume) + np.array([78.0, 172.0, 168.0]) * (0.68 * w_sm_plume)
     st_sea_col = np.where(is_copper_tarn[..., None], np.array([52.0, 184.0, 162.0]), st_sea_col)
-    is_batch5_hlake = is_high_lake | (whas_exp & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05)))
+    is_batch5_hlake = is_high_lake | (whas_exp & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05) | (w_ne_outer_wall > 0.05)))
     st_sea_col = np.where(is_batch5_hlake[..., None], np.array([42.0, 108.0, 128.0]), st_sea_col)
+    is_ne_cauld_tarn = whas_exp & (w_ne_outer_wall > 0.15)
+    st_sea_col = np.where(is_ne_cauld_tarn[..., None], np.array([48.0, 166.0, 152.0]), st_sea_col)
 
     st_syn_exp = np.where(whas_exp[..., None], st_sea_col * np.clip(shade_exp, 0.86, 1.12), st_clim_exp)
     st_final_exp = np.clip(st_pad.astype(float) * (1.0 - w_exp_paint) + st_syn_exp * w_exp_paint, 0.0, 255.0).round().astype(np.uint8)
@@ -1297,6 +1390,10 @@ def main():
         if nm == 'Flooded Tower' or s.get('id') == 'su9oc1m9io':
             # Explicitly position Flooded Tower on its shallow (<20 m) Ring Sea bay shelf at (1028, 840)
             s['px'], s['py'] = 1028, 840
+        elif nm == 'Farport' or s.get('id') == 's998483c9b':
+            # Explicitly position Farport on the near-shore coastal bluff plateau at (294, 588) at 212.0 m
+            # (above the 100 m Farside tsunami run-up ceiling, 8 km above the 0.0 m Līng-Mā estuary harbour at 290, 588)
+            s['px'], s['py'] = 294, 588
         sx, sy = int(s['px']), int(s['py'])
         # Original unshifted coordinates for reference in Eo_1393
         ox, oy = sx - DX, sy - DY
@@ -1324,11 +1421,11 @@ def main():
             elif not old_wet:
                 submerged_bad = True
 
-        # 2. Extreme elevation displacement (> 450 m change from old_elev, unless it's Pluton or a remodeled volcano/abyss settlement)
+        # 2. Extreme elevation displacement (> 450 m change from old_elev, unless it's Pluton, Farport, or a remodeled volcano/abyss settlement)
         elev_delta = abs(new_elev - old_elev)
         elev_bad = (elev_delta > 450.0) and (
-            nm not in {'Pluton', "Noa's Regret", "Zey'danin", 'Dhelv', 'Mantis', 'Locus', 'Verge', 'Mungo', 'Reed', 'Šurpu-Dhelv', 'Qarnu-Tūbu', 'Nūru-Šaplu'}
-            and s['id'] not in {'szeij_surpu01', 'szeij_qarnu02', 'szeij_nuru03'}
+            nm not in {'Pluton', 'Farport', 'Hub 01', "Noa's Regret", "Zey'danin", 'Dhelv', 'Mantis', 'Locus', 'Verge', 'Mungo', 'Reed', 'Šurpu-Dhelv', 'Qarnu-Tūbu', 'Nūru-Šaplu'}
+            and s['id'] not in {'szeij_surpu01', 'szeij_qarnu02', 'szeij_nuru03', 's998483c9b'}
         )
 
         if submerged_bad or elev_bad:
@@ -1396,11 +1493,45 @@ def main():
     print('--- Step 7H: Renaming All Rivers & Wadis Across All 27 Cultural Tongues & Dialects ---')
     river_md_path = os.path.join(HERE, 'river-names-5.1.md')
     rivers_exp, tongue_counts = RN.rename_all_rivers_culturally(
-        rivers_exp, regs_exp, setts_exp, En_exp=En_exp, markdown_out_path=river_md_path
+        rivers_exp, regs_exp, setts_exp, En_exp=En_exp, markdown_out_path=river_md_path,
+        old_rivers=D_old['rivers'],
     )
     D_new['rivers'] = rivers_exp
     top_tongues_str = ', '.join(f'{k}:{v}' for k, v in sorted(tongue_counts.items(), key=lambda kv: -kv[1])[:10])
     print(f'  Named {len(rivers_exp)} rivers across {len(tongue_counts)} tongues (top: {top_tongues_str})')
+
+    # 7I. Run Final Guards After the Last Pass Touches `En_exp`
+    print('--- Step 7I: Running Final Guards (Vent Peaks, Lake Levels, River Descent, & Settlement Pads) ---')
+    # 1. Vent-peak guard (every vent with `peak` and `volc` has ground within 400 m of `peak` inside 12 km / 6 px,
+    #    or inside 40 km / 20 px for the 77-km-wide Godthrone Olympus-Mons caldera whose rim radius is 32.5-38.7 km)
+    for v_chk in [volc_exp] + list(vents_exp):
+        if 'peak' not in v_chk:
+            continue
+        vx_c, vy_c = v_chk['px']
+        r_px = 20 if float(v_chk['peak']) >= 20000.0 else 6
+        iy0, iy1 = max(0, int(round(vy_c)) - r_px), min(NEW_OH, int(round(vy_c)) + r_px + 1)
+        ix0, ix1 = max(0, int(round(vx_c)) - r_px), min(NEW_OW, int(round(vx_c)) + r_px + 1)
+        yy_v, xx_v = np.mgrid[iy0:iy1, ix0:ix1]
+        in_disc = np.hypot(xx_v - vx_c, yy_v - vy_c) <= float(r_px)
+        max_e_disc = float(En_exp[iy0:iy1, ix0:ix1][in_disc].max())
+        assert max_e_disc >= float(v_chk['peak']) - 400.0, (
+            f"Vent peak guard failed at px={v_chk['px']}: peak={v_chk['peak']} m, max_e={max_e_disc:.1f} m"
+        )
+    # 2. Lake-level guard (no NaN water levels on wet cells)
+    assert not np.isnan(wlev_exp[whas_exp]).any(), 'Lake-level guard failed: NaN water level on wet cell'
+    # 3. River-descent guard (monotonic non-increasing bed_m from source to mouth)
+    for r_chk in rivers_exp:
+        b_chk = r_chk.get('bed_m') or []
+        for b1_c, b2_c in zip(b_chk, b_chk[1:]):
+            assert b2_c <= b1_c + 1e-6, f"River descent guard failed on {r_chk.get('id')}: {b1_c} -> {b2_c}"
+    # 4. Settlement-pad & Farport tsunami guard
+    assert len(worse_problems) == 0, f'Settlement guard failed: {worse_problems}'
+    farport_s = next(s for s in setts_exp if s['name'] == 'Farport' or s.get('id') == 's998483c9b')
+    fpx, fpy = int(farport_s['px']), int(farport_s['py'])
+    assert not whas_exp[fpy, fpx], f'Farport at {(fpx, fpy)} must be on dry land'
+    assert float(En_exp[fpy, fpx]) >= 180.0, f'Farport elevation {En_exp[fpy, fpx]:.1f} m must exceed 100 m tsunami run-up ceiling'
+    assert whas_exp[588, 290] and abs(float(wlev_exp[588, 290])) <= 0.5, 'Farport estuary harbour at (290, 588) must be at 0.0 m sea level'
+    print('  All final guards PASSED (vent peaks within 400 m inside 12 km, lakes valid, rivers monotonic, Farport at 212.0 m above 0.0 m harbour).')
 
     # =========================================================================
     # STEP 8: Encode All Rasters into `D_new`, Update `climate.present`, and Save
@@ -1425,6 +1556,18 @@ def main():
             })
     new_present.sort(key=lambda x: x['km2'], reverse=True)
     D_new['climate']['present'] = new_present
+    D_new['legacy_shift'] = {'dx': DX, 'dy': DY, 'old_fullW': OLD_OW, 'old_fullH': OLD_OH}
+    D_new['tsunami_farside'] = {
+        'crest_m': 50.0,
+        'crest_range_m': [35.0, 55.0],
+        'scour_bench_m': 65.0,
+        'chevron_m': 38.0,
+        'max_runup_ceiling_m': 100.0,
+        'farport_px': [294, 588],
+        'farport_elev_m': 212.0,
+        'harbour_px': [290, 588],
+        'harbour_wlev_m': 0.0,
+    }
 
     D_new['h'] = P.encode_heights(D_new, En_exp, whas_exp)
     D_new['wl'] = P.encode_levels(D_new, whas_exp, wlev_exp)
@@ -1442,10 +1585,12 @@ def main():
     P.save(D_new)
 
     # Update `openworld/little-demo/source/regions.json` & `settlements.json`
-    with open(regs_json_path, 'w', encoding='utf-8') as f:
+    with open(regs_json_path, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(regs_exp, f, indent=1)
-    with open(setts_json_path, 'w', encoding='utf-8') as f:
+        f.write('\n')
+    with open(setts_json_path, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(setts_exp, f, indent=1)
+        f.write('\n')
 
     # Update `51-region-store.js` and `60-settlements.js` with shifted defaults + `krator.canvas50` localStorage migration
     new_reg_ids_50 = [
@@ -1453,9 +1598,11 @@ def main():
         'rmvriavalley', 'rmvdoubledelta', 'rmvarachnoids', 'rmvthearch',
         'rmvseamounts', 'rmvthecrook', 'rmvcopperglacier', 'rmvtharnuplands', 'rmvoutlandpass',
         'rmvyiyw8ucd1y', 'rmvyj1kvhx4m4', 'rmvyj4v2ozgb1', 'rmvyk0ubpkdoy', 'rmvyk62bgdvs3',
+        'rmvymakpc0pft', 'rmvyl36gozner',
     ]
     sync_reg_ids_52 = [
         'rmuqm8dxeuvhi', 'rmvyiyw8ucd1y', 'rmvyj1kvhx4m4', 'rmvyj4v2ozgb1', 'rmvyk0ubpkdoy', 'rmvyk62bgdvs3',
+        'rmvymakpc0pft', 'rmvyl36gozner', 'rmvraoas90co7', 'rmvoutlandpass',
     ]
     reg_js_new = f"""  function localSave(){{ try{{ localStorage.setItem('krator.regions',JSON.stringify([...regions.values()])); }}catch(e){{}} }}
   function localLoad(){{
@@ -1480,12 +1627,12 @@ def main():
         localStorage.setItem('krator.regAdded.5.0','1');
         localSave();
       }}
-      if(localStorage.getItem('krator.regMerged.5.2')!=='1'){{
+      if(localStorage.getItem('krator.regMerged.5.3')!=='1'){{
         regions.delete('rmvyj7vb4uawm');
         {json.dumps(sync_reg_ids_52)}.forEach(id=>{{
           const d=defMap.get(id); if(d) regions.set(id,d);
         }});
-        localStorage.setItem('krator.regMerged.5.2','1');
+        localStorage.setItem('krator.regMerged.5.3','1');
         localSave();
       }}
     }}catch(e){{}}
@@ -1497,7 +1644,7 @@ def main():
         reg_store_txt,
         flags=re.S
     )
-    with open(reg_store_path, 'w', encoding='utf-8') as f:
+    with open(reg_store_path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(reg_store_updated)
 
     # Update `60-settlements.js`
@@ -1524,21 +1671,14 @@ def main():
         sett_store_txt,
         flags=re.S
     )
-    with open(sett_store_path, 'w', encoding='utf-8') as f:
+    with open(sett_store_path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(sett_store_updated)
 
-    # Build HTML viewer via model/build.py
+    # Build HTML viewer via model/build.py (only dist/scale-model.html is built in repo)
     print('--- Step 9: Running model/build.py & Exporting Scale Model 5.1 + Verification Crops ---')
     subprocess.check_call([sys.executable, os.path.join(HERE, 'model', 'build.py')])
 
     dist_html = os.path.join(HERE, 'model', 'dist', 'scale-model.html')
-    out_51 = os.path.join(HERE, 'scale-model-5.1.html')
-    out_50 = os.path.join(HERE, 'scale-model-5.0.html')
-    out_424 = os.path.join(HERE, 'scale-model-4.24.html')
-    shutil.copy2(dist_html, out_51)
-    shutil.copy2(dist_html, out_50)
-    shutil.copy2(dist_html, out_424)
-
     artifact_dir = 'C:/Users/travi/.gemini/antigravity/brain/e30de27d-3a14-4ec5-8c8a-76d1d73e27fc'
     artifact_html = os.path.join(artifact_dir, 'scale-model-artifact.html')
     if os.path.exists(artifact_dir):
@@ -1546,9 +1686,11 @@ def main():
         if os.path.exists(river_md_path):
             shutil.copy2(river_md_path, os.path.join(artifact_dir, 'river-names-5.1.md'))
 
-    # Save audit report JSON
-    report_path = os.path.join(HERE, 'build_425_report.json')
-    with open(report_path, 'w', encoding='utf-8') as f:
+    # Save audit report JSON to history/
+    hist_dir = os.path.join(HERE, 'history')
+    os.makedirs(hist_dir, exist_ok=True)
+    report_path = os.path.join(hist_dir, 'build_425_report.json')
+    with open(report_path, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({
             'dimensions': {'w': NEW_OW, 'hh': NEW_OH, 'fullW': NEW_OW, 'fullH': NEW_OH, 'dx': DX, 'dy': DY},
             'auto_moved_settlements': auto_moved,
@@ -1560,6 +1702,7 @@ def main():
             'tubes_total': len(tubes_list),
             'settlement_audit': audit_report,
         }, f, indent=2)
+        f.write('\n')
 
     # Save verification crops to artifact directory
     scratch_dir = os.path.join(artifact_dir, 'scratch')

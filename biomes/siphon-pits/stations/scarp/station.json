@@ -1,21 +1,22 @@
 {
- "name": "The Scarp Pass (station 2): the central dividing basalt fault, switchback road carved into hexagonal columns, frost polygons, the fortified waystation, wild Ghaunt-Ox migration trail",
- "out": "siphon-scarp.html",
- "site": {
-  "name": "scarp",
-  "title": "The Scarp Pass",
-  "px": 1285,
-  "py": 1125,
-  "base": 3350.0,
-  "atm": 1.12,
-  "mean": -4.8,
-  "rain": 180,
-  "cls": "Dsc",
-  "lat": -28.9
- },
- "water": [],
- "frost": {
-  "pattern": "polygons",
-  "scale": 12.0
- }
+  "canvas": "5.1 (1821x1723)",
+  "name": "The Scarp Pass (station 2): the central dividing basalt fault, switchback road carved into hexagonal columns, frost polygons, the fortified waystation, wild Ghaunt-Ox migration trail",
+  "out": "siphon-scarp.html",
+  "site": {
+    "name": "scarp",
+    "title": "The Scarp Pass",
+    "px": 1557,
+    "py": 1455,
+    "base": 3350.0,
+    "atm": 1.12,
+    "mean": -4.8,
+    "rain": 180,
+    "cls": "Dsc",
+    "lat": -28.9
+  },
+  "water": [],
+  "frost": {
+    "pattern": "polygons",
+    "scale": 12.0
+  }
 }

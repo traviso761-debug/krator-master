@@ -22,6 +22,23 @@ sys.path.insert(0, MODEL)
 import build   # noqa: E402  (model/build.py: the data folder's format)
 
 DATA_DIR = build.DATA_DIR
+LEGACY_SHIFT = (272, 330)
+LEGACY_FULL_SIZE = (1549, 1393)
+INLINE_KEYS = {'legacy_shift', 'tsunami_farside'}
+
+
+def legacy_px(px, py=None, D=None):
+    """Shift 4.23/4.24 map-pixel coordinates (1549x1393) onto the 5.1 canvas (1821x1723) by (+272, +330)."""
+    shift = (D or {}).get('legacy_shift') if isinstance(D, dict) else None
+    if isinstance(shift, (list, tuple)) and len(shift) >= 2:
+        dx, dy = shift[0], shift[1]
+    elif isinstance(shift, dict) and 'dx' in shift:
+        dx, dy = shift['dx'], shift['dy']
+    else:
+        dx, dy = LEGACY_SHIFT
+    if py is None:
+        return [px[0] + dx, px[1] + dy]
+    return px + dx, py + dy
 
 
 def load(path=DATA_DIR):
@@ -49,7 +66,10 @@ def save(D, folder=DATA_DIR):
     known = {o['key']: o for o in order}
     for k in D:
         if k not in known:
-            o = {'key': k, 'file': k + '.json'} if isinstance(D[k], (list, dict)) else {'key': k, 'value': D[k]}
+            if k in INLINE_KEYS or not isinstance(D[k], (list, dict)):
+                o = {'key': k, 'value': D[k]}
+            else:
+                o = {'key': k, 'file': k + '.json'}
             order.append(o)
             known[k] = o
     order = [o for o in order if o['key'] in D]

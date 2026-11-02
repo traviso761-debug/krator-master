@@ -548,12 +548,29 @@ def remodel_volcanoes(Eo, whas0, wlev0, regs_list, vents_list, volc_dict):
     E_gs_target = E_mare + rille_cut
     En = En * (1.0 - w_gs) + E_gs_target * w_gs
 
+    # Sculpt the Godstep flood-basalt head shield/fissure cone around vent[77] (620.8, 815.17):
+    # 2,850.0 m WNW rim crest at (619, 814) surrounding the 2,700.0 m fissure floor at (620.8, 815.17)
+    r_gs_v = np.hypot(dx_gs, dy_gs)
+    th_gs_v = np.arctan2(dy_gs, dx_gs)
+    r_rim_gsv = 3.2
+    r_base_gsv = 16.0
+    h_rim_gsv = 2810.0 + 40.0 * np.cos(th_gs_v + 2.5)
+    u_gsv = np.clip((r_gs_v - r_rim_gsv) / (r_base_gsv - r_rim_gsv), 0.0, 1.0)
+    E_gsv_cone = np.where(
+        r_gs_v < r_rim_gsv,
+        2700.0 + (h_rim_gsv - 2700.0) * G.sstep(0.35, 1.0, r_gs_v / r_rim_gsv),
+        En + np.maximum(0.0, h_rim_gsv - En) * ((1.0 - u_gsv) ** 2.0),
+    )
+    w_gsv = G.sstep(16.0, 7.0, r_gs_v)
+    En = En * (1.0 - w_gsv) + E_gsv_cone * w_gsv
+
     # Pin exact Godthrone pit floor (21,194.0 m at vent[76]), Pluton (9,650.0 m),
-    # Southern Brine Lake bed (6,415.0 m), Red Riwa head (5,365.0 m), and vent[77] (2,700.0 m)
+    # Southern Brine Lake bed (6,415.0 m), Red Riwa head (5,365.0 m), and vent[77] (2,700.0 m / 2,850.0 m rim)
     En[int(round(932.59 * sv)), int(round(577.85 * su))] = 21194.0
     En[int(round(998.0 * sv)), int(round(471.0 * su))] = 9650.0
     En[int(round(1068.0 * sv)), int(round(571.0 * su))] = 6415.0
     En[int(round(1109.6 * sv)), int(round(592.8 * su))] = 5365.0
+    En[int(round(814.0 * sv)), int(round(619.0 * su))] = 2850.0
     En[int(round(815.2 * sv)), int(round(620.8 * su))] = 2700.0
 
 
@@ -676,11 +693,30 @@ def remodel_volcanoes(Eo, whas0, wlev0, regs_list, vents_list, volc_dict):
     )
     En += saddle_lift * G.sstep(18.0, 6.0, np.abs(p_cx)) * saddle_env
 
-    # Pin exact summit peaks and canonical crater floors for vents[2] and vents[3]
+    # Sculpt the two parasitic cones on the saddle at (735, 1142) [peak 9493.1 m, floor 9333.1 m]
+    # and (752, 1155) [peak 7535.4 m, floor 7385.4 m] so their rim crests and crater floors are exact
+    for pvx, pvy, p_fl, p_pk, d_c in (
+        (735.0, 1142.0, 9333.1, 9493.1, d_cone_a),
+        (752.0, 1155.0, 7385.4, 7535.4, d_cone_b),
+    ):
+        u_pc = np.clip((d_c - 2.6) / (11.0 - 2.6), 0.0, 1.0)
+        E_pc = np.where(
+            d_c < 2.6,
+            p_fl + (p_pk - p_fl) * G.sstep(0.35, 1.0, d_c / 2.6),
+            En + np.maximum(0.0, p_pk - En) * ((1.0 - u_pc) ** 2.1),
+        )
+        w_pc = G.sstep(11.0, 4.5, d_c)
+        En = En * (1.0 - w_pc) + E_pc * w_pc
+
+    # Pin exact summit peaks and canonical crater floors for vents[2], vents[3], and the 2 parasitic vents
     En[int(round(1129.0 * sv)), int(round(713.0 * su))] = 12180.0
     En[int(round(vy2 * sv)), int(round(vx2 * su))] = 11080.0
     En[int(round(1166.0 * sv)), int(round(767.0 * su))] = 9340.0
     En[int(round(vy3 * sv)), int(round(vx3 * su))] = 8535.2
+    En[int(round(1141.0 * sv)), int(round(734.0 * su))] = 9493.1
+    En[int(round(1142.0 * sv)), int(round(735.0 * su))] = 9333.1
+    En[int(round(1154.0 * sv)), int(round(751.0 * su))] = 7535.4
+    En[int(round(1155.0 * sv)), int(round(752.0 * su))] = 7385.4
 
 
     # ==========================================================================

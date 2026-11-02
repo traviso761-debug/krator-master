@@ -1,6 +1,6 @@
 # Scale model tools
 
-The **Krator Scale Model** artifact (https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), version 4.23, and the tools
+The **Krator Scale Model** artifact (https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), version 5.1, and the tools
 that edit it. Since 2026-10-28 the page is a build like every other Krator build: its source is in this repo, and the
 page is written from it.
 
@@ -12,10 +12,10 @@ page is written from it.
 | `model/data/` | the `DATA` object: each raster a PNG or JPEG (in LFS), each list or object a JSON file (one record a line), the key order and scalars in `model.json` |
 | `model/build.py` | writes `model/dist/scale-model.html` (not committed; the artifact is the published copy). `--check <saved page>` asserts it is byte-identical to a saved copy of the live artifact |
 | `model/import_page.py` | a saved page split back into `src/` and `data/`; run once (from version 90) and only again if the page is changed outside the build |
-| `smodel/` | the library every edit takes: `page` (load, save, grids, height and water encodings), `geom` (masks, smoothsteps, river strokes), `terrain` (mountains, humps, cuts, levels, perched lakes, weathering), `climate` (reclimate, lapse, lake rain), `paint` (relight, retint, repaint, desert and climate repaints, river paint), `rivers` (water books, routing set-up, tracing, channels, route and carve), `hydro` (runoff, fill-spill routing) |
-| `tests/test_smodel.py` | smodel against the scripts it was lifted from, on the live data (71 checks, about two minutes) |
-| `extract_region.py`, `ancient_roads.py`, `god_road.py` | the live tools: they read a saved page or `model/data`, through smodel |
-| `history/` | every past edit's script and report (4.11 to 4.23), frozen as the record (`history/README.md`) |
+| `smodel/` | the library every edit takes: `page` (load, save, grids, height and water encodings, `legacy_px`), `geom` (masks, smoothsteps, river strokes), `terrain` (mountains, humps, cuts, levels, perched lakes, weathering), `climate` (reclimate, lapse, lake rain), `paint` (relight, retint, repaint, desert and climate repaints, river paint), `rivers` (water books, routing set-up, tracing, channels, route and carve), `hydro` (runoff, fill-spill routing), plus the 5.0/5.1 planetary passes (`volcanoes`, `east_abyss`, `tier1_biomes`, `tranche2_biomes`, `tranche3_biomes`, `biome_transitions`, `nw_expansion`, `river_names`) |
+| `tests/test_smodel.py` | smodel against the scripts it was lifted from, on the live data, plus vent-peak and weather checks |
+| `extract_region.py`, `build_425_master.py` | the live tools: they read a saved page or `model/data`, through smodel |
+| `history/` | every past edit's script and report (4.11 to 4.24), frozen as the record (`history/README.md`) |
 
 The data's rasters and how each map mode on the page draws from them are in `BRIEF-GEMINI.md` ("The grids and the
 rasters", "How each map mode gets its picture").
@@ -466,6 +466,68 @@ two-tiered volcano-tectonic province of **The Siphon Pits & Ostrukh Terraces** (
    map px thermal-inversion oases with `+7.5 °C` geothermal boost, `540–680 mm/yr` steam-condensation rainfall, 40 height
    cells / `640 km²` of boiling turquoise crater lakes, and 4 flagship diatreme vents in `DATA.vents`). All 63 river
    courses across both regions updated (`0` climbing courses).
+
+### Part III (4.24b) — The 5-Region Southeastern Complex (`High Rift`, `Stalker Gate`, & `Mid Basin`)
+
+Completes the southeastern mountain-and-basin complex by sculpting three contiguous regions that link `Region 99` and
+`Siphon Pits` to `The Rift`:
+
+1. **`High Rift` (`rmvhighrift100`)**: A southern highland-to-trough transition graben (`135,048 km²`) stepping down from
+   the `+8,500 m` outer crater wall into terraced rift benches (`+1,400–2,800 m`, `Cfb`/`Dfb`/`BSk`) and a deep eastern
+   rift arm.
+2. **`Stalker Gate` (`rmvstalkergate`)**: A trans-divide structural pass network (`76,412 km²`) cutting through the
+   glaciated Stalker Range (`+5,200–9,400 m`), featuring *Lake Vapora* (`+2,340 m`) and progressive WNW outer-wall slopes
+   connecting `Weavers' Cradle` (`Region 99`) and `Ostrukh Terraces` (`Siphon Pits`) to the central basins.
+3. **`Mid Basin` (`rmvmidbasin101`)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
+   and step-faulted benches bridging `Stalker Gate`, `High Rift`, and `Siphon Pits`.
+
+## 5.0 & 5.1: `build_425_master.py` (Nov 2026) — Unified 2 km/cell Grid, N/W Canvas Expansion (`1821 × 1723`), & Planetary Remodeling
+
+`python3 tools/scale-model/build_425_master.py` unifies the scale model on a single **full-resolution `1821 × 1723`
+(`2 km/cell`, `su = sv = 1.0`)** height and raster grid, expanding the canvas northwest by **`DX = +272, DY = +330` px**
+(`544 km` west, `660 km` north; `smodel.page.LEGACY_SHIFT = (272, 330)` and `smodel.page.legacy_px(px, py)`):
+
+1. **North & West Canvas Expansion (`smodel/nw_expansion.py`)**:
+   - **Ria River Valley (`rmvriavalley`) & Spider Lake (`rmvyj4v2ozgb1`)**: A `1,300 km` sinuous alluvial trunk valley
+     (*Pak-Ria* / `id: 9101`) fed by the `+1,460.0 m` highland lake (`WH`, parked biome kit `biomes/spiderlake/`) and
+     bordered on the north by the dissected cherty dolomite and purple-red porphyry bluffs of **Neo-Ozarks**
+     (`rmvyiyw8ucd1y`, drained by *Pak-Ma* / `id: 9107`).
+   - **Outland Gate (`rmvoutlandpass`, `biomes/outlandgate/`)**: A `1,500 m`-deep right-lateral transtensional fault and
+     jökulhlaup water-gap piercing the northeastern megacrater rim from North Outland Lake (`+1,734 m`) and Upper Gate
+     Tarn (`+1,720 m`) down to `+1,460 m` via the *Outland Gate River* (`id: 9106`).
+   - **NE Outer Wall (`rmvymakpc0pft`, `biomes/neouterwall/`)**: *The Glass-Skarn Bastion* — impact-crater terrace blocks
+     and black pseudotachylite fault mirrors overprinted by Northern Korona epidote-garnet skarns and Arachnoid radial
+     basalt dike-walls enclosing 3 geothermally heated `Cfb`/`Dfb` Boxwork Dike-Cauldrons (`+2,670`, `+2,810`, `+2,950 m`
+     tarns).
+   - **The Great Double Delta (`rmvdoubledelta`) & Web-Cleaver Gorge (`id: 9102`)**: Coalescing `0.0 m` estuarine
+     distributaries where the Ria Trunk River and the Northern Korona / Arachnoid *Web-Cleaver Gorge* meet the NW Ocean.
+   - **The Arch (`rmvthearch`) & Steaming Seamounts (`rmvseamounts`)**: Exposed subaerial mid-ocean spreading ridge with
+     paired rift-shoulder horsts (`+500–2,050 m`), central axial graben (`< 250 m`), and 8 shallow phreatomagmatic vents.
+   - **The Crook (`rmvthecrook`), Silent Vales (`rmvyk0ubpkdoy`), Sasquatch Tribes (`rmvyj1kvhx4m4`), & Copper Glacier
+     (`rmvcopperglacier`)**: Western structural peninsula, sheltered cool-temperate cedar-fern vales (`+1,380–1,680 m`
+     lakes draining via `id: 9110`), high periglacial hanging troughs (`+5,880–6,240 m`), and banded malachite-azurite
+     glaciers feeding Copper Tarn (`+2,380.0 m`).
+2. **Farside Tsunami Coast (`rmvyk62bgdvs3`) & Farport (`s998483c9b`)**:
+   - **Tsunami Physics (`DATA.tsunami_farside`)**: Design tsunami wave crest **`50 m`** (`35–55 m` range along exposed
+     headlands), wave-planed salt-bleached bedrock scour bench to **`65 m`**, V-shaped megaboulder chevron ridges to
+     **`38 m`**, and maximum catastrophic run-up ceiling **`100 m`**.
+   - **Farport & Līng-Mā Estuary (`r002`)**: **Farport** (`s998483c9b`) stands on the near-shore coastal bluff plateau at
+     **`px (294, 588)` at `212.0 m`** (dry land, safely above the `100 m` run-up ceiling), overlooking the **`0.0 m`
+     sea-level drowned estuary harbour at `px (290, 588)`** where the last reach of *Līng-Mā* (`r002`) grades smoothly to
+     `0.0 m` sea level (`mouth_m = 0.0`).
+3. **Volcanoes, Lava Tubes, & Remodeled Interior Biomes (`smodel/volcanoes.py`, `east_abyss.py`, `tier1_biomes.py`,
+   `tranche2_biomes.py`, `tranche3_biomes.py`, `biome_transitions.py`)**:
+   - **Volcanic Edifices**: Preserves and sharpens **Throne** (`px 1060, 854`, rim `7,220 m`, floor `6,340 m`),
+     **Lesser Throne** (`px 1130, 854`, WNW rim `6,880 m`, crater floor `6,070 m`), **Godthrone** (`px 968, 1012`, peak
+     `25,000 m`, floor `21,194 m`), **Godstep Head Vent** (`px 892.8, 1145.2`, peak `2,850 m`, floor `2,700 m`), and the
+     **Catch–Xanadu Twin Stratovolcanoes & Parasitic Cones** (`px 988, 1458` at `12,480 m`, `px 1042, 1498` at `11,920 m`,
+     `px 1007, 1472` at `9,493.1 m`, and `px 1024, 1485` at `7,535.4 m`). Adds **`DATA.tubes`** (10 subterranean lava tube
+     systems) and 3 Zeijani cavern settlements.
+   - **Impact-Crater Wall Consistency**: Aligns `n highlands`, `s highlands`, `e inner wall`, `w outer wall`, `NW outer wall`,
+     and `ne outer wall` with concentric listric megaslump terraces, pseudotachylite fault mirrors, and radial impact-tear
+     dykes/chutes.
+   - **Cultural River Naming (`smodel/river_names.py`, `river-names-5.1.md`)**: Names all 885 rivers and wadis across 27
+     cultural tongues and records both the `4.21/4.23 Old Name` (`r['old_name']`) and `5.1 New Name` (`r['name']`).
 
 ## Cutting a region out for the open world
 

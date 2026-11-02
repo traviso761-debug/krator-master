@@ -37,7 +37,7 @@ variables, so a fragment can use what an earlier one declared.
 
 ## data/
 
-Each key of `DATA`, in the page's order (`model.json`). Grids: *height* 774 × 696 (about 4 km a cell), *full* 1549 × 1393 (2 km a pixel).
+Each key of `DATA`, in the page's order (`model.json`). Grids (unified in `5.1`): *height* 1821 × 1723 (2 km a cell), *full* 1821 × 1723 (2 km a pixel; expanded northwest by `+272, +330` from the 4.23/4.24 `1549 × 1393` canvas).
 
 | File | Grid | What |
 |---|---|---|
@@ -50,7 +50,9 @@ Each key of `DATA`, in the page's order (`model.json`). Grids: *height* 774 × 6
 | `c.png` | full | climate class index into `climate.json`'s `classes` |
 | `tm` `th` `tl` `tw` `tc` `.png` | full | °C + 90: mean, hottest afternoon, coldest night, warmest month, coldest month; 0 = airless |
 | `wd.png` | height | wind: R power, G speed (scales `wdmax`, `wdgam`, `wdvmax` in `model.json`), B > 127 airless |
-| `rivers.json` | | 871 rivers and dry valleys: course in map px, discharge and bed per vertex, width, depth, names |
-| `basins.json`, `outlets.json`, `vents.json`, `palaeolakes.json`, `dams.json`, `floods.json`, `volc.json` | | lakes, lake outlets, vents, the old dam lakes, dams, breach floods, the Volcano |
+| `rivers.json` | | 885 rivers and dry valleys: course in map px, discharge and bed per vertex, width, depth, 5.1 `name` and 4.21/4.23 `old_name` |
+| `volc.json` | | the central Volcano (`Throne`) summit caldera coordinates, rim peak, and lava floor |
+| `tubes.json` | | 10 subterranean lava tube & cavern systems (`id`, `name`, `system`, `path_px`, `portals`, `width_m`, `height_m`) |
+| `basins.json`, `outlets.json`, `vents.json`, `palaeolakes.json`, `dams.json`, `floods.json` | | lakes, lake outlets, vents, the old dam lakes, dams, breach floods |
 | `climate.json`, `hydro.json` | | the class table and assumptions; the water books and thresholds |
-| `model.json` | | key order, the scalars (`w`, `hh`, `lo`, `hi`, `fullW`, `fullH`, wind scales), each key's file |
+| `model.json` | | key order, the scalars (`w`, `hh`, `lo`, `hi`, `fullW`, `fullH`, wind scales, `legacy_shift`, `tsunami_farside`), each key's file |

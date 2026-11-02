@@ -72,3 +72,5 @@ godot/data/spike/
 godot/data/world-nhighlands-wide/
 # the Rift jungle tile (biomes/rift/PERF.md: regenerate with tools/harness.py export)
 godot/data/world-rift-jungle/
+# scale-model built HTML snapshots (only model/dist/scale-model.html is built locally)
+tools/scale-model/scale-model-*.html

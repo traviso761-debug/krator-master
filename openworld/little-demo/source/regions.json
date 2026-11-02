@@ -11062,7 +11062,7 @@
   "name": "outland gate",
   "color": "#528a58",
   "kind": "geographic",
-  "notes": "Outland Gate (NE Trans-Boundary Water-Gap Pass): a dramatic highland valley and water-gap corridor (+1,460 to +1,734 m floor framed by +4,400..+7,600 m snow peaks) breaching the northeastern rim to carry the Outland Gate River from the northern Outland lake directly into the Eastern Highland Lake.",
+  "notes": "Outland Gate (NE Trans-Boundary Water-Gap Pass): a dramatic highland valley and water-gap corridor (+1,460 to +1,734 m floor framed by +4,400..+7,600 m snow peaks) breaching the northeastern rim to carry the Outland Gate River from the northern Outland lake directly into Spider Lake (see biomes/outlandgate/PLAN.md).",
   "points": [
    [
     1345,
@@ -11087,6 +11087,146 @@
    [
     1405,
     365
+   ]
+  ]
+ },
+ {
+  "id": "rmvymakpc0pft",
+  "name": "ne outer wall",
+  "color": "#cf573a",
+  "kind": "biome",
+  "createdAt": "2026-11-02T01:54:51.999Z",
+  "notes": "NE Outer Wall \u2014 The Glass-Skarn Bastion (101,372 km\u00b2): a structurally unique impact-crater rim bastion wedged between the Northern Korona volcano-tectonic dome, the Arachnoid radial dike swarm, Spider Lake, and the Outland Gate fault. Features 3 geothermally heated Boxwork Dike-Cauldrons (+2,670 to +2,950 m warm hydrothermal tarns), pistachio-green epidote and wine-red grossular garnet contact-metamorphic skarn badlands, and black pseudotachylite fault mirrors.",
+  "points": [
+   [
+    1089,
+    339
+   ],
+   [
+    1107,
+    367
+   ],
+   [
+    1175,
+    366
+   ],
+   [
+    1225,
+    390
+   ],
+   [
+    1254,
+    387
+   ],
+   [
+    1304,
+    377
+   ],
+   [
+    1362,
+    380
+   ],
+   [
+    1415,
+    391
+   ],
+   [
+    1456,
+    399
+   ],
+   [
+    1415,
+    321
+   ],
+   [
+    1389,
+    295
+   ],
+   [
+    1356,
+    288
+   ],
+   [
+    1309,
+    294
+   ],
+   [
+    1261,
+    267
+   ],
+   [
+    1241,
+    253
+   ],
+   [
+    1214,
+    282
+   ],
+   [
+    1162,
+    321
+   ]
+  ]
+ },
+ {
+  "id": "rmvyl36gozner",
+  "name": "Yuni Emirate",
+  "color": "#d7bd60",
+  "kind": "political",
+  "createdAt": "2026-11-02T01:28:04.262Z",
+  "notes": "The Yuni Emirate: desert-and-canyon polity spanning the Yuni Valley, Lake Ostrukh, and the eastern piedmont fans bordering the Loom-Chasms and SE Desert.",
+  "points": [
+   [
+    1354,
+    882
+   ],
+   [
+    1454,
+    845
+   ],
+   [
+    1515,
+    811
+   ],
+   [
+    1578,
+    868
+   ],
+   [
+    1647,
+    949
+   ],
+   [
+    1637,
+    1020
+   ],
+   [
+    1686,
+    1110
+   ],
+   [
+    1687,
+    1179
+   ],
+   [
+    1656,
+    1213
+   ],
+   [
+    1525,
+    1143
+   ],
+   [
+    1495,
+    1109
+   ],
+   [
+    1484,
+    1016
+   ],
+   [
+    1407,
+    941
    ]
   ]
  }
