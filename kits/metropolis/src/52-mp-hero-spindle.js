@@ -3,7 +3,7 @@
 // so the glass follows the rooms. Each window storey is a band: a spandrel and a head on the skin, the glass 0.55 m in, and on it the bay's piers,
 // jambs, fillers and mullions as instanced panels. A blank storey is one strip. The shape past the storeys (root fins, portals, lamp) is built here, from the record.
 MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP.builder(lite),seedK=MP.idHash(F.id+state),ruin=state!=='intact';
- const R=MP.spindleR,cut=S.keep?S.keep*F.height.roof:1e9,stain=ruin?MP.stain(seedK,S.stain||.7):null;
+ const R=MP.spindleR,cut=S.keep?S.keep*F.height.roof:1e9,stain=ruin?MP.stain(seedK,S.stain==null?.7:S.stain):null;
  const DARK=[.12,.12,.13],WALL=ruin?[.86,.83,.78]:[.97,.97,.96],D=.55,PI2=Math.PI*2;
  // a breach: a run of bays and storeys burnt out or fallen away, by hash. In the skin's strips it is a hole; the void behind it is the window chunk
  const breaches=[];if(S.breach){const n=Math.round(F.levels.length*S.breach*1.6);for(let i=0;i<n;i++){const u=j=>MP.u(seedK&0xffff,i,j),l=5+Math.floor(u(1)*44),b=F.levels[l];if(!b)continue;breaches.push({a:u(2)*PI2,w:.14+u(3)*.3,y0:b.y,y1:b.y+(1+Math.floor(u(4)*3.5))*MP.STOREY});}}
@@ -47,7 +47,7 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
  // ---- the root fins: a thin wall with a curved outer edge, from the ground to where it dies in the skin
  for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*PI2/F.fins.n,c=Math.cos(a),s=Math.sin(a),t=F.fins.t/2,nS=20,y1=Math.min(F.fins.y1,cut),col=ruin?[.8,.77,.72]:[1,1,1],mat=y=>y<21?'concrete':'white';
   const P=(r,y,d)=>[c*r-s*d,y,s*r+c*d];
-  for(let j=0;j<nS;j++){const ya=y1*j/nS,yb=y1*(j+1)/nS,ra=MP.finR(F,ya),rb=MP.finR(F,yb),ia=R(ya)-1,ib=R(yb)-1,m=mat(ya),l=Math.hypot(rb-ra,yb-ya)||1,nr=(yb-ya)/l,ny=-(rb-ra)/l;
+  for(let j=0;j<nS;j++){const ya=y1*j/nS,yb=y1*(j+1)/nS,ra=MP.finR(F,ya),rb=MP.finR(F,yb),ia=R(ya)-1,ib=R(yb)-1,m=mat(ya),l=Math.max(Math.hypot(rb-ra,yb-ya),1e-3),nr=(yb-ya)/l,ny=-(rb-ra)/l;
    B.quad(m,P(ra,ya,-t),P(ra,ya,t),P(rb,yb,t),P(rb,yb,-t),[c*nr,ny,s*nr],{col});
    B.quad(m,P(ia,ya,t),P(ib,yb,t),P(rb,yb,t),P(ra,ya,t),[-s,0,c],{col});
    B.quad(m,P(ra,ya,-t),P(rb,yb,-t),P(ib,yb,-t),P(ia,ya,-t),[s,0,-c],{col});}}

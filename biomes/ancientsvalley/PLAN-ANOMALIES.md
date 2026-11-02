@@ -259,6 +259,8 @@ Near-range cost depends on how many towers a player can stand close to, so stree
 4. District bakes, then the fog pass and a measured view from the worst street.
 5. The anomalies' House and Babel can then stand in the same city.
 
+**The test bed:** `kits/metropolis` (2026-11-02): sixteen towers designed for these tiers, two built, and the spike's findings (`kits/metropolis/README.md`). A box shell does not fit a curved tower: `KSHELL` grew a polar mode.
+
 **Core adoption:** adds `KSHELL` (new) and `core/terrain`'s `KFAR` to section 8's table, plus `kits/ancients` read in place, `core/city` for the street layout (read `core/city/README.md`, "Porting a settlement", first), and `core/lod` if `BIO.LOD` doesn't fit
 buildings. It's independent of `core/anomaly`, so either can go first.
 

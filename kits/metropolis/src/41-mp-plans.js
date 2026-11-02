@@ -21,7 +21,7 @@
     o = o || {}; var R = skinR(F, L), rc = coreR(F, L.k), band = o.band == null ? R - rc - CW : o.band;
     var st = KratorAncientsInteriors.ringPlate({
       id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, rOut: function () { return R; }, depth: band, cw: o.cw == null ? CW : o.cw, n: n,
-      kinds: function (i, nn) { return kinds(i, nn); }, seg: o.seg || 4, core: { r: rc, kind: null }, door: o.door
+      kinds: function (i, nn) { return kinds(i, nn); }, seg: o.seg == null ? 4 : o.seg, core: { r: rc, kind: null }, door: o.door
     });
     st.R = R; st.rc = rc; st.n = n; st.band = band;
     st.rooms.forEach(function (Q) { var src = Q.kind; Q.mpKind = src; Q.kind = kindOf(src); if (UNFURNISHED[src]) Q.furnish = false; });
@@ -89,7 +89,7 @@
   // ---- the slab: a bar plate along x, the shafts cut out of it
   function bar(F, L, roomW, kinds, o) {
     o = o || {}; var w = F.footprint.w, d = F.footprint.d - 0.9;
-    var st = KratorAncientsInteriors.barPlate({ id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, path: function (u) { return [-w / 2 + w * u, 0]; }, depth: d, side: 'both', cw: o.cw || 2.4, roomW: roomW, kinds: kinds, door: o.door });
+    var st = KratorAncientsInteriors.barPlate({ id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, path: function (u) { return [-w / 2 + w * u, 0]; }, depth: d, side: 'both', cw: o.cw == null ? 2.4 : o.cw, roomW: roomW, kinds: kinds, door: o.door });
     st.rooms.forEach(function (Q) { var src = Q.kind; Q.mpKind = src; Q.kind = kindOf(src); if (UNFURNISHED[src]) Q.furnish = false; });
     return cutShafts(F, st);
   }

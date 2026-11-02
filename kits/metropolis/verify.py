@@ -49,6 +49,7 @@ async def main():
                     await pg.wait_for_timeout(1500)
                 await pg.screenshot(path=os.path.join(a.out, nm.replace(':', '').replace(',', '').replace(' ', '-').replace('(', '').replace(')', '') + '.png'))
                 print('shot', nm)
+            print('furniture maps', await pg.evaluate('JSON.stringify(KratorFurniture.textureInfo?KratorFurniture.textureInfo():null)'))
 
 
 try:

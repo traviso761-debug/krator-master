@@ -3,7 +3,7 @@
 // of the great arcade and bronze flares every 12 m, blind relief end walls with the fire stairs behind them, a stepped metal roof hall.
 MP.heroLedger=function(state,lite){const F=MP.LEDGER,S=F.ruins[state]||{},B=MP.builder(lite),ruin=state!=='intact',seedK=MP.idHash(F.id+state);
  const hw=F.footprint.w/2,hd=F.footprint.d/2,roof=F.levels[F.levels.length-1].y+F.levels[F.levels.length-1].h,cut=S.keep?S.keep*F.height.roof:1e9;
- const WALL=ruin?[.84,.81,.76]:[.97,.97,.95],DARK=[.12,.12,.13],D=.7,sc=ruin?MP.stain(seedK,S.stain||.7):null;
+ const WALL=ruin?[.84,.81,.76]:[.97,.97,.95],DARK=[.12,.12,.13],D=.7,sc=ruin?MP.stain(seedK,S.stain==null?.7:S.stain):null;
  const shade=(x,y)=>sc?sc(x*.25,y):null,stained=(x,y)=>shade(x,y)||undefined;
  const breach=[];if(S.breach){for(let i=0;i<9;i++){const u=j=>MP.u(seedK&0xffff,i,j),l=2+Math.floor(u(1)*8);breach.push({x:-hw+u(2)*2*hw,w:3+u(3)*9,s:u(4)<.5?1:-1,y0:F.levels[l].y,y1:F.levels[l].y+(1+Math.floor(u(5)*3))*MP.STOREY});}}
  const inBreach=(x,y,s)=>breach.some(b=>b.s===s&&Math.abs(x-b.x)<b.w&&y>b.y0&&y<b.y1);

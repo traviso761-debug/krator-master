@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 37 (41%) | 0 (0%) | 0 (0%) | 14 (16%) | 38 (42%) |
+| KB | 38 (41%) | 0 (0%) | 0 (0%) | 15 (17%) | 39 (42%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,18 +14,18 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/40-mp-records.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/41-mp-plans.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-mp-plans.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-mp-facade.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-mp-shell.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44-mp-audit.js` | 4.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 1.5 | [web] | 6 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-host-land.js` | 1.0 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/50-mp-kit.js` | 8.0 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 3 | 1 | 0 | 0 | 0 |  |
-| `src/52-mp-hero-spindle.js` | 6.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-mp-kit.js` | 8.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 3 | 1 | 0 | 0 | 0 |  |
+| `src/52-mp-hero-spindle.js` | 6.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-mp-hero-ledger.js` | 6.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/56-mp-interiors.js` | 5.2 | [draw] | 3 | 0 | 0 | 0 | 0 | 9 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/60-mp-shell-host.js` | 11.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 14 | 4 | 0 | 0 | 0 |  |
-| `src/70-mp-stage.js` | 11.5 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 1 | 4 | 0 | 0 | 0 |  |
+| `src/56-mp-interiors.js` | 5.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 9 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/60-mp-shell-host.js` | 11.5 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 14 | 4 | 0 | 0 | 0 |  |
+| `src/70-mp-stage.js` | 12.4 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 1 | 4 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 0.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-host-take.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |

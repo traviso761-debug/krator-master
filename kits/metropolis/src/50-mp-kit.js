@@ -28,8 +28,8 @@ MP.mats=(function(){let M=null;
 // the window: a standard material whose emissive is the room behind the pane. The grey of the room is added, so a pane's colour and gloss stay the glass's
 MP.windowMat=function(o,gl){const m=new THREE.MeshStandardMaterial(Object.assign({vertexColors:true},o));
  m.onBeforeCompile=function(sh){
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vMpW;varying vec3 vMpN;').replace('#include <begin_vertex>','#include <begin_vertex>\nvMpW=(modelMatrix*vec4(position,1.0)).xyz;vMpN=normalize(mat3(modelMatrix)*normal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vMpW;varying vec3 vMpN;\n'+MP.ROOM_GLSL).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=mpRoom(vMpW,normalize(vMpW-cameraPosition),normalize(vMpN),0.0)*'+(gl?'0.55':'1.0')+';');};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vMpW;varying vec3 vMpN;varying vec3 vMpC;').replace('#include <begin_vertex>','#include <begin_vertex>\nvMpW=(modelMatrix*vec4(position,1.0)).xyz;vMpN=normalize(mat3(modelMatrix)*normal);vMpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vMpW;varying vec3 vMpN;varying vec3 vMpC;\n'+MP.ROOM_GLSL).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=mpRoom(vMpW,normalize(vMpW-vMpC),normalize(vMpN),0.0)*'+(gl?'0.55':'1.0')+';');};
  m.customProgramCacheKey=()=>'mpwin'+gl;return m;};
 
 // ---- the builder: buckets of quads, one instanced panel box
