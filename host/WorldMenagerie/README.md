@@ -14,7 +14,7 @@ stages, and anything only one of them needs travels with that one.
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
 of the others. Both read `/scenes.json`, which the server builds from `site.toml`.
 
-**Site:** `http://<this computer's address>:8000/` (`./sitectl url` prints it for the computer it runs on)
+**Site:** `http://<this computer's address>:8001/`, served by Krator's site (`../sitectl url` prints it)
 
 ## Controls
 
@@ -3121,27 +3121,20 @@ uses `hash3(x, z, k)` or its own `mkRng(seed)` stream.
 
 ## Managing the server
 
-Use `./sitectl` from this folder. Never run it with `sudo`; it refuses.
+The Menagerie has no server of its own. The one site is Krator's, on port 8001: the `krator` user service, run by
+`../sitectl` (krator-master's `host/`; `host/HOSTING.md`). After a change, `../sitectl sync && ../sitectl reload`.
+This folder's `./sitectl` builds, checks and tests; asked for a service command, it points there.
 
 | Command | What it does |
 |---|---|
-| `./sitectl status` | Service state and the site URLs |
-| `./sitectl reload` | Build, check `site.toml`, then apply it with no downtime (alias `apply`) |
-| `./sitectl restart` | Build, check, restart. Use after editing `server.py`, host or port. |
-| `./sitectl start` / `stop` | Start or stop the server |
-| `./sitectl enable` / `disable` | Start now and at every login / stop and don't start at login |
 | `./sitectl build` | Assemble `src/<city>/build.js` from the stage files |
 | `./sitectl check` | Build, validate `site.toml`, list every URL. Nothing else changes. |
 | `./sitectl test [seconds]` | Module tests under gjs, then a headless build of every golden page/seed |
 | `./sitectl probe …` | `tools/probe.py` with your arguments (metrics, fingerprints, screenshots) |
-| `./sitectl logs [N]` / `follow` | Last N log lines / live log |
-| `./sitectl url` / `health` | Print the URLs / ask the running server if it's up |
-| `./sitectl install` | Rewrite the systemd unit for this folder (after moving the project) |
-| `./sitectl boot` | How to start the site at boot without a login |
 
 Editing HTML, CSS, data files or images needs no command: files are read on every request and the
 server sends `304 Not Modified` when the browser's copy is current. Editing a stage file needs
-`./sitectl build` (or any command that runs it). Editing `server.py` needs `restart`.
+`./sitectl build`, then `../sitectl sync` to reach the site.
 
 ### Testing
 
@@ -3204,24 +3197,20 @@ for text when the client accepts it, `ETag`/`Last-Modified` with `304`, `HEAD`, 
 reload, one log line per request in the journal. No `Range` support, no TLS, no authentication:
 fine on the LAN, never port-forward it to the internet.
 
-The systemd **user** service `menagerie` (`~/.config/systemd/user/menagerie.service`) runs it; the unit
-runs `server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
-`sudo`: `systemctl --user status|start|stop|restart|reload menagerie`, `journalctl --user -fu menagerie`. With
-`sudo` they fail with `Failed to connect to user scope bus`. The service starts at login; for boot
-without a login run `sudo loginctl enable-linger $USER` once.
+Krator's `krator` user service runs it on port 8001 (`host/HOSTING.md`); there is no `menagerie` service.
 
 ## Network notes
 
 - The router assigns this computer's address and may change it (`hostname -I` shows it; reserve it in the router).
-- The firewall is off. If you enable one: `sudo ufw allow 8000/tcp`.
+- The firewall is off. If you enable one: `sudo ufw allow 8001/tcp`.
 - Everything is served locally; no page needs the internet.
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| Page doesn't load | `./sitectl status`, `./sitectl health` |
-| Service won't start | `./sitectl logs 20`: a `problem:` line names the missing file |
+| Page doesn't load | `../sitectl status`, `../sitectl health` |
+| Service won't start | `../sitectl logs 20`: a `problem:` line names the missing file |
 | A stage edit has no effect | `./sitectl build` (the served file is `build.js`) |
 | Red box on the page | that stage failed; the rest still builds. `./sitectl probe --page …` shows the same text |
 | `LAYOUT CHANGED` from `test` | a random draw moved: see Seeds above; if intended, re-save the golden with `--save-golden` |
