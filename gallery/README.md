@@ -105,7 +105,7 @@ Biomes and Objects v28). Republish the tongues page to the new URL from now on.
 The therian heads (the coyote, cat, lion, rat, monkey and bird of `core/charactermodels/tools/heads.py` and
 `therian.py`, 2026-11-02) have no room in the Cosmetic Lab's 256 MB, so they are a lab of their own, "Cosmetic Lab:
 therian heads" (https://claude.ai/artifact/S2nPEgRriRyjzCxbecqMeY, private): the same page with the two bodies, their
-clips and default dress, and the six heads as Body mods chips (the chips of the other items show names only: their
+clips and default dress, and the six heads and their tails (`tools/tails.py`) as Body mods chips (the chips of the other items show names only: their
 pieces and thumbnails are not there). Publish the heads' pieces there, not to the main lab.
 They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
 `build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the

@@ -302,6 +302,17 @@ yet), a chip in the Cosmetic Lab's Body mods and an entry in the Animation Lab's
 <body> <base> all` makes them all (`make_mpfb.py` makes them with the coyote). The published Cosmetic Lab has no room for
 their pieces (README, "Publishing the labs"): they are published in a lab of their own, "Cosmetic Lab: therian heads"
 (`gallery/README.md`, "Character lab links").
+**Their tails** (2026-11-02; `tools/tails.py`, on the reptile tail's joints and spring chain): a mod per species
+(`mod_tail_<species>`, group `tail`, test), each its own chain: a length, a fall per segment (negative rises, past 90
+degrees curls forward), a shrink, radii. The skeleton's tail joints keep the reptile's rest; the item carries the
+species' offsets (`tail.rest`, Tail2 on, the hips' frame), which the figure puts on the joints while the tail is worn
+(`tailRest`, Godot `_tail_rest`), scaled as the morphs scale the skeleton's, and the piece is bound on that chain. The
+coyote's brush (short, bushy, a black tip, a cream underside), the cat's (long, thin, carried up and over, tabby rings,
+lively), the lion's (long, hanging, a dark tuft in the mane's long fur: a second fur row), the rat's (naked, the scale
+map tinted pink, role `skin`, tapering to a point), the monkey's (long, carried up, curling at the end) and the bird's
+(a fan of nine flat feathers on the first three joints, stiff). The furred ones are drawn with the garments' fur shells
+on the tail's own UV (fur rows on v: 0.1 m a unit), in their vertex colours times the coat tint. The motion (stiffness,
+gravity, sway) is each item's: a cat's and a monkey's are held up and sway wide, a rat's hangs.
 
 **Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
 no `coat` field). Four so far: a shaggy pelt (the Khaayken; 5 cm), a coyote's brush (the Coyote Men; 2 cm, agouti, its
@@ -719,6 +730,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills; the non-human tail and head), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/tails.py` | the therian tails: a chain, a tube (or a fan of feathers) and a kit item per species, on the tail joints, with the species' own rest chain | |
 | `tools/heads.py`, `tools/therian.py` | the therian heads: the coyote's field, paint, eyes, lids and nose, taking a species dict; the cat, lion, rat, monkey and bird as species dicts with their own extras (a mane, a beak, a bare face, whiskers) | |
 | `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
