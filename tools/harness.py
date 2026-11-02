@@ -966,7 +966,12 @@ async def ratchet_main(argv):
             rat = load_ratchet()   # re-read: several runs may write in turn
             rat.setdefault("pages", {})
             if bad:
-                rat["pages"][key] = {k: time.strftime("%Y-%m-%d") + ": " + v for k, v in sorted(bad.items())}
+                # the views a page's own verify visits are not all its #ui buttons, so a view's failure is listed for the page
+                eyes = sorted(k for k in bad if k.startswith("eye:"))
+                rec = {k: v for k, v in bad.items() if not k.startswith("eye:")}
+                if eyes:
+                    rec["eye:*"] = "%d views: %s" % (len(eyes), "; ".join(e[4:] + " " + bad[e][:80] for e in eyes[:3]))[:200]
+                rat["pages"][key] = {k: time.strftime("%Y-%m-%d") + ": " + v for k, v in sorted(rec.items())}
             else:
                 rat["pages"].pop(key, None)
             rat["_doc"] = RATCHET_DOC
