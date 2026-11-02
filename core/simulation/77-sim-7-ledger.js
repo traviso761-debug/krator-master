@@ -9,7 +9,7 @@
 //                       to JSON and to compare later. A row: unit, owner, total and its states (production, transit,
 //                       storage), ordered, inbound, outbound; the running flows made, imported, exported, used, bought,
 //                       eaten, spoiled, short
-//   SIM.ledger(a, b, opt) -> {ok, problems:[strings], towns:{key: {good: statement}}, routes:{route: {'a>b': {good: leg}}}}
+//   SIM.ledger(a, b, opt) -> {ok, problems:[strings], towns:{key: {good: statement}}, routes:{route: {'a>b': {good: leg}}}, sites:{id: {taken, made, amount}}}
 //                       the statement between two snapshots. opt.tol: the residual allowed (0.5: the stocks round to
 //                       hundredths). A statement: {unit, owner, opening, made, imported, consumed, spoiled, exported,
 //                       closing, residual, abroadOut, abroadIn, inbound, outbound, ordered}. A leg: {shipped, landed,
@@ -40,7 +40,8 @@
   }
   SIM.ledgerSnap = function(){
     var out={ version:SIM.LEDGER_VERSION, minute:SIM.minute(), towns:{}, sea:{}, routes:{} }, T=SIM.TRADE;
-    keys().forEach(function(k){ out.towns[k]=snapTown(k); });
+    keys().forEach(function(k){ out.towns[k]=snapTown(k); var E=econOf(k), R=E.resSites;
+      if(R) Object.keys(R).forEach(function(id){ var S=R[id]; (out.sites||(out.sites={}))[id]={ settlement:k, goods:S.goods.slice(), taken:S.taken, amount:S.amount, regen:S.regen }; }); });
     if(T) T.order.forEach(function(id){ var R=T.routes[id], sea=out.sea[id]={};
       R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
@@ -70,6 +71,11 @@
         if(st.abroadOut<-tol) bad(k+' '+g+': '+(-st.abroadOut)+' shipped by route but never booked exported');
         if(st.abroadIn<-tol) bad(k+' '+g+': '+(-st.abroadIn)+' landed by route but never booked imported');
         if(spoiled>d('used')+tol) bad(k+' '+g+': more spoiled than was booked used'); }); });
+    /* a site: what it gave, against what its settlement made of its goods; a finite site's amount by what it gave and regrew */
+    Object.keys(b.sites||{}).forEach(function(id){ var S=b.sites[id], A=(a.sites||{})[id], d=S.taken-(A ? A.taken : 0), made=0, st=out.towns[S.settlement]||{};
+      S.goods.forEach(function(g){ made+=(st[g]||{}).made||0; }); (out.sites||(out.sites={}))[id]={ taken:d, made:made, amount:S.amount };
+      if(d>made+tol) bad(id+': gave '+d+' but its settlement made '+made+' of '+S.goods.join(', '));
+      if(S.amount!=null && A && S.amount>A.amount-d+tol+S.regen*Math.ceil((b.minute-a.minute)/1440+1)) bad(id+': holds more than it gave and regrew'); });
     return out;
   };
 })(typeof window!=='undefined'?window:globalThis);

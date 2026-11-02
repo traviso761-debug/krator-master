@@ -393,11 +393,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "2b48f30282fc"
+  "c80f77e6458f"
  ],
  "77-sim-6-govern.js": [
   "core/simulation",
-  "0a1a4e4e7b7a"
+  "6916bc2cf15e"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
@@ -413,11 +413,11 @@
  ],
  "77-sim-6-trade.js": [
   "core/simulation",
-  "ca003233a000"
+  "6270845dd155"
  ],
  "77-sim-7-ledger.js": [
   "core/simulation",
-  "639a76ed8723"
+  "3a65e47a05fa"
  ],
  "77-sim-7-lod.js": [
   "core/simulation",

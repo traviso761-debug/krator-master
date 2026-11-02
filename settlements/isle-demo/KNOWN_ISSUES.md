@@ -250,8 +250,12 @@
       economies are as before.
 - [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
       open world draws the buildings (88h) but no villagers.
-- [ ] **The production and the map run apart:** the lumber village's felling (88h, on the world clock) is not its sim's
-      timber, and the mine's node and the salt field are not drawn down. PLAN.md section 5's resource records are next.
+- [ ] **The felling and the timber still run apart** (the rest closed 2026-11-02, PLAN-ECONOMY.md Phase 1): each village's
+      works now draw on its map record by that record's id, the grade setting the yield, and the sim reports what each gave
+      (`SIM.sitesReport`, the ledger reconciles it). Nothing runs out, by the owner's rule of 2026-10-18 (core's `amount` and
+      `regen` are built and tested, and unset here). But the stumps the stand shows (88h) are a pure function of the world
+      clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
+      forbids for now. Lot ages for perishables are not built: nothing needs them yet.
 - [ ] **Iron goes abroad:** Valapo smelts the mine's ore (two ore and one charcoal an iron) and the Hykkousoi buy it; Kautoa
       does not yet work it into tools (the stone tools stay; iron tools are owed, PLAN.md 9b).
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.

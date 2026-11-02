@@ -861,6 +861,34 @@ function world(seed){
  ok('an unkeyed page has one ledger, under _',L.ok&&L.towns._.corn.consumed===5&&L.towns._.corn.closing===45,!L.ok);
  ok('no economy, an empty ledger',Object.keys(world(183).S.ledgerSnap().towns).length===0,false);}
 
+// resource sites and stockpile policies (PLAN-ECONOMY.md Phase 1): a site's grade sets the yield, its id keys its take, an
+// endless site never stops (the owner's rule), a finite one blocks and says so, regrows by night; a policy's max stops the
+// makers, its reserve stays out of a route, its min holds a shelf
+{const mk=(site,pol,gov)=>{const {S,clock}=world(191);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'pit',kind:'mine',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'miner',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   const E=S.economy(Object.assign({goods:{ore:{unit:'lot'}},every:60,window:1,cart:{cap:500,load:5,unload:5,minLoad:5}},gov?{govern:{every:60,cover:3,ti:1.5,alpha:.3,min:.3,max:1.5}}:{}));
+   S.store('shed',{kind:'warehouse'});if(site)S.site(Object.assign({id:'world:node-7',kind:'iron',goods:['ore']},site));
+   S.recipe('pit',Object.assign({out:['ore'],rate:2,cap:100000},site?{site:'world:node-7'}:{}));S.R.place.shed.stock={ore:0};if(pol)S.stockpile(null,pol);
+   [0,1].forEach(i=>S.actor({id:'m'+i,role:'miner',home:'homeA',work:'pit'}));S.cart(S.actor({id:'c',role:'carter',home:'homeA'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const P=mk(null),H=mk({grade:'high',yield:2}),L=mk({grade:'low',yield:.5});[P,H,L].forEach(W=>W.run(10));
+ ok('a site\'s grade sets the yield ('+H.E.made.ore+' high, '+P.E.made.ore+' plain, '+L.E.made.ore+' low)',H.E.made.ore>1.8*P.E.made.ore&&L.E.made.ore<.6*P.E.made.ore,H.E.made.ore<=P.E.made.ore);
+ const R0=H.S.sitesReport()[0];ok('a site reports by its world id what it gave, and an endless one has no amount',R0.id==='world:node-7'&&R0.taken===H.E.made.ore&&R0.amount===null,R0.taken!==H.E.made.ore);
+ const a=H.S.ledgerSnap();H.run(5);const LG=H.S.ledger(a,H.S.ledgerSnap());ok('the ledger reconciles a site\'s take with what was made',LG.ok&&LG.sites['world:node-7'].taken>0,!LG.ok);
+ const bad=JSON.parse(JSON.stringify(H.S.ledgerSnap()));bad.sites['world:node-7'].taken+=50;ok('negative: a site that gave more than was made is caught',!H.S.ledger(a,bad).ok,H.S.ledger(a,bad).ok);
+ const F=mk({amount:30});F.run(12);ok('a finite site stops at nothing left and says why',F.E.made.ore===30&&F.S.sitesReport()[0].amount===0&&F.E.blocked['depleted: world:node-7']>0,F.E.made.ore>30);
+ const Fr=mk({amount:30,regen:10});Fr.run(30);ok('a site with regen grows back by night',Fr.E.made.ore>30,Fr.E.made.ore<=30);
+ const noMax=mk(null,null,true),Mx=mk(null,{ore:{max:60}},true);[noMax,Mx].forEach(W=>W.run(72));
+ ok('a policy\'s max stops the makers ('+Mx.E.made.ore+' made, '+noMax.E.made.ore+' without; rate '+Mx.E.recipes.pit.rate+')',Mx.E.recipes.pit.rate===0&&Mx.E.made.ore<noMax.E.made.ore,Mx.E.recipes.pit.rate>0);
+ const Mn=mk(null,{ore:{min:100}},true);Mn.run(72);const sm=Mn.S.economyGoverned().ore;ok('a policy\'s min holds a shelf with no demand',sm.target===100&&noMax.S.economyGoverned().ore.target===0,sm.target!==100);}
+{const go=(pol)=>{const {S,clock}=world(193);S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{}},window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:400};
+   if(pol)S.stockpile('kautoa',pol);S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:1000,minutes:60,mins:30,keep:0,want:100,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}return EV.imported.rice||0;};
+ const r=go({rice:{reserve:300}}),n=go(null);ok('a policy\'s reserve stays out of a route ('+r+' sent, '+n+' without)',r===100&&n===400,r>100);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

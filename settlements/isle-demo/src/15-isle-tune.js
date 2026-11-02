@@ -317,6 +317,11 @@ ISLE.TUNE.sim = {
       byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
     },
     goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
+    /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
+       sets the yield (kits/resources RES_ORE.grades); nothing runs out (the owner, 2026-10-18: core's `amount` stays unset).
+       `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
+    gradeYield: { low: 0.5, medium: 1, high: 2 },
+    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 } },
     minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
     carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },

@@ -211,6 +211,13 @@ readers of `used` are unchanged. Inbound, outbound and ordered stand beside it, 
 or off the map. A sender's exports less what it shipped is **abroad** (never negative); so is a receiver's imports less what landed. A good
 leaving the map has no counterparty yet: the isles' check holds abroad equal to what the ships bought.
 
+**Resource sites and stockpiles (Phase 1).** `SIM.site({id, kind, goods, grade, yield, amount, regen, capacity, settlement})` keys a resource to its
+world record's stable id, and a recipe's `site` draws on it: `yield` multiplies the rate, `taken` counts what it gave, and the ledger holds that
+to what its settlement made. `amount` unset is endless (the owner's rule for nodes, pasture, salt and regrowing timber: core/hamlet/PLAN.md); a number
+depletes, blocks as `depleted: id`, and takes `regen` back a night. `SIM.stockpile(settlement, {good: {min, target, max, reserve}})` is a settlement's
+policy: `min` floors the governor's target, `target` replaces it, at `max` the good's makers stop (its supply line, with the governor's `pool`), and no
+trade route takes `reserve`.
+
 **Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
 does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields
 join a row; an existing field's meaning does not change. The export takes the statement as an added section when Godot needs it.
