@@ -37,5 +37,10 @@ const { a, b } = first, T = Object.keys(b.towns);
 { const B = cp(b); B.towns[T[0]].report.stats.stolen = (B.towns[T[0]].report.stats.stolen || 0) + 40; caught('40 servings stolen that no burglary logged', ISLE.crimeChecks(a, B), /burglars took/); }
 { const B = cp(b), r = { kind: 'arrest', actor: 'z', m: a.minute + 10, days: 7 }, c = { kind: 'crime', crime: 'pickpocket', actor: 'z', m: a.minute + 100 }; B.log.push(r, c);
   caught('a crime by one held', ISLE.crimeChecks(a, B), /nobody held/); }
+{ const B = cp(b); B.towns.kautoa.report.guild.place = SIM.all('place').find(P => P.kind === 'tavern' && SIM.settlementOf(P.id) === 'kautoa' && P.id !== b.towns.kautoa.report.guild.place).id;
+  caught('a guild at a tavern nearer the barracks', ISLE.crimeChecks(a, B), /one thieves' guild/); }
+{ const B = cp(b), h = B.log.find(e => e.kind === 'hide') || { actor: 'h', m: a.minute + 5, until: a.minute + 200 }; if (!B.log.includes(h)) B.log.push(Object.assign({ kind: 'hide' }, h));
+  B.log.push({ kind: 'arrest', actor: h.actor, m: h.m + 1, days: 7 }); caught('one arrested while hidden', ISLE.crimeChecks(a, B), /nobody hidden/); }
+{ const B = cp(b); B.towns.kautoa.report.guild.stash.shirt = (B.towns.kautoa.report.guild.stash.shirt || 0) + 3; caught('three shirts on the guild\'s shelf nobody fenced', ISLE.crimeChecks(a, B), /fenced is at the guild/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

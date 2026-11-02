@@ -311,7 +311,13 @@ ISLE.TUNE.sim = {
       burglary: { hours: [1, 4], chance: 0.1, share: 0.3 }, assault: { below: 30, acts: ['SOCIALIZE'], chance: 0.002 } },
     seen: { base: 0.1, perWitness: 0.04, guard: 0.5, sleeper: 0.05, night: 0.4, max: 0.95, nightHours: [21, 5] },
     arrest: { reach: 400, base: 0.7, ratio: 1 / 150, respond: 30 }, jail: { act: 'JAIL', days: 7, resist: 0.15, resistDays: 30, lieLow: 2 },
-    abstract: { atShare: 0.3, witnesses: 8 } },
+    abstract: { atShare: 0.3, witnesses: 8 },
+    /* THE THIEVES' GUILD (owner, 2026-11-02): one a town, the tavern farthest from its barracks. A criminal seen within
+       `hideReach` m of it, nearer it than the soldier coming, hides there `hideMins` minutes (an unwatched town: `abstractHide`
+       of them) and is not arrested; a burglar takes `items` spare thing (clothes kept at home) besides the food, carries it all
+       to the guild in a free hour and fences it there (the food into the guild's store, the things on its shelf, the thief's
+       material meter down `perServing` a serving and `perItem` a thing); arrested first, the loot goes back */
+    guild: { kinds: ['tavern'], hideReach: 300, hideMins: 120, abstractHide: 0.5, items: 1, fence: { acts: ['SOCIALIZE', 'IDLE', 'BUY'], mins: 30, perServing: 0.2, perItem: 8 } } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

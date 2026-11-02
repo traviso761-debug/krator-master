@@ -233,6 +233,12 @@ and arrests by its distance (a town at the abstract level: its guards on duty a 
 `SIM.command` (`by: 'jail'`, act `JAIL`) for a week (a month resisting), and lie low after. A commanded actor is not counted at work at the abstract
 level (`77-sim-6-economy.js`), nor its tool worn (`itemsAbstractDay`). Every roll is a hash: no draw from `SIM.rng`. `SIM.crimeReport(s)`,
 `SIM.crimeEvents(since)` (kept apart from the trimmed `SIM.LOG`), `SIM.jailed(a)`.
+**The thieves' guild** (`guild`, opt-in; owner, 2026-11-02): one a settlement, the place of its `kinds` (a tavern) farthest from its nearest jail
+(`P.guild`). A criminal seen within reach of it, nearer it than the coming guard, hides there (a `SIM.command`, `by: 'hide'`) and is not arrested;
+nobody picks a pocket inside it. A burglar's loot is a lot `{from, food, items}` on `a.loot`: the food sits in its home's store (still storage, so the
+books balance) and the things (spare clothes kept at home) leave their owners' `inv`; in a free hour the thief goes to the guild and fences it: the food
+into the guild's store, the things into its `stash`, its material meter down. Arrested first, the loot goes back. For the world's own actors (the
+player): `SIM.crimeHide(a)`, `SIM.crimeFence(a)`, `SIM.crimeLoot(a, lot)`, `SIM.crimeAlarm(a, kind, at)`; `SIM.guildOf(s)`, `SIM.hidden(a)`.
 
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a

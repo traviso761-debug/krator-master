@@ -254,6 +254,11 @@
       sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
 - [ ] **No money:** a pocket picked is the victim's material meter and the thief's; nothing changes hands. Coin waits for
       wages (PLAN-ECONOMY's later phases).
+- [ ] **The guild's stash goes nowhere:** what is fenced sits in the guild's store and on its shelf. With money it would be
+      sold on (to the player above all); for now nobody buys it, and its food is still counted in the town's storage.
+- [ ] **The guild is not marked on the map:** it is one of the taverns (`P.guild` in the sim); the inspector does not name it.
+- [ ] **The player's hooks are untried in a page** (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`): tested in core on
+      ordinary actors; the isle pages have no player.
 - [ ] **No fights yet in two weeks:** nobody's happiness falls under 30. The rule is tested in core (test-sim.js) only.
 - [ ] **No murder, no sentence of death** (the brief's); no courts, fines or the stocks; the held eat nothing from the
       barracks' kitchen (their household's store feeds them as if at home).

@@ -2,21 +2,25 @@
 /* [G data] core/simulation's crime (77-sim-6-crime.js, opt-in) on the isles, tuned by ISLE.TUNE.sim.crime (15): the Voth
    brief's rules (settlements/voth/SIM-ROADMAP.md 1.7) proved here first. Each town's soldiers are its guards and its
    barracks its jails; its criminals are a share of its adults; pickpockets work the markets, shops and greens, burglars
-   the households' food stores, and any adult unhappy enough may start a fight.
+   the households' food stores, and any adult unhappy enough may start a fight. THE THIEVES' GUILD (owner, 2026-11-02): one
+   tavern a town, the farthest from its barracks, where a criminal hides from the watch and fences what it stole.
      ISLE.simCrime()            after both towns are declared (40): SIM.crime with the isles' roles -> its report
      ISLE.crimeBooks()          a snapshot: each town's criminals, stats, the held, and each household food store's total
      ISLE.crimeChecks(a, b)     over two snapshots: the criminals a share of the adults and never a guard; every arrest
                                 held in a barracks of the arrested's own town for its days and out of work; every one let
                                 go when its days are up; what burglars took moved between households of one town (none
-                                lost); a fight's victim hurt; nothing done by someone held */
+                                lost); a fight's victim hurt; nothing done by someone held; one guild a town (its
+                                tavern farthest from the barracks); nobody hidden there arrested; what was fenced
+                                at the guild, no more than was stolen */
 ISLE.simCrime = function () {
   var T = ISLE.TUNE.sim, K = T.crime, S = ISLE.SIM; if (!K || !SIM.crime) return null;
   var job = function (a) { var s = SIM.settlementOf(a); return s != null && a.role.indexOf(s + '.') === 0 ? a.role.slice(s.length + 1) : a.role; };
   var mine = function (a) { return S.order.indexOf(SIM.settlementOf(a)) >= 0; };
   var C = SIM.crime({ seed: T.seed, share: K.share, who: function (a) { return mine(a) && K.not.indexOf(job(a)) < 0; },
     guard: function (a) { return mine(a) && K.guards.indexOf(job(a)) >= 0; }, jails: K.jails, guardActs: K.guardActs,
-    crimes: K.crimes, seen: K.seen, arrest: K.arrest, jail: K.jail, abstract: K.abstract });
-  return { criminals: C.crooks.length };
+    crimes: K.crimes, seen: K.seen, arrest: K.arrest, jail: K.jail, abstract: K.abstract, guild: K.guild || null });
+  var guilds = {}; S.order.forEach(function (s) { var G = SIM.guildOf(s); if (G) guilds[s] = G.id; });
+  return { criminals: C.crooks.length, guilds: guilds };
 };
 ISLE.crimeBooks = function () {
   var S = ISLE.SIM, out = { minute: SIM.minute(), towns: {} }; if (!SIM.CRIME) return out;
@@ -53,5 +57,19 @@ ISLE.crimeChecks = function (a, b) {
     return b.log.some(function (r) { return r.kind === 'arrest' && r.actor === e.actor && r.m < e.m && e.m < r.m + r.days * 1440; }); });
   ok('nobody held commits a crime', !bad.length, bad.length ? bad.length + ' crimes by the held' : acts.length + ' crimes, ' + towns.map(function (s) { var st = b.towns[s].report.stats;
     return s + ': ' + sum(st.attempts) + ' tried, ' + sum(st.done) + ' done, ' + sum(st.seen) + ' seen, ' + sum(st.arrested) + ' arrested, ' + sum(st.escaped) + ' escaped'; }).join('; '));
+  /* the thieves' guild */
+  var kinds = (K.guild || {}).kinds || [], jails = K.jails, place = function (id) { return SIM.R.place[id]; };
+  var gl = towns.map(function (s) { var G = b.towns[s].report.guild, far = function (P) { var d = Infinity;
+      SIM.all('place').forEach(function (J) { if (jails.indexOf(J.kind) >= 0 && SIM.settlementOf(J.id) === s) d = Math.min(d, Math.hypot(J.x - P.x, J.z - P.z)); }); return d; };
+    var best = SIM.all('place').filter(function (P) { return kinds.indexOf(P.kind) >= 0 && SIM.settlementOf(P.id) === s; }).reduce(function (m, P) { return Math.max(m, far(P)); }, -1);
+    return { s: s, G: G, ok: !!G && kinds.indexOf(G.kind) >= 0 && SIM.settlementOf(G.place) === s && Math.abs(far(place(G.place)) - best) < 1e-6, d: G ? Math.round(far(place(G.place))) : null }; });
+  if (K.guild) ok('one thieves\' guild a town: its tavern farthest from the barracks', gl.every(function (g) { return g.ok; }),
+    gl.map(function (g) { return g.s + ' ' + (g.G ? g.G.place + ' (' + g.G.kind + ', ' + g.d + ' m from the barracks)' : 'none'); }).join('; '));
+  var hides = b.log.filter(function (e) { return e.kind === 'hide'; }), caughtHid = b.log.filter(function (r) { return r.kind === 'arrest' && hides.some(function (h) { return h.actor === r.actor && h.m <= r.m && r.m < h.until; }); });
+  if (K.guild) ok('nobody hidden at the guild is arrested', !caughtHid.length, caughtHid.length ? caughtHid.length + ' arrested while hidden' : hides.length + ' hid' + (hides.length ? ': ' + hides.slice(0, 3).map(function (h) { return h.actor + ' at ' + h.guild; }).join(', ') : ''));
+  if (K.guild) ok('what was fenced is at the guild, and no more than was stolen', towns.every(function (s) { var R = b.towns[s].report, st = R.stats, G = R.guild || { store: {}, stash: {} };
+      var held = Object.keys(G.store).reduce(function (n, f) { return n + G.store[f]; }, 0), shelf = Object.keys(G.stash).reduce(function (n, k) { return n + G.stash[k]; }, 0);
+      return st.fenced <= st.stolen && st.fencedItems <= st.taken && held === st.fenced && shelf === st.fencedItems; }),
+    towns.map(function (s) { var st = b.towns[s].report.stats; return s + ': ' + (st.fenced || 0) + ' of ' + (st.stolen || 0) + ' servings and ' + (st.fencedItems || 0) + ' of ' + (st.taken || 0) + ' things fenced, ' + (b.towns[s].report.carrying || []).length + ' still carrying, ' + (st.recovered || 0) + ' recovered'; }).join('; '));
   return res;
 };

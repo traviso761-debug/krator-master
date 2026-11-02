@@ -214,6 +214,13 @@ declares both once they are planned, in one order whichever town it draws, and h
   resist, 15%), out of work, then lie low two days. Two weeks (Kautoa watched, then Valapo): about 60 crimes tried, 50
   done, 13 seen, 3 arrested, the rest escaped; 24 burglaries carried off about 300 servings; no fights (nobody that
   unhappy). The towns' week checks all still pass with it on, and Godot's isle books agree with the new week.
+  **The thieves' guild** (owner, 2026-11-02): one tavern a town, the farthest from its barracks (Kautoa's 1,056 m off,
+  Valapo's 700 m). A criminal seen within 300 m of it, nearer it than the soldier coming, runs there and hides two hours
+  and cannot be arrested; nobody picks a pocket inside. A burglar takes a spare thing from the household besides the food,
+  carries the lot to the guild in a free hour and fences it: the food into the guild's store, the things onto its shelf,
+  the thief's material meter down. Arrested first, the loot goes back to the household. Two weeks: 4 hid (none taken),
+  every stolen thing and most of the food fenced (the rest eaten at the thief's home first). The player's hooks are in
+  core (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`), waiting for a player.
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

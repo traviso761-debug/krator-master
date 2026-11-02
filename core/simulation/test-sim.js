@@ -1001,6 +1001,49 @@ function world(seed){
    for(let m=0;m<1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}return E.made.rice||0;};
  const wj=W(true),wf=W(false);ok('a jailed worker does not work at the abstract level ('+wj+' made, '+wf+' free)',wj===0&&wf>0,wf===0);}
 
+// the thieves' guild (77-sim-6-crime.js `guild`; owner, 2026-11-02): one a town, the tavern farthest from the jail; a
+// burglar's loot (food, and a spare shirt) carried there in a free hour and fenced (the food into its store, the shirt on
+// its shelf, the thief's material meter down); a thief seen near it hides there, out of the guard's reach, and is not
+// arrested; an arrested thief's loot goes back to the household; nobody picks a pocket in the guild. Each with a negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(239);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'post',kind:'post',x:o.postX==null?100:o.postX,z:o.postZ==null?50:o.postZ,activities:{WORK:2}});S.place({id:'cell',kind:'barracks',x:0,z:0,activities:{SLEEP:4}});
+   S.place({id:'homeC',kind:'home',x:100,z:0,activities:{SLEEP:2,REST:2}});
+   S.place({id:'nearTav',kind:'tavern',x:10,z:0,activities:{SOCIALIZE:6}});S.place({id:'den',kind:'tavern',x:120,z:60,activities:{SOCIALIZE:6}});
+   S.role({id:'loafer',org:'folk',sched:[[0,'SLEEP'],[6,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},SOCIALIZE:{kinds:o.at||['market']}}});
+   S.role({id:'guard',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   S.actor({id:'thief',role:'loafer',home:'homeC'});const v1=S.actor({id:'v1',role:'loafer',home:'homeA'});S.actor({id:'v2',role:'loafer',home:'homeB'});
+   S.actor({id:'g1',role:'guard',home:'homeA',work:'post'});
+   S.needs({list:['material'],rate:{material:0},init:30});
+   S.items({kinds:{shirt:{cat:'clothes',slot:'torso',life:900}},free:['IDLE'],secPerMinute:40});v1.inv={shirt:2};
+   S.R.place.homeA.store={rice:100,fish:60};S.R.place.homeB.store={rice:80};S.R.place.homeC.store={};
+   S.crime({seed:5,share:1,who:a=>a.id==='thief',guard:a=>a.role==='guard',jails:['barracks'],guardActs:['WORK'],crimes:o.crimes,
+     seen:{base:o.seen==null?0:o.seen,perWitness:0,guard:0,night:1},arrest:{reach:300,base:1},jail:{days:7,resist:0},
+     guild:o.guild===false?null:{kinds:['tavern'],hideReach:300,hideMins:120,items:1,fence:{acts:['SOCIALIZE'],mins:30,perServing:0.2,perItem:8}}});
+   const run=(h)=>{for(let m=S._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const food=W=>['homeA','homeB','homeC','den'].reduce((n,id)=>n+Object.values(W.S.R.place[id].store||{}).reduce((a,b)=>a+b,0),0);
+ const A=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0.5}}}),G=A.S.guildOf(null);
+ ok('the guild is the tavern farthest from the jail ('+(G&&G.id)+')',G&&G.id==='den'&&G.guild,!(G&&G.id==='den'));
+ const f0=food(A);A.run(5);const R1=A.S.crimeReport(),car=R1.carrying.length;A.run(10);const R2=A.S.crimeReport(),th=A.S.R.actor.thief;
+ A.S.needsOf(th,A.S.minute());
+ ok('a burglar\'s loot is fenced at the guild in a free hour ('+R2.stats[''].fenced+' servings, '+R2.stats[''].fencedItems+' shirt; the stash '+JSON.stringify(R2.guild.stash)+'), none lost',
+   car===1&&R2.stats[''].fenced>0&&R2.guild.stash.shirt===1&&!R2.carrying.length&&food(A)===f0&&A.S.R.actor.v1.inv.shirt===1&&th.nd[A.S.NEED.idx.material]<30,
+   !(R2.stats[''].fenced>0));
+ // hiding: a pickpocket seen at the market, the guild 20 m off, the guard 120 m off
+ const pp={pickpocket:{acts:['SOCIALIZE'],at:['market'],hours:[6,20],chance:1}};
+ const H=mk({crimes:pp,seen:1,postX:0,postZ:10});H.run(8);const RH=H.S.crimeReport();
+ const N=mk({crimes:pp,seen:1,postX:0,postZ:10,guild:false});N.run(8);const RN=N.S.crimeReport();
+ ok('a thief seen near the guild hides there and is not arrested ('+(RH.stats[''].hid.pickpocket||0)+' hid; without a guild '+(RN.stats[''].arrested.pickpocket||0)+' arrested)',
+   RH.stats[''].hid.pickpocket>0&&!(RH.stats[''].arrested.pickpocket>0)&&!RH.jailed.length,!(RN.stats[''].arrested.pickpocket>0));
+ // recovery: a thief carrying loot arrested gives it back
+ const Rc=mk({crimes:{}}),thc=Rc.S.R.actor.thief;Rc.run(1);Rc.S.R.place.homeA.store.rice-=20;Rc.S.R.place.homeC.store.rice=20;Rc.S.R.actor.v1.inv.shirt--;
+ Rc.S.crimeLoot(thc,{from:'homeA',food:{rice:20},items:[{item:'shirt',owner:'v1'}]});const caught=Rc.S.crimeAlarm(thc,'burglary',{x:100,z:50,place:'post'});
+ ok('an arrested thief\'s loot goes back to the household ('+Rc.S.R.place.homeA.store.rice+' rice, '+Rc.S.R.actor.v1.inv.shirt+' shirts)',caught&&Rc.S.R.place.homeA.store.rice===100&&Rc.S.R.actor.v1.inv.shirt===2&&!thc.loot,
+   Rc.S.R.place.homeC.store.rice>0);
+ // no pocket picked in the guild: the loafers spend their day there
+ const Q=mk({crimes:pp,at:['tavern']});Q.run(14);const RQ=Q.S.crimeReport(),inDen=Q.S.R.actor.thief.place;
+ const Q2=mk({crimes:{pickpocket:{acts:['SOCIALIZE'],at:['tavern'],hours:[6,20],chance:1}},at:['tavern'],guild:false});Q2.run(14);
+ ok('nobody picks a pocket inside the guild (the thief at '+inDen+', '+(RQ.stats[''].attempts.pickpocket||0)+' tried there)',!(RQ.stats[''].attempts.pickpocket>0),Q2.S.crimeReport().stats[''].attempts.pickpocket>0===false);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 
