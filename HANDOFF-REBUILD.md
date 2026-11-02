@@ -1,5 +1,164 @@
 # Handoff: the all-builds rebuild
 
+## Owner's decisions, 2026-11-01 (read first)
+
+- **Order:** finish the core pass (below), then the three-ground diagnosis, then pair 4. Pair 4 is free of the map; pair 5 on wait for map 5.1.
+- **Map 5.1** (`gemini-loom-chasms`, Gemini's scale model) merges here after `tools/scale-model/HANDOFF-GEMINI-5.1.md` on that branch is done.
+  `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan needs a rewrite before its station 1.
+- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
+- **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
+- **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
+- **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
+
+## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
+
+**State:** `claude/biome-rebuild` (worktree `C:/Users/travi/Documents/krator-biome-rebuild`, unpushed). origin/main is merged in
+(ebfc29d9e; `LORE.md`'s sky rows kept from this branch: check them against main's). **Pairs 1-3 are merged** (eastabyss, nwbay,
+swbay, hyperjungle, sedesert, necanyons), as are the Rift, the SW highlands, the Godthrone, KLAVA, the card fit and the foliage
+guards (c63eacb4c), the water audit (ac251a770) and `CORE-IMPROVEMENTS.md`. necanyons finished (b792fcba6, 3dac639b8: the owner's notes, the foliage guards, all three pages pass). **The hyperjungle's
+own items float under the attach audit** (bloom, ucard, ribbon, clump0-2: up to 7.9% of cards on necanyons' pages, capped there by
+`guards.maxShare` in KNOWN_ISSUES): fix the hyperjungle's crown placement, then lower those caps.
+
+**The core pass was stopped mid-way.** Each session committed its work to its own branch (`git branch --list 'claude/core-*'
+'claude/water-core-pass'`); none is merged unless its report says so. Read each session's last report, then finish and merge each:
+- `core-tools`: **merged here (2026-11-01).** `python3 tools/test_all.py --no-build` passes, 103 steps, with every check in it: `check_source` (new: trailing `//`, `|| <number>`, `cameraPosition`, bare GLSL splices, raw `texture2D`), `check_assembly` (finished; rule NEEDS on `tools/fragment_needs.json`, which declares the water modules' order; `tools/build.py` fails a page on it), `check_vendor`, `check_views`, `check_budgets`, `check_cells --ratchet`, `check_stale`, and `tools/tests/test_lints.py` (a negative for each rule, the LFS refusal, `pack.py`'s refusal, the baseline's NOT BUILT and `--write` guard, `reach.py`). `test_all`'s rebuild now runs through `tools/build.py`. A build's turn: rebuild with `tools/build.py`, commit `build-inputs.json`, then `python3 tools/check_stale.py --write-baseline` (and `check_assembly`'s) so the keys shrink. **Stale, not rewritten:** `check_stale` 88 keys (80 STALE, 4 UNRECORDED, NO-MANIFEST for Locus, Longsong, Pinnacle Rock and little-demo, deprecated); `port_baseline.py` 37 CHANGED, 23 NEW, 33 MISSING (32 Port pages gitignored, Locus' plants). The pairs and the close-out rebuild them. Locus' build rule is fixed, and Longsong and Pinnacle Rock read the moved `openworld/isle-demo/src/world/41-world-fields.js` (the same text as their pages): all three build, their pages left for their turn. **Open:** `openworld/isle-demo/src/world/80-world-sky.js:86`: a `//` swallows `giantRing.renderOrder=-9` and the rest of the line (TRAILING's one finding); `check_assembly`'s likely real findings are `BIO.impostor*` on ringisles, `CUT.drawCamp`/`planCamp` on nhighlands, `CANT.*` on isle-site, `KCITY.stance` on Ys, `KMAT` read before its script on Mungo; 40 view names with ':' stay baselined until the harness makes file names safe; `settlements/longsong/tests/test-sim.js` failed once in test_all (33 s), then passed twice, not diagnosed. `check_core_use` has 11 fixed findings to shrink with `--write-baseline`;
+- `core-verify` **merged 2026-11-01**. Every browser verify is on `verify_page` (Yuni's two walks and core/charactermodels too; Voth's partial load stays on the harness by design). Added: `verify_page(routes=)`, `BIO.capReport` and `_api.seatSweeps` read as universal asserts when a page has them (`seat-sweeps`; core-biome and core-seat need no wiring, only a check that a page shows them), a `winding` report that never fails (item 15, in the harness so no page bytes move), and `harness.py sheet <page>` / `await V.sheet(out)`, every baked BIO item alone on a grid in its own scene. GPU (Arc, D3D11), pages rebuilt from current sources: nhighlands 4.82%, eastabyss 5.84%, Rift 7.44%, each failing only the foliage attach audit, universal asserts clean. **The committed nhighlands, eastabyss and Rift pages predate the foliage guards**, so a committed page passes where its rebuild fails; nhighlands and the Rift's audit failures are new to this list and belong to their biome turns. A real page with a broken shader fails `shader-errors` alone. Fixtures pass on SwiftShader and GPU. **Not done:** the ratchet baseline covers only ehighlands of 166 pages (each takes 2-6 min and holds the GPU lock; of the others only ebadlands has finished, clean). Until it is run, a page failing a universal assert fails its verify: run `KRATOR_GL=gpu python3 tools/harness.py ratchet --write --views auto <page>` page by page, with every build's `tex/` and page pulled, or an LFS pointer is recorded as a failure (geyser's was, and was removed). `test_all --no-build` here fails six node steps: the five `test-isle-*` and interiors' `test-walk`, on LFS pointers in this partial checkout (`Unexpected identifier 'https'`), not on this work. **Not run:** core/charactermodels' checks (its pieces are not in Git: `mpfb_male/anims: 404`, the conversion got as far as that), verify_heavy on Yuni, and sedesert's and the Throne's verifies since the `name` fix. The sheet blanks about a third of its cells under SwiftShader (programs fail to link); use the GPU. It shows the far version only where that is an item of its own.
+- `core-seat` (WIP 15788f6fe on `claude/core-seat-324f0b`): `KSEAT` (`core/terrain/38a-core-seat.js`), the probe sweeps (`core/host/95b-host-seat.js`), and KSTACKS/KCARVE probe points, with tests, `SEAT.md`, and lints clean. Left: swlowlands' adoption has a syntax error in `99-host-take.js` (apostrophes in two check names), unbuilt and unverified; then the merge. core-verify's note names the file `47`: it is `38a`. Also found: every ringed KSTACKS top has an open hole at its centre (in `TODO.md`'s ride-alongs);
+- `core-biome` **merged 2026-11-01** (`core/biome/README.md`, "The placer's defaults" and "A tree's structure, and a crown held by it"; `test-grid.js`, `test-twigs.js`). In: per-cell `BIO.grid`, the cliff gate with `BIO.cliffCheck`, the 250k instance cap with `BIO.capReport` (`verify_page` reads it as `instance-cap`; seen working on nhighlands), bucket probe points, and, new and opt-in, `BIO.tree` (owner scope, restored on a throw), the structure log (`BIO.beam` and `BIO.tube` spans in a scope), `BIO.twigEnds`, `BIO.snapSeg` and `BIO.clumpOn`. **Pages:** none moves by draw: no kit opens a scope, no kit is on the cell form. The cap adds a console warning on a page over it, and bakes carry `probePoints`. Every page takes `core/biome`, so its text is behind its sources until its turn (`check_stale`: 0 over the baseline). No page is committed here. **nhighlands, rebuilt, GPU (Arc), `--assert --all-views`: fails two checks and nothing else**, each recorded in its `KNOWN_ISSUES.md` for pair 7, neither fixable from core: the attach audit (4.82%, the same as `core-verify` measured before this work) and `instance-cap` (`needle` 632,299, `frond` 595,481; counts that predate the cap). The 130 floor plants and 6 trees on rock faces stay until it moves onto the cell form.
+  **Crowns at twig tips did not fix the hyperjungle: read this before its fix.** A trial on the rebuilt page (hero clumps moved onto their spans under r 1 m by `BIO.snapSeg`, not committed): 2,291 of 11,254 cards float before (20.36%), 2,288 after. Its hero crowns were not the floaters. What is left: `bloom` 556 of 805 (the kapok's flowers, jittered +-2.5 m off the twig end, far past a stem card's tolerance) and `clump0`, `clump2`, `clump5` (175, 233, 258), whose worst cases lie at the hero disc's edge. Those are probably saplings (`buildSapling`: past 760 m it draws no boughs at all, so its clumps have nothing to hold them; not traced card by card). So the fix there is the blooms on `snapSeg`, and saplings that either keep a bough or hold their clumps to the trunk. `clumpOn` can't help where no structure is drawn. The necanyons' `crown()` is a separate case and is untried.
+  **Not done:** per-plant card records: nothing in the repo says what this item was, and the card guard and `check_cells` cover what the name suggests; ask the owner if it is still wanted. Adoption of the structure log by any kit;
+- `core-shader` (WIP e0a9e7a34 on `claude/core-shader-654624`): `core/shader` (`KHOOK`, `KCOLOR`, tests pass) is adopted in core/atmos (byte-identical on 54 snapshots) and core/terrain 43-45. Left: the lava draw (46), the core/water draw with `checkPrograms` and colour space, `khost.resolve` adding core/shader plus `build.py` lines for 7 non-khost builds, READMEs, a GPU-verified page, core/biome after `core-biome`. **Don't merge it before `khost.resolve` lands: pages then fail with "core/shader is not on this page".** Its scratchpad `snap.js` compares old and new shader text;
+- water **merged 2026-11-02** (`claude/water-core-pass` and `claude/core-water-finish-a26d7d`; `core/water/README.md`, "The core pass" and "The water as fields"). In: the flow network, the shore from the ground, ribbon rows and breakup; **Godot parity** (item 9) ran for the first time and passes on 4.7.2: `godot/tests/water/core_pass_test.gd` and the six older water tests headless, and `core_pass_shaders.gd`, which compiles all eight water shaders on the RTX 5060 (a headless run compiles none); **ext/60**: `WATER.fields` / `fieldAt` / `fieldFns` (shore distance, depth, flow proximity from the water the eye sees) and `WATER.edgeAudit` (`plant-in-water`, `wet-short`, `wet-wide`), worked example `test-edge.js`; the water ext modules 58-shore, 59, 59b and 60 declared in `tools/fragment_needs.json`.
+  **necanyons' creek:** a 4 m ground strip over the carve (about 40k triangles, `?creekstrip=0`) and a page check, `WATER.audit` on the creek. The check found the creek rising downstream by up to 4 m and up to 19 m under the savanna's talus, so the bed is now graded (`creekBed`) and the channel has one section (`creekGround`): 167, 461 and 352 findings went to 0. Moving the ground moves the placement along the creek. All three pages pass `--assert --all-views` (GPU, Arc).
+  **eastabyss** was rebuilt on the merge (network + mirror switch): it fails only the foliage attach audit, 5.84% against its 1% limit, the figure `core-verify` measured before this work; it belongs to its turn.
+  **Not done:** no biome reads the fields or runs `edgeAudit` yet, and the environmental-field contract itself is still unwritten in `core/biome/README.md`. A dark-stemmed palm clump stands at the creek's edge in the view "The creek" (`biomes/necanyons/KNOWN_ISSUES.md`: seen, not measured; `waterMask` holds a clump's centre, not its stems). Staged shore-grid bakes: skipped, no hitch measured. `core_pass_shaders.gd` proves they compile, not how they look: no Godot picture was judged.
+  **Two traps for the next session:** a worktree cut from an old branch and merged forward keeps old files as CRLF on disk (`git ls-files --eol`, `i/lf w/crlf`), which gives false DRIFT in `check_vendor` and `sync_core --check` and CRLF pages: delete them and check them out again. And `check_assembly.py --write-baseline` and `check_stale.py --write-baseline` run in a tree of LFS pointers drop every unbuilt page's keys: add a rebuilt page's new keys by hand there (BIO.leafOn and leafQ on necanyons' and eastabyss' pages: `20-core-kit.js` reads them behind `o.leaf`, and neither page takes `31b`). `build.py`'s page write lacked `newline='\n'` in necanyons and eastabyss (fixed); 19 other biomes' `build.py` write the same way, so their pages come out CRLF on Windows.
+
+**`tools/dep_graph.py` fails here** (a `test_all` step; reported 2026-10-27): `core/atmos/demo/build.py` takes `three.min.js` from
+`kits/ancients` and `kits/ringsea` (move it to a shared place, or allow-list it in `tools/dep_allowlist.json` with a reason), and a
+false positive `kits/ancients -> settlements/span` from a comment in `kits/ancients/build.py` (make the scanner skip comments, or
+allow-list it). The probe-points, probe broad-phase and camera-guard entries in `TODO.md` are done (9e86c8dad): take them out.
+
+**Merge origin/main again** for `MODULARITY-PLAN.md`'s "Status 2026-10-27" (a67c26b4c). In stage 2, add Iziz's
+`settlements/iziz/src/81-sky.js` (16 kits vendor it) to `SKY-PLAN.md` section 9: each kit binds `ATMOS.skyBiome` from one host
+fragment and drops the copy. Check that the Iziz palace's own camera guard (`95q-palace-cutlabels.js`) came out. The plan's shared
+building engine is now named `core/engine`, not `core/kit`.
+
+**ChatGPT's visual integration plan, reviewed 2026-10-28** (`C:/Users/travi/Documents/Codex/2026-10-28/referenced-chatgpt-conversation-this-is-an/outputs/BIOME-REBUILD-VISUAL-PLAN.md`):
+- **Take:**
+  - **an environmental-field contract**, a small core-pass item: one documented set of host fields with units (elevation, slope,
+    wet, salt, flow proximity, shore distance and depth, cold, upland, exposed rock) in `core/biome/README.md`, each derived from
+    terrain, shore, strata and scour data. Kits name these ad hoc today (`wet`, `salt`, `upland`, `flow`, `mist`...). Each turn maps
+    its fields to the contract.
+  - **a material channel audit:** check which packed maps `KGROUND` layers and the biome materials actually consume (normal,
+    roughness) before claiming PBR; then a coverage matrix (surface, maps, consumers, gaps) beside `core/materials/PLAN.md`.
+  - **three lines in every turn's checklist:** ground layers are driven by documented masks; strata and scour outputs feed placement
+    (ledges, talus, bars), not only the height; wet ground and flora read the same shore distance as the water (`WATER.audit`).
+- **Skip:**
+  - its pilot-first sequence: the owner's pair order stands, and nine biomes are already done;
+  - its shoreline and junction step: `core/water/PRACTICE.md`, `WATER.audit`, confluences and `claude/water-core-pass` cover it;
+  - its budgets step: `GRAPHIC-LOAD.md`, `PERF.md`, and `BUDGETS.json` on `claude/core-tools-57240f` cover it;
+- **Ground is the weak point** (the owner, 2026-10-28: "the ground nevertheless does remain a weakness, it tends to be 'okay' at
+  best"). Having `KGROUND` in the universal set has not made the ground good. Make it a core-pass workstream of its own, with
+  ChatGPT's step 2 (ground layered by ecology and landform) as its spine:
+  1. **Diagnose first, on three ground types** (a forest floor: nhighlands; a rocky or eroded surface: sedesert or necanyons; a wet
+     or salt margin: eastabyss or the Bowl). Take near, mid and far screenshots, and say what makes each read "okay": macro paint
+     dominating; layers too few or too uniform; normal or roughness maps unread; tiling; no micro-relief; mesh too coarse for the
+     shading; no debris; flat light on flat ground.
+  2. **Then the core fixes the diagnosis names.** Likely candidates:
+     - `KGROUND` reads each layer's normal and roughness;
+     - the planned detail normal field (`PLAN.md` "From spiderbench", the `detail.*` sets);
+     - triplanar sampling on steep ground;
+     - anti-tiling macro variation;
+     - layer weights from the environmental-field contract (wet darkening, salt bloom, scree under slopes, organic litter under
+       canopy) and from strata colour on exposed rock;
+     - a near-camera scatter of small debris and cover (pebbles, litter, twigs, low cover cards) on core instancing;
+     - finer ground mesh near the camera.
+  3. **Judge by eye with the owner**, on the three pages with switches for before and after, then add it to every turn's checklist.
+  Budget it like the rest: measured, not assumed.
+- **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
+  the ground, breakup). Four points the practice lacks, to take:
+  1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
+     plants keep clear of the water's surface and the wet-ground band follows the water's real edge, not the mask. Worked example:
+     one shoreline and one junction with water, wet ground and plant edges matching. It pairs with the ground workstream.
+  2. **Water as fields:** the shore distance, depth and flow proximity, exported (for example `WATER.fieldAt`) as entries of the
+     environmental-field contract, so ground wetness and flora read the water's own numbers.
+  3. **Staged shore-grid bakes** where a grid causes a load hitch: measure first.
+  4. **The water ext modules' order** (55 after 22, 57 and its needs), declared to `core-tools`' `check_assembly`, so a build missing
+     one fails at build time.
+  Skip its "preserve advected ripples on rivers": the owner asked for breakup on rivers too (eastabyss, `WATER.breakupFlows`).
+
+**Reflections: lessons from the Menagerie's Lake Atitlán** (the owner, 2026-10-31; `host/WorldMenagerie/src/atitlan/waves.js` on
+origin/main; settings in `data/cities/atitlan.json`, `waves`). Core water reflects only the sky (`A.skyEnv`), so hills and shore trees
+never appear in a lake.
+- **How Atitlán does it:** a second camera mirrored in the water plane renders into a target at 35% of the screen's width and height,
+  every 2nd frame, with shadow updates off and a clip plane at the waterline. Only non-instanced meshes over 30 m radius are drawn
+  (on layer 1, rescanned every 2 s). The water mixes it in by Fresnel, capped at .92, with the UVs nudged by the wave slope, and rain
+  dulls it.
+- **Why it may not transfer as it stands:**
+  - resolution only cuts fill, and `biomes/nhighlands/PERF.md` found our pages vertex-bound, so the cost is the ground's vertices;
+  - Atitlán's rule drops instanced meshes, which on a biome page means every tree, so forest shores would reflect bare ground;
+  - it serves one water level, so rivers, terraces and second lakes stay on the sky reflection;
+  - our sky is a separate background pass and must be drawn into the target too;
+  - Godot has no built-in planar reflection: the twin needs a SubViewport mirror.
+- **Tiers, cheapest first; stop at the first the owner accepts:**
+  1. **Ridge reflection:** draw the sky model's ridge profiles, or a one-shot capture from the lake's centre, into the reflection
+     lookup. No per-frame geometry, and it refreshes only when the hour changes much.
+  2. **A static mirror:** the planar render above, done once and again on a slow timer, for still water with a nearly still camera.
+  3. **A live mirror:** Atitlán's method for the one largest still in view, drawing `KFAR`'s far field and the sky plus far impostors
+     for trees, never hero meshes. Off underwater, off when the still fills little of the screen, off beyond a set distance.
+- **The gate:** opt-in per surface with a `?mirror=0` switch. Measure on the Intel Arc 140T by `tools/perf_views.py`, on a lake view
+  and on a view with no lake (it must cost nothing there), on a heavy page. Set the limit with the owner before tier 3 lands.
+- **Cheap lessons, no mirror needed:** fade each wave by its pixel footprint (`wFoot`) so far water doesn't alias; sum waves of
+  incommensurate lengths on golden-angle bearings over warped coordinates (compare with `WATER.breakup`); drop the glint's shininess
+  in wind; let rain dull the reflection; tint shallows by exp(-depth/d) from a baked depth map; add a pale wet edge and surf strip at
+  the waterline (it suits the ground workstream).
+
+**The mirror prototype, measured 2026-10-31** (`core/water/ext/58-core-water-mirror.js`, opt-in; on eastabyss by `?mirror=off|probe|live`,
+with no query nothing installs). Intel Arc 140T, 1280x720, GPU timer queries, minimum of 9 frames:
+
+| View | World pass | Live mirror pass (35%) | At 25% | Mirror draws |
+|---|---|---|---|---|
+| The salt lake | ~15 ms | 2.2-2.6 ms | 2.0-2.1 ms | 32 calls, 0.86 M tris (world 199, 3.83 M) |
+| Marsh pools | ~18 ms | 3.0-3.1 ms | 2.7-2.8 ms | 37 calls, 1.12 M tris (world 245, 5.21 M) |
+| The east delta | ~16.5 ms | 2.9 ms | 2.7 ms | not read: the counter was fixed after this run |
+| Salt flats (no lake in view) | ~3.4 ms | 1.15 ms | 1.1 ms | must be gated off |
+
+- **Live mirror:** every 2nd frame that is about 1-1.5 ms a frame on the lake views, roughly 7-8% of the world pass. Dropping the
+  resolution barely helps (as predicted: the cost is vertices). It compiles no new programs (oblique clip, the page's output encoding).
+- **Probe:** a capture of about 20-27 ms GPU, 0.5-0.9 s wall on the main thread (a hitch: split it over six frames). After that a frame
+  costs nothing the timers can separate from noise. The water's extra shader cost is also within noise (timings swing ±25%).
+- **Limits of this run:** the far-tree filter (`/^biome:far/`) matched nothing, so **no trees are in either tier yet**, and with them the
+  live number will rise: find eastabyss' real far meshes and re-measure. The page **crashed** ("Target crashed") in all three bench
+  runs after several views, cause unknown (it was not seen without the bench's mode switching): find out before adoption. The world's
+  view timings on Marsh pools swung 17.7-27 ms while the bench ran. The look hasn't had the owner's pass: the bench pages are only
+  on `?mirror=`. The probe shows a pale band at the near shore on Marsh pools (parallax radius or capture height).
+- **Not done:** auto-off when no still is on screen, or the camera is far; one water level only; `KHOOK` adoption (`core-shader`); no
+  Godot twin; no PORT row or node test.
+
+**Every biome gets the switch; the mirror stays off at page load** (the owner, 2026-11-01: so the tri counts don't rise). `WATER.mirrorSwitch`
+(`core/water/ext/58`) adds a "reflections" button that cycles off, probe, live, and builds nothing until first turned on (eastabyss: 199 calls,
+3.83 M tris either way at the opening view). eastabyss has it. Each biome's turn with a large still adopts it (`BACKPORT.md` section 1,
+`core/water/README.md`). `?mirror=probe` and `?mirror=live` still work. The capture now draws one face a frame into a second cube and
+swaps it in, re-captures when the hour moves by 1, and includes the far trees (`biome:impTrees`, 16,974 instances). The soak: 93 view
+changes in probe mode, no crash, geometry, texture and program counts flat; so the bench's crash is in the live tier or its
+switching (not traced; trace it before any lake takes `live`). eastabyss' `--assert --all-views` fails only the foliage attach audit
+(5.84% of cards, limit 1%), which predates the mirror (the guards landed after its turn); the error panel and console are clean.
+Left: the near-shore pale band; adopting it per kit (a still's `center`, `radius` and `level`); one cube per lake; the Godot twin; a node
+PORT row.
+
+**The mirror's open issues, closed 2026-11-02** (`core/water/ext/58`; Arc 140T, eastabyss):
+- **The crash is the bench, not the page.** It needs a loop of `EXT_disjoint_timer_query_webgl2` queries round `M.renderLive()`: "Target crashed" after 31 views, and again after 11. Without timers: 14 minutes live on the page's own loop (56 views, memory flat) and 48 views of resolution switching, no crash. Not run: timers with the mirror off, so whether the mirror matters to it is unknown; time a mirror pass with few queries.
+- **Reflectionless trees:** a pass inherited the main camera's runtime LOD, so stand-ins near it were hidden and heroes aren't drawn. A pass now shows every stand-in and opens BIO's fade range. Trees under 7 m have no stand-in. Live pass 2.4-3.4 ms (2.0-2.9 at 25%), every 2nd frame: no measurable rise.
+- **Water that reflected nothing:** the rivers' and forks' ribbons were not in `materials`. A page lists every surface near the mirror's level.
+- **The pale probe:** the sphere must be the shoreline's distance (eastabyss 6000 -> 1500 m). It is better, not gone: one capture point can't hold a near shore. The live tier is the good picture; the probe is the cheap one.
+- **`far`:** the live pass is skipped past that distance from `center` (eastabyss 4000 m).
+- **Left:** one cube per lake, the Godot twin, a test of the stand-in pass (GPU shots only so far).
+
+**Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
+"After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
+only from the owner's own message: the app refuses starts from session reports.
+
 ## START HERE: the final rebuild (handoff of 2026-10-26)
 
 **For the session that runs the final rebuild.** Everything below this section is the earlier plan and its record; this
@@ -296,6 +455,37 @@ kits"). The owner settled two points: **Korona's plume is active** (geyser field
 `corona` station; `korona/NOTES.md`), and the cone on **Xanadu's south-eastern wall** holds an ice field (`ice`). Each
 station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
 
+### Every build in the rebuild: the foliage guards (the owner, 2026-10-27)
+
+Cut-out cards drawn wrong, foliage floating and branches without leaves kept coming back build after build, each fixed
+locally and repeated in the next. Three guards now catch them in every page, and every verify that runs `hostChecks` runs
+them (`core/host/95-host-probe.js` appends them; `core/biome/test-guards.js`):
+1. **The card guard** (`20-core-kit.js`, `BIO.def`): the core refuses, through the error panel, a sheet of plants drawn whole
+   (no cell, no stems, no cut by `BIO.geo.cells`, `"sheet": "geometry"` or the kit's own uv), a library plant on a frond,
+   ribbon or hang with no `base`, and a crown on the clump with neither `stems` nor `base`. It knows what each image is from
+   the pack (`plants`, `anchor`: `tools/textures/pack.py` writes them now), so a build is checked from its first re-pack.
+2. **The attachment audit** (`BIO.attachAudit`, host check "foliage held by its structure"): every leaf and hanging card more
+   than 2 m above the build's ground (and not reaching down to it) must start within a quarter of its size (a centred tripod:
+   six tenths) plus half a metre of bark, a rod, rock, a wall or water. Over 1% floating fails, naming the items and the
+   worst places. Negative controls: every card lifted 6 m must fail.
+3. **One LOD key per tree** (host check "a tree's cards switch with their structure"): a held card must share its
+   structure's chunk and never reach further than it. And the core now gives every chunk mesh the height range of all the
+   meshes in its chunk (`_lodShareBox`; `BIO.LOD.ownBox` for the old per-mesh box), so a tree's bark and leaves switch at one
+   distance and are culled together.
+
+**Calibration** (necanyons, rebuilt with the guards on 2026-10-27, not committed): the card guard found the two whole bloom
+sheets (`bloom`, `wort`); the audit found **2,863 of 8,448 cards floating (34%)**, among them 1,496 of 1,585 flametip sprigs.
+Its crowns were given stems at its turn, but `crown()` still puts each clump at a point in the crown's volume, not at a twig
+tip, so the stems start in the air (one sprig 8 m above its tree, in a probe view). The LOD check passes (2 of 5,585).
+**Expect most biomes to fail the audit at first**: it measures what the owner has been seeing.
+
+**At each build's turn, when a guard fails:** fix the placement, not the threshold: put each clump, sprig, frond and flower at
+a recorded branch point or twig tip (`crownOn`, `BIO.leafOn`, a leader under any crown top), give the card slots their cell,
+base or stems (`check_cells.py`), and keep leaves on the same LOD key and range as their boughs (set `BIO.owner` to the tree's
+foot for every part of a tree). An item that floats by design (rafts on water, seed fluff) is defined with `{free: true}`. A
+build that cannot fix it all in its turn sets `KHOST.take({guards: {maxShare: <its share now>}})` with a `KNOWN_ISSUES.md`
+entry, so the share can only fall. The practices behind this are in the painting-to-3d-world skill, `foliage-kit.md` §15.
+
 ### Still to write (core) before or during step 1
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`
@@ -329,6 +519,7 @@ station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
 
 ### Practical rules (learned this session)
 
+- **The lock's heartbeat** (the owner, 2026-11-02; `CLAUDE.md`): check a GPU job every 30 minutes; no progress in 30 minutes means hung: stop it by PID and release the lock.
 - **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
   in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
   process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.

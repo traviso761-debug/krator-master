@@ -120,7 +120,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the planned biomes' water kinds (ext/54: the seep dams and karst springs at the seeps) and the confluences (ext/55: where the side
 # canyon's stream meets the creek), by path (2026-10-27, the final rebuild; BACKPORT.md's row)
-for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js']:
+for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','57-core-water-audit.js']:
     PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 4, 9: the weather and its selector (2026-10-26)
 for f in CORE_ATMOS:
@@ -181,7 +181,7 @@ if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); 
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,OUT[:-5]+'.tex.js')
-open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

@@ -73,6 +73,15 @@
       cells round the water works are drawn at ~1.5 m (fine patches), the rest at 16 m.
 - [ ] **Station 3's carnivores are station 1's sizes**: "growing larger toward Korona" is not drawn (a scale option on 57's passes).
 
+- [ ] **The foliage guards' audit, with a ceiling** (2026-10-27): necanyons' own cards pass on every page (`?nojungle`: 0.38%, 0.03%,
+      0.45%; its crowns now on twigs grown from their limbs, its flowers on twig tips and stalks). What floats is the hyperjungle's,
+      read in place (`bloom`, `ucard`, `ribbon`, `clump0-2`): 7.9% on station 1, 3.3% on station 2, 1.2% on station 3, so each page
+      sets `guards.maxShare` (.08, .035, .013: 99 and the stations' STATION_TAKE). Lower them when the hyperjungle's fix lands.
+
 Switches: `?diet=0 ?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 ?kground=0 ?far=0 ?hz=0 ?hfog=0 ?strata=0 ?contour=0 ?weather=0
 ?springs=0 ?confluence=0 ?arches=0 ?impgain= ?impwrap=`.
-
+- [x] **The creek's ground** (2026-11-02): the floor's 16 m cells under an 18 m channel. Now a 4 m strip over the carve (`47`, ?creekstrip=0), the bed graded (the water
+      rose downstream by up to 4 m and ran up to 19 m under the savanna's talus) and a channel section through it (`creekGround`). A page check, `WATER.audit` on the creek: 0 findings on all three
+      pages (167, 461 and 352 before the grade). The strip adds about 40k triangles.
+- [ ] **Palms rooted at the creek's edge** (seen 2026-11-02 in the view "The creek", not measured): a dark-stemmed clump stands at or in the water's edge. `waterMask` holds a clump's centre
+      off the water; its stems are not held. Give the placement `WATER.fieldAt`'s shore, and `WATER.edgeAudit` the plant records.

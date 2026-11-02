@@ -32,6 +32,12 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
+- **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
+  from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
+  (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
+  list `ext/56` in every build that takes core/water (the pooled `settlements/`/`kits/` lists and each biome's `CORE_WATER`), set
+  `W.BREAKUP_AUTO=true` as the default in ext/56, rebuild them all, rewrite the baseline once, and look at a lake, a pool and a river
+  in a few of them (the eastabyss look). `node core/water/test-breakup.js` and `test-gaps.js` say what moves.
 - **The planetary nebula, smaller and with its white dwarf** (the owner, 2026-10-27; done in the sources on
   `claude/core-atmos-planned-16a374`): `SKY.cluster.pn` radius 3 to 2 degrees (`core/atmos/sky/89-atmos-e-skymodel.js`) and a
   blue-white central star a pixel or two wide with a faint glow (`89-atmos-g-sky.js`); the Godot include, `golden.json` and
@@ -46,11 +52,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
   pages' hashes and their per-type triangle counts (the hero column doubles).
 
-- **Done in the sources 2026-10-25, waiting for stage 2's rebuild** (branch `claude/biome-rebuild`): core/host's probe reads
-  `userData.probePoints` and indexes the volumes on KSPACE (`regOccupancy`: Rift 96 s to 0.6 s, the same counts;
-  `core/host/test-probe.js`), the Ancient Port kit's probe reads `probePoints`, the camera's pointer capture is guarded and
-  the Iziz palace's own guard is gone, and `check_profile` takes a 64 px sky. The biome pages are rebuilt; the settlement
-  and kit pages that take core/host or the port probe (port, Hook, Ys, Iziz's palace ...) pick it up in stage 2.
 - **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
   pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
   Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two

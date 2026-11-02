@@ -752,3 +752,51 @@ or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not check
   as the first runs on eastabyss and the Rift jungle did (2026-10-27; their findings are in the session notes, not fixed here).
 - Costs: about `length / step` x 2 x (1 + scan) ground samples a flow, an open surface's box at half its mask cell, 9 x 16 x 16 for a still.
   Seconds for a biome page; run it in a check, not each frame.
+
+## The core pass (2026-10-27: PRACTICE.md section 2, items 2, 4, 5, 8; `test-network.js`, `test-shore.js`, `test-breakup.js`, `test-flow-keep.js`)
+
+All opt-in; `test-gaps.js` loads every new fragment and its default snapshot still passes.
+
+| Item | Call | What |
+|---|---|---|
+| 2, a flow network | `WATER.network({flows: [{flow, parent}], ground, open, reach, mouth: {len}, confluence})` (ext/59), `WATER.drawNetwork(N, {flow, flows, confluence})` (ext/59b) | each flow names the flow it leaves or joins; the network finds each join's kind (a tributary ends on its parent, a distributary starts from it) and its overlap, refuses a child that does not reach its parent, gives a fork's siblings one confluence placed and sized from their overlaps, fades every flow that ends in one of `open` over `len` m (45) round where it enters (its rows refined), and orders each child over its parent. `drawNetwork` draws the flows, the discs and the fades. `WATER.audit`'s overlap rule finds nothing left in the test's river system (295 findings drawn loose) |
+| 4, the shore from the ground | `WATER.maskFromGround({box, cell, level, ground, seed, limit, dilate})` (ext/58) | an open surface's mask flooded over the ground from its seeds (where the ground is under the level, and `limit` allows) and dilated a cell: every mask edge then lies over ground above the level, so the shore is the ground's contour (`WATER.audit`'s open-edge: 516 cut edges for a shape-drawn mask, 0 for this). A `limit` (a river's band left to its ribbon) is the only place a straight edge stays |
+| 5, breakup by default | `WATER.BREAKUP_AUTO = true` before the water is drawn (ext/56) | every open, still, pool, ribbon and confluence drawing made after it takes the breakup (`BREAKUP`, ribbons `BREAKUP_FLOW`; `o.breakup` an object laid over them, `false` to keep one out). The default flip waits for the all-builds rebuild (`TODO.md`) |
+| 8, ribbon rows that follow their effects | `drawFlow({keep, refine: true})`, `W.ribbon(S, {refine: {f, tol, min}})` (22, 51) | rows where `keep` changes (no row's step over about `tol`, .08; never closer than `min`, 2 m), the rest of the line at `step`: a fade resolves without densifying the whole line. The record keeps `{tol, min}` |
+
+**Adopting it** (eastabyss station 1 is the worked page, `src/89w-host-water.js` and `build.py`):
+- `build.py`: list `core/water/ext/59-core-water-network.js` and `59b-core-water-network-draw.js` (with 55 and 55b, which they need; 56 for
+  breakup; 58 for the shore) by path, after the top-level core/water.
+- Replace hand-wired forks, joins and mouth fades with one network: `const NET = WATER.network({flows: [{flow: RIVER}, {flow: CHANNEL, parent: 0}, ...],
+  ground: terrainH, open: [LAKE], confluence: {cell: 2}}); const D = WATER.drawNetwork(NET, {flow: RIVER_DRAW_OPTIONS});` (`D.flows`, `D.confluences`).
+  A flow's `densify` kept only for its fade can go: the mouths refine their own rows.
+- A lake or sea whose mask is drawn from a shape: `mask: WATER.maskFromGround({box, cell, level, ground: terrainH, seed: (x, z) => inside(x, z),
+  limit: (x, z) => !inARiverBand(x, z)})`.
+- A page that wants the breakup everywhere now: `WATER.BREAKUP_AUTO = true;` before its first water drawing (in place of `breakupAll()` and
+  `breakupFlows()` after them).
+
+## The water as fields, and the land side of its edge (2026-11-02: ext/60; `node core/water/test-edge.js`)
+
+`WATER.audit` checks the water against the ground. These read the other way, from the land: the ground's wet band and the plants take the water's own numbers.
+
+- `WATER.fields({box, cell, ground, surfaces})` bakes a raster of the water the eye sees (a surface holds the point and its level is over the ground); `WATER.fieldAt(F, x, z)` -> `{shore, depth, flow}`, `WATER.fieldFns(F)` -> one function each, for a host's field table.
+  `shore` is signed metres to the edge (over 0 on land), `depth` metres of water, `flow` metres to the nearest running water. These are the shore distance, depth and flow proximity entries of the environmental-field contract the core pass plans for `core/biome/README.md`.
+- `WATER.edgeAudit({field, plants, wet, band, wide, clear, allow})` -> findings in `WATER.audit`'s shape: `plant-in-water` (a plant nearer the water than its radius plus `clear`, unless `aquatic`), `wet-short` (land within `band` of the edge with no wet ground), `wet-wide` (with `wide`: wet ground past it, a band that follows a mask or an old line).
+  Give `wet` the water's share of the wetness, or `allow` where a seep or rain owns the ground. `test-edge.js` is the worked example: one shoreline and one junction, the wet band from the fields clean, one from the mask caught.
+- **Not done:** no biome reads them yet (each turn maps its fields), staged shore-grid bakes (measure a hitch first).
+
+## The reflections switch
+
+`WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page
+loads with reflections off, and `WATER.mirror` isn't called, so no material is patched and no tri is drawn. A button in the host panel
+cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the cheap tier, patchy near a shore (one capture point). The live mirror is the good picture, at about 2.4-3.4 ms every 2nd frame
+on the Arc 140T. Don't wrap `renderLive` in a loop of GPU timer queries: that crashed the tab on the Arc, and the page's own loop never did.
+
+**Adopting it** (the exact lines; each biome's own turn does it, where it has a large still; `biomes/eastabyss/src/99-host-take.js` is the example):
+
+1. `build.py`: add `58-core-water-mirror.js` to the kit's `core/water/ext` list.
+2. In the take fragment, before `KHOST.take`, with every surface at the still's level (rivers and forks too), its centre, its shoreline's distance as `radius`, and `far`:
+   `const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[...],level,center:[x,z],radius,far,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});`
+3. In `KHOST.take`: `draw:()=>{MIRROR.update();SKY.draw();}`.
+
+Never call `Sw.set` at load, and don't set a tier in a page's defaults. `node core/water/test-mirror-switch.js` holds the rule. Godot has no twin yet.

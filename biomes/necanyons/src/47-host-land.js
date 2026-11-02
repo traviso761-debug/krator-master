@@ -15,13 +15,21 @@ _mark('layout');
 const _tm={x:NaN,z:NaN,h:0};
 // the TALUS: the floor rises against a wall's foot, the rock's fall and sand banked up (the wall goes down into it)
 const TALW=LANDO.talus?LANDO.talus.w:55;
-const creekBed=z=>floorH(CREEK.x(z),z);   /* the creek's bed (its water: + CREEK.depth) */
+/* the creek's bed (its water: + CREEK.depth). GRADED (2026-11-02; WATER.audit on the fine strip: the water rose downstream by up to 4 m and ran under the
+   savanna's talus): the floor's line every 12 m (the water's own points), the running minimum from the high end, so the water never climbs */
+const creekBed=(function(){const raw=z=>floorH(CREEK.x(z),z);if(!NEWROCK||LANDO.creek===false)return raw;
+ const z0=-TERR.R*1.1,n=Math.floor(TERR.R*2.2/12)+1,Y=[];for(let i=0;i<n;i++)Y.push(raw(z0+i*12));
+ if(Y[0]>=Y[n-1]){for(let i=1;i<n;i++)Y[i]=Math.min(Y[i],Y[i-1]);}else{for(let i=n-2;i>=0;i--)Y[i]=Math.min(Y[i],Y[i+1]);}
+ return z=>{const u=Math.max(0,Math.min(n-1,(z-z0)/12)),i=Math.min(n-2,Math.floor(u));return Y[i]+(Y[i+1]-Y[i])*(u-i);};})();
+/* the channel on that bed: within w + 8 m the ground is this section (the bed at the middle, the water's level just past the ribbon's edge, then a bank of 1 in 4), so
+   water and ground meet where the ribbon ends whatever the floor's cross slope; out to w + 30 m nothing stands over the section (a talus cut through) */
+const creekGround=!NEWROCK||LANDO.creek===false?(x,z,h)=>h:(x,z,h)=>{const d=creekD(x,z),w=CREEK.w;if(d>=w+30)return h;const o=w+.8,b=creekBed(z)+(d<o?CREEK.depth*d*d/(o*o):CREEK.depth+(d-o)*.25),c=h+(Math.min(h,b)-h)*smooth(w+30,w+12,d);return c+(b-c)*smooth(w+8,w+2,d);};
 /* the default talus is core/terrain's (KRELIEF.talus, lifted from Korona: the same apron, 18 m high, 55 m out) where the page
    rebuilds its land; the kit's own copy of it otherwise */
 const talus=LANDO.talus?(x,z)=>{const fd=NECANYONS.footD(x,z);return fd<TALW?LANDO.talus.h(x,z,fd):0;}:
  NEWROCK&&typeof KRELIEF!=='undefined'&&KRELIEF.talus?KRELIEF.talus({footD:NECANYONS.footD,h:18,reach:55,curve:1.6,rough:.5,scale:.012,seed:44}):
  (x,z)=>{const fd=NECANYONS.footD(x,z);return fd<60?18*Math.pow(smooth(55,0,fd),1.6)*(.75+.5*fbm(x*.012,z*.012,44,2)):0;};
-const ground0=(x,z)=>floorH(x,z)+talus(x,z);
+const ground0=(x,z)=>creekGround(x,z,floorH(x,z)+talus(x,z));
 /* THE WATER WORKS AT THE SEEPS (2026-10-27, the final rebuild; BACKPORT.md's row: karst springs at the seeps, tall falls where the
    streams drop, a confluence where they meet; ?springs=0 without them). Where the High Cap's spring line comes out of its eastern face
    nearest the creek, the seep runs as a TALL FALL down the wall (core/water drawFall with plungeR and footK, 89w) on to the talus, into
@@ -134,7 +142,11 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
   /* a station's floor (LAND.ground): its base layer (the savanna's red soil for the litter) and a DESERT PAVEMENT, small clasts packed
      where its field (KRELIEF.pavement, by vertex: aP) says the wind has taken the fines */
   const GO=LANDO.ground||{},PAVE=typeof GO.pave==='function';
-  const LY=[KGROUND.layer('necanyons',GO.base||'ground.litter',{w:'1.0',tint:GO.baseTint||'vec3(0.42)',name:'base'}),
+  /* THE MOTTLE (the owner, 2026-10-27: "too yellow, needs green mottling"; the savanna "too brown/orange, more yellow mottling"): two
+     octaves of value noise on the world position (patches of ~45 m and ~11 m) tint the floor after its layers, toward the moss and the
+     jungle's green (or a station's own: LAND.ground.mottle {tint, amt}); the base litter itself a little less yellow. ?mottle=0 */
+  const MOT=RQ.get('mottle')==='0'?null:Object.assign({tint:'vec3(0.42,0.88,0.36)',amt:.85},GO.mottle||{});
+  const LY=[KGROUND.layer('necanyons',GO.base||'ground.litter',{w:'1.0',tint:GO.baseTint||(MOT?'vec3(0.36,0.41,0.42)':'vec3(0.42)'),name:'base'}),
    KGROUND.layer('necanyons','ground.talus',{w:'vW.x',tint:'vec3(0.8)',name:'talus'}),
    KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'smoothstep(0.45,0.85,vW.x)',amt:.7,proj:'xz',size:.7,jitter:.9,matrix:.1,sub:.22,fleck:0,
     matrixColor:0x6b3a26,tint:'vec3(0.85)',seed:KRAND.hash(4747,0,1,7)%997,name:'scree'}),
@@ -142,9 +154,12 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
    PAVE?KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'vP',amt:.85,proj:'xz',size:.14,jitter:.9,matrix:.14,sub:0,fleck:0,matrixColor:GO.paveMatrix||0x9a6a4a,
     tint:'vec3(0.7)',seed:KRAND.hash(4747,0,2,7)%997,name:'pavement'}):null];
   if(LY[0]&&LY[1]&&LY[3]){MAT_GROUND.onBeforeCompile=sh=>{
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;'+(PAVE?'attribute float aP;varying float vP;':'')).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;'+(PAVE?'vP=aP;':''));
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;'+(PAVE?'varying float vP;':'')).replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
-   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg',layers:LY,at:'/*KGROUND*/'});}}}
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vMW;'+(PAVE?'attribute float aP;varying float vP;':'')).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vMW=(modelMatrix*vec4(transformed,1.0)).xyz;'+(PAVE?'vP=aP;':''));
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;varying vec3 vMW;'+(PAVE?'varying float vP;':'')+
+     'float ncH(vec2 p){p=fract(p*vec2(0.1031,0.1030));p+=dot(p,p.yx+33.33);return fract((p.x+p.y)*p.x);}'+
+     'float ncN(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);return mix(mix(ncH(i),ncH(i+vec2(1,0)),u.x),mix(ncH(i+vec2(0,1)),ncH(i+vec2(1,1)),u.x),u.y);}').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;'+
+     (MOT?'{float m=0.65*ncN(vMW.xz/45.0)+0.35*ncN(vMW.xz/11.0+17.3);m=smoothstep(0.42,0.72,m)*(1.0-vW.x)*(1.0-vW.y);diffuseColor.rgb*=mix(vec3(1.0),'+MOT.tint+','+MOT.amt.toFixed(3)+'*m);}':''));};
+   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg'+(MOT?'-m':''),layers:LY,at:'/*KGROUND*/'});}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
@@ -155,27 +170,36 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
  /* FINE PATCHES UNDER THE WATER WORKS (2026-10-27): the floor's cells are ~16 m, wider than a spring's bowl or the stream's channel, so
     the cells over each work's box are cut out of the floor and the box drawn again at ~1.5 m from groundH, its edge rows on the coarse
     floor's own edges (heights interpolated between its vertices: no crack). The coarse mesh is the same without works */
- const C=S/N,boxes=[];
- if(WORKS){const pad=(x0,z0,x1,z1)=>{const s=v=>Math.max(0,Math.min(N,v));boxes.push([s(Math.floor((x0+S/2)/C)),s(Math.floor((z0+S/2)/C)),s(Math.ceil((x1+S/2)/C)),s(Math.ceil((z1+S/2)/C))]);};
-  const P=WORKS.fall&&WORKS.fall.pool;if(P)pad(P.x-P.r*2.2,P.z-P.r*2.2,P.x+P.r*2.2,P.z+P.r*2.2);WORKS.springs.forEach(S2=>pad(S2.x-S2.r*2.2,S2.z-S2.r*2.2,S2.x+S2.r*2.2,S2.z+S2.r*2.2));
-  for(const CH of WORKS.chans){const c=CH.pts;for(let i=0;i<c.length-1;i++){const a=c[i],b=c[i+1],r=CH.w*3;pad(Math.min(a[0],b[0])-r,Math.min(a[1],b[1])-r,Math.max(a[0],b[0])+r,Math.max(a[1],b[1])+r);}}
-  /* the stream's edge out into the creek too: the creek's own channel there */
-  const inBox=(ix,iy)=>boxes.some(B=>ix>=B[0]&&ix<B[2]&&iy>=B[1]&&iy<B[3]);
-  if(boxes.length){const I=g.index.array,keep=[];for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){if(inBox(ix,iy))continue;const o=6*(iy*N+ix);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}}
+ const C=S/N,boxes=[],FINE=11,STRIP=4;   /* sub-cells a coarse cell: ~1.45 m under the works, 4 m along the creek */
+ const pad=(x0,z0,x1,z1,K)=>{const s=v=>Math.max(0,Math.min(N,v));boxes.push([s(Math.floor((x0+S/2)/C)),s(Math.floor((z0+S/2)/C)),s(Math.ceil((x1+S/2)/C)),s(Math.ceil((z1+S/2)/C)),K]);};
+ if(WORKS){const P=WORKS.fall&&WORKS.fall.pool;if(P)pad(P.x-P.r*2.2,P.z-P.r*2.2,P.x+P.r*2.2,P.z+P.r*2.2,FINE);WORKS.springs.forEach(S2=>pad(S2.x-S2.r*2.2,S2.z-S2.r*2.2,S2.x+S2.r*2.2,S2.z+S2.r*2.2,FINE));
+  for(const CH of WORKS.chans){const c=CH.pts;for(let i=0;i<c.length-1;i++){const a=c[i],b=c[i+1],r=CH.w*3;pad(Math.min(a[0],b[0])-r,Math.min(a[1],b[1])-r,Math.max(a[0],b[0])+r,Math.max(a[1],b[1])+r,FINE);}}}
+ /* THE CREEK'S STRIP (core/water/PRACTICE.md, "Make the ground mesh finer than the narrowest channel"; 2026-11-02): the channel is 18 m of water
+    in a carve that closes over 26 m, on 16 m cells: the banks were mush and the water's edge wandered with the cells. The cells over the carve,
+    a row at a time, are drawn again at 4 m. ?creekstrip=0 */
+ if(NEWROCK&&LANDO.creek!==false&&RQ.get('creekstrip')!=='0')for(let iy=0;iy<N;iy++){const z0=-S/2+iy*C,xa=CREEK.x(z0),xb=CREEK.x(z0+C),r=CREEK.w+26;pad(Math.min(xa,xb)-r,z0,Math.max(xa,xb)+r,z0+C-1e-6,STRIP);}
+ const cov=new Map();boxes.forEach(B=>{for(let iy=B[1];iy<B[3];iy++)for(let ix=B[0];ix<B[2];ix++)cov.set(iy*N+ix,Math.max(cov.get(iy*N+ix)||0,B[4]));});
+ if(cov.size){const I=g.index.array,keep=[];for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){if(cov.has(iy*N+ix))continue;const o=6*(iy*N+ix);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}
  g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);
- if(boxes.length){const cov=new Set();boxes.forEach(B=>{for(let iy=B[1];iy<B[3];iy++)for(let ix=B[0];ix<B[2];ix++)cov.add(iy*N+ix);});
-  const vH=(ix,iy)=>p.getY(iy*(N+1)+ix),K=11,pos=[],ww=[],idx=[],pp=[];   /* K sub-cells a coarse cell: ~1.45 m */
-  cov.forEach(key=>{const iy=key/N|0,ix=key%N,x0=-S/2+ix*C,z0=-S/2+iy*C,o=pos.length/3;
-   const edgeOf=(i,j)=>{const u=i/K,v=j/K;   /* a vertex on the cell's edge shared with a coarse cell takes the coarse edge's line */
-    const nb=(dx,dy)=>!cov.has((iy+dy)*N+(ix+dx))||ix+dx<0||iy+dy<0||ix+dx>=N||iy+dy>=N;
-    if(j===0&&nb(0,-1))return vH(ix,iy)*(1-u)+vH(ix+1,iy)*u;if(j===K&&nb(0,1))return vH(ix,iy+1)*(1-u)+vH(ix+1,iy+1)*u;
-    if(i===0&&nb(-1,0))return vH(ix,iy)*(1-v)+vH(ix,iy+1)*v;if(i===K&&nb(1,0))return vH(ix+1,iy)*(1-v)+vH(ix+1,iy+1)*v;return null;};
+ if(cov.size){const pos=[],ww=[],idx=[],pp=[];
+  cov.forEach((K,key)=>{const iy=key/N|0,ix=key%N,x0=-S/2+ix*C,z0=-S/2+iy*C,o=pos.length/3;
+   /* a vertex on an edge shared with a coarser cell lies on that cell's line (its own samples, heights between them: no crack) */
+   const Kof=(dx,dy)=>ix+dx<0||iy+dy<0||ix+dx>=N||iy+dy>=N?1:cov.get((iy+dy)*N+ix+dx)||1;
+   const line=(Kn,xa,za,xb,zb,u)=>{const t=u*Kn,i=Math.min(Kn-1,Math.floor(t)),f=t-i,h=q=>groundH(xa+(xb-xa)*q/Kn,za+(zb-za)*q/Kn);return h(i)*(1-f)+(f>0?h(i+1)*f:0);};
+   const edgeOf=(i,j)=>{const u=i/K,v=j/K,x1=x0+C,z1=z0+C;let n;
+    if(j===0&&(n=Kof(0,-1))<K)return line(n,x0,z0,x1,z0,u);if(j===K&&(n=Kof(0,1))<K)return line(n,x0,z1,x1,z1,u);
+    if(i===0&&(n=Kof(-1,0))<K)return line(n,x0,z0,x0,z1,v);if(i===K&&(n=Kof(1,0))<K)return line(n,x1,z0,x1,z1,v);return null;};
    for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){const x=x0+i/K*C,z=z0+j/K*C,e=edgeOf(i,j);pos.push(x,e==null?groundH(x,z):e,z);
     const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));if(paveF)pp.push(paveF(x,z));}
    for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
   const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));if(paveF)pg.setAttribute('aP',new THREE.Float32BufferAttribute(pp,1));
-  pg.setIndex(idx);pg.computeVertexNormals();const pm=new THREE.Mesh(pg,MAT_GROUND);pm.userData.probeSkip=true;pm.userData.inspectLabel='The canyon floor (by the springs and the stream)';pm.userData.host=true;scene.add(pm);}})();
+  pg.setIndex(idx);pg.computeVertexNormals();
+  /* each cell has its own vertices: their normals are welded, or the grid of cells shows in the light */
+  {const nr=pg.attributes.normal,sum=new Map(),keyOf=i=>Math.round(pos[3*i]*4)+','+Math.round(pos[3*i+2]*4);
+   for(let i=0;i<nr.count;i++){const k=keyOf(i),q=sum.get(k)||[0,0,0];q[0]+=nr.getX(i);q[1]+=nr.getY(i);q[2]+=nr.getZ(i);sum.set(k,q);}
+   for(let i=0;i<nr.count;i++){const q=sum.get(keyOf(i)),l=Math.hypot(q[0],q[1],q[2])||1;nr.setXYZ(i,q[0]/l,q[1]/l,q[2]/l);}}
+  const pm=new THREE.Mesh(pg,MAT_GROUND);pm.userData.probeSkip=true;pm.userData.inspectLabel='The canyon floor (by the creek, the springs and the stream)';pm.userData.host=true;scene.add(pm);}})();
 
 // ---------------------------------------------------------------- the rock (KSTACKS meshes): three meshes, by material
 // walls of the mesas, buttes and towers (desert varnish), walls of the stacks (cross-bedded), and every top (slickrock).
@@ -233,7 +257,9 @@ function wearRock(B,m){
  const mk=(A,L,label)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.uv,2));
   const cl=new THREE.Float32BufferAttribute(A.col,3);for(let i=0;i<cl.count;i++){c.setRGB(cl.getX(i),cl.getY(i),cl.getZ(i)).convertSRGBToLinear();cl.setXYZ(i,c.r,c.g,c.b);}
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
-  let mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+  /* both sides on the rebuilt rock (the owner, 2026-10-27: "transparency on rock formations viewed from below"): a bed's lip, worn and
+     notched, leaves back faces toward an eye under it, which culled to the sky */
+  let mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true,side:NEWROCK?THREE.DoubleSide:THREE.FrontSide});
   if(A!==acc.top&&A!==acc.topC)mat=rockStrata(mat,'necanyons-rock-'+label.length);   /* the walls take the beds; the tops are slickrock */
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
  // one anchor per body at its middle (an invisible instance): the rock is three merged meshes, so the probe's samples

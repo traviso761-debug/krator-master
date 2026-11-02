@@ -34,4 +34,14 @@ const shore=x=>{const t=Math.min(1,Math.max(0,(x-70)/60));return 1-t*t*(3-2*t);}
   !D0.mesh.geometry.attributes.wtrKeep&&!c0.fs.includes('vWtrK')&&!D0.S.ribbonOpt.keep&&Math.abs(G.run('a',.5)-.4)<1e-12,false);
  const Do=W.drawFlow(mk(),{keep:(x,z)=>shore(x),transparent:false}),co=compiled(Do.material);
  ok('an opaque ribbon discards where less than half is kept',co.fs.includes('if(vWtrK<0.5)discard;'),co.fs.includes('diffuseColor.a*=vWtrK;'));}
+// ---- refine (2026-10-27, the core pass): rows where keep changes, not along the whole line
+{const coarse=()=>W.flow({name:'coarse channel',pts:[[0,0,.1],[60,0,.1],[150,0,.1],[400,0,.1]],width:20,speed:.7});
+ const keepR=(x,z)=>shore(x),R0=W.drawFlow(coarse(),{keep:keepR,step:30}),R1=W.drawFlow(coarse(),{keep:keepR,step:30,refine:true});
+ const rowsX=D=>{const r=D.ribbon,out=[];for(let i=0;i<r.rows;i++)out.push(r.pos[i*(r.across+1)*3]);return out;},x0=rowsX(R0),x1=rowsX(R1);
+ const jump=xs=>{let m=0;for(let i=1;i<xs.length;i++)m=Math.max(m,Math.abs(shore(xs[i])-shore(xs[i-1])));return m;};
+ ok('refine: rows where keep changes ('+x1.length+' rows, '+x0.length+' without), keep never steps more than tol + a little between rows ('+jump(x1).toFixed(3)+'; without: '+jump(x0).toFixed(3)+')',
+  jump(x1)<=.1&&jump(x0)>.3&&x1.length<x0.length+40,false);
+ ok('...the long reach where keep is constant keeps its 30 m rows (rows past x 150: '+x1.filter(x=>x>150).length+'), and the record keeps tol and min, not the function',
+  x1.filter(x=>x>150).length===x0.filter(x=>x>150).length&&JSON.stringify(R1.S.ribbonOpt.refine)==='{"tol":0.08,"min":2}',false);
+ const R2=W.drawFlow(coarse(),{keep:keepR,step:30});ok('...negative: without refine the ribbon is the old one (same rows as before)',JSON.stringify(R2.ribbon.pos)===JSON.stringify(R0.ribbon.pos)&&!R2.S.ribbonOpt.refine,false);}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);

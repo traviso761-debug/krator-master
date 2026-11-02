@@ -134,7 +134,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # core/water/ext: the deltas' forks as one water (WATER.confluence: the side channels leave the main river without their ribbons' foam
 # and side fade overlapping inside each other's water; 2026-10-27)
-for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js']:
+for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','58-core-water-mirror.js','59-core-water-network.js','59b-core-water-network-draw.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
@@ -162,7 +162,7 @@ for f in frags:
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

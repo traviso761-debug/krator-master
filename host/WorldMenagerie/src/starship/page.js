@@ -263,7 +263,9 @@ export async function starshipPage(opts){
 
     const scene=new THREE.Scene();
     const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,0.6,2400000);
-    const renderer=createRenderer(THREE,{pixelCap:1.8,clear:0x020306});
+    // a model fifty kilometres long that is also walked on at eye height cannot share one linear depth range: it asks
+    // for a logarithmic one (Rama)
+    const renderer=createRenderer(THREE,{pixelCap:1.8,clear:0x020306,logDepth:!!opts.logDepth});
     installContextLoss(renderer);
     const animHooks=[];
 
@@ -397,8 +399,10 @@ export async function starshipPage(opts){
     vbtn.setAttribute('aria-expanded','false');
     {const h=document.createElement('div');h.className='sub';h.textContent='Viewpoints';viewsEl.appendChild(h);}
     const goto=v=>{Object.assign(V,{tx:0,ty:0,tz:0,roll:0},v);};
+    api.view=goto;     // a model's events may move the turntable (Rama's)
+    // a model whose camera can be elsewhere (Rama's interior, its events) hears first, to give the camera back
     for(const [name,v] of Object.entries(C.views||{}))mkBtn(name,viewsEl,()=>{
-      goto(v);viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
+      if(SHIP.onView)SHIP.onView(name,v);goto(v);viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
     if(SHIP.buttons)for(const [label,fn] of Object.entries(SHIP.buttons))mkBtn(label,ui,fn);
     const wire=createWire({THREE,scene,animHooks});
     installWireUI({ui,mkBtn,wire,hash:location.hash.slice(1)});

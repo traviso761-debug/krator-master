@@ -19,47 +19,26 @@ playwright install chromium (KRATOR_CHROME=/path/to/chrome launches a Chromium a
 """
 import argparse, asyncio, functools, http.server, json, os, socketserver, sys, threading
 
-GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 HERE = os.path.dirname(os.path.abspath(__file__))
-THREE = os.path.join(HERE, '..', '..', 'kits', 'ancients', 'three.min.js')
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page, Abort   # the launcher (KRATOR_CHROME), the server and the pinned three.js
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except Exception:
     pass
 
 
-async def launch_chromium(p):
-    for k in ("KRATOR_CHROME", "PW_CHROME", "CHROME_PATH"):
-        if os.environ.get(k):
-            return await p.chromium.launch(executable_path=os.environ[k], args=GL_ARGS)
-    return await p.chromium.launch(args=GL_ARGS)
-
-
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=folder)
-    handler.log_message = lambda *x: None
-    httpd = socketserver.TCPServer(('127.0.0.1', 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
     os.makedirs(a.out, exist_ok=True)
-    async with async_playwright() as p:
-        b = await launch_chromium(p)
-        W, H = [int(t) for t in a.size.split('x')]
-        pg = await b.new_page(viewport={'width': W, 'height': H})
+    async with verify_page(a.html, here=HERE, size=a.size, settle_ms=0,
+                           ready_js="typeof CAM==='object'&&CAM&&window._api") as V:
+        pg, errs, fails = V.page, V.errs, V.fails
         pg.set_default_timeout(900000)
-        errs = []
-        pg.on('pageerror', lambda e: errs.append(str(e)))
-        if os.path.exists(THREE):
-            await pg.route('**/three.min.js', lambda r: asyncio.ensure_future(r.fulfill(path=THREE, content_type='application/javascript')))
-        await pg.goto('http://127.0.0.1:%d/%s' % (port, name))
-        await pg.wait_for_function("(typeof CAM==='object'&&CAM&&window._api)||(document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=600000)
+        if not V.ready:
+            print('timed out waiting for the page to build'); fails.append('build timeout')
         if a.list:
             print('\n'.join(await pg.evaluate('_api.views()')))
-            await b.close()
-            return 0
+            raise Abort(0)
         settle = await pg.evaluate('_api.settle(240000)')
         st = await pg.evaluate('_api.stats()')
         panel = await pg.evaluate("document.getElementById('errs').textContent")
@@ -100,7 +79,7 @@ async def run(a):
             s = await pg.evaluate('_api.settle(240000)')
             r = await pg.evaluate('_api.render()')
             out = os.path.join(a.out, label + '.png')
-            await pg.screenshot(path=out)
+            await V.shot(out, view=label)
             print('%s: %s  settle %s  draws %d  tris %d' % (label, out, s['ms'], r['calls'], r['triangles']))
             for e in a.eval or []:
                 print('   eval: %s' % await pg.evaluate(e))
@@ -108,11 +87,8 @@ async def run(a):
         if panel and 'error panel' not in fails:
             print('ERROR PANEL (after views):', panel[:2000])
             fails.append('error panel after views')
-        await b.close()
-    httpd.shutdown()
-    print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
-    return 1 if fails else 0
-
+        print('\nBUILD CHECKS:', 'OK' if not fails else 'FAILED: ' + ', '.join(fails))
+    return V.exit()
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()

@@ -24,7 +24,7 @@ import argparse, asyncio, importlib.util, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
-from harness import STATS_JS, launch_chromium, open_page, parse_views, serve
+from harness import STATS_JS, launch_chromium, open_page, parse_views, serve, verify_page, Abort
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -59,104 +59,89 @@ return R;}"""
 
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder = os.path.dirname(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
-    fails = []
     assert_js = port_asserts()
-    async with async_playwright() as p:
-      with serve(folder) as port:
-          b = await launch_chromium(p)
-          pg, errs, ready = await open_page(b, a.html, port, size=a.size, here=HERE)
-          if not ready:
-              print("timed out waiting for the page to build")
-              fails.append("build timeout")
-          await pg.wait_for_timeout(2500)
-          try:
-              st = await pg.evaluate(STATS_JS)
-          except Exception as e:
-              print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
-              await b.close()
-              return 2
-          print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
-          if st["errs"]:
-              fails.append("error panel not clean")
-          if errs:
-              print("PAGE ERRORS:", errs[:5])
-              fails.append("page errors")
-          print("draw calls:", st["calls"], "triangles:", st["tris"])
-          print("counters:", json.dumps(st["counters"], sort_keys=True))
+    async with verify_page(a.html, here=HERE, size=a.size) as V:
+        pg, errs, fails = V.page, V.errs, V.fails
+        if not V.ready:
+            print("timed out waiting for the page to build")
+            fails.append("build timeout")
+        try:
+            st = await pg.evaluate(STATS_JS)
+        except Exception as e:
+            print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
+            raise Abort(2)
+        print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
+        if st["errs"]:
+            fails.append("error panel not clean")
+        if errs:
+            print("PAGE ERRORS:", errs[:5])
+            fails.append("page errors")
+        print("draw calls:", st["calls"], "triangles:", st["tris"])
+        print("counters:", json.dumps(st["counters"], sort_keys=True))
 
-          if a.assert_:
-              print("\n--- invariants ---")
-              results = await pg.evaluate(assert_js)
-              results += await pg.evaluate(HOOK_ASSERT_JS)
-              for r in results:
-                  soft = r.get("budget") and not a.strict_budget
-                  tag = "  PASS  " if r["ok"] else ("  OVER  " if soft else "  FAIL  ")
-                  print(tag + r["name"] + " : " + r["detail"])
-                  if not r["ok"] and not soft:
-                      fails.append("assert " + r["name"])
-              print("\n--- per type (scene triangles, instances, meshes) ---")
-              ts = await pg.evaluate("()=>window._api.typeStats()")
-              for k in sorted(ts, key=lambda k: -ts[k]["tris"]):
-                  v = ts[k]
-                  print("  %-14s %9d / %7d  %-6s  inst %7d  meshes %5d%s"
-                        % (k, v["tris"], v["limit"], v["cls"], v["inst"], v["meshes"], "   OVER" if v["over"] else ""))
+        if a.assert_:
+            print("\n--- invariants ---")
+            results = await pg.evaluate(assert_js)
+            results += await pg.evaluate(HOOK_ASSERT_JS)
+            for r in results:
+                soft = r.get("budget") and not a.strict_budget
+                tag = "  PASS  " if r["ok"] else ("  OVER  " if soft else "  FAIL  ")
+                print(tag + r["name"] + " : " + r["detail"])
+                if not r["ok"] and not soft:
+                    fails.append("assert " + r["name"])
+            print("\n--- per type (scene triangles, instances, meshes) ---")
+            ts = await pg.evaluate("()=>window._api.typeStats()")
+            for k in sorted(ts, key=lambda k: -ts[k]["tris"]):
+                v = ts[k]
+                print("  %-14s %9d / %7d  %-6s  inst %7d  meshes %5d%s"
+                      % (k, v["tris"], v["limit"], v["cls"], v["inst"], v["meshes"], "   OVER" if v["over"] else ""))
 
-          presets = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
-          views = presets if a.all_views else parse_views(a.views, presets)
-          if len(views) > 16:
-              print("\nNOTE: %d views requested; 16 per run is the working limit under software GL." % len(views))
-          await pg.screenshot(path=os.path.join(a.out, "initial.png"))
-          per_view = []
-          for v in views:
-              try:
-                  ok = await pg.evaluate(
-                      "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
-                      "if(!b)return false;b.click();return true;}", v)
-                  if not ok:
-                      raise RuntimeError("no such preset")
-                  await pg.wait_for_timeout(900)
-                  fn = os.path.join(a.out, "view_" + v.replace(" ", "_").replace("/", "-") + ".png")
-                  await pg.screenshot(path=fn)
-                  st2 = await pg.evaluate("()=>({calls:renderer.info.render.calls,tris:renderer.info.render.triangles})")
-                  per_view.append((v, st2["calls"], st2["tris"]))
-                  print("shot: %s   calls %d  tris %.2fM" % (fn, st2["calls"], st2["tris"] / 1e6))
-              except Exception as e:
-                  print("view failed:", v, e)
-                  fails.append("view " + v)
-          if per_view:
-              lim = await pg.evaluate("()=>window._api?window._api.BUDGET.showcase.calls:0")
-              worst = max(per_view, key=lambda r: r[1])
-              print("\n--- worst draw calls over %d views ---" % len(per_view))
-              for v, c, t in sorted(per_view, key=lambda r: -r[1])[:6]:
-                  print("  %-28s calls %5d  tris %.2fM%s" % (v, c, t / 1e6, "   OVER" if lim and c > lim else ""))
-              if lim and worst[1] > lim:
-                  print("  OVER budget: %s at %d / %d draw calls" % (worst[0], worst[1], lim))
-                  if a.assert_ and a.strict_budget:
-                      fails.append("budget drawCalls (%s)" % worst[0])
-          for i, c in enumerate(a.cam or []):
-              v = [float(t) for t in c.split(",")]
-              await pg.evaluate("(v)=>window._api.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
-              await pg.wait_for_timeout(900)
-              fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i))
-              await pg.screenshot(path=fn)
-              print("shot:", fn)
-          for ev in (a.eval or []):
-              try:
-                  print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
-              except Exception as e:
-                  print("eval failed:", str(e)[:400])
-          await b.close()
-
-    if fails:
-        print("\nFAILED: " + "; ".join(fails))
-        return 1
-    print("\nOK")
-    return 0
-
-
+        presets = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+        views = presets if a.all_views else parse_views(a.views, presets)
+        if len(views) > 16:
+            print("\nNOTE: %d views requested; 16 per run is the working limit under software GL." % len(views))
+        await V.shot(os.path.join(a.out, "initial.png"))
+        per_view = []
+        for v in views:
+            try:
+                ok = await pg.evaluate(
+                    "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
+                    "if(!b)return false;b.click();return true;}", v)
+                if not ok:
+                    raise RuntimeError("no such preset")
+                await pg.wait_for_timeout(900)
+                fn = os.path.join(a.out, "view_" + v.replace(" ", "_").replace("/", "-") + ".png")
+                await V.shot(fn, view=v)
+                st2 = await pg.evaluate("()=>({calls:renderer.info.render.calls,tris:renderer.info.render.triangles})")
+                per_view.append((v, st2["calls"], st2["tris"]))
+                print("shot: %s   calls %d  tris %.2fM" % (fn, st2["calls"], st2["tris"] / 1e6))
+            except Exception as e:
+                print("view failed:", v, e)
+                fails.append("view " + v)
+        if per_view:
+            lim = await pg.evaluate("()=>window._api?window._api.BUDGET.showcase.calls:0")
+            worst = max(per_view, key=lambda r: r[1])
+            print("\n--- worst draw calls over %d views ---" % len(per_view))
+            for v, c, t in sorted(per_view, key=lambda r: -r[1])[:6]:
+                print("  %-28s calls %5d  tris %.2fM%s" % (v, c, t / 1e6, "   OVER" if lim and c > lim else ""))
+            if lim and worst[1] > lim:
+                print("  OVER budget: %s at %d / %d draw calls" % (worst[0], worst[1], lim))
+                if a.assert_ and a.strict_budget:
+                    fails.append("budget drawCalls (%s)" % worst[0])
+        for i, c in enumerate(a.cam or []):
+            v = [float(t) for t in c.split(",")]
+            await pg.evaluate("(v)=>window._api.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
+            await pg.wait_for_timeout(900)
+            fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i))
+            await V.shot(fn)
+            print("shot:", fn)
+        for ev in (a.eval or []):
+            try:
+                print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
+            except Exception as e:
+                print("eval failed:", str(e)[:400])
+    return V.exit()
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("html")

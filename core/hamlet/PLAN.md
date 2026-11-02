@@ -41,11 +41,11 @@ settlement will want a hinterland, so it is written once. It reads core/city's p
 module, `core/hamlet`** (owner, 2026-10-18), not part of `core/city`.
 
 **Small settlements in general.** The name is `hamlet`, not `hinterland`, because the same machinery is to make
-other small settlements later. **Nomadic camps** are the first named: a camp is a village spec with tents for houses,
-no warehouse but a cache or the herd itself, and a site that moves with the season (the nomad kits,
-`kits/desert-nomads`, `kits/ash-nomads`). So the spec's parts are kept separate: what it needs (the required
-buildings), how big it is (the census), how it is laid out (green and lanes, or a ring of tents), and where it sits
-(fixed, or a route of sites). A camp swaps the layout and the siting and keeps the rest.
+other small settlements later. So the spec's parts are kept separate: what it needs (the required buildings), how big
+it is (the census), how it is laid out (green and lanes), and where it sits. **Nomadic camps are not hamlet's**
+(owner, 2026-10-26): they are `core/camp` (`KCAMP`, `core/camp/PLAN.md`), because a band's tents follow its people
+where a village's people follow the work, and because a camp moves. `core/camp` reads hamlet's helpers in place
+(`gatherAt`, `fieldCapacity`, the overlap tests, `idHash`, the felling marks).
 
 **The Godot rule** (as `core/city`'s): the data side is free of three.js and the DOM, `[G data]`. Records are keyed
 by stable ids, edits are deltas by id, and the rules are plain functions on records. Placement draws from `core/rand`
@@ -240,7 +240,9 @@ demo's plan (section 9).
 - A village is far from the camera nearly always, so it runs at **the abstract level**: books and carts tick, nobody
   is posed. That makes it a cheap, early case for the abstract-level week test.
 - Felling, mining and salt-raking write to the resource's record: a stand's deltas, and a node's or field's worked
-  share, so the books and the map agree.
+  share, so the books and the map agree. (Not yet: the sim's production and the felling clock run apart.)
+- **Built (2026-10-26):** settlements/isle-demo `47h-isle-hamlets.js`. A village works to its town's need: its governor counts
+  its town's stock with its own and not its own shipping as demand (core/simulation's `govern.pool`, `govern.exported`).
 
 ## 6. Order of work
 
@@ -251,14 +253,14 @@ demo's plan (section 9).
 | H2 | **The village generator** (`core/hamlet`, `[G data]`): spec to census, siting, green, lanes, houses, works and stores, on `KCITY.prim`, `KSPACE`, `KRAND`, `core/tags` | `node core/hamlet/test-hamlet.js`: every village has its required buildings; population ≤ 500 and staffed (every job a worker, every household a house); no overlap; deterministic (same spec, same hash); refuses a cliff site; each with a negative |
 | H3 | **The Islanders' missing buildings** (section 3), after the owner's textures | islanders `verify.py --assert`; a sheet shot per new building |
 | H4 | **The four isle villages** placed on the open world from their specs, with their resources; timber regrowth as deltas | the isle world's checks in the browser pane; a felled tree is a stump, then a sapling, then whole after the tunable |
-| H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books | a load traced from a village's warehouse to its town's; the abstract-level week balances for each village |
+| H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books. **Done 2026-10-26** (settlements/isle-demo `47h-isle-hamlets.js`: each village its town's settlement at the abstract level, its works producers, its people dealt, two carted roads (its goods out, its town's foods in); the towns put the goods to use: salt, Kautoa's tannery on the ranch's hides, its dockyard and building on the timber, Valapo's smithies smelting the mine's ore with the lumber village's charcoal, the iron sold to the Hykkousoi) | `tests/test-isle-hamlets.js` (stand-in ground) and openworld/isle-demo `verify.py` (the villages on the map): staffed, making, every load landed or on the road and booked imported, each village fed; each with a negative; the towns' two-week checks hold with them |
 | H6 | **Fishing and farming villages** round Kautoa from spec rows | the same tests; the farm ring's crops match `CROPS.at` at each site |
 
 ## 7. Questions for the owner
 
 Settled (owner, 2026-10-18):
 - **The salt flats:** the big north-west pan near Kautoa (section 4).
-- **Where the module lives:** its own core module, `core/hamlet`, kept general enough for nomadic camps later.
+- **Where the module lives:** its own core module, `core/hamlet`, kept general enough for other small settlements (nomadic camps went to `core/camp` on 2026-10-26).
 - **The ranch** keeps buffalo, pigs and some beast rider mounts, with a stable and a rookery (section 3).
 - **Pasture** goes on every zone with a decent understory; **fishing grounds** are zones of their own where real
   fishing is good (reefs, estuaries, lakes and the like). Both are effectively infinite for now (section 2).

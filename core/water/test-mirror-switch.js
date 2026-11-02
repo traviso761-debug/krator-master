@@ -1,0 +1,27 @@
+// node core/water/test-mirror-switch.js — WATER.mirrorSwitch (core/water/ext/58): off at page load builds nothing, so the tri counts don't rise
+const fs=require('fs'),path=require('path');
+global.window=global;global.WATER={};
+let bad=0;const ok=(name,pass)=>{if(!pass)bad++;console.log((pass?'PASS  ':'FAIL  ')+name);};
+eval(fs.readFileSync(path.join(__dirname,'ext','58-core-water-mirror.js'),'utf8'));
+let built=0,sets=[],ups=0;
+WATER.mirror=()=>{built++;return{set(m){sets.push(m);},update(){ups++;}};};
+const btn={};global.document={createElement:()=>btn};
+const ui={appendChild(b){this.b=b;}};
+const Sw=WATER.mirrorSwitch({ui});
+ok('nothing is built at page load',built===0);
+ok('it starts off',Sw.mode()==='off'&&Sw.M()===null);
+Sw.update();ok('a frame while off does nothing',ups===0);
+ok('the panel has its button, reading off',ui.b===btn&&btn.textContent==='reflections: off');
+Sw.set('off');ok('off stays unbuilt',built===0);
+btn.onclick();ok('the button turns on the probe, building once',built===1&&Sw.mode()==='probe'&&sets[0]==='probe');
+Sw.update();ok('a frame while on updates the mirror',ups===1);
+btn.onclick();ok('then the live mirror, no second build',built===1&&Sw.mode()==='live');
+btn.onclick();ok('then off',Sw.mode()==='off'&&sets[sets.length-1]==='off'&&btn.textContent==='reflections: off');
+Sw.set('nonsense');ok('an unknown tier is ignored',Sw.mode()==='off');
+global.location={search:'?mirror=live'};
+const real=global.setTimeout;let later=null;global.setTimeout=f=>{later=f;};
+const Sq=WATER.mirrorSwitch({});global.setTimeout=real;
+ok('the query waits for the page',built===1&&later!==null);later();ok('?mirror=live turns it on',Sq.mode()==='live'&&built===2);
+global.location={search:'?mirror=0'};later=null;global.setTimeout=f=>{later=f;};WATER.mirrorSwitch({});global.setTimeout=real;
+ok('?mirror=0 asks for nothing',later===null);
+console.log(bad?bad+' failed':'all pass');process.exit(bad?1:0);

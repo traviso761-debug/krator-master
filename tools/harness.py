@@ -26,8 +26,37 @@ and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world c
 (world.json, world.glb, the library pack's maps; core/export/README.md):
 
     python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
+
+VERIFY_PAGE (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 15, 16). Every verify.py opens its page through `verify_page`,
+which owns the GPU lock, the browser, the server and the load, and runs the universal asserts on the way out, so no
+verify can pass a broken page:
+
+    async with verify_page(a.html, here=HERE, size=a.size) as V:
+        pg, errs, fails = V.page, V.errs, V.fails      # the build's own checks append to fails
+        ...
+        await V.shot(fn, view=v)                         # screenshot + calls/tris + the eye check for that view
+    return V.exit()                                      # prints the universal results, returns the exit code
+
+The universal asserts: the page is not an LFS pointer; it got ready; the error panel and page errors are clean; no
+shader compile or WebGL errors in the console (r128 sends them to console.error only); every texture decoded; the real
+GPU when KRATOR_GL=gpu; no NaN geometry and no empty registered volume (when the page has the probe, `_api`); no
+instanced item past the instance cap (3c); the eye of every view is not inside geometry (10a); the budget in the
+build's BUDGETS.json; BIO.capReport and _api.seatSweeps when the page has them; a winding report (item 15, never a
+failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
+listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
+(--write records them; a page is taken out of the ratchet at its own rebuild turn).
+
+The GPU lock (item 16): with KRATOR_GL=gpu, verify_page takes the one lock (KRATOR_GPU_LOCK, default
+<temp>/claude/krator-verify-gpu.lock, a directory with an `owner` file), waits for it with a timeout
+(KRATOR_GPU_LOCK_TIMEOUT, default 1800 s) and a report, takes over a lock whose harness holder is dead, and releases it
+on the way out. Do not take it in bash around a verify any more; to run another command under it:
+
+    python3 tools/harness.py lock [--timeout 1800] -- python3 biomes/godthrone/perf.py ...
+
+Every browser the harness launches is recorded by PID (<temp>/claude/krator-harness/<pid>.json); a later harness kills
+the browsers of a harness that died, by PID and only when the process is a Chromium.
 """
-import asyncio, contextlib, functools, glob, http.server, json, os, re, socketserver, sys, threading, time
+import asyncio, contextlib, functools, glob, http.server, json, os, re, socketserver, subprocess, sys, tempfile, threading, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Software GL (SwiftShader) by default: the Linux cloud containers and CI have no GPU. KRATOR_GL=gpu runs on the real GPU
@@ -63,9 +92,257 @@ except Exception:
     pass
 
 
+# --------------------------------------------------------------------------
+# Processes: the GPU lock and the browsers this harness launched (item 16)
+TMP = os.path.join(tempfile.gettempdir(), "claude")
+GPU_LOCK = os.environ.get("KRATOR_GPU_LOCK") or os.path.join(TMP, "krator-verify-gpu.lock")
+BROWSERS_DIR = os.path.join(TMP, "krator-harness")
+CHROME_NAMES = re.compile(r"chrome|chromium|headless_shell", re.I)
+
+
+def _proc_table():
+    """{pid: (ppid, exe name)} for every process: Toolhelp32 on Windows (no psutil here), ps elsewhere."""
+    out = {}
+    if sys.platform == "win32":
+        import ctypes
+        from ctypes import wintypes
+
+        class PE(ctypes.Structure):
+            _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD), ("th32ProcessID", wintypes.DWORD),
+                        ("th32DefaultHeapID", ctypes.c_void_p), ("th32ModuleID", wintypes.DWORD),
+                        ("cntThreads", wintypes.DWORD), ("th32ParentProcessID", wintypes.DWORD),
+                        ("pcPriClassBase", ctypes.c_long), ("dwFlags", wintypes.DWORD), ("szExeFile", ctypes.c_wchar * 260)]
+        k32 = ctypes.windll.kernel32
+        k32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+        snap = k32.CreateToolhelp32Snapshot(2, 0)
+        e = PE()
+        e.dwSize = ctypes.sizeof(PE)
+        ok = k32.Process32FirstW(snap, ctypes.byref(e))
+        while ok:
+            out[e.th32ProcessID] = (e.th32ParentProcessID, e.szExeFile)
+            ok = k32.Process32NextW(snap, ctypes.byref(e))
+        k32.CloseHandle(snap)
+        return out
+    try:
+        for ln in subprocess.run(["ps", "-eo", "pid=,ppid=,comm="], capture_output=True, text=True).stdout.splitlines():
+            t = ln.split(None, 2)
+            if len(t) == 3:
+                out[int(t[0])] = (int(t[1]), t[2])
+    except Exception:
+        pass
+    return out
+
+
+def pid_alive(pid):
+    if not pid:
+        return False
+    if sys.platform == "win32":
+        import ctypes
+        h = ctypes.windll.kernel32.OpenProcess(0x1000, False, int(pid))   # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            return False
+        code = ctypes.c_ulong()
+        ctypes.windll.kernel32.GetExitCodeProcess(h, ctypes.byref(code))
+        ctypes.windll.kernel32.CloseHandle(h)
+        return code.value == 259                                            # STILL_ACTIVE
+    try:
+        os.kill(int(pid), 0)
+        return True
+    except OSError:
+        return False
+
+
+def _proc_start(pid):
+    """When the process started (epoch seconds), or None where it cannot be read."""
+    if sys.platform != "win32":
+        return None
+    import ctypes
+    h = ctypes.windll.kernel32.OpenProcess(0x1000, False, int(pid))
+    if not h:
+        return None
+    t = [ctypes.c_ulonglong() for _ in range(4)]
+    ok = ctypes.windll.kernel32.GetProcessTimes(h, *[ctypes.byref(x) for x in t])
+    ctypes.windll.kernel32.CloseHandle(h)
+    return t[0].value / 1e7 - 11644473600 if ok else None
+
+
+def _kill_pids(pids, before=None):
+    """Kill these PIDs (and their trees) when each is still a Chromium, and (given `before`) started before then, so a
+    reused PID is never hit: never by name or pattern (memory: kill by PID)."""
+    tab = _proc_table()
+    hit = [p for p in pids if p in tab and CHROME_NAMES.search(tab[p][1] or "")
+           and not (before and (_proc_start(p) or 0) > before + 2)]
+    for p in hit:
+        try:
+            if sys.platform == "win32":
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(p)], capture_output=True, creationflags=0x08000000)
+            else:
+                os.kill(p, 9)
+        except Exception:
+            pass
+    return hit
+
+
+def reap_orphans():
+    """Kill the browsers of every harness that died without closing them (stopped verify loops left
+    chrome-headless-shell at 500 MB each)."""
+    os.makedirs(BROWSERS_DIR, exist_ok=True)
+    for f in glob.glob(os.path.join(BROWSERS_DIR, "*.json")):
+        try:
+            owner = int(os.path.basename(f)[:-5])
+            if pid_alive(owner):
+                continue
+            with open(f, encoding="utf-8") as fh:
+                rec = json.load(fh)
+            hit = _kill_pids(rec.get("pids", []), before=rec.get("t"))
+            if hit:
+                print("harness: killed %d orphaned browser process(es) of dead harness %d: %s" % (len(hit), owner, hit), flush=True)
+            os.remove(f)
+        except Exception:
+            pass
+
+
+_MY_BROWSERS = set()
+
+
+def _descendants(tab=None):
+    tab = tab or _proc_table()
+    kids, todo = set(), [os.getpid()]
+    while todo:
+        q = todo.pop()
+        for pid, (pp, name) in tab.items():
+            if pp == q and pid not in kids and pid != q:
+                kids.add(pid)
+                todo.append(pid)
+    return kids
+
+
+def _record_browsers():
+    """The Chromium processes under this process (python -> playwright driver -> chrome), written to our record."""
+    tab = _proc_table()
+    _MY_BROWSERS.update(p for p in _descendants(tab) if CHROME_NAMES.search(tab[p][1] or ""))
+    try:
+        os.makedirs(BROWSERS_DIR, exist_ok=True)
+        with open(os.path.join(BROWSERS_DIR, "%d.json" % os.getpid()), "w", encoding="utf-8", newline="\n") as fh:
+            json.dump({"pids": sorted(_MY_BROWSERS), "argv": sys.argv[:4], "t": time.time()}, fh)
+    except Exception:
+        pass
+
+
+def _forget_browsers(kill=False):
+    if kill and _MY_BROWSERS:   # only those still under this process: a browser closed normally is gone
+        _kill_pids(sorted(_MY_BROWSERS & _descendants()))
+    _MY_BROWSERS.clear()
+    try:
+        os.remove(os.path.join(BROWSERS_DIR, "%d.json" % os.getpid()))
+    except OSError:
+        pass
+
+
+import atexit
+atexit.register(lambda: _forget_browsers(kill=True))
+
+
+class GpuLockTimeout(RuntimeError):
+    pass
+
+
+def _lock_owner():
+    try:
+        with open(os.path.join(GPU_LOCK, "owner"), encoding="utf-8", errors="replace") as fh:
+            return fh.read().strip()
+    except OSError:
+        return ""
+
+
+@contextlib.contextmanager
+def gpu_lock(timeout=None, what=""):
+    """The one GPU lock (HANDOFF-REBUILD.md, "Practical rules"): a directory made with mkdir, an `owner` file inside.
+    Waits up to `timeout` s (KRATOR_GPU_LOCK_TIMEOUT, default 1800), printing who holds it; takes over a lock whose
+    holder is a harness that is no longer running; never removes a lock a live or unknown holder (a bash session) took.
+    Re-entrant: a child of the holder (KRATOR_GPU_LOCK_HELD in its environment) does not wait for its parent."""
+    if os.environ.get("KRATOR_GPU_LOCK_HELD"):
+        yield
+        return
+    timeout = float(os.environ.get("KRATOR_GPU_LOCK_TIMEOUT") or 1800) if timeout is None else timeout
+    os.makedirs(os.path.dirname(GPU_LOCK), exist_ok=True)
+    t0, said = time.time(), 0
+    while True:
+        try:
+            os.mkdir(GPU_LOCK)
+            break
+        except FileExistsError:
+            pass
+        owner = _lock_owner()
+        m = re.match(r"harness pid=(\d+)", owner)
+        if m and not pid_alive(int(m.group(1))):
+            print("harness: GPU lock held by a dead harness (%s): taking it over" % owner, flush=True)
+            with contextlib.suppress(OSError):
+                os.remove(os.path.join(GPU_LOCK, "owner"))
+            with contextlib.suppress(OSError):
+                os.rmdir(GPU_LOCK)
+            continue
+        waited = time.time() - t0
+        if waited >= timeout:
+            try:
+                age = time.time() - os.path.getmtime(GPU_LOCK)
+            except OSError:
+                age = 0
+            raise GpuLockTimeout("GPU lock %s still held after %.0f s by: %s (lock age %.0f min). If that holder is dead "
+                                 "(no process of it running), remove the directory; if it is your own shell, stop taking "
+                                 "the lock in bash: the harness takes it now (or set KRATOR_GPU_LOCK_HELD=1)."
+                                 % (GPU_LOCK, waited, owner or "(no owner file)", age / 60))
+        if waited >= said:
+            print("harness: waiting for the GPU lock (held by: %s) %.0f/%.0f s" % (owner or "(no owner file)", waited, timeout), flush=True)
+            said = waited + 120
+        time.sleep(5)
+    with open(os.path.join(GPU_LOCK, "owner"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write("harness pid=%d %s %s\n" % (os.getpid(), time.strftime("%Y-%m-%dT%H:%M:%S"), what))
+    os.environ["KRATOR_GPU_LOCK_HELD"] = "harness pid=%d" % os.getpid()
+    try:
+        yield
+    finally:
+        os.environ.pop("KRATOR_GPU_LOCK_HELD", None)
+        if re.match(r"harness pid=%d\b" % os.getpid(), _lock_owner()):
+            with contextlib.suppress(OSError):
+                os.remove(os.path.join(GPU_LOCK, "owner"))
+            with contextlib.suppress(OSError):
+                os.rmdir(GPU_LOCK)
+
+
+def lock_main(argv):
+    """python3 tools/harness.py lock [--timeout S] -- <command ...>: run a command under the GPU lock."""
+    timeout = None
+    if argv[:1] == ["--timeout"]:
+        timeout, argv = float(argv[1]), argv[2:]
+    if argv[:1] == ["--"]:
+        argv = argv[1:]
+    if not argv:
+        print(lock_main.__doc__)
+        return 2
+    try:
+        with gpu_lock(timeout, what=" ".join(argv)[:120]):
+            return subprocess.call(argv)
+    except GpuLockTimeout as e:
+        print("FAILED: " + str(e))
+        return 3
+
+
+def is_gpu():
+    return os.environ.get("KRATOR_GL", "").lower() == "gpu"
+
+
 async def launch_chromium(p, args=GL_ARGS):
     """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own build, else a pinned build under
-    /opt/pw-browsers: a cloud container ships one that need not match the pip playwright's pin."""
+    /opt/pw-browsers: a cloud container ships one that need not match the pip playwright's pin. The browser's
+    processes are recorded by PID, and the orphans of dead harnesses are killed first."""
+    reap_orphans()
+    b = await _launch(p, args)
+    _record_browsers()
+    return b
+
+
+async def _launch(p, args):
     for k in CHROME_ENV:
         if os.environ.get(k):
             return await p.chromium.launch(executable_path=os.environ[k], args=args)
@@ -135,11 +412,45 @@ async def route_three(pg, folder, here=None):
             route.fulfill(path=three, content_type="application/javascript")))
 
 
-async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None, init=()):
+# Item 2c. r128 reports a shader that does not compile with console.error only, and the mesh does not draw: the page
+# builds, the error panel stays clean and the surface is simply missing (crater-drylands lost its ground to a NaN in GLSL).
+SHADER_ERR = re.compile(r"THREE\.WebGL(Program|Shader)|shader error|getShaderInfoLog|getProgramInfoLog|ERROR: \d+:\d+|"
+                        r"WebGL: INVALID|GL_INVALID|CONTEXT_LOST|context lost", re.I)
+SHADER_IGNORE = re.compile(r"GPU stall due to ReadPixels|Automatic fallback to software WebGL|loseContext: context lost", re.I)
+
+
+GL_CALL_ERR = re.compile(r"WebGL: INVALID|GL_INVALID|CONTEXT_LOST|context lost", re.I)
+
+
+def gl_errors(lines):
+    """The shader and WebGL failures among console (type, text) pairs. A shader that fails is a console.error (r128:
+    "THREE.WebGLProgram: shader error"); a program that links with a compiler warning (D3D's X3595 under ANGLE) is a
+    console.warn of its info log and draws, so only the GL call errors count as warnings."""
+    return [t for k, t in lines if not SHADER_IGNORE.search(t)
+            and (k == "error" and SHADER_ERR.search(t) or GL_CALL_ERR.search(t))]
+# Every image that fails to decode, attached or not (an LFS pointer packed as a data URL fails here, silently).
+IMG_HOOK_JS = """(()=>{ window.__kimgErr=[]; const d=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,'src');
+ if(!d||!d.set) return; Object.defineProperty(HTMLImageElement.prototype,'src',{configurable:true,enumerable:d.enumerable,get:d.get,
+ set(v){ if(!this.__kw){ this.__kw=1; this.addEventListener('error',()=>{ const s=String(this.src||'');
+   window.__kimgErr.push(s.startsWith('data:')?s.slice(0,40)+'... ('+s.length+' chars)':s.slice(-120)); }); }
+   return d.set.call(this,v); }}); })();"""
+
+
+def watch_console(pg):
+    """Collect console errors and warnings on pg.krator_console, from before the page loads, for the whole run."""
+    if getattr(pg, "krator_console", None) is not None:
+        return pg.krator_console
+    pg.krator_console = []
+    pg.on("console", lambda m: pg.krator_console.append((m.type, m.text)) if m.type in ("error", "warning") else None)
+    return pg.krator_console
+
+
+async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None, init=(), ready_js=None, routes=()):
     """A new page on `html`, served on `port` from `root` (default: the page's folder; give the repo root for a page
     that loads siblings by relative path, as kits/ancients-interiors loads ../../catalog/), three.js routed, waiting
     until the world is built (`window._ready`) or the error panel fills. `init`: scripts (paths) run before the page's
-    own (godot/tools/stage_hook.js, for KSTAGE). Returns (page, page_errors, ready)."""
+    own (godot/tools/stage_hook.js, for KSTAGE); `routes`: (url pattern, handler) pairs set before it loads.
+    Returns (page, page_errors, ready)."""
     folder = os.path.dirname(os.path.abspath(html))
     name = os.path.relpath(os.path.abspath(html), os.path.abspath(root or folder)).replace(os.sep, '/')
     W, H = [int(t) for t in size.split("x")]
@@ -147,14 +458,18 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
     pg.set_default_timeout(600000)
     errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
+    watch_console(pg)
+    await pg.add_init_script(IMG_HOOK_JS)
     for f in init:
         with open(f, encoding='utf-8') as fh:
             await pg.add_init_script(fh.read())
     await route_three(pg, folder, here)
+    for pat, fn in routes:
+        await pg.route(pat, fn)
     await pg.goto(f"http://127.0.0.1:{port}/{name}{query}", timeout=LOAD_MS)
     ready = True
     try:
-        await pg.wait_for_function(READY_JS, timeout=580000)
+        await pg.wait_for_function(ready_js or READY_JS, timeout=580000)
     except Exception:
         ready = False
     return pg, errs, ready
@@ -181,6 +496,7 @@ async def smoke(pages, settle_ms=2500):
                 except Exception as e:
                     st = {"errs": "page did not initialise: " + str(e).splitlines()[0], "calls": None, "tris": None}
                 await pg.close()
+            errs = errs + ["console: " + t for t in gl_errors(pg.krator_console)]
             dirty = bool(st["errs"] and st["errs"] != "(no #errs)") or bool(errs) or not ready
             bad += dirty
             print("%s  %-55s %5.0fs  calls %s  tris %s%s%s" % (
@@ -190,6 +506,483 @@ async def smoke(pages, settle_ms=2500):
         await b.close()
     print("%d pages, %d dirty" % (len(pages), bad))
     return 1 if bad else 0
+
+
+# --------------------------------------------------------------------------
+# verify_page: the universal asserts every verify.py runs (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 16)
+RATCHET = os.path.join(ROOT, "tools", "verify_ratchet.json")
+INSTANCE_CAP = 250000      # item 3c: one instanced item past this many is a runaway pass (918,541 cobra lilies)
+EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surface it faces
+# The scene and camera of a page: its top-level `scene` and `camera` (a classic script's top-level const is visible to
+# evaluate), else window.scene / _api.scene, else any window value that is one.
+FIND_JS = """const __kfind=()=>{ let sc=null,cam=null;
+ try{ if(typeof scene!=='undefined'&&scene&&scene.isScene) sc=scene; }catch(e){}
+ try{ if(typeof camera!=='undefined'&&camera&&camera.isCamera) cam=camera; }catch(e){}
+ const A=window._api||{}; sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null);
+ cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null);
+ if(!sc||!cam){ for(const k of Object.keys(window)){ let v; try{ v=window[k]; }catch(e){ continue; }
+   if(!v||typeof v!=='object') continue; if(!sc&&v.isScene) sc=v; if(!cam&&v.isPerspectiveCamera) cam=v; } }
+ return {sc,cam}; };"""
+SAMPLE_JS = "()=>{ try{ return {calls:renderer.info.render.calls, tris:renderer.info.render.triangles}; }catch(e){ return null; } }"
+UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
+ const {sc}=__kfind(); const A=window._api||null; const R={scene:!!sc};
+ R.panel=document.getElementById('errs')?document.getElementById('errs').textContent:null;
+ R.imgErr=(window.__kimgErr||[]).slice(0,8); R.imgErrN=(window.__kimgErr||[]).length;
+ const bad=[]; let n=0;
+ if(sc){ const seen=new Set();
+  const chk=(t,where)=>{ if(!t||!t.isTexture||seen.has(t)) return; seen.add(t); n++;
+   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture) return;
+   const ims=t.isCubeTexture?(t.image||[]):[t.image];
+   if(t.isCubeTexture&&!ims.length){ bad.push(where+' (cube, no faces)'); return; }
+   for(const im of ims){ if(!im){ bad.push(where+' (no image)'); return; }
+    let w=im.width,h=im.height;
+    if(typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement){ if(!im.complete){ bad.push(where+' (still loading)'); return; } w=im.naturalWidth; h=im.naturalHeight; }
+    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; } } };
+  const scan=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) chk(v,(m.name||m.type)+'.'+k); }
+   if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
+    if(v&&v.isTexture) chk(v,(m.name||m.type)+'.uniforms.'+k); else if(Array.isArray(v)) v.forEach((x,i)=>{ if(x&&x.isTexture) chk(x,(m.name||m.type)+'.uniforms.'+k+'['+i+']'); }); } };
+  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m); });
+  if(sc.background&&sc.background.isTexture) chk(sc.background,'scene.background');
+  if(sc.environment&&sc.environment.isTexture) chk(sc.environment,'scene.environment'); }
+ R.tex={n, bad:bad.slice(0,8), badN:bad.length};
+ R.nan=(A&&typeof A.nanSweep==='function')?(()=>{ try{ const s=A.nanSweep(); return {meshes:s.meshes, instances:s.instances,
+   first:JSON.stringify((s.firstInstances||[]).concat(s.first||[])).slice(0,300)}; }catch(e){ return {error:String(e)}; } })():null;
+ R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
+   return {n:o.length, empty:e.length, names:e.slice(0,6).map(x=>x.name)}; }catch(e){ return {error:String(e)}; } })():null;
+ const over=[]; let src=null; const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null);
+ if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) over.push((r.kit?r.kit+'/':'')+(r.item||'?')+' '+r.count+' > '+r.cap+(r.why?' ('+r.why+')':' (no capWhy)')); }catch(e){ over.push('capReport threw: '+e); } }
+ else if(sc){ src='scene scan, cap '+cap; sc.traverse(o=>{ if(o.isInstancedMesh&&o.count>cap&&!(o.userData&&o.userData.capOk))
+   over.push((o.name||(o.userData&&(o.userData.item||o.userData.tag))||o.geometry.type)+' '+o.count); }); }
+ R.cap={src, over:over.slice(0,8), overN:over.length};
+ R.seat=(A&&typeof A.seatSweeps==='function')?(()=>{ try{ const S=A.seatSweeps(), o={}; for(const k of ['contact','clear','doors','stairs']){ const x=S[k]||{};
+   o[k]={n:x.n, nFails:x.nFails||0, first:JSON.stringify((x.fails||[]).slice(0,2)).slice(0,160)}; } o.neg=!S.contact||S.contact.neg===true; return o; }catch(e){ return {error:String(e)}; } })():null;
+ try{ R.sceneTris=(A&&A.totals&&A.totals.tris!=null)?A.totals.tris:null; }catch(e){ R.sceneTris=null; }
+ return R; }"""
+# Item 10a: from the eye, rays up, down and four ways level, against the solid meshes drawn (instances prefiltered by
+# their bounds; materials made two-sided only for the duration of the call, so a ray sees the inside of a closed mesh).
+# Fails when the eye is inside a closed mesh (four of six rays meet a back face first), under the drawn ground (the ray
+# up meets the underside and the ray down meets nothing), inside foliage (five of six rays meet a cut-out within 2 m),
+# or nearer than EYE_NEAR to a solid surface it looks at.
+EYE_JS = "(opt)=>{" + FIND_JS + """
+ const {sc,cam}=__kfind(); if(!sc||!cam||typeof THREE==='undefined') return {skipped:'no scene, camera or THREE reachable from the page'};
+ sc.updateMatrixWorld(); cam.updateMatrixWorld();
+ const eye=new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld), fwd=new THREE.Vector3(); cam.getWorldDirection(fwd);
+ const list=[]; const vis=o=>{ if(!o.visible) return; if(o.isMesh&&o.material&&o.geometry&&o.geometry.attributes&&o.geometry.attributes.position&&!o.isSkinnedMesh) list.push(o); for(const c of o.children) vis(c); }; vis(sc);
+ const solid=m=>m&&m.visible!==false&&!m.transparent&&m.depthWrite!==false&&m.colorWrite!==false;
+ const cut=m=>m&&m.alphaTest>0;
+ const sides=new Map(); for(const o of list) for(const m of (Array.isArray(o.material)?o.material:[o.material])) if(m&&!sides.has(m)) sides.set(m,m.side);
+ const rc=new THREE.Raycaster(), tmp=new THREE.Mesh(), im=new THREE.Matrix4(), nrm=new THREE.Vector3();
+ const nameOf=o=>o.name||(o.userData&&(o.userData.item||o.userData.tag||o.userData.kind||o.userData.name))||(o.parent&&o.parent.name)||o.geometry.type;
+ const matOf=h=>Array.isArray(h.object.material)?h.object.material[h.face?h.face.materialIndex:0]:h.object.material;
+ function cast(dir,far){ rc.set(eye,dir); rc.near=0; rc.far=far; const hits=[];
+  for(const o of list){ const ms=Array.isArray(o.material)?o.material:[o.material]; if(!ms.some(solid)) continue;
+   if(o.isInstancedMesh){ const g=o.geometry; if(!g.boundingSphere) g.computeBoundingSphere(); const R0=g.boundingSphere.radius, c=g.boundingSphere.center;
+    const a=o.instanceMatrix.array, e=o.matrixWorld.elements, ws=o.matrixWorld.getMaxScaleOnAxis();
+    for(let i=0;i<o.count;i++){ const j=i*16;
+     const lx=a[j]*c.x+a[j+4]*c.y+a[j+8]*c.z+a[j+12], ly=a[j+1]*c.x+a[j+5]*c.y+a[j+9]*c.z+a[j+13], lz=a[j+2]*c.x+a[j+6]*c.y+a[j+10]*c.z+a[j+14];
+     const px=e[0]*lx+e[4]*ly+e[8]*lz+e[12]-eye.x, py=e[1]*lx+e[5]*ly+e[9]*lz+e[13]-eye.y, pz=e[2]*lx+e[6]*ly+e[10]*lz+e[14]-eye.z;
+     const s=Math.max(Math.hypot(a[j],a[j+1],a[j+2]),Math.hypot(a[j+4],a[j+5],a[j+6]),Math.hypot(a[j+8],a[j+9],a[j+10]))*ws*R0;
+     let t=px*dir.x+py*dir.y+pz*dir.z; if(t<-s||t>far+s) continue; t=Math.max(0,Math.min(far,t));
+     const dx=px-dir.x*t, dy=py-dir.y*t, dz=pz-dir.z*t; if(dx*dx+dy*dy+dz*dz>s*s) continue;
+     tmp.geometry=g; tmp.material=o.material; im.fromArray(a,j); tmp.matrixWorld.multiplyMatrices(o.matrixWorld,im);
+     const k0=hits.length; tmp.raycast(rc,hits); for(let k=k0;k<hits.length;k++){ hits[k].object=o; hits[k].instanceId=i; hits[k].__m=tmp.matrixWorld.clone(); } }
+   } else { const k0=hits.length; o.raycast(rc,hits); for(let k=k0;k<hits.length;k++) hits[k].__m=o.matrixWorld; } }
+  const out=[]; for(const h of hits){ const m=matOf(h); if(!solid(m)) continue; let kind='two';
+   if(h.face&&sides.get(m)!==THREE.DoubleSide){ nrm.copy(h.face.normal).transformDirection(h.__m); let back=nrm.dot(dir)>0; if(sides.get(m)===THREE.BackSide) back=!back; kind=back?'back':'front'; }
+   out.push({d:h.distance, kind, cut:cut(m), name:nameOf(h.object)}); }
+  out.sort((x,y)=>x.d-y.d); return out; }
+ const R={eye:[+eye.x.toFixed(1),+eye.y.toFixed(1),+eye.z.toFixed(1)]};
+ try{ for(const m of sides.keys()) m.side=THREE.DoubleSide;
+  const axes=[[0,1,0],[0,-1,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1]].map(v=>new THREE.Vector3(v[0],v[1],v[2]));
+  const first=axes.map((d,i)=>{ const hs=cast(d,i<2?2000:opt.far); return {solid:hs.find(h=>!h.cut)||null, any:hs[0]||null}; });
+  const backs=first.filter(f=>f.solid&&f.solid.kind==='back'&&f.solid.d<=opt.far);
+  if(backs.length>=4) R.inside=[...new Set(backs.map(f=>f.solid.name))].slice(0,4).join(', ');
+  if(first[0].solid&&first[0].solid.kind==='back'&&!first[1].solid) R.under=first[0].solid.name+' ('+first[0].solid.d.toFixed(1)+' m above)';
+  const leaf=first.filter(f=>f.any&&f.any.cut&&f.any.d<2);
+  if(leaf.length>=5) R.foliage=[...new Set(leaf.map(f=>f.any.name))].slice(0,3).join(', ');
+  const ahead=cast(fwd.normalize(),opt.near).find(h=>!h.cut&&h.kind!=='back');
+  if(ahead) R.near=ahead.name+' at '+ahead.d.toFixed(2)+' m';
+ } finally { for(const [m,s] of sides) m.side=s; }
+ return R; }"""
+
+
+# Item 15, nwbay's sweep: of each solid one-sided geometry drawn, the share of its faces pointing out from its centre, and the
+# share pointing up. Few of either: inside-out, the faces you see are culled (a ground or a bowl faces up and is not listed).
+# A report, not a failure: a hollow a camera stands in reads the same. Run from here, so it reaches every page with no page
+# bytes moved.
+WINDING_JS = "(opt)=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc||typeof THREE==='undefined') return null; sc.updateMatrixWorld();
+ const seen=new Set(), out=[]; let n=0; const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),e=new THREE.Vector3(),f=new THREE.Vector3(),m=new THREE.Vector3(),ctr=new THREE.Vector3();
+ sc.traverse(o=>{ if(!o.isMesh||o.isSkinnedMesh||!o.geometry||!o.geometry.attributes||!o.geometry.attributes.position||o.visible===false) return;
+  const M=o.material; if(Array.isArray(M)||!M||M.side!==THREE.FrontSide||M.transparent||M.alphaTest>0||M.depthWrite===false||M.colorWrite===false) return;
+  const g=o.geometry, key=g.uuid+(o.matrixWorld.determinant()<0?'-':''); if(seen.has(key)) return; seen.add(key);
+  const P=g.attributes.position, I=g.index, tris=(I?I.count:P.count)/3|0; if(tris<(opt.minTris||12)) return; n++;
+  if(!g.boundingBox) g.computeBoundingBox(); g.boundingBox.getCenter(ctr);
+  const st=Math.max(1,Math.floor(tris/(opt.sample||6000))); let t=0,up=0,outw=0; const flip=o.matrixWorld.determinant()<0?-1:1;
+  for(let i=0;i<tris;i+=st){ const j=i*3, i0=I?I.getX(j):j, i1=I?I.getX(j+1):j+1, i2=I?I.getX(j+2):j+2;
+   a.fromBufferAttribute(P,i0); b.fromBufferAttribute(P,i1); c.fromBufferAttribute(P,i2); e.subVectors(b,a); f.subVectors(c,a); e.cross(f); if(e.lengthSq()<1e-12) continue; e.normalize().multiplyScalar(flip);
+   m.copy(a).add(b).add(c).multiplyScalar(1/3).sub(ctr); t++; if(e.dot(m)>0) outw++; if(e.y>.2) up++; }
+  if(t&&outw/t<(opt.out||.25)&&up/t<(opt.up||.5)) out.push({name:o.name||(o.userData&&(o.userData.item||o.userData.tag))||(o.parent&&o.parent.name)||g.type,tris,out:+(outw/t).toFixed(2),up:+(up/t).toFixed(2)}); });
+ return {n, suspects:out.sort((x,y)=>y.tris-x.tris).slice(0,12), suspectN:out.length}; }"""
+# The item sheet (the card audit, 2026-10-27; swhighlands' ?sheet= lifted out of one build): every baked BIO item alone on a grid
+# at full detail, from its own mesh (its attributes, its first instance's colour), scaled to fit the cell, on a plain floor in
+# plain daylight, so a check looks at the plant and not at numbers. A far version that is an item of its own
+# (BIO.impostorItem) gets its own cell. Its own scene and camera: the page's loop keeps running and draws them instead (it
+# resets the world's camera and LOD every frame). Run it last.
+SHEET_JS = "(opt)=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc||typeof renderer==='undefined') return null;
+ const seen={}; sc.traverse(o=>{ if(!o.isInstancedMesh||!/^biome:/.test(o.name||'')) return; const id=(o.userData.kit||'')+'/'+o.name.slice(6); if(!seen[id]||o.count>seen[id].count) seen[id]=o; });
+ const items=Object.keys(seen).sort().map(id=>({id,src:seen[id]})), page=items.slice(opt.from,opt.from+opt.per);
+ const cols=Math.ceil(Math.sqrt(opt.per*1.6)), rows=Math.ceil(opt.per/cols), S=10, labels=[], one=new THREE.Matrix4();
+ const W=new THREE.Scene(); W.background=new THREE.Color(0x8fa3b5);
+ if(sc.fog){ W.fog=sc.fog.clone(); W.fog.density=1e-7; W.fog.near=1e6; W.fog.far=1e7; }   /* thinned, not removed: core/atmos' fog chunk reads its uniforms */
+ W.add(new THREE.HemisphereLight(0xffffff,0x6a6a60,1.1)); const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(.6,1,.5); W.add(sun);
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(cols*S+20,rows*S+20).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:0x8a8478})); fl.position.y=-.02; W.add(fl);
+ const c0=new THREE.Color(); page.forEach((p,i)=>{ const g=p.src.geometry; if(!g.boundingBox) g.computeBoundingBox(); const bb=g.boundingBox, sz=new THREE.Vector3(); bb.getSize(sz); const big=Math.max(sz.x,sz.y,sz.z)||1, k=7/big;
+  const im=new THREE.InstancedMesh(g,p.src.material,1); one.makeScale(k,k,k); one.setPosition(0,-bb.min.y*k,0); im.setMatrixAt(0,one); im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
+  if(p.src.instanceColor){ p.src.getColorAt(0,c0); im.setColorAt(0,c0); }
+  const col=i%cols, row=Math.floor(i/cols); im.position.set((col-(cols-1)/2)*S,0,(row-(rows-1)/2)*S); W.add(im);
+  labels.push({x:im.position.x,z:im.position.z,t:p.id+'  '+big.toFixed(1)+' m  x'+p.src.count}); });
+ const a=innerWidth/innerHeight, cam=new THREE.PerspectiveCamera(35,a,.5,2000), w=cols*S, h=rows*S; cam.position.set(0,Math.max(w/a,h)*1.75,h*.8); cam.lookAt(0,1.5,0); cam.updateMatrixWorld();
+ window.__ksheetRender=window.__ksheetRender||renderer.render.bind(renderer); const r0=window.__ksheetRender; renderer.render=()=>r0(W,cam); r0(W,cam);
+ let el=document.getElementById('__ksheetLabels'); if(!el){ el=document.createElement('div'); el.id='__ksheetLabels'; el.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99999;font:10px sans-serif;color:#fff;text-shadow:0 0 2px #000'; document.body.appendChild(el);
+  for(const c of [...document.body.children]) if(c!==el&&c.tagName!=='CANVAS'&&c.tagName!=='SCRIPT') c.style.display='none'; }
+ el.innerHTML=''; const v=new THREE.Vector3(); for(const L of labels){ v.set(L.x,0,L.z+S*.42).project(cam); const d=document.createElement('div'); d.textContent=L.t; d.style.cssText='position:absolute;transform:translateX(-50%);white-space:nowrap;left:'+((v.x+1)*50)+'%;top:'+((1-v.y)*50)+'%'; el.appendChild(d); }
+ return {total:items.length, shown:page.length}; }"""
+
+
+def _repo_root(path):
+    d = os.path.dirname(os.path.abspath(path))
+    while True:
+        if os.path.exists(os.path.join(d, "tools", "harness.py")):
+            return d
+        up = os.path.dirname(d)
+        if up == d:
+            return ROOT
+        d = up
+
+
+def _page_key(html):
+    return os.path.relpath(os.path.abspath(html), _repo_root(html)).replace(os.sep, "/")
+
+
+def is_lfs_pointer(path):
+    try:
+        with open(path, "rb") as fh:
+            return fh.read(64).startswith(b"version https://git-lfs")
+    except OSError:
+        return False
+
+
+def load_ratchet():
+    try:
+        with open(RATCHET, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError):
+        return {"pages": {}}
+
+
+def load_budget(here, html):
+    """The page's ceilings from <build>/BUDGETS.json (CORE-IMPROVEMENTS.md item 3d; core-tools writes and lints it):
+    {"pages": {"<page file name>" or "*": {"tris": n, "calls": n, "bytes": n, "scene_tris": n, "why": ...}}}.
+    tris and calls are the worst rendered over the views visited; scene_tris is the probe's whole-scene count."""
+    f = os.path.join(here, "BUDGETS.json")
+    if not os.path.isfile(f):
+        return None, "no BUDGETS.json"
+    with open(f, encoding="utf-8") as fh:
+        d = json.load(fh)
+    pages = d.get("pages", d)
+    base = os.path.basename(html)
+    for k in (base, os.path.splitext(base)[0], "*"):
+        if isinstance(pages.get(k), dict):
+            return pages[k], "BUDGETS.json[%s]" % k
+    return None, "BUDGETS.json has no entry for %s" % base
+
+
+class Abort(Exception):
+    """Raised inside `async with verify_page(...)` to stop the build's own checks early with an exit code (the page did
+    not initialise): the universal asserts still run, and V.exit() returns the code."""
+
+    def __init__(self, code=2):
+        Exception.__init__(self, code)
+        self.code = code
+
+
+class VerifyPage:
+    """What verify_page yields: the page, its page errors and the build's own fails list, and the views it visits."""
+
+    def __init__(self, html, here):
+        self.html, self.here, self.key = os.path.abspath(html), here, _page_key(html)
+        self.page = self.browser = self.port = self.code = None
+        self.errs, self.fails, self.ready = [], [], False
+        self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
+        self.winding = None
+
+    async def sample(self, view):
+        s = await self.page.evaluate(SAMPLE_JS)
+        if s:
+            self.samples.append((view, s["calls"], s["tris"]))
+        return s
+
+    async def eye(self, view):
+        """The eye check (item 10a) at the camera as it is now, under the view's name."""
+        try:
+            r = await self.page.evaluate(EYE_JS, {"near": EYE_NEAR, "far": 50})
+        except Exception as e:
+            r = {"skipped": "eye check threw: " + str(e).splitlines()[0][:200]}
+        self.eyes.append((view, r))
+        return r
+
+    async def shot(self, path, view=None, **kw):
+        """Screenshot, then the calls and triangles at this view and its eye check. Use it for every preset view."""
+        await self.page.screenshot(path=path, **kw)
+        name = view or os.path.splitext(os.path.basename(path))[0]
+        await self.sample(name)
+        await self.eye(name)
+
+    async def sheet(self, out, per=24, settle_ms=1500):
+        """The item sheet: <out>/items-NN.png, every BIO item alone on a grid, `per` to a picture. It takes the page over,
+        so call it after the build's checks and views. Returns the pictures written ([] on a page with no BIO)."""
+        os.makedirs(out, exist_ok=True)
+        shots, i = [], 0
+        while True:
+            r = await self.page.evaluate(SHEET_JS, {"from": i, "per": per})
+            if not r or not r["shown"]:
+                return shots
+            await self.page.wait_for_timeout(settle_ms)
+            fn = os.path.join(out, "items-%02d.png" % (i // per))
+            await self.page.screenshot(path=fn)
+            shots.append(fn)
+            i += per
+            if i >= r["total"]:
+                return shots
+
+    async def run_universal(self):
+        U, pg = self.universal, self.page
+        U.append(("page-ready", self.ready, "ready" if self.ready else "never set window._ready (and the error panel stayed empty)"))
+        try:
+            await pg.wait_for_function("!window._texPending", timeout=120000)
+        except Exception:
+            U.append(("textures-decoded", False, "window._texPending still set after 120 s"))
+        try:
+            await self.sample("final")
+            R = await pg.evaluate(UNIVERSAL_JS, INSTANCE_CAP)
+        except Exception as e:
+            U.append(("page-alive", False, "the page could not be read: " + str(e).splitlines()[0][:200]))
+            R = None
+        cons = getattr(pg, "krator_console", [])
+        sh = gl_errors(cons)
+        U.append(("shader-errors", not sh, "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3]))
+                  if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % len(cons)))
+        U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
+        if R:
+            panel = R["panel"]
+            U.append(("error-panel", not panel, repr(panel[:300]) if panel else ("clean" if panel is not None else "(no #errs element)")))
+            t = R["tex"]
+            ok = not t["badN"] and not R["imgErrN"]
+            U.append(("textures-decoded", ok, ("%d of %d textures not decoded: %s; %d images failed to decode: %s (an LFS pointer? "
+                      "git lfs pull the build's tex/)" % (t["badN"], t["n"], ", ".join(t["bad"]), R["imgErrN"], ", ".join(R["imgErr"])))
+                      if not ok else "%d textures, all decoded%s" % (t["n"], "" if R["scene"] else " (no scene reachable: images only)")))
+            if R["nan"] is not None:
+                n = R["nan"]
+                U.append(("no-nan-geometry", not n.get("error") and not n.get("meshes") and not n.get("instances"),
+                          n.get("error") or ("%s instanced items, %s meshes at NaN: %s" % (n["instances"], n["meshes"], n["first"])
+                                             if n["meshes"] or n["instances"] else "clean")))
+            if R["occ"] is not None:
+                o = R["occ"]
+                U.append(("registered-volumes-non-empty", not o.get("error") and not o.get("empty"),
+                          o.get("error") or ("%d empty of %d: %s" % (o["empty"], o["n"], " | ".join(o["names"])) if o["empty"]
+                                             else "%d volumes, none empty" % o["n"])))
+            if R["seat"] is not None:   # core-seat's sweeps (core/host/95b-host-seat.js, core/terrain/SEAT.md), when the page takes them
+                st = R["seat"]
+                bad = [k for k in ("contact", "clear", "doors", "stairs") if not st.get("error") and st[k]["nFails"]]
+                U.append(("seat-sweeps", not st.get("error") and not bad and st.get("neg", False),
+                          st.get("error") or ("; ".join("%s %s of %s: %s" % (k, st[k]["nFails"], st[k]["n"], st[k]["first"]) for k in bad)
+                                              or ("the contact control did not read as floating" if not st["neg"]
+                                                  else ", ".join("%s %s" % (k, st[k]["n"]) for k in ("contact", "clear", "doors", "stairs"))))))
+            c = R["cap"]
+            if c["src"]:
+                U.append(("instance-cap", not c["overN"], ("%d items past the cap (%s): %s" % (c["overN"], c["src"], ", ".join(c["over"])))
+                          if c["overN"] else "none past the cap (%s)" % c["src"]))
+        try:
+            w = await pg.evaluate(WINDING_JS, {})
+        except Exception as e:
+            w = {"error": str(e).splitlines()[0][:200]}
+        self.winding = w
+        if w is not None:
+            U.append(("winding", True, w.get("error") or ("%d of %d geometries look inside-out (a report): %s" % (w["suspectN"], w["n"], ", ".join(
+                "%s out %.2f up %.2f, %d tris" % (x["name"], x["out"], x["up"], x["tris"]) for x in w["suspects"][:6]))
+                if w["suspectN"] else "%d geometries, none inside-out" % w["n"])))
+        if is_gpu():
+            try:
+                rn = await pg.evaluate(RENDERER_JS)
+            except Exception as e:
+                rn = "unknown: " + str(e)[:80]
+            U.append(("gpu-renderer", "swiftshader" not in rn.lower(), rn))
+        if not self.eyes:
+            await self.eye("as loaded")
+        for v, r in self.eyes:
+            if r.get("skipped"):
+                U.append(("eye:" + v, True, "skipped: " + r["skipped"]))
+                continue
+            bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near") if r.get(k)]
+            U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s" % r["eye"]))
+        b, src = load_budget(self.here, self.html)
+        if b is None:
+            U.append(("budget", True, src))
+        else:
+            over, got = [], []
+            wc = max(self.samples, key=lambda s: s[1] or 0) if self.samples else None
+            wt = max(self.samples, key=lambda s: s[2] or 0) if self.samples else None
+            vals = {"calls": (wc[1], wc[0]) if wc else None, "tris": (wt[2], wt[0]) if wt else None,
+                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None}
+            for k in ("tris", "calls", "bytes", "scene_tris"):
+                lim = b.get(k)
+                if lim is None or not vals.get(k) or vals[k][0] is None:
+                    continue
+                got.append("%s %s/%s (%s)" % (k, vals[k][0], lim, vals[k][1]))
+                if vals[k][0] > lim:
+                    over.append("%s %s > %s at %s" % (k, vals[k][0], lim, vals[k][1]))
+            U.append(("budget", not over, ("%s: " % src) + ("; ".join(over) if over else ", ".join(got) or "nothing measured")))
+
+    def exit(self, code=None):
+        """Print the universal asserts against the ratchet, fold them into the build's own fails, print the verdict and
+        return the exit code (`code` overrides it, as the old `return 2` for a page that never initialised)."""
+        rat = load_ratchet().get("pages", {}).get(self.key, {})
+        print("\n--- universal asserts (tools/harness.py verify_page) ---")
+        for name, ok, detail in self.universal:
+            known = name in rat or (name.startswith("eye:") and "eye:*" in rat)
+            tag = "  PASS  " if ok else ("  KNOWN " if known else "  FAIL  ")
+            print(tag + name + " : " + detail)
+            if not ok and not known:
+                self.fails.append("universal " + name)
+        fixed = [n for n in rat if n != "eye:*" and any(u[0] == n and u[1] for u in self.universal)]
+        if fixed:
+            print("  ratchet: %s passes now; take it out of tools/verify_ratchet.json (harness.py ratchet --write %s)" % (", ".join(fixed), self.key))
+        code = self.code if code is None else code
+        if self.fails:
+            print("\nFAILED: " + "; ".join(self.fails))
+            return code or 1
+        print("\nOK")
+        return code or 0
+
+
+@contextlib.asynccontextmanager
+async def verify_page(html, here=None, size="1280x800", query="", root=None, init=(), settle_ms=2500, lock=True, args=None,
+                      ready_js=None, routes=()):
+    """Open `html` for a verify and run the universal asserts after the build's own (see the module docstring).
+    here: the build's folder (its BUDGETS.json, its three.min.js); root: the folder to serve (default the page's);
+    ready_js: the page's own ready test when it is not one READY_JS knows (the error panel filling still counts);
+    routes: what the page loads from elsewhere (open_page)."""
+    html = os.path.abspath(html)
+    folder = os.path.dirname(html)
+    if here is None:
+        here = os.path.dirname(folder) if os.path.basename(folder) == "dist" else folder
+    V = VerifyPage(html, here)
+    if is_lfs_pointer(html):
+        V.universal.append(("lfs-pointer", False, "%s is a Git LFS pointer, not a page: git lfs pull --include=\"%s\"" % (V.key, V.key)))
+        raise SystemExit(V.exit())
+    from playwright.async_api import async_playwright
+    lk = gpu_lock(what=V.key) if (lock and is_gpu()) else contextlib.nullcontext()
+    try:
+        lk.__enter__()
+    except GpuLockTimeout as e:
+        print("FAILED: " + str(e))
+        raise SystemExit(3)
+    try:
+        async with async_playwright() as p:
+            V.browser = await launch_chromium(p, args or GL_ARGS)
+            try:
+                with serve(root or folder) as port:
+                    V.port = port
+                    V.page, V.errs, V.ready = await open_page(V.browser, html, port, size=size, here=here, query=query, root=root, init=init, routes=routes,
+                                                              ready_js=ready_js and "(%s) || (%s)" % (ready_js, READY_JS))
+                    if not V.ready:
+                        print("timed out waiting for the page to build")
+                    await V.page.wait_for_timeout(settle_ms)
+                    try:
+                        yield V
+                    except Abort as e:
+                        V.code = e.code
+                    finally:
+                        try:
+                            await V.run_universal()
+                        except Exception as e:
+                            V.universal.append(("universal-run", False, "the universal asserts threw: " + str(e).splitlines()[0][:300]))
+            finally:
+                with contextlib.suppress(Exception):
+                    await V.browser.close()
+        _forget_browsers()
+    finally:
+        lk.__exit__(None, None, None)
+
+
+RATCHET_DOC = ("The universal verify asserts (tools/harness.py verify_page) each page failed when they were introduced. "
+               "A listed assert only warns for that page; anything else fails. Take a page's entries out at its own "
+               "rebuild turn, once fixed: python3 tools/harness.py ratchet --write <page>.")
+
+
+async def sheet_main(argv):
+    """python3 tools/harness.py sheet <page.html> [--out shots/sheet] [--per 24]: the item sheet on its own (VerifyPage.sheet)."""
+    out = argv[argv.index("--out") + 1] if "--out" in argv else "shots/sheet"
+    per = int(argv[argv.index("--per") + 1]) if "--per" in argv else 24
+    page = next(a for i, a in enumerate(argv) if not a.startswith("--") and not (i and argv[i - 1] in ("--out", "--per")))
+    async with verify_page(page, root=_repo_root(page)) as V:
+        await V.eye("as loaded")   # the sheet takes the renderer
+        shots = await V.sheet(out, per)
+        print("\n".join(shots) or "no BIO items on this page")
+    return V.exit()
+
+
+async def ratchet_main(argv):
+    """python3 tools/harness.py ratchet [--write] [--views auto] <page.html ...>
+    Run the universal asserts alone on each page (the eye check at the page's opening view, and with --views auto at
+    each of its #ui preset buttons, at most 16) and print what fails. --write records each page's failures in
+    tools/verify_ratchet.json (replacing that page's entry: a page that passes leaves the ratchet)."""
+    write = "--write" in argv
+    auto = "--views" in argv and argv[argv.index("--views") + 1] == "auto"
+    pages = [a for i, a in enumerate(argv) if not a.startswith("--") and not (i and argv[i - 1] == "--views")]
+    worst = 0
+    for html in pages:
+        t0, key, V = time.time(), _page_key(html), None
+        if is_lfs_pointer(html):
+            print("skip  %-60s an LFS pointer here (not built)" % key, flush=True)
+            continue
+        try:
+            async with verify_page(html, root=_repo_root(html), query=SMOKE_QUERY.get(key, "")) as V:
+                if auto:
+                    names = await V.page.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim()).filter(Boolean)")
+                    for v in names[:16]:
+                        await V.page.evaluate("(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v); if(b) b.click();}", v)
+                        await V.page.wait_for_timeout(900)
+                        await V.sample(v)
+                        await V.eye(v)
+        except SystemExit:
+            pass
+        except Exception as e:
+            print("FAIL  %-60s the run threw: %s" % (key, str(e).splitlines()[0][:200]), flush=True)
+            worst = 1
+            continue
+        bad = {n: d[:200] for n, ok, d in (V.universal if V else []) if not ok}
+        worst = max(worst, 1 if bad else 0)
+        print("%s  %-60s %4.0fs  %s" % ("FAIL" if bad else "ok  ", key, time.time() - t0, "; ".join("%s: %s" % (k, v[:120]) for k, v in bad.items())), flush=True)
+        if write:
+            rat = load_ratchet()   # re-read: several runs may write in turn
+            rat.setdefault("pages", {})
+            if bad:
+                # the views a page's own verify visits are not all its #ui buttons, so a view's failure is listed for the page
+                eyes = sorted(k for k in bad if k.startswith("eye:"))
+                rec = {k: v for k, v in bad.items() if not k.startswith("eye:")}
+                if eyes:
+                    rec["eye:*"] = "%d views: %s" % (len(eyes), "; ".join(e[4:] + " " + bad[e][:80] for e in eyes[:3]))[:200]
+                rat["pages"][key] = {k: time.strftime("%Y-%m-%d") + ": " + v for k, v in sorted(rec.items())}
+            else:
+                rat["pages"].pop(key, None)
+            rat["_doc"] = RATCHET_DOC
+            with open(RATCHET, "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(rat, fh, indent=1, sort_keys=True)
+                fh.write("\n")
+    return worst
 
 
 POSE_JS = """()=>{ if(window._walk&&typeof window._walk.pose==='function'&&window._walk.on) return Object.assign({mode:'walk'}, window._walk.pose());
@@ -527,4 +1320,10 @@ if __name__ == "__main__":
         sys.exit(asyncio.run(smoke(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "walk":
         sys.exit(asyncio.run(walk_main(sys.argv[2:])))
+    if len(sys.argv) > 2 and sys.argv[1] == "sheet":
+        sys.exit(asyncio.run(sheet_main(sys.argv[2:])))
+    if len(sys.argv) > 2 and sys.argv[1] == "ratchet":
+        sys.exit(asyncio.run(ratchet_main(sys.argv[2:])))
+    if len(sys.argv) > 2 and sys.argv[1] == "lock":
+        sys.exit(lock_main(sys.argv[2:]))
     print(__doc__)

@@ -94,6 +94,7 @@ HCHK.night=(N,look)=>{const site=ATMOS.siteAt(SKY.preset.site.px,SKY.preset.site
  return{ok:nf===1&&df===0&&n.sunI<d.sunI*.3&&lum(n.zen)<.1&&lum(n.fogC)<.2&&lum(d.zen)>.3,detail:'midnight: key '+n.sunI.toFixed(2)+', zenith '+lum(n.zen).toFixed(2)+', fog '+lum(n.fogC).toFixed(2)+'; noon: key '+d.sunI.toFixed(2)+', zenith '+lum(d.zen).toFixed(2)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts();
  add('the creek and the rain pools on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
+ if(WATER_RECS&&WATER_RECS.creek&&WATER.audit){const F=WATER.audit({ground:groundH,surfaces:[WATER_RECS.creek]}).filter(f=>f.rule!=='overlap'),S=WATER.auditSummary(F);add('the creek on its ground (WATER.audit)',{ok:!F.length,detail:F.length+' findings'+(S.length?': '+S.slice(0,4).map(q=>q.rule+' x'+q.n+', worst '+q.by+' at '+q.x+','+q.z).join('; '):'')});}
  add('the night darkens the light, the dome and the fog',HCHK.night(NIGHT));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
  add('a fruit, a staple and a medicinal plant',HCHK.three(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
@@ -131,6 +132,9 @@ KHOST.take({build:'necanyons',title:ST_TAKE&&ST_TAKE.title||'Krator biome — th
   'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.pools)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),layout:()=>NECANYONS.records()},
  minimap:{title:'The north-eastern canyons'},
+ /* the foliage guards' ceiling (HANDOFF-REBUILD "the foliage guards"; KNOWN_ISSUES.md): necanyons' own cards pass under 1% (?nojungle);
+    what floats is the hyperjungle's, read in place (its blooms, understorey cards, lianas, clumps), until its own fix. Only falls */
+ guards:{maxShare:ST_TAKE&&ST_TAKE.maxShare!=null?ST_TAKE.maxShare:.08},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

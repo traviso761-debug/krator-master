@@ -25,18 +25,65 @@ was built, how it was checked, and what full Lizardmen and therian peoples would
 - Over trousers it comes out through the waistband's back; through a shirt, a robe or a cape it comes through the cloth
   (KNOWN_ISSUES.md).
 
-**An animal head** (`tools/mods.py lizard_head`, kit item `mod_head_lizard`), a procedural reptile snout:
-- The cranium and upper jaw lofted from a profile (`SNOUT`: per station along the head, half width, top, mouth line,
-  jaw bottom; scaled to each body's head), rigid on Head; the lower jaw on `face_jaw`; eyes with a slit pupil under brow
-  ridges, nostrils, a crest of low spines, teeth inside the closed mouth, a dark mouth.
+**An animal head** (`tools/mods.py lizard_head`, `tools/reptile.py`, kit item `mod_head_lizard`): a Komodo dragon's
+head with an iguana's crest (the owner's photographs, 2026-10-27; its first form, a lofted snout with slit-pupilled
+eyes, was replaced):
+- Two signed distance fields meshed as the therian heads are (`tools/heads.py`: surface nets on a 3 mm grid, projected,
+  smoothed). The upper head, rigid on Head: a loft (`UPPER`: per station half width, top and mouth line, scaled to each
+  body's head) with the temples swelling behind the eyes, brow ridges hooding them, the nostrils' bosses near the tip,
+  the skull carried back over the jaw's hinge and down the nape. The lower jaw on `face_jaw`: a loft (`LOWER`) a
+  little narrower, so the upper lip's scales overhang it, heavy jowls, the throat in loose folds.
+- Painted per vertex (the skin tint multiplies it): a dark mottle, paler lip scales, a pale ring round each eye, a
+  lighter throat. The skin is the library's `organic.scale` (its albedo made near-colourless, and its normal map), on
+  the tail too; without the images checked out, the procedural stand-in (`scale_texture`). The body's skin and the
+  nipples (the skin has holes under them) wear the same scales under the head: kit item `skin_detail`, the head's maps
+  repeated across the skin's UVs to the head's scale size (`skin_repeat`; `skinDetail` in `50-figure.js`, the skin
+  shader's `detail_repeat` in Godot), so the collar meets scales, not human skin.
+- Both lips tuck in toward the mouth's line, and near it the jaw is never wider than nine tenths of the upper lip: the
+  lip overhangs, and no ledge stands out at the corner.
+- Eyes: a round black pupil in a dark amber iris. **Lower lids** rise to shut them: a `blink` morph target on the
+  piece's second mesh, which the figures' blinks drive (as the coyote's upper lids).
+- The crest: flat blades down the midline from the crown over the nape and down the back of the neck (`crest`,
+  `blade`), short on the crown, tallest on the neck, standing up and back; the neck's on the nearest base vertex's
+  weights and deltas, on a material of their own (kit item `crest_neck`: the skin triangles under their roots), left
+  out under a worn item that covers that skin. Teeth inside the closed mouth, seen when it opens.
 - It replaces the human head: the item's `hide` is the base skin weighted at least half to Head (the human head's
   skin, as a worn item hides skin), its `hide_parts` the lips, ears, brows, lashes and eyes, and `replaces_head` drops
   hair, beard and headgear (`KCHAR.replacesHead`, `KChar.replaces_head`).
 - A collar from the neck, below the edge of the hidden skin, up into the head covers the seam. Its vertices take the
   nearest neck vertex's weights and morph deltas, fading to the head's above that edge, so it follows the neck under
   every slider. The head's rigid parts move with the Head joint's morph delta (the face sliders do nothing to it).
-- **The jaw** (no clip moves it either): opened about its hinge by up to 9 degrees for a third of every 5 seconds, a
+- **The jaw** (no clip moves it either): opened about its hinge by up to 6 degrees for a third of every 5 seconds, a
   breath with the mouth a little open (`jaw` / `_jaw`; kit item `jaw`). `fig.jawOpen` (`jaw_open` in Godot) holds it.
+
+**A frog's head** (`tools/mods.py frog_head`, `tools/amphibian.py`, kit item `mod_head_frog`; the owner's reference
+paintings, 2026-10-27) for the Frogmen of the south-western highlands, Dalab's martial clients (LORE 6.22),, made as the lizard's is, its collar shared (`_head_collar`):
+- Broad, flat and rounded, sitting low with hardly a neck; the mouth a wide line from the blunt snout back under the
+  eardrum; the jaw meets the upper lip flush; a full throat's pouch under it (on `face_jaw`, opened as the lizard's).
+- Big eyes standing proud of turrets high on the head, a little larger than the first cut (`SIZE`, the whole head 1.12
+  times): an iris texture (`iris_texture`: a horizontal pupil, its dark margin, a lighter collarette, radial fibres, a
+  net of veins, a dark band through the pupil, the limbus) that the record's eye colour tints (role `iris`; the
+  lizard's eyes too, with a round pupil). A wide lower lid lies down in the turret and rises over the front of the eye to blink (`blink`; it turns 95
+  degrees: a morph moves each point straight, so further and the lid passes through the ball halfway).
+- The eardrums dished in behind the eyes under the dorsolateral folds; small nostrils on top of the snout.
+- **Its skin in the record's colours, as a poison dart frog's**: `skin` the ground, `skin2` the marks, `skin3` the pale
+  parts (throat, belly, the lip's stripe, the eardrum's ring), `pattern` one of `spots`, `net` (bands), `marble`
+  (blotches) or `none`, `pattern_amount` how much of the skin the marks take; the kit item's `pattern` holds the
+  defaults (and the eye colour). The pattern is three fields over the body at rest (`pattern_fields`: the distance to
+  the nearest of a scatter of points, to the line between the two nearest, a marbling), the same for the head's
+  vertices (COLOR_0, with the pale share; a shade in TEXCOORD_1) and the body's skin, baked into its UV square from
+  each texel's place at rest (`body_mask`, on a primitive with no area), so the marks run on from head to body and
+  across the UV islands' edges. The figures colour both (`patternMat` in `50-figure.js`; `kchar_pattern.gdshader`,
+  `kchar_skin.gdshader`). The Cosmetic Lab's Pattern section sets them, its eye colours an animal's.
+- **Its colours keep to a palette** (owner, 2026-10-27; `mods.FROG_PALETTE`, kit item `pattern` `palette`): greens,
+  browns, red-browns and creams for the skin and the pale parts, and those or black for the marks. The Cosmetic Lab
+  offers only these (no free colour), and both figures hold any other colour a record carries to the nearest of them
+  (`snap`, `patternColours`; `_snap`, `_pattern_colours` in Godot).
+- **Webbed hands**: a thin web between each pair of fingers from the knuckles up to 0.6 of their length at their sides,
+  scalloped deeper between, on the two fingers' joints by where each point lies across (`hand_webs`); a round pad under
+  each fingertip. Its skin is the library's `skin.smooth`, moist and glossier, which the body wears under the head.
+- A test record as the Lizardman is: the Cosmetic Lab's "Frogman" chip (or `?frog`), the Animation Lab's Body mods menu
+  ("Frogman (test: head)").
 
 **Making them.** `python3 tools/nonhuman.py` puts both on the bodies as they stand, from the published pieces, with no
 Blender (they are made from the base GLB; their deltas from `base.morph.bin` and kit.json's joint rows). A whole rebuild
