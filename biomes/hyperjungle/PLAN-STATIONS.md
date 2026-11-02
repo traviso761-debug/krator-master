@@ -34,6 +34,10 @@ Pylon's and Talia's vassal-kit pages read this station for their ground (`settle
 Várzea and igapó: forest standing in water for half the year, buttress roots and stilt roots, floating meadows, the
 lake's open water, black-water channels; a high-water and a low-water state on the world clock.
 
+**The owner (2026-11-02) asked for a seasonal floodplain among the stations Krator lacks.** This station's 8 m flood pulse
+is the jungle's; the great river's floodplain and its delta, Wing's bench above the Ring Sea, is `biomes/swlowlands`'s
+station 3 (`PLAN-STATIONS.md` there), which takes this station's seasonal water level as its precedent.
+
 ## Order
 
 J0 sites (station 2 in `se savannah rim`, near Talia); J1 station 2; J2 station 3; verified and baselined; `kits/crops`
