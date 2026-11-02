@@ -36,7 +36,10 @@ export function nav(W){
      const rate=b.rate||1e-5;home.spin.push(()=>{pg.userData.spinner.rotation.y+=rate;});});}
   home.P.sunDisc=true;
   const cache=new Map([['home',home]]);W.homePlace=home;W.herePlace=()=>here;
-  const get=P=>{if(!cache.has(P.id))cache.set(P.id,makePlace(THREE,P,kit));return cache.get(P.id);};
+  // a place is made the first time it is wanted; the modules that put things in places (the starbases, the traffic)
+  // hear of it then, in W.placeHooks
+  W.placeHooks=[];
+  const get=P=>{if(!cache.has(P.id)){const pl=makePlace(THREE,P,kit);cache.set(P.id,pl);for(const f of W.placeHooks)f(pl);}return cache.get(P.id);};
   let here=home,inWarp=false;
   SYS.add(home.group);
 
@@ -57,14 +60,17 @@ export function nav(W){
     const h=W.heading();yawQ.setFromAxisAngle(Y,Math.atan2(-h.f.z,h.f.x));
     SYS.position.copy(ROOT.position);SYS.quaternion.copy(SKY.quaternion).multiply(yawQ);
     SYS.add(pl.group);pl.group.visible=true;setLight(pl);
+    // fresh now: the hooks below (the wormhole, the orders, the escorts) turn world points into this place's frame
+    SYS.updateMatrixWorld(true);
     if(W.placeTarget)W.placeTarget();
     // out of warp at a quarter impulse, the dampers taking the rest
     W.setThrottle(Math.max(0.25,S.thr));
     course.clear();
     toast(pl.P.name,pl.P.note);
     if(W.onArrive)W.onArrive(pl);
+    for(const f of W.arriveHooks)f(pl);
   }
-  W.arrive=arrive;
+  W.arrive=arrive;W.arriveHooks=[];W.placeOf=get;
 
   // at warp: the place you left is gone at once, and the light is starlight; the ship crosses the chart
   W.warpTick=(dt,fwd)=>{
@@ -104,7 +110,7 @@ export function nav(W){
       if(d<s.r*6&&(!b||d/s.r<b.d/b.r))b={name:s.name,c:wp.clone(),r:s.r,d};}return b;};
   let holding=0;
   W.collide=(S,dt)=>{holding=Math.max(0,holding-dt);
-    for(const s of worldSolids()){SYS.localToWorld(wp.copy(s.c));const m=s.r+(s.orbit?2000:500),d2=wp.distanceToSquared(ROOT.position);
+    for(const s of worldSolids()){if(s.gate)continue;SYS.localToWorld(wp.copy(s.c));const m=s.r+(s.orbit?2000:500),d2=wp.distanceToSquared(ROOT.position);
       if(d2<m*m){const d=Math.sqrt(d2);n.copy(ROOT.position).sub(wp).divideScalar(d||1);ROOT.position.copy(wp).addScaledVector(n,m);
         const into=S.vel.dot(n);if(into<0)S.vel.addScaledVector(n,-into);holding=1.5;}}};
 

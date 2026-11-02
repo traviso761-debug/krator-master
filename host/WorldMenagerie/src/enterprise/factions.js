@@ -11,6 +11,11 @@
 //                keel under one tall swept fin, two spars below with amber engine strips. They help, a little.
 //   a hauler     a trader's tug pulling a spine of cargo pods, about 400 m.
 //   a derelict   two broken halves of something ancient and ribbed, 2.5 km long, a few lights still flickering.
+//   the Kethri   a swarm people: darts of about 40 m, a black needle between two curved teal vanes, that come in
+//                fives and sixes, fast, and fight to the last. Each is weak; the swarm is not.
+//   the Ossari   a reclusive people who grow their ships: a pearl-white hull of swollen pods along a curved spine,
+//                membranes of sail between them glowing faintly gold, about 600 m. Met for the first time here.
+//   a probe      a long-range survey probe, two metres of instruments on a mast, its beacon blinking.
 export function factions(THREE,W,E){
   const std=(c,m,r)=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:r,envMap:W.env,envMapIntensity:1.1});
   const flat=(pts,depth,mat,bev)=>{const sh=new THREE.Shape();pts.forEach(([x,z],i)=>i?sh.lineTo(x,z):sh.moveTo(x,z));sh.closePath();
@@ -116,5 +121,39 @@ export function factions(THREE,W,E){
     g.userData.info={name:'A derelict',info:'Two halves of something old and very large, 2.5 km end to end, dead but for a few lights.'};
     return {g,nose,bubble,engines:[]};
   }
-  return {varr,lattice,sere,hauler,derelict};
+  function kethri(){
+    const g=new THREE.Group(),black=std(0x14181a,0.6,0.35),vane=std(0x1f6a64,0.5,0.4),glowM=new THREE.MeshBasicMaterial({color:0x40ffd0,toneMapped:false});
+    const needle=new THREE.Mesh(new THREE.ConeGeometry(4.5,46,8),black);needle.rotation.z=-Math.PI/2;g.add(needle);
+    for(const sd of [1,-1]){const v=new THREE.Mesh(new THREE.TorusGeometry(16,1.6,5,16,Math.PI*0.9),vane);v.position.set(-6,0,sd*4);v.rotation.set(Math.PI/2,0,sd>0?0.3:Math.PI-0.3);v.scale.set(1,0.5,1);g.add(v);
+      const tip=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),glowM);tip.position.set(-14,0,sd*18);g.add(tip);}
+    const engines=[];{const e=E.sprite(0x40ffd0,34,0.9);e.position.set(-25,0,0);e.userData.eng=true;g.add(e);engines.push(e);}
+    const nose=E.sprite(0x80ffe0,12,0.8);nose.position.set(24,0,0);g.add(nose);
+    const bubble=E.sprite(0x40ffd0,110,0);g.add(bubble);fin(g);
+    g.userData.info={name:'A Kethri dart',info:'One of a swarm: a forty-metre needle between two teal vanes. Alone it is little; there is never only one.'};
+    return {g,nose,bubble,engines};
+  }
+  function ossari(){
+    const g=new THREE.Group(),pearl=std(0xe8e2d4,0.15,0.35),sailM=new THREE.MeshBasicMaterial({color:0xffd890,transparent:true,opacity:0.28,side:THREE.DoubleSide,depthWrite:false,toneMapped:false});
+    // pods swelling along a curved spine, biggest amidships, and sails of light between them
+    const pts=[];for(let i=0;i<9;i++){const u=i/8,x=280-u*560,y=Math.sin(u*Math.PI)*60;pts.push([x,y]);
+      const r=26+70*Math.sin(u*Math.PI)**1.5,p=new THREE.Mesh(new THREE.SphereGeometry(r,20,14),pearl);p.position.set(x,y,0);p.scale.set(1.3,0.8,1);g.add(p);}
+    for(const sd of [1,-1]){const sh=new THREE.Shape();sh.moveTo(pts[1][0],0);sh.quadraticCurveTo(0,sd*260,pts[7][0],0);sh.lineTo(pts[1][0],0);
+      const s=new THREE.Mesh(new THREE.ShapeGeometry(sh,16),sailM);s.rotation.x=sd*0.35;s.position.y=50;g.add(s);}
+    const engines=[];for(const z of [-30,30]){const e=E.sprite(0xffe0a0,120,0.7);e.position.set(-300,10,z);e.userData.eng=true;g.add(e);engines.push(e);}
+    for(let i=0;i<7;i++){const l=E.sprite(0xfff2c8,26,0.9);l.position.set(220-i*70,pts[Math.min(8,i+1)][1]+40,(i%2?1:-1)*30);g.add(l);}
+    const nose=E.sprite(0xffe8b0,20,0.6);nose.position.set(300,0,0);g.add(nose);const bubble=E.sprite(0xffe0a0,900,0);g.add(bubble);fin(g);
+    g.userData.info={name:'An Ossari vessel',info:'A grown ship, six hundred metres of pearl-white pods along a curved spine, sails of faint light between them. The Ossari have never been met before.'};
+    return {g,nose,bubble,engines};
+  }
+  function probe(){
+    const g=new THREE.Group(),m=std(0xb8bcc0,0.6,0.35);
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(9,12,40,10),m);body.rotation.z=Math.PI/2;g.add(body);
+    const dish=new THREE.Mesh(new THREE.SphereGeometry(16,14,8,0,Math.PI*2,0,0.9),m);dish.rotation.z=-Math.PI/2;dish.position.x=22;g.add(dish);
+    const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,40,5),m);mast.position.y=20;g.add(mast);
+    const beacon=E.sprite(0xff4030,60,1);beacon.position.y=42;beacon.userData.flick=0;g.add(beacon);
+    const nose=E.sprite(0xffffff,1,0);g.add(nose);const bubble=E.sprite(0xffffff,1,0);g.add(bubble);fin(g);
+    g.userData.info={name:'A survey probe',info:'A long-range probe, forty metres of instruments, its beacon still blinking.'};
+    return {g,nose,bubble,engines:[]};
+  }
+  return {varr,lattice,sere,hauler,derelict,kethri,ossari,probe};
 }

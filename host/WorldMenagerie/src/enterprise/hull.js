@@ -209,13 +209,16 @@ export function bridgeSurf(u,v,p){
 
 // ---------- the grid ----------
 // A surface function made into an indexed mesh, with normals from the function itself (central differences),
-// so the seam where u or v wraps round has no crease. `flip` turns the faces over.
+// so the seam where u or v wraps round has no crease. `flip` turns the faces over. nu and nv are a number of even
+// steps, or the list of u (or v) values to put the rows at (rows() below).
 export function surface(THREE,f,nu,nv,flip){
+  const US=Array.isArray(nu)?nu:null,VS=Array.isArray(nv)?nv:null;
+  if(US)nu=US.length-1;if(VS)nv=VS.length-1;
   const N=(nu+1)*(nv+1),pos=new Float32Array(N*3),nor=new Float32Array(N*3),uv=new Float32Array(N*2);
   const p=new THREE.Vector3(),n=new THREE.Vector3();
   let k=0;
   for(let i=0;i<=nu;i++)for(let j=0;j<=nv;j++,k++){
-    const u=i/nu,v=j/nv;f(u,v,p);
+    const u=US?US[i]:i/nu,v=VS?VS[j]:j/nv;f(u,v,p);
     pos[k*3]=p.x;pos[k*3+1]=p.y;pos[k*3+2]=p.z;uv[k*2]=u;uv[k*2+1]=v;
     normalAt(f,u,v,n,flip);nor[k*3]=n.x;nor[k*3+1]=n.y;nor[k*3+2]=n.z;
   }
@@ -231,6 +234,26 @@ export function surface(THREE,f,nu,nv,flip){
   g.setIndex(idx);g.computeBoundingSphere();
   return g;
 }
+// Where the rows of a grid are needed. The surfaces are sampled on an even n by m grid, and a row (along u for axis
+// 0, along v for 1) is left out wherever every sample between the rows kept either side of it lies within tol
+// metres of the straight line between them, on every surface given. Most of a hull is nearly flat one way or the
+// other, so this keeps the rows where it bends (a nacelle's ends and corners, the saucer's dorsal and edge) and
+// drops two in three of the rest. The kept rows are still exact (u, v), so the textures land where they did; and
+// surfaces that share an edge (the saucer's top, rim and underside) are given the same rows, so the edge has no gaps.
+export const TOL=0.02;
+export function rows(fs,n,m,axis,tol=TOL){
+  const P=fs.map(f=>{const a=new Float64Array((n+1)*(m+1)*3),p={x:0,y:0,z:0};let k=0;
+    for(let r=0;r<=n;r++)for(let c=0;c<=m;c++,k+=3){if(axis)f(c/m,r/n,p);else f(r/n,c/m,p);a[k]=p.x;a[k+1]=p.y;a[k+2]=p.z;}return a;});
+  const ok=(a,b)=>{for(const Q of P)for(let r=a+1;r<b;r++){const t=(r-a)/(b-a);
+    for(let c=0;c<=m;c++){const A=(a*(m+1)+c)*3,B=(b*(m+1)+c)*3,R=(r*(m+1)+c)*3;
+      const dx=Q[R]-Q[A]-(Q[B]-Q[A])*t,dy=Q[R+1]-Q[A+1]-(Q[B+1]-Q[A+1])*t,dz=Q[R+2]-Q[A+2]-(Q[B+2]-Q[A+2])*t;
+      if(dx*dx+dy*dy+dz*dz>tol*tol)return false;}}return true;};
+  const keep=[0];
+  for(let k=0;k<n;){let b=k+1;while(b<n&&ok(k,b+1))b++;keep.push(b/n);k=b;}
+  return keep;
+}
+// a surface on the rows it needs, from an even nu by nv grid
+export const thinSurface=(THREE,f,nu,nv,flip)=>surface(THREE,f,rows([f],nu,nv,0),rows([f],nv,nu,1),flip);
 const _a={x:0,y:0,z:0},_b={x:0,y:0,z:0},_c={x:0,y:0,z:0},_d={x:0,y:0,z:0};
 export function normalAt(f,u,v,n,flip){
   for(const e of [2e-4,2e-3,1e-2]){
