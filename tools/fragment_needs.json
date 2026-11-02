@@ -1,0 +1,18 @@
+{
+ "what": "What a shared fragment needs on its page: tools/check_assembly.py, rule NEEDS. `needs`: on the page and before it. `after`: before it, if the page has it at all. Each module's own header says these in prose; this file is what is checked.",
+ "fragments": {
+  "core/water/21-core-water-shore.js": {"needs": ["core/water/20-core-water.js"]},
+  "core/water/22-core-water-flow.js": {"needs": ["core/water/20-core-water.js"]},
+  "core/water/50-core-water-draw.js": {"needs": ["core/water/20-core-water.js"]},
+  "core/water/51-core-water-kinds.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js", "core/water/50-core-water-draw.js"], "after": ["core/water/21-core-water-shore.js"]},
+  "core/water/ext/53-core-water-terraces.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js"]},
+  "core/water/ext/53b-core-water-terraces-draw.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js", "core/water/50-core-water-draw.js", "core/water/51-core-water-kinds.js", "core/water/ext/53-core-water-terraces.js"]},
+  "core/water/ext/54-core-water-kinds-ext.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js"]},
+  "core/water/ext/54b-core-water-kinds-ext-draw.js": {"needs": ["core/water/20-core-water.js", "core/water/21-core-water-shore.js", "core/water/22-core-water-flow.js", "core/water/50-core-water-draw.js", "core/water/51-core-water-kinds.js", "core/water/ext/54-core-water-kinds-ext.js"]},
+  "core/water/ext/55-core-water-confluence.js": {"needs": ["core/water/20-core-water.js", "core/water/21-core-water-shore.js", "core/water/22-core-water-flow.js"]},
+  "core/water/ext/55b-core-water-confluence-draw.js": {"needs": ["core/water/20-core-water.js", "core/water/21-core-water-shore.js", "core/water/22-core-water-flow.js", "core/water/50-core-water-draw.js", "core/water/51-core-water-kinds.js", "core/water/ext/55-core-water-confluence.js"]},
+  "core/water/ext/56-core-water-breakup.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js", "core/water/50-core-water-draw.js", "core/water/51-core-water-kinds.js"]},
+  "core/water/ext/57-core-water-audit.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js"], "after": ["core/water/ext/55-core-water-confluence.js"]},
+  "core/water/ext/58-core-water-mirror.js": {"needs": ["core/water/20-core-water.js"]}
+ }
+}

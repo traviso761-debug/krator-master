@@ -6,13 +6,24 @@
                                            # builds, the Godot headless tests, the shot compare on the must-pass
                                            # cases (each skipped, and said so, when its tool is missing: playwright,
                                            # godot, numpy and Pillow)
-    python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only)
+    python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only, on the committed pages)
     python3 tools/test_all.py --nightly --no-cache   # run every verify, even one that passed on the same page before
     python3 tools/test_all.py --list       # print the steps and exit
 
 Exit code 1 if any step fails. Each step prints PASS, FAIL or SKIP with its time; failures print the tail of their
-output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes: a clean
-tree after a run is part of the proof (the push job checks it with `git status --porcelain`).
+output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes and each
+build's build-inputs.json (it runs through tools/build.py): a clean tree after a run is part of the proof (the push job
+checks it with `git status --porcelain`).
+
+The ratcheted steps (tools/ratchet.py) fail on what is new, never on the pile; each baseline is meant to shrink to {}:
+check_assembly, check_source, check_vendor, check_views, check_stale and check_cells (--strict replaces its ratchet at
+the rebuild's close-out). Known entries, on purpose:
+  - check_views: 40 view names hold a ':' (a name a screenshot cannot take on NTFS); tools/harness.py owns the fix, which
+    is to make the file name safe when it writes one (CORE-IMPROVEMENTS.md item 17);
+  - check_stale: the pages the biome rebuild's pairs and its close-out rebuild; it records them with --write-baseline, so a
+    page a change leaves behind is new and fails. A pair's rebuild removes its keys (rerun --write-baseline).
+Reports, in --no-build: the pages that differ from PORT-BASELINE.json are the same stale pages, so the hash compare runs
+with the rebuild, where it can hold.
 """
 import glob, importlib.util, os, shutil, subprocess, sys, time
 
@@ -106,7 +117,15 @@ def steps(nightly, build):
          ('builds take the core modules (README.md, "Core modules are not optional")', [PY, 'tools/check_core_use.py']),
          ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
-         ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
+         ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py']),
+         # tools/check_source.py: trailing // that swallow statements, `|| <number>` option reads, cameraPosition, bare GLSL splices
+         # and raw texture2D in hooks (CORE-IMPROVEMENTS.md 17, 14, 8b, 9b); a ratchet
+         ('source lints (comments, || numbers, shader text)', [PY, 'tools/check_source.py']),
+         ('vendored drift only shrinks (item 19)', [PY, 'tools/check_vendor.py', '--quiet']),
+         ('stations have views, view names are file-safe (item 10b)', [PY, 'tools/check_views.py']),
+         ('page cap and BUDGETS.json (items 3a, 3d)', [PY, 'tools/check_budgets.py']),
+         # passes, saying so, while the library cards are LFS pointers (CI pulls only tex/)
+         ('card cells (ratchet; tools/textures/check_cells.py)', [PY, 'tools/textures/check_cells.py', '--ratchet'])]
     for t in sorted(glob.glob(os.path.join(ROOT, 'tools', 'tests', 'test_*.py'))):
         s.append(('tools ' + os.path.relpath(t, ROOT).replace(os.sep, '/'), [PY, t]))
     n = node()
@@ -114,13 +133,23 @@ def steps(nightly, build):
     for t in node_tests():
         if t not in late:
             s.append(('node ' + t, [n, t] if n else None))
+    # read the pages and the manifests, so after the rebuild when there is one (with --no-build: the committed pages; an
+    # LFS pointer page counts as NOT BUILT in the first and as its oid in the second)
+    pages = [('page assembly: clash, order, missing, needs (tools/check_assembly.py)', [PY, 'tools/check_assembly.py']),
+             ('pages behind their sources (tools/check_stale.py)', [PY, 'tools/check_stale.py'])]
     if build:
+        # through tools/build.py: the same build, plus its LFS refusal, page cap, fragment needs and build-inputs.json
         for b in builds():
-            s.append(('build ' + b, [PY, 'build.py'], b))
-        s += extra_builds()
+            s.append(('build ' + b, [PY, 'tools/build.py', b]))
+        for name, cmd, cwd in extra_builds():
+            script = os.path.basename(cmd[1])
+            s.append((name, [PY, 'tools/build.py', cwd] + cmd[2:] + ([] if script == 'build.py' else ['--script', script])))
         for t in late:
             s.append(('node ' + t, [n, t] if n else None))
+        s += pages
         s.append(('hash baseline (PORT-BASELINE.json)', [PY, 'tools/port_baseline.py']))
+    else:
+        s += pages
     if nightly:
         pw = importlib.util.find_spec('playwright') is not None
         s.append(('furniture fingerprint', [PY, 'core/furnish/fingerprint.py'] if pw else None))

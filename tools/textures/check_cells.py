@@ -33,11 +33,17 @@ own src/ (the BIO.def line that names the slot's material), and reports, with th
              proposal first (a sheet whose plants overlap can be read wrong: --plants), then tools/textures/pack.py <build>,
              rebuild, and look at the items in the page
   --plants   print each named card's plants (boxes, bases), e.g. --plants card.fern card.sword
-  --strict   exit 1 on any fault (test_all can take it once the final rebuild has fixed the builds)
+  --strict   exit 1 on any fault (test_all takes it once the final rebuild has fixed the builds)
+  --ratchet  exit 1 on a fault not in tools/check_cells_baseline.json (tools/ratchet.py; --write-baseline takes today's, --list
+             prints all): what test_all runs until --strict can replace it. A checkout whose library cards are LFS pointers
+             (CI) says so and passes: `git lfs pull --include="core/materials/library/card.*/*"` to check them
 """
 import glob, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib, ratchet  # noqa: E402
+
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
 BASES = os.path.join(LIB, 'card-bases.json')
 _cache, _plants = {}, {}
@@ -505,10 +511,21 @@ def main(argv):
             files += glob.glob(os.path.join(ROOT, top, '**', 'materials.json'), recursive=True)
         files = [f for f in files if os.sep + 'dist' + os.sep not in f and os.sep + 'archive' + os.sep not in f]
     only = next((set(a.split('=', 1)[1].split(',')) for a in argv if a.startswith('--slots=')), None)
+    rat = '--ratchet' in argv
+    if rat and any(buildlib.is_pointer(p) for p in glob.glob(os.path.join(ROOT, 'core', 'materials', 'library', 'card.*', 'albedo.*'))):
+        print('card cells: the library cards are LFS pointers here, not checked')
+        return 0
     faults = []
     for f in sorted(files):
         if os.path.isfile(f):
             faults += check_build(f, fix, only)
+    if rat:
+        findings, detail = {}, {}
+        for k, rel, slot, lib, ks, why, prop in faults:
+            key = '%s: %s %s' % (rel, k, slot)
+            findings[key] = findings.get(key, 0) + 1
+            detail.setdefault(key, []).append('%s on %s: %s' % (lib, ks, why))
+        return ratchet.main('check_cells', findings, argv, detail, 'fault')
     for k, rel, slot, lib, ks, why, prop in faults:
         print('%-13s %-42s %-12s %-24s %-12s %s%s' % (k, rel, slot, lib, ks, why, ('  -> ' + json.dumps(prop)) if prop else ''))
     print('card cells: %d fault(s) in %d materials.json%s' % (len(faults), len(files), ' (fixed where a cut was proposed)' if fix else ''))
