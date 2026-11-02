@@ -12,7 +12,7 @@ function viewTree(key,s,t,dist,h,look,side){const sp=SWLOW.SPECIES.findIndex(S=>
  const R=Math.max(best.spread||0,best.crownR),D=dist*R,a=Math.atan2(SUNH[1],SUNH[0])+(side||0),cx=best.x+Math.cos(a)*D,cz=best.z+Math.sin(a)*D;
  return[cx,terrainH(cx,cz)+h,cz,best.x,best.y0+best.H*look,best.z];}
 function viewAxis(s0,t0,h0,s1,t1,h1){const a=xzOf(s0,t0),b=xzOf(s1,t1);return[a[0],terrainH(a[0],a[1])+h0,a[1],b[0],terrainH(b[0],b[1])+h1,b[1]];}
-const VIEWS={
+const VIEWS=ST&&ST.views?ST.views():{
  'The oak avenue':(()=>{const a=xzOf(-985,ROAD_T(-985)),b=xzOf(-800,ROAD_T(-800));return[a[0],terrainH(a[0],a[1])+1.7,a[1],b[0],terrainH(b[0],b[1])+9,b[1]];})(),
  'Under the vault':(()=>{const a=xzOf(-720,ROAD_T(-720)),b=xzOf(-640,ROAD_T(-640));return[a[0],terrainH(a[0],a[1])+1.7,a[1],b[0],terrainH(b[0],b[1])+15,b[1]];})(),
  'A sprawl oak':viewTree('sprawloak',-300,0,1.75,4,.3,.4),
@@ -41,6 +41,9 @@ const VIEWS={
  'From the hills':viewAxis(2300,150,60,-1300,-200,0),
  'From afar':viewAxis(3000,-2200,380,-400,0,0),
  'Krator rising':viewAxis(-600,200,30,1200,1400,900),
+ 'A clear spring':SPRINGS.length?(()=>{const S=SPRINGS[1],a=S.side>0?2.2:-.9;return[S.x+Math.cos(a)*44,S.y0+7,S.z+Math.sin(a)*44,S.x,S.y0+3,S.z];})():viewAxis(0,0,30,200,0,0),
+ 'The ribbon roots':viewTree('ribbonroot',-1350,0,1.5,2,.15,.3),
+ 'The fishing bridge':()=>KIN_BRIDGES.length?(b=>{const mx=(b[0]+b[2])/2,mz=(b[1]+b[3])/2;return[mx+60,terrainH(mx+60,mz+40)+6,mz+40,mx,6,mz];})(KIN_BRIDGES[0]):viewAxis(-1300,-200,30,-1400,0,0),
 };
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -110,9 +113,15 @@ function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];
 function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatScene(),F),off=F.map(r=>Math.abs(r.off)).sort((a,b)=>a-b),q=f=>off.length?off[Math.min(off.length-1,Math.floor(off.length*f))]:0;
  return{ok:c.n>1000&&c.fails.length<=(old?0:FEET_OWED)&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground, '+_feet.held+' held pieces left out ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
   c.worst.gap.toFixed(2)+' m up, '+c.worst.depth.toFixed(2)+' m down; the control '+(c.neg?'floats':'DID NOT float')+'); terrainH off the drawn ground at these feet: median '+q(.5).toFixed(2)+', p99 '+q(.99).toFixed(2)+', max '+q(1).toFixed(2)+' m'};}
+// THE LAND SIDE OF THE WATER (core/water ext/60, PRACTICE.md section 2; ChatGPT's third checklist line): the env's fields hold their units, the trees stand out of the water the eye sees, and the wet band reaches it
+function edgeCheck(){const P=[];for(const T of SWLOW.TREES){if(T.cut||T.lv===0||T.sp===0||T.sp===1)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:SWLOW.SPECIES[T.sp].key});if(P.length>4000)break;}
+ const bad=BIO.envCheck(ENV,[[0,0],[-1400,-200],[800,300],[-2400,0]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)};}
+const EDGE_OWED={plant:40,wet:400};   // the first run's counts, recorded in KNOWN_ISSUES.md; ratchet down
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
  add('the plants feet on the drawn ground (KSEAT contact sweep)',feetCheck(false));
+ add('the flora and the wet band read the water\'s own shore (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_instNames();
  add('a fruiting species with no catalog fruit',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='rattlepod'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SWLOW.PLANTS,N));
@@ -120,6 +129,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the figs never drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N.filter(n=>n[0]!=='biome:fig')));
  add('the plants feet back on terrainH (as before KSEAT): they float and sink',feetCheck(true));
  return R;}
+/* the land in the sea (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
+const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[SEA_DRAW.mesh.material,INLAND_DRAW.mesh.material],level:0,center:xzOf(-2500,-50),radius:700,far:4000,
+ tree:o=>/^biome:impTrees/.test(o.name),hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;
 // ---------------------------------------------------------------- the page, handed to the host
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
@@ -127,7 +139,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'swlowlands',title:'Krator Southwestern Lowlands',
  hint:'The southwestern lowlands: mangrove shore, bayou, rainforest strip, humid subtropical plain, Mediterranean hills (ideal type)',
  scene,camera,renderer,ground:drawnH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:()=>{MIRROR.update();SKY.draw();},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

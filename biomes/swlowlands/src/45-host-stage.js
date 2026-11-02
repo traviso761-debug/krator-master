@@ -31,9 +31,16 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
+// A STATION (stations/<name>/44z-host-*.js, loaded before this fragment) hands this stage STATION_STAGE: its own terrain, fields, mask, river and ground
+// split, over the same axis, sea and kit. Null on the page itself
+const ST=typeof STATION_STAGE!=='undefined'?STATION_STAGE:null;
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
+/* the draw-call and vertex set (BACKPORT.md section 1; nhighlands' lines): welded items, one mesh a chunk, the cross-fade, chunks off screen dropped; ?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 */
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();const HAZE=new THREE.Color(0xc6ccc0);scene.fog=new THREE.FogExp2(HAZE.getHex(),.00020);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,14000);
@@ -61,14 +68,14 @@ function riverD(x,z){const s=sOf(x,z),t=tOf(x,z);if(s>TERR.R*1.2)return 1e9;
  if(f>0){d=Math.min(d,Math.abs(t-(RIVER_T(s)+f*210)),Math.abs(t-(RIVER_T(s)-f*170)));}
  return d;}
 // the river's width grows toward the sea
-function riverW(x,z){const s=sOf(x,z);return mix(9,26,smooth(1800,-1500,s));}
+function riverW(x,z){const s=sOf(x,z);if(ST&&ST.riverW)return ST.riverW(s);return mix(9,26,smooth(1800,-1500,s));}
 // a bayou: sloughs and pools in the coastal lowland, oxbow ponds up the valley
 function swampK(x,z){const s=sw(x,z),sh=shoreS(tOf(x,z));return smooth(-1050,-1350,s)*smooth(sh+10,sh+90,sOf(x,z));}
 // THE OAK AVENUE: a dirt road across the plain toward the tower, t as a function of s.
 // The host owns the road; the biome plants its two rows (SWLOW.build({avenues})).
 const ROAD_S=[-1000,-420];
 function ROAD_T(s){return 300+22*Math.sin(s*.006);}
-function roadD(x,z){const s=sOf(x,z),t=tOf(x,z);if(s<ROAD_S[0]-60||s>ROAD_S[1]+60||Math.abs(t-300)>90)return 1e9;
+function roadD(x,z){if(ST)return 1e9;const s=sOf(x,z),t=tOf(x,z);if(s<ROAD_S[0]-60||s>ROAD_S[1]+60||Math.abs(t-300)>90)return 1e9;
  const sc=clamp(s,ROAD_S[0],ROAD_S[1]),slope=22*.006*Math.cos(sc*.006);return Math.hypot(s-sc,(t-ROAD_T(sc))/Math.sqrt(1+slope*slope));}
 // THE CORK GROVE: a harvested planting on the first slopes of the hills (the biome plants it)
 const CORK_GROVE={center:xzOf(1250,-260),r:70,spacing:16,angle:.35,species:'corkoak',stripped:true};
@@ -79,7 +86,15 @@ function baseH(x,z){const s=sw(x,z);
  return 1.25+2.8*smooth(-1500,-300,s)+7*smooth(-400,700,s)+60*smooth(500,1900,s)+75*smooth(1600,3200,s);}
 function hillH(x,z){const s=sw(x,z),k=smooth(300,1300,s);
  return k*(46*(fbm(x*.0016+2,z*.0016-4,63,3)-.5)+14*(fbm(x*.006-1,z*.006+7,64,2)-.5))+(1-k)*(1.6*(fbm(x*.004,z*.004,65,2)-.5));}
-function terrainH(x,z){
+// THE CLEAR SPRINGS (BACKPORT.md's row, PLAN-FLORA.md: the SW highlands' karst rivers come out at the foot of the hills; ?springs=0 without them): three blue-green
+// pools beside the river in the hills, each in a bowl the ground keeps for it, each sending a gin-clear run to the river (core/water ext/54 W.karstSpring: 89w-host-water.js),
+// each under spring cypresses (87-host-kin.js). Placed by the river's own line: s along the axis, side of the river, metres off it
+const SPRINGS=ST||new URLSearchParams(location.search).get('springs')==='0'?[]:[[760,1,74],[1210,-1,80],[1640,1,70]].map(q=>{const s=q[0],t=RIVER_T(s)+q[1]*q[2],a=xzOf(s,t);return{s,t,side:q[1],x:a[0],z:a[1],r:9,y0:null};});
+function terrainH(x,z){if(ST&&ST.terrainH)return ST.terrainH(x,z);let h=terrainH0(x,z);
+ for(const S of SPRINGS){const d=Math.hypot(x-S.x,z-S.z);if(d>S.r*1.6)continue;if(S.y0==null)S.y0=terrainH0(S.x,S.z);
+  h=Math.min(h,mix(S.y0-1.6,h,smooth(S.r*.85,S.r*1.6,d)));}   /* the spring's bowl: only ever lower */
+ return h;}
+function terrainH0(x,z){
  let h=baseH(x,z)+hillH(x,z);const h0=h;
  const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
  // bayou pools and sloughs: standing water a few tens of metres across
@@ -113,6 +128,7 @@ const FIELD={
  flow:(x,z)=>clamp(smooth(W_R(x,z)*5+90,W_R(x,z)+4,riverD(x,z)),0,1),
  upland:(x,z)=>clamp((terrainH(x,z)-8)/150,0,1)};
 function W_R(x,z){return riverW(x,z);}
+if(ST&&ST.fields)Object.assign(FIELD,ST.fields);
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
 /* THE GROUND AS DRAWN (2026-10-27, core/terrain KSEAT; CORE-IMPROVEMENTS.md item 1): the biome core seats every plant and
@@ -122,7 +138,7 @@ const OBSTACLES=[];
 let GROUND_SEAT=null;
 function drawnH(x,z){const h=GROUND_SEAT?KSEAT.down(GROUND_SEAT,x,z):null;return h?h.y:terrainH(x,z);}
 BIO.init({tags:'swlowlands',THREE:THREE,scene:scene,terrainH:drawnH,placeH:terrainH,
- mask:(x,z)=>{if(roadD(x,z)<11.5)return 0;const h=terrainH(x,z);return h<.12?0:h<.6?(h-.12)/.48:1;},   // nothing on the road or its mown verges   // nothing rooted under water (the mangrove pass asks past the mask itself)
+ mask:(x,z)=>{if(roadD(x,z)<11.5)return 0;if(ST&&ST.mask){const k=ST.mask(x,z);if(k<=0)return 0;}for(const S of SPRINGS)if(Math.hypot(x-S.x,z-S.z)<S.r*1.25)return 0;const h=terrainH(x,z);return h<.12?0:h<.6?(h-.12)/.48:1;},   // nothing on the road or its mown verges   // nothing rooted under water (the mangrove pass asks past the mask itself)
  obstacles:OBSTACLES,ticks:tick,seed:11,
  // the LOD spine: a row of origins down the NW -> SE axis, sea to hills
  origin:[-2300,-1650,-1000,-350,300,950,1600,2250].map(s=>xzOf(s,0)),center:[0,0],
@@ -165,15 +181,24 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
+/* Standard under KGROUND (roughness high, as dry ground is): the rain's gloss and the puddles show on it, as they cannot on Lambert; ?kground=0 for the old floor */
+const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 /* the library's two ground layers over the painted floor, by the fields (materials.json ground.bayoumud: the bayou mud, dark patches on pale silt (ground095b); ground.oaklitter: the oak woods muddy leaf litter (ground020)), each anti-tiled
    (two scales, one turned 37 degrees, a slow noise between) and part-mixed with the painted colour; without the pack the floor is the painted one */
-const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed)return null;const a=KMAT.packed('swlowlands','ground.bayoumud'),c=KMAT.packed('swlowlands','ground.oaklitter');if(!a||!c)return null;
+const GLAY=USE_KG?null:(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed)return null;const a=KMAT.packed('swlowlands','ground.bayoumud'),c=KMAT.packed('swlowlands','ground.oaklitter');if(!a||!c)return null;
  return{a:KMAT.textures(a,{aniso:8}).map,aK:1/a.scale[0],b:KMAT.textures(c,{aniso:8}).map,bK:1/c.scale[0]};})();
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};if(GLAY){sh.uniforms.uGA={value:GLAY.a};sh.uniforms.uGB={value:GLAY.b};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGA,uGB;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);'+(GLAY?'vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGA,vGWP.xz,'+GLAY.aK.toFixed(4)+')*1.2,clamp(vGL.x*0.65,0.0,0.65));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGB,vGWP.xz,'+GLAY.bK.toFixed(4)+')*1.2,clamp(vGL.y*0.7,0.0,0.7));':'')+'}');};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aGL;varying vec2 vGL;attribute vec2 aGM;varying vec2 vGM;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGM=aGM;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec2 vGL;varying vec2 vGM;'+(GLAY?'uniform sampler2D uGA,uGB;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);'+(GLAY?'vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGA,vGWP.xz,'+GLAY.aK.toFixed(4)+')*1.2,clamp(vGL.x*0.65,0.0,0.65));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGB,vGWP.xz,'+GLAY.bK.toFixed(4)+')*1.2,clamp(vGL.y*0.7,0.0,0.7));':'')+'}\n/*KGROUND*/\ndiffuseColor.rgb*=mix(vec3(1.0),vec3(0.58,0.56,0.54),vGM.y);');};
+/* THE FLOOR ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild): the library's sets, hex-tiled and scaled with distance, by height over the painted
+   floor. Each weight is a documented mask of a vertex (below, 'THE GROUND'S MASKS'): aGL.x the bayou (swampK), aGL.y the open oak country (1 - the rainforest, the dry hills, the
+   bayou and the beach), aGM.x exposed rock (BIO.ENV's slope band; on a station its strata's ledges), aGM.y the water's wet band (89z, WATER.fieldAt's shore). No new sets: the
+   diagnosis of the three grounds (HANDOFF-REBUILD.md) has not run, so this takes the universal row and no more */
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'swlowlands-ground',at:'/*KGROUND*/',layers:[KGROUND.layer('swlowlands','ground.bayoumud',{w:'vGL.x',amt:.65,gain:1.2,tint:'diffuse'}),
+ KGROUND.layer('swlowlands','ground.oaklitter',{w:'vGL.y',amt:.7,gain:1.2,tint:'diffuse'}),
+ KGROUND.layer('swlowlands','rock',{w:'vGM.x',amt:.9,gain:1.15,tint:'diffuse*vec3(1.5,1.32,1.2)',name:'rock'})]});
 /* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal), but
    every cell that straddles the waterline (its corners both under .3 m and over -.3 m: ~3.7k cells, the bayou, the oxbows and
    the shore) is split 4 x 4 (~4.1 m) on terrainH. The coarse facets stood above the water as straight-edged brown islets
@@ -181,7 +206,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
    ground moves, toward it. A split cell's edge against a coarse neighbour takes the coarse edge's line (no cracks). */
 (function(){const N=400,S=TERR.R*2.2,c=S/N,F=4,NF=N*F,cf=c/F,N1=N+1,H=new Float32Array(N1*N1);
  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++)H[j*N1+i]=terrainH(-S/2+i*c,-S/2+j*c);
- const sub=new Uint8Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=H[j*N1+i],b=H[j*N1+i+1],d=H[(j+1)*N1+i],e=H[(j+1)*N1+i+1];if(Math.min(a,b,d,e)<.3&&Math.max(a,b,d,e)>-.3)sub[j*N+i]=1;}
+ const sub=new Uint8Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=H[j*N1+i],b=H[j*N1+i+1],d=H[(j+1)*N1+i],e=H[(j+1)*N1+i+1];if(Math.min(a,b,d,e)<.3&&Math.max(a,b,d,e)>-.3)sub[j*N+i]=1;else if(ST&&ST.split&&ST.split(-S/2+(i+.5)*c,-S/2+(j+.5)*c,a,b,d,e))sub[j*N+i]=1;}
  const isSub=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&sub[j*N+i]===1;
  const pos=[],uvs=[],idx=[],V=new Map();
  function vid(I,J){const k=J*(NF+1)+I;let v=V.get(k);if(v!==undefined)return v;const x=-S/2+I*cf,z=-S/2+J*cf,i=Math.floor(I/F),j=Math.floor(J/F),fi=I%F,fj=J%F;let h;
@@ -195,7 +220,9 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(idx);
  const p=g.attributes.position;
  {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=sk;gl[i*2+1]=open;}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel='The lowland floor';scene.add(m);
+ /* THE GROUND'S MASKS (documented above): aGM.x exposed rock, from the ground's slope (BIO.ENV: rock over bands.slope [.6, 1.2]) or the station's own; aGM.y filled by 89z from the water's shore */
+ {const gm=new Float32Array(p.count*2),E0=4;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),sl=Math.hypot(terrainH(x+E0,z)-terrainH(x-E0,z),terrainH(x,z+E0)-terrainH(x,z-E0))/(2*E0);gm[i*2]=ST&&ST.rock?ST.rock(x,z,sl):smooth(.6,1.2,sl);}g.setAttribute('aGM',new THREE.BufferAttribute(gm,2));}
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel='The lowland floor';scene.add(m);window._groundMesh=m;
  GROUND_SEAT=KSEAT.tris(pos,idx,{id:'ground',cls:'ground'});})();   /* the drawn ground: what drawnH and the probe's contact sweep read */
 
 // ---------------------------------------------------------------- the water
@@ -206,15 +233,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
 // never climbs downstream. BIO.waterH and terrainH are unchanged. The tints are the old plane's constants.
 const SEA_SHALLOW=new THREE.Color(0x4aa89a),SEA_MID=new THREE.Color(0x24707a),SEA_DEEP=new THREE.Color(0x103e52),SEA_PALE=new THREE.Color(0x9ed0bc);
 const BAYOU_COL=new THREE.Color(0x3a3a22),RIVER_COL=new THREE.Color(0x5a6040);
-const RIVER_PTS=[];{let yc=-1e9,on=false;for(let s=-300;s<TERR.R*1.25;s+=24){const a=xzOf(s,RIVER_T(s)),y=terrainH(a[0],a[1])+.6;if(!on&&y<.05)continue;on=true;yc=Math.max(yc,y);RIVER_PTS.push([a[0],a[1],yc]);}RIVER_PTS.reverse();}
+const RIVER_PTS=[];{let yc=-1e9,on=false;for(let s=ST&&ST.riverFrom!=null?ST.riverFrom:-300;s<TERR.R*1.25;s+=24){const a=xzOf(s,RIVER_T(s)),y=ST&&ST.riverY?ST.riverY(s):terrainH(a[0],a[1])+.6;if(!on&&y<.05)continue;on=true;yc=Math.max(yc,y);RIVER_PTS.push([a[0],a[1],yc]);}RIVER_PTS.reverse();}
 const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.6*riverW(p[0],p[1])),
  speed:RIVER_PTS.map((p,i)=>1+2.2*smooth(.01,.08,i+1<RIVER_PTS.length?(p[2]-RIVER_PTS[i+1][2])/24:0))});
 // ---------------------------------------------------------------- the road
+// (a station has no road: ST)
 // A ribbon a few cm over the ground in its own dirt texture: two wheel ruts, a grassy
 // crown, leaf litter, pale sand. (The ground canvas is ~4 m a pixel; a road needs its own.)
 // the road rides the RENDERED ground (drawnH: the ground mesh's own triangles, its split waterline cells included; it
 // replaces the old meshH, which repeated the coarse cells and no longer matched where the cells are split)
-(function(){const TEX=BIO.canvasTex(256,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+if(!ST)(function(){const TEX=BIO.canvasTex(256,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,u=x/w,q=(u-.5)/.4+.5,rut=Math.max(smooth(.12,0,Math.abs(q-.28)),smooth(.12,0,Math.abs(q-.72))),crown=smooth(.1,0,Math.abs(q-.5)),verge=smooth(.19,.22,Math.abs(u-.5));
    const n=(fbm(x/14,y/14,2.1,3)-.5)*40+(BIO.fn.h3(x,y,5)-.5)*22;let r=206+n-rut*26,g2=190+n-rut*24,b=152+n-rut*20;   // the road in the middle 40%, mown grass verges either side
    r=mix(r,120,crown*.45);g2=mix(g2,132,crown*.45);b=mix(b,70,crown*.45);
