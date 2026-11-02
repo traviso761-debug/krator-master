@@ -37,7 +37,14 @@ Rules (key: '<page>: <RULE> <name>'; the detail lines name the fragments, '--lis
   MISSING  'X.y(' where X is an ALL-CAPS name declared at the top of the page as a module (not an array, 'new ...', a
            number or a string) and y is never defined anywhere on the page: not as '.y =', 'y =', 'y:', "'y':", 'y(){'
            (a method), 'function y', a shorthand '{y}' or ',y,', nor a declared name. Built-in methods (push, forEach,
-           get, has, ...) are ignored. This is 'BIO.walkLoop is not a function' when a core fragment was not listed.
+           get, has, ...) and the methods of the three.js objects and canvases such names hold (traverse, getContext, ...)
+           are ignored, and so is an optional hook: a page that also reads X.y without calling it (X.y&&X.y(), if(X.y)) has
+           tested for it. This is 'BIO.walkLoop is not a function' when a core fragment was not listed.
+  NEEDS    tools/fragment_needs.json declares what a shared fragment needs. A page that holds the fragment (found by its
+           header line) must hold each of its `needs` before it, and each of its `after` before it if the page has it
+           at all. Unlike ORDER this sees a fragment whose functions all run later (the water ext modules: 'Nothing
+           runs at load time', and a page that lists 55b without 51 draws nothing). tools/build.py runs this rule on the
+           pages it writes, so a build missing one fails at build time, with no baseline.
 
 Scope is approximated: names a function or block declares (params included) shadow top-level names inside it, a
 var in a block belongs to its function, and 'for (let i ...)' scopes i to the loop. Nothing is evaluated, so a read
@@ -47,7 +54,7 @@ The ratchet (tools/ratchet.py): the baseline (tools/check_assembly_baseline.json
 fails only on a key that is new or whose count grew, so existing pages keep passing and a new page or fragment cannot
 add to the pile. Fixing a finding and rerunning --write-baseline shrinks the file; it is meant to reach {}.
 """
-import bisect, hashlib, os, re, sys, time
+import bisect, hashlib, json, os, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import jsscan, ratchet                                      # noqa: E402
@@ -81,9 +88,11 @@ push pop shift unshift slice splice concat join reverse sort indexOf lastIndexOf
 reduceRight some every find findIndex findLast findLastIndex flat flatMap fill copyWithin keys values entries at
 get set has add delete clear call apply bind then catch finally charAt charCodeAt codePointAt startsWith endsWith
 split substring substr toLowerCase toUpperCase trim trimStart trimEnd padStart padEnd repeat replace replaceAll match
-matchAll search normalize localeCompare toFixed toPrecision clone copy dispose'''.split())
+matchAll search normalize localeCompare toFixed toPrecision clone copy dispose test exec traverse getContext
+getObjectByName setMatrixAt setAttribute distanceTo distanceToSquared'''.split())
 
 MODULE_NAME = re.compile(r'[A-Z][A-Z0-9_]+$')
+NEEDS_FILE = os.path.join(ROOT, 'tools', 'fragment_needs.json')
 
 
 def is_id(v):
@@ -154,11 +163,13 @@ def analyse(body):
     root.tdecls = []
     frames = [root]
     calls = []                      # (pos, X, y)
+    tested = set()                  # (X, y): X.y read without calling it, here
     defs = set()
     decl_on = False                 # inside a var/let/const declarator list
     decl_kind = None
     decl_depth = 0
     decl_target = None
+    decl_saved = []                 # the lists an inner const interrupted: 'const a=()=>{const t=1;},b=2' declares b too
     expect_binding = False
     pending_func = None             # 'expr' / 'decl' after the function keyword, until its params open
     pending_class = None            # depth at which the class body '{' is expected
@@ -279,11 +290,17 @@ def analyse(body):
                     if prev2 == 'window' and (i < 3 or V[i - 3] not in ('.', '?.')):
                         ext = V[i + 2] == 'window' and V[i + 3] == '.' and V[i + 4] == v
                         frames[-1].wdecls.append((pos, v, ext, V[i + 2]))
-                elif nv == '(' and prev2 is not None and MODULE_NAME.match(prev2) and (i < 3 or V[i - 3] not in ('.', '?.')):
-                    calls.append((pos, prev2, v))
+                elif prev2 is not None and MODULE_NAME.match(prev2) and (i < 3 or V[i - 3] not in ('.', '?.')):
+                    if nv == '(':
+                        if i < 3 or V[i - 3] != 'new':        # new TH.Color(: a class on an alias of three.js
+                            calls.append((pos, prev2, v))
+                    else:
+                        tested.add((prev2, v))
             elif v in KEYWORDS:
                 if v == 'var' or v == 'let' or v == 'const':
                     if not (nv in ('=', '.', '(', ':', ';', ',', ')')):
+                        if decl_on and len(frames) > decl_depth:
+                            decl_saved.append((decl_kind, decl_depth, decl_target))
                         decl_on = True
                         decl_kind = v
                         decl_depth = len(frames)
@@ -397,6 +414,12 @@ def analyse(body):
                     close_frame(i)
             if decl_on and len(frames) < decl_depth:
                 decl_on = False
+            while decl_saved and decl_saved[-1][1] >= len(frames):
+                saved = decl_saved.pop()
+                if saved[1] == len(frames):
+                    decl_kind, decl_depth, decl_target = saved
+                    decl_on = True
+                    expect_binding = False
         elif v == ',' or v == ';':
             while len(frames) > 1 and frames[-1].kind == 'arrow':
                 close_frame(i - 1)
@@ -410,8 +433,11 @@ def analyse(body):
         elif v == '=>':
             top = frames[-1]
             if V[i + 1] != '{':
+                names = carry or seed                    # (a, b) => from the stash above, x => from the identifier
                 f = push('arrow', pos)
                 f.immediate = top.kind == 'paren' and top.immediate
+                if names:
+                    f.decls = dict.fromkeys(names[1], 0)
                 carry = None
             elif carry is None:
                 carry = seed                             # x => { : the lone parameter's seed
@@ -424,7 +450,7 @@ def analyse(body):
     if stash is not None:
         root.reads.extend(stash.reads)
     return {'decls': root.tdecls, 'reads': root.reads, 'wdecls': root.wdecls, 'calls': calls, 'defs': defs,
-            'markers': markers}
+            'tested': tested, 'markers': markers}
 
 
 # ------------------------------------------------------------------------------------------------ pages
@@ -459,6 +485,44 @@ def page_scripts(path, text):
         if not body.strip() or '@license' in body[:2048]:
             continue
         out.append((label, body, typ == 'module'))
+    return out
+
+
+_needs = None
+_headers = {}
+
+
+def header_of(frag):
+    """A fragment's first line: what marks it on a page (the builds keep comments)."""
+    if frag not in _headers:
+        with open(os.path.join(ROOT, frag), encoding='utf-8') as fh:
+            _headers[frag] = fh.readline().strip()
+    return _headers[frag]
+
+
+def check_needs(text):
+    """[(key, lines)] for one page's text: rule NEEDS."""
+    global _needs
+    if _needs is None:
+        with open(NEEDS_FILE, encoding='utf-8') as fh:
+            _needs = json.load(fh)['fragments']
+    out, at = [], {}
+
+    def where(frag):
+        if frag not in at:
+            at[frag] = text.find(header_of(frag))
+        return at[frag]
+
+    for frag, v in _needs.items():
+        p = where(frag)
+        if p < 0:
+            continue
+        for n in v.get('needs', []) + v.get('after', []):
+            q = where(n)
+            if q > p:
+                out.append(('NEEDS %s %s' % (frag, n), ['%s must load after %s; the page has it later' % (frag, n)]))
+            elif q < 0 and n in v.get('needs', []):
+                out.append(('NEEDS %s %s' % (frag, n), ['%s needs %s, which is not on the page' % (frag, n)]))
     return out
 
 
@@ -538,23 +602,28 @@ def check_page(path):
             add('ORDER %s' % name, ['%s reads %s; first declared (%s) in %s' % (fname, name, d[3], frag(d[0], d[1])[1])])
 
     # MISSING
-    defined = set()
+    defined, tested = set(), set()
     for label, a, is_mod in infos:
         defined |= a['defs']
+        tested |= a['tested']
     modules = {}
     for d in decls:
         if MODULE_NAME.match(d[2]) and d[3] in ('const', 'let', 'var', 'window', 'class'):
             init = d[5]
-            ok = d[3] == 'class' or (init is not None and init not in ('[', 'new') and init[0] not in '0123456789\'"`-.')
+            ok = d[3] == 'class' or (init is not None and init not in ('[', 'new', 'THREE') and init[0] not in '0123456789\'"`-.')
             modules[d[2]] = modules.get(d[2], False) or ok
     miss = {}
     for si, (label, a, is_mod) in enumerate(infos):
         for pos, x, y in a['calls']:
-            if modules.get(x) and y not in defined and y not in BUILTIN_METHODS:
+            if modules.get(x) and y not in defined and y not in BUILTIN_METHODS and (x, y) not in tested:
                 miss.setdefault('%s.%s' % (x, y), []).append(frag(si, pos)[1])
     for k_, fr in miss.items():
         uniq = sorted(set(fr))
         add('MISSING %s' % k_, ['%s calls %s (%d call sites)' % (f_, k_, fr.count(f_)) for f_ in uniq], len(fr))
+
+    # NEEDS
+    for key, lines in check_needs(text):
+        add(key, lines)
     return path, findings, detail, None
 
 

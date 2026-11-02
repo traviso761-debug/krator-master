@@ -3,7 +3,7 @@
 
 An edge A -> B means a build.py of module A names a path under module B (core/<m>, kits/<k>, biomes/<b>,
 settlements/<s>, openworld/<o>). It is what a build READS, found from path strings in build*.py, not what runs.
-Strings in comments count; fragment-level reads (a file listed from another build's src/) are named by the
+A `#` comment does not count (`# settlements/span PLAN.md SP2` reads nothing); a docstring still does. Fragment-level reads (a file listed from another build's src/) are named by the
 build.py that lists them, so they show up here.
 
 The dependency runs one way (MODULARITY-PLAN.md):  settlements / openworld  ->  kits / biomes  ->  core.
@@ -12,7 +12,8 @@ A backwards edge is:
     kits/*   -> settlements/* or openworld/*
     biomes/* -> settlements/* or openworld/*
 The ones that exist today are listed in tools/dep_allowlist.json. A new one fails; as the plan removes edges,
-delete their lines (a listed edge that is gone is reported as stale).
+delete their lines (a listed edge that is gone is reported as stale). The file's `reasons` says why an edge that is
+not debt stays: a demo's local copy of three.js, for one.
 
 Usage:
     python3 tools/dep_graph.py                   check (what test_all.py runs)
@@ -20,7 +21,7 @@ Usage:
     python3 tools/dep_graph.py --init-allowlist  rewrite the allow-list to the backwards edges found now
     python3 tools/dep_graph.py --who <module>    what <module> reads, and what reads it
 """
-import glob, json, os, re, sys
+import glob, io, json, os, re, sys, tokenize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GROUPS = ('settlements', 'kits', 'biomes', 'openworld', 'core')
@@ -40,6 +41,15 @@ def build_files(mod):
     return sorted(glob.glob(os.path.join(d, 'build*.py')) + glob.glob(os.path.join(d, '*', 'build*.py')))
 
 
+def code_of(text):
+    """A build.py without its # comments: its strings stay, so the paths it reads stay."""
+    try:
+        toks = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return text
+    return ' '.join(t.string for t in toks if t.type != tokenize.COMMENT)
+
+
 def edges():
     out = {}
     for mod in modules():
@@ -48,7 +58,7 @@ def edges():
             if os.sep + 'dist' + os.sep in f:
                 continue
             try:
-                text = open(f, encoding='utf-8', errors='replace').read()
+                text = code_of(open(f, encoding='utf-8', errors='replace').read())
             except OSError:
                 continue
             for g, n in PAT.findall(text):
@@ -88,8 +98,10 @@ def main(argv):
     e = edges()
     back = back_edges(e)
     if '--init-allowlist' in argv:
+        old = json.load(open(ALLOW, encoding='utf-8')) if os.path.isfile(ALLOW) else {}
         write_json(ALLOW, {'_note': 'Backwards edges that exist today (tools/dep_graph.py). Delete a line when the edge is removed; '
-                                    'never add one without a reason in MODULARITY-PLAN.md.', 'backwards': back})
+                                    'never add one without a reason in MODULARITY-PLAN.md.', 'backwards': back,
+                           'reasons': {k: v for k, v in old.get('reasons', {}).items() if k in back}})
         print('wrote %s (%d edges)' % (os.path.relpath(ALLOW, ROOT), len(back)))
         return 0
     if '--who' in argv:

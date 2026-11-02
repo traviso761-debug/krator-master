@@ -26,6 +26,7 @@ import buildlib, ratchet  # noqa: E402
 
 ROOT = buildlib.ROOT
 _hash = {}
+LINTS = ('tools/check_',)   # a build runs tools/check_port.py as a lint; it writes no page bytes, so a change to it moves none
 PAGES = ('.html', '.js')   # UNRECORDED looks at pages and bundles; a build's own bookkeeping (build-manifest.json) is not one
 
 
@@ -49,6 +50,8 @@ def check(build):
                                                    (' ' + ' '.join(args[1:])) if args[1:] else '')
         why = []
         for p, v in run.get('inputs', {}).items():
+            if p.startswith(LINTS):
+                continue
             now = h(p)
             if now != v:
                 why.append(('changed  ' if now else 'gone     ') + p)

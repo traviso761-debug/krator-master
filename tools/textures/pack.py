@@ -52,6 +52,9 @@ import numpy as np
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib  # noqa: E402
+
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
 MATS = os.path.join(ROOT, 'core', 'materials')
 
@@ -66,6 +69,8 @@ def sha1(path):
 
 
 def load(path, size, mode):
+    if buildlib.is_pointer(path):    # a pack written from a pointer would be black in every page that takes it
+        buildlib.refuse_pointer(path, 'tools/textures/pack.py')
     im = Image.open(path).convert(mode)
     wh = tuple(size) if isinstance(size, (list, tuple)) else (size, size)
     if im.size != wh:

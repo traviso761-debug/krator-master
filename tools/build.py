@@ -12,14 +12,16 @@ It is the same build: build.py runs unchanged in its own folder. What it adds:
     the command's key. tools/check_stale.py and tools/reach.py read that file. Commit it with the pages.
   - a read of a Git LFS pointer that is not a page or a bundle (a texture pack, a library image) stops the build with
     the `git lfs pull` to run (2a);
-  - a page over its size cap fails, a page over 90% of it warns (3a; the cap is 16 MB unless BUDGETS.json raises it).
+  - a page over its size cap fails, a page over 90% of it warns (3a; the cap is 16 MB unless BUDGETS.json raises it);
+  - a page missing a fragment a shared fragment needs, or holding it too late, fails (tools/fragment_needs.json, the
+    NEEDS rule of tools/check_assembly.py: the water ext modules' order).
 A plain `python3 build.py` still works and still refuses the pointers it would read (tools/check_port.py runs
 buildlib.preflight first), but it leaves build-inputs.json behind, so check_stale.py reports its page as UNRECORDED.
 """
 import concurrent.futures, os, shutil, subprocess, sys, tempfile, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import buildlib  # noqa: E402
+import buildlib, check_assembly  # noqa: E402
 
 ROOT = buildlib.ROOT
 HOOK = os.path.join(ROOT, 'tools', '_inputs')
@@ -74,6 +76,12 @@ def run(build, args, script='build.py', quiet=False):
             if level:
                 notes.append(('PAGE CAP FAIL  ' if level == 'fail' else 'page cap warn  ') + msg)
                 code = code or (1 if level == 'fail' else 0)
+        if p.endswith('.html') and not buildlib.is_pointer(os.path.join(ROOT, p)):
+            with open(os.path.join(ROOT, p), encoding='utf-8', errors='replace') as fh:
+                text = fh.read().replace('\r\n', '\n')
+            for key, lines in check_assembly.check_needs(text):
+                notes.append('FRAGMENT NEEDS FAIL  %s: %s' % (p, lines[0]))
+                code = 1
     tail = '\n'.join(notes)
     out += ('\n' + tail if tail else '') + '\nrecorded %s: %d inputs, %d listings, %d outputs' % (
         man, len(inputs), len(listings), len(outputs))
