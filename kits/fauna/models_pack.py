@@ -12,9 +12,10 @@ The kit's frame is +z the snout, y up, **+x the animal's LEFT**. The rigs were c
 L / R (wingL, legR, footL, leg0Lt ...) are renamed here by the sign of their pivot's x, once, so the kit's part names are
 true (wingL is the left wing, the one on +x).
 
-Needs numpy and PIL. Reads only the GLB it is given (never the Meshy API), so a repack is deterministic.
+Needs numpy and PIL. Reads only the GLB it is given and rig/sources/<key>/ (never the Meshy API), so a repack is deterministic. After a
+pack, run rig/fit_anchors.js and rig/patch_models.py, then tests/test-models.js, which a new model must clear with no waiver.
 """
-import argparse, base64, io, json, os, re, struct, sys
+import argparse, base64, hashlib, io, json, os, re, struct, sys
 import numpy as np
 from PIL import Image
 
@@ -43,6 +44,37 @@ def jpeg(blob, size, q):
         im = im.resize((size, size), Image.LANCZOS)
     out = io.BytesIO(); im.save(out, 'JPEG', quality=q, optimize=True)
     return 'data:image/jpeg;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def webp_lossless(blob, size):
+    """A normal map stays lossless, as tools/textures/pack.py keeps every normal map."""
+    im = Image.open(io.BytesIO(blob)).convert('RGB')
+    if max(im.size) > size:
+        im = im.resize((size, size), Image.LANCZOS)
+    out = io.BytesIO(); im.save(out, 'WEBP', lossless=True, method=6)
+    return 'data:image/webp;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def webp_rgba(blob, size):
+    im = Image.open(io.BytesIO(blob)).convert('RGBA')
+    if max(im.size) > size:
+        im = im.resize((size, size), Image.LANCZOS)
+    out = io.BytesIO(); im.save(out, 'WEBP', quality=84, method=6)
+    return 'data:image/webp;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def source_record(key):
+    """What the model was made from (PLAN-MESHY.md, C1): rig/sources/<key>/source.json, naming the raw GLB beside it. A pack without it
+    is refused, because the first 19 models kept nothing and none can be regenerated."""
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rig', 'sources', key); p = os.path.join(d, 'source.json')
+    if not os.path.isfile(p):
+        sys.exit('models_pack: no %s (prompt, reference, Meshy task ids, model, credits, raw: the raw GLB\'s file name)' % os.path.relpath(p))
+    rec = json.load(open(p, encoding='utf-8'))
+    for k in ('prompt', 'task_ids', 'ai_model', 'credits', 'raw'):
+        if k not in rec:
+            sys.exit('models_pack: %s has no %s' % (os.path.relpath(p), k))
+    rec['raw_sha256'] = hashlib.sha256(open(os.path.join(d, rec['raw']), 'rb').read()).hexdigest()
+    return rec
 
 
 SIDE = re.compile(r'^(wing2?|wingO2?|leg\d*|legT\d*|foot)([LR])([tf]?)$')
@@ -162,11 +194,25 @@ def main():
         return J['images'][J['textures'][texinfo['index']]['source']]
     def data(im):
         v = J['bufferViews'][im['bufferView']]; return BIN[v['byteOffset']:v['byteOffset'] + v['byteLength']]
-    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': jpeg(data(img(mat['normalTexture'])), a.tex, 84),
+    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': webp_lossless(data(img(mat['normalTexture'])), a.tex),
            'mr': jpeg(data(img(pbr['metallicRoughnessTexture'])), a.mrtex, 84)}
+    # every other material a primitive uses (a see-through wing card) goes with the parts that use it: the first version kept
+    # materials[0] alone, and the dragonfly's wings drew the body's atlas, opaque
+    mats = {}
+    for i, nd in enumerate(nodes):
+        if 'mesh' not in nd:
+            continue
+        mi = J['meshes'][nd['mesh']]['primitives'][0].get('material', 0)
+        if mi:
+            m_ = J['materials'][mi]; p_ = m_['pbrMetallicRoughness']; e = mats.setdefault(m_.get('name') or 'mat%d' % mi, {'parts': [], 'roughness': p_.get('roughnessFactor', 0.5)})
+            e['parts'].append(names[i]); e['_img'] = data(img(p_['baseColorTexture']))
+    for e in mats.values():
+        e['parts'].sort(); e['map'] = webp_rgba(e.pop('_img'), a.mrtex)
 
     doc = {'format': 1, 'key': a.key, 'group': a.group, 'scale': S, 'tris': tris, 'rest': info, 'nodes': out_nodes, 'meshes': meshes, 'anims': anims, 'tex': tex,
-           'renamed': rename}
+           'renamed': rename, 'source': source_record(a.key)}
+    if mats:
+        doc['mats'] = mats
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(doc, fh, sort_keys=True, separators=(',', ':'))

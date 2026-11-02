@@ -34,9 +34,11 @@
       budget is 9 000; `data`/`modelData.budget` is 14 000 for them) and about 1 MB of packed geometry and baked maps apiece, so a
       bundle that takes the flyers and crawlers grows by about 6 MB, and one that takes the farm too by about 5 MB more; models are opt-in, `bundle(groups, mdl=True)`. Fine for a few animals a scene; do not herd them. The
       wing and shoulder joints carry duplicated bands of faces so no seam opens (a few hundred triangles each). Their textures
-      are Meshy's baked maps, not library sets; a perched wing is a rigid fold (the membrane cannot gather); the bat's and
+      are Meshy's baked maps, not library sets (the dragonfly's wings are the library's `wing.dragonfly`); a perched wing is a rigid fold (the membrane cannot gather); the bat's and
       quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
       flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
+- [ ] Every Meshy model but the millipede, dragonfly and hen opens at a join in some clip: the necks when grazing, the shoulders of the flyers, the bellies and leg roots of the horse and ox (`tests/test-models.js`, C4; `PLAN-MESHY.md` section 2). Their numbers are held in `tests/models-waivers.json`. Fixing them means regenerating, since the source GLBs are gone. Rigid parts suit an exoskeleton; a membrane flyer wants skinning.
+- [ ] A model variant ignores breeds and `pose: 'fly'`, and one model is one colour.
 - [ ] The five new mounts (`riders`, 2026-10-19) are the kit's choices where the lore is silent: the riding tiger (only the tribe's
       name), the raptor's size (the lore says velociraptor), the jungle mammoth (thin-haired, for the heat), every yield, life figure
       and temperament. Their legs turn rigidly at the hip like every animal's here, so a walking mammoth or threehorn lifts its feet

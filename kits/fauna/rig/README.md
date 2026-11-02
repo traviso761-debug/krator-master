@@ -18,6 +18,11 @@ checks: no foot slides more than 3% of a stride and no leg goes through the grou
 This is working code from one session, not a tool: paths are the session's, and the thresholds in `fcfg.py` were tuned by eye
 per model.
 
+**The steps for a new model** (`../PLAN-MESHY.md`): keep the source in `rig/sources/<key>/` (`source.json`: prompt, task_ids, ai_model,
+credits, raw; and the raw GLB), rig it, `models_pack.py`, `node rig/fit_anchors.js`, `python3 rig/patch_models.py`, then
+`node tests/test-models.js`, which a new model must clear with no waiver. `--png <dir>` draws where a body opens. The `verify_*.py`
+above need the rigged GLB and are not in CI; the test covers their foot slide and floor depth on the packed model.
+
 **Farm animals** (cow, ox, pig, sheep, goat, hen, dog, cat): `qmodel.py <animal> <meshy.glb> <out.glb>` is one script (Meshy
 text-to-3D standing pose, textured). It decimates in one pass, carries the UVs, splits the body into torso, head (with the neck),
 tail and per leg a thigh, shin and foot, overlaps every join with a band of the neighbour's faces so no seam opens, and rigs a

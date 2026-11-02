@@ -48,7 +48,8 @@ millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, 
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
 `fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
-a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`.
+a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`. Every model is held to
+`tests/test-models.js` (`PLAN-MESHY.md` section 4), and a new one must clear it with no waiver.
 
 ## What an animal carries (data first)
 

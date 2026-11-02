@@ -26,6 +26,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
+  anchors and `userData.anchorOn`, and `krator-fauna-farm.js` the bison's variant 3 size. The pages that bundle the kit (Voth,
+  isle-demo, ash-nomads, desert-nomads, islanders, lizardmen, scyvoi, ringisles, sedesert and its stations, longsong) were not
+  rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
+  far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
+  `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
 - **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the

@@ -1,0 +1,153 @@
+// node kits/fauna/tests/test-models.js [--report] [--write-waivers] [--png dir]: the gate on the packed baked models (PLAN-MESHY.md section 4).
+// Reads models/*.json and the kit's catalog; no GPU, no browser, no source GLB. A new model must clear every LIMIT. The models shipped
+// before this test are held by tests/models-waivers.json: a waived number may only get better, and a waiver no longer needed fails, so
+// the list can only shrink. Each check has a negative on damaged copies of a clean model.
+'use strict';
+const fs = require('fs'), path = require('path');
+const L = require('./models-lib.js');
+const ROOT = path.join(__dirname, '..', '..', '..'), DIR = path.join(ROOT, 'kits', 'fauna', 'models'), WFILE = path.join(__dirname, 'models-waivers.json');
+const arg = n => process.argv.includes(n), argv = n => process.argv[process.argv.indexOf(n) + 1];
+let fails = 0;
+const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++; };
+
+const LIMITS = {
+  closure: 0.015,      // C4: largest view into a body, any clip, frame and view, as a share of the body's broadest view
+  pieces: 0,           // C3: limb parts in more than one piece (rigs with overlap bands count only true breaks: see limbPieces)
+  sides: 1.5,          // C3: triangles of a limb part against its mirror
+  pivot: 0.06,         // C6: a child part's pivot from its parent's surface, as a share of the body's longest side
+  slide: 3,            // C7: a planted foot's slide, % of a stride
+  below: 0.005,        // C7: lowest point of a leg under the ground, as a share of the height
+  mb: 1.5,             // C9: file size
+  parts: 25,           // C9: parts, each a draw call
+  density: 150,        // C9: colour map, pixels a metre (a floor: the one limit a higher number clears)
+  lossyNormal: 0,      // C9: 1 when the normal map is a JPEG
+  sourceLost: 0,       // C1: 1 when the model carries no source record
+};
+const CHECKS = Object.keys(LIMITS), over = (c, v) => (c === 'density' ? v < LIMITS[c] : v > LIMITS[c]);
+const worse = (c, v, w) => (c === 'density' ? v < w / 1.02 : v > w * 1.02);   /* a waived number may only get better, past rounding */
+const FRAMES = 7, RES = 240, DIRS = L.dirs();
+
+/* ---- C4: render every clip from every side and look for the inside of a body */
+function closure(m, B) {
+  B = B || L.bounds(m); const watched = n => L.TRUNK.test(n); let worst = { px: 0 }, area = 0;
+  for (const [cn, c] of [['rest', null]].concat(Object.entries(m.clips))) for (let f = 0; f < (c ? FRAMES : 1); f++) { const W = L.pose(m, c, c ? c.dur * f / FRAMES : 0);
+    for (let d = 0; d < DIRS.length; d++) { const R = L.raster(m, W, B, DIRS[d], RES, watched); let a = 0; for (let i = 0; i < R.id.length; i++) if (R.id[i] === 1 || R.id[i] === 2) a++;
+      area = Math.max(area, a); const px = L.blob(R, 2); if (px > worst.px) worst = { px, clip: cn, frame: f, dir: d, R }; } }
+  worst.v = worst.px / Math.max(area, 1); return worst;   /* against the body's broadest view, so an end-on view with little body in it does not inflate the share */
+}
+/* ---- C3: welded pieces of a part. Rigs that overlap a join carry a band of the neighbour's faces, so small pieces are not breaks: a
+   second piece counts only over 15% of the part's triangles */
+function pieces(P) {
+  const idOf = new Map(), wid = new Int32Array(P.pos.length / 3);
+  for (let i = 0; i < wid.length; i++) { const k = Math.round(P.pos[i * 3] * 2e4) + ',' + Math.round(P.pos[i * 3 + 1] * 2e4) + ',' + Math.round(P.pos[i * 3 + 2] * 2e4); if (!idOf.has(k)) idOf.set(k, idOf.size); wid[i] = idOf.get(k); }
+  const up = new Int32Array(idOf.size).map((_, i) => i), find = a => { while (up[a] !== a) a = up[a] = up[up[a]]; return a; };
+  for (let t = 0; t < P.idx.length; t += 3) { const a = find(wid[P.idx[t]]), b = find(wid[P.idx[t + 1]]), c = find(wid[P.idx[t + 2]]); up[b] = a; up[find(c)] = a; }
+  const n = {}; for (let t = 0; t < P.idx.length; t += 3) { const r = find(wid[P.idx[t]]); n[r] = (n[r] || 0) + 1; }
+  const sizes = Object.values(n).sort((a, b) => b - a), tot = P.idx.length / 3;
+  return { all: sizes.length, big: sizes.filter(s => s >= 0.15 * tot).length };
+}
+const isLimb = n => /^(leg|foot)/.test(n), mirror = n => { const q = /^(.*?)([LR])([tf]?)$/.exec(n); return q ? q[1] + (q[2] === 'L' ? 'R' : 'L') + q[3] : null; };
+function worldVert(m, W, P, i, v) { L.apply(W[P.node], P.pos, i * 3, v); return v; }
+/* ---- C7: slide and depth of the limb ends over the walk */
+function walk(m) {
+  const c = m.clips.walk, ex = c && c.extras; if (!ex || !ex.speed) return { slide: 0, below: 0 };
+  const G = ex.ground == null ? m.M.rest.ground : ex.ground, nodes = m.M.nodes, T = []; for (let k = 0; k < 24; k++) T.push(c.dur * k / 24);
+  const hasKid = n => Object.keys(m.parts).some(q => isLimb(q) && nodes[m.parts[q].node].parent === m.parts[n].node);
+  const ends = Object.keys(m.parts).filter(n => isLimb(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9;
+  for (const n of ends) { const P = m.parts[n], np = P.pos.length / 3, ys = T.map((_, k) => { let y = 1e9; for (let i = 0; i < np; i++) y = Math.min(y, worldVert(m, Ws[k], P, i, v)[1]); return y; });
+    const ymin = Math.min(...ys), kst = ys.indexOf(ymin); lo = Math.min(lo, ymin); let tip = 0, ty = 1e9; for (let i = 0; i < np; i++) { const y = worldVert(m, Ws[kst], P, i, v)[1]; if (y < ty) { ty = y; tip = i; } }
+    const zs = []; for (let k = 0; k < T.length; k++) { if (ys[k] > ymin + 0.004) continue; const q = worldVert(m, Ws[k], P, tip, v); zs.push(q[2] + ex.speed * T[k]); }
+    for (let i = 1; i < zs.length; i++) { while (zs[i] - zs[i - 1] > per / 2) zs[i] -= per; while (zs[i] - zs[i - 1] < -per / 2) zs[i] += per; }
+    if (zs.length > 1) worst = Math.max(worst, Math.max(...zs) - Math.min(...zs)); }
+  return { slide: ex.stride ? 100 * worst / ex.stride : 0, below: Math.max(0, (G - lo) * m.M.scale / Math.max(m.M.rest.h, 1e-6)) };
+}
+/* ---- C6: a child's pivot must sit on or in its parent (rest; pivots are fixed in the parent's frame) */
+function pivots(m) {
+  const nodes = m.M.nodes, S = m.M.scale, side = Math.max(m.M.rest.w, m.M.rest.d, m.M.rest.h); let worst = 0, who = '';
+  for (const n in m.parts) { const nd = nodes[m.parts[n].node]; if (nd.parent < 0) continue; const pn = nodes[nd.parent].name, Q = m.parts[pn]; if (!Q) continue;
+    let d = 1e18; for (let i = 0; i < Q.pos.length; i += 3) d = Math.min(d, (Q.pos[i] - nd.t[0]) ** 2 + (Q.pos[i + 1] - nd.t[1]) ** 2 + (Q.pos[i + 2] - nd.t[2]) ** 2);
+    const v = Math.sqrt(d) * S / side; if (v > worst) { worst = v; who = n; } }
+  return { pivot: worst, who };
+}
+/* ---- C9: the colour map's pixels a metre, and the UV area of each part (a card sampling the whole atlas has one near 1) */
+function density(m) {
+  let a3 = 0, a2 = 0; const S = m.M.scale, px = 1024;
+  for (const n in m.parts) { if (uvOwn(m, n)) continue; const P = m.parts[n], I = P.idx;
+    for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3, ux = P.pos[b] - P.pos[a], uy = P.pos[b + 1] - P.pos[a + 1], uz = P.pos[b + 2] - P.pos[a + 2], vx = P.pos[c] - P.pos[a], vy = P.pos[c + 1] - P.pos[a + 1], vz = P.pos[c + 2] - P.pos[a + 2];
+      a3 += 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) * S * S; a2 += 0.5 * uvArea(P, t); } }
+  return px * Math.sqrt(a2 / Math.max(a3, 1e-9));
+}
+const uvOwn = (m, n) => Object.values(m.M.mats || {}).some(q => q.parts.indexOf(n) >= 0);
+function uvArea(P, t) { const a = P.idx[t] * 2, b = P.idx[t + 1] * 2, c = P.idx[t + 2] * 2, e = P.uv[b] - P.uv[a], f = P.uv[b + 1] - P.uv[a + 1], g = P.uv[c] - P.uv[a], h = P.uv[c + 1] - P.uv[a + 1]; return Math.abs(e * h - f * g); }
+const fillsAtlas = m => Object.keys(m.parts).filter(n => { if (uvOwn(m, n)) return false; const P = m.parts[n]; let a = 0; for (let t = 0; t < P.idx.length; t += 3) a += 0.5 * uvArea(P, t); return a > 0.7; });
+
+/* the numbers a model is held to */
+function measure(m, file, full) {
+  const c = full === false ? { v: 0 } : closure(m), lim = Object.keys(m.parts).filter(isLimb), w = walk(m), piv = pivots(m); let side = 1;
+  for (const n of lim) { const q = mirror(n); if (!q || !m.parts[q]) continue; side = Math.max(side, m.parts[n].idx.length / m.parts[q].idx.length); }
+  return { closure: c.v, closureAt: c, pieces: lim.filter(n => pieces(m.parts[n]).big > 1).length, sides: side, pivot: piv.pivot, slide: w.slide, below: w.below,
+    mb: fs.statSync(file).size / 1e6, parts: Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
+}
+
+const files = fs.readdirSync(DIR).filter(f => f.endsWith('.json')).sort(), MODELS = {}, MEASURED = {};
+const waivers = fs.existsSync(WFILE) ? JSON.parse(fs.readFileSync(WFILE, 'utf8')).models : {};
+for (const f of files) { const m = L.load(path.join(DIR, f)); MODELS[m.key] = m; MEASURED[m.key] = measure(m, path.join(DIR, f)); }
+const pad = (x, n) => String(x).padEnd(n), num = x => (typeof x === 'number' ? (Number.isInteger(x) ? x : +x.toFixed(4)) : x);
+if (arg('--report')) { console.log(pad('model', 21) + CHECKS.map(k => pad(k, 11)).join('')); for (const k in MEASURED) console.log(pad(k, 21) + CHECKS.map(q => pad(num(MEASURED[k][q]), 11)).join('') + (MEASURED[k].closureAt.clip || '')); }
+if (arg('--png')) for (const k in MEASURED) { const a = MEASURED[k].closureAt; if (a.R) L.png(a.R, path.join(argv('--png'), k + '-' + a.clip + '.png')); }
+if (arg('--write-waivers')) { const out = {};
+  for (const k in MEASURED) { const w = {}; for (const c of CHECKS) if (over(c, MEASURED[k][c])) w[c] = num(MEASURED[k][c]); if (Object.keys(w).length) out[k] = w; }
+  fs.writeFileSync(WFILE, JSON.stringify({ note: 'The models shipped before tests/test-models.js, as measured. A number here may only fall: see PLAN-MESHY.md. A new model gets no row.', models: out }, null, 1) + '\n'); console.log('wrote', WFILE); process.exit(0); }
+
+// ---------------------------------------------------------------- every model against the limits, or its waiver
+for (const k in MEASURED) { const v = MEASURED[k], w = waivers[k] || {}, bad = [], stale = [];
+  for (const c of CHECKS) { const o = over(c, v[c]); if (o && !(c in w)) bad.push(c + ' ' + num(v[c]) + ' past ' + LIMITS[c]); else if (o && worse(c, v[c], w[c])) bad.push(c + ' ' + num(v[c]) + ' worse than its waiver ' + w[c]); else if (!o && c in w) stale.push(c); }
+  ok(!bad.length && !stale.length, k + ': ' + (bad.concat(stale.map(s => s + ' passes now: remove its waiver')).join('; ') || (Object.keys(w).length ? 'holds its ' + Object.keys(w).length + ' waiver(s): ' + Object.keys(w).join(', ') : 'clear of every limit'))); }
+for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model');
+
+// ---------------------------------------------------------------- C8: the contract with the catalog
+{ const { KF } = L.registry(ROOT), rows = L.modelled(KF);
+  ok(rows.length === new Set(rows.map(r => r.model)).size || rows.length >= files.length, 'catalog: ' + rows.length + ' model variants');
+  const named = new Set(rows.map(r => r.model));
+  ok(files.every(f => named.has(f.slice(0, -5))) && rows.every(r => MODELS[r.model]), 'every model file has an entry, and every entry its file');
+  const contract = (m, r) => { const bad = [], E = r.E, D = Object.assign({}, E.data || {}, (E.modelData || {})[r.variant] || {});
+    let legs = 0; for (const nd of m.M.nodes) if (/^leg(\d+|\d?[LR])$/.test(nd.name)) legs++;
+    if (D.legs != null && legs !== D.legs) bad.push('legs ' + legs + ' against ' + D.legs);
+    if (!m.clips.perch || !m.clips.walk) bad.push('perch and walk clips');
+    if (D.wings && !m.clips.flap && !m.clips.hover) bad.push('a wing clip');
+    if (m.M.tris > (D.budget || 9000)) bad.push('tris ' + m.M.tris + ' over ' + (D.budget || 9000));
+    const fa = fillsAtlas(m); if (fa.length) bad.push('parts filling the atlas (a lost material?): ' + fa.join(' '));
+    let g = null; try { g = KF.build(r.key, { variant: r.variant, seed: 3 }); } catch (e) { g = null; }
+    if (g) { let nan = 0; g.traverse(o => { if (o.isMesh) { const q = o.geometry.attributes.position.array; for (let i = 0; i < q.length; i++) if (!isFinite(q[i])) nan++; } }); if (nan) bad.push('the procedural fallback has NaN positions'); }
+    const want = g ? Object.keys(g.userData.anchors || {}).filter(n => !/^spread\d/.test(n)) : [], have = m.M.anchors || {}, side = Math.max(m.M.rest.w, m.M.rest.d, m.M.rest.h), S = m.M.scale, W = L.pose(m, m.clips.perch, 0), v = [0, 0, 0];
+    for (const a of want) { const q = have[a]; if (!q) { bad.push('anchor ' + a + ' missing'); continue; }
+      const off = [-m.M.rest.center[0] * S, -m.M.rest.ground * S, -m.M.rest.center[1] * S]; let d = 1e18;
+      for (const n in m.parts) { const P = m.parts[n]; for (let i = 0; i < P.pos.length / 3; i++) { worldVert(m, W, P, i, v); d = Math.min(d, Math.hypot(v[0] * S + off[0] - q.p[0], v[1] * S + off[1] - q.p[1], v[2] * S + off[2] - q.p[2])); } }
+      if (d > 0.05 * side) bad.push('anchor ' + a + ' ' + d.toFixed(2) + ' m off the body'); if (m.byName[q.node] == null) bad.push('anchor ' + a + ' on a node that does not exist'); }
+    { const W0 = L.pose(m, null, 0); for (const nd of m.M.nodes) { if (!/^(leg\d|foot|wing2?|wingO2?)L/.test(nd.name)) continue; const o = mirror(nd.name); if (m.byName[o] != null && W0[m.byName[nd.name]][12] <= W0[m.byName[o]][12]) bad.push(nd.name + ' on the wrong side'); } }   /* +x is the animal's left */
+    return bad; };
+  for (const r of rows) { const b = contract(MODELS[r.model], r); ok(!b.length, 'contract ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'legs, clips, budget, anchors, materials and sides')); }
+
+  // ---------------------------------------------------------------- the negatives: every check bites
+  const base = 'giant-dragonfly', fresh = () => L.load(path.join(DIR, base + '.json')), file = path.join(DIR, base + '.json'), row = rows.find(r => r.model === base);
+  { const m = fresh(), P = m.parts.thorax, n = P.idx.length, keep = []; const v = [0, 0, 0], W = L.pose(m, null, 0); for (let t = 0; t < n; t += 3) { L.apply(W[P.node], P.pos, P.idx[t] * 3, v); if (!(v[1] > 0.04 && Math.abs(v[0]) < 0.12)) keep.push(P.idx[t], P.idx[t + 1], P.idx[t + 2]); }
+    P.idx = Uint32Array.from(keep); const c = closure(m); ok(c.v > LIMITS.closure, 'negative C4: a hole cut in the dragonfly\'s back is seen (' + num(c.v) + ')'); }
+  ok(MEASURED.quetzalcoatlus.closure > LIMITS.closure && MEASURED['giant-bat'].closure > LIMITS.closure && MEASURED['giant-archaeopteryx'].closure > LIMITS.closure, 'negative C4: the three flyers, known to open, read over the limit (' + ['quetzalcoatlus', 'giant-bat', 'giant-archaeopteryx'].map(k => num(MEASURED[k].closure)).join(', ') + ')');
+  ok(MEASURED[base].closure <= LIMITS.closure, 'the dragonfly, known to stay shut, reads under it (' + num(MEASURED[base].closure) + ')');
+  { const m = fresh(), n = Object.keys(m.parts).find(q => /^leg\dL$/.test(q)), P = m.parts[n], ks = []; const zs = []; for (let t = 0; t < P.idx.length; t += 3) zs.push(P.pos[P.idx[t] * 3 + 1]); const mid = zs.slice().sort((a, b) => a - b)[zs.length >> 1];
+    for (let t = 0; t < P.idx.length; t += 3) if (Math.abs(P.pos[P.idx[t] * 3 + 1] - mid) > 0.04 * (Math.max(...zs) - Math.min(...zs)) + 0.004) ks.push(P.idx[t], P.idx[t + 1], P.idx[t + 2]); P.idx = Uint32Array.from(ks);
+    ok(measure(m, file, false).pieces > 0, 'negative C3: a leg cut in two is two pieces'); }
+  { const m = fresh(), n = Object.keys(m.parts).find(q => /^leg\dL$/.test(q)), P = m.parts[n]; P.idx = P.idx.slice(0, (P.idx.length / 18 | 0) * 3); ok(measure(m, file, false).sides > LIMITS.sides, 'negative C3: a leg with a sixth of its mirror\'s faces'); }
+  { const m = fresh(), nd = m.M.nodes[m.parts.wingL.node]; nd.t = [nd.t[0] + 1.5, nd.t[1], nd.t[2]]; ok(pivots(m).pivot > LIMITS.pivot, 'negative C6: a wing moved off the thorax'); }
+  { const m = fresh(); m.clips.walk.extras = Object.assign({}, m.clips.walk.extras, { speed: m.clips.walk.extras.speed * 3 }); ok(walk(m).slide > LIMITS.slide, 'negative C7: the wrong root speed slides the feet'); }
+  { const m = fresh(); m.M.rest = Object.assign({}, m.M.rest, { h: m.M.rest.h }); const c = m.clips.walk; c.extras = Object.assign({}, c.extras, { ground: c.extras.ground + 0.3 }); ok(walk(m).below > LIMITS.below, 'negative C7: a ground above the feet reads as through the floor'); }
+  { const m = fresh(); delete m.M.mats; ok(contract(m, row).some(s => /filling the atlas/.test(s)), 'negative C8: the dragonfly without its wing material fails (the bug that shipped)'); }
+  { const m = fresh(); delete m.M.anchors; ok(contract(m, row).some(s => /anchor saddle missing/.test(s)), 'negative C8: a rideable model without its saddle fails'); }
+  { const m = fresh(), a = m.M.anchors.saddle; a.p = [a.p[0], a.p[1] + 4, a.p[2]]; ok(contract(m, row).some(s => /off the body/.test(s)), 'negative C8: a saddle floating over the body fails'); }
+  { const m = fresh(), L0 = m.M.nodes.find(n => n.name === 'wingL'), R0 = m.M.nodes.find(n => n.name === 'wingR'); L0.name = 'wingR'; R0.name = 'wingL'; m.byName.wingL = m.M.nodes.indexOf(R0); m.byName.wingR = m.M.nodes.indexOf(L0); ok(contract(m, row).some(s => /wrong side/.test(s)), 'negative C8: left and right swapped fail'); }
+  ok(over('density', 100) && !over('density', 200) && worse('closure', 0.09, 0.05) && !worse('closure', 0.05, 0.05) && worse('density', 90, 120), 'negative: limits and waivers read the right way up (a floor for density)');
+  { const m = fresh(); m.M.tris = 99999; ok(contract(m, row).some(s => /over/.test(s)), 'negative C9: over the budget fails'); }
+  { const m = fresh(); m.M.tex = Object.assign({}, m.M.tex, { nrm: 'data:image/jpeg;base64,' }); m.M.source = { raw: 'x' }; const v = measure(m, file, false); ok(v.lossyNormal === 1 && v.sourceLost === 0, 'negative C9, C1: a JPEG normal map is flagged; a source record clears C1'); }
+}
+console.log(fails ? '\n' + fails + ' FAILED' : '\nall passed');
+process.exit(fails ? 1 : 0);

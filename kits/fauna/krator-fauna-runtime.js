@@ -108,13 +108,15 @@ const KratorFaunaAPI = (function () {
         tr.push(k.path === 'quaternion' ? new THREE.QuaternionKeyframeTrack(k.node + '.quaternion', t, v) : new THREE.VectorKeyframeTrack(k.node + (k.path === 'scale' ? '.scale' : '.position'), t, v)); }
       clips[cn] = new THREE.AnimationClip(cn, A.dur, tr);
     }
-    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, clips: clips });
+    const partMat = {};      /* a part with a material of its own (M.mats: a wing card, see-through); the rest share the baked maps */
+    for (const mn in (M.mats || {})) { const q = M.mats[mn], m2 = new THREE.MeshStandardMaterial({ map: modelTex(q.map, true), transparent: true, alphaTest: 0.02, depthWrite: false, metalness: 0, roughness: q.roughness == null ? 0.5 : q.roughness, side: THREE.DoubleSide }); for (const p of q.parts) partMat[p] = m2; }
+    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips });
   }
   function buildModel(E, key, opt) {
     const v = opt.variant | 0, mc = modelOf(E.models[v]), M = mc.M, S = M.scale, root = new THREE.Group(); root.name = 'fauna:' + key;
     const top = new THREE.Group(); top.scale.setScalar(S); top.position.set(-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S); root.add(top);
     const gs = M.nodes.map(nd => { const g = new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
-      const geo = mc.geo[nd.name]; if (geo) { const m = new THREE.Mesh(geo, mc.mat); m.castShadow = true; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
+      const geo = mc.geo[nd.name], pm = mc.partMat[nd.name]; if (geo) { const m = new THREE.Mesh(geo, pm || mc.mat); m.castShadow = !pm; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
     M.nodes.forEach((nd, i) => (nd.parent < 0 ? top : gs[nd.parent]).add(gs[i]));
     const P = { legs: [] }, side = s => (s === 'R' ? 1 : 0);
     M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
@@ -128,8 +130,10 @@ const KratorFaunaAPI = (function () {
     if (!P.body) P.body = top;
     const dm = (E.variantDims && E.variantDims[v]) || { w: E.w, d: E.d, h: E.h };
     let walk = M.anims.walk && M.anims.walk.extras;
+    const anchors = {}, anchorOn = {};      /* fitted to this body (rig/fit_anchors.js): anchors in the animal frame at rest, as a procedural build's; anchorOn names the part that carries each and the point on it, for tack that should ride a body that moves */
+    for (const a in (M.anchors || {})) { const q = M.anchors[a]; anchors[a] = q.p.slice(); const i = M.nodes.findIndex(nd => nd.name === q.node); if (i >= 0) anchorOn[a] = { part: gs[i], at: q.at.slice() }; }
     root.userData = { key: key, name: E.name, variant: v, variantName: E.variantNames[v] || '', breed: null, S: 1, model: E.models[v], tags: E.tags, traits: E.traits, yields: E.yields, life: E.life, data: E.data, size: E.size, source: E.source,
-      anchors: {}, parts: P, tris: M.tris, w: dm.w, d: dm.d, h: dm.h, fauna: true, walkSpeed: walk ? walk.speed * S : 0, walkStride: walk ? walk.stride * S : 0, modelTop: top };
+      anchors: anchors, anchorOn: anchorOn, parts: P, tris: M.tris, w: dm.w, d: dm.d, h: dm.h, fauna: true, walkSpeed: walk ? walk.speed * S : 0, walkStride: walk ? walk.stride * S : 0, modelTop: top };
     const mixer = new THREE.AnimationMixer(top), acts = {};
     for (const cn in mc.clips) { acts[cn] = mixer.clipAction(mc.clips[cn]); acts[cn].setLoop(THREE.LoopRepeat, Infinity); }
     root.userData._mx = { mixer: mixer, acts: acts, cur: null, clips: mc.clips };
