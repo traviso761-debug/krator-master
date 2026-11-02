@@ -3,8 +3,8 @@
 // SIM.items(config); a world without it decides exactly as before.
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
-//               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
+//               cool, stale, meal:{mult, single, none, mess, rich, pot?, noPot?}, lack, hurt, heal, low, days, meals, perMeal,
+//               treat:{at, items:[[least wealth, item], ...], mix?}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -99,7 +99,9 @@
     if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
       /* a treat: the material meter high, the best luxury or household good its wealth reaches */
       else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
-        var best=null; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]) best=t[1]; }); if(best) errand(a, best, 'free', d*1440); } }
+        var best=null, can=[]; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]){ best=t[1]; can.push(t[1]); } });
+        if(I.treat.mix && can.length) best=can[Math.floor(hash(a.k, d, 23)*can.length)];   /* `mix` (opt-in): any treat its wealth reaches, by a hash of the person and the day; else the dearest */
+        if(best) errand(a, best, 'free', d*1440); } }
   }
   function errand(a, item, when, minute){
     var I=SIM.ITEMS; if(a.errCool && minute<a.errCool) return false;
@@ -236,8 +238,11 @@
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
     var sz=SIM.economySeasoning ? SIM.economySeasoning() : 1, Q=function(f){ var K=I.kinds[f]; return (K && K.quality!=null ? K.quality : 1)*sz; };   /* a better food (cheese) makes a better meal; a seasoned one too (77-sim-6-govern.js) */
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
-    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
+    /* a kitchen without its pot (opt-in: `meal.pot` the item, `meal.noPot` the worth of what it cooks; place.potBy who keeps it) */
+    var hp=M.pot && P.potBy!=null ? SIM.R.actor[P.potBy] : null, pot=hp && !SIM.owns(hp, M.pot) ? (M.noPot==null ? 1 : M.noPot) : 1;
+    if(pot<1 && have.length) mealStat(a, 'potless');
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*pot*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*pot*Q(have[0]); }
     mealStat(a, 'none'); return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */

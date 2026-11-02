@@ -193,7 +193,9 @@ ISLE.TUNE.sim = {
        person (`wealthSpread`), so the middle and the rich split between two treats */
     treats: { 'kava bowl': { cat: 'luxury', material: 25, good: 'kava' }, mat: { cat: 'household', material: 40, good: 'mats' },
       lamp: { cat: 'household', material: 45, good: 'lamps' }, necklace: { cat: 'luxury', material: 70, good: 'jewellery' } },
-    treat: { at: 55, items: [[0, 'kava bowl'], [0.3, 'mat'], [0.5, 'lamp'], [0.85, 'necklace']] },
+    treat: { at: 55, items: [[0, 'kava bowl'], [0.3, 'mat'], [0.5, 'lamp'], [0.85, 'necklace']], mix: true },
+    /* a kitchen without its pot: what it cooks is worth this (core's meal.pot) */
+    noPot: 0.7,
     wealthSpread: { poor: [0, 0.2], middle: [0.35, 0.65], rich: [0.8, 1] },
     wares: { market: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
       shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
@@ -222,7 +224,7 @@ ISLE.TUNE.sim = {
        good its buyers could not get is still made); `least` the shelf stock of the treats and the gear a town keeps with
        no demand (a town at the abstract level buys none: watched again, its people find them) */
     govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
-      least: { kava: 300, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
+      least: { kava: 600, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */

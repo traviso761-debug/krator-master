@@ -898,7 +898,23 @@ function world(seed){
  S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const e=S.actor({id:'e1',role:'eater',home:'cot'});
  S.R.place.cot.store={milk:5,bread:5};e.wanted=null;S.decide(e,S.minute(),clock.t);const b1=e.boost.EAT;
  S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
- ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
+ ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);
+ // a kitchen without its pot (meal.pot): what it cooks is worth noPot; with the pot, or no rule, a full meal
+ const c0=S.place({id:'cot2',kind:'home',x:0,z:0,activities:{EAT:3,SLEEP:3}});S.ITEMS.kinds.pot={id:'pot',cat:'household',slot:'lhand',life:60};
+ const e2=S.actor({id:'e2',role:'eater',home:'cot2'});c0.potBy='e2';S.ITEMS.meal.pot='pot';S.ITEMS.meal.noPot=0.6;
+ const bite=(m)=>{c0.store={milk:5,bread:5};e2.wanted=null;S.decide(e2,S.minute()+m,clock.t);return e2.boost.EAT;};
+ const none=bite(2);S.equip(e2,'pot',0);const has=bite(3);
+ ok('a kitchen without its pot cooks a poorer meal ('+none.toFixed(1)+'), with it a full one ('+has.toFixed(1)+')',Math.abs(none-1.8)<1e-9&&has===3,none>=has);}
+// the treat's mix (treat.mix): over days a person buys any treat its wealth reaches, by a hash; without it only the dearest
+{const {S}=world(173);S.needs({list:['material'],rate:{material:1},fill:{}});
+ S.items({kinds:{kava:{cat:'luxury',material:1},mat:{cat:'household',material:1},gem:{cat:'luxury',material:1}},free:['IDLE'],secPerMinute:1});S.shop('market',['kava','mat','gem']);
+ S.role({id:'buyer',org:'folk',sched:[[0,'IDLE']]});const a=S.actor({id:'t1',role:'buyer',home:'homeA'});a.wealth=0.5;
+ const seen=(mix)=>{S.ITEMS.treat={at:10,items:[[0,'kava'],[0.3,'mat'],[0.9,'gem']],mix:mix};const n={};a.itDay=0;a.nd=[60];a.ndT=S.minute();
+   for(let d=1;d<=40;d++){a.errand=null;a.errCool=null;a.nd=[60];S.itemsAbstractDay(a,d,null);}
+   Object.keys(S.ITEMS.stats.errands).forEach(k=>{n[k]=S.ITEMS.stats.errands[k];});S.ITEMS.stats.errands={};return n;};
+ const M=seen(true),D=seen(false);
+ ok('mix: a person of middling wealth buys both treats it reaches ('+JSON.stringify(M)+'), not the one past it',M.kava>5&&M.mat>5&&!M.gem,!(M.kava>0));
+ ok('without it only the dearest it reaches',D.mat===40&&!D.kava,D.kava>0);}
 
 
 // what things hold and the settlement's stocks (77-sim-7-stocks.js): SIM.contents(id) by record, SIM.stocks() by item
