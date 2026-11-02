@@ -31,11 +31,12 @@ Monks' words come.
 | | |
 |---|---|
 | Folder | `biomes/hearths/` (`src/`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `tests/test-hearths.js`): the shared life, no page of its own, read in place by the host kits' `build.py` (the pooled-folder rule: each names the fragments it takes), as `biomes/geyser` and (proposed) `biomes/gills` are |
-| Pages | stations of the host kits: `biomes/riftrim/build.py --station hearths` -> `dist/riftrim-hearths.html` (the Hearth field on the north rim) and `--station hearths-hold` (the loj under it); `biomes/oidong/build.py --station hearths` -> `dist/oidong-hearths.html` (the Cold Hearths on the valley's north rim); `biomes/godstep/build.py --station hearths` -> `dist/godstep-hearths.html` (the small field at the flank vent, the owner's third, 2026-11-02; it folds into the godstep plan's optional vent station); section 11. Each station's `99-host-take.js` and `station.json` live in its host kit |
+| Pages | stations of the host kits: `biomes/riftrim/build.py --station hearths` -> `dist/riftrim-hearths.html` (the Hearth field on the north rim) and `--station hearths-hold` (the loj under it); `biomes/oidong/build.py --station hearths` -> `dist/oidong-hearths.html` (the Cold Hearths on the valley's north rim); `biomes/godstep/build.py --station hearths` -> `dist/godstep-hearths.html` (the small field at the flank vent, the owner's third, 2026-11-02; it folds into the godstep plan's optional vent station); and **the hot-country cousin, the Stills** (section 7b): `biomes/geyser/build.py --station stills` -> `dist/geyser-stills.html` at the Steampits showcase, and the still trees in every page that loads the geyser kit (the West Ring's geyser isles, the Throne's geyser isle: the owner, 2026-11-02, "stills grow at all 3"); section 11. Each station's `99-host-take.js` and `station.json` live in its host kit |
 | Regions on the model | none new: each station is inside its host's polygon (`rift rim N` / `w rift highland`, `Oidong Valley`, `godstep valley`) on its host's ground, at vents the model already holds (`DATA.vents`); section 5 |
 | Object | `HEARTH` (`SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `heat`, `work`, `dress`, `layout`) on the `BIOME-API.md` contract, loaded into the host's `BIO.kit('hearths')`; `HEARTH.heat(x, z)` is the ground's temperature from the vent records (section 14), `HEARTH.work(t, W, atm)` the engine's state in `0..1` (open fans 1, closed spindles 0) from the clock, the weather and the eclipse, which every shader, hazard and animal reads (section 3) |
 | Core | through the hosts: `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky with its eclipse seasons, the weather, snow cover), `water` (springs, pools), `terrain` (`KFIELD`, `KCAVERN`, `KRELIEF`, `KSTRATA`, `KFROST`, `KGROUND`, `KFAR`, `KHORIZON`), `clock`; section 13 |
-| Read in place | `biomes/riftrim` (the glass rim's light-piping forest, the lakes, the caverns and the Tungangs' holds: the host), `biomes/oidong` (the high passes' cushions and snow lotus: the host), `biomes/geyser` (the hot pools' temperature ramp, the fumaroles), `biomes/ehighlands` (the glass tower by its one-plant API, on the Oidong rim), `kits/fauna` (the cinder crawler, the frost trunker, the cavern leaper), `kits/resources` (the node field) |
+| Read in place | `biomes/riftrim` (the glass rim's light-piping forest, the lakes, the caverns and the Tungangs' holds: the host), `biomes/oidong` (the high passes' cushions and snow lotus: the host), `biomes/godstep` (the red crater: the host), `biomes/geyser` (the hot pools' temperature ramp, the fumaroles, the geysers' cycles; **the host of the Stills**), `biomes/ehighlands` (the glass tower by its one-plant API, on the Oidong rim), `kits/fauna` (the cinder crawler, the frost trunker, the cavern leaper), `kits/resources` (the node field) |
+| Overlap to reconcile | `biomes/geyser/PLAN-STATIONS.md` (2026-10-26) already plans its station 2 ("the high desert") at the Oidong rim's two vents, the Godstep flank vent and the Lesser Throne, and its station 3 ("the mountain forest") at the rift rim's three vents: the same ground as the Hearths' three stations. One build per vent field: the hearths stations **are** those geyser stations with the hearth life on them, built on the host kit named above with the geyser kit read in place, or the geyser kit's stations gain the hearth life; the owner's call (section 17) |
 | Out of scope | the Tungangs' loj as architecture (their kit, when it exists; this kit publishes the chamber and the sites), Ledge and Dalab's road (the riftrim plan), the animals' models (`kits/fauna`), the ore nodes' data (`kits/resources`) |
 
 Not a new biome in the gallery: the stations are published with their hosts' pages. `biomes/README.md`'s table gets one
@@ -313,7 +314,7 @@ ground, the host's teal and glass beside them. Nothing glows; nothing is iridesc
 | `hearth` | **Hearth tree** | 25-60 degC ground | the engine: a limpet foot 1-3 m across, a heat-pipe stalk 2-12 m, a crown of 8-16 black ribbed fans 1-2 m long. Fans open flat to the zenith at night and in eclipse (`HEARTH.work`), fold into a silvered spindle by day; the spindle's sun side carries the light partner (green under the silver). The stalk bows sunward by day (`39-core-lean.js` toward the sun's mean bearing), the foot's record carries its walk (section 3). The two countries differ in dress (section 7a). The fans are the frill line's fins on a hinge (`BIO.kin` of the Rift's frill) |
 | `stalkdead` | **Dead stalk** | the rings round each disc | a hearth tree whose ground went cold: foot gone, stalk standing hollow and white, fans fallen; a `KSTACKS` `stalk` or `BIO.fung` tube with collision; the field's history. Snaps in the wind; a fallen one is a pipe the Tungangs cut |
 | `ember` | **Ember mat** | 60-95 degC: the fumaroles' aprons | a flat black fleshy mat on the hottest ground a hearth cannot stand, its surface a radiator without a stalk, warm to the hand; kin of the Throne's thermal mats; the first native thing on new hot ground |
-| `kettle` | **Kettle cup** | the hot pools' rims, 40-80 degC water | a cup 30-80 cm across rooted in a pool's rim with its bowl in the water: the pool's convection cycles the partner's cells for it (Muller's own setting, section 4): a hearth tree with the pool for a stalk; its lip above the water is a small black fan |
+| `kettle` | **Boil cup** (was "kettle cup": the geyser kit already has a kettle lily) | the hot pools' rims, 40-80 degC water | a cup 30-80 cm across rooted in a pool's rim with its bowl in the water: the pool's convection cycles the partner's cells for it (Muller's own setting, section 4): a hearth tree with the pool for a stalk; its lip above the water is a small black fan |
 | `stoker` | **Stoker** | the discs' edges, 10-25 degC | a creeping heat-seeker: a fleshy runner a few centimetres thick that advances a hand's breadth a year toward warmer ground, a line of small black fins along its back; the first heat-eater onto ground that is warming and the last off ground that is cooling, so the stokers point the way the heat is moving |
 | `shade` | **Shade cap** | the mixed ring, among the host's forest | a native light-eater of the gradient's edge: a pale cap on a short stalk whose cap tilts to shade a hearth tree's foot at noon and folds away at dusk; the two grow together (the hearth's warm ground is the cap's only frost-free bed) |
 | `coal` | **Coal moss** | 20-40 degC, the discs' floor | a black fleshy turf between the stalks, warm, snow-free, the hearth animals' bed; stores the day's heat and gives it up at night |
@@ -330,6 +331,46 @@ As the Gills have a red and a white dress, the Hearths have two by their cold:
 | Stand | discs 100-300 m across among glass columns and lakes | discs 50-150 m across on bare gravel, the only dark thing for kilometres |
 | Dead | white stalks standing in rings | stalks snapped by the wind, the rings drawn in fallen pipes |
 | Season | winter the working season; summer idle | winter the working season; summer nights still work |
+
+### 7b. The hot-country cousin: the Stills (the geyser kit's station; the owner, 2026-11-02: at all three sites)
+
+The Steampits, the West Ring's geyser isles and the Throne's geyser isle stand at -400 to -1,600 m, 1.9-2.0 atm, +32-34
+degC (37/28, never under +22 at night), 1,000-1,900 mm, with 3.5-5.5 m/s of sea wind (the model's six Steampits vents and
+the Ring Sea's geysers, `DATA.vents`). The Hearths' engine as written would not run there: no cold sky, no frozen ground.
+But the hot end is better. **Water boils at 119 degC at 1.9 atm**, and the basins are full of boiling springs. So the
+cousin keeps the heat-pipe stalk and the thermosynthetic partner and swaps both ends:
+
+- **The hot end is the water.** A still tree's foot stands in a boiling pool or on a geyser's cone with its roots in the
+  119 degC water: hotter than any warm ground the rim's hearths get, and the water's heat transfer is in kilowatts a
+  square metre a degree, so the stalk's heat pipe, not the foot, is the limit.
+- **The cold end is the wind.** Air at 2.3 kg/m3 convects hard even at the basins' 4 m/s: a fan at 70 degC in 33 degC air
+  sheds about **2 kW/m2**, ten times what a Hearths fan radiates to a clear night, and it needs no sky, so **the engine
+  runs day and night** (392 K against 343 K: Carnot 12%, a realised 1.5-2%). The daily yield is twice the Hearths', the
+  dense air lets a thicker stalk carry more (a 30 cm stalk 50-150 kW), so the still trees are **15-30 m**, the biggest
+  the lineage grows, standing where the hypertrees cannot (the sinter aprons, the boiling margins).
+- **No fold: a feather.** Sun on a 70 degC fan costs a third of its cooling, not the engine, so by day the fans turn
+  **edge-on to the sun** as a sun-dial does in reverse and stand **across the wind** like sails: a whole basin of them
+  faces the sea breeze and turns through the day with the sun. The third tropism, to the wind, is the cousin's own.
+- **The geyser rule.** A fan in a geyser's spray is scalded, so the trees ring each geyser at its spray line, and **they
+  fold during the geyser's warning phase and eruption** (`WATER.geyser`'s `pre` and `dur`, the geyser kit's real
+  periods): a visitor sees the ring round a cone flinch shut a minute before it blows and open again as the column falls.
+- **The dead are glass.** The geyser kit already drowns its dead forest in silica; a dead still tree silicifies the same
+  way, standing white and glassy by the pool that killed it when the plumbing shifted, hollow, ringing when struck.
+- **Why not the whole shore.** Only boiling water feeds the engine; a warm pool at 60 degC gives a tenth of the gradient
+  against 33 degC air. So the Stills stand only where the water boils: a ring round each spring and cone, nothing between.
+
+| Key | Name | Where | What it is |
+|---|---|---|---|
+| `still` | **Still tree** | the boiling springs' rims, geyser cones outside the spray line | the cousin: a foot in boiling water, a 30 cm heat-pipe stalk 15-30 m, 12-20 black fans 2-4 m long held across the wind and edge-on to the sun, folding on the geyser's warning (`WATER.geyser` state). Sister form of the hearth tree (`BIO.kin`): the same fans without the silver, the same stalk thicker, no walk (a spring does not move; a tree stands or dies). Its tallow runs in the heat and pools at the foot |
+| `stillglass` | **Glass still** | by dead springs | a silicified still tree, white, hollow, standing; the geyser kit's silica drowning on the lineage's own body |
+| `sailcup` | **Sail cup** | the warm run-off channels (40-80 degC) | the boil cup's hot-country form, its lip a small fan across the wind; the mat-banded run-off's one native |
+| `spraymat` | **Spray mat** | inside the spray line, where a still tree cannot stand | the ember mat's cousin on the scalded ground round a cone, black, flat, wet, re-growing after each eruption |
+
+The Stills' people: the Steampits' shore is **Screamer Country** (Fort Kalor 20 km from the vents, Kierson 27-50 km)
+and **Shell Province**'s Izani at Port Goto (60 km); the isles are the Islanders', the Hykkousoi's and Voth's by the
+Ring Sea's fleets. *Proposed*: the still trees' wax is the isles' lamp oil, and a still tree's hollow glass is a horn.
+Their fauna: the fin-mouse and fin-owl in hot-country coats, and the Steampits' own (the geyser kit's and the
+hyperjungle's) read in place; no stalker (nothing needs the warmth here).
 
 ### Guests, read in place
 
@@ -442,6 +483,16 @@ spindles' silver, the steam, the snow line's edge, the hazards and the animals t
    the lake in the older crater beside it with the Talovolci's walled fields, the Godthrone's mass up the valley. Set on
    a winter night, the one season its engine earns; the noon preset shows the field shut and silver in a warm valley,
    the only hearth that is often idle.
+6. **The Stills** (geyser `--station stills`, `dist/geyser-stills.html`; the Steampits showcase's ground, -1,440 m, 1.9
+   atm, +33 degC): the geyser basin as the kit draws it (the sinter cones, the prismatic springs, the terraces to the sea,
+   the dead forest in silica) with the still trees ringing every boiling spring and cone at the spray line, their black
+   sails all across the sea wind and edge-on to the sun, glass stills by the dead springs, sail cups down the run-off,
+   the hyperjungle's wall behind. **The first ten seconds**: the camera stands on a terrace at midday with the sea
+   behind; the Old Kettle's ring of stills flinches shut, the geyser goes up, the column falls as rain on the folded
+   fans, and the ring opens again into black sails steaming in the sun. The dusk preset: the fans turning with the
+   sun's last bearing, the Screamers' fort lights on the shore. The same life is drawn by every page that loads the
+   geyser kit (the West Ring's geyser isles, the Throne's geyser isle), at their own springs, with no station of their
+   own.
 
 ## 12. How it reads, and what it costs
 
@@ -465,7 +516,8 @@ spindles' silver, the steam, the snow line's edge, the hazards and the animals t
 
 ## 13. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
-The host kits (`biomes/riftrim`, `biomes/oidong`) own the ground, the page and most of the core; `biomes/hearths`'s own
+The host kits (`biomes/riftrim`, `biomes/oidong`, `biomes/godstep`, and `biomes/geyser` for the Stills) own the ground,
+the page and most of the core; `biomes/hearths`'s own
 fragments are `[G data]` only (species, the heat field's records, the work function, dress, layout), and the drawing is
 the host's and the core's. What the hearths stations need of the core, taken through the host's `build.py` (listed in
 each station's `station.json`), and for each module not taken, why:
@@ -480,7 +532,7 @@ each station's `station.json`), and for each module not taken, why:
 | `core/clock` | `KCLOCK` (`C.day`, `C.hour`, `C.season`) | the hour, the season and (through the sky model) the eclipse, so `HEARTH.work` is the sky's |
 | `core/terrain` | `30-core-field` + brush, `35-core-strata` + host shade (the hosts' recipes), `37-core-stacks` (`stalk` *proposed*, or `BIO.fung` tubes), `38-core-relief` (`pit`, `pavement`, `talus`), `39-core-cavern` (the hold: `hall`, `shaft`, `tube`), `42-core-frost`, `43-core-ground` (`KGROUND`; the snow and sinter layers weighted by the heat field), `44-core-farfield` + draw, `45-core-horizon` + shade; **`KTHERM` *proposed*** (section 14) | the shelf, the vents, the discs, the hold, the far country |
 | `core/atmos` | the core, presets, export, waves, skylight, `bindHost`, the shared sky (the eclipse seasons), `bindWeather`, snow cover (its mask from the heat field), height fog, `3-particles` (steam) | the sky, the eclipse, the steam, the snow line |
-| `core/water` | `20`, `21`, `22`, `50`, `51`, `geyser/52` + draw (`WATER.spring`: the hot pools with the kit's ramp and banded mats), `ext/57` (the audit) | the pools, wet ground under the steam |
+| `core/water` | `20`, `21`, `22`, `50`, `51`, `geyser/52` + draw (`WATER.spring`: the hot pools with the kit's ramp and banded mats; `WATER.geyser`: the Stills read each geyser's `state(t)` for the flinch), `ext/57` (the audit) | the pools, wet ground under the steam; the Stills' geysers |
 | `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, marks, pictures, minimap) | the host's page shell; the probe checks section 16's invariants |
 | `core/materials` | `record` (`KMAT`) and the generated pack (`biomes/hearths/materials.json`, `tools/textures/pack.py biomes/hearths`, read by the hosts as a second pack) | every library set (section 15) |
 | `core/export` | `07`, `09` | the krator-world container; the hazards section |
@@ -507,8 +559,10 @@ and `python3 tools/port_baseline.py` run, as the shared-copy rule in `CLAUDE.md`
    (`core/atmos/sky/89-atmos-e-skymodel.js` has the geometry): *proposed* `ATMOS.sunHidden(t)` as `[G data]`, beside the
    libration the Gills ask for, so a biome can know the eclipse without reading pixels.
 3. **`39-core-lean.js` toward a bearing.** It leans every plant toward the giant; the hearth stalks bow toward the sun's
-   mean daily bearing (north here, at 50 degrees south) and the fans toward the zenith. A `toward: {az, alt}` option on
-   the same function, defaulting to the giant, so no other kit moves.
+   mean daily bearing (north here, at 50 degrees south) and the fans toward the zenith; the still trees' fans turn
+   across the wind (`ATMOS.windAt`) and edge-on to the sun's bearing now. A `toward: {az, alt}` option on the same
+   function, defaulting to the giant, and a per-frame yaw uniform for the Stills' fans (one scalar, as the fold), so no
+   other kit moves.
 4. **`BIO.animHook` mode `breath`** (the Gills' proposal, a second taker): a scalar uniform scaling a per-item
    displacement; here the fans' fold about their hinge and the spindle's silver (a roughness and albedo term on the
    same uniform).
@@ -628,6 +682,11 @@ Tungangs' surface, Dalab's reasons, Oidong's warmth, the origin, the names' tong
    the Monks' for the Cold Hearths; the Talovolci's for the stair's hearth; the shared kit stays `hearths` unless the
    owner says otherwise.
 2. **What Dalab does with the gene**, if anything the game shows.
-3. **A hot-country cousin** (the owner's question, 2026-11-02: "some kind of semi-related biome in the region
-   Steampits"): the same lineage with its hot end in boiling water and its cold end in the air, a station of the geyser
-   kit; sketched in this session's report, to be written into this plan as section 7b if the owner wants it.
+3. **One build per vent field**: the geyser kit's planned stations 2 and 3 stand on the same vents as the Hearths'
+   three stations (section 0, "Overlap to reconcile"). Are the hearths stations built on riftrim, oidong and godstep
+   with the geyser kit read in place (this plan's shape), or does the geyser kit's station plan absorb the hearth life?
+4. **The Stills' words** (section 7b): the Islanders', the Hykkousoi's or the Izani's for the still tree and its wax
+   and glass; and whether the isles' lamp oil and the glass horn stand.
+
+Settled 2026-11-02, later: **the Stills grow at all three geyser sites** (the Steampits, the West Ring's geyser isles,
+the Throne's geyser isle), as section 7b says.
