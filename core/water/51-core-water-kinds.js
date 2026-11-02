@@ -63,6 +63,9 @@
   if(o.rapids)S.rapids=[o.rapids[0],o.rapids[1]];const rap=S.rapids||null;
   S.ribbonOpt={step:o.step==null?Q.step:o.step,across:o.across==null?Q.across:o.across,margin:o.margin==null?Q.margin:o.margin};
   if(o.depthBias!=null)S.ribbonOpt.depthBias=o.depthBias;if(o.chute!=null)S.ribbonOpt.chute=o.chute;
+  /* o.refine (2026-10-27, opt-in): true (rows where o.keep changes) or {f, tol, min} (W.ribbon's): a per-vertex effect resolves without densifying the
+     whole line; the record keeps {tol, min} (the function is not data: a port refines by the host's own) */
+  if(o.refine){const r=o.refine===true?{}:o.refine,fn=r.f||o.keep;if(typeof fn==='function')S.ribbonOpt.refine={f:fn,tol:r.tol==null?.08:r.tol,min:r.min==null?2:r.min};}
   const R=W.ribbon(S,S.ribbonOpt),g=new T.BufferGeometry();
   // o.origin: the mesh stands at the ribbon's middle and its vertices are local to it (a river a hundred km long, a
   // million metres out, keeps its float precision); the shader still reads world positions through modelMatrix

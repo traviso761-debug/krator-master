@@ -22,7 +22,10 @@ number; it was making two things agree that had been computed apart.
 
 Done this session (opt-in, tested, in `README.md`): `WATER.confluence` and `fadeRibbons` (ext/55), `drawFlow({keep})`,
 `drawFall({plungeR, footK})`, `WATER.breakupAll` / `breakupFlows` (ext/56), the brine/blood/clear looks, pans and ice
-(ext/54). Still to write:
+(ext/54). Since written (2026-10-27, the core pass; README "The core pass"): item 1 and 3 (`WATER.audit`, `lipAt`, `toeAt`,
+`levelFromDownstream`, ext/57), item 2 (`WATER.network`, ext/59), item 4 (`WATER.maskFromGround`, ext/58), item 5 ready behind
+`WATER.BREAKUP_AUTO` (the flip parked in `TODO.md`), item 8 (`drawFlow({refine})`); items 6 and 7 are core-shader's (`KHOOK`, `KCOLOR`);
+item 9's state is in the README's Godot notes. The list as first written:
 
 1. **`WATER.audit({ground, surfaces?})`: the water-ground contract as one check.** *Written 2026-10-27: ext/57, `test-audit.js`, README "The water-ground audit".* Every fault in row 1 and most in
    row 3 was found by a probe written by hand for that page. Make it a core function that a `verify.py` calls, each
@@ -58,7 +61,7 @@ Done this session (opt-in, tested, in `README.md`): `WATER.confluence` and `fade
 8. **Ribbon resolution follows its effects.** A ribbon's rows are `step` apart (eastabyss: 30 m), so any per-vertex
    effect (`keep`, chutes, the end of a channel) needs `densify`. `drawFlow` could add rows where `keep` or the slope
    changes fast.
-9. **Godot parity.** The importer does not draw confluences, `keep`, breakup, `footK`/`plungeR`, pans or ice; their
+9. **Godot parity.** *Written and run 2026-11-02 on Godot 4.7.2: `godot/tests/water/core_pass_test.gd` headless, `core_pass_shaders.gd` compiles every water shader on the RTX 5060.* The importer did not draw confluences, `keep`, breakup, `footK`/`plungeR`, pans or ice; their
    records are exported (`water_import.gd` notes). A `.gdshaderinc` of the breakup and the confluence's grid mesh are
    the two that change how ported water looks.
 

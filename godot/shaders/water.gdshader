@@ -10,6 +10,7 @@ render_mode blend_mix, cull_back, depth_draw_opaque;
 
 #include "res://shaders/kcolour.gdshaderinc"
 #include "res://shaders/lib/water.gdshaderinc"
+#include "res://shaders/lib/water_breakup.gdshaderinc"   // the breakup (core/water ext/56): off unless bk_on
 
 uniform float spacing = 2.0;                 // the grid's vertex spacing (m)
 uniform vec3 colour = vec3(0.012, 0.06, 0.08);   // linear (the export's look)
@@ -51,6 +52,7 @@ void fragment() {
 	float mpp = max(length(fwidth(v_p0)), 1e-4);
 	vec4 nj = wtr_tro_nj(v_p0, mpp, atm_wave_t);
 	vec3 n = wtr_normal(nj, v_p, distance(CAMERA_POSITION_WORLD, vec3(v_p.x, wtr_level, v_p.y)), v_m);
+	if (bk_on) n = wb_breakup(n, v_p);
 	float dp = wtr_depth(v_p);
 	float fk = wtr_foam_t.w * wtr_foam(v_p0, mpp, nj.w)
 		* smoothstep(0.55, 0.85, wtr_noise(v_p0 * foam_noise.x) * 0.55 + wtr_noise(v_p0 * foam_noise.y) * 0.45)
