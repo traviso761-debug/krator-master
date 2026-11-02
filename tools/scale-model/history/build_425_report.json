@@ -1,0 +1,1685 @@
+{
+  "dimensions": {
+    "w": 1821,
+    "hh": 1723,
+    "fullW": 1821,
+    "fullH": 1723,
+    "dx": 272,
+    "dy": 330
+  },
+  "auto_moved_settlements": [],
+  "worse_problems": [],
+  "settlements_total": 117,
+  "regions_total": 118,
+  "rivers_total": 885,
+  "river_tongue_counts": {
+    "islander": 3,
+    "dalab": 41,
+    "republic": 17,
+    "yuni": 108,
+    "islanderw": 1,
+    "izani": 80,
+    "vothic": 32,
+    "xanadui": 31,
+    "riders": 5,
+    "painted": 4,
+    "dasri": 93,
+    "scyvoi": 6,
+    "tungang": 83,
+    "eternian": 73,
+    "hum": 83,
+    "khaay": 19,
+    "vrivolci": 30,
+    "yusar": 56,
+    "jimjam": 16,
+    "screamer": 6,
+    "talovolci": 3,
+    "argot": 36,
+    "hykkousik": 3,
+    "tabist": 10,
+    "farside": 37,
+    "zeijani": 3,
+    "heiland": 6
+  },
+  "tubes_total": 15,
+  "settlement_audit": [
+    {
+      "name": "Agropolis",
+      "type": "ruin",
+      "px": [
+        717,
+        917
+      ],
+      "elev_m": -855.8,
+      "old_elev_m": -855.8,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 8.5
+    },
+    {
+      "name": "Almua",
+      "type": "city",
+      "px": [
+        718,
+        883
+      ],
+      "elev_m": -2013.2,
+      "old_elev_m": -2013.2,
+      "wet": true,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 23.6
+    },
+    {
+      "name": "Arcbeam",
+      "type": "arcology",
+      "px": [
+        1016,
+        1058
+      ],
+      "elev_m": 2118.8,
+      "old_elev_m": 2118.8,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 5.6
+    },
+    {
+      "name": "Ardent",
+      "type": "city",
+      "px": [
+        851,
+        572
+      ],
+      "elev_m": 3796.1,
+      "old_elev_m": 3796.1,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 10.4
+    },
+    {
+      "name": "Babel",
+      "type": "ruined arcology",
+      "px": [
+        456,
+        908
+      ],
+      "elev_m": 54.9,
+      "old_elev_m": 54.9,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 25.0
+    },
+    {
+      "name": "Bastion",
+      "type": "outpost",
+      "px": [
+        536,
+        627
+      ],
+      "elev_m": 1495.2,
+      "old_elev_m": 1495.2,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 48.7
+    },
+    {
+      "name": "Bipo",
+      "type": "village",
+      "px": [
+        1000,
+        816
+      ],
+      "elev_m": -1545.2,
+      "old_elev_m": -1545.2,
+      "wet": true,
+      "climate": "WS",
+      "old_climate": "WS",
+      "slope_m_km": 52.1
+    },
+    {
+      "name": "Blade",
+      "type": "ruined arcology",
+      "px": [
+        451,
+        1022
+      ],
+      "elev_m": 1229.0,
+      "old_elev_m": 1229.0,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 27.9
+    },
+    {
+      "name": "Boatmurder",
+      "type": "outpost",
+      "px": [
+        766,
+        404
+      ],
+      "elev_m": 779.3,
+      "old_elev_m": 768.5,
+      "wet": false,
+      "climate": "BSh",
+      "old_climate": "BSh",
+      "slope_m_km": 28.8
+    },
+    {
+      "name": "Carcosa",
+      "type": "ruin",
+      "px": [
+        395,
+        812
+      ],
+      "elev_m": 139.3,
+      "old_elev_m": 139.3,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Am",
+      "slope_m_km": 34.0
+    },
+    {
+      "name": "Cascade",
+      "type": "arcology",
+      "px": [
+        568,
+        841
+      ],
+      "elev_m": 2782.5,
+      "old_elev_m": 2793.7,
+      "wet": false,
+      "climate": "Cfb",
+      "old_climate": "Cfb",
+      "slope_m_km": 14.9
+    },
+    {
+      "name": "Chimes",
+      "type": "ruined arcology",
+      "px": [
+        468,
+        1392
+      ],
+      "elev_m": 243.3,
+      "old_elev_m": 265.3,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 220.5
+    },
+    {
+      "name": "Corpus",
+      "type": "ruin",
+      "px": [
+        520,
+        693
+      ],
+      "elev_m": 605.0,
+      "old_elev_m": 620.9,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 55.2
+    },
+    {
+      "name": "Coyote Canyon",
+      "type": "village",
+      "px": [
+        1265,
+        500
+      ],
+      "elev_m": 1603.1,
+      "old_elev_m": 1603.1,
+      "wet": false,
+      "climate": "BSh",
+      "old_climate": "BSh",
+      "slope_m_km": 246.0
+    },
+    {
+      "name": "Crescent",
+      "type": "ruined arcology",
+      "px": [
+        994,
+        694
+      ],
+      "elev_m": -1483.7,
+      "old_elev_m": -1483.0,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 23.3
+    },
+    {
+      "name": "Cthonos",
+      "type": "ruined arcology",
+      "px": [
+        526,
+        1503
+      ],
+      "elev_m": 2313.1,
+      "old_elev_m": 2313.1,
+      "wet": false,
+      "climate": "Csb",
+      "old_climate": "Csb",
+      "slope_m_km": 127.9
+    },
+    {
+      "name": "Cube",
+      "type": "ruined arcology",
+      "px": [
+        720,
+        1567
+      ],
+      "elev_m": -223.9,
+      "old_elev_m": -223.9,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 12.3
+    },
+    {
+      "name": "Dalab",
+      "type": "city",
+      "px": [
+        464,
+        1112
+      ],
+      "elev_m": 606.5,
+      "old_elev_m": 608.0,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 21.3
+    },
+    {
+      "name": "Daranch",
+      "type": "village",
+      "px": [
+        527,
+        1149
+      ],
+      "elev_m": 677.1,
+      "old_elev_m": 677.1,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 13.8
+    },
+    {
+      "name": "Dhelv",
+      "type": "cavern",
+      "px": [
+        840,
+        776
+      ],
+      "elev_m": -68.0,
+      "old_elev_m": -178.9,
+      "wet": false,
+      "climate": "WS",
+      "old_climate": "Af",
+      "slope_m_km": 0.5
+    },
+    {
+      "name": "Dilihan",
+      "type": "city",
+      "px": [
+        744,
+        663
+      ],
+      "elev_m": -888.8,
+      "old_elev_m": -888.8,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Am",
+      "slope_m_km": 101.1
+    },
+    {
+      "name": "Dorado",
+      "type": "ruin",
+      "px": [
+        483,
+        964
+      ],
+      "elev_m": -32.0,
+      "old_elev_m": -32.0,
+      "wet": true,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 31.2
+    },
+    {
+      "name": "Drum",
+      "type": "arcology",
+      "px": [
+        673,
+        932
+      ],
+      "elev_m": -792.1,
+      "old_elev_m": -776.2,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 59.4
+    },
+    {
+      "name": "Erehwon",
+      "type": "city",
+      "px": [
+        800,
+        1503
+      ],
+      "elev_m": -536.8,
+      "old_elev_m": -536.8,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 0.0
+    },
+    {
+      "name": "Farport",
+      "type": "city",
+      "px": [
+        294,
+        588
+      ],
+      "elev_m": 212.0,
+      "old_elev_m": 44.7,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Af",
+      "slope_m_km": 8.1
+    },
+    {
+      "name": "Flooded Tower",
+      "type": "ruined arcology",
+      "px": [
+        1028,
+        840
+      ],
+      "elev_m": -1512.5,
+      "old_elev_m": -1489.4,
+      "wet": true,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 0.0
+    },
+    {
+      "name": "Footfall",
+      "type": "ruin",
+      "px": [
+        560,
+        767
+      ],
+      "elev_m": 2956.8,
+      "old_elev_m": 3103.5,
+      "wet": false,
+      "climate": "Csb",
+      "old_climate": "Csb",
+      "slope_m_km": 16.1
+    },
+    {
+      "name": "Fort Ebon",
+      "type": "ruin",
+      "px": [
+        695,
+        782
+      ],
+      "elev_m": -712.4,
+      "old_elev_m": -712.4,
+      "wet": false,
+      "climate": "BSh",
+      "old_climate": "BSh",
+      "slope_m_km": 12.7
+    },
+    {
+      "name": "Fort Kalor",
+      "type": "ruin",
+      "px": [
+        863,
+        693
+      ],
+      "elev_m": -1642.1,
+      "old_elev_m": -1642.1,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 75.6
+    },
+    {
+      "name": "Fort Kreia",
+      "type": "ruin",
+      "px": [
+        1049,
+        736
+      ],
+      "elev_m": 1058.4,
+      "old_elev_m": 1058.4,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 16.0
+    },
+    {
+      "name": "Fort Ordo",
+      "type": "ruin",
+      "px": [
+        1060,
+        831
+      ],
+      "elev_m": -1151.1,
+      "old_elev_m": -1151.1,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 17.4
+    },
+    {
+      "name": "Fort Vaklu",
+      "type": "outpost",
+      "px": [
+        984,
+        912
+      ],
+      "elev_m": -1396.3,
+      "old_elev_m": -1396.3,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 5.0
+    },
+    {
+      "name": "Fridon",
+      "type": "city",
+      "px": [
+        1027,
+        931
+      ],
+      "elev_m": -1195.6,
+      "old_elev_m": -1195.6,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 34.2
+    },
+    {
+      "name": "Fulcrum",
+      "type": "arcology",
+      "px": [
+        409,
+        621
+      ],
+      "elev_m": 43.5,
+      "old_elev_m": 43.5,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 2.3
+    },
+    {
+      "name": "Furrow",
+      "type": "outpost",
+      "px": [
+        1276,
+        639
+      ],
+      "elev_m": -593.0,
+      "old_elev_m": -623.2,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 142.0
+    },
+    {
+      "name": "Gila",
+      "type": "village",
+      "px": [
+        653,
+        1485
+      ],
+      "elev_m": -1613.4,
+      "old_elev_m": -1613.4,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 58.9
+    },
+    {
+      "name": "Girder",
+      "type": "village",
+      "px": [
+        1039,
+        869
+      ],
+      "elev_m": -1386.3,
+      "old_elev_m": -1378.6,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 17.3
+    },
+    {
+      "name": "Glaive",
+      "type": "village",
+      "px": [
+        599,
+        734
+      ],
+      "elev_m": 3129.4,
+      "old_elev_m": 3146.6,
+      "wet": false,
+      "climate": "Csb",
+      "old_climate": "Csb",
+      "slope_m_km": 59.3
+    },
+    {
+      "name": "Henge",
+      "type": "ruined arcology",
+      "px": [
+        457,
+        735
+      ],
+      "elev_m": 684.8,
+      "old_elev_m": 684.8,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 9.0
+    },
+    {
+      "name": "Hexahedron",
+      "type": "arcology",
+      "px": [
+        827,
+        668
+      ],
+      "elev_m": -1344.6,
+      "old_elev_m": -1336.2,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 5.5
+    },
+    {
+      "name": "Hook",
+      "type": "city",
+      "px": [
+        809,
+        923
+      ],
+      "elev_m": -1492.5,
+      "old_elev_m": -1453.8,
+      "wet": true,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 35.4
+    },
+    {
+      "name": "Hub 01",
+      "type": "ruined arcology",
+      "px": [
+        1344,
+        1409
+      ],
+      "elev_m": 4350.5,
+      "old_elev_m": 3297.0,
+      "wet": false,
+      "climate": "ET",
+      "old_climate": "Dwc",
+      "slope_m_km": 19.1
+    },
+    {
+      "name": "Iziz",
+      "type": "city",
+      "px": [
+        963,
+        985
+      ],
+      "elev_m": -1428.2,
+      "old_elev_m": -1428.2,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 11.9
+    },
+    {
+      "name": "Jimjam",
+      "type": "city",
+      "px": [
+        746,
+        550
+      ],
+      "elev_m": 691.7,
+      "old_elev_m": 691.7,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 21.0
+    },
+    {
+      "name": "Kautoa",
+      "type": "city",
+      "px": [
+        964,
+        725
+      ],
+      "elev_m": -1191.2,
+      "old_elev_m": -1202.0,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 101.1
+    },
+    {
+      "name": "Kierson",
+      "type": "village",
+      "px": [
+        884,
+        737
+      ],
+      "elev_m": -1269.0,
+      "old_elev_m": -1269.0,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 52.7
+    },
+    {
+      "name": "Komodo",
+      "type": "village",
+      "px": [
+        865,
+        1617
+      ],
+      "elev_m": -2417.6,
+      "old_elev_m": -2417.6,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 78.7
+    },
+    {
+      "name": "Ledge",
+      "type": "arcology",
+      "px": [
+        437,
+        1330
+      ],
+      "elev_m": 1562.4,
+      "old_elev_m": 1562.4,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 301.6
+    },
+    {
+      "name": "Leng",
+      "type": "ruined arcology",
+      "px": [
+        490,
+        554
+      ],
+      "elev_m": 4485.1,
+      "old_elev_m": 4503.0,
+      "wet": false,
+      "climate": "Dsc",
+      "old_climate": "Dsc",
+      "slope_m_km": 8.0
+    },
+    {
+      "name": "Lipp",
+      "type": "village",
+      "px": [
+        691,
+        619
+      ],
+      "elev_m": 3565.2,
+      "old_elev_m": 3565.2,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 54.7
+    },
+    {
+      "name": "Locus",
+      "type": "village",
+      "px": [
+        1267,
+        1043
+      ],
+      "elev_m": -1722.2,
+      "old_elev_m": -1549.1,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 231.2
+    },
+    {
+      "name": "Loj Twenny",
+      "type": "cavern",
+      "px": [
+        457,
+        1269
+      ],
+      "elev_m": 6216.9,
+      "old_elev_m": 6216.9,
+      "wet": false,
+      "climate": "ET",
+      "old_climate": "ET",
+      "slope_m_km": 78.8
+    },
+    {
+      "name": "Longsong",
+      "type": "village",
+      "px": [
+        1226,
+        1626
+      ],
+      "elev_m": 2076.2,
+      "old_elev_m": 2076.2,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 13.3
+    },
+    {
+      "name": "Lux",
+      "type": "city",
+      "px": [
+        495,
+        645
+      ],
+      "elev_m": -106.3,
+      "old_elev_m": -106.3,
+      "wet": true,
+      "climate": "WS",
+      "old_climate": "WS",
+      "slope_m_km": 39.7
+    },
+    {
+      "name": "Mantis",
+      "type": "village",
+      "px": [
+        1113,
+        1164
+      ],
+      "elev_m": -977.8,
+      "old_elev_m": -977.8,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Am",
+      "slope_m_km": 29.8
+    },
+    {
+      "name": "Mav's Refuge",
+      "type": "city",
+      "px": [
+        1024,
+        807
+      ],
+      "elev_m": -1449.8,
+      "old_elev_m": -1449.8,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 11.6
+    },
+    {
+      "name": "Mirabilis",
+      "type": "village",
+      "px": [
+        350,
+        726
+      ],
+      "elev_m": 3124.8,
+      "old_elev_m": 3074.9,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 96.8
+    },
+    {
+      "name": "Mungo",
+      "type": "village",
+      "px": [
+        1321,
+        825
+      ],
+      "elev_m": -1803.4,
+      "old_elev_m": -2498.5,
+      "wet": true,
+      "climate": "WX",
+      "old_climate": "WX",
+      "slope_m_km": 88.9
+    },
+    {
+      "name": "Nazar",
+      "type": "ruin",
+      "px": [
+        582,
+        1079
+      ],
+      "elev_m": 466.3,
+      "old_elev_m": 466.3,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 7.9
+    },
+    {
+      "name": "Necropolis",
+      "type": "ruin",
+      "px": [
+        406,
+        944
+      ],
+      "elev_m": 168.3,
+      "old_elev_m": 168.3,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 12.9
+    },
+    {
+      "name": "Nereus",
+      "type": "village",
+      "px": [
+        762,
+        805
+      ],
+      "elev_m": -1199.8,
+      "old_elev_m": -1199.8,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 9.6
+    },
+    {
+      "name": "Noa's Regret",
+      "type": "ruined arcology",
+      "px": [
+        896,
+        866
+      ],
+      "elev_m": -1492.0,
+      "old_elev_m": -193.6,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "BWh",
+      "slope_m_km": 26.9
+    },
+    {
+      "name": "Nulab",
+      "type": "city",
+      "px": [
+        443,
+        1359
+      ],
+      "elev_m": 343.7,
+      "old_elev_m": 348.8,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 13.2
+    },
+    {
+      "name": "Nusidi",
+      "type": "ruin",
+      "px": [
+        996,
+        870
+      ],
+      "elev_m": -1378.0,
+      "old_elev_m": -1378.0,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 28.4
+    },
+    {
+      "name": "Pinnacle Rock",
+      "type": "city",
+      "px": [
+        1027,
+        681
+      ],
+      "elev_m": -334.0,
+      "old_elev_m": -331.1,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Am",
+      "slope_m_km": 19.1
+    },
+    {
+      "name": "Pluton",
+      "type": "ruined arcology",
+      "px": [
+        743,
+        1328
+      ],
+      "elev_m": 9650.0,
+      "old_elev_m": 16321.6,
+      "wet": false,
+      "climate": "O",
+      "old_climate": "O",
+      "slope_m_km": 9.0
+    },
+    {
+      "name": "Pontus",
+      "type": "village",
+      "px": [
+        702,
+        839
+      ],
+      "elev_m": -1540.3,
+      "old_elev_m": -1540.3,
+      "wet": true,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 48.9
+    },
+    {
+      "name": "Port  Tobin",
+      "type": "village",
+      "px": [
+        932,
+        973
+      ],
+      "elev_m": -1393.3,
+      "old_elev_m": -1393.3,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 8.2
+    },
+    {
+      "name": "Port Goto",
+      "type": "village",
+      "px": [
+        918,
+        698
+      ],
+      "elev_m": -1453.3,
+      "old_elev_m": -1397.8,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "XV",
+      "slope_m_km": 22.3
+    },
+    {
+      "name": "Port Visas",
+      "type": "village",
+      "px": [
+        800,
+        712
+      ],
+      "elev_m": -1458.2,
+      "old_elev_m": -1458.2,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 9.5
+    },
+    {
+      "name": "Pylon",
+      "type": "arcology",
+      "px": [
+        869,
+        1002
+      ],
+      "elev_m": -862.5,
+      "old_elev_m": -862.5,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 13.5
+    },
+    {
+      "name": "Qiblai",
+      "type": "city",
+      "px": [
+        963,
+        1566
+      ],
+      "elev_m": 1661.6,
+      "old_elev_m": 1662.4,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 268.8
+    },
+    {
+      "name": "Reed",
+      "type": "village",
+      "px": [
+        1277,
+        676
+      ],
+      "elev_m": -2342.0,
+      "old_elev_m": -2599.1,
+      "wet": true,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 4.3
+    },
+    {
+      "name": "Roketstad",
+      "type": "city",
+      "px": [
+        609,
+        684
+      ],
+      "elev_m": 3518.3,
+      "old_elev_m": 3518.3,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 8.2
+    },
+    {
+      "name": "Sauropolis",
+      "type": "city",
+      "px": [
+        765,
+        1596
+      ],
+      "elev_m": -2600.0,
+      "old_elev_m": -2599.1,
+      "wet": true,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 0.2
+    },
+    {
+      "name": "Serai",
+      "type": "village",
+      "px": [
+        826,
+        478
+      ],
+      "elev_m": -26.9,
+      "old_elev_m": -26.9,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 15.1
+    },
+    {
+      "name": "Shade",
+      "type": "outpost",
+      "px": [
+        1229,
+        885
+      ],
+      "elev_m": 2532.6,
+      "old_elev_m": 2532.6,
+      "wet": false,
+      "climate": "Dfb",
+      "old_climate": "Dfb",
+      "slope_m_km": 73.8
+    },
+    {
+      "name": "Shelf",
+      "type": "arcology",
+      "px": [
+        461,
+        1161
+      ],
+      "elev_m": 3759.7,
+      "old_elev_m": 3759.7,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 123.9
+    },
+    {
+      "name": "Shell",
+      "type": "arcology",
+      "px": [
+        902,
+        659
+      ],
+      "elev_m": -1239.8,
+      "old_elev_m": -1236.4,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 52.9
+    },
+    {
+      "name": "Shim",
+      "type": "city",
+      "px": [
+        654,
+        1118
+      ],
+      "elev_m": -461.5,
+      "old_elev_m": -461.5,
+      "wet": true,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 37.4
+    },
+    {
+      "name": "Sleeping City",
+      "type": "ruin",
+      "px": [
+        1044,
+        776
+      ],
+      "elev_m": -678.6,
+      "old_elev_m": -678.6,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 8.7
+    },
+    {
+      "name": "Span",
+      "type": "ruined arcology",
+      "px": [
+        554,
+        1010
+      ],
+      "elev_m": 2545.6,
+      "old_elev_m": 2545.6,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 82.1
+    },
+    {
+      "name": "Spirladunon",
+      "type": "city",
+      "px": [
+        800,
+        1017
+      ],
+      "elev_m": 1398.1,
+      "old_elev_m": 1400.9,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 88.2
+    },
+    {
+      "name": "Stair",
+      "type": "ruined arcology",
+      "px": [
+        1106,
+        1442
+      ],
+      "elev_m": 1379.4,
+      "old_elev_m": 1379.4,
+      "wet": false,
+      "climate": "BWk",
+      "old_climate": "BWk",
+      "slope_m_km": 123.6
+    },
+    {
+      "name": "Strongbow",
+      "type": "arcology",
+      "px": [
+        1026,
+        1594
+      ],
+      "elev_m": 1707.2,
+      "old_elev_m": 1707.2,
+      "wet": true,
+      "climate": "Cfb",
+      "old_climate": "Cfb",
+      "slope_m_km": 9.3
+    },
+    {
+      "name": "Strongwall",
+      "type": "outpost",
+      "px": [
+        914,
+        1634
+      ],
+      "elev_m": -474.5,
+      "old_elev_m": -474.5,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 76.3
+    },
+    {
+      "name": "Stump",
+      "type": "ruined arcology",
+      "px": [
+        1044,
+        952
+      ],
+      "elev_m": -1311.6,
+      "old_elev_m": -1311.6,
+      "wet": false,
+      "climate": "WS",
+      "old_climate": "WS",
+      "slope_m_km": 44.1
+    },
+    {
+      "name": "Talia",
+      "type": "city",
+      "px": [
+        1073,
+        939
+      ],
+      "elev_m": 250.0,
+      "old_elev_m": 250.0,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 42.7
+    },
+    {
+      "name": "Tallhouse",
+      "type": "outpost",
+      "px": [
+        683,
+        1184
+      ],
+      "elev_m": 990.0,
+      "old_elev_m": 1001.2,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 11.0
+    },
+    {
+      "name": "Talon",
+      "type": "village",
+      "px": [
+        1026,
+        760
+      ],
+      "elev_m": -1169.7,
+      "old_elev_m": -1158.5,
+      "wet": false,
+      "climate": "Am",
+      "old_climate": "Am",
+      "slope_m_km": 39.3
+    },
+    {
+      "name": "Temora",
+      "type": "village",
+      "px": [
+        762,
+        883
+      ],
+      "elev_m": -1002.4,
+      "old_elev_m": -1002.4,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 11.9
+    },
+    {
+      "name": "Tethis",
+      "type": "arcology",
+      "px": [
+        733,
+        775
+      ],
+      "elev_m": -1273.5,
+      "old_elev_m": -1273.5,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 19.1
+    },
+    {
+      "name": "The Gate",
+      "type": "outpost",
+      "px": [
+        1408,
+        414
+      ],
+      "elev_m": 8002.3,
+      "old_elev_m": 7730.6,
+      "wet": false,
+      "climate": "HF",
+      "old_climate": "HF",
+      "slope_m_km": 37.9
+    },
+    {
+      "name": "The Tubes",
+      "type": "cavern",
+      "px": [
+        608,
+        1547
+      ],
+      "elev_m": -77.6,
+      "old_elev_m": -77.6,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 47.6
+    },
+    {
+      "name": "Theodiga",
+      "type": "arcology",
+      "px": [
+        908,
+        1535
+      ],
+      "elev_m": -1911.9,
+      "old_elev_m": -1911.9,
+      "wet": true,
+      "climate": "WS",
+      "old_climate": "WS",
+      "slope_m_km": 7.8
+    },
+    {
+      "name": "Tilted Tower",
+      "type": "ruined arcology",
+      "px": [
+        614,
+        490
+      ],
+      "elev_m": 3513.0,
+      "old_elev_m": 3513.0,
+      "wet": false,
+      "climate": "Cfb",
+      "old_climate": "Cfb",
+      "slope_m_km": 57.2
+    },
+    {
+      "name": "Torus",
+      "type": "arcology",
+      "px": [
+        774,
+        1007
+      ],
+      "elev_m": -788.7,
+      "old_elev_m": -788.7,
+      "wet": false,
+      "climate": "Af",
+      "old_climate": "Af",
+      "slope_m_km": 17.6
+    },
+    {
+      "name": "Trickster's House",
+      "type": "ruined arcology",
+      "px": [
+        1512,
+        660
+      ],
+      "elev_m": 2052.6,
+      "old_elev_m": 2052.6,
+      "wet": true,
+      "climate": "WH",
+      "old_climate": "WH",
+      "slope_m_km": 18.3
+    },
+    {
+      "name": "Trigon",
+      "type": "arcology",
+      "px": [
+        722,
+        740
+      ],
+      "elev_m": -1264.4,
+      "old_elev_m": -1264.4,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 20.1
+    },
+    {
+      "name": "Tuatara",
+      "type": "village",
+      "px": [
+        818,
+        1554
+      ],
+      "elev_m": -1703.7,
+      "old_elev_m": -1700.8,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 26.6
+    },
+    {
+      "name": "Tzunfort",
+      "type": "outpost",
+      "px": [
+        670,
+        886
+      ],
+      "elev_m": -749.5,
+      "old_elev_m": -746.6,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 21.8
+    },
+    {
+      "name": "Valapo",
+      "type": "village",
+      "px": [
+        942,
+        782
+      ],
+      "elev_m": -1320.8,
+      "old_elev_m": -1320.8,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "XA",
+      "slope_m_km": 40.6
+    },
+    {
+      "name": "Veil",
+      "type": "outpost",
+      "px": [
+        448,
+        838
+      ],
+      "elev_m": 3393.3,
+      "old_elev_m": 3393.3,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 56.2
+    },
+    {
+      "name": "Veladiga",
+      "type": "ruined arcology",
+      "px": [
+        685,
+        479
+      ],
+      "elev_m": 693.8,
+      "old_elev_m": 693.8,
+      "wet": false,
+      "climate": "BSh",
+      "old_climate": "BSh",
+      "slope_m_km": 2.0
+    },
+    {
+      "name": "Verge",
+      "type": "city",
+      "px": [
+        1263,
+        946
+      ],
+      "elev_m": -516.3,
+      "old_elev_m": -50.8,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "BSh",
+      "slope_m_km": 136.9
+    },
+    {
+      "name": "Voth",
+      "type": "city",
+      "px": [
+        742,
+        1018
+      ],
+      "elev_m": -1560.3,
+      "old_elev_m": -1560.3,
+      "wet": true,
+      "climate": "WS",
+      "old_climate": "WS",
+      "slope_m_km": 0.0
+    },
+    {
+      "name": "Wildcat",
+      "type": "village",
+      "px": [
+        427,
+        1453
+      ],
+      "elev_m": 3427.0,
+      "old_elev_m": 3427.0,
+      "wet": false,
+      "climate": "Dsb",
+      "old_climate": "Dsb",
+      "slope_m_km": 34.3
+    },
+    {
+      "name": "Wing",
+      "type": "ruined arcology",
+      "px": [
+        699,
+        1042
+      ],
+      "elev_m": 134.9,
+      "old_elev_m": 137.8,
+      "wet": false,
+      "climate": "Aw",
+      "old_climate": "Aw",
+      "slope_m_km": 25.7
+    },
+    {
+      "name": "Yith",
+      "type": "village",
+      "px": [
+        346,
+        418
+      ],
+      "elev_m": 1611.5,
+      "old_elev_m": 1611.5,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfa",
+      "slope_m_km": 47.7
+    },
+    {
+      "name": "Ys",
+      "type": "city",
+      "px": [
+        789,
+        738
+      ],
+      "elev_m": -1383.0,
+      "old_elev_m": -1383.0,
+      "wet": false,
+      "climate": "XV",
+      "old_climate": "XV",
+      "slope_m_km": 8.1
+    },
+    {
+      "name": "Yuni",
+      "type": "city",
+      "px": [
+        1263,
+        1089
+      ],
+      "elev_m": 636.2,
+      "old_elev_m": 636.2,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "BSh",
+      "slope_m_km": 19.0
+    },
+    {
+      "name": "Zey'danin",
+      "type": "city",
+      "px": [
+        795,
+        860
+      ],
+      "elev_m": -1180.0,
+      "old_elev_m": -360.7,
+      "wet": false,
+      "climate": "XA",
+      "old_climate": "Af",
+      "slope_m_km": 41.9
+    },
+    {
+      "name": "Ostrukh-on-Water",
+      "type": "village",
+      "px": [
+        1516,
+        1471
+      ],
+      "elev_m": 1987.8,
+      "old_elev_m": 1987.8,
+      "wet": false,
+      "climate": "Cwb",
+      "old_climate": "Cwb",
+      "slope_m_km": 3.4
+    },
+    {
+      "name": "Spindle Fan",
+      "type": "village",
+      "px": [
+        1561,
+        1140
+      ],
+      "elev_m": 2150.1,
+      "old_elev_m": 2169.6,
+      "wet": false,
+      "climate": "Cwb",
+      "old_climate": "Cwb",
+      "slope_m_km": 2.9
+    },
+    {
+      "name": "\u0160urpu-Dhelv",
+      "type": "cavern",
+      "px": [
+        806,
+        818
+      ],
+      "elev_m": -358.6,
+      "old_elev_m": 2813.7,
+      "wet": false,
+      "climate": "Cfa",
+      "old_climate": "Cfb",
+      "slope_m_km": 55.8
+    },
+    {
+      "name": "Qarnu-T\u016bbu",
+      "type": "cavern",
+      "px": [
+        834,
+        882
+      ],
+      "elev_m": -635.4,
+      "old_elev_m": 1634.4,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Csa",
+      "slope_m_km": 42.2
+    },
+    {
+      "name": "N\u016bru-\u0160aplu",
+      "type": "cavern",
+      "px": [
+        876,
+        802
+      ],
+      "elev_m": 226.4,
+      "old_elev_m": 2931.0,
+      "wet": false,
+      "climate": "Csa",
+      "old_climate": "Cfb",
+      "slope_m_km": 71.3
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+ "version": "4.22",
+ "grid_km": 4.005,
+ "runoff": "Turc: P - P/sqrt(0.9+(P/L)^2), L = 300+25T+0.05T^3 mm/yr",
+ "lake_evaporation": "L at the cell",
+ "evap_k": 1.24,
+ "books": {
+  "barrier_m": 5000.0,
+  "import_km": 300.0,
+  "imported_m3s": 6299,
+  "evap_k": 1.24,
+  "crater": {
+   "turc_alone_left": 18710,
+   "rain": 104466,
+   "land_evap": 56850,
+   "water_evap": 41318,
+   "left": 6299
+  },
+  "sealed": [
+   {
+    "at_px": [
+     732,
+     1529
+    ],
+    "km2": 1587094,
+    "rain_mm": 449,
+    "left_m3s": 2331,
+    "rain_scale": 0.825,
+    "rain_scale_closed_now": 0.86
+   },
+   {
+    "at_px": [
+     1611,
+     580
+    ],
+    "km2": 695478,
+    "rain_mm": 115,
+    "left_m3s": 848,
+    "rain_scale": 0.421,
+    "rain_scale_closed_now": 0.456
+   },
+   {
+    "at_px": [
+     1620,
+     1522
+    ],
+    "km2": 625287,
+    "rain_mm": 160,
+    "left_m3s": 1519,
+    "rain_scale": 0.064,
+    "rain_scale_closed_now": 0.233
+   },
+   {
+    "at_px": [
+     1638,
+     1145
+    ],
+    "km2": 577376,
+    "rain_mm": 313,
+    "left_m3s": 2367,
+    "rain_scale": 0.319,
+    "rain_scale_closed_now": 0.321
+   },
+   {
+    "at_px": [
+     1100,
+     1391
+    ],
+    "km2": 345213,
+    "rain_mm": 41,
+    "left_m3s": 71,
+    "rain_scale": 0.049,
+    "rain_scale_closed_now": 0.059,
+    "rain_scale_set_ground": 1.0,
+    "recomputed_422": "rain as set under the spill; the books close through its terminal lake"
+   },
+   {
+    "at_px": [
+     1573,
+     891
+    ],
+    "km2": 167506,
+    "rain_mm": 140,
+    "left_m3s": 374,
+    "rain_scale": 0.205,
+    "rain_scale_closed_now": 0.218
+   },
+   {
+    "at_px": [
+     1350,
+     1399
+    ],
+    "km2": 140125,
+    "rain_mm": 2,
+    "left_m3s": 0,
+    "rain_scale": 0.637,
+    "rain_scale_closed_now": 0.625
+   },
+   {
+    "at_px": [
+     1766,
+     582
+    ],
+    "km2": 105222,
+    "rain_mm": 50,
+    "left_m3s": 63,
+    "rain_scale": 0.098,
+    "rain_scale_closed_now": 0.25
+   }
+  ]
+ },
+ "q": "mean annual discharge, m3/s",
+ "width_depth": "w = 4.5 Q^0.5, d = 0.35 Q^0.38 (m)",
+ "wadi_width": "3 A^0.35 m (A km2), the flash-flood bed",
+ "thresholds": {
+  "ice_t": -10.0,
+  "q_river_m3s": 10.0,
+  "a_wadi_km2": 2500.0,
+  "min_km": 24,
+  "breach_m": 150.0
+ },
+ "note": "px: one vertex per height cell (~4 km); bed_m the surface under each (a lake's level on water); the Yuni river keeps its drawn course as drawn_px"
+}
