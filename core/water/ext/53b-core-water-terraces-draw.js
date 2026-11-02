@@ -41,10 +41,10 @@
   const mat=new T.MeshStandardMaterial({color:col,roughness:.42,metalness:0,transparent:true,depthWrite:false,side:T.DoubleSide});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec2 vWtrUF;varying vec2 vWtrFP;';const SD=o.margin==null&&o.edge==null?'':JSON.stringify([o.margin,o.edge]);mat.customProgramCacheKey=()=>'wtr-falls:'+W.hashStr(CH+op+SD);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;attribute vec2 wtrFP;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;vWtrFP=wtrFP;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
+   W.vs(sh,'wtr-drawFalls',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;attribute vec2 wtrFP;'],['#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;vWtrFP=wtrFP;']);
+   W.fs(sh,'wtr-drawFalls',['#include <common>','#include <common>\n'+CH],['#include <color_fragment>','#include <color_fragment>\n'+
     'float wtrSt=wtrStreakA(vWtrUF.x,vWtrUF.y,vWtrFP.x,vWtrFP.y);float wtrFm=wtrFallFoam(vWtrUF.y,wtrSt);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.95,0.97,0.97),wtrFm);'+
-    'diffuseColor.a='+f(op)+'*(0.45+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(W.sideOpt({},o),'(vWtrFP.x*'+f(1/W.PRESETS.fall.streak.across)+')')+'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));');};
+    'diffuseColor.a='+f(op)+'*(0.45+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(W.sideOpt({},o),'(vWtrFP.x*'+f(1/W.PRESETS.fall.streak.across)+')')+'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));']);};
   const mesh=tag(new T.Mesh(g,mat),name,ids,o);mesh.renderOrder=o.renderOrder==null?3:o.renderOrder;scene.add(mesh);
   const D={mesh,material:mat,falls:list,merged:M};
   if(o.plunge!==false&&M.plunge.count){const P=M.plunge,pg=new T.BufferGeometry();pg.setAttribute('position',new T.Float32BufferAttribute(P.pos,3));
@@ -57,8 +57,8 @@
    const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);
    const C2='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec3 vWtrW;varying vec3 vWtrPC;'+(RF?'varying float vWtrPR;':'');pm.customProgramCacheKey=()=>'wtr-plunges:'+W.hashStr(C2+RF);
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2+'\nattribute vec3 wtrPC;'+(RF?'attribute float wtrPR;':'')).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;vWtrPC=wtrPC;'+(RF?'vWtrPR=wtrPR;':''));
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlungeA(vWtrW.xz,vWtrPC);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF);};
+    W.vs(sh,'wtr-drawFalls',['#include <common>','#include <common>\n'+C2+'\nattribute vec3 wtrPC;'+(RF?'attribute float wtrPR;':'')],['#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;vWtrPC=wtrPC;'+(RF?'vWtrPR=wtrPR;':'')]);
+    W.fs(sh,'wtr-drawFalls',['#include <common>','#include <common>\n'+C2],['#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlungeA(vWtrW.xz,vWtrPC);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF]);};
    D.plunge=tag(new T.Mesh(pg,pm),name+':plunge',ids,o);D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
    if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const pts=[],sd=W.sprayByDrop(o);for(const S of list){const Pl=W.plunge(S),y=(o.plungeY==null?Pl.y+.06:o.plungeY)+1;
      if(sd){for(const p of W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)))pts.push([p[0],p[1],p[2],'spray']);continue;}
@@ -84,9 +84,9 @@
    transparent:o.opacity!=null&&o.opacity<1,opacity:o.opacity==null?1:o.opacity,depthWrite:!(o.opacity!=null&&o.opacity<1)});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;'+GV;mat.customProgramCacheKey=()=>'wtr-still:'+W.hashStr(CH+CF)+W.rainK(o);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+(anyG?'\nattribute vec4 wtrGA;attribute vec3 wtrGC;attribute vec3 wtrGR;':'')).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(anyG?'vWtrGA=wtrGA;vWtrGC=wtrGC;vWtrGR=wtrGR;':''));
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);');
-   if(CF)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+CF);};
+   W.vs(sh,'wtr-drawPools',['#include <common>','#include <common>\n'+CH+(anyG?'\nattribute vec4 wtrGA;attribute vec3 wtrGC;attribute vec3 wtrGR;':'')],['#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(anyG?'vWtrGA=wtrGA;vWtrGC=wtrGC;vWtrGR=wtrGR;':'')]);
+   W.fs(sh,'wtr-drawPools',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);']);
+   if(CF)W.fs(sh,'wtr-drawPools',['#include <color_fragment>','#include <color_fragment>\n'+CF]);};
   const mesh=tag(new T.Mesh(g,mat),name,list.map(S=>S.id),o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={mesh,material:mat,list};W.drawn.push(D);return D;};
 

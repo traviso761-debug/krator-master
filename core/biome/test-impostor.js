@@ -2,6 +2,7 @@
 // part (the views drawn, the shader) is checked on a page (biomes/swbay, verify.py); here the map, the bases, the capture's
 // bookkeeping (one tree built, rendered grid x grid twice, its stores emptied, its charges and the page's state restored)
 // and the item it defines, with a renderer that records its calls.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

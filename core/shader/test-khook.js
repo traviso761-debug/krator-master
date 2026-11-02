@@ -72,6 +72,14 @@ const at=(s,t)=>s.indexOf(t+';');
  ok('checkPrograms: the program that did not link, its log and the material that uses it',out.length===1&&out[0].kind==='program'&&/undeclared/.test(out[0].fragmentLog)&&out[0].materials.length===1&&out[0].materials[0].name==='broken'&&out[0].materials[0].object==='cliff',out.length!==1);
  ok('...[] when every program links',K.checkPrograms({info:{programs:[good]},properties:rr.properties},scene).length===0,false);
  const mm=new T.MeshBasicMaterial();K.add(mm,'gone',{fragment:{at:[{at:'missing_chunk',after:'x;'}]}});thrown(()=>mm.onBeforeCompile(R.shader('basic'),rr));
- const o2=K.checkPrograms();ok('...the anchors missed too, and with no renderer, every renderer a layer compiled on',o2.some(x=>x.kind==='anchor'&&x.layer==='gone')&&o2.some(x=>x.kind==='program'),false);}
+ const o2=K.checkPrograms();ok('...the anchors missed too, and with no renderer, every renderer a layer compiled on',o2.some(x=>x.kind==='anchor'&&x.layer==='gone')&&o2.some(x=>x.kind==='program'),false);
+ const o3=K.checkPrograms(null,null,/^nothing$/);ok('...only: a slice by key and layer (WATER.checkPrograms)',o3.length===0&&K.checkPrograms(null,null,/gone/).every(x=>x.kind==='anchor')&&K.checkPrograms(null,null,/gone/).length===1,false);}
+
+// 8. the warp's slot: empty, nothing moves; installed, it runs last and keys the program
+{const mk=()=>K.add(new T.MeshBasicMaterial(),'w',{vertex:{at:[{at:'project_vertex',after:'A;'}]}}),a=mk(),b=mk(),s0=R.compile(a);
+ ok('the warp slot: empty by default, the text and the key are the layers alone',K.warp===null&&!/warp/.test(s0.key)&&s0.vs.includes('A;'),false);
+ K.warp={key:'t',run(sh){sh.vertexShader=sh.vertexShader.replace('A;','A;WARP;');}};const s1=R.compile(b);K.warp=null;
+ ok('...installed: after the layers, and in the program key',s1.vs.includes('A;WARP;')&&s1.key===s0.key+'|warp:t',false);
+ ok('...removed: as it was',R.compile(a).vs===s0.vs&&a.customProgramCacheKey()===s0.key,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

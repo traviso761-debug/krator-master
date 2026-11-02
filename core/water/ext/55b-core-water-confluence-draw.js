@@ -18,9 +18,8 @@
  // the ribbons' weight outside the disc: 0 inside it, 1 past its rim
  W.ribbonFadeGLSL=C=>'smoothstep('+f(C.r-C.feather)+','+f(C.r)+',length(vWtrW.xz-vec2('+f(C.mouth[0])+','+f(C.mouth[1])+')))';
  W.fadeRibbons=(C,draws)=>{const t=W.ribbonFadeGLSL(C);
-  for(const D of draws){const m=D.material||D,ob=m.onBeforeCompile,ok=m.customProgramCacheKey,opaque=!m.transparent,line=opaque?'if('+t+'<0.5)discard;':'diffuseColor.a*='+t+';';
-   m.onBeforeCompile=(sh,r)=>{ob.call(m,sh,r);sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+line);};
-   m.customProgramCacheKey=()=>ok.call(m)+'|cf:'+W.hashStr(line);m.needsUpdate=true;}
+  for(const D of draws){const m=D.material||D,opaque=!m.transparent,line=opaque?'if('+t+'<0.5)discard;':'diffuseColor.a*='+t+';';
+   W.KH().add(m,'wtr-cf:'+W.hashStr(line),sh=>{W.fs(sh,'wtr-fadeRibbons',['#include <color_fragment>','#include <color_fragment>\n'+line]);},{key:'cf:'+W.hashStr(line)});}
   return t;};
  W.drawConfluence=(C,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period(),M=C.mesh(),g=new T.BufferGeometry();
   const rap=o.rapids||(C.flows[0]&&C.flows[0].rapids)||null;
@@ -38,11 +37,8 @@
    'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-C.margin)+',0.25,vWtrB)*vWtrA;';
   mat.customProgramCacheKey=()=>'wtr-confluence:'+W.hashStr(CH+CF)+W.rainK(o);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;attribute float wtrFade;attribute float wtrMeet;')
-    .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrA=wtrFade;vWtrM=wtrMeet;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <color_fragment>','#include <color_fragment>\n'+CF)
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);')
-    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);');};
+   W.vs(sh,'wtr-drawConfluence',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;attribute float wtrFade;attribute float wtrMeet;'],['#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrA=wtrFade;vWtrM=wtrMeet;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;']);
+   W.fs(sh,'wtr-drawConfluence',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <color_fragment>','#include <color_fragment>\n'+CF],['#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);'],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);']);};
   const mesh=new T.Mesh(g,mat);mesh.name='water:'+C.name;mesh.userData.lodSkip=true;mesh.userData.water=C.flows.map(S=>S.id);
   if(o.pick)mesh.userData.inspectLabel=C.name;else{mesh.userData.probeSkip=true;mesh.raycast=()=>{};}
   mesh.renderOrder=o.renderOrder==null?2:o.renderOrder;scene.add(mesh);

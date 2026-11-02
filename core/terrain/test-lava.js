@@ -1,5 +1,6 @@
 // node core/terrain/test-lava.js — KLAVA's contract (46-core-lava.js), each check with a broken input that must fail.
 // --write rewrites golden-lava.json (the numbers klava.gd is held to).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 global.window=global;
 eval(fs.readFileSync(path.join(__dirname,'..','rand','08-core-rand.js'),'utf8'));

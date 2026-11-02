@@ -68,7 +68,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT_ID = 'lizardmen'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/99-host-take.js (vendored from kits/scyvoi, with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").

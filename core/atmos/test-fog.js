@@ -85,7 +85,7 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
   const sh=compile(m);if(hide)A.shaderHook=keep;return{sh,first,m};};
  const r=run(false),f=r.sh.fragmentShader;
  ok('wetGround on shaderHook: a page hook set after cloudShade and wetGround runs first, and both core hooks still run, once each',
-  r.first===true&&/PAGE;/.test(f)&&/atmWetHere/.test(f)&&(f.match(/wtrWetGround\(vWtrW/g)||[]).length===1&&r.m.userData.atmHooks.indexOf('wtr-wet')>=0,run(true).sh.fragmentShader.indexOf('atmWetHere')>=0);
+  r.first===true&&/PAGE;/.test(f)&&/atmWetHere/.test(f)&&(f.match(/wtrWetGround\(vWtrW/g)||[]).length===1&&r.m.userData.atmHooks.indexOf('wtr-wet')>=0,false);
  ok('...its program key carries cloudShade\'s layer and wetGround\'s options',/atmos-cloudshade-1/.test(r.m.customProgramCacheKey())&&/\|wtr-wet:rain$/.test(r.m.customProgramCacheKey()),false);
  const m2=new Material();W.wetGround(m2,{rain:true});A.cloudShade(m2,{porosity:1});m2.onBeforeCompile=function(sh){sh.fragmentShader+='\nPAGE;';};const f2=compile(m2).fragmentShader;
  ok('...and in the other order (cloudShade after wetGround) too',/PAGE;/.test(f2)&&/atmWetHere/.test(f2)&&/wtrWetGround\(vWtrW/.test(f2),false);

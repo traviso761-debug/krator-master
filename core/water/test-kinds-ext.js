@@ -2,6 +2,7 @@
 // blood water, the SW highlands' gin-clear river and karst springs), the salt pan, the ice with its salt rim and drifts, the bloodfalls out from
 // under the ice, riverweed and comb-weed, the seep dam. Each check has a negative control; each shader chunk is run as text (glsl-interp.js) against
 // its twin. First: loading the fragments moves nothing (the export of a scene made without them is the same after they load).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');

@@ -774,6 +774,12 @@ class VerifyPage:
         sh = gl_errors(cons)
         U.append(("shader-errors", not sh, "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3]))
                   if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % len(cons)))
+        try:
+            bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
+        except Exception:
+            bad = None
+        if bad is not None:
+            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else "every program linked, no anchor missed (KHOOK.checkPrograms)"))
         U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
         if R:
             panel = R["panel"]

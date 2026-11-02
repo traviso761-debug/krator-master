@@ -1,6 +1,7 @@
 // node core/water/test-shore.js — the shore from the ground (core/water/ext/58, 2026-10-27, PRACTICE.md section 2 item 4): an open surface's mask
 // flooded over its ground from its seeds and dilated a cell, so its edges lie over ground that rises above the level and the shore the eye sees is
 // the ground's contour. Judged by WATER.audit's open-edge rule (ext/57), with the shape-drawn mask as the negative.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const files=['core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js','core/water/21-core-water-shore.js',

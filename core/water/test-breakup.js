@@ -1,5 +1,6 @@
 // node core/water/test-breakup.js — natural ripples on open and still water (core/water/ext/56, 2026-10-27; the owner: eastabyss's salt lake shaded in a
 // regular grid). The shader's text against its twin, the regularity it breaks (with a negative), and that nothing moves without it.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');
@@ -20,7 +21,7 @@ const T3={Color,Vector2:V2,Vector3:V3,BufferGeometry:BG,InstancedBufferGeometry:
  DataTexture:class{constructor(d,w,h){this.image={data:d,width:w,height:h};}},RGBAFormat:1,UnsignedByteType:1,LinearFilter:1,ClampToEdgeWrapping:1,
  Frustum:class{setFromProjectionMatrix(){}intersectsBox(){return true;}},Matrix4:class{multiplyMatrices(){}},Box3:class{constructor(){this.min=new V3();this.max=new V3();}}};
 A.T=T3;A.h={scene:{add(){}},THREE:T3};A.U={waveTime:{value:0},waveAmp:{value:1},rain:{value:0}};A.hooks=[];A.skyEnv=null;
-const FS='#include <common>\nvoid main(){\n#include <color_fragment>\n#include <roughnessmap_fragment>\n#include <normal_fragment_begin>\n#include <normal_fragment_maps>\n#include <emissivemap_fragment>\n',VS='#include <common>\n#include <begin_vertex>\n#include <project_vertex>\n';
+const FS='#include <common>\nvoid main(){\n#include <color_fragment>\n#include <roughnessmap_fragment>\n#include <metalnessmap_fragment>\n#include <normal_fragment_begin>\n#include <normal_fragment_maps>\n#include <emissivemap_fragment>\n',VS='#include <common>\n#include <beginnormal_vertex>\n#include <begin_vertex>\n#include <project_vertex>\n';
 const compiled=m=>{const sh={uniforms:{},vertexShader:VS,fragmentShader:FS};m.onBeforeCompile(sh,null);return{key:m.customProgramCacheKey(),fs:sh.fragmentShader};};
 
 // the case: eastabyss's salt lake, its three swells and no share of the wave field, and a still pool

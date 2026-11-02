@@ -97,7 +97,9 @@ LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
-CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
+SHADER_DIR = os.path.join(ROOT, 'core', 'shader')
+CORE_SHADER = ['06-core-khook.js', '06b-core-kcolor.js']   # core/atmos and core/water call them
+CORE_WATER = ['20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']   # 50's draw calls 51's rain helpers
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell,
 # the port core, the per-target tables. Anything else must contain a builder.
@@ -113,7 +115,7 @@ DETERMINISTIC = {
     '71w-port-sea.js',                    # the sea on core/water
 }
 DETERMINISTIC |= {'89x-port-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
-DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_SHADER) | set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
 SEED_COLLISION_EXCEPTIONS = set()
 
@@ -221,6 +223,7 @@ def build_one(target, do_checks):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})   # a src/ copy overrides
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(SHADER_DIR, f) for f in CORE_SHADER if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})

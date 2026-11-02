@@ -1,6 +1,7 @@
 // node core/biome/test-cards.js: a library card on its geometry's axes (20-core-kit.js, "A LIBRARY CARD ON ITS GEOMETRY'S
 // AXES"; 30-core-foliage.js's frond, ribbon, hang and clump declare the edge that holds their plant). Each check with a
 // negative: a slot with no "base" draws every geometry exactly as before.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

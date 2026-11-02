@@ -185,6 +185,7 @@ DETERMINISTIC = {
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js', '89-hl-trades.js'}   # core/host (no rnd()); the take; the sites into core/tags
 

@@ -3,6 +3,7 @@
 // hashes of a snapshot taken from the code as it stood before the change (GOLDEN below; `--golden-from <dir>` prints a new one
 // from fragments copied into <dir>); (b) each option, with a negative control, in test-water.js and here (the new fragments in
 // core/water/ext/ run here, with a three.js stub: no GPU).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const ROOT=path.join(__dirname,'..','..');
 const argv=process.argv.slice(2),gi=argv.indexOf('--golden-from'),FROM=gi>=0?argv[gi+1]:null;

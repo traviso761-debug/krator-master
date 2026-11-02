@@ -43,18 +43,17 @@
     'return normalize(vec3(-s.x,1.0,-s.y));}',
    'vec3 wtrBreakup(vec3 n,vec2 p){return wtrBreakupV(n,p,vec2('+f(B.drift[0])+','+f(B.drift[1])+'));}',
    'vec3 wtrBreakupF(vec3 n,vec2 p,vec2 v){return wtrBreakupV(n,p,v);}'].join('\n');};
- W.breakupOn=(mat,Bo)=>{if(!mat||mat.userData.wtrBreakup)return mat;const ch=W.breakupGLSL(Bo),ob=mat.onBeforeCompile,ok=mat.customProgramCacheKey;mat.userData.wtrBreakup=true;
+ W.breakupOn=(mat,Bo)=>{if(!mat||mat.userData.wtrBreakup)return mat;const ch=W.breakupGLSL(Bo);mat.userData.wtrBreakup=true;
   /* the world position varying: open water's vWtrP, still water's vWtrW; a ribbon (or a confluence) also carries its current vWtrF, and its
      chop drifts with it (wtrBreakupF) */
-  mat.onBeforeCompile=(sh,r)=>{ob.call(mat,sh,r);const fs=sh.fragmentShader,P=/varying vec2 vWtrP\b/.test(fs)?'vWtrP':/varying vec3 vWtrW\b/.test(fs)?'vWtrW.xz':null;if(!P)return;
+  return W.KH().add(mat,'wtr-breakup',sh=>{const fs=sh.fragmentShader,P=/varying vec2 vWtrP\b/.test(fs)?'vWtrP':/varying vec3 vWtrW\b/.test(fs)?'vWtrW.xz':null;if(!P)return;
    const call=/varying vec2 vWtrF\b/.test(fs)&&P==='vWtrW.xz'?'wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)':'wtrBreakup(wtrBn,'+P+')';
    const at=fs.includes('#include <normal_fragment_maps>')?'#include <normal_fragment_maps>':'#include <emissivemap_fragment>';
    /* the chunk goes just before main, after every declaration the drawing added (its clock, atmWaveT, comes in with atmos_waves wherever the
       drawing put it; first after <common> it ran before that and failed to compile: silently, the mesh just stops drawing); declared here
       only if the fragment has no clock at all */
    const clk=/#include <atmos_waves>|uniform\s+float\s+atmWaveT\b/.test(fs)?'':'uniform float atmWaveT;\n';const A=typeof ATMOS!=='undefined'?ATMOS:null;if(clk&&A&&A.waveUniforms)A.waveUniforms(sh.uniforms);
-   sh.fragmentShader=fs.replace(/void\s+main\s*\(/,m=>clk+ch+'\n'+m).replace(at,'{vec3 wtrBn=(vec4(normal,0.0)*viewMatrix).xyz;normal=normalize((viewMatrix*vec4('+call+',0.0)).xyz);}\n'+at);};
-  mat.customProgramCacheKey=()=>ok.call(mat)+'|bk:'+W.hashStr(ch);mat.needsUpdate=true;return mat;};
+   W.fs(sh,'wtr-breakup',[/void\s+main\s*\(/,m=>clk+ch+'\n'+m],[at,'{vec3 wtrBn=(vec4(normal,0.0)*viewMatrix).xyz;normal=normalize((viewMatrix*vec4('+call+',0.0)).xyz);}\n'+at]);},{key:'bk:'+W.hashStr(ch)});};
  W.breakupAll=Bo=>{let n=0;for(const D of W.drawn||[]){const k=D.S&&D.S.kind;if((k==='open'||k==='still')&&D.material){W.breakupOn(D.material,Bo);n++;}}return n;};
  // AUTO (2026-10-27, the core pass): WATER.BREAKUP_AUTO (false) set true before a page draws its water, and every drawing made after takes the
  // breakup as it is made: open and still water (draw, drawStill, stillMaterial, drawPools) with BREAKUP, ribbons and confluences (drawFlow,

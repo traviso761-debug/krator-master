@@ -96,6 +96,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '44-core-ports.js',   # core/ports: the buildings' marks (no rnd())
                  '90-atmos-host.js',   # binds core/atmos
                  '98-start.js'}        # the take (KHOST.take)
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 DETERMINISTIC |= set(CORE_WATER) | {'90w-brook-water.js'}   # core/water: IIFE-scoped, its own PRNG, nothing placed
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG

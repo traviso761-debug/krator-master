@@ -16,6 +16,8 @@ ATMOS = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(ATMOS))
 
 FRAGMENTS = [
+    os.path.join(ROOT, 'core', 'shader', '06-core-khook.js'),
+    os.path.join(ROOT, 'core', 'shader', '06b-core-kcolor.js'),
     os.path.join(ROOT, 'core', 'clock', '20-core-clock.js'),
     os.path.join(ATMOS, '89-atmos-0-core.js'),
     os.path.join(ATMOS, '89-atmos-0p-presets.js'),

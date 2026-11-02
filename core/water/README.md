@@ -65,6 +65,14 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `test-kinds-ext.js` | | `node core/water/test-kinds-ext.js`: ext/54 and 54b, each check with a negative, each chunk run as text against its twin; first, that loading them moves no export, preset or shader (`test-gaps.js` also loads them) |
 | `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
 
+## core/shader (2026-11-02)
+
+Every water hook goes through `KHOOK` (`core/shader/README.md`), so a page needs `core/shader` (`khost.resolve` adds it). What wraps a
+material is a layer (`wtr-ride`, `wtr-wet`, `wtr-keep`, `wtr-rust`, `wtr-cf:<hash>`, `wtr-breakup`, `wtr-mirror`); a page hook runs first
+whenever it is assigned. A kind's own hook edits through `W.vs` and `W.fs`, which throw on a missing anchor. `WATER.checkPrograms(renderer?,
+scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. Colours go in as written (`WATER.colAsWritten`);
+`KCOLOR.lin(hex)` is how to pass a true display hex. The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
+
 ## Taking it into a build
 
 List the two files in `build.py` beside core/atmos, which the drawing needs (`89-atmos-0-core.js`, `89-atmos-0p-presets.js`,

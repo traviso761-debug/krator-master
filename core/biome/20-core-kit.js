@@ -457,12 +457,11 @@ function _lodInject(src,decl,body){const m=src.match(_MAIN);if(!m)return null;co
 BIO._lodInject=_lodInject;
 BIO.lodFade=function(m){if(!m||!m.isMaterial)return false;if(m.userData._lodFade)return true;
  if(m.isRawShaderMaterial||(m.isShaderMaterial&&m.glslVersion)||m.isPointsMaterial||m.isLineBasicMaterial||m.isSpriteMaterial)return false;
- const P=BIO.host.THREE.Material.prototype,oh=m.onBeforeCompile,ok=m.customProgramCacheKey,G=BIO.LODFADE_GLSL;
- m.onBeforeCompile=function(sh,r){if(oh&&oh!==P.onBeforeCompile)oh.call(this,sh,r);
+ const G=BIO.LODFADE_GLSL;if(typeof KHOOK==='undefined')throw new Error('core/biome: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');
+ KHOOK.add(m,'lodfade',function(sh){
   const v=_lodInject(sh.vertexShader,G.vertexDecl,G.vertexMain),f=_lodInject(sh.fragmentShader,G.fragmentDecl,G.fragmentMain);
-  if(v&&f){sh.vertexShader=v.replace('#include <fog_vertex>','#include <fog_vertex>\nif (_lcull > 0.5) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);');sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}};   /* the culled instance's vertices meet off the clip volume: never rasterized */
- m.customProgramCacheKey=function(){return (ok===P.customProgramCacheKey?String(oh):ok.call(this))+'|lodfade';};
- m.userData._lodFade=true;m.needsUpdate=true;return true;};
+  if(v&&f){sh.vertexShader=KHOOK.rep(v,'#include <fog_vertex>','#include <fog_vertex>\nif (_lcull > 0.5) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);','lodfade','vertex');sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}});   /* the culled instance's vertices meet off the clip volume: never rasterized */
+ m.userData._lodFade=true;return true;};
 // the per-mesh vec4s: aLodA box x0 z0 x1 z1; aLodB y0 y1 minRange -range0; aLodC end0 range1 end1 range2 (ends in rows:
 // instances, or a bucket's vertices). e null: a mesh sharing a faded material that is not chunked (aLodB.w 1: drawn as before)
 function _lodAttrs(mesh,e,vEnds){const T=BIO.host.THREE,a=new Float32Array(12),big=1e9;

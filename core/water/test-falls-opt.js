@@ -1,6 +1,7 @@
 // node core/water/test-falls-opt.js — drawFall's options for tall falls (2026-10-27, the Rift jungle's 160 m and 87 m cliffs): plungeR (the churn
 // disc sized to the pool it lands in, its rim faded) and footK (the curtain's alpha held toward its foot instead of thinning). Each against the
 // shader's own text in glsl-interp.js, with negatives; and the merged falls' plungeR (ext/53, nwbay's terraces); without them the text is the old one (test-gaps.js holds the default's hash).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');

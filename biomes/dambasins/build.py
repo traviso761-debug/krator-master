@@ -80,6 +80,7 @@ def kit_paths():
     src = {f: os.path.join(PORT_SRC, f) for f in os.listdir(PORT_SRC) if f[0].isdigit()}
     src.update({f: os.path.join(PB.CORE, f) for f in PB.CORE_FILES if f not in src})
     src.update({f: os.path.join(PB.LOD_DIR, f) for f in PB.LOD_FILES if f not in src})
+    src.update({f: os.path.join(PB.SHADER_DIR, f) for f in PB.CORE_SHADER if f not in src})
     src.update({f: os.path.join(PB.ATMOS_DIR, f) for f in PB.CORE_ATMOS if f not in src})
     src.update({f: os.path.join(PB.WATER_DIR, f) for f in PB.CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in PB.RECORD_FILES if f not in src})

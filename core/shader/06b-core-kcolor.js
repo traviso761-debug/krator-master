@@ -21,7 +21,7 @@
    'linear' | 'reinhard' | 'cineon' | 'none'); KCOLOR.exposure(renderer, e) (the shared sky's hourly exposure);
    KCOLOR.report(renderer) -> {output, tone, exposure} for a verify view. */
 (function(root){'use strict';
-var C={};
+ var C={};
 C.toLin=function(c){return c<0.04045?c*0.0773993808:Math.pow(c*0.9478672986+0.0521327014,2.4);};
 C.toSRGB=function(c){return c<0.0031308?c*12.92:1.055*Math.pow(c,0.41666)-0.055;};
 C.rgb=function(x){if(x==null)throw new Error('KCOLOR: no colour');
@@ -45,7 +45,7 @@ C.GLSL='#ifndef KCOLOR_GLSL\n#define KCOLOR_GLSL\n'+
  'vec3 gamma22ToLinear(vec3 c){return pow(c,vec3(2.2));}\n#endif\n';
 C.include=function(sh){if(sh.vertexShader.indexOf('#define KCOLOR_GLSL')<0)sh.vertexShader=C.GLSL+sh.vertexShader;if(sh.fragmentShader.indexOf('#define KCOLOR_GLSL')<0)sh.fragmentShader=C.GLSL+sh.fragmentShader;return sh;};
 // the renderer
-var TONES={aces:'ACESFilmicToneMapping',linear:'LinearToneMapping',reinhard:'ReinhardToneMapping',cineon:'CineonToneMapping',none:'NoToneMapping'};
+ var TONES={aces:'ACESFilmicToneMapping',linear:'LinearToneMapping',reinhard:'ReinhardToneMapping',cineon:'CineonToneMapping',none:'NoToneMapping'};
 C.output=function(r,o){o=o||{};var T=root.THREE;if(!r||!T)return r;r.outputEncoding=T.sRGBEncoding;
  var t=TONES[(o.tone||'aces').toLowerCase()];if(!t)throw new Error('KCOLOR.output: no tone mapping '+o.tone);r.toneMapping=T[t];
  if(o.exposure!=null)C.exposure(r,o.exposure);return r;};

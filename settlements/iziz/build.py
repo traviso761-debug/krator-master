@@ -215,6 +215,7 @@ DETERMINISTIC = {
     '69dp-palace-matlib-pack.js',         # generated: the palace's library pack
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)

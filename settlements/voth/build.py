@@ -333,10 +333,11 @@ SWBAY_TEMPLE_H = 40
 CORE_TIME = ['core/clock/20-core-clock.js'] + ['core/atmos/89-atmos-%s.js' % f for f in ('0-core', '0p-presets', '2-lights', '3-particles', '4-weather', '8-export', '9-host', 'b-skylight')]
 
 
+# core/shader first (KHOOK, KCOLOR: core/atmos, core/water and core/biome, later on the page, call them); then
 # where things stand and what they are, from core (core/rand KRAND, core/tags KTAGS, core/walk KWALK), read from their
 # folders: the cantons' bridges, causeways and stairs (targets/voth-site/20-site-cantons.js) are seeded by KRAND,
 # registered in KTAGS and walked through KWALK
-CORE_PLACE = ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
+CORE_PLACE = ['core/shader/06-core-khook.js', 'core/shader/06b-core-kcolor.js', 'core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
 
 
 def core_place_fragment():

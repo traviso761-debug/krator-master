@@ -1,6 +1,7 @@
 // node core/water/test-flow-keep.js — drawFlow({keep}) (2026-10-27, eastabyss's delta): a ribbon fades out where the host says other water already
 // lies (a lake, a marsh pool), so a channel never rides over it. Sampled per ribbon vertex; with a negative; without it the text is the old one
 // (test-gaps.js holds the default's hash).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');
