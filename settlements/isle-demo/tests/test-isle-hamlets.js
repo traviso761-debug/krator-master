@@ -44,6 +44,7 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const B = cp(b); B.villages['hamlet-mine'].site.id = 'somewhere-else'; caught('a mine on another record', ISLE.hamletChecks(a, B), /its record from the map/); }
 { const B = cp(b); B.villages['hamlet-salt'].site.taken += 40; caught('a pan that gave more than was made', ISLE.hamletChecks(a, B), /its record from the map/); }
 { const B = cp(b); B.ledger.towns.kautoa.salt.total += 90000; caught('a town heaped with salt past the ceiling', ISLE.hamletChecks(a, B), /ceiling/); }
+{ const B = cp(b); B.ledger.towns.kautoa.irontools.total += 500; caught('Kautoa forging iron tools past its ceiling', ISLE.hamletChecks(a, B), /ceiling/); }
 { const B = cp(b); B.villages['hamlet-lumber'].workers = 3; caught('a lumber village with three workers', ISLE.hamletChecks(a, B), /staffed/); }
 /* the towns' goods from the villages put to use */
 const KA = SIM.econ('kautoa'), VA = SIM.econ('valapo');
@@ -51,7 +52,11 @@ ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber;
   (KA.used.hides || 0) > 0 && (KA.used.timber || 0) > 0 && (VA.used.ore || 0) > 0 && (VA.imported.charcoal || 0) > 0 && (VA.made.iron || 0) > 0,
   'Kautoa hides used ' + (KA.used.hides || 0) + ', timber used ' + (KA.used.timber || 0) + '; Valapo ore used ' + (VA.used.ore || 0) + ', charcoal landed ' + (VA.imported.charcoal || 0) + ', iron made ' + (VA.made.iron || 0));
 { const IR = SIM.econ('kautoa'); ok('the chain runs to its end: Valapo smelts, the lakatoi carries the iron, Kautoa\'s smithies work it into tools', (VA.made.iron || 0) > 0 && (IR.imported.iron || 0) > 0 && (IR.used.iron || 0) > 0,
-    'iron made ' + (VA.made.iron || 0) + ', landed in Kautoa ' + (IR.imported.iron || 0) + ', worked ' + (IR.used.iron || 0) + ', tools made there ' + (IR.made.tools || 0)); }
+    'iron made ' + (VA.made.iron || 0) + ', landed in Kautoa ' + (IR.imported.iron || 0) + ', worked ' + (IR.used.iron || 0) + ', iron tools made there ' + (IR.made.irontools || 0));
+  /* the iron tools (PLAN.md 9b): their own good and item; a stone tool's errand buys one when its seller has it */
+  const by = t => ((SIM.ITEMS.statsBy || {})[t] || {}).bought || {}, KB = by('kautoa'), VB = by('valapo');
+  ok('the iron tools are their own line: made in Kautoa, bought there in place of stone, carried to Valapo', (IR.made.irontools || 0) > 0 && (KB['iron tool'] || 0) > 0 && (VA.imported.irontools || 0) > 0,
+    'Kautoa made ' + (IR.made.irontools || 0) + ', its people bought ' + (KB['iron tool'] || 0) + ' iron and ' + (KB['stone tool'] || 0) + ' stone; Valapo landed ' + (VA.imported.irontools || 0) + ', bought ' + (VB['iron tool'] || 0) + ' iron and ' + (VB['stone tool'] || 0) + ' stone; short of iron tools: Kautoa ' + (IR.short.irontools || 0) + ', Valapo ' + (VA.short.irontools || 0)); }
 /* depletion: the mine's node all but emptied: it stops, says why, Valapo's smithies run out and say what they miss */
 { const EM = SIM.econ('hamlet-mine'), St = EM.resSites['hamlet-mine:node'], m0 = EM.made.ore || 0; St.amount = 40; ISLE.simRun(4 * 1440);
   const gone = (EM.made.ore || 0) - m0, R = SIM.sitesReport('hamlet-mine')[0], BL = EM.blocked['depleted: hamlet-mine:node'] || 0;

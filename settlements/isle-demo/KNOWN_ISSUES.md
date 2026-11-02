@@ -256,10 +256,18 @@
       `ISLE.TUNE.sim.hamlets.sites`: an ore node does not come back, the rest regrow). But the stumps the stand shows (88h) are a pure function of the world
       clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
       forbids for now. Lot ages for perishables are not built: nothing needs them yet.
-- [ ] **Iron tools share the stone tools' good:** the chain runs to its end (2026-11-02, PLAN-ECONOMY.md Phase 2): Valapo smelts
-      the mine's ore in batches, the lakatoi carries the iron, and every fourth Kautoan smithy works it with charcoal into
-      `tools`, in place of the armour it made. The good is still sold as `stone tool` (PLAN.md 9b owes iron tools their own
-      line). A mine that empties ends Valapo's iron: nothing yet opens a new node or moves the village.
+- [x] **Iron tools have their own line** (2026-11-02; they shared the stone tools' good the same morning): every fourth
+      Kautoan smithy works Valapo's iron into `irontools`, sold as `iron tool` (3,000 worked hours) at the markets, shops
+      and smithies of both towns once the villages are declared, and carried to Valapo by the lakatoi. A stone tool's errand
+      buys an iron one when its seller has it (core's tool `prefer`), a worn iron tool is replaced as stone (`base`), so a
+      town out of iron falls back to stone; a miss is booked short of `irontools`, which is the want the governor and the
+      lakatoi read. Ceilings on the chain (`hamlets.town[s].stockpile`: Kautoa's iron tools 80, Valapo's iron 120) stop the
+      smithies at a pile, so the mine is not drawn down for it.
+- [ ] **Only the stone trades take iron.** The field hands' digging sticks and the other wooden tools (`wood tool`) have no
+      iron line (PLAN.md 9b: "later an iron hoe"); giving `wood tool` a `prefer` would hand the weavers and potters iron too,
+      so it wants the field hands' tool split from the rest first.
+- [ ] **A mine that empties ends Valapo's iron:** nothing yet opens a new node or moves the village; the iron tools then fall
+      back to stone as they wear out.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).

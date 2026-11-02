@@ -181,8 +181,12 @@ ISLE.TUNE.sim = {
        herders' and grooms' goads, the weavers' shuttles, the potters' paddles and the officials' styluses are wood
        (Kautoa's dockyard; Valapo's by the lakatoi until it has a carver's workshop); the fishers' nets are corded
        cotton (the weavers). A stone tool blunts in a thousand worked hours (about three months;
-       Voth's iron ones last three to five thousand) */
-    tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', kinds: ['orchard', 'smithy', 'workshop', 'dockyard', 'tannery'], roles: ['labourer'] },
+       Voth's iron ones last three to five thousand). THE IRON TOOLS (PLAN.md 9b, 2026-11-02): where the villages are declared
+       (47h: the mine's ore smelted in Valapo, worked in Kautoa's smithies into `irontools`), a stone tool's errand buys an
+       iron one when its seller has it and the town holds the good (core's `prefer`), and a worn iron tool is replaced as
+       a stone one (`base`), so a town out of iron falls back; a page without the villages has no iron good and buys stone */
+    tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', kinds: ['orchard', 'smithy', 'workshop', 'dockyard', 'tannery'], roles: ['labourer'], prefer: ['iron tool'] },
+      'iron tool': { cat: 'tool', workLife: 3000, good: 'irontools', base: 'stone tool' },
       'wood tool': { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['field', 'pens', 'byre', 'weaver', 'potter'], roles: ['groom', 'official'] },
       net: { cat: 'tool', workLife: 1500, good: 'nets', kinds: ['fishdock'] },
       cookpot: { cat: 'tool', workLife: 1500, good: 'pots', roles: ['baker', 'keeper'] } },
@@ -300,7 +304,7 @@ ISLE.TUNE.sim = {
        road        the carts between a village and its town: a convoy at `kmh` over the straight line times `detour`, a
                    stay of `mins`; `cap` a load. Two routes a village: OUT, all it makes but its own use (`keep` 0, the want
                    unbounded: the village works for its town); IN, the parent's foods it eats (its want, `want` days)
-       town        what the villages' goods feed in their towns: new `inputs` (the tannery's leather from hides, the
+       town        what the villages' goods feed in their towns (`stockpile`: the town's ceilings on the iron chain): new `inputs` (the tannery's leather from hides, the
                    dockyard's wooden tools from timber, the smithies' iron from ore and charcoal), `recipes` for a kind's
                    places that have none (Valapo's smithies, idle till now, smelt iron), `uses` a person a day drawn hourly (Kautoa builds with timber),
                    `expect` a day on the lakatoi (the charcoal Valapo's smelting wants before any has come) */
@@ -316,22 +320,29 @@ ISLE.TUNE.sim = {
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
       byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
     },
-    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools'],
     /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
        sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it holds and regrows a night (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come back, a pan and a pasture and a stand do).
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
     sites: { iron: { amount: { low: 20000, medium: 60000, high: 150000 } }, salt: { amount: 40000, regen: 300 }, pasture: { amount: 40000, regen: 2000 }, stand: { amount: 120000, regen: 330 } },
     stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 } },
-    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
+    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10, irontools: 5 },
     carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
     town: {
       kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100, iron: 40 },
-        /* every `every`th smithy works the iron into tools, a batch (PLAN-ECONOMY.md Phase 2): Valapo smelts, Kautoa works the iron */
-        batches: { smithy: { every: 4, batch: { 'in': { iron: 1, charcoal: 1 }, out: { tools: 2 }, hours: 8 }, cap: 200 } } },
-      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
+        /* every `every`th smithy works the iron into iron tools, a batch (PLAN-ECONOMY.md Phase 2): Valapo smelts, Kautoa works the iron */
+        batches: { smithy: { every: 4, batch: { 'in': { iron: 1, charcoal: 1 }, out: { irontools: 2 }, hours: 8 }, cap: 200 } },
+        /* the iron chain's ceilings (SIM.stockpile, 2026-11-02): the governor never runs a maker under its floor, so without
+           them the smithies smelted and forged three to eight times what was bought, and the mine (which does not come
+           back) ran down for a pile. At `max` (the town's warehouses, sites, carts and what is at sea toward it) the makers stop */
+        stockpile: { irontools: { max: 80 } } },
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 },
+        stockpile: { iron: { max: 120 } } }
     },
-    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } }
+    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } },
+    /* the iron tools' sellers in both towns (items.tools 'iron tool'): added to these kinds' wares once the villages are declared */
+    wares: { market: ['iron tool'], shop: ['iron tool'], smithy: ['iron tool'] }
   }
 };

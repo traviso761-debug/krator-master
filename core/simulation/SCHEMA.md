@@ -224,6 +224,11 @@ when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` 
 derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
 A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
 
+**Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
+seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better
+good, so its want shows where nobody could buy it. A kind's `base` is the kind sought when it wears out (the isles' iron tool: the stone tool), so a
+town out of the better good falls back. The ledger sees only goods: an iron tool bought is one `irontools` used.
+
 **Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
 does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields
 join a row; an existing field's meaning does not change. The export takes the statement as an added section when Godot needs it.

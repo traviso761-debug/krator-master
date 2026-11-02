@@ -204,6 +204,16 @@ declares both once they are planned, in one order whichever town it draws, and h
   weavers). Three weeks: 2,240 tooled, 446 on racks; 145 wooden tools, 103 stone, 40 cooking pots and 4 nets worn out
   and replaced in work time; 404 hurt, 369 healed (265 by poultice), none past three days; 948 sarongs and 732 sun hats
   bought; 105 clubs. The weavers' places take cloth three in eight, garments two, mats, hats and nets one each.
+- **Iron tools** (2026-11-02; PLAN.md 9b). Where the villages are declared (the open world; `tests/test-isle-hamlets.js`),
+  the iron mine's ore is smelted in Valapo, the lakatoi carries the iron to Kautoa, and every fourth Kautoan smithy forges
+  it with charcoal into `irontools`, sold as an `iron tool` (3,000 worked hours, three stone tools' life) at the markets,
+  shops and smithies of both towns and carried back to Valapo by the lakatoi. A worker whose stone tool wears through buys
+  an iron one if the seller has it (core/simulation's tool `prefer`), and a worn iron tool is replaced as stone (`base`),
+  so a town out of iron falls back to stone. Kautoa's iron tools stop at 80 and Valapo's iron at 120 (stockpile
+  ceilings), so the mine, which does not come back, is not drawn down for a pile. Fifteen days with Kautoa watched: 162
+  iron tools forged, 71 bought (60 in Kautoa, 11 in Valapo) against 9 stone; 483 iron smelted, 102 landed in Kautoa, the
+  rest sold to the Hykkousoi or held at the ceiling. The city page has no villages, so it has no iron and its week is
+  unchanged.
 - **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
   isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
   efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and

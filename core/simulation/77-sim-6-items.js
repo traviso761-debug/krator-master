@@ -2,7 +2,7 @@
 // The Voth brief (settlements/voth/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
 // SIM.items(config); a world without it decides exactly as before.
 //
-//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
+//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?, prefer?, base?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich, pot?, noPot?}, lack, hurt, heal, low, days, meals, perMeal,
 //               treat:{at, items:[[least wealth, item], ...], mix?}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
@@ -21,6 +21,11 @@
 // fewer sets of a clothing item than the actor keeps, it buys one on its time off, and the material meter (77-sim-6-
 // needs.js) rises by `lack` a day for each set missing. A worked day carries a `hurt` chance (a hash of the actor and
 // the day): hurt, it buys a poultice on its time off (or heals in `heal` days).
+// BETTER TOOLS (opt-in, by kind): a tool kind's `prefer` lists better kinds (an iron tool over a stone one); its errand
+// buys the first of them its seller sells and its settlement's economy holds (that good declared and in stock), else
+// itself, and a miss is booked short of the better good (the town's want of it: the governor and the trade read it).
+// A kind's `base` is the kind its replacement is sought as when it wears out (the iron tool's: the stone tool, so a
+// town out of iron falls back). Without either, a tool is replaced by its own kind, as before.
 // ERRANDS: one at a time; `when` 'work' (in an hour of WORK) or 'free' (in an hour of one of `free`, once a seller is
 // open and within reach: looked at once an hour); its place the
 // nearest within reach that sells the item and has room (BUY); `mins` minutes there complete it (the item bought, the
@@ -57,7 +62,7 @@
     SIM.ITEMS = I; return I;
   };
   SIM.shop = function(placeId, items){ var I=SIM.ITEMS; if(!I) return; I.sells[placeId]=items.slice();
-    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); (I.sellers[k]||(I.sellers[k]=[])).push(placeId); }); I._food=null; };
+    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); var L=I.sellers[k]||(I.sellers[k]=[]); if(L.indexOf(placeId)<0) L.push(placeId); }); I._food=null; };   /* called again, a place's list is replaced and it is a seller once */
   function sellersOf(item){ var I=SIM.ITEMS; if(item!=='food') return I.sellers[item]||[];
     if(!I._food){ var s={}; I.foods.forEach(function(f){ (I.sellers[f]||[]).forEach(function(id){ s[id]=1; }); }); I._food=Object.keys(s); } return I._food; }
   SIM.sellersOf = sellersOf;
@@ -148,11 +153,15 @@
         for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } } }   /* one food out: more of the others it sells */
       if(H && H.shopper===a.id) H.shopper=null;
     } else {
-      if(SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
+      var it=E.item;
+      if(K.cat==='tool' && K.prefer && SIM.ECON){ for(var pi=0; pi<K.prefer.length; pi++){ var pk=K.prefer[pi], PK=I.kinds[pk];   /* `prefer`: a better tool, when this seller has it and the town holds its good */
+        if(!PK || !PK.good || !SIM.ECON.goods[PK.good] || sold.indexOf(pk)<0) continue;
+        if(SIM.supply(PK.good, PK.per==null?1:PK.per, true)){ it=pk; K=PK; stat(I.stats.preferred||(I.stats.preferred={}), pk); break; } } }   /* missed, it is booked short of the better good: the town's want of it */
+      if(it===E.item && SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
         cum(a, 'outOf', E.item); stat(I.stats.failed, E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
-      cum(a, 'bought', E.item); stat(bs, E.item);
+      cum(a, 'bought', it); stat(bs, it);
       if(K.cat==='medicine'){ a.hurt=null; a.owesP=false; I.stats.poultice++; I.stats.healed++; }
-      else if(K.cat==='tool'){ a.tool={ k:E.item, w:0 }; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }
+      else if(K.cat==='tool'){ a.tool={ k:it, w:0 }; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }
       else if(K.slot){ var p=pos(K); if(!a.eq || !a.eq[p]) SIM.equip(a, E.item, 0); else SIM.give(a, E.item, 1); }
       else SIM.give(a, E.item, 1);
       if(K.material && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, minute); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.max(0, a.nd[mi]-K.material); }
@@ -170,7 +179,7 @@
       if(act==='WORK' && a.activity==='WORK' && a.arrM!=null && minute>=a.arrM){ a.workedDay=d;
         if(a.tool){ var K=I.kinds[a.tool.k], dw=a.wkT==null ? 0 : minute-a.wkT; if(dw<0 || dw>90) dw=0;   /* minutes at work since last asked (the step's wake: at most an hour), not a gap */
           if(K.workLife) a.tool.w += dw/60/K.workLife;
-          if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', minute); } }
+          if(a.tool.w>=1){ var k=a.tool.k, kn=K.base||k; a.tool=null; a.toolNeed=kn; I.stats.broken++; cum(a, 'brokenBy', k); I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, kn, 'work', minute); } }
         a.wkT=minute; }
       else a.wkT=null;
       var E=a.errand;
@@ -284,7 +293,7 @@
     var job=a.work!=null ? a.work : (a.mem && a.mem.WORK);
     if(hw && job!=null){ a.workedDay=d-1;
       if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
-        if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', d*1440); } }
+        if(a.tool.w>=1){ var k=a.tool.k, kn=K.base||k; a.tool=null; a.toolNeed=kn; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, kn, 'work', d*1440); } }
       else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
     if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
     if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;

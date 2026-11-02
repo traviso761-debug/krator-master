@@ -746,8 +746,11 @@ watched town's mean happiness at 60 or more and no need but material above 70. *
 (2026-10-19):** tools by trade (stone, wood, nets, cooking pots; racks for the dockers and the soldiers), injuries and
 the healers' poultices, a war club for a quarter of the rich, sets by class, sarongs and sun hats (README.md); a
 week-test check holds the clothes (95% clad or buying) and the hurt (none past its healing days). Left: a carver's
-workshop for Valapo (its wooden and stone tools come by lakatoi), iron tools after the ingots, water vessels and the
-fishers' canoes.
+workshop for Valapo (its wooden and stone tools come by lakatoi), water vessels and the fishers' canoes. **Iron tools
+built (2026-11-02):** where the villages are declared, Kautoa's smithies work Valapo's iron into iron tools (3,000 worked
+hours), bought in place of a stone tool when the seller has one (core's tool `prefer`), worn out and replaced as stone
+(`base`); the town's stockpile ceilings hold the chain to what is bought. The field hands' iron hoe is still owed (their
+digging stick shares `wood tool` with the weavers and potters).
 
 **The rules taken from Voth (and where the isles differ).**
 - **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,

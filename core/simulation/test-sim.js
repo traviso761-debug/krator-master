@@ -889,6 +889,33 @@ function world(seed){
    for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}return EV.imported.rice||0;};
  const r=go({rice:{reserve:300}}),n=go(null);ok('a policy\'s reserve stays out of a route ('+r+' sent, '+n+' without)',r===100&&n===400,r>100);}
 
+// better tools (77-sim-6-items.js `prefer`, `base`; the isles' iron tools): a worn tool's errand buys the better kind when
+// its seller sells it and the town holds its good, else its own, the miss booked short of the better good; a better tool
+// worn out is sought as its base, so a town out of iron falls back; an undeclared good is never bought free
+{const mk=(o)=>{o=o||{};const {S,clock}=world(211);
+   ['WORK','EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:6,EAT:6},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});S.place({id:'vShop',kind:'shop',x:60,z:0,activities:{BUY:4},open:[6,20],settlement:'valapo'});
+   const goods={rice:{},tools:{}};if(o.declared!==false)goods.irontools={};
+   const EV=S.economy({goods:goods,every:60,window:1},{settlement:'valapo'});S.store('vShed',{kind:'warehouse'});
+   S.R.place.vShed.stock={rice:500,tools:100,irontools:2};
+   S.items({kinds:{rice:{cat:'food',food:true},stone:Object.assign({cat:'tool',workLife:20,good:'tools'},o.prefer===false?{}:{prefer:['iron']}),iron:{cat:'tool',workLife:30,good:'irontools',base:'stone'}},free:['IDLE'],secPerMinute:40});
+   S.shop('vShop',o.sells===false?['stone','rice']:['stone','iron','rice']);
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
+   const ps=[0,1,2,3].map(i=>{const a=S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'});a.tool={k:'stone',w:0.1*i};return a;});
+   S.R.place.vHome.store={rice:200};S.R.place.vHome.people=4;
+   clock.d=0;clock.h=0;S.level('valapo','abstract');
+   for(let m=0;m<6*1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}
+   return {S,EV,ps,B:(S.ITEMS.statsBy||{}).valapo||S.ITEMS.stats};};
+ const A=mk(),bA=A.B.bought||{},brA=A.S.ITEMS.stats.brokenBy||{};
+ ok('better tools: the town\'s two iron tools bought first, then stone ('+(bA.iron||0)+' iron, '+(bA.stone||0)+' stone; irontools used '+(A.EV.used.irontools||0)+')',bA.iron===2&&A.EV.used.irontools===2&&bA.stone>=2&&A.ps.every(a=>a.tool),!(bA.iron>0));
+ ok('out of iron, the miss is booked short of the better good (the town\'s want: '+(A.EV.short.irontools||0)+')',A.EV.short.irontools>0,!(A.EV.short.irontools>0));
+ ok('an iron tool worn out is sought as stone and replaced from it ('+(brA.iron||0)+' worn out)',brA.iron>=1&&A.ps.every(a=>a.tool&&!a.toolNeed),!(brA.iron>=1));
+ const N=mk({prefer:false}),bN=N.B.bought||{};ok('without prefer, stone is replaced by stone',!(bN.iron>0)&&bN.stone>=4&&!(N.EV.short.irontools>0),bN.iron>0);
+ const U=mk({declared:false}),bU=U.B.bought||{};ok('a better good the economy does not hold is never bought free',!(bU.iron>0)&&bU.stone>=4,bU.iron>0);
+ const W=mk({sells:false}),bW=W.B.bought||{};ok('a seller without the better tool sells its own',!(bW.iron>0)&&bW.stone>=4,bW.iron>0);}
+
 // batch recipes (PLAN-ECONOMY.md Phase 2): inputs claimed once at the start, outputs and byproducts at the end, and what
 // stops a batch said by place: no input, a partial input, no workers, a full store, an empty site
 {const mk=(o)=>{o=o||{};const {S,clock}=world(197);['WORK'].forEach(a=>S.activity({id:a}));

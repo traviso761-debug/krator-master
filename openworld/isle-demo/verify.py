@@ -108,6 +108,7 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  B=cp(b);B.villages['hamlet-lumber'].landed.timber=(B.villages['hamlet-lumber'].landed.timber||0)-15;negs.push(Object.assign({neg:'lost'},pick(ISLE.hamletChecks(a,B),/landed in its town/)));
  B=cp(b);B.villages['hamlet-mine'].site.id='elsewhere';negs.push(Object.assign({neg:'record'},pick(ISLE.hamletChecks(a,B),/its record from the map/)));
  B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
+ B=cp(b);{const K=B.ledger.towns.kautoa;(K.irontools||(K.irontools={total:0})).total+=500;}negs.push(Object.assign({neg:'iron pile'},pick(ISLE.hamletChecks(a,B),/ceiling/)));
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 

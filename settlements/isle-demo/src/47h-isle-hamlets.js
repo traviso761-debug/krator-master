@@ -19,7 +19,7 @@
          nearest the village; IN, the parent's foods the village eats (not those it makes), to the village's warehouse;
        - lowered to the abstract level.
      Before the first village, the towns take the villages' goods (`goods`), their new inputs, recipes and uses (`town`),
-     and the lakatoi the charcoal and the iron (`lakatoi`, `expect`).
+     and the lakatoi the charcoal and the iron (`lakatoi`, `expect`), and the iron tools go on sale (`wares`).
      ISLE.simHamletBooks()       a snapshot: each village's people, workers, made, shipped and landed by good, its food
      ISLE.hamletChecks(a, b)     over two snapshots: each village staffed and fed (no meal without food, its food never
                                  out after its first day), making its goods, every load it sent landed in its town or at
@@ -51,7 +51,13 @@ ISLE.simHamletTowns = function () {
     Object.keys(TW.batches || {}).forEach(function (kind) { var R1 = TW.batches[kind], n = 0;
       X.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (n++ % R1.every)) return; SIM.recipe(P.id, { batch: R1.batch, cap: R1.cap }); }); });
     var W = E.warehouses[0]; if (W) Object.keys(TW.startLots || {}).forEach(function (g) { W.stock[g] = (W.stock[g] || 0) + TW.startLots[g]; });
+    if (TW.stockpile) SIM.stockpile(s, TW.stockpile);   /* the town's ceilings on the villages' chain (Kautoa's iron tools, Valapo's iron) */
+    /* the iron tools on sale where the villages' goods reach (`wares`: the markets, the shops, the smithies) */
+    var IS = SIM.ITEMS; if (IS && HT.wares) X.places.places.forEach(function (P) { var add = HT.wares[P.kind]; if (!add) return;
+      var L = (IS.sells[P.id] || []).slice(); add.forEach(function (k) { if (IS.kinds[k] && L.indexOf(k) < 0) L.push(k); }); if (L.length === (IS.sells[P.id] || []).length) return;
+      SIM.shop(P.id, L); if (!(P.activities.BUY >= 2)) { P.activities.BUY = 2; S.waresMoved = true; } });
   });
+  if (S.waresMoved && SIM.placesChanged) SIM.placesChanged();
   /* the lakatoi carries the charcoal to Valapo's smithies and their iron back; Valapo expects its charcoal before any has come */
   var L = SIM.TRADE && SIM.TRADE.routes.lakatoi;
   if (L && L.goods) { var G = {}; Object.keys(L.goods).forEach(function (s) { G[s] = L.goods[s].concat((HT.lakatoi || {})[s] || []); }); L.goods = G;
@@ -186,7 +192,13 @@ ISLE.hamletChecks = function (a, b) {
     sites.map(function (s) { return s.id + ': ' + (s.ok ? '' : 'NOT ITS RECORD ') + s.gave + ' taken, ' + s.made + ' made, grade ' + s.grade + ' x' + s.yield; }).join('; '));
   var over = []; ids.forEach(function (id) { var X = b.villages[id], T = b.ledger.towns[X.parent] || {}, V = b.ledger.towns[id] || {}, CAP = (ISLE.TUNE.sim.hamlets.road || {}).cap || 0;
     Object.keys(X.policy).forEach(function (g) { var m = X.policy[g].max, h = ((T[g] || {}).total || 0) + ((V[g] || {}).total || 0) + ((T[g] || {}).inbound || 0); if (m != null && h > m + CAP * 0.5 && (X.goods[g].made - a.villages[id].goods[g].made) > 0 && h > (((a.ledger.towns[X.parent] || {})[g] || {}).total || 0) + 0.2 * m + m) over.push(id + ' ' + g + ' ' + Math.round(h) + ' over ' + m); }); });
-  ok('no village piles its goods past its stockpile ceiling', !over.length, over.length ? over.join('; ') : ids.map(function (id) { return id + ' ' + JSON.stringify(b.villages[id].policy); }).join('; '));
+  /* and the towns' own ceilings on the chain (`town[s].stockpile`): what the town holds and has on its way, past `max` by
+     more than a quarter (a batch or a load landing after the stop), and more than it held at the start, is a pile */
+  var HTt = ISLE.TUNE.sim.hamlets.town || {}, towns = Object.keys(HTt).filter(function (s) { return HTt[s].stockpile && b.ledger.towns[s]; });
+  towns.forEach(function (s) { Object.keys(HTt[s].stockpile).forEach(function (g) { var m = HTt[s].stockpile[g].max, R = b.ledger.towns[s][g] || {}, R0 = (a.ledger.towns[s] || {})[g] || {},
+    h = (R.total || 0) + (R.inbound || 0), h0 = (R0.total || 0) + (R0.inbound || 0); if (m != null && h > m * 1.25 + 10 && h > h0) over.push(s + ' ' + g + ' ' + Math.round(h) + ' over ' + m); }); });
+  ok('no village piles its goods past its stockpile ceiling, nor a town the iron chain past its own', !over.length, over.length ? over.join('; ') : ids.map(function (id) { return id + ' ' + JSON.stringify(b.villages[id].policy); }).join('; ') +
+    towns.map(function (s) { return '; ' + s + ' ' + Object.keys(HTt[s].stockpile).map(function (g) { var R = b.ledger.towns[s][g] || {}; return g + ' ' + Math.round((R.total || 0) + (R.inbound || 0)) + ' of ' + HTt[s].stockpile[g].max; }).join(', '); }).join(''));
   var LG = SIM.ledger(a.ledger, b.ledger);
   ok('the books balance in every town and village, every road and sea leg reconciled (the ledger)', LG.ok, LG.ok ? Object.keys(LG.towns).length + ' settlements, ' + Object.keys(LG.routes).length + ' routes' : LG.problems.slice(0, 3).join('; '));
   return res;
