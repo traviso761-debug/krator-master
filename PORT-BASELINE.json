@@ -93,8 +93,8 @@
    "sha256": "38f3d879dae58bf43249896a00f98eeed24c6a236f9fa68bef8e6307d7c84c4b"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 6732478,
-   "sha256": "bfd99e93275e528bdf5a0b8d2bf1b5fab4b6d1f409e7efd2db981a927ebb08ee"
+   "bytes": 7218383,
+   "sha256": "a15526506d0e0aa30be09efa542567fa4d61af1cbab4b834e5395157df2de3ce"
   },
   "biomes/oidong/dist/oidong.html": {
    "bytes": 2679653,
@@ -153,8 +153,8 @@
    "sha256": "6472150f4099a62d16806d1413a7b81be4d78f3384c73cfbb9f6475ecdb0f3b2"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 6604195,
-   "sha256": "6cd0319844eb4df856c736226d837cc02a22531b0047b53f0bda09f253363516"
+   "bytes": 7084526,
+   "sha256": "790cbebe1244277cd1d0fb40f9d173f09999a3d6109dcc26241ec2cba38cde0a"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 546392,

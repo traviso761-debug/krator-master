@@ -798,7 +798,7 @@ All opt-in; `test-gaps.js` loads every new fragment and its default snapshot sti
 `WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page
 loads with reflections off, and `WATER.mirror` isn't called, so no material is patched and no tri is drawn. A button in the host panel
 cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the cheap tier, patchy near a shore (one capture point). The live mirror is the good picture, at about 2.4-3.4 ms every 2nd frame
-on the Arc 140T. Don't wrap `renderLive` in a loop of GPU timer queries: that crashed the tab on the Arc, and the page's own loop never did.
+on the Arc 140T. A loop of GPU timer queries round `renderLive` crashed the tab on the Arc, cause unknown; about 1,900 queries on 2026-11-02, resolution switching included, did not repeat it, and the page's own loop never did it.
 
 **Adopting it** (the exact lines; each biome's own turn does it, where it has a large still; `biomes/eastabyss/src/99-host-take.js` is the example):
 

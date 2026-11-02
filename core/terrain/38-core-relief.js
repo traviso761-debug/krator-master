@@ -43,6 +43,8 @@
 //   KRELIEF.columns({w, jitter, angle, seed})   columnar jointing in plan: cell(x,z), relief(x,z)
 //   KRELIEF.gap({a, b, w, floor, wind, ...})   a water gap or a wind gap notched through a ridge
 //   KRELIEF.joints({world, angle, sp}) and KRELIEF.tableland({joints, zone, top, floor, z0, slot})   the pillar rim's table
+//   KRELIEF.scarp({pts, side, h, run, power, benches, ravines, buttresses, talus, rim, warp, rough, ends, drop, seed})   a wall along a polyline;
+//   KRELIEF.scarpProfile(rec, n) its profile, published for the model's side (SCARP.md)
 //        (its towers: KSTACKS.pillars on the same joints and zone)
 (function(root){
   'use strict';
@@ -478,8 +480,85 @@
       if(a.d<w2)y=Math.min(y,t-Math.min(t-fl,dp*(t-fl)*(.5+.5*f))*(1-Math.pow(a.d/w2,6)));
       return y;};}
 
-  var SHAPES={wadi:wadiH,pit:pitH,rille:rilleH,tube:tubeH,gap:gapH,stair:function(R,x,z,g){return Math.max(g==null?-Infinity:g,stairH(R,x,z));}};
-  var PARTS={wadi:wadiAt,pit:pitAt,rille:rilleAt,tube:tubeAt,gap:gapAt,stair:function(R,x,z){var p=stairProf(R,x,z);return p?{part:p.part,step:p.i}:null;}};
+  // ---------------------------------------------------------------- KRELIEF.scarp: a wall along a polyline (2026-11-02; SCARP.md)
+  // The Cliff Lungs' section 14 and the fifth kit on the Inner Wall's face. Read in the kits: shighlands' wall (a drop of 760 over a 1160 m run on
+  // smooth^1.15, three ravines), ehighlands' range (smooth^1.25), sedesert's ramp (smooth^1.5) and benched canyon, swhighlands' still-owed fan coast.
+  // All are a power of a smoothstep, so that is the face here: with no benches the profile is exactly smooth(0, run, d)^power falling from the rim.
+  // KRELIEF.scarp({pts:[[x,z],...] (the rim, 2 points or more), side (1: the plateau on the side of n = (-uz, ux), u along the line; -1 the other),
+  //   h (800: the wall's height), run (900: its width in plan, rim to foot), power (1.25), drop (false: the floor is the ground and the plateau stands
+  //   h over it; true: the plateau is the ground and the floor falls h under it),
+  //   benches {n (0), at:[shares of h down from the rim] (even, jittered by hash), w (run*.06: a bench's width)},
+  //   ravines {n (L/900, or 0 with none asked) , w:[lo,hi] (half-width, m: 90,150), head:[lo,hi] (how far back into the plateau: 100,300), depth:[lo,hi] (the cut in the face: 40,160), power (1.6), fan {r, h}: a cone at each mouth},
+  //   buttresses {sp (420: spacing along the line), w (.3: half-width, a share of sp), amp (70: how far out from the wall)},
+  //   talus {h (.08*h), reach (run*.3), curve, rough, scale} (KRELIEF.talus against the foot; false none), rim {lip (0 m), w (run*.05)},
+  //   warp {amp (0 m), scale (1/800)}: the line wandering, rough (.012: of h, on the face), ends (run: the wall dying away past the line's ends), seed})
+  //   -> a plain JSON-safe record {kind:'scarp', pts, S (arc length), L, side, h, run, power, drop, segs (the faces, {d, r, a, b}: from d over r m the share of h falls a to b),
+  //       benchK:[{d0, d1, share}], ravines:[{s, x, z, nx, nz (the rim's point, n toward the floor), w, head, depth, fan}], buttresses:[{s, w, amp, x, z, nx, nz}], talus, rim, warp, rough, ends, seed}
+  //   shape(rec, x, z, g) the height given the ground g. at(rec, x, z) -> {part:'rim'|'face'|'bench'|'buttress'|'ravine'|'talus'|'fan', d (m from the rim toward the foot), s (along the line),
+  //       share (of h left), i (the bench, ravine or buttress)}; null on the plateau and the open floor. rock(rec, x, z) 0..1: the face's bare rock
+  //   Nearest point by every segment: a wall's polyline is short; bake it, as a page's field does
+  function scarp(o){var K=KRq();if(!o||!o.pts||o.pts.length<2)throw new Error('KRELIEF.scarp: pts needs two points or more');
+    var seed=(o.seed==null?1:o.seed)>>>0,h=o.h==null?800:o.h,run=o.run==null?900:o.run,pw=o.power==null?1.25:o.power,side=o.side==null?1:o.side;if(!(h>0)||!(run>0))throw new Error('KRELIEF.scarp: h and run must be over 0');
+    var P=o.pts.map(function(p){return [p[0],p[1]];}),A=[0],i;for(i=1;i<P.length;i++)A.push(A[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));var L=A[A.length-1];if(!(L>0))throw new Error('KRELIEF.scarp: the line has no length');
+    var R={kind:'scarp',seed:seed,pts:P,S:A,L:L,side:side,h:h,run:run,power:pw,drop:!!o.drop,rough:o.rough==null?.012:o.rough,ends:o.ends==null?run:o.ends,benchK:[],ravines:[],buttresses:[]};
+    var BO=o.benches||{},bn=BO.n==null?(BO.at?BO.at.length:0):BO.n,bw=BO.w==null?run*.06:BO.w,at=[];
+    for(i=0;i<bn;i++)at.push(BO.at?BO.at[i]:(i+1+(u01(K,seed,i,0,0xB01)-.5)*.5)/(bn+1));at.sort(function(a,b){return a-b;});
+    var fr=run-bn*bw;if(!(fr>run*.25))throw new Error('KRELIEF.scarp: '+bn+' benches of '+bw+' m do not fit a '+run+' m run: fewer benches, narrower or a wider run');
+    var segs=[],pd=0,ps=0;for(i=0;i<=bn;i++){var ds=(i<bn?at[i]:1)-ps,r=fr*ds;segs.push({d:pd,r:r,a:1-ps,b:1-ps-ds});pd+=r;ps+=ds;if(i<bn){R.benchK.push({d0:pd,d1:pd+bw,share:1-ps});pd+=bw;}}
+    R.segs=segs;
+    var RO=o.ravines,BU=o.buttresses;
+    if(RO){var nr=RO.n==null?Math.max(1,Math.round(L/900)):RO.n,wr=RO.w||[90,150],hr=RO.head||[100,300],dr=RO.depth||[40,160];R.ravPower=RO.power==null?1.6:RO.power;
+      for(i=0;i<nr;i++){var u=function(c){return u01(K,seed,i,c,0xB02);},sr=L*(i+.2+.6*u(0))/nr,qr=rimPt(R,sr);
+        R.ravines.push({s:sr,x:qr[0],z:qr[1],nx:qr[2],nz:qr[3],w:wr[0]+(wr[1]-wr[0])*u(1),head:hr[0]+(hr[1]-hr[0])*u(2),depth:dr[0]+(dr[1]-dr[0])*u(3),fan:RO.fan?{r:RO.fan.r,h:RO.fan.h}:null});}}
+    if(BU){var sp=BU.sp==null?420:BU.sp,nb=Math.floor(L/sp);R.buSp=sp;for(i=0;i<nb;i++){var sb=sp*(i+.25+.5*u01(K,seed,i,0,0xB03)),qb=rimPt(R,sb);
+      R.buttresses.push({s:sb,w:sp*(BU.w==null?.3:BU.w)*(.7+.6*u01(K,seed,i,1,0xB03)),amp:(BU.amp==null?70:BU.amp)*(.6+.8*u01(K,seed,i,2,0xB03)),x:qb[0],z:qb[1],nx:qb[2],nz:qb[3]});}}
+    R.talus=o.talus===false?null:Object.assign({h:h*.08,reach:run*.3,curve:1.6,rough:.5,scale:.012},o.talus||{});
+    var RM=o.rim||{};R.rim={lip:RM.lip==null?0:RM.lip,w:RM.w==null?run*.05:RM.w};
+    var W=o.warp||{};R.warp={amp:W.amp==null?0:W.amp,scale:W.scale==null?1/800:W.scale};
+    return R;}
+  // the rim's point at arc length s: [x, z, nx, nz], n the way the floor lies
+  function rimPt(R,s){var i=0,n=R.pts.length;while(i<n-2&&R.S[i+1]<s)i++;var a=R.pts[i],b=R.pts[i+1],l=(R.S[i+1]-R.S[i])||1,t=(s-R.S[i])/l,ux=(b[0]-a[0])/l,uz=(b[1]-a[1])/l;return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,uz*R.side,-ux*R.side];}
+  // where (x,z) is: s along the line, d the metres from the rim toward the foot (negative on the plateau), both before the ravines and the buttresses, and how far past an end
+  function scarpLocal(R,x,z){var best=Infinity,bs=0,bq=0,bp=0,P=R.pts;
+    if(R.warp.amp){var K=KRq(),w=R.warp;x+=w.amp*(2*K.fbm(x*w.scale,z*w.scale,.5,3,R.seed+3)-1);z+=w.amp*(2*K.fbm(x*w.scale+31,z*w.scale-17,.5,3,R.seed+4)-1);}
+    for(var i=0;i+1<P.length;i++){var a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l=(R.S[i+1]-R.S[i])||1,ux=dx/l,uz=dz/l,ax=x-a[0],az=z-a[1],t=ax*ux+az*uz,tc=t<0?0:t>l?l:t,ex=ax-ux*tc,ez=az-uz*tc,dd=Math.sqrt(ex*ex+ez*ez);
+      if(dd<best-1e-9){best=dd;bs=R.S[i]+tc;var q=-uz*ax+ux*az;bq=q;bp=t<0&&i===0?-t:t>l&&i+2===P.length?t-l:0;}}
+    var sg=(bq>=0?1:-1)*R.side;   /* signed by the nearest segment; distance by the nearest point, so a corner stays continuous */
+    return {s:bs,d:-sg*best,past:bp,qd:bp>0?-(bq*R.side):-sg*best};}
+  // the share of h left at d metres from the rim: one smooth^power to a face, flat over a bench
+  function scarpTab(R,d){if(d<=0)return 1;if(d>=R.run)return 0;for(var q=0;q<R.segs.length;q++){var G=R.segs[q];if(d>G.d+G.r)continue;if(d<G.d)return G.a;return G.a-(G.a-G.b)*Math.pow(smooth(0,1,(d-G.d)/G.r),R.power);}return 0;}
+  function buttressAt(R,s){if(!R.buttresses.length)return null;var i0=Math.round(s/R.buSp-.5),best=null;for(var i=i0-1;i<=i0+1;i++){var B=R.buttresses[i];if(!B)continue;var a=(s-B.s)/B.w,k=Math.exp(-a*a);if(!best||k>best.k)best={i:i,k:k,amp:B.amp};}return best;}
+  function ravineAt(R,s){var best=null;for(var i=0;i<R.ravines.length;i++){var V=R.ravines[i],a=Math.abs(s-V.s)/V.w;if(a<2.4&&(!best||a<best.a))best={i:i,a:a,V:V};}return best;}
+  // the height over the floor (m) at a point, and its reading
+  function scarpRead(R,x,z){var L=scarpLocal(R,x,z),end=L.past>0?1-smooth(0,R.ends,L.past):1,d=L.qd,bt=buttressAt(R,L.s),rv=ravineAt(R,L.s),head=0,cut=0;
+    if(bt)d-=bt.amp*bt.k;
+    if(rv){var f=Math.pow(smooth(2.4,0,rv.a),R.ravPower);head=rv.V.head*f;d+=head;var into=clamp01((d+rv.V.head)/(R.run*.5+rv.V.head));cut=rv.V.depth*f*into*(1-clamp01((d-R.run)/(R.run*.2)));}
+    var sh=scarpTab(R,d),h=R.h*end,y=h*sh,T=0,K=KRq();
+    if(R.talus){var Ta=R.talus,fd=d-R.run;if(fd<Ta.reach)T=Ta.h*end*Math.pow(smooth(Ta.reach,0,fd),Ta.curve)*(1-Ta.rough/2+Ta.rough*K.fbm(x*Ta.scale,z*Ta.scale,.5,2,R.seed+44));}
+    var fan=0;if(rv&&rv.V.fan){var mx=rv.V.x+rv.V.nx*R.run,mz=rv.V.z+rv.V.nz*R.run,fq=Math.hypot(x-mx,z-mz);if(fq<rv.V.fan.r)fan=rv.V.fan.h*Math.pow(1-fq/rv.V.fan.r,1.5);}
+    var band=sh>0&&sh<1?1:0,noise=band?R.rough*h*(2*K.fbm(x/70,z/70,.5,3,R.seed+7)-1)*Math.min(1,Math.min(sh,1-sh)*8):0,lip=0;
+    if(R.rim.lip){var e=d/R.rim.w;lip=R.rim.lip*end*Math.exp(-e*e);}
+    return {y:Math.max(y+noise-cut,T,fan)+lip,sh:sh,d:d,s:L.s,T:T,fan:fan,rv:rv,bt:bt,end:end,cut:cut};}
+  function scarpH(R,x,z,g){var q=scarpRead(R,x,z);return (g==null?0:g)+q.y-(R.drop?R.h*q.end:0);}
+  function scarpAt(R,x,z){var q=scarpRead(R,x,z),nb=null,i;if(q.end<=0)return null;
+    var base={d:q.d,s:q.s,share:q.sh};function pt(n,k){var o={part:n};if(k!=null)o.i=k;return Object.assign(o,base);}
+    if(q.rv&&q.rv.a<1&&q.d>0&&q.d<R.run)return pt('ravine',q.rv.i);
+    if(q.fan>q.T&&q.fan>.05)return pt('fan',q.rv.i);
+    if(Math.abs(q.d)<R.rim.w)return pt('rim');
+    if(q.d<0)return null;
+    if(q.T>0&&q.T>R.h*q.sh)return pt('talus');
+    if(q.d>=R.run)return q.T>.05?pt('talus'):null;
+    for(i=0;i<R.benchK.length;i++){nb=R.benchK[i];if(q.d>=nb.d0&&q.d<=nb.d1)return pt('bench',i);}
+    if(q.bt&&q.bt.k>.5)return pt('buttress',q.bt.i);
+    return pt('face');}
+  function scarpRock(R,x,z){var a=scarpAt(R,x,z);if(!a)return 0;return a.part==='face'||a.part==='buttress'||a.part==='ravine'?1:a.part==='rim'?.6:a.part==='bench'?.3:a.part==='talus'?.2:0;}
+  // THE PROFILE as data, for the scale model (SCARP.md): n+1 samples rim to foot, plus what the plan needs. share: 1 at the rim, 0 at the foot
+  function scarpProfile(R,n){n=n==null?64:n;var d=[],sh=[];for(var i=0;i<=n;i++){var v=R.run*i/n;d.push(v);sh.push(scarpTab(R,v));}
+    return {format:'krator-scarp-profile',version:1,h:R.h,run:R.run,power:R.power,side:R.side,drop:R.drop,pts:R.pts,d:d,share:sh,benches:R.benchK,talus:R.talus?{h:R.talus.h,reach:R.talus.reach,curve:R.talus.curve}:null,
+      rim:R.rim,ravines:R.ravines.map(function(V){return {s:V.s,x:V.x,z:V.z,w:V.w,head:V.head,depth:V.depth};}),buttresses:R.buttresses.map(function(B){return {s:B.s,x:B.x,z:B.z,w:B.w,amp:B.amp};})};}
+
+  var SHAPES={scarp:scarpH,wadi:wadiH,pit:pitH,rille:rilleH,tube:tubeH,gap:gapH,stair:function(R,x,z,g){return Math.max(g==null?-Infinity:g,stairH(R,x,z));}};
+  var PARTS={scarp:scarpAt,wadi:wadiAt,pit:pitAt,rille:rilleAt,tube:tubeAt,gap:gapAt,stair:function(R,x,z){var p=stairProf(R,x,z);return p?{part:p.part,step:p.i}:null;}};
   function shape(R,x,z,g){var f=R&&SHAPES[R.kind];if(!f)throw new Error('KRELIEF.shape: not a landform record ('+(R&&R.kind)+')');return f(R,x,z,g);}
   function partAt(R,x,z,g){var f=R&&PARTS[R.kind];if(!f)throw new Error('KRELIEF.at: not a landform record ('+(R&&R.kind)+')');return f(R,x,z,g);}
   // KRELIEF.apply(ground, [records]) -> (x,z) => the ground with each form applied in order
@@ -487,5 +566,5 @@
 
   root.KRELIEF={range:range,join:join,volcano:volcano,fields:fields,river:river,noise:noise,hash:hash,
     meander:meander,wadi:wadi,talus:talus,pit:pit,pavement:pavement,paintCover:paintCover,stair:stair,flowAt:flowAt,rille:rille,tube:tube,columns:columns,
-    gap:gap,joints:joints,tableland:tableland,shape:shape,at:partAt,apply:apply,kinds:function(){return Object.keys(SHAPES);}};
+    scarp:scarp,scarpProfile:scarpProfile,scarpRock:scarpRock,gap:gap,joints:joints,tableland:tableland,shape:shape,at:partAt,apply:apply,kinds:function(){return Object.keys(SHAPES);}};
 })(typeof window!=='undefined'?window:globalThis);

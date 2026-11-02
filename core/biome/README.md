@@ -578,3 +578,61 @@ sky with `BIO.giantFromSky(SKY.state.giantDir)` (or the day's mean), which moves
 **ehighlands, at its rebuild:** replace `EHIGH.setGiant(GIANT_AZ)` with `BIO.setGiant(GIANT_AZ)` and `EHIGH.GIANT` / `GIANT_YAW` /
 `toward(a, jit)` with `BIO.GIANT` / `BIO.GIANT_YAW` / `BIO.leanTo(null, a, {jit, u: rng()})`: the same numbers in the same draw order,
 so its page holds. (Its `rr(-j, j)` is one `rng()` draw, which `u` stands in for.)
+
+**A bearing that is not the giant** (2026-11-02; `test-lean.js`): `toward` also takes `{az, alt}`, az in degrees clockwise from north. `BIO.leanTo(null, k, {toward: {az: 0, alt: 40}})`
+turns a stem toward that point of the sky and stops on it, so `k` can't carry it past (the Hearths' stalks, bowing to the sun's mean daily bearing; alt 90, the zenith, for their fans).
+Without `alt` it is a plain bearing: `{toward: {az: 335}}` with az the way the wind blows TO is Outland Gate's flagged trees. `BIO.bearingYaw(toward)` is `BIO.GIANT_YAW`'s twin for any
+bearing. No `toward` is the giant, and the numbers are the old ones.
+
+## The breath (`35-core-anim.js`, `BIO.animHook` mode `breath`; opt-in; `test-breath.js`)
+
+One scalar moves a part of every item of a kit: the Gills' pads and fringes, the Cliff Lungs' sphincters and drips, the Hearths' fans. `BIO.breathState(key)` is a `{value}` shared by
+every material of that key; the kit writes `.value` (0..1) once a frame, and nothing is done per item. Per instance `aP0 = [vx, vy, vz, the item's share of amp]`, `aP1 = [lag, ...]`: an
+item starts when the state passes its lag and still reaches all of it with the state.
+
+| `o.breath` | |
+|---|---|
+| `shape` | `bulge` along the normal (amp < 0 narrows), `stream` along `aP0.xyz`, `fold` about local z (amp in radians; normals stay put) |
+| `amp`, `top` | metres or radians; `top` grows the move from 0 at y = 0 to all of it at y = top |
+| `albedo` | the colour multiplied by this at a full breath (the Hearths' spindle) |
+| `rough` | added to the roughness; needs `BIO.animMat`'s `o.pbr` (a Standard material). On a Lambert the hook throws |
+| `band` | `[y0, y1]`: holds `albedo` and `rough` to that height window (the Lungs' sheen band) |
+
+### Adopting it
+
+1. `CORE_BIOME` already holds `35-core-anim.js` for a kit with fauna. Add it if not.
+2. `const m = BIO.animMat('gills:fringe', {mode: 'breath', vertexColors: true, breath: {key: 'gills', shape: 'stream', amp: 1.4, top: .8}})`. The key must be unique per configuration, as for any animated material.
+3. Give the geometry `aP0` and `aP1` as instanced attributes (`BIO.dynamic` and the kit's baking, as for `flit`).
+4. One tick: `BIO.breathState('gills').value = GILLS.breath(t)`, with `t` from the module clock and the state from `ATMOS.libration`.
+
+**Godot:** the record is `userData.bio.opts.breath`, plain data; a port is a global shader parameter per key and the same three lines in the vertex shader. Not written yet: no kit has asked.
+
+## The environmental fields (`41-core-env.js`, opt-in; `test-env.js`)
+
+One documented set of host fields, so ground, flora, hazards and water read the same numbers. **`BIO.ENV` is the table below as data.** No kit is on it yet: each turn maps its fields to
+it. `BIO.env(o)` is a thin adapter, and owns no numbers: a field no source gives is left out, not faked.
+
+| Name | Unit | Derived from |
+|---|---|---|
+| `elevation` | m | the page's ground (`terrainH`, a `KFIELD`) |
+| `slope` | m/m (rise over run) | the ground's central difference (`o.step`, 4 m) |
+| `shore` | m, signed: over 0 on land, under 0 in the water | `WATER.fields` (`WATER.fieldAt`, `core/water/ext/60-core-water-fields.js`) |
+| `depth` | m of water | `WATER.fields` |
+| `flowDist` | m to the nearest running water | `WATER.fields`'s `flow` |
+| `flow` | 0..1 | `flowDist` over `bands.flow` (60 m) |
+| `wet` | 0..1 | the kit's, else `shore` over `bands.wet` (40 m) |
+| `salt` | 0..1 | the kit's (a pan, a surf line, a brine seep); nothing derives it |
+| `cold` | 0..1, 1 frozen | `temp` over `bands.cold` ([-8, 4] degrees) |
+| `upland` | 0..1 | `elevation` over `bands.upland` ([y0, y1]) |
+| `rock` | 0..1 exposed rock | the kit's (`KSTRATA` `S.ledge`, `KRELIEF.scarpRock`, a `KSCOUR` course's scabland), else `slope` over `bands.slope` ([.6, 1.2]) |
+| `temp` | degrees C | `KTHERM.heatAt`, a baked `KTHERM.fieldFns(F)`, else the kit's soil `o.temp` |
+
+**`flow` and `flowDist` are two names on purpose.** `BIO.field('flow')` has always been 0..1, and `WATER.fieldAt(...).flow` is metres. A kit that hands the water's number to `BIO.field` has a bug
+this table names: `BIO.envInto` copies only the 0..1 fields into a host's table, so metres and degrees never reach it. Kit names outside this set (`mist`, `sun`, `gully`) stay the kit's.
+
+### Adopting it
+
+1. `CORE_BIOME`: add `'41-core-env.js'` after `'10-core-head.js'`.
+2. `const E = BIO.env({ground: terrainH, water: WATER.fieldFns(F), therm: H, wet: kitWet, rock: (x, z) => KRELIEF.scarpRock(W, x, z), bands: {upland: [800, 1600]}})`.
+3. `BIO.envInto(host.fields, E, {wet: 'marsh'})` for the kit's own name; read the rest from `E`.
+4. In the kit's checks: `BIO.envCheck(E, points)` must be empty, and `WATER.edgeAudit` gets `wet: E.wet`.

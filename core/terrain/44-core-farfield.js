@@ -33,6 +33,21 @@
 //        -> {pos, col, idx (Uint32), attrs {name: Float32Array}, lines, count {verts, tris}, H (heights as drawn, dense),
 //            at(x, z) (dense: the drawn height, bilinear on the lattice)}
 //   KFAR.hash(g)   a determinism hash of the arrays
+//   FAR ITEMS (2026-11-02, opt-in; the Gills', the Hearths' and the Lungs' section 14s): things in the far field that are not the
+//   ground. Each set is a plain record of arrays, one kind to a set, placed by cell: an item is hashed from (world, source's i, slot,
+//   salt), so any list of the same sources makes the same items. A set is {kind, count, ...arrays, range}, and KFAR.itemsExport wraps
+//   sets of any kind, so the metropolis's district masses (biomes/ancientsvalley/PLAN-ANOMALIES.md section 13: one skyline mesh a km2
+//   past 3 km) are a further `kind` with its own arrays and `range`, in this format, not a new one. Not built.
+//   KFAR.sprites({world, sources, shape, range, kind})  steam or cloud as camera-facing sprites, scaled by ONE value of the kit's
+//        sources [{x, z, y (the height the sprite column stands on), r (scatter radius, 0), n (sprites, 12), size [lo, hi] (m wide at
+//        k 1), rise [lo, hi] (m over y), alpha (.5), lag (0: the k this source starts at), tint ([1, 1, 1])}]
+//        shape(x, z, y) -> y: the far grid's exag and curve (KFAR.shape), so a sprite stands on the relief as drawn
+//        range [near, far]: the sprite fades in over the first 10 % past near and out over the last 10 % before far (no range: always)
+//        kind 'steam' (default) | 'cloud'
+//        -> {kind, world, count, pos (x y z), size, alpha, lag, tint (r g b), seed (a per-sprite 0..1 for the shader's wobble), range}
+//   KFAR.spriteAt(S, i, k, r)  {size, alpha} of sprite i at the kit's value k (0..1) and distance r: the shader's numbers (a probe's,
+//        and Godot's): the sprite gates in past its lag, size and alpha grow with what is left
+//   KFAR.itemsExport(sets) / KFAR.itemsLoad(j)   {format:'krator-far-items', version:1, sets} (typed arrays as plain arrays)
 (function(root){
   var KR=root.KRAND;
   function clamp(v,a,b){return v<a?a:v>b?b:v;}
@@ -75,10 +90,27 @@
     if(ex){var b=ex.base==null?0:ex.base;y=b+(y-b)*(1+(ex.k-1)*sm(ex.from,ex.to==null?ex.from*2:ex.to,r));}
     if(cu){var R=cu.R==null?4.81e6:cu.R,f=cu.from==null?0:cu.from;if(r>f)y-=(r*r-f*f)/(2*R);}
     return y;}
+  // ---- far items
+  function sprites(o){
+    if(!KR)throw new Error('KFAR.sprites: load core/rand/08-core-rand.js first');
+    if(!o||!o.sources||!o.sources.length)throw new Error('KFAR.sprites: sources are needed');
+    var wd=(o.world==null?0:o.world)>>>0,kind=o.kind==null?'steam':o.kind,pos=[],size=[],alpha=[],lag=[],tint=[],sd=[],salt=kind==='cloud'?0xFA2:0xFA1;
+    o.sources.forEach(function(s,i){var n=s.n==null?12:s.n,r=s.r==null?0:s.r,sz=s.size||[200,500],ri=s.rise||[50,300],a=s.alpha==null?.5:s.alpha,lg=s.lag==null?0:s.lag,t=s.tint||[1,1,1];
+      if(s.x==null||s.z==null||s.y==null)throw new Error('KFAR.sprites: a source needs x, z and y');
+      for(var q=0;q<n;q++){var u=function(c){return KR.unit(KR.hash(wd,i,q,salt+c));},an=u(0)*Math.PI*2,d=r*Math.sqrt(u(1)),x=s.x+Math.cos(an)*d,z=s.z+Math.sin(an)*d,y=s.y+ri[0]+(ri[1]-ri[0])*u(2);
+        pos.push(x,o.shape?o.shape(x,z,y):y,z);size.push(sz[0]+(sz[1]-sz[0])*u(3));alpha.push(a*(.6+.4*u(4)));lag.push(lg+(1-lg)*.3*u(5));tint.push(t[0],t[1],t[2]);sd.push(u(6));}});
+    return {kind:kind,world:wd,count:size.length,pos:new Float32Array(pos),size:new Float32Array(size),alpha:new Float32Array(alpha),lag:new Float32Array(lag),tint:new Float32Array(tint),seed:new Float32Array(sd),range:o.range||null};}
+  function spriteK(lag,k){return clamp((k-lag)/Math.max(1-lag,.001),0,1);}
+  function rangeK(R,r){if(!R)return 1;var w=(R[1]-R[0])*.1;return sm(R[0],R[0]+w,r)*(1-sm(R[1]-w,R[1],r));}
+  function spriteAt(S,i,k,r){var g=spriteK(S.lag[i],k);return {size:S.size[i]*g,alpha:S.alpha[i]*g*rangeK(S.range,r==null?(S.range?(S.range[0]+S.range[1])/2:0):r)};}
+  function itemsExport(sets){return {format:'krator-far-items',version:1,sets:sets.map(function(S){var o={};Object.keys(S).forEach(function(k){var v=S[k];o[k]=v&&v.buffer?Array.prototype.slice.call(v):v;});return o;})};}
+  var ARR={pos:1,size:1,alpha:1,lag:1,tint:1,seed:1};
+  function itemsLoad(j){if(!j||j.format!=='krator-far-items')throw new Error('KFAR.itemsLoad: not a krator-far-items export');
+    return j.sets.map(function(S){var o={};Object.keys(S).forEach(function(k){o[k]=ARR[k]?new Float32Array(S[k]):S[k];});return o;});}
   // the fractional index of v on ascending lines (-1 off them)
   function locate(L,v){if(v<L[0]||v>L[L.length-1])return -1;var lo=0,hi=L.length-1;while(hi-lo>1){var m=(lo+hi)>>1;if(L[m]<=v)lo=m;else hi=m;}return lo+(v-L[lo])/((L[hi]-L[lo])||1);}
   function hash(g){var h=KR?KR.hash(7,g.pos.length,g.idx.length):(g.pos.length*31+g.idx.length)>>>0;
     var mix=function(a,b){return KR?KR.hash(a,b):((a*16777619)^b)>>>0;};
     for(var i=0;i<g.pos.length;i+=5)h=mix(h,Math.round(g.pos[i]*100));for(i=0;i<g.col.length;i+=7)h=mix(h,Math.round(g.col[i]*1e4));for(i=0;i<g.idx.length;i+=11)h=mix(h,g.idx[i]);return h>>>0;}
-  root.KFAR=Object.assign(root.KFAR||{},{lines:lines,grid:grid,shape:shapeY,hash:hash,locate:locate,R:4.81e6});
+  root.KFAR=Object.assign(root.KFAR||{},{lines:lines,grid:grid,shape:shapeY,hash:hash,locate:locate,R:4.81e6,sprites:sprites,spriteAt:spriteAt,itemsExport:itemsExport,itemsLoad:itemsLoad});
 })(typeof globalThis!=='undefined'?globalThis:this);
