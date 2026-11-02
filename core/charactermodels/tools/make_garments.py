@@ -786,6 +786,38 @@ def settle(gid, parts, slot):
     np.savez(os.path.join(OUT, gid, gid + '.layers.npz'), P=P, L=L)
 
 
+def fur_of(parts, lens, spans):
+    """the garment's fur, for the figure's shells (core/charactermodels/data/fur.json): rows of the texture as
+    [v0, v1, kind, mu, mv] (glTF v, 0 at the top; the kind from the fabric, fur.short 'short', fur.astrakhan 'astrakhan';
+    the metres a unit of u and of v spans: the strip's girth and its length over its rows). A part whose fabric is fur
+    is fur but for its bands in another colour (the papakha's crown); a sole is left bare (it lies on the ground). On any
+    part a 'feather' or 'solid' band in the fur colours is a fur trim (a cape's edge); a fringe ('rays') is not.
+    tools/fur.py derives the same from pieces built before this was written"""
+    furc = (tuple(C['fur']), tuple(C['darkfur']))
+    out = []
+    for p, (circ, length), (y0, h) in zip(parts, lens, spans):
+        fab = p.paint.get('fabric', '')
+        whole = fab.startswith('fur') and '_sole_' not in p.name
+        kind = fab.split('.', 1)[1] if whole else 'short'
+        rows = np.zeros(h, bool)
+        rows[:] = whole
+        for where, f0, f1, style, fg, bg, rep in p.paint.get('bands', []):
+            if where == 'bottom': r0, r1 = (1 - f1 / length) * h, (1 - f0 / length) * h
+            else: r0, r1 = f0 / length * h, f1 / length * h
+            r0, r1 = int(max(0, round(r0))), int(min(h, round(r1)))
+            rows[r0:r1] = style in ('feather', 'solid') and tuple(fg) in furc + ((tuple(p.paint['base']),) if whole else ())
+        k = 0
+        while k < h:
+            if rows[k]:
+                e = k
+                while e < h and rows[e]: e += 1
+                out.append([round((y0 + k) / TEX, 5), round((y0 + e) / TEX, 5), kind, round(float(circ), 4), round(float(length) * TEX / h, 4)])
+                k = e
+            else:
+                k += 1
+    return out
+
+
 def build(gid, label, parts, slot='torso'):
     """the parts as one mesh with UVs (one texture strip each), its texture and material, and the .mhclo"""
     settle(gid, parts, slot)
@@ -795,10 +827,11 @@ def build(gid, label, parts, slot='torso'):
     lens = [p.lengths() for p in parts]
     share = np.array([max(0.12, l[1]) for l in lens]); share = share / share.sum()
     img = np.zeros((TEX, TEX, 3))
-    y0, groups, pfaces = 0, [], []
+    y0, groups, pfaces, spans = 0, [], [], []
     for k, (p, (circ, length)) in enumerate(zip(parts, lens)):
         pfaces.append([])
         h = TEX - y0 if k == len(parts) - 1 else int(round(share[k] * TEX))
+        spans.append((y0, h))
         img[y0:y0 + h] = paint_strip(p.paint, TEX, h, circ, length)
         v_top, v_bot = 1 - y0 / TEX, 1 - (y0 + h) / TEX
         pad = 1.5 / TEX
@@ -897,7 +930,7 @@ def build(gid, label, parts, slot='torso'):
             hips.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o), round(float(WAIST - HIPS[2]), 4)])
         o += n
     json.dump({'garment': gid, 'verts': off - len(gone), 'parts': specs, 'arms': 4 if gid in FOUR else 2, 'gone': gone, 'lower': lower,
-               'hips': hips},
+               'hips': hips, 'fur': fur_of(parts, lens, spans)},
               open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
     print('GARMENT', gid, len(me.vertices), 'verts', len(me.polygons), 'quads,', sum(len(c['chains']) for c in specs), 'chains ->', d)
     return obj

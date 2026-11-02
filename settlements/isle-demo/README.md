@@ -163,7 +163,7 @@ declares both once they are planned, in one order whichever town it draws, and h
   granaries, 20 carts. A town opens with three days of food (the governor's cover), each in its share of what the town makes.
 - **The economy governed** (the owner, 2026-10-19, after two research passes on balancing an economy and on
   inventory control). No hand-set factors: every hour each producer's rate is its full rate times a multiplier from an
-  **order-up-to rule with its supply line** (`src/49-isle-govern.js`, `economy.govern`): what is wanted of a good a day
+  **order-up-to rule with its supply line** (core/simulation's `77-sim-6-govern.js` since 2026-10-26; `src/49-isle-govern.js` turns `economy.govern` into each town's rules): what is wanted of a good a day
   is its demand plus three tenths of the gap between three days of demand and its supply line, closed over a day and a
   half, over
   what the town makes of it at the full rate (learnt as it runs), clamped to 0.3-1.5. The demand is the good's use and
@@ -186,8 +186,8 @@ declares both once they are planned, in one order whichever town it draws, and h
   farmhands, craftsmen and labourers own a stone tool (adze, harvest knife, maul, scraper; 1,000 worked hours), made in
   Kautoa's workshops from four stones (an inefficient use of the quarry, as the owner asked), whichever of sandals and
   tools the town has fewer days of, and carried to Valapo by the lakatoi; worn through at work it is bought at once in
-  work time, and without one a worker works at half pace (the page asks again each hour of work if the town was out:
-  `ISLE.simToolRetry`). **Salt** keeps three quarters of the fish and meat that would spoil in the warehouses (a salt for
+  work time, and without one a worker works at half pace (asked again each hour of work if the town was out:
+  core's `SIM.items({retry})`). **Salt** keeps three quarters of the fish and meat that would spoil in the warehouses (a salt for
   four servings), and while a town holds salt its households season their food (Kautoa's own salt now used too), so every
   meal at home counts as a better one (`fine`). The staples shops and the market stay open until 21:00: the farmhands,
   in from the far fields at 17:00, reached a shop as it closed, and from day 13 about 370 of Kautoa's meals a day were

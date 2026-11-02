@@ -1,0 +1,32 @@
+{
+ "_note": "Backwards edges that exist today (tools/dep_graph.py). Delete a line when the edge is removed; never add one without a reason in MODULARITY-PLAN.md.",
+ "backwards": [
+  "biomes/dambasins -> settlements/hook",
+  "biomes/dambasins -> settlements/port",
+  "biomes/ringisles -> openworld/isle-demo",
+  "biomes/ringisles -> settlements/isle-demo",
+  "core/materials -> biomes/sedesert",
+  "core/materials -> kits/ancients",
+  "core/materials -> kits/ringsea",
+  "core/sockets -> kits/post-apoc",
+  "kits/ash-nomads -> settlements/iziz",
+  "kits/beast-riders -> settlements/isle-demo",
+  "kits/catalog -> settlements/iziz",
+  "kits/catalog -> settlements/voth",
+  "kits/desert-nomads -> settlements/iziz",
+  "kits/eternian -> settlements/iziz",
+  "kits/fauna -> settlements/iziz",
+  "kits/interiors -> settlements/iziz",
+  "kits/islanders -> settlements/iziz",
+  "kits/lizardmen -> settlements/iziz",
+  "kits/mechs -> settlements/iziz",
+  "kits/motor-vehicles -> settlements/iziz",
+  "kits/pylon -> settlements/iziz",
+  "kits/resources -> settlements/iziz",
+  "kits/ringsea -> settlements/reedlake",
+  "kits/scyvoi -> settlements/iziz",
+  "kits/talia -> settlements/iziz",
+  "kits/yeti -> settlements/iziz",
+  "kits/zeijani -> settlements/iziz"
+ ]
+}

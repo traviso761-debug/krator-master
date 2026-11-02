@@ -229,6 +229,8 @@ core/simulation/
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
     77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
+    77-sim-6-govern.js    the economy's opt-in rules: a production governor (order-up-to with its supply line), spoilage,
+                          keeping (salt), seasoning (lifted from the isle demo 2026-10-26)
     77-sim-7-lod.js       tiers 0–2 (Phase 5+)
     77-sim-8-export.js    SIM.export() / SIM.download(), format 'krator-sim' (Phase 7)
     77-sim-9-debug.js     window._sim, census, audits, pathviz hooks
@@ -627,6 +629,29 @@ Locus is already closest to the target. Make it the mobility reference:
   because it *knows* of them.
 - `77-sim-7-lod.js`: tier 0/1/2 state for actors beyond an embodiment radius;
   Voth's 1200 CPU pedestrians are the forcing case.
+- **Done 2026-10-26, `77-sim-6-govern.js`:** the economy's rules, proved on the isle demo (its `49`, 2026-10-19) and
+  lifted here, each opt-in through `SIM.economy(config)`: `govern` (every `every` minutes a producer's rate is its full
+  rate times what is wanted of its good, demand + alpha (cover x demand - supply line) / ti, over what the town makes at
+  full, clamped; the demand counts the town's use and unmet draws, its exports or the want of the towns its trade routes
+  carry the good to, `buys` a day, and the goods made from it; the supply line counts warehouses, sites, carts and what
+  is at sea toward it), `spoil` (a share of each perishable's warehoused and site stock a night, booked used), `keep` (a
+  preserving good, salt, keeps a share of what would rot), `season` (a town holding its seasoning cooks better meals:
+  the items' meal quality). `SIM.items({retry})` asks again for a tool whose errand failed. `SIM.economy({useShort})`
+  counts a good's unmet draws as use (at most once more its use), so a good nobody could get is still made; a governed
+  maker of several goods picks by the days of the whole supply line, and a good never made asks for the most rate only
+  when it is wanted (2026-10-26, the isles' `alternate` dropped). A town at the abstract level lives each person's day
+  (77-sim-6-items.js `SIM.itemsAbstractDay`, called by 77-sim-7-lod.js at an hour hashed from the person): clothes and
+  tool worn, a hurt, the material meter risen (`SIM.needsDrift`), and what that wants bought at once at the nearest
+  seller in the town, so the governor learns the demand for treats and wear while nobody watches. On the first day a
+  recipe whose every good already holds its shelf stock (`least`) runs at its floor, not flat out. `SIM.itemsDiet(town,
+  {food: share})` has a town's households buy the named foods at their share (an imported food at its ration), the rest by
+  the warehouses' stock. `SIM.items({stagger})` has each household buy its days of food times 1 +- stagger (a hash of the
+  home), so the restocking rounds drift apart. The governor's `exported: false` and `pool: [settlements]` let a village work to
+  its town's need (the isle demo's hamlets, core/hamlet H5). A governed maker of
+  several goods makes none over target while one is under; `cart.urgent` (opt-in) fetches a good its buyers went short of,
+  the shelves holding under that many days of it, in any amount. They run as SIM.step's last
+  act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as
+  on its own (2026-10-26); `test-sim.js` holds each rule with a negative.
 
 ### Phase 6: player faction
 

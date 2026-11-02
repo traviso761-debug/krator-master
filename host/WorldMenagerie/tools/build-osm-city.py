@@ -316,6 +316,145 @@ def water_cut(t, water, waterways, wc):
     print(f"terrain.cutWater: {int(m.sum())} cells under the mapped water cut to {lim / 10} m")
 
 
+def lake_bed(t, water, lc):
+    """terrain.lakeBed: the elevation tiles carry a lake as a flat sheet at its surface, so the ground meets the water
+    plane all over it and shows through. Inside the named water areas (their islands left alone) the ground is cut to
+    `shore` metres under the surface at the edge, deepening by `slope` a metre out, to `depth` (Atitlán).
+    With `grid` (a file from tools/grid-xyz.py, or one made another way in its shape: Crater Lake's USGS multibeam
+    survey, Atitlán's 2014 echo-sounder map) each cell takes the measured bed instead, its elevation above sea level
+    less terrain.datum; where the survey has no soundings (the first metres off the shore) the cut above stays.
+    With `scale` (metres) the cut eases instead of running straight: `shore` at the edge, toward `depth` as
+    1 - exp(-distance / scale), so a caldera lake has steep walls and a broad floor (Atitlán, until its survey is in).
+    `knolls` raise the bed where something stands up from it that the cut or a coarse survey does not have (Samabaj's
+    drowned island): each {"at": [lat, lon], "r": [east, north] half-widths of its top in metres, "top": its depth in
+    metres at the centre, "tilt": [east, north] metres shallower per metre that way across the top, "flank": metres
+    deeper per metre out from the top's edge}; the bed is the shallower of the two."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    from scipy import ndimage
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    H = np.array(t["h"], dtype=np.int32).reshape(nz, nx)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    names = set(lc.get("names") or [])
+    ring = lambda o: [(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]
+    m = np.zeros(nx * nz, bool)
+    for w in water:
+        if w.get("n") not in names:
+            continue
+        inside = MPath(ring(w["o"])).contains_points(pts)
+        for hole in w.get("i") or []:
+            inside &= ~MPath(ring(hole)).contains_points(pts)
+        m |= inside
+    M = m.reshape(nz, nx)
+    dist = ndimage.distance_transform_edt(M) * step
+    shore, slope, depth = float(lc.get("shore", 1.0)), float(lc.get("slope", 0.15)), float(lc.get("depth", 30))
+    out = np.maximum(0, dist - step * 0.5)
+    if lc.get("scale"):
+        cut = shore + (depth - shore) * (1 - np.exp(-out / float(lc["scale"])))
+    else:
+        cut = np.minimum(depth, shore + slope * out)
+    bed = -cut
+    if lc.get("grid"):
+        G = json.load(open(os.path.join(ROOT, lc["grid"]), encoding="utf-8"))
+        gv = np.array([np.nan if v is None else v / 10 for v in G["h"]], dtype=np.float64).reshape(G["ny"], G["nx"])
+        ok = np.isfinite(gv)
+        fj = (LAT0 - Z / M_LAT - G["lat0"]) / G["dlat"]
+        fi = (LON0 + X / M_LON - G["lon0"]) / G["dlon"]
+        val = ndimage.map_coordinates(np.where(ok, gv, 0.0), [fj, fi], order=1, mode="constant", cval=0.0)
+        wt = ndimage.map_coordinates(ok.astype(np.float64), [fj, fi], order=1, mode="constant", cval=0.0)
+        datum = float((CITY.get("terrain") or {}).get("datum") or 0)
+        meas = np.where(wt > 0.5, val / np.maximum(wt, 1e-9) - datum, np.nan)   # the mean of the soundings round it
+        use = M & np.isfinite(meas)
+        bed = np.where(use, np.minimum(meas, -0.5), bed)
+        print(f"terrain.lakeBed: {int(use.sum())} of {int(M.sum())} cells from {lc['grid']}, deepest {-float(np.nanmin(np.where(use, meas, np.nan))):.1f} m")
+    for k in lc.get("knolls") or []:
+        kx, kz = (k["at"][1] - LON0) * M_LON, -(k["at"][0] - LAT0) * M_LAT
+        ex, nz_ = X - kx, -(Z - kz)   # east and north of the knoll's centre
+        rx, rn = (float(v) for v in k["r"])
+        e = np.sqrt((ex / rx) ** 2 + (nz_ / rn) ** 2)
+        te, tn = (float(v) for v in (k.get("tilt") or [0, 0]))
+        # the top: `top` deep at the centre, tilted, rounded 3 m at its edge; outside it the flank falls away
+        cx, cn = np.where(e > 1, ex / np.maximum(e, 1e-9), ex), np.where(e > 1, nz_ / np.maximum(e, 1e-9), nz_)
+        kd = float(k["top"]) - te * cx - tn * cn + 3 * np.minimum(e, 1) ** 2 + float(k.get("flank", 0.6)) * np.maximum(0, e - 1) * min(rx, rn)
+        bed = np.where(M, np.maximum(bed, -kd), bed)
+        print(f"terrain.lakeBed: a knoll at {k['at']}, {float(k['top']):.1f} m down at the top")
+    H = np.where(M, np.minimum(H, np.round(bed * 10).astype(np.int32)), H)
+    cut = -bed
+    t["h"] = [int(v) for v in H.ravel()]
+    print(f"terrain.lakeBed: {int(M.sum())} cells under {', '.join(sorted(names))}, to {float(cut[M].max()) if M.any() else 0:.0f} m")
+
+
+def water_reaches(t, water, rc):
+    """terrain.reaches: a mountain river through a city is not one level. Each mapped water area named in `names`
+    is cut across its long axis into reaches `length` metres long, each drawn level at the lowest ground along it
+    less `below` metres, never lower than the reach downstream of it (the river runs toward `flows`: "west",
+    "east", "north" or "south"); the ground inside each reach is cut to `depth` metres under its water. The steps
+    between reaches read as the weirs a river like the Miljacka has. `bank` (metres, default half a cell) is how far past
+    the mapped bank the cut reaches; a walled channel takes 0, so the street keeps its level to the edge."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    H = np.array(t["h"], dtype=np.int32).reshape(nz, nx)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    Hr = H.ravel()
+    names = set(rc.get("names") or [])
+    L, below, depth = float(rc.get("length", 120)), float(rc.get("below", 0.4)), float(rc.get("depth", 1.0))
+    bank = float(rc.get("bank", step * 0.5))   # how far past the mapped bank the ground is cut: 0 keeps the street to the edge (a walled channel)
+    flows = rc.get("flows", "west")
+    ax = 0 if flows in ("west", "east") else 1
+    up = 1 if flows in ("west", "north") else -1   # +1: upstream is toward +x (east) or +z (south)
+    def clip(poly, k, v, keep_ge):
+        out = []
+        for i in range(len(poly)):
+            a, b = poly[i], poly[(i + 1) % len(poly)]
+            ina, inb = (a[k] >= v) == keep_ge, (b[k] >= v) == keep_ge
+            if ina:
+                out.append(a)
+            if ina != inb:
+                f = (v - a[k]) / (b[k] - a[k])
+                out.append((a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f))
+        return out
+    new, nr = [], 0
+    for w in water:
+        if w.get("n") not in names or w.get("i"):
+            new.append(w)
+            continue
+        o = w["o"]
+        ring = [(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]
+        lo, hi = min(p[ax] for p in ring), max(p[ax] for p in ring)
+        n = max(1, int(np.ceil((hi - lo) / L)))
+        bands = [(lo + (hi - lo) * i / n, lo + (hi - lo) * (i + 1) / n) for i in range(n)]
+        if up < 0:
+            bands.reverse()    # walk the bands from downstream up
+        prev = None
+        for a, b in bands:
+            piece = clip(clip(ring, ax, a - 0.3, True), ax, b + 0.3, False)
+            if len(piece) < 3:
+                continue
+            m = MPath(piece).contains_points(pts, radius=bank)
+            if not m.any():
+                cx = sum(p[0] for p in piece) / len(piece); cz = sum(p[1] for p in piece) / len(piece)
+                m = (np.abs(pts[:, 0] - cx) < step) & (np.abs(pts[:, 1] - cz) < step)
+            if not m.any():
+                continue    # off the terrain grid
+            y = float(np.percentile(Hr[m], 10)) / 10 - below
+            if prev is not None:
+                y = max(y, prev)
+            prev = y
+            lim = int(round((y - depth) * 10))
+            cut = m & (Hr > lim)
+            Hr[cut] = lim
+            new.append({"o": [v for p in piece for v in (round(p[0] * 10), round(p[1] * 10))], "i": [], "n": w["n"], "y": round(y, 2)})
+            nr += 1
+    water[:] = new
+    t["h"] = [int(v) for v in Hr]
+    print(f"terrain.reaches: {nr} reaches, the water from {min(w['y'] for w in new if 'y' in w):.1f} to {max(w['y'] for w in new if 'y' in w):.1f} m")
+
+
 def terrain_grid():
     """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
     cfg = CITY.get("terrain")
@@ -646,7 +785,9 @@ def main():
             h, mh = height_of(t, c)
             rec = {"o": o, "h": h, "mh": mh, "t": t, "a": a, "c": c, "i": holes}
             (parts if "building:part" in t and "building" not in t else outlines).append(rec)
-    # an outline with parts inside is drawn by its parts (Willis Tower's tubes, Hancock's taper)
+    # an outline with parts inside is drawn by its parts (Willis Tower's tubes, Hancock's taper), unless they cover
+    # less than half of it: then the parts are something on it (Pripyat's nine-storey blocks map only the lift
+    # tower rising over the roof) and the outline stays too
     grid = {}
     for p in parts:
         grid.setdefault((int(p["c"][0] // 100), int(p["c"][1] // 100)), []).append(p)
@@ -660,7 +801,9 @@ def main():
             # parts that all start well above the ground (a spire mapped as parts, the shaft only as the outline): keep
             # the outline, up to where the lowest part begins, or the tower floats
             low = min(p["mh"] or 0 for p in inner)
-            if low > 3:
+            if sum(p["a"] for p in inner) < 0.5 * b["a"]:
+                pass
+            elif low > 3:
                 b["h"] = min(b["h"], low)
             else:
                 dropped_by_parts += 1
@@ -706,6 +849,10 @@ def main():
     t = terrain_grid()
     if t and (CITY.get("terrain") or {}).get("cutWater"):
         water_cut(t, polys["water"], out.get("waterways") or [], CITY["terrain"]["cutWater"])
+    if t and (CITY.get("terrain") or {}).get("reaches"):
+        water_reaches(t, polys["water"], CITY["terrain"]["reaches"])
+    if t and (CITY.get("terrain") or {}).get("lakeBed"):
+        lake_bed(t, polys["water"], CITY["terrain"]["lakeBed"])
     if t:
         out["terrain"] = t
         lo, hi = min(t["h"]) / 10, max(t["h"]) / 10
