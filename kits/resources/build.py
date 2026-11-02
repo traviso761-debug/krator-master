@@ -61,7 +61,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT_ID = 'resources'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos')]
 # the engine and the sky, READ IN PLACE: nothing vendored here, so nothing drifts (a fix to the engine reaches this kit at once)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). the engine's src/99-host-take.js (read in place from kits/scyvoi, with 92-world.js) hands it the

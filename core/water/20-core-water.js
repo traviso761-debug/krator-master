@@ -13,6 +13,15 @@
 // written in turns (fract of each term), as the wave field's is, so atmWaveT's wrap is seamless and fp32 never steps.
 // Without core/atmos loaded the field is 0 and the period 600 s.
 const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
+ // core/shader: every water hook goes through KHOOK (a layer on a material, an anchor that throws). W.vs / W.fs are a hook's replaces, in order
+ W.KH=()=>{if(typeof KHOOK!=='undefined')return KHOOK;throw new Error('core/water: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');};
+ W.vs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.v(sh,r[0],r[1],who);return sh;};
+ W.fs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.f(sh,r[0],r[1],who);return sh;};
+ // a water colour goes into the shader AS WRITTEN: a hex here was tuned as linear and is not decoded (KCOLOR.linArr with {linear:true} says so).
+ // Decoding them would darken every page's water; a surface wanting a true display hex passes KCOLOR.lin(hex), a THREE.Color, which is linear
+ W.colAsWritten=(T,c)=>{if(typeof KCOLOR==='undefined')throw new Error('core/water: core/shader is not on this page (KCOLOR): list core/shader/06b-core-kcolor.js (khost.resolve adds it)');return KCOLOR.linArr(new T.Color(c),{linear:true});};
+ // the water's slice of KHOOK.checkPrograms: its programs that did not link and its anchors missed; [] when all is runnable
+ W.checkPrograms=(r,scene)=>W.KH().checkPrograms(r,scene,/wtr/);
  const fr=x=>x-Math.floor(x),cl=(x,a,b)=>x<a?a:x>b?b:x,ss=(a,b,x)=>{const t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t);};
  // (a page that declares ATMOS later in the same script has it in its temporal dead zone until then: typeof throws)
  const AT=()=>{try{return typeof ATMOS!=='undefined'&&ATMOS.PRESETS&&ATMOS.PRESETS.waves?ATMOS:null;}catch(e){return null;}};

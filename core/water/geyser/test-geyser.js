@@ -2,6 +2,7 @@
 // broken input that must fail. The shader chunks the drawing compiles (the colour ramp, the cycle) are read as TEXT and run
 // here as JavaScript (a small transliteration of the subset they use), against the CPU twins. --golden writes
 // godot/tests/water/geyser_golden.json: the Old Kettle's data and the states a port replays (GEYSER_STATE).
+require('../../shader/06-core-khook.js');require('../../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..','..');
 const src=['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/water/20-core-water.js','core/water/geyser/52-core-water-geyser.js','core/water/geyser/52b-core-water-geyser-draw.js']

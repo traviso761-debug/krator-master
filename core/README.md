@@ -10,6 +10,11 @@ thing is: ids, class, tags), `space/` (the one spatial index placement passes sh
 `krator-world` container every module gives its part to, for Godot). `charactermodels/` (the people: MakeHuman bodies,
 clothes, peoples and clips, with two labs) is a build of its own as well as a module.
 
+## `shader/`
+
+`KHOOK` (the one door for shader hooks: layers in a fixed order, a program keyed from them, an anchor that throws, `checkPrograms`)
+and `KCOLOR` (display against linear). On every page: `khost.resolve` adds them. `shader/README.md`.
+
 ## `materials/`
 
 | File | What |

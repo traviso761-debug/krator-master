@@ -74,12 +74,13 @@
    {const q=st.station;v(U.uStaDir,q.dir);v(U.uStaAx,q.axis);v(U.uStaV,q.vel);U.uStaK.value.set(q.radiusDeg*D,q.lit,q.dist,q.up);}
    U.uRealT.value=(typeof performance!=='undefined'?performance.now():Date.now())/1000%86400;U.uMeteor.value=P.night.meteors==null?1:P.night.meteors;
    U.uPixAng.value=(cam.fov*D)/Math.max(1,r.domElement.height);   // one framebuffer pixel, radians
-   // the page's light (the colour script is display-space; three's lights and fog are linear)
-   if(o.sun){o.sun.position.set(...st.sunDir).multiplyScalar(1000);if(o.sun.target)o.sun.target.position.set(0,0,0);o.sun.color.setRGB(...L.sunC).convertSRGBToLinear();o.sun.intensity=L.sunI*(st.sunAlt>-1?1:0);}
-   shine.position.set(...st.giantDir).multiplyScalar(1000);shine.color.setRGB(...L.shineC).convertSRGBToLinear();shine.intensity=L.shineI;
-   if(o.hemi){o.hemi.color.setRGB(...L.hemiS).convertSRGBToLinear();o.hemi.groundColor.setRGB(...L.hemiG).convertSRGBToLinear();o.hemi.intensity=L.hemiI;}
-   r.toneMappingExposure=L.exp;
-   if(o.fog!==false&&scene.fog){scene.fog.color.setRGB(...L.fogC).convertSRGBToLinear();if(scene.fog.density!=null)scene.fog.density=L.fogD;
+   // the page's light (the colour script is display-space; three's lights and fog are linear: KCOLOR.lin, three's own curve)
+   const KC=A.KC();
+   if(o.sun){o.sun.position.set(...st.sunDir).multiplyScalar(1000);if(o.sun.target)o.sun.target.position.set(0,0,0);KC.lin(L.sunC,o.sun.color);o.sun.intensity=L.sunI*(st.sunAlt>-1?1:0);}
+   shine.position.set(...st.giantDir).multiplyScalar(1000);KC.lin(L.shineC,shine.color);shine.intensity=L.shineI;
+   if(o.hemi){KC.lin(L.hemiS,o.hemi.color);KC.lin(L.hemiG,o.hemi.groundColor);o.hemi.intensity=L.hemiI;}
+   KC.exposure(r,L.exp);
+   if(o.fog!==false&&scene.fog){KC.lin(L.fogC,scene.fog.color);if(scene.fog.density!=null)scene.fog.density=L.fogD;
     if(!o.weather&&A.wxFog)A.wxFog(scene.fog);}   /* ATMOS.bindWeather's fog law on top of the hour's fog (X2): the two compose, whichever bound first */
    if(A.U&&A.U.hour)A.U.hour.value=clock.hour;};
   // S.renderSky(): the sky pass alone, into whatever target is bound (a page with its own post pass draws the world after it)
@@ -87,7 +88,7 @@
    const ac=r.autoClear;r.autoClear=true;r.render(sscene,scam);r.autoClear=ac;};
   S.render=function(){S.renderSky();const ac=r.autoClear;r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
   // the reflections: ATMOS.skylight captures the sky scene (about the origin) whenever the hour moves or the key does
-  if(o.skylight)S.skylight=A.skylight({renderer:r,sky:sscene,scene,ground:()=>new T.Color(...(S.look?S.look.hemiG:[.2,.2,.2])).convertSRGBToLinear(),
+  if(o.skylight)S.skylight=A.skylight({renderer:r,sky:sscene,scene,ground:()=>A.KC().lin(S.look?S.look.hemiG:[.2,.2,.2],new T.Color()),
    key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.thin&&S.look?S.look.p.toFixed(2):P.air.pressure].join()});
   // the moon maps: one atlas image, a 2:1 row a moon in SKY.moons order (o.moonAtlas: a URL); procedural until it loads
   if(o.moonAtlas)new T.TextureLoader().load(o.moonAtlas,t=>{t.wrapS=T.RepeatWrapping;t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=4;U.uMoonMaps.value=t;U.uMoonMapOn.value=1;});
@@ -99,23 +100,12 @@
  // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
  // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing.
- // ATMOS.shaderHook(material, key, fn(shader, renderer)): adds fn to a material's onBeforeCompile so that any number of hooks
- // (cloudShade, heightFog, snowOn, WATER.wetGround, the page's own) compose in ANY order. The material's onBeforeCompile
- // becomes an accessor (as wetGround's and snowOn's are): reading it gives this layer's hook, which runs the layer under it
- // first; assigning it goes down to the innermost layer (the page's own hook), so a page that sets its hook after the core
- // hooks keeps them. A layer over an accessor reads the one under through ITS getter, never through mat.onBeforeCompile,
- // so no hook can call itself (the NW outer wall's recursion: cloudShade after wetGround). The program key composes the same
- // way: the layer's key appended to the one under (with no key under, the innermost hook's source, as three's default).
- // Returns the material; a material that already carries the key is left alone (each layer once).
- A.shaderHook=function(mat,key,fn){if(!mat)return mat;mat.userData=mat.userData||{};const keys=mat.userData.atmHooks||(mat.userData.atmHooks=[]);
-  if(keys.indexOf(key)>=0)return mat;keys.push(key);
-  const d=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');let get,set;
-  if(d&&d.get){get=()=>d.get.call(mat);set=d.set?v=>d.set.call(mat,v):()=>{};}else{let page=mat.onBeforeCompile;get=()=>page;set=v=>{page=v;};}
-  const hook=function(sh,r){const p=get();if(p)p.call(this,sh,r);fn.call(this,sh,r);};
-  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>hook,set});
-  const proto=A.T?A.T.Material.prototype.customProgramCacheKey:null,own=mat.customProgramCacheKey&&mat.customProgramCacheKey!==proto?mat.customProgramCacheKey:null;
-  mat.customProgramCacheKey=function(){let k;if(own)k=own.call(this);else{const p=get();k=p?p.toString():'';}return k+'|'+key;};
-  mat.needsUpdate=true;return mat;};
+ // ATMOS.shaderHook(material, key, fn(shader, renderer)): KHOOK.add(material, key, fn) (core/shader/06-core-khook.js, the one
+ // door for shader hooks). Any number of layers (cloudShade, heightFog, snowOn, WATER.wetGround, the page's own) compose in a
+ // fixed order: the page's own hook first (assigned before or after), then the layers as added; a page hook that wraps the one
+ // it read never recurses (the NW outer wall's: cloudShade after wetGround); the program key is the key under it + '|' + key;
+ // a layer added twice runs once; a missing anchor throws. Returns the material.
+ A.shaderHook=function(mat,key,fn){return A.KH().add(mat,key,fn);};
  // ATMOS.cloudShade(material, {porosity}): the sky's clouds shade this ground or plant material (SKY-PLAN.md 11.1), and
  // rain darkens it. Every directional light is shaded along its own direction (the sun, the giantshine); a standard
  // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
@@ -123,21 +113,22 @@
  // Under cover (the rain occlusion map, fx/89-atmos-fx-raincover.js, when the page takes it) the ground stays dry.
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
  A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
-  return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
+  const K=A.KH();return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
    for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'])sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};
    const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
    const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';
    const lambert=/lights_lambert_vertex/.test(sh.vertexShader);
    if(lambert){
-    const lam=A.T.ShaderChunk.lights_lambert_vertex.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLights\[\s*i\s*\],\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);
-    sh.vertexShader=head+(occ?'varying vec3 atmWPosF;\n':'')+sh.vertexShader.replace('#include <lights_lambert_vertex>',wp+'vec3 atmWPos=atmWP.xyz;\n'+(occ?'atmWPosF=atmWPos;\n':'')+lam);}
-   else{sh.vertexShader='varying vec3 atmWPos;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp+'atmWPos=atmWP.xyz;');
-    const lfb=A.T.ShaderChunk.lights_fragment_begin.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLight,\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);   /* the include is not expanded yet: expand it here */
-    sh.fragmentShader=head+'varying vec3 atmWPos;\n'+sh.fragmentShader.replace('#include <lights_fragment_begin>',lfb)
-     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);');}
+    const lam=K.rep(A.T.ShaderChunk.lights_lambert_vertex,/(getDirectionalDirectLightIrradiance\(\s*directionalLights\[\s*i\s*\],\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);
+    sh.vertexShader=head+(occ?'varying vec3 atmWPosF;\n':'')+K.rep(sh.vertexShader,'#include <lights_lambert_vertex>',wp+'vec3 atmWPos=atmWP.xyz;\n'+(occ?'atmWPosF=atmWPos;\n':'')+lam);}
+   else{/* after <project_vertex>; a hook that replaced it (a leaf card's sway) gets it before <fog_vertex> instead, as the snow does */
+    sh.vertexShader='varying vec3 atmWPos;\n'+K.inject(sh.vertexShader,{at:'project_vertex',after:wp+'atmWPos=atmWP.xyz;',fallback:{at:'fog_vertex',before:wp+'atmWPos=atmWP.xyz;'}});
+    const lfb=K.rep(A.T.ShaderChunk.lights_fragment_begin,/(getDirectionalDirectLightIrradiance\(\s*directionalLight,\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);   /* the include is not expanded yet: expand it here */
+    const RL=A.repLit(this);sh.fragmentShader=head+'varying vec3 atmWPos;\n'+RL(RL(sh.fragmentShader,'#include <lights_fragment_begin>',lfb),
+     '#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);');}
    /* the wet here: W.wet, none under cover when the page takes the rain occlusion map (the world position reaches the fragment) */
    const wetHere=occ?'float atmWetHere=uWet*(1.0-atmRainCover('+(lambert?'atmWPosF':'atmWPos')+'));':'float atmWetHere=uWet;';
    sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+(occ?(lambert?'varying vec3 atmWPosF;\n':'')+occ+'\n':'')
-    +sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n'+wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;');});};
+    +K.rep(sh.fragmentShader,'#include <map_fragment>','#include <map_fragment>\n'+wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;');});};
 })();

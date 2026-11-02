@@ -4,6 +4,7 @@
 // swizzles, inout, if/for, ?:, the builtins below), in doubles, so "the twin equals the shader's sum" is checked on the
 // very text the GPU compiles, at sample points. Then the clock's wrap, the Newton inverse, the foam's decay, the bed's
 // bytes, the CDLOD selection (tiling, one level between neighbours, no crack where levels meet), riding, flow and still water.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const src=['core/terrain/30-core-field.js','core/mask/25-core-mask.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js',

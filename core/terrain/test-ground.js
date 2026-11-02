@@ -3,7 +3,7 @@
 const fs=require('fs'),path=require('path');
 global.window=global;
 const proto={customProgramCacheKey:function(){return 'default';}};global.THREE={Material:{prototype:proto}};
-eval(fs.readFileSync(path.join(__dirname,'43-core-ground.js'),'utf8'));
+eval(fs.readFileSync(path.join(__dirname,'..','shader','06-core-khook.js'),'utf8'));eval(fs.readFileSync(path.join(__dirname,'43-core-ground.js'),'utf8'));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const G=KGROUND,F=G.fn;
 

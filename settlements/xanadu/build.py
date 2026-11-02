@@ -147,6 +147,7 @@ DETERMINISTIC = {
     '90a-er-world.js', '90b-er-build.js', '93-er-ui.js',   # the Erewhon city target
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)

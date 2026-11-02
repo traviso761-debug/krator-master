@@ -1,6 +1,7 @@
 // node core/water/test-network.js — a flow network (core/water/ext/59 and 59b, 2026-10-27, PRACTICE.md section 2 item 2): joins, confluences, forks
 // and mouths wired from one graph. The case: a river with a tributary, a fork into two distributaries at its end, both ending in a lake. Judged by
 // the joins found, the discs shared, the mouths' fades, and WATER.audit's overlap rule (ext/57) with the hand-drawn ribbons as the negative.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const rd=f=>fs.readFileSync(path.join(ROOT,f),'utf8');

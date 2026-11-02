@@ -66,6 +66,7 @@ def safe(js):
 
 # ---------------------------------------------------------------- the shared modules, by slot name
 CORE = {
+    '06-core-khook.js': 'core/shader/06-core-khook.js', '06b-core-kcolor.js': 'core/shader/06b-core-kcolor.js',
     '08-core-rand.js': 'core/rand/08-core-rand.js',
     '10-core-head.js': 'core/biome/10-core-head.js', '20-core-kit.js': 'core/biome/20-core-kit.js',
     '30-core-foliage.js': 'core/biome/30-core-foliage.js', '40-core-place.js': 'core/biome/40-core-place.js',

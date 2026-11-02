@@ -68,7 +68,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'zeijani.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/99-host-take.js hands it the page (its own, kits/scyvoi's with the kit's

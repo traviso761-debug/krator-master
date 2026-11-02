@@ -85,7 +85,9 @@ MATLIB_PACK = '45x-matlib-pack.js'
 ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
-CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
+SHADER_DIR = os.path.join(ROOT, 'core', 'shader')
+CORE_SHADER = ['06-core-khook.js', '06b-core-kcolor.js']   # core/atmos and core/water call them
+CORE_WATER = ['20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']   # 50's draw calls 51's rain helpers
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED = re.compile(r'\breseed\(\s*(\d+)\s*\)')
@@ -133,6 +135,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(CORE, f) for f in CORE_FILES}
     paths.update({f: os.path.join(RECORD, f) for f in RECORD_FILES})
+    paths.update({f: os.path.join(SHADER_DIR, f) for f in CORE_SHADER})
     paths.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS})
     paths.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER})
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides

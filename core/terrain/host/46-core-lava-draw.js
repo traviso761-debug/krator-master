@@ -44,8 +44,9 @@
    mat.uniforms.uLavaT=A.U.time;mat.uniforms.uNight=o.night||A.U.night;
    if(A.h&&A.h.scene&&A.h.scene.fog){mat.uniforms.fogColor.value=A.h.scene.fog.color;mat.uniforms.fogDensity.value=A.h.scene.fog.density||0;}}
   else{const col=new Float32Array(N*3);g.setAttribute('color',new T.BufferAttribute(col,3));mat=new T.MeshBasicMaterial({vertexColors:true});
-   mat.onBeforeCompile=sh=>{sh.vertexShader='attribute float aShow;varying float vShow;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvShow=aShow;');
-    sh.fragmentShader='varying float vShow;\n'+sh.fragmentShader.replace('void main() {','void main() {\nif(vShow<0.5)discard;');};}
+   const KH=root.KHOOK;if(!KH)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');
+   KH.add(mat,'klava-show',{vertex:{head:'attribute float aShow;varying float vShow;\n',at:[{at:'begin_vertex',after:'vShow=aShow;'}]},
+    fragment:{head:'varying float vShow;\n',at:[{at:'void main() {',after:'if(vShow<0.5)discard;'}]}});}
   const M=new T.Mesh(g,mat);M.name=o.name||'lava flow';M.frustumCulled=false;M.userData.lava=sim;M.userData.inspectLabel=M.name;
   const noPond=o.ponds===false;
   M.update=function(){const hm=sim.hmin,cs=g.attributes.color,po=sim.pondOf;let wx=0,wz=0,wv=0;

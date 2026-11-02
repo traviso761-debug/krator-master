@@ -60,7 +60,7 @@ KIT_SRC = os.path.join(KIT, 'src')
 KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js',   # the kit sheet's host
             '92-camera.js', '92-world.js', '99-host-take.js'}   # the kit sheet's views and take: Dhelv's are core/host's (src/92-dhelv-camera.js, src/99-start.js)
 TEX_DIR = os.path.join(KIT, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
 # the biome core (BIO: the kits' registry, foliage, placement, the stage) for the kipuka's forest (P5b)
 CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '44-core-stage.js')]

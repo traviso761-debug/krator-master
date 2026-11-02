@@ -66,7 +66,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'scyvoi.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/98-host-take.js hands it the page (KHOST.take); it replaced the engine's own
 # 92-camera.js and 91-probe.js (2026-10-18, KNOWN_ISSUES.md "Host port"). A src/ file with a shell file's name would win.

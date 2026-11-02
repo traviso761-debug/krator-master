@@ -1,6 +1,7 @@
 // node core/water/test-audit.js — WATER.audit and the placement helpers (ext/57, 2026-10-27; PRACTICE.md section 2, items 1 and 3): a synthetic
 // case for every rule that must pass clean, and a broken input that must fail it; lipAt, toeAt and levelFromDownstream on a cliff, and
 // fallsOf({ground}) placing a fall there where the plain fallsOf leaves its lip 10 m back from the edge.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const files=['core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js','core/water/21-core-water-shore.js',

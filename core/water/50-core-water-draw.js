@@ -132,13 +132,10 @@
  //        (default true) divides by the instance's y scale (the lift is added in the mesh's own space). Heave only (no pitch or roll); the page's
  //        own onBeforeCompile runs first, whenever it is assigned (as WATER.wetGround). Returns the material.
  W.rideGLSL=S=>W.glsl(S)+'\nfloat wtrRide(vec2 p){return wtrHeight(p)-wtrLevel;}';
- W.rideOn=(mat,S,o)=>{o=o||{};const wt=o.weight||null,sy=o.scaleY!==false;let page=mat.onBeforeCompile;
-  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|wtr-ride:'+W.hashStr(W.rideGLSL(S))+(wt||'')+(sy?'s':'');
-  const ride=function(sh,r){if(page)page.call(this,sh,r);ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n#include <atmos_waves>\n'+W.rideGLSL(S)+'\n'+(wt?'attribute float '+wt+';\n':''))
-    .replace('#include <begin_vertex>','#include <begin_vertex>\n{\n#ifdef USE_INSTANCING\nvec4 wtrRc=modelMatrix*instanceMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs='+(sy?'max(length(instanceMatrix[1].xyz),1.0e-3)':'1.0')+';\n'+
-     '#else\nvec4 wtrRc=modelMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs=1.0;\n#endif\ntransformed.y+=wtrRide(wtrRc.xz)'+(wt?'*'+wt:'')+'/wtrRs;\n}');};
-  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>ride,set:fn=>{page=fn;}});mat.needsUpdate=true;return mat;};
+ W.rideOn=(mat,S,o)=>{o=o||{};const wt=o.weight||null,sy=o.scaleY!==false;
+  return W.KH().add(mat,'wtr-ride',function(sh,r){ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));
+   W.vs(sh,'wtr-rideOn',['#include <common>','#include <common>\n#include <atmos_waves>\n'+W.rideGLSL(S)+'\n'+(wt?'attribute float '+wt+';\n':'')],['#include <begin_vertex>','#include <begin_vertex>\n{\n#ifdef USE_INSTANCING\nvec4 wtrRc=modelMatrix*instanceMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs='+(sy?'max(length(instanceMatrix[1].xyz),1.0e-3)':'1.0')+';\n'+
+     '#else\nvec4 wtrRc=modelMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs=1.0;\n#endif\ntransformed.y+=wtrRide(wtrRc.xz)'+(wt?'*'+wt:'')+'/wtrRs;\n}']);},{key:()=>'wtr-ride:'+W.hashStr(W.rideGLSL(S))+(wt||'')+(sy?'s':'')});};
 
  // FNV-1a of a string (a program cache key)
  W.hashStr=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
@@ -164,7 +161,7 @@
    normalMap:o.normalMap||null,transparent:!!o.transparent,depthWrite:!o.transparent});
   if(o.normalMap)mat.normalScale.set(o.normalScale==null?.5:o.normalScale,o.normalScale==null?.5:o.normalScale);
   if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;
-  const U=W.uniformsOf(S),col=c=>v3(c),lin=c=>{const q=new T.Color(c);return[q.r,q.g,q.b];};
+  const U=W.uniformsOf(S),col=c=>v3(c),lin=c=>W.colAsWritten(T,c);
   const per=W.period(),dc=o.detailCycles||[3,2],surf=o.surf==null?153:o.surf,RP=o.ramp||[0.5,9],SD=o.surfDepth==null?[0.1,1.4]:Array.isArray(o.surfDepth)?o.surfDepth:[0.1,o.surfDepth];
   // the options a page chose over the defaults, for the export (nothing is recorded for a default)
   {const dop={};if(o.surf===false)dop.surf=false;if(o.surfDepth!=null)dop.surfDepth=o.surfDepth;if(o.ramp)dop.ramp=o.ramp;if(o.depthBias!=null)dop.depthBias=o.depthBias;if(Object.keys(dop).length)S.drawOpt=dop;}
@@ -190,17 +187,11 @@
   mat.customProgramCacheKey=()=>'wtr-open:'+W.hashStr(W.glsl(S)+fragColor+VARY+(o.origin?'o':'')+(o.normalMap?'n':''))+W.rainK(o);
   mat.onBeforeCompile=sh=>{const CH=W.shaderOn(S,sh)+VARY;
    if(o.origin)sh.uniforms.wtrOrigin=U2.wtrOrigin;
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;'+(o.origin?'uniform vec2 wtrOrigin;':''))
-    .replace('#include <beginnormal_vertex>','vec3 objectNormal=vec3(0.0,1.0,0.0);')
-    .replace('#include <begin_vertex>','vec3 wtrM=wtrMorph(position.xz,wtrNode);vec4 wtrS=wtrSurface(wtrM.xy,wtrM.z);vWtrP0=wtrM.xy;vWtrP=wtrS.xz;vWtrDamp=wtrS.w;vec3 transformed=wtrS.xyz'+(o.origin?'-vec3(wtrOrigin.x,0.0,wtrOrigin.y)':'')+';'+
-     (o.normalMap?'\n#ifdef USE_UV\nvUv=(uvTransform*vec3(wtrS.xz*'+f(1/(o.detailSize||46))+',1.0)).xy;\n#endif\n':''));
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)+'\n'+
+   W.vs(sh,'wtr-draw',['#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;'+(o.origin?'uniform vec2 wtrOrigin;':'')],['#include <beginnormal_vertex>','vec3 objectNormal=vec3(0.0,1.0,0.0);'],['#include <begin_vertex>','vec3 wtrM=wtrMorph(position.xz,wtrNode);vec4 wtrS=wtrSurface(wtrM.xy,wtrM.z);vWtrP0=wtrM.xy;vWtrP=wtrS.xz;vWtrDamp=wtrS.w;vec3 transformed=wtrS.xyz'+(o.origin?'-vec3(wtrOrigin.x,0.0,wtrOrigin.y)':'')+';'+
+     (o.normalMap?'\n#ifdef USE_UV\nvUv=(uvTransform*vec3(wtrS.xz*'+f(1/(o.detailSize||46))+',1.0)).xy;\n#endif\n':'')]);
+   W.fs(sh,'wtr-draw',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)+'\n'+
      'float wtrHash(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}\n'+
-     'float wtrNoise(vec2 p){vec2 i=floor(p);vec2 u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(wtrHash(i),wtrHash(i+vec2(1.0,0.0)),u.x),mix(wtrHash(i+vec2(0.0,1.0)),wtrHash(i+vec2(1.0,1.0)),u.x),u.y);}')
-    .replace('#include <color_fragment>','#include <color_fragment>\n'+fragColor)
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.85,wtrFoamK);')
-    .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.0-wtrFoamK;')
-    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrN','vWtrP','vec3(vWtrP.x,wtrLevel,vWtrP.y)')+',0.0)).xyz);');};
+     'float wtrNoise(vec2 p){vec2 i=floor(p);vec2 u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(wtrHash(i),wtrHash(i+vec2(1.0,0.0)),u.x),mix(wtrHash(i+vec2(0.0,1.0)),wtrHash(i+vec2(1.0,1.0)),u.x),u.y);}'],['#include <color_fragment>','#include <color_fragment>\n'+fragColor],['#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.85,wtrFoamK);'],['#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.0-wtrFoamK;'],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrN','vWtrP','vec3(vWtrP.x,wtrLevel,vWtrP.y)')+',0.0)).xyz);']);};
   const mesh=new T.Mesh(g,mat);mesh.name='water:'+S.name;mesh.frustumCulled=false;mesh.raycast=o.pick?W.pickRay(S,mesh,T,()=>U.wtrLevel.value):()=>{};if(o.pick)mesh.userData.inspectLabel=S.name;else mesh.userData.probeSkip=true;mesh.userData.water=S.id;
   mesh.userData.lodSkip=true;   // the CDLOD mesh is its own level of detail: core/lod's pass must not take it (it would cull or copy the unit grid)
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);

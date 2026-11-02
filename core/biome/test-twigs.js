@@ -1,6 +1,7 @@
 // node core/biome/test-twigs.js: a tree's structure and a crown held by it (20-core-kit.js, 2026-11-01): the BIO.tree scope, the
 // log BIO.beam and BIO.tube write in it, BIO.twigEnds, BIO.snapSeg and BIO.clumpOn, read back through the attachment audit. Each
 // check with a negative. Opt-in: with no scope nothing is logged.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

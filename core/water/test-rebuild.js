@@ -3,6 +3,7 @@
 // floaters heave on the GPU), R9 wetness (Lagarde), puddles in baked hollows and rain rings (WATER.rainRippleGLSL) on puddles and water, the
 // rain-cover hook. Each new function against its twin (the shader's own text run in glsl-interp.js) and with a negative control; each option's
 // absence leaves the old text (test-gaps.js holds the snapshot of every default).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');

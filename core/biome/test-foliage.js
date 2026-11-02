@@ -4,6 +4,7 @@
 // the shader it wrote before the 2026-10-26 additions (spin, ground tint, gusts, alpha-to-coverage, back-light, the
 // per-vertex bark colour, the cross-fade hook). FROZEN holds the SHA-1 of those shaders as core/biome at de751ca46
 // wrote them (measured on that file, the same option sets): a change to a default shows here.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path'),vm=require('vm'),crypto=require('crypto');
 const D=__dirname,read=f=>fs.readFileSync(path.join(D,f),'utf8');
 const THREE_JS=path.join(D,'..','..','kits','ancients','three.min.js');   /* the pinned r128 (tools/harness.py local_three) */

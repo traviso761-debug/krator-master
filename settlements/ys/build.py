@@ -226,6 +226,7 @@ DETERMINISTIC = {
     '71w-port-sea.js',   # the sea on core/water (vendored from the port kit)
     '89x-ys-trades.js',   # the Voth census table (data only: YS_TRADES, read by tools/check_trades.py)
 }
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'91t-ys-tags.js', '99-start.js'}   # core/host, core/tags (no rnd()); the records; the take
 

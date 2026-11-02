@@ -30,6 +30,8 @@ WHERE = {
     '97-host-minimap.js': 'host',     # the minimap from the records (needs core/minimap's 88 and 88a)
     '98-host-edit.js': 'host',        # edit modes: core/edits operations (needs core/edits)
     '99-host-cutaway.js': 'host',     # the cutaway and its storey bar (o.cutaway)
+    '06-core-khook.js': 'shader',     # every page: KHOOK, the one door for shader hooks
+    '06b-core-kcolor.js': 'shader',   # every page: KCOLOR, colour space
     '40-core-edits.js': 'edits',
     '20-core-space.js': 'space',
     '88-core-minimap.js': 'minimap',
@@ -42,6 +44,8 @@ FULL = SHELL + ['93-host-inspect.js', '93-host-stocks.js', '94-host-marks.js', '
                 '99-host-cutaway.js', '40-core-edits.js', '20-core-space.js', '88-core-minimap.js', '88a-core-minimap-host.js']
 # the seat sweeps, opt-in (CORE-IMPROVEMENTS.md item 1): khost.resolve(PATH, khost.SEAT) beside the shell
 SEAT = ['38a-core-seat.js', '95b-host-seat.js']
+# core/shader goes on every page (resolve adds it whatever the list): core/atmos, core/terrain, core/water and core/biome call it
+SHADER = ['06-core-khook.js', '06b-core-kcolor.js']
 EDITS_JS = '39-host-edits.js'      # the generated fragment edits_js() writes (sorts before core/edits and every builder)
 
 
@@ -50,9 +54,9 @@ def path(name):
 
 
 def resolve(paths, names=SHELL):
-    """Add each named shell file to `paths` unless the build has its own copy of that name. Returns the overrides."""
+    """Add each named shell file, and core/shader, to `paths` unless the build has its own copy of that name. Returns the overrides."""
     own = []
-    for f in names:
+    for f in list(names) + [s for s in SHADER if s not in names]:
         if f in paths:
             own.append(f)
         else:

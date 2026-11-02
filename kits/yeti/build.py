@@ -70,7 +70,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT_ID = 'yeti'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
 # single core files (a module the kit takes one piece of)
 CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,

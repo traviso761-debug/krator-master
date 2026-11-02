@@ -34,7 +34,7 @@
 (function(){const W=WATER,TAU=Math.PI*2;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},f=glf;
  const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
- const lin=(T,c)=>{const q=new T.Color(c);return'vec3('+[q.r,q.g,q.b].map(glf).join(',')+')';};
+ const lin=(T,c)=>'vec3('+W.colAsWritten(T,c).map(glf).join(',')+')';
  const tag=(m,S,o)=>{m.name='water:'+S.name;if(!(o&&o.pick))m.userData.probeSkip=true;m.userData.lodSkip=true;m.userData.water=S.id;if(o&&o.pick)m.userData.inspectLabel=S.name;else m.raycast=()=>{};return m;};
  // the sky's light on a material (b-skylight's capture), as WATER.draw takes it
  const sky=(mat,o)=>{const A=AT();if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;
@@ -84,11 +84,9 @@
   const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;'+(EF?'varying float vWtrE;':'');
   const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'')+(EF?'e'+EF.len+','+EF.foam+','+EL+','+EF.color+','+!!EF.keepFoam+','+EF.flow+','+EF.turn+','+EF.turnK:'')+(o.mouths&&o.mouths.length?'m'+JSON.stringify(o.mouths):'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;'+(EF?'attribute float wtrAlong;':''))
-    .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(EF?'vWtrE='+f(EL)+'-wtrAlong;'+(EF.flow?'{float wtrU=1.0-smoothstep(0.0,'+f(EF.turn==null?8:EF.turn)+',vWtrE);vWtrF=mix(vWtrF,vec2('+f(EF.flow[0])+','+f(EF.flow[1])+')*length(vWtrF),wtrU*'+f(EF.turnK==null?1:EF.turnK)+');}':''):''));   /* endFade.flow [x, z] (a unit), endFade.turn (8 m), endFade.turnK (1: how far it turns): the current turns into the main's over the last turn m, its ripples
+   W.vs(sh,'wtr-drawFlow',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;'+(EF?'attribute float wtrAlong;':'')],['#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(EF?'vWtrE='+f(EL)+'-wtrAlong;'+(EF.flow?'{float wtrU=1.0-smoothstep(0.0,'+f(EF.turn==null?8:EF.turn)+',vWtrE);vWtrF=mix(vWtrF,vec2('+f(EF.flow[0])+','+f(EF.flow[1])+')*length(vWtrF),wtrU*'+f(EF.turnK==null?1:EF.turnK)+');}':''):'')]);   /* endFade.flow [x, z] (a unit), endFade.turn (8 m), endFade.turnK (1: how far it turns): the current turns into the main's over the last turn m, its ripples
     joining the main's; the ripples are advected by phase, so a short or full turn shears them: a long, partial one (30 m, .6) reads best */
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms))
-    .replace('#include <color_fragment>','#include <color_fragment>\n'+
+   W.fs(sh,'wtr-drawFlow',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <color_fragment>','#include <color_fragment>\n'+
      'float wtrP0=fract(atmWaveT*'+f(Q.phases/per)+');float wtrW0=1.0-abs(2.0*wtrP0-1.0);'+
      // the breakup noise rides the current too (the same two phases)
      'float wtrNz=mix(wtrNoise((vWtrW.xz-vWtrF*fract(wtrP0+0.5)*'+f(T2)+')*0.55+7.3),wtrNoise((vWtrW.xz-vWtrF*wtrP0*'+f(T2)+')*0.55),wtrW0);'+
@@ -110,17 +108,14 @@
      (EF?(o.transparent!==false?'diffuseColor.a*='+(EF.keepFoam?'max(smoothstep(0.0,'+f(EF.len)+',vWtrE),wtrFoamK)':'smoothstep(0.0,'+f(EF.len)+',vWtrE)')+';':'if(vWtrE<'+f(EF.len*.5)+')discard;'):'')+
      // chute (2026-10-26): the ribbon gives way where the line is steeper than this (the falls' curtains draw the water there: fallsOf's steep),
      // so its sheet down a chute, cut by the banks, does not show beside the curtain
-     (o.chute!=null?(o.transparent!==false?'diffuseColor.a*=1.0-smoothstep('+f(.85*o.chute)+','+f(o.chute)+',vWtrS);':'if(vWtrS>='+f(o.chute)+')discard;'):''))
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);')
-    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);');};
+     (o.chute!=null?(o.transparent!==false?'diffuseColor.a*=1.0-smoothstep('+f(.85*o.chute)+','+f(o.chute)+',vWtrS);':'if(vWtrS>='+f(o.chute)+')discard;'):'')],['#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);'],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);']);};
   /* o.keep (2026-10-27, eastabyss's delta; opt-in): (x, z) -> 0..1, sampled at each ribbon vertex, the ribbon's alpha times it (an opaque
      ribbon discards under half): a channel fades out where other water already lies (a lake, a marsh pool), so it never rides over it.
      Without it nothing is added; the record notes keep: true (a port samples the host's own function) */
   if(o.keep){const K=new Float32Array(R.count);for(let i=0;i<R.count;i++){const v=+o.keep(R.pos[i*3],R.pos[i*3+2]);K[i]=v<0?0:v>1?1:v;}g.setAttribute('wtrKeep',new T.Float32BufferAttribute(K,1));S.ribbonOpt.keep=true;
-   const ob=mat.onBeforeCompile,ok=mat.customProgramCacheKey,KL=o.transparent!==false?'diffuseColor.a*=vWtrK;':'if(vWtrK<0.5)discard;';
-   mat.onBeforeCompile=(sh,r)=>{ob.call(mat,sh,r);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float wtrKeep;varying float vWtrK;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrK=wtrKeep;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vWtrK;').replace('#include <roughnessmap_fragment>',KL+'\n#include <roughnessmap_fragment>');};
-   mat.customProgramCacheKey=()=>ok.call(mat)+'|keep:'+KL;}
+   const KL=o.transparent!==false?'diffuseColor.a*=vWtrK;':'if(vWtrK<0.5)discard;';
+   W.KH().add(mat,'wtr-keep',sh=>{W.vs(sh,'wtr-drawFlow',['#include <common>','#include <common>\nattribute float wtrKeep;varying float vWtrK;'],['#include <begin_vertex>','#include <begin_vertex>\nvWtrK=wtrKeep;']);
+    W.fs(sh,'wtr-drawFlow',['#include <common>','#include <common>\nvarying float vWtrK;'],['#include <roughnessmap_fragment>',KL+'\n#include <roughnessmap_fragment>']);},{key:'keep:'+KL});}
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?1:o.renderOrder;mesh.position.set(org[0],0,org[2]);scene.add(mesh);
   const D={S,mesh,material:mat,ribbon:R};W.drawn.push(D);
   // spray at the steep reaches (the rapids' mist): core/atmos's 'spray' particles where the page has them
@@ -151,13 +146,13 @@
   const mat=new T.MeshStandardMaterial({color:col,roughness:.42,metalness:0,transparent:true,depthWrite:false,side:T.DoubleSide});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec2 vWtrUF;';const SD=S.curtainOpt.margin==null&&S.curtainOpt.edge==null?'':W.sideGLSL(S.curtainOpt,f(S.lipW));mat.customProgramCacheKey=()=>'wtr-fall:'+W.hashStr(CH+op+SD+(lipK==null?'':'|lip'+lipK)+(footK==null?'':'|foot'+footK));
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
+   W.vs(sh,'wtr-drawFall',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;'],['#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;']);
+   W.fs(sh,'wtr-drawFall',['#include <common>','#include <common>\n'+CH],['#include <color_fragment>','#include <color_fragment>\n'+
     'float wtrSt=wtrStreak(vWtrUF.x,vWtrUF.y);float wtrFm=wtrFallFoam(vWtrUF.y,wtrSt);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.95,0.97,0.97),wtrFm);'+
     'diffuseColor.a='+f(op)+'*'+(lipK==null?'(0.45':'min(1.0,mix('+f(lipK)+',0.45,smoothstep(0.0,0.35,vWtrUF.y))')+'+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+
     /* footK (opt-in, 2026-10-27, the Rift's 160 m falls): the curtain's alpha toward its foot, the white water arriving at its pool,
        instead of thinning to 0.6 of itself (a tall curtain read as stopping half way down its cliff) */
-    (footK==null?'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));':';diffuseColor.a=max(diffuseColor.a,'+f(op)+'*'+f(footK)+'*smoothstep(0.3,1.0,vWtrUF.y)*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+');'));};
+    (footK==null?'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));':';diffuseColor.a=max(diffuseColor.a,'+f(op)+'*'+f(footK)+'*smoothstep(0.3,1.0,vWtrUF.y)*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+');')]);};
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?3:o.renderOrder;scene.add(mesh);
   const D={S,mesh,material:mat,curtain:M};
   // the plunge pool: a disc of churned white water at the foot, its rings running out
@@ -166,8 +161,8 @@
   if(o.plunge!==false){const P=W.plunge(S),r=o.plungeR==null?P.r*2.4:o.plungeR,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
    const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);const RF=o.plungeR==null?'':'diffuseColor.a*=1.0-smoothstep('+f(.75*r)+','+f(r)+',length(vWtrW.xz-vec2('+f(P.x)+','+f(P.z)+')));';pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S)+RF);
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);const C2='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec3 vWtrW;';
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF);};
+    W.vs(sh,'wtr-drawFall',['#include <common>','#include <common>\n'+C2],['#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;']);
+    W.fs(sh,'wtr-drawFall',['#include <common>','#include <common>\n'+C2],['#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF]);};
    D.plunge=tag(new T.Mesh(pg,pm),S,o);D.plunge.name+=':plunge';D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
    if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const sd=W.sprayByDrop(o);
     D.spray=A.smoke(sd?W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)).map(p=>[p[0],p[1],p[2],'spray']):[[P.x,y+1,P.z,'spray'],[P.x+P.r*.5,y+1,P.z,'spray'],[P.x-P.r*.5,y+1,P.z-P.r*.4,'spray']]);}}
@@ -190,9 +185,9 @@
   const CF=(S.gradient?'diffuseColor.rgb=mix('+lin(T,S.gradient.centre)+','+lin(T,S.gradient.rim)+',wtrStillT(vWtrW.xz));':'')+(o.tint!=null?'diffuseColor.rgb*='+lin(T,o.tint)+';':'');
   mat.customProgramCacheKey=()=>'wtr-still:'+W.hashStr(CH+CF)+W.rainK(o);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);');
-   if(CF)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+CF);};
+   W.vs(sh,'wtr-drawStill',['#include <common>','#include <common>\n'+CH],['#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;']);
+   W.fs(sh,'wtr-drawStill',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);']);
+   if(CF)W.fs(sh,'wtr-drawStill',['#include <color_fragment>','#include <color_fragment>\n'+CF]);};
   const mesh=tag(new T.Mesh(g,mat),S,o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={S,mesh,material:mat};if(S.seasonal)D.y0=S.level;W.drawn.push(D);return D;};
  // one still-water material for many small pools drawn by a build's own (instanced) meshes: troughs, wallows, basins.
@@ -202,10 +197,10 @@
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;varying float vWtrNy;';mat.customProgramCacheKey=()=>'wtr-stillmat'+W.rainK(o);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
-    'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\n'+
-    'if(vWtrNy>0.7)normal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);');};
+   W.vs(sh,'wtr-stillMaterial',['#include <common>','#include <common>\n'+CH],['#include <project_vertex>','#include <project_vertex>\n'+
+    'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;']);
+   W.fs(sh,'wtr-stillMaterial',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <normal_fragment_begin>','#include <normal_fragment_begin>\n'+
+    'if(vWtrNy>0.7)normal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);']);};
   return mat;};
 
  // ---- RAIN (2026-10-26, WEATHER-RESEARCH items 1-3): rings on water and puddles, and the sky's cover
@@ -260,23 +255,20 @@
  W.wetGround=(mat,o)=>{o=o||{};
   if(WETS&&WETS.has(mat)){const P=WETS.get(mat);let ch=false;for(const k of Object.keys(o))if(o[k]!=null&&P[k]==null){P[k]=o[k];ch=true;}if(ch)mat.needsUpdate=true;return mat;}
   o=Object.assign({},o);if(WETS)WETS.set(mat,o);
-  const S=o.surface||null;let page=mat.onBeforeCompile;const model=()=>o.porosity!=null||!!o.puddles;
-  const wkey=()=>'|wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain')+
+  const S=o.surface||null;const model=()=>o.porosity!=null||!!o.puddles;
+  const wkey=()=>'wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain')+
    (model()?'|lag:'+[o.porosity,o.puddles?W.hashStr(W.puddleGLSL(o.puddles)):'',o.ripples!==false].join()+W.rainKey():'');
-  // THROUGH ATMOS.shaderHook where the page has it (core/atmos/host/89-atmos-h-skyhost.js; 2026-10-26, HANDOFF-REBUILD.md's open
-  // request): the chunk is one layer among cloudShade, heightFog and snowOn, so a page hook assigned after all of them goes to the
-  // innermost layer and replaces none of the core ones (before, a hook set after wetGround replaced whatever core hook wetGround
-  // had captured under it). The shader text is the same either way; the program key is shaderHook's with this call's options after it
-  const Ah=AT(),SH=Ah&&Ah.shaderHook?Ah.shaderHook:null;
-  if(!SH){const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+wkey();}
+   // a KHOOK layer (core/shader; 2026-11-02): one layer among cloudShade, heightFog and snowOn, whichever is on the material; a page hook
+  // assigned after any of them goes under the layers and replaces none. The key reads this call's options as they stand
   const chunk=function(sh,r){const S2=o.surface||S,M=model(),A=AT();let CH=W.wetChunk(S2,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
    if(M){if(!(S2&&S2.shore)){CH+='\nuniform float atmWaveT;';sh.uniforms.atmWaveT=A.U.waveTime;}CH+='\nuniform float wtrLight;';sh.uniforms.wtrLight=A.U.light||{value:1};
     CH+='\n'+W.rainChunk(sh.uniforms)+W.wetLookGLSL()+'\n'+(o.puddles?W.puddleGLSL(o.puddles):'float wtrPuddle(vec2 p,float wet){return 0.0;}')+'\n';
     if(o.puddles)sh.uniforms.wtrHollowT={value:W.hollowTexture(o.puddles,A.T)};}
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
-    'vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;');
+   W.vs(sh,'wtr-wetGround',['#include <common>','#include <common>\n'+CH]);
+   const WV='vec4 wtrWp=vec4(transformed,1.0);vec3 wtrN=objectNormal;\n#ifdef USE_INSTANCING\nwtrWp=instanceMatrix*wtrWp;wtrN=mat3(instanceMatrix)*wtrN;\n#endif\nvWtrW=(modelMatrix*wtrWp).xyz;vWtrNy=normalize(mat3(modelMatrix)*wtrN).y;';   /* a page hook that replaced <project_vertex> (the foliage's sway): before <fog_vertex>, as snowOn */
+   sh.vertexShader=W.KH().inject(sh.vertexShader,{at:'project_vertex',after:WV,fallback:{at:'fog_vertex',before:WV}},'wtr-wet','vertex');
    // after everything that sets the albedo (a build's own colour hooks included) and the roughness, before the light
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <emissivemap_fragment>',M?
+   W.fs(sh,'wtr-wetGround',['#include <common>','#include <common>\n'+CH]);sh.fragmentShader=(A?A.repLit(mat):W.KH().rep)(sh.fragmentShader,'#include <emissivemap_fragment>',M?
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrOk=wtrOpen(vWtrW);float wtrW=max(wtrWG.x,wtrRain*wtrOk*smoothstep(0.35,0.8,vWtrNy));'+
     'float wtrPd=wtrPuddle(vWtrW.xz,wtrRain*wtrOk)*smoothstep(0.85,0.97,vWtrNy);diffuseColor.rgb*=wtrWetDarkL(wtrW,wtrPd,'+f(o.porosity==null?.7:o.porosity)+');\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRoughL(roughnessFactor,wtrW,wtrPd,wtrWG.y);\n#endif\n'+
@@ -290,8 +282,5 @@
     'totalEmissiveRadiance+=wtrPd*min(wtrFr,0.6)*'+f(W.WET.sheen)+'*wtrSkyL;}\n#endif\n}':
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
-  if(SH){SH(mat,'wtr-wet',chunk);const k=mat.customProgramCacheKey;mat.customProgramCacheKey=function(){return k.call(this)+wkey();};return mat;}
-  const wet=function(sh,r){if(page)page.call(this,sh,r);chunk.call(this,sh,r);};
-  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>wet,set:fn=>{page=fn;}});
-  mat.needsUpdate=true;return mat;};
+  return W.KH().add(mat,'wtr-wet',chunk,{key:wkey});};
 })();

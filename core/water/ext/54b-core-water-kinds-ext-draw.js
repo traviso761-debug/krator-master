@@ -41,9 +41,8 @@
   const U={wtrPanWet:{value:P.wetNow()}};A.hook(()=>{U.wtrPanWet.value=P.wetNow();});
   const CH=W.panGLSL(P)+'\nuniform float wtrPanWet;'+VW;mat.customProgramCacheKey=()=>'wtr-pan:'+W.hashStr(CH);
   mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+VW).replace('#include <begin_vertex>',VWV);
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\nvec4 wtrPn=wtrPan(vWtrW.xz,wtrPanWet);diffuseColor.rgb=wtrPn.rgb;')
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix('+f(P.roughness[0])+','+f(P.roughness[1])+',max(wtrPn.w,smoothstep(0.0,0.5,wtrPanWet)*0.3));');};
+   W.vs(sh,'wtr-drawPan',['#include <common>','#include <common>\n'+VW],['#include <begin_vertex>',VWV]);
+   W.fs(sh,'wtr-drawPan',['#include <common>','#include <common>\n'+CH],['#include <color_fragment>','#include <color_fragment>\nvec4 wtrPn=wtrPan(vWtrW.xz,wtrPanWet);diffuseColor.rgb=wtrPn.rgb;'],['#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix('+f(P.roughness[0])+','+f(P.roughness[1])+',max(wtrPn.w,smoothstep(0.0,0.5,wtrPanWet)*0.3));']);};
   const mesh=tag(new T.Mesh(g,mat),P.name,P.id,o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={S:P,mesh,material:mat,uniforms:U};W.drawn.push(D);return D;};
 
@@ -58,9 +57,8 @@
   const g=flatMesh(T,I.poly,I.level+lift),mat=new T.MeshStandardMaterial({color:0xffffff,roughness:rr[0],metalness:0});sky(mat,o);W.biasMaterial(mat,o);
   const U={wtrIceMap:{value:tex}},CH=W.iceGLSL(I,M)+'\n'+VW;mat.customProgramCacheKey=()=>'wtr-ice:'+W.hashStr(CH);
   mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+VW).replace('#include <begin_vertex>',VWV);
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=wtrIce(vWtrW.xz);')
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix('+f(rr[0])+','+f(rr[1])+',smoothstep(0.0,0.25,wtrIceRD(vWtrW.xz).y));');};
+   W.vs(sh,'wtr-drawIce',['#include <common>','#include <common>\n'+VW],['#include <begin_vertex>',VWV]);
+   W.fs(sh,'wtr-drawIce',['#include <common>','#include <common>\n'+CH],['#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=wtrIce(vWtrW.xz);'],['#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix('+f(rr[0])+','+f(rr[1])+',smoothstep(0.0,0.25,wtrIceRD(vWtrW.xz).y));']);};
   const mesh=tag(new T.Mesh(g,mat),I.name,I.id,o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={S:I,mesh,material:mat,texture:tex,bake:M};
   if(o.drifts!==false&&I.drifts.length){const DM=W.driftMesh(I,{res:o.res,lift:lift*2}),dg=new T.BufferGeometry();dg.setAttribute('position',new T.Float32BufferAttribute(DM.pos,3));
@@ -72,9 +70,7 @@
  // ---- BLOOD: the rust down a curtain (vWtrUF.y is the fall fraction f)
  W.rustGLSL=B=>'diffuseColor.rgb=mix('+v3(W.rgbOf(W.LOOKS[B.look].fresh||'#8a958c'))+',diffuseColor.rgb,1.0-exp(-('+f(B.age0)+'+vWtrUF.y*'+f(B.fall.tFall)+')*'+f(1/B.tau)+'));';
  W.drawBloodFall=(B,o)=>{o=o||{};const L=W.LOOKS[B.look],D=W.drawFall(B.fall,W.lookDraw(L,'fall',Object.assign({color:W.lookHex(L,.8)},o))),mat=D.material,R=W.rustGLSL(B);
-  const ob=mat.onBeforeCompile,ok=mat.customProgramCacheKey;
-  mat.onBeforeCompile=(sh,r)=>{ob.call(mat,sh,r);sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+R);};
-  mat.customProgramCacheKey=()=>ok.call(mat)+'|rust:'+W.hashStr(R);
+  W.KH().add(mat,'wtr-rust',sh=>{W.fs(sh,'wtr-drawBloodFall',['#include <color_fragment>','#include <color_fragment>\n'+R]);},{key:'rust:'+W.hashStr(R)});
   if(B.pool&&o.pool!==false)D.pool=W.drawStill(B.pool,Object.assign(W.lookDraw(L,'still'),o.pool||{}));
   D.B=B;return D;};
 
@@ -87,9 +83,9 @@
   const mat=new T.MeshStandardMaterial({color:0xffffff,roughness:o.roughness==null?.55:o.roughness,metalness:0,side:T.DoubleSide});W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.weedGLSL(sw);
   mat.customProgramCacheKey=()=>'wtr-weed:'+W.hashStr(CH);
-  mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <begin_vertex>','#include <begin_vertex>\n'+
+  mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);W.vs(sh,'wtr-drawWeed',['#include <common>','#include <common>\n'+CH],['#include <begin_vertex>','#include <begin_vertex>\n'+
    '#ifdef USE_INSTANCING\nvec2 wtrRt=vec2(instanceMatrix[3].x,instanceMatrix[3].z);\n#else\nvec2 wtrRt=vec2(0.0);\n#endif\n'+
-   'transformed.z+=wtrWeedSway(wtrRt,position.x);');};
+   'transformed.z+=wtrWeedSway(wtrRt,position.x);']);};
   const mesh=new T.InstancedMesh(g,mat,list.length),M=mesh.instanceMatrix.array,colours=new Float32Array(list.length*3);
   list.forEach((r,i)=>{const c=Math.cos(r.yaw),s=Math.sin(r.yaw),k=i*16,L=r.len;
    // column-major: x along the yaw (scaled by the length), y up, z across; then the root's position

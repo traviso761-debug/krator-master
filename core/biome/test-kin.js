@@ -1,6 +1,7 @@
 // node core/biome/test-kin.js: kin species (PLAN-LANDS.md H2; BIO.kitBuilder in 20-core-kit.js, BIO.kin in
 // 32-core-variants.js). A source kit shaped as the biome kits are (SPECIES, make(sp, x, y, z), grow(T, lv), builders that
 // read SP[T.sp] through a closure) is loaded but never built; its cousin is grown from it. Each check with a negative.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');
 const THREE = require(path.join(ROOT, 'kits', 'ancients', 'three.min.js'));

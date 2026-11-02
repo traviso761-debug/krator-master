@@ -1,6 +1,7 @@
 // node core/water/test-edge.js — the water as fields and the land side of its edge (core/water/ext/60, 2026-11-02): WATER.fields reads the water the eye
 // sees, not the record's shape; WATER.edgeAudit holds plants off it and the wet band to it. The worked example: one shoreline (a lake) and one junction (a
 // stream into a river), with water, wet ground and plant edges matching, and a wet band drawn from the mask as the negative.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const files=['core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js','core/water/21-core-water-shore.js',

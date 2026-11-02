@@ -6,6 +6,7 @@
 //       rooted item on a face, with its negative control
 //   3c  the instance cap: BIO.err once at the first put over BIO.CAP, BIO.capReport, cap/capWhy, CAP_THROW
 //   6   bucket meshes carry userData.probePoints (flat, one a 2 m cell), so a volume over a trunk reads full
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const ROOT=path.join(__dirname,'..','..'),read=f=>fs.readFileSync(path.join(ROOT,f),'utf8');

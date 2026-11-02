@@ -4,7 +4,7 @@
 // (r128) if one is found, places a small street, steps the clock and fingerprints ATMOS.export(): the golden vectors a
 // Godot Atmos autoload is tested against (GODOT-PLAN.md rule 9).
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
-const FRAGS=fs.readdirSync(__dirname).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort();
+const FRAGS=['../shader/06-core-khook.js','../shader/06b-core-kcolor.js'].concat(fs.readdirSync(__dirname).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort());   /* core/shader first, as khost.resolve puts it */
 const load=()=>{global.window=global;eval(FRAGS.map(f=>fs.readFileSync(path.join(__dirname,f),'utf8')).join('\n')+';global.ATMOS=ATMOS;');};
 load();const A=ATMOS;
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};

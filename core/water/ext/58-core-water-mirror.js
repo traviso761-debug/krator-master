@@ -22,12 +22,10 @@
    'if(uMirM>1.5){vec4 mirQ=uMirRM*vec4(vMirW,1.0);mirR=texture2D(uMirT,clamp(mirQ.xy/mirQ.w+mirN.xz*uMirUV,0.001,0.999)).rgb;}'+
    'else{vec3 mirD=reflect(-mirV,mirN);mirD.y=abs(mirD.y);vec3 mirO=vMirW-uMirC;float mirB=dot(mirO,mirD),mirE=dot(mirO,mirO)-uMirR*uMirR,mirS=-mirB+sqrt(max(mirB*mirB-mirE,0.0));vec3 mirH=mirO+mirD*mirS;mirR=textureCube(uMirP,vec3(-mirH.x,mirH.y,mirH.z)).rgb;}'+
    'gl_FragColor.rgb=mix(gl_FragColor.rgb,mirR,clamp(mirF*uMirK,0.0,0.92));';
-  for(const m of mats){const prev=m.onBeforeCompile,key=m.customProgramCacheKey;
-   m.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);Object.assign(sh.uniforms,U);
-    sh.vertexShader='varying vec3 vMirW;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\nvMirW=(inverse(viewMatrix)*mvPosition).xyz;');
-    sh.fragmentShader='varying vec3 vMirW;uniform float uMirM,uMirK,uMirRip,uMirUV,uMirR;uniform sampler2D uMirT;uniform mat4 uMirRM;uniform samplerCube uMirP;uniform vec3 uMirC;\n'+
-     sh.fragmentShader.replace('#include <encodings_fragment>','#include <encodings_fragment>\nif(uMirM>0.5){vec3 mirV=normalize(cameraPosition-vMirW),mirN=normalize(mix(vec3(0.0,1.0,0.0),normalize(transpose(mat3(viewMatrix))*normal),uMirRip));'+FRAG+'}');};
-   m.customProgramCacheKey=function(){return (key?key.call(this):'')+'|mirror';};m.needsUpdate=true;}
+  for(const m of mats){WATER.KH().add(m,'wtr-mirror',function(sh){Object.assign(sh.uniforms,U);
+    WATER.vs(sh,'wtr-mirror',['#include <project_vertex>','#include <project_vertex>\nvMirW=(inverse(viewMatrix)*mvPosition).xyz;']);sh.vertexShader='varying vec3 vMirW;\n'+sh.vertexShader;
+    WATER.fs(sh,'wtr-mirror',['#include <encodings_fragment>','#include <encodings_fragment>\nif(uMirM>0.5){vec3 mirV=normalize(cameraPosition-vMirW),mirN=normalize(mix(vec3(0.0,1.0,0.0),normalize(transpose(mat3(viewMatrix))*normal),uMirRip));'+FRAG+'}']);
+    sh.fragmentShader='varying vec3 vMirW;uniform float uMirM,uMirK,uMirRip,uMirUV,uMirR;uniform sampler2D uMirT;uniform mat4 uMirRM;uniform samplerCube uMirP;uniform vec3 uMirC;\n'+sh.fragmentShader;},{key:'mirror'});}
   // what each tier draws, by layer: 1 the live mirror's large meshes, 3 what o.tree picks for it; 2 the probe (both of those: never the hero plants, which took a page down in six faces)
   // the trees: the page's runtime LOD shows the stand-ins by the main camera (none near it) and the heroes are never drawn here, so a tree by the
   // camera's own shore would have no reflection. A mirror pass shows every stand-in, and BIO's fade uniforms open their range for the pass.

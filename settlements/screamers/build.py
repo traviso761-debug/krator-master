@@ -191,6 +191,7 @@ DETERMINISTIC = {
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(WALK_FILES)
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES)   # core/host, core/rand, core/tags: no rng()
 
