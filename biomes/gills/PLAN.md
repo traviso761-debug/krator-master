@@ -1,4 +1,4 @@
-# gills: the plan (proposal, 2026-11-02; re-sited the same day)
+# gills: the plan (proposal, 2026-11-02; re-sited and re-shaped the same day)
 
 **The Gills**: cracked volcanic ground where the fissures breathe once a day in time with the giant's nod, and the
 only life that can live in the cracks is a life that runs on the breath. The idea in one line: **a metabolism separated
@@ -9,30 +9,38 @@ out-breath, and lays down one ring of its own body for every day it has lived. T
 its lining; their dead bodies are the landscape.
 
 **Two countries, one lineage** (the owner, 2026-11-02: "porque no los dos"): the **Red Gills** on the Godthrone's south
-flank, where the breath is iron brine from under the ice belt, and the **White Gills** on the twin volcanoes between the
-Catch and the Vale of Xanadu, where it is alkaline magnesium brine from serpentinized rock. The same life, two
-chemistries, two colours and two shapes, so a traveller tells them at a glance (section 7). The first draft (commit
-c1de31bcd) sat on the Lesser Throne; the owner ruled it out, rightly: that volcano erupted less than a thousand years
-ago and there has not been time for the ecosystem. The Lesser Throne survives here only as an optional nursery (section
-11, station 6).
+flank, where the breath is iron brine from under the ice belt, and the **White Gills** over the whole massif of the twin
+volcanoes between the Catch and the Vale of Xanadu, from the Catch flank across the pass to the Xanadu side, where it is
+alkaline magnesium brine from serpentinized rock. The same life, two chemistries, two colours and two shapes, so a
+traveller tells them at a glance (section 7).
 
-Status: **a proposal for the owner.** Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every
-lore and map change this plan wants is marked *proposed*. Working names throughout; the owner's, the Nomads' or the
-Xanadui's names are better.
+**Settled with the owner, 2026-11-02.** (1) **Each country is a station of its host kit, not a kit of its own:** the Red
+Gills are stations of `biomes/godthrone`; the White Gills are stations of `biomes/catch` (the Catch flank, the candles,
+the pass) and of `biomes/xanadu` (the Xanadu side, Alph's head); `biomes/gills` holds the shared life both read in
+place, the way `biomes/geyser` is shared by the Steampits, the ring isles and Korona. (2) **The twins are younger than
+the Godthrone but older than the Ancients' colonization of Krator**, so the White Gills are fully developed. (3) The
+first draft (commit c1de31bcd) sat on the Lesser Throne; the owner ruled it out, rightly: that volcano erupted less than
+a thousand years ago and there has not been time for the ecosystem. It survives here only as an optional nursery
+(section 11).
+
+Status: **a proposal for the owner** on what is not settled above. Nothing is built, nothing on the model is changed and
+`LORE.md` is untouched. Every lore and map change this plan wants is marked *proposed*. Working names throughout; the
+owner's, the Nomads' or the Xanadui's names are better.
 
 ## 0. What the kit is
 
 | | |
 |---|---|
-| Folder | `biomes/gills/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`) |
-| Pages | stations, as the Throne's and Korona's (`build.py --station <name>`): `dist/gills.html` (station 1, the Red Gill) and `dist/gills-<name>.html` (section 11) |
-| Regions on the model | *proposed*: two biome polygons, `red gills` on the Godthrone's south flank (inside the `godthrone` polygon, which keeps its ground: the Gills overlay it as the dam basins overlay nsemiarid) and `white gills` on the twin volcanoes' north-east flank (inside `the catch`'s polygon, the same way); section 5 |
-| Object | `GILLS` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `breath`, `country`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape); `GILLS.breath(t)` is the one pure function of the tide every shader, hazard and animal reads (section 3); `country` is `red` or `white` and sets the chemistry's dress |
-| Core | `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky and its libration), `water` (springs, ice), `terrain` (`KFIELD`, `KCAVERN`, `KSTACKS`, `KRELIEF`, `KSTRATA`, `KFROST`, `KGROUND`, `KFAR`, `KHORIZON`), `clock`; section 13 |
-| Read in place | `biomes/godthrone` (the `tibasalt` strata, the ice belt's edge, the bloodfalls' iron-eaters and riverweed by kin, the glass halo on the skyline), `biomes/catch` (the gravel fan, the oases' tugai and the sedesert palms it reads), `biomes/xanadu` (the Vale's dry Mediterranean flora at the Red Gills' foot), `biomes/geyser` (station 5's ice caves and geysers on the twins), `biomes/ehighlands` (the glass tower, by its one-plant API), `kits/fauna` (the cinder crawler, the frost trunker), `kits/resources` (the node field) |
-| Out of scope | the Monks' hermitage and the caravans' camps as buildings (a settlement or `core/camp` plan); the animals' models (`kits/fauna`); the ore nodes' data (`kits/resources`); Pluton and the Ancients' tunnels (the Godthrone's own settlement plan) |
+| Folder | `biomes/gills/` (`src/`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `tests/test-gills.js`): **the shared life, no page of its own.** Its fragments are read in place by the host kits' `build.py` (the pooled-folder rule: each names the fragments it takes), as `biomes/geyser`'s are by Korona's corona station |
+| Pages | **stations of the host kits** (the owner, 2026-11-02): `biomes/godthrone/build.py --station gills` -> `dist/godthrone-gills.html` (the Red Gill) and `--station gills-ladder` (the Red ladder); `biomes/catch/build.py --station gills` -> `dist/catch-gills.html` (the White Gill over Bitta's road), `--station gills-candles` (the pipe field and the candles), `--station gills-pass` (the pass: the White ladder); `biomes/xanadu/build.py --station gills` -> `dist/xanadu-gills.html` (Alph's head); section 11. Each station's `stations/<name>/99-host-take.js` and `station.json` live in its host kit |
+| Regions on the model | none new: each station is inside its host's polygon or on the unowned summits between them, and its ground is the host's. The *proposed* outlines of section 5 are station extents for the host kits' notes, not biome polygons |
+| Object | `GILLS` (`SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `breath`, `country`, `dress`, `layout`) on the `BIOME-API.md` contract, loaded into the host's `BIO.kit`; the host kit's `build` places it (its fields, its ground) and calls `GILLS.layout` for the swarm and `GILLS.dress` for the life; `GILLS.breath(t)` is the one pure function of the tide every shader, hazard and animal reads (section 3); `country` is `red` or `white` and sets the chemistry's dress |
+| Core | through the hosts: `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky and its libration), `water` (springs, ice), `terrain` (`KFIELD`, `KCAVERN`, `KSTACKS`, `KRELIEF`, `KSTRATA`, `KFROST`, `KGROUND`, `KFAR`, `KHORIZON`), `clock`; section 13 |
+| Read in place | `biomes/godthrone` (the `tibasalt` strata, the ice belt's edge, the bloodfalls' iron-eaters and riverweed by kin, the glass halo on the skyline), `biomes/catch` (the gravel fan, the oases' tugai and the sedesert palms it reads), `biomes/xanadu` (the Vale's flora at both countries' feet, Alph's chasm), `biomes/geyser` (station 5's ice caves and geysers on the twins), `biomes/ehighlands` (the glass tower, by its one-plant API), `kits/fauna` (the cinder crawler, the frost trunker), `kits/resources` (the node field) |
+| Out of scope | the Monks' hermitage and the caravans' camps as buildings (a settlement or `core/camp` plan); the animals' models (`kits/fauna`); the ore nodes' data (`kits/resources`); Pluton and the Ancients' tunnels (the Godthrone's own settlement plan); Strongbow (Xanadu's arcology at the pass's far end) |
 
-A new biome: it goes in the gallery when it first reaches `main`.
+Not a new biome in the gallery: the stations are published with their host kits' pages (the godthrone kit's, the
+Catch's and Xanadu's entries gain stations). `biomes/README.md`'s table gets one row for `gills/` as a shared kit.
 
 ## 1. The idea
 
@@ -135,7 +143,7 @@ of the mountain off the pipes that have fallen.
 - **Life on the Godthrone.** The godthrone plan's rule is "no plants, no animals, no settlement above Pluton" (9.5 km)
   and its point is a kit "where the ground is the whole show" (`godthrone/PLAN.md:192-201`). The Red Gills keep the
   rule (their living lips stop at about 9 km, section 3) and put life only in the cracks of its south flank, where the
-  plan already has iron-eaters and riverweed: a flank station's worth of life on a mountain that stays bare.
+  plan already has iron-eaters and riverweed: two stations' worth of life on a mountain that stays bare.
 
 ## 3. The physics, honestly
 
@@ -164,9 +172,9 @@ of the mountain off the pipes that have fallen.
   "Why it is red"), with hydrogen from the heat pipe's hot rock; the laminae are red-brown and black. In air with 0.15-
   0.21 atm O2 a hydrogen-methane seep ignites readily (Chimaera's eternal flames in Turkey are a serpentinite methane
   seep that has burned for millennia): where a throat's gas is dry and fast it burns, and the White Gills have
-  **candles** (section 11, station 4). The oxide-charging mantle is Earth's ferromanganese crust chemistry (Mn(II)
-  oxidised to Mn(IV) by microbes, reduced again by H2S and H2) with the organism doing it on a daily cycle; the laminae
-  are stromatolite laminae with a daily period, as some Earth stromatolites have.
+  **candles** (section 11). The oxide-charging mantle is Earth's ferromanganese crust chemistry (Mn(II) oxidised to
+  Mn(IV) by microbes, reduced again by H2S and H2) with the organism doing it on a daily cycle; the laminae are
+  stromatolite laminae with a daily period, as some Earth stromatolites have.
 - **How far up it can go** (the owner's question, 2026-11-02). The biome brings its own heat and water from below, so
   the dry-cold line does not stop it the way it stops everything else. Three limits do, and they make a ladder:
   - **Living lips to about 8.5-9 km** (0.55 atm, mean -27 degC). At 0.55 atm water boils at about 84 degC, the top of
@@ -180,7 +188,9 @@ of the mountain off the pipes that have fallen.
     air and rimes the lee of its mouth; nothing lives in it. Above 15 km the conduits hold no liquid to breathe and
     nothing shows at the surface.
   So each country reads as one transect: white or red steaming pipes, then ice-cased pipes, then frost jets, then bare
-  dead pipes and nothing. Life stops where people do.
+  dead pipes and nothing. Life stops where people do. On the twins the ladder is the pass itself: the caravan road from
+  Lasso (6.6 km) over the 7.3 km saddle toward Strongbow climbs through the ice pipes, and the lower summit (8.5 km)
+  carries the frost jets.
 - **Sound and light.** The breath is audible: a plateau-wide low drone on the out-breath, a hiss on the in-breath,
   carried farther in Krator's air than in Earth's. The out-breath's warm column over cold ground gives the strong mirage
   the dense-air notes promise (`biomes/WORLD.md`, "Mirages are about twice as strong"): the far pipes shimmer and lift at
@@ -213,12 +223,12 @@ of the mountain off the pipes that have fallen.
 
 ## 5. Where it is on the model (scale model 5.1, surveyed 2026-11-02)
 
-### The Red Gills: the Godthrone's south flank
+### The Red Gills: the Godthrone's south flank (stations of `biomes/godthrone`)
 
 Between the ice belt's southern edge and the scarp down into the Vale of Xanadu, round the bloodfalls (the godthrone
 plan's planned station 6, `-blood`, ~5.5 km): 5.1 px about **850-905 by 1425-1462**, inside the `godthrone` biome polygon
-(the Rift's geographic polygon reaches the bloodfalls' cell). *Proposed* polygon `red gills`: `[852,1428] [878,1424]
-[905,1432] [910,1452] [892,1462] [866,1458] [850,1446]`, about 3,500 km2, an overlay on `godthrone`'s ground.
+(the Rift's geographic polygon reaches the bloodfalls' cell). *Proposed* station extent, for the godthrone kit's notes:
+`[852,1428] [878,1424] [905,1432] [910,1452] [892,1462] [866,1458] [850,1446]`, about 3,500 km2 of the kit's own ground.
 
 | Point (px) | Height | Air | Rain | Mean (warm/cold) | Extremes | Class | What |
 |---|---|---|---|---|---|---|---|
@@ -237,33 +247,37 @@ plan's planned station 6, `-blood`, ~5.5 km): 5.1 px about **850-905 by 1425-146
   dry-cold line turned ochre palagonite). The gills cut the stacked flows; the pipes stand on colonnade ledges.
 - **Age:** a plume that never moves (`LORE.md` section 2) built the mountain; the oldest heat plumbing on Krator, so the
   pipe fields go back in stacked generations far past the Ancients' arrival.
-- **Neighbours:** the godthrone kit all round (its bloodfalls station is the Red Gills' neighbour, its ice belt above,
-  its orange belt and dry-cold line the top of the ladder); `xanadu` below the scarp (the Vale, Csb/Cfb at 1.7-2 km; the
-  Red Riwa's red riverweed is the kit's below the falls); `rift rim N` west. Settlements: Erewhon (Xanadu's city) 198 km,
-  Theodiga 189 km, Qiblai 293 km, Tuatara 251 km. Pluton stands on the airless west flank, far off.
+- **Neighbours:** the godthrone kit's other stations (its bloodfalls station is the Red Gills' neighbour, its ice belt
+  above, its orange belt and dry-cold line the top of the ladder); `xanadu` below the scarp (the Vale, Csb/Cfb at 1.7-2
+  km; the Red Riwa's red riverweed is the kit's below the falls); `rift rim N` west. Settlements: Erewhon (Xanadu's
+  city) 198 km, Theodiga 189 km, Qiblai 293 km, Tuatara 251 km. Pluton stands on the airless west flank, far off.
 - **Who holds it:** nobody. The Talovolci hold the mountain sacred (*proposed* in the godthrone plan, section 6); the
   Vale's Xanadui live in sight of it.
 
-### The White Gills: the twin volcanoes between the Catch and Xanadu
+### The White Gills: the twin volcanoes between the Catch and Xanadu (stations of `biomes/catch` and `biomes/xanadu`)
 
 The 5.1 README's "Catch-Xanadu Twin Stratovolcanoes": summits at px 988,1458 (11,080 m, 0.40 atm, airless) and 1042,1498
-(8,535 m, 0.55 atm, HF), with parasitic cones at 1007,1472 (9,333 m) and 1024,1485 (7,385 m). Their north-east flank
-falls to the Catch's floor; it carries the Catch's oases Bitta ("Bitter Water": a lava-tube spring of "mineralized
-volcanic brackish water" at 4,712 m, px 1078,1510) and Lasso (6,602 m, px 1040,1566, "the last water before the 7.3 km
-pass toward Strongbow"), and the caravan road between them (`biomes/catch/PLAN.md`). *Proposed* polygon `white gills`:
-`[1000,1428] [1030,1422] [1062,1440] [1082,1468] [1086,1505] [1066,1520] [1040,1510] [1018,1480] [1004,1455]`, about
-7,000 km2, an overlay on `the catch`'s polygon (whose own ground is the floor and the fan; the flank above 3.5 km is no
-one's).
+(8,535 m, 0.55 atm, HF), with parasitic cones at 1007,1472 (9,333 m) and 1024,1485 (7,385 m). **The gill life runs over
+the whole massif** (the owner, 2026-11-02): the north-east flank down to the Catch, which carries the Catch's oases Bitta
+("Bitter Water": a lava-tube spring of "mineralized volcanic brackish water" at 4,712 m, px 1078,1510) and Lasso (6,602
+m, px 1040,1566, "the last water before the 7.3 km pass toward Strongbow") and the caravan road between them
+(`biomes/catch/PLAN.md`); the pass itself over the saddle south of the lower summit; and the south-west flank into the
+Vale of Xanadu, where the Sacred River Alph bursts from its chasm. *Proposed* station extents: the Catch side
+`[1000,1428] [1030,1422] [1062,1440] [1082,1468] [1086,1505] [1066,1520] [1040,1510] [1018,1480] [1004,1455]` (about
+7,000 km2, the catch kit's ground above its fan), the pass `[1030,1540] [1050,1545] [1050,1580] [1030,1580]` (the
+saddle, no kit's ground: the catch kit's station reaches it as its oasis Lasso already does), the Xanadu side
+`[940,1480] [990,1470] [1010,1500] [980,1520] [945,1510]` (the xanadu kit's ground above the Vale).
 
 | Point (px) | Height | Air | Rain | Mean (warm/cold) | Extremes | Class | What |
 |---|---|---|---|---|---|---|---|
-| 1015,1430 | 3,746 m | 1.00 atm | 110 mm | +2 (15/-11) | +25/-21 | Dsc | the lowest gills, the pipe field: station 4 |
-| 1015,1438 | 4,670 m | 0.89 | 94 | -4 (9/-17) | +19/-27 | ET | the White Gill over Bitta's road: station 3 |
+| 1015,1430 | 3,746 m | 1.00 atm | 110 mm | +2 (15/-11) | +25/-21 | Dsc | the lowest gills, the pipe field and the candles (catch) |
+| 1015,1438 | 4,670 m | 0.89 | 94 | -4 (9/-17) | +19/-27 | ET | the White Gill over Bitta's road (catch) |
 | 1078,1510 | 4,712 m | 0.89 | 125 | -4 (9/-17) | +19/-27 | ET | Bitta, the oasis under the gills |
 | 1015,1446 | 5,231 m | 0.83 | 16 | -7 (6/-20) | +16/-31 | ET | the upper gills |
-| 1040,1566 | 6,602 m | 0.70 | 78 | -16 (-3/-29) | +7/-40 | EF | Lasso and the pass's approach: ice pipes |
+| 1040,1566 | 6,602 m | 0.70 | 78 | -16 (-3/-29) | +7/-40 | EF | Lasso and the pass: the ice pipes begin (catch) |
 | 1024,1485 | 7,385 m | 0.64 | 0 | -21 (-8/-34) | +3/-45 | HF | the parasitic cone: the last lips |
-| 1042,1498 | 8,535 m | 0.55 | 0 | -28 (-15/-41) | -3/-52 | HF | the lower summit: frost jets |
+| 1042,1498 | 8,535 m | 0.55 | 0 | -28 (-15/-41) | -3/-52 | HF | the lower summit: frost jets over the pass |
+| 938,1496 | ~6,300 m | ~0.73 | | | | | Alph's subglacial reservoir on the Xanadu side (`cav_alph_headwater`) |
 
 - **Water and heat:** the two geothermal tubes above; the Erebus ice caves at 7.26 km with 88 degC geysers (the geyser
   kit's station 5, `biomes/geyser/PLAN-STATIONS.md`); the Sacred River Alph's subglacial reservoir at ~6.3 km on the
@@ -272,12 +286,16 @@ one's).
   day, at the hour of the giant's nod.
 - **Rock:** dacite and basalt (`DATA.tubes`), with the ultramafic root the serpentinization needs *proposed* in the
   cones' deep plumbing; `KSTRATA` recipes `canyon` on the Catch side's lake beds below and the volcano's own flows above.
-- **Age:** not stated anywhere; the plan asks (section 17). Stratovolcanoes on a heat-pipe world are long-lived.
-- **Neighbours:** `the catch` below (the north fan station and Kolli at the notch; the hyperarid floor at 1.4 km, whose
-  model rain is flagged ten times too generous, so this flank's figures may fall), `xanadu` over the summit ridge (the
-  Vale, Alph's chasm), `godthrone` to the west (one airless body with the twins' upper flanks). Settlements: Stair 153
-  km (the Hill arcology, the crossing's campground), Qiblai 268 km, Strongbow 288 km, Theodiga 297 km.
-- **Who holds it:** nobody; the caravans cross under it. Yuni, Izani, Dasri and Xanadui traders, the Catch's divers.
+- **Age** (the owner, 2026-11-02): **younger than the Godthrone, older than the Ancients' colonization of Krator**, so
+  the White Gills are fully developed: pipe fields in stacked generations on every flank, the Cataclysm's band well up
+  inside the standing pipes, the oldest fallen rings older than any human on the world.
+- **Neighbours:** `the catch` below the north-east flank (the north fan station and Kolli at the notch; the hyperarid
+  floor at 1.4 km, whose model rain is flagged ten times too generous, so this flank's figures may fall), `xanadu` below
+  the south-west flank (the Vale, Alph's chasm, Erewhon), `godthrone` to the west (one airless body with the twins' upper
+  flanks), Strongbow at the pass's far end. Settlements: Stair 153 km (the Hill arcology, the crossing's campground),
+  Qiblai 268 km, Strongbow 288 km, Theodiga 297 km.
+- **Who holds it:** nobody; the caravans cross it. Yuni, Izani, Dasri and Xanadui traders, the Catch's divers; the
+  Xanadui below the Vale side.
 
 ### Both
 
@@ -285,23 +303,25 @@ one's).
   at 1.0 atm are the alien biome a caravan walks past.
 - **Why not elsewhere:** Korona's trench country has the ring faults and the heat but its air is 2 atm at 40 degC, so
   the breath would be invisible and the biome would lose its picture; the Lesser Throne is too young (section 4).
-- **The scale model:** no height, rain or river change is proposed. The fissures are kit-scale (tens of metres) and are
-  made by the kit's own fields, not by the model. The two polygons are overlays on ground other kits own, as the dam
-  basins are on nsemiarid's (`biomes/nsemiarid/PLAN.md` section 3).
+- **The scale model:** no height, rain, river or polygon change is proposed. The fissures are kit-scale (tens of metres)
+  and are made by the host kits' fields, not by the model. Each station stands inside its host's polygon (or on the
+  unowned saddle between two hosts) and on its host's ground.
 
 ## 6. The ground and the landforms (`core/terrain`)
 
-- **The flank** (`KFIELD`): the model's heights at 1:1 with the kit's own relief. Red: stacked titanium-basalt flows
-  (`KSTRATA` formation `tibasalt`, each flow a ledge, the bead horizons recessed, ochre palagonite below the dry-cold
-  line, as the godthrone kit draws them), debris-covered ice tongues above 6 km, the ice belt's cliff on the skyline.
-  White: a stratovolcano's flank of flows and ash beds over the Catch's old lake beds, the gravel fan below; patterned
-  ground on both (`KFROST` polygons, `42-core-frost.js`), snow in the lee hollows.
-- **The gills** (`KCAVERN` trenches, the kit's own layout). Red: **radial** cracks on bearings from the summit, 200 m to
-  3 km long, straight, in a swarm that fans down the flank, their walls colonnaded where a thick flow is cut. White:
-  **ring** cracks round the two cones and their parasites, shorter and curved, with radial cracks between the cones
-  where the two swarms meet. Each gill is a `KCAVERN.trench`, 10-90 m across and 100-400 m deep, its throats
-  (`KCAVERN.shaft`) running from the floor down into the conduit system (drawn only as dark mouths with a breath; not
-  walked). Placed by `KRAND` from (world, cell, index, salt): a gill's position, bearing, length and age are hashes.
+- **The flank** (`KFIELD`, the host's): the model's heights at 1:1 with the host kit's own relief. Red: stacked
+  titanium-basalt flows (`KSTRATA` formation `tibasalt`, each flow a ledge, the bead horizons recessed, ochre palagonite
+  below the dry-cold line, as the godthrone kit draws them), debris-covered ice tongues above 6 km, the ice belt's cliff
+  on the skyline. White: a stratovolcano's flank of flows and ash beds over the Catch's old lake beds on one side and
+  over the Vale's wall on the other, the gravel fan below the first; patterned ground on both (`KFROST` polygons,
+  `42-core-frost.js`), snow in the lee hollows.
+- **The gills** (`KCAVERN` trenches, `GILLS.layout`). Red: **radial** cracks on bearings from the summit, 200 m to 3 km
+  long, straight, in a swarm that fans down the flank, their walls colonnaded where a thick flow is cut. White: **ring**
+  cracks round the two cones and their parasites, shorter and curved, with radial cracks between the cones where the two
+  swarms meet; the pass crosses the ring cracks of both cones. Each gill is a `KCAVERN.trench`, 10-90 m across and
+  100-400 m deep, its throats (`KCAVERN.shaft`) running from the floor down into the conduit system (drawn only as dark
+  mouths with a breath; not walked). Placed by `KRAND` from (world, cell, index, salt): a gill's position, bearing,
+  length and age are hashes.
 - **The breath pipes** (`KSTACKS`, a *proposed* kind `chimney`, section 14) along both lips of every gill and down the
   walls on ledges, fallen pipes across the floor, stumps, rubble fans of broken rings. A pipe is a `KSTACKS` body
   (collision, ledges, LOD from the record) whose bore is a `KCAVERN.shaft`, so a walker can look down one. Its laminae
@@ -313,11 +333,12 @@ one's).
   column on the out-breath only; the Red Gills' pools red, the White Gills' milky).
 - **The ladder** (both countries, upslope): ice pipes (a `chimney` in an `ice` dress: `ice.aufeis`, `ice.rust`), frost
   jets (a steam emitter with no pipe, a rime fan on its lee), then nothing; the godthrone kit's orange belt and glass
-  halo read in place above the Red ladder.
-- **The candles** (the White Gills, station 4): dry gills whose throats burn: a flame mesh on core/atmos's fire chunk,
-  `KHAZ` kind `heat`, a black heat crust round the mouth.
+  halo read in place above the Red ladder; the pass's road through the White one.
+- **The candles** (the White Gills, the Catch side): dry gills whose throats burn: a flame mesh on core/atmos's fire
+  chunk, `KHAZ` kind `heat`, a black heat crust round the mouth.
 - **The far field and the horizon** (`KFAR`, `KHORIZON`): the Godthrone's shield and ice belt, or the twins' two cones
-  and the Catch's white floor; the gill swarm's far stripes of steam at the breath hour drawn as sprites in the far field.
+  with the Catch's white floor on one side and the Vale on the other; the gill swarm's far stripes of steam at the breath
+  hour drawn as sprites in the far field.
 
 Fields and seeds are deterministic from the terrain (`KRAND` by cell), as every kit's.
 
@@ -336,7 +357,7 @@ the Bowl's dense-air habit's shape: one builder, two parameter sets; the two are
 | Fringe | dark red filaments | pale orange filaments |
 | Dew mat and aprons | rust-brown, red-stained ice, red pools (the bloodfalls' palette, `godthrone/PLAN.md` "Why it is red") | white lime dust, travertine, milky pools |
 | Beads | dark red spheres | chalk-white spheres |
-| Skyline | the ice belt and the Godthrone's shield | two cones and the Catch's white floor |
+| Skyline | the ice belt and the Godthrone's shield | two cones, the Catch's white floor on one side, the Vale on the other |
 
 Working names, the same species in both countries unless marked.
 
@@ -364,7 +385,8 @@ Working names, the same species in both countries unless marked.
 
 - `biomes/godthrone`: the endolith band in split stones and the orange belt's crusts above the Red Gills; the
   bloodfalls' iron-eaters and the Red Riwa's riverweed as kin at the foot (`godthrone/PLAN.md:195-200`, section 4).
-- `biomes/xanadu`: the Vale's dry Mediterranean flora at the Red Gills' scarp foot (Csb, 1.7-2 km); nothing of it climbs.
+- `biomes/xanadu`: the Vale's dry Mediterranean flora at the Red Gills' scarp foot and at the White Gills' Xanadu foot
+  (Csb, 1.7-2 km); nothing of it climbs; the chasm frill at Alph's head is the kit's own.
 - `biomes/catch`: the fan's tugai and the oases' palms at Bitta, under the White Gills; the lava pioneers (the Throne's
   glassfern by kin, `throne/NOTES.md:307-311`) on the twins' young flows if any are young.
 - `biomes/ehighlands`: the **glass tower** on both ladders' scree (`EHIGH.make`/`grow`): the only glass and the only
@@ -396,7 +418,7 @@ the breath and the thing in it.
   it, the caravans would carry it. No new family.
 - **Fuel**: the out-breath is hydrogen and methane. A throat capped with a hide bell gives a clean flame for three hours
   a day; a candle gives it all day. *Proposed* as the caravans' and the Catch's divers' fuel on the pass and a thing
-  Yuni and the Eternal State would study (the owner's call; it touches the energy lore).
+  Yuni, Xanadu and the Eternal State would study (the owner's call; it touches the energy lore).
 - **Medicine** (`kits/crops`, zone `gills`, `how: node`): **lung salt**, scraped from a charged collar at the end of the
   in-breath: an oxygen-carrying salt the caravans chew on the 7.3 km pass toward Strongbow and sell to the crater for
   the thin-air sickness, the abyss cough's opposite. Dalab's genepriests want it (pressure adaptation is their trade,
@@ -412,20 +434,22 @@ the breath and the thing in it.
   lip's rotten rings (`fall`), the ladder's thin air (`cold`, and the godthrone kit's own air rule above 9 km), the
   throat maw (`hunter`, cycled on the in-breath). The tell is the clock: the giant's nod and the collars' colour say
   which hazard is on.
-- **People**: no one lives in either country. **The White Gills** stand over the Catch-to-Xanadu caravan road between
-  Bitta and Lasso (`biomes/catch/PLAN.md`: the five oases, Stair's campground 153 km north-east, the Stalkers' peaks
-  far to the east): Yuni, Izani, Dasri and Xanadui traders pass under them, water at the salt cups and Bitta's spring,
-  cut lung salt and ore, and time the pass by the breath; the Catch's divers know the candles. *Proposed*: the **History
-  Monks** keep a hermitage of two or three in the White pipe field (section 10), from Longsong in the Oidong Valley
-  east of Xanadu (`LORE.md` 6.15). **The Red Gills** are the Talovolci's sacred mountain's one living flank, in sight of
-  the Vale; the Xanadui climb to them for the red salt; Erewhon is 198 km. Hazard to both: the mountains are live.
+- **People**: no one lives in either country. **The White Gills** stand over the whole Catch-to-Xanadu crossing: the
+  caravan road between Bitta and Lasso (`biomes/catch/PLAN.md`: the five oases, Stair's campground 153 km north-east,
+  the Stalkers' peaks far to the east), the pass itself through the ice pipes, and the descent on the Xanadu side past
+  Alph's head to the Vale and Strongbow. Yuni, Izani, Dasri and Xanadui traders pass through them, water at the salt
+  cups and Bitta's spring, cut lung salt and ore, and time the pass by the breath; the Catch's divers know the candles;
+  the Xanadui hold Alph's head holy (the Sacred River's source). *Proposed*: the **History Monks** keep a hermitage of
+  two or three in the White pipe field (section 10), from Longsong in the Oidong Valley east of Xanadu (`LORE.md`
+  6.15). **The Red Gills** are the Talovolci's sacred mountain's one living flank, in sight of the Vale; the Xanadui
+  climb to them for the red salt; Erewhon is 198 km. Hazard to both: the mountains are live.
 
 ## 10. The pipes as a calendar (*proposed* lore)
 
 A breath pipe lays one couplet a day, 0.2-0.4 mm; a wet season leaves a thicker pale ring once a year; so a pipe's
 rings are days and years that anyone can count, and the tallest standing Red pipes (80-90 m, 0.75 g) are some 1,200 to
-1,500 years old at the base, with fallen generations under them going back far further. Two bands run through every
-pipe old enough to hold them:
+1,500 years old at the base, with fallen generations under them going back far further. On the twins, old since before
+the Ancients came, the same holds. Two bands run through every pipe old enough to hold them:
 
 1. **The glass band**, in the Red pipes: a lamina of orange bead glass from a summit eruption of the Godthrone, the
    fountain's halo carried down the flank by the wind (the godthrone plan's halo "tens of km across"); a dated event
@@ -443,44 +467,55 @@ the archive they most want. The owner may want the thin years to mean something 
 
 ## 11. Stations
 
-Each station takes the date (so the breath hour) from its `99-host-take.js`; the host's time control moves through
-the breath. The breath state `GILLS.breath(t)` in `0..1` (out-breath 1, in-breath 0, with the ramps) drives the steam,
-the collars' colour, the bellows pads, the fringes, the beads, the hazards and the breath-riders together.
+Each station is its host kit's (`build.py --station <name>` in `biomes/godthrone`, `biomes/catch` or `biomes/xanadu`)
+and takes the date (so the breath hour) from its `99-host-take.js`; the host's time control moves through the breath. The
+breath state `GILLS.breath(t)` in `0..1` (out-breath 1, in-breath 0, with the ramps) drives the steam, the collars'
+colour, the bellows pads, the fringes, the beads, the hazards and the breath-riders together.
 
-1. **The Red Gill** (`dist/gills.html`, px 862,1438: 5,441 m, 0.81 atm, 157 mm, EF, -7 degC, 6/-20; the Godthrone's
-   south flank at the bloodfalls' level). One great radial gill 1.6 km long and 60 m across, 300 m deep, both lips
-   lined with tall red pipes in colonnade rows, the walls stepped with rust collars and dark fringes, bellows pads across
-   the side cracks, the breath meadow running away south-east rust-brown over red-stained ice, the ice belt's cliff and
-   a red fall on the skyline, the Godthrone's shield filling the north. Set in spring, with the out-breath at dawn.
-   **The first ten seconds**: the camera stands on the lip in blue pre-dawn with the giant huge in the north-east; as
-   the sun rises the whole 1.6 km of the crack begins to steam at once, the wall of mist climbs and tips downwind over
-   the meadow, the pipes sing, the beads roll away, and the breath-riders lift off the lips one after another. The
-   in-breath preset shows the same place six hours on: dry, silent but for the hiss, the collars black, the fringes
-   sucked flat, dust streaming down into the throats, a bead-runner fighting the draught.
-2. **The ladder** (`-ladder`, px 900,1450 to 940,1450: 7.2 to 8.7 km, 0.65 to 0.54 atm, 0-78 mm, -18 to -28 degC, EF
-   to HF): up the flank from the last red pipes through the ice pipes to the dry-cold line, the lining gone down the
-   throats, the out-breath freezing into fumarolic ice towers, then frost jets on bare ground with rime fans on their
-   lee, the godthrone kit's orange belt and palagonite ridges read in place, the sky going violet, the glass halo's
-   orange on the horizon. The breath still comes on the hour; nothing else moves.
-3. **The White Gill** (`-white`, px 1015,1438: 4,670 m, 0.89 atm, 94 mm, ET, -4 degC, 9/-17; the twins' north-east
-   flank over Bitta's road): a ring gill curving round the lower cone, its lips crowded with squat white branching
-   pipes like a reef, lime collars and pale fringes, travertine aprons and milky pools, the breath meadow white with
-   lime, the caravan road threading between the pipes below with its cairns, Bitta's green at the fan's toe, the
-   Catch's white floor beyond, the two cones above. Set in autumn, with the out-breath at dusk: the mist wall catching
-   the last light, the giant nodding, the candles of station 4 just visible as blue points up the flank.
-4. **The pipe field and the candles** (`-candles`, px 1015,1430: 3,746 m, 1.0 atm, 110 mm, Dsc, +2 degC; the lowest
-   White gills): a dead gill closed by the tide's slow shift of the swarm, its hundreds of white pipes standing silent,
-   fallen ones across the floor, rubble fans of broken rings; beside it the dry gills whose gas burns: blue flames a
-   metre tall at the throats, invisible at noon, plain at dusk, the black heat crust round each; the Monks' two cells
-   built into a pipe's base (a placement site only: the building is a settlement's), their count cut into the bore; the
-   caravans' smelting hearths and slag; the pass's road climbing toward Lasso.
-5. **Alph's head** (`-alph`, optional; the twins' Xanadu side, ~6.3 km): the subglacial reservoir's gills on the ice,
-   the chasm below where the Sacred River bursts out once a day on the breath (*proposed*, section 5), the Vale beyond;
-   the xanadu kit read in place at the foot.
-6. **The nursery** (`-nursery`, optional; the Lesser Throne's plateau, px 1138,822: 3,174 m, 1.08 atm, 188 mm, BSk):
-   the first draft's site kept as the lineage's youngest country: cracks less than a thousand years old with collars
-   and fringes and no pipes yet, the first stumps a hand high, the young cone smoking above. The same life in its
-   infancy, if the owner wants the comparison.
+1. **The Red Gill** (godthrone `--station gills`, `dist/godthrone-gills.html`; px 862,1438: 5,441 m, 0.81 atm, 157 mm,
+   EF, -7 degC, 6/-20; the Godthrone's south flank at the bloodfalls' level). One great radial gill 1.6 km long and 60 m
+   across, 300 m deep, both lips lined with tall red pipes in colonnade rows, the walls stepped with rust collars and
+   dark fringes, bellows pads across the side cracks, the breath meadow running away south-east rust-brown over
+   red-stained ice, the ice belt's cliff and a red fall on the skyline, the Godthrone's shield filling the north. Set in
+   spring, with the out-breath at dawn. **The first ten seconds**: the camera stands on the lip in blue pre-dawn with the
+   giant huge in the north-east; as the sun rises the whole 1.6 km of the crack begins to steam at once, the wall of
+   mist climbs and tips downwind over the meadow, the pipes sing, the beads roll away, and the breath-riders lift off
+   the lips one after another. The in-breath preset shows the same place six hours on: dry, silent but for the hiss, the
+   collars black, the fringes sucked flat, dust streaming down into the throats, a bead-runner fighting the draught.
+2. **The Red ladder** (godthrone `--station gills-ladder`, `dist/godthrone-gills-ladder.html`; px 900,1450 to 940,1450:
+   7.2 to 8.7 km, 0.65 to 0.54 atm, 0-78 mm, -18 to -28 degC, EF to HF): up the flank from the last red pipes through
+   the ice pipes to the dry-cold line, the lining gone down the throats, the out-breath freezing into fumarolic ice
+   towers, then frost jets on bare ground with rime fans on their lee, the godthrone kit's orange belt and palagonite
+   ridges read in place, the sky going violet, the glass halo's orange on the horizon. The breath still comes on the
+   hour; nothing else moves.
+3. **The White Gill** (catch `--station gills`, `dist/catch-gills.html`; px 1015,1438: 4,670 m, 0.89 atm, 94 mm, ET,
+   -4 degC, 9/-17; the twins' north-east flank over Bitta's road): a ring gill curving round the lower cone, its lips
+   crowded with squat white branching pipes like a reef, lime collars and pale fringes, travertine aprons and milky
+   pools, the breath meadow white with lime, the caravan road threading between the pipes below with its cairns, Bitta's
+   green at the fan's toe, the Catch's white floor beyond, the two cones above. Set in autumn, with the out-breath at
+   dusk: the mist wall catching the last light, the giant nodding, the candles of station 4 just visible as blue points
+   down the flank.
+4. **The pipe field and the candles** (catch `--station gills-candles`, `dist/catch-gills-candles.html`; px 1015,1430:
+   3,746 m, 1.0 atm, 110 mm, Dsc, +2 degC; the lowest White gills): a dead gill closed by the tide's slow shift of the
+   swarm, its hundreds of white pipes standing silent, fallen ones across the floor, rubble fans of broken rings; beside
+   it the dry gills whose gas burns: blue flames a metre tall at the throats, invisible at noon, plain at dusk, the black
+   heat crust round each; the Monks' two cells built into a pipe's base (a placement site only: the building is a
+   settlement's), their count cut into the bore; the caravans' smelting hearths and slag; the road climbing toward Lasso.
+5. **The pass** (catch `--station gills-pass`, `dist/catch-gills-pass.html`; px 1040,1566 to the saddle: 6.6 to 7.3 km,
+   0.70 to 0.64 atm, -16 to -21 degC, EF to HF): the White ladder, which is also the crossing: Lasso's last water in a
+   gill's salt cups, the road climbing between ice pipes with the caravans' chains and cairns, the ring cracks of both
+   cones meeting at the saddle, frost jets on the lower summit above, and from the top the Vale opening to the
+   south-west with Alph's chasm below. The geyser kit's ice caves (station 5) are over the shoulder; the Erebus-style
+   fumarolic towers here are the gills' own.
+6. **Alph's head** (xanadu `--station gills`, `dist/xanadu-gills.html`; the twins' Xanadu side, ~6.3 km, px ~938,1496):
+   the gills on and under the ice over the Sacred River's subglacial reservoir, white pipes standing out of the glacier's
+   edge, and the chasm below where the river bursts out once a day on the breath (*proposed*, section 5), the Vale
+   beyond and Erewhon's gardens in the haze; the xanadu kit's wildwood read in place at the foot. Set at the breath's
+   hour so the fountain is seen to be forced.
+7. **The nursery** (optional, a station of `biomes/ehighlands` if wanted; the Lesser Throne's plateau, px 1138,822:
+   3,174 m, 1.08 atm, 188 mm, BSk): the first draft's site kept as the lineage's youngest country: cracks less than a
+   thousand years old with collars and fringes and no pipes yet, the first stumps a hand high, the young cone smoking
+   above. The same life in its infancy, if the owner wants the comparison.
 
 ## 12. How it reads, and what it costs
 
@@ -490,14 +525,14 @@ the collars' colour, the bellows pads, the fringes, the beads, the hazards and t
   dozen draws. The collars, fringes and pads are `BIO.fung` items on the core's instancing (`33-core-fungoid.js`). The
   gill walls are the field's own mesh with a `KCAVERN` trench cut. Target: **under 6 M triangles and 60 draw calls per
   view** on the integrated GPU, measured as the Godthrone's `PERF.md` measures (its pages run 2-3 M tris, 20-35 calls,
-  12-25 ms sync on the Arc 140T).
+  12-25 ms sync on the Arc 140T); a gills station adds to its host's own view no more than the host's other stations do.
 - **The breath.** Steam is core/atmos's smoke kind on a few hundred emitters whose rate is `GILLS.breath(t)`; the mist
   wall over the meadow is the height fog's pooled layer (`sky/89-atmos-j-fog.js` `fogPool`) with its density on the same
   function; the far gills' steam is sprites in `KFAR`. No per-frame CPU work: everything reads the clock.
 - **Motion.** Bellows pads, fringes and beads move in the vertex shader (`BIO.animHook`, a `breath` mode: a scalar
   uniform from `GILLS.breath`), so a thousand of them cost nothing per frame. The breath-riders are `kits/fauna` orbit
   animals whose count fades with the breath.
-- **Light.** The shared sky at each station's pressure (the godthrone kit's thin-air end on the ladder); the giant's nod
+- **Light.** The shared sky at each station's pressure (the godthrone kit's thin-air end on the ladders); the giant's nod
   is already in the sky model; the collars' albedo and the mist's density are the biome's tells. Night: no
   bioluminescence but the candles and the optional throat lamps; giantshine on white pipes, and on red ice, is the night
   picture.
@@ -507,12 +542,15 @@ the collars' colour, the bellows pads, the fringes, the beads, the hazards and t
 
 ## 13. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
-Start from `biomes/godthrone` (the newest station kit on the full core, whose ground the Red Gills overlay) and
-`biomes/abyssal-savannah` (the newest station-1 kit). The modules the kit takes, by name, and for each it does not, why:
+The host kits already take most of this: `biomes/godthrone`'s adoption is its plan's section 9a, `biomes/catch`'s and
+`biomes/xanadu`'s their own. What follows is what the **gills stations** need of the core, taken through the host's
+`build.py` (a station lists its fragments in its `station.json`, as the godthrone kit's stations do for `core/water`),
+and what `biomes/gills`'s own fragments may touch (`[G data]` only: species, layout, breath, dress records; the drawing is
+the host's and the core's). The modules, by name, and for each not taken, why:
 
 | Module | Takes | For |
 |---|---|---|
-| `core/biome` | `10-core-head`, `20-core-kit` (`BIO.INDEX_ITEMS`, LOD merge/fade/cull), `30-core-foliage` (ground tint, A2C, back-light, the one wind), `31b-core-leafset`, `32-core-variants`, `33-core-fungoid` (`BIO.fung`: collars, pads, limewood and rustwood caps, dew mat), `34-core-impostor` (far pipes), `35-core-anim` (the breath mode: *proposed*, section 14), `39-core-lean` (ehighlands' glass tower in place leans to the giant), `40-core-place`, `42`/`43-core-export(-host)`, `44-core-stage` | every species on the core's builders and items; `BIO.kin` for the two countries' sister forms |
+| `core/biome` | `10-core-head`, `20-core-kit` (`BIO.INDEX_ITEMS`, LOD merge/fade/cull), `30-core-foliage` (ground tint, A2C, back-light, the one wind), `31b-core-leafset`, `32-core-variants`, `33-core-fungoid` (`BIO.fung`: collars, pads, limewood and rustwood caps, dew mat), `34-core-impostor` (far pipes), `35-core-anim` (the breath mode: *proposed*, section 14), `39-core-lean` (ehighlands' glass tower in place leans to the giant), `40-core-place`, `42`/`43-core-export(-host)`, `44-core-stage` | every species on the core's builders and items; `BIO.kin` for the two countries' sister forms; `BIO.kit('gills')` so the shared life's items never collide with a host's |
 | `core/rand` | `KRAND` | every field, every gill, pipe and bead cell (`KRAND.hash(world, ix, iz, salt)`); no sin hash, no stream |
 | `core/tags` | `50`, `52`, `53` | every pipe, collar, pad, bead, pool and hazard a record (`BIO.init({tags})`) |
 | `core/space` | `KSPACE` | the keep-clear between pipes and the nearest-gill index the meadows and hazards read |
@@ -520,9 +558,9 @@ Start from `biomes/godthrone` (the newest station kit on the full core, whose gr
 | `core/clock` | `KCLOCK` (`C.day`, `C.hour`) | the date and hour, so the breath's phase is the sky's |
 | `core/terrain` | `30-core-field` + brush, `35-core-strata` + host shade (`tibasalt` on the Red, the twins' flows on the White; `lamina` *proposed*), `37-core-stacks` (`chimney` *proposed*; `columns` on the colonnades), `38-core-relief` (`tube` for collapse pits, `talus`, `pavement`, the strip field), `39-core-cavern` (`trench`, `shaft`), `42-core-frost` (patterned ground, both), `43-core-ground` (`KGROUND` library layers, `clast` and `sand` kinds as the godthrone kit uses them), `44-core-farfield` + draw, `45-core-horizon` + shade | the flanks, the gills, the pipes, the far country |
 | `core/atmos` | the core, presets, export, waves, skylight, `bindHost`, the shared sky at each station's pressure (the giant's libration), `bindWeather`, height fog (`fogPool`), `3-particles` (steam), `3d-dust` (the in-breath's dust), snow cover | the sky, the breath's steam and mist, the light |
-| `core/water` | `20`, `21`, `22`, `50`, `51`, `geyser/52` + draw (`WATER.spring`), `ext/53` + draw (the travertine aprons), `ext/54` + draw (the `ice` kind and the `blood` and `brine` looks for the Red pools and stained ice), `ext/57` (the audit) | the brine pools, the aprons, the ice, wet ground under the mist |
-| `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, marks, pictures, minimap) | the page shell; the probe checks section 16's invariants |
-| `core/materials` | `record` (`KMAT`) and the generated pack (`materials.json`, `tools/textures/pack.py`) | every library set (section 15) |
+| `core/water` | `20`, `21`, `22`, `50`, `51`, `geyser/52` + draw (`WATER.spring`), `ext/53` + draw (the travertine aprons), `ext/54` + draw (the `ice` kind and the `blood` and `brine` looks for the Red pools and stained ice), `ext/57` (the audit); at Alph's head the xanadu kit's own flow and fall for the river | the brine pools, the aprons, the ice, wet ground under the mist |
+| `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, marks, pictures, minimap) | the host's page shell; the probe checks section 16's invariants |
+| `core/materials` | `record` (`KMAT`) and the generated pack (`biomes/gills/materials.json`, `tools/textures/pack.py biomes/gills`, read by the hosts as a second pack) | every library set (section 15) |
 | `core/export` | `07`, `09` | the krator-world container; the hazards section |
 
 Not taken: `core/mask` (nothing is placed from a canvas), `core/city`, `core/hamlet`, `core/camp`, `core/simulation`,
@@ -530,11 +568,13 @@ Not taken: `core/mask` (nothing is placed from a canvas), `core/city`, `core/ham
 way swhighlands' pillar rim publishes `SWHI_PILLARS_SITE`), `core/lod` (the biome core's runtime LOD covers it),
 `core/walk` beyond what `KCAVERN` writes (the throats are not walked), `33b-core-bamboo`, `36-core-walker`,
 `37-core-traps` (no carnivorous plants: the hunter is an animal), `38-core-fire` (the candles are steady flames on the
-atmos chunk, not a spreading fire), `46-core-lava` (no young flows at either site unless the twins' age says so), the
-season (one season a page; the date sets the breath hour). `kits/crops`: the `gills` zone and the lung salt record only;
-nothing is farmed.
+atmos chunk, not a spreading fire), `46-core-lava` (no young flows at either site), the season (one season a page; the
+date sets the breath hour). `kits/crops`: the `gills` zone and the lung salt record only; nothing is farmed.
 
-`tools/check_core_use.py` runs before the first station is called done.
+`tools/check_core_use.py` runs on the three host kits before the first station is called done, and `tools/check_port.py`
+on `biomes/gills` (every fragment `[G data]`: nothing in it touches the browser). After any change to `biomes/gills`, every
+host kit is rebuilt and verified (`godthrone/verify.py --assert`, `catch/verify.py --assert`, `xanadu/verify.py --assert`)
+and `python3 tools/port_baseline.py` run, as the shared-copy rule in `CLAUDE.md` asks.
 
 ## 14. New in core (each small, each a proposal)
 
@@ -558,8 +598,8 @@ nothing is farmed.
 6. **`KFAR` sprites.** The far gills' steam as a few hundred sprites in the far field, scaled by the breath; `KFAR.grid`
    carries colour and height today, not sprites. Small.
 
-Nothing else is new. The gills are `KCAVERN` trenches, the flanks `KFIELD`s, the pools `WATER.spring`, the ice the
-`ice` kind of `ext/54`.
+Nothing else is new. The gills are `KCAVERN` trenches, the flanks the hosts' `KFIELD`s, the pools `WATER.spring`, the
+ice the `ice` kind of `ext/54`.
 
 ## 15. Textures
 
@@ -645,29 +685,32 @@ flowers. No text, no border, no watermark.
 
 Reference images to collect into `refs/`: Lost City's carbonate chimneys (the White pipes' form), Blood Falls and its
 rust terraces (the Red palette), Chimaera's flames (the candles), ferromanganese crust sections (the collars and
-laminae), Erebus's fumarolic ice towers (the ladder), Wind Cave's breathing entrance, Enceladus's tiger stripes from
+laminae), Erebus's fumarolic ice towers (the ladders), Wind Cave's breathing entrance, Enceladus's tiger stripes from
 orbit (the swarm's plan), Iceland's fissure swarms (the gills from the ground).
 
 ## 16. Order of work
 
-- **G0.** The owner's yes or no on the mechanism, the two sites, the lineage rule, the calendar, the names, the throat
-  lamp, Alph's pulse (section 17); the texture prompts moved to `PROMPTS-NEEDED.md`; the two polygons drawn on the model.
-- **G1.** `ATMOS.libration`, `GILLS.breath` and its node test (the phase against the sky model, the drift of the hour
-  through a year, determinism); the hazard records cycled on it.
-- **G2.** The ground: the flanks on `KFIELD` over the two kits' ground, the gill swarms as `KCAVERN` trenches and shafts
-  (radial on the Red, ring on the White), the strip field; the `chimney` kind (both forms, the `ice` dress) and the
-  `lamina` recipe with their tests; the pipes placed from the gills' ages.
+- **G0.** The owner's yes or no on the mechanism, the lineage rule, the calendar, the names, the throat lamp, Alph's
+  pulse (section 17); the texture prompts moved to `PROMPTS-NEEDED.md`. Settled 2026-11-02: the two sites, stations of
+  the host kits with `biomes/gills` as the shared life, the White Gills over the whole twin massif, the twins old enough
+  for full gills.
+- **G1.** `ATMOS.libration`, `GILLS.breath` and its node test (`biomes/gills/tests/test-gills.js`: the phase against
+  the sky model, the drift of the hour through a year, determinism); the hazard records cycled on it.
+- **G2.** The ground: each station on its host's `KFIELD`, the gill swarms as `KCAVERN` trenches and shafts (radial on
+  the Red, ring on the White) laid out by `GILLS.layout`, the strip field; the `chimney` kind (both forms, the `ice`
+  dress) and the `lamina` recipe with their tests; the pipes placed from the gills' ages.
 - **G3.** The flora: pipes, collars, pads, fringes, dew mat, salt cup, limewood and rustwood, beads, in both dresses as
   `BIO.kin` sisters; the `breath` anim mode; the guest kits read in place.
 - **G4.** The breath itself: steam emitters, the pooled fog, the far sprites, the collars' colour, the brine pools on
-  `WATER.spring`; station 1 with its two presets (out-breath, in-breath).
-- **G5.** Stations 2-4; the ladder's ice pipes and frost jets; the Monks' and caravans' sites published as data;
-  stations 5 and 6 if wanted.
-- **G6.** `verify.py --assert` with the probe's invariants: every pipe's lamina count equals its age in days from its
-  record; every hazard's phase equals `GILLS.breath`'s; the out-breath preset shows steam at every live throat and the
-  in-breath preset none; no living lip above 9 km and no ice pipe above 12 km; nothing placed on a lip within its
-  `fall` record's edge; the pipes' height under 90 m; each country's species in its own dress and no other; each check
-  with a negative. `PORT.md`, the index tools, `tools/check_core_use.py`, `python3 tools/port_baseline.py`, the gallery.
+  `WATER.spring`; the godthrone kit's `gills` station with its two presets (out-breath, in-breath).
+- **G5.** The catch kit's three stations and the xanadu kit's one; the ladders' ice pipes and frost jets; Alph's pulse;
+  the Monks' and caravans' sites published as data; the nursery if wanted.
+- **G6.** Each host's `verify.py --assert` with the probe's invariants on its gills stations: every pipe's lamina count
+  equals its age in days from its record; every hazard's phase equals `GILLS.breath`'s; the out-breath preset shows
+  steam at every live throat and the in-breath preset none; no living lip above 9 km and no ice pipe above 12 km;
+  nothing placed on a lip within its `fall` record's edge; the pipes' height under 90 m; each country's species in its
+  own dress and no other; each check with a negative. `PORT.md`, the index tools, `tools/check_core_use.py`,
+  `tools/check_port.py`, `python3 tools/port_baseline.py`, the hosts' gallery entries.
 - **G7.** `kits/fauna`: the breath-rider, the throat maw, the bead-runner, two coats each. `kits/crops`: the `gills`
   zone, lung salt. `kits/resources`: the owner nodes.
 
@@ -678,20 +721,17 @@ orbit (the swarm's plan), Iceland's fissure swarms (the gills from the ground).
    what is drawn).
 2. **The lineage rule** (*proposed*): "the native body is a host that takes a partner; the partner decides whether it
    lives on light or on redox." The first biochemical statement about Krator's own life. Yes, no, or reworded?
-3. **The two sites**: the Godthrone's south flank as an overlay on the godthrone kit's ground (its plan says "the ground
-   is the whole show"; the Red Gills put life in its cracks below 9 km) and the twins' north-east flank as an overlay on
-   the Catch's. One kit with two countries, or a station of each host kit?
-4. **The twins' age**: nothing states it. Old enough for the White pipe fields?
-5. **The calendar** (section 10): may the pipes record a Godthrone summit eruption as a glass band and a band the Monks
+3. **The calendar** (section 10): may the pipes record a Godthrone summit eruption as a glass band and a band the Monks
    read as the Cataclysm? What do the thin years mean, if anything?
-6. **Alph's pulse** (*proposed*): may the breath be what makes the Sacred River's fountain burst once a day?
-7. **The names**: the Xanadui's or Dasri's words for the gills, the breath, the pipes, the two countries and the lung
-   salt; whether the kit is `gills` or something of the owner's.
-8. **The throat lamp**: the one glow, inside the throats on the in-breath. Keep or strike.
-9. **Fuel**: may the breath's hydrogen be a thing people burn, and who knows it (the caravans only, or Yuni and the
-   State too)?
-10. **The Monks**: a hermitage in the White pipe field counting rings, with Longsong across the Vale. Yes, and in whose
-    name?
-11. **The nursery**: keep the Lesser Throne as the lineage's youngest country (station 6), or drop it altogether?
-12. **The tide's size**: the plan quotes tens of metres in the rock as a plausibility bound and uses the tide only as a
+4. **Alph's pulse** (*proposed*): may the breath be what makes the Sacred River's fountain burst once a day?
+5. **The names**: the Xanadui's or Dasri's words for the gills, the breath, the pipes, the two countries and the lung
+   salt; whether the shared kit is `gills` or something of the owner's.
+6. **The throat lamp**: the one glow, inside the throats on the in-breath. Keep or strike.
+7. **Fuel**: may the breath's hydrogen be a thing people burn, and who knows it (the caravans only, or Yuni, Xanadu and
+   the State too)?
+8. **The Monks**: a hermitage in the White pipe field counting rings, with Longsong across the Vale. Yes, and in whose
+   name?
+9. **The nursery**: keep the Lesser Throne as the lineage's youngest country (an ehighlands station), or drop it
+   altogether?
+10. **The tide's size**: the plan quotes tens of metres in the rock as a plausibility bound and uses the tide only as a
     valve. If the owner wants a number in `LORE.md`, which?
