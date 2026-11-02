@@ -121,6 +121,7 @@ return R;}"""
 
 
 async def run(a):
+    name = os.path.basename(a.html)
     from playwright.async_api import async_playwright
     here = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(a.out, exist_ok=True)
