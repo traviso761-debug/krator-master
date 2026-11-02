@@ -5,6 +5,12 @@ the rebuild's checkout and maps likely areas, not diagnosed bugs: reproduce each
 
 ## Where it stands (2026-11-02)
 
+**The owner's verdict, ahead of every number below: not solved.** On the textured shots of the slit skirts, every one showed leg clipping through the clothes or seam separation to some degree. The fault counts
+miss what the owner sees (a leg leaving through a slit is not a "closed-in patch"). The question sent to ChatGPT and Gemini is whether chains plus a capsule push have reached their limit, against baking real cloth or cutting real panels.
+
+**The live labs are not this branch.** They carry the review-round-3 work (posture controls, two-sided sleeves, the Talovolci) and lack what this branch has (frog and coyote heads, fur). So Cosmetic Lab v73 and Animation Lab v53 are the live pages
+with this branch's `50-figure.js` changes, the four skirts' kit entries and their pieces applied on top, not `build.py`'s output. Merge the two lines before the next whole publish, or publishing `dist/` drops the posture controls. The patched Cosmetic page passed `verify.py --assert`; the Animation page's timed out on SwiftShader, and it loads as the unpatched page does on the GPU.
+
 **Done, on `claude/garment-defects`: the push fix, then side slits on four skirts.** The review's rule, "do not start by widening the padding", was right: both
 causes found were the push itself, and narrowing it where nothing needs it is the fix. The owner chose a side slit over more flare for the skirts with no cloth for
 a stride.
