@@ -60,6 +60,8 @@ export function nav(W){
     const h=W.heading();yawQ.setFromAxisAngle(Y,Math.atan2(-h.f.z,h.f.x));
     SYS.position.copy(ROOT.position);SYS.quaternion.copy(SKY.quaternion).multiply(yawQ);
     SYS.add(pl.group);pl.group.visible=true;setLight(pl);
+    // fresh now: the hooks below (the wormhole, the orders, the escorts) turn world points into this place's frame
+    SYS.updateMatrixWorld(true);
     if(W.placeTarget)W.placeTarget();
     // out of warp at a quarter impulse, the dampers taking the rest
     W.setThrottle(Math.max(0.25,S.thr));

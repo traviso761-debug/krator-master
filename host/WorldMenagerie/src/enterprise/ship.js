@@ -36,6 +36,7 @@ import {sensors} from './sensors.js';
 import {comms} from './comms.js';
 import {transporter} from './transporter.js';
 import {orders} from './orders.js';
+import {helm} from './helm.js';
 import {PLACES} from './places.js';
 
 export function model(api){
@@ -338,6 +339,7 @@ export function model(api){
   const CO=comms(W);
   const BT=transporter(W);
   const OR=orders(W);
+  const HE=helm(W);
   // the interface goes red under red alert (lcars.js)
   {let was=null;animHooks.push(()=>{const r=EV.state().red;if(r!==was){was=r;document.documentElement.classList.toggle('alert',r);}});}
   // the extras' buttons go in the events panel
@@ -361,7 +363,7 @@ export function model(api){
    // #dbg: the events' state in the probe's report
    const hist=[];if(h.has('dbg'))setInterval(()=>{hist.push([W.heading().hd,Math.round(ROOT.position.x),Math.round(ROOT.position.z),+W.flight.rate.y.toFixed(3)].join('/'));if(hist.length>12)hist.shift();},1000);
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:Object.assign(EX.state(),SBM.state()),carto:CA.state(),traffic:TR.state(),orders:OR.state(),sensors:SE.state(),comms:CO.state(),beam:BT.state(),worm:WH.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:Object.assign(EX.state(),SBM.state()),carto:CA.state(),traffic:TR.state(),orders:OR.state(),sensors:SE.state(),comms:CO.state(),beam:BT.state(),worm:WH.state(),helm:HE.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
    // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
    if(h.has('warpf'))NV.course.w=+h.get('warpf');
    if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}

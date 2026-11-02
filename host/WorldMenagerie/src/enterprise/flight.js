@@ -59,17 +59,18 @@ export function flight(W){
   W.flight=S;
   const keys=new Set(),pad=new Set();
   const typing=e=>e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA');
-  addEventListener('keydown',e=>{if(!S.on||typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.length===1?e.key.toLowerCase():e.key;keys.add(k);
+  addEventListener('keydown',e=>{if(!S.on||typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.length===1?e.key.toLowerCase():e.key;if(k==='f'&&S.fHeld)return;keys.add(k);
     if(e.repeat)return;
     if(k==='x'){allStop();}
     if(k>='1'&&k<='9'){if(W.course&&W.course.dest)W.course.setWarp(+k);else W.engage(+k);}if(k==='0'){W.course&&W.course.clear();W.dropOut();}
-    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire(e.shiftKey?'spread':'torpedo');if(k==='k')W.dock&&W.dock();if(k==='g')W.tractor&&W.tractor();
+    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire(e.shiftKey?'spread':'torpedo');if(k==='k')W.dock&&W.dock();if(k==='g')W.tractor&&W.tractor();if(k==='z')W.toggleShields&&W.toggleShields();
     if(k==='o')toggleOrbit();if(k==='v')cycleCam();if(k==='m')W.mute&&W.mute();if(k==='c'&&W.openNav)W.openNav();
     if(k.startsWith('Arrow'))e.preventDefault();});
-  addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys.delete(k);});
+  addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys.delete(k);if(k==='f')S.fHeld=false;});
+  addEventListener('blur',()=>{S.fHeld=false;});
   // F takes the helm from the turntable, as the Fly button does (at the helm F is nose down, so it does not hand it
   // back: the button does)
-  addEventListener('keydown',e=>{if(S.on||e.repeat||typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='f'||e.key==='F')W.startFlight&&W.startFlight();});
+  addEventListener('keydown',e=>{if(S.on||e.repeat||typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='f'||e.key==='F'){S.fHeld=true;W.startFlight&&W.startFlight();}});
   addEventListener('blur',()=>keys.clear());
   const setThrottle=f=>{S.thr=Math.max(0,Math.min(1,f));};
   function allStop(){setThrottle(0);S.orbit=null;if(W.course)W.course.clear();if(S.warp)W.dropOut();}
@@ -339,7 +340,7 @@ export function flight(W){
 @media (max-width:600px){#ent-help{display:none!important}}
 body.bare #ent-help,body.bare #ent-pad,body.bare #navpanel{display:none!important}`;document.head.appendChild(st);}
   const help=document.createElement('div');help.id='ent-help';help.style.display='none';
-  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo (shift: a spread) · G tractor beam<br>K dock (flies there first) · P stellar cartography · L markers<br>J orders and log · N scan · H comms · B transporter<br>V the camera: chase, flyby, bridge, director · M sound<br>Drag to look round, scroll to stand off';
+  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo (shift: a spread) · Z shields · G tractor beam<br>K dock (flies there first) · P stellar cartography · L markers<br>J orders and log · N scan · H comms · B transporter<br>V the camera: chase, flyby, bridge, director · M sound<br>Drag to look round, scroll to stand off';
   const padEl=document.createElement('div');padEl.id='ent-pad';padEl.style.display='none';
   const names={q:'Roll left',ArrowUp:'Nose up',e:'Roll right',a:'Turn left',ArrowDown:'Nose down',d:'Turn right',s1:'Slower',x1:'All stop',w1:'Faster',v1:'Camera'};
   for(const [lab,k] of [['⟲','q'],['▲','ArrowUp'],['⟳','e'],['◀','a'],['▼','ArrowDown'],['▶','d'],['−','s1'],['■','x1'],['+','w1'],['🎥','v1']]){

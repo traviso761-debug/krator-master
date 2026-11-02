@@ -13,6 +13,7 @@ import {buildSky} from '../starship/page.js';
 import {planetMesh} from './planets.js';
 import {pulsar,disc,eye,rogue} from './exotic.js';
 import {mouth} from './wormhole.js';
+import {storm,ring} from './wilds.js';
 
 const D=900000;
 const dirOf=(az,el)=>[Math.cos(az)*Math.cos(el),Math.sin(el),Math.sin(az)*Math.cos(el)];
@@ -57,6 +58,18 @@ export const PLACES=[
     light:{colour:'#d8f0ff',intensity:1.2,az:0.15,el:0.12,ambient:0.34,fill:{colour:'#c04050',intensity:0.6,az:-2,el:-0.2}},build:eye},
   {id:'rogue',name:'A rogue planet',ly:[-7,-12],note:'A world flung out of its system long ago, adrift with no sun. Its only light is its aurora.',
     light:{colour:'#9ab0d0',intensity:0.25,az:0.6,el:0.7,ambient:0.18,fill:{colour:'#30ff90',intensity:0.5,az:-0.55,el:0.3}},build:rogue},
+  // the seventh pass's places: a colony, an ion storm, an ancient ring, a broken world (wilds.js for two of them)
+  {id:'colony',sunDisc:true,name:'A colony world',ly:[6.5,4.6],note:'New Arden, the sector\'s youngest colony: forty thousand people on a green world, and a starbase still half built over it.',
+    light:{colour:'#fff2dc',intensity:2.3,az:0.9,el:0.2,ambient:0.3,fill:{colour:'#5a8ac0',intensity:0.4,az:-1.2,el:-0.2}},
+    sky:{bodies:[{name:'New Arden',type:'terran',az:-0.4,el:-0.1,dist:0.6,deg:15,seed:6.2,sea:0.55,colours:['#174a6e','#4a7a3a','#a89060','#f4f6f8'],clouds:true,cloudK:1,atmos:'#7ab8ff',atmosK:1,rate:2.5e-5},
+      {type:'moon',name:'a moon',az:0.5,el:0.15,dist:0.5,deg:2,seed:4.1,colours:['#6a6560','#857f77','#a49d92','#c4beb4']}]}},
+  {id:'storm',name:'An ion storm',ly:[17,-8.5],note:'A storm of charged gas light-years across, its lightning jumping from cloud to cloud. Its eye is calm, and full of readings nobody has taken.',
+    light:{colour:'#d8c8ff',intensity:0.9,az:0.2,el:0.4,ambient:0.34,fill:{colour:'#8a50b8',intensity:0.8,az:-1.5,el:-0.2}},build:storm},
+  {id:'relic',name:'An ancient ring',ly:[-4.5,-8.5],note:'Seventy kilometres across and older than any people living: a ring of dark metal turning round a hub that still glows. Nobody knows who built it.',
+    light:{colour:'#e0e8ff',intensity:1.3,az:0.6,el:0.3,ambient:0.26,fill:{colour:'#4a8ab0',intensity:0.6,az:-1.2,el:-0.1}},build:ring},
+  {id:'shattered',name:'A shattered world',ly:[9.5,9],note:'A planet broken open by something, its core still glowing through the cracks, its pieces strewn for thousands of kilometres.',
+    light:{colour:'#ffe2c0',intensity:2,az:0.8,el:0.3,ambient:0.26,fill:{colour:'#ff6a30',intensity:0.5,az:-0.6,el:-0.3}},
+    sky:{bodies:[{name:'the shattered world',type:'lava',az:-0.5,el:-0.08,dist:0.55,deg:13,seed:9.1,colours:['#1a1612','#3a3028','#000000','#000000'],atmos:'#ff7040',atmosK:0.3,rate:1e-5}]},build:belt},
   // the wormhole's two mouths (wormhole.js): `link` is the place the other mouth is at
   {id:'gate',name:'The wormhole',ly:[-1.6,3.6],link:'farside',note:'One mouth of a stable wormhole, five kilometres across. Through it: a place thirty light-years off. Fly into it.',
     light:{colour:'#dfe8ff',intensity:1.1,az:0.5,el:0.35,ambient:0.3,fill:{colour:'#ffc870',intensity:0.9,az:0.15,el:0.03}},

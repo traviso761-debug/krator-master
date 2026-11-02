@@ -10,6 +10,9 @@
 //   Meridian   a cruiser of about 410 m: saucer, neck, a long secondary hull, nacelles out level with it on outriggers.
 //   Tamar      a science vessel of about 170 m: a small saucer on a deep body, one big nacelle on a fin above.
 //   Halyard    a transport of about 230 m: a slab hull with cargo pods along its back and two short nacelles.
+//   Corvid     a scout of about 120 m: a small saucer with its two nacelles hugging its flanks, nothing else.
+//   Anvil      a fleet tender of about 300 m: a heavy slab, a big tractor emitter at the bow, four nacelles in an X.
+// And two that are not Starfleet's, from factions.js: an Ossari vessel (first contact) and a lost survey probe.
 //
 // Each place's ships are made the first time you arrive there (W.placeHooks) from a seed of its own, so the same
 // ships are at the same place every time; they move only while you are there. Click one for its card; the chart
@@ -26,11 +29,17 @@ const CLASSES={
   meridian:{title:'Meridian-class cruiser',blurb:'An explorer of the line: saucer, neck and a long secondary hull, its nacelles out level with it on long outriggers.'},
   tamar:{title:'Tamar-class science vessel',blurb:'A survey ship: a small saucer on a deep body full of sensors, one great nacelle on a fin above.'},
   halyard:{title:'Halyard-class transport',blurb:'A fleet transport: a slab hull, cargo pods along its back, two short nacelles.'},
+  corvid:{title:'Corvid-class scout',blurb:'A fast scout: a small saucer and two nacelles hugging its flanks.'},
+  anvil:{title:'Anvil-class fleet tender',blurb:'A heavy tender and tug: a slab of a hull, a great tractor emitter at the bow, four nacelles in an X.'},
+  ossari:{title:'An Ossari vessel',blurb:'A grown ship of a people the Federation has never met: pearl-white pods along a curved spine, sails of faint light.',alien:true},
+  probe:{title:'A survey probe',blurb:'A long-range probe, forty metres of instruments, its beacon still blinking.',alien:true},
 };
 const NAMES=[['USS Arden','NCC-71802','kestrel'],['USS Callander','NCC-75530','meridian'],['USS Tamsin','NCC-68211','tamar'],['USS Halvard','NCC-59003','halyard'],
   ['USS Corvo','NCC-72940','kestrel'],['USS Ilsabet','NCC-77104','meridian'],['USS Vantor','NCC-66318','tamar'],['USS Ellery','NCC-70455','kestrel'],
   ['USS Brannoch','NCC-74822','halyard'],['USS Sorrel','NCC-69977','tamar'],['USS Aldane','NCC-73310','meridian'],['USS Wrenfield','NCC-71266','kestrel'],
-  ['USS Marisol','NCC-76031','meridian'],['USS Teague','NCC-58840','halyard'],['USS Odalys','NCC-74409','tamar'],['USS Penrhyn','NCC-70918','kestrel']];
+  ['USS Marisol','NCC-76031','meridian'],['USS Teague','NCC-58840','halyard'],['USS Odalys','NCC-74409','tamar'],['USS Penrhyn','NCC-70918','kestrel'],
+  ['USS Kittering','NCC-80117','corvid'],['USS Bellweather','NCC-62290','anvil'],['USS Sparrowhawk','NCC-80342','corvid'],['USS Grimsdyke','NCC-62815','anvil'],
+  ['USS Quillon','NCC-80560','corvid'],['USS Marrick','NCC-75911','meridian']];
 
 export function traffic(W){
   const {THREE,SYS,animHooks}=W,F=W.fx,V=()=>new THREE.Vector3();
@@ -41,6 +50,8 @@ export function traffic(W){
 
   // ---- the pieces ----
   function design(cls){
+    // the strangers come from factions.js
+    if(CLASSES[cls].alien){const m=W.FA[cls]();m.g.userData.info=null;m.g.traverse(o=>{if(o.isMesh)o.castShadow=o.receiveShadow=false;});return m.g;}
     const parts=[],glows=[],g=new THREE.Group();
     const glow=(x,y,z,col,size,op)=>{const s=F.sprite(col,size,op);s.position.set(x,y,z);g.add(s);glows.push(s);return s;};
     const box=(w,h,d,mat,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parts.push(m);return m;};
@@ -70,6 +81,10 @@ export function traffic(W){
     else if(cls==='tamar'){saucer(48,9,25,0);body(15,125,15,-17);defl(13,-17,8,0xffa040);
       const pod=new THREE.Mesh(new THREE.SphereGeometry(7,14,10),M.dark);pod.position.set(-10,-31,0);pod.scale.set(1.8,1,1);parts.push(pod);
       nacelle(-28,115,9,24,0);strut([-60,-6,0],[-78,20,0],44,4);}
+    else if(cls==='corvid'){saucer(40,7,0,0);defl(36,-4,4,0x9fd0ff);
+      for(const sd of [1,-1]){nacelle(-30,80,6,0,sd*38);strut([-18,0,sd*20],[-30,0,sd*34],18,3);}}
+    else if(cls==='anvil'){body(20,250,24,0,SECT.slab);box(36,34,64,M.dark,128,0,0);defl(148,0,14,0x9fd0ff);box(60,10,40,M.panel,40,22,0);box(0.6,3,30,M.lit,70.4,24,0);
+      for(const sd of [1,-1])for(const sy of [1,-1]){nacelle(-90,110,7,sy*36,sd*44);strut([-70,sy*10,sd*16],[-100,sy*34,sd*42],26,3);}}
     else{body(70,170,15,0,SECT.slab);box(18,7,20,M.panel,55,14,0);box(0.6,2,16,M.lit,64.4,14,0);
       for(let i=0;i<4;i++)box(26,12,22,i%2?M.dark:M.panel,25-i*32,17,0);
       for(const sd of [1,-1]){nacelle(-45,80,6,-6,sd*27);strut([-70,-2,sd*12],[-80,-6,sd*24],22,3);}}
@@ -85,12 +100,12 @@ export function traffic(W){
   const all=[];let nameAt=0;
   const nextName=pick=>{for(let k=0;k<NAMES.length;k++){const n=NAMES[(nameAt+k)%NAMES.length];if(!pick||n[2]===pick){nameAt=(nameAt+k+1)%NAMES.length;return n;}}return NAMES[nameAt++%NAMES.length];};
   function ship(pl,cls,task,named){
-    const [name,reg,c]=named||nextName(cls),g=make(c),info={name:name+' ('+reg+')',info:''};
+    const [name,reg,c]=named||nextName(cls),g=make(c),info={name:reg?name+' ('+reg+')':name,info:''};
     g.userData.info=info;pl.group.add(g);W.pickable(g);
     const t={name,reg,cls:c,g,info,task,pl,heading:V().set(1,0,0),stretch:1,hidden:false};
     setInfo(t);all.push(t);return t;
   }
-  const setInfo=t=>{t.info.info=CLASSES[t.cls].title+', of this page\'s own design. '+CLASSES[t.cls].blurb+' '+t.task.say;};
+  const setInfo=t=>{const C=CLASSES[t.cls];t.info.info=(C.alien?C.title+'. ':C.title+', of this page\'s own design. ')+C.blurb+' '+t.task.say;};
   function plan(pl){
     if(pl.P.id==='deep')return;
     let s=[...pl.P.id].reduce((a,c)=>a*31+c.charCodeAt(0),7)>>>0;const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
@@ -169,9 +184,12 @@ export function traffic(W){
         face(t,V().set(-1,0,0).applyQuaternion(st.g.quaternion),up.set(0,1,0).applyQuaternion(st.g.quaternion));}
       else if(T.kind==='escort'){
         // still while she docks; otherwise in its slot, swaying a little, facing the way she faces
-        if(!(W.dockTarget&&W.dockTarget())){const w=slotWorld(t,V());w.y+=Math.sin(now*0.0004+T.slot)*25;t.g.position.copy(pl.group.worldToLocal(w));
+        // (on the autopilot's leg to the starbase they keep up; on the approach and at the clamps they wait)
+        const ph=W.dockPhase&&W.dockPhase();if(!ph||ph==='transit'){const w=slotWorld(t,V());w.y+=Math.sin(now*0.0004+T.slot)*25;t.g.position.copy(pl.group.worldToLocal(w));
           face(t,V().set(1,0,0).applyQuaternion(W.ROOT.quaternion).applyQuaternion(pl.group.getWorldQuaternion(new THREE.Quaternion()).invert()),up.set(0,1,0));}
         const foe=W.enemy;if(foe&&now*0.001>T.fireT&&foe.m.g.getWorldPosition(V()).distanceTo(t.g.getWorldPosition(V()))<9000){T.fireT=now*0.001+2.6+Math.random()*1.4;fire(t,foe);}}
+      else if(T.kind==='contact'||T.kind==='cargo'){t.g.rotation.y+=dt*(T.kind==='cargo'?0.05:0.004);
+        if(T.kind==='cargo')t.g.traverse(o=>{if(o.userData.flick!=null)o.material.opacity=Math.sin(now*0.004)>0.6?1:0.1;});}
       else if(T.kind==='wreck'){t.g.rotation.x+=dt*0.01;t.g.rotation.z+=dt*0.006;
         t.g.traverse(o=>{if(o.userData.flick!=null)o.material.opacity=Math.sin(now*0.003+o.userData.flick)>0.7||Math.sin(now*0.017+o.userData.flick*3)>0.96?0.9:0.05;});
         if(t.vent)t.vent.material.opacity=0.35+0.25*Math.sin(now*0.011);}
@@ -184,7 +202,18 @@ export function traffic(W){
   // escorts go to warp when she does
   let wasWarp=false;
   animHooks.push(()=>{const w=!!W.flight.warp;if(w&&!wasWarp)for(const t of escorts())if(t.g.visible){warpFx(t,true);t.task.inWarp=true;}wasWarp=w;});
-  W.traffic={here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all,escort,release,escorts,wreck,setTask,
-    spawn:(pl,cls,task,name)=>ship(pl,cls,task,name),remove:t=>{t.pl.group.remove(t.g);all.splice(all.indexOf(t),1);const i=W.pick.indexOf(t.g);if(i>=0)W.pick.splice(i,1);}};
+  // a stranger out of warp ahead of the ship: the Ossari (first contact) or a probe (cargo, to beam aboard)
+  function stranger(cls,task,name,dist,side){const pl=W.herePlace(),f=V().set(1,0,0).applyQuaternion(W.ROOT.quaternion),s=V().set(0,0,1).applyQuaternion(W.ROOT.quaternion);
+    const t=ship(pl,cls,task,[name,'',cls]);t.g.position.copy(pl.group.worldToLocal(W.ROOT.position.clone().addScaledVector(f,dist).addScaledVector(s,side).add(V().set(0,300,0))));
+    t.g.traverse(o=>{if(o.isSprite&&o.userData.flick!=null)o.material=o.material.clone();});
+    face(t,V().set(-1,0,0).applyQuaternion(W.ROOT.quaternion).applyQuaternion(pl.group.getWorldQuaternion(new THREE.Quaternion()).invert()),up.set(0,1,0));
+    if(cls!=='probe')warpFx(t,false);return t;}
+  W.ossari=()=>{const n=['Seventh Bloom','Long Listening','The Quiet Between','Patience of Moss'][Math.floor(Math.random()*4)];
+    const t=stranger('ossari',{kind:'contact',hails:0,say:'It has not moved since it arrived. It is listening.'},'The Ossari vessel '+n,6000,-1800);
+    F.note&&W.toast&&W.toast('Sensors',' A ship we have never seen, six kilometres ahead: grown, not built. It is not hostile. It is waiting.');W.emit&&W.emit('ossari',t);return t;};
+  // going: to warp, and gone for good
+  const leave=t=>{if(!t.g.visible)return;warpFx(t,true);setTimeout(()=>{if(all.includes(t))W.traffic.remove(t);},900);};
+  W.traffic={stranger,leave,here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all,escort,release,escorts,wreck,setTask,
+    spawn:(pl,cls,task,name)=>ship(pl,cls,task,name),remove:t=>{const j=all.indexOf(t);if(j<0)return;t.pl.group.remove(t.g);all.splice(j,1);const i=W.pick.indexOf(t.g);if(i>=0)W.pick.splice(i,1);}};
   return {state:()=>({ships:all.length,here:W.traffic.here().map(t=>t.name+':'+t.task.kind)})};
 }

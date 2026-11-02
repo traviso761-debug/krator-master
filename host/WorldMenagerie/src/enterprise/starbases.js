@@ -22,6 +22,7 @@ export const STATIONS=[
   {n:23,place:'ice',body:0,alt:0.1,turn:0.35,lift:-0.08,note:'Over the ice world\'s day side, where the red dwarf never sets: a research station and a relay.'},
   {n:47,place:'ocean',body:0,alt:0.07,turn:-0.3,lift:0.15,rings:2,note:'Above the water world\'s weather, between it and its rings: a colony\'s port and shipyard.'},
   {n:74,place:'lava',body:0,alt:0.22,turn:0.5,lift:0.1,note:'Well clear of the lava world\'s heat, on its night side\'s edge: a geological survey post.'},
+  {n:88,place:'colony',body:0,alt:0.07,turn:0.4,lift:0.1,rings:2,note:'Over New Arden, the sector\'s youngest colony: a port still half built, scaffolding on its second ring.'},
   {n:9,place:'belt',pos:[26000,1800,-9000],ry:0.8,note:'A mining station in the belt, where the ore haulers bring the rock.'},
 ];
 export const stationName=s=>'Starbase '+s.n;
@@ -122,7 +123,10 @@ export function starbases(W){
     W.setThrottle(0);F.note('Approach control, '+st.name+': cleared to dock, berth one. We have the helm.');
   }
   function doDock(st){
-    if(dock.phase==='docked'){dock.phase=null;W.setThrottle(0.15);F.note('Cast off from '+dock.st.name+'.');return;}
+    // asked by name for the one already being docked at (a marker, the chart, comms, the orders): nothing to do
+    if(st&&dock.phase&&st===dock.st){F.note(dock.phase==='docked'?'Docked at '+st.name+'. K casts off.':'Already on the way in to '+st.name+'.');return;}
+    // docked: K casts off; asked for another starbase, she casts off and goes there
+    if(dock.phase==='docked'){dock.phase=null;W.setThrottle(0.15);F.note('Cast off from '+dock.st.name+'.');if(!(st&&st.g))return;}
     if(dock.phase&&!st){W.cancelAuto();return;}
     st=st&&st.g?st:nearest();
     if(!st){F.note('There is no starbase here. The chart (P) shows where they are.');return;}
@@ -133,10 +137,12 @@ export function starbases(W){
     if(d<12000){approach(st);return;}
     // from far off: the impulse autopilot to a point out beyond the arm's end, then approach control
     dock.phase='transit';
-    W.goto({name:st.name,pos:()=>toW(st,OUT),stop:0,quiet:true,done:()=>{if(dock.phase==='transit'&&dock.st===st)approach(st);}});
+    W.goto({name:st.name,pos:()=>toW(st,OUT),stop:0,quiet:true,fromDock:true,done:()=>{if(dock.phase==='transit'&&dock.st===st)approach(st);}});
     F.note('Laying in a course for '+st.name+', '+Math.round(d/1000).toLocaleString('en')+' km, at full impulse.');
   }
-  W.dock=doDock;W.dockTarget=()=>dock.phase?dock.st:null;
+  W.dock=doDock;W.dockTarget=()=>dock.phase?dock.st:null;W.dockPhase=()=>dock.phase;
+  // the autopilot sent anywhere else lets the docking go
+  {const g0=W.goto;W.goto=t=>{if(dock.phase&&!t.fromDock){dock.phase=null;}g0(t);};}
   {const prev=W.cancelAuto;W.cancelAuto=quiet=>{if(dock.phase&&!quiet)F.note(dock.phase==='docked'?'Cast off.':'Docking cancelled.');dock.phase=null;prev&&prev(quiet);};}
   const qLook=(st,dir)=>{const m=new THREE.Matrix4(),up=V().set(0,1,0).applyQuaternion(qOf(st)),x=dir.clone().normalize(),z=x.clone().cross(up).normalize(),y=z.clone().cross(x);
     m.makeBasis(x,y,z);return new THREE.Quaternion().setFromRotationMatrix(m);};

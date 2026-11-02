@@ -47,7 +47,7 @@ export function transporter(W){
     if(busy){note('Still energising.');return;}
     const cs=W.contacts?W.contacts():[];
     // a ship's crew off a wreck
-    const wreck=target&&target.ship&&target.ship.task.kind==='wreck'?target:cs.filter(c=>c.kind==='ship'&&c.ship.task.kind==='wreck').sort((a,b)=>a.d-b.d)[0];
+    const wreck=target&&target.ship&&target.ship.task.kind==='wreck'?target:cs.filter(c=>c.kind==='ship'&&c.ship.task.kind==='wreck'&&!c.ship.task.saved).sort((a,b)=>a.d-b.d)[0];
     if(wreck&&!wreck.ship.task.saved){
       if(wreck.d>5000){note(wreck.name+' is '+km(wreck.d)+' off: bring us within five kilometres.');return;}
       const t=wreck.ship,n=t.task.crew||40,cyc=Math.max(2,Math.min(4,Math.ceil(n/18)));
@@ -55,20 +55,29 @@ export function transporter(W){
       energise(()=>t.g.getWorldPosition(V()),220,cyc,()=>{t.task.saved=true;t.task.crew=0;t.task.say='Abandoned: her crew are aboard the Enterprise.';
         W.traffic.setTask(t,t.task);rescued+=n;note('All '+n+' aboard. Sickbay is taking the injured.');W.emit&&W.emit('rescued',t);W.emit&&W.emit('beam',{kind:'rescue',t});});
       return;}
-    // the away team
+    // the away team (unless it was a probe she was asked to bring aboard)
+    if(!(target&&target.ship&&target.ship.task.kind==='cargo')){
     const orb=S.orbit&&S.orbit.b;
     if(away&&away.pl===W.herePlace()){
       if(!orb||orb.name!==away.body){note('The away team is on '+away.body+': put us back in orbit over it to bring them up.');return;}
       note('Energising. Four to beam up.');
       energise(()=>F.shipCentre().add(V().set(0,-160,0).applyQuaternion(ROOT.quaternion)),80,1,()=>{note('Away team aboard. '+away.found);W.emit&&W.emit('aboard',away);W.emit&&W.emit('beam',{kind:'aboard'});away=null;},0x9fd0ff);
       return;}
+    if(orb&&away){note('The away team is still on '+away.body+', '+away.pl.P.name.replace(/^Home: .*/,'at home').toLowerCase()+': bring them back first.');return;}
     if(orb){const r=seeded(orb.name+W.herePlace().P.id),pk=a=>a[Math.floor(r()*a.length)];
-      const found=/gas giant/.test(orb.name)?'They never got there: it is gas all the way down. (They are fine: the beam would not lock.)':
+      const found=orb.name==='the hub'?'They found halls that light up as they walk into them, and writing nobody can read. They felt watched the whole time.':/gas giant/.test(orb.name)?'They never got there: it is gas all the way down. (They are fine: the beam would not lock.)':
         pk(['They found the ruins of a settlement nobody had charted, and brought back pictures.','They took core samples and a frightened lizard, which they have been told to put back.',
           'They report air that is breathable, water that is not, and a view they would like to describe at length.','They found a cave full of crystals that hum when the sun is on them.']);
       away={pl:W.herePlace(),body:orb.name,found};
       note('Away team: four, led by the first officer. Energising.');
       energise(()=>F.shipCentre().add(V().set(0,-200,0).applyQuaternion(ROOT.quaternion)),80,1,()=>{note('The away team is down on '+orb.name+'. B to bring them back.');W.emit&&W.emit('away',away);W.emit&&W.emit('beam',{kind:'away',body:orb.name});},0x9fd0ff);
+      return;}
+    }
+    // something to bring aboard: a probe
+    const cargo=target&&target.ship&&target.ship.task.kind==='cargo'?target:cs.filter(c=>c.kind==='ship'&&c.ship.task.kind==='cargo').sort((a,b)=>a.d-b.d)[0];
+    if(cargo){if(cargo.d>4000){note(cargo.name+' is '+km(cargo.d)+' off: bring us within four kilometres.');return;}
+      const t=cargo.ship;note('Locking on to '+cargo.name+'. It is heavier than it looks. Energising.');
+      energise(()=>t.g.getWorldPosition(V()),160,2,()=>{note(cargo.name+' is in the cargo bay. Science is already arguing over it.');W.traffic.remove(t);W.emit&&W.emit('recovered',t);W.emit&&W.emit('beam',{kind:'cargo',t});},0x9fe8ff);
       return;}
     // a courtesy party across to a ship or a starbase
     const near=target&&(target.kind==='ship'||target.kind==='station')?target:cs.filter(c=>c.kind==='ship'||c.kind==='station').sort((a,b)=>a.d-b.d)[0];

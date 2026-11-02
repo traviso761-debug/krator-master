@@ -64,7 +64,7 @@ export function cartography(W){
     if(c.kind==='foe'){const g=c.foe.m.g;W.goto({name:c.name,pos:()=>g.getWorldPosition(V()),stop:3000,done:()=>F.note('In weapons range of the '+c.name+'.')});return;}
     if(c.kind==='ship'){const g=c.ship.g;W.goto({name:c.name,pos:()=>g.getWorldPosition(V()),stop:2500,done:()=>F.note('Alongside '+c.name+'.')});return;}
     const local=c.local.clone();
-    W.goto({name:c.name,pos:()=>SYS.localToWorld(local.clone()),stop:c.kind==='body'?c.r*1.35:c.r+1500,done:c.kind==='body'?orbitOnArrival:null});
+    W.goto({name:c.name,pos:()=>SYS.localToWorld(local.clone()),stop:c.kind==='body'?Math.max(c.r*1.35,c.r+3000):c.r+1500,done:c.kind==='body'?orbitOnArrival:null});
   }
   W.goContact=goTo;W.contacts=contacts;
 
@@ -87,11 +87,19 @@ body.bare #ent-marks{display:none}`;
   const mk=i=>{if(!pool[i]){const b=document.createElement('button');b.type='button';b.className='mk';b.append(document.createElement('i'),document.createElement('span'));
     b.onclick=()=>{const c=b._c;if(c){W.audio&&W.audio();goTo(c);}};layer.appendChild(b);pool[i]=b;}return pool[i];};
   const pc=V(),nd=V();
+  // who is here is gathered every tenth frame; where they are, every frame (ships and hostiles move)
+  let cache=[],ck=0,cachePl=null;
+  const where=c=>{if(c.ship)c.ship.g.getWorldPosition(c.world);else if(c.foe)c.foe.m.g.getWorldPosition(c.world);else SYS.localToWorld(c.world.copy(c.local));
+    c.d=Math.max(0,c.world.distanceTo(ROOT.position)-(c.kind==='body'?c.r:0));};
+  const set=(b,k,v)=>{if(b['_'+k]!==v){b['_'+k]=v;if(k==='cls')b.className=v;else if(k==='tf')b.style.transform=v;else if(k==='rot')b.firstChild.style.transform=v;
+    else if(k==='lab')b.lastChild.textContent=v;else if(k==='aria')b.setAttribute('aria-label',v);else if(k==='disp')b.style.display=v;}};
   function marks(camera){
     let n=0;
     if(MODES[mode]!=='none'){
       const tgt=go.t,dk=W.dockTarget&&W.dockTarget();
-      for(const c of contacts()){
+      if(ck++%10===0||W.herePlace()!==cachePl){cache=contacts();cachePl=W.herePlace();}else for(const c of cache)where(c);
+      cache=cache.filter(c=>!c.ship||c.ship.g.parent);
+      for(const c of cache){if(c.foe&&c.foe.gone)continue;
         // the autopilot's or docking's target, what the orders want and any hostile are always marked
         const isT=tgt&&tgt.name===c.name||dk&&dk===c.st||W.orderTarget&&W.orderTarget()===c.name;
         if(MODES[mode]==='starbases'&&c.kind!=='station'&&c.kind!=='foe'&&c.kind!=='gate'&&!isT)continue;
@@ -102,17 +110,15 @@ body.bare #ent-marks{display:none}`;
         if(on&&c.d<1)continue;
         if(!on){if(Math.abs(x)<1e-6&&Math.abs(y)<1e-6)y=-1;const m=Math.max(Math.abs(x)/0.93,Math.abs(y)/0.86);x/=m;y/=m;}
         const b=mk(n++);b._c=c;
-        b.className='mk '+c.kind+(isT?' tgt':'')+(on?'':' off');
-        b.style.transform=`translate(${Math.round((x+1)/2*innerWidth)}px,${Math.round((1-y)/2*innerHeight)}px)`;
-        b.firstChild.style.transform=on?'':'rotate('+Math.atan2(x,y)+'rad)';
         // the label on the side away from the edge, so it is never cut off
-        b.classList.toggle('left',x>0.4);
-        const label=c.name.replace(/^the /,'')+' · '+km(c.d);
-        if(b.lastChild.textContent!==label)b.lastChild.textContent=label;
-        b.setAttribute('aria-label',(c.kind==='station'?'Dock at ':'Go to ')+c.name+', '+km(c.d));
-        b.style.display='';
+        set(b,'cls','mk '+c.kind+(isT?' tgt':'')+(on?'':' off')+(x>0.4?' left':''));
+        set(b,'tf',`translate(${Math.round((x+1)/2*innerWidth)}px,${Math.round((1-y)/2*innerHeight)}px)`);
+        set(b,'rot',on?'':'rotate('+Math.atan2(x,y).toFixed(2)+'rad)');
+        const dist=km(c.d);set(b,'lab',c.name.replace(/^the /,'')+' · '+dist);
+        set(b,'aria',(c.kind==='station'?'Dock at ':'Go to ')+c.name+', '+dist);
+        set(b,'disp','');
       }}
-    for(let i=n;i<pool.length;i++)pool[i].style.display='none';
+    for(let i=n;i<pool.length;i++)set(pool[i],'disp','none');
   }
   W.preRender.push(marks);
   const cycleMarks=()=>{mode=(mode+1)%MODES.length;F.note('Markers: '+MODES[mode]+'.');syncBar();};
@@ -298,7 +304,8 @@ body.bare #cartopanel{display:none!important}`;
     // the text under it every few frames (it is DOM, and buttons that are rebuilt under the pointer cannot be clicked)
     if(C.dirty||++tk%30===0){refreshSel();showInfo();showList();C.dirty=false;}
   }
-  animHooks.push(()=>{if(panel.classList.contains('open'))frame();});
+  // every third frame is plenty for a chart (it was a millisecond and a half a frame), at once when something changed
+  let fk=0;animHooks.push(()=>{if(panel.classList.contains('open')&&(C.dirty||++fk%3===0))frame();});
 
   addEventListener('keydown',e=>{if(e.repeat||e.ctrlKey||e.metaKey||e.altKey||/INPUT|TEXTAREA/.test(e.target.tagName||''))return;
     if(e.key==='p'||e.key==='P'){W.audio&&W.audio();toggle();}

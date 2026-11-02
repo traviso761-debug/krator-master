@@ -2112,6 +2112,22 @@ wireframe and menagerie menu every other page has.
     capitals, going to reds under red alert; this page's own CSS and palette, no font fetched, scoped to
     `enterprise.html` alone. For tests: `#mission=rescue` (or survey, escort, defend, deliver, wormhole) accepts those
     orders at once, `#ev=orders,comms,scan,sweep,beam,formup,wormhole,hailhq,accept,next`, and `#dbg` reports them.
+  - **Eighth pass: more of everything, and a fresh run each time.** Every visit is dealt its own run of orders (a seed
+    of its own, the kinds shuffled, each drawing its places, ships, cargo, ambushes and odds from it; `#mseed=` fixes it
+    for tests), from fourteen kinds: the six before, and a **patrol** of three places (raiders may be waiting at one), a
+    **first contact** with the **Ossari** (a people who grow their ships: pearl-white pods on a curved spine, sails of
+    faint light; hail them until they answer properly), **recovering a probe** (beam it aboard; something may have
+    followed its signal), an **evacuation** (orbit, a medical team down, the injured up, then a starbase), a **Kethri
+    swarm** (darts of forty metres in fives and sixes, fast and fragile), **hunting** a named Varr raider-captain, the
+    **ion storm**'s eye, and the **ancient ring**'s hub, which has woken up. Mission objects are put ahead of the ship
+    only once she has stopped coasting out of warp (she runs on about a hundred kilometres). Four new places
+    (`wilds.js` for two): **a colony world**, New Arden, with **Starbase 88** over it; **an ion storm**, violet murk and
+    lightning round a calm eye; **an ancient ring** seventy kilometres across, turning round a glowing hub you can orbit
+    and send a team into; and **a shattered world**, its core glowing through the cracks, its pieces strewn round it.
+    Two new Federation classes (the Corvid scout, the Anvil fleet tender). At the helm, **Z** raises and lowers the
+    shields, and a strip of quick controls down the right (`helm.js`: shields, red alert, phasers, torpedo, scan, hail,
+    energise, dock, lit while on); every panel has a Close of its own, and Escape closes them. For tests:
+    `#ev=swarm`, `#ev=ossari`, `#mission=patrol` (or contact, probe, evacuate, swarm, hunt, storm, relic).
   - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
     on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
     2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they

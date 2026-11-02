@@ -34,5 +34,7 @@ starshipPage({
     'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
     'Every planet with a world worth a port has a starbase over it; P shows them all, and K flies you in to dock.',
     'The other ships are going about their own business: patrols, stores, surveys, and somewhere else to be.',
+    'Every visit, Starfleet deals a different run of orders. Z raises the shields.',
+    'The Ossari grow their ships. Nobody had met them until now: hold your fire and keep talking.',
   ],
 });
