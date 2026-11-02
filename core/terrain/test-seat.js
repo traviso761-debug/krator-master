@@ -11,6 +11,16 @@ load('38a-core-seat.js');
 const K=KSEAT;
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 
+// ---- a few huge faces among many small ones: the buckets stay in proportion and no hit moves
+{const pos=[];let q=1;const r=()=>(q=q*16807%2147483647)/2147483647;
+ for(let i=0;i<4000;i++){const x=r()*180,y=r()*100,z=r()*180;pos.push(x,y,z,x+.3,y,z,x,y+.3,z+.3);}
+ for(let i=0;i<20;i++){const y=i*5;pos.push(0,y,0,0,y,190,190,y,0,190,y,190,190,y,0,0,y,190);}
+ const P=new Float32Array(pos),A=K.tris(P,null,{id:'a'}),F=K.tris(P,null,{id:'f',cell:8});let same=true;
+ for(let i=0;i<500;i++){const x=r()*180,z=r()*180,a=K.down(A,x,z,120),f=K.down(F,x,z,120);if(!a||!f||a.y!==f.y)same=false;}
+ ok('huge faces coarsen the buckets (a cell of '+A.cell+' m)',A.cell>1);
+ ok('and every ray reads what a fixed cell reads',same);
+ ok('a given cell stands',K.tris(P,null,{cell:1}).cell===1);}
+
 // ---- a closed box, faces wound CCW from outside (the drawn convention)
 function box(x0,y0,z0,x1,y1,z1){const c=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],
   F=[[0,3,2,1],[4,5,6,7],[0,1,5,4],[3,7,6,2],[0,4,7,3],[1,2,6,5]],pos=[],mid=[(x0+x1)/2,(y0+y1)/2,(z0+z1)/2];

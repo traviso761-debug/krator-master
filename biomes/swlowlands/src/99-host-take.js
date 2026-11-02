@@ -85,19 +85,24 @@ const HCHK={
 // its quartiles within .25 m: a trunk, a shrub, a tuft; not a crown or a hanging clump). Each sampled instance is a
 // record whose foot is that offset under it; the probe's contact sweep (core/host/95b-host-seat.js) measures it against the
 // ground mesh. opt.old puts each foot where terrainH (the closure, what the plants stood on before) put it, the
-// negative: the sweep must see those float and sink. Memoised: the instances do not move after the build
+// negative: the sweep must see those float and sink. Memoised: the instances do not move after the build.
+// HELD_ITEMS share a mesh between pieces on the ground and pieces something else holds (a palm's crown, a limb, a trunk's spines,
+// a log's back, duckweed on the water): an instance of one more than HELD_UP over the drawn ground is not a foot. That hides a
+// float above HELD_UP on these items only, so the check's line counts what it left out. NOT_FEET: a boulder's origin is its middle
+const HELD_ITEMS={'biome:fan':1,'biome:frond':1,'biome:cone':1,'biome:mossmat':1},NOT_FEET={'biome:boulder':1},HELD_UP=.6;
 let _feet=null;
-function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];
-  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!M.count)return;M.updateMatrixWorld();
+function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];let held=0;
+  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!M.count||NOT_FEET[M.name])return;M.updateMatrixWorld();
    const P=[],st=Math.max(1,Math.floor(M.count/400));
    for(let i=0;i<M.count;i+=st){M.getMatrixAt(i,m);m.premultiply(M.matrixWorld);const e=m.elements;P.push([e[12],e[13],e[14],e[13]-drawnH(e[12],e[14]),i]);}
    const d=P.map(p=>p[3]).sort((a,b)=>a-b),q=f=>d[Math.min(d.length-1,Math.floor(d.length*f))],med=q(.5);
    if(med<-1||med>.3||q(.75)-q(.25)>.25)return;items.push(M.name);
-   P.forEach(p=>out.push({id:M.name+'#'+p[4],'class':'flora',at:[p[0],p[1]-med,p[2]],off:terrainH(p[0],p[2])-drawnH(p[0],p[2]),foot:{tol:.3}}));});
-  _feet={items,recs:out};}
+   P.forEach(p=>{if(HELD_ITEMS[M.name]&&p[3]-med>HELD_UP){held++;return;}
+    out.push({id:M.name+'#'+p[4],'class':'flora',at:[p[0],p[1]-med,p[2]],off:terrainH(p[0],p[2])-drawnH(p[0],p[2]),foot:{tol:.3}});});});
+  _feet={items,recs:out,held};}
  return old?_feet.recs.map(r=>Object.assign({},r,{at:[r.at[0],r.at[1]+r.off,r.at[2]]})):_feet.recs;}
 function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatScene(),F),off=F.map(r=>Math.abs(r.off)).sort((a,b)=>a-b),q=f=>off.length?off[Math.min(off.length-1,Math.floor(off.length*f))]:0;
- return{ok:c.n>1000&&!c.fails.length&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
+ return{ok:c.n>1000&&!c.fails.length&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground, '+_feet.held+' held pieces left out ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
   c.worst.gap.toFixed(2)+' m up, '+c.worst.depth.toFixed(2)+' m down; the control '+(c.neg?'floats':'DID NOT float')+'); terrainH off the drawn ground at these feet: median '+q(.5).toFixed(2)+', p99 '+q(.99).toFixed(2)+', max '+q(1).toFixed(2)+' m'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));

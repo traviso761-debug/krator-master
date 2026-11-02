@@ -123,6 +123,13 @@ function tris(pos,idx,o){o=o||{};var M=o.matrix,nv=pos.length/3,P=new Float64Arr
     if(isFinite(x0)){area+=(x1-x0)+(z1-z0);used++;}}
   // the bucket: about two triangles' span, kept between 1 and 64 m
   var c=o.cell!=null?+o.cell:Math.min(64,Math.max(1,used?area/used:4)),B=new Map(),ox=isFinite(box[0])?box[0]:0,oz=isFinite(box[2])?box[2]:0;
+  /* a few huge faces among many small ones (a tower's floor plates among its girders): the mean span puts each plate in tens
+     of thousands of buckets. Coarsen until the entries are in proportion to the triangles; the buckets only speed the search,
+     so no hit moves. An explicit o.cell stands */
+  if(o.cell==null)for(var g=0;g<12;g++){var ent=0,lim=Math.max(1e5,16*nt);
+    for(t=0;t<nt&&ent<=lim;t++){var a0=vi(t,0)*3,b0=vi(t,1)*3,e0=vi(t,2)*3;
+      ent+=(Math.floor((Math.max(P[a0],P[b0],P[e0])-Math.min(P[a0],P[b0],P[e0]))/c)+1)*(Math.floor((Math.max(P[a0+2],P[b0+2],P[e0+2])-Math.min(P[a0+2],P[b0+2],P[e0+2]))/c)+1);}
+    if(!(ent>lim))break;c*=2;}
   for(t=0;t<nt;t++){var a=vi(t,0)*3,b=vi(t,1)*3,cc=vi(t,2)*3;
     var i0=Math.floor((Math.min(P[a],P[b],P[cc])-ox)/c),i1=Math.floor((Math.max(P[a],P[b],P[cc])-ox)/c),
         j0=Math.floor((Math.min(P[a+2],P[b+2],P[cc+2])-oz)/c),j1=Math.floor((Math.max(P[a+2],P[b+2],P[cc+2])-oz)/c);

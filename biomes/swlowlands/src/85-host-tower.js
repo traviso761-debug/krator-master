@@ -47,7 +47,7 @@ function buildTestTower(){
    for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(n[i]);}
    for(let i=0;i<p.length;i+=3){uv.push((p[i]+p[i+2])/6,p[i+1]/6);}});   // triplanar-ish world uv
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
-  const m=new THREE.Mesh(geo,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return geo;};
+  const m=new THREE.Mesh(geo,mat);m.userData.inspectLabel=label;m.userData.host=true;m.userData.seat='building';scene.add(m);return geo;};
  const matC=new THREE.MeshLambertMaterial({map:hostTowerLib('towerConcrete',TEXC),color:0x8e8878});
  const gC=merge(conc,matC,'Girder tower — concrete');
  const gW=merge(wall,matC,'Girder tower — core walls and rubble');
