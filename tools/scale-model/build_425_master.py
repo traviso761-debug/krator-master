@@ -867,6 +867,62 @@ def main():
     coastal_spike = (d_to_water_px <= 5.0) & (grad_px > 340.0) & ~vent_guard & ~whas_exp
     En_exp = np.where(coastal_spike, np.minimum(En_exp, En_coast_blur), En_exp)
 
+    # =========================================================================
+    # STEP 5B-SCARP: Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1)
+    # Along the `s highlands` north edge over `hyperjungle S` and `savage hyperjungle`
+    # (`px 745-930, py 1022-1060`), sculpt the scarp as a real step from the 0-500 m
+    # talus foot (~210-420 m) through the 1.2-2.4 km cloud-forest bench (~1,520-1,950 m)
+    # to the 3.0-3.8 km paramo rim crest (~3,320-3,780 m) over 4-5 cells (8-10 km),
+    # with 15 recessed V-ravines and projecting megabreccia buttresses, while keeping
+    # Spirladunon (800, 1017 at 1,398.2 m), Voth (742, 1018), Torus (774, 1007), and
+    # Pylon (869, 1002) untouched.
+    # =========================================================================
+    spirl_e_orig = float(En_exp[1017, 800])
+    y_scarp_base = (
+        1029.8
+        - 2.4 * np.sin((X_exp - 745.0) / 185.0 * math.pi)
+        + 0.7 * np.sin((X_exp - 760.0) / 28.0 * 2.0 * math.pi)
+    )
+    ravine_xs = [751.0, 761.0, 771.0, 783.0, 795.0, 807.0, 819.0, 831.0, 843.0, 855.0, 868.0, 881.0, 894.0, 907.0, 920.0]
+    rav_indent = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    for idx_rv, rx_v in enumerate(ravine_xs):
+        rw_v = 1.65 + 0.25 * ((idx_rv * 3) % 3)
+        rdepth_y = 1.65 + 0.45 * ((idx_rv * 5) % 3)
+        rav_indent = np.maximum(rav_indent, rdepth_y * np.exp(-((X_exp - rx_v) / rw_v) ** 2))
+    buttress_prom = 1.05 * np.clip(1.0 - rav_indent / 1.15, 0.0, 1.0)
+    y_scarp_line = y_scarp_base + rav_indent - 0.55 * buttress_prom
+    dy_scarp = Y_exp - y_scarp_line
+
+    u_foot_sc = G.sstep(-7.5, -2.0, dy_scarp)
+    u_low_wall = G.sstep(-2.0, 0.0, dy_scarp)
+    u_bench_sc = G.sstep(0.0, 0.9, dy_scarp)
+    u_up_wall = G.sstep(0.9, 2.4, dy_scarp)
+    u_crest_sc = G.sstep(2.4, 7.5, dy_scarp)
+
+    h_foot_sc = 215.0 + 185.0 * u_foot_sc - 35.0 * (rav_indent / 2.1)
+    h_bench_sc = 1540.0 + 360.0 * u_bench_sc + 95.0 * meta_nw['fbm2']
+    h_crest_sc = 3360.0 + 340.0 * u_crest_sc + 145.0 * buttress_prom + 110.0 * meta_nw['fbm1']
+    chute_cut_sc = (260.0 * (rav_indent / 2.1)) * G.sstep(-2.2, -0.3, dy_scarp) * (1.0 - G.sstep(1.8, 3.6, dy_scarp))
+
+    h_scarp_prof = (
+        h_foot_sc * (1.0 - u_low_wall)
+        + h_bench_sc * (u_low_wall * (1.0 - u_up_wall))
+        + h_crest_sc * u_up_wall
+        - chute_cut_sc
+    )
+    u_south_tie = G.sstep(1047.0, 1058.0, Y_exp)
+    h_scarp_target = h_scarp_prof * (1.0 - u_south_tie) + np.maximum(En_exp, 3380.0) * u_south_tie
+
+    w_scarp_x = G.sstep(744.0, 749.0, X_exp) * (1.0 - G.sstep(925.0, 931.0, X_exp))
+    w_scarp_y = G.sstep(1017.5, 1020.5, Y_exp) * (1.0 - G.sstep(1054.0, 1060.0, Y_exp))
+    d_spirl = np.hypot(X_exp - 800.0, Y_exp - 1017.0)
+    w_spirl_guard = G.sstep(4.2, 6.0, d_spirl)
+    d_voth = np.hypot(X_exp - 742.0, Y_exp - 1018.0)
+    w_voth_guard = G.sstep(3.5, 5.5, d_voth)
+    w_s_inner_scarp = w_scarp_x * w_scarp_y * w_spirl_guard * w_voth_guard * (~whas_exp).astype(float)
+    En_exp = En_exp * (1.0 - w_s_inner_scarp) + h_scarp_target * w_s_inner_scarp
+    En_exp[1017, 800] = spirl_e_orig
+
     # Save pre-river-incision hillshade so we can transfer the newly carved river-bank shading onto `t_pad` & `st_pad`!
     En_pre_riv = En_exp.copy()
     shade_pre_riv = compute_clean_hillshade(En_pre_riv, zf=5.0, az_deg=315.0, alt_deg=45.0)
@@ -993,6 +1049,12 @@ def main():
             vx_i, vy_i = vx_i + DX, vy_i + DY
         vent_summit_core |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 2.5)
 
+    # Re-assert the Southern Inner Wall scarp (`w_s_inner_scarp`) outside river channel seeds (`~riv_seed_mask`)
+    # so river valley-width smoothing never blurs the 4-5 cell step or cloud-forest bench, while keeping Spirladunon locked:
+    w_scarp_post = w_s_inner_scarp * (~riv_seed_mask).astype(float)
+    En_exp = En_exp * (1.0 - w_scarp_post) + h_scarp_target * w_scarp_post
+    En_exp[1017, 800] = spirl_e_orig
+
     climbing_fixed = 0
     for _pass_riv in range(2):
         for r in rivers_exp:
@@ -1038,6 +1100,125 @@ def main():
             r['source_m'] = beds[0]
             r['mouth_m'] = beds[-1]
     print(f'  Total rivers incised & verified on expanded map: {len(rivers_exp)} (clamped {climbing_fixed} vertices)')
+
+    # =========================================================================
+    # STEP 5C: Ancient's Valley (`rmva8s97fa99i`) 17 m Lake & Seven Vitrified
+    #          Blast Basins — Cut LAST in the Terrain Pipeline (Round 3 Item 2)
+    # =========================================================================
+    # 1. Settle the Ancient's Valley / SW Lowlands terminal lake (`Body 242`) to `wlev = 17.4 m`
+    #    (`lake_level_m = 17` on `"western lake (Ancient's Valley) outlet"`), grading its old
+    #    -431..-700 m trench bed up to a shallow -12..-28 m lake bed and clamping stale `wlev > 18 m`
+    #    edge cells to 17.4 m.
+    in_anc_lake_box = (X_exp >= 360.0) & (X_exp <= 560.0) & (Y_exp >= 910.0) & (Y_exp <= 1068.0)
+    anc_lake_mask = in_anc_lake_box & whas_exp & (np.nan_to_num(wlev_exp, nan=0.0) < 250.0)
+    wlev_exp = np.where(anc_lake_mask, 17.4, wlev_exp)
+    d_anc_lake_in = nd.distance_transform_edt(anc_lake_mask)
+    shallow_anc_bed = -8.0 - 18.0 * G.sstep(0.0, 8.0, d_anc_lake_in) + 3.5 * meta_nw['fbm2']
+    En_exp = np.where(anc_lake_mask & (En_exp < -28.0), shallow_anc_bed, En_exp)
+
+    # 2. Re-cut the seven vitrified nuclear/ordnance blast basins in `ancient's valley` LAST in the
+    #    terrain pipeline, sized for the (861, 910) half-grid round-trip so every single basin has
+    #    a flat vitrified floor 85-105 m below its local pad and a raised +38..+46 m vitrified rim:
+    #    - 4 dry basins: (476, 915) r=6 km, (398, 966) r=5.5 km, (450, 896) r=5 km, (406, 908) r=6.5 km
+    #    - 2 drowned lake basins: (428, 948) r=7.5 km, (460, 962) r=7 km (drowned at 17.4 m, bed -44..-46 m)
+    #    - 1 half-drowned shore basin: (420, 984) r=6.5 km (north half drowned at 17.4 m, south half dry)
+    anc_blast_specs = [
+        # (bx, by, r_km, mode, h_pad, floor_m, rim_m, breach_ang_deg)
+        (476.0, 915.0, 6.0, 'dry', 84.0, -22.0, 132.0, None),
+        (398.0, 966.0, 5.5, 'dry', 78.0, -26.0, 126.0, None),
+        (450.0, 896.0, 5.0, 'dry', 92.0, -14.0, 140.0, None),
+        (406.0, 908.0, 6.5, 'dry', 86.0, -20.0, 134.0, None),
+        (428.0, 948.0, 7.5, 'drowned', 22.0, -44.0, 38.0, 35.0),
+        (460.0, 962.0, 7.0, 'drowned', 22.0, -46.0, 36.0, -145.0),
+        (420.0, 984.0, 6.5, 'half', 42.0, -24.0, 76.0, -90.0),
+    ]
+    w_anc_basins = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    w_anc_rim_glass = np.zeros((NEW_OH, NEW_OW), dtype=float)
+
+    for bx, by, r_km, b_mode, h_pad, floor_m, rim_m, br_ang in anc_blast_specs:
+        r_px = r_km / 2.0
+        dx_b = X_exp - bx
+        dy_b = Y_exp - by
+        dist_b = np.hypot(dx_b, dy_b)
+        ang_b = np.degrees(np.arctan2(dy_b, dx_b))
+
+        # Smooth outer apron tie-in (`r_px + 1.4 <= dist_b <= r_px + 3.2`)
+        w_apron = 1.0 - G.sstep(r_px + 1.3, r_px + 3.0, dist_b)
+        w_anc_basins = np.maximum(w_anc_basins, w_apron)
+
+        # Raised vitrified rim ring (`0.78 * r_px <= dist_b <= 1.42 * r_px`) and flat vitrified crater bowl (`dist_b <= 0.72 * r_px`)
+        u_bowl = 1.0 - G.sstep(0.58 * r_px, 0.85 * r_px, dist_b)
+        u_rim = G.sstep(0.68 * r_px, 0.92 * r_px, dist_b) * (1.0 - G.sstep(1.22 * r_px, 1.52 * r_px, dist_b))
+        w_anc_rim_glass = np.maximum(w_anc_rim_glass, u_rim)
+
+        h_crater = h_pad * (1.0 - u_bowl - u_rim) + floor_m * u_bowl + rim_m * u_rim
+        if b_mode == 'half':
+            # Southern half of the `(420, 984)` shore basin bowl is emergent dry melt-sheet (`+18..+24 m`), northern half drowned (`-24 m`)
+            u_south_half = G.sstep(-0.4, 0.6, dy_b)
+            floor_half = floor_m * (1.0 - u_south_half) + (-6.0) * u_south_half
+            h_crater = h_pad * (1.0 - u_bowl - u_rim) + floor_half * u_bowl + rim_m * u_rim
+
+        if br_ang is not None:
+            d_ang = np.abs(((ang_b - br_ang + 180.0) % 360.0) - 180.0)
+            u_breach = (1.0 - G.sstep(18.0, 34.0, d_ang)) * G.sstep(0.60 * r_px, 0.85 * r_px, dist_b) * (1.0 - G.sstep(1.30 * r_px, 1.60 * r_px, dist_b))
+            h_crater = h_crater * (1.0 - u_breach) + 6.0 * u_breach
+        else:
+            u_breach = np.zeros_like(dist_b)
+
+        En_exp = np.where(dist_b <= (r_px + 1.55), h_crater, En_exp * (1.0 - 0.65 * w_apron) + h_pad * (0.65 * w_apron))
+
+        if b_mode == 'dry':
+            dry_zone = dist_b <= (r_px + 2.0)
+            whas_exp[dry_zone] = False
+            wlev_exp[dry_zone] = np.nan
+        elif b_mode == 'drowned':
+            in_bowl = (dist_b <= 0.82 * r_px) | (u_breach > 0.35)
+            on_rim = (dist_b > 0.82 * r_px) & (dist_b <= 1.45 * r_px) & (u_breach <= 0.35)
+            whas_exp[in_bowl] = True
+            wlev_exp[in_bowl] = 17.4
+            whas_exp[on_rim] = False
+            wlev_exp[on_rim] = np.nan
+        elif b_mode == 'half':
+            in_north_bowl = ((dist_b <= 0.80 * r_px) & (dy_b <= 0.0)) | (u_breach > 0.35)
+            in_south_or_rim = ((dist_b <= 1.48 * r_px) & ~in_north_bowl)
+            whas_exp[in_north_bowl] = True
+            wlev_exp[in_north_bowl] = 17.4
+            whas_exp[in_south_or_rim] = False
+            wlev_exp[in_south_or_rim] = np.nan
+
+    # Update `cls_exp` and `zon_exp` in `ancient's valley` & Southern Inner Wall scarp to match final `whas_exp` and `En_exp`:
+    anc_box_all = (X_exp >= 360.0) & (X_exp <= 560.0) & (Y_exp >= 885.0) & (Y_exp <= 1068.0)
+    cls_exp[anc_box_all & whas_exp] = idx['WH']
+    cls_exp[anc_box_all & ~whas_exp & (cls_exp == idx['WH'])] = idx['Cfa']
+    zon_exp[anc_box_all & whas_exp] = 4
+    zon_exp[anc_box_all & ~whas_exp & (zon_exp == 4)] = 0
+
+    in_scarp_clim = (w_s_inner_scarp > 0.25) & ~whas_exp
+    cls_exp[in_scarp_clim & (En_exp < 950.0)] = idx['Af']
+    cls_exp[in_scarp_clim & (En_exp >= 950.0) & (En_exp < 2450.0)] = idx['Cfb']
+    cls_exp[in_scarp_clim & (En_exp >= 2450.0)] = idx['ET']
+    zon_exp[in_scarp_clim & (En_exp < 1350.0)] = 0
+    zon_exp[in_scarp_clim & (En_exp >= 1350.0)] = 1
+
+    # Re-verify river `bed_m` monotonic non-increasing after Ancient's Valley lake level update (without altering blast basins):
+    for r in rivers_exp:
+        pts_r = r.get('px') or []
+        if not pts_r:
+            continue
+        beds = []
+        for px_, py_ in pts_r:
+            iy = min(NEW_OH - 1, max(0, int(round(py_))))
+            ix = min(NEW_OW - 1, max(0, int(round(px_))))
+            if whas_exp[iy, ix] and not np.isnan(wlev_exp[iy, ix]):
+                beds.append(round(float(max(En_exp[iy, ix], wlev_exp[iy, ix])), 1))
+            else:
+                beds.append(round(float(En_exp[iy, ix]), 1))
+        for i in range(1, len(beds)):
+            if beds[i] > beds[i - 1]:
+                beds[i] = beds[i - 1]
+        r['bed_m'] = beds
+        r['source_m'] = beds[0]
+        r['mouth_m'] = beds[-1]
 
     # =========================================================================
     # STEP 6: Synthesize & Blend `st`, `t`, `rt`, `ct` on (1723, 1821)
@@ -1116,8 +1297,9 @@ def main():
         np.maximum(np.maximum(w_silent_vales, w_sasquatch_vales), np.maximum(w_ne_outer_wall, w_nw_crater_scarp)),
         np.maximum(np.maximum(w_ozark_dolomite, w_porphyry_vein), w_tsunami_scour),
     )
+    w_r3_paint = np.maximum(w_s_inner_scarp, w_anc_basins)
     w_exp_paint = np.maximum(
-        np.maximum(np.maximum(w_seam, w_wall_unify), np.maximum(w_nw_sea_unify, w_batch5_paint)),
+        np.maximum(np.maximum(w_seam, w_wall_unify), np.maximum(w_nw_sea_unify, np.maximum(w_batch5_paint, w_r3_paint))),
         np.maximum(np.maximum(w_arach_paint, w_legacy_seams), np.maximum(w_ne_connector, w_sw_connector)),
     )[..., None]
 
@@ -1298,6 +1480,15 @@ def main():
     pseudo_rgb = np.array([56.0, 54.0, 62.0]) * shade_exp
     st_clim_exp = st_clim_exp * (1.0 - 0.76 * w_pseudo_scarp[..., None]) + pseudo_rgb * (0.76 * w_pseudo_scarp[..., None])
 
+    # 5H. Southern Inner Wall Scarp (`w_s_inner_scarp`: cloud-forest bench `[54, 108, 56]` & megabreccia cliff `[84, 76, 68]`)
+    #     and Ancient's Valley Vitrified Blast Rims (`w_anc_rim_glass`: dark trinitite/obsidian melt `[62, 64, 58]`):
+    w_scarp_bench_st = w_s_inner_scarp * G.sstep(950.0, 1450.0, En_exp) * (1.0 - G.sstep(2150.0, 2650.0, En_exp)) * (~whas_exp).astype(float)
+    st_clim_exp = st_clim_exp * (1.0 - 0.72 * w_scarp_bench_st[..., None]) + (np.array([54.0, 108.0, 56.0]) * shade_exp) * (0.72 * w_scarp_bench_st[..., None])
+    w_scarp_cliff_st = w_s_inner_scarp * G.sstep(2050.0, 2650.0, En_exp) * (1.0 - G.sstep(3250.0, 3550.0, En_exp)) * (~whas_exp).astype(float)
+    st_clim_exp = st_clim_exp * (1.0 - 0.68 * w_scarp_cliff_st[..., None]) + (np.array([86.0, 78.0, 70.0]) * shade_exp) * (0.68 * w_scarp_cliff_st[..., None])
+    w_anc_glass_st = np.clip(w_anc_rim_glass, 0.0, 1.0) * (~whas_exp).astype(float)
+    st_clim_exp = st_clim_exp * (1.0 - 0.74 * w_anc_glass_st[..., None]) + (np.array([64.0, 66.0, 58.0]) * shade_exp) * (0.74 * w_anc_glass_st[..., None])
+
     # 6. High Alpine Snow & Glaciers (`4,150 m <= En_exp < 8,200 m`) & Airless Dark Rust-Red Outer Plateau (`En_exp >= 7,600 m`):
     # Smoothly continuous `snow_thresh` so there is zero boolean jump ring around `sasquatch tribes` or `Silent Vales`!
     snow_thresh = (
@@ -1389,6 +1580,8 @@ def main():
             o['from'] = shift_pt(o['from'])
         if 'px' in o:
             o['px'] = shift_pts(o['px'])
+        if "Ancient's Valley" in str(o.get('name', '')):
+            o['lake_level_m'] = 17
     D_new['outlets'] = outlets_exp
 
     palaeo_exp = copy.deepcopy(D_old.get('palaeolakes', []))
@@ -1645,7 +1838,22 @@ def main():
     assert not whas_exp[fpy, fpx], f'Farport at {(fpx, fpy)} must be on dry land'
     assert float(En_exp[fpy, fpx]) >= 180.0, f'Farport elevation {En_exp[fpy, fpx]:.1f} m must exceed 100 m tsunami run-up ceiling'
     assert whas_exp[588, 290] and abs(float(wlev_exp[588, 290])) <= 0.5, 'Farport estuary harbour at (290, 588) must be at 0.0 m sea level'
-    print('  All final guards PASSED (vent peaks within 400 m inside 12 km, lakes valid, rivers monotonic, Farport at 212.0 m above 0.0 m harbour).')
+
+    # 5. Round 3 guards: Ancient's Valley 7 blast basins & 17.4 m lake + Southern Inner Wall scarp & Spirladunon
+    for bx, by, r_km, b_mode, *_ in anc_blast_specs:
+        r_px = r_km / 2.0
+        dist_b = np.hypot(X_exp - bx, Y_exp - by)
+        c_e = float(En_exp[int(round(by)), int(round(bx))])
+        rim_med = float(np.median(En_exp[(dist_b >= 0.85 * r_px) & (dist_b <= 1.35 * r_px)]))
+        assert (rim_med - c_e) >= 60.0, f'Blast basin {(bx, by)} rim_med ({rim_med:.1f} m) - centre ({c_e:.1f} m) < 60 m'
+        if b_mode == 'dry':
+            assert not whas_exp[int(round(by)), int(round(bx))], f'Dry blast basin {(bx, by)} must not be water'
+        elif b_mode == 'drowned':
+            assert whas_exp[int(round(by)), int(round(bx))], f'Drowned blast basin {(bx, by)} must be in lake'
+            assert abs(float(wlev_exp[int(round(by)), int(round(bx))]) - 17.4) <= 0.5, f'Drowned basin {(bx, by)} wlev != 17.4 m'
+            assert c_e >= -80.0, f'Drowned blast basin {(bx, by)} floor ({c_e:.1f} m) is too deep (< -80 m)'
+    assert abs(float(En_exp[1017, 800]) - spirl_e_orig) <= 5.0, f'Spirladunon at (800, 1017) moved from {spirl_e_orig:.1f} m to {En_exp[1017, 800]:.1f} m'
+    print('  All final guards PASSED (vent peaks within 400 m inside 12 km, lakes valid, rivers monotonic, Farport at 212.0 m, 7 blast basins & Southern Inner Wall scarp verified).')
 
     # =========================================================================
     # STEP 8: Encode All Rasters into `D_new`, Update `climate.present`, and Save

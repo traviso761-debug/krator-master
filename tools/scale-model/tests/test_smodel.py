@@ -196,4 +196,68 @@ for r in D.get('rivers', []):
 check('all river bed_m profiles descend monotonically', len(bad_bed_rivs) == 0)
 check('all rivers descend along course (max climb %.1f m <= 50 m, worst=%s)' % (max_riv_climb, worst_riv),
       max_riv_climb <= 50.0)
+
+# ---- 7. river name stability (r002 is Līng-Mā, and rerouting/reordering rivers never changes unrelated river names)
+import copy as _copy   # noqa: E402
+from smodel import river_names as RN   # noqa: E402
+r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
+check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
+regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
+setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
+if os.path.exists(regs_path) and os.path.exists(setts_path):
+    regs_doc = _json.load(open(regs_path, encoding='utf-8'))
+    setts_doc = _json.load(open(setts_path, encoding='utf-8'))
+    r_orig = _copy.deepcopy(D['rivers'])
+    r_pert = _copy.deepcopy(D['rivers'])
+    for r_p in r_pert[::5]:
+        if r_p.get('px'):
+            r_p['px'] = [[p[0] + 3.0, p[1] - 2.0] for p in r_p['px']]
+        r_p['length_km'] = float(r_p.get('length_km') or 50.0) + 77.0
+    r_pert.reverse()
+    RN.rename_all_rivers_culturally(r_orig, regs_doc, setts_doc)
+    RN.rename_all_rivers_culturally(r_pert, regs_doc, setts_doc)
+    map_orig = {str(r['id']): (r['name'], r['tongue']) for r in r_orig}
+    map_pert = {str(r['id']): (r['name'], r['tongue']) for r in r_pert}
+    check('river names invariant under course/order perturbation', map_orig == map_pert)
+
+# ---- 8. Ancient's Valley 7 blast basins & 17 m lake (Round 3 Item 2)
+anc_basins_test = [
+    (476.0, 915.0, 6.0, 'dry'),
+    (398.0, 966.0, 5.5, 'dry'),
+    (450.0, 896.0, 5.0, 'dry'),
+    (406.0, 908.0, 6.5, 'dry'),
+    (428.0, 948.0, 7.5, 'drowned'),
+    (460.0, 962.0, 7.0, 'drowned'),
+    (420.0, 984.0, 6.5, 'half'),
+]
+yy_e, xx_e = np.mgrid[0:E.shape[0], 0:E.shape[1]]
+for bx_t, by_t, r_km_t, mode_t in anc_basins_test:
+    cx_e = bx_t * su
+    cy_e = by_t * sv
+    r_e = (r_km_t / 2.0) * su
+    dist_e = np.hypot(xx_e - cx_e, yy_e - cy_e)
+    icx, icy = int(round(cx_e)), int(round(cy_e))
+    centre_h = float(E[icy, icx])
+    rim_h = float(np.median(E[(dist_e >= 0.80 * r_e) & (dist_e <= 1.45 * r_e)]))
+    check('blast basin (%.0f, %.0f) depression (rim %.1f m vs centre %.1f m)' % (bx_t, by_t, rim_h, centre_h),
+          (rim_h - centre_h) >= 45.0)
+    if mode_t == 'dry':
+        check('dry blast basin (%.0f, %.0f) is dry' % (bx_t, by_t), not bool(whas[icy, icx]))
+    elif mode_t == 'drowned':
+        check('drowned blast basin (%.0f, %.0f) is in 17.4 m lake with shallow bed' % (bx_t, by_t),
+              bool(whas[icy, icx]) and abs(float(wlev[icy, icx]) - 17.4) <= 1.0 and centre_h >= -80.0)
+
+# ---- 9. Southern Inner Wall scarp & Spirladunon (Round 3 Item 3)
+spirl_h = float(E[int(round(1017.0 * sv)), int(round(800.0 * su))])
+check('Spirladunon (800, 1017) preserved near 1,398 m (got %.1f m)' % spirl_h, 1300.0 <= spirl_h <= 1500.0)
+scarp_steps = []
+for x_sc in range(750, 926, 5):
+    if 795 <= x_sc <= 805:
+        continue
+    col_sc = [float(E[int(round(y_sc * sv)), int(round(x_sc * su))]) for y_sc in range(1022, 1061)]
+    y_foot = max([i for i, h_v in enumerate(col_sc) if h_v < 500.0], default=-1)
+    y_crest = min([i for i, h_v in enumerate(col_sc) if h_v > 3000.0], default=99)
+    scarp_steps.append(y_crest - y_foot)
+check('Southern Inner Wall scarp steps <500 m to >3,000 m in <= 6 px (max=%d px)' % max(scarp_steps),
+      all(1 <= s_px <= 6 for s_px in scarp_steps))
 print('%d checks passed' % ok)
