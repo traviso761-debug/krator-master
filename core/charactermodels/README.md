@@ -282,7 +282,26 @@ the face sliders leave the muzzle alone), weighted to the Head and into the Neck
 skin, the brows, lashes, eyes, lips and ears (`hide_parts`, which `KCHAR.hiddenParts` now takes from mods too), the hair
 and beard (`covers_hair` on a mod), and is `furred`, so a coat runs on up the neck under it. `make_mpfb.py` makes it with
 the other mods (its morphs, the Godot shapes and the skin regions from the export); `python3 tools/heads.py <body> <base>`
-makes it alone (the morph file the base skin's own entry under the head's materials, the Godot shapes empty).
+makes it alone (the morph file the base skin's own entry under the head's materials, cut to the skull vertices the head
+takes, the Godot shapes empty).
+**Five more therian heads** (2026-11-02; `tools/therian.py`, on `heads.py`'s machinery, which now takes a species
+dict: the coyote's every number named, the others varying them, with hooks for what the coyote has not): the **cat**
+(a short blunt muzzle, big forward eyes with slit pupils, tall pointed ears, a pink nose, tabby bars, whiskers: thin
+crossed ribbons, untinted), the **lion** (a long broad muzzle and heavy jaw, small round black-backed ears, amber eyes,
+and a mane: a field of its own round the head, under the jaw and down the neck, clear of the face, painted dark and
+worn in the fur kind `mane`, a 6 cm pile, the face's fur the same kind short), the **rat** (a long tapering snout,
+small black bulging eyes on the sides, large round thin bare pink ears on an untinted material, a pink nose, whiskers),
+the **monkey** (a macaque: a round skull with a brow ridge, a short broad prognathous muzzle with nostrils cut in it and
+no pad, close forward brown eyes, round bare ears, and a bare face: its triangles on a second material in the skin's
+colour, role `skin`, as the lids and ears), and the **bird** (a corvid: eyes on the sides with large round pupils, no
+ears, a beak of its own primitive on a 2 mm grid, an upper mandible hooked at the tip over a lower one, the nares cut
+at its base, horn going dark toward the tip, untinted; the cere bare; a dark stripe through the eye; plumage, the fur
+kind `plumage`, wide strands overlapping at the root, standing in a crest on the crown and lying back down the nape).
+Each is a kit item `mod_head_<species>` (slot `mods`, group `head`, kind `therian`, marked `test`: no people draws one
+yet), a chip in the Cosmetic Lab's Body mods and an entry in the Animation Lab's Body mods menu; `python3 tools/heads.py
+<body> <base> all` makes them all (`make_mpfb.py` makes them with the coyote). The published Cosmetic Lab has no room for
+their pieces (README, "Publishing the labs"): they are published in a lab of their own, "Cosmetic Lab: therian heads"
+(`gallery/README.md`, "Character lab links").
 
 **Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
 no `coat` field). Four so far: a shaggy pelt (the Khaayken; 5 cm), a coyote's brush (the Coyote Men; 2 cm, agouti, its
@@ -700,6 +719,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills; the non-human tail and head), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/heads.py`, `tools/therian.py` | the therian heads: the coyote's field, paint, eyes, lids and nose, taking a species dict; the cat, lion, rat, monkey and bird as species dicts with their own extras (a mane, a beak, a bare face, whiskers) | |
 | `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |

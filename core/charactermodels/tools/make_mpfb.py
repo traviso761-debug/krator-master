@@ -1378,11 +1378,13 @@ def main():
     nh = {}
     mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name, nh)
     if not merge and not big:
-        # the therian heads (tools/heads.py): a body mod made from the base, its morphs and Godot shapes packed here by _VIDX
+        # the therian heads (tools/heads.py: the coyote; tools/therian.py: the cat, lion, rat, monkey and bird): body
+        # mods made from the base, their morphs and Godot shapes packed here by _VIDX
         import heads
-        he, hr = heads.make(os.path.join(pieces, 'base.glb'), pieces, name, int(len(BT)))
-        mod_items.append(he)
-        mod_roles.update(hr)
+        for sp in heads.all_species():
+            he, hr = heads.make(os.path.join(pieces, 'base.glb'), pieces, name, int(len(BT)), sp)
+            mod_items.append(he)
+            mod_roles.update(hr)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
