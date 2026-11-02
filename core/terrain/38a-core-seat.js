@@ -102,10 +102,18 @@ function triHit(px,py,pz,dx,dy,dz,ax,ay,az,bx,by,bz,cx,cy,cz,R){
   return t;}
 
 // the xz cells a segment (x0,z0)-(x1,z1) passes through on a lattice of `c` metres from (ox,oz), padded one cell, as [i,j]
+/* a ray allocates nothing it does not need: a sweep casts hundreds of thousands, and strings and dictionaries per ray were 2 GB of
+   garbage a pass on swlowlands, which took the renderer past V8's heap limit at random (HANDOFF-REBUILD.md, core-crashes) */
+var CELLKEY=67108864;
+function cellKey(i,j){return i*CELLKEY+j;}
 function cellsAlong(ox,oz,c,x0,z0,x1,z1,fn){
-  var L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/(c*.5))),seen={};
-  for(var k=0;k<=n;k++){var x=x0+(x1-x0)*k/n,z=z0+(z1-z0)*k/n,i=Math.floor((x-ox)/c),j=Math.floor((z-oz)/c);
-    for(var di=-1;di<=1;di++)for(var dj=-1;dj<=1;dj++){var key=(i+di)+','+(j+dj);if(seen[key])continue;seen[key]=1;if(fn(i+di,j+dj))return;}}}
+  var di,dj,i,j;
+  if(x0===x1&&z0===z1){i=Math.floor((x0-ox)/c);j=Math.floor((z0-oz)/c);
+    for(di=-1;di<=1;di++)for(dj=-1;dj<=1;dj++)if(fn(i+di,j+dj))return;
+    return;}
+  var L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/(c*.5))),seen=new Set();
+  for(var k=0;k<=n;k++){var x=x0+(x1-x0)*k/n,z=z0+(z1-z0)*k/n;i=Math.floor((x-ox)/c);j=Math.floor((z-oz)/c);
+    for(di=-1;di<=1;di++)for(dj=-1;dj<=1;dj++){var key=cellKey(i+di,j+dj);if(seen.has(key))continue;seen.add(key);if(fn(i+di,j+dj))return;}}}
 
 // ---------------------------------------------------------------- surfaces
 // every surface: {kind, id, cls, box:[x0,y0,z0,x1,y1,z1], tris(x0,z0,x1,z1, fn(ax..cz) -> stop?)} and cast(p, d, far, R)
@@ -134,11 +142,11 @@ function tris(pos,idx,o){o=o||{};var M=o.matrix,nv=pos.length/3,P=new Float64Arr
     var i0=Math.floor((Math.min(P[a],P[b],P[cc])-ox)/c),i1=Math.floor((Math.max(P[a],P[b],P[cc])-ox)/c),
         j0=Math.floor((Math.min(P[a+2],P[b+2],P[cc+2])-oz)/c),j1=Math.floor((Math.max(P[a+2],P[b+2],P[cc+2])-oz)/c);
     if(!isFinite(i0)||!isFinite(j0))continue;
-    for(var ii=i0;ii<=i1;ii++)for(var jj=j0;jj<=j1;jj++){var key=ii+','+jj,L=B.get(key);if(!L)B.set(key,L=[]);L.push(t);}}
-  var S={kind:'tris',id:o.id==null?'tris':o.id,cls:o.cls==null?null:o.cls,box:box,cell:c,ntri:nt,P:P};
-  S.cast=function(p,d,far,R,best){var x1=p[0]+d[0]*far,z1=p[2]+d[2]*far,stamp={};
-    cellsAlong(ox,oz,c,p[0],p[2],x1,z1,function(i,j){var L=B.get(i+','+j);if(!L)return false;
-      for(var q=0;q<L.length;q++){var t=L[q];if(stamp[t])continue;stamp[t]=1;
+    for(var ii=i0;ii<=i1;ii++)for(var jj=j0;jj<=j1;jj++){var key=cellKey(ii,jj),L=B.get(key);if(!L)B.set(key,L=[]);L.push(t);}}
+  var S={kind:'tris',id:o.id==null?'tris':o.id,cls:o.cls==null?null:o.cls,box:box,cell:c,ntri:nt,P:P},stamp=null,cast=0;
+  S.cast=function(p,d,far,R,best){var x1=p[0]+d[0]*far,z1=p[2]+d[2]*far;if(!stamp)stamp=new Uint32Array(nt);cast++;
+    cellsAlong(ox,oz,c,p[0],p[2],x1,z1,function(i,j){var L=B.get(cellKey(i,j));if(!L)return false;
+      for(var q=0;q<L.length;q++){var t=L[q];if(stamp[t]===cast)continue;stamp[t]=cast;
         var a=vi(t,0)*3,b=vi(t,1)*3,e=vi(t,2)*3,
             h=triHit(p[0],p[1],p[2],d[0],d[1],d[2],P[a],P[a+1],P[a+2],P[b],P[b+1],P[b+2],P[e],P[e+1],P[e+2],R);
         if(h>=0&&h<=far&&h<best.t&&edgeOk(d,R,best.edge)){best.t=h;best.n=[R[0],R[1],R[2]];best.S=S;}}

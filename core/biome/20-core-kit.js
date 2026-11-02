@@ -618,7 +618,12 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
   smp.push({x,y,z,tol:(stem?KS0:K)*s+PAD,m,i});}}
  const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set();
  for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)want.add(key(cx+a,cz+b));}
- const SP=KS.create({cell:CELL}),pts=[],add=(x,y,z,r,lod)=>{if(!want.has(key(cf(x),cf(z))))return;SP.insert(pts.length,x,z,0);pts.push([x,y,z,r,lod]);};
+ /* the samples are the index and each structure point updates the samples near it as it is made: a list of the points was 3.5 GB
+    live on swlowlands, and an audit past V8's 4 GB limit killed the renderer at random (HANDOFF-REBUILD.md, core-crashes). The test
+    is the same one (|dx|, |dz| <= tol) in the same order, so no result moves */
+ const SP=KS.create({cell:CELL}),near=[],add=(x,y,z,r,lod)=>{if(!want.has(key(cf(x),cf(z))))return;SP.query(x,z,0,near);
+  for(const p of near){const d=Math.hypot(x-p.x,y-p.y,z-p.z)-r;if(d<p.best){p.best=d;p.bl=lod;}}};
+ for(const p of smp){p.best=1e9;p.bl=null;SP.insert(p,p.x,p.z,p.tol);}
  for(const m of str){const geo=m.geometry,pa=geo&&geo.attributes&&geo.attributes.position;if(!pa)continue;m.updateMatrixWorld();
   if(m.isInstancedMesh){if(!geo.boundingBox)geo.computeBoundingBox();const bb=geo.boundingBox,cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,r0=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2;
    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);A.set(cx,bb.min.y,cz).applyMatrix4(M4);B.set(cx,bb.max.y,cz).applyMatrix4(M4);
@@ -630,9 +635,8 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
    for(let t=0;t<nt;t++){let near=false;for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);if(want.has(key(cf(Vt[k].x),cf(Vt[k].z))))near=true;}
     if(!near)continue;const lod=lodOf(m,vi[0],true);
     for(let k=0;k<3;k++){const a=Vt[k],b=Vt[(k+1)%3],n=Math.max(1,Math.ceil(a.distanceTo(b)/stp));for(let q=0;q<n;q++){V.lerpVectors(a,b,q/n);add(V.x,V.y,V.z,0,lod);}}}}}
- const c=[],worst=[];
- for(const p of smp){SP.query(p.x,p.z,p.tol,c);let best=1e9,bl=null;
-  for(const j of c){const q=pts[j],d=Math.hypot(q[0]-p.x,q[1]-p.y,q[2]-p.z)-q[3];if(d<best){best=d;bl=q[4];}}
+ const worst=[];
+ for(const p of smp){const best=p.best,bl=p.bl;
   out.audited++;const nm=p.m.name||'?',bi=out.byItem[nm]||(out.byItem[nm]={n:0,floating:0,split:0,outrange:0});bi.n++;
   if(best>p.tol){out.floating++;bi.floating++;worst.push({item:nm,at:[+p.x.toFixed(1),+p.y.toFixed(1),+p.z.toFixed(1)],d:best>1e8?null:+best.toFixed(2),tol:+p.tol.toFixed(2)});continue;}
   const fl=lodOf(p.m,p.i,false);

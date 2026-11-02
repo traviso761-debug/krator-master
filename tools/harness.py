@@ -251,12 +251,45 @@ def page_crashed(pg):
     """A crashed renderer: an evaluate already waiting on it never returns, so a verify sat on the GPU lock until something
     killed it (swlowlands, 2026-11-02). Say so, give the lock back if this process took it, and leave with exit code 75."""
     print("harness: THE PAGE CRASHED (the renderer died): %s" % pg.url, flush=True)
+    _forget_browsers(kill=True)
     if _lock_owner().startswith("harness pid=%d " % os.getpid()):
         with contextlib.suppress(OSError):
             os.remove(os.path.join(GPU_LOCK, "owner"))
         with contextlib.suppress(OSError):
             os.rmdir(GPU_LOCK)
     os._exit(75)
+
+
+def renderer_pids():
+    """The renderers among this process's Chromium processes (by their --type=renderer command line)."""
+    tab = _proc_table()
+    mine = set(p for p in _descendants(tab) if CHROME_NAMES.search(tab[p][1] or ""))
+    if not mine:
+        return []
+    if sys.platform == "win32":
+        ps = "Get-CimInstance Win32_Process -Filter \"Name like '%chrome%'\" | ForEach-Object { \"$($_.ProcessId) $($_.CommandLine)\" }"
+        out = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, errors="replace").stdout
+        lines = [ln.split(None, 1) for ln in out.splitlines() if ln.strip()]
+        return [int(t[0]) for t in lines if len(t) == 2 and t[0].isdigit() and int(t[0]) in mine and "--type=renderer" in t[1]]
+    found = []
+    for p in mine:
+        with contextlib.suppress(OSError):
+            with open("/proc/%d/cmdline" % p, "rb") as fh:
+                if b"--type=renderer" in fh.read():
+                    found.append(p)
+    return found
+
+
+async def watch_renderer(pg):
+    """A renderer can die with no crash event (swlowlands' V8 out of memory, 2026-11-02: most deaths): the browser and the GPU
+    process live on and an evaluate waits for ever, on the GPU lock. Poll the renderer's pid; gone is the same as the event."""
+    pids = renderer_pids()
+    if not pids:
+        return
+    while True:
+        await asyncio.sleep(5)
+        if not any(pid_alive(p) for p in pids):
+            page_crashed(pg)
 
 
 def _lock_owner():
@@ -919,6 +952,7 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
                     if not V.ready:
                         print("timed out waiting for the page to build")
                     await V.page.wait_for_timeout(settle_ms)
+                    watch = asyncio.ensure_future(watch_renderer(V.page))
                     try:
                         yield V
                     except Abort as e:
@@ -928,6 +962,7 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
                             await V.run_universal()
                         except Exception as e:
                             V.universal.append(("universal-run", False, "the universal asserts threw: " + str(e).splitlines()[0][:300]))
+                        watch.cancel()
             finally:
                 with contextlib.suppress(Exception):
                     await V.browser.close()
