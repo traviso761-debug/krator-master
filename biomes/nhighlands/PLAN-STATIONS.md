@@ -37,7 +37,35 @@ cork grove read in place for the oaks; the chaparral is this kit's own.
 Whitebark- and bristlecone-like pines at the tree line (ebadlands' bristlecones read in place, or the kit's own),
 then fell-field, talus, snowbeds and a tarn under the summit ridges.
 
+## Station 5: the bog country (asked for by the owner, 2026-11-02)
+
+Krator has bogs as corners of stations (the eastern highlands' cushion bog, the southern highlands' paramo bogs) and no
+bog country. The model's flattest wet cold ground in this polygon (scale model 5.1, surveyed 2026-11-02: cold classes, over
+500 mm, slope under 2.5%) is one plateau: **9,700 km2 round px 543,780** at 3,300 m, 1.06 atm, 894 mm, +8 degC (20/-4),
+Dsb with Cfb and Dfb corners, 42 km from the ruin of **Footfall** (px 560,767), behind the Inner Wall's wet face. No lake
+on the model there (its 2 km cells hold none under 4 km2), which is right for a mire: the water is in the ground.
+
+- **What it is**: a high **fen and raised-bog country** on the plateau's flats, fed less by its rain (a dry-summer class)
+  than by the snowmelt and seepage off the crest above and the old growth's wet face below, as the Sierra's and the
+  Altai's high meadows are: sphagnum and sedge lawns, raised bogs with their domed centres and pool-and-ridge patterns
+  (`KFROST`'s polygons as the pattern's form, the pools `WATER.still`), string bogs on the gentle slopes, black peat
+  faces where the streams cut them, dwarf birch and krummholz on the hummocks, the kit's great trumpets standing alone in
+  the fen with their held water, bell-bulbs glowing over the pools at night; cottongrass (`card.cottongrass`), cloudberry
+  (`card.cloudberry`) and sphagnum (`ground.sphagnum`) are in the library already.
+- **Hazard and reward**: the mire itself (`core/hazard` `sink`, by `move`: a walker slows and sinks off the hummocks;
+  quaking ground over the pools, `trigger: weight`), the fog (height fog pooling on the flats at dawn), the cold at night;
+  **peat** as the Republic's and the Clansmen's fuel and the bog's preserved things (*proposed*: bog finds, Ancient and
+  older, as the peat's salvage, with the Catch's dry salvage and the Deeps' dead water as its cousins), bog iron for the
+  Clansmen's smiths (`kits/resources` `iron` is already highest on basin margins), the kit's trumpet water.
+- **People**: the Iron Republic's north and the Rustic Clansmen's country meet here (`LORE.md` 6.3, 6.4); Footfall's ruin
+  on its edge; a peat-cutters' camp as a published site.
+- **Core**: `WATER.still` for the pools and `WATER.wet` for the lawns, `KFROST` for the pattern, `KGROUND` a `peat` layer
+  (`ground.peat.black` is in the library), the season (the pools frozen in winter: the `ice` kind of `ext/54`), the kit's
+  own species in their wet habit; nothing new.
+
 ## Order
 
 N0 sites chosen from the model, texture prompts; N1 station 2 (the largest gap); N2 station 3; N3 station 4; each
-verified and baselined. Note: Roketstad reads this kit with the new flora gated off; stations do not change station 1.
+verified and baselined. **N4** (2026-11-02): station 5, the bog country, on the Footfall plateau; its `peat` layer and
+`sink` hazard; verified and baselined. Note: Roketstad reads this kit with the new flora gated off; stations do not change
+station 1.
