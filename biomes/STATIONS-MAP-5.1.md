@@ -84,6 +84,10 @@ stays at the water, in the wave's reach**: quays, dockyard and the traders' fact
 
 **Rechecked on 3e35e605f (Round 2, merged):** Gemini restored the accidental moves: nwouterwall's yeti station is back at 5,647 m and Farside's front at 2,179 m. Farside's kelp coast is 725 m (548 m at review). Farport's river is now named Hōng-Mā (`r002`); this document's earlier name is Līng-Mā, because the names moved again in Round 2.
 
+## Rechecked on Round 3 (68b6aa22b, merged)
+
+River names are frozen (`smodel/frozen_river_names.json`), and Farport's river is Līng-Mā again. The seven valley basins read as basins, four of them dry, round a 17.4 m lake. **The southern Inner Wall scarp is on the model, and it moves shighlands:** its cloud forest page's site goes from -183 to 550 m, and ground near px 838,1036 moved up to 4.7 km. Re-survey shighlands' stations in its turn (pair 12). Up to 408 m moved near px 501,1064 in SW lowlands: unexplained in the README, and swlowlands' turn was built on Round 2.
+
 ## New kits and priorities (the owner, 2026-11-01)
 
 **New kits needed:**
