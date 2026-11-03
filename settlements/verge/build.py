@@ -26,6 +26,7 @@ the kit and every build that reads it:
 import glob, hashlib, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
@@ -264,6 +265,7 @@ def main():
             out.append('\n// ==================== %s   (%s)\n' % (f, frags[f][1]))
         out.append(frags[f][0])
     html = ''.join(out)
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(SIDE, html, DIST, 'verge.tex.js')
     with open(os.path.join(DIST, OUT), 'w', encoding='utf-8') as fh:

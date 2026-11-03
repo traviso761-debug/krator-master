@@ -34,6 +34,7 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
@@ -343,6 +344,7 @@ def main():
             for e in errs:
                 print('  -', e)
             sys.exit(1)
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
     os.makedirs(DIST, exist_ok=True)
     import matlib_pack

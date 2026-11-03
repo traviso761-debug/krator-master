@@ -50,6 +50,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CAT = os.path.join(ROOT, 'kits', 'catalog')
@@ -126,6 +127,7 @@ def main():
             print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     script = ''.join('/* ---------- %s ---------- */\n%s%s' % (n, b, '' if b.endswith('\n') else '\n') for n, b in parts)
     html = read(os.path.join(SRC, '00-head.html')) + '<script>\n' + script.replace('</script', '<\\/script') + read(os.path.join(SRC, '99-tail.html'))
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')
     with open(out, 'w', encoding='utf-8', newline='\n') as fh:

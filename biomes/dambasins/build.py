@@ -30,6 +30,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))            # repo root
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 PORT = os.path.join(ROOT, 'settlements', 'port')         # the Ancient Port kit, read in place
 PORT_SRC = os.path.join(PORT, 'src')
 SRC = os.path.join(HERE, 'src')
@@ -109,6 +110,9 @@ def build_one(target, do_checks):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[PB.MATLIB_PACK] = matlib_pack.fragment(PORT, PACK_KEY, side=side)
     order = sorted(order + [PB.MATLIB_PACK])
+    if BSRC.LISTING:   # --list-sources: what this station's page is made of; main() reports every station's
+        BSRC.note(paths)
+        return order, None, None
 
     if do_checks:
         errs = PB.check(order, bodies)
@@ -163,6 +167,8 @@ def main():
             sys.exit('no targets found under targets/*/89z-rows.js')
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         blocks = re.findall(r'<script[^>]*>(.*?)</script>', html, re.S)
         body = max(blocks, key=len) if blocks else ''
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
@@ -179,6 +185,7 @@ def main():
         print('built %-24s (%2d fragments, %4.0f KB)%s%s'
               % (os.path.relpath(out, HERE).replace(os.sep, '/'), len(order), os.path.getsize(out) / 1024,
                  syntax, '' if do_checks else '  [checks skipped]'))
+    BSRC.report(vendored=[os.path.join(PORT_SRC, f) for f in own_src() if os.path.isfile(os.path.join(PORT_SRC, f))])
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         with open(ki, encoding='utf-8') as fh:

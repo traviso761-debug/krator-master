@@ -61,6 +61,8 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+BSRC.variants([['--station',_s] for _s in sorted(os.listdir(os.path.join(HERE,'stations'))) if os.path.isfile(os.path.join(HERE,'stations',_s,'station.json'))])   # every station's page
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "korona.html"
 STATION=None
 if '--station' in sys.argv:
@@ -159,6 +161,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'korona.tex.js',prune=False)

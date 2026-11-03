@@ -22,6 +22,7 @@ Usage:  python3 build.py [--no-checks]
 import hashlib, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
@@ -107,6 +108,7 @@ def main():
     for f in order:
         with open(os.path.join(SRC, f)) as fh:
             bodies[f] = fh.read()
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
 
     if do_checks:
         errs = check(order, bodies)

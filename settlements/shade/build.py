@@ -44,6 +44,7 @@ if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
         _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
     _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'))
 OUT = 'shade.html'
 CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain (opt-in by name; a local copy wins)
@@ -127,6 +128,7 @@ def main():
         out.append('\n// ==================== %s\n' % f if f.endswith('.js') else ''); out.append(s)
     if bad:
         print('BIOME FRAGMENT DEPENDS ON THE HOST:\n  ' + '\n  '.join(bad)); return 1
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8').write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)

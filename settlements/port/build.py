@@ -84,6 +84,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '88x-matlib-pack.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -258,6 +259,8 @@ def build_one(target, do_checks):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, target + '.html')
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'port.tex.js', prune=False)   # shared by every target
@@ -281,6 +284,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         blocks = re.findall(r'<script[^>]*>(.*?)</script>', html, re.S)
         body = max(blocks, key=len) if blocks else ''
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
@@ -301,6 +306,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report()   # --list-sources: every target's files, then exit
 
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
 if os.path.exists(_ki):

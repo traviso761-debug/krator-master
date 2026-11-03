@@ -17,6 +17,7 @@ water, sky, nursery, flora, floor, places, towns, camera and probe. This build a
 import base64, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, 'src')
 DATA = os.path.join(HERE, 'data')
@@ -230,6 +231,7 @@ def main():
         body = open(os.path.join(ROOT, 'biomes', k, 'src', last), encoding='utf8').read()
         if not re.search(r'^[^/\n]*BIO\.kitEnd\(', body, re.M):
             sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does' % (k, last))
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(out)
     os.makedirs(DIST, exist_ok=True)
     if SIDE:   # the packs beside the page (dist/isle-demo.tex.<kit>.js), loaded by <script src> ahead of its code

@@ -16,6 +16,7 @@ archive/voth-first), which this build runs whole or lifts by name (vothlift.py),
 import base64, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.dirname(os.path.dirname(HERE))
 DIST = os.path.join(HERE, 'dist')
 VOTH = HERE   # Voth's own folder: src/ (the source library), catalog/, three.min.js
@@ -401,6 +402,8 @@ def page(name, frag_dir, vendor, extra, strict, js_list=None):
     body = ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, f)), NL) for f in js)
     parts.append('<script>' + NL + ('"use strict";' + NL if strict else '') + body + '</script>' + NL)
     parts += [read(os.path.join(frag_dir, f)) for f in tail]
+    if BSRC.LISTING:   # --list-sources: this page's files are read; main() goes on to the next page, then reports
+        return
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, name)
     with open(out, 'w', encoding='utf-8', newline=NL) as f:
@@ -428,3 +431,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report()   # --list-sources: both pages' files, then exit

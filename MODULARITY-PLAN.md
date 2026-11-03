@@ -66,8 +66,49 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   **Done 2026-10-26** (1a5f9402d, b5c7f5084 on main).
 - **Follow-up (found 2026-10-27):** the scanner counts a path in a comment. On the rebuild branch it reports
   `kits/ancients -> settlements/span` from the text `settlements/span PLAN.md SP2` in a comment in
-  `kits/ancients/build.py`; the kit does not read Span. Skip comment-only matches (a `#` comment line, and the part of
-  a line after `#` outside a string), then drop any allow-list line that was only a comment.
+  `kits/ancients/build.py`; the kit does not read Span. It also misses the paths a build composes in code
+  (`for d in ('rand', 'tags'): os.path.join(ROOT, 'core', d)`), seeing them only when a comment happens to list them.
+  Stripping comments (`check_core_use.code_only()`, tried 2026-11-03 and reverted) fell from 826 edges to 540 and lost real ones.
+  **Done 2026-11-03: the graph comes from what each build loads.** Every `build*.py` (78 of them) imports
+  `tools/build_sources.py` and supports `--list-sources`: it prints every repo file the build reads (the fragments it
+  resolves, the Python it imports, a delegated build.py, and with `\tvendored` the upstreams its `--vendor-check`
+  compares), and exits before its first write. An audit hook records the reads, and refuses a write or a subprocess,
+  so a list can not build anything. `report()` runs the build's own `vendor_check` to find the upstreams, `variants()` runs
+  biomes/throne's and biomes/korona's `--station` pages, and per-target builds (Iziz, Ancients, the Ancients-lineage
+  settlements) report the union of their targets. A read made by another module's helper (a bundle, `isle-demo/bundles.py
+  kcity_bundle`) counts as the build's. `tools/dep_graph.py` runs the lists (about 7 s, in parallel) and falls back to the
+  text scan only for a build without `--list-sources` (none today; `DEPS.json` "listed" / "scanned" says which).
+  `DEPS.json` "vendored" names the 45 edges that exist only through a vendored copy.
+  Result against the 826-edge `DEPS.json`: 873 edges, 87 lost, 134 gained. Each lost edge, by kind:
+  - comments (67): `core/furnish` in 20 biome kits ("the way the core/furnish builds take them"), `core/edits` and
+    `core/space` in 11 and 7 settlements ("Not core/edits", "less core/space"), `core/water` in 6 biomes ("core/water
+    draws here in a later phase"), the Scyvoi-lineage notes ("Forked from kits/scyvoi, as kits/eternian and kits/islanders
+    were", "as kits/islanders reads kits/resources", "vendored from kits/scyvoi") in yeti, eternian, crops, resources,
+    lizardmen and zeijani, `settlements/girder` and `mavs-refuge -> kits/beast-riders`
+    ("for kits/beast-riders" beside `PORTS_DIR`), `settlements/iziz -> kits/pylon, kits/talia` (the `--kit` comment),
+    `settlements/iziz` in Screamers, `biomes/ringisles -> openworld/isle-demo, settlements/isle-demo`, `biomes/dambasins
+    -> settlements/hook, biomes/nsemiarid`, `biomes/nsemiarid -> biomes/scablands`, `settlements/highlands -> biomes/geyser`,
+    `settlements/longsong -> biomes/sedesert`, `kits/beast-riders ->
+    settlements/isle-demo`, `kits/catalog -> settlements/voth`, `openworld/isle-demo -> openworld/little-demo`.
+  - an empty opt-in list (16): `CORE_T` names core/terrain in 16 biome kits whose `CORE_TERRAIN` is `[]`.
+  - code that loads nothing (4): Reedlake's `UPSTREAM` keeps `kits/ancients` and `settlements/iziz` entries its
+    `vendor_check` never uses (it compares Highlands only); `core/materials/demo`'s `find_three()` takes the first
+    `three.min.js` it finds (Ring Sea's), so its `kits/ancients` and `biomes/sedesert` candidates are never read.
+  None of the three named as lost by the code_only() try is lost the way it looked: `kits/eternian -> kits/scyvoi` is
+  composed code (`os.path.join(ROOT, 'kits', 'scyvoi', 'src', f)` for its vendored engine), now a "vendored" edge;
+  Iziz's `--kit` and Girder's `PORTS_DIR` mentions are comments, and the reads run the other way: `kits/pylon` and
+  `kits/talia -> settlements/iziz` (their build hands over to Iziz's) and `kits/beast-riders -> settlements/girder,
+  settlements/mavs-refuge` (`towns.py` seals both towns' `src/` into the kit's page).
+  The gains are the composed and delegated reads: Dhelv's 11 core modules, the biome-to-biome reads (Korona's six, the
+  Ring Isles' five, the Throne's Hyperjungle, Little Demo's two kits), the Throne's stations' `core/water`, Pylon's and
+  Talia's whole Iziz page, the towns sealed by `towns.py` (Beast Riders, the isle demo, Pinnacle Rock), Voth's
+  `foreign.py` (Dalab, Jimjam, Ys, the Ring Sea), Mechs' `vehicles-core.js`, `core/clock` and `core/minimap` from the
+  host shell lists, and the core modules the scablands overlay takes through N Semiarid's `build()`.
+  Allow-list: seven lines deleted (the comment-only and never-read edges above); two added, `kits/beast-riders ->
+  settlements/girder` and `-> settlements/mavs-refuge`, real reads the scan never saw (step 5).
+  Found on the way: `settlements/pinnacle-rock`, `settlements/longsong` and `openworld/little-demo` name
+  `openworld/little-demo/src/41-world-fields.js`, which moved to `openworld/isle-demo/src/world/` (d848c157), so they
+  do not build; their lists report the path they name. `settlements/yuni/build_fragments.py` fails its own build rules.
 
 **Step 1: the kits onto the shared sky (the 81-sky.js move).**
 - Revised 2026-10-27: do not move `KratorSky` into core. The shared sky in `core/atmos/sky` (on the biome rebuild,
@@ -115,6 +156,11 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   `core/materials`, finish the drift decisions in `core/README.md`).
 - `kits/beast-riders` and `kits/ringsea` stop reading `isle-demo` and `reedlake`; `biomes/ringisles` and
   `biomes/dambasins` stop reading `settlements/*` (their data goes in `openworld/` or the kit itself).
+  Since step 0's follow-up (2026-11-03): Ring Isles and the Beast Riders' `isle-demo` edge were comments (gone), and
+  Dambasins reads `settlements/port` only. `kits/beast-riders -> settlements/girder, settlements/mavs-refuge` is new
+  to the list: `kits/beast-riders/towns.py` seals both towns' engines and builders (their `src/`) into the kit's page,
+  the faithful port its `KNOWN_ISSUES.md` describes; the towns' fragments it needs move to the kit or to core.
+  `core/materials -> kits/ringsea` is `core/materials/demo` taking Ring Sea's `three.min.js` (as `core/atmos/demo` below).
 - `kits/post-apoc <-> core/sockets`: the kit takes the sockets module, the module does not name the kit.
 - `core/atmos -> kits/ancients, kits/ringsea` (on the biome rebuild): `core/atmos/demo/build.py` looks for
   `three.min.js` in those two kits. Take it from one shared place instead (the harness's local three.js,
@@ -202,4 +248,5 @@ dependency moves.
 
 The scan matched path strings in `build.py` only. It does not see reads inside fragments, dynamic paths, or
 `verify.py`/tooling, and it counts a path in a comment. Step 0 replaces it with a proper tool before anything moves.
-`tools/dep_graph.py` keeps the first two limits and, until step 0's follow-up, the third.
+Since step 0's follow-up `tools/dep_graph.py` takes what each build reads (`--list-sources`), which sees dynamic paths
+and skips comments; it still does not see a fragment that loads another at run time, or `verify.py` and tooling.

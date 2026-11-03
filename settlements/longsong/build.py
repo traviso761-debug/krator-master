@@ -70,6 +70,7 @@ def find_node():
     return None
 
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else 'longsong.html'
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
@@ -195,6 +196,9 @@ def _kchar():
                         or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
         bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
         need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
+    if BSRC.LISTING:   # --list-sources: the pieces it would copy beside the page, by name; nothing is written
+        BSRC.note([os.path.join(CM, 'dist', 'pieces', k + '.txt') for k in need])
+        return ''
     kd = os.path.join(DIST, 'kchar')
     os.makedirs(kd, exist_ok=True)
     keep, missing = set(), []
@@ -259,6 +263,7 @@ VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:
     PATH[f] = None
+BSRC.report(PATH)   # --list-sources: what the page is made of (every path it names), then exit
 frags = sorted(PATH)
 out = []; bad = []
 for f in frags:

@@ -1,17 +1,12 @@
 {
  "backwards": [
-  "biomes/dambasins -> settlements/hook",
   "biomes/dambasins -> settlements/port",
-  "biomes/ringisles -> openworld/isle-demo",
-  "biomes/ringisles -> settlements/isle-demo",
-  "core/materials -> biomes/sedesert",
-  "core/materials -> kits/ancients",
   "core/materials -> kits/ringsea",
   "core/sockets -> kits/post-apoc",
   "kits/ash-nomads -> settlements/iziz",
-  "kits/beast-riders -> settlements/isle-demo",
+  "kits/beast-riders -> settlements/girder",
+  "kits/beast-riders -> settlements/mavs-refuge",
   "kits/catalog -> settlements/iziz",
-  "kits/catalog -> settlements/voth",
   "kits/desert-nomads -> settlements/iziz",
   "kits/eternian -> settlements/iziz",
   "kits/fauna -> settlements/iziz",
@@ -34,22 +29,19 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "biomes/dambasins": [
-   "biomes/nsemiarid",
    "core/atmos",
+   "core/lod",
    "core/materials",
    "core/rand",
    "core/terrain",
-   "settlements/hook",
+   "core/water",
    "settlements/port"
   ],
   "biomes/eastabyss": [
@@ -57,13 +49,11 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/ebadlands": [
@@ -71,13 +61,11 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/ehighlands": [
@@ -85,14 +73,11 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "biomes/geyser": [
    "biomes/hyperjungle",
@@ -100,13 +85,11 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/guilin": [
@@ -117,7 +100,6 @@
    "core/clock",
    "core/edits",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/minimap",
@@ -132,18 +114,23 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/korona": [
+   "biomes/ehighlands",
+   "biomes/hyperjungle",
+   "biomes/necanyons",
+   "biomes/nhighlands",
+   "biomes/nwlowlands",
+   "biomes/sedesert",
    "core/atmos",
    "core/biome",
+   "core/clock",
    "core/export",
    "core/host",
    "core/materials",
@@ -160,7 +147,6 @@
    "core/clock",
    "core/edits",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/minimap",
@@ -174,23 +160,21 @@
    "core/atmos",
    "core/biome",
    "core/clock",
+   "core/edits",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/nsemiarid": [
-   "biomes/scablands",
    "core/atmos",
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
@@ -204,61 +188,59 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "biomes/nwlowlands": [
    "core/atmos",
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/oidong": [
    "core/atmos",
    "core/biome",
    "core/clock",
+   "core/edits",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "biomes/rift": [
    "core/atmos",
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/ringisles": [
+   "biomes/eastabyss",
+   "biomes/geyser",
    "biomes/hyperjungle",
+   "biomes/sedesert",
+   "biomes/swbay",
+   "biomes/throne",
    "core/atmos",
    "core/biome",
+   "core/clock",
    "core/export",
    "core/host",
    "core/materials",
@@ -266,22 +248,31 @@
    "core/space",
    "core/tags",
    "core/water",
-   "kits/fauna",
-   "openworld/isle-demo",
-   "settlements/isle-demo"
+   "kits/fauna"
   ],
   "biomes/scablands": [
    "biomes/nsemiarid",
-   "core/terrain"
+   "core/atmos",
+   "core/biome",
+   "core/clock",
+   "core/export",
+   "core/host",
+   "core/materials",
+   "core/rand",
+   "core/space",
+   "core/tags",
+   "core/terrain",
+   "core/water"
   ],
   "biomes/sedesert": [
    "core/atmos",
    "core/biome",
    "core/clock",
+   "core/edits",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/space",
    "core/tags",
@@ -294,27 +285,22 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "biomes/swbay": [
    "core/atmos",
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/swlowlands": [
@@ -322,26 +308,23 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/throne": [
+   "biomes/hyperjungle",
    "core/atmos",
    "core/biome",
    "core/clock",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
    "core/tags",
-   "core/terrain",
    "core/water"
   ],
   "biomes/xanadu": [
@@ -349,24 +332,25 @@
    "core/biome",
    "core/clock",
    "core/export",
-   "core/furnish",
    "core/host",
    "core/materials",
    "core/rand",
    "core/space",
-   "core/tags",
-   "core/terrain",
-   "core/water"
+   "core/tags"
   ],
   "core/charactermodels": [
    "core/rand"
   ],
   "core/host": [
-   "core/simulation"
+   "core/clock",
+   "core/edits",
+   "core/minimap",
+   "core/rand",
+   "core/simulation",
+   "core/space",
+   "core/tags"
   ],
   "core/materials": [
-   "biomes/sedesert",
-   "kits/ancients",
    "kits/ringsea"
   ],
   "core/simulation": [
@@ -405,19 +389,23 @@
    "settlements/iziz"
   ],
   "kits/beast-riders": [
+   "core/furnish",
+   "core/materials",
+   "core/ports",
    "core/rand",
+   "core/space",
+   "core/tags",
    "kits/catalog",
-   "settlements/isle-demo"
+   "kits/interiors",
+   "settlements/girder",
+   "settlements/mavs-refuge"
   ],
   "kits/catalog": [
    "core/sockets",
-   "settlements/iziz",
-   "settlements/voth"
+   "settlements/iziz"
   ],
   "kits/crops": [
-   "core/rand",
-   "kits/islanders",
-   "kits/resources"
+   "core/rand"
   ],
   "kits/desert-nomads": [
    "core/atmos",
@@ -442,7 +430,6 @@
    "core/tags",
    "core/walk",
    "kits/catalog",
-   "kits/islanders",
    "kits/scyvoi",
    "settlements/iziz"
   ],
@@ -481,11 +468,11 @@
    "kits/catalog",
    "kits/fauna",
    "kits/islanders",
-   "kits/scyvoi",
    "settlements/iziz"
   ],
   "kits/mechs": [
    "kits/catalog",
+   "kits/motor-vehicles",
    "settlements/iziz"
   ],
   "kits/motor-vehicles": [
@@ -495,13 +482,29 @@
   "kits/post-apoc": [
    "core/furnish",
    "core/materials",
+   "core/rand",
    "core/sockets",
    "core/tags",
+   "core/walk",
    "kits/ancients",
    "kits/catalog",
    "kits/interiors"
   ],
   "kits/pylon": [
+   "core/biome",
+   "core/clock",
+   "core/export",
+   "core/furnish",
+   "core/host",
+   "core/lod",
+   "core/materials",
+   "core/minimap",
+   "core/rand",
+   "core/tags",
+   "core/walk",
+   "kits/ancients",
+   "kits/catalog",
+   "kits/interiors",
    "settlements/iziz"
   ],
   "kits/resources": [
@@ -513,7 +516,6 @@
    "core/rand",
    "core/tags",
    "kits/catalog",
-   "kits/islanders",
    "kits/scyvoi",
    "settlements/iziz"
   ],
@@ -537,6 +539,19 @@
    "settlements/iziz"
   ],
   "kits/talia": [
+   "core/biome",
+   "core/clock",
+   "core/export",
+   "core/furnish",
+   "core/host",
+   "core/lod",
+   "core/materials",
+   "core/minimap",
+   "core/rand",
+   "core/tags",
+   "core/walk",
+   "kits/catalog",
+   "kits/interiors",
    "settlements/iziz"
   ],
   "kits/yeti": [
@@ -550,8 +565,6 @@
    "core/tags",
    "core/walk",
    "kits/catalog",
-   "kits/eternian",
-   "kits/islanders",
    "kits/scyvoi",
    "settlements/iziz"
   ],
@@ -562,12 +575,12 @@
    "core/host",
    "core/materials",
    "core/rand",
+   "core/sockets",
    "core/tags",
    "core/terrain",
    "core/walk",
    "kits/catalog",
    "kits/interiors",
-   "kits/scyvoi",
    "settlements/iziz"
   ],
   "openworld/isle-demo": [
@@ -580,23 +593,36 @@
    "biomes/throne",
    "core/atmos",
    "core/biome",
+   "core/camp",
    "core/city",
    "core/clock",
    "core/export",
+   "core/furnish",
    "core/hamlet",
    "core/materials",
+   "core/ports",
    "core/rand",
    "core/simulation",
    "core/space",
    "core/tags",
    "core/terrain",
    "core/water",
+   "kits/beast-riders",
+   "kits/catalog",
+   "kits/fauna",
+   "kits/interiors",
+   "kits/islanders",
    "kits/resources",
-   "openworld/little-demo",
+   "kits/ringsea",
+   "settlements/girder",
    "settlements/isle-demo",
-   "settlements/iziz"
+   "settlements/iziz",
+   "settlements/mavs-refuge",
+   "settlements/voth"
   ],
   "openworld/little-demo": [
+   "biomes/eastabyss",
+   "biomes/ebadlands",
    "biomes/hyperjungle",
    "biomes/sedesert",
    "core/atmos",
@@ -611,32 +637,41 @@
    "biomes/swlowlands",
    "core/biome",
    "core/clock",
-   "core/edits",
    "core/host",
    "core/lod",
    "core/mask",
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
    "core/tags",
    "kits/ancients",
+   "settlements/highlands",
    "settlements/iziz"
   ],
   "settlements/dhelv": [
    "biomes/hyperjungle",
    "biomes/throne",
+   "core/atmos",
    "core/biome",
-   "core/edits",
+   "core/clock",
+   "core/furnish",
    "core/host",
-   "core/space",
+   "core/materials",
+   "core/minimap",
+   "core/rand",
+   "core/sched",
+   "core/simulation",
+   "core/sockets",
+   "core/tags",
    "core/terrain",
+   "core/walk",
    "kits/catalog",
    "kits/interiors",
    "kits/zeijani"
   ],
   "settlements/girder": [
    "core/atmos",
+   "core/clock",
    "core/edits",
    "core/furnish",
    "core/host",
@@ -649,19 +684,19 @@
    "core/tags",
    "core/walk",
    "core/water",
-   "kits/beast-riders",
    "kits/catalog",
    "kits/interiors"
   ],
   "settlements/highlands": [
-   "biomes/geyser",
    "biomes/nhighlands",
    "core/biome",
+   "core/clock",
    "core/furnish",
    "core/host",
    "core/lod",
    "core/mask",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/space",
    "core/tags",
@@ -682,7 +717,10 @@
    "core/biome",
    "core/city",
    "core/export",
+   "core/furnish",
+   "core/hamlet",
    "core/materials",
+   "core/ports",
    "core/rand",
    "core/simulation",
    "core/space",
@@ -690,10 +728,15 @@
    "core/terrain",
    "kits/beast-riders",
    "kits/catalog",
+   "kits/fauna",
+   "kits/interiors",
    "kits/islanders",
+   "kits/resources",
    "kits/ringsea",
    "openworld/isle-demo",
+   "settlements/girder",
    "settlements/iziz",
+   "settlements/mavs-refuge",
    "settlements/voth"
   ],
   "settlements/iziz": [
@@ -701,7 +744,6 @@
    "core/atmos",
    "core/biome",
    "core/clock",
-   "core/edits",
    "core/export",
    "core/furnish",
    "core/host",
@@ -710,18 +752,14 @@
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
    "core/tags",
    "core/walk",
    "kits/ancients",
    "kits/catalog",
-   "kits/interiors",
-   "kits/pylon",
-   "kits/talia"
+   "kits/interiors"
   ],
   "settlements/jimjam": [
    "core/clock",
-   "core/edits",
    "core/host",
    "core/lod",
    "core/materials",
@@ -756,11 +794,11 @@
   ],
   "settlements/longsong": [
    "biomes/oidong",
-   "biomes/sedesert",
    "core/atmos",
    "core/biome",
    "core/charactermodels",
    "core/city",
+   "core/clock",
    "core/edits",
    "core/export",
    "core/hamlet",
@@ -787,6 +825,7 @@
    "settlements/xanadu"
   ],
   "settlements/mavs-refuge": [
+   "core/clock",
    "core/edits",
    "core/furnish",
    "core/host",
@@ -797,7 +836,6 @@
    "core/rand",
    "core/space",
    "core/tags",
-   "kits/beast-riders",
    "kits/catalog",
    "kits/interiors"
   ],
@@ -805,12 +843,16 @@
    "biomes/eastabyss",
    "core/atmos",
    "core/biome",
+   "core/clock",
    "core/edits",
    "core/furnish",
    "core/host",
    "core/lod",
+   "core/mask",
    "core/materials",
    "core/minimap",
+   "core/rand",
+   "core/sched",
    "core/simulation",
    "core/space",
    "core/tags",
@@ -825,7 +867,6 @@
   "settlements/noahs-regret": [
    "core/atmos",
    "core/clock",
-   "core/edits",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -854,6 +895,7 @@
    "core/lod",
    "core/materials",
    "core/minimap",
+   "core/ports",
    "core/rand",
    "core/space",
    "core/tags",
@@ -862,9 +904,11 @@
    "core/water",
    "kits/beast-riders",
    "kits/catalog",
+   "kits/interiors",
    "openworld/little-demo",
    "settlements/girder",
-   "settlements/isle-demo"
+   "settlements/isle-demo",
+   "settlements/mavs-refuge"
   ],
   "settlements/port": [
    "core/atmos",
@@ -875,45 +919,41 @@
   "settlements/reedlake": [
    "core/atmos",
    "core/clock",
-   "core/edits",
    "core/host",
    "core/lod",
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
    "core/tags",
    "core/water",
-   "kits/ancients",
-   "settlements/highlands",
-   "settlements/iziz"
+   "settlements/highlands"
   ],
   "settlements/screamers": [
    "core/clock",
-   "core/edits",
+   "core/furnish",
    "core/host",
    "core/lod",
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
+   "core/sockets",
    "core/tags",
    "core/walk",
    "kits/catalog",
    "kits/interiors",
-   "kits/post-apoc",
-   "settlements/iziz"
+   "kits/post-apoc"
   ],
   "settlements/shade": [
    "biomes/sedesert",
    "core/biome",
    "core/clock",
-   "core/edits",
    "core/host",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/sched",
    "core/simulation",
+   "core/space",
    "core/tags",
    "core/terrain"
   ],
@@ -923,11 +963,11 @@
    "core/biome",
    "core/city",
    "core/clock",
-   "core/edits",
    "core/furnish",
    "core/host",
    "core/mask",
    "core/materials",
+   "core/minimap",
    "core/rand",
    "core/sched",
    "core/space",
@@ -947,6 +987,7 @@
    "core/clock",
    "core/edits",
    "core/host",
+   "core/materials",
    "core/minimap",
    "core/rand",
    "core/simulation",
@@ -955,20 +996,22 @@
    "core/walk",
    "kits/catalog",
    "kits/fauna",
-   "kits/interiors"
+   "kits/interiors",
+   "kits/ringsea",
+   "settlements/dalab",
+   "settlements/jimjam",
+   "settlements/ys"
   ],
   "settlements/xanadu": [
    "biomes/xanadu",
    "core/atmos",
    "core/clock",
-   "core/edits",
    "core/host",
    "core/lod",
    "core/mask",
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
    "core/tags",
    "core/water",
    "settlements/highlands",
@@ -980,12 +1023,10 @@
    "core/biome",
    "core/city",
    "core/clock",
-   "core/edits",
    "core/host",
    "core/materials",
    "core/minimap",
    "core/rand",
-   "core/space",
    "core/tags",
    "core/water",
    "kits/ancients",
@@ -1004,8 +1045,185 @@
    "core/materials",
    "core/minimap",
    "core/rand",
+   "core/sched",
    "core/space",
    "core/tags"
+  ]
+ },
+ "listed": [
+  "biomes/crater-drylands/build.py",
+  "biomes/dambasins/build.py",
+  "biomes/eastabyss/build.py",
+  "biomes/ebadlands/build.py",
+  "biomes/ehighlands/build.py",
+  "biomes/geyser/build.py",
+  "biomes/guilin/build.py",
+  "biomes/hyperjungle/build.py",
+  "biomes/korona/build.py",
+  "biomes/necanyons/build.py",
+  "biomes/nhighlands/build.py",
+  "biomes/nsemiarid/build.py",
+  "biomes/nwbay/build.py",
+  "biomes/nwlowlands/build.py",
+  "biomes/oidong/build.py",
+  "biomes/rift/build.py",
+  "biomes/ringisles/build.py",
+  "biomes/scablands/build.py",
+  "biomes/sedesert/build.py",
+  "biomes/shighlands/build.py",
+  "biomes/swbay/build.py",
+  "biomes/swlowlands/build.py",
+  "biomes/throne/build.py",
+  "biomes/xanadu/build.py",
+  "core/charactermodels/build.py",
+  "core/host/example/build.py",
+  "core/materials/demo/build.py",
+  "core/simulation/example/build.py",
+  "core/sockets/example/build.py",
+  "kits/ancients-interiors/build.py",
+  "kits/ancients/build.py",
+  "kits/ash-nomads/build.py",
+  "kits/beast-riders/build.py",
+  "kits/catalog/build.py",
+  "kits/crops/build.py",
+  "kits/desert-nomads/build.py",
+  "kits/eternian/build.py",
+  "kits/fauna/build.py",
+  "kits/interiors/build.py",
+  "kits/islanders/build.py",
+  "kits/lizardmen/build.py",
+  "kits/mechs/build.py",
+  "kits/motor-vehicles/build.py",
+  "kits/post-apoc/build.py",
+  "kits/pylon/build.py",
+  "kits/resources/build.py",
+  "kits/ringsea/build.py",
+  "kits/scyvoi/build.py",
+  "kits/talia/build.py",
+  "kits/yeti/build.py",
+  "kits/zeijani/build.py",
+  "openworld/isle-demo/build.py",
+  "openworld/little-demo/build.py",
+  "settlements/dalab/build.py",
+  "settlements/dhelv/build.py",
+  "settlements/girder/build.py",
+  "settlements/girder/build_hero.py",
+  "settlements/highlands/build.py",
+  "settlements/hook/build.py",
+  "settlements/isle-demo/build.py",
+  "settlements/iziz/build.py",
+  "settlements/jimjam/build.py",
+  "settlements/locus/build.py",
+  "settlements/longsong/build.py",
+  "settlements/mavs-refuge/build.py",
+  "settlements/mungo/build.py",
+  "settlements/noahs-regret/build.py",
+  "settlements/pinnacle-rock/build.py",
+  "settlements/port/build.py",
+  "settlements/reedlake/build.py",
+  "settlements/screamers/build.py",
+  "settlements/shade/build.py",
+  "settlements/verge/build.py",
+  "settlements/voth/build.py",
+  "settlements/xanadu/build.py",
+  "settlements/ys/build.py",
+  "settlements/yuni/build.py",
+  "settlements/yuni/build_fragments.py"
+ ],
+ "scanned": [],
+ "vendored": {
+  "kits/ash-nomads": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "kits/catalog": [
+   "core/sockets",
+   "settlements/iziz"
+  ],
+  "kits/desert-nomads": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "kits/eternian": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "kits/fauna": [
+   "settlements/iziz"
+  ],
+  "kits/interiors": [
+   "settlements/iziz"
+  ],
+  "kits/islanders": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "kits/lizardmen": [
+   "kits/islanders",
+   "settlements/iziz"
+  ],
+  "kits/mechs": [
+   "settlements/iziz"
+  ],
+  "kits/motor-vehicles": [
+   "settlements/iziz"
+  ],
+  "kits/post-apoc": [
+   "kits/ancients"
+  ],
+  "kits/ringsea": [
+   "core/sockets",
+   "settlements/reedlake"
+  ],
+  "kits/scyvoi": [
+   "settlements/iziz"
+  ],
+  "kits/yeti": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "kits/zeijani": [
+   "settlements/iziz"
+  ],
+  "settlements/dalab": [
+   "core/biome",
+   "kits/ancients",
+   "settlements/highlands",
+   "settlements/iziz"
+  ],
+  "settlements/highlands": [
+   "kits/ancients",
+   "settlements/iziz"
+  ],
+  "settlements/iziz": [
+   "core/biome",
+   "kits/ancients"
+  ],
+  "settlements/jimjam": [
+   "core/sockets",
+   "kits/ancients",
+   "settlements/iziz"
+  ],
+  "settlements/noahs-regret": [
+   "kits/scyvoi",
+   "settlements/iziz"
+  ],
+  "settlements/reedlake": [
+   "settlements/highlands"
+  ],
+  "settlements/shade": [
+   "core/biome"
+  ],
+  "settlements/xanadu": [
+   "settlements/highlands",
+   "settlements/iziz"
+  ],
+  "settlements/ys": [
+   "core/biome",
+   "kits/ancients",
+   "settlements/highlands",
+   "settlements/iziz",
+   "settlements/port"
   ]
  }
 }

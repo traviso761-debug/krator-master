@@ -29,6 +29,7 @@ import hashlib, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CATALOG = os.path.join(ROOT, 'kits', 'catalog')
@@ -129,6 +130,7 @@ def main():
                '   edit src/ and rebuild. Engine-neutral: no THREE, no DOM. Load kits/interiors\' core first. See API.md. */\n' + join(core))
     tags = ''.join('<script src="../../catalog/%s"></script>\n' % f for f in CATALOG_LOADED)
     html = read(os.path.join(SRC, '00-head.html')).replace('<!--CATALOG-->', tags) + '<script>\n' + script + read(os.path.join(SRC, '99-tail.html'))
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, 'ancients-interiors.html')
     with open(out, 'w', encoding='utf-8', newline='') as fh:
