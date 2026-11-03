@@ -21,7 +21,8 @@ key registered twice, and runs `node --check` on the script.
 
 Every build is deterministic: build-manifest.json holds a sha1 per input.
 
-Usage:  python3 build.py [--no-checks] [--vendor-check]
+Usage:  python3 build.py [--no-checks] [--vendor-check] [--opt-in]
+        --opt-in: the sheet with the opt-in sets (OPT_IN_FILES) to dist/catalog-optin.html, no manifest
 """
 import fnmatch, hashlib, json, os, re, subprocess, sys
 
@@ -62,11 +63,20 @@ SOURCES = [
 ]
 
 
-def sources():
+# OPT-IN sets (furniture_bundle.py OPT_IN, 2026-11-03): kept off the default sheet, so dist/catalog.html and
+# build-manifest.json stay as they were. `--opt-in` builds the sheet WITH them, after the culture files, to
+# dist/catalog-optin.html (not committed: .gitignore) and writes no manifest; verify.py takes that page like the other.
+# Fold them into the default set the next time the catalog is touched (the opt-in file's header).
+OPT_IN_FILES = ['krator-optin-furniture-ancient-bath.js']
+
+
+def sources(optin=False):
     out = []
     for s in SOURCES:
         if '*' in s:
             out += sorted(f for f in os.listdir(HERE) if fnmatch.fnmatch(f, s) and f not in out)
+            if optin and s == 'krator-master-furniture-*.js':
+                out += OPT_IN_FILES
         else:
             out.append(s)
     return out
@@ -124,7 +134,9 @@ def main():
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
-    parts = [(f, read(os.path.join(HERE, f))) for f in sources()] + [(f, read(os.path.join(SRC, f))) for f in js]
+    optin = '--opt-in' in sys.argv
+    out_name = OUT + '-optin' if optin else OUT
+    parts = [(f, read(os.path.join(HERE, f))) for f in sources(optin)] + [(f, read(os.path.join(SRC, f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:
@@ -136,15 +148,16 @@ def main():
     html = (''.join(read(os.path.join(SRC, f)) for f in head) + '<script>\n' + script +
             ''.join(read(os.path.join(SRC, f)) for f in tail))
     os.makedirs(DIST, exist_ok=True)
-    out = os.path.join(DIST, OUT + '.html')
+    out = os.path.join(DIST, out_name + '.html')
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
-    manifest = {n: hashlib.sha1(b.encode()).hexdigest()[:12] for n, b in parts}
-    for f in head + tail:
-        manifest[f] = hashlib.sha1(read(os.path.join(SRC, f)).encode()).hexdigest()[:12]
-    with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8') as fh:
-        json.dump(manifest, fh, indent=1, sort_keys=True)
-    chk = os.path.join(HERE, '.syntax-%s.js' % OUT)
+    if not optin:
+        manifest = {n: hashlib.sha1(b.encode()).hexdigest()[:12] for n, b in parts}
+        for f in head + tail:
+            manifest[f] = hashlib.sha1(read(os.path.join(SRC, f)).encode()).hexdigest()[:12]
+        with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8') as fh:
+            json.dump(manifest, fh, indent=1, sort_keys=True)
+    chk = os.path.join(HERE, '.syntax-%s.js' % out_name)
     with open(chk, 'w', encoding='utf-8') as fh:
         fh.write(script)
     try:

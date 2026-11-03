@@ -6,7 +6,7 @@ The master catalog: asset engine, the parametric furniture kit and 1674 furnitur
 
 Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/catalog.html`
+Built output (never open it; edit `src/` and rebuild): `dist/catalog-optin.html`, `dist/catalog.html`
 
 Build: `cd kits/catalog && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -29,8 +29,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
 | `krator-master-furniture-eastabyss.js` | 57 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767); The builders' yard (2026-10): building stock for (811) |
 | `krator-master-furniture-eternian.js` | 27 |  |
-| `krator-master-furniture-generic-fruit.js` | 64 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
-| `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (190); Food (21 pieces) (588); Drink (6 pieces) (1130); Supplies (11 pieces) (1296) |
+| `krator-master-furniture-generic-fruit.js` | 80 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (4 pieces; pandan keys ab (314); Rift (5 pieces; the stone pine is the parasol pi (404); South-eastern Desert (3 pieces) (508); South-west Bay (3 pieces; gatepod above) (576); South-western Lowlands (6 pieces; acorns are the (652); Xanadu (7 pieces; tunas and lantern fruit are sh (777); Eastern Badlands (6 pieces; tunas, acorns and pi (926) |
+| `krator-master-furniture-generic-goods.js` | 92 **big** | Storage containers (17 pieces) (200); Food (21 pieces) (598); Drink (6 pieces) (1140); Supplies (11 pieces) (1306) |
 | `krator-master-furniture-generic.js` | 5 |  |
 | `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
 | `krator-master-furniture-islander.js` | 6 |  |
@@ -56,6 +56,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-zeijani.js` | 49 **big** | home (112); brewing and fungi (183); the alchemist (258); light (330); crafts (369); the sacred (549); the dead (675); the scouts and the cistern (735) |
 | `krator-master-furniture.js` | 281 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |
 | `krator-master-plants.js` | 92 **big** | Voth (21 species) (10); Iziz (7 species) (870); Beast-Rider (Mav's Refuge / Girder) (11 species) (1188); Yuni (9 species) (1700) |
+| `krator-optin-furniture-ancient-bath.js` | 17 |  |
 | `krator-symbols.js` | 11 | CULTURE SYMBOLS (shared: core/sockets/38-symbols (1); symbols: each draws in the box (cx,cy,R) with tw (10) |
 
 ## src/

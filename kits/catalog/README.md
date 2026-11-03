@@ -33,6 +33,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette and fourteen shell-grown bespoke pieces (lathes and tubes, ported from Ys). See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (60, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
 | `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
+| `krator-optin-furniture-ancient-bath.js` | **OPT-IN ONLY, until the next time the catalog is touched**: the Ancients' bath fixtures (seven `ancient` pieces for room kind `bath`) and the `bath` room programme. On no default page or bundle; see "Opt-in sets" below |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -218,6 +219,31 @@ outbuilding is **furniture**: a catalog piece placed as data and built by the ca
   `userData.furniture` (`userData.missingFurniture` for a key the catalog lacks: nothing drawn).
   **The height is the caller's**: `F.furn` does not apply the piece's anchor, so pass the floor, the
   top it stands on, or the beam a hanging piece meets.
+
+### Opt-in sets (2026-11-03)
+
+A set of pieces added between all-builds rebuilds goes in a `krator-optin-furniture-<name>.js` file, NOT a
+`krator-master-furniture-*.js` one, so nothing that globs the culture files takes it (this sheet's default build,
+`furniture_bundle.bundle(None)` or any culture name, `kits/interiors` and `kits/ancients-interiors`, which load the culture
+files by path) and every page built before it stays byte-identical. A build asks for it by name:
+
+```python
+furniture_bundle.bundle(['generic-goods', 'post-apoc', 'scrap'], harvested=True, tex=True, optin=['ancient-bath'])
+```
+
+It joins the bundle after the runtime (so it may extend `KratorFurniture`) and before the detail maps. `python3 build.py
+--opt-in` builds this sheet with every opt-in set to `dist/catalog-optin.html` (not committed, no manifest; `verify.py
+dist/catalog-optin.html --assert` checks it like the default sheet), and `verify.py`'s static checks read the opt-in files
+always.
+
+**This is temporary. The next time the catalog is touched** (every build that takes it is rebuilt then anyway), each set is
+**made permanent**: its pieces folded into the default set, its palette keys into `FPAL`, anything else it carries to its
+proper home, the `optin` argument dropped from every caller, the file deleted, and every build that takes the catalog
+rebuilt. Each file's header says where its parts go. `TODO.md`, "Ride along with the next all-builds rebuild", lists it.
+
+| Set | File | What |
+|---|---|---|
+| `ancient-bath` | `krator-optin-furniture-ancient-bath.js` | the Ancients' bath fixtures, culture `ancient`, rooms `['bath']` only (so nothing else's furnishing moves): `ancients_bath_tub` (vessel, role `bathtub`; drawn or dry), `ancients_bath_shower` (vessel, `shower`; a stall on a stone tray, or a 0.32 m deep wet room), `ancients_bath_toilet` (vessel, `toilet`; wall cistern, or wall-hung off a render duct), `ancients_bath_basin` (vessel, `washbasin`; pedestal, or slim on brackets, an oval mirror over it), `ancients_bath_mirror` (art, `mirror`), `ancients_bath_towel_rail` (rack, `towel_rail`), `ancients_bath_bench` (bench). White porcelain and render, pale stone, bronze and brass (eight new `FPAL.ancient` keys in its PALETTE block). It also carries the **`bath` room programme**, which `kits/interiors` lacks: require a bathtub or shower, a toilet and a basin; then a towel rail, a mirror and a bench while there is room. `KratorFurniture.ancientBath.install(KratorInteriors)` installs it (keeps an existing one); at the fold it moves to `kits/interiors/src/30-programs.js`. The compact variants fit a bath about 0.85 m wide; a room 1.5 m wide or more fills completely, and from 2 m it may take the tub |
 
 ### Size-aware segments (2026-10-12, ROADMAP stage 1)
 

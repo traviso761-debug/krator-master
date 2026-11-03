@@ -51,6 +51,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-zeijani.js` | 49.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture.js` | 280.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 2249 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-plants.js` | 91.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 755 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `krator-optin-furniture-ancient-bath.js` | 16.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 | opt-in set (`bundle(optin=['ancient-bath'])`, `build.py --opt-in`); also carries the `bath` room programme as data, which moves to kits/interiors at the fold |
 | `krator-symbols.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/00-head.html` | 4.1 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
