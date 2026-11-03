@@ -186,14 +186,14 @@ VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', '
 for _f in VENDOR_RENAME:
     VENDORED[_f] = 'kits/ancients/src'
 # the biome (phase 3, DESIGN §8): the shared biome core from core/biome and the north-west bay kit from biomes/nwbay/src,
-# byte-identical, as src/86-bio-*.js (the dalab pattern). Only the city target takes them (TARGET_ONLY); the city's host
+# READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/
+# held copies, behind core/biome and the fauna's move onto BIO.dynamic). Only the city target takes them; the city's host
 # binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
-                '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
-for _b in BIO_VENDORED:
-    VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'
-    VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
+BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+               '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
+               '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
+BIO_PATHS = {'86-bio-%s.js' % b: os.path.join(ROOT, *(('core', 'biome') if '-core-' in b else ('biomes', 'nwbay', 'src')), b + '.js')
+             for b in BIO_INPLACE}
 # src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
 # foreign kits.
 TARGET_ONLY = {'86-bio-': ('city',), '89x-ys-trades': ('city',)}   # the Voth census table (89x-ys-trades.js) is the city page's only
@@ -323,6 +323,9 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s' % target)
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()
            and all(target in tg for pre, tg in TARGET_ONLY.items() if f.startswith(pre))}
+    if target == 'city':   # the biome, read in place (a src/ copy with the same name would win)
+        for f, p in BIO_PATHS.items():
+            src.setdefault(f, p)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
