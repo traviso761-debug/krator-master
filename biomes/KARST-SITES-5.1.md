@@ -22,7 +22,8 @@ from the canvas's top-left corner. A region cut by `extract_region.py` uses its 
 **One finding first.** `geology.json` has no carbonate province (its provinces are water, sedimentary, crystalline,
 volcanic, evaporite, rift). So the map's limestone exists only in the lore and the kits' plans: the Hykkousoi province,
 swhighlands' ring folds, the `rift` strata recipe, n semiarid's basement and the Neo-Ozarks. Gypsum and salt are mapped,
-but only round the 4.2x basins.
+but only round the 4.2x basins. **Since added (2026-11-03):** a `carbonate` province and a `limestone` layer
+(`kits/resources/GEOLOGY.md`, "The carbonate"); other missing rocks are proposed in `kits/resources/ROCK-PROPOSAL.md`.
 
 ## Ranked sites
 

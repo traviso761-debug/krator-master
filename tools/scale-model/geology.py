@@ -4,12 +4,16 @@ river-carried placers and the ringed evaporite basins, as one data file the Reso
 the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources/GEOLOGY.md is the format).
 
     python3 tools/scale-model/geology.py <page.html> <regions dir> <settlements dir> <out.json> [--preview <dir>]
+    python3 tools/scale-model/geology.py --carbonate <geology.json> <regions> [--shift dx,dy]
 
 <page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection (a folder of one JSON per document, or one JSON list)
 <settlements dir>  the artifact's `settlements` collection, the same way
 <out.json>         kits/resources/data/geology.json
 --preview <dir>    also write province.png and one PNG per family there (for the eye; not shipped)
+--carbonate        add the carbonate province and the limestone layer to a bake made before them, in place, leaving every
+                   other byte as it was: <regions> is a collection as above or a region store (model/src/51-region-store.js,
+                   its default regions); --shift moves the regions' px onto the bake's canvas (-272,-330 takes 5.1's onto 4.23's)
 
 Reads (never edits) the page: the heights `h` and water `wl` (the half-resolution grid, ~4 km a cell: the grid this bake
 writes on), rain `p`, the mean temperature `tm`, `DATA.vents`, `DATA.basins`, `DATA.palaeolakes`, `DATA.dams`,
@@ -17,9 +21,10 @@ writes on), rain `p`, the mean temperature `tm`, `DATA.vents`, `DATA.basins`, `D
 
 The provinces (one byte a cell; bit 7 = Ancient-ruin ground, over the geology):
   0 water  1 sedimentary basin  2 crystalline upland (and the airless rim)  3 volcanic arc or vent field  4 evaporite
-  5 rift
-The families: the ore kinds of kits/resources (42r-res-ore.js RES_ORE.kinds) and four that only the ledger reads
-(stone, clay, wood, water: the basics every polity needs within a day's travel).
+  5 rift  6 carbonate (a limestone and dolomite platform: carbonate())
+The families: the ore kinds of kits/resources (42r-res-ore.js RES_ORE.kinds), four that only the ledger reads
+(stone, clay, wood, water: the basics every polity needs within a day's travel), and the rock layers no node field or
+ledger reads yet (limestone: biomes/KARST-SITES-5.1.md).
 
 The node field (KRES.nodesIn, kits/resources/src/45r-res-field.js) reads the families' bytes; this bake also runs the
 same field for the gold and tin lodes (KRAND, in numpy: the same integers as core/rand), so the placers it routes start
@@ -39,8 +44,9 @@ FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
-FAMILIES = NODE_FAMILIES + LEDGER_FAMILIES
-PROVINCES = ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift']
+ROCK_FAMILIES = ['limestone']
+FAMILIES = NODE_FAMILIES + LEDGER_FAMILIES + ROCK_FAMILIES
+PROVINCES = ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate']
 RUIN_BIT = 128
 # the mask byte: bit 0 water (a lake or the sea), bit 1 cliff (the cell's slope over CLIFF), bit 2 airless (over AIRLESS_M),
 # bit 3 sea (a water body of SEA_CELLS cells or more: the Ring Sea, the north-west ocean: salt water to boil)
@@ -70,6 +76,15 @@ MIN_UP = 1.5                # m/km: ... and that upstream slope was at least thi
 PLACER_GAP_KM = 10.0        # no two placers of one kind closer along one river
 PLACER_MIN = 0.35           # the smallest load dropped as a placer (a low-grade node's yield is 0.5)
 PLACER_FAMILIES = ('gold', 'tin')
+# carbonate (the owner, 2026-11-03; biomes/KARST-SITES-5.1.md): read from the bake's own layers and the biome regions only, so
+# a full bake and --carbonate on a saved one give the same bytes. The platforms are the old marine carbonate the lore names
+# (the Hykkousoi limestone, the Neo-Ozarks' dolomite; swhighlands' ring folds are limestone ridges among sandstones and shales)
+CARBONATE_REGIONS = {'k-guilin': 1.0, 'nw bay': 0.9, 'neo-ozarks': 1.0, 'spider lake': 0.6, 'sw highlands': 0.45}
+CARB_PROVINCE = 128         # a platform byte at least this makes a sedimentary or crystalline cell the carbonate province
+LAKE_FRINGE = 0.6           # lake limestone and marl: the first salt a drying lake lays, outside its gypsum ring
+TUFA = 0.5                  # tufa and lake carbonate round the soda lakes
+RIFT_LIME = 70              # the rift fill's stromatolite limestones and marls (thin, patchy: core/terrain/STRATA-PLAN.md `rift`)
+CALCRETE = 50               # caliche in semi-arid basin soils, at its most where the rain is ~400 mm
 
 M32 = 0xFFFFFFFF
 INV = 1.0 / 4294967296.0
@@ -167,7 +182,79 @@ def unrle(s, n):
     return out
 
 
+def poly_mask(pts, VW, VH, su, sv, shift=(0, 0)):
+    im = Image.new('L', (VW, VH), 0)
+    ImageDraw.Draw(im).polygon([((x + shift[0]) * su, (y + shift[1]) * sv) for x, y in pts], fill=1)
+    return np.array(im).astype(bool)
+
+
+def platform_weight(regions, VW, VH, su, sv, shift=(0, 0)):
+    """the carbonate platforms' weight per cell (0-1): CARBONATE_REGIONS' biome polygons, the strongest where they overlap"""
+    w = np.zeros((VH, VW))
+    for r in regions:
+        k = r['name'].strip().lower()
+        if k in CARBONATE_REGIONS and r.get('kind') == 'biome' and len(r['points']) >= 3:
+            w = np.maximum(w, CARBONATE_REGIONS[k] * poly_mask(r['points'], VW, VH, su, sv, shift))
+    return w
+
+
+def carbonate(prov, mask, P, platform):
+    """the limestone byte and the province with its carbonate cells, from the bake's layers (prov without the ruin bit).
+    Five sources, the strongest wins: the platforms; lake limestone and marl outside each basin's gypsum ring; tufa round the
+    soda lakes; the rift fill's thin limestones; calcrete in semi-arid basins (the aridity is saltpeter's, 200 x arid + 40 on
+    evaporites)"""
+    land = (mask & 1) == 0
+    gyp, alk = P['gypsum'].astype(float), P['alkali'].astype(float)
+    arid = np.clip((P['saltpeter'].astype(float) - 40.0 * (prov == 4)) / 200.0, 0, 1)
+    plat = 255.0 * platform * ((prov == 1) | (prov == 2) | (prov == 4) | (prov == 5))
+    fringe = LAKE_FRINGE * ndimage.maximum_filter(gyp, 5) * (gyp < 80)
+    tufa = TUFA * ndimage.maximum_filter(alk, 3)
+    rift = RIFT_LIME * (prov == 5)
+    calcrete = CALCRETE * np.clip(1 - np.abs(arid - 0.4) / 0.4, 0, 1) * (prov == 1)
+    lime = np.clip(np.round(np.maximum.reduce([plat, fringe, tufa, rift, calcrete]) * land), 0, 255).astype(np.uint8)
+    out = prov.copy()
+    out[(plat >= CARB_PROVINCE) & ((prov == 1) | (prov == 2)) & land] = PROVINCES.index('carbonate')
+    return lime, out
+
+
+def add_carbonate(argv):
+    """--carbonate: the carbonate province and the limestone layer added to a bake made before them, in place"""
+    path, src = argv[2], argv[3]
+    sh = [a.split('=', 1)[1] for a in argv if a.startswith('--shift=')] or \
+         [argv[k + 1] for k, a in enumerate(argv) if a == '--shift']
+    shift = tuple(float(v) for v in sh[0].split(',')) if sh else (0, 0)
+    data = json.load(open(path, encoding='utf-8'))
+    if 'limestone' in data['families']:
+        sys.exit(path + ' already has the limestone layer')
+    g = data['grid']; VW, VH = g['w'], g['h']; su, sv = (VW - 1) / (g['fullW'] - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    if src.endswith('.js'):
+        import re
+        regions = json.loads(re.search(r'const defRegs = (\[.*?\]);\n', open(src, encoding='utf-8').read(), re.S).group(1))
+    else:
+        regions = docs(src)
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov_b, mask = L('province'), L('mask')
+    P = {k: L(k) for k in ('gypsum', 'alkali', 'saltpeter')}
+    lime, prov = carbonate(prov_b & 127, mask, P, platform_weight(regions, VW, VH, su, sv, shift))
+    prov_b = prov | (prov_b & RUIN_BIT)
+    land = (mask & 1) == 0
+    data['provinces'] = PROVINCES
+    data['families'] = data['families'] + ROCK_FAMILIES
+    data['rockFamilies'] = ROCK_FAMILIES
+    data['layers']['province'] = rle(prov_b)
+    data['layers']['limestone'] = rle(lime)
+    data['stats']['province_cells'] = {PROVINCES[k]: int((prov == k).sum()) for k in range(len(PROVINCES))}
+    data['stats']['mean']['limestone'] = round(float(lime[land].mean()), 2)
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added carbonate to %s: %s, limestone mean %s' % (path, json.dumps(data['stats']['province_cells']),
+                                                            data['stats']['mean']['limestone']))
+
+
 def main(argv):
+    if '--carbonate' in argv[1:2]:
+        return add_carbonate(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -189,9 +276,7 @@ def main(argv):
     regions = docs(regs_dir); setts = docs(setts_dir)
 
     def poly(pts):
-        im = Image.new('L', (VW, VH), 0)
-        ImageDraw.Draw(im).polygon([(x * su, y * sv) for x, y in pts], fill=1)
-        return np.array(im).astype(bool)
+        return poly_mask(pts, VW, VH, su, sv)
 
     def named(names, kinds=None):
         m = np.zeros((VH, VW), bool)
@@ -309,16 +394,17 @@ def main(argv):
     for k in ('copper', 'silver', 'gold', 'tin', 'rare-earth', 'iron', 'coal', 'oil'):
         f[k] = f[k] * hard
     P = {}
-    for k in FAMILIES:
+    for k in NODE_FAMILIES + LEDGER_FAMILIES:
         a = np.clip(np.round(f[k]), 0, 255).astype(np.uint8)
         if k not in ('water',):
             a[water] = 0
         P[k] = a
-    prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
     wlab, nw = ndimage.label(water)
     sizes = np.bincount(wlab.ravel())
     sea = water & (sizes[wlab] >= SEA_CELLS)
     mask = (water.astype(np.uint8)) | (cliff.astype(np.uint8) << 1) | (airless.astype(np.uint8) << 2) | (sea.astype(np.uint8) << 3)
+    P['limestone'], prov = carbonate(prov, mask, P, platform_weight(regions, VW, VH, su, sv))
+    prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
     # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask
     def lode_nodes(fam):
@@ -424,7 +510,7 @@ def main(argv):
             'mask': {'water': 1, 'cliff': 2, 'airless': 4, 'sea': 8},
             'field': {'world': WORLD, 'inset': INSET, 'cells': FIELD, 'families': NODE_FAMILIES,
                       'grade': {'tilt': 0.5, 'high': 0.15, 'medium': 0.55}},
-            'families': FAMILIES, 'ledgerFamilies': LEDGER_FAMILIES,
+            'families': FAMILIES, 'ledgerFamilies': LEDGER_FAMILIES, 'rockFamilies': ROCK_FAMILIES,
             'layers': {'province': rle(prov_b), 'mask': rle(mask), **{k: rle(P[k]) for k in FAMILIES}},
             'placers': placers, 'basins': basins_out, 'polities': polities, 'settlements': settl, 'stats': stats}
     # the round trip, so a reader that decodes the format gets these bytes
@@ -437,7 +523,8 @@ def main(argv):
     print('placers', stats['placers'], 'lodes', digest, 'basins', len(basins_out))
     if prev:
         os.makedirs(prev, exist_ok=True)
-        pal = np.array([[60, 90, 150], [200, 180, 120], [150, 150, 160], [190, 70, 40], [240, 240, 230], [70, 150, 110]], np.uint8)
+        pal = np.array([[60, 90, 150], [200, 180, 120], [150, 150, 160], [190, 70, 40], [240, 240, 230], [70, 150, 110],
+                        [120, 200, 210]], np.uint8)
         im = pal[prov]
         im[(prov_b & RUIN_BIT) > 0] = (im[(prov_b & RUIN_BIT) > 0] * 0.6 + np.array([255, 0, 255]) * 0.4).astype(np.uint8)
         Image.fromarray(im).save(os.path.join(prev, 'province.png'))

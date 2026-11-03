@@ -11,7 +11,7 @@
 | `data/ledger.json` | the ledger of this data (`node kits/resources/tests/test-res.js --ledger`): what core/simulation and Godot read |
 | `godot/kres_field.gd`, `godot/kres_field_test.gd`, `godot/golden-field.json` | the GDScript twin of the field, its test, its vectors |
 | `src/98r-host-geomap.js` | `[web]` the page's geology map (G): provinces, a family's prospectivity, the nodes of a window by family |
-| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 44 checks, each with a negative |
+| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 47 checks, each with a negative |
 
 ## Rebake
 
@@ -26,6 +26,15 @@ cd kits/resources && python3 build.py
 Deterministic: the same page and database give the same bytes. 2026-10-26: scale model 4.23, 97 regions, 109 settlements;
 2.9 MB of data, 11 s.
 
+**The carbonate** (2026-11-03) was added to that 4.23 bake without a rebake: `carbonate()` reads only the bake's own layers and
+the biome regions, so the pass below gives the bytes a full bake with the same regions would, and every other byte stays as it was (the 4.23
+page and database are not kept in the repo). It took the regions from 5.1's region store, shifted onto the 4.23 canvas:
+
+```
+# the bake keeps all its other bytes; only the province (1,491 cells to carbonate) and the new limestone layer change
+python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
+```
+
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
@@ -33,11 +42,12 @@ One JSON object. The browser, node and Godot read the same integers; nothing is 
 ```
 format 'krator-geology', version 1, source 'Krator Scale Model 4.23'
 grid      {w: 774, h: 696, fullW: 1549, fullH: 1393, px_m: 2000, cell_km: 4.0052}   the scale model's height grid
-provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift']   a province byte's low 7 bits
+provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate']   a province byte's low 7 bits
 ruinBit   128                                                                         set on Ancient-ruin ground
 mask      {water: 1, cliff: 2, airless: 4, sea: 8}                                    the mask byte's bits
 field     {world, inset, cells: {family: m}, families: [...], grade: {tilt, high, medium}}   the node field's constants
-families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water)
+families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water, then rockFamilies: limestone)
+rockFamilies ['limestone']   rock layers no node field or ledger reads yet
 layers    {province, mask, <family>...}: each a byte raster, run-length coded, base64
 placers   [{id, kind, grade, x, z, placer: true, river, why, load}]   world metres
 basins    [{id, at_px, kind, level_m, top_m, cells, soda, intensity}]   each evaporite basin the bake ringed
@@ -64,6 +74,7 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | 3 | volcanic | within `10 + 4 x radius` km of a `DATA.vents` vent; the biome regions Throne/Volcano, godthrone, Korona / NE, rift rim N and S, godstep valley |
 | 4 | evaporite | a ringed basin's strand where any evaporite byte is over 40 |
 | 5 | rift | the regions rift and The Rift |
+| 6 | carbonate | a sedimentary or crystalline cell whose platform byte (below, limestone) is 128 or more: k-guilin, NW bay (and the Neo-Ozarks, off this canvas) |
 | +128 | ruin ground | within 12 km of a ruin or ruined arcology settlement, and the region Ruins of Nazar |
 
 ### The families
@@ -82,6 +93,7 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | saltpeter | 200 x aridity (rain under 600 mm), + 40 on evaporites |
 | gypsum, halite, potash, alkali | the ringed basins (below); halite also 40 under flat, dry sedimentary basins (bedded rock salt) |
 | stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock; floodplains and lake shores; rain and warmth; rivers, shores and rain |
+| limestone | a rock layer (no node kind, no ledger basic; `biomes/KARST-SITES-5.1.md`): the strongest of the **platforms** (255 x the biome region's weight: k-guilin 1, NW bay .9, neo-ozarks 1, spider lake .6, sw highlands .45; on sedimentary, crystalline, evaporite and rift ground), **lake limestone and marl** outside each basin's gypsum ring (.6 x the gypsum within 2 cells, where the cell's own gypsum is under 80), **tufa** round the soda lakes (.5 x the alkali within 1 cell), the **rift fill**'s thin limestones (70 on rift ground), **calcrete** in semi-arid basins (50 at ~400 mm of rain, from saltpeter's aridity, on sedimentary ground) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
 
