@@ -125,8 +125,11 @@
    else{/* after <project_vertex>; a hook that replaced it (a leaf card's sway) gets it before <fog_vertex> instead, as the snow does */
     sh.vertexShader='varying vec3 atmWPos;\n'+K.inject(sh.vertexShader,{at:'project_vertex',after:wp+'atmWPos=atmWP.xyz;',fallback:{at:'fog_vertex',before:wp+'atmWPos=atmWP.xyz;'}});
     const lfb=K.rep(A.T.ShaderChunk.lights_fragment_begin,/(getDirectionalDirectLightIrradiance\(\s*directionalLight,\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);   /* the include is not expanded yet: expand it here */
-    const RL=A.repLit(this);sh.fragmentShader=head+'varying vec3 atmWPos;\n'+RL(RL(sh.fragmentShader,'#include <lights_fragment_begin>',lfb),
-     '#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);');}
+    /* the wet's gloss on a Standard material's roughness; a Phong material has no <roughnessmap_fragment> (2026-11-02: KHOOK threw at render on the
+       Throne glacier's Phong ice), so it takes the darkening alone. A Standard material's text is unchanged */
+    const RL=A.repLit(this),fs1=RL(sh.fragmentShader,'#include <lights_fragment_begin>',lfb);
+    sh.fragmentShader=head+'varying vec3 atmWPos;\n'+(fs1.indexOf('#include <roughnessmap_fragment>')>=0?RL(fs1,
+     '#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);'):fs1);}
    /* the wet here: W.wet, none under cover when the page takes the rain occlusion map (the world position reaches the fragment) */
    const wetHere=occ?'float atmWetHere=uWet*(1.0-atmRainCover('+(lambert?'atmWPosF':'atmWPos')+'));':'float atmWetHere=uWet;';
    /* a hook that samples its own map (core/biome's gloss bark replaces <map_fragment> and <color_fragment>) gets it before <alphamap_fragment>, the next chunk that holds */
