@@ -24,23 +24,23 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `28-et-mat.js` | 2 |  |
 | `37-wk-rec.js` | 2 |  |
 | `38-et-alt.js` | 2 |  |
-| `40-et-kit.js` | 9 |  |
+| `40-et-kit.js` | 10 |  |
 | `41-et-profile.js` | 8 |  |
 | `42-et-head.js` | 12 |  |
 | `43-et-statue.js` | 5 |  |
 | `44-et-roof.js` | 11 |  |
 | `45-et-samples.js` | 6 |  |
 | `46-et-civic-kit.js` | 4 |  |
-| `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (68) |
+| `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (69) |
 | `51-et-dwell-mid.js` | 7 |  |
 | `52-et-dwell-rich.js` | 9 |  |
 | `53-et-court.js` | 5 |  |
 | `54-et-dwell-hex.js` | 3 |  |
-| `60-et-state.js` | 11 |  |
-| `61-et-defence.js` | 13 |  |
+| `60-et-state.js` | 12 |  |
+| `61-et-defence.js` | 14 |  |
 | `62-et-machine.js` | 10 |  |
 | `63-et-faith.js` | 9 |  |
-| `64-et-trade-kit.js` | 6 |  |
+| `64-et-trade-kit.js` | 8 |  |
 | `65-et-works.js` | 6 |  |
 | `66-et-trades.js` | 14 |  |
 | `67-et-land.js` | 7 |  |

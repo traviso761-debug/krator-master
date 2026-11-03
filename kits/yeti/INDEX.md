@@ -31,7 +31,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `42-yt-tunnel.js` | 13 |  |
 | `43-yt-craft.js` | 2 |  |
 | `44-yt-props.js` | 5 |  |
-| `50-yt-dwell.js` | 11 |  |
+| `50-yt-dwell.js` | 12 |  |
 | `51-yt-cluster.js` | 8 |  |
 | `52-yt-rich.js` | 3 |  |
 | `53-yt-balagan.js` | 7 |  |
@@ -41,7 +41,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `61-yt-works.js` | 8 |  |
 | `62-yt-stores.js` | 4 |  |
 | `63-yt-land.js` | 6 |  |
-| `64-yt-war.js` | 5 |  |
+| `64-yt-war.js` | 7 |  |
 | `68-yt-trades.js` | 4 |  |
 | `89-rows.js` | 2 |  |
 | `90y-yt-ground.js` | 4 |  |
