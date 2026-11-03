@@ -314,9 +314,21 @@ Placement takes `H.contour(25, {box})`; the snow takes `ATMOS.snowBare(H.snowMas
 
 **`KSTACKS` kind `chimney`** (`37-core-stacks.js`). One hollow kind, `form` setting its defaults: `pipe` (the Gills), `bell` (the Lungs: flared, on holdfasts), `stalk` (the Hearths: slender, broken),
 `siphon` (Siphon Pits). Options: `bore | wall, taper, flare {from, k, p}, mouths, fork, spread, lean, toward, state ('standing'|'broken'|'rubble'|'fallen'), cut, fan, ledges, ledgeW, holdfasts, ice {from, thick}`.
-`topAt`, `at`, `surface`, `foot`, `ledge` and `ring` read it as any body (over the bore `topAt` finds no lip; `ledge` answers on `ledges`' steps); `mesh` adds part 3, the bore, and `ice`, 0..1 a vertex, with `ice`. Laminae are not here (the `lamina` recipe is another session's).
+`topAt`, `at`, `surface`, `foot`, `ledge` and `ring` read it as any body (over the bore `topAt` finds no lip; `ledge` answers on `ledges`' steps); `mesh` adds part 3, the bore, and `ice`, 0..1 a vertex, with `ice`. Laminae are `KSTRATA.lamina` (`35b-core-lamina.js`, `core/terrain/LAMINA.md`, 2026-11-03), read on a chimney by `L.atPipe(B, x, y, z)`.
 `KSTACKS.bore(B, {depth})` gives its `KCAVERN.shaft` records and the well: a shaft stands plumb, so on a leaning bed the mesh and the shaft part by at most half that bed's shift (`test-chimney.js` holds it).
 *Adopting it:* `make` it, draw `mesh(B, {bore: 'open'})` when a shaft goes on below (without it a plug closes the foot), and add `bore(B).shafts` and `.opening` to the cavern.
+
+**`KHAZ` moving and pooling** (`core/hazard/21-core-hazard-flow.js`, 2026-11-03): a hazard's `move` read at last, `move.pull` toward its core (the Gills' in-breath), and `shape.pool` (gas that kills on the floor and is nothing a few metres up); `core/hazard/README.md`, "Moving and pooling".
+
+**`KSPELEO`** (`core/terrain/39b-core-speleo.js`, `test-speleo.js`, 2026-11-03): what grows in a built KCAVERN's voids (riftrim's hold:
+gypsum chandeliers, stalactites, stalagmites, columns where the two meet), placed by `KRAND` per cell from the cavern's own `sdf` and
+`ceilingAt` (a tile placed alone gets what the whole cavern has there; nothing under the sky or in rock), meshed as plain arrays,
+`KSPELEO.blocks` for core/walk. *Adopting it:* list it after `39-core-cavern.js`; after `C.build()`, `const R = KSPELEO.place(C, {box,
+y: a height inside the voids, world, kinds})`, register each record (`core/tags`), draw `KSPELEO.mesh(R)` as one geometry, add
+`KSPELEO.blocks(R)` to the walk (`C.fixture` takes the same box order). Not judged by eye.
+
+**The breath's turn** (`core/biome/35b-core-anim-turn.js`), **steam in groups** and **the heat shimmer** (`core/atmos/fx/`): see
+`core/biome/README.md`, "The breath's turn", and `core/atmos/README.md`, "Steam in groups and the heat shimmer".
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 
