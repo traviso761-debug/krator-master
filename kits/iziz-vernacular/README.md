@@ -31,6 +31,17 @@ funicular, the isle demo Iziz's `88y-iziz-matlib.js`); until 2026-11-03 each kep
 `22-materials`, `68-mat-v5`, `opt/69a-world-uv`). Its library bind, `88y-iziz-matlib.js`, is still Iziz's (it binds Iziz's
 `materials.json` families; it moves to `core/materials` with step 4's matlib item).
 
+**The dark voids left** (the doors-and-glass pass, 2026-11-03). Every doorway and window draws through 69e5 (a real leaf in
+`KDOOR`, `KGLASS` glass over the room card), and `vnStrip`, `vnWin`'s dark plate and `vnDoor`'s recess in 69c are wrapped
+there. What still draws `vDarkB` (`MAT.void`, unlit) is not an opening, and stays dark on purpose: furnace, kiln, forge and
+oven mouths behind their embers (`71` the kiln and the smithy's hearth, `71b` the dye vats' fires, `71c` the forges and the
+chimney's flue, `72` the bakehouse oven, `73c` the farm hearth, `74` the brazier and the guild forge), wells and cisterns
+(`72` the well, `74` `vgWell`, `73` the standpipe's trough), troughs, drains, culverts and pits (`71` and `73c` the sawpits,
+`71b` the tannery's drain, `73b` the tail race's culvert, `73c` `vldTrough` and the boat's bilge, `74` `vgTrough`), the vent
+cowls' mouths and a tank's open end (`73b`), the quarry's drill grooves and parting gaps (`73b`), oil stains (`71c`), the
+Ancient panels' cell slots (`71c` `vcrPanel`) and a basket's mouth (`73c`). `vWinGlass` (the opaque dark glass) is left on
+water (troughs, pools, the mill race) and the wrecked robot's eye (`74`).
+
 **Who takes it.**
 - Read in place: `settlements/iziz` (its `vernacular` target is the kit's sheet; the city places it), and through Iziz's
   page `kits/pylon` and `kits/talia`, which are written on its contract (`settlements/iziz/VASSAL-KITS.md`);
