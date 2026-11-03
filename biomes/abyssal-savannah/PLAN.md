@@ -237,6 +237,9 @@ air and the water follow; `89z-host-build.js` (was 88) places the flora last, on
    savanna on Earth's classes. **(default)** the kit is both: station 1 the rim slope (what the eastabyss sketch drew),
    station 2 the floor's belt.
 2. **Station 1's site**: the gentle east rim at px ~1021,350 (the gentlest transect, a 46 km climb). **(default)**
+   **Map 5.1 (2026-11-03):** the climb moved ~5 px east, so the site is px 1026,350 (-638 m, Aw, ~1,240 mm, +30 degC). On 5.1 row 350 reads
+   XV at -1,256 to -1,007 m (old px 1019-1022), Aw at -879 to -493 m (1023-1028), BSh from -328 m (1029); the plan's rain figures above are 4.22's
+   (`KNOWN_ISSUES.md`: 5.1 is wetter).
 3. **The risers, gullies and kopjes are the page's, not the model's** (it cannot resolve them at 4 km a cell).
    **(default)** two risers and a caprock rim on the model's grade.
 4. **Fire as a static mosaic**, not a moving fire. **(default)** static; a fire model and the people who burn are S6.

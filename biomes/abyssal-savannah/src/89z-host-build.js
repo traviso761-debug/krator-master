@@ -22,7 +22,8 @@ const IMP_GAIN=2.6;   /* the impostors' gain (oidong 2.6, eastabyss 3.6, ebadlan
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 (function(){
  const t0=performance.now(),Q=new URLSearchParams(location.search);
- if(Q.get('diet')==='0')ABSAV.IMPOSTORS=false;   /* ?diet=0: the kit's own far blobs, not the impostors */
+ if(Q.get('diet')==='0')ABSAV.IMPOSTORS=false;
+ if(Q.get('fields')!=='0')ABSAV.SHORE=(x,z)=>inMap(x,z)?WATER_FN.shore(x,z):NaN;   /* trees keep off the water by its own shore (55) */   /* ?diet=0: the kit's own far blobs, not the impostors */
  // the caprock's lip: the profile's lip (RIM.lip in the warped coordinate) at every 9 m down the map, on the ground
  const lip=[];for(let z=-TERR.Z+20;z<=TERR.Z-20;z+=9){const x=RIM.lip-warpZ(z);lip.push([x,z]);}
  const rim={lip,c:[RIM.lip-warpZ(0),0],r:TERR.Z,y0:terrainH(RIM.face[0]-warpZ(0),0)-5,h:300};
