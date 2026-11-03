@@ -1,5 +1,9 @@
 {
  "pages": {
+  "biomes/abyssal-savannah/dist/abyssal-savannah.html": {
+   "bytes": 11216432,
+   "sha256": "003e9d9db7a8975f2739f5ebcd900a65a20e818a8754ab12e929b13d855f8400"
+  },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"

@@ -10,26 +10,42 @@ Read before changing anything here. `build.py` prints the open count.
       keep its rng draws where the savannah was (or move its passes onto per-cell seeds first), call `ABSAV.zones` /
       `ABSAV.make` / `ABSAV.grow` for the `sav` zone, and add this kit's fragments and pack to its `build.py`.
 - [ ] **The ground is not the scale model's.** The rim slope is an analytic profile on the survey's grade (KRAND noise),
-      not KLAND (on another branch, not in this checkout). The risers, gullies and kopjes are the page's own (PLAN.md Q3).
-- [ ] **Fire is a static mosaic** (`ABSAV.burn`): no front that moves, no smoke, no people who burn (PLAN.md S6).
-- [ ] **Two textures owed** (`core/materials/PROMPTS-NEEDED.md` section 24): `ground.savanna.litter` (stand-in
-      `ground.redsoil`) and `card.grass.thatch` (stand-in `card.grass.dry`, a knee-high bunchgrass drawn 3 m tall: the tufts
-      read squat and too open up close).
+      not KLAND (still not in this checkout). The risers, gullies and kopjes are the page's own (PLAN.md Q3). Map 5.1
+      (2026-11-03): the site moved to px 1026,350 (-638 m, Aw); the page's foot to bench (-600 to -100 m) lies in the rim's upper
+      bench band (-550 to -100 m on 5.1), and the far field runs west on 5.1's grade. The page's climb is about twice the model's
+      grade (500 m over 6 km where 5.1 rises ~500 m over ~14 km, old px 1026-1033): the treads are the page's, not the model's.
+- [ ] **5.1 made the climb wetter than the plan says** (for the owner): ~1,240 mm at the foot (Aw, +30 degC), ~1,100 mm on the
+      bench (BSh, +27 degC), where the plan has 720-1,160 and 440-630 mm, and the foot is Aw, not Am. The flora is unchanged:
+      the jungle still climbs out of the foot and the gullies (a wet Aw's gallery forest). Say if the parkland should close up.
+- [ ] **Fire is a static mosaic** (`ABSAV.burn`): no front that moves, no smoke, no people who burn (PLAN.md S6). BACKPORT.md's
+      row asks for `KFIRE` (core/biome 38): its `history` would replace the mosaic, which re-rolls every patch and so every plant,
+      lily, charred stem and ground colour that reads it. Not taken in this turn: it is S6's, a deliberate placement change.
+- [ ] **The umbrella's crown plate shows one sprig** (for the owner): `check_cells.py --fix` (2026-11-03) cut the plate's
+      `card.acacia` sheet to one plant, so one sprig is stretched over a disc 5-14 m across (before, all nine at once). A plate
+      texture is owed: `card.umbrella.plate`, its prompt in `core/materials/PROMPTS-NEEDED.md` section 24.
 - [ ] **The caprock's talus assumes downslope is -x** (`60`, `caprock`): fine on this host; a world with the rim facing
       another way must hand the direction (add `rim.down`).
-- [ ] **The cycad fronds use `card.fern` whole**, its tip at the frond's base (the card loads unflipped): the fronds widen
-      outward. The eastern abyss has the same with its `cycfrond` slot.
 - [ ] **No fauna.** Grazers and the eastern abyss's frilled lizards on the rocks belong to `kits/fauna` (PLAN.md Q6).
 - [ ] **No runtime LOD.** The trees and the floor are levelled by distance from the LOD spine, not the camera (the
       eastabyss kits' way); a free camera standing far off the spine sees the mid and far bands up close.
 - [ ] **The bench reads thin.** Its bunchgrass (paired tussocks, `card.ichu` tinted) is a steppe from the ground but a
       scatter from above; the stub-lycopsid colonies carry it. A denser short-grass card or a second floor layer is a look pass.
-- [ ] **PORT.md is hand-written** in a short shape: `tools/check_port.py` warns that it finds no rows (13 warnings, no
-      failure). Rerun `tools/audit_port.py` (not run by this session, per its brief) to write the full table.
-- [ ] **Every view draws the whole scene** (~9.2M triangles, ~50 calls): the meshes are map-wide, so frustum culling
+- [ ] **Every view draws the whole scene** (~9.7M triangles, ~52 calls): the meshes are map-wide, so frustum culling
       saves nothing. The core's chunked LOD (`BIO.range`, as swbay's trees use) would cut it.
 - [ ] **Stations 2 and 3** (the floor's belt, the bench's edge with ebadlands read in place) are planned, not built.
 
+- [ ] **KSHADOW's cost is not measured** (the cloud turn had no GPU): the coordinator times `?shadow=0` against the default on
+      the Arc. The Throne's isle and vents skipped it for its cost; oidong measured it within noise.
+- [ ] **The scene's triangles rose** with the crowns held: 8.65M -> 9.67M at the opening view (software GL), over the kit's 9M
+      showcase budget (`BUDGET` in `99-host-take.js`; a warning, not a failure); the tree pass 4.21M -> 5.22M of 6M (the heroes'
+      twigs at 6 triangles, the joints' spans). The owner or the GPU run decides: raise the budget, or thin the twigs (one per
+      two clumps, or none past ~500 m).
+
 ## Done
+
+- [x] 2026-11-03, the final rebuild (pair 8): the universal set (PLAN.md section 11); the attach audit 28.39% -> 0.00% (software GL, `verify.py --assert`; a twig to each hero clump, mid clumps held);
+      the textures `ground.savanna.litter` and `card.grass.thatch` were delivered and wired on 2026-10-26 (the open item was
+      stale); the cycad frond's card is cut and based at its bottom (`check_cells.py --fix`: `cell`, `base: bottom`), not judged
+      by eye; `PORT.md` written by `tools/audit_port.py`.
 
 - [x] 2026-10-26: station 1 built to the plan's S0-S4 (`NOTES.md`).
