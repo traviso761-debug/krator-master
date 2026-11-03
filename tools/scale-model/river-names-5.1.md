@@ -17,7 +17,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `farside` | 37 | `xMista qRiba` (82 km), `ɓRiba qRiba` (80 km), `qRidj qRiba` (75 km), `qBlaka qRiba` (69 km) |
 | `argot` | 36 | `Xipa Guli` (130 km), `Gete Guli` (125 km), `yardang Guli` (100 km), `katarak Guli` (98 km) |
 | `vothic` | 32 | `Drïm Rivrh` (207 km), `klir Rivrh` (205 km), `Sharf Rivrh` (137 km), `Kowld Rivrh` (131 km) |
-| `xanadui` | 31 | `Rīfar al-Bihār` (95 km), `Bīruk al-Ghaym` (90 km), `Gūlī al-Yāqūt` (84 km), `Gūlī al-Jawhar` (81 km) |
+| `xanadui` | 31 | `Solṭ Siṭrīm` (95 km), `Solṭ Riwā` (90 km), `Sekriḍ Ḍrāi` (84 km), `Ḍhom Ḍrāi` (81 km) |
 | `vrivolci` | 30 | `Dubnosriba` (211 km), `Tarvosriba` (174 km), `Ixosriba` (130 km), `Clodosriba` (112 km) |
 | `riders` | 22 | `Na'ashǫ́'ii Baatar` (138 km), `Ch'il Baatar` (128 km), `Łizhin Baatar` (123 km), `Tsékooh Baatar` (122 km) |
 | `tabist` | 22 | `Rvr Fḍḍ` (93 km), `Rvr Ḥmm` (85 km), `Gl Ḏhb` (84 km), `Gl Šms` (80 km) |
@@ -266,9 +266,9 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r102` | `Rīfar Rīd` | **Rīfar al-Sarāb** | `dasri` | river | 161 | `755 -> -2136` | sea | al-Sarāb (mirage) + Rīfar (river) |
 | `r103` | `Grį Baatar` | **Dootł'izh Baatar** | `riders` | river | 109 | `-67 -> -1479` | sea | Dootł'izh (jade-green) + Baatar (river) |
 | `r104` | `Rit Chhim` | **mist Brük** | `vothic` | river | 87 | `1263 -> 55` | sea | mist (mist) + Brük (stream) |
-| `r105` | `Lõsõ-bi Siṭrīm` | **Bīruk al-Ghaym** | `xanadui` | river | 90 | `2116 -> 2004` | sea | alghaym (cloud-veil) + Bīruk (stream) |
+| `r105` | `Lõsõ-bi Siṭrīm` | **Solṭ Riwā** | `xanadui` | river | 90 | `2116 -> 2004` | sea | Solṭ (salt) + Riwā (river) |
 | `r106` | `Dalab Bruk` | **Wind Bruk** | `dalab` | river | 94 | `879 -> 9` | sea | Wind (wind) + Bruk (stream) |
-| `r107` | `Phols Siṭrīm` | **Rīfar al-Jadwal** | `xanadui` | river | 23 | `3681 -> -329` | sea | aljadwal (terraced-rill) + Rīfar (river) |
+| `r107` | `Phols Siṭrīm` | **Keb Riwā** | `xanadui` | river | 23 | `3681 -> -329` | sea | Keb (cave) + Riwā (river) |
 | `r108` | `Ancient's Valley stream 2` | **Runbrook Saltwhite** | `yusar` | river | 52 | `1204 -> 37` | sea | Saltwhite (white-salt) + Runbrook (stream) |
 | `r109` | `Ancient's Valley stream 3` | **Runbrook Windlow** | `yusar` | river | 48 | `1387 -> 28` | sea | Windlow (low-wind) + Runbrook (stream) |
 | `r110` | `n semiarid stream 2` | **Roda Rivar** | `argot` | river | 47 | `769 -> -40` | sea | Roda (portage-road) + Rivar (river) |
@@ -413,7 +413,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r249` | `Lizardmen stream 11` | **Blek Beck** | `tungang` | river | 40 | `-1796 -> -2601` | sea | Blek (black-shale) + Beck (stream) |
 | `r250` | `NW lowlands stream 23` | **Pepa Kriki** | `argot` | river | 49 | `991 -> 459` | sea | Pepa (paper-treaty) + Kriki (stream) |
 | `r251` | `Rīfar al-Thirst` | **Rīfar al-Bīr** | `dasri` | river | 141 | `2720 -> -2024` | sea | al-Bīr (cistern-well) + Rīfar (river) |
-| `r252` | `Solṭ Siṭrīm` | **Bīruk al-Dhahab** | `xanadui` | river | 45 | `2057 -> 2010` | sea | aldhahab (gold) + Bīruk (stream) |
+| `r252` | `Solṭ Siṭrīm` | **Balāk Siṭrīm** | `xanadui` | river | 45 | `2057 -> 2010` | sea | Balāk (black) + Siṭrīm (stream) |
 | `r253` | `n semiarid stream 9` | **Timba Kriki** | `argot` | river | 55 | `1110 -> 129` | sea | Timba (drift-timber) + Kriki (stream) |
 | `r254` | `n semiarid stream 10` | **Kamandar Kriki** | `argot` | river | 66 | `1152 -> 185` | sea | Kamandar (commander) + Kriki (stream) |
 | `r255` | `Istrim de Verge` | **Rrivar Blaca** | `izani` | river | 192 | `244 -> -2118` | sea | Blaca (black) + Rrivar (river) |
@@ -433,7 +433,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r269` | `n semiarid stream 13` | **Gete Kriki** | `argot` | river | 31 | `647 -> 40` | sea | Gete (spillway-gate) + Kriki (stream) |
 | `r270` | `NW lowlands stream 29` | **Kebla Kriki** | `argot` | river | 49 | `964 -> 453` | sea | Kebla (cable-chain) + Kriki (stream) |
 | `r271` | `Istrim Bidar` | **Bruk cedra** | `izani` | river | 94 | `1292 -> -1027` | sea | cedra (cedar) + Bruk (stream) |
-| `r272` | `Siwipṭ Siṭrīm` | **Bīruk al-Yāqūt** | `xanadui` | river | 43 | `1188 -> -620` | sea | alyāqūt (ruby) + Bīruk (stream) |
+| `r272` | `Siwipṭ Siṭrīm` | **Qol Siṭrīm** | `xanadui` | river | 43 | `1188 -> -620` | sea | Qol (cold) + Siṭrīm (stream) |
 | `r273` | `Blak Rivrh` | **Brant Rivrh** | `vothic` | river | 58 | `777 -> -520` | klir Rivrh | Brant (burnt) + Rivrh (river) |
 | `r274` | `Ancient's Valley river 4` | **Waywater Ironblack** | `yusar` | river | 148 | `4293 -> 69` | Dariba | Ironblack (black-iron) + Waywater (river) |
 | `r275` | `Farside stream 18` | **Sīu-Hāk-Kē** | `eternian` | river | 25 | `3536 -> 1888` | Līng-Mā | Sīu (little) + Hāk (black-ink) + Kē (stream) |
@@ -578,7 +578,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r415` | `Istrim Guar` | **Bruk Guaita** | `izani` | river | 50 | `35 -> -966` | Rrivar stara | Guaita (white) + Bruk (stream) |
 | `r416` | `Ancient's Valley stream 25` | **Runbrook Wideway Sideout** | `yusar` | river | 35 | `1748 -> 1164` | Waywater Watchstill | Wideway (great) + Sideout (outside) + Runbrook (stream) |
 | `r417` | `Wādī al-Lonj` | **Wādī al-Layl** | `dasri` | wadi | 313 | `1620 -> -1767` | sea | al-Layl (star-night) + Wādī (wadi) |
-| `r418` | `Sekriḍ Ḍrāi` | **Gūlī al-Zumurrud** | `xanadui` | wadi | 64 | `2393 -> 2107` | sea | alzumurrud (emerald) + Gūlī (wadi) |
+| `r418` | `Sekriḍ Ḍrāi` | **Satõ Ḍrāi** | `xanadui` | wadi | 64 | `2393 -> 2107` | sea | Satõ (stone) + Ḍrāi (wadi) |
 | `r419` | `unnamed wadi` | **Mō-Gèl** | `hum` | wadi | 82 | `6110 -> 1284` | sea | Mō (Dry-mist) + Gèl (wadi) |
 | `r420` | `Vali Iston` | **Guli Rreda** | `izani` | wadi | 138 | `1471 -> 262` | sea | Rreda (red) + Guli (wadi) |
 | `r422` | `Wādī al-Snāk` | **Wādī al-Bālm** | `dasri` | wadi | 184 | `1417 -> -1940` | sea | al-Bālm (date-palm) + Wādī (wadi) |
@@ -601,7 +601,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r439` | `unnamed wadi 9` | **Sī-Chūng-Gèl** | `hum` | wadi | 57 | `6352 -> 3720` | sea | Sī (west) + Chūng (middle-tier) + Gèl (wadi) |
 | `r440` | `unnamed wadi 10` | **Guli rrija** | `izani` | wadi | 158 | `5751 -> -1083` | sea | rrija (ridge) + Guli (wadi) |
 | `r441` | `unnamed wadi 11` | **Hā-Lōk-Gèl** | `hum` | wadi | 48 | `6492 -> 5898` | sea | Hā (lower) + Lōk (step-bench) + Gèl (wadi) |
-| `r442` | `Reḍ Riwā` | **Rīfar al-Bihār** | `xanadui` | river | 95 | `5353 -> 1213` | Bīruk al-Yāqūt | albihār (incense) + Rīfar (river) |
+| `r442` | `Reḍ Riwā` | **Solṭ Siṭrīm** | `xanadui` | river | 95 | `5353 -> 1213` | Qol Siṭrīm | Solṭ (salt) + Siṭrīm (stream) |
 | `r443` | `unnamed wadi 12` | **Sīng-Gèl** | `hum` | wadi | 94 | `6363 -> 1772` | sea | Sīng (night-star) + Gèl (wadi) |
 | `r444` | `Siphon Melt` | **Silba Guli** | `yuni` | wadi | 158 | `1502 -> 258` | sea | Silba (Silver) + Guli (wadi) |
 | `r445` | `Lizardmen wadi` | **Gowd Gill** | `tungang` | wadi | 20 | `-1012 -> -1639` | sea | Gowd (gold) + Gill (wadi) |
@@ -628,7 +628,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r466` | `Yeti Valley wadi 2` | **Musïq Quli** | `khaay` | wadi | 25 | `6128 -> 6021` | sea | Musïq (musk-ox) + Quli (wadi) |
 | `r467` | `The Catch wadi 3` | **Wādī al-Rīḥ al-Gharb** | `dasri` | wadi | 77 | `5125 -> 426` | sea | al-Gharb (west) + al-Rīḥ (simoom-wind) + Wādī (wadi) |
 | `r468` | `n semiarid wadi 2` | **Gete Guli** | `argot` | wadi | 125 | `4682 -> -37` | sea | Gete (spillway-gate) + Guli (wadi) |
-| `r469` | `Satõ Ḍrāi` | **Gūlī al-Jadwal** | `xanadui` | wadi | 32 | `3658 -> -748` | sea | aljadwal (terraced-rill) + Gūlī (wadi) |
+| `r469` | `Satõ Ḍrāi` | **Sanõ Ḍrāi** | `xanadui` | wadi | 32 | `3658 -> -748` | sea | Sanõ (snow) + Ḍrāi (wadi) |
 | `r470` | `unnamed wadi 25` | **Ista Stoun Guli** | `yuni` | wadi | 31 | `5979 -> 3912` | sea | Ista (east) + Stoun (Stone) + Guli (wadi) |
 | `r472` | `unnamed wadi 26` | **bretša Guli** | `argot` | wadi | 95 | `4574 -> 150` | sea | bretša (breach-coulee) + Guli (wadi) |
 | `r473` | `unnamed wadi 27` | **Loua Aina Guli** | `yuni` | wadi | 74 | `1348 -> 321` | sea | Loua (lower) + Aina (Iron) + Guli (wadi) |
@@ -645,11 +645,11 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r485` | `Wādī al-Frost` | **Wādī al-Raml al-Gharb** | `dasri` | wadi | 57 | `5188 -> 2957` | sea | al-Gharb (west) + al-Raml (red-sand) + Wādī (wadi) |
 | `r486` | `Wādī al-Wāyṭ` | **Wādī al-Shams** | `dasri` | wadi | 108 | `6178 -> 2246` | sea | al-Shams (sun-scorch) + Wādī (wadi) |
 | `r487` | `unnamed wadi 33` | **Winda Guli** | `yuni` | wadi | 95 | `338 -> 266` | sea | Winda (Wind) + Guli (wadi) |
-| `r488` | `Rīḍ Ḍrāi` | **Gūlī al-Ṣafā** | `xanadui` | wadi | 43 | `1159 -> -569` | sea | alṣafā (clarity) + Gūlī (wadi) |
+| `r488` | `Rīḍ Ḍrāi` | **Sakāi Ḍrāi** | `xanadui` | wadi | 43 | `1159 -> -569` | sea | Sakāi (sky) + Ḍrāi (wadi) |
 | `r489` | `unnamed wadi 34` | **Kū-Gèl** | `hum` | wadi | 77 | `4042 -> 1007` | sea | Kū (spider-web) + Gèl (wadi) |
 | `r490` | `e badlands wadi 6` | **Biga Kopa Guli** | `yuni` | wadi | 46 | `6168 -> 4431` | sea | Biga (great) + Kopa (Copper) + Guli (wadi) |
 | `r491` | `unnamed wadi 35` | **Likl Reda Guli** | `yuni` | wadi | 16 | `3806 -> 3806` | sea | Likl (little) + Reda (Red) + Guli (wadi) |
-| `r492` | `Wāiṭ Ḍrāi` | **Gūlī al-Ward** | `xanadui` | wadi | 80 | `5701 -> -620` | sea | alward (rose-garden) + Gūlī (wadi) |
+| `r492` | `Wāiṭ Ḍrāi` | **Bhon Ḍrāi** | `xanadui` | wadi | 80 | `5701 -> -620` | sea | Bhon (bone) + Ḍrāi (wadi) |
 | `r493` | `n semiarid wadi 4` | **Barada Guli** | `argot` | wadi | 62 | `1421 -> 77` | sea | Barada (brother-crew) + Guli (wadi) |
 | `r494` | `Awadi n Arid` | **Gl Ḏhb** | `tabist` | wadi | 84 | `299 -> -1974` | sea | Ḏhb (ochre-gold) + Gl (wadi) |
 | `r495` | `unnamed wadi 36` | **Wādī al-Ṣakhr al-Ṣaghīr** | `dasri` | wadi | 47 | `5424 -> 4325` | sea | al-Ṣaghīr (little) + al-Ṣakhr (sandstone-mesa) + Wādī (wadi) |
@@ -677,7 +677,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r518` | `Vali Olda` | **Guli coper** | `izani` | wadi | 31 | `-800 -> -1249` | sea | coper (copper) + Guli (wadi) |
 | `r519` | `n semiarid wadi 5` | **yardang Guli** | `argot` | wadi | 100 | `4360 -> -48` | sea | yardang (wind-keel) + Guli (wadi) |
 | `r520` | `Ret Gulusu` | **Kumun Gulusu** | `scyvoi` | wadi | 80 | `-566 -> -1541` | sea | Kumun (sand-sheet) + Gulusu (wadi) |
-| `r521` | `Jeḍ Ḍrāi` | **Gūlī al-Nūr** | `xanadui` | wadi | 30 | `2780 -> 2313` | sea | alnūr (light) + Gūlī (wadi) |
+| `r521` | `Jeḍ Ḍrāi` | **Sã Ḍrāi** | `xanadui` | wadi | 30 | `2780 -> 2313` | sea | Sã (sun) + Ḍrāi (wadi) |
 | `r522` | `n semiarid wadi 6` | **Topa Pepa Guli** | `argot` | wadi | 10 | `199 -> -47` | sea | Topa (upper) + Pepa (paper-treaty) + Guli (wadi) |
 | `r523` | `unnamed wadi 47` | **Likl Solt Guli** | `yuni` | wadi | 22 | `2236 -> 2236` | sea | Likl (little) + Solt (Salt) + Guli (wadi) |
 | `r524` | `unnamed wadi 48` | **Norta Spindl Guli** | `yuni` | wadi | 6 | `4538 -> 4538` | sea | Norta (north) + Spindl (Spindle) + Guli (wadi) |
@@ -688,7 +688,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r529` | `unnamed wadi 52` | **Wādī al-Jabal al-Taḥt** | `dasri` | wadi | 26 | `4932 -> 4200` | sea | al-Taḥt (lower) + al-Jabal (escarpment) + Wādī (wadi) |
 | `r530` | `Howling Gulch` | **Noon Wash** | `screamer` | wadi | 80 | `-1049 -> -1887` | sea | Noon (noon) + Wash (wadi) |
 | `r531` | `unnamed wadi 53` | **Likl Dipa Guli** | `yuni` | wadi | 32 | `631 -> 404` | sea | Likl (little) + Dipa (Deep) + Guli (wadi) |
-| `r532` | `Ḍhom Ḍrāi` | **Gūlī al-Ghaym** | `xanadui` | wadi | 55 | `5470 -> 2073` | sea | alghaym (cloud-veil) + Gūlī (wadi) |
+| `r532` | `Ḍhom Ḍrāi` | **Silwā Ḍrāi** | `xanadui` | wadi | 55 | `5470 -> 2073` | sea | Silwā (silver) + Ḍrāi (wadi) |
 | `r533` | `e badlands wadi 9` | **Sēk-Gèl** | `hum` | wadi | 69 | `6364 -> 4494` | sea | Sēk (chasm-wall) + Gèl (wadi) |
 | `r534` | `unnamed wadi 54` | **Lām-Gèl** | `hum` | wadi | 70 | `3543 -> 1870` | sea | Lām (ring-dike) + Gèl (wadi) |
 | `r535` | `n semiarid wadi 7` | **Kebla Guli** | `argot` | wadi | 59 | `1153 -> 323` | sea | Kebla (cable-chain) + Guli (wadi) |
@@ -714,7 +714,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r556` | `unnamed wadi 62` | **Pāk-Lōk-Gèl** | `hum` | wadi | 15 | `2231 -> 2231` | sea | Pāk (north) + Lōk (step-bench) + Gèl (wadi) |
 | `r557` | `Lizardmen wadi 7` | **Tkyoob Gill** | `tungang` | wadi | 44 | `4345 -> -1733` | sea | Tkyoob (Cube) + Gill (wadi) |
 | `r558` | `unnamed wadi 64` | **Wādī al-Ghubār al-Fawq** | `dasri` | wadi | 23 | `4736 -> 4378` | sea | al-Fawq (upper) + al-Ghubār (dust-plume) + Wādī (wadi) |
-| `r559` | `Kĩ Ḍrāi` | **Gūlī al-Kahf** | `xanadui` | wadi | 31 | `5046 -> 2093` | sea | alkahf (cavern) + Gūlī (wadi) |
+| `r559` | `Kĩ Ḍrāi` | **Mũ Ḍrāi** | `xanadui` | wadi | 31 | `5046 -> 2093` | sea | Mũ (moon) + Ḍrāi (wadi) |
 | `r560` | `The Catch wadi 7` | **Wādī al-Rīḥ al-Kabīr** | `dasri` | wadi | 15 | `509 -> 352` | sea | al-Kabīr (great) + al-Rīḥ (simoom-wind) + Wādī (wadi) |
 | `r561` | `Shrieking Gulch` | **Red Wash** | `screamer` | wadi | 67 | `-674 -> -1709` | sea | Red (red) + Wash (wadi) |
 | `r562` | `Bonzo Gulli` | **Biga Sista Guli** | `yuni` | wadi | 51 | `5266 -> 4239` | sea | Biga (great) + Sista (Sister) + Guli (wadi) |
@@ -725,7 +725,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r567` | `unnamed wadi 67` | **Fūng-Kū** | `eternian` | wadi | 95 | `4248 -> 565` | sea | Fūng (north-wind) + Kū (wadi) |
 | `r568` | `Ancient's Valley wadi` | **Cutdry Walkcrook** | `yusar` | wadi | 23 | `1035 -> 797` | sea | Walkcrook (crooked-walk) + Cutdry (wadi) |
 | `r569` | `unnamed wadi 68` | **Loua Stara Guli** | `yuni` | wadi | 25 | `4835 -> 4726` | sea | Loua (lower) + Stara (Star) + Guli (wadi) |
-| `r570` | `Mũ Ḍrāi` | **Gūlī al-Ṣakhr** | `xanadui` | wadi | 33 | `3958 -> 3023` | sea | alṣakhr (crag) + Gūlī (wadi) |
+| `r570` | `Mũ Ḍrāi` | **Balāk Ḍrāi** | `xanadui` | wadi | 33 | `3958 -> 3023` | sea | Balāk (black) + Ḍrāi (wadi) |
 | `r571` | `unnamed wadi 69` | **Sīu-Sīng-Gèl** | `hum` | wadi | 58 | `5994 -> 1342` | sea | Sīu (little) + Sīng (night-star) + Gèl (wadi) |
 | `r572` | `Korona / NE wadi 4` | **Pāk-Lām-Gèl** | `hum` | wadi | 39 | `5342 -> 4182` | sea | Pāk (north) + Lām (ring-dike) + Gèl (wadi) |
 | `r573` | `n semiarid wadi 9` | **Roda Guli** | `argot` | wadi | 75 | `1817 -> 54` | sea | Roda (portage-road) + Guli (wadi) |
@@ -740,7 +740,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r582` | `Wādī al-Ījal` | **Wādī al-Kawkab al-Fawq** | `dasri` | wadi | 22 | `4337 -> 3836` | sea | al-Fawq (upper) + al-Kawkab (falling-star) + Wādī (wadi) |
 | `r583` | `e badlands wadi 13` | **Wādī al-Nar al-Taḥt** | `dasri` | wadi | 55 | `4626 -> 277` | sea | al-Taḥt (lower) + al-Nar (ember) + Wādī (wadi) |
 | `r584` | `Wailing Gulch` | **alkali Wash** | `screamer` | wadi | 15 | `-1845 -> -1938` | sea | alkali (alkali) + Wash (wadi) |
-| `r585` | `Sanõ Ḍrāi` | **Gūlī al-Yāqūt** | `xanadui` | wadi | 84 | `4983 -> -1611` | sea | alyāqūt (ruby) + Gūlī (wadi) |
+| `r585` | `Sanõ Ḍrāi` | **Sekriḍ Ḍrāi** | `xanadui` | wadi | 84 | `4983 -> -1611` | sea | Sekriḍ (sacred) + Ḍrāi (wadi) |
 | `r586` | `The Rift wadi 5` | **Deyp Gill** | `tungang` | wadi | 16 | `5816 -> 3052` | sea | Deyp (deep-gill) + Gill (wadi) |
 | `r587` | `unnamed wadi 80` | **Sīu-Wūn-Gèl** | `hum` | wadi | 35 | `1949 -> 690` | sea | Sīu (little) + Wūn (cloud-ledge) + Gèl (wadi) |
 | `r588` | `Ancient's Valley wadi 2` | **Cutdry Turnback** | `yusar` | wadi | 34 | `542 -> 89` | sea | Turnback (back-turn) + Cutdry (wadi) |
@@ -768,10 +768,10 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r610` | `NW boreal wadi 7` | **Noor Goold Quli** | `khaay` | wadi | 10 | `4255 -> 4116` | sea | Noor (north) + Goold (gold-nugget) + Quli (wadi) |
 | `r611` | `The Tiers wadi 3` | **Sīu-Lōk-Gèl** | `hum` | wadi | 27 | `2244 -> 658` | sea | Sīu (little) + Lōk (step-bench) + Gèl (wadi) |
 | `r612` | `The Rift wadi 7` | **Kopa Gill** | `tungang` | wadi | 56 | `5244 -> -708` | sea | Kopa (copper-ice) + Gill (wadi) |
-| `r613` | `Sakāi Ḍrāi` | **Gūlī al-Bard** | `xanadui` | wadi | 71 | `5589 -> -545` | sea | albard (cold-snow) + Gūlī (wadi) |
+| `r613` | `Sakāi Ḍrāi` | **Girīn Ḍrāi** | `xanadui` | wadi | 71 | `5589 -> -545` | sea | Girīn (green) + Ḍrāi (wadi) |
 | `r614` | `Vali Igal` | **Guli airon** | `izani` | wadi | 14 | `-605 -> -788` | sea | airon (iron) + Guli (wadi) |
 | `r615` | `Ancient's Valley wadi 3` | **Cutdry Fallhigh** | `yusar` | wadi | 52 | `1133 -> 608` | sea | Fallhigh (high-fall) + Cutdry (wadi) |
-| `r616` | `Ghol Ḍrāi` | **Gūlī al-Jawhar** | `xanadui` | wadi | 81 | `5417 -> -568` | sea | aljawhar (jewel) + Gūlī (wadi) |
+| `r616` | `Ghol Ḍrāi` | **Ḍhom Ḍrāi** | `xanadui` | wadi | 81 | `5417 -> -568` | sea | Ḍhom (dome) + Ḍrāi (wadi) |
 | `r617` | `e badlands wadi 16` | **Wādī al-Layl al-Gharb** | `dasri` | wadi | 67 | `6403 -> 3196` | sea | al-Gharb (west) + al-Layl (star-night) + Wādī (wadi) |
 | `r618` | `Vali Rreivan` | **Guli taur** | `izani` | wadi | 12 | `-1061 -> -1071` | sea | taur (tower) + Guli (wadi) |
 | `r619` | `Vali Aul` | **Guli Falz** | `izani` | wadi | 40 | `-906 -> -1242` | sea | Falz (falls) + Guli (wadi) |
@@ -795,7 +795,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r637` | `e badlands wadi 17` | **Wādī al-Jabal** | `dasri` | wadi | 88 | `5614 -> -412` | sea | al-Jabal (escarpment) + Wādī (wadi) |
 | `r638` | `unnamed wadi 99` | **Wādī al-Bālm al-Kabīr** | `dasri` | wadi | 8 | `4216 -> 4190` | sea | al-Kabīr (great) + al-Bālm (date-palm) + Wādī (wadi) |
 | `r639` | `Korona / NE wadi 7` | **Hōng-Gèl** | `hum` | wadi | 65 | `418 -> -56` | sea | Hōng (red-sandstone) + Gèl (wadi) |
-| `r640` | `Sã Ḍrāi` | **Gūlī al-Barad** | `xanadui` | wadi | 10 | `-453 -> -714` | sea | albarad (hail-ice) + Gūlī (wadi) |
+| `r640` | `Sã Ḍrāi` | **Wĩḍ Ḍrāi** | `xanadui` | wadi | 10 | `-453 -> -714` | sea | Wĩḍ (wind) + Ḍrāi (wadi) |
 | `r641` | `Oiro Gulli` | **Loua Teris Guli** | `yuni` | wadi | 27 | `5832 -> 4211` | sea | Loua (lower) + Teris (Terrace) + Guli (wadi) |
 | `r642` | `unnamed wadi 101` | **Tāi-Wūn-Gèl** | `hum` | wadi | 43 | `3925 -> 3822` | sea | Tāi (great) + Wūn (cloud-ledge) + Gèl (wadi) |
 | `r643` | `unnamed wadi 103` | **Likl Swifta Guli** | `yuni` | wadi | 15 | `4360 -> 4360` | sea | Likl (little) + Swifta (Swift) + Guli (wadi) |
@@ -804,7 +804,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r646` | `Chhong Drai` | **Brik Gülch** | `vothic` | wadi | 59 | `-137 -> -1065` | sea | Brik (bridge) + Gülch (wadi) |
 | `r647` | `Vali Dir` | **Guli clifa** | `izani` | wadi | 61 | `757 -> -753` | sea | clifa (cliff) + Guli (wadi) |
 | `r648` | `Vali Froga` | **Guli Goulda** | `izani` | wadi | 38 | `712 -> 264` | sea | Goulda (gold) + Guli (wadi) |
-| `r649` | `Sitār Ḍrāi` | **Gūlī al-Bihār** | `xanadui` | wadi | 56 | `5044 -> 2456` | sea | albihār (incense) + Gūlī (wadi) |
+| `r649` | `Sitār Ḍrāi` | **Solṭ Ḍrāi** | `xanadui` | wadi | 56 | `5044 -> 2456` | sea | Solṭ (salt) + Ḍrāi (wadi) |
 | `r650` | `Chu Drai` | **Hafn Gülch** | `vothic` | wadi | 26 | `-512 -> -830` | sea | Hafn (harbour) + Gülch (wadi) |
 | `r651` | `unnamed wadi 105` | **Likl Longa Guli** | `yuni` | wadi | 10 | `6608 -> 6339` | sea | Likl (little) + Longa (Long) + Guli (wadi) |
 | `r652` | `NW lowlands wadi 4` | **Ngān-Kū** | `eternian` | wadi | 44 | `640 -> 80` | sea | Ngān (silver-thread) + Kū (wadi) |
@@ -826,19 +826,19 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r668` | `NW lowlands wadi 7` | **Pāk-Kū** | `eternian` | wadi | 68 | `3141 -> 146` | sea | Pāk (white-jade) + Kū (wadi) |
 | `r669` | `Oniguli` | **Dip Guli** | `dalab` | wadi | 27 | `4131 -> 1039` | sea | Dip (deep) + Guli (wadi) |
 | `r670` | `unnamed wadi 114` | **Sīng-Kū** | `eternian` | wadi | 32 | `3315 -> 848` | sea | Sīng (star-lantern) + Kū (wadi) |
-| `r671` | `Bhon Ḍrāi` | **Gūlī al-Layl** | `xanadui` | wadi | 39 | `5449 -> 2063` | sea | allayl (night) + Gūlī (wadi) |
+| `r671` | `Bhon Ḍrāi` | **Ghol Ḍrāi** | `xanadui` | wadi | 39 | `5449 -> 2063` | sea | Ghol (gold) + Ḍrāi (wadi) |
 | `r672` | `Ancient's Valley wadi 4` | **Cutdry Shadowlong** | `yusar` | wadi | 92 | `970 -> 70` | sea | Shadowlong (long-shadow) + Cutdry (wadi) |
 | `r673` | `Vali Il` | **Guli brij** | `izani` | wadi | 14 | `466 -> 262` | sea | brij (bridge) + Guli (wadi) |
 | `r674` | `The Bowl wadi 12` | **Gl Ǧbl** | `tabist` | wadi | 16 | `2410 -> 448` | sea | Ǧbl (horsts) + Gl (wadi) |
 | `r675` | `The Catch wadi 11` | **Wādī al-Milḥ al-Ṣaghīr** | `dasri` | wadi | 21 | `434 -> 340` | sea | al-Ṣaghīr (little) + al-Milḥ (salt-crust) + Wādī (wadi) |
-| `r676` | `Āirã Ḍrāi` | **Gūlī al-Rīḥ** | `xanadui` | wadi | 38 | `3157 -> 2138` | sea | alrīḥ (mountain-wind) + Gūlī (wadi) |
+| `r676` | `Āirã Ḍrāi` | **Kilāuḍ Ḍrāi** | `xanadui` | wadi | 38 | `3157 -> 2138` | sea | Kilāuḍ (cloud) + Ḍrāi (wadi) |
 | `r678` | `Blacko Gulli` | **Ista Dipa Guli** | `yuni` | wadi | 52 | `650 -> -2501` | sea | Ista (east) + Dipa (Deep) + Guli (wadi) |
 | `r679` | `Bǫ Khol` | **Blùd Gèl** | `painted` | wadi | 39 | `-1079 -> -1461` | sea | Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men |
 | `r680` | `Korona / NE wadi 8` | **Sāng-Sīng-Gèl** | `hum` | wadi | 10 | `-995 -> -1041` | sea | Sāng (upper) + Sīng (night-star) + Gèl (wadi) |
 | `r681` | `Korona / NE wadi 9` | **Hā-Mō-Gèl** | `hum` | wadi | 39 | `4922 -> 4004` | sea | Hā (lower) + Mō (Dry-mist) + Gèl (wadi) |
-| `r682` | `Girīn Ḍrāi` | **Gūlī Qubbah** | `xanadui` | wadi | 12 | `5442 -> 3332` | sea | Qubbah (pleasure-dome) + Gūlī (wadi) |
-| `r683` | `Barāiṭ Ḍrāi` | **Gūlī al-Fiḍḍah** | `xanadui` | wadi | 16 | `-434 -> -709` | sea | alfiḍḍah (silver) + Gūlī (wadi) |
-| `r684` | `Olḍ Ḍrāi` | **Gūlī al-Dhahab** | `xanadui` | wadi | 10 | `1958 -> 1883` | sea | aldhahab (gold) + Gūlī (wadi) |
+| `r682` | `Girīn Ḍrāi` | **Sitār Ḍrāi** | `xanadui` | wadi | 12 | `5442 -> 3332` | sea | Sitār (star) + Ḍrāi (wadi) |
+| `r683` | `Barāiṭ Ḍrāi` | **Āis Ḍrāi** | `xanadui` | wadi | 16 | `-434 -> -709` | sea | Āis (ice) + Ḍrāi (wadi) |
+| `r684` | `Olḍ Ḍrāi` | **Ḍhīp Ḍrāi** | `xanadui` | wadi | 10 | `1958 -> 1883` | sea | Ḍhīp (deep) + Ḍrāi (wadi) |
 | `r685` | `unnamed wadi 115` | **Sauta Sista Guli** | `yuni` | wadi | 41 | `261 -> 261` | sea | Sauta (south) + Sista (Sister) + Guli (wadi) |
 | `r686` | `unnamed wadi 116` | **Tōng-Chūng-Gèl** | `hum` | wadi | 31 | `4204 -> 2422` | sea | Tōng (east) + Chūng (middle-tier) + Gèl (wadi) |
 | `r687` | `NW lowlands wadi 8` | **Sī-Sī-Kū** | `eternian` | wadi | 17 | `705 -> 507` | sea | Sī (west) + Sī (western-marsh) + Kū (wadi) |
@@ -865,7 +865,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r710` | `Bitrh Drai` | **klir Gülch** | `vothic` | wadi | 47 | `-960 -> -1470` | sea | klir (clear) + Gülch (wadi) |
 | `r711` | `e badlands wadi 22` | **Wādī al-Dhahab al-Ṣaghīr** | `dasri` | wadi | 44 | `5308 -> 3076` | sea | al-Ṣaghīr (little) + al-Dhahab (gold-dust) + Wādī (wadi) |
 | `r712` | `Wādī al-Īl` | **Wādī al-Shams al-Sharq** | `dasri` | wadi | 44 | `268 -> 176` | sea | al-Sharq (east) + al-Shams (sun-scorch) + Wādī (wadi) |
-| `r713` | `Reḍ Ḍrāi` | **Gūlī Qubbah al-Janūb** | `xanadui` | wadi | 4 | `-878 -> -1213` | sea | al-Janūb (south) + Qubbah (pleasure-dome) + Gūlī (wadi) |
+| `r713` | `Reḍ Ḍrāi` | **Āirã Ḍrāi** | `xanadui` | wadi | 4 | `-878 -> -1213` | sea | Āirã (iron) + Ḍrāi (wadi) |
 | `r714` | `NW lowlands wadi 9` | **Hāk-Kū** | `eternian` | wadi | 21 | `555 -> 162` | sea | Hāk (black-ink) + Kū (wadi) |
 | `r715` | `unnamed wadi 129` | **Likl Brada Guli** | `yuni` | wadi | 28 | `5392 -> 4557` | sea | Likl (little) + Brada (Brother) + Guli (wadi) |
 | `r716` | `unnamed wadi 130` | **Pāk-Hāk-Gèl** | `hum` | wadi | 19 | `6540 -> 6230` | sea | Pāk (north) + Hāk (black-basalt) + Gèl (wadi) |
@@ -905,7 +905,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r750` | `Korona / NE wadi 12` | **Tōng-Lām-Gèl** | `hum` | wadi | 25 | `-646 -> -1812` | sea | Tōng (east) + Lām (ring-dike) + Gèl (wadi) |
 | `r751` | `Sando Gulli` | **Westa Waita Guli** | `yuni` | wadi | 29 | `441 -> -1865` | sea | Westa (west) + Waita (White) + Guli (wadi) |
 | `r752` | `Greeno Gulli` | **Apa Kopa Guli** | `yuni` | wadi | 17 | `-2367 -> -2382` | sea | Apa (upper) + Kopa (Copper) + Guli (wadi) |
-| `r753` | `Kilīā Ḍrāi` | **Gūlī al-Bard al-ṣaghīr** | `xanadui` | wadi | 4 | `-536 -> -616` | sea | al-Ṣaghīr (little) + albard (cold-snow) + Gūlī (wadi) |
+| `r753` | `Kilīā Ḍrāi` | **Barāiṭ Ḍrāi** | `xanadui` | wadi | 4 | `-536 -> -616` | sea | Barāiṭ (bright) + Ḍrāi (wadi) |
 | `r754` | `Lizardmen wadi 12` | **Neet Gill** | `tungang` | wadi | 17 | `-1917 -> -2194` | sea | Neet (night) + Gill (wadi) |
 | `r755` | `unnamed wadi 143` | **Sīu-Chūng-Gèl** | `hum` | wadi | 4 | `3947 -> 3239` | sea | Sīu (little) + Chūng (middle-tier) + Gèl (wadi) |
 | `r756` | `The Rift wadi 8` | **Stuan Gill** | `tungang` | wadi | 34 | `3809 -> -754` | sea | Stuan (stone) + Gill (wadi) |
@@ -922,7 +922,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r767` | `unnamed wadi 144` | **Stanosguli** | `vrivolci` | wadi | 38 | `5368 -> 4114` | sea | Stanos (standing-stone) + Guli (wadi) |
 | `r768` | `Glasguli` | **Misti Guli** | `dalab` | wadi | 34 | `3863 -> 2934` | sea | Misti (misty) + Guli (wadi) |
 | `r769` | `unnamed wadi 146` | **Hā-Fūng-Gèl** | `hum` | wadi | 23 | `2560 -> 1656` | sea | Hā (lower) + Fūng (canyon-wind) + Gèl (wadi) |
-| `r770` | `Thin Ḍrāi` | **Gūlī al-Layl al-kabīr** | `xanadui` | wadi | 8 | `5144 -> 4215` | sea | al-Kabīr (great) + allayl (night) + Gūlī (wadi) |
+| `r770` | `Thin Ḍrāi` | **Kilīā Ḍrāi** | `xanadui` | wadi | 8 | `5144 -> 4215` | sea | Kilīā (clear) + Ḍrāi (wadi) |
 | `r771` | `Korona / NE wadi 13` | **Sīu-Tsēk-Gèl** | `hum` | wadi | 6 | `377 -> 377` | sea | Sīu (little) + Tsēk (cleaver-stone) + Gèl (wadi) |
 | `r772` | `The Bowl wadi 17` | **Gl Bḥr** | `tabist` | wadi | 14 | `-1094 -> -1117` | sea | Bḥr (sunken-sea) + Gl (wadi) |
 | `r773` | `Lizardmen wadi 15` | **Tyan Gill** | `tungang` | wadi | 27 | `56 -> -1655` | sea | Tyan (Second) + Gill (wadi) |
@@ -937,7 +937,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r783` | `Shiilguli` | **Vali Guli** | `dalab` | wadi | 11 | `195 -> 39` | sea | Vali (valley) + Guli (wadi) |
 | `r784` | `unnamed wadi 151` | **Sāng-Tsēk-Gèl** | `hum` | wadi | 4 | `7112 -> 7112` | sea | Sāng (upper) + Tsēk (cleaver-stone) + Gèl (wadi) |
 | `r785` | `Jimjam wadi 5` | **Vēka-kāl** | `jimjam` | wadi | 8 | `329 -> -58` | sea | Vēka (swift) + kāl (wadi) |
-| `r786` | `Phāyar Ḍrāi` | **Gūlī al-Samā** | `xanadui` | wadi | 12 | `173 -> -1568` | sea | alsamā (sky-mirror) + Gūlī (wadi) |
+| `r786` | `Phāyar Ḍrāi` | **Jeḍ Ḍrāi** | `xanadui` | wadi | 12 | `173 -> -1568` | sea | Jeḍ (jade) + Ḍrāi (wadi) |
 | `r787` | `Sumok Gulusu` | **Akun Gulusu** | `scyvoi` | wadi | 4 | `-1174 -> -1262` | sea | Akun (white-salt) + Gulusu (wadi) |
 | `r788` | `Ancient's Valley wadi 6` | **Cutdry Glassblue** | `yusar` | wadi | 16 | `292 -> 70` | sea | Glassblue (blue-glass) + Cutdry (wadi) |
 | `r789` | `unnamed wadi 153` | **Nām-Kām-Gèl** | `hum` | wadi | 8 | `6264 -> 6190` | sea | Nām (south) + Kām (copper-gold) + Gèl (wadi) |
@@ -955,7 +955,7 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r801` | `The Bowl wadi 20` | **Gl Nḥs** | `tabist` | wadi | 10 | `-1038 -> -1128` | sea | Nḥs (copper-brine) + Gl (wadi) |
 | `r802` | `unnamed wadi 155` | **Kurin Kuri** | `heiland` | wadi | 4 | `4432 -> 4402` | sea | Kurin (green) + Kuri (wadi) |
 | `r803` | `unnamed wadi 157` | **Par Kuri** | `heiland` | wadi | 10 | `4044 -> 3649` | sea | Par (far) + Kuri (wadi) |
-| `r804` | `Ḍhīp Ḍrāi` | **Gūlī al-Zumurrud al-aʿlā** | `xanadui` | wadi | 6 | `2805 -> 2542` | sea | al-Aʿlā (upper) + alzumurrud (emerald) + Gūlī (wadi) |
+| `r804` | `Ḍhīp Ḍrāi` | **Wāiṭ Ḍrāi** | `xanadui` | wadi | 6 | `2805 -> 2542` | sea | Wāiṭ (white) + Ḍrāi (wadi) |
 | `r805` | `Wādī al-Jūld` | **Wādī al-Dhahab** | `dasri` | wadi | 98 | `662 -> -49` | Wādī al-Layl | al-Dhahab (gold-dust) + Wādī (wadi) |
 | `r806` | `Wādī al-Mūn` | **Wādī al-Sarāb al-Kabīr** | `dasri` | wadi | 67 | `792 -> 257` | Wādī al-Layl | al-Kabīr (great) + al-Sarāb (mirage) + Wādī (wadi) |
 | `r807` | `Wādī al-Rayn` | **Wādī al-Naḥās al-Ṣaghīr** | `dasri` | wadi | 10 | `690 -> 423` | Wādī al-Layl | al-Ṣaghīr (little) + al-Naḥās (copper-stain) + Wādī (wadi) |
@@ -987,8 +987,8 @@ Total named courses: **885** (`0` unnamed placeholders remaining).
 | `r833` | `unnamed wadi 106` | **Hā-Yūt-Gèl** | `hum` | wadi | 16 | `4504 -> 3950` | Sī-Chūng-Gèl | Hā (lower) + Yūt (howling-moon) + Gèl (wadi) |
 | `r834` | `Vali Rrein` | **Guli Gran clifa** | `izani` | wadi | 6 | `-863 -> -902` | Guli rrija | Gran (great) + clifa (cliff) + Guli (wadi) |
 | `r835` | `unnamed wadi 102` | **Sīu-Tōng-Gèl** | `hum` | wadi | 12 | `6164 -> 5932` | Hā-Lōk-Gèl | Sīu (little) + Tōng (east-gate) + Gèl (wadi) |
-| `r836` | `Āis Ḍrāi` | **Gūlī al-Salsabīl** | `xanadui` | wadi | 37 | `5633 -> 1588` | Rīfar al-Bihār | alsalsabīl (nectar-spring) + Gūlī (wadi) |
-| `r837` | `Biṭā Ḍrāi` | **Gūlī al-Jadwal al-ṣaghīr** | `xanadui` | wadi | 6 | `4942 -> 4883` | Rīfar al-Bihār | al-Ṣaghīr (little) + aljadwal (terraced-rill) + Gūlī (wadi) |
+| `r836` | `Āis Ḍrāi` | **Reḍ Ḍrāi** | `xanadui` | wadi | 37 | `5633 -> 1588` | Solṭ Siṭrīm | Reḍ (red) + Ḍrāi (wadi) |
+| `r837` | `Biṭā Ḍrāi` | **Keb Ḍrāi** | `xanadui` | wadi | 6 | `4942 -> 4883` | Solṭ Siṭrīm | Keb (cave) + Ḍrāi (wadi) |
 | `r838` | `unnamed wadi 77` | **Tōng-Sēk-Gèl** | `hum` | wadi | 56 | `6373 -> 3097` | Sīng-Gèl | Tōng (east) + Sēk (chasm-wall) + Gèl (wadi) |
 | `r839` | `Korona / NE wadi 5` | **Sī-Sēk-Gèl** | `hum` | wadi | 27 | `671 -> 224` | Pāk-Gèl | Sī (west) + Sēk (chasm-wall) + Gèl (wadi) |
 | `r840` | `n semiarid wadi 17` | **Topa Golda Guli** | `argot` | wadi | 6 | `589 -> 494` | katarak Guli | Topa (upper) + Golda (gold) + Guli (wadi) |
