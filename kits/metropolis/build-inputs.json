@@ -52,6 +52,8 @@
     "kits/catalog/krator-furniture-kit.js": "cdb40849f12aabed723a669862cea5c9891d238f4e2e00f3b9d8b89fa7fa6674",
     "kits/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "kits/catalog/krator-master-furniture-generic-goods.js": "4cd7461cfe5d086b2fef6cb04c5bd656a46fb5779e114a401637cbb2ed4fef82",
+    "kits/catalog/krator-master-furniture-post-apoc.js": "3c0e4921653baad9472be5a9f4480fc00252b49e8e2e98b16c322676e645c1da",
+    "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/catalog/krator-master-furniture.js": "62e4fa728ae1a37e66310d9c7507595e140513f8309c8fceef9ecde0b6244b80",
     "kits/catalog/krator-symbols.js": "8fbd9a7487e06d800b69a081751f0b580cf75285b6c46e701549e1fbb50eceb4",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
@@ -132,7 +134,7 @@
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "58757e0a43a4b03a488da72b1df9fe06898ee5a61a4a01732aa39c13cedec66a",
     "kits/metropolis/PORT.md": "2c04262833766d711f2cdbfd54ca7f47143b556596730cb4d71e8a00ec3b85db",
-    "kits/metropolis/build.py": "a0df905b94798f7443f5bf7e6828aba143d0b5e20e929aafc21c95ae3e0aed54",
+    "kits/metropolis/build.py": "73e347598e50f1f969a30592f1e1e5fba4170bb02494f712dd672f69155574f6",
     "kits/metropolis/src/00-head.html": "530d4e6f9428a73ff30c7a6cdb9aef50330a1cdcfc2a0f84b4becd5403de5530",
     "kits/metropolis/src/40-mp-records.js": "11eff550cbf473e306203a1cb905005ba98669ec0c6f889ba1456568bed3a6a8",
     "kits/metropolis/src/41-mp-plans.js": "9de4036f7205d6907dd7f3c9d0d45af07ed2251f723ae627b56be7929a378b0e",
@@ -148,7 +150,7 @@
     "kits/metropolis/src/60-mp-shell-host.js": "c98646004b88bd8756ed131e58202d1c0a91fe899c1c274fd1ed8c4b94773b50",
     "kits/metropolis/src/70-mp-stage.js": "757d7e61f9a31863688170f662283061f62a1d4d906fb9a2798fd98f59aa87f3",
     "kits/metropolis/src/89-host-sky.js": "07b08465959eb084e9570f512cc898ffbe324c882e1736fc995d70ce61301f16",
-    "kits/metropolis/src/99-host-take.js": "6090ab50c4280f7e8d4bed6bf4bc952112455d8de3b49c40d53210c44862c25d",
+    "kits/metropolis/src/99-host-take.js": "a78ebce5d36d386d56dd30707cd95776a8cea8311e671f57fabb3dfef606dd0c",
     "kits/metropolis/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "kits/metropolis/tex/bronze.albedo.webp": "eeb626313e5bd2824d1b26d5d13a4804dc1c797d837616621769d0bd2c85325a",
     "kits/metropolis/tex/bronze.normal.webp": "8b3da6f34ee8ec4560c09f727701c2468481ba662c2c000547bef9e9fb0e7c18",
@@ -180,13 +182,13 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/metropolis/build-manifest.json": "4c1da698f080c4fb5c19ebdaefe4be786603a26b7c38bba175c8eb0b8c8a019e",
-    "kits/metropolis/dist/metropolis.html": "225acd01104cdc26bab0922c9b78b801d0c15bee191511a7a98460dc6ad05277",
+    "kits/metropolis/build-manifest.json": "0353b85b5138bf1c6ddbc3b62aec0fad56c31d2bef66f67f735ab42043fca61f",
+    "kits/metropolis/dist/metropolis.html": "f361f03ba867caeddd9d415f28457050fe5781a5a3eec4413c893c4061d3e143",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "c62abeaa268fb884a5087501508c39c9b41a707834fcec27d7ae64631d70ae1f"
    },
    "outputs_raw": {
-    "kits/metropolis/build-manifest.json": "4c1da698f080c4fb5c19ebdaefe4be786603a26b7c38bba175c8eb0b8c8a019e",
-    "kits/metropolis/dist/metropolis.html": "225acd01104cdc26bab0922c9b78b801d0c15bee191511a7a98460dc6ad05277",
+    "kits/metropolis/build-manifest.json": "0353b85b5138bf1c6ddbc3b62aec0fad56c31d2bef66f67f735ab42043fca61f",
+    "kits/metropolis/dist/metropolis.html": "f361f03ba867caeddd9d415f28457050fe5781a5a3eec4413c893c4061d3e143",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "c62abeaa268fb884a5087501508c39c9b41a707834fcec27d7ae64631d70ae1f"
    }
   }

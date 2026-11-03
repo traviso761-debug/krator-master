@@ -13,7 +13,7 @@ function hostNegatives(){const R=[];{const F=JSON.parse(JSON.stringify(MP.SPINDL
  R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});return R;}
 KHOST.on(SKY.view,'view');KHOST.on(()=>MP.rideView(),'view');
 const STOREY_SELECT=[['','take the lift to...']].concat(MP.SPINDLE.levels.map(L=>[String(L.k),'L'+L.k+' '+L.use]));
-KratorAncientsInteriors.DRESS.ancient.coldFrame=null;KratorAncientsInteriors.DRESS.ancient.rug=null;   /* the cold frame is the post-apoc set's and this bundle carries no rug: a hydroponics hall and a lobby go without */
+/* the Ancient dress's statue, rug and cold frame are the post-apoc set's pieces: build.py bundles that culture's file */
 MP.walkSync();
 const HOSTED=KHOST.take({build:'metropolis',walk:KWALK,controls:[{select:STOREY_SELECT,id:'mpStorey',on:v=>{if(v!=='')MP.ride(+v);}}],keys:{'.':()=>MP.step(1),',':()=>MP.step(-1)},title:'Krator — the metropolis test bed',hint:'Pick a view. The Tiers views are a city: fly (W A S D, Q E, Shift), F to walk. Fly or walk into a tower near you and its storey opens; the lift list and , . change storey. In a pair, west is the real building and east its baked shell.',
  scene,camera,renderer,ground:terrainH,clear:1.2,registry:REG,views:VIEWS,ticks:TICKS,onView:n=>MP.show(n),start:'Tiers, the worst street',

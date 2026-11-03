@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 from harness import verify_page, Abort
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SAMPLE = [('spindle', 0), ('spindle', 2), ('spindle', 3), ('spindle', 8), ('spindle', 17), ('spindle', 22), ('spindle', 31), ('spindle', 40), ('spindle', 48), ('ledger', 2), ('ledger', 3), ('ledger', 6), ('ledger', 8), ('ledger', 10), ('ledger', 11)]
+SAMPLE = [('spindle', 0), ('spindle', 2), ('spindle', 3), ('spindle', 8), ('spindle', 17), ('spindle', 22), ('spindle', 31), ('spindle', 40), ('spindle', 48), ('ledger', 0), ('ledger', 2), ('ledger', 3), ('ledger', 6), ('ledger', 8), ('ledger', 10), ('ledger', 11)]
 
 
 async def main():
