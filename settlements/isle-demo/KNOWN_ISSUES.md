@@ -252,8 +252,12 @@
       seen only by the household.
 - [ ] **The criminal does not walk to the house it burgles**: the burglary is resolved at the hour, where the criminal
       sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
-- [ ] **No money changes hands yet:** the accounts are open (2026-11-03, `47m`: money's M0, Kautoan shells), but a pocket picked is
-      still the victim's material meter and the thief's; coin waits for M1, wages and purchases (`core/simulation/PLAN-MONEY.md`).
+- [ ] **Money measures, it does not yet limit** (2026-11-03, `47m`: M0 and M1's first part): wages, rations and purchases are paid,
+      but a household that cannot pay is fed on the dole, so nobody goes without; a pocket picked is still the meters, not coin.
+      Households save about a tenth of their income, so the ration runs at 77-87%: moving prices (M2) are to close it.
+- [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
+      Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
+      (M1's second part) come next.
 - [ ] **The guild's stash goes nowhere:** what is fenced sits in the guild's store and on its shelf. With money it would be
       sold on (to the player above all); for now nobody buys it, and its food is still counted in the town's storage.
 - [x] **The guild is marked on the map** (2026-11-02): a landmark "Thieves' guild" under its tavern in each town's registry (the

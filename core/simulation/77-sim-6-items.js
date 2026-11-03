@@ -146,7 +146,7 @@
     var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
     if(E.item==='food'){
       var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*daysOf(H));
-      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; cum(a, 'bought', f, n); stat(bs, f, n); };
+      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; cum(a, 'bought', f, n); stat(bs, f, n); if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyBuy(a.home, E.place, f, n, SIM.settlementOf(E.place)); };   /* paid for (77-sim-6-money.js M1) */
         var share=split(foods, SIM.ECON && SIM.ECON.settlement, need);   /* by what is on the shelf (the warehouses' stock), or the town's diet */
         foods.forEach(function(f, i){ var n=share[i];
           if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n){ cum(a, 'outOf', f, n-got); lack+=n-got; } n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
@@ -160,7 +160,7 @@
         if(SIM.supply(PK.good, PK.per==null?1:PK.per, true)){ it=pk; K=PK; stat(I.stats.preferred||(I.stats.preferred={}), pk); break; } } }   /* missed, it is booked short of the better good: the town's want of it */
       if(it===E.item && SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
         cum(a, 'outOf', E.item); stat(I.stats.failed, E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
-      cum(a, 'bought', it); stat(bs, it);
+      cum(a, 'bought', it); stat(bs, it); if(SIM.MONEY && SIM.MONEY.m1 && K.good && a.home!=null) SIM.moneyBuy(a.home, E.place, K.good, K.per==null?1:K.per, SIM.settlementOf(E.place));
       if(K.cat==='medicine'){ a.hurt=null; a.owesP=false; I.stats.poultice++; I.stats.healed++; }
       else if(K.cat==='tool'){ a.tool={ k:it, w:0 }; if(it!==E.item) a.tool.base=E.item; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }   /* a better tool remembers what it stood in for */
       else if(K.slot){ var p=pos(K); if(!a.eq || !a.eq[p]) SIM.equip(a, E.item, 0); else SIM.give(a, E.item, 1); }
@@ -243,7 +243,7 @@
     var I=SIM.ITEMS, M=I.meal;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
     if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ mealStat(a, 'out'); return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
-    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); if(SIM.MONEY && SIM.MONEY.m1 && a.home!=null) SIM.moneyBuy(a.home, P.id, 'meal', 1, SIM.settlementOf(P.id)); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
     if(P.mess){ mealStat(a, 'mess'); return M.mess; }
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
@@ -278,7 +278,7 @@
       sold=(I.townFoods||(I.townFoods={}))[town]=I.foods.filter(function(f){ return u[f]; }); }
     var foods=sold.length ? sold : I.foods, need=Math.ceil(ppl*I.meals*I.perMeal*daysOf(P)), lack=0;
     var share=split(foods, town, need);
-    var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
+    var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyBuy(P.id, null, f, k, town); };   /* paid to the town's shops (its treasury) */
     foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
     for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
   };

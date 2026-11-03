@@ -2,7 +2,20 @@
 
 **M0 is built** (`77-sim-6-money.js`, SCHEMA.md "Money"; the isles' accounts: settlements/isle-demo `47m`, `tests/test-isle-money.js`):
 currencies at a rate to the Talent, accounts with owners, mint, burn, pay and exchange, the ledger holding every settlement's money to
-its books. Nothing is paid on the isles yet; M1 (wages and purchases) is next.
+its books. **M1's first part is built** (2026-11-03, `m1` in the same module; the isles' `15` money.m1, `47m`,
+`tests/test-isle-money.js`): prices at labour cost times a calibrated markup, wages at midnight for the rota's hours, every
+purchase paid, the chief's redistribution (a ration for each member with no work, shared out of what the treasury holds
+over a day's wages), the dole for what a household cannot pay. Money measures and limits nothing yet: the goods' economy,
+the week test and Godot's export are unchanged byte for byte. Left of M1: spending by savings within a class's band, and
+the rise and fall of a station.
+
+**What the first run taught** (the isles, 2026-11-03): (1) households with no earner (children, elders, kin at home) are
+half the people, so wages alone leave half of what is eaten on the dole: the ration (the chief's redistribution) fixes it,
+the markup then set on the earners' own keep (a ration a dependant is then the mean wage of an earner); (2) calibrating
+on the first days measures the opening restock's waves (30% over a normal day), so the market opens after a warm-up;
+(3) the takings must reach the treasury before the payroll; (4) households save about a tenth of their income, so a fixed
+ration drains the treasury: it shares out what the treasury holds over a day's wages (77-87% of a full keep), which M2's
+moving prices should close. Kautoa's markup is 10.1, Valapo's 7.6: bread 20 and 15 shells, a stone tool 704 and 229.
 
 The owner asked (2026-11-02) for suggestions on implementing and balancing money in the sim, after crime and the
 thieves' guild showed what is missing without it: a pocket picked takes nothing, a fence pays nothing, the guild's stash

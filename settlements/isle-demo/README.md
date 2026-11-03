@@ -227,7 +227,12 @@ declares both once they are planned, in one order whichever town it draws, and h
   Kautoan shells, worth a twentieth of an Izani Talent (the traders' money). Every household holds shells by its class
   (poor 40, middle 200, rich 1,000), every workplace has an account owned by its town's treasury (20 shells a person in
   reserve), the thieves' guild 500, and the money changers and the traders from beyond hold Talents: 2,113 accounts,
-  457,000 shells. Nothing is paid yet (wages and prices are M1); the ledger holds each town's money to its books.
+  457,000 shells. **Wages and purchases (M1, 2026-11-03):** every trade earns 6 shells a rota hour, paid at midnight; prices
+  are each good's labour cost times a markup set after five days (a warm-up, then three measured) so the households'
+  spending meets the wage bill: Kautoa's 10.1 (bread 20 shells, fish 9, a meal out 23, a stone tool 704), Valapo's 7.6.
+  The chief redistributes: each night the treasury gives every household a ration for each member with no work, from
+  what it holds over a day's wages (Kautoa 77% of a full keep, Valapo 87%); what a household cannot pay is fed on the
+  dole (about a tenth of what is bought). Money limits nothing yet: the goods' economy runs exactly as before.
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

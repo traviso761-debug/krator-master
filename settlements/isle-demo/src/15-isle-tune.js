@@ -322,11 +322,20 @@ ISLE.TUNE.sim = {
      currency, the Izani Talent the trade's: the Islanders' is Kautoan shells (strung shell money), `talent` its value in
      Talents. M0 opens the accounts and nothing moves yet (wages and prices are M1): every household in its town's currency
      with `endow` shells by its home's class, every workplace (a recipe or wares) owned by its town's treasury (PLAN-MONEY
-     2a: the treasury owns them all to start), the treasury with `treasury` shells a person, the guild `guild`, the money
+     2a: the treasury owns them all to start), the treasury with `treasury` shells a person (three days' wages), the guild `guild`, the money
      changers' reserves, the traders from beyond in Talents. The numbers are placeholders for M1's tuning */
   money: { currencies: { talent: { name: 'Izani Talent', talent: 1, unit: 'talent' }, shell: { name: 'Kautoan shells', talent: 0.05, unit: 'shell' } },
-    spread: 0.03, nation: { islanders: 'shell' }, endow: { poor: 40, middle: 200, rich: 1000 }, treasury: 20, guild: 500,
-    changers: { shell: 20000, talent: 1000 }, foreign: { talent: 5000 } },
+    spread: 0.03, nation: { islanders: 'shell' }, endow: { poor: 300, middle: 800, rich: 3000 }, treasury: 60, guild: 500,
+    changers: { shell: 20000, talent: 1000 }, foreign: { talent: 5000 },
+    /* M1 (PLAN-MONEY.md, 2026-11-03): every trade earns `wage` shells a rota hour (the same for all to start), paid at midnight
+       into its household (a barracks' soldiers into their mess); prices are each good's labour cost at `wage` an hour times a
+       markup, set after `calibrate` days of measuring (after a warm-up: the opening restock's waves would bias it) so that what the households spend is the wage bill (the officials,
+       soldiers and dockers make nothing a household buys: the markup carries them); a good nobody on the isles makes costs
+       `fallback`. THE CHIEF'S REDISTRIBUTION (`ration`): each night the treasury gives every household a day's keep for each
+       member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
+       keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
+       household cannot pay is fed on its treasury's dole */
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

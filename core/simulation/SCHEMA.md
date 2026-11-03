@@ -247,7 +247,12 @@ ways, each booked by its reason: `SIM.mint` (a faucet), `SIM.burn` (a sink), `SI
 settlements booked out of one and into the other) and `SIM.exchange` (two transfers through the money changers, at the rates less their spread).
 The ledger's snapshot carries `money` (every balance, every settlement's books), and its statement holds, exactly, opening + minted - burned + in -
 out = closing per settlement and currency, what left the settlements equal to what came in, and no account below zero. `SIM.moneyReport(s)` is
-the monthly report's numbers: supply, accounts, minted, burned and paid by reason.
+the monthly report's numbers: supply, accounts, minted, burned and paid by reason. **M1** (`SIM.money({m1})`, 2026-11-03): each good's price is its
+labour cost (its makers' worker-hours a unit at the pricing wage, plus its inputs', down the chain; an import its maker town's) times a markup set
+after a warm-up and some calibration days so the households' spending meets the wage bill (with `ration`, the earners' own keep); at midnight the
+day's takings are swept to the workplaces' owners, the payroll pays each employed person's rota hours into its household (not while held), and the
+treasury shares out a ration a dependant from what it holds over a day's wages; a purchase is paid from the household, the rest on the dole
+(`SIM.moneyBuy`, called by the items). `SIM.moneyM1()` gives the markups, rations and each day's wages, rations, spending, dole and anything unpaid.
 
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a

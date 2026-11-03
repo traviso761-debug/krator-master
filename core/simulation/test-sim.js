@@ -1074,6 +1074,47 @@ function world(seed){
  ok('an account gone is caught',!L3.ok&&L3.problems.some(p=>/is gone/.test(p)),L3.ok);
  let bad=false;try{S.mint('hhA',1.5,'x');}catch(e){bad=true;}ok('money is whole numbers only',bad,!bad);}
 
+// money M1 (77-sim-6-money.js `m1`; PLAN-MONEY.md): prices at labour cost (bread its baking plus its rice), a calibration
+// day that measures and pays nothing, then wages at midnight for the rota's hours into each worker's household, the
+// households paying for their food, a household with no wage and no money fed on the treasury's dole, nobody paid while
+// held, the circular flow (wages = spending + saving) and the ledger holding. Each with a negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(251);S.activity({id:'WORK'});S.settlement({id:'kautoa',faction:'town'});
+   const P=(id,kind,x,acts)=>S.place({id,kind,x,z:0,activities:acts,open:[0,24],settlement:'kautoa'});
+   P('shed','warehouse',10,{});P('farm','field',60,{WORK:4});P('bake','bakehouse',80,{WORK:2});P('hA','house',100,{SLEEP:4,EAT:4});P('hB','house',120,{SLEEP:4,EAT:4});P('hC','house',140,{SLEEP:4,EAT:4});
+   S.economy({goods:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
+   S.recipe('farm',{out:['rice'],rate:2,cap:5000});S.recipe('bake',{out:['bread'],rate:4,cap:5000});S.R.place.shed.stock={rice:400,bread:200};
+   S.items({kinds:{rice:{cat:'food',food:true},bread:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1});
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{WORK:{pin:'work'}}});S.role({id:'idler',org:'folk',sched:[[0,'SLEEP']]});
+   const gs=[0,1,2].map(i=>S.actor({id:'gr'+i,role:'grower',home:'hA',work:i<2?'farm':'bake'}));S.actor({id:'gr3',role:'grower',home:'hB',work:'farm'});S.actor({id:'id0',role:'idler',home:'hC'});
+   ['hA','hB','hC'].forEach(h=>{S.R.place[h].store={rice:4};S.R.place[h].people=h==='hA'?3:1;});
+   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration}});
+   S.account({id:'treasury:kautoa',kind:'treasury',currency:'shell',settlement:'kautoa'});S.mint('treasury:kautoa',o.reserve==null?3000:o.reserve,'reserve');
+   ['farm','bake'].forEach(w=>S.account({id:'wp:'+w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
+   ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',60,'endowment');S.mint('hh:hB',30,'endowment');
+   if(o.jail) S.command(gs[0],{act:'SLEEP',place:'hA',until:3*1440,by:'jail'});
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');const run=(d)=>{for(let m=S._m||0,e=m+Math.round(d*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const A=mk();A.run(1+1/1440);const day0=A.S.moneyReport().currencies.shell.paid,mk0=A.S.moneyM1().markup.kautoa,a0=A.S.ledgerSnap(),hh0=['hA','hB','hC'].map(h=>A.S.acct('hh:'+h).balance);A.run(2);const R=A.S.moneyM1(),L=A.S.ledger(a0,A.S.ledgerSnap());
+ const P=A.S.MONEY.m1.price.kautoa,C=A.S.MONEY.m1.cost.kautoa;
+ ok('prices at labour cost: rice '+C.rice+', bread '+C.bread+' (its baking and its rice); at the markup '+mk0.toFixed(2)+': rice '+P.rice+', bread '+P.bread,
+   Math.abs(C.rice-1.5)<1e-9&&Math.abs(C.bread-(0.75+1.5))<1e-9&&P.bread>P.rice&&P.rice>=1&&Number.isInteger(P.bread),Math.abs(C.bread-2.25)>1e-9);
+ ok('the calibration day measures, no purchase paid; the market opens at its end, with its wages ('+JSON.stringify(day0)+'); the markup the wage bill over the spending at cost',!day0.purchase&&day0.wage===4*12*3&&mk0>1&&R.live,!!day0.purchase);
+ const D=R.days.kautoa.slice(1),wages=D.reduce((n,d)=>n+d.wages,0),spent=D.reduce((n,d)=>n+d.spent,0),dole=D.reduce((n,d)=>n+d.dole,0),dHof=(L)=>L.reduce((n,h)=>n+A.S.acct('hh:'+h).balance-hh0[['hA','hB','hC'].indexOf(h)],0),dH=dHof(['hA','hB','hC']);
+ ok('wages paid at midnight for the rota\'s hours: 4 workers x 12 h x 3 a day ('+wages+' in two days)',wages===2*4*12*3,wages===0);
+ ok('the circular flow: wages = the households\' spending + their saving ('+wages+' = '+spent+' + '+dH+')',wages===spent+dH&&spent>0,wages===spent+dHof(['hB','hC']));
+ ok('a household with no wage and no money is fed on the treasury\'s dole ('+dole+' in two days; hC holds '+A.S.acct('hh:hC').balance+')',dole>0&&A.S.acct('hh:hC').balance===0,!(dole>0));
+ ok('the ledger holds the town\'s money to its books',L.ok,!L.ok);
+ const J=mk({jail:true});J.run(3+1/1440);const JD=J.S.moneyM1().days.kautoa.slice(1).reduce((n,d)=>n+d.wages,0);
+ ok('nobody is paid while held ('+JD+' to the three free workers)',JD===2*3*12*3,JD===2*4*12*3);
+ const T=mk({calibrate:3});T.run(3+1/1440);const RT=T.S.moneyM1();ok('a longer calibration measures over its days ('+RT.days.kautoa.length+' days, markup '+(RT.markup.kautoa||0).toFixed(2)+')',RT.live&&RT.days.kautoa.length===3&&!(T.S.moneyReport().currencies.shell.paid.purchase>0)&&RT.markup.kautoa>1,!RT.live);
+ // the chief's redistribution (m1.ration): each member with no work kept by the treasury, the markup on the earners' keep
+ const Q=mk({ration:true,calibrate:3}),q0=()=>['hA','hB','hC'].map(h=>Q.S.acct('hh:'+h).balance);Q.run(3+1/1440);const qh=q0(),qt=Q.S.acct('treasury:kautoa').balance+Q.S.acct('wp:farm').balance+Q.S.acct('wp:bake').balance;Q.run(4);
+ const QR=Q.S.moneyM1(),QD=QR.days.kautoa.slice(3),qw=QD.reduce((n,d)=>n+d.wages,0),qr=QD.reduce((n,d)=>n+d.ration,0),qs=QD.reduce((n,d)=>n+d.spent,0),qd=QD.reduce((n,d)=>n+d.dole,0),qdh=q0().reduce((n,b,i)=>n+b-qh[i],0);
+ const qt1=Q.S.acct('treasury:kautoa').balance+Q.S.acct('wp:farm').balance+Q.S.acct('wp:bake').balance;
+ ok('the ration keeps the household with no work ('+qr+' paid, ration '+QR.ration.kautoa+' a head; dole '+qd+'), and wages + rations = spending + saving ('+qw+' + '+qr+' = '+qs+' + '+qdh+')',
+   qr>0&&qd<0.05*(qs+qd)&&qw+qr===qs+qdh,!(qr>0));
+ ok('the treasury breaks even, near enough, on the earners\' markup ('+(qt1-qt)+' over four days on '+(qw+qr)+' paid out)',Math.abs(qt1-qt)<0.25*(qw+qr),false);
+ const N=mk({calibrate:false});N.run(1+1/1440);ok('without calibration it pays from the first day',(N.S.moneyReport().currencies.shell.paid.wage||0)>0,!((N.S.moneyReport().currencies.shell.paid.wage||0)>0));}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

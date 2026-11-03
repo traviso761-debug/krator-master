@@ -32,6 +32,17 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
   const paid = SIM.pay(k.id, v.id, 25, 'a gift'), got = SIM.exchange('foreign:beyond', 'treasury:kautoa', 100, 'a ship buys shells'), c1 = ISLE.moneyBooks(), L = SIM.ledger(c0.ledger, c1.ledger);
   ok('money moves between towns and currencies and the books still balance (25 shells Kautoa to Valapo; 100 Talents for ' + got + ' shells)',
     paid === 25 && got === Math.floor(100 / 0.05 * 0.97) && L.ok && L.money.towns.valapo.shell['in'] === 25 && L.money.towns.kautoa.shell.out === 25, L.ok ? '' : L.problems.slice(0, 2).join('; ')); }
+/* M1: after the calibration days, a few days of wages and purchases; the checks over them, each with a negative */
+{ const C0 = ISLE.TUNE.sim.money.m1.calibrate, cal = typeof C0 === 'object' ? C0.after + C0.days : C0, now = Math.floor(SIM.minute() / 1440);
+  if (now <= cal) ISLE.simRun((cal + 1 - now) * 1440 + 1);
+  const m0 = ISLE.moneyBooks(); ISLE.simRun(3 * 1440); const m1 = ISLE.moneyBooks();
+  ISLE.moneyM1Checks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
+  { const B = cp(m1); B.households[Object.keys(B.households)[0]] += 40; caught('40 shells saved that no wage paid', ISLE.moneyM1Checks(m0, B), /circular flow/); }
+  { const B = cp(m1); B.prices.kautoa.bread = 0; caught('bread at no price', ISLE.moneyM1Checks(m0, B), /prices whole/); }
+  { const B = cp(m1), k = Object.keys(B.m1.days)[0]; B.m1.days[k][B.m1.days[k].length - 1].unpaid += 12; caught('a day\'s wages left unpaid', ISLE.moneyM1Checks(m0, B), /paid in full/); }
+  const L = SIM.ledger(m0.ledger, m1.ledger); ok('the ledger holds every settlement\'s money over the paid days', L.ok, L.ok ? '' : L.problems.slice(0, 2).join('; '));
+  { const B = cp(m1), id = Object.keys(B.ledger.money.accounts).find(k => k === 'treasury:kautoa'); B.ledger.money.accounts[id] -= 400000; caught("Kautoa's treasury 400,000 shells down", ISLE.moneyM1Checks(m0, B), /breaks even/); }
+  const D = m1.m1.days; console.log('--- markup ' + JSON.stringify(m1.m1.markup) + ', ration ' + JSON.stringify(m1.m1.ration) + '; the days: ' + Object.keys(D).map(k => k + ' ' + D[k].map(d => 'day ' + d.day + ' wages ' + d.wages + ' ration ' + d.ration + ' (' + (d.rationShare == null ? '-' : Math.round(100 * d.rationShare) + '%') + ') spent ' + d.spent + ' dole ' + d.dole + ' unpaid ' + d.unpaid).join(', ')).join(' | ').slice(0, 1800)); }
 const R = SIM.moneyReport();
 console.log('--- the report: ' + Object.keys(R.currencies).map(c => R.currencies[c].name + ' ' + R.currencies[c].supply + ' in ' + R.currencies[c].accounts + ' accounts').join('; '));
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
