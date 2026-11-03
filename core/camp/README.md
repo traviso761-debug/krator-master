@@ -17,12 +17,16 @@ kit's globals.
 | `10-camp-cultures.js` | `KCAMP.CULTURES[culture]`: which of a kit's keys is a dwelling, a sleeping tent, the chief's, the council's, a workshop or a pen; household sizes; who works where; the wind (the pens go downwind); the default formation. One row so far: `beast-rider` |
 | `20-camp-census.js` | `KCAMP.census({id, world, culture, program})` deals the program's dwellings to households and the work to the band's adults: `{pop, adults, children, elders, riders, mounts, households, people}`. `KCAMP.tentIds(id, program)` gives every tent and pen its id, `<band>:<key>:<i>`, the same at every site. `KCAMP.seedOf(world, id)` |
 | `30-camp-pitch.js` | `KCAMP.pitch({id, world, culture, program, site, dims(key, v), ground: {ok}, way, wind?, formation?, gap?, common?})` lays the camp out as records: the tents in a ring (or a horseshoe) round the hearth, doors in, the chief's pavilion opposite the way in and the trades by it; the pens downwind beyond the ring; the pasture beyond them; the hedge round it all with its two gates and the pasture's rails with one. `KCAMP.check(camp, ground)` counts overlaps, boxes off the ground and boxes outside the hedge. `KCAMP.box`, `KCAMP.overlaps`, `KCAMP.inPoly` |
+| `40-camp-work.js` | **Work camps** (PLAN.md 6.5, 2026-11-02): a crew from a fixed yard that migrates through a range of stands. `KCAMP.stands` (the range on a world grid, stable ids), `KCAMP.workCamp`, `workStart`, `workMove` (strike, march, pitch: the op log), `workNext` (the move rule), `workDue` (down to the seed trees), `workLeft` (a stand's timber: what its last visit took, regrown since), `workAt` (the camp at any hour), `workTree` (a tree's stump, sapling or standing state from what the sim took), `workYield` (what the range gives back a day for ever), `workReplay` (the state from the log). First consumer: the isle demo's lumber crew (`settlements/isle-demo` 47h, `openworld/isle-demo` 88h) |
 
 A program is the shape the Beast Riders' kit writes (`kits/beast-riders/src/79-br-camp.js`, `BR_CAMP[tribe].grounds`):
 `{tents: [{key, n, v}], pens: [...], hedge: {key, v, gate}, pasture: {fence, ha}}`. The hedge and the rails come back as
 closed loops with gate distances; the host cuts them into the kit's pieces with `BR_RUN`.
 
 ## Tests
+
+`node core/camp/test-work.js`: the work camp, 10 checks with negatives: stable stand ids, five years of a crew always fed, every pitch at a stand grown back, no stand under its seed trees, the range sustainable, the camp at any hour, replay and determinism, the trees following what was taken.
+
 
 `node core/camp/test-camp.js`: 15 checks, each with a negative. They cover the census (40 to 70 people at 60 seeds,
 households in dwellings, every workshop staffed) and the pitch on the Raptor band's real program and the kit's

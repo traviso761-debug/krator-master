@@ -49,7 +49,8 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
   else if(sp.focus==='lumber'){
    const L=cells(sp,(x,z)=>{if(wet(x,z))return 0;const z0=Z(x,z);return z0.forest>.6?z0.forest:0;});
    if(!L.length){out.errors.push(sp.id+': no forest in the patch');continue;}
-   const seed=near(L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600};start=[seed.x,seed.z];}
+   const seed=near(L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
+    forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];}   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */
   else if(sp.focus==='mine'){
    const L=cells(sp,(x,z)=>wet(x,z)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch');continue;}
    let top=L[0];for(const c of L)if(c.v>top.v)top=c;

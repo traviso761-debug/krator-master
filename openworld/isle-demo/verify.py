@@ -102,12 +102,22 @@ EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'b
 
 # the hamlets in the sim (47h): the villages this map lays out, declared with their towns (48t), run two days; the checks
 # of settlements/isle-demo 47h (ISLE.hamletChecks) and their negatives
+# the thieves' guilds on the open world (88t): each town's under its tavern in that town's registry, its sign and pin drawn
+# in the town's group over it, a diamond on the region map (MAP_MARKS) at the guild; the negative moves one mark 2 km
+GUILD_JS = r"""(neg)=>{const S=_isleTowns.stats,gm=S.guilds||[],MM=window.MAP_MARKS||[];if(neg==='moved'&&MM[0])MM[0].x+=2000;
+ const ok=gm.length===2&&gm.every(g=>{const P=SIM.R.place[g.place],tw=ISLE_TOWNS_W.plans.find(p=>p.town===g.town),R=tw&&tw.tags.get(g.record),m=MM.find(k=>k.label.endsWith(g.town));
+   return P&&P.guild&&P.kind==='tavern'&&R&&R.name==="Thieves' guild"&&m&&Math.hypot(m.x-P.x,m.z-P.z)<1;});
+ let signs=0;HOST.scene.traverse(o=>{if(o.name==="thieves' guild sign")signs++;});
+ if(neg==='moved'&&MM[0])MM[0].x-=2000;
+ return{name:"the thieves' guilds on the map: one a town, a landmark under its tavern, its sign drawn, a mark on the region map",ok:ok&&signs===2,
+  detail:gm.map(g=>g.town+' '+g.place+' record '+g.record).join('; ')+'; '+signs+' signs, '+MM.length+' map marks'};}"""
 HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
  const negs=[];let B=cp(b);B.villages['hamlet-mine'].goods.ore.made=a.villages['hamlet-mine'].goods.ore.made;negs.push(Object.assign({neg:'unmade'},pick(ISLE.hamletChecks(a,B),/makes its goods/)));
  B=cp(b);B.villages['hamlet-lumber'].landed.timber=(B.villages['hamlet-lumber'].landed.timber||0)-15;negs.push(Object.assign({neg:'lost'},pick(ISLE.hamletChecks(a,B),/landed in its town/)));
  B=cp(b);B.villages['hamlet-mine'].site.id='elsewhere';negs.push(Object.assign({neg:'record'},pick(ISLE.hamletChecks(a,B),/its record from the map/)));
  B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
+ B=cp(b);{const K=B.ledger.towns.kautoa;(K.irontools||(K.irontools={total:0})).total+=500;}negs.push(Object.assign({neg:'iron pile'},pick(ISLE.hamletChecks(a,B),/ceiling/)));
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 
@@ -153,6 +163,15 @@ async def run(a):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)
+                print("--- the thieves' guilds (settlements/isle-demo 47c) ---")
+                for neg in (None, 'moved'):
+                    r = await pg.evaluate(GUILD_JS, neg)
+                    if neg is None:
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                        if not r['ok']: fails.append(r['name'])
+                    else:
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + " negative (a guild's map mark 2 km off) : " + r['detail'])
+                        if r['ok']: fails.append('negative guild')
                 print('--- the camps (core/camp) ---')
                 nm = 'the camps: pitched whole, a band of 40 to 70, no overlap, on good ground, inside the hedge, cleared, tagged'
                 r = (await pg.evaluate('_camps.checks()'))[0]

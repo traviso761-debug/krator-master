@@ -24,6 +24,33 @@ DRAW.stage = function () {
   var sun = new THREE.DirectionalLight(0xfff1dc, 1.05); sun.position.set(-0.55, 0.75, 0.35); scene.add(sun);
   addEventListener('resize', function () { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 };
+/* ---------------------------------------------------------------- the thieves' guild (47c ISLE.tagGuilds; owner, 2026-11-02) */
+/* A guild's mark, in the town's frame: a post by the tavern's door with a plum board painted with a dagger (the den's
+   sign), and a map pin above the roof, "Thieves' guild", the same size on screen at any distance (DRAW.guildPins(false)
+   hides the pins). It decides nothing: the guild is the sim's (core/simulation 77-sim-6-crime.js) */
+DRAW.guildTex = function (w, h, paint) { var c = document.createElement('canvas'); c.width = w; c.height = h; paint(c.getContext('2d'), w, h);
+  var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; };
+DRAW.dagger = function (g, x, y, s, col) {   /* a dagger, point down, its hilt at (x, y), s its length */
+  g.fillStyle = col; g.beginPath(); g.moveTo(x - s * 0.07, y + s * 0.22); g.lineTo(x + s * 0.07, y + s * 0.22); g.lineTo(x, y + s); g.closePath(); g.fill();
+  g.fillRect(x - s * 0.22, y + s * 0.16, s * 0.44, s * 0.07); g.fillRect(x - s * 0.04, y, s * 0.08, s * 0.17); g.beginPath(); g.arc(x, y - s * 0.02, s * 0.06, 0, Math.PI * 2); g.fill(); };
+DRAW.guildPins = function (on) { (DRAW.guildMarks || []).forEach(function (G) { if (G.pin) G.pin.visible = on !== false; }); };
+DRAW.guild = function (m) {
+  if (!m || !m.at) return null;
+  var g = new THREE.Group(), sz = m.size || [8, 8, 6], s = Math.sin(m.ry || 0), c = Math.cos(m.ry || 0), fr = sz[1] / 2 + 1.4, side = Math.min(sz[0] / 2, 3);
+  var x = m.at[0] + s * fr + c * side, z = m.at[2] + c * fr - s * side, y = m.at[1];
+  var wood = new THREE.MeshLambertMaterial({ color: 0x3a2a1e }), post = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 4.4, 6).translate(0, 2.2, 0), wood);
+  var arm = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.12).translate(0.75, 4.1, 0), wood);
+  var face = DRAW.guildTex(128, 96, function (q, w, h) { q.fillStyle = '#4a1e3a'; q.fillRect(0, 0, w, h); q.strokeStyle = '#c9a24a'; q.lineWidth = 6; q.strokeRect(5, 5, w - 10, h - 10);
+    DRAW.dagger(q, w / 2, 14, 70, '#d8c27a'); });
+  var board = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.8, 0.06).translate(1.1, 3.55, 0), [wood, wood, wood, wood, new THREE.MeshLambertMaterial({ map: face }), new THREE.MeshLambertMaterial({ map: face })]);
+  [post, arm, board].forEach(function (k) { g.add(k); }); g.position.set(x, y, z); g.rotation.y = m.ry || 0; g.name = "thieves' guild sign";
+  g.userData.inspectLabel = "Thieves' guild"; scene.add(g);
+  var pinT = DRAW.guildTex(512, 128, function (q, w, h) { q.fillStyle = 'rgba(40,14,32,0.86)'; q.fillRect(0, 8, w, h - 16); q.strokeStyle = '#c9a24a'; q.lineWidth = 5; q.strokeRect(4, 10, w - 8, h - 20);
+    DRAW.dagger(q, 62, 22, 84, '#e6cf86'); q.fillStyle = '#f2e2b0'; q.font = 'bold 54px Georgia, serif'; q.textBaseline = 'middle'; q.fillText("Thieves' guild", 112, h / 2 + 2); });
+  var pin = new THREE.Sprite(new THREE.SpriteMaterial({ map: pinT, sizeAttenuation: false, depthTest: false, transparent: true }));
+  pin.scale.set(0.16, 0.04, 1); pin.position.set(m.at[0], y + sz[2] + 5, m.at[2]); pin.renderOrder = 20; pin.name = "thieves' guild pin"; scene.add(pin);
+  var G = { mark: m, sign: g, pin: pin }; (DRAW.guildMarks || (DRAW.guildMarks = [])).push(G); DRAW.stats.guilds = DRAW.guildMarks.length; return G;
+};
 /* ---------------------------------------------------------------- the ground and the sea */
 /* the library's layers over the vertex colours (materials.json, pack 'isle'): the town ground's aL weights (tilled, damp sand,
    sand with rocks, shingle) and the streets' aK (0 gravel, 1 dry grass path), read at world xz; a layer without its set is skipped */

@@ -182,6 +182,10 @@ loads each build's `tex/` pack, which is WebP. What is left:
 
 ## Features
 
+- **Revisit taxes when the economy is more fleshed out** *(the owner, 2026-11-03)*. For now money is taxed only by an
+  excise on imports and exports (core/simulation/PLAN-MONEY.md, M5). Wage, sales, land or poll taxes, tolls on the roads
+  and harbour dues wait until wages, prices and the player's towns run: decide then which each nation levies, and who
+  the taxes pay (soldiers, officials, the watch). The tribute player settlements owe a nation (same plan) is separate.
 - **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
   rather than from the rendered scene. A base layer is painted once into an offscreen canvas: every walkable
   floor, sorted by height so upper levels cover lower, coloured by level, with labels. Each update (at most

@@ -224,6 +224,67 @@ when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` 
 derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
 A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
 
+**Crime and punishment (`77-sim-6-crime.js`, 2026-11-02; opt-in by `SIM.crime(config)`).** The Voth brief's rules (settlements/voth/SIM-ROADMAP.md 1.7),
+proved on the isle demo. Criminals are a share of the eligible, by a hash of the person. Each hour (SIM.step's last act): a criminal in a free hour at
+a market picks a pocket (the victim's material meter up, the thief's down), at night burgles another household of its town (a share of its food store
+to its own: the town's books unchanged); anyone unhappy among company may start a fight (the victim hurt: the items' `hurt`). The odds it is seen rise
+with the witnesses (a guard much more), fall at night; seen, it fails, the nearest guard on duty within reach comes (a `SIM.command` for some minutes)
+and arrests by its distance (a town at the abstract level: its guards on duty a head); the arrested are held at the nearest jail place by a
+`SIM.command` (`by: 'jail'`, act `JAIL`) for a week (a month resisting), and lie low after. A commanded actor is not counted at work at the abstract
+level (`77-sim-6-economy.js`), nor its tool worn (`itemsAbstractDay`). Every roll is a hash: no draw from `SIM.rng`. `SIM.crimeReport(s)`,
+`SIM.crimeEvents(since)` (kept apart from the trimmed `SIM.LOG`), `SIM.jailed(a)`.
+**The thieves' guild** (`guild`, opt-in; owner, 2026-11-02): one a settlement, the place of its `kinds` (a tavern) farthest from its nearest jail
+(`P.guild`). A criminal seen within reach of it, nearer it than the coming guard, hides there (a `SIM.command`, `by: 'hide'`) and is not arrested;
+nobody picks a pocket inside it. A burglar's loot is a lot `{from, food, items}` on `a.loot`: the food sits in its home's store (still storage, so the
+books balance) and the things (spare clothes kept at home) leave their owners' `inv`; in a free hour the thief goes to the guild and fences it: the food
+into the guild's store, the things into its `stash`, its material meter down. Arrested first, the loot goes back. For the world's own actors (the
+player): `SIM.crimeHide(a)`, `SIM.crimeFence(a)`, `SIM.crimeLoot(a, lot)`, `SIM.crimeAlarm(a, kind, at)`; `SIM.guildOf(s)`, `SIM.hidden(a)`.
+
+**Money (`77-sim-6-money.js`, 2026-11-03; opt-in by `SIM.money`; PLAN-MONEY.md M0).** Each nation has its currency, each at a rate to the
+Izani Talent (the trade's money). An account `{id, owner, kind, currency, settlement, ownedBy, balance}` holds a whole number of its currency's
+smallest unit; its id is stable (`hh:<home>`, `wp:<place>`, `treasury:<settlement>`, `guild:<settlement>`, `changer:<currency>`). Money moves four
+ways, each booked by its reason: `SIM.mint` (a faucet), `SIM.burn` (a sink), `SIM.pay` (a transfer within a currency, never overdrawing; between
+settlements booked out of one and into the other) and `SIM.exchange` (two transfers through the money changers, at the rates less their spread).
+The ledger's snapshot carries `money` (every balance, every settlement's books), and its statement holds, exactly, opening + minted - burned + in -
+out = closing per settlement and currency, what left the settlements equal to what came in, and no account below zero. `SIM.moneyReport(s)` is
+the monthly report's numbers: supply, accounts, minted, burned and paid by reason. **M1** (`SIM.money({m1})`, 2026-11-03): each good's price is its
+labour cost (its makers' worker-hours a unit at the pricing wage, plus its inputs', down the chain; an import its maker town's) times a markup set
+after a warm-up and some calibration days so the households' spending meets the wage bill (with `ration`, the earners' own keep); at midnight the
+day's takings are swept to the workplaces' owners, the payroll pays each employed person's rota hours into its household (not while held), and the
+treasury shares out a ration a dependant from what it holds over a day's wages; a purchase is paid from the household, the rest on the dole
+(`SIM.moneyBuy`, called by the items). `SIM.moneyM1()` gives the markups, rations and each day's wages, rations, spending, dole and anything unpaid. The ration is m1's default (`ration:
+false` turns it off). **M2** (`SIM.money({m2: {k, lo, hi, smooth, level}})`): each night a governed good's price is its cost x markup x its scarcity,
+(target / supply line)^k held to [lo, hi] and eased in over `smooth` days (`SIM.MONEY.m1.rel`); with `level`, the markup moves toward what makes the
+households' spending meet the wages and the full rations, at most `step` a night, the ration with it (a day's history keeps the price index, `cpi`). **Spending** (`m1.spend: {bands: {cls: [lo, hi]}, days, treatDrop}`): each night a household's
+savings in days of its keep set its people's `wealth` within their class's band (`SIM.moneyFill(home)`); the treat's bar falls by `treatDrop` at a
+full purse (`SIM.moneyTreatDrop`); a treat or a meal out by choice only with money in hand (`SIM.moneyCan`, asked by the items before the wish and
+again at the counter for a treat). **Stations** (`m1.stations`): a person's `station` (worker, merchant, prince, noble) and its `rises`; a
+household buys a vacant place of the next station's kinds (its workplace account's `ownedBy` becomes the household's, `merchant` the riser) and its
+runner rises; an owned place pays `wholesale` to the treasury, its takings swept to the household, its wages covered from it; a household that
+cannot cover them falls. `SIM.moneyStations()` -> rises and falls by settlement and station, and their events. Happiness modifiers:
+`SIM.happinessAdd(a, n, days, why)` (a.hmods, fading; a negative n a cheer), `SIM.happinessPool(s, classOf?)` (77-sim-6-needs.js).
+
+**Unrest (77-sim-6-unrest.js, PLAN-MONEY.md M6, 2026-11-03).** Per settlement: `level` and `stage` by key (`all`, and each class), the stage one
+of calm, grumble, demand, strike, treason (the deepest line the level is under; eased back `hyst` over a line); `demands` [{id, m, key, keys,
+kind: goods | ruler, goods, due, answer: granted | refused, answered, asked, came, sent: {'<sender>><good>': n}, why}]; `strikes` [{m, key, keys,
+held: [place], until}] (the places' recipes held, reason 'strike'); `treason` [{m, key, level}]. A shipment is booked exported by its sender and
+imported by the asker, so a settlement's books hold. `SIM.unrestReport(s?)`, `SIM.unrestArrest(s)` (crime's arrest odds read it),
+`SIM.unrestSpare(s, g)`. **Needs at the abstract level** (77-sim-6-needs.js `SIM.needsAbstract`): the meters of an unwatched town's people are
+lived by schedule from their clock to the minute asked (`a.absAct`, `a.absIntr` its state), so any reader of an abstract actor's meters gets
+its lived day; a household's abstract meals set `P.absBoost`, its people's EAT. **Vital needs** (`SIM.needs` `vital: {need: line}`): past its
+line a vital meter caps happiness, 100 at the line to 0 full.
+
+**A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
+report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a
+site grown back while nobody worked it and books it `regrown` (as the nightly `regen` now is), which the ledger allows. A site feeding a batch
+recipe has its take booked when the batch starts and its out made when it ends: the ledger holds the take less the batches in hand (`wip`) to
+what was made.
+
+**Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
+seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better
+good, so its want shows where nobody could buy it. A better tool bought in place of another remembers it (`a.tool.base`) and, worn out, is sought as that one again (a
+field hand's hoe, a smith's stone tool); a kind's `base` is the fallback for one given at the start. So a town out of the better good falls back. The ledger sees only goods: an iron tool bought is one `irontools` used.
+
 **Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
 does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields
 join a row; an existing field's meaning does not change. The export takes the statement as an added section when Godot needs it.

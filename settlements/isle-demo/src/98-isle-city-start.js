@@ -103,6 +103,12 @@ setTimeout(function () {
           var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.otherG = O.G; window._city.holds = ISLE.simHolds(town);
           ISLE.simWatch(town);   /* P7d: the drawn town presented, the other abstract */
           ISLE.runUI(ui); lap('sim');
+          /* the thieves' guild on the map (47c): registered under its tavern in each town's registry, its sign and pin
+             drawn in the drawn town, a button to fly there */
+          var gm = window._city.guilds = ISLE.tagGuilds(function (t) { return t === town ? cur.tags : O.tags; });
+          gm.filter(function (m) { return m.town === town && m.at; }).forEach(function (m) { DRAW.guild(m);
+            var gb = document.createElement('button'); gb.textContent = "thieves' guild"; gb.title = m.name + ' (' + m.place + ')';
+            gb.onclick = function () { CAM.t = [m.at[0], 0, m.at[2]]; CAM.dist = 160; CAM.yaw = (m.ry || 0) + 0.5; CAM.pitch = 0.5; CAM.apply(); }; ui.appendChild(gb); });
         } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }
       /* ?simAt=minute: the sim run to that minute first (the export's case: 355, people on their way to work) */

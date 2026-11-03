@@ -1,7 +1,8 @@
 # core/camp: bands, camps and the journeys between them (plan, 2026-10-20; owner's answers 2026-10-26)
 
 **Status (2026-10-26):** the census and the pitch are built (part of C1: `README.md`, `node core/camp/test-camp.js`),
-with their first consumer, a Raptor band's camp in the isle demo (section 10, "The first build"). The rest is a plan.
+with their first consumer, a Raptor band's camp in the isle demo (section 10, "The first build"). **2026-11-02:** the first work camp
+(section 6.5): the isle demo's lumber crew migrating through its forest (`40-camp-work.js`, `node core/camp/test-work.js`). The rest is a plan.
 It is written against `origin/main`'s `core/simulation` (settlements, trade
 between settlements, the three levels: `77-sim-6-economy.js` `SIM.settlement`, `77-sim-6-trade.js`,
 `77-sim-7-lod.js`).
@@ -482,6 +483,40 @@ disbands. Captives are a population transfer, booked the same way.
 
 The player's own expedition (`core/simulation/ROADMAP.md` §13: travel, temporary camp, explore, salvage, return) is the
 same record with the player as its leader.
+
+### 6.5 Work camps (built 2026-11-02, first slice: `40-camp-work.js`)
+
+The owner (2026-11-02): resources a major settlement's villages work last a long time, at least five years, "although some,
+like timber, might be better implemented as a work camp that migrates. This could be a test bed for the camps module."
+
+A **work camp** is a crew a fixed settlement sends out to work a resource spread over a range: it pitches at one **stand**,
+works it down, strikes, marches to the next, and the stands it left grow back. It is the band's wander cycle (section 5)
+with a yard in place of a territory and a stand's timber in place of a site's yields, so it exercises the same machine:
+the op log (pitch, strike, march), the position as a pure function of the day, regrowth from the day it left, the move
+rule by score and hash, the hand-over to the sim. The first is the isle demo's lumber crew; charcoal burners, rubber
+tappers, a fishing fleet's beach camps and a quarry gang are the same.
+
+- **The range** is cut on a world grid (`KCAMP.stands`): a cell keeps its id (`<camp>:stand:<i>:<j>`) whatever the yard,
+  so a stand's history survives a change of range. A host gives each cell's capacity (the isles: the forest's share x the
+  hectares x 21 timber trees a hectare x 40 lots a tree).
+- **The move rule** (`KCAMP.workNext`): the stand with the most timber over (1 + haul to the yard / 2.5 km) (1 + march
+  from here / 1.5 km), of those grown back whole (else the most regrown); the camp moves when a tenth is left standing
+  (the seed trees). The crew is idle from strike to pitch (8 h, the march at 3 km/h, 8 h).
+- **What the sim took is the felled count.** The stand being worked is a `SIM.site`; its `taken` is the visit's take, and
+  `KCAMP.workTree` makes the first `n x taken / cap` trees of the stand (nearest the camp's spot first) stumps, then
+  saplings, then whole after `regrowDays`. So the stumps on the map follow the sim's own timber (the felling clock ran
+  apart from it before).
+- **Sustainable by construction:** `KCAMP.workYield` is what the range gives back a day for ever; a crew drawing less never
+  runs it out (the isles: 5,000 a day against a crew's 193 at full).
+- **In the sim** (settlements/isle-demo 47h): the crew is a place of its village (kind `fellcamp`, its posts half the
+  sawpits'), its batch recipe felling logs (fuelwood the byproduct) from its stand's site; the sawpits saw the logs, the
+  kilns burn the fuelwood. Core's `SIM.recipeHold` idles the crew on the march, `SIM.recipeSite` points it at the new
+  stand, `SIM.siteRestore` books a revisited stand's regrowth for the ledger.
+
+**Not built yet:** the crew still sleeps in the village's houses (the villages are always abstract, so nobody walks
+there); the camp is drawn as stand-in shelters (no kit has a felling camp's lean-tos and log pile: an Islanders kit task);
+the march is not a `SIM.group`; the camp is not its own settlement (`SIM.settlement` kind `camp`, `mobile`), which C4 makes
+of any band. Those come with C2 (striking and pitching as timelines) and C4 (the hand-over).
 
 ### 6.4 Armies (later)
 

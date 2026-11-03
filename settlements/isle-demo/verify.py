@@ -149,6 +149,16 @@ SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pic
 SIMX_NEGS = ('home', 'stock', 'sea', 'count')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
+# the thieves' guild on the map (47c, 60 DRAW.guild): one a town, registered under its tavern in that town's registry as
+# a landmark named "Thieves' guild", the drawn town's sign and pin over it; the negative moves the pin 50 m off
+GUILD_JS = r"""(neg)=>{const gm=_city.guilds||[],T=_city.town,cur=gm.find(m=>m.town===T),G=(DRAW.guildMarks||[]).find(g=>g.mark.town===T);
+ if(neg==='moved'&&G)G.pin.position.x+=50;
+ const reg=gm.every(m=>{const P=SIM.R.place[m.place];return P&&P.guild&&P.kind==='tavern'&&m.record;}),R=cur&&KTAGS.page.get(cur.record);
+ const named=!!R&&R.name==="Thieves' guild"&&R['class']==='landmark'&&R.parent===cur.tag;
+ const drawn=!!G&&Math.hypot(G.pin.position.x-cur.at[0],G.pin.position.z-cur.at[2])<1&&G.sign.visible!==false;
+ if(neg==='moved'&&G)G.pin.position.x-=50;
+ return{name:"the thieves' guild on the map: one a town, a landmark under its tavern, its sign and pin drawn over it",ok:gm.length===2&&reg&&named&&drawn,
+  detail:gm.map(m=>m.town+' '+m.place+' ('+(SIM.R.place[m.place]||{}).kind+', record '+m.record+')').join('; ')+(R?'; '+T+"'s record: "+R.name+' under '+R.parent:'')+(drawn?'; sign and pin drawn':'; NOT DRAWN OVER IT')};}"""
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
  if(!ISLE.SIM.dayMs){const t0=performance.now(),c=ISLE.TUNE.sim.clock.start+630;ISLE.simRun(c-ISLE.SIM.clock.m);ISLE.SIM.soc={};ISLE.SIM.order.forEach(k=>{ISLE.SIM.soc[k]=ISLE.simSocial(k);});ISLE.simDay();ISLE.SIM.dayMs=Math.round(performance.now()-t0);}
  const books=ISLE.simBooks(s),res=()=>SIM.all('actor').filter(a=>!a.driven&&SIM.R.role[a.role].settlement===s).map(a=>Object.assign({},a)),cp=()=>JSON.parse(JSON.stringify(books));
@@ -244,6 +254,12 @@ async def run_city(a):
                             r = await pg.evaluate(CANOE_JS, 'flip')
                             print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a vessel shown in the wrong state) : ' + r['detail'])
                             if r['ok']: fails.append('negative canoes')
+                            r = await pg.evaluate(GUILD_JS, None)
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                            if not r['ok']: fails.append(r['name'])
+                            r = await pg.evaluate(GUILD_JS, 'moved')
+                            print(('  PASS  ' if not r['ok'] else '  MISSED') + " negative (the guild's pin 50 m off) : " + r['detail'])
+                            if r['ok']: fails.append('negative guild')
                             r = await pg.evaluate(CIT_JS, None)
                             print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                             if not r['ok']: fails.append(r['name'])

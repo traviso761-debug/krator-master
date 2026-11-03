@@ -242,6 +242,42 @@
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.
 
+## Crime and punishment (2026-11-02)
+
+- [x] **The watch walks the markets** (2026-11-02): a third of each town's soldiers are watchmen, posted at the barracks with the
+      rest but patrolling the markets, greens and plazas by day (`PATROL`, moving on every 30 minutes; `jobs.soldier.patrol`).
+      At noon Kautoa's 30 are all out, one within 50 to 170 m of each market. Arrests in the watched town are still few:
+      most crimes go unseen (the brief's odds), and the core test holds the near-guard arrest.
+- [ ] **No watch at night** (the brief's "fewer night watchmen with lanterns"): the watchmen sleep; night burglaries are
+      seen only by the household.
+- [ ] **The criminal does not walk to the house it burgles**: the burglary is resolved at the hour, where the criminal
+      sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
+- [ ] **Money measures, it does not yet limit** (2026-11-03, `47m`: M0 and M1's first part): wages, rations and purchases are paid,
+      but a household that cannot pay is fed on the dole, so nobody goes without; a pocket picked is still the meters, not coin.
+      With spending that follows savings the ration runs at 93-97%, the dole at 8-10% (food and clothes only). M2's price level
+      stays off: it spirals against the flat wage (PLAN-MONEY.md).
+- [ ] **No merchant princes or nobles rise on the isles yet:** a trading house has no takings until trade by price (M3); stations
+      climb in order. And a riser keeps its home's class name for its household (only the riser's class moves).
+- [ ] **An unwatched town is a little happier than watched** (Valapo 86 unwatched, 80 watched, over twelve days): its people
+      never find a temple shut or full and walk ten minutes at each change of activity; contemplation and sleep are the gap.
+- [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
+      its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town reaches treason about a
+      week after its stores are eaten (`smooth` 5), and a strike holds workplaces that may already be idle.
+- [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
+      Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
+      (M1's second part) come next.
+- [ ] **The guild's stash goes nowhere:** what is fenced sits in the guild's store and on its shelf. With money it would be
+      sold on (to the player above all); for now nobody buys it, and its food is still counted in the town's storage.
+- [x] **The guild is marked on the map** (2026-11-02): a landmark "Thieves' guild" under its tavern in each town's registry (the
+      inspector names it), a plum sign with a dagger by the tavern's door and a pin over its roof (60 `DRAW.guild`), a button to
+      fly there on the city page, and on the open world a diamond on the region map with a legend line and a Go to entry.
+      The pin always shows (a map marker, not something a citizen would see): `DRAW.guildPins(false)` hides it.
+- [ ] **The player's hooks are untried in a page** (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`): tested in core on
+      ordinary actors; the isle pages have no player.
+- [ ] **No fights yet in two weeks:** nobody's happiness falls under 30. The rule is tested in core (test-sim.js) only.
+- [ ] **No murder, no sentence of death** (the brief's); no courts, fines or the stocks; the held eat nothing from the
+      barracks' kitchen (their household's store feeds them as if at home).
+
 ## The hamlets in the sim (core/hamlet H5, 2026-10-26)
 
 - [ ] **The villages are declared only where a page hands them in** (47h): the open world's page from the map, the node
@@ -250,16 +286,29 @@
       economies are as before.
 - [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
       open world draws the buildings (88h) but no villagers.
-- [ ] **The felling and the timber still run apart** (the rest closed 2026-11-02, PLAN-ECONOMY.md Phase 1): each village's
-      works now draw on its map record by that record's id, the grade setting the yield, and the sim reports what each gave
-      (`SIM.sitesReport`, the ledger reconciles it). They deplete (the owner, 2026-11-02, over the rule of 2026-10-18;
-      `ISLE.TUNE.sim.hamlets.sites`: an ore node does not come back, the rest regrow). But the stumps the stand shows (88h) are a pure function of the world
-      clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
-      forbids for now. Lot ages for perishables are not built: nothing needs them yet.
-- [ ] **Iron tools share the stone tools' good:** the chain runs to its end (2026-11-02, PLAN-ECONOMY.md Phase 2): Valapo smelts
-      the mine's ore in batches, the lakatoi carries the iron, and every fourth Kautoan smithy works it with charcoal into
-      `tools`, in place of the armour it made. The good is still sold as `stone tool` (PLAN.md 9b owes iron tools their own
-      line). A mine that empties ends Valapo's iron: nothing yet opens a new node or moves the village.
+- [x] **The felling and the timber run together** (2026-11-02; core/camp PLAN.md 6.5): the lumber village is the yard, and
+      half its sawyers go out as a felling crew, a work camp that pitches at one 400 m stand of the forest at a time, fells
+      it to its seed trees, strikes and marches on (`ISLE.TUNE.sim.hamlets.crew`; core/camp 40). Its logs come from its
+      stand's site, the sawpits saw them, the kilns burn the tops; the open world's stumps (88h) are the stand's first trees
+      in the share the sim took (KCAMP.workTree), so map and books agree. The camp's history is its op log; nothing else is stored.
+- [x] **Every village's resource lasts at least five years** (owner, 2026-11-02): sized from its works flat out against its
+      regrowth (`hamlets.life`, `sites`; 47h `ISLE.siteLife`), ore by grade (5, 10, 20 years); a check holds it, flat out and at
+      the run's draw. The salt pan as first sized (40,000 lots, 300 back a night) would have run dry in three and a half months.
+- [ ] **The felling crew sleeps in the village** (the villages are always abstract: nobody walks there); its camp is drawn as
+      stand-in shelters and a log pile (no kit has a felling camp's lean-tos: an Islanders kit task); the march is not a
+      `SIM.group`. core/camp's C2 and C4 bring those. Lot ages for perishables are not built: nothing needs them yet.
+- [x] **Iron tools have their own line** (2026-11-02; they shared the stone tools' good the same morning): every fourth
+      Kautoan smithy works Valapo's iron into `irontools`, sold as `iron tool` (3,000 worked hours) at the markets, shops
+      and smithies of both towns once the villages are declared, and carried to Valapo by the lakatoi. A stone tool's errand
+      buys an iron one when its seller has it (core's tool `prefer`), a worn iron tool is replaced as stone (`base`), so a
+      town out of iron falls back to stone; a miss is booked short of `irontools`, which is the want the governor and the
+      lakatoi read. Ceilings on the chain (`hamlets.town[s].stockpile`: Kautoa's iron tools 80, Valapo's iron 120) stop the
+      smithies at a pile, so the mine is not drawn down for it.
+- [x] **The field hands take iron too** (2026-11-02): their digging stick is its own `hoe` (wood, the dockyard's), which an
+      iron tool replaces where the town has one; a better tool remembers what it stood in for (core), so a worn iron tool is
+      sought as the hoe or the stone tool it replaced. The other wooden tools (goads, shuttles, paddles, styluses) stay wood.
+- [ ] **A mine that empties ends Valapo's iron** (at its five years' least, flat out): nothing yet opens a new node or moves the
+      village; the iron tools then fall back to stone as they wear out.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).
