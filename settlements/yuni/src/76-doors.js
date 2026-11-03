@@ -346,17 +346,33 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     P.walls.forEach(function(Wl){ var A=Wl.a, B=Wl.b, L=Math.hypot(B[0]-A[0],B[1]-A[1]); if(L<0.05) return; var tx=(B[0]-A[0])/L, tz=(B[1]-A[1])/L;
       var gaps=(Wl.openings||[]).filter(function(o){ return o.door; }).map(function(o){ return [o.u-o.w/2, o.u+o.w/2]; });
       for(var u=0.1; u<L; u+=0.2){ if(gaps.some(function(g){ return u>g[0]-0.05 && u<g[1]+0.05; })) continue;
-        var w=w2(A[0]+tx*u, A[1]+tz*u), r=Math.max(0.1, (Wl.thick==null?0.12:Wl.thick)/2); W.block([w[0]-r,w[0]+r,w[1]-r,w[1]+r, b.y+Wl.y+0.02, b.y+Wl.y+Wl.h], Wl.id); } });
-    P.stairs.forEach(function(S){ var g=P.groups[S.group], a=g.RF(S.u, S.va-0.4), c=g.RF(S.u, S.vb+0.3), wa=w2(a[0],a[1]), wc=w2(c[0],c[1]);
-      W.strip({ a:[wa[0], wa[1], b.y+S.y0], b:[wc[0], wc[1], b.y+S.y1], w:Math.max(0.5, S.w-0.1), name:S.id, tag:'stair' }); });
+        var w=w2(A[0]+tx*u, A[1]+tz*u), r=Math.max(0.06, (Wl.thick==null?0.12:Wl.thick)/2); W.block([w[0]-r,w[0]+r,w[1]-r,w[1]+r, b.y+Wl.y+0.02, b.y+Wl.y+Wl.h], Wl.id); } });
+    /* a stair as the walker climbs it (stairAt above): rising from its foot va to its top vb, then level for 0.35 m either end */
+    var ladder=false;
+    P.stairs.forEach(function(S){ var g=P.groups[S.group], wd=Math.max(0.5, S.w-0.1), pt=function(v){ var q=g.RF(S.u, v), w=w2(q[0],q[1]); return w; };
+      var f0=pt(S.va-0.35), f1=pt(S.va), t1=pt(S.vb), t0=pt(S.vb+0.35); if(S.kind==='ladder') ladder=true;
+      W.strip({ a:[f0[0], f0[1], b.y+S.y0], b:[f1[0], f1[1], b.y+S.y0], w:wd, name:S.id+'.foot', tag:'stair' });
+      W.strip({ a:[f1[0], f1[1], b.y+S.y0], b:[t1[0], t1[1], b.y+S.y1], w:wd, name:S.id, tag:'stair' });
+      W.strip({ a:[t1[0], t1[1], b.y+S.y1], b:[t0[0], t0[1], b.y+S.y1], w:wd, name:S.id+'.top', tag:'stair' }); });
     var starts=[], nogap=0;
-    P.doors.forEach(function(d){ if(d.kind!=='exterior') return; var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw), D=FIX.byId[d.fixture], g=P.groups[d.group];
-      var o=w2(d.at[0]+nx*1.6, d.at[1]+nz*1.6), s0=w2(d.at[0]+nx*1.2, d.at[1]+nz*1.2), i=w2(d.at[0]-nx*0.9, d.at[1]-nz*0.9), ys=D ? D.y : b.y+d.y,
+    /* the street doors, and a hand-written plan's doorways onto its court (the caravanserai's cells: INTERIOR_CUSTOM) */
+    P.doors.forEach(function(d){ if(d.kind!=='exterior' && !(d.rooms && (d.rooms.indexOf('court')>=0 || d.rooms.indexOf('outside')>=0))) return;
+      var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw), D=d.fixture ? FIX.byId[d.fixture] : null, g=P.groups[d.group];
+      /* the door step: from 1.8 m out to 1.6 m in, the corridor walkable() lets the walker through a door by (doorway(D, x, z, 1.6, ...)) */
+      var o=w2(d.at[0]+nx*1.8, d.at[1]+nz*1.8), s0=w2(d.at[0]+nx*1.4, d.at[1]+nz*1.4), i=w2(d.at[0]-nx*1.6, d.at[1]-nz*1.6), ys=D ? D.y : b.y+d.y,
           yi=b.y+(g && g.levels[0] ? g.levels[0].y : P.levels[0] ? P.levels[0].y : d.y);   /* the floor of the door's own group */
       if(!P.walls.some(function(Wl){ return (Wl.openings||[]).some(function(op){ return op.door===d.id; }); })) nogap++;   /* the shell drew no doorway for it */
-      W.strip({ a:[o[0], o[1], ys], b:[i[0], i[1], yi], w:Math.max(0.5, d.w-0.2), name:d.id, tag:'doorstep' }); starts.push([s0[0], ys+(yi-ys)*0.4/2.5, s0[1]]); });
-    var res=W.reach(starts, { cell:0.2, step:0.45, r:0.2, h:1.7, margin:2 }), hit=new Set(res.reached);
-    var miss=P.rooms.filter(function(R){ return !hit.has(floors[R.id]); }); miss.nogap=nogap; return miss; }
+      W.strip({ a:[o[0], o[1], ys], b:[i[0], i[1], yi], w:Math.max(0.6, d.w), name:d.id, tag:'doorstep' }); starts.push([s0[0], ys+(yi-ys)*0.4/3.4, s0[1]]); });
+    /* a ladder rises 3 m in about one: walked in 0.1 m cells, a rung is within a step */
+    /* r 0.15: Yuni's walker has no body, only margins (a door lets its centre within w/2 - 0.12 of the middle: a hut's 0.72 m mouth) */
+    var res=W.reach(starts, { cell:ladder ? 0.1 : 0.15, step:0.45, r:0.15, h:1.7, margin:2 }), hit=new Set(res.reached);
+    var miss=P.rooms.filter(function(R){ return !hit.has(floors[R.id]); }); miss.nogap=nogap;
+    miss.debug={ starts:starts, nodes:res.nodes, standing:starts.map(function(p){ return W.floorsAt(p[0], p[2]).map(function(f){ return [+f[0].toFixed(2), f[1].name]; }); }),
+      blockedAtStart:starts.map(function(p){ var k=W.blocked(p[0], p[1]+0.05, p[2], 0.2, 1.65); return k ? k.tag : null; }),
+      strips:W.floors.filter(function(f){ return f.kind==='strip'; }).map(function(f){ return [f.name, f.a.map(function(v){ return +v.toFixed(2); }), f.b.map(function(v){ return +v.toFixed(2); }), f.w]; }),
+      rooms:P.rooms.map(function(R){ return [R.id, R.lvl, b.y+R.y, hit.has(floors[R.id])]; }) };
+    return miss; }
+  DOORS.reachDebug = function(bid){ var b=FIX.byId[bid], P=b && interiorPlan(bid); return P ? reachOne(b, P).debug : null; };
   DOORS.reach = function(only){ var out={ buildings:0, rooms:0, reached:0, unreached:[], sealedBuildings:0, doorsWithoutDoorway:0, byAsset:{}, byKind:{}, byLevel:{} };
     FIX.buildings.forEach(function(b){ if(only && only.indexOf(b.id)<0 && only.indexOf(b.asset)<0) return; var P=interiorPlan(b.id); if(!P) return;
       var miss=reachOne(b, P); out.buildings++; out.rooms+=P.rooms.length; out.reached+=P.rooms.length-miss.length; out.doorsWithoutDoorway+=miss.nogap;
@@ -372,5 +388,5 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     walk:DOORS.walk, walkTo:DOORS.walkTo, lifeSim:function(s){ if(typeof LIFE!=='undefined' && LIFE.sim) LIFE.sim(s); },
     /* fixed-step walking for headless tests, where frames are too slow for real time */
     sim:function(key, secs){ keys[key]=true; for(var t=0;t<secs;t+=1/30){ stepWalk(1/30); stepDoors(1/30); } keys[key]=false; return WALK.bid; }, cutaway:setCutaway, touch:DOORS.touch,
-    reach:DOORS.reach, openings:function(){ return window._openings; }, kdoor:function(id){ var R=KDOOR.get(id); return R ? { id:R.id, open:R.open, target:R.target, locked:R.locked, by:R.by } : null; }, mode:function(m){ DOORS.mode=m; }, WALK:WALK, INT:INT, DOORS:DOORS, key:function(k,on){ keys[k]=!!on; } };
+    reach:DOORS.reach, reachDebug:DOORS.reachDebug, openings:function(){ return window._openings; }, kdoor:function(id){ var R=KDOOR.get(id); return R ? { id:R.id, open:R.open, target:R.target, locked:R.locked, by:R.by } : null; }, mode:function(m){ DOORS.mode=m; }, WALK:WALK, INT:INT, DOORS:DOORS, key:function(k,on){ keys[k]=!!on; } };
 })();

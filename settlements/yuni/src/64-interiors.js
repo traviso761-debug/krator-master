@@ -470,6 +470,9 @@ function addShell(plan, b, g, L, A, B, doors){
   function project(px, pz, qnx, qnz, w, y0, y1, ref){
     if(qnx*nx+qnz*nz < 0.82) return;
     var dist=(px-A[0])*nx+(pz-A[1])*nz, u=(px-A[0])*tx+(pz-A[1])*tz;
+    /* a door wider than the face it meets (a hut's mouth on a ten-sided room's short side) takes the whole face, so the shell
+       is never drawn across a doorway (the reachability audit, 2026-11-03: 87 doors had no doorway in their shell) */
+    if(ref.door && dist >= -0.2 && dist <= 1.6 && u > -0.1 && u < len+0.1 && len < w+0.04){ w = Math.max(0.3, len-0.06); u = len/2; }
     if(dist < -0.2 || dist > 1.6 || u < w/2+0.02 || u > len-w/2-0.02) return;
     ops.push({ u:+u.toFixed(3), w:+w.toFixed(3), y0:+Math.max(0,y0).toFixed(3), y1:+Math.min(L.H-0.12, y1).toFixed(3), depth:+Math.max(0.05,dist).toFixed(3), door:ref.door||null, window:ref.window||null });
   }
