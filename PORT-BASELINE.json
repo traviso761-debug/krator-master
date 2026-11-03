@@ -40,9 +40,13 @@
    "bytes": 2012185,
    "sha256": "373f650e50fb1f5da0ea096b42f5a67e0eca6a5de2edbbf04a337fcfc5b0079b"
   },
+  "biomes/geyser/dist/geyser-stills.html": {
+   "bytes": 1442849,
+   "sha256": "7f1ba4e8a75b412dc7a7f432cf0a160c0890f7e57abc182e2603a86c98f6be76"
+  },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 637289,
-   "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
+   "bytes": 1412188,
+   "sha256": "ac8852a3cfa59bb3a02d55ece18b42a977ef44305abadf32e30c12fe54abaf87"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
@@ -117,8 +121,8 @@
    "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3644167,
-   "sha256": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
+   "bytes": 3648759,
+   "sha256": "e7be140ee90b66b71023638ea755b8eaaab34aff66d20f9b1093fcdbb50455c7"
   },
   "biomes/oidong/dist/oidong-passes.html": {
    "bytes": 3602278,

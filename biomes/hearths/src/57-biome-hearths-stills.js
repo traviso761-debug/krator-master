@@ -46,11 +46,13 @@ HEARTH.stills=function(o){const {TAU,clamp,smooth,mix}=BIO.fn,D=HEARTH.DRESS.hot
    if(o.mask&&o.mask(x,z)<=0)continue;const rr=mix(.5,1.3,U(ring,i,62));BIO.put('sspray',[x,G(x,z)+.015,z],BIO.fn.qEuler(0,U(ring,i,63)*TAU,0),[rr,.08,rr],MAT.clone().lerp(C(0x2c2a24),U(ring,i,64)*.5));out.counts.spraymat++;}
   if(N)BIO.register({name:'Spray mats inside the spray line',key:'spraymat',kit:'hearths',x:g.sx==null?g.x:g.sx,z:g.sz==null?g.z:g.sz,y:(g.base==null?G(g.x,g.z):g.base)-1,r:g.sprayR,h:2});});
  // the sail cups: down the warm run-off, 40-80 degC, their lips' fans across the wind
- (o.runoff||[]).forEach((P,ci)=>{const ring=301+ci;for(let i=0;i<P.length;i++){const p=P[i];if(p[2]<40||p[2]>80||U(ring,i,70)>.5*q)continue;
+ (o.runoff||[]).forEach((P,ci)=>{const ring=301+ci,mine=[];for(let i=0;i<P.length;i++){const p=P[i];if(p[2]<40||p[2]>80||U(ring,i,70)>.5*q)continue;
    const side=U(ring,i,71)<.5?-1:1,off=mix(.3,1.2,U(ring,i,72))*side,x=p[0]-p[4]*off,z=p[1]+p[3]*off,y=G(x,z),s=mix(.35,.75,U(ring,i,73));
    BIO.put('scup',[x,y-.05,z],BIO.fn.qEuler(0,U(ring,i,74)*TAU,0),[s,s*.8,s],C(0x2a2622));
-   BIO.put('scupfan',[x,y+s*.45,z],BIO.fn.qEuler(0,-across+Math.PI/2,-.25),[s*1.2,s*1.2,s*1.2],BLACK);out.counts.sailcup++;}
-  if(out.counts.sailcup)BIO.register({name:'Sail cups along the run-off',key:'sailcup',kit:'hearths',x:P[0][0],z:P[0][1],y:G(P[0][0],P[0][1])-1,r:4,h:2});});
+   BIO.put('scupfan',[x,y+s*.45,z],BIO.fn.qEuler(0,-across+Math.PI/2,-.25),[s*1.2,s*1.2,s*1.2],BLACK);out.counts.sailcup++;mine.push([x,y,z]);}
+  /* one volume over this channel's own cups (none when it has none) */
+  if(mine.length){let cx=0,cz=0,lo=1e9;mine.forEach(p=>{cx+=p[0];cz+=p[2];lo=Math.min(lo,p[1]);});cx/=mine.length;cz/=mine.length;let r=0;mine.forEach(p=>{r=Math.max(r,Math.hypot(p[0]-cx,p[2]-cz));});
+   BIO.register({name:'Sail cups along the run-off',key:'sailcup',kit:'hearths',x:cx,z:cz,y:lo-1,r:r+1.5,h:3});}});
  return out;};
 // THE SAILS' TWO SCALARS, one write a frame each (the page's tick):
 // sailTurn(sunAz, sunAlt, wind): the yaw that turns the sails from across the wind toward edge-on to the sun by day (a sail edge-on to the sun is in its
