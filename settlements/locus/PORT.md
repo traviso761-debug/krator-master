@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 101 (22%) | 5 (1%) | 18 (4%) | 165 (35%) | 180 (38%) |
+| KB | 101 (21%) | 5 (1%) | 18 (4%) | 170 (36%) | 176 (37%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,10 +19,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/21-sky.js` | 56.4 | [web] | 67 | 0 | 19 | 6 | 0 | 9 | 26 | 0 | 0 | 0 | 0 |  |
 | `src/30-layout.js` | 40.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-ground.js` | 7.4 | [draw] | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/45-kit.js` | 31.1 | [draw] | 41 | 0 | 0 | 0 | 0 | 14 | 15 | 2 | 0 | 0 | 0 | REGISTER: every site also a core/tags record (rid; queued until the vocabulary loads, regFlush; not in Verge's YKIT), 2026-10-15 |
+| `src/45-kit.js` | 31.5 | [draw] | 42 | 0 | 0 | 0 | 0 | 14 | 15 | 2 | 0 | 0 | 0 | REGISTER: every site also a core/tags record (rid; queued until the vocabulary loads, regFlush; not in Verge's YKIT), 2026-10-15 |
 | `src/47-texture.js` | 17.0 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-structure.js` | 9.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/53-assets.js` | 22.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws; 2026-10-15: buildAsset's site carries key, family, culture and its turned box for its core/tags record |
+| `src/53-assets.js` | 23.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws; 2026-10-15: buildAsset's site carries key, family, culture and its turned box for its core/tags record |
 | `src/60-flora.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/62-plants.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/63-furniture.js` | 9.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 61 | 0 | 0 | 0 | 0 | 0 |  |
@@ -50,7 +50,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-sheetui.js` | 4.1 | [web] | 1 | 0 | 10 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-atmos-host.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90w-lake.js` | 5.1 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | the open lake's binding of core/water (its shader is core/water's; the shoreline mask and the plume are the only GLSL here) |
-| `src/95-locus-doors.js` | 4.5 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2026-11-03: core/door's host binding: each KDOOR leaf posed through its kit instance (KDOORHOST.posed), the walk blocks, the E tip, the probe's counts, LDOOR.reach (the audit). The records are core/door's |
+| `src/95-locus-doors.js` | 5.0 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2026-11-03: core/door's host binding: each KDOOR leaf posed through its kit instance (KDOORHOST.posed), the walk blocks, the E tip, the probe's counts, LDOOR.reach (the audit). The records are core/door's |
 | `src/98-start.js` | 7.1 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take (2026-10-15; Mungo reads it too): views, palette, editor world (LWORLD), cutaway units, the page's frame in a view subscriber |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

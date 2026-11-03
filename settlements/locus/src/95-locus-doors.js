@@ -27,8 +27,9 @@ var LDOOR = { on: typeof KDOOR !== 'undefined' && typeof KDOORHOST !== 'undefine
     panes:YOPEN.panes, cards:cards, voids:voids, cleared:LDOOR.cleared || 0 };
   /* the reachability audit (core/walk): every floor the interiors registered, flooded from the step outside each unlocked door
      (the doors opened first, as a walker would); verify.py --eval "()=>LDOOR.reach()" on locus.html?interiors=1 */
-  LDOOR.reach = function(){ var by = {}, shut = [], seen = new Set(), hit = new Set(), out = { placements:0, starts:0, capped:0, nodes:0 };
-    KDOOR.list.forEach(function(R){ if(R.locked) return; shut.push(R); KWALK.setBlock(R.blocks, false);
+  /* o.all: every door open, locked or not (the page as it was before core/door: its leaves stood in no walk) */
+  LDOOR.reach = function(o){ var all = !!(o && o.all), by = {}, shut = [], seen = new Set(), hit = new Set(), out = { all:all, placements:0, starts:0, capped:0, nodes:0 };
+    KDOOR.list.forEach(function(R){ if(R.locked && !all) return; shut.push(R); KWALK.setBlock(R.blocks, false);
       var pk = R.id.replace(/\.d\d+$/, ''); (by[pk] || (by[pk] = [])).push(R); });
     /* one flood per placement, over its own box (the doors' steps and 24 m round them), on the floors and the open ground */
     /* the starts: the street in front of each door, at the ground 1 to 7 m out (a raised house's entry flight starts there), and its step */
@@ -40,7 +41,7 @@ var LDOOR = { on: typeof KDOOR !== 'undefined' && typeof KDOORHOST !== 'undefine
       var res = KWALK.reach(st, { ground:terrainH, box:[x0, x1, z0, z1] });
       out.placements++; out.starts += L.length; out.nodes += res.nodes; if(res.capped) out.capped++;
       res.reached.forEach(function(f){ hit.add(f); seen.add(f); }); res.unreached.forEach(function(f){ seen.add(f); }); }
-    shut.forEach(function(R){ if(R.open < 0.5) KWALK.setBlock(R.blocks, true); });
+    shut.forEach(function(R){ if(R.open < 0.5 || R.locked) KWALK.setBlock(R.blocks, true); });
     var miss = []; seen.forEach(function(f){ if(!hit.has(f)) miss.push(f); });
     out.floors = KWALK.floors.length; out.near = seen.size; out.reached = hit.size; out.unreached = miss.length;
     out.never = KWALK.floors.length - seen.size;   /* floors no unlocked door's box takes in: a room behind a locked door */

@@ -45,3 +45,16 @@
 - [ ] The catalog substitutes are not one-for-one: the rain jar is a group of three clay pots (`yuni_poor_clay_pots`),
       the two-post fish rack the four-post `abyss_smoking_rack`, the 4.4 m shade bench two 2.1 m `abyss_bench`es, the
       tent's ring of six cushions two `yuni_common_floor_seating` sets, the salt sacks two `yuni_common_grain_sacks`.
+
+## Doors, glass and voids (core/door, 2026-11-03)
+
+The kit draws through Locus's fork of the Yuni engine, whose openings are core/door's now (`settlements/locus/src/53-assets.js`,
+its `KNOWN_ISSUES.md` has the counts and the audit).
+- [x] Every `F.door` is a KDOOR record with a leaf that swings (`<key>.<n>.d<i>`), locked: the bodies are solid. With
+      `?interiors=1` a door that opens onto a planned room is unlocked. Windows are KGLASS panes over the room card.
+- [x] The dark panels that stood for openings are the room card (`F.card`: the lattice screens' and windcatchers' backing, the
+      pyramid vents, the tent and warehouse doors, the loading dock, the still-house's open side, the skirt and roof vents of the
+      power house), or glass and a locked leaf (the control shed's blue strip, stained glass, and its metal door).
+- [ ] Left dark on purpose: the stills' roof flues (`64-locus-petroleum.js`), the kiln's mouth with its fire, the wheel pit, the
+      culverts' pipes (`settlements/locus/src/68c-locus-crossings.js`).
+

@@ -93,3 +93,33 @@ The gain is modest: most of Locus is dense instanced flora and stone close to ev
 The table is `src/67-lo-trades.js` (`LO_TRADES`, on the world page; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 21 trades carried, 5 partly, 9 gaps, 9 na (no sea, no embassies, no beetles or elephant bugs, no mushroom cellars).
 - [ ] Gaps (a later session builds them): bakery, butcher, brewhouse or date-wine press, tannery, wayside shrine, house of healing, date-palm orchard, quarry, dairy.
 - [ ] Partly carried: shipwrights (sailmaker only; no boatyard), priests and undertakers (temple; no funerary court), miners (pumpjacks for oil; no ore mine head), granary keepers and millers (granaries; no mill), swineherds and duck keepers (animal pen; no duck coops).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The owner: no dark voids; doors that open with a key nearby or for an NPC; real glass. `build.py` takes `core/door`; the frame
+draws openings as Yuni's does (`53-assets.js`, helpers in `45-kit.js`, `81-glow.js`), `95-locus-doors.js` binds them. Mungo reads
+the same fragments (its `build.py` takes `core/door` too); Verge's YKIT carries them, its KDOOR from the Vernacular bundle.
+Counts (`window._openings`), before -> after, `verify.py --assert` passing on all three pages before (but `voth-trades`, which
+failed on every page: the keys moved to the kits; fixed here) and after:
+- [x] locus.html: every door was a static plank box on a black reveal, in no registry -> 668 KDOOR records with a swinging leaf
+      (`<key>.<n>.d<i>`), all locked (the bodies are solid); each of the 2,593 windows a KGLASS pane (was an opaque plate on black;
+      `_openings.panes`, 2,156, counts the frame's F.window and the builders' glass, the rest are WINPANEs of their own:
+      portholes, round windows); 3,476 room cards; 89 voids
+      left (stills' flues, the kiln's mouth, culverts, pits, the badgir's dark slots where a builder passes VOIDC itself).
+      Draw calls 180 -> 184 of 190 (the leaf bucket, the lit and electric panes, the stained strip).
+- [x] locus-kit.html: 13 doors (13 locked), 60 windows glazed (48 by the frame), 197 cards, 7 voids; abyss-kit.html: 165 doors
+      (165 locked), 284 windows glazed (149), 633 cards, 0 voids. Mungo: 221 doors, 399 windows glazed (283), 710 cards, 13 voids
+      (draw calls 435 -> 437 of 459). Verge: `verify.py
+      --assert` 16 PASS before and after (draw calls 483 -> 487).
+- [ ] Locus's draw calls stand at 184 of 190: the next bucket a builder adds may need one folded away.
+
+The audit (`LDOOR.reach()`, `?interiors=1`; core/walk's defaults, one flood per placement over its doors' box, from each unlocked
+door's step and the street 1 to 7 m out): 145 placements, 510 interior floors. With every door open (`LDOOR.reach({all:true})`, the
+page as it was, its leaves in no walk) 422 reached; with the locked ones shut 390 (146 doors unlocked onto a planned room).
+- [ ] 32 floors are reached only through a locked door: a door that leads into a planned room but meets no floor of it within
+      1.6 m of its sill (the warehouse hall's entry flight, the refinery's still-house): the interiors kit's entrance and the
+      building's F.door do not coincide. A fix unlocks by the set's own street doors (`kits/interiors/sets/locus.js`).
+- [ ] 86 floors no door reaches even open: mostly the stilt houses' upper storeys (`stilt_mid#1.house.floor.1.*`, no stair
+      registered reaching them), the warehouse's entry flight. The interiors kit's walk records (`kits/interiors/src/49b-walk.js`).
+- [ ] The doors open on the solid body's face (the kit draws no hollow walls); with the interiors off every door is locked.
+

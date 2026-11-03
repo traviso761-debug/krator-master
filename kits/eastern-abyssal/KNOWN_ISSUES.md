@@ -167,3 +167,13 @@ Geometry checked against the source; file:line as of 36e1afb (the lines have sin
       bare plank (the rich cone house plants herbs on its terraces).
 - [ ] **The umbrella canopy is a 10 m bay**, not a street-long run between facades as in `umbrellas.jpg`; place several
       in a row along a street to get the effect.
+
+## Doors, glass and voids (core/door, 2026-11-03)
+
+Drawn through Locus's frame (`settlements/locus/src/53-assets.js`; counts and the audit in `settlements/locus/KNOWN_ISSUES.md`).
+- [x] Every `F.door` is a KDOOR record with a swinging leaf, locked on the solid bodies (unlocked onto a planned room with
+      `?interiors=1`); every `F.window` a KGLASS pane over the room card; the portholes' sockets are the room card under glass.
+- [x] Shop fronts and hatches are the room card (`F.card`); the balcony doors of the tenement, the shop's loft door and the barn
+      door are locked leaves (`F.doorway`); the towers' slits and the barred vent are cards.
+- [ ] The barn door and the loft door are single leaves drawn shut, not split or hung; they never open (no room behind).
+

@@ -105,12 +105,15 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length, nd=(typeof 
     else { var w=LOCF.why(key, F.variant|0), u=LOCF.unfurnished[w], k=key+((F.variant|0)?'#'+(F.variant|0):''); u[k]=(u[k]||0)+1; } }
   return rec; };
 /* the doors that open onto the rooms just planned (core/door; 53-assets.js F.door draws them locked, as the bodies are solid):
-   a door of this placement whose sill meets one of the interiors' floors 0.6 m inside it is unlocked as built, so the walker,
+   a door of this placement whose sill meets one of the interiors' floors within 1.6 m inside it (0.8 m up or down: a deck, a
+   plinth's step), or that an entry flight (a raised floor's steps from the ground) passes within a metre of, is unlocked as
+   built, so the walker,
    E, an NPC or a quest opens it into the rooms (95-locus-doors.js; Highlands' 89y-hl-furnish.js is the pattern). The leaf opens
    on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md) */
 function locfDoorsIn(nd){ if(typeof KDOOR==='undefined' || typeof KWALK==='undefined') return 0; var n=0;
-  for(var i=nd;i<KDOOR.list.length;i++){ var D=KDOOR.list[i]; if(!D.locked) continue; var ix=D.at[0]-Math.sin(D.yaw)*0.6, iz=D.at[2]-Math.cos(D.yaw)*0.6;
-    if(KWALK.floorsAt(ix,iz).some(function(f){ return Math.abs(f[0]-D.at[1]) < 0.6; })){ KDOOR.lock(D, false, { asBuilt:true }); n++; } }
+  for(var i=nd;i<KDOOR.list.length;i++){ var D=KDOOR.list[i]; if(!D.locked) continue;
+    for(var t=-1.0;t<=1.61;t+=0.3){ var ix=D.at[0]-Math.sin(D.yaw)*t, iz=D.at[2]-Math.cos(D.yaw)*t;
+      if(KWALK.floorsAt(ix,iz).some(function(f){ return String(f[1].tag).indexOf('built:')===0 && (Math.abs(f[0]-D.at[1]) < 0.8 || /\.entry$/.test(f[1].name)); })){ KDOOR.lock(D, false, { asBuilt:true }); n++; break; } } }
   return n; }
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;

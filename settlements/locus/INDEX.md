@@ -40,7 +40,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
-| `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
+| `45-kit.js` | 32 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
 | `47-texture.js` | 17 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
 | `53-assets.js` | 23 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
@@ -71,6 +71,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
 | `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
-| `95-locus-doors.js` | 4 | 31b. THE DOORS: core/door on the Yuni engine's l (1) |
+| `95-locus-doors.js` | 5 | 31b. THE DOORS: core/door on the Yuni engine's l (1) |
 | `98-start.js` | 7 | 99. START: ON core/host (1) |
 | `99-tail.html` | <1 |  |
