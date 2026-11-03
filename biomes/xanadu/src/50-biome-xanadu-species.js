@@ -676,7 +676,7 @@ BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Pods (cacao, lanterns)'});
 BIO.def('ball',G.ball(),M.solid,{label:'Fruit and berries'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones and buds'});
-BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems'});
+BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems',cap:400000,capWhy:'the crowns\' twigs, midribs and mid-tier rods that hold every leaf card to wood (the attach audit, 2026-11-03): 270k on the Vale, 350k on the cloud slopes, 12 tris each, inside the trees\' detail range only'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(XANADU.BARKTEX[3]),{label:'Small trunks (fibrous)'});
 BIO.def('trunkw',BIO.geo.trunk(8),BIO.solidMat(XANADU.BARKTEX[0]),{label:'Small trunks (whorled)'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(XANADU.ROCKTEX),{label:'Boulders (small)'});

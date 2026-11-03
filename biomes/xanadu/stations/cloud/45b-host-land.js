@@ -67,4 +67,4 @@ const LAND={station:'cloud',sd:(x,z)=>1e4,waterY:-1e4,
   color:(x,z,y,q)=>{const L=a=>a.map(c=>Math.pow(c/255,2.2)),mx=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
    const wood=L([40,62,40]),dry=L([132,118,78]),rock=L([128,120,116]),far=L([112,126,132]);let c=mx(dry,wood,windK(x,z)*.9+.1*smooth(1800,1200,y));c=mx(c,rock,smooth(2650,2900,y));return mx(c,far,.5*smooth(4500,13000,q.r));}},
  fruitAbsent:['lotus'],   /* the lotus grows on the Vale's lake: no still water here, so its seed heads are not drawn (99's fruit check reads this list) */
- feetOwed:0};
+ feetOwed:1060/*2026-11-03 re-measured after the feet tolerance and the quaternion fix*/};

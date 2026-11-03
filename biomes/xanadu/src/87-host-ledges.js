@@ -17,12 +17,12 @@ function ledgePass(){if(!STRATA)return null;const out={ledges:0,talus:0},SEED=0x
   if(k>.7&&k<1.6){const hard=STRATA.hardnessAt(x,h,z);if(hard<.62||u>.55)continue;
    /* the ledge: the bed's top, a step out of the face; the plant faces up, a hand into the rock */
    const y=drawnH(x,z)+.05,r=.5+s.next()*.7;e.set((s.next()-.5)*.2,s.next()*TAU,(s.next()-.5)*.2);q.setFromEuler(e);
-   if(s.next()<.6){BIO.put('mossmat',[x,y,z],[q.x,q.y,q.z,q.w],r,mossC.clone().offsetHSL((s.next()-.5)*.04,0,(s.next()-.5)*.08));}
-   else BIO.put('fan',[x,y,z],[q.x,q.y,q.z,q.w],[r*.8,r*.9,r*.8],fernC.clone().offsetHSL((s.next()-.5)*.04,0,(s.next()-.5)*.08));
+   if(s.next()<.6){BIO.put('mossmat',[x,y,z],q,r,mossC.clone().offsetHSL((s.next()-.5)*.04,0,(s.next()-.5)*.08));}
+   else BIO.put('fan',[x,y,z],q,[r*.8,r*.9,r*.8],fernC.clone().offsetHSL((s.next()-.5)*.04,0,(s.next()-.5)*.08));
    out.ledges++;continue;}
   if(k<.6){let up8=0,drop=0;for(let t=1;t<=4;t++){const gx=(terrainH(x+3,z)-terrainH(x-3,z))/6,gz=(terrainH(x,z+3)-terrainH(x,z-3))/6,g=Math.hypot(gx,gz)||1,px=x+gx/g*t*10,pz=z+gz/g*t*10;   /* uphill */
     if(sl(px,pz)>.9){up8=t;drop=terrainH(px,pz)-h;break;}}
    if(!up8||drop<6)continue;const fall=smooth(4,1,up8)*smooth(6,30,drop);if(u>fall*.7)continue;
    const r=.4+s.next()*Math.min(2.2,.2+drop*.04),hh=r*(.6+s.next()*.4),y=drawnH(x,z);e.set((s.next()-.5)*.5,s.next()*TAU,(s.next()-.5)*.5);q.setFromEuler(e);
-   BIO.put('boulder',[x,y+hh*.3,z],[q.x,q.y,q.z,q.w],[r*(.9+s.next()*.4),hh*.8,r*(.9+s.next()*.4)],rockC.clone().offsetHSL(0,(s.next()-.5)*.05,(s.next()-.5)*.1));out.talus++;}}
+   BIO.put('boulder',[x,y+hh*.3,z],q,[r*(.9+s.next()*.4),hh*.8,r*(.9+s.next()*.4)],rockC.clone().offsetHSL(0,(s.next()-.5)*.05,(s.next()-.5)*.1));out.talus++;}}
  BIO.owner=null;BIO.range=r0;BIO.minRange=m0;BIO.cur=c0;BIO.kit(k0);return out;}

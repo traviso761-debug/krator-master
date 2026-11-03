@@ -38,7 +38,8 @@ const IMP_GAIN=3.0;   /* the impostors' gain (eastabyss 3.6, swlowlands 2.4, sed
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:LAND.label+(LAND.station?'':' (ideal type)'),x:0,z:0,r:TERR.R,h:1100});
+ {let lo=1e9,hi=-1e9;for(let i=0;i<=32;i++)for(let j=0;j<=32;j++){const h=terrainH(-TERR.R+i*TERR.R/16,-TERR.R+j*TERR.R/16);if(h<lo)lo=h;if(h>hi)hi=h;}   /* the volume spans the ground it covers: a station's floor stands kilometres above 0 */
+  REGISTER({name:LAND.label+(LAND.station?'':' (ideal type)'),x:0,z:0,r:TERR.R,y:Math.min(lo,0)-20,h:hi-Math.min(lo,0)+1100});}
 })();
 // THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner 2026-11-03: "the valley does need shadows", pair 6 takes it): one box that follows the view, 90 to
 // 600 m by the eye's height. What casts: the ground receives; the trees' bark, the stand-ins and every lit opaque mesh of the flora cast and receive

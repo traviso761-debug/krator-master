@@ -50,7 +50,7 @@ const LAND={station:'floor',label:'The Rift floor',
  fruitAll:false,   /* the tall cousins carry the Vale's tags, but the Vale's fruit trees (olives, cacao's pods by the kit's own pass) are not grown by the kit here */
  /* feetOwed: 508 of 41,730 sampled feet off the drawn ground, measured 2026-11-03 (SwiftShader; NOTES.md): the kit's fern fronds (457) and mushrooms (37) on
     its fallen logs' backs (held by the log, not the ground: src/99's HELD_ITEMS lacks them), 14 grass and cobra lilies. A ratchet, down never up */
- dome:false,feetOwed:508,R:TERR.R+300,
+ dome:false,feetOwed:158/*2026-11-03 re-measured after the feet tolerance and the quaternion fix*/,R:TERR.R+300,
  far:{label:'The Rift floor round the lake',
   h:(x,z)=>{const g=terrainH(clamp(x,TERR.X0,TERR.X1),clamp(z,TERR.Z0,TERR.Z1)),d=Math.max(Math.abs(x)-3400,Math.abs(z)-3400,0);
    if(FLOORLAND.sd(x,z)<-120&&z<-2000+.3*x)return -.4;   /* the lake past the water's box */

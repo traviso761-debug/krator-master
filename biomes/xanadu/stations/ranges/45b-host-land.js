@@ -84,7 +84,8 @@ const LAND={sd:()=>1e4,station:'ranges',label:'The high ranges round the Vale',
  spine:[[-2000,-2500],[1900,-2300],[-40,-830],[-1200,-460],[1300,-420],[-500,300],[200,900],[600,2000]],   /* eight origins: the two belts, the amphitheatre, the treeline twice, the fell-field, the tarn, the glacier */
  snowH:5500,lake:false,waterY:-1e4,bands:{upland:[3000,6700]},
  belt:{y0:3500,y1:4400,windward:[.71,.71],density:.0007},   /* the boreal side's cloud: the south-east's wet air lifted up the range */
- dome:false,feetOwed:1918,fruitAll:false,   /* measured 2026-11-03 (SwiftShader): 1,918 of 49,341 feet off the drawn ground, the kit's floor tufts on 50-75% slopes (grass 939, frond 332, clubmoss 270, cushions 242); ratchet down */R:TERR.R+200,river:null,
+ exportBox:[-180,-674,120,-374],   /* verify's export tile: the chasm head (the pool, its ferns and the fell-field's cover); the base's box holds no water here */
+ dome:false,feetOwed:483/*2026-11-03 re-measured after the feet tolerance and the quaternion fix*/,fruitAll:false,   /* measured 2026-11-03 (SwiftShader): 1,918 of 49,341 feet off the drawn ground, the kit's floor tufts on 50-75% slopes (grass 939, frond 332, clubmoss 270, cushions 242); ratchet down */R:TERR.R+200,river:null,
  far:{label:'The ranges round the Vale',
   h:(x,z)=>{const X0=TERR.X0,X1=TERR.X1,Z0=TERR.Z0,Z1=TERR.Z1,d=Math.max(X0-x,x-X1,Z0-z,z-Z1,0),g=terrainH(clamp(x,X0,X1),clamp(z,Z0,Z1));
    const rid=1-Math.abs(2*KRAND.fbm(x*.0005,.5,z*.0005,3,431)-1);

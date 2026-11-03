@@ -53,7 +53,7 @@ const FIELD_RAW={
 const LAND={station:'gills',label:'Alph\'s head: the White Gills (Wāiṭ Gīl)',
  hint:'Alph\'s head on the twins\' Xanadu side: ring gills that breathe once a day at the giant\'s nod (Bhlo, the out-breath; Suq, the in-breath), squat white breath pipes (Phlū) out of the glacier\'s edge, the chasm where the Sacred River is forced up on the breath (Ālph-bi Bhlo), the Vale\'s wildwood at the foot',
  sd:(x,z)=>1e4,lake:false,waterY:-1e4,R:3300,dome:false,belt:null,snowH:5700,bands:{upland:[3000,4800]},
- feetOwed:1018,fruitAll:false,   /* 2026-11-03, SwiftShader: the kit's floor clusters (grass, clubmoss, mushroom, blade, lobe...) scatter round a masked centre onto this flank's slopes, up to 4.7 m off the drawn ground; the kit's to fix (60), ratchet down */
+ feetOwed:691/*2026-11-03 re-measured after the feet tolerance and the quaternion fix*/,fruitAll:false,   /* 2026-11-03, SwiftShader: the kit's floor clusters (grass, clubmoss, mushroom, blade, lobe...) scatter round a masked centre onto this flank's slopes, up to 4.7 m off the drawn ground; the kit's to fix (60), ratchet down */
  // nothing of the Vale's flora over 4,750 m (it does not climb: PLAN.md section 7, "Guests"), none in a gill or the river's channel, none on the pool's floor
  /* and none where the drawn ground (46's 10 m mesh, KSEAT) is more than .5 m off terrainH: the gills' and the amphitheatre's walls are steeper than a
     cell can follow, so a plant placed there floats or sinks (the feet check) */

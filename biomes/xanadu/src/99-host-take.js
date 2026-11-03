@@ -37,7 +37,7 @@ const HCHK={
    .concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.edible.length&&!PL[k].tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(k)<0));
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
   const fr=SP.filter(S=>S.tags.harvest&&S.tags.harvest.fruit).map(S=>S.key).concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.fruit));
-  const undrawn=LAND.fruitAll===false?[]:fr.filter(k=>!(N[XANADU.FRUIT_ITEM[k]]>0));   /* a station that grows none of the Vale's fruit trees says so (LAND.fruitAll false): the tags are still checked */
+  const undrawn=LAND.fruitAll===false?[]:fr.filter(k=>!(N[XANADU.FRUIT_ITEM[k]]>0)&&(LAND.fruitAbsent||[]).indexOf(k)<0);   /* a station that grows none of the Vale's fruit trees says so (LAND.fruitAll false): the tags are still checked */
   return{ok:!miss.length&&!untagged.length&&!undrawn.length&&fr.length>=9,
    detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(undrawn.length?'fruit not drawn: '+undrawn.join(', ')+'; ':'')+
     fr.length+' fruiting species and plants, '+XANADU.FRUIT_KEYS.length+' catalog keys; whorl olives '+(N.whorlolive||0)+', lotus seed heads '+(N.lotuspod||0)+', pods '+(N.pod||0)+', fruit balls '+(N.ball||0)+', pitaya '+(N.pitayafruit||0)+', catkins '+(N.catkin||0)}}};
@@ -54,7 +54,7 @@ function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];
    for(let i=0;i<M.count;i+=st){M.getMatrixAt(i,m);m.premultiply(M.matrixWorld);const e=m.elements;P.push([e[12],e[13],e[14],e[13]-drawnH(e[12],e[14]),i]);}
    const d=P.map(p=>p[3]).sort((a,b)=>a-b),q=f=>d[Math.min(d.length-1,Math.floor(d.length*f))],med=q(.5);
    if(med<-1||med>.3||q(.75)-q(.25)>.25)return;items.push(M.name);
-   const tol=Math.max(.3,Math.min(.6,(q(.95)-q(.05))/2));   /* an item's own planting scatter round its median is not a gap */
+   const tol=Math.max(.3,Math.min(.6,(q(.95)-q(.05))/2),Math.min(1,-med));   /* an item's own planting scatter round its median is not a gap; nor is a rise smaller than the item's sinking (a trunk set .9 m in still touches) */
    P.forEach(p=>{if(p[3]-med>HELD_UP&&(HELD_ITEMS[M.name]||OBSTACLES.some(o=>Math.hypot(p[0]-o.x,p[2]-o.z)<o.r))){held++;return;}
     out.push({id:M.name+'#'+p[4],'class':'flora',at:[p[0],p[1]-med,p[2]],off:terrainH(p[0],p[2])-drawnH(p[0],p[2]),foot:{tol}});});});
   _feet={items,recs:out,held};}
@@ -65,7 +65,7 @@ function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatS
 // THE LAND SIDE OF THE WATER (core/water ext/60, PRACTICE.md section 2; the checklist's third line): the env's fields hold their units, the trees stand out of
 // the water the eye sees, and the wet band reaches it. The dawn redwoods (sp 0) stand in the shallows by design (the kit's notes)
 const EDGE_OWED=LAND.edgeOwed||{plant:0,wet:0};   // ratchet: none owed at this turn
-function edgeCheck(neg){const P=[];for(const T of XANADU.TREES.concat(LAND.edgeTrees?LAND.edgeTrees():[])){if(T.lv===0||T.sp===0)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:XANADU.SPECIES[T.sp].key});if(P.length>4000)break;}
+function edgeCheck(neg){const P=[];for(const T of XANADU.TREES.concat(LAND.edgeTrees?LAND.edgeTrees():[])){if(T.lv===0||T.sp===0)continue;const rip=(XANADU.SPECIES[T.sp].tags||{}).riparian;if(rip&&rip!=='no'&&WATER_FN&&WATER_FN.shore(T.x,T.z)>-1)continue;   /* a riparian species (frost willow, lotus trumpet) may stand in the shallows, as the redwood does */P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:XANADU.SPECIES[T.sp].key});if(P.length>4000)break;}
  if(neg&&WATER_F){const s=XANADU.TREES.find(T=>T.lv>0);const w=(function(){for(let z=TERR.Z0;z<TERR.Z1;z+=40)for(let x=TERR.X0;x<TERR.X1;x+=40)if(WATER_FN.shore(x,z)<-4)return[x,z];return null;})();if(w)P.push({x:w[0],z:w[1],r:.5,name:'the control (in the water)'});}
  const pts=[[0,0],[TERR.X0*.5,TERR.Z0*.5],[TERR.X1*.5,TERR.Z1*.5],[TERR.X0*.5,TERR.Z1*.5]],bad=BIO.envCheck(ENV,pts),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)};}
@@ -77,7 +77,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=itemCounts();
  add('a fruiting species with no catalog fruit',HCHK.fruit(XANADU.SPECIES.map(S=>S.key==='cacao'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),XANADU.PLANTS,N));
- if(LAND.fruitAll!==false)add('no whorl olives drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,Object.assign({},N,{whorlolive:0})));
+ if(LAND.fruitAll!==false&&(LAND.fruitAbsent||[]).indexOf('whorlolive')<0)add('no whorl olives drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,Object.assign({},N,{whorlolive:0})));
  add('a plant with no harvest tag',HCHK.fruit(XANADU.SPECIES,Object.assign({},XANADU.PLANTS,{lotus:{name:'Lotus',items:[],tags:{}}}),N));
  if(XQ_ON('seat'))add('the plants feet back on terrainH (as before KSEAT): they float and sink',feetCheck(true));
  add('a tree standing in the lake',edgeCheck(true));

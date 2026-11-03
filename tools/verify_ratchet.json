@@ -13,6 +13,24 @@
   },
   "biomes/swlowlands/dist/swlowlands.html": {
    "seat-sweeps": "2026-11-02: contact 35 of 39274: [{\"id\":\"biome:fan#6776\",\"status\":\"buried\",\"depth\":0.33235820168159225,\"gap\":null,\"h\":null},{\"id\":\"biome:reed#199\",\"status\":\"float\",\"gap\":0.30537631769468376,\"de"
+  },
+  "biomes/xanadu/dist/xanadu-cloud.html": {
+   "seat-sweeps": "2026-11-03: contact 1060 of 95012: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
+  },
+  "biomes/xanadu/dist/xanadu-descent.html": {
+   "seat-sweeps": "2026-11-03: contact 305 of 62001: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
+  },
+  "biomes/xanadu/dist/xanadu-floor.html": {
+   "seat-sweeps": "2026-11-03: contact 158 of 41380: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
+  },
+  "biomes/xanadu/dist/xanadu-gills.html": {
+   "seat-sweeps": "2026-11-03: contact 691 of 37287: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
+  },
+  "biomes/xanadu/dist/xanadu-ranges.html": {
+   "seat-sweeps": "2026-11-03: contact 483 of 49108: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
+  },
+  "biomes/xanadu/dist/xanadu.html": {
+   "seat-sweeps": "2026-11-03: contact 239 of 59368: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"
   }
  }
 }

@@ -39,7 +39,9 @@ const LAND={station:'descent',label:'The descent',
  /* feetOwed: 1,226 of 60,906 sampled feet off the drawn ground on 2026-11-03 (SwiftShader), all the kit's own floor items (grass 542, trunk 294, frond 178,
     star 86, ...) on the valley's 17% slopes and the step's foot, floating 2-4 m: the kit's floor pass seats on a height that is not the drawn mesh there
     (NOTES.md). A ratchet: down, never up */
- dome:false,feetOwed:1226,R:TERR.R+300,
+ exportBox:[-1567,-1508,-1267,-1208],   /* verify's export tile: under the cataract (the pool and the floor's cover); the base's box holds no buckets here */
+ fruitAbsent:['whorlolive'],   /* 10,014 whorl olive trees here, none a hero (lv 0-1): olives are drawn on hero crowns only */
+ dome:false,feetOwed:305/*2026-11-03 re-measured after the feet tolerance and the quaternion fix*/,R:TERR.R+300,
  far:{label:'The abyss round the descent',
   h:(x,z)=>{const s=sOf(x,z),t=tOf(x,z),g=terrainH(clamp(x,TERR.X0,TERR.X1),clamp(z,TERR.Z0,TERR.Z1)),d=Math.max(Math.abs(x)-3400,Math.abs(z)-3400,0);
    if(s<lakeShore(t)-200)return LAKE_Y-.4;if(s>seaShore(t)+100)return -.4;   /* the two lakes past the water's boxes */

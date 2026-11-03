@@ -139,5 +139,8 @@ const LAND={sd:(x,z)=>MAP.at(MAP.SD,x,z),
  // the LOD spine: the promontory, the river from the mouth up to the fountain, the vale, both green flanks; the last the western uplands' ridge
  spine:[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700],[-1080,1020]],
  snowH:760,label:'The Vale of Xanadu',lake:true,river:RIV,
+ /* ratchets, measured 2026-11-03 (SwiftShader; KNOWN_ISSUES.md): 239 of 59,368 sampled feet off the drawn ground (the kit's floor passes on steep
+    ground: lobes, stars, reeds); one cacao 1 m into the lake at (288, 397), the kit's cacao pass reading the placement height, not the water the eye sees */
+ feetOwed:239,edgeOwed:{plant:1,wet:0},
  // the reflections switch's still (99): the lake and the river's last reach at level 0, centred north of the mouth, the sphere its shore's distance
  mirror:()=>({materials:[LAKE_DRAW.mesh.material,RIVER_DRAW.mesh.material],level:0,center:[LAKE_SEED[0],LAKE_SEED[1]-900],radius:1500,far:4000})};

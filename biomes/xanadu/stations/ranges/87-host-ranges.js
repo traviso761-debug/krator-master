@@ -22,7 +22,7 @@ const RANGES=(function(){
  const LOD={tree:420,krumm:380,small:320};   /* the heroes and the small plants near the LOD spine only: the page held 62.5 M tris at 900/650/520 (the kit's budget is 30 M) */
  const rnd=s=>({u:()=>s.next(),r:(a,b)=>a+(b-a)*s.next(),i:(a,b)=>a+Math.floor(s.next()*(b-a+1)),pick:A=>A[Math.floor(s.next()*A.length)%A.length]});
  const vary=(c,dl,R)=>{const x=c.clone?c.clone():C(c);x.offsetHSL(R.r(-.015,.015),R.r(-.04,.04),R.r(-dl,dl));return x;};
- const qE=(x,y,z)=>{const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));return[q.x,q.y,q.z,q.w];};
+ const qE=(x,y,z)=>{const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));return q;};   /* BIO.put takes a Quaternion */
  /* a needle pad on a bough's end: the card's centre on the wood, so the attach audit finds it held */
  function pad(p,size,flat,col,R,c2){BIO.put('needle',p,qE(R.r(-.3,.3),R.r(0,TAU2),R.r(-.3,.3)),[size,size*flat,size],col,{n:[R.r(-.3,.3),1,R.r(-.3,.3)],c2:c2||null});}
  // ---- the records (core/tags: a tree's tags as the kit's, harvest as biomes/FRUIT.md)

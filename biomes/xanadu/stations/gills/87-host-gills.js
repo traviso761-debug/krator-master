@@ -70,7 +70,7 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('white'),T3=THREE,t
  BIO.def('gcap',capG,new T3.MeshLambertMaterial({vertexColors:true}),{label:'Limewood: caps crusted with lime'});
  GILLS_DRAW.lampMat=new T3.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:0,blending:T3.AdditiveBlending,depthWrite:false,fog:false});
  BIO.def('glamp',lampG,GILLS_DRAW.lampMat,{label:'Throat lamp: faint blue, on the in-breath only',free:true});
- const C=c=>new T3.Color(c[0],c[1],c[2]),q=new T3.Quaternion(),e=new T3.Euler(),Q=(x,y,z)=>{e.set(x,y,z);q.setFromEuler(e);return[q.x,q.y,q.z,q.w];};
+ const C=c=>new T3.Color(c[0],c[1],c[2]),q=new T3.Quaternion(),e=new T3.Euler(),Q=(x,y,z)=>{e.set(x,y,z);return q.setFromEuler(e);};   /* BIO.put takes a Quaternion (compose copies it) */
  const n={};const put=(it,p,r,s,c,x)=>{BIO.put(it,p,r,s,c,x);n[it]=(n[it]||0)+1;};
  BIO.range=1200;L.collars.forEach(c=>{BIO.owner=[c.x,c.z];put('gcollar',[c.x,c.y,c.z],null,[c.r,c.r*.8,c.r],C(D.collar),{aP0:[0,0,0,1],aP1:[c.lag,0,0,0]});});
  BIO.range=700;L.fringes.forEach(f=>{BIO.owner=[f.x,f.z];const dx=Math.cos(f.yaw),dz=Math.sin(f.yaw);put('gfringe',[f.x,f.y,f.z],Q(0,-f.yaw,0),[1,f.len,1],C(D.fringe),{aP0:[dx*.5,.85,dz*.5,1],aP1:[f.lag,0,0,0]});});
