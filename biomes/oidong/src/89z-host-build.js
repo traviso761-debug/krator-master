@@ -23,7 +23,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  if(Q.get('diet')==='0')OIDONG.IMPOSTORS=false;
  if(Q.get('fields')!=='0')OIDONG.SHORE=(x,z)=>WATER_FN.shore(x,z);   /* trees keep off the water by its own shore (55: offShore) */
- try{window._biome=OIDONG.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}
+ if(typeof STATION_SKIP_KIT==='undefined'||!STATION_SKIP_KIT){try{window._biome=OIDONG.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}}   /* a station above the trees runs its own (STATION_BUILD) */
  if(typeof STATION_BUILD==='function'){try{window._station=STATION_BUILD();}catch(e){reportErr('station: '+e.stack);}}   /* a station's own placement (stations/<name>/) */
  // the standing-stone groups the floor placed: the ground shader rakes ripples round them (84-host-ground.js)
  try{setStones(OIDONG.STONES);}catch(e){reportErr('stones: '+e.stack);}

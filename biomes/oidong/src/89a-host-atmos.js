@@ -21,7 +21,7 @@ const AIR=(function(){const q=new URLSearchParams(location.search),out={hfog:fal
  if(q.get('wet')==='1'&&WATER.hollows&&WATER.wetGround&&typeof USE_KG!=='undefined'&&USE_KG){try{
   const H=WATER.hollows({h:(x,z)=>terrainH(x,z),box:BOX,cell:(BOX[2]-BOX[0])/512,blur:25,depth:.5,mask:(x,z)=>under(x,z)||FIELD.flow(x,z)>.5||FIELD.rock(x,z)>.6?0:1});
   WATER.wetGround(MAT_GROUND,{rain:true,porosity:.5,puddles:H});out.wet=true;}catch(e){reportErr('wet ground: '+e.stack);}}
- if(q.get('snow')!=='0'&&ATMOS.snowCover){ATMOS.snowCover({line:[1950,2450],lee:.45,base:0});out.snow=true;}   /* every lit material takes it after the bake (89z: snowOnScene) */
+ if(q.get('snow')!=='0'&&ATMOS.snowCover){ATMOS.snowCover({line:typeof SNOW_LINE!=='undefined'?SNOW_LINE:[1950,2450],lee:.45,base:0})   /* a station names its own (SNOW_LINE) */;out.snow=true;}   /* every lit material takes it after the bake (89z: snowOnScene) */
  return out;})();
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js): it starts clear, so the page looks as it did; the Weather selector in the panel picks the rest
 ATMOS.bindWeather({climate:{cold:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});

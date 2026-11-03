@@ -11,8 +11,8 @@ const FAR=(function(){
  const C={floor:L([128,140,96]),terrace:L([150,148,118]),scree:L([150,144,136]),rock:L([126,124,122]),snow:L([228,232,238]),far:L([156,160,172])};
  // the far colour by the height over the floor (the floor's green, the terraces' sage, the scree, the granite, the snow from ~2.1 km up: the model's
  // Dsc and ET line round 3.9-4.2 km)
- const colr=(x,z,y,q)=>{const f0=floor0(x),u=y-f0,n1=KRAND.fbm(x*.002,.5,z*.002,2,414);let c=mixC(C.floor,C.terrace,smooth(80,300,u));
-  c=mixC(c,C.scree,smooth(500,900,u));c=mixC(c,C.rock,smooth(900,1500,u)*(.5+.5*n1));c=mixC(c,C.snow,smooth(1900,2400,u)*(.55+.45*n1));
+ const colr=(x,z,y,q)=>{const f0=floor0(x),u=y-f0,n1=clamp(KRAND.fbm(x*.002,.5,z*.002,2,414)*.6+KRAND.fbm(x*.011,.5,z*.011,2,415)*.6-.1,0,1);   /* two scales: the snow broken by rock ribs, not one sheet */let c=mixC(C.floor,C.terrace,smooth(80,300,u));
+  c=mixC(c,C.scree,smooth(500,900,u));c=mixC(c,C.rock,smooth(900,1500,u)*(.5+.5*n1));c=mixC(c,C.snow,smooth(1900,2400,u)*smooth(.2,.6,n1));
   return mixC(c,C.far,.5*smooth(4500,13000,q.r));};
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
   h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;return landH(x,z);},
