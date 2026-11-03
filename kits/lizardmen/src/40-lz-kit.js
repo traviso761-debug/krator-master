@@ -83,7 +83,8 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
   const g=off=>(u,v)=>{const z=hz2-2*hz2*u,b=yb(u),t=yt(u);return [gx+off,lerp(b,t,v),z];};
   psurf(gmk,g(0),48,4,gcol,{flip:s<0});psurf(gmk,g(-s*.3),48,4,gcol,{flip:s>0});
   for(const d of doors){const dh=lzDoorH(d.c),dw=dh*.62;for(const k of [-1,1]){const p0=[gx,y0,d.z+k*dw/2],p1=[gx,y0+dh,d.z],p2=[gx-s*.3,y0,d.z+k*dw/2];plane4(gmk,p0,p1,p2,.02,gcol);}
-   door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);lzLeaf(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw,dh);lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
+   door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);{let hh=dh,n=0;while(hh>=1.15&&n<7){hh/=LZ_RATIO;n++;}const hi=dh/Math.pow(LZ_RATIO,Math.max(0,n-1)),dz=Math.max(0,n-1)*.14+.08;   /* the leaf behind the portal's innermost frame, its size */
+    lzLeaf(gx-s*(dz-.02),y0,d.z,s>0?PI/2:-PI/2,hi*.62,hi);}lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
   if(s>0)for(const [ez,ey] of o.eyes||[])lzNoCut(()=>lzEye(gx+.02,ey,ez,PI/2,.45,{mk:'bronze'}));}}
 /* a domed cell: a lathe of `prof` ([[r, y], ...] from the foot up) with an INNER shell, and real triangular doorways
    cut through both: o.door (one, facing +z of a frame turned o.ry) or o.doors [{dh, ry}] (several, ry the way each faces,
