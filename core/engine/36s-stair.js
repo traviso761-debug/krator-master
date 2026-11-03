@@ -99,3 +99,8 @@ function svFloor(pts,y){if(!svWalkOn()||!pts||pts.length<3)return;KWALK.poly({pt
 /* svClip(pts, a, n): the part of a convex polygon (local [x, z]) on the side of the line through a that n points to: a floor less a band */
 function svClip(P,a,n){const out=[],s=p=>(p[0]-a[0])*n[0]+(p[1]-a[1])*n[1];for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length],sp=s(p),sq=s(q);
  if(sp>=0)out.push(p);if((sp>=0)!==(sq>=0)){const t=sp/(sp-sq);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);}}return out;}
+/* svStripWalk(a, b, w): a kit's own flight (its treads drawn in svNoWalk) as the walk's one strip, a and b local [x, y, z] (the foot and the
+   top), tagged 'stair:<key>', with svStair's pad past the top */
+function svStripWalk(a,b,w){if(!svWalkOn())return;const A=svWP(a[0],a[1],a[2]),B=svWP(b[0],b[1],b[2]),tag='stair:'+CURKEY,dx=b[0]-a[0],dz=b[2]-a[2],L=Math.hypot(dx,dz)||1,ux=dx/L,uz=dz/L,px=uz,pz=-ux;
+ KWALK.strip({a:A,b:B,w,name:'stair',tag});
+ KWALK.poly({pts:[[0,-w/2],[.35,-w/2],[.35,w/2],[0,w/2]].map(q=>svWP(b[0]+ux*q[0]+px*q[1],b[1],b[2]+uz*q[0]+pz*q[1])),name:'landing',tag});}
