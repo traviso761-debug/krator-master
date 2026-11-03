@@ -18,7 +18,10 @@
 // drawing of them, a leaf as an instance of its own item, and keeps its names for the builders and the host that call it.
 //   IZDOOR.list   KDOOR.list: [{id, idx (its vDoorLeaf instance), at [x,y,z] (sill, wall middle, world), hinge [x,y,z], yaw
 //                  (world, outward), w, h, t, open 0..1, target 0..1, locked, by, key (the def), r0 (its first REG index)}]
-//   IZDOOR.leaf(x, y, z, ry, w, h, t, c, o)   o: {locked, mirror (hinged on +x: a double door's right leaf), key}
+//   IZDOOR.leaf(x, y, z, ry, w, h, t, c, o)   o: {locked, mirror (hinged on +x: a double door's right leaf), key, id}. The id is
+//                                 stable: o.id, or the def's key, where the placement stands and the door's number in it
+//                                 ('iz_house_rich@12,-40.0'), so a save or a quest names the same door when other buildings
+//                                 move; outside a placement 'door.<n>'
 //   IZDOOR.open(id, o) / close(id, o) / toggle(id, o) / nearest(x, y, z, r)   KDOOR's
 //   IZDOOR.finish(W)              once the world is built: drops doors a failed placement unwound (KDOOR.prune), registers
 //                                 each door's walk blocks in W (KDOOR.walk: core/walk, shut = blocked, open = clear)
@@ -28,7 +31,7 @@ MAT.izGlass=KGLASS.material(THREE,'clear');   // core/door's clear glass (the va
 MAT.warmPane.transparent=true;MAT.warmPane.opacity=.42;MAT.warmPane.depthWrite=false;MAT.warmPane.side=DS;   // a lit pane you see the room through (the day/night swap, 90a, still drives its colour)
 MAT.izRoom=new THREE.MeshStandardMaterial({color:0x6e5a46,roughness:.94});   // a room's back, for meshes (79's sentry gallery)
 kdef('vWinClear',VBOX,MAT.izGlass);kdef('vDoorLeaf',VBOX,MAT.wood);
-// (draw calls: the glow pane is vWinLit, the room card a dim vPlaster. The leaves are their own item, vDoorLeaf, which 95j
+// (draw calls: the glow pane is vWinLit, the room card a dim vPlaster in IZ_ROOMC, KGLASS.SPEC.room's colour. The leaves are their own item, vDoorLeaf, which 95j
 // keeps out of core/lod: a moved instance of a shared, LOD-copied item kept its old pose on screen)
 const IZ_ROOMC=vC(0x6e5a46);
 const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},get RATE(){return KDOOR.RATE;},
@@ -39,7 +42,8 @@ const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},ge
  leaf(x,y,z,ry,w,h,t,c,o){o=o||{};const it=KIT.items.vDoorLeaf,idx=it.length;
   kput('vDoorLeaf',[x,y+h/2,z],vQ(ry,0,0),[w,h,t],c||vC(VPAL.woodMid[0]));const R=it[idx];if(!R)return null;
   const hl=loc(x,z,o.mirror?w/2:-w/2,0,ry),C=VERN.cur,s=KXF&&KXF.s?KXF.s:1;
-  return KDOOR.add({id:'door.'+KDOOR.list.length,idx,ref:R,p0:R.p.slice(),q0:R.q?R.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
+  let id=o.id;if(id==null&&C){C._door=(C._door||0)+1;const b=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1);id=b;for(let k=1;KDOOR.get(id);k++)id=b+'#'+k;}
+  return KDOOR.add({id:id==null?'door.'+KDOOR.list.length:id,idx,ref:R,p0:R.p.slice(),q0:R.q?R.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
    yaw:IZDOOR._yaw(ry),sign:o.mirror?-1:1,w:w*s,h:h*s,t:t*s,locked:!!o.locked,key:C?C.D.key:(o.key||null),r0:C?C.r0:null});},
  get:id=>KDOOR.get(id),open:(id,o)=>KDOOR.open(id,o),close:(id,o)=>KDOOR.close(id,o),toggle:(id,o)=>KDOOR.toggle(id,o),
  nearest:(x,y,z,r)=>KDOOR.nearest(x,y,z,r),
@@ -61,7 +65,7 @@ function vnOpening(x,y,z,ry,w,h,kind,c){kind=kind||'win';
  if(kind==='door'){if(cut){const m=loc(x,z,0,-t/2,ry);IZDOOR.leaf(m[0],y,m[1],ry,w*.96,h-.04,.07,c);vnStoop(x,y,z,ry,w,'vStone',null);}
   else{const m=loc(x,z,0,.04,ry);IZDOOR.leaf(m[0],y,m[1],ry,w,h,.08,c,{locked:true});vnStoop(x,y,z,ry,w,'vStone',null);}return;}   /* a locked door on a solid body is stooped too: it stood in the air */
  if(kind==='shut'){const p=loc(x,z,0,.06,ry);for(let k=0;k<Math.max(1,Math.round(h/.3));k++)vB('vWood',p[0],y+k*.3,p[1],w+.06,Math.min(.26,h-k*.3),.08,ry,c);return;}
- if(!cut){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry);}
+ if(!cut){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry,IZ_ROOMC);}
  const g=loc(x,z,0,cut?-t/2:.06,ry);
  if(kind==='win')vB('vWinClear',g[0],y,g[1],w,h,.04,ry);else if(kind==='glow')vB('vWinLit',g[0],y,g[1],w,h,.04,ry);}
 // a street door's stoop (the owner, 2026-10-20: "fix remaining doors"): a landing level with the sill, 0.9 m out, then steps
@@ -113,7 +117,7 @@ function vnStoopsDraw(C){const SS=C._stairs||[];for(const D of C._stoops||[]){co
  vnWin=function(x,y,z,ry,w,h,kind,frameItem,c,shutters){const F=vnOnHollow(x,y,z,ry);
   if(F)F.B.ops.push({face:F.face,u:F.u,w,y0:y-F.B.y,y1:y-F.B.y+h,door:false});
   const t=F?F.B.t:0,g=loc(x,z,0,F?.05-t/2:.06,ry);
-  if(!F&&kind!=='shut'){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry);}
+  if(!F&&kind!=='shut'){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry,IZ_ROOMC);}
   if(kind==='lit')vB('vWinLit',g[0],y,g[1],w,h,.04,ry);else if(kind==='glass')vB('vWinClear',g[0],y,g[1],w,h,.04,ry);
   if(kind==='shut'){const p=loc(x,z,0,.12,ry);for(let k=0;k<Math.round(h/.3);k++)vB('vWood',p[0],y+k*.3,p[1],w+.1,.26,.08,ry,c);}
   frameItem=frameItem||'vWood';const p=loc(x,z,0,.14,ry);
@@ -123,13 +127,13 @@ function vnStoopsDraw(C){const SS=C._stairs||[];for(const D of C._stoops||[]){co
   if(shutters){for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.15+w*.22),.2,ry);kput('vWood',[q[0],y+h/2,q[1]],vQ(ry,0,0).multiply(qEuler(0,-s*.55,0)),[w*.48,h,.05],c||null);}}};
  // the deco strip: a glazed slit through a hollow wall, glass over a room card on a solid one; its fins as before
  vnStrip=function(x,y,z,ry,w,h,frameItem,c){const cut=typeof vnHole==='function'&&vnHole(x,y,z,ry,w,h,false);const F=cut?vnOnHollow(x,y,z,ry):null;
-  if(!cut){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry);}
+  if(!cut){const b=loc(x,z,0,.02,ry);vB('vPlaster',b[0],y,b[1],w,h,.04,ry,IZ_ROOMC);}
   const g=loc(x,z,0,cut?-F.B.t/2:.06,ry);vB('vWinClear',g[0],y,g[1],w,h,.04,ry);
   for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.08),.1,ry);vB(frameItem,p[0],y-.1,p[1],.16,h+.2,.22,ry,c);}
   const n=Math.max(2,Math.round(h/.9));for(let k=1;k<n;k++){const p=loc(x,z,0,.12,ry);vB(frameItem,p[0],y+h*k/n-.05,p[1],w+.1,.1,.26,ry,c);}};
 })();
 // a window a builder draws as a plain plate on a solid mass (a drum's ring, a gable's loft opening, a tower's slit): the
 // room card the plate stood for, inside a glass box a little larger, so the face is glass with the room's colour behind it
-function vnPlate(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry);vB('vWinClear',x,y-.01,z,w+.02,h+.02,d+.04,ry);}
+function vnPlate(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry,IZ_ROOMC);vB('vWinClear',x,y-.01,z,w+.02,h+.02,d+.04,ry);}
 // the same with an electric glow pane in front of the room card (a lit window drawn as a plate)
-function vnGlowPlate(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry);vB('vWinLit',x,y-.01,z,w+.02,h+.02,d+.04,ry);}
+function vnGlowPlate(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry,IZ_ROOMC);vB('vWinLit',x,y-.01,z,w+.02,h+.02,d+.04,ry);}

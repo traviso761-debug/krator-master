@@ -14,8 +14,7 @@
 //   hnRoomQ(p,q,s)              the same for a rotated plate (kput's arguments)
 //   hnPlate(x,y,z,w,h,d,ry)     a glazed band drawn as a box (north lights, a ship's ports): the card inside a glass box a
 //   hnPlateQ(p,q,s)             little larger (69e5's vnPlate with the room's colour); hnPlateQ for a rotated plate
-// The Vernacular's vnWin draws its room card in the plaster's own light colour (69e5); here it takes the room's (IZ_ROOMC,
-// KGLASS.SPEC.room's 0x6e5a46), so a window on these log and stucco faces reads as a room, not a blank.
+// The Vernacular's room card is the room's dim colour (69e5's IZ_ROOMC, KGLASS.SPEC.room's 0x6e5a46): a window reads as a room.
 // Not openings, and kept dark on purpose: flues, fireboxes and furnace mouths behind their embers, wells and shafts, trenches
 // and scorch marks (vDarkB, which stays the Vernacular's unlit void).
 const HL_STAINED=KGLASS.material(THREE,'stained',{color:0x7a2e3e});   // the grand halls' fanlights (core/door: stained)
@@ -24,21 +23,13 @@ kdef('hArchRoom',arcWindowGeo(1.1,2,.4),MAT.izRoom);kdef('hArchGlass',arcWindowG
 // the keel recess (71's hKeelDark: kokoshniks, porch gables, the portals' keel heads) is the room's dim back, not a void.
 // 71 is vendored by Reed Lake, Dalab and Ys, so the item is re-pointed here and 71 stays as they have it
 KIT.defs.hKeelDark.mat=MAT.izRoom;
-// a door's id: the def's key, where the placement stands and the door's number in it ('hl_rep_house_rich@12,-40.0'), so a
-// save or a quest names the same door when other buildings move (69e5's own id is the page's door count, 'door.<n>')
-{const add0=KDOOR.add;KDOOR.add=function(r){const C=VERN.cur;
-  if(C&&r&&/^door\.\d+$/.test(String(r.id))){C._door=(C._door||0)+1;let id=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1),k=1;
-   while(KDOOR.get(id))id=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1)+'#'+(k++);r=Object.assign({},r,{id});}
-  return add0.call(KDOOR,r);};}
+// a door's id is IZDOOR.leaf's: the def's key, where the placement stands and the door's number in it (69e5)
 // a door's step: the kit's builders draw their own flights and stoops, so a door keeps the old threshold step (69c: one
 // step under the sill, unless the builder passed step false), not 69e5's landing and flight from the ground
 let HL_DOORSTEP=true;
 {const d0=vnDoor;vnDoor=function(x,y,z,ry,w,h,frameItem,c,leafC,step){const s0=HL_DOORSTEP;HL_DOORSTEP=step!==false;
   try{return d0.apply(this,arguments);}finally{HL_DOORSTEP=s0;}};}
 vnStoop=function(x,y,z,ry,w,item,c){if(!HL_DOORSTEP)return;const s=loc(x,z,0,.5,ry);vB(item,s[0],y-.18,s[1],w+.6,.18,.8,ry,c);};
-// the Vernacular's window: its room card (the vPlaster it draws with no colour) in the room's colour
-{const w0=vnWin;vnWin=function(){const it=KIT.items.vPlaster,n=it.length;const r=w0.apply(this,arguments);
-  for(let i=n;i<it.length;i++)if(!it[i].c)it[i].c=IZ_ROOMC;return r;};}
 function hnDoorway(x,y,z,ry,w,h,o){o=o||{};const t=o.t==null?.08:o.t,out=o.out==null?.01:o.out,c=o.c||null;
  const two=o.double==null?w>=1.8:!!o.double;
  if(!two){const m=loc(x,z,0,out+t/2,ry);return[IZDOOR.leaf(m[0],y,m[1],ry,w,h,t,c,{locked:true})];}

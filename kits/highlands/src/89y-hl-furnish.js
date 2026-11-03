@@ -45,7 +45,7 @@ VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur,nd=KDOOR.list.length;co
 // leaf still opens on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md)
 function hlfDoorsIn(nd,tag){let n=0;
  for(let i=nd;i<KDOOR.list.length;i++){const D=KDOOR.list[i];if(!D.locked)continue;const ix=D.at[0]-Math.sin(D.yaw)*.6,iz=D.at[2]-Math.cos(D.yaw)*.6;
-  if(KWALK.floorsAt(ix,iz).some(f=>String(f[1].tag).indexOf(tag)===0&&Math.abs(f[0]-D.at[1])<.6)){KDOOR.lock(D,false);D.locked0=false;n++;}}
+  if(KWALK.floorsAt(ix,iz).some(f=>String(f[1].tag).indexOf(tag)===0&&Math.abs(f[0]-D.at[1])<.6)){KDOOR.lock(D,false,{asBuilt:true});n++;}}
  return n;}
 // the batch becomes meshes once, when the kit bakes its instances
 const hlfBake=kbake;

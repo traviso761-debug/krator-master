@@ -22,7 +22,8 @@
 //   D.get(id)                           the record (or the record itself)
 //   D.open(id, {by, auto}) / close(id, {by}) / toggle(id, o)   false when locked or missing. by: 'player' | 'npc' | a name;
 //                                       auto: seconds the door stays open before it shuts itself
-//   D.lock(id, on)                      lock (shutting it) or unlock
+//   D.lock(id, on, o)                   lock (shutting it) or unlock; o.asBuilt: the world was built so (a door found to open
+//                                       on a furnished room), so state() keeps no delta for it
 //   D.nearest(x, y, z, r)               the nearest unlocked door whose sill is within r (2.2) in plan and 2.2 in height
 //   D.step(dt)                          ease every moving door (RATE rad/s over SWING rad); switch its walk blocks as it
 //                                       passes half open; returns the doors that moved (the host poses those)
@@ -56,7 +57,7 @@
     function open(id,op){var D=get(id);if(!D||D.locked)return false;op=op||{};D.target=1;D.by=op.by||'player';D.auto=op.auto||0;return true;}
     function close(id,op){var D=get(id);if(!D)return false;D.target=0;D.by=(op&&op.by)||D.by;D.auto=0;return true;}
     function toggle(id,op){var D=get(id);if(!D)return false;return D.target>.5?close(D,op):open(D,op);}
-    function lock(id,on){var D=get(id);if(!D)return false;D.locked=!!on;if(on){D.target=0;D.auto=0;}return true;}
+    function lock(id,on,op){var D=get(id);if(!D)return false;D.locked=!!on;if(on){D.target=0;D.auto=0;}if(op&&op.asBuilt)D.locked0=D.locked;return true;}
     function nearest(x,y,z,r){r=r==null?2.2:r;var best=null,bd=r*r;
       for(var i=0;i<list.length;i++){var D=list[i];if(D.locked||Math.abs(y-D.at[1])>2.2)continue;
         var dx=x-D.at[0],dz=z-D.at[2],d=dx*dx+dz*dz;if(d<bd){bd=d;best=D;}}return best;}

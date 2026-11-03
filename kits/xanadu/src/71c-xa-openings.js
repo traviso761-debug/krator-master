@@ -11,25 +11,16 @@
 //                               pane ('glass' clear, 'lit' the warm pane, 'stained', 'frosted') in its front half; 'open' the card alone
 //   xnRoom(x,y,z,w,h,d,ry)      an unglazed opening drawn as a box (a slit, a vent, an oriel's inside): the room's dim back
 //   xnRoomQ(p,q,s)              the same for a rotated plate (kput's arguments)
-// The Vernacular's vnWin draws its room card in the plaster's own light colour (69e5), which on these whitewashed faces
-// reads as no window at all; here it takes the room's (IZ_ROOMC, KGLASS.SPEC.room's 0x6e5a46).
+// The Vernacular's room card is the room's dim colour (69e5's IZ_ROOMC, KGLASS.SPEC.room's 0x6e5a46): a window reads as a room.
 // Not openings, and kept dark on purpose: wells and shafts, ovens and kilns behind their embers (vDarkB, the Vernacular's void).
 kdef('xStainedB',VBOX,KGLASS.material(THREE,'stained',{color:0x2a5a8a}));kdef('xFrostedB',VBOX,KGLASS.material(THREE,'frosted'));
-// a door's id: the def's key, where the placement stands and the door's number in it ('xa_house_rich@12,-40.0'), so a save
-// or a quest names the same door when other buildings move (69e5's own id is the page's door count, 'door.<n>')
-{const add0=KDOOR.add;KDOOR.add=function(r){const C=VERN.cur;
-  if(C&&r&&/^door\.\d+$/.test(String(r.id))){C._door=(C._door||0)+1;let id=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1),k=1;
-   while(KDOOR.get(id))id=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1)+'#'+(k++);r=Object.assign({},r,{id});}
-  return add0.call(KDOOR,r);};}
+// a door's id is IZDOOR.leaf's: the def's key, where the placement stands and the door's number in it (69e5)
 // a door's step: the kit's builders draw their own flights and plinths, so a door keeps the old threshold step (69c: one
 // step under the sill, unless the builder passed step false), not 69e5's landing and flight from the ground
 let XA_DOORSTEP=true;
 {const d0=vnDoor;vnDoor=function(x,y,z,ry,w,h,frameItem,c,leafC,step){const s0=XA_DOORSTEP;XA_DOORSTEP=step!==false;
   try{return d0.apply(this,arguments);}finally{XA_DOORSTEP=s0;}};}
 vnStoop=function(x,y,z,ry,w,item,c){if(!XA_DOORSTEP)return;const s=loc(x,z,0,.5,ry);vB(item,s[0],y-.18,s[1],w+.6,.18,.8,ry,c);};
-// the Vernacular's window: its room card (the vPlaster it draws with no colour) in the room's colour
-{const w0=vnWin;vnWin=function(){const it=KIT.items.vPlaster,n=it.length;const r=w0.apply(this,arguments);
-  for(let i=n;i<it.length;i++)if(!it[i].c)it[i].c=IZ_ROOMC;return r;};}
 function xnDoorway(x,y,z,ry,w,h,o){o=o||{};const t=o.t==null?.08:o.t,out=o.out==null?.01:o.out,c=o.c||null;
  const two=o.double==null?w>=1.8:!!o.double;
  if(!two){const m=loc(x,z,0,out+t/2,ry);return[IZDOOR.leaf(m[0],y,m[1],ry,w,h,t,c,{locked:true})];}
