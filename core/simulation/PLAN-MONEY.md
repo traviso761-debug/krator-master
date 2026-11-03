@@ -80,7 +80,7 @@ record. Sources are at the end.
 **The third round (2026-11-03):**
 12. **The tribute ramp stands** ((people - 50) / 450, capped at 1), and **the full rate is a fixed sum** (a nation's, in
     Talents a month; the sums wait for M1's prices).
-13. **Fluid nations: two stations a life** (the Iron Republic, Yuni, and perhaps the Tungangs of Jimjam), **with the same
+13. **Fluid nations: two stations a life** (the Iron Republic, Yuni, and perhaps the Tungangs, the tunnel people of the Rift and the southern Outer Wall: LORE.md §6.1), **with the same
     money bar** as everywhere else.
 14. **Unrest is a happiness pool.** Each fallen household takes an **unhappiness modifier**; it feeds a **collective and a
     per-class happiness pool** for the settlement, which other things move too (needs not met, hunger, the taxes and
