@@ -285,7 +285,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
 - **A fluid society** (the owner, 2026-11-03): class follows profession everywhere, but the Republic offers more room to rise
-  than most: a worker may climb more than one station in a lifetime (core/simulation/PLAN-MONEY.md).
+  than most: a person may climb two stations in a lifetime, not one (core/simulation/PLAN-MONEY.md).
 - **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland words, worn short and sung with two melodies by their Korona neighbours. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
@@ -405,8 +405,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Look: Gaudí + Burmecia + Sahelian for the rich; Musgum, Mandara and Tiebele mud architecture for the poor; neo-African civic buildings.
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the caravanserai.
 - Sign: the **hyperboloid**, yellow. No ships.
-- **A fluid society** (the owner, 2026-11-03): as in the Iron Republic, a Yuni worker may rise more than one station in a
-  single generation (core/simulation/PLAN-MONEY.md).
+- **A fluid society** (the owner, 2026-11-03): as in the Iron Republic, a Yuni worker may rise two stations in a single
+  generation (core/simulation/PLAN-MONEY.md).
 - Controls Locus, Verge lower city, and an outpost to their north [TBD].
 - **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
@@ -482,6 +482,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - the **year** is four seasons of 91 days plus **the Day Outside** (*Ḍē Auṭsaiḍu*), which belongs to no count: no work, no contracts, no oaths.
 
   *Van Sanḍē*, when both moons are new, is **the Double Dark** (*Ḍabal Ḍārkku*), and both their shadows cross the giant's face. It comes once every 91 days and falls one day later in the year each year. The day-names and the year come back into step after 91 × 365 days: **the Round** (*Raunḍu*) of **91 years**. Few people see a Round end, and someone who claims to have seen two is a living wonder or a liar. The **Long Count** (*Lōṅ Kaunṭu*) is the days since **the Flood** (*Falaḍu*). It is the only running count since the Ancients fell, and the Order of Historians would give anything for its tables. Whether it is true is open. [the owner, Oct 2026]
+- **Perhaps a fluid society** (the owner, 2026-11-03): the Tungangs might, like the Iron Republic and Yuni, let a person rise
+  two stations in a life (core/simulation/PLAN-MONEY.md).
 - **The day-keepers** (*kaunṭavan*, "count-men") read a person's birth-day for what they are fit for. Caravans wait for a good day to set out and courts won't sit on a bad one. Jimjam sells **almanacs** along the caravan routes, and contracts across the crater are dated by its reckoning.
 - **The temple arch** frames the summer-solstice sunset. It is the calendar's anchor and an observatory, not a sun god's house. Once a Round the Double Dark falls on that sunset: the **Great Round** (*Gerēṭṭu Raunḍu*). Every kiln and hearth in the city goes out and is relit from the temple: **the New Fire** (*Nyū Faiyar*). The arch was aimed for 40° S; the site is north of that reference, so it is re-aimed once the lake's latitude is fixed (§12). Side sightlines in the arch mark **Veil's farthest swings from the sun** (up to 50°), as Uxmal's Governor's Palace marks Venus's (the owner, 2026-10-26; not built yet).
 - **The ranks of the sky** (the owner, 2026-10-26; the names, the owner, 2026-10-27). Jimjam reads time, not space: it has no zodiac of star-houses, and every body enters the art as a count or as a station on its cycle (first seen at dawn, first seen at dusk, hidden in the sun, opposite it), as the Maya read Venus. The day-keepers rank the sky (the bodies: §2, `gallery/krator-system`):

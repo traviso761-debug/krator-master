@@ -77,6 +77,19 @@ record. Sources are at the end.
   from market barter (*gimwali*). Shell money is made (a faucet: the strings' makers), held in ceremonial hoards (a
   sink), and paid in bride price and ceremony (transfers).
 
+**The third round (2026-11-03):**
+12. **The tribute ramp stands** ((people - 50) / 450, capped at 1), and **the full rate is a fixed sum** (a nation's, in
+    Talents a month; the sums wait for M1's prices).
+13. **Fluid nations: two stations a life** (the Iron Republic, Yuni, and perhaps the Tungangs of Jimjam), **with the same
+    money bar** as everywhere else.
+14. **Unrest is a happiness pool.** Each fallen household takes an **unhappiness modifier**; it feeds a **collective and a
+    per-class happiness pool** for the settlement, which other things move too (needs not met, hunger, the taxes and
+    tribute later). **The farther the pool falls below 50%, the more serious the unrest.** The milder forms are **demands**:
+    a new ruler, or a shipment of needed goods from the faction's authorities; the gravest is **treason**. A **revolution**
+    is situational and needs the political system fleshed out first: Hook, say, could throw out Iziz and invite Voth back,
+    or become independent, if both are weak enough (M6 below; core/simulation PLAN.md Phase 4).
+15. **Twenty Kautoan shells to the Talent** (the rate built in M0) stands.
+
 ## 2. A proposal for Krator
 
 **M0. Accounts and the books (no prices yet).** Money is a good of the ledger with a unit, one currency a nation (the
@@ -132,13 +145,21 @@ discounted while it is small (proposed: the full rate times min(1, (people - 50)
 later, it sends someone to collect). Wage, sales and land taxes, tolls and harbour dues wait (TODO.md). Temple offerings
 and ceremonial hoards stay the sinks people want.
 
-**M6. Falls and unrest** (the owner, 2026-11-03: downward mobility is a cause for mass unrest, if not revolution). Each
-settlement counts the households that fell a station (a bankrupt merchant back to worker, a prince to merchant) over a
-window, as a share of its households of those stations. Unrest rises with that share (and later with hunger, taxes and
-tribute), lowers loyalty (core/simulation's needs already keep a loyalty), and past thresholds becomes events: crowds and
-riots at the squares, the watch overwhelmed (crime's arrest odds fall), a strike, and at the top a revolution (the
-settlement's ruler or faction replaced: core/simulation PLAN.md Phase 4's factions). The thresholds are a nation's
-(a fluid nation's people expect to rise and take a fall harder, or more lightly: the owner's call).
+**M6. Falls, the happiness pool and unrest** (the owner, 2026-11-03, answers 9 and 14). A household that falls a station
+(a bankrupt merchant back to worker, a prince to merchant) takes an **unhappiness modifier** on its people's happiness
+(core/simulation's needs already give each person a happiness and a loyalty), fading over months. Each settlement keeps a
+**happiness pool**: the mean happiness of its people, collective and **per class** (workers, merchants, merchant princes,
+nobles), moved by the falls' modifiers and by everything else that moves happiness (needs unmet, hunger, later the taxes
+and tribute). **Unrest is how far a pool is below 50%**, and its stages grow with it:
+- just under 50%: grumbling (loyalty falls, the watch's arrest odds fall, more fights: crime's `assault`);
+- lower: **demands** to the faction's authorities: a shipment of the goods the town is short of (the faction's other
+  settlements send it, or do not), or **a new ruler**;
+- lower still, demands refused: strikes (workplaces held, `SIM.recipeHold`) and riots at the squares;
+- at the bottom: **treason**, and a **revolution** whose outcome is situational (answer 14): the settlement may throw out
+  its faction and invite another back (Hook from Iziz to Voth), or go independent, as the factions' strength allows.
+  That needs core/simulation PLAN.md Phase 4's factions and a political system first: a settlement's ruler, its
+  faction's strength and reach, and its neighbours' claims. A per-class pool lets one class rise while another is
+  content (the merchants in revolt, the workers not). The thresholds and how fast a pool moves are a nation's.
 
 **Balancing and proof (each phase, with negatives, as the economy's checks):** the money ledger balances in every
 settlement and on every route; the money supply per head stays in a band over 90 fast-forwarded days; the price index
@@ -184,12 +205,9 @@ shape: an account and an owner per workplace record, edits as deltas by id.
 
 ## 3. Questions for the owner (answered 2026-11-03: section 0; still open below)
 
-1. **The tribute's curve and rate**: the proposed (people - 50) / 450 ramp, and the full rate (a sum, or a share of the
-   settlement's trade)?
-2. **Mobility by nation**: how many stations a life in the Iron Republic and Yuni (two?), and is the bar lower there too?
-3. **Unrest from falls**: the share of fallen households that starts unrest, and what a revolution does (a new ruler of the
-   same nation, independence, or a change of faction)?
-4. **The Talent's rate** for Kautoan shells (proposed: 20 shells a Talent, the money changer's spread 3%).
+1. **The tribute's fixed sums**, a nation's, in Talents a month: set once M1's prices give the Talent a meaning.
+2. **The political system** that revolutions need (M6): rulers, a faction's strength and reach, claims. A plan of its own
+   (core/simulation PLAN.md Phase 4), before unrest goes past demands.
 
 ## Sources
 
