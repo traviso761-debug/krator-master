@@ -219,7 +219,7 @@
     "kits/metropolis/src/50-mp-kit.js": "2d92c3af8b3eaebb2f1f023a04a34708f09dca565b25828fa17a9ff61e456c60",
     "kits/metropolis/src/52-mp-hero-spindle.js": "b3a4c43925fe714d40e2ab1593b67394fd4a569ba33e45dc70dbba1ca3cae31c",
     "kits/metropolis/src/53-mp-hero-ledger.js": "bab98d035e529ed3a5b9d00883506f5329d1d680855d926ed90eae3ffc9a78c0",
-    "kits/metropolis/src/54-mp-hero-designs.js": "750666a02584b2771b22f30f8abf5155ab71cfe5e1bcb1aa352280761efa413e",
+    "kits/metropolis/src/54-mp-hero-designs.js": "3a6aa9b86392e158523cb67aa301c5a289ac959c07186734fe37074e26afe3cb",
     "kits/metropolis/src/55-mp-hero-ancients.js": "e4ebad07b43443bd8009974485de6557cc1a36df6f60daae35df8a69d30d4f69",
     "kits/metropolis/src/56-mp-interiors.js": "b623852bd5fd5b9c172e234719d86faaabdc7cfbf15da938c6e588893ba920dc",
     "kits/metropolis/src/57-mp-debris.js": "71322a3c670dc60f96f782050d508aba70ec62da674b1b9d47794f344d072895",
@@ -269,14 +269,14 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/metropolis/build-manifest.json": "ffd8d4eb869ca6df7fb9f76363af38b0663c0760ef8dc51ffbac8ee32e6eed09",
-    "kits/metropolis/dist/metropolis.html": "87a83448a21c9a74edfc79a7383098c94ce17e7684e58cc18d693f5d55ce685d",
+    "kits/metropolis/build-manifest.json": "dcd3700142b4ab6f5a7543ea6421752d330f0939e938338042f987c9f4620693",
+    "kits/metropolis/dist/metropolis.html": "fe4cc8d0dd642d7d98202dce3ccbc3804f59486cd4fbd3b43973d18c58afcc6c",
     "kits/metropolis/dist/metropolis.tex.ancients.js": "917e219ad93e6c385aae65f55e32623d99d156972a58ca0f29045f1e877ad307",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "787a345078b2fdf24fd065437aa2fdae071665d1e027ce216779f1dba8584e97"
    },
    "outputs_raw": {
-    "kits/metropolis/build-manifest.json": "ffd8d4eb869ca6df7fb9f76363af38b0663c0760ef8dc51ffbac8ee32e6eed09",
-    "kits/metropolis/dist/metropolis.html": "87a83448a21c9a74edfc79a7383098c94ce17e7684e58cc18d693f5d55ce685d",
+    "kits/metropolis/build-manifest.json": "dcd3700142b4ab6f5a7543ea6421752d330f0939e938338042f987c9f4620693",
+    "kits/metropolis/dist/metropolis.html": "fe4cc8d0dd642d7d98202dce3ccbc3804f59486cd4fbd3b43973d18c58afcc6c",
     "kits/metropolis/dist/metropolis.tex.ancients.js": "917e219ad93e6c385aae65f55e32623d99d156972a58ca0f29045f1e877ad307",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "787a345078b2fdf24fd065437aa2fdae071665d1e027ce216779f1dba8584e97"
    }

@@ -100,7 +100,7 @@ MP.heroDesign=function(F,state,lite){const B=MP.builder(lite),W=DK.WALL,PI2=Math
  const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];
  /* storeys and a core (59), from the drawn shape */
  /* a design with plans (46c) opens its storeys on demand (56); the rest take the floor plates */
- if(!lite&&!(MP.FAMILY[F.id]&&MP.FAMILY[F.id].design)){const Fl=MP.floors({sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
+ if(!lite&&!(MP.FAMILY[F.id]&&MP.FAMILY[F.id].design)){const Fl=MP.floors(G,{sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
  return G;};
 MP.DESIGN_BUILD={
  // S2: five bronze pipes in a shallow arc, each its own storeys and a conical cap with a mouth; bronze bands bind them (the owner, 2026-11-03: no transit tube
