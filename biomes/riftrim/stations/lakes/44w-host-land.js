@@ -60,7 +60,7 @@ const LAND={name:'The lakes of the north rim (riftrim station 2)',title:'Krator 
   return (x<STATION.shoreX(clamp(z,-S0,S0))&&ds<1?Math.min(g,STATION.LAKE-2):g)+de*.25+dn*.1-ds*.9*smooth(0,5000,ds)+160*(fbm(x*.0008,z*.0008,412,3)-.5)*smooth(0,1500,Math.max(Math.abs(x),Math.abs(z))-S0);},
  farBands:[0,2600,3300,3900,4300],farLabel:'The north rim and the trough past the map',
  kin:[
-  {ref:'rift.beardtree',key:'beardtree',name:'Beard tree',cell:30,minR:3,accept:Z=>Z.lake*.4*Z.tree*smooth(.4,.6,Z.wet)},
+  /* OWED: rift.beardtree (the beard tree): its builder (rift src/55, B[27]) scatters blooms and anemones up to .8 m round a limb point, and with four trees the attach audit failed at 1.86% here; grown again once the Rift holds them (BIO.holdTo). KNOWN_ISSUES.md */
   /* OWED: rift.araucaria (the monkey-puzzle): its builder (rift src/55, B[9]) scatters its blooms up to .6 of a pad off the pad, and the attach audit failed at 51% here (1,982 of 2,039 blooms floating); grown again once the Rift holds them (BIO.holdTo). KNOWN_ISSUES.md */
   /* the cloud tree-fern (rift.cloudfern) grows on the N rim's warm lower edge (PLAN.md section 3), not at 3.3 km: not on this page */
   {ref:'shigh.crozier',key:'crozier',name:'Crozier tree fern',cell:36,minR:2,accept:Z=>(Z.lake*.3+Z.montane*.03*smooth(.4,.6,Z.wet))*Z.tree}],

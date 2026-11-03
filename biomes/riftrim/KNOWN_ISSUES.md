@@ -41,6 +41,9 @@ coordinator's (`HANDOFF-REBUILD.md`, the riftrim paragraph).
 
 ## Borrowed species
 
+- [ ] **The beard tree is not grown** (station 2): the Rift's `B[27]` scatters its blooms and anemones up to .8 m round a limb point; with four
+  trees the attach audit failed at 1.86% (12 of 644 cards). Commented, owed as the monkey-puzzle is. Station 2's only borrowed species is now
+  the S highlands' crozier: the N rim's Rift cloud forest (PLAN.md section 3) waits on the Rift's turn.
 - [ ] **The monkey-puzzle is not grown** (station 2): the Rift's builder (`src/55`, `B[9]`) scatters its blooms up to .6 of a pad's width off
   the pad, and the attach audit failed at 51% on station 2 with it (1,982 of 2,039 blooms floating). Its row is commented; grow it again
   once the Rift holds them (`BIO.holdTo`).

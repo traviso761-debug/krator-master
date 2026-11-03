@@ -545,7 +545,7 @@
     "biomes/rift/tex/leaflet.albedo.webp": "7727416533e76ec5f925780d88529e27e3ae778271d4c32f088751a55a51c55a",
     "biomes/rift/tex/moss.albedo.webp": "66be08cf6afd0860c5a14edec1a6fab70ffaadda435a5c5e7602b1ced26044cf",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "154defaa16e124a328525629e285479e1c8170643156f4b5e26f6b291cd21be5",
+    "biomes/riftrim/KNOWN_ISSUES.md": "05090e6ea4f4da31e1ccd06ac0e459639686d3e1664ef52189d630810083fe70",
     "biomes/riftrim/PORT.md": "c50c4987a8114c677d4539d3f4ea7ed0e1959122111486c0579f0a02158c45de",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -564,7 +564,7 @@
     "biomes/riftrim/src/89z-host-build.js": "13f96f6c8720052ba05d9d353d76c9797afb723c8a4c27d3ece70b645d031f34",
     "biomes/riftrim/src/99-host-take.js": "436107174e5d1332a7eb308877eb31c7c7b09f3b35afff03619289ffc9fd5241",
     "biomes/riftrim/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/riftrim/stations/lakes/44w-host-land.js": "1fa3eae7c35768e6b51052a22dc5bb41a435bddc56fb6fe965144a76ea254a2d",
+    "biomes/riftrim/stations/lakes/44w-host-land.js": "2324ac6f44332e8381ff11668d64d00b6d6b714ca562af5cc4295150e9a2846f",
     "biomes/riftrim/stations/lakes/station.json": "ff4c9689030240fd3df622378c133f6137772d3b826a350e35e95a729527f193",
     "biomes/riftrim/tex/anemone.albedo.webp": "6c744774da5a06c54aae9fc38847700e740c3cecf6f67c0fe96a6e719ba342e0",
     "biomes/riftrim/tex/barkB.albedo.webp": "79d9337cce99580f8111e009b3df6b67d938f4bf9a52bd13afa247a53e81e0bb",
@@ -709,10 +709,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "557741688d1ab449431faf217b074c7218500e0d79923c5f49436b4ab1756683"
+    "biomes/riftrim/dist/riftrim-lakes.html": "90c299824ca71e1fe7f5b582844c42e37f5703b3b5b787feae31084305a39a7d"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "557741688d1ab449431faf217b074c7218500e0d79923c5f49436b4ab1756683"
+    "biomes/riftrim/dist/riftrim-lakes.html": "90c299824ca71e1fe7f5b582844c42e37f5703b3b5b787feae31084305a39a7d"
    }
   },
   "build.py --station ledge": {
