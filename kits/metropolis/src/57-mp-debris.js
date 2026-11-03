@@ -11,14 +11,14 @@ MP.debris=function(F,state,coarse){const P=MP.debrisPlan(F,state);if(!P)return n
   const I=g.index;if(I)for(let i=0;i<I.count;i++)q.i.push(base+I.getX(i));else for(let i=0;i<P0.count;i++)q.i.push(base+i);};
  const one=new THREE.Matrix4();
  // the heaps (core/terrain KRUBBLE): rubble grey, darker in the hollows between the lumps; the loose blocks each a shade of their own. coarse: the far one, a sparser grid
- // and no blocks or pieces, for the ruins past 1 km
+ // with its big blocks but not the cover's chunks or the pieces, for the ruins past 1 km
  MP.heaps(F,state).forEach(function(H){const o=KRUBBLE.mesh(H,{cell:coarse?16:4}),n=o.pos.length/3,col=new Float32Array(n*3);
   for(let i=0;i<n;i++){const k=o.part[i]?1-o.occ[i]:(coarse?.9:.7)*(1-.5*o.occ[i]);col[i*3]=.78*k;col[i*3+1]=.75*k;col[i*3+2]=.7*k;   /* the bed a shade under the chunks; the far heap, chunkless, lighter */}
-  /* the bed in the rubble set (loose debris, so the heap does not read as one cast mass), the chunks and blocks in the concrete; the far heap is its bed alone */
-  const bed=[],lumps=[];for(let i=0;i<o.idx.length;i+=3)(o.part[o.idx[i]]?lumps:bed).push(o.idx[i],o.idx[i+1],o.idx[i+2]);
+  /* the bed in the rubble set (loose debris, so the heap does not read as one cast mass), the chunks and blocks in the concrete; the far heap its bed and big blocks */
+  const bed=[],lumps=[];for(let i=0;i<o.idx.length;i+=3){const pt=o.part[o.idx[i]];if(coarse&&pt===2)continue;(pt?lumps:bed).push(o.idx[i],o.idx[i+1],o.idx[i+2]);}
   const g=new THREE.BufferGeometry(),uv=new Float32Array(o.uv.length);for(let i=0;i<uv.length;i++)uv[i]=o.uv[i]/4;   /* the library's uvs are in 4 m units */
   g.setAttribute('position',new THREE.BufferAttribute(o.pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(new THREE.BufferAttribute(new Uint32Array(bed),1));g.computeVertexNormals();put('rubble',g,one);
-  if(!coarse){const gc=g.clone();gc.setIndex(new THREE.BufferAttribute(new Uint32Array(lumps),1));gc.computeVertexNormals();put('concrete',gc,one);}});
+  if(lumps.length){const gc=g.clone();gc.setIndex(new THREE.BufferAttribute(new Uint32Array(lumps),1));gc.computeVertexNormals();put('concrete',gc,one);}});
  if(coarse)P.pieces.length=0;
  // the pieces, each drawn about its own origin, then laid where the plan says
  P.pieces.forEach(function(pc){const B=MP.builder(),m=new THREE.Matrix4();

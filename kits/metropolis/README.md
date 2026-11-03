@@ -87,6 +87,8 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
   level under that, so silhouettes and relief are not rounded off. Shells stand to 1.4 km (the impostor, 128 px a view, was soft at 1 km).
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
+The fallen Ledger keeps its arcade (the owner, 2026-11-03): its arches, piers and flares stand in the mound.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

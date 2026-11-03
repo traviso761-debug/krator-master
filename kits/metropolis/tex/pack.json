@@ -129,26 +129,26 @@
     "normalMap": "rubble.normal.webp",
     "roughnessMap": "rubble.rough.webp"
    },
-   "lib": "rock.rubble.sturzstrom",
+   "lib": "ground.rubble.demolition",
    "metal": 0,
    "normalScale": 1.0,
-   "roughLift": 0.1,
+   "roughLift": 0.05,
    "scale": [
-    4.0,
-    4.0
+    3.0,
+    3.0
    ],
    "size": 512,
    "source": {
-    "albedo": "077c7bffe8f8574617342901bba53d44f339b88a",
-    "normal": "d598c173c5e069699fcbda0163da4cbad180f85c",
-    "roughness": "db489b556bf31f2acf448875ca15bbdd917cf80e"
+    "albedo": "52acea4904e7aa66d27e8c405e89e1dcf399e1ce",
+    "normal": "60a7bfd9b255dfec68822d0dedbb841f5fccd25c",
+    "roughness": "f2ed7e835502489015eb73dbd56aae03f954ffad"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.15,
-    "mean": 0.5,
-    "sourceMean": 0.496
+    "keep": 0.75,
+    "mean": 0.55,
+    "sourceMean": 0.4644
    }
   },
   "white": {

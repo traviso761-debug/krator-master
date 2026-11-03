@@ -7,8 +7,12 @@ const MPS={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
 const MP_NEAR=300,MP_FAR=1400,MP_IMPFAR=3200,MP_RUBBLE=1000;
 // the tiers: a grid of blocks, a tower in about 70% of them, by hash
 MPS.towers=(function(){const P=[],pitch=/[?&]pitch=(\d+)/.test(location.search)?+RegExp.$1:220;MPS.pitch=pitch;const NB=Math.ceil(3100/pitch);for(let i=-NB;i<=NB;i++)for(let j=-NB;j<=NB;j++){if(MP.u(11,i+40,j+40)>.7)continue;if(i===0&&j===0)continue;const x=i*pitch,z=j*pitch;if(Math.hypot(x,z)>3100)continue;
- /* the states, by hash: a fifth intact, a quarter gutted, the five ruins a tenth or so each; a ruined Spindle turned by quarters, so its rubble does not all fall one way */
- const f=MP.u(12,i+40,j+40)<.55?'spindle':'ledger',g=MP.u(13,i+40,j+40),st=MP.RUINS[[.2,.45,.57,.69,.79,.89,1.01].findIndex(c=>g<c)],turn=f==='spindle'&&MP.RUINS.indexOf(st)>1?Math.floor(MP.u(15,i+40,j+40)*4)*Math.PI/2:0;
+ /* the states, by hash: a fifth intact, a quarter gutted, the five ruins a tenth or so each. A ruined Spindle is turned by quarters so its rubble (along a fin, at
+    a0 in its frame) falls where the fewest neighbouring blocks hold a tower: the diagonal block it heads for and the two beside it; ties go to the hash's quarter */
+ const f=MP.u(12,i+40,j+40)<.55?'spindle':'ledger',g=MP.u(13,i+40,j+40),st=MP.RUINS[[.2,.45,.57,.69,.79,.89,1.01].findIndex(c=>g<c)],k0=Math.floor(MP.u(15,i+40,j+40)*4),
+  has=(a,b)=>!(MP.u(11,a+40,b+40)>.7)&&!(a===0&&b===0)&&Math.hypot(a*pitch,b*pitch)<=3100,
+  crowd=k=>{const w=MP.SPINDLE.fins.a0-k*Math.PI/2,di=Math.sign(Math.round(Math.cos(w)*10)),dj=Math.sign(Math.round(Math.sin(w)*10));return (has(i+di,j+dj)?2:0)+(di&&has(i+di,j)?1:0)+(dj&&has(i,j+dj)?1:0);},
+  kb=[0,1,2,3].map(q=>(k0+q)%4).reduce((b,k)=>crowd(k)<crowd(b)?k:b,k0),turn=f==='spindle'&&MP.RUINS.indexOf(st)>1?kb*Math.PI/2:0;
  P.push({id:'mp.t.'+i+'.'+j,key:f+'.'+st,x,z,yaw:f==='ledger'?(MP.u(14,i+40,j+40)<.5?Math.PI/2:0):turn});}return P;})();
 MP.mats();   /* now, not at the bake: the shells and impostors wait for these maps */
 MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return false;const t0=performance.now();

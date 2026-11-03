@@ -15,7 +15,7 @@
 //   KRUBBLE.heightAt(H, x, z)   the heap's surface over (x, z), metres above y0 (0 off it): the one surface function
 //   KRUBBLE.at(list, x, z)      the highest heap surface (world y) over (x, z), or -Infinity
 //   KRUBBLE.mesh(H, opt)        {pos, idx, uv, part, occ}: the surface as a polar grid (opt.cell, 4 m, between rings and round them; its last ring 5 cm under the ground)
-//                               then each block as a box, its corners jittered (a broken piece, not a brick); part 0 the heap, 1 a block or chunk; occ 0..1, the hollows between the lumps dark; uv in metres. CCW seen from outside
+//                               then each block as a box, its corners jittered (a broken piece, not a brick); part 0 the heap, 1 a block, 2 a chunk of the cover; occ 0..1, the hollows between the lumps dark; uv in metres. CCW seen from outside
 //   KRUBBLE.walkTris(H, cell)   the surface as triangles [[x, z, y] x 3] on a coarser grid (cell, 4 m) for a walk registry (core/walk's poly takes them as they are)
 //   KRUBBLE.export(list) / KRUBBLE.load(o)   {format:'krator-rubble', version:1, heaps:[...]} and back
 (function (root) {
@@ -82,7 +82,7 @@
       var P = function (x, y, z) { var y1 = y * cx - z * sx, z1 = y * sx + z * cx, x2 = x * cz - y1 * sz, y2 = x * sz + y1 * cz; return [b.x + x2 * cy + z1 * sy, b.y + y2, b.z - x2 * sy + z1 * cy]; };
       /* each corner pulled in or out by up to a fifth of the side, by hash of the piece and the corner: a broken piece, not a brick */
       var hw = b.w / 2, hh = b.h / 2, hd = b.d / 2, C = [], bs = KR.hash(H.seed, Math.round(b.x * 64), Math.round(b.z * 64), 41), J = function (k, a) { return 1 + (KR.unit(KR.hash(bs, k, a)) - 0.5) * 0.4; };
-      for (var k = 0; k < 8; k++) { var p = P((k & 1 ? hw : -hw) * J(k, 1), (k & 2 ? hh : -hh) * J(k, 2), (k & 4 ? hd : -hd) * J(k, 3)); C.push(vert(p[0], p[1], p[2], 1, 1 - b.tone)); }
+      for (var k = 0; k < 8; k++) { var p = P((k & 1 ? hw : -hw) * J(k, 1), (k & 2 ? hh : -hh) * J(k, 2), (k & 4 ? hd : -hd) * J(k, 3)); C.push(vert(p[0], p[1], p[2], b.chunk ? 2 : 1, 1 - b.tone)); }
       [[0, 4, 6, 2], [1, 3, 7, 5], [0, 1, 5, 4], [2, 6, 7, 3], [0, 2, 3, 1], [4, 5, 7, 6]].forEach(function (f) { idx.push(C[f[0]], C[f[1]], C[f[2]], C[f[0]], C[f[2]], C[f[3]]); });
     });
     return { pos: new Float32Array(pos), idx: new Uint32Array(idx), uv: new Float32Array(uv), part: new Uint8Array(part), occ: new Float32Array(occ) };

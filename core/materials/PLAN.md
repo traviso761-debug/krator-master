@@ -553,6 +553,10 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
+`ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
+heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.
+
 **Delivered 2026-11-02 and processed, the metropolis towers** (`tools/textures/batches/metropolis-2026-11.json`, pasted by
 the owner): `metal.ancient.white.macro` (16 m panel courses; processed with the seam pass off, the sheet already tiles: every course
 has a joint at its edge), `stone.adobe.ceramic`, `patterns/ancient/baroque-scroll` (cropped to its period). The macro panel is
