@@ -4,7 +4,7 @@
    with floor / strip / poly / block (KWALK, or KWALK.create()). Lifted from kits/zeijani (37-zj-walk.js zwItem).
      - each planned storey's floor (its polygon drawn in by the walker's radius, less its stairwells), at its y
      - each wall as small blocks, gapped at its door openings (windows stay shut)
-     - each stair or ladder as a strip from its foot to its top
+     - each stair as a strip from its foot to its top; a ladder (or a flight steeper than 1.1) as rung floors 0.4 m apart
      - each explicit room's floor and walls, gapped at its doors
      - a RAISED base (a plinth, a deck on piles: the body's y above the ground) gets an entry flight from the ground
        outside every street door up to its sill, so the walker can get in; a rise within `step` needs none
@@ -48,6 +48,20 @@
     }
     return parts;
   };
+  /* a ladder (or a flight steeper than LADDER_SLOPE) as rung floors RUNG apart up its line, each reaching on to 0.35 m past the top: a
+     strip that steep rises more than a step over a 0.4 m cell, so neither core/walk's reach nor a walker stepping 0.45 m climbs it
+     (core/walk/box KWALKBOX.ladder's rule, 2026-11-03). Returns 1 (one climb) */
+  const LADDER_SLOPE = 1.1, RUNG = 0.4;
+  function rungs(W, f, tp, w, name, tag) {
+    const dx = tp.x - f.x, dz = tp.z - f.z, run = Math.hypot(dx, dz), ux = run > 1e-6 ? dx / run : 0, uz = run > 1e-6 ? dz / run : 1, px = -uz, pz = ux,
+      rise = tp.y - f.y, n = Math.max(2, Math.ceil(rise / RUNG - 1e-9));
+    for (let i = 1; i <= n; i++) {
+      const u = i / n, cx = f.x + dx * u, cz = f.z + dz * u, y = f.y + rise * u, a0 = -0.3, a1 = Math.hypot(tp.x - cx, tp.z - cz) + 0.35;
+      W.poly({ pts: [[cx + ux * a0 - px * w / 2, cz + uz * a0 - pz * w / 2, y], [cx + ux * a1 - px * w / 2, cz + uz * a1 - pz * w / 2, y],
+        [cx + ux * a1 + px * w / 2, cz + uz * a1 + pz * w / 2, y], [cx + ux * a0 + px * w / 2, cz + uz * a0 + pz * w / 2, y]], name: name + '.rung' + i, tag });
+    }
+    return 1;
+  }
   function wall(W, a, b, y0, y1, t, gaps, tag, st) {
     const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz); if (L < 1e-3) return 0;
     const n = Math.max(1, Math.ceil(L / st)), h = Math.max(t, st) / 2; let k = 0;
@@ -136,7 +150,10 @@
       const G0 = B.graph || { nodes: [] };
       for (const S of B.stairs || []) {
         const f = G0.nodes.find(n => n.tag === 'stairfoot' && n.ref === S.id), tp = G0.nodes.find(n => n.tag === 'stairtop' && n.ref === S.id);
-        if (f && tp) { W.strip({ a: [f.x, f.z, f.y], b: [tp.x, tp.z, tp.y], w: Math.max(0.6, S.w - 0.3), name: S.id, tag }); out.strips++; }
+        if (!f || !tp) continue;
+        const run = Math.hypot(tp.x - f.x, tp.z - f.z), rise = tp.y - f.y, w = Math.max(0.6, S.w - 0.3);
+        if (rise > 0 && (S.kind === 'ladder' || run < 1e-6 || rise / run > LADDER_SLOPE)) { out.strips += rungs(W, f, tp, w, S.id, tag); continue; }
+        W.strip({ a: [f.x, f.z, f.y], b: [tp.x, tp.z, tp.y], w, name: S.id, tag }); out.strips++;
       }
       const f0 = (B.floors || []).find(F => F.level === 0), outline = B.poly || (f0 && f0.poly);
       /* a flight that would run into another body of the same item (a tower beside a hall, a block under a block; their walls grown by 0.45 m) is not drawn: that body is entered from its neighbour */
