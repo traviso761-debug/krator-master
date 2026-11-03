@@ -357,7 +357,7 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
 | 0 graph check | none | none | none |
 | 1 sky | 14 kits + iziz (+ Noah's Regret) | done 2026-11-02 | none (no byte moved) |
 | 2 kit engine | 8 kits + Noah's Regret's geometry | done 2026-11-03 | none committed (proof: fingerprints) |
-| 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
+| 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | module done 2026-11-03; the kits' pass under way | those builds |
 | 3 catalog / Voth | the catalog's build.py comments; then the engine to core/catalog | done 2026-11-03 | the current runtime-loading pages |
 | 4 culture kits out of settlements | the Vernacular first, then Highlands, Xanadu, Locus | low per kit (files move unchanged) | none (byte-identical) |
 | 5 backwards edges | the scanner, 3 builds' lookups, the sockets sheet's folder | done 2026-11-03 | none (byte-identical) |
@@ -388,7 +388,16 @@ steps 2 and 3 to move pages takes them, with the stale pages above). `TODO.md`, 
 - ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the kits' half is step 1 (done, as a placeholder); the
   settlements' half is SKY-PLAN's S5 and step 4.
 
-**Step 2b (new): `core/door`, opening doors as a core module, beside `core/walk`.** `TODO.md`, "Opening doors as a
+**Step 2b (new): `core/door`, opening doors as a core module, beside `core/walk`.** **Module done 2026-11-03** (owner:
+"implement real glass" with it): `core/door` is `KDOOR` (records by stable id, open/close/toggle/nearest, the swing, walk
+blocks, save deltas, export), `KGLASS` (the glass kinds as data and one material each) and `KDOORHOST` (posing, tick, the E
+key); `node core/door/test-door.js`. The Vernacular's `IZDOOR` draws on it: Iziz's city page has the same 1875 doors, 6394
+walk blocks, doorway clearing and door check as before, and the same leaf matrices after opening and shutting 25 doors.
+`KWALK.reach` (core/walk) is the reachability audit. **The pass over the kits** (the owner, 2026-11-03: every kit's black
+voids replaced with true doors and windows, settlement kits first, then the Ancient structures and the arcologies; every
+layout audited with `KWALK.reach` so every interior region and built floor is reachable) runs kit family by kit family:
+the `core/engine` kits with Islanders' and Zeijani's forks; Highlands and Xanadu; then the Yuni lineage, the Beast
+Riders' towns, Pylon and Talia, Post-Apoc; then `kits/ancients`, `kits/port` and the arcologies. `TODO.md`, "Opening doors as a
 core module", "Real doors and glass across the kits", and "Doors that open" (Viewers):
 - Lift `IZDOOR` (`settlements/iziz/src/69e5-iziz-openings.js`) and `95j-iziz-doors.js` into `core/door`: leaves as
   plain records keyed by stable ids (hinge, width, swing, state, locked), `open` / `close` / `toggle` / `nearest` as
