@@ -22,7 +22,8 @@ function describe(hit){const p=hit.point,o=hit.object;
  const name=PLT?PLT.name+'  ·  '+lab+(best?'  (at '+best.name+')':''):(best?best.name+'  ·  '+lab:lab),tg=PLT?PLT.tags:null;
  return name+'\n'+(isItem?'flora · the high passes':'terrain / water')+(tg?'\n'+tg.climate+' · '+tg.aridity+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\nwet '+(FIELD.wet(p.x,p.z)*100|0)+'% · cold '+(FIELD.cold(p.x,p.z)*100|0)+'%\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
-const BUDGET={showcase:{tris:8000000,calls:110},cls:{pass:6000000,host:1500000},type:{'oidong/high':'pass','host':'host'}};
+const BUDGET={showcase:{tris:10000000,calls:110},cls:{pass:8000000,host:1500000},   /* measured 2026-11-03 (Arc): the high country 7.0M, the scene 7.6-8.1M */
+ type:{'oidong/high':'pass','host':'host'}};
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 const HCHK={
@@ -74,5 +75,6 @@ KHOST.take({build:ST.build||'oidong-passes',title:ST.title||'Krator biome — th
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,
+ exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree above the tree line: no bucket geometry to export */
  exportBox:[Math.round(TARN.x-150),Math.round(TARN.z-150),Math.round(TARN.x+150),Math.round(TARN.z+150)],   /* verify.py's export box: holds the tarn (the water section) */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

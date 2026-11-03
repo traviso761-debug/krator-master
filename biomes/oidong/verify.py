@@ -160,7 +160,8 @@ async def run(a):
                          "   OVER" if v["over"] else ""))
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
+            sprof = await pg.evaluate("()=>window._api&&window._api.exportProfile||null")   # a station's own (no trees: no buckets)
+            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else (sprof or EXPORT_PROFILE)
             box = await pg.evaluate("()=>window._api&&window._api.exportBox||null") or EXPORT_BOX   # a station's own box (its water), else the valley's
             pok, lines = await check_profile(pg, box, prof)
             for ln in lines:

@@ -21,9 +21,9 @@ HEARTH.layout=function(o){const {TAU,clamp,smooth,mix,qEuler}=BIO.fn,D=HEARTH.DR
  const TREES=[];
  cells(4.5,2,(x,z,t,s)=>{if(t<25||t>60)return;const k=smooth(25,45,t);if(s.next()>(.35+.5*k)*q)return;
   if(TREES.some(T=>Math.hypot(T.x-x,T.z-z)<mix(4.2,2.6,k)))return;TREES.push({x,z,heat:t,u:s.next()});});
- TREES.forEach((T,i)=>{const y=G(T.x,T.z),H=mix(D.stalk[0],D.stalk[1],U(i,1))*mix(.75,1.1,smooth(25,55,T.heat)),fr=mix(.9,1.6,U(i,2))*(o.dress==='rim'?1.4:1);
+ TREES.forEach((T,i)=>{const y=G(T.x,T.z),H=mix(D.stalk[0],D.stalk[1],U(i,1))*mix(.75,1.1,smooth(25,55,T.heat)),fr=mix(.45,.8,U(i,2))*(o.dress==='rim'?1.6:1);   /* the foot: a limpet a metre or so across on the Cold Hearths (section 3: 1-3 m, the rim's the larger) */
   BIO.register({name:'A hearth tree',key:'hearth',kit:'hearths',x:T.x,z:T.z,y:y,r:fr+.5,h:H+1.5,tags:{heat:T.heat}});
-  BIO.put('hfoot',[T.x,y-.15,T.z],qEuler(0,U(i,3)*TAU,0),[fr,fr*.9,fr],FOOT.clone().lerp(BLACK,.5));
+  BIO.put('hfoot',[T.x,y-.08,T.z],qEuler(0,U(i,3)*TAU,0),[fr,fr*1.5,fr],FOOT.clone().lerp(C(0x4a4038),.4));
   /* the stalk bows to the sun's mean bearing (39-core-lean.js), each its own share of the bow (a hash, not a draw) */
   const lq=BIO.leanQ?BIO.leanQ(.12+.14*U(i,4),{toward:o.toward||{az:0,alt:40},u:U(i,5)}):[0,0,0,1],Q=new T3.Quaternion(lq[0],lq[1],lq[2],lq[3]);
   BIO.put('hstalk',[T.x,y,T.z],Q,[1.1,H,1.1],STALK);

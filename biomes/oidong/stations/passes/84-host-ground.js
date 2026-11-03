@@ -20,7 +20,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.lerp(DAMP,smooth(.35,.7,wet)*.75);
   t.copy(GRAN).lerp(GRAN2,clamp(.4+n*1.6,0,1));c.lerp(t,smooth(.25,.6,rock));
   c.lerp(ROAD,smooth(3.5,1,Math.abs(wz-roadZ(wx)))*.6);
-  c.lerp(SNOW,smooth(5900,6250,hh)*smooth(.2,.7,pav+.3)*(1-smooth(.35,.7,rock)*.85));   /* the snow lies on the benches and in the gullies; the steep rock breaks it */
+  c.lerp(SNOW,smooth(SITE.base+850,SITE.base+1200,hh)*smooth(.2,.7,pav+.3)*smooth(.35,.62,fbm(x/14,y/14,1.7,3))*(1-smooth(.35,.7,rock)*.85));   /* patchy: drifts in the hollows, rock and scree between */   /* the snow lies on the benches and in the gullies; the steep rock breaks it */
   const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -40,7 +40,7 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-passes-ground'+(KG_PAVE?'p':'')+(
  KG_PAVE?{kind:'clast',w:'(1.0-vRock)*(1.0-vFlat)*(1.0-vWet)',amt:.5,proj:'xz',size:.07,matrix:.26,matrixColor:0x7a7064,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x4a4642,0x5e5850,0x6e665a,0x3e3a36,0x7a6e5e,0x58524a],seed:331,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vFlat',amt:.8,size:2.4,width:.07,edgeTint:'vec3(0.4,0.37,0.33)',warp:.16,rim:.06,rimTint:'vec3(0.55,0.52,0.48)',seed:332,name:'sorted polygons'}:null,
- {kind:'clast',w:'vRock*0.85',amt:.75,proj:'tri',size:.8,matrix:.12,matrixColor:0x5a5652,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0x6a6662,0x78746e,0x52504c,0x86807a,0x605c58],seed:333,name:'talus'}]});
+ {kind:'clast',w:'vRock*0.85',amt:.75,proj:'tri',size:.8,matrix:.12,matrixColor:0x6e6a66,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0x8a8682,0x9a958e,0x726e6a,0xa8a29a,0x807a74],seed:333,name:'talus'}]});
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),fl=new Float32Array(nx*nx);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
