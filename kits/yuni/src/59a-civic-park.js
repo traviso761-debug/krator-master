@@ -22,7 +22,7 @@
         F.toron(o,y,tz+h-0.05, 0,1, 1.05); F.toron(o,y,tz-h+0.05, 0,-1, 1.05); F.toron(h-0.05,y,tz+o, 1,0, 1.05); F.toron(-h+0.05,y,tz+o, -1,0, 1.05); } }
       for(var r2=0;r2<2;r2++){ var y2=TH+1.4+r2*1.5, h2=1.7*(1-0.5*(y2-TH)/4.8); [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(nn){ F.toron(nn[0]*(h2-0.05), y2, tz+nn[1]*(h2-0.05), nn[0],nn[1], 0.9); }); }
       F.fr8(0,0,tz+hw(0)-0.1, 1.9,2.6,1.2, 0, c2, fam); F.door(0,tz+hw(0)+0.46, 0,1, 0.95,1.9, PLANKC[3]);
-      F.box(0,8.2,tz+hw(8.2)-0.12, 0.45,1.0,0.3, 0, VOIDC[0],'dark');
+      F.card(0,8.2,tz+hw(8.2)-0.12, 0.45,1.0,0.3, 0);   /* an unglazed slit: the room card */
       F.lantern(1.5,2.4,7.75, 0.8,12,0); shrub(F,-4.6,4.6,0.9); if(F.wealth>0.4) cypress(F,4.8,4.4,5.5);
     } });
 
@@ -78,10 +78,10 @@
       for(var sl=0;sl<4;sl++){ var sa=sl*1.32+0.4, sy=SH0+1.0+sl*1.75, sr=(sy<SH0+3.1?R0-0.22:R1+0.30);
         F.window(Math.cos(sa)*sr, sy, Math.sin(sa)*sr, Math.cos(sa),Math.sin(sa), 0.40,1.05, {noReveal:true});
         F.box(Math.cos(sa)*(sr+0.04), sy-0.78, Math.sin(sa)*(sr+0.04), 0.56,0.12,0.12, Math.atan2(Math.cos(sa),Math.sin(sa)), shade(col,0.08), fam); }
-      /* ---- the BELFRY: a dark void behind four parabolic openings, with a bell you can read ---- */
-      F.cyl(0, BEL-0.40, 0, R1-0.06, 0.42, 0, VOIDC[0], 'dark');                                             /* the dark ceiling of the belfry */
-      F.cyl(0, SH1+0.22, 0, R1-0.06, 0.30, 0, VOIDC[1], 'dark');                                             /* and its dark floor */
-      F.cyl(0, SH1+0.50, 0, 0.62, 2.1, 0, VOIDC[0], 'dark');                                                 /* a dark core behind the bell */
+      /* ---- the BELFRY: the shaded room behind four parabolic openings (the room card's colour, not a void), with a bell you can read ---- */
+      F.cyl(0, BEL-0.40, 0, R1-0.06, 0.42, 0, ROOMC, 'dark');                                                /* the belfry's ceiling */
+      F.cyl(0, SH1+0.22, 0, R1-0.06, 0.30, 0, ROOMC, 'dark');                                                /* and its floor */
+      F.cyl(0, SH1+0.50, 0, 0.62, 2.1, 0, ROOMC, 'dark');                                                    /* the core behind the bell */
       [0,PI/2,PI,-PI/2].forEach(function(f){ var sn=Math.sin(f), cs=Math.cos(f);
         F.archwall(fam, sn*(R1-0.05), SH1+0.30, cs*(R1-0.05), f, 2.9,3.0,0.62, 2.05,2.45, col, { pointed:1.8, colIn:shade(col,-0.5), noTop:true });
         F.archband('mosaic', sn*(R1+0.26), SH1+0.30, cs*(R1+0.26), f, 2.05,2.45, 0.24,0.10, band);

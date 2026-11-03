@@ -22,11 +22,19 @@ windows and openings) and `53-assets.js` (`ASSET`, `FURN`, the frame `F`: `F.doo
 planner). The engine is not a kit or a core module: each world that runs it has forked it with its own constants inside
 `10-core.js` (MODULARITY-PLAN.md step 4b says why).
 
+**Openings (core/door, 2026-11-03).** No black plates: a builder draws an opening through the frame, which both forks
+(Yuni's and Locus's `53-assets.js`, helpers in `45-kit.js`) carry. `F.door` is a working door (a KDOOR record,
+`<key>.<n>.d<i>`); `F.window` a pane of glass (`81-glow.js`, KGLASS) over the room card (`ROOMC`, KGLASS's `room`
+colour); `F.card(...)` the room card alone (an open hut mouth, a shop within its front, a vent: F.box's arguments without
+the colour); `F.paneBox(...)` a glazing panel (card and glass, `o.kind`, `o.out`); `F.pane(...)` glass alone;
+`F.doorway(...)` a doorway drawn as a panel, now a locked leaf (`o.col`, `o.fam`, `o.out`). A void that is not an
+opening (a smoke hole, a flue's top, a well, a pot's mouth, a trough, a shadowed floor) stays `VOIDC`.
+
 **Who takes it.**
 - Read in place: `settlements/yuni` (the city places the buildings; its `sheet` target, `yuni-assets.html`, is the kit's sheet).
 - Read in place on Locus's frame (2026-11-03): `settlements/locus` (its own frame, `53-assets.js`, has the kit's `F.opening`,
   `F.mass` and `F.doorIds`, but no fixtures registry or interiors planner, so an opening there is a door point and a mass draws
-  nothing), and through Locus Mungo and Verge's `YKIT`. Until then Locus kept an older fork of these files.
+  nothing; its doors are locked unless `?interiors=1` plans a room behind one), and through Locus Mungo and Verge's `YKIT`. Until then Locus kept an older fork of these files.
 - The interiors kit's sets `kits/interiors/sets/yuni.js` and `yuni-town.js` furnish these buildings by key.
 
 **Its own sheet.** Not yet: the sheet is Yuni's `sheet` target, on Yuni's page shell, and `verify.py yuni-assets.html

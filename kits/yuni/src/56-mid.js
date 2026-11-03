@@ -45,8 +45,10 @@ reseed(560001);
   function pdoor(F,lx,lz,face,col,fam,o){ o=o||{}; var nx=Math.sin(face), nz=Math.cos(face), ow=o.ow||1.5, oh=o.oh||2.5, W=o.W||2.3, Hh=o.H||3.05, T=o.T||0.2;
     F.door(lx,lz, nx,nz, ow-0.1, 2.25, o.leaf!=null?o.leaf:PLANKC[1], o.sill);
     F.archwall(fam||'relief', lx+nx*(T/2+0.06),o.sill||0,lz+nz*(T/2+0.06), face, W,Hh,T, ow,oh, col, { noBack:true, seg:8, pointed:2.7, colIn:shade(col,-0.2) }); }
-  /* a dark parabolic opening standing proud of a wall (loggia window, vent, kiln mouth) */
-  function parch(F,lx,ly,lz,face,w,h,col,fam){ var nx=Math.sin(face), nz=Math.cos(face); F.box(lx+nx*0.03,ly,lz+nz*0.03, w+0.1,h+0.05,0.06, face, VOIDC[0],'dark');
+  /* a parabolic opening standing proud of a wall (loggia window, vent, hatch): the room card behind it (53-assets.js F.card),
+     glazed when it is a window (glass: F.paneBox, clear glass on the card) */
+  function parch(F,lx,ly,lz,face,w,h,col,fam,glass){ var nx=Math.sin(face), nz=Math.cos(face);
+    if(glass) F.paneBox(lx+nx*0.03,ly,lz+nz*0.03, w+0.1,h+0.05,0.06, face, { out:[nx,nz] }); else F.card(lx+nx*0.03,ly,lz+nz*0.03, w+0.1,h+0.05,0.06, face);
     F.archwall(fam||'plaster', lx+nx*0.12,ly,lz+nz*0.12, face, w+0.7,h+0.45,0.2, w,h, col, { noBack:true, seg:6 }); }
   /* striped awning: n stripes across x0..x1, from the wall edge (zb,yb) down to the front edge (zf,yf); both faces */
   function awning(F,x0,x1,zb,yb,zf,yf,n,cA,cB,poles){ for(var i=0;i<n;i++){ var xa=x0+(x1-x0)*i/n, xb=x0+(x1-x0)*(i+1)/n, c=i%2?cB:cA;
@@ -86,7 +88,7 @@ reseed(560001);
       /* roof terrace: stair bulkhead, pots, laundry */
       var bx=(v%2?-1:1)*(W*0.93/2-1.7), bz=cz-D*0.93/2+1.75, bh=(v===2?3.0:2.2), bw=(v===2?3.6:2.3);
       if(v===2){ bx=W*0.93/2-2.35; bz=cz-D*0.93/2+2.4; }
-      F.box(bx,H,bz, bw,bh,bw, 0, shade(col,0.04),fam); F.box(bx-(v===2?0.9:0),H,bz+bw/2+0.02, 0.9,1.9,0.08, 0, VOIDC[1],'dark');
+      F.box(bx,H,bz, bw,bh,bw, 0, shade(col,0.04),fam); F.doorway(bx-(v===2?0.9:0),H,bz+bw/2+0.02, 0.9,1.9,0.08, 0, { out:[0,1] });   /* the stair kiosk's door: a locked leaf (53-assets.js F.doorway) */
       if(v===2){ F.window(bx+0.8,H+1.7,bz+bw/2+0.03, 0,1, 0.7,0.9); F.box(bx,H+bh,bz, bw+0.3,0.3,bw+0.3, 0, trim,'plaster'); }
       pot(F,-bx*0.9,H,cz+D*0.3, 0.32,0.7, TILEC[1]); F.blob(-bx*0.9,H+0.6,cz+D*0.3,0.45,0.6,0,PAL.shrub[1],'leafy');
       if(F.chance(0.7)) laundry(F, -bx, H+1.9, bz, bx-(bx>0?1:-1)*bw/2, H+1.9, bz, 3), F.rod(-bx,H,bz,-bx,H+2.0,bz,0.04,TIMBERC[1]);
@@ -141,7 +143,7 @@ reseed(560001);
       function zf0(y){ return z0+D0/2*(1-0.16*y/H0); }
       pdoor(F,m*2.6,zf0(1.4)+0.02,0, shade(col,0.08),fam==='adobe'?'adobe':'relief',{leaf:PLANKC[v]});
       F.window(-m*1.0,2.2,zf0(2.2)+0.03, 0,1, 0.5,0.6); F.window(-m*3.4,2.2,zf0(2.2)+0.03, 0,1, 0.5,0.6);
-      for(var r=0;r<2;r++) for(var c=0;c<=r;c++) F.pyr(m*2.6+(c-r/2)*0.6, 3.25-r*0.4, zf0(3.1)-0.1, 0.36,0.32,0.3, 0, VOIDC[0],'dark');
+      for(var r=0;r<2;r++) for(var c=0;c<=r;c++) F.pyr(m*2.6+(c-r/2)*0.6, 3.25-r*0.4, zf0(3.1)-0.1, 0.36,0.32,0.3, 0, ROOMC,'dark');
       horn(m*(w0/2-0.3),H0+0.7,z0+d0/2-0.3); horn(-m*(w0/2-0.3),H0+0.7,z0+d0/2-0.3);
       /* second cube, back corner, with an arcaded loggia facing the terrace */
       var W1=v===2?7.6:6.6, D1=5.6, H1=3.3, x1=-m*(w0/2-W1/2-0.05), z1=z0-d0/2+D1/2+0.05, y1=H0;
@@ -150,13 +152,13 @@ reseed(560001);
       F.box(x1,y1,z1+D1/2-1.55, W1-0.3,H1-0.3,0.06, 0, shade(col,-0.35),fam);         /* shaded back wall of the loggia */
       var nb=v===2?4:3; F.arcade(fam, x1,y1,z1+D1/2-0.2, 0, nb, W1/nb, H1-0.35, 0.4, col, { pier:0.55, head:0.55, seg:6, noTop:true });
       F.box(x1-W1/2+0.2,y1,z1+D1/2-0.95, 0.4,H1-0.35,1.5,0,col,fam); F.box(x1+W1/2-0.2,y1,z1+D1/2-0.95, 0.4,H1-0.35,1.5,0,col,fam);
-      F.box(x1-m*1.0,y1,z1+D1/2-1.5, 0.9,1.95,0.08, 0, VOIDC[1],'dark');
+      F.doorway(x1-m*1.0,y1,z1+D1/2-1.5, 0.9,1.95,0.08, 0);
       var y2=y1+H1; parapet(F,x1,z1,W1,D1,y2,0.6,0.28,col,fam,'fb'+(v===0?'lr':m>0?'l':'r'));
       horn(x1-W1/2+0.28,y2+0.55,z1+D1/2-0.28); horn(x1+W1/2-0.28,y2+0.55,z1+D1/2-0.28); horn(x1-m*(W1/2-0.28),y2+0.55,z1-D1/2+0.28);
       F.window(x1-m*(W1/2+0.0)-m*0.03, y1+1.8, z1-0.9, -m,0, 0.5,0.7);
       /* third cube (not on variant 0): a small tower room stepping back again */
       if(v>0){ var W2=3.6, x2=x1-m*(W1/2-W2/2), z2=z1-D1/2+W2/2, H2=v===2?3.6:2.9; F.fr8(x2,y2,z2, W2,H2,W2, 0, col,fam);
-        F.window(x2,y2+1.7,z2+W2/2*(1-0.16*1.7/H2)+0.03, 0,1, 0.5,0.8); F.box(x2+m*(W2/2-0.12),y2,z2, 0.08,1.9,0.85, 0, VOIDC[1],'dark');
+        F.window(x2,y2+1.7,z2+W2/2*(1-0.16*1.7/H2)+0.03, 0,1, 0.5,0.8); F.doorway(x2+m*(W2/2-0.12),y2,z2, 0.08,1.9,0.85, 0, { out:[m,0] });
         [[1,1],[-1,1],[1,-1],[-1,-1]].forEach(function(q){ horn(x2+q[0]*(W2*0.42-0.27),y2+H2-0.05,z2+q[1]*(W2*0.42-0.27)); }); }
       else { F.edome(x1-m*1.2,y2,z1-0.6, 1.5,1.0,1.5, 0, col,fam); }
       /* life on the terrace */
@@ -192,7 +194,7 @@ reseed(560001);
       F.window(wx+m*0.6,2.0,B.zf(2.0)+0.03, 0,1, 0.7,0.85); F.window(wx+m*(Ww/2-0.02)*0.975,2.0,wz, m,0, 0.7,0.85);
       F.roundWindow(tx+Math.cos(PI/2)*rr0(H-2.6),H-2.6,tz+Math.sin(PI/2)*rr0(H-2.6), 0,1, 0.5, shade(col,0.12), 6);
       /* terrace door from the drum onto the wing roof, awning, pots */
-      var da2=m>0?0.18:PI-0.18; F.box(tx+Math.cos(da2)*(rr0(Hw+1)-0.12),Hw,tz+Math.sin(da2)*(rr0(Hw+1)-0.12), 0.95,1.95,0.4, -da2+PI/2, VOIDC[1],'dark');
+      var da2=m>0?0.18:PI-0.18; F.doorway(tx+Math.cos(da2)*(rr0(Hw+1)-0.12),Hw,tz+Math.sin(da2)*(rr0(Hw+1)-0.12), 0.95,1.95,0.4, -da2+PI/2, { out:[Math.cos(da2),Math.sin(da2)] });
       awning(F, wx-1.6,wx+1.6, wz-Dw*0.45+0.4,Hw+2.3, wz+0.6,Hw+2.0, 4, AWNINGC[v], AWNINGC[3], false);
       [[-1.5,-Dw*0.45+0.4],[1.5,-Dw*0.45+0.4],[-1.5,0.6],[1.5,0.6]].forEach(function(q){ F.rod(wx+q[0],Hw,wz+q[1],wx+q[0],Hw+(q[1]>0?2.0:2.3),wz+q[1],0.045,TIMBERC[1]); });
       pot(F,wx+m*2.2,Hw,wz+2.0,0.33,0.7,TILEC[1]);
@@ -220,13 +222,13 @@ reseed(560001);
       if(v===0) F.cone(tx,TH+1.9,tz,0.18,0.8,0,BRASSC[0],'metal'); else for(i=0;i<6;i++){ var a=i/6*TAU; F.cone(tx+Math.cos(a)*(rr0(TH)-0.3),TH+0.75,tz+Math.sin(a)*(rr0(TH)-0.3),0.28,0.8,0,tcol,fam); }
       var by=TH-1.2; F.lathe(F.wealth>0.6?'paintbw':'relief',tx,tz,[[rr0(by)+0.06,by],[rr0(by+0.8)+0.06,by+0.8],[rr0(by+0.8)-0.04,by+0.85]], F.wealth>0.6?0xf0e6d0:shade(tcol,0.12),{seg:14});
       [PI/2, m>0?0:PI].forEach(function(a){ F.window(tx+Math.cos(a)*rr0(5.4),5.4,tz+Math.sin(a)*rr0(5.4),Math.cos(a),Math.sin(a),0.65,1.0,{noReveal:true}); F.window(tx+Math.cos(a)*rr0(2.2),2.2,tz+Math.sin(a)*rr0(2.2),Math.cos(a),Math.sin(a),0.55,0.75,{noReveal:true}); });
-      F.box(tx,H,tz-rr0(H+1)+0.1, 0.9,1.9,0.3, 0, VOIDC[1],'dark');
+      F.doorway(tx,H,tz-rr0(H+1)+0.1, 0.9,1.9,0.3, 0, { out:[0,-1] });
       /* front door + few windows: a closed house */
       pdoor(F,-m*1.2,h-0.02,0, shade(col,0.10),'relief',{leaf:PLANKC[v+1]});
       F.window(-m*3.9,2.3,h+0.03, 0,1, 0.6,0.7); F.window(-m*(h+0.03),2.3,1.5, -m,0, 0.6,0.7); F.window(-m*(h+0.03),2.3,-2.5, -m,0, 0.6,0.7); F.window(m*(h+0.03),2.3,-2.0, m,0, 0.6,0.7);
       for(i=0;i<4;i++) F.toron(-m*(2.6+i*0.8),H-0.4,h, 0,1, 0.7,0.07);
       /* the court: a tree, a doorway, laundry on the roof */
-      F.tree(-m*0.3,-0.2,'olive',5.2,0.7); F.box(0,0.7,-h+dp+0.02, 1.0,2.0,0.06, 0, VOIDC[1],'dark'); F.box(0,0.7,h-dp-0.02, 1.0,2.0,0.06, 0, VOIDC[1],'dark');
+      F.tree(-m*0.3,-0.2,'olive',5.2,0.7); F.doorway(0,0.7,-h+dp+0.02, 1.0,2.0,0.06, 0, { out:[0,1] }); F.doorway(0,0.7,h-dp-0.02, 1.0,2.0,0.06, 0, { out:[0,-1] });   /* the doors onto the court */
       laundry(F,-m*4.6,H+1.7,-4.4, -m*4.6,H+1.7,-0.6, 3); F.rod(-m*4.6,H,-4.4,-m*4.6,H+1.75,-4.4,0.04,TIMBERC[1]); F.rod(-m*4.6,H,-0.6,-m*4.6,H+1.75,-0.6,0.04,TIMBERC[1]);
       F.lantern(-m*1.2+1.5,2.6,h+0.3,0.8,12,0);
     } });
@@ -245,7 +247,7 @@ reseed(560001);
       rband(F,B,H-0.5,H+0.1,0.05, F.wealth>0.6?MOSBLUEC[v]:shade(lite,0.03), F.wealth>0.6?'mosaic':'relief');
       var zf=B.zf(1.5), sx=-m*1.35;
       /* the shopfront: a wide parabolic opening, dark within, shelves and a counter */
-      F.box(sx,0,zf+0.03, 3.6,2.9,0.06, 0, VOIDC[1],'dark');
+      F.card(sx,0,zf+0.03, 3.6,2.9,0.06, 0);   /* the shop within: the room card */
       F.archwall(fam==='adobe'?'adobe':'relief', sx,0,zf+0.15, 0, 4.0,3.35,0.3, 3.3,2.8, lite, { noBack:true, seg:8, pointed:2.6 });
       F.box(sx,1.55,zf+0.12, 2.5,0.07,0.22, 0, PLANKC[3],'plank'); F.box(sx,0,zf+0.85, 2.9,0.95,0.6, 0, PLANKC[1],'plank');
       pdoor(F,m*2.55,zf-0.04,0, lite,'relief',{W:1.9,ow:1.25,leaf:PLANKC[v]});
@@ -254,7 +256,7 @@ reseed(560001);
       for(var s=1;s<st;s++){ var y=s*3.2+2.0; F.window(-2.2,y,B.zf(y)+0.03,0,1,0.75,1.0); F.window(0.3*m+0.0,y,B.zf(y)+0.03,0,1,0.75,1.0); if(s>1) F.window(2.4,y,B.zf(y)+0.03,0,1,0.75,1.0); }
       F.window(B.xr(5)+0.03,5.2,cz, 1,0, 0.7,1.0); F.window(B.xl(5)-0.03,5.2,cz, -1,0, 0.7,1.0);
       sign(F, m*2.55, 4.35, B.zf(4.35), [MOSWARMC[0],MOSBLUEC[1],MOSGREENC[0],MOSWARMC[2]][v]);
-      F.box(m*(W/2*0.95-1.6),H,cz-D/2*0.95+1.6, 2.2,2.2,2.2, 0, shade(col,0.04),fam); F.box(m*(W/2*0.95-1.6),H,cz-D/2*0.95+2.72, 0.9,1.85,0.06,0,VOIDC[1],'dark');
+      F.box(m*(W/2*0.95-1.6),H,cz-D/2*0.95+1.6, 2.2,2.2,2.2, 0, shade(col,0.04),fam); F.doorway(m*(W/2*0.95-1.6),H,cz-D/2*0.95+2.72, 0.9,1.85,0.06,0, { out:[0,1] });
       laundry(F, -m*3.2,H+1.8,cz-2.0, -m*3.2,H+1.8,cz+2.0, 3); F.rod(-m*3.2,H,cz-2.0,-m*3.2,H+1.85,cz-2.0,0.04,TIMBERC[1]); F.rod(-m*3.2,H,cz+2.0,-m*3.2,H+1.85,cz+2.0,0.04,TIMBERC[1]);
       F.lantern(sx+m*2.2+m*0.0,2.75,zf+0.45,0.9,13,0);
       /* the goods */
@@ -286,7 +288,7 @@ reseed(560001);
       pdoor(F,bx,zf-0.04,0, lite,'relief',{leaf:PLANKC[0],ow:1.6,W:2.5});
       F.window(bx-2.7,1.9,B.zf(1.9)+0.03,0,1,0.8,0.9); F.window(bx+2.7,1.9,B.zf(1.9)+0.03,0,1,0.8,0.9);
       for(var s=1;s<(v?3:2);s++){ var y=s*3.2+2.2; F.window(bx-2.6,y,B.zf(y)+0.03,0,1,0.8,1.1); F.window(bx+2.6,y,B.zf(y)+0.03,0,1,0.8,1.1); if(s>1) F.window(bx,y,B.zf(y)+0.03,0,1,0.8,1.1); }
-      F.box(bx,PH+0.3,B.zf(4.5)+0.02, 1.0,2.0,0.08, 0, VOIDC[1],'dark');                        /* door onto the porch terrace */
+      F.doorway(bx,PH+0.3,B.zf(4.5)+0.02, 1.0,2.0,0.08, 0, { out:[0,1] });                        /* door onto the porch terrace */
       F.window(bx-m*(W/2*0.97+0.03),5.3,cz, -m,0, 0.8,1.1);
       /* benches + table under the porch, stools on the terrace */
       F.box(bx-2.7,0,zf+1.0, 1.9,0.45,0.5, 0, PLANKC[2],'plank'); F.box(bx+2.7,0,zf+1.0, 1.9,0.45,0.5, 0, PLANKC[2],'plank');
@@ -299,7 +301,7 @@ reseed(560001);
       F.box(yx,0,2.9, 1.6,0.75,0.8, 0.2, PLANKC[1],'plank'); F.box(yx-0.1,0,3.85, 1.5,0.42,0.35, 0.2, PLANKC[3],'plank'); F.box(yx+0.1,0,1.95, 1.5,0.42,0.35, 0.2, PLANKC[3],'plank');
       jar(F,yx+m*1.5,0,4.6,0.6,TILEC[1]);
       /* kitchen lean-to at the back of the yard with a smoking chimney */
-      F.box(yx-m*0.3,0,-4.0, 3.6,2.9,3.0, 0, shade(col,-0.04),fam); F.box(yx-m*0.3,0,-2.48, 1.0,1.95,0.06, 0, VOIDC[1],'dark');
+      F.box(yx-m*0.3,0,-4.0, 3.6,2.9,3.0, 0, shade(col,-0.04),fam); F.doorway(yx-m*0.3,0,-2.48, 1.0,1.95,0.06, 0, { out:[0,1] });
       F.fr8(yx+m*0.8,2.9,-4.4, 1.1,3.4,1.1, 0, shade(col,-0.08),fam); F.box(yx+m*0.8,6.25,-4.4, 0.7,0.12,0.7, 0, PAL.paintBlack[0],'dark');
       F.fr5(yx+m*0.8,5.2,-4.4, 1.0,1.2,1.0, 0, PAL.paintBlack[1],'plaster');
       F.lamp(yx-m*0.3,1.3,-2.2, 0.9,9);
@@ -308,7 +310,7 @@ reseed(560001);
       F.lantern(bx-1.35,2.75,pz+0.42,0.9,13,0); F.lantern(bx+1.35,2.75,pz+0.42,0.9,13,0); F.lantern(yx-m*1.6,2.6,z1+0.2,0.8,12,0); F.lantern(bx,3.0,zf+1.2,0.8,10,0.3);
       F.lantern(yx+m*0.2,2.9,2.4,0.7,10,0);  F.rod(yx+m*0.2,3.2,2.4, yx+m*0.2,4.0,1.4, 0.02, TIMBERC[3]);
       /* roof */
-      var rx=bx+m*(W/2*0.95-1.7), rz=cz-D/2*0.95+1.7; F.box(rx,H,rz, 2.3,2.2,2.3, 0, lite,fam); F.box(rx,H,rz+1.17, 0.9,1.85,0.06, 0, VOIDC[1],'dark');
+      var rx=bx+m*(W/2*0.95-1.7), rz=cz-D/2*0.95+1.7; F.box(rx,H,rz, 2.3,2.2,2.3, 0, lite,fam); F.doorway(rx,H,rz+1.17, 0.9,1.85,0.06, 0, { out:[0,1] });
       if(v) F.edome(rx,H+2.2,rz, 1.25,1.0,1.25, 0, lite,fam);
       awning(F, bx-m*2.0-1.3,bx-m*2.0+1.3, cz-1.5,H+2.3, cz+1.6,H+2.0, 3, AWNINGC[1],AWNINGC[3], false);
       [[-1.3,-1.5,2.3],[1.3,-1.5,2.3],[-1.3,1.6,2.0],[1.3,1.6,2.0]].forEach(function(q){ F.rod(bx-m*2.0+q[0]*0.97,H,cz+q[1], bx-m*2.0+q[0]*0.97,H+q[2],cz+q[1], 0.045,TIMBERC[1]); });
@@ -351,7 +353,7 @@ reseed(560001);
     build:function(F){
       var v=F.variant, m=v?-1:1, col=v?WHITEC[3]:ADOBEC[1], fam=v?'plaster':'adobe', dk=PAL.adobeDark[1];
       var B=rbody(F,{ x:0,z:-3.5,W:11.0,D:4.2,H:3.7,par:0.7,rc:0.8,k:0.96,col:col,fam:fam,base:0.7 });
-      F.box(m*3.0,0,B.zf(1)+0.02, 1.1,2.0,0.06, 0, VOIDC[1],'dark'); F.window(-m*3.2,2.0,B.zf(2)+0.03,0,1,0.7,0.8);
+      F.doorway(m*3.0,0,B.zf(1)+0.02, 1.1,2.0,0.06, 0, { out:[0,1] }); F.window(-m*3.2,2.0,B.zf(2)+0.03,0,1,0.7,0.8);
       /* the heavy roof of the forge porch on fat piers, beam ends showing */
       var zr0=-1.5, zr1=4.9, RY=3.2;
       F.box(0,RY,(zr0+zr1)/2, 11.0,0.75,zr1-zr0, 0, shade(col,-0.05),fam); parapet(F,0,(zr0+zr1)/2,11.0,zr1-zr0,RY+0.75,0.4,0.3,shade(col,-0.02),fam,'flr');
@@ -488,9 +490,9 @@ reseed(560001);
       F.box(0,H,-zi+0.0, LB,0.9,0.4,0,col,fam); [-1,1].forEach(function(s){ F.box(s*(GW/2+(xi-GW/2)/2),H,zi, xi-GW/2,0.9,0.4,0,col,fam); F.box(s*xi,H,0, 0.4,0.88,LS,0,col,fam); });
       F.box(0,H-0.28,-zi+0.33, LB-1,0.5,0.06,0,MOSBLUEC[3],'mosaic'); [-1,1].forEach(function(s){ F.box(s*(xi-0.33),H-0.28,0, 0.06,0.5,LS-1,0,MOSBLUEC[3],'mosaic'); });
       /* room doors behind the galleries (not on the stable side's ground floor) */
-      for(i=0;i<15;i+=2){ var dx=(i-7)*LB/15; F.box(dx,Y0,-Z+RB+0.03, 1.1,2.1,0.06,0,VOIDC[1],'dark'); if(i%4===0) F.box(dx,H1,-Z+RB+0.03, 1.1,2.1,0.06,0,VOIDC[1],'dark'); }
-      for(i=0;i<11;i+=2){ var dz=(i-5)*LS/11; F.box(X-RB-0.03,Y0,dz, 0.06,2.1,1.1,0,VOIDC[1],'dark'); if(i%4===1) F.box(X-RB-0.03,H1,dz, 0.06,2.1,1.1,0,VOIDC[1],'dark'); if(i%4===1) F.box(-X+RB+0.03,H1,dz, 0.06,2.1,1.1,0,VOIDC[1],'dark'); }
-      [-1,1].forEach(function(s){ for(i=0;i<3;i++){ var fx=s*(GW/2+3+i*10.5); F.box(fx,Y0,Z-RB-0.03, 1.1,2.1,0.06,0,VOIDC[1],'dark'); } });
+      for(i=0;i<15;i+=2){ var dx=(i-7)*LB/15; F.doorway(dx,Y0,-Z+RB+0.03, 1.1,2.1,0.06,0,{ out:[0,1] }); if(i%4===0) F.doorway(dx,H1,-Z+RB+0.03, 1.1,2.1,0.06,0,{ out:[0,1] }); }   /* locked leaves: no rooms are planned behind them */
+      for(i=0;i<11;i+=2){ var dz=(i-5)*LS/11; F.doorway(X-RB-0.03,Y0,dz, 0.06,2.1,1.1,0,{ out:[-1,0] }); if(i%4===1) F.doorway(X-RB-0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[-1,0] }); if(i%4===1) F.doorway(-X+RB+0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[1,0] }); }
+      [-1,1].forEach(function(s){ for(i=0;i<3;i++){ var fx=s*(GW/2+3+i*10.5); F.doorway(fx,Y0,Z-RB-0.03, 1.1,2.1,0.06,0,{ out:[0,-1] }); } });
       /* STABLES along the left (-x) range: rails between the piers, mangers, hay */
       F.box(-xi-0.0,Y0+1.0,0, 0.14,0.14,LS-2, 0, TIMBERC[0],'timber'); F.box(-xi,Y0+0.5,0, 0.12,0.12,LS-2, 0, TIMBERC[2],'timber');
       for(i=0;i<5;i++){ var sz=(i-2)*10; F.box(-X+RB+0.5,Y0,sz, 0.8,0.7,4.5,0,PLANKC[1],'plank'); F.box(-X+RB+0.5,Y0+0.7,sz, 0.7,0.25,4.2,0,THATCHC[0],'thatch'); F.box(-xi-1.4,Y0,sz+4.9, 2.4,1.5,0.12,0,PLANKC[3],'plank'); }
@@ -505,7 +507,7 @@ reseed(560001);
         F.archband('plaster', 0,0,gz+s*(GT/2+0.10), s>0?0:PI, OW+0.84,OH+0.42, 0.20, 0.18, WHITEC[2], { pointed:3 }); });
       F.box(0,15.3,gz+GT/2+0.06, GW-2.6,1.0,0.12,0,MOSBLUEC[2],'mosaic'); F.box(0,14.6,gz+GT/2+0.06, GW-2.6,0.5,0.12,0,MOSWARMC[0],'mosaic'); F.box(0,12.6,gz+GT/2+0.05, 6.5,1.5,0.1,0,0xf0e6d0,'paintcol');
       for(i=-2;i<=2;i++){ if(i) F.toron(i*3.4,13.6,gz+GT/2, 0,1, 0.8,0.1); }
-      [-1,1].forEach(function(s){ parch(F, s*7.2,9.0,gz+GT/2, 0, 1.0,1.9, col,fam);
+      [-1,1].forEach(function(s){ parch(F, s*7.2,9.0,gz+GT/2, 0, 1.0,1.9, col,fam, true);
         F.fr5(s*(GW/2-0.2),0,gz+GT/2-0.35, 2.2,GH+1.5,2.0,0,col,fam); F.cone(s*(GW/2-0.2),GH+1.4,gz+GT/2-0.35, 0.72,2.4,0,col,fam);
         F.fr5(s*(GW/2-0.2),0,gz-GT/2+0.4, 2.0,GH+1.0,2.0,0,col,fam); F.cone(s*(GW/2-0.2),GH+0.9,gz-GT/2+0.4, 0.66,2.0,0,col,fam);
         F.box(s*4.1,0,gz+2.6, 0.18,7.0,3.6, s*0.12, PLANKC[3],'plank');                                  /* the great leaves, swung open */
@@ -514,7 +516,7 @@ reseed(560001);
       F.edome(0,GH,gz-0.5, 3.8,3.0,3.8, 0, MOSBLUEC[1],'mosaic'); F.cone(0,GH+2.9,gz-0.5,0.22,1.4,0,BRASSC[0],'metal');
       /* corner towers */
       [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){ var tx=q[0]*(X-4.6), tz=q[1]*(Z-4.6); F.tower(tx,0,tz, 3.5,17.5, { fam:fam, col:col, band:MOSBLUEC[0], seg:10, windows:[], finial:false });
-        F.cone(tx,17.9,tz,0.25,1.8,0,BRASSC[0],'metal'); for(var k=0;k<2;k++){ var a=Math.atan2(-q[1],-q[0])+(k?0.9:-0.9); F.box(tx+Math.cos(a)*3.2,10.6,tz+Math.sin(a)*3.2, 0.7,1.5,0.5, -a+PI/2, VOIDC[0],'dark'); } });
+        F.cone(tx,17.9,tz,0.25,1.8,0,BRASSC[0],'metal'); for(var k=0;k<2;k++){ var a=Math.atan2(-q[1],-q[0])+(k?0.9:-0.9); F.paneBox(tx+Math.cos(a)*3.2,10.6,tz+Math.sin(a)*3.2, 0.7,1.5,0.5, -a+PI/2, { out:[Math.cos(a),Math.sin(a)] }); } });
       /* THE COURT: well, trough, hitching rails, pack animals, nomad tents, trees */
       F.lathe('mosaic',0,-3,[[2.0,Y0],[2.0,Y0+0.85],[1.65,Y0+0.92]],MOSBLUEC[1],{seg:10}); F.lathe('glass',0,-3,[[1.95,Y0+0.6],[1.95,Y0+0.64]],GLASSC[2],{seg:10,cap:true});
       F.box(-2.3,Y0,-3, 0.25,2.9,0.25,0,TIMBERC[0],'timber'); F.box(2.3,Y0,-3, 0.25,2.9,0.25,0,TIMBERC[0],'timber'); F.box(0,Y0+2.8,-3, 5.2,0.25,0.25,0,TIMBERC[1],'timber'); F.rod(0,Y0+2.8,-3,0,Y0+1.7,-3,0.02,PAL.thatch[3]); F.fr5(0,Y0+1.7,-3,0.4,0.4,0.4,[PI,0,0],PLANKC[0],'plank');

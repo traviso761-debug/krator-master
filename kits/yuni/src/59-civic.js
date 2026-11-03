@@ -8,8 +8,8 @@ reseed(590001);
   /* a disc / short cylinder whose axis is the horizontal LOCAL direction (nx,nz): round windows, medallions */
   function hdisc(F, lx,ly,lz, nx,nz, r, len, col, fam, sink){ var s=sink==null?0.3:sink, a=F.P(lx-nx*s,ly,lz-nz*s), b=F.P(lx+nx*len,ly,lz+nz*len);
     push('cyl', fam||'adobe', [a.x,a.y,a.z, r, Math.hypot(b.x-a.x,b.z-a.z), r, beamQuat(a.x,a.y,a.z,b.x,b.y,b.z), col]); }
-  /* circular window: relief ring + dark disc + a pane that lights at night */
-  function rwin(F, lx,ly,lz, nx,nz, r, ringCol){ hdisc(F,lx,ly,lz,nx,nz, r*1.38, 0.14, ringCol, 'relief'); hdisc(F,lx,ly,lz,nx,nz, r, 0.20, VOIDC[0], 'dark');
+  /* circular window: relief ring + the room card + a pane of glass that lights at night (81-glow.js) */
+  function rwin(F, lx,ly,lz, nx,nz, r, ringCol){ hdisc(F,lx,ly,lz,nx,nz, r*1.38, 0.14, ringCol, 'relief'); hdisc(F,lx,ly,lz,nx,nz, r, 0.20, ROOMC_GLASS, 'dark');
     var p=F.P(lx+nx*0.27,ly,lz+nz*0.27), n=F.dir(nx,nz); WINPANE(p.x,p.y,p.z, n[0],n[1], r*1.25, r*1.25, false); }
   /* a door at any height (F.door is ground-only) */
   function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ return F.door(lx,lz, nx,nz, w,h, col, ly); }   /* the working, tagged door (53-assets.js) */
@@ -20,6 +20,10 @@ reseed(590001);
     var out=[], j=0; for(i=0;i<n;i++){ var s=L[M]*i/n; while(L[j+1]<s) j++; out.push((j+(s-L[j])/(L[j+1]-L[j]))/M*TAU); } return out; }
   function ewall(F, fam, cx,cz, a,b, y0,y1, seg, col){ var ts=ellT(a,b,seg); for(var i=0;i<seg;i++){ var t0=ts[i], t1=ts[(i+1)%seg], tm=(t0+(i+1<seg?t1:TAU))/2;
     F.quad(fam, [cx+a*Math.cos(t0),y0,cz+b*Math.sin(t0)], [cx+a*Math.cos(t1),y0,cz+b*Math.sin(t1)], [cx+a*Math.cos(t1),y1,cz+b*Math.sin(t1)], [cx+a*Math.cos(t0),y1,cz+b*Math.sin(t0)], col, [Math.cos(tm)/a,0,Math.sin(tm)/b]); } }
+  /* glass round an ellipse, a hair outside ewall's faces: one clear pane per segment (53-assets.js F.pane) */
+  function eglass(F, cx,cz, a,b, y0,y1, seg){ var ts=ellT(a,b,seg); for(var i=0;i<seg;i++){ var t0=ts[i], t1=(i+1<seg?ts[i+1]:TAU), tm=(t0+t1)/2;
+    var x0=cx+a*Math.cos(t0), z0=cz+b*Math.sin(t0), x1=cx+a*Math.cos(t1), z1=cz+b*Math.sin(t1), nx=Math.cos(tm)/a, nz=Math.sin(tm)/b, nl=Math.hypot(nx,nz); nx/=nl; nz/=nl;
+    F.pane((x0+x1)/2+nx*0.04, (y0+y1)/2, (z0+z1)/2+nz*0.04, nx,nz, Math.hypot(x1-x0,z1-z0), y1-y0); } }
   /* a thin roof plate with a WAVY rim (flat-shaded, closed): the CCSE roof and the louvre rings */
   function wavyRoof(F, fam, cx,cz, a,b, y, th, crown, amp,k,ph, seg, colTop, colUnder, famUnder){
     function rim(i){ var t=i/seg*TAU, m=1+amp*Math.cos(k*t+ph); return [cx+a*m*Math.cos(t), cz+b*m*Math.sin(t)]; }
@@ -39,7 +43,7 @@ reseed(590001);
   ASSET({ key:'civic_archive', name:'Archive of the Order', family:'civic', districts:['core','prosper'], wealth:[0.6,1], w:60, d:44, h:35, variants:1,
     build:function(F){
       var cz=-4, a=27, b=15.5, H=6.4, red=ADOBEREDC[0], red2=ADOBEREDC[2], pale=PAL.whitewash[1];
-      ewall(F,'dark', 0,cz, a-0.95,b-0.95, 0,H, 44, VOIDC[1]);                               /* the recessed dark glazing line */
+      ewall(F,'dark', 0,cz, a-0.95,b-0.95, 0,H, 44, ROOMC_GLASS); eglass(F, 0,cz, a-0.95,b-0.95, 0.7,H, 44);   /* the recessed glazing line: glass over the room card */
       ewall(F,'adobe', 0,cz, a-0.2,b-0.2, 0,0.7, 44, shade(red,-0.2));                         /* brick plinth */
       ewall(F,'adobe', 0,cz, a-0.2,b-0.2, H-1.0,H, 44, red);                                   /* brick head band under the roof */
       var n=38, ts=ellT(a,b,n);
@@ -55,7 +59,7 @@ reseed(590001);
       F.lantern(-2.6,3.2,cz+b+1.35, 0.9,14,0); F.lantern(2.6,3.2,cz+b+1.35, 0.9,14,0);
       /* the broad wavy roof: pale top, timber-slat soffit */
       wavyRoof(F,'plaster', 0,cz, 28.7,17.2, H, 0.75, 1.7, 0.03,14,0, 56, pale, PLANKC[2], 'plank');
-      ewall(F,'adobe', -7,cz, 11.5,7.0, H+1.2,H+3.6, 28, red2); ewall(F,'dark', -7,cz, 11.56,7.06, H+2.0,H+3.0, 28, VOIDC[1]);
+      ewall(F,'adobe', -7,cz, 11.5,7.0, H+1.2,H+3.6, 28, red2); ewall(F,'dark', -7,cz, 11.56,7.06, H+2.0,H+3.0, 28, ROOMC_GLASS); eglass(F, -7,cz, 11.56,7.06, H+2.0,H+3.0, 28);
       for(var cl=0;cl<14;cl++){ var ct=cl/14*TAU+0.2, cnx=Math.cos(ct)/11.5, cnz=Math.sin(ct)/7.0, cnl=Math.hypot(cnx,cnz); F.box(-7+11.5*Math.cos(ct),H+1.9,cz+7.0*Math.sin(ct), 1.5,1.2,0.5, Math.atan2(cnx/cnl,cnz/cnl), red, 'adobe'); }
       wavyRoof(F,'plaster', -7,cz, 12.8,8.2, H+3.6, 0.5, 0.9, 0.04,9,0.5, 36, pale, PLANKC[2], 'plank');
       /* the drum tower with its stack of wavy louvre rings */
@@ -90,7 +94,7 @@ reseed(590001);
         var rb=R+0.85, rt=R*0.42, rh=big?2.7:2.2; F.mcone('tile', x,H,z, rb,rt,rh, tile, 20, { under:true, underDy:0.0 });
         F.cyl(x,H+rh-0.25,z, rt+0.25,0.3, 0, dk, 'adobe');                                  /* lantern floor closes the frustum */
         var lr=rt*0.82, lh=big?2.4:1.8; for(var i=0;i<8;i++){ var a=i/8*TAU; F.cyl(x+Math.cos(a)*lr, H+rh, z+Math.sin(a)*lr, 0.2,lh, 0, red2, 'adobe'); }
-        F.cyl(x,H+rh,z, lr*0.45,lh, 0, VOIDC[1], 'dark');
+        F.cyl(x,H+rh,z, lr*0.45,lh, 0, ROOMC, 'dark');   /* the lantern within its posts: the room card */
         F.mcone('tile', x,H+rh+lh,z, rt+0.9,0,(big?2.2:1.7), TILEC[2], 12, { under:true });
         F.ball(x,H+rh+lh+(big?2.3:1.8),z, 0.22, BRASSC[1], 'metal');
         return H+rh+lh; }
@@ -102,7 +106,7 @@ reseed(590001);
         var da = sg<0 ? -0.35 : PI+0.35; F.door(sg*19+6.08*Math.cos(da), 2+6.08*Math.sin(da), Math.cos(da),Math.sin(da), 1.3,2.3, PLANKC[2]); });
       /* curved two-storey gallery wings */
       [[PI+0.31, PI+1.14],[TAU-1.14, TAU-0.31]].forEach(function(w){
-        F.sector('adobe', C[0],C[1], 16.5,21.5, w[0],w[1], 0,3.3, red, { faces:'io', colInner:VOIDC[1] });
+        F.sector('adobe', C[0],C[1], 16.5,21.5, w[0],w[1], 0,3.3, red, { faces:'io', colInner:ROOMC });
         F.sector('adobe', C[0],C[1], 16.5,21.5, w[0],w[1], 3.3,6.6, red2, { faces:'io' });
         F.sector('adobe', C[0],C[1], 16.25,21.75, w[0],w[1], 6.6,7.05, dk, { faces:'tbio' });
         F.sector('relief', C[0],C[1], 16.38,21.62, w[0],w[1], 3.15,3.5, rel, { faces:'bio' });
@@ -185,7 +189,7 @@ reseed(590001);
         F.cone(x,P+th+1.8,tz, 0.7,1.5, 0, mud2, 'adobe'); F.cyl(x,P+th+3.05,tz, 0.30,0.28, 0, GILDC[0], 'metal'); F.ball(x,P+th+3.62,tz, 0.30, PAL.whitewash[2], 'plaster');
         for(var r=0;r<4;r++){ var y=3.2+r*(th-4.5)/3; for(var c=-1;c<=1;c++) F.toron(x+c*0.62, P+y, fz(y)-0.1, 0,1, 1.15);
           if(r%2===0) [-1,1].forEach(function(sg){ F.toron(x+sg*(fx(y)-0.1), P+y, tz, sg,0, 1.0); }); }
-        F.box(x, P+th*0.45, fz(th*0.45)-0.12, 0.5,1.3,0.3, 0, VOIDC[0], 'dark');
+        F.card(x, P+th*0.45, fz(th*0.45)-0.12, 0.5,1.3,0.3, 0);   /* an unglazed opening in the spire */
         /* glazed tile set into the recessed panels of the tower face */
         for(var gt=0;gt<3;gt++){ var gy=P+2.6+gt*3.4, gzz=fz(gy)-0.06;
           F.box(x-1.35, gy, gzz, 0.9,1.5,0.12, 0, (gt%2)?MOSBLUEC[0]:MOSGREENC[0], 'mosaic');

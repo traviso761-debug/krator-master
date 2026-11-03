@@ -27,7 +27,7 @@ reseed(550001);
       F.window(dx>0?-3.7:3.7, 2.0, zf(2.0)+0.03, 0,1, 0.8, 0.9);
       if(two){ F.window(-3.6, 5.0, zf(5.0)+0.03, 0,1, 0.8, 1.0); F.window(3.6, 5.0, zf(5.0)+0.03, 0,1, 0.8, 1.0); F.window(xf(4.9)+0.03, 4.9, 0, 1,0, 0.8, 1.0); }
       for(var t=0;t<5;t++){ F.toron(-1.6+t*0.8, H-0.9, zf(H-0.9), 0,1, 0.9); }
-      for(var r=0;r<3;r++) for(var c=0;c<=r;c++){ var vy=H-2.0-r*0.45+(two?0:0.5); F.pyr((c-r/2)*0.7+(two?0:-1.0)*0, vy, zf(vy)-0.10, 0.42,0.36,0.3, 0, VOIDC[0], 'dark'); }
+      for(var r=0;r<3;r++) for(var c=0;c<=r;c++){ var vy=H-2.0-r*0.45+(two?0:0.5); F.pyr((c-r/2)*0.7+(two?0:-1.0)*0, vy, zf(vy)-0.10, 0.42,0.36,0.3, 0, ROOMC, 'dark'); }   /* the vents: the room card, not a void */
       if(F.wealth>0.5) F.box(0, H-0.55, zf(H-0.4)+0.02, W*0.84-1.6, 0.35, 0.12, 0, MOSBLUEC[F.variant%4], 'mosaic');   /* a tile frieze where there is money */
       F.lantern(dx+1.1, 2.5, zf(2.5)+0.35, 0.8, 12, 0);
     } });

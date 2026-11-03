@@ -65,7 +65,7 @@
           F.quad('plaster', [xa,ye(xa)-0.3,e[0]],[xb,ye(xb)-0.3,e[0]],[xb,yc(xb),e[1]],[xa,yc(xa),e[1]], stone2, [0,-1,0]);          /* soffit */
           /* the clerestory band: a little lobed window in every other bay */
           F.quad('mosaic', [xa,yc(xa),e[1]],[xb,yc(xb),e[1]],[xb,yc(xb)+1.75,e[1]],[xa,yc(xa)+1.75,e[1]], pale, [0,0,-e[2]]);
-          if(i%2===1){ F.archwall('mosaic', xm, yc(xm)+0.15, e[1]-e[2]*0.12, e[2]>0?PI:0, 48/NX-0.3,1.5,0.26, 1.15,1.25, pale, { pointed:1.6, colIn:VOIDC[0] });
+          if(i%2===1){ F.archwall('mosaic', xm, yc(xm)+0.15, e[1]-e[2]*0.12, e[2]>0?PI:0, 48/NX-0.3,1.5,0.26, 1.15,1.25, pale, { pointed:1.6, colIn:ROOMC_GLASS });
             F.window(xm, yc(xm)+0.85, e[1]-e[2]*0.26, 0,-e[2], 1.1,1.2, {noReveal:true}); } });
         /* the monitor roof over the clerestory, with the mosaic spine */
         [[zc0,1],[zc1,-1]].forEach(function(e){ F.quad('mosaic', [xa,yc(xa)+1.75,e[0]],[xb,yc(xb)+1.75,e[0]],[xb,yrr(xb),zRm],[xa,yrr(xa),zRm], (i%2)?MOSWARMC[0]:GILDC[0], [0,1,e[1]*0.6]);
@@ -157,7 +157,7 @@
       /* the mask parapet on the terrace edge, the Batllo profile */
       [-15.3,0,15.3].forEach(function(fx){
         F.box(fx,TER+0.35,17.75, 6.6,0.95,0.42, 0, mosw, 'relief');
-        [-1.6,1.6].forEach(function(ex){ F.disc(fx+ex, TER+0.95, 17.95, 0,1, 0.40,0.18, VOIDC[0], 'dark'); });
+        [-1.6,1.6].forEach(function(ex){ F.disc(fx+ex, TER+0.95, 17.95, 0,1, 0.40,0.18, ROOMC, 'dark');   /* the mask's eyes: shade, not a void */ });
         F.box(fx,TER+1.28,17.75, 6.8,0.26,0.56, 0, stone, 'relief'); });
       [-22.3,22.3].forEach(function(px){ F.box(px,TER+0.35,15.7, 0.8,1.2,4.6, 0, mosw, 'relief'); });
       /* the facade, rising from the hall's front wall */
@@ -275,7 +275,7 @@
       [-1,1].forEach(function(sg){ F.box(sg*YX,0,(YZ0+YZ1)/2, 0.5,1.05,YZ1-YZ0, 0, red, wfam); F.box(sg*YX,1.05,(YZ0+YZ1)/2, 0.68,0.26,YZ1-YZ0, 0, band, 'mosaic');
         for(var kp=0;kp<5;kp++) F.blob(sg*YX, 1.31, YZ0+1.4+kp*2.4, 0.32,0.34, 0, (kp%2)?MOSWARMC[0]:PAL.mosaicWhite[0], 'mosaic'); });
       F.box(0,0,YZ1, 2*YX,1.05,0.5, 0, red, wfam); F.box(0,1.05,YZ1, 2*YX+0.18,0.26,0.68, 0, band, 'mosaic');
-      F.box(0,0,YZ1, 4.2,1.75,0.7, 0, red2, wfam); F.box(0,0,YZ1, 3.0,1.9,0.8, 0, VOIDC[1], 'dark');   /* the yard gate */
+      F.box(0,0,YZ1, 4.2,1.75,0.7, 0, red2, wfam); F.doorway(0,0,YZ1, 3.0,1.9,0.8, 0, { out:[0,1] });   /* the yard gate: a locked leaf */
       for(var pq=0;pq<10;pq++) F.box(-18+pq*4.0, 0.02, YZ0+1.2, 3.4,0.07,2.6, 0, (pq%2)?PAL.pavingRich[0]:PAL.mosaicWhite[0], 'mosaic');
       F.box(0,0,YZ0-0.3, 2*YX,0.08,0.3, 0, PAL.paving[0], 'adobe');
       /* the well head */

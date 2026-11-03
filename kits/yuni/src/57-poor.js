@@ -46,7 +46,7 @@ reseed(570001);
     F.rod(x,ry0+hc-0.75,z, x,ry0+hc-0.45,z, 0.17, THATCHC[4], 'thatch');                   /* binding */
     F.cone(x,ry0+hc-0.5,z, 0.13,0.85, 0, shade(tc,-0.2), 'thatch');                        /* topknot */
     var c=Math.cos(da), s=Math.sin(da);
-    F.box(x+c*(r-0.12),y0,z+s*(r-0.12), 0.72,1.5,0.34, PI/2-da, VOIDC[1], 'dark');
+    F.card(x+c*(r-0.12),y0,z+s*(r-0.12), 0.72,1.5,0.34, PI/2-da);   /* the hut mouth: an open doorway, the room card within (53-assets.js) */
     if(o.doorReg!==false) doorPt(F, x+c*r, z+s*r, c, s, 0.72, 1.5, y0);     /* every hut mouth is a doorway (51-fixtures.js) */
   }
   /* a flat-roofed battered mud room. Local room frame: +z = its front, turned by yaw. o:{door:x|null, par, horns, torons, spouts, win, band} */
@@ -100,8 +100,8 @@ reseed(570001);
     var zf=cz+R*1.07;
     F.fr5(cx,0,zf-0.55, 2.0,2.75,1.7, 0, shade(col,0.03), 'adobe');
     F.tube('adobe',[[-0.98,0],[-0.9,1.1],[-0.66,2.1],[-0.3,2.62],[0,2.76],[0.3,2.62],[0.66,2.1],[0.9,1.1],[0.98,0]].map(function(p){ return {x:cx+p[0],y:p[1],z:zf+0.12-p[1]*0.085,r:0.27}; }),shade(col,0.09),{seg:5});
-    F.box(cx,0,zf+0.06, 0.62,1.45,0.5, 0, VOIDC[2], 'dark');
-    F.cyl(cx,1.62,zf+0.19, 0.5,0.7, [-PI/2,0,0], VOIDC[2], 'dark');
+    F.card(cx,0,zf+0.06, 0.62,1.45,0.5, 0);   /* the open mouth: the room card within */
+    F.cyl(cx,1.62,zf+0.19, 0.5,0.7, [-PI/2,0,0], ROOMC, 'dark');
     F.box(cx,-0.02,zf+0.55, 1.5,0.14,0.5, 0, shade(col,-0.08), 'adobe');                     /* sill */
     if(doorReg) doorPt(F,cx,zf+0.3,0,1);
   }
@@ -135,7 +135,7 @@ reseed(570001);
       /* the porch: a moulded mud hood growing out of the shell, over a parabolic door */
       var zF=cz+R+0.62, zB=cz+R*0.52, ow=1.15, oh=2.05,
           pcol = v===1 ? white : (v===2 ? shade(col,0.05) : col), pfam = v===1 ? 'plaster' : 'adobe';
-      F.box(0,0,cz+R*0.86, ow+0.15,oh+0.05,0.7, 0, VOIDC[1], 'dark');                     /* the dark interior */
+      F.card(0,0,cz+R*0.86, ow+0.15,oh+0.05,0.7, 0);                                    /* the room within the open door */
       F.archband(pfam,0,0,zF,0, ow,oh, 0.50, zF-zB, pcol, {seg:14});                       /* the hood, swept back into the shell */
       F.archband(pfam,0,0,zF+0.17,0, ow+1.0,oh+0.50, 0.36, 0.34, shade(pcol,-0.05), {seg:14});  /* its flared outer roll */
       F.archband('adobe',0,0,zF+0.22,0, ow,oh, 0.13, 0, shade(col,-0.16), {seg:14});       /* the dark lip at the mouth */
