@@ -13,6 +13,8 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
+                        core/engine/36o-open.js draws them)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-fauna-bundle.js    GENERATED (kits/fauna/fauna_bundle.py): the animals as one closure, KratorFauna
@@ -69,7 +71,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 KIT_ID = 'ash-nomads'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
