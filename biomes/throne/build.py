@@ -66,9 +66,9 @@ if '--station' in sys.argv:
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-# 2026-11-02, the final rebuild (BACKPORT.md section 1, every station): KGROUND (43: the ground's layers through THRONE.layGLSL), KFAR (44: the country
-# past the map, src/83f-host-far.js), KHORIZON (45: its shadows), KTHERM (47: the ground's heat between the vents, src/89y-host-core.js)
-CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']
+# 2026-11-02, the final rebuild (BACKPORT.md section 1, every station): KGROUND (43: the ground's layers through THRONE.layGLSL), KHORIZON (45: its shadows),
+# KTHERM (47: the ground's heat between the vents, src/89x-host-fields.js). KFAR is not taken: KNOWN_ISSUES.md, 'The far field'
+CORE_TERRAIN=['43-core-ground.js','45-core-horizon.js','47-core-therm.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
@@ -81,7 +81,6 @@ CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
-PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 if STATION:
     # src/89a-host-atmos.js (the atmosphere binding of station 1, 2, 6 and 11) is a station's only when station.json says "atmosHost"
@@ -182,6 +181,7 @@ def matlib_pack(pname='throne',tex_dir=None):
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
+        if e.get('cell'): f['cell']=e['cell']   # one cell of a card sheet (TODO.md, "The inline pack writers that drop cell"; nsemiarid's line): no slot here has one yet, the sheets are cut by hand (50's sheet())
         for k,name in sorted(e['files'].items()):
             f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(tex_dir,name),'rb').read()).decode()
         out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))

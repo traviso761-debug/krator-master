@@ -50,3 +50,5 @@ const HILLS=[{x:-1350,z:450,r:360,h:110},{x:900,z:-1350,r:280,h:80},{x:1500,z:15
 // THE HOLLOW: where the CO2 pools (Lake Nyos, Mammoth Mountain): a closed basin, the mat on its floor
 const HOLLOW={x:350,z:650,r:130,depth:16,name:'A CO2 hollow (the mat on its floor; nothing else lives in it)'};
 function plumeAt(x,z){return clamp(.88+.12*smooth(-2000,1500,uOf(-x,-z)),0,1);}
+// THE AIR's height fog (89zz-host-core.js; the final rebuild): the plume's ash haze thins with height; no valley mist under the ash
+const ATMOS_AIR={falloff:1/700,sun:.3,sky:.3};

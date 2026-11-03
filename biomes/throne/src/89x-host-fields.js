@@ -10,7 +10,7 @@
 //   THE GROUND  a wet band darkens the ground toward the real edge (14 m, the KHOOK layer 'throne-wet' on the ground's materials), of every water
 //               but the open sea (its own swash wets the beach: WATER.wetGround on the frontier and the isle)
 //   THE HEAT    KTHERM from the page's vents: its fumaroles (STEAM, FUMS), its geysers (GEYSERS) and its hot springs (the WATER.spring records,
-//               by their temperature); the soil the lapse rate's (28 C at the sea, 5.5 C a km). ENV.temp, the glacier's bare snow (89zz)
+//               by their temperature); the soil the scale model's lapse (climate.json: 26 C at the datum, 5.5 C a km, warmer below it: the Ring Sea's shore is 1.5 km under). ENV.temp, the glacier's bare snow (89zz)
 //   ENV         BIO.env over the page's ground, the water's fields, the heat and the kit's wet; BIO.envCheck and WATER.edgeAudit run in 99-host-tz-core.js
 // ?fields=0: none of the flora's or the ground's changes (the fields are still made for the checks); ?wetband=0 no wet band on the ground.
 const ENV_BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],ENV_ON=CORE_Q.get('fields')!=='0';
@@ -26,7 +26,7 @@ const THERM=(function(){if(typeof KTHERM==='undefined')return null;const V=[];
  if(typeof GEYSERS!=='undefined')GEYSERS.forEach((G,i)=>add('geyser'+i,G.x,G.z,95,60));
  ENV_SURF.filter(q=>q.thermal).forEach((q,i)=>{const t=q.thermal;add('spring'+i,t.x,t.z,30+65*Math.min(1,t.temp*1.45),t.r*4);});
  if(!V.length)return null;
- return KTHERM.create({soil:(x,z)=>28-.0055*Math.max(0,terrainH(x,z)),vents:V,detail:{amp:1.5,scale:.02,seed:KRAND.hash(571,514,47)}});})();
+ return KTHERM.create({soil:(x,z)=>26-.0055*terrainH(x,z),vents:V,detail:{amp:1.5,scale:.02,seed:KRAND.hash(571,514,47)}});})();
 const THERM_F=THERM?THERM.bake({box:ENV_BOX,cell:8}):null;
 const ENV=BIO.env({ground:terrainH,water:WATER_FN||undefined,therm:THERM_F?KTHERM.fieldFns(THERM_F):undefined,wet:(x,z)=>FIELD.wet(x,z),
  bands:{upland:[1500,2300],flow:60}});
