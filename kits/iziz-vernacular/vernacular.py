@@ -14,6 +14,7 @@ import glob, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
+ROOT = os.path.dirname(os.path.dirname(HERE))
 # the kit's foundation, in filename order: materials and kit items, helpers, hollow bodies, openings, fixtures
 BASE = ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js', '69f-iziz-fixtures.js']
 # the buildings: dwellings, trades, civic, infrastructure, works, land, guilds, the frontier, and the trades table
@@ -29,6 +30,31 @@ def path(f):
 
 def paths(names=None):
     return {f: path(f) for f in (FILES if names is None else names)}
+
+
+# the Ancients core the kit draws through, in filename order: the Ancients kit's files, and core/materials' (opt/ for the
+# opt-in world-UV hook). Iziz vendors the first group byte for byte (its --vendor-check), so a bundle takes them from the kit.
+ANCIENTS_CORE = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
+                 '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js']
+# what a bundle takes of the kit's foundation (69f-iziz-fixtures notes the fixtures for a page's core/tags: not a bundle's)
+BUNDLE_BASE = ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']
+
+
+def core_path(f):
+    """An Ancients-core name: the Ancients kit's src/, else core/materials, else core/materials/opt."""
+    for d in (os.path.join(ROOT, 'kits', 'ancients', 'src'), os.path.join(ROOT, 'core', 'materials'),
+              os.path.join(ROOT, 'core', 'materials', 'opt')):
+        p = os.path.join(d, f)
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError('no Ancients-core file ' + f)
+
+
+def bundle_files():
+    """THE Vernacular bundle (settlements/iziz/VASSAL-KITS.md, "The bundle": one list, no third copy): the Ancients core,
+    the kit's foundation and every building fragment, in filename order. Verge's and the isle demo's IZV take it and add
+    their own extras (Verge: the Ancients funicular; the isle demo: Iziz's library bind, 88y-iziz-matlib.js)."""
+    return [core_path(f) for f in ANCIENTS_CORE] + [path(f) for f in BUNDLE_BASE] + building_files()
 
 
 def building_files():

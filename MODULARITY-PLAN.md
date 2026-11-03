@@ -245,8 +245,14 @@ leaves each settlement folder as its layout and page, building as it does today 
   from the kit, and Highlands', Dalab's and Ys's `--vendor-check` compares their copies with it (Highlands identical; Dalab's
   and Ys's drift as it did against Iziz). Proof: Iziz's seven pages, Pylon's and Talia's, 32 outputs in all, byte-identical
   to the build before; Verge's page and both `IZV` bundles differ only in the moved files' path labels. Next for the kit:
-  a `build.py` of its own (its sheet, from Iziz's `vernacular` target), and one `izv_files()` for Verge and the isle demo
-  (their two lists have drifted: Verge's lacks `71a`-`c`, `73b`-`c`, `74z` and `88y`); `88y-iziz-matlib` with the matlib item.
+  a `build.py` of its own (its sheet, from Iziz's `vernacular` target: it runs on Iziz's page shell, so the kit would read the
+  settlement as Pylon and Talia do; it waits for that shell to be core's), and `88y-iziz-matlib` with the matlib item.
+  **One bundle list, done 2026-11-03:** `vernacular.py bundle_files()` (the Ancients core from `kits/ancients` and
+  `core/materials`, the foundation, every building fragment); Verge and the isle demo take it, plus the funicular and `88y`
+  respectively. The isle demo's bundle changes only in nine core labels; Verge's gains the five building fragments it lacked
+  (`71a`-`c`, `73b`, `73c`: definitions only, it places none of them), and `verify.py --assert` reads the same before and
+  after (every check; the camera's 483 calls and 8 rooms planned on a rerun of both pages: the first run of the old page
+  had caught the interiors queue one room further on).
   The kit's trades table (`74z`) names two buildings of Iziz's foreign quarter (the Voth embassy, the Order's chapterhouse:
   Iziz's `75-port-embassy.js`, `76-port-chapterhouse.js`, which Dalab and Ys vendor too), so `tools/check_trades.py --all` looks
   their keys up in Iziz's `src/` (`EXTRA_SRC`) until those foreign-quarter sets have a kit of their own.

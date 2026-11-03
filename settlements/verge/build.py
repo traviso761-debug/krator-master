@@ -112,21 +112,9 @@ MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
-    def iz(f):   # the Vernacular kit's own files, else a copy in settlements/iziz/src, which wins over core/materials (its build's srcpath rule)
-        p = kvern.path(f) if f in kvern.FILES else os.path.join(IZIZ, f)
-        if os.path.exists(p):
-            return p
-        q = os.path.join(MATS, f)
-        return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
-    names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
-             '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js', '70-vern-dwellings.js', '71-vern-trade.js',
-             '72-vern-civic.js', '73-vern-infra.js', '74-vern-guilds.js']
-    # 69e5: real doors and glass (vnPlate, vnHole, vnOpening, IZDOOR, IZ_ROOMC), which the vernacular fragments call since 2026-10-19
-    out = [iz(f) for f in names]
-    out += sorted(glob.glob(os.path.join(kvern.SRC, '74[a-z]-vern-*.js')))     # additions to the vernacular set
-    out += sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))   # the Ancients funicular
-    return out
+    """The Vernacular kit's one bundle list (kits/iziz-vernacular/vernacular.py bundle_files(): the Ancients core, the kit's
+    foundation, every building fragment), and the Ancients funicular Verge's trail takes."""
+    return kvern.bundle_files() + sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))
 
 
 def izv_bundle():
