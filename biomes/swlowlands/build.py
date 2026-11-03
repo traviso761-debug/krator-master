@@ -116,7 +116,7 @@ import json as _json
 NEIGH={'nwlowlands':(['50-biome-nwlowlands-species.js','55-biome-nwlowlands-trees.js'],'NWLOW',['bk.paper','bk.smooth','lance','needle','bloom','moss','spike','broad','feather']),
        'swbay':(['50-biome-swbay-species.js','55-biome-swbay-trees.js'],'SWBAY',['bark0','bark1','bark2','bark3','bark4','bark5','bark6','needle','palmate','moss','bloom']),
        'swhighlands':(['50-biome-swhighlands-species.js','55-biome-swhighlands-trees.js','57-biome-swhighlands-pillars.js','58-biome-swhighlands-rainwall.js',
-                       '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath','crust','moss','coral','swcord','pad'])}
+                       '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath','crust','moss','coral','swcord','swlog','swwhorl','swbottle','swpillar','pad'])}
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
@@ -139,7 +139,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the final rebuild: the looks, the karst springs and the comb weed (54), confluences (55), breakup (56), the audit (57), the reflections switch (58),
 # the shore's fields (60), by path (core/water/README.md; tools/fragment_needs.json has their order)
-for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
     PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,

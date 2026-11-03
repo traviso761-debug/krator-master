@@ -69,7 +69,7 @@ function grassTuft(x,y,z,lv,set,hk,k){const h=rr(.5,1.1)*(hk||1)*(lv===0?1.6:1),
 function azalea(x,y,z,lv,st){const Rs=shrub(x,y,z,lv,PAL.shrub,.8);if(lv>=1)blooms(x,y+Rs*.6,z,Rs*.9,lv===2?ri(10,18):5,PAL.azalea,[.2,.34],Rs*.6);st.azaleas++;}
 function yucca(x,y,z,lv,st){const h=rr(.8,1.4);tuft('spike',x,y,z,h,h*1.3,leafCol(PAL.agave,1.3,.02));
  if(lv>=1&&rng()<.5){const sh=rr(2.5,4.5),c=C(pick(PAL.cream));BIO.beam('rod',[x,y+h*.4,z],[x,y+sh,z],.05,.035,rodCol(0x7a6a4a));
-  for(let j=0;j<(lv===2?ri(22,34):8);j++){const yy=y+sh*rr(.5,1),a=rr(0,TAU),d=(y+sh-yy)*.28+.12;BIO.put('bloom',[x+Math.cos(a)*d,yy,z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.2,.32),bright(c,1.15));}}st.yuccas++;}
+  for(let j=0;j<(lv===2?ri(22,34):8);j++){const yy=y+sh*rr(.5,1),a=rr(0,TAU),d=(y+sh-yy)*.12+.06;BIO.put('bloom',[x+Math.cos(a)*d,yy,z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.2,.32),bright(c,1.15));}}st.yuccas++;}
 function mullein(x,y,z,lv,st){const h=rr(1.2,2.4),c=C(pick(PAL.mullein));BIO.put('rosette',[x,y,z],qEuler(0,rr(0,TAU),0),[.45,.3,.45],leafCol(PAL.sage,1.1));
  if(lv>=1){BIO.beam('rod',[x,y,z],[x,y+h,z],.04,.03,rodCol(0x8a9a78));for(let j=0;j<(lv===2?12:5);j++){const yy=y+h*rr(.35,1),a=rr(0,TAU);BIO.put('bloom',[x+Math.cos(a)*.08,yy,z+Math.sin(a)*.08],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.1,.16),bright(c,1.1));}}st.spikes++;}
 function aloe(x,y,z,lv,st){const h=rr(.5,.9);tuft('spike',x,y,z,h,h*1.5,leafCol(PAL.agave,1.25,.02));

@@ -122,6 +122,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
  add('the plants feet on the drawn ground (KSEAT contact sweep)',feetCheck(false));
  add('the flora and the wet band read the water\'s own shore (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
+ if(ST&&ST.checks)ST.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_instNames();
  add('a fruiting species with no catalog fruit',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='rattlepod'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SWLOW.PLANTS,N));
@@ -136,8 +137,8 @@ const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'swlowlands',title:'Krator Southwestern Lowlands',
- hint:'The southwestern lowlands: mangrove shore, bayou, rainforest strip, humid subtropical plain, Mediterranean hills (ideal type)',
+KHOST.take({build:'swlowlands',title:ST&&ST.region?'Krator: '+ST.region.name:'Krator Southwestern Lowlands',
+ hint:ST&&ST.region?ST.region.name:'The southwestern lowlands: mangrove shore, bayou, rainforest strip, humid subtropical plain, Mediterranean hills (ideal type)',
  scene,camera,renderer,ground:drawnH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:()=>{MIRROR.update();SKY.draw();},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
@@ -148,3 +149,5 @@ KHOST.take({build:'swlowlands',title:'Krator Southwestern Lowlands',
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+/* the season (core/biome, BACKPORT.md's row; the lowlands' summer drought): the grass goes gold and the broadleaves thin in the dry months; ?season=0 */
+if(new URLSearchParams(location.search).get('season')!=='0')BIO.bindSeason(null,{});

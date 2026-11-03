@@ -61,7 +61,7 @@ function shoreS(t){return -1900+170*(fbm(t*.0011+3,1.7,41,3)-.5)*2+40*Math.sin(t
 function seaIn(x,z){const t=tOf(x,z);return sOf(x,z)-shoreS(t);}
 // the river: t as a function of s, meandering down from the SE hills to the delta
 function RIVER_T(s){return -120+260*Math.sin(s*.00115+.6)+90*Math.sin(s*.0043+1.3)+30*Math.sin(s*.011);}
-function riverD(x,z){const s=sOf(x,z),t=tOf(x,z);if(s>TERR.R*1.2)return 1e9;
+function riverD(x,z){if(ST&&ST.riverD)return ST.riverD(x,z);const s=sOf(x,z),t=tOf(x,z);if(s>TERR.R*1.2)return 1e9;
  let d=Math.abs(t-RIVER_T(s));
  // the delta: two distributaries fan out over the last 500 m
  const sh=shoreS(RIVER_T(s)),f=smooth(sh+520,sh+40,s);
@@ -89,9 +89,10 @@ function hillH(x,z){const s=sw(x,z),k=smooth(300,1300,s);
 // THE CLEAR SPRINGS (BACKPORT.md's row, PLAN-FLORA.md: the SW highlands' karst rivers come out at the foot of the hills; ?springs=0 without them): three blue-green
 // pools beside the river in the hills, each in a bowl the ground keeps for it, each sending a gin-clear run to the river (core/water ext/54 W.karstSpring: 89w-host-water.js),
 // each under spring cypresses (87-host-kin.js). Placed by the river's own line: s along the axis, side of the river, metres off it
-const SPRINGS=ST||new URLSearchParams(location.search).get('springs')==='0'?[]:[[760,1,74],[1210,-1,80],[1640,1,70]].map(q=>{const s=q[0],t=RIVER_T(s)+q[1]*q[2],a=xzOf(s,t);return{s,t,side:q[1],x:a[0],z:a[1],r:9,y0:null};});
-function terrainH(x,z){if(ST&&ST.terrainH)return ST.terrainH(x,z);let h=terrainH0(x,z);
- for(const S of SPRINGS){const d=Math.hypot(x-S.x,z-S.z);if(d>S.r*1.6)continue;if(S.y0==null)S.y0=terrainH0(S.x,S.z);
+const SPRINGS=new URLSearchParams(location.search).get('springs')==='0'?[]:(ST?ST.springs||[]:[[760,1,74],[1210,-1,80],[1640,1,70]]).map(q=>{const s=q[0],t=RIVER_T(s)+q[1]*q[2],a=xzOf(s,t);return{s,t,side:q[1],x:a[0],z:a[1],r:9,y0:null};});
+function groundH0(x,z){return ST&&ST.terrainH?ST.terrainH(x,z):terrainH0(x,z);}
+function terrainH(x,z){let h=groundH0(x,z);
+ for(const S of SPRINGS){const d=Math.hypot(x-S.x,z-S.z);if(d>S.r*1.6)continue;if(S.y0==null)S.y0=groundH0(S.x,S.z);
   h=Math.min(h,mix(S.y0-1.6,h,smooth(S.r*.85,S.r*1.6,d)));}   /* the spring's bowl: only ever lower */
  return h;}
 function terrainH0(x,z){
@@ -199,6 +200,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'swlowlands-ground',at:'/*KGROUND*/',layers:[KGROUND.layer('swlowlands','ground.bayoumud',{w:'vGL.x',amt:.65,gain:1.2,tint:'diffuse'}),
  KGROUND.layer('swlowlands','ground.oaklitter',{w:'vGL.y',amt:.7,gain:1.2,tint:'diffuse'}),
  KGROUND.layer('swlowlands','rock',{w:'vGM.x',amt:.9,gain:1.15,tint:'diffuse*vec3(1.5,1.32,1.2)',name:'rock'})]});
+if(ST&&ST.strata&&stationStrata.hook)stationStrata.hook(MAT_GROUND);
 /* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal), but
    every cell that straddles the waterline (its corners both under .3 m and over -.3 m: ~3.7k cells, the bayou, the oxbows and
    the shore) is split 4 x 4 (~4.1 m) on terrainH. The coarse facets stood above the water as straight-edged brown islets

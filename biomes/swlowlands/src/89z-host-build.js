@@ -4,7 +4,7 @@
 // 89z, after the water (it was 88): the flora reads the water's own numbers, so the surfaces must exist before the first plant.
 // THE WATER AS FIELDS (core/water ext/60; core/biome 41; the final rebuild): one shore for the flora, the ground's wet band and the audit. FIELD.wet and FIELD.flow keep their kit's
 // meaning but their water term is now the distance to the water the eye sees (WATER.fieldAt), not to a line; the wet band on the ground (aGM.y) reads the same shore. ?fields=0 for the old lines
-const WATER_F=WATER.fields({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:6,ground:terrainH});
+const WATER_F=WATER.fields({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:6,ground:terrainH,surfaces:WATER.surfaces.filter(q=>q.kind!=='fall'&&!q.seasonal)});   /* a seasonal flood is not the shore */
 const WATER_FN=WATER.fieldFns(WATER_F);
 /* the wet band's share of the water: 1 at the edge, gone by 40 m */
 const WET_SHORE=(x,z)=>smooth(40,1,WATER_FN.shore(x,z));
@@ -27,9 +27,11 @@ const IMP_GAIN=2.4;   /* the impostors' gain (eastabyss 3.6, nwbay and swbay 2.2
  if(typeof swlowKinVeto==='function')swlowKinVeto();
  try{window._biome=SWLOW.build(ST?{R:TERR.R-150,quality:BIOME_Q}:{R:TERR.R-150,quality:BIOME_Q,avenues:[{path:ROAD,spacing:24,offset:13.5,species:'sprawloak'}],groves:[CORK_GROVE]});}catch(e){reportErr('biome: '+e.stack);}
  if(typeof growKin==='function'){try{window._kin=growKin();}catch(e){reportErr('kin: '+e.stack);}}
+ if(ST&&ST.build){try{window._station=ST.build();}catch(e){reportErr('station: '+e.stack);}}
+ if(ST&&ST.site)ST.site();
  if(shells.length){try{SWLOW.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
  const b=BIO.bake();
- BIO.setA2C(renderer);
+ BIO.setA2C(renderer);{const G=TERR.R*1.1;BIO.setGround(TEX_GROUND,[-G,G,G,-G]);}   /* R5: the floor's cover takes the ground's colour at its root; the paint's v runs z1..z0 */
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||IMP_GAIN),wrap:+(Q.get('impwrap')||1)});
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}

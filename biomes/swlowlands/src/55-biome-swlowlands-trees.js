@@ -280,7 +280,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
 // 27 the SPRING CYPRESS (PLAN-FLORA.md, refs/01-03, the Montezuma cypress's habit): the knee-cypress's bole, many metres wide, fluted and
 // buttressed, its roots sprawling over the bank into the pool, the crown low and wide. Drawn at lv 1 and 2; its far form is the cypress's
 B[27]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
- const hc=H*rr(.38,.48),bo=bole(fam,T,S,hc,rb,1.1,5,ri(9,13),lv===2?18:12,5,0);st.trunk+=bo.tris;
+ const hc=H*rr(.38,.48),bo=bole(fam,T,S,hc,rb*.8,.55,4,ri(9,13),lv===2?18:12,5,0);st.trunk+=bo.tris;
  const nL=lv===2?ri(8,11):ri(5,6),a0=rr(0,TAU),spots=[],all=[],beards=[];
  for(let k=0;k<nL;k++){const u=mix(.55,.98,(k+rr(0,.9))/nL),a=a0+k*GOLD+rr(-.3,.3),el=rr(.02,.28),len=T.crownR*rr(.75,1.1),r0=clamp(bo.rAt(u)*.3,.3,1.1);
   const pts=limbPts({x:T.x+Math.cos(a)*bo.rAt(u)*.7,y:T.y0+hc*u,z:T.z+Math.sin(a)*bo.rAt(u)*.7},a,el,len,r0,.12,5,-.12,.1,.06);

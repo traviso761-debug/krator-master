@@ -39,7 +39,7 @@ function kinBridges(){const out=[],C=[],D=[[1,0],[0,1],[RT2,RT2],[RT2,-RT2]];
  for(const c of C){if(out.length>=2)break;if(out.some(b=>Math.hypot(b[0]-c.p[0],b[1]-c.p[1])<280))continue;out.push([c.p[0],c.p[1],c.q[0],c.q[1]]);}
  return out;}
 // before SWLOW.build: the cuts (only within reach of the heroes: a far tree keeps its impostor, so the far canopy does not thin); the springs' clearing whatever ?kin says
-function swlowKinVeto(){const prev=SWLOW.veto;if(!ST&&KIN_ON)KIN_BRIDGES.push(...kinBridges());
+function swlowKinVeto(){const prev=SWLOW.veto;if(ST&&ST.kinRules)KIN_RULES.push(...ST.kinRules);if(!ST&&KIN_ON)KIN_BRIDGES.push(...kinBridges());
  SWLOW.veto=(kind,key,x,z)=>{if(prev&&prev(kind,key,x,z))return true;if(kind!=='tree')return false;
   for(const S of SPRINGS)if(Math.hypot(x-S.x,z-S.z)<S.r+24)return true;
   if(key!=='mangrove'&&key!=='cypress'&&WATER_FN.shore(x,z)<.8)return true;   /* no bole in the water the eye sees (the ribbons, the springs' runs): WATER.edgeAudit's plant-in-water */
