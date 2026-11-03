@@ -404,14 +404,14 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
     {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
   - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes
     and cliffs: a baked offset texture for the shaders is not done. Keep alterations off a varied stack: their lines read the shifted height.
-- **The season's last two pieces (H7)** (`core/biome/30s-core-season-flush.js` and `core/clock/21-core-clock-flush.js`; `test-season-flush.js`,
+- **The season's last two pieces (H7)** (`core/biome/30s-core-season-flush.js` and `core/clock/opt/21-core-clock-flush.js`; `test-season-flush.js`,
   `test-flush.js`):
   - **the copper flush**, a leaf colour at the start of the rains (`KCLOCK.flush`, `BIO.FLUSH`, `BIO.bindFlush`);
   - **the Godot leaf twin**: `season_dry` and `season_flush` as global uniforms, `shaders/lib/season.gdshaderinc` in `foliage.gdshader`,
     `biome_import.gd` reading the leaf's season options, and `KSeason.flush` and `set_globals` in `kseason.gd` (golden `golden-flush.json`).
 
   `core/biome/README.md`, "The season", has the details and the GPU check.
-- **The `sound` record (H9)** (`core/tags/54-core-tags-sound.js`, `test-sound.js`, twin `ksound.gd`): an aeolian emitter as a record in core/tags,
+- **The `sound` record (H9)** (`core/tags/opt/54-core-tags-sound.js`, `test-sound.js`, twin `ksound.gd`): an aeolian emitter as a record in core/tags,
   for a core/audio still to be written and Godot's audio. Its modes are an edge tone, an overblown closed pipe and a Helmholtz cavity, with
   presets for the howl bamboo, the Singing Gjár and the singing buttress. `core/tags/README.md`, "Adopting it: the sound key".
 - **`KSPAN`** (`core/biome/45-core-span.js`, `test-span.js`): catenaries between two anchors, for spiderlake's silk and loom-chasms' living
@@ -840,7 +840,7 @@ vocabulary), for the inspector, the minimap, the exporters and Godot node metada
 | `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
 | `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
 | `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
-| `54-core-tags-sound.js` | [G data] opt-in: the `sound` record (H9), aeolian emitters with `KTAGS.sound`, `soundLevel` and `soundAt`; twin `ksound.gd` (`tags/README.md`, "Adopting it: the sound key") |
+| `opt/54-core-tags-sound.js` | [G data] opt-in (a subfolder: the settlements that take every file in `core/tags` do not take it): the `sound` record (H9), aeolian emitters with `KTAGS.sound`, `soundLevel` and `soundAt`; twin `ksound.gd` (`tags/README.md`, "Adopting it: the sound key") |
 | `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
 

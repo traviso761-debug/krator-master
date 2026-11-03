@@ -1,4 +1,4 @@
-// node core/tags/test-sound.js — the sound record (54-core-tags-sound.js), each check with a negative; --write rewrites
+// node core/tags/test-sound.js — the sound record (opt/54-core-tags-sound.js), each check with a negative; --write rewrites
 // golden-sound.json, which ksound_test.gd holds ksound.gd to.
 'use strict';
 const fs=require('fs'),path=require('path');
@@ -8,7 +8,7 @@ let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.lo
 const throws=f=>{try{f();return false;}catch(e){return true;}};
 const before=JSON.stringify(K.VOCAB);
 ok('  negative: before it is loaded, a sound tag is an unknown key',K.norm({sound:{kind:'edge'}}).problems.length===1,false);
-require('./54-core-tags-sound.js');
+require('./opt/54-core-tags-sound.js');
 const after=JSON.parse(JSON.stringify(K.VOCAB));delete after.soundKinds;delete after.keys.sound;
 ok('loaded, the vocabulary only gains soundKinds and the sound key',JSON.stringify(after)===before,false);
 ok('a sound tag is an object, no problem; a string is one',K.norm({sound:{kind:'edge'}}).problems.length===0&&K.norm({sound:'loud'}).problems.length===1,false);
@@ -45,5 +45,5 @@ for(let i=0;i<72;i++){const s=recs[i%recs.length],w={speed:(i*1.7)%32,dir:i*.37}
 const G=path.join(__dirname,'golden-sound.json'),gold={format:'krator-sound-golden',version:1,recs,cases};
 if(process.argv.includes('--write'))fs.writeFileSync(G,JSON.stringify(gold)+'\n');
 ok('golden-sound.json is the module\'s output (--write rewrites it)',fs.existsSync(G)&&fs.readFileSync(G,'utf8')===JSON.stringify(gold)+'\n',false);
-ok('the fragment uses no THREE, no DOM, no Math.random',!/THREE\.|document\.|Math\.random\(/.test(fs.readFileSync(path.join(__dirname,'54-core-tags-sound.js'),'utf8')),false);
+ok('the fragment uses no THREE, no DOM, no Math.random',!/THREE\.|document\.|Math\.random\(/.test(fs.readFileSync(path.join(__dirname,'opt','54-core-tags-sound.js'),'utf8')),false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

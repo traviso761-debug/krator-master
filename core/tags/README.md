@@ -11,7 +11,7 @@ Travis's decisions; this file is what was built.
 | `50-core-tags.js` | [G data] | `KTAGS.create({build})`: the registry (`add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`), the ids, `KTAGS.uid`, `KTAGS.norm` (the input mapping and the checks). No THREE, no DOM: it runs in node. Needs `core/rand` (the uid is a `KRAND.hash`) |
 | `52-core-tags-vocab.js` | [G data] | `KTAGS.VOCAB`: classes, the 23 cultures and their display names, the aliases, types, wealth, states, settings, jobs, Köppen, fixture kinds, the known tag keys, the id prefixes. The catalog's lists are copied, not read |
 | `53-core-tags-host.js` | [web] | `KTAGS.label(rec, instance)`: the inspector's text, generated from the record |
-| `54-core-tags-sound.js` | [G data] | opt-in: the `sound` key and `VOCAB.soundKinds`; `KTAGS.sound` (a record from its kind), `KTAGS.soundLevel` and `soundAt` (gain and pitch for a wind). Its test is `test-sound.js`, its twin `ksound.gd` (`golden-sound.json`) |
+| `opt/54-core-tags-sound.js` | [G data] | opt-in (a subfolder, so the settlements that take every file in `core/tags` do not take it): the `sound` key and `VOCAB.soundKinds`; `KTAGS.sound` (a record from its kind), `KTAGS.soundLevel` and `soundAt` (gain and pitch for a wind). Its test is `test-sound.js`, its twin `ksound.gd` (`golden-sound.json`) |
 | `test-tags.js` | | the node test: the vocabulary against the catalog's source, each check with a negative, a fixed run's ids, the pinned uid and export digest, the proposal's three labels, `golden.json` |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | | the uid in GDScript and its vectors; copied to `godot/tests/tags/` by `godot/tools/sync_core.py` |
 
@@ -190,7 +190,8 @@ per instance, a bucket the volumes it merges (`BIO.export`), a glTF node its rec
 
 ## Adopting it: the sound key (H9, 2026-11-03)
 
-`54-core-tags-sound.js` is opt-in: load it after `52-core-tags-vocab.js`. It adds the `sound` key (rule `object`) and
+`opt/54-core-tags-sound.js` is opt-in: list it by path after `52-core-tags-vocab.js`. It sits in a subfolder because a dozen
+settlements take every numbered file in `core/tags`, and those pages must not change. It adds the `sound` key (rule `object`) and
 `VOCAB.soundKinds`, and changes nothing else, so a page without it is untouched. An aeolian emitter is a record like anything placed:
 
 ```js

@@ -500,10 +500,10 @@ kapok) `season:{drop:.9,colour:0x9a7040,k:.5}`, the bolster `season:{colour:0xd8
 
 - **The flush.** It is a colour at the start of the rains, not in the dry. `season: {..., flush: {colour, k, stagger}}` on a `leafMat`
   reads one more page-wide uniform, `BIO.FLUSH.value`, which `BIO.bindFlush(clock, o)` drives from `KCLOCK.flush`
-  (`core/clock/21-core-clock-flush.js`). That is a pulse keyed to the day the wet last rose through one half: `rise` 5 days, `hold` 18,
+  (`core/clock/opt/21-core-clock-flush.js`). That is a pulse keyed to the day the wet last rose through one half: `rise` 5 days, `hold` 18,
   `fade` 12. Its colour step sits right after the dry's, with the same hash. Without `flush`, every shader is the one it was, character
   for character (the test compares all of them).
-  *Adopting it* (the rust miombo): load the fragment after `30-core-foliage.js` and `21-core-clock-flush.js` after core/clock, then
+  *Adopting it* (the rust miombo): load the fragment after `30-core-foliage.js` and `core/clock/opt/21-core-clock-flush.js` after core/clock, then
   `BIO.bindFlush(null, {sharp: 2})`, and give the crown `season: {flush: {colour: 0xb0502a}}`.
 - **The Godot twin.**
   - `godot/shaders/lib/season.gdshaderinc` holds the two global uniforms, `season_dry` and `season_flush`, in `project.godot`'s

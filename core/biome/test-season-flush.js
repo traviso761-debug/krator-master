@@ -35,7 +35,7 @@ check('setFlush clamps a number and reads a record\'s flush',B.setFlush(2)===1&&
 check('  negative: bindFlush without core/clock binds nothing',B.bindFlush({day:0,hour:0})===false,false);
 vm.runInContext(fs.readFileSync(path.join(D,'..','clock','20-core-clock.js'),'utf8'),B.__ctx);
 check('  nor with core/clock but not its flush fragment',B.bindFlush({day:0,hour:0})===false,false);
-vm.runInContext(fs.readFileSync(path.join(D,'..','clock','21-core-clock-flush.js'),'utf8'),B.__ctx);
+vm.runInContext(fs.readFileSync(path.join(D,'..','clock','opt','21-core-clock-flush.js'),'utf8'),B.__ctx);
 const KC=B.__ctx.KCLOCK;let on=null;for(let d=1;d<366;d+=.25)if(KC.season(d-.25,0,{}).wet<.5&&KC.season(d,0,{}).wet>=.5){on=d;break;}
 const C=KC.make({hour:0,day:Math.floor(on)+10});B.__ticks=[];
 check('bindFlush drives BIO.FLUSH from the clock: full ten days into the rains',B.bindFlush(C)===true&&B.FLUSH.value>.99,false);

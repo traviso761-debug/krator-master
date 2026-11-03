@@ -4,7 +4,7 @@
 // dike-ribs in the Outland Bore) and High Rift's Singing Gjár (the organ-pipe drone of wind across deep fissures).
 // A sound is registered like anything placed: T.add({class:'feature', kind:'sound', key, at, r, tags:{sound: KTAGS.sound({...})}}).
 // Loading this file adds the `sound` tag key (rule 'object') and VOCAB.soundKinds to KTAGS.VOCAB; it changes nothing else, so
-// a build that does not load it is untouched. Plain numbers: no THREE, no DOM, no Math.random. The GDScript twin of the level is
+// a build that does not load it is untouched. It sits in opt/: a dozen settlements take every numbered file in core/tags. Plain numbers: no THREE, no DOM, no Math.random. The GDScript twin of the level is
 // ksound.gd (golden-sound.json; node core/tags/test-sound.js). Needs 50-core-tags.js and 52-core-tags-vocab.js (and core/rand).
 //
 //   KTAGS.sound(o) -> the record, its kind's row filling what o leaves out:

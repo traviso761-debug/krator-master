@@ -2,7 +2,7 @@
 // The season's last open piece (core/biome/README.md, "The season"; biomes/hyperjungle/PLAN-LANDS.md section 11, H7): the copper
 // flush. The rust miombo's new leaves come out copper-red as the rains begin, for a few weeks, then turn green, so it is a colour
 // at the START of the wet, not in the dry. One page-wide uniform beside BIO.SEASON, BIO.FLUSH.value (0..1, how strong the flush
-// is now: core/clock's KCLOCK.flush, 21-core-clock-flush.js), read only by a leafMat whose season options carry `flush`:
+// is now: core/clock's KCLOCK.flush, core/clock/opt/21-core-clock-flush.js), read only by a leafMat whose season options carry `flush`:
 //   season: {..., flush: {colour (hex: the new leaves' colour), k (1: how far at full flush), stagger (.5: spread by the
 //            instance's hash, as the dry's; a stand flushes patchily)}}
 //   BIO.setFlush(x)             a number or a record ({flush}); clamped to 0..1
@@ -19,7 +19,7 @@
   BIO.FLUSH={value:0};
   BIO.setFlush=function(s){var d=s!=null&&typeof s==='object'?s.flush:s;BIO.FLUSH.value=Math.min(1,Math.max(0,+d||0));return BIO.FLUSH.value;};
   BIO.bindFlush=function(clock,o){var K=typeof KHOST!=='undefined'&&KHOST&&KHOST.host?KHOST.host.clock:null,C=clock||K,KC=root.KCLOCK;
-    if(!KC||!KC.flush||!C){if(BIO.err)BIO.err('BIO.bindFlush: needs core/clock with 21-core-clock-flush.js, and a clock');return false;}
+    if(!KC||!KC.flush||!C){if(BIO.err)BIO.err('BIO.bindFlush: needs core/clock with opt/21-core-clock-flush.js, and a clock');return false;}
     var f=function(){BIO.setFlush(KC.flush(C.day,C.hour,o));};f();if(BIO.host)BIO.host.ticks(f);return true;};
   // a leaf's flush options: colour (hex, or null: none), k (1), stagger (.5)
   BIO._flushOpt=function(s){if(!s||typeof s!=='object'||!s.flush)return null;var f=s.flush===true?{}:s.flush;

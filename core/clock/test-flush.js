@@ -1,4 +1,4 @@
-// node core/clock/test-flush.js — KCLOCK.flush (21-core-clock-flush.js), each check with a negative; --write rewrites
+// node core/clock/test-flush.js — KCLOCK.flush (opt/21-core-clock-flush.js), each check with a negative; --write rewrites
 // golden-flush.json, which kseason_flush_test.gd holds kseason.gd's KSeason.flush to.
 'use strict';
 const fs=require('fs'),path=require('path');
@@ -6,7 +6,7 @@ global.window=global;
 eval(fs.readFileSync(path.join(__dirname,'20-core-clock.js'),'utf8'));
 let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const before=JSON.stringify([0,40,100,200,300].map(d=>KCLOCK.season(d,12,{sharp:2})));
-eval(fs.readFileSync(path.join(__dirname,'21-core-clock-flush.js'),'utf8'));
+eval(fs.readFileSync(path.join(__dirname,'opt','21-core-clock-flush.js'),'utf8'));
 ok('loaded, KCLOCK.season answers exactly as before',JSON.stringify([0,40,100,200,300].map(d=>KCLOCK.season(d,12,{sharp:2})))===before,false);
 const F=(d,o)=>KCLOCK.flush(d,0,o),W=(d,o)=>KCLOCK.season(d,0,o).wet;
 // the onset: the first day the wet rises through .5

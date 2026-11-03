@@ -2,7 +2,8 @@
 // The copper flush (biomes/hyperjungle/PLAN-LANDS.md section 11, H7): the rust miombo's new leaves come out copper-red at the START
 // of the rains, for a few weeks, then turn green. KCLOCK.season gives how far into the wet or the dry a day is; the flush is a
 // pulse keyed to the day the wet last rose through one half (the rains' onset, whatever `sharp` is: the wet crosses .5 where the
-// sun's cosine crosses 0). Plain numbers, no THREE, no DOM; opt-in (needs 20-core-clock.js first). The GDScript twin is
+// sun's cosine crosses 0). Plain numbers, no THREE, no DOM; opt-in (needs 20-core-clock.js first). It sits in opt/ because
+// several settlements take every numbered file in core/clock, and their pages must not change. The GDScript twin is
 // KSeason.flush in kseason.gd (golden-flush.json; node core/clock/test-flush.js).
 //   KCLOCK.flush(day, hour, o) -> {flush (0..1), since (days since the rains began, 0..yearD)}
 //   C.flush(o) is not added to a clock: call KCLOCK.flush(C.day, C.hour, o)

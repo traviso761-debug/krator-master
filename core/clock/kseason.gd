@@ -38,7 +38,7 @@ static func _sm(a: float, b: float, v: float) -> float:
 	return t * t * (3.0 - 2.0 * t)
 
 
-# KCLOCK.flush's twin (21-core-clock-flush.js): the copper flush, a pulse keyed to the day the wet last rose through one half.
+# KCLOCK.flush's twin (opt/21-core-clock-flush.js): the copper flush, a pulse keyed to the day the wet last rose through one half.
 #   KSeason.flush(day, hour, o) -> {flush (0..1), since (days since the rains began)}; o adds rise (5), hold (18), fade (12) days
 static func flush(day: float, hour: float, o: Dictionary = {}) -> Dictionary:
 	var y: Dictionary = o.get("year", YEAR)

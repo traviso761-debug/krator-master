@@ -1,4 +1,4 @@
-# core/tags' sound record in GDScript: the twin of KTAGS.soundLevel and KTAGS.soundAt (54-core-tags-sound.js; H9). A record's
+# core/tags' sound record in GDScript: the twin of KTAGS.soundLevel and KTAGS.soundAt (opt/54-core-tags-sound.js; H9). A record's
 # tags.sound as the export carries it (KTAGS.sound filled it on the page, its detune drawn there), read by Godot's audio: how
 # loud, and at what pitches, for a wind. ksound_test.gd checks it against golden-sound.json, which test-sound.js writes.
 #   KSound.level(snd, wind: {speed, dir}, o: {T}) -> {on, gain, pitch, u, partials: [[Hz, amp], ...]}
