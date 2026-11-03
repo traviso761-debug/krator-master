@@ -173,16 +173,16 @@
    "sha256": "6472150f4099a62d16806d1413a7b81be4d78f3384c73cfbb9f6475ecdb0f3b2"
   },
   "biomes/swlowlands/dist/swlowlands-delta.html": {
-   "bytes": 1847949,
-   "sha256": "4ce76e85855389dd4a656a8ec9bee4e775005d9d7c71a5a660ccdb85dab099f0"
+   "bytes": 1852313,
+   "sha256": "74b9cd5d8d4c28878a176ae6103daff493ee496d9f0237bb6a43dd68331c3302"
   },
   "biomes/swlowlands/dist/swlowlands-gorge.html": {
-   "bytes": 1843625,
-   "sha256": "a791630c7996aba8158faa853e6384ad3c22bb594f7d3e4ae29ecd1ab216477a"
+   "bytes": 1847990,
+   "sha256": "33974842086a62de9b698c9e5084f614de77a2af64fc07fa3c57a670ee4bc996"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 1839566,
-   "sha256": "1f23907764b2607507d6fd0d62f6fe2d8343580f9675ff2b2948268905ffe605"
+   "bytes": 1843931,
+   "sha256": "b106d48dc319fffb3b5c0457805f244c083c093a8fbc474bd499c3544b41db17"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 546392,

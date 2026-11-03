@@ -1,4 +1,4 @@
-// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// ================================================================= HOST â€” the kit's views, inspector words and probe checks, handed to core/host
 // The camera, the frame loop, the panel and window._api are core/host's (90-host-camera.js, 91-host-loop.js,
 // 92-host-panel.js, 95-host-probe.js; core/host/README.md): this fragment only says what this page has. It replaced the
 // kit's own 90-host-camera.js and 91-host-probe.js (2026-10-12); the views, the inspector's words and the checks are theirs.
@@ -51,10 +51,10 @@ function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
- let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  Â·  '+lab:lab);
  // the tree's harvest tag (biomes/FRUIT.md): what it yields and the catalog piece its fruit is
  const S=best&&SWLOW.SPECIES.find(s=>s.name===best.name),hv=S?S.tags.harvest:null;
- const hl=hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'';
+ const hl=hv?'\nharvest: wood '+hv.wood+' Â· edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' Â· medicinal':'')+(hv.fruit?' Â· catalog '+hv.fruit:''):'';
  return name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hl;}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per biome pass come from
@@ -95,8 +95,8 @@ const HCHK={
 // inside an obstacle's footprint: the tower's ledge plants (65-biome-swlowlands-dress.js). The tower is not a seat surface: its
 // stacked floors cost every foot in its box dozens of rays, and verify did not finish. NOT_FEET: a boulder's origin is its middle
 const HELD_ITEMS={'biome:fan':1,'biome:frond':1,'biome:cone':1,'biome:mossmat':1},NOT_FEET={'biome:boulder':1},HELD_UP=.6;
-// FEET_OWED: the feet still off the drawn ground, recorded on 2026-11-02 (KNOWN_ISSUES.md); ratchet it down, never up
-const FEET_OWED=38;
+// FEET_OWED: the feet still off the drawn ground, recorded on 2026-11-02 (KNOWN_ISSUES.md), 17 since the river's strip and the reeds' own ground (2026-11-03); ratchet it down, never up
+const FEET_OWED=17;
 let _feet=null;
 function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];let held=0;
   scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!M.count||NOT_FEET[M.name])return;M.updateMatrixWorld();
@@ -118,10 +118,18 @@ function edgeCheck(){const P=[];for(const T of SWLOW.TREES){if(T.cut||T.lv===0||
  const bad=BIO.envCheck(ENV,[[0,0],[-1400,-200],[800,300],[-2400,0]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)};}
 const EDGE_OWED={plant:0,wet:0};   // ratchet: none owed at this turn
+// the river and its banks (2026-11-03, nwlowlands' flickering ponds): the river against the ground as DRAWN (drawnH: the river's 2 m strip, else the 16.5 m floor), WATER.audit's opt-in
+// flow-graze, inside the drawn square; its negative is the coarse floor alone (coarseH), which bridged the channel's banks across the ribbon
+function coarseH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,X=k=>-S/2+k*c;
+ const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));
+ return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);}
+function grazeCheck(G){if(!WATER.audit)return{ok:false,detail:'no audit'};const E=TERR.R*1.05,F=WATER.audit({ground:G,graze:true,surfaces:[RIVER]}).filter(f=>(f.rule==='flow-graze'||f.rule==='flow-under')&&Math.abs(f.x)<E&&Math.abs(f.z)<E),g=F.filter(f=>f.rule==='flow-graze');
+ return{ok:!F.length,detail:g.length+' graze and '+(F.length-g.length)+' under findings in the square'+(F.length?', first at '+F[0].x+', '+F[0].z:'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
  add('the plants feet on the drawn ground (KSEAT contact sweep)',feetCheck(false));
  add('the flora and the wet band read the water\'s own shore (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
+ if(RIVER_STRIP)add('the river and its banks cross, not lie along each other (drawn ground)',grazeCheck(drawnH));
  if(ST&&ST.checks)ST.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_instNames();
@@ -129,6 +137,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a species with no harvest tag',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='madrone'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),SWLOW.PLANTS,N));
  add('the figs never drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N.filter(n=>n[0]!=='biome:fig')));
  add('the plants feet back on terrainH (as before KSEAT): they float and sink',feetCheck(true));
+ if(RIVER_STRIP)add('the river on the coarse 16.5 m floor alone',grazeCheck(coarseH));
  return R;}
 /* the land in the sea (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
 const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[SEA_DRAW.mesh.material,INLAND_DRAW.mesh.material],level:0,center:xzOf(-2500,-50),radius:700,far:4000,

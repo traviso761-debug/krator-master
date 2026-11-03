@@ -62,7 +62,8 @@ function youngCane(x,y,z,lv,st){const S=SWLOW.SPECIES[4],n=ri(2,4);
   frondCrown(px,y+h,pz,rr(1.2,2),ri(3,5),-.8,-.2,leafCol(S.leaf,1.4),'palmfrond');}st.canes++;}
 function iris(x,y,z,lv,st){const h=rr(.7,1.2);tuft('spike',x,y,z,h,h*.6,leafCol(PAL.reed,1.35,.03));if(lv>=1)blooms(x,y+h*.75,z,.35,ri(2,4),PAL.iris,[.14,.24],.25);st.iris++;}
 function reed(x,y,z,lv){const h=rr(1.4,2.8)*(lv===0?1.5:1),n=lv===2?ri(2,4):1;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,2):0;tuft('reed',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(PAL.reed,1.35,.025));}}
+ /* a clump's outer tufts follow the ground under them (2026-11-03: on the hill river's steep 2 m banks one height for the clump buried or floated them) */
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,2):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;tuft('reed',px,d?y+Y(px,pz)-Y(x,z):y,pz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(PAL.reed,1.35,.025));}}
 function sedge(x,y,z,lv,set){const h=rr(.5,1.1)*(lv===0?1.5:1);tuft('grass',x,y,z,h,h*1.3,leafCol(set||PAL.grassGreen,1.35,.03));}
 function grassTuft(x,y,z,lv,set,hk,k){const h=rr(.5,1.1)*(hk||1)*(lv===0?1.6:1),n=lv===2?(k||ri(2,4)):1;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.5,1.8):0;tuft('grass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.4,leafCol(set,1.3,.03));}}
