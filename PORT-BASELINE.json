@@ -85,16 +85,16 @@
    "sha256": "faf48500933c917f9585903b980cda6b1bbfa53e30cf68dbda0f2308271ed6a3"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
-   "bytes": 1485627,
-   "sha256": "a7eb0b11ade62bb1be49f803daa85d95ac0d592fab5d7bc494408728dcc31cf9"
+   "bytes": 1581694,
+   "sha256": "a0427c4d0476618d79b5433bc52f383145991d88e88aebb0af6afe1c782290fe"
   },
   "biomes/necanyons/dist/necanyons-savanna.html": {
-   "bytes": 1488637,
-   "sha256": "d01fef14582c8fa55f2ec332aba4510b85f5ca4ecc38968769ca3dd87bfd2fbc"
+   "bytes": 1584704,
+   "sha256": "9d5d8242c094428b5b2c1d3a4126b735be71d0da62d4b17cd26787a466513bc5"
   },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 1484972,
-   "sha256": "0d8579e99d91ff071005dcea33bf0637ca58f4455fa7e42ff286ed2390c660fd"
+   "bytes": 1581053,
+   "sha256": "8e606a222423320da0d497336f3398c4ef9e574e53328c351817479dbe2b8e04"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 6308440,
@@ -109,12 +109,12 @@
    "sha256": "38f3d879dae58bf43249896a00f98eeed24c6a236f9fa68bef8e6307d7c84c4b"
   },
   "biomes/nwlowlands/dist/nwlowlands-margins.html": {
-   "bytes": 10519298,
-   "sha256": "f7b2f176edcefec0e12454ddbb311a8db473f7386fac524e53c9779f16871041"
+   "bytes": 10524565,
+   "sha256": "e0983ee2c36fe6111f591a5bff805db41a90da56d7bc51ca3a49d6c7112e4586"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 10515792,
-   "sha256": "f42aeae8ce9666c120f19cf7c918fe7a255bce4fa660b111025a1d0120287dc3"
+   "bytes": 10521059,
+   "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
   "biomes/oidong/dist/oidong.html": {
    "bytes": 2679653,
@@ -173,16 +173,16 @@
    "sha256": "6472150f4099a62d16806d1413a7b81be4d78f3384c73cfbb9f6475ecdb0f3b2"
   },
   "biomes/swlowlands/dist/swlowlands-delta.html": {
-   "bytes": 1847119,
-   "sha256": "30ec20dd2195aca7a36c65d977025a626267573d47a8642a21fa9f076834a13d"
+   "bytes": 1847949,
+   "sha256": "4ce76e85855389dd4a656a8ec9bee4e775005d9d7c71a5a660ccdb85dab099f0"
   },
   "biomes/swlowlands/dist/swlowlands-gorge.html": {
-   "bytes": 1842795,
-   "sha256": "e8e3b81ab8ac6046887c819fbf460dc2797764f57f757822fa8ec6fe461f62ce"
+   "bytes": 1843625,
+   "sha256": "a791630c7996aba8158faa853e6384ad3c22bb594f7d3e4ae29ecd1ab216477a"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 1838736,
-   "sha256": "ae1b1d04f566ef0cc29af43eb8a6c9cf73258095c465a7c8331bd76d3156dc7a"
+   "bytes": 1839566,
+   "sha256": "1f23907764b2607507d6fd0d62f6fe2d8343580f9675ff2b2948268905ffe605"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 546392,
@@ -493,8 +493,8 @@
    "sha256": "a4a80fd4eec9827ec13b96c6182ac08c016a4e8595fe1db753ea2591dafeb3d7"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 586431,
-   "sha256": "753a2f52f34969a2a4562deb47b885ccae20025fa04fef1fe8b37e253135d3cb"
+   "bytes": 5251019,
+   "sha256": "2acbee0411ec27b87b15d66dbde4c2c9d414e29bada9bdc5e1abce3c6edc9465"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4937437,

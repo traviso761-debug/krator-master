@@ -144,7 +144,8 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
 {
   load('kits/resources/src/42r-res-ore.js'); load('kits/resources/src/45r-res-field.js');
   const KR = KRES.load(JSON.parse(fs.readFileSync(path.join(ROOT, 'kits', 'resources', 'data', 'geology.json'), 'utf8'))), PM = KR.data().grid.px_m;
-  const node = KR.nodesIn({ x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM }).find(n => RES_ORE.kinds[n.kind].works === 'mine');
+  const sh = KR.data().grid.fullW === 1549 ? [0, 0] : [272, 330];   /* the eastern uplands' tile, in 4.23 px, on either canvas */
+  const node = KR.nodesIn({ x0: (1100 + sh[0]) * PM, z0: (660 + sh[1]) * PM, x1: (1160 + sh[0]) * PM, z1: (720 + sh[1]) * PM }).find(n => RES_ORE.kinds[n.kind].works === 'mine');
   const at = { x: node.x + 150, z: node.z }, near = KR.near(at.x, at.z, node.kind, row.reach.mine)[0];
   const free = o => H.village(spec('mine', Object.assign({ resource: null, site: at, link: { x: at.x - 500, z: at.z + 200 } }, o)));   /* the default works lane runs away from the node */
   const m = free({ ore: node.kind }), any = free(), none = free({ kres: { near: () => [] } });

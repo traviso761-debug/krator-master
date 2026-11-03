@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The heat shimmer and the breath's turn on a real WebGL context (SwiftShader by default, so no GPU lock; KRATOR_GL=gpu for the GPU).
+"""The heat shimmer, the breath's turn and the far lines on a real WebGL context (SwiftShader by default, so no GPU lock; KRATOR_GL=gpu for the GPU).
 
     python3 core/atmos/check_shimmer.py [--shot out.png]
 
@@ -7,6 +7,7 @@ A checkered ground 200 m square with one hot patch in its middle (a KTHERM-style
 at 6 m up. It draws the frame twice through ATMOS.shimmer (k 0, then k 1 a second on) and counts the pixels that moved inside the hot
 patch's screen box and outside it: the shimmer must move many inside and none outside, and the sky none. On the same page an
 instanced mesh with BIO.animHook's breath.turn (35b-core-anim-turn.js) must compile and turn: its pixels differ between uTurn 0 and .25.
+KFAR.streakMesh's ribbons (host/44b-core-farfield-lines-draw.js) must draw, and cover more pixels at k 1 than at k 0.
 Exit 0 when every check holds and no shader or WebGL error was logged.
 """
 import asyncio, json, os, shutil, sys, tempfile
@@ -19,7 +20,8 @@ import harness  # noqa: E402
 FILES = ['core/shader/06-core-khook.js', 'core/shader/06b-core-kcolor.js'] + sorted(
     'core/atmos/' + f for f in os.listdir(HERE) if f.startswith('89-atmos-') and f.endswith('.js')) + [
     'core/atmos/fx/89-atmos-fx-shimmer.js', 'core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js',
-    'core/biome/35-core-anim.js', 'core/biome/35b-core-anim-turn.js']
+    'core/biome/35-core-anim.js', 'core/biome/35b-core-anim-turn.js', 'core/rand/08-core-rand.js', 'core/terrain/44-core-farfield.js',
+    'core/terrain/44b-core-farfield-lines.js', 'core/terrain/host/44b-core-farfield-lines-draw.js']
 
 PAGE = r"""<!doctype html><html><body style="margin:0"><script src="three.min.js"></script>%s<script>
 const W=320,Hh=200,R=new THREE.WebGLRenderer({preserveDrawingBuffer:true});R.setSize(W,Hh);R.setPixelRatio(1);document.body.appendChild(R.domElement);
@@ -48,9 +50,13 @@ im.material.onBeforeCompile=BIO.animHook({mode:'breath',breath:{key:'sun',shape:
 const sc2=new THREE.Scene();sc2.background=new THREE.Color(0xffffff);sc2.add(im);sc2.add(new THREE.AmbientLight(0xffffff,1));
 BIO.breathState('sun').value=0;R.render(sc2,cam);const c=read();BIO.breathState('sun').value=.25;R.render(sc2,cam);const d=read();
 let turned=0,drawn=0;for(let k=0;k<c.length;k+=4){if(c[k]<200)drawn++;if(Math.abs(c[k]-d[k])>20)turned++;}
+/* the far lines: two ribbons down a far wall, dark on white, wider and darker at k 1 than at k 0 */
+const SL=KFAR.streaks({world:2,lines:[{a:[-20,0,-300],b:[-10,60,-320],w:8},{a:[25,0,-300],b:[30,50,-310],w:6}]}),uk={value:0},ML=KFAR.streakMesh(SL,{k:uk,fog:false});
+const sc3=new THREE.Scene();sc3.background=new THREE.Color(0xffffff);sc3.add(ML);uk.value=0;R.render(sc3,cam);const e0=read();uk.value=1;R.render(sc3,cam);const e1=read();
+let line0=0,line1=0;for(let k=0;k<e0.length;k+=4){if(e0[k]<245)line0++;if(e1[k]<245)line1++;}
 S.draw(scene,cam,.4);const png=R.domElement.toDataURL('image/png');   /* a shimmered frame, for --shot */
 S.k.value=0;S.draw(scene,cam,0);const png0=R.domElement.toDataURL('image/png');
-window.RESULT={inside,outside,sky,box:[x0,x1,y0,y1].map(Math.round),turned,drawn,programs:R.info.programs.length,png,png0};
+window.RESULT={inside,outside,sky,box:[x0,x1,y0,y1].map(Math.round),turned,drawn,line0,line1,programs:R.info.programs.length,png,png0};
 </script></body></html>"""
 
 
@@ -94,6 +100,7 @@ async def main(shot):
               ('and nothing outside it (%d)' % r['outside'], r['outside'] == 0),
               ('the sky does not shimmer (%d)' % r['sky'], r['sky'] == 0),
               ('the turned card is drawn (%d pixels) and turns (%d)' % (r['drawn'], r['turned']), r['drawn'] > 100 and r['turned'] > 50),
+              ('the far lines draw (%d pixels dry) and widen wet (%d)' % (r['line0'], r['line1']), r['line0'] > 30 and r['line1'] > r['line0'] * 1.4),
               ('no shader or WebGL error (%s)' % (errs[:3] or 'none'), not errs)]
     for name, good in checks:
         print(('PASS  ' if good else 'FAIL  ') + name)

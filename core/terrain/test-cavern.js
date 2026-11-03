@@ -157,6 +157,7 @@ function carvedBlock(o) {
   return { D, W };
 }
 const K = carvedBlock(), Km = K.D.meshAll();
+console.log('carved block: hash ' + KCAVERN.hash(Km));
 const kw = (() => {   // open edges are allowed only where the cavern's mesh meets the host's ground
   const vid = new Map(), E = new Map(); let nv = 0;
   const key = (m, i) => { const k = Math.round(m.pos[i * 3] * 1e4) + ',' + Math.round(m.pos[i * 3 + 1] * 1e4) + ',' + Math.round(m.pos[i * 3 + 2] * 1e4); let v = vid.get(k); if (v === undefined) { v = nv++; vid.set(k, [v, m.pos[i * 3 + 1]]); v = vid.get(k); } return v; };
