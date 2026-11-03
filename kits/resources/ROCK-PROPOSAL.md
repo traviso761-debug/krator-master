@@ -1,7 +1,8 @@
 # Rock types the geology does not carry yet (proposal, 2026-11-03)
 
-**Status: a proposal for the owner. Nothing here is built** except the carbonate, which was added the same day
-(`GEOLOGY.md`, "The carbonate"; `biomes/KARST-SITES-5.1.md`).
+**Status (2026-11-03): 1, 2, 3, 4, 5, 7 and 9 are built** (the owner: "do 1, 2, 5, 4, 3, 7, 9"), with the carbonate added
+earlier the same day. 6 (surficial cover) and 8 (silica) are still proposals. What was built, what was deliberately left
+out, and where the biome kits now disagree with the data are in "Built" and "Where the biomes must change", at the end.
 
 `data/geology.json` has seven provinces (water, sedimentary, crystalline, volcanic, evaporite, rift, carbonate). The lore,
 the strata recipes and the biome plans name many more rocks. This file lists the rocks they need that the bake has no
@@ -53,3 +54,99 @@ hamlets' mines, the ledger and Godot's golden field. So it is the owner's decisi
 - the 5.1 page and its regions and settlements (the artifact's database; the 4.23 inputs are not in the repo);
 - a frame decision: keep world metres on the old canvas (`x = (px - 272) x 2000`), or move to 5.1's frame;
 - a note to each reader that its nodes move.
+
+## Built (2026-11-03)
+
+`tools/scale-model/geology.py` `rocks()`, added to the 4.23 bake by `--rocks` (`GEOLOGY.md` has the rules and the command).
+Only the province layer changed; every family layer, lode digest and placer is byte-identical, and the new layers are
+**rock families** that neither the node field nor the ledger reads.
+
+| # | Built as | Cells (4 km) | Not done, and why |
+|---|---|---|---|
+| 1 | province `impact` (the walls' crystalline); layers `impactite` (walls, benches, melt-sheet margin) and `nickel` (the margin, Sudbury) | 29,097 impact | **no nickel node kind**: adding one puts new nodes in every tile, which moves the ledger and the isle demo's economy. `nickel` is a prospect until the owner adds the kind |
+| 2 | province `basalt` (n semiarid, Siphon Pits, Region 99) | 36,433 | the copper bytes are **not moved** onto the basalt (native copper): copper is a node kind |
+| 3 | layer `tuff` round every vent, longest downwind | 10,437 > 0 | no pozzolana node kind (the same reason) |
+| 4 | province `ultramafic` (the Arch: off the 4.23 canvas, so 0 cells today); layer `ultramafic` for the White Gills' root | 334 > 0 (the root) | no surface ultramafic on the old canvas: the gills plan says the twins are dacite and basalt with the root *proposed* deep, so the root is a layer, not a province |
+| 5 | provinces `granite` (pluton blocks in the rugged crystalline), `quartzite` (Korona's tables, the high flat shelves); the painted highlands back to sedimentary; `crystalline` is the gneiss basement | granite 40,570, quartzite 21,349; crystalline 285,710 to 194,157 (most of the rest is airless) | **tin is not moved off the gneiss onto the granite**: tin is a node kind |
+| 7 | layers `marble` and `skarn` where the limestone meets granite or volcanic ground | marble 6,273, skarn 2,655 > 0 | no skarn ores (tungsten, copper, iron) moved, for the same reason |
+| 9 | layer `glass`: the seven blast basins (melt floor, vitrified rim) | 92 > 0 | none |
+
+**The ores wait for one decision.** Moving copper, tin and iron onto the new rocks, and adding nickel, pozzolana and
+skarn ores as node kinds, changes which nodes exist. That reaches the ledger (`data/ledger.json`), the hamlets' mines,
+the isle demo's economy (its stocks proof, `test-sim.js` and the baseline) and Godot's golden field. It belongs with
+the 5.1 rebake above, as one change the owner approves.
+
+## Where the biomes must change
+
+The data now says things some kits do not draw, and the other way round. Each row names a kit, what disagrees, and the
+change. "Agrees" means the kit already draws what the data now says.
+
+**1. Impact walls** (n highlands 31% impact, s highlands 70%, e inner wall 30%, w outer wall 42%, NW outer wall 72%; the
+melt-sheet margin, `nickel` 220, runs along the inner foot of every wall)
+- `nhighlands`, `nwouterwall`, `wouterwall`, `shighlands`, `ehighlands` (the e inner wall's kit): their crag and cliff
+  faces draw generic or granite-like rock with no strata. They should take swhighlands' `megabreccia` recipe (the
+  `crest` formation) where the province is `impact`: chaotic blocks of every rock in a darker matrix, pseudotachylite
+  veins (black glassy seams), shatter cones on fresh faces. The 5.1 model's slump terraces and "fault mirrors" are
+  already in the heights, so this is a strata and ground change, not a terrain one.
+- `clifflung` (the S inner wall's face over the hyperjungle) and `swhighlands`' crest: **agree** (megabreccia is
+  already the crest recipe). The Cliff Lungs' face should read as megabreccia between the lungs.
+- **Settlements at a wall's foot now sit on the nickel ring**: Voth, Spirladunon, Torus, Pylon (the S inner wall), and
+  the e savannah, se savannah and ne rims. No kit changes until there is a nickel node kind; when there is, those
+  settlements' mines and the ledger change.
+
+**2. Flood basalt** (n semiarid 72% basalt, its dam-lake beds 28% evaporite; Siphon Pits 100%; Region 99 99%)
+- `nsemiarid`, `scablands`, `dambasins`: **agree** (their plans draw flood basalt, coulees and dry falls). `nsemiarid`'s
+  plan already has its basement limestone under the basalt; nothing to change.
+- `siphon-pits`, `loom-chasms`: **agree** (basalt plateau, columnar walls, maars).
+- `godstep`: the valley's four ponded flood-lava steps are still `volcanic` (the head vent's reach covers them). Godstep's
+  plan should treat the steps as basalt flows (it does in its 5.1 rewrite), so this is a data refinement for the rebake.
+
+**3. Tuff aprons** (the Throne and Rift rims to ~195, the Godthrone and Godstep to 200, Oidong 191, hyperjungle N 161,
+SW and NW bays to 177, the Catch 95, the Stalker Range 185)
+- `throne`: **agrees** in kind (the Zeijani's tuff spires and cave villages) but should draw tuff, not basalt, on the
+  stations downwind (south-east) of the vents: pale, soft, layered ash with fairy chimneys.
+- `godthrone`, `godstep`, `riftrim` (the rim's vents), `oidong`: the downwind (south-east) flanks should show pale ash
+  and ignimbrite benches in their strata, with the upwind flanks bare flows. None draws ash beds now except `rift`'s recipe.
+- `nwbay`, `swbay`, `hyperjungle` (N): the tuff is the Throne's apron reaching them. This is a ground change only: ash
+  soils under the jungle (fertile, dark) and an ash bed or two in a cut bank.
+
+**4. Ultramafic**
+- `gills` (`catch --station gills`): **agrees**. The root layer (to 117 at the White Gill) matches the plan's "ultramafic
+  root *proposed* in the cones' deep plumbing". No surface change.
+- The Arch (north-west, low priority): a kit there should draw serpentinite and peridotite (green-black, scaly, talc
+  seams) when it is built.
+
+**5. Granite, quartzite and the gneiss basement**
+- `korona`: **agrees**. 73% of its region is now `quartzite` (the tepui tables it draws), not volcanic. Its kit already
+  uses the `tepui` recipe. Its stations' far fields could stop drawing it as a volcanic province.
+- `paintedhighlands`: **agrees**. It is now 98% sedimentary (its danxia and badland beds), not volcanic.
+- Granite now covers part of: the Yuni Valley (42%), Oidong (33%), the crater drylands S (25%), e abyss (20%), the Catch
+  (21%), ebadlands (17%), sw highlands (15%), the Bowl (14%), the Stalker Range (14%). These kits draw sandstone and
+  badland strata (`canyon`, `badland`) or generic crags everywhere:
+  - `ebadlands`, `sedesert` (the Bowl), `catch`, `crater-drylands`: where the province is granite, add **granite
+    landforms** (tors, domes, boulder fields, grus) in place of bedded cliffs; a `granite` strata or ground set is owed
+    (no recipe exists; `core/materials` may need a texture: add to `PROMPTS-NEEDED.md` if none fits).
+  - `oidong`: its moss valley's crags and temple cliffs read well as granite (Huangshan's); the kit's crag rock should
+    take a granite look in those blocks.
+  - `swhighlands`: the granite blocks are on its crest side (the crest recipe is megabreccia there, so a pluton inside
+    the wall is plausible). No station is affected yet.
+- The high flat quartzite shelves (outside Korona, 1% of n highlands, the w rift highland): agree with the kits' tables.
+
+**7. Marble and skarn** (a band where limestone meets granite or volcanic ground)
+- `k-guilin` and `nwbay`: marble to 230 on the edge of the platform that touches the Throne's volcanic ground (NW bay is
+  8% volcanic). The kits draw grey limestone towers everywhere. A **white marble band** at that contact (a quarry, the
+  Hykkousoi's carved stone) is the change; the towers stay limestone.
+- `swbay` (marble to 207), `sedesert`/the Bowl (126), `catch` (134), `ancientsvalley` (104): small contact bands. Kits
+  need nothing until a station stands on one.
+- **Lore agrees**: the marble the brick cities import ("Korona, where volcanic heat would have cooked limestone") now has
+  sources. Korona's band is small (68); the larger ones are the NW and SW bays'. Worth telling the owner, because Jimjam's
+  marble may come from the bays instead.
+
+**9. The Ancients' glass**
+- `ancientsvalley` (`PLAN-ANOMALIES.md`, the blast basins): **agrees**; the layer marks the seven basins and their rims.
+  Its stations should draw the floors as melt glass (green-black, bubbled, crazed) with the rims brighter, if they do not.
+- `swlowlands` and `nwlowlands` show `glass` 255 in their region masks only because their polygons overlap Ancient's
+  Valley. Nothing to change in those kits.
+
+**For every kit:** none reads `geology.json` at build time, so no page changes until a kit opts in. The change list above
+is what each kit's look and strata should follow when it next rebuilds, as the biome rebuild's turns reach it.

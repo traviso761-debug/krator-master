@@ -31,6 +31,15 @@ ok(DATA.families.every(f => DATA.layers[f]), 'every family has a layer');
   ok(DATA.provinces[6] === 'carbonate' && kg.province === 'carbonate' && kg.p.limestone >= 128, 'k-guilin is the carbonate province');
   ok(sed.province !== 'carbonate', 'negative: the eastern uplands are not');
   ok(DATA.rockFamilies.indexOf('limestone') >= 0 && DATA.field.families.indexOf('limestone') < 0, 'limestone is a rock layer, not a node kind'); }
+/* the other rocks (geology.py rocks(); ROCK-PROPOSAL.md): provinces in the walls, the flood basalt, Korona's tables; rock
+   layers no node field reads */
+{ const at51 = (x, y) => G.at((x - 272) * PM, (y - 330) * PM);
+  const sem = at51(800, 470), kor = at51(1077, 504), wall = at51(790, 1100), bl = at51(476, 915);
+  ok(DATA.provinces.slice(7).join() === 'impact,basalt,granite,quartzite,ultramafic', 'the new provinces, after the old ones');
+  ok(sem.province === 'basalt' && kor.province === 'quartzite', 'n semiarid is flood basalt, Korona\'s tables quartzite (' + sem.province + ', ' + kor.province + ')');
+  ok(wall.province === 'impact' && wall.p.impactite === 255, 'the crater wall is megabreccia (' + wall.province + ')');
+  ok(bl.p.glass > 0, 'the blast basin is glass');
+  ok(DATA.rockFamilies.every(f => DATA.layers[f] && DATA.field.families.indexOf(f) < 0), 'every rock layer is there, none a node kind'); }
 
 /* ---- the field: deterministic, streamable (any tile alone), every node kept by the rule */
 const T0 = { x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM };   /* 120 km of the eastern uplands */

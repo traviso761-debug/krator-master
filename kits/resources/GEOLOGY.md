@@ -11,7 +11,7 @@
 | `data/ledger.json` | the ledger of this data (`node kits/resources/tests/test-res.js --ledger`): what core/simulation and Godot read |
 | `godot/kres_field.gd`, `godot/kres_field_test.gd`, `godot/golden-field.json` | the GDScript twin of the field, its test, its vectors |
 | `src/98r-host-geomap.js` | `[web]` the page's geology map (G): provinces, a family's prospectivity, the nodes of a window by family |
-| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 47 checks, each with a negative |
+| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 52 checks, each with a negative |
 
 ## Rebake
 
@@ -35,6 +35,14 @@ page and database are not kept in the repo). It took the regions from 5.1's regi
 python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
 ```
 
+**The other rocks** (2026-11-03, `ROCK-PROPOSAL.md` 1-5, 7 and 9) were added the same way. `rocks()` reads the bake's layers, the
+regions and the vents (5.1's, from the model's data, shifted onto the 4.23 canvas). Again only the province layer changes;
+the seven new layers are rock families, so no node, lode, placer or ledger sum moves:
+
+```
+python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
+```
+
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
@@ -42,12 +50,13 @@ One JSON object. The browser, node and Godot read the same integers; nothing is 
 ```
 format 'krator-geology', version 1, source 'Krator Scale Model 4.23'
 grid      {w: 774, h: 696, fullW: 1549, fullH: 1393, px_m: 2000, cell_km: 4.0052}   the scale model's height grid
-provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate']   a province byte's low 7 bits
+provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate', 'impact', 'basalt', 'granite',
+           'quartzite', 'ultramafic']   a province byte's low 7 bits
 ruinBit   128                                                                         set on Ancient-ruin ground
 mask      {water: 1, cliff: 2, airless: 4, sea: 8}                                    the mask byte's bits
 field     {world, inset, cells: {family: m}, families: [...], grade: {tilt, high, medium}}   the node field's constants
-families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water, then rockFamilies: limestone)
-rockFamilies ['limestone']   rock layers no node field or ledger reads yet
+families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water, then rockFamilies)
+rockFamilies ['limestone', 'impactite', 'nickel', 'ultramafic', 'tuff', 'marble', 'skarn', 'glass']   rock layers no node field or ledger reads yet
 layers    {province, mask, <family>...}: each a byte raster, run-length coded, base64
 placers   [{id, kind, grade, x, z, placer: true, river, why, load}]   world metres
 basins    [{id, at_px, kind, level_m, top_m, cells, soda, intensity}]   each evaporite basin the bake ringed
@@ -75,6 +84,14 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | 4 | evaporite | a ringed basin's strand where any evaporite byte is over 40 |
 | 5 | rift | the regions rift and The Rift |
 | 6 | carbonate | a sedimentary or crystalline cell whose platform byte (below, limestone) is 128 or more: k-guilin, NW bay (and the Neo-Ozarks, off this canvas) |
+| 7 | impact | the crater walls' crystalline (megabreccia, pseudotachylite): the biome regions n highlands, s highlands, e inner wall, w outer wall, NW outer wall, ne outer wall |
+| 8 | basalt | flood basalt: the sedimentary and crystalline cells of n semiarid, Siphon Pits and Region 99 (their dried lake beds stay evaporite) |
+| 9 | granite | the rest of the crystalline that is rugged (stone byte 150 and up) and not airless, in 6-cell pluton blocks whose hash (`rock:granite`) is under .45 |
+| 10 | quartzite | Korona / NE's volcanic cells beyond 8 km of a vent (its tepui tables), and the rest of the crystalline that is flat (stone under 100) and not airless (high plateau sandstone). The painted highlands' volcanic beyond 8 km of a vent goes back to sedimentary |
+| 11 | ultramafic | where mantle is bare: the region the arch (off this canvas, so no cell yet) |
+
+`crystalline` (2) is now the **gneiss basement**: what is left after the walls, the plutons and the plateaus, half of it
+airless.
 | +128 | ruin ground | within 12 km of a ruin or ruined arcology settlement, and the region Ruins of Nazar |
 
 ### The families
@@ -94,6 +111,13 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | gypsum, halite, potash, alkali | the ringed basins (below); halite also 40 under flat, dry sedimentary basins (bedded rock salt) |
 | stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock; floodplains and lake shores; rain and warmth; rivers, shores and rain |
 | limestone | a rock layer (no node kind, no ledger basic; `biomes/KARST-SITES-5.1.md`): the strongest of the **platforms** (255 x the biome region's weight: k-guilin 1, NW bay .9, neo-ozarks 1, spider lake .6, sw highlands .45; on sedimentary, crystalline, evaporite and rift ground), **lake limestone and marl** outside each basin's gypsum ring (.6 x the gypsum within 2 cells, where the cell's own gypsum is under 80), **tufa** round the soda lakes (.5 x the alkali within 1 cell), the **rift fill**'s thin limestones (70 on rift ground), **calcrete** in semi-arid basins (50 at ~400 mm of rain, from saltpeter's aridity, on sedimentary ground) |
+| impactite | 255 on the impact province, 140 on the walls' sedimentary benches, 120 on the melt sheet's margin (the Inner Crater floor within 3 cells of a wall) |
+| nickel | Sudbury's ore (nickel, copper, platinum): 220 at the melt sheet's margin falling to 0 three cells out, 60 on the impact province. A prospect only: no node kind yet |
+| ultramafic | 255 on the ultramafic province; 120 falling to 0 over 20-30 km round the White Gills' root (5.1 px 1015,1438 and the twins 988,1458, 1042,1498: *proposed* deep, not at the surface) |
+| tuff | ash and ignimbrite round every vent: 200 falling to 0 at 2.5 reaches (reach `10 + 4 x radius` km), the apron longest downwind (to the south-east) |
+| marble | .9 x the limestone within 2 cells of granite or volcanic ground (where the limestone is 40 or more) |
+| skarn | 200 on the cell beside granite or volcanic ground where the limestone is 30 or more |
+| glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
 

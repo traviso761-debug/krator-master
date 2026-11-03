@@ -5,6 +5,7 @@ the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources
 
     python3 tools/scale-model/geology.py <page.html> <regions dir> <settlements dir> <out.json> [--preview <dir>]
     python3 tools/scale-model/geology.py --carbonate <geology.json> <regions> [--shift dx,dy]
+    python3 tools/scale-model/geology.py --rocks <geology.json> <regions> --vents <page.html | model data> [--shift dx,dy]
 
 <page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection (a folder of one JSON per document, or one JSON list)
@@ -21,7 +22,8 @@ writes on), rain `p`, the mean temperature `tm`, `DATA.vents`, `DATA.basins`, `D
 
 The provinces (one byte a cell; bit 7 = Ancient-ruin ground, over the geology):
   0 water  1 sedimentary basin  2 crystalline upland (and the airless rim)  3 volcanic arc or vent field  4 evaporite
-  5 rift  6 carbonate (a limestone and dolomite platform: carbonate())
+  5 rift  6 carbonate (a limestone and dolomite platform: carbonate())  7 impact  8 basalt  9 granite  10 quartzite
+  11 ultramafic (rocks(); 2 crystalline is then the gneiss basement)
 The families: the ore kinds of kits/resources (42r-res-ore.js RES_ORE.kinds), four that only the ledger reads
 (stone, clay, wood, water: the basics every polity needs within a day's travel), and the rock layers no node field or
 ledger reads yet (limestone: biomes/KARST-SITES-5.1.md).
@@ -44,9 +46,10 @@ FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
-ROCK_FAMILIES = ['limestone']
+ROCK_FAMILIES = ['limestone', 'impactite', 'nickel', 'ultramafic', 'tuff', 'marble', 'skarn', 'glass']
 FAMILIES = NODE_FAMILIES + LEDGER_FAMILIES + ROCK_FAMILIES
-PROVINCES = ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate']
+PROVINCES = ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate',
+             'impact', 'basalt', 'granite', 'quartzite', 'ultramafic']
 RUIN_BIT = 128
 # the mask byte: bit 0 water (a lake or the sea), bit 1 cliff (the cell's slope over CLIFF), bit 2 airless (over AIRLESS_M),
 # bit 3 sea (a water body of SEA_CELLS cells or more: the Ring Sea, the north-west ocean: salt water to boil)
@@ -85,6 +88,25 @@ LAKE_FRINGE = 0.6           # lake limestone and marl: the first salt a drying l
 TUFA = 0.5                  # tufa and lake carbonate round the soda lakes
 RIFT_LIME = 70              # the rift fill's stromatolite limestones and marls (thin, patchy: core/terrain/STRATA-PLAN.md `rift`)
 CALCRETE = 50               # caliche in semi-arid basin soils, at its most where the rain is ~400 mm
+# the other rocks (the owner, 2026-11-03; kits/resources/ROCK-PROPOSAL.md 1-5, 7, 9): read from the bake's layers, the biome
+# regions and the vents only, so a full bake and --rocks on a saved one agree. Seats are 5.1 px (moved onto a 4.23 canvas)
+IMPACT_REGIONS = ('n highlands', 's highlands', 'e inner wall', 'w outer wall', 'nw outer wall', 'ne outer wall')
+CRATER_FLOOR = ('inner crater',)    # geographic: the melt sheet's margin under it, at the walls' foot, is Sudbury's ore
+MELT_CELLS = 3.0                    # the margin's width in cells (~12 km)
+BASALT_REGIONS = ('n semiarid', 'siphon pits', 'region 99')   # flood basalt (nsemiarid/PLAN.md 4; the 4.24 SE regions)
+QUARTZITE_REGIONS = ('korona / ne',)        # tepui tables (STRATA-PLAN.md `tepui`): volcanic only near a vent
+SANDSTONE_REGIONS = ('painted highlands',)  # danxia and badland beds: volcanic only near a vent
+ULTRAMAFIC_REGIONS = ('the arch',)          # an exposed spreading ridge (nw_expansion.py), off the 4.23 canvas
+VENT_CORE_KM = 8.0
+GRANITE_BLOCK = 6                   # cells a pluton block (~24 km): a block's hash under GRANITE_P is granite
+GRANITE_P = 0.45
+# the White Gills' ultramafic root, *proposed* deep in the twins' plumbing (biomes/gills/PLAN.md, "Rock"): a layer, not a province
+ULTRAMAFIC_ROOTS = [((1015.0, 1438.0), 30.0), ((988.0, 1458.0), 20.0), ((1042.0, 1498.0), 20.0)]   # 5.1 px, km
+TUFF_REACH = 2.5                    # a vent's ash apron, in its reaches; downwind (the north-westerlies) it reaches furthest
+WIND = (0.7071, 0.7071)             # where the ash goes: toward the south-east (x east, y south)
+# the Ancients' seven vitrified blast basins in Ancient's Valley (build_425_master.py anc_blast_specs): 5.1 px, radius km
+VITRIFIED = [(476.0, 915.0, 6.0), (398.0, 966.0, 5.5), (450.0, 896.0, 5.0), (406.0, 908.0, 6.5), (428.0, 948.0, 7.5),
+             (460.0, 962.0, 7.0), (420.0, 984.0, 6.5)]
 
 M32 = 0xFFFFFFFF
 INV = 1.0 / 4294967296.0
@@ -217,6 +239,128 @@ def carbonate(prov, mask, P, platform):
     return lime, out
 
 
+def region_mask(regions, names, kinds, VW, VH, su, sv, shift=(0, 0)):
+    m = np.zeros((VH, VW), bool)
+    for r in regions:
+        if r['name'].strip().lower() in names and (kinds is None or r.get('kind') in kinds) and len(r['points']) >= 3:
+            m |= poly_mask(r['points'], VW, VH, su, sv, shift)
+    return m
+
+
+def seat_px(x, y, OW):
+    """a 5.1 px on the bake's canvas: moved by the legacy shift onto a 4.23 page (1549 wide)"""
+    return (x - 272.0, y - 330.0) if OW == 1549 else (x, y)
+
+
+def rocks(prov, mask, P, regions, vents, VW, VH, OW, su, sv, cell_km, shift=(0, 0)):
+    """the impact, basalt, granite, quartzite and ultramafic provinces and the rock layers impactite, nickel, ultramafic,
+    tuff, marble, skarn and glass (ROCK-PROPOSAL.md 1-5, 7, 9), from the bake's layers (prov without the ruin bit, the
+    limestone layer among P), the regions and the vents ([(px, py, radius)] on the bake's canvas). Returns (layers, prov)"""
+    land = (mask & 1) == 0
+    jj, ii = np.mgrid[0:VH, 0:VW]
+    R = lambda names, kinds=('biome',): region_mask(regions, names, kinds, VW, VH, su, sv, shift)
+    PI = PROVINCES.index
+    out = prov.copy()
+    # the vents: the distance to the nearest (km), and the tuff's apron (a reach-scaled falloff, furthest downwind)
+    ventd = np.full((VH, VW), 1e9); tuff = np.zeros((VH, VW))
+    for vx, vy, vr in vents:
+        dx, dy = (ii - vx * su) * cell_km, (jj - vy * sv) * cell_km
+        d = np.hypot(dx, dy); ventd = np.minimum(ventd, d)
+        reach = 10.0 + 4.0 * vr
+        lee = 0.55 + 0.45 * np.where(d > 0, (dx * WIND[0] + dy * WIND[1]) / np.maximum(d, 1e-9), 1.0)
+        tuff = np.maximum(tuff, 200.0 * np.clip(1 - d / (TUFF_REACH * reach * lee), 0, 1))
+    # 1: impactites. The walls' crystalline is megabreccia (the province); their benches carry breccia under thin cover; the
+    # melt sheet's margin at the walls' foot, inside the crater floor, carries its nickel, copper and platinum (Sudbury)
+    wall = R(IMPACT_REGIONS)
+    out[wall & (prov == PI('crystalline'))] = PI('impact')
+    floor = R(CRATER_FLOOR, ('geographic',)) & ~wall
+    dwall = ndimage.distance_transform_edt(~wall)
+    margin = floor & (dwall <= MELT_CELLS)
+    impactite = np.maximum.reduce([255.0 * (wall & (out == PI('impact'))), 140.0 * (wall & (prov == PI('sedimentary'))),
+                                   120.0 * margin])
+    nickel = np.maximum(220.0 * margin * np.clip(1 - (dwall - 1) / MELT_CELLS, 0, 1), 60.0 * (out == PI('impact')))
+    # 2: plateau basalt in the flood-lava regions (their dried lake beds stay evaporite)
+    out[R(BASALT_REGIONS) & ((prov == PI('sedimentary')) | (prov == PI('crystalline')))] = PI('basalt')
+    # the corrections: Korona's tables are quartzite and the painted highlands sandstone, volcanic only round a vent
+    far = ventd > VENT_CORE_KM
+    out[R(QUARTZITE_REGIONS) & (prov == PI('volcanic')) & far] = PI('quartzite')
+    out[R(SANDSTONE_REGIONS) & (prov == PI('volcanic')) & far] = PI('sedimentary')
+    # 5: the rest of the crystalline: high flat shelves are quartzite (plateau sandstone), the rugged ranges granite plutons
+    # in blocks by hash, the remainder the gneiss basement (the province keeps its name). The stone byte is the relief's
+    rest = out == PI('crystalline'); airless = (mask & 4) > 0; stone = P['stone'].astype(float)
+    bj, bi = jj // GRANITE_BLOCK, ii // GRANITE_BLOCK
+    pluton = k_unit(k_hash(k_child(WORLD, 'rock:granite'), bi, bj)) < GRANITE_P
+    out[rest & ~airless & (stone < 100)] = PI('quartzite')
+    out[rest & ~airless & (stone >= 150) & pluton] = PI('granite')
+    # 4: the ultramafic: a province where mantle is bare (the Arch), and the twins' root as a layer only
+    out[R(ULTRAMAFIC_REGIONS) & ((prov == PI('sedimentary')) | (prov == PI('crystalline')) | (prov == PI('volcanic')))] = PI('ultramafic')
+    ultra = 255.0 * (out == PI('ultramafic'))
+    for (sx, sy), rk in ULTRAMAFIC_ROOTS:
+        cx, cy = seat_px(sx, sy, OW)
+        ultra = np.maximum(ultra, 120.0 * np.clip(1 - np.hypot((ii - cx * su) * cell_km, (jj - cy * sv) * cell_km) / rk, 0, 1))
+    # 7: the contact aureoles: the limestone a pluton or a volcano touched is marble, its very contact skarn
+    hot = (out == PI('granite')) | (out == PI('volcanic'))
+    lime = P['limestone'].astype(float)
+    marble = 0.9 * lime * (ndimage.binary_dilation(hot, iterations=2) & (lime >= 40))
+    skarn = 200.0 * (ndimage.binary_dilation(hot, iterations=1) & ~hot & (lime >= 30))
+    # 9: the Ancients' glass: a blast basin's melt floor, its vitrified rim brighter
+    glass = np.zeros((VH, VW))
+    for bx, by, rk in VITRIFIED:
+        cx, cy = seat_px(bx, by, OW)
+        d = np.hypot((ii - cx * su) * cell_km, (jj - cy * sv) * cell_km)
+        glass = np.maximum(glass, np.where(d < rk, 180.0, np.where(d < 1.5 * rk + cell_km * .5, 255.0, 0.0)))
+    L = {'impactite': impactite, 'nickel': nickel, 'ultramafic': ultra, 'tuff': tuff, 'marble': marble, 'skarn': skarn, 'glass': glass}
+    return {k: np.clip(np.round(v * land), 0, 255).astype(np.uint8) for k, v in L.items()}, out
+
+
+def model_vents(src, OW, shift):
+    """the vents [(px, py, radius)] of a page or a model data folder, moved by shift onto the bake's canvas"""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from smodel import page as SP
+    D = SP.load(src) if os.path.isdir(src) else load_page(src)
+    return [(v['px'][0] + shift[0], v['px'][1] + shift[1], v.get('radius', 3)) for v in D['vents']]
+
+
+def add_rocks(argv):
+    """--rocks: the other rocks added to a bake that has the carbonate, in place, leaving every other byte as it was"""
+    path, src = argv[2], argv[3]
+    sh = [a.split('=', 1)[1] for a in argv if a.startswith('--shift=')] or [argv[k + 1] for k, a in enumerate(argv) if a == '--shift']
+    shift = tuple(float(v) for v in sh[0].split(',')) if sh else (0, 0)
+    vsrc = [argv[k + 1] for k, a in enumerate(argv) if a == '--vents']
+    if not vsrc:
+        sys.exit('--rocks needs --vents <page.html | model data folder>')
+    data = json.load(open(path, encoding='utf-8'))
+    if 'limestone' not in data['families']:
+        sys.exit(path + ' has no limestone layer: run --carbonate first')
+    if 'impactite' in data['families']:
+        sys.exit(path + ' already has the rock layers')
+    g = data['grid']; VW, VH, OW = g['w'], g['h'], g['fullW']; su, sv = (VW - 1) / (OW - 1), (VH - 1) / (g['fullH'] - 1)
+    n = VW * VH
+    if src.endswith('.js'):
+        import re
+        regions = json.loads(re.search(r'const defRegs = (\[.*?\]);\n', open(src, encoding='utf-8').read(), re.S).group(1))
+    else:
+        regions = docs(src)
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov_b, mask = L('province'), L('mask')
+    P = {k: L(k) for k in ('stone', 'limestone')}
+    layers, prov = rocks(prov_b & 127, mask, P, regions, model_vents(vsrc[0], OW, shift), VW, VH, OW, su, sv, g['cell_km'], shift)
+    land = (mask & 1) == 0
+    data['provinces'] = PROVINCES
+    new = [k for k in ROCK_FAMILIES if k != 'limestone']
+    data['families'] = data['families'] + new
+    data['rockFamilies'] = ROCK_FAMILIES
+    data['layers']['province'] = rle(prov | (prov_b & RUIN_BIT))
+    for k in new:
+        data['layers'][k] = rle(layers[k])
+        data['stats']['mean'][k] = round(float(layers[k][land].mean()), 2)
+    data['stats']['province_cells'] = {PROVINCES[k]: int((prov == k).sum()) for k in range(len(PROVINCES))}
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added the rocks to %s: %s' % (path, json.dumps(data['stats']['province_cells'])))
+    print('means', {k: data['stats']['mean'][k] for k in new})
+
+
 def add_carbonate(argv):
     """--carbonate: the carbonate province and the limestone layer added to a bake made before them, in place"""
     path, src = argv[2], argv[3]
@@ -239,12 +383,12 @@ def add_carbonate(argv):
     lime, prov = carbonate(prov_b & 127, mask, P, platform_weight(regions, VW, VH, su, sv, shift))
     prov_b = prov | (prov_b & RUIN_BIT)
     land = (mask & 1) == 0
-    data['provinces'] = PROVINCES
-    data['families'] = data['families'] + ROCK_FAMILIES
-    data['rockFamilies'] = ROCK_FAMILIES
+    data['provinces'] = PROVINCES[:7]
+    data['families'] = data['families'] + ['limestone']
+    data['rockFamilies'] = ['limestone']
     data['layers']['province'] = rle(prov_b)
     data['layers']['limestone'] = rle(lime)
-    data['stats']['province_cells'] = {PROVINCES[k]: int((prov == k).sum()) for k in range(len(PROVINCES))}
+    data['stats']['province_cells'] = {PROVINCES[k]: int((prov == k).sum()) for k in range(7)}
     data['stats']['mean']['limestone'] = round(float(lime[land].mean()), 2)
     with open(path, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(data, fh, separators=(',', ':'), sort_keys=True)
@@ -255,6 +399,8 @@ def add_carbonate(argv):
 def main(argv):
     if '--carbonate' in argv[1:2]:
         return add_carbonate(argv)
+    if '--rocks' in argv[1:2]:
+        return add_rocks(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -404,6 +550,9 @@ def main(argv):
     sea = water & (sizes[wlab] >= SEA_CELLS)
     mask = (water.astype(np.uint8)) | (cliff.astype(np.uint8) << 1) | (airless.astype(np.uint8) << 2) | (sea.astype(np.uint8) << 3)
     P['limestone'], prov = carbonate(prov, mask, P, platform_weight(regions, VW, VH, su, sv))
+    RL, prov = rocks(prov, mask, P, regions, [(v['px'][0], v['px'][1], v.get('radius', 3)) for v in D['vents']],
+                     VW, VH, OW, su, sv, CELL_KM)
+    P.update(RL)
     prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
     # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask
@@ -524,7 +673,7 @@ def main(argv):
     if prev:
         os.makedirs(prev, exist_ok=True)
         pal = np.array([[60, 90, 150], [200, 180, 120], [150, 150, 160], [190, 70, 40], [240, 240, 230], [70, 150, 110],
-                        [120, 200, 210]], np.uint8)
+                        [120, 200, 210], [120, 80, 110], [50, 50, 60], [220, 170, 170], [230, 220, 190], [60, 110, 60]], np.uint8)
         im = pal[prov]
         im[(prov_b & RUIN_BIT) > 0] = (im[(prov_b & RUIN_BIT) > 0] * 0.6 + np.array([255, 0, 255]) * 0.4).astype(np.uint8)
         Image.fromarray(im).save(os.path.join(prev, 'province.png'))
