@@ -41,7 +41,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 33 **big** | 8. LAYOUT (1); THE INNER-CITY PLOT SCHEDULE (67); STREET NETWORK (202); WALK GRAPH (life-layer framework) (430) |
 | `40-ground.js` | 10 | 9. GROUND CANVAS + MASK (1) |
-| `45-kit.js` | 32 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
+| `45-kit.js` | 33 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `50-structure.js` | 16 | 12. STRUCTURE (massing) (1) |
 | `51-fixtures.js` | 13 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (130) |
@@ -63,7 +63,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `61e-ancients-furniture.js` | 20 |  |
 | `62-plants.js` | 5 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
-| `64-interiors.js` | 77 **big** | 15d. INTERIORS (1); THE PLANNER (225); THE MINIMUM KIT (554); GEOMETRY (703) |
+| `64-interiors.js` | 78 **big** | 15d. INTERIORS (1); THE PLANNER (225); THE MINIMUM KIT (559); GEOMETRY (708) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
 | `66-canal.js` | 7 | 16b. THE CANAL WORKS (1) |
 | `67-yu-trades.js` | 6 | = (1) |
@@ -74,7 +74,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 17 | 20. EMIT + GROUND + RIVER (1) |
-| `76-doors.js` | 32 **big** | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
+| `76-doors.js` | 35 **big** | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
 | `77-export.js` | 9 | 20c. CORE/EXPORT: YUNI'S PART (1) |
 | `80-camera.js` | 12 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (104) |
 | `81-glow.js` | 7 | 26. NIGHT GLOW (1) |

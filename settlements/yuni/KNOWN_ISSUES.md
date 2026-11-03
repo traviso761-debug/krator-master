@@ -448,15 +448,17 @@ Counts (`window._openings`, `verify.py yuni.html --assert --eval "()=>window._op
       (`walltower.<n>.d0/1`), the Vault's (`vault.d0`) and the six sealed doors underground (`under.sealed.d<n>`). KDOOR holds
       open and shut and eases them (KDOORHOST.tick); the walker still opens a door it reaches, an NPC's DOORS.touch opens one
       for its seconds and it shuts itself, E toggles the door within reach ("E: open the door"), a quest calls KDOOR.open / close.
-- [x] Glass: 6,804 windows were an opaque plate (MeshBasic, `windowDark` by day) on a black reveal -> 6,860 KGLASS panes (clear,
+- [x] Glass: 6,804 windows were an opaque plate (MeshBasic, `windowDark` by day) on a black reveal -> each a KGLASS pane (clear,
       and the lit kind on the evening schedule; the Vault's electric windows a cool glow: KGLASS `opt.emissive`), each over
       the room card in shade (`ROOMC_GLASS`), plus the Archive's glazing bands and the loggia and tower windows (`F.paneBox`,
-      `F.pane`). Draw calls (verify's budget) 149 -> 150 of 190 on the world page, 116 -> 117 on the sheet.
+      `F.pane`; `_openings.panes`, 6,860, counts the frame's windows and that glass). Draw calls (verify's budget) 149 -> 150 of 190 on the world page, 116 -> 117 on the sheet.
 - [x] Voids: about 9,900 instances of the `dark` family, all near black -> 9,630 room cards (`ROOMC`, KGLASS's room colour: hut
       mouths, a shop within its front, reveals, vents, slits, the belfry) and 290 left dark on purpose: smoke holes and the cone
       houses' open crowns, flue tops, wells, pots' mouths, a trough, a shaded floor, furniture's own sockets (61e) and the
       round windows' spokes' backing (none of them an opening). The Ancients' blue `glass` family stays opaque where it is
       water or lit (troughs, basins, the Vault's crown, rose windows, the sealed doors' leaves): it is lit from behind or not glass.
+- [x] The sheet (`yuni-assets.html`): 362 FIX doors -> 520 KDOOR records (205 locked, 528 leaves), 1,189 windows glazed (1,245
+      panes counted), 1,406 cards, 13 voids. `verify.py --assert` passes on both pages before and after, the same invariants.
 - [ ] Windows are panes on a solid face: the streamed interiors are seen through doorways (the portal), not through windows.
       A window of a live interior shows the card, not the room.
 - [ ] The interiors' own doors (64-interiors.js, streamed with the rooms) keep 76-doors.js's proximity loop and are not KDOOR
