@@ -133,28 +133,28 @@
    "sha256": "b321e556031b17569e2b358d69717f5d753fdf4e59e895e9f9c999ac0c13c967"
   },
   "biomes/riftrim/dist/riftrim-barrens.html": {
-   "bytes": 8172285,
-   "sha256": "33901a263b97ef2d0ab724dd6fbcb1cd6476ce299f108e1beaafd4f0b519efd7"
+   "bytes": 8172745,
+   "sha256": "ba4729b0d603e7384803f6d97f7695340096ba8c0bcea68209cb9186139ca5e1"
   },
   "biomes/riftrim/dist/riftrim-gorge.html": {
-   "bytes": 8733116,
-   "sha256": "0e1fbc50f55cefbf7fadbfbf9c4c65d58a67d18accca96e34e2679063dabf6c1"
+   "bytes": 8733576,
+   "sha256": "98a1f616f89df49137735a972dfe82410cfddd58f854ed35a9fb48865ed2c9b8"
   },
   "biomes/riftrim/dist/riftrim-ice.html": {
-   "bytes": 8173670,
-   "sha256": "df2f25a3f490ce1af185102aee2fb5d9947436ff557207b1be338b6623471822"
+   "bytes": 8174130,
+   "sha256": "910530cb8ea6b86bb7ffbf375e4d6cf3a18a6d9e4492423c91587193df1ae9cc"
   },
   "biomes/riftrim/dist/riftrim-lakes.html": {
-   "bytes": 9178705,
-   "sha256": "b7fcfac6253e27092406f518cf82ec2e9a665473ed9234c57f81d17a3ce353a6"
+   "bytes": 9179165,
+   "sha256": "274bfd352ab5d61aa1ae2d3c6d8b15eab090567c99c27b00c26d70641353f2df"
   },
   "biomes/riftrim/dist/riftrim-pass.html": {
-   "bytes": 7542601,
-   "sha256": "dc0be406512a14732aaff90c7032908857aa55a197ee2050ede044ef1e0a71f1"
+   "bytes": 7543121,
+   "sha256": "da5316514f34ff2be5c8fc6cdecc2a5a72a5b1bb91234efe7928c53bfe5c9007"
   },
   "biomes/riftrim/dist/riftrim.html": {
-   "bytes": 9351156,
-   "sha256": "2500d906ae655809314c89cf1de18b0271f08f14e881190c7020080babeafaf4"
+   "bytes": 9351616,
+   "sha256": "214cc48c56d2bb503896d41af6ceb9dbdcaecaf7980af2a7060c3ba99b40929a"
   },
   "biomes/ringisles/dist/ringisles.html": {
    "bytes": 2210611,

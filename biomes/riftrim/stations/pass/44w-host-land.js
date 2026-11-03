@@ -10,7 +10,7 @@
 //   south    THE HIGH TUNDRA, 5.9-6.4 km: the S rim's fellfield (prism heath, cushion anemones, reindeer lichen), the road running on south
 const STATION=(function(){const R=3000,PY=8040,PZ=-2550;
  const ridge=(x,z,f,s)=>1-Math.abs(2*fbm(x*f,z*f,s,2)-1);
- const base=(x,z)=>{const u=(z+3000)/6000;return PY+40-2450*Math.pow(clamp(u,0,1.1),.85)+260*(ridge(x,z,.0011,71)-.5)+30*(fbm(x*.008,z*.008,72,2)-.5)+smooth(-3000,-2600,z)*320;};
+ const base=(x,z)=>{const u=(z+3000)/6000;return PY+40-2450*Math.pow(clamp(u,0,1.1),.85)+260*(ridge(x,z,.0011,71)-.5)+30*(fbm(x*.008,z*.008,72,2)-.5)+smooth(-2600,-3000,z)*320;};   /* the face steepening at the north edge only */
  // the road: switchbacks down the face from the portal's apron, then a long line south over the tundra
  const ROAD=[[0,PZ+90],[420,PZ+380],[-380,PZ+760],[460,PZ+1150],[-300,PZ+1560],[380,PZ+1980],[-200,PZ+2450],[150,PZ+3000],[-80,PZ+3700],[200,PZ+4600],[0,PZ+5700]];
  const APRON={x:0,z:PZ+60,r:110};
@@ -39,8 +39,8 @@ function waterH(x,z){return STATION.waterH(x,z);}
 function fieldsAt(x,z,h,slope){const F=STATION.fieldsAt(x,z,h,slope),n=nearLine(STATION.ROAD,x,z);F.road=smooth(6,3,n.d);return F;}
 const LAND={name:'The crossing (riftrim station 5)',title:'Krator biome — the rift rim: the crossing',
  hint:'Station 5 of the rift rim: Dalab\'s road at the Ancient tunnel\'s south portal, 8 km up the Outer Wall under a near-airless sky (0.58 atm), the Tungangs\' signal lamps in its mouth, the road winding down the ice and rock to the high tundra (scale model 5.1, px 477,1245)',
- region:{name:'The crossing (station 5)',x:0,z:0,r:TERR.R},rim:'s',wind:[.3,1],arcade:false,fruitMin:0,
- species:[],exportBox:[-150,-2300,150,-2000],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree grows here: no bucket to export */
+ region:{name:'The crossing (station 5)',x:0,z:0,r:TERR.R},rim:'s',lamps:true,wind:[.3,1],arcade:false,fruitMin:0,
+ species:[],exportBox:[-150,2500,150,2800],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree grows here: no bucket to export */
  sky:{px:205,py:915},atm:.58,cloud:.08,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330) */
  fog:{falloff:1/2600,sun:.5,sky:.15},climate:{cold:true,dry:true},wet:false,snowLine:[6200,6600],snowBase:0,frozen:true,groundN:540,
  groundLayers:['tundra','lichen','clad','snowalgae','iris'],
