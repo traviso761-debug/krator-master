@@ -404,6 +404,13 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
     {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
   - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes
     and cliffs: a baked offset texture for the shaders is not done. Keep alterations off a varied stack: their lines read the shifted height.
+- **The season's last two pieces (H7)** (`core/biome/30s-core-season-flush.js` and `core/clock/21-core-clock-flush.js`; `test-season-flush.js`,
+  `test-flush.js`):
+  - **the copper flush**, a leaf colour at the start of the rains (`KCLOCK.flush`, `BIO.FLUSH`, `BIO.bindFlush`);
+  - **the Godot leaf twin**: `season_dry` and `season_flush` as global uniforms, `shaders/lib/season.gdshaderinc` in `foliage.gdshader`,
+    `biome_import.gd` reading the leaf's season options, and `KSeason.flush` and `set_globals` in `kseason.gd` (golden `golden-flush.json`).
+
+  `core/biome/README.md`, "The season", has the details and the GPU check.
 
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 

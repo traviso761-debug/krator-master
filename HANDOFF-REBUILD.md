@@ -32,6 +32,11 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
 - **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid
   Basin** (its interbedded loess and tuff) and **wouterwall** (the loess mantle on the bench). The shaders still draw the flat column, so a
   page reads the varied rock on the CPU.
+- **The season's copper flush and its Godot twin** (H7: `core/biome/30s-core-season-flush.js`, `core/clock/21-core-clock-flush.js`,
+  `godot/shaders/lib/season.gdshaderinc`):
+  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on `savannarim`) takes the flush;
+  - **Godstep's redlands** station reads the same species;
+  - every kit on the monsoon season gets the Godot `season_dry` with it.
 
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 
