@@ -10,7 +10,7 @@
   function arc(r, t0, t1, n) { var o = []; for (var i = 0; i <= n; i++) o.push(at(r, t0 + (t1 - t0) * i / n)); return o; }
 
   // the room kinds: `store` etc. are kits/interiors programmes; a kind with no programme is furnished false
-  var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, bath: 1, concourse: 1, hallway: 1 };
+  var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, bath: 1, concourse: 1, hallway: 1, wardrobe: 1 };
   MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber', wardrobe: 'store' };
   function kindOf(k) { return MP.ROOMKIND[k] || k; }
 
@@ -31,7 +31,7 @@
   // ---- a flat: one sector of a ring, cut. Outer band (the glass): living, then one or two bedrooms. Inner band (the corridor side):
   // kitchen, hall, bath. The hall's span overlaps every outer room, so it has a door to each. Only the outer rooms have glass.
   function flatSector(st, Q, i, beds) {
-    var n = st.n, t0 = TAU * i / n, t1 = TAU * (i + 1) / n, ra = st.R - st.band, rb = st.R - 0.05, rm = ra + Math.min(8, st.band * 0.45), T = function (f) { return t0 + (t1 - t0) * f; };
+    var n = st.n, t0 = TAU * i / n, t1 = TAU * (i + 1) / n, ra = st.R - st.band, rb = st.R - 0.05, rm = ra + Math.min(beds > 1 ? 8 : 4.6, st.band * 0.45), T = function (f) { return t0 + (t1 - t0) * f; };
     var splits = beds > 1 ? [0, 0.48, 0.74, 1] : [0, 0.58, 1], fk = beds > 1 ? 0.3 : 0.38, fb = beds > 1 ? 0.88 : 0.82, id = Q.id, DW = 0.9;
     function room(name, kind, f0, f1, r0, r1) {
       return { id: id + '.' + name, kind: kindOf(kind), mpKind: kind, flat: id, poly: arc(r0, T(f0), T(f1), 2).concat(arc(r1, T(f0), T(f1), 2).reverse()), y: Q.y, h: Q.h, level: Q.level,
@@ -143,7 +143,7 @@
     var T = F.core.kind === 'round' ? PLAN : PLAN_BAR, fn = T[L.use];
     if (!fn) throw new Error('MP.storey: no plan for the use ' + L.use);
     var st = fn(F, L); st.use = L.use; st.family = F.id;
-    st.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind] && !(Q.mpKind === 'stack' && Q.side === 'right'); if (Q.mpKind === 'greenhouse') { Q.recipe = 'greenhouse'; Q.kind = 'store'; } });
+    st.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind] && !(Q.mpKind === 'stack' && Q.side === 'right'); if (Q.mpKind === 'greenhouse') { Q.recipe = 'greenhouse'; Q.kind = 'store'; } if (Q.mpKind === 'reception') { Q.recipe = 'officers-hall'; Q.furnish = true; } });
     MP.fenestrate(F, st);
     return st;
   };

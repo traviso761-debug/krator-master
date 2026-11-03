@@ -34,7 +34,7 @@
 "core/walk/20-core-walk.js": "f9a8b1c32d061a00cecf96bf2405920c049de996",
 "kits/metropolis/src/00-head.html": "1d9f900c6fb85102ec1a7cd616385d0bcab311f4",
 "kits/metropolis/src/40-mp-records.js": "2d93de27c032f7f60f50038645ff05b8a77c2bbf",
-"kits/metropolis/src/41-mp-plans.js": "43bcbbd08b28f2acec39c409fb3c92dc9cca31e1",
+"kits/metropolis/src/41-mp-plans.js": "35b321193b42c966a9139d1656a0184014fb32a1",
 "kits/metropolis/src/42-mp-facade.js": "1d02add7a9e7ddb940a382a2ff5f136472429bfa",
 "kits/metropolis/src/43-mp-shell.js": "e0e5b0a985d14a89411040bd74dd40c5fe38e4e2",
 "kits/metropolis/src/44-mp-audit.js": "27e2db60fde1a40c2a873fb0db9ec18419704206",
@@ -43,10 +43,10 @@
 "kits/metropolis/src/50-mp-kit.js": "fc66b8e283407a4bffe37b97c7616a710d4cec30",
 "kits/metropolis/src/52-mp-hero-spindle.js": "f0cb0abd9a0eb59a3811d2db0c2b6cf61453beea",
 "kits/metropolis/src/53-mp-hero-ledger.js": "fe1d07aab62a3d8e9a5d057efaffd8e1f4e0372e",
-"kits/metropolis/src/56-mp-interiors.js": "ce8e58aebe3560701b3e5e1565de1aa410d8e6e1",
+"kits/metropolis/src/56-mp-interiors.js": "27390fb015005f73eecb753081581b1254709226",
 "kits/metropolis/src/60-mp-shell-host.js": "a38f4df3adb553e3cfe9d58a1759b9df29c5eaea",
 "kits/metropolis/src/70-mp-stage.js": "57b9e6d5fe05aabf3cfe2f2c9728bb151c9aa487",
 "kits/metropolis/src/89-host-sky.js": "097774a5ffe723acb854fb437067c78b8e35d90e",
-"kits/metropolis/src/99-host-take.js": "770998c3bff8f2adc90545d51c8fe4a8e4d3513b",
+"kits/metropolis/src/99-host-take.js": "dfc358e193aad2f2c425ec226a317f050f15b0b0",
 "kits/metropolis/src/99-tail.html": "bf3a2481959e0704504a05c734e71eaf4baab04f"
 }
