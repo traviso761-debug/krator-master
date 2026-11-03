@@ -49,8 +49,8 @@ rare earths), so they move nodes. They belong in a **full rebake**, and one is d
 4.23 bake on the old canvas (1549x1393). The model is 5.1 on 1821x1723, and its heights differ from 4.23's (the bake rings the Cut's salt
 lake at -1,456 m; 5.1's ground there is at -1,900 m).
 
-A 5.1 rebake moves every node. That reaches the isle demo's economy (stocks proof, `test-sim.js`, the baseline), the
-hamlets' mines, the ledger and Godot's golden field. So it is the owner's decision. It needs:
+A 5.1 rebake moves nodes. That reaches the ledger, the hamlets' mine test and Godot's golden field (not the isle demo's
+economy: it does not read the field yet; `REBAKE-PLAN.md` section 1). So it is the owner's decision. It needs:
 - the 5.1 page and its regions and settlements (the artifact's database; the 4.23 inputs are not in the repo);
 - a frame decision: keep world metres on the old canvas (`x = (px - 272) x 2000`), or move to 5.1's frame;
 - a note to each reader that its nodes move.
@@ -63,7 +63,7 @@ Only the province layer changed; every family layer, lode digest and placer is b
 
 | # | Built as | Cells (4 km) | Not done, and why |
 |---|---|---|---|
-| 1 | province `impact` (the walls' crystalline); layers `impactite` (walls, benches, melt-sheet margin) and `nickel` (the margin, Sudbury) | 29,097 impact | **no nickel node kind**: adding one puts new nodes in every tile, which moves the ledger and the isle demo's economy. `nickel` is a prospect until the owner adds the kind |
+| 1 | province `impact` (the walls' crystalline); layers `impactite` (walls, benches, melt-sheet margin) and `nickel` (the margin, Sudbury) | 29,097 impact | **no nickel node kind**: adding one puts new nodes in every tile, which moves the ledger. `nickel` is a prospect until the owner adds the kind |
 | 2 | province `basalt` (n semiarid, Siphon Pits, Region 99) | 36,433 | the copper bytes are **not moved** onto the basalt (native copper): copper is a node kind |
 | 3 | layer `tuff` round every vent, longest downwind | 10,437 > 0 | no pozzolana node kind (the same reason) |
 | 4 | province `ultramafic` (the Arch: off the 4.23 canvas, so 0 cells today); layer `ultramafic` for the White Gills' root | 334 > 0 (the root) | no surface ultramafic on the old canvas: the gills plan says the twins are dacite and basalt with the root *proposed* deep, so the root is a layer, not a province |
@@ -72,9 +72,8 @@ Only the province layer changed; every family layer, lode digest and placer is b
 | 9 | layer `glass`: the seven blast basins (melt floor, vitrified rim) | 92 > 0 | none |
 
 **The ores wait for one decision.** Moving copper, tin and iron onto the new rocks, and adding nickel, pozzolana and
-skarn ores as node kinds, changes which nodes exist. That reaches the ledger (`data/ledger.json`), the hamlets' mines,
-the isle demo's economy (its stocks proof, `test-sim.js` and the baseline) and Godot's golden field. It belongs with
-the 5.1 rebake above, as one change the owner approves.
+skarn ores as node kinds, changes which nodes exist. That reaches the ledger (`data/ledger.json`), the hamlets' mine test
+and Godot's golden field. It belongs with the 5.1 rebake, as one change the owner approves: `REBAKE-PLAN.md`.
 
 ## Where the biomes must change
 
