@@ -11,7 +11,7 @@
 const IMP_GAIN=2.2;   /* the impostors' gain (nwbay and swbay 2.2, the hyperjungle 1.6): set against the near crowns on 'From afar' at this turn */
 (function(){
  if(BIO.bindAtmosWind)BIO.bindAtmosWind();BIO.setA2C(renderer);
- if(BIO.impostorLook)BIO.impostorLook({gain:+(CORE_Q.get('impgain')||IMP_GAIN),wrap:+(CORE_Q.get('impwrap')||1)});
+ if(BIO.impostorLook)BIO.impostorLook({gain:+(CORE_Q.get('impgain')||IMP_GAIN),wrap:(CORE_Q.has('impwrap')?+CORE_Q.get('impwrap'):1)});
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
 })();
 const GROUND_MATS_ALL=[typeof MAT_GROUND!=='undefined'?MAT_GROUND:null,typeof MAT_TUBE!=='undefined'?MAT_TUBE:null,typeof GROUND!=='undefined'&&GROUND?GROUND.material:null,
@@ -36,13 +36,13 @@ const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{
   sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
 // the rain's occlusion map (no rain under the trees) adds a texture unit to every lit material: a ground already at the limit (the isle's) keeps the rain everywhere, as before
 window._rainCover=null;
-if(typeof ATMOS!=='undefined'&&ATMOS.rainCover&&!ATMOS.raincover){const MAXT=renderer.capabilities.maxTextures||16,full=GROUND_MATS_ALL.filter(m=>samplersOf(m)+1>MAXT);
+if(typeof ATMOS!=='undefined'&&ATMOS.rainCover&&!ATMOS.raincover){const MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),full=GROUND_MATS_ALL.filter(m=>samplersOf(m)+1>MAXT);
  if(full.length)window._rainCover='skipped: the ground reads '+Math.max(...full.map(samplersOf))+' of '+MAXT+' texture units';
  else{try{ATMOS.rainCover({renderer});window._rainCover='on';}catch(e){reportErr('rain cover: '+e.stack);}}}
 const GROUND_HZ=(function(){if(typeof KHORIZON==='undefined'||CORE_Q.get('hz')==='0')return null;
  try{const t0=performance.now(),S=TERR.R*1.1,F=typeof FAR!=='undefined'&&FAR?FAR:null,H=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,
    far:F?{h:(x,z)=>{const v=F.G.at(x,z);return v===v?v:0;},box:[-F.R,-F.R,F.R,F.R],n:200}:undefined});
-  const MAXT=renderer.capabilities.maxTextures||16,skip=[];
+  const MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),skip=[];
   window._horizon={ms:Math.round(performance.now()-t0),n:H.n};GROUND_MATS_ALL.forEach(m=>{if(samplersOf(m)+2<=MAXT)KHORIZON.shade(m,H);else skip.push(m.name||'the ground');});
   window._horizon.mats=KHORIZON.shadeScene(scene,H,{filter:o=>!o.userData.farField&&(Array.isArray(o.material)?o.material:[o.material]).every(m=>GROUND_MATS_ALL.indexOf(m)<0&&samplersOf(m)+2<=MAXT)});   /* the filter takes the mesh */window._horizon.skipped=skip;return H;}
  catch(e){reportErr('horizon: '+e.stack);return null;}})();

@@ -8,11 +8,11 @@
 (function(){const api=window._api;if(!api)return;
  const P0=[[0,0],[TERR.R*.5,0],[0,-TERR.R*.5],[-TERR.R*.45,TERR.R*.3]];
  const AQUA=['brimstone','mangrove'];
- const trees=()=>{const o=[];(THRONE.TREES||[]).forEach(T=>{const S=THRONE.SPECIES[T.sp];o.push({x:T.x,z:T.z,r:Math.max(.3,T.rb||.3),name:S.key,aquatic:AQUA.indexOf(S.key)>=0});});
-  if(typeof HYPERJUNGLE!=='undefined'&&HYPERJUNGLE.TREES)HYPERJUNGLE.TREES.forEach(T=>{if(T&&T.lv>0)o.push({x:T.x,z:T.z,r:Math.max(.3,T.rb||.3),name:'hyperjungle'});});return o;};
+ const trees=()=>{const o=[];(THRONE.TREES||[]).forEach(T=>{const S=THRONE.SPECIES[T.sp];o.push({x:T.x,z:T.z,r:Math.max(.3,(T.rb==null?.3:T.rb)),name:S.key,aquatic:AQUA.indexOf(S.key)>=0});});
+  if(typeof HYPERJUNGLE!=='undefined'&&HYPERJUNGLE.TREES)HYPERJUNGLE.TREES.forEach(T=>{if(T&&T.lv>0)o.push({x:T.x,z:T.z,r:Math.max(.3,(T.rb==null?.3:T.rb)),name:'hyperjungle'});});return o;};
  const envCk=(E,pts)=>{const bad=BIO.envCheck(E,pts);return{ok:!bad.length,detail:bad.length?bad.length+' out of range (first '+bad[0].name+' '+bad[0].value+' at '+[bad[0].x|0,bad[0].z|0]+')':
   Object.keys(E).length+' fields in range at '+pts.length+' points ('+Object.keys(E).join(', ')+')'};};
- const edgeCk=(plants)=>{if(!WATER_F)return null;const F=WATER.edgeAudit({field:WATER_F,plants,wet:(x,z)=>FIELD.wet(x,z),band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ const edgeCk=(plants)=>{if(!WATER_F)return null;const F=WATER.edgeAudit({field:WATER_F,plants,wet:(x,z)=>FIELD.wet(x,z),band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]==null?0:N[f.rule])+1;});
   return{ok:!F.length,detail:F.length?Object.keys(N).map(k=>k+' '+N[k]).join(', ')+' (first '+(F[0].name||F[0].rule)+' at '+[F[0].x|0,F[0].z|0]+')':plants.length+' trees clear of the water, the wet field at its edge'};};
  const hc=api.hostChecks,hn=api.hostNegatives;
  api.hostChecks=function(){const R=hc?hc.apply(this,arguments):[];

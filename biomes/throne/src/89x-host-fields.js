@@ -21,7 +21,7 @@ const shoreAt=(x,z)=>{if(!WATER_FN)return 1e9;const s=WATER_FN.shore(x,z);return
 const WET_SHORE=(x,z)=>{const s=shoreAt(x,z);return s<0?1:.9*smooth(40,1,s);};
 const THERM=(function(){if(typeof KTHERM==='undefined')return null;const V=[];
  const add=(id,x,z,T,reach)=>{if(isFinite(x)&&isFinite(z)&&reach>0)V.push({id,kind:'point',x,z,T,reach,decay:3});};
- if(typeof STEAM!=='undefined')STEAM.forEach((S,i)=>add('steam'+i,S.x,S.z,60+40*(S.s==null?1:S.s),Math.max(12,(S.R||8)*3)));
+ if(typeof STEAM!=='undefined')STEAM.forEach((S,i)=>add('steam'+i,S.x,S.z,60+40*(S.s==null?1:S.s),Math.max(12,((S.R==null?8:S.R))*3)));
  if(typeof FUMS!=='undefined')FUMS.forEach((F,i)=>add('fumarole'+i,F.x,F.z,70+25*(F.s==null?1:F.s),40));
  if(typeof GEYSERS!=='undefined')GEYSERS.forEach((G,i)=>add('geyser'+i,G.x,G.z,95,60));
  ENV_SURF.filter(q=>q.thermal).forEach((q,i)=>{const t=q.thermal;add('spring'+i,t.x,t.z,30+65*Math.min(1,t.temp*1.45),t.r*4);});
@@ -34,7 +34,7 @@ if(ENV_ON&&WATER_FN){
  // the flora: not on the water the eye sees, and the kit's wet field wetter where the water is near
  const M0=BIO.host.mask;BIO.host.mask=(x,z)=>shoreAt(x,z)<.8?0:(M0?M0(x,z):1);
  /* and a tree's bole, its own width clear of it too (55's pass asks after the tree's draws); the candelabras and the mangroves stand in it */
- THRONE.veto=T=>{const S=THRONE.SPECIES[T.sp];return !(S&&(S.key==='brimstone'||S.key==='mangrove'))&&shoreAt(T.x,T.z)<(T.rb||.3)*1.3+.3;};
+ THRONE.veto=T=>{const S=THRONE.SPECIES[T.sp];return !(S&&(S.key==='brimstone'||S.key==='mangrove'))&&shoreAt(T.x,T.z)<((T.rb==null?.3:T.rb))*1.3+.3;};
  const W0=FIELD.wet;FIELD.wet=(x,z)=>{const s=shoreAt(x,z);return s>1e8?W0(x,z):Math.max(W0(x,z),WET_SHORE(x,z));};
  // the ground: the wet band to the real edge (not of the open sea), a vertex attribute on the ground's meshes (no texture unit: station 1's floor
  // already reads fifteen of sixteen), darkening the paint and the layers toward the water

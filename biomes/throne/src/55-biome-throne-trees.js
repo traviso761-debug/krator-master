@@ -349,7 +349,7 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),cy=
  {const ld=treeGrow({x:e.x,y:e.y-1,z:e.z},dirOf(la,1.45),H*.36,e.r*.95,.25,near?6:3,0,.05);ld[0].r=e.r*1.02;
   st.limb+=BIO.tube('bark0',ld,barkCol(S,2),{seg:near?10:6,cap:true});fol(ld.slice(Math.floor(ld.length/3)),near?ri(8,12):4);ends.push(tip(ld));}
  /* the ruff's throat 3 m over the fork's end, on a stalk of the limb's bark (2026-11-02: it floated there with nothing under it) */
- for(const t of ends){const s=rr(5,8);st.limb+=BIO.tube('bark0',[{x:t.x,y:t.y-.4,z:t.z,r:Math.max(.12,(t.r||.3)*.8)},{x:t.x,y:t.y+3,z:t.z,r:Math.max(.1,(t.r||.3)*.6)}],barkCol(S,1),{seg:near?6:4,cap:true});ruffAt(t.x,t.y+3,t.z,s,st,lv,true);
+ for(const t of ends){const s=rr(5,8);st.limb+=BIO.tube('bark0',[{x:t.x,y:t.y-.4,z:t.z,r:Math.max(.12,((t.r==null?.3:t.r))*.8)},{x:t.x,y:t.y+3,z:t.z,r:Math.max(.1,((t.r==null?.3:t.r))*.6)}],barkCol(S,1),{seg:near?6:4,cap:true});ruffAt(t.x,t.y+3,t.z,s,st,lv,true);
   top=Math.max(top,t.y+s*.6);reach=Math.max(reach,Math.hypot(t.x-T.x,t.z-T.z)+s);}
  regTree(T,S,reach,top-T.y0+2);};
 

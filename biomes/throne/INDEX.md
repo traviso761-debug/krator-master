@@ -4,14 +4,16 @@
 
 The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life.
 
-Docs: `BIOME-API.md`, `HANDOFF-FLORA-REPORT.md`, `HANDOFF-FLORA.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
+Docs: `BIOME-API.md`, `HANDOFF-FLORA-REPORT.md`, `HANDOFF-FLORA.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/throne-ash.html`, `dist/throne-caldera.html`, `dist/throne-cloud.html`, `dist/throne-frontier.html`, `dist/throne-glacier.html`, `dist/throne-isle.html`, `dist/throne-kipuka.html`, `dist/throne-savanna.html`, `dist/throne-tube.html`, `dist/throne-vents.html`, `dist/throne.html`
 
 Build: `cd biomes/throne && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `45-core-horizon.js`, `47-core-therm.js`
+
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -25,13 +27,21 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `45-host-stage.js` | 8 | the land before the lava (42); the plume (90) |
 | `46-biome-throne-flows.js` | 6 |  |
 | `47-host-land.js` | 10 | what is cut after the lava (22); the fields (cached below; these are the definiti (59); the host binding (88) |
-| `50-biome-throne-species.js` | 93 **big** | palettes (17); the tree species (84); harvest (biomes/FRUIT.md) (166); the small plants (the floor), tagged (205); leaf textures (266); bark textures (336); geometries local to this biome (366); materials (497); the library (core/materials/PLAN.md, The Throne) (541); instanced items (696) |
-| `55-biome-throne-trees.js` | 82 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (60); polyline helpers (Girder's) (75); keep-clear between trees (85); foliage helpers (95); the builders (139); the geyser isle's shore (stations/isle) (410); the cloud forest (stations/cloudforest) (478); the lava casts (509); impostors (the far canopy) (527) |
-| `60-biome-throne-floor.js` | 43 **big** | small plants (26); the zone planters (97); the pass (147); the shallows (the geyser isle: stations/isle) (195); the sulphur life (vent country: stations/vents) (239); the cold (the glacier: stations/glacier) (272); the cave (the lava tube: stations/tube) (291); the new flora (stations 1 and 7: HANDOFF-FLORA.m (309) |
-| `70-biome-throne.js` | 4 |  |
-| `82-host-sky.js` | 15 | day and night (174) |
-| `83-host-heat.js` | 5 |  |
-| `84-host-ground.js` | 17 | the ground (18); the water: the acid lake, the hot pools (111); the steam (133) |
-| `88-host-build.js` | 1 |  |
+| `50-biome-throne-species.js` | 96 **big** | palettes (17); the tree species (85); harvest (biomes/FRUIT.md) (169); the small plants (the floor), tagged (208); leaf textures (274); bark textures (344); geometries local to this biome (374); materials (505); the library (core/materials/PLAN.md, The Throne) (549); instanced items (713) |
+| `55-biome-throne-trees.js` | 87 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (60); polyline helpers (Girder's) (75); keep-clear between trees (85); foliage helpers (95); the builders (151); the geyser isle's shore (stations/isle) (427); the cloud forest (stations/cloudforest) (495); the lava casts (526); impostors (the far canopy) (544) |
+| `60-biome-throne-floor.js` | 43 **big** | small plants (26); the zone planters (98); the pass (148); the shallows (the geyser isle: stations/isle) (196); the sulphur life (vent country: stations/vents) (240); the cold (the glacier: stations/glacier) (273); the cave (the lava tube: stations/tube) (292); the new flora (stations 1 and 7: HANDOFF-FLORA.m (310) |
+| `70-biome-throne.js` | 6 |  |
+| `80-host-core.js` | 1 |  |
+| `82-host-sky.js` | <1 |  |
+| `83-host-heat.js` | 6 |  |
+| `84-host-ground.js` | 15 | the ground (18); the water: the acid lake, the hot pools (111); the steam (115) |
+| `89-host-sky.js` | 2 |  |
+| `89a-host-atmos.js` | 2 |  |
+| `89w-host-water.js` | 3 |  |
+| `89x-host-fields.js` | 6 |  |
+| `89z-host-build.js` | 1 |  |
+| `89zz-host-core.js` | 6 |  |
+| `98z-host-core.js` | 1 |  |
 | `99-host-take.js` | 17 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (145) |
+| `99-host-tz-core.js` | 3 |  |
 | `99-tail.html` | <1 |  |

@@ -15,3 +15,5 @@ const MARSH_DRAW=WATER.drawStill(MARSH_WATER,{roughness:.35,metalness:.05,envMap
 MARSH_DRAW.mesh.userData.probeSkip=true;MARSH_DRAW.mesh.userData.inspectLabel=MARSH_WATER.name;
 // the reflections switch (core/water/ext/58; 89zz-host-core.js installs it, off at page load): the marsh is the page's largest still
 const MIRROR_STILL={materials:[MARSH_DRAW.mesh.material],level:MARSH.level,center:[MARSH.x,MARSH.z],radius:(MARSH.ru+MARSH.rp)*.5,far:2500};
+// the marsh fizzes while acid rain falls (89-host-atmos.js, ATMOS.acidRain)
+if(ACID_RAIN&&ATMOS.acidOn)ATMOS.acidOn(MARSH_DRAW.mesh.material,{kind:'water'});

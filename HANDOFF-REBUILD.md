@@ -322,7 +322,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
-  | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
+  | 5 | throne (**merged 2026-11-02:** all eleven pages; `biomes/throne/PLAN.md`, "Core adoption"), ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu, oidong | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |
   | 8 | ringisles, abyssal-savannah | after all their sources |
