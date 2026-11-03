@@ -18,13 +18,14 @@ let st=null;
 const drop=p=>p[1]-BIO.terrainH(p[0],p[2])-.25,above=p=>drop(p)>.3;
 
 // a crust or a moss pad lying on a surface with normal n
-function crust(p,n,r,set){const s=r*rr(.7,1.3);BIO.put('lichen',[p[0]+n[0]*.04,p[1]+n[1]*.04,p[2]+n[2]*.04],qUp(n),[s,1,s],leafCol(set,1.05,.03,.1,.06));st.lichen++;}
+function crust(p,n,r,set){const s=r*rr(.7,1.3);BIO.put(EBADLANDS.FUNG?'crustf':'lichen',[p[0]+n[0]*.04,p[1]+n[1]*.04,p[2]+n[2]*.04],qUp(n),[s,1,s],leafCol(set,1.05,.03,.1,.06));st.lichen++;}
 // a HANGING-GARDEN CURTAIN hung from p, facing out along (dx,dz): maidenhair ribbons side by side, blooms dotted on them
 function curtain(p,dx,dz,len,w){len=Math.min(len,drop(p));if(len<.6)return;const m=Math.hypot(dx,dz)||1;dx/=m;dz/=m;const q=qFacing([dx,0,dz]),tx=-dz,tz=dx,n=ri(2,4),c=vary(pick(PAL.maiden),.03,.08,.05);
  for(let i=0;i<n;i++){const o=(i-(n-1)/2)*w/n+rr(-.1,.1)*w,L=len*rr(.55,1),x=p[0]+tx*o+dx*rr(.05,.2),y=p[1]+rr(-.1,.05),z=p[2]+tz*o+dz*rr(.05,.2);
   BIO.put('maiden',[x,y,z],q,[w/n*rr(.9,1.4),L,1],bright(c,rr(.95,1.2)));
-  for(let k=0,b=ri(1,4);k<b;k++){const t=rr(.15,.85),set=rng()<.65?PAL.monkey:PAL.columbine;   // monkeyflower, columbine
-   BIO.put('bloom',[x+tx*rr(-.3,.3)+dx*.08,y-L*t,z+tz*rr(-.3,.3)+dz*.08],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.09,.16),bright(vary(pick(set),.02,.08,.05),1.15));}}
+  for(let k=0,b=ri(1,4);k<b;k++){const t=rr(.15,.85)*.55,set=rng()<.65?PAL.monkey:PAL.columbine;   // monkeyflower, columbine: in the strand's upper half, at the seep (the attach audit holds an onLeaf flower within half a hanging card's length of its hook); same draws
+   BIO.put('bloom',[x+tx*rr(-.3,.3)*.15+dx*.03,y-L*t,z+tz*rr(-.3,.3)*.15+dz*.03],   /* on the strand (the final rebuild: .3 m to the side and .08 out left them off a ribbon .2 m wide; same draws) */
+    qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.09,.16),bright(vary(pick(set),.02,.08,.05),1.15));}}
  st.curtains++;}
 // a rose weeper's pink strands spilling off a high ledge
 function drape(p,dx,dz,len){len=Math.min(len,drop(p));if(len<.8)return;const m=Math.hypot(dx,dz)||1;dx/=m;dz/=m;const c=pick(SPK.weeper.leaf);

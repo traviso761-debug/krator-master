@@ -1,4 +1,8 @@
 {
+ "biomes/ebadlands: STALE build.py --station canyons": 1,
+ "biomes/ebadlands: STALE build.py --station montane": 1,
+ "biomes/ebadlands: STALE build.py --station tundra": 1,
+ "biomes/ebadlands: STALE build.py --station waste": 1,
  "biomes/abyssal-savannah: STALE build.py": 1,
  "biomes/catch: STALE build.py": 1,
  "biomes/crater-drylands: STALE build.py": 1,
@@ -13,6 +17,8 @@
  "biomes/godthrone: STALE build.py": 1,
  "biomes/guilin: STALE build.py": 1,
  "biomes/hyperjungle: STALE build.py": 1,
+ "biomes/hyperjungle: STALE build.py --station lake": 1,
+ "biomes/hyperjungle: STALE build.py --station savanna": 1,
  "biomes/k-guilin: STALE build.py": 1,
  "biomes/korona: STALE build.py": 1,
  "biomes/necanyons: STALE build.py": 1,

@@ -54,7 +54,7 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   air) and the arms are 7- and 9-sided tubes (`55-biome-sedesert-trees.js`). The same column geometry is in `biomes/ebadlands`,
   `biomes/nsemiarid` and `biomes/throne` (their `50-*-species.js`, and their trees fragment where it has a column tree) and
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
-  pages' hashes and their per-type triangle counts (the hero column doubles).
+  pages' hashes and their per-type triangle counts (the hero column doubles). **2026-11-02:** ebadlands' moonflower column is ported (its turn); nsemiarid, the Throne and Shade are left.
 
 - **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
   pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
@@ -119,7 +119,7 @@ purpose. Take an item out when it is done.
   Throne's) follow automatically.
   **2026-10-26:** the fragment is written (`core/biome/33-core-fungoid.js`, `test-fungoid.js`, core/biome README "Fungoid parts")
   and nhighlands' mushroom and disc stalk are on it; the rest of the list is still to switch. **2026-10-27:** nwbay's bracket is
-  on `BIO.fung.bracket` (its page only, `?fung=0` the old dome; `biomes/nwbay/PLAN.md`). **2026-10-27:** swbay's mushroom, parasol, bracket and the cap-tree's `capTop` are on `BIO.fung` (its page only, `?fung=0`; `biomes/swbay/PLAN.md`).
+  on `BIO.fung.bracket` (its page only, `?fung=0` the old dome; `biomes/nwbay/PLAN.md`). **2026-10-27:** swbay's mushroom, parasol, bracket and the cap-tree's `capTop` are on `BIO.fung` (its page only, `?fung=0`; `biomes/swbay/PLAN.md`). **2026-11-02:** ebadlands' dressing crusts are on `BIO.fung.crust` (its pages, `?fung=0`; `biomes/ebadlands/PLAN-STATIONS.md`).
 
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 

@@ -28,6 +28,7 @@
   "core/water/ext/58-core-water-shore.js": {"needs": ["core/water/20-core-water.js"]},
   "core/water/ext/59-core-water-network.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js", "core/water/ext/55-core-water-confluence.js"]},
   "core/water/ext/59b-core-water-network-draw.js": {"needs": ["core/water/51-core-water-kinds.js", "core/water/ext/55b-core-water-confluence-draw.js", "core/water/ext/59-core-water-network.js"]},
-  "core/water/ext/60-core-water-fields.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js"]}
+  "core/water/ext/60-core-water-fields.js": {"needs": ["core/water/20-core-water.js", "core/water/22-core-water-flow.js"]},
+  "core/water/ext/61-core-water-plume.js": {"needs": ["core/water/20-core-water.js", "core/water/50-core-water-draw.js"]}
  }
 }
