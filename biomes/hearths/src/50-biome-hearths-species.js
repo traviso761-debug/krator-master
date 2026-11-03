@@ -35,7 +35,7 @@ const PLANTS={
 const HARVEST={hearth:HV('pipes (a fallen stalk, cut: the Tungangs\')',['wax (the tallow beads)'],true,'The hearth wax is food and light; nobody fells a living hearth.'),
  stalkdead:HV('pipes, fuel',[],false,'A fallen stalk is a pipe ready-made.'),ember:HV('none',[],false,''),coal:HV('stuffing (dried: bedding)',[],false,'Warm to lie on; the animals sleep on it.'),
  stoker:HV('none',[],false,'The stokers point the way the heat is moving.'),
- still:HV('pipes (a glass still, cut: a horn)',['wax (runs in the heat, pooled at the foot)'],true,'Proposed: the isles\' lamp oil.'),stillglass:HV('horns, pipes',[],false,'Hollow; it rings when struck.'),
+ still:HV('pipes (a glass still, cut: a horn)',['wax (runs in the heat, pooled at the foot)'],true,'Proposed: the isles\' lamp oil.'),stillglass:HV('pipes (cut into horns)',[],false,'Hollow; it rings when struck.'),
  sailcup:HV('none',[],false,'The run-off\'s one native.'),spraymat:HV('none',[],false,'Regrows after each eruption.'),tallow:HV('none',['wax (eaten, burned)'],true,'Sets hard on cold nights; gathered at dawn.')};
 SPECIES.forEach((S,i)=>{S.i=i;S.tags.harvest=HARVEST[S.key];});for(const k in PLANTS)PLANTS[k].tags.harvest=HARVEST[k];
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);

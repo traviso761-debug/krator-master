@@ -60,7 +60,7 @@ const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},u
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 const KG_LAYERS=USE_KG&&GLAY?[['litter','0.65'],['grass','grass*0.9','mix(vec3(1.0),base*3.0,0.3)'],
  ['moss','grass*smoothstep(0.03,0.09,heat)*(1.0-smoothstep(0.2,0.32,heat))*0.8'],['rock','rock'],['sand','sand','mix(vec3(1.0),base*4.0,0.25)'],
- ['sinter','dead*0.7','vec3(0.78,0.76,0.72)','dead sinter'],['sinter','sin_','mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1))'],
+ ['sinter','dead*0.7','vec3(0.78,0.76,0.72)','dead sinter'],['sinter','sin_','mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),_sk)'],
  ['tufa','terr','vec3(1.04,1.02,0.98)'],['clay','acid*0.9','mix(vec3(1.0),base*1.4,0.6)'],['mud','mud*0.95']]
  .map(L=>KGROUND.layer('geyser','ground.'+L[0],{w:L[1],tint:L[2]||'vec3(1.0)',amt:1,gain:1,name:L[3]||L[0]})).filter(Boolean):[];
 const KG_ON=KG_LAYERS.length===10;
@@ -88,11 +88,11 @@ MAT_GROUND.onBeforeCompile=sh=>{if(STAIR_LAM)Object.assign(sh.uniforms,STAIR_LAM
   'c=mix(c,vec3(0.86,0.72,0.2),smoothstep(0.42,0.47,h));c=mix(c,vec3(0.66,0.74,0.36),smoothstep(0.5,0.55,h));return pow(c,vec3(2.2));}';
  const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);vec3 dt=texture2D(uDetail,p*0.13).rgb;'+
   'float rock=vC.a,heat=vT.x,sin_=vT.y,film=vT.z,acid=vT.w,dead=vU.z,mud=vU.w,terr=vW.x,sand=vW.y,vent=vW.z,grass=vW.w;'+
-  'vec3 base=pow(vC.rgb,vec3(2.2));'+(KG_ON?'vec3 c=base;diffuseColor.rgb=c;\n/*KGROUND*/\nc=diffuseColor.rgb;':'vec3 c=mix('+L('litter')+',base,0.35);'+
+  'vec3 base=pow(vC.rgb,vec3(2.2));float _sk=smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1);'+(KG_ON?'vec3 c=base;diffuseColor.rgb=c;\n/*KGROUND*/\nc=diffuseColor.rgb;':'vec3 c=mix('+L('litter')+',base,0.35);'+
   'c=mix(c,'+L('grass')+'*mix(vec3(1.0),base*3.0,0.3),grass*0.9);'+
   'c=mix(c,'+L('moss')+',grass*smoothstep(0.03,0.09,heat)*(1.0-smoothstep(0.2,0.32,heat))*0.8);'+
   'c=mix(c,'+L('rock')+',rock);c=mix(c,'+L('sand')+'*mix(vec3(1.0),base*4.0,0.25),sand);'+
-  'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),dead*0.7);c=mix(c,'+L('sinter')+'*mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1)),sin_);'+
+  'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),dead*0.7);c=mix(c,'+L('sinter')+'*mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),_sk),sin_);'+
   'c=mix(c,'+L('tufa')+'*vec3(1.04,1.02,0.98),terr);'+
   'c=mix(c,'+L('clay')+'*mix(vec3(1.0),base*1.4,0.6),acid*0.9);c=mix(c,'+L('mud')+',mud*0.95);')+
   // a steam vent's ground: sulphur yellow, rust round it
