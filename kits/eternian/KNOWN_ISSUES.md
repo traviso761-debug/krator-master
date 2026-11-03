@@ -58,9 +58,9 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
 - [ ] Left unreached after the stairs pass (269 big, 201 a walker could stand on), read with `reach_dump.js`: flat roofs behind
       parapets and the parapets' copings (the canal house, the corner turret, the shophouse, the barracks' ranges: a roof terrace
       would want its own stair or hatch), cornices under the hips, the solid bodies by design (the gate's towers, the wall towers,
-      the clock's body and balcony, the withdrawal house, the kiln), the doorless or sealed halls (the relic hall has no door; the
-      ancestor gallery's only door is the locked civic door on its pier bundle, its hall wall closed behind it: a hollow passage
-      through the bundle would open it), the pier tops, and a few furniture-scale tops (the colossi's plinths, the villa's basin).
+      the clock's body and balcony, the withdrawal house, the kiln), the relic hall, which has no door at all (its gate is the turbine
+      casing; the ancestor gallery, sealed the same way, has a keepers' door in its back wall now, with steps up its podium), the
+      pier tops, and a few furniture-scale tops (the colossi's plinths, the villa's basin).
 - [ ] 16 doors are locked: the facades on the pier bundles (`etWall` `o.solid`: the gate fronts, the harbour's), the ministry's and
       the faith house's civic doors on their bundles, the fort's six tower doors (solid towers). The onyx and alabaster lights stay
       stone; the mine shaft's and the reservoir mouth's dark boxes are not openings into a room and stay.
