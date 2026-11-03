@@ -508,7 +508,7 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '67-cultural.js', '75-hotel.js']
 
 
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '40-core-place',
+BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '36-core-walker', '40-core-place',   # 36: BIO.walkLoop, the jungle fauna's (2026-11-03)
                 '50-biome-hyperjungle-species', '55-biome-hyperjungle-trees', '58-biome-hyperjungle-fauna',
                 '60-biome-hyperjungle-floor', '65-biome-hyperjungle-dress',
                 '70-biome-hyperjungle']   # ../biomes/hyperjungle/src -> targets/city/86-bio-*.js, through bio_wrap()
