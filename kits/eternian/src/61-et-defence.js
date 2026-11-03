@@ -82,7 +82,7 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
   /* the moat (its water between the platform's revetment and an outer kerb) and the platform in its stone revetment */
   for(let i=0;i<6;i++){const j=(i+1)%6;etPoly('water',[[hp[i][0],.3,hp[i][1]],[hp[j][0],.3,hp[j][1]],[hm[j][0],.3,hm[j][1]],[hm[i][0],.3,hm[i][1]]],new THREE.Color(ET_WATER));}
   etHexFaces(Rm*ET_HEX_AP+.25,()=>box('stone',0,0,0,Rm+.6,.55,.5,sd));
-  prism('stone',hp,0,PH-.05,sd);prism('earth',etHex(Rp-.25),PH-.05,PH,P('earth'));
+  prism('stone',hp,0,PH-.05,sd);prism('earth',etHex(Rp-.25),PH-.05,PH,P('earth'));svFloor(etHex(Rp-.25),PH);   /* the platform: a prism, so its top is declared to the walk */
   pushM(TF(0,PH,0));
   prism('paving',etHex(R-2.5),0,.02,P('paving'));
   /* the bridge: level with the platform over the moat, stepping down at its outer end (each step a little narrower, so no
@@ -97,8 +97,9 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
    if(k===1)for(const s of [-1,1])seg(R/2-g,s*(g+R/2)/2);else seg(R,0);
    const gx=STAIR[k],cuts=k===1?[[-R/2,-g],[g,R/2]]:gx==null?[[-R/2,R/2]]:[[-R/2,gx-.8],[gx+.8,R/2]];
    for(const [a,b] of cuts)box('brick',(a+b)/2,8,-1.6,b-a,1.0,.4,br);   /* the inner parapet, open at a stair's head */
-   if(gx!=null){for(let i=0;i<20;i++)box('brick',gx,i*.4,-7.8+i*.3+.15,1.4,.4,.3,i%2?br:brD);
-    for(const s of [-1,1]){const x=gx+s*.68,t=[[x,0,-7.8],[x,0,-1.85],[x,7.93,-1.85]];etPoly('brick',t,brD);etPoly('brick',t.slice().reverse(),brD);}}});
+   /* the stair to the walk: a dog-leg of solid brick out from the wall's inner face, arriving through the gap in the inner parapet
+      (core/engine svStairCase; the old flight's 0.4 m steps over 0.3 m treads were too steep for a walker) */
+   if(gx!=null)svStairCase({x0:gx-1,x1:gx+1,z0:-8.3,z1:-2.25},[0,8.1],{w:.9,start:'+',style:'solid',mk:'brick',col:brD});});   /* clear of the 4.4 m stone base */
   /* the corner towers: points outward, gold faces on the outer faces, slits, a door from the court, a celadon pavilion */
   for(let i=0;i<6;i++){const a=i*PI/3;pushM(TF(R*Math.cos(a),0,R*Math.sin(a)));
    prism('stone',etHex(5.8),0,.6,sd);prism('brick',etHex(5.2),.6,13,br);prism('brick',etHex(5.6),13,13.5,brD);
@@ -122,12 +123,12 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
    popM();});
   /* the keep: a stepped plinth, three storeys of brick, the ogee, a gold face on every face of the top storey */
   const KR=8,KG=1.0,kap=(KR+.3)*ET_HEX_AP;
-  etTrade({plan:'hex',R:KR,storeys:3,sh:3.6,G:KG,mk:'brick',upMk:'brick',roof:'ogee',roofMk:'celadon',steel:true,mask:'terracotta',
+  etTrade({plan:'hex',R:KR,storeys:3,sh:3.6,G:KG,steps:false,mk:'brick',upMk:'brick',roof:'ogee',roofMk:'celadon',steel:true,mask:'terracotta',
    furn:[['eternian_common_register_desk',4,1.0,0],['eternian_common_archive_shelf',3,.5,0],['eternian_common_bench',5,.6,0],['eternian_common_table',0,1.4,0],
     ['eternian_common_bed',2,.8,1],['eternian_common_bed',3,.8,1],['eternian_common_bed',0,.8,1],['eternian_common_chest',4,.5,1],
     ['eternian_common_tube_rack',4,.4,2],['eternian_court_petition_stand',2,1.2,2],['eternian_court_alabaster_lamp',0,.6,2],['eternian_common_mask_shelf',3,.4,2]],
    extra:F=>etHexFaces(F.ap+ET_T/2,()=>etHead(0,F.G+2*3.6+2.45,.3,.95,{metal:'gold'}))});
-  for(let s=0;s<3;s++)box('stone',0,0,kap+.15+s*.3,3.2-s*.1,KG*(3-s)/3,.3,sd);   /* the keep's steps, each a little narrower */
+  svStair(0,kap+1.35,0,KG,PI,{style:'solid',w:3.2,run:1.35,col:sd});   /* the keep's steps (core/engine svStair: the old three were 0.33 m risers on 0.3 m treads, one a block) */
   for(const s of [-1,1]){box('stone',s*2.9,0,kap+1.6,1.2,1.0,1.2,sd);etFigure(s*2.9,1.0,kap+1.6,3.4,{pose:'folded',metal:'bronze'});}
   {const z0=kap+1.05,z1=ap-5;box('paving',0,.02,(z0+z1)/2,3.6,.03,z1-z0,new THREE.Color(P('paving')).multiplyScalar(.9));}
   cyl('iron',-13,0,9,.1,14,P('iron'),6);etBanner(-12.4,13.6,9,1.2,3.6);

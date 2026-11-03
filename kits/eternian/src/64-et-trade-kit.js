@@ -8,7 +8,8 @@
 //   etTrade(o): o.plan 'rect' (o.w, o.d) | 'hex' (o.R); o.storeys (1-3), o.sh storey height; o.mk / o.upMk the walls
 //   below and above; o.shop (a wide opening on the front), o.mask ('terracotta' | 'lead' | false); o.roof 'gable' |
 //   'hip' | 'pent' | 'flat' | 'pyramid' (hex: 'pyramid' or 'ogee'), o.roofMk; o.chimney [x, z]; o.furn [[key, x, z, ry,
-//   storey]] (hex: [[key, face, inset, storey]]); o.extra(F) with F = {G, H, top, w, d, R, ap}. Returns F.
+//   storey]] (hex: [[key, face, inset, storey]]); o.extra(F) with F = {G, H, top, w, d, R, ap}; o.steps false: no steps drawn up to a
+//   door on a plinth over 0.45 m (the def draws its own). Two storeys or more get a straight flight a storey (svStair). Returns F.
 const ET_SH=3.2;
 function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.G==null?.35:o.G,mk=o.mk||'block',upMk=o.upMk||(mk==='brick'?'brick':'lime');
  const col=k=>k==='brick'?P('brick'):k==='block'?P('block'):k==='silt'?P('silt'):P('lime'),fr=k=>new THREE.Color(col(k)).multiplyScalar(.9);
@@ -20,9 +21,14 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
    etHexFaces(ap,(k)=>{const op=[];
     if(s===0&&k===1){if(o.shop)op.push({x:0,w:fw-1.0,h:2.6,y:.1,gap:true});else op.push({x:0,w:1.2,h:2.3,door:true,maskMetal:mask||'terracotta',mask:mask!==false});}
     else op.push({x:0,w:Math.min(1.3,fw-1.2),h:1.4,y:.95,dark:o.poor,shut:!o.steel,steel:!!o.steel});
-    etWall(fw,y,sh,m,col(m),op,{frame:fr(m)});});
-   for(const q of etHex(R))box(m,q[0],y,q[1],.4,sh,.4,fr(m));
-   if(s>0)prism('timber',etHex(R-.2),y-.2,y,P('timber'));}
+    etWall(fw,y,sh,m,col(m),op,{frame:fr(m),steps:o.steps});});
+   for(const q of etHex(R))box(m,q[0],y,q[1],.4,sh,.4,fr(m));}
+  /* the floors (a prism the walk's box reader cannot see: registered with svFloor) and, for two storeys or more, a straight flight a
+     storey along the back face (core/engine svStair), each over the last, the floor above left open over its band */
+  svFloor(etHex(R-.1),G+.03);
+  if(n>1){const w=.9,zo=-(ap-.3),zi=zo+w+.1,hx=R/2+R/2*(.3/ap)-.17,run=2*hx-.5;
+   for(let s=1;s<n;s++){const y0=G+(s-1)*sh,y=G+s*sh;svStair(-run/2,zo+(w/2+.05),y0,y,PI/2,{w,run,col:P('timberL'),scol:P('timber'),rail:'left'});
+    const fl=svClip(etHex(R-.2),[0,zi],[0,1]);prism('timber',fl,y-.2,y,P('timber'));svFloor(fl,y);}}
   if(o.shop){box('timber',0,G,ap-.6,fw-1.2,1.0,.45,P('timber'));door(0,G,ap,0,1.4);}
   const rm=o.roofMk||'tile',ry=G+H;
   if(o.roof==='ogee')etOgee(R+.6,ry,R*.9,{mk:rm,seg:6,a0:0,col:etKeyCol(rm)});
@@ -40,9 +46,13 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
    else for(let i=0;i<nw;i++)front.push({x:-W/2+(i+.5)*W/nw,w:1.0,h:1.4,y:.95,dark:o.poor,steel:!!o.steel,shut:!o.steel});
    back.push({x:0,w:1.0,h:1.2,y:1.1,dark:o.poor,shut:!o.steel,steel:!!o.steel});
    if(D>5)side.push({x:0,w:1.0,h:1.2,y:1.1,dark:o.poor,shut:!o.steel,steel:!!o.steel});
-   etWalls(W,D,y,sh,m,col(m),{front:front,back:back,left:side,right:o.rightDoor&&s===0?[{x:0,w:1.0,h:2.2,door:true,mask:false}]:side},{frame:fr(m)});
-   if(s>0)box('timber',.6,y-.2,0,W-1.8,.2,D-.6,P('timber'));}
-  if(n>1)for(let s=1;s<n;s++)etStair(-W/2+.9,G+(s-1)*sh,D/2-.6,1.0,sh/16,-.2,16,P('timberL'));
+   etWalls(W,D,y,sh,m,col(m),{front:front,back:back,left:side,right:o.rightDoor&&s===0?[{x:0,w:1.0,h:2.2,door:true,mask:false}]:side},{frame:fr(m),steps:o.steps});
+   }
+  /* the stair: a straight flight a storey up the left wall from the back toward the front, each over the last (core/engine
+     svStairCase: the old flight's top met no floor, the floor above stopping short of its line), the floor above open over it */
+  if(n>1){const ys=[];for(let s=0;s<n;s++)ys.push(G+s*sh);
+   const SC=svStairCase({x0:-W/2+.3,x1:-W/2+1.4,z0:-D/2+.35,z1:D/2-.35},ys,{w:.95,col:P('timberL'),scol:P('timber'),rail:'right'});
+   for(let s=1;s<n;s++)svWell('timber',0,G+s*sh-.2,0,W-.6,.2,D-.6,P('timber'),SC.wells[s-1]);}
   if(o.shop){box('timber',-W*.12,G,D/2-.6,Math.min(3.4,W*.42),1.0,.45,P('timber'));box('lime',-W*.12,G+2.75,D/2+.3,Math.min(4.2,W*.5),.12,.7,P('limeShade'));}
   const rm=o.roofMk||'tile',ry=G+H,rf=o.roof||'gable';
   if(rf==='gable')etGable(W,D,ry,o.roofH||Math.min(2.6,D*.35),{mk:rm,ribs:rm==='tile'?.3:0,ov:.45,wallMk:upMk,wallCol:col(upMk)});
