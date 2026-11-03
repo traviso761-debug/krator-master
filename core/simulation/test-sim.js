@@ -1084,15 +1084,17 @@ function world(seed){
    S.economy(Object.assign({goods:o.treat?{rice:{},bread:{},kava:{}}:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},o.govern?{govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:1}}:{}),{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
    S.recipe('farm',{out:['rice'],rate:2,cap:5000});S.recipe('bake',{out:['bread'],rate:4,cap:5000});S.R.place.shed.stock={rice:400,bread:200};
    if(o.treat){S.needs({list:['material'],rate:{material:0.5},init:10});P('shop','shop',90,{BUY:6});S.R.place.shed.stock.kava=5000;}
+   if(o.stations){S.needs({list:['material'],rate:{material:0.2},init:10});P('shop','shop',90,{BUY:6,WORK:2});}
    S.items(Object.assign({kinds:Object.assign({rice:{cat:'food',food:true},bread:{cat:'food',food:true}},o.treat?{'kava bowl':{cat:'luxury',material:25,good:'kava'}}:{}),free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1},o.treat?{treat:{at:30,items:[[0,'kava bowl']]}}:{}));
    if(o.treat) S.shop('shop',['kava bowl']);
+   if(o.stations) S.shop('shop',['rice','bread']);
    S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{WORK:{pin:'work'}}});S.role({id:'idler',org:'folk',sched:[[0,'SLEEP']]});
    const gs=[0,1,2].map(i=>S.actor({id:'gr'+i,role:'grower',home:'hA',work:i<2?'farm':'bake'}));S.actor({id:'gr3',role:'grower',home:'hB',work:'farm'});S.actor({id:'id0',role:'idler',home:'hC'});
    S.all('actor').forEach(a=>{a.cls='poor';a.wealth=0.1;});
    ['hA','hB','hC'].forEach(h=>{S.R.place[h].store={rice:4};S.R.place[h].people=h==='hA'?3:1;});
-   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration,spend:o.spend||null},m2:o.m2||null});
+   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration,spend:o.spend||null,stations:o.stations||null},m2:o.m2||null});
    S.account({id:'treasury:kautoa',kind:'treasury',currency:'shell',settlement:'kautoa'});S.mint('treasury:kautoa',o.reserve==null?3000:o.reserve,'reserve');
-   ['farm','bake'].forEach(w=>S.account({id:'wp:'+w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
+   ['farm','bake'].concat(o.stations?['shop']:[]).forEach(w=>S.account({id:'wp:'+w,owner:w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
    ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,owner:h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',o.rich==null?60:o.rich,'endowment');S.mint('hh:hB',30,'endowment');
    if(o.jail) S.command(gs[0],{act:'SLEEP',place:'hA',until:3*1440,by:'jail'});
    clock.d=0;clock.h=0;S.level('kautoa','abstract');const run=(d)=>{for(let m=S._m||0,e=m+Math.round(d*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
@@ -1137,6 +1139,23 @@ function world(seed){
  ok('wealth follows savings within the class\'s band (the saving household '+wA.toFixed(2)+', the broke one '+wC.toFixed(2)+', the band 0 to 0.2)',Math.abs(wA-0.2)<1e-9&&Math.abs(wC-0)<1e-9,Math.abs(S0.S.R.actor.gr0.wealth-0.2)<1e-9);
  ok('a treat only with money in hand (the broke household '+kv(S1,'hC')+' bowls; without the rule, on the dole, '+kv(S0,'hC')+')',kv(S1,'hC')===0&&kv(S0,'hC')>0,kv(S1,'hC')>0);
  ok('savings lower the treat\'s bar, so saved money is spent (the saving household '+kv(S1,'hA')+' bowls, '+kv(S2,'hA')+' without the drop)',kv(S1,'hA')>kv(S2,'hA'),kv(S1,'hA')<=kv(S2,'hA'));
+ // stations (m1.stations): a household whose purse holds the price buys a vacant shop and one of its workers rises to its
+ // merchant (its class with it); the owned shop keeps its margin, the rest to the treasury wholesale; a household that
+ // cannot cover its shop's wages falls back, the shop to the treasury, its people unhappier; one rise a life (two where fluid)
+ const ST=(o)=>Object.assign({of:a=>'worker',cls:{worker:'poor',merchant:'middle'},rise:{merchant:{places:['shop'],cost:3,hold:1}},margin:0.15,reserve:2,fall:{unhappy:30,days:20}},o||{});
+ const R1=mk({stations:ST(),rich:6000,calibrate:1});R1.run(1+1/1440);R1.run(1);const gr=R1.S.R.actor.gr0,shopA=R1.S.acct('wp:shop'),ev=R1.S.moneyStations();
+ ok('a household whose purse holds the price buys the vacant shop and its worker rises ('+JSON.stringify(ev.rises)+'; '+gr.id+' a '+gr.station+', '+gr.cls+', the shop the '+shopA.ownedBy+'\'s)',
+   gr.station==='merchant'&&gr.cls==='middle'&&shopA.ownedBy==='hh:hA'&&gr.work==='shop'&&ev.events[0].price>0,gr.station!=='merchant');
+ R1.run(2);const wh=R1.S.moneyReport().currencies.shell.paid.wholesale||0,pu=R1.S.MONEY.flows.shell.paid.purchase||0;
+ ok('the owned shop keeps its margin and pays the treasury the rest wholesale ('+wh+' wholesale)',wh>0,!(wh>0));
+ const F1=mk({stations:ST({margin:0}),rich:6000,calibrate:1});F1.run(1+1/1440);F1.run(1);const fg=F1.S.R.actor.gr0,was=fg.station;F1.S.burn('hh:hA',F1.S.acct('hh:hA').balance,'lost');F1.run(2);
+ const fev=F1.S.moneyStations(),pool=F1.S.happinessPool('kautoa'),hA=F1.S.R.actor.gr1,hB=F1.S.R.actor.gr3;
+ ok('a household that cannot cover its shop\'s wages falls: the shop to the treasury, its merchant a '+fg.station+' ('+fg.cls+'), its people '+Math.round(F1.S.happiness(hA))+' happy to '+Math.round(F1.S.happiness(hB))+' next door',
+   was==='merchant'&&fg.station==='worker'&&fg.cls==='poor'&&F1.S.acct('wp:shop').ownedBy==='treasury:kautoa'&&(fev.falls.kautoa||{}).merchant===1&&F1.S.happiness(hA)<F1.S.happiness(hB)-20,fg.station==='merchant');
+ ok('the happiness pool by class ('+Object.keys(pool.byClass).map(c=>c+' '+Math.round(pool.byClass[c].mean)).join(', ')+')',pool.all.n===5&&pool.byClass.poor&&pool.byClass.poor.n===5,!pool.byClass.poor);
+ F1.S.mint('hh:hA',9000,'endowment');F1.run(2);ok('one rise a life: the fallen merchant does not rise again ('+fg.station+', '+fg.rises+' rise)',fg.station==='worker'&&fg.rises===1,fg.station!=='worker');
+ const F2=mk({stations:ST({margin:0,perLife:2}),rich:6000,calibrate:1});F2.run(1+1/1440);F2.run(1);F2.S.burn('hh:hA',F2.S.acct('hh:hA').balance,'lost');F2.run(2);F2.S.mint('hh:hA',9000,'endowment');F2.run(2);
+ const f2=F2.S.R.actor.gr0;ok('where the nation is fluid (two a life) it may rise again ('+f2.station+', '+f2.rises+' rises)',f2.rises===2&&f2.station==='merchant',f2.rises<2);
  const N=mk({calibrate:false});N.run(1+1/1440);ok('without calibration it pays from the first day',(N.S.moneyReport().currencies.shell.paid.wage||0)>0,!((N.S.moneyReport().currencies.shell.paid.wage||0)>0));}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)

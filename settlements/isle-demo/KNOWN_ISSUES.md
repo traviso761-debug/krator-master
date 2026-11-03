@@ -255,7 +255,11 @@
 - [ ] **Money measures, it does not yet limit** (2026-11-03, `47m`: M0 and M1's first part): wages, rations and purchases are paid,
       but a household that cannot pay is fed on the dole, so nobody goes without; a pocket picked is still the meters, not coin.
       With spending that follows savings the ration runs at 93-97%, the dole at 8-10% (food and clothes only). M2's price level
-      stays off: it spirals against the flat wage (PLAN-MONEY.md). The rise and fall of a station is next.
+      stays off: it spirals against the flat wage (PLAN-MONEY.md).
+- [ ] **No merchant princes or nobles rise on the isles yet:** a trading house has no takings until trade by price (M3); stations
+      climb in order. And a riser keeps its home's class name for its household (only the riser's class moves).
+- [ ] **An unwatched town does not live its needs**, so its happiness pool sinks (Valapo 29 after 20 days unwatched): unrest (M6)
+      waits for the abstract level to fill its people's meters.
 - [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
       Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
       (M1's second part) come next.

@@ -340,7 +340,17 @@ ISLE.TUNE.sim = {
          set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
          higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
          out only with money in hand (the dole feeds and clothes, it does not treat) */
-      spend: { days: 10, treatDrop: 15 } },
+      spend: { days: 10, treatDrop: 15 },
+      /* STATIONS (M1's last part, the owner 2026-11-03: class follows profession; one rise a life, two in the fluid nations;
+         a fall a cause of unrest): the traders and keepers are merchants, the officials of the rich houses nobles, everyone
+         else a worker (a person's class changes only with a rise or a fall). A worker's household whose purse holds a
+         vacant shop's price (`cost` days of its wage bill) and `reserve` days of its keep for `hold` nights buys it from the
+         treasury, and the worker rises to merchant and runs it; the shop keeps `margin` of what it sells and pays the treasury
+         the rest wholesale, and its wages are the household's; a household that cannot cover them falls (the shop back to
+         the treasury, its merchant a worker again, its people `fall.unhappy` less happy, fading over `fall.days`). No
+         merchant princes on the isles yet: a trading house has no takings until trade by price (M3) */
+      stations: { merchants: ['trader', 'keeper'], nobles: ['official'], cls: { worker: 'poor', merchant: 'middle', prince: 'rich', noble: 'rich' },
+        rise: { merchant: { places: ['shop', 'butcher', 'tavern'], cost: 10, hold: 3 } }, perLife: 1, margin: 0.15, reserve: 5, fall: { unhappy: 25, days: 30 } } },
     /* M2 (2026-11-03): prices move each night: a governed good by its scarcity, (target / supply line)^`k`, held to [lo, hi]
        of its cost x markup and eased in over `smooth` days; the town's markup (its price level) toward what makes the
        households' spending meet the wages and the full rations, at most `level.step` a night; the ration moves with it.

@@ -79,8 +79,21 @@
   SIM.happiness = function(a, nd){
     var N=SIM.NEED; nd = nd || a.nd; if(!N || !nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
     for(var i=0;i<nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(nd[i]/100, N.pain); w+=wi; }
-    return w ? 100 - s/w : 100;
+    var h = w ? 100 - s/w : 100; return a.hmods && a.hmods.length ? Math.max(0, h - SIM.happinessMod(a)) : h;
   };
+  /* HAPPINESS MODIFIERS (opt-in, by whoever pushes one: a household's fall, 77-sim-6-money.js): a.hmods [{n, t (minute),
+     days, why}], each n points off happiness at first, fading to nothing over its days; spent ones dropped */
+  SIM.happinessMod = function(a, minute){ var m=minute==null ? SIM.minute() : minute, L=a.hmods||[], t=0;
+    for(var i=L.length-1;i>=0;i--){ var f=1-(m-L[i].t)/(L[i].days*1440); if(f<=0){ L.splice(i, 1); continue; } if(f<1 || m>=L[i].t) t+=L[i].n*Math.min(1, f); }
+    return t; };
+  SIM.happinessAdd = function(a, n, days, why){ (a.hmods||(a.hmods=[])).push({ n:n, t:SIM.minute(), days:days, why:why||null }); };
+  /* THE HAPPINESS POOL (PLAN-MONEY.md M6; the owner, 2026-11-03): a settlement's people's mean happiness, collective and by
+     class (`classOf(a)`, default a.cls) -> {all: {mean, n}, byClass: {cls: {mean, n}}}; unrest is how far it falls below 50 */
+  SIM.happinessPool = function(s, classOf){ var out={ all:{ mean:null, n:0 }, byClass:{} }, sum=0, by={};
+    if(!SIM.NEED) return out;
+    SIM.all('actor').forEach(function(a){ if(a.driven || !a.nd || (s!=null && SIM.settlementOf(a)!==s)) return; var h=SIM.happiness(a); if(h==null) return;
+      sum+=h; out.all.n++; var c=classOf ? classOf(a) : a.cls; if(c==null) return; var B=by[c]||(by[c]={ s:0, n:0 }); B.s+=h; B.n++; });
+    out.all.mean=out.all.n ? sum/out.all.n : null; Object.keys(by).sort().forEach(function(c){ out.byClass[c]={ mean:by[c].s/by[c].n, n:by[c].n }; }); return out; };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
   SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
     return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };

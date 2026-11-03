@@ -258,7 +258,11 @@ false` turns it off). **M2** (`SIM.money({m2: {k, lo, hi, smooth, level}})`): ea
 households' spending meet the wages and the full rations, at most `step` a night, the ration with it (a day's history keeps the price index, `cpi`). **Spending** (`m1.spend: {bands: {cls: [lo, hi]}, days, treatDrop}`): each night a household's
 savings in days of its keep set its people's `wealth` within their class's band (`SIM.moneyFill(home)`); the treat's bar falls by `treatDrop` at a
 full purse (`SIM.moneyTreatDrop`); a treat or a meal out by choice only with money in hand (`SIM.moneyCan`, asked by the items before the wish and
-again at the counter for a treat).
+again at the counter for a treat). **Stations** (`m1.stations`): a person's `station` (worker, merchant, prince, noble) and its `rises`; a
+household buys a vacant place of the next station's kinds (its workplace account's `ownedBy` becomes the household's, `merchant` the riser) and its
+runner rises; an owned place pays `wholesale` to the treasury, its takings swept to the household, its wages covered from it; a household that
+cannot cover them falls. `SIM.moneyStations()` -> rises and falls by settlement and station, and their events. Happiness modifiers:
+`SIM.happinessAdd(a, n, days, why)` (a.hmods, fading), `SIM.happinessPool(s, classOf?)` (77-sim-6-needs.js).
 
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a

@@ -42,6 +42,11 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
   { const B = cp(m1), k = Object.keys(B.m1.days)[0]; B.m1.days[k][B.m1.days[k].length - 1].unpaid += 12; caught('a day\'s wages left unpaid', ISLE.moneyM1Checks(m0, B), /paid in full/); }
   ISLE.moneyM2Checks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
   ISLE.moneySpendChecks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
+  ISLE.moneyStationChecks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
+  { const B = cp(m1); B.stations.events.push({ m: m1.minute, kind: 'rise', settlement: 'kautoa', household: 'hh:kautoa.0', actor: 'k0', from: 'worker', to: 'merchant', place: SIM.all('place').find(P => P.kind === 'quay' && SIM.settlementOf(P.id) === 'kautoa').id, price: 1 });
+    caught('a worker rising by buying a quay', ISLE.moneyStationChecks(m0, B), /every rise/); }
+  { const B = cp(m1), P = SIM.accounts({ kind: 'workplace', settlement: 'valapo' })[0]; B.stations.events.push({ m: m1.minute, kind: 'fall', settlement: 'valapo', household: 'hh:x', place: P.owner, actor: null });
+    const was = P.ownedBy; P.ownedBy = 'hh:valapo.0'; caught('a fallen household keeping its shop', ISLE.moneyStationChecks(m0, B), /every fall/); P.ownedBy = was; }
   { const x = SIM.all('actor').find(q => q.cls === 'poor' && ISLE.SIM.order.indexOf(SIM.settlementOf(q)) >= 0), w = x.wealth; x.wealth = 0.9; caught('a poor man at a rich man\'s wealth', ISLE.moneySpendChecks(m0, m1), /within its class/); x.wealth = w; }
   { const B = cp(m1), k = Object.keys(B.m1.days)[0], d = B.m1.days[k][B.m1.days[k].length - 1]; d.doleBy = Object.assign({}, d.doleBy, { kava: 50000 }); d.dole += 50000; caught('50,000 shells of kava on the dole', ISLE.moneySpendChecks(m0, B), /on the dole/); }
   { const B = cp(m1); B.rel.kautoa.fish = 3; caught('fish at three times its cost', ISLE.moneyM2Checks(m0, B), /priced within/); }

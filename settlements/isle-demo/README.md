@@ -239,7 +239,11 @@ declares both once they are planned, in one order whichever town it draws, and h
   (core/simulation/PLAN-MONEY.md, "What moving prices taught"). **Spending follows savings:** a household's purse (its
   savings in days of its keep, ten a full one) sets its people's wealth within their class (the treats it reaches, how
   often it eats out), a full purse lowers the treat's bar, and treats and meals out by choice need money in hand: rations
-  rose to 93-97% of a full keep, no treat is on the dole, and the people are a little happier (83).
+  rose to 93-97% of a full keep, no treat is on the dole, and the people are a little happier (83). **Stations:** the
+  traders and keepers are merchants; a worker's household whose purse holds a vacant shop's price (1,980 shells) and five
+  days' keep for three nights buys it, and the worker rises to merchant and runs it (the shop keeps 15%, the rest to the
+  treasury wholesale); a household that cannot cover its shop's wages falls, unhappier for a month. Twenty days: 6 rises,
+  no fall.
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

@@ -21,8 +21,19 @@ out; the treat's bar on the material meter falls by `treatDrop` (15) at a full p
 bought only with money in hand, the purse checked again at the counter (several of a household wish the same day). On the
 isles: rations 93-97% of a full keep (90-92% before), the dole 8-10%, no treat on it; half the households hold a quarter
 of a full purse (ten days' keep), the top tenth half. Money now steers what people do: the week test's 32 checks still
-pass (happiness 83, the material meter 34, was 36), and Godot's isle books were exported again and agree. **Left of M1:**
-the rise and fall of a station (and the falls' unhappiness, M6).
+pass (happiness 83, the material meter 34, was 36), and Godot's isle books were exported again and agree.
+
+**M1's last part is built: stations** (2026-11-03, `m1.stations`; the isles' `15` money.m1.stations, `47m` station checks).
+A household whose purse has held a vacant shop's price (10 days of its wage bill) and five days of its keep for three
+nights buys it from the treasury; one of its workers rises to merchant (class middle) and runs it; the owned shop keeps
+15% of what it sells and pays the treasury the rest wholesale, and its wages are the household's to cover; a household
+that cannot cover them falls (the shop back to the treasury, the merchant a worker again, everyone of the household 25
+less happy, fading over 30 days: `SIM.happinessAdd`, read by SIM.happiness), and the fall is counted by station. One rise
+a life (`perLife`, two in the fluid nations). The happiness pool, collective and by class (`SIM.happinessPool`), is ready
+for M6. On the isles over 20 days: 6 rises (shops at 1,980 shells), no fall, rations 93-99%, the price index within 5%.
+No merchant princes on the isles yet: a trading house has no takings until trade by price (M3), so it would fall at once.
+**M6 needs one thing first: the abstract level must live its needs.** A town nobody watches does not fill its people's
+meters, so its pool sinks (Valapo's to 29 in 20 days unwatched): unrest read off it would riot wherever the player is not.
 
 **What moving prices taught** (the isles, eight market days, 2026-11-03):
 - **Scarcity pricing alone is stable.** The price index stays within 5% of where it opened; Kautoa's dearest goods are its
