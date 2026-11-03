@@ -35,8 +35,8 @@ Texel: 0.33 m (intact and gutted), 0.5 m for the five ruin states past gutted.
 - The trace (`mpTrace`): from the cage surface toward the eye's ray, relaxed sphere tracing by the side gap (`max(g*.85, mn)`), limited over a roof by
   the top map's height, 32 steps (`MP_STEPS`); a hit is bisected back to the surface (5 halvings); then the colour branch: the top map's
   colour on a real roof (normal up, and air 1.2 m above in the side map or the top map flat 1.5 m all round), the bottom map's on a soffit, else
-  the side map's. `mpLod` is the distance's mip level; `mpGeo = mpLod - 1` is used for the shape reads; colour reads at `mpLod - .75` plus up to
-  1.25 more on faces seen edge-on.
+  the side map's. `mpLod` is the distance's mip level, used for the shape reads (`mpGeo`); colour reads at `mpLod - .25` plus up to 1.25 more on faces
+  seen edge-on.
 - `src/70-mp-stage.js` [web]: what stands where; `MPS.tiersTick` (heroes under 300 m, shells to 1.4 km and to 3.2 km when seen steeply, impostors
   past that). `src/52-mp-hero-spindle.js` is the real building the bake is made from.
 
@@ -66,6 +66,8 @@ Texel: 0.33 m (intact and gutted), 0.5 m for the five ruin states past gutted.
   Reads now stay half a texel (at their mip) inside the slot (`hv` in `mpGap`). The overlay test above now covers the skirt.
 - A descending ray steps no further than 5 cm over the ground; the step's limit over a roof also reads the top map's sharp texel (at an edge
   the blurred one read empty and the ray stepped by the side gap past a curb).
+- A strip of the side map at -180 degrees was never baked above 100 m (the wrap passes cut theta at the same seam): the wrap passes now cut at 0 (2026-11-03).
+- The read biases: colour a quarter mip sharp, shape at the distance's mip (sharper aliased into a dither).
 - The lobby's reveal floor is a 0.45 m curb (a floor at the ground has no height in a side map).
 - The top map's height encoding moved from `0.02 + 0.98 y/H` to `0.1 + 0.9 y/H` (the ground sat on the empty threshold).
 - Tried and reverted: treating anything just under a top-map surface as solid, whatever the side map says. Up the shaft the top map holds every

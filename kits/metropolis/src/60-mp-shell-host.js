@@ -15,12 +15,14 @@ const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform f
  'uniform mat3 uUvT;','void main(){vUv=(uUvT*vec3(uv,1.0)).xy;vCol=vec3(1.0);','#ifdef USE_COLOR','vCol*=color;','#endif','#ifdef USE_INSTANCING_COLOR','vCol*=instanceColor;','#endif',
  '#ifdef USE_INSTANCING','vec4 p=instanceMatrix*vec4(position,1.0);vN=normalize(mat3(instanceMatrix)*(normal/vec3(dot(instanceMatrix[0].xyz,instanceMatrix[0].xyz),dot(instanceMatrix[1].xyz,instanceMatrix[1].xyz),dot(instanceMatrix[2].xyz,instanceMatrix[2].xyz))));',
  '#else','vec4 p=vec4(position,1.0);vN=normal;','#endif',
- 'vXZ=p.xz;if(uMode<0.5){float th=atan(p.z,p.x)+uWrap*6.2831853;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
+ 'vXZ=p.xz;if(uMode<0.5){float th=uWrap==0.0?atan(p.z,p.x):atan(-p.z,-p.x)+uWrap*3.14159265;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
  'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.1+0.9*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
-// a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company
+// a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company, and it is dropped. The
+// wrap passes (+1, -1) cut theta at 0, not at the seam (0..2pi and -2pi..0), so a triangle across the seam is whole in them and fills the slot's edge and gutter: with one
+// cut for all three passes a strip at -180 degrees went unbaked (a seam down the shell, 2026-11-03)
 const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap,uClip;uniform vec3 uFaceN;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;uniform sampler2D uRMap;uniform float uHasRMap;',
  'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
- 'void main(){if(uMode<0.5&&abs(vTh-uWrap*6.2831853-atan(vXZ.y,vXZ.x))>0.3)discard;if(uMode>1.5&&vH<uClip)discard;',
+ 'void main(){if(uMode<0.5&&abs(vTh-(uWrap==0.0?atan(vXZ.y,vXZ.x):atan(-vXZ.y,-vXZ.x)+uWrap*3.14159265))>0.3)discard;if(uMode>1.5&&vH<uClip)discard;',
  ' if(uPass<0.5){vec3 c=uHasMap>0.5?texture2D(uMap,vUv).rgb:vec3(1.0);c*=pow(uColor*vCol,vec3(1.0/2.2));gl_FragColor=vec4(c,1.0);}',
  /* roughness is linear data: it is read with texture() and no sRGB decode (check_source's RAWTEX rule is for colour maps) */
 /* a side map's sills and reveals are ledges a pixel tall: an up-facing normal there catches a high sun as a bright slit, so in a side map a ledge takes the wall's normal */
@@ -60,10 +62,11 @@ const DM=['vMpP=position;',
 const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;uniform float uTexel;uniform float uDbg;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
  'vec2 mpUV;float mpLod;float mpGeo;vec3 mpHP;vec3 mpRd;float mpBr;',MP.ROOM_GLSL,
  // the gap: how far p is outside the surface along the map's axis, and the uv it sampled
- /* a side map is read half a texel (at its mip) inside its slot: at the foot or the seam the filter blended in the atlas's empty gutter, which took the radius at the ground
-    from 46 m to a third of it, so the skirt's outer metres were lost and its rim spiked */
+ /* a side map is read half a texel (at its mip) inside its slot in height: at the foot the filter blended in the atlas's empty gutter, which took the radius at the ground
+    from 46 m to a third of it, so the skirt's outer metres were lost and its rim spiked. Not in angle on a polar map: its gutter holds the wrapped map (the bake's
+    three wrap passes), and clamping there drew a stripe down the seam. A box map's perimeter is clamped (its seam is a corner) */
  'float mpGap(vec3 p){vec4 F=vMpFrame;if(p.y>F.y)return 4.0;vec2 hv=exp2(mpLod)*.5/(vMpSlot.zw*uAt);float v=clamp(p.y/F.y,hv.y,1.0-hv.y);',
- ' if(F.x<0.5){float u=clamp(atan(p.z,p.x)/6.2831853+0.5,hv.x,1.0-hv.x);mpUV=vMpSlot.xy+vMpSlot.zw*vec2(u,v);float r=textureLod(uB,mpUV,mpGeo).a*F.z;return length(p.xz)-r;}',
+ ' if(F.x<0.5){float u=atan(p.z,p.x)/6.2831853+0.5;mpUV=vMpSlot.xy+vMpSlot.zw*vec2(u,v);float r=textureLod(uB,mpUV,mpGeo).a*F.z;return length(p.xz)-r;}',
  ' float hx=F.z,hz=F.w,D=hz,per=4.0*(hx+hz),dz=hz-abs(p.z),dx=hx-abs(p.x);',
  /* a box is the hull of two of its maps: the long face on the point's side (it reaches the middle) and the end face on its side (it reaches D in). A point is solid only
     inside both; judging by the nearest face alone let a ray over a setback roof read the far face's map. An empty end map deeper than D says nothing, so the long face decides (it returned
@@ -81,7 +84,7 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
  /* a roof is where the top map is flat for 1.5 m all round; a sill never is (the wall rises behind it). The side map's air above was the only test, and over a box
     it fails on a low roof past a hall's end: the long face's map extrudes the hall over it, which read the side map there as bars */
  'bool mpFlat(vec2 ut,float ty,vec2 hxz,float ey){vec2 o=vMpTop.zw*1.5/(2.0*hxz);float tol=max(ey,0.5),L=mpLod+1.0;for(int k=0;k<4;k++){vec2 d=k==0?vec2(o.x,0.0):k==1?vec2(-o.x,0.0):k==2?vec2(0.0,o.y):vec2(0.0,-o.y);float a=textureLod(uB,ut+d,L).a;if(a<0.05||abs((a-.1)/.9*vMpFrame.y-ty)>tol)return false;}return true;}',
- 'bool mpTrace(){mpBr=0.0;vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));mpGeo=max(0.0,mpLod-1.0);float t=0.0,tp=0.0,mn=max(0.25,dist*uPx*.6),g,ta,ty;',
+ 'bool mpTrace(){mpBr=0.0;vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));mpGeo=mpLod;float t=0.0,tp=0.0,mn=max(0.25,dist*uPx*.6),g,ta,ty;',
  ' vec4 F=vMpFrame;float lim=F.x<0.5?F.z*1.08:0.0;',
  ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
  ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;',
@@ -99,9 +102,9 @@ KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=ne
  m.onBeforeCompile=function(sh){Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+DV).replace('#include <begin_vertex>','#include <begin_vertex>\n'+DM);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define MP_STEPS '+steps+'\n'+DF)
-   /* crispness: the colour is read three quarters of a mip under the distance's level, and up to 1.25 coarser where the surface is seen edge-on (the distance alone left a
-      grazing face's windows sparkling from above); the shape (mpGeo) a whole level under the colour's, so a silhouette and its relief are not rounded off */
-   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=max(0.0,mpLod-.75+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
+   /* the colour is read a quarter mip under the distance's level, and up to 1.25 coarser where the surface is seen edge-on (the distance alone left a grazing face's windows
+      sparkling from above); the shape (mpGeo) at the distance's level. Sharper (three quarters, and the shape a level under: 2026-11-03) aliased into a dither */
+   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=max(0.0,mpLod-.25+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=mC.r;').replace('#include <metalnessmap_fragment>','float metalnessFactor=mC.g;')
    .replace('#include <normal_fragment_begin>',['vec3 mN=normalize(mB.xyz*2.0-1.0),mW=vec3(vMpRot.x*mN.x-vMpRot.y*mN.z,mN.y,vMpRot.y*mN.x+vMpRot.x*mN.z);vec3 normal=normalize((viewMatrix*vec4(mW,0.0)).xyz);vec3 geometryNormal=normal;'].join('\n'))
    .replace('#include <normal_fragment_maps>','')

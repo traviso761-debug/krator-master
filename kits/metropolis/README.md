@@ -83,8 +83,10 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
 - **Shell edges** (2026-11-03): a side map was read up to its slot's edge, where the filter blended in the atlas's empty gutter: at the foot that took the Spindle's radius from
   46 m to a third of it, so its skirt's outer metres went missing and its rim spiked, seen from above. Reads stay half a texel (at their mip) inside the slot. A descending ray
   steps no further than 5 cm over the ground, and the step's limit over a roof reads the sharp texel too. The roof map's heights are 0.1 + 0.9 y/H (0 empty).
-- **Crisper shells:** the colour is read three quarters of a mip under the distance's level (up to 1.25 coarser on a face seen edge-on, which sparkled), the shape a whole
-  level under that, so silhouettes and relief are not rounded off. Shells stand to 1.4 km (the impostor, 128 px a view, was soft at 1 km).
+- **Crisper shells:** the colour is read a quarter mip under the distance's level (up to 1.25 coarser on a face seen edge-on, which sparkled), the shape at it (three
+  quarters, and the shape a level finer, aliased into a dither). Shells stand to 1.4 km (the impostor, 128 px a view, was soft at 1 km).
+- **The seam at -180 degrees:** the bake's wrap passes cut theta at the same seam as the main pass, so a triangle across it was dropped in all three and a strip of the
+  side map went unbaked above 100 m (a dark line down the shell). The wrap passes now cut at 0.
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 The fallen Ledger keeps its arcade (the owner, 2026-11-03): its arches, piers and flares stand in the mound.
