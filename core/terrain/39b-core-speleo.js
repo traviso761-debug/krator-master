@@ -8,7 +8,10 @@
 //
 //   const R = KSPELEO.place(C, {box:[x0, z0, x1, z1], y (a height inside the voids to look from), cell (4 m), world, kinds, accept})
 //     kinds   {name: {p (a cell's chance), len:[a, b], r:[a, b], arms:[a, b] (chandelier), minGap (m of open below it)}}; default
-//             KSPELEO.HYPOGENE: gypsum chandeliers, a few stalactites and stalagmites, columns where the two would meet
+//             KSPELEO.HYPOGENE: gypsum chandeliers, a few stalactites and stalagmites, columns where the two would meet;
+//             KSPELEO.LIMESTONE (a solution cave, KKARST's): dripstone, soda straws {n, r: the cluster's spread}, curtains {r: the span,
+//             folds}, flowstone mounds, rimstone dams {n, slope: the floor's least fall} on a sloping floor. A cell takes the first kind
+//             its hash falls in, in the order chandelier, stalactite, straw, curtain, flowstone, rimstone
 //     accept  (rec) -> bool: the kit's last word (a hazard's taboo, a path kept clear)
 //   -> [{id, kind, x, y (where it is fixed: the ceiling, or the floor), z, len, r, roof, floor, arms?, seed}]. A point under the sky
 //      (no roof), or in rock, gets nothing. kind: 'chandelier' (selenite blades fanning down from the roof), 'stalactite'
@@ -22,9 +25,29 @@
   'use strict';
   function KR(){var K=root.KRAND;if(!K)throw new Error('KSPELEO: load core/rand/08-core-rand.js first');return K;}
   function d(v,x){return v==null?x:v;}
-  var KINDS=['chandelier','stalactite','stalagmite','column'];
+  var KINDS=['chandelier','stalactite','stalagmite','column','straw','curtain','flowstone','rimstone'];
   var HYPOGENE={chandelier:{p:.22,len:[1.5,4.5],r:[.6,1.6],arms:[7,14],minGap:3},stalactite:{p:.12,len:[.6,2.4],r:[.08,.3],minGap:1},
     stalagmite:{p:.5,len:[.3,1.6],r:[.15,.45]}};
+  /* a limestone cave's dress (2026-11-03, KKARST's caves): the dripstone, soda straws in clusters, curtains along a sloping roof,
+     flowstone mounds, and rimstone dams across a sloping floor */
+  var LIMESTONE={stalactite:{p:.16,len:[.4,3],r:[.06,.35],minGap:1},stalagmite:{p:.6,len:[.3,2.5],r:[.12,.5]},
+    straw:{p:.12,len:[.15,.9],r:[.4,1.6],n:[6,20]},curtain:{p:.08,len:[.6,3],r:[1.5,6],folds:[3,7],minGap:2},
+    flowstone:{p:.07,len:[.4,1.6],r:[1.5,5]},rimstone:{p:.1,len:[.08,.3],r:[1,4],n:[2,5],slope:.03}};
+  /* the limestone kinds a cell may hold once neither a chandelier nor a stalactite took it: each its share of `pick` after theirs */
+  function limestone(KS,C,o,x,z,g,gap,pick,acc,u,id,seed,K){var order=['straw','curtain','flowstone','rimstone'];
+    function rng(a,t){return a[0]+(a[1]-a[0])*t;}
+    for(var q=0;q<order.length;q++){var k=order[q],S=KS[k];if(!S)continue;if(pick>=acc+S.p){acc+=S.p;continue;}
+      if(k==='straw'){if(gap<1)return null;var n=Math.round(rng(S.n||[6,20],u(12))),sp=rng(S.r,u(13)),arms=[];
+        for(var a=0;a<n;a++){var w=function(s){return K.unit(K.hash(seed,a,0x5100+s));},an=w(1)*2*Math.PI,dd=sp*Math.sqrt(w(2));arms.push({dx:Math.cos(an)*dd,dz:Math.sin(an)*dd,len:Math.min(rng(S.len,w(3)),gap*.8)});}
+        return {id:id,kind:'straw',x:x,y:g[1],z:z,len:Math.max.apply(null,arms.map(function(m){return m.len;})),r:sp,arms:arms};}
+      if(k==='curtain'){if(gap<d(S.minGap,2))return null;return {id:id,kind:'curtain',x:x,y:g[1],z:z,len:Math.min(rng(S.len,u(12)),gap*.6),r:rng(S.r,u(13)),az:u(14)*Math.PI,folds:Math.round(rng(S.folds||[3,7],u(15))),amp:.08+.12*u(16)};}
+      if(k==='flowstone')return {id:id,kind:'flowstone',x:x,y:g[0],z:z,len:Math.min(rng(S.len,u(12)),gap*.4),r:rng(S.r,u(13))};
+      /* rimstone: the floor must fall; dams cross it downslope of the cell's point, each a low arc */
+      var e=1,gx=gapAt(C,x+e,o.y,z),gz=gapAt(C,x,o.y,z+e);if(!gx||!gz)return null;var sx=(gx[0]-g[0])/e,sz=(gz[0]-g[0])/e,sl=Math.hypot(sx,sz);
+      if(sl<d(S.slope,.03))return null;var dir=Math.atan2(-sz,-sx),nd=Math.round(rng(S.n||[2,5],u(12))),R=rng(S.r,u(13)),dams=[];
+      for(var m=0;m<nd;m++){var off=m*R*.45;dams.push({off:off,w:R*(.5+.3*K.unit(K.hash(seed,m,0x5200))),h:rng(S.len,K.unit(K.hash(seed,m,0x5201))),y:g[0]-sl*off});}
+      return {id:id,kind:'rimstone',x:x,y:g[0],z:z,len:Math.max.apply(null,dams.map(function(m){return m.h;})),r:R,dir:dir,slope:sl,dams:dams};}
+    return null;}
   function pairOf(o,k){var a=o[k];if(!Array.isArray(a)||a.length!==2||!(a[0]<=a[1]))throw new Error('KSPELEO: '+k+' is [lo, hi]');return a;}
   /* the open column through (x, z) at y: [floor, roof], or null in rock or under the sky */
   function gapAt(C,x,y,z){if(!(C.sdf(x,y,z)>0))return null;var roof=C.ceilingAt(x,z,y);if(roof==null)return null;
@@ -34,7 +57,7 @@
     var B=o.box;if(!Array.isArray(B)||B.length!==4||!(B[2]>B[0])||!(B[3]>B[1]))throw new Error('KSPELEO.place: box is [x0, z0, x1, z1]');
     if(typeof o.y!=='number'||!isFinite(o.y))throw new Error('KSPELEO.place: y, a height inside the voids');
     var cs=d(o.cell,4);if(!(cs>0))throw new Error('KSPELEO.place: cell must be above 0');var W=d(o.world,0)>>>0,KS=o.kinds||HYPOGENE,out=[];
-    Object.keys(KS).forEach(function(k){if(KINDS.indexOf(k)<0||k==='column')throw new Error('KSPELEO.place: a kind is chandelier, stalactite or stalagmite (columns come of the last two), not '+k);
+    Object.keys(KS).forEach(function(k){if(KINDS.indexOf(k)<0||k==='column')throw new Error('KSPELEO.place: a kind is '+KINDS.filter(function(q){return q!=='column';}).join(', ')+' (columns come of stalactite and stalagmite), not '+k);
       pairOf(KS[k],'len');pairOf(KS[k],'r');if(k==='chandelier'&&KS[k].arms)pairOf(KS[k],'arms');});
     var i0=Math.floor(B[0]/cs),i1=Math.floor((B[2]-1e-9)/cs),j0=Math.floor(B[1]/cs),j1=Math.floor((B[3]-1e-9)/cs);
     function u(i,j,s){return K.unit(K.hash(W,i,j,s));}
@@ -50,6 +73,7 @@
           if(L1+L2>=gap)rec={id:id,kind:'column',x:x,y:g[0],z:z,len:gap,r:Math.max(r1,r2),roof:g[1],floor:g[0]};
           else{var rs={id:id+':up',kind:'stalagmite',x:x,y:g[0],z:z,len:L2,r:r2,roof:g[1],floor:g[0],seed:K.hash(W,i,j,11)};if(!o.accept||o.accept(rs))out.push(rs);}}
         if(!rec)rec={id:id,kind:'stalactite',x:x,y:g[1],z:z,len:Math.min(L1,gap*.9),r:r1};}
+      else rec=limestone(KS,C,o,x,z,g,gap,pick,d(ch&&ch.p,0)+d(sc&&sc.p,0),function(s){return u(i,j,s);},id,seed,K);
       if(!rec)continue;rec.roof=g[1];rec.floor=g[0];rec.seed=seed;if(!o.accept||o.accept(rec))out.push(rec);}
     return out;}
   // ---- the meshes: a cone (stalactite down, stalagmite up), a column waisted in the middle, a chandelier's blades (flat
@@ -67,6 +91,18 @@
       if(r.kind==='stalactite')tube([[x,r.y+.05,z,r.r],[x,r.y-r.len*.5,z,r.r*.45],[x,r.y-r.len,z,eps]],k);
       else if(r.kind==='stalagmite')tube([[x,r.y-.05,z,r.r],[x,r.y+r.len*.6,z,r.r*.55],[x,r.y+r.len,z,r.r*.2]],k);
       else if(r.kind==='column')tube([[x,r.y-.05,z,r.r*1.3],[x,r.y+r.len*.5,z,r.r*.7],[x,r.y+r.len+.05,z,r.r*1.3]],k);
+      else if(r.kind==='straw'){var sv=seg;seg=3;r.arms.forEach(function(A){tube([[x+A.dx,r.y+.03,z+A.dz,.014],[x+A.dx,r.y-A.len*.6,z+A.dz,.01],[x+A.dx,r.y-A.len,z+A.dz,.005]],k);});seg=sv;}
+      else if(r.kind==='flowstone')tube([[x,r.y-.05,z,r.r],[x,r.y+r.len*.45,z,r.r*.7],[x,r.y+r.len,z,r.r*.12]],k);
+      else if(r.kind==='rimstone'){var sv2=seg;seg=4;var cd=Math.cos(r.dir),sd=Math.sin(r.dir);r.dams.forEach(function(D){var pts=[];
+          for(var a=-3;a<=3;a++){var t=a/3,along=D.off+D.w*.35*(1-t*t),across=t*D.w;pts.push([x+cd*along-sd*across,D.y+D.h*.5,z+sd*along+cd*across,D.h*.5]);}tube(pts,k);});seg=sv2;}
+      else if(r.kind==='curtain'){/* a sheet hanging from the roof along az, folded across itself; drawn both sides */
+        var ca=Math.cos(r.az),sa=Math.sin(r.az),nu=Math.max(8,r.folds*6),nv=4;
+        for(var side=0;side<2;side++){var sb=P.length/3,sg=side?-1:1;
+          for(var iu=0;iu<=nu;iu++){var tu=iu/nu,s=(tu-.5)*r.r,ph=tu*r.folds*2*Math.PI,off=Math.sin(ph)*r.amp,dn=Math.cos(ph);
+            for(var iv=0;iv<=nv;iv++){var tv=iv/nv,drop=r.len*tv*(.75+.25*Math.sin(tu*Math.PI));
+              v([x+ca*s-sa*off*(1+tv),r.y+.03-drop,z+sa*s+ca*off*(1+tv)],[-sa*sg*(1-.5*Math.abs(dn)),0,ca*sg*(1-.5*Math.abs(dn))],k);}}
+          for(iu=0;iu<nu;iu++)for(iv=0;iv<nv;iv++){var p0=sb+iu*(nv+1)+iv,p1=p0+nv+1;if(side)I.push(p0,p0+1,p1,p1,p0+1,p1+1);else I.push(p0,p1,p0+1,p0+1,p1,p1+1);}}
+        }
       else{tube([[x,r.y+.05,z,r.r*.35],[x,r.y-r.r*.3,z,r.r*.3],[x,r.y-r.r*.6,z,eps]],k);
         r.arms.forEach(function(A){var dx=Math.cos(A.az)*Math.sin(A.tilt),dz=Math.sin(A.az)*Math.sin(A.tilt),dy=-Math.cos(A.tilt),o0=[x+dx*r.r*.25,r.y-r.r*.2,z+dz*r.r*.25];
           var save=seg;seg=4;tube([[o0[0],o0[1],o0[2],A.w],[o0[0]+dx*A.len*.7,o0[1]+dy*A.len*.7,o0[2]+dz*A.len*.7,A.w*.8],[o0[0]+dx*A.len,o0[1]+dy*A.len,o0[2]+dz*A.len,eps]],k);seg=save;});}});
@@ -74,5 +110,5 @@
   function blocks(R){return R.filter(function(r){return r.kind==='stalagmite'||r.kind==='column';}).map(function(r){var w=r.kind==='column'?r.r*1.3:r.r;
     return {id:r.id,box:[r.x-w,r.x+w,r.z-w,r.z+w,r.y,r.y+r.len]};});}
   function exp(R){return {format:'krator-speleo',version:1,convention:{units:'m',up:'+y',x:'east',z:'south'},kinds:KINDS.slice(),records:JSON.parse(JSON.stringify(R))};}
-  root.KSPELEO={place:place,mesh:mesh,blocks:blocks,export:exp,KINDS:KINDS,HYPOGENE:HYPOGENE,gapAt:gapAt};
+  root.KSPELEO={place:place,mesh:mesh,blocks:blocks,export:exp,KINDS:KINDS,HYPOGENE:HYPOGENE,LIMESTONE:LIMESTONE,gapAt:gapAt};
 })(typeof window!=='undefined'?window:globalThis);
