@@ -1,4 +1,4 @@
-// node core/hazard/test-hazard-flow.js â€” a hazard's move (the in-breath's pull) and pooled gas (21-core-hazard-flow.js), each
+// node core/hazard/test-hazard-flow.js — a hazard's move (the in-breath's pull) and pooled gas (21-core-hazard-flow.js), each
 // check with a negative.
 'use strict';
 const fs=require('fs'),path=require('path');

@@ -617,6 +617,25 @@ item starts when the state passes its lag and still reaches all of it with the s
 
 **Godot:** the record is `userData.bio.opts.breath`, plain data; a port is a global shader parameter per key and the same three lines in the vertex shader. Not written yet: no kit has asked.
 
+## The breath's turn (`35b-core-anim-turn.js`, opt-in, 2026-11-03; `test-breath-turn.js`)
+
+The Stills' sails (`biomes/hearths/PLAN.md` 7b, 14 item 3) stand across the wind and edge-on to the sun, turning with it through
+the day, and fold shut on a geyser's warning: two scalars on one item. `o.breath.turn {key, amp (2 pi), share}` adds a yaw about
+the item's own y axis through its origin, on its own key, after the breath's shape, with the normals turned (fold's stay put):
+`uTurn x amp (x aP0.w with share) + aP1.y`, `aP1.y` the item's own heading. `o.breath.shape: 'turn'` makes the yaw the breath itself
+(`breath.key`, `breath.amp`), nothing else moving. A material that asks for no turn gets the hook's text unchanged, character for
+character. Compiled and turning on SwiftShader (`core/atmos/check_shimmer.py`, the card's pixels).
+
+### Adopting it
+
+1. `build.py`: list `core/biome/35b-core-anim-turn.js` after `35-core-anim.js`.
+2. `BIO.animMat('stills:sail', {mode: 'breath', breath: {key: 'geyser', shape: 'fold', amp: 1.2, turn: {key: 'sails', amp: 2 * Math.PI}}})`;
+   each item's `aP1.y` its fan's heading round the stalk.
+3. One tick: `BIO.breathState('geyser').value` from `WATER.geyser`'s `S.state(t)` (shut in `pre` and `column`), and
+   `BIO.breathState('sails').value = yaw / (2 pi)` with the yaw across `ATMOS.windAt` and edge-on to the sun's bearing.
+
+**Godot:** a second global shader parameter per key; `VERTEX.xz` and `NORMAL.xz` turned by the same angle.
+
 ## The environmental fields (`41-core-env.js`, opt-in; `test-env.js`)
 
 One documented set of host fields, so ground, flora, hazards and water read the same numbers. **`BIO.ENV` is the table below as data.** No kit is on it yet: each turn maps its fields to
