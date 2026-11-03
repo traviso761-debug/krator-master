@@ -117,12 +117,12 @@
    "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3643836,
-   "sha256": "c3ed141dfb60d7a8b01c07fb591ce9fbd6634aae38249104aeeacbfbddebabae"
+   "bytes": 3644167,
+   "sha256": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
   },
   "biomes/oidong/dist/oidong-passes.html": {
-   "bytes": 3601947,
-   "sha256": "392c5ad907d5ace4266803939b3d9295f7d17a0767342f773fac2d84d6d5997e"
+   "bytes": 3602278,
+   "sha256": "1638e239ba9f5ae9ee3c24448a36f17e1dec7fe8511d7c914d3fd031defb08b9"
   },
   "biomes/oidong/dist/oidong.html": {
    "bytes": 3625063,
