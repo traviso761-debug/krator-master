@@ -57,6 +57,8 @@ economy: it does not read the field yet; `REBAKE-PLAN.md` section 1). So it is t
 
 ## Built (2026-11-03)
 
+*The cell counts below are the 4.23 bake's. The 5.1 rebake (`REBAKE-PLAN.md`) runs the same rules on the bigger canvas: `GEOLOGY.md` has its counts (carbonate 9,205; impact 35,322; basalt 37,497; granite 58,665; quartzite 21,689; ultramafic 8,169, the Arch now on the canvas).*
+
 `tools/scale-model/geology.py` `rocks()`, added to the 4.23 bake by `--rocks` (`GEOLOGY.md` has the rules and the command).
 Only the province layer changed; every family layer, lode digest and placer is byte-identical, and the new layers are
 **rock families** that neither the node field nor the ledger reads.

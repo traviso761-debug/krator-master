@@ -1,6 +1,6 @@
 # The geology rebake on scale model 5.1 (plan, 2026-11-03)
 
-**Status: a plan for the owner. Nothing is rebaked.** It needs the five decisions in section 2.
+**Status (2026-11-03): R0-R2 done** (the owner: "Yes, start R0-R2", taking section 2's recommendations a-c). The bake is on 5.1, 4 km cells, world metres from 5.1's origin with the lattice anchored to 4.23's; the regions and settlements are the model's defaults (the database is still on the 4.23 canvas: `GEOLOGY.md`, "Rebake"). The ledger, the Godot golden field and its copies, the tests' tiles, the Resources page and its baseline went with it. **R3-R6 (the ores onto the new rocks, nickel and marble as kinds) are next**, on decisions d and e. What R2 measured is in `GEOLOGY.md`, "What the 5.1 rebake moved".
 
 `data/geology.json` is still the **4.23 bake on the old canvas** (1549x1393, 4 km cells, world metres from the old
 top-left). The model is 5.1 on 1821x1723. The carbonate and the other rocks were added to the old bake without moving any
