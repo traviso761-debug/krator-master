@@ -158,7 +158,7 @@ function classesAt(x,z,h,sd){const D=dryAt(x,z,h),low=1-smooth(18,48,h);
 // none burns; no mangal, no vent; the fish camp's five plots are not the island's two gardens
 STATION.skip=['classes','placed','burn','gardens','mangal','thermal'];
 STATION.night=['The lagoon at night'];
-STATION.views=function(H){const M=MOTU[0],pa=PASS.a,px=Math.cos(pa)*RIM.rx,pz=Math.sin(pa)*RIM.rz,P=POOLS[0]||{x:BENCH.x,z:BENCH.z,level:BENCH.level},
+const STATION_VIEWS=function(H){const M=MOTU[0],pa=PASS.a,px=Math.cos(pa)*RIM.rx,pz=Math.sin(pa)*RIM.rz,P=POOLS[0]||{x:BENCH.x,z:BENCH.z,level:BENCH.level},
   HD=HEADS.slice().sort((a,b)=>b.top-a.top)[0],BE=H.bestAt((f,x,z)=>f('beach')*smooth(1400,300,Math.hypot(x-M.x,z-M.z)));
  return{
  'The lagoon from above':[3900,1100,3500,-300,-8,-300],
@@ -170,6 +170,7 @@ STATION.views=function(H){const M=MOTU[0],pa=PASS.a,px=Math.cos(pa)*RIM.rx,pz=Ma
  'The motu\'s strand':H.toward(BE[0]+30,BE[1]+20,BE[0],BE[1],40,1.7,1),
  'The far rim from the camp':[GARDEN.x,6,GARDEN.z,-Math.cos(M.a)*RIM.rx,0,-Math.sin(M.a)*RIM.rz],
  'The lagoon at night':[2600,240,-2200,0,10,0]};};
+STATION.views=STATION_VIEWS;   /* src/99 reads STATION.views; tools/check_views.py reads the STATION_VIEWS form */
 
 // the LOD spine: every 500 m along the rim's crest, the motu's lattice, the camp and the beachrock
 STATION.spine=(function(){const L=[];for(let k=0;k<44;k++){const a=k/44*TAU;L.push([RIM.cx+Math.cos(a)*RIM.rx,RIM.cz+Math.sin(a)*RIM.rz]);}
