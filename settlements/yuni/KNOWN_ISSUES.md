@@ -477,4 +477,11 @@ a step from 1.8 m outside to 1.6 m inside, a hand-written plan's court doorways 
       living rooms, all round or lathe bodies whose room is sized at the top of its taper, so it lies more than the door's
       1.6 m corridor inside the door: neither the walker nor the audit gets in, and the shell is drawn there with no doorway.
       A fix sizes the room at the floor (and keeps the wall inside the taper) or lengthens the corridor to the room.
+- [x] (the stairs pass, 2026-11-03) The corridor is lengthened: a street door's corridor runs on to 0.3 m inside the room behind it
+      when the room starts deeper than 1.6 m (`doorIn` in 76-doors.js, cached on the fixture), for the walker (`walkable()`) and the
+      audit alike, and the audit's walls are clear of such a corridor as the walker passes them (the taper's inner face, drawn across
+      it with no doorway of its own). `_doors.reach()`: 3,512 -> 3,563 of 3,578 rooms reached, sealed buildings 51 -> 0; the musgums,
+      the egg huts and the tower houses' living rooms are reached.
+- [ ] 15 rooms unreached, all `poor_cone_cluster` huts: a cluster's hut whose door faces a neighbouring hut, so its street step
+      starts inside the neighbour's room and the corridor meets the neighbour's wall. The plan's door, not the walk.
 
