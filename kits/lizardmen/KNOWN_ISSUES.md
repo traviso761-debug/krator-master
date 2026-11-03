@@ -48,3 +48,12 @@ The table is `LZ_TRADES` in `src/59-lz-trades.js` (checked by `tools/check_trade
 - [ ] orchardmen: an orchard of Rift fruit trees (the farm has greens, pods and yam only).
 - [ ] miners: a mine head (ore for the bronze hall).
 - [ ] quarrymen and masons (partly, the bronze and stone hall cuts stone): a quarry.
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] Reached 131 of 233 floors before, 138 after (77 caste doors, all operable; 82 boxes cleared from their doorways).
+- [ ] 95 unreached (33 big): the tower's and the watchtower's storeys (no stair or ladder registered), the obelisk's steps, the
+      windmill's and the lookout's platforms, the seer's model tops, the great hall's dais (as `tools/walk_audit` found before).
+- [ ] The triangle leaves pivot on the apex line; on a battered wall the leaf stands plumb in the wall's middle, so at its apex it
+      can touch the leaning sheet. The reliquary's great portal is an open passage mouth (no leaf).

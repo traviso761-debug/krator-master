@@ -84,3 +84,13 @@
       houses, and the upper galleries of the two halls (`iw-hall`, `ie-hall`) and `ip-tower`, which I have not read. `tools/walk_audit/registry_reach.py`
       asks the same of `core/walk` itself.
 
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] 109 doors (95 operable, 14 locked); the reach is unchanged by them, 1344 of 2161 floors (the doors were gaps already).
+- [ ] 817 unreached (269 big): the palace's platforms and pavilions, the dockyards' slips and lofts, the chiefs' and nobles' houses'
+      lofts, the square's stands, the gate's walk; mostly floors reached only by the ladders `door_walk.py` climbs and core/walk's
+      reach does not (a ladder registered as rung floors 0.45 m apart is at the edge of the 0.45 m step), and roofs. Not fixed here.
+- [ ] `tools/walk_audit/door_walk.py` walks each door with the host's walker: the doors are shut now, so it needs them opened
+      first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s), as the reach audit does.
+- [ ] The adit's dark back is the mine's tunnel (no room behind it to card) and stays; the windlass's well mouth too.

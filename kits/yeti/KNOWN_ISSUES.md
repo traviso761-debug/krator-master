@@ -54,3 +54,11 @@
   (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
   (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
   Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] The balagan's porch door: `verify.py` `walk-reach` now walks with every unlocked door open (it failed with the door shut).
+- [ ] The reach audit with core/walk's defaults leaves 331 of 876 floors unreached (68 big): the winter street's sunken tunnels
+      at -1.2 m, the fort's walk, the cold traps' dropped floors. The kit's own `walk-reach` (a 0.6 m step, its own targets) passes:
+      the difference is the step and the ground rule, not a missing stair.

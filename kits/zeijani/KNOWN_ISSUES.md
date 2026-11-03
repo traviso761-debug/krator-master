@@ -68,3 +68,14 @@
       no pigsty or duck yard).
 - [x] **Not here (na):** shipwrights, coast guard, dockers, river bargemen, fishers, ferrymen (no water to work), chinampa
       growers, power-house stokers, elephant bug handlers (the Voth city's beast), monks (no order), embassy staff (tabled).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] Every timber leaf (29: the houses', the shops', the works', the court's double gate) stands open as drawn and is operable;
+      its walk blocks are off while it stands open (a door drawn ajar), so the kit's walk routes pass as before. Reach unchanged:
+      83 of 102 built floors.
+- [ ] 19 unreached (6 big): the scouts' tower storeys (no stair registered), the wooden house's floor 0.5 m over the ground with
+      a 0.42 m sill (over core/walk's 0.45 m step by 5 cm; the page's own walker steps 0.6 m), the roof terraces.
+- [ ] The lamp niches and the ancestor niche keep their dark backs (niches, not openings); the shop's dark transom band under
+      its sign too.

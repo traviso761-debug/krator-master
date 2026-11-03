@@ -30,3 +30,17 @@
 - [ ] **The frontier fort (`et_fort`, 2026-10-22)**: the corner towers and the wall walk are solid (no rooms inside the
       towers; a door from the court on each, no stair up); the keep's three storeys have no stair between them (the
       interiors set does not plan the keep yet). Its gatehouse is the city gate, so the fort carries the gate's colossi.
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] Reached 215 of 998 floors before (the fixed leaf boxes stood in the doorways as blocks), 312 of 1000 after (the two declared below among them; 156 doors opened, 25 wall
+      boxes cleared from doorways). The Registry's hall was still unreached: its podium and top step are 0.8 m boxes, which
+      core/walk/box reads as blocks, so its door stood on nothing; their tops are declared floors now (`wkPad`), and the hall is reached.
+- [ ] 688 unreached (276 big), nearly all upper storeys and roofs with no stair registered (the merchant house's three floors, the
+      canal house's, the ministry's offices, the gate's and the clock's upper chambers) and the podium-borne halls whose podium
+      is taller than 0.7 m (the ministry, the customs house, the ancestor gallery, the historians' house): their tops need
+      `wkPad` like the Registry's, or core/walk/box a rule for a solid podium's top. The stairs are the interiors set's to plan.
+- [ ] 16 doors are locked: the facades on the pier bundles (`etWall` `o.solid`: the gate fronts, the harbour's), the ministry's and
+      the faith house's civic doors on their bundles, the fort's six tower doors (solid towers). The onyx and alabaster lights stay
+      stone; the mine shaft's and the reservoir mouth's dark boxes are not openings into a room and stay.
