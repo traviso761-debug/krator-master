@@ -580,6 +580,7 @@
    "biomes/throne",
    "core/atmos",
    "core/biome",
+   "core/camp",
    "core/city",
    "core/clock",
    "core/export",
@@ -591,21 +592,10 @@
    "core/tags",
    "core/terrain",
    "core/water",
+   "kits/beast-riders",
    "kits/resources",
-   "openworld/little-demo",
    "settlements/isle-demo",
    "settlements/iziz"
-  ],
-  "openworld/little-demo": [
-   "biomes/hyperjungle",
-   "biomes/sedesert",
-   "core/atmos",
-   "core/biome",
-   "core/clock",
-   "core/rand",
-   "core/space",
-   "core/terrain",
-   "core/water"
   ],
   "settlements/dalab": [
    "biomes/swlowlands",
@@ -682,6 +672,7 @@
    "core/biome",
    "core/city",
    "core/export",
+   "core/hamlet",
    "core/materials",
    "core/rand",
    "core/simulation",
@@ -781,7 +772,7 @@
    "kits/crops",
    "kits/fauna",
    "kits/interiors",
-   "openworld/little-demo",
+   "openworld/isle-demo",
    "settlements/isle-demo",
    "settlements/pinnacle-rock",
    "settlements/xanadu"
@@ -862,7 +853,7 @@
    "core/water",
    "kits/beast-riders",
    "kits/catalog",
-   "openworld/little-demo",
+   "openworld/isle-demo",
    "settlements/girder",
    "settlements/isle-demo"
   ],

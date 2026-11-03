@@ -436,14 +436,6 @@
    "bytes": 6352895,
    "sha256": "70c8b86f6e248f8072300c1cb4bb4389ef39aeccbec10587fc4cf317f1883b68"
   },
-  "openworld/little-demo/dist/little-demo.artifact.html": {
-   "bytes": 5088461,
-   "sha256": "319308d69fde833b5f08452efd0851508d8d83e865b3715cb50840dab09cca45"
-  },
-  "openworld/little-demo/dist/little-demo.html": {
-   "bytes": 5088719,
-   "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
-  },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6573669,
    "sha256": "9f9f43d96c94005e830678426fd1201ba04396b15e80df75d21df0a115e46af7"

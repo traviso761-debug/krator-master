@@ -146,7 +146,7 @@ the pillars, the banned outcomes, the measured gates, the delta loop and which e
 each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`, and open worlds (a region of the scale model at 1:1,
 streamed, with the biome kits' flora, the built settlements placed in it as tiles baked from their own pages, and
-highways between them) in `openworld/` (`openworld/little-demo/README.md`). The gallery of every
+highways between them) in `openworld/` (`openworld/isle-demo/README.md`; the first, the eastern desert, is retired: `archive/little-demo`). The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you

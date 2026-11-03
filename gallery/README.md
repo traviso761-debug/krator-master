@@ -4,7 +4,7 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
-**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+**Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the published gallery is not republished for that, so the live page keeps it until the next publish.
 ## The Krator System in the top list (2026-10-26)
 
 The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
