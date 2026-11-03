@@ -18,9 +18,17 @@ Chromium on software GL (SwiftShader) only; the coordinator runs `verify.py --as
 - [ ] **The pages are ~5-6 MB**: the Oidong pack (21 families) rides along for `OIDONG.buildHigh`'s few items. Trim the kin's family list to what
       buildHigh draws once its items' slots are known.
 - [ ] **The gjá's beck**: Verdigris Beck rises in the master gjá's floor water; its first reach out of the gjá is not drawn as a flow.
-- [ ] **nhighlands is being rebuilt (pair 7) while this kit reads its larch in place**: re-check the Mirror's larch after that turn merges (the
-      attach audit, `BIO.flareJoin` on its limbs).
+- [ ] **The Mirror's rift larch is off by default (`?larch=1`)**: nhighlands' builder, read in place by `BIO.kin`, set 462 of 4808 larch cards
+      off their limbs (9.6%, limit 1%; software GL, 2026-11-03). Grow it by default once nhighlands' turn (pair 7, under way) holds its crowns
+      (`BIO.holdTo`), then re-run the attach audit. Until then the region has no tree on its pages.
 - [ ] The card fit for `tussock` (`card.ichu`) and `heath` (`card.steamcomb`) is `check_cells.py --fix`'s stems proposal, not reviewed by eye.
+
+## What ran here (software GL, SwiftShader, 2026-11-03)
+
+`verify.py <page> --assert --views <one view>` on every page: **all five OK** (the Caldron, `--views "The Caldron and the cataract"`, 3.1M
+triangles, 41 calls; the Mirror, "The fans under the fault", 4.1M; the Wedge, "The crest", 4.1M; the Coulee, "The Gill's channel", 8.7M; the
+Gjár, "A singing fissure", 8.1M of the 10M showcase budget). Stations 1 and 5 were verified before the last two fixes, which touch only the
+other stations' code paths (their pages' bytes moved). Not run: `--all-views`, the GPU, the hash baseline.
 
 ## Decisions taken in the first pass (for the owner's look pass)
 

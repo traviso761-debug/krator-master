@@ -14,7 +14,7 @@ hazards, the sound, and the core it takes. The owner remembers the region as **"
 fissures and the crystal that lines them are a station of their own (5), and the singing is written as data for `core/audio`
 (section 8).
 
-**Status: plan (2026-11-03); the build follows on `claude/highrift-cloud`.** Every name coined here is *proposed*; nothing
+**Status: plan (2026-11-03) and a first pass of all five stations, built in the cloud on `claude/highrift-cloud`: software-GL `--assert` OK on each; the GPU pass is the coordinator's (`KNOWN_ISSUES.md`).** Every name coined here is *proposed*; nothing
 in `LORE.md` or the model is changed. Look decisions for the owner are in section 11.
 
 ## 0. What the kit is
@@ -180,7 +180,7 @@ opal: armour), **copper** (the acid ground's metals: pigment and poison), **stea
 | `beadcap` | **Bead cap** | on the sinter at 25-50 °C, in rings round the vents | small fungoid knobs 5-30 cm, each capped with a bead of geyserite it grows itself: they read as the sinter's own beading until you see the stalks (`BIO.fung`) | native, the Hearths' kin (heat-eater) |
 | `verdwort` | **Verdigris wort** | acid, copper-rich ground (station 2's shore, the gjár's vent) | low rosettes of thick blue-green leaves crusted with copper salts, a copper accumulator (Earth's *Haumaniastrum* is the model); a single blue-white flower spike | native |
 | `steamheath` | **Steam heath** | the warm margins (10-25 °C ground) and the spray zone | a dense low heath, its twigs hung with condensed droplets, combing the steam (`card.steamcomb`) | native |
-| `riftlarch` | **Rift larch** | the Mirror Graben's fans (Dfb, the one tree stand) | an Earth larch gone wild at 2.9 km, short and flag-crowned, gold in autumn (`card.larch`, `bark.larch`) | Earth, brought by the Ancients (the only tree in the region) |
+| `riftlarch` | **Rift larch** | the Mirror Graben's fans (Dfb, the one tree stand; **off by default until nhighlands holds its crowns**, `KNOWN_ISSUES.md`) | an Earth larch gone wild at 2.9 km, short and flag-crowned, gold in autumn (`card.larch`, `bark.larch`) | Earth, brought by the Ancients (the only tree in the region) |
 | (read in place) | **HEARTH**: the hearth tree, ember mat, coal moss, stoker, tallow bead | every vent's ground, by `KTHERM`'s temperature | `biomes/hearths`' own builders, `rim` dress | native, the Hearths' |
 | (read in place) | **OIDONG** high country: cushions, the snow lotus, sky poppies | the horst, the gjár plateau, the coulee's lobes | `OIDONG.buildHigh` | Oidong's |
 | (card) | tussock | the cold ground everywhere | `card.ichu` / `card.stipa` | the shared grass |
