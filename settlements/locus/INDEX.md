@@ -55,24 +55,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
-| `64-locus-chapterhouse.js` | 14 | 16Q. LOCUS — the Geomancers' Chapterhouse (1) |
-| `64-locus-core.js` | 16 | 16L. LOCUS — shared helpers (1) |
-| `64-locus-dwellings.js` | 19 | 16M. LOCUS — abyssal-desert dwellings, tents and (1) |
-| `64-locus-farm.js` | 10 | 16O. LOCUS — the salt-rice farm (1) |
-| `64-locus-infra.js` | 8 | 16R. LOCUS — the warehouse, the fishing dock, an (1) |
-| `64-locus-petroleum.js` | 22 | 16P. LOCUS — the petroleum works (1) |
-| `64-locus-plants.js` | 4 | 16N. LOCUS — crops and marsh-edge plants (1) |
-| `64-locus-power.js` | 18 | 16W. LOCUS — power and fuel (1) |
-| `65-abyss-00-core.js` | 42 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (217); ABYSS 7. overhead clutter (236); ABYSS 8. the stepped square altar (264) |
-| `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
-| `65-abyss-30-housing.js` | 21 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
-| `65-abyss-40-shops.js` | 31 **big** | 16X-S. ABYSS — shops (1) |
-| `65-abyss-50-civic.js` | 22 | 16X-C. ABYSS — hospitality and civic (1) |
-| `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
-| `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
-| `65-abyss-75-verge.js` | 22 | 16X-V. ABYSS — Lower Verge: the mayor's compound (1) |
-| `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
-| `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
 | `66-locus-furnish.js` | 11 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `67-lo-trades.js` | 6 | = (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |

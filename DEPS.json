@@ -807,7 +807,9 @@
    "core/walk",
    "core/water",
    "kits/catalog",
+   "kits/eastern-abyssal",
    "kits/interiors",
+   "kits/locus",
    "kits/motor-vehicles"
   ],
   "settlements/longsong": [
@@ -885,7 +887,9 @@
    "core/walk",
    "core/water",
    "kits/catalog",
+   "kits/eastern-abyssal",
    "kits/interiors",
+   "kits/locus",
    "kits/motor-vehicles",
    "settlements/locus",
    "settlements/reedlake"
@@ -1009,8 +1013,10 @@
    "core/walk",
    "kits/ancients",
    "kits/catalog",
+   "kits/eastern-abyssal",
    "kits/interiors",
    "kits/iziz-vernacular",
+   "kits/locus",
    "settlements/iziz",
    "settlements/locus"
   ],

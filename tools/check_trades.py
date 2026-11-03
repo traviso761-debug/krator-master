@@ -109,6 +109,8 @@ EXTRA_SRC = {
     # Vernacular: the Voth embassy and the Order's chapterhouse (settlements/iziz/src/75-port-embassy.js, 76-port-chapterhouse.js;
     # MODULARITY-PLAN.md step 4: they move with the foreign-quarter sets)
     'kits/iziz-vernacular': ['settlements/iziz/src'],
+    # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
+    'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src'],
 }
 
 

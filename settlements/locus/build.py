@@ -114,6 +114,8 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
+import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
 VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
@@ -280,6 +282,9 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for kit in (locuskit, abysskit):   # the two kits (a src/ copy with the same name would win: none)
+        for f, p in kit.paths().items():
+            paths.setdefault(f, p)
     for f in RECORD_FILES:
         paths.setdefault(f, os.path.join(RECORD_DIR, f))
     for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, WALK_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR, WATER_DIR):       # a src/ copy with the same name overrides

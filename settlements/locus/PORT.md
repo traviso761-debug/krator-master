@@ -34,24 +34,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-flora.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/62-plants.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/63-furniture.js` | 9.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 61 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-chapterhouse.js` | 13.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 58 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-core.js` | 16.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 68 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-dwellings.js` | 19.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 56 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-farm.js` | 10.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-infra.js` | 8.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-petroleum.js` | 22.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 86 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-plants.js` | 3.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/64-locus-power.js` | 17.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 95 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-00-core.js` | 42.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 103 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-20-plants.js` | 2.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/65-abyss-30-housing.js` | 21.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-40-shops.js` | 31.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 63 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-50-civic.js` | 21.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-60-temple.js` | 7.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-70-palace.js` | 8.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-75-verge.js` | 22.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 95 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-80-military.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65-abyss-90-farm.js` | 12.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-locus-furnish.js` | 10.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (frame seed and spot), the frame stack round every ASSET build, the open rooms deferred to the interiors, the interior-set item per variant, night lamps, inspector entries, the linear colours at the flush; 2026-10-15: locfVetoed (the owner's edits log vetoes a moved or removed piece at draw); interior pieces registered (ixf_) |
 | `src/67-lo-trades.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table LO_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
 | `src/68-place.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

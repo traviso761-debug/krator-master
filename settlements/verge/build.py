@@ -133,6 +133,8 @@ def izv_bundle():
 
 # ---------------------------------------------------------------- the Yuni / Locus / Abyss bundle (YKIT)
 LOCUS = os.path.join(ROOT, 'settlements', 'locus', 'src')
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
+import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
 # Locus fragments cut into parts so they can be read (settlements/locus/build.py CONTINUES): YKIT takes the fragment
 # whole, its parts joined back on under the fragment's own name, so the bundle is the same text as before the cut.
 LOCUS_PARTS = {'59-civic.js': ['59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js']}
@@ -142,8 +144,8 @@ def ykit_files():
     names = ['05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js',
              '56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js']
     out = [os.path.join(LOCUS, f) for f in names]
-    out += sorted(glob.glob(os.path.join(LOCUS, '64-locus-*.js')))
-    out += sorted(glob.glob(os.path.join(LOCUS, '65-abyss-*.js')))
+    out += [locuskit.path(f) for f in locuskit.FILES]
+    out += [abysskit.path(f) for f in abysskit.FILES]
     out.append(os.path.join(LOCUS, '72-lights.js'))
     return out
 

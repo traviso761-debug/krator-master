@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "634dbfe625a3"
+  "37b2934850e3"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -204,75 +204,75 @@
   "bf68cad2a480"
  ],
  "64-locus-chapterhouse.js": [
-  "locus",
+  "kits/locus",
   "47e79381a102"
  ],
  "64-locus-core.js": [
-  "locus",
+  "kits/locus",
   "78a2b3e723de"
  ],
  "64-locus-dwellings.js": [
-  "locus",
+  "kits/locus",
   "619078277bbc"
  ],
  "64-locus-farm.js": [
-  "locus",
+  "kits/locus",
   "c07e2388e419"
  ],
  "64-locus-infra.js": [
-  "locus",
+  "kits/locus",
   "888fe2d1e510"
  ],
  "64-locus-petroleum.js": [
-  "locus",
+  "kits/locus",
   "610bea0a7963"
  ],
  "64-locus-plants.js": [
-  "locus",
+  "kits/locus",
   "fc0551ec404f"
  ],
  "64-locus-power.js": [
-  "locus",
+  "kits/locus",
   "594b17f6fb38"
  ],
  "65-abyss-00-core.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "d37734d5a5f2"
  ],
  "65-abyss-20-plants.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "ef9feb9249fe"
  ],
  "65-abyss-30-housing.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "535eff8c49ba"
  ],
  "65-abyss-40-shops.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "e45e77b4a1cd"
  ],
  "65-abyss-50-civic.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "f65f9d5dbfd5"
  ],
  "65-abyss-60-temple.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "7e06db023902"
  ],
  "65-abyss-70-palace.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "34a95b8ac0a6"
  ],
  "65-abyss-75-verge.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "da2ab5b03584"
  ],
  "65-abyss-80-military.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "2c449f12edfa"
  ],
  "65-abyss-90-farm.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "30123e08cdf7"
  ],
  "65r-reed-village.js": [
@@ -281,11 +281,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "fa979dc17387"
+  "78c571d4ed1f"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "00102fcc6041"
+  "67f84c44b230"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -393,7 +393,7 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "c80f77e6458f"
+  "41e0298ca3e2"
  ],
  "77-sim-6-govern.js": [
   "core/simulation",

@@ -268,6 +268,14 @@ leaves each settlement folder as its layout and page, building as it does today 
   (Xanadu's copies were byte-identical), so it reads no settlement. Xanadu reads the kit in place; Longsong takes `XAK` from
   the kit (its 39 files the same; only path labels and the header's path change). Xanadu's six outputs byte-identical;
   `XA_TRADES` passes as the kit's. Left with the matlib item: Xanadu's texture pack, which Longsong also reads. Next: (4) Locus.
+- **(4) Locus's two kits, done 2026-11-03:** the Locus kit (`64-locus-*`, 8 files) to `kits/locus` and the Eastern Abyssal kit
+  (`65-abyss-*`, 10 files) to `kits/eastern-abyssal`, each with its NOTES and KNOWN_ISSUES (Locus's `LOCUS-KIT-*` and
+  `ABYSS-KIT-*`). Locus reads them in place, Mungo by name (its fork of the Locus engine), Verge in `YKIT`. Locus's four pages
+  and Mungo's page byte-identical; Verge's differs only in the kits' path labels; Mungo's manifest records the files' new
+  origin. Locus's census (`LO_TRADES`) names the kits' buildings, so `tools/check_trades.py` looks there for it.
+  **Next, (4b): the Yuni engine and the Yuni base assets**, still in `settlements/locus/src` (`05-palette`, `10-core`, `20-stage`,
+  `45-kit`, `47-texture`, `50-structure`, `53-assets`, `56`-`59c`) and drawn through by both kits, Mungo and Verge's `YKIT`: an
+  engine extraction like step 2's Scyvoi engine (and `settlements/yuni`'s own copies of it to compare), not a plain move.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).
