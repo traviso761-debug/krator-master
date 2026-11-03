@@ -576,8 +576,8 @@
   },
   "r105:__tongue__": "xanadui",
   "r105:xanadui": {
-    "gloss": "alghaym (cloud-veil) + Bīruk (stream)",
-    "name": "Bīruk al-Ghaym"
+    "gloss": "Solṭ (salt) + Riwā (river)",
+    "name": "Solṭ Riwā"
   },
   "r106:__tongue__": "dalab",
   "r106:dalab": {
@@ -586,8 +586,8 @@
   },
   "r107:__tongue__": "xanadui",
   "r107:xanadui": {
-    "gloss": "aljadwal (terraced-rill) + Rīfar (river)",
-    "name": "Rīfar al-Jadwal"
+    "gloss": "Keb (cave) + Riwā (river)",
+    "name": "Keb Riwā"
   },
   "r108:__tongue__": "yusar",
   "r108:yusar": {
@@ -1311,8 +1311,8 @@
   },
   "r252:__tongue__": "xanadui",
   "r252:xanadui": {
-    "gloss": "aldhahab (gold) + Bīruk (stream)",
-    "name": "Bīruk al-Dhahab"
+    "gloss": "Balāk (black) + Siṭrīm (stream)",
+    "name": "Balāk Siṭrīm"
   },
   "r253:__tongue__": "argot",
   "r253:argot": {
@@ -1411,8 +1411,8 @@
   },
   "r272:__tongue__": "xanadui",
   "r272:xanadui": {
-    "gloss": "alyāqūt (ruby) + Bīruk (stream)",
-    "name": "Bīruk al-Yāqūt"
+    "gloss": "Qol (cold) + Siṭrīm (stream)",
+    "name": "Qol Siṭrīm"
   },
   "r273:__tongue__": "vothic",
   "r273:vothic": {
@@ -2136,8 +2136,8 @@
   },
   "r418:__tongue__": "xanadui",
   "r418:xanadui": {
-    "gloss": "alzumurrud (emerald) + Gūlī (wadi)",
-    "name": "Gūlī al-Zumurrud"
+    "gloss": "Satõ (stone) + Ḍrāi (wadi)",
+    "name": "Satõ Ḍrāi"
   },
   "r419:__tongue__": "hum",
   "r419:hum": {
@@ -2251,8 +2251,8 @@
   },
   "r442:__tongue__": "xanadui",
   "r442:xanadui": {
-    "gloss": "albihār (incense) + Rīfar (river)",
-    "name": "Rīfar al-Bihār"
+    "gloss": "Solṭ (salt) + Siṭrīm (stream)",
+    "name": "Solṭ Siṭrīm"
   },
   "r443:__tongue__": "hum",
   "r443:hum": {
@@ -2386,8 +2386,8 @@
   },
   "r469:__tongue__": "xanadui",
   "r469:xanadui": {
-    "gloss": "aljadwal (terraced-rill) + Gūlī (wadi)",
-    "name": "Gūlī al-Jadwal"
+    "gloss": "Sanõ (snow) + Ḍrāi (wadi)",
+    "name": "Sanõ Ḍrāi"
   },
   "r470:__tongue__": "yuni",
   "r470:yuni": {
@@ -2471,8 +2471,8 @@
   },
   "r488:__tongue__": "xanadui",
   "r488:xanadui": {
-    "gloss": "alṣafā (clarity) + Gūlī (wadi)",
-    "name": "Gūlī al-Ṣafā"
+    "gloss": "Sakāi (sky) + Ḍrāi (wadi)",
+    "name": "Sakāi Ḍrāi"
   },
   "r489:__tongue__": "hum",
   "r489:hum": {
@@ -2491,8 +2491,8 @@
   },
   "r492:__tongue__": "xanadui",
   "r492:xanadui": {
-    "gloss": "alward (rose-garden) + Gūlī (wadi)",
-    "name": "Gūlī al-Ward"
+    "gloss": "Bhon (bone) + Ḍrāi (wadi)",
+    "name": "Bhon Ḍrāi"
   },
   "r493:__tongue__": "argot",
   "r493:argot": {
@@ -2631,8 +2631,8 @@
   },
   "r521:__tongue__": "xanadui",
   "r521:xanadui": {
-    "gloss": "alnūr (light) + Gūlī (wadi)",
-    "name": "Gūlī al-Nūr"
+    "gloss": "Sã (sun) + Ḍrāi (wadi)",
+    "name": "Sã Ḍrāi"
   },
   "r522:__tongue__": "argot",
   "r522:argot": {
@@ -2686,8 +2686,8 @@
   },
   "r532:__tongue__": "xanadui",
   "r532:xanadui": {
-    "gloss": "alghaym (cloud-veil) + Gūlī (wadi)",
-    "name": "Gūlī al-Ghaym"
+    "gloss": "Silwā (silver) + Ḍrāi (wadi)",
+    "name": "Silwā Ḍrāi"
   },
   "r533:__tongue__": "hum",
   "r533:hum": {
@@ -2816,8 +2816,8 @@
   },
   "r559:__tongue__": "xanadui",
   "r559:xanadui": {
-    "gloss": "alkahf (cavern) + Gūlī (wadi)",
-    "name": "Gūlī al-Kahf"
+    "gloss": "Mũ (moon) + Ḍrāi (wadi)",
+    "name": "Mũ Ḍrāi"
   },
   "r560:__tongue__": "dasri",
   "r560:dasri": {
@@ -2871,8 +2871,8 @@
   },
   "r570:__tongue__": "xanadui",
   "r570:xanadui": {
-    "gloss": "alṣakhr (crag) + Gūlī (wadi)",
-    "name": "Gūlī al-Ṣakhr"
+    "gloss": "Balāk (black) + Ḍrāi (wadi)",
+    "name": "Balāk Ḍrāi"
   },
   "r571:__tongue__": "hum",
   "r571:hum": {
@@ -2946,8 +2946,8 @@
   },
   "r585:__tongue__": "xanadui",
   "r585:xanadui": {
-    "gloss": "alyāqūt (ruby) + Gūlī (wadi)",
-    "name": "Gūlī al-Yāqūt"
+    "gloss": "Sekriḍ (sacred) + Ḍrāi (wadi)",
+    "name": "Sekriḍ Ḍrāi"
   },
   "r586:__tongue__": "tungang",
   "r586:tungang": {
@@ -3086,8 +3086,8 @@
   },
   "r613:__tongue__": "xanadui",
   "r613:xanadui": {
-    "gloss": "albard (cold-snow) + Gūlī (wadi)",
-    "name": "Gūlī al-Bard"
+    "gloss": "Girīn (green) + Ḍrāi (wadi)",
+    "name": "Girīn Ḍrāi"
   },
   "r614:__tongue__": "izani",
   "r614:izani": {
@@ -3101,8 +3101,8 @@
   },
   "r616:__tongue__": "xanadui",
   "r616:xanadui": {
-    "gloss": "aljawhar (jewel) + Gūlī (wadi)",
-    "name": "Gūlī al-Jawhar"
+    "gloss": "Ḍhom (dome) + Ḍrāi (wadi)",
+    "name": "Ḍhom Ḍrāi"
   },
   "r617:__tongue__": "dasri",
   "r617:dasri": {
@@ -3221,8 +3221,8 @@
   },
   "r640:__tongue__": "xanadui",
   "r640:xanadui": {
-    "gloss": "albarad (hail-ice) + Gūlī (wadi)",
-    "name": "Gūlī al-Barad"
+    "gloss": "Wĩḍ (wind) + Ḍrāi (wadi)",
+    "name": "Wĩḍ Ḍrāi"
   },
   "r641:__tongue__": "yuni",
   "r641:yuni": {
@@ -3266,8 +3266,8 @@
   },
   "r649:__tongue__": "xanadui",
   "r649:xanadui": {
-    "gloss": "albihār (incense) + Gūlī (wadi)",
-    "name": "Gūlī al-Bihār"
+    "gloss": "Solṭ (salt) + Ḍrāi (wadi)",
+    "name": "Solṭ Ḍrāi"
   },
   "r650:__tongue__": "vothic",
   "r650:vothic": {
@@ -3376,8 +3376,8 @@
   },
   "r671:__tongue__": "xanadui",
   "r671:xanadui": {
-    "gloss": "allayl (night) + Gūlī (wadi)",
-    "name": "Gūlī al-Layl"
+    "gloss": "Ghol (gold) + Ḍrāi (wadi)",
+    "name": "Ghol Ḍrāi"
   },
   "r672:__tongue__": "yusar",
   "r672:yusar": {
@@ -3401,8 +3401,8 @@
   },
   "r676:__tongue__": "xanadui",
   "r676:xanadui": {
-    "gloss": "alrīḥ (mountain-wind) + Gūlī (wadi)",
-    "name": "Gūlī al-Rīḥ"
+    "gloss": "Kilāuḍ (cloud) + Ḍrāi (wadi)",
+    "name": "Kilāuḍ Ḍrāi"
   },
   "r678:__tongue__": "yuni",
   "r678:yuni": {
@@ -3426,18 +3426,18 @@
   },
   "r682:__tongue__": "xanadui",
   "r682:xanadui": {
-    "gloss": "Qubbah (pleasure-dome) + Gūlī (wadi)",
-    "name": "Gūlī Qubbah"
+    "gloss": "Sitār (star) + Ḍrāi (wadi)",
+    "name": "Sitār Ḍrāi"
   },
   "r683:__tongue__": "xanadui",
   "r683:xanadui": {
-    "gloss": "alfiḍḍah (silver) + Gūlī (wadi)",
-    "name": "Gūlī al-Fiḍḍah"
+    "gloss": "Āis (ice) + Ḍrāi (wadi)",
+    "name": "Āis Ḍrāi"
   },
   "r684:__tongue__": "xanadui",
   "r684:xanadui": {
-    "gloss": "aldhahab (gold) + Gūlī (wadi)",
-    "name": "Gūlī al-Dhahab"
+    "gloss": "Ḍhīp (deep) + Ḍrāi (wadi)",
+    "name": "Ḍhīp Ḍrāi"
   },
   "r685:__tongue__": "yuni",
   "r685:yuni": {
@@ -3571,8 +3571,8 @@
   },
   "r713:__tongue__": "xanadui",
   "r713:xanadui": {
-    "gloss": "al-Janūb (south) + Qubbah (pleasure-dome) + Gūlī (wadi)",
-    "name": "Gūlī Qubbah al-Janūb"
+    "gloss": "Āirã (iron) + Ḍrāi (wadi)",
+    "name": "Āirã Ḍrāi"
   },
   "r714:__tongue__": "eternian",
   "r714:eternian": {
@@ -3771,8 +3771,8 @@
   },
   "r753:__tongue__": "xanadui",
   "r753:xanadui": {
-    "gloss": "al-Ṣaghīr (little) + albard (cold-snow) + Gūlī (wadi)",
-    "name": "Gūlī al-Bard al-ṣaghīr"
+    "gloss": "Barāiṭ (bright) + Ḍrāi (wadi)",
+    "name": "Barāiṭ Ḍrāi"
   },
   "r754:__tongue__": "tungang",
   "r754:tungang": {
@@ -3856,8 +3856,8 @@
   },
   "r770:__tongue__": "xanadui",
   "r770:xanadui": {
-    "gloss": "al-Kabīr (great) + allayl (night) + Gūlī (wadi)",
-    "name": "Gūlī al-Layl al-kabīr"
+    "gloss": "Kilīā (clear) + Ḍrāi (wadi)",
+    "name": "Kilīā Ḍrāi"
   },
   "r771:__tongue__": "hum",
   "r771:hum": {
@@ -3931,8 +3931,8 @@
   },
   "r786:__tongue__": "xanadui",
   "r786:xanadui": {
-    "gloss": "alsamā (sky-mirror) + Gūlī (wadi)",
-    "name": "Gūlī al-Samā"
+    "gloss": "Jeḍ (jade) + Ḍrāi (wadi)",
+    "name": "Jeḍ Ḍrāi"
   },
   "r787:__tongue__": "izani",
   "r787:izani": {
@@ -4021,8 +4021,8 @@
   },
   "r804:__tongue__": "xanadui",
   "r804:xanadui": {
-    "gloss": "al-Aʿlā (upper) + alzumurrud (emerald) + Gūlī (wadi)",
-    "name": "Gūlī al-Zumurrud al-aʿlā"
+    "gloss": "Wāiṭ (white) + Ḍrāi (wadi)",
+    "name": "Wāiṭ Ḍrāi"
   },
   "r805:__tongue__": "dasri",
   "r805:dasri": {
@@ -4181,13 +4181,13 @@
   },
   "r836:__tongue__": "xanadui",
   "r836:xanadui": {
-    "gloss": "alsalsabīl (nectar-spring) + Gūlī (wadi)",
-    "name": "Gūlī al-Salsabīl"
+    "gloss": "Reḍ (red) + Ḍrāi (wadi)",
+    "name": "Reḍ Ḍrāi"
   },
   "r837:__tongue__": "xanadui",
   "r837:xanadui": {
-    "gloss": "al-Ṣaghīr (little) + aljadwal (terraced-rill) + Gūlī (wadi)",
-    "name": "Gūlī al-Jadwal al-ṣaghīr"
+    "gloss": "Keb (cave) + Ḍrāi (wadi)",
+    "name": "Keb Ḍrāi"
   },
   "r838:__tongue__": "hum",
   "r838:hum": {

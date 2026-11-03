@@ -10,7 +10,7 @@
  const D=RES_GEO.data(),W=D.grid.w,H=D.grid.h,PM=D.grid.px_m,su=(W-1)/(D.grid.fullW-1),sv=(H-1)/(D.grid.fullH-1);
  const COL={iron:'#b5532a',copper:'#2fb08c',gold:'#e8b830',tin:'#8a96a8',silver:'#dfe3ea',lead:'#666','rare-earth':'#c15fb0',coal:'#1c1c1c',
   sulfur:'#f0e030',saltpeter:'#f4f1e8',oil:'#5a4430',gypsum:'#cfc4ae',halite:'#ffffff',potash:'#d8604e',alkali:'#f0b48a',stone:'#999',clay:'#b07a50',wood:'#3a8a3a',water:'#4a8ad8'};
- const PROV=[[46,70,110],[176,160,112],[128,128,138],[170,62,40],[236,234,226],[60,140,100]];
+ const PROV=[[46,70,110],[176,160,112],[128,128,138],[170,62,40],[236,234,226],[60,140,100],[110,186,196]];
  const LG=typeof RES_LEDGERDATA!=='undefined'?RES_LEDGERDATA:null;
  let built=false,fam='all',win={px:692,py:395,km:120},stats=null,cv,zv,info,panel,keyBox;
  const el=(t,css,par,txt)=>{const e=document.createElement(t);if(css)e.style.cssText=css;if(txt!=null)e.textContent=txt;if(par)par.appendChild(e);return e;};

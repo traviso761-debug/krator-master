@@ -9,7 +9,8 @@
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x5a6a4a)});}
 // the river through the hills is a lowland river (the old ribbon had no rapids): foam only where it really steepens (the flow's own rapids band, 2026-10-21; it was a page-wide preset)
 // the surfaces' records are 86-host-fields.js's: the flora and the ground read the water's own fields, so the records stand before the build
-const SEA_DRAW=WATER.draw(SEA_WATER,{renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,surf:false,
+const SEA_DRAW=WATER.draw(SEA_WATER,{renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,surf:false,breakers:false,   /* a lake: no shore-grid breakers either (the owner, 2026-11-02: the contour rings round islands) */
+ 
  shallow:lin(SEA_SHALLOW.clone().lerp(SEA_MID,.3)),deep:lin(SEA_DEEP.clone().multiplyScalar(.75))});
 SEA_DRAW.mesh.userData.inspectLabel='The lake';
 /* the river's ribbon fades out where the gorge's own ribbon carries it (keep, core/water 2026-10-27): the two lay 5 cm apart along the gorge and z-fought (the audit's overlap); and it fades in over its first 270 m at the map's upstream edge, where it began square-cut over a shallow trench (flow-graze) */

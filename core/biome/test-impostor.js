@@ -78,6 +78,19 @@ ok(ticks.length === 1, 'the lights are read each frame by one tick');
   ok(n0 === 0 && !r.ready && I.pending === 1 && ticks.length === before + 1, 'a species whose map has not decoded waits (a tick retries it)');
   ticks[ticks.length - 1](); ok(!r.ready, 'still no image: still waiting (the negative)');
   tex.image = { width: 4, height: 4, complete: true }; ticks[ticks.length - 1](); ok(r.ready && I.pending === 0, 'the image in: the next frame bakes it'); }
+// the wait counts visible time only (2026-11-02): a page left in a background tab for longer than the wait bakes when it is shown, with no error
+{ const D = vm.runInContext('Date', ctx), now0 = D.now; let clock = 1e6; D.now = () => clock; ctx.document = { hidden: true };
+  const tex = new THREE.Texture(), cardMat = new THREE.MeshLambertMaterial({ map: tex, alphaTest: .4 }); BIO.kit('hidden');
+  BIO.def('card', new THREE.PlaneGeometry(1, 1), cardMat); const r = BIO.impostor('hidden', () => BIO.put('card', [0, 1, 0], null, 1, null)); BIO.kit('');
+  const b1 = ticks.length; BIO.bakeImpostors(renderer, { wait: 2 }); const t = ticks[b1];
+  clock += 600000; t(); ok(!r.ready && errs.length === 0, 'ten minutes hidden: not late, still waiting, no error');
+  ctx.document.hidden = false; tex.image = { width: 4, height: 4, complete: true }; clock += 16; t();
+  ok(r.ready && errs.length === 0, 'shown with its map in: baked on the next frame, no error');
+  const tex2 = new THREE.Texture(), m2 = new THREE.MeshLambertMaterial({ map: tex2, alphaTest: .4 }); BIO.kit('never');
+  BIO.def('card', new THREE.PlaneGeometry(1, 1), m2); const r2 = BIO.impostor('never', () => BIO.put('card', [0, 1, 0], null, 1, null)); BIO.kit('');
+  const b2 = ticks.length; BIO.bakeImpostors(renderer, { wait: 2 }); const t2 = ticks[b2]; for (let i = 0; i < 3; i++) { clock += 1000; t2(); }
+  ok(r2.ready && /never/.test(errs[0] || ''), 'a map that never arrives in visible time is baked anyway and named (the negative)'); errs.length = 0;
+  D.now = now0; delete ctx.document; }
 ok(errs.length === 0, 'no errors (' + errs.join('; ') + ')');
 
 console.log(fails ? fails + ' FAILED' : 'all passed'); process.exit(fails ? 1 : 0);

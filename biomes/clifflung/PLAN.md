@@ -418,16 +418,62 @@ Talovolci are the Crag Men.
   the ring's sphincter joint makes a shelf; a climb of three kilometres takes a day, in the warm breath, with water at
   every rest. A hamlet keeps its stair as a Gaulish people keeps a bridge: a champion's portion goes to whoever climbs it
   fastest at the summer feast.
-- **The wells.** A crest hamlet stands at a mouth and takes its name from the lung (*-anatlon*, "the breath", *proposed*
-  from the Gaulish *anatia*, breath: so *Veranatlon*, "the great breath"); its terraces run below the collar; its learned
-  order reads the year's weather off the lung's breath hours and the ring bands' colour.
+- **The wells.** A crest hamlet stands at a mouth and takes its name from the lung: the hamlet at *Marios Bređos*, the
+  great breath, is *Mariobređuelos*, "great-breath-well" (the words below); its terraces run below the collar; its
+  learned order reads the year's weather off the lung's breath hours and the ring bands' colour.
 - **The mirror lung.** A left-handed lung is an omen, as a mirror-handed tree is (`LORE.md:863-865`). *Proposed*: no stair
-  is ever lashed to one, no hamlet drinks from one; its mouth is a *nemeton*, a sacred place, where the learned order
+  is ever lashed to one, no hamlet drinks from one; its mouth is a *nemetos*, a sacred grove (the model's own word), where the learned order
   leaves the dead to the mouth-maw. The kit places one mirror lung in about forty (the shighlands' `MIRROR_EVERY` rule,
   scaled), and the host's preset finds it.
 - **The road the raiders took.** Dalab's skinchangers came up the lungs disguised as climbers (`LORE.md:877-879`), and the
   Talovolci have watched the mouths since: a watch-hut at each great mouth, a horn, and a cut stair at the first sign.
   The Izani legion recruited at the foot of the stairs; the loanwords came back up them.
+
+
+### The words (the owner's answer of 2026-11-03: "make up some words from Krator tongues")
+
+Coined by the tongue's own rules (`lore/tongues-of-krator.html`, the Talovolci tab, on the rebuild branch): English roots
+run through the Gaulish changes (nouns take *-os* one, *-oi* many, *-a* for some; *f* > *v*; *w* > *u*; the old *gh* of
+*high*, *night* > *x*; *th* > *đ*, the tau gallicum; *sh*, *j*, *ch* > *s*, *g*, *c*; the article dropped), compounded the
+Gaulish way (*ver-* over, great; *-dunon* a fort; *-magos* a field; the model's prefixes *Uxo-* upper, *Ande-* lower,
+*Marios* great, *Levto-* left, below), and cut in stroke-groups along a stone's edge between two spirals turning the
+forest's way. The model already names this country in the tongue (`tools/scale-model/smodel/river_names.py`: *Vindos
+Rivros* the white-mist river, *Nemetos Brucos* the sacred-grove stream, *Clodos* the cloud sea, *Magos* the paramo plain,
+*Dubnos* the deep chasm, *Gilva* a ravine), and the new words keep to that house style. Working names in the kit's tables
+stay English; these are what the Talovolci say.
+
+| Talovolci | Gloss | How it is built |
+|---|---|---|
+| **bređos** (pl. *bređoi*) | a breath; the breath | English *breath*: *th* > *đ*, *-os* |
+| **Clivobređos** | the cliff lung (the whole colony) | *cliff* > *clivos* (*f* > *v*) + *bređos*: "cliff-breath". In the country simply *bređos*, as the river is simply *rivros* |
+| **ringos** (pl. *ringoi*) | a lung ring, the colony's individual | English *ring* with *-os*; *Uxoringoi*, the upper rings; *Anderingoi*, the lower |
+| **mouđos** (pl. *mouđoi*) | a mouth of a lung | English *mouth*: *th* > *đ* |
+| **Andemouđos** | the intake bell at the foot | the model's *Ande-* (lower) + *mouđos*: "lower mouth" |
+| **Uxomouđos** | the mouth on the crest | *Uxo-* (upper) + *mouđos*: "upper mouth"; *Mariomouđos*, a great mouth, the one a hamlet stands at |
+| **Verbređos** | the noon breath, the roaring draw | *ver-* (over, great) + *bređos*: "the over-breath" |
+| **Nixtobređos** | the cold breath, the winter night's reversal at the bells | *night* > *nixtos* (*gh* > *x*) + *bređos*: "night-breath" |
+| **Clivodeuos** | the condensate, the lung's water | *cliff* > *clivo-* + *dew* > *deuos* (*w* > *u*): "cliff-dew"; what the collar weeps |
+| **uelos** (pl. *ueloi*) | a well: a mouth's pool and its hamlet's water | English *well*: *w* > *u* |
+| **-uelos** | the crest hamlets' name ending | a lung's name + *-uelos*: *Mariobređuelos*, "great-breath-well", the hamlet at *Marios Bređos*; beside *-dunon* (a fort) and *-magos* (a field) |
+| **ladra** (pl. *ladroi*) | a ladder, a stair | English *ladder* with *-a* (as *uatera*, water): the lung-stair is a *bređoladra* |
+| **Levtobređos** | the mirror lung, the left-handed one | *left* > *levtos* (*f* > *v*) + *bređos*: "left-breath"; never climbed, never drunk from |
+| **nemetos** | a sacred grove, a sacred place | the model's own word (*Nemetos Brucos*); the mirror lung's mouth is a **Levtonemetos**, "the left-grove", where the dead are left to the maw |
+| **Scinropos** | the lung-skin rope | *skin* > *scin-* (as in the tongue's *Scincangioi*, the skinchangers) + *rope* > *ropos*: the rope that does not rot |
+| **Combocacos** | comb cake, the throat combs' catch pressed | *comb* > *combos* + *cake* > *cacos* (*k* written *c*): "comb-cake" |
+| **combos** | a throat comb | English *comb* with *-os* |
+| **huscos** (pl. *huscoi*) | a husk, a dead lung: the dry road | English *husk* with *-os* |
+| **Gunglomagos** | the fall-out lawn, the jungle's seedlings on the paramo | *jungle* > *gunglos* (*j* > *g*) + *-magos* (a field): "jungle-field" |
+| **Deuocoilos** | the dew coil | *dew* > *deuo-* + *coil* > *coilos*: "dew-coil" |
+| **Mouđoclodos** | the cap cloud standing over a mouth at noon | *mouđos* + *clodos* (the model's cloud): "mouth-cloud" |
+| **Ringocraulos** | the ring-crawler | *ringos* + *crawler* > *craulos* (*w* > *u*) |
+| **Mouđomauos** | the mouth-maw | *mouđos* + *maw* > *mauos* (*w* > *u*) |
+| **Bređoridos** | the flue-rider | *bređos* + *rider* > *ridos* |
+| **bandos** (pl. *bandoi*) | a pressure band, the ring's birth colour | English *band* with *-os*: the Talovolci count a lung's *bandoi* as a traveller counts contours |
+
+The owner's *-dunon* and *-magos* stand; the plan's earlier *-anatlon* (a Gaulish loan, not a word the tongue's rules make)
+is withdrawn for *-uelos*, and *nemeton* is corrected to the model's *nemetos*. *Proposed* for a stair's foot-post, cut
+between its two spirals: **SUB MOUĐU CLODOS, VER MOUĐU SKIOS**, "under the mouth the cloud, over the mouth the sky", on the
+pattern of the tab's own stone ("SUB CLODU SPIRLA, VER CLODU SKIOS").
 
 ## 11. Stations
 
@@ -460,7 +506,7 @@ the flue-riders together; the weather's wet and the season set its amplitude.
    (the camera can follow: the bore is a `KCAVERN` tube).
 4. **The Husks** (`-husks`, optional, px 850,1038: the face east of the stations where a landslide took the lungs): a field
    of dead lungs lying down the talus in rings, pale and banded, the road through them, the first young lungs growing
-   back from the foot, a mirror lung among them with the Talovolci's *nemeton* at its mouth.
+   back from the foot, a mirror lung among them with the Talovolci's *Levtonemetos* at its mouth.
 
 ## 12. How it reads, and what it costs
 
@@ -655,9 +701,10 @@ talovolci are the same as the 'crag men'". Taken question by question:
    1, 7).
 3. **The site**: **stands.** The southern Inner Wall between Voth and Pylon as a band kit on the `s highlands` polygon, no
    polygon of its own.
-4. **The Talovolci's stairs, wells and omen**: **approved as proposed** (section 10). The names (*-anatlon*, *nemeton*) are
-   still the plan's Gaulish guesses: **open**, for the owner's tongue sheet (`lore/tongues-of-krator.html`, the Talovolci
-   tab).
+4. **The Talovolci's stairs, wells and omen**: **approved as proposed** (section 10). The names: the owner (2026-11-03)
+   asked for words made up from Krator's tongues, so section 10, "The words", coins them by the Talovolci tab's rules
+   (*Clivobređos* the lung, *ringos*, *mouđos*, *uelos*, *ladra*, *Levtobređos*, *nemetos*, *Scinropos*, *Combocacos* and
+   the rest); *-anatlon* is withdrawn, *nemeton* corrected to the model's *nemetos*.
 5. **Who else knows**: **everyone.** The lungs are widely known as the convenient way up the Wall (section 9).
 6. **The yield**: **stands** (4-20 m3 a day a lung).
 7. **The mote lamp**: **struck.** Nothing in the biome glows (sections 7, 11, 12).
@@ -669,5 +716,6 @@ talovolci are the same as the 'crag men'". Taken question by question:
 Lore facts applied: **Spirladunon** is the current name of the place the lore called Daridel (the model's marker at 800,1017
 is right); the **Talovolci are the Crag Men** (the old polygon name is theirs).
 
-Still open: the Talovolci's words for the lung, the ring, the stair, the well and the mirror lung (4); the kit's own name;
-whether the next model update's scarp takes the whole southern stretch (px 745-930) or the stations' middle first.
+Still open: the kit's own name (the Talovolci's *Clivobređos* suggests `clivobredos` or `bredos` if the owner wants the
+tongue's word for the folder); whether the next model update's scarp takes the whole southern stretch (px 745-930) or
+the stations' middle first.

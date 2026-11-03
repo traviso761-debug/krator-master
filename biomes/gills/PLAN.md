@@ -39,7 +39,11 @@ as a valve, is plausible and stands as written.
 **Third round, 2026-11-02:** (13) **the lineage rule is canon**: "the native body is a host that takes a partner; the
 partner decides whether it lives on light or on redox" (section 2; a sentence for `LORE.md` section 8 is proposed there).
 
-Status: **a proposal for the owner** on what is not settled above: the Xanadui words and the other south-eastern vents.
+**Fourth round, 2026-11-03** (the owner: "make up some words from Krator tongues"): (14) **the Xanadui words are coined**
+in section 9a, on the tongue's rules (`lore/tongues-of-krator.html`, the Xanadui sheet) and the model's older Xanadui
+river names (Reḍ Riwā, Wāiṭ Ḍrāi, Solṭ Siṭrīm, Bhon Ḍrāi).
+
+Status: **a proposal for the owner** only on the other south-eastern vents (section 17).
 Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is
 marked *proposed* with its wording. Working names throughout until the Xanadui words come.
 
@@ -474,6 +478,38 @@ the breath and the thing in it.
   Talovolci's sacred mountain's one living flank, in sight of the Vale; the Xanadui climb to them for the red salt;
   Erewhon is 198 km. Hazard to both: the mountains are live.
 
+## 9a. The Xanadui words (the owner's answer, 2026-11-03)
+
+Coined on the Xanadui sheet of `lore/tongues-of-krator.html` (the owner, Oct 2026): English worn for a thousand years to
+sound like Nepali, Tibetan or Persian: English **t d** become retroflex **ṭ ḍ**, **f** becomes **ph**, stops take breath
+(**bh gh**), **c/k** before a back vowel goes uvular **q**, long vowels are marked, a nasal vowel takes the tilde, **st-**
+breaks up (*stream* > *Siṭrīm*); the verb goes last, prepositions are suffixes (*-āl* to, *-phrām* from, *-bi* by, *-ān*
+on), and every statement carries its evidence (*-sin* seen, *-se* said). The model's older Xanadui river names are the
+house style (`river_names.py` 4.21-4.23 layer: *Reḍ Riwā* red river, *Wāiṭ Ḍrāi* white dry-valley, *Solṭ Siṭrīm* salt
+stream, *Bhon Ḍrāi* bone dry-valley, *Qol Ḍrāi* cold dry-valley, *Sakāi Ḍrāi* sky dry-valley). The 5.1 river layer's
+*Rīfar al-…* / *Gūlī al-…* names are a different, Arabic-flavoured convention (`river-names-5.1.md`); these words follow
+the owner's sheet. Script: the prayer-wheel syllabary, one block a syllable, the horn for ṭ ḍ, the tail for bh gh, the kill
+stroke on a final consonant.
+
+| Word | Gloss | Built |
+|---|---|---|
+| **Gīl** | a gill: one breathing crack | English *gill*, the vowel lengthened as in *Siṭrīm*; a whole swarm is **Gīl-dem** only in Dalab's low tongue (its plural); Xanadui counts them: *tū Gīl* |
+| **Reḍ Gīl**, **Wāiṭ Gīl** | the Red Gills (the Godthrone's), the White Gills (the twins') | *red*, *white* as the model already has them in *Reḍ Riwā* and *Wāiṭ Ḍrāi*; adjective first, as there |
+| **Bhlo** | the out-breath (the hours the gills exhale) | English *blow*, breathed initial, the diphthong flattened to **o** (*dome* > *Ḍhom*): *Gīl-bi Bhlo-dā-sin*, "the gill blew; I saw it" |
+| **Suq** | the in-breath (the draw) | English *suck*, the final **k** gone uvular after a back vowel: *Suq-ān na-sṭãḍ*, "do not stand on the suck" (the caravaneers' rule at a throat) |
+| **Noḍ** | the giant's daily nod, so the breath's clock; **Noḍ-āl** "at the nod" is the hour of the Bhlo | English *nod*, retroflex **ḍ** |
+| **Phlū** | a breath pipe (the living chimney) | English *flue*, **f** > **ph** as the sheet gives; a dead pipe is **Bhon Phlū**, bone flue (*Bhon* as in *Bhon Ḍrāi*) |
+| **Phlū-phīlḍ** | a pipe field, the dead stand round a moved gill | *flue* + *field* (**f** > **ph**, **d** > **ḍ**, the long **ī**) |
+| **Lãg Solṭ** | lung salt, the medicine from a charged collar | English *lung* with the nasal vowel the sheet gives for **-ng**, *salt* as in *Solṭ Siṭrīm*; the dangerous one is **Bhlo-Solṭ**, the salt cut at the out-breath |
+| **Qolar** | the collar, the living lining with its oxide crust | English *collar*, **c** > uvular **q** before the back vowel, the final **r** kept |
+| **Bhlo-wāṭar** | the breath-water, the out-breath's mist and the salt cups' drink | *blow* + *water* (**t** > **ṭ**) |
+| **Thin Yīr** | the thin years, the band in the pipes the Monks read as the Cataclysm | *thin* (dental **th**), *year* lengthened; the Monks' Oidong-born say it with the Xanadui dental, their elders in English |
+| **Ālph-bi Bhlo** | "Alph's breath": the fountain's daily burst, forced by the Bhlo | *Ālph* (the model's name, r070) + the agent suffix *-bi* + *Bhlo*: "the blow by Alph" |
+| **Qãḍal** | a candle: a throat that burns | English *candle*, **c** > **q**, the nasal vowel before the lost **n**, **d** > **ḍ** |
+| **Sar-Gīl** | the honorific the Xanadui use of the Red Gills on the sacred mountain | the sheet's *Sar-* honorific (as *Sar-Sulṭān*) on *Gīl* |
+
+The Dasrī (the Eastern Nomads') and the Monks' own words are not coined: the owner said Xanadui.
+
 ## 10. The pipes as a calendar (canon, the owner, 2026-11-02)
 
 A breath pipe lays one couplet a day, 0.2-0.4 mm; a wet season leaves a thicker pale ring once a year; so a pipe's
@@ -754,9 +790,9 @@ Settled 2026-11-02 (the head of this file): the mechanism, the lineage rule, the
 age, the White Gills' extent, the calendar, Alph's pulse, the throat lamp, the fuel and the Geomancers, the Monks' stop,
 the nursery dropped, the tide's size. Still open:
 
-1. **The Xanadui words** for the gills, the breath, the pipes, the two countries and the lung salt (the owner: the names
-   are Xanadui); the shared kit keeps `gills` as its folder name unless the owner says otherwise.
-2. **Other gills in the south-east**: the owner's note that the Geomancers work "the various tectonic / volcanic
+Coined 2026-11-03 (section 9a): the Xanadui words. The shared kit keeps `gills` as its folder name.
+
+1. **Other gills in the south-east**: the owner's note that the Geomancers work "the various tectonic / volcanic
    resources of the southeast map quadrant" suggests the Gills may breathe at other vents of that quadrant (the Catch's
    twin stratovolcanoes are two; the vents at the Catch's south-west notch and Yuni's own geothermal Vault are others).
    Does the lineage reach them, or only the Godthrone and the twins?

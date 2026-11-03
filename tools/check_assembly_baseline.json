@@ -130,5 +130,18 @@
  "biomes/nwlowlands/dist/nwlowlands.html: MISSING MG.amK": 1,
  "biomes/nwlowlands/dist/nwlowlands.html: MISSING MG.bindFields": 1,
  "biomes/nwlowlands/dist/nwlowlands.html: MISSING MG.checks": 1,
- "biomes/nwlowlands/dist/nwlowlands.html: MISSING MG.savK": 1
+ "biomes/nwlowlands/dist/nwlowlands.html: MISSING MG.savK": 1,
+ "biomes/ebadlands/dist/ebadlands-canyons.html: MISSING BIO.leafOn": 1,
+ "biomes/ebadlands/dist/ebadlands-canyons.html: MISSING BIO.leafQ": 1,
+ "biomes/ebadlands/dist/ebadlands-canyons.html: MISSING STATION.slotZ": 1,
+ "biomes/ebadlands/dist/ebadlands-montane.html: MISSING BIO.leafOn": 1,
+ "biomes/ebadlands/dist/ebadlands-montane.html: MISSING BIO.leafQ": 1,
+ "biomes/ebadlands/dist/ebadlands-montane.html: MISSING STATION.slotZ": 1,
+ "biomes/ebadlands/dist/ebadlands-tundra.html: MISSING BIO.leafOn": 1,
+ "biomes/ebadlands/dist/ebadlands-tundra.html: MISSING BIO.leafQ": 1,
+ "biomes/ebadlands/dist/ebadlands-tundra.html: MISSING STATION.slotZ": 1,
+ "biomes/ebadlands/dist/ebadlands-waste.html: MISSING BIO.leafOn": 1,
+ "biomes/ebadlands/dist/ebadlands-waste.html: MISSING BIO.leafQ": 1,
+ "biomes/ebadlands/dist/ebadlands.html: MISSING BIO.leafOn": 1,
+ "biomes/ebadlands/dist/ebadlands.html: MISSING BIO.leafQ": 1
 }
