@@ -488,7 +488,7 @@ spindles' silver, the steam, the snow line's edge, the hazards and the animals t
    the lake in the older crater beside it with the Talovolci's walled fields, the Godthrone's mass up the valley. Set on
    a winter night, the one season its engine earns; the noon preset shows the field shut and silver in a warm valley,
    the only hearth that is often idle.
-6. **The Stills** (geyser `--station stills`, `dist/geyser-stills.html`; the Steampits showcase's ground, -1,440 m, 1.9
+6. **The Stills** (**built 2026-11-03** in geyser's rebuild turn: `src/57-biome-hearths-stills.js` and the Stills' records and parts in `50`; what was built and the look decisions: `biomes/geyser/PLAN-STATIONS.md`, "Station 6 of the Hearths") (geyser `--station stills`, `dist/geyser-stills.html`; the Steampits showcase's ground, -1,440 m, 1.9
    atm, +33 degC): the geyser basin as the kit draws it (the sinter cones, the prismatic springs, the terraces to the sea,
    the dead forest in silica) with the still trees ringing every boiling spring and cone at the spray line, their black
    sails all across the sea wind and edge-on to the sun, glass stills by the dead springs, sail cups down the run-off,

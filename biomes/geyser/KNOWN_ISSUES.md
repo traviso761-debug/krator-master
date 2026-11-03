@@ -91,3 +91,18 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       (13:00 and 22:00: the old SW sun is out of reach at the equinox here). Draw calls at the default camera (verify.py
       --assert, GPU): 105 before, 103 after.
 
+
+## The final rebuild (pair 7, 2026-11-03; PLAN-STATIONS.md, "Core adoption")
+
+- [x] **The page died at render when rebuilt from the merged sources** (`W.wetChunk`: `WATER.PRESETS.shore` undefined): `build.py` lacked
+  `core/water/21-core-water-shore.js`. Listed.
+- [x] **A shade half that sorts before its data half** throws before the error panel is wired, and the page is blank with no message:
+  `core/terrain/host/35b-core-lamina-shade.js` sorts before `35b-core-lamina.js` (`-` before `.`), so the build keys it `35c-core-lamina-shade.js`.
+  Worth a check in `tools/check_assembly.py` for every page (not done: shared).
+- [ ] **KSHADOW's cost not measured** (no GPU in the cloud session). Software GL cannot time it. The coordinator's GPU run measures `?shadow=0`
+  against the default at "The geyser basin" and "From above"; if it is unaffordable, set it off by default here.
+- [ ] **The attach audit is close to its limit**: 0.98% (limit 1%) after the card fixes, 0.90% before. The heath (`small`) took stems from
+  `check_cells.py --fix` and 6 of its 533 cards now float (they were 0); the bloom (51 of 853) and the kettle lilies on the creek's mouth (6 of 7, on
+  the water: `free` wants setting on `lily`) are the rest. Not traced in this turn.
+- [ ] **No look judged on a GPU**: KGROUND's layers (hex-tiled and height-blended against the old two-read sampler), the curtains' lamina bands,
+  the plume, the far field's canopy colour and the Stills. Software GL shots only (the turn's notes say which).
