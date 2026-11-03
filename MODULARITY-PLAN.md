@@ -330,7 +330,8 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
 - The chain's re-vendors since that session, done 2026-11-03: Xanadu's `69-mat-salvage.js` and Reed Lake's `69-mat-salvage.js`,
   `71-hl-mat.js` and `71b-hl-motif.js` from Highlands (upstream's `patchOpening`, paving and frieze materials, folk murals).
   Their pages wait for the all-builds rebuild: they were already behind their sources (`core/water`, `core/tags`, the
-  library packs) before it. Iziz's seven biome copies (`--vendor-bio`): in progress.
+  library packs) before it. Iziz's seven biome copies (`--vendor-bio`), with `core/biome/36-core-walker.js` the fauna now
+  needs: done, verified (`settlements/iziz/KNOWN_ISSUES.md`). The Ancients chain is quiet: step 4 can start.
 - Settlements that vendor a biome read it by path: Dalab (swlowlands), Shade (sedesert), and Iziz's and Ys's old
   hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
 
