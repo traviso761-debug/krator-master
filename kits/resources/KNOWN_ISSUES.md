@@ -24,7 +24,7 @@
       6a), and the lime kilns burn the spray coral to lime. They are crops in `kits/crops` (`kelp-ash`, `coral-lime`), not
       nodes; when the Catch adds its potash and alkali-salt nodes, a works rule that takes either a node or the crop would
       let Farside's glassmakers draw on both.
-- [ ] **The fairness audit's findings (2026-10-26, `data/ledger.json` `audit`):** 21. Most are inland towns with no salt
+- [ ] **The fairness audit's findings (2026-10-26, `data/ledger.json` `audit`):** 21; 25 since the 5.1 rebake and the ores on the new rocks (2026-11-03, `GEOLOGY.md`). "Yuni Emirate: Spindle Fan" shows twice: the map has two polities named Yuni Emirate (for the owner). The marble quarry's library set reads flat and pale at a distance (`rock.marble012`, full colour): a tint or a veinier set would help. Most are inland towns with no salt
       within a day's travel (30 km): the Lizardmen's five towns, four of Xanadu's, four of the Dalab's, Wildcat (Fellgangs);
       Jimjam's Serai has no stone in reach; the polities with no settlement (Coyote Kingdom, Painted Men, Tungang Union, Yeti
       Kingdom, Lesser Throne) are audited at their centroid and miss wood, water or salt there; Region 87's eleven towns reach
