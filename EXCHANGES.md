@@ -512,8 +512,9 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | main→ebadlands | `mesquite` | Mesquite | animals (pods eaten, seed dropped) | read in place | ebadlands' lowest BSh washes, the badlands' edge | a semiarid riparian shrub; the river lines run across the border |
 | ebadlands→main | `juniper` | Utah juniper | birds (berries) | cousin: lower and broader in the thicker air, with a redder bark | sedesert's mesa tops and the BSk uplands (1.4-2.9 km) | the desert's mesas are badlands ground; juniper is the mesa tree |
 
-**ebadlands' turn (2026-11-02, pair 5).** Taken: main→ebadlands `mesquite`, read in place (as it is) on station 1 on the wadis' banks and fans
-(`biomes/ebadlands/src/87-host-kin.js`, `stations/waste/station.json`). **Owed:** Bowl→ebadlands `tamarisk` (the Bowl's tamarisk builder is
+**ebadlands' turn (2026-11-02, pair 5).** Wired but **not read** yet: main→ebadlands `mesquite` (`biomes/ebadlands/src/87-host-kin.js` grows it on station 1's wadis once `stations/waste/station.json`
+reads sedesert again: sedesert's builder jitters the mesquite's crowns up to ~2.8 m off their limbs, and the attach audit failed station 1 at 9.5%; sedesert's
+next turn holds them, BIO.holdTo). **Owed:** Bowl→ebadlands `tamarisk` (the Bowl's tamarisk builder is
 private to `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl's next turn exports it, then ebadlands grows it on the wadis'
 bars); ebadlands→main `juniper` and ebadlands→Bowl `cottonwood` (sedesert's pages, its next turn: `build.py` NEIGH and `87-host-kin.js` read
 ebadlands' species and trees in place; neither ebadlands species key nor index changed). No ebadlands species key or index changed.

@@ -41,7 +41,7 @@ A station is `python3 build.py --station <name>`: `stations/<name>/44w-host-land
 
 | Station | Page | Site on 5.1 (old canvas) | The model there | What the page draws |
 |---|---|---|---|---|
-| 1 the hot waste | `dist/ebadlands-waste.html` | px 1352,844 (1080,514) | BSh, 1,101 m, 392 mm, +23 (34/11), 2.4 km relief | the sulphur flats (vents, five acid pools, brimstone reeds, stilt pods), the painted badlands cut into dendritic gullies (badland recipe), two wadis to a playa (mud polygons), the reg (desert pavement), the first step of the staircase (230 m, canyon recipe) with its talus, domes and a slot canyon; rope araucarias in the slot, mesquite on the washes (the kin) |
+| 1 the hot waste | `dist/ebadlands-waste.html` | px 1352,844 (1080,514) | BSh, 1,101 m, 392 mm, +23 (34/11), 2.4 km relief | the sulphur flats (vents, five acid pools, brimstone reeds, stilt pods), the painted badlands cut into dendritic gullies (badland recipe), two wadis to a playa (mud polygons), the reg (desert pavement), the first step of the staircase (230 m, canyon recipe) with its talus, domes and a slot canyon; rope araucarias in the slot (the kin) |
 | 2 canyons and green valleys | `dist/ebadlands-canyons.html` | px 1279,1111 (1007,781) | Csa (Cfa, BSk round it), 2,156 m, 612 mm, +13 (24/1), 3.2 km relief | five steps of the staircase in the canyon recipe, each bed's ledge in the ground (`S.terrace`), a river down through them in a Zion narrows widening to a green valley (cottonwood, maple, oak, weepers), pinyon-juniper on the treads, talus and its boulders at every cliff's foot |
 | 3 montane forest | `dist/ebadlands-montane.html` | px 1356,1016 (1084,686) | Dfb (Dsb, Dfc, Dsc round it), 3,630 m, 690 mm, +7 (20/-6), 2.0 km relief | ponderosa and aspen, a wet meadow (no trees), a burn (charred ground, 2,000 snags, 1,350 logs, no living tree), spruce-fir up to a cirque tarn (the reflections switch) and its stream; granite, no bedded rock |
 | 4 tree line, tundra, glacier | `dist/ebadlands-tundra.html` | px 1374,623 (1102,293) | ET with Dfc below, 4,782 m, 267 mm, +1 (14/-12), 2.1 km relief | the last spruce-fir and krummholz, bristlecones, tundra with patterned ground (KGROUND's polygon kind) and granite tors, a valley glacier (host ice: the ground drawn as ice and firn, nothing roots on it) with lateral and end moraines (boulder fields) and a milky proglacial lake; the airless rim's wall past the map (KFAR, 4 km up in 8) |
@@ -68,7 +68,7 @@ one), not a mapped ice field.
 | `BIO.fung`: the dressing's lichen and moss crusts on `BIO.fung.crust` | `src/50`, `65` | `?fung=0` |
 | Card cells (`check_cells.py`): 0 faults before and after | `materials.json` | |
 | Ride-along: the succulent columns' quality pass (the moonflower cactus, 80 triangles) | `src/50` | |
-| Exchanges (`EXCHANGES.md`): eastabyss's araucaria (a cousin) and sedesert's mesquite on station 1, read in place | `src/87-host-kin.js`, `stations/waste/station.json` | `?kin=0` |
+| Exchanges (`EXCHANGES.md`): eastabyss's araucaria (a cousin) on station 1, read in place; sedesert's mesquite wired but not read (its crowns float off their limbs in sedesert's builder) | `src/87-host-kin.js`, `stations/waste/station.json` | `?kin=0` |
 
 **The review's three lines.** Ground layers on documented masks: `45-host-stage.js`, "THE GROUND'S MASKS" (each layer's zone weight,
 the pavement, the polygons, the water's wet band, the talus; no layer on a bare noise). Strata and scour feed placement: the beds'

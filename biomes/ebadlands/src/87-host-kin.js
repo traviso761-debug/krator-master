@@ -5,7 +5,9 @@
 //   eastabyss.araucaria -> 'ropearaucaria', Rope araucaria, a cousin: shorter (x.7) and sparser in the thinner, drier air, no abyssal habit; in the
 //                     waste's shade, the slot canyon cut into the first step and the gullies' floors near the step's foot (the low BSh canyons over the
 //                     abyss's rim the row names)
-//   sedesert.mesquite -> 'mesquite', Mesquite, as it is (read in place): the washes' banks and the wadis' fans, the badlands' edge
+//   sedesert.mesquite -> 'mesquite', Mesquite, as it is (read in place): the washes' banks and the wadis' fans. OWED, not read now: sedesert's builder
+//                     jitters the crowns up to ~2.8 m off their limbs and the attach audit failed at 9.5% (29 of 305 cards); grown here again (station.json)
+//                     once sedesert holds them (BIO.holdTo, its next turn). The code stays: it grows nothing while SEDESERT is not on the page
 // Owed: the Bowl's tamarisk (its builder is private to the Bowl's floor fragment, stations/bowl/66-biome-sedesert-halo.js: the Bowl's next turn exports
 // it, then this file grows it on the wadis' bars), Korona's frost tank (Korona's turn, pair 9). Placed after the kit's build and before the bake, on a
 // lattice whose every cell is KRAND.hash(world, i, j, salt) and whose tree's numbers come from a reseed of the same hash: nothing the kit placed moves.

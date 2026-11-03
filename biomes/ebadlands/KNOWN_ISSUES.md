@@ -102,7 +102,8 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   KGROUND reading a texture array, would give them back.
 - [ ] **No wet ground on the dry lands** (the transect, stations 1, 2 and 4): the weather's dry climate never wets the ground, and the
   puddle mask and the rain map are two texture units the ground has not got. Station 3 (montane, wet) has it.
-- [ ] **Exchanges owed** (`EXCHANGES.md`): the Bowl's tamarisk to station 1 (its builder is private to
+- [ ] **Exchanges owed** (`EXCHANGES.md`): sedesert's mesquite (wired in `87-host-kin.js`, not read: its crowns float off their limbs, 9.5% on station 1's
+  attach audit; read it again once sedesert holds them), the Bowl's tamarisk to station 1 (its builder is private to
   `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl exports it, then `src/87-host-kin.js` grows it on the wadis' bars),
   Korona's frost tank (Korona's turn, pair 9); as vendor, ebadlands' juniper to sedesert's main page and cottonwood to the Bowl's delta
   (sedesert's next turn: its `build.py` NEIGH and `87-host-kin.js`, then its pages' verifies), and the bristlecone to Korona (Korona's turn).
