@@ -14,7 +14,8 @@ MP.ROOM_GLSL=[
 ' vec3 c=T==ty?(q.y>0.0?vec3(.20,.20,.19):vec3(.11,.10,.09)):(T==tz?mix(vec3(.10,.11,.12),vec3(.20,.19,.17),h):vec3(.15,.15,.15));',
 ' return c*exp(-T*.14)*(.45+.7*h);}'].join('\n');
 MP.mats=(function(){let M=null;
- const fam=(name,o)=>{const P=KMAT.mode==='lib'?KMAT.packed('metropolis',name):null,T=P?KMAT.textures(P,{aniso:8}):{};
+ /* the geometry's uvs are in 4 m units; a family's library scale sets its repeat (the white skin's panels are 16 m) */
+ const fam=(name,o)=>{const P=KMAT.mode==='lib'?KMAT.packed('metropolis',name):null,T=P?KMAT.textures(P,{aniso:8}):{};if(P&&P.scale)[T.map,T.normalMap,T.roughnessMap].forEach(t=>{if(t)t.repeat.set(4/P.scale[0],4/P.scale[1]);});
   return new THREE.MeshStandardMaterial(Object.assign({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,vertexColors:true,metalness:P?P.metal||0:0,roughness:1},o||{}));};
  return function(){if(M)return M;
   M={white:fam('white',{metalness:.12}),concrete:fam('concrete'),relief:fam('relief'),bronze:fam('bronze',{metalness:.35,color:0xd8b48a}),

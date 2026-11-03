@@ -13,8 +13,8 @@ MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return fals
  const size=/[?&]atlas=1024\b/.test(location.search)?1024:2048;
  MPS.packed=KSHELL.pack([].concat(...MPS.keys.map(k=>KSHELL.slots(MPS.rec[k]))),size);MPS.packed.forEach((s,i)=>{MPS.slot[s.id]=s;});MPS.atlas=KSHELL.atlas(size,renderer);
  if(!/[?&]nobake/.test(location.search))MPS.keys.forEach(k=>KSHELL.bake(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.hero[k],MPS.slot[k+'.top'],MPS.slot[k+'.bot']));if(!/[?&]nomip/.test(location.search))KSHELL.finish(MPS.atlas);
- MPS.mat=KSHELL.material(MPS.atlas,{steps:/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:24});MPS.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;
- if(!/[?&]noshell\b/.test(location.search))MPS.keys.forEach(k=>{const im=KSHELL.draw(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.mat,new Array(512).fill([0,0,0]),MPS.slot[k+'.top'],MPS.slot[k+'.bot']);im.count=0;scene.add(im);MPS.mesh[k]=im;});
+ MPS.mat=KSHELL.material(MPS.atlas,{steps:/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:32});MPS.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;
+ if(!/[?&]noshell\b/.test(location.search))MPS.keys.forEach(k=>{const im=KSHELL.draw(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.mat,new Array(1400).fill([0,0,0]),MPS.slot[k+'.top'],MPS.slot[k+'.bot']);im.count=0;scene.add(im);MPS.mesh[k]=im;});
  MPS.bakeMs=Math.round(performance.now()-t0);
  // the impostors: one set, a slot a family and state, built from the hero's own meshes
  const S=BIO.impostorSet('mp',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:4});MPS.impSet=S;BIO.kit('metro');
@@ -50,18 +50,21 @@ function mpClear(){MPS.live.forEach(g=>{scene.remove(g);});MPS.live.length=0;MPS
 MP.show=function(name){if(!MPS.ready){MPS.want=name;return;}const c=MP_CFG[name];if(!c)return;mpClear();MPS.mode=name;
  (c.heroes||[]).forEach(h=>mpHero(h[0],h[1],h[2],h[3],c.fade));mpShells(c.shells||[]);
  if(c.band)MPS.mat.userData.U.uBand.value.set(c.band[0],c.band[1],.15);
- if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(MP_NEAR,MP_FAR,.15);MPS.nextTier=0;MPS.tierGroups=new Map();}
+ if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(MP_NEAR,0,.15);MPS.nextTier=0;MPS.tierGroups=new Map();}
  if(c.storey)MP.openStorey(c.storey[0],c.storey[1],c.storey[2],c.storey[3]);
  if(c.atlas){const m=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshBasicMaterial({map:MPS.atlas[c.atlas].texture,fog:false,toneMapped:false}));m.position.set(0,220,0);m.geometry.attributes.uv;scene.add(m);MPS.live.push(m);}};
 // the tiers each half second: the nearest towers are heroes from a pool; 300 m - 1 km shells
-MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode];if(!c||!c.tiers)return;const now=performance.now();if(now<(MPS.nextTier||0))return;MPS.nextTier=now+500;
- const e=camera.position,T=MPS.towers,near=[],mid=[],MAX=MPS.heroMax==null?10:MPS.heroMax;for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e);t.d=d;if(d<MP_NEAR)near.push(t);if(d>=MP_NEAR*.85&&d<MP_FAR)mid.push(t);}
+MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode];if(!c||!c.tiers)return;const now=performance.now();if(now<(MPS.nextTier||0))return;MPS.nextTier=now+150;
+ const e=camera.position,T=MPS.towers,near=[],mid=[],MAX=MPS.heroMax==null?24:MPS.heroMax;
+ /* a tower seen steeply from above (over 35 degrees) is a shell out to 3.2 km: an impostor is a card, and a tall thin tower's card seen from over it is a long leaning smear that overlaps its neighbours */
+ for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-MPS.rec[t.key].frame.H*.5)>.7*Math.max(hz,1);t.d=d;t.shell=false;if(d<MP_NEAR)near.push(t);if(d>=MP_NEAR*.85&&(d<MP_FAR||(steep&&d<MP_IMPFAR))){mid.push(t);t.shell=true;}}
  near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX),G=MPS.tierGroups;
  /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
- G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85)mid.push(t);});
+ G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85){mid.push(t);t.shell=true;}});
  mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));
- // an impostor stands for its tower past 850 m, tower by tower, and the shell dithers out in front of it to 1 km (a chunk's fade left half-dithered ghosts at the boundary): nearer, its matrix is zero
- MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR*.85;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
+ // an impostor stands for exactly the towers that are neither a hero nor a shell, tower by tower (a chunk's fade left half-dithered ghosts; a flat distance hid both from a high camera): for the rest its matrix is zero
+ MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=MPS.towerAt[F[i*16+12]+','+F[i*16+14]],near=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
+MPS.towerAt={};MPS.towers.forEach(t=>{MPS.towerAt[t.x+','+t.z]=t;});
 tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();MP.enterTick();if(MP.walkDirty)MP.walkSync();}});
 // ---- the views. A pair stands 170 m apart, hero to the west, its shell to the east, looked at from 300 m
 const D=300,sp='spindle.intact',sg='spindle.gutted',li='ledger.intact',lg='ledger.gutted';

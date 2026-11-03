@@ -124,3 +124,5 @@ MP.envelope = function (F, y) {
 };
 // a root fin's outer edge: the skin at y plus a flare that dies at the fin's top
 MP.finR = function (F, y) { var t = 1 - y / F.fins.y1; return MP.spindleR(y) + F.fins.out * Math.pow(t, 1.4); };
+// the arcade's piers along a slab: as near `every` apart as fits a whole number of spans, end to end (a fixed 12 m on a 126 m slab put the last pier 6 m past the end)
+MP.arcadePiers = function (F) { var hw = F.footprint.w / 2, n = Math.max(1, Math.round(2 * hw / F.arcade.every)), out = []; for (var i = 0; i <= n; i++) out.push(-hw + i * 2 * hw / n); return out; };

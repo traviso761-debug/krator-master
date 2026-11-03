@@ -181,9 +181,9 @@ On `kits/interiors` and `kits/ancients-interiors`, audited the same way:
 
 ## 7. Materials
 
-From the library: `metal.ancient.white`, `concrete.board`, `concrete.block.relief`, `metal.bronze`, `concrete.slab`. Owed, in
-`core/materials/PROMPTS-NEEDED.md` section 31: `metal.ancient.white.macro` (the 4 m tile reads as noise on a 230 m tower),
-`patterns/ancient/baroque-scroll` (S8) and `stone.adobe.ceramic` (S6, M8). No building here papers over a gap with a procedural stand-in.
+From the library: `metal.ancient.white.macro` (the towers' white skin, 16 m panel courses), `concrete.board`, `concrete.block.relief`,
+`metal.bronze`, `concrete.slab`. Delivered 2026-11-02 for the later buildings: `stone.adobe.ceramic` (S6, M8) and
+`patterns/ancient/baroque-scroll` (S8). Nothing is owed.
 
 ## 8. Tier strategy for the sixteen: what each needs
 
@@ -191,7 +191,7 @@ From the library: `metal.ancient.white`, `concrete.board`, `concrete.block.relie
 |---|---|---|
 | Under 300 m | hero | a pool of about ten, by distance |
 | 300 m - 1 km | shell | one instanced mesh per family and state |
-| 1 - 3 km | impostor | one `BIO.impostorSet`: slots for families x states |
+| 1 - 3 km | impostor | one `BIO.impostorSet`: slots for families x states; seen from over 35 degrees above, a shell to 3.2 km instead |
 | Over 3 km | district | a `KFAR` extension: not in this spike |
 
 **Expected weak spots of a heightfield**, to be tested by the eight skyscrapers:

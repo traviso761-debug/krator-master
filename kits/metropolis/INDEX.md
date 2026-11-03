@@ -24,10 +24,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-host-stage.js` | 1 |  |
 | `47-host-land.js` | <1 |  |
 | `50-mp-kit.js` | 8 |  |
-| `52-mp-hero-spindle.js` | 6 |  |
+| `52-mp-hero-spindle.js` | 7 |  |
 | `53-mp-hero-ledger.js` | 7 |  |
 | `56-mp-interiors.js` | 14 |  |
-| `60-mp-shell-host.js` | 14 |  |
+| `60-mp-shell-host.js` | 15 |  |
 | `70-mp-stage.js` | 14 |  |
 | `89-host-sky.js` | <1 |  |
 | `99-host-take.js` | 4 |  |

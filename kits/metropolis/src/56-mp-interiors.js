@@ -52,7 +52,7 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
 MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
  if(F.core.kind==='round'){const r=MP.spindleR(1.5)-.6,N=Math.ceil(2*Math.PI*r/.5);for(let i=0;i<N;i++){const a=2*Math.PI*i/N;if(F.portals.some(p=>{let d=Math.abs(a-p);d=Math.min(d,2*Math.PI-d);return d*r<6;}))continue;b(Math.cos(a)*r,Math.sin(a)*r,.3);}
   for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*2*Math.PI/F.fins.n;for(let rr=r;rr<MP.finR(F,0);rr+=.5)b(Math.cos(a)*rr,Math.sin(a)*rr,F.fins.t/2);}}
- else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}for(let x=-hw;x<=hw;x+=F.arcade.every)[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);});}};
+ else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}MP.arcadePiers(F).forEach(x=>[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);}));}};
 MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});MP.walkDirty=false;
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;

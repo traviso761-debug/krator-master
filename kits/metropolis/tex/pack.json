@@ -129,26 +129,26 @@
     "normalMap": "white.normal.webp",
     "roughnessMap": "white.rough.webp"
    },
-   "lib": "metal.ancient.white",
-   "metal": 0.35,
+   "lib": "metal.ancient.white.macro",
+   "metal": 0.12,
    "normalScale": 1.0,
    "roughLift": 0.1,
    "scale": [
-    4.0,
-    4.0
+    16.0,
+    16.0
    ],
    "size": 512,
    "source": {
-    "albedo": "c65fb71a390d53f33eed4ee01b6e06e3f7f05fc8",
-    "normal": "12eed2b419581527c9aa0d60ce43c94c1d2760be",
-    "roughness": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+    "albedo": "b7749e3767dc5b4b4d2d44a6d38d0a2dbe0ceae1",
+    "normal": "a2e9ad5e8ef44124de29f5f05b1940197807b1a9",
+    "roughness": "f6d6b7de43e08c8d5c11edcdd7401f20cf26026b"
    },
    "specular": 0.4,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.875,
-    "sourceMean": 0.8337
+    "sourceMean": 0.8871
    }
   }
  },

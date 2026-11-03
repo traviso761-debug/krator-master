@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 3 prompts** (section 31, the metropolis, 2026-11-02; before it, 0: 2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+**Count: 0 prompts** (2026-11-02: section 31, the metropolis's three, delivered: `PLAN.md` "Delivered 2026-11-02"; 2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -272,31 +272,6 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
-
-## 31. The metropolis towers (`kits/metropolis`, 2026-11-02)
-
-Three surfaces the sixteen towers ask for that the library lacks (`kits/metropolis/PLAN.md` section 7). Only the first is
-wanted for the two built so far; the other two wait on the owner's go for the other fourteen. **Reuse, so no prompt:** S2's
-ribbed bronze `metal.bronze.cast`; S3's black glass `stone.obsidian`; S6 and M8's sand ceramic `plaster.clay_block_wall` and `ceramic.terracotta`;
-S8's rust-red ledge `stone.corbel.slab` tinted.
-
-`metal.ancient.white.macro` (the 4 m panel tile reads as noise on a 230 m tower; this is the seam pattern at 16 m):
-
-```
-Flat, front-on, evenly lit surface texture of a futuristic white enamelled metal building facade, seen square on. Very large rectangular panels in staggered courses, thin dark recessed seams between them, each panel a slightly different off-white (#ecebe6, #e4e3de, #f1f0ec), a faint fine vertical brushing, no rivets, no windows, no text, no shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.
-```
-
-`patterns/ancient/baroque-scroll` (S8's swollen scrolled ornament, tinted pale blue or rust by the build):
-
-```
-Flat, front-on, evenly lit relief panel of a monumental carved stone ornament: large swollen scrolls, acanthus curls and bulbous cartouches on a giant scale, deep soft undercuts, all in one pale grey-white stone (#dfe3e6, #cfd5da), no figures, no text, no hard shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.
-```
-
-`stone.adobe.ceramic` (S6's and M8's stages: smooth baked sand ceramic, the handmade look the plain plasters miss at a tower's scale):
-
-```
-Flat, front-on, evenly lit surface texture of a smooth hand-finished baked ceramic wall, warm sand colours (#d9b77c, #cfa96c, #e2c48c), broad soft trowel sweeps, faint horizontal lift lines every metre or so, a few fine hairline cracks, slightly glazed, no bricks, no tiles, no openings, no text, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.
-```
 
 ## Gaps with no prompt yet
 

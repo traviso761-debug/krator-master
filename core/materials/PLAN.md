@@ -553,6 +553,11 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-02 and processed, the metropolis towers** (`tools/textures/batches/metropolis-2026-11.json`, pasted by
+the owner): `metal.ancient.white.macro` (16 m panel courses; processed with the seam pass off, the sheet already tiles: every course
+has a joint at its edge), `stone.adobe.ceramic`, `patterns/ancient/baroque-scroll` (cropped to its period). The macro panel is
+`kits/metropolis`' white skin; the other two wait for S6, S8 and M8.
+
 **Delivered 2026-10-25, the shared sky's moon maps** (pasted by the owner; resized to 1024x512 by hand, albedo only, no batch: they are
 equirectangular maps, not tiles): `sky.moon.companion`, `sky.moon.week`, `sky.moon.thirteen`, `sky.moon.day`, `sky.moon.two-day`,
 `sky.moon.four-day`. Wired in `core/atmos` (the sky's moon atlas, `core/atmos/demo/build.py` `moon_atlas()`); the prompts are in

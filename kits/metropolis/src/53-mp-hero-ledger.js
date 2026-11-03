@@ -37,11 +37,11 @@ MP.heroLedger=function(state,lite){const F=MP.LEDGER,S=F.ruins[state]||{},B=MP.b
  [1,-1].forEach(function(s){const x=s*hw,c=stained(s*7,top*.5);if(s>0)B.quad('relief',[x,0,hd],[x,0,-hd],[x,top,-hd],[x,top,hd],[1,0,0],{uv:6,col:c});else B.quad('relief',[x,0,-hd],[x,0,hd],[x,top,hd],[x,top,-hd],[-1,0,0],{uv:6,col:c});
   for(let i=0;i<4;i++){const z=-hd+hd*(i*2+1)/4;B.box('concrete',s>0?x:x-.8,s>0?x+.8:x,0,top+1.2,z-.7,z+.7,{col:c});}});
  // ---- the arcade: an arch frame and a pier every 12 m, the arches instanced as panels would be flat, so each is a few voussoirs, and the bronze flares over them
- const A=F.arcade,ay=7.2;
- for(let i=0;i<=Math.round(2*hw/A.every);i++){const x=-hw+i*A.every,brk=ruin&&MP.u(seedK&0xffff,i,31)<.12;
+ const A=F.arcade,ay=7.2,PX=MP.arcadePiers(F),sp=PX[1]-PX[0];
+ for(let i=0;i<PX.length;i++){const x=PX[i],brk=ruin&&MP.u(seedK&0xffff,i,31)<.12;
   [1,-1].forEach(function(s){const z=s*hd;
-   if(!brk)B.box('concrete',x-1,x+1,0,ay,Math.min(z,z-s*A.depth),Math.max(z,z-s*A.depth),{});
-   if(i<Math.round(2*hw/A.every)){const a=6-1,nV=7,cx=x+A.every/2;
+   if(!brk)B.box('concrete',Math.max(x-1,-hw),Math.min(x+1,hw),0,ay,Math.min(z,z-s*A.depth),Math.max(z,z-s*A.depth),{});
+   if(i<PX.length-1){const a=sp/2-1,nV=7,cx=x+sp/2;
     for(let v=0;v<nV;v++){const t=Math.PI*(v+.5)/nV,w=2*a/nV*1.25,px=cx-Math.cos(t)*a,py=2.4+Math.sin(t)*(ay-2.4-.6)+.0;B.panel(px,(py+ay)/2,z-s*.5,0,w,ay-py,1,[.74,.72,.68]);}}
    // the flare: a bronze curve from the pier's foot to the spandrel, out of the wall
    if(i%1===0&&!(ruin&&MP.u(seedK&0xffff,i,41+s)<.3)){const n=8,Y=F.buttress.y1,O=F.buttress.out,col=ruin?[.55,.5,.42]:[1,1,1],t=.55;
@@ -49,7 +49,7 @@ MP.heroLedger=function(state,lite){const F=MP.LEDGER,S=F.ruins[state]||{},B=MP.b
      if(s>0){B.quad('bronze',P(x-t,oa,ya),P(x+t,oa,ya),P(x+t,ob,yb),P(x-t,ob,yb),[0,ny,nz],{col,uv:2});B.quad('bronze',P(x+t,oa,ya),P(x+t,0,ya),P(x+t,0,yb),P(x+t,ob,yb),[1,0,0],{col,uv:2});B.quad('bronze',P(x-t,0,ya),P(x-t,oa,ya),P(x-t,ob,yb),P(x-t,0,yb),[-1,0,0],{col,uv:2});}
      else{B.quad('bronze',P(x+t,oa,ya),P(x-t,oa,ya),P(x-t,ob,yb),P(x+t,ob,yb),[0,ny,nz],{col,uv:2});B.quad('bronze',P(x+t,0,ya),P(x+t,oa,ya),P(x+t,ob,yb),P(x+t,0,yb),[1,0,0],{col,uv:2});B.quad('bronze',P(x-t,oa,ya),P(x-t,0,ya),P(x-t,0,yb),P(x-t,ob,yb),[-1,0,0],{col,uv:2});}}}});}
  // ---- the roof: the parapet and, intact, the stepped metal hall of the council
- const pcol=stained(0,top);B.box('white',-hw,hw,top-.1,top+1.2,hd-.8,hd,{col:pcol});B.box('white',-hw,hw,top-.1,top+1.2,-hd,-hd+.8,{col:pcol});B.quad('concrete',[-hw,top+.2,hd],[hw,top+.2,hd],[hw,top+.2,-hd],[-hw,top+.2,-hd],[0,1,0]);
+ const pcol=stained(0,top);B.box('white',-hw,hw,top-.1,top+1.2,hd-.8,hd,{col:pcol});B.box('white',-hw,hw,top-.1,top+1.2,-hd,-hd+.8,{col:pcol});[1,-1].forEach(s=>B.box('white',s>0?hw-.8:-hw,s>0?hw:-hw+.8,top-.1,top+1.2,-hd+.8,hd-.8,{col:pcol}));B.quad('concrete',[-hw,top+.2,hd],[hw,top+.2,hd],[hw,top+.2,-hd],[-hw,top+.2,-hd],[0,1,0]);
  if(cut>=roof){const c=F.massing[1];for(let i=0;i<c.steps;i++){const k=1-i*.2,w=c.w*k/2,d=c.d*k/2,y0=roof+i*2.8,y1=y0+2.8;B.box('bronze',-w,w,y0,y1-.5,-d,d,{uv:3});B.box('bronze',-w-.5,w+.5,y1-.5,y1,-d-.5,d+.5,{uv:3});}}
  else{const c=[.6,.58,.54];for(let i=0;i<12;i++){const x=-44+i*8,h=.8+3*MP.u(seedK&0xffff,i,51);B.panel(x,top+h/2,0,0,.5,h,14,c);}}
  return B.finish(F,state);};
