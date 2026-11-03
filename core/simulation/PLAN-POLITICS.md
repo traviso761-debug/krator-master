@@ -22,11 +22,21 @@ are the owner's (LORE.md); where this draft proposes, it says so.
    against the colonizers; the Fellgangs against southern Dalab.
 5. **The drained dam basin and the floodlands** in general: a mix of settlers, outlaws, and those who skirt the line.
 6. **Smaller gangs of bandits** that come and go fluidly in the more remote parts of the map.
+7. **A raid's severity** (answering section 3, question 4): agreed, except that "the Screamers could potentially knock out
+   Iziz's enclave ports if Iziz is already doing poorly".
+8. **Risings under a leader:** "If the Scyvoi unite under a charismatic leader they could potentially destroy Drum or
+   Pontus and open up more land for raids and migration; a Dasri leader could similarly try to take Verge or Mantis as
+   capital of a new kingdom; abyss nomads might similarly try to take Verge or Locus. Fellgangs might try the same for
+   Nulab. Odds of success will vary with faction strength."
 
 ## 1. The model (proposed)
 
-**Nothing irreversible happens without the player.** Irreversible: a settlement changing faction, a ruler deposed, a
-settlement sacked or abandoned, a large share of its people lost. Everything else may move on its own.
+**No surprise ruins.** Irreversible: a settlement changing faction, a ruler deposed, a settlement sacked or abandoned, a
+large share of its people lost. Most of these happen only with the player. The exceptions (section 0, items 7 and 8: a
+rising under a leader, the Screamers against a failing Iziz's ports) can happen on their own, but only at the end of a
+long build-up the world makes known, with its odds set by the defender's strength, so the player could always have
+stepped in. (The owner's first rule, 2026-11-03, was nothing irreversible without the player; items 7 and 8 loosened it
+the same day.)
 
 - **A bowl for every settlement.** Each has a resting state (owner, ruler, people, its stocks about their targets). The
   world's own shocks (a blight, a bad season, a raid) push it up the side; its authorities push back in proportion to how
@@ -53,6 +63,10 @@ settlement sacked or abandoned, a large share of its people lost. Everything els
 | **Raid zone** (a border under steady pressure) | Screamers / neighbours; eastern nomads / Iziz (Yuni if relations sour); Scyvoi / Voth and Hykkousoi; Painted Men / Shell and Beast Riders; Zeijani / colonizers; Fellgangs / southern Dalab | raids at a rate in a band (core/camp's ventures: raids with balance caps), loot and casualties out, recovery in | a raid never takes a settlement; the rate and the losses capped, the defenders' recovery faster than the raids at rest | ends a band's camp, guards a road, joins a raid |
 | **Frontier** (no owner) | the drained dam basin and the floodlands | settlers, outlaws and those between, local control shifting place to place | nobody holds it; settlement counts and the outlaw share in a band | settles (a player settlement outside core territory: no tribute), clears, rules |
 | **Bandits** (fluid) | small gangs in the remote parts of the map | gangs form, move and break up | a density budget a region; a gang broken is replaced only slowly | hunts them, hires them |
+| **Rising** (a people united under a leader) | the Scyvoi against Drum or Pontus (destroyed: land opened for raids and migration); a Dasri leader against Verge or Mantis (a new kingdom's capital); the abyss nomads against Verge or Locus; the Fellgangs against Nulab | a named leader appears among a raiding people when conditions allow, gathers the bands over months (raids grow, refugees, rumours, envoys), then marches; the outcome by the odds of the leader's strength against the defender's | rare (one at a time in a region, a cooldown after); every stage visible and long; a city taken stays a living city under its new rulers, a city destroyed leaves its ruin and its survivors somewhere | kills, joins, bribes or splits the leader; arms the defender; turns the march; or lets it happen |
+
+The Screamers' raid zone takes the same build-up when Iziz is weak (its strength under a line): the raids on its enclave
+ports grow over a season, and a port may be knocked out at the end of it.
 
 ## 3. Questions for the owner
 
@@ -61,6 +75,8 @@ settlement sacked or abandoned, a large share of its people lost. Everything els
 2. **The annual duel** (Dalab and the SW highland natives): its odds, and whether the player can be champion.
 3. **How long a standing crisis waits** before it eases back, and whether one ignored leaves a mark (a harsher governor,
    a grudge that lowers the next rim).
-4. **A raid zone's worst off-screen outcome:** the draft says never a settlement lost; a hamlet burned and rebuilt?
+4. ~~A raid zone's worst off-screen outcome~~ (answered, section 0 item 7). Still open: a **rising's rarity** (one a
+   region at a time? a cooldown of years?), how long its build-up lasts before it marches, and whether a destroyed city
+   is ever resettled (by its survivors, the victors, or the player).
 5. **Fronts' cycles:** Hook's period (a season? a year?), and whether the other fronts turn at all or only skirmish.
 6. **What the player's actions weigh:** a scale for the source tag (one assassination against a season of raids).
