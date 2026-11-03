@@ -13,6 +13,8 @@
  "biomes/godthrone: STALE build.py": 1,
  "biomes/guilin: STALE build.py": 1,
  "biomes/hyperjungle: STALE build.py": 1,
+ "biomes/hyperjungle: STALE build.py --station lake": 1,
+ "biomes/hyperjungle: STALE build.py --station savanna": 1,
  "biomes/k-guilin: STALE build.py": 1,
  "biomes/korona: STALE build.py": 1,
  "biomes/necanyons: STALE build.py": 1,

@@ -228,15 +228,20 @@ function kitReady(kit){const R=BIO.kits[kit];if(!R)return true;const mats=[];for
 IMP.kitReady=kitReady;
 // bake every species not baked yet once its kit's textures are in (each frame until then, by a tick, for up to opt.wait
 // seconds, 30 by default; then anyway); returns how many it baked now. opt.onDone(n) is called when the last one is baked.
+// The wait counts only time the page is visible (2026-11-02, the owner saw "textures not in after 180 s" in a background pane): a hidden tab runs
+// no frames and may defer its image decodes, so its first frame back found the wall clock past the wait and baked "anyway" with every map in.
+// A tick adds at most a second, and nothing while document.hidden; a late bake names the kits whose maps were still out.
 BIO.bakeImpostors=function(renderer,opt){opt=opt||{};if(!renderer){BIO.err('BIO.bakeImpostors: no renderer');return 0;}
- const t0=Date.now(),wait=(opt.wait==null?30:opt.wait)*1000;
+ const wait=(opt.wait==null?30:opt.wait)*1000;let seen=0,last=Date.now();
+ const shown=()=>typeof document==='undefined'||!document.hidden;
  const run=force=>{let n=0;const sets=new Set();let pending=0;
   for(const rec of IMP.list){if(rec.ready||rec.failed)continue;if(!force&&!kitReady(rec.kit)){pending++;continue;}
    if(capture(rec,renderer)){n++;sets.add(rec.set);}else rec.failed=true;}
   sets.forEach(setTextures);readLights();IMP.pending=pending;return n;};
  const n=run(false);
- if(IMP.pending&&BIO.host.ticks&&!IMP.waiting){IMP.waiting=true;BIO.tick(function(){if(!IMP.waiting)return;const late=Date.now()-t0>wait,k=run(late);
-  if(!IMP.pending||late){IMP.waiting=false;if(late&&k)BIO.err('BIO.bakeImpostors: textures not in after '+(wait/1000)+' s: baked anyway');if(opt.onDone)opt.onDone(k);}});}
+ if(IMP.pending&&BIO.host.ticks&&!IMP.waiting){IMP.waiting=true;BIO.tick(function(){if(!IMP.waiting)return;const now=Date.now();if(shown())seen+=Math.min(now-last,1000);last=now;
+  const late=seen>wait,out=late?[...new Set(IMP.list.filter(r=>!r.ready&&!r.failed&&!kitReady(r.kit)).map(r=>r.kit))]:[],k=run(late);
+  if(!IMP.pending||late){IMP.waiting=false;if(late&&k&&out.length)BIO.err('BIO.bakeImpostors: textures not in after '+(wait/1000)+' s visible: baked anyway ('+out.join(', ')+')');if(opt.onDone)opt.onDone(k);}});}
  else if(!IMP.pending&&opt.onDone)opt.onDone(n);
  return n;};
 })();

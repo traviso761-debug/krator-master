@@ -26,8 +26,10 @@ const INLAND_MASK=(function(){const c=2*WATER_CELL,nx=WATER_NX>>1,d=new Uint8Arr
 const SEA_MASK={x0:INLAND_MASK.x0,z0:INLAND_MASK.z0,cell:INLAND_MASK.cell,nx:INLAND_MASK.nx,nz:INLAND_MASK.nz,data:INLAND_MASK.data.map(v=>255-v)};
 // the inland sea: calm (the old plane was flat with a ripple normal), the bed's shallows over sand, the deep beyond
 const SEA_WATER=WATER.open({name:'The inland sea',level:0,swell:[[.06,45,300,0,.04],[.035,18,260,1.3,.03]],field:.12,bounds:WATER_BOX,
- bed:waterBed,bedBox:WATER_BOX,bedCell:WATER_CELL,shore:{seeds:[xzOf(-2600,0)]},mask:SEA_MASK});
-const SEA_DRAW=WATER.draw(SEA_WATER,{renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,
+ bed:waterBed,bedBox:WATER_BOX,bedCell:WATER_CELL,shore:{seeds:[xzOf(-2600,0)]},mask:SEA_MASK,
+ /* a station's plume (ST.sea: its tint and the current that carries it, core/water ext/61; ?plume=0 without it) */
+ ...(ST&&ST.sea&&ST.sea.tint&&new URLSearchParams(location.search).get('plume')!=='0'?{tint:ST.sea.tint(lin(BAYOU_COL.clone().lerp(RIVER_COL,.5).multiplyScalar(.8))),tintFlow:ST.sea.flow}:{})});
+const SEA_DRAW=WATER.draw(SEA_WATER,{...(ST&&ST.sea&&ST.sea.surf===false?{surf:false,breakers:false}:{}),renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,
  shallow:lin(SEA_SHALLOW.clone().lerp(SEA_MID,.3)),deep:lin(SEA_DEEP.clone().multiplyScalar(.75))});
 SEA_DRAW.mesh.userData.inspectLabel='The inland sea';
 // the inland water: three-centimetre ripples on a flat surface, one tea-dark colour between the bayou's and the river's

@@ -808,3 +808,23 @@ on the Arc 140T. A loop of GPU timer queries round `renderLive` crashed the tab 
 3. In `KHOST.take`: `draw:()=>{MIRROR.update();SKY.draw();}`.
 
 Never call `Sw.set` at load, and don't set a tier in a page's defaults. `node core/water/test-mirror-switch.js` holds the rule. Godot has no twin yet.
+
+## A plume that moves: `tintFlow` (2026-11-02: ext/61; `node core/water/test-plume.js`)
+
+The owner, on swlowlands' delta: the river's water met the clear sea at a hard edge, and should swirl and mix as a real delta's does. An open surface's
+tint field (`WATER.open({tint})`) was laid once; `WATER.open({tint, tintFlow})` carries it on a current. The field is read upstream along a velocity
+field plus a curl-noise swirl, in two phases half a cycle apart that cross-fade (the flow-map method: Vlachos, "Water Flow in Portal 2", 2010). A
+noise carried with the water breaks it into filaments, and the eddies wander round a loop once a wave period, so they turn over without a pop at
+the clock's wrap. A flow map keeps a steady current's mean picture still by design: what moves is the detail and the eddies, and the plume as a
+whole stands downstream of where it was laid.
+
+- `tintFlow: {v(x, z) -> [vx, vz] m/s | null, cell, period (60 s), swirl (.12 m/s), scale (140 m), evolve (.8), fil (.45), filScale (30 m)}`.
+- `WATER.tintFlowAt(S, x, z, t)` is the shader's twin. The test runs `wtrTintFlow`'s own text against it, to 1e-16.
+- **Adopting it:** list `ext/61-core-water-plume.js` in the build (`tools/fragment_needs.json`: after 20 and 50). Give the surface a tint (the
+  plume's colour, fading with distance) and a `tintFlow` whose `v` runs out from the mouths, spreads off each channel's line and drifts along the
+  shore. swlowlands' delta station is the worked example (`stations/delta/44z-host-delta.js`, `sea`; `?plume=0` without it).
+- **Nothing else moves:** 50's text changes only behind `S.tintFlow`, and the test proves a tint without it draws the same shader, key and
+  uniforms. `20` and `50` changed as source text, so every page that takes them moves by bytes at its next rebuild.
+
+**`breakers: false`** (`WATER.draw`, the same day): a shore grid's breakers draw no foam. Use it for a sheltered arm or a lake, where `surf: false`
+alone left the shore grid's white bands. Opt-in: no page moves without it.

@@ -141,7 +141,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   // a TINT field: a colour laid over the depth ramp where a body differs (a bayou in a sea, a river's plume, shoals): a raster over a box,
   // {box [x0,z0,x1,z1], cell, at(x,z) -> null | colour | {c, a}} baked at cell centres, or {x0, z0, cell, nx, nz, data} of premultiplied RGBA bytes;
   // S.tintAt(x,z) -> [r, g, b, a] (0..1, premultiplied: the surface's colour becomes colour*(1-a) + rgb), 0 outside the box
-  if(o.tint){S.tint=W.bakeTint(o.tint);}
+  if(o.tint){S.tint=W.bakeTint(o.tint);if(o.tintFlow)S.tintFlow=o.tintFlow;}   /* tintFlow: the tint carried on a current (ext/61; ignored without it) */
   S.tintAt=(x,z)=>S.tint?W.tintSample(S.tint,x,z):[0,0,0,0];
   S.shore=!!(S.bed&&S.bed.shore);
   // depth below the surface at (x,z) and t; the damping it gives (1 where there is no bed); on a shore grid the waves
