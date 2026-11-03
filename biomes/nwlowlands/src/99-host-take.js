@@ -6,11 +6,12 @@
 // near-detail tree of a species to a point on the (s,t) axis and frames it from
 // the sun side, so a view still lands on its subject when the placement moves.
 const SUNH=(()=>{const l=Math.hypot(-1200,-600);return[-1200/l,-600/l];})();
+const eyeH=(x,z)=>Math.max(terrainH(x,z),meshH(x,z));   /* the drawn ground, not only the field: 'Candle birches' stood under a 16 m cell's face */
 function viewTree(key,s,t,dist,h,look,side){const sp=NWLOW.SPECIES.findIndex(S=>S.key===key),o=xzOf(s,t);let best=null,bd=1e9;
  for(const T of NWLOW.TREES){if(T.sp!==sp||T.lv!==2)continue;const d=Math.hypot(T.x-o[0],T.z-o[1]);if(d<bd){bd=d;best=T;}}
  if(!best)return[o[0]+80,terrainH(o[0],o[1])+30,o[1]+80,o[0],terrainH(o[0],o[1]),o[1]];
  const R=Math.max(best.spread||0,best.crownR),D=dist*R,a=Math.atan2(SUNH[1],SUNH[0])+(side||0),cx=best.x+Math.cos(a)*D,cz=best.z+Math.sin(a)*D;
- return[cx,terrainH(cx,cz)+h,cz,best.x,best.y0+best.H*look,best.z];}
+ return[cx,eyeH(cx,cz)+h,cz,best.x,best.y0+best.H*look,best.z];}
 function viewAxis(s0,t0,h0,s1,t1,h1){const a=xzOf(s0,t0),b=xzOf(s1,t1);return[a[0],terrainH(a[0],a[1])+h0,a[1],b[0],terrainH(b[0],b[1])+h1,b[1]];}
 // a bamboo grove near (s,t): the point of highest grove weight within ~700 m.
 // inside: stand in it looking along; edge: stand outside it looking in
@@ -32,16 +33,19 @@ const VIEWS={
  'Candle birches':viewTree('birch',-300,-200,2.5,1.8,.55,.3),
  'Spire cedars':viewTree('spire',-200,200,2.4,2,.6,.3),
  'Column kauri':viewTree('kauri',-900,-300,1.1,2,.65,.3),
- 'Sea pens':viewTree('bluegum',-200,0,.8,1.3,.08,.5),
+ 'Sea pens':viewTree('bluegum',-200,0,1.2,2.2,.08,1.4),
  'Tower ash':viewTree('towerash',1400,0,1.4,3,.7,.3),
  'Grass trees and banksia':viewTree('grasstree',1500,0,4,2,.5,.3),
  'Crag pines':viewTree('cragpine',1900,0,2.5,8,.6,.3),
  'The tower':[40-150,terrainH(-110,-560)+40,-470-90,40,110,-470],
+ 'The marl gorge':(()=>{const s=2050,a=xzOf(s-40,RIVER_T(s-40)),b=xzOf(s+160,RIVER_T(s+160));return[a[0],terrainH(a[0],a[1])+4,a[1],b[0],terrainH(b[0],b[1])+12,b[1]];})(),
+ 'The gorge from its rim':(()=>{const s=2100,a=xzOf(s,RIVER_T(s)+58),b=xzOf(s+60,RIVER_T(s+60));return[a[0],terrainH(a[0],a[1])+3,a[1],b[0],terrainH(b[0],b[1]),b[1]];})(),
  'From the foothills':viewAxis(2400,100,90,-1500,-100,0),
  'From afar':viewAxis(3000,2200,420,-400,0,0),
  'Krator rising':viewAxis(-400,-200,30,1200,1400,900),
  'The Inner Wall':viewAxis(1600,-250,30,5600,250,700),   /* the far-field range and its foothill pillars (83-host-range.js) */
 };
+if(MG){for(const k of Object.keys(VIEWS))delete VIEWS[k];Object.assign(VIEWS,MG.views({viewAxis,viewTree,xzOf}));}
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
  // the smallest registered volume round the point, ignoring the map-wide one
@@ -77,22 +81,32 @@ const HCHK={
  fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),n=P.filter(p=>/:pompom$/.test(p[3])).length;
   return{ok:!miss.length&&!untagged.length&&n>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' pompom instances drawn; catalog keys: '+NWLOW.FRUIT_KEYS.join(', ')+'; not drawn: '+FRUIT_NOT_DRAWN.join(', ')};}};
+// the water's edge from the land (core/water ext/60): every tree clear of the water it does not stand in, the wet band on the real edge; the riparian trees may stand at the edge (r 0), no tree in it
+HCHK.edge=wet=>{const F=WATER.edgeAudit({field:WATER_F,plants:NWLOW.TREES.map(T=>({x:T.x,z:T.z,r:0,name:NWLOW.SPECIES[T.sp].key,aquatic:T.y0<.4})),wet:wet||wetShare,band:4,wide:80,clear:0}),S=WATER.auditSummary(F);
+ return{ok:!F.length,detail:F.length+' findings: '+JSON.stringify(S).slice(0,240)};};
+HCHK.env=()=>{const P=[];for(let i=0;i<300;i++){const a=i*2.4,r=40+i*9;P.push([Math.cos(a)*r,Math.sin(a)*r]);}const bad=BIO.envCheck(ENV,P);return{ok:!bad.length,detail:bad.length+' bad: '+JSON.stringify(bad).slice(0,200)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NWLOW.SPECIES,P));
+ add('the land reads the water\'s own edge',HCHK.edge());
+ add('the environmental fields',HCHK.env());
+ if(MG)MG.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  add('a fruiting species with no catalog fruit',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='pandan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
  add('a species with no harvest tag',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='banksia'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
  add('no fruit drawn',HCHK.fruit(NWLOW.SPECIES,P.filter(p=>!/:pompom$/.test(p[3]))));
+ add('a wet band that stops 30 m short of the water',HCHK.edge((x,z)=>WF.shore(x,z)<30?0:wetShare(x,z)));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+// THE REFLECTIONS SWITCH (core/water README; off at page load): the lake, level 0, shore ~1.7 km from the mirror's centre
+const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[SEA_DRAW.mesh.material],level:0,center:xzOf(-2400,0),radius:1700,far:4200,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'nwlowlands',title:'Krator Northwestern Lowlands',
- hint:'The northwestern lowlands: lake shore, rainforest strip, subtropical forest and bamboo groves, Mediterranean foothills (ideal type)',
+KHOST.take({build:MG?'nwlowlands-margins':'nwlowlands',title:MG?'Krator Northwestern Lowlands: the lake margins':'Krator Northwestern Lowlands',
+ hint:MG?MG.hint:'The northwestern lowlands: lake shore, rainforest strip, subtropical forest and bamboo groves, Mediterranean foothills (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:()=>{MIRROR.update();SKY.draw();},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'the Inner Wall (far field)':{match:o=>!!(o.userData&&o.userData.farField)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
@@ -100,3 +114,5 @@ KHOST.take({build:'nwlowlands',title:'Krator Northwestern Lowlands',
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// THE DRY SEASON (core/biome H7; ?season=0): the host clock's seasons on the grass and the deciduous crowns; a Mediterranean summer drought in the hills
+if(NWLOW_LOOK.season&&BIO.bindSeason)BIO.bindSeason(null,{sharp:2});

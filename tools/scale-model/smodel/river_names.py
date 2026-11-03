@@ -33,6 +33,8 @@
     `Rrivar Isguifta`, `Rrivar Loña`, `Borun Gulusu`, `Filem Gulusu`, `Sivift Gulusu`, `Bitir Gulusu`,
     `Rīfar al-Bālm`, `K'etsaal Baatar`, and `Ria River`).
 """
+import hashlib
+import json
 import math
 import os
 import numpy as np
@@ -42,6 +44,7 @@ from PIL import Image, ImageDraw
 # Canon river names referenced in LORE.md, biomes/*/*.md, and settlements/*/*.md that must never be overwritten
 CANON_RIVER_NAMES = {
     'Dariba',
+    'Līng-Mā',
     'Kaskejt Rivr',
     'Chimes Riba',
     'the Bigga',
@@ -67,6 +70,7 @@ CANON_RIVER_NAMES = {
 # Explicit canon overrides by numeric river ID
 CANON_BY_ID = {
     1: ('Dariba', 'dalab', "da riba ('the river') — mother river of the Dalab basin"),
+    2: ('Līng-Mā', 'eternian', "Līng (lotus-bell) + Mā (river) — Farport's drowned estuary river"),
     4: ('Kaskejt Rivr', 'republic', "Cascade River ('Kaskejt Rivr') — the stepped cataract river of Cascade"),
     5: ('Chimes Riba', 'dalab', "Chimes River ('Chimes Riba') — the Great Lake outlet gorge plunging past Chimes into the Rift"),
     18: ('Vai Moana', 'islander', "Moana (deep-ocean) + Vai (river) — eastern Ring Isle stream"),
@@ -576,21 +580,45 @@ def format_river_name(tongue, stem, generic, order, rid):
 
 
 def _rid_num(rid):
-    """Extract numeric ID from `'r001'` -> `1` or `9101` -> `9101`."""
+    """Extract deterministic numeric ID from `'r001'` -> `1` or `9101` -> `9101`."""
     if isinstance(rid, int):
         return rid
     s = str(rid).strip()
-    if s.startswith('r') or s.startswith('R'):
-        s = s[1:]
+    if (s.startswith('r') or s.startswith('R')) and s[1:].isdigit():
+        return int(s[1:])
     try:
         return int(s)
     except ValueError:
-        return abs(hash(s)) % 100000
+        h = hashlib.sha256(s.encode('utf-8')).digest()
+        return 100000 + (int.from_bytes(h[:4], 'big') % 100000)
+
+
+FROZEN_NAMES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frozen_river_names.json')
+
+
+def _stable_river_seed(rid_str, tng, mod_a, mod_b):
+    """Deterministic `(seed_idx, q_seed)` keyed solely on `(river_id, tongue)` via SHA-256."""
+    digest = hashlib.sha256(f'{rid_str}:{tng}'.encode('utf-8')).digest()
+    seed_a = int.from_bytes(digest[:4], 'big') % max(1, mod_a)
+    seed_b = int.from_bytes(digest[4:8], 'big') % max(1, mod_b)
+    return seed_a, seed_b
 
 
 def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None, old_rivers=None):
-    """Assign culturally and linguistically authentic names across all 27 tongues to `rivers_exp`."""
+    """Assign culturally and linguistically authentic names across all 27 tongues to `rivers_exp`.
+
+    Names are keyed strictly on `(river id, tongue)` via SHA-256 and processed in fixed ID order
+    so that editing a river's course (`px`), length (`length_km`), or list order never changes any river's name.
+    """
     t_grid, id_to_t = build_tongue_grid(regs_exp, shape=(1723, 1821))
+
+    frozen_map = {}
+    if os.path.exists(FROZEN_NAMES_PATH):
+        try:
+            with open(FROZEN_NAMES_PATH, encoding='utf-8') as f:
+                frozen_map = json.load(f)
+        except Exception:
+            frozen_map = {}
 
     old_name_by_id = {}
     if old_rivers:
@@ -601,8 +629,10 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
     id_to_river = {str(r['id']): r for r in rivers_exp}
 
     # Pass 1: Normalize metadata (`length_km`, `kind`), record `old_name`, and lock in all canon / fixed rivers first
+    # Process in fixed ID order for complete determinism
+    rivers_in_id_order = sorted(rivers_exp, key=lambda r: (_rid_num(r['id']), str(r['id'])))
     canon_ids = set()
-    for r in rivers_exp:
+    for r in rivers_in_id_order:
         rid_str_0 = str(r['id'])
         if 'old_name' not in r:
             if rid_str_0 in old_name_by_id:
@@ -658,12 +688,11 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
             used_names.add(cur_name.lower())
             canon_ids.add(rid_str)
 
-    # Sort remaining rivers by length descending so major trunk rivers get the primary unprefixed stems
-    remaining = [r for r in rivers_exp if str(r['id']) not in canon_ids]
-    remaining.sort(key=lambda r: (-float(r.get('length_km') or 0.0), _rid_num(r['id'])))
+    # Sort remaining rivers strictly in fixed ID order (never by `length_km` or coordinates)
+    remaining = [r for r in rivers_in_id_order if str(r['id']) not in canon_ids]
 
     tongue_counts = {}
-    for r in rivers_exp:
+    for r in rivers_in_id_order:
         if str(r['id']) in canon_ids:
             tng = r.get('tongue') or 'dalab'
             tongue_counts[tng] = tongue_counts.get(tng, 0) + 1
@@ -700,19 +729,37 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
     }
 
     for r in remaining:
+        rid_str = str(r['id'])
         rid = _rid_num(r['id'])
-        tng = infer_river_tongue(r, t_grid, id_to_t, setts_exp)
+        existing_tng = r.get('tongue')
+        def_tng_key = f'{rid_str}:__tongue__'
+        if existing_tng and existing_tng in TONGUE_GENERICS:
+            tng = existing_tng
+        elif def_tng_key in frozen_map and frozen_map[def_tng_key] in TONGUE_GENERICS:
+            tng = frozen_map[def_tng_key]
+        else:
+            tng = infer_river_tongue(r, t_grid, id_to_t, setts_exp)
         r['tongue'] = tng
 
+        freeze_key = f'{rid_str}:{tng}'
+        if freeze_key in frozen_map:
+            f_entry = frozen_map[freeze_key]
+            f_name = f_entry.get('name', '').strip()
+            if f_name and f_name.lower() not in used_names:
+                r['name'] = f_name
+                r['gloss'] = f_entry.get('gloss', '')
+                used_names.add(f_name.lower())
+                tongue_counts[tng] = tongue_counts.get(tng, 0) + 1
+                continue
+
         kind = r.get('kind', 'perennial')
-        length_km = float(r.get('length_km') or 0.0)
         order_num = int(r.get('order') or 1)
 
         riv_w, str_w, wad_w, word_order = TONGUE_GENERICS[tng]
         if kind == 'wadi':
             generic = wad_w
             generic_en = 'wadi'
-        elif length_km >= 95.0 or order_num >= 2:
+        elif order_num >= 2 or rid <= 220 or (9100 <= rid < 100000):
             generic = riv_w
             generic_en = 'river'
         else:
@@ -722,10 +769,8 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         lex = TONGUE_LEXICON[tng]
         quals = SECONDARY_QUALIFIERS[tng]
 
-        # Deterministic starting index from river ID + coordinates so neighbouring streams get distinct stems
-        pts = r.get('px') or [[0, 0]]
-        mx, my = pts[len(pts) // 2]
-        seed_idx = (rid * 7 + int(round(mx)) * 3 + int(round(my)) * 5) % len(lex)
+        # Deterministic starting index keyed strictly on `(river id, tongue)` via SHA-256
+        seed_idx, q_seed = _stable_river_seed(rid_str, tng, len(lex), len(quals))
 
         chosen_name = None
         chosen_gloss = None
@@ -742,7 +787,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         # If all primary stems for this generic are taken in this tongue, combine with a directional/size qualifier
         if chosen_name is None:
             for q_step in range(len(quals)):
-                q_loc, q_en = quals[(rid + q_step) % len(quals)]
+                q_loc, q_en = quals[(q_seed + q_step) % len(quals)]
                 for step in range(len(lex)):
                     stem, gls_en = lex[(seed_idx + step) % len(lex)]
                     if tng in {'eternian', 'hum', 'zeijani', 'jimjam'}:
@@ -769,6 +814,15 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         r['gloss'] = chosen_gloss
         used_names.add(chosen_name.lower())
         tongue_counts[tng] = tongue_counts.get(tng, 0) + 1
+        frozen_map[freeze_key] = {'name': chosen_name, 'gloss': chosen_gloss}
+
+    if not os.path.exists(FROZEN_NAMES_PATH):
+        try:
+            with open(FROZEN_NAMES_PATH, 'w', encoding='utf-8', newline='\n') as f:
+                json.dump(frozen_map, f, ensure_ascii=False, indent=2, sort_keys=True)
+                f.write('\n')
+        except Exception:
+            pass
 
     # Pass 2: Update `r['to']['name']` for all tributaries that drain into another river
     num_to_river = {_rid_num(r['id']): r for r in rivers_exp if isinstance(r['id'], int) or (str(r['id']).startswith('r') and str(r['id'])[1:].isdigit())}

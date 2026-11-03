@@ -221,6 +221,8 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 ### nhighlands ↔ nwlowlands
 
+**Status (nwlowlands' side, 2026-11-02):** `greyalder` and `foglaurel` built as `bluealder` and `bluelaurel` (`biomes/nwlowlands/src/87k-host-kin.js`); `NHL.make` and `NHL.grow` added for them, additive. The two rows into nhighlands wait for its turn (pair 7).
+
 - **Existing exchanges: none.** nhighlands' `BRIEF.md` uses nwlowlands only as a style reference and for the far view.
   `nwlowlands/PLAN-STATIONS.md:42` gives its Dsb corner to nhighlands or nsemiarid. The Cut reads both kits, but not each
   other's.
@@ -313,6 +315,8 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 - No new proposals needed.
 
 ### nwlowlands ↔ swlowlands
+
+**Status (nwlowlands' side, 2026-11-02):** `sycamore` and `cypress` wired as `bluesycamore` and `pondcypress` (`biomes/nwlowlands/src/87k-host-kin.js`); they grow once swlowlands' `make` and `grow` are merged.
 
 - **Existing exchanges: none** (see the note at the top). It is one engine, cloned; no species pass between them.
 

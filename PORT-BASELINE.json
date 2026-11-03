@@ -92,9 +92,13 @@
    "bytes": 7967514,
    "sha256": "38f3d879dae58bf43249896a00f98eeed24c6a236f9fa68bef8e6307d7c84c4b"
   },
+  "biomes/nwlowlands/dist/nwlowlands-margins.html": {
+   "bytes": 10577169,
+   "sha256": "ac7a1486127563008a9cd06ff3a86095103ad7682955f508c16ba1c9a815a5e8"
+  },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 7218383,
-   "sha256": "a15526506d0e0aa30be09efa542567fa4d61af1cbab4b834e5395157df2de3ce"
+   "bytes": 10573663,
+   "sha256": "3f8d857911b7ba80675283849b5c01047ee412ed3293fb54997ff86201939d32"
   },
   "biomes/oidong/dist/oidong.html": {
    "bytes": 2679653,

@@ -623,5 +623,8 @@ NHL.treeAt=function(x,y,z,key,opt){opt=opt||{};const sp=KEY[key];const S=SP[sp];
  const T={x,z,y0:y-.4,sp,H:opt.H||rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:opt.wet==null?.85:opt.wet,cold:opt.cold==null?BIO.field('cold',x,z):opt.cold,lv:opt.lv==null?2:opt.lv,lean:opt.lean};
  if(opt.scale){T.H*=opt.scale;T.rb*=Math.pow(opt.scale,.8);T.crownR*=opt.scale;}
  const o0=BIO.owner;BIO.owner=[x,z];B[S.habit](T,st,T.lv);BIO.owner=o0;NHL.TREES.push(T);hadd({x,z,r:T.rb*1.4+1});return T;};
+// one tree alone (biomes/WORLD.md: trees as variants; BIO.kin's make and grow): the pass's own record, then its habit's builder (lv 2 near, 1 mid) or its far form (lv 0). Additive: the kit's own pass does not call them
+NHL.make=function(sp,x,y,z){const S=SP[sp];return{x,z,y0:y-.4,sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z),cold:BIO.field('cold',x,z)};};
+NHL.grow=function(T,lv){means();const st={trunk:0,limb:0,far:0,clumps:0,sprays:0,snow:0,moss:0,drapes:0,glow:0,fins:0,byS:SP.map(()=>0)};T.lv=lv;if(lv===0)buildFar(T,T.seed%7,st,false);else B[SP[T.sp].habit](T,st,lv);return st;};
 NHL._glowCluster=glowCluster;NHL._drape=drape;NHL._mossOn=mossOn;
 })();

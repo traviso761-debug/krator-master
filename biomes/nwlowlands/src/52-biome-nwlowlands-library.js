@@ -10,6 +10,8 @@
  const mk=(slot,key,opt)=>{if(!has(slot))return null;return tbl[slot]=BIO.leafMat(ph(),'nwl-'+key,opt);};
  const under=[1,2].map(i=>mk('under'+i,'under'+i,{swayW:'1.0',swayA:.06})).filter(Boolean),hang=[1].map(i=>mk('hang'+i,'hang'+i,{swayW:'(-position.y)',swayA:.055,axis:1})).filter(Boolean);
  if(has('fungus')&&BIO.defs.fungus){BIO.defs.fungus.mat=tbl.fungus=BIO.solidMat(null,0xffffff);}
+ /* the shrub lobes' own leaf skin (KNOWN_ISSUES, 2026-10-26: they shared the plain M.solid with stems and cones), this kit's page only */
+ if(has('shrub')&&BIO.defs.lobe&&(window.NWLOW_LOOK||{}).lobes){BIO.defs.lobe.mat=tbl.shrub=BIO.solidMat(null,0xffffff);}
  NWLOW.LIB=Object.assign(NWLOW.LIB||{},BIO.libSwap(KIT,tbl));
  if(under.length)BIO.variantPool('ucard',under,0x3c01);
  if(hang.length)BIO.variantPool('strand',hang,0x3c02);

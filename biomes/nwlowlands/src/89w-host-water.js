@@ -7,26 +7,20 @@
 {const env=new THREE.Scene(),WENV={environment:null};
  env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x5a6a4a)});}
-const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // the river through the hills is a lowland river (the old ribbon had no rapids): foam only where it really steepens (the flow's own rapids band, 2026-10-21; it was a page-wide preset)
-const WATER_BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],WATER_CELL=8,WATER_NX=Math.ceil((WATER_BOX[2]-WATER_BOX[0])/WATER_CELL);
-// the ground at the bed's cell centres, once: the shore grid and the masks read this array (bakeBed and shoreGrid sample at those centres)
-const WATER_G=new Float32Array(WATER_NX*WATER_NX);
-for(let j=0;j<WATER_NX;j++)for(let i=0;i<WATER_NX;i++)WATER_G[j*WATER_NX+i]=terrainH(WATER_BOX[0]+(i+.5)*WATER_CELL,WATER_BOX[1]+(j+.5)*WATER_CELL);
-const waterBed=(x,z)=>WATER_G[Math.min(WATER_NX-1,Math.max(0,Math.floor((z-WATER_BOX[1])/WATER_CELL)))*WATER_NX+Math.min(WATER_NX-1,Math.max(0,Math.floor((x-WATER_BOX[0])/WATER_CELL)))];
-// ONE open surface (2026-10-21; it was a sea with a shore grid plus a second masked, bed-less tea-dark surface at the same level): the shore grid is flooded from the middle of the
-// water AND from every inland hollow (a predicate seed: inland of the shore, where the bayou, its oxbows and the river's lowland reach lie), so the surface stops where the water does;
-// the bayou's, the delta's and the river's tea-dark colour is a tint field over it (alpha 1 inland, fading 120 m out over the delta's plume instead of the old hard step at the mask edge).
-// surf is off: the bed is the true bed (no 1.4 m clamp) and a lap of white on the bayou's shallows is wrong; the sea's beach loses its lap line with it.
-const INLAND_COL=lin(BAYOU_COL.clone().lerp(RIVER_COL,.5).multiplyScalar(.8)),INLAND_HEX=((Math.round(INLAND_COL.r*255)<<16)|(Math.round(INLAND_COL.g*255)<<8)|Math.round(INLAND_COL.b*255));
-const ss01=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
-const SEA_SEED=xzOf(-2600,0);
-const WATER_TINT={box:WATER_BOX,cell:2*WATER_CELL,at:(x,z)=>{const si=seaIn(x,z);if(si>=0)return{c:INLAND_HEX,a:1};if(si<=-120)return null;
- const a=ss01(-120,-30,si)*(1-ss01(15,60,riverD(x,z)));return a>.004?{c:INLAND_HEX,a}:null;}};
-const SEA_WATER=WATER.open({name:'The lake',level:0,swell:[[.06,45,300,0,.04],[.035,18,260,1.3,.03]],field:.12,bounds:WATER_BOX,
- bed:waterBed,bedBox:WATER_BOX,bedCell:WATER_CELL,shore:{seeds:(x,z)=>seaIn(x,z)>=0||Math.hypot(x-SEA_SEED[0],z-SEA_SEED[1])<40},tint:WATER_TINT});
+// the surfaces' records are 86-host-fields.js's: the flora and the ground read the water's own fields, so the records stand before the build
 const SEA_DRAW=WATER.draw(SEA_WATER,{renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,surf:false,
  shallow:lin(SEA_SHALLOW.clone().lerp(SEA_MID,.3)),deep:lin(SEA_DEEP.clone().multiplyScalar(.75))});
 SEA_DRAW.mesh.userData.inspectLabel='The lake';
 const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.08,.3],shallow:lin(RIVER_COL),deep:lin(BAYOU_COL),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:24,across:6,margin:1.2,renderOrder:2});
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
+// THE GORGE'S WATER (core/water ext/54's looks, the row's clear-water look; refs/01): the marl's reach of the river runs turquoise over its pale clay floor, a ribbon of its own over the page's
+const GORGE_DRAW=GORGE_FLOW?WATER.drawFlow(GORGE_FLOW,WATER.lookDraw('proglacial','flow',{step:24,across:6,margin:1.2,renderOrder:3,roughness:.14,envMapIntensity:.3,shallow:lin(0x2da2ad),deep:lin(0x0c5363),color:0xffffff})):null;
+if(GORGE_DRAW)GORGE_DRAW.mesh.userData.inspectLabel='The marl gorge';
+// natural ripples (ext/56; TODO.md's ride-along, taken here on this kit's own surfaces)
+WATER.breakupAll();WATER.breakupFlows();
+// THE FLOOD (station 2, core/water's seasonal still, the hyperjungle lake's mechanism): the lake's level rises over the flats in the rains, 60 days behind them; the ground is drawn to the high water's
+// line, so the gallery and the grass stand in it half the year. The floating meadows ride it
+if(MG){const c=[[-1700,-3300],[900,-3300],[900,3300],[-1700,3300]].map(p=>xzOf(p[0],p[1])),FLOOD=window._flood=WATER.still({name:'The flood',poly:c,seasonal:{low:-.35,high:.95,lagD:60,sharp:1.5}});
+ const D=WATER.drawStill(FLOOD,{color:lin(0x3a4a3e).getHex(),roughness:.1,metalness:.08,envMapIntensity:.5,depthBias:[-1.5,-6]});D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel='The flood (its level follows the season)';
+ tick(()=>{if(typeof KHOST==='undefined'||!KHOST.host)return;WATER.stepSeasons(KHOST.host.clock);scene.traverse(o=>{if(o.name==='biome:floatmat')o.position.y=Math.max(0,FLOOD.level);});});}

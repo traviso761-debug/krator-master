@@ -1,6 +1,11 @@
 // ================================================================= HOST — stage
 // the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
 // carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+// THE LOOK (the final rebuild, PLAN.md "Core adoption"): what only this kit's own host asks of its fragments. The Cut and Farside read 50, 55 and 60 in
+// place and set none of it, so their pages draw as they did until their turns. ?x=0 turns each off for the owner's look pass
+const NWQ=new URLSearchParams(location.search),NWQ_ON=k=>NWQ.get(k)!=='0';
+const MG=typeof MARGINS!=='undefined'?MARGINS:null;   /* station 2's map and hooks (stations/margins/44z-host-margins.js); null on the page */
+window.NWLOW_LOOK={monsoon:!!MG,season:NWQ_ON('season'),backlit:NWQ_ON('backlit'),rootcol:NWQ_ON('rootcol'),culm:NWQ_ON('culm'),fung:NWQ_ON('fung'),lobes:NWQ_ON('lobes')};
 function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nwlowlands',n):null;if(!L)return fb;
  const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // The ideal-type host for the NORTHWESTERN LOWLANDS: renderer, lights, fog, the terrain
@@ -62,15 +67,29 @@ function swampK(x,z){const s=sw(x,z),sh=shoreS(tOf(x,z));return smooth(-1050,-13
 // The host owns the road; the biome plants its two rows (NWLOW.build({avenues})).
 const ROAD_S=[-1000,-420];
 function ROAD_T(s){return 300+22*Math.sin(s*.006);}
-function roadD(x,z){const s=sOf(x,z),t=tOf(x,z);if(s<ROAD_S[0]-60||s>ROAD_S[1]+60||Math.abs(t-300)>90)return 1e9;
+function roadD(x,z){const s=sOf(x,z),t=tOf(x,z);if(MG||s<ROAD_S[0]-60||s>ROAD_S[1]+60||Math.abs(t-300)>90)return 1e9;
  const sc=clamp(s,ROAD_S[0],ROAD_S[1]),slope=22*.006*Math.cos(sc*.006);return Math.hypot(s-sc,(t-ROAD_T(sc))/Math.sqrt(1+slope*slope));}
 const ROAD=[];for(let s=ROAD_S[0];s<=ROAD_S[1]+.1;s+=20)ROAD.push(xzOf(s,ROAD_T(s)));
 // ---------------------------------------------------------------- terrain
-function baseH(x,z){const s=sw(x,z);
+function baseH(x,z){const s=sw(x,z);if(MG)return MG.baseH(x,z,s,tOf(x,z));
  // the lowland shelf, the long subtropical rise, then the foothills of the Inner Wall range
  return 1.25+2.8*smooth(-1500,-300,s)+9*smooth(-400,900,s)+90*smooth(800,2200,s)+220*smooth(1900,3600,s);}
-function hillH(x,z){const s=sw(x,z),k=smooth(300,1300,s);
+function hillH(x,z){const s=sw(x,z),k=smooth(300,1300,s);if(MG)return 0;
  return k*(mix(46,110,smooth(1500,3000,s))*(fbm(x*.0016+2,z*.0016-4,63,3)-.5)+18*(fbm(x*.006-1,z*.006+7,64,2)-.5))+(1-k)*(1.6*(fbm(x*.004,z*.004,65,2)-.5));}
+// THE MARL GORGE (PLAN-FLORA.md, refs/01; BACKPORT.md's row; ?marl=0): where the river leaves the Inner Wall's foot it has cut a deep slot into soft blue clay, walls
+// near sheer, stepped by the marl's harder beds (KSTRATA, 86-host-fields.js), a narrow floor. Depth and width by s along the river, eased in and out; a heightfield, so no
+// true undercut: the walls' lean is the beds' ledges. Drawn at 4 m by its own ground strip (GORGE_STRIP, 86-host-fields.js)
+const GORGE={s0:1350,s1:2750,on:NWQ_ON('marl')&&!MG};
+function gorgeK(s){return GORGE.on?smooth(GORGE.s0,GORGE.s0+320,s)*smooth(GORGE.s1,GORGE.s1-420,s):0;}
+function gorgeCut(x,z){const s=sOf(x,z),k=gorgeK(s);if(k<=0)return 0;const d=Math.abs(tOf(x,z)-RIVER_T(s)),W=riverW(x,z),fl=W*.75,wall=fl+16+10*(fbm(s*.006,3.1,331,2)-.5);
+ if(d>=wall+18)return 0;const e=smooth(wall+18,wall,d),w=smooth(wall,fl,d);return k*(26+14*fbm(s*.0031,7.7,332,2))*(.1*e+.9*w);}
+// THE MARL'S BEDS (core/terrain KSTRATA; ?marl=0 none): soft blue-grey clay with thin harder bands, near level; the walls' steps come from this record's ledge pass, the shader draws the same beds
+// (the ground's vGL2.z, 86-host-fields.js) and the ledge plants read its hardness (87-host-gorge.js), so bed, step and plant agree
+if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['nwl-marl'])KSTRATA.add({name:'nwl-marl',main:'marl',kinds:{
+ marl:{p:.56,th:[1.2,3.8],col:[0x8ba2ac,0x7f97a2,0x97acb2],hard:.25,xbed:0,varnish:0},
+ clay:{p:.26,th:[.5,1.6],col:[0x62798a,0x6d8490],hard:.1,xbed:0,varnish:0},
+ band:{p:.18,th:[.25,.7],col:[0xb8bdb2,0xaab2aa],hard:.8,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:0}});
+const NW_MARL=GORGE.on&&typeof KSTRATA!=='undefined'?BIO.strata({recipe:'nwl-marl',seed:8105,range:[-40,420],dip:[.3,-.2,.02],warp:[4,1.4],res:.25,private:true}):null;
 function terrainH(x,z){
  let h=baseH(x,z)+hillH(x,z);const h0=h;
  const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
@@ -83,6 +102,7 @@ function terrainH(x,z){
  const bank=smooth(W+10,W*.6,rd);
  // in the lowland the bed drops under the water plane; up in the hills it is a 2.8 m trench the ribbon runs in
  if(bank>0){const lowland=smooth(250,-150,sw(x,z));h=mix(h,Math.min(h-.2,mix(h-2.8,-2.2,lowland)),bank);}
+ {const gc=gorgeCut(x,z);if(gc>0){h-=gc;if(NW_MARL&&gc>1.5)h=NW_MARL.ledge(x,z,h,1.1);}}
  // the sea: a sandy shelf then the deep
  const si=seaIn(x,z);if(si<30){const bed=-.4-1.6*smooth(0,-160,si)-9*smooth(-160,-700,si)+.8*(fbm(x*.004,z*.004,71,2)-.5)*smooth(-20,-150,si);
   h=mix(h,Math.min(bed,-.25),smooth(30,-12,si));}
@@ -105,6 +125,7 @@ const FIELD={
  flow:(x,z)=>clamp(smooth(W_R(x,z)*5+90,W_R(x,z)+4,riverD(x,z)),0,1),
  upland:(x,z)=>clamp((terrainH(x,z)-10)/240,0,1)};
 function W_R(x,z){return riverW(x,z);}
+if(MG)MG.bindFields(FIELD,{sw,tOf,riverD});
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
 BIO.init({tags:'nwlowlands',THREE:THREE,scene:scene,terrainH:terrainH,
@@ -116,7 +137,7 @@ BIO.init({tags:'nwlowlands',THREE:THREE,scene:scene,terrainH:terrainH,
 BIO.setSun([-1200,900,-600]);
 // the runtime LOD's draw-call options (core/biome README, "The runtime LOD"; core change B1/B2, 2026-10-26): one mesh per
 // chunk whatever its ranges, small floor layers on coarser chunks, and a dithered cross-fade over the last 15% of each range
-BIO.LOD.merge=true;BIO.LOD.minTris=1500;BIO.LOD.fade=.15;
+BIO.INDEX_ITEMS=NWQ_ON('index');BIO.LOD.merge=NWQ_ON('lodmerge');BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&NWQ_ON('lodfade')?.15:0;BIO.LOD.cull=BIO.LOD.fade>0&&NWQ_ON('lodcull');
 // ---------------------------------------------------------------- the ground
 // One mesh, painted from a coarse cache of the fields (each costs fbm calls),
 // with a tiled grain texture multiplied in. The red soils of the hills are
@@ -154,19 +175,40 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-/* the library's two ground layers over the painted floor, by the fields (materials.json ground.rainfloor: the rainforest dark floor (ground106); ground.lawn: the subtropical glades, a park lawn (ground003)), each anti-tiled
-   (two scales, one turned 37 degrees, a slow noise between) and part-mixed with the painted colour; without the pack the floor is the painted one */
-const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed)return null;const a=KMAT.packed('nwlowlands','ground.rainfloor'),c=KMAT.packed('nwlowlands','ground.lawn');if(!a||!c)return null;
- return{a:KMAT.textures(a,{aniso:8}).map,aK:1/a.scale[0],b:KMAT.textures(c,{aniso:8}).map,bK:1/c.scale[0]};})();
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};if(GLAY){sh.uniforms.uGA={value:GLAY.a};sh.uniforms.uGB={value:GLAY.b};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGA,uGB;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);'+(GLAY?'vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGA,vGWP.xz,'+GLAY.aK.toFixed(4)+')*1.1,clamp(vGL.x*0.65,0.0,0.65));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGB,vGWP.xz,'+GLAY.bK.toFixed(4)+')*1.25,clamp(vGL.y*0.7,0.0,0.7));':'')+'}');};
+const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890}),GROUND_MESHES=[];
+function groundShader(mat,marl){mat.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;attribute vec3 aGL2;varying vec4 vGL;varying vec3 vGL2;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGL2=aGL2;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;varying vec3 vGL2;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}'+(marl?'\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),sc/0.42,vGL2.z*0.75);}':''));
+ if(marl)marl.inject(sh);};}
+groundShader(MAT_GROUND,null);
+const MAT_MARL=NW_MARL?new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890}):null;if(MAT_MARL)groundShader(MAT_MARL,NW_MARL);   /* the gorge's strip: a page's 16 texture units hold the ground's five layers or the beds, not both */
+// THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND; the final rebuild; ?kground=0 for the paint alone): hex-tiled, scaled with distance, blended by height, each by a documented
+// mask (GLW in 86-host-fields.js, once the water's fields exist; the kit's own zone fields and the water's shore): the rainforest floor, the lawn of the glades, the hills' red soil,
+// the beach's sand, wet mud within the water's reach, shingle on the river's bars
+const GL_ON=NWQ_ON('kground')&&typeof KGROUND!=='undefined';
+if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwlowlands',slot,{w,amt,gain,tint:'diffuse'});
+ const LY=[L('ground.rainfloor','vGL.x',.65,1.1),L('ground.lawn','vGL.y',.7,1.25),L('groundDry','vGL.z',.6,1.05),L('groundSand','vGL.w',.75,1.1),L('groundMud','vGL2.x',.8,.8),L('groundGravel','vGL2.y',.85,1.0)];
+ if(!MG)KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-ground'});
+ if(MG)LY.push(L('groundBurn','vGL2.z',.55,.75)),KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-margins'});
+ if(MAT_MARL)KGROUND.hook(MAT_MARL,{layers:[LY[4],LY[5],L('rockMarl','vGL2.z',.9,1.0)].filter(Boolean),key:'nwlowlands-marl'});}
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
- {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=tr*(1-sk);gl[i*2+1]=open*smooth(.0,.4,FC.at(FC.a.wet,x,z)+.15);}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);})();
+ g.setAttribute('aGL',new THREE.BufferAttribute(new Float32Array(p.count*4),4));g.setAttribute('aGL2',new THREE.BufferAttribute(new Float32Array(p.count*3),3));
+ /* THE GORGE'S STRIP (core/water/PRACTICE.md, "Make the ground mesh finer than the narrowest channel"; necanyons' creek strip): the walls close over less than two 16 m cells, so the cells over the cut
+    are left out of the coarse floor and drawn again at 4 m, each edge shared with a coarse cell on that cell's own line (no crack). About 40k triangles */
+ const C=S/N,cov=new Set();if(GORGE.on)for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-S/2+(i+.5)*C,z=-S/2+(j+.5)*C;if(gorgeK(sOf(x,z))<=0)continue;let hit=false;for(const dx of [-1,0,1])for(const dz of [-1,0,1])if(gorgeCut(x+dx*C*.75,z+dz*C*.75)>.02)hit=true;if(hit)cov.add(j*N+i);}
+ if(cov.size){const I=g.index.array,keep=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(cov.has(j*N+i))continue;const o=6*(j*N+i);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);GROUND_MESHES.push(m);
+ if(cov.size){const K=4,pos=[],idx=[],has=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&cov.has(j*N+i);
+  cov.forEach(key=>{const j0=Math.floor(key/N),i0=key%N,x0=-S/2+i0*C,z0=-S/2+j0*C,o=pos.length/3;
+   for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){let x=x0+i/K*C,z=z0+j/K*C,y;
+    const edge=(i===0&&!has(i0-1,j0))||(i===K&&!has(i0+1,j0))?1:(j===0&&!has(i0,j0-1))||(j===K&&!has(i0,j0+1))?2:0;
+    if(edge===1){const a=terrainH(x,z0),b=terrainH(x,z0+C);y=a+(b-a)*j/K;}else if(edge===2){const a=terrainH(x0,z),b=terrainH(x0+C,z);y=a+(b-a)*i/K;}else y=terrainH(x,z);pos.push(x,y,z);}
+   for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
+  const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(pos.map((v,k)=>k%3===0?v/S+.5:k%3===2?.5-v/S:0).filter((v,k)=>k%3!==1),2));g2.setIndex(idx);
+  const n=pos.length/3;g2.setAttribute('aGL',new THREE.BufferAttribute(new Float32Array(n*4),4));g2.setAttribute('aGL2',new THREE.BufferAttribute(new Float32Array(n*3),3));g2.computeVertexNormals();
+  const m2=new THREE.Mesh(g2,MAT_MARL||MAT_GROUND);m2.userData.probeSkip=true;m2.userData.inspectLabel='The marl gorge';scene.add(m2);GROUND_MESHES.push(m2);}})();
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the water is core/water's. The lake, the lowland river and the ponds were one plane at y=0 in the page's own
@@ -187,7 +229,7 @@ const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.
 function meshH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,X=k=>-S/2+k*c;
  const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));
  return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);}
-(function(){const TEX=BIO.canvasTex(256,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+if(!MG)(function(){const TEX=BIO.canvasTex(256,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,u=x/w,q=(u-.5)/.4+.5,rut=Math.max(smooth(.12,0,Math.abs(q-.28)),smooth(.12,0,Math.abs(q-.72))),crown=smooth(.1,0,Math.abs(q-.5)),verge=smooth(.19,.22,Math.abs(u-.5));
    const n=(fbm(x/14,y/14,2.1,3)-.5)*40+(BIO.fn.h3(x,y,5)-.5)*22;let r=206+n-rut*26,g2=190+n-rut*24,b=152+n-rut*20;   // the road in the middle 40%, mown grass verges either side
    r=mix(r,120,crown*.45);g2=mix(g2,132,crown*.45);b=mix(b,70,crown*.45);

@@ -7,6 +7,7 @@
   `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan needs a rewrite before its station 1.
 - **Map 5.1 is merged here** (538c814d1, Gemini's Round 2, 3e35e605f, 2026-11-02). Its checks passed; region cuts and the pages that read the model are not re-cut yet (`biomes/STATIONS-MAP-5.1.md`, "Regions needing a re-cut"). The old map is frozen.
 - **The alien biome session's stations are in the queue** (the owner, 2026-11-02; plans merged here). Each is built with its host kit's turn: swlowlands 3 (the delta and Wing's floodplain, one station reading swbay in place), nhighlands 5 (the Footfall bogs), ringisles 3 (the lagoon), outlands 8 (the Mires, when that kit is built). The kits' own plans: `biomes/gills` (stations on godthrone, catch, xanadu), `biomes/hearths` (riftrim, oidong, the Stills at geyser's sites), `biomes/deeps`, `biomes/clifflung`. A turn reads its host's station list and these plans, and asks the owner only about what's still open in them.
+- **Map 5.1 Round 3 is merged here** (68b6aa22b): frozen river names, the valley's seven basins and lake, the southern Inner Wall scarp. shighlands' stations need a re-survey (`biomes/STATIONS-MAP-5.1.md`).
 - **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
 - **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
@@ -320,7 +321,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 1 | eastabyss, nwbay | pure vendors |
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
-  | 4 | swlowlands (**done 2026-11-02:** stations `gorge`, `delta`; all pages pass), nwlowlands | their exchanges together; nwlowlands vends to the Cut and Farside |
+  | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu, oidong | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |
@@ -330,6 +331,8 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
   | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
+
+  **nwlowlands' turn, merged 2026-11-02** (`biomes/nwlowlands/PLAN.md`, "Core adoption"): station 2 `margins` is built. `verify.py --assert --all-views` passes on the Arc for both pages (audit .57% and .17%, drawn 7.49M at worst). **Species changed for readers (keys, indices kept, 23 species):** every crown on `crownOn` is held to its limb by `BIO.holdTo`; needle cypress and the spire cedar's mid tier draw a rod to each crown spot; `needle`, `feather`, `ginkgo` and `blossom` are on stems, and `pad` is `free`, `bloom` `onLeaf`. Readers' pages move at their turns (the Cut, Farside, Korona, ringisles). Flagged off for readers (`NWLOW_LOOK`): seasons, back-light, root colour, the culm, the bracket, the lobes' skin. `check_cells --fix` can't see kits that `BIO.def` by forEach: stems were set by hand here, so swlowlands-like kits want checking. **Open:** `bluesycamore` and `pondcypress` grow none until swlowlands' `SWLOW.make` and `grow` merge; whichever kit merges second rebuilds nwlowlands and reads `_kin`.
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).

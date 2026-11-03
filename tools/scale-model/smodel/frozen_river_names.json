@@ -1,0 +1,4427 @@
+{
+  "9101:__tongue__": "eternian",
+  "9101:eternian": {
+    "gloss": "Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta",
+    "name": "Ria River (Mā-Rīa)"
+  },
+  "9102:__tongue__": "hum",
+  "9102:hum": {
+    "gloss": "Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River",
+    "name": "Hām-Tsēk (Web-Cleaver River)"
+  },
+  "9103:__tongue__": "eternian",
+  "9103:eternian": {
+    "gloss": "Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta",
+    "name": "Tōng-Mā (North Ria Distributary)"
+  },
+  "9104:__tongue__": "eternian",
+  "9104:eternian": {
+    "gloss": "Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta",
+    "name": "Sī-Mā (South Ria Distributary)"
+  },
+  "9105:__tongue__": "tungang",
+  "9105:tungang": {
+    "gloss": "Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook",
+    "name": "Kopa-Tarn Warra (Crook River)"
+  },
+  "9106:__tongue__": "hum",
+  "9106:hum": {
+    "gloss": "Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland",
+    "name": "Hau-Gèl (Outland Gate River)"
+  },
+  "9107:__tongue__": "eternian",
+  "9107:eternian": {
+    "gloss": "Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River",
+    "name": "Pāk-Mā (North Ria Fork)"
+  },
+  "9108:__tongue__": "eternian",
+  "9108:eternian": {
+    "gloss": "Mō (ink-stone) + Mā (river)",
+    "name": "Mō-Mā"
+  },
+  "9109:__tongue__": "eternian",
+  "9109:eternian": {
+    "gloss": "Chīng (clear-mirror) + Mā (river)",
+    "name": "Chīng-Mā"
+  },
+  "9110:__tongue__": "tungang",
+  "9110:tungang": {
+    "gloss": "Blek (black-shale) + Warra (river)",
+    "name": "Blek Warra"
+  },
+  "r000:__tongue__": "vothic",
+  "r000:vothic": {
+    "gloss": "klir (clear) + Rivrh (river)",
+    "name": "klir Rivrh"
+  },
+  "r001:__tongue__": "dalab",
+  "r001:dalab": {
+    "gloss": "da riba ('the river') — mother river of the Dalab basin",
+    "name": "Dariba"
+  },
+  "r002:__tongue__": "eternian",
+  "r002:eternian": {
+    "gloss": "Līng (lotus-bell) + Mā (river)",
+    "name": "Līng-Mā"
+  },
+  "r003:__tongue__": "tungang",
+  "r003:tungang": {
+    "gloss": "Tarn (mountain-tarn) + Warra (river)",
+    "name": "Tarn Warra"
+  },
+  "r004:__tongue__": "republic",
+  "r004:republic": {
+    "gloss": "Cascade River ('Kaskejt Rivr') — the stepped cataract river of Cascade",
+    "name": "Kaskejt Rivr"
+  },
+  "r005:__tongue__": "dalab",
+  "r005:dalab": {
+    "gloss": "Chimes River ('Chimes Riba') — the Great Lake outlet gorge plunging past Chimes into the Rift",
+    "name": "Chimes Riba"
+  },
+  "r006:__tongue__": "tungang",
+  "r006:tungang": {
+    "gloss": "Fah (far) + Warra (river)",
+    "name": "Fah Warra"
+  },
+  "r007:__tongue__": "vrivolci",
+  "r007:vrivolci": {
+    "gloss": "Tarvos (bull-tor) + Riba (river)",
+    "name": "Tarvosriba"
+  },
+  "r008:__tongue__": "yusar",
+  "r008:yusar": {
+    "gloss": "Coldkeep (keep-cold) + Waywater (river)",
+    "name": "Waywater Coldkeep"
+  },
+  "r009:__tongue__": "tungang",
+  "r009:tungang": {
+    "gloss": "Weyt (white-water) + Warra (river)",
+    "name": "Weyt Warra"
+  },
+  "r010:__tongue__": "republic",
+  "r010:republic": {
+    "gloss": "Blak (black) + Bruk (stream)",
+    "name": "Blak Bruk"
+  },
+  "r011:__tongue__": "vrivolci",
+  "r011:vrivolci": {
+    "gloss": "Dubnos (deep-hollow) + Riba (river)",
+    "name": "Dubnosriba"
+  },
+  "r012:__tongue__": "eternian",
+  "r012:eternian": {
+    "gloss": "Hāk (black-ink) + Mā (river)",
+    "name": "Hāk-Mā"
+  },
+  "r013:__tongue__": "izani",
+  "r013:izani": {
+    "gloss": "Falz (falls) + Bruk (stream)",
+    "name": "Bruk Falz"
+  },
+  "r014:__tongue__": "eternian",
+  "r014:eternian": {
+    "gloss": "Hōng (vermilion) + Mā (river)",
+    "name": "Hōng-Mā"
+  },
+  "r015:__tongue__": "yusar",
+  "r015:yusar": {
+    "gloss": "Fallhigh (high-fall) + Waywater (river)",
+    "name": "Waywater Fallhigh"
+  },
+  "r016:__tongue__": "eternian",
+  "r016:eternian": {
+    "gloss": "Chī (paper-scroll) + Mā (river)",
+    "name": "Chī-Mā"
+  },
+  "r017:__tongue__": "eternian",
+  "r017:eternian": {
+    "gloss": "Kām (gold-leaf) + Mā (river)",
+    "name": "Kām-Mā"
+  },
+  "r018:__tongue__": "islander",
+  "r018:islander": {
+    "gloss": "Moana (deep-ocean) + Vai (river) — eastern Ring Isle stream",
+    "name": "Vai Moana"
+  },
+  "r019:__tongue__": "yuni",
+  "r019:yuni": {
+    "gloss": "the Bigga ('the Bigger') — mother river of Yuni Valley",
+    "name": "the Bigga"
+  },
+  "r020:__tongue__": "tungang",
+  "r020:tungang": {
+    "gloss": "Kual (coal) + Warra (river)",
+    "name": "Kual Warra"
+  },
+  "r021:__tongue__": "farside",
+  "r021:farside": {
+    "gloss": "xMista (sea-fog) + qRiba (river)",
+    "name": "xMista qRiba"
+  },
+  "r022:__tongue__": "islanderw",
+  "r022:islanderw": {
+    "gloss": "Pou (stone-pillar) + Vai (river) — western Ring Isle & Arch stream",
+    "name": "Vai Pou"
+  },
+  "r023:__tongue__": "talovolci",
+  "r023:talovolci": {
+    "gloss": "Vindos (white-mist) + Rivros (river)",
+    "name": "Vindos Rivros"
+  },
+  "r024:__tongue__": "jimjam",
+  "r024:jimjam": {
+    "gloss": "Mēkam (monsoon-cloud) + āṟu (river)",
+    "name": "Mēkam-āṟu"
+  },
+  "r025:__tongue__": "izani",
+  "r025:izani": {
+    "gloss": "Cistal (crystal) + Rrivar (river)",
+    "name": "Rrivar Cistal"
+  },
+  "r026:__tongue__": "dalab",
+  "r026:dalab": {
+    "gloss": "Span River ('Pan Riba') — the mountain gorge river bridged by Span",
+    "name": "Pan Riba"
+  },
+  "r027:__tongue__": "jimjam",
+  "r027:jimjam": {
+    "gloss": "Nīla (blue-lotus) + āṟu (river)",
+    "name": "Nīla-āṟu"
+  },
+  "r028:__tongue__": "izani",
+  "r028:izani": {
+    "gloss": "falls river",
+    "name": "Rrivar Falz"
+  },
+  "r029:__tongue__": "vothic",
+  "r029:vothic": {
+    "gloss": "Turm (tower) + Rivrh (river)",
+    "name": "Turm Rivrh"
+  },
+  "r030:__tongue__": "vrivolci",
+  "r030:vrivolci": {
+    "gloss": "Clodos (cloud-bench) + Riba (river)",
+    "name": "Clodosriba"
+  },
+  "r031:__tongue__": "izani",
+  "r031:izani": {
+    "gloss": "swift river",
+    "name": "Rrivar Isguifta"
+  },
+  "r032:__tongue__": "jimjam",
+  "r032:jimjam": {
+    "gloss": "Periya (great) + āṟu (river)",
+    "name": "Periya-āṟu"
+  },
+  "r033:__tongue__": "izani",
+  "r033:izani": {
+    "gloss": "geit (gate) + Rrivar (river)",
+    "name": "Rrivar geit"
+  },
+  "r034:__tongue__": "vothic",
+  "r034:vothic": {
+    "gloss": "Sharf (sharp) + Rivrh (river)",
+    "name": "Sharf Rivrh"
+  },
+  "r035:__tongue__": "izani",
+  "r035:izani": {
+    "gloss": "Goulda (gold) + Rrivar (river)",
+    "name": "Rrivar Goulda"
+  },
+  "r036:__tongue__": "izani",
+  "r036:izani": {
+    "gloss": "green river",
+    "name": "Rrivar Grin"
+  },
+  "r037:__tongue__": "tabist",
+  "r037:tabist": {
+    "gloss": "Ḥmm (hot-brine) + Rvr (river)",
+    "name": "Rvr Ḥmm"
+  },
+  "r038:__tongue__": "jimjam",
+  "r038:jimjam": {
+    "gloss": "Tāmarai (lotus) + āṟu (river)",
+    "name": "Tāmarai-āṟu"
+  },
+  "r039:__tongue__": "vrivolci",
+  "r039:vrivolci": {
+    "gloss": "Ixos (ice-peak) + Riba (river)",
+    "name": "Ixosriba"
+  },
+  "r040:__tongue__": "izani",
+  "r040:izani": {
+    "gloss": "taur (tower) + Rrivar (river)",
+    "name": "Rrivar taur"
+  },
+  "r041:__tongue__": "farside",
+  "r041:farside": {
+    "gloss": "qRidj (terrace-ridge) + qRiba (river)",
+    "name": "qRidj qRiba"
+  },
+  "r042:__tongue__": "yuni",
+  "r042:yuni": {
+    "gloss": "Braita (Bright) + Riba (river)",
+    "name": "Braita Riba"
+  },
+  "r043:__tongue__": "farside",
+  "r043:farside": {
+    "gloss": "ɗStara (outer-star) + qRiba (river)",
+    "name": "ɗStara qRiba"
+  },
+  "r044:__tongue__": "farside",
+  "r044:farside": {
+    "gloss": "ɓRiba (deep-implosive) + qRiba (river)",
+    "name": "ɓRiba qRiba"
+  },
+  "r045:__tongue__": "hum",
+  "r045:hum": {
+    "gloss": "Sīng (night-star) + Hām (river)",
+    "name": "Sīng-Hām"
+  },
+  "r046:__tongue__": "riders",
+  "r046:riders": {
+    "gloss": "Béesh (obsidian) + Baatar (river)",
+    "name": "Béesh Baatar"
+  },
+  "r047:__tongue__": "izani",
+  "r047:izani": {
+    "gloss": "Dippa (deep) + Rrivar (river)",
+    "name": "Rrivar Dippa"
+  },
+  "r048:__tongue__": "tungang",
+  "r048:tungang": {
+    "gloss": "Pimp (Fifth) + Warra (river)",
+    "name": "Pimp Warra"
+  },
+  "r049:__tongue__": "izani",
+  "r049:izani": {
+    "gloss": "Guaita (white) + Rrivar (river)",
+    "name": "Rrivar Guaita"
+  },
+  "r050:__tongue__": "tabist",
+  "r050:tabist": {
+    "gloss": "Bḥr (sunken-sea) + Rvr (river)",
+    "name": "Rvr Bḥr"
+  },
+  "r051:__tongue__": "republic",
+  "r051:republic": {
+    "gloss": "Silvr (silver) + Bruk (stream)",
+    "name": "Silvr Bruk"
+  },
+  "r052:__tongue__": "tungang",
+  "r052:tungang": {
+    "gloss": "Tkyoob (Cube) + Warra (river)",
+    "name": "Tkyoob Warra"
+  },
+  "r053:__tongue__": "dasri",
+  "r053:dasri": {
+    "gloss": "al-Qaṣr (butte-fortress) + Rīfar (river)",
+    "name": "Rīfar al-Qaṣr"
+  },
+  "r054:__tongue__": "tungang",
+  "r054:tungang": {
+    "gloss": "Fell (high-fell) + Warra (river)",
+    "name": "Fell Warra"
+  },
+  "r055:__tongue__": "argot",
+  "r055:argot": {
+    "gloss": "Gete (spillway-gate) + Rivar (river)",
+    "name": "Gete Rivar"
+  },
+  "r056:__tongue__": "izani",
+  "r056:izani": {
+    "gloss": "long river",
+    "name": "Rrivar Loña"
+  },
+  "r057:__tongue__": "jimjam",
+  "r057:jimjam": {
+    "gloss": "Veḷḷi (silver) + āṟu (river)",
+    "name": "Veḷḷi-āṟu"
+  },
+  "r058:__tongue__": "vothic",
+  "r058:vothic": {
+    "gloss": "Drum river",
+    "name": "Drïm Rivrh"
+  },
+  "r059:__tongue__": "vrivolci",
+  "r059:vrivolci": {
+    "gloss": "carnos (cairn) + Riba (river)",
+    "name": "carnosriba"
+  },
+  "r060:__tongue__": "vrivolci",
+  "r060:vrivolci": {
+    "gloss": "Rixos (king-stone) + Bruk (stream)",
+    "name": "Rixosbruk"
+  },
+  "r061:__tongue__": "farside",
+  "r061:farside": {
+    "gloss": "qAina (iron-sand) + qRiba (river)",
+    "name": "qAina qRiba"
+  },
+  "r062:__tongue__": "hum",
+  "r062:hum": {
+    "gloss": "Hōng (red-sandstone) + Hām (river)",
+    "name": "Hōng-Hām"
+  },
+  "r063:__tongue__": "izani",
+  "r063:izani": {
+    "gloss": "brij (bridge) + Rrivar (river)",
+    "name": "Rrivar brij"
+  },
+  "r064:__tongue__": "farside",
+  "r064:farside": {
+    "gloss": "xKlira (clear-pebble) + qRiba (river)",
+    "name": "xKlira qRiba"
+  },
+  "r065:__tongue__": "vothic",
+  "r065:vothic": {
+    "gloss": "Shvarts (black) + Brük (stream)",
+    "name": "Shvarts Brük"
+  },
+  "r066:__tongue__": "tungang",
+  "r066:tungang": {
+    "gloss": "Garth (garth-enclosure) + Warra (river)",
+    "name": "Garth Warra"
+  },
+  "r067:__tongue__": "yuni",
+  "r067:yuni": {
+    "gloss": "Solt (Salt) + Riba (river)",
+    "name": "Solt Riba"
+  },
+  "r068:__tongue__": "izani",
+  "r068:izani": {
+    "gloss": "Caulda (cold) + Rrivar (river)",
+    "name": "Rrivar Caulda"
+  },
+  "r069:__tongue__": "vrivolci",
+  "r069:vrivolci": {
+    "gloss": "Uaros (high-crag) + Riba (river)",
+    "name": "Uarosriba"
+  },
+  "r070:__tongue__": "xanadui",
+  "r070:xanadui": {
+    "gloss": "Ālph — the sacred river of Xanadu plunging into the sunless cavern sea",
+    "name": "Ālph"
+  },
+  "r071:__tongue__": "vrivolci",
+  "r071:vrivolci": {
+    "gloss": "Spirla (spiral) + Riba (river)",
+    "name": "Spirlariba"
+  },
+  "r072:__tongue__": "vothic",
+  "r072:vothic": {
+    "gloss": "Torus river",
+    "name": "Tors Rivrh"
+  },
+  "r073:__tongue__": "tungang",
+  "r073:tungang": {
+    "gloss": "Laa (low) + Stuan (stone) + Beck (stream)",
+    "name": "Laa Stuan Beck"
+  },
+  "r074:__tongue__": "farside",
+  "r074:farside": {
+    "gloss": "cSolt (salt-spray) + cBruk (stream)",
+    "name": "cSolt cBruk"
+  },
+  "r075:__tongue__": "farside",
+  "r075:farside": {
+    "gloss": "ɗGould (gold-implosive) + qRiba (river)",
+    "name": "ɗGould qRiba"
+  },
+  "r076:__tongue__": "zeijani",
+  "r076:zeijani": {
+    "gloss": "dannu (strong-wall) + Nāru (river)",
+    "name": "Nāru-Dannu"
+  },
+  "r077:__tongue__": "yuni",
+  "r077:yuni": {
+    "gloss": "Waita (White) + Riba (river)",
+    "name": "Waita Riba"
+  },
+  "r078:__tongue__": "eternian",
+  "r078:eternian": {
+    "gloss": "Tōng (east) + Sēk (stone-weir) + Mā (river)",
+    "name": "Tōng-Sēk-Mā"
+  },
+  "r079:__tongue__": "dasri",
+  "r079:dasri": {
+    "gloss": "al-Ghubār (dust-plume) + Rīfar (river)",
+    "name": "Rīfar al-Ghubār"
+  },
+  "r080:__tongue__": "dalab",
+  "r080:dalab": {
+    "gloss": "Star (star) + Riba (river)",
+    "name": "Star Riba"
+  },
+  "r081:__tongue__": "tungang",
+  "r081:tungang": {
+    "gloss": "Yan (First) + Warra (river)",
+    "name": "Yan Warra"
+  },
+  "r082:__tongue__": "izani",
+  "r082:izani": {
+    "gloss": "pina (pine) + Rrivar (river)",
+    "name": "Rrivar pina"
+  },
+  "r083:__tongue__": "farside",
+  "r083:farside": {
+    "gloss": "cSolt (salt-spray) + qRiba (river)",
+    "name": "cSolt qRiba"
+  },
+  "r084:__tongue__": "izani",
+  "r084:izani": {
+    "gloss": "onda (wave) + Rrivar (river)",
+    "name": "Rrivar onda"
+  },
+  "r085:__tongue__": "hum",
+  "r085:hum": {
+    "gloss": "Hau (coyote-hound) + Kē (stream)",
+    "name": "Hau-Kē"
+  },
+  "r086:__tongue__": "tungang",
+  "r086:tungang": {
+    "gloss": "Tyan (Second) + Warra (river)",
+    "name": "Tyan Warra"
+  },
+  "r087:__tongue__": "farside",
+  "r087:farside": {
+    "gloss": "xKlira (clear-pebble) + cBruk (stream)",
+    "name": "xKlira cBruk"
+  },
+  "r088:__tongue__": "tungang",
+  "r088:tungang": {
+    "gloss": "Kruk (crook-bend) + Warra (river)",
+    "name": "Kruk Warra"
+  },
+  "r089:__tongue__": "farside",
+  "r089:farside": {
+    "gloss": "xBrod (broad-wash) + qRiba (river)",
+    "name": "xBrod qRiba"
+  },
+  "r090:__tongue__": "argot",
+  "r090:argot": {
+    "gloss": "Ankra (anchor) + Rivar (river)",
+    "name": "Ankra Rivar"
+  },
+  "r091:__tongue__": "farside",
+  "r091:farside": {
+    "gloss": "cWaita (white-foam) + cBruk (stream)",
+    "name": "cWaita cBruk"
+  },
+  "r092:__tongue__": "republic",
+  "r092:republic": {
+    "gloss": "Dip (deep) + Rivr (river)",
+    "name": "Dip Rivr"
+  },
+  "r093:__tongue__": "farside",
+  "r093:farside": {
+    "gloss": "qBlaka (black-shale) + cBruk (stream)",
+    "name": "qBlaka cBruk"
+  },
+  "r094:__tongue__": "yuni",
+  "r094:yuni": {
+    "gloss": "Sista (Sister) + Riba (river)",
+    "name": "Sista Riba"
+  },
+  "r095:__tongue__": "farside",
+  "r095:farside": {
+    "gloss": "ɓRiba (deep-implosive) + cBruk (stream)",
+    "name": "ɓRiba cBruk"
+  },
+  "r096:__tongue__": "farside",
+  "r096:farside": {
+    "gloss": "qAina (iron-sand) + cBruk (stream)",
+    "name": "qAina cBruk"
+  },
+  "r097:__tongue__": "dalab",
+  "r097:dalab": {
+    "gloss": "Wind (wind) + Riba (river)",
+    "name": "Wind Riba"
+  },
+  "r098:__tongue__": "hum",
+  "r098:hum": {
+    "gloss": "Sām (deep-notch) + Hām (river)",
+    "name": "Sām-Hām"
+  },
+  "r099:__tongue__": "izani",
+  "r099:izani": {
+    "gloss": "Salta (salt) + Rrivar (river)",
+    "name": "Rrivar Salta"
+  },
+  "r100:__tongue__": "farside",
+  "r100:farside": {
+    "gloss": "ɗGould (gold-implosive) + cBruk (stream)",
+    "name": "ɗGould cBruk"
+  },
+  "r101:__tongue__": "yusar",
+  "r101:yusar": {
+    "gloss": "Turnback (back-turn) + Waywater (river)",
+    "name": "Waywater Turnback"
+  },
+  "r102:__tongue__": "dasri",
+  "r102:dasri": {
+    "gloss": "al-Sarāb (mirage) + Rīfar (river)",
+    "name": "Rīfar al-Sarāb"
+  },
+  "r103:__tongue__": "izani",
+  "r103:izani": {
+    "gloss": "cedra (cedar) + Rrivar (river)",
+    "name": "Rrivar cedra"
+  },
+  "r104:__tongue__": "vothic",
+  "r104:vothic": {
+    "gloss": "mist (mist) + Brük (stream)",
+    "name": "mist Brük"
+  },
+  "r105:__tongue__": "xanadui",
+  "r105:xanadui": {
+    "gloss": "alghaym (cloud-veil) + Bīruk (stream)",
+    "name": "Bīruk al-Ghaym"
+  },
+  "r106:__tongue__": "dalab",
+  "r106:dalab": {
+    "gloss": "Wind (wind) + Bruk (stream)",
+    "name": "Wind Bruk"
+  },
+  "r107:__tongue__": "xanadui",
+  "r107:xanadui": {
+    "gloss": "aljadwal (terraced-rill) + Rīfar (river)",
+    "name": "Rīfar al-Jadwal"
+  },
+  "r108:__tongue__": "yusar",
+  "r108:yusar": {
+    "gloss": "Saltwhite (white-salt) + Runbrook (stream)",
+    "name": "Runbrook Saltwhite"
+  },
+  "r109:__tongue__": "yusar",
+  "r109:yusar": {
+    "gloss": "Windlow (low-wind) + Runbrook (stream)",
+    "name": "Runbrook Windlow"
+  },
+  "r110:__tongue__": "argot",
+  "r110:argot": {
+    "gloss": "Roda (portage-road) + Rivar (river)",
+    "name": "Roda Rivar"
+  },
+  "r111:__tongue__": "eternian",
+  "r111:eternian": {
+    "gloss": "Wūn (cloud-mist) + Kē (stream)",
+    "name": "Wūn-Kē"
+  },
+  "r112:__tongue__": "izani",
+  "r112:izani": {
+    "gloss": "onda (wave) + Bruk (stream)",
+    "name": "Bruk onda"
+  },
+  "r113:__tongue__": "farside",
+  "r113:farside": {
+    "gloss": "ɓSuna (west-sun) + qRiba (river)",
+    "name": "ɓSuna qRiba"
+  },
+  "r114:__tongue__": "dasri",
+  "r114:dasri": {
+    "gloss": "al-Zulāl (cool-oasis) + Rīfar (river)",
+    "name": "Rīfar al-Zulāl"
+  },
+  "r115:__tongue__": "vothic",
+  "r115:vothic": {
+    "gloss": "Flint (flint) + Rivrh (river)",
+    "name": "Flint Rivrh"
+  },
+  "r116:__tongue__": "tungang",
+  "r116:tungang": {
+    "gloss": "Tlahn (iron-clan) + Warra (river)",
+    "name": "Tlahn Warra"
+  },
+  "r117:__tongue__": "yusar",
+  "r117:yusar": {
+    "gloss": "Sleepdown (down-sleep) + Waywater (river)",
+    "name": "Waywater Sleepdown"
+  },
+  "r118:__tongue__": "izani",
+  "r118:izani": {
+    "gloss": "Rreda (red) + Rrivar (river)",
+    "name": "Rrivar Rreda"
+  },
+  "r119:__tongue__": "farside",
+  "r119:farside": {
+    "gloss": "cSaut (south) + ɓRiba (deep-implosive) + cBruk (stream)",
+    "name": "cSaut ɓRiba cBruk"
+  },
+  "r120:__tongue__": "farside",
+  "r120:farside": {
+    "gloss": "xBrod (broad-wash) + cBruk (stream)",
+    "name": "xBrod cBruk"
+  },
+  "r121:__tongue__": "hum",
+  "r121:hum": {
+    "gloss": "Yūt (howling-moon) + Hām (river)",
+    "name": "Yūt-Hām"
+  },
+  "r122:__tongue__": "eternian",
+  "r122:eternian": {
+    "gloss": "Ngān (silver-thread) + Kē (stream)",
+    "name": "Ngān-Kē"
+  },
+  "r123:__tongue__": "republic",
+  "r123:republic": {
+    "gloss": "Birč (birch) + Bruk (stream)",
+    "name": "Birč Bruk"
+  },
+  "r124:__tongue__": "yusar",
+  "r124:yusar": {
+    "gloss": "Golddeep (deep-gold) + Waywater (river)",
+    "name": "Waywater Golddeep"
+  },
+  "r125:__tongue__": "hum",
+  "r125:hum": {
+    "gloss": "Tōng (east-gate) + Hām (river)",
+    "name": "Tōng-Hām"
+  },
+  "r126:__tongue__": "vothic",
+  "r126:vothic": {
+    "gloss": "Kowld (cold) + Rivrh (river)",
+    "name": "Kowld Rivrh"
+  },
+  "r127:__tongue__": "yuni",
+  "r127:yuni": {
+    "gloss": "Grina (Green) + Riba (river)",
+    "name": "Grina Riba"
+  },
+  "r128:__tongue__": "izani",
+  "r128:izani": {
+    "gloss": "pina (pine) + Bruk (stream)",
+    "name": "Bruk pina"
+  },
+  "r129:__tongue__": "tungang",
+  "r129:tungang": {
+    "gloss": "Kowd (cold) + Beck (stream)",
+    "name": "Kowd Beck"
+  },
+  "r130:__tongue__": "farside",
+  "r130:farside": {
+    "gloss": "ɓSuna (west-sun) + cBruk (stream)",
+    "name": "ɓSuna cBruk"
+  },
+  "r131:__tongue__": "vothic",
+  "r131:vothic": {
+    "gloss": "brayt (bright) + Rivrh (river)",
+    "name": "brayt Rivrh"
+  },
+  "r132:__tongue__": "eternian",
+  "r132:eternian": {
+    "gloss": "Sīng (star-lantern) + Mā (river)",
+    "name": "Sīng-Mā"
+  },
+  "r133:__tongue__": "vrivolci",
+  "r133:vrivolci": {
+    "gloss": "Branos (raven) + Bruk (stream)",
+    "name": "Branosbruk"
+  },
+  "r134:__tongue__": "farside",
+  "r134:farside": {
+    "gloss": "xWinda (wind-click) + cBruk (stream)",
+    "name": "xWinda cBruk"
+  },
+  "r135:__tongue__": "vrivolci",
+  "r135:vrivolci": {
+    "gloss": "Dubnos (deep-hollow) + Bruk (stream)",
+    "name": "Dubnosbruk"
+  },
+  "r136:__tongue__": "yusar",
+  "r136:yusar": {
+    "gloss": "Ashgrey (grey-ash) + Waywater (river)",
+    "name": "Waywater Ashgrey"
+  },
+  "r137:__tongue__": "farside",
+  "r137:farside": {
+    "gloss": "cFols (bench-falls) + cBruk (stream)",
+    "name": "cFols cBruk"
+  },
+  "r138:__tongue__": "vrivolci",
+  "r138:vrivolci": {
+    "gloss": "Stanos (standing-stone) + Bruk (stream)",
+    "name": "Stanosbruk"
+  },
+  "r139:__tongue__": "yusar",
+  "r139:yusar": {
+    "gloss": "Saltwhite (white-salt) + Waywater (river)",
+    "name": "Waywater Saltwhite"
+  },
+  "r140:__tongue__": "tungang",
+  "r140:tungang": {
+    "gloss": "Pimp (Fifth) + Beck (stream)",
+    "name": "Pimp Beck"
+  },
+  "r141:__tongue__": "yusar",
+  "r141:yusar": {
+    "gloss": "Smallway (little) + Shadowlong (long-shadow) + Runbrook (stream)",
+    "name": "Runbrook Smallway Shadowlong"
+  },
+  "r142:__tongue__": "yusar",
+  "r142:yusar": {
+    "gloss": "Glassblue (blue-glass) + Runbrook (stream)",
+    "name": "Runbrook Glassblue"
+  },
+  "r143:__tongue__": "izani",
+  "r143:izani": {
+    "gloss": "Sola (sun) + Rrivar (river)",
+    "name": "Rrivar Sola"
+  },
+  "r144:__tongue__": "dalab",
+  "r144:dalab": {
+    "gloss": "Star (star) + Bruk (stream)",
+    "name": "Star Bruk"
+  },
+  "r145:__tongue__": "tungang",
+  "r145:tungang": {
+    "gloss": "Leet (light) + Beck (stream)",
+    "name": "Leet Beck"
+  },
+  "r146:__tongue__": "argot",
+  "r146:argot": {
+    "gloss": "Barada (brother-crew) + Kriki (stream)",
+    "name": "Barada Kriki"
+  },
+  "r147:__tongue__": "farside",
+  "r147:farside": {
+    "gloss": "ɓLikl (little) + ɗStara (outer-star) + cBruk (stream)",
+    "name": "ɓLikl ɗStara cBruk"
+  },
+  "r148:__tongue__": "farside",
+  "r148:farside": {
+    "gloss": "qRidj (terrace-ridge) + cBruk (stream)",
+    "name": "qRidj cBruk"
+  },
+  "r149:__tongue__": "eternian",
+  "r149:eternian": {
+    "gloss": "Sēk (stone-weir) + Mā (river)",
+    "name": "Sēk-Mā"
+  },
+  "r150:__tongue__": "tungang",
+  "r150:tungang": {
+    "gloss": "Kruk (crook-bend) + Beck (stream)",
+    "name": "Kruk Beck"
+  },
+  "r151:__tongue__": "tabist",
+  "r151:tabist": {
+    "gloss": "Qmr (moon-pan) + Brk (stream)",
+    "name": "Brk Qmr"
+  },
+  "r152:__tongue__": "yusar",
+  "r152:yusar": {
+    "gloss": "Stonered (red-stone) + Waywater (river)",
+    "name": "Waywater Stonered"
+  },
+  "r153:__tongue__": "eternian",
+  "r153:eternian": {
+    "gloss": "Ngān (silver-thread) + Mā (river)",
+    "name": "Ngān-Mā"
+  },
+  "r154:__tongue__": "hum",
+  "r154:hum": {
+    "gloss": "Kū (spider-web) + Kē (stream)",
+    "name": "Kū-Kē"
+  },
+  "r155:__tongue__": "farside",
+  "r155:farside": {
+    "gloss": "cWaita (white-foam) + qRiba (river)",
+    "name": "cWaita qRiba"
+  },
+  "r156:__tongue__": "tungang",
+  "r156:tungang": {
+    "gloss": "Noth (north) + Leet (light) + Beck (stream)",
+    "name": "Noth Leet Beck"
+  },
+  "r157:__tongue__": "farside",
+  "r157:farside": {
+    "gloss": "qLoua (lower) + ɓSuna (west-sun) + cBruk (stream)",
+    "name": "qLoua ɓSuna cBruk"
+  },
+  "r158:__tongue__": "dalab",
+  "r158:dalab": {
+    "gloss": "Stoun (stone) + Riba (river)",
+    "name": "Stoun Riba"
+  },
+  "r159:__tongue__": "vothic",
+  "r159:vothic": {
+    "gloss": "Dip (deep) + Brük (stream)",
+    "name": "Dip Brük"
+  },
+  "r160:__tongue__": "dalab",
+  "r160:dalab": {
+    "gloss": "Sun (sun) + Bruk (stream)",
+    "name": "Sun Bruk"
+  },
+  "r161:__tongue__": "yusar",
+  "r161:yusar": {
+    "gloss": "Golddeep (deep-gold) + Runbrook (stream)",
+    "name": "Runbrook Golddeep"
+  },
+  "r162:__tongue__": "eternian",
+  "r162:eternian": {
+    "gloss": "Sēk (stone-weir) + Kē (stream)",
+    "name": "Sēk-Kē"
+  },
+  "r163:__tongue__": "zeijani",
+  "r163:zeijani": {
+    "gloss": "peṣû (sinter-white) + Palgu (stream)",
+    "name": "Palgu-Peṣû"
+  },
+  "r164:__tongue__": "eternian",
+  "r164:eternian": {
+    "gloss": "Tōng (eastern-reed) + Mā (river)",
+    "name": "Tōng-Mā"
+  },
+  "r165:__tongue__": "dasri",
+  "r165:dasri": {
+    "gloss": "al-Rīḥ (simoom-wind) + Rīfar (river)",
+    "name": "Rīfar al-Rīḥ"
+  },
+  "r166:__tongue__": "islander",
+  "r166:islander": {
+    "gloss": "Toka (coral-rock) + Vai (river) — Kautoa island river",
+    "name": "Vai Toka"
+  },
+  "r167:__tongue__": "vrivolci",
+  "r167:vrivolci": {
+    "gloss": "vindos (white-snow) + Bruk (stream)",
+    "name": "vindosbruk"
+  },
+  "r168:__tongue__": "tungang",
+  "r168:tungang": {
+    "gloss": "Kual (coal) + Beck (stream)",
+    "name": "Kual Beck"
+  },
+  "r169:__tongue__": "farside",
+  "r169:farside": {
+    "gloss": "xMista (sea-fog) + cBruk (stream)",
+    "name": "xMista cBruk"
+  },
+  "r170:__tongue__": "riders",
+  "r170:riders": {
+    "gloss": "Łizhin (black-water) + Baatar (river)",
+    "name": "Łizhin Baatar"
+  },
+  "r171:__tongue__": "yusar",
+  "r171:yusar": {
+    "gloss": "Watchstill (still-watch) + Runbrook (stream)",
+    "name": "Runbrook Watchstill"
+  },
+  "r172:__tongue__": "tabist",
+  "r172:tabist": {
+    "gloss": "Ḥdd (iron-oxide) + Rvr (river)",
+    "name": "Rvr Ḥdd"
+  },
+  "r173:__tongue__": "yusar",
+  "r173:yusar": {
+    "gloss": "Fallhigh (high-fall) + Runbrook (stream)",
+    "name": "Runbrook Fallhigh"
+  },
+  "r174:__tongue__": "yuni",
+  "r174:yuni": {
+    "gloss": "Aina (Iron) + Bruk (stream)",
+    "name": "Aina Bruk"
+  },
+  "r175:__tongue__": "farside",
+  "r175:farside": {
+    "gloss": "ɗStara (outer-star) + cBruk (stream)",
+    "name": "ɗStara cBruk"
+  },
+  "r176:__tongue__": "argot",
+  "r176:argot": {
+    "gloss": "Pepa (paper-treaty) + Rivar (river)",
+    "name": "Pepa Rivar"
+  },
+  "r177:__tongue__": "tungang",
+  "r177:tungang": {
+    "gloss": "Weyt (white-water) + Beck (stream)",
+    "name": "Weyt Beck"
+  },
+  "r178:__tongue__": "eternian",
+  "r178:eternian": {
+    "gloss": "Sīng (star-lantern) + Kē (stream)",
+    "name": "Sīng-Kē"
+  },
+  "r179:__tongue__": "scyvoi",
+  "r179:scyvoi": {
+    "gloss": "Cakmak (flint) + Riviri (river)",
+    "name": "Cakmak Riviri"
+  },
+  "r180:__tongue__": "yuni",
+  "r180:yuni": {
+    "gloss": "Teris (Terrace) + Bruk (stream)",
+    "name": "Teris Bruk"
+  },
+  "r181:__tongue__": "yusar",
+  "r181:yusar": {
+    "gloss": "Turnback (back-turn) + Runbrook (stream)",
+    "name": "Runbrook Turnback"
+  },
+  "r182:__tongue__": "tungang",
+  "r182:tungang": {
+    "gloss": "Tlahn (iron-clan) + Beck (stream)",
+    "name": "Tlahn Beck"
+  },
+  "r183:__tongue__": "dalab",
+  "r183:dalab": {
+    "gloss": "Kould (cold) + Riba (river)",
+    "name": "Kould Riba"
+  },
+  "r184:__tongue__": "farside",
+  "r184:farside": {
+    "gloss": "qStoun (stone-click) + cBruk (stream)",
+    "name": "qStoun cBruk"
+  },
+  "r185:__tongue__": "painted",
+  "r185:painted": {
+    "gloss": "Ràv (raven) + Rìv (river) — northern Danxia hogback river of the Painted Men",
+    "name": "Ràv Rìv"
+  },
+  "r186:__tongue__": "eternian",
+  "r186:eternian": {
+    "gloss": "Chūng (middle-dyke) + Kē (stream)",
+    "name": "Chūng-Kē"
+  },
+  "r187:__tongue__": "eternian",
+  "r187:eternian": {
+    "gloss": "Hōng (vermilion) + Kē (stream)",
+    "name": "Hōng-Kē"
+  },
+  "r188:__tongue__": "dasri",
+  "r188:dasri": {
+    "gloss": "al-Dhahab (gold-dust) + Rīfar (river)",
+    "name": "Rīfar al-Dhahab"
+  },
+  "r189:__tongue__": "yusar",
+  "r189:yusar": {
+    "gloss": "Shadowlong (long-shadow) + Waywater (river)",
+    "name": "Waywater Shadowlong"
+  },
+  "r190:__tongue__": "yusar",
+  "r190:yusar": {
+    "gloss": "Northway (north) + Golddeep (deep-gold) + Runbrook (stream)",
+    "name": "Runbrook Northway Golddeep"
+  },
+  "r191:__tongue__": "tungang",
+  "r191:tungang": {
+    "gloss": "Methera (Fourth) + Beck (stream)",
+    "name": "Methera Beck"
+  },
+  "r192:__tongue__": "tungang",
+  "r192:tungang": {
+    "gloss": "Gowd (gold) + Beck (stream)",
+    "name": "Gowd Beck"
+  },
+  "r193:__tongue__": "eternian",
+  "r193:eternian": {
+    "gloss": "Fūng (north-wind) + Kē (stream)",
+    "name": "Fūng-Kē"
+  },
+  "r194:__tongue__": "izani",
+  "r194:izani": {
+    "gloss": "Stona (stone) + Rrivar (river)",
+    "name": "Rrivar Stona"
+  },
+  "r195:__tongue__": "khaay",
+  "r195:khaay": {
+    "gloss": "Ïsnoo (drift-snow) + Quli (wadi)",
+    "name": "Ïsnoo Quli"
+  },
+  "r196:__tongue__": "farside",
+  "r196:farside": {
+    "gloss": "ɗNort (north) + qBlaka (black-shale) + cBruk (stream)",
+    "name": "ɗNort qBlaka cBruk"
+  },
+  "r197:__tongue__": "dasri",
+  "r197:dasri": {
+    "gloss": "al-Milḥ (salt-crust) + Rīfar (river)",
+    "name": "Rīfar al-Milḥ"
+  },
+  "r198:__tongue__": "dalab",
+  "r198:dalab": {
+    "gloss": "Wait (white) + Bruk (stream)",
+    "name": "Wait Bruk"
+  },
+  "r199:__tongue__": "painted",
+  "r199:painted": {
+    "gloss": "Àirn (iron) + Rìv (river) — northwestern stream of the Painted Highlands",
+    "name": "Àirn Rìv"
+  },
+  "r200:__tongue__": "dasri",
+  "r200:dasri": {
+    "gloss": "al-Ṣakhr (sandstone-mesa) + Rīfar (river)",
+    "name": "Rīfar al-Ṣakhr"
+  },
+  "r201:__tongue__": "republic",
+  "r201:republic": {
+    "gloss": "Snou (snow) + Bruk (stream)",
+    "name": "Snou Bruk"
+  },
+  "r202:__tongue__": "tungang",
+  "r202:tungang": {
+    "gloss": "Muckle (great) + Weyt (white-water) + Beck (stream)",
+    "name": "Muckle Weyt Beck"
+  },
+  "r203:__tongue__": "izani",
+  "r203:izani": {
+    "gloss": "Rreda (red) + Bruk (stream)",
+    "name": "Bruk Rreda"
+  },
+  "r204:__tongue__": "yusar",
+  "r204:yusar": {
+    "gloss": "Highside (upper) + Lightsun (sun-light) + Runbrook (stream)",
+    "name": "Runbrook Highside Lightsun"
+  },
+  "r205:__tongue__": "eternian",
+  "r205:eternian": {
+    "gloss": "Tsēng (celadon-green) + Kē (stream)",
+    "name": "Tsēng-Kē"
+  },
+  "r206:__tongue__": "izani",
+  "r206:izani": {
+    "gloss": "Isguifta (swift) + Bruk (stream)",
+    "name": "Bruk Isguifta"
+  },
+  "r207:__tongue__": "tungang",
+  "r207:tungang": {
+    "gloss": "Stuan (stone) + Warra (river)",
+    "name": "Stuan Warra"
+  },
+  "r208:__tongue__": "painted",
+  "r208:painted": {
+    "gloss": "Òk (ochre) + Rìv (river) — eastern Painted Canyon river draining toward Korona",
+    "name": "Òk Rìv"
+  },
+  "r209:__tongue__": "dalab",
+  "r209:dalab": {
+    "gloss": "Geit (gate) + Bruk (stream)",
+    "name": "Geit Bruk"
+  },
+  "r210:__tongue__": "farside",
+  "r210:farside": {
+    "gloss": "cApa (upper) + xWinda (wind-click) + cBruk (stream)",
+    "name": "cApa xWinda cBruk"
+  },
+  "r211:__tongue__": "tungang",
+  "r211:tungang": {
+    "gloss": "Lile (little) + Stuan (stone) + Beck (stream)",
+    "name": "Lile Stuan Beck"
+  },
+  "r212:__tongue__": "izani",
+  "r212:izani": {
+    "gloss": "coper (copper) + Rrivar (river)",
+    "name": "Rrivar coper"
+  },
+  "r213:__tongue__": "eternian",
+  "r213:eternian": {
+    "gloss": "Sām (deep-pool) + Kē (stream)",
+    "name": "Sām-Kē"
+  },
+  "r214:__tongue__": "tungang",
+  "r214:tungang": {
+    "gloss": "Yist (east) + Fah (far) + Beck (stream)",
+    "name": "Yist Fah Beck"
+  },
+  "r215:__tongue__": "tungang",
+  "r215:tungang": {
+    "gloss": "Brant (steep-brow) + Beck (stream)",
+    "name": "Brant Beck"
+  },
+  "r216:__tongue__": "dalab",
+  "r216:dalab": {
+    "gloss": "Stoun (stone) + Bruk (stream)",
+    "name": "Stoun Bruk"
+  },
+  "r217:__tongue__": "vothic",
+  "r217:vothic": {
+    "gloss": "Kowld (cold) + Brük (stream)",
+    "name": "Kowld Brük"
+  },
+  "r218:__tongue__": "vrivolci",
+  "r218:vrivolci": {
+    "gloss": "Vrivolci (free-clan) + Bruk (stream)",
+    "name": "Vrivolcibruk"
+  },
+  "r219:__tongue__": "izani",
+  "r219:izani": {
+    "gloss": "stara (star) + Bruk (stream)",
+    "name": "Bruk stara"
+  },
+  "r220:__tongue__": "yuni",
+  "r220:yuni": {
+    "gloss": "Spindl (Spindle) + Bruk (stream)",
+    "name": "Spindl Bruk"
+  },
+  "r221:__tongue__": "farside",
+  "r221:farside": {
+    "gloss": "cSaut (south) + xBrod (broad-wash) + cBruk (stream)",
+    "name": "cSaut xBrod cBruk"
+  },
+  "r222:__tongue__": "jimjam",
+  "r222:jimjam": {
+    "gloss": "Kuḷir (cool) + ōṭai (stream)",
+    "name": "Kuḷir-ōṭai"
+  },
+  "r223:__tongue__": "dalab",
+  "r223:dalab": {
+    "gloss": "Solt (salt) + Bruk (stream)",
+    "name": "Solt Bruk"
+  },
+  "r224:__tongue__": "argot",
+  "r224:argot": {
+    "gloss": "Raida (raider) + Kriki (stream)",
+    "name": "Raida Kriki"
+  },
+  "r225:__tongue__": "vrivolci",
+  "r225:vrivolci": {
+    "gloss": "Tarvos (bull-tor) + Bruk (stream)",
+    "name": "Tarvosbruk"
+  },
+  "r226:__tongue__": "tungang",
+  "r226:tungang": {
+    "gloss": "Muckle (great) + Yan (First) + Beck (stream)",
+    "name": "Muckle Yan Beck"
+  },
+  "r227:__tongue__": "eternian",
+  "r227:eternian": {
+    "gloss": "Yūt (moon-bridge) + Mā (river)",
+    "name": "Yūt-Mā"
+  },
+  "r228:__tongue__": "dasri",
+  "r228:dasri": {
+    "gloss": "al-Kawkab (falling-star) + Rīfar (river)",
+    "name": "Rīfar al-Kawkab"
+  },
+  "r229:__tongue__": "dasri",
+  "r229:dasri": {
+    "gloss": "al-Qaṣr (butte-fortress) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Qaṣr"
+  },
+  "r230:__tongue__": "eternian",
+  "r230:eternian": {
+    "gloss": "Chī (paper-scroll) + Kē (stream)",
+    "name": "Chī-Kē"
+  },
+  "r231:__tongue__": "yuni",
+  "r231:yuni": {
+    "gloss": "Longa (Long) + Bruk (stream)",
+    "name": "Longa Bruk"
+  },
+  "r232:__tongue__": "dasri",
+  "r232:dasri": {
+    "gloss": "al-Kawkab (falling-star) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Kawkab"
+  },
+  "r233:__tongue__": "argot",
+  "r233:argot": {
+    "gloss": "Ankra (anchor) + Kriki (stream)",
+    "name": "Ankra Kriki"
+  },
+  "r234:__tongue__": "farside",
+  "r234:farside": {
+    "gloss": "cApa (upper) + ɗGould (gold-implosive) + cBruk (stream)",
+    "name": "cApa ɗGould cBruk"
+  },
+  "r235:__tongue__": "yuni",
+  "r235:yuni": {
+    "gloss": "Stara (Star) + Bruk (stream)",
+    "name": "Stara Bruk"
+  },
+  "r236:__tongue__": "eternian",
+  "r236:eternian": {
+    "gloss": "Pāk (north) + Sām (deep-pool) + Kē (stream)",
+    "name": "Pāk-Sām-Kē"
+  },
+  "r237:__tongue__": "talovolci",
+  "r237:talovolci": {
+    "gloss": "Nemetos (sacred-grove) + Brucos (stream)",
+    "name": "Nemetos Brucos"
+  },
+  "r238:__tongue__": "republic",
+  "r238:republic": {
+    "gloss": "パイン (pine) + Bruk (stream)",
+    "name": "Pajn Bruk"
+  },
+  "r239:__tongue__": "yuni",
+  "r239:yuni": {
+    "gloss": "Kopa (Copper) + Bruk (stream)",
+    "name": "Kopa Bruk"
+  },
+  "r240:__tongue__": "eternian",
+  "r240:eternian": {
+    "gloss": "Sāng (upper) + Chī (paper-scroll) + Kē (stream)",
+    "name": "Sāng-Chī-Kē"
+  },
+  "r241:__tongue__": "yusar",
+  "r241:yusar": {
+    "gloss": "Lowside (lower) + Fallhigh (high-fall) + Runbrook (stream)",
+    "name": "Runbrook Lowside Fallhigh"
+  },
+  "r242:__tongue__": "vothic",
+  "r242:vothic": {
+    "gloss": "Hafn (harbour) + Brük (stream)",
+    "name": "Hafn Brük"
+  },
+  "r243:__tongue__": "hykkousik",
+  "r243:hykkousik": {
+    "gloss": "Stahr (star) + Rhyver (river)",
+    "name": "Stahr Rhyver"
+  },
+  "r244:__tongue__": "hum",
+  "r244:hum": {
+    "gloss": "Pāk (white-mesa) + Kē (stream)",
+    "name": "Pāk-Kē"
+  },
+  "r245:__tongue__": "zeijani",
+  "r245:zeijani": {
+    "gloss": "šadû (caldera-rim) + Palgu (stream)",
+    "name": "Palgu-Šadû"
+  },
+  "r246:__tongue__": "argot",
+  "r246:argot": {
+    "gloss": "Mape (chart-map) + Kriki (stream)",
+    "name": "Mape Kriki"
+  },
+  "r247:__tongue__": "izani",
+  "r247:izani": {
+    "gloss": "Dippa (deep) + Bruk (stream)",
+    "name": "Bruk Dippa"
+  },
+  "r248:__tongue__": "yusar",
+  "r248:yusar": {
+    "gloss": "Wideway (great) + Walkcrook (crooked-walk) + Runbrook (stream)",
+    "name": "Runbrook Wideway Walkcrook"
+  },
+  "r249:__tongue__": "tungang",
+  "r249:tungang": {
+    "gloss": "Blek (black-shale) + Beck (stream)",
+    "name": "Blek Beck"
+  },
+  "r250:__tongue__": "argot",
+  "r250:argot": {
+    "gloss": "Pepa (paper-treaty) + Kriki (stream)",
+    "name": "Pepa Kriki"
+  },
+  "r251:__tongue__": "dasri",
+  "r251:dasri": {
+    "gloss": "al-Bīr (cistern-well) + Rīfar (river)",
+    "name": "Rīfar al-Bīr"
+  },
+  "r252:__tongue__": "xanadui",
+  "r252:xanadui": {
+    "gloss": "aldhahab (gold) + Bīruk (stream)",
+    "name": "Bīruk al-Dhahab"
+  },
+  "r253:__tongue__": "argot",
+  "r253:argot": {
+    "gloss": "Timba (drift-timber) + Kriki (stream)",
+    "name": "Timba Kriki"
+  },
+  "r254:__tongue__": "argot",
+  "r254:argot": {
+    "gloss": "Kamandar (commander) + Kriki (stream)",
+    "name": "Kamandar Kriki"
+  },
+  "r255:__tongue__": "izani",
+  "r255:izani": {
+    "gloss": "Blaca (black) + Rrivar (river)",
+    "name": "Rrivar Blaca"
+  },
+  "r256:__tongue__": "tungang",
+  "r256:tungang": {
+    "gloss": "Deyp (deep-gill) + Beck (stream)",
+    "name": "Deyp Beck"
+  },
+  "r257:__tongue__": "yusar",
+  "r257:yusar": {
+    "gloss": "Southway (south) + Watchstill (still-watch) + Runbrook (stream)",
+    "name": "Runbrook Southway Watchstill"
+  },
+  "r258:__tongue__": "eternian",
+  "r258:eternian": {
+    "gloss": "Chīng (clear-mirror) + Kē (stream)",
+    "name": "Chīng-Kē"
+  },
+  "r259:__tongue__": "dalab",
+  "r259:dalab": {
+    "gloss": "Brod (broad) + Bruk (stream)",
+    "name": "Brod Bruk"
+  },
+  "r260:__tongue__": "dasri",
+  "r260:dasri": {
+    "gloss": "palm stream",
+    "name": "Rīfar al-Bālm"
+  },
+  "r261:__tongue__": "jimjam",
+  "r261:jimjam": {
+    "gloss": "Ciṉṉa (little) + āṟu (river)",
+    "name": "Ciṉṉa-āṟu"
+  },
+  "r262:__tongue__": "dalab",
+  "r262:dalab": {
+    "gloss": "Red (red) + Bruk (stream)",
+    "name": "Red Bruk"
+  },
+  "r263:__tongue__": "vothic",
+  "r263:vothic": {
+    "gloss": "Silvr (silver) + Brük (stream)",
+    "name": "Silvr Brük"
+  },
+  "r264:__tongue__": "yuni",
+  "r264:yuni": {
+    "gloss": "Silba (Silver) + Riba (river)",
+    "name": "Silba Riba"
+  },
+  "r265:__tongue__": "argot",
+  "r265:argot": {
+    "gloss": "Kamandar (commander) + Guli (wadi)",
+    "name": "Kamandar Guli"
+  },
+  "r266:__tongue__": "dalab",
+  "r266:dalab": {
+    "gloss": "Klir (clear) + Bruk (stream)",
+    "name": "Klir Bruk"
+  },
+  "r267:__tongue__": "yuni",
+  "r267:yuni": {
+    "gloss": "Winda (Wind) + Riba (river)",
+    "name": "Winda Riba"
+  },
+  "r268:__tongue__": "yuni",
+  "r268:yuni": {
+    "gloss": "Reda (Red) + Bruk (stream)",
+    "name": "Reda Bruk"
+  },
+  "r269:__tongue__": "argot",
+  "r269:argot": {
+    "gloss": "Gete (spillway-gate) + Kriki (stream)",
+    "name": "Gete Kriki"
+  },
+  "r270:__tongue__": "argot",
+  "r270:argot": {
+    "gloss": "Kebla (cable-chain) + Kriki (stream)",
+    "name": "Kebla Kriki"
+  },
+  "r271:__tongue__": "izani",
+  "r271:izani": {
+    "gloss": "cedra (cedar) + Bruk (stream)",
+    "name": "Bruk cedra"
+  },
+  "r272:__tongue__": "xanadui",
+  "r272:xanadui": {
+    "gloss": "alyāqūt (ruby) + Bīruk (stream)",
+    "name": "Bīruk al-Yāqūt"
+  },
+  "r273:__tongue__": "vothic",
+  "r273:vothic": {
+    "gloss": "Brant (burnt) + Rivrh (river)",
+    "name": "Brant Rivrh"
+  },
+  "r274:__tongue__": "yusar",
+  "r274:yusar": {
+    "gloss": "Ironblack (black-iron) + Waywater (river)",
+    "name": "Waywater Ironblack"
+  },
+  "r275:__tongue__": "eternian",
+  "r275:eternian": {
+    "gloss": "Sīu (little) + Hāk (black-ink) + Kē (stream)",
+    "name": "Sīu-Hāk-Kē"
+  },
+  "r276:__tongue__": "eternian",
+  "r276:eternian": {
+    "gloss": "Kām (gold-leaf) + Kē (stream)",
+    "name": "Kām-Kē"
+  },
+  "r277:__tongue__": "eternian",
+  "r277:eternian": {
+    "gloss": "Hāk (black-ink) + Kē (stream)",
+    "name": "Hāk-Kē"
+  },
+  "r278:__tongue__": "tungang",
+  "r278:tungang": {
+    "gloss": "Garth (garth-enclosure) + Beck (stream)",
+    "name": "Garth Beck"
+  },
+  "r279:__tongue__": "yusar",
+  "r279:yusar": {
+    "gloss": "Smallway (little) + Windlow (low-wind) + Runbrook (stream)",
+    "name": "Runbrook Smallway Windlow"
+  },
+  "r280:__tongue__": "republic",
+  "r280:republic": {
+    "gloss": "Kould (cold) + Bruk (stream)",
+    "name": "Kould Bruk"
+  },
+  "r281:__tongue__": "republic",
+  "r281:republic": {
+    "gloss": "Frost (frost) + Rivr (river)",
+    "name": "Frost Rivr"
+  },
+  "r282:__tongue__": "republic",
+  "r282:republic": {
+    "gloss": "Frost (frost) + Bruk (stream)",
+    "name": "Frost Bruk"
+  },
+  "r283:__tongue__": "tungang",
+  "r283:tungang": {
+    "gloss": "Tethera (Third) + Warra (river)",
+    "name": "Tethera Warra"
+  },
+  "r284:__tongue__": "vrivolci",
+  "r284:vrivolci": {
+    "gloss": "vindos (white-snow) + Riba (river)",
+    "name": "vindosriba"
+  },
+  "r285:__tongue__": "vrivolci",
+  "r285:vrivolci": {
+    "gloss": "Gedos (spear-ridge) + Riba (river)",
+    "name": "Gedosriba"
+  },
+  "r286:__tongue__": "vrivolci",
+  "r286:vrivolci": {
+    "gloss": "Vrivolci (free-clan) + Riba (river)",
+    "name": "Vrivolciriba"
+  },
+  "r287:__tongue__": "vrivolci",
+  "r287:vrivolci": {
+    "gloss": "Rixos (king-stone) + Riba (river)",
+    "name": "Rixosriba"
+  },
+  "r288:__tongue__": "vrivolci",
+  "r288:vrivolci": {
+    "gloss": "Uatera (water-leap) + Bruk (stream)",
+    "name": "Uaterabruk"
+  },
+  "r289:__tongue__": "vrivolci",
+  "r289:vrivolci": {
+    "gloss": "Spirla (spiral) + Bruk (stream)",
+    "name": "Spirlabruk"
+  },
+  "r290:__tongue__": "yusar",
+  "r290:yusar": {
+    "gloss": "Sideout (outside) + Waywater (river)",
+    "name": "Waywater Sideout"
+  },
+  "r291:__tongue__": "yusar",
+  "r291:yusar": {
+    "gloss": "Windlow (low-wind) + Waywater (river)",
+    "name": "Waywater Windlow"
+  },
+  "r292:__tongue__": "yusar",
+  "r292:yusar": {
+    "gloss": "Stonered (red-stone) + Runbrook (stream)",
+    "name": "Runbrook Stonered"
+  },
+  "r293:__tongue__": "yusar",
+  "r293:yusar": {
+    "gloss": "Lightsun (sun-light) + Waywater (river)",
+    "name": "Waywater Lightsun"
+  },
+  "r294:__tongue__": "yusar",
+  "r294:yusar": {
+    "gloss": "Ashgrey (grey-ash) + Runbrook (stream)",
+    "name": "Runbrook Ashgrey"
+  },
+  "r295:__tongue__": "tungang",
+  "r295:tungang": {
+    "gloss": "Howe (howe-mound) + Warra (river)",
+    "name": "Howe Warra"
+  },
+  "r296:__tongue__": "tungang",
+  "r296:tungang": {
+    "gloss": "Haa (high) + Leet (light) + Beck (stream)",
+    "name": "Haa Leet Beck"
+  },
+  "r297:__tongue__": "tungang",
+  "r297:tungang": {
+    "gloss": "Methera (Fourth) + Warra (river)",
+    "name": "Methera Warra"
+  },
+  "r298:__tongue__": "tungang",
+  "r298:tungang": {
+    "gloss": "Stuan (stone) + Beck (stream)",
+    "name": "Stuan Beck"
+  },
+  "r299:__tongue__": "tungang",
+  "r299:tungang": {
+    "gloss": "Tethera (Third) + Beck (stream)",
+    "name": "Tethera Beck"
+  },
+  "r300:__tongue__": "vrivolci",
+  "r300:vrivolci": {
+    "gloss": "dervos (oak-wood) + Riba (river)",
+    "name": "dervosriba"
+  },
+  "r301:__tongue__": "vrivolci",
+  "r301:vrivolci": {
+    "gloss": "Viros (true-giant) + Bruk (stream)",
+    "name": "Virosbruk"
+  },
+  "r302:__tongue__": "vrivolci",
+  "r302:vrivolci": {
+    "gloss": "Clodos (cloud-bench) + Bruk (stream)",
+    "name": "Clodosbruk"
+  },
+  "r303:__tongue__": "vrivolci",
+  "r303:vrivolci": {
+    "gloss": "Ixos (ice-peak) + Bruk (stream)",
+    "name": "Ixosbruk"
+  },
+  "r304:__tongue__": "vrivolci",
+  "r304:vrivolci": {
+    "gloss": "Stanos (standing-stone) + Riba (river)",
+    "name": "Stanosriba"
+  },
+  "r305:__tongue__": "eternian",
+  "r305:eternian": {
+    "gloss": "Lōk (willow-terrace) + Mā (river)",
+    "name": "Lōk-Mā"
+  },
+  "r306:__tongue__": "eternian",
+  "r306:eternian": {
+    "gloss": "Tsēng (celadon-green) + Mā (river)",
+    "name": "Tsēng-Mā"
+  },
+  "r307:__tongue__": "eternian",
+  "r307:eternian": {
+    "gloss": "Wūn (cloud-mist) + Mā (river)",
+    "name": "Wūn-Mā"
+  },
+  "r308:__tongue__": "eternian",
+  "r308:eternian": {
+    "gloss": "Tōng (eastern-reed) + Kē (stream)",
+    "name": "Tōng-Kē"
+  },
+  "r309:__tongue__": "eternian",
+  "r309:eternian": {
+    "gloss": "Mō (ink-stone) + Kē (stream)",
+    "name": "Mō-Kē"
+  },
+  "r310:__tongue__": "eternian",
+  "r310:eternian": {
+    "gloss": "Fūng (north-wind) + Mā (river)",
+    "name": "Fūng-Mā"
+  },
+  "r311:__tongue__": "eternian",
+  "r311:eternian": {
+    "gloss": "Yūt (moon-bridge) + Kē (stream)",
+    "name": "Yūt-Kē"
+  },
+  "r312:__tongue__": "eternian",
+  "r312:eternian": {
+    "gloss": "Pāk (white-jade) + Mā (river)",
+    "name": "Pāk-Mā"
+  },
+  "r313:__tongue__": "eternian",
+  "r313:eternian": {
+    "gloss": "Hā (lower) + Lōk (willow-terrace) + Kē (stream)",
+    "name": "Hā-Lōk-Kē"
+  },
+  "r314:__tongue__": "yusar",
+  "r314:yusar": {
+    "gloss": "Walkcrook (crooked-walk) + Runbrook (stream)",
+    "name": "Runbrook Walkcrook"
+  },
+  "r315:__tongue__": "yusar",
+  "r315:yusar": {
+    "gloss": "Ironblack (black-iron) + Runbrook (stream)",
+    "name": "Runbrook Ironblack"
+  },
+  "r316:__tongue__": "yusar",
+  "r316:yusar": {
+    "gloss": "Walkcrook (crooked-walk) + Waywater (river)",
+    "name": "Waywater Walkcrook"
+  },
+  "r317:__tongue__": "yusar",
+  "r317:yusar": {
+    "gloss": "Lightsun (sun-light) + Runbrook (stream)",
+    "name": "Runbrook Lightsun"
+  },
+  "r318:__tongue__": "yusar",
+  "r318:yusar": {
+    "gloss": "Shadowlong (long-shadow) + Runbrook (stream)",
+    "name": "Runbrook Shadowlong"
+  },
+  "r319:__tongue__": "dalab",
+  "r319:dalab": {
+    "gloss": "Ridj (ridge) + Riba (river)",
+    "name": "Ridj Riba"
+  },
+  "r320:__tongue__": "dalab",
+  "r320:dalab": {
+    "gloss": "Swift (swift) + Bruk (stream)",
+    "name": "Swift Bruk"
+  },
+  "r321:__tongue__": "eternian",
+  "r321:eternian": {
+    "gloss": "Lōk (willow-terrace) + Kē (stream)",
+    "name": "Lōk-Kē"
+  },
+  "r322:__tongue__": "eternian",
+  "r322:eternian": {
+    "gloss": "Sī (western-marsh) + Mā (river)",
+    "name": "Sī-Mā"
+  },
+  "r323:__tongue__": "eternian",
+  "r323:eternian": {
+    "gloss": "Sām (deep-pool) + Mā (river)",
+    "name": "Sām-Mā"
+  },
+  "r324:__tongue__": "eternian",
+  "r324:eternian": {
+    "gloss": "Chūng (middle-dyke) + Mā (river)",
+    "name": "Chūng-Mā"
+  },
+  "r325:__tongue__": "riders",
+  "r325:riders": {
+    "gloss": "Ch'il (vine) + Baatar (river)",
+    "name": "Ch'il Baatar"
+  },
+  "r326:__tongue__": "riders",
+  "r326:riders": {
+    "gloss": "Tł'aai (canopy) + Buruuk (stream)",
+    "name": "Tł'aai Buruuk"
+  },
+  "r327:__tongue__": "yuni",
+  "r327:yuni": {
+    "gloss": "Klira (Clear) + Riba (river)",
+    "name": "Klira Riba"
+  },
+  "r328:__tongue__": "yuni",
+  "r328:yuni": {
+    "gloss": "Longa (Long) + Riba (river)",
+    "name": "Longa Riba"
+  },
+  "r329:__tongue__": "yuni",
+  "r329:yuni": {
+    "gloss": "Klira (Clear) + Bruk (stream)",
+    "name": "Klira Bruk"
+  },
+  "r330:__tongue__": "yuni",
+  "r330:yuni": {
+    "gloss": "Sista (Sister) + Bruk (stream)",
+    "name": "Sista Bruk"
+  },
+  "r331:__tongue__": "tungang",
+  "r331:tungang": {
+    "gloss": "Gowd (gold) + Warra (river)",
+    "name": "Gowd Warra"
+  },
+  "r332:__tongue__": "tungang",
+  "r332:tungang": {
+    "gloss": "Tarn (mountain-tarn) + Beck (stream)",
+    "name": "Tarn Beck"
+  },
+  "r333:__tongue__": "tungang",
+  "r333:tungang": {
+    "gloss": "Howe (howe-mound) + Beck (stream)",
+    "name": "Howe Beck"
+  },
+  "r334:__tongue__": "farside",
+  "r334:farside": {
+    "gloss": "qBlaka (black-shale) + qRiba (river)",
+    "name": "qBlaka qRiba"
+  },
+  "r335:__tongue__": "vothic",
+  "r335:vothic": {
+    "gloss": "Vayt (white) + Brük (stream)",
+    "name": "Vayt Brük"
+  },
+  "r336:__tongue__": "vothic",
+  "r336:vothic": {
+    "gloss": "Krown (crown) + Brük (stream)",
+    "name": "Krown Brük"
+  },
+  "r337:__tongue__": "vothic",
+  "r337:vothic": {
+    "gloss": "Stil (still) + Rivrh (river)",
+    "name": "Stil Rivrh"
+  },
+  "r338:__tongue__": "jimjam",
+  "r338:jimjam": {
+    "gloss": "Mūṅkil (bamboo) + ōṭai (stream)",
+    "name": "Mūṅkil-ōṭai"
+  },
+  "r339:__tongue__": "izani",
+  "r339:izani": {
+    "gloss": "stara (star) + Rrivar (river)",
+    "name": "Rrivar stara"
+  },
+  "r340:__tongue__": "dalab",
+  "r340:dalab": {
+    "gloss": "Fols (falls) + Bruk (stream)",
+    "name": "Fols Bruk"
+  },
+  "r341:__tongue__": "dalab",
+  "r341:dalab": {
+    "gloss": "Aian (iron) + Bruk (stream)",
+    "name": "Aian Bruk"
+  },
+  "r342:__tongue__": "jimjam",
+  "r342:jimjam": {
+    "gloss": "Vēka (swift) + ōṭai (stream)",
+    "name": "Vēka-ōṭai"
+  },
+  "r343:__tongue__": "jimjam",
+  "r343:jimjam": {
+    "gloss": "Veḷḷi (silver) + ōṭai (stream)",
+    "name": "Veḷḷi-ōṭai"
+  },
+  "r344:__tongue__": "republic",
+  "r344:republic": {
+    "gloss": "Grin (green) + Bruk (stream)",
+    "name": "Grin Bruk"
+  },
+  "r345:__tongue__": "republic",
+  "r345:republic": {
+    "gloss": "Dip (deep) + Bruk (stream)",
+    "name": "Dip Bruk"
+  },
+  "r346:__tongue__": "izani",
+  "r346:izani": {
+    "gloss": "coper (copper) + Bruk (stream)",
+    "name": "Bruk coper"
+  },
+  "r347:__tongue__": "vothic",
+  "r347:vothic": {
+    "gloss": "Silvr (silver) + Rivrh (river)",
+    "name": "Silvr Rivrh"
+  },
+  "r348:__tongue__": "vothic",
+  "r348:vothic": {
+    "gloss": "Gowld (gold) + Brük (stream)",
+    "name": "Gowld Brük"
+  },
+  "r349:__tongue__": "vothic",
+  "r349:vothic": {
+    "gloss": "Vind (wind) + Brük (stream)",
+    "name": "Vind Brük"
+  },
+  "r350:__tongue__": "vrivolci",
+  "r350:vrivolci": {
+    "gloss": "carnos (cairn) + Bruk (stream)",
+    "name": "carnosbruk"
+  },
+  "r351:__tongue__": "izani",
+  "r351:izani": {
+    "gloss": "Mista (mist) + Bruk (stream)",
+    "name": "Bruk Mista"
+  },
+  "r352:__tongue__": "riders",
+  "r352:riders": {
+    "gloss": "Quetzal Water (K'etsaal Baatar) — the Beast Riders' river 11 km from Pinnacle Rock",
+    "name": "K'etsaal Baatar"
+  },
+  "r353:__tongue__": "izani",
+  "r353:izani": {
+    "gloss": "クラウン (crown) + Rrivar (river)",
+    "name": "Rrivar Craun"
+  },
+  "r354:__tongue__": "izani",
+  "r354:izani": {
+    "gloss": "Mista (mist) + Rrivar (river)",
+    "name": "Rrivar Mista"
+  },
+  "r355:__tongue__": "izani",
+  "r355:izani": {
+    "gloss": "Stona (stone) + Bruk (stream)",
+    "name": "Bruk Stona"
+  },
+  "r356:__tongue__": "jimjam",
+  "r356:jimjam": {
+    "gloss": "Mēkam (monsoon-cloud) + ōṭai (stream)",
+    "name": "Mēkam-ōṭai"
+  },
+  "r357:__tongue__": "farside",
+  "r357:farside": {
+    "gloss": "cFols (bench-falls) + qRiba (river)",
+    "name": "cFols qRiba"
+  },
+  "r358:__tongue__": "yuni",
+  "r358:yuni": {
+    "gloss": "Mista (Mist) + Riba (river)",
+    "name": "Mista Riba"
+  },
+  "r359:__tongue__": "yuni",
+  "r359:yuni": {
+    "gloss": "Blaka (Black) + Riba (river)",
+    "name": "Blaka Riba"
+  },
+  "r360:__tongue__": "farside",
+  "r360:farside": {
+    "gloss": "cKould (cold-click) + cBruk (stream)",
+    "name": "cKould cBruk"
+  },
+  "r361:__tongue__": "izani",
+  "r361:izani": {
+    "gloss": "Sola (sun) + Bruk (stream)",
+    "name": "Bruk Sola"
+  },
+  "r362:__tongue__": "izani",
+  "r362:izani": {
+    "gloss": "clifa (cliff) + Bruk (stream)",
+    "name": "Bruk clifa"
+  },
+  "r363:__tongue__": "izani",
+  "r363:izani": {
+    "gloss": "brij (bridge) + Bruk (stream)",
+    "name": "Bruk brij"
+  },
+  "r364:__tongue__": "izani",
+  "r364:izani": {
+    "gloss": "geit (gate) + Bruk (stream)",
+    "name": "Bruk geit"
+  },
+  "r365:__tongue__": "izani",
+  "r365:izani": {
+    "gloss": "Grin (green) + Bruk (stream)",
+    "name": "Bruk Grin"
+  },
+  "r366:__tongue__": "tungang",
+  "r366:tungang": {
+    "gloss": "Fah (far) + Beck (stream)",
+    "name": "Fah Beck"
+  },
+  "r367:__tongue__": "tungang",
+  "r367:tungang": {
+    "gloss": "Wist (west) + Tkyoob (Cube) + Beck (stream)",
+    "name": "Wist Tkyoob Beck"
+  },
+  "r368:__tongue__": "izani",
+  "r368:izani": {
+    "gloss": "Blaca (black) + Bruk (stream)",
+    "name": "Bruk Blaca"
+  },
+  "r369:__tongue__": "tungang",
+  "r369:tungang": {
+    "gloss": "Kopa (copper-ice) + Warra (river)",
+    "name": "Kopa Warra"
+  },
+  "r370:__tongue__": "dasri",
+  "r370:dasri": {
+    "gloss": "al-Naḥās (copper-stain) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Naḥās"
+  },
+  "r371:__tongue__": "dasri",
+  "r371:dasri": {
+    "gloss": "al-Ghubār (dust-plume) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Ghubār"
+  },
+  "r372:__tongue__": "tungang",
+  "r372:tungang": {
+    "gloss": "Tkyoob (Cube) + Beck (stream)",
+    "name": "Tkyoob Beck"
+  },
+  "r373:__tongue__": "izani",
+  "r373:izani": {
+    "gloss": "Goulda (gold) + Bruk (stream)",
+    "name": "Bruk Goulda"
+  },
+  "r374:__tongue__": "farside",
+  "r374:farside": {
+    "gloss": "xBiga (great) + qRidj (terrace-ridge) + cBruk (stream)",
+    "name": "xBiga qRidj cBruk"
+  },
+  "r375:__tongue__": "yuni",
+  "r375:yuni": {
+    "gloss": "Swifta (Swift) + Bruk (stream)",
+    "name": "Swifta Bruk"
+  },
+  "r376:__tongue__": "talovolci",
+  "r376:talovolci": {
+    "gloss": "Viros (giant-stride) + Brucos (stream)",
+    "name": "Viros Brucos"
+  },
+  "r377:__tongue__": "vrivolci",
+  "r377:vrivolci": {
+    "gloss": "Gedos (spear-ridge) + Bruk (stream)",
+    "name": "Gedosbruk"
+  },
+  "r378:__tongue__": "vothic",
+  "r378:vothic": {
+    "gloss": "Brant (burnt) + Brük (stream)",
+    "name": "Brant Brük"
+  },
+  "r379:__tongue__": "dasri",
+  "r379:dasri": {
+    "gloss": "al-Sarāb (mirage) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Sarāb"
+  },
+  "r380:__tongue__": "argot",
+  "r380:argot": {
+    "gloss": "balsa (raft) + Kriki (stream)",
+    "name": "balsa Kriki"
+  },
+  "r381:__tongue__": "argot",
+  "r381:argot": {
+    "gloss": "Golda (gold) + Kriki (stream)",
+    "name": "Golda Kriki"
+  },
+  "r382:__tongue__": "republic",
+  "r382:republic": {
+    "gloss": "ग्रेनाइट (granite) + Bruk (stream)",
+    "name": "Granit Bruk"
+  },
+  "r383:__tongue__": "dalab",
+  "r383:dalab": {
+    "gloss": "Misti (misty) + Bruk (stream)",
+    "name": "Misti Bruk"
+  },
+  "r384:__tongue__": "dasri",
+  "r384:dasri": {
+    "gloss": "al-Dhahab (gold-dust) + al-Bīruk (stream)",
+    "name": "al-Bīruk al-Dhahab"
+  },
+  "r385:__tongue__": "izani",
+  "r385:izani": {
+    "gloss": "Loña (long) + Bruk (stream)",
+    "name": "Bruk Loña"
+  },
+  "r386:__tongue__": "argot",
+  "r386:argot": {
+    "gloss": "Xipa (ship-hull) + Kriki (stream)",
+    "name": "Xipa Kriki"
+  },
+  "r387:__tongue__": "hum",
+  "r387:hum": {
+    "gloss": "Lām (ring-dike) + Kē (stream)",
+    "name": "Lām-Kē"
+  },
+  "r388:__tongue__": "yusar",
+  "r388:yusar": {
+    "gloss": "Sideout (outside) + Runbrook (stream)",
+    "name": "Runbrook Sideout"
+  },
+  "r390:__tongue__": "tabist",
+  "r390:tabist": {
+    "gloss": "Nḥs (copper-brine) + Brk (stream)",
+    "name": "Brk Nḥs"
+  },
+  "r391:__tongue__": "yusar",
+  "r391:yusar": {
+    "gloss": "Glassblue (blue-glass) + Waywater (river)",
+    "name": "Waywater Glassblue"
+  },
+  "r392:__tongue__": "republic",
+  "r392:republic": {
+    "gloss": "Wajt (white) + Bruk (stream)",
+    "name": "Wajt Bruk"
+  },
+  "r393:__tongue__": "tungang",
+  "r393:tungang": {
+    "gloss": "Yan (First) + Beck (stream)",
+    "name": "Yan Beck"
+  },
+  "r394:__tongue__": "vrivolci",
+  "r394:vrivolci": {
+    "gloss": "Uaros (high-crag) + Bruk (stream)",
+    "name": "Uarosbruk"
+  },
+  "r395:__tongue__": "vrivolci",
+  "r395:vrivolci": {
+    "gloss": "dervos (oak-wood) + Bruk (stream)",
+    "name": "dervosbruk"
+  },
+  "r396:__tongue__": "yusar",
+  "r396:yusar": {
+    "gloss": "Sleepdown (down-sleep) + Runbrook (stream)",
+    "name": "Runbrook Sleepdown"
+  },
+  "r397:__tongue__": "yusar",
+  "r397:yusar": {
+    "gloss": "Watchstill (still-watch) + Waywater (river)",
+    "name": "Waywater Watchstill"
+  },
+  "r398:__tongue__": "yusar",
+  "r398:yusar": {
+    "gloss": "Coldkeep (keep-cold) + Runbrook (stream)",
+    "name": "Runbrook Coldkeep"
+  },
+  "r399:__tongue__": "yusar",
+  "r399:yusar": {
+    "gloss": "Smallway (little) + Lightsun (sun-light) + Runbrook (stream)",
+    "name": "Runbrook Smallway Lightsun"
+  },
+  "r400:__tongue__": "yusar",
+  "r400:yusar": {
+    "gloss": "Northway (north) + Shadowlong (long-shadow) + Runbrook (stream)",
+    "name": "Runbrook Northway Shadowlong"
+  },
+  "r401:__tongue__": "yusar",
+  "r401:yusar": {
+    "gloss": "Southway (south) + Walkcrook (crooked-walk) + Runbrook (stream)",
+    "name": "Runbrook Southway Walkcrook"
+  },
+  "r402:__tongue__": "yusar",
+  "r402:yusar": {
+    "gloss": "Highside (upper) + Stonered (red-stone) + Runbrook (stream)",
+    "name": "Runbrook Highside Stonered"
+  },
+  "r403:__tongue__": "dalab",
+  "r403:dalab": {
+    "gloss": "Vali (valley) + Bruk (stream)",
+    "name": "Vali Bruk"
+  },
+  "r404:__tongue__": "tungang",
+  "r404:tungang": {
+    "gloss": "Tyan (Second) + Beck (stream)",
+    "name": "Tyan Beck"
+  },
+  "r405:__tongue__": "tungang",
+  "r405:tungang": {
+    "gloss": "Neet (night) + Beck (stream)",
+    "name": "Neet Beck"
+  },
+  "r406:__tongue__": "dalab",
+  "r406:dalab": {
+    "gloss": "Ridj (ridge) + Bruk (stream)",
+    "name": "Ridj Bruk"
+  },
+  "r407:__tongue__": "eternian",
+  "r407:eternian": {
+    "gloss": "Sī (west) + Pāk (white-jade) + Kē (stream)",
+    "name": "Sī-Pāk-Kē"
+  },
+  "r408:__tongue__": "republic",
+  "r408:republic": {
+    "gloss": "Hamer (hammer) + Bruk (stream)",
+    "name": "Hamer Bruk"
+  },
+  "r409:__tongue__": "yusar",
+  "r409:yusar": {
+    "gloss": "Lowside (lower) + Ironblack (black-iron) + Runbrook (stream)",
+    "name": "Runbrook Lowside Ironblack"
+  },
+  "r410:__tongue__": "dalab",
+  "r410:dalab": {
+    "gloss": "Long (long) + Bruk (stream)",
+    "name": "Long Bruk"
+  },
+  "r411:__tongue__": "eternian",
+  "r411:eternian": {
+    "gloss": "Sī (western-marsh) + Kē (stream)",
+    "name": "Sī-Kē"
+  },
+  "r412:__tongue__": "eternian",
+  "r412:eternian": {
+    "gloss": "Līng (lotus-bell) + Kē (stream)",
+    "name": "Līng-Kē"
+  },
+  "r413:__tongue__": "eternian",
+  "r413:eternian": {
+    "gloss": "Nām (south) + Kām (gold-leaf) + Kē (stream)",
+    "name": "Nām-Kām-Kē"
+  },
+  "r414:__tongue__": "tungang",
+  "r414:tungang": {
+    "gloss": "Kopa (copper-ice) + Beck (stream)",
+    "name": "Kopa Beck"
+  },
+  "r415:__tongue__": "izani",
+  "r415:izani": {
+    "gloss": "Guaita (white) + Bruk (stream)",
+    "name": "Bruk Guaita"
+  },
+  "r416:__tongue__": "yusar",
+  "r416:yusar": {
+    "gloss": "Wideway (great) + Sideout (outside) + Runbrook (stream)",
+    "name": "Runbrook Wideway Sideout"
+  },
+  "r417:__tongue__": "dasri",
+  "r417:dasri": {
+    "gloss": "al-Layl (star-night) + Wādī (wadi)",
+    "name": "Wādī al-Layl"
+  },
+  "r418:__tongue__": "xanadui",
+  "r418:xanadui": {
+    "gloss": "alzumurrud (emerald) + Gūlī (wadi)",
+    "name": "Gūlī al-Zumurrud"
+  },
+  "r419:__tongue__": "hum",
+  "r419:hum": {
+    "gloss": "Mō (Dry-mist) + Gèl (wadi)",
+    "name": "Mō-Gèl"
+  },
+  "r420:__tongue__": "izani",
+  "r420:izani": {
+    "gloss": "Rreda (red) + Guli (wadi)",
+    "name": "Guli Rreda"
+  },
+  "r422:__tongue__": "dasri",
+  "r422:dasri": {
+    "gloss": "al-Bālm (date-palm) + Wādī (wadi)",
+    "name": "Wādī al-Bālm"
+  },
+  "r423:__tongue__": "dasri",
+  "r423:dasri": {
+    "gloss": "al-Sarāb (mirage) + Wādī (wadi)",
+    "name": "Wādī al-Sarāb"
+  },
+  "r424:__tongue__": "yuni",
+  "r424:yuni": {
+    "gloss": "Gould (Gold) + Guli (wadi)",
+    "name": "Gould Guli"
+  },
+  "r425:__tongue__": "izani",
+  "r425:izani": {
+    "gloss": "Dippa (deep) + Guli (wadi)",
+    "name": "Guli Dippa"
+  },
+  "r426:__tongue__": "yuni",
+  "r426:yuni": {
+    "gloss": "Braita (Bright) + Guli (wadi)",
+    "name": "Braita Guli"
+  },
+  "r427:__tongue__": "argot",
+  "r427:argot": {
+    "gloss": "Xipa (ship-hull) + Guli (wadi)",
+    "name": "Xipa Guli"
+  },
+  "r428:__tongue__": "hum",
+  "r428:hum": {
+    "gloss": "Fūng (canyon-wind) + Gèl (wadi)",
+    "name": "Fūng-Gèl"
+  },
+  "r429:__tongue__": "yuni",
+  "r429:yuni": {
+    "gloss": "Mista (Mist) + Guli (wadi)",
+    "name": "Mista Guli"
+  },
+  "r430:__tongue__": "dasri",
+  "r430:dasri": {
+    "gloss": "al-Ghubār (dust-plume) + Wādī (wadi)",
+    "name": "Wādī al-Ghubār"
+  },
+  "r431:__tongue__": "yuni",
+  "r431:yuni": {
+    "gloss": "Teris (Terrace) + Guli (wadi)",
+    "name": "Teris Guli"
+  },
+  "r432:__tongue__": "hum",
+  "r432:hum": {
+    "gloss": "Tsēk (cleaver-stone) + Gèl (wadi)",
+    "name": "Tsēk-Gèl"
+  },
+  "r433:__tongue__": "yuni",
+  "r433:yuni": {
+    "gloss": "Dipa (Deep) + Guli (wadi)",
+    "name": "Dipa Guli"
+  },
+  "r434:__tongue__": "yuni",
+  "r434:yuni": {
+    "gloss": "Stara (Star) + Guli (wadi)",
+    "name": "Stara Guli"
+  },
+  "r435:__tongue__": "dasri",
+  "r435:dasri": {
+    "gloss": "al-Raml (red-sand) + Wādī (wadi)",
+    "name": "Wādī al-Raml"
+  },
+  "r436:__tongue__": "izani",
+  "r436:izani": {
+    "gloss": "Loña (long) + Guli (wadi)",
+    "name": "Guli Loña"
+  },
+  "r437:__tongue__": "izani",
+  "r437:izani": {
+    "gloss": "pina (pine) + Guli (wadi)",
+    "name": "Guli pina"
+  },
+  "r438:__tongue__": "dasri",
+  "r438:dasri": {
+    "gloss": "al-Zulāl (cool-oasis) + Wādī (wadi)",
+    "name": "Wādī al-Zulāl"
+  },
+  "r439:__tongue__": "hum",
+  "r439:hum": {
+    "gloss": "Sī (west) + Chūng (middle-tier) + Gèl (wadi)",
+    "name": "Sī-Chūng-Gèl"
+  },
+  "r440:__tongue__": "izani",
+  "r440:izani": {
+    "gloss": "rrija (ridge) + Guli (wadi)",
+    "name": "Guli rrija"
+  },
+  "r441:__tongue__": "hum",
+  "r441:hum": {
+    "gloss": "Hā (lower) + Lōk (step-bench) + Gèl (wadi)",
+    "name": "Hā-Lōk-Gèl"
+  },
+  "r442:__tongue__": "xanadui",
+  "r442:xanadui": {
+    "gloss": "albihār (incense) + Rīfar (river)",
+    "name": "Rīfar al-Bihār"
+  },
+  "r443:__tongue__": "hum",
+  "r443:hum": {
+    "gloss": "Sīng (night-star) + Gèl (wadi)",
+    "name": "Sīng-Gèl"
+  },
+  "r444:__tongue__": "yuni",
+  "r444:yuni": {
+    "gloss": "Silba (Silver) + Guli (wadi)",
+    "name": "Silba Guli"
+  },
+  "r445:__tongue__": "tungang",
+  "r445:tungang": {
+    "gloss": "Gowd (gold) + Gill (wadi)",
+    "name": "Gowd Gill"
+  },
+  "r446:__tongue__": "hum",
+  "r446:hum": {
+    "gloss": "Pāk (white-mesa) + Gèl (wadi)",
+    "name": "Pāk-Gèl"
+  },
+  "r447:__tongue__": "argot",
+  "r447:argot": {
+    "gloss": "katarak (cataract) + Guli (wadi)",
+    "name": "katarak Guli"
+  },
+  "r448:__tongue__": "eternian",
+  "r448:eternian": {
+    "gloss": "Kām (gold-leaf) + Kū (wadi)",
+    "name": "Kām-Kū"
+  },
+  "r449:__tongue__": "yuni",
+  "r449:yuni": {
+    "gloss": "Kopa (Copper) + Guli (wadi)",
+    "name": "Kopa Guli"
+  },
+  "r450:__tongue__": "yuni",
+  "r450:yuni": {
+    "gloss": "Longa (Long) + Guli (wadi)",
+    "name": "Longa Guli"
+  },
+  "r451:__tongue__": "dasri",
+  "r451:dasri": {
+    "gloss": "al-Kawkab (falling-star) + Wādī (wadi)",
+    "name": "Wādī al-Kawkab"
+  },
+  "r452:__tongue__": "yuni",
+  "r452:yuni": {
+    "gloss": "Sista (Sister) + Guli (wadi)",
+    "name": "Sista Guli"
+  },
+  "r453:__tongue__": "izani",
+  "r453:izani": {
+    "gloss": "Cistal (crystal) + Guli (wadi)",
+    "name": "Guli Cistal"
+  },
+  "r454:__tongue__": "hum",
+  "r454:hum": {
+    "gloss": "Sī (west-pass) + Gèl (wadi)",
+    "name": "Sī-Gèl"
+  },
+  "r455:__tongue__": "yuni",
+  "r455:yuni": {
+    "gloss": "Westa (west) + Blaka (Black) + Guli (wadi)",
+    "name": "Westa Blaka Guli"
+  },
+  "r456:__tongue__": "tungang",
+  "r456:tungang": {
+    "gloss": "Garth (garth-enclosure) + Gill (wadi)",
+    "name": "Garth Gill"
+  },
+  "r457:__tongue__": "tungang",
+  "r457:tungang": {
+    "gloss": "Howe (howe-mound) + Gill (wadi)",
+    "name": "Howe Gill"
+  },
+  "r458:__tongue__": "yuni",
+  "r458:yuni": {
+    "gloss": "Grina (Green) + Guli (wadi)",
+    "name": "Grina Guli"
+  },
+  "r459:__tongue__": "yuni",
+  "r459:yuni": {
+    "gloss": "Spindl (Spindle) + Guli (wadi)",
+    "name": "Spindl Guli"
+  },
+  "r460:__tongue__": "hum",
+  "r460:hum": {
+    "gloss": "Pāk (north) + Wūn (cloud-ledge) + Gèl (wadi)",
+    "name": "Pāk-Wūn-Gèl"
+  },
+  "r461:__tongue__": "hum",
+  "r461:hum": {
+    "gloss": "Sām (deep-notch) + Gèl (wadi)",
+    "name": "Sām-Gèl"
+  },
+  "r462:__tongue__": "screamer",
+  "r462:screamer": {
+    "gloss": "Mirage (mirage) + Wash (wadi)",
+    "name": "Mirage Wash"
+  },
+  "r463:__tongue__": "yuni",
+  "r463:yuni": {
+    "gloss": "Reda (Red) + Guli (wadi)",
+    "name": "Reda Guli"
+  },
+  "r464:__tongue__": "dasri",
+  "r464:dasri": {
+    "gloss": "al-Kabīr (great) + al-Qamar (crescent-moon) + Wādī (wadi)",
+    "name": "Wādī al-Qamar al-Kabīr"
+  },
+  "r465:__tongue__": "yuni",
+  "r465:yuni": {
+    "gloss": "Loua (lower) + Suna (Sun) + Guli (wadi)",
+    "name": "Loua Suna Guli"
+  },
+  "r466:__tongue__": "khaay",
+  "r466:khaay": {
+    "gloss": "Musïq (musk-ox) + Quli (wadi)",
+    "name": "Musïq Quli"
+  },
+  "r467:__tongue__": "dasri",
+  "r467:dasri": {
+    "gloss": "al-Gharb (west) + al-Rīḥ (simoom-wind) + Wādī (wadi)",
+    "name": "Wādī al-Rīḥ al-Gharb"
+  },
+  "r468:__tongue__": "argot",
+  "r468:argot": {
+    "gloss": "Gete (spillway-gate) + Guli (wadi)",
+    "name": "Gete Guli"
+  },
+  "r469:__tongue__": "xanadui",
+  "r469:xanadui": {
+    "gloss": "aljadwal (terraced-rill) + Gūlī (wadi)",
+    "name": "Gūlī al-Jadwal"
+  },
+  "r470:__tongue__": "yuni",
+  "r470:yuni": {
+    "gloss": "Ista (east) + Stoun (Stone) + Guli (wadi)",
+    "name": "Ista Stoun Guli"
+  },
+  "r472:__tongue__": "argot",
+  "r472:argot": {
+    "gloss": "bretša (breach-coulee) + Guli (wadi)",
+    "name": "bretša Guli"
+  },
+  "r473:__tongue__": "yuni",
+  "r473:yuni": {
+    "gloss": "Loua (lower) + Aina (Iron) + Guli (wadi)",
+    "name": "Loua Aina Guli"
+  },
+  "r474:__tongue__": "yuni",
+  "r474:yuni": {
+    "gloss": "Biga (great) + Klira (Clear) + Guli (wadi)",
+    "name": "Biga Klira Guli"
+  },
+  "r476:__tongue__": "yuni",
+  "r476:yuni": {
+    "gloss": "Norta (north) + Blaka (Black) + Guli (wadi)",
+    "name": "Norta Blaka Guli"
+  },
+  "r477:__tongue__": "khaay",
+  "r477:khaay": {
+    "gloss": "Mïïst (ice-fog) + Quli (wadi)",
+    "name": "Mïïst Quli"
+  },
+  "r478:__tongue__": "yuni",
+  "r478:yuni": {
+    "gloss": "Kould (Cold) + Guli (wadi)",
+    "name": "Kould Guli"
+  },
+  "r479:__tongue__": "hum",
+  "r479:hum": {
+    "gloss": "Yūt (howling-moon) + Gèl (wadi)",
+    "name": "Yūt-Gèl"
+  },
+  "r480:__tongue__": "dasri",
+  "r480:dasri": {
+    "gloss": "al-Fawq (upper) + al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal al-Fawq"
+  },
+  "r481:__tongue__": "heiland",
+  "r481:heiland": {
+    "gloss": "Payar (fire) + Kuri (wadi)",
+    "name": "Payar Kuri"
+  },
+  "r482:__tongue__": "argot",
+  "r482:argot": {
+    "gloss": "Ankra (anchor) + Guli (wadi)",
+    "name": "Ankra Guli"
+  },
+  "r483:__tongue__": "dasri",
+  "r483:dasri": {
+    "gloss": "al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal"
+  },
+  "r484:__tongue__": "hum",
+  "r484:hum": {
+    "gloss": "Hāk (black-basalt) + Gèl (wadi)",
+    "name": "Hāk-Gèl"
+  },
+  "r485:__tongue__": "dasri",
+  "r485:dasri": {
+    "gloss": "al-Gharb (west) + al-Raml (red-sand) + Wādī (wadi)",
+    "name": "Wādī al-Raml al-Gharb"
+  },
+  "r486:__tongue__": "dasri",
+  "r486:dasri": {
+    "gloss": "al-Shams (sun-scorch) + Wādī (wadi)",
+    "name": "Wādī al-Shams"
+  },
+  "r487:__tongue__": "yuni",
+  "r487:yuni": {
+    "gloss": "Winda (Wind) + Guli (wadi)",
+    "name": "Winda Guli"
+  },
+  "r488:__tongue__": "xanadui",
+  "r488:xanadui": {
+    "gloss": "alṣafā (clarity) + Gūlī (wadi)",
+    "name": "Gūlī al-Ṣafā"
+  },
+  "r489:__tongue__": "hum",
+  "r489:hum": {
+    "gloss": "Kū (spider-web) + Gèl (wadi)",
+    "name": "Kū-Gèl"
+  },
+  "r490:__tongue__": "yuni",
+  "r490:yuni": {
+    "gloss": "Biga (great) + Kopa (Copper) + Guli (wadi)",
+    "name": "Biga Kopa Guli"
+  },
+  "r491:__tongue__": "yuni",
+  "r491:yuni": {
+    "gloss": "Likl (little) + Reda (Red) + Guli (wadi)",
+    "name": "Likl Reda Guli"
+  },
+  "r492:__tongue__": "xanadui",
+  "r492:xanadui": {
+    "gloss": "alward (rose-garden) + Gūlī (wadi)",
+    "name": "Gūlī al-Ward"
+  },
+  "r493:__tongue__": "argot",
+  "r493:argot": {
+    "gloss": "Barada (brother-crew) + Guli (wadi)",
+    "name": "Barada Guli"
+  },
+  "r494:__tongue__": "dasri",
+  "r494:dasri": {
+    "gloss": "al-Nar (ember) + Wādī (wadi)",
+    "name": "Wādī al-Nar"
+  },
+  "r495:__tongue__": "dasri",
+  "r495:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Ṣakhr (sandstone-mesa) + Wādī (wadi)",
+    "name": "Wādī al-Ṣakhr al-Ṣaghīr"
+  },
+  "r496:__tongue__": "scyvoi",
+  "r496:scyvoi": {
+    "gloss": "swift dry valley",
+    "name": "Sivift Gulusu"
+  },
+  "r497:__tongue__": "yuni",
+  "r497:yuni": {
+    "gloss": "Aina (Iron) + Guli (wadi)",
+    "name": "Aina Guli"
+  },
+  "r498:__tongue__": "hum",
+  "r498:hum": {
+    "gloss": "Lōk (step-bench) + Gèl (wadi)",
+    "name": "Lōk-Gèl"
+  },
+  "r499:__tongue__": "hum",
+  "r499:hum": {
+    "gloss": "Kām (copper-gold) + Gèl (wadi)",
+    "name": "Kām-Gèl"
+  },
+  "r500:__tongue__": "hum",
+  "r500:hum": {
+    "gloss": "Pāk (north) + Sī (west-pass) + Gèl (wadi)",
+    "name": "Pāk-Sī-Gèl"
+  },
+  "r501:__tongue__": "tungang",
+  "r501:tungang": {
+    "gloss": "Yan (First) + Gill (wadi)",
+    "name": "Yan Gill"
+  },
+  "r502:__tongue__": "dasri",
+  "r502:dasri": {
+    "gloss": "al-Bīr (cistern-well) + Wādī (wadi)",
+    "name": "Wādī al-Bīr"
+  },
+  "r503:__tongue__": "tungang",
+  "r503:tungang": {
+    "gloss": "Wist (west) + Gowd (gold) + Gill (wadi)",
+    "name": "Wist Gowd Gill"
+  },
+  "r504:__tongue__": "dasri",
+  "r504:dasri": {
+    "gloss": "al-Qaṣr (butte-fortress) + Wādī (wadi)",
+    "name": "Wādī al-Qaṣr"
+  },
+  "r505:__tongue__": "yuni",
+  "r505:yuni": {
+    "gloss": "Loua (lower) + Waita (White) + Guli (wadi)",
+    "name": "Loua Waita Guli"
+  },
+  "r506:__tongue__": "hum",
+  "r506:hum": {
+    "gloss": "Hau (coyote-hound) + Gèl (wadi)",
+    "name": "Hau-Gèl"
+  },
+  "r507:__tongue__": "dasri",
+  "r507:dasri": {
+    "gloss": "al-Ḥajar (black-basalt) + Wādī (wadi)",
+    "name": "Wādī al-Ḥajar"
+  },
+  "r508:__tongue__": "dasri",
+  "r508:dasri": {
+    "gloss": "al-Milḥ (salt-crust) + Wādī (wadi)",
+    "name": "Wādī al-Milḥ"
+  },
+  "r509:__tongue__": "scyvoi",
+  "r509:scyvoi": {
+    "gloss": "Karun (black-stone) + Gulusu (wadi)",
+    "name": "Karun Gulusu"
+  },
+  "r510:__tongue__": "tabist",
+  "r510:tabist": {
+    "gloss": "Ḥdd (iron-oxide) + Gl (wadi)",
+    "name": "Gl Ḥdd"
+  },
+  "r511:__tongue__": "hum",
+  "r511:hum": {
+    "gloss": "Sī (west) + Pāk (white-mesa) + Gèl (wadi)",
+    "name": "Sī-Pāk-Gèl"
+  },
+  "r512:__tongue__": "eternian",
+  "r512:eternian": {
+    "gloss": "Sēk (stone-weir) + Kū (wadi)",
+    "name": "Sēk-Kū"
+  },
+  "r513:__tongue__": "hum",
+  "r513:hum": {
+    "gloss": "Hā (lower) + Hōng (red-sandstone) + Gèl (wadi)",
+    "name": "Hā-Hōng-Gèl"
+  },
+  "r514:__tongue__": "yuni",
+  "r514:yuni": {
+    "gloss": "Waita (White) + Guli (wadi)",
+    "name": "Waita Guli"
+  },
+  "r516:__tongue__": "tungang",
+  "r516:tungang": {
+    "gloss": "Weyt (white-water) + Gill (wadi)",
+    "name": "Weyt Gill"
+  },
+  "r517:__tongue__": "hum",
+  "r517:hum": {
+    "gloss": "Nām (south) + Hōng (red-sandstone) + Gèl (wadi)",
+    "name": "Nām-Hōng-Gèl"
+  },
+  "r518:__tongue__": "izani",
+  "r518:izani": {
+    "gloss": "coper (copper) + Guli (wadi)",
+    "name": "Guli coper"
+  },
+  "r519:__tongue__": "argot",
+  "r519:argot": {
+    "gloss": "yardang (wind-keel) + Guli (wadi)",
+    "name": "yardang Guli"
+  },
+  "r520:__tongue__": "hykkousik",
+  "r520:hykkousik": {
+    "gloss": "Pheurle (pearl) + Ghouly (wadi)",
+    "name": "Pheurle Ghouly"
+  },
+  "r521:__tongue__": "xanadui",
+  "r521:xanadui": {
+    "gloss": "alnūr (light) + Gūlī (wadi)",
+    "name": "Gūlī al-Nūr"
+  },
+  "r522:__tongue__": "argot",
+  "r522:argot": {
+    "gloss": "Topa (upper) + Pepa (paper-treaty) + Guli (wadi)",
+    "name": "Topa Pepa Guli"
+  },
+  "r523:__tongue__": "yuni",
+  "r523:yuni": {
+    "gloss": "Likl (little) + Solt (Salt) + Guli (wadi)",
+    "name": "Likl Solt Guli"
+  },
+  "r524:__tongue__": "yuni",
+  "r524:yuni": {
+    "gloss": "Norta (north) + Spindl (Spindle) + Guli (wadi)",
+    "name": "Norta Spindl Guli"
+  },
+  "r525:__tongue__": "dasri",
+  "r525:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Shams (sun-scorch) + Wādī (wadi)",
+    "name": "Wādī al-Shams al-Ṣaghīr"
+  },
+  "r526:__tongue__": "hum",
+  "r526:hum": {
+    "gloss": "Tōng (east) + Pāk (white-mesa) + Gèl (wadi)",
+    "name": "Tōng-Pāk-Gèl"
+  },
+  "r527:__tongue__": "yuni",
+  "r527:yuni": {
+    "gloss": "Westa (west) + Klira (Clear) + Guli (wadi)",
+    "name": "Westa Klira Guli"
+  },
+  "r528:__tongue__": "yusar",
+  "r528:yusar": {
+    "gloss": "Windlow (low-wind) + Cutdry (wadi)",
+    "name": "Cutdry Windlow"
+  },
+  "r529:__tongue__": "dasri",
+  "r529:dasri": {
+    "gloss": "al-Taḥt (lower) + al-Jabal (escarpment) + Wādī (wadi)",
+    "name": "Wādī al-Jabal al-Taḥt"
+  },
+  "r530:__tongue__": "screamer",
+  "r530:screamer": {
+    "gloss": "Noon (noon) + Wash (wadi)",
+    "name": "Noon Wash"
+  },
+  "r531:__tongue__": "yuni",
+  "r531:yuni": {
+    "gloss": "Likl (little) + Dipa (Deep) + Guli (wadi)",
+    "name": "Likl Dipa Guli"
+  },
+  "r532:__tongue__": "xanadui",
+  "r532:xanadui": {
+    "gloss": "alghaym (cloud-veil) + Gūlī (wadi)",
+    "name": "Gūlī al-Ghaym"
+  },
+  "r533:__tongue__": "hum",
+  "r533:hum": {
+    "gloss": "Sēk (chasm-wall) + Gèl (wadi)",
+    "name": "Sēk-Gèl"
+  },
+  "r534:__tongue__": "hum",
+  "r534:hum": {
+    "gloss": "Lām (ring-dike) + Gèl (wadi)",
+    "name": "Lām-Gèl"
+  },
+  "r535:__tongue__": "argot",
+  "r535:argot": {
+    "gloss": "Kebla (cable-chain) + Guli (wadi)",
+    "name": "Kebla Guli"
+  },
+  "r536:__tongue__": "tungang",
+  "r536:tungang": {
+    "gloss": "Haa (high) + Blek (black-shale) + Beck (stream)",
+    "name": "Haa Blek Beck"
+  },
+  "r537:__tongue__": "dalab",
+  "r537:dalab": {
+    "gloss": "Swift (swift) + Guli (wadi)",
+    "name": "Swift Guli"
+  },
+  "r538:__tongue__": "tungang",
+  "r538:tungang": {
+    "gloss": "Fell (high-fell) + Gill (wadi)",
+    "name": "Fell Gill"
+  },
+  "r539:__tongue__": "hum",
+  "r539:hum": {
+    "gloss": "Sīu (little) + Sām (deep-notch) + Gèl (wadi)",
+    "name": "Sīu-Sām-Gèl"
+  },
+  "r540:__tongue__": "dasri",
+  "r540:dasri": {
+    "gloss": "al-Fawq (upper) + al-Zulāl (cool-oasis) + Wādī (wadi)",
+    "name": "Wādī al-Zulāl al-Fawq"
+  },
+  "r541:__tongue__": "tungang",
+  "r541:tungang": {
+    "gloss": "Sooth (south) + Fell (high-fell) + Gill (wadi)",
+    "name": "Sooth Fell Gill"
+  },
+  "r542:__tongue__": "tungang",
+  "r542:tungang": {
+    "gloss": "Fah (far) + Gill (wadi)",
+    "name": "Fah Gill"
+  },
+  "r543:__tongue__": "izani",
+  "r543:izani": {
+    "gloss": "Sola (sun) + Guli (wadi)",
+    "name": "Guli Sola"
+  },
+  "r544:__tongue__": "dasri",
+  "r544:dasri": {
+    "gloss": "al-Sharq (east) + al-Bīr (cistern-well) + Wādī (wadi)",
+    "name": "Wādī al-Bīr al-Sharq"
+  },
+  "r545:__tongue__": "dasri",
+  "r545:dasri": {
+    "gloss": "al-Gharb (west) + al-Naḥās (copper-stain) + Wādī (wadi)",
+    "name": "Wādī al-Naḥās al-Gharb"
+  },
+  "r546:__tongue__": "yuni",
+  "r546:yuni": {
+    "gloss": "Brada (Brother) + Guli (wadi)",
+    "name": "Brada Guli"
+  },
+  "r547:__tongue__": "hum",
+  "r547:hum": {
+    "gloss": "Sīu (little) + Lām (ring-dike) + Gèl (wadi)",
+    "name": "Sīu-Lām-Gèl"
+  },
+  "r548:__tongue__": "eternian",
+  "r548:eternian": {
+    "gloss": "Līng (lotus-bell) + Kū (wadi)",
+    "name": "Līng-Kū"
+  },
+  "r549:__tongue__": "dalab",
+  "r549:dalab": {
+    "gloss": "Geit (gate) + Guli (wadi)",
+    "name": "Geit Guli"
+  },
+  "r551:__tongue__": "hum",
+  "r551:hum": {
+    "gloss": "Chīng (clear-pool) + Gèl (wadi)",
+    "name": "Chīng-Gèl"
+  },
+  "r552:__tongue__": "izani",
+  "r552:izani": {
+    "gloss": "valle (valley) + Guli (wadi)",
+    "name": "Guli valle"
+  },
+  "r553:__tongue__": "yuni",
+  "r553:yuni": {
+    "gloss": "Solt (Salt) + Guli (wadi)",
+    "name": "Solt Guli"
+  },
+  "r554:__tongue__": "argot",
+  "r554:argot": {
+    "gloss": "Golda (gold) + Guli (wadi)",
+    "name": "Golda Guli"
+  },
+  "r555:__tongue__": "tungang",
+  "r555:tungang": {
+    "gloss": "Tarn (mountain-tarn) + Gill (wadi)",
+    "name": "Tarn Gill"
+  },
+  "r556:__tongue__": "hum",
+  "r556:hum": {
+    "gloss": "Pāk (north) + Lōk (step-bench) + Gèl (wadi)",
+    "name": "Pāk-Lōk-Gèl"
+  },
+  "r557:__tongue__": "tungang",
+  "r557:tungang": {
+    "gloss": "Tkyoob (Cube) + Gill (wadi)",
+    "name": "Tkyoob Gill"
+  },
+  "r558:__tongue__": "dasri",
+  "r558:dasri": {
+    "gloss": "al-Fawq (upper) + al-Ghubār (dust-plume) + Wādī (wadi)",
+    "name": "Wādī al-Ghubār al-Fawq"
+  },
+  "r559:__tongue__": "xanadui",
+  "r559:xanadui": {
+    "gloss": "alkahf (cavern) + Gūlī (wadi)",
+    "name": "Gūlī al-Kahf"
+  },
+  "r560:__tongue__": "dasri",
+  "r560:dasri": {
+    "gloss": "al-Kabīr (great) + al-Rīḥ (simoom-wind) + Wādī (wadi)",
+    "name": "Wādī al-Rīḥ al-Kabīr"
+  },
+  "r561:__tongue__": "screamer",
+  "r561:screamer": {
+    "gloss": "Red (red) + Wash (wadi)",
+    "name": "Red Wash"
+  },
+  "r562:__tongue__": "yuni",
+  "r562:yuni": {
+    "gloss": "Biga (great) + Sista (Sister) + Guli (wadi)",
+    "name": "Biga Sista Guli"
+  },
+  "r563:__tongue__": "hum",
+  "r563:hum": {
+    "gloss": "Sīu (little) + Sī (west-pass) + Gèl (wadi)",
+    "name": "Sīu-Sī-Gèl"
+  },
+  "r564:__tongue__": "yuni",
+  "r564:yuni": {
+    "gloss": "Stoun (Stone) + Guli (wadi)",
+    "name": "Stoun Guli"
+  },
+  "r565:__tongue__": "khaay",
+  "r565:khaay": {
+    "gloss": "Loo (lower) + Khaay (yeti-peak) + Quli (wadi)",
+    "name": "Loo Khaay Quli"
+  },
+  "r566:__tongue__": "khaay",
+  "r566:khaay": {
+    "gloss": "Paayar (hearth-fire) + Quli (wadi)",
+    "name": "Paayar Quli"
+  },
+  "r567:__tongue__": "eternian",
+  "r567:eternian": {
+    "gloss": "Fūng (north-wind) + Kū (wadi)",
+    "name": "Fūng-Kū"
+  },
+  "r568:__tongue__": "yusar",
+  "r568:yusar": {
+    "gloss": "Walkcrook (crooked-walk) + Cutdry (wadi)",
+    "name": "Cutdry Walkcrook"
+  },
+  "r569:__tongue__": "yuni",
+  "r569:yuni": {
+    "gloss": "Loua (lower) + Stara (Star) + Guli (wadi)",
+    "name": "Loua Stara Guli"
+  },
+  "r570:__tongue__": "xanadui",
+  "r570:xanadui": {
+    "gloss": "alṣakhr (crag) + Gūlī (wadi)",
+    "name": "Gūlī al-Ṣakhr"
+  },
+  "r571:__tongue__": "hum",
+  "r571:hum": {
+    "gloss": "Sīu (little) + Sīng (night-star) + Gèl (wadi)",
+    "name": "Sīu-Sīng-Gèl"
+  },
+  "r572:__tongue__": "hum",
+  "r572:hum": {
+    "gloss": "Pāk (north) + Lām (ring-dike) + Gèl (wadi)",
+    "name": "Pāk-Lām-Gèl"
+  },
+  "r573:__tongue__": "argot",
+  "r573:argot": {
+    "gloss": "Roda (portage-road) + Guli (wadi)",
+    "name": "Roda Guli"
+  },
+  "r574:__tongue__": "heiland",
+  "r574:heiland": {
+    "gloss": "Hay (high) + Kuri (wadi)",
+    "name": "Hay Kuri"
+  },
+  "r575:__tongue__": "dasri",
+  "r575:dasri": {
+    "gloss": "al-Qamar (crescent-moon) + Wādī (wadi)",
+    "name": "Wādī al-Qamar"
+  },
+  "r576:__tongue__": "hum",
+  "r576:hum": {
+    "gloss": "Sāng (upper) + Hāk (black-basalt) + Gèl (wadi)",
+    "name": "Sāng-Hāk-Gèl"
+  },
+  "r577:__tongue__": "scyvoi",
+  "r577:scyvoi": {
+    "gloss": "Serin (cool-spring) + Gulusu (wadi)",
+    "name": "Serin Gulusu"
+  },
+  "r578:__tongue__": "dasri",
+  "r578:dasri": {
+    "gloss": "al-Kabīr (great) + al-Raml (red-sand) + Wādī (wadi)",
+    "name": "Wādī al-Raml al-Kabīr"
+  },
+  "r579:__tongue__": "yuni",
+  "r579:yuni": {
+    "gloss": "Likl (little) + Stoun (Stone) + Guli (wadi)",
+    "name": "Likl Stoun Guli"
+  },
+  "r580:__tongue__": "hum",
+  "r580:hum": {
+    "gloss": "Pāk (north) + Sēk (chasm-wall) + Gèl (wadi)",
+    "name": "Pāk-Sēk-Gèl"
+  },
+  "r581:__tongue__": "hum",
+  "r581:hum": {
+    "gloss": "Tōng (east-gate) + Gèl (wadi)",
+    "name": "Tōng-Gèl"
+  },
+  "r582:__tongue__": "dasri",
+  "r582:dasri": {
+    "gloss": "al-Fawq (upper) + al-Kawkab (falling-star) + Wādī (wadi)",
+    "name": "Wādī al-Kawkab al-Fawq"
+  },
+  "r583:__tongue__": "dasri",
+  "r583:dasri": {
+    "gloss": "al-Taḥt (lower) + al-Nar (ember) + Wādī (wadi)",
+    "name": "Wādī al-Nar al-Taḥt"
+  },
+  "r584:__tongue__": "screamer",
+  "r584:screamer": {
+    "gloss": "alkali (alkali) + Wash (wadi)",
+    "name": "alkali Wash"
+  },
+  "r585:__tongue__": "xanadui",
+  "r585:xanadui": {
+    "gloss": "alyāqūt (ruby) + Gūlī (wadi)",
+    "name": "Gūlī al-Yāqūt"
+  },
+  "r586:__tongue__": "tungang",
+  "r586:tungang": {
+    "gloss": "Deyp (deep-gill) + Gill (wadi)",
+    "name": "Deyp Gill"
+  },
+  "r587:__tongue__": "hum",
+  "r587:hum": {
+    "gloss": "Sīu (little) + Wūn (cloud-ledge) + Gèl (wadi)",
+    "name": "Sīu-Wūn-Gèl"
+  },
+  "r588:__tongue__": "yusar",
+  "r588:yusar": {
+    "gloss": "Turnback (back-turn) + Cutdry (wadi)",
+    "name": "Cutdry Turnback"
+  },
+  "r589:__tongue__": "hum",
+  "r589:hum": {
+    "gloss": "Nām (south) + Kū (spider-web) + Gèl (wadi)",
+    "name": "Nām-Kū-Gèl"
+  },
+  "r590:__tongue__": "tungang",
+  "r590:tungang": {
+    "gloss": "Kowd (cold) + Gill (wadi)",
+    "name": "Kowd Gill"
+  },
+  "r591:__tongue__": "dasri",
+  "r591:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Ghubār (dust-plume) + Wādī (wadi)",
+    "name": "Wādī al-Ghubār al-Ṣaghīr"
+  },
+  "r592:__tongue__": "khaay",
+  "r592:khaay": {
+    "gloss": "Gïriin (moss-green) + Quli (wadi)",
+    "name": "Gïriin Quli"
+  },
+  "r593:__tongue__": "dasri",
+  "r593:dasri": {
+    "gloss": "al-Gharb (west) + al-Dhahab (gold-dust) + Wādī (wadi)",
+    "name": "Wādī al-Dhahab al-Gharb"
+  },
+  "r594:__tongue__": "khaay",
+  "r594:khaay": {
+    "gloss": "Ïstaar (polar-star) + Quli (wadi)",
+    "name": "Ïstaar Quli"
+  },
+  "r595:__tongue__": "scyvoi",
+  "r595:scyvoi": {
+    "gloss": "bitter dry valley",
+    "name": "Bitir Gulusu"
+  },
+  "r596:__tongue__": "khaay",
+  "r596:khaay": {
+    "gloss": "Bïlaaq (black-lichen) + Quli (wadi)",
+    "name": "Bïlaaq Quli"
+  },
+  "r597:__tongue__": "dalab",
+  "r597:dalab": {
+    "gloss": "Klir (clear) + Guli (wadi)",
+    "name": "Klir Guli"
+  },
+  "r598:__tongue__": "eternian",
+  "r598:eternian": {
+    "gloss": "Tsēng (celadon-green) + Kū (wadi)",
+    "name": "Tsēng-Kū"
+  },
+  "r599:__tongue__": "yuni",
+  "r599:yuni": {
+    "gloss": "Swifta (Swift) + Guli (wadi)",
+    "name": "Swifta Guli"
+  },
+  "r600:__tongue__": "izani",
+  "r600:izani": {
+    "gloss": "Salta (salt) + Guli (wadi)",
+    "name": "Guli Salta"
+  },
+  "r601:__tongue__": "yuni",
+  "r601:yuni": {
+    "gloss": "Loua (lower) + Winda (Wind) + Guli (wadi)",
+    "name": "Loua Winda Guli"
+  },
+  "r602:__tongue__": "yuni",
+  "r602:yuni": {
+    "gloss": "Biga (great) + Suna (Sun) + Guli (wadi)",
+    "name": "Biga Suna Guli"
+  },
+  "r603:__tongue__": "hum",
+  "r603:hum": {
+    "gloss": "Sīu (little) + Hau (coyote-hound) + Gèl (wadi)",
+    "name": "Sīu-Hau-Gèl"
+  },
+  "r604:__tongue__": "tungang",
+  "r604:tungang": {
+    "gloss": "Kruk (crook-bend) + Gill (wadi)",
+    "name": "Kruk Gill"
+  },
+  "r605:__tongue__": "hum",
+  "r605:hum": {
+    "gloss": "Nām (south) + Lām (ring-dike) + Gèl (wadi)",
+    "name": "Nām-Lām-Gèl"
+  },
+  "r606:__tongue__": "dasri",
+  "r606:dasri": {
+    "gloss": "al-Fawq (upper) + al-Sarāb (mirage) + Wādī (wadi)",
+    "name": "Wādī al-Sarāb al-Fawq"
+  },
+  "r607:__tongue__": "dasri",
+  "r607:dasri": {
+    "gloss": "al-Naḥās (copper-stain) + Wādī (wadi)",
+    "name": "Wādī al-Naḥās"
+  },
+  "r608:__tongue__": "izani",
+  "r608:izani": {
+    "gloss": "Guaita (white) + Guli (wadi)",
+    "name": "Guli Guaita"
+  },
+  "r609:__tongue__": "yuni",
+  "r609:yuni": {
+    "gloss": "Loua (lower) + Swifta (Swift) + Guli (wadi)",
+    "name": "Loua Swifta Guli"
+  },
+  "r610:__tongue__": "khaay",
+  "r610:khaay": {
+    "gloss": "Noor (north) + Goold (gold-nugget) + Quli (wadi)",
+    "name": "Noor Goold Quli"
+  },
+  "r611:__tongue__": "hum",
+  "r611:hum": {
+    "gloss": "Sīu (little) + Lōk (step-bench) + Gèl (wadi)",
+    "name": "Sīu-Lōk-Gèl"
+  },
+  "r612:__tongue__": "tungang",
+  "r612:tungang": {
+    "gloss": "Kopa (copper-ice) + Gill (wadi)",
+    "name": "Kopa Gill"
+  },
+  "r613:__tongue__": "xanadui",
+  "r613:xanadui": {
+    "gloss": "albard (cold-snow) + Gūlī (wadi)",
+    "name": "Gūlī al-Bard"
+  },
+  "r614:__tongue__": "izani",
+  "r614:izani": {
+    "gloss": "airon (iron) + Guli (wadi)",
+    "name": "Guli airon"
+  },
+  "r615:__tongue__": "yusar",
+  "r615:yusar": {
+    "gloss": "Fallhigh (high-fall) + Cutdry (wadi)",
+    "name": "Cutdry Fallhigh"
+  },
+  "r616:__tongue__": "xanadui",
+  "r616:xanadui": {
+    "gloss": "aljawhar (jewel) + Gūlī (wadi)",
+    "name": "Gūlī al-Jawhar"
+  },
+  "r617:__tongue__": "dasri",
+  "r617:dasri": {
+    "gloss": "al-Gharb (west) + al-Layl (star-night) + Wādī (wadi)",
+    "name": "Wādī al-Layl al-Gharb"
+  },
+  "r618:__tongue__": "izani",
+  "r618:izani": {
+    "gloss": "taur (tower) + Guli (wadi)",
+    "name": "Guli taur"
+  },
+  "r619:__tongue__": "izani",
+  "r619:izani": {
+    "gloss": "Falz (falls) + Guli (wadi)",
+    "name": "Guli Falz"
+  },
+  "r620:__tongue__": "hum",
+  "r620:hum": {
+    "gloss": "Pāk (north) + Kū (spider-web) + Gèl (wadi)",
+    "name": "Pāk-Kū-Gèl"
+  },
+  "r621:__tongue__": "vothic",
+  "r621:vothic": {
+    "gloss": "Shvarts (black) + Gülch (wadi)",
+    "name": "Shvarts Gülch"
+  },
+  "r622:__tongue__": "yuni",
+  "r622:yuni": {
+    "gloss": "Ista (east) + Stara (Star) + Guli (wadi)",
+    "name": "Ista Stara Guli"
+  },
+  "r623:__tongue__": "eternian",
+  "r623:eternian": {
+    "gloss": "Chūng (middle-dyke) + Kū (wadi)",
+    "name": "Chūng-Kū"
+  },
+  "r624:__tongue__": "hum",
+  "r624:hum": {
+    "gloss": "Chūng (middle-tier) + Gèl (wadi)",
+    "name": "Chūng-Gèl"
+  },
+  "r625:__tongue__": "hum",
+  "r625:hum": {
+    "gloss": "Hā (lower) + Hāk (black-basalt) + Gèl (wadi)",
+    "name": "Hā-Hāk-Gèl"
+  },
+  "r626:__tongue__": "izani",
+  "r626:izani": {
+    "gloss": "geit (gate) + Guli (wadi)",
+    "name": "Guli geit"
+  },
+  "r627:__tongue__": "eternian",
+  "r627:eternian": {
+    "gloss": "Sī (western-marsh) + Kū (wadi)",
+    "name": "Sī-Kū"
+  },
+  "r628:__tongue__": "yuni",
+  "r628:yuni": {
+    "gloss": "Norta (north) + Kopa (Copper) + Guli (wadi)",
+    "name": "Norta Kopa Guli"
+  },
+  "r629:__tongue__": "yuni",
+  "r629:yuni": {
+    "gloss": "Sauta (south) + Swifta (Swift) + Guli (wadi)",
+    "name": "Sauta Swifta Guli"
+  },
+  "r630:__tongue__": "hum",
+  "r630:hum": {
+    "gloss": "Tōng (east) + Tsēk (cleaver-stone) + Gèl (wadi)",
+    "name": "Tōng-Tsēk-Gèl"
+  },
+  "r631:__tongue__": "eternian",
+  "r631:eternian": {
+    "gloss": "Lōk (willow-terrace) + Kū (wadi)",
+    "name": "Lōk-Kū"
+  },
+  "r632:__tongue__": "yuni",
+  "r632:yuni": {
+    "gloss": "Apa (upper) + Aina (Iron) + Guli (wadi)",
+    "name": "Apa Aina Guli"
+  },
+  "r633:__tongue__": "yuni",
+  "r633:yuni": {
+    "gloss": "Loua (lower) + Longa (Long) + Guli (wadi)",
+    "name": "Loua Longa Guli"
+  },
+  "r634:__tongue__": "eternian",
+  "r634:eternian": {
+    "gloss": "Chīng (clear-mirror) + Kū (wadi)",
+    "name": "Chīng-Kū"
+  },
+  "r635:__tongue__": "izani",
+  "r635:izani": {
+    "gloss": "onda (wave) + Guli (wadi)",
+    "name": "Guli onda"
+  },
+  "r636:__tongue__": "yuni",
+  "r636:yuni": {
+    "gloss": "Norta (north) + Reda (Red) + Guli (wadi)",
+    "name": "Norta Reda Guli"
+  },
+  "r637:__tongue__": "dasri",
+  "r637:dasri": {
+    "gloss": "al-Jabal (escarpment) + Wādī (wadi)",
+    "name": "Wādī al-Jabal"
+  },
+  "r638:__tongue__": "dasri",
+  "r638:dasri": {
+    "gloss": "al-Kabīr (great) + al-Bālm (date-palm) + Wādī (wadi)",
+    "name": "Wādī al-Bālm al-Kabīr"
+  },
+  "r639:__tongue__": "hum",
+  "r639:hum": {
+    "gloss": "Hōng (red-sandstone) + Gèl (wadi)",
+    "name": "Hōng-Gèl"
+  },
+  "r640:__tongue__": "xanadui",
+  "r640:xanadui": {
+    "gloss": "albarad (hail-ice) + Gūlī (wadi)",
+    "name": "Gūlī al-Barad"
+  },
+  "r641:__tongue__": "yuni",
+  "r641:yuni": {
+    "gloss": "Loua (lower) + Teris (Terrace) + Guli (wadi)",
+    "name": "Loua Teris Guli"
+  },
+  "r642:__tongue__": "hum",
+  "r642:hum": {
+    "gloss": "Tāi (great) + Wūn (cloud-ledge) + Gèl (wadi)",
+    "name": "Tāi-Wūn-Gèl"
+  },
+  "r643:__tongue__": "yuni",
+  "r643:yuni": {
+    "gloss": "Likl (little) + Swifta (Swift) + Guli (wadi)",
+    "name": "Likl Swifta Guli"
+  },
+  "r644:__tongue__": "dasri",
+  "r644:dasri": {
+    "gloss": "al-Kabīr (great) + al-Ghubār (dust-plume) + Wādī (wadi)",
+    "name": "Wādī al-Ghubār al-Kabīr"
+  },
+  "r645:__tongue__": "dasri",
+  "r645:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Zulāl (cool-oasis) + Wādī (wadi)",
+    "name": "Wādī al-Zulāl al-Ṣaghīr"
+  },
+  "r646:__tongue__": "vothic",
+  "r646:vothic": {
+    "gloss": "Brik (bridge) + Gülch (wadi)",
+    "name": "Brik Gülch"
+  },
+  "r647:__tongue__": "izani",
+  "r647:izani": {
+    "gloss": "clifa (cliff) + Guli (wadi)",
+    "name": "Guli clifa"
+  },
+  "r648:__tongue__": "izani",
+  "r648:izani": {
+    "gloss": "Goulda (gold) + Guli (wadi)",
+    "name": "Guli Goulda"
+  },
+  "r649:__tongue__": "xanadui",
+  "r649:xanadui": {
+    "gloss": "albihār (incense) + Gūlī (wadi)",
+    "name": "Gūlī al-Bihār"
+  },
+  "r650:__tongue__": "vothic",
+  "r650:vothic": {
+    "gloss": "Hafn (harbour) + Gülch (wadi)",
+    "name": "Hafn Gülch"
+  },
+  "r651:__tongue__": "yuni",
+  "r651:yuni": {
+    "gloss": "Likl (little) + Longa (Long) + Guli (wadi)",
+    "name": "Likl Longa Guli"
+  },
+  "r652:__tongue__": "eternian",
+  "r652:eternian": {
+    "gloss": "Ngān (silver-thread) + Kū (wadi)",
+    "name": "Ngān-Kū"
+  },
+  "r653:__tongue__": "yuni",
+  "r653:yuni": {
+    "gloss": "Sauta (south) + Brada (Brother) + Guli (wadi)",
+    "name": "Sauta Brada Guli"
+  },
+  "r654:__tongue__": "republic",
+  "r654:republic": {
+    "gloss": "Hamer (hammer) + Guli (wadi)",
+    "name": "Hamer Guli"
+  },
+  "r655:__tongue__": "hum",
+  "r655:hum": {
+    "gloss": "Sī (west) + Sī (west-pass) + Gèl (wadi)",
+    "name": "Sī-Sī-Gèl"
+  },
+  "r656:__tongue__": "eternian",
+  "r656:eternian": {
+    "gloss": "Yūt (moon-bridge) + Kū (wadi)",
+    "name": "Yūt-Kū"
+  },
+  "r657:__tongue__": "argot",
+  "r657:argot": {
+    "gloss": "balsa (raft) + Guli (wadi)",
+    "name": "balsa Guli"
+  },
+  "r658:__tongue__": "khaay",
+  "r658:khaay": {
+    "gloss": "Lheek (tundra-lake) + Quli (wadi)",
+    "name": "Lheek Quli"
+  },
+  "r659:__tongue__": "yusar",
+  "r659:yusar": {
+    "gloss": "Lightsun (sun-light) + Cutdry (wadi)",
+    "name": "Cutdry Lightsun"
+  },
+  "r660:__tongue__": "khaay",
+  "r660:khaay": {
+    "gloss": "Aays (blue-ice) + Quli (wadi)",
+    "name": "Aays Quli"
+  },
+  "r661:__tongue__": "tungang",
+  "r661:tungang": {
+    "gloss": "Kual (coal) + Gill (wadi)",
+    "name": "Kual Gill"
+  },
+  "r662:__tongue__": "eternian",
+  "r662:eternian": {
+    "gloss": "Hōng (vermilion) + Kū (wadi)",
+    "name": "Hōng-Kū"
+  },
+  "r663:__tongue__": "dalab",
+  "r663:dalab": {
+    "gloss": "Fols (falls) + Guli (wadi)",
+    "name": "Fols Guli"
+  },
+  "r664:__tongue__": "yuni",
+  "r664:yuni": {
+    "gloss": "Apa (upper) + Waita (White) + Guli (wadi)",
+    "name": "Apa Waita Guli"
+  },
+  "r665:__tongue__": "eternian",
+  "r665:eternian": {
+    "gloss": "Chī (paper-scroll) + Kū (wadi)",
+    "name": "Chī-Kū"
+  },
+  "r666:__tongue__": "yuni",
+  "r666:yuni": {
+    "gloss": "Biga (great) + Aina (Iron) + Guli (wadi)",
+    "name": "Biga Aina Guli"
+  },
+  "r667:__tongue__": "yuni",
+  "r667:yuni": {
+    "gloss": "Likl (little) + Kould (Cold) + Guli (wadi)",
+    "name": "Likl Kould Guli"
+  },
+  "r668:__tongue__": "eternian",
+  "r668:eternian": {
+    "gloss": "Pāk (white-jade) + Kū (wadi)",
+    "name": "Pāk-Kū"
+  },
+  "r669:__tongue__": "dalab",
+  "r669:dalab": {
+    "gloss": "Sun (sun) + Guli (wadi)",
+    "name": "Sun Guli"
+  },
+  "r670:__tongue__": "eternian",
+  "r670:eternian": {
+    "gloss": "Sīng (star-lantern) + Kū (wadi)",
+    "name": "Sīng-Kū"
+  },
+  "r671:__tongue__": "xanadui",
+  "r671:xanadui": {
+    "gloss": "allayl (night) + Gūlī (wadi)",
+    "name": "Gūlī al-Layl"
+  },
+  "r672:__tongue__": "yusar",
+  "r672:yusar": {
+    "gloss": "Shadowlong (long-shadow) + Cutdry (wadi)",
+    "name": "Cutdry Shadowlong"
+  },
+  "r673:__tongue__": "izani",
+  "r673:izani": {
+    "gloss": "brij (bridge) + Guli (wadi)",
+    "name": "Guli brij"
+  },
+  "r674:__tongue__": "tabist",
+  "r674:tabist": {
+    "gloss": "Ǧbl (horsts) + Gl (wadi)",
+    "name": "Gl Ǧbl"
+  },
+  "r675:__tongue__": "dasri",
+  "r675:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Milḥ (salt-crust) + Wādī (wadi)",
+    "name": "Wādī al-Milḥ al-Ṣaghīr"
+  },
+  "r676:__tongue__": "xanadui",
+  "r676:xanadui": {
+    "gloss": "alrīḥ (mountain-wind) + Gūlī (wadi)",
+    "name": "Gūlī al-Rīḥ"
+  },
+  "r678:__tongue__": "yuni",
+  "r678:yuni": {
+    "gloss": "Ista (east) + Dipa (Deep) + Guli (wadi)",
+    "name": "Ista Dipa Guli"
+  },
+  "r679:__tongue__": "painted",
+  "r679:painted": {
+    "gloss": "Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men",
+    "name": "Blùd Gèl"
+  },
+  "r680:__tongue__": "hum",
+  "r680:hum": {
+    "gloss": "Sāng (upper) + Sīng (night-star) + Gèl (wadi)",
+    "name": "Sāng-Sīng-Gèl"
+  },
+  "r681:__tongue__": "hum",
+  "r681:hum": {
+    "gloss": "Hā (lower) + Mō (Dry-mist) + Gèl (wadi)",
+    "name": "Hā-Mō-Gèl"
+  },
+  "r682:__tongue__": "xanadui",
+  "r682:xanadui": {
+    "gloss": "Qubbah (pleasure-dome) + Gūlī (wadi)",
+    "name": "Gūlī Qubbah"
+  },
+  "r683:__tongue__": "xanadui",
+  "r683:xanadui": {
+    "gloss": "alfiḍḍah (silver) + Gūlī (wadi)",
+    "name": "Gūlī al-Fiḍḍah"
+  },
+  "r684:__tongue__": "xanadui",
+  "r684:xanadui": {
+    "gloss": "aldhahab (gold) + Gūlī (wadi)",
+    "name": "Gūlī al-Dhahab"
+  },
+  "r685:__tongue__": "yuni",
+  "r685:yuni": {
+    "gloss": "Sauta (south) + Sista (Sister) + Guli (wadi)",
+    "name": "Sauta Sista Guli"
+  },
+  "r686:__tongue__": "hum",
+  "r686:hum": {
+    "gloss": "Tōng (east) + Chūng (middle-tier) + Gèl (wadi)",
+    "name": "Tōng-Chūng-Gèl"
+  },
+  "r687:__tongue__": "eternian",
+  "r687:eternian": {
+    "gloss": "Sī (west) + Sī (western-marsh) + Kū (wadi)",
+    "name": "Sī-Sī-Kū"
+  },
+  "r688:__tongue__": "dasri",
+  "r688:dasri": {
+    "gloss": "al-Sharq (east) + al-Nar (ember) + Wādī (wadi)",
+    "name": "Wādī al-Nar al-Sharq"
+  },
+  "r689:__tongue__": "hum",
+  "r689:hum": {
+    "gloss": "Hā (lower) + Pāk (white-mesa) + Gèl (wadi)",
+    "name": "Hā-Pāk-Gèl"
+  },
+  "r690:__tongue__": "dalab",
+  "r690:dalab": {
+    "gloss": "Brait (bright) + Guli (wadi)",
+    "name": "Brait Guli"
+  },
+  "r691:__tongue__": "argot",
+  "r691:argot": {
+    "gloss": "Raida (raider) + Guli (wadi)",
+    "name": "Raida Guli"
+  },
+  "r692:__tongue__": "dasri",
+  "r692:dasri": {
+    "gloss": "al-Kabīr (great) + al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal al-Kabīr"
+  },
+  "r693:__tongue__": "yuni",
+  "r693:yuni": {
+    "gloss": "Sauta (south) + Teris (Terrace) + Guli (wadi)",
+    "name": "Sauta Teris Guli"
+  },
+  "r694:__tongue__": "dalab",
+  "r694:dalab": {
+    "gloss": "Aian (iron) + Guli (wadi)",
+    "name": "Aian Guli"
+  },
+  "r696:__tongue__": "dasri",
+  "r696:dasri": {
+    "gloss": "al-Fawq (upper) + al-Qamar (crescent-moon) + Wādī (wadi)",
+    "name": "Wādī al-Qamar al-Fawq"
+  },
+  "r697:__tongue__": "scyvoi",
+  "r697:scyvoi": {
+    "gloss": "burn dry valley",
+    "name": "Borun Gulusu"
+  },
+  "r698:__tongue__": "eternian",
+  "r698:eternian": {
+    "gloss": "Tōng (eastern-reed) + Kū (wadi)",
+    "name": "Tōng-Kū"
+  },
+  "r699:__tongue__": "jimjam",
+  "r699:jimjam": {
+    "gloss": "Kal (granite-stone) + kāl (wadi)",
+    "name": "Kal-kāl"
+  },
+  "r700:__tongue__": "vothic",
+  "r700:vothic": {
+    "gloss": "Vayt (white) + Gülch (wadi)",
+    "name": "Vayt Gülch"
+  },
+  "r701:__tongue__": "dalab",
+  "r701:dalab": {
+    "gloss": "Wait (white) + Guli (wadi)",
+    "name": "Wait Guli"
+  },
+  "r702:__tongue__": "dalab",
+  "r702:dalab": {
+    "gloss": "Dip (deep) + Guli (wadi)",
+    "name": "Dip Guli"
+  },
+  "r704:__tongue__": "dasri",
+  "r704:dasri": {
+    "gloss": "al-Kabīr (great) + al-Bīr (cistern-well) + Wādī (wadi)",
+    "name": "Wādī al-Bīr al-Kabīr"
+  },
+  "r705:__tongue__": "hum",
+  "r705:hum": {
+    "gloss": "Hā (lower) + Sām (deep-notch) + Gèl (wadi)",
+    "name": "Hā-Sām-Gèl"
+  },
+  "r706:__tongue__": "hum",
+  "r706:hum": {
+    "gloss": "Tāi (great) + Lām (ring-dike) + Gèl (wadi)",
+    "name": "Tāi-Lām-Gèl"
+  },
+  "r707:__tongue__": "hum",
+  "r707:hum": {
+    "gloss": "Sīu (little) + Mō (Dry-mist) + Gèl (wadi)",
+    "name": "Sīu-Mō-Gèl"
+  },
+  "r708:__tongue__": "dasri",
+  "r708:dasri": {
+    "gloss": "al-Ṣakhr (sandstone-mesa) + Wādī (wadi)",
+    "name": "Wādī al-Ṣakhr"
+  },
+  "r709:__tongue__": "eternian",
+  "r709:eternian": {
+    "gloss": "Sām (deep-pool) + Kū (wadi)",
+    "name": "Sām-Kū"
+  },
+  "r710:__tongue__": "vothic",
+  "r710:vothic": {
+    "gloss": "klir (clear) + Gülch (wadi)",
+    "name": "klir Gülch"
+  },
+  "r711:__tongue__": "dasri",
+  "r711:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Dhahab (gold-dust) + Wādī (wadi)",
+    "name": "Wādī al-Dhahab al-Ṣaghīr"
+  },
+  "r712:__tongue__": "dasri",
+  "r712:dasri": {
+    "gloss": "al-Sharq (east) + al-Shams (sun-scorch) + Wādī (wadi)",
+    "name": "Wādī al-Shams al-Sharq"
+  },
+  "r713:__tongue__": "xanadui",
+  "r713:xanadui": {
+    "gloss": "al-Janūb (south) + Qubbah (pleasure-dome) + Gūlī (wadi)",
+    "name": "Gūlī Qubbah al-Janūb"
+  },
+  "r714:__tongue__": "eternian",
+  "r714:eternian": {
+    "gloss": "Hāk (black-ink) + Kū (wadi)",
+    "name": "Hāk-Kū"
+  },
+  "r715:__tongue__": "yuni",
+  "r715:yuni": {
+    "gloss": "Likl (little) + Brada (Brother) + Guli (wadi)",
+    "name": "Likl Brada Guli"
+  },
+  "r716:__tongue__": "hum",
+  "r716:hum": {
+    "gloss": "Pāk (north) + Hāk (black-basalt) + Gèl (wadi)",
+    "name": "Pāk-Hāk-Gèl"
+  },
+  "r717:__tongue__": "yusar",
+  "r717:yusar": {
+    "gloss": "Stonered (red-stone) + Cutdry (wadi)",
+    "name": "Cutdry Stonered"
+  },
+  "r718:__tongue__": "yuni",
+  "r718:yuni": {
+    "gloss": "Ista (east) + Spindl (Spindle) + Guli (wadi)",
+    "name": "Ista Spindl Guli"
+  },
+  "r719:__tongue__": "dasri",
+  "r719:dasri": {
+    "gloss": "al-Gharb (west) + al-Jabal (escarpment) + Wādī (wadi)",
+    "name": "Wādī al-Jabal al-Gharb"
+  },
+  "r720:__tongue__": "yuni",
+  "r720:yuni": {
+    "gloss": "Apa (upper) + Longa (Long) + Guli (wadi)",
+    "name": "Apa Longa Guli"
+  },
+  "r721:__tongue__": "yuni",
+  "r721:yuni": {
+    "gloss": "Loua (lower) + Brada (Brother) + Guli (wadi)",
+    "name": "Loua Brada Guli"
+  },
+  "r722:__tongue__": "eternian",
+  "r722:eternian": {
+    "gloss": "Wūn (cloud-mist) + Kū (wadi)",
+    "name": "Wūn-Kū"
+  },
+  "r723:__tongue__": "republic",
+  "r723:republic": {
+    "gloss": "Birč (birch) + Guli (wadi)",
+    "name": "Birč Guli"
+  },
+  "r724:__tongue__": "khaay",
+  "r724:khaay": {
+    "gloss": "Waayt (white-rime) + Quli (wadi)",
+    "name": "Waayt Quli"
+  },
+  "r725:__tongue__": "argot",
+  "r725:argot": {
+    "gloss": "Suda (south) + bretša (breach-coulee) + Guli (wadi)",
+    "name": "Suda bretša Guli"
+  },
+  "r726:__tongue__": "tungang",
+  "r726:tungang": {
+    "gloss": "Pimp (Fifth) + Gill (wadi)",
+    "name": "Pimp Gill"
+  },
+  "r727:__tongue__": "yusar",
+  "r727:yusar": {
+    "gloss": "Coldkeep (keep-cold) + Cutdry (wadi)",
+    "name": "Cutdry Coldkeep"
+  },
+  "r728:__tongue__": "hum",
+  "r728:hum": {
+    "gloss": "Sāng (upper) + Kām (copper-gold) + Gèl (wadi)",
+    "name": "Sāng-Kām-Gèl"
+  },
+  "r729:__tongue__": "dalab",
+  "r729:dalab": {
+    "gloss": "Red (red) + Guli (wadi)",
+    "name": "Red Guli"
+  },
+  "r730:__tongue__": "dalab",
+  "r730:dalab": {
+    "gloss": "Wind (wind) + Guli (wadi)",
+    "name": "Wind Guli"
+  },
+  "r731:__tongue__": "tungang",
+  "r731:tungang": {
+    "gloss": "Brant (steep-brow) + Gill (wadi)",
+    "name": "Brant Gill"
+  },
+  "r732:__tongue__": "tungang",
+  "r732:tungang": {
+    "gloss": "Blek (black-shale) + Gill (wadi)",
+    "name": "Blek Gill"
+  },
+  "r733:__tongue__": "izani",
+  "r733:izani": {
+    "gloss": "Suda (south) + taur (tower) + Guli (wadi)",
+    "name": "Guli Suda taur"
+  },
+  "r734:__tongue__": "yuni",
+  "r734:yuni": {
+    "gloss": "Ista (east) + Sista (Sister) + Guli (wadi)",
+    "name": "Ista Sista Guli"
+  },
+  "r735:__tongue__": "argot",
+  "r735:argot": {
+    "gloss": "Pepa (paper-treaty) + Guli (wadi)",
+    "name": "Pepa Guli"
+  },
+  "r736:__tongue__": "yuni",
+  "r736:yuni": {
+    "gloss": "Apa (upper) + Stoun (Stone) + Guli (wadi)",
+    "name": "Apa Stoun Guli"
+  },
+  "r737:__tongue__": "yuni",
+  "r737:yuni": {
+    "gloss": "Loua (lower) + Mista (Mist) + Guli (wadi)",
+    "name": "Loua Mista Guli"
+  },
+  "r738:__tongue__": "heiland",
+  "r738:heiland": {
+    "gloss": "San (sun) + Kuri (wadi)",
+    "name": "San Kuri"
+  },
+  "r739:__tongue__": "yuni",
+  "r739:yuni": {
+    "gloss": "Suna (Sun) + Guli (wadi)",
+    "name": "Suna Guli"
+  },
+  "r740:__tongue__": "dalab",
+  "r740:dalab": {
+    "gloss": "Long (long) + Guli (wadi)",
+    "name": "Long Guli"
+  },
+  "r741:__tongue__": "hum",
+  "r741:hum": {
+    "gloss": "Nām (south) + Sām (deep-notch) + Gèl (wadi)",
+    "name": "Nām-Sām-Gèl"
+  },
+  "r742:__tongue__": "jimjam",
+  "r742:jimjam": {
+    "gloss": "Veḷḷi (silver) + kāl (wadi)",
+    "name": "Veḷḷi-kāl"
+  },
+  "r743:__tongue__": "dasri",
+  "r743:dasri": {
+    "gloss": "al-Gharb (west) + al-Ṣakhr (sandstone-mesa) + Wādī (wadi)",
+    "name": "Wādī al-Ṣakhr al-Gharb"
+  },
+  "r744:__tongue__": "vothic",
+  "r744:vothic": {
+    "gloss": "Sharf (sharp) + Gülch (wadi)",
+    "name": "Sharf Gülch"
+  },
+  "r745:__tongue__": "izani",
+  "r745:izani": {
+    "gloss": "Stona (stone) + Guli (wadi)",
+    "name": "Guli Stona"
+  },
+  "r746:__tongue__": "hum",
+  "r746:hum": {
+    "gloss": "Tāi (great) + Chūng (middle-tier) + Gèl (wadi)",
+    "name": "Tāi-Chūng-Gèl"
+  },
+  "r747:__tongue__": "izani",
+  "r747:izani": {
+    "gloss": "Blaca (black) + Guli (wadi)",
+    "name": "Guli Blaca"
+  },
+  "r748:__tongue__": "vothic",
+  "r748:vothic": {
+    "gloss": "Krown (crown) + Gülch (wadi)",
+    "name": "Krown Gülch"
+  },
+  "r749:__tongue__": "dasri",
+  "r749:dasri": {
+    "gloss": "al-Gharb (west) + al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal al-Gharb"
+  },
+  "r750:__tongue__": "hum",
+  "r750:hum": {
+    "gloss": "Tōng (east) + Lām (ring-dike) + Gèl (wadi)",
+    "name": "Tōng-Lām-Gèl"
+  },
+  "r751:__tongue__": "yuni",
+  "r751:yuni": {
+    "gloss": "Westa (west) + Waita (White) + Guli (wadi)",
+    "name": "Westa Waita Guli"
+  },
+  "r752:__tongue__": "yuni",
+  "r752:yuni": {
+    "gloss": "Apa (upper) + Kopa (Copper) + Guli (wadi)",
+    "name": "Apa Kopa Guli"
+  },
+  "r753:__tongue__": "xanadui",
+  "r753:xanadui": {
+    "gloss": "al-Ṣaghīr (little) + albard (cold-snow) + Gūlī (wadi)",
+    "name": "Gūlī al-Bard al-ṣaghīr"
+  },
+  "r754:__tongue__": "tungang",
+  "r754:tungang": {
+    "gloss": "Neet (night) + Gill (wadi)",
+    "name": "Neet Gill"
+  },
+  "r755:__tongue__": "hum",
+  "r755:hum": {
+    "gloss": "Sīu (little) + Chūng (middle-tier) + Gèl (wadi)",
+    "name": "Sīu-Chūng-Gèl"
+  },
+  "r756:__tongue__": "tungang",
+  "r756:tungang": {
+    "gloss": "Stuan (stone) + Gill (wadi)",
+    "name": "Stuan Gill"
+  },
+  "r757:__tongue__": "argot",
+  "r757:argot": {
+    "gloss": "Bota (lower) + Raida (raider) + Guli (wadi)",
+    "name": "Bota Raida Guli"
+  },
+  "r758:__tongue__": "dasri",
+  "r758:dasri": {
+    "gloss": "al-Kabīr (great) + al-Jabal (escarpment) + Wādī (wadi)",
+    "name": "Wādī al-Jabal al-Kabīr"
+  },
+  "r759:__tongue__": "jimjam",
+  "r759:jimjam": {
+    "gloss": "Kuḷir (cool) + kāl (wadi)",
+    "name": "Kuḷir-kāl"
+  },
+  "r760:__tongue__": "izani",
+  "r760:izani": {
+    "gloss": "Alta (high) + pina (pine) + Guli (wadi)",
+    "name": "Guli Alta pina"
+  },
+  "r761:__tongue__": "dasri",
+  "r761:dasri": {
+    "gloss": "al-Gharb (west) + al-Sarāb (mirage) + Wādī (wadi)",
+    "name": "Wādī al-Sarāb al-Gharb"
+  },
+  "r762:__tongue__": "tungang",
+  "r762:tungang": {
+    "gloss": "Tlahn (iron-clan) + Gill (wadi)",
+    "name": "Tlahn Gill"
+  },
+  "r763:__tongue__": "khaay",
+  "r763:khaay": {
+    "gloss": "Wïïnd (katabatic-wind) + Quli (wadi)",
+    "name": "Wïïnd Quli"
+  },
+  "r764:__tongue__": "vothic",
+  "r764:vothic": {
+    "gloss": "Silvr (silver) + Gülch (wadi)",
+    "name": "Silvr Gülch"
+  },
+  "r765:__tongue__": "scyvoi",
+  "r765:scyvoi": {
+    "gloss": "flame dry valley",
+    "name": "Filem Gulusu"
+  },
+  "r766:__tongue__": "tungang",
+  "r766:tungang": {
+    "gloss": "Tethera (Third) + Gill (wadi)",
+    "name": "Tethera Gill"
+  },
+  "r767:__tongue__": "vrivolci",
+  "r767:vrivolci": {
+    "gloss": "Stanos (standing-stone) + Guli (wadi)",
+    "name": "Stanosguli"
+  },
+  "r768:__tongue__": "dalab",
+  "r768:dalab": {
+    "gloss": "Misti (misty) + Guli (wadi)",
+    "name": "Misti Guli"
+  },
+  "r769:__tongue__": "hum",
+  "r769:hum": {
+    "gloss": "Hā (lower) + Fūng (canyon-wind) + Gèl (wadi)",
+    "name": "Hā-Fūng-Gèl"
+  },
+  "r770:__tongue__": "xanadui",
+  "r770:xanadui": {
+    "gloss": "al-Kabīr (great) + allayl (night) + Gūlī (wadi)",
+    "name": "Gūlī al-Layl al-kabīr"
+  },
+  "r771:__tongue__": "hum",
+  "r771:hum": {
+    "gloss": "Sīu (little) + Tsēk (cleaver-stone) + Gèl (wadi)",
+    "name": "Sīu-Tsēk-Gèl"
+  },
+  "r772:__tongue__": "tabist",
+  "r772:tabist": {
+    "gloss": "Ḍbb (pressure-haze) + Gl (wadi)",
+    "name": "Gl Ḍbb"
+  },
+  "r773:__tongue__": "tungang",
+  "r773:tungang": {
+    "gloss": "Tyan (Second) + Gill (wadi)",
+    "name": "Tyan Gill"
+  },
+  "r775:__tongue__": "dasri",
+  "r775:dasri": {
+    "gloss": "al-Taḥt (lower) + al-Layl (star-night) + Wādī (wadi)",
+    "name": "Wādī al-Layl al-Taḥt"
+  },
+  "r776:__tongue__": "dalab",
+  "r776:dalab": {
+    "gloss": "Brod (broad) + Guli (wadi)",
+    "name": "Brod Guli"
+  },
+  "r777:__tongue__": "dasri",
+  "r777:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Sarāb (mirage) + Wādī (wadi)",
+    "name": "Wādī al-Sarāb al-Ṣaghīr"
+  },
+  "r778:__tongue__": "tungang",
+  "r778:tungang": {
+    "gloss": "Leet (light) + Gill (wadi)",
+    "name": "Leet Gill"
+  },
+  "r779:__tongue__": "argot",
+  "r779:argot": {
+    "gloss": "Timba (drift-timber) + Guli (wadi)",
+    "name": "Timba Guli"
+  },
+  "r780:__tongue__": "yuni",
+  "r780:yuni": {
+    "gloss": "Norta (north) + Waita (White) + Guli (wadi)",
+    "name": "Norta Waita Guli"
+  },
+  "r781:__tongue__": "dasri",
+  "r781:dasri": {
+    "gloss": "al-Taḥt (lower) + al-Zulāl (cool-oasis) + Wādī (wadi)",
+    "name": "Wādī al-Zulāl al-Taḥt"
+  },
+  "r782:__tongue__": "hum",
+  "r782:hum": {
+    "gloss": "Tōng (east) + Lōk (step-bench) + Gèl (wadi)",
+    "name": "Tōng-Lōk-Gèl"
+  },
+  "r783:__tongue__": "dalab",
+  "r783:dalab": {
+    "gloss": "Star (star) + Guli (wadi)",
+    "name": "Star Guli"
+  },
+  "r784:__tongue__": "hum",
+  "r784:hum": {
+    "gloss": "Sāng (upper) + Tsēk (cleaver-stone) + Gèl (wadi)",
+    "name": "Sāng-Tsēk-Gèl"
+  },
+  "r785:__tongue__": "jimjam",
+  "r785:jimjam": {
+    "gloss": "Vēka (swift) + kāl (wadi)",
+    "name": "Vēka-kāl"
+  },
+  "r786:__tongue__": "xanadui",
+  "r786:xanadui": {
+    "gloss": "alsamā (sky-mirror) + Gūlī (wadi)",
+    "name": "Gūlī al-Samā"
+  },
+  "r787:__tongue__": "izani",
+  "r787:izani": {
+    "gloss": "Pica (little) + onda (wave) + Guli (wadi)",
+    "name": "Guli Pica onda"
+  },
+  "r788:__tongue__": "yusar",
+  "r788:yusar": {
+    "gloss": "Glassblue (blue-glass) + Cutdry (wadi)",
+    "name": "Cutdry Glassblue"
+  },
+  "r789:__tongue__": "hum",
+  "r789:hum": {
+    "gloss": "Nām (south) + Kām (copper-gold) + Gèl (wadi)",
+    "name": "Nām-Kām-Gèl"
+  },
+  "r790:__tongue__": "hum",
+  "r790:hum": {
+    "gloss": "Tōng (east) + Hōng (red-sandstone) + Gèl (wadi)",
+    "name": "Tōng-Hōng-Gèl"
+  },
+  "r791:__tongue__": "dasri",
+  "r791:dasri": {
+    "gloss": "al-Gharb (west) + al-Qaṣr (butte-fortress) + Wādī (wadi)",
+    "name": "Wādī al-Qaṣr al-Gharb"
+  },
+  "r792:__tongue__": "vothic",
+  "r792:vothic": {
+    "gloss": "mist (mist) + Gülch (wadi)",
+    "name": "mist Gülch"
+  },
+  "r793:__tongue__": "izani",
+  "r793:izani": {
+    "gloss": "Baja (low) + Falz (falls) + Guli (wadi)",
+    "name": "Guli Baja Falz"
+  },
+  "r794:__tongue__": "eternian",
+  "r794:eternian": {
+    "gloss": "Tāi (great) + Chūng (middle-dyke) + Kū (wadi)",
+    "name": "Tāi-Chūng-Kū"
+  },
+  "r795:__tongue__": "dasri",
+  "r795:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Kawkab (falling-star) + Wādī (wadi)",
+    "name": "Wādī al-Kawkab al-Ṣaghīr"
+  },
+  "r796:__tongue__": "yusar",
+  "r796:yusar": {
+    "gloss": "Watchstill (still-watch) + Cutdry (wadi)",
+    "name": "Cutdry Watchstill"
+  },
+  "r797:__tongue__": "yuni",
+  "r797:yuni": {
+    "gloss": "Sauta (south) + Mista (Mist) + Guli (wadi)",
+    "name": "Sauta Mista Guli"
+  },
+  "r798:__tongue__": "yusar",
+  "r798:yusar": {
+    "gloss": "Saltwhite (white-salt) + Cutdry (wadi)",
+    "name": "Cutdry Saltwhite"
+  },
+  "r799:__tongue__": "screamer",
+  "r799:screamer": {
+    "gloss": "Gypsum (gypsum) + Wash (wadi)",
+    "name": "Gypsum Wash"
+  },
+  "r800:__tongue__": "tungang",
+  "r800:tungang": {
+    "gloss": "Methera (Fourth) + Gill (wadi)",
+    "name": "Methera Gill"
+  },
+  "r801:__tongue__": "tabist",
+  "r801:tabist": {
+    "gloss": "Ḥmm (hot-brine) + Gl (wadi)",
+    "name": "Gl Ḥmm"
+  },
+  "r802:__tongue__": "heiland",
+  "r802:heiland": {
+    "gloss": "Kurin (green) + Kuri (wadi)",
+    "name": "Kurin Kuri"
+  },
+  "r803:__tongue__": "heiland",
+  "r803:heiland": {
+    "gloss": "Par (far) + Kuri (wadi)",
+    "name": "Par Kuri"
+  },
+  "r804:__tongue__": "xanadui",
+  "r804:xanadui": {
+    "gloss": "al-Aʿlā (upper) + alzumurrud (emerald) + Gūlī (wadi)",
+    "name": "Gūlī al-Zumurrud al-aʿlā"
+  },
+  "r805:__tongue__": "dasri",
+  "r805:dasri": {
+    "gloss": "al-Dhahab (gold-dust) + Wādī (wadi)",
+    "name": "Wādī al-Dhahab"
+  },
+  "r806:__tongue__": "dasri",
+  "r806:dasri": {
+    "gloss": "al-Kabīr (great) + al-Sarāb (mirage) + Wādī (wadi)",
+    "name": "Wādī al-Sarāb al-Kabīr"
+  },
+  "r807:__tongue__": "dasri",
+  "r807:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Naḥās (copper-stain) + Wādī (wadi)",
+    "name": "Wādī al-Naḥās al-Ṣaghīr"
+  },
+  "r808:__tongue__": "dasri",
+  "r808:dasri": {
+    "gloss": "al-Sharq (east) + al-Qamar (crescent-moon) + Wādī (wadi)",
+    "name": "Wādī al-Qamar al-Sharq"
+  },
+  "r809:__tongue__": "dasri",
+  "r809:dasri": {
+    "gloss": "al-Gharb (west) + al-Nar (ember) + Wādī (wadi)",
+    "name": "Wādī al-Nar al-Gharb"
+  },
+  "r810:__tongue__": "izani",
+  "r810:izani": {
+    "gloss": "stara (star) + Guli (wadi)",
+    "name": "Guli stara"
+  },
+  "r811:__tongue__": "izani",
+  "r811:izani": {
+    "gloss": "Isguifta (swift) + Guli (wadi)",
+    "name": "Guli Isguifta"
+  },
+  "r812:__tongue__": "dasri",
+  "r812:dasri": {
+    "gloss": "al-Kabīr (great) + al-Qaṣr (butte-fortress) + Wādī (wadi)",
+    "name": "Wādī al-Qaṣr al-Kabīr"
+  },
+  "r813:__tongue__": "dasri",
+  "r813:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal al-Ṣaghīr"
+  },
+  "r814:__tongue__": "dasri",
+  "r814:dasri": {
+    "gloss": "al-Sharq (east) + al-Salsal (dry-clay) + Wādī (wadi)",
+    "name": "Wādī al-Salsal al-Sharq"
+  },
+  "r815:__tongue__": "yuni",
+  "r815:yuni": {
+    "gloss": "Westa (west) + Teris (Terrace) + Guli (wadi)",
+    "name": "Westa Teris Guli"
+  },
+  "r816:__tongue__": "yuni",
+  "r816:yuni": {
+    "gloss": "Apa (upper) + Silba (Silver) + Guli (wadi)",
+    "name": "Apa Silba Guli"
+  },
+  "r817:__tongue__": "izani",
+  "r817:izani": {
+    "gloss": "Baja (low) + Mista (mist) + Guli (wadi)",
+    "name": "Guli Baja Mista"
+  },
+  "r818:__tongue__": "izani",
+  "r818:izani": {
+    "gloss": "Mista (mist) + Guli (wadi)",
+    "name": "Guli Mista"
+  },
+  "r819:__tongue__": "yuni",
+  "r819:yuni": {
+    "gloss": "Likl (little) + Gould (Gold) + Guli (wadi)",
+    "name": "Likl Gould Guli"
+  },
+  "r820:__tongue__": "yuni",
+  "r820:yuni": {
+    "gloss": "Norta (north) + Dipa (Deep) + Guli (wadi)",
+    "name": "Norta Dipa Guli"
+  },
+  "r821:__tongue__": "argot",
+  "r821:argot": {
+    "gloss": "Mape (chart-map) + Guli (wadi)",
+    "name": "Mape Guli"
+  },
+  "r822:__tongue__": "yuni",
+  "r822:yuni": {
+    "gloss": "Ista (east) + Waita (White) + Guli (wadi)",
+    "name": "Ista Waita Guli"
+  },
+  "r823:__tongue__": "yuni",
+  "r823:yuni": {
+    "gloss": "Klira (Clear) + Guli (wadi)",
+    "name": "Klira Guli"
+  },
+  "r824:__tongue__": "dasri",
+  "r824:dasri": {
+    "gloss": "al-Rīḥ (simoom-wind) + Wādī (wadi)",
+    "name": "Wādī al-Rīḥ"
+  },
+  "r825:__tongue__": "yuni",
+  "r825:yuni": {
+    "gloss": "Loua (lower) + Braita (Bright) + Guli (wadi)",
+    "name": "Loua Braita Guli"
+  },
+  "r826:__tongue__": "hum",
+  "r826:hum": {
+    "gloss": "Wūn (cloud-ledge) + Gèl (wadi)",
+    "name": "Wūn-Gèl"
+  },
+  "r827:__tongue__": "yuni",
+  "r827:yuni": {
+    "gloss": "Blaka (Black) + Guli (wadi)",
+    "name": "Blaka Guli"
+  },
+  "r828:__tongue__": "yuni",
+  "r828:yuni": {
+    "gloss": "Norta (north) + Kould (Cold) + Guli (wadi)",
+    "name": "Norta Kould Guli"
+  },
+  "r829:__tongue__": "izani",
+  "r829:izani": {
+    "gloss": "cedra (cedar) + Guli (wadi)",
+    "name": "Guli cedra"
+  },
+  "r830:__tongue__": "izani",
+  "r830:izani": {
+    "gloss": "Caulda (cold) + Guli (wadi)",
+    "name": "Guli Caulda"
+  },
+  "r831:__tongue__": "dasri",
+  "r831:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Ḥajar (black-basalt) + Wādī (wadi)",
+    "name": "Wādī al-Ḥajar al-Ṣaghīr"
+  },
+  "r832:__tongue__": "dasri",
+  "r832:dasri": {
+    "gloss": "al-Sharq (east) + al-Rīḥ (simoom-wind) + Wādī (wadi)",
+    "name": "Wādī al-Rīḥ al-Sharq"
+  },
+  "r833:__tongue__": "hum",
+  "r833:hum": {
+    "gloss": "Hā (lower) + Yūt (howling-moon) + Gèl (wadi)",
+    "name": "Hā-Yūt-Gèl"
+  },
+  "r834:__tongue__": "izani",
+  "r834:izani": {
+    "gloss": "Gran (great) + clifa (cliff) + Guli (wadi)",
+    "name": "Guli Gran clifa"
+  },
+  "r835:__tongue__": "hum",
+  "r835:hum": {
+    "gloss": "Sīu (little) + Tōng (east-gate) + Gèl (wadi)",
+    "name": "Sīu-Tōng-Gèl"
+  },
+  "r836:__tongue__": "xanadui",
+  "r836:xanadui": {
+    "gloss": "alsalsabīl (nectar-spring) + Gūlī (wadi)",
+    "name": "Gūlī al-Salsabīl"
+  },
+  "r837:__tongue__": "xanadui",
+  "r837:xanadui": {
+    "gloss": "al-Ṣaghīr (little) + aljadwal (terraced-rill) + Gūlī (wadi)",
+    "name": "Gūlī al-Jadwal al-ṣaghīr"
+  },
+  "r838:__tongue__": "hum",
+  "r838:hum": {
+    "gloss": "Tōng (east) + Sēk (chasm-wall) + Gèl (wadi)",
+    "name": "Tōng-Sēk-Gèl"
+  },
+  "r839:__tongue__": "hum",
+  "r839:hum": {
+    "gloss": "Sī (west) + Sēk (chasm-wall) + Gèl (wadi)",
+    "name": "Sī-Sēk-Gèl"
+  },
+  "r840:__tongue__": "argot",
+  "r840:argot": {
+    "gloss": "Topa (upper) + Golda (gold) + Guli (wadi)",
+    "name": "Topa Golda Guli"
+  },
+  "r841:__tongue__": "eternian",
+  "r841:eternian": {
+    "gloss": "Mō (ink-stone) + Kū (wadi)",
+    "name": "Mō-Kū"
+  },
+  "r842:__tongue__": "yuni",
+  "r842:yuni": {
+    "gloss": "Biga (great) + Longa (Long) + Guli (wadi)",
+    "name": "Biga Longa Guli"
+  },
+  "r843:__tongue__": "dasri",
+  "r843:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Layl (star-night) + Wādī (wadi)",
+    "name": "Wādī al-Layl al-Ṣaghīr"
+  },
+  "r844:__tongue__": "yuni",
+  "r844:yuni": {
+    "gloss": "Norta (north) + Grina (Green) + Guli (wadi)",
+    "name": "Norta Grina Guli"
+  },
+  "r845:__tongue__": "izani",
+  "r845:izani": {
+    "gloss": "Grin (green) + Guli (wadi)",
+    "name": "Guli Grin"
+  },
+  "r846:__tongue__": "hum",
+  "r846:hum": {
+    "gloss": "Tōng (east) + Kū (spider-web) + Gèl (wadi)",
+    "name": "Tōng-Kū-Gèl"
+  },
+  "r847:__tongue__": "yuni",
+  "r847:yuni": {
+    "gloss": "Westa (west) + Suna (Sun) + Guli (wadi)",
+    "name": "Westa Suna Guli"
+  },
+  "r848:__tongue__": "yuni",
+  "r848:yuni": {
+    "gloss": "Apa (upper) + Teris (Terrace) + Guli (wadi)",
+    "name": "Apa Teris Guli"
+  },
+  "r849:__tongue__": "yuni",
+  "r849:yuni": {
+    "gloss": "Loua (lower) + Sista (Sister) + Guli (wadi)",
+    "name": "Loua Sista Guli"
+  },
+  "r850:__tongue__": "yuni",
+  "r850:yuni": {
+    "gloss": "Biga (great) + Gould (Gold) + Guli (wadi)",
+    "name": "Biga Gould Guli"
+  },
+  "r851:__tongue__": "hum",
+  "r851:hum": {
+    "gloss": "Sīu (little) + Pāk (white-mesa) + Gèl (wadi)",
+    "name": "Sīu-Pāk-Gèl"
+  },
+  "r852:__tongue__": "hum",
+  "r852:hum": {
+    "gloss": "Pāk (north) + Kām (copper-gold) + Gèl (wadi)",
+    "name": "Pāk-Kām-Gèl"
+  },
+  "r853:__tongue__": "screamer",
+  "r853:screamer": {
+    "gloss": "Lost (lost) + Wash (wadi)",
+    "name": "Lost Wash"
+  },
+  "r854:__tongue__": "yuni",
+  "r854:yuni": {
+    "gloss": "Ista (east) + Blaka (Black) + Guli (wadi)",
+    "name": "Ista Blaka Guli"
+  },
+  "r855:__tongue__": "khaay",
+  "r855:khaay": {
+    "gloss": "Lïtl (little) + Paayar (hearth-fire) + Quli (wadi)",
+    "name": "Lïtl Paayar Quli"
+  },
+  "r856:__tongue__": "khaay",
+  "r856:khaay": {
+    "gloss": "Ïstoon (permafrost-stone) + Quli (wadi)",
+    "name": "Ïstoon Quli"
+  },
+  "r857:__tongue__": "khaay",
+  "r857:khaay": {
+    "gloss": "Khaay (yeti-peak) + Quli (wadi)",
+    "name": "Khaay Quli"
+  },
+  "r858:__tongue__": "dasri",
+  "r858:dasri": {
+    "gloss": "al-Fawq (upper) + al-Bālm (date-palm) + Wādī (wadi)",
+    "name": "Wādī al-Bālm al-Fawq"
+  },
+  "r859:__tongue__": "heiland",
+  "r859:heiland": {
+    "gloss": "Suno (snow) + Kuri (wadi)",
+    "name": "Suno Kuri"
+  },
+  "r860:__tongue__": "dasri",
+  "r860:dasri": {
+    "gloss": "al-Kabīr (great) + al-Shams (sun-scorch) + Wādī (wadi)",
+    "name": "Wādī al-Shams al-Kabīr"
+  },
+  "r861:__tongue__": "dasri",
+  "r861:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Bālm (date-palm) + Wādī (wadi)",
+    "name": "Wādī al-Bālm al-Ṣaghīr"
+  },
+  "r862:__tongue__": "izani",
+  "r862:izani": {
+    "gloss": "クラウン (crown) + Guli (wadi)",
+    "name": "Guli Craun"
+  },
+  "r863:__tongue__": "vothic",
+  "r863:vothic": {
+    "gloss": "Deep River ('Dip Rivrh') — Almua's navigable harbour river",
+    "name": "Dip Rivrh"
+  },
+  "r864:__tongue__": "islander",
+  "r864:islander": {
+    "gloss": "Kura (red-feather) + Auwai (stream) — East Ring Isles stream",
+    "name": "Auwai Kura"
+  },
+  "r865:__tongue__": "izani",
+  "r865:izani": {
+    "gloss": "airon (iron) + Rrivar (river)",
+    "name": "Rrivar airon"
+  },
+  "r866:__tongue__": "tungang",
+  "r866:tungang": {
+    "gloss": "Muckle (great) + Tkyoob (Cube) + Beck (stream)",
+    "name": "Muckle Tkyoob Beck"
+  },
+  "r867:__tongue__": "dasri",
+  "r867:dasri": {
+    "gloss": "al-Layl (star-night) + Rīfar (river)",
+    "name": "Rīfar al-Layl"
+  },
+  "r868:__tongue__": "dalab",
+  "r868:dalab": {
+    "gloss": "Gould (gold) + Bruk (stream)",
+    "name": "Gould Bruk"
+  },
+  "r869:__tongue__": "tungang",
+  "r869:tungang": {
+    "gloss": "Fell (high-fell) + Beck (stream)",
+    "name": "Fell Beck"
+  },
+  "r870:__tongue__": "tungang",
+  "r870:tungang": {
+    "gloss": "Yist (east) + Tkyoob (Cube) + Beck (stream)",
+    "name": "Yist Tkyoob Beck"
+  },
+  "r871:__tongue__": "tabist",
+  "r871:tabist": {
+    "gloss": "Ǧbl (horsts) + Brk (stream)",
+    "name": "Brk Ǧbl"
+  },
+  "r872:__tongue__": "khaay",
+  "r872:khaay": {
+    "gloss": "Qoold (bitter-cold) + Quli (wadi)",
+    "name": "Qoold Quli"
+  },
+  "r873:__tongue__": "khaay",
+  "r873:khaay": {
+    "gloss": "Qaribuu (caribou) + Quli (wadi)",
+    "name": "Qaribuu Quli"
+  },
+  "r874:__tongue__": "khaay",
+  "r874:khaay": {
+    "gloss": "Goold (gold-nugget) + Quli (wadi)",
+    "name": "Goold Quli"
+  },
+  "r875:__tongue__": "dasri",
+  "r875:dasri": {
+    "gloss": "al-Gharb (west) + al-Bīr (cistern-well) + Wādī (wadi)",
+    "name": "Wādī al-Bīr al-Gharb"
+  },
+  "r876:__tongue__": "jimjam",
+  "r876:jimjam": {
+    "gloss": "Pacum (green-paddy) + kāl (wadi)",
+    "name": "Pacum-kāl"
+  },
+  "r877:__tongue__": "izani",
+  "r877:izani": {
+    "gloss": "Suda (south) + valle (valley) + Guli (wadi)",
+    "name": "Guli Suda valle"
+  },
+  "r878:__tongue__": "eternian",
+  "r878:eternian": {
+    "gloss": "Tōng (east) + Līng (lotus-bell) + Kū (wadi)",
+    "name": "Tōng-Līng-Kū"
+  },
+  "r879:__tongue__": "dasri",
+  "r879:dasri": {
+    "gloss": "al-Ṣaghīr (little) + al-Rīḥ (simoom-wind) + Wādī (wadi)",
+    "name": "Wādī al-Rīḥ al-Ṣaghīr"
+  },
+  "r880:__tongue__": "dasri",
+  "r880:dasri": {
+    "gloss": "al-Sharq (east) + al-Qaṣr (butte-fortress) + Wādī (wadi)",
+    "name": "Wādī al-Qaṣr al-Sharq"
+  },
+  "r_hr_jokulhlaup:__tongue__": "tungang",
+  "r_hr_jokulhlaup:tungang": {
+    "gloss": "Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim",
+    "name": "Brant-Fell Gill"
+  },
+  "r_hr_verdigris:__tongue__": "tungang",
+  "r_hr_verdigris:tungang": {
+    "gloss": "Verdigris Beck ('Copper-Ice Beck') — High Rift turquoise glacial meltwater stream",
+    "name": "Verdigris Beck"
+  },
+  "r_mb_siphon_breach:__tongue__": "yuni",
+  "r_mb_siphon_breach:yuni": {
+    "gloss": "Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh",
+    "name": "Ostrukh Riba"
+  },
+  "r_sg_vapora_bigga:__tongue__": "yuni",
+  "r_sg_vapora_bigga:yuni": {
+    "gloss": "Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate",
+    "name": "Vapora Riba"
+  }
+}
