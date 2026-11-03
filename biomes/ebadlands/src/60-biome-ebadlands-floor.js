@@ -22,7 +22,8 @@ const rockTint=(set,k)=>tint(vary(pick(set||PAL.rockRed),.02,.06,.06),means().ro
 const crustTint=(set,k)=>tint(vary(pick(set),.02,.06,.05),means().crust,k==null?rr(.6,.8):k);
 const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 const blooms=(x,y,z,r,n,set,sz)=>EBADLANDS.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,s0:.14,s1:.3});
-// a cluster round a point the mask accepted: each satellite tests the mask itself
+// a cluster round a point the mask accepted: each satellite tests the mask itself (and a tuft takes the ground at its own spot, not the centre's: the
+// final rebuild's attach audit found bunchgrass a metre over the downhill side of a slope)
 function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
 const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad);
 const putRooted=(x,z,...a)=>{if(BIO.mask(x,z)<=0)return false;BIO.put(...a);return true;};
@@ -43,12 +44,12 @@ function sage(x,y,z,lv,k){const hc=vary(pick(PAL.sage),.03,.08,.05),Rs=rr(.5,1.1
 function rabbit(x,y,z,lv){const hc=vary(pick(PAL.rabbit),.03,.08,.05),Rs=rr(.5,1.0);
  card('small',x,y+Rs*.5,z,Rs*1.3,Rs*.9,bright(hc,1.3),.2);
  if(lv>=1)for(let i=0,m=lv===2?ri(3,6):2;i<m;i++){const a=rr(0,TAU),d=Rs*rr(0,.45);BIO.put('plume',[x+Math.cos(a)*d,y+Rs*rr(.85,1.15),z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),Rs*rr(.35,.55),leafCol(PAL.rabbitFl,1.2,.02,.06,.05),{n:[0,1,0]});}}
-function bunch(x,y,z,lv,set){const h=rr(.35,.85)*(lv===0?1.6:1);around(x,z,lv===2?ri(2,4):1,.4,1.4,(px,pz)=>tuft('bunch',px,y,pz,h*rr(.8,1.1),h*1.2,leafCol(set||PAL.bunch,1.3,.03)));}
-function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
-function mirage(x,y,z,lv){const h=rr(.9,1.8);around(x,z,lv===2?ri(2,5):1,.5,1.6,(px,pz)=>tuft('mirage',px,y,pz,h*rr(.8,1.1),h*.9,leafCol(PAL.mirage,1.25,.02,.06,.04)));}
+function bunch(x,y,z,lv,set){const h=rr(.35,.85)*(lv===0?1.6:1);around(x,z,lv===2?ri(2,4):1,.4,1.4,(px,pz)=>tuft('bunch',px,Y(px,pz),pz,h*rr(.8,1.1),h*1.2,leafCol(set||PAL.bunch,1.3,.03)));}
+function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,Y(px,pz),pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
+function mirage(x,y,z,lv){const h=rr(.9,1.8);around(x,z,lv===2?ri(2,5):1,.5,1.6,(px,pz)=>tuft('mirage',px,Y(px,pz),pz,h*rr(.8,1.1),h*.9,leafCol(PAL.mirage,1.25,.02,.06,.04)));}
 function reed(x,y,z,lv){const h=rr(1.2,2.4)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):lv===1?2:1,.6,2,(hx,hz,k)=>{if(k&&BIO.depth(hx,hz)>.8)return;tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.0),leafCol(PAL.reed,1.3,.025));});}
 function sedge(x,y,z,lv){const h=rr(.4,.9)*(lv===0?1.5:1);tuft('reed',x,y,z,h,h*1.2,leafCol(PAL.sedge,1.3,.03));}
-function flowers(x,y,z,lv,set){if(lv===2&&rng()<.45){const h=rr(.4,.9);around(x,z,ri(2,4),.3,1,(px,pz)=>tuft('spike',px,y,pz,h*rr(.8,1.1),h*.5,leafCol(set||[0x7a5ab8,0x8a6ac8,0x6a4aa8],1.2,.02)));}
+function flowers(x,y,z,lv,set){if(lv===2&&rng()<.45){const h=rr(.4,.9);around(x,z,ri(2,4),.3,1,(px,pz)=>tuft('spike',px,Y(px,pz),pz,h*rr(.8,1.1),h*.5,leafCol(set||[0x7a5ab8,0x8a6ac8,0x6a4aa8],1.2,.02)));}
  else blooms(x,y,z,rr(.6,1.4),lv===2?ri(4,9):2,set||PAL.flowers);}
 function phlox(x,y,z,lv){const R=rr(.3,.7);BIO.put('lobe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[R,R*.35,R],leafCol(PAL.cushion,.9,.03));
  blooms(x,y+R*.3,z,R*.8,lv===2?ri(6,12):3,PAL.phlox,[.1,.18]);}
