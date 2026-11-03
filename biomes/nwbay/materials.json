@@ -1067,6 +1067,38 @@
    "specular": 0.25,
    "mapOnly": true,
    "own": true
+  },
+  "groundMarble": {
+   "lib": "rock.marble012",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true,
+   "_note": "2026-11-03, the catch-up pass: the white marble band at the limestone's volcanic contact and the marble nodes' outcrops (45-host-stage.js glWeights2; 44n NWBAY_GEO)"
+  },
+  "groundAsh": {
+   "lib": "ground.ash",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true,
+   "_note": "2026-11-03, the catch-up pass: the ash soils on the old flows, darkened by the layer's tint toward a fertile ash soil: a STAND-IN until an andosol set is sourced (core/materials/PROMPTS-NEEDED.md)"
   }
  }
 }

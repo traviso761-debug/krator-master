@@ -103,6 +103,9 @@ const R=[];
 // 6. the biome's own invariants (91-host-probe: the height ceiling, nothing on a
 //    cliff face, the figs on the karst, nothing rooted under water).
 if(typeof A.extra==='function'){try{for(const r of A.extra())R.push(r);}catch(e){R.push({name:'extra-checks',ok:false,detail:String(e)});}}
+// 7. the host's checks: core/host appends the biome core's guards to them (the card guard, the attach audit, one LOD key per tree;
+//    core/biome/20-core-kit.js BIO.guardChecks). Added at the catch-up pass, 2026-11-03: this verify never ran them before
+if(typeof A.hostChecks==='function'){try{for(const c of A.hostChecks())R.push({name:c.name,ok:c.ok,detail:c.detail});}catch(e){R.push({name:'host-checks',ok:false,detail:String(e)});}}
 return R;}"""
 
 
