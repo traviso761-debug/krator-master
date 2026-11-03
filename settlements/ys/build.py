@@ -163,7 +163,7 @@ VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers
 for _f in VENDORED_IZIZ_FQ:
     VENDORED.setdefault(_f, 'settlements/iziz/src')   # the embassy and the chapterhouse; the Vernacular's three are the kit's (above)
 for _f in VENDORED_HL:
-    VENDORED[_f] = 'settlements/highlands/src'
+    VENDORED[_f] = 'kits/highlands/src'   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 # Build-time renames in a vendored fragment's body (the file on disk stays byte-identical to its upstream, so
 # --vendor-check stays clean and a re-vendor is a plain copy). Only for collisions in the shared scope that cannot be
 # avoided: Ys's 60-hyk-mat.js already declares `HPAL` (the Hykkousoi palette, read by 88b) and `hC`, both `const`, and

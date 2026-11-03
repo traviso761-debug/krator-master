@@ -340,7 +340,7 @@ def vendor_check():
                              ('iziz-vernacular', VENDORED_VERN, os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
                              ('core/atmos/placeholder', VENDORED_SKY, os.path.join(ROOT, 'core', 'atmos', 'placeholder')),
-                             ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
+                             ('highlands', VENDORED_HL, os.path.join(ROOT, 'kits', 'highlands', 'src')),   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
                              # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
                              ('core/biome', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' in b],
                               os.path.join(ROOT, 'core', 'biome')),

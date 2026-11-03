@@ -257,6 +257,12 @@ leaves each settlement folder as its layout and page, building as it does today 
   Iziz's `75-port-embassy.js`, `76-port-chapterhouse.js`, which Dalab and Ys vendor too), so `tools/check_trades.py --all` looks
   their keys up in Iziz's `src/` (`EXTRA_SRC`) until those foreign-quarter sets have a kit of their own.
   Then (2), Highlands' sets.
+- **(2) Highlands' sets, done 2026-11-03:** the 29 fragments (the foundation `70`-`73b`, `88`, `89`, `89y`, `94`; Republican `74`-`79f`;
+  Rustic `80`-`81b`; Tribal `84`-`85b`) moved unchanged to `kits/highlands/src`, one kit with the three sets named in
+  `highlands.py` (`SETS`, `culture_files()`), since all three stand on one foundation. Highlands reads it in place (its sheet
+  and Roketstad); Reed Lake's, Dalab's and Ys's `--vendor-check` compares their copies with it (Reed Lake identical but its
+  adapted `73-hl-carve`; Dalab and Ys drift as before). Highlands' nine outputs byte-identical to the build before;
+  `HL_TRADES` passes as the kit's. Next: (3) Xanadu.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).

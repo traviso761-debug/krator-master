@@ -644,8 +644,8 @@
    "core/rand",
    "core/tags",
    "kits/ancients",
+   "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/highlands",
    "settlements/iziz"
   ],
   "settlements/dhelv": [
@@ -708,6 +708,7 @@
    "core/walk",
    "kits/ancients",
    "kits/catalog",
+   "kits/highlands",
    "kits/interiors",
    "kits/iziz-vernacular",
    "settlements/iziz"
@@ -952,6 +953,7 @@
    "core/rand",
    "core/tags",
    "core/water",
+   "kits/highlands",
    "settlements/highlands"
   ],
   "settlements/screamers": [
@@ -1061,8 +1063,8 @@
    "core/tags",
    "core/water",
    "kits/ancients",
+   "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/highlands",
    "settlements/iziz",
    "settlements/port"
   ],
@@ -1179,8 +1181,8 @@
    "core/atmos",
    "core/biome",
    "kits/ancients",
+   "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/highlands",
    "settlements/iziz"
   ],
   "settlements/highlands": [
@@ -1199,6 +1201,7 @@
    "settlements/iziz"
   ],
   "settlements/reedlake": [
+   "kits/highlands",
    "settlements/highlands"
   ],
   "settlements/shade": [
@@ -1210,8 +1213,8 @@
   "settlements/ys": [
    "core/biome",
    "kits/ancients",
+   "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/highlands",
    "settlements/iziz",
    "settlements/port"
   ]

@@ -84,7 +84,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UPSTREAM = {'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
-            'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
+            'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'highlands-kit': os.path.join(ROOT, 'kits', 'highlands')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -319,8 +319,8 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69b-vern-mat.js', '69c-vern-helpers.js',
-            '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',
-            '91-probe.js', '92-camera.js', '93-labels.js']          # all from ../highlands/src
+            '91-probe.js', '92-camera.js', '93-labels.js']          # from ../highlands/src (its copies of the Ancients core, the Vernacular's and Iziz's)
+HL_VENDORED = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js']   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 IZIZ_VENDORED = []
 # kept behind upstream on purpose: drift expected, recorded in KNOWN_ISSUES.md. 73-hl-carve.js keeps the drawn
 # furniture helpers (hnTotem, hnWoodpile, hnFirepit, hnMenhir): Highlands' copy places them from the master catalog
@@ -331,7 +331,7 @@ ADAPTED = {'73-hl-carve.js'}
 def vendor_manifest():
     """VENDOR.json: sha1 of every vendored fragment, so drift is visible."""
     out = {}
-    for f in VENDORED + IZIZ_VENDORED:
+    for f in VENDORED + IZIZ_VENDORED + HL_VENDORED:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -341,7 +341,7 @@ def vendor_manifest():
 
 def vendor_check():
     """Compare vendored fragments with ../highlands/src."""
-    for up_name, files in (('highlands', VENDORED),):
+    for up_name, files in (('highlands', VENDORED), ('highlands-kit', HL_VENDORED)):
         up = os.path.join(UPSTREAM[up_name], 'src')
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)

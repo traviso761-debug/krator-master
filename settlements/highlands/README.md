@@ -5,6 +5,10 @@ The wooden architecture of the highland, temperate regions of the Inner Wall, in
 to the south: Norse + Alpine) and **Tribal** (the Painted Men: bamboo, raw logs, totems, cliff settlements) —
 carved and painted in a NW-coast formline palette, with a note of East-Asian dougong on civic eaves.
 
+**The kit's files are `kits/highlands/src` since 2026-11-03** (`kits/highlands/README.md`; MODULARITY-PLAN.md step 4). This
+folder is the page that shows them (the `highlands` target, the kit's sheet) and the town of Roketstad; its build reads
+the kit in place, so everything below holds.
+
 Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (vendored), so the kit drops into a
 settlement target (Raketstad is next) the same way the Iziz Vernacular set dropped into the Iziz city.
 

@@ -106,6 +106,13 @@ def builds(only=None):
             if only and d != only:
                 continue
             out.append(d)
+    # a SOURCE KIT: a kit folder with a src/ and no build of its own (a culture kit lifted out of a settlement, MODULARITY-
+    # PLAN.md step 4: kits/iziz-vernacular, kits/highlands). Its fragments are scanned for OWN findings like a build's, so a
+    # finding does not drop out of sight when its file moves; MISSING does not apply (the builds that read it take the modules)
+    for d in glob.glob(os.path.join(ROOT, 'kits', '*', 'src')):
+        k = os.path.relpath(os.path.dirname(d), ROOT).replace(os.sep, '/')
+        if not os.path.exists(os.path.join(ROOT, k, 'build.py')) and (not only or k == only):
+            out.append(k)
     return sorted(out)
 
 
@@ -143,9 +150,10 @@ def scan(build):
     found = {}
     kind = build.split('/')[0]
     bp = os.path.join(ROOT, build, 'build.py')
-    mods = modules_named(open(bp, encoding='utf-8').read())
+    source_kit = not os.path.exists(bp)
+    mods = set() if source_kit else modules_named(open(bp, encoding='utf-8').read())
     skip_sync = kind in ('settlements', 'kits', 'openworld') and build not in PLACED
-    for m in REQUIRED.get(kind, []):
+    for m in ([] if source_kit else REQUIRED.get(kind, [])):
         if m not in mods and m not in NOT_APPLICABLE.get(build, {}):
             found['%s: MISSING core/%s' % (build, m)] = 1
     if kind in ('settlements', 'openworld') and 'simulation' in mods and 'city' not in mods and build not in SINGLE_COMPLEX and build not in CAVERN:
