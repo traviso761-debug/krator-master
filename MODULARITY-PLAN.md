@@ -439,8 +439,9 @@ dependency moves.
   (2026-11-03, `engine.py` lists the files); splitting it moves no byte.
 - Whether `core/engine/10-core.js` moves onto `core/rand` (Yeti's version): every kit's buildings change (step 2).
 - ~~Whether to split the catalog's engine into `core/catalog`.~~ Yes (owner, 2026-11-03): done in step 3.
-- Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
-  allowed kit -> settlement edge.
+- ~~Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
+  allowed kit -> settlement edge.~~ Yes (owner, 2026-11-03): they build in Iziz's page; their two backwards edges stay
+  allow-listed.
 - ~~Whether to take the step 1 gallery republish with the rebuild.~~ Moot: step 1 changed no page. Ask with the next
   all-builds rebuild (CLAUDE.md "Publishing").
 - ~~Whether a kit's viewer should ever move from the placeholder onto `ATMOS.skyBiome`.~~ Keep the placeholder for the
