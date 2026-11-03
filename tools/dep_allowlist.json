@@ -64,8 +64,6 @@
   "settlements/reedlake -> kits/highlands",
   "settlements/reedlake -> kits/iziz-vernacular",
   "settlements/reedlake -> settlements/highlands",
-  "settlements/shade -> biomes/sedesert",
-  "settlements/shade -> core/biome",
   "settlements/xanadu -> core/atmos",
   "settlements/xanadu -> kits/ancients",
   "settlements/xanadu -> kits/iziz-vernacular",
