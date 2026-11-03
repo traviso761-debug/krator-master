@@ -219,16 +219,29 @@ The plan as written before the step:
   and the culture files (stay in the kit), the same split `core/furnish` made for placement.
 - Done when: `kits/catalog` has no `settlements/*` edge.
 
-**Step 4: settlement chains onto core (stage 3, with `core/city`).**
-- For each shared Vernacular helper that two or more settlements vendor (`70-vern-dwellings`, `88y-iziz-matlib`,
-  Locus's `81-glow`, Highlands' biome fragment): move it to the owning core module (`core/materials`,
-  `core/atmos`, `core/biome`) or to the kit that owns the culture, then let the settlements take it by path.
-- Order: Locus glow -> `core/atmos`; matlib -> `core/materials`; Vernacular helpers -> `kits/ancients` (they are
-  the Ancients' contract, `settlements/iziz/VASSAL-KITS.md`); `70-biome-nhighlands` -> `biomes/nhighlands`
-  (already there; Highlands should take it from the biome, not the other way round).
+**Step 4: the culture kits out of the settlement folders.** Rewritten 2026-11-03 (owner): the settlements will be rebuilt
+on the open world, an involved process of its own, so this step does not port a settlement's layout, sites or page. It
+lifts out what the open-world rebuild will need, the culture building kits that live inside settlement folders, and
+leaves each settlement folder as its layout and page, building as it does today until the open world replaces it.
+- **What moves:** a culture's building code (its materials, helpers, defs and builders: most of a settlement's 60-89
+  fragments: Iziz 47 of 79, Highlands 32 of 50, Xanadu 38 of 55, Locus 43 of 66) to `kits/<culture>/`, and the shared
+  infrastructure among them to `core/` (the material library bindings, `88y-*-matlib`, to `core/materials`; Locus's
+  `81-glow` to `core/atmos`). Settlements, and the kits built on them, read the kit by path.
+- **What stays:** each settlement's site, layout, targets, sheet rows and host fragments. No work on them here:
+  no `core/city` port, no layout pass.
+- **How:** the files move unchanged and keep their names, so every page keeps its filename order and rebuilds
+  byte-identical (the engine and catalog moves' proof). A copy a settlement vendors is checked against the kit from then
+  on; reading the kit in place instead is the settlement's own port, with the open world.
+- **Order, down the chain:** (1) the **Iziz Vernacular** -> `kits/iziz-vernacular` (the most dependents: Iziz, Pylon and
+  Talia on its page, Verge and the isle demo bundling it, Highlands, Xanadu, Reed Lake, Dalab and Ys vendoring its
+  materials and helpers). Not `kits/ancients`, as this step first said: Pylon and Talia are written on the Vernacular's
+  contract (`settlements/iziz/VASSAL-KITS.md`), which sits on the Ancients core but is Iziz's culture. The kit also holds
+  the one Vernacular bundle list the contract asks for (Verge's and the isle demo's copies have drifted). (2) Highlands'
+  Republican, Rustic and Tribal sets. (3) Xanadu's Sultanate set. (4) Locus's Eastern Abyssal set. (5) The rest as they
+  come up. `70-biome-nhighlands` -> `biomes/nhighlands` (already there; Highlands takes it from the biome).
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
-- Done when: the settlement -> settlement edges in `DEPS.json` are only content links (Voth/Locus lore, the isle
-  demo's two towns), not code.
+- Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
+  are only content links (lore, the isle demo's two towns).
 
 **Step 5: fix the remaining backwards edges.** **Done 2026-11-03:** the allow-list is down to four real reads (12 -> 4):
 Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
@@ -273,7 +286,7 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
 | 2 kit engine | 8 kits + Noah's Regret's geometry | done 2026-11-03 | none committed (proof: fingerprints) |
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
 | 3 catalog / Voth | the catalog's build.py comments; then the engine to core/catalog | done 2026-11-03 | the current runtime-loading pages |
-| 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
+| 4 culture kits out of settlements | the Vernacular first, then Highlands, Xanadu, Locus | low per kit (files move unchanged) | none (byte-identical) |
 | 5 backwards edges | the scanner, 3 builds' lookups, the sockets sheet's folder | done 2026-11-03 | none (byte-identical) |
 | 6 guard rails | CI only | none | none |
 
