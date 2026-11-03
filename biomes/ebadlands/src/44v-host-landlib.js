@@ -6,6 +6,7 @@
 // as fields the placement reads (talus, wash: the review's second line).
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const LQ=new URLSearchParams(location.search);
+var EBADLANDS_NOFUNG=LQ.get('fung')==='0';   /* the dressing's crusts on BIO.fung (50) or the old mat card */
 // a channel's wall (u: the distance from its line in floor half-widths; uo: its outer edge), the transect's profile: 1 the floor .. 0 past the walls
 function chanWallK(u,uo){if(u>=uo)return 0;const b=1+.5*(uo-1);return .58*smooth(uo,b,u)+.42*smooth(b+.12*(uo-1),1,u);}
 // a closed blob's distance in radii (a pool, a cirque, a meadow): wobbled by its index
@@ -46,7 +47,7 @@ function stationLand(o){
  const TARNL=TARN?TARN.base+.8:-1e9;
  function waterH(x,z){if(RIV){const c=chan(x,z);if(c.dC<c.w*1.05)return WL(x);}const pd=poolD(x,z);if(pd[0]<1.4)return POOLL[pd[1]];if(TARN&&tarnD(x,z)<1.3)return TARNL;return -1e9;}
  const canyonAt=(x,z)=>{const c=chan(x,z);return c.wall*(RIV?smooth(12,40,landH(x,z)-RIV.bed(x)):0);};
- const RIVER_SPEC=RIV?{name:RIV.name||'The river',pts:(function(){const p=[];for(let x=R*1.1;x>=-R*1.1;x-=20)p.push([x,RIV.line(x),WL(x)]);return p;})(),width:RIV.width||24,speed:RIV.speed||1.2}:null;
+ const RIVER_SPEC=RIV?{name:RIV.name==null?'The river':RIV.name,pts:(function(){const p=[];for(let x=R*1.1;x>=-R*1.1;x-=20)p.push([x,RIV.line(x),WL(x)]);return p;})(),width:RIV.width==null?24:RIV.width,speed:RIV.speed==null?1.2:RIV.speed}:null;
  function fieldsAt(x,z,h,slope){const can=canyonAt(x,z),c=chan(x,z),wd=waterH(x,z),pd=poolD(x,z)[0],td=tarnD(x,z);
   const geo=o.geo?o.geo(x,z):0,cold=clamp(o.cold(x,z,h),0,1);
   const near=Math.max(RIV?smooth(60,8,c.dC-c.w*.2):0,smooth(2.2,1.05,td)*.9,smooth(2.4,1.1,pd)*.6);

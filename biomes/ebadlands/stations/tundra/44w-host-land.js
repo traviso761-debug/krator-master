@@ -44,7 +44,8 @@ function poolD(x,z){return[1e9,-1];}
 function fieldsAt(x,z,h,slope){const F=STATION.fieldsAt(x,z,h,slope);F.talus=STATION.moraineK(x,z)*.8;return F;}
 const LAND={name:'The tree line, the tundra and the glacier (ebadlands station 4)',title:'Krator biome — the eastern badlands: the tree line, the tundra and the glacier',
  hint:'Station 4 of the eastern badlands: krummholz and bristlecones at the tree line, tundra with patterned ground and tors, a valley glacier off the airless rim, its moraines and its milky lake (ET, 4.8 km on the model)',
- region:{name:'The tree line and the tundra (station 4)',x:0,z:0,r:TERR.R,h:1100},arcade:false,sky:{px:1102,py:293},
+ region:{name:'The tree line and the tundra (station 4)',x:0,z:0,r:TERR.R,h:1100},arcade:false,fruitMin:0,   /* no species of the tree line fruits for the catalog (the bristlecone's seed is not drawn) */
+ species:['bristlecone','spruce','fir','aspen'],sky:{px:1102,py:293},
  fog:{falloff:1/500,sun:.3,sky:.35},climate:{cold:true,dry:true},snowLine:[1780,1960],snowBase:0,groundN:540,
  groundLayers:['steppe','needles','tundra'],talusPalette:[0x8a8680,0x9a958e,0x6e6a66,0xa8a49c,0x7a7672],talusMatrix:0x7a746c,   /* the moraine's granite */
  // the airless rim's wall past the map's east edge: the ground climbing some 4 km in 8

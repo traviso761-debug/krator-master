@@ -210,6 +210,8 @@ PORT row.
 - **`far`:** the live pass is skipped past that distance from `center` (eastabyss 4000 m).
 - **Left:** one cube per lake, the Godot twin, a test of the stand-in pass (GPU shots only so far).
 
+**ebadlands' turn (2026-11-02, pair 5; `biomes/ebadlands/PLAN-STATIONS.md`, "Core adoption"):** the transect stays the overview (B0 decided at the turn) and four stations are built on 5.1's survey: `waste` (BSh), `canyons` (the Grand Staircase), `montane` (a meadow, a burn, a cirque tarn), `tundra` (krummholz, patterned ground, a valley glacier). The land is split from the stage (`src/44w-host-land.js`, the land contract; `src/44v-host-landlib.js`); `src/35-core-strata.js` is gone (KSTRATA's `badland` and `canyon` recipes); `88-host-build.js` is `89z-host-build.js`. **Species for readers (eastabyss, the open world, Yuni): keys and indices unchanged;** `bloom` is `onLeaf`; floor blooms and tufts sit on the ground at their own spot (same draws); the moonflower column has the quality pass; the dressing's crusts are `crustf` (`BIO.fung.crust`) only where a page has core/biome 33. **The 16 texture units:** the strata (5) leave five library layers a ground: a page with KSTRATA, KHORIZON and the rain cover cannot take more (ANGLE on the Arc linked 15). Owed: the Bowl's tamarisk, ebadlands' juniper to sedesert main and cottonwood to the Bowl (sedesert's next turn), Korona's rows (pair 9).
+
 **swlowlands' turn (2026-11-02):** species changed for readers: none of keys 0-26 or their indices; new 27 `springcypress`, 28 `ribbonroot`; new `SWLOW.make`, `grow`, `veto`, `IMPOSTORS`; item `padbloom`; `bk.mottle` is `bark.plane`; the madrone's blooms sit lower in the crown; every tree's shape re-rolled once (per-tree reseed); `88-host-build.js` is `89z-host-build.js`. Owed: swbay's receiver rows (mangrove, coastoak); `biomes/swlowlands/PLAN-STATIONS.md`, "For the owner".
 
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
@@ -322,7 +324,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
-  | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
+  | 5 | throne, ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu, oidong | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |
   | 8 | ringisles, abyssal-savannah | after all their sources |

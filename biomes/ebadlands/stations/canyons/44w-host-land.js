@@ -37,7 +37,7 @@ function poolD(x,z){return[1e9,-1];}
 function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 const LAND={name:'The canyons and green valleys (ebadlands station 2)',title:'Krator biome — the eastern badlands: the canyons and green valleys',
  hint:'Station 2 of the eastern badlands: five steps of the staircase in bedded sandstone, a river down through them in a Zion canyon, a green valley on the lowest tread, pinyon-juniper on the benches (Csa/Cfa/BSk, 2.2 km on the model)',
- region:{name:'The canyons and green valleys (station 2)',x:0,z:0,r:TERR.R,h:900},arcade:false,sky:{px:1007,py:781},
+ region:{name:'The canyons and green valleys (station 2)',x:0,z:0,r:TERR.R,h:900},arcade:false,species:['cottonwood','oak','maple','weeper','umbel','pinyon','juniper','ponderosa','aspen','yucca'],sky:{px:1007,py:781},
  fog:{falloff:1/800,sun:.35,sky:.3,mist:{density:.0011,y:220,depth:14,noise:.6}},climate:{dry:true,wet:false},snowLine:null,groundN:560,
  groundLayers:['clay','sandstone','steppe','needles','redwall'],
  far:(x,z,S0)=>{const g=terrainH(clamp(x,-S0,S0),clamp(z,-S0,S0)),dx=Math.max(0,x-S0),dw=Math.max(0,-S0-x);

@@ -59,6 +59,8 @@ const HCHK={
  // every species of the table is placed somewhere on the stage (an asset modelled and never placed is invisible: SKILL.md 1b)
  placed(C){const zero=EBADLANDS.SPECIES.filter((S,i)=>!(C[i]>0)).map(S=>S.key);
   return{ok:C.length===EBADLANDS.SPECIES.length&&!zero.length,detail:zero.length?'never placed: '+zero.join(', '):C.length+' species, the scarcest '+Math.min(...C)};},
+ // a station's own species (LAND.species): each placed somewhere on its page
+ placedIn(keys,C){const zero=keys.filter(k=>!(C[SPI(k)]>0));return{ok:!zero.length,detail:zero.length?'never placed: '+zero.join(', '):keys.length+' species of this band, the scarcest '+Math.min(...keys.map(k=>C[SPI(k)]))};},
  // every species carries its tags, the Koppen classes among them, inside the region's classes and outside the barren ones
  tagged(SP){const reg=Object.keys(EBADLANDS.KOPPEN),bad=[];
   for(const S of SP){const t=S.tags||{},k=t.koppen||[];
@@ -80,7 +82,7 @@ const HCHK={
  // fruit: every fruiting species and plant names a catalog piece, and fruit is drawn on the stage
  fruit(SP,PL,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
   const n=P.filter(p=>/fruit|grapes/.test(p[3])).length,untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
-  return{ok:!miss.length&&!untagged.length&&n>=200,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' fruit and grape instances drawn; catalog keys: '+EBADLANDS.FRUIT_KEYS.length};},
+  return{ok:!miss.length&&!untagged.length&&n>=(LAND.fruitMin==null?200:LAND.fruitMin),detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' fruit and grape instances drawn; catalog keys: '+EBADLANDS.FRUIT_KEYS.length};},
  // trees as variants: every placed species has K prototypes at each level, and the drawn trees are instances of them
  variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
   for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv))miss.push(EBADLANDS.SPECIES[sp].key+' v'+v+' lv'+lv);
@@ -94,12 +96,13 @@ const HCHK={
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 // the flora and the ground's wet band read the water's own shore (the review's third line): the env fields in the contract, no tree standing in the water,
 // and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
-function edgeCheck(){const P=[];for(const T of EBADLANDS.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb||.4,.6),name:EBADLANDS.SPECIES[T.sp].key});if(P.length>6000)break;}
+function edgeCheck(){const P=[];for(const T of EBADLANDS.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:EBADLANDS.SPECIES[T.sp].key});if(P.length>6000)break;}
  const bad=BIO.envCheck(ENV,[[0,0],[-1400,-200],[800,300],[-2400,0]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:(x,z)=>Math.max(WET_SHORE(x,z),FIELD.geo(x,z)),band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
 const EDGE_OWED=LAND.edgeOwed||{plant:0,wet:0};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
- add('every species placed',HCHK.placed(EBADLANDS.COUNTS||[]));
+ /* a station holds its band's species, not all seventeen (LAND.species): the others are none there by the climate, not by a fault */
+ add(LAND.species?'every species of this band placed':'every species placed',LAND.species?HCHK.placedIn(LAND.species,EBADLANDS.COUNTS||[]):HCHK.placed(EBADLANDS.COUNTS||[]));
  add('every species tagged with its Koppen classes',HCHK.tagged(EBADLANDS.SPECIES));
  add('nothing rooted under the water',HCHK.dry(P));
  add('nothing grows on barren ground',HCHK.barren(P));
@@ -113,7 +116,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
- const C=(EBADLANDS.COUNTS||[]).slice();C[SPI('umbel')]=0;add('a species never placed',HCHK.placed(C));
+ const C=(EBADLANDS.COUNTS||[]).slice();C[SPI(LAND.species?LAND.species[0]:'umbel')]=0;add('a species never placed',LAND.species?HCHK.placedIn(LAND.species,C):HCHK.placed(C));
  add('a species with no Koppen classes',HCHK.tagged(EBADLANDS.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
  add('a species tagged with the ice cap',HCHK.tagged([Object.assign({},EBADLANDS.SPECIES[0],{tags:Object.assign({},EBADLANDS.SPECIES[0].tags,{koppen:['EF']})})]));
  // the steepest bedded face of a wall, a point on the river's bed, the iciest crest point: the land's (found, not typed)

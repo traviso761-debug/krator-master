@@ -16,13 +16,13 @@ function growKin(){
  const ARA=typeof EASTABYSS!=='undefined'?BIO.kin('eastabyss.araucaria',{key:'ropearaucaria',name:'Rope araucaria',scale:{H:.7,rb:.8,crownR:.85},
   tags:{abyssal:false,koppen:['BSh','Csa']}}):null;
  const MES=typeof SEDESERT!=='undefined'?BIO.kin('sedesert.mesquite',{key:'mesquite',name:'Mesquite',tags:{koppen:['BSh','BWh']}}):null;
- const S=KSPACE.create({cell:40});(EBADLANDS.TREES||[]).forEach(T=>S.insert(T,T.x,T.z,(T.rb||.5)*1.4+2));
+ const S=KSPACE.create({cell:40});(EBADLANDS.TREES||[]).forEach(T=>S.insert(T,T.x,T.z,(T.rb==null?.5:T.rb)*1.4+2));
  const clear=(x,z,r)=>!S.some(x,z,r,()=>true)&&BIO.clearOf(x,z,r)&&BIO.mask(x,z)>.9&&terrainH(x,z)-waterH(x,z)>.5;
  const R=TERR.R-150,F=(n,x,z)=>BIO.field(n,x,z);
  function lattice(K,cell,salt,accept,minR){if(!K)return 0;let n=0;const N=Math.ceil(R/cell);
   for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(W,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt)),x=(i+u(1))*cell,z=(j+u(2))*cell;
    if(Math.abs(x)>R||Math.abs(z)>R||u(3)>accept(x,z)||!clear(x,z,minR))continue;
-   reseed(h);const T=K.make(x,terrainH(x,z),z),lv=BIO.lodD(x,z)<1100?2:1;K.grow(T,lv);
+   reseed(h);const T=K.make(x,terrainH(x,z),z);K.grow(T,2);   /* the hero always: a mid tier draws no boughs and its crowns would float (a few dozen trees) */
    S.insert(T,x,z,(T.rb==null?1:T.rb)*1.4+2);REGISTER({name:K.name,kind:'tree',label:K.name,x,z,y:T.y0,r:T.crownR==null?3:T.crownR,h:T.H});n++;}
   return n;}
  BIO.cur='badlands/kin';

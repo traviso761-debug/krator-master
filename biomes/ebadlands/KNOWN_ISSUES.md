@@ -88,6 +88,35 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   the pack has them, the rods and tassels otherwise; the check counts either. 1,652 stands, all at a pool shore.
 
 
+## The final rebuild's turn (2026-11-02, pair 5; `PLAN-STATIONS.md` "Core adoption")
+
+- [ ] **The looks to judge** (each behind its switch): the badland and canyon recipes on the strata (`?strata=0` the legacy column), the
+  ground's layers on KGROUND (`?kground=0`: the pine floor reads paler and greyer than the old mix: not measured, by eye), the pavement
+  (`?pave=0`), the mud polygons and patterned ground (`?polygon=0`), the talus scree and the landforms (`?landforms=0`), the impostors' gain
+  2.4 (`?impgain=`; the core bake is ~4x dark), the height fog (`?hfog=0`), the dust (`?dust=0`, `?storm=1`), the lichen crusts on
+  `BIO.fung` (`?fung=0`), the far country (`?far=0`), and each station's page as a whole.
+- [ ] **B0 was decided at the turn, not by the owner**: the transect stays the overview page and station 1 is the hot waste alone.
+- [ ] **Five library ground layers a page** (`45-host-stage.js`, `LAND.groundLayers`): a fragment shader has 16 texture units and ANGLE on
+  the Arc linked 15 at most; the strata take 5, the horizon 2, the paint, the grain and the rain's cover map 3. The transect lost travertine,
+  redwall, caprock, playa and tundra (the playa's look is the polygon kind's, the tundra station has tundra). An atlas of the layers, or
+  KGROUND reading a texture array, would give them back.
+- [ ] **No wet ground on the dry lands** (the transect, stations 1, 2 and 4): the weather's dry climate never wets the ground, and the
+  puddle mask and the rain map are two texture units the ground has not got. Station 3 (montane, wet) has it.
+- [ ] **Exchanges owed** (`EXCHANGES.md`): the Bowl's tamarisk to station 1 (its builder is private to
+  `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl exports it, then `src/87-host-kin.js` grows it on the wadis' bars),
+  Korona's frost tank (Korona's turn, pair 9); as vendor, ebadlands' juniper to sedesert's main page and cottonwood to the Bowl's delta
+  (sedesert's next turn: its `build.py` NEIGH and `87-host-kin.js`, then its pages' verifies), and the bristlecone to Korona (Korona's turn).
+- [ ] **The glacier is host ice** (station 4): the ground drawn as ice and firn (barren, snow), no ice kind in core/water; its surface has no
+  crevasses or séracs.
+- [ ] **The overview's sky site** (old canvas 1043,508) lies in the abyss's rim on scale model 5.1 (-1,648 m): kept, since the sky reads only
+  the latitude and the giant's bearing from it.
+- **The transect's land is `src/44w-host-land.js`** (split from `45-host-stage.js`): a station replaces it (`stations/<name>/`); its header is
+  the land contract. `88-host-build.js` is `89z-host-build.js` (after the water: the flora reads the water's shore).
+- **Species for readers** (eastabyss, the open world, Yuni): keys and indices unchanged; the item `bloom` is `onLeaf` (held in a leaf card's
+  body), flat floor blooms and the floor's tufts take the ground at their own spot (same draws), the hanging garden's blooms sit on their
+  strand, the moonflower's column has the quality pass (80 triangles), and the dressing's crusts are `crustf` (`BIO.fung.crust`) where the page
+  has core/biome 33 (a reader without it keeps `lichen`).
+
 ## Export profile: sections left out (2026-10-18)
 
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

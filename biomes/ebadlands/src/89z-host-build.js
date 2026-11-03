@@ -32,6 +32,9 @@ const IMP_GAIN=2.4;   /* the impostors' gain (eastabyss 3.6, nwbay and swbay 2.2
    BIO.cur='badlands/floor';Object.assign(out,EBADLANDS.buildFloor(out.R,q));
    BIO.cur='badlands/sulphur';Object.assign(out,EBADLANDS.buildSulphur(out.R,q));BIO.cur=null;window._biome=out;}}
  catch(e){reportErr('biome: '+e.stack);}
+ /* the trees keep off the water by the water's own shore (WATER.fieldAt, the review's third line): a record whose bole would reach past the edge goes
+    (the mask keeps roots out of the water by the ground's height under them; a bank's slope can still put a trunk's side in it). ?fields=0 keeps them */
+ if(!unique&&Q.get('fields')!=='0'){const n0=EBADLANDS.TREES.length;EBADLANDS.TREES=EBADLANDS.TREES.filter(T=>{const s=WATER_FN.shore(T.x,T.z);return s!==s||s>=Math.min(T.rb==null?.5:T.rb,.6);});window._shoreCut=n0-EBADLANDS.TREES.length;}
  if(typeof growKin==='function'){try{window._kin=growKin();}catch(e){reportErr('kin: '+e.stack);}}   /* the neighbours' species (87-host-kin.js, EXCHANGES.md) */
  if(LAND.build){try{window._station=LAND.build();}catch(e){reportErr('station: '+e.stack);}}   /* a station's own placement (its talus, its bars, its ice) */
  if(shells.length){try{window._dress=EBADLANDS.dress(shells,{ledges:{n:360,plants:180,edges:150,hang:5.5},soffits:{n:220,hang:4.5},walls:{n:260,hang:3}});}catch(e){reportErr('dress: '+e.stack);}}
@@ -48,5 +51,6 @@ const IMP_GAIN=2.4;   /* the impostors' gain (eastabyss 3.6, nwbay and swbay 2.2
  if(AIR.snow&&ATMOS.snowOnScene){scene.traverse(o=>{const m=o.material;if(!o.isMesh||!m||m.userData.noSnow||!o.geometry.attributes.aN||!m.userData.bio||m.userData.bio.kind!=='leaf'||(m.userData.bio.opts||{}).aN)return;
   ATMOS.snowOn(m,{twoSided:m.side===THREE.DoubleSide,aN:false});m.userData.noSnow=true;});ATMOS.snowOnScene(scene);}   /* the lying snow on every lit material, the flora's and the variants' included (89a) */
  window._buildMs=Math.round(performance.now()-t0);
- REGISTER(LAND.region);
+ /* the land's whole volume from its own ground (a station's stands 1-2 km up): its lowest point to its highest, on a 100 m lattice */
+ {const R=LAND.region;if(R.y==null){let lo=1e9,hi=-1e9;for(let z=-TERR.R;z<=TERR.R;z+=100)for(let x=-TERR.R;x<=TERR.R;x+=100){const h=terrainH(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}R.y=Math.floor(lo-10);R.h=Math.ceil(hi-lo+60);}REGISTER(R);}
 })();

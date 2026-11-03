@@ -103,7 +103,9 @@ EBADLANDS.blooms=blooms;
 function hangVine(x,y,z,len,w,st){const n=ri(2,4),a0=rr(0,TAU),lc=leafCol(PAL.grapeLeaf,1.2,.03,.08,.05);
  for(let i=0;i<n;i++){const a=a0+i*GOLD,d=w*rr(.1,.5),L=len*rr(.6,1.05);
   BIO.put('vine',[x+Math.cos(a)*d,y+rr(-.1,.1),z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w*rr(.7,1.1),L,1],bright(lc,rr(.9,1.08)));
-  if(rng()<.7){const t=rr(.25,.8),gs=rr(.12,.2);BIO.put('grapes',[x+Math.cos(a)*d*1.2,y-L*t,z+Math.sin(a)*d*1.2],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[gs,gs*rr(1.1,1.5),gs],bright(vary(pick(PAL.grape),.02,.06,.05),1.15));if(st)st.fruit++;}}
+  /* a cluster in the strand's upper half, on it (the final rebuild: the attach audit holds an onLeaf item within half a hanging card's length of its
+     hook; lower and .2 of a width out they read as floating); the same draws */
+  if(rng()<.7){const t=rr(.25,.8)*.55,gs=rr(.12,.2);BIO.put('grapes',[x+Math.cos(a)*d,y-L*t,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[gs,gs*rr(1.1,1.5),gs],bright(vary(pick(PAL.grape),.02,.06,.05),1.15));if(st)st.fruit++;}}
  if(st)st.vines++;}
 EBADLANDS.hangVine=hangVine;
 // the volume the world's inspector names a tree by

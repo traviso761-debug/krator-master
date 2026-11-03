@@ -43,7 +43,7 @@ function montaneOpenings(){const M=STATION,keep=T=>M.meadowK(T.x,T.z)<.3&&M.burn
  return{treesTaken:n0-EBADLANDS.TREES.length,snags,logs};}
 const LAND={name:'The montane forest (ebadlands station 3)',title:'Krator biome — the eastern badlands: the montane forest',
  hint:'Station 3 of the eastern badlands: ponderosa and aspen, a wet meadow, a burn with its snags, spruce-fir up to a cirque and its tarn (Dfb/Dfc, 3.6 km on the model)',
- region:{name:'The montane forest (station 3)',x:0,z:0,r:TERR.R,h:1200},arcade:false,sky:{px:1084,py:686},
+ region:{name:'The montane forest (station 3)',x:0,z:0,r:TERR.R,h:1200},arcade:false,species:['ponderosa','aspen','spruce','fir','oak','maple','pinyon','juniper'],sky:{px:1084,py:686},
  fog:{falloff:1/600,sun:.3,sky:.3,mist:{density:.0012,y:STATION.MEADOW?900:0,depth:12,noise:.7}},climate:{wet:true,cold:true},snowLine:[1650,1780],wet:true,groundN:540,
  groundLayers:['steppe','needles','tundra'],
  far:(x,z,S0)=>{const g=terrainH(clamp(x,-S0,S0),clamp(z,-S0,S0)),dx=Math.max(0,x-S0),dw=Math.max(0,-S0-x);
