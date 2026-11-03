@@ -23,7 +23,7 @@
     "biomes/throne/src/89w-host-water.js": "ae70a00c2616267741b5971bef1f99831a5b82259d60bda08cc2cd334a19c222",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
     "biomes/throne/src/89z-host-build.js": "ddcb07cafe4542d4fba895bc46f6be97b640dd5df3e140c380f3f1fc8761955c",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-take.js": "0b5e8e78b0519a1b779743e193f563a00cee411c9288bc5b4b160a3e6730bb3e",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
@@ -229,12 +229,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne.html": "05143c952a69f618d1944bff9f7c82538ae45493c9225bcc48c48ef4ed9ac07e",
+    "biomes/throne/dist/throne.html": "b38bea900a9fe01594bc361203577fccdb12d1524de9a939f76ef8d623666c12",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne.html": "05143c952a69f618d1944bff9f7c82538ae45493c9225bcc48c48ef4ed9ac07e",
+    "biomes/throne/dist/throne.html": "b38bea900a9fe01594bc361203577fccdb12d1524de9a939f76ef8d623666c12",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -252,7 +252,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -460,12 +460,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-ash.html": "239cadc0d267fe400062763a9e268aae5198cdcbf2bbfae40bbf761b11350528",
+    "biomes/throne/dist/throne-ash.html": "24bff396528e653009b5bd03d952d6dedf4abae1e38c5058a5a20241a40ae8a6",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-ash.html": "239cadc0d267fe400062763a9e268aae5198cdcbf2bbfae40bbf761b11350528",
+    "biomes/throne/dist/throne-ash.html": "24bff396528e653009b5bd03d952d6dedf4abae1e38c5058a5a20241a40ae8a6",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -483,7 +483,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -688,12 +688,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-blast.html": "f0e652b94c4a7fa9ec3b36019cdbcc42875e22740b532805c2bc59718b63d87a",
+    "biomes/throne/dist/throne-blast.html": "5a797d42aba751483431571221dd38eda16ee46cadbee3e79683778a9765f299",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-blast.html": "f0e652b94c4a7fa9ec3b36019cdbcc42875e22740b532805c2bc59718b63d87a",
+    "biomes/throne/dist/throne-blast.html": "5a797d42aba751483431571221dd38eda16ee46cadbee3e79683778a9765f299",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -711,7 +711,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -917,12 +917,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-caldera.html": "d99ab0e6777a293c2e8b4c1aa23c23ce1c3ac1e7226456e5dd10cfa51a373b59",
+    "biomes/throne/dist/throne-caldera.html": "e64d6951793a5c75390f2b9bbb72a67f0fa3cac460724185b4cdbf6f71d15801",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-caldera.html": "d99ab0e6777a293c2e8b4c1aa23c23ce1c3ac1e7226456e5dd10cfa51a373b59",
+    "biomes/throne/dist/throne-caldera.html": "e64d6951793a5c75390f2b9bbb72a67f0fa3cac460724185b4cdbf6f71d15801",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -940,7 +940,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -1157,12 +1157,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-cloud.html": "0a660b6ce332438fda5dfaac676a173575579474bbba088aa7bf909adac1bed0",
+    "biomes/throne/dist/throne-cloud.html": "ddd61fbb3e722fae04a6cdaf1a89836c44ef74efef10194deee5d2dce76f2064",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-cloud.html": "0a660b6ce332438fda5dfaac676a173575579474bbba088aa7bf909adac1bed0",
+    "biomes/throne/dist/throne-cloud.html": "ddd61fbb3e722fae04a6cdaf1a89836c44ef74efef10194deee5d2dce76f2064",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -1180,7 +1180,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -1395,12 +1395,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-delta.html": "36b107fc4d879d3b5f8258d348346ea6d7712325bc785866e5b0c9a6e205caba",
+    "biomes/throne/dist/throne-delta.html": "fee8c07477af900740c6497bcc1a940166ca202118e4711535043b98b84f2034",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-delta.html": "36b107fc4d879d3b5f8258d348346ea6d7712325bc785866e5b0c9a6e205caba",
+    "biomes/throne/dist/throne-delta.html": "fee8c07477af900740c6497bcc1a940166ca202118e4711535043b98b84f2034",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -1463,7 +1463,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -1680,13 +1680,13 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-frontier.html": "ca88f4d9fb5f6552a4432fe0a4f80868833fb06d67a48550a221da8806ad6329",
+    "biomes/throne/dist/throne-frontier.html": "48ef3e69d161ca0aeb46cee3248eb4d802453ac09389507578726b9b79c9c84e",
     "biomes/throne/dist/throne.tex.hyperjungle.js": "1beedc453a1b6f79e6d856b1b99f99a070083763cc2aec80f5baa3255a0d5a4a",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-frontier.html": "ca88f4d9fb5f6552a4432fe0a4f80868833fb06d67a48550a221da8806ad6329",
+    "biomes/throne/dist/throne-frontier.html": "48ef3e69d161ca0aeb46cee3248eb4d802453ac09389507578726b9b79c9c84e",
     "biomes/throne/dist/throne.tex.hyperjungle.js": "1beedc453a1b6f79e6d856b1b99f99a070083763cc2aec80f5baa3255a0d5a4a",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
@@ -1705,7 +1705,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -1920,12 +1920,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-glacier.html": "e09adeb03258a27a8c795af4a975b95404925bed21e637f4683d747f75fc9df8",
+    "biomes/throne/dist/throne-glacier.html": "315cc37449ec188c126cc2f299c7deefecfdb624efad3ae4905bdb74303907e3",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-glacier.html": "e09adeb03258a27a8c795af4a975b95404925bed21e637f4683d747f75fc9df8",
+    "biomes/throne/dist/throne-glacier.html": "315cc37449ec188c126cc2f299c7deefecfdb624efad3ae4905bdb74303907e3",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -1943,7 +1943,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -2161,12 +2161,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-isle.html": "1a329cae6552555a79d4c88e383c54c1acba9735dab33e256c9528496126aa50",
+    "biomes/throne/dist/throne-isle.html": "bb257ec6edf215afd92799993adfd0877dcca32781b14701908f5d8b6a1df75c",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-isle.html": "1a329cae6552555a79d4c88e383c54c1acba9735dab33e256c9528496126aa50",
+    "biomes/throne/dist/throne-isle.html": "bb257ec6edf215afd92799993adfd0877dcca32781b14701908f5d8b6a1df75c",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -2230,7 +2230,7 @@
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89a-host-atmos.js": "f2d4b10bb2b88a645c19b9635cf60e312f04e21eff8557f6e01d06b461197fd0",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -2446,13 +2446,13 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-kipuka.html": "e1b8573e0b05c5cfcb7fd54154ce451c5c32a2d73f9f681b58f6ecdcd7cae92f",
+    "biomes/throne/dist/throne-kipuka.html": "e4ef6000cfee47b302cba16272b31a16e01257fbb1369d3d8ea712e73780c69f",
     "biomes/throne/dist/throne.tex.hyperjungle.js": "1beedc453a1b6f79e6d856b1b99f99a070083763cc2aec80f5baa3255a0d5a4a",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-kipuka.html": "e1b8573e0b05c5cfcb7fd54154ce451c5c32a2d73f9f681b58f6ecdcd7cae92f",
+    "biomes/throne/dist/throne-kipuka.html": "e4ef6000cfee47b302cba16272b31a16e01257fbb1369d3d8ea712e73780c69f",
     "biomes/throne/dist/throne.tex.hyperjungle.js": "1beedc453a1b6f79e6d856b1b99f99a070083763cc2aec80f5baa3255a0d5a4a",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
@@ -2471,7 +2471,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -2676,12 +2676,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-penitentes.html": "3336a1be05ae81bb6b9196bcd74268616b5c2475b4bce481c89546389b14c1ba",
+    "biomes/throne/dist/throne-penitentes.html": "2e62fed132e9bbf4e0a95e7d02026563d72a8f00b040b8681c5fc8a464736843",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-penitentes.html": "3336a1be05ae81bb6b9196bcd74268616b5c2475b4bce481c89546389b14c1ba",
+    "biomes/throne/dist/throne-penitentes.html": "2e62fed132e9bbf4e0a95e7d02026563d72a8f00b040b8681c5fc8a464736843",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -2700,7 +2700,7 @@
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89a-host-atmos.js": "f2d4b10bb2b88a645c19b9635cf60e312f04e21eff8557f6e01d06b461197fd0",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -2915,12 +2915,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-savanna.html": "ca4fc42852a180612b83747be2c14ab9a0a77594043eb9b15c56f94020472ca5",
+    "biomes/throne/dist/throne-savanna.html": "5c4676899df7b900aa04151d2ed1c00075e9083be5f2597ec0b34ebdd17b9eb9",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-savanna.html": "ca4fc42852a180612b83747be2c14ab9a0a77594043eb9b15c56f94020472ca5",
+    "biomes/throne/dist/throne-savanna.html": "5c4676899df7b900aa04151d2ed1c00075e9083be5f2597ec0b34ebdd17b9eb9",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -2939,7 +2939,7 @@
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89a-host-atmos.js": "f2d4b10bb2b88a645c19b9635cf60e312f04e21eff8557f6e01d06b461197fd0",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -3138,12 +3138,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-tube.html": "9b72f68ab297973ff7708e57377f332b6ef777228e1d36e449355f4529db2455",
+    "biomes/throne/dist/throne-tube.html": "8ae2984e46615892fe8743a5e934578a1fa5b50446db61ed12aa8b158d8de20b",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-tube.html": "9b72f68ab297973ff7708e57377f332b6ef777228e1d36e449355f4529db2455",
+    "biomes/throne/dist/throne-tube.html": "8ae2984e46615892fe8743a5e934578a1fa5b50446db61ed12aa8b158d8de20b",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
@@ -3161,7 +3161,7 @@
     "biomes/throne/src/80-host-core.js": "d5b9a2de3d96200371b2b5558bcafcf4eedacbcba9e93cce64f8bf2823a2c942",
     "biomes/throne/src/83-host-heat.js": "1d844ce49269cdb71ef4c5d7edb40b7fcf43cc2d006da42b690a18c38083f9ba",
     "biomes/throne/src/89x-host-fields.js": "2db545b7d898b0ae5ecf6168b4361fae5734cc733c09fb01194e8f93fa790ec7",
-    "biomes/throne/src/89zz-host-core.js": "4af934caba8f0d05e5dd1c1a34c45c3461cec59ab687e17021c0fa981ba58549",
+    "biomes/throne/src/89zz-host-core.js": "dce13fef2f830b6b772a6350efcc19971a848608587b85edf7a5c5951057109e",
     "biomes/throne/src/98z-host-core.js": "426b10252f6ffe1e2928c18acfb246e8c11164f9ff3aeb31723c141526bb8cda",
     "biomes/throne/src/99-host-tz-core.js": "36c062916093658bd9b2310e06294bd988e201139f26d0202d6620002712b967",
     "biomes/throne/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -3380,12 +3380,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-vents.html": "5d0c0269195e97f56d97ed9c893d4fc65b37b483a58c513850d1916bca9ce35f",
+    "biomes/throne/dist/throne-vents.html": "a2b75801aabf1bb895fad2d38c7d69be19333f2c878c99ef074b1227c84148e4",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-vents.html": "5d0c0269195e97f56d97ed9c893d4fc65b37b483a58c513850d1916bca9ce35f",
+    "biomes/throne/dist/throne-vents.html": "a2b75801aabf1bb895fad2d38c7d69be19333f2c878c99ef074b1227c84148e4",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }

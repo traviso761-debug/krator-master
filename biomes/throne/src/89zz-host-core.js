@@ -33,20 +33,20 @@ const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshP
 const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
   const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;   /* a dry run: what it misses is not a real compile's (that one records its own) */
   try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
-  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n+(m.userData&&m.userData.twShadow?1:0);}catch(e){return 99;}};   /* +1: the sun's shadow map on a receiver (three adds it at compile) */
-// THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03): one box that follows the view (90-600 m), every placed mesh casting. A ground receives
-// only where its shader keeps a texture unit free for the shadow map (it is counted before the rain cover and the horizon, which take what is left);
-// window._shadow says which received. ?shadow=0 none of it. The tube's sun lights only its skylights, but the box serves them the same way
+  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);}catch(e){return 99;}};   /* +1: the sun's shadow map, in every lit material once it is on (three adds it at compile) */
+let SHADOW_ON=false;
+// THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03): one box that follows the view (90-600 m), every placed mesh casting and receiving.
+// In three r128 the shadow map's sampler is declared in EVERY lit material once the renderer's shadow map is on (receiveShadow is only a uniform),
+// so a page whose ground already reads all sixteen texture units cannot take it: the isle's and the vents' grounds (window._shadow says why). It is
+// decided before the rain cover and the horizon, which then count the map (samplersOf +1). ?shadow=0 none of it
 window._shadow=null;
-const SHADOW=(function(){if(typeof KSHADOW==='undefined'||typeof sun==='undefined'||!sun||!sun.isDirectionalLight||CORE_Q.get('shadow')==='0')return null;
- try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH}),MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),rec=[],skip=[];
-  /* on a page with open water (a sea's or a lake's shore grid, which wets its ground) a ground keeps one unit spare: the count missed one there (the isle's ground overflowed, 2026-11-03) */
-  const spare=ENV_SURF.some(q=>q.kind==='open')?1:0;
-  GROUND_MATS_ALL.forEach(m=>{if(samplersOf(m)+1+spare<=MAXT){m.userData.twShadow=true;rec.push(m);}else skip.push(m.name||m.type);});
-  scene.traverse(o=>{if(o.isMesh&&rec.indexOf(o.material)>=0)o.receiveShadow=true;});
+const SHADOW=(function(){if(typeof KSHADOW==='undefined'||typeof sun==='undefined'||!sun||!sun.isDirectionalLight||CORE_Q.get('shadow')==='0'){window._shadow='off';return null;}
+ const MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),worst=Math.max(0,...GROUND_MATS_ALL.map(samplersOf));
+ if(worst+1>MAXT){window._shadow='skipped: the ground reads '+worst+' of '+MAXT+' texture units';return null;}
+ try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});GROUND_MATS_ALL.forEach(m=>{m.userData.twShadow=true;});
+  scene.traverse(o=>{if(o.isMesh&&GROUND_MATS_ALL.indexOf(o.material)>=0)o.receiveShadow=true;});
   scene.children.forEach(c=>{if(!(c.userData&&c.userData.farField)&&!(c.isMesh&&GROUND_MATS_ALL.indexOf(c.material)>=0))S.cast(c);});
-  window._shadow={grounds:rec.length,skipped:skip};return S;}catch(e){reportErr('shadow: '+e.stack);return null;}})();
-// the rain's occlusion map (no rain under the trees) adds a texture unit to every lit material: a ground already at the limit (the isle's) keeps the rain everywhere, as before
+  SHADOW_ON=true;window._shadow={grounds:GROUND_MATS_ALL.length,worst:worst+1};return S;}catch(e){reportErr('shadow: '+e.stack);return null;}})();// the rain's occlusion map (no rain under the trees) adds a texture unit to every lit material: a ground already at the limit (the isle's) keeps the rain everywhere, as before
 window._rainCover=null;
 if(typeof ATMOS!=='undefined'&&ATMOS.rainCover&&!ATMOS.raincover){const MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),full=GROUND_MATS_ALL.filter(m=>samplersOf(m)+1>MAXT);
  if(full.length)window._rainCover='skipped: the ground reads '+Math.max(...full.map(samplersOf))+' of '+MAXT+' texture units';
