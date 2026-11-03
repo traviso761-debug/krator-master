@@ -40,6 +40,9 @@ defBuilding({key:'yt_winter_fort',name:'Winter fort (seasonal pycrete)',seed:980
   ytFortWall(c,c,2.2,c,h,t,mk,sl);ytFortWall(-2.2,c,-c,c,h,t,mk,sl);
   for(const [x,z] of [[-c,-c],[c,-c],[c,c],[-c,c]])ytFortTower(x,z,2.2,6.2,mk,sl);
   for(const s of [-1,1])ytFortTower(s*2.6,c,1.5,5.4,mk,sl);box('larch',0,0,c,3.4,3.0,.25,P('larchOld'));box('larch',0,3.0,c,4.2,.3,1.6,P('larch'));
+  /* the way up to the fighting walk: a flight of pycrete blocks along the back wall's inner face (core/engine svStair; the walk had
+     none: 2026-11-03), arriving beside the walk at its height */
+  {const wy=h*(1-.18*sl)-sl*.3,run=(Math.ceil(wy/.19-1e-9)-1)*.27;svStair(-6.2,-c+t/2+.5,0,wy,PI/2,{style:'solid',w:.9,run,mk,col:P('ice')});}
   place('yt_fort_dome',0,-4,0,{y:0,v:sl});
   for(const [x,z] of [[-7,6],[7,6],[-8,-8],[8,-6]])FURNISH('generic_crate',x,0,z,0);
   /* the spring's meltwater: a fan of standing water along the foot of each wall, outside and in */
