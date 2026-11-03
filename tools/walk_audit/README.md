@@ -7,7 +7,7 @@ Lizardmen, the nomad kits). Kits whose buildings come from an interiors set are 
 ```
 python3 tools/walk_audit/run.py kits/islanders/dist/islanders.html [--only key,key] [--all] [--json out.json] [--dump folder]
 python3 tools/walk_audit/registry_reach.py kits/islanders/dist/islanders.html [--only key,key] [--cell 0.1]   # the same question asked of core/walk
-python3 tools/walk_audit/door_walk.py kits/islanders/dist/islanders.html [--only key,key] [--trace]   # the host's own walker, 11 m out, in through each door
+python3 tools/walk_audit/door_walk.py kits/islanders/dist/islanders.html [--only key,key] [--trace] [--shut]   # the host's own walker, 11 m out, in through each door (core/door's doors opened first; --shut as built)
 python3 tools/walk_audit/registry_count.py <page.html> --query interiors=1        # what a host's KWALK holds
 node tools/walk_audit/test_audit.js        # in tools/test_all.py
 ```
