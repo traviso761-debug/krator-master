@@ -20,7 +20,7 @@
     F.levels.forEach(function (L) {
       var st = MP.storey(F, L.k), tag = F.id + ' L' + L.k + ' ' + L.use + ': ';
       rooms += st.rooms.length;
-      AI().storeyAudit(st, round ? inRing(st) : inRect(F)).forEach(function (t) { fails.push(tag + t); });
+      AI().storeyAudit(st, st.inside || (round ? inRing(st) : inRect(F))).forEach(function (t) { fails.push(tag + t); });
       reach(st).forEach(function (id) { fails.push(tag + id + ' is not reached from a shaft'); });
       // the shafts: each stands in the core on every storey it serves
       F.core.shafts.forEach(function (s) {

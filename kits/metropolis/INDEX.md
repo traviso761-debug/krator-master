@@ -17,14 +17,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-mp-records.js` | 19 |  |
-| `41-mp-plans.js` | 24 |  |
+| `41-mp-plans.js` | 32 **big** |  |
 | `42-mp-facade.js` | 5 |  |
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
 | `45-host-stage.js` | 1 |  |
 | `46-mp-designs.js` | 5 |  |
 | `46b-mp-ancients.js` | 5 |  |
-| `46c-mp-planned.js` | 20 |  |
+| `46c-mp-planned.js` | 28 |  |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
@@ -35,7 +35,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 12 |  |
-| `59b-mp-ruin-design.js` | 6 |  |
+| `59b-mp-ruin-design.js` | 7 |  |
 | `60-mp-shell-host.js` | 22 |  |
 | `70-mp-stage.js` | 20 |  |
 | `89-host-sky.js` | <1 |  |

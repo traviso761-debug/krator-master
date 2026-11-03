@@ -34,18 +34,24 @@ MP.ruinDesign = function (G, F, state) {
   /* inside: a floor slab at every storey under the tear (a skeleton's to its frame's top): the storey's own plan outline (the Swell's clover, the
      Terrace's ring round its court, an atrium's ring), its triangles kept where the tear stands over them */
   const B = MP.builder(false), rc = F.core.r, hi = R.frame ? top : R.cut, sp = [], sn = [], si = [];
+  /* a floor tears in patches (noise over the plan), not along rays from the axis as the facade's line does */
+  const seed = MP.idHash(F.id + '.' + state + '.slabs') & 0xffff, slabLimit = (x, z) => state === 'gutted' ? Infinity : R.cut - R.torn * Math.min(1, Math.max(0, (KRAND.vnoise(x / 7, z / 7, 3.1, seed) + 0.5 * KRAND.vnoise(x / 2.7, z / 2.7, 5.3, seed)) / 1.5 - 0.2) / 0.6);
   if (state !== 'gutted') F.levels.forEach(L => {
     if (L.k === 0 || L.y > hi - 0.5) return;
-    /* the outline is star-shaped from the axis (a ring, a clover, an atrium's ring): a radial mesh, 3 m steps from the hole (or the axis) out to
+    /* the outline is star-shaped from the axis (a ring, a clover, an atrium's ring): a radial mesh, 6 m steps from the hole (or the axis) out to
        it, so the tear cuts small cells, not a fan's long triangles */
-    const st = MP.storey(F, L.k), hole = st.hole || (F.core.atrium ? rc : 0), O = st.outline.map(p => ({ t: Math.atan2(p[1], p[0]), r: Math.hypot(p[0], p[1]) })).sort((a, b) => a.t - b.t), N = O.length;
+    const st = MP.storey(F, L.k), hole0 = st.hole || (F.core.atrium ? rc : 0), Hr = st.holeRect, O0 = st.outline.map(p => ({ t: Math.atan2(p[1], p[0]), r: Math.hypot(p[0], p[1]) })).sort((a, b) => a.t - b.t);
+    /* a rect outline is four corners: sample its edges so the mesh follows them; a rect court's reach is its edge's at each angle */
+    const O = O0.length >= 16 ? O0 : (() => { const o = []; for (let i = 0; i < 48; i++) { const t = -Math.PI + 2 * Math.PI * i / 48; let best = 0; for (let j = 0; j < st.outline.length; j++) { const a = st.outline[j], b = st.outline[(j + 1) % st.outline.length], dx = Math.cos(t), dz = Math.sin(t), ex = b[0] - a[0], ez = b[1] - a[1], den = dx * ez - dz * ex; if (Math.abs(den) < 1e-9) continue; const u = (a[0] * ez - a[1] * ex) / den, v = (a[0] * dz - a[1] * dx) / den; if (u > 0 && v >= 0 && v <= 1) best = Math.max(best, u); } o.push({ t, r: best }); } return o; })(), N = O.length;
+    const holeAt = t => { if (!Hr) return hole0; const R2 = st.rect, lt = t + R2.yaw, cx2 = Math.abs(Math.cos(lt)), sz2 = Math.abs(Math.sin(lt)); return Math.min(cx2 > 1e-6 ? Hr.hw / cx2 : 1e9, sz2 > 1e-6 ? Hr.hd / sz2 : 1e9); };
     for (let i = 0; i < N; i++) {
-      const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, nr = Math.max(1, Math.ceil((Math.max(a.r, b.r) - hole) / 3));
+      const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, ha = holeAt(ta), hb = holeAt(tb), nr = Math.max(1, Math.ceil((Math.max(a.r - ha, b.r - hb)) / 6));
       for (let j = 0; j < nr; j++) {
-        const f0 = j / nr, f1 = (j + 1) / nr, ra0 = hole + (a.r - 0.2 - hole) * f0, ra1 = hole + (a.r - 0.2 - hole) * f1, rb0 = hole + (b.r - 0.2 - hole) * f0, rb1 = hole + (b.r - 0.2 - hole) * f1;
+        if (a.r - 0.2 <= ha || b.r - 0.2 <= hb) break;
+        const f0 = j / nr, f1 = (j + 1) / nr, ra0 = ha + (a.r - 0.2 - ha) * f0, ra1 = ha + (a.r - 0.2 - ha) * f1, rb0 = hb + (b.r - 0.2 - hb) * f0, rb1 = hb + (b.r - 0.2 - hb) * f1;
         const p = [[ra0 * Math.cos(ta), ra0 * Math.sin(ta)], [rb0 * Math.cos(tb), rb0 * Math.sin(tb)], [rb1 * Math.cos(tb), rb1 * Math.sin(tb)], [ra1 * Math.cos(ta), ra1 * Math.sin(ta)]];
         const cx = (p[0][0] + p[1][0] + p[2][0] + p[3][0]) / 4, cz = (p[0][1] + p[1][1] + p[2][1] + p[3][1]) / 4;
-        if (!R.frame && L.y > Math.min(limit(cx, cz), skin) + 0.3) continue;
+        if (!R.frame && L.y > Math.min(slabLimit(cx, cz), skin) + 0.3) continue;
         [[L.y, 1], [L.y - 0.3, -1]].forEach(fc => { const b0 = sp.length / 3, ord = fc[1] > 0 ? [0, 1, 2, 3] : [0, 3, 2, 1]; ord.forEach(v => { sp.push(p[v][0], fc[0], p[v][1]); sn.push(0, fc[1], 0); }); si.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); });
       }
     }
@@ -55,7 +61,7 @@ MP.ruinDesign = function (G, F, state) {
     const col = new Float32Array(sp.length).fill(stain < 1 ? stain : 1); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     const m = new THREE.Mesh(g, MP.mats().concrete); m.name = F.id + '.ruin.slabs'; G.add(m); }
   /* the core, its walls to the cut (a stump's to its own height over the cut) */
-  if (state !== 'gutted' && !F.core.atrium && !F.core.bays) { const cy = Math.max(R.core || 0, Math.min(hi, F.height.roof)); B.lathe('concrete', [[rc, 0], [rc, cy]], 24, { uv: 4 }); B.lathe('concrete', [[rc - 0.3, cy], [rc - 0.3, 0]], 24, { uv: 4 }); B.lathe('concrete', [[rc, cy], [rc - 0.3, cy]], 24, { uv: 2 }); }
+  if (state !== 'gutted' && F.core.kind === 'round' && !F.core.atrium && !F.core.bays) { const cy = Math.max(R.core || 0, Math.min(hi, F.height.roof)); B.lathe('concrete', [[rc, 0], [rc, cy]], 24, { uv: 4 }); B.lathe('concrete', [[rc - 0.3, cy], [rc - 0.3, 0]], 24, { uv: 4 }); B.lathe('concrete', [[rc, cy], [rc - 0.3, cy]], 24, { uv: 2 }); }
   const H = B.finish(F, 'ruin'); H.children.forEach(c => { c.name = F.id + '.ruin.' + c.name; G.add(c); });
   const D = MP.debris(F, state); if (D) { D.name = 'debris'; G.add(D); }
   G.name = F.id + '.' + state; G.userData.ruin = R;

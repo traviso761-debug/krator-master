@@ -201,5 +201,74 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
       ruins: ruins({ crown: { keep: 0.8, note: 'the lobes\' domes and the top storeys fallen' }, broken: { keep: 0.55, note: 'two lobes torn off above the middle' } })
     };
   })();
-  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell'];
+  // ---- the rect designs (batch 3): rooms round four sides (MP.planLib.rectRings), each storey's rectangle the design's own at its height
+  var KINDS = { lobby: function (i) { return i % 4 === 0 ? 'concourse' : 'stall'; }, market: function () { return 'stall'; }, clinic: function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }, offices: function (i) { return i % 4 === 3 ? 'meeting' : 'office'; },
+    plant: function () { return 'plant'; }, records: function () { return 'stack'; }, school: function (i) { return i % 7 === 3 ? 'store' : 'classroom'; }, hydroponics: function () { return 'greenhouse'; }, skylobby: function (i) { return i % 3 ? 'cafe' : 'concourse'; },
+    arcade: function (i) { return i % 5 === 2 ? 'cafe' : 'stall'; } };
+  var kindsOf = function (u) { return KINDS[u] || KINDS.offices; };
+
+  // ---- the Reed: a slab 58 x 24 m turning 50 degrees and widening a quarter to its top. A ring of rooms 7 m deep round a slot of core, its stair
+  // and lift on the axis (so they stand inside the slot at every turn)
+  (function () {
+    var D = MP.DESIGNS.reed, H = D.height.roof, n1 = Math.round((H - D.sh) / D.sh), h1 = (H - D.sh) / n1;
+    var rect = function (y) { var t = Math.min(1, Math.max(0, y) / H), s = 1 + D.widen * t; return { hw: D.footprint.w / 2 * s, hd: D.footprint.d / 2 * s, yaw: D.twist * Math.PI / 180 * t }; };
+    var zones = [{ use: 'lobby', n: 1, h: D.sh }, { use: 'market', n: 1, h: h1 }, { use: 'clinic', n: 2, h: h1 }, { use: 'offices', n: 20, h: h1 }, { use: 'plant', n: 1, h: h1 }, { use: 'records', n: 4, h: h1 }, { use: 'school', n: 2, h: h1 },
+      { use: 'offices', n: n1 - 34, h: h1 }, { use: 'plant', n: 1, h: h1 }, { use: 'hydroponics', n: 3, h: h1 }];
+    var L = levels(zones), last = L.length - 1;
+    MP.FAMILY.reed = {
+      id: 'reed', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'rect', w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function (y) { var r = rect(y); return Math.min(r.hw, r.hd); }, portals: [], crown: { k: 'garden' }, secScale: 1, mat: 'white', fall: Math.PI / 2,
+      core: { kind: 'rects', shafts: [{ id: 'stair', kind: 'stair', x: -2.2, z: 0, w: 3.2, d: 2.6, from: 0, to: last }, { id: 'lift', kind: 'lift', x: 2.2, z: 0, w: 2.4, d: 2.6, from: 0, to: last }] },
+      bays: { width: 3, n: 0 },
+      plan: function (F, Lv, lib) { var r = rect(Lv.y + Lv.h / 2); return lib.rectRings(F, Lv, { hw: r.hw - 0.8, hd: r.hd - 0.8, yaw: r.yaw, bands: [{ d: 7, roomW: 6, kinds: kindsOf(Lv.use), door: 'in' }, { d: lib.CW, corr: true }], shafts: F.core.shafts }); },
+      ruins: ruins({ crown: { keep: 0.82, note: 'the roof garden and the top storeys down' }, broken: { keep: 0.58, note: 'snapped at the twist\'s middle' } })
+    };
+  })();
+
+  // ---- the Wedge: a black frustum 64 x 56 m narrowing to 40 x 30 m and leaning 8 m in z; its sky lobby a storey of 7.8 m set 3 m in at 122 m.
+  // Rooms round four sides (a band of 6 to 10 m, as deep as the storey allows), a core zone in the middle; four shafts where every storey's zone
+  // overlaps
+  (function () {
+    var D = MP.DESIGNS.wedge, H = D.height.roof, T = D.top, sl = D.slot, n1 = Math.round((sl[0] - D.sh) / D.sh), h1 = (sl[0] - D.sh) / n1, n2 = Math.round((H - sl[1]) / D.sh), h2 = (H - sl[1]) / n2;
+    var rect = function (y) { var t = Math.min(1, Math.max(0, y) / H); return { cx: 0, cz: D.lean * Math.pow(t, 1.5), hw: D.footprint.w / 2 + (T.hw - D.footprint.w / 2) * t, hd: D.footprint.d / 2 + (T.hd - D.footprint.d / 2) * t }; };
+    var zones = [{ use: 'lobby', n: 1, h: D.sh }, { use: 'market', n: 1, h: h1 }, { use: 'clinic', n: 2, h: h1 }, { use: 'offices', n: 18, h: h1 }, { use: 'plant', n: 1, h: h1 }, { use: 'records', n: 4, h: h1 }, { use: 'offices', n: n1 - 26, h: h1 },
+      { use: 'skylobby', n: 1, h: sl[1] - sl[0] }, { use: 'offices', n: n2 - 5, h: h2 }, { use: 'plant', n: 1, h: h2 }, { use: 'records', n: 3, h: h2 }, { use: 'offices', n: 1, h: h2 }];
+    var L = levels(zones), last = L.length - 1;
+    MP.FAMILY.wedge = {
+      id: 'wedge', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'rect', w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function (y) { var r = rect(y); return Math.min(r.hw, r.hd); }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'dark', fall: Math.PI / 2,
+      core: { kind: 'rects', shafts: [{ id: 'stair.w', kind: 'stair', x: -6, z: 4, w: 3.2, d: 2.6, from: 0, to: last }, { id: 'lift.w', kind: 'lift', x: -2, z: 4, w: 2.4, d: 3, from: 0, to: last },
+        { id: 'lift.e', kind: 'lift', x: 2, z: 4, w: 2.4, d: 3, from: 0, to: last }, { id: 'stair.e', kind: 'stair', x: 6, z: 4, w: 3.2, d: 2.6, from: 0, to: last }] },
+      bays: { width: 3.2, n: 0 },
+      plan: function (F, Lv, lib) {
+        var r = rect(Lv.y + Lv.h / 2), sky = Lv.use === 'skylobby', hw = r.hw - 0.6 - (sky ? 3 : 0), hd = r.hd - 0.6 - (sky ? 3 : 0), d = Math.max(6, Math.min(10, Math.min(hw, hd) - 0.45 - lib.CW - 7.5));
+        return lib.rectRings(F, Lv, { hw: hw, hd: hd, cx: r.cx, cz: r.cz, bands: [{ d: d, roomW: 6, kinds: kindsOf(Lv.use), door: 'in' }, { d: lib.CW, corr: true }], shafts: F.core.shafts });
+      },
+      ruins: ruins({ crown: { keep: 0.82, note: 'the top over the sky lobby fallen in' }, broken: { keep: 0.6, note: 'torn just under the sky lobby' } })
+    };
+  })();
+
+  // ---- the Arcades: a ring of building 84 x 52 m round a 52 x 24 m court; two storeys behind the arcade's glass (3 m in), two above its 13 m
+  // arches. Rooms on the street (4 to 6 m) and on the court (the rest), a corridor between; four shafts in the court's band, east and west
+  (function () {
+    var D = MP.DESIGNS.arcades, H = D.height.roof, hw = D.footprint.w / 2, hd = D.footprint.d / 2, cw = D.court.w / 2, cd = D.court.d / 2, hs = D.sh;
+    var zones = [{ use: 'arcade', n: 1, h: hs }, { use: 'clinic', n: 1, h: hs }, { use: 'offices', n: 2, h: hs }];
+    var L = levels(zones), last = L.length - 1, hole = { hw: cw + 0.6 + 0.45, hd: cd + 0.6 + 0.45 }, sx = hole.hw + 1.9;
+    MP.FAMILY.arcades = {
+      id: 'arcades', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'rect', w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return hd; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'concrete', fall: 0,
+      core: { kind: 'rects', shafts: [{ id: 'stair.e', kind: 'stair', x: sx, z: 4, w: 2.6, d: 3.2, from: 0, to: last, face: 1 }, { id: 'lift.e', kind: 'lift', x: sx, z: -4, w: 2.6, d: 2.6, from: 0, to: last, face: 1 },
+        { id: 'stair.w', kind: 'stair', x: -sx, z: -4, w: 2.6, d: 3.2, from: 0, to: last, face: 3 }, { id: 'lift.w', kind: 'lift', x: -sx, z: 4, w: 2.6, d: 2.6, from: 0, to: last, face: 3 }] },
+      bays: { width: 6, n: 0 },
+      plan: function (F, Lv, lib) {
+        var low = Lv.k < 2, ohw = hw - (low ? 3 : 0.9) - 0.45, ohd = hd - (low ? 3 : 0.9) - 0.45;
+        return lib.rectRings(F, Lv, { hw: ohw, hd: ohd, hole: hole, bands: [{ d: low ? 4 : 6, roomW: 6, kinds: kindsOf(Lv.use), door: 'in' }, { d: lib.CW, corr: true }, { d: null, roomW: 5.2, kinds: function (i) { return Lv.use === 'arcade' ? (i % 3 ? 'stall' : 'cafe') : i % 3 === 1 ? 'meeting' : 'office'; }, door: 'out' }], shafts: F.core.shafts });
+      },
+      ruins: ruins({ gutted: { glass: 0, strips: 0, breach: 0.1, stain: 0.75, keep: 1, note: 'the arcade\'s glass gone, burnt out' }, crown: { keep: 0.75, note: 'the top storey fallen into the court' }, broken: { keep: 0.5, note: 'one wing down to the arcade' }, stump: { keep: 0.5, note: 'the arcade standing, its arches' }, skeleton: { keep: 1, bare: 0.5, note: 'the upper storeys\' frame' } })
+    };
+  })();
+  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell', 'reed', 'wedge', 'arcades'];
 })();

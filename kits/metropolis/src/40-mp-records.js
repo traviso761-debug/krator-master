@@ -161,7 +161,7 @@ MP.debrisPlan = function (F, state) {
     var H = F.height.roof, R0 = F.envR(0), ph2 = F.fall == null ? 0 : F.fall, sq = H < R0 * 1.2, s2 = Math.max(H, R0 * 2), d2 = [Math.cos(ph2), Math.sin(ph2)];
     var at2 = function (s, o) { return [d2[0] * s - d2[1] * o, d2[1] * s + d2[0] * o]; }, mnd = function (s, o, rx, rz, hs, i) { var c = at2(s, o); M.push(heap(c[0], c[1], 0, ph2, rx, rz, hs, i)); };
     /* a section lying: the shaft's radius where it broke (secR: the Stalk's stalk, not its saucers); a design's discs (the Stalk's saucers) fall as the Spindle's lamp does */
-    var sec = function (s, o, y, len, ry, tilt) { var c = at2(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: Math.max(2, (F.secR ? F.secR(y) : F.envR(y)) * 0.8), len: len, ry: ph2 + ry, tilt: tilt, mat: F.mat }); };
+    var sec = function (s, o, y, len, ry, tilt) { var c = at2(s, o); if (F.footprint.shape === 'rect') { P.push({ kind: 'slab', x: c[0], y: 1.6, z: c[1], w: len, d: Math.min(F.footprint.w, F.footprint.d) * 0.55, t: 3.2, ry: ph2 + ry, tilt: tilt * 0.6 }); return; } P.push({ kind: 'shaft', x: c[0], z: c[1], r: Math.max(2, (F.secR ? F.secR(y) : F.envR(y)) * 0.8), len: len, ry: ph2 + ry, tilt: tilt, mat: F.mat }); };
     var dsc = function (s, o, r, tilt) { var c = at2(s, o); P.push({ kind: 'disc', x: c[0], z: c[1], r: r, ry: ph2, tilt: tilt }); };
     if (sq) {
       if (state === 'crown') mnd(0, 0, R0 * 0.7, R0 * 0.7, [4, 3, 2.5], 0);

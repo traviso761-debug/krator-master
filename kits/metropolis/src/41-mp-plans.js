@@ -244,7 +244,66 @@
     });
     return st;
   }
-  MP.planLib = { sectors: sectors, rings: rings, lobe: lobe, turn: turn, arc: arc, at: at, kindOf: kindOf, UNFURNISHED: UNFURNISHED, CW: CW, PLAN: PLAN };
+  // ---- rect rings: rooms round all four sides of a rectangle (the Wedge's, the Reed's, the Arcades'), in bands outside in like rings(). A rooms
+  // band's north and south rooms run the band's full width (their end rooms take the corners), its east and west rooms fit between them; every room's
+  // door is on its corridor's side. Inside the bands: a core zone (a core room holding the shafts, each with a core bay of its own) or, with o.hole,
+  // the court. A band with d null fills to the hole (its depth differs side to side). Shafts standing in a band take the room they fall in as their
+  // core bay. The plate is built centred and square, then turned by o.yaw and moved to (o.cx, o.cz): a storey can lean and twist. Rooms carry their
+  // own windows on the skin and on the court (st.windowsOwn); the storey its own inside test (st.inside).
+  // o: { hw, hd, cx, cz, yaw, bands: [{ d, roomW, kinds(i, n, side), door, corr }], hole: { hw, hd } | null, shafts: [{ id, x, z, w, d }] (the record's) }
+  function rectRings(F, L, o) {
+    var id = F.id + '.' + L.k, cx = o.cx || 0, cz = o.cz || 0, yaw = o.yaw || 0, c = Math.cos(yaw), s = Math.sin(yaw);
+    var toL = function (x, z) { var dx = x - cx, dz = z - cz; return [dx * c - dz * s, dx * s + dz * c]; };
+    var st = { id: id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [[-o.hw, -o.hd], [o.hw, -o.hd], [o.hw, o.hd], [-o.hw, o.hd]], windowsOwn: true, holeRect: o.hole || null };
+    var sh = (o.shafts || []).filter(function (q) { return L.k >= q.from && L.k <= q.to; }).map(function (q) { var p = toL(q.x, q.z); return { id: q.id, x: p[0], z: p[1], w: q.w, d: q.d }; });
+    var R = [{ hw: o.hw, hd: o.hd }]; o.bands.forEach(function (b) { var p = R[R.length - 1]; R.push(b.d == null ? { hw: o.hole.hw, hd: o.hole.hd } : { hw: p.hw - b.d, hd: p.hd - b.d }); });
+    var B = o.bands.map(function (b, i) { return Object.assign({}, b, { o: R[i], i: R[i + 1], cid: b.corr ? id + '.corr' + i : null }); });
+    var used = {};
+    function wall(wid, pts, a, b, d) { st.walls.push({ id: wid, pts: pts, y: L.y, h: L.h, rooms: [a, b || null], door: d || null, broken: false }); }
+    B.forEach(function (b, bi) {
+      if (b.corr) { st.rooms.push({ id: b.cid, kind: 'corridor', mpKind: 'corridor', poly: null, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false }); return; }
+      var inC = B[bi + 1] && B[bi + 1].corr ? B[bi + 1] : null, outC = B[bi - 1] && B[bi - 1].corr ? B[bi - 1] : null, C = b.door === 'out' ? (outC || inC) : (inC || outC), toIn = C === inC;
+      var Ro = b.o, Ri = b.i, rw = b.roomW == null ? 6 : b.roomW, k = 0;
+      /* each side: [axis along, its outer and inner offsets, the run along it]: N/S run x over the band's full width, E/W run z between them */
+      [['S', 1], ['E', 1], ['N', -1], ['W', -1]].forEach(function (sd) {
+        var S = sd[0], sg = sd[1], ns = S === 'S' || S === 'N', a0 = ns ? -Ri.hw : -Ri.hd, a1 = ns ? Ri.hw : Ri.hd, n = Math.max(1, Math.round((a1 - a0) / rw));
+        var P = function (along, off) { return ns ? [along, sg * off] : [sg * off, along]; }, oo = ns ? Ro.hd : Ro.hw, oi = ns ? Ri.hd : Ri.hw;
+        for (var i = 0; i < n; i++) {
+          var u0 = a0 + (a1 - a0) * i / n, u1 = a0 + (a1 - a0) * (i + 1) / n, e0 = ns && i === 0 ? -Ro.hw : u0, e1 = ns && i === n - 1 ? Ro.hw : u1, um = (u0 + u1) / 2;
+          var poly = [P(e0, oi), P(e1, oi), P(e1, oo - 0.05), P(e0, oo - 0.05)], rid = id + '.b' + bi + S + i;
+          var shaft = sh.filter(function (q) { var p = ns ? q.x : q.z, off = sg * (ns ? q.z : q.x); return p >= e0 && p <= e1 && off >= oi && off <= oo; })[0];
+          var src = shaft ? 'core' : b.kinds(k++, n * 4, S), Q = { id: rid, kind: kindOf(src), mpKind: src, poly: poly, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: !UNFURNISHED[src] && src !== 'core', shaft: shaft ? shaft.id : undefined, side: S };
+          if (shaft) used[shaft.id] = 1;
+          if (C) { var dp = P(um, toIn ? oi : oo); Q.doors.push({ at: dp, w: src === 'core' ? 1.2 : 1, to: C.cid }); wall(rid + '.c', [P(u0, toIn ? oi : oo), P(u1, toIn ? oi : oo)], rid, C.cid, { at: dp, w: Q.doors[0].w }); }
+          /* the far side where no corridor is: a middle band's (the skin's and the court's are the building's) */
+          var far = toIn ? oo : oi, farIsSkin = toIn ? bi === 0 : (bi === B.length - 1 && o.hole);
+          if (!farIsSkin && !(toIn ? outC : inC)) wall(rid + '.f', [P(u0, far), P(u1, far)], rid, null);
+          if (!(ns && i === 0)) wall(rid + '.p', [P(u0, oi), P(u0, oo - 0.05)], rid, null);
+          if (!ns && i === n - 1) wall(rid + '.q', [P(u1, oi), P(u1, oo - 0.05)], rid, null);
+          /* windows: on the skin (the outer band) and on the court (the inner band round a hole) */
+          var winOn = bi === 0 ? oo : (o.hole && bi === B.length - 1 ? oi : null);
+          if (winOn != null && !MP.WINDOWLESS[src] && src !== 'core') { var S2 = MP.BAYSIZE[({ office: 'ribbon', meeting: 'ribbon', classroom: 'tall', clinic: 'window', bedroom: 'window', living: 'wide', stall: 'wide', cafe: 'wide', concourse: 'tall', hall: 'tall', reception: 'tall' })[src] || 'window']; Q.windows.push({ at: P(um, winOn), w: Math.round((u1 - u0) * 0.7 * 100) / 100, sill: S2[1], h: S2[2] - S2[1] }); }
+          st.rooms.push(Q);
+        }
+      });
+    });
+    /* the core zone: the rectangle inside the last corridor, a core room on it, and a core bay for each shaft standing in it */
+    if (!o.hole) {
+      var Z = R[R.length - 1], last = B[B.length - 1], zid = id + '.core', zp = [[-Z.hw, -Z.hd], [Z.hw, -Z.hd], [Z.hw, Z.hd], [-Z.hw, Z.hd]], zd = [0, Z.hd];
+      st.rooms.push({ id: zid, kind: 'core', mpKind: 'core', poly: zp, y: L.y, h: L.h, level: L.k, doors: last.corr ? [{ at: zd, w: 1.6, to: last.cid }] : [], windows: [], furnish: false });
+      if (last.corr) { wall(zid + '.s', [zp[3], zp[2]], zid, last.cid, { at: zd, w: 1.6 }); wall(zid + '.n', [zp[0], zp[1]], zid, last.cid); wall(zid + '.e', [zp[1], zp[2]], zid, last.cid); wall(zid + '.w', [zp[3], zp[0]], zid, last.cid); }
+      sh.forEach(function (q) { if (used[q.id]) return; st.rooms.push({ id: id + '.' + q.id, kind: 'core', mpKind: 'core', poly: [[q.x - q.w / 2, q.z - q.d / 2], [q.x + q.w / 2, q.z - q.d / 2], [q.x + q.w / 2, q.z + q.d / 2], [q.x - q.w / 2, q.z + q.d / 2]], y: L.y, h: L.h, level: L.k, doors: [{ at: [q.x, q.z], w: 1, to: zid }], windows: [], furnish: false, shaft: q.id }); });
+    }
+    /* turned and moved into the building's frame: rooms, doors, walls, the outline; the inside test reads back into the plate's own */
+    var T = function (p) { return [r3(cx + p[0] * c + p[1] * s), r3(cz - p[0] * s + p[1] * c)]; };
+    st.outline = st.outline.map(T);
+    st.rooms.forEach(function (Q) { if (Q.poly) Q.poly = Q.poly.map(T); Q.doors.forEach(function (d) { d.at = T(d.at); }); Q.windows.forEach(function (w) { w.at = T(w.at); }); });
+    st.walls.forEach(function (W) { W.pts = W.pts.map(T); if (W.door) W.door.at = T(W.door.at); });
+    st.inside = function (x, z) { var p = toL(x, z); return Math.abs(p[0]) <= o.hw + 0.02 && Math.abs(p[1]) <= o.hd + 0.02 && !(o.hole && Math.abs(p[0]) < o.hole.hw - 0.02 && Math.abs(p[1]) < o.hole.hd - 0.02); };
+    st.rect = { hw: o.hw, hd: o.hd, cx: cx, cz: cz, yaw: yaw };
+    return st;
+  }
+  MP.planLib = { sectors: sectors, rings: rings, rectRings: rectRings, lobe: lobe, turn: turn, arc: arc, at: at, kindOf: kindOf, UNFURNISHED: UNFURNISHED, CW: CW, PLAN: PLAN };
 
   MP.storey = function (F, k) {
     var L = F.levels[k]; if (!L) throw new Error('MP.storey: ' + F.id + ' has no level ' + k);

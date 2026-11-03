@@ -208,6 +208,15 @@ of the other lobes (at mid-height the lobes meet: the floor there is left open),
 own windows; its hero draws each lobe's facade and balconies only where they are outside, and the middle's drum only in the valleys. A ruin's
 slabs are now its storeys' own outlines, cut cell by cell.
 
+**Batch 3:** the rect designs, on `MP.planLib.rectRings` (rooms round all four sides in bands outside in, their doors on the corridor, the north
+and south rooms taking the corners; inside, a core zone with a core bay for each shaft, or a court; each storey's rectangle turned and moved to
+the design's at its height; the rooms set their own windows on the skin and the court). The Reed (54 storeys, 1310 rooms): rooms 7 m deep round a
+slot of core turning with the slab, its stair and lift on the axis so they stand in the slot at every turn. The Wedge (47 storeys, 1174 rooms):
+a band of 6 to 10 m as the storey allows, the core zone with four shafts where every storey's zone overlaps as it leans, the sky lobby 3 m in.
+The Arcades (4 storeys, 268 rooms): street rooms behind the arcade's glass and the relief wall, court rooms on the pool, the shafts in the court's
+band facing the corridor. A ruin's floors now tear in patches (noise over the plan), the facade along its line; a rect design's rubble holds
+storey-thick slabs, not drum sections.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

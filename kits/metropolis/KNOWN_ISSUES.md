@@ -27,3 +27,5 @@
 - [ ] **The Spiral's ramp doorways do not meet a storey:** its portals sit on the ramp every half turn; the cone's storeys (4.25 m) are not at their sills.
 - [ ] **The Terrace's court-side rooms have no windows in their plans** (its service band: stores and plant): its court facade is the design's glass, drawn without rooms behind it in mind.
 - [ ] **The Swell's lobes leave open floor where they meet** (mid-height): no rooms are planned there, the floor is a hall between the lobes' corridors and the concourse.
+- [ ] **A design's ruin states run over its hero budget:** the floor slabs and the rubble add to the cut hero (the Reed's 41 to 66 k, the Wedge's 38 to 61 k, against 60 and 45 k).
+- [ ] **The Wedge's ruins are mullion cages:** it is all black curtain glass, so with the glass gone its frame stands bare in every ruin state; its slabs show inside.

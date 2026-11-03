@@ -30,7 +30,9 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   const g0=Math.max(0,sd-d.w/2),g1=Math.min(end,sd+d.w/2);run(0,g0,y0,y1);run(g1,end,y0,y1);run(g0,g1,y0+DH,y1);});
  // the slab and the ceiling
  /* an atrium (the Cupola's galleries): the slab and the ceiling ring it, open over the hall */
- const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if((F.core.atrium&&L.k>0)||st.hole){const rc=st.hole||MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium||st.hole?48:1});sl.rotateX(-Math.PI/2);
+ const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if((F.core.atrium&&L.k>0)||st.hole){const rc=st.hole||MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}
+ /* a court in a rect plate (the Arcades'): a rectangle in the slab, in the plate's own frame */
+ if(st.holeRect&&st.rect){const R=st.rect,c=Math.cos(R.yaw),s=Math.sin(R.yaw),T=(x,z)=>new THREE.Vector2(R.cx+x*c+z*s,-(R.cz-x*s+z*c)),q=st.holeRect,h=new THREE.Path([T(-q.hw,-q.hd),T(-q.hw,q.hd),T(q.hw,q.hd),T(q.hw,-q.hd)]);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium||st.hole?48:1});sl.rotateX(-Math.PI/2);
  /* a storey on the street lifts its slab and furniture 3 cm off the street plane (one plane under the other at y 0 fought) */
  const lift=L.y<.05?.03:0;const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22+lift;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.name='ceiling';ce.position.y=L.y+L.h-.26;g.add(ce);
  // the skin's inner face, where the outside's one-sided strips do not show: spandrel and head, and a dado of the core
@@ -41,12 +43,12 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   if(F.core.atrium){if(L.k>0){for(let q=0,nq=Math.ceil(2*Math.PI*r/.35);q<nq;q++){const a=2*Math.PI*q/nq;blocks.push([Math.cos(a)*(r+.1),Math.sin(a)*(r+.1)]);}B.lathe('glassClear',[[r,L.y+1.1],[r,L.y]],72,{});B.lathe('bronze',[[r+.05,L.y+1.1],[r-.1,L.y+1.1]],72,{uv:2});}}
   else if(!F.core.bays){B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
   B.lathe('concrete',[[r-.25,L.y],[r-.25,L.y+L.h]],36,{skip});}}
- else{const hw=F.footprint.w/2-.1,hd=F.footprint.d/2-.1;B.quad('relief',[hw,L.y,-hd],[hw,L.y,hd],[hw,L.y+L.h,hd],[hw,L.y+L.h,-hd],[-1,0,0],{uv:6});B.quad('relief',[-hw,L.y,hd],[-hw,L.y,-hd],[-hw,L.y+L.h,-hd],[-hw,L.y+L.h,hd],[1,0,0],{uv:6});
+ else if(!F.design){const hw=F.footprint.w/2-.1,hd=F.footprint.d/2-.1;B.quad('relief',[hw,L.y,-hd],[hw,L.y,hd],[hw,L.y+L.h,hd],[hw,L.y+L.h,-hd],[-1,0,0],{uv:6});B.quad('relief',[-hw,L.y,hd],[-hw,L.y,-hd],[-hw,L.y+L.h,-hd],[-hw,L.y+L.h,hd],[1,0,0],{uv:6});
   if(L.use!=='arcade')[1,-1].forEach(s=>{const z=s*hd;const q=(a,b)=>s>0?B.quad('white',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1]):B.quad('white',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1]);q(L.y,L.y+.9);q(L.y+2.5,L.y+L.h);});}
  // the shafts: a lift's car door, a stair's first flight, each where the record says on every storey
  F.core.shafts.forEach(function(s){if(k<s.from||k>s.to)return;const c=s.kind==='lift'?[.4,.42,.44]:[.6,.6,.58];
   /* the shaft's door: on the side that faces out of the core (a ring) or to the corridor (a slab): open for a stair, a shut bronze leaf for a lift */
-  const out=round?1:-1,face=Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]],top=L.y+L.h-.26;
+  const out=round?1:-1,face=s.face!=null?s.face:Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]],top=L.y+L.h-.26;
   E.forEach((e,i)=>{if(i!==face){seg([e[0],e[1]],[e[2],e[3]],y0,top,c);return;}const l=Math.hypot(e[2]-e[0],e[3]-e[1]),w=Math.min(1.2,l-.4),t0=(1-w/l)/2,t1=1-t0,P=f=>[e[0]+(e[2]-e[0])*f,e[1]+(e[3]-e[1])*f];seg([e[0],e[1]],P(t0),y0,top,c);seg(P(t1),[e[2],e[3]],y0,top,c);seg(P(t0),P(t1),y0+DH,top,c);if(s.kind==='lift'){const a=P(t0),b=P(t1),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(l,DH,.07),M.bronze);m.position.set((a[0]+b[0])/2,y0+DH/2,(a[1]+b[1])/2);m.rotation.y=-Math.atan2(dz,dx);m.name='a lift door';leaves.push({m,base:m.position.clone(),ax:[dx/l,dz/l],w:l,open:0});}});
   /* a stair: a switchback along the shaft, in from the door side up to a half landing, then back up to the door side of the storey above. Its steps are drawn from the record and walked as strips */
   if(s.kind==='stair'&&k<s.to){const sgn=face===2?1:-1,n=9,hd=s.d/2,hw=s.w/2,zD=s.z+sgn*(hd-.55),zI=s.z-sgn*(hd-.55),col={col:[.6,.6,.58],uv:2},H=L.h;
