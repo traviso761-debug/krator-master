@@ -138,19 +138,21 @@
     // registered is walkable too (the street between two doors). o.box [x0,x1,z0,z1] bounds the flood (default: every
     // floor's bounds, grown by o.margin, 6 m); o.limit caps the samples (3e6). Blocks switched off (an open door) do not stop
     // it, so open the doors first. Returns {reached, unreached: [floor records], nodes, capped}: a floor is reached when a
-    // sample on it was; one in the box that no sample stood on is unreached (a sealed room, a floor no stair meets).
+    // sample on it was; one in the box that no sample stood on is unreached (a sealed room, a floor no stair meets). Two
+    // floors at one height over one sample (a room's floor laid on a deck's) are both reached when the sample is.
     function reach(starts,o){
       o=o||{};var C=o.cell==null?0.4:o.cell,S=o.step==null?0.45:o.step,R=o.r==null?0.25:o.r,H=o.h==null?1.7:o.h,G=o.ground||null,M=o.margin==null?6:o.margin,LIM=o.limit==null?3e6:o.limit;
       var bb=o.box||bounds();if(!bb)return{reached:[],unreached:[],nodes:0,capped:false};
       var X0=o.box?bb[0]:bb[0]-M,X1=o.box?bb[1]:bb[1]+M,Z0=o.box?bb[2]:bb[2]-M,Z1=o.box?bb[3]:bb[3]+M;
-      var NI=Math.floor((X1-X0)/C),NJ=Math.floor((Z1-Z0)/C),seen=new Set(),hit=new Set(),Q=[],head=0,capped=false;
+      var NI=Math.floor((X1-X0)/C),NJ=Math.floor((Z1-Z0)/C),seen=new Map(),hit=new Set(),Q=[],head=0,capped=false;
       function standAt(x,z,y){var out=[],fs=floorsAt(x,z),i;
         for(i=0;i<fs.length;i++)if(Math.abs(fs[i][0]-y)<=S)out.push(fs[i]);
         if(!out.length&&G){var gy=G(x,z),under=false;for(i=0;i<fs.length;i++)if(fs[i][0]<=gy+S&&fs[i][0]>=gy-S)under=true;
           if(gy!=null&&!under&&Math.abs(gy-y)<=S)out.push([gy,null]);}
         return out;}
-      function visit(i,j,y,f){if(i<0||j<0||i>NI||j>NJ)return;var k=i+','+j+','+Math.round(y*10);if(seen.has(k))return;seen.add(k);
-        if(blocked(X0+i*C,y+0.05,Z0+j*C,R,H-0.05))return;if(f)hit.add(f);Q.push([i,j,y]);}
+      function visit(i,j,y,f){if(i<0||j<0||i>NI||j>NJ)return;var k=i+','+j+','+Math.round(y*10),was=seen.get(k);
+        if(was!==undefined){if(was&&f)hit.add(f);return;}   // the sample is known: a second floor at its height is stood on too
+        var ok=!blocked(X0+i*C,y+0.05,Z0+j*C,R,H-0.05);seen.set(k,ok);if(!ok)return;if(f)hit.add(f);Q.push([i,j,y]);}
       for(var s=0;s<starts.length;s++){var p=starts[s],si=Math.round((p[0]-X0)/C),sj=Math.round((p[2]-Z0)/C),st=standAt(X0+si*C,Z0+sj*C,p[1]);
         for(var t=0;t<st.length;t++)visit(si,sj,st[t][0],st[t][1]);}
       var D=[[1,0],[-1,0],[0,1],[0,-1]];
