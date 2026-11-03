@@ -67,8 +67,15 @@ SCHK.pools=function(O,lift){const W=[];POTHOLES.forEach(P=>W.push(P));const bad=
   detail:O.lily.length+' lilies ('+withLily.size+' of '+W.length+' pools), '+O.quill.length+' quills, '+O.sedge.length+' sedge, '+O.fern.length+' ferns'+(bad.length?'; '+bad.length+' wrong (first: '+bad[0]+')':'')};};
 const WATERS=[{level:PLUNGE.level,poly:PLUNGE.poly}].concat(POTHOLES.map(p=>({level:p.level,poly:p.poly})));
 const DUST_PTS=Array.from({length:60},(_,k)=>{const p=courseAt(LEN*(k+.5)/60,((k*7)%11-5)/5*HALF*.8);return p;});
+// the flora and the ground's wet band read the water's own shore (the review's third line; the kit's lines): no tree standing in the water, the wet
+// band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
+const EDGE_OWED={plant:0,wet:0};
+function edgeCheck(){const P=[];for(const T of NSEMIARID.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:NSEMIARID.SPECIES[T.sp].key});if(P.length>8000)break;}
+ const bad=BIO.envCheck(ENV,[[PLUNGE.x,PLUNGE.z+400],DUST_PTS[10],DUST_PTS[40]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
  add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree on a bare rock face',HCHK.cliffs(T));
  if(typeof VARIANTS!=='undefined')add('trees drawn as shared variants',HCHK.variants(VARIANTS,T));
@@ -99,11 +106,15 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (the kit's 46: merge, fade, cull) */
+/* the land in the plunge lake (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
+const MIRROR=WATER_DRAW.plunge&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[WATER_DRAW.plunge.mesh.material],
+ level:PLUNGE.level,center:[PLUNGE.x,PLUNGE.z],radius:900,far:3500,tree:o=>o.name==='variant:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
 KHOST.take({build:'scablands',title:'Krator overlay — the scablands: a coulee and dry falls',
  hint:'The west breach in small: the flood from the broken dam scoured this coulee to bare basalt, butte-and-basin and potholes, fell over a dry falls into a plunge-pool lake, and laid bars with giant current ripples below; streamlined loess islands kept the steppe (the n semiarid kit, read in place)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL],
+ inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL].concat(AIR_CONTROL?[AIR_CONTROL]:[]),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>(SEEDS?[SEEDS.points]:[]).concat(FLIGHT?FLIGHT.meshes:[])},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,

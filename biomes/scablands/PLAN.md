@@ -66,3 +66,14 @@ seeds, the variants), and the station's:
 - **the pools' flora in its places**: lilies on their pool's water, quills on the waterline, ferns at the falls' foot;
 - **the water held**: the plunge lake's and every pothole pool's shore over its level all round;
 - each with a broken input that must fail.
+
+## 6. Core adoption: the final rebuild's turn (2026-11-03, pair 9)
+
+The coulee takes the kit's turn as it reads the kit (`biomes/nsemiarid/PLAN.md` section 11): the graphics set (`46-host-graphics.js`), the
+variants' far level on impostors, KGROUND on the kit's painted ground (with this stage's tint under the layers), KFAR past the map (the plateau
+and the coulee by this stage's `terrainH`), KHORIZON, height fog, the rain cover, the air's load with a dust storm, breakup, the water's fields and
+the edge audit (`99-host-take.js` `edgeCheck`), `BIO.flareJoin`, and the species fixes (the solid bodies as wood, the gliders and the kiting blades
+`free`, the drift's back row lower; a kiting blade never under the plunge lake). This page's own: **`WATER.mirrorSwitch` on the plunge lake**, off at
+page load (`?mirror=probe|live`). The rock stays `KSCOUR.strata` (the basalt flows that step the walls): KSTRATA would be a second copy of the same
+beds. **Not taken:** karst site 10's spring line at the basalt's base (`biomes/KARST-SITES-5.1.md`, "low gain": a note for the coulee's next pass);
+the overhanging lip (KNOWN_ISSUES.md).
