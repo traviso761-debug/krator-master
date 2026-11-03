@@ -414,6 +414,12 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
 - **The `sound` record (H9)** (`core/tags/54-core-tags-sound.js`, `test-sound.js`, twin `ksound.gd`): an aeolian emitter as a record in core/tags,
   for a core/audio still to be written and Godot's audio. Its modes are an edge tone, an overblown closed pipe and a Helmholtz cavity, with
   presets for the howl bamboo, the Singing Gjár and the singing buttress. `core/tags/README.md`, "Adopting it: the sound key".
+- **`KSPAN`** (`core/biome/45-core-span.js`, `test-span.js`): catenaries between two anchors, for spiderlake's silk and loom-chasms' living
+  cables. A span is solved by length, slack or sag. `up` makes a buoyant cable arch over its chord; the shape is the mirror, since
+  buoyancy only changes the tension. It gives points, the tangent, the low point and the tension for a weight, and `strands` hangs a
+  curtain of spans between two anchor lines, with each strand's slack drawn by hash.
+  - Data only: a kit draws the points as tubes or ribbons.
+  - *Adopting it:* list the file in `CORE_BIOME`; `KSPAN.points(KSPAN.solve(a, b, {slack: .05}), 24)`.
 
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 

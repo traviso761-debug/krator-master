@@ -43,6 +43,8 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
   - **High Rift** takes `gjar-organ` on the Singing Gjár.
 
   There is no core/audio yet: the records are there for it and for Godot.
+- **`KSPAN`** (`core/biome/45-core-span.js`), catenary spans: **spiderlake** takes it for its silk bridge-curtains, guys and reeling
+  frames, and **loom-chasms** for its living cables across the rifts (`up` where a cable is buoyant).
 
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 
