@@ -490,8 +490,10 @@ reseed(560001);
       F.box(0,H,-zi+0.0, LB,0.9,0.4,0,col,fam); [-1,1].forEach(function(s){ F.box(s*(GW/2+(xi-GW/2)/2),H,zi, xi-GW/2,0.9,0.4,0,col,fam); F.box(s*xi,H,0, 0.4,0.88,LS,0,col,fam); });
       F.box(0,H-0.28,-zi+0.33, LB-1,0.5,0.06,0,MOSBLUEC[3],'mosaic'); [-1,1].forEach(function(s){ F.box(s*(xi-0.33),H-0.28,0, 0.06,0.5,LS-1,0,MOSBLUEC[3],'mosaic'); });
       /* room doors behind the galleries (not on the stable side's ground floor) */
-      for(i=0;i<15;i+=2){ var dx=(i-7)*LB/15; F.doorway(dx,Y0,-Z+RB+0.03, 1.1,2.1,0.06,0,{ out:[0,1] }); if(i%4===0) F.doorway(dx,H1,-Z+RB+0.03, 1.1,2.1,0.06,0,{ out:[0,1] }); }   /* locked leaves: no rooms are planned behind them */
-      for(i=0;i<11;i+=2){ var dz=(i-5)*LS/11; F.doorway(X-RB-0.03,Y0,dz, 0.06,2.1,1.1,0,{ out:[-1,0] }); if(i%4===1) F.doorway(X-RB-0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[-1,0] }); if(i%4===1) F.doorway(-X+RB+0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[1,0] }); }
+      for(i=0;i<15;i+=2){ var dx=(i-7)*LB/15; F.card(dx,Y0,-Z+RB+0.03, 1.1,2.1,0.06,0); if(i%4===0) F.doorway(dx,H1,-Z+RB+0.03, 1.1,2.1,0.06,0,{ out:[0,1] }); }
+      /* the court-level doorways stand open onto the cells INTERIOR_CUSTOM.trade_caravanserai plans behind them (64-interiors.js): the room card;
+         the gallery-level ones, with no room behind, are locked leaves (53-assets.js F.doorway) */
+      for(i=0;i<11;i+=2){ var dz=(i-5)*LS/11; F.card(X-RB-0.03,Y0,dz, 0.06,2.1,1.1,0); if(i%4===1) F.doorway(X-RB-0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[-1,0] }); if(i%4===1) F.doorway(-X+RB+0.03,H1,dz, 0.06,2.1,1.1,0,{ out:[1,0] }); }
       [-1,1].forEach(function(s){ for(i=0;i<3;i++){ var fx=s*(GW/2+3+i*10.5); F.doorway(fx,Y0,Z-RB-0.03, 1.1,2.1,0.06,0,{ out:[0,-1] }); } });
       /* STABLES along the left (-x) range: rails between the piers, mangers, hay */
       F.box(-xi-0.0,Y0+1.0,0, 0.14,0.14,LS-2, 0, TIMBERC[0],'timber'); F.box(-xi,Y0+0.5,0, 0.12,0.12,LS-2, 0, TIMBERC[2],'timber');
