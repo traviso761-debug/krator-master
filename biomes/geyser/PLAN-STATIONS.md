@@ -5,7 +5,10 @@ and the Ring Sea's isles, where most of the model's vents are. But the model als
 forested, or in ice, where a geyser field looks nothing like the showcase; and Korona's plume is active. Four stations add them. The page as built stays station 1.
 Stations follow the Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan, awaiting the owner.**
+**Status (2026-11-03, the rebuild turn, pair 7):** the showcase page (station 1) is rebuilt on the core (below, "Core adoption"), and the
+Hearths' station 6, **the Stills** (`--station stills`), is built on its ground. Stations 2-5 (`puna`, `basin`, `corona`, `ice`) are still a
+plan: the owner gave `puna`'s and `basin`'s Oidong, Godstep and rift-rim sites to the Hearths' hosts (2026-11-02; `biomes/hearths/PLAN.md`
+"Overlap, settled"), so each keeps only the sites the Hearths do not take, and none is built in this turn (below, "Owed").
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `DATA.vents`, 79 in all)
 
@@ -100,3 +103,61 @@ of the cone at (770,1168), about 7 km, 0.6-0.7 atm, a mean near -20 °C, no rain
 
 `puna` first (it differs most from the showcase), then `corona` (with Korona's next pass), then `basin` with or after
 riftrim, then `ice`.
+
+## Station 6 of the Hearths: the Stills (`--station stills`, `dist/geyser-stills.html`; built 2026-11-03)
+
+`biomes/hearths/PLAN.md` section 7b and section 11 item 6, on the showcase's own ground (no `base`: `stations/stills/` adds one fragment to
+`src/`). `biomes/hearths/src` is read in place (`station.json` "kin": `50` the records and parts, `57` the placement, new in this turn), with
+`core/biome/35b-core-anim-turn.js` (the breath's turn). What is drawn, all from the kit's own water records (`GEYSER.R`), never a noise:
+
+- **Still trees** ring every boiling spring at its rim (temp .75 and over: the Great Prism and the funnels), their feet in the water's edge,
+  and every geyser at its spray line (outside it; off the kit's trees by `GEYSER.blocked`): a 15-30 m heat-pipe stalk, 4-6 tiers of black
+  sails (each a panel of three fans) held **across the sea wind**, wax pooled at some feet.
+- **The two scalars** (one write a frame each, `87-host-stills.js`): a geyser's ring **folds its sails** through the warning (`pre`) and
+  the column and opens them as the steam's roar falls (`HEARTH.sailFold` on `WATER.geyser`'s `S.state` at the show's clock; key
+  `stills:<geyser>`); the springs' rings never fold. **Every sail turns** from across the wind toward edge-on to the sun by day, back
+  across the wind at night (`HEARTH.sailTurn` on the sky's sun; key `stills:turn`, three quarters of the way at full day).
+- **Glass stills** by the springs gone cool (temp under .55), white, standing; **spray mats** on the scalded ground inside each cone's spray
+  line; **sail cups** down the run-off's 40-80 degC reach, their fans across the wind.
+- Views: "The Old Kettle's ring" (the Old Kettle set off as the view opens, so its ring is seen shut), "The stills round the Great Prism",
+  "A still tree", "The sails across the wind". Checks (each with a negative): the field placed, still trees only at boiling water, the fold's
+  phases, the turn by day and night.
+
+**Look decisions for the owner** (none judged on a GPU yet):
+- The sail is three fans side by side in one plane (the plan's "held across the wind like sails"), not a radial crown: a radial crown cannot
+  stand across a wind. Folded, a sail swings down-wind and hangs along the stalk (2.5 rad): the plan says only "fold".
+- The turn is a compromise: the plan asks both across the wind and edge-on to the sun, which disagree most of the day; the sails go three
+  quarters of the way to edge-on at full day.
+- The page opens at the host's 06:00; the plan's "first ten seconds" are at midday: `#hour=13`. Sail cups' cup is a funnel cap with a small
+  fan on its lip; vertex-shaded, no textures (the Hearths' section 15 has none delivered).
+
+**Not built here:** the people's words (the plan's open question 3), the fauna, the shimmer over the hot ground (`ATMOS.shimmer`: a post pass,
+as the Cold Hearths left it), KTHERM (the rings are placed by the water records, which already say where the water boils), and the Stills on
+the other two geyser sites (the West Ring's isles, the Throne's geyser isle: their own pages' turns, reading `57` in place).
+
+## Core adoption (the rebuild turn, pair 7, 2026-11-03)
+
+The universal set (`BACKPORT.md` sections 1 and 5) and the kit's row, on both pages unless said:
+
+| Module | Taken | Where |
+|---|---|---|
+| `core/water/21` (the shore presets) | **yes, a fix**: the page rebuilt from the merged sources died at render (`W.wetChunk`: `WATER.PRESETS.shore` undefined) | `build.py` |
+| `BIO.flareJoin` (31j) | the pandan's forks, the kanuka's side limbs, the snags' stubs; 6 sides at a joint over .15 m. Guarded, so a reader without 31j (the hyperjungle's lake station, ringisles) draws the limbs as before | `55` |
+| Octahedral impostors (34) | the hyperjungle's far trees (its `55` makes them when 34 is on the page), its gain 1.6, `?diet=0` the old blobs; the kit's own trees all stand inside the hero radius, so none of them goes far | `88` |
+| Cards on their geometry | `check_cells.py --fix`: the screwpine crown's cell (it showed a quarter of the plant), the pandan strap's plain cell and base, the heath's stems; 3 faults to 0, repacked | `materials.json`, `tex/pack.json` |
+| `KGROUND` (43) | the nine library surfaces the paint mixed (litter, grass, moss, rock, sand, sinter twice, travertine, clay, mud) are KGROUND layers in the same order with the same weights and tints; the mats' sampler stays the kit's (a term on top, as the vents, film and pools are); `?kground=0` the old mix | `84` |
+| `KSTRATA` lamina (35, 35b) | the row's "strata in the sinter terraces": the Stair's curtains banded as travertine lays down (couplets of ~0.8 mm a day, a paler band each wet season, 151 years over the flight), cream and iron buff; `?lamina=0` | `84` |
+| `KFAR` (44), `KHORIZON` (45) | the plateau's canopy and the coast to 14 km; the horizon over the square and the far field, on the ground and (after the bake) the flora; `?far=0`, `?hz=0` | `85`, `88` |
+| `KSHADOW` | yes (`?shadow=0`): the flora casts, the ground receives; shader materials (springs, columns, plumes) and the far field neither. Its cost is not measured here (no GPU): the coordinator's run measures it | `88` |
+| Sky and air | the shared sky as before; height fog, rain cover, lightning listed with the particles | `build.py` |
+| River plume (ext/61) | the creek's tea-brown water and the Stair's milky silica run-off carried into the sea on a current (`?plume=0`) | `89w-host-sea.js` |
+| No breakers on still water | nothing to do: the Stair's pools are `drawPools` (no surf); the sea keeps its breakers | |
+| `WATER.mirrorSwitch` (58) | **dropped**: the largest stills are the springs, whose discs are their own shader (the ramp) with no anchor the mirror can patch; the Stair's 143 pools are small at 143 levels | |
+| `KHAZ` (the row's "vents and hot ground") | the springs' sinter crusts (KHAZ hot ground), the fumaroles' gas, the mud pots' boiling clay, beside the geysers, springs and acid flats already there | `46`, `65` |
+| `KGROUND` `polygon` (the row) | **dropped**: the sinter flats are geyserite sheets laid by water, not frost or desiccation polygons | |
+| Brine looks, karst-spring vents (the row) | **dropped**: the springs' colour is core/water's thermal ramp already; no karst here | |
+| `BIO.fung`, `BIO.bamboo` | the kit has no fungoid or bamboo part of its own; 33 is listed for the hyperjungle and the Stills | |
+
+**Owed:** stations 2-5 (each a session: `puna` first, at the e inner wall's, the east's and the Lesser Throne's vents); the hyperjungle's own
+universal set on this page (its `KGROUND` ground is not this page's: the basin's ground is the kit's); `WATER.audit` on the creek (57 is listed,
+no check reads it yet); the Godot side of the new pieces (the exporter carries the hazards and the stills' records; nothing judged in Godot).
