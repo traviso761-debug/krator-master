@@ -96,7 +96,7 @@ const HCHK={
 // stacked floors cost every foot in its box dozens of rays, and verify did not finish. NOT_FEET: a boulder's origin is its middle
 const HELD_ITEMS={'biome:fan':1,'biome:frond':1,'biome:cone':1,'biome:mossmat':1},NOT_FEET={'biome:boulder':1},HELD_UP=.6;
 // FEET_OWED: the feet still off the drawn ground, recorded on 2026-11-02 (KNOWN_ISSUES.md); ratchet it down, never up
-const FEET_OWED=47;
+const FEET_OWED=38;
 let _feet=null;
 function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];let held=0;
   scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!M.count||NOT_FEET[M.name])return;M.updateMatrixWorld();
@@ -111,7 +111,7 @@ function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];
   _feet={items,recs:out,held};}
  return old?_feet.recs.map(r=>Object.assign({},r,{at:[r.at[0],r.at[1]+r.off,r.at[2]]})):_feet.recs;}
 function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatScene(),F),off=F.map(r=>Math.abs(r.off)).sort((a,b)=>a-b),q=f=>off.length?off[Math.min(off.length-1,Math.floor(off.length*f))]:0;
- return{ok:c.n>1000&&c.fails.length<=(old?0:FEET_OWED)&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground, '+_feet.held+' held pieces left out ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
+ return{ok:c.n>1000&&c.fails.length<=(old?0:ST&&ST.feetOwed!=null?ST.feetOwed:FEET_OWED)&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground, '+_feet.held+' held pieces left out ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
   c.worst.gap.toFixed(2)+' m up, '+c.worst.depth.toFixed(2)+' m down; the control '+(c.neg?'floats':'DID NOT float')+'); terrainH off the drawn ground at these feet: median '+q(.5).toFixed(2)+', p99 '+q(.99).toFixed(2)+', max '+q(1).toFixed(2)+' m'};}
 // THE LAND SIDE OF THE WATER (core/water ext/60, PRACTICE.md section 2; ChatGPT's third checklist line): the env's fields hold their units, the trees stand out of the water the eye sees, and the wet band reaches it
 function edgeCheck(){const P=[];for(const T of SWLOW.TREES){if(T.cut||T.lv===0||T.sp===0||T.sp===1)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:SWLOW.SPECIES[T.sp].key});if(P.length>4000)break;}

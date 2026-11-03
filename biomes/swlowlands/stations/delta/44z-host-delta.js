@@ -36,11 +36,11 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
   flood:{low:YB-1.2,high:YB+2.2,poly:floodPoly,lagD:45,sharp:1.5},
   kinRules:[{from:'canepalm',to:'swbay.splay',share:.3,salt:0x6e41,zone:Z=>Z.rip>.4}],
   fields:{tropic:(x,z)=>.82*smooth(300,-500,sOf(x,z)),dry:(x,z)=>.8*smooth(60,240,over(x,z))*smooth(-700,-200,sOf(x,z)),wet:(x,z)=>mix(.92,.5,smooth(40,240,over(x,z))),upland:(x,z)=>clamp((over(x,z)-40)/240,0,1)},
-  mask:(x,z)=>{const s=sOf(x,z),d=dCh(s,tOf(x,z)),w=W(s);if(d<w*1.25)return 0;if(s>330&&siteD(x,z)<SITE_R)return 0;const e=5,sl=Math.hypot(h(x+e,z)-h(x-e,z),h(x,z+e)-h(x,z-e))/(2*e);return sl>.95?0:1;},
+  mask:(x,z)=>{const s=sOf(x,z),d=dCh(s,tOf(x,z)),w=W(s);if(d<w*1.25)return 0;if(s>330&&siteD(x,z)<SITE_R)return 0;const e=5,sl=Math.hypot(h(x+e,z)-h(x-e,z),h(x,z+e)-h(x,z-e))/(2*e);return sl>.62?0:1;},
   rock:(x,z,sl)=>Math.max(smooth(.55,1,sl),.7*barK(x,z)),
   split:(x,z)=>{const s=sOf(x,z),d=dCh(s,tOf(x,z));return d<W(s)*1.9;},
   build:()=>({talus:stationBoulders(talus,{seed:8134,dens:.8,r:1.5,tint:0xa88870,label:'Talus under the walls'}),bars:stationBoulders(barK,{seed:8135,cell:9,dens:.5,r:.35,tint:0x9a8f80,range:800,label:'Gravel on a bar'})}),
-  region:{name:'The delta and Wing\'s floodplain',x:0,z:0,r:TERR.R,h:520},
+  region:{name:'The delta and Wing\'s floodplain',x:0,z:0,r:3000,h:520},
   site:()=>{const a=xzOf(SITE_S,RIVER_T(SITE_S)+340);window._wingSite={name:'Wing',px:[699,1042],x:+a[0].toFixed(1),z:+a[1].toFixed(1),y:YB+1.1,r:SITE_R,flood:[YB-1.2,YB+2.2]};},
   checks:add=>{const L=WATER.surfaces.find(q=>q.seasonal);add('the bench floods with the season',(()=>{if(!L)return{ok:false,detail:'no seasonal surface'};const lo=L.levelOf(0),hi=L.levelOf(1),n=WATER.stepSeasons(KHOST.host.clock);return{ok:hi-lo>3&&n>=1,detail:'low '+lo+', high '+hi+', now '+L.level.toFixed(2)+'; '+n+' stepped'};})());},
   views:()=>{const v=(s0,t0,h0,s1,t1,h1)=>{const a=xzOf(s0,RIVER_T(s0)+t0),b=xzOf(s1,RIVER_T(s1)+t1);return[a[0],Math.max(0,h(a[0],a[1]))+h0,a[1],b[0],Math.max(0,h(b[0],b[1]))+h1,b[1]];};

@@ -183,3 +183,11 @@ over .6 m above the ground on `HELD_ITEMS`, or inside an obstacle's footprint. A
 The tower is not a seat surface: with it marked, verify never finished twice, though the stall was not traced to it.
 
 - 2026-11-02, the foliage attach audit: 7.24% to .73%. Flowers in foliage `onLeaf`, the willow's veils held to their limb, pads `free`.
+
+## The final rebuild's turn (2026-11-02)
+
+- [ ] **Ground, as the universal row asks and no further.** `KGROUND` over the paint on documented masks; the three-ground diagnosis has not run. Standard, not Lambert, under KGROUND (`?kground=0` for the old floor).
+- [ ] **Cousins to judge:** the red lattice sprawl, red banksia, red-flake paperbark, flat red puzzle (colours and scale by `BIO.kin`; what a builder does not read stays the source's). The ribbon-root's planks are three stacked tubes, not a true plank. Not taken: nhighlands' two and shighlands' crozier (their later turns), the puya and dust reef (wouterwall unbuilt).
+- [ ] **swbay's receiver rows (mangrove, coastoak) are not wired:** swbay's turn came first; they want a swbay rebuild.
+- `88-host-build.js` is now `89z-host-build.js`: the water must exist before the first plant reads its shore. The tree pass reseeds per tree, so every tree's shape changed once at this turn; placement passes did not move, but `FIELD.wet` and `flow` now read the water, so riparian ground did.
+- bloom's sheet is cut by the geometry (`"sheet": "geometry"`, sedesert's rects), not check_cells' proposal, which the owner marked wrong.

@@ -18,11 +18,11 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
  const talus=(x,z)=>{const s=sOf(x,z),q=qOf(x,z,s,Math.abs(tOf(x,z)-RIVER_T(s)));return smooth(0,.06,q)*smooth(.2,.1,q)*smooth(-1400,-900,s);};
  return{terrainH:h,riverY:Y,riverW:W,riverFrom:-1460,rapids:[.02,.09],riverLook:[0x3f8f78,0x12463e],falls:{steep:.3,minDrop:3.5},springs:[[-160,1,190],[880,-1,210]],strata:S,
   fields:{tropic:(x,z)=>.55*smooth(-700,-1700,sOf(x,z)),dry:(x,z)=>.85*smooth(80,320,over(x,z)),wet:(x,z)=>mix(.84,.5,smooth(60,320,over(x,z))),upland:(x,z)=>clamp((over(x,z)-60)/320,0,1)},
-  mask:(x,z)=>{const s=sOf(x,z),d=Math.abs(tOf(x,z)-RIVER_T(s));if(d<W(s)*1.25)return 0;const e=5,sl=Math.hypot(h(x+e,z)-h(x-e,z),h(x,z+e)-h(x,z-e))/(2*e);return sl>.95?0:1;},
+  mask:(x,z)=>{const s=sOf(x,z),d=Math.abs(tOf(x,z)-RIVER_T(s));if(d<W(s)*1.25)return 0;const e=5,sl=Math.hypot(h(x+e,z)-h(x-e,z),h(x,z+e)-h(x,z-e))/(2*e);return sl>.62?0:1;},
   rock:(x,z,sl)=>Math.max(smooth(.55,1,sl),.5*smooth(.05,.3,qOf(x,z,sOf(x,z),Math.abs(tOf(x,z)-RIVER_T(sOf(x,z)))))*smooth(.6,.4,1-sl)),
   split:(x,z)=>{const s=sOf(x,z),d=Math.abs(tOf(x,z)-RIVER_T(s)),w=W(s);return d<w*1.9;},
   build:()=>({talus:stationBoulders(talus,{seed:8132,dens:.8,r:1.6,tint:0xb08068,label:'Talus under the walls'})}),
-  region:{name:'The great gorge (klir Rivrh)',x:0,z:0,r:TERR.R,h:900},
+  region:{name:'The great gorge (klir Rivrh)',x:0,z:0,r:3000,h:900},
   site:()=>{window._gorgeSite={river:'r000',px:[676,1077],wall:620,note:'the ground Shim\'s build reads (settlements/shim/PLAN.md): RIVER_T, Y, W'};},
   views:()=>{const v=(s0,t0,h0,s1,t1,h1)=>{const a=xzOf(s0,RIVER_T(s0)+t0),b=xzOf(s1,RIVER_T(s1)+t1);return[a[0],h(a[0],a[1])+h0,a[1],b[0],h(b[0],b[1])+h1,b[1]];};
    return{'The gorge from the rim':v(600,760,12,-300,0,10),'On the river':v(900,0,16,300,0,14),'A rapid':v(-60,14,10,-200,0,2),'The riparian bench':v(300,150,3,520,120,10),'The walls':v(250,120,4,300,640,120),
