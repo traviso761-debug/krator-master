@@ -40,6 +40,9 @@ useGroupXF endGroupXF`).
 
 ## The Vernacular set
 
+The files are `kits/iziz-vernacular/src` since 2026-11-03 (`kits/iziz-vernacular/README.md`); Iziz's page reads them in place, so
+the API below is unchanged.
+
 ### Registry — `69c-vern-helpers.js`
 
 ```js

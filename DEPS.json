@@ -502,6 +502,7 @@
    "kits/ancients",
    "kits/catalog",
    "kits/interiors",
+   "kits/iziz-vernacular",
    "settlements/iziz"
   ],
   "kits/resources": [
@@ -555,6 +556,7 @@
    "core/walk",
    "kits/catalog",
    "kits/interiors",
+   "kits/iziz-vernacular",
    "settlements/iziz"
   ],
   "kits/yeti": [
@@ -619,6 +621,7 @@
    "kits/fauna",
    "kits/interiors",
    "kits/islanders",
+   "kits/iziz-vernacular",
    "kits/resources",
    "kits/ringsea",
    "settlements/girder",
@@ -640,6 +643,7 @@
    "core/rand",
    "core/tags",
    "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/highlands",
    "settlements/iziz"
   ],
@@ -704,6 +708,7 @@
    "kits/ancients",
    "kits/catalog",
    "kits/interiors",
+   "kits/iziz-vernacular",
    "settlements/iziz"
   ],
   "settlements/hook": [
@@ -734,6 +739,7 @@
    "kits/fauna",
    "kits/interiors",
    "kits/islanders",
+   "kits/iziz-vernacular",
    "kits/resources",
    "kits/ringsea",
    "openworld/isle-demo",
@@ -761,7 +767,8 @@
    "core/walk",
    "kits/ancients",
    "kits/catalog",
-   "kits/interiors"
+   "kits/interiors",
+   "kits/iziz-vernacular"
   ],
   "settlements/jimjam": [
    "core/atmos",
@@ -921,6 +928,7 @@
    "kits/beast-riders",
    "kits/catalog",
    "kits/interiors",
+   "kits/iziz-vernacular",
    "openworld/isle-demo",
    "settlements/girder",
    "settlements/isle-demo",
@@ -995,6 +1003,7 @@
    "kits/ancients",
    "kits/catalog",
    "kits/interiors",
+   "kits/iziz-vernacular",
    "settlements/iziz",
    "settlements/locus"
   ],
@@ -1050,6 +1059,7 @@
    "core/tags",
    "core/water",
    "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/highlands",
    "settlements/iziz",
    "settlements/port"
@@ -1167,11 +1177,13 @@
    "core/atmos",
    "core/biome",
    "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/highlands",
    "settlements/iziz"
   ],
   "settlements/highlands": [
    "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/iziz"
   ],
   "settlements/iziz": [
@@ -1196,6 +1208,7 @@
   "settlements/ys": [
    "core/biome",
    "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/highlands",
    "settlements/iziz",
    "settlements/port"

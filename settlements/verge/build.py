@@ -106,12 +106,14 @@ INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the mi
 
 # ---------------------------------------------------------------- the Iziz Vernacular bundle (IZV)
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
-    def iz(f):   # a local copy in settlements/iziz/src wins over core/materials (its build's srcpath rule)
-        p = os.path.join(IZIZ, f)
+    def iz(f):   # the Vernacular kit's own files, else a copy in settlements/iziz/src, which wins over core/materials (its build's srcpath rule)
+        p = kvern.path(f) if f in kvern.FILES else os.path.join(IZIZ, f)
         if os.path.exists(p):
             return p
         q = os.path.join(MATS, f)
@@ -122,7 +124,7 @@ def izv_files():
              '72-vern-civic.js', '73-vern-infra.js', '74-vern-guilds.js']
     # 69e5: real doors and glass (vnPlate, vnHole, vnOpening, IZDOOR, IZ_ROOMC), which the vernacular fragments call since 2026-10-19
     out = [iz(f) for f in names]
-    out += sorted(glob.glob(os.path.join(IZIZ, '74[a-z]-vern-*.js')))          # additions to the vernacular set
+    out += sorted(glob.glob(os.path.join(kvern.SRC, '74[a-z]-vern-*.js')))     # additions to the vernacular set
     out += sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))   # the Ancients funicular
     return out
 

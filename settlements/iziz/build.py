@@ -110,6 +110,8 @@ import host as khost
 # kits read it too (MODULARITY-PLAN.md step 1); it was src/81-sky.js, the upstream 13 kits and 6 settlements vendored
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 # the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
 # whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
@@ -397,6 +399,7 @@ def build_one(target, do_checks, assert_origin):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src.update({f: p for f, p in kvern.paths().items() if f not in src})   # the Vernacular kit (a src/ copy would win: none)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})

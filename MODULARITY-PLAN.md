@@ -239,6 +239,18 @@ leaves each settlement folder as its layout and page, building as it does today 
   the one Vernacular bundle list the contract asks for (Verge's and the isle demo's copies have drifted). (2) Highlands'
   Republican, Rustic and Tribal sets. (3) Xanadu's Sultanate set. (4) Locus's Eastern Abyssal set. (5) The rest as they
   come up. `70-biome-nhighlands` -> `biomes/nhighlands` (already there; Highlands takes it from the biome).
+- **(1) The Iziz Vernacular, done 2026-11-03:** its 17 fragments (`69b`-`69f`, `70`-`74z`) moved unchanged to
+  `kits/iziz-vernacular/src` (`vernacular.py`, the file list; README; `PORT.md` with Iziz's tags). Iziz reads them in place
+  (Pylon and Talia through its page), Verge's and the isle demo's `IZV` bundles and the isle demo's size reader take them
+  from the kit, and Highlands', Dalab's and Ys's `--vendor-check` compares their copies with it (Highlands identical; Dalab's
+  and Ys's drift as it did against Iziz). Proof: Iziz's seven pages, Pylon's and Talia's, 32 outputs in all, byte-identical
+  to the build before; Verge's page and both `IZV` bundles differ only in the moved files' path labels. Next for the kit:
+  a `build.py` of its own (its sheet, from Iziz's `vernacular` target), and one `izv_files()` for Verge and the isle demo
+  (their two lists have drifted: Verge's lacks `71a`-`c`, `73b`-`c`, `74z` and `88y`); `88y-iziz-matlib` with the matlib item.
+  The kit's trades table (`74z`) names two buildings of Iziz's foreign quarter (the Voth embassy, the Order's chapterhouse:
+  Iziz's `75-port-embassy.js`, `76-port-chapterhouse.js`, which Dalab and Ys vendor too), so `tools/check_trades.py --all` looks
+  their keys up in Iziz's `src/` (`EXTRA_SRC`) until those foreign-quarter sets have a kit of their own.
+  Then (2), Highlands' sets.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).

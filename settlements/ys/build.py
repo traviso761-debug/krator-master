@@ -147,8 +147,10 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
-for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '92-camera.js', '93-labels.js']:
+for _f in ['92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js']:
+    VENDORED[_f] = 'kits/iziz-vernacular/src'   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 VENDORED['81-sky.js'] = 'core/atmos/placeholder'   # KratorSky left Iziz's src/ on 2026-11-02; read in place with MODULARITY-PLAN.md step 4
 # the foreign quarter (phase 3, DESIGN §2 and §6; NOTES.md "The foreign quarter"): the Iziz Vernacular dwellings and
 # trade, the Voth embassy and the Historians' chapterhouse (the Yuni-set ports) from Iziz; the Highlands kit's
@@ -159,7 +161,7 @@ VENDORED['81-sky.js'] = 'core/atmos/placeholder'   # KratorSky left Iziz's src/ 
 VENDORED_IZIZ_FQ = ['69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']   # 69e: vnBody/vnBand, which 70 and 71 call (solid here: Ys never turns VERN.interiors on)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
 for _f in VENDORED_IZIZ_FQ:
-    VENDORED[_f] = 'settlements/iziz/src'
+    VENDORED.setdefault(_f, 'settlements/iziz/src')   # the embassy and the chapterhouse; the Vernacular's three are the kit's (above)
 for _f in VENDORED_HL:
     VENDORED[_f] = 'settlements/highlands/src'
 # Build-time renames in a vendored fragment's body (the file on disk stays byte-identical to its upstream, so

@@ -166,10 +166,10 @@ def dims_fragment():
             if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
                 continue
             out[m.group(1)] = rec(b, 'isk', 'types')
-    for f in sorted(glob.glob(os.path.join(ROOT, 'settlements', 'iziz', 'src', '7*-vern-*.js'))):
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))):   # the Vernacular kit (MODULARITY-PLAN.md step 4)
         for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", read(f)):
             out[m.group(1)] = rec(m.group(2), 'izv', 'type', 8)
-            for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # settlements/iziz/src/70-vern-dwellings.js
+            for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # kits/iziz-vernacular/src/70-vern-dwellings.js
                 if tag in m.group(2):
                     out[m.group(1)]['types'] = [t]
     BRK = os.path.join(ROOT, 'kits', 'beast-riders')

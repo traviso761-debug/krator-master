@@ -309,7 +309,8 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
-VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '90-scene.js', '91-probe.js',
+VENDORED_VERN = ['69b-vern-mat.js', '69c-vern-helpers.js']   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
+VENDORED_IZIZ = ['90-scene.js', '91-probe.js',
                  '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html',
                  '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
 VENDORED_SKY = ['81-sky.js']   # ../../core/atmos/placeholder (KratorSky; Iziz's src/ copy moved there 2026-11-02; read in place with MODULARITY-PLAN.md step 4)
@@ -322,7 +323,7 @@ BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place
 def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_IZIZ + VENDORED_SKY + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
+    for f in VENDORED + VENDORED_VERN + VENDORED_IZIZ + VENDORED_SKY + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -336,6 +337,7 @@ def vendor_check():
     if os.path.exists(lab) and os.path.exists(up):
         print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'drifts from (deliberate: the wall gap LAB_WALL_GAP and the narrower BITE, marked DALAB in the file)'))
     for label, files, up in (('ancients', VENDORED, os.path.join(ROOT, 'kits', 'ancients', 'src')),
+                             ('iziz-vernacular', VENDORED_VERN, os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
                              ('core/atmos/placeholder', VENDORED_SKY, os.path.join(ROOT, 'core', 'atmos', 'placeholder')),
                              ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),

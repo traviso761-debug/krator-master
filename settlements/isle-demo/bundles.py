@@ -151,14 +151,16 @@ def isk_bundle():
 
 # ---------------------------------------------------------------- the Iziz Vernacular
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
     """settlements/verge/build.py izv_files() and every vernacular fragment Iziz has added since (one shared copy is a
     follow-up: KNOWN_ISSUES.md)"""
-    def iz(f):   # a local copy in settlements/iziz/src wins over core/materials (its build's srcpath rule)
-        p = os.path.join(IZIZ, f)
+    def iz(f):   # the Vernacular kit's own files, else a copy in settlements/iziz/src, which wins over core/materials (its build's srcpath rule)
+        p = kvern.path(f) if f in kvern.FILES else os.path.join(IZIZ, f)
         if os.path.exists(p):
             return p
         q = os.path.join(MATS, f)
@@ -168,7 +170,7 @@ def izv_files():
              '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']   # 69e5: real doors and glass (vnPlate, vnHole, IZDOOR), which the vernacular fragments call since 2026-10-19
     out = [iz(f) for f in names]
     # every vernacular building fragment in its file order: Verge's list stops at 74, and Iziz has since added 71a-c, 73b-c
-    out += sorted(glob.glob(os.path.join(IZIZ, '7[0-4]*-vern-*.js')))
+    out += kvern.building_files()
     # Iziz's own library bind (its aliases and tiles) and its material records for the export (KMAT.adapter('iziz'))
     out.append(os.path.join(IZIZ, '88y-iziz-matlib.js'))
     return out

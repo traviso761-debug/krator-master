@@ -84,6 +84,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UPSTREAM = {'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
+            'iziz-vernacular': os.path.join(ROOT, 'kits', 'iziz-vernacular'),
             'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -381,7 +382,8 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
-IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+IZIZ_VENDORED = ['91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+VERN_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js']   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 # vendored with a deliberate local edit: drift expected, recorded in KNOWN_ISSUES.md (91-probe.js counts each placed
 # catalog furniture piece, HLF.placed, as a sample of its volume; Iziz places no catalog furniture)
 ADAPTED = {'91-probe.js'}
@@ -390,7 +392,7 @@ ADAPTED = {'91-probe.js'}
 def vendor_manifest():
     """VENDOR.json: sha1 of every vendored fragment, so drift is visible."""
     out = {}
-    for f in VENDORED + IZIZ_VENDORED:
+    for f in VENDORED + IZIZ_VENDORED + VERN_VENDORED:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -400,7 +402,7 @@ def vendor_manifest():
 
 def vendor_check():
     """Compare vendored fragments with ../ancients/src and ../iziz/src."""
-    for up_name, files in (('ancients', VENDORED), ('iziz', IZIZ_VENDORED)):
+    for up_name, files in (('ancients', VENDORED), ('iziz', IZIZ_VENDORED), ('iziz-vernacular', VERN_VENDORED)):
         up = os.path.join(UPSTREAM[up_name], 'src')
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
