@@ -275,6 +275,19 @@ never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lamb
 **Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
 pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
 
+**High Rift, a new kit (2026-11-03, cloud; branch `claude/highrift-cloud`, not merged; `biomes/highrift/PLAN.md`, `KNOWN_ISSUES.md`):** scale model 5.1's
+`rmvhighrift100` on Gemini's own design (`smodel/se_provinces.py`: its five zones, heights and lakes kept), five stations on one stage, each a 5.2 km ideal type
+placed on the carved ground: **the Caldron and the Opaline Cataract** (`dist/highrift.html`, 5.1 px 1358,1661: the 2,580 m hot pool as `WATER.open` without surf or
+breakers, the cataract as four `WATER.terraces` tiers and a tall fall, Brant-Fell Gill's flour as a moving plume (ext 61), the outlet's 13 rimstone pools, a geyser),
+**the Mirror** (`-mirror`, 1430,1630: acid Lake Verdigris, a boiling patch over vent 89, the hematite fault mirror, acid springs; nhighlands' larch read in place by
+`BIO.kin` as the rift larch), **the Dorsal Wedge** (`-wedge`, 4,200 m tundra crest), **the Coulee** (`-coulee`: lava lobes, the Gill's outburst channel, vent 90's
+geyser) and **the Singing Gjár** (`-gjar`: the 310 m master gjá with gin-clear water, ten singing fissures lined with bladed quartz; the singing as `HRIFT.SOUND` records
+for a `core/audio` that does not exist yet). Every page takes the universal set (`31j` flareJoin, `WATER.mirrorSwitch` off at load, KSHADOW attached **off** at load:
+`?shadow=1`, KSTRATA `rift` on every face, KGROUND, KFAR, KHORIZON, KTHERM on every vent) and reads **the Hearths and Oidong's high country in place**. Not taken:
+KHOOK.warp (an empty slot), KKARST/KCAVERN (no caves, no carbonate). **Checks (no GPU):** `check_core_use` 0 findings; every page loads clean in headless Chromium on
+software GL (SwiftShader; probes listed in the kit's `KNOWN_ISSUES.md`); **owed to the coordinator:** `verify.py --assert --all-views` on the GPU, the hash baseline,
+KSCOUR on the Gill's bed, the fault mirror's texture (`PROMPTS-NEEDED.md` section 35), Lake Cinnabar's page. Look decisions for the owner: the plan's section 11.
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
 and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,

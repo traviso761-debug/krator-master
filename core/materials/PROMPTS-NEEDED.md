@@ -352,6 +352,16 @@ as canes rather than tubes at close range (the joints' green rings, the water in
 Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: a 3 x 3 grid of nine separate clumps of tall jointed glassy canes like a horsetail, each clump of three to seven straight unbranched canes standing upright from the bottom edge of its cell and filling its height, the canes clear and colourless like water-filled glass (#d8efe9), faintly refracting, each joint a narrow ring of green (#3a8a5a) with a thin dark collar, a few canes with water beads at the joints; no leaves, no flowers. Keep colours natural but slightly muted and even. No text, no border, no watermark.
 ```
 
+## 35. High Rift (`biomes/highrift`, 2026-11-03)
+
+The Mirror Graben's fault mirror (`biomes/highrift/PLAN.md` sections 2 and 11): until it comes, station `mirror`'s fault face draws
+`rock.basalt.oxidised` at a low roughness. Full colour, 2 m a tile, roughness low (the sheen is the point).
+
+`rock.hematite.mirror`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished fault plane (slickenside) coated in specular hematite, steel-grey to blue-black (#3a3c42, #23252b) with a faint metallic grain, long straight parallel grooves and fine striations all running top to bottom, a few low steps across the grooves, patches where the coating has worn through to red-brown earthy hematite (#7a3a26) and rust stains (#9a5a32) bleeding down the grooves, hairline cracks across them. Full colour: not tinted.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
