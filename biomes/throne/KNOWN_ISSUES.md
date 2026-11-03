@@ -5,7 +5,7 @@
   `stations/savanna/`), the ash desert deep under the plume (7, `stations/ashdesert/`), vent country (8,
   `stations/vents/`) the glacier with its ice caves (9, `stations/glacier/`) and the rim over the caldera (10, `stations/caldera/`)
   are built, and the lava tube (11, `stations/tube/`, map 5.1's `tube_hot_05`): eleven pages, every one rebuilt in the final rebuild (2026-11-02,
-  `PLAN.md`). The shoulders' cold belt went into the glacier's. Not yet a station: the geyser field, the lee's penitentes
+  `PLAN.md`), and three more (2026-11-02, `PLAN.md`, "New stations"): the lava delta (12, `stations/delta/`), the blast zone (13, `stations/blast/`) and the lee's penitentes (14, `stations/penitentes/`). The shoulders' cold belt went into the glacier's. Not yet a station: the geyser field, the lee's penitentes
   below the summit. The shoulders' cold belt (gill-coral trees among conifers in the snow) is not yet a
   station (it could pair with the glacier's).
 - [ ] **One pack for every station.** `materials.json` and `tex/` hold every station's textures, so each page carries the

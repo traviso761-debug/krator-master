@@ -6,7 +6,7 @@ The Throne: the central volcano. Station 1, the plume's edge on the south-east s
 
 Docs: `BIOME-API.md`, `HANDOFF-FLORA-REPORT.md`, `HANDOFF-FLORA.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/throne-ash.html`, `dist/throne-caldera.html`, `dist/throne-cloud.html`, `dist/throne-frontier.html`, `dist/throne-glacier.html`, `dist/throne-isle.html`, `dist/throne-kipuka.html`, `dist/throne-savanna.html`, `dist/throne-tube.html`, `dist/throne-vents.html`, `dist/throne.html`
+Built output (never open it; edit `src/` and rebuild): `dist/throne-ash.html`, `dist/throne-blast.html`, `dist/throne-caldera.html`, `dist/throne-cloud.html`, `dist/throne-delta.html`, `dist/throne-frontier.html`, `dist/throne-glacier.html`, `dist/throne-isle.html`, `dist/throne-kipuka.html`, `dist/throne-penitentes.html`, `dist/throne-savanna.html`, `dist/throne-tube.html`, `dist/throne-vents.html`, `dist/throne.html`
 
 Build: `cd biomes/throne && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.

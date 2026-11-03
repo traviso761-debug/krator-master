@@ -47,7 +47,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  const W={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x',obsidian:'vL2.y',cinder:'vL2.z',rock037:'vL2.w'};
  // TRIPLANAR (Godot: StandardMaterial3D's uv1_triplanar): the cliff from the three axes, blended by the normal (projected
  // from above it smeared down the 450 m wall)
- let decl='uniform sampler2D uDetail,uMacro;uniform float uNight;uniform vec3 uSunDir;varying vec3 vGWP,vGN;varying vec4 vL0,vL1,vL2;'+
+ let decl=KHOOK.EYE+'uniform sampler2D uDetail,uMacro;uniform float uNight;uniform vec3 uSunDir;varying vec3 vGWP,vGN;varying vec4 vL0,vL1,vL2;'+
   'vec3 _tri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}',body;
  if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='vec3 _E_veins=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
@@ -56,10 +56,11 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  else body='vec3 _E_veins=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.6);}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   // the veins round the lake glow (dull by day, bright at night): the summit glow
+  // (the eye is kEye(), core/shader's, from the view matrix: r128 uploads no cameraPosition to a Lambert ground; the caldera's own copy still reads 0)
   // and GLINTS on the snow: a random facet normal per 14 cm cell, a tight highlight of the sun on it (near the camera only)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n {vec2 gc=floor(vGWP.xz*7.0);vec3 rn=fract(sin(vec3(dot(gc,vec2(12.9,78.2)),dot(gc,vec2(39.3,11.1)),dot(gc,vec2(73.1,52.7))))*43758.5)-0.5;'+
-   'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(cameraPosition-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
-   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(cameraPosition-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
+   'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(kEye()-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
+   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(kEye()-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;

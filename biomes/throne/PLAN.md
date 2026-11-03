@@ -78,8 +78,13 @@ library: `wood.silver`, `bark.char`, `card.charred`, `ground.ash`, `ground.ash.r
 ### Station 14: the lee's penitentes (`stations/penitentes`, `throne-penitentes.html`)
 
 **Site:** the east flank (the lee of the north-west westerlies), ~18-21 px out, 5.0-5.7 km up: EF over ET, 141 mm a year (map 5.1). The snow lies
-dry under a hard sun at ~0.5 atm, so it sublimates into penitentes. **What it shows:** fields of penitentes, blades 1-4 m tall leaning toward the
+dry under a hard sun at ~0.8 atm, so it sublimates into penitentes. **What it shows:** fields of penitentes, blades 1-4 m tall leaning toward the
 noon sun (north at 40 S) in rows east-west, on the EF slope; rock ribs and moraine between them; at the map's foot the ET tundra, lichen and
 cushion plants. **The cold belt:** its gill-coral trees among conifers grow 1.5 km lower (Dfc, ~3.6 km): they are on the glacier station's page
 (`stations/glacier`, built 2026-10), not here. **Core:** the snow (fx snowcover), the caldera's penitente item, height fog, KTHERM (no vents: soil
 alone). Textures: `ground.snow011`, `ground.snow015`, `ice.glacier`, `ice.clear`.
+
+**Built 2026-11-02** (each forked from the caldera's fragments by way of the penitentes page; every check, its negatives and the universal set pass in the browser on the GPU):
+- **12, the delta:** the pali 280 m, the lava as one channel ribbon on core/atmos's lava (the tube's channel mode) down the flank, over the lip and across the bench to the entry; the laze as steam points (white, leaning south-east); three littoral cones; 1,374 static pumice rafts; the old flank planted by the kit's shoulder passes (2,422 trees). Owed: the laze as a core/hazard record (R11; the page registers it as a volume only), the lava fall's own spray, KLAVA's frozen flows on the bench (the bench is the host's own surface), ground.sand.black on the coves (the paint stands in).
+- **13, the blast:** BLAST.at, the field (a fan NNE from the scar, 3.9 km on its axis); 39k logs laid along it (BLAST.logs, the check holds each to the field), 7.7k stumps, 17k seared snags standing, 3.7k pumice blocks; the living forest past the seared edge is the kit's cold-belt pass (THRONE.veto keeps it out of the blast). Owed: wood.silver and card.charred (the logs are the charred and charcoal barks), pioneers beyond lichen (fireweed-like cousins), the hazard keys.
+- **14, the penitentes:** the east flank in benches (treads of snow, 62 m rock steps); 54k blades near the cameras (on the whole map they were 27 M triangles), boulders on the steps; the tundra at the map's foot. The cold belt stays on the glacier page.
