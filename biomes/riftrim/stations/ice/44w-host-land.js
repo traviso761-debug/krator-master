@@ -41,7 +41,8 @@ function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 const LAND={name:'The cold lake (riftrim station 3)',title:'Krator biome — the rift rim: the cold lake',
  hint:'Station 3 of the rift rim, the black rim (the S rim): the 4,477 m lake frozen most of the year, lantern lobelias and cushion anemones on the alpine, a glacier and its moraines above it, the trough falling away to the north (scale model 5.1, px 706,1645)',
  region:{name:'The cold lake (station 3)',x:0,z:0,r:TERR.R},rim:'s',wind:[.9,.4],arcade:false,fruitMin:0,
- species:['lanternlobelia'],sky:{px:434,py:1315},atm:.92,cloud:.2,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330) */
+ species:['lanternlobelia'],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no bucket here to export: the one own tree (the lantern lobelia) is drawn as variants, and the borrowed trees' buckets are their vendors' registries, which the export does not read for this kit (checked 2026-11-03) */
+sky:{px:434,py:1315},atm:.92,cloud:.2,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330) */
  fog:{falloff:1/1400,sun:.4,sky:.25},climate:{cold:true,dry:true},wet:false,snowLine:[4700,4950],snowBase:0,frozen:true,groundN:540,
  groundLayers:['tundra','lichen','iris','snowalgae','clad'],
  talusPalette:[0x3e3a3c,0x4e4846,0x5e5450,0x2e2c30,0x6a5a52],talusMatrix:0x46403e,
