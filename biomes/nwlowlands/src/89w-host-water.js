@@ -12,7 +12,8 @@
 const SEA_DRAW=WATER.draw(SEA_WATER,{renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,surf:false,
  shallow:lin(SEA_SHALLOW.clone().lerp(SEA_MID,.3)),deep:lin(SEA_DEEP.clone().multiplyScalar(.75))});
 SEA_DRAW.mesh.userData.inspectLabel='The lake';
-const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.08,.3],shallow:lin(RIVER_COL),deep:lin(BAYOU_COL),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:24,across:6,margin:1.2,renderOrder:2});
+/* the river's ribbon fades out where the gorge's own ribbon carries it (keep, core/water 2026-10-27): the two lay 5 cm apart along the gorge and z-fought (the audit's overlap); and it fades in over its first 270 m at the map's upstream edge, where it began square-cut over a shallow trench (flow-graze) */
+const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.08,.3],keep:(x,z)=>(1-smooth(.3,.45,gorgeK(sOf(x,z))))*smooth(3700,3480,sOf(x,z)),refine:true,shallow:lin(RIVER_COL),deep:lin(BAYOU_COL),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:24,across:6,margin:1.2,renderOrder:2});
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
 // THE GORGE'S WATER (core/water ext/54's looks, the row's clear-water look; refs/01): the marl's reach of the river runs turquoise over its pale clay floor, a ribbon of its own over the page's
 const GORGE_DRAW=GORGE_FLOW?WATER.drawFlow(GORGE_FLOW,WATER.lookDraw('proglacial','flow',{step:24,across:6,margin:1.2,renderOrder:3,roughness:.14,envMapIntensity:.3,shallow:lin(0x2da2ad),deep:lin(0x0c5363),color:0xffffff})):null;

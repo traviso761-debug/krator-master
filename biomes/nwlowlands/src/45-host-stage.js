@@ -78,7 +78,7 @@ function hillH(x,z){const s=sw(x,z),k=smooth(300,1300,s);if(MG)return 0;
  return k*(mix(46,110,smooth(1500,3000,s))*(fbm(x*.0016+2,z*.0016-4,63,3)-.5)+18*(fbm(x*.006-1,z*.006+7,64,2)-.5))+(1-k)*(1.6*(fbm(x*.004,z*.004,65,2)-.5));}
 // THE MARL GORGE (PLAN-FLORA.md, refs/01; BACKPORT.md's row; ?marl=0): where the river leaves the Inner Wall's foot it has cut a deep slot into soft blue clay, walls
 // near sheer, stepped by the marl's harder beds (KSTRATA, 86-host-fields.js), a narrow floor. Depth and width by s along the river, eased in and out; a heightfield, so no
-// true undercut: the walls' lean is the beds' ledges. Drawn at 4 m by its own ground strip (GORGE_STRIP, 86-host-fields.js)
+// true undercut: the walls' lean is the beds' ledges. Drawn at 4 m by its own ground strip (THE STRIPS, below)
 const GORGE={s0:1350,s1:2750,on:NWQ_ON('marl')&&!MG};
 function gorgeK(s){return GORGE.on?smooth(GORGE.s0,GORGE.s0+320,s)*smooth(GORGE.s1,GORGE.s1-420,s):0;}
 function gorgeCut(x,z){const s=sOf(x,z),k=gorgeK(s);if(k<=0)return 0;const d=Math.abs(tOf(x,z)-RIVER_T(s)),W=riverW(x,z),fl=W*.75,wall=fl+16+10*(fbm(s*.006,3.1,331,2)-.5);
@@ -90,18 +90,29 @@ if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['nwl-marl'])KSTRATA.add({name:
  clay:{p:.26,th:[.5,1.6],col:[0x62798a,0x6d8490],hard:.1,xbed:0,varnish:0},
  band:{p:.18,th:[.25,.7],col:[0xb8bdb2,0xaab2aa],hard:.8,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:0}});
 const NW_MARL=GORGE.on&&typeof KSTRATA!=='undefined'?BIO.strata({recipe:'nwl-marl',seed:8105,range:[-40,420],dip:[.3,-.2,.02],warp:[4,1.4],res:.25,private:true}):null;
-function terrainH(x,z){
- let h=baseH(x,z)+hillH(x,z);const h0=h;
- const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
+// the ground before the river's channel: the land, the bayou, the oxbows and the valley the river cut
+function terrainPre(x,z,rd,W){
+ let h=baseH(x,z)+hillH(x,z);
  // bayou pools and sloughs: standing water a few tens of metres across
  const sk=swampK(x,z);if(sk>0){const pool=fbm(x*.0068+11,z*.0068-7,313,2);h-=sk*3.6*smooth(.43,.29,pool);}
  // oxbow ponds up the subtropical valley, near the river only
  const ox=smooth(-1100,-700,sw(x,z))*smooth(600,300,sw(x,z))*smooth(420,120,rd);if(ox>0){const p=fbm(x*.011-3,z*.011+5,317,2);h-=ox*4.2*smooth(.70,.665,p);}
- // the valley the river cut (wider in the hills), and the channel itself
+ // the valley the river cut (wider in the hills)
  const vk=smooth(W*9+120,W*1.2,rd)*smooth(200,900,sw(x,z));h-=vk*Math.max(0,h-baseH(x,z)*.8)*.55;
+ return h;}
+// THE CHANNEL IN THE HILLS (2026-11-03, the owner's flickering ponds): the river's ribbon is level across at its centreline's ground + .6 m (RIVER_PTS), so its trench is cut
+// from the CENTRE's ground, not the local ground: a bed 2.8 m under it out to .75 of the half width, then a steep bank (3.6 m over ~4 m) that rises through the water's level inside the ribbon's
+// edge and on above it. Before, the trench was 2.8 m under each point's own ground, so on a cross-slope the bank lay within centimetres of the water over metres, and
+// ribbon and bank z-fought (WATER.audit's flow-graze). ?channel=0 the old trench
+const CHANNEL_ON=NWQ_ON('channel');
+function channelH(s,rd,W){const c=xzOf(s,RIVER_T(s)),hc=terrainPre(c[0],c[1],0,riverW(c[0],c[1]));return hc-2.8+3.6*smooth(W*.75,W+2,rd);}
+function terrainH(x,z){
+ const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
+ let h=terrainPre(x,z,rd,W);const h0=baseH(x,z)+hillH(x,z);
  const bank=smooth(W+10,W*.6,rd);
- // in the lowland the bed drops under the water plane; up in the hills it is a 2.8 m trench the ribbon runs in
- if(bank>0){const lowland=smooth(250,-150,sw(x,z));h=mix(h,Math.min(h-.2,mix(h-2.8,-2.2,lowland)),bank);}
+ // in the lowland the bed drops under the water plane; up in the hills the trench the ribbon runs in
+ if(bank>0){const lowland=smooth(250,-150,sw(x,z));h=mix(h,Math.min(h-.2,mix(h-2.8,-2.2,lowland)),bank);
+  if(CHANNEL_ON&&lowland<1&&rd<W*1.2+12&&Math.abs(tOf(x,z)-RIVER_T(s))<=rd+.01){const t=channelH(s,rd,W);h=mix(mix(t,h,smooth(W*1.2,W*1.2+12,rd)),h,lowland);}}   /* the main channel only (not the delta's); a cross-slope's low side gets a bank too */
  {const gc=gorgeCut(x,z);if(gc>0){h-=gc;if(NW_MARL&&gc>1.5)h=NW_MARL.ledge(x,z,h,1.1);}}
  // the sea: a sandy shelf then the deep
  const si=seaIn(x,z);if(si<30){const bed=-.4-1.6*smooth(0,-160,si)-9*smooth(-160,-700,si)+.8*(fbm(x*.004,z*.004,71,2)-.5)*smooth(-20,-150,si);
@@ -192,23 +203,38 @@ if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwlowlands',slot,{w,amt,gain
  if(!MG)KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-ground'});
  if(MG)LY.push(L('groundBurn','vGL2.z',.55,.75)),KGROUND.hook(MAT_GROUND,{layers:LY.filter(Boolean),key:'nwlowlands-margins'});
  if(MAT_MARL)KGROUND.hook(MAT_MARL,{layers:[LY[4],LY[5],L('rockMarl','vGL2.z',.9,1.0)].filter(Boolean),key:'nwlowlands-marl'});}
+const STRIP={KOF:{g:8,r:8},cov:null};   /* the strips' cells at 2 m (drawnH reads them) */
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  g.setAttribute('aGL',new THREE.BufferAttribute(new Float32Array(p.count*4),4));g.setAttribute('aGL2',new THREE.BufferAttribute(new Float32Array(p.count*3),3));
- /* THE GORGE'S STRIP (core/water/PRACTICE.md, "Make the ground mesh finer than the narrowest channel"; necanyons' creek strip): the walls close over less than two 16 m cells, so the cells over the cut
-    are left out of the coarse floor and drawn again at 4 m, each edge shared with a coarse cell on that cell's own line (no crack). About 40k triangles */
- const C=S/N,cov=new Set();if(GORGE.on)for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-S/2+(i+.5)*C,z=-S/2+(j+.5)*C;if(gorgeK(sOf(x,z))<=0)continue;let hit=false;for(const dx of [-1,0,1])for(const dz of [-1,0,1])if(gorgeCut(x+dx*C*.75,z+dz*C*.75)>.02)hit=true;if(hit)cov.add(j*N+i);}
+ /* THE STRIPS (core/water/PRACTICE.md, "Make the ground mesh finer than the narrowest channel"; necanyons' creek strip): the cells over the marl gorge and, since
+    2026-11-03, over the river's channel in the hills are left out of the coarse floor and drawn again at 4 m, each edge shared with a coarse cell on that cell's own line
+    (no crack). The hill river's channel is ~11 m wide, under one 16 m cell: the coarse triangles bridged its banks across the ribbon, and bank and water z-fought in
+    patches along it (the owner's flickering ponds, 2026-11-03; WATER.audit on the drawn ground, flow-graze). ?riverstrip=0 the coarse floor there */
+ const C=S/N,cov=new Map(),RSTRIP=CHANNEL_ON&&NWQ_ON('riverstrip');
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-S/2+(i+.5)*C,z=-S/2+(j+.5)*C;let kind=null;
+  if(GORGE.on&&gorgeK(sOf(x,z))>0){for(const dx of [-1,0,1])for(const dz of [-1,0,1])if(gorgeCut(x+dx*C*.75,z+dz*C*.75)>.02)kind='g';}
+  if(!kind&&RSTRIP&&sw(x,z)>-260){const s=sOf(x,z),W=riverW(x,z);if(Math.abs(tOf(x,z)-RIVER_T(s))<W*1.2+12+C*.75)kind='r';}
+  if(kind)cov.set(j*N+i,kind);}
  if(cov.size){const I=g.index.array,keep=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(cov.has(j*N+i))continue;const o=6*(j*N+i);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);GROUND_MESHES.push(m);
- if(cov.size){const K=4,pos=[],idx=[],has=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&cov.has(j*N+i);
-  cov.forEach(key=>{const j0=Math.floor(key/N),i0=key%N,x0=-S/2+i0*C,z0=-S/2+j0*C,o=pos.length/3;
-   for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){let x=x0+i/K*C,z=z0+j/K*C,y;
-    const edge=(i===0&&!has(i0-1,j0))||(i===K&&!has(i0+1,j0))?1:(j===0&&!has(i0,j0-1))||(j===K&&!has(i0,j0+1))?2:0;
-    if(edge===1){const a=terrainH(x,z0),b=terrainH(x,z0+C);y=a+(b-a)*j/K;}else if(edge===2){const a=terrainH(x0,z),b=terrainH(x0+C,z);y=a+(b-a)*i/K;}else y=terrainH(x,z);pos.push(x,y,z);}
+ STRIP.cov=cov;STRIP.C=C;STRIP.N=N;STRIP.S=S;
+ /* each kind's subdivision (STRIP.KOF): 2 m for both, the river's channel (its banks rise ~3.6 m over ~4 m; at 4 m the drawn bank still lay along the level) and the gorge (at 4 m its shallow ends, s ~1365 and ~2690, grazed the river). A cell's side
+    against a coarser neighbour (or the 16 m floor, K 1) takes that neighbour's line, so no seam cracks */
+ const nK=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&cov.has(j*N+i)?STRIP.KOF[cov.get(j*N+i)]:1;
+ const onLine=(n,xa,za,xb,zb,t)=>{const tt=t*n,k=Math.min(n-1,Math.floor(tt)),f=tt-k,P=q=>terrainH(xa+(xb-xa)*q/n,za+(zb-za)*q/n);return f>0?P(k)*(1-f)+P(k+1)*f:P(k);};
+ const strip=(kind,mat,label)=>{const K=STRIP.KOF[kind],pos=[],idx=[];
+  cov.forEach((kd,key)=>{if(kd!==kind)return;const j0=Math.floor(key/N),i0=key%N,x0=-S/2+i0*C,z0=-S/2+j0*C,o=pos.length/3;
+   for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){const x=x0+i/K*C,z=z0+j/K*C;let y=null,nb=K;
+    if(i===0||i===K){const n=nK(i0+(i?1:-1),j0);if(n<nb){nb=n;y=onLine(n,x,z0,x,z0+C,j/K);}}
+    if(j===0||j===K){const n=nK(i0,j0+(j?1:-1));if(n<nb){nb=n;y=onLine(n,x0,z,x0+C,z,i/K);}}
+    pos.push(x,y==null?terrainH(x,z):y,z);}
    for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
+  if(!idx.length)return;
   const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(pos.map((v,k)=>k%3===0?v/S+.5:k%3===2?.5-v/S:0).filter((v,k)=>k%3!==1),2));g2.setIndex(idx);
   const n=pos.length/3;g2.setAttribute('aGL',new THREE.BufferAttribute(new Float32Array(n*4),4));g2.setAttribute('aGL2',new THREE.BufferAttribute(new Float32Array(n*3),3));g2.computeVertexNormals();
-  const m2=new THREE.Mesh(g2,MAT_MARL||MAT_GROUND);m2.userData.probeSkip=true;m2.userData.inspectLabel='The marl gorge';scene.add(m2);GROUND_MESHES.push(m2);}})();
+  const m2=new THREE.Mesh(g2,mat);m2.userData.probeSkip=true;m2.userData.inspectLabel=label;scene.add(m2);GROUND_MESHES.push(m2);};
+ strip('g',MAT_MARL||MAT_GROUND,'The marl gorge');strip('r',MAT_GROUND,'The river\'s banks');})();
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the water is core/water's. The lake, the lowland river and the ponds were one plane at y=0 in the page's own
@@ -226,6 +252,11 @@ const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.
 // crown, leaf litter, pale sand. (The ground canvas is ~4 m a pixel; a road needs its own.)
 // the height of the RENDERED ground (400 cells of ~16 m, split on the same diagonal as PlaneGeometry):
 // between its vertices it rides above or below terrainH, and a road laid on terrainH sinks into it
+// the DRAWN ground's height: a strip's 4 m cells inside the strips (their inner vertices; the edge rows are the coarse line, read here as the field), else the coarse
+// 16 m cells (WATER.audit reads this: the water is checked against what is drawn, not the field)
+function drawnH(x,z){const T=STRIP;if(T.cov){const i=Math.floor((x+T.S/2)/T.C),j=Math.floor((z+T.S/2)/T.C);if(T.cov.has(j*T.N+i)){const c=T.C/T.KOF[T.cov.get(j*T.N+i)],x0=-T.S/2+i*T.C,z0=-T.S/2+j*T.C,u=(x-x0)/c,v=(z-z0)/c,a=Math.floor(u),b=Math.floor(v),fu=u-a,fv=v-b,X=k=>x0+k*c,Z=k=>z0+k*c;
+ const h00=terrainH(X(a),Z(b)),h10=terrainH(X(a+1),Z(b)),h01=terrainH(X(a),Z(b+1)),h11=terrainH(X(a+1),Z(b+1));return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);}}
+ return meshH(x,z);}
 function meshH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,X=k=>-S/2+k*c;
  const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));
  return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);}

@@ -719,6 +719,7 @@ nothing it looks at.
 | `flow-under` | a flow's water is under the ground at its centreline (`tol.under`, 5 cm), sampled every `step` (4 m) | m under |
 | `flow-slab` | the ribbon's outer edge (half width + its drawn margin) stands over `tol.slab` (.3 m) above the ground, no other water there | m over |
 | `flow-pocket` | past that edge the ground stays under the level for `tol.pocket` (1 m) or more, out to `scan` (the width, at least 20 m) | m past the edge |
+| `flow-graze` | (opt-in: `graze: true` or `{tol, w}`) from 2 m inside the ribbon's edge out past its margin, the ground stays within `tol` (.12 m) of the level for `w` (2 m) or more, no other water there: ribbon and bank near coplanar, a z-fight at range. **Pass the ground as drawn** (a page's `drawnH`, `KSEAT`'s), not the field: a 16 m mesh bridging an 11 m channel is the fault the field can't see (nwlowlands' hill river, 2026-11-03) | m of it |
 | `still-rim` | a still's level is over its rim's ground (`tol.rim`, 5 cm), where no other water lies just outside | m over |
 | `still-floor` | its level is over none of its floor (16 x 16 samples) | m short |
 | `open-edge` | an open surface's mask edge crosses ground under its level (`tol.edge`), and no other surface's water lies there; its bounds' own edge only inside `o.extent` ([x0, z0, x1, z1], the ground the page has: a box ending at the map's edge is no cut) | m under |
