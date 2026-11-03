@@ -73,6 +73,20 @@ its probes.
   `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
   as `KHAZ.tabooOk` does on the page.
 
+## Moving and pooling (`21-core-hazard-flow.js`, 2026-11-03)
+
+- `move` (`speed`, `sink`, `slip`, `pull`, `to`, `still`): the walker's `HazardStatus` calls `KHazard.drift(pos, t)` each
+  physics tick, scales its pace by `speed`, sinks by `sink`, and adds `pull` (m/s) to its `velocity` before
+  `move_and_slide`. A `CharacterBody3D` does not take an `Area3D`'s gravity by itself, so the pull is the status's, not the
+  physics server's. **Loose rigid bodies** (a tide bead, a dropped pack) take it from the Area: `gravity_space_override =
+  SPACE_OVERRIDE_COMBINE`, `gravity_point = true`, `gravity_point_center = to` (local), `gravity = pull / 0.5` (a body
+  reaching about the pull's speed in half a second), `gravity_point_unit_distance = 0`, switched with `monitoring` as the
+  state turns on and off. The Area's own falloff is not KHAZ's: the status's drift is the one to check against the page
+  (`KHAZ.moveAt` sampled at fixed points, as for `state`).
+- `shape.pool`: `KHazard.dose` multiplies by `1 - smoothstep(0, pool, y - (at.y + y0))` at the height the status passes, as the
+  page does (a host passes the walker's breathing height, about 1.6 m over its feet). The
+  `Area3D` is the whole band; the ramp is in the dose.
+
 ## Navigation: NavigationRegion3D
 
 Each zone of `krator-walk`'s `zones` (or each `registry.hazards` record's `hazard.nav`):
