@@ -103,11 +103,11 @@ function limb(pts,col,pR){const P=FJ(pts,pR);for(let i=0;i+1<P.length;i++)BIO.be
 const pt=(a,r)=>({x:a[0],y:a[1],z:a[2],r});
 // A CROWN HELD BY ITS WOOD (core/biome README, "What held means"; the attach audit, 28.4% of this page's cards floating, leaflet 35,463 of 52,120): a hero's
 // clump gets a twig from the nearest of its wood's points (a rod: no random numbers, so nothing placed moves); a mid tree's clump is held toward that point
-// (BIO.holdTo, size*.55: a centred tripod's reach), no new triangles. hold(c, p, size, lv, col, r) -> the clump's centre to draw at
+// (BIO.holdTo, size*.2+.3: a stem card's reach), no new triangles. hold(c, p, size, lv, col, r) -> the clump's centre to draw at
 function nearestOf(P,p){let b=P[0],bd=1e18;for(const q of P){const d=(q[0]-p[0])**2+(q[1]-p[1])**2+(q[2]-p[2])**2;if(d<bd){bd=d;b=q;}}return b;}
 function twigTo(W,p,size,lv,col,r){if(!W||!W.length||ABSAV.HOLD===false)return p;const c=nearestOf(W,p);
- if(lv===2){BIO.beam('rod',c,[p[0],p[1]-size*.12,p[2]],r,r*.45,col);return p;}
- return typeof BIO.holdTo==='function'?BIO.holdTo(c,p,size*.55):p;}
+ if(lv===2){BIO.beam('twig',c,[p[0],p[1]-size*.12,p[2]],r,r*.45,col);return p;}
+ return typeof BIO.holdTo==='function'?BIO.holdTo(c,p,size*.2+.3):p;}   /* a stem card's reach: the leaflet card has its stems (check_cells, 2026-11-03) */
 // a lathe bole: rings from the foot to h, tapering from rb, leaning by (lx,lz) per metre; a char band to charH at the foot
 function bole(fam,T,h,rb,lx,lz,seg,charH,col){const rings=[],vs=5;
  for(let yy=0;yy<=h+1e-6;yy+=Math.max(1,h/6)){const u=yy/h,c=C(col).lerp(CHAR,smooth(charH+.4,charH*.4,yy)*.92);

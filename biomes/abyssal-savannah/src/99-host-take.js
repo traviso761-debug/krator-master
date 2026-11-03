@@ -61,7 +61,7 @@ function burnAges(){const o={};for(let z=-TERR.Z+100;z<TERR.Z;z+=200)for(let x=-
 const EDGE_OWED={plant:0,wet:0};
 function edgeCheck(){const P=[];for(const T of ABSAV.TREES){P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:T.ea?'ea':ABSAV.SPECIES[T.sp].key});if(P.length>8000)break;}
  const G=STREAM.gully,bad=BIO.envCheck(ENV,[[0,0],[-1500,G.zc(-1500)],[PAN.c[0],PAN.c[1]],[-2780,G.zc(-2780)]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
- return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'+(F.length?'; first: '+JSON.stringify(F[0]).slice(0,240):'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=ABSAV.TREES,F=(window._biome||{}).floor||{};
  add('species tagged',HCHK.tags(ABSAV.SPECIES.concat(ABSAV.PLANTS)));
  add('savannah trees in their zones',HCHK.zoned(T));
