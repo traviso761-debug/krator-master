@@ -51,7 +51,7 @@ function swlowKinVeto(){const prev=SWLOW.veto;if(ST&&ST.kinRules)KIN_RULES.push(
 function growKin(){const out={trees:{},floor:{},bridges:0},KIN={};
  const kin=ref=>{if(!(ref in KIN))KIN[ref]=BIO.kin(ref,Object.assign({},KIN_DEF[ref]||{key:ref.split('.')[1]}));return KIN[ref];};
  const LT=SWLOW.LOD.tree,prevCur=BIO.cur;BIO.cur='lowlands/trees';
- const place=(x,z,salt,build)=>{const y=terrainH(x,z);reseed(KRAND.hash(KIN_W,Math.round(x),Math.round(z),salt));const lv=BIO.lodD(x,z)<700?2:1;BIO.owner=[x,z];BIO.range=LT;BIO.minRange=0;
+ const place=(x,z,salt,build)=>{const y=drawnH(x,z);reseed(KRAND.hash(KIN_W,Math.round(x),Math.round(z),salt));const lv=BIO.lodD(x,z)<700?2:1;BIO.owner=[x,z];BIO.range=LT;BIO.minRange=0;
   const T=build(y,lv);BIO.owner=null;BIO.range=null;BIO.minRange=0;return T;};
  const growOwn=(key,x,z,salt)=>{const sp=SWLOW.SPECIES.findIndex(S=>S.key===key);return place(x,z,salt,(y,lv)=>{const T=SWLOW.make(sp,x,y,z);SWLOW.TREES.push(T);SWLOW.grow(T,lv);
     BIO.range=1e9;BIO.minRange=LT;SWLOW.grow(Object.assign({},T),0);out.trees[key]=(out.trees[key]||0)+1;return T;});};
