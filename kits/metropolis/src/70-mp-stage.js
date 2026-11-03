@@ -72,10 +72,12 @@ MP.show=function(name){if(!MPS.ready){MPS.want=name;return;}const c=MP_CFG[name]
 MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode];if(!c||!c.tiers)return;const now=performance.now();if(now<(MPS.nextTier||0))return;MPS.nextTier=now+150;
  const e=camera.position,T=MPS.towers,near=[],mid=[],MAX=MPS.heroMax==null?24:MPS.heroMax;
  /* a tower seen steeply from above (over 35 degrees) is a shell out to 3.2 km: an impostor is a card, and a tall thin tower's card seen from over it is a long leaning smear that overlaps its neighbours */
- for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-MPS.rec[t.key].frame.H*.5)>.7*Math.max(hz,1);t.d=d;t.shell=false;if(d<MP_NEAR)near.push(t);if(d>=MP_NEAR*.85&&(d<MP_FAR||(steep&&d<MP_IMPFAR))){mid.push(t);t.shell=true;}}
+ /* a skeleton has no shell (MP.NOSHELL): its bare frame stands in front of its floors, a surface behind a surface, which a heightfield (polar or box)
+    bakes as the core standing through the slabs (the owner, 2026-11-03); it is a hero to the hero's range, then its impostor */
+ for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-MPS.rec[t.key].frame.H*.5)>.7*Math.max(hz,1),ns=MP.NOSHELL(t.key);t.d=d;t.shell=false;if(d<MP_NEAR)near.push(t);if(!ns&&d>=MP_NEAR*.85&&(d<MP_FAR||(steep&&d<MP_IMPFAR))){mid.push(t);t.shell=true;}}
  near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX),G=MPS.tierGroups;
  /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
- G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85){mid.push(t);t.shell=true;}});
+ G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
  mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));mpDebris(T.filter(t=>t.d<MP_RUBBLE).map(t=>[t.key,t.x,t.z,t.yaw]));mpDebris(T.filter(t=>t.d>=MP_RUBBLE&&t.d<MP_IMPFAR).map(t=>[t.key,t.x,t.z,t.yaw]),true);
  // an impostor stands for exactly the towers that are neither a hero nor a shell, tower by tower (a chunk's fade left half-dithered ghosts; a flat distance hid both from a high camera): for the rest its matrix is zero
  MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=MPS.towerAt[F[i*16+12]+','+F[i*16+14]],near=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
@@ -103,9 +105,10 @@ const MPS_DESIGNVIEWS={cfg:{},views:{}};(function(){const all=['spindle','ledger
  (MP.ANCIENT_PLANNED||[]).forEach(k=>{const F=MP.ANCIENTS[k],D=Math.max(F.footprint.w,F.footprint.d),gap=D*1.2+20,n='Ruins, '+F.name.replace(/^The /,''),H=F.height.tip,row=[];
   MP.RUINS.forEach((s,i)=>row.push([k+'.'+s,(i-3)*gap,0,0]));MPS_DESIGNVIEWS.cfg[n]={heroes:row};const w=gap*6;MPS_DESIGNVIEWS.views[n]=[w*.35,Math.max(H*.8,w*.28),w*.75,0,H*.2,0];});MPS_DESIGNVIEWS.views['Ancients, all']=[1300,1000,1300,0,40,0];})();
 /* a ruin's pair: the hero turned half round, so each one's rubble falls away from the other */
-const MPS_RUINVIEWS={cfg:{},views:{}};['crown','broken','stump','skeleton','fallen'].forEach(s=>{const a='Ruin, Spindle '+s,b='Ruin, Ledger '+s;
- MPS_RUINVIEWS.cfg[a]={heroes:[['spindle.'+s,-150,0,Math.PI]],shells:[['spindle.'+s,150,0,0]]};MPS_RUINVIEWS.views[a]=[0,70,470,0,55,0];
- MPS_RUINVIEWS.cfg[b]={heroes:[['ledger.'+s,-95,0,Math.PI]],shells:[['ledger.'+s,95,0,0]]};MPS_RUINVIEWS.views[b]=[0,45,250,0,14,0];});
+MP.NOSHELL=k=>/\.skeleton$/.test(k);
+const MPS_RUINVIEWS={cfg:{},views:{}};['crown','broken','stump','skeleton','fallen'].forEach(s=>{const a='Ruin, Spindle '+s,b='Ruin, Ledger '+s,ns=MP.NOSHELL('x.'+s);
+ MPS_RUINVIEWS.cfg[a]={heroes:[['spindle.'+s,-150,0,Math.PI]],shells:ns?[]:[['spindle.'+s,150,0,0]]};MPS_RUINVIEWS.views[a]=[0,70,470,0,55,0];
+ MPS_RUINVIEWS.cfg[b]={heroes:[['ledger.'+s,-95,0,Math.PI]],shells:ns?[]:[['ledger.'+s,95,0,0]]};MPS_RUINVIEWS.views[b]=[0,45,250,0,14,0];});
 const MP_CFG={
  'Pair, Spindle, street':Object.assign(PAIR(sp,85),{}),'Pair, Spindle, raised':PAIR(sp,85),'Pair, Spindle gutted':PAIR(sg,85),'Pair, Spindle gutted, crown':PAIR(sg,85),'Pair, Spindle at 150 m':PAIR(sp,85),
  'Pair, Spindle, the roof':PAIR(sp,85),'Pair, Spindle, under the lamp':PAIR(sp,85),'Pair, Ledger, the roof':PAIR(li,80),'Pair, Ledger':PAIR(li,80),'Pair, Ledger gutted':PAIR(lg,80),'Pair, Ledger end on':{heroes:[[li,0,-60]],shells:[[li,0,60]]},

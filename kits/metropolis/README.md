@@ -267,6 +267,7 @@ baths and stores inside); audited under `verify.py --assert` (hostChecks), the p
 | Wedges, twisted slabs, lobes, octagons | should be good | still star-shaped; the twist's facets need testing |
 | Disc and saucer towers | fair | the soffit shows from the street |
 | Arches, courts, the Yoke, the Terrace, the Arcades | poor in one map | a surface behind a surface: two parts or real geometry |
+| A skeleton ruin (a bare frame in front of its floors) | **none** | a surface behind a surface: a heightfield bakes the core standing through the slabs (the owner saw it, 2026-11-03); a skeleton is a hero to the hero's range, then its impostor (`MP.NOSHELL`, 70) |
 | The Long Curve | poor in polar | not star-shaped from inside: box segments, or the arc's centre as the axis |
 
 **Converting an older Ancient building** would take four things: a record with an envelope and a cage; a mesh with no ground plane or interior in the bake (the bake takes the outermost surface, so anything outside the tower spoils it); a choice of `polar` or `box`; and a mask for its glass, since the kit's materials do not say which are windows. A tower built from `kdef` kit pieces needs them gathered into a Group for the bake. A building with no room plan keeps a shell with fake rooms: enough at range, and the interiors are a separate job. Bake cost should be small; atlas space is 3 x 2048 px per four bakes here, about 67 MB of GPU memory with mips, with room to spare in it, made at load, so it does not count against the page cap.
