@@ -72,6 +72,9 @@ ok('export is plain records: no blocks, no draw handles',E.format==='krator-door
 ok('every glass kind has a colour and an opacity; panes are transparent, the room card is not',
   KGLASS.kinds().every(k=>typeof KGLASS.SPEC[k].color==='number'&&KGLASS.SPEC[k].opacity>0)&&KGLASS.SPEC.clear.transparent&&!KGLASS.SPEC.room.transparent,KGLASS.SPEC.room.transparent);
 ok('the clear pane is Iziz\'s glass (0xb4ccd2, .22)',KGLASS.SPEC.clear.color===0xb4ccd2&&KGLASS.SPEC.clear.opacity===.22,KGLASS.SPEC.clear.opacity!==.22);
+{const conv=[];function FakeMat(o){this.color={hex:o.color,convertSRGBToLinear(){conv.push(this.hex);return this;}};this.userData={};}
+ const T={MeshStandardMaterial:FakeMat,Color:function(){},DoubleSide:2,FrontSide:0};KGLASS.material(T,'room');KGLASS.material(T,'clear');
+ ok('the room card\'s colour is taken as sRGB (converted to linear), the glass kinds\' as given',conv.length===1&&conv[0]===0x6e5a46,conv.length!==1);}
 threw=false;try{KGLASS.material({},'nope');}catch(e){threw=true;}
 ok('an unknown glass kind is refused',threw,false);
 // a stub three.js: enough for KGLASS.material and KDOORHOST.posed (the host's other calls need the real one)

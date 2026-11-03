@@ -23,7 +23,7 @@
     frosted:{color:0xdfe7ea,opacity:.62,roughness:.75,metalness:0,emissive:0x000000,glow:0,transparent:true},
     smoked: {color:0x2a3a44,opacity:.55,roughness:.04,metalness:.35,emissive:0x000000,glow:0,transparent:true},
     stained:{color:0x8a3a5a,opacity:.5,roughness:.2,metalness:0,emissive:0x000000,glow:.15,transparent:true},
-    room:   {color:0x6e5a46,opacity:1,roughness:.94,metalness:0,emissive:0x000000,glow:0,transparent:false}
+    room:   {color:0x6e5a46,opacity:1,roughness:.94,metalness:0,emissive:0x000000,glow:0,transparent:false,srgb:true}
   };
   var cache=new Map();
   function material(T,kind,opt){
@@ -32,6 +32,7 @@
     var c=cache.get(T);if(!c){c=new Map();cache.set(T,c);}
     var m=c.get(k);if(m)return m;
     m=new T.MeshStandardMaterial({color:col,roughness:S.roughness,metalness:S.metalness,side:S.transparent?T.DoubleSide:T.FrontSide});
+    if(S.srgb&&m.color.convertSRGBToLinear)m.color.convertSRGBToLinear();   // the card's hex is an sRGB colour (as vC and hc take one): r128 reads a material's hex as linear, which drew the dim card light beige
     if(S.transparent){m.transparent=true;m.opacity=S.opacity;m.depthWrite=false;}
     if(S.glow){m.emissive=new T.Color(em);m.emissiveIntensity=S.glow;}
     m.name='kglass:'+kind;m.userData.kglass=kind;

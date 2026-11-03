@@ -30,9 +30,9 @@ MAT.taTile=MAT.shingle.clone();vWorldUV(MAT.taTile,.5);
 MAT.taCobalt=KGLASS.material(THREE,'stained',{color:0x2f5fb8});
 // the lit pane and the glass, double-sided, for the pointed wedges
 MAT.taLit=MAT.warmPane.clone();MAT.taLit.side=THREE.DoubleSide;MAT.taGlass=MAT.izGlass;   // core/door's clear glass (double-sided already)
-// the room's dim back (KGLASS.SPEC.room, 69e5's MAT.izRoom), no longer the void: its colour taken as sRGB (r128 reads a material's
-// hex as linear, so izRoom draws a light beige; the Vernacular's own card is vPlaster in IZ_ROOMC, vC's converted colour)
-MAT.taRoomS=MAT.izRoom.clone();MAT.taRoomS.color.convertSRGBToLinear();MAT.taRoom=MAT.taRoomS.clone();MAT.taRoom.side=THREE.DoubleSide;
+// the room's dim back (KGLASS.SPEC.room, 69e5's MAT.izRoom), no longer the void (KGLASS 'room', its colour taken as sRGB:
+// the Vernacular's IZ_ROOMC card's colour)
+MAT.taRoomS=MAT.izRoom;MAT.taRoom=MAT.taRoomS.clone();MAT.taRoom.side=THREE.DoubleSide;
 // a disc: a smooth cylinder whose axis is local z, centred (scale [r, r, depth]); the round head of an arch, a medallion
 const TADISC=new THREE.CylinderGeometry(1,1,1,28).rotateX(Math.PI/2);
 // (arch bands are boxes in segments: tanArcBand in 69u, so a band keeps its width on any span)

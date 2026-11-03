@@ -29,7 +29,7 @@
 // [G data] for the records and the walk; the leaf's matrix (tick) is the draw side.
 MAT.izGlass=KGLASS.material(THREE,'clear');   // core/door's clear glass (the values this line had: 0xb4ccd2, .22, rough .05, metal .1)
 MAT.warmPane.transparent=true;MAT.warmPane.opacity=.42;MAT.warmPane.depthWrite=false;MAT.warmPane.side=DS;   // a lit pane you see the room through (the day/night swap, 90a, still drives its colour)
-MAT.izRoom=new THREE.MeshStandardMaterial({color:0x6e5a46,roughness:.94});   // a room's back, for meshes (79's sentry gallery)
+MAT.izRoom=KGLASS.material(THREE,'room');   // a room's back, for meshes (79's sentry gallery): KGLASS's card, its colour taken as sRGB as IZ_ROOMC is
 kdef('vWinClear',VBOX,MAT.izGlass);kdef('vDoorLeaf',VBOX,MAT.wood);
 // (draw calls: the glow pane is vWinLit, the room card a dim vPlaster in IZ_ROOMC, KGLASS.SPEC.room's colour. The leaves are their own item, vDoorLeaf, which 95j
 // keeps out of core/lod: a moved instance of a shared, LOD-copied item kept its old pose on screen)

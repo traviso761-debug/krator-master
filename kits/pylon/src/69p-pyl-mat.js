@@ -33,9 +33,8 @@ const PYHEX=new THREE.CylinderGeometry(1,1,1,6).rotateX(Math.PI/2).rotateZ(Math.
 // a Vernacular one beside it are the same glass), transparent, over the room's dim back (the card, MAT.izRoom: KGLASS.SPEC.room)
 // where nothing real is behind it (the owner, 2026-11-03: "real glass"; it was the dark glass lifted to an opaque sky grey)
 MAT.pyPane=MAT.izGlass;kdef('pyPaneB',VBOX,MAT.pyPane);
-// the room card: 69e5's MAT.izRoom with its colour taken as sRGB (r128 reads a material's hex as linear, so izRoom draws a light
-// beige on screen; the Vernacular's own card is vPlaster in IZ_ROOMC, vC's converted colour, and this matches it)
-MAT.pyRoomS=MAT.izRoom.clone();MAT.pyRoomS.color.convertSRGBToLinear();
+// the room card: 69e5's MAT.izRoom (KGLASS 'room', its colour taken as sRGB: the Vernacular's IZ_ROOMC card's colour)
+MAT.pyRoomS=MAT.izRoom;
 kdef('pyConc',VBOX,MAT.pyConc);
 kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.pyPane);kdef('pyDiscD',PYDISC,MAT.pyRoomS);kdef('pyDiscR',PYDISC,MAT.rust);
 kdef('pyRing',PYRING,MAT.plaster);kdef('pyRingI',PYRING,MAT.iron);
