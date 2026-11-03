@@ -39,8 +39,8 @@
 - [ ] The salt heaps are the catalog's `job_salt_heap`, white domes as tall as a person: larger than a pan's raked heaps.
 - [ ] The sulphur crust, the brine and the salt are tinted stand-ins (`IS_SULPHUR`, `IS_BRINE`, `IS_SALT` on `stone`, `water`, `sand`): no
       library set for them. A salt-crust set is asked for with the isle demo's biome (biomes/ringisles); sulphur crust likewise.
-- [ ] `build.py --vendor-check` reports DRIFT in `30-geo.js` and `36-def.js` from the A/B gable sheets (9e43e0ba, before this pass):
-      deliberate, not yet recorded upstream in kits/scyvoi.
+- [x] `build.py --vendor-check` reported DRIFT in `30-geo.js` and `36-def.js` from the A/B gable sheets (9e43e0ba): merged
+      into `core/engine` on 2026-11-02 (MODULARITY-PLAN.md step 2b); the kit's tables are `src/31-alt-takes.js`.
 
 ## Mines and ore (2026-10-15)
 

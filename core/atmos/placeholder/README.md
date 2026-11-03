@@ -14,13 +14,12 @@ does for the host shell. The names keep their place in each build's filename ord
 Do not copy them into a `src/`.
 
 **What is not settled.**
-- It is not the shared sky. That is `core/atmos/sky` (`ATMOS.sky`, `ATMOS.skyBiome`) on the biome rebuild. When that lands
-  a kit may move onto `ATMOS.skyBiome` with a neutral preset, and this folder goes when the last kit has. It is optional:
-  nothing about a kit's pieces depends on which sky its viewer draws.
+- It is not the shared sky. That is `core/atmos/sky` (`ATMOS.sky`, `ATMOS.skyBiome`) on the biome rebuild. The kits keep
+  this one (owner, 2026-11-03): nothing about a kit's pieces depends on which sky its viewer draws.
 - `h3()` is a `Math.sin` hash. It is used only for the star field and the giant's bands, never for placement (placement draws
   from `core/rand`), and `tools/check_core_use.py` only scans a build's own `src/`, so it is not a finding here.
-- The settlements that still vendor `81-sky.js` (Dalab, Jimjam, Noah's Regret, Xanadu, Ys) check their copy against this file
+- The settlements that still vendor `81-sky.js` (Dalab, Jimjam, Xanadu, Ys) check their copy against this file
   (`--vendor-check`) and read it by path with MODULARITY-PLAN.md step 4. Iziz reads it here, and Pylon and Talia through Iziz.
 
 **Taken by:** kits ash-nomads, catalog, desert-nomads, eternian, fauna, interiors, islanders, lizardmen, mechs,
-motor-vehicles, resources, scyvoi, yeti, zeijani; `settlements/iziz` (and its `--kit` builds, Pylon and Talia).
+motor-vehicles, resources, scyvoi, yeti, zeijani; `settlements/iziz` (and its `--kit` builds, Pylon and Talia); `settlements/noahs-regret`.

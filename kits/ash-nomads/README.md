@@ -39,7 +39,7 @@ python3 ../../tools/textures/pack.py kits/ash-nomads        # (from the repo roo
 
 ## How it is made
 
-Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED unchanged (`build.py --vendor-check`); the kit's
+Forked from `kits/scyvoi`: the engine is `core/engine`, read in place (its README; MODULARITY-PLAN.md step 2), its alternative materials `31-alt-takes.js`; the kit's
 identity and look are `src/26k-kit.js`. Its shapes are in `40a-ak-ash.js` (the concave spire, the five-spired chief, the dome,
 the ridge, the bands of figures, banners, the sun disc), the defs in `42`-`59`.
 

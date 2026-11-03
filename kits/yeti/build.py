@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Concatenate src/* into dist/yeti.html (the Yeti kit: the Khaayken of the High Country, kits/yeti/PLAN.md).
-Forked from kits/scyvoi (2026-10-25, as kits/eternian and kits/islanders were): the engine fragments are VENDORED from
-kits/scyvoi/src (--vendor-check), all but src/10-core.js, which is the engine's on core/rand (KNOWN_ISSUES.md).
+Forked from kits/scyvoi (2026-10-25, as kits/eternian and kits/islanders were): the engine is core/engine, read in place
+(core/engine/README.md), all but src/10-core.js, this kit's own: the engine's on core/rand (KNOWN_ISSUES.md).
 
 Usage: python3 build.py [--no-checks]
        python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
-  src/*                 the kit (00-head.html ... 99-tail.html)
+  src/*                 the kit (00-head.html ... 89-rows.js)
+  core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
@@ -74,7 +75,7 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materi
 # single core files (a module the kit takes one piece of)
 CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
-# and the authoring tools (inspect, polygon, path). src/99-host-take.js (vendored from kits/scyvoi, with 92-world.js) hands it the
+# and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost

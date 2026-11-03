@@ -38,7 +38,14 @@ function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
+/* a building's alternative takes, set per building by place() (36-def.js) from a hash of its seed, variant and place, so
+   they draw nothing from the stream. A kit fills the tables in a fragment of its own (31-alt-takes.js; core/engine/README.md):
+     GABLE_ALT_K  key -> its other take, drawn when the building's GABLE_ALT is set (the Islanders' gable sheets)
+     MAT_VAR      key -> its list of materials (materials.json families), indexed by the building's MAT_ALT, the first
+                  entry the usual material (repeats weight it); the library mode only, and only when the second is a MAT */
+let GABLE_ALT=0;const GABLE_ALT_K={};
+let MAT_ALT=0;const MAT_VAR={};
+function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);

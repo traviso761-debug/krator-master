@@ -53,7 +53,7 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
-ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
+ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
                'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the

@@ -16,6 +16,7 @@ Write code with an eye to an eventual port to Godot.
   | the sea, a lake, a river, a fall, a pool, a hot spring, a geyser | `core/water` (open, shore, flow, fall, still, spring, geyser, terraces): no `MAT_WATER`, no ripple shader of your own |
   | camera, viewer, inspector, polygon tool, walk keys, probe, cut-away | `core/host` (`KHOST`), `core/walk`: do not write a camera or a probe |
   | records, tags, names, vocabulary | `core/tags` (`KTAGS`); everything placed is registered before it is drawn |
+  | a building kit's engine (merged geometry by material, `defBuilding` and its records, the sheet's scene, the host hand-over) | `core/engine` (`engine.py`), read by path: a new kit starts from it, never from a copy of another kit's `src/` |
   | furniture and interiors | `kits/catalog` through `core/furnish`, with `kits/interiors` for rooms |
   | streets, lots, a town | `core/city`; a village or camp: `core/hamlet`; people and time: `core/simulation`, `core/sched`, `core/clock` |
   | flora, fauna, biome zones | `core/biome` and the biome kits (`kits/fauna`, `kits/crops`); new species go into the kit, not the page |

@@ -43,7 +43,7 @@ the fire season).
 
 ## The engine is shared
 
-`kits/desert-nomads` and `kits/ash-nomads` vendor this kit's engine fragments (`10-core`, `27-mat`, `30-geo`, `36-def`, `40-tk-tentkit`, `90-scene`, `92-world`, `99-host-take`, `91f-furnish`, `91n-night`, `92-camera`, `93-anim`, `99-tail`) unchanged: whatever names the kit or its culture lives in `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Fix the engine here, copy it to both, and their `build.py --vendor-check` must read OK.
+The engine (`10-core`, `27-mat`, `30-geo`, `36-def`, `90-scene`, `91f-furnish`, `91n-night`, `92-world`, `93-anim`, `99-host-take`, `99-tail`) moved from this kit's `src/` to `core/engine` on 2026-11-02 (MODULARITY-PLAN.md step 2): this kit, the nomads, Eternian, Islanders, Lizardmen, Yeti and Resources read it in place. Whatever names a kit or its culture lives in its `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette), its alternative materials in `src/31-alt-takes.js`. Fix the engine in `core/engine`, rebuild every kit on it and run `python3 core/engine/fingerprint.py`. `kits/desert-nomads` and `kits/ash-nomads` still vendor this kit's tents (`40-tk-tentkit`, a culture file).
 
 ## Design rules this kit follows
 

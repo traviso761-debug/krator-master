@@ -50,6 +50,6 @@
 - **`src/10-core.js` on core/rand.** The Scyvoi engine's `10-core.js` writes its own mulberry32 stream, a `Math.sin`
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
-  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file not in build.py's
-  `VENDORED`. The fix belongs upstream in `kits/scyvoi/src/10-core.js` (and the kits vendoring it: Islanders, Eternian,
-  the nomads), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
+  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
+  (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).

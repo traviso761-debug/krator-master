@@ -52,7 +52,7 @@ drua, the kora-kora, the pirates' lanong) are in `kits/ringsea`.
 
 ## How it is made
 
-Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED unchanged (`build.py --vendor-check`). The
+Forked from `kits/scyvoi`: the engine is `core/engine`, read in place (its README; MODULARITY-PLAN.md step 2), its alternative materials and gable takes `31-alt-takes.js`. The
 kit's identity and palette are `src/26k-kit.js`; the shared toolkit `40-42` (piles, walls, the horned saddle roof and the
 spire roof as thick shells with scrap patching, carved posts and finials, rooms); the West's houses `50`, its civic, trade,
 harbour and defence buildings `52-55`; the East's `60`, `62-65`; the palace `66`; the shore and the sea `90h`. See `API.md`

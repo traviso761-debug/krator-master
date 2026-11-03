@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Concatenate src/* into dist/islanders.html (the Islanders kit: the Ring Sea Islanders, West (rumah) and East (Kautoa)).
-Forked from kits/scyvoi (2026-10-12): the engine fragments are VENDORED from kits/scyvoi/src (--vendor-check).
+Forked from kits/scyvoi (2026-10-12): the engine is core/engine, read in place (core/engine/README.md); --vendor-check reports a src/ copy as a shadow.
 
 Usage: python3 build.py [--no-checks]
        python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
-  src/*                 the kit (00-head.html ... 99-tail.html)
+  src/*                 the kit (00-head.html ... 89-rows.js)
+  core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
@@ -73,7 +74,7 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materi
 # kits/resources' ore (owner, 2026-10-15: the nodes are their own kit): read in place, never copied
 RESOURCES = {f: os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in ('42r-res-ore.js', '44r-res-nodes.js')}
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
-# and the authoring tools (inspect, polygon, path). src/99-host-take.js (vendored from kits/scyvoi, with 92-world.js) hands it the
+# and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost

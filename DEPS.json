@@ -380,6 +380,7 @@
   "kits/ash-nomads": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -407,6 +408,7 @@
   "kits/desert-nomads": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -419,6 +421,7 @@
   "kits/eternian": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -440,6 +443,7 @@
   "kits/islanders": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -454,6 +458,7 @@
   "kits/lizardmen": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -488,6 +493,7 @@
   "kits/resources": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -507,6 +513,7 @@
   "kits/scyvoi": [
    "core/atmos",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -522,6 +529,7 @@
    "core/atmos",
    "core/city",
    "core/clock",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -808,6 +816,7 @@
    "core/atmos",
    "core/clock",
    "core/edits",
+   "core/engine",
    "core/furnish",
    "core/host",
    "core/materials",
@@ -818,8 +827,7 @@
    "core/water",
    "kits/ancients-interiors",
    "kits/catalog",
-   "kits/interiors",
-   "kits/scyvoi"
+   "kits/interiors"
   ],
   "settlements/pinnacle-rock": [
    "biomes/hyperjungle",

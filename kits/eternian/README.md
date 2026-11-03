@@ -12,9 +12,9 @@ python3 verify.py dist/eternian.html --assert        # footprints, doors, tags (
 
 ## How it is built
 
-Forked from the Scyvoi engine as `kits/islanders` was (`PLAN.md` §0): the engine fragments are vendored byte for byte
-from `kits/scyvoi/src` (`10-core 27-mat 30-geo 36-def 90-scene 91f-furnish 91n-night 92-world 93-anim 99-host-take
-99-tail`; the sky from `settlements/iziz`), and `build.py --vendor-check` reports drift. The shared modules are read in
+Forked from the Scyvoi engine as `kits/islanders` was (`PLAN.md` §0): the engine is `core/engine`, read in place
+(`10-core 27-mat 30-geo 36-def 90-scene 91f-furnish 91n-night 92-world 93-anim 99-host-take 99-tail`; its README), the sky
+`core/atmos/placeholder`, and `build.py --vendor-check` reports a `src/` copy as a shadow. The shared modules are read in
 place: `core/rand`, `core/materials/record`, `core/tags`, `core/furnish`, `core/walk`, `core/atmos`, `core/host`, and the
 catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture as one bundle. What is the kit's own:
 `26k-kit.js` (identity, library families, palette), `37-wk-rec.js` (walk records, from the Islanders kit), `40-et-kit.js`

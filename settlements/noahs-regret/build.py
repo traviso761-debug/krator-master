@@ -81,7 +81,11 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
-VENDORED = {'30-geo.js': os.path.join(ROOT, 'core', 'engine', '30-geo.js')}   # the engine moved to core/engine (MODULARITY-PLAN.md step 2)
+VENDORED = {}
+# the engine's geometry, read in place (core/engine; MODULARITY-PLAN.md step 2): the rest of src/'s engine is this build's
+# own fork of it (10-core, 27-mat, 36-def, 90-scene, 91f-furnish, 91n-night, 93-anim), to be ported onto core/engine
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine
 # GENERATED fragments, never written to src/
 # The furniture cultures: the Ancients' own fittings (ancient), the pirates' salvage (ancients-salvage, post-apoc, scrap),
 # the shared poor set and goods (generic, generic-goods): kits/interiors IX.CULTURE_FAMILY chains end in them.
@@ -140,6 +144,7 @@ def sources():
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     khost.resolve(paths, CORE_HOST)
     paths.update(psky.paths(psky.SKY))
+    paths.update(kengine.paths(['30-geo.js']))
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core

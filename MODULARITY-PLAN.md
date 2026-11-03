@@ -70,6 +70,13 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   `kits/ancients -> settlements/span` from the text `settlements/span PLAN.md SP2` in a comment in
   `kits/ancients/build.py`; the kit does not read Span. Skip comment-only matches (a `#` comment line, and the part of
   a line after `#` outside a string), then drop any allow-list line that was only a comment.
+  **Tried 2026-11-03 and reverted:** stripping comments and docstrings (`check_core_use.code_only`) takes the edges from
+  826 to 540, because builds compose paths in code (`for d in ('rand', 'tags'): os.path.join(ROOT, 'core', d)`) and
+  the comment that lists them was the only text the scanner could see; adding `check_core_use.modules_named` for the
+  core edges still loses about 35 real ones (Iziz -> Pylon and Talia, Girder -> Beast Riders, biome-to-biome reads)
+  while finding 31 it missed (Dhelv's core modules among them). A path string is not a read. The fix is to ask each
+  build what it reads (a `build.py --list-sources` that prints the resolved path of every fragment), not to read its
+  text; until then the comment false positives stay (on main: `kits/* -> kits/scyvoi` from "Forked from kits/scyvoi").
 
 **Step 1: the placeholder sky into core (the 81-sky.js move).** **Done 2026-11-02** for the kits and Iziz.
 - Revised 2026-11-02 (owner): a kit's sky is a placeholder. A kit's pieces go into the open world at a site, and that
@@ -91,12 +98,38 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 - **Left for step 4** (baselined as `sky-copy` findings): Dalab, Jimjam, Xanadu and Ys keep their copies, and their
   `--vendor-check` now compares them with `core/atmos/placeholder` (all identical); Highlands' Roketstad has its own fork
   (`targets/roketstad/81-rk-sky.js`). Each reads the core file by path when its chain is ported.
-- Not required, later: when the biome rebuild lands, a kit may move onto `ATMOS.skyBiome` with a neutral preset (one host
-  fragment), and the placeholder goes with the last kit. Nothing about a kit's pieces depends on it.
+- The kits keep the placeholder (owner, 2026-11-03): they do not move onto `ATMOS.skyBiome` when the biome rebuild lands.
 - Done: no kit's `build.py` names `settlements/iziz` except Pylon and Talia (the `--kit` contract). `DEPS.json`: 826 ->
   821 edges; the allow-list's backwards edges 27 -> 13.
 
-**Step 2: `core/engine` (the Scyvoi engine) .**
+**Step 2: `core/engine` (the Scyvoi engine).** **Done 2026-11-03** for the kits that vendored it (2a: 85d5bda3; 2b).
+- 2a moved the engine (`10-core`, `27-mat`, `30-geo`, `36-def`, `90-scene`, `91f-furnish`, `91n-night`, `92-world`,
+  `93-anim`, `99-host-take`, `99-tail.html`) unchanged from `kits/scyvoi/src` to `core/engine/` (`engine.py`, the file list;
+  README). Scyvoi, Ash and Desert Nomads, Eternian, Islanders, Lizardmen, Yeti and Resources read it by path; 56 identical
+  copies went. No byte moved (29 outputs of nine builds identical to the build before).
+- 2b decided the drift by reading it. It was one feature added to each fork: per-building alternative materials
+  (`MAT_ALT`, a table `MAT_VAR` per kit: the nomads, Islanders, Lizardmen, Noah's Regret), the Islanders' alternative gable
+  sheets (`GABLE_ALT`), the Islanders' windows and door heights in the records, and `walk: KWALK` for the host. All of it
+  is in `core/engine` now with empty tables; each kit fills its own in `src/31-alt-takes.js`; 11 drifted copies went
+  (Noah's Regret's `30-geo.js` among them). Proof: `core/engine/fingerprint.py` (the registry's records, every drawn
+  object's material key, world matrix and vertex data, the clock pinned) is the same on all nine pages before and after,
+  and it does see a change (emptying the Islanders' table moves 10 materials' triangle counts).
+- Changes that are not in the fingerprint: every kit's records now carry `doors` and `windows` (Islanders' already did);
+  `door()` keeps a height; the host gets `KWALK` on every page that takes `core/walk`, so Eternian's and Yeti's walkers
+  now collide with their buildings (the step's ride-along, half done: Scyvoi, the nomads and Resources do not take
+  `core/walk`). `verify.py --assert`: Eternian and Scyvoi pass; Yeti fails only `tags-vocabulary` (`khaayken`, its
+  KNOWN_ISSUES.md; it fails the same before).
+- **Not yet on it:** `kits/zeijani` (its own fork: most files differ, its `92-camera.js` is the controls' reference) and
+  `settlements/noahs-regret` (its own fork of everything but `30-geo.js`). Each is a port with its own fingerprint.
+- **Open, the owner's:** `core/engine/10-core.js` writes its own mulberry32, a `Math.sin` hash and a value noise (the
+  check no longer counts them: it reads builds, not core; 18 baseline entries moved with the file). Yeti's `10-core.js`
+  is the engine's on `core/rand` (the same stream, KRAND's portable hash and noise) and stays a Yeti override; taking it
+  upstream changes every kit's draws and so every building ("moving rubble", GODOT-PLAN.md section 7), with screenshots.
+- The isle demo's Islanders bundle (`settlements/isle-demo/bundles.py`) takes the engine from `core/engine`; its text
+  changes in path labels and the order of the alternative tables, not in code. Its pages were already behind their
+  sources (the isle demo does not build whole in a checkout without Girder's textures) and wait for the all-builds rebuild.
+
+The plan as written before the step:
 - Promote the engine fragments Scyvoi, Islanders, Eternian, Lizardmen, Zeijani, the nomad kits and Resources share
   into `core/engine/`: scene, world, animation, host-take, material and geometry helpers. Kits keep their own
   definitions (`36-def`, the culture files, tents, buildings) and only read the engine from core.
@@ -146,7 +179,7 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 |---|---|---|---|
 | 0 graph check | none | none | none |
 | 1 sky | 14 kits + iziz (+ Noah's Regret) | done 2026-11-02 | none (no byte moved) |
-| 2 kit engine | 8 to 10 kits | medium (forks have drifted) | those kits and what bundles them |
+| 2 kit engine | 8 kits + Noah's Regret's geometry | done 2026-11-03 | none committed (proof: fingerprints) |
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
 | 3 catalog / Voth | catalog, Voth, 30 dependents | medium | catalog dependents |
 | 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
@@ -188,7 +221,8 @@ core module", "Real doors and glass across the kits", and "Doors that open" (Vie
 - Pylon's `pylDoorway` and Talia's arches hang a leaf in it; the other building kits (Ancients, Islanders, Lizardmen,
   the nomads, Scyvoi, Zeijani, Eternian) draw doors and glass through it, not through 69e5's wrappers.
 
-**With step 2 (`core/engine`).**
+**With step 2 (`core/engine`).** Half of the first is done (the host gets `KWALK` where the page takes `core/walk`); the
+rest waits for Zeijani's port onto the engine, whose controls are the reference.
 - One walk mode and one set of controls in every viewer (`TODO.md`, Viewers): the engine takes `core/host` and
   `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` is the reference for the controls).
   GODOT-PLAN.md counts `camera.js` copied in 16 builds, `probe.js` in 15, `stats.js` in 10.
@@ -215,13 +249,15 @@ dependency moves.
 ## Not decided (owner)
 
 - ~~Whether the sky is `core/sky` or an opt-in subfolder of `core/atmos`.~~ Settled by the build: `core/atmos/sky`.
-- Whether `core/engine` is one module or split (scene/world vs. animation vs. materials).
+- Whether `core/engine` is one module or split (scene/world vs. animation vs. materials). One module for now
+  (2026-11-03, `engine.py` lists the files); splitting it moves no byte.
+- Whether `core/engine/10-core.js` moves onto `core/rand` (Yeti's version): every kit's buildings change (step 2).
 - Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
   allowed kit -> settlement edge.
 - ~~Whether to take the step 1 gallery republish with the rebuild.~~ Moot: step 1 changed no page. Ask with the next
   all-builds rebuild (CLAUDE.md "Publishing").
-- Whether a kit's viewer should ever move from the placeholder onto `ATMOS.skyBiome` (a neutral preset), or keep the
-  placeholder until the kits' viewers are retired into the open world.
+- ~~Whether a kit's viewer should ever move from the placeholder onto `ATMOS.skyBiome`.~~ Keep the placeholder for the
+  kits (owner, 2026-11-03).
 
 ## Caveats
 

@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `12-nr-world.js` | 5 | THE GROUND (world y): the shore, the dune, the s (35) |
 | `14-nr-plan.js` | 25 |  |
 | `27-mat.js` | 9 |  |
-| `30-geo.js` | 23 |  |
+| `31-alt-takes.js` | <1 | ALTERNATIVE TAKES: the tables core/engine's emit reads |
 | `36-def.js` | 5 |  |
 | `40-nr-hull.js` | 22 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (126); the sterns: rounded, stepping back in terraces (142); the bow: the forecastle, the stem, the anchors (183) |
 | `41-nr-piers.js` | 6 |  |

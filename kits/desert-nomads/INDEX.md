@@ -20,11 +20,8 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 5 |  |
-| `27-mat.js` | 6 |  |
-| `30-geo.js` | 23 |  |
-| `36-def.js` | 5 |  |
+| `31-alt-takes.js` | <1 | ALTERNATIVE TAKES: the tables core/engine's emit reads |
 | `40-tk-tentkit.js` | 21 |  |
 | `40d-dk-desert.js` | 10 |  |
 | `41-tk-dress.js` | 4 |  |
@@ -37,10 +34,3 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `59-dh-pens.js` | 5 |  |
 | `60-dn-trades.js` | 6 | = (2) |
 | `89-rows.js` | <1 |  |
-| `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
-| `91f-furnish.js` | 6 |  |
-| `91n-night.js` | 3 |  |
-| `92-world.js` | <1 |  |
-| `93-anim.js` | 3 |  |
-| `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
-| `99-tail.html` | <1 |  |

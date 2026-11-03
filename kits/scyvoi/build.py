@@ -5,7 +5,8 @@ Usage: python3 build.py [--no-checks]
        python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
-  src/*                 the kit (00-head.html ... 99-tail.html)
+  src/*                 the kit (00-head.html ... 89-rows.js)
+  core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)

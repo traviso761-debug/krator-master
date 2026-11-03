@@ -36,7 +36,7 @@ The page is a kit sheet like the Scyvoi kit's, with the same tools: **Inspector*
 
 ## How it is made
 
-Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED unchanged (`build.py --vendor-check`); the kit's
+Forked from `kits/scyvoi`: the engine is `core/engine`, read in place (its README; MODULARITY-PLAN.md step 2), its alternative materials `31-alt-takes.js`; the kit's
 identity and look are `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Its own shapes are in
 `40d-dk-desert.js`, its interiors' helpers in `41-tk-dress.js`, the defs in `42`-`59`. Every animal is the fauna kit's
 (`KratorFauna`: dromedary, horse, sheep, cattle, goat, riding and pack lizards, marsh emu); the tack is fitted to its anchors.

@@ -25,4 +25,3 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `43r-res-fields.js` | 5 |  |
 | `44r-res-nodes.js` | 14 |  |
 | `89-rows.js` | 1 |  |
-| `99-tail.html` | <1 |  |
