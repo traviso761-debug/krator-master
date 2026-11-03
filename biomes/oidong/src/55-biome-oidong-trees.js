@@ -280,7 +280,8 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hT=H*rr(.45,.6),ph=rr(0,TA
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:5});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rb*.35,.08,rodCol(S.bark[0]));
   for(let i=1;i<=5;i++){const p=pts[i];clumpAt('broad',p.x+rr(-.6,.6),p.y+rr(0,.6),p.z+rr(-.6,.6),rr(1.6,2.4),.45,hc,T.x,cy,T.z,T.crownR,H*.2,null);st.clumps++;
    const m=lv===2?ri(3,6):lv===1?2:1;for(let r=0;r<m;r++){const col=white?C(pick(PAL.ivory)):vary(C(pick(S.leaf)),.02,.06,.05);
-    BIO.put('raceme',[p.x+rr(-1.3,1.3),p.y+rr(-.2,.4),p.z+rr(-1.3,1.3)],qEuler(0,rr(0,TAU),0),[rr(.5,.8),rr(1.1,2.6),1],bright(col,1.15),{c2:bright(C(white?0xe8e0f8:pick(PAL.irid.wisteria)),1.05)});st.racemes++;}}}
+    /* held to its limb (BIO.holdTo, the attach audit: they hung up to 1.3 m off it); the same draws, so nothing moves but the raceme. Its card cell is kept (the owner) */
+    BIO.put('raceme',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-1.3,1.3),p.y+rr(-.2,.4),p.z+rr(-1.3,1.3)],p.r+.35),qEuler(0,rr(0,TAU),0),[rr(.5,.8),rr(1.1,2.6),1],bright(col,1.15),{c2:bright(C(white?0xe8e0f8:pick(PAL.irid.wisteria)),1.05)});st.racemes++;}}}
  regTree(T,S,T.crownR,H+1);};
 
 // 9 the CHALICE TREE: a pale smooth column holding up one great shallow cap, teal above and veined underneath, that fills
@@ -364,7 +365,7 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb;
  const tiers=lv===2?Math.round(H/2.2):Math.round(H/4),hc=vary(pick(S.leaf),.02,.05,.04),rc=rodCol(S.bark[0]);
  for(let t=0;t<tiers;t++){const u=lerp(.26,.97,t/(tiers-1)),y=T.y0+H*u,Rt=T.crownR*Math.pow(1-u,.8)*rr(.85,1.15)+.5,nB=lv===2?ri(4,6):3,a0=t*GOLD;
   for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.25,.25),ex=T.x+Math.cos(a)*Rt,ez=T.z+Math.sin(a)*Rt,ey=y-Rt*.1;
-   if(lv===2&&Rt>1.4)BIO.beam('rod',[T.x,y,T.z],[ex,ey,ez],rAt(u)*.3+.04,.04,rc);
+   if(lv>=1&&Rt>1.4)BIO.beam('rod',[T.x,y,T.z],[ex,ey,ez],rAt(u)*.3+.04,.04,rc);   /* the mid tier draws its limbs too (the attach audit: its needle clumps held nothing) */
    const sz=Math.max(1.3,Rt*rr(.6,.8));clumpAt('darkneedle',T.x+(ex-T.x)*.8,ey+sz*.05,T.z+(ez-T.z)*.8,sz,.45,hc,T.x,y,T.z,Rt+1,Rt*.6+1,null);st.clumps++;}}
  clumpAt('darkneedle',T.x,T.y0+H*.99,T.z,1.4,.9,hc,T.x,T.y0+H,T.z,2,2,null);
  regTree(T,S,T.crownR,H+1);};
@@ -389,7 +390,7 @@ B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  const tiers=lv===2?ri(5,9):4,hc=vary(pick(S.leaf),.02,.05,.04),rc=rodCol(S.bark[0]),a0=rr(0,TAU);
  for(let t=0;t<tiers;t++){const u=lerp(.22,.9,t/(tiers-1)),y=T.y0+H*u,Rt=R*(1-.75*u)*rr(.9,1.1)+.6,nB=lv===2?ri(5,7):4;
   for(let k=0;k<nB;k++){const a=a0+t*.5+k/nB*TAU,ex=T.x+Math.cos(a)*Rt,ez=T.z+Math.sin(a)*Rt;
-   if(lv===2)BIO.beam('rod',[T.x,y,T.z],[ex,y+Rt*.06,ez],rAt(u)*.35+.04,.03,rc);
+   if(lv>=1)BIO.beam('rod',[T.x,y,T.z],[ex,y+Rt*.06,ez],rAt(u)*.35+.04,.03,rc);   /* the mid tier too (as the cedar) */
    const m=lv===2?(Rt>2.5?3:2):1;for(let c=0;c<m;c++){const f=lerp(.35,1,(c+.5)/m),sz=Math.max(1.2,Rt*rr(.42,.55));clumpAt('darkneedle',T.x+(ex-T.x)*f,y+Rt*.06*f+.1,T.z+(ez-T.z)*f,sz,.22,hc,T.x,y-Rt*.3,T.z,Rt+1,Rt*.5+1,null);st.clumps++;}}}
  BIO.put('cone',[T.x,T.y0+H*.94,T.z],qUp([0,1,0]),[rAt(.9)*3,H*.08,rAt(.9)*3],hc);
  regTree(T,S,R,H+1);};
@@ -476,7 +477,7 @@ function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
  const mkT=(sp,x,y,z,s,hk)=>{const S=SP[sp];return{x:x,z:z,y0:y-.35,sp:sp,H:s.range(S.H[0],S.H[1])*(hk==null?1:hk),rb:s.range(S.rb[0],S.rb[1]),crownR:s.range(S.crownR[0],S.crownR[1]),seed:s.int(0,999999),wet:BIO.field('wet',x,z)};};
  const lvOf=(x,z,small)=>{const ld=BIO.lodD(x,z);return ld<LOD.hero*(small?.94:1)?2:(ld<LOD.mid*(small?.87:1)?1:0);};
  const ok=(x,z,pad)=>BIO.mask(x,z)>0&&BIO.clearOf(x,z,pad)&&!blocked(x,z,pad);
- const add=(T,P)=>{T.lv=lvOf(T.x,T.z,P.opt.small);NEW.push(T);hadd({x:T.x,z:T.z,r:P.opt.keep==null?T.rb*1.4+1:P.opt.keep});};
+ const add=(T,P)=>{if(offShore(T))return;T.lv=lvOf(T.x,T.z,P.opt.small);NEW.push(T);hadd({x:T.x,z:T.z,r:P.opt.keep==null?T.rb*1.4+1:P.opt.keep});};
  OIDONG.NEWPASSES.forEach(P=>{const S=SP[P.sp],seed=KRAND.child(550019,'oidong/'+S.key),pad=P.opt.pad==null?4:P.opt.pad;
   if(P.landmarks){const C=[];   // score every point of a coarse lattice, then take the best ones far enough apart
    for(let z=o[1]-R;z<=o[1]+R;z+=40)for(let x=o[0]-R;x<=o[0]+R;x+=40){if(Math.hypot(x-o[0],z-o[1])>R-60)continue;const a=P.accept(zones(x,z),x,z);if(a<=.3)continue;
@@ -501,6 +502,9 @@ function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 // far.blobs: icosahedral blobs on a pole (sedesert's recipe, as shighlands)
+// a tree whose bole would reach past the water's edge goes (OIDONG.SHORE: the host's WATER.fieldAt shore distance, the review's third line; a page
+// without it keeps the old mask alone). Tested after the tree's draws, so nothing else moves
+const offShore=T=>{if(!OIDONG.SHORE)return false;const s=OIDONG.SHORE(T.x,T.z);return s===s&&s<Math.min(T.rb==null?.5:T.rb,.6)+.3;};
 let ICO=null,FAR=(T,i)=>{};   /* FAR: a far tree's draw, set by buildTrees (the impostor or the blobs) */
 function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
  let tris=0;
@@ -539,6 +543,7 @@ OIDONG.buildTrees=function(R,q){
     const T=OIDONG.make(sp,x,opt.water?BIO.waterH(x,z)+.4:y,z);if(opt.mod)opt.mod(T,zones(x,z));
     const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
     if(T.lv===0&&!S.far)return;
+    if(!opt.water&&offShore(T))return;
     TREES.push(T);hadd({x:x,z:z,r:(opt.water?T.crownR*.9:T.rb*1.4)+1});n++;},gopt);
   return n;}
  OIDONG.PASSES.forEach(pass);
