@@ -40,9 +40,11 @@ let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;SV_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!SVTAGS)svTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
  if(typeof saReset==='function')saReset();
+ svOpenReset();   /* the doors (core/door, 36o-open.js): a fresh registry per world build */
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
+ svOpenFlush(WORLD);   /* the door leaves' meshes, and their walk blocks where the page has core/walk */
  if(typeof saFlush==='function')saFlush(WORLD);
  window._build={ms:Math.round(performance.now()-t0),tris:Math.round(GSTAT.tris),sites:SITES.length,records:REG.length,halos:HALOS.length,life:SV_LIFE.length};return WORLD;}
 // views: an opening, an overview, a shot per row, an eye-level shot per site, and for each tent a look inside (cut-away)

@@ -26,7 +26,7 @@ function describe(first,hits){const h=hits.find(q=>inWorld(q.object)&&!cutHidden
  return t+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);}
 
 // ---------------------------------------------------------------- the cut-away (C), night (N, in 91n-night.js), shadows
-function cutSet(on){ANIMU.uCut.value=on?1:0;WORLD.traverse(m=>{if(m.isMesh&&m.userData.mk&&SV_CUT[m.userData.mk])m.castShadow=!on;});return !!on;}
+function cutSet(on){ANIMU.uCut.value=on?1:0;WORLD.traverse(m=>{if(m.isMesh&&m.userData.mk&&SV_CUT[m.userData.mk])m.castShadow=!on;});for(const m of SV_OPEN.cutMeshes)m.visible=!on;return !!on;}   /* a tent's door leaves go with its near half */
 const CT={cut:{button:'Cut-away (C)',title:'open the near half of every tent',on:()=>{cutSet(!ANIMU.uCut.value);}},
  night:{button:'Night (N)',title:'21:30, lamps and braziers lit',on:()=>{nightSet(!NIGHT.on);}},
  shadows:{button:'Shadows',on:()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;scene.traverse(o=>{if(o.material)o.material.needsUpdate=true;});}}};
@@ -40,6 +40,10 @@ KHOST.on(function engineFrame(dt){const C=KHOST.cam,now=performance.now();ANIMU.
  {const tg=C.ctl.walk?camera.position:C.ctl.target;sun.target.position.set(tg.x,0,tg.z);sun.position.set(tg.x+LIGHTDIR.x*300,LIGHTDIR.y*300,tg.z+LIGHTDIR.z*300);sun.target.updateMatrixWorld();}
  skyCam.quaternion.copy(camera.quaternion);skyCam.fov=camera.fov;skyCam.updateProjectionMatrix();
  atmosFrame(dt);paintControls();},'view');
+/* the doors (core/door, 36o-open.js): ease the moving leaves each frame; E (the keys below) opens or shuts the one within reach */
+FRAME_HOOKS.push(dt=>{KDOORHOST.tick(dt);});
+const svDoorWalking=()=>!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);
+FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,svDoorWalking));
 addEventListener('resize',()=>{skyCam.aspect=innerWidth/innerHeight;skyCam.updateProjectionMatrix();});
 
 // ---------------------------------------------------------------- the probe's fields (verify.py --assert): what 91-probe.js held
@@ -57,15 +61,19 @@ const ENGINE_API={REG,DEFS,SITES,ROWS,SV_LIFE,
  materials(){return window._materials;},
  life(){return SV_LIFE;},
  setNight(v){nightSet(v);},
- setCut(v){cutSet(v);}};
+ setCut(v){cutSet(v);},
+ // the doors and the glass (core/door): the counts, the records (KDOOR.export), the save's deltas
+ openings(){return SV_OPEN.stats();},
+ doorExport(){return KDOOR.export();},
+ doorState(){return KDOOR.state();}};
 
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.take({build:KIT.id,title:TITLE,
- hint:'Cut-away (C) opens the tents, Night (N) lights the lamps; the tools in the inspector panel lay out a polygon or a path',
+ hint:'Cut-away (C) opens the tents, Night (N) lights the lamps, E opens or shuts the door in reach; the tools in the inspector panel lay out a polygon or a path',
  scene,camera,renderer,ground:terrainH,walk:typeof KWALK!=='undefined'?KWALK:null,clear:.4,minR:1,maxR:2500,
  views:VIEWS,
  controls:[CT.cut,CT.night,CT.shadows],
- keys:{c:()=>{cutSet(!ANIMU.uCut.value);},n:()=>{nightSet(!NIGHT.on);}},
+ keys:{c:()=>{cutSet(!ANIMU.uCut.value);},n:()=>{nightSet(!NIGHT.on);},e:()=>{KDOORHOST.toggleNear(camera.position,svDoorWalking());}},
  inspect:describe,
  stats:()=>'records '+REG.length+'  furniture '+SVF.placed.length+(ANIMU.uCut.value?'\ncut-away':'')+(NIGHT.on?'\nnight':''),
  draw:(sc,cam)=>{renderer.clear();renderer.render(skyScene,skyCam);renderer.render(sc,cam);},
