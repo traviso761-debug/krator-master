@@ -29,6 +29,10 @@ const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: t
 function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
+/* the draw-call and vertex set (BACKPORT.md section 1; nhighlands' lines): welded items, one mesh a chunk, the cross-fade, chunks off screen dropped; ?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 */
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
 // THE LIGHT OF THE VALLEY: about 1 atm at 1600 m, clear cold air, so the zenith is a deep cool blue and the sun white;
 // the haze is pale and faintly lilac (the still water throws the sky back up), and the shadows are soft.
@@ -43,8 +47,12 @@ const fill=new THREE.DirectionalLight(0xe4e0f0,.22);fill.position.set(700,300,90
 const TERR={R:2600};
 // the valley's axis: z of the floor's middle for each x
 function axisZ(x){return 140*Math.sin(x*.0008+.6)+60*Math.sin(x*.0027+1.9)+18*Math.sin(x*.009);}
-// the floor: rising gently east, and up a step at the head (the cataract's face, x 2000..2090)
-function floor0(x){return 1580+(x+2600)*.009+70*smooth(2000,2090,x)+40*smooth(2250,2600,x);}
+// the floor (scale model 5.1, re-surveyed 2026-11-03: biomes/oidong/PLAN-STATIONS.md "The ground on 5.1"): the Cfb floor at ~1,890 m, its pools in a
+// chain of steps rising east (the model's lakes 1,901, 1,909, 1,916, 1,922 m...), so four steps here, one pool on each, with an 11 m riser between;
+// at the head the 300 m headwall (Gemini's 5.1 sculpt: the eastern headwall cataract, x 1960..2120) and the hanging valley over it
+const STEPS=[-1250,-180,820],STEP_H=11,HEAD_H=300;
+function floor0(x){return 1890+(x+2600)*.002+STEP_H*(smooth(STEPS[0]-40,STEPS[0]+40,x)+smooth(STEPS[1]-40,STEPS[1]+40,x)+smooth(STEPS[2]-40,STEPS[2]+40,x))
+ +HEAD_H*smooth(1960,2120,x)+40*smooth(2250,2600,x);}
 // the pools: x, offset off the axis, radius, name. The levels are computed below from the carved hollows
 const POOLS=[{x:-1750,dz:10,r:330,name:'The Mirror'},{x:-700,dz:-40,r:170,name:'The second pool'},{x:350,dz:30,r:230,name:'The lotus pool'},{x:1250,dz:-20,r:150,name:'The upper pool'}];
 POOLS.forEach(P=>{P.z=axisZ(P.x)+P.dz;});
@@ -72,17 +80,23 @@ function landH(x,z){const az=axisZ(x),dz=z-az,W=520;
  const bench=1+.14*Math.sin(u*TAU*2.2+x*.0012)*smooth(.1,.4,u);
  h+=560*Math.pow(u,1.35)*bench+90*u*(fbm(x*.0018+7,z*.0018-4,29,3)-.5)+24*Math.pow(u,.5)*(fbm(x*.006,z*.006+9,31,2)-.5);
  // the head: the hanging step's face is rough rock
- h+=12*smooth(2000,2090,x)*(1-smooth(2090,2200,x))*(fbm(x*.02,z*.02,37,2)-.5);
+ h+=34*smooth(1960,2040,x)*(1-smooth(2120,2220,x))*(fbm(x*.02,z*.02,37,2)-.5);
+ // the headwall's gullies and spurs: across the face a ridge-and-furrow in z (worn by the cataract's old courses), so the 300 m wall is not one sheet
+ {const w=smooth(1955,1995,x)*(1-smooth(2100,2135,x));if(w>0)h+=w*(46*(fbm(z*.011+3,x*.003,41,3)-.5)+18*Math.abs(Math.sin(z*.034+fbm(z*.02,x*.01,43,2)*3)));}
  return h+knollAt(x,z).h;}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function terrainH0(x,z){let h=landH(x,z);
  for(let i=0;i<POOLS.length;i++){const P=POOLS[i],d=Math.hypot(x-P.x,z-P.z)/(1+.14*(fbm(x*.003+i,z*.003,71+i,2)-.5));if(d<P.r*1.5)h-=7.5*smooth(P.r*1.4,P.r*.3,d);}
  const sd=streamD(x,z);if(sd<24)h-=1.4*smooth(18,2,sd);
+ {const d=Math.hypot(x-PLUNGE.x,z-PLUNGE.z);if(d<PLUNGE.r*1.6)h-=6*smooth(PLUNGE.r*1.5,PLUNGE.r*.3,d);}   /* the plunge pool at the headwall's toe */
  return h;}
+// the plunge pool the cataract falls into, at the headwall's toe (x 1960): carved into the floor's first metres, its own level
+const PLUNGE={x:1918,r:36,name:'The plunge pool'};PLUNGE.z=axisZ(PLUNGE.x)+streamOff(PLUNGE.x);
 POOLS.forEach(P=>{let lo=1e9;for(let k=0;k<24;k++){const a=k/24*TAU;lo=Math.min(lo,terrainH0(P.x+Math.cos(a)*P.r*1.12,P.z+Math.sin(a)*P.r*1.12));}P.l=lo-.35;});
-function waterH(x,z){for(let i=0;i<POOLS.length;i++){const P=POOLS[i];if(Math.abs(x-P.x)<P.r*1.5&&Math.abs(z-P.z)<P.r*1.5&&Math.hypot(x-P.x,z-P.z)<P.r*1.5)return P.l;}return -1e9;}
-const CATARACT={x:2050,z:axisZ(2050)+streamOff(2050)};
+{let lo=1e9;for(let k=0;k<24;k++){const a=k/24*TAU;lo=Math.min(lo,terrainH0(PLUNGE.x+Math.cos(a)*PLUNGE.r*1.12,PLUNGE.z+Math.sin(a)*PLUNGE.r*1.12));}PLUNGE.l=lo-.35;}
+function waterH(x,z){if(Math.hypot(x-PLUNGE.x,z-PLUNGE.z)<PLUNGE.r*1.4)return PLUNGE.l;for(let i=0;i<POOLS.length;i++){const P=POOLS[i];if(Math.abs(x-P.x)<P.r*1.5&&Math.abs(z-P.z)<P.r*1.5&&Math.hypot(x-P.x,z-P.z)<P.r*1.5)return P.l;}return -1e9;}
+const CATARACT={x:2040,z:axisZ(2040)+streamOff(2040)};
 
 // ---------------------------------------------------------------- the climate fields (cached below; these are the definitions)
 // The kit reads the world's fields (biomes/WORLD.md): wet, flow, rock, slope, cold, upland, mist, and one this kit adds:
@@ -97,7 +111,7 @@ function fieldsAt(x,z,h,slope){const K=knollAt(x,z),fan=fanAt(x,z),f0=floor0(x);
  const rock=clamp(Math.max(K.rock*.95,smooth(.74,1.0,slope)*.9,smooth(.6,.78,slope)*smooth(.35,.7,up)*.5),0,1);
  const wet=clamp(.66+.3*smooth(70,0,dw)-.48*fan+.26*stream+.22*mist-.35*up-.3*rock+.07*(fbm(x*.0015,z*.0015,131,2)-.5),0,1);
  return{wet,flow:stream,upland:up,canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,
-  cold:clamp(.42+(h-1560)/1300,0,1),geo:0,barren:0,fog:0,mist,flat:fan*(1-rock)};}
+  cold:clamp(.42+(h-1870)/1300,0,1),geo:0,barren:0,fog:0,mist,flat:fan*(1-rock)};}
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','flat'];
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);

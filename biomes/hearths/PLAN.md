@@ -20,6 +20,11 @@ their holds, the wax their staple, the walk in their sagas); **Dalab**: the hear
 genepriests come over the rim for, not the one thing; the **kettle cup origin** stands (section 10); the **names** are
 the Tungangs' and the Monks' (still to be supplied); **the walk is under a metre a year**.
 
+**Built so far (2026-11-03, oidong's rebuild turn):** `src/50-biome-hearths-species.js` (`HEARTH`: the species and plants with tags, `work`,
+the two dresses, the parts on `BIO.fung` and the breath's `fold`) and `src/55-biome-hearths-place.js` (`HEARTH.layout` on a KTHERM bake), read in place
+by `biomes/oidong/stations/hearths` (station 3). Not yet: the boil cup, the shade cap, the walk, the hold, the animals, the textures (section 15), the
+Godot side, `tests/test-hearths.js`, `BIOME-API.md`.
+
 Status: **a proposal for the owner** only in its wording of the lore sentences and the names. Nothing is built, nothing
 on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is marked *proposed* with its
 wording. It follows the owner's 2026-11-02 pattern for the Gills: **a shared kit of life read in place by host kits,

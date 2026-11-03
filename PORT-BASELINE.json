@@ -116,9 +116,17 @@
    "bytes": 10521059,
    "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
+  "biomes/oidong/dist/oidong-hearths.html": {
+   "bytes": 3643836,
+   "sha256": "c3ed141dfb60d7a8b01c07fb591ce9fbd6634aae38249104aeeacbfbddebabae"
+  },
+  "biomes/oidong/dist/oidong-passes.html": {
+   "bytes": 3601947,
+   "sha256": "392c5ad907d5ace4266803939b3d9295f7d17a0767342f773fac2d84d6d5997e"
+  },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 2679653,
-   "sha256": "484a3f4c51dd56ef8d6025da680ed61b794afeeb5e2efcccdbaf66a705704c87"
+   "bytes": 3625063,
+   "sha256": "1cbb8370a94f7d84d660ce679dc00c8e1eaf7b41dbc45cb194bfb7f88dffffe7"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 6327489,
