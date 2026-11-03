@@ -7,11 +7,11 @@ rounds 4 and 3 (the history, with the reasons each rule exists), then the `pushO
 ## Where the work is
 
 - **Worktree** `C:\Users\travi\Documents\krator-garments`, branch `claude/garment-defects` (branched from local
-  `claude/biome-rebuild`). Last commit `b0477373b` (round 3: bone fix, slits out). **Rounds 4 and 5 are uncommitted** in
-  the working tree: `src/50-figure.js`, `tools/garment_audit.py`, `tools/shots.py`, `tools/make_mpfb.py`, the Godot twin
-  (`godot/krator/character/kchar_figure.gd`, `kchar_push.gdshaderinc`, `kchar_push.gdshader`, `kchar_fur.gdshader`),
-  `tests/garment-audit.json`, the docs. `pieces/mpfb_male|female/mindfront_kimono.glb` were reweighted in place
-  (gitignored; originals in `C:\Users\travi\Tools\rb\kimono-before`). Do not push, merge or publish without the owner's word.
+  `claude/biome-rebuild`), not pushed. `b0477373b` is round 3 (bone fix, slits out); `644bea198` is rounds 4 and 5
+  (`src/50-figure.js`, `tools/garment_audit.py`, `tools/shots.py`, `tools/make_mpfb.py`, the Godot twin in
+  `godot/krator/character/`, `tests/garment-audit.json`, the docs, this handoff). `pieces/mpfb_male|female/mindfront_kimono.glb`
+  were reweighted in place (gitignored, so only in this worktree; originals in `C:\Users\travi\Tools\rb\kimono-before`; the
+  built `dist/pieces/*/mindfront_kimono.txt` carry them). Do not push, merge or publish without the owner's word.
 - **The live labs are not this branch.** Cosmetic Lab https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw (v75) and Animation
   Lab https://claude.ai/artifact/WStXx16aNHT63stCoz331x (v55) carry the owner's posture work (review round 3), which this
   branch lacks, so poses differ from `dist/`. They are updated by patching the diff of `src/50-figure.js` onto them, never
