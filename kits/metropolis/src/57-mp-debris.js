@@ -10,9 +10,9 @@ MP.debris=function(F,state,coarse){const P=MP.debrisPlan(F,state);if(!P)return n
   for(let i=0;i<P0.count;i++){v.fromBufferAttribute(P0,i).applyMatrix4(m);q.p.push(v.x,v.y,v.z);v.fromBufferAttribute(N0,i).applyMatrix3(n3).normalize();q.n.push(v.x,v.y,v.z);q.u.push(U0?U0.getX(i):0,U0?U0.getY(i):0);if(C0)q.c.push(C0.getX(i),C0.getY(i),C0.getZ(i));else q.c.push(1,1,1);}
   const I=g.index;if(I)for(let i=0;i<I.count;i++)q.i.push(base+I.getX(i));else for(let i=0;i<P0.count;i++)q.i.push(base+i);};
  const one=new THREE.Matrix4();
- // the heaps (core/terrain KRUBBLE): rubble grey, darker in the hollows between the lumps; the loose blocks each a shade of their own. coarse: the far one, a sparser grid
+ // the heaps (core/terrain KRUBBLE): rubble grey, darker in the hollows between the lumps; the loose blocks each a shade of their own. coarse: the far one, an 8 m grid
  // with its big blocks but not the cover's chunks or the pieces, for the ruins past 1 km
- MP.heaps(F,state).forEach(function(H){const o=KRUBBLE.mesh(H,{cell:coarse?16:4}),n=o.pos.length/3,col=new Float32Array(n*3);
+ MP.heaps(F,state).forEach(function(H){const o=KRUBBLE.mesh(H,{cell:coarse?8:4}),n=o.pos.length/3,col=new Float32Array(n*3);
   for(let i=0;i<n;i++){const k=o.part[i]?1-o.occ[i]:(coarse?.9:.7)*(1-.5*o.occ[i]);col[i*3]=.78*k;col[i*3+1]=.75*k;col[i*3+2]=.7*k;   /* the bed a shade under the chunks; the far heap, chunkless, lighter */}
   /* the bed in the rubble set (loose debris, so the heap does not read as one cast mass), the chunks and blocks in the concrete; the far heap its bed and big blocks */
   const bed=[],lumps=[];for(let i=0;i<o.idx.length;i+=3){const pt=o.part[o.idx[i]];if(coarse&&pt===2)continue;(pt?lumps:bed).push(o.idx[i],o.idx[i+1],o.idx[i+2]);}

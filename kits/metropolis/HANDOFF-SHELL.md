@@ -34,7 +34,7 @@ Texel: 0.33 m (intact and gutted), 0.5 m for the five ruin states past gutted.
   MeshStandardMaterial), `KSHELL.draw` (instanced cages with per-instance slot, frame, top and bottom slot attributes).
 - The trace (`mpTrace`): from the cage surface toward the eye's ray, relaxed sphere tracing by the side gap (`max(g*.85, mn)`), limited over a roof by
   the top map's height, 32 steps (`MP_STEPS`); a hit is bisected back to the surface (5 halvings); then the colour branch: the top map's
-  colour on a real roof (normal up, and air 3.5 m above in the side map or the top map flat 1.5 m all round), the bottom map's on a soffit, else
+  colour on a real roof (normal up, and air 1.2 m above in the side map or the top map flat 1.5 m all round), the bottom map's on a soffit, else
   the side map's. `mpLod` is the distance's mip level; `mpGeo = mpLod - 1` is used for the shape reads; colour reads at `mpLod - .75` plus up to
   1.25 more on faces seen edge-on.
 - `src/70-mp-stage.js` [web]: what stands where; `MPS.tiersTick` (heroes under 300 m, shells to 1.4 km and to 3.2 km when seen steeply, impostors
@@ -80,7 +80,7 @@ Texel: 0.33 m (intact and gutted), 0.5 m for the five ruin states past gutted.
 3. **One-row ledges.** A ledge (a reveal, a hoop, the disc's rim) is one row of the side map; with linear filtering between rows the radius
    slopes across it, so grazing rays from above see a smeared band. The bake already gives a side map's ledges the wall's normal (`BF`).
 4. **Mips at the slot.** `mpGeo` reads the shape one mip under the colour; at the top and bottom of a slot the mips still blend the gutter.
-5. **The branch switch.** The top map's colour applies only where the side map shows air 3.5 m above or the top map is flat 1.5 m round; on the
+5. **The branch switch.** The top map's colour applies only where the side map shows air 1.2 m above (3.5 m until 2026-11-03) or the top map is flat 1.5 m round; on the
    skirt's narrow tiers and the lamp's sloped dome that test may flip pixel to pixel (view 4 shows it).
 6. **The fins** (three radial blades, 2.2 m thick) are three texels wide in angle: the filter draws each as a wedge. Known; may be part of the "spines".
 

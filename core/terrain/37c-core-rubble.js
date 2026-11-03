@@ -27,7 +27,7 @@
     if (!o || o.id == null) throw new Error('KRUBBLE.heap: a heap needs an id');
     var seed = (o.seed == null ? KR.child(7, String(o.id)) : o.seed) >>> 0, rx = o.rx == null ? 20 : o.rx, rz = o.rz == null ? rx : o.rz;
     var H = { id: o.id, kind: 'heap', x: o.x || 0, z: o.z || 0, y0: o.y0 == null ? 0 : o.y0, rx: rx, rz: rz, ry: o.ry || 0, h: o.h == null ? Math.min(rx, rz) * 0.45 : o.h, seed: seed,
-      rough: o.rough == null ? 0.22 : o.rough, lumps: [], blocks: [] };
+      rough: o.rough == null ? 0.22 : o.rough, cell: o.cell == null ? 4 : o.cell, lumps: [], blocks: [] };
     var nl = o.lumps == null ? 5 : o.lumps;
     for (var i = 0; i < nl; i++) {
       var a = u01(seed, i, 11) * TAU, q = Math.sqrt(u01(seed, i, 12)) * 0.7;
@@ -36,9 +36,10 @@
     var nb = o.blocks == null ? 12 : o.blocks, sz = o.size || [1.5, 4];
     for (var j = 0; j < nb; j++) {
       var b = u01(seed, j, 21) * TAU, p = Math.sqrt(u01(seed, j, 22)) * 0.85, lu = Math.cos(b) * p, lv = Math.sin(b) * p, L = sz[0] + (sz[1] - sz[0]) * u01(seed, j, 23);
-      var w = toWorld(H, lu * H.rx, lv * H.rz), y = H.y0 + heightAt(H, w[0], w[1]), bh = L * (0.25 + 0.35 * u01(seed, j, 24)), bd = L * (0.4 + 0.5 * u01(seed, j, 25));
-      /* a block lies on the heap, sunk by a third of its height, tipped up to 35 degrees */
-      H.blocks.push({ x: w[0], y: y + bh * 0.17, z: w[1], w: L, h: bh, d: bd, ry: u01(seed, j, 26) * TAU, tx: (u01(seed, j, 27) - 0.5) * 1.2, tz: (u01(seed, j, 28) - 0.5) * 1.2, tone: 0.85 + 0.2 * u01(seed, j, 29), chunk: 0 });
+      var w = toWorld(H, lu * H.rx, lv * H.rz), bh = L * (0.25 + 0.35 * u01(seed, j, 24)), bd = L * (0.4 + 0.5 * u01(seed, j, 25)), bry = u01(seed, j, 26) * TAU;
+      /* a block rests on the drawn bed (rest), tipped a little more by hash */
+      var rb = rest(H, w[0], w[1], L, bd, bry, bh);
+      H.blocks.push({ x: w[0], y: rb[0], z: w[1], w: L, h: bh, d: bd, ry: bry, tx: rb[1] + (u01(seed, j, 27) - 0.5) * 0.3, tz: rb[2] + (u01(seed, j, 28) - 0.5) * 0.3, tone: 0.85 + 0.2 * u01(seed, j, 29), chunk: 0 });
     }
     /* the cover: a chunk a cell of a jittered grid in the heap's frame, by hash of (cell i, cell j), most cells taken; the edge thins out */
     var sp = o.cover || 0;
@@ -46,8 +47,9 @@
       var hc = KR.hash(seed, ci + 4096, cj + 4096, 31), r1 = function (k) { return KR.unit(KR.hash(hc, k)); };
       var cu = (ci + r1(1)) * sp, cv = (cj + r1(2)) * sp, qq = (cu * cu) / (H.rx * H.rx) + (cv * cv) / (H.rz * H.rz);
       if (qq > 0.95 || r1(3) > 0.9 - 0.5 * qq) continue;
-      var cw = toWorld(H, cu, cv), cy = H.y0 + heightAt(H, cw[0], cw[1]), cl = sp * (0.6 + 0.75 * r1(4)), ch = cl * (0.35 + 0.35 * r1(5));
-      H.blocks.push({ x: cw[0], y: cy + ch * 0.17, z: cw[1], w: cl, h: ch, d: cl * (0.55 + 0.4 * r1(6)), ry: r1(7) * TAU, tx: (r1(8) - 0.5) * 0.9, tz: (r1(9) - 0.5) * 0.9, tone: 0.78 + 0.3 * r1(10), chunk: 1 });
+      var cw = toWorld(H, cu, cv), cl = sp * (0.6 + 0.75 * r1(4)), ch = cl * (0.35 + 0.35 * r1(5)), cd = cl * (0.55 + 0.4 * r1(6)), cry = r1(7) * TAU;
+      var rc = rest(H, cw[0], cw[1], cl, cd, cry, ch);
+      H.blocks.push({ x: cw[0], y: rc[0], z: cw[1], w: cl, h: ch, d: cd, ry: cry, tx: rc[1] + (r1(8) - 0.5) * 0.3, tz: rc[2] + (r1(9) - 0.5) * 0.3, tone: 0.78 + 0.3 * r1(10), chunk: 1 });
     }
     return H;
   }
@@ -59,12 +61,33 @@
     if (q2 >= 1) return 0;
     var e = 1 - q2, y = H.h * Math.pow(e, 0.85);
     for (var i = 0; i < H.lumps.length; i++) { var m = H.lumps[i], du = u - m.u, dv = v - m.v, d2 = (du * du + dv * dv) / (m.r * m.r); if (d2 < 4) y += H.h * m.h * Math.exp(-d2 * 1.6) * e; }
-    var n = KR.vnoise(l[0] / 3.1, l[1] / 3.1, 0.5, H.seed) * 0.65 + KR.vnoise(l[0] / 1.2, l[1] / 1.2, 2.5, H.seed) * 0.35;
+    /* the noise no finer than the mesh's grid can draw (2.6 and 1.6 cells): finer, the drawn bed ran under it in its hollows and the pieces resting on it floated */
+    var c = H.cell == null ? 4 : H.cell, n = KR.vnoise(l[0] / (2.6 * c), l[1] / (2.6 * c), 0.5, H.seed) * 0.65 + KR.vnoise(l[0] / (1.6 * c), l[1] / (1.6 * c), 2.5, H.seed) * 0.35;
     return Math.max(0, y + (n - 0.5) * 2 * H.rough * H.h * Math.min(1, e * 3));
+  }
+  // the mesh's polar grid for a cell: rings and segments
+  function grid(H, cell) { var R = Math.max(H.rx, H.rz); return { nr: Math.max(3, Math.ceil(R / cell)), ns: Math.max(16, Math.ceil(TAU * R / cell)) }; }
+  // the drawn bed's height over (x, z), metres above y0: the mesh's own triangles (at the heap's cell), so what rests on it rests on what is drawn
+  function bedAt(H, x, z) {
+    var l = toLocal(H, x, z), u = l[0] / H.rx, v = l[1] / H.rz, q = Math.sqrt(u * u + v * v);
+    if (q >= 1) return 0;
+    var G = grid(H, H.cell == null ? 4 : H.cell), fr = q * G.nr, a = Math.atan2(v, u); if (a < 0) a += TAU;
+    var fs = a / TAU * G.ns, i = Math.floor(fr), j = Math.floor(fs) % G.ns, s = fr - i, t = fs - Math.floor(fs);
+    var P = function (ri, sj) { if (ri === 0) return heightAt(H, H.x, H.z); if (ri >= G.nr) return -0.05; var ang = (sj % G.ns) / G.ns * TAU, w = toWorld(H, Math.cos(ang) * ri / G.nr * H.rx, Math.sin(ang) * ri / G.nr * H.rz); return heightAt(H, w[0], w[1]); };
+    if (i === 0) return P(0, 0) * (1 - s) + s * (P(1, j) * (1 - t) + P(1, j + 1) * t);
+    var a0 = P(i, j), a1 = P(i, j + 1), b0 = P(i + 1, j), b1 = P(i + 1, j + 1);
+    return s + t <= 1 ? a0 + t * (a1 - a0) + s * (b0 - a0) : b1 + (1 - t) * (b0 - b1) + (1 - s) * (a1 - b1);
+  }
+  // how a piece w by d, turned ry, h tall rests: laid along the drawn bed's slope under it (the tilts that put its bottom in the bed's plane), its bottom sunk 0.35 h
+  // into the bed at its centre: [y, tx, tz]. Resting on the lowest point under it buried most pieces on a steep heap; resting on its centre floated the downhill side
+  function rest(H, x, z, w, d, ry, h) {
+    var c = Math.cos(ry), sn = Math.sin(ry), B = function (px, pz) { return bedAt(H, x + px * c + pz * sn, z - px * sn + pz * c); };
+    var sx = (B(w / 2, 0) - B(-w / 2, 0)) / w, sz = (B(0, d / 2) - B(0, -d / 2)) / d;
+    return [H.y0 + B(0, 0) + h * 0.15, -Math.atan(sz), Math.atan(sx)];
   }
   function at(list, x, z) { var best = -Infinity; for (var i = 0; i < list.length; i++) { var H = list[i], y = heightAt(H, x, z); if (y > 0) best = Math.max(best, H.y0 + y); } return best; }
   function mesh(H, opt) {
-    opt = opt || {}; var cell = opt.cell == null ? 4 : opt.cell, R = Math.max(H.rx, H.rz), nr = Math.max(3, Math.ceil(R / cell)), ns = Math.max(16, Math.ceil(TAU * R / cell));
+    opt = opt || {}; var cell = opt.cell == null ? (H.cell == null ? 4 : H.cell) : opt.cell, G = grid(H, cell), nr = G.nr, ns = G.ns;
     var pos = [], idx = [], uv = [], part = [], occ = [];
     var vert = function (x, y, z, p, o) { pos.push(x, y, z); uv.push(x, z); part.push(p); occ.push(o); return pos.length / 3 - 1; };
     var shade = function (x, z, y) { var s = 0, k = 0, d = 1.5; [[d, 0], [-d, 0], [0, d], [0, -d]].forEach(function (q) { s += heightAt(H, x + q[0], z + q[1]); k++; }); return Math.max(0, Math.min(1, (s / k - y) / 1.2)); };
@@ -82,18 +105,23 @@
       var P = function (x, y, z) { var y1 = y * cx - z * sx, z1 = y * sx + z * cx, x2 = x * cz - y1 * sz, y2 = x * sz + y1 * cz; return [b.x + x2 * cy + z1 * sy, b.y + y2, b.z - x2 * sy + z1 * cy]; };
       /* each corner pulled in or out by up to a fifth of the side, by hash of the piece and the corner: a broken piece, not a brick */
       var hw = b.w / 2, hh = b.h / 2, hd = b.d / 2, C = [], bs = KR.hash(H.seed, Math.round(b.x * 64), Math.round(b.z * 64), 41), J = function (k, a) { return 1 + (KR.unit(KR.hash(bs, k, a)) - 0.5) * 0.4; };
-      for (var k = 0; k < 8; k++) { var p = P((k & 1 ? hw : -hw) * J(k, 1), (k & 2 ? hh : -hh) * J(k, 2), (k & 4 ? hd : -hd) * J(k, 3)); C.push(vert(p[0], p[1], p[2], b.chunk ? 2 : 1, 1 - b.tone)); }
-      [[0, 4, 6, 2], [1, 3, 7, 5], [0, 1, 5, 4], [2, 6, 7, 3], [0, 2, 3, 1], [4, 5, 7, 6]].forEach(function (f) { idx.push(C[f[0]], C[f[1]], C[f[2]], C[f[0]], C[f[2]], C[f[3]]); });
+      for (var k = 0; k < 8; k++) C.push(P((k & 1 ? hw : -hw) * J(k, 1), (k & 2 ? hh : -hh) * J(k, 2), (k & 4 ? hd : -hd) * J(k, 3)));
+      /* each face its own four vertices, its uv the world metres in the plane it most faces (a side of a piece took the top's x, z and streaked) */
+      [[0, 4, 6, 2], [1, 3, 7, 5], [0, 1, 5, 4], [2, 6, 7, 3], [0, 2, 3, 1], [4, 5, 7, 6]].forEach(function (f) {
+        var A = C[f[0]], Bq = C[f[1]], Cq = C[f[2]], ux = Bq[0] - A[0], uy = Bq[1] - A[1], uz = Bq[2] - A[2], vx = Cq[0] - A[0], vy = Cq[1] - A[1], vz = Cq[2] - A[2];
+        var nx = Math.abs(uy * vz - uz * vy), ny = Math.abs(uz * vx - ux * vz), nz = Math.abs(ux * vy - uy * vx), q = [];
+        f.forEach(function (ci) { var p = C[ci], v0 = vert(p[0], p[1], p[2], b.chunk ? 2 : 1, 1 - b.tone); if (nx >= ny && nx >= nz) { uv[v0 * 2] = p[2]; uv[v0 * 2 + 1] = p[1]; } else if (nz >= ny) { uv[v0 * 2] = p[0]; uv[v0 * 2 + 1] = p[1]; } q.push(v0); });
+        idx.push(q[0], q[1], q[2], q[0], q[2], q[3]); });
     });
     return { pos: new Float32Array(pos), idx: new Uint32Array(idx), uv: new Float32Array(uv), part: new Uint8Array(part), occ: new Float32Array(occ) };
   }
   function walkTris(H, cell) {
-    cell = cell == null ? 4 : cell; var R = Math.max(H.rx, H.rz), nr = Math.max(2, Math.ceil(R / cell)), ns = Math.max(12, Math.ceil(TAU * R / cell)), out = [];
+    cell = cell == null ? (H.cell == null ? 4 : H.cell) : cell; var R = Math.max(H.rx, H.rz), nr = Math.max(2, Math.ceil(R / cell)), ns = Math.max(12, Math.ceil(TAU * R / cell)), out = [];
     var P = function (q, a) { var w = toWorld(H, Math.cos(a) * q * H.rx, Math.sin(a) * q * H.rz); return [w[0], w[1], H.y0 + heightAt(H, w[0], w[1])]; }, C = [H.x, H.z, H.y0 + heightAt(H, H.x, H.z)];
     for (var j = 0; j < ns; j++) { var a = j / ns * TAU, b = (j + 1) / ns * TAU; out.push([C, P(1 / nr, a), P(1 / nr, b)]); for (var i = 1; i < nr; i++) { var q0 = i / nr, q1 = (i + 1) / nr; out.push([P(q0, a), P(q1, a), P(q1, b)], [P(q0, a), P(q1, b), P(q0, b)]); } }
     return out;
   }
-  root.KRUBBLE = { version: 1, heap: heap, heightAt: heightAt, at: at, mesh: mesh, walkTris: walkTris, toLocal: toLocal, toWorld: toWorld,
+  root.KRUBBLE = { version: 1, heap: heap, heightAt: heightAt, bedAt: bedAt, at: at, mesh: mesh, walkTris: walkTris, toLocal: toLocal, toWorld: toWorld,
     export: function (list) { return { format: 'krator-rubble', version: 1, heaps: JSON.parse(JSON.stringify(list)) }; },
     load: function (o) { if (!o || o.format !== 'krator-rubble') throw new Error('KRUBBLE.load: not a krator-rubble export'); return o.heaps; } };
 })(typeof window !== 'undefined' ? window : this);

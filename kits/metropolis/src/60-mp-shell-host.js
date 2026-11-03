@@ -76,6 +76,8 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
     under the empty test, and the step's limit over a roof (below) let a ray step by the side gap past a curb at the ground */
  'bool mpIn(vec3 p,vec3 rd,float mn,float ey,vec2 hxz,out float g,out float ta,out float ty){g=mpGap(p);vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h;ta=textureLod(uB,ut,mpGeo+1.0).a;ty=(ta-.1)/.9*vMpFrame.y;',
  ' float a0=textureLod(uB,ut,0.0).a;if(a0>0.05&&ta<=0.05){ta=a0;ty=(a0-.1)/.9*vMpFrame.y;}return g<mn*.5&&(rd.y>=0.0||(ta>0.05&&p.y<=ty+ey*2.5));}',
+ /* the top map's colour takes over where the side map shows 1.2 m of air over the hit (a sill or reveal is 0.55 to 0.7 m deep; at 3.5 m the Ledger's hall, stepped 1.8 m, was
+    drawn as one dark riser from above), or where */
  /* a roof is where the top map is flat for 1.5 m all round; a sill never is (the wall rises behind it). The side map's air above was the only test, and over a box
     it fails on a low roof past a hall's end: the long face's map extrudes the hall over it, which read the side map there as bars */
  'bool mpFlat(vec2 ut,float ty,vec2 hxz,float ey){vec2 o=vMpTop.zw*1.5/(2.0*hxz);float tol=max(ey,0.5),L=mpLod+1.0;for(int k=0;k<4;k++){vec2 d=k==0?vec2(o.x,0.0):k==1?vec2(-o.x,0.0):k==2?vec2(0.0,o.y):vec2(0.0,-o.y);float a=textureLod(uB,ut+d,L).a;if(a<0.05||abs((a-.1)/.9*vMpFrame.y-ty)>tol)return false;}return true;}',
@@ -87,7 +89,7 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
     so the colour is read at the surface's own height (a deep landing read a skirt's side lower down, as spines, and a roof's map flipped with the camera) */
  '  if(mpIn(p,rd,mn,ey,hxz,g,ta,ty)){float a=tp,b=t;for(int j=0;j<5;j++){float m=(a+b)*.5;if(mpIn(ro+rd*m,rd,mn,ey,hxz,g,ta,ty))b=m;else a=m;}',
  '   p=ro+rd*b;mpIn(p,rd,mn,ey,hxz,g,ta,ty);vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h,ub=vMpBot.xy+vMpBot.zw*h,us=mpUV;mpHP=p;',
- '   if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85&&(mpGap(vec3(p.x,p.y+ey*2.0,p.z))>3.5||mpFlat(ut,ty,hxz,ey))){mpUV=ut;mpBr=1.0;}else if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.05){mpUV=ub;mpBr=2.0;}else mpUV=us;return true;}',
+ '   if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85&&(mpGap(vec3(p.x,p.y+ey*2.0,p.z))>1.2||mpFlat(ut,ty,hxz,ey))){mpUV=ut;mpBr=1.0;}else if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.05){mpUV=ub;mpBr=2.0;}else mpUV=us;return true;}',
  /* the side map's gap is a horizontal distance: a steep ray stepping by it fell through a flared skirt, so a ray going down over a roof steps no further than the roof's height above it,
     and none past 5 cm over the ground, where a curb or a fin's foot is a row or two of the map */
  '  tp=t;float s=max(g*.85,mn);if(rd.y<0.0&&ta>0.05){if(g<mn*.5)s=clamp((p.y-ty-ey)/(-rd.y),mn,2.0);else if(p.y>ty+ey)s=min(s,max((p.y-ty-ey)/(-rd.y),max(mn,ey*.5)));}if(rd.y<0.0&&p.y>.05)s=min(s,max((p.y-.05)/(-rd.y),mn*.5));t+=s;',
