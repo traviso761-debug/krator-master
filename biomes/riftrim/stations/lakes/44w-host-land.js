@@ -25,7 +25,7 @@ const STATION=(function(){const R=3000,LAKE=3272,T1=3420,T2=3350;
   // the rim's edge: the ground falling into the trough past EDGE (800 m within the page's last 600 m), the outlet's hanging valley cut back into it
   if(z>EDGE-200){const n=nearLine(OUT,x,z),v=smooth(260,40,n.d);h-=smooth(EDGE-150,EDGE+650,z+60*v*smooth(EDGE,EDGE-200,z))*900*(1-.15*v);}
   // the outlet stream across the shore flat to the lip
-  if(z>800&&z<EDGE+80){const n=nearLine(OUT,x,z);if(n.d<40)h=Math.min(h,mix(h,LAKE-2-n.t*6,smooth(40,10,n.d)));}
+  if(z>800&&z<EDGE+80){const n=nearLine(OUT,x,z);if(n.d<40)h=Math.min(h,mix(h,LAKE-4.5-n.t*6,smooth(40,10,n.d)));}
   return h;}
  const lipZ=EDGE+40,lp=OUT[OUT.length-2];
  const L=rimLand({R,ground,
@@ -61,7 +61,7 @@ const LAND={name:'The lakes of the north rim (riftrim station 2)',title:'Krator 
  farBands:[0,2600,3300,3900,4300],farLabel:'The north rim and the trough past the map',
  kin:[
   {ref:'rift.beardtree',key:'beardtree',name:'Beard tree',cell:30,minR:3,accept:Z=>Z.lake*.4*Z.tree*smooth(.4,.6,Z.wet)},
-  {ref:'rift.araucaria',key:'araucaria',name:'Monkey-puzzle',cell:70,minR:5,accept:Z=>Z.montane*.12},
+  /* OWED: rift.araucaria (the monkey-puzzle): its builder (rift src/55, B[9]) scatters its blooms up to .6 of a pad off the pad, and the attach audit failed at 51% here (1,982 of 2,039 blooms floating); grown again once the Rift holds them (BIO.holdTo). KNOWN_ISSUES.md */
   /* the cloud tree-fern (rift.cloudfern) grows on the N rim's warm lower edge (PLAN.md section 3), not at 3.3 km: not on this page */
   {ref:'shigh.crozier',key:'crozier',name:'Crozier tree fern',cell:36,minR:2,accept:Z=>(Z.lake*.3+Z.montane*.03*smooth(.4,.6,Z.wet))*Z.tree}],
  views:H=>{const {P,look,atTree,nearTree,gh}=H,S=STATION;

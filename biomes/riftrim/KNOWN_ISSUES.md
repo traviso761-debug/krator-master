@@ -41,6 +41,10 @@ coordinator's (`HANDOFF-REBUILD.md`, the riftrim paragraph).
 
 ## Borrowed species
 
+- [ ] **The monkey-puzzle is not grown** (station 2): the Rift's builder (`src/55`, `B[9]`) scatters its blooms up to .6 of a pad's width off
+  the pad, and the attach audit failed at 51% on station 2 with it (1,982 of 2,039 blooms floating). Its row is commented; grow it again
+  once the Rift holds them (`BIO.holdTo`).
+
 - [ ] **The tier cedar is not grown** (stations 1 and 4): the SW lowlands' builder (`src/55`, `B[16]`) jitters its 4 m pads up to 1.2 m
   off the limbs, and the attach audit failed at 1.96% on station 1 with it (273 of 6,186 needle cards floating; the limit is 1%). Its row is
   commented in the two lands; grow it again once swlowlands holds them (`BIO.holdTo`), as ebadlands waits on sedesert's mesquite.
