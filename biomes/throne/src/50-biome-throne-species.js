@@ -262,7 +262,7 @@ THRONE.PLANTS={
  bloodchalice:PK('Blood chalice','temperate','humid','yes',['BSk'],'native','vent',['tfunnel','rod'],HV('none',[],false,'Clusters of tall red flared trumpets on the acid shores; dew beads on their lips.')),
  mossdome:PK('Moss domes','temperate','subhumid','both',['BSk'],'native','seam',['brain','rod'],HV('none',[],false,'Squat lumpy green domes in the gullies and the skylights, a pale fringe of roots on their downhill side.')),
  redcoral:PK('Red coral-fern','temperate','subhumid','both',['BSk'],'native','seam',['feather'],HV('none',[],false,'Branching red sprays among the moss domes.')),
- snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','feather'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
+ snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','rafthair'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
 };
 /* THE MAT IS A HAZARD (core/hazard, 2026-10-26): a slime mould that digests what sleeps on it, so it corrodes slowly and the
    longer one stays the worse (a soak: nothing at first, full after half an hour, forgotten over ten minutes off it); paths
@@ -715,6 +715,7 @@ BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('glossy',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Ranj-tree leaves'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 BIO.def('feather',G.tuft(),M.feather,{label:'Plume-bush feathers and anemone tufts'});
+BIO.def('rafthair',G.tuft(),M.feather,{label:'Snare raft hairs',free:true});   /* the feather tuft on the snare rafts, which float (2026-11-02: free, so the attach audit does not read them as a crown off its tree) */
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Tufts'});
 BIO.def('plume',G.tuft(),M.plume,{label:'Broom flowers'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Stalk daisies'});
@@ -789,7 +790,9 @@ BIO.def('bladder',(function(){const g=new T3.IcosahedronGeometry(1,1),p=g.attrib
  const LAB={reedbrim:'Brimstone reeds',angel:'Angel trumpets',spiderlily:'Spider lilies',trumpets:'Trumpet fungi',aloeflower:'Star-aloe blossoms',grassdry:'Tall grass',flowerspike:'Fire flowers',kelp:'Kelp',seaweed:'Seaweed',mosshang:'Moss curtains',ferngreen:'Cloud ferns',weeper:'Veil-tree veils',carnplant:'Snare plants',coralcard:'Vent growths',mushalien:'Plume mushrooms',moltensucc:'Ember succulents',moss:'Snare moss (hanging)',tendril:'Ash creepers (tendrils)',shelf:'Lantern brackets (glowing shelf fungi)',glowshroom:'Glow mushrooms',aflora:'Glow tufts',carnivore:'Snare flowers',specimen:'Plume fungi',drip:'Dripping fungi',succulent:'Spotted succulents'};
  // the wrack lies flat on the sand: a quad in the ground's plane, face up
  (THRONE.LIB.wrack||[]).forEach(k=>BIO.def(k,quad().rotateX(-Math.PI/2),M[k],{label:'Wrack (cast kelp)'}));
- for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond'||key==='pyreblade'||key==='lacecard')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key]}));}
+ for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond'||key==='pyreblade'||key==='lacecard')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key],onLeaf:key==='drip'||key==='moss'}));}
+ // (2026-11-02, the attach audit: the drips and the snare moss hang under the parasols' caps, which are drawn on a leaf material for their sway, so
+ // the audit reads a cap as a card and not as structure; onLeaf holds what hangs from one inside the cap's body. Under a limb its bark holds them)
  if(M.lavaleaf)BIO.def('lavaleaf',BIO.geo.clump(),M.lavaleaf,{attrs:['aN'],label:'Lava-leaf shrubs'});
  if(M.distressed)BIO.def('distressed',BIO.geo.clump(),M.distressed,{attrs:['aN'],label:'Withered ash shrubs'});
  if(M.broom)BIO.def('broom',BIO.geo.clump(),M.broom,{attrs:['aN'],label:'Ash broom'});

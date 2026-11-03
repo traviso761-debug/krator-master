@@ -95,5 +95,8 @@
  "settlements/voth: STALE build.py": 1,
  "settlements/xanadu: STALE build.py": 1,
  "settlements/ys: STALE build.py": 1,
- "settlements/yuni: STALE build.py": 1
+ "settlements/yuni: STALE build.py": 1,
+ "biomes/nwlowlands: STALE build.py --station margins": 1,
+ "biomes/swlowlands: STALE build.py --station delta": 1,
+ "biomes/swlowlands: STALE build.py --station gorge": 1
 }

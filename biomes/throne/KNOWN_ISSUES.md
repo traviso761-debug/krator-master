@@ -4,7 +4,8 @@
   the geyser isle (4, `stations/isle/`), the cloud forest (5, `stations/cloudforest/`), the south-flank savanna (6,
   `stations/savanna/`), the ash desert deep under the plume (7, `stations/ashdesert/`), vent country (8,
   `stations/vents/`) the glacier with its ice caves (9, `stations/glacier/`) and the rim over the caldera (10, `stations/caldera/`)
-  are built. The shoulders' cold belt went into the glacier's. Not yet a station: the geyser field, the lee's penitentes
+  are built, and the lava tube (11, `stations/tube/`, map 5.1's `tube_hot_05`): eleven pages, every one rebuilt in the final rebuild (2026-11-02,
+  `PLAN.md`), and three more (2026-11-02, `PLAN.md`, "New stations"): the lava delta (12, `stations/delta/`), the blast zone (13, `stations/blast/`) and the lee's penitentes (14, `stations/penitentes/`). The shoulders' cold belt went into the glacier's. Not yet a station: the geyser field, the lee's penitentes
   below the summit. The shoulders' cold belt (gill-coral trees among conifers in the snow) is not yet a
   station (it could pair with the glacier's).
 - [ ] **One pack for every station.** `materials.json` and `tex/` hold every station's textures, so each page carries the
@@ -232,6 +233,27 @@
       20M the brief keeps it to); the isle 130 -> 129, 16.94M -> 16.80M (renderer); vents 202 -> 203, 21.62M -> 21.74M (renderer; +0.12M is the pools' fine ground patch);
       the glacier 42 -> 42 (the outwash view 42 -> 44: one flow per braid), 6.31M -> 6.31M. The cloud forest 75 -> 72, 21.41M -> 20.06M scene triangles (the falls two meshes for
       four, the pools one for four, the streams one per run; the triangles fell with the dense stand's thinning edge, its item).
+
+## The final rebuild (pair 5, 2026-11-02; `PLAN.md`, "Core adoption")
+
+- [ ] **The far field.** No page takes KFAR: each station is an ideal type whose `terrainH` past the map is its own procedure, not the scale model, and
+  station 1 is at its triangle ceiling. KHORIZON is baked over the map alone. Owed: a far ring per station from the model's heights round its px (the
+  sky's ridges stand in today).
+- [ ] **Sixteen texture units.** Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers), the isle's and the vents'
+  sixteen. The horizon (two units) goes on a ground only where it fits (`window._horizon.skipped`: station 1, the isle, the ash desert, the vents and the
+  caldera keep their grounds' plain light, their flora takes it), and the rain's occlusion map (one) only where the ground has one free
+  (`window._rainCover`: skipped on the isle and the vents, where the rain falls everywhere, as before). **The sun's shadows** (`KSHADOW`) take one more unit in every lit material (three r128 declares the map whenever the renderer's shadow map is on), so a page whose ground already reads sixteen has none: the isle and the vents (`window._shadow`); the others have them. **Their cost on station 1** (2026-11-03, the Intel Arc 140T, 1280x720, the world pass by wall clock: the Arc's ANGLE has no timer query): 118.7 to 161.2 ms on 'The plume's edge', 143.1 to 184.8 on 'From afar', 115.0 to 158.9 on 'A wild Ranj tree', about +42 ms a frame (+30-38%); the instances drawn double (0.55 to 1.11 M, the casters drawn again into the map), the triangles held do not move (19.89 M). **Station 1 cannot afford them on the Arc**: it already draws at 7-9 frames a second there. They stay on (`?shadow=0` turns them off) until the owner decides: off on station 1, or a caster list cut to the hero trees. A ground on fewer layers, or two layers packed
+  in one map, would free them.
+- [ ] **What hangs under a cap.** The parasols' caps are drawn on a leaf material (their sway), so the attach audit reads a cap as a card and holds what
+  hangs from it only inside half its radius (`onLeaf`). The snare moss and the drips were hung out to .85 of the radius; they now hang inside .47 and
+  .48 of it. **The owner's eye:** a cap's rim may look bare now.
+- [ ] **The caldera on map 5.1.** The model agrees with the page: its floor 10,260 m (the page 10,300), the west rim 10,450-10,835 m (the page 10,750, the
+  peaks to ~10,850), so the wall's ~450 m drop stands. One difference for the owner: the model's floor holds a pit some 250 m deep (cells to 9,985 m), where
+  the page's lava lake lies in a pit of 28 m. Deepening it changes the station's main view; not done.
+- [ ] **The Zeijani's tubes round the kipuka** (map 5.1, `tubes.json`): `tube_dhelv_01`'s West Kipuka Portal (a cliff portal in old-growth kipuka forest, a
+  rolling stone door 2 km in) and its neighbours `tube_surpu_02`, `_qarnu_03`, `_nuru_04` give station 2 a real route; the page draws none of them.
+- [ ] **ringisles' strand pandanus** (`EXCHANGES.md`, ringisles ↔ throne) is not on the isle's beaches: ringisles reads this kit in place and has its turn in
+  pair 8; read it in place there, or here after it.
 
 ## Open
 

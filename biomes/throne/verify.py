@@ -82,6 +82,9 @@ EXPORT_STATIONS = {
     # trees; the summit has none, and the rim, the lake and the penitentes are the host's own or instanced), so buckets
     # may read empty here (4 sets, 139 instances)
     'throne-caldera.html': {'box': [0, -1500, 300, -1200], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage', 'atmos']},
+    'throne-blast.html': {'box': [-150, -350, 150, -50], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage', 'atmos']},   # station 13 (2026-11-02): the blowdown
+    'throne-delta.html': {'box': [-300, -300, 0, 0], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']},   # station 12 (2026-11-02): the bench and the sea
+    'throne-penitentes.html': {'box': [-450, -150, -150, 150], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage', 'atmos']},   # station 14 (2026-11-02): the treads round the middle
     # the lava tube (11): the tube under the skylights at the default view (68 sets, 2 buckets); HEAT.render's shimmer
     # draws on the frame after the scene, so the stage's panorama and the terrain read ok
     'throne-tube.html': {'box': [-320, -320, -20, -20], 'profile': EXPORT_SECTIONS + ['atmos']},

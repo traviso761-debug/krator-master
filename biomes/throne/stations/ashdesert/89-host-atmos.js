@@ -22,5 +22,8 @@ ATMOS.weather({mode:'ashfall',ash:true,apply:W=>{const a=W.ash||0,f=W.flash||0,n
  SKYVEIL.material.color.copy(_wf);SKYVEIL.material.opacity=clamp(smooth(.35,.95,a)+.5*W.fog,0,1);}});   // the veil closes in a full storm, so fogged shapes do not stand out against the dome
 // a few fog banks in the hollows between the dunes, up only in fog
 (function(){reseed(8903);const pts=[],L=BIO.LOD();for(let k=0;k<3000&&pts.length<260;k++){const x=rr(-2400,2400),z=rr(-2400,2400);if(BIO.lodD(x,z)>L.mid)continue;pts.push([x,terrainH(x,z)+rr(1,6),z]);}ATMOS.fogBank(pts);})();
+// THE AIR'S LOAD (core/atmos/fx/89-atmos-fx-airload.js; the final rebuild, BACKPORT.md's row: the ash load): the weather's ash in mg/m3 under the
+// plume, and the fog it makes when that is thicker than the law's above (so a sight KHAZ reads is the wall on screen); ?airload=0 the law alone
+if(ATMOS.airLoad&&new URLSearchParams(location.search).get('airload')!=='0')ATMOS.airLoad({ash:4000,ashAt:(x,z)=>1,colour:0x6b5d49,ashColour:0x6b5d49});
 ATMOS.finish();
 // the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

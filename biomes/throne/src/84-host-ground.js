@@ -76,7 +76,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vGlow=aGlow;vL0=aL0;vL1=aL1;vL2=aL2;');
  const W={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying float vRock,vGlow;varying vec4 vL0,vL1,vL2;',body,emit;
- if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
+ if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
   body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='veins'||k==='glowcarpet'||k==='mycelium'?'vec3 _E_'+k+'=L;':'')).join('')+'}';

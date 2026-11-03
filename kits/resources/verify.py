@@ -45,7 +45,7 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
   const nk=Object.keys(RES_ORE.kinds).length*Object.keys(RES_ORE.grades).length;
   R.push({name:'resource-nodes',ok:N.length===nk&&!E.length,detail:E.length?E.join(', '):N.length+' nodes ('+Object.keys(RES_ORE.kinds).join(', ')+' x low, medium, high), tagged rock, level, harvest; the rule checked (mines and derricks)'});}
  {const E=[];const ok=(c,t)=>{if(!c)E.push(t);};const G=window.RES_GEO,D=G&&G.data();ok(D&&D.format==='krator-geology','no geology data');
-  let st=null;if(D){const t={x0:662*2000,z0:365*2000,x1:722*2000,z1:425*2000},a=G.nodesIn(t),b=G.nodesIn(t);
+  let st=null;if(D){const dx=D.grid.fullW===1549?0:272,dz=D.grid.fullW===1549?0:330,t={x0:(662+dx)*2000,z0:(365+dz)*2000,x1:(722+dx)*2000,z1:(425+dz)*2000},a=G.nodesIn(t),b=G.nodesIn(t);
    ok(a.length>50&&JSON.stringify(a.map(n=>n.id))===JSON.stringify(b.map(n=>n.id)),'the field is not deterministic or is empty');
    ok(a.every(n=>RES_ORE.kinds[n.kind]&&RES_ORE.grades[n.grade]),'a node of an unknown kind');
    ok(typeof RES_LEDGERDATA!=='undefined'&&RES_LEDGERDATA&&Object.keys(RES_LEDGERDATA.polities).length>=20,'no ledger');

@@ -86,3 +86,5 @@ const HOLLOWS=[(function(){const u=180,c=upAt(u,GRABEN.pw(u)-130);return{x:c[0],
  (function(){const c=upAt(-900,-1650);return{x:c[0],z:c[1],r:88,depth:13};})()].map((H,i)=>Object.assign(H,{i,name:'A CO2 hollow (the mat on its floor; nothing else lives in it)'}));
 // how far under the plume (the kit's 'plume' field): deep everywhere here, deepest down-rift
 function plumeAt(x,z){return clamp(.9+.08*smooth(2500,-2500,uOf(x,z))+.05*(fbm(x*.0005,z*.0005,89,2)-.5),0,1);}
+// THE AIR's height fog (89zz-host-core.js; the final rebuild): a thin mist pooled in the graben at dawn under the acid fog banks (89-host-atmos.js)
+const ATMOS_AIR={falloff:1/800,sun:.35,sky:.35,mist:{density:.0015,below:40,depth:30,noise:.7}};

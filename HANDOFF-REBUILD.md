@@ -237,6 +237,17 @@ PORT row.
 
 **swlowlands' turn (2026-11-02):** species changed for readers: none of keys 0-26 or their indices; new 27 `springcypress`, 28 `ribbonroot`; new `SWLOW.make`, `grow`, `veto`, `IMPOSTORS`; item `padbloom`; `bk.mottle` is `bark.plane`; the madrone's blooms sit lower in the crown; every tree's shape re-rolled once (per-tree reseed); `88-host-build.js` is `89z-host-build.js`. Owed: swbay's receiver rows (mangrove, coastoak); `biomes/swlowlands/PLAN-STATIONS.md`, "For the owner".
 
+**The Throne's turn (pair 5, 2026-11-03; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"):** all eleven pages rebuilt on the universal set (in `src/` fragments
+no station overrides: `80`, `89x`, `89zz`, `98z`, `99-host-tz`; the build moved from `88` to `89z`, after the water), every attach audit at 0-0.0%; map 5.1's frontier
+re-survey (its flank refitted), the caldera checked (a ~250 m pit in the model's floor is the owner's call), `tube_hot_05` recorded; three new stations, 12 the
+lava delta, 13 the blast zone, 14 the lee's penitentes. **Species changed for readers** (ringisles, the Godthrone; `THRONE.SPECIES` keys and indices kept, 33):
+crowns held on their wood (Ranj, ruff, ash pine's mid tier, great ruff, lehua and its pompoms, mangrove, elfin); limbs flared into their parents (`BIO.flareJoin`, on a page that lists `31j`); every page takes `KSHADOW` (`src/89zz`) but the isle and the vents, whose grounds read all 16 texture units (r128 puts the shadow map in every lit material); on station 1 they cost about +42 ms a frame on the Arc 140T (115-143 to 159-185 ms, wall clock; +30-38%), which it cannot afford, left on for the owner's decision; a stalk under each great ruff; far trees are impostors
+where `34-core-impostor.js` is on the page; new item `rafthair` (the snare raft's hairs, `free`); `drip` and `moss` cards `onLeaf`, hung inside half a cap; new
+`THRONE.veto`, `THRONE.layGLSL`. **Core fixed on the way:** `cloudShade` on a Phong material (the glacier's ice threw at render), the lava's crust uniform (a cloned map
+never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lambert ground reads `cameraPosition` (0) for its snow glints; the new stations' copies use `kEye`.
+**Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
+pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
 and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
@@ -354,7 +365,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
-  | 5 | throne, ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
+  | 5 | throne (**merged 2026-11-03:** all fourteen pages, stations 12-14 new; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"), ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu (**merged 2026-11-03:** stations `cloud`, `descent`, `ranges`, `gills`, `floor`), oidong (**merged 2026-11-03:** stations `passes`, `hearths`) | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |
   | 8 | ringisles, abyssal-savannah | after all their sources |
