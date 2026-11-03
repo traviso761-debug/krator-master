@@ -64,8 +64,9 @@ const bloomCol=()=>bright(vary(pick(PAL.bloom),.03,.10,.06),1.15);
 // parent and a collar where it leaves it, on every bough, secondary branch and wand drawn by BIO.tube (not the trunks, the roots or B14's jointed
 // stem, which rise from the ground). The points the kit grew are kept for everything else (the spots, the hangs, the epiphytes): only the tube
 // drawn changes, and no random number is drawn, so placement does not move. ON ONLY WHERE THE HOST ASKS (NWBAY_LOOK.joints, nwbay's own page;
-// ?joints=0 off there): k-guilin reads this fragment in place and draws as before until its own turn
-const J=(pts,parentR)=>(typeof NWBAY_LOOK!=='undefined'&&NWBAY_LOOK&&NWBAY_LOOK.joints&&typeof BIO.flareJoin==='function'&&pts&&pts.length>1)?BIO.flareJoin(pts,{parentR:parentR==null?pts[0].r*1.35:parentR}):pts;
+// ?joints=0 off there; only a limb .25 m or more at its root, where a collar shows: the thin secondaries cost ~.7 M triangles for
+// nothing seen, measured 2026-11-03): k-guilin reads this fragment in place and draws as before until its own turn
+const J=(pts,parentR)=>(typeof NWBAY_LOOK!=='undefined'&&NWBAY_LOOK&&NWBAY_LOOK.joints&&typeof BIO.flareJoin==='function'&&pts&&pts.length>1&&pts[0].r>=.25)?BIO.flareJoin(pts,{parentR:parentR==null?pts[0].r*1.35:parentR}):pts;
 // ---------------------------------------------------------------- a card held by its structure
 // core/biome BIO.holdTo (the attach audit's class 3, "jitter off a spot", 2026-11-02): a bloom scattered round its axil or tip, or a crown clump
 // set at the crown's top over a bough that ends lower, is drawn within reach of the point that holds it. The same random numbers are drawn
@@ -167,7 +168,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  const cy=T.y0+H*.84,ex=T.crownR,ey=H*.25,sz0=rr(7,10),nC=lv===2?1.8:1.1;let mine=0;
  spots.forEach(s=>{const cnt=Math.floor(nC)+(rng()<nC-Math.floor(nC)?1:0);
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.4,.4)*s.s;
-   if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('prism',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,C(pick(S.leaf2)));st.clumps++;mine++;}});
+   if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;const hq=holdC([s.p.x,s.p.y,s.p.z],[x,y,z],sz0*.25);clumpAt('prism',hq[0],hq[1],hq[2],sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,C(pick(S.leaf2)));st.clumps++;mine++;}});
  if(!mine){clumpAt('prism',T.x,T.y0+H*.9,T.z,sz0,.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,C(pick(S.leaf2)));st.clumps++;}
  let spread=T.crownR;boughs.forEach(pts=>{const e=pts[pts.length-1];spread=Math.max(spread,Math.hypot(e.x-T.x,e.z-T.z)+8);});T.spread=spread;
  epiBole(T,rAt,st,lv,1.4);
