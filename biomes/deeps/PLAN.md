@@ -12,10 +12,11 @@ breathes, no wood-borer lives, the Ancients' sunken fleet lies as it sank, and t
 vent-born sulphur lineage, at home where it began. The Hykkousoi can go anywhere in the upper storey and nowhere in the
 lower, which is exactly where the prizes are.
 
-Status: **a proposal for the owner.** Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every
-lore and map change this plan wants is marked *proposed*. It is a new domain for the engine (underwater; section 12 and
-14 say what that costs), so this plan is longer on the physics and the core than on species. Working names throughout;
-the Hykkousoi's words are better.
+Status: **a late, late build: expansion-pack territory, maybe** (the owner, 2026-11-03). The plan stands as a proposal;
+its section 17 questions wait until then. Nothing is built, nothing on the model is changed and `LORE.md` is untouched.
+Every lore and map change this plan wants is marked *proposed*. It is a new domain for the engine (underwater; sections
+12 and 14 say what that costs), so this plan is longer on the physics and the core than on species. Working names
+throughout; the Hykkousoi's words are better.
 
 ## 0. What the kit is
 
