@@ -1402,7 +1402,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_wild_apple', name: 'Wild Apples', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'cloth'],
   biome: 'nsemiarid', source: ['apple'],
   w: 0.24, d: 0.24, h: 0.13, variants: 2, variantNames: ['a bowl, every tree a different apple', 'dried rings on a string'],
   variantDims: [{ w: 0.24, d: 0.24, h: 0.13 }, { w: 0.3, d: 0.06, h: 0.04 }],
@@ -1421,7 +1421,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_wild_pear', name: 'Wild Pears', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'nsemiarid', source: ['pear'],
   w: 0.22, d: 0.22, h: 0.11, variants: 2, variantNames: ['small and hard, a handful', 'bletted soft on a dish'],
   variantDims: [{ w: 0.2, d: 0.2, h: 0.09 }, { w: 0.22, d: 0.22, h: 0.11 }],
@@ -1489,7 +1489,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_pistachio', name: 'Pistachios', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'nsemiarid', source: ['pistachio'],
   w: 0.18, d: 0.18, h: 0.07, variants: 2, variantNames: ['in their rosy hulls, a cluster', 'split shells in a dish'],
   variantDims: [{ w: 0.18, d: 0.12, h: 0.05 }, { w: 0.18, d: 0.18, h: 0.07 }],
@@ -1507,10 +1507,10 @@ FURN({
 
 FURN({
   key: 'generic_fruit_almond', name: 'Almonds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone', 'cloth'],
   biome: 'nsemiarid', source: ['almond'],
   w: 0.22, d: 0.2, h: 0.07, variants: 2, variantNames: ['in the green hull (the sweet strain, marked)', 'blanched kernels in a dish'],
-  variantDims: [{ w: 0.18, d: 0.16, h: 0.05 }, { w: 0.22, d: 0.2, h: 0.07 }],
+  variantDims: [{ w: 0.18, d: 0.16, h: 0.03 }, { w: 0.22, d: 0.2, h: 0.07 }],
   build: function (F) {
     const hull = F.col('fruitAlmondHull'), shell = F.col('fruitAlmondShell'), nut = F.col('fruitAlmondNut'), white = F.col('fruitAlmondBlanched');
     if (F.variant === 0) { for (let i = 0; i < 7; i++) { const a = i * 0.9, r = i ? 0.05 : 0; F.blob(Math.cos(a) * r, 0.016, Math.sin(a) * r, 0.016, 0.026, a, i % 3 ? hull : shell, 'food'); }
@@ -1527,13 +1527,13 @@ FURN({
 
 FURN({
   key: 'generic_fruit_pomelo', name: 'Pomelos', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'guilin', source: ['pomelo'],
   w: 0.3, d: 0.26, h: 0.2, variants: 2, variantNames: ['whole, a head across', 'peeled segments and candied peel'],
   variantDims: [{ w: 0.2, d: 0.2, h: 0.2 }, { w: 0.3, d: 0.26, h: 0.07 }],
   build: function (F) {
     const peel = F.col('fruitPomelo'), pith = F.col('fruitPomeloPith'), flesh = F.col('fruitPomeloFlesh'), cand = F.col('fruitPomeloPeelCandied');
-    if (F.variant === 0) { F.blob(0, 0.095, 0, 0.1, 0.095, 0, peel, 'food'); F.cyl(0, 0.19, 0, 0.012, 0.012, 0, F.col('timberWalnut'), 'wood');
+    if (F.variant === 0) { F.blob(0, 0.095, 0, 0.1, 0.19, 0, peel, 'food');   /* h is the whole height: it rests on the board */ F.cyl(0, 0.19, 0, 0.012, 0.012, 0, F.col('timberWalnut'), 'wood');
       F.blob(0.04, 0.2, 0.01, 0.04, 0.008, 0.6, F.col('vegLeaf'), 'food'); }
     else {
       KGEN.plate(F, -0.03, 0, 0, 0.12, F.col('stoneCream'));
@@ -1545,7 +1545,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_osmanthus', name: 'Osmanthus Flowers', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass', 'metal'],
   biome: 'guilin', source: ['osmanthus'],
   w: 0.26, d: 0.18, h: 0.16, variants: 2, variantNames: ['dried for tea, in a dish', 'the syrup in a jar, a cup of the tea'],
   variantDims: [{ w: 0.2, d: 0.2, h: 0.05 }, { w: 0.26, d: 0.18, h: 0.16 }],
