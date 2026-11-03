@@ -917,7 +917,7 @@
   },
   "build.py --station cloudforest": {
    "inputs": {
-    "biomes/throne/KNOWN_ISSUES.md": "c51f19ae09dae118cabf77f69d53b56f7efbe22dd6107dad8d7bd65ddb6d6c1e",
+    "biomes/throne/KNOWN_ISSUES.md": "702cbecac96ff5c6dc235fb41246a904c470301bf85d8032f16403a363cf7f24",
     "biomes/throne/PORT.md": "66b0099d0fe675ba16052fe728843ce07b909ab8230c95b2f49bbabf9c1cd6f2",
     "biomes/throne/build.py": "ac255ca24727fd7b63a202fc69a8136d96694842cdbeecd0b2e5ba1e930b6789",
     "biomes/throne/src/46-biome-throne-flows.js": "b26c32c07f107ab67202ab50790ecd1209b82eab76510ffece78d32650358e9e",
@@ -942,8 +942,8 @@
     "biomes/throne/stations/cloudforest/89-host-atmos.js": "7d8095ce180f612392db64c4594638f7b572774d257e7d60b90d71ddc72f0720",
     "biomes/throne/stations/cloudforest/89-host-sky.js": "ea0e80778b97b31b0b8df9860860843dd9626c29267096cac2a85bafd9f2e416",
     "biomes/throne/stations/cloudforest/89w-host-water.js": "b52e54ce017cab21f6e353bf6a8330da4d77cf25ee570805ede958eb3edb4b32",
-    "biomes/throne/stations/cloudforest/89z-host-build.js": "db7aad17dceea2cc9645bf81f16c20264b1ad27d4b79abcba2f06413dccd84bf",
-    "biomes/throne/stations/cloudforest/99-host-take.js": "e504ee21dc8268fd0063d3040a74800e9f179dabf32ec102420e724cad55f6e7",
+    "biomes/throne/stations/cloudforest/89z-host-build.js": "6416303a2bb732dbb080790ad7984e2e798111752887628dcba31701147a085b",
+    "biomes/throne/stations/cloudforest/99-host-take.js": "1aae5ee647bfa317f38f0b14ee8ebc09dce05e3c87c59c6814fe2f8c7be13192",
     "biomes/throne/stations/cloudforest/station.json": "4d0079e7e96437614afac16c296556eaa9f0e8de0c4172a3765968c9051680ca",
     "biomes/throne/tex/bark.armored.albedo.webp": "96289b2dd259c262955a7a422bc2ca69263c06070735b945ec10bb8f2f36391e",
     "biomes/throne/tex/bark.bracket.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
@@ -1142,12 +1142,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-cloud.html": "387705cd375c5de016ac7aa79ae2622443b4d16f400082925164e78be0508494",
+    "biomes/throne/dist/throne-cloud.html": "1f4a4a29b5d79a0fc41c703069d0831c6b84bc70bf0789a3eff715b0d4e7f91d",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-cloud.html": "387705cd375c5de016ac7aa79ae2622443b4d16f400082925164e78be0508494",
+    "biomes/throne/dist/throne-cloud.html": "1f4a4a29b5d79a0fc41c703069d0831c6b84bc70bf0789a3eff715b0d4e7f91d",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
