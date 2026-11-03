@@ -54,6 +54,10 @@ MP.builder=function(lite){const B={b:{},panels:[]};
   Q([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1]);Q([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1]);
   Q([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0]);Q([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0]);
   Q([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0]);};
+ // a closed box turned by yaw (its +z to the outward, as a panel's), all six faces: a door frame is seen from in and out and from under
+ B.obox=function(name,cx,cy,cz,yaw,w,h,d,o){const c=Math.cos(yaw),s=Math.sin(yaw),T=(x,y,z)=>[cx+x*c+z*s,cy+y,cz-x*s+z*c],N=(x,y,z)=>[x*c+z*s,y,-x*s+z*c],a=w/2,b=h/2,e=d/2,Q=(p,q,r,t,n)=>B.quad(name,T(...p),T(...q),T(...r),T(...t),N(...n),o);
+  Q([-a,-b,e],[a,-b,e],[a,b,e],[-a,b,e],[0,0,1]);Q([a,-b,-e],[-a,-b,-e],[-a,b,-e],[a,b,-e],[0,0,-1]);Q([a,-b,e],[a,-b,-e],[a,b,-e],[a,b,e],[1,0,0]);Q([-a,-b,-e],[-a,-b,e],[-a,b,e],[-a,b,-e],[-1,0,0]);
+  Q([-a,b,e],[a,b,e],[a,b,-e],[-a,b,-e],[0,1,0]);Q([-a,-b,-e],[a,-b,-e],[a,-b,e],[-a,-b,e],[0,-1,0]);};
  // one instanced box: centre, yaw (its +z turned to the outward), width, height, depth, colour
  B.panel=function(x,y,z,yaw,w,h,d,c){if(lite&&w<.8)return;B.panels.push(x,y,z,yaw,w,h,d,c[0],c[1],c[2]);};
  B.finish=function(F,state){const G=new THREE.Group(),M=MP.mats();G.name=F.id+'.'+state;let tris=0,calls=0;
@@ -67,6 +71,15 @@ MP.builder=function(lite){const B={b:{},panels:[]};
   G.userData={family:F.id,state:state,tris:tris,calls:calls,panels:n};return G;};
  return B;};
 
+// an entrance's leaves: each opening {x, z, yaw, w, h} (its centre at the foot, +z to the outward) takes two glass leaves in bronze frames, which slide apart along the
+// opening when a walker comes near (MP.doorTick). They are meshes of the hero's own, named 'a door leaf', so a placed clone moves its own
+MP.doorLeaves=function(G,list){if(!list.length)return;const M=MP.mats(),glass=MP.doorGlass||(MP.doorGlass=new THREE.MeshStandardMaterial({color:0x1f3038,roughness:.06,metalness:.55,name:'mp.doorGlass'})),cache={};
+ list.forEach(function(o){const lw=o.w/2-.02,key=lw.toFixed(2)+'x'+o.h.toFixed(2);
+  if(!cache[key]){const B=MP.builder(),f=.09;B.obox('bronze',-lw/2+f/2,o.h/2,0,0,f,o.h,.1,{uv:2});B.obox('bronze',lw/2-f/2,o.h/2,0,0,f,o.h,.1,{uv:2});B.obox('bronze',0,o.h-f/2,0,0,lw,f,.1,{uv:2});B.obox('bronze',0,.08,0,0,lw,.16,.1,{uv:2});B.obox('bronze',0,1.05,.07,0,lw*.6,.05,.04,{uv:2});
+   cache[key]={frame:B.finish({id:'door'},'leaf').children[0].geometry,glass:new THREE.BoxGeometry(lw-2*f,o.h-f-.16,.03).translate(0,(o.h-f+.16)/2,0)};}
+  /* 0.27 m inside the screen's plane, behind its posts (0.3 deep), so an open leaf slides behind the jamb and the sidelight, not through them */
+  const c=Math.cos(o.yaw),s=Math.sin(o.yaw),ax=[c,-s],ix=-s*.27,iz=-c*.27;
+  [-1,1].forEach(function(side){const px=o.x+ix+ax[0]*side*o.w/4,pz=o.z+iz+ax[1]*side*o.w/4;[[cache[key].frame,M.bronze],[cache[key].glass,glass]].forEach(function(gm){const m=new THREE.Mesh(gm[0],gm[1]);m.position.set(px,0,pz);m.rotation.y=o.yaw;m.name='a door leaf';m.userData.door={ax:[ax[0]*side,ax[1]*side],w:o.w/2};G.add(m);});});});};
 // the panel: a unit box of its front (+z), two sides and top: 8 triangles, a pier in a recess shows no more
 MP.panelGeo=function(){const P=[],Nn=[],U=[],I=[],face=(a,b,c,d,n)=>{const v=P.length/3;[a,b,c,d].forEach((q,i)=>{P.push(q[0]-.5,q[1]-.5,q[2]-.5);Nn.push(n[0],n[1],n[2]);U.push(i===1||i===2?.5:0,i>1?.5:0);});I.push(v,v+1,v+3,v+1,v+2,v+3);};
  face([0,0,1],[1,0,1],[1,1,1],[0,1,1],[0,0,1]);face([1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,0,0]);face([0,0,0],[0,0,1],[0,1,1],[0,1,0],[-1,0,0]);face([0,1,1],[1,1,1],[1,1,0],[0,1,0],[0,1,0]);

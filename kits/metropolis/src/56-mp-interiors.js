@@ -29,7 +29,7 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
   B.lathe('concrete',[[r-.25,L.y],[r-.25,L.y+L.h]],36,{skip});}
  else{const hw=F.footprint.w/2-.1,hd=F.footprint.d/2-.1;B.quad('relief',[hw,L.y,-hd],[hw,L.y,hd],[hw,L.y+L.h,hd],[hw,L.y+L.h,-hd],[-1,0,0],{uv:6});B.quad('relief',[-hw,L.y,hd],[-hw,L.y,-hd],[-hw,L.y+L.h,-hd],[-hw,L.y+L.h,hd],[1,0,0],{uv:6});
-  [1,-1].forEach(s=>{const z=s*hd;const q=(a,b)=>s>0?B.quad('white',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1]):B.quad('white',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1]);q(L.y,L.y+.9);q(L.y+2.5,L.y+L.h);});}
+  if(L.use!=='arcade')[1,-1].forEach(s=>{const z=s*hd;const q=(a,b)=>s>0?B.quad('white',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1]):B.quad('white',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1]);q(L.y,L.y+.9);q(L.y+2.5,L.y+L.h);});}
  // the shafts: a lift's car door, a stair's first flight, each where the record says on every storey
  F.core.shafts.forEach(function(s){if(k<s.from||k>s.to)return;const c=s.kind==='lift'?[.4,.42,.44]:[.6,.6,.58];
   /* the shaft's door: on the side that faces out of the core (a ring) or to the corridor (a slab): open for a stair, a shut bronze leaf for a lift */
@@ -50,9 +50,11 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes
 // a tower at the street: its skin stops a walker, its doors do not. The Spindle's skirt with its three portals; the Ledger's end walls and its arcade's piers
 MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
- if(F.core.kind==='round'){const r=MP.spindleR(1.5)-.6,N=Math.ceil(2*Math.PI*r/.5);for(let i=0;i<N;i++){const a=2*Math.PI*i/N;if(F.portals.some(p=>{let d=Math.abs(a-p);d=Math.min(d,2*Math.PI-d);return d*r<6;}))continue;b(Math.cos(a)*r,Math.sin(a)*r,.3);}
+ if(F.core.kind==='round'){const r=MP.spindleR(1.5)-.6,N=Math.ceil(2*Math.PI*r/.5);for(let i=0;i<N;i++){const a=2*Math.PI*i/N;if(F.portals.some(p=>{let d=Math.abs(a-p);d=Math.min(d,2*Math.PI-d);return d*r<3.6;}))continue;b(Math.cos(a)*r,Math.sin(a)*r,.3);}
   for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*2*Math.PI/F.fins.n;for(let rr=r;rr<MP.finR(F,0);rr+=.5)b(Math.cos(a)*rr,Math.sin(a)*rr,F.fins.t/2);}}
- else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}MP.arcadePiers(F).forEach(x=>[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);}));}};
+ else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}MP.arcadePiers(F).forEach(x=>[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);}));
+  /* the arcade's glass, but for its doors in the middle bay */
+  for(let x=-hw;x<=hw;x+=.5)if(Math.abs(x)>3.6)[1,-1].forEach(s=>b(x,s*(hd-F.arcade.depth),.25));}};
 MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});MP.walkDirty=false;
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
@@ -65,10 +67,11 @@ MP.openStorey=function(key,k,x,z,yaw){yaw=yaw==null?0:yaw;const F=MP.FAMILY[key]
 MP.closeOne=function(){const o=MP.open.shift();if(!o)return;scene.remove(o.g);o.g.traverse(m=>{if(m.geometry&&!m.isInstancedMesh)m.geometry.dispose();});};
 MP.closeStoreys=function(){while(MP.open.length)MP.closeOne();MP.walkSync();};
 // going in: a camera inside a hero's skin opens the storey it stands on and the two either side, a camera that left closes them. Nothing runs for a tower nobody is in
-MP.heroAt=function(e){for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
-  if(F.core.kind==='round'?Math.hypot(lx,lz)<MP.spindleR(Math.min(e.y,222)):Math.abs(lx)<F.footprint.w/2&&Math.abs(lz)<F.footprint.d/2)return {m,F};}return null;};
+MP.heroAt=function(e,m0){const mg=m0==null?0:m0;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
+  if(F.core.kind==='round'?Math.hypot(lx,lz)<MP.spindleR(Math.min(e.y,222))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
 MP.levelAt=function(F,y){let k=0;F.levels.forEach(L=>{if(y>=L.y-.1)k=L.k;});return k;};
-MP.enterTick=function(){const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;const e=camera.position,H=MP.heroAt(e);if(MPS.mode&&MP_CFG[MPS.mode].storey&&!MP.entered)return;
+MP.enterTick=function(){const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;/* 3 m out: the storey opens as the walker reaches a door, so its leaves part onto the lobby, not onto the hollow of a hero */
+ const e=camera.position,H=MP.heroAt(e,3);if(MPS.mode&&MP_CFG[MPS.mode].storey&&!MP.entered)return;
  if(!H){if(MP.entered){MP.entered=null;MP.closeStoreys();}return;}const key=H.F.id,k=MP.levelAt(H.F,e.y),id=key+'@'+H.m.x+','+H.m.z+'#'+k;if(MP.entered===id)return;MP.entered=id;MP.openStorey(key,k,H.m.x,H.m.z,H.m.yaw);};
 // the lift: to storey k of the hero the camera is in, or the nearest: stand at the core's door and walk from there
 MP.goStorey=function(k){const e=camera.position;let H=MP.heroAt(e);if(!H){let b=null,bd=1e9;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const d=Math.hypot(e.x-m.x,e.z-m.z);if(d<bd){bd=d;b=m;}}if(!b)return false;H={m:b,F:MP.FAMILY[b.key.split('.')[0]]};}
@@ -78,8 +81,9 @@ MP.ride=function(k){const H=MP.heroAt(camera.position);if(!H||!HOSTED.ctl.walk)r
  const lift=F.core.shafts.filter(s=>s.kind==='lift'&&s.from<=Math.min(k,c0)&&s.to>=Math.max(k,c0))[0];if(!lift)return MP.goStorey(k);
  const c=Math.cos(m.yaw),n=Math.sin(m.yaw),x=m.x+lift.x*c+lift.z*n,z=m.z-lift.x*n+lift.z*c,y0=F.levels[c0].y,y1=F.levels[k].y;
  MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.ride.on={x,z,y0,y1,t0:performance.now(),ms:Math.max(1500,Math.abs(y1-y0)/6*1000)};return true;};
-// the lift doors: a leaf slides into the wall when the walker comes within 2.5 m, or while the car stands at that storey
-MP.doorTick=function(){const e=camera.position,v=new THREE.Vector3();MP.open.forEach(o=>{(o.g.userData.leaves||[]).forEach(q=>{q.m.getWorldPosition(v);const near=Math.hypot(v.x-e.x,v.z-e.z)<2.5&&Math.abs(v.y-(e.y-HOSTED.ctl.eye+1.07))<2;q.open+=((near?1:0)-q.open)*.15;
+// the doors: a lift's leaf slides into the wall when the walker comes within 2.5 m, or while the car stands at that storey; an entrance's leaves (a placed hero's) part
+// when the walker is within 3 m of their opening
+MP.doorTick=function(){const e=camera.position,v=new THREE.Vector3();MP.open.map(o=>o.g).concat(typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{(g.userData.leaves||[]).forEach(q=>{v.copy(q.base);q.m.parent.localToWorld(v);const near=Math.hypot(v.x-e.x,v.z-e.z)<(q.r==null?2.5:q.r)&&Math.abs(v.y-(e.y-HOSTED.ctl.eye+1.07))<2;q.open+=((near?1:0)-q.open)*.15;
   q.m.position.set(q.base.x+q.ax[0]*q.w*.95*q.open,q.base.y,q.base.z+q.ax[1]*q.w*.95*q.open);});});};
 MP.rideView=function(){MP.doorTick();const R=MP.ride.on;if(!R)return;const f=Math.min(1,(performance.now()-R.t0)/R.ms),e=f<.5?2*f*f:1-2*(1-f)*(1-f),y=R.y0+(R.y1-R.y0)*e,C=HOSTED.cam;
  C.walkAt=[R.x,R.z,y];HOSTED.ctl.target.set(R.x,y+HOSTED.ctl.eye,R.z);camera.position.set(R.x,y+HOSTED.ctl.eye,R.z);MP.nextEnter=performance.now()+600;if(f>=1)MP.ride.on=null;};

@@ -32,6 +32,11 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
+- **`AI.barPlate`'s cross walls run diagonally** (2026-11-02, `kits/metropolis`): in `kits/ancients-interiors/src/35-ai-plates.js` the `.x` wall
+  is `[inner[0], outer[m]]`, the room's inner start to its outer end, a wall corner to corner across every room of a bar storey; it should be
+  `[inner[0], outer[0]]`. `kits/metropolis/src/41-mp-plans.js` straightens them after the fact (drop that once the kit is fixed). The fix reaches
+  every page `python3 tools/reach.py kits/ancients-interiors/src/35-ai-plates.js` lists (`kits/ancients`, Noah's Regret, the metropolis), and
+  moves their furnishing: rebuild them, rerun their audits.
 - **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
   from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:

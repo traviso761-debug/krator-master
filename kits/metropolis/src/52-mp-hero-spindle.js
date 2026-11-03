@@ -8,11 +8,13 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
  // a breach: a run of bays and storeys burnt out or fallen away, by hash. In the skin's strips it is a hole; the void behind it is the window chunk
  const breaches=[];if(S.breach){const n=Math.round(F.levels.length*S.breach*1.6);for(let i=0;i<n;i++){const u=j=>MP.u(seedK&0xffff,i,j),l=5+Math.floor(u(1)*44),b=F.levels[l];if(!b)continue;breaches.push({a:u(2)*PI2,w:.14+u(3)*.3,y0:b.y,y1:b.y+(1+Math.floor(u(4)*3.5))*MP.STOREY});}}
  const inBreach=(t,y)=>breaches.some(b=>{let d=Math.abs(t-b.a);d=Math.min(d,PI2-d);return d<b.w&&y>b.y0&&y<b.y1;});
- const hoop=l=>l.use==='plant';
+ const hoop=l=>l.use==='plant',doors=[],DH=2.9;
  F.levels.forEach(function(L,lk){if(L.y>=cut)return;
   const y0=L.y,y1=Math.min(L.y+L.h,cut),fac=MP.levelFacade(F,L.k).ring,N=fac.length,bucket=y0<21?'concrete':'white',kinds=fac.map(b=>b.kind);
   const skirt=y0<21,glassy=kinds.some(k=>MP.isGlass(k)||k==='louvre'||k==='arcade');
   const col=stain||undefined,skip=ruin?inBreach:null;
+  /* the lobby's doors: at each portal the two bays either side of it (the portal is a bay line) take a door screen, not the sloping glass */
+  const isDoor=L.use==='lobby'&&!ruin?(t=>F.portals.some(p=>{let d=Math.abs(t-p);d=Math.min(d,PI2-d);return d<PI2/N-1e-4;})):null;
   if(!glassy||L.use==='lamp'||L.use==='roofpark'){if(L.use==='lamp'||L.use==='roofpark')return;
    B.lathe(bucket,[[R(y0),y0],[R(y1),y1]],N,{col,skip});}
   else{
@@ -24,10 +26,18 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
    B.lathe(bucket,[[rT-dep,yT],[rT,yT]],N,{col,skip,uv:2});
    B.lathe(bucket,[[rT,yT],[R(y1),y1]],N,{col,skip});
    // what fills the band: glass where a window is, void where the ruin took it
-   B.lathe(ruin?'glassOut':'glass',[[rS-dep,yS],[rT-dep,yT]],N,{uv:4});
+   B.lathe(ruin?'glassOut':'glass',[[rS-dep,yS],[rT-dep,yT]],N,{uv:4,skip:isDoor?(t=>isDoor(t)):null});
+   /* a door screen on the chord of the two bays at the glass's foot: bronze posts, fixed sidelights, a head, a pair of sliding leaves (MP.doorLeaves) between the sidelights; over the head a
+      soffit back to the sloping glass, a cheek at each side, the glass again above */
+   if(isDoor){const Wd=PI2/N,rg=rS-dep,rAt=y=>rg+(rT-dep-rg)*(y-yS)/(yT-yS),hwd=rg*Math.sin(Wd),Hh=DH+.4,rh=rAt(Hh);
+    F.portals.forEach(function(p){const rc0=rg*Math.cos(Wd),cx=rc0*Math.cos(p),cz=rc0*Math.sin(p),yaw=Math.PI/2-p,tx=Math.sin(p),tz=-Math.cos(p),at=x=>[cx+tx*x,cz+tz*x];
+     [-hwd+.15,-1.8,1.8,hwd-.15].forEach(x=>{const q=at(x);B.obox('bronze',q[0],DH/2,q[1],yaw,.3,DH,.3,{uv:2});});[-1,1].forEach(k=>{const q=at(k*(1.95+hwd-.3)/2);B.obox('glass',q[0],DH/2,q[1],yaw,hwd-.3-1.95,DH,.04,{uv:4});});B.obox('bronze',cx,DH+.2,cz,yaw,2*hwd,.4,.36,{uv:2});
+     B.lathe('glass',[[rh,Hh],[rT-dep,yT]],2,{a0:p-Wd,a1:p+Wd,uv:4});B.lathe(bucket,[[rh,Hh],[rg,Hh]],2,{a0:p-Wd,a1:p+Wd,uv:2});
+     [p-Wd,p+Wd].forEach(a=>{const c=Math.cos(a),s=Math.sin(a),A=[rg*c,yS,rg*s],Bp=[rg*c,Hh,rg*s],C=[rh*c,Hh,rh*s];B.quad(bucket,A,Bp,C,C,[-s,0,c],{uv:2});B.quad(bucket,Bp,A,C,C,[s,0,-c],{uv:2});});
+     doors.push({x:cx,z:cz,yaw,w:3.3,h:DH});});}
    const W=PI2/N;
    fac.forEach(function(b,bi){const k=b.kind,c=b.th,a=c-W/2,ym=(yS+yT)/2,r=(rS+rT)/2-dep/2,arc=W*r,yaw=Math.PI/2-c;
-    if(ruin&&inBreach(c,ym))return;
+    if(ruin&&inBreach(c,ym))return;if(isDoor&&isDoor(c))return;
     const put=(off,y,w,h,d,cl)=>{const t=c+off/r;B.panel(Math.cos(t)*r,y,Math.sin(t)*r,yaw+(c-t),w,h,d,cl);};
     if(k==='pier'||k==='blank'){put(0,ym,arc*1.02,yT-yS,dep,WALL);return;}
     if(k==='louvre'){for(let s=0;s<3;s++)put(0,yS+(yT-yS)*(s+.5)/3,arc*.98,.26,dep*.8,DARK);return;}
@@ -69,4 +79,4 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
   // the torn top: the core stands a little above the skin; the skin's edge is cut by the last storey, a dark floor over it
   const Rc=R(cut)-.3,top=[];B.lathe('dark',[[Rc,cut-.4],[0,cut-.4]],36,{});B.lathe('concrete',[[6.5,cut-1],[6.5,cut+7]],16,{});B.lathe('concrete',[[6.5,cut+7],[0,cut+7]],12,{});
   for(let i=0;i<14;i++){const a=MP.u(seedK&0xffff,i,77)*PI2,h=1.5+4*MP.u(seedK&0xffff,i,78),w=.6+1.5*MP.u(seedK&0xffff,i,79),r=Rc+.1;B.panel(Math.cos(a)*r,cut+h/2-.4,Math.sin(a)*r,Math.PI/2-a,w,h,.5,WALL);}}
- return B.finish(F,state);};
+ const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);return G;};

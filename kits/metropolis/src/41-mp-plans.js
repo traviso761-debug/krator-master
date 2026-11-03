@@ -7,6 +7,14 @@
   var TAU = Math.PI * 2, CW = 1.8;     // the corridor
   function r3(v) { return Math.round(v * 1000) / 1000; }
   function at(r, th) { return [r3(r * Math.cos(th)), r3(r * Math.sin(th))]; }
+  // a plate turned about the axis by a: every point it holds (rooms, doors, walls, the outline)
+  function turn(st, a) {
+    var c = Math.cos(a), n = Math.sin(a), T = function (p) { return [r3(p[0] * c - p[1] * n), r3(p[0] * n + p[1] * c)]; };
+    st.outline = st.outline.map(T);
+    st.rooms.forEach(function (Q) { if (Q.poly) Q.poly = Q.poly.map(T); Q.doors.forEach(function (d) { d.at = T(d.at); }); if (Q.th != null) Q.th += a; });
+    st.walls.forEach(function (W) { W.pts = W.pts.map(T); if (W.door) W.door.at = T(W.door.at); });
+    return st;
+  }
   function arc(r, t0, t1, n) { var o = []; for (var i = 0; i <= n; i++) o.push(at(r, t0 + (t1 - t0) * i / n)); return o; }
 
   // the room kinds: `store` etc. are kits/interiors programmes; a kind with no programme is furnished false
@@ -72,7 +80,14 @@
   }
 
   var PLAN = {
-    lobby: function (F, L) { return sectors(F, L, 9, function (i) { return ['concourse', 'stall', 'cafe'][i % 3]; }, { cw: 5, door: 2.4 }); },
+    /* the lobby is turned so a concourse faces each portal (the ring starts at 0, where a portal is, so a partition stood in its doorway), and a concourse is open to the
+       ring corridor: from the doors straight to the lifts */
+    lobby: function (F, L) {
+      var st = turn(sectors(F, L, 9, function (i) { return ['concourse', 'stall', 'cafe'][i % 3]; }, { cw: 5, door: 2.4 }), F.portals[0] - TAU / 18);
+      var open = {}; st.rooms.forEach(function (Q) { if (Q.mpKind === 'concourse') open[Q.id + '.cw'] = 1; });
+      st.walls = st.walls.filter(function (W) { return !open[W.id]; });
+      return st;
+    },
     mezzanine: function (F, L) { return sectors(F, L, 12, function (i) { return i % 3 ? 'office' : 'store'; }); },
     market: function (F, L) { return sectors(F, L, 24, function () { return 'stall'; }, { cw: 3.4, door: 2 }); },
     clinic: function (F, L) { return sectors(F, L, 18, function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }); },
@@ -92,8 +107,12 @@
 
   // ---- the slab: a bar plate along x, the shafts cut out of it
   function bar(F, L, roomW, kinds, o) {
-    o = o || {}; var w = F.footprint.w, d = F.footprint.d - 0.9;
+    o = o || {}; var w = F.footprint.w, d = F.footprint.d - 0.9 - 2 * (o.inset || 0);
     var st = KratorAncientsInteriors.barPlate({ id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, path: function (u) { return [-w / 2 + w * u, 0]; }, depth: d, side: 'both', cw: o.cw == null ? 2.4 : o.cw, roomW: roomW, kinds: kinds, door: o.door });
+    /* AI.barPlate draws a cross wall from the room's inner start to its OUTER END (outer[m]), a diagonal across the room; it should run straight across at the start
+       (the room's polygon ends there). Straightened here; the kit's fix waits for an all-builds rebuild (KNOWN_ISSUES.md) */
+    var byId = {}; st.rooms.forEach(function (Q) { byId[Q.id] = Q; });
+    st.walls.forEach(function (W) { var Q = /\.x$/.test(W.id) && byId[W.rooms[0]]; if (Q) W.pts = [W.pts[0], Q.poly[Q.poly.length - 1]]; });
     st.rooms.forEach(function (Q) { var src = Q.kind; Q.mpKind = src; Q.kind = kindOf(src); if (UNFURNISHED[src]) Q.furnish = false; });
     return cutShafts(F, st);
   }
@@ -127,7 +146,7 @@
     return st;
   }
   var PLAN_BAR = {
-    arcade: function (F, L) { return bar(F, L, 18, function (i, n) { return i === (n >> 1) ? 'reception' : i % 3 === 1 ? 'stall' : 'concourse'; }, { cw: 6, door: 3 }); },
+    arcade: function (F, L) { return bar(F, L, 18, function (i, n) { return i === (n >> 1) ? 'reception' : i % 3 === 1 ? 'stall' : 'concourse'; }, { cw: 6, door: 3, inset: F.arcade.depth }); },   // the arcade's glass stands 3 m in: its rooms stop there, not in the walkway
     mezzanine: function (F, L) { return bar(F, L, 6, function (i) { return i % 4 ? 'office' : 'store'; }); },
     market: function (F, L) { return bar(F, L, 6, function () { return 'stall'; }, { cw: 3.4, door: 2 }); },
     clinic: function (F, L) { return bar(F, L, 6, function (i) { return i % 8 === 3 ? 'store' : 'clinic'; }); },
