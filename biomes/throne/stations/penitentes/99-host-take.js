@@ -25,10 +25,10 @@ const VIEWS={
  'A rock step':(function(){let x=-200,z=600;for(let k=0;k<80;k++){if(benchAt(x-k*6,z).riser>.6){x-=k*6;break;}}return[x+90,gh(x+90,z,3),z+30,x,gh(x,z,25),z];})(),
  'The snowline':across(1500,-900,.3,900,6,2),
  'Blowing snow':(function(){const b=onPen(400,-600);return[b[0]+30,gh(b[0]+30,b[1],7),b[1],b[0]-300,gh(b[0]-300,b[1],10),b[1]];   /* over the blades (one stood at the eye at 2 m) */})(),
- 'Night: the penitentes under the ring':(function(){const b=PEN;return[b.x+20,gh(b.x+20,b.z,2),b.z+8,b.x-60,gh(b.x-60,b.z,6),b.z];})(),
+ 'The penitentes at night':(function(){const b=PEN;return[b.x+20,gh(b.x+20,b.z,2),b.z+8,b.x-60,gh(b.x-60,b.z,6),b.z];})(),
  'From above':[2400,terrainH(2400,1800)+900,1800,-200,terrainH(-200,0),0],
 };
-VMODE['Night: the penitentes under the ring']='night';
+VMODE['The penitentes at night']='night';
 VWEATHER['Blowing snow']='blizzard';
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(ATMOS.W){ATMOS.W.mode=VWEATHER[k]||'clear';const s=document.getElementById('atmosWeather');if(s)s.value=ATMOS.W.mode;}};   // the host's onView: the preset's light and weather// ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;

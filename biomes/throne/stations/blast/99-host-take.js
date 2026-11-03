@@ -22,10 +22,10 @@ const VIEWS={
  'The seared edge':(function(){let p=onAxis(2600,0);for(let k=0;k<200;k++){const q=onAxis(1800+k*15,0);if(FIELD.seared(q[0],q[1])>.6){p=q;break;}}const c=[p[0]-AX[0]*120,p[1]-AX[1]*120];return[c[0],gh(c[0],c[1],5),c[1],p[0],gh(p[0],p[1],10),p[1]];})(),
  'The living forest beyond':across(-1700,-1400,.3,600,4,10),
  'Down the fan from the scar\'s rim':(function(){const c=onAxis(-BLAST.r*.9,0);return[c[0],gh(c[0],c[1],6),c[1],BLAST.x+AX[0]*2400,gh(BLAST.x+AX[0]*2400,BLAST.z+AX[1]*2400,0),BLAST.z+AX[1]*2400];})(),
- 'Night: the dead forest under the ring':(function(){const b=[BD.x,BD.z];return[b[0]+40,gh(b[0]+40,b[1],6),b[1]+30,b[0],gh(b[0],b[1],2),b[1]];})(),
+ 'The dead forest at night':(function(){const b=[BD.x,BD.z];return[b[0]+40,gh(b[0]+40,b[1],6),b[1]+30,b[0],gh(b[0],b[1],2),b[1]];})(),
  'From above':[2300,terrainH(2300,-2300)+1100,-2300,BLAST.x,terrainH(BLAST.x,BLAST.z),BLAST.z],
 };
-VMODE['Night: the dead forest under the ring']='night';
+VMODE['The dead forest at night']='night';
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(ATMOS.W){ATMOS.W.mode=VWEATHER[k]||'clear';const s=document.getElementById('atmosWeather');if(s)s.value=ATMOS.W.mode;}};   // the host's onView: the preset's light and weather// ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
  let best2=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best2||r.r<best2.r))best2=r;}

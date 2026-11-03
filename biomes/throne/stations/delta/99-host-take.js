@@ -22,10 +22,10 @@ const VIEWS={
  'Littoral cones':(function(){const C=LCONES[1],c=[C.x-70,C.z+40];return[c[0],gh(c[0],c[1],4),c[1],C.x,gh(C.x,C.z,C.h*.5),C.z];})(),
  'Pumice rafts in the swash':(function(){const t=ENTRY.t+650,s=frontS(t)-6,c=st(s-30,t+20,3),f=xzOf(s+60,t-40);return[c[0],c[1],c[2],f[0],SEA,f[1]];})(),
  'From the old flank':(function(){const c=st(paliS(DELTA.t0)-PALI.face-40,DELTA.t0+260,3);return[c[0],c[1],c[2],ENTRY.x,SEA+10,ENTRY.z];})(),
- 'Night: the entry glowing':(function(){const c=st(ENTRY.s-140,ENTRY.t-120,6);return[c[0],c[1],c[2],ENTRY.x,SEA+3,ENTRY.z];})(),
+ 'The entry glowing at night':(function(){const c=st(ENTRY.s-140,ENTRY.t-120,6);return[c[0],c[1],c[2],ENTRY.x,SEA+3,ENTRY.z];})(),
  'From the sea':(function(){const c=xzOf(ENTRY.s+900,ENTRY.t-300);return[c[0],SEA+60,c[1],ENTRY.x,SEA+80,ENTRY.z];})(),
 };
-VMODE['Night: the entry glowing']='night';
+VMODE['The entry glowing at night']='night';
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(ATMOS.W){ATMOS.W.mode=VWEATHER[k]||'clear';const s=document.getElementById('atmosWeather');if(s)s.value=ATMOS.W.mode;}};   // the host's onView: the preset's light and weather
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;

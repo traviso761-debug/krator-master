@@ -166,5 +166,11 @@
  "biomes/throne/dist/throne-vents.html: MISSING BIO.leafOn": 1,
  "biomes/throne/dist/throne-vents.html: MISSING BIO.leafQ": 1,
  "biomes/throne/dist/throne.html: MISSING BIO.leafOn": 1,
- "biomes/throne/dist/throne.html: MISSING BIO.leafQ": 1
+ "biomes/throne/dist/throne.html: MISSING BIO.leafQ": 1,
+ "biomes/throne/dist/throne-blast.html: MISSING BIO.leafOn": 1,
+ "biomes/throne/dist/throne-blast.html: MISSING BIO.leafQ": 1,
+ "biomes/throne/dist/throne-delta.html: MISSING BIO.leafOn": 1,
+ "biomes/throne/dist/throne-delta.html: MISSING BIO.leafQ": 1,
+ "biomes/throne/dist/throne-penitentes.html: MISSING BIO.leafOn": 1,
+ "biomes/throne/dist/throne-penitentes.html: MISSING BIO.leafQ": 1
 }
