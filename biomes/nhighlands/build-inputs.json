@@ -10,8 +10,8 @@
     "biomes/cut/src/70-biome-cut.js": "5d09b0884633e71f78bd6189813d98faef1daeb031fca0b27544f0f25d94f4cf",
     "biomes/cut/tex/pack.json": "14f5d4137c6fd960a562f612a61bff52504290d299a893304866e6450c1558a6",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
-    "biomes/nhighlands/KNOWN_ISSUES.md": "3f7326842b62a25329be3ebfc11d8ec75f853cf3a599f21f0649ac2705473b60",
-    "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "513361c2d1853d2426c8a3a3a489b789a5c5286868fdb90ada00c31cae38ad55",
+    "biomes/nhighlands/PORT.md": "cc97ec7c4e8048ce8c93887246e7f296eb8022cd52fc8594576182946d784c2c",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
     "biomes/nhighlands/src/45-host-stage.js": "aa3a15428855a90a39c61fd88f57895edf699b50851974a6a6734eeb12574498",
@@ -173,8 +173,8 @@
   },
   "build.py --station bogs": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "3f7326842b62a25329be3ebfc11d8ec75f853cf3a599f21f0649ac2705473b60",
-    "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "513361c2d1853d2426c8a3a3a489b789a5c5286868fdb90ada00c31cae38ad55",
+    "biomes/nhighlands/PORT.md": "cc97ec7c4e8048ce8c93887246e7f296eb8022cd52fc8594576182946d784c2c",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
     "biomes/nhighlands/src/50-biome-nhighlands-species.js": "7e52635bc5c6f0e197f6685680ff264774a9618df2344f3081ee36d66ff5341d",
