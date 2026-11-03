@@ -1,6 +1,7 @@
 /* ============================== 7h5. BUILDING AND UPKEEP (PLAN-POLITICS.md section 4, 2026-11-03) ============================== */
 /* [G data] core/simulation's building (77-sim-6-build.js) on the isles, tuned by ISLE.TUNE.sim.build (15). The plan leaves
-   `vacant` of each town's dwellings as empty lots (32), each a place of kind `lot` with its builders' posts (40); the
+   `vacant` of each town's dwellings as empty lots (32), each a place of kind `lot` with a builder's post (40; its posts
+   then follow its project's hands, core's rebalance, so every post is filled); the
    builders (a trade: 42's jobs) are sent to the town's projects, `pace` at a time. A house is built of its kind's bill
    (timber, stone, mats) out of the warehouses as the work goes; done, the lot becomes a home with its beds (empty, for
    the town's growth: PLAN-POLITICS.md section 4) and the plan's record is marked built, so the drawing shows the house.
@@ -47,8 +48,9 @@ ISLE.buildBooks = function () {
 ISLE.buildChecks = function (a, b) {
   var out = [], ok = function (name, pass, detail) { out.push({ name: name, ok: !!pass, detail: detail || '' }); };
   var R = b.report, towns = ISLE.SIM.order, B = SIM.BUILD;
-  var bad = b.lots.filter(function (x) { return !(x.kind === 'lot' && x.work > 0 && !x.built) && !(x.kind === 'home' && x.beds > 0 && !x.work && x.built); });
-  ok('every empty lot of the plan is a lot with its builders\' posts, or a built home with its beds', b.lots.length > 0 && !bad.length,
+  var hands = {}; SIM.all('actor').forEach(function (q) { if (q.work != null) hands[q.work] = (hands[q.work] || 0) + 1; });
+  var bad = b.lots.filter(function (x) { return !(x.kind === 'lot' && !x.built && x.work === (hands[x.id] || 0)) && !(x.kind === 'home' && x.beds > 0 && !x.work && x.built); });
+  ok('every empty lot of the plan is a lot with its posts for its builders (none waiting its turn), or a built home with its beds', b.lots.length > 0 && !bad.length,
     b.lots.length + ' lots' + (bad.length ? '; WRONG: ' + bad.slice(0, 4).map(function (x) { return x.id + ' ' + x.kind; }).join(', ') : ''));
   var ahead = [];
   Object.keys(R.towns).forEach(function (s) { R.towns[s].projects.forEach(function (P) { var f = 1; Object.keys(P.bill).forEach(function (g) { if (P.bill[g] > 0) f = Math.min(f, P.got[g] / P.bill[g]); });

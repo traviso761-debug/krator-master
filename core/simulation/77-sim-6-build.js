@@ -24,7 +24,7 @@
 // work, what the bill wants for the work so far is drawn; the work done never runs ahead of the share of the bill
 // delivered, so a project short of stone waits. Its workers are whoever's work is the lot (the host deals them, a trade
 // of builders, one a lot); whenever a project starts or ends the town's builders are spread over its projects evenly (or
-// stay, idle, if none is left); done, the host's onBuilt turns the lot into its building, and the next lot's project starts.
+// stay, idle, if none is left), and a lot's WORK posts follow its hands (none at a lot waiting its turn); done, the host's onBuilt turns the lot into its building, and the next lot's project starts.
 // UPKEEP is a steady sink: every standing building `of` a kind with a `life` wears its whole bill over its life; each hour
 // a town draws its buildings' wear a good at a time (the fractions carried), booked used. What it cannot draw is OWED and
 // drawn first when the good comes back; while it is owed, the town's buildings show it: a building's wear is whether
@@ -84,7 +84,11 @@
     var share=Math.ceil(mine.length/T.active.length);
     Object.keys(on).sort().forEach(function(lot){ while(on[lot].length>share) idle.push(on[lot].pop()); });
     idle.forEach(function(a){ var best=null; Object.keys(on).sort().forEach(function(lot){ if(best==null || on[lot].length<on[best].length) best=lot; });
-      on[best].push(a); a.work=best; if(a.mem) a.mem.WORK=best; }); }
+      on[best].push(a); a.work=best; if(a.mem) a.mem.WORK=best; });
+    /* a lot's WORK posts follow its hands (a project's crew, none at a lot waiting its turn), so every post is filled */
+    T.lots.forEach(function(id){ var P=SIM.R.place[id], L=B.lots[id]; if(!P || L.state==='built') return; var n=on[id] ? on[id].length : 0;
+      if(n) P.activities.WORK=n; else delete P.activities.WORK; });
+    if(SIM.placesChanged) SIM.placesChanged(); }
   /* a town's upkeep a day by good: its standing buildings' bills over their lives (counted once, then on a place change) */
   function rate(s){ var B=SIM.BUILD, T=town(s); if(T.rate) return T.rate; var r={}, n=0;
     if(B.cfg.of) SIM.all('place').forEach(function(P){ if(P.settlement!==s || (B.lots[P.id] && B.lots[P.id].state!=='built')) return; var k=B.cfg.of(P), K=k && B.cfg.kinds[k]; if(!K || !(K.life>0)) return;
