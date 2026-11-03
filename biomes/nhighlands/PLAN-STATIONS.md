@@ -77,12 +77,12 @@ station 1.
 - **The land** (4.8 km square, the kit's page scale: the bench at ~800 m as station 1's boreal band, the crest's rise past the SE edge and the wet face's
   fall past the NW meeting station 1's ramp at s = +-4900 for the far country): three raised bogs (Ingram domes 4.4-6.2 m over 1-1.5 km), string fen on
   the SE rise (peat strings along the contours, flarks between), four mineral knolls where the wood stands, a peat stream cut 1.8-3 m into the peat with
-  black hags, no falls, and about 520 pools: concentric pool-and-ridge rows on the domes' flanks, flarks in the string fen, the dubh lochan on the big
+  black hags, no falls, and about 390 pools: concentric pool-and-ridge rows on the domes' flanks, flarks in the string fen, the dubh lochan on the big
   dome's crown. Every form is a plain record seeded from `KRAND` by index (`DOMES`, `KNOLLS`, `BOG_POOLS`).
 - **The geology**: the bake (`kits/resources/data/geology.json`) puts the plateau on sedimentary ground, not the wall's impact province, so it has no
   megabreccia (`STATION_BRECCIA=false`); the steep is cut peat.
 - **The forest** (`NHL.STATION_PASSES`, a hook the kit's pass offers; station 1 sets none): the kit's own species. Spruce, fir, larch and birch close on
-  the knolls; birch and larch in the lagg; on the open mire stunted spruce (12-22% of its height), tamarack-like larch, knee-high dwarf birch and a few
+  the knolls; birch and larch in the lagg; on the open mire stunted spruce (at most 6.5 m), tamarack-like larch (7.5 m), knee-high dwarf birch and a few
   krummholz spruce on the domes' crowns; the great trumpets alone in the fen. A field `bog` (1 on the open mire) drives it.
 - **The floor** (`NHL.STATION_PLANT`, the same kind of hook in the floor's pass): sphagnum hummocks (the moss cushion in sphagnum's red, ochre and green)
   with heath and lichen on their tops, cotton-grass lawns, cloudberry, sedge, corn lilies in the lagg; the kit's montane and boreal floors on the knolls.

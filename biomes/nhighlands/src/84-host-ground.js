@@ -98,7 +98,7 @@ function buildGround(){
     ' float b1=0.5+0.5*sin(y*0.24), b2=smoothstep(0.6,0.95,sin(y*0.08+1.3));',
     ' vec3 st=mix(vec3(0.17,0.18,0.17),vec3(0.26,0.27,0.25),b1); st=mix(st,vec3(0.12,0.14,0.11),b2*0.6);',
     ' st*=0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
-    BRECCIA_ON?' }':typeof STATION_STEEP==='string'?' diffuseColor.rgb=mix(diffuseColor.rgb,'+STATION_STEEP+',smoothstep(0.3,0.6,steep)*0.9);}':' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};   /* with the megabreccia on, the clast layer above draws the steep */
+    BRECCIA_ON?' }':typeof STATION_STEEP==='string'?' diffuseColor.rgb=mix(diffuseColor.rgb,'+STATION_STEEP+',smoothstep(0.14,0.36,steep)*0.92);}':' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};   /* with the megabreccia on, the clast layer above draws the steep */
  KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground'});
  /* THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
     directions baked over the map (256 texels a side, ~26 m) and, beyond it, over the far country's drawn lattice (FAR.G), so at a

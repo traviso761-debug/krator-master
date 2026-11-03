@@ -28,16 +28,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 17 | the map (47); the stream (87); terrain (129); the climate fields (151); the host binding (182) |
 | `50-biome-nhighlands-species.js` | 62 **big** | palettes (24); the tree species (70); leaf and frond textures (202); bark textures (311); geometries local to this biome (347); an iridescent bark (404); materials (407); instanced items (489); the new flora (HANDOFF-FLORA.md) (533) |
-| `55-biome-nhighlands-trees.js` | 66 **big** | zones from the fields (26); colour (50); polyline helpers (71); keep-clear between trees (82); foliage and epiphyte helpers (88); the builders (159); the new habits (HANDOFF-FLORA.md) (402); impostors (the far canopy) (498); the pass (529) |
+| `55-biome-nhighlands-trees.js` | 67 **big** | zones from the fields (26); colour (50); polyline helpers (71); keep-clear between trees (82); foliage and epiphyte helpers (88); the builders (159); the new habits (HANDOFF-FLORA.md) (409); impostors (the far canopy) (505); the pass (536) |
 | `60-biome-nhighlands-floor.js` | 26 | small plants (27); the zone planters (94); the pass (178); the new flora (HANDOFF-FLORA.md) (211) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 11 | the fog (7); the far country (17); light modes (109) |
 | `84-host-ground.js` | 20 | the water (135); the mist (139) |
 | `85-host-tower.js` | 5 |  |
-| `86-host-pillars.js` | 5 |  |
+| `86-host-pillars.js` | 6 |  |
 | `87-host-cut.js` | 4 |  |
-| `88-host-build.js` | 3 |  |
+| `88-host-build.js` | 4 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 3 |  |

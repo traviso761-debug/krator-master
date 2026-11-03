@@ -14,11 +14,11 @@ const bogOf=(x,z)=>BIO.field('bog',x,z);
 // ---------------------------------------------------------------- the cards (painted stand-ins; the pack's library maps replace them: BIO.libSwap)
 const TXB={
  cotton:BIO.alphaTex(256,(g,S)=>{g.lineCap='round';for(let i=0;i<9;i++){const x=S*(.3+.4*rng()),top=S*(.12+.2*rng());g.strokeStyle='#8a9a5a';g.lineWidth=S*.012;g.beginPath();g.moveTo(S/2,S);g.quadraticCurveTo(x,S*.6,x,top+S*.05);g.stroke();
-  g.fillStyle='#f4f2ea';for(let k=0;k<14;k++){g.beginPath();g.arc(x+(rng()-.5)*S*.07,top+(rng()-.5)*S*.06,S*(.012+.012*rng()),0,TAU);g.fill();}}}),
+  g.fillStyle='#f4f2ea';for(let k=0;k<14;k++){g.beginPath();g.arc(x+(rng()-.5)*S*.07,top+(rng()-.5)*S*.06,S*(.012+.012*rng()),0,TAU);g.fill();}}},[220,220,210]),
  cloud:BIO.alphaTex(256,(g,S)=>{g.fillStyle='#3e6a2c';for(let i=0;i<5;i++){const a=i/5*TAU,x=S/2+Math.cos(a)*S*.2,y=S*.62+Math.sin(a)*S*.14;g.beginPath();g.ellipse(x,y,S*.14,S*.1,a,0,TAU);g.fill();}
-  g.fillStyle='#e8902a';g.beginPath();g.arc(S/2,S*.4,S*.07,0,TAU);g.fill();}),
+  g.fillStyle='#e8902a';g.beginPath();g.arc(S/2,S*.4,S*.07,0,TAU);g.fill();},[170,180,150]),
  corn:BIO.alphaTex(256,(g,S)=>{g.fillStyle='#6e9a44';for(let i=0;i<7;i++){const y=S*(.95-i*.11),w=S*(.28-i*.03);g.beginPath();g.ellipse(S/2+(i%2?w*.3:-w*.3),y,w,S*.07,(i%2?.4:-.4),0,TAU);g.fill();}
-  g.fillStyle='#d8dcb4';for(let k=0;k<30;k++){g.beginPath();g.arc(S/2+(rng()-.5)*S*.16,S*(.08+.16*rng()),S*.012,0,TAU);g.fill();}})};
+  g.fillStyle='#d8dcb4';for(let k=0;k<30;k++){g.beginPath();g.arc(S/2+(rng()-.5)*S*.16,S*(.08+.16*rng()),S*.012,0,TAU);g.fill();}},[180,190,160])};
 const MB={
  cotton:BIO.leafMat(TXB.cotton,'nh-cotton',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.12,alphaTest:.4}),
  cloudberry:BIO.leafMat(TXB.cloud,'nh-cloudberry',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.04,alphaTest:.4}),
@@ -35,11 +35,11 @@ NHL.PLANTS.push(
  {label:'Corn lily',name:'Corn lily (false hellebore: poisonous)',tags:TG?TG('boreal','humid','yes',HVf('none',[],true,'every part is poisonous; a herder\'s bane, a physician\'s drop')):{climate:'boreal',aridity:'humid',abyssal:false,riparian:'yes',harvest:{wood:'none',edible:[],medicinal:true,fruit:null,notes:'poisonous'}}});
 // the sphagnum's colours: red, ochre, green (the hummock tops red, the lawns green)
 NHL.FRUIT_NOT_DRAWN_MORE=['Cloudberry'];   /* the berries are on the card; no catalog cloudberry yet (KNOWN_ISSUES.md) */
-const SPH={red:[0x8a3a2a,0x9a4632,0x7a3428],ochre:[0xa08040,0xb09048,0x8a7038],green:[0x6a8a3a,0x7a9a40,0x5a7a34]};
+const SPH={red:[0x7a3e2c,0x86482f,0x6e3a2a],ochre:[0xa08040,0xb09048,0x8a7038],green:[0x6a8a3a,0x7a9a40,0x5a7a34]};
 const col=(set,k)=>{const c=C(pick(set));c.offsetHSL((rng()-.5)*.02,(rng()-.5)*.06,(rng()-.5)*.05);return c.multiplyScalar(k==null?1:k);};
 // ---------------------------------------------------------------- the forest: the kit's species in the mire (PLAN-STATIONS.md station 5)
 NHL.STATION_PASSES=function(P){const {pass,o,BIG,SMALL}=P;
- const dwarf=(k,kr)=>(T)=>{T.H*=k;T.rb*=Math.max(.3,k*.9);T.crownR*=kr==null?k*1.3:kr;};
+ const dwarf=(k,kr,mx)=>(T)=>{const H0=T.H;T.H=Math.min(T.H*k,mx==null?6:mx);const f=T.H/H0;T.rb*=Math.max(.3,f*.9);T.crownR*=kr==null?f*1.3:kr;};   /* stunted: a share of its height, never over mx m */
  const B=(x,z)=>bogOf(x,z);
  // the mineral knolls and the bench's NW lip: a closed montane-boreal wood (spruce and fir, larch, birch in groves), thinning into the lagg
  pass('normanspruce',30,(Z,x,z)=>(1-smooth(.15,.45,B(x,z)))*(Z.montane*.55+Z.boreal*.35),o(BIG,{pad:2.5,patch:.4}));
@@ -49,19 +49,19 @@ NHL.STATION_PASSES=function(P){const {pass,o,BIG,SMALL}=P;
  pass('birch',26,(Z,x,z)=>{const b=B(x,z);return (1-smooth(.2,.55,b))*Z.grove*.5+smooth(.2,.45,b)*(1-smooth(.5,.75,b))*.3;},o(BIG,{pad:1.5,patch:.25}));
  pass('rowan',60,(Z,x,z)=>(1-smooth(.15,.4,B(x,z)))*.08,o(SMALL,{pad:2,patch:.5}));
  // the stream's levees
- pass('greyalder',24,(Z,x,z)=>Z.rip*.45*(1-smooth(.6,.9,B(x,z))),o(BIG,{pad:2.5,patch:.35}));
- pass('brookwillow',16,(Z,x,z)=>Z.rip*.5,o(SMALL,{pad:1.6,patch:.4}));
+ pass('greyalder',24,(Z,x,z)=>Z.rip*.45*(1-smooth(.45,.7,B(x,z))),o(BIG,{pad:2.5,patch:.35}));
+ pass('brookwillow',16,(Z,x,z)=>Z.rip*.5*(1-smooth(.6,.8,B(x,z))),o(SMALL,{pad:1.6,patch:.4}));
  // the open mire: stunted trees on the hummocks (a bog spruce a few metres tall, a larch like a tamarack, dwarf birch knee-high), scattered
- pass('spirespruce',30,(Z,x,z)=>smooth(.5,.75,B(x,z))*.16,o(SMALL,{far:true,pad:1.6,patch:.5,patchScale:.02,mod:dwarf(rr(.12,.22),.25)}));
- pass('larch',44,(Z,x,z)=>smooth(.45,.7,B(x,z))*.12,o(SMALL,{far:true,pad:1.8,patch:.5,patchScale:.02,mod:dwarf(rr(.15,.28),.3)}));
- pass('birch',14,(Z,x,z)=>smooth(.55,.8,B(x,z))*.22,o(SMALL,{pad:1,patch:.6,patchScale:.03,mod:dwarf(rr(.05,.09),.1)}));
- pass('windspruce',40,(Z,x,z)=>smooth(.7,.95,B(x,z))*.06,o(SMALL,{pad:1.2,patch:.4,mod:dwarf(.6,.6)}));
+ pass('spirespruce',30,(Z,x,z)=>smooth(.5,.75,B(x,z))*.16,o(SMALL,{far:true,pad:1.6,patch:.5,patchScale:.02,mod:dwarf(rr(.12,.22),.25,6.5)}));
+ pass('larch',44,(Z,x,z)=>smooth(.45,.7,B(x,z))*.12,o(SMALL,{far:true,pad:1.8,patch:.5,patchScale:.02,mod:dwarf(rr(.15,.28),.3,7.5)}));
+ pass('birch',14,(Z,x,z)=>smooth(.55,.8,B(x,z))*.22,o(SMALL,{pad:1,patch:.6,patchScale:.03,mod:dwarf(rr(.05,.09),.1,1.4)}));
+ pass('windspruce',40,(Z,x,z)=>smooth(.7,.95,B(x,z))*.06,o(SMALL,{pad:1.2,patch:.4,mod:dwarf(.6,.6,5)}));
  // the great trumpets alone in the fen, holding their water (the kit's own), and their glow over the pools at night
  pass('greattrumpet',240,(Z,x,z)=>smooth(.45,.7,B(x,z))*.35,o(BIG,{hero:420,mid:820,pad:9,own:6,patch:0}));};
 // ---------------------------------------------------------------- the floor
 // one spot of the kit's floor grid (5.6 m near, 13 m mid, 30 m far): the mire's plants by its bog field, the kit's own floors on the mineral ground
 NHL.STATION_PLANT=function(x,y,z,Z,lv,st,F){const b=bogOf(x,z),t=rng();st.bog=st.bog||{hummock:0,cotton:0,cloud:0,corn:0,sedge:0};const S=st.bog;
- const hummock=(R)=>{const set=rng()<.45?SPH.red:rng()<.5?SPH.ochre:SPH.green;BIO.put('cushion',[x,y+R*.12,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.35,.55),R],col(set,1.05));S.hummock++;
+ const hummock=(R)=>{R*=.6;const set=rng()<.3?SPH.red:rng()<.35?SPH.ochre:SPH.green;BIO.put('cushion',[x,y+R*.05,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.22,.34),R],col(set,set===SPH.red?.8:.95));S.hummock++;   /* low and soft: at full size the cushion read as a red boulder */
   if(lv===2&&rng()<.5)BIO.put('mossmat',[x+rr(-.6,.6),y+.05,z+rr(-.6,.6)],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[R*1.6,1,R*1.6],col(SPH.green,.95));
   if(rng()<.35)F.heath(x,y+R*.4,z,lv);else if(rng()<.25)F.lichen(x,y+R*.4,z,lv);};
  const cotton=(n)=>{for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.6),h=rr(.35,.6);F.tuft('cotton',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*.8,col([0xe8e6dc,0xf0eee6,0xdcd8c8]));}S.cotton++;};

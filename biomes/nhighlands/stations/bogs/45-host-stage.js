@@ -129,6 +129,12 @@ const STREAM_FLOW=WATER.flow({name:'The peat stream',pts:STREAM.P.map((p,i)=>[p[
  speed:STREAM.P.map((p,i)=>.4+1.2*smooth(.002,.02,STREAM.drop[i]))});
 const STREAM_FALLS=[];
 const TARN_STILL=WATER.still({name:'The head pool',level:TARN.level,gradient:{centre:0x14100c,rim:0x3a3020,power:1.4},poly:Array.from({length:32},(_,k)=>{const a=k/32*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+3),TARN.z+Math.sin(a)*(TARN.r+3)];})});
+// the pools the stream's channel, its head pool or the dubh lochan would cut into go (their lip is lower than their level there: the check in 98);
+// the index (POOLH) is rebuilt on what is left. A pool's id is kept, so the hazards and the views name the same pools
+for(let i=BOG_POOLS.length-1;i>=0;i--){const P=BOG_POOLS[i];if(P===LOCHAN)continue;const r=streamNear(P.x,P.z);
+ if((r&&r.d<r.w+P.a+12)||Math.hypot(P.x-TARN.x,P.z-TARN.z)<TARN.r+P.a+24||Math.hypot(P.x-LOCHAN.x,P.z-LOCHAN.z)<LOCHAN.a+P.a+8)BOG_POOLS.splice(i,1);}
+for(const k in POOLH)delete POOLH[k];
+BOG_POOLS.forEach(P=>{for(let gx=Math.floor((P.x-P.a)/PH);gx<=Math.floor((P.x+P.a)/PH);gx++)for(let gz=Math.floor((P.z-P.a)/PH);gz<=Math.floor((P.z+P.a)/PH);gz++)(POOLH[gx+','+gz]||(POOLH[gx+','+gz]=[])).push(P);});
 // the bog pools as core/water stills (drawn as one mesh by WATER.drawPools): peat-brown, near black in the middle
 const POOL_STILLS=BOG_POOLS.map(P=>WATER.still({name:P.kind==='lochan'?'The dubh lochan':P.kind==='flark'?'A flark':'A bog pool',level:P.level,poly:P.poly,
  gradient:{centre:0x0e0c09,rim:0x3c3424,power:1.2}}));
@@ -145,7 +151,7 @@ function terrainH(x,z){let h=baseH(x,z);
  const dt=Math.hypot(x-TARN.x,z-TARN.z);
  if(dt<TARN.r+30){const bowl=TARN.level-2.2*(1-Math.pow(Math.min(1,dt/TARN.r),2))+Math.max(0,dt-TARN.r)*.25+(dt<TARN.r?0:.25);if(bowl<h)h=bowl;}
  // the pools: a floor under each, its edge a cut peat lip (the poly's level, then down)
- const P=poolAt(x,z,3);if(P){const u=poolU(P,x,z);if(u<1)h=Math.min(h,P.level-.25-P.depth*(1-u*u));else h=Math.min(h,mix(P.level-.25,h,smooth(1,1+3/P.b,u)));}
+ const P=poolAt(x,z,0);if(P){const u=poolU(P,x,z);if(u<1)h=Math.min(h,P.level-.25-P.depth*(1-u*u));}   /* inside its ellipse only: the peat round it stays at its own height, a cut lip 0.4 m over the water (outside it a hollow under the level drew a dry moat) */
  // the stream: a channel cut into the peat with steep black hags, the ground held under the ribbon
  const r=streamNear(x,z);
  if(r){const w=r.w,t=Math.max(0,r.d-w),bank=Math.max(r.bank,r.level-.25)+.35+t*.9+Math.max(0,t-3)*.25;
@@ -169,7 +175,7 @@ const FC=(function(){const N=300,SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,K=['h','s
   let knoll=0;for(const K of KNOLLS){const r=Math.hypot(x-K.x,z-K.z)/K.R;knoll=Math.max(knoll,Math.exp(-r*r*2.2));}
   const dm=domeAt(x,z),sg=stringAt(x,z),r=streamNear(x,z),dT=Math.hypot(x-TARN.x,z-TARN.z),pl=poolAt(x,z,14);
   a.valley[k]=r?Math.exp(-(r.d*r.d)/(60*60)):0;
-  a.flow[k]=Math.max(r?smooth(40,4,r.d):0,smooth(TARN.r+30,TARN.r,dT),pl?.7:0);
+  a.flow[k]=Math.max(r?smooth(40,4,r.d):0,smooth(TARN.r+30,TARN.r,dT),pl?.25:0);   /* a pool wets its edge but is no stream bank: the kit's riparian zone (rip) starts at .3 */
   a.up[k]=clamp(h/1400,0,1);
   const n1=fbm(x*.0021+4,z*.0021-6,88,2)-.5,n2=fbm(x*.0009-3,z*.0009+2,89,2)-.5;
   // BOG: the open mire. The domes (their crowns wholly), the string fen, the wet flats; not the knolls, the levees, the bench's NW lip

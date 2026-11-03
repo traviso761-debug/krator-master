@@ -8,7 +8,7 @@
 const STATION_SKIP=['stream-descends','tower-hung-with-growth','trumpets-and-glow-found','every-species-placed'];
 const STATION_EXPORT_BOX=[LOCHAN.x-150,LOCHAN.z-150,LOCHAN.x+150,LOCHAN.z+150];   /* the export profile's box: the lochan, its pools and hummocks */
 const MIRROR_STILL={materials:[POOLS_DRAW.material||POOLS_DRAW.mesh.material],level:LOCHAN.level,center:[LOCHAN.x,LOCHAN.z],radius:LOCHAN.a*3};
-function STATION_VIEWS(add,G){const P=(s,t)=>xzOf(s,t);
+const STATION_VIEWS=function(add,G){const P=(s,t)=>xzOf(s,t);
  {const c=P(2600,-300),t=P(-1600,200);add('Overview: the bog country from the SE rise',[c[0],G(c[0],c[1])+90,c[1],t[0],G(t[0],t[1])+6,t[1]]);}
  {const D=DOMES[0],a=-2.3,cx=LOCHAN.x+Math.cos(a)*(LOCHAN.a+35),cz=LOCHAN.z+Math.sin(a)*(LOCHAN.a+35);add('The dubh lochan',[cx,G(cx,cz)+4,cz,LOCHAN.x,LOCHAN.level+1,LOCHAN.z]);}
  {const D=DOMES[0],cx=D.x+D.R*.55,cz=D.z+D.R*.3;add('A raised bog: pools and ridges',[cx,G(cx,cz)+14,cz,D.x,G(D.x,D.z)-2,D.z]);}
@@ -19,7 +19,7 @@ function STATION_VIEWS(add,G){const P=(s,t)=>xzOf(s,t);
   if(T){const cx=T.x+44,cz=T.z+30;add('A great trumpet alone in the fen',[cx,G(cx,cz)+4,cz,T.x,T.y0+T.H*.5,T.z]);
    const cx2=T.x+20,cz2=T.z-14;add('Night: the trumpets over the pools',[cx2,G(cx2,cz2)+3,cz2,T.x,T.y0+T.H*.45,T.z],'night');}}
  {const K=KNOLLS[0],a=Math.atan2(-K.z,-K.x),cx=K.x+Math.cos(a)*(K.R+160),cz=K.z+Math.sin(a)*(K.R+160);add('The lagg: the wood meets the mire',[cx,G(cx,cz)+3,cz,K.x,G(K.x,K.z)+10,K.z]);}
- {const c=P(-1800,400),t=P(400,-200);add('Morning fog on the flats',[c[0],G(c[0],c[1])+5,c[1],t[0],G(t[0],t[1])+4,t[1]],'dawn');}}
+ {const c=P(-1800,400),t=P(400,-200);add('Morning fog on the flats',[c[0],G(c[0],c[1])+5,c[1],t[0],G(t[0],t[1])+4,t[1]],'dawn');}};
 const STATION_CHK={
  // the mire is open: no tree over 8 m on its open ground (bog > .75) but the great trumpets, which stand there alone
  open(trees){const bad=trees.filter(T=>T.H>8&&T.sp!==NHL.KEY.greattrumpet&&FIELD.bog(T.x,T.z)>.75);
@@ -38,7 +38,7 @@ function STATION_CHECKS(){const R=[],add=(name,r)=>R.push({name,ok:r.ok,detail:r
  add('the mire is open (no tall tree on the open bog)',STATION_CHK.open(NHL.TREES));
  add('the bog pools stand in the peat',STATION_CHK.pools(BOG_POOLS));
  const N=stationN();add('the mire\'s plants are drawn',STATION_CHK.plants(N));
- add('the mire\'s hazards are registered',STATION_CHK.hazards(REG));
+ add('the mire\'s hazards are registered',STATION_CHK.hazards(BOG_HAZARDS));
  neg('a 30 m spruce at the lochan\'s crown',STATION_CHK.open([{sp:NHL.KEY.spirespruce,H:30,x:DOMES[0].x+200,z:DOMES[0].z}]));
  neg('a pool hung 2 m over the peat',STATION_CHK.pools([Object.assign({},BOG_POOLS[0],{level:BOG_POOLS[0].level+2})]));
  neg('no corn lilies drawn',STATION_CHK.plants(Object.assign({},N,{cornlily:0})));

@@ -24,5 +24,5 @@ const FALL_DRAWS=STREAM_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0x
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=k?'The waterfall':'The upper fall';D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='The plunge pool';return D;});
 const TARN_DRAW=WATER.drawStill(TARN_STILL,{color:lin(0x18120c),roughness:.16,metalness:0,envMapIntensity:.1,rain:true,renderOrder:1});
 TARN_DRAW.mesh.userData.probeSkip=true;TARN_DRAW.mesh.userData.inspectLabel='The tarn';
-const POOLS_DRAW=WATER.drawPools(POOL_STILLS,{color:lin(0x14100c),roughness:.12,metalness:0,envMapIntensity:.14,rain:true,renderOrder:1,name:'The bog pools'});
+const POOLS_DRAW=WATER.drawPools(POOL_STILLS,{color:lin(0x0a0806),roughness:.1,metalness:0,envMapIntensity:.08,rain:true,renderOrder:1,name:'The bog pools'});
 POOLS_DRAW.mesh.userData.inspectLabel='A bog pool';
