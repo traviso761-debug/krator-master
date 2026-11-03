@@ -225,7 +225,7 @@ TONGUE_GENERICS = {
     'hykkousik':  ('Rhyver',   'Brouk',    'Ghouly',   'WG'),
     'islander':   ('Vai',      'Auwai',    'awa',      'GW'),
     'islanderw':  ('Vai',      'Hau',      'Kaha',     'GW'),
-    'xanadui':    ('Rīfar',    'Bīruk',    'Gūlī',     'GW'),
+    'xanadui':    ('Riwā',     'Siṭrīm',   'Ḍrāi',     'WG'),
     'yuni':       ('Riba',     'Bruk',     'Guli',     'WG'),
     'dalab':      ('Riba',     'Bruk',     'Guli',     'WG'),
     'vrivolci':   ('Riba',     'Bruk',     'Guli',     'WG'),
@@ -291,12 +291,18 @@ TONGUE_LEXICON = {
         ('Moana', 'blue-trench'), ('Toka', 'seamount-crag'), ('Puna', 'hot-spring'), ('Ao', 'cloud-arch'),
         ('Rā', 'sun-arch'), ('Wai', 'fresh-pool'), ('Papa', 'ledge'), ('Roa', 'long-ridge'),
     ],
+    # Xanadui is English worn to sound Nepali or Persian (the tongues sheet, the owner 2026-11-03): t d > ṭ ḍ,
+    # f > ph, v w > w, b d g before a long vowel breathed (bh ḍh gh), k before o u > q, s + consonant broken
+    # (stone > Satõ), final -n -ng a nasal vowel, final -r lost; the adjective goes first, as in the 4.21-4.23
+    # layer's Reḍ Riwā, Wāiṭ Ḍrāi, Solṭ Siṭrīm, Bhon Ḍrāi (history/river_names.py has the same words)
     'xanadui': [
-        ('Qubbah', 'pleasure-dome'), ('alsamā', 'sky-mirror'), ('albarad', 'hail-ice'), ('aldhahab', 'gold'),
-        ('alfiḍḍah', 'silver'), ('alzumurrud', 'emerald'), ('alyāqūt', 'ruby'), ('albihār', 'incense'),
-        ('alghaym', 'cloud-veil'), ('alsalsabīl', 'nectar-spring'), ('alnūr', 'light'), ('allayl', 'night'),
-        ('alkahf', 'cavern'), ('alṣakhr', 'crag'), ('alward', 'rose-garden'), ('alṣafā', 'clarity'),
-        ('albard', 'cold-snow'), ('alrīḥ', 'mountain-wind'), ('aljadwal', 'terraced-rill'), ('aljawhar', 'jewel'),
+        ('Reḍ', 'red'), ('Wāiṭ', 'white'), ('Balāk', 'black'), ('Qol', 'cold'),
+        ('Solṭ', 'salt'), ('Satõ', 'stone'), ('Sã', 'sun'), ('Sitār', 'star'),
+        ('Ghol', 'gold'), ('Silwā', 'silver'), ('Bhon', 'bone'), ('Āirã', 'iron'),
+        ('Girīn', 'green'), ('Ḍhīp', 'deep'), ('Barāiṭ', 'bright'), ('Kilīā', 'clear'),
+        ('Sanõ', 'snow'), ('Āis', 'ice'), ('Sakāi', 'sky'), ('Kilāuḍ', 'cloud'),
+        ('Wĩḍ', 'wind'), ('Mũ', 'moon'), ('Sekriḍ', 'sacred'), ('Jeḍ', 'jade'),
+        ('Ḍhom', 'dome'), ('Keb', 'cave'),
     ],
     'yuni': [
         ('Sista', 'Sister'), ('Brada', 'Brother'), ('Gould', 'Gold'), ('Silba', 'Silver'),
@@ -545,10 +551,8 @@ def format_river_name(tongue, stem, generic, order, rid):
         return f'{generic} {stem_c}'
 
     if tongue == 'xanadui':
-        # Xanadui: `Rīfar al-Qubbah` / `Gūlī al-Barad`
-        if stem_c.startswith('al'):
-            stem_c = 'al-' + stem_c[2:].capitalize()
-        return f'{generic} {stem_c}'
+        # Xanadui (the tongues sheet): the adjective first, as `Reḍ Riwā`, `Solṭ Siṭrīm`, `Bhon Ḍrāi`
+        return f'{stem_c} {generic}'
 
     if tongue == 'zeijani':
         # Akkadian construct state: `Nāru-Šurpu`, `Palgu-Qarnu`, `ḫarru-Kibrītu`
@@ -704,7 +708,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         'hykkousik': [('Hyghe', 'high'), ('Lhou', 'low'), ('Graet', 'great'), ('Lyttle', 'little'), ('Nhor', 'north'), ('Soud', 'south'), ('Aest', 'east'), ('Whest', 'west')],
         'islander':  [('Runga', 'upper'), ('Raro', 'lower'), ('Nui', 'great'), ('Iti', 'little'), ('Tonga', 'south'), ('Tokerau', 'north')],
         'islanderw': [('Runga', 'upper'), ('Raro', 'lower'), ('Nui', 'great'), ('Iti', 'little'), ('Rāwhiti', 'east'), ('Tua', 'outer')],
-        'xanadui':   [('al-Aʿlā', 'upper'), ('al-Asfal', 'lower'), ('al-Kabīr', 'great'), ('al-Ṣaghīr', 'little'), ('al-Shamāl', 'north'), ('al-Janūb', 'south')],
+        'xanadui':   [('Xāi', 'upper'), ('Lo', 'lower'), ('Garēṭ', 'great'), ('Liṭal', 'little'), ('North', 'north'), ('Sāuth', 'south')],
         'yuni':      [('Apa', 'upper'), ('Loua', 'lower'), ('Biga', 'great'), ('Likl', 'little'), ('Norta', 'north'), ('Sauta', 'south'), ('Ista', 'east'), ('Westa', 'west')],
         'dalab':     [('Apa', 'upper'), ('Loua', 'lower'), ('Big', 'great'), ('Likl', 'little'), ('Nort', 'north'), ('Saut', 'south'), ('Ist', 'east'), ('West', 'west')],
         'vrivolci':  [('Uxo', 'upper'), ('Ande', 'lower'), ('Mago', 'great'), ('Brigo', 'high'), ('Are', 'fore'), ('Ate', 'back')],
@@ -792,7 +796,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
                     stem, gls_en = lex[(seed_idx + step) % len(lex)]
                     if tng in {'eternian', 'hum', 'zeijani', 'jimjam'}:
                         comp_stem = f'{q_loc}-{stem}'
-                    elif tng in {'dasri', 'xanadui'}:
+                    elif tng == 'dasri':
                         comp_stem = f'{stem} {q_loc}'
                     else:
                         comp_stem = f'{q_loc} {stem}'
