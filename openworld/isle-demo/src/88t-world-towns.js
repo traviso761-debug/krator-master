@@ -24,7 +24,7 @@ const T=W.plans.map(P=>{const F=P.G.frame,g=new THREE.Group();g.position.set(F.x
  const D=ISLE_DRAW_FACTORY(g);if(shared){D.protos=shared.protos;D.failed=shared.failed;}else shared=D;
  D.nearR=0;   /* massing only until the camera comes over the town */
  const keep=ISLE.cur;ISLE.cur=P;
- try{D.streets(P.R,P.G);D.orchards(P.R,P.G);D.records(P.R);D.vessels(P.R);}catch(e){S.errors.push(P.town+' draw: '+(e&&e.stack?e.stack:e));}
+ try{D.streets(P.R,P.G);D.orchards(P.R,P.G);D.records(P.R);D.lots(P.R);D.vessels(P.R);}catch(e){S.errors.push(P.town+' draw: '+(e&&e.stack?e.stack:e));}
  finally{ISLE.cur=keep;}
  const X={P,F,g,D,full:false};cull(X);return X;});
 /* the thieves' guild on the map (settlements/isle-demo 47c, ISLE.tagGuilds): under its tavern in its town's registry, its sign
@@ -139,7 +139,8 @@ function drop(list,g){list.forEach(m=>g.remove(m));list.length=0;}
 function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);drop(X.fullM,X.g);X.hlodAt=at?at.slice():null;X.dirty=false;HL.lastRebuild=performance.now();
  if(!on){X.ves.forEach(v=>{v.g.visible=true;});return;}
  const by={},fb={},n0=D.recs.length;let mid=0,full=0;
- D.recs.forEach((L,i)=>{const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<D.nearR||d>=MID_R)return;
+ D.recs.forEach((L,i)=>{if(L.vacant&&!L.built)return;   /* an empty lot: its works (60 DRAW.lots) */
+  const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<D.nearR||d>=MID_R)return;
   /* the full ring, merged on the texture arrays: a piece in one or two draw calls (and its parts that cannot merge) */
   if(ATL&&d<FULL_R){const id0=L.kit+':'+L.key+'#'+(L.v|0),A=atlasOf(id0,()=>{const Q=D.proto(L.kit,L.key,L.v);return Q?Q.parts:null;});
    if(A){(fb[id0]||(fb[id0]={A,P:D.protos[id0],L:[],i:[]})).L.push(L);fb[id0].i.push(i);return;}}
@@ -183,6 +184,8 @@ function hlodCheck(o){o=o||{};const X=T.find(x=>x.full);if(!X)return{ok:false,de
  const st=X.stats||{};return{ok:!twice&&!none&&X.mid.length>0,detail:X.P.town+': '+D.recs.length+' lots, '+(st.full||0)+' full, '+(st.mid||0)+' baked, '+(st.massing||0)+' massing; vessels baked '+(st.vesselsBaked||0)+
   ' of '+X.ves.length+'; '+HL.bakes+' pieces baked in '+Math.round(HL.bakeMs)+' ms'+(twice?'; '+twice+' DRAWN TWICE':'')+(none?'; '+none+' NOT DRAWN ('+missing.slice(0,3).join(', ')+')':'')};}
 HOST.TICKS.push(()=>update());
+/* the empty lots' works follow their projects (settlements/isle-demo 47b, 60 DRAW.lotsTick): a house finished, its town's rings rebuilt */
+let lotsAt=0;HOST.TICKS.push(()=>{const now=performance.now();if(now-lotsAt<1000)return;lotsAt=now;for(const X of T)if(X.D.lotsTick&&X.D.lotsTick())X.dirty=true;});
 /* ---------------------------------------------------------------- the export: one town, in its frame */
 let exportOff=[];
 function exportTown(town){const P=W.select(town);if(!P)return null;const X=T.find(x=>x.P===P);

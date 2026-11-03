@@ -92,7 +92,9 @@ ISLE.TUNE.sim = {
       /* the watch (2026-11-02, for crime and punishment: 47c): `share` of the soldiers are watchmen, posted at the barracks as
          the rest but walking the markets, greens and plazas by day (`at`, `cap` a place), moving on every `every` minutes */
       patrol: { share: 1 / 3, role: 'watchman', sched: 'patrol', at: ['market', 'green', 'plaza'], cap: 2, every: 30 } },
-    official: { kinds: ['hall', 'school', 'healer', 'temple', 'residence', 'square', 'shrine'] }
+    official: { kinds: ['hall', 'school', 'healer', 'temple', 'residence', 'square', 'shrine'] },
+    /* the builders (2026-11-03, 47b): one a lot left empty (`build.posts`), sent to the town's projects */
+    builder: { kinds: ['lot'] }
   },
   /* the homes the kin fill, in order: whatever beds the roles leave, the residences and barracks too */
   homes: ['home', 'residence', 'barracks'],
@@ -137,7 +139,7 @@ ISLE.TUNE.sim = {
       WORSHIP: { contemplate: 45, socialize: 5 }, STUDY: { contemplate: 10, socialize: 4, drink: 4 }, HOUSEWORK: { drink: 6, socialize: 2, relax: 2 },
       BUY: { socialize: 4, relax: 2 }, PATROL: { drink: 6, socialize: 1 } },
     work: { drink: 4, eat: 1.5, relax: 1 },
-    labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, watchman: 0.7, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
+    labour: { farmhand: 1, labourer: 1, builder: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, watchman: 0.7, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
     byTrade: { soldier: { material: 0.5 }, watchman: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
     weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
     traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
@@ -237,7 +239,7 @@ ISLE.TUNE.sim = {
        no demand (a town at the abstract level buys none: watched again, its people find them) */
     govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
       least: { kava: 600, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50,
-        cotton: 1000 } },   /* the weavers draw cotton by the batch: a floor (2026-11-03: an unwatched town now buys its clothes at a watched one's pace, and Valapo's cotton swung) */
+        cotton: 1000, stone: 300 } },   /* stone (2026-11-03): the builders' and the upkeep's draws and Valapo's by canoe on top of the tools'; the weavers draw cotton by the batch: a floor (2026-11-03: an unwatched town now buys its clothes at a watched one's pace, and Valapo's cotton swung) */
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
@@ -297,7 +299,7 @@ ISLE.TUNE.sim = {
     diet: { valapo: { rice: 0.05 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
-        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools'], valapo: ['sugar', 'garments', 'nets'] } },
+        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools', 'stone', 'timber'], valapo: ['sugar', 'garments', 'nets'] } },   /* stone and timber: Valapo's houses (47b); timber only where the lumber village is */
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]
@@ -370,6 +372,18 @@ ISLE.TUNE.sim = {
      about six days later. Placeholders */
   unrest: { smooth: 5, hyst: 5, stages: { grumble: 50, demand: 40, strike: 30, treason: 20 }, grumble: { arrest: 0.7 },
     demand: { goods: 2, days: 5, keep: 2, every: 5, grant: 0.4, granted: { n: -10, days: 10 }, refused: { n: 5, days: 10 } }, strike: { after: 5, share: 0.5, days: 1 } },
+  /* BUILDING AND UPKEEP (47b; core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4; the owner, 2026-11-03: most
+     cities should show fillable empty lots while the player is there, adding demand for timber, stone and the other
+     building materials, and upkeep as a demand sink). `vacant` of each town's dwellings are left as empty lots in the
+     plan (32: a hash of the town and the lot; the census counts their households out), `posts` builders each; the town
+     keeps `pace` projects going, its builders sent to them. A house is built of `kinds` (a dwelling of one household a
+     `house`, of three a `longhouse`): its bill (timber for the piles and frame, stone for the footings and hearth, mats
+     for the thatch and wall screens) and its worker-hours. Every standing home wears its bill over `life` days (the
+     thatch is the first to go; a house on piles needs little stone, its hearth and footing), drawn hourly from the warehouses; owed when they are out, shown on a share of the houses
+     after `grace` days. Timber is kept only where the lumber village is (the open world): on the city page a house's
+     timber is gathered on the spot and its upkeep skips it. Placeholders */
+  build: { vacant: 0.03, posts: 1, pace: 2, grace: 30,
+    kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 } } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

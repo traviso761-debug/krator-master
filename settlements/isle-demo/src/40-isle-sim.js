@@ -58,6 +58,10 @@ ISLE.simPlaces = function (TS, R, G, nav) {
     var K = T.kinds[L.key]; if (!K) { out.unmapped[L.key] = (out.unmapped[L.key] || 0) + 1; return; }
     var hh = ISLE.households(L.key), beds = hh * T.home.per;
     var tags = { key: L.key, lot: L.id, tag: L.tag, trade: ISLE.tradeOf(L.key), cls: L.cls, district: L.district, role: L.role };
+    if (L.vacant && T.build) {   /* an empty lot (32, 47b): its builders' posts, out of doors, until its house is built */
+      tags.vacant = true; tags.hh = hh; (ISLE.SIM.lotRecs || (ISLE.SIM.lotRecs = {}))[s + '.' + L.lot] = L;   /* the plan's record: the drawing follows its project (47b) */
+      put(s + '.' + L.lot, 'an empty lot', ['lot', { WORK: T.build.posts * 100 / Math.max(1, L.w * L.d) }, { out: true, wander: 4 }], L.x, L.z, L.ry, L.w * L.d, 0, tags);
+      return; }
     var rec = [s + '.' + L.lot, L.name || ISLE_DIMS[L.key] && ISLE_DIMS[L.key].role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
     if (K[0] === 'home') homes.push({ h: KRAND.hash(T.seed, 71, i), rec: rec }); else put.apply(null, rec);
   });
@@ -129,6 +133,7 @@ ISLE.simDeclare = function (plans, clock) {
     X.ms.people = Date.now() - t1;
   });
   S.trade = ISLE.simTrade();
+  S.build = ISLE.simBuild();   /* the empty lots and upkeep (47b), before the money opens the lots' accounts */
   S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
   S.money = ISLE.simMoney();   /* the accounts (47m: money's M0), after the crime's guild */
   S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */

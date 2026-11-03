@@ -25,5 +25,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `88c-world-life.js` | 13 |  |
 | `88h-world-hamlets.js` | 16 |  |
 | `88k-world-camps.js` | 12 |  |
-| `88t-world-towns.js` | 25 |  |
+| `88t-world-towns.js` | 26 |  |
 | `89-world-geysers.js` | 6 |  |

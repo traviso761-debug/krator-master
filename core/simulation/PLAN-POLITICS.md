@@ -121,3 +121,13 @@ town cascading through the others.
   data. A stage opens only while the town is unwatched, so the player comes back to find a new quarter, never sees one
   appear.
 
+**The first pass is built** (2026-11-03: core/simulation 77-sim-6-build.js; the isles' `47b`, `32`'s empty lots, `60`'s
+drawing; tests/test-isle-build.js). Three in a hundred of the isles' dwellings are left as empty lots (Kautoa 39, Valapo
+12), each with a builder; a town keeps two projects going and spreads its builders over them. A house (1,200
+worker-hours: timber 40, stone 2, mats 30; a longhouse 3,000) takes Kautoa's twenty builders about six days; the drawing
+follows it (a cleared plot with its timber, stone and mats; the piles; the floor and the wall frame; the rafters; the
+house). Every home wears its bill over three years: Kautoa draws about 32 mats, 2 stone and 43 timber a day (the timber
+where the lumber village is: the open world), Valapo a third of that; the canoes carry Valapo its stone and timber, and
+the governor keeps a stone floor. Twenty days without stone leave Kautoa 44 stone owed and two thirds of its houses
+showing wear. **Not yet:** a finished house stands empty (the people to fill it are section 4's flows: refugees, growth);
+workplaces do not wear; a household cannot buy a lot; the works are plain stand-ins for the islanders kit's own pieces.

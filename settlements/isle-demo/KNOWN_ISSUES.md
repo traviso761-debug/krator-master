@@ -260,6 +260,10 @@
       climb in order. And a riser keeps its home's class name for its household (only the riser's class moves).
 - [ ] **An unwatched town is a little happier than watched** (Valapo 86 unwatched, 80 watched, over twelve days): its people
       never find a temple shut or full and walk ten minutes at each change of activity; contemplation and sleep are the gap.
+- [ ] **A finished house stands empty:** nobody moves in until the people flows (refugees, growth: PLAN-POLITICS.md section 4)
+      are built. Workplaces do not wear yet, and a household cannot buy a lot. On the city page (no lumber village) a house's
+      timber is gathered on the spot and the upkeep draws none. The works on an empty lot are plain stand-ins (a plot, posts,
+      a frame, rafters), not the islanders kit's pieces; the open world draws them too but bakes none into its far rings.
 - [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
       its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town reaches treason about a
       week after its stores are eaten (`smooth` 5), and a strike holds workplaces that may already be idle.

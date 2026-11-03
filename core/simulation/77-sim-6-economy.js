@@ -85,6 +85,7 @@
       var bo=Object.keys(B.out||{}).concat(Object.keys(B.by||{})); bo.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
       Rb.batch={ 'in':Object.assign({}, B['in']||{}), out:Object.assign({}, B.out||{}), by:Object.assign({}, B.by||{}), hours:B.hours }; Rb.out=Object.keys(B.out||{}); Rb.rate=1/B.hours;
       Rb.out.forEach(function(g){ if(!E.inputs[g]){ var q={}; Object.keys(Rb.batch['in']).forEach(function(i){ q[i]=Rb.batch['in'][i]/B.out[g]; }); if(Object.keys(q).length) E.inputs[g]=q; } }); }
+    if(o.build) E.recipes[id].build=true;   /* a building lot: its worked hours go to its project (77-sim-6-build.js), it makes nothing */
     if(o.site!=null){ if(!E.resSites || !E.resSites[o.site]) throw new Error('SIM.recipe '+id+': unknown site '+o.site); E.recipes[id].site=o.site; } return P; };
   /* a resource site (opt-in): see the head of this file */
   SIM.site = function(o){ var E=o.settlement!=null ? SIM.econ(o.settlement) : SIM.ECON; if(!E) return null; if(!o.id) throw new Error('SIM.site: an id');
@@ -208,7 +209,9 @@
     Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
       if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
       else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
-    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null; if(!R.out.length || !R.rate) return;
+    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null;
+      if(R.build){ if(R.hold && !(R.hold.until!=null && minute>=R.hold.until)) return; if(SIM.BUILD) SIM.buildWork(id, W[id]*hrs, minute); return; }   /* a lot's builders at work (77-sim-6-build.js) */
+      if(!R.out.length || !R.rate) return;
       if(R.hold){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else { (E.why||(E.why={}))[id]={ reason:R.hold.reason }; return; } }   /* held (SIM.recipeHold): its hours lost */
       var u=W[id]*R.rate*(St ? St.yield : 1)*hrs;
       if(R.batch) batchWork(E, SIM.R.place[id], R, u, St); else make(SIM.R.place[id], R.out, u, 'carry', St); });

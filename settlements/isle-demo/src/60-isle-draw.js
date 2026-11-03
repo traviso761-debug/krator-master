@@ -211,7 +211,7 @@ DRAW.near = function (at, force) {
   DRAW.at = at.slice();
   DRAW.inst.forEach(function (m) { scene.remove(m); m.dispose(); }); DRAW.inst = [];
   var all = DRAW.recs, near = [];
-  all.forEach(function (L, i) { var d = Math.hypot(L.x - at[0], L.z - at[1]); if (d < DRAW.nearR) near.push([d, i]); });
+  all.forEach(function (L, i) { if (L.vacant && !L.built) return; var d = Math.hypot(L.x - at[0], L.z - at[1]); if (d < DRAW.nearR) near.push([d, i]); });   /* an empty lot: its works (DRAW.lots) */
   near.sort(function (a, b) { return a[0] - b[0]; }); near = near.slice(0, DRAW.nearMax);
   var full = {}, by = {}, t0 = performance.now();
   near.forEach(function (ni) { var L = all[ni[1]], P = DRAW.proto(L.kit, L.key, L.v); if (!P) return; full[ni[1]] = 1; (by[P.id] || (by[P.id] = { P: P, L: [] })).L.push(L); });
@@ -227,7 +227,7 @@ DRAW.near = function (at, force) {
   }
   var nb = 0, z0 = new THREE.Matrix4().makeScale(0, 0, 0);
   all.forEach(function (L, i) {
-    if (full[i]) { DRAW.massB.setMatrixAt(i, z0); DRAW.massR.setMatrixAt(i, z0); return; }
+    if (full[i] || (L.vacant && !L.built)) { DRAW.massB.setMatrixAt(i, z0); DRAW.massR.setMatrixAt(i, z0); return; }
     var wh = L.cls === 'wall' ? L.h : Math.max(2.5, L.h * 0.45), rh = L.cls === 'wall' ? 0.01 : Math.max(1.5, L.h - wh);
     DRAW.massB.setMatrixAt(i, DRAW.matOf(L, [L.w * 0.9, wh, L.d * 0.9]));
     var r = DRAW.matOf(L, [L.w * 1.02, rh, L.d * 1.02]); r.elements[13] += wh; DRAW.massR.setMatrixAt(i, r); nb++;
@@ -236,6 +236,51 @@ DRAW.near = function (at, force) {
   if (DRAW.massB.instanceColor) DRAW.massB.instanceColor.needsUpdate = true; if (DRAW.massR.instanceColor) DRAW.massR.instanceColor.needsUpdate = true;
   DRAW.stats.near = Object.keys(full).length; DRAW.stats.massing = nb; DRAW.stats.nearTris = Math.round(tris); DRAW.stats.protos = DRAW.built;
   DRAW.stats.nearMs = Math.round(performance.now() - t0);
+};
+/* ---------------------------------------------------------------- the empty lots and their houses going up (47b) */
+/* Each empty lot of the plan (32: L.vacant) drawn as its works, by its project's stage (ISLE.lotStage, from the sim):
+   'cleared' a levelled plot with a stack of timber, a heap of stone and a roll of mats; 'piles' its posts standing;
+   'frame' the floor platform and the wall posts with their plates; 'roof' the rafters to the ridge. 'built': the works
+   gone and the house drawn as any (the near set rebuilt). It decides nothing: the stage is the sim's record */
+DRAW.lots = function (R) {
+  var wood = new THREE.MeshLambertMaterial({ color: 0x7a5a3a }), raw = new THREE.MeshLambertMaterial({ color: 0x9c7a52 }), earth = new THREE.MeshLambertMaterial({ color: 0x6e5a40 });
+  var stone = new THREE.MeshLambertMaterial({ color: 0x8a8478 }), mat = new THREE.MeshLambertMaterial({ color: 0xc2a868 });
+  var box = function (w, h, d, m, x, y, z, ry) { var k = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); k.position.set(x, y, z); if (ry) k.rotation.y = ry; return k; };
+  var post = function (h, x, z, y0, r) { var k = new THREE.Mesh(new THREE.CylinderGeometry(r || 0.14, (r || 0.14) * 1.2, h, 6), wood); k.position.set(x, y0 + h / 2, z); return k; };
+  DRAW.lotWorks = [];
+  R.lots.forEach(function (L) {
+    if (!L.vacant) return;
+    var g = new THREE.Group(), w = Math.max(4, L.w * 0.9), d = Math.max(4, L.d * 0.9), hw = w / 2, hd = d / 2, pile = 1.6, wall = Math.max(2.4, (L.h || 6) * 0.45);
+    var parts = { cleared: new THREE.Group(), piles: new THREE.Group(), frame: new THREE.Group(), roof: new THREE.Group() };
+    parts.cleared.add(box(w, 0.12, d, earth, 0, 0.06, 0));
+    for (var i = 0; i < 4; i++) parts.cleared.add(new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3.2, 6).rotateZ(Math.PI / 2).translate(hw + 1.2, 0.2 + i % 2 * 0.3, -hd + 0.6 + i * 0.32), raw));
+    parts.cleared.add(box(1.0, 0.5, 1.0, stone, hw + 1.1, 0.25, hd - 0.8)); parts.cleared.add(new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.2, 8).rotateX(Math.PI / 2).translate(hw + 1.1, 0.35, hd - 2.2), mat));
+    var P = []; [-1, 0, 1].forEach(function (u) { [-1, 1].forEach(function (v) { P.push([u * (hw - 0.3), v * (hd - 0.3)]); }); });
+    P.forEach(function (p) { parts.piles.add(post(pile, p[0], p[1], 0, 0.16)); });
+    parts.frame.add(box(w, 0.18, d, raw, 0, pile + 0.09, 0));
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (s) { parts.frame.add(post(wall, s[0] * (hw - 0.3), s[1] * (hd - 0.3), pile + 0.18, 0.12)); });
+    parts.frame.add(box(w, 0.16, 0.16, wood, 0, pile + wall, -hd + 0.3)); parts.frame.add(box(w, 0.16, 0.16, wood, 0, pile + wall, hd - 0.3));
+    var top = pile + wall, ridge = top + Math.max(2.5, (L.h || 6) * 0.5), rl = Math.hypot(hd, ridge - top);
+    for (var k = -2; k <= 2; k++) [-1, 1].forEach(function (v) { var r = box(0.12, rl, 0.12, raw, k * (hw - 0.4) / 2, (top + ridge) / 2, v * hd / 2); r.rotation.x = -v * Math.atan2(hd, ridge - top); parts.roof.add(r); });   /* leaning in to the ridge */
+    parts.roof.add(box(w + 0.6, 0.16, 0.16, wood, 0, ridge, 0));
+    Object.keys(parts).forEach(function (k) { parts[k].name = k; g.add(parts[k]); });
+    g.position.set(L.x, L.y, L.z); g.rotation.y = L.ry || 0; g.name = 'empty lot ' + L.id; g.userData.inspectLabel = 'An empty lot: a house to be built'; scene.add(g);
+    DRAW.lotWorks.push({ L: L, g: g, parts: parts, stage: null });
+  });
+  DRAW.lotsTick(); DRAW.stats.lots = DRAW.lotWorks.length;
+};
+DRAW.LOT_STAGES = ['cleared', 'piles', 'frame', 'roof'];
+DRAW.lotsTick = function () {
+  var again = false, by = {};
+  (DRAW.lotWorks || []).forEach(function (W) {
+    var st = (typeof ISLE !== 'undefined' && ISLE.lotStage ? ISLE.lotStage(W.L) : null) || 'cleared'; by[st] = (by[st] || 0) + 1; if (st === W.stage) return; W.stage = st;
+    if (st === 'built') { W.g.visible = false; again = true; return; }
+    var k = DRAW.LOT_STAGES.indexOf(st); W.g.visible = true;
+    DRAW.LOT_STAGES.forEach(function (s, i) { W.parts[s].visible = i <= k; });
+  });
+  DRAW.stats.lotStages = by;
+  if (again && DRAW.at) DRAW.near(DRAW.at, true);   /* a house finished: drawn as any */
+  return again;
 };
 /* ---------------------------------------------------------------- the vessels */
 DRAW.vessels = function (R) {

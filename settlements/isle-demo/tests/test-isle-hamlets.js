@@ -79,4 +79,7 @@ ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber;
   ok('a mine emptied stops, and says why', gone === 40 && R.amount === 0 && BL > 0, gone + ' more ore, ' + R.amount + ' left, blocked ' + BL + ' times');
   const why = Object.values(SIM.blockedReport('valapo')).filter(w => w.reason === 'missing' && w.goods.indexOf('ore') >= 0).length, v0 = SIM.stockOf('ore', 'valapo');
   console.log('--- after the mine: Valapo holds ' + v0 + ' ore, ' + why + ' smithies say they miss it'); }
+/* the building's timber (47b): with the lumber village the towns keep timber, and their houses' upkeep and projects draw it */
+if (SIM.BUILD) { const BR = SIM.buildReport(), tw = ISLE.SIM.order.map(s2 => { const T = BR.towns[s2]; return T ? s2 + ' timber ' + (T.upkeep.taken.timber || 0) + ' drawn, ' + (T.upkeep.owed.timber || 0) + ' owed, ' + T.built + ' built' : s2 + ' -'; });
+  ok('with the lumber village the houses draw their timber (' + tw.join('; ') + ')', ISLE.SIM.order.every(s2 => BR.towns[s2] && BR.towns[s2].upkeep.taken.timber > 0), tw.join('; ')); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
