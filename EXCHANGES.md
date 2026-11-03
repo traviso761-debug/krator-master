@@ -468,6 +468,10 @@ ebadlands' `HV()` helper: code, not a species.
 | eastabyss→ebadlands | `araucaria` | Rope araucaria | animals (seed cones cached) | cousin: shorter, sparser ropes, no abyssal habit | ebadlands' low BSh/Csa canyons over the abyss rim (950-1,600 m) | the abyss's one temperate-semiarid species, so it can climb out into the badlands' lowest band |
 | ebadlands→eastabyss | `cottonwood` | Fremont cottonwood | water (seed fluff down the rivers into the abyss) | cousin: taller, a buttressed bole in the 1.9 atm air | the abyss's riverbanks in the BSh/Aw margin (-1,200 to -100 m) | a riparian tree whose seed travels on water; the badlands' rivers drain into the abyss |
 
+**Done (2026-11-02, ebadlands' turn, pair 5).** eastabyss→ebadlands `araucaria`: a cousin (`ropearaucaria`, x.7 tall, sparser), read in place on
+station 1, the hot waste (`biomes/ebadlands/src/87-host-kin.js`): the slot canyon cut into the first step and the gullies' floors near its foot.
+ebadlands→eastabyss `cottonwood` was taken at eastabyss's turn (`abysscottonwood`).
+
 ### eastabyss ↔ sedesert (main)
 
 **Existing exchanges: none either way.** sedesert's core is the eastern abyss kit's core (`sedesert/BIOME-API.md:11`),
@@ -491,6 +495,8 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | ebadlands→korona | `bristlecone` | Bristlecone pine | birds (nutcracker caches) | read in place | Korona's east plateau at 4.6 km, the hoar table country (Dsc/BWk, about 62 mm) | the same plateau and the same cold, dry, high ground where bristlecones live |
 | korona→ebadlands | `frosttank` | Frost tank | water (snowmelt) and birds | read in place | the melt pools of ebadlands' ET/Dfc high band (5.1-5.9 km) | Korona's ET/Dsc ice-table trap, already tagged for exactly this ground |
 
+**Waiting on Korona's turn (pair 9)** for both rows: Korona is the later vendor and reader (ebadlands' turn, 2026-11-02, left them).
+
 ### ebadlands ↔ sedesert (the Bowl and main)
 
 **Existing exchanges: none either way.**
@@ -505,6 +511,13 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | ebadlands→Bowl | `cottonwood` | Fremont cottonwood | water | cousin: dense-air habit, a squat, broad crown | the Bowl's `delta` levees on its east side | gallery trees on the delta's distributaries, beside the Bowl's tamarisk |
 | main→ebadlands | `mesquite` | Mesquite | animals (pods eaten, seed dropped) | read in place | ebadlands' lowest BSh washes, the badlands' edge | a semiarid riparian shrub; the river lines run across the border |
 | ebadlands→main | `juniper` | Utah juniper | birds (berries) | cousin: lower and broader in the thicker air, with a redder bark | sedesert's mesa tops and the BSk uplands (1.4-2.9 km) | the desert's mesas are badlands ground; juniper is the mesa tree |
+
+**ebadlands' turn (2026-11-02, pair 5).** Wired but **not read** yet: main→ebadlands `mesquite` (`biomes/ebadlands/src/87-host-kin.js` grows it on station 1's wadis once `stations/waste/station.json`
+reads sedesert again: sedesert's builder jitters the mesquite's crowns up to ~2.8 m off their limbs, and the attach audit failed station 1 at 9.5%; sedesert's
+next turn holds them, BIO.holdTo). **Owed:** Bowl→ebadlands `tamarisk` (the Bowl's tamarisk builder is
+private to `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl's next turn exports it, then ebadlands grows it on the wadis'
+bars); ebadlands→main `juniper` and ebadlands→Bowl `cottonwood` (sedesert's pages, its next turn: `build.py` NEIGH and `87-host-kin.js` read
+ebadlands' species and trees in place; neither ebadlands species key nor index changed). No ebadlands species key or index changed.
 
 ### ehighlands ↔ sedesert (the Bowl, main, steppe)
 

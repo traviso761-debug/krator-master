@@ -161,10 +161,16 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            # a station names its own box (LAND.exportBox: a 300 m cell holding a bucket and its water; PLAN-STATIONS.md), the transect uses EXPORT_BOX
+            box = await pg.evaluate("typeof LAND!=='undefined'&&LAND.exportBox?LAND.exportBox:null") or EXPORT_BOX
+            if not a.profile:   # a station may name its own profile (LAND.exportProfile; its reason in PLAN-STATIONS.md)
+                prof = await pg.evaluate("typeof LAND!=='undefined'&&LAND.exportProfile?LAND.exportProfile:null") or prof
+            if not await pg.evaluate("typeof RIVER_SPEC!=='undefined'&&!!RIVER_SPEC||typeof TARN!=='undefined'&&!!TARN||typeof POOLS!=='undefined'&&POOLS.length>0"):
+                prof = [s for s in prof if s != 'water']   # a station with no water has no water section to fill
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

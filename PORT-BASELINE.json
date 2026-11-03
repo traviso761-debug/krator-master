@@ -16,9 +16,25 @@
    "bytes": 7640573,
    "sha256": "9a163ba59bf6ad6afd1c202fa431c4635162c168a7523e185bd83afb1d718b64"
   },
+  "biomes/ebadlands/dist/ebadlands-canyons.html": {
+   "bytes": 5832985,
+   "sha256": "15cc37c3262468998f5b5dd4ff7da08bb4814bc2c9a2ce0acb91a122daa071c3"
+  },
+  "biomes/ebadlands/dist/ebadlands-montane.html": {
+   "bytes": 5833081,
+   "sha256": "287acbe55506515fe6e0f64efed36ed1823a4df6dee4560e6d82ed2edce7f62c"
+  },
+  "biomes/ebadlands/dist/ebadlands-tundra.html": {
+   "bytes": 5833591,
+   "sha256": "aff5216f9f4c5498d13e9e4eb1f442d0bb7e79e1be5c4eba13f4abe72162ffca"
+  },
+  "biomes/ebadlands/dist/ebadlands-waste.html": {
+   "bytes": 6019072,
+   "sha256": "c36ce875d7624972c93c1acb67a5cff0195b2ab02f9dc8d010c031cc7fa5d25e"
+  },
   "biomes/ebadlands/dist/ebadlands.html": {
-   "bytes": 4490873,
-   "sha256": "7c5baf61572c1a27d29f50da741923605895733753af4f6a2357df82aa5b5882"
+   "bytes": 5846983,
+   "sha256": "00075ebfaf7d39709b0b416fb93119e50042686d54b6b8f8417c1f416909da6b"
   },
   "biomes/ehighlands/dist/ehighlands.html": {
    "bytes": 2012185,
