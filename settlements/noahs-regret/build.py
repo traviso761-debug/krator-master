@@ -72,7 +72,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'noahs-regret.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water', 'door')]   # door: KDOOR, KGLASS, KDOORHOST (core/door/README.md)
 # core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap and cutaway, with core/clock, core/space and core/minimap (host.FULL). Not core/edits: no editor world (the catalog
 # pieces are merged into the hull-frame batch). Each file is its own scope (an IIFE): left out of the name rules.
@@ -145,7 +145,7 @@ def sources():
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     khost.resolve(paths, CORE_HOST)
     paths.update(psky.paths(psky.SKY))
-    paths.update(kengine.paths(['30-geo.js']))
+    paths.update(kengine.paths(['30-geo.js', '36o-open.js']))   # 36o: the engine's door leaves on core/door (svLeaf), read in place
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
