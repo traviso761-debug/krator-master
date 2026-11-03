@@ -63,7 +63,7 @@ Each row says how this one differs; the default is below the table.
 **Default ruin.** *Gutted:* glass gone, cyan dead, a share of bays burnt out, panels stained. *Crown gone:* cut at the top
 hoop. *Broken:* cut at a hoop two-thirds up, torn edge, a rubble `KSTACKS` mound at the foot. *Stump:* cut at the first
 plant floor, core standing higher. *Skeleton:* skin off above the stump, instanced beams on the storey grid. *Fallen:* a
-`KSTACKS` mound along the direction of fall, with sections of the shaft lying in it.
+`KSTACKS` mound along the direction of fall, with sections of the shaft lying in it. Built for both towers 2026-11-03 (`README.md`, "The ruins"): the rubble and what stands free of the axis are their own instanced object, not the shell's.
 
 ### Skyscrapers
 

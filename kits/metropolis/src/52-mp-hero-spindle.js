@@ -2,17 +2,41 @@
 // MP.heroSpindle(state) -> a Group. Budget 80k triangles (F.tris), under 10 draw calls. The storeys come from the record and the facade from the plan,
 // so the glass follows the rooms. Each window storey is a band: a spandrel and a head on the skin, the glass 0.55 m in, and on it the bay's piers,
 // jambs, fillers and mullions as instanced panels. A blank storey is one strip. The shape past the storeys (root fins, portals, lamp) is built here, from the record.
-MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP.builder(lite),seedK=MP.idHash(F.id+state),ruin=state!=='intact';
- const R=MP.spindleR,cut=S.keep?S.keep*F.height.roof:1e9,stain=ruin?MP.stain(seedK,S.stain==null?.7:S.stain):null;
+// a Spindle's root fins between y0 and y1 (their outer edge MP.finR, their inner edge a metre inside the skin's line): the hero's, and a stump's free-standing upper fins,
+// which a polar shell cannot hold (a blade off the axis fans into a sheet), so the rubble (57) draws them; free closes the inner edge, which the skin hid
+MP.spindleFins=function(B,F,y0,y1,ruin,free){const R=MP.spindleR,PI2=Math.PI*2;if(y1<=y0)return;
+ for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*PI2/F.fins.n,c=Math.cos(a),s=Math.sin(a),t=F.fins.t/2,nS=Math.max(4,Math.round(20*(y1-y0)/F.fins.y1)),col=ruin?[.8,.77,.72]:[1,1,1],mat=y=>y<21?'concrete':'white';
+  const P=(r,y,d)=>[c*r-s*d,y,s*r+c*d];
+  for(let j=0;j<nS;j++){const ya=y0+(y1-y0)*j/nS,yb=y0+(y1-y0)*(j+1)/nS,ra=MP.finR(F,ya),rb=MP.finR(F,yb),ia=R(ya)-1,ib=R(yb)-1,m=mat(ya),l=Math.max(Math.hypot(rb-ra,yb-ya),1e-3),nr=(yb-ya)/l,ny=-(rb-ra)/l;
+   B.quad(m,P(ra,ya,-t),P(ra,ya,t),P(rb,yb,t),P(rb,yb,-t),[c*nr,ny,s*nr],{col});
+   B.quad(m,P(ia,ya,t),P(ib,yb,t),P(rb,yb,t),P(ra,ya,t),[-s,0,c],{col});
+   B.quad(m,P(ra,ya,-t),P(rb,yb,-t),P(ib,yb,-t),P(ia,ya,-t),[s,0,-c],{col});
+   if(free)B.quad(m,P(ia,ya,t),P(ia,ya,-t),P(ib,yb,-t),P(ib,yb,t),[-c,0,-s],{col});}
+  if(free){const r0=MP.finR(F,y1),i0=R(y1)-1;B.quad('concrete',P(i0,y1,-t),P(i0,y1,t),P(r0,y1,t),P(r0,y1,-t),[0,1,0],{col});}}};
+MP.heroSpindle=function(state,lite,only){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP.builder(lite),seedK=MP.idHash(F.id+state),ruin=state!=='intact';
+ const R=MP.spindleR,RU=MP.ruin(F,state),cut=RU.cut,stain=ruin?MP.stain(seedK,S.stain==null?.7:S.stain):null;
+ /* the tear (MP.ruin, MP.tearAt): a storey stands in a 15-degree sector while its foot is under the tear there, so the edge steps by storeys and sectors and every
+    band of 72 or 48 bays breaks on the same lines. topAt is the top of what stands in a sector; a skeleton's floors and columns are its frame, from frame[0] */
+ const SEC=24,torn=RU.torn>0,secOf=t=>Math.floor((((t%PI2)+PI2)%PI2)/(PI2/SEC)),tear=t=>MP.tearAt(F,RU,(secOf(t)+.5)*(PI2/SEC)*24),
+  topAt=t=>{const c=tear(t);let y=0;F.levels.forEach(L=>{if(L.y<c&&L.y<cut)y=Math.max(y,Math.min(L.y+L.h,cut));});return y;},
+  patch=(t,y)=>RU.patchy&&y>RU.patchy[0]&&y<RU.patchy[1]&&MP.u(seedK&0xffff,secOf(t*2),Math.floor(y/MP.STOREY),91)<.5,frame0=RU.frame?RU.frame[0]:Infinity;
  const DARK=[.12,.12,.13],WALL=ruin?[.86,.83,.78]:[.97,.97,.96],D=.55,PI2=Math.PI*2;
  // a breach: a run of bays and storeys burnt out or fallen away, by hash. In the skin's strips it is a hole; the void behind it is the window chunk
  const breaches=[];if(S.breach){const n=Math.round(F.levels.length*S.breach*1.6);for(let i=0;i<n;i++){const u=j=>MP.u(seedK&0xffff,i,j),l=5+Math.floor(u(1)*44),b=F.levels[l];if(!b)continue;breaches.push({a:u(2)*PI2,w:.14+u(3)*.3,y0:b.y,y1:b.y+(1+Math.floor(u(4)*3.5))*MP.STOREY});}}
  const inBreach=(t,y)=>breaches.some(b=>{let d=Math.abs(t-b.a);d=Math.min(d,PI2-d);return d<b.w&&y>b.y0&&y<b.y1;});
  const hoop=l=>l.use==='plant',doors=[],DH=2.9;
- F.levels.forEach(function(L,lk){if(L.y>=cut)return;
+ /* a skeleton's storey above its skin: the core (the hero's), and the bare frame, the floor (a ring slab) and 24 rusted columns at the skin's line, each torn by the same
+    sectors. The frame is drawn only for only === 'frame', by the rubble (57): a polar shell fans free columns and slab edges into a ragged mass */
+ const RUST=[.42,.33,.27];
+ function frameLevel(L){const y=L.y,rc=MP.coreR(F,L.k),ro=R(y)-.6,sk=t=>L.y>=tear(t);
+  if(only!=='frame'){B.lathe('concrete',[[rc,y],[rc,y+L.h]],16,{uv:3});if(L.y===F.levels.filter(q=>q.y>=frame0)[0].y&&RU.patchy){const p0=RU.patchy[0],p1=RU.patchy[1];B.lathe('dark',[[R(p0)-1.2,p0],[R(p1)-1.2,p1]],48,{});}return;}
+  B.lathe('concrete',[[ro,y+.02],[rc,y+.02]],48,{uv:3,skip:sk});B.lathe('concrete',[[rc,y-.32],[ro,y-.32]],48,{uv:3,skip:sk});B.lathe('concrete',[[ro,y-.32],[ro,y+.02]],48,{uv:2,skip:sk});
+  for(let i=0;i<24;i++){const a=(i+.5)*PI2/24;if(sk(a))continue;const r=R(y+L.h/2)-.9;B.obox('concrete',Math.cos(a)*r,y+L.h/2,Math.sin(a)*r,Math.PI/2-a,.7,L.h,.7,{col:RUST,uv:2});}}
+ if(only==='frame'){F.levels.forEach(L=>{if(L.y>=frame0&&L.y<cut)frameLevel(L);});return B.finish(F,state+'.frame');}
+ F.levels.forEach(function(L,lk){if(L.y>=cut)return;if(L.y>=frame0){frameLevel(L);return;}
   const y0=L.y,y1=Math.min(L.y+L.h,cut),fac=MP.levelFacade(F,L.k).ring,N=fac.length,bucket=y0<21?'concrete':'white',kinds=fac.map(b=>b.kind);
   const skirt=y0<21,glassy=kinds.some(k=>MP.isGlass(k)||k==='louvre'||k==='arcade');
-  const col=stain||undefined,skip=ruin?inBreach:null;
+  const col=stain||undefined,skip=ruin?((t,y)=>inBreach(t,y)||(torn&&L.y>=tear(t))||patch(t,y)):null;
   /* the lobby's doors: at each portal the two bays either side of it (the portal is a bay line) take a door screen, not the sloping glass */
   const isDoor=L.use==='lobby'&&!ruin?(t=>F.portals.some(p=>{let d=Math.abs(t-p);d=Math.min(d,PI2-d);return d<PI2/N-1e-4;})):null;
   if(!glassy||L.use==='lamp'||L.use==='roofpark'){if(L.use==='lamp'||L.use==='roofpark')return;
@@ -26,7 +50,7 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
    B.lathe(bucket,[[rT-dep,yT],[rT,yT]],N,{col,skip,uv:2});
    B.lathe(bucket,[[rT,yT],[R(y1),y1]],N,{col,skip});
    // what fills the band: glass where a window is, void where the ruin took it
-   B.lathe(ruin?'glassOut':'glass',[[rS-dep,yS],[rT-dep,yT]],N,{uv:4,skip:isDoor?(t=>isDoor(t)):null});
+   B.lathe(ruin?'glassOut':'glass',[[rS-dep,yS],[rT-dep,yT]],N,{uv:4,skip:isDoor?(t=>isDoor(t)):(torn||RU.patchy?skip:null)});
    /* a door screen on the chord of the two bays at the glass's foot: bronze posts, fixed sidelights, a head, a pair of sliding leaves (MP.doorLeaves) between the sidelights; over the head a
       soffit back to the sloping glass, a cheek at each side, the glass again above */
    if(isDoor){const Wd=PI2/N,rg=rS-dep,rAt=y=>rg+(rT-dep-rg)*(y-yS)/(yT-yS),hwd=rg*Math.sin(Wd),Hh=DH+.4,rh=rAt(Hh);
@@ -37,7 +61,7 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
      doors.push({x:cx,z:cz,yaw,w:3.3,h:DH});});}
    const W=PI2/N;
    fac.forEach(function(b,bi){const k=b.kind,c=b.th,a=c-W/2,ym=(yS+yT)/2,r=(rS+rT)/2-dep/2,arc=W*r,yaw=Math.PI/2-c;
-    if(ruin&&inBreach(c,ym))return;if(isDoor&&isDoor(c))return;
+    if(ruin&&inBreach(c,ym))return;if(torn&&L.y>=tear(c))return;if(patch(c,ym))return;if(isDoor&&isDoor(c))return;
     const put=(off,y,w,h,d,cl)=>{const t=c+off/r;B.panel(Math.cos(t)*r,y,Math.sin(t)*r,yaw+(c-t),w,h,d,cl);};
     if(k==='pier'||k==='blank'){put(0,ym,arc*1.02,yT-yS,dep,WALL);return;}
     if(k==='louvre'){for(let s=0;s<3;s++)put(0,yS+(yT-yS)*(s+.5)/3,arc*.98,.26,dep*.8,DARK);return;}
@@ -48,8 +72,8 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
     if(ft<yT-.03)put(0,(ft+yT)/2,arc*1.01,yT-ft,dep,WALL);
     if(ruin?MP.u(seedK&0xffff,lk,bi)<.2:(y0<75||bi%2===0))put(arc/2,ym,.09,yT-yS,.14,DARK);});}
   // a plant floor is where the structure transfers: a bronze hoop round it, the ruin's breaking line
-  if(hoop(L))B.lathe(ruin?'white':'bronze',[[R(y1)+.02,y1-.9],[R(y1)+.35,y1-.8],[R(y1)+.35,y1+.5],[R(y1)+.02,y1+.6]],N,{uv:2,col});
-  if(L.use==='lobby'||L.use==='skylobby')B.lathe(ruin?'cyanDead':'cyan',[[R(y1)+.05,y1-.5],[R(y1)+.05,y1-.1]],N,{uv:2});});
+  if(hoop(L))B.lathe(ruin?'white':'bronze',[[R(y1)+.02,y1-.9],[R(y1)+.35,y1-.8],[R(y1)+.35,y1+.5],[R(y1)+.02,y1+.6]],N,{uv:2,col,skip:torn?(t=>L.y>=tear(t)):null});
+  if(L.use==='lobby'||L.use==='skylobby')B.lathe(ruin?'cyanDead':'cyan',[[R(y1)+.05,y1-.5],[R(y1)+.05,y1-.1]],N,{uv:2,skip:torn?(t=>L.y>=tear(t)):null});});
  // ---- behind each breach, the burnt-out storeys: a face 1.2 m in, drawn as rooms (the window chunk), so a breach is a hole into the building, not through it
  breaches.forEach(function(b){if(b.y0>=cut)return;const y1=Math.min(b.y1,cut),n=Math.max(2,Math.ceil((y1-b.y0)/3.6)),pts=[];for(let i=0;i<=n;i++){const y=b.y0+(y1-b.y0)*i/n;pts.push([R(y)-1.2,y]);}
   B.lathe('glassOut',pts,Math.max(4,Math.round(b.w*2*24)),{a0:b.a-b.w,a1:b.a+b.w,uv:4});
@@ -58,13 +82,8 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
  F.portals.forEach(function(a){const c=Math.cos(a),s=Math.sin(a),r=44,yaw=Math.PI/2-a,w=12,h=7;
   B.lathe('concrete',[[r+5,h],[r+5,h+1.2],[r-3,h+1.2]],6,{a0:a-.17,a1:a+.17,uv:3});B.lathe('concrete',[[r-3,h],[r+5,h]],6,{a0:a-.17,a1:a+.17,uv:3,flip:true});
   [-1,1].forEach(d=>{const x=c*r-s*d*(w/2+.8),z=s*r+c*d*(w/2+.8);B.panel(x,h/2,z,yaw,1.2,h,8,[.72,.7,.66]);});});
- // ---- the root fins: a thin wall with a curved outer edge, from the ground to where it dies in the skin
- for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*PI2/F.fins.n,c=Math.cos(a),s=Math.sin(a),t=F.fins.t/2,nS=20,y1=Math.min(F.fins.y1,cut),col=ruin?[.8,.77,.72]:[1,1,1],mat=y=>y<21?'concrete':'white';
-  const P=(r,y,d)=>[c*r-s*d,y,s*r+c*d];
-  for(let j=0;j<nS;j++){const ya=y1*j/nS,yb=y1*(j+1)/nS,ra=MP.finR(F,ya),rb=MP.finR(F,yb),ia=R(ya)-1,ib=R(yb)-1,m=mat(ya),l=Math.max(Math.hypot(rb-ra,yb-ya),1e-3),nr=(yb-ya)/l,ny=-(rb-ra)/l;
-   B.quad(m,P(ra,ya,-t),P(ra,ya,t),P(rb,yb,t),P(rb,yb,-t),[c*nr,ny,s*nr],{col});
-   B.quad(m,P(ia,ya,t),P(ib,yb,t),P(rb,yb,t),P(ra,ya,t),[-s,0,c],{col});
-   B.quad(m,P(ra,ya,-t),P(rb,yb,-t),P(ib,yb,-t),P(ia,ya,-t),[s,0,-c],{col});}}
+ // ---- the root fins: a thin wall with a curved outer edge, from the ground to where it dies in the skin (a ruin's to its cut: a stump's free fins are its rubble's, 57)
+ MP.spindleFins(B,F,0,RU.fins,ruin);
  // ---- the lamp: the neck flares to the disc; the disc's rim is the observation ring, on it a low dome, a needle
  if(cut>=F.height.roof){const K=F.crown,sg=56,rD=K.r;
   B.lathe('white',[[R(222),222],[rD-2,225.2],[rD,226]],sg,{});
@@ -77,6 +96,11 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
   B.lathe('bronze',[[.6,248],[1.4,248.3],[.55,248.7]],12,{uv:1});B.lathe('bronze',[[.45,254],[.95,254.2],[.4,254.5]],12,{uv:1});
  }else{
   // the torn top: the core stands a little above the skin; the skin's edge is cut by the last storey, a dark floor over it
-  const Rc=R(cut)-.3,top=[];B.lathe('dark',[[Rc,cut-.4],[0,cut-.4]],36,{});B.lathe('concrete',[[6.5,cut-1],[6.5,cut+7]],16,{});B.lathe('concrete',[[6.5,cut+7],[0,cut+7]],12,{});
-  for(let i=0;i<14;i++){const a=MP.u(seedK&0xffff,i,77)*PI2,h=1.5+4*MP.u(seedK&0xffff,i,78),w=.6+1.5*MP.u(seedK&0xffff,i,79),r=Rc+.1;B.panel(Math.cos(a)*r,cut+h/2-.4,Math.sin(a)*r,Math.PI/2-a,w,h,.5,WALL);}}
+  const Rc=R(cut)-.3,cTop=RU.core>0?RU.core:cut+7,c0=(torn?cut-RU.torn:cut)-1;
+  if(!torn)B.lathe('dark',[[Rc,cut-.4],[0,cut-.4]],36,{});
+  else if(!RU.frame){/* each sector's top: a dark floor over the burnt storeys, and a wall down each step to the lower sector beside it (seen from either side) */
+   const W=PI2/SEC;for(let i=0;i<SEC;i++){const a0=i*W,y=topAt(a0+W/2),yn=topAt(a0+W*1.5);B.lathe('dark',[[R(y)-.05,y],[0,y]],2,{a0,a1:a0+W});
+    if(Math.abs(y-yn)>.1){const a=a0+W,c=Math.cos(a),s=Math.sin(a),lo=Math.min(y,yn),hi=Math.max(y,yn),r=R(lo)-.05;B.quad('dark',[0,lo,0],[r*c,lo,r*s],[r*c,hi,r*s],[0,hi,0],[s,0,-c],{uv:2});B.quad('dark',[r*c,lo,r*s],[0,lo,0],[0,hi,0],[r*c,hi,r*s],[-s,0,c],{uv:2});}}}
+  B.lathe('concrete',[[6.5,c0],[6.5,cTop]],16,{});B.lathe('concrete',[[6.5,cTop],[0,cTop]],12,{});
+  for(let i=0;i<14;i++){const a=MP.u(seedK&0xffff,i,77)*PI2,h=1.5+4*MP.u(seedK&0xffff,i,78),w=.6+1.5*MP.u(seedK&0xffff,i,79),y=torn?topAt(a):cut,r=R(y)-.4;B.panel(Math.cos(a)*r,y+h/2-.4,Math.sin(a)*r,Math.PI/2-a,w,h,.5,WALL);}}
  const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);return G;};

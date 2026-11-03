@@ -44,7 +44,7 @@ KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,p
     const half=W[i]/2;c.left=-half;c.right=half;c.top=H/2;c.bottom=-H/2;c.position.set(q[0]*(q[3]+1),H/2,q[2]*(q[3]+1));c.up.set(0,1,0);c.lookAt(0,H/2,0);c.near=.5;c.far=q[3]+1+f.D;c.updateProjectionMatrix();c.updateMatrixWorld();
     P.vp.value.multiplyMatrices(c.projectionMatrix,c.matrixWorldInverse);P.faceN.value.set(q[0],q[1],q[2]);P.faceD.value=q[3];vp(x,slot.y,x1-x,slot.h);R.clear(true,true,true);R.render(sc,cam);});}
   /* the hull maps: a plain projection, x and z to the slot, y to depth: from above the highest surface wins, from below the lowest */
-  const hm=P.mode.value;[[top,1],[bot,-1]].forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;P.clip.value=S<0?.02+.98*rec.soffit/f.H:0;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
+  const hm=P.mode.value;[[top,1],[bot,-1]].filter(e=>e[0]).forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;P.clip.value=S<0?.02+.98*rec.soffit/f.H:0;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
   rt.scissorTest=false;rt.viewport.set(0,0,rt.width,rt.height);});
  R.setRenderTarget(old);R.autoClear=oAuto;R.setClearColor(oc,oa);R.toneMapping=tm;mats.forEach(l=>l.forEach(m=>m.dispose()));return true;};
 // the mips, once every slot is baked
@@ -100,6 +100,6 @@ KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=ne
 KSHELL.draw=function(at,rec,slot,mat,places,top,bot){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();
  const im=new THREE.InstancedMesh(g,mat,Math.max(n,1)),a=new Float32Array(Math.max(n,1)*4),b=new Float32Array(Math.max(n,1)*4),ta=new Float32Array(Math.max(n,1)*4),ba=new Float32Array(Math.max(n,1)*4),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1);
  for(let i=0;i<n;i++){const p=places[i];M.compose(new THREE.Vector3(p[0],0,p[1]),Q.setFromAxisAngle(Y,p[2]==null?0:p[2]),one);im.setMatrixAt(i,M);}
- for(let i=0;i<Math.max(n,1);i++){a.set([slot.x/S,slot.y/S,slot.w/S,slot.h/S],i*4);b.set([f.mode,f.H,f.a,f.b],i*4);ta.set([top.x/S,top.y/S,top.w/S,top.h/S],i*4);ba.set([bot.x/S,bot.y/S,bot.w/S,bot.h/S],i*4);}
+ for(let i=0;i<Math.max(n,1);i++){a.set([slot.x/S,slot.y/S,slot.w/S,slot.h/S],i*4);b.set([f.mode,f.H,f.a,f.b],i*4);ta.set([top.x/S,top.y/S,top.w/S,top.h/S],i*4);ba.set(bot?[bot.x/S,bot.y/S,bot.w/S,bot.h/S]:[0,0,0,0],i*4);}
  g.setAttribute('aSlot',new THREE.InstancedBufferAttribute(a,4));g.setAttribute('aFrame',new THREE.InstancedBufferAttribute(b,4));g.setAttribute('aTop',new THREE.InstancedBufferAttribute(ta,4));g.setAttribute('aBot',new THREE.InstancedBufferAttribute(ba,4));im.count=n;im.frustumCulled=false;im.name='shell.'+rec.id;return im;};
 })();

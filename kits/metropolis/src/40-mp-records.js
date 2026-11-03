@@ -126,3 +126,54 @@ MP.envelope = function (F, y) {
 MP.finR = function (F, y) { var t = 1 - y / F.fins.y1; return MP.spindleR(y) + F.fins.out * Math.pow(t, 1.4); };
 // the arcade's piers along a slab: as near `every` apart as fits a whole number of spans, end to end (a fixed 12 m on a 126 m slab put the last pier 6 m past the end)
 MP.arcadePiers = function (F) { var hw = F.footprint.w / 2, n = Math.max(1, Math.round(2 * hw / F.arcade.every)), out = []; for (var i = 0; i <= n; i++) out.push(-hw + i * 2 * hw / n); return out; };
+
+// ---- a ruin, as plain numbers (metres), from its record's state. cut: where the skin is cut; torn: how far the tear runs down under the cut (the edge steps by
+// storeys, deeper here and there); skin: the top of the whole skin (a storey under it can open); frame: [y0, y1] of a skeleton's bare steel, patchy below it from
+// the plant floor; top: the highest thing that stands (the shell's frame); core, fins, ends: what stands above the cut (a stump's core and fins, a fallen slab's end walls)
+MP.ruin = function (F, state) {
+  var S = F.ruins[state], roof = F.height.roof, plant = F.levels.filter(function (L) { return L.use === 'plant'; })[0], plantTop = plant ? plant.y + plant.h : 0, round = F.core.kind === 'round';
+  if (!S || state === 'intact') return { state: 'intact', cut: Infinity, torn: 0, skin: F.height.tip, top: F.height.tip, frame: null, patchy: null, core: 0, fins: F.fins ? F.fins.y1 : 0, ends: 0, span: null };
+  var cut = S.keep * roof, torn = ({ gutted: 0, crown: 1.5, broken: 3, stump: 1, skeleton: 2, fallen: 1.5 })[state] * MP.STOREY, skin = cut - torn, frame = null, patchy = null;
+  if (state === 'skeleton') { var fz = plantTop + (1 - (S.bare || 0)) * (cut - plantTop); patchy = [plantTop, fz]; frame = [fz, cut]; skin = plantTop; }
+  /* a stump's fins stand above its cut, free of the skin: finsFree, the rubble's to draw (a polar shell fans a free blade into a sheet) */
+  var core = S.core ? S.core * roof : 0, fins = F.fins ? Math.min(F.fins.y1, cut) : 0, finsFree = F.fins && state === 'stump' && F.fins.y1 > cut ? [cut, F.fins.y1] : null, ends = state === 'fallen' && !round ? 0.55 * roof : 0;
+  if (state === 'fallen' && !round) skin = 0;
+  return { state: state, cut: cut, torn: torn, skin: Math.max(0, skin), top: Math.max(cut + (round ? 8 : 1), core + 1, fins, ends), frame: frame, patchy: patchy, core: core, fins: fins, finsFree: finsFree, ends: ends, span: S.span || null };
+};
+// where the tear cuts the skin at u (a polar tower: the angle times 24, about metres; a slab: x): the cut, less up to `torn` by value noise (KRAND), so the edge steps
+// storey by storey. A slab's broken span (the Ledger's) is cut to the arcade's top, blending to the tear over 4 m either side
+MP.tearAt = function (F, R, u) {
+  if (!R.torn && !R.span) return R.cut;
+  var seed = MP.idHash(F.id + '.' + R.state) & 0xffff, f = (KRAND.vnoise(u / 9, 1.7, 0, seed) + 0.5 * KRAND.vnoise(u / 3.3, 4.1, 0, seed)) / 1.5, c = R.cut - R.torn * Math.min(1, Math.max(0, (f - 0.2) / 0.6));
+  if (R.span) { var a = F.levels[1].y - 0.01, d = Math.max(R.span[0] - u, u - R.span[1]); if (d < 0) return a; if (d < 4) return a + (c - a) * d / 4; }
+  return c;
+};
+// what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KSTACKS buttes (centre, its tiers, a seed); pieces:
+// a shaft's section lying (r, len, along the yaw ry, tipped by tilt), the lamp's disc on its side, a slab tipped up. A Spindle falls along a fin, the Ledger in on itself
+MP.debrisPlan = function (F, state) {
+  var R = MP.ruin(F, state); if (R.state === 'intact' || state === 'gutted') return null;
+  var seed = function (i) { return MP.idHash(F.id + '.' + state + '.' + i) >>> 0; }, M = [], P = [];
+  var tiers = function (rx, rz, hs) { var e = rx / rz, r = Math.sqrt(rx * rz); return hs.map(function (h, i) { var k = [1, 0.72, 0.48, 0.3][i]; return { h: h, r: r * k, e: Math.max(1, e * (1 - 0.15 * i)) }; }); };
+  if (F.core.kind === 'round') {
+    var ph = F.fins.a0, d = [Math.cos(ph), Math.sin(ph)], at = function (s, o) { return [d[0] * s - d[1] * o, d[1] * s + d[0] * o]; }, R0 = MP.spindleR(0), rAt = MP.spindleR;
+    var mound = function (s, o, rx, rz, hs, i) { var c = at(s, o); M.push({ x: c[0], z: c[1], ry: ph, tiers: tiers(rx, rz, hs), seed: seed('m' + i) }); };
+    var shaft = function (s, o, y, len, ry, tilt) { var c = at(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: rAt(y), len: len, ry: ph + ry, tilt: tilt }); };
+    var disc = function (s, o, tilt) { var c = at(s, o); P.push({ kind: 'disc', x: c[0], z: c[1], r: F.crown.r, ry: ph, tilt: tilt }); };
+    if (state === 'crown') { mound(R0 + 14, 0, 20, 12, [4, 3.5, 3], 0); disc(R0 + 26, 4, 0.42); shaft(R0 + 6, -14, 216, 14, 0.5, 0.1); }
+    if (state === 'broken') { mound(R0 + 52, 0, 58, 22, [7, 6, 4], 0); shaft(R0 + 26, 2, 150, 24, 0.08, 0.06); shaft(R0 + 66, -5, 175, 22, -0.15, -0.05); shaft(R0 + 96, 6, 200, 18, 0.3, 0.08); disc(R0 + 118, 0, 0.5); }
+    if (state === 'stump') { mound(R0 * 0.55, 0, 54, 42, [8, 6, 5], 0); mound(R0 + 40, 18, 24, 13, [4, 3], 1); shaft(R0 + 12, -16, 60, 24, 0.4, 0.05); shaft(R0 + 38, 14, 110, 20, -0.6, 0.08); }
+    if (state === 'skeleton') { mound(R0 + 6, 0, 18, 11, [3.5, 3], 0); mound(R0 + 2, -28, 13, 9, [3, 2], 1); }
+    if (state === 'fallen') { mound(R0 + 96, 0, 106, 28, [8, 6, 5], 0); mound(R0 * 0.4, 0, 42, 36, [7, 5], 1); [[30, 30], [80, 70], [130, 115], [180, 160]].forEach(function (q, i) { shaft(R0 + q[0], (i % 2 ? 4 : -4), q[1], 26, (i % 2 ? 0.1 : -0.12), 0.05); }); disc(R0 + 214, 0, 0.35); }
+  } else {
+    var hw = F.footprint.w / 2, hd = F.footprint.d / 2, mb = function (x, z, y0, rx, rz, hs, i) { M.push({ x: x, z: z, y0: y0, ry: 0, tiers: tiers(rx, rz, hs), seed: seed('m' + i) }); };
+    var slab = function (x, y, z, w, dd, ry, tilt, i) { P.push({ kind: 'slab', x: x, y: y, z: z, w: w, d: dd, t: 0.4, ry: ry, tilt: tilt }); };
+    if (state === 'crown') { mb(0, 0, R.skin, 40, 8, [1.6, 1.2], 0); mb(0, -(hd + 6), 0, 38, 6, [2, 1.5], 1); slab(-14, R.skin + 1.2, 1, 9, 6, 0.2, 0.3); slab(12, R.skin + 1, -2, 8, 7, -0.3, -0.25); }
+    if (state === 'broken') { mb(0, 0, F.levels[1].y, 24, 11, [4, 3, 2], 0); mb(0, hd + 6, 0, 22, 7, [3, 2], 1); mb(0, -(hd + 6), 0, 22, 7, [3, 2], 2); slab(-8, 11, 4, 10, 8, 0.15, 0.45); slab(9, 10, -3, 9, 7, -0.2, -0.35); slab(2, 3, hd + 7, 8, 6, 0.6, 0.6); }
+    if (state === 'stump') { mb(0, hd + 7, 0, 58, 7, [3, 2.5, 1.5], 0); mb(0, -(hd + 7), 0, 58, 7, [3, 2.5, 1.5], 1); slab(-30, 3, hd + 6, 10, 7, 0.1, 0.55); slab(25, 3, -(hd + 6), 9, 7, -0.2, -0.5); }
+    if (state === 'skeleton') { mb(0, hd + 5, 0, 50, 5, [2, 1.5], 0); mb(0, -(hd + 5), 0, 50, 5, [2, 1.5], 1); }
+    if (state === 'fallen') { mb(0, 0, 0, 66, 18, [5, 4, 3], 0); [[-40, 0.4], [-14, -0.3], [8, 0.5], [30, -0.45], [50, 0.3]].forEach(function (q, i) { slab(q[0], 7, (i % 2 ? 4 : -4), 12, 9, (i % 2 ? 0.2 : -0.15), q[1], i); }); }
+  }
+  if (R.finsFree) P.push({ kind: 'fins', y0: R.finsFree[0], y1: R.finsFree[1] });
+  if (R.frame) P.push({ kind: 'frame' });
+  return { mounds: M, pieces: P };
+};

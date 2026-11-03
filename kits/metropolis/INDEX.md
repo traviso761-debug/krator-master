@@ -16,19 +16,20 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-mp-records.js` | 9 |  |
-| `41-mp-plans.js` | 13 |  |
+| `40-mp-records.js` | 15 |  |
+| `41-mp-plans.js` | 15 |  |
 | `42-mp-facade.js` | 4 |  |
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
 | `45-host-stage.js` | 1 |  |
 | `47-host-land.js` | <1 |  |
-| `50-mp-kit.js` | 8 |  |
-| `52-mp-hero-spindle.js` | 7 |  |
-| `53-mp-hero-ledger.js` | 7 |  |
-| `56-mp-interiors.js` | 14 |  |
-| `60-mp-shell-host.js` | 15 |  |
-| `70-mp-stage.js` | 14 |  |
+| `50-mp-kit.js` | 11 |  |
+| `52-mp-hero-spindle.js` | 12 |  |
+| `53-mp-hero-ledger.js` | 13 |  |
+| `56-mp-interiors.js` | 15 |  |
+| `57-mp-debris.js` | 5 |  |
+| `60-mp-shell-host.js` | 16 |  |
+| `70-mp-stage.js` | 17 |  |
 | `89-host-sky.js` | <1 |  |
 | `99-host-take.js` | 4 |  |
 | `99-tail.html` | <1 |  |

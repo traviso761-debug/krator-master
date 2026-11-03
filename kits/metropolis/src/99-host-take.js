@@ -8,7 +8,10 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  for(const k in a)add(k+': the plans pass the audit',a[k].ok,a[k].ok?a[k].rooms+' rooms, '+a[k].flats+' flats':a[k].fails[0]);
  add('the stage booted',MPS.ready);if(!MPS.ready)return R;
  MPS.keys.forEach(k=>{const H=MPS.hero[k].userData,F=MP.FAMILY[k.split('.')[0]];add(k+': hero under its budget',H.tris<=F.tris,H.tris+' of '+F.tris);add(k+': hero under 10 draw calls',H.calls<10,''+H.calls);add(k+': a cage of 60 triangles or fewer',MPS.rec[k].tris<=60,''+MPS.rec[k].tris);});
- add('four impostors baked',MPS.impN===4,''+MPS.impN);return R;}
+ add(MPS.keys.length+' impostors baked',MPS.impN===MPS.keys.length,''+MPS.impN);
+ /* the ruins: each state but intact and gutted has its rubble, under 25k triangles (it stands at every ruin within 1 km); every shell's slots in the one atlas */
+ MPS.keys.filter(k=>MP.RUINS.indexOf(k.split('.')[1])>1).forEach(k=>add(k+': rubble under 25k triangles',MPS.debris[k]&&MPS.debrisTris[k]<=25000,''+MPS.debrisTris[k]));
+ add('every shell packs one atlas',MPS.packed.length===MPS.keys.reduce((n,k)=>n+KSHELL.slots(MPS.rec[k]).length,0),MPS.packed.length+' slots');return R;}
 function hostNegatives(){const R=[];{const F=JSON.parse(JSON.stringify(MP.SPINDLE));F.core.shafts[0].x=9;R.push({name:'a shaft out of the core',failed:!MP.audit(F).ok});}
  R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});return R;}
 KHOST.on(SKY.view,'view');KHOST.on(()=>MP.rideView(),'view');

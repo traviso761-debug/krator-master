@@ -22,7 +22,8 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `43-mp-shell.js` | [G data] | `KSHELL.record`, cages, atlas packing; the prototype of `core/shell` |
 | `44-mp-audit.js` | [G data] | `MP.audit`: shafts line up, every room reached, flats whole, glass only where rooms want it |
 | `50-53` | [draw] | the hero kit, the Spindle, the Ledger |
-| `56-mp-interiors.js` | [draw] | a storey drawn on demand, furnished; at most three open |
+| `56-mp-interiors.js` | [draw] | a storey drawn on demand, furnished; at most three open (a ruin's only under its standing skin) |
+| `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
 | `70-mp-stage.js` | [web] | what stands where in each view; impostors, one a frame |
 
@@ -65,6 +66,18 @@ Budgets: hero 74k of 80k (Spindle), 36k of 45k (Ledger), 6 and 8 draw calls. Cag
 - **A shell's hit is bisected back to the surface** (five halvings between the last point outside and the first inside), and a ray going down steps no further than the roof map's height above it. Stepping by the side map's gap, a horizontal distance, let a steep ray fall through a flared skirt and read its side lower down (spines round every base), and a roof's colour flipped between the roof map and the side map's top row as the camera moved. On a box, a roof is also where the roof map is flat for 1.5 m all round: past the Ledger's roof hall the long face's map extrudes the hall over the low roof, so the old test (air above, in the side map) read the side map there as dark bars.
 - **A hull map is only right on real roofs.** It holds every sill and ledge as a true up-facing surface, and at first that showed as bright slits on every shell seen from above. Top and bottom maps now apply only where the side map shows an overhang of over 3.5 m.
 - **Heroes are the cost of a dense city:** ten of them take the street from 1.3 to 2.9 ms, and 390 k triangles. That is affordable on the Arc for these two; a heavier family counts. Street width is the budget lever, as section 13 says.
+
+**The ruins** (2026-11-03): all seven states of the brief are built for both towers: intact, gutted, crown gone, broken, stump, skeleton, fallen (`MP.RUINS`,
+the records' `ruins`). `MP.ruin(F, state)` turns a state into numbers (the cut, the tear's depth, the standing skin, a skeleton's bare frame, what stands above the cut);
+`MP.tearAt` steps the torn edge by storeys and by 15-degree sectors (a Spindle) or 3 m bays (the Ledger, whose broken span drops to the arcade); `MP.debrisPlan` lays the
+rubble as records, a Spindle's along a fin, the Ledger's onto itself and into the street.
+
+- **A shell holds what stands about the axis, and no more.** A stump's fins standing free and a skeleton's columns and slab edges fan into broad sheets in a polar map (a
+  blade off the axis interpolates to the core beside it). They are drawn with the rubble instead, real geometry at every distance; the hero and shell keep the skin and core.
+- **The rubble is its own instanced object,** one mesh a material and state, at every ruin within 1 km: it lies off the tower's axis, so it is in neither the shell nor the
+  impostor. At `?pitch=140` the worst street draws 0.94 M triangles in 123 calls with 13 heroes and about 70 ruins' rubble in range (a 1.6 km range took it to 2.2 M); a fallen Spindle's rubble is 22 k.
+- **Each state's shell is as tall as what stands,** and the five past gutted take a 0.5 m map and none from below (no lamp): the fourteen records pack one 2048 atlas.
+- **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
