@@ -16,18 +16,42 @@ function throws(f, msg) { let t = false; try { f(); } catch (e) { t = true; } ok
 const G = RES_GEO.load(DATA), PM = DATA.grid.px_m;
 const key = n => n.id + '@' + n.gx.toFixed(3) + ',' + n.gz.toFixed(3) + ':' + n.grade;
 const ids = ns => ns.map(key).sort();
+/* the checks' places are written in 4.23 px; on a 5.1 bake they sit 272, 330 px further in (geology.py LEGACY_SHIFT) */
+const OLD = DATA.grid.fullW === 1549, DX = OLD ? 0 : 272, DZ = OLD ? 0 : 330, AN = DATA.field.anchor || [0, 0];
+const X = px => (px + DX) * PM, Z = py => (py + DZ) * PM;
 
 /* ---- the data */
 ok(DATA.format === 'krator-geology' && DATA.version === 1, 'format');
 throws(() => RES_GEO.load({ format: 'x' }), 'not geology data');
 const N = DATA.grid.w * DATA.grid.h;
-ok(G.prospect('iron', 1000 * PM, 700 * PM) >= 0 && G.at(1000 * PM, 700 * PM) && G.at(-5e6, 0) === null, 'at / off the grid');
+ok(G.prospect('iron', X(1000), Z(700)) >= 0 && G.at(X(1000), Z(700)) && G.at(-5e6, 0) === null, 'at / off the grid');
 { const bad = JSON.parse(JSON.stringify(DATA)); bad.layers.iron = bad.layers.iron.slice(0, 40); RES_GEO.load(bad);
   throws(() => RES_GEO.prospect('iron', 0, 0), 'a truncated layer'); RES_GEO.load(DATA); }
 ok(DATA.families.every(f => DATA.layers[f]), 'every family has a layer');
+/* the carbonate (tools/scale-model/geology.py carbonate()): the Hykkousoi platform is the carbonate province, and the
+   limestone layer is a rock family that the node field does not place */
+{ const kg = G.at(X(508), Z(395)), sed = G.at(X(1000), Z(700));
+  ok(DATA.provinces[6] === 'carbonate' && kg.province === 'carbonate' && kg.p.limestone >= 128, 'k-guilin is the carbonate province');
+  ok(sed.province !== 'carbonate', 'negative: the eastern uplands are not');
+  ok(DATA.rockFamilies.indexOf('limestone') >= 0 && DATA.field.families.indexOf('limestone') < 0, 'limestone is a rock layer, not a node kind'); }
+/* the other rocks (geology.py rocks(); ROCK-PROPOSAL.md): provinces in the walls, the flood basalt, Korona's tables; rock
+   layers no node field reads */
+{ const at51 = (x, y) => G.at(X(x - 272), Z(y - 330));
+  const sem = at51(800, 470), kor = at51(1077, 504), wall = at51(790, 1100), bl = at51(476, 915);
+  ok(DATA.provinces.slice(7).join() === 'impact,basalt,granite,quartzite,ultramafic', 'the new provinces, after the old ones');
+  ok(sem.province === 'basalt' && kor.province === 'quartzite', 'n semiarid is flood basalt, Korona\'s tables quartzite (' + sem.province + ', ' + kor.province + ')');
+  ok(wall.province === 'impact' && wall.p.impactite === 255, 'the crater wall is megabreccia (' + wall.province + ')');
+  ok(bl.p.glass > 0, 'the blast basin is glass');
+  ok(DATA.rockFamilies.every(f => DATA.layers[f] && DATA.field.families.indexOf(f) < 0), 'every rock layer is there, none a node kind'); }
+/* the lattice anchor (REBAKE-PLAN.md R1): cell ix starts at anchor + ix x C, so a 5.1 bake keeps 4.23's cells where they were */
+{ const c = G.candidate('iron', 400, 300), C = DATA.field.cells.iron;
+  ok(OLD ? !DATA.field.anchor || (AN[0] === 0 && AN[1] === 0) : AN[0] === 544000 && AN[1] === 660000, 'the anchor is 4.23\'s origin on 5.1\'s canvas (' + AN + ')');
+  ok(c.gx >= AN[0] + 400 * C && c.gx < AN[0] + 401 * C && c.gz >= AN[1] + 300 * C && c.gz < AN[1] + 301 * C, 'a candidate lies in its anchored cell');
+  const nAt = G.nodesIn({ x0: AN[0] + 400 * C, z0: AN[1] + 300 * C, x1: AN[0] + 401 * C, z1: AN[1] + 301 * C }, { families: ['iron'], placers: false });
+  ok(nAt.every(n => n.id === 'res:iron:400:300') && (c.kept && !c.drop) === (nAt.length === 1), 'nodesIn finds a cell\'s node by the anchored lattice', nAt.some(n => n.id !== 'res:iron:400:300')); }
 
 /* ---- the field: deterministic, streamable (any tile alone), every node kept by the rule */
-const T0 = { x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM };   /* 120 km of the eastern uplands */
+const T0 = { x0: X(1100), z0: Z(660), x1: X(1160), z1: Z(720) };   /* 120 km of the eastern uplands */
 const A = G.nodesIn(T0), B = G.nodesIn(T0);
 ok(A.length > 50 && JSON.stringify(ids(A)) === JSON.stringify(ids(B)), 'deterministic (' + A.length + ' nodes)');
 { const mx = (T0.x0 + T0.x1) / 2, mz = (T0.z0 + T0.z1) / 2, q = [];
@@ -43,9 +67,9 @@ ok(A.filter(n => n.src === 'field').every(n => /^res:[a-z-]+:-?\d+:-?\d+$/.test(
     const s = KRAND.cell(KRAND.child(DATA.field.world, 'res:iron'), ix, iz), u = KRAND.unit(KRAND.hash(s, 1));
     if (c.kept !== (Math.floor(u * 255) < c.p)) bad++; if (c.kept) kept++;
     const C = DATA.field.cells.iron, ins = DATA.field.inset;
-    if (c.gx < (ix + ins) * C - 1e-6 || c.gx > (ix + 1 - ins) * C + 1e-6) bad++; }
+    if (c.gx < AN[0] + (ix + ins) * C - 1e-6 || c.gx > AN[0] + (ix + 1 - ins) * C + 1e-6) bad++; }
   ok(!bad && kept > 0, 'kept iff floor(unit x 255) < prospectivity, inside the inset (' + kept + ' of 400)'); }
-{ const sea = G.nodesIn({ x0: 10 * PM, z0: 10 * PM, x1: 50 * PM, z1: 50 * PM });   /* the north-west ocean */
+{ const sea = G.nodesIn({ x0: X(10), z0: Z(10), x1: X(50), z1: Z(50) });   /* the north-west ocean */
   ok(sea.length === 0, 'negative: no node at sea (' + sea.length + ')'); }
 
 /* ---- the drop rule: water and cliffs drop a kept candidate, never re-roll it */
@@ -56,7 +80,7 @@ ok(A.filter(n => n.src === 'field').every(n => /^res:[a-z-]+:-?\d+:-?\d+$/.test(
   ok(steep.length > 0 && steep.length < all.size && ids(steep).every(k => all.has(k)), 'a cliff drops its node; the rest stand where they stood (no re-roll)'); }
 
 /* ---- the host's frame, owner nodes and deltas by id */
-{ const O = { x: 1130 * PM, z: 690 * PM }, loc = G.nodesIn({ x0: T0.x0 - O.x, z0: T0.z0 - O.z, x1: T0.x1 - O.x, z1: T0.z1 - O.z }, { origin: O });
+{ const O = { x: X(1130), z: Z(690) }, loc = G.nodesIn({ x0: T0.x0 - O.x, z0: T0.z0 - O.z, x1: T0.x1 - O.x, z1: T0.z1 - O.z }, { origin: O });
   ok(loc.length === A.length && loc.every(n => Math.abs(n.x - (n.gx - O.x)) < 1e-6), 'a local frame (origin) moves nothing'); }
 { const a = A.find(n => n.src === 'field'), b = A.filter(n => n.src === 'field')[1];
   const R = G.nodesIn(T0, { owner: [{ id: a.id, kind: a.kind, grade: 'high', x: a.gx + 5, z: a.gz }, { id: 'owner:1', kind: 'iron', grade: 'low', x: T0.x0 + 10, z: T0.z0 + 10 }],
@@ -70,8 +94,9 @@ ok(A.filter(n => n.src === 'field').every(n => /^res:[a-z-]+:-?\d+:-?\d+$/.test(
 
 /* ---- the cross-engine check: the bake's own lode field (numpy KRAND) is this field (the coarse rule) */
 for (const fam of ['gold', 'tin']) {
-  const C = DATA.field.cells[fam], nx = Math.ceil(DATA.grid.fullW * PM / C), nz = Math.ceil(DATA.grid.fullH * PM / C), rows = [];
-  for (let iz = 0; iz < nz; iz++) for (let ix = 0; ix < nx; ix++) { const c = G.candidate(fam, ix, iz);
+  const C = DATA.field.cells[fam], i0 = Math.floor(-AN[0] / C), j0 = Math.floor(-AN[1] / C), rows = [];
+  const i1 = Math.ceil((DATA.grid.fullW * PM - AN[0]) / C), j1 = Math.ceil((DATA.grid.fullH * PM - AN[1]) / C);
+  for (let iz = j0; iz < j1; iz++) for (let ix = i0; ix < i1; ix++) { const c = G.candidate(fam, ix, iz);
     if (c.kept && !c.drop) rows.push([ix, iz, c.grade === 'high' ? 2 : c.grade === 'medium' ? 1 : 0.5]); }
   rows.sort((p, q) => p[1] - q[1] || p[0] - q[0]);
   const txt = rows.map(r => r[0] + ',' + r[1] + ',' + r[2]).join(';'), sha = require('crypto').createHash('sha1').update(txt).digest('hex').slice(0, 16);
@@ -82,7 +107,7 @@ for (const fam of ['gold', 'tin']) {
 /* ---- the placers: down the rivers, from the lodes */
 { const P = DATA.placers;
   ok(P.length > 100 && new Set(P.map(p => p.id)).size === P.length, 'placers: ' + P.length + ', ids unique');
-  ok(P.every(p => /^res:placer-(gold|tin):r\d+:\d+$/.test(p.id) && RES_ORE.grades[p.grade]), 'placer ids and grades');
+  ok(P.every(p => /^res:placer-(gold|tin):[^:]+:\d+$/.test(p.id) && RES_ORE.grades[p.grade]), 'placer ids and grades');
   ok(P.every(p => ['flatten', 'mouth', 'confluence'].indexOf(p.why) >= 0), 'every placer where the flow slows');
   const t = { x0: 0, z0: 0, x1: DATA.grid.fullW * PM, z1: DATA.grid.fullH * PM };
   const with_ = G.nodesIn(t, { families: ['gold'], placers: true }).filter(n => n.placer).length;
@@ -91,15 +116,15 @@ for (const fam of ['gold', 'tin']) {
 
 /* ---- the evaporite rings: the Catch's salts (potash, alkali) where its closed basins dry */
 { const catchP = [[763, 1061.5], [809, 1083.6], [799, 1097.6], [835.1, 1079.6]];
-  const near = (k, at) => G.near(at[0] * PM, at[1] * PM, k, 30000).length;
+  const near = (k, at) => G.near(X(at[0]), Z(at[1]), k, 30000).length;
   const sum = k => catchP.reduce((s, p) => s + near(k, p), 0);
   ['gypsum', 'halite', 'potash', 'alkali'].forEach(k => ok(sum(k) > 0, 'the Catch has ' + k + ' nodes (' + sum(k) + ')'));
   ok(near('potash', [575, 504]) === 0 && near('alkali', [575, 504]) === 0, 'negative: no potash or alkali on the Volcano');
-  const b = DATA.basins.find(b => b.at_px[0] === 763);
+  const b = DATA.basins.find(b => b.at_px[0] === 763 + DX);
   ok(b && b.soda === 1, 'the Catch\'s brine is alkaline (soda 1)'); }
 
 /* ---- near and register */
-{ const c = [1130 * PM, 690 * PM], ns = G.near(c[0], c[1], 'iron', 20000);
+{ const c = [X(1130), Z(690)], ns = G.near(c[0], c[1], 'iron', 20000);
   ok(ns.length > 0 && ns.every((p, i) => !i || ns[i - 1].dist <= p.dist), 'near: nearest first (' + ns.length + ')');
   ok(G.near(c[0], c[1], 'iron', 0).length === 0, 'negative: nothing within 0 m');
   const T = KTAGS.create({ build: 'test-res' }), recs = G.register(T, ns, { height: () => 12 });
@@ -127,7 +152,7 @@ const LG = RES_LEDGER.build();
 
 /* ---- the Godot twin's golden tile (kits/resources/godot/kres_field_test.gd reads it) */
 { const f = path.join(KIT, 'godot', 'golden-field.json');
-  const Tg = { x0: 1120 * PM, z0: 680 * PM, x1: 1135 * PM, z1: 695 * PM };
+  const Tg = { x0: X(1120), z0: Z(680), x1: X(1135), z1: Z(695) };
   const tile = G.nodesIn(Tg).filter(n => n.src !== 'owner').map(n => ({ id: n.id, grade: n.grade, gx: n.gx, gz: n.gz }));
   const txt = JSON.stringify({ tile: [Tg.x0, Tg.z0, Tg.x1, Tg.z1], nodes: tile, lodes: DATA.stats.lodes }, null, 0) + '\n';
   if (process.argv.indexOf('--ledger') >= 0) { fs.writeFileSync(f, txt); console.log('wrote ' + f); }

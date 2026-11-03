@@ -96,6 +96,12 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] Wattle pods, ginkgo seeds and kauri cones: tagged as edible with `fruit: null`, named in the probe's not-drawn list.
       2026-10-20: catalogued (`generic_fruit_wattle_seed`, `generic_fruit_ginkgo_seed`, `generic_fruit_kauri_cone`) and tagged; still not drawn on the stage. `settlements/highlands` carries this kit's pack and needs a rebuild for the tags.
 
+- [x] **The flickering ponds** (the owner, 2026-11-03): small turquoise "ponds" in the dry hills whose dark bank and water flickered into each other. They were the hill river's
+      ribbon, not ponds: its channel is ~11 m wide, the ground is drawn on 16 m cells, and the coarse triangles bridged the banks across the ribbon, so bank and water lay within
+      centimetres over metres and z-fought in patches (on the drawn ground: 208 `flow-graze`, 385 `flow-under`). Not a puddle, wet-ground or KGROUND layer, nor a missing
+      polygonOffset. Fixed: the hill river's cells are drawn again at 2 m, and the gorge's too (at 4 m its shallow ends grazed the river; `45`, `?riverstrip=0`); the trench is cut from the centreline's ground, with a bank that crosses the
+      level (`channelH`, `?channel=0`); the river's ribbon fades out under the gorge's ribbon (they lay 5 cm apart) and in over its first 270 m at the map's upstream edge
+      (`89w`). The page check `the river and its banks cross` holds it, with the coarse floor as its negative. Seen on the GPU, before and after.
 ## Done
 
 - [x] Runtime LOD (Oct 2026, review item 2): every pass builds under `BIO.range` (`NWLOW.LOD`),

@@ -291,6 +291,15 @@ does not shimmer. `const S = ATMOS.shimmer({renderer, field: H.bake({box, cell: 
 ground; its target is not multisampled (a page that relies on MSAA loses it under the pass); its wavering is a GLSL value noise
 (a look, not placement, so not on KRAND).
 
+## The cloud deck's day (`fx/89-atmos-fx-deckday.js`, opt-in, 2026-11-03; `test-deckday.js`)
+
+The cloud sea at a wall's foot laps up at dawn and burns back through the day (the Cliff Lungs' section 14 item 5). `ATMOS.deckLevel(hour,
+W, {y, lap, burn, high, low, fog, rain})` is the level as a plain function of the hour and the weather (the kit's own breath reads the same
+one); `ATMOS.deckDay(deck, o)` writes it into a `cloudDeck`'s `uY` each frame; `ATMOS.deckIn(x, y, z, t, level)` is how deep a point is in
+the cloud; `ATMOS.provideDeck(KHAZ, {level, base})` registers `visibility` (25 m deep in it, the page's own elsewhere), the field the
+deck gave none of. The deck's ground-clearance window is fixed when it is made: make it at `o.y` and keep `lap` and `burn` within about
+60 m. **Godot:** `deckLevel` is arithmetic on the clock; the deck's shader takes the level as a uniform, as here.
+
 ## Tags
 
 The module registers nothing itself, because a host's registry is its own. The Iziz city adds REG entries for what it

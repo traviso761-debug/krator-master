@@ -84,17 +84,23 @@ const HCHK={
 // the water's edge from the land (core/water ext/60): every tree clear of the water it does not stand in, the wet band on the real edge; the riparian trees may stand at the edge (r 0), no tree in it
 HCHK.edge=wet=>{const F=WATER.edgeAudit({field:WATER_F,plants:NWLOW.TREES.map(T=>({x:T.x,z:T.z,r:0,name:NWLOW.SPECIES[T.sp].key,aquatic:T.y0<.4})),wet:wet||wetShare,band:4,wide:80,clear:0}),S=WATER.auditSummary(F);
  return{ok:!F.length,detail:F.length+' findings: '+JSON.stringify(S).slice(0,240)};};
+// the owner's flickering ponds (2026-11-03): the hill river against the ground as DRAWN (drawnH: the 4 m strips, else the 16 m floor), WATER.audit's opt-in flow-graze,
+// inside the drawn square; its negative is the coarse floor alone (meshH), which bridged the channel's banks across the ribbon
+HCHK.graze=G=>{if(!WATER.audit)return{ok:false,detail:'no audit'};const E=TERR.R*1.05,F=WATER.audit({ground:G,graze:true,surfaces:[RIVER]}).filter(f=>f.rule==='flow-graze'&&Math.abs(f.x)<E&&Math.abs(f.z)<E);
+ return{ok:!F.length,detail:F.length+' graze findings in the square'+(F.length?', worst '+Math.max(...F.map(f=>f.by))+' m at '+F[0].x+', '+F[0].z:'')};};
 HCHK.env=()=>{const P=[];for(let i=0;i<300;i++){const a=i*2.4,r=40+i*9;P.push([Math.cos(a)*r,Math.sin(a)*r]);}const bad=BIO.envCheck(ENV,P);return{ok:!bad.length,detail:bad.length+' bad: '+JSON.stringify(bad).slice(0,200)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NWLOW.SPECIES,P));
  add('the land reads the water\'s own edge',HCHK.edge());
  add('the environmental fields',HCHK.env());
+ add('the river and its banks cross, not lie along each other (drawn ground)',HCHK.graze(drawnH));
  if(MG)MG.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  add('a fruiting species with no catalog fruit',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='pandan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
  add('a species with no harvest tag',HCHK.fruit(NWLOW.SPECIES.map(S=>S.key==='banksia'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
  add('no fruit drawn',HCHK.fruit(NWLOW.SPECIES,P.filter(p=>!/:pompom$/.test(p[3]))));
+ add('the river on the coarse 16 m floor alone',HCHK.graze(meshH));
  add('a wet band that stops 30 m short of the water',HCHK.edge((x,z)=>WF.shore(x,z)<30?0:wetShare(x,z)));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

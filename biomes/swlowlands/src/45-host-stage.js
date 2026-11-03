@@ -61,7 +61,7 @@ function shoreS(t){return -1900+170*(fbm(t*.0011+3,1.7,41,3)-.5)*2+40*Math.sin(t
 function seaIn(x,z){const t=tOf(x,z);return sOf(x,z)-shoreS(t);}
 // the river: t as a function of s, meandering down from the SE hills to the delta
 function RIVER_T(s){return -120+260*Math.sin(s*.00115+.6)+90*Math.sin(s*.0043+1.3)+30*Math.sin(s*.011);}
-function riverD(x,z){if(ST&&ST.riverD)return ST.riverD(x,z);const s=sOf(x,z),t=tOf(x,z);if(s>TERR.R*1.2)return 1e9;
+function riverD(x,z){if(ST&&ST.riverD)return ST.riverD(x,z);const s=sOf(x,z),t=tOf(x,z);if(s>TERR.R*1.25+20)return 1e9;   /* past the ribbon's last point (RIVER_PTS, s < 1.25 R): at 1.2 R its last 150 m ran over ground with no trench (flow-under) */
  let d=Math.abs(t-RIVER_T(s));
  // the delta: two distributaries fan out over the last 500 m
  const sh=shoreS(RIVER_T(s)),f=smooth(sh+520,sh+40,s);
@@ -95,18 +95,29 @@ function terrainH(x,z){let h=groundH0(x,z);
  for(const S of SPRINGS){const d=Math.hypot(x-S.x,z-S.z);if(d>S.r*1.6)continue;if(S.y0==null)S.y0=groundH0(S.x,S.z);
   h=Math.min(h,mix(S.y0-1.6,h,smooth(S.r*.85,S.r*1.6,d)));}   /* the spring's bowl: only ever lower */
  return h;}
-function terrainH0(x,z){
- let h=baseH(x,z)+hillH(x,z);const h0=h;
- const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
+// the ground before the river's channel: the land, the bayou, the oxbows and the valley the river cut
+function terrainPre(x,z,rd,W){
+ let h=baseH(x,z)+hillH(x,z);
  // bayou pools and sloughs: standing water a few tens of metres across
  const sk=swampK(x,z);if(sk>0){const pool=fbm(x*.0068+11,z*.0068-7,313,2);h-=sk*3.6*smooth(.43,.29,pool);}
  // oxbow ponds up the subtropical valley, near the river only
  const ox=smooth(-1100,-700,sw(x,z))*smooth(600,300,sw(x,z))*smooth(420,120,rd);if(ox>0){const p=fbm(x*.011-3,z*.011+5,317,2);h-=ox*4.2*smooth(.70,.665,p);}
- // the valley the river cut (wider in the hills), and the channel itself
+ // the valley the river cut (wider in the hills)
  const vk=smooth(W*9+120,W*1.2,rd)*smooth(200,900,sw(x,z));h-=vk*Math.max(0,h-baseH(x,z)*.8)*.55;
+ return h;}
+// THE CHANNEL IN THE HILLS (2026-11-03, nwlowlands' flickering ponds; WATER.audit's flow-graze): the river's ribbon is level across at its centreline's ground + .6 m (RIVER_PTS),
+// so its trench is cut from the CENTRE's ground, not the local ground: a bed 2.8 m under it out to .75 of the half width, then a steep bank (3.6 m over ~4 m) that rises
+// through the water's level inside the ribbon's edge and on above it. Before, the trench was 2.8 m under each point's own ground, so on a cross-slope the bank lay within
+// centimetres of the water over metres, and ribbon and bank z-fought. ?channel=0 the old trench
+const CHANNEL_ON=new URLSearchParams(location.search).get('channel')!=='0';
+function channelH(s,W){const c=xzOf(s,RIVER_T(s));return terrainPre(c[0],c[1],0,riverW(c[0],c[1]))-2.8;}
+function terrainH0(x,z){
+ const s=sOf(x,z),rd=riverD(x,z),W=riverW(x,z);
+ let h=terrainPre(x,z,rd,W);const h0=baseH(x,z)+hillH(x,z);
  const bank=smooth(W+10,W*.6,rd);
- // in the lowland the bed drops under the water plane; up in the hills it is a 2.8 m trench the ribbon runs in
- if(bank>0){const lowland=smooth(250,-150,sw(x,z));h=mix(h,Math.min(h-.2,mix(h-2.8,-2.2,lowland)),bank);}
+ // in the lowland the bed drops under the water plane; up in the hills the trench the ribbon runs in
+ if(bank>0){const lowland=smooth(250,-150,sw(x,z));h=mix(h,Math.min(h-.2,mix(h-2.8,-2.2,lowland)),bank);
+  if(CHANNEL_ON&&lowland<1&&rd<W*1.2+12&&Math.abs(tOf(x,z)-RIVER_T(s))<=rd+.01){const t=channelH(s,W)+3.6*smooth(W*.75,W+2,rd);h=mix(mix(t,h,smooth(W*1.2,W*1.2+12,rd)),h,lowland);}}   /* the main channel only (not the delta's); a cross-slope's low side gets a bank too */
  // the sea: a sandy shelf then the deep
  const si=seaIn(x,z);if(si<30){const bed=-.4-1.6*smooth(0,-160,si)-9*smooth(-160,-700,si)+.8*(fbm(x*.004,z*.004,71,2)-.5)*smooth(-20,-150,si);
   h=mix(h,Math.min(bed,-.25),smooth(30,-12,si));}
@@ -206,19 +217,29 @@ if(ST&&ST.strata&&stationStrata.hook)stationStrata.hook(MAT_GROUND);
    the shore) is split 4 x 4 (~4.1 m) on terrainH. The coarse facets stood above the water as straight-edged brown islets
    ('The plain from above', KNOWN_ISSUES); the finer cells follow the real waterline. terrainH is unchanged: only the drawn
    ground moves, toward it. A split cell's edge against a coarse neighbour takes the coarse edge's line (no cracks). */
-(function(){const N=400,S=TERR.R*2.2,c=S/N,F=4,NF=N*F,cf=c/F,N1=N+1,H=new Float32Array(N1*N1);
+/* THE RIVER'S STRIP (2026-11-03, core/water/PRACTICE.md, "Make the ground mesh finer than the narrowest channel"; nwlowlands' flickering ponds): the hill river's
+   channel is ~9-15 m wide, under one 16.5 m cell: the coarse triangles bridged its banks across the ribbon, and bank and water lay within centimetres for metres
+   (WATER.audit on the drawn ground: 289 flow-graze, 272 flow-under). Its cells are split 8 x 8 (~2.1 m), the bank's 3.6 m rise over ~4 m (channelH) drawn as it is.
+   A cell's side against a coarser neighbour takes that neighbour's line (no crack). ?riverstrip=0 the coarse floor there */
+const RIVER_STRIP=CHANNEL_ON&&new URLSearchParams(location.search).get('riverstrip')!=='0'&&!(ST&&ST.terrainH);
+(function(){const N=400,S=TERR.R*2.2,c=S/N,F=8,NF=N*F,cf=c/F,N1=N+1,H=new Float32Array(N1*N1);
  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++)H[j*N1+i]=terrainH(-S/2+i*c,-S/2+j*c);
- const sub=new Uint8Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=H[j*N1+i],b=H[j*N1+i+1],d=H[(j+1)*N1+i],e=H[(j+1)*N1+i+1];if(Math.min(a,b,d,e)<.3&&Math.max(a,b,d,e)>-.3)sub[j*N+i]=1;else if(ST&&ST.split&&ST.split(-S/2+(i+.5)*c,-S/2+(j+.5)*c,a,b,d,e))sub[j*N+i]=1;}
- const isSub=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&sub[j*N+i]===1;
+ /* each cell's step in eighths: 8 the coarse cell, 2 a waterline cell (~4.1 m), 1 the river's strip (~2.1 m) */
+ const step=new Uint8Array(N*N).fill(F);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=H[j*N1+i],b=H[j*N1+i+1],d=H[(j+1)*N1+i],e=H[(j+1)*N1+i+1],x=-S/2+(i+.5)*c,z=-S/2+(j+.5)*c;
+  if(RIVER_STRIP&&sw(x,z)>-260){const s=sOf(x,z);if(s<TERR.R*1.25&&Math.abs(tOf(x,z)-RIVER_T(s))<riverW(x,z)*1.2+12+c*.75){step[j*N+i]=1;continue;}}
+  if(Math.min(a,b,d,e)<.3&&Math.max(a,b,d,e)>-.3)step[j*N+i]=2;else if(ST&&ST.split&&ST.split(x,z,a,b,d,e))step[j*N+i]=2;}
+ const stOf=(i,j)=>i>=0&&j>=0&&i<N&&j<N?step[j*N+i]:F;
  const pos=[],uvs=[],idx=[],V=new Map();
+ /* a vertex on an edge lies on the line of the coarser of the two cells either side: terrainH at that cell's steps along the edge, straight between them */
+ const onEdge=(m,f,P)=>{if(m===F)return null;const k=f-f%m;return f%m?P(k)+(P(k+m)-P(k))*(f%m)/m:P(f);};
  function vid(I,J){const k=J*(NF+1)+I;let v=V.get(k);if(v!==undefined)return v;const x=-S/2+I*cf,z=-S/2+J*cf,i=Math.floor(I/F),j=Math.floor(J/F),fi=I%F,fj=J%F;let h;
   if(!fi&&!fj)h=H[j*N1+i];
   else if(fi&&fj)h=terrainH(x,z);
-  else if(!fi)h=(isSub(i-1,j)&&isSub(i,j))?terrainH(x,z):H[j*N1+i]+(H[(j+1)*N1+i]-H[j*N1+i])*fj/F;   /* on a vertical cell edge */
-  else h=(isSub(i,j-1)&&isSub(i,j))?terrainH(x,z):H[j*N1+i]+(H[j*N1+i+1]-H[j*N1+i])*fi/F;            /* on a horizontal cell edge */
+  else if(!fi){const m=Math.max(stOf(i-1,j),stOf(i,j));h=onEdge(m,fj,q=>q===0?H[j*N1+i]:q===F?H[(j+1)*N1+i]:terrainH(x,-S/2+(j*F+q)*cf));if(h==null)h=H[j*N1+i]+(H[(j+1)*N1+i]-H[j*N1+i])*fj/F;}   /* on a vertical cell edge */
+  else{const m=Math.max(stOf(i,j-1),stOf(i,j));h=onEdge(m,fi,q=>q===0?H[j*N1+i]:q===F?H[j*N1+i+1]:terrainH(-S/2+(i*F+q)*cf,z));if(h==null)h=H[j*N1+i]+(H[j*N1+i+1]-H[j*N1+i])*fi/F;}   /* on a horizontal cell edge */
   v=pos.length/3;pos.push(x,h,z);uvs.push(I/NF,1-J/NF);V.set(k,v);return v;}
  const quad=(I,J,s)=>{const a=vid(I,J),b=vid(I,J+s),cc=vid(I+s,J+s),d=vid(I+s,J);idx.push(a,b,d,b,cc,d);};   /* PlaneGeometry's diagonal */
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(sub[j*N+i]){for(let v=0;v<F;v++)for(let u=0;u<F;u++)quad(i*F+u,j*F+v,1);}else quad(i*F,j*F,F);}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const st=step[j*N+i];for(let v=0;v<F;v+=st)for(let u=0;u<F;u+=st)quad(i*F+u,j*F+v,st);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(idx);
  const p=g.attributes.position;
  {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=sk;gl[i*2+1]=open;}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}

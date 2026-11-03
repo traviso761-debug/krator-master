@@ -330,6 +330,46 @@ y: a height inside the voids, world, kinds})`, register each record (`core/tags`
 **The breath's turn** (`core/biome/35b-core-anim-turn.js`), **steam in groups** and **the heat shimmer** (`core/atmos/fx/`): see
 `core/biome/README.md`, "The breath's turn", and `core/atmos/README.md`, "Steam in groups and the heat shimmer".
 
+### The Cliff Lungs', Godstep's and the limestone caves' pieces (2026-11-03)
+
+Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, which is in `39-core-cavern.js` (below).
+
+- **`KLAVA.bakeLayers`, `KLAVA.column`, `KLAVA.strata`** (`46b-core-lava-layers.js`, `test-lava-layers.js`; Godstep's owed 1): `KLAVA.bake`'s run bit
+  for bit, keeping each eruption's frozen sheet; the stack at a point; and the same flows as KSTRATA formations, so a front's or a rille's
+  wall shows the flows the plain was built from. *Adopting it:* `const B = KLAVA.bakeLayers(o)` in place of `KLAVA.bake(o)` (the same `dh`
+  and `age`); at a cliff, `KSTRATA.create({seed, formations: KLAVA.strata(B, x, z, {ground}), warp: [0, 0], dip: [1, 0, 0]})`.
+- **`KRELIEF.tumuli`, `KRELIEF.tumulus`, `KRELIEF.tubeRille`** (`38b-core-relief-lava.js`, `test-relief-lava.js`; Godstep's owed 2 and 3, the
+  Throne's tube station): tumuli on a bake's ponded lobes and pressure ridges along their margins, each split by an axial crack; and the
+  trench cut where a `KRELIEF.tube`'s roof fell (by thickness, or spans given), talus at its walls' foot, its walls recorded for the carve,
+  skylights where the roof stands thin. *Adopting it:* list the file after `38-core-relief.js`; the records go into `KRELIEF.apply` with the
+  others (`KRELIEF.shape`, `at`, `apply` and `kinds` take them once it is loaded; every older kind answers as before); add the rille's
+  `openings` to the cavern.
+- **`KCAVERN.pipe`** (`39-core-cavern.js`, `test-cavern-pipe.js`; the Cliff Lungs' item 2): a hollow body on a 3D centreline, a solid
+  `pipebody` standing in the air as a mass does and a `bore` inside it, its floor stepped, its open ends doors. The edit: `mass` gained a
+  `body` flag, and the six places that named `'mass'` read it; no older kind's mesh moved (`test-cavern.js`' hashes 75a40609 and 41820564
+  before and after). *Adopting it:* `C.pipe({id, pts: [[x, y, z], ...], r, wall, steps, open})` before `C.build()`.
+- **`ATMOS.deckLevel`, `deckDay`, `deckIn`, `provideDeck`** (`core/atmos/fx/89-atmos-fx-deckday.js`, `test-deckday.js`; the Cliff Lungs' item 5):
+  `core/atmos/README.md`, "Steam in groups and the heat shimmer" and "The cloud deck's day".
+- **`KFAR.streaks`, `streakAt`, `streaksOf`, `streakMesh`** (`44b-core-farfield-lines.js`, `host/44b-core-farfield-lines-draw.js`,
+  `test-farfield-lines.js`; the Cliff Lungs' item 7): far dark lines (the lungs down the Inner Wall, a far fall or scar) as camera-facing
+  ribbons scaled by the kit's value, as the sprites are. *Adopting it:* `scene.add(KFAR.streakMesh(KFAR.streaks({world, lines, shape, range}),
+  {k: uniform}))`. Drawn and counted on SwiftShader (`core/atmos/check_shimmer.py`).
+- **`KKARST`** (`39c-core-karst.js`, `test-karst.js`; limestone caverns): a solution cave's plan as records. Branchwork (sinks draining down
+  the joints to one spring, the floor falling to it) or a network maze on a jittered joint lattice; chambers where passages meet; older dry
+  levels above, joined by shafts; keyhole canyons over the water table and sumps under it; dolines over the sinks and cenotes where a
+  chamber's roof is thin; a `karst` KSTRATA recipe. `KKARST.build(C, N)` carves it in a KCAVERN; `water(N)` gives the streams, sumps, pools
+  and the spring's `WATER.karstSpring` arguments; `hazards(N)` the drowning and the falls; `relief(N)` the dolines as a KRELIEF kind.
+  *Adopting it:* `const N = KKARST.network({box, ground, world, kind, level, table, joints})`, then `KKARST.build(C, N)` before `C.build()`,
+  the ground through `KRELIEF.apply(ground, KKARST.relief(N))`, then `KSPELEO.place(C, {box, y, kinds: KSPELEO.LIMESTONE})`.
+  **`kind: 'hypogene'`** (2026-11-03, the Hearth hold): water rising from depth, hot and sulphurous. Feeders up the faults or joints,
+  big chambers and cupolas over them at the water table, a level rising maze or spongework a storey (older storeys above, at older
+  tables), gypsum crust round the table (replacement gypsum and blocks on the old storeys) tagged `speleo: 'HYPOGENE'`, a warm spring
+  and vents for outlets, no sinks; `hazards(N)` adds scalding pools, pooled bad air and the acid's drips on the existing kinds (heat,
+  gas with `shape.pool`, acid). Dress it with `KSPELEO.place(C, {box: crust.box, y, kinds: KSPELEO.HYPOGENE})` over each of `N.crusts`.
+  The branch and maze outputs are byte-identical to before it (`test-karst.js` holds their digests).
+- **`KSPELEO.LIMESTONE`** (`39b-core-speleo.js`): soda straws in clusters, curtains along the roof, flowstone mounds, and rimstone dams
+  across a falling floor, beside the dripstone; the hypogene preset's records are unchanged.
+
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 
 **`KFAR` far items** (`44-core-farfield.js`, drawn by `host/44-core-farfield-draw.js`). `KFAR.sprites({world, sources, shape, range, kind})`: far steam and cloud as a plain record, placed by hash of (world, source, slot), so

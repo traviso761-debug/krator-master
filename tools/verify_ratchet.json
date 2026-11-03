@@ -6,13 +6,13 @@
    "instance-cap": "2026-11-01: 1 items past the cap (scene scan, cap 250000): biome:ichu 396010"
   },
   "biomes/swlowlands/dist/swlowlands-delta.html": {
-   "seat-sweeps": "2026-11-02: contact 113 of 36187: [{\"id\":\"biome:fan#3231\",\"status\":\"buried\",\"depth\":0.5552533090681864,\"gap\":null,\"h\":null},{\"id\":\"biome:fan#3240\",\"status\":\"buried\",\"depth\":0.567356436778933,\"ga"
+   "seat-sweeps": "2026-11-03: contact 66 of 36187: [{\"id\":\"biome:fan#3231\",\"status\":\"buried\",\"depth\":0.5552533090681864,\"gap\":null,\"h\":null},{\"id\":\"biome:fan#3240\",\"status\":\"buried\",\"depth\":0.567356436778933,\"ga"
   },
   "biomes/swlowlands/dist/swlowlands-gorge.html": {
-   "seat-sweeps": "2026-11-02: contact 172 of 36167: [{\"id\":\"biome:melon#0\",\"status\":\"float\",\"gap\":0.8371130169834657,\"depth\":0,\"h\":237.61578856939875},{\"id\":\"biome:melon#1\",\"status\":\"float\",\"gap\":1.74946963338700"
+   "seat-sweeps": "2026-11-03: contact 123 of 36175: [{\"id\":\"biome:melon#0\",\"status\":\"float\",\"gap\":0.8371130169834657,\"depth\":0,\"h\":237.61578856939875},{\"id\":\"biome:melon#1\",\"status\":\"float\",\"gap\":1.74946963338700"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "seat-sweeps": "2026-11-02: contact 35 of 39274: [{\"id\":\"biome:fan#6776\",\"status\":\"buried\",\"depth\":0.33235820168159225,\"gap\":null,\"h\":null},{\"id\":\"biome:reed#199\",\"status\":\"float\",\"gap\":0.30537631769468376,\"de"
+   "seat-sweeps": "2026-11-03: contact 17 of 39269: [{\"id\":\"biome:fan#6300\",\"status\":\"float\",\"gap\":0.4466096873564589,\"depth\":0,\"h\":1.7777190923930681},{\"id\":\"biome:fan#7084\",\"status\":\"float\",\"gap\":0.370985028199"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "seat-sweeps": "2026-11-03: contact 1060 of 95012: the kit's older floor passes on steep ground (and on a station, past the drawn ground's edge: 'off'); the same count is the build's own LAND.feetOwed (biomes/xanadu/KNOWN_ISSUES.md)"

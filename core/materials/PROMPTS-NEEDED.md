@@ -147,15 +147,6 @@ tinted gold on black or white on black); the fish-scale roofs are `metal.scale` 
 tracery's grid is `patterns/eternian/screen-pierced` (`.b`), a keyed, tiling pierced cast-bronze screen on magenta. Not
 covered: the brick (the kit tints the plain `brick` set today) and the tracery's three window heads.
 
-## 19. The Oidong Valley's carved bark (`biomes/oidong`, 2026-10-26)
-
-The cloud-pad tree (species 17, the diversity pass from the owner's reference photo of patterned trunks) wears a bark
-patterned in bold two-tone motifs. Nothing in the library or `patterns/` has it (`bark.tapestry` is carpet-like,
-`bark.mosaic` full-colour plates, `bark.cratered` grey pits), so `50-biome-oidong-species.js` paints a procedural stand-in
-(`OIDONG.barkTex7`, bucket `bark7`). Lands as the family `bark.carved` in `biomes/oidong/materials.json` (full colour,
-`keep` 1: the species' bark colour is a near-white multiplier), then `LIBBARK[7]` in the species fragment. Two takes
-(`.b` the variant) so a grove does not repeat one trunk.
-
 ## 24. The abyssal savannah (`biomes/abyssal-savannah`, 2026-10-26)
 
 `biomes/abyssal-savannah/PLAN.md` section 10. **Reuse, so no prompt:** `card.grass.dry`, `card.ichu` and `card.rankgrass`

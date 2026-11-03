@@ -74,7 +74,9 @@ item 9's state is in the README's Godot notes. The list as first written:
   plus its margin covers the carve), banks rising above the level within a couple of metres of the edge. A ribbon over
   uncarved ground is a slab; a carve wider than its ribbon leaves pockets for other water to flood.
 - Make the ground mesh finer than the narrowest channel, or give small water its own strip mesh and hold the coarse
-  ground under it (skill: a 6.5 m brook on 6.7 m cells is mush).
+  ground under it (skill: a 6.5 m brook on 6.7 m cells is mush). A mesh coarser than the channel bridges its banks across
+  the ribbon and the two z-fight in patches that read as ponds (nwlowlands, 2026-11-03): check it with `WATER.audit({ground: drawnH,
+  graze: true})`, the ground as drawn, since the field (`terrainH`) has the channel and the mesh hasn't.
 - Find lips, toes and pool centres on the ground (the first metre-per-metre drop; where it levels off), never from the
   plan's nominal distances. Put the pool where the water lands; carve its bowl under its level; level the ground under
   a spring's rim to the spring's height.
