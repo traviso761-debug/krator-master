@@ -9,6 +9,25 @@ over a day's wages), the dole for what a household cannot pay. Money measures an
 the week test and Godot's export are unchanged byte for byte. Left of M1: spending by savings within a class's band, and
 the rise and fall of a station.
 
+**M2 is built** (2026-11-03, `m2` in the same module; the isles' `m2`, `47m` M2 checks): prices move each night by scarcity,
+(target / supply line)^0.5 held to half and double of cost x markup and eased in over three days. **The redistribution is
+on everywhere** (the owner, 2026-11-03: the ration is m1's default until households are true households; `ration: false`
+turns it off). **The price level is built but off on the isles**, after what it did (below).
+
+**What moving prices taught** (the isles, eight market days, 2026-11-03):
+- **Scarcity pricing alone is stable.** The price index stays within 5% of where it opened; Kautoa's dearest goods are its
+  scarce quarry stone and kava (x1.4), its cheapest the meat and armour it has plenty of (x0.6); 23 of 23 goods point the
+  right way. Rations run at 90-92% of a full keep, the dole at 10-11% of what is bought, the treasuries break even.
+- **A price level against a flat wage spirals.** Raising the markup when the treasury takes in less than it owes (wages and
+  full rations) drove prices up 5% a night, the cap, for eight nights (Kautoa's markup 10.6 to 14.9) without settling: each
+  rise leaves more earners' households unable to pay, the dole grows (10% to 18% of what is bought), and food given on the
+  dole is not takings, so the treasury stays short and the rule raises prices again. The gap it chases is households
+  saving, and no price level closes that: a dearer everything only moves who is short.
+- **So the gap wants**, in order: (1) M1's second part, spending that follows savings (a household holding more than its
+  band's keep buys more, better, treats, a station), which is how saved money comes back; (2) then, if a price level is
+  still wanted, wages that move with it (indexed), so it cannot outrun the earners. The flat wage stays until the owner
+  says (2026-11-03).
+
 **What the first run taught** (the isles, 2026-11-03): (1) households with no earner (children, elders, kin at home) are
 half the people, so wages alone leave half of what is eaten on the dole: the ration (the chief's redistribution) fixes it,
 the markup then set on the earners' own keep (a ration a dependant is then the mean wage of an earner); (2) calibrating

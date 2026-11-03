@@ -335,7 +335,12 @@ ISLE.TUNE.sim = {
        member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
        keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
        household cannot pay is fed on its treasury's dole */
-    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true } },
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true },
+    /* M2 (2026-11-03): prices move each night: a governed good by its scarcity, (target / supply line)^`k`, held to [lo, hi]
+       of its cost x markup and eased in over `smooth` days; the town's markup (its price level) toward what makes the
+       households' spending meet the wages and the full rations, at most `level.step` a night; the ration moves with it.
+       The wage stays flat (the owner: see how prices shake out first) */
+    m2: { k: 0.5, lo: 0.5, hi: 2, smooth: 3, level: false } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

@@ -16,7 +16,7 @@
                                 below zero; each settlement's money balanced to its books (the ledger) */
 ISLE.simMoney = function () {
   var T = ISLE.TUNE.sim, K = T.money, S = ISLE.SIM; if (!K || !SIM.money) return null;
-  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback, ration: !!M1.ration } : null });
+  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback, ration: M1.ration !== false } : null, m2: K.m2 || null });
   Object.keys(K.changers || {}).forEach(function (c) { if (SIM.acct('changer:' + c)) SIM.mint('changer:' + c, K.changers[c], 'reserve'); });
   Object.keys(K.foreign || {}).forEach(function (c) { SIM.account({ id: 'foreign:beyond', owner: 'ships from beyond', kind: 'foreign', currency: c, name: 'the traders from beyond the isles' });
     SIM.mint('foreign:beyond', K.foreign[c], 'reserve'); });
@@ -47,7 +47,7 @@ ISLE.simMoneyTown = function (s) {
   return out;
 };
 ISLE.moneyBooks = function () { var hh = {}; SIM.accounts().forEach(function (A) { if (A.kind === 'household' || A.kind === 'mess') hh[A.id] = A.balance; });
-  return { minute: SIM.minute(), report: SIM.moneyReport(), ledger: SIM.ledgerSnap(), m1: SIM.moneyM1(), households: hh,
+  return { minute: SIM.minute(), report: SIM.moneyReport(), ledger: SIM.ledgerSnap(), m1: SIM.moneyM1(), households: hh, rel: SIM.MONEY && SIM.MONEY.m1 ? JSON.parse(JSON.stringify(SIM.MONEY.m1.rel)) : null,
     prices: SIM.MONEY && SIM.MONEY.m1 ? JSON.parse(JSON.stringify(SIM.MONEY.m1.price)) : null }; };
 /* M1's checks, over two snapshots taken after the calibration: the prices whole, at least 1, and a made good dearer than
    its inputs' cost (bread over its taro); the wage bill paid in full each day (none unpaid); the circular flow in every
@@ -97,3 +97,24 @@ ISLE.moneyChecks = function (a, b) {
   ok('each settlement\'s money is what its books say (the ledger)', L.ok && !!L.money, L.ok ? Object.keys(L.money ? L.money.towns : {}).map(function (k) { return (k || 'the crater') + ' ' + Object.keys(L.money.towns[k]).map(function (c) { return L.money.towns[k][c].closing + ' ' + c; }).join(', '); }).join('; ') : L.problems.slice(0, 3).join('; '));
   return res;
 };
+/* M2's checks (moving prices), over the same two snapshots: every governed good's scarcity within [lo, hi] of its cost x
+   markup; the town's price index (its foods' prices over their cost) within `drift` of where it opened, no runaway; a good
+   short of its target dearer than one over it, on the whole */
+ISLE.moneyM2Checks = function (a, b, drift) {
+  var res = [], ok = function (name, pass, detail) { res.push({ name: 'money M2: ' + name, ok: !!pass, detail: detail }); };
+  var Z = ISLE.TUNE.sim.money.m2; if (!Z) return res; drift = drift == null ? 0.15 : drift;
+  var towns = ISLE.SIM.order, bad = [], idx = [], short = [];
+  towns.forEach(function (s) { var R = (b.rel || {})[s] || {}; Object.keys(R).forEach(function (g) { if (!(R[g] >= Z.lo - 1e-9 && R[g] <= Z.hi + 1e-9)) bad.push(s + ' ' + g + ' ' + R[g]); });
+    var H = (b.m1.days[s] || []).filter(function (d) { return d.cpi != null; }), c0 = H.length ? H[0].cpi : null, c1 = H.length ? H[H.length - 1].cpi : null, mx = 0;
+    H.forEach(function (d) { mx = Math.max(mx, Math.abs(d.cpi / c0 - 1)); }); idx.push({ s: s, c0: c0, c1: c1, mx: mx, n: H.length });
+    var V = SIM.econ(s).govern && SIM.econ(s).govern.view, up = 0, n = 0; if (V) Object.keys(R).forEach(function (g) { var v = V[g]; if (!v || !(v.target > 0)) return; n++; if ((v.pos < v.target) === (R[g] > 1) || Math.abs(R[g] - 1) < 0.02) up++; });
+    short.push({ s: s, n: n, up: up }); });
+  ok('every governed good priced within ' + Z.lo + ' to ' + Z.hi + ' of its cost x markup', !bad.length && towns.every(function (s) { return Object.keys((b.rel || {})[s] || {}).length > 0; }),
+    bad.length ? bad.slice(0, 4).join('; ') : towns.map(function (s) { var R = b.rel[s], k = Object.keys(R).sort(function (x, y) { return R[y] - R[x]; }); return s + ': dearest ' + k.slice(0, 3).map(function (g) { return g + ' x' + R[g].toFixed(2); }).join(', ') + '; cheapest ' + k.slice(-2).map(function (g) { return g + ' x' + R[g].toFixed(2); }).join(', '); }).join(' | '));
+  ok('each town\'s price index within ' + Math.round(drift * 100) + '% of where it opened (no runaway)', idx.every(function (x) { return x.n >= 3 && x.mx <= drift; }),
+    idx.map(function (x) { return x.s + ' ' + (x.c0 || 0).toFixed(2) + ' to ' + (x.c1 || 0).toFixed(2) + ' (at most ' + Math.round(x.mx * 100) + '% off)'; }).join('; '));
+  ok('a good short of its target dearer, one over it cheaper (on the whole)', short.every(function (x) { return x.n > 0 && x.up >= 0.75 * x.n; }),
+    short.map(function (x) { return x.s + ' ' + x.up + ' of ' + x.n + ' goods'; }).join('; '));
+  return res;
+};
+

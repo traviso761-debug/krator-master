@@ -232,7 +232,11 @@ declares both once they are planned, in one order whichever town it draws, and h
   spending meets the wage bill: Kautoa's 10.1 (bread 20 shells, fish 9, a meal out 23, a stone tool 704), Valapo's 7.6.
   The chief redistributes: each night the treasury gives every household a ration for each member with no work, from
   what it holds over a day's wages (Kautoa 77% of a full keep, Valapo 87%); what a household cannot pay is fed on the
-  dole (about a tenth of what is bought). Money limits nothing yet: the goods' economy runs exactly as before.
+  dole (about a tenth of what is bought). Money limits nothing yet: the goods' economy runs exactly as before. **Moving
+  prices (M2):** each night a good's price follows its scarcity, (target / supply line)^0.5 within half and double of its
+  cost x markup, eased in over three days: Kautoa's stone and kava dearest (x1.4), its meat and armour cheapest (x0.6); the
+  price index holds within 5%, rations at 90-92% of a full keep. The price level is off: against a flat wage it spirals
+  (core/simulation/PLAN-MONEY.md, "What moving prices taught").
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

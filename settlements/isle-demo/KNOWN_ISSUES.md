@@ -254,7 +254,8 @@
       sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
 - [ ] **Money measures, it does not yet limit** (2026-11-03, `47m`: M0 and M1's first part): wages, rations and purchases are paid,
       but a household that cannot pay is fed on the dole, so nobody goes without; a pocket picked is still the meters, not coin.
-      Households save about a tenth of their income, so the ration runs at 77-87%: moving prices (M2) are to close it.
+      Households save about a tenth of their income, so the ration runs at 90-92% with M2's scarcity prices. M2's price level
+      would close it but spirals against the flat wage (PLAN-MONEY.md); spending that follows savings (M1's second part) is next.
 - [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
       Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
       (M1's second part) come next.

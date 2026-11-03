@@ -46,6 +46,9 @@
 //                          the payroll (each employed person's rota hours of the day before, not while held; from its
 //                          workplace's account, its owner covering what the till lacks); the rations
 //   SIM.moneyM1(s) -> {markup, live, wages, spent, dole, atCost} the day's numbers by settlement
+//   m2: {k, lo, hi, smooth, level: {gain, step} | false} (opt-in, PLAN-MONEY.md M2): prices that move, each night (m2Day below)
+//   ration: on by default with m1 (the owner, 2026-11-03: the chief's redistribution everywhere until households are true
+//        households); `ration: false` turns it off
 // THE BOOKS, per settlement and currency: opening + minted - burned + in - out = closing, where in and out are payments
 // between accounts of two settlements (an account with no settlement is the crater's: '' in the books). Across the
 // settlements of a currency, what went out is what came in.
@@ -61,7 +64,9 @@
   SIM.money = function(o){
     var M={ cur:{}, acc:{}, order:[], books:{}, flows:{}, spread:o.spread==null ? 0.03 : o.spread };
     if(o.m1) M.m1={ wage:o.m1.wage||null, priceWage:o.m1.priceWage==null ? 1 : o.m1.priceWage, fallback:o.m1.fallback, calibrate:o.m1.calibrate===true ? 1 : typeof o.m1.calibrate==='object' && o.m1.calibrate ? (o.m1.calibrate.days|0) : (o.m1.calibrate|0), calAfter:o.m1.calibrate && typeof o.m1.calibrate==='object' ? (o.m1.calibrate.after|0) : 0, live:!o.m1.calibrate, cal:{}, sweep:o.m1.sweep,
-      household:o.m1.household, seller:o.m1.seller, treasury:o.m1.treasury, cost:{}, price:{}, markup:{}, day:{}, history:{}, busyTown:{}, ration:{}, rationOn:!!o.m1.ration, keep:o.m1.keep };
+      household:o.m1.household, seller:o.m1.seller, treasury:o.m1.treasury, cost:{}, price:{}, markup:{}, day:{}, history:{}, busyTown:{}, ration:{}, rationOn:o.m1.ration!==false, keep:o.m1.keep, perKeep:{}, rel:{}, cpi:{},
+      m2:o.m2 ? { k:o.m2.k==null ? 0.5 : o.m2.k, lo:o.m2.lo==null ? 0.5 : o.m2.lo, hi:o.m2.hi==null ? 2 : o.m2.hi, smooth:o.m2.smooth==null ? 3 : o.m2.smooth,
+        gain:(o.m2.level||{}).gain==null ? 0.5 : o.m2.level.gain, step:(o.m2.level||{}).step==null ? 0.05 : o.m2.level.step, level:o.m2.level!==false } : null };
     Object.keys(o.currencies||{}).forEach(function(c){ var C=o.currencies[c]; if(!(C.talent>0)) throw new Error('SIM.money: currency '+c+' needs its value in Talents');
       M.cur[c]={ id:c, name:C.name||c, talent:C.talent, unit:C.unit||c }; });
     SIM.MONEY=M;
@@ -123,7 +128,7 @@
     if(F.length) out.meal=per*F.reduce(function(a, f){ return a+(out[f]||0); }, 0)/F.length;
     return out; }
   SIM.moneyPrices = function(s){ var C=m1(); if(!C) return null; var k=key(s); if(!C.cost[k]) costIn(s, null); var c=C.cost[k], mk=C.markup[k]==null ? 1 : C.markup[k], P=C.price[k]={};
-    Object.keys(c).forEach(function(g){ P[g]=Math.max(1, Math.round(c[g]*mk)); }); return P; };
+    var R=C.rel[k]||{}; Object.keys(c).forEach(function(g){ P[g]=Math.max(1, Math.round(c[g]*mk*(R[g]==null ? 1 : R[g]))); }); return P; };   /* M2: times its scarcity (rel) */
   function priceOf(s, g){ var C=m1(), k=key(s); if(!C.price[k]) SIM.moneyPrices(s); var p=C.price[k][g]; return p==null ? null : p; }
   SIM.moneyBuy = function(home, place, g, n, s){ var C=m1(); if(!C || !(n>0)) return 0; var M=SIM.MONEY, I=ids(s), D=day1(s), k=key(s);
     if(!C.cost[k]) costIn(s, null); var cst=C.cost[k][g]; if(cst!=null) D.atCost+=cst*n;
@@ -144,7 +149,7 @@
         A.wb+=wb; A.atCost+=D.atCost; A.people+=n; A.earners+=e; A.days=(A.days||0)+1; });
       if(Math.floor(minute/1440)>=C.calAfter+C.calibrate){ Object.keys(C.cal).forEach(function(k){ var A=C.cal[k], per=A.people>0 ? A.atCost/A.people : 0;   /* a person's day at cost */
           var base=C.rationOn ? per*A.earners : A.atCost;   /* with the ration: the wage bill buys the earners' own keep; the treasury the rest */
-          C.markup[k]=base>0 ? Math.max(1, A.wb/base) : 1; if(C.rationOn) C.ration[k]=Math.round(per*C.markup[k]); SIM.moneyPrices(k==='' ? null : k); }); C.live=true; C.opened=Math.floor(minute/1440); } }   /* the market opens: the last measured day's wages and rations are paid now */
+          C.markup[k]=base>0 ? Math.max(1, A.wb/base) : 1; C.perKeep[k]=per; if(C.rationOn) C.ration[k]=Math.round(per*C.markup[k]); SIM.moneyPrices(k==='' ? null : k); }); C.live=true; C.opened=Math.floor(minute/1440); } }   /* the market opens: the last measured day's wages and rations are paid now */
     if(C.sweep!==false) Object.keys(M.acc).forEach(function(id){ var A=M.acc[id]; if(A.kind==='workplace' && A.ownedBy && A.balance>0 && M.acc[A.ownedBy]) SIM.pay(id, A.ownedBy, A.balance, 'takings'); });   /* the day's takings to their owners first: they pay the day's wages */
     if(C.live) SIM.all('actor').forEach(function(a){ if(a.driven || a.work==null || !a.present) return; var s=SIM.R.settlement ? SIM.settlementOf(a) : null; if(s!=null && !M.acc[ids(s).tre(s)]) return;
       if(a.cmd && a.cmd.by==='jail' && a.cmd.until>prev) return;   /* held: no wage */
@@ -161,7 +166,28 @@
       Object.keys(dep).sort().forEach(function(h){ var s=SIM.R.settlement ? SIM.settlementOf(h) : null, k=key(s), r=C.ration[k], I=ids(s); if(!(r>0) || !M.acc[I.hh(h)] || !M.acc[I.tre(s)]) return;
         var n=Math.floor(r*dep[h]*share[k]); if(n>0){ var paid=SIM.pay(I.tre(s), I.hh(h), n, 'ration', true), D=day1(s); D.ration=(D.ration||0)+paid; } }); }   /* the chief's redistribution: each member with no work its keep */
     Object.keys(C.day).forEach(function(k){ (C.history[k]||(C.history[k]=[])).push(Object.assign({ day:Math.floor(prev/1440), markup:C.markup[k]==null ? 1 : C.markup[k] }, C.day[k])); });
+    if(C.live && C.m2) Object.keys(C.day).forEach(function(k){ m2Day(k, C.day[k]); });
     C.day={}; };
+  /* M2: PRICES THAT MOVE, at midnight after the payroll and the rations (PLAN-MONEY.md M2):
+     - a good's SCARCITY: rel = (target / position)^k, clamped to [lo, hi], eased in over `smooth` days, from the governor's
+       view of the good (77-sim-6-govern.js: its target, days of cover of its demand, and its whole supply line); a good the
+       town does not govern keeps 1;
+     - the PRICE LEVEL: the town's markup moves toward what makes its takings (the households' spending) meet its wage bill
+       and the full rations due, both smoothed over `smooth` days (a town restocks in lumps): x(1 + gain x (owed - took) / owed), at most `step` a day; the ration a dependant, a
+       day's keep, moves with it (the wages do not: a flat wage, the owner's call of 2026-11-03).
+     Prices are whole, at least 1. The households buy what they need whatever the price (no elasticity yet), so the goods'
+     economy runs as before; a dearer good makes its seller's takings larger, not the town hungrier */
+  function m2Day(k, D){ var C=m1(), Z=C.m2, s=k==='' ? null : k, E=econKey(s), R=C.rel[k]||(C.rel[k]={});
+    var V=E && E.govern && E.govern.view; if(V) Object.keys(V).forEach(function(g){ var v=V[g]; if(!(v && v.target>0)) return;
+      var r=Math.pow(v.target/Math.max(v.pos, 1e-6), Z.k), want=Math.max(Z.lo, Math.min(Z.hi, r)), cur=R[g]==null ? 1 : R[g]; R[g]=cur+(want-cur)/Math.max(1, Z.smooth); });
+    if(Z.level){ var A=(C.ema||(C.ema={}))[k]||(C.ema[k]={ owed:null, took:null }), o0=(D.wages||0)+(D.rationDue||0), t0=D.spent||0;   /* smoothed over `smooth` days: a town restocks in lumps */
+      A.owed=A.owed==null ? o0 : A.owed+(o0-A.owed)/Math.max(1, Z.smooth); A.took=A.took==null ? t0 : A.took+(t0-A.took)/Math.max(1, Z.smooth);
+      var owed=A.owed, took=A.took;
+      if(owed>0){ var f=1+Math.max(-Z.step, Math.min(Z.step, Z.gain*(owed-took)/owed)); C.markup[k]=Math.max(1, (C.markup[k]==null ? 1 : C.markup[k])*f);
+        if(C.rationOn && C.perKeep[k]!=null) C.ration[k]=Math.round(C.perKeep[k]*C.markup[k]); } }
+    SIM.moneyPrices(s);
+    var F=(E && E.meal && E.meal.foods) || [], P=C.price[k]||{}, c=C.cost[k]||{}, n=0, d=0; F.forEach(function(f){ if(P[f]!=null && c[f]>0){ n+=P[f]; d+=c[f]; } });
+    var H=C.history[k]; if(H && H.length){ H[H.length-1].cpi=d>0 ? n/d : null; H[H.length-1].markupAfter=C.markup[k]; H[H.length-1].rationAfter=C.ration[k]; } }
 
   SIM.moneyReport = function(s){ var M=SIM.MONEY; if(!M) return null; var out={ currencies:{}, towns:{} };
     Object.keys(M.cur).forEach(function(c){ var F=flows(c), sup=0, n=0; M.order.forEach(function(id){ var A=M.acc[id]; if(A.currency!==c || (s!==undefined && A.settlement!==s)) return; sup+=A.balance; n++; });

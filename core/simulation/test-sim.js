@@ -1081,13 +1081,13 @@ function world(seed){
 {const mk=(o)=>{o=o||{};const {S,clock}=world(251);S.activity({id:'WORK'});S.settlement({id:'kautoa',faction:'town'});
    const P=(id,kind,x,acts)=>S.place({id,kind,x,z:0,activities:acts,open:[0,24],settlement:'kautoa'});
    P('shed','warehouse',10,{});P('farm','field',60,{WORK:4});P('bake','bakehouse',80,{WORK:2});P('hA','house',100,{SLEEP:4,EAT:4});P('hB','house',120,{SLEEP:4,EAT:4});P('hC','house',140,{SLEEP:4,EAT:4});
-   S.economy({goods:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
+   S.economy(Object.assign({goods:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},o.govern?{govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:1}}:{}),{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
    S.recipe('farm',{out:['rice'],rate:2,cap:5000});S.recipe('bake',{out:['bread'],rate:4,cap:5000});S.R.place.shed.stock={rice:400,bread:200};
    S.items({kinds:{rice:{cat:'food',food:true},bread:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1});
    S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{WORK:{pin:'work'}}});S.role({id:'idler',org:'folk',sched:[[0,'SLEEP']]});
    const gs=[0,1,2].map(i=>S.actor({id:'gr'+i,role:'grower',home:'hA',work:i<2?'farm':'bake'}));S.actor({id:'gr3',role:'grower',home:'hB',work:'farm'});S.actor({id:'id0',role:'idler',home:'hC'});
    ['hA','hB','hC'].forEach(h=>{S.R.place[h].store={rice:4};S.R.place[h].people=h==='hA'?3:1;});
-   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration}});
+   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration},m2:o.m2||null});
    S.account({id:'treasury:kautoa',kind:'treasury',currency:'shell',settlement:'kautoa'});S.mint('treasury:kautoa',o.reserve==null?3000:o.reserve,'reserve');
    ['farm','bake'].forEach(w=>S.account({id:'wp:'+w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
    ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',60,'endowment');S.mint('hh:hB',30,'endowment');
@@ -1113,6 +1113,18 @@ function world(seed){
  ok('the ration keeps the household with no work ('+qr+' paid, ration '+QR.ration.kautoa+' a head; dole '+qd+'), and wages + rations = spending + saving ('+qw+' + '+qr+' = '+qs+' + '+qdh+')',
    qr>0&&qd<0.05*(qs+qd)&&qw+qr===qs+qdh,!(qr>0));
  ok('the treasury breaks even, near enough, on the earners\' markup ('+(qt1-qt)+' over four days on '+(qw+qr)+' paid out)',Math.abs(qt1-qt)<0.25*(qw+qr),false);
+ // M2 (moving prices): a governed good kept scarce gets dearer, one glutted cheaper, within the clamp, eased in; when the
+ // households save, the price level rises until the takings meet the wages and the rations, the ration a day's keep with it
+ const G2=mk({govern:true,calibrate:1,ration:true,m2:{k:0.5,lo:0.5,hi:2,smooth:3,level:false}});G2.run(1+1/1440);
+ const E2=G2.S.econ('kautoa');G2.S.R.place.shed.stock.rice=2;G2.S.R.place.shed.stock.bread=40000;G2.S.R.place.farm.stock={};G2.S.R.place.bake.stock={};G2.S.R.place.farm.cap=0;
+ G2.run(4);const rel=G2.S.MONEY.m1.rel.kautoa,PR=G2.S.MONEY.m1.price.kautoa,base=G2.S.MONEY.m1.cost.kautoa,mk2=G2.S.MONEY.m1.markup.kautoa;
+ ok('scarce rice dearer ('+rel.rice.toFixed(2)+'), glutted bread cheaper ('+rel.bread.toFixed(2)+'), within half to double, eased in',rel.rice>1.2&&rel.rice<=2&&rel.bread<0.85&&rel.bread>=0.5&&PR.rice===Math.max(1,Math.round(base.rice*mk2*rel.rice)),!(rel.rice>1));
+ const lv=(m2)=>{const T=mk({ration:true,calibrate:3,m2});T.run(3+1/1440);const t0=()=>T.S.acct('treasury:kautoa').balance+T.S.acct('wp:farm').balance+T.S.acct('wp:bake').balance;T.run(8);
+   const H=T.S.moneyM1().days.kautoa.slice(-5),owed=H.reduce((n,d)=>n+d.wages+d.rationDue,0),took=H.reduce((n,d)=>n+d.spent,0);return {T,owed,took,gap:(owed-took)/owed,mk:T.S.MONEY.m1.markup.kautoa,ra:T.S.MONEY.m1.ration.kautoa};};
+ const L2=lv({level:{gain:0.5,step:0.05},smooth:3}),L0=lv(null);
+ ok('the price level closes the gap between what the treasury owes and what it takes ('+Math.round(100*L0.gap)+'% short at fixed prices, '+Math.round(100*L2.gap)+'% with M2; markup '+L0.mk.toFixed(2)+' to '+L2.mk.toFixed(2)+', ration '+L0.ra+' to '+L2.ra+')',
+   Math.abs(L2.gap)<Math.abs(L0.gap)&&L2.mk>L0.mk&&L2.ra>L0.ra,Math.abs(L2.gap)>=Math.abs(L0.gap));
+ const L2L=L2.T.S.ledgerSnap();ok('the books still hold with prices moving',L2.T.S.ledger(L2L,L2L).ok,false);
  const N=mk({calibrate:false});N.run(1+1/1440);ok('without calibration it pays from the first day',(N.S.moneyReport().currencies.shell.paid.wage||0)>0,!((N.S.moneyReport().currencies.shell.paid.wage||0)>0));}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
