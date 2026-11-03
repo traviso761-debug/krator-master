@@ -110,3 +110,21 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       every side). Day and night are hours now (13:00 and 22:00). Draw calls at the default camera (verify.py --assert,
       GPU): 764 before, 762 after.
 
+
+## The final rebuild (pair 8, 2026-11-03; `PLAN-STATIONS.md`, "Core adoption")
+
+- [x] **`check_assembly`'s MISSING `BIO.impostorItem/Put/Set` and `BIO.leafOn/leafQ`** (the six borrowed kits' trees and the kit core called them; the page
+  did not list `34-core-impostor.js` or `31b-core-leafset.js`): both listed. The borrowed kits' far trees are now their octahedral impostors (`?imp=0` their
+  old blobs), baked after the bake (`89zz-host-core.js`, gain 2.2).
+- [x] **The vent film's glint read `cameraPosition`** (84): r128 uploads none to a Lambert ground, so the glint was lit from the origin. It reads `kEye()`
+  (core/shader's `KHOOK.EYE`, the eye from the view matrix), as the Throne's new stations do.
+- [x] **Cards on their geometry**: `check_cells.py --fix` on the nine crown clumps (`stems`), the liana (its `cell` and `base: top`), the bromeliad (its whole
+  plant, not a quarter of it) and the wrack (one seaweed of the nine). The one fault left is `bananaleaf`, by design: it has no material slot, and 52 cuts
+  its cell itself, turned upright.
+- [x] **Lianas and bromeliads floating** (the attach audit's `liana` and `epiphyte`, after the Throne's `pompom`): the dressing (60) hung each liana at a
+  random point of a crown's disc and seated each bromeliad at the trunk's foot radius at its height. The forest's near and mid trees now keep their
+  structure log (`BIO.tree`, 55: what `BIO.tube` and `BIO.beam` drew, this kit's or a borrowed one's), and both are put on the span nearest the old spot
+  (`BIO.snapSeg`), the liana set out on the bark, the bromeliad seated in it. The same draws, so nothing else moves. A tree whose kit draws no spans
+  (a lathed bole) keeps the old spot.
+- [x] **Numeric defaults with `||`** (the port lint, 11): eight were defaults and are `x == null ? d : x`; three stay, `Z.xv / (Z.sav || 1)` and its
+  kind, which guard a division, not a default.
