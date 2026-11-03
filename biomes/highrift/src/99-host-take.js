@@ -39,7 +39,7 @@ const HCHK={
  heat(P){const bad=P.filter(p=>(p[3]==='biome:hrbead'&&HEAT_AT(p[0],p[2])<18)||(p[3]==='biome:hrtuss'&&HEAT_AT(p[0],p[2])>22));return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':'bead caps on warm ground, tussock off it'};},
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6&&p[3]!=='biome:hrblade';});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
- water(){const w=window._water||{};const ok=SKEY==='cataract'?w.treads===4&&w.terraces===SITE.outlet.levels.length&&w.geyser:SKEY==='wedge'?!!w.tarnDraw:!!w.geyser;return{ok,detail:JSON.stringify(w).slice(0,200)};}};
+ water(){const w=window._water||{};const ok=SKEY==='wedge'?!!w.tarnDraw:SKEY==='cataract'?w.treads===4&&w.terraces===SITE.outlet.levels.length&&w.geyser:SKEY==='wedge'?!!w.tarnDraw:!!w.geyser;return{ok,detail:JSON.stringify(w).slice(0,200)};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the rift\'s own life placed',HCHK.placed(window._station));
  add('heat-banded plants on their ground (KTHERM)',HCHK.heat(P));
@@ -49,7 +49,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('no bead caps',HCHK.placed(Object.assign({},window._station,{beads:0})));
- add('tussock on a vent',HCHK.heat([[SITE.vents[0].x,0,SITE.vents[0].z,'biome:hrtuss']]));
+ if(SITE.vents.length)add('tussock on a vent',HCHK.heat([[SITE.vents[0].x,0,SITE.vents[0].z,'biome:hrtuss']]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
 KHOST.on(SKY.view,'view');

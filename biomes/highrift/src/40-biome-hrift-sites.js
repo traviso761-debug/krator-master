@@ -30,7 +30,8 @@ var HRIFT_SITES={
   base:4200,atm:.95,koppen:'ET',rain:220,temp:{mean:0,warm:13,cold:-13,low:-24},soil:-1,snow:[4150,4500],
   north:3010,south:3240,
   tors:[[-900,-120,260,55],[700,80,300,70],[1900,-60,220,45]],tarn:[200,420,46],hollows:[[-1500,300,250],[-200,-500,220],[1300,520,260],[-700,700,200],[200,420,170]],
-  cairns:[[-60,0,2.0],[1200,-30,1.6],[-1800,20,1.4]]},
+  cairns:[[-60,0,2.0],[1200,-30,1.6],[-1800,20,1.4]],
+  vents:[]},   /* the horst is cold: no vent on the crest */
  // ZONE 4: the South Fire-and-Ice Coulee at 3,240 m: old coulee lobes cut by Brant-Fell Gill's outburst channel (flowing west), vent 90 at the page's east
  coulee:{key:'coulee',name:'The Coulee: fire and ice',zone:4,px:[1452,1684],world:[2904000,3368000],sky:{px:1180,py:1354},
   base:3240,atm:1.07,koppen:'Dwc',rain:345,temp:{mean:9,warm:23,cold:-3,low:-15},soil:4,snow:[3300,3800],
