@@ -28,6 +28,13 @@ are the owner's (LORE.md); where this draft proposes, it says so.
    Pontus and open up more land for raids and migration; a Dasri leader could similarly try to take Verge or Mantis as
    capital of a new kingdom; abyss nomads might similarly try to take Verge or Locus. Fellgangs might try the same for
    Nulab. Odds of success will vary with faction strength."
+9. **A rising's build-up takes months.** At most **two risings in the world at a time.**
+10. **A destroyed city is resettled** by its neighbouring nations, "with much better success chance if by original owner.
+    Player could be sponsored to help rebuild, or claim the site for themselves, which will piss off original owner and
+    anyone who held it recently".
+11. **Growth:** "We may need to come up with a way to grow cities to absorb refugees and accommodate pop growth. I'm a
+    bit wary of this though because sudden pop shifts could have unpredictable cascade effects and I'm not sure I trust
+    procedural city expansion" (section 4).
 
 ## 1. The model (proposed)
 
@@ -75,8 +82,26 @@ ports grow over a season, and a port may be knocked out at the end of it.
 2. **The annual duel** (Dalab and the SW highland natives): its odds, and whether the player can be champion.
 3. **How long a standing crisis waits** before it eases back, and whether one ignored leaves a mark (a harsher governor,
    a grudge that lowers the next rim).
-4. ~~A raid zone's worst off-screen outcome~~ (answered, section 0 item 7). Still open: a **rising's rarity** (one a
-   region at a time? a cooldown of years?), how long its build-up lasts before it marches, and whether a destroyed city
-   is ever resettled (by its survivors, the victors, or the player).
+4. ~~A raid zone's worst off-screen outcome, a rising's rarity and build-up, resettlement~~ (answered, section 0 items 7
+   to 10). Still open: a rising's cooldown after it ends, and how long a ruin waits before a nation tries to resettle it.
 5. **Fronts' cycles:** Hook's period (a season? a year?), and whether the other fronts turn at all or only skirmish.
 6. **What the player's actions weigh:** a scale for the source tag (one assassination against a season of raids).
+
+## 4. Population and growth (proposed, for the owner's item 11)
+
+The aim: people can move and multiply without the city's plan changing under the player, and without a shift in one
+town cascading through the others.
+
+- **Refugees go to a camp first, not into the city.** A refugee camp is a core/camp camp pitched outside the town (tents,
+  cook fires, a ration line). The layout of the city does not change. The camp's people are a class of their own in the
+  town's happiness pool, fed by the town's relief (a cost to its treasury); they settle into the town as housing frees,
+  move on to the next town, or go home when it is resettled. A camp is temporary by nature, so a procedural one is safe.
+- **Flows are rate-limited and capped by housing.** At most a set share of a town's people may arrive or settle in a
+  month; a town's housing is its cap. What a town cannot take stays in the camp or moves on, and growth past the cap
+  leaves for the frontier (the dam basin's settlers). Births and deaths are slow. The damping is the cascade guard.
+- **A city grows by authored stages, not at run time.** Each city's plan (core/city) carries its growth ahead of time:
+  vacant lots inside, then an outer ring, then a new quarter, filled in a fixed order as its people pass each stage's
+  line. core/city may draw a stage's layout, but at authoring time, reviewed by the owner and committed as data, like any
+  other plan. A stage opens only while the town is unwatched (the abstract level), so the player comes back to find a new
+  quarter, never sees one appear.
+
