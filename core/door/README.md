@@ -37,7 +37,7 @@ const save = KDOOR.state(); KDOOR.load(save);   // deltas by id
 
 `KGLASS.material(THREE, 'clear')` is the shared pane; the kinds are `clear` (Iziz's glass), `lit` (a night window you still see
 through), `frosted`, `smoked` (the Ancients' tinted curtain walls), `stained` (`{color}`), and `room`, the dim card a pane on a
-solid body stands in front of (opaque: the room you would see). Every pane is transparent with depth writes off, so it sorts
+solid body stands in front of (opaque: the room you would see). `opt.emissive` gives a lit pane another glow (an electric lamp's). Every pane is transparent with depth writes off, so it sorts
 after the opaque scene. `KGLASS.SPEC` is the data the Godot side reads (a StandardMaterial3D with alpha transparency).
 
 ## The host
@@ -45,6 +45,7 @@ after the opaque scene. `KGLASS.SPEC` is the data the Godot side reads (a Standa
 ```js
 KDOORHOST.instanced(D, im, idx, q0, s);   // the leaf is instance idx of InstancedMesh im (or a function returning it)
 KDOORHOST.object(D, mesh);                // or its own mesh
+KDOORHOST.posed(D, (D, pose) => ...);     // or the page poses it itself (a leaf instanced from its hinge, a rolled mat)
 FRAME_HOOKS.push(dt => KDOORHOST.tick(dt));
 KHOST.take({ ..., keys: { e: () => KDOORHOST.toggleNear(camera.position, walking) } });
 const tip = KDOORHOST.tip(() => camera.position, () => walking); FRAME_HOOKS.push(tip);
@@ -60,4 +61,7 @@ first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s, or swit
 
 - Iziz (every target) and, through its page, Pylon and Talia; the Vernacular bundle (`vernacular.py bundle_files()`: Verge's and
   the isle demo's `IZV`) carries `10` and `20`. The Vernacular's `IZDOOR` is the drawing of these records.
+- The Yuni engine's worlds (2026-11-03): Yuni (`settlements/yuni`: its own leaves posed through `KDOORHOST.posed`, its walker,
+  `DOORS.reach` on core/walk), Locus and its two kit sheets, Mungo, and Verge's YKIT (the leaves drawn shut; Verge's KDOOR is the
+  Vernacular bundle's).
 - The other building kits come onto it in the doors-and-glass pass (TODO.md).
