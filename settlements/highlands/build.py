@@ -102,6 +102,11 @@ RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its 
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
 WALK_DIR = os.path.join(ROOT, 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
 TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR, WALK_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
+# core/door (KDOOR: the doors' records and walk blocks; KGLASS: the glass; KDOORHOST: posing a leaf, the frame tick, the E key)
+# and the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and
+# glass (kits/highlands/src/71c-hl-openings.js) draw through them; src/95-hl-doors.js finishes them once the world is built
+DOOR_FILES = dict(khl.OPENINGS)
+DOOR_FILES['90-core-door-host.js'] = os.path.join(ROOT, 'core', 'door', '90-core-door-host.js')
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -191,6 +196,7 @@ DETERMINISTIC = {
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js', '89-hl-trades.js'}   # core/host (no rnd()); the take; the sites into core/tags
+DETERMINISTIC |= set(DOOR_FILES) | {'71c-hl-openings.js', '95-hl-doors.js'}   # core/door, the openings (69e5, 71c), their finish: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -317,6 +323,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})   # core/door and the Vernacular's openings, read in place
     khost.resolve(src, CORE_HOST)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):

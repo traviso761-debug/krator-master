@@ -135,7 +135,7 @@ function xnCumba(x,y,z,ry,w,h,d,o){o=o||{};const wallC=o.c||xC(xPick(XPAL.wash))
 function xnJharokha(x,y,z,ry,w,h,c,o){o=o||{};c=c||xC(xPick(XPAL.stone));const d=o.d||.9,jc=o.jaliC||xC(XPAL.white);
  const bc=loc(x,z,0,d/2,ry);vB('vStone',bc[0],y-.16,bc[1],w+.2,.16,d+.1,ry,c);
  const nb=Math.max(2,Math.round(w/.8));for(let i=0;i<nb;i++){const u=-w/2+.2+(w-.4)*i/(nb-1);const p=loc(x,z,u,0,ry);xnBracket(p[0],y-.16,p[1],ry,d*.9,.8,.2,c,'xArmS');}
- vB('vDarkB',bc[0],y,bc[1],w-.1,h,d-.1,ry);
+ xnRoom(bc[0],y,bc[1],w-.1,h,d-.1,ry);   // the oriel's inside behind the jali
  for(const f of[[0,d,0,w],[-w/2,d/2,-Math.PI/2,d],[w/2,d/2,Math.PI/2,d]]){const p=loc(x,z,f[0],f[1],ry);kput('xJali',[p[0],y+h/2,p[1]],qEuler(0,ry+f[2],0),[f[3],h,1],jc);}
  for(const s of[-1,1]){const p=loc(x,z,s*(w/2),d,ry);vB('vStone',p[0],y,p[1],.14,h,.14,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vStone',q[0],y,q[1],.14,h,.14,ry,c);}
  vB('vStone',bc[0],y+h,bc[1],w+.2,.14,d+.1,ry,c);
@@ -147,14 +147,14 @@ function xnJharokha(x,y,z,ry,w,h,c,o){o=o||{};c=c||xC(xPick(XPAL.stone));const d
   vBall('xGold',dc[0],y+h+.44+R*.55+.08,dc[1],.1,xC(xPick(XPAL.gold)));}}
 
 // ---------------------------------------------------------------- the Persian note: arches, iwans, arcades, domes
-// an arch slab on a face: (x,z) ON the face, ry outward; w x h x dep; a dark plane inside the opening unless o.open
+// an arch slab on a face: (x,z) ON the face, ry outward; w x h x dep; the room's dim back inside the opening unless o.open
 function xnArch(item,x,y,z,ry,w,h,dep,c,o){o=o||{};const p=loc(x,z,0,dep/2-.02,ry);kput(item||'xArchW',[p[0],y,p[1]],qEuler(0,ry,0),[w,h,dep],c||null);
- if(!o.open){const q=loc(x,z,0,.06,ry);vB('vDarkB',q[0],y,q[1],w*.72,h*.88,.05,ry);}}
+ if(!o.open){const q=loc(x,z,0,.06,ry);xnRoom(q[0],y,q[1],w*.72,h*.88,.05,ry);}}
 // Iwan: a tall arched portal in a rectangular frame (pishtaq) proud of the wall, a mosaic band over the arch, a door
 // in the dark of the vault, corner turrets (guldasta) if o.guldasta. (x,z) ON the wall face, ry outward.
 function xnIwan(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u,v)=>loc(x,z,u,v,ry);const fr=P(0,d/2);
  vB('xWashB',fr[0],y,fr[1],w,h,d,ry,c);
- const aw=w*.78,ah=h*.86;const a=P(0,d+.02);vB('vDarkB',a[0],y,a[1],aw*.72,ah*.9,.04,ry);
+ const aw=w*.78,ah=h*.86;const a=P(0,d+.02);xnRoom(a[0],y,a[1],aw*.72,ah*.9,.04,ry);
  kput(o.mosaic===false?'xArchW':'xArchM',[a[0],y,a[1]],qEuler(0,ry,0),[aw,ah,.14],o.mosaic===false?c:null);
  const b=P(0,d+.05);xvFr(b[0],y+ah+.05,b[1],w-.4,Math.max(.5,(h-ah)*.55),.12,ry);
  for(const s of[-1,1]){const q=P(s*(w/2-.3),d+.05);xvFr(q[0],y+.3,q[1],.5,ah-.3,.1,ry);}

@@ -99,7 +99,7 @@ function buildXaPrison(G,o){reseed(32911+(o.v|0));const V=xV(o),W=26,H=16,rock=x
  // the cliff mass, the cut face, the ledge before it
  kput('xBatS92',[0,0,-12],null,[W+10,H+8,12],rock);vB('xRockB',0,0,-4,W,H,6,0,rock.clone().multiplyScalar(.9));for(const s of[-1,1])vB('xRockB',s*(W/2+4),0,-3,6,H+3,8,0,rock);vB('vStone',0,0,2,W+4,.6,8,0,stone.clone().multiplyScalar(.8));
  // the facade: rows of barred windows in dressed surrounds, a gate with a portcullis, a watch platform with a brazier
- for(let r=0;r<3;r++)for(let k=0;k<7;k++){const x=-W/2+2+k*(W-4)/6,y=2.2+r*4.2;if(r===0&&(k===3))continue;vB('vStone',x,y-.2,-1.05,1.4,1.6,.3,0,stone.clone().multiplyScalar(.9));vB('vDarkB',x,y,-.95,1.0,1.2,.1,0);
+ for(let r=0;r<3;r++)for(let k=0;k<7;k++){const x=-W/2+2+k*(W-4)/6,y=2.2+r*4.2;if(r===0&&(k===3))continue;vB('vStone',x,y-.2,-1.05,1.4,1.6,.3,0,stone.clone().multiplyScalar(.9));xnPane(x,y,-.88,1.0,1.2,.04,0,'glass');
   for(let b=0;b<4;b++)vPst('vPipe',x-.4+b*.27,y,-.9,.025,1.2,iron);}
  vB('vStone',0,0,-1.1,4.6,5.2,.4,0,stone);kput('xArcDark',[0,.6,-.85],null,[3,3.8,.2]);for(let b=0;b<7;b++)vPst('vPipe',-1.3+b*.43,.6,-.8,.04,3.4,iron);for(let b=0;b<4;b++)vB('vIron',0,1.2+b*.8,-.8,3,.06,.06,0,iron);
  vB('vStone',0,H-.6,-1.5,W-2,.6,4,0,stone);xnCrenel(0,H,-1.5,W-2,4,0,1.0,stone,{item:'vStone'});for(const s of[-1,1]){vPst('xDrumS',s*(W/2-1.8),H-.6,-1.5,.6,.9,iron);if(lit)vBall('vBulb',s*(W/2-1.8),H+.5,-1.5,.2);}

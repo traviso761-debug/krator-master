@@ -12,7 +12,7 @@ function xnXOFrame(x,y,z,ry,w,h,cols,lit){const P=(u,v,d)=>loc(x,z,u,v+(d||0),ry
  for(const [ww,hh,c,d] of steps){const p=P(0,d);const t=.3;const cc=xC(c);
   vB('xPaint',p[0],y+hh-t,p[1],ww,t,.1,ry,cc);vB('xPaint',p[0],y,p[1],ww,t,.1,ry,cc);for(const s of[-1,1]){const q=P(s*(ww/2-t/2),d);vB('xPaint',q[0],y,q[1],t,hh,.1,ry,cc);}
   for(const s of[-1,1]){const q=P(s*(ww/2-.5),d);vB('xPaint',q[0],y+hh-.6,q[1],.5,.3,.1,ry,cc);vB('xPaint',q[0],y+.3,q[1],.5,.3,.1,ry,cc);}}   // the mitre steps at the corners
- const g=P(0,.04);vB(lit?'vWinLit':'vWinGlass',g[0],y+.35,g[1],w-1.5,h-1.5,.08,ry);const gw=w-1.5,gh=h-1.5;
+ const g=P(0,.04);xnPane(g[0],y+.35,g[1],w-1.5,h-1.5,.08,ry,lit?'lit':'glass');const gw=w-1.5,gh=h-1.5;
  for(let k=1;k<Math.round(gw/1.2);k++){const q=P(-gw/2+k*gw/Math.round(gw/1.2),.09);vB('xPaint',q[0],y+.35,q[1],.06,gh,.04,ry,xC(XAN.black));}
  for(let k=1;k<Math.round(gh/1.4);k++){const q=P(0,.09);vB('xPaint',q[0],y+.35+k*gh/Math.round(gh/1.4),q[1],gw,.06,.04,ry,xC(XAN.black));}}
 // a lozenge motif: a diamond of paint in two colours, with a smaller diamond inside
@@ -33,7 +33,7 @@ function buildXaAndeanPoor(G,o){reseed(32601+(o.v|0));const V=xV(o),W=8,D=7,H1=3
  vnReg('Palopó shop-house (poor)',0,0,5,H1+H2+3);
  vB('vStone',0,0,0,W+.3,.5,D+.3,0,xC(xPick(XPAL.stone)));vB('vPlaster',0,.5,0,W,H1,D,0,base);vB('vPlaster',0,.5+H1,0,W+(V===2?1.4:0),H2,D,0,base);
  // the shop: a roll-front and a door, goods stacked, a sign board
- vB('vDarkB',-1.4,.5,D/2+.05,3.2,2.4,.1,0);vB('xPaint',-1.4,.5,D/2+.1,3.2,.3,.06,0,trim);for(let k=0;k<5;k++)vB('xPaint',-1.4,.9+k*.45,D/2+.09,3.2,.06,.04,0,xC(0x1a3a80));
+ xnPane(-1.4,.5,D/2+.05,3.2,2.4,.1,0,'glass');vB('xPaint',-1.4,.5,D/2+.1,3.2,.3,.06,0,trim);for(let k=0;k<5;k++)vB('xPaint',-1.4,.9+k*.45,D/2+.09,3.2,.06,.04,0,xC(0x1a3a80));
  vnDoor(2.4,.5,D/2,0,1.0,2.2,'xPaint',trim,xC(0x5a3a1a),false);vB('xPaint',0,.5+H1-.5,D/2+.08,W-.6,.6,.06,0,xC(XAN.cream));vB('xPaint',0,.5+H1-.4,D/2+.12,W-1.4,.4,.04,0,trim);
  // the bands of lozenges: under each floor's cornice and along the balcony
  xnXOZigzag(0,.5+H1-1.0,D/2,0,W-1,.5,z1,z2);xnXOZigzag(0,.5+H1+H2-.9,D/2,0,W-1,.5,z1,z2);for(const s of[-1,1])xnXOZigzag(s*W/2,.5+H1+H2-.9,0,s*Math.PI/2,D-1,.5,z1,z2);
@@ -59,7 +59,7 @@ function buildXaAndeanMid(G,o){reseed(32621+(o.v|0));const V=xV(o),W=12,D=10,NS=
  for(let k=0;k<NS;k++){const y=.4+k*SH;vB('vPlaster',0,y,0,W,SH,D,0,wall);
   // the cornice: a chevron band in the second colour, stepped out
   vB('xPaint',0,y+SH-.35,0,W+.4,.35,D+.4,0,xC(f[0]));xnXOZigzag(0,y+SH-.85,D/2,0,W-1.5,.45,f[1],f[2]);
-  if(k===0){xnXOFrame(-3.0,y+.3,D/2,0,4.4,SH-.7,[f[0],f[1],f[2]],false);vB('vDarkB',-3.0,y+.6,D/2+.06,3,2.2,.08,0);   // the shop front, its glass dark
+  if(k===0){xnXOFrame(-3.0,y+.3,D/2,0,4.4,SH-.7,[f[0],f[1],f[2]],false);xnPane(-3.0,y+.6,D/2+.06,3,2.2,.08,0,'glass');   // the shop front, glass over the shop
    xnXOFrame(2.8,y+.3,D/2,0,3.6,SH-.7,[f[1],f[2],f[0]],false);vnDoor(2.8,y+.4,D/2+.12,0,1.2,2.4,'xPaint',xC(f[2]),xC(0x2a1a10),false);}
   else{for(const u of[-3.2,3.2])xnXOFrame(u,y+.2,D/2,0,4.6,SH-.5,k%2?[f[0],f[1],f[2]]:[f[2],f[0],f[1]],lit);xnXOLozenge(0,y+SH/2,D/2,0,1.4,f[1],f[2]);
    for(const s of[-1,1]){xnXOFrame(s*W/2,y+.2,-1.5,s*Math.PI/2,3.4,SH-.5,[f[1],f[0],f[2]],lit);xnXOChakana(s*W/2,y+SH/2,2.6,s*Math.PI/2,1.3,f[2]);}}}
@@ -81,11 +81,11 @@ function buildXaAndeanRich(G,o){reseed(32641+(o.v|0));const V=xV(o),W=16,D=13,NS
  const YT=.6+NS*SH;vB('vPlaster',0,.6,0,W,NS*SH,D,0,wall);
  // the ground: a grand entry in a three-colour stepped portal, shopfronts either side
  xnXOFrame(0,.8,D/2,0,5.6,SH*1.6,[f[0],f[1],f[2]],false);vnDoor(0,.9,D/2+.12,0,2.0,3.0,'xPaint',xC(f[2]),xC(0x2a1a10),false);kput('xArcP',[0,3.9,D/2+.14],null,[2.6,1.2,.16],gold);
- for(const s of[-1,1]){xnXOFrame(s*5.2,.9,D/2,0,3.8,SH-.6,[f[1],f[2],f[0]],false);vB('vDarkB',s*5.2,1.2,D/2+.06,2.2,2.0,.08,0);}
+ for(const s of[-1,1]){xnXOFrame(s*5.2,.9,D/2,0,3.8,SH-.6,[f[1],f[2],f[0]],false);xnPane(s*5.2,1.2,D/2+.06,2.2,2.0,.08,0,'glass');}
  // the storeys above: cornices, two great three-storey frames on the front, the ballroom band of roundels, gold lozenges
  for(let k=1;k<NS;k++){const y=.6+k*SH;vB('xPaint',0,y-.3,0,W+.5,.3,D+.5,0,xC(f[0]));if(k%2)xnXOZigzag(0,y-.75,D/2,0,W-2,.45,f[1],f[2]);}
  for(const s of[-1,1])xnXOFrame(s*4.6,.6+SH+.3,D/2,0,5.4,SH*2.4,[f[0],f[1],f[2]],lit);
- {const yb=.6+SH*3.5;for(const u of[-4.6,0,4.6]){kput('xDisc',[u,yb+.6,D/2+.08],qEuler(Math.PI/2,0,0),[1.0,.06,1.0],xC(f[2]));vB(lit?'vWinLit':'vWinGlass',u,yb,D/2+.04,1.4,1.4,.08,0);}   // the ballroom's round windows
+ {const yb=.6+SH*3.5;for(const u of[-4.6,0,4.6]){kput('xDisc',[u,yb+.6,D/2+.08],qEuler(Math.PI/2,0,0),[1.0,.06,1.0],xC(f[2]));xnPane(u,yb,D/2+.04,1.4,1.4,.08,0,lit?'lit':'glass');}   // the ballroom's round windows
   xnXOZigzag(0,yb-.5,D/2,0,W-2,.5,f[1],XAN.cream);}
  for(const s of[-1,1])xnXOFrame(s*4.6,.6+SH*4+.2,D/2,0,5.4,SH*(NS-4)-.5,[f[2],f[0],f[1]],lit);
  for(let k=1;k<NS;k++)for(const s of[-1,1]){const y=.6+k*SH;xnXOFrame(s*W/2,y+.3,-2.5,s*Math.PI/2,4.0,SH-.7,[f[1],f[0],f[2]],lit);xnXOLozenge(s*W/2,y+SH/2,3,s*Math.PI/2,1.2,pal[3],XAN.cream);}

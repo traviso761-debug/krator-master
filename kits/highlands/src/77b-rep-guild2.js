@@ -61,7 +61,7 @@ function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,
  // the observatory: a stone drum, a copper dome with its shutter slit open, a brass telescope through it
  const OX=HX-W/2-3.6;kput('hOctS',[OX,0,HZ],qEuler(0,Math.PI/8,0),[4.2,7,4.2],ash);vB('vStone',OX,7,HZ,8.2,.3,8.2,0,ash);
  kput('vDomeC',[OX,7.2,HZ],null,[3.8,3.6,3.8],cu);
- const sl=loc(OX,HZ,0,0,0);kput('vDarkB',[sl[0],9.4,sl[1]+2.4],qEuler(-.72,0,0),[1.1,3.2,.3]);                                        // the open slit (toward +z, climbing the dome)
+ const sl=loc(OX,HZ,0,0,0);hnRoomQ([sl[0],9.4,sl[1]+2.4],qEuler(-.72,0,0),[1.1,3.2,.3]);                                        // the open slit (toward +z, climbing the dome)
  kput('vPipeC',[OX,9.6,HZ+.8],qEuler(-.95,0,0),[.34,4.2,.34],hC(0xb8903a));kput('vPipeC',[OX,9.6,HZ+.8],qEuler(-.95,0,0),[.42,.6,.42],hC(0x7a5a2a));   // telescope + collar
  for(let k=0;k<8;k++){const a=k*Math.PI/4;if(k===0)continue;const p=loc(OX,HZ,0,3.9,a);vnWin(p[0],2.4,p[1],a,.6,1.4,lit,'vStone',ash);}
  vnDoor(OX,0,HZ+3.95,0,1.1,2.2,'vStone',ash,tar);
@@ -121,7 +121,7 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
   for(const s of[-1,1]){for(let i=0;i<=7;i++){const x=HX-L/2+.3+(L-.6)*i/7;kput('hCol',[x,.3,DZ+s*(hw-.25)],null,[.15,eave-.65,.15],hC(vPick(HFRAME.postPoor)));}
    vB('hPlankB',HX,.3,DZ+s*(hw-.45),L-.4,eave-.8,.12,0,plank);vnPatch(HX+rr(-6,6),.6,DZ+s*(hw-.35),s>0?0:Math.PI,5,1.6,5);}
   for(const e of[-1,1]){const x=HX+e*(L/2-.1);for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.15;vB('hPlankB',x,.3,DZ+u,.14,h,.82,0,plank);}}
-  vB('vDarkB',HX+L/2+.05,.3,DZ,.08,4,5,0);}
+  hnDoorway(HX+L/2+.01,.3,DZ,Math.PI/2,5,4,{c:plank});}
  // ---- the sorting yard: fence, the tank gate, heaps, the gantry, the stores, the furnace, the weighbridge
  const YX0=-4,YX1=34,YZ0=-23,YZ1=21,GX=16,IT=[['vPlateW','vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vTankR','vPipeR'],['vPlateW','vSheet'],['vPlate','vPipeR']];
  const segs=[[[YX0+8,YZ0],[YX1,YZ0]],[[YX1,YZ0],[YX1,YZ1]],[[YX0+8,YZ1],[GX-3.6,YZ1]],[[GX+3.6,YZ1],[YX1,YZ1]],[[YX0+8,YZ0],[YX0+8,-12]]];

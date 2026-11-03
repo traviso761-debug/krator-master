@@ -19,7 +19,7 @@ function hnRAEyeGeo(){const s=new THREE.Shape();const N=14;s.moveTo(-.5,0);for(l
  return new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false}).translate(0,0,-.5);}
 const HRA_ARCH=hnRAArchGeo(1.2,.7,.66);
 kdef('hRAArchS',HRA_ARCH,MAT.stone);kdef('hRAArchP',HRA_ARCH,MAT.plaster);kdef('hRAArchW',HRA_ARCH,MAT.wood);
-kdef('hRAEye',hnRAEyeGeo(),MAT.scale);kdef('hRAVoid',VBALL,MAT.void);
+kdef('hRAEye',hnRAEyeGeo(),MAT.scale);kdef('hRAVoid',VBALL,MAT.izRoom);kdef('hRAGlass',VBALL,MAT.izGlass);   // the eyelid's pane: the room's back and its glass (71c)
 kdef('hRAKeelL',HKEEL,MAT.logs);kdef('hRAKeelPt',HKEEL,MAT.paint);   // keel boards in log and in paint
 
 // A gable roof laid by hnGable(x0,Y,z0,len,span,p,ry,…): a point on one slope. side ±1 (the +z / −z slope of the
@@ -33,7 +33,7 @@ function hnRARoofPatch(item,x0,Y,z0,ry,span,p,side,u,t,w,L,c){const S=hnRASlope(
 // Eyelid dormer on a slope: front face at t from the ridge, width w, height h.
 function hnRAEyelid(x0,Y,z0,ry,span,p,side,u,t,w,h,c){const a=Math.atan(p),ry2=ry+(side<0?Math.PI:0),L=h/p+.6;
  const ys=Y+p*(span/2-t)+.24/Math.cos(a)-.06;const P=loc(x0,z0,u,side*(t-L/2),ry);kput('hRAEye',[P[0],ys,P[1]],qEuler(0,ry2,0),[w,h,L],c||null);
- const F=loc(x0,z0,u,side*(t+.005),ry);kput('hRAVoid',[F[0],ys+h*.34,F[1]],qEuler(0,ry2,0),[w*.2,h*.13,.02]);}
+ const F=loc(x0,z0,u,side*(t+.005),ry);kput('hRAVoid',[F[0],ys+h*.34,F[1]],qEuler(0,ry2,0),[w*.2,h*.13,.02]);kput('hRAGlass',[F[0],ys+h*.34,F[1]],qEuler(0,ry2,0),[w*.2+.02,h*.13+.02,.05]);}
 // Gabled dormer on a slope: a rendered box with a window, its own little gable (ridge running up the roof).
 function hnRADormer(x0,Y,z0,ry,span,p,side,u,t,w,h,wallC,roofC,trimC,kind){const ry2=ry+(side<0?Math.PI:0);const ys=Y+p*(span/2-t);const L=(h+.3)/p+.5;
  const P=loc(x0,z0,u,side*(t-L/2),ry);vB('vPlaster',P[0],ys-.3,P[1],w,h+.3,L,ry2,wallC);
@@ -101,8 +101,8 @@ function buildHlRepMidA(G,o){reseed(20201+(o.v|0));const W=8,D=11,S=.7,H1=3.3,H2
  hnSocle(0,0,0,W,S,D,0);
  hnStucco(0,S,0,W,H1,D,0,wall,hC(vPick(HPAL.ashlar)));
  // the carriage gate: a tall arched opening with a boarded leaf, stone surround
- kput('winSmD',[1.6,S+1.35,D/2+.02],null,[1.9/1.1,2.7/2,.25]);vB('vStone',1.6,S,D/2+.05,2.4,.2,.25,0,hC(vPick(HPAL.ashlar)));
- kput('vWood',[1.6,S+1.1,D/2+.06],null,[1.7,2.2,.06],hC(vPick(HPAL.tar)));
+ kput('hArchRoom',[1.6,S+1.35,D/2+.02],null,[1.9/1.1,2.7/2,.25]);kput('hArchGlass',[1.6,S+1.35,D/2+.02],null,[1.9/1.1+.02,2.7/2+.01,.3]);   // the arch's fanlight over the leafvB('vStone',1.6,S,D/2+.05,2.4,.2,.25,0,hC(vPick(HPAL.ashlar)));
+ IZDOOR.leaf(1.6,S,D/2+.06,0,1.7,2.2,.06,hC(vPick(HPAL.tar)),{locked:true});   // the gate's leaf (core/door)
  for(const u of[-2.3,-.6]){vnWin(u,S+1.1,D/2,0,.8,1.3,'glass','vStone',hC(vPick(HPAL.ashlar)),true);}
  hnForm('hFormA',1.6,S+2.75,D/2+.02,0,1.8,.9);                                                   // the painted crest over the gate
  for(const z of[-3,0,3])vnWin(W/2,S+1.1,z,Math.PI/2,.8,1.3,'glass','vStone',hC(vPick(HPAL.ashlar)),false);
@@ -295,7 +295,7 @@ function buildHlRepRichC(G,o){reseed(20321+(o.v|0));const W=16,D=12,H1=3.9,H2=3.
  // ground storey: dressed stone, a plinth, the carriage gate and barred windows
  vB('vStone',0,0,0,W,H1,D,0,ash);vB('hRubB',0,0,0,W+.24,.7,D+.24,0,hC(vPick(HPAL.rubble)));
  const gx=W/2-3.4;kput('hRAArchS',[gx,0,D/2+.15],null,[4.2,H1-.1,.34],ash.clone().multiplyScalar(.93));
- vB('vWood',gx,0,D/2+.07,2.9,3.35,.1,0,tar);vB('vDarkB',gx+.6,0,D/2+.12,.8,1.9,.04,0);
+ vB('vWood',gx,0,D/2+.07,2.9,3.35,.1,0,tar);hnDoorway(gx+.6,0,D/2+.1,0,.8,1.9,{t:.04,out:0,c:tar.clone().multiplyScalar(.75)});   // the wicket in the gate
  for(let k=0;k<5;k++)vB('vIron',gx,.5+k*.65,D/2+.13,2.8,.06,.03,0,hC(0x2e2a26));
  hnForm('hFormA',gx,H1-.82,D/2+.3,0,1.5,.75);
  for(const u of[-6,-3.6,-1.2]){vnWin(u,1.3,D/2,0,.9,1.5,lit,'vStone',ash);for(let k=0;k<4;k++)vB('vIron',u-.33+k*.22,1.3,D/2+.12,.04,1.5,.04,0,hC(0x2e2a26));}

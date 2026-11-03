@@ -15,8 +15,10 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 # shared by the three sets: textures, materials, motifs, helpers, carving, the timber frame, the dress, the trades
-# table, the furniture glue (catalog pieces placed through FURNISH) and the clocks' and orreries' animation
-FOUNDATION = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',
+# table, the furniture glue (catalog pieces placed through FURNISH) and the clocks' and orreries' animation. 71c-hl-openings.js
+# (the real doors and glass) draws through the Vernacular's openings, 69e5-iziz-openings.js, and core/door's 10 and 20
+# (KDOOR, KGLASS), which a build takes with it (OPENINGS below)
+FOUNDATION = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '71c-hl-openings.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',
               '88-hl-dress.js', '89-hl-trades.js', '89y-hl-furnish.js', '94-hl-anim.js']
 SETS = {
     'republican': ['74-rep-dwell.js', '75-rep-trade.js', '76-rep-civic.js', '76c-rep-capital.js', '77-rep-guild.js',
@@ -26,6 +28,14 @@ SETS = {
     'tribal': ['84-tri-dwell.js', '85-tri-village.js', '85b-tri-salvage.js'],
 }
 FILES = sorted(FOUNDATION + [f for s in SETS.values() for f in s])
+
+
+# what 71c-hl-openings.js draws through, read in place: the Vernacular's openings (IZDOOR, vnOpening, the vDoorLeaf and
+# vWinClear items) and core/door's records and glass, by the names a build orders them under
+_ROOT = os.path.dirname(os.path.dirname(HERE))
+OPENINGS = {'10-core-door.js': os.path.join(_ROOT, 'core', 'door', '10-core-door.js'),
+            '20-core-glass.js': os.path.join(_ROOT, 'core', 'door', '20-core-glass.js'),
+            '69e5-iziz-openings.js': os.path.join(_ROOT, 'kits', 'iziz-vernacular', 'src', '69e5-iziz-openings.js')}
 
 
 def path(f):

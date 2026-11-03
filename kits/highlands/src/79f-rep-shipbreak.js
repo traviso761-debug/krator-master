@@ -22,16 +22,16 @@ function hlShipBreak(G,o,V){   // the shared body; the two builders below seed i
  // the plated fore hull and its nose
  {const L=XC-X0,c=A((X0+XC)/2);kput('hShipC',c,QH,[R,L,R],hull);kput('hShipNose',A(X0),QH,[R,NL,R],hull);
   for(let k=0;k<=Math.round(L/4);k++)kput('vHoop',A(X0+k*L/Math.round(L/4)),QR,[R+.05,R+.05,1.6],hC(0x6a6258));
-  for(let k=0;k<Math.floor(L/3);k++){const u=X0+2+k*3,th=1.25;kput('vDarkB',A(u,R*Math.cos(th),R*Math.sin(th)+.05),qEuler(0,0,p).multiply(qEuler(-(Math.PI/2-th),0,0)),[1.4,.5,.12],null);}
+  for(let k=0;k<Math.floor(L/3);k++){const u=X0+2+k*3,th=1.25;hnRoomQ(A(u,R*Math.cos(th),R*Math.sin(th)+.05),qEuler(0,0,p).multiply(qEuler(-(Math.PI/2-th),0,0)),[1.4,.5,.12]);}
   // plates already lifted off the top of the fore hull: dark gaps
-  for(let k=0;k<(V?2:4);k++){const u=XC-3-k*3.4;kput('vDarkB',A(u,R+.02,rr(-1.5,1.5)),qEuler(0,0,p),[2.6,.08,rr(2,3.4)],null);}
+  for(let k=0;k<(V?2:4);k++){const u=XC-3-k*3.4;hnRoomQ(A(u,R+.02,rr(-1.5,1.5)),qEuler(0,0,p),[2.6,.08,rr(2,3.4)]);}
   // the cut face at XC is hidden by the ribs; a dark disc inside the stripped section reads as the fore bulkhead's openings
   kput('hShipCap',A(XC+.3),qEuler(0,0,p).multiply(qEuler(0,Math.PI/2,0)),[R-.2,R-.2,1],null);}
  // midships stripped to the frame: rib rings, keel and stringers, the decks showing, a few plates still on
  {const L=XS-XC,n=Math.round(L/2.2);for(let k=0;k<=n;k++)kput('vHoop',A(XC+k*L/n),QR,[R,R,2.4],rust);
   for(let k=0;k<10;k++){const th=k/10*TAU;if(th>Math.PI*.8&&th<Math.PI*1.2)continue;const dy=R*Math.cos(th),dz=R*Math.sin(th);beam('vIron',A(XC,dy,dz),A(XS,dy,dz),.22,.22,rust);}
   for(const dy of[-R*.45,R*.15]){const w=2*Math.sqrt(R*R-dy*dy)-.4;kput('hShipB',A((XC+XS)/2,dy,0),qEuler(0,0,p),[L-.4,.3,w],hull.clone().multiplyScalar(.8));
-   for(let k=0;k<3;k++)kput('vDarkB',A(XC+1+k*L/3,dy+1.2,rr(-w/3,w/3)),qEuler(0,0,p),[1.6,2,1.6],null);}
+   for(let k=0;k<3;k++)hnRoomQ(A(XC+1+k*L/3,dy+1.2,rr(-w/3,w/3)),qEuler(0,0,p),[1.6,2,1.6]);}
   for(let k=0;k<(V?2:4);k++){const u=XC+1.5+k*L/4,th=rr(-1,1);kput('hHullSeg',A(u,0,0),qEuler(0,0,p+Math.PI/2).multiply(qEuler(0,th,0)),[R+.08,1.9,R+.08],hull);}
   kput('hShipCap',A(XS-.2),qEuler(0,0,p).multiply(qEuler(0,-Math.PI/2,0)),[R-.3,R-.3,1],null);}
  // the gantry straddling the cut, lifting a plate away

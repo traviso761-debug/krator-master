@@ -91,7 +91,7 @@ function buildHlRepFarmhouse(G,o){reseed(21511+(o.v|0));const ZS=15;
  // ---- the barn across the back
  {const BZ=-11,BW=30,BD=10,H=4.6;hnSocle(0,0,BZ,BW,.5,BD,0,rub,ash);hnLogBox(0,.5,BZ,BW,H,BD,0,aged,.3);
   hnGable(0,.5+H,BZ,BW,BD,1.1,0,'vShingleB',sh,.7,'hGableLog',aged);hnBarge(0,.5+H,BZ,BW,BD,5.5,0,.7,aged,'lace');
-  for(const s of[-1,1])kput('vWood',[s*2.4,2.3,BZ+BD/2+1.2],qEuler(0,-s*1.1,0),[2.3,3.6,.12],aged);vB('vDarkB',0,.5,BZ+BD/2+.02,4.6,3.6,.06,0);vB('vWood',0,4.15,BZ+BD/2+.06,5.2,.24,.14,0,aged);
+  for(const s of[-1,1])kput('vWood',[s*2.4,2.3,BZ+BD/2+1.2],qEuler(0,-s*1.1,0),[2.3,3.6,.12],aged);hnRoom(0,.5,BZ+BD/2+.02,4.6,3.6,.06,0);vB('vWood',0,4.15,BZ+BD/2+.06,5.2,.24,.14,0,aged);
   vnWin(-9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);vnWin(9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);
   rng();FURNISH('hl_tri_haycock',0,0,BZ+BD/2+2.1,.1,{v:1});}   // hay before the barn doors
  // ---- stables and byre down the east side, half-timber over stone, shed roof to the yard
@@ -148,7 +148,7 @@ function buildHlRepPens(G,o){reseed(21531+(o.v|0));
   vnShedRoof(sx,2.6,sz,13.4,4.8,1.1,0,'vShingleB',sh,.4);
   rng();FURNISH('hl_rep_hay_rack',sx,0,sz-1.85,0,{v:0});}   // the hay rack along the back wall
  // the pigsty: a low rubble hut with a shed roof, a mud wallow
- {const px=12,pz=-8.5;vB('hRubB',px,0,pz,6.5,1.7,3.6,0,rub);vB('vDarkB',px-1.5,0,pz+1.82,.9,1.0,.04,0);vnShedRoof(px,1.7,pz,6.9,3.8,.6,0,'vShingleB',sh,.3);
+ {const px=12,pz=-8.5;vB('hRubB',px,0,pz,6.5,1.7,3.6,0,rub);hnRoom(px-1.5,0,pz+1.82,.9,1.0,.04,0);vnShedRoof(px,1.7,pz,6.9,3.8,.6,0,'vShingleB',sh,.3);
   vB('hPaint',11.5,0,-2.8,6,.06,4.6,0,mud);}
  // troughs, a water butt, feed sacks
  hnRCTrough(-7,1,0,3,aged);hnRCTrough(3,-4,Math.PI/2,2.4,aged);hnRCTrough(11,-5,0,2.4,aged);hnWaterButt(-2.2,0,-9.5,.45,1);hnSacks(-12,0,9,3);
@@ -222,7 +222,7 @@ function buildHlRepMine(G,o){reseed(21561+(o.v|0));
  for(let i=0;i<10;i++)kput('hRCBoulder',[-22+i*4.8+rr(-1,1),7+rr(0,1.8),-15+rr(-2.5,1.5)],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[rr(4.5,7),rr(2.2,3.4),rr(4,6)],rockC.clone().multiplyScalar(rr(.85,1.05)));
  for(const s of[-1,1])kput('hRCBoulder',[s*23.5,3,-11.5],qEuler(rng(),rng(),0),[3.5,4.5,4],rockC);
  // the adit: dark gallery into the rock, rubble wing walls, a timber portal with a crest board and a little roof
- {const ax=-8,az=-7;vB('vDarkB',ax,0,az-4,2.6,2.9,8,0);for(const s of[-1,1])vB('hRubB',ax+s*2.4,0,az-3,1.8,3.8,6,0,rub);vB('hRubB',ax,3.3,az-3.6,6.6,1.6,5,0,rub);
+ {const ax=-8,az=-7;hnRoom(ax,0,az-4,2.6,2.9,8,0);for(const s of[-1,1])vB('hRubB',ax+s*2.4,0,az-3,1.8,3.8,6,0,rub);vB('hRubB',ax,3.3,az-3.6,6.6,1.6,5,0,rub);
   for(const s of[-1,1])vPst('vPostB',ax+s*1.3,0,az,.2,3.1,tar);vB('vWood',ax,3.0,az,3.4,.34,.4,0,tar);vB('vWood',ax,3.34,az+.05,4.2,1.2,.14,0,aged);
   hnForm('hFormT',ax,3.4,az+.12,0,2.2,1.05);vnGableRoof(ax,4.6,az-.3,4.6,1.4,.6,0,'vShingleB',sh,.25);
   }

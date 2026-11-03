@@ -36,7 +36,7 @@ kdef('hShipBand',new THREE.CylinderGeometry(1,1,1,40,1,true),MAT.hMazeBand);
 kdef('hShipNose',new THREE.LatheGeometry([[1,0],[.97,.18],[.9,.36],[.78,.54],[.6,.7],[.38,.85],[.16,.96],[0,1]].map(p=>new THREE.Vector2(p[0],p[1])),40),MAT.hShip);
 kdef('hShipBell',new THREE.CylinderGeometry(.42,1,1,24,1,true),MAT.rust);                               // engine bell: narrow at +y
 kdef('hShipDisc',new THREE.CylinderGeometry(1,1,1,40).translate(0,.5,0),MAT.hShip);                    // thrust plate, base at y=0
-kdef('hShipCap',new THREE.CircleGeometry(1,40),MAT.void);                                              // the dark inside of a broken end
+kdef('hShipCap',new THREE.CircleGeometry(1,40),MAT.izRoom);                                              // the dark inside of a broken end
 function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
  const ash=hC(vPick(HPAL.ashlar)),log=hC(vPick(HPAL.aged)),corr=hC(vPick(HSV.corr)),sh=hC(vPick(HPAL.shingle)),sand=hC(0x9a8260),rust=hC(vPick(HSV.rust)),iron=hC(0x3a3430),lit=vLit()?'lit':'glass';
  const hull=hC(0xb4b0a6),dark=hC(0x2a2624),bell=hC(0x4a4440);
@@ -50,11 +50,11 @@ function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
   for(let k=0;k<=6;k++){const u=-P.L/2+.4+(P.L-.8)*k/6;kput('vHoop',ax(P,u,P.yc,0),qEuler(0,P.yaw+Math.PI/2,0),[R+.05,R+.05,1.6],hC(0x6a6258));}   // frame rings
   // the ship's own ports: rows of dark slots on the front flank at two deck levels
   for(const th of[1.2,1.7])for(let k=0;k<9;k++){const u=-P.L/2+3+k*(P.L-6)/8,y=P.yc+R*Math.cos(th),z=R*Math.sin(th)+.05;
-   const p=ax(P,u,y,z);kput('vDarkB',p,qEuler(0,P.yaw,0).multiply(qEuler(-(Math.PI/2-th),0,0)),[1.6,.55,.12],null);}}
+   const p=ax(P,u,y,z);hnPlateQ(p,qEuler(0,P.yaw,0).multiply(qEuler(-(Math.PI/2-th),0,0)),[1.6,.55,.12]);}}
  // what stands on the hull: a dorsal superstructure with a strip of ports on the aft half, antennae and a dish; long
  // tanks slung low along both flanks of each half on struts, half in the earth
  {const u0=-4,sp=ax(B,u0,B.yc+R-.6,0);kput('hShipB',[sp[0],sp[1]+1.6,sp[2]],qEuler(0,B.yaw,0),[20,3.2,5.5],hull);kput('hShipB',ax(B,u0-3,B.yc+R+3.6,0),qEuler(0,B.yaw,0),[10,2,4],hull);
-  for(const oz of[2.78,-2.78]){const w=ax(B,u0,B.yc+R+1.7,oz);kput('vDarkB',w,qEuler(0,B.yaw,0),[17,.6,.08],null);}
+  for(const oz of[2.78,-2.78]){const w=ax(B,u0,B.yc+R+1.7,oz);hnPlateQ(w,qEuler(0,B.yaw,0),[17,.6,.08]);}
   for(const [u,h] of[[4,9],[6.5,6]]){const m=ax(B,u,B.yc+R+.9,0);vPst('vPipe',m[0],m[1],m[2],.12,h,iron);for(let k=1;k<4;k++)vB('vIron',m[0],m[1]+h*k/4,m[2],1.6-k*.3,.08,.08,B.yaw,iron);}
   const d=ax(B,-11,B.yc+R+.2,0);hnDish(d[0],d[1],d[2],B.yaw+.6,2.2);}
  for(const P of[A,B])for(const s of[-1,1]){const oz=s*(R-.2),y=P.yc-R*.5;const c=ax(P,0,y,oz);kput('hTankC',c,Q(P),[2,P.L*.62,2],hull.clone().multiplyScalar(.82));
@@ -82,7 +82,7 @@ function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
   hnGable(x,y,z,w+.6,w+.6,1.8,rng()<.5?0:Math.PI/2,rng()<.6?'vCorr':'vShingleB',rng()<.6?corr:sh,.35,'vGableW',log);
   if(i%2)hnCable([x,y-.3,z],[x+(rng()<.5?-8:8),y+3,z],hC(0x3a3028));}
  // the airlock in the aft half's flank, a gate now: lanterns along its lintel
- {const y0=0,zf=flankZ(B,3.2)+.1,p=ax(B,-8,y0,zf);vB('vDarkB',p[0],y0,p[2],5,6,.5,B.yaw);const l=ax(B,-8,6.2,zf+.35);vB('vIron',l[0],6.1,l[2],6,.4,.5,B.yaw,iron);
+ {const y0=0,zf=flankZ(B,3.2)+.1,p=ax(B,-8,y0,zf);hnDoorway(p[0],y0,p[2],B.yaw,5,6,{out:.25});const l=ax(B,-8,6.2,zf+.35);vB('vIron',l[0],6.1,l[2],6,.4,.5,B.yaw,iron);
   for(let k=0;k<4;k++){const q=ax(B,-10+k*1.3,5.9,zf+.6);hnLantern(q[0],5.9,q[2]);}}
  // terraces cantilevered off the front flanks: a platform on raking beams, a hut, a carved balustrade
  const terr=(P,u,y)=>{const fz=flankZ(P,y)+1.6,c=ax(P,u,y,fz);const x=c[0],z=c[2];vB('boxCR',x,y-.35,z,7,.35,3.6,P.yaw,ash);

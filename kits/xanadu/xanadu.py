@@ -14,7 +14,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '72-xa-helpers.js', '88-xa-dress.js', '89-xa-trades.js']
+FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpers.js', '88-xa-dress.js', '89-xa-trades.js']
 BUILDINGS = ['74-xa-dwell.js', '75-xa-trade.js', '76-xa-farm.js', '77-xa-sacred.js', '78-xa-palace.js', '79-xa-guild.js',
              '80-xa-military.js', '81-xa-public.js', '82-xa-hill.js', '83-xa-turk.js', '84-xa-grandbath.js', '85-xa-water.js',
              '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js']
@@ -23,6 +23,10 @@ FILES = sorted(FOUNDATION + BUILDINGS)
 ANCIENTS_CORE = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
                  '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js']          # kits/ancients/src
 VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js']                                 # kits/iziz-vernacular/src
+# the real doors and glass (71c-xa-openings.js) draw through the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and
+# vWinClear items, kits/iziz-vernacular/src) and core/door's records and glass (KDOOR, KGLASS), read in place
+OPENINGS_VERN = ['69e5-iziz-openings.js']                                               # kits/iziz-vernacular/src
+DOOR = ['10-core-door.js', '20-core-glass.js']                                          # core/door
 
 
 def path(f):

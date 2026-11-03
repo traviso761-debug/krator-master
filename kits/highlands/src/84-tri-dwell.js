@@ -64,7 +64,7 @@ kdef('hTRMatCyl',hTRCylGeo(14,1,true,TAU),MAT.bmat);kdef('hTRBandCyl',hTRCylGeo(
 kdef('hTRConeP',hTRCylGeo(10,.06,true,3),MAT.trCone);kdef('hTRDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
 kdef('hTRShield',new THREE.CircleGeometry(1,16),MAT.trShield);
 kdef('hTRBowl',new THREE.SphereGeometry(1,12,5,0,TAU,Math.PI/2,Math.PI/2),MAT.trIron);kdef('hTRFlame',VCONE,MAT.ember);
-kdef('hTRVoid',VBALL,MAT.void);kdef('hTRLeafB',VBOX,MAT.moss);
+kdef('hTRVoid',VBALL,MAT.izRoom);kdef('hTRLeafB',VBOX,MAT.moss);
 
 // ---------------------------------------------------------------- package helpers
 // A plain mesh from fn(u,v) -> [x,y,z,U,V] (own UVs — for painted lenses and gables mapped to their bounding box)
@@ -201,7 +201,7 @@ function buildHlTriLargeA(G,o){reseed(23031+(o.v|0));const W=13,D=11,H=3.4,F=o.c
  for(const s of[-1,1]){hnMember('hPaint',[s*W/2,Y+H,D/2+.12],[0,Y+H+rise,D/2+.12],.26,.08,[0,0,1],hC(HPAL.black));}
  // the entrance pole: its lowest figure's mouth is the door
  const pz=D/2+.62;hnTREntrancePole(0,Y,pz,.62,o.cliff?8:11.5,0,2.6,.84);kput('hTRVoid',[0,Y+.95,pz+.42],null,[.46,.95,.3]);
- vB('vDarkB',0,Y,D/2+.02,1.1,1.9,.1,0);
+ hnDoorway(0,Y,D/2+.02,0,1.1,1.9,{out:.02});
  // deck across the front, carved corner posts, steps
  vB('vWood',0,Y-.2,D/2+1.35,W+.6,.2,2.7,0,aged);for(const s of[-1,1])hnTotemPole(s*(W/2-.1),Y,D/2+2.4,.2,2.6,0,s>0);   // carved posts at the deck corners
  hnFrieze(0,Y-.4,D/2+2.72,0,W+.6,.35);

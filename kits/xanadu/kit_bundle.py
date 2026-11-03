@@ -8,7 +8,8 @@ page's nor another kit's:
                                        (86-bio-*: the kit's plants fall back to its own boxes and cones without it)
 
     XAK.proto(key, v)   the def built once at the origin on flat ground into a new group (its kit items baked as
-                        InstancedMeshes, per instance colours kept); null for a key the kit lacks
+                        InstancedMeshes, per instance colours kept; userData.doors its doors as core/door records, all
+                        locked); null for a key the kit lacks
     XAK.dims()          {key: {w, d, h, fw, fd, name, family, types, wealth, variants}} for every def
     XAK.bind(KMAT)      binds the library maps onto the kit's MAT from the page's KMAT, where the page registered the
                         pack 'xanadu' (tools/textures/matlib_pack.fragment(settlements/xanadu, 'xanadu')): the kit page's
@@ -41,7 +42,8 @@ def files():
     import xanadu as kxa
     names = {f: p for f, p in kxa.paths().items() if f not in SKIP and f[:2] < SKIP_FROM}
     names.update({f: os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in kxa.ANCIENTS_CORE})
-    names.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.VERNACULAR})
+    names.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.VERNACULAR + kxa.OPENINGS_VERN})
+    names.update({f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR})   # core/door's records and glass, as the Vernacular bundle carries them
     for f in os.listdir(MATS):   # core/materials (a src/ copy of the same name would win: none today)
         if f[0].isdigit() and f.endswith('.js') and f not in names:
             names[f] = os.path.join(MATS, f)
@@ -69,6 +71,9 @@ var window = new Proxy(globalThis.window || globalThis, {
   get: function (t, k) { if (Object.prototype.hasOwnProperty.call(XAK_WIN, k)) return XAK_WIN[k]; var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
   set: function (t, k, v) { XAK_WIN[k] = v; return true; } });
 var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: function () { return 4; } } };
+/* core/door's registry and glass are the kit's own (its window is the shadow above, so their globals land there: DOOR_BIND
+   below names them); no walk: a proto's stairs and doors stand at the origin, not in the page's core/walk */
+var KDOOR, KGLASS, KWALK;
 '''
 
 TAIL = r'''
@@ -80,14 +85,18 @@ reportErr = function (m) { XAK_ERRS.push(String(m).slice(0, 600)); if (typeof co
 var XAK_SHARED = {};
 function xakProto(key, v, o) {
   var D = VERN.defs[key]; if (!D) return null; o = o || {};
-  KIT.order.forEach(function (n) { KIT.items[n].length = 0; KIT.meshes[n] = null; });
+  KIT.order.forEach(function (n) { KIT.items[n].length = 0; KIT.meshes[n] = null; }); KDOOR.clear();
   var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
   try { withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, drop: o.drop || 0, footC: o.footC, rotor: o.rotor }); }); kbake(G);
     KIT.order.forEach(function (n) { var im = KIT.meshes[n]; if (!im) return; im.userData.kdef = n; im.name = n;
       im.material = XAK_SHARED[n] || (XAK_SHARED[n] = im.material); im.material.userData.kdef = n; }); }
   catch (e) { XAK_ERRS.push(key + ': ' + String(e && e.stack || e).slice(0, 600)); return null; }
   finally { REG.length = r0; KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
-  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
+  /* its doors (core/door records, in the def's frame at the origin; idx: the leaf's instance in the vDoorLeaf mesh), every one
+     locked: the kit's bodies are solid. A host that keeps the leaves as instances can register them in its own KDOOR */
+  var doors = KDOOR.list.map(function (R) { return { id: R.id, at: R.at, hinge: R.hinge, yaw: R.yaw, sign: R.sign, w: R.w, h: R.h, t: R.t, locked: R.locked, idx: R.idx }; });
+  KDOOR.clear();
+  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h, doors: doors };
   return G;
 }
 function xakDims() { var out = {}; VERN.order.forEach(function (k) { var D = VERN.defs[k]; if (!/^xa_/.test(k)) return;
@@ -101,9 +110,14 @@ return { proto: xakProto, dims: xakDims, bind: xakBind, rotors: xakRotors, VERN:
 '''
 
 
+# after core/door's glass: its two globals, set on the kit's shadow window, become the kit's own KDOOR and KGLASS
+DOOR_BIND = 'KDOOR = XAK_WIN.KDOOR; KGLASS = XAK_WIN.KGLASS;' + NL
+
+
 def bundle(key='XAK'):
     fs = files()
-    body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in fs)
+    body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) + (DOOR_BIND if f.endswith('20-core-glass.js') else '')
+                   for f in fs)
     js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (kits/xanadu/kit_bundle.py). GENERATED: '
           'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + TAIL +
           '})();' + NL)

@@ -55,8 +55,8 @@ function buildHlRepWreckMarket(G,o){reseed(22121+(o.v|0));const L=22,R=7,arc=Mat
 function buildHlRepPressWorks(G,o){reseed(22131+(o.v|0));const W=24,D=14,H=4.4,corr=hC(vPick(HSV.corr)),log=hC(vPick(HPAL.aged)),iron=hC(0x3a3430),rust=hC(vPick(HSV.rust)),lit=vLit()?'lit':'glass';
  vnReg('Press works',0,0,14,8);
  vB('vCorr',0,0,0,W,H,D,0,corr.clone().multiplyScalar(.85));vnPatch(0,.5,D/2+.02,0,18,3,10);
- for(let k=0;k<5;k++){const x=-W/2+W*(k+.5)/5;kput('vCorr',[x,H+1.1,0],qEuler(0,0,.55),[W/5*1.12,.1,D+.4],corr);vB('vWinGlass',x+W/10-.15,H,0,.08,2.1,D-.4,0);}   // sawtooth roofs, glazed north lights
- vB('vDarkB',0,0,D/2+.03,5,3.6,.06,0);vB('vIron',0,3.8,D/2+.1,6,.2,.12,0,iron);
+ for(let k=0;k<5;k++){const x=-W/2+W*(k+.5)/5;kput('vCorr',[x,H+1.1,0],qEuler(0,0,.55),[W/5*1.12,.1,D+.4],corr);hnPlate(x+W/10-.15,H,0,.08,2.1,D-.4,0);}   // sawtooth roofs, glazed north lights
+ hnDoorway(0,0,D/2,0,5,3.6,{c:iron});vB('vIron',0,3.8,D/2+.1,6,.2,.12,0,iron);
  for(const s of[-1,1]){beam('vIron',[s*9,0,D/2+2],[s*9,6,D/2+5],.25,.25,iron);beam('vIron',[s*9,0,D/2+8],[s*9,6,D/2+5],.25,.25,iron);}vB('vIron',0,6,D/2+5,19,.4,.5,0,rust);
  for(let k=0;k<3;k++){hlRngSkip(5);FURNISH('hl_rep_plate_stack',-5+k*5,0,D/2+5,0,{v:0});}   // plate stacks under the gantry
  hnFachBox(W/2+2.6,0,-2,4.2,2.8,5,0,null,null,lit);hnGable(W/2+2.6,2.8,-2,5,4.2,1.5,Math.PI/2,'vCorr',corr,.4,'vGableW',log);}

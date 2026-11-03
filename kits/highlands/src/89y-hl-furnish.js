@@ -32,12 +32,21 @@ function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='ri
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item
 // gets its rooms planned and furnished at its placement; the plan is data on the group (userData.interior)
 const hlfPlace=VERN.place;
-VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=hlfPlace.call(VERN,sc,key,x,z,ry,o);
+VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur,nd=KDOOR.list.length;const G=hlfPlace.call(VERN,sc,key,x,z,ry,o);
  if(top&&G&&HLF.interiors){const it=KratorInteriors.sets.find(key);
-  if(it&&!it.skip){const r=HLF.interior(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:'hl.'+HLF.buildings.length+'.'}).summary;
+  if(it&&!it.skip){const pre='hl.'+HLF.buildings.length+'.',r=HLF.interior(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:pre}).summary;
    G.userData.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};
-   Object.assign(HLF.buildings[HLF.buildings.length-1],{key,interior:G.userData.interior});}}
+   Object.assign(HLF.buildings[HLF.buildings.length-1],{key,interior:G.userData.interior});
+   G.userData.interior.doors=hlfDoorsIn(nd,'built:'+pre);}}
  return G;};
+// the doors that open onto the rooms just planned: a door of this placement (71c, 69e5: drawn locked, as the kit's bodies are
+// solid) whose sill meets one of the interior's floors 0.6 m inside it is unlocked, so a walker, an NPC or the E key opens it
+// into the rooms (core/door; the reachability audit, 2026-11-03: with them locked most of the furnished rooms were sealed). The
+// leaf still opens on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md)
+function hlfDoorsIn(nd,tag){let n=0;
+ for(let i=nd;i<KDOOR.list.length;i++){const D=KDOOR.list[i];if(!D.locked)continue;const ix=D.at[0]-Math.sin(D.yaw)*.6,iz=D.at[2]-Math.cos(D.yaw)*.6;
+  if(KWALK.floorsAt(ix,iz).some(f=>String(f[1].tag).indexOf(tag)===0&&Math.abs(f[0]-D.at[1])<.6)){KDOOR.lock(D,false);D.locked0=false;n++;}}
+ return n;}
 // the batch becomes meshes once, when the kit bakes its instances
 const hlfBake=kbake;
 // the catalog's colours are sRGB values taken as they are; this kit's materials are linear (hC converts every colour), so

@@ -100,6 +100,11 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+# core/door (KDOOR: the doors' records; KGLASS: the glass; KDOORHOST: posing a leaf, the frame tick, the E key) and the
+# Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and glass
+# (kits/xanadu/src/71c-xa-openings.js) draw through them; src/90-xa-doors.js hands each leaf to the host after a bake
+DOOR_FILES = {f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR + ['90-core-door-host.js']}
+DOOR_FILES.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.OPENINGS_VERN})
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -155,6 +160,7 @@ DETERMINISTIC = {
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
+DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -271,6 +277,7 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})   # core/door and the Vernacular's openings, read in place
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):

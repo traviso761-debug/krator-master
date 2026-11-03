@@ -58,7 +58,7 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=8
  vnReg('Pleasure Dome',0,-12,15,30);vnReg('Pleasure Dome — gardens',0,20,20,3);vnReg('Pleasure Dome — baths',-30,-24,9,9);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
  // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the corners
  for(const s of[-1,1]){vB('xWashB',s*(GW/2-.3),0,0,.6,2.6,GD,0,wash);vB('xTilesB',s*(GW/2-.3),2.6,0,.9,.22,GD+.3,0,tile);vB('xWashB',0,0,s*(GD/2-.3),GW,2.6,.6,0,wash);vB('xTilesB',0,2.6,s*(GD/2-.3),GW+.3,.22,.9,0,tile);}
- vB('vDarkB',0,0,GD/2-.3,4.4,2.6,.8,0);xnArch('xArchS',0,0,GD/2+.1,0,6.2,3.4,.8,stone,{open:true});for(const s of[-1,1])vPst('xColS',s*3.4,0,GD/2-.3,.35,3.8,stone);
+ xnDoorway(0,0,GD/2,0,4.4,2.6);xnArch('xArchS',0,0,GD/2+.1,0,6.2,3.4,.8,stone,{open:true});for(const s of[-1,1])vPst('xColS',s*3.4,0,GD/2-.3,.35,3.8,stone);
  for(const sx of[-1,1])for(const sz of[-1,1])xnChhatri(sx*(GW/2-4),0,sz*(GD/2-4),1.6,3.6,stone,tile,6);
  // the dome pavilion: a square hall with pointed arcades on all four faces, a mosaic drum and the great dome, four turrets
  const HZ=-12,HW=22;xnWall(0,0,HZ,HW+3,1.2,HW+3,0,stone,'dressed');vB('vStone',0,1.06,HZ,HW+3.3,.14,HW+3.3,0,stone.clone().multiplyScalar(1.08));

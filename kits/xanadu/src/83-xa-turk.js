@@ -13,7 +13,7 @@ function xnXTRoof(x,y,z,w,d,ry,c,over,rise){over=over||1.5;rise=rise||Math.min(w
  vB('vWood',x,y-.04,z,w+2*over,.08,d+2*over,ry,xC(XTURK.timber));vnHipRoof('xHipT',x,y+.4,z,w,d,rise,ry,c||xC(XTURK.tile),over);
  vB('xPaint',x,y+.4+rise-.1,z,w>=d?w-d+.6:.4,.2,w>=d?.4:d-w+.6,ry,xC(XTURK.tile2));}
 // a round-arched window: an arched dark recess in a stone or painted surround, glazing bars, a keystone
-function xnXTArchWin(x,y,z,ry,w,h,c,kind,lit){const f=loc(x,z,0,.03,ry);vB(lit?'vWinLit':'vWinGlass',f[0],y,f[1],w,h-.1,.1,ry);
+function xnXTArchWin(x,y,z,ry,w,h,c,kind,lit){const f=loc(x,z,0,.03,ry);xnPane(f[0],y,f[1],w,h-.1,.1,ry,lit?'lit':'glass');
  kput('xArcDark',[f[0],y+h-w/2-.1,f[1]],qEuler(0,ry,0),[w,w/2+.1,.1]);
  const p=loc(x,z,0,.1,ry);for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.07),.1,ry);vB(kind||'vStone',q[0],y-.05,q[1],.14,h-w/2+.05,.18,ry,c);}
  kput('xArcP',[p[0],y+h-w/2-.14,p[1]],qEuler(0,ry,0),[w+.28,w/2+.32,.18],c);kput('xArcDark',[loc(x,z,0,.12,ry)[0],y+h-w/2-.1,loc(x,z,0,.12,ry)[1]],qEuler(0,ry,0),[w,w/2+.1,.12]);
@@ -98,7 +98,7 @@ function buildXaHouseTurkA(G,o){reseed(32021+(o.v|0));const V=xV(o),W=13,D=10,H1
  if(V===1){xnFlatRoof(0,Y+H2,0,W,D,0,wall,{eave:true,eaveC:tim,parapet:.6});xnPavilion(2,Y+H2+.6-.3,-1,3,2.6,2.4,0,{c:xC(XTURK.timberD),tileC:tile});}
  else{xnXTRoof(0,Y+H2,0,W+.4,D+.4,0,tile,1.5);vB('vStone',3.5,Y+H2+1.4,-2,.8,2.6,.8,0,stone);vB('vStone',3.5,Y+H2+4,-2,1.1,.2,1.1,0,stone);}
  // the garden: a low wall, a tree, planters, a bench
- for(const s of[-1,1])vB('vStone',s*(W/2+2.5),0,D/2+2,.4,1.0,7,0,stone);vB('vStone',0,0,D/2+5.5,W+5,1.0,.4,0,stone);vB('vDarkB',-1.4,0,D/2+5.5,1.8,1.0,.5,0);
+ for(const s of[-1,1])vB('vStone',s*(W/2+2.5),0,D/2+2,.4,1.0,7,0,stone);vB('vStone',0,0,D/2+5.5,W+5,1.0,.4,0,stone);xnDoorway(-1.4,0,D/2+5.7,0,1.8,1.0);   /* the garden gate in the low wall */
  xnTree(W/2+.6,D/2+3.5,4.2);vnPlanter(2.6,0,D/2+1.2,2,.6,0,tim);vB('vWood',-W/2-.8,.45,D/2+3,.5,.08,1.8,0,tim);vnFolk(0,D/2+7,2,1.5);}
 // B — the timber corner house: a brick ground storey with big arched windows, two timber storeys above with an
 // octagonal bay on the street corner, glazed-tile bands between the storeys and beside the windows, a wide timber
@@ -133,7 +133,7 @@ function buildXaShopTurkA(G,o){reseed(32041+(o.v|0));const V=xV(o),N=V===3?4:3,W
  vnReg('Turkish shop row',0,0,9.5,H1+H2+5);
  vB('vStone',0,0,0,W,H1,D,0,stone.clone().multiplyScalar(.96));vB('vStone',0,0,0,W+.4,.3,D+.4,0,stone);
  const bw=W/N;for(let i=0;i<N;i++){const x=-W/2+bw*(i+.5);xnArch('xArchS',x,.3,D/2,0,bw-.4,H1-.4,.5,stone,{});
-  vB('vWood',x,.3,D/2+.2,bw*.6,.1,.1,0,tim);vB('vWinGlass',x+bw*.15,.4,D/2+.18,bw*.3,2.0,.08,0);vB('vWood',x+bw*.15,2.4,D/2+.2,bw*.3+.1,.12,.12,0,tim);   // the glazed shopfront and the door beside it
+  vB('vWood',x,.3,D/2+.2,bw*.6,.1,.1,0,tim);xnPane(x+bw*.15,.4,D/2+.18,bw*.3,2.0,.08,0,'glass');vB('vWood',x+bw*.15,2.4,D/2+.2,bw*.3+.1,.12,.12,0,tim);   // the glazed shopfront and the door beside it
   vnDoor(x-bw*.18,.3,D/2+.2,0,.95,2.1,'vWood',tim,xC(xPick([XTURK.timber,0x2a5aa8,0x2f7a4a])),false);
   vnAwning(x,H1-.55,D/2+.3,0,bw-.9,1.8,xC(xPick([0xa8382a,0x2f7a4a,0xe8a030,0x1e3f8a])));
   // café tables and chairs under the awning
@@ -152,8 +152,8 @@ function buildXaShopTurkB(G,o){reseed(32051+(o.v|0));const V=xV(o),W=10,D=9,H1=3
  const stone=xC(xPick(XPAL.stone)),wall=xC(xPick([XTURK.cream,XTURK.ochre,0xd8c0a0])),tim=xC(xPick([XTURK.timber,XTURK.timberD])),timD=xC(XTURK.timberD),tile=xC(V===2?XTURK.tile2:XTURK.tile),iron=xC(XTURK.iron);
  vnReg('Corner café',0,0,8,H1+H2+5);
  vB('vStone',0,0,0,W,H1,D,0,stone.clone().multiplyScalar(.96));vB('vStone',0,0,0,W+.4,.3,D+.4,0,stone);
- for(const u of[-2.6,.4])xnArch('xArchS',u,.3,D/2,0,2.6,H1-.4,.5,stone,{});vB('vWinGlass',-2.6,.4,D/2+.18,1.6,2.0,.08,0);vnDoor(.4,.3,D/2+.2,0,1.0,2.1,'vWood',timD,xC(0x2f7a4a),false);
- for(const z of[-2.5,.5])xnArch('xArchS',W/2,.3,z,Math.PI/2,2.6,H1-.4,.5,stone,{});vB('vWinGlass',W/2+.18,.4,-2.5,.08,2.0,1.6,0);vB('vWinGlass',W/2+.18,.4,.5,.08,2.0,1.6,0);
+ for(const u of[-2.6,.4])xnArch('xArchS',u,.3,D/2,0,2.6,H1-.4,.5,stone,{});xnPane(-2.6,.4,D/2+.18,1.6,2.0,.08,0,'glass');vnDoor(.4,.3,D/2+.2,0,1.0,2.1,'vWood',timD,xC(0x2f7a4a),false);
+ for(const z of[-2.5,.5])xnArch('xArchS',W/2,.3,z,Math.PI/2,2.6,H1-.4,.5,stone,{});xnPane(W/2+.18,.4,-2.5,1.6,2.0,.08,Math.PI/2,'glass');xnPane(W/2+.18,.4,.5,1.6,2.0,.08,Math.PI/2,'glass');
  vnAwning(-1.1,H1-.55,D/2+.3,0,5.4,1.8,xC(xPick([0xa8382a,0x2f7a4a,0xe8a030])));vnAwning(W/2+.3,H1-.55,-1,Math.PI/2,5,1.6,xC(xPick([0xa8382a,0x2f7a4a,0xe8a030])));
  vB('xPaint',3.6,H1-1.0,D/2+.06,1.6,.6,.06,0,xC(0xa8382a));xnMural('xMosB',-W/2+1.4,1.2,D/2+.02,0,1.2,1.6);
  // above: render, the octagonal corner bay, arched windows, tile band, the roof

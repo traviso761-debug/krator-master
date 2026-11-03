@@ -52,7 +52,7 @@ function buildHlRusTemple(G,o){reseed(22201+(o.v|0));const W=8,D=12,F=.5,Y1=6,Y2
  const T=2.4,TB1=ridge+1;vB('hRUBoardV',0,ridge-1.4,0,T,TB1-ridge+1.4,T,0,tar);
  kput('hRUSkirtC',[0,TB1-.3,0],null,[T/.6,.8,T/.6],sh);
  const TB2=TB1+2.2;vB('hRUBoardV',0,TB1+.4,0,T,TB2-TB1-.4,T,0,tar);
- for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(0,0,0,T/2,a);vB('vDarkB',p[0],TB1+.8,p[1],.9,1.1,.1,a);kput('hKeelW',[...[loc(0,0,0,T/2+.04,a)].map(q=>[q[0],TB1+1.85,q[1]])[0]],qEuler(0,a,0),[1.1,.4,.08],bc);
+ for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(0,0,0,T/2,a);hnRoom(p[0],TB1+.8,p[1],.9,1.1,.1,a);kput('hKeelW',[...[loc(0,0,0,T/2+.04,a)].map(q=>[q[0],TB1+1.85,q[1]])[0]],qEuler(0,a,0),[1.1,.4,.08],bc);
   const g=loc(0,0,0,.95,a);hnGable(g[0],TB2-.15,g[1],1.5,1.1,1.5,a-Math.PI/2,'vShingleB',sh,.12,'vGableW',tar);}
  kput('hTentSh',[0,TB2-.1,0],null,[1.72,7.6,1.72],sh);const tip=TB2+7.4;
  vPst('vIron',0,tip-.3,0,.05,1.6,hC(0x2e2a26));vBall('hGold',0,tip+.9,0,.16,hC(HPAL.gold[0]));kput('hPaint',[.3,tip+1.1,0],null,[.6,.3,.03],hC(HPAL.gold[1]));
@@ -250,8 +250,8 @@ function buildHlRusFarmhouse(G,o){reseed(22281+(o.v|0));const L=20,D=10,H1=2.8,H
  vB('hRubB',bx,0,0,BW,H1,D,0,st);for(const u of[-3.5,-1,1.5])vnWin(bx+u,1.2,D/2,0,.5,.5,'open','vWood',barn);
  vnDoor(bx+3.4,0,D/2,0,1.5,2.2,'vWood',barn,barn,false);
  hnRUBoards(bx,H1,0,BW,H2,D,0,barn,null,barn.clone().multiplyScalar(.8));
- for(let k=0;k<6;k++)vB('vDarkB',bx-4+k*1.2,H1+.9,D/2+.03,.12,1.2,.06,0);
- vB('vDarkB',bx+2.6,H1+.3,D/2+.05,1.8,1.8,.08,0);vB('vWood',bx+2.6,H1+.3,D/2+.1,1.7,1.7,.06,0,barn);
+ for(let k=0;k<6;k++)hnRoom(bx-4+k*1.2,H1+.9,D/2+.03,.12,1.2,.06,0);
+ hnRoom(bx+2.6,H1+.3,D/2+.05,1.8,1.8,.08,0);IZDOOR.leaf(bx+2.6,H1+.3,D/2+.1,0,1.7,1.7,.06,barn,{locked:true});
  // one roof, ridge along x
  const pitch=.62,over=1.5,top=hnGable(0,H1+H2,0,L,D,pitch,0,'vShingleB',sh,over,'hGableLog',log);
  hnBarge(0,H1+H2,0,L,D,pitch*D/2,0,over,log.clone().multiplyScalar(1.3),'horns');
@@ -279,7 +279,7 @@ function buildHlRusFarm(G,o){reseed(22291+(o.v|0));const FW=50,FD=35;
  for(const [x,z,r] of[[-16,14.2,0],[4,14.2,0],[16,-6,Math.PI/2]])hnRUHesje(x,z,r,7.5);
  // field barn (løe): board walls, turf roof
  const bx=-FW/2+4,bz=-FD/2+3.5;hnRUBoards(bx,0,bz,5,2.6,4,0,wd,null,null,.8);hnRUTurf(bx,2.6,bz,5,4,.9,0,.4,'vGableW',wd,6);
- vB('vDarkB',bx,0,bz+2.03,1.6,2,.06,0);
+ hnDoorway(bx,0,bz+2,0,1.6,2,{c:wd});
  // scarecrow
  FURNISH('hl_rus_scarecrow',6,0,-2,0);
  vnFolk(-6,6,3,5);}

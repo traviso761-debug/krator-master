@@ -7,7 +7,7 @@
 // a rack of spears leaning in a timber stand; a round soldiers' tent
 function xnXGSpears(x,z,ry,n){const aged=xC(xPick(XPAL.aged)),iron=xC(0x2e2a26);const P=(u,v)=>loc(x,z,u,v,ry);vB('vWood',x,0,z,n*.4+.4,.3,.6,ry,aged);const t=P(0,0);vB('vWood',t[0],1.1,t[1],n*.4+.4,.1,.1,ry,aged);
  for(let k=0;k<n;k++){const p=P(-n*.2+k*.4+.2,0);kput('vWood',[p[0],1.4,p[1]],qEuler(rr(-.06,.06),0,rr(-.05,.05)),[.04,2.8,.04],aged);kput('vConeI',[p[0],2.8,p[1]],null,[.05,.36,.05],iron);}}
-function xnXGTent(x,z,r,c){kput('xConeP',[x,0,z],null,[r,r*1.3,r],c||xC(xPick([0xe8e0cc,0xd8d0b8,XPAL.red])));vPst('vPost',x,r*1.3,z,.04,.4,xC(0x5a4632));vB('vDarkB',x,0,z+r*.7,.6,1.1,.3,0);}
+function xnXGTent(x,z,r,c){kput('xConeP',[x,0,z],null,[r,r*1.3,r],c||xC(xPick([0xe8e0cc,0xd8d0b8,XPAL.red])));vPst('vPost',x,r*1.3,z,.04,.4,xC(0x5a4632));xnRoom(x,0,z+r*.7,.6,1.1,.3,0);}
 
 // ---------------------------------------------------------------- the barracks
 function buildXaBarracks(G,o){reseed(31401+(o.v|0));const V=xV(o),W=28,D=10,lit=xLit()?'lit':'glass';
@@ -48,7 +48,7 @@ function buildXaGate(G,o){reseed(31421+(o.v|0));const V=xV(o),TH=V===2?17:13,GW=
  for(const s of[-1,1]){if(V===1){xnWall(s*(GW/2+3.6),0,0,7,TH,7,0,stone,'dressed');xnCrenel(s*(GW/2+3.6),TH,0,6.2,6.2,0,1.2,stone,{item:'vStone',pointed:true});xnGiltRoof(s*(GW/2+3.6),TH+.5,0,3.6,3.6,0,{frame:1.2,over:.7});}   // v1: square towers with gilt roofs
   else xnXETower(s*(GW/2+3.4),0,0,3.8,TH,stone,tile);}
  xnWall(0,0,0,GW,GH,GD,0,wash,'wash');xnIwan(0,0,GD/2,0,8.4,GH-.6,1.5,wash,{guldasta:true});
- vB('vDarkB',0,0,-GD/2-.02,5.4,7,.06,0);kput('xArchS',[0,0,-GD/2-.2],qEuler(0,Math.PI,0),[7.4,8.4,.4],stone);
+ xnDoorway(0,0,-GD/2,Math.PI,5.4,7);kput('xArchS',[0,0,-GD/2-.2],qEuler(0,Math.PI,0),[7.4,8.4,.4],stone);
  for(const s of[-1,1])kput('vWood',[s*1.5,0+3.2,GD/2+1.0],qEuler(0,s*.5,0),[2.6,6.2,.14],tim);for(let k=0;k<4;k++)vB('vIron',0,1+k*1.6,GD/2+1.1,5.2,.08,.04,0,xC(0x2e2a26));
  xnFlatRoof(0,GH,0,GW,GD,0,wash,{band:true,gold:true,parapet:false});xnCrenel(0,GH+.3,0,GW+.2,GD+.2,0,1.2,wash,{pointed:true});
  if(V===2)xnDome(0,GH+.5,0,2.8,'T',{drum:1.6,c:tile,fin:1.4});else xnGiltRoof(0,GH+.5,0,5.6,3.6,0,{frame:1.8,over:.9});xnRoundel(0,GH-1.0,GD/2+1.52,0,1.4);
@@ -95,11 +95,11 @@ function buildXaWatch(G,o){reseed(31441+(o.v|0));const V=xV(o),W=10,D=10,lit=xLi
  // the lantern tower: dressed stone shaft, an open lantern on columns under a tiled roof, the alarm bell, a lamp
  const tx=V===1?-(W/2+1.5):W/2+1.5,tz=-D/2+1.5,TT=V===1?20:15;
  if(V===2){for(const s of[-1,1])vPst('vPostS',s*.9,top,-2,.18,2.6,stone);vB('vStone',0,top+2.6,-2,2.4,.3,.5,0,stone);kput('xBulbG',[0,top+1.4,-2],null,[.5,.7,.5],xC(xPick(XPAL.gold)));vnGableRoof(0,top+2.9,-2,2.6,1.2,.6,0,'xTilesB',tile,.2);}   // v2: a bell cote on the roof instead of a tower
- else{xnWall(tx,0,tz,4.6,TT,4.6,0,stone,'dressed');for(let k=0;k<TT/4-1;k++)vB('vDarkB',tx,3+k*4,tz+2.3*.94,.4,1.1,.1,0);
+ else{xnWall(tx,0,tz,4.6,TT,4.6,0,stone,'dressed');for(let k=0;k<TT/4-1;k++)xnRoom(tx,3+k*4,tz+2.3*.94,.4,1.1,.1,0);
  xnPavilion(tx,TT,tz,3.4,3.4,3.2,0,{c:trim,tileC:tile,over:.7});kput('xBulbG',[tx,TT+1.4,tz],null,[.5,.7,.5],xC(xPick(XPAL.gold)));vBeam([tx,TT+2.9,tz],[tx,TT+2.1,tz],.03,iron,'vRope');}
  // the cells: a low barred block at the side; stocks in front; the watch's banner
  vB('xWashB',-W/2-3.2,0,-1,5.4,2.8,7,0,wash);xnFlatRoof(-W/2-3.2,2.8,-1,5.4,7,0,wash,{parapet:.4});for(const z of[-3,-1,1])for(let k=0;k<3;k++)vB('vIron',-W/2-5.92,1.4,z-.25+k*.25,.04,.9,.03,0,iron);
- for(const z of[-3,-1,1])vB('vDarkB',-W/2-5.9,1.4,z,.06,.9,.7,0);vnDoor(-W/2-3.2,0,2.5,0,1,2,'vIron',iron,iron,true);
+ for(const z of[-3,-1,1])xnRoom(-W/2-5.9,1.4,z,.06,.9,.7,0);vnDoor(-W/2-3.2,0,2.5,0,1,2,'vIron',iron,iron,true);
  vB('vWood',3.5,.9,D/2+3,1.8,.24,.3,0,tim);for(const s of[-1,1])vPst('vPost',3.5+s*.7,0,D/2+3,.08,.9,tim);vnFolk(3.5,D/2+3.4,1,.2);
  xnFlagpole(-2,top-.6,-2,3.6,xC(XPAL.red));if(xLit()){vnLampPost(3,0,D/2+2,3.4);}vnFolk(-1,D/2+4,2,1.5);}
 // ---------------------------------------------------------------- the mustering ground

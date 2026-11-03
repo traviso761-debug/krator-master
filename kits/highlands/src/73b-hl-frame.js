@@ -80,7 +80,7 @@ function hlFrameOf(){const c=VERN.cur;if(c.frame)return c.frame;const w=c.D.tags
 // a lattice window: backing (glass / lit / dark — the fitting pass reads these as windows), the lattice in front, a
 // lacquered frame, a sill, and on the better houses a caihua head board
 function hnLatWin(x,y,z,ry,w,h,kind,frameC){const F=hlFrameOf();frameC=frameC||F.post;const f=loc(x,z,0,.04,ry);
- vB(kind==='lit'?'vWinLit':kind==='glass'?'vWinGlass':'vDarkB',f[0],y,f[1],w,h,.08,ry);
+ hnPane(f[0],y,f[1],w,h,.08,ry,kind==='lit'||kind==='glass'?kind:'open');   // glass over the room card (71c)
  const l=loc(x,z,0,.11,ry);kput(F.latt,[l[0],y+h/2,l[1]],qEuler(0,ry,0),[w,h,1],hC(0x3a2a22));
  const p=loc(x,z,0,.13,ry);for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.06),.13,ry);vB('hPaint',q[0],y-.06,q[1],.12,h+.12,.1,ry,frameC);}
  vB('hPaint',p[0],y+h,p[1],w+.24,.12,.12,ry,frameC);vB('vWood',p[0],y-.14,p[1],w+.3,.1,.22,ry,hC(0x3a2a22));
@@ -89,7 +89,7 @@ function hnLatWin(x,y,z,ry,w,h,kind,frameC){const F=hlFrameOf();frameC=frameC||F
 function hnGeshan(x,y,z,ry,u0,u1,y0,y1,kind){const F=hlFrameOf();const W=u1-u0,H=y1-y0,n=Math.max(2,Math.round(W/.72)),lw=W/n;
  for(let k=0;k<n;k++){const um=u0+lw*(k+.5);const b=loc(x,z,um,.04,ry);
   vB('hPlankB',b[0],y0,b[1],lw-.04,H*.34,.06,ry,F.plank);                                                       // dado (qunban)
-  const g=loc(x,z,um,.02,ry);vB(kind==='lit'&&k%2?'vWinLit':'vDarkB',g[0],y0+H*.38,g[1],lw-.1,H*.5,.04,ry);
+  const g=loc(x,z,um,.02,ry);hnPane(g[0],y0+H*.38,g[1],lw-.1,H*.5,.04,ry,kind==='lit'&&k%2?'lit':'glass');
   const l=loc(x,z,um,.07,ry);kput(F.latt,[l[0],y0+H*.63,l[1]],qEuler(0,ry,0),[lw-.1,H*.5,1],hC(0x3a2a22));
   vB('hPlankB',b[0],y0+H*.9,b[1],lw-.04,H*.1,.06,ry,F.plank);
   for(const s of[-1,1]){const q=loc(x,z,um+s*(lw/2-.03),.09,ry);vB('hPaint',q[0],y0,q[1],.06,H,.07,ry,F.post);}
@@ -113,7 +113,7 @@ function hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC,o){o=o||{};const F=hlFrameOf(
    hnLatWin(m[0],wy,m[1],ry,ww,wh,kind||'glass',F.post);}
   else if(F.st==='lattice'&&!o.plainBays)hnGeshan(x,y,z,ry,u0,u1,y0,y1,kind);
   else{vB('hPlankB',m[0],y0,m[1],u1-u0,H,.08,ry,F.plank);
-   if(F.st==='mixed'&&H>1.6){const l=P(um,.07);vB('vDarkB',l[0],y1-H*.2,l[1],u1-u0-.12,H*.16,.03,ry);kput(F.latt,[l[0],y1-H*.12,l[1]],qEuler(0,ry,0),[u1-u0-.12,H*.16,1],hC(0x3a2a22));}
+   if(F.st==='mixed'&&H>1.6){const l=P(um,.07);hnPane(l[0],y1-H*.2,l[1],u1-u0-.12,H*.16,.03,ry,'glass');kput(F.latt,[l[0],y1-H*.12,l[1]],qEuler(0,ry,0),[u1-u0-.12,H*.16,1],hC(0x3a2a22));}
    else{const r=P(um,.06);vB('vWood',r[0],y0+H*.48,r[1],u1-u0,.08,.05,ry,F.plank.clone().multiplyScalar(.7));}}}   // a rail across the boards
  // posts with banded capitals, each capped by a bracket set; the rich add a set mid-bay on the architrave
  if(!o.noPosts)for(let i=0;i<=nb;i++){const u=Math.max(-w/2+.12,Math.min(w/2-.12,-w/2+i*bw)),p=P(u,T);
@@ -145,6 +145,7 @@ function hnGalleryFace(x,y,z,ry,w,h,dep,kind){const F=hlFrameOf();const nb=Math.
   vB('hPaint',m[0],y+.84,m[1],L,.09,.14,rry,F.post);vB('vWood',m[0],y,m[1],L,.1,.1,rry,dark);};
  {const a=P(-w/2,dep-.16),b=P(w/2,dep-.16);rail(a,b,ry,w);for(const s of[-1,1]){const a2=P(s*(w/2-.08),.1),b2=P(s*(w/2-.08),dep-.16);rail(a2,b2,ry+Math.PI/2,dep-.26);}}}
 // ---------------------------------------------------------------- the four overrides
+HLWINS.add('vWinClear');HLWINS.add('vDoorLeaf');HLWINS.add('hArchGlass');   // the real glass and leaves (71c) are windows to the bracket rows too
 const _hlFachFace0=hnFachFace,_hlFachBox0=hnFachBox,_hlVnWin0=vnWin,_hlNal0=hnNal,_hlShut0=hnRAShutters;
 // swinging European shutters go: a lattice window closes with its own inner panels
 hnRAShutters=function(){if(!hlFrameOn())return _hlShut0.apply(null,arguments);};

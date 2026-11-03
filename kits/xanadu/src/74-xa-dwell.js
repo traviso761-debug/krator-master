@@ -21,7 +21,7 @@ function buildXaPoorA(G,o){reseed(30101+(o.v|0));const V=xV(o),W=8.4,D=7.2,H1=2.
  // the outside stair to the upper door on the +x side, a small landing on posts
  vB('vWood',SS*(W/2+.9),.5+H1-.2,2.2,1.8,.2,2.2,0,aged);for(const z of[1.2,3.2])vPst('vPost',SS*(W/2+1.7),.5,z,.1,H1-.2,aged);
  xnFlight(SS*(W/2+.9),.5,3.3+5.1,0,1.2,H1-.2,'vStone',xC(xPick(XPAL.rubble)));vnDoor(SS*(W/2-.2),.5+H1,2.2,SS*Math.PI/2,.9,1.8,'vWood',aged,aged,false);
- if(V===4){vB('xRubB',W/2+1.6,0,-1.8,3,1.9,4,0,xC(xPick(XPAL.rubble)));vnShedRoof(W/2+1.6,1.9,-1.8,3.4,4.4,.5,Math.PI/2,'xEarthB',earth,.3,.3);vB('vDarkB',W/2+3.1,0,-1.8,.06,1.5,1.4,0);}
+ if(V===4){vB('xRubB',W/2+1.6,0,-1.8,3,1.9,4,0,xC(xPick(XPAL.rubble)));vnShedRoof(W/2+1.6,1.9,-1.8,3.4,4.4,.5,Math.PI/2,'xEarthB',earth,.3,.3);xnDoorway(W/2+3.1,0,-1.8,Math.PI/2,1.4,1.5);}
  if(V===3)xnShrine(-W/2-2.4,0,D/2+1.2,.8);
  if(V===2)for(const u of[-2.2,2.2])xnTibWin(u,.5+H1+H2+.9,S.d/2/.96-.2,0,.8,.9,'open',trim,{noVal:true});
  const top=xnFlatRoof(0,.5+H1+H2+H3,0,S.w,S.d,0,earth,{parapet:.7,corner:V===1?'pinnacle':'flag'});

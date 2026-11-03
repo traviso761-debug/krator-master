@@ -89,7 +89,7 @@ kdef('xOctW',XOCT,MAT.xWash);kdef('xOctT',XOCT,MAT.xTiles);kdef('xOctS',XOCT,MAT
 kdef('xDisc',XDISC,MAT.xPaint);kdef('xDiscG',XDISC,MAT.xGoldDS);kdef('xDiscS',XDISC,MAT.stone);kdef('xDiscWater',XDISC,MAT.xWater);
 kdef('xCol',XCOL,MAT.xPaint);kdef('xColS',XCOL,MAT.stone);kdef('xColG',XCOL,MAT.xGold);kdef('xColW',XCOL,MAT.woodV);
 kdef('xArchW',XARCH,MAT.xWash);kdef('xArchS',XARCH,MAT.stone);kdef('xArchM',XARCH,MAT.xMosA);kdef('xArchE',XARCH,MAT.xEarth);kdef('xArchP',XARCH,MAT.xPaint);
-kdef('xArcS',XARCHS,MAT.stone);kdef('xArcW',XARCHS,MAT.xWash);kdef('xArcM',XARCHS,MAT.xMosB);kdef('xArcP',XARCHS,MAT.xPaint);kdef('xArcDark',XARCHS,MAT.void);
+kdef('xArcS',XARCHS,MAT.stone);kdef('xArcW',XARCHS,MAT.xWash);kdef('xArcM',XARCHS,MAT.xMosB);kdef('xArcP',XARCHS,MAT.xPaint);kdef('xArcDark',XARCHS,MAT.izRoom);   // a niche's or an arch head's back: the room's dim colour, not a void (71c)
 kdef('xArm',XARM,MAT.xPaint);kdef('xArmW',XARM,MAT.wood);kdef('xArmS',XARM,MAT.stone);kdef('xArmG',XARM,MAT.xGoldDS);
 kdef('xBatW96',XBAT96,MAT.xWash);kdef('xBatW92',XBAT92,MAT.xWash);kdef('xBatW86',XBAT86,MAT.xWash);kdef('xBatW80',XBAT80,MAT.xWash);
 kdef('xBatE96',XBAT96,MAT.xEarth);kdef('xBatE92',XBAT92,MAT.xEarth);kdef('xBatE86',XBAT86,MAT.xEarth);kdef('xBatE80',XBAT80,MAT.xEarth);

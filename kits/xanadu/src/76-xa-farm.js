@@ -51,7 +51,7 @@ function buildXaFarmhouse(G,o){reseed(30611+(o.v|0));const V=xV(o),YW=24,YD=20,M
  // the byre against the east wall: rubble, a shed roof of poles and earth, a rack of fodder
  if(V===2){for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',7*M+sx*4,0,-6+sz*2.2,.15,3.6,aged);vnGableRoof(7*M,3.6,-6,8.6,5,1.4,0,'vThatchB',xC(xPick(VPAL.thatch)),.5,'vGableW',aged);vB('vThatchB',7*M,0,-6,7.4,2.8,3.8,0,xC(xPick(VPAL.thatch)));}   // a pole hay barn instead of the byre
  else{vB('xRubB',7*M,0,-6,9,2.2,5,0,rub);vnShedRoof(7*M,2.2,-6,9.4,5.4,.5,0,'xEarthB',earth,.35,.3);for(let k=0;k<7;k++)beam('vWood',[M*(3.2+k*1.2),2.6,-8.9],[M*(3.2+k*1.2),2.15,-3.1],.1,.1,aged);
- vB('vDarkB',5*M,0,-3.5,1.6,1.8,.04,0);vB('vDarkB',9*M,0,-3.5,1.6,1.8,.04,0);vB('vWood',7*M,0,-2.6,8,.9,.08,0,aged);}
+ xnDoorway(5*M,0,-3.5,0,1.6,1.8,{out:0});xnDoorway(9*M,0,-3.5,0,1.6,1.8,{out:0});vB('vWood',7*M,0,-2.6,8,.9,.08,0,aged);}
  // the yard: dung cakes drying on the wall, a hay stack, the well, yaks, sacks, a cart
  for(let k=0;k<14;k++)kput('xDisc',[-YW/2+.36,1.2+(k%2)*.5,-8+k*1.2],qEuler(0,0,Math.PI/2),[.3,.06,.3],xC(0x5a4a34));
  kput('xPaintBall',[8,1.2,4],null,[2,1.4,2],xC(xPick(VPAL.thatch)));kput('vConeT',[8,1.6,4],null,[2.1,1.8,2.1],xC(xPick(VPAL.thatch)));vPst('vPost',8,3,4,.05,.8,aged);
@@ -67,7 +67,7 @@ function buildXaGranary(G,o){reseed(30621+(o.v|0));const V=xV(o),W=V===2?11:7,D=
  if(V===1){kput('xDrumE',[0,P,0],null,[W/2,H,W/2],xC(xPick(XPAL.earth)));kput('vConeT',[0,P+H-.1,0],null,[W/2+.5,3,W/2+.5],xC(xPick(VPAL.thatch)));vnDoor(0,P,W/2*.99,0,1,1.8,'vWood',aged,aged,false);vnLadder(0,0,W/2+1.2,0,P+.4,aged);vnSacks(-3.5,0,D/2+2,5);vnFolk(1,D/2+4,2,1.2);return;}   // the round granary
  const S=xnStack(0,P,0,W,D,0,[H],V===4?xC(xPick(XPAL.timber)):wash,'wash');if(V===4)vnFrame(0,P,0,W,H,D,0,xC(xPick(XPAL.dark)),.12);
  if(V===2)vB('xWashB',0,P,0,.3,H,D+.02,0,wash);
- for(const s of[-1,1])for(const z of[-3,-1,1,3])vB('vDarkB',s*(W/2*.99),P+1.2,z,.06,1.0,.22,0);
+ for(const s of[-1,1])for(const z of[-3,-1,1,3])xnRoom(s*(W/2*.99),P+1.2,z,.06,1.0,.22,0);
  for(const z of[-2.6,-.8,1,2.8])for(const s of[-1,1])vB('xPaint',s*(W/2*.99+.02),P+2.4,z,.06,.5,.5,0,trim);           // painted marks over the vents
  vnDoor(0,P,D/2*.99,0,1.1,1.9,'vWood',aged,aged,false);vB('vWood',0,P+2.1,D/2*.99+.15,1.9,.16,.3,0,aged);xnCorbels(0,P+2.1,D/2*.99,0,1.5,3,aged,.5);
  vB('xPaint',0,P+2.4,D/2*.99+.04,1.4,.6,.06,0,trim);xnRoundel(0,P+2.7,D/2*.99+.06,0,.5);

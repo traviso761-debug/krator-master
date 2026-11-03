@@ -21,10 +21,10 @@ function buildXaArena(G,o){reseed(31601+(o.v|0));const V=xV(o),R=V===1?18:22,H=V
  if(V===2){xnXHOct(R,[0,2,4,6],(cx,cz,a,L)=>{const f=loc(cx,cz,0,T/2,a);xnArch('xArchM',f[0],0,f[1],a,6,7.4,.6,null,{});});}   // v2: four mosaic gates round the ring, no gate block
  else{xnWall(0,0,R,12,H+2.5,T+2,0,wash,'wash');xnIwan(0,0,R+T/2+1,0,9,H+.5,1.4,wash,{guldasta:true});xnFlatRoof(0,H+2.5,R,11.4,T+1.7,0,wash,{band:true,gold:true,parapet:.5});
  xnGiltRoof(0,H+3.0,R,5.4,3.4,0,{frame:1.6,over:.9});xnRoundel(0,H+1.0,R+T/2+1+1.42,0,1.4);}
- vB('vDarkB',0,0,R-2.85,5,6.5,.1,0);kput('xArchS',[0,0,R-3.1],qEuler(0,Math.PI,0),[7,8,.5],stone);
+ xnDoorway(0,0,R-2.9,Math.PI,5,6.5);kput('xArchS',[0,0,R-3.1],qEuler(0,Math.PI,0),[7,8,.5],stone);
  // the seating: four rings of solid tiers stepping down to the sand; entrances through the lower tier
  for(let t=0;t<(V===1?3:4);t++){const r=R-T/2-1.1-t*2.2,h=(V===1?4.5:6.2)-t*1.55;xnXHOct(r,null,(cx,cz,a,L,k)=>{vB('vStone',cx,0,cz,L-.1,h,2.2,a,stone.clone().multiplyScalar(t%2?1:.94));
-  if(t===0&&(k===2||k===4||k===6)){const p=loc(cx,cz,0,-1.1,a);vB('vDarkB',p[0],0,p[1],2.4,2.6,.1,a);}});}
+  if(t===0&&(k===2||k===4||k===6)){const p=loc(cx,cz,0,-1.1,a);xnDoorway(p[0],0,p[1],a+Math.PI,2.4,2.6,{out:.05});}});}
  kput('xDisc',[0,0,0],null,[R-T/2-9.9,.16,R-T/2-9.9],sand);
  // the masts and the awnings: a mast on the wall at each corner and mid-side, cloth strips over the upper seats
  xnXHOct(R,null,(cx,cz,a,L)=>{for(const u of[-L*.4,0,L*.4]){const p=loc(cx,cz,u,-T*.8/2+.5,a);vPst('vPost',p[0],H,p[1],.1,5,tim);vBall('xGold',p[0],H+5.1,p[1],.12,gold);}
@@ -68,7 +68,7 @@ function buildXaBath(G,o){reseed(31621+(o.v|0));const V=xV(o),W=24,D=16,H=5.6;
  for(const sx of[-1,1])for(const sz of[-1,1]){const dx=sx*7.6,dz=-1+sz*4.4;kput('xDrumW',[dx,top-.5+.3,dz],null,[2.5,.6,2.5],wash);kput(V===1?'xDomeG':'xDomeW',[dx,top-.5+.9,dz],null,[2.6,2.8,2.6],V===1?gold:wash);
   for(let k=0;k<6;k++){const a=k/6*TAU;vBall('xGold',dx+Math.sin(a)*1.4,top+.4+2.0,dz+Math.cos(a)*1.4,.14,gold);}vBall('xGold',dx,top+.4+2.9,dz,.2,gold);}}
  // the boiler house and cistern behind, the woodpile; the fountain court in front
- vB('xRubB',-6,0,-D/2-3,7,3.4,5,0,rub);vnShedRoof(-6,3.4,-D/2-3,7.4,5.4,.7,Math.PI,'vCorr',null,.3,.1);vnChimney(-6,4.1,-D/2-4,4.5,.28,true);vB('vDarkB',-6,0,-D/2-.5,1.4,1.6,.06,0);
+ vB('xRubB',-6,0,-D/2-3,7,3.4,5,0,rub);vnShedRoof(-6,3.4,-D/2-3,7.4,5.4,.7,Math.PI,'vCorr',null,.3,.1);vnChimney(-6,4.1,-D/2-4,4.5,.28,true);xnDoorway(-6,0,-D/2-.5,0,1.4,1.6,{out:0});
  kput('xDrumS',[6,0,-D/2-3.2],null,[2.6,4.6,2.6],stone);vB('xWaterB',6,4.4,-D/2-3.2,3.6,.1,3.6,0,xC(XPAL.water));beam('vPipe',[6,3.8,-D/2-3.2],[3,3.8,-D/2],.12,.12,xC(0x2e2a26));
  for(let k=0;k<12;k++)vB('vWood',-11.5,.1+Math.floor(k/4)*.3,-D/2-2+ (k%4)*.6,2.4,.28,.28,0,xC(xPick(XPAL.timber)));
  xnPave(0,D/2+6,W-4,8,0,stone,2.4);xnFountain(0,0,D/2+6,2.4,stone);for(const s of[-1,1]){xnCypress(s*8,D/2+3.5,6);xnTree(s*8,D/2+8.5,4);vB('vStone',s*4.5,0,D/2+9,2.4,.5,.6,0,stone);}
@@ -79,7 +79,7 @@ function buildXaGarden(G,o){reseed(31631+(o.v|0));const V=xV(o),W=38,D=30;
  vnReg('Public garden',0,0,20,6);vnReg('Public garden — tea pavilion',0,-D/2+4,4,6);
  // the low wall with its tiled coping, arched openings on the front, corner posts with gold balls
  for(const s of[-1,1]){vB('vStone',s*(W/2-.25),0,0,.5,1.3,D,0,stone);vB('xTilesB',s*(W/2-.25),1.3,0,.8,.16,D+.3,0,tile);vB('vStone',0,0,s*(D/2-.25),W,1.3,.5,0,stone);vB('xTilesB',0,1.3,s*(D/2-.25),W+.3,.16,.8,0,tile);}
- for(const s of[-1,1]){vB('vDarkB',s*6,0,D/2-.25,3.2,1.3,.6,0);xnArch('xArchS',s*6,0,D/2+.05,0,4.4,3.0,.6,stone,{open:true});}vB('vDarkB',0,0,D/2-.25,3.6,1.3,.6,0);xnArch('xArchS',0,0,D/2+.05,0,5,3.4,.6,stone,{open:true});
+ for(const s of[-1,1]){xnRoom(s*6,0,D/2-.25,3.2,1.3,.6,0);xnArch('xArchS',s*6,0,D/2+.05,0,4.4,3.0,.6,stone,{open:true});}xnRoom(0,0,D/2-.25,3.6,1.3,.6,0);xnArch('xArchS',0,0,D/2+.05,0,5,3.4,.6,stone,{open:true});
  for(const sx of[-1,1])for(const sz of[-1,1]){vB('vStone',sx*(W/2-.4),0,sz*(D/2-.4),.9,2,.9,0,stone);vBall('xGold',sx*(W/2-.4),2.3,sz*(D/2-.4),.24,xC(xPick(XPAL.gold)));}
  // the chahar bagh, a cypress walk down the axis, the tea pavilion at the back, benches, a shrine
  if(V===1){xnPool(0,.02,2,6,D-12,0,stone);for(const s of[-1,1])for(let k=0;k<6;k++){xnCypress(s*5,D/2-4-k*3.6,rr(5,7));xnTree(s*11,D/2-5-k*3.6,rr(3.5,4.5));}}   // v1: a long pool between cypress walks

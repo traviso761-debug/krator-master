@@ -14,6 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/70-xa-tex.js` | 10.1 | [draw] | 0 | 13 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/71-xa-mat.js` | 11.2 | [draw] | 16 | 0 | 0 | 0 | 0 | 30 | 2 | 0 | 0 | 0 | 0 |  |
+| `src/71c-xa-openings.js` | 4.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | real doors and glass: leaves registered in KDOOR (core/door) through IZDOOR.leaf (69e5), panes and room cards as kit items; stable door ids |
 | `src/72-xa-helpers.js` | 32.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-xa-dwell.js` | 25.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-xa-trade.js` | 8.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

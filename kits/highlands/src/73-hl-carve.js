@@ -172,7 +172,7 @@ function hnTower(x,y,z,w,h,ry,o){o=o||{};const trimC=o.trimC||hC(HPAL.white),bea
   for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const f=loc(x,z,0,(w+.8)/2,a);kput('hLaceB',[f[0],top+.7,f[1]],qEuler(0,a,0),[w+.7,.9,1],beamC);
    const n=Math.max(2,Math.round(w/1.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(w+.8)/2+(w+.8)*i/n,(w+.8)/2-.08,a);vPst('vPost',p[0],top+.25,p[1],.09,LH,beamC);}
    for(let i=0;i<n;i++){const p=loc(x,z,-(w+.8)/2+(w+.8)*(i+.5)/n,(w+.8)/2-.08,a);kput('hKeelW',[p[0],top+LH-.55,p[1]],qEuler(0,a,0),[(w+.8)/n-.18,.6,.1],beamC);}}
-  vB('vDarkB',x,top+.25,z,w-.3,LH,w-.3,ry);top+=LH+.25;vB('vWood',x,top,z,w+1.1,.2,w+1.1,ry,beamC);top+=.2;}
+  hnRoom(x,top+.25,z,w-.3,LH,w-.3,ry);top+=LH+.25;vB('vWood',x,top,z,w+1.1,.2,w+1.1,ry,beamC);top+=.2;}
  const roof=o.roof||'spire',rc=o.roofC||hC(vPick(HPAL.slate));
  if(roof==='spire'){kput('hPyrSc',[x,top-.2,z],qEuler(0,ry,0),[w+1.2,w*2.1,w+1.2],rc);
   for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const p=loc(x,z,0,w*.42,a);vB('vPlaster',p[0],top+w*.35,p[1],w*.28,w*.3,.5,a,trimC);vnGableRoof(p[0],top+w*.35+w*.3,p[1],w*.28,.5,w*.22,a+Math.PI/2,'hGableSc',rc,.08);}

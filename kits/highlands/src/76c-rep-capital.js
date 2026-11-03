@@ -16,14 +16,14 @@ function buildHlRepArsenal(G,o){reseed(22001+(o.v|0));const W=46,D=34,S=.5,H1=4.
  // the front range and its gate tower
  hnRustic(0,S,D/2-4,W,H1,8,0,stone);hnRBQuoins(0,S,D/2-4,W,H1,8,0,ash);hnFachBox(0,S+H1,D/2-4,W,3.2,8,0,null,null,lit);
  hnGable(0,S+H1+3.2,D/2-4,W,8,1.2,0,'hGableSc',slate,.6,'vGablePl',stone);
- vB('vStone',0,0,D/2+.2,9,S+H1+9,6,0,stone);hnRBQuoins(0,0,D/2+.2,9,S+H1+9,6,0,ash);vB('vDarkB',0,S,D/2+3.22,4.4,5,.1,0);
+ vB('vStone',0,0,D/2+.2,9,S+H1+9,6,0,stone);hnRBQuoins(0,0,D/2+.2,9,S+H1+9,6,0,ash);hnDoorway(0,S,D/2+3.2,0,4.4,5);
  for(let k=0;k<5;k++)for(const s of[-1,1]){const p=loc(0,D/2+.2,-4.5+k*2.25,s*3,0);vB('vStone',p[0],S+H1+9,p[1],1.2,1.2,.9,0,stone);}   // merlons
  hnEmblem(0,S+6.6,D/2+3.28,0,2.4);for(const s of[-1,1]){vPst('vPipe',s*3.8,S+H1+9,D/2+2.8,.06,6,hC(0x2e2a26));vB('hPaint',s*3.8+.9,S+H1+13.6,D/2+2.8,1.8,1.2,.03,0,red);}
  for(const u of[-19,-15,-11,11,15,19])vnWin(u,S+1.4,D/2+.02,0,1.2,1.8,lit,'vStone',ash);
  // the side ranges
  for(const s of[-1,1]){const x=s*(W/2-4);hnRustic(x,S,-2,8,H1,D-12,0,stone);hnFachBox(x,S+H1,-2,8,3,D-12,0,null,null,lit);hnGable(x,S+H1+3,-2,D-12,8,1.2,Math.PI/2,'hGableSc',slate,.6,'vGablePl',stone);}
  // the magazine: a turf vault behind a stone portal
- kput('hBatterRub',[0,S,-D/2+5],null,[W-18,5.5,9],hC(0x6a7a4a));vB('vStone',0,S,-D/2+9.6,8,4.2,1.2,0,stone);vB('vDarkB',0,S,-D/2+10.22,3,3,.08,0);vB('vIron',0,S+3,-D/2+10.3,3.4,.2,.1,0,rust);
+ kput('hBatterRub',[0,S,-D/2+5],null,[W-18,5.5,9],hC(0x6a7a4a));vB('vStone',0,S,-D/2+9.6,8,4.2,1.2,0,stone);hnDoorway(0,S,-D/2+10.2,0,3,3,{c:rust});vB('vIron',0,S+3,-D/2+10.3,3.4,.2,.1,0,rust);
  // the drill court: rocket racks on trestles
  for(let r=0;r<3;r++){hlRngSkip(6);hnFurn('hl_rep_rocket_rack',0,S,-2+r*4,0,{},.25,0);}   // (the trestles and rockets drew 6 colours)
  vnFolk(0,D/2+6,4,3);}

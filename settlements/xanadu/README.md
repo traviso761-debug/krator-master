@@ -38,6 +38,14 @@ python3 tools/erewhon-map.py <map.png> [--preview out.png]     # regenerate targ
 python3 verify.py dist/erewhon.html --assert --views "Overview,The palace precinct" --out shots/er   # ~2 min a shot in SwiftShader
 ```
 
+## Doors and glass (core/door)
+
+The kit's doors are real leaves and its windows real glass (`kits/xanadu/README.md`, "Doors and glass"): the build reads
+core/door's `10`, `20` and `90` and the Vernacular's `69e5-iziz-openings.js` in place (`DOOR_FILES`), `src/90-xa-doors.js` hands
+each bake's leaves to `KDOORHOST` (Erewhon bakes chunk by chunk: `90b-er-build.js` calls `xaDoorsBind()` after each) with the
+frame tick, and `99-start.js` gives E and its tip. Every door is locked (the kit's bodies are solid; the pages have no core/walk
+and no interiors). `window._doors` counts the doors, the panes and the `vDarkB` left (wells, a shaft, ovens and kilns).
+
 ## Level of detail (core/lod)
 
 The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and

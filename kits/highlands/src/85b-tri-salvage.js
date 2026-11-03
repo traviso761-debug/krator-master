@@ -75,7 +75,7 @@ function buildHlTriSiloDrum(G,o){reseed(26031+(o.v|0));const R=3,H=3,RO=R+1.3;
  vPst('hTRDisc',0,0,0,RO+.2,.3,rub);kput('hSiloC',[0,.3,0],null,[R,H,R],corr);
  kput('hTRBandCyl',[0,1.5,0],null,[R+.05,.7,R+.05],null);kput('vHoop',[0,H+.2,0],qEuler(Math.PI/2,0,0),[R+.03,R+.03,1.4],hC(vPick(HSV.rust)));
  vnDoor(0,.3,R+.03,0,1,1.9,'vWood',bam,hC(0x5a4a3a),false);
- for(const a of[1.1,-1.1]){const x=Math.sin(a)*(R+.02),z=Math.cos(a)*(R+.02);vB('vDarkB',x,1.6,z,.7,.6,.06,a);}
+ for(const a of[1.1,-1.1]){const x=Math.sin(a)*(R+.02),z=Math.cos(a)*(R+.02);hnRoom(x,1.6,z,.7,.6,.06,a);}
  for(let k=0;k<12;k++){const a=k/12*TAU+.13;vPst('hBamboo',Math.sin(a)*RO,.3,Math.cos(a)*RO,.08,H-.1,bam);}
  vnThatchCone(0,H+.3,0,RO+.3,4.4,th);
  vPst('vPost',0,H+4.2,0,.07,1,log);kput('hPaintBall',[0,H+5.2,0],null,[.18,.22,.18],hC(HPAL.black));

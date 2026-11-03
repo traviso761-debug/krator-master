@@ -50,8 +50,8 @@ function hnRBQuoins(x,y,z,w,h,d,ry,qc){qc=qc||hC(vPick(HPAL.ashlar));const n=Mat
 function hnRBBars(x,y,z,ry,w,h){for(let i=1;i<5;i++){const p=loc(x,z,-w/2+w*i/5,.2,ry);vB('vIron',p[0],y,p[1],.05,h,.05,ry,hC(hRBIRON));}
  const p=loc(x,z,0,.2,ry);vB('vIron',p[0],y+h*.5,p[1],w,.05,.05,ry,hC(hRBIRON));}
 // iron-bound double door, shut: dark recess, two board leaves with iron straps and studs, stone or timber surround
-function hnRBIronDoor(x,y,z,ry,w,h,frame,c,leafC){frame=frame||'vStone';const f=loc(x,z,0,.03,ry);vB('vDarkB',f[0],y,f[1],w,h,.1,ry);const I=hC(hRBIRON);
- for(const s of[-1,1]){const l=loc(x,z,s*w/4,.09,ry);vB('vWood',l[0],y,l[1],w/2-.04,h-.04,.08,ry,leafC||hC(vPick(HPAL.tar)));
+function hnRBIronDoor(x,y,z,ry,w,h,frame,c,leafC){frame=frame||'vStone';const f=loc(x,z,0,.03,ry);hnRoom(f[0],y,f[1],w,h,.1,ry);const I=hC(hRBIRON);
+ for(const s of[-1,1]){const l=loc(x,z,s*w/4,.09,ry);IZDOOR.leaf(l[0],y,l[1],ry,w/2-.04,h-.04,.08,leafC||hC(vPick(HPAL.tar)),{locked:true,mirror:s>0});
   for(const t of[.18,.5,.82]){const b=loc(x,z,s*w/4,.14,ry);vB('vIron',b[0],y+h*t-.06,b[1],w/2-.12,.12,.03,ry,I);}
   const r=loc(x,z,s*.12,.16,ry);vBall('vBall',r[0],y+h*.5,r[1],.08,I);}
  for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.12),.12,ry);vB(frame,q[0],y,q[1],.24,h+.2,.24,ry,c);}
@@ -327,7 +327,7 @@ function buildHlRepTheater(G,o){reseed(20741+(o.v|0));const R=14,DH=10.5,DZ=-1.5
  hnBochka(0,6.2,-5.9,9.8,3.8,1.9,0,'hKeelSc',roofC);hnForm('hFormA',0,6.25,-3.95,0,3.4,1.3);
  // the stage house: stucco below, half-timber above, a dark stage opening, the tent roof and a flag
  hnStucco(0,0,-11.5,11,7.5,8,0,cream,ash);hnFachBox(0,7.5,-11.5,11,3.8,8,0,cream,beamC,lit);hnFachBox(0,11.3,-11.5,11,3.8,8,0,cream,beamC,lit);
- vB('vDarkB',0,1.4,-7.46,7.4,4.6,.1,0,null);for(const s of[-1,1])vB('vStone',s*3.95,1.4,-7.4,.5,4.8,.25,0,ash);vB('vStone',0,6,-7.4,8.4,.5,.25,0,ash);
+ hnRoom(0,1.4,-7.46,7.4,4.6,.1,0);for(const s of[-1,1])vB('vStone',s*3.95,1.4,-7.4,.5,4.8,.25,0,ash);vB('vStone',0,6,-7.4,8.4,.5,.25,0,ash);
  vB('hPaint',0,6,-7.3,7.4,.02,.02,0,hC(HPAL.red));for(let i=0;i<7;i++)kput('hPaint',[-3.2+i*1.07,5.3,-7.36],null,[.9,1.2,.05],hC(i%2?HPAL.red:0x8a2420));
  const t=hnTent(0,15.1,-11.5,7.1,9.5,'hTentSc',roofC);hnOnion(0,t-1.2,-11.5,.6,'G',hC(HPAL.gold[0]),.6,'hOctP',cream);hnRBFlag(0,t+.8,-11.5,0,2.4,hC(HPAL.teal));
  // the entrance porch

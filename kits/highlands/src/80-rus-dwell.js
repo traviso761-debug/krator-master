@@ -180,10 +180,10 @@ function buildHlRusRichA(G,o){reseed(22151+(o.v|0));const W=13,D=11,DB=10,H1=3,H
  // barn behind: aged boards, big doors on the side, a hay ramp at the back
  const bz=-D/2-DB/2;hnRUBoards(0,0,bz,W,y4,DB,0,barn,null,barn.clone().multiplyScalar(.8));
  vB('hRubB',0,0,bz,W+.24,.6,DB+.24,0,hC(vPick(HPAL.rubble)));
- for(const s of[-1,1]){const p=[W/2+.05,0,bz+s*1.4];vB('vDarkB',p[0],0,p[2],.1,3.2,2.4,0);vB('vWood',p[0]+.08,0,p[2],.08,3.1,2.3,0,barn.clone().multiplyScalar(.85));}
+ for(const s of[-1,1]){const p=[W/2+.05,0,bz+s*1.4];hnRoom(p[0],0,p[2],.1,3.2,2.4,0);IZDOOR.leaf(p[0]+.08,0,p[2],Math.PI/2,2.3,3.1,.08,barn.clone().multiplyScalar(.85),{locked:true});}
  vnWin(W/2,5,bz,Math.PI/2,1.6,1.6,'shut','vWood',barn);
  // the hay ramp (Tenne): an earth ramp with a timber bridge to the loft door at the back
- vB('vDarkB',0,y2,-D/2-DB-.04,3,2.8,.1,0);beam('vWood',[0,.1,-D/2-DB-6.5],[0,y2-.05,-D/2-DB-.1],3,.2,barn);
+ hnDoorway(0,y2,-D/2-DB,Math.PI,3,2.8,{c:barn});beam('vWood',[0,.1,-D/2-DB-6.5],[0,y2-.05,-D/2-DB-.1],3,.2,barn);
  for(const t of[.35,.7])for(const s of[-1,1])vPst('vPost',s*1.35,0,-D/2-DB-6.5*(1-t)-.1,.1,y2*t-.1,barn);
  for(const s of[-1,1])hnDeckRail([s*1.5,.1,-D/2-DB-6.5],[s*1.5,y2-.05,-D/2-DB-.1],0,barn,1);
  // one roof over both, ridge running front to back

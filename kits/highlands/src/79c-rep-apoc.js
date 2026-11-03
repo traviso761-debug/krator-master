@@ -24,7 +24,7 @@ function hnCont(x,y,z,ry,L,c,o){o=o||{};const H=2.6,D=2.44,dk=c.clone().multiply
  {const p=loc(x,z,L/2+.02,0,ry);vB('vIron',p[0],y+.15,p[1],.04,H-.3,D-.3,ry,dk);for(const u of[-.75,-.35,.35,.75]){const q=loc(x,z,L/2+.06,u,ry);vB('vIron',q[0],y+.2,q[1],.04,H-.4,.04,ry,hC(0x2e2a26));}}
  for(const u of o.win||[]){const p=loc(x,z,u,D/2+.02,ry);hnLatWin(p[0],y+.95,p[1],ry,1,1,o.kind||'glass',null);}
  if(o.door!=null){const p=loc(x,z,o.door,D/2+.03,ry);vnDoor(p[0],y+.02,p[1],ry,.9,2.05,'hPaint',hC(vPick(HFRAME.post)),hC(vPick(HPAL.tar)),false);}
- if(o.shop){const p=loc(x,z,0,D/2-.02,ry);vB('vDarkB',p[0],y+.1,p[1],L-.5,H-.45,.06,ry);const a=loc(x,z,0,D/2+.75,ry);
+ if(o.shop){const p=loc(x,z,0,D/2-.02,ry);hnRoom(p[0],y+.1,p[1],L-.5,H-.45,.06,ry);const a=loc(x,z,0,D/2+.75,ry);
   kput('vClothB',[a[0],y+H-.28,a[1]],qEuler(0,ry,0).multiply(qEuler(.35,0,0)),[L-.2,.05,1.6],hC(vPick([0xc03a2a,0x2e8a88,0xd8a030,0x3a6aa8])));
   const k=loc(x,z,0,D/2+.3,ry);vB('vWood',k[0],y,k[1],L-.8,.95,.5,ry,hC(vPick(HPAL.aged)));}}
 function hnSolar(x,y,z,ry,w,d){for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.2),0,ry);vB('vIron',p[0],y,p[1],.06,.55,.06,ry,hC(0x3a3430));}
@@ -52,7 +52,7 @@ function buildHlRepHullVault(G,o){reseed(21841+(o.v|0));const L=26,R=8.2,arc=Mat
   vB('hPlankB',0,.4,s*(hw-.45),L-.4,eave-.9,.12,0,plank);vnPatch(rr(-8,8),.8,s*(hw-.35),s>0?0:Math.PI,5,1.8,6);vnPatch(rr(-8,8),.8,s*(hw-.35),s>0?0:Math.PI,4,1.6,5);
   for(const x of[-9,-3,3,9]){const p=[x,s*(hw-.38)];hnLatWin(p[0],1.6,p[1],s>0?0:Math.PI,1.3,.8,lit,null);}}
  for(const e of[-1,1]){const x=e*(L/2-.1);for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.15;vB('hPlankB',x,.4,u,.14,h,.82,0,plank);}}   // the ends, stepped under the arc
- const fx=L/2+.05;vB('vDarkB',fx,.4,0,.08,5.2,6,0);for(const s of[-1,1])vB('hPlankB',fx+.1,.4,s*2.4,.1,5.2,1.8,0,plank.clone().multiplyScalar(1.15));vB('vIron',fx+.2,5.7,0,.1,.12,8,0,iron);
+ const fx=L/2+.05;hnRoom(fx,.4,0,.08,5.2,6,0);for(const s of[-1,1])vB('hPlankB',fx+.1,.4,s*2.4,.1,5.2,1.8,0,plank.clone().multiplyScalar(1.15));vB('vIron',fx+.2,5.7,0,.1,.12,8,0,iron);
  hnSignBoard(fx+.08,6.4,0,Math.PI/2,5,1.1,'rocket');
  for(const x of[-6,6]){vnBarrel(x,.4+yc+R-.05,0,.5,.8,rust);kput('vConeI',[x,.4+yc+R+.75,0],null,[.6,.35,.6],iron);}
  for(let k=0;k<4;k++)for(let j=0;j<hri(3,6);j++)hlRngSkip(4);FURNISH('hl_rep_plate_stack',L/2+2.5,0,-hw+3.1,Math.PI/2,{v:0});}   // the plates stacked by the doors
@@ -163,7 +163,7 @@ function buildHlRepGarage(G,o){reseed(21901+(o.v|0));const lit=vLit()?'lit':'gla
  // the carport and the wreck
  for(const x of[1.2,6.4])for(const z of[-2.6,2.6])kput('hCol',[x,0,z],null,[.12,3,.12],hC(vPick(HFRAME.postPoor)));
  kput('vCorr',[3.8,3.2,0],qEuler(0,0,-.16),[6,.1,6.2],corr);
- vB('vRustB',4,.55,0,4.2,.9,1.9,0,rust);vB('vRustB',3.7,1.45,0,2.2,.7,1.8,0,rust);vB('vDarkB',3.7,1.5,0,2.3,.5,1.82,0);
+ vB('vRustB',4,.55,0,4.2,.9,1.9,0,rust);vB('vRustB',3.7,1.45,0,2.2,.7,1.8,0,rust);hnPlate(3.7,1.5,0,2.3,.5,1.82,0);
  for(const x of[2.6,5.4])for(const z of[-.95,.95]){vB('boxCR',x,0,z,.4,.4,.4,0,hC(0x8a8478));}
  FURNISH('pa_tyre_stack',7.6,0,-2,0,{v:1});   // tyres
  // the water tank on its stand, drums, the tool chest, the sign, a lamp
@@ -189,7 +189,7 @@ function buildHlRepContShops(G,o){reseed(21911+(o.v|0));const lit=vLit()?'lit':'
 // the side, a rooftop box of greens; a leaning utility pole with lanterns and wires to the eaves.
 function buildHlRepLanternStall(G,o){reseed(21921+(o.v|0));const lit=vLit()?'lit':'glass',post=hC(vPick(HFRAME.post)),red=hC(vPick(HPAL.roofRed)),plank=hC(vPick(HFRAME.plank)),log=hC(vPick(HPAL.aged));
  vnReg('Lantern stall',0,0,6,11);
- vB('hPlankB',0,0,-1.6,7,3,.12,0,plank);for(const s of[-1,1])vB('hPlankB',s*3.44,0,0,.12,3,3.3,0,plank);vB('vDarkB',0,.05,-1.5,6.7,2.9,.05,0);
+ vB('hPlankB',0,0,-1.6,7,3,.12,0,plank);for(const s of[-1,1])vB('hPlankB',s*3.44,0,0,.12,3,3.3,0,plank);hnRoom(0,.05,-1.5,6.7,2.9,.05,0);
  for(const x of[-3.4,-1.1,1.1,3.4])kput('hCol',[x,0,1.62],null,[.12,3,.12],post);vB('hPaint',0,2.9,1.62,7.1,.22,.2,0,post);
  hlRngSkip(54);   // the shelves of pots and the counter stood in the stall: the interiors' room (the pots drew 54 numbers)
  for(let k=0;k<7;k++)hnLantern(-3+k,2.75,1.9);

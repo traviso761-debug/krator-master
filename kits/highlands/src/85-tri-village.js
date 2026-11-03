@@ -57,7 +57,7 @@ function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5
   hnTRGrid(G,(u,v)=>{const z=(u*2-1)*Zw;const top=Math.max(wt+.02,V.y(s*Xw,z)-.12);const y=lerp(wt-.05,top,v);return[s*(Xw+.1),y,z*-s,u,(y-wt+.05)/gt];},30,8,MAT.formA);
   vnDoor(s*Xw,P,0,s*Math.PI/2,1.6,2.6,'hPaint',blk,tar,false);hnForm('hFormA',s*(Xw+.02),P+3,0,s*Math.PI/2,5,2.5);}
  // the entrance: great doors between tall totem posts, a crest lintel
- vB('vDarkB',0,P,Zw+.02,3.2,4.4,.1,0);for(const s of[-1,1])kput('vWood',[s*1.95,P+2.2,Zw+.7],qEuler(0,s*.5,0),[1.5,4.3,.14],tar);
+ hnRoom(0,P,Zw+.02,3.2,4.4,.1,0);for(const s of[-1,1])kput('vWood',[s*1.95,P+2.2,Zw+.7],qEuler(0,s*.5,0),[1.5,4.3,.14],tar);
  for(const s of[-1,1]){hnTotemPole(s*2.3,P,Zw+.35,.36,5.2,0,true);hnForm('hFormV',s*3.2,P+.1,Zw+.02,0,.8,4.4);}
  hnForm('hFormA',0,P+4.6,Zw+.04,0,4.6,2.1);
  // the gallery under the eaves: totem posts carrying the shell, a carved rail along the platform edge

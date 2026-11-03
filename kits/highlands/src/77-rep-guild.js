@@ -63,7 +63,7 @@ function buildHlRepGuildAlch(G,o){reseed(21011+(o.v|0));const LX=-12,LZ=3,W=20,D
  hnFrieze(LX,y3-.55,FZ+.02,0,W,.5);
  const top=hnGable(LX,y3,LZ,W,D,.95,0,'hGableSc',slate,.6,'vGablePl',cream);hnBarge(LX,y3,LZ,W,D,.95*D/2,0,.6,hC(HPAL.white),'lace');
  // ridge vent: a louvred monitor under its own little gable
- vB('vDarkB',LX,top-.3,LZ,12,1.2,1.4,0);for(const s of[-1,1])for(let k=0;k<3;k++)vB('vWood',LX,top-.1+k*.3,LZ+s*.72,12,.08,.14,0,tar);
+ hnRoom(LX,top-.3,LZ,12,1.2,1.4,0);for(const s of[-1,1])for(let k=0;k<3;k++)vB('vWood',LX,top-.1+k*.3,LZ+s*.72,12,.08,.14,0,tar);
  for(const s of[-1,1])vB('vWood',LX+s*6,top-.3,LZ,.2,1.2,1.5,0,tar);
  hnGable(LX,top+.9,LZ,12.2,1.8,.7,0,'hGableSc',slate,.3);
  // fume stacks and flues, lightning rods
@@ -86,7 +86,7 @@ function buildHlRepGuildAlch(G,o){reseed(21011+(o.v|0));const LX=-12,LZ=3,W=20,D
  vB('hRBDirt',15,0,7,20,.05,6,0,hC(0x5a4a3e));for(let i=0;i<7;i++)kput('vDarkB',[rr(8,24),.06,rr(4.8,9.2)],qEuler(0,rng()*3,0),[rr(.8,1.8),.02,rr(.8,1.6)]);
  kput('hRBBerm',[25.8,0,7],qEuler(0,Math.PI/2,0),[8,3,3],turf);
  for(const z of[5,7,9]){kput('vWood',[24.2,1,z],qEuler(0,0,rr(-.15,.15)),[.2,2,1.4],hC(0x2a2420));kput('vWood',[23.6,.15,z+rr(-.4,.4)],qEuler(0,rng()*3,Math.PI/2),[.12,1,.3],hC(0x2a2420));}
- vB('hRubB',7,0,7,3.4,2.2,3.2,0,rub);vB('hTurfB',7,2.2,7,3.8,.5,3.6,0,turf);vB('vDarkB',8.72,1.3,7,.1,.35,2,0);vPst('vPipe',7.6,2.7,6.2,.06,1.2,hC(hRBIRON));
+ vB('hRubB',7,0,7,3.4,2.2,3.2,0,rub);vB('hTurfB',7,2.2,7,3.8,.5,3.6,0,turf);hnRoom(8.72,1.3,7,.1,.35,2,0);vPst('vPipe',7.6,2.7,6.2,.06,1.2,hC(hRBIRON));
  for(const s of[-1,1])hnRBPennant(15+s*9,0,10.6,Math.PI/2,5.5,red);hnRBFlag(4,0,11.5,0,6,red,false);
  hnTotem(LX+4.5,0,FZ+2.4,.36,6.5,0,{hat:true,painted:true});
  hnRBLamps([[LX-3,FZ+3],[LX+3,FZ+3],[13,-3.6]],3.4);vnFolk(LX,FZ+4,3,2.5);kput('figB',[7.8,0,9.3],null,1,hC(0x3a4a3a));kput('figH',[7.8,0,9.3],null,1,hC(0xc9a17e));}
@@ -179,7 +179,7 @@ function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D
  hnBracketRow(HX-6,y3-.7,FZ,0,4.6,2,.5);hnBracketRow(HX+6,y3-.7,FZ,0,4.6,2,.5);
  // the sawtooth workshop on the west end
  const AX=HX-W/2-3.2;vB('vPlaster',AX,0,HZ,6.4,4,D,0,cream);hnRBWins(AX,.9,HZ+D/2,0,5,2,2,2.4,lit,'vIron',iron);hnRBWins(AX-3.2,.9,HZ,-Math.PI/2,D-2,3,1.6,2.2,lit,'vIron',iron);
- for(let i=0;i<3;i++){const z0=HZ-D/2+i*D/3;vnShedRoof(AX,4,z0+D/6,6.4,D/3,1.4,Math.PI,'hGableSc',slate,.15,.14);vB('vWinGlass',AX,4,z0+D/3-.08,6.2,1.36,.1,0);
+ for(let i=0;i<3;i++){const z0=HZ-D/2+i*D/3;vnShedRoof(AX,4,z0+D/6,6.4,D/3,1.4,Math.PI,'hGableSc',slate,.15,.14);hnPlate(AX,4,z0+D/3-.08,6.2,1.36,.1,0);
   for(let k=0;k<6;k++)vB('vIron',AX-2.6+k*1.05,4,z0+D/3-.02,.05,1.36,.06,0,iron);}
  // the clock tower (Travis: after the clocktower reference) — the guild's own, a great clockwork wheel across its face
  hnRBClockTower(TX,TZ,{B:6.5,TH:9.5,roof:grn,oak:tar.clone().multiplyScalar(1.15),tar,rub:hC(vPick(HPAL.rubble)),ash,bigGear:true});

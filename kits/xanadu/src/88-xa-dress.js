@@ -61,7 +61,7 @@ const _xaKputPalopo=kput;
 kput=function(name,p,q,s,c){const C=VERN.cur;if(!C||!C.o.palopo||C.palBusy)return _xaKputPalopo(name,p,q,s,c);const P=C.pal;
  const bigBox=(name==='vWood'||name==='vStone')&&Array.isArray(s)&&s[0]>=6&&s[1]>=2.6&&s[2]>=6;   // the board and brick storeys of the Turkish houses
  if(XPALOPO_WALL.has(name)||bigBox){const S=Array.isArray(s)?s:[s,s,s];if(S[0]>=2.4&&S[1]>=2.0&&S[2]>=1.2)C.walls.push({name,p,q,s:S});return _xaKputPalopo(name,p,q,s,P.base);}
- if((name==='vWinLit'||name==='vWinGlass'||name==='vDarkB')&&Array.isArray(s)&&s[0]>.35&&s[1]>.35)C.opens.push({p,q,s});   // an opening: the mural fitting avoids it
+ if((name==='vWinLit'||name==='vWinGlass'||name==='vDarkB'||name==='vWinClear'||name==='vDoorLeaf'||name==='xStainedB')&&Array.isArray(s)&&s[0]>.35&&s[1]>.35)C.opens.push({p,q,s});   // an opening: the mural fitting avoids it
  if(name==='xPaint'&&c&&(c.r>.03||c.g>.03||c.b>.03))return _xaKputPalopo(name,p,q,s,P.trim);          // painted trim goes orange / yellow; the black surrounds stay black
  if(name==='vWood'&&Array.isArray(s)&&s[1]<.4&&Math.max(s[0],s[2])>1)return _xaKputPalopo(name,p,q,s,P.trim);   // lintels, sills, head beams
  if(name==='xValance')return _xaKputPalopo(name,p,q,s,P.trim2);

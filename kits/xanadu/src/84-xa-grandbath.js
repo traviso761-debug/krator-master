@@ -13,7 +13,7 @@ TEX.xGlass=canvasTex(128,256,(g,w,h)=>{const cols=['#e03030','#2860d8','#30b040'
  g.strokeStyle='#1a1614';g.lineWidth=2;for(let k=0;k<=w;k+=cw){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();}for(let k=0;k<=h;k+=ch){g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}
  for(let k=0;k<12;k++){const a=k/12*TAU;g.beginPath();g.moveTo(rc[0],rc[1]);g.lineTo(rc[0]+Math.cos(a)*w*.42,rc[1]+Math.sin(a)*w*.42);g.stroke();}g.beginPath();g.arc(rc[0],rc[1],w*.42,0,TAU);g.stroke();});
 TEX.xGlass.wrapS=TEX.xGlass.wrapT=THREE.ClampToEdgeWrapping;
-MAT.xGlass=new THREE.MeshBasicMaterial({map:TEX.xGlass,side:THREE.DoubleSide});
+MAT.xGlass=new THREE.MeshBasicMaterial({map:TEX.xGlass,side:THREE.DoubleSide,transparent:true,opacity:KGLASS.SPEC.stained.opacity+.15,depthWrite:false});MAT.xGlass.userData.kglass='stained';   // stained glass you see the light through (core/door's kind)
 // the bath tile, after the picture: on each tile an orange ground, a half circle off the left edge and one off the
 // right, so that across the joints the circles close — red and purple in a checker — and the orange left between
 // them reads as pointed lenses running up the wall; dark grout on the joints, a glossy glaze

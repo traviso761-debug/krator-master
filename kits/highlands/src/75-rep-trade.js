@@ -79,7 +79,7 @@ function buildHlRepTavernA(G,o){reseed(20401+(o.v|0));const W=11,D=20,Y0=.6,H=3.
  const yb=yw+4;hnBalcony(0,yb,zf,0,2.2,.9,tar,trim,false);vnDoor(0,yb,zf,0,.85,1.65,'vWood',tar,tar,false);
  for(const s of[-1,1])vnWin(s*2.6,yw+.6,zf,0,.6,.8,'glass','hPaint',trim);
  // smoke louvre on the ridge
- vB('vWood',0,yw+rise-.6,ZC-3,1.4,1.3,2.2,0,log);for(const s of[-1,1])vB('vDarkB',s*.71,yw+rise-.1,ZC-3,.02,.5,1.8,0);
+ vB('vWood',0,yw+rise-.6,ZC-3,1.4,1.3,2.2,0,log);for(const s of[-1,1])hnRoom(s*.71,yw+rise-.1,ZC-3,.02,.5,1.8,0);
  vnGableRoof(0,yw+rise+.7,ZC-3,2.8,2,1,Math.PI/2,'vShingleB',sh,.25);
  // outside: long tables and benches, a fire, barrels, a hanging sign
  const tz=zf+PD+4.4;for(const x of[-3.4,3.4])hnRATable(x,tz,Math.PI/2,5.2,pine);hnFirepit(0,0,tz+.6,.7);
@@ -152,7 +152,7 @@ function buildHlRepInn(G,o){reseed(20431+(o.v|0));const W=26,H1=3.4,H2=3,S=.4,yT
  vnReg('Coaching inn — front range',0,8,13,yT+6.5);vnReg('Coaching inn — wings and yard',0,-4,13,yT+3.8);
  // FRONT RANGE (z 4…12): two stone blocks either side of the carriage passage, two timber storeys over all
  const fz=8,fd=8,gw=4.4;for(const s of[-1,1]){const bw=W/2-gw/2;hnStucco(s*(gw/2+bw/2),0,fz,bw,S+H1,fd,0,wall,ash);}
- vB('vDarkB',0,0,fz,gw,S+H1-.1,fd-.2,0);vB('vWood',0,S+H1-.3,fz,gw,.3,fd,0,beamC);vnPaving(0,.03,fz,gw,fd,0,hC(vPick(HPAL.rubble)),10);
+ vB('vWood',0,S+H1-.3,fz,gw,.3,fd,0,beamC);   /* the passage is open: the court shows through it */vnPaving(0,.03,fz,gw,fd,0,hC(vPick(HPAL.rubble)),10);
  for(const s of[-1,1])kput('hRAArchS',[0,0,fz+s*(fd/2+.12)],null,[gw+1.6,S+H1,.3],ash);
  hnForm('hFormA',0,S+H1-.6,fz+fd/2+.28,0,1.2,.6);
  for(const u of[-10.5,-8,-5.2,5.2,8])vnWin(u,S+1,fz+fd/2,0,.9,1.4,lit,'vStone',ash);
@@ -169,7 +169,7 @@ function buildHlRepInn(G,o){reseed(20431+(o.v|0));const W=26,H1=3.4,H2=3,S=.4,yT
  hnRAHangSign(-4.4,S+3.2,fz+fd/2,0,trim);
  for(const s of[-1,1])hnForm('hFormT',s*(W/2+.08),yT+1.1,fz,s*Math.PI/2,2.6,1.3);
  // bell cupola on the ridge
- {const cy=rt-.6;vB('vWood',0,cy,fz,1.8,1.6,1.8,0,beamC);kput('hOctW',[0,cy+1.6,fz],null,[1.05,1.3,1.05],log);for(let k=0;k<8;k++){const a=k/8*TAU;vB('vDarkB',Math.sin(a)*1,cy+1.85,fz+Math.cos(a)*1,.36,.8,.04,a);}
+ {const cy=rt-.6;vB('vWood',0,cy,fz,1.8,1.6,1.8,0,beamC);kput('hOctW',[0,cy+1.6,fz],null,[1.05,1.3,1.05],log);for(let k=0;k<8;k++){const a=k/8*TAU;hnRoom(Math.sin(a)*1,cy+1.85,fz+Math.cos(a)*1,.36,.8,.04,a);}
   const t=hnTent(0,cy+2.9,fz,1.35,2.6,'hTentSc',roof);vPst('vIron',0,t-.2,fz,.04,1.1,hC(0x2e2a26));vBall('hGold',0,t+.3,fz,.13,hC(HPAL.gold[0]));}
  hnStoneChimney(-7,rt-2.2,fz-1,2.6,.8);hnStoneChimney(7,rt-2.2,fz-1,2.6,.8);
  // WINGS (x ±7…13, z −12…4) with galleries on the yard side
@@ -186,7 +186,7 @@ function buildHlRepInn(G,o){reseed(20431+(o.v|0));const W=26,H1=3.4,H2=3,S=.4,yT
  // STABLE range across the back with the hay loft: stall doors, a hoist, hay
  const sz=-9,sd=6;hnStucco(0,0,sz,14,S+H1,sd,0,hC(vPick(HPAL.rubble)),ash);hnLogBox(0,S+H1,sz,14,2.4,sd,0,log,0);
  hnGable(0,S+H1+2.4,sz,14.6,sd,1.1,0,'vShingleB',hC(vPick(HPAL.shingle)),.5,'hGableLog',log);
- for(let i=0;i<5;i++){const x=-5.6+i*2.8;vB('vDarkB',x,0,sz+sd/2,1.4,2.3,.1,0);vB('vWood',x,0,sz+sd/2+.04,1.3,1.2,.1,0,tar);}
+ for(let i=0;i<5;i++){const x=-5.6+i*2.8;hnRoom(x,0,sz+sd/2,1.4,2.3,.1,0);IZDOOR.leaf(x,0,sz+sd/2+.04,0,1.3,1.2,.1,tar,{locked:true});}   // the stalls' half doors
  vnDoor(0,S+H1,sz+sd/2,0,1.4,1.8,'vWood',log,tar,false);vB('vWood',0,S+H1+2.2,sz+sd/2+.8,.2,.2,1.8,0,log);vPst('vRope',0,S+H1-1.2,sz+sd/2+1.6,.02,3.4,hC(0xa89878));
  kput('vThatchB',[0,S+H1+.4,sz+sd/2+.05],null,[1.3,.5,.3],hC(vPick(VPAL.thatch)));
  // the yard: paving, a coach, horses at a trough, a well, lamps
@@ -208,7 +208,7 @@ function buildHlRepShops(G,o){reseed(20441+(o.v|0));const U=4.8,N=3,W=U*N,D=9,H1
   // ground: stone/render shop storey (log for the painted log house)
   if(kind===2)hnLogBox(x,0,0,U-.02,H1,D,0,log,0);else hnStucco(x,0,0,U-.02,H1,D,0,wall,ash);
   // the shop front: opening, counter leaf on brackets, hood leaf propped, goods, awning or not
-  const ox=x-.45,ow=2.7;vB('vDarkB',ox,.9,D/2-.04,ow,1.7,.12,0);for(const s of[-1,1])vB('hPaint',ox+s*(ow/2+.06),.85,D/2+.02,.12,1.85,.1,0,trim);
+  const ox=x-.45,ow=2.7;hnRoom(ox,.9,D/2-.04,ow,1.7,.12,0);for(const s of[-1,1])vB('hPaint',ox+s*(ow/2+.06),.85,D/2+.02,.12,1.85,.1,0,trim);
   vB('vWood',ox,.84,D/2+.32,ow,.08,.62,0,wood);for(const s of[-1,1])hnMember('vWood',[ox+s*(ow/2-.2),.35,D/2+.04],[ox+s*(ow/2-.2),.8,D/2+.55],.08,.08,[1,0,0],wood);
   kput('vWood',[ox,2.95,D/2+.42],vQ(0,-1.0,0),[ow,.06,1.0],wood);for(const s of[-1,1])beam('vIron',[ox+s*(ow/2-.1),2.6,D/2+.04],[ox+s*(ow/2-.1),2.72,D/2+.8],.03,.03,hC(0x2e2a26));
   for(let k=0;k<4;k++){const gx=ox-ow/2+.35+k*(ow-.7)/3;const r=rng();
@@ -289,7 +289,7 @@ function buildHlRepWorkshopB(G,o){reseed(20471+(o.v|0));const W=12,D=9,H1=3.6,H2
  hnLogBox(-2,H1,0,W,H2,D,0,log);hnGable(-2,H1+H2,0,W,D,1.1,0,'vShingleB',sh,.6,'hGableLog',log);hnBarge(-2,H1+H2,0,W,D,1.1*D/2,0,.6,trim,'lace');
  vnDoor(-3.2,0,D/2,0,2.2,2.8,'vStone',ash,tar,false);for(const u of[-6.4,0])vnWin(u,1.2,D/2,0,.9,1.1,'shut','vStone',ash);
  for(const u of[-5.5,-1,2])hnNal(u,H1+.7,D/2,0,.7,1,'glass',trim,{});hnRASignboard(-3.2,2.95,D/2+.02,0,3,.48,hC(vPick([HPAL.ochre,HPAL.teal])),tar);
- {const rv=H1+H2+1.1*D/2;vB('vWood',-2,rv-.4,0,3,1,1.2,0,log);for(const s of[-1,1])vB('vDarkB',-2,rv-.1,s*.61,2.6,.45,.02,0);vnGableRoof(-2,rv+.55,0,3.4,1.8,.7,0,'vShingleB',sh,.2);}
+ {const rv=H1+H2+1.1*D/2;vB('vWood',-2,rv-.4,0,3,1,1.2,0,log);for(const s of[-1,1])hnRoom(-2,rv-.1,s*.61,2.6,.45,.02,0);vnGableRoof(-2,rv+.55,0,3.4,1.8,.7,0,'vShingleB',sh,.2);}
  // the malt kiln: a square stone tower, a steep pyramid roof, the vented cowl on top
  {const kx=W/2+.6,kz=-.8,kw=4.4,kh=7;hnStucco(kx,0,kz,kw,kh,kw,0,hC(vPick(HPAL.stucco)),ash);
   vnDoor(kx,0,kz+kw/2,0,1,2,'vStone',ash,tar,false);vB('vDarkB',kx,.3,kz+kw/2+.01,.7,.5,.04,0);vBall('vEmber',kx,.45,kz+kw/2+.04,.14);
@@ -337,7 +337,7 @@ function buildHlRepSmithyLarge(G,o){reseed(20491+(o.v|0));const W=16,D=10,H=4.4,
  for(let i=1;i<4;i++)vB('vWood',HX-W/2+W*i/4,H-.3,0,.24,.24,D,0,log);
  const P=.85,top=hnGable(HX,H,0,W,D,P,0,'vShingleB',sh,.8,'vGableW',log);
  for(const [s,u,t] of[[1,-5,1.6],[1,2,2.4],[1,5.5,1.4],[-1,-3,1.8],[-1,4,2]])hnRARoofPatch(vPick(['vCorr','vCorr','vRustB']),HX,H,0,0,D,P,s,u,t,rr(2.2,3.4),rr(1.6,2.4));
- vB('vWood',HX,top-.3,0,6,.9,1.4,0,log);for(const s of[-1,1])vB('vDarkB',HX,top+.05,s*.71,5.6,.4,.02,0);vnGableRoof(HX,top+.6,0,6.4,2.2,.7,0,'vCorr',null,.25);
+ vB('vWood',HX,top-.3,0,6,.9,1.4,0,log);for(const s of[-1,1])hnRoom(HX,top+.05,s*.71,5.6,.4,.02,0);vnGableRoof(HX,top+.6,0,6.4,2.2,.7,0,'vCorr',null,.25);
  // the forge hall is a room (kits/interiors/sets/highlands.js): the interiors place its forges, anvils, troughs and
  // racks. Its two tall iron stacks stay, rising from the roof as they did (the hearths, troughs and racks drew 16+1
  // numbers each hearth and 14 for the bar stock)
@@ -345,7 +345,7 @@ function buildHlRepSmithyLarge(G,o){reseed(20491+(o.v|0));const W=16,D=10,H=4.4,
  hlRngSkip(14);
  // bellows house at −x: a log shed, the great bellows seen through its open side, the rocker beam through the wall
  {const bx=HX-W/2-2.2;hnLogBox(bx,0,-1.5,3.6,3,4.4,0,log,.2);vnShedRoof(bx,3,-1.5,4,4.8,.7,-Math.PI/2,'vCorr',null,.3);
-  vB('vDarkB',bx,.4,-1.5+2.21,2.4,2.2,.04,0);kput('vTarpB',[bx,1.2,.9],qEuler(-.25,0,0),[1.8,.35,1.3],hC(0x6a4a30));vB('vWood',bx,.8,.9,1.9,.12,1.4,0,log);
+  hnRoom(bx,.4,-1.5+2.21,2.4,2.2,.04,0);kput('vTarpB',[bx,1.2,.9],qEuler(-.25,0,0),[1.8,.35,1.3],hC(0x6a4a30));vB('vWood',bx,.8,.9,1.9,.12,1.4,0,log);
   beam('vWood',[bx+1.8,2.6,-1.2],[bx-.6,2.2,.6],.14,.14,log);vPst('vRope',bx-.6,1.2,.6,.03,1,hC(0xa89878));kput('vStone',[bx-.6,1.05,.6],null,[.4,.3,.4],rub);}
  // jib crane over the yard, hoisting a salvaged panel
  hnRACrane(HX+4,D/2+2.2,Math.PI/2,5.2,3.4,log,true);kput('vPanelB',[HX+4,1.9,D/2+2.2+3.4],null,[1.4,.06,1],null);
@@ -384,7 +384,7 @@ function buildHlRepStables(G,o){reseed(20501+(o.v|0));const W=30,D=24,WH=3.2,T=.
  // the stable and hay-loft range across the back
  {const bz=-D/2+3,bd=6-T,bw=W-T*2;vB('hRubB',0,0,bz,bw,2.8,bd,0,rub);hnLogBox(0,2.8,bz,bw,2.6,bd,0,log,0);
   hnGable(0,5.4,bz,bw+.2,bd,1.1,0,'vShingleB',sh,.5,'hGableLog',log);
-  for(let i=0;i<6;i++){const x=-11+i*4.4;vB('vDarkB',x,0,bz+bd/2,1.5,2.3,.1,0);vB('vWood',x,0,bz+bd/2+.05,1.4,1.15,.08,0,hC(vPick(HPAL.tar)));}
+  for(let i=0;i<6;i++){const x=-11+i*4.4;hnRoom(x,0,bz+bd/2,1.5,2.3,.1,0);IZDOOR.leaf(x,0,bz+bd/2+.05,0,1.4,1.15,.08,hC(vPick(HPAL.tar)),{locked:true});}   // the stalls' half doors
   for(const x of[-7,7]){vnDoor(x,2.9,bz+bd/2,0,1.5,1.9,'vWood',log,hC(vPick(HPAL.tar)),false);kput('vThatchB',[x,3.3,bz+bd/2+.08],null,[1.2,.7,.25],hC(vPick(VPAL.thatch)));vB('vWood',x,5.3,bz+bd/2+.7,.2,.2,1.5,0,log);vPst('vRope',x,3.4,bz+bd/2+1.3,.02,1.9,hC(0xa89878));}
   vnLadder(0,0,bz+bd/2+.5,0,2.9,log);}
  // the wagon yard, the trough and a haystack
@@ -398,11 +398,11 @@ function buildHlRepStables(G,o){reseed(20501+(o.v|0));const W=30,D=24,WH=3.2,T=.
 function buildHlRepWarehouseA(G,o){reseed(20511+(o.v|0));const W=10,D=16,S=1.4,H=3,P=1.3;
  const log=hC(vPick(HPAL.pine)).multiplyScalar(rr(.8,.95)),rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),sh=hC(vPick(HPAL.shingle)),tar=hC(vPick(HPAL.tar)),trim=hC(vPick([HPAL.red,HPAL.teal,HPAL.white]));
  const yw=S+2*H,rise=P*W/2;vnReg('Log warehouse',0,0,10,yw+rise+1);
- hnSocle(0,0,0,W,S,D,0,rub,ash);for(const z of[-5,0,5])for(const s of[-1,1])vB('vDarkB',s*(W/2+.02),.5,z,.04,.4,.8,0);
+ hnSocle(0,0,0,W,S,D,0,rub,ash);for(const z of[-5,0,5])for(const s of[-1,1])hnRoom(s*(W/2+.02),.5,z,.04,.4,.8,0);
  hnLogBox(0,S,0,W,H,D,0,log);hnLogBox(0,S+H,0,W,H,D,0,log);vB('vWood',0,S+H-.1,0,W+.25,.2,D+.25,0,tar);
  hnGable(0,yw,0,D,W,P,Math.PI/2,'vShingleB',sh,.7,'hGableLog',log);hnBarge(0,yw,0,D,W,rise,Math.PI/2,.7,trim,'lace');
  // the door column and the hoist gable
- const zf=D/2;for(const [y,h] of[[S,2.3],[S+H+.1,2.2],[yw+.4,1.8]]){vB('vDarkB',0,y,zf+.02,1.6,h,.06,0);for(const s of[-1,1])kput('vWood',[s*1.1,y+h/2,zf+.3],qEuler(0,s*1.2,0),[.8,h-.05,.06],tar);vB('vWood',0,y+h,zf+.08,2,.16,.16,0,tar);}
+ const zf=D/2;for(const [y,h] of[[S,2.3],[S+H+.1,2.2],[yw+.4,1.8]]){hnRoom(0,y,zf+.02,1.6,h,.06,0);for(const s of[-1,1])kput('vWood',[s*1.1,y+h/2,zf+.3],qEuler(0,s*1.2,0),[.8,h-.05,.06],tar);vB('vWood',0,y+h,zf+.08,2,.16,.16,0,tar);}
  {const hy=yw+2.6,out=1.8;vB('vWood',0,hy,zf+out/2,.26,.26,out+1.2,0,tar);vnGableRoof(0,hy+.4,zf+out/2-.1,out+.8,2,1.3,Math.PI/2,'vShingleB',sh,.25,'vGableW',log);
   vB('vWood',0,hy-.02,zf+out-.1,.3,.2,.3,0,hC(0x2e2a26));vPst('vRope',0,S+1.4,zf+out-.1,.025,hy-S-1.4,hC(0xa89878));kput('vSack',[0,S+1.2,zf+out-.1],qEuler(0,.4,0),[.32,.42,.3],hC(0xb8a080));}
  for(const s of[-1,1])for(const z of[-5.5,-2,2,5.5])for(const f of[0,1])vnWin(s*W/2,S+f*H+1.1,z,s*Math.PI/2,.7,.7,'shut','vWood',tar);
@@ -420,7 +420,7 @@ function buildHlRepWarehouseB(G,o){reseed(20521+(o.v|0));const W=20,D=12,H=6,S=1
  for(const x of[-5,0,5])vB('vStone',x,0,D/2+.1,.7,H,.22,0,ash);vB('vStone',0,H-.4,0,W+.3,.4,D+.3,0,ash);
  // iron-framed plate doors, three bays, at dock height; high windows with iron bars
  for(const x of[-7.5,-2.5,2.5,7.5]){const dx=x;if(Math.abs(x)>6){vnWin(dx,S+2.4,D/2,0,1.4,1.2,'glass','vIron',I);continue;}
-  vB('vDarkB',dx,S,D/2+.02,3,3.2,.05,0);for(const s of[-1,1])vB('vIron',dx+s*1.6,S,D/2+.1,.2,3.4,.18,0,I);vB('vIron',dx,S+3.3,D/2+.1,3.4,.2,.18,0,I);
+  hnDoorway(dx,S,D/2,0,3,3.2,{t:.06,c:I});for(const s of[-1,1])vB('vIron',dx+s*1.6,S,D/2+.1,.2,3.4,.18,0,I);vB('vIron',dx,S+3.3,D/2+.1,3.4,.2,.18,0,I);
   kput('vRustB',[dx-.75,S+1.6,D/2+.1],null,[1.46,3.1,.06],null);kput('vPlate',[dx+.9,S+1.6,D/2+.35],qEuler(0,-.6,0),[1.46,3.1,1],null);
   for(let k=0;k<5;k++)vB('vIron',dx-.75,S+.2+k*.7,D/2+.14,1.4,.05,.03,0,I);}
  for(const x of[-7.5,-2.5,2.5,7.5])vnWin(x,H-1.9,D/2,0,1.2,1,'glass','vIron',I);
