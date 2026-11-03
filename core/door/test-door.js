@@ -46,6 +46,18 @@ const wallIn=W2.block([-.6,.6,-.1,.1,0,3],'wall'),wallBeside=W2.block([2,3,-.1,.
 const n=K2.clearDoorways(W2);
 ok('a wall across the doorway is switched off, one beside it is kept, the leaf\'s own blocks are back on',
   n>=1&&wallIn.off&&!wallBeside.off&&D2.blocks.every(b=>!b.off),!wallIn.off);
+// a door built open: its walk blocks off from the start; a locked one ignores open
+const W4=KWALK.create(),K4=KDOOR.create();W4.floor({rect:[-10,10,-10,10],y:0,name:'yard'});
+const G=K4.add({id:'gate',at:[0,0,0],hinge:[-.5,0,0],w:1,h:2,open:1}),Lk=K4.add({id:'cell',at:[4,0,0],hinge:[3.5,0,0],w:1,h:2,locked:true,open:1});
+K4.walk(W4);
+ok('a door built open stands open, its doorway clear; a locked one is shut whatever it was given',
+  G.open===1&&G.target===1&&W4.blocked(0,0,0,.2,1.7)===null&&Lk.open===0&&W4.blocked(4,0,0,.2,1.7)!==null,G.open!==1);
+// clearDoorways leaves a locked door's line alone (a solid body's mass), unless asked
+const mass=W4.block([3.3,4.7,-.1,.1,0,3],'mass'),wallG=W4.block([-.6,.6,-.1,.1,0,3],'wallG');
+K4.clearDoorways(W4);
+ok('clearDoorways switches off the wall in an unlocked doorway, not the mass behind a locked one',wallG.off&&!mass.off,mass.off);
+K4.clearDoorways(W4,{locked:true});
+ok('o.locked true clears the locked doorways too',mass.off,!mass.off);
 // prune, state, load, export
 const keepList=K.list;K.prune(D=>D.id!=='door.2');
 ok('prune drops in place (the same array) and frees the id',K.list===keepList&&K.get('door.2')===null&&K.list.length===3,K.list.length!==3);

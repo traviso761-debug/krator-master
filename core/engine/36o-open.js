@@ -60,9 +60,9 @@ function svLeaf(x,y,z,yaw,w,h,o){o=o||{};const split=o.split==null?w>1.6:!!o.spl
  const hw=o.pivot?0:w/2,at=svW(x,y,z),hinge=svW(x+hs*ux*hw,y,z+hs*uz*hw),p0=svW(x,y+h/2,z),wy=svYaw(yaw);
  const e=CM.elements,sc=Math.hypot(e[0],e[1],e[2])||1;
  const base=svDefIndex(),i=CURREC?CURREC._doorN++:SV_OPEN.leaves.length;
+ let open=0;if(o.ajar&&!o.locked){const v=Math.min(1,Math.abs(o.ajar)/KDOOR.SWING);let lo=0,hi=1;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(m*m*(3-2*m)<v)lo=m;else hi=m;}open=(lo+hi)/2;}   /* the smoothstep KDOOR.angle eases by, inverted */
  const D=KDOOR.add({id:o.id==null?base+'.d'+i:o.id,at,hinge,p0,yaw:wy,sign:(o.mirror?-1:1)*(o.out?-1:1),w:w*sc,h:h*sc,t:t*sc,locked:!!o.locked,
-  key:CURREC?CURREC.key:null,name:o.name||null});
- if(o.ajar&&!o.locked){const v=Math.min(1,Math.abs(o.ajar)/KDOOR.SWING);let lo=0,hi=1;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(m*m*(3-2*m)<v)lo=m;else hi=m;}D.open=D.target=(lo+hi)/2;}   /* the smoothstep KDOOR.angle eases by, inverted */
+  open,pivot:!!o.pivot,key:CURREC?CURREC.key:null,name:o.name||null});
  SV_OPEN.leaves.push({D,mk:o.mk||'wood',shape:o.shape==='tri'?'tri':'box',col:o.col==null?0xffffff:(typeof o.col==='number'?o.col:o.col.clone()),cut:CUTC[3]>.5,q:new THREE.Quaternion().setFromAxisAngle(_up,wy),s:[w*sc,h*sc,t*sc]});
  return D;}
 function svDoorway(x,y,z,yaw,w,h,o){o=o||{};
@@ -101,13 +101,7 @@ function svOpenFlush(parent,o){
   parent.add(im);SV_OPEN.meshes.push(im);if(G[0].cut)SV_OPEN.cutMeshes.push(im);}
  for(const D of KDOOR.list)if(D.target>0||D.open>0)KDOORHOST.pose(D);
  if(typeof KWALK!=='undefined'&&!(o&&o.walk===false))svOpenWalk(KWALK);}   /* o.walk false: the page calls svOpenWalk itself, after its last walk records (Zeijani's interiors) */
-/* the walk (core/walk): each door's blocks (shut = on), and every other block standing in an UNLOCKED doorway switched off (the
-   wall boxes either side of a gap a little narrower than the door, a panel the old builder drew there). KDOOR.clearDoorways
-   clears every door's line, a locked one's too, and a locked door stands on a solid body's face, whose mass is one block:
-   so the clearing runs on a registry of the unlocked doors only, with every door's own blocks set aside while it looks. */
-function svOpenWalk(Wk){KDOOR.walk(Wk);const keep=[];
- /* KDOOR.walk raises every door's blocks, a door the builder drew standing open (ajar) too: that one's are off, as KDOOR.step
-    would leave them had it opened (core/door README: shut = blocked, open = clear) */
- for(const D of KDOOR.list)for(const B of D.blocks){keep.push([B,!(D.open>0)]);Wk.setBlock(B,false);}
- const R=KDOOR.create();for(const D of KDOOR.list)if(!D.locked)R.add({id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,w:D.w,h:D.h,t:D.t,sign:D.sign});
- const n=R.clearDoorways(Wk);for(const [B,on] of keep)Wk.setBlock(B,on);SV_OPEN.cleared=n;return n;}
+/* the walk (core/walk): each door's blocks (a door drawn ajar, however far, starts clear), and every other
+   block standing in an UNLOCKED doorway switched off (the wall boxes either side of a gap a little narrower than the door, a
+   panel the old builder drew there); a locked door stands on a solid body's face, whose mass block KDOOR leaves alone */
+function svOpenWalk(Wk){KDOOR.walk(Wk);const n=KDOOR.clearDoorways(Wk);SV_OPEN.cleared=n;return n;}

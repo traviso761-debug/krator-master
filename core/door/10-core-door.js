@@ -16,6 +16,8 @@
 //        w h t   the leaf's width, height and thickness (world)
 //        p0      [x,y,z] the leaf's centre when shut (default at, raised h/2); pose() turns it about the hinge
 //        locked  a door that does not open (a solid body's door: nothing behind it); key: the owner (a def's key)
+//        open    0..1: how far open it stands as built (a gate drawn open; default 0, shut). A locked door is shut
+//        pivot   true: the leaf turns about its own middle (hinge = at), not a jamb (a triangle leaf); kept on the record
 //        any other field is kept on the record (a host's draw handle, a builder's own index)
 //   D.get(id)                           the record (or the record itself)
 //   D.open(id, {by, auto}) / close(id, {by}) / toggle(id, o)   false when locked or missing. by: 'player' | 'npc' | a name;
@@ -26,9 +28,11 @@
 //                                       passes half open; returns the doors that moved (the host poses those)
 //   D.angle(rec)                        the leaf's swing now (rad, signed); D.pose(rec) -> [x, y, z, a]: its centre and swing
 //   D.walk(W)                           once the world is built: each door's doorway as small blocks along its line in W
-//                                       (core/walk), shut = on; returns the number of doors
-//   D.clearDoorways(W)                  switch off any OTHER block standing in a doorway (a room wall whose gap is narrower
-//                                       or set beside the door); returns how many were switched off
+//                                       (core/walk), on for a door built shut, off for one built open (step() then switches them as
+//                                       the door passes half open, and on again when it is shut); returns the number of doors
+//   D.clearDoorways(W, o)               switch off any OTHER block standing in an unlocked doorway (a room wall whose gap is
+//                                       narrower or set beside the door); a locked door's line is left alone (a solid body's
+//                                       face: its mass block stays). o.locked true clears those too. Returns how many
 //   D.prune(keep)                       drop the doors keep(rec) refuses (a placement that was unwound), in place
 //   D.state() / D.load(state)           the deltas a save keeps: {id: {open, locked}} for every door not shut and unlocked
 //   D.export()                          {format:'krator-doors', version, doors:[...]}: the records for Godot (no draw handles)
@@ -44,6 +48,7 @@
         sign:r.sign==null?1:(r.sign<0?-1:1),w:r.w,h:r.h,t:r.t==null?.07:r.t,
         p0:r.p0?r.p0.slice():[r.at[0],r.at[1]+r.h/2,r.at[2]],
         open:0,target:0,locked:!!r.locked,by:null,auto:0,key:r.key==null?null:r.key,blocks:[]};
+      if(r.open!=null&&!D.locked)D.open=D.target=Math.max(0,Math.min(1,+r.open||0));
       if(byId.has(D.id))throw new Error('KDOOR.add: id '+D.id+' is taken');
       for(var k in r)if(!CORE[k])D[k]=r[k];
       list.push(D);byId.set(D.id,D);return D;}
@@ -70,11 +75,12 @@
     function walk(Wk){W=Wk||null;if(!W)return list.length;
       for(var i=0;i<list.length;i++){var D=list[i],n=Math.max(2,Math.ceil(D.w/.3)),ux=Math.cos(D.yaw),uz=-Math.sin(D.yaw),hw=D.w/n/2,ht=Math.max(D.t,.3)/2;
         for(var j=0;j<n;j++){var u=-D.w/2+(j+.5)*D.w/n,cx=D.at[0]+ux*u,cz=D.at[2]+uz*u,r=Math.max(hw,ht);
-          D.blocks.push(W.block([cx-r,cx+r,cz-r,cz+r,D.at[1],D.at[1]+D.h],'door:'+D.id));}}
+          D.blocks.push(W.block([cx-r,cx+r,cz-r,cz+r,D.at[1],D.at[1]+D.h],'door:'+D.id));}
+        if(D.open>0)setWalk(D,false);}   // a door built standing open (however far: the builder drew it passable): its doorway clear
       return list.length;}
-    function clearDoorways(Wk){Wk=Wk||W;if(!Wk)return 0;var cleared=0,on=new Map(),i,j;
+    function clearDoorways(Wk,o){if(Wk&&!Wk.block&&o==null){o=Wk;Wk=null;}Wk=Wk||W;if(!Wk)return 0;var cleared=0,on=new Map(),i,j,all=!!(o&&o.locked);
       for(i=0;i<list.length;i++)for(j=0;j<list[i].blocks.length;j++){var B=list[i].blocks[j];on.set(B,!B.off);Wk.setBlock(B,false);}   // the leaves' own blocks aside while looking
-      for(i=0;i<list.length;i++){var D=list[i],ux=Math.cos(D.yaw),uz=-Math.sin(D.yaw),n=Math.max(2,Math.ceil(D.w/.15));
+      for(i=0;i<list.length;i++){var D=list[i];if(D.locked&&!all)continue;var ux=Math.cos(D.yaw),uz=-Math.sin(D.yaw),n=Math.max(2,Math.ceil(D.w/.15));
         for(j=0;j<=n;j++){var u=-D.w/2+.08+(D.w-.16)*j/n,x=D.at[0]+ux*u,z=D.at[2]+uz*u,ys=[.3,1.2];
           for(var k=0;k<ys.length;k++){var b,g=0;while((b=Wk.blocked(x,D.at[1]+ys[k],z,.04,.05))&&g++<8){Wk.setBlock(b,false);cleared++;}}}}
       on.forEach(function(v,B){Wk.setBlock(B,v);});
@@ -86,7 +92,7 @@
     function load(s){for(var id in s){var D=byId.get(id);if(!D)continue;D.locked=!!s[id].locked;D.target=s[id].open>.5?1:0;}}
     function exp(){return{format:'krator-doors',version:1,convention:'y up, metres, x east, z south; yaw outward',
       swing:K.SWING,rate:K.RATE,
-      doors:list.map(function(D){return{id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,sign:D.sign,w:D.w,h:D.h,t:D.t,locked:D.locked,key:D.key};})};}
+      doors:list.map(function(D){return{id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,sign:D.sign,w:D.w,h:D.h,t:D.t,locked:D.locked,key:D.key,open:D.target,pivot:!!D.pivot};})};}
     K.add=function(r){var D=add(r);D.locked0=D.locked;return D;};
     K.get=get;K.open=open;K.close=close;K.toggle=toggle;K.lock=lock;K.nearest=nearest;K.step=step;K.angle=angle;K.pose=pose;
     K.walk=walk;K.clearDoorways=clearDoorways;K.prune=prune;K.state=state;K.load=load;K.export=exp;
