@@ -20,7 +20,7 @@ const STATION=(function(){const R=3000,LV=299;
   // the gorge: east of the brink the floor drops with the river, its walls standing to the shoulders
   const gk=smooth(200,600,x),gw=w+60+x*.08;if(gk>0){const wall=smooth(gw*2.6,gw,d);h=mix(h,Math.min(h,y+3+Math.pow(Math.max(0,d-w)/gw,1.6)*(h-y)*.5),wall*gk);}
   // the channel: the bed under the water line
-  if(d<w*2.2){const bed=y-3.5-(x<400?2:0);h=mix(h,Math.min(h,bed),smooth(w*2.2,w*1.02,d));}
+  if(d<w*2.2){const bed=y-3.5-(x<400?2:0);h=d<w?Math.min(h,bed+(d/w)*2.5):mix(h,Math.min(h,y+.6+(d-w)*.25),smooth(w*2.2,w,d));}   /* the bed under the water to the river's edge, the bank just over the water past it */
   // the falls' faces: each lip a sharp step (the ground falls with the water)
   // Chimes' bench: a flat terrace cut into the shoulder
   {const bd=Math.hypot(x-BENCH.x,(z-BENCH.z)*1.4);if(bd<BENCH.r*1.8)h=mix(BENCH.y,h,smooth(BENCH.r*.9,BENCH.r*1.8,bd));}
@@ -28,7 +28,7 @@ const STATION=(function(){const R=3000,LV=299;
  const pts=[];for(let x=-3300;x<=3300;x+=20)pts.push([x,rz(x),wl(x)]);
  const falls=STEPS.map((s,i)=>{const x=s[0],z=rz(x),w=W(x),fx=x+Math.max(60,(s[1]-s[2])*.18);return{name:['The brink (the first fall)','The second fall','The third fall'][i],
   lip:[[x,z-w,s[1]+.3],[x,z+w,s[1]+.3]],dir:[1,0],drop:s[1]-s[2],foot:[fx,rz(fx),s[2]],plungeR:Math.max(24,w*1.6)};});
- const L=rimLand({R,ground,river:{pts,width:110,name:'Chimes Riba',speed:2.2},falls,
+ const L=rimLand({R,ground,river:{pts,width:110,half:(x,z)=>W(x),name:'Chimes Riba',speed:2.2},falls,
   tm:(x,z,h)=>22-6.5*(h-LV)/1000,
   wet:(x,z,h)=>.55+.15*smooth(1400,2100,h)+.2*smooth(400,1600,x)*smooth(300,60,Math.abs(z-rz(x))),
   fog:(x,z,h)=>Math.max(smooth(1500,1900,h)*.9,.7*smooth(380,900,x)*smooth(260,80,Math.abs(z-rz(x)))),   /* the cloud belt; the falls' spray in the gorge */
@@ -63,8 +63,8 @@ const LAND={name:'The gorge (riftrim station 4)',title:'Krator biome — the rif
   return{
   'The notch from upstream':[-1600,S.LV+30,S.rz(-1600)+40,600,S.LV-60,S.rz(600)],
   'The brink':[s0[0]-220,S.LV+14,S.rz(s0[0]-220)-90,s0[0]+300,s0[2]+80,S.rz(s0[0]+300)],
-  'The falls from the gorge\'s floor':[s1[0]+500,s1[2]+60,S.rz(s1[0]+500)+120,s1[0],s1[1]-60,S.rz(s1[0])],
-  'Chimes\' bench over the brink':[S.BENCH.x-260,S.BENCH.y+30,S.BENCH.z-120,s0[0]+200,s0[2],S.rz(s0[0]+200)],
+  'The falls from the gorge\'s floor':[s1[0]+500,Math.max(S.wl(s1[0]+500)+25,gh(s1[0]+500,S.rz(s1[0]+500)+40,6)),S.rz(s1[0]+500)+40,s1[0],s1[1]-60,S.rz(s1[0])],
+  'Chimes\' bench over the brink':[S.BENCH.x-260,Math.max(S.BENCH.y+30,gh(S.BENCH.x-260,S.BENCH.z-120,8)),S.BENCH.z-120,s0[0]+200,s0[2],S.rz(s0[0]+200)],
   'Mist frills on the shoulder':atTree(nearTree('mistfrill',P.cloud[0],P.cloud[1]),26,2.2,3),
   'Cork oaks and fan trees on the plain':look(P.shore[0]-40,P.shore[1]+30,6,P.shore[0]+40,P.shore[1]-20,4),
   'From afar':look(-2900,2600,700,700,0,0)};},
