@@ -35,6 +35,9 @@ are the owner's (LORE.md); where this draft proposes, it says so.
 11. **Growth:** "We may need to come up with a way to grow cities to absorb refugees and accommodate pop growth. I'm a
     bit wary of this though because sudden pop shifts could have unpredictable cascade effects and I'm not sure I trust
     procedural city expansion" (section 4).
+12. **Empty lots and upkeep** (owner, 2026-11-03): drawing the expansions is low priority, but most cities should show
+    some fillable empty lots even while the player is there, which adds demand for timber, stone and other building
+    materials; and building maintenance as a demand sink.
 
 ## 1. The model (proposed)
 
@@ -99,9 +102,22 @@ town cascading through the others.
 - **Flows are rate-limited and capped by housing.** At most a set share of a town's people may arrive or settle in a
   month; a town's housing is its cap. What a town cannot take stays in the camp or moves on, and growth past the cap
   leaves for the frontier (the dam basin's settlers). Births and deaths are slow. The damping is the cascade guard.
-- **A city grows by authored stages, not at run time.** Each city's plan (core/city) carries its growth ahead of time:
-  vacant lots inside, then an outer ring, then a new quarter, filled in a fixed order as its people pass each stage's
-  line. core/city may draw a stage's layout, but at authoring time, reviewed by the owner and committed as data, like any
-  other plan. A stage opens only while the town is unwatched (the abstract level), so the player comes back to find a new
-  quarter, never sees one appear.
+- **Empty lots fill in plain view, by building** (the owner's item 12). Most cities' plans keep some lots empty (cleared
+  ground, a foundation, a pile of stone): authored, so nothing is invented at run time. A lot is filled by a building
+  PROJECT, a record: the building's kind (one the plan already allows there), its bill of materials (timber, stone,
+  thatch, rope, tools), its labour hours, and who pays (the treasury, or a household: a rise of station, 77-sim-6-money.js,
+  could buy a lot as it buys a shop). The materials come out of the warehouses as the town's builders work, so the
+  governor sees the demand and the lumber camp and the quarry answer it; the drawing follows the record's progress
+  (foundation, frame, walls, roof), so the player can watch a house go up over weeks. A project waits when its materials
+  are short. Housing pressure (people over housing, the refugees in the camp) orders projects; so does wealth.
+- **Upkeep is a steady sink** (item 12). Every building wears by its materials (thatch fast, timber slower, stone slowest);
+  keeping it costs a share of its bill of materials a year, booked as used. Neglected (the materials short, the treasury
+  broke), a building shows its wear (a patched roof, a sagging porch) and gives its people less (housing a need, a little
+  unhappiness), but off-screen it never falls to a ruin (no surprise ruins). Upkeep at rest should be within what the
+  lumber camp's range gives back for ever (core/camp `KCAMP.workYield`) and the quarries' rates, so a town can keep
+  itself.
+- **New quarters grow by authored stages, not at run time,** and later (low priority, the owner): when a town's lots are
+  full, an outer ring, then a new quarter, drawn by core/city at authoring time, reviewed by the owner and committed as
+  data. A stage opens only while the town is unwatched, so the player comes back to find a new quarter, never sees one
+  appear.
 
