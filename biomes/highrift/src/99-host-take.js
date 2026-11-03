@@ -48,7 +48,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
- add('no bead caps',HCHK.placed(Object.assign({},window._station,{beads:0})));
+ add(SKEY==='wedge'?'no tussock':'no bead caps',HCHK.placed(Object.assign({},window._station,SKEY==='wedge'?{tussock:0}:{beads:0})));
  if(SITE.vents.length)add('tussock on a vent',HCHK.heat([[SITE.vents[0].x,0,SITE.vents[0].z,'biome:hrtuss']]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
