@@ -17,7 +17,7 @@
     "biomes/oidong/src/89-host-sky.js": "72a3a88bebaa2b4fa166ee5ed3b64e3cc6681ebf5674c92da9f702fd2870bb5f",
     "biomes/oidong/src/89a-host-atmos.js": "bbdb4b93526f46c13b9cfb713e7d3e2e9d8cc6b4f6526fdc022ae15138be8108",
     "biomes/oidong/src/89w-host-water.js": "3dcf69b0ef771891e06c39fdcb9a503d3e803f648f8f6fc3c250404bf22d4122",
-    "biomes/oidong/src/89z-host-build.js": "98c93ede41a395aa495bae290781925f0cc0f30276a78cf698c1eba7faaf9df1",
+    "biomes/oidong/src/89z-host-build.js": "f17800c12c3f87b584373e0f1741df8c58f00a54e4453a89d8e29e69645a3bf2",
     "biomes/oidong/src/99-host-take.js": "cdf1d2c29865fc7ce88f0ef10b94d2704e0c8437a38c0c5839163890a0c253e5",
     "biomes/oidong/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
@@ -137,38 +137,38 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong.html": "690ff497969f9a5b0dc35d6eb691171abdd771d3a45f65a66aabd4321e35f6b9"
+    "biomes/oidong/dist/oidong.html": "96dd58d805fa6e21d0a731f3a86c42148178f651c7359804f3fa08526f347a5d"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong.html": "690ff497969f9a5b0dc35d6eb691171abdd771d3a45f65a66aabd4321e35f6b9"
+    "biomes/oidong/dist/oidong.html": "96dd58d805fa6e21d0a731f3a86c42148178f651c7359804f3fa08526f347a5d"
    }
   },
   "build.py --station hearths": {
    "inputs": {
-    "biomes/hearths/src/50-biome-hearths-species.js": "4b38d123af9cb4b438d76e1febc938ce92dbf0874f53f1021c615e7b5262e414",
-    "biomes/hearths/src/55-biome-hearths-place.js": "3a4b7a23b744c872bb8c6a8303025e21aa26c4586da88baef39256acee3243a3",
+    "biomes/hearths/src/50-biome-hearths-species.js": "de6f102c7689ec646ba84596f7c57ea9163bd18881ab260372d77cb9f96ce80c",
+    "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
     "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
-    "biomes/oidong/PORT.md": "ad9cdd322e681d3594bb3d6359243c32e14872bcdc970865ff48a34a494eaa4d",
+    "biomes/oidong/PORT.md": "3d7f70e6d23338db679a210db0232a85a367e3487f497294fd274998b5f57b67",
     "biomes/oidong/build.py": "2a24577e6e42510cb34871f1bf71b04983af43e06d4011260c3701172c7dd447",
     "biomes/oidong/src/00-head.html": "faa1cf8280291175dad5f27fec09c77201da238fe161ffecebb86095794e13fb",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
     "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
-    "biomes/oidong/src/70-biome-oidong.js": "286c9d2b685d19fd2fdbe61697e7ed10e53d0853ec223480af6aa7b79e48c8e8",
+    "biomes/oidong/src/70-biome-oidong.js": "ad23374114d41f55b4c1c52fdeb69ed68fa0965ac347437cb85fc697bec2158d",
     "biomes/oidong/src/85-host-far.js": "85af76f4123fb1d851b7ea558cbbdd24d0479de97591692dacea024ce4336a90",
     "biomes/oidong/src/89a-host-atmos.js": "bbdb4b93526f46c13b9cfb713e7d3e2e9d8cc6b4f6526fdc022ae15138be8108",
-    "biomes/oidong/src/89z-host-build.js": "98c93ede41a395aa495bae290781925f0cc0f30276a78cf698c1eba7faaf9df1",
+    "biomes/oidong/src/89z-host-build.js": "f17800c12c3f87b584373e0f1741df8c58f00a54e4453a89d8e29e69645a3bf2",
     "biomes/oidong/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/oidong/stations/hearths/44z-host-site.js": "c1341ad1bb31da48795f37382e32760c83421a1abb133d308e7d54d0b2832f8e",
     "biomes/oidong/stations/hearths/88-host-high.js": "8d88d58841cfc474696cabfdc43beaa64cc0e3d8c6802d1b73bf85e8ac41ff20",
     "biomes/oidong/stations/hearths/89-host-sky.js": "2d9eacf50d43bc54981cb5b797018ad8243d489f702f40dbffc71b56abbdf000",
-    "biomes/oidong/stations/hearths/89b-host-hearths.js": "538a3beaa73bc11c45fc8d01c09c8bb9e1dbfc3e703187f0acdf394bb51f275a",
+    "biomes/oidong/stations/hearths/89b-host-hearths.js": "923b2fb7a7e526224f1a81ee441e6ffbc6f78f56782c7653104462f7bf749f63",
     "biomes/oidong/stations/hearths/98-host-hearths-take.js": "1fdad3b38fb0128c759ce43e3c578403be7f2704dfb2a12df93c95f3129c15d1",
-    "biomes/oidong/stations/hearths/station.json": "710cf8ae7b917456925e9a69c4dbecfb31a0bba0f0eca75a5853b9b128422d53",
+    "biomes/oidong/stations/hearths/station.json": "46bc69a4d4bf19cc047c966193603a384ec4ebf0a16420c8d6808c21f8c1ff01",
     "biomes/oidong/stations/passes/45-host-stage.js": "cc5f852702a5aab90da3a55d21f2774e73d6dabbcb36ee8b598331bf55a940ff",
-    "biomes/oidong/stations/passes/84-host-ground.js": "c124c40b9f5b23b34002acaf364bb6faf129fa9c5ecb2584f7cec05533cb00ed",
+    "biomes/oidong/stations/passes/84-host-ground.js": "aced91355762793fab55102b7f4e9d6f9143ae47de802861ea2d0cd9f1e6f686",
     "biomes/oidong/stations/passes/89w-host-water.js": "e8169baddc7c7fc02b3e9d758f7b564d7cc35708bda20378a1c6c238978b18d9",
-    "biomes/oidong/stations/passes/99-host-take.js": "f09774d6a851b0d85a7b51831722c3e5314ed966c5e61323afddb9d58586d979",
+    "biomes/oidong/stations/passes/99-host-take.js": "4a1f730bb0d4369b78084fbf99ade4c6d24b5831ea2e2e402f7659505fbbebb9",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
     "biomes/oidong/tex/bark.cedar.albedo.webp": "a135a8aed1119ca326e820594b6b605043f7e92095fc7ca9320e18d907cee7b6",
@@ -204,6 +204,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
+    "core/atmos/fx/89-atmos-fx-smokegroups.js": "670a0312d20917534a1afe44cd457b34df28e4e98bae6059a3be4974c6bedc16",
     "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
@@ -290,32 +291,32 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "3dac44727b7943f12fd9c37ee9645d6532d42249843894b9a2c5a2df7ab6b412"
+    "biomes/oidong/dist/oidong-hearths.html": "e8a9b9d4929c5849b1b8e46475b0bcc3ec89008a9e74cb57489f03c32e58d62b"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "3dac44727b7943f12fd9c37ee9645d6532d42249843894b9a2c5a2df7ab6b412"
+    "biomes/oidong/dist/oidong-hearths.html": "e8a9b9d4929c5849b1b8e46475b0bcc3ec89008a9e74cb57489f03c32e58d62b"
    }
   },
   "build.py --station passes": {
    "inputs": {
     "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
-    "biomes/oidong/PORT.md": "ad9cdd322e681d3594bb3d6359243c32e14872bcdc970865ff48a34a494eaa4d",
+    "biomes/oidong/PORT.md": "3d7f70e6d23338db679a210db0232a85a367e3487f497294fd274998b5f57b67",
     "biomes/oidong/build.py": "2a24577e6e42510cb34871f1bf71b04983af43e06d4011260c3701172c7dd447",
     "biomes/oidong/src/00-head.html": "faa1cf8280291175dad5f27fec09c77201da238fe161ffecebb86095794e13fb",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
     "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
-    "biomes/oidong/src/70-biome-oidong.js": "286c9d2b685d19fd2fdbe61697e7ed10e53d0853ec223480af6aa7b79e48c8e8",
+    "biomes/oidong/src/70-biome-oidong.js": "ad23374114d41f55b4c1c52fdeb69ed68fa0965ac347437cb85fc697bec2158d",
     "biomes/oidong/src/85-host-far.js": "85af76f4123fb1d851b7ea558cbbdd24d0479de97591692dacea024ce4336a90",
     "biomes/oidong/src/89a-host-atmos.js": "bbdb4b93526f46c13b9cfb713e7d3e2e9d8cc6b4f6526fdc022ae15138be8108",
-    "biomes/oidong/src/89z-host-build.js": "98c93ede41a395aa495bae290781925f0cc0f30276a78cf698c1eba7faaf9df1",
+    "biomes/oidong/src/89z-host-build.js": "f17800c12c3f87b584373e0f1741df8c58f00a54e4453a89d8e29e69645a3bf2",
     "biomes/oidong/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/oidong/stations/passes/45-host-stage.js": "cc5f852702a5aab90da3a55d21f2774e73d6dabbcb36ee8b598331bf55a940ff",
-    "biomes/oidong/stations/passes/84-host-ground.js": "c124c40b9f5b23b34002acaf364bb6faf129fa9c5ecb2584f7cec05533cb00ed",
+    "biomes/oidong/stations/passes/84-host-ground.js": "aced91355762793fab55102b7f4e9d6f9143ae47de802861ea2d0cd9f1e6f686",
     "biomes/oidong/stations/passes/88-host-high.js": "203f508a9656d3305b029913ec55611a745670308ad773e619ffc896b1dc7d97",
     "biomes/oidong/stations/passes/89-host-sky.js": "7c636d800d84fe12ec68a5ea3381bd9e27bacee28bfe96bc57e26700d5b5f840",
     "biomes/oidong/stations/passes/89w-host-water.js": "e8169baddc7c7fc02b3e9d758f7b564d7cc35708bda20378a1c6c238978b18d9",
-    "biomes/oidong/stations/passes/99-host-take.js": "f09774d6a851b0d85a7b51831722c3e5314ed966c5e61323afddb9d58586d979",
+    "biomes/oidong/stations/passes/99-host-take.js": "4a1f730bb0d4369b78084fbf99ade4c6d24b5831ea2e2e402f7659505fbbebb9",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
     "biomes/oidong/tex/bark.cedar.albedo.webp": "a135a8aed1119ca326e820594b6b605043f7e92095fc7ca9320e18d907cee7b6",
@@ -434,10 +435,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-passes.html": "7e0f7ab01ee37eca693011ad0834560767e49612dba4d101018a7acebdbae3bb"
+    "biomes/oidong/dist/oidong-passes.html": "ecd2b821ebcd1cfeabc1ce471998e733fba72bfad7d845e806c403a3f4187be2"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-passes.html": "7e0f7ab01ee37eca693011ad0834560767e49612dba4d101018a7acebdbae3bb"
+    "biomes/oidong/dist/oidong-passes.html": "ecd2b821ebcd1cfeabc1ce471998e733fba72bfad7d845e806c403a3f4187be2"
    }
   }
  }
