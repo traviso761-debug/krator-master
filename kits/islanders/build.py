@@ -79,11 +79,10 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 VENDORED = {}
-# the engine, shared with the Scyvoi kit it was forked from: fix it there, then copy it here
-VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js', '99-tail.html')})
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['islander', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Islanders' pieces, the shared goods, the trades, scrap
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-fauna-bundle.js'}
@@ -145,6 +144,7 @@ def sources():
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
+    paths.update(kengine.paths())
     core = dict(paths)
     paths.update(RESOURCES)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one

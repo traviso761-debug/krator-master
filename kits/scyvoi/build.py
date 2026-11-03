@@ -74,6 +74,8 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 VENDORED = {}
 # GENERATED fragments, never written to src/
@@ -137,6 +139,7 @@ def sources():
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
+    paths.update(kengine.paths())
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core

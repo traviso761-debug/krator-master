@@ -81,7 +81,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
-VENDORED = {'30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}
+VENDORED = {'30-geo.js': os.path.join(ROOT, 'core', 'engine', '30-geo.js')}   # the engine moved to core/engine (MODULARITY-PLAN.md step 2)
 # GENERATED fragments, never written to src/
 # The furniture cultures: the Ancients' own fittings (ancient), the pirates' salvage (ancients-salvage, post-apoc, scrap),
 # the shared poor set and goods (generic, generic-goods): kits/interiors IX.CULTURE_FAMILY chains end in them.

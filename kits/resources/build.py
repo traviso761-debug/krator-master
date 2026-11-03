@@ -6,8 +6,8 @@ Usage: python3 build.py [--no-checks]
 The page is one <script> made of, in filename order:
   src/*                 the kit: 00-head.html, 26k-kit.js (identity), 42r-res-ore.js (the rule, [G data]), 44r-res-nodes.js
                         (the nodes), 89-rows.js (the sheet), 99-tail.html
-  kits/scyvoi/src       the engine, READ IN PLACE (not vendored: nothing here to drift): 10-core, 27-mat, 30-geo, 36-def,
-                        90-scene, 91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take
+  core/engine           the engine, READ IN PLACE (core/engine/README.md): 10-core, 27-mat, 30-geo, 36-def, 90-scene,
+                        91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take, 99-tail
   core/atmos/placeholder  81-sky.js (KratorSky, the placeholder sky), read in place
   core/rand, core/materials/record, core/tags, core/furnish, core/atmos   as every kit on the engine
   26-matlib-pack.js     GENERATED: the library pack (none yet: the nodes draw on vertex colours)
@@ -70,8 +70,9 @@ CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 ENGINE = psky.paths(psky.SKY)
-ENGINE.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js')})
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
+ENGINE.update(kengine.paths())
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic']   # the engine's furniture pass needs a bundle; the nodes place none
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}

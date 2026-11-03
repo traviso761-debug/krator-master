@@ -68,7 +68,11 @@ ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-p
 
 
 def isk_files():
-    fs = {f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP}
+    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them
+    sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+    import engine as kengine
+    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in ISK_SKIP}
+    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP})
     for f in ('42r-res-ore.js', '44r-res-nodes.js'):      # kits/resources, read in place (kits/islanders/build.py RESOURCES)
         fs[f] = os.path.join(ROOT, 'kits', 'resources', 'src', f)
     return [fs[f] for f in sorted(fs)]
