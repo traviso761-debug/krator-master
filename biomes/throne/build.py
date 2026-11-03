@@ -82,6 +82,9 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
+# core/shadow (KSHADOW, the owner, 2026-11-03): the sun's shadows in one view-following box; the data half and its host, attached in src/89zz-host-core.js
+PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
+PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
 if STATION:
     # src/89a-host-atmos.js (the atmosphere binding of station 1, 2, 6 and 11) is a station's only when station.json says "atmosHost"
     # (the others bind core/atmos in their own 89-host-atmos.js, with weather)
