@@ -12,7 +12,7 @@ KRATOR_GL=gpu python3 tools/perf_views.py kits/metropolis/dist/metropolis.html -
 
 Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). Pick a view from the select: the pairs stand the real building (west) beside its shell (east).
 
-**To look around,** open `dist/metropolis.html?pitch=140` from a local server. The Tiers views are a city of the two families: fly (W A S D, Q E, Shift), F to walk. Walk or fly into a hero and its storey opens; the lift list, or `,` and `.`, changes storey. Walls stop a walker; stairs are not walkable, the lift is the way up.
+**To look around,** open `dist/metropolis.html?pitch=140` from a local server. The Tiers views are a city of the two families: fly (W A S D, Q E, Shift), F to walk. Walk or fly into a hero and its storey opens; the lift list, or `,` and `.`, changes storey. Walls stop a walker, and the stairs in the core walk up a storey at a time.
 
 | Fragment | Tag | What |
 |---|---|---|
@@ -38,9 +38,9 @@ Measured 2026-11-02 on the **Intel Arc 140T**, 1280 x 800, `tools/perf_views.py`
 | Inside a flat (one storey open, its furniture) | 17 | 150 k | 1.1 |
 | Blocks 220 m apart, street (3 heroes in range) | 66 | 50 k in frame | 1.3 |
 | Blocks 220 m apart, from a roof | 66 | 50 k in frame | 1.8 |
-| **Blocks 140 m apart (`?pitch=140`), street: 10 heroes, 109 shells** | 90 | 390 k | **2.8** |
-| Blocks 140 m apart, from a roof | 87 | 380 k | 3.4 |
-| Blocks 140 m apart, from the air | 63 | 10 k | 1.8 |
+| **Blocks 140 m apart (`?pitch=140`), street: 10 heroes, 109 shells** | 89 | 390 k | **2.9** |
+| Blocks 140 m apart, from a roof | 87 | 380 k | 3.7 |
+| Blocks 140 m apart, from the air | 63 | 10 k | 2.0 |
 
 Budgets: hero 74k of 80k (Spindle), 36k of 45k (Ledger), 6 and 8 draw calls. Cages 56 and 10 triangles. All four shells and their hull maps bake in 0.15-0.4 s, all four impostors in 0.25-0.6 s.
 
@@ -57,10 +57,12 @@ Budgets: hero 74k of 80k (Spindle), 36k of 45k (Ledger), 6 and 8 draw calls. Cag
 
 - **Thin parts** were the sawtooth at the skirt; the hull map from above (a column with nothing in it is air) tidied them, and they still show under 300 m.
 - **Roofs** now work: a hull map from above makes them real surfaces. **Soffits** take their colour from a map from below; their shape is the side map's. They still break up under 200 m, inside the hero's range.
+- **The map from below sees the wrong thing unless it is cut:** under a lamp, the lowest surface of a column is the shaft's windows far down, which showed as a mosaic on the soffit. The bake now discards everything below the neck (`soffit`, one height a tower: the Stalk's two saucers will need two).
 - **The map from below cannot be a bound:** a tower is hollow, so the lowest surface of a column inside it is high up, and using it as a limit erased the walls.
 - **Close up** the map is soft under 200 m, with horizontal streaks (`Shell-close-130-m.png`). Hold the switch at 300 m.
-- **Shell to impostor is a hard switch** at 1 km, tower by tower: a chunk's fade left half-dithered ghost towers. Hero to shell now dithers through the city too.
-- **Heroes are the cost of a dense city:** ten of them take the street from 1.3 to 2.8 ms, and 390 k triangles. That is affordable on the Arc for these two; a heavier family counts. Street width is the budget lever, as section 13 says.
+- **Shell to impostor** now fades: the impostor stands from 850 m and the shell dithers out in front of it to 1 km. Hero to shell dithers too.
+- **A hull map is only right on real roofs.** It holds every sill and ledge as a true up-facing surface, and at first that showed as bright slits on every shell seen from above. Top and bottom maps now apply only where the side map shows an overhang of over 3.5 m.
+- **Heroes are the cost of a dense city:** ten of them take the street from 1.3 to 2.9 ms, and 390 k triangles. That is affordable on the Arc for these two; a heavier family counts. Street width is the budget lever, as section 13 says.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

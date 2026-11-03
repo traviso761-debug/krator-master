@@ -9,7 +9,7 @@ MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat)MP.
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;
  // the partitions: a polyline, gapped at its door, with a lintel over the gap
- const blocks=[],seg=(a,b,y0,y1,c)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.04)return;if(y0<L.y+.5)for(let q=0,nq=Math.ceil(l/.35);q<nq;q++){const f=(q+.5)/nq;blocks.push([a[0]+dx*f,a[1]+dz*f]);}const nx=-dz/l*T/2,nz=dx/l*T/2,cl={col:c,uv:2},P=(q,s,y)=>[q[0]+nx*s,y,q[1]+nz*s];
+ const stairs=[],landings=[],blocks=[],seg=(a,b,y0,y1,c)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.04)return;if(y0<L.y+.5)for(let q=0,nq=Math.ceil(l/.35);q<nq;q++){const f=(q+.5)/nq;blocks.push([a[0]+dx*f,a[1]+dz*f]);}const nx=-dz/l*T/2,nz=dx/l*T/2,cl={col:c,uv:2},P=(q,s,y)=>[q[0]+nx*s,y,q[1]+nz*s];
   B.quad('white',P(a,1,y0),P(b,1,y0),P(b,1,y1),P(a,1,y1),[-dz/l,0,dx/l],cl);B.quad('white',P(b,-1,y0),P(a,-1,y0),P(a,-1,y1),P(b,-1,y1),[dz/l,0,-dx/l],cl);B.quad('white',P(a,1,y1),P(b,1,y1),P(b,-1,y1),P(a,-1,y1),[0,1,0],cl);B.quad('white',P(a,-1,y0),P(a,1,y0),P(a,1,y1),P(a,-1,y1),[-dx/l,0,-dz/l],cl);B.quad('white',P(b,1,y0),P(b,-1,y0),P(b,-1,y1),P(b,1,y1),[dx/l,0,dz/l],cl);B.quad('white',P(a,-1,y0),P(b,-1,y0),P(b,1,y0),P(a,1,y0),[0,-1,0],cl);};
  const WALL=[.84,.85,.84],y0=L.y+.02,y1=L.y+WH,DH=2.15;
  /* the door is found along the whole polyline, not per piece: a curved wall bends at its middle, which is where a door tends to stand */
@@ -35,18 +35,24 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   /* the shaft's door: on the side that faces out of the core (a ring) or to the corridor (a slab): open for a stair, a shut bronze leaf for a lift */
   const out=round?1:-1,face=Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]],top=L.y+L.h-.26;
   E.forEach((e,i)=>{if(i!==face){seg([e[0],e[1]],[e[2],e[3]],y0,top,c);return;}const l=Math.hypot(e[2]-e[0],e[3]-e[1]),w=Math.min(1.2,l-.4),t0=(1-w/l)/2,t1=1-t0,P=f=>[e[0]+(e[2]-e[0])*f,e[1]+(e[3]-e[1])*f];seg([e[0],e[1]],P(t0),y0,top,c);seg(P(t1),[e[2],e[3]],y0,top,c);seg(P(t0),P(t1),y0+DH,top,c);if(s.kind==='lift')seg(P(t0),P(t1),y0,y0+DH,[.42,.33,.22]);});
-  if(s.kind==='stair'){const n=10;for(let i=0;i<n;i++)B.panel(s.x-s.w*.25,L.y+.09+i*.18,s.z-s.d/2+.3+i*(s.d-.6)/n,0,s.w*.45,.18,(s.d-.6)/n,[.55,.55,.53]);}});
+  /* a stair: a switchback along the shaft, in from the door side up to a half landing, then back up to the door side of the storey above. Its steps are drawn from the record and walked as strips */
+  if(s.kind==='stair'&&k<s.to){const sgn=face===2?1:-1,n=9,hd=s.d/2,hw=s.w/2,zD=s.z+sgn*(hd-.55),zI=s.z-sgn*(hd-.55),col={col:[.6,.6,.58],uv:2},H=L.h;
+   const flight=(x0,x1,z0,z1,y0,y1)=>{for(let i=0;i<n;i++){const a=i/n,b=(i+1)/n,za=z0+(z1-z0)*a,zb=z0+(z1-z0)*b;B.box('concrete',x0,x1,y0,y0+(y1-y0)*b,Math.min(za,zb),Math.max(za,zb),col);}stairs.push({a:[(x0+x1)/2,z0,y0],b:[(x0+x1)/2,z1,y1],w:x1-x0});};
+   flight(s.x-hw+.1,s.x-.08,zD,zI,L.y,L.y+H/2);flight(s.x+.08,s.x+hw-.1,zI,zD,L.y+H/2,L.y+H);
+   const z0=Math.min(zI,s.z-sgn*hd),z1=Math.max(zI,s.z-sgn*hd);B.box('concrete',s.x-hw+.1,s.x+hw-.1,L.y+H/2-.2,L.y+H/2,z0,z1,col);landings.push({x0:s.x-hw+.1,x1:s.x+hw-.1,z0,z1,y:L.y+H/2});}});
  const G=B.finish(F,'storey'+k);G.children.forEach(m=>g.add(m.clone()));
  // the furniture
  const out=MP.furnish(F,st);let pieces=0;
  if(out.rooms){const Bf=KratorFurniture.batch({indexed:true});out.rooms.forEach(r=>r.placements.forEach(p=>{Bf.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.variant|0,seed:MP.idHash(p.room||'r')&0xffff,wealth:.6,setting:'indoor'});pieces++;}));
   const fg=Bf.flush(g);if(fg)fg.traverse(o=>{if(o.isMesh)KFURN.linearColours(o.geometry);});}
  let tris=0;g.traverse(o=>{if(o.isMesh&&o.geometry){const c=o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count;tris+=c/3*(o.isInstancedMesh?o.count:1);}});
- g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,outline:st.outline};return g;};
+ g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,stairs:stairs,landings:landings,outline:st.outline};return g;};
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes
 MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
   W.poly({pts:o.g.userData.outline.map(p=>{const q=T(p);return [q[0],q[1],y];}),name:o.key+' L'+o.k,tag:'storey'});
+  o.g.userData.stairs.forEach(f=>{const a=T(f.a),b=T(f.b);W.strip({a:[a[0],a[1],f.a[2]],b:[b[0],b[1],f.b[2]],w:f.w,name:'a stair',tag:'stair'});});
+  o.g.userData.landings.forEach(l=>{W.poly({pts:[[l.x0,l.z0],[l.x1,l.z0],[l.x1,l.z1],[l.x0,l.z1]].map(p=>{const q=T(p);return [q[0],q[1],l.y];}),name:'a landing',tag:'stair'});});
   o.g.userData.blocks.forEach(p=>{const q=T(p);W.block([q[0]-.09,q[0]+.09,q[1]-.09,q[1]+.09,y,y+3],'wall');});});};
 MP.openStorey=function(key,k,x,z,yaw){yaw=yaw==null?0:yaw;const F=MP.FAMILY[key];if(MP.open.some(o=>o.key===key&&o.k===k&&o.x===x&&o.z===z))return;
  const g=MP.drawStorey(F,k);g.position.set(x,0,z);g.rotation.y=yaw;scene.add(g);MP.open.push({key,k,g,x,z,yaw});while(MP.open.length>MP.LIVE)MP.closeOne();MP.walkSync();};
@@ -61,6 +67,6 @@ MP.enterTick=function(){const now=performance.now();if(now<(MP.nextEnter||0))ret
 // the lift: to storey k of the hero the camera is in, or the nearest: stand at the core's door and walk from there
 MP.goStorey=function(k){const e=camera.position;let H=MP.heroAt(e);if(!H){let b=null,bd=1e9;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const d=Math.hypot(e.x-m.x,e.z-m.z);if(d<bd){bd=d;b=m;}}if(!b)return false;H={m:b,F:MP.FAMILY[b.key.split('.')[0]]};}
  const F=H.F,m=H.m;k=Math.max(0,Math.min(F.levels.length-1,k));const L=F.levels[k],c=Math.cos(m.yaw),n=Math.sin(m.yaw),st=MP.storey(F,k),P=F.core.kind==='round'?[MP.coreR(F,k)+1,0]:[0,0],x=m.x+P[0]*c+P[1]*n,z=m.z-P[0]*n+P[1]*c;
- MP.closeStoreys();MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;const C=HOSTED.cam;C.walkAt=[x,z,L.y];HOSTED.ctl.target.set(x,L.y+HOSTED.ctl.eye,z);HOSTED.ctl.walk=true;HOSTED.ctl.phi=Math.PI/2+.05;HOSTED.ctl.theta=(F.core.kind==='round'?Math.PI:-Math.PI/2)+m.yaw;return true;};
+ MP.closeStoreys();MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.nextEnter=performance.now()+800;const C=HOSTED.cam;C.walkAt=[x,z,L.y];HOSTED.ctl.target.set(x,L.y+HOSTED.ctl.eye,z);HOSTED.ctl.walk=true;HOSTED.ctl.phi=Math.PI/2+.05;HOSTED.ctl.theta=(F.core.kind==='round'?Math.PI:-Math.PI/2)+m.yaw;return true;};
 MP.step=function(d){const H=MP.heroAt(camera.position);if(!H)return false;return MP.goStorey(MP.levelAt(H.F,camera.position.y-HOSTED.ctl.eye+.2)+d);};
 

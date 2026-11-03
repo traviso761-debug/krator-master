@@ -16,18 +16,19 @@ const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform f
  'vXZ=p.xz;if(uMode<0.5){float th=atan(p.z,p.x)+uWrap*6.2831853;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
  'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.02+0.98*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
 // a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company
-const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;',
+const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap,uClip;uniform vec3 uFaceN;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;',
  'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
- 'void main(){if(uMode<0.5&&abs(vTh-uWrap*6.2831853-atan(vXZ.y,vXZ.x))>0.3)discard;',
+ 'void main(){if(uMode<0.5&&abs(vTh-uWrap*6.2831853-atan(vXZ.y,vXZ.x))>0.3)discard;if(uMode>1.5&&vH<uClip)discard;',
  ' if(uPass<0.5){vec3 c=uHasMap>0.5?texture2D(uMap,vUv).rgb:vec3(1.0);c*=pow(uColor*vCol,vec3(1.0/2.2));gl_FragColor=vec4(c,1.0);}',
- ' else if(uPass<1.5){vec3 n=normalize(vN);gl_FragColor=vec4(n*0.5+0.5,vH);}',
+ /* a side map's sills and reveals are ledges a pixel tall: an up-facing normal there catches a high sun as a bright slit, so in a side map a ledge takes the wall's normal */
+ ' else if(uPass<1.5){vec3 n=normalize(vN);if(uMode<1.5&&abs(n.y)>0.9)n=uMode<0.5?normalize(vec3(vXZ.x,0.0,vXZ.y)):uFaceN;gl_FragColor=vec4(n*0.5+0.5,vH);}',
  ' else gl_FragColor=vec4(uRough,uMetal,uWin,1.0);}'].join('\n');
 function bakeMat(src,P,pass){const m=new THREE.ShaderMaterial({vertexShader:BV,fragmentShader:BF,side:THREE.DoubleSide,vertexColors:!!src.vertexColors,
- uniforms:{uPass:{value:pass},uMode:P.mode,uH:P.H,uA:P.A,uWrap:P.wrap,uXs:P.xs,uYs:P.ys,uFaceN:P.faceN,uFaceD:P.faceD,uVP:P.vp,uRough:{value:src.roughness==null?1:src.roughness},uMetal:{value:src.metalness==null?0:src.metalness},uWin:{value:src.userData.win?1:0},uColor:{value:src.color?src.color.clone():new THREE.Color(1,1,1)},uMap:{value:src.map||null},uHasMap:{value:src.map?1:0}}});return m;}
+ uniforms:{uPass:{value:pass},uMode:P.mode,uClip:P.clip,uH:P.H,uA:P.A,uWrap:P.wrap,uXs:P.xs,uYs:P.ys,uFaceN:P.faceN,uFaceD:P.faceD,uVP:P.vp,uRough:{value:src.roughness==null?1:src.roughness},uMetal:{value:src.metalness==null?0:src.metalness},uWin:{value:src.userData.win?1:0},uColor:{value:src.color?src.color.clone():new THREE.Color(1,1,1)},uMap:{value:src.map||null},uHasMap:{value:src.map?1:0}}});return m;}
 KSHELL.atlas=function(size,renderer){const mk=()=>{const t=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true,format:THREE.RGBAFormat,type:THREE.UnsignedByteType,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,generateMipmaps:false});return t;};
  const a={size,A:mk(),B:mk(),C:mk(),renderer};const old=renderer.getRenderTarget(),oc=renderer.getClearColor(new THREE.Color()),oa=renderer.getClearAlpha();renderer.setClearColor(0,0);
  [a.A,a.B,a.C].forEach(t=>{renderer.setRenderTarget(t);renderer.clear(true,true,true);});renderer.setRenderTarget(old);renderer.setClearColor(oc,oa);return a;};
-KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,pad=8,P={mode:{value:f.mode},H:{value:f.H},A:{value:f.mode?f.D:f.a},wrap:{value:0},xs:{value:1},ys:{value:1},faceN:{value:new THREE.Vector3(0,0,1)},faceD:{value:0},vp:{value:new THREE.Matrix4()}};
+KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,pad=8,P={mode:{value:f.mode},H:{value:f.H},A:{value:f.mode?f.D:f.a},wrap:{value:0},clip:{value:0},xs:{value:1},ys:{value:1},faceN:{value:new THREE.Vector3(0,0,1)},faceD:{value:0},vp:{value:new THREE.Matrix4()}};
  const sc=new THREE.Scene(),meshes=[];hero.children.forEach(m=>{const k=m.isInstancedMesh?new THREE.InstancedMesh(m.geometry,m.material,m.count):new THREE.Mesh(m.geometry,m.material);if(m.isInstancedMesh){k.instanceMatrix=m.instanceMatrix;k.instanceColor=m.instanceColor;}k.frustumCulled=false;k._src=m.material;sc.add(k);meshes.push(k);});
  const mats=[0,1,2].map(p=>meshes.map(k=>bakeMat(k._src,P,p)));
  const old=R.getRenderTarget(),oAuto=R.autoClear,oc=R.getClearColor(new THREE.Color()),oa=R.getClearAlpha(),tm=R.toneMapping;R.autoClear=false;R.setClearColor(0,0);R.toneMapping=THREE.NoToneMapping;
@@ -42,7 +43,7 @@ KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,p
     const half=W[i]/2;c.left=-half;c.right=half;c.top=H/2;c.bottom=-H/2;c.position.set(q[0]*(q[3]+1),H/2,q[2]*(q[3]+1));c.up.set(0,1,0);c.lookAt(0,H/2,0);c.near=.5;c.far=q[3]+1+f.D;c.updateProjectionMatrix();c.updateMatrixWorld();
     P.vp.value.multiplyMatrices(c.projectionMatrix,c.matrixWorldInverse);P.faceN.value.set(q[0],q[1],q[2]);P.faceD.value=q[3];vp(x,slot.y,x1-x,slot.h);R.clear(true,true,true);R.render(sc,cam);});}
   /* the hull maps: a plain projection, x and z to the slot, y to depth: from above the highest surface wins, from below the lowest */
-  const hm=P.mode.value;[[top,1],[bot,-1]].forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
+  const hm=P.mode.value;[[top,1],[bot,-1]].forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;P.clip.value=S<0?.02+.98*rec.soffit/f.H:0;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
   rt.scissorTest=false;rt.viewport.set(0,0,rt.width,rt.height);});
  R.setRenderTarget(old);R.autoClear=oAuto;R.setClearColor(oc,oa);R.toneMapping=tm;mats.forEach(l=>l.forEach(m=>m.dispose()));return true;};
 // the mips, once every slot is baked
@@ -66,7 +67,7 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;uni
  ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
  ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;float g=mpGap(p);',
  '  if(g<mn*.5){vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h,ub=vMpBot.xy+vMpBot.zw*h,us=mpUV;float ta=textureLod(uB,ut,mpLod+1.0).a,ty=(ta-.02)/.98*F.y;',
- '   if(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5)){mpHP=p;if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85)mpUV=ut;else{mpUV=us;if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.01)mpUV=ub;else mpUV=us;}return true;}}',
+ '   if(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5)){mpHP=p;if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85&&mpGap(vec3(p.x,p.y+ey*2.0,p.z))>3.5)mpUV=ut;else{mpUV=us;if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.01)mpUV=ub;else mpUV=us;}return true;}}',
  '  t+=max(g*.85,mn);',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');

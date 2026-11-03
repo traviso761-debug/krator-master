@@ -50,7 +50,7 @@ function mpClear(){MPS.live.forEach(g=>{scene.remove(g);});MPS.live.length=0;MPS
 MP.show=function(name){if(!MPS.ready){MPS.want=name;return;}const c=MP_CFG[name];if(!c)return;mpClear();MPS.mode=name;
  (c.heroes||[]).forEach(h=>mpHero(h[0],h[1],h[2],h[3],c.fade));mpShells(c.shells||[]);
  if(c.band)MPS.mat.userData.U.uBand.value.set(c.band[0],c.band[1],.15);
- if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(MP_NEAR,0,.15);MPS.nextTier=0;MPS.tierGroups=new Map();}
+ if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(MP_NEAR,MP_FAR,.15);MPS.nextTier=0;MPS.tierGroups=new Map();}
  if(c.storey)MP.openStorey(c.storey[0],c.storey[1],c.storey[2],c.storey[3]);
  if(c.atlas){const m=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshBasicMaterial({map:MPS.atlas[c.atlas].texture,fog:false,toneMapped:false}));m.position.set(0,220,0);m.geometry.attributes.uv;scene.add(m);MPS.live.push(m);}};
 // the tiers each half second: the nearest towers are heroes from a pool; 300 m - 1 km shells
@@ -60,8 +60,8 @@ MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode
  /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
  G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85)mid.push(t);});
  mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));
- // an impostor stands for its tower past 1 km, tower by tower (a chunk's fade left half-dithered ghosts at the boundary): nearer, its matrix is zero
- MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
+ // an impostor stands for its tower past 850 m, tower by tower, and the shell dithers out in front of it to 1 km (a chunk's fade left half-dithered ghosts at the boundary): nearer, its matrix is zero
+ MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR*.85;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
 tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();MP.enterTick();}});
 // ---- the views. A pair stands 170 m apart, hero to the west, its shell to the east, looked at from 300 m
 const D=300,sp='spindle.intact',sg='spindle.gutted',li='ledger.intact',lg='ledger.gutted';

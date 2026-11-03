@@ -1,89 +1,9 @@
 {
- "kits/metropolis/dist/metropolis.html": {
-  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 140T GPU (8GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
-  "held": {
-   "held": 860,
-   "geometries": 96,
-   "textures": 22
-  },
-  "views": {
-   "Hero alone at 300 m": {
-    "calls": 7,
-    "tris": 74206,
-    "inst": 4858,
-    "imesh": 5,
-    "ms": 0.413125,
-    "n": 24,
-    "dis": 0,
-    "med": 0.69026
-   },
-   "Shell alone at 300 m": {
-    "calls": 2,
-    "tris": 58,
-    "inst": 1,
-    "imesh": 4,
-    "ms": 0.457604,
-    "n": 24,
-    "dis": 0,
-    "med": 0.690937
-   },
-   "Shell close, 130 m": {
-    "calls": 2,
-    "tris": 58,
-    "inst": 1,
-    "imesh": 4,
-    "ms": 0.878229,
-    "n": 24,
-    "dis": 0,
-    "med": 0.907656
-   },
-   "Tiers, the worst street": {
-    "calls": 66,
-    "tris": 48284,
-    "inst": 6151,
-    "imesh": 66,
-    "ms": 1.253541,
-    "n": 24,
-    "dis": 0,
-    "med": 1.369114
-   },
-   "Tiers, from a roof": {
-    "calls": 66,
-    "tris": 48284,
-    "inst": 6151,
-    "imesh": 66,
-    "ms": 1.818645,
-    "n": 24,
-    "dis": 0,
-    "med": 1.893854
-   },
-   "Tiers, from the air": {
-    "calls": 65,
-    "tris": 2314,
-    "inst": 474,
-    "imesh": 64,
-    "ms": 1.146614,
-    "n": 24,
-    "dis": 0,
-    "med": 2.320781
-   },
-   "Inside the Spindle, a flat": {
-    "calls": 17,
-    "tris": 145734,
-    "inst": 4878,
-    "imesh": 6,
-    "ms": 1.079791,
-    "n": 24,
-    "dis": 0,
-    "med": 2.67677
-   }
-  }
- },
  "kits/metropolis/dist/metropolis.html?pitch=140": {
   "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 140T GPU (8GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "held": {
    "held": 2142,
-   "geometries": 119,
+   "geometries": 116,
    "textures": 24
   },
   "views": {
@@ -92,70 +12,60 @@
     "tris": 74206,
     "inst": 4858,
     "imesh": 5,
-    "ms": 0.364114,
+    "ms": 0.39651,
     "n": 24,
     "dis": 0,
-    "med": 0.639791
+    "med": 0.415052
    },
    "Shell alone at 300 m": {
     "calls": 2,
     "tris": 58,
     "inst": 1,
     "imesh": 4,
-    "ms": 0.483177,
+    "ms": 0.465572,
     "n": 24,
     "dis": 0,
-    "med": 1.104062
+    "med": 0.478229
    },
    "Shell close, 130 m": {
     "calls": 2,
     "tris": 58,
     "inst": 1,
     "imesh": 4,
-    "ms": 0.853177,
+    "ms": 0.912187,
     "n": 24,
     "dis": 0,
-    "med": 2.180156
+    "med": 0.959427
    },
    "Tiers, the worst street": {
-    "calls": 90,
-    "tris": 394920,
-    "inst": 36148,
-    "imesh": 73,
-    "ms": 2.785885,
+    "calls": 89,
+    "tris": 394760,
+    "inst": 36128,
+    "imesh": 72,
+    "ms": 2.911927,
     "n": 24,
     "dis": 0,
-    "med": 4.080156
+    "med": 2.934739
    },
    "Tiers, from a roof": {
     "calls": 87,
     "tris": 378350,
     "inst": 36128,
     "imesh": 72,
-    "ms": 3.411458,
+    "ms": 3.660468,
     "n": 24,
     "dis": 0,
-    "med": 4.234635
+    "med": 3.67625
    },
    "Tiers, from the air": {
     "calls": 63,
     "tris": 5990,
     "inst": 1175,
     "imesh": 62,
-    "ms": 1.837604,
+    "ms": 1.960208,
     "n": 24,
     "dis": 0,
-    "med": 1.898697
-   },
-   "Inside the Spindle, a flat": {
-    "calls": 17,
-    "tris": 145734,
-    "inst": 4878,
-    "imesh": 6,
-    "ms": 0.96677,
-    "n": 24,
-    "dis": 0,
-    "med": 1.044531
+    "med": 1.967812
    }
   }
  }

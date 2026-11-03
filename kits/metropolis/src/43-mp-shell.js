@@ -4,7 +4,8 @@
 //   polar  anything star-shaped about its axis: (theta, y) -> surface radius. The cage is a stack of N-sided frustums.
 //   box    a slab: (perimeter, y) -> depth from the box's face. The cage is the box.
 // Both add two hull maps. From above, (x, z) -> y: a point over the highest surface of its column is air, so a roof is a real surface. From below, colour only: a tower is hollow, so
-// the lowest surface of a column inside it is no bound, and the side map already gives a soffit's shape. The map from below gives it its colour.
+// the lowest surface of a column inside it is no bound, and the side map already gives a soffit's shape. The map from below gives it its colour,
+// and is cut at soffit (the height where the overhang starts): from below, a column under a lamp would otherwise see the shaft's own windows far down. One soffit a tower: the Stalk's two saucers will need two.
 // The silhouette comes from the map, not the cage: the fragment traces the view ray down from the cage (60).
 var KSHELL = {};
 (function () {
@@ -55,7 +56,7 @@ var KSHELL = {};
     }
     // the hull maps, seen from straight above and straight below: what the side map cannot hold (a roof, a soffit, a column with nothing in it)
     var hx = frame.a, hz = o.mode === 'polar' ? frame.a : frame.b, hull = { w: Math.ceil(2 * hx / o.texel), h: Math.ceil(2 * hz / o.texel) };
-    return { id: F.id + '.' + state, family: F.id, state: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame, hull: hull, hx: hx, hz: hz };
+    return { id: F.id + '.' + state, family: F.id, state: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame, hull: hull, hx: hx, hz: hz, soffit: F.crown && F.crown.neck ? F.crown.neck[0] : 0 };
   };
   // the three slots of a record, as things KSHELL.pack can pack
   KSHELL.slots = function (r) { return [r, { id: r.id + '.top', map: r.hull }, { id: r.id + '.bot', map: r.hull }]; };
