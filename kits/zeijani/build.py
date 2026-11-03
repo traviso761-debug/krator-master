@@ -13,6 +13,8 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass)
+  core/engine           36o-open.js only (svLeaf, svDoorway, svPane: the engine's drawing of core/door, read in place by this fork)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): the interiors core and sets/zeijani.js (KratorInteriors):
@@ -69,8 +71,9 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'zeijani.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
-CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'door')]
+CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js'),   # one file of a core folder
+              os.path.join(ROOT, 'core', 'engine', '36o-open.js')]       # the engine's doors and glass on core/door (this fork's 36-def.js has none)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/99-host-take.js hands it the page (its own, kits/scyvoi's with the kit's
 # names, the walk registry and the interiors' furniture records); it replaced the kit's 92-camera.js (2026-10-18, KNOWN_ISSUES.md).
