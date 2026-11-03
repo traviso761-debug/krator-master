@@ -13,9 +13,9 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
 const throws = f => { try { f(); return false; } catch (e) { return true; } };
 const V = K.VOCAB;
 
-// ---- the vocabulary still matches its source (kits/catalog/krator-furniture-core.js) ----
+// ---- the vocabulary still matches its source (core/catalog/krator-furniture-core.js; the culture files in kits/catalog) ----
 const CAT = path.join(__dirname, '..', '..', 'kits', 'catalog');
-const core = fs.readFileSync(path.join(CAT, 'krator-furniture-core.js'), 'utf8');
+const core = fs.readFileSync(path.join(__dirname, '..', 'catalog', 'krator-furniture-core.js'), 'utf8');
 const lit = name => { const m = new RegExp('const ' + name + ' = ([\\[{][\\s\\S]*?[\\]}]);').exec(core); return m ? Function('return ' + m[1])() : null; };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 ok(same(V.catalog.cultures, lit('FURN_CULTURES')), 'cultures: the copy matches FURN_CULTURES');

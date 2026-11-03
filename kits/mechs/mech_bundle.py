@@ -19,7 +19,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KITS = os.path.dirname(HERE)
-CORE = [(os.path.join(KITS, 'catalog'), 'krator-furniture-core.js'), (os.path.join(KITS, 'catalog'), 'krator-symbols.js'),
+CORE = [(os.path.join(os.path.dirname(KITS), 'core', 'catalog'), 'krator-furniture-core.js'), (os.path.join(KITS, 'catalog'), 'krator-symbols.js'),
         (os.path.join(KITS, 'motor-vehicles'), 'vehicles-core.js'), (HERE, 'mechs-core.js'), (HERE, 'mechs-parts.js')]
 RUNTIME = (HERE, 'mechs-runtime.js')
 PREFIX = 'krator-mechs-'

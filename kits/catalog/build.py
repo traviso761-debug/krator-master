@@ -69,6 +69,8 @@ def sources():
         else:
             out.append(s)
     return out
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
 VENDORED = {
             # the culture symbols, shared with the socket packs; vendored here because other builds load the
             # catalog's files by relative path from kits/ and cannot reach core/. Re-copy after editing upstream.
@@ -138,7 +140,7 @@ def main():
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
-    parts = [(f, read(os.path.join(HERE, f))) for f in sources()] + [(f, read(src_path(f))) for f in js]
+    parts = [(f, read(kcat.path(f))) for f in sources()] + [(f, read(src_path(f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:

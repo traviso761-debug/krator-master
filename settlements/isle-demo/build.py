@@ -32,8 +32,8 @@ REC = os.path.join(HERE, 'voth-sources.json')
 NL = '\n'
 
 # the engine page Voth's site editor runs on (scene, camera, renderer, controls), as Voth's build.py lists it
-VENDOR = [os.path.join(VOTH, 'three.min.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'),
-          os.path.join(ROOT, 'kits', 'catalog', 'krator-asset-engine.js'), os.path.join(VOTH, 'catalog', 'lod.js')]
+VENDOR = [os.path.join(VOTH, 'three.min.js'), os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'),
+          os.path.join(ROOT, 'core', 'catalog', 'krator-asset-engine.js'), os.path.join(VOTH, 'catalog', 'lod.js')]
 # the open world's ground: the noise, the fields (heights, water, colour) and the isle's coast
 GROUND = [os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'), os.path.join(ROOT, 'core', 'terrain', '38-core-relief.js'),
           os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'), os.path.join(WORLD, 'src', '43-world-isles.js')]

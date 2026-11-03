@@ -57,6 +57,8 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CATALOG = os.path.join(ROOT, 'kits', 'catalog')
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
 OUT = 'interiors'
 
 ADAPTERS = ['adapters/catalog-adapter.js']
@@ -105,12 +107,12 @@ def check(parts):
         if len(fs) > 1:
             errs.append('top-level name `%s` declared in more than one file: %s' % (d, ', '.join(fs)))
     for f in CATALOG_LOADED:
-        p = os.path.join(CATALOG, f)
+        p = kcat.path(f)
         if not os.path.exists(p):
-            errs.append('catalog file missing: kits/catalog/%s' % f)
+            errs.append('catalog file missing: %s' % kcat.rel(f))
             continue
         for d in sorted(decls(read(p)) & set(seen)):
-            errs.append('top-level name `%s` (%s) clashes with kits/catalog/%s' % (d, ', '.join(seen[d]), f))
+            errs.append('top-level name `%s` (%s) clashes with %s' % (d, ', '.join(seen[d]), kcat.rel(f)))
     return errs
 
 
@@ -208,7 +210,7 @@ def main():
                   [('src-walk/' + f, read(os.path.join(SRC_WALK, f))) for f in sorted(os.listdir(SRC_WALK)) if f.endswith('.js')] +
                   [('src/' + f, read(src_path(f))) for f in SETS_SHARED])
     walk_libs = ['three.min.js'] + CATALOG_LOADED + ['krator-master-buildings-beast-rider.js']
-    lib_tags = ''.join('<script>/* kits/catalog/%s */\n%s\n</script>\n' % (f, read(os.path.join(CATALOG, f))) for f in walk_libs)
+    lib_tags = ''.join('<script>/* %s */\n%s\n</script>\n' % (kcat.rel(f), read(kcat.path(f))) for f in walk_libs)
     lib_tags += ''.join('<script>/* walk/shells/%s */\n%s\n</script>\n' % (f, read(os.path.join(shells_dir, f))) for f in shell_files)
     walk_script = join(walk_parts)
     walk_head = read(os.path.join(SRC_WALK, '00-head.html')).replace('<!--CATALOG-->', lib_tags)

@@ -61,14 +61,14 @@ def core_node():
 async def run(a):
     from playwright.async_api import async_playwright
     path = os.path.abspath(a.html)
-    rel = os.path.relpath(path, KITS).replace(os.sep, '/')
+    rel = os.path.relpath(path, os.path.dirname(KITS)).replace(os.sep, '/')   # served from the repo root: the page loads core/catalog
     if a.out:
         os.makedirs(a.out, exist_ok=True)
 
     class Quiet(http.server.SimpleHTTPRequestHandler):
         def log_message(self, *x):
             pass
-    handler = lambda *x, **k: Quiet(*x, directory=KITS, **k)
+    handler = lambda *x, **k: Quiet(*x, directory=os.path.dirname(KITS), **k)
     socketserver.TCPServer.allow_reuse_address = True
     httpd = socketserver.TCPServer(('127.0.0.1', 0), handler)
     port = httpd.server_address[1]

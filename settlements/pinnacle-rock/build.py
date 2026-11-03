@@ -158,6 +158,7 @@ BR_SKIP=tuple(f for f in _json.load(open(os.path.join(BRK,'materials.json'),enco
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','isle-demo')))
 import bundles as _isle
 CATD=os.path.normpath(os.path.join(HERE,'..','..','kits','catalog'))
+CATE=os.path.normpath(os.path.join(HERE,'..','..','core','catalog'))   # the catalog's engine (MODULARITY-PLAN.md step 3)
 CAT_OWN=['50-br-mounts.js','51-br-trades.js','52-br-trades-b.js','53-br-trades-c.js','54-br-houses.js','55-br-rockcut.js',
          '56-br-rockcut-b.js','70-br-tent-kit.js','71-br-tents-dwell.js','72-br-tents-trade.js','73-br-tents-pens.js',
          '74-br-tents-bands.js','75-br-tents-bounds.js','79-br-camp.js']
@@ -202,11 +203,11 @@ def cat_fragment(side):
         kft='var KF_TEX = %s;\n'%kf_tex_json()
     return _isle.safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/pinnacle-rock/build.py cat_fragment). GENERATED: edit '
                       'kits/catalog, kits/beast-riders and the towns (kits/beast-riders/towns.py). */\n'
-                      'var CAT = (function(){\nvar scene = new THREE.Group();\n'+_isle.body([os.path.join(CATD,'krator-furniture-core.js')])+
+                      'var CAT = (function(){\nvar scene = new THREE.Group();\n'+_isle.body([os.path.join(CATE,'krator-furniture-core.js')])+
                       _isle.body([os.path.join(BRK,'src',f) for f in CAT_OWN])+
                       '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */\n'+tjs+'\n'+
-                      _isle.body([os.path.join(BRK,'src','60-br-ports.js'),os.path.join(CATD,'krator-furniture-runtime.js')])+kft+
-                      _isle.body([os.path.join(CATD,'krator-furniture-detail.js')])+CAT_PROTO+'})();\n')
+                      _isle.body([os.path.join(BRK,'src','60-br-ports.js'),os.path.join(CATE,'krator-furniture-runtime.js')])+kft+
+                      _isle.body([os.path.join(CATE,'krator-furniture-detail.js')])+CAT_PROTO+'})();\n')
 # the isle demo's prototype flattener, read in place (its header: CAT.proto's group into one geometry per material)
 PATH['89a-host-isle-protos.js']=os.path.normpath(os.path.join(HERE,'..','isle-demo','src','58-isle-protos.js'))
 # THE FLYERS (PLAN.md P2; flyers/README.md): Girder's flyers READ IN PLACE (settlements/girder/src 84-flyers.js, 84b, the

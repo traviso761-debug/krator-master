@@ -53,6 +53,8 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CAT = os.path.join(ROOT, 'kits', 'catalog')
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
 OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
           'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js', 'krator-master-furniture-generic-goods.js']
@@ -103,10 +105,10 @@ def main():
     import towns
     tjs, tfiles = towns.bundle()
     parts = [(f, read(os.path.join(ROOT, f))) for f in CORE_JS] + \
-            [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
+            [(kcat.rel(f), read(kcat.path(f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
             [(TOWNS, tjs)] + [('src/' + f, read(os.path.join(SRC, f))) for f in PORTS] + \
-            [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
-            [('kits/catalog/' + DETAIL, read(os.path.join(CAT, DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in TOOLS]
+            [(kcat.rel(f), read(kcat.path(f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
+            [(kcat.rel(DETAIL), read(kcat.path(DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [(kcat.rel(f) if '/' not in f else 'kits/catalog/' + f, read(kcat.path(f) if '/' not in f else os.path.join(CAT, f))) for f in TOOLS]
     if '--no-checks' not in sys.argv:
         errs, decl, keys = [], {}, {}
         for name, body in parts:

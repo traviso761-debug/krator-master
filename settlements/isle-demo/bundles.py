@@ -214,7 +214,7 @@ def izv_bundle():
 # kits/beast-riders/towns.py, registered by src/60-br-ports.js), on the catalog's core. The catalog's hand-made copies
 # (krator-master-buildings-beast-rider.js) are no longer taken.
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
-CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
+CAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 # the kit's tent set (src/70-75: the bands' tents, pens and boundaries), for a page that pitches camps (core/camp): the
 # open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
@@ -227,7 +227,7 @@ CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-te
 # page when side is given), the detail code with a stand-in for the furniture batch it extends (CAT draws no furniture),
 # and catProto details every non-port building as the kit's sheet does; each detailed material is tagged
 # userData.courtTri {tile, detail, gain}, the triplanar hook core/export already carries to Godot (Iziz's court finishes).
-CAT_DETAIL = os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-detail.js')
+CAT_DETAIL = os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-detail.js')
 CAT_TAIL = r'''
 function catDetail(g) {
   if (!KF_TEX) return g;
