@@ -248,9 +248,29 @@
    "bytes": 1184207,
    "sha256": "460d1b8fa5d776783a099a334691a35b8da23694aeeacad8d29f4dce8bdaa30c"
   },
+  "biomes/xanadu/dist/xanadu-cloud.html": {
+   "bytes": 8369116,
+   "sha256": "1809a7377897f43798278042af7cc6569c20d845b6d3e2d64d60e2b5fe49dbe5"
+  },
+  "biomes/xanadu/dist/xanadu-descent.html": {
+   "bytes": 7644287,
+   "sha256": "7dc70ed5f202d4a2c51fa73f18f4226f7e0bcc0068db64d4403c1784aa287498"
+  },
+  "biomes/xanadu/dist/xanadu-floor.html": {
+   "bytes": 12603636,
+   "sha256": "43f7188df05d73d44e8970ff83c027e958644c5d3d94a49a200f9a8313d5f9a1"
+  },
+  "biomes/xanadu/dist/xanadu-gills.html": {
+   "bytes": 7770038,
+   "sha256": "5705b00efd494806ee480af4eec5f8334068407149c9d5565ebefc805e1b89ab"
+  },
+  "biomes/xanadu/dist/xanadu-ranges.html": {
+   "bytes": 7657390,
+   "sha256": "8cf706c9f2576c9cc851398c187246fa2447442351f03336209558757e6297d0"
+  },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 6186195,
-   "sha256": "0c7f7131ac5f4099132caa2aec5d1225154d4fd2c0ab1f5a0a549bdcfe388b1d"
+   "bytes": 7654473,
+   "sha256": "70a584c371a6c6c44ef6895550322af8a3152da3828c09de022653e4f867adfe"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 184370,
