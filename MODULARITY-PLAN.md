@@ -326,11 +326,21 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
 - On the biome rebuild only (not on this branch): `core/atmos/demo/build.py` looks for three.js in Ancients and Ring Sea;
   it takes `harness.local_three` when that branch lands, as the materials demo does now.
 
-**Step 6: keep it modular.**
-- `tools/check_core_use.py` already blocks bespoke PRNG, noise, sky and water. Add: a build may not list another
-  build's `src/` (only `core/`, its own kit, or a kit it declares in `PLAN.md` "Core adoption"), and a
-  `--vendor-check` entry is an error unless the file is in a short documented list.
-- New kits start from the nearest finished one *and* the `core/engine` engine; they never fork an engine.
+**Step 6: keep it modular.** **Done 2026-11-03** (the checks; the lists shrink as the work below removes edges).
+- `tools/check_core_use.py` already blocks bespoke PRNG, noise, sky and water.
+- `tools/dep_graph.py` (a `test_all.py` step) now checks two more lists in `tools/dep_allowlist.json` as it checks the
+  backwards edges (a new entry fails, a gone one is reported stale):
+  - **`lateral`**, a settlement or open-world region reading another (31 today). What should stay are content links
+    (the isle demo's two towns and its region, Longsong's and Pinnacle Rock's neighbours); the code reads go as their
+    shared files reach a kit or core (Mungo and Verge -> Locus, Verge -> Iziz, Voth -> Dalab, Jimjam, Ys).
+  - **`vendored`**, every module -> upstream pair a build keeps copies of and checks with `--vendor-check` (38 today,
+    counting pairs a build also reads, which DEPS.json's "vendored" leaves out). A new copy is an error: read the
+    upstream in place, or record here why it must drift. The rule is per pair, not per file (a per-file list would
+    run to hundreds of lines and be rewritten by every re-vendor).
+  The plan's first wording ("a build may not list another build's `src/`") is the lateral list plus the backwards one:
+  a settlement reading a kit or core is the order the plan wants.
+- New kits start from the nearest finished one *and* the `core/engine` engine; they never fork an engine (not checked:
+  a fork is copies, which the vendored list catches only when the build checks them).
 
 ## Order of work and cost
 
@@ -343,7 +353,7 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
 | 3 catalog / Voth | the catalog's build.py comments; then the engine to core/catalog | done 2026-11-03 | the current runtime-loading pages |
 | 4 culture kits out of settlements | the Vernacular first, then Highlands, Xanadu, Locus | low per kit (files move unchanged) | none (byte-identical) |
 | 5 backwards edges | the scanner, 3 builds' lookups, the sockets sheet's folder | done 2026-11-03 | none (byte-identical) |
-| 6 guard rails | CI only | none | none |
+| 6 guard rails | CI only | done 2026-11-03 | none |
 
 Run steps 2 to 3 on one branch with one all-builds rebuild (CLAUDE.md "Rebuild what a shared change reaches") and
 `python3 tools/port_baseline.py` after each; step 4 waits for the Ancients re-vendor chain to be quiet.

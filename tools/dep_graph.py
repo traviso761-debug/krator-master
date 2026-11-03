@@ -22,6 +22,13 @@ A read of a pinned third-party library (THIRD_PARTY: three.js r128, the same byt
 The ones that exist today are listed in tools/dep_allowlist.json. A new one fails; as the plan removes edges,
 delete their lines (a listed edge that is gone is reported as stale).
 
+Two more lists keep it modular (MODULARITY-PLAN.md step 6), checked the same way (new fails, gone is stale):
+  "lateral"   a settlement or open-world region reading another one (settlements/* or openworld/* -> settlements/*
+              or openworld/*). Shared code goes to a kit or core; what stays are content links (the isle demo's two
+              towns and its open-world region) and the reads the plan has not moved yet.
+  "vendored"  a module that keeps copies of another module's files and checks them with --vendor-check. A new copy
+              is an error: read the file in place (a kit's file list, core/) instead, or record why in the plan.
+
 Usage:
     python3 tools/dep_graph.py                   check (what test_all.py runs)
     python3 tools/dep_graph.py --write           also write DEPS.json (every edge, sorted)
@@ -110,7 +117,8 @@ def list_files(f):
 
 
 def edges(scan_only=False):
-    """({module: [modules it reads]}, {build file: 'listed' | 'scanned'}, [errors], {module: [vendored-only]})."""
+    """({module: [modules it reads]}, {build file: 'listed' | 'scanned'}, [errors], {module: [vendored-only]},
+    {module: [every module it vendors from]})."""
     jobs = [(mod, f, not scan_only and listed(f)) for mod in modules() for f in build_files(mod)]
 
     def run(job):
@@ -139,7 +147,8 @@ def edges(scan_only=False):
             vonly[mod] = sorted(v)
         if not out[mod]:
             del out[mod]
-    return {m: sorted(v) for m, v in sorted(out.items())}, how, errs, vonly
+    vall = {m: sorted(v - {m}) for m, v in sorted(vout.items()) if v - {m}}
+    return {m: sorted(v) for m, v in sorted(out.items())}, how, errs, vonly, vall
 
 
 def group(m):
@@ -157,6 +166,27 @@ def backwards(a, b):
 
 def back_edges(e):
     return sorted('%s -> %s' % (a, b) for a, bs in e.items() for b in bs if backwards(a, b))
+
+
+def lateral(a, b):
+    return group(a) in ('settlements', 'openworld') and group(b) in ('settlements', 'openworld')
+
+
+def lateral_edges(e):
+    return sorted('%s -> %s' % (a, b) for a, bs in e.items() for b in bs if lateral(a, b))
+
+
+def vendored_edges(vall):
+    """Every module -> upstream pair a build vendors from (DEPS.json "vendored" holds only the vendored-only ones)."""
+    return sorted('%s -> %s' % (a, b) for a, bs in vall.items() for b in bs)
+
+
+LISTS = (('backwards', 'backwards edge', 'The order is settlements -> kits/biomes -> core: move the shared code '
+          'into core/ (MODULARITY-PLAN.md) instead of reading it from a build above it.'),
+         ('lateral', 'settlement -> settlement edge', 'A settlement reads another only for content (lore, the isle demo\'s '
+          'two towns): move shared code into a kit or core/ (MODULARITY-PLAN.md step 4, 6).'),
+         ('vendored', 'vendored copy', 'Read the upstream in place (its kit\'s file list, or core/) instead of keeping a '
+          'copy checked by --vendor-check (MODULARITY-PLAN.md step 6); if a copy must drift, record why in the plan.'))
 
 
 def write_json(path, obj):
@@ -178,16 +208,18 @@ def main(argv):
             for x, v in files:
                 print('  ' + x + ('  (vendored upstream)' if v else ''))
         return 0
-    e, how, errs, vonly = edges('--scan-only' in argv)
+    e, how, errs, vonly, vall = edges('--scan-only' in argv)
     for x in errs:
         print('ERROR ' + x)
     if errs:
         return 1
     back = back_edges(e)
+    found = {'backwards': back, 'lateral': lateral_edges(e), 'vendored': vendored_edges(vall)}
     if '--init-allowlist' in argv:
-        write_json(ALLOW, {'_note': 'Backwards edges that exist today (tools/dep_graph.py). Delete a line when the edge is removed; '
-                                    'never add one without a reason in MODULARITY-PLAN.md.', 'backwards': back})
-        print('wrote %s (%d edges)' % (os.path.relpath(ALLOW, ROOT), len(back)))
+        write_json(ALLOW, dict({'_note': 'Edges that exist today (tools/dep_graph.py): backwards, settlement -> settlement '
+                                         '(lateral) and vendored copies. Delete a line when the edge is removed; never add '
+                                         'one without a reason in MODULARITY-PLAN.md.'}, **found))
+        print('wrote %s (%s)' % (os.path.relpath(ALLOW, ROOT), ', '.join('%d %s' % (len(v), k) for k, v in found.items())))
         return 0
     if '--who' in argv:
         m = argv[argv.index('--who') + 1]
@@ -200,23 +232,27 @@ def main(argv):
                           'scanned': sorted(f for f, h in how.items() if h == 'scanned')})
         print('wrote DEPS.json (%d modules, %d edges)' % (len(e), sum(len(v) for v in e.values())))
     try:
-        allowed = set(json.load(open(ALLOW, encoding='utf-8')).get('backwards', []))
+        allow = json.load(open(ALLOW, encoding='utf-8'))
     except (OSError, ValueError):
         print('missing or unreadable %s; run with --init-allowlist' % os.path.relpath(ALLOW, ROOT))
         return 1
-    new = [x for x in back if x not in allowed]
-    stale = sorted(allowed - set(back))
-    for x in stale:
-        print('stale allow-list entry (edge is gone, delete the line): ' + x)
-    for x in new:
-        print('NEW backwards edge: ' + x)
-    if new:
-        print('\n%d new backwards edge(s). The order is settlements -> kits/biomes -> core: move the shared code '
-              'into core/ (MODULARITY-PLAN.md) instead of reading it from a build above it.' % len(new))
+    bad = 0
+    for key, what, advice in LISTS:
+        allowed = set(allow.get(key, []))
+        new = [x for x in found[key] if x not in allowed]
+        for x in sorted(allowed - set(found[key])):
+            print('stale allow-list entry (%s "%s": it is gone, delete the line): %s' % (os.path.basename(ALLOW), key, x))
+        for x in new:
+            print('NEW %s: %s' % (what, x))
+        if new:
+            print('\n%d new %s(s). %s\n' % (len(new), what, advice))
+            bad += len(new)
+    if bad:
         return 1
     nl = sum(1 for h in how.values() if h == 'listed')
-    print('dep graph ok: %d modules, %d edges, %d allow-listed backwards edges (%d builds listed, %d scanned)'
-          % (len(e), sum(len(v) for v in e.values()), len(back), nl, len(how) - nl))
+    print('dep graph ok: %d modules, %d edges; allow-listed: %d backwards, %d settlement -> settlement, %d vendored '
+          '(%d builds listed, %d scanned)' % (len(e), sum(len(v) for v in e.values()), len(back), len(found['lateral']),
+                                              len(found['vendored']), nl, len(how) - nl))
     return 0
 
 
