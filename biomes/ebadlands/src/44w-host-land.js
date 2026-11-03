@@ -25,8 +25,6 @@
 //   (2620,-1180)       the TARN in its cirque, in the spruce-fir
 // The fields are the host's own (this is a showcase): cold from height (and the north is hotter), wet from the
 // south and the range's orographic rain, plus the river; geo round the vents; barren on the crest.
-const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
-const LQ=new URLSearchParams(location.search);
 const TERR={R:3400};
 const VENTS={x:-2150,z:-2250,r:760};
 const POOLS=[[-2230,-2310,46,2.4],[-2090,-2190,30,1.8],[-2350,-2150,24,1.6],[-1990,-2380,36,2.0],[-2280,-2470,22,1.4],[-2130,-2050,18,1.2]];   // x, z, r, depth

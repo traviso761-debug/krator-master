@@ -46,7 +46,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={
  showcase:{tris:19500000,calls:700},   // scene triangles DRAWN at the camera (variants: the level by the camera); calls: one per variant pool part on this 6.8 km map (KNOWN_ISSUES), not a target
  cls:{pass:16000000,host:900000},
- type:{'badlands/trees':'pass','badlands/floor':'pass','badlands/dress':'pass','badlands/nursery':'pass','badlands/sulphur':'pass','host':'host'},
+ type:{'badlands/trees':'pass','badlands/floor':'pass','badlands/dress':'pass','badlands/nursery':'pass','badlands/sulphur':'pass','badlands/kin':'pass','host':'host'},
 };
 // the instanced items only (what the kit roots): a mesh's bounding-box centre is not a plant. The kit's hanging
 // things (weeper strands, stilt-pod tendrils) and the floor's flat mats are origins too, all at or above the ground.

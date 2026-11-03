@@ -1,0 +1,7 @@
+{
+ "note": "Station 1, the hot waste (PLAN-STATIONS.md). kin: the neighbours' species read in place (EXCHANGES.md, ebadlands as receiver; src/87-host-kin.js grows them): [fragments, the kit's API, the pack families their builders draw with]",
+ "kin": {
+  "eastabyss": [["src/50-biome-eastabyss-species.js", "src/55-biome-eastabyss-trees.js"], "EASTABYSS", ["bark2", "rope"]],
+  "sedesert": [["src/50-biome-sedesert-species.js", "src/55-biome-sedesert-trees.js"], "SEDESERT", ["bark3", "feather", "pods"]]
+ }
+}

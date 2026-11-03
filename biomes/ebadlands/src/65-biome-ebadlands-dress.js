@@ -24,7 +24,8 @@ function curtain(p,dx,dz,len,w){len=Math.min(len,drop(p));if(len<.6)return;const
  for(let i=0;i<n;i++){const o=(i-(n-1)/2)*w/n+rr(-.1,.1)*w,L=len*rr(.55,1),x=p[0]+tx*o+dx*rr(.05,.2),y=p[1]+rr(-.1,.05),z=p[2]+tz*o+dz*rr(.05,.2);
   BIO.put('maiden',[x,y,z],q,[w/n*rr(.9,1.4),L,1],bright(c,rr(.95,1.2)));
   for(let k=0,b=ri(1,4);k<b;k++){const t=rr(.15,.85),set=rng()<.65?PAL.monkey:PAL.columbine;   // monkeyflower, columbine
-   BIO.put('bloom',[x+tx*rr(-.3,.3)+dx*.08,y-L*t,z+tz*rr(-.3,.3)+dz*.08],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.09,.16),bright(vary(pick(set),.02,.08,.05),1.15));}}
+   BIO.put('bloom',[x+tx*rr(-.3,.3)*.15+dx*.03,y-L*t,z+tz*rr(-.3,.3)*.15+dz*.03],   /* on the strand (the final rebuild: .3 m to the side and .08 out left them off a ribbon .2 m wide; same draws) */
+    qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.09,.16),bright(vary(pick(set),.02,.08,.05),1.15));}}
  st.curtains++;}
 // a rose weeper's pink strands spilling off a high ledge
 function drape(p,dx,dz,len){len=Math.min(len,drop(p));if(len<.8)return;const m=Math.hypot(dx,dz)||1;dx/=m;dz/=m;const c=pick(SPK.weeper.leaf);

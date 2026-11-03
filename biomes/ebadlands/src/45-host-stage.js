@@ -30,7 +30,7 @@ const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.set(-1000,1150,
 const fill=new THREE.DirectionalLight(0xd8c0a8,.22);fill.position.set(900,300,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the climate fields, cached (the land's fieldsAt: these are a grid of them)
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','strata','crack','snow','pave','polyg','talus','wash'];
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','strata','crack','snow','pave','polyg','talus','wash','char'];
 const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  // the bed under each cell, as the strata shader draws it (S.surface: the wash down a gentle slope, the loose cover in the bed's colour): the painter's colour
  const SF=STRATA.surface?{r:new Float32Array(N*N),g:new Float32Array(N*N),b:new Float32Array(N*N)}:null;
@@ -51,9 +51,10 @@ FIELD.sulph=(x,z)=>POOLS.length?Math.max(FIELD.geo(x,z),smooth(1.9,1.2,poolD(x,z
 
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
-// nothing roots on a rock body (KSTACKS: a dome, a tor) or within a metre and a half of its foot
-const ROCK_MASK=ROCK.length?(x,z)=>{const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:1;}:null;
-BIO.init({tags:'ebadlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:ROCK_MASK||undefined,
+// THE MASK: the core's default (nothing rooted where the water is over the ground, a ramp over the first .7 m: a host's own mask replaces it, so it is
+// written out here) and nothing on a rock body (KSTACKS: a dome, a tor) or within a metre and a half of its foot
+const ROCK_MASK=(x,z)=>{const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;if(w<=0||!ROCK.length)return w;const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:w;};
+BIO.init({tags:'ebadlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:ROCK_MASK,
  obstacles:OBSTACLES,ticks:tick,seed:13,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:400,mid:1000,far:2600,floor:[360,880]},
  windows:{water:[-TERR.R,-TERR.R,TERR.R,TERR.R]}});
@@ -69,12 +70,12 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   STEP=K(0x8e9278),STEP2=K(0x9a9a80),SLICK=K(0xb06a4a),GRASS=K(0x6a8a3a),GRASS2=K(0x7e9648),SOIL=K(0x8a6a4c),
   PINE=K(0x6e5e44),PINE2=K(0x7a8048),BOR=K(0x4a4434),MOSS=K(0x4e5a30),TUN=K(0x6a6844),TUN2=K(0x7a7462),
   GRAN=K(0x8a8680),GRAN2=K(0x6e6a68),SNOW=K(0xeef1f4),ICE=K(0xd8e4ee),GRAVEL=K(0xb8a890),SILT=K(0x8a8068),DAMP=K(0x4a4834),
-  COBBLE=K(0xa89478),SCREE=K(0x9a7660),bed=new THREE.Color();
+  COBBLE=K(0xa89478),SCREE=K(0x9a7660),CHAR=K(0x2e2a26),ASH=K(0x6a645c),bed=new THREE.Color();
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=fbm(x/24,y/24,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5),hh=FC.at(FC.a.h,wx,wz);
   const wet=FC.at(FC.a.wet,wx,wz),flow=FC.at(FC.a.flow,wx,wz),can=FC.at(FC.a.canyon,wx,wz),rock=FC.at(FC.a.rock,wx,wz),cold=FC.at(FC.a.cold,wx,wz),
    geo=FC.at(FC.a.geo,wx,wz),sl=FC.at(FC.a.slope,wx,wz),snow=FC.at(FC.a.snow,wx,wz),bar=FC.at(FC.a.barren,wx,wz),str=FC.at(FC.a.strata,wx,wz),
-   tal=FC.at(FC.a.talus,wx,wz),wash=FC.at(FC.a.wash,wx,wz);
+   tal=FC.at(FC.a.talus,wx,wz),wash=FC.at(FC.a.wash,wx,wz),chr=FC.at(FC.a.char,wx,wz);
   const pav=fbm(x/80+5,y/80-2,.7,2);
   // the hot basin: pale cracked pink-tan
   c.copy(DES).lerp(DES2,clamp(.5+n*1.8,0,1));c.lerp(BANDS[5],smooth(.55,.7,pav)*.3);
@@ -100,6 +101,8 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the canyon: gravel and silt on the floor, damp at the water; its walls are strata (aRock)
   t.copy(GRAVEL).lerp(SILT,smooth(.6,.9,wet));c.lerp(t,smooth(.5,.95,can)*smooth(.6,.3,cold)*.6);c.lerp(GRASS,smooth(.85,1,can)*smooth(.2,.6,flow)*.4);
   c.lerp(DAMP,smooth(.6,.95,flow)*.7);
+  // a burn (a station's): charred ground and grey ash between
+  if(chr>0){t.copy(CHAR).lerp(ASH,clamp(.5+n*2.2,0,1));c.lerp(t,chr*.8);}
   const k=1+n*.10+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -167,7 +170,7 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'ebadlands-ground'+(KG_PAVE?'p':'')+(KG_P
  KG_PAVE?{kind:'clast',w:'vGM.x*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb08a6a,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vGM.y*(1.0-vRock)',amt:.85,size:3.2,width:.05,edgeTint:'vec3(0.62,0.56,0.5)',warp:.14,seed:312,name:'mud polygons'}:null,
- {kind:'clast',w:'vGM.w',amt:.8,proj:'tri',size:.7,matrix:.12,matrixColor:0x8a6650,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0x9a5a44,0xb07058,0x7a4a3a,0xc08a6a,0x8a6a5a],seed:313,name:'talus'}])});
+ {kind:'clast',w:'vGM.w',amt:.8,proj:'tri',size:.7,matrix:.12,matrixColor:LAND.talusMatrix==null?0x8a6650:LAND.talusMatrix,sub:.2,fleck:0,jitter:.9,vary:.35,palette:LAND.talusPalette||[0x9a5a44,0xb07058,0x7a4a3a,0xc08a6a,0x8a6a5a],seed:313,name:'talus'}])});
 /* THE GROUND MESH: N x N cells of TERR.R*2.2/N metres on terrainH, its zone weights per vertex. THE GROUND'S MASKS (the review's first line: each layer
    on a documented mask, no layer on a bare noise): aGL0..2 the ten library layers' zone weights (GLW above: the strata field, slope, the vents' geo,
    the pools' banks, cold, wet; normalised to sum 1 at most), aCrack the paint's mud cracks, aRock the strata's share (bedded rock showing), and aGM:
@@ -180,7 +183,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
   FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));ck[k]=F.crack;rk[k]=F.strata*(1-F.snow);
   gm[k*4]=Math.max(F.pave,F.wash*.8);gm[k*4+1]=F.polyg;gm[k*4+3]=F.talus;
   if(GL){F.pool=POOLS.length?smooth(2.6,1.15,poolD(x,z)[0]):0;F.x=x;F.z=z;
-   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1);s+=v;return v;}),k1=s>1?1/s:1;
+   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char);s+=v;return v;}),k1=s>1?1/s:1;   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash */
    for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
@@ -207,7 +210,10 @@ function ST_GROUND_N(){return LAND.groundN==null?560:LAND.groundN;}
     .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 dt=texture2D(uDetail,vSWP.xz*0.12+vSWP.y*0.07).rgb;diffuseColor.rgb=strataColor(vSWP,vSWN)*(0.6+0.4*vColor.r/0.62)*(0.86+0.28*dt.r);}');};
   mat.customProgramCacheKey=()=>'ebad-rock-'+(dome?1:0);
   const me=new THREE.Mesh(g,mat);me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel=dome?'A slickrock dome':'A granite tor';scene.add(me);return me;};
- mk(acc.dome,true);mk(acc.tor,false);})();
+ mk(acc.dome,true);mk(acc.tor,false);
+ /* an invisible anchor at each body's middle: the probe's registered-volume check finds something inside each one */
+ {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
+  ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}})();
 
 // ---------------------------------------------------------------- the water
 // core/water records (drawn in 89w-host-water.js): the river a WATER.flow from the land's RIVER_SPEC, the acid pools and the tarn WATER.still discs
