@@ -215,6 +215,17 @@ PORT row.
 
 **swlowlands' turn (2026-11-02):** species changed for readers: none of keys 0-26 or their indices; new 27 `springcypress`, 28 `ribbonroot`; new `SWLOW.make`, `grow`, `veto`, `IMPOSTORS`; item `padbloom`; `bk.mottle` is `bark.plane`; the madrone's blooms sit lower in the crown; every tree's shape re-rolled once (per-tree reseed); `88-host-build.js` is `89z-host-build.js`. Owed: swbay's receiver rows (mangrove, coastoak); `biomes/swlowlands/PLAN-STATIONS.md`, "For the owner".
 
+**The Throne's turn (pair 5, 2026-11-03; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"):** all eleven pages rebuilt on the universal set (in `src/` fragments
+no station overrides: `80`, `89x`, `89zz`, `98z`, `99-host-tz`; the build moved from `88` to `89z`, after the water), every attach audit at 0-0.0%; map 5.1's frontier
+re-survey (its flank refitted), the caldera checked (a ~250 m pit in the model's floor is the owner's call), `tube_hot_05` recorded; three new stations, 12 the
+lava delta, 13 the blast zone, 14 the lee's penitentes. **Species changed for readers** (ringisles, the Godthrone; `THRONE.SPECIES` keys and indices kept, 33):
+crowns held on their wood (Ranj, ruff, ash pine's mid tier, great ruff, lehua and its pompoms, mangrove, elfin); a stalk under each great ruff; far trees are impostors
+where `34-core-impostor.js` is on the page; new item `rafthair` (the snare raft's hairs, `free`); `drip` and `moss` cards `onLeaf`, hung inside half a cap; new
+`THRONE.veto`, `THRONE.layGLSL`. **Core fixed on the way:** `cloudShade` on a Phong material (the glacier's ice threw at render), the lava's crust uniform (a cloned map
+never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lambert ground reads `cameraPosition` (0) for its snow glints; the new stations' copies use `kEye`.
+**Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
+pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
 and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
