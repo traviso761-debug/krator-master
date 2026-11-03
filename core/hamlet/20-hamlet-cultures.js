@@ -48,8 +48,9 @@ KHAMLET.CULTURES.islander_east = {
 };
 /* Xanadu's valley folk (settlements/xanadu, the building kit; settlements/longsong's three villages round the monastery,
    2026-10-20): whitewashed and rammed-earth houses under flat roofs with the maroon twig band, a temple, the Farmers'
-   Guild's hall for the headmen, a bazaar row, a teahouse, a granary, farmsteads and the windmill (asbad). The kit has no
-   pens, corral or dairy yet: their boxes are pending (the host draws its own) */
+   Guild's hall for the headmen, a bazaar row, a teahouse, a granary, farmsteads and the windmill (asbad). The kit has its
+   pens, corral and dairy now (xa_pens, xa_corral, xa_dairy, kits/xanadu/src/76-xa-farm.js); the boxes below stay pending,
+   so a host without the kit's boxes still places them (it draws its own) */
 KHAMLET.CULTURES.xanadu = {
   kit: 'xanadu', household: 5.5, workShare: 0.45, slopeMax: 0.22,
   religious: 'xa_temple', civic: 'xa_guild_farm', general: 'xa_shops', food: 'xa_teahouse', warehouse: 'xa_granary',

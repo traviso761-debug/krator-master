@@ -228,7 +228,7 @@ const FK = (function () {
   };
   /* ------------------------------------------------------------ emblems
      The culture's device, drawn with the socket packs' own SYMBOLS (core/sockets/38-symbols.js,
-     vendored as krator-symbols.js) so a tapestry matches the banner on the building. K.symbolOf
+     read in place under the name krator-symbols.js) so a tapestry matches the banner on the building. K.symbolOf
      picks the symbol: the sheet's `sym`, else the culture's pack's (SYMBOL_OF), else the culture's own. */
   K.symbolOf = function (S, culture) {
     if (S && S.sym) return S.sym;

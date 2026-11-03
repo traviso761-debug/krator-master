@@ -11,7 +11,7 @@
  var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
- // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // ---- copied from core/catalog/krator-furniture-core.js (checked by test-tags.js) ----
  // FURN_CULTURES (the 27 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',

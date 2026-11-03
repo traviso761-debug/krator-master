@@ -11,8 +11,9 @@
 
 - **Vendored from `kits/ancients/src` since 2026-11-03** (`10-core.js`, `12-stats.js`, `30-kit.js`, `99-tail.html`: the vessels' engine;
   Reed Lake vendors the same files from there, and this kit used to check them against Reed Lake, a settlement:
-  MODULARITY-PLAN.md step 5). `10-core.js` drifts: upstream gained the frame hook (`TICKS`, `tick()`), which the vessels do not
-  use. Voth's `ringsea.py` and the isle demo bundle this file, so it is re-vendored with the next all-builds rebuild (`TODO.md`).
+  MODULARITY-PLAN.md step 5). `10-core.js` is identical again since 2026-11-03 (re-vendored with the all-builds rebuild: upstream's
+  frame hook, `TICKS` and `tick()`, which the vessels do not use; inside Voth's and the isle demo's `RINGSEA` closure it shadows
+  nothing).
 - [ ] **The viewer shell is this kit's own** (since 2026-11-03; it began as Reed Lake's): `00-head.html`, `92-camera.js`,
   `93-labels.js`, `verify.py`, `jscheck.py`. Its place is `core/host` (camera, labels, the probe) and `tools/harness.py` (the
   Chromium launcher `verify.py` and `jscheck.py` paste), as Scyvoi's host port did (kits/scyvoi/KNOWN_ISSUES.md "Host port").

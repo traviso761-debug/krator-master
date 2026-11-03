@@ -190,8 +190,7 @@ def main():
 # KNOWN_ISSUES.md; anything else that differs from upstream is an error (fix upstream, then re-vendor).
 ANCIENTS = os.path.join(ROOT, 'kits', 'ancients')
 VENDORED = ['src/10-core.js', 'src/12-stats.js', 'src/30-kit.js', 'src/99-tail.html']
-DELIBERATE = {'src/10-core.js': "upstream gained the frame hook (TICKS, tick()), which the vessels do not use; Voth's ringsea.py and the isle "
-                                "demo bundle this file, so it is re-vendored with the next all-builds rebuild (TODO.md)"}
+DELIBERATE = {}   # 10-core.js was drift until 2026-11-03 (upstream's frame hook): re-vendored with the all-builds rebuild
 # The viewer shell is this kit's own since 2026-11-03: src/00-head.html, 92-camera.js, 93-labels.js, verify.py and jscheck.py
 # began as Reed Lake's and had all drifted on purpose (the title, the Labels button, vessel labels, the vessel invariants, a
 # Chromium fallback). Their place is the core host shell and the shared harness (KNOWN_ISSUES.md, "The viewer shell"), not a settlement.
