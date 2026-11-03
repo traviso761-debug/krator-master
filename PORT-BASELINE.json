@@ -132,6 +132,30 @@
    "bytes": 6327489,
    "sha256": "b321e556031b17569e2b358d69717f5d753fdf4e59e895e9f9c999ac0c13c967"
   },
+  "biomes/riftrim/dist/riftrim-barrens.html": {
+   "bytes": 8171583,
+   "sha256": "901cf8fc0540a0afd5b7db5e67b356b3564dd502f665ae3e2b1808fd8440e7ae"
+  },
+  "biomes/riftrim/dist/riftrim-gorge.html": {
+   "bytes": 8732489,
+   "sha256": "0395b8f26f171b7a0fe5f9bccedb59ce03f4995ec74ad37ea6d74cf4682ed0b5"
+  },
+  "biomes/riftrim/dist/riftrim-ice.html": {
+   "bytes": 8172968,
+   "sha256": "5f05397b2da5143b8eb19b911fce16636dadf17a31ea61992fc5abca2e3d2d69"
+  },
+  "biomes/riftrim/dist/riftrim-lakes.html": {
+   "bytes": 9178145,
+   "sha256": "cdb03fcb99e1d2ce528d8866420a32ce2dcd698f24c385b0289e951852f6c00f"
+  },
+  "biomes/riftrim/dist/riftrim-pass.html": {
+   "bytes": 7542215,
+   "sha256": "2cfd8b7d708a813b332fe786d70a5e629d84033f134a492075f7af1ae1caa2db"
+  },
+  "biomes/riftrim/dist/riftrim.html": {
+   "bytes": 9350770,
+   "sha256": "c3d115e6448b4aa474045be42e0be0a7b576657132b825244f101c8d3d5e1e04"
+  },
   "biomes/ringisles/dist/ringisles.html": {
    "bytes": 2210611,
    "sha256": "04a9e0ee9e02fa0811c7327f389b919cc8e03e7440cc71c9d8816ce26e46b4d8"

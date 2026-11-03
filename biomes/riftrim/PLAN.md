@@ -525,7 +525,7 @@ plan recommends none. None of them is hard to reverse: each is a name or a site 
 | 1 | The Fellgangs' divergence and numbers | **Neither is drawn.** The name *Fellgangs* is kept (the model already has a `Fellgangs` polygon). No people are placed on any page (no settlement or crowd is this kit's) | nothing on the pages; the plan's section 6 table stands as proposed | a Fellgang camp would be a `core/camp` record, later |
 | 2 | Ledge's point | done: 437,1330 on 5.1 (= 165,1000 old) | station 1 | |
 | 3 | Chimes, Cthonos, The Tubes | **Kept where 5.1 puts them** (468,1392; 526,1503; 608,1547). Only Chimes is near a station (4, the gorge), and it is drawn as **a ruin's site** only (a terrace cut in the gorge's shoulder, tagged `Chimes (ruin, site only)`), no architecture | station 4 | the tag and the terrace's position in `stations/gorge/44w-host-land.js` |
-| 4 | Ledge's own build | **A settlement's, not this kit's** (as the plan says). Station 1 draws **the site only**: the cliff with its Ancient-cut benches (`KSTACKS.contour` terraces), the tunnel's portal and the lift slots as cave mouths in the face (`KCARVE`), the road's end on the cliff top, the springs at the foot. No buildings, no Dalab quarter, no lifts | station 1 | `settlements/ledge/` when it is planned |
+| 4 | Ledge's own build | **A settlement's, not this kit's** (as the plan says). Station 1 draws **the site only**: the cliff with its Ancient-cut benches (cut into the ground's profile below Ledge's site; `KSTACKS.contour` bodies and `KCARVE` mouths for the portal and the lift slots are owed: "Core adoption"). No buildings, no Dalab quarter, no lifts | station 1 | `settlements/ledge/` when it is planned |
 | 5 | Chimes or "The Span" | **Keep both names; rename and move nothing** (the most conservative): the gorge station calls it Chimes, as the model does; Dalab's Span stays at 282,680 old | station 4's labels | |
 | 6 | The model's Rift settlements | **Out of this kit's scope**: no change to the model | | |
 | 7 | The three rims' flora | **Taken as proposed** (section 3), all three lists, the W highland's borrowed six included (tier cedar, cork oak, bay laurel, veil willow, coilbark, spiral aloe) | every station | the station's `species` and `kin` lists |
@@ -536,14 +536,61 @@ plan recommends none. None of them is hard to reverse: each is a name or a site 
 - **The Hearths' stations are not built in this turn.** `biomes/hearths/PLAN.md` hosts three stations here (`hearths`, `hearths-hold`,
   `hearths-walk`); oidong built its own in pair 6. They need the Hearths' species read in place, KTHERM's bake and `KKARST`'s hypogene
   mode on the hold: a turn of their own on this kit, after the owner's look pass on the rims.
-- **Ledge's cliff springs' cave (karst site 6)** is laid out with `KKARST` and drawn as cave mouths and springs on the face; the
-  page does not walk inside it (no cave station was asked for).
-- **The crossing's air**: 0.58 atm at the portal. The page draws the thin-air sky (`ATMOS` thin air) but nothing grows above 6.5 km
-  except lichen on the rock: the S rim's flora runs out by height, as section 3 implies.
+- **Ledge's cliff springs' cave (karst site 6)** is not laid out this turn (`KKARST` owed: "Core adoption").
+- **The crossing's air**: 0.58 atm at the portal (the sky's air pressure). Nothing grows above ~6.5 km: the S rim's fellfield runs out by
+  height, as section 3 implies, and the page's south edge (~5.7 km) is the high tundra.
 - **The great lake's colour**: the deep-lake gradient (dark blue under the cliff, green-blue over the plain's shallows). The other
   kinds (glacial, algal, peat, frozen) are on stations 2, 3 and 6 as section 3's table gives them.
-- **Dalab's fields on the basin plain** are drawn as plain field patches of `kits/crops` colours, not as a settlement's fields.
+- **Dalab's fields on the basin plain** are a `farm` field (strips of `ground.terrace.field` and grain tufts), with bay-laurel hedges round
+  them; not a settlement's fields, and not yet from `kits/crops` records.
 - **Fauna**: none (section 8: `kits/fauna`, later).
+
+## Core adoption (the build, 2026-11-03; the cloud session `claude/riftrim-cloud`)
+
+**Started from** `biomes/ebadlands` (the nearest finished multi-station kit on the current core, rebuilt in pair 5): its host fragments
+(the stage, the variants, the far field, the sky, the air, the take) forked and renamed; the land rewritten as a library of lakes
+(`src/44v-host-landlib.js`, `rimLand()`); the species, trees and floor written new (`50`, `55`, `60`); the kin grower made generic
+(`87-host-kin.js` grows the rows each station's `LAND.kin` lists). Station 1 is the kit's own page (`build.py` with no `--station`).
+
+**The three rims kept apart** by shape first and colour second, as section 3 asks: the N rim's columns (frost frills 25-40 m, translucent
+back-lit fins; bell firs' hung bells) over a teal algal lake; the S rim's low dark field (sun rosettes all tilted to the sun, sailwort
+turned edge-on to one wind, cushion anemones, black boulders crusted in iris lichen, snowblood on the snow) with one lantern lobelia
+standing in it; the W rim's hung veils in fog (mist frills leaning and dripping, veil thread on frills and boulders, mist cups, moor
+sponge) among Dalab's planted lowland stands and fields. Each page sets the rim (`LAND.rim`: `RRIM.biome`), its ground palette (45) and
+its ground layers (five of twelve: `LAND.groundLayers`).
+
+| Universal set (`BACKPORT.md` sections 1 and 5) | Taken | How |
+|---|---|---|
+| `BIO.INDEX_ITEMS`, `BIO.LOD.merge/minTris/fade/cull` | yes | inherited (45; `?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0`) |
+| Octahedral impostors on the variants' far level | yes | 86 (`VARIANTS.IMP`, `?diet=0`); `BIO.impostorLook` gain 2.4 (ebadlands'): **to set at the GPU look pass** |
+| Cards on their geometry (`check_cells.py --fix`) | yes, 0 faults | the lobe larch's crown sprigs held by their stems (summer row, autumn row), the fog drip's cell tightened |
+| Hanging cards as one strand (`"base": "top"`) | yes | veil thread, fog drip, the bell fir's bells |
+| `BIO.flareJoin` on limb joints | yes | the bell fir's forks, the lobe larch's limbs and sprays (the frills have fins, not limbs) |
+| `BIO.fung`, `BIO.bamboo` | not used | no fungoid part; the glass cane is its own jointed item, not a bamboo |
+| Shared sky, height fog, rain cover, lightning, `bindWeather` | yes | inherited; the sky's site is each station's (old-canvas px: the sky model's frame), its air pressure the station's |
+| Snow that lies (`snowCover` with lee drifts) | yes | every station's `LAND.snowLine`; `frozen` on the S stations |
+| Water: tall falls (`plungeR`, `footK`, `spray: 'drop'`), no breakers on still water, W4 per-lake colour | yes | five lake kinds (89w); the hanging valley's fall (station 2), the gorge's three falls (station 4); `surf:false, breakers:false` on every still |
+| The plume and foam fix (core/water) | yes | rides with core/water: nothing kit-side |
+| `WATER.mirrorSwitch`, off at page load | yes | on the largest still (99): the great lake, the north rim's lake, the cold lake |
+| `KSHADOW`, toggleable and **off by default** | yes | attached in 89z and turned off at load (`window._shadow.off()`); `?shadow=1` or the panel's "shadows" select turns it on. **Core has no switch of its own yet**: this uses the handle's `off()`/`on()` |
+| `KSTRATA` | yes | the `rift` recipe (core/terrain/35, written for this kit) on Ledge's cliff, the lakes' rim, the gorge and the barrens' edge; `rift-volcanic` at the cold lake; `rift-basement` on the Outer Wall at the crossing |
+| `KGROUND`, `KHORIZON`, `KFAR` | yes | the twelve rim layers on documented masks (45 `GLW`); the far field per station (`LAND.far`) |
+| `KHOOK.warp` where Ancient structures are | not applicable | no Ancient structure is drawn: Ledge, Chimes and the portal are sites only (section 12, answers 3 and 4) |
+| Confluences | not taken | no two rivers join on any page (the tarns' stream enters a lake) |
+| Kin (the owner's option A, the Rift's station 3) | yes, as lineage | each own species carries `lineage` (the Rift species it descends from) and `RRIM.make`/`RRIM.grow` are exported, so `BIO.kin('riftrim.frostfrill', ...)` works for the Rift's sky islands; the borrowed species are read in place with `BIO.kin` (87) |
+
+**Not taken this turn, owed** (each listed in `KNOWN_ISSUES.md`):
+
+- **KCARVE cave mouths and `KSTACKS.contour` on Ledge's cliff; `KKARST` and `KCAVERN` for its cliff springs (karst site 6).** The cliff's
+  Ancient-cut benches are cut into the ground (a stepped profile within 650 m of Ledge's site), not contour bodies; no mouth is carved (the
+  ground's 11.8 m cells need a ~40 m patch, and the springs' cave wants a page that goes inside it). `build.py` lists none of those
+  fragments until they are drawn.
+- **The crossing's portal** is a cut face with the Tungangs' lamps in a row before it (the lobelia's glow item), not a carved mouth; the
+  waystation is a level apron (its build is a settlement's).
+- **The Hearths' stations** (`hearths`, `hearths-hold`, `hearths-walk`: `biomes/hearths/PLAN.md` section 11) are not built.
+- **The tier cedar** (the SW lowlands', the W list's timber) is not grown yet: its builder's pads float off its limbs past the attach
+  audit's limit (`KNOWN_ISSUES.md`); the other seven borrowed W species are.
+- **`PORT.md`** is written by `tools/audit_port.py`; the Godot twin is not started.
 
 ## Core changes to take (reconciled 2026-10-27)
 
