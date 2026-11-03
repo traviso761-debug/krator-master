@@ -140,7 +140,7 @@ The plan as written before the step:
   Ancients re-vendor session did), not by overwriting.
 - Done when: `kits/*` list `core/engine` and no kit lists another kit's `src/` for engine code.
 
-**Step 3: break the catalog <-> Voth knot.** **Done 2026-11-03: there was no knot in code.**
+**Step 3: break the catalog <-> Voth knot.** **Done 2026-11-03: there was no knot in code; the core/catalog split done too.**
 - Checked in code, not comments (`check_core_use.code_only` over every `kits/catalog/*.py`; the JS files' `settlements/`
   strings are `source:` provenance fields and comments): `kits/catalog` reads no settlement. Its registries are its own
   top-level files (one per culture, plus `krator-master-buildings-voth.js`, Voth's first-generation buildings, a culture
@@ -148,23 +148,27 @@ The plan as written before the step:
   (`settlements/voth/catalog/index.html`) and `settlements/voth/build.py` read the kit: the allowed direction. The edge
   was two comments in `kits/catalog/build.py` that say so; reworded, the allow-list line is gone (13 -> 12 backwards
   edges), and `kits/catalog` reads only `core/atmos` and `core/sockets`.
-- **The split is not done; it is the owner's call.** `core/catalog` (the engine side: `krator-furniture-core.js`,
-  `krator-asset-engine.js`, `krator-furniture-kit.js`, `-runtime.js`, `-detail.js`, `inspector.js`, `krator-symbols.js`) would
-  follow the rule that what two builds read lives in core, but it fixes no dependency (a kit read by builds above it is
-  allowed, as the biome kits are) and it reaches a dozen builds and the pages that load the files at run time by
-  relative path (`kits/interiors/src/00-head.html` and `src-sets/`, `settlements/voth/catalog/index.html`; the gallery
-  inlines a page's local scripts, `gallery/build_gallery.py`, so publishing follows). Those pages would load
-  `../../../core/catalog/...` instead, and every builder that reads the files by path (Voth, the isle demo, Pinnacle
-  Rock, motor-vehicles, mechs, fauna, interiors, `tools/textures/audit_catalog.js`, `core/tags/test-tags.js`) moves with it.
-  Pages change only in path labels and script tags; the proof would be the fingerprints (core/engine, core/furnish).
-- **Found on the way, for step 5:** `core/tags/52-core-tags-vocab.js` copies the catalog's vocabulary (`FURN_CULTURES`,
-  `BUILDING_TYPES`, `FURN_TIERS`, `FURN_JOBS`, `FURN_SETTINGS`, the culture names) from `kits/catalog/krator-furniture-core.js`,
-  and `core/tags/test-tags.js` reads the kit to check the copy: core depends on a kit (the scanner reads only build.py,
-  so it does not list this). The source should be core/tags, with the catalog checked against it, or both in
-  `core/catalog` if the split is taken.
-- The culture symbols ride-along (`kits/catalog/krator-symbols.js`, vendored from `core/sockets/38-symbols.js`, drifted)
-  stays parked: pages load the copy at run time by relative path, and re-syncing it changes pages, so it goes with the
-  split or the all-builds rebuild.
+- **The split, done 2026-11-03 (owner: "agree with your step 3 proposal"; 945e2dae).** The engine
+  (`krator-furniture-core.js`, `krator-asset-engine.js`, `krator-furniture-kit.js`, `-runtime.js`, `-detail.js`, `inspector.js`)
+  moved unchanged to `core/catalog/`, with `catalog.py` (a catalog name -> its file: the engine there, a culture file in
+  the kit), `files.json` and `catalog-files.js` (the same lookup for node tools). Every reader resolves names through it:
+  the catalog's build, bundle, verify and segment test, fauna, mechs, motor-vehicles, interiors and Ancients Interiors
+  (their runtime script tags; their `verify.py` serve the repo root), Beast Riders, Voth (its build, its static catalog
+  sheet), the isle demo, Pinnacle Rock, `core/tags`' test, the texture audit.
+- Proof against a build of every reader before the move: catalog, fauna and the interiors cores identical, every other
+  page different only in path labels and script tags; the interiors pages, their sets sheet and Ancients Interiors pass
+  `verify.py --assert` from the repo root; Voth's catalog sheet loads with no 404. Committed: the pages that were current
+  (interiors, interiors-sets, ancients-interiors, motor-vehicles and its bundle, voth-site) with their baseline entries.
+  The stale ones (beast-riders, interiors-walk, mechs, voth-city) are self-contained, keep working, and take the new
+  labels at the all-builds rebuild (`TODO.md`, "Ride along").
+- `core/tags` -> `kits/catalog` (below, step 5) went with it: the vocabulary's source is `core/catalog/krator-furniture-core.js`,
+  so the copy and its check are core -> core.
+- Found on the way: `core/tags/52-core-tags-vocab.js` copies the catalog's vocabulary and `core/tags/test-tags.js` checked it
+  against the kit (core -> kit, not in `DEPS.json`, which reads only build.py). Fixed by the split.
+- The culture symbols ride-along, done (3d39ba47): `kits/catalog/krator-symbols.js` (a copy of `core/sockets/38-symbols.js`,
+  behind it: no Order scroll, Xanadu's wheel for its lotus) is gone, and the name resolves to `core/sockets`. A content change
+  on purpose; the three pages that load it at run time are committed and pass their gates, the bundled ones take it at the
+  all-builds rebuild.
 
 The plan as written before the step:
 - Move the catalog registries and the Voth-building sheet loader so the dependency is `settlements/voth ->
@@ -186,8 +190,7 @@ The plan as written before the step:
   demo's two towns), not code.
 
 **Step 5: fix the remaining backwards edges.**
-- `core/tags` -> `kits/catalog` (found in step 3; not in `DEPS.json`, which reads only build.py): the vocabulary's source
-  moves to core/tags (or `core/catalog`), and the catalog is checked against it.
+- ~~`core/tags` -> `kits/catalog`~~ (found in step 3): fixed by the core/catalog split.
 - `core/materials` stops naming `biomes/sedesert`, `kits/ancients`, `kits/ringsea` (move the three fragments into
   `core/materials`, finish the drift decisions in `core/README.md`).
 - `kits/beast-riders` and `kits/ringsea` stop reading `isle-demo` and `reedlake`; `biomes/ringisles` and
@@ -211,7 +214,7 @@ The plan as written before the step:
 | 1 sky | 14 kits + iziz (+ Noah's Regret) | done 2026-11-02 | none (no byte moved) |
 | 2 kit engine | 8 kits + Noah's Regret's geometry | done 2026-11-03 | none committed (proof: fingerprints) |
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
-| 3 catalog / Voth | the catalog's build.py comments | done 2026-11-03 (no knot in code); the core/catalog split open | none |
+| 3 catalog / Voth | the catalog's build.py comments; then the engine to core/catalog | done 2026-11-03 | the current runtime-loading pages |
 | 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
 | 5 backwards edges | 6 builds | low | those builds |
 | 6 guard rails | CI only | none | none |
@@ -235,8 +238,8 @@ steps 2 and 3 to move pages takes them, with the stale pages above). `TODO.md`, 
 - ~~The probes read a merged mesh's own sample points; a broad phase for `regOccupancy` on `core/space`; guard the
   camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad). When it lands: check the Iziz palace page's
   own guard (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`) came out, and take the three out of `TODO.md`.
-- The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy
-  `kits/catalog/krator-symbols.js` goes (the TODO asked for a re-vendor; reading in place removes the vendored file).
+- ~~The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy goes.~~ Done in step 3
+  (3d39ba47); the bundled pages take the new symbols in the rebuild (`TODO.md`'s first ride-along).
 - `core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).
 - ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the kits' half is step 1 (done, as a placeholder); the
   settlements' half is SKY-PLAN's S5 and step 4.
@@ -259,7 +262,7 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
 - Interiors in every building kit that has them, with a cut-away (`TODO.md`, Viewers): done once in `core/engine`
   through `kits/interiors` and `core/furnish`, not once per kit.
 
-**With step 3 (catalog / Voth).** The symbols item above if the all-builds rebuild has not taken it.
+**With step 3 (catalog / Voth).** The symbols item: done in step 3 (3d39ba47).
 
 **With step 4 (the settlement chains).**
 - `useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js` (Jimjam's open item) before the chain stops
@@ -282,8 +285,7 @@ dependency moves.
 - Whether `core/engine` is one module or split (scene/world vs. animation vs. materials). One module for now
   (2026-11-03, `engine.py` lists the files); splitting it moves no byte.
 - Whether `core/engine/10-core.js` moves onto `core/rand` (Yeti's version): every kit's buildings change (step 2).
-- Whether to split the catalog's engine into `core/catalog` (step 3): the rule says yes, no dependency needs it, and it
-  moves every page that loads the catalog at run time.
+- ~~Whether to split the catalog's engine into `core/catalog`.~~ Yes (owner, 2026-11-03): done in step 3.
 - Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
   allowed kit -> settlement edge.
 - ~~Whether to take the step 1 gallery republish with the rebuild.~~ Moot: step 1 changed no page. Ask with the next

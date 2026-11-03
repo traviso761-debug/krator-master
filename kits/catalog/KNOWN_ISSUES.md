@@ -1,9 +1,8 @@
 # kits/catalog — known issues
 
-- **`krator-symbols.js` has drifted from `core/sockets/38-symbols.js`, on purpose** (2026-10-20): the core file gained
-  `scroll` (the Order of Historians' symbol, `SYMBOL_OF.order`) and Xanadu's `lotus` for the wheel; this copy is in the furniture bundle every furnished build
-  takes, so it is re-vendored with the next all-builds rebuild (`TODO.md`, "Ride along"). Until then the Order's furniture
-  draws no scroll and Xanadu's still the wheel; `build.py --vendor-check` reports the drift.
+- ~~`krator-symbols.js` drifted from `core/sockets/38-symbols.js`~~ (2026-10-20). Fixed 2026-11-03: the copy is gone and the
+  name resolves to `core/sockets/38-symbols.js` (`core/catalog/files.json`; MODULARITY-PLAN.md step 3), so the Order's scroll and
+  Xanadu's lotus are in every page built since. Pages built before (the bundled worlds) take them at the next all-builds rebuild.
 
 `verify.py --assert` passes with nothing deferred: its `ALLOW` list is empty. The style rules (no host globals,
 `F.shade`/`F.TAU`, no literal colours) are assertions now, not warnings.

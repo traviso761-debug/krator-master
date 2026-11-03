@@ -373,6 +373,7 @@
    "kits/interiors"
   ],
   "kits/ancients-interiors": [
+   "core/catalog",
    "kits/catalog",
    "kits/interiors"
   ],
@@ -390,12 +391,14 @@
    "kits/scyvoi"
   ],
   "kits/beast-riders": [
+   "core/catalog",
    "core/rand",
    "kits/catalog",
    "settlements/isle-demo"
   ],
   "kits/catalog": [
    "core/atmos",
+   "core/catalog",
    "core/sockets"
   ],
   "kits/crops": [
@@ -432,10 +435,11 @@
   ],
   "kits/fauna": [
    "core/atmos",
-   "kits/catalog"
+   "core/catalog"
   ],
   "kits/interiors": [
    "core/atmos",
+   "core/catalog",
    "kits/catalog"
   ],
   "kits/islanders": [
@@ -470,11 +474,11 @@
   ],
   "kits/mechs": [
    "core/atmos",
-   "kits/catalog"
+   "core/catalog"
   ],
   "kits/motor-vehicles": [
    "core/atmos",
-   "kits/catalog"
+   "core/catalog"
   ],
   "kits/post-apoc": [
    "core/furnish",
@@ -666,6 +670,7 @@
   ],
   "settlements/isle-demo": [
    "core/biome",
+   "core/catalog",
    "core/city",
    "core/export",
    "core/hamlet",
@@ -676,7 +681,6 @@
    "core/tags",
    "core/terrain",
    "kits/beast-riders",
-   "kits/catalog",
    "kits/islanders",
    "kits/ringsea",
    "openworld/isle-demo",
@@ -832,6 +836,7 @@
    "biomes/necanyons",
    "core/atmos",
    "core/biome",
+   "core/catalog",
    "core/city",
    "core/clock",
    "core/edits",
@@ -930,6 +935,7 @@
    "biomes/swbay",
    "core/atmos",
    "core/biome",
+   "core/catalog",
    "core/city",
    "core/clock",
    "core/edits",
@@ -937,6 +943,7 @@
    "core/minimap",
    "core/rand",
    "core/simulation",
+   "core/sockets",
    "core/space",
    "core/tags",
    "core/walk",

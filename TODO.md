@@ -26,6 +26,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **The catalog's engine moved to `core/catalog` and its symbols to `core/sockets`** (2026-11-03, MODULARITY-PLAN.md step 3).
+  The pages that inline the furniture bundle (about 30) still carry the old `kits/catalog/...` labels and the old symbols
+  (no Order scroll, Xanadu's wheel): they take both when rebuilt. Stale comments in fragments every page inlines, left
+  so as not to move every page for a comment: `core/tags/52-core-tags-vocab.js` ("copied from kits/catalog/krator-furniture-core.js"),
+  `core/sockets/38-symbols.js` ("vendored there as kits/catalog/krator-symbols.js"), `core/catalog/krator-furniture-kit.js`
+  ("vendored as krator-symbols.js"). Reword them in that rebuild.
+
 - **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
   (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
   (`settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
@@ -56,11 +63,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
   Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
   builds take core/hamlet (Longsong, `openworld/isle-demo`): a comment change was not worth an isle-demo rebuild alone.
-
-- **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
-  Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
-  is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
-  Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
 - **The waiting cultures** (the owner, 2026-10-26; `kits/yeti/PLAN.md` section 11). The rebuild this list waits for: register
   `khaayken`, `tungang`, `fellgang`, `talovolci`, `pylon` and `talia` in `core/tags/52-core-tags-vocab.js` (`CATALOG_CULTURES`
