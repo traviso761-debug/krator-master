@@ -12,6 +12,7 @@ The engine the Scyvoi lineage of building kits runs on, moved here unchanged fro
 | `30-geo.js` | the geometry engine: every primitive merged into a bucket per material key, in world space |
 | `36-def.js` | the registry and placement: `defBuilding`, the records, doors |
 | `36o-open.js` | real doors and glass on `core/door` (2026-11-03): `svLeaf`, `svDoorway`, `svPane`, `svPanePoly`, `svRoom`, `svGlass`; the leaves' meshes and walk blocks (`svOpenFlush`, `svOpenWalk`) |
+| `36s-stair.js` | stairs a walker climbs (2026-11-03): `svStair` (an open timber flight, solid steps or a ladder, in the kit's materials), `svWell` (a slab less the stair's well), `svLanding`; each flight a `KWALK.strip` tagged `stair:<key>` |
 | `90-scene.js` | the scene: renderer, the placeholder sky (`core/atmos/placeholder`), ground, the sheet's layout |
 | `91f-furnish.js` | the furniture adapter onto `core/furnish` |
 | `91n-night.js` | the night lights |

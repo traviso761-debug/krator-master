@@ -17,6 +17,7 @@ FILES = [
     '30-geo.js',         # the geometry engine: every primitive merged into a bucket per material key
     '36-def.js',         # the registry and placement: defBuilding, the records, doors
     '36o-open.js',       # real doors and glass on core/door: svLeaf, svDoorway, svPane (the page loads core/door)
+    '36s-stair.js',      # stairs a walker climbs: svStair (open, solid, ladder), svWell, svLanding, and their core/walk strips
     '90-scene.js',       # the scene: renderer, the placeholder sky, ground, the sheet's layout from 89-rows.js
     '91f-furnish.js',    # the furniture adapter onto core/furnish
     '91n-night.js',      # the night lights
