@@ -140,4 +140,8 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
   Arc's ANGLE) `89zz` skips the sun's shadows, the rain's occlusion map and the ground's horizon (the flora keeps the horizon), as on the Throne's isle;
   under SwiftShader (32) all three run, so a software verify is not the GPU's page. To take shadows on the Arc the ground must drop a layer (the damp
   sand and the wet sand are near twins) or pack two into one map.
-- [ ] **`export-profile` under software GL**: "library textures still decoding after 180 s" on the first rebuilt page; not seen on a GPU run yet.
+- [ ] **`export-profile` under software GL** (station 1): "library textures still decoding after 180 s", on both software runs of the rebuilt page;
+  the first screenshot then timed out (10 minutes at 1280x800, 26.7 M triangles), so the harness's universal asserts were not reached. The GPU run owes both.
+- [x] **The lagoon's export box** was the island's (`EXPORT_BOX`: open lagoon on its map): `verify.py`'s `STATION_EXPORT_BOX` gives it the north-east motu.
+- [x] **The lagoon's morning mist read as a white wall** across the far lagoon from 'The lagoon from above' (the Throne's isle's density, .001, below
+  14 m: a grazing ray crossed kilometres of it): .00025 below 10 m (`89a`, both pages). The owner's eye: whether any low mist is wanted.
