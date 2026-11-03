@@ -35,7 +35,7 @@ named soluble rock but thin or patchy beds, or a stand-in for the true process. 
 | 1 | **The Hykkousoi karst**: NW bay, Ys and k-guilin | 780,725 (plain), 745,728 (lake), 789,738 (Ys) | 1560,1450 | `k-guilin` page; `nwbay` page (its tiankeng and cenotes); Ys | thick grey limestone (`nwbay-karst` recipe) | branch, with a drowned level | **A** | high: cenotes and the tiankeng get a cave under them, and Ys's drowned stacks get sumps | none (the Zeijani tubes are 95-260 km off) |
 | 2 | **swhighlands' ring folds** | 545-555, 975-985 | 1100,1960 | `swhighlands` station 1 (built: has a river cave) | limestone ridges in `ringfold` (opal-shell limestone) | branch: river cave, sinkhole chain, 1 old level | **A** | high: the plan's river cave, natural bridges and karst springs | none (the nearest tube is 520 km off) |
 | 3 | **Cube's plateau**: gypsum maze in the rift fill | 720,1570 | 1440,3140 | `rift` station 4 (Cube's plateau); its springs at station 2 | gypsum and stromatolite limestone (`rift` recipe) | maze, 2 storeys, dry | **B+** | high: the reward under Cube, and the Tungangs' lost east | `tube_rift_08` 200 km off; The Tubes is a lava tube, not this |
-| 4 | **The Hearth hold**: hypogene chambers | 525,1400 | 1050,2800 | `hearths` station 2 (the hold, under `riftrim --station hearths`) | lake limestone and gypsum under the vent field | maze with big chambers (a stand-in for hypogene) | **B** | high: the plan asks for it ("huge chambers, gypsum blocks") | none; the field's fumarole shaft goes through it |
+| 4 | **The Hearth hold**: hypogene chambers | 525,1400 | 1050,2800 | `hearths` station 2 (the hold, under `riftrim --station hearths`) | lake limestone and gypsum under the vent field | hypogene (`kind:'hypogene'`): feeders, chambers and cupolas, 2 storeys | **B** | high: the plan asks for it ("huge chambers, gypsum blocks") | none; the field's fumarole shaft goes through it |
 | 5 | **The great river gorge** | 690,1050 | 1380,2100 | `swlowlands` station 2 (built); Shim's ground | limestone walls (the station takes `rock.limestone.karst`) | branch from the rim to the wall springs, 1 old level | **B** | medium: springs in the gorge walls, dry valleys and dolines on the rims | none |
 | 6 | **Ledge's cliff springs** | 437-445, 1330-1345 | 880,2670 | `riftrim` (Ledge's point and the great lake) | `rift` fill in the trough wall | branch from the highland to the lake's foot | **B-** | medium: "the springs at the great lake's foot are the caves' outflow" | the Ancients' Rift-line tunnels come out here (they join natural caves by design); `tube_rift_08` 125 km off |
 | 7 | **Korona's west trench rims** | 950,475 | 1900,950 | `korona` (nearest: the trench station) | gypsum and salt round the endorheic trench lakes | maze in gypsum, sinks on the rims | **C+** | medium | none |
@@ -145,8 +145,8 @@ KKARST.network({box:[-1800,-1800,1800,1800], ground, world, kind:'branch',
 - **Surface.** Collapse dolines on the table, a scarp lined with cave mouths, the springs at its foot.
 - **Who uses it.** Cube was the Ancients' hub (`riftrim/PLAN.md` section 5), "the reward for a player who
   braves the Lizardmen". The Tungangs once lived throughout the Rift: those east of Chimes were wiped out in tunnel wars
-  after the Lizardmen came, and a lost loj in the east is rumoured (`LORE.md`). This maze is a natural place for that lost
-  loj, and for the Ancients' line to have joined natural caves under its hub. That is *proposed*, for the owner.
+  after the Lizardmen came, and a lost loj in the east is rumoured (`LORE.md`). **Approved by the owner (2026-11-03):** this
+  maze is where that lost loj lies, and where the Ancients' line joined natural caves under its hub.
 - **Conflicts.** `tube_rift_08` (the Southern Rift basalt tubes, 594-628 x 1528-1558) is 160-200 km west. **The Tubes**
   (cavern settlement, 608,1547) sits on that tube, so it is a lava tube, not karst: keep KKARST off it.
 
@@ -170,23 +170,35 @@ KKARST.network({box:[-2000,-2000,2000,2000], ground, world, kind:'maze',
 - **Rock.** Lake limestones and gypsum of the rift fill, lifted onto the shoulder, meeting the vents' sulphur water. This
   is the "hypogene chambers" row of `riftrim/PLAN.md`, rated "good". Sulphuric acid dissolves from below, so the chambers
   are huge, with gypsum blocks and chandeliers, few entrances, warm and wet.
-- **Cave kind and levels.** KKARST models water falling to a spring, so this is a stand-in: use a **maze** with a high
-  chamber chance and big chambers, one level, the table just above the floor (warm pools), and no sinks. At 0.75 g a roof
-  spans about a third wider, so let `chamber.r` run past Earth's sizes.
-- **Spring.** The warm water rises. Its outflow goes down the rim toward the trough. The fumarole's shaft through the hold
-  is a `KCAVERN` shaft added by the station, not by KKARST.
-- **Surface.** Few signs: a warm, steaming collapse or two (cenotes from `thin`), the hearth stand's floor as the roof.
+- **Cave kind and levels.** KKARST's **`kind: 'hypogene'`** (added 2026-11-03 for this site): feeders rising up the rim's
+  faults from depth, big chambers and cupolas over them at the water table, a rising maze a storey, an older dry storey
+  above at an older table (replacement gypsum and fallen gypsum blocks on its floors), and gypsum crust round today's table.
+  At 0.75 g a roof spans about a third wider, so `chamber.r` runs past Earth's sizes.
+- **Outlets.** A warm, sulphurous spring where today's table meets the rim, going down toward the trough, and vents where a
+  cupola has broken the shelf's surface. There are no sinks. The fumarole's shaft through the hold is a `KCAVERN` shaft added
+  by the station, not by KKARST.
+- **Surface.** Few signs: the vents steaming through the hearth stand (`N.outlets`), the warm spring, the hearth stand's
+  floor as the roof.
+- **Hazards.** `KKARST.hazards(N)` gives scalding pools over the flooded chambers, bad air (H2S and CO2) pooled on every
+  active chamber's floor (load `core/hazard/21-core-hazard-flow.js` for `shape.pool`), the acid's drips in the crust band,
+  and falls down the shafts above the water.
 - **Who uses it.** The Tungangs' holds: "the warm, wet hypogene chambers by the vents above all", where they grow the dark
   crops (`riftrim/PLAN.md` section 6).
 - **Conflicts.** None with the tubes (`tube_rift_08` is 290 km off). The rim's vents are lava sources: if a tube is drawn
   here later, keep it out of the chamber box.
 
 ```js
-KKARST.network({box:[-900,-900,900,900], ground, world, kind:'maze',
-  level: G - 60, p:.45, joints:{angle:0, sp:55},
-  table: G - 58,                              /* a warm wet floor, pools in the lows */
-  chamber:{p:.6, r:[18,45], h:[12,30]}, thin:15,
-  spring:[/* the shelf's lowest edge toward the trough */], w:[3,8], h:[3,7]})
+const N = KKARST.network({box:[-900,-900,900,900], ground, world, kind:'hypogene',
+  level: G - 70, table: G - 69,               /* the active storey: warm wet floors, hot pools in the lows */
+  temp: 55,                                   /* scalding: the vents' sulphur water */
+  levels:[{y: G - 40}],                       /* the older storey: dry, replacement gypsum and blocks */
+  form:'maze', p:.45, joints:{angle:/* the rim's strike */, sp:55},
+  feeders:{cell:300, p:.6, depth:200, faults:[/* the rim's faults as [x0, z0, x1, z1] */]},
+  chamber:{p:.4, r:[20,60], h:[12,32]},       /* 0.75 g: wider spans than Earth's */
+  cupola:{p:.7, n:[1,4], r:[4,10], h:[3,8]}, thin:12,
+  outlet:[/* the shelf's lowest edge toward the trough */], w:[3,8], h:[3,7]});
+KKARST.build(C, N, {rock:'gypsum'});
+N.crusts.forEach(c => KSPELEO.place(C, {box:c.box, y:(c.y0 + c.y1) / 2, world, kinds:KSPELEO.HYPOGENE}));
 ```
 
 ## 5. The great river gorge (swlowlands station 2, Shim's ground)
@@ -317,7 +329,9 @@ basalt's base. Note the lake marl that fires Jimjam's yellow brick (`LORE.md`, t
 
 ## Notes for the module
 
-- `KKARST.build`'s default rock is `'tuff'`. Pass `rock:'limestone'` or `'gypsum'` for these sites.
-- Hypogene caves (site 4) are a stand-in on the water-table model. If more sites want them (the Throne's vents meeting
-  the Hykkousoi limestone would be another), a `kind:'hypogene'` whose spring is a rising feeder would be a real addition.
+- `KKARST.build`'s default rock is `'tuff'`. Pass `rock:'limestone'` or `'gypsum'` for these sites, but note that the rock is
+  only a label so far: KCAVERN has materials for basalt and tuff only (`MATS`), and draws any other rock as raw tuff. A
+  limestone and a gypsum material for KCAVERN are owed before these caves look right.
+- Hypogene caves now have their own kind (`kind:'hypogene'`, 2026-11-03; site 4). Another candidate for it: the Throne's
+  vents meeting the Hykkousoi limestone.
 - Hykkousoi sumps are roads, not hazards: `KKARST.hazards` could take a `breathers` tag so `drown` skips water-breathers.
