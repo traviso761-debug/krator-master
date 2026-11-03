@@ -2,10 +2,14 @@
    PLANNER-OWNED runtime for 51-fixtures.js (what a door IS) and 64-interiors.js (what is behind it).
 
    DOORS. Every leaf F.door drew sits in its own instanced bucket ('leaf|plank', 'leaf|cloth'),
-   hung from its hinge, so a door opens by rewriting one instance matrix: no per-door mesh. A door
-   wants to open when the walker is within reach, when someone in the life layer arrives at it
-   (DOORS.touch), or when the Doors control says so. Hinged leaves swing ~80 degrees, cloth mats
-   roll up. Reveals (the dark box behind a leaf) are hidden while open so you can see through.
+   hung from its hinge, so a door opens by rewriting one instance matrix: no per-door mesh. Each
+   door is a record in core/door (KDOOR, a stable id: 53-assets.js), which holds whether it is
+   open and eases it (KDOORHOST.tick); a door with no room planned behind it is locked (a solid
+   body). A door opens when the walker reaches it (the Doors control's auto), when someone in the
+   life layer arrives at it (DOORS.touch: KDOOR.open by 'npc', shutting itself after a few
+   seconds), on E within reach (98-start.js), or by id (KDOOR.open / close). Hinged leaves swing
+   ~80 degrees, cloth mats roll up. Reveals (the room-coloured box behind a leaf) are hidden while
+   open onto a live interior so you can see through.
 
    SEEING IN. The city's walls are solid boxes, so an open door would show the wall behind it.
    Each open door near the camera gets a PORTAL: a quad on the doorway that (1) marks its pixels
@@ -57,31 +61,46 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   function showPlinths(b, on){ if(!b) return; (b._plinths||[]).forEach(function(ref){ showReveal(ref, on); }); }
   function showReveal(ref, on){ if(!ref) return; var B=BUCKET[ref.key]; if(!B||!B.mesh||!B.list[ref.i]) return;
     B.mesh.setMatrixAt(ref.i, on ? kitMatrix(B.list[ref.i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }
-  /* someone (the life layer, a script) wants this door open for a few seconds */
-  DOORS.touch = function(id, secs){ var D=FIX.byId[id]; if(D) DOORS.touched[id] = Math.max(DOORS.touched[id]||0, secs||3.5); };
+  /* ---------------------------------------------------------------- the doors' records (core/door)
+     53-assets.js gave every door with a leaf its KDOOR record (D._kd). One whose building has no interior plan opens onto
+     a solid body: locked as built (KDOOR.lock asBuilt, so a save keeps no delta for it). KDOOR eases the rest; each one's
+     leaves are posed here as it moves (KDOORHOST.posed), and its reveal hidden while it stands open onto a live interior. */
+  var KD = [];
+  FIX.doors.forEach(function(D){ var R=D._kd; if(!R) return; KD.push(R); R.fixD = D;
+    if(D.to==='interior' && !(D.building && interiorPlan(D.building))) KDOOR.lock(R, true, { asBuilt:true });
+  });
+  /* the host poses them (core/door's 90-core-door-host.js loads after this fragment: 98-start.js hands each record over) */
+  DOORS.pose = function(R){ var D=R.fixD, e=R.open*R.open*(3-2*R.open); D.open=R.open;
+    (D._leaves||[]).forEach(function(L){ poseLeaf(L, e); });
+    if(D._rvl && !INT.cutaway && D.building!==INT.occupied) showReveal(D._rvl, R.open < 0.25 || !INT.live[D._lid||D.building]); };
+  DOORS.records = KD;
+  /* someone (the life layer, a script) wants this door open for a few seconds: it opens, and shuts itself after them */
+  DOORS.touch = function(id, secs){ var D=FIX.byId[id]; if(D && D._kd) KDOOR.open(D._kd, { by:'npc', auto:secs==null?3.5:secs }); };
+  /* the walker (the Doors control's auto) opens a door it reaches and shuts it behind; the control's open / shut sets every
+     door near; a door the player opened or shut with E, or an NPC's, is left as they set it */
+  function autoDoor(R, want, by){ if(R.locked) return;
+    if(want){ if(R.target < 0.5) KDOOR.open(R, { by:by }); }
+    else if(R.target > 0.5 && (R.by==='walker' || R.by==='mode')) KDOOR.close(R, { by:by }); }
 
   var animating = {};
-  function setWant(D, w){ if(D.want!==w){ D.want=w; animating[D.id]=D; } }
   function stepDoors(dt){
     var fx = WALK.on ? WALK.x : ctl.tx, fz = WALK.on ? WALK.z : ctl.tz;
     var near = doorsNear(fx, fz, 60); DOORS.near = near;
-    for(var id in DOORS.touched){ DOORS.touched[id]-=dt; if(DOORS.touched[id]<=0) delete DOORS.touched[id]; }
-    near.forEach(function(D){ if(D.style==='open'||D.style==='gate') return;
-      var w = DOORS.mode==='open' ? 1 : DOORS.mode==='shut' ? 0 : ((DOORS.touched[D.id] || (WALK.on && Math.hypot(D.x-WALK.x, D.z-WALK.z) < 2.6 && Math.abs(D.y-WALK.y) < 2.5)) ? 1 : 0);
-      setWant(D, w); });
-    for(var id2 in DOORS.touched){ var Dt=FIX.byId[id2]; if(Dt && Dt.style!=='open' && Dt.style!=='gate') setWant(Dt, 1); }
+    near.forEach(function(D){ var R=D._kd; if(!R) return;
+      if(DOORS.mode==='open' || DOORS.mode==='shut'){ if(DOORS.mode==='open' ? R.target < 0.5 : R.target > 0.5){ if(DOORS.mode==='open') KDOOR.open(R, { by:'mode' }); else KDOOR.close(R, { by:'mode' }); } return; }
+      autoDoor(R, WALK.on && Math.hypot(D.x-WALK.x, D.z-WALK.z) < 2.6 && Math.abs(D.y-WALK.y) < 2.5, 'walker'); });
+    KDOORHOST.tick(dt);
     /* interior doors of the built interiors */
     for(var bid in INT.live){ var I=INT.live[bid]; I.doors.forEach(function(d){
       var w = DOORS.mode==='open' ? 1 : DOORS.mode==='shut' ? 0 : (WALK.on && WALK.bid===bid && Math.hypot(d.wx-WALK.x, d.wz-WALK.z) < 2.0 ? 1 : 0.0);
       if(d.want!==w){ d.want=w; animating[d.id]=d; } }); }
-    var n=0;
+    var n=KDOOR.list.filter(function(R){ return R.open!==R.target; }).length;
     for(var k in animating){ var A=animating[k], tgt=A.want||0, sp=dt*1.6;
       A.open = A.open==null?0:A.open;
       if(Math.abs(A.open-tgt) < 1e-3){ delete animating[k]; continue; }
       A.open = A.open < tgt ? Math.min(tgt, A.open+sp) : Math.max(tgt, A.open-sp);
       var e = A.open*A.open*(3-2*A.open);
       (A._leaves||[]).forEach(function(L){ poseLeaf(L, e); });
-      if(A._rvl && !INT.cutaway && A.building!==INT.occupied) showReveal(A._rvl, A.open < 0.25 || !INT.live[A._lid||A.building]);
       n++; }
     DOORS.stats.animating = n;
   }
@@ -307,11 +326,51 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     var n = nk||0; IND.uIndoorSun.value = INT.cutaway ? 0.9 : 0.24*(1-n); IND.uIndoorWarm.value.setRGB(0.09+0.42*n, 0.08+0.27*n, 0.07+0.12*n);
     IND.uFloorLift.value = INT.cutaway ? 0.12 : 0.30*(1-n) + 0.14*n;
   });
+  /* ---------------------------------------------------------------- the probe's counts (verify.py prints window.*)
+     doors: KDOOR records; locked: on a solid body; leaves drawn; panes of glass; cards (the room behind glass or a doorway on a
+     solid body); voids: what is left in the 'dark' family that is not a card (smoke holes, flues, wells, troughs: 53-assets.js) */
+  (function(){ var voids=0, cards=0; for(var k in BUCKET){ var B=BUCKET[k]; if(B.fam!=='dark') continue; B.list.forEach(function(r){ if(yopenIsCard(r[7])) cards++; else voids++; }); }   /* a card is a 'dark' instance in the room's colour */
+    window._openings = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(R){ return R.locked; }).length, leaves:YOPEN.leaves,
+      panes:YOPEN.panes, cards:cards, voids:voids, mergedVoidTris:(MBK.dark && MBK.dark.tris) || 0 }; })();
+
+  /* ---------------------------------------------------------------- the reachability audit (core/walk: KWALK.reach)
+     Yuni's walker is its own (walkable() above: the rooms of a level, the interior doorways, the stairs, the exterior doors).
+     DOORS.reach() writes the same thing into a KWALK registry of its own, building by building, and floods it from each
+     exterior door's step: every room a floor (its polygon, at its level), every wall a row of blocks with its doorways left
+     out, every stair a rising strip, each exterior door a strip from the street into the room behind it. A room no walker
+     gets to is a sealed room or a level no stair meets. Returns {buildings, rooms, reached, unreached:[{bid, asset, room,
+     kind, lvl}], sealedBuildings} (verify.py --eval "()=>_doors.reach()"; KNOWN_ISSUES.md has the numbers). */
+  function reachOne(b, P){
+    var W=KWALK.create(), w2=function(lx,lz){ return intToWorld(b, lx, lz); }, floors={};
+    P.rooms.forEach(function(R){ floors[R.id]=W.poly({ pts:R.poly.map(function(q){ var w=w2(q[0],q[1]); return [w[0], w[1], b.y+R.y]; }), name:R.id, tag:R.kind }); });
+    P.walls.forEach(function(Wl){ var A=Wl.a, B=Wl.b, L=Math.hypot(B[0]-A[0],B[1]-A[1]); if(L<0.05) return; var tx=(B[0]-A[0])/L, tz=(B[1]-A[1])/L;
+      var gaps=(Wl.openings||[]).filter(function(o){ return o.door; }).map(function(o){ return [o.u-o.w/2, o.u+o.w/2]; });
+      for(var u=0.1; u<L; u+=0.2){ if(gaps.some(function(g){ return u>g[0]-0.05 && u<g[1]+0.05; })) continue;
+        var w=w2(A[0]+tx*u, A[1]+tz*u), r=Math.max(0.1, (Wl.thick==null?0.12:Wl.thick)/2); W.block([w[0]-r,w[0]+r,w[1]-r,w[1]+r, b.y+Wl.y+0.02, b.y+Wl.y+Wl.h], Wl.id); } });
+    P.stairs.forEach(function(S){ var g=P.groups[S.group], a=g.RF(S.u, S.va-0.4), c=g.RF(S.u, S.vb+0.3), wa=w2(a[0],a[1]), wc=w2(c[0],c[1]);
+      W.strip({ a:[wa[0], wa[1], b.y+S.y0], b:[wc[0], wc[1], b.y+S.y1], w:Math.max(0.5, S.w-0.1), name:S.id, tag:'stair' }); });
+    var starts=[], nogap=0;
+    P.doors.forEach(function(d){ if(d.kind!=='exterior') return; var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw), D=FIX.byId[d.fixture], g=P.groups[d.group];
+      var o=w2(d.at[0]+nx*1.6, d.at[1]+nz*1.6), s0=w2(d.at[0]+nx*1.2, d.at[1]+nz*1.2), i=w2(d.at[0]-nx*0.9, d.at[1]-nz*0.9), ys=D ? D.y : b.y+d.y,
+          yi=b.y+(g && g.levels[0] ? g.levels[0].y : P.levels[0] ? P.levels[0].y : d.y);   /* the floor of the door's own group */
+      if(!P.walls.some(function(Wl){ return (Wl.openings||[]).some(function(op){ return op.door===d.id; }); })) nogap++;   /* the shell drew no doorway for it */
+      W.strip({ a:[o[0], o[1], ys], b:[i[0], i[1], yi], w:Math.max(0.5, d.w-0.2), name:d.id, tag:'doorstep' }); starts.push([s0[0], ys+(yi-ys)*0.4/2.5, s0[1]]); });
+    var res=W.reach(starts, { cell:0.2, step:0.45, r:0.2, h:1.7, margin:2 }), hit=new Set(res.reached);
+    var miss=P.rooms.filter(function(R){ return !hit.has(floors[R.id]); }); miss.nogap=nogap; return miss; }
+  DOORS.reach = function(only){ var out={ buildings:0, rooms:0, reached:0, unreached:[], sealedBuildings:0, doorsWithoutDoorway:0, byAsset:{}, byKind:{}, byLevel:{} };
+    FIX.buildings.forEach(function(b){ if(only && only.indexOf(b.id)<0 && only.indexOf(b.asset)<0) return; var P=interiorPlan(b.id); if(!P) return;
+      var miss=reachOne(b, P); out.buildings++; out.rooms+=P.rooms.length; out.reached+=P.rooms.length-miss.length; out.doorsWithoutDoorway+=miss.nogap;
+      miss.forEach(function(R){ out.byKind[R.kind]=(out.byKind[R.kind]||0)+1; out.byLevel[R.lvl]=(out.byLevel[R.lvl]||0)+1; });
+      if(miss.length===P.rooms.length) out.sealedBuildings++;
+      miss.forEach(function(R){ out.unreached.push({ bid:b.id, asset:b.asset, room:R.id, kind:R.kind, lvl:R.lvl }); out.byAsset[b.asset]=(out.byAsset[b.asset]||0)+1; }); });
+    out.unreachedN = out.unreached.length; out.unreached = out.unreached.slice(0, 40); return out; };
+
   window._doors = { stats:function(){ return { doors:FIX.doors.length, windows:FIX.windows.length, lights:FIX.lights.length, buildings:FIX.buildings.length,
       live:INT.order.length, portals:INT.stats.portals||0, indoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.inside; }).length : 0,
       atDoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg && a.leg.door; }).length : 0,
       legs:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg; }).length : 0, animating:DOORS.stats.animating||0, walk:WALK.on?{ x:+WALK.x.toFixed(2), z:+WALK.z.toFixed(2), y:+WALK.y.toFixed(2), lvl:WALK.lvl, bid:WALK.bid }:null }; },
     walk:DOORS.walk, walkTo:DOORS.walkTo, lifeSim:function(s){ if(typeof LIFE!=='undefined' && LIFE.sim) LIFE.sim(s); },
     /* fixed-step walking for headless tests, where frames are too slow for real time */
-    sim:function(key, secs){ keys[key]=true; for(var t=0;t<secs;t+=1/30){ stepWalk(1/30); stepDoors(1/30); } keys[key]=false; return WALK.bid; }, cutaway:setCutaway, touch:DOORS.touch, mode:function(m){ DOORS.mode=m; }, WALK:WALK, INT:INT, DOORS:DOORS, key:function(k,on){ keys[k]=!!on; } };
+    sim:function(key, secs){ keys[key]=true; for(var t=0;t<secs;t+=1/30){ stepWalk(1/30); stepDoors(1/30); } keys[key]=false; return WALK.bid; }, cutaway:setCutaway, touch:DOORS.touch,
+    reach:DOORS.reach, openings:function(){ return window._openings; }, kdoor:function(id){ var R=KDOOR.get(id); return R ? { id:R.id, open:R.open, target:R.target, locked:R.locked, by:R.by } : null; }, mode:function(m){ DOORS.mode=m; }, WALK:WALK, INT:INT, DOORS:DOORS, key:function(k,on){ keys[k]=!!on; } };
 })();

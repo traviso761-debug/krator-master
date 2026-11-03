@@ -74,7 +74,10 @@ TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags') 
 # Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
 # export: core/export (07-core-export.js and its adapters: the krator-world container; core/export/README.md), which
 # 77-export.js fills with Yuni's fixtures beside its KRATOR_EXPORT route (GAME_EXPORT.md, "Two routes").
-CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record')]
+# door: the doors' records and the glass (KDOOR, KGLASS, KDOORHOST: core/door/README.md), which 53-assets.js draws its
+# openings with and 76-doors.js drives; walk: KWALK, for the reachability audit of the interiors only (76-doors.js
+# DOORS.reach: Yuni's walker is its own, on the interior plans)
+CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record'), 'door', 'walk']
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,

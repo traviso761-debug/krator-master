@@ -478,7 +478,9 @@ function addShell(plan, b, g, L, A, B, doors){
     if(yl-W.h/2 < 0.2 || yl+W.h/2 > L.H-0.1) return;
     project(p[0], p[1], Math.sin(yawL), Math.cos(yawL), W.w, yl-W.h/2, yl+W.h/2, { window:wid }); });
   ops.sort(function(p,q){ return p.u-q.u; });
-  for(var i=1;i<ops.length;i++) if(ops[i].u-ops[i].w/2 < ops[i-1].u+ops[i-1].w/2+0.12){ ops.splice(i,1); i--; }
+  /* two openings that overlap: the later one goes, unless it is a door and the earlier a window (a door's doorway is never walled
+     up for a window: the reachability audit, 2026-11-03, 76-doors.js DOORS.reach) */
+  for(var i=1;i<ops.length;i++) if(ops[i].u-ops[i].w/2 < ops[i-1].u+ops[i-1].w/2+0.12){ ops.splice((ops[i].door && !ops[i-1].door) ? i-1 : i, 1); i--; }
   plan.walls.push({ id:plan.bid+'.wall.'+plan.walls.length, kind:'shell', module:plan.finish, a:[+A[0].toFixed(3),+A[1].toFixed(3)], b:[+B[0].toFixed(3),+B[1].toFixed(3)],
     out:[+nx.toFixed(4),+nz.toFixed(4)], lvl:L.k, y:L.y, h:L.H, thick:0.12, openings:ops, group:plan.groups.indexOf(g) });
 }
