@@ -6,6 +6,8 @@ function mpAudit(){const out={};for(const F of MP.families()){const A=MP.audit(F
 function mpRoomAudit(key,k){const F=MP.FAMILY[key],st=MP.storey(F,k),o=MP.furnish(F,st),fails=[];let pieces=0;(o.rooms||[]).forEach(r=>{pieces+=r.placements.length;if(r.recipe){const A=KratorAncientsInteriors.audit(r.recipe,o.catalog);if(!A.ok)fails.push(r.R.id+': '+JSON.stringify(A.fails[0]));}else{const A=KratorInteriors.audit(r.room,r.plan,o.adapter);if(!A.ok)fails.push(r.R.id+': '+JSON.stringify(A.fails[0]));}});return {rooms:(o.rooms||[]).length,pieces,fails};}
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail:detail||''}),a=mpAudit();
  for(const k in a)add(k+': the plans pass the audit',a[k].ok,a[k].ok?a[k].rooms+' rooms, '+a[k].flats+' flats':a[k].fails[0]);
+ /* the Ancients kit's buildings with plans (46d): planned off their hero's grid, so audited here, not in node */
+ (MP.ANCIENT_PLANNED||[]).forEach(k=>{if(!MP.FAMILY[k])MP.hero(k);const F=MP.FAMILY[k],A=F?MP.audit(F):null;add(k+': the grid plans pass the audit',A&&A.ok,A?(A.ok?A.rooms+' rooms':A.fails[0]):'no family');});
  add('the stage booted',MPS.ready);if(!MPS.ready)return R;
  MPS.keys.forEach(k=>{const H=MPS.hero[k].userData,F=MP.FAMILY[k.split('.')[0]];add(k+': hero under its budget',H.tris<=F.tris,H.tris+' of '+F.tris);add(k+': hero under 10 draw calls',H.calls<10,''+H.calls);add(k+': a cage of 60 triangles or fewer',MPS.rec[k].tris<=60,''+MPS.rec[k].tris);});
  add(MPS.keys.length+' impostors baked',MPS.impN===MPS.keys.length,''+MPS.impN);

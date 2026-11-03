@@ -244,6 +244,20 @@ hero's belt now steps with them), and the forest, a park storey with no ceiling 
 pavilions at the legs' feet are ticket halls on the plaza. `roundBands` lays a round plate of any size: rooms at the skin, middle rings of
 windowless rooms with passages, the core.
 
+**The Ancients kit's buildings, batch 1** (the Redoubt, Skyscraper A, the Honeycomb Block): plans on a grid (`46d`, `MP.gridPlan`), since
+the kit's shapes are drawn, not recorded. `MP.floors` (59) keeps the cells it reads off the hero (each storey's inside, the ground storey's, the
+core square); the first hero built makes the building's family from them (`MP.ancientFamily`: a ground storey and one at each level, what each
+is for from `MP.ANCIENT_USES`, the core square's stair and lift). A storey's cells are banded by their depth from the skin: rooms 6 m deep at the
+skin, a corridor 2 m, then inner rooms (windowless kinds) and corridors in turn; a plate 6 m deep or less is one hall. Every corridor is joined
+to the one the core opens on (a way carved through the rooms where they are cut off), the core's south door gets a way to the nearest
+corridor, and a part of the storey cut off from the core's (Sky A's office ring round its atrium, the Redoubt's ring round its keep) gets a
+bridge over the gap, 40 m at most, with its own slab and glass rails. Rooms are cut along their corridor 6 m apart; walls run on the cells'
+edges between rooms and corridors, straightened (Douglas-Peucker, 0.5 m) once the doors are placed; the skin is the hero's. On the ground every
+room on the skin opens on the street. The ruins are a design's (the hero cut at the tear, its own plates in pieces of 8 m so the tear cuts
+them, the rubble of one tower); the cutter now tests the kit's nested and scaled meshes in the hero's frame, and cuts unindexed ones (Sky A's
+crown stood whole over its ruins). The Redoubt 196 rooms, Sky A 1874 (105 storeys), the Honeycomb Block 501 (lodging: bedrooms at the skin,
+baths and stores inside); audited under `verify.py --assert` (hostChecks), the planner on synthetic plates in node.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

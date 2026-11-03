@@ -11,7 +11,9 @@
 //    none if 4 does not), concrete, with a door on its south face on every storey it serves.
 // o: sh (storey height), y0 (the first plate, default sh), top (no plate within a storey of it: default the roof), floors (false: none),
 // maxY (no plate above it), cell (1), roofAccess (a head-house over the core on the roof), roof (a building the kit left open-topped, as the Watch's drum: under this height an enclosed cell
-// counts as covered, and a roof plate is drawn at it). Returns a Group named 'floors', or null; userData { storeys, cells, core, tris }.
+// counts as covered, and a roof plate is drawn at it), tile (a ruin's: the plates in pieces of 8 m at most, so a tear cuts them). Returns a Group named
+// 'floors', or null; userData { storeys, cells, core, tris, grid } (grid: the cells, for the plans on it, 46d: x0, z0, cell, W, D, the ground storey's
+// inside cells and each level's, the core).
 MP.floors = function (G, o) {
   if (o.floors === false) return null;
   const cell = o.cell == null ? 1 : o.cell, sh = o.sh, y0 = o.y0 == null ? sh : o.y0, roof = o.roof == null ? null : o.roof, top = Math.min(roof == null ? o.top : roof, o.maxY == null ? 1e9 : o.maxY);
@@ -109,9 +111,12 @@ MP.floors = function (G, o) {
       let i2 = i; while (i2 + 1 < W && g[j * W + i2 + 1] && !used[j * W + i2 + 1]) i2++;
       let j2 = j; for (;;) { const r = j2 + 1; if (r >= D) break; let full = true; for (let a = i; a <= i2; a++) if (!g[r * W + a] || used[r * W + a]) { full = false; break; } if (!full) break; j2 = r; }
       for (let b = j; b <= j2; b++) for (let a = i; a <= i2; a++) used[b * W + a] = 1;
-      const ax = x0 + i * cell, bx = x0 + (i2 + 1) * cell, az = z0 + j * cell, bz = z0 + (j2 + 1) * cell, y = L.y;
-      B.quad('concrete', [ax, y, bz], [bx, y, bz], [bx, y, az], [ax, y, az], [0, 1, 0], { uv: 4 });
-      B.quad('white', [ax, y - 0.25, az], [bx, y - 0.25, az], [bx, y - 0.25, bz], [ax, y - 0.25, bz], [0, -1, 0], { uv: 4 });
+      const AX = x0 + i * cell, BX = x0 + (i2 + 1) * cell, AZ = z0 + j * cell, BZ = z0 + (j2 + 1) * cell, y = L.y, nx = o.tile ? Math.ceil((BX - AX) / 8) : 1, nz = o.tile ? Math.ceil((BZ - AZ) / 8) : 1;
+      for (let p = 0; p < nx; p++) for (let r = 0; r < nz; r++) {
+        const ax = AX + (BX - AX) * p / nx, bx = AX + (BX - AX) * (p + 1) / nx, az = AZ + (BZ - AZ) * r / nz, bz = AZ + (BZ - AZ) * (r + 1) / nz;
+        B.quad('concrete', [ax, y, bz], [bx, y, bz], [bx, y, az], [ax, y, az], [0, 1, 0], { uv: 4 });
+        B.quad('white', [ax, y - 0.25, az], [bx, y - 0.25, az], [bx, y - 0.25, bz], [ax, y - 0.25, bz], [0, -1, 0], { uv: 4 });
+      }
       S.cells += (i2 - i + 1) * (j2 - j + 1);
     }
   });
@@ -131,6 +136,9 @@ MP.floors = function (G, o) {
   }
   const F = new THREE.Group(); const H = B.finish({ id: 'floors' }, 'floors'); H.children.forEach(m => F.add(m)); F.name = 'floors';
   let nt = 0; F.traverse(m => { if (m.isMesh) nt += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3; });
-  S.tris = Math.round(nt); S.levels = levels.map(L => +L.y.toFixed(2)); F.userData = S;
+  S.tris = Math.round(nt); S.levels = levels.map(L => +L.y.toFixed(2));
+  /* the grid kept for the plans (46d): a level whose cells match the one under it shares its array */
+  if (o.grid) { const gl = []; levels.forEach((L, q) => { const p = gl[q - 1]; gl.push({ y: L.y, roof: !!L.roof, g: p && p.g.length === L.g.length && p.g.every((v, n) => v === L.g[n]) ? p.g : L.g }); }); S.grid = { x0, z0, cell, W, D, ground: inside(0), levels: gl, core: S.core }; }
+  F.userData = S;
   return F;
 };

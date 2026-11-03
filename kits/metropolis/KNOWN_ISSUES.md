@@ -32,5 +32,9 @@
 - [ ] **A design's tear runs round the origin** (`MP.tearAt`, by angle): on the Organ, the Pods and the Long Curve, whose parts stand off the axis, it jumps where the angle wraps (behind the origin, at -x), so the torn line steps there.
 - [ ] **The Terrarium's legs carry nothing:** their pavilions are ticket halls with street doors only; the way up is the service stalk at the middle. Inclined lifts in the legs would need a shaft kind the plans, the drawing and the walk do not have (a stair up them would be about 40 degrees).
 - [ ] **The Yoke's ruins run over budget** (crown 87 k, skeleton 67 k, against 75 k) as the other designs' do.
+- [ ] **A grid plan's bridge or joining corridor can meet a wall of the kit's with no opening in it** (46d): the cells say where the floor is, not whether a gap is air or wall, and the hero is not cut. Sky A's bridges cross its atrium (air); the Redoubt's and the Honeycomb Block's may run into a wall.
+- [ ] **Sky A's core stands in its atrium on landings `MP.floors` reads under the spire's cover** (r 11 m, every storey from 60 m): a stair and lift tower with bridges to the office ring, rational, but the landings are the cells' own reading, not the kit's.
+- [ ] **A grid plan's walls follow 1 m cells, straightened to 0.5 m:** a curved building's partitions are straight lines between steps, and its rooms' outlines are within half a metre of their walls.
+- [ ] **Sky A's widest storeys are about 590 k triangles furnished** (one storey open at a time, three at most).
 - [ ] **The Organ's pipes have small rooms:** a pipe of r 9 m leaves a band of 3.1 m between its corridor and the skin (the core takes 3.2 m, the corridor 1.8 m); the wider pipes 4.1 and 5.1 m.
 - [ ] **The Wedge's ruins are mullion cages:** it is all black curtain glass, so with the glass gone its frame stands bare in every ruin state; its slabs show inside.

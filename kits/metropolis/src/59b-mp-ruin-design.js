@@ -10,21 +10,28 @@ MP.ruinDesign = function (G, F, state) {
   const u = (x, z) => Math.atan2(z, x) * 24, limit = (x, z) => (state === 'gutted' ? Infinity : MP.tearAt(F, R, u(x, z)));
   const skin = R.frame ? R.skin : Infinity, top = R.frame ? R.frame[1] : Infinity, v = new THREE.Vector3(), m = new THREE.Matrix4(), Z = new THREE.Matrix4().makeScale(0, 0, 0);
   const drop = [];
+  /* every test in the hero's own frame: the Ancients kit's meshes sit in groups of their own, moved and scaled (55) */
+  G.updateMatrixWorld(true); const inv = new THREE.Matrix4().copy(G.matrixWorld).invert(), Mw = new THREE.Matrix4(), mm = new THREE.Matrix4(), va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3();
   G.traverse(o => {
     if (!o.isMesh || !o.geometry) return;
     if (o.name === 'a door leaf') { drop.push(o); return; }
     const n = o.material && o.material.name || '';
     if (glassy(n) && state !== 'intact') { drop.push(o); return; }
+    Mw.multiplyMatrices(inv, o.matrixWorld);
     if (o.isInstancedMesh) {
       /* the piers: cut at the tear; a skeleton's stand to the frame's top */
-      for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, m); v.setFromMatrixPosition(m); const yTop = v.y + Math.abs(m.elements[5]) / 2, lim = R.frame ? top : limit(v.x, v.z); if (yTop > lim) o.setMatrixAt(i, Z); }
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      const gh = o.geometry.boundingBox.max.y;
+      for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, m); mm.multiplyMatrices(Mw, m); v.setFromMatrixPosition(mm); const yTop = v.y + Math.max(Math.abs(mm.elements[5]) / 2, Math.abs(mm.elements[5] * gh)), lim = R.frame ? top : limit(v.x, v.z); if (yTop > lim) o.setMatrixAt(i, Z); }
       o.instanceMatrix.needsUpdate = true; return;
     }
-    /* the merged surfaces: keep a triangle under the torn line (a skeleton's skin under its skin line); the stone stained */
-    const g = o.geometry, P = g.attributes.position, I = g.index; if (!I) return;
+    /* the merged surfaces: keep a triangle under the torn line (a skeleton's skin under its skin line); the stone stained. A mesh with no index
+       (the kit's) is cut as one, its kept triangles given one */
+    const g = o.geometry, P = g.attributes.position, I = g.index, nI = I ? I.count : P.count, at = q => (I ? I.getX(q) : q);
     const keep = [];
-    for (let t = 0; t < I.count; t += 3) {
-      const a = I.getX(t), b = I.getX(t + 1), c = I.getX(t + 2), y = Math.max(P.getY(a), P.getY(b), P.getY(c)), cx = (P.getX(a) + P.getX(b) + P.getX(c)) / 3, cz = (P.getZ(a) + P.getZ(b) + P.getZ(c)) / 3;
+    for (let t = 0; t + 2 < nI; t += 3) {
+      const a = at(t), b = at(t + 1), c = at(t + 2); va.fromBufferAttribute(P, a).applyMatrix4(Mw); vb.fromBufferAttribute(P, b).applyMatrix4(Mw); vc.fromBufferAttribute(P, c).applyMatrix4(Mw);
+      const y = Math.max(va.y, vb.y, vc.y), cx = (va.x + vb.x + vc.x) / 3, cz = (va.z + vb.z + vc.z) / 3;
       if (y <= Math.min(limit(cx, cz), skin) + 0.05) keep.push(a, b, c);
     }
     const g2 = g.clone(); g2.setIndex(keep); const C = g2.attributes.color; if (C && stain < 1) { for (let i = 0; i < C.count; i++) C.setXYZ(i, C.getX(i) * stain, C.getY(i) * stain, C.getZ(i) * stain); C.needsUpdate = true; }
@@ -51,7 +58,8 @@ MP.ruinDesign = function (G, F, state) {
       }
     }
   };
-  F.levels.forEach(L => {
+  /* an Ancients building's slabs are its hero's own plates (59, in pieces), cut with the rest */
+  if (!F.anc) F.levels.forEach(L => {
     if (L.k === 0 || L.y > hi - 0.5) return;
     /* a strip (the Pods' bridge) keeps its floor wherever its tube stands, gutted too: its rings round it, not hung in the air */
     const st0 = MP.storey(F, L.k);

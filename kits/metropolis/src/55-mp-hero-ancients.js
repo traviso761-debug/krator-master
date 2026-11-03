@@ -28,8 +28,11 @@ MP.heroAncient = function (A, state) {
   const S = MP.ancientSize(holder);
   holder.position.set(-S.cx, 0, -S.cz); G.add(holder);
   /* storeys and a core (59), from the drawn shape */
-  const Fl = MP.floors(G, { sh: A.sh, top: A.height.roof, y0: A.floorsY0, floors: A.floors, maxY: A.floorsMaxY, roof: A.roof }); if (Fl) { G.add(Fl); G.userData.floors = Fl.userData; }
+  const planned = (MP.ANCIENT_PLANNED || []).indexOf(A.id) >= 0, ruin = state != null && state !== 'intact';
+  const Fl = MP.floors(G, { sh: A.sh, top: A.height.roof, y0: A.floorsY0, floors: A.floors, maxY: A.floorsMaxY, roof: A.roof, grid: planned && !MP.FAMILY[A.id], tile: ruin }); if (Fl) { G.add(Fl); G.userData.floors = Fl.userData; }
   G.userData.entrances = MP.ancientEntrances(G, A);
+  /* a building with plans (46d): its family is made from this first hero's grid, once */
+  if (planned && !MP.FAMILY[A.id] && Fl && Fl.userData.grid) MP.ancientFamily(A, Fl.userData.grid, G.userData.entrances);
   G.name = A.id + '.' + (state == null ? 'intact' : state); G.userData.walk = []; G.userData.size = S; G.userData.dropped = dropped; G.userData.seated = seated;
   return G;
 };

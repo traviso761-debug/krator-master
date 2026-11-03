@@ -25,6 +25,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46-mp-designs.js` | 5 |  |
 | `46b-mp-ancients.js` | 5 |  |
 | `46c-mp-planned.js` | 53 **big** |  |
+| `46d-mp-gridplan.js` | 33 **big** |  |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
@@ -34,10 +35,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `56-mp-interiors.js` | 21 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
-| `59-mp-floors.js` | 12 |  |
-| `59b-mp-ruin-design.js` | 9 |  |
+| `59-mp-floors.js` | 13 |  |
+| `59b-mp-ruin-design.js` | 10 |  |
 | `60-mp-shell-host.js` | 22 |  |
-| `70-mp-stage.js` | 20 |  |
+| `70-mp-stage.js` | 21 |  |
 | `89-host-sky.js` | <1 |  |
 | `99-host-take.js` | 5 |  |
 | `99-tail.html` | <1 |  |
