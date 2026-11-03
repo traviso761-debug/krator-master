@@ -79,7 +79,9 @@ function landH(x,z){const e=ESC(z),step=smooth(e-70,e+70,x);
  let h=mix(basinH(x,z),plateauH(x,z),step)+rangeH(x,z);
  // the escarpment's face: a band of steep red rock, benched
  h+=8*Math.sin(clamp((x-e+70)/140,0,1)*Math.PI*3)*smooth(0,.3,step)*smooth(1,.7,step);
- const bk=badK(x,z);if(bk>0)h+=bk*moundH(x,z);
+ const bk=badK(x,z);if(bk>0){h+=bk*moundH(x,z);
+  /* the beds' differential erosion (KSTRATA's ledge pass, the owner 2026-11-03): where the mound's flank is steep, hard beds stand proud and soft ones ease back */
+  if(STRATA.ledge&&LQ.get('ledges')!=='0'){const e=3,sl=bk*Math.hypot(moundH(x+e,z)-moundH(x-e,z),moundH(x,z+e)-moundH(x,z-e))/(2*e);if(sl>.4)h=STRATA.ledge(x,z,h,sl,{k:.75,bench:1.4,anchor:14});}}
  if(LANDF)h=LANDF.apply(x,z,h);
  // the vents' flat: a shallow basin, crusted
  const dv=Math.hypot(x-VENTS.x,z-VENTS.z);if(dv<VENTS.r*1.3)h=mix(h,basinH(x,z)-18+3*(fbm(x*.01,z*.01,77,2)-.5),smooth(VENTS.r*1.25,VENTS.r*.7,dv));
@@ -150,6 +152,7 @@ const ROCK=(function(){if(LQ.get('landforms')==='0'||typeof KSTACKS==='undefined
  out.forEach(B=>{B.name=B.kind==='dome'?'A slickrock dome (Navajo sandstone, cross-bedded)':'A granite tor';});return out;})();
 // ---------------------------------------------------------------- the page's words, views and test points
 const LAND={name:'The eastern badlands (ideal type)',region:{name:'The eastern badlands (ideal type)',x:0,z:0,r:TERR.R,h:2200},arcade:true,
+ build:()=>({chips:badlandChips({seed:5901})}),   /* the beds' chips on the painted badlands and the escarpment (44v) */
  // the shared sky's site (the polygon's middle on the old canvas: on scale model 5.1 that pixel lies in the abyss's rim at -1,648 m, but the sky reads
  // only latitude and the giant's bearing from it, which barely move; PLAN-STATIONS.md has the stations' own sites)
  sky:{px:1043,py:508},

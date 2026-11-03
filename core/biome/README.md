@@ -245,6 +245,16 @@ sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.
   tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
   Test: `test-guards.js`.
 
+## A limb's joint to its parent (`31j-core-joint.js`, `BIO.flareJoin`; opt-in; `test-joint.js`)
+
+A limb grown as a polyline and drawn by `BIO.tube` started at its parent as thin as one step up: two pipes pushed together (the owner on
+ebadlands' ember crown, 2026-11-03). `BIO.flareJoin(pts, {parentR, k, sink, cap, len})` returns the limb's points with a root sunk back into the
+parent (`sink` x its radius, along the limb) at `k` x the limb's first radius (capped at `cap` x the parent's, never under the limb's own), and a
+collar point eased into the limb; the rest is the kit's. No random numbers, so a kit's stream does not move. Adopting it: list
+`'31j-core-joint.js'` in `CORE_BIOME`, and pass a limb's points through it before `BIO.tube` (guard `BIO.flareJoin ?` where a reader may not list
+it), with more sides at the joint (6-8 for a limb over ~.15 m). Every kit that grows limbs with a polyline and `BIO.tube` has the seam; ebadlands
+is the first on it.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the
