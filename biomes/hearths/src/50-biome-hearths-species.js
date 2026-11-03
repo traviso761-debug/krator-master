@@ -24,8 +24,8 @@ const PLANTS={
  coal:{name:'Coal moss',items:['hcoal'],tags:K('polar','semiarid','no',['ET','Dsc','Dfc'],{heat:[20,40]})},
  stoker:{name:'Stoker',items:['hstoker','hfin'],tags:K('polar','semiarid','no',['ET','Dsc','Dfc'],{heat:[10,25]})},
  tallow:{name:'Tallow bead',items:['htallow'],tags:K('polar','semiarid','no',['ET','Dsc','Dfc'],{heat:[25,60]})}};
-const HARVEST={hearth:HV('pipe (a fallen stalk, cut: the Tungangs\')',['wax (the tallow beads)'],true,'The hearth wax is food and light; nobody fells a living hearth.'),
- stalkdead:HV('pipe, fuel',[],false,'A fallen stalk is a pipe ready-made.'),ember:HV('none',[],false,''),coal:HV('bedding (dried)',[],false,'Warm to lie on; the animals sleep on it.'),
+const HARVEST={hearth:HV('pipes (a fallen stalk, cut: the Tungangs\')',['wax (the tallow beads)'],true,'The hearth wax is food and light; nobody fells a living hearth.'),
+ stalkdead:HV('pipes, fuel',[],false,'A fallen stalk is a pipe ready-made.'),ember:HV('none',[],false,''),coal:HV('stuffing (dried: bedding)',[],false,'Warm to lie on; the animals sleep on it.'),
  stoker:HV('none',[],false,'The stokers point the way the heat is moving.'),tallow:HV('none',['wax (eaten, burned)'],true,'Sets hard on cold nights; gathered at dawn.')};
 SPECIES.forEach((S,i)=>{S.i=i;S.tags.harvest=HARVEST[S.key];});for(const k in PLANTS)PLANTS[k].tags.harvest=HARVEST[k];
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);
