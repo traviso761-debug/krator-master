@@ -14,7 +14,7 @@ uniform float metal = 0.0;
 #include "res://krator/character/kchar_push.gdshaderinc"
 
 void vertex() {
-	kc_push(VERTEX, NORMAL, CUSTOM1.x);
+	kc_push(VERTEX, NORMAL, CUSTOM1.x, CUSTOM1.y);
 }
 
 void fragment() {

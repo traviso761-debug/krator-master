@@ -49,6 +49,10 @@ area you are about to change.
 
 ## 3. Clothing fit and clipping
 
+- **Check the measuring tool before tuning against it** → `shots.py` and `garment_audit.py` stepped the cloth 2 s from `max(0, t - 2)` and then snapped the skeleton to `t`, so for any `t` under 2 the cloth was from another moment of the stride. Rounds of tuning and every shot the owner judged held that error. A clip wraps: start `t - 2` back round the loop. When a fix moves nothing at all, suspect the picture first.
+- **A leg through the back of a robe in a run** → the shin kicked straight back pierces the sheet, and a push out of a capsule only opens a collar round it. No padding helps. Take the cloth over the limb: points on the leg set how far out from the body's axis the cloth must reach at their bearing, the rows below hanging from them, the rows above running to the waist (`pushOut`, the hull). Along the axis's radius, so a front seam stays shut.
+- **Two tiers of one garment in stripes** → they were clamped to one radius, and more padding moves both. Use a smooth maximum and feed it the rest radius, not where the chains swung.
+- **A piece with no chains parting or lifting with the legs** → it is skinned to them: hang it from the hips (`skirt_weights(rigid=True)`) and stand it up against the pelvis's tilt, measured from the hips' joint, not the spine, or posture reads as a tilt. `mpfb_build --only` cannot re-export a library piece.
 - **Skin through a garment that has no delete group** → cast rays out and in from the skin (`covered()`) to derive
   one; for tops with a partial group, union the ray result in (shoulders and chest came through T-shirts).
 - **Knees and the crotch seam through loose library trousers** (cargo trousers in a crouch, a lunge, a roll) → tint the

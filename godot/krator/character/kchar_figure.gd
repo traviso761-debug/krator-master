@@ -230,16 +230,18 @@ static func _build(glb: String) -> Array:
 				var flags := 0
 				if arr[Mesh.ARRAY_BONES] != null and arr[Mesh.ARRAY_BONES].size() == arr[Mesh.ARRAY_VERTEX].size() * 8:
 					flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
-				# each vertex's rest height (CUSTOM1), and the piece's lowest and highest: the fur shells' band (_fur)
+				# each vertex's rest height and rest distance from the axis (CUSTOM1), and the piece's lowest and highest:
+				# the fur shells' band (_fur), the hull (kc_push)
 				var pv: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
 				var ys := PackedFloat32Array()
-				ys.resize(pv.size())
+				ys.resize(pv.size() * 2)
 				for q in pv.size():
-					ys[q] = pv[q].y
+					ys[q * 2] = pv[q].y
+					ys[q * 2 + 1] = Vector2(pv[q].x, pv[q].z).length()
 					y_lo = minf(y_lo, pv[q].y)
 					y_hi = maxf(y_hi, pv[q].y)
 				arr[Mesh.ARRAY_CUSTOM1] = ys
-				flags |= Mesh.ARRAY_CUSTOM_R_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT
+				flags |= Mesh.ARRAY_CUSTOM_RG_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT
 				if verts0 == null:
 					verts0 = arr[Mesh.ARRAY_VERTEX]
 					for sh in bs:
@@ -493,8 +495,12 @@ func apply(rec: Dictionary) -> void:
 	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
 	var feet_top := -1000.0
 	var hem := 1000.0
+	# every loose layer takes the hull from the lowest hem worn: from its own, a gown left a skirt's tent to come through it
+	_hem_low = 1000.0
 	for mi in want:
 		var pt: Dictionary = mi.get_meta("part")
+		if pt["role"] == "armour" and _is_loose(pt):
+			_hem_low = minf(_hem_low, float(mi.get_meta("built")["y_lo"]))
 		if pt["role"] == "armour" and pt["slot"] == "feet":
 			feet_top = maxf(feet_top, float(mi.get_meta("built")["y_hi"]))
 		elif pt["role"] == "armour" and pt["slot"] == "torso":
@@ -1834,6 +1840,17 @@ func _cloth_step(dt: float) -> void:
 	if seats.size() == 2:
 		W = W.filter(func(e): return not e.get("seat", false))
 		W.append({"a": (seats[0]["a"] + seats[0]["b"]) * 0.5, "b": (seats[1]["a"] + seats[1]["b"]) * 0.5, "r": seats[0]["r"], "leg": false})
+	# and the feet (_foot_ends): a chain knew the shin and not the heel kicked up past it
+	for i in 2:
+		var side: String = ["Left", "Right"][i]
+		var fa := skeleton.find_bone(side + "Foot")
+		var ft := skeleton.find_bone(side + "ToeBase")
+		var sh := skeleton.find_bone(side + "Leg")
+		for cp in _caps:
+			if cp["a"] == sh and cp["b"] == fa and ft >= 0:
+				var fr := _foot_r(cp)
+				var fe := _foot_ends(i, fr, _gp(fa).origin, _gp(ft).origin)
+				W.append({"a": fe[0], "b": fe[1], "r": fr + C_PAD / size, "r0": fr, "leg": true, "seat": false})
 	var ground := 0.008 - skeleton.position.y
 	var wind := Vector3.ZERO
 	for cm in skel.get("clips", []):
@@ -2036,6 +2053,7 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("metal", m2.metallic)
 	var loose := _is_loose(part)
 	pm.set_shader_parameter("kcL", 1.0 if loose else 0.0)
+	pm.set_shader_parameter("kcEO", 1.0 if loose and _item_of(part).get("cloth") == null else 0.0)
 	var top = null
 	var legs = null
 	for x in kit["items"]:
@@ -2453,18 +2471,20 @@ func _leg_caps() -> void:
 	for i in legs.size():
 		var a := skeleton.find_bone(legs[i][0])
 		var b := skeleton.find_bone(legs[i][1])
-		# a foot has no collider of its own: it takes its shin's radius; the arms' capsules (6-9) are hard
+		# a foot has no collider of its own (_foot_ends); the arms' capsules (6-9) are hard
 		var foot: bool = i == 4 or i == 5
 		var ca := skeleton.find_bone(legs[i - 2][0]) if foot else a
 		var cb := a if foot else b
 		var r := 0.0
 		var re := 0.0
+		var fr := 0.0
 		for cp in _caps:
 			if cp["a"] == ca and cp["b"] == cb:
-				# the radius at each end (a foot takes its shin's at the ankle, all along); an arm keeps one radius
+				# the radius at each end; an arm keeps one radius
 				# (its taper measured the deltoid, and the hard push crushed a tunic and its mantle together)
-				r = float(cp["r"] if i >= 6 else cp["rb"] if foot else cp["ra"]) + 0.01
-				re = float(cp["r"] if i >= 6 else cp["rb"]) + 0.01
+				fr = _foot_r(cp)
+				r = float(cp["r"] if i >= 6 else fr if foot else cp["ra"]) + 0.01
+				re = float(cp["r"] if i >= 6 else fr if foot else cp["rb"]) + 0.01
 		if b < 0 or a < 0 or (i >= 10 and not four_arms):        # no such joints, or a two-armed giant's lower pair
 			r = 0.0
 			re = 0.0
@@ -2472,6 +2492,10 @@ func _leg_caps() -> void:
 			b = a
 		var pa := _gp(a).origin
 		var pb := _gp(b).origin
+		if foot and r > 0.0:
+			var fe := _foot_ends(i - 4, fr, pa, pb)
+			pa = fe[0]
+			pb = fe[1]
 		A.append(Vector4(pa.x, pa.y, pa.z, r))
 		Bv.append(Vector4(pb.x, pb.y, pb.z, 1.0 if i >= 6 else 0.0))
 		R.append(re)
@@ -2500,6 +2524,39 @@ func _leg_caps() -> void:
 		var r1 := (_gp(sp).origin - hip).normalized()
 		if r0.dot(r1) < 0.99999:
 			up = Quaternion(r0, r1) * Vector3.UP
+	# the hull's points, six a leg: mid-thigh, knee, mid-shin, ankle, heel, toes
+	var E := []
+	for e in 2:
+		for q in [[e, 0.5], [e, 1.0], [2 + e, 0.5], [2 + e, 1.0], [4 + e, 0.0], [4 + e, 1.0]]:
+			var ea: Vector4 = A[q[0]]
+			var eb: Vector4 = Bv[q[0]]
+			var ep := Vector3(ea.x, ea.y, ea.z).lerp(Vector3(eb.x, eb.y, eb.z), q[1])
+			E.append(Vector4(ep.x, ep.y, ep.z, lerpf(ea.w, R[q[0]], q[1]) if ea.w > 0.0 else 0.0))
+	# what hangs a piece with no chains straight below the pelvis (kcTl, legCaps in 50-figure.js): the hips' whole turn from their
+	# rest undone, then turned the way the feet face (from a vector it read posture as a tilt, or missed a wide stance's roll)
+	var q0 := skeleton.get_bone_global_rest(_hips).basis.get_rotation_quaternion()
+	var q1 := _gp(_hips).basis.get_rotation_quaternion()
+	var f0 := _foot_face(true)
+	var f1 := _foot_face(false)
+	var tq := Quaternion(Vector3.UP, atan2(f1.x, f1.z) - atan2(f0.x, f0.z)) * (q1 * q0.inverse()).inverse()
+	var ta := tq.get_angle()
+	if ta > TILT_MAX:          # a run's lean undone in full folded the cloth over itself across the band it turns in
+		tq = Quaternion.IDENTITY.slerp(tq, TILT_MAX / ta)
+	# in a stride (kcM) it eases to the turn from the way down between the hip joints now to its rest's (legCaps in 50-figure.js)
+	var ll := skeleton.find_bone("LeftUpLeg")
+	var rl := skeleton.find_bone("RightUpLeg")
+	if ll >= 0 and rl >= 0:
+		var t0: Vector3 = ((skeleton.get_bone_global_rest(ll).origin + skeleton.get_bone_global_rest(rl).origin) * 0.5 - skeleton.get_bone_global_rest(_hips).origin).normalized()
+		var t1: Vector3 = ((_gp(ll).origin + _gp(rl).origin) * 0.5 - hip).normalized()
+		var tv := Quaternion(t1, t0) if t0.dot(t1) < 0.99999 else Quaternion.IDENTITY
+		# (how far the thighs are apart fore and aft, the way the feet face: a stride; not kcM, nor one thigh's lean)
+		var sw := 0.0
+		for k in 2:
+			var ea: Vector4 = A[k]
+			var eb: Vector4 = Bv[k]
+			sw += (-1.0 if k == 1 else 1.0) * Vector3(eb.x - ea.x, eb.y - ea.y, eb.z - ea.z).normalized().dot(f1)
+		tq = tq.slerp(tv, smoothstep(0.2, 0.5, absf(sw)))
+	var tilt := Basis(tq)
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)
 		pm.set_shader_parameter("kcB", Bv)
@@ -2508,6 +2565,47 @@ func _leg_caps() -> void:
 		pm.set_shader_parameter("kcU", up)
 		pm.set_shader_parameter("kcM", smoothstep(0.02, 0.1, stride))
 		pm.set_shader_parameter("kcK", skeleton.get_bone_global_rest(skeleton.find_bone("LeftLeg")).origin.y)
+		pm.set_shader_parameter("kcE", E)
+		pm.set_shader_parameter("kcHm", _hem_low)
+		pm.set_shader_parameter("kcTl", tilt)
+
+
+var _hem_low := 0.0
+
+
+# A foot's capsule (footEnds in 50-figure.js): the bones run along the top of the foot, ankle to ball, so it is moved down to
+# the sole (the way the shin comes in, square to the foot) and out to the toes. pa, pb the ankle and the ball
+const TILT_MAX := 0.35
+const FOOT_SOLE := 0.012
+const FOOT_TOE := 0.03
+
+
+# the way the feet face, level: heel to toes, both feet (at rest, or now)
+func _foot_face(rest: bool) -> Vector3:
+	var v := Vector3.ZERO
+	for side in ["Left", "Right"]:
+		var a := skeleton.find_bone(side + "Foot")
+		var b := skeleton.find_bone(side + "ToeBase")
+		if a < 0 or b < 0:
+			continue
+		v += (skeleton.get_bone_global_rest(b).origin - skeleton.get_bone_global_rest(a).origin) if rest else (_gp(b).origin - _gp(a).origin)
+	v.y = 0.0
+	return v.normalized() if v.length_squared() > 1e-8 else Vector3(0, 0, 1)
+
+
+func _foot_r(cp: Dictionary) -> float:
+	return maxf(float(cp["rb"]), 0.05)
+
+
+func _foot_ends(sd: int, r: float, pa: Vector3, pb: Vector3) -> Array:
+	var side: String = ["Left", "Right"][sd]
+	var knee := _gp(skeleton.find_bone(side + "Leg")).origin
+	var ya := skeleton.get_bone_global_rest(skeleton.find_bone("LeftFoot")).origin.y
+	var yb := skeleton.get_bone_global_rest(skeleton.find_bone("LeftToeBase")).origin.y
+	var n := (pa - knee).normalized()
+	var f := (pb - pa).normalized()
+	n = (n - f * n.dot(f)).normalized()
+	return [pa + n * (ya + FOOT_SOLE - r), pb + n * (yb + FOOT_SOLE - r) + f * FOOT_TOE]
 
 
 # twin of bodyFix in 50-figure.js: each limb a segment with its capsule's radius (the body's tapered ra to rb, an arm

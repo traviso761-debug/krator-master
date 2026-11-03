@@ -69,9 +69,13 @@ STEP = '''async (s)=>{ var K = window._kchar, f = K.fig;
   f.cloth = s.cloth !== false; if(s.pre) eval(s.pre);
   Object.values(f.clothState().items).forEach(function(it){ it.reset = true; });
   var t = s.t == null ? 2 : s.t;
-  if(f.action){ f.action.paused = false; f.action.time = Math.max(0, t - 2); }
+  // the clip wrapped back 2 s from t, so the 2 s of cloth end on t: from 0 they ended wherever 2 s fell in the loop, the
+  // skeleton then jumped to t and the cloth stayed, so every shot held cloth from another moment of the stride
+  // (a kicked-up sole through a robe's back that no one could see in the page)
+  var d = f.action ? f.action.getClip().duration : 0, once = f.action && f.action.loop === THREE.LoopOnce;
+  if(f.action){ f.action.paused = false; f.action.time = once ? Math.max(0, t - 2) : (((t - 2) % d) + d) % d; }
   for(var i = 0; i < 60; i++) f.update(1 / 30);
-  if(f.action){ f.action.paused = true; f.action.time = t; f.update(0); } }'''
+  if(f.action){ f.action.paused = true; f.action.time = once ? t : t % d; f.update(0); } }'''
 
 VIEW = '''async ([yaw, at, dist]) => { var c = window._kchar.cam; c.yaw = yaw; c.spin = false; c.at = at; c.want.dist = c.dist = dist; c.want.pitch = c.pitch = 0.05;
   await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); }); }'''

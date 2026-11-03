@@ -1,233 +1,179 @@
 {
 "f-beast_riders-noble": {},
-"f-beast_riders-peasant": {
-"under motion": 10
-},
+"f-beast_riders-peasant": {},
 "f-beast_riders-trade": {},
 "f-chichani-noble": {
-"skin motion": 9539,
-"under motion": 2571
+"under motion": 480
 },
 "f-chichani-peasant": {
-"skin motion": 6963,
-"under motion": 334
+"under motion": 1471
 },
 "f-chichani-trade": {
-"skin idle": 588,
-"skin motion": 9418,
-"under motion": 4577
+"under motion": 2216
 },
-"f-dalabites-noble": {
-"skin motion": 5864
-},
+"f-dalabites-noble": {},
 "f-dalabites-peasant": {
-"skin motion": 6513
+"skin motion": 1633
 },
-"f-dalabites-trade": {
-"skin motion": 25,
-"under motion": 1333
-},
-"f-historians-agent": {
-"under motion": 333
-},
-"f-historians-elder": {
-"skin idle": 244,
-"skin motion": 2419
-},
-"f-historians-monk": {
-"skin idle": 220,
-"skin motion": 2419
-},
-"f-historians-novice": {
-"skin idle": 153,
-"skin motion": 3017,
-"under motion": 11
-},
-"f-hykkousoi-noble": {
-"skin idle": 15,
-"skin motion": 7123
-},
-"f-hykkousoi-peasant": {
-"skin motion": 1895
-},
+"f-dalabites-trade": {},
+"f-historians-agent": {},
+"f-historians-elder": {},
+"f-historians-monk": {},
+"f-historians-novice": {},
+"f-hykkousoi-noble": {},
+"f-hykkousoi-peasant": {},
 "f-hykkousoi-trade": {
-"under motion": 10822,
+"under idle": 236,
+"under motion": 1747,
 "under rest": 216
 },
 "f-iron_republic-noble": {
-"under motion": 8827,
+"under idle": 90,
+"under motion": 4184,
 "under rest": 32
 },
-"f-iron_republic-noble_fest": {
-"skin motion": 2485
-},
+"f-iron_republic-noble_fest": {},
 "f-iron_republic-peasant": {
-"skin motion": 6023
+"skin motion": 12
 },
-"f-iron_republic-peasant_fest": {
-"skin motion": 2968
-},
+"f-iron_republic-peasant_fest": {},
 "f-iron_republic-trade": {
-"skin motion": 2320,
-"under motion": 2630
+"under motion": 6983
 },
 "f-iron_republic-trade_fest": {
-"under motion": 2836,
+"under idle": 682,
+"under motion": 5312,
 "under rest": 235
 },
 "f-izani-noble": {
-"skin motion": 6755,
-"under motion": 1225
+"skin motion": 847,
+"under motion": 125
 },
 "f-izani-peasant": {
 "skin motion": 19,
-"skin rest": 33,
-"under motion": 23
+"skin rest": 33
 },
 "f-izani-trade": {
-"under motion": 2005
+"under motion": 2359
 },
-"f-xanadu-rich": {
-"skin motion": 3111
-},
-"f-xanadu-town": {
-"under motion": 116
-},
-"f-yuni-noble": {
-"skin motion": 590
-},
+"f-xanadu-rich": {},
+"f-xanadu-town": {},
+"f-yuni-noble": {},
 "f-yuni-peasant": {
-"skin idle": 47,
-"skin motion": 4696,
-"under motion": 147
+"skin idle": 14,
+"under motion": 1699
 },
 "f-yuni-trade": {
-"skin motion": 76,
-"under motion": 2017,
+"skin motion": 24,
+"under motion": 38,
 "under rest": 579
 },
 "g-free_giants-chief": {
 "skin idle": 661,
 "skin motion": 259,
-"under idle": 134,
-"under motion": 1907
+"under idle": 507,
+"under motion": 9934
 },
 "g-free_giants-clan": {},
 "g-free_giants-clan4": {
 "skin idle": 661,
 "skin motion": 237,
-"under idle": 13,
-"under motion": 1824
+"under idle": 851,
+"under motion": 5290
 },
 "g-free_giants-warrior": {
 "skin idle": 668,
-"skin motion": 1006
+"skin motion": 1006,
+"under motion": 2827
 },
 "g-giants-patrol": {},
 "g-giants-temple": {},
 "m-beast_riders-noble": {
-"under idle": 3538,
-"under motion": 1067,
 "under rest": 1698
 },
 "m-beast_riders-peasant": {
-"under idle": 3601,
-"under motion": 2635,
+"under idle": 2480,
+"under motion": 556,
 "under rest": 962
 },
 "m-beast_riders-trade": {
-"under motion": 5107,
 "under rest": 55
 },
 "m-chichani-noble": {
-"skin motion": 1673,
-"under idle": 434,
-"under motion": 2756,
+"under idle": 1215,
+"under motion": 2685,
 "under rest": 909
 },
 "m-chichani-peasant": {
-"skin idle": 10
+"skin idle": 10,
+"under motion": 527
 },
 "m-chichani-trade": {
-"skin motion": 172,
-"under motion": 5413,
+"under motion": 6632,
 "under rest": 786
 },
 "m-dalabites-noble": {},
 "m-dalabites-peasant": {
 "skin idle": 72,
-"skin motion": 4592
+"skin motion": 129
 },
-"m-dalabites-trade": {
-"under motion": 1344
-},
+"m-dalabites-trade": {},
 "m-historians-agent": {
-"under motion": 3213
+"under motion": 388
 },
 "m-historians-elder": {},
 "m-historians-monk": {},
 "m-historians-novice": {
-"skin motion": 7079,
-"under motion": 49
+"skin motion": 80
 },
-"m-hykkousoi-noble": {
-"skin motion": 81
+"m-hykkousoi-noble": {},
+"m-hykkousoi-peasant": {
+"skin motion": 14
 },
-"m-hykkousoi-peasant": {},
 "m-hykkousoi-trade": {
-"under idle": 2481,
-"under motion": 12061,
+"under motion": 4344,
 "under rest": 3591
 },
-"m-iron_republic-noble": {
-"under motion": 1958
-},
+"m-iron_republic-noble": {},
 "m-iron_republic-noble_fest": {
-"under motion": 148,
 "under rest": 84
 },
 "m-iron_republic-peasant": {
-"under motion": 815
+"under motion": 2287
 },
 "m-iron_republic-peasant_fest": {
-"under motion": 1362,
+"under motion": 1595,
 "under rest": 1164
 },
 "m-iron_republic-trade": {
-"under motion": 503
+"under idle": 44
 },
 "m-iron_republic-trade_fest": {
-"under motion": 1094
+"under idle": 48
 },
 "m-izani-noble": {
-"under motion": 738,
 "under rest": 586
 },
-"m-izani-peasant": {
-"under motion": 1900
-},
+"m-izani-peasant": {},
 "m-izani-trade": {
-"under motion": 527
+"under motion": 589
 },
 "m-xanadu-rich": {
-"skin idle": 127,
-"skin motion": 4381,
-"under motion": 558,
+"skin idle": 154,
+"skin motion": 983,
 "under rest": 3325
 },
 "m-xanadu-town": {
-"under motion": 1710
+"under motion": 422
 },
 "m-yuni-noble": {
-"skin idle": 32,
-"skin motion": 4674
+"skin idle": 32
 },
 "m-yuni-peasant": {
-"under motion": 3307
+"under motion": 10
 },
 "m-yuni-trade": {
-"skin motion": 57,
-"under motion": 12660,
+"under motion": 189,
 "under rest": 297
 }
 }

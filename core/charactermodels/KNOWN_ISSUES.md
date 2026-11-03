@@ -114,15 +114,9 @@
   a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
   the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
   whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
-  can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
-  the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
-  the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
-  seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
-  raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
-  fitted shape is a tube; the chains and the push move it, they do not make more of it).
-- **A run shows more skin than it did, and a tall body's walk more.** The 2026-11-02 pass (HANDOFF-GARMENT-DEFECTS.md, with the counts) halved or better most faults on neutral bodies once the cloth bones
-  followed their chains, but skin in a run rose 42%, and at `height` 1 skin in a walk rose 73% and trousers through tops in a run 51%. Starting the thigh's push higher once it swings wins the run back and loses the tall walk: left out, the owner's choice.
-  `tools/garment_audit.py --check` holds the counts where they are.
+  can still show one through another for a frame or two where the chains swing.
+- **In a stride a garment stands wider than it hangs.** The hull (`pushOut`, HANDOFF-GARMENT-DEFECTS.md round 4) keeps the legs inside by taking the cloth over them, so a long robe bells out in a walk and a run. Two tiers of one garment
+  can show flecks of the lower through the upper where they meet; the Izani court cape shows more of the robe through it.
 - **No garment has a slit.** `torso_tube(slit=)` and the runtime's handling of it work and are unused: the four skirts cut with one looked worse than uncut once the bones were right.
 - **Tall bodies tear long robes in a run.** The monk's robe (and the skirts now cut as it) holds in a run up to about
   +0.7 height (the owner, 2026-10-20); taller, the thigh is up to 29% longer (44 to 57 cm) and its raised knee goes out

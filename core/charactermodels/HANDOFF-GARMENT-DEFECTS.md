@@ -3,9 +3,30 @@
 ChatGPT's review of 2026-10-28, added to the repo by the owner's word on 2026-11-01. It was written from an inspection of
 the rebuild's checkout and maps likely areas, not diagnosed bugs: reproduce each defect first. Read it beside `HANDOFF-CLIPPING.md`.
 
+**Taking this over? Start at `HANDOFF-GARMENT-NEXT.md`**: where the work stands, round 5, shots of what is broken now.
+
+## Round 4: the tools' bug, and the hull (2026-11-02)
+
+**Read this first. Every count and shot before this round is suspect.** `shots.py` and `garment_audit.py` ran the clip 2 s from `max(0, t - 2)`, then set the skeleton to `t` and did not step the cloth. For any `t` under 2 the cloth was from another moment of the stride: walk and run in every sweep, every shot sheet the owner judged, and the "a run shows more skin" of round 3. Both now start `t - 2` back round the loop, so the 2 s end on `t`. A third of what looked like a fault, the flat sole through a robe's back in some frames, was the tool; the leg through the back was real and was worse than the shots had shown.
+
+**The hull.** A shin kicked straight back pierces the sheet, and a push out of a capsule moves cloth away from the limb: it opens a collar round the leg and the leg stays through. Padding, tapers and thresholds could not touch that, which is why rounds 1 to 3 stalled on it. So in `pushOut` each leg gives six points (mid-thigh, knee, mid-shin, ankle, heel, toes: `kcE`), and each sets how far out from the body's axis the cloth must reach at its bearing: its row and all below hang from it, the rows above run up to the waist, the bearings beside it fall away, as a sheet over a raised foot. The cloth is moved along the axis's radius, so two panels at one bearing go together and a front seam stays shut. It comes in with the stride (`kcM`), and the legs' capsules hand over to it (`1 - kcM`): the two together tore the cloth.
+
+- **Every loose layer takes it from the lowest hem worn** (`kcHm`): from its own hem, a gown left a skirt's tent to come through it. A point within 12 cm of the ground counts for nothing, or a robe tents over a planted foot's toes.
+- **A smooth maximum (a cube root), not a clamp.** Clamped, two tiers of one skirt met on one radius and came through each other in stripes, whatever the padding (more padding made it worse: the voth_f skirt's purple and crimson are two tiers of one garment). Inside the hull the radius going in is the rest radius (`position`, capped at 6 cm over the current one, or a kimono's sleeves were flung out): where the chains had swung, two tiers could be either way round.
+- **The feet have real colliders**: `footEnds`, moved from the top of the foot to the sole and out to the toes, in the push and in `clothStep`'s `W` (the chains knew no foot). On its own this changed little; the hull's heel and toes use it.
+
+**The Kimono** (`mindfront_kimono`, the man's first outfit, a library piece with no chains) had its lower half skinned to the legs: the shins lifted its back with a kicked-up leg and each thigh took its own front panel, which is the owner's "pants through the back, seams splitting in front". `skirt_weights(rigid=True)` hangs it from the hips alone (`make_mpfb.py`, for `LOOSE`), it takes the hull in place of the legs' capsules, at rest too (`kcEO`), and below the hips it is stood back up against the pelvis's tilt (`kcTl`, measured from the hips' joint: from the spine it read the back's posture as a tilt and lifted the back hem off the calves). `mpfb_build --only` cannot re-export a library piece (`merged 0 items`), so the two GLBs in `pieces/` were reweighted in place by the same function; a whole rebuild gives the same.
+
+- **A top over a skirt stands 6 cm further in the hull** (`kcP` 4 cm picks it out): a skirt flared wider at rest than the coat over it came through in patches, trousers-and-skirts through tops up 75% until then. It is why coats stand wide in a stride.
+
+**The counts, the live build against this one, both with the tools fixed, all 66 outfits:** skin through cloth 70913 to 8295 (walk 13854 to 581, run 25353 to 1744, idle 5015 to 636, crouch 26640 to 5283); legs items through tops 131017 to 125767; feet through tops 125303 to 88769; cloth folded through itself 789131 to 710178; holes flat at 60697 to 60011.
+Height 1: skin 83001 to 26319 (walk 29365 to 541, crouch 53250 to 25392), legs through tops **171863 to 189604, all of it crouch (76113 to 104137)**; folded cloth **649013 to 710923**. Height -1: skin 59666 to 7014, legs through tops 91630 to 74907. Crouch is the weak clip on the tall body. Counts before round 4 are not comparable with these. `tests/garment-audit.json` was rewritten from a sweep with the fixed tools.
+
+**Left:** flecks of under-tier through the top tier at the back (the Chichani woman's crimson; the Izani court cape shows more of the robe through it: its rest shape is not cleanly outside the robe's); a pale panel in the Kimono's front overlap; a slipper near the hem of the jama and the boubou in one run frame; long robes stand wider in a stride than they did; a skirt's chains still swing wide in a run; white sleeve patches on the boubou at the shoulder, which the hull does not reach. Godot has all of it and compiles it (one known failure, no shader errors), but its picture has still not been compared with the page. Round 4 is on the live labs, patched on as before: Cosmetic Lab v75 and Animation Lab v55, with the Kimono's two pieces.
+
 ## Round 3: the bone bug, and the slits taken out (2026-11-02)
 
-**Read this first; it overturns much of what follows.** Gemini's review found the cause of the staircase. In `clothStep` a chain bone's offset came from the postured rest while its rotation was built on the A-pose's, so while a clip
+**Read this after round 4: its counts came from the out-of-step tools.** Gemini's review found the cause of the staircase. In `clothStep` a chain bone's offset came from the postured rest while its rotation was built on the A-pose's, so while a clip
 played bones stood away from the particles they follow: mean 10.4 cm and worst 30.6 cm on the man's skirt at an idle, 1.8 and 7.4 on the woman's. The simulated cloth and the drawn cloth were different shapes. Each joint now sits on its point.
 All the tuning below was measured with that bug in it. Over all 66 outfits the fix alone took skin through cloth from 161743 to 90492, trousers through tops from 315684 to 132879, folds from 1.55M to 781k, skin at idle from 23826 to 3782.
 
@@ -22,7 +43,7 @@ worth nothing in a tall walk). Claims in the first review that did not match the
 **The open choice: the thigh's dead zone.** `cup` in `pushOut` leaves the back of the top of the thigh unpushed down to `ct` 0.3-0.4. Starting it at 0.18-0.28 once the thigh swings (`smoothstep(0.09, 0.18, lift)`) takes neutral skin in a run from 63802 to 46272 and trousers to 119809, and takes trousers in a tall walk from 61007 to
 138661. With a gate at 0.03-0.12 it was the same trade with better numbers while the slits were in. No gate separates them: a tall body's walk trips it. Why a longer thigh suffers so much is not known. It is left out. Ask the owner.
 
-**Left:** a run's kicked-up shin at the hem; skirts swinging wide in a run; the tall body's walk; the plain cast clothes, still never swept; Godot's picture never compared with the page. The live labs still lack all of this round.
+**Left:** a run's kicked-up shin at the hem; skirts swinging wide in a run; the tall body's walk; the plain cast clothes, still never swept; Godot's picture never compared with the page. Round 3 is on the live labs: Cosmetic Lab v74 and Animation Lab v54 (patched on as below, not `dist/`). The patched Cosmetic page passed `verify.py --assert`; `verify.py` waits on a hook the Animation page has not got, so that page was loaded on the GPU beside its last version: the same one blocked-font error, and the skirts draw.
 
 ## Where it stood before round 3 (2026-11-02)
 

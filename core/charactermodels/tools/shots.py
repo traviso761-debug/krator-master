@@ -23,9 +23,11 @@ STEP = '''async (s)=>{ var K = window._kchar, f = K.fig, c = K.cam;
   f.cloth = s.cloth !== false; if(s.pre) eval(s.pre);
   Object.values(f.clothState().items).forEach(function(it){ it.reset = true; });
   var t = s.t == null ? 2 : s.t;
-  if(f.action){ f.action.paused = false; f.action.time = Math.max(0, t - 2); }
+  // wrapped back 2 s from t, so the 2 s of cloth end on t (garment_audit.py STEP)
+  var d = f.action ? f.action.getClip().duration : 0, once = f.action && f.action.loop === THREE.LoopOnce;
+  if(f.action){ f.action.paused = false; f.action.time = once ? Math.max(0, t - 2) : (((t - 2) % d) + d) % d; }
   for(var i = 0; i < 60; i++) f.update(1 / 30);
-  if(f.action){ f.action.paused = true; f.action.time = t; f.update(0); } }'''
+  if(f.action){ f.action.paused = true; f.action.time = once ? t : t % d; f.update(0); } }'''
 
 
 async def main(outdir, spec, page):

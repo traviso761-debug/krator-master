@@ -105,7 +105,7 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None, rigid=False):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
     skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). cloth: (item id, its
     make_garments.py chain spec): bone chains are added (cloth_bones), and what the kit needs of them is put in
@@ -156,7 +156,7 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=Non
         M = M @ R4.T                                # IBM' = IBM inv(R): vertices and joints both turned by R
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     if skirt is not None:
-        skirt_weights(j, b, skirt)
+        skirt_weights(j, b, skirt, rigid=rigid)
     if head_above is not None:
         head_weights(j, b, head_above)
     cloth_blobs = {}
@@ -313,12 +313,14 @@ SKIRT_KEEP = 0.8           # the share of the legs' pull a skirt keeps (split ev
 SKIRT_POOL = 0.65          # how much of a vertex's own pull gives way to the pooled one (the rest still follows its side's leg)
 
 
-def skirt_weights(j, b, y0, band=0.12):
+def skirt_weights(j, b, y0, band=0.12, rigid=False):
     """a garment hanging below the crotch (a skirt, a robe's or a cloak's hem) takes its skin weights from MakeHuman's
     skirt helper, which follows each thigh: in a stride the cloth parts like trousers. Below y0 (fading in over 'band')
     the legs' weights are partly pooled (SKIRT_POOL): SKIRT_KEEP of them shared evenly by both thighs (the hem still
     sways front to back), the rest given to the hips; the remainder still follows its own side's leg, so a stride
-    stretches the cloth instead of splitting it. Edits JOINTS_0 / WEIGHTS_0 in place (b: the GLB's bytearray)"""
+    stretches the cloth instead of splitting it. rigid (a garment with no chains: LOOSE): all of it to the hips: it was
+    the shins' pull that lifted the kimono's back with a kicked-up leg and each thigh's that parted its front, and the
+    hull in the page (50-figure.js pushOut) moves it off the legs. Edits JOINTS_0 / WEIGHTS_0 in place (b: the GLB's bytearray)"""
     def arr(ai):
         a = j['accessors'][ai]
         v = j['bufferViews'][a['bufferView']]
@@ -346,7 +348,7 @@ def skirt_weights(j, b, y0, band=0.12):
             aj, dj, oj, JJ = arr(at['JOINTS_0'])
             aw, dw, ow, WW = arr(at['WEIGHTS_0'])
             Wf = WW.astype(np.float64) / (np.iinfo(dw).max if aw.get('normalized') else 1.0)
-            f = np.clip((y0 - P[:, 1]) / band, 0, 1) * SKIRT_POOL
+            f = np.clip((y0 - P[:, 1]) / band, 0, 1) * (1.0 if rigid else SKIRT_POOL)
             for v in np.nonzero(f > 0)[0]:
                 dense = {}
                 for jj, ww in zip(JJ[v], Wf[v]):
@@ -355,9 +357,10 @@ def skirt_weights(j, b, y0, band=0.12):
                 if legs <= 0:
                     continue
                 want = {k: w for k, w in dense.items() if k not in chain}
-                want[hips[0]] = want.get(hips[0], 0) + legs * (1 - SKIRT_KEEP)
-                want[lup[0]] = want.get(lup[0], 0) + legs * SKIRT_KEEP / 2
-                want[rup[0]] = want.get(rup[0], 0) + legs * SKIRT_KEEP / 2
+                keep = 0.0 if rigid else SKIRT_KEEP
+                want[hips[0]] = want.get(hips[0], 0) + legs * (1 - keep)
+                want[lup[0]] = want.get(lup[0], 0) + legs * keep / 2
+                want[rup[0]] = want.get(rup[0], 0) + legs * keep / 2
                 mix = {k: dense.get(k, 0) * (1 - f[v]) + want.get(k, 0) * f[v] for k in set(dense) | set(want)}
                 top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
                 tot = sum(w for _, w in top) or 1.0
@@ -1401,7 +1404,7 @@ def main():
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
+                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, rigid=it['id'] in LOOSE, cloth=cl, body=contact if it['slot'] != 'legs' else None,
                      head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:

@@ -36,15 +36,22 @@ uniform float kcS = 0.0;
 uniform float kcSH = 1000.0;   // the top's hem, of the hip-to-ankle length: the squeeze stops there (1000: all the way)
 // how far a fully bent knee's corner stands out of its two capsules
 const float KNEE = 0.04;
+// the hull (pushOut in 50-figure.js): the leg's six points each (mid-thigh, knee, mid-shin, ankle, heel, toes), the lowest
+// hem worn, 1 for a garment with no chains (the hull in place of the legs' capsules, at rest too), and what stands its pelvis back up
+uniform vec4 kcE[12];
+uniform float kcHm = 0.0;
+uniform float kcEO = 0.0;
+uniform mat3 kcTl = mat3(1.0);
 
-void kc_push(inout vec3 kv, vec3 kn, float ry) {
+// kv the skinned vertex, kn its normal, ry and rr its rest height and its rest distance from the axis (CUSTOM1)
+void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 	if (kcL > 0.5) {
 		// behind the hips: the seat's capsules (14, 15) lie behind them
 		vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
 		bk.y = 0.0;
 		bk *= kcA[14].w > 0.0 ? 1.0 / max(length(bk), 1e-5) : 0.0;
 		for (int i = 0; i < 16; i++) {
-			if (kcA[i].w <= 0.0) {
+			if (kcA[i].w <= 0.0 || (kcEO > 0.5 && i < 6)) {
 				continue;
 			}
 			vec3 a = kcA[i].xyz;
@@ -102,7 +109,39 @@ void kc_push(inout vec3 kv, vec3 kn, float ry) {
 					w *= w;
 					d = normalize(d) * (1.0 - w) + o * w;
 				}
-				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu);   // a thin band: [0, r + sh] into [r - sh, r + sh]
+				// a thin band: [0, r + sh] into [r - sh, r + sh]; the legs' capsules hand over to the hull in a stride
+				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - kcM : 1.0));
+			}
+		}
+		// the hull: the leg's points set how far out from the body's axis the cloth must reach at their bearing, the row of
+		// the point and all below hanging from it, the rows above running up to the waist (pushOut in 50-figure.js)
+		if (kcEO > 0.5) {
+			kv = mix(kv, kcH + kcTl * (kv - kcH), smoothstep(0.03, 0.55, kcH.y - kv.y));
+		}
+		if (max(kcM, kcEO) > 0.0) {
+			vec2 ep = kv.xz - kcH.xz;
+			float er = length(ep);
+			float ew = 0.0;
+			float ehy = kcH.y + 0.12;
+			if (er > 1e-4 && kv.y < ehy) {
+				for (int i = 0; i < 12; i++) {
+					vec4 es = kcE[i];
+					vec2 esp = es.xz - kcH.xz;
+					float esr = length(esp);
+					if (es.w <= 0.0 || esr < 1e-3) {
+						continue;
+					}
+					float ehw = atan(es.w + 0.04, esr);
+					float ea = acos(clamp(dot(ep, esp) / (er * esr), -1.0, 1.0));
+					float ewa = 1.0 - smoothstep(ehw, ehw + 0.28, ea);
+					float ewy = 1.0 - smoothstep(0.0, max(ehy - es.y - es.w, 0.05), kv.y - es.y - es.w);
+					ew = max(ew, smoothstep(max(kcHm, 0.12) - 0.02, max(kcHm, 0.12) + 0.06, es.y + es.w) * ewa * ewy * (esr + es.w + kcP + kcPO * kcM + 0.01 + 4.0 * smoothstep(0.03, 0.04, kcP) * 0.015));
+				}
+			}
+			ew = max(ew * max(kcM, kcEO) - 0.02, 0.0);
+			if (ew > 0.0) {
+				float eb = mix(er, min(rr, er + 0.06), clamp((ew - er) / 0.1, 0.0, 1.0));
+				kv.xz = kcH.xz + ep / er * pow(eb * eb * eb + ew * ew * ew, 1.0 / 3.0);
 			}
 		}
 	}
@@ -138,7 +177,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry) {
 		float dd = bi < 2 ? bt * lt : bi < 4 ? lt + bt * ls : lt + ls + bt * 0.1;
 		float hm = kcSH * (lt + ls);
 		float f = 1.0 - smoothstep(hm - 0.02, hm + 0.02, dd);
-		if (best > 0.0 && best < 0.15) {
+		if (best > 0.0 && best < 0.3) {
 			vec3 d = kv - bq;
 			kv = mix(kv, bq + d * (br / length(d)), f);
 		}
