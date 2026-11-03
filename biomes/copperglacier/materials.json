@@ -1,0 +1,22 @@
+{
+ "build": "copperglacier",
+ "note": "Copper Glacier's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 5). The ground's KGROUND layers (84-host-ground.js): ground.snow (the firn and snow), ground.algae (the summer firn's snow algae), ground.gravel (the moraine and the outwash), ground.lichen (the crust on the old moraine), rock.granite (the walls: granite, and the stand-in for the gneiss until rock.gneiss.banded is delivered), rock.malachite and rock.gossan (the copper ground, on the resource data's copper), ice.glacier (the ice's surface; tinted verdigris on the copper ground: the stand-in for ice.glacier.verdigris), ice.debris (the dirty snout and the medial moraine). ice.clear is the seracs and bergs (86). The cards: lichen, moss, sedge (card.grass.dry), spike (the copper flower, card.flowerspike). bark.coral is the frost coral's skin (the Throne's gill-coral cap, the cold lineage's own). Run python3 tools/textures/pack.py biomes/copperglacier after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.snow": {"lib": "ground.snow011", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "ground.algae": {"lib": "ground.snow.algae", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "ground.gravel": {"lib": "ground.gravel042", "scale": [2.2, 2.2], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.35, "mapOnly": true},
+  "ground.lichen": {"lib": "ground.lichen.crust", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "rock.granite": {"lib": "rock.granite.tor", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.62}, "mapOnly": true, "roughLift": 0.3},
+  "rock.malachite": {"lib": "rock.malachite", "scale": [1.5, 1.5], "roughLift": 0.1, "specular": 0.2, "mapOnly": true},
+  "rock.gossan": {"lib": "rock.gossan", "scale": [2.0, 2.0], "roughLift": 0.1, "specular": 0.2, "mapOnly": true},
+  "ice.glacier": {"lib": "ice.glacier", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.5, "mapOnly": true},
+  "ice.debris": {"lib": "ice.debris", "scale": [4.0, 4.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.3, "mapOnly": true},
+  "ice.clear": {"lib": "ice.clear", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.05, "specular": 0.6},
+  "bark.coral": {"lib": "organic.cap.gillcoral", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0.2, "specular": 0.35},
+  "lichen": {"lib": "card.lichen", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.3333, 0.3333, 0.6667, 0.6667]},
+  "moss": {"lib": "card.moss", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.63}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "sedge": {"lib": "card.grass.dry", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "spike": {"lib": "card.flowerspike", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]}
+ }
+}

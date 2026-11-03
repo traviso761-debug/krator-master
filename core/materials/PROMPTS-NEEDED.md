@@ -294,6 +294,21 @@ Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta backgr
 Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
 ```
 
+## 32. Copper Glacier (`biomes/copperglacier`, 2026-11-03)
+
+Most of the region is gneiss (`kits/resources/data/geology.json`: crystalline, 7,532 of 13,426 cells), and the library has no gneiss: `rock.granite.tor`
+stands in on the walls, the nunataks and the boulders. The lore's banded verdigris ice has no set: `ice.glacier` tinted green on the copper ground
+stands in (`biomes/copperglacier/PLAN.md` section 5, `KNOWN_ISSUES.md`). Wire them as the families `rock.granite` (or a new `rock.gneiss` slot) and
+`ice.glacier` in `biomes/copperglacier/materials.json`.
+
+`rock.gneiss.banded`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a glacier-polished banded gneiss outcrop, its foliation running diagonally across the frame in wavy, folded bands a finger to a hand wide: dark grey-black biotite-rich bands (#3a3836) alternating with pale grey and pinkish-white quartz-feldspar bands (#cfc8bd, #d8c3b4), a few augen of pink feldspar the size of a thumbnail, fine glacial striations scratched across the bands, a dusting of pale rock flour in the hollows. Full colour: not tinted.
+```
+`ice.glacier.verdigris`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the surface of old glacier ice, dense and bubble-poor, in parallel wavy bands (ogives and foliation) running across the frame: bands of milky blue-white ice (#cfe3ea) alternating with bands stained verdigris and emerald by copper minerals carried in the ice (#5fae94, #3f8f78), a few thin dark streaks of fine rock debris (#5a5a52) and scattered fragments of blue azurite (#3a62a8) and green malachite frozen in, fine meltwater runnels and cryoconite holes across it. Full colour: not tinted.
+```
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

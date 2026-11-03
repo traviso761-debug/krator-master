@@ -248,6 +248,27 @@ never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lamb
 **Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
 pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
 
+**Copper Glacier, the new kit (2026-11-03; `biomes/copperglacier/PLAN.md`, `KNOWN_ISSUES.md`):** first, **`KGLACIER` is in core**
+(`core/terrain/44g-core-glacier.js`, [G data], and `host/44h-core-glacier-draw.js`, `test-glacier.js`), lifted from the Throne's glacier station. The data half
+holds the ice, the trough, the moraines and the pond basin, plus seracs, bergs, crevasses and caves on `KRAND.hash` per kind and index. The drawing half has the
+serac and ice-tower items, the cave shells, the arch, the crevasse slots and the steam. The station takes both (station.json `"terrain"`, a new key in the
+Throne's `build.py`) and keeps its own placement draws. A scene fingerprint (every mesh, instance, registered record and a terrain grid) reads 39 of 39 lines the
+same before and after, so the page draws exactly what it drew; its hash moved for the code that moved, and its baseline entry is rewritten.
+
+Then the kit. It is three pages on map 5.1 sites, one stage making each station's land from the numbers in its `44z-host-site.js`:
+- `dist/copperglacier.html`, Copper Tarn (px 156,1150): a glacier calving into the turquoise tarn;
+- `-pass`, the copper slope (px 320,1248, the skarn): a hanging glacier, its moraine pond, malachite and gossan, the nodes, copper flowers;
+- `-icefield` (px 213,1225, 6.5 km): plateau ice, nunataks, the ice cliff, ice caves.
+
+**The copper is read from `geology.json` at build time** (`res_site.js` writes `CG_RES` into the page), not invented. **The lore's porphyry is not in the data**: copper
+is 50 on the gneiss and 240 only on the eastern pass's rift skarn. The kit follows the data, and that is for the owner (`PLAN.md` section 1). Ice caves only: there is
+no soluble rock. Life: frost coral (the cold lineage, limbs on `BIO.flareJoin`), verdigris cushions, copper flowers on the copper ground, lichen, moss, sedge, snow
+algae, and ice worms that glow at dusk.
+
+The universal set is taken: KGROUND on documented masks, KFAR and KHORIZON, KFROST, still water with no surf or breakers, the stream's plume, `WATER.mirrorSwitch`
+off at load, the shore's fields, and the shared sky at each site. KSHADOW is measured at +20-56% a frame on the Arc (station 1), so it is off at load (`?shadow=1`), for the owner. KSTRATA, KKARST and impostors are dropped, with reasons. **Owed textures**
+(`PROMPTS-NEEDED.md` 32): `rock.gneiss.banded` and `ice.glacier.verdigris`; their stand-ins are named.
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
 and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
