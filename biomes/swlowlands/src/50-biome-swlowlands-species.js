@@ -162,6 +162,11 @@ SWLOW.SPECIES=[
   leaf:PAL.stargum,tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'both'}},
  /*26*/{key:'baylaurel',name:'Bay laurel',H:[14,22],rb:[.8,1.3],crownR:[12,20],bk:'bk_pale',bark:[0x8e948a,0x82887e,0x9aa094],
   leaf:PAL.bay,moss:.1,touch:.08,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'both'}},
+ // PLAN-FLORA.md, the kit's own two for the edge under the highlands (the final rebuild; refs/01-04): planted by the host (87-host-kin.js), never by a zone pass
+ /*27*/{key:'springcypress',name:'Spring cypress',H:[24,36],rb:[3.4,5.6],crownR:[18,28],bk:'bk_stringy',bark:[0x6a3422,0x5c2c1e,0x763c28],
+  leaf:PAL.cypress,tags:{climate:'subtropic',aridity:'humid',abyssal:false,riparian:'yes'}},
+ /*28*/{key:'ribbonroot',name:'Ribbon-root tree',H:[20,30],rb:[.8,1.3],crownR:[12,18],bk:'bk_stringy',bark:[0x7a3a26,0x8a4430,0x6a3020],
+  leaf:PAL.bay,tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SWLOW.byKey={};SWLOW.SPECIES.forEach(S=>{SWLOW.byKey[S.key]=S;});
 
@@ -197,6 +202,8 @@ SWLOW.HARVEST={
  sunburn:HV('fuel',[],true,'The resin dresses sunburn, hence the name.'),
  stargum:HV('timber',[],true,'The resin is a cough syrup.'),
  baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (a catalog piece, not drawn on the stage) are roasted.','generic_fruit_bay_laurel'),
+ springcypress:HV('timber (rot-proof)',[],false,'Too old and too wide to fell; the springs are named for them.'),
+ ribbonroot:HV('timber',[],true,'The plank roots are cut for canoe boards; the red sap stanches wounds.'),
 };
 SWLOW.SPECIES.forEach(S=>{S.tags.harvest=SWLOW.HARVEST[S.key]||HV('none');});
 // the small plants that bear catalogued fruit (60-floor places them); `items` names the instanced items that draw them
@@ -499,7 +506,7 @@ const M=SWLOW.MAT={
  rock:BIO.barkMat(SWLOW.ROCKTEX),
  oakleaf:BIO.leafMat(TX.oakleaf,'swl-oakleaf',{aN:true,swayW:'1.0',swayA:.10}),
  glossy:BIO.leafMat(TX.glossy,'swl-glossy',{aN:true,swayW:'1.0',swayA:.12}),
- broad:BIO.leafMat(TX.broad,'swl-broad',{aN:true,swayW:'1.0',swayA:.14}),
+ broad:BIO.leafMat(TX.broad,'swl-broad',{aN:true,swayW:'1.0',swayA:.14,backlit:.35,season:{drop:.3,colour:0x9a7040,k:.4}}),
  feather:BIO.leafMat(TX.feather,'swl-feather',{aN:true,swayW:'1.0',swayA:.12}),
  lance:BIO.leafMat(TX.lance,'swl-lance',{aN:true,swayW:'1.0',swayA:.16}),
  manz:BIO.leafMat(TX.manz,'swl-manz',{aN:true,swayW:'1.0',swayA:.05}),
@@ -516,7 +523,7 @@ const M=SWLOW.MAT={
  spike:BIO.leafMat(TX.spike,'swl-spike',{swayW:'(position.y)',swayA:.03,alphaTest:.42}),
  lupin:BIO.leafMat(TX.lupin,'swl-lupin',{swayW:'(position.y)',swayA:.08,alphaTest:.42}),
  reed:BIO.leafMat(TX.reed,'swl-reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'swl-grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
+ grass:BIO.leafMat(TX.grass,'swl-grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4,ground:{k:.8,gain:.6,fade:[600,800]},season:{colour:0xc8a860,k:.7}}),
  frond:BIO.leafMat(TX.frond,'swl-frond',{swayW:'(position.x)',swayA:.07}),
  bigfrond:BIO.leafMat(TX.bigfrond,'swl-bigfrond',{swayW:'(position.x)',swayA:.09}),
  under:BIO.leafMat(TX.under,'swl-under',{swayW:'1.0',swayA:.06}),
@@ -572,7 +579,10 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});
+/* the bloom sheet cut by the geometry (materials.json "sheet": "geometry"; sedesert's rects: its rows touch, so check_cells' cell is wrong: two of the six flowers a bloom) */
+const BLOOM_G=()=>typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('swlowlands','bloom')?BIO.geo.cells(BIO.geo.bloom(),{rects:[[.02,.02,.49,.33],[.51,.34,.98,.66],[.02,.67,.49,.98],[.51,.02,.98,.33],[.02,.34,.49,.66],[.51,.67,.98,.98]],pick:[0,1],scale:1}):BIO.geo.bloom();
+BIO.def('bloom',BLOOM_G(),M.bloom,{label:'Blooms',onLeaf:true});
+BIO.def('padbloom',BLOOM_G(),M.bloom,{label:'Water and marsh flowers',free:true});   /* a lily's flower and the sea lavender: held by the water or a low tuft, not by bark (the attach audit) */
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Agaves'});
 BIO.def('brom',G.rosette([[12,1.0,.55,.26],[9,.72,.85,.22],[6,.45,1.15,.2]]),M.rosette,{label:'Bromeliads'});
 BIO.def('pad',G.pad(),M.pad,{label:'Lily pads and hyacinths',free:true});

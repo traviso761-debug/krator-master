@@ -5,8 +5,14 @@
    "eye:*": "2026-11-01: 1 views: Ragbark eye [-758.1, 216.6, 1027.3]: under BufferGeometry (0.0 m above)",
    "instance-cap": "2026-11-01: 1 items past the cap (scene scan, cap 250000): biome:ichu 396010"
   },
+  "biomes/swlowlands/dist/swlowlands-delta.html": {
+   "seat-sweeps": "2026-11-02: contact 113 of 36187: [{\"id\":\"biome:fan#3231\",\"status\":\"buried\",\"depth\":0.5552533090681864,\"gap\":null,\"h\":null},{\"id\":\"biome:fan#3240\",\"status\":\"buried\",\"depth\":0.567356436778933,\"ga"
+  },
+  "biomes/swlowlands/dist/swlowlands-gorge.html": {
+   "seat-sweeps": "2026-11-02: contact 172 of 36167: [{\"id\":\"biome:melon#0\",\"status\":\"float\",\"gap\":0.8371130169834657,\"depth\":0,\"h\":237.61578856939875},{\"id\":\"biome:melon#1\",\"status\":\"float\",\"gap\":1.74946963338700"
+  },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "seat-sweeps": "2026-11-02: contact 47 of 36733: [{\"id\":\"biome:reed#320\",\"status\":\"buried\",\"depth\":0.9748087885636183,\"gap\":null,\"h\":null},{\"id\":\"biome:reed#352\",\"status\":\"buried\",\"depth\":0.3128512674432924,\"g"
+   "seat-sweeps": "2026-11-02: contact 35 of 39274: [{\"id\":\"biome:fan#6776\",\"status\":\"buried\",\"depth\":0.33235820168159225,\"gap\":null,\"h\":null},{\"id\":\"biome:reed#199\",\"status\":\"float\",\"gap\":0.30537631769468376,\"de"
   }
  }
 }

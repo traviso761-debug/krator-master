@@ -277,6 +277,39 @@ B[1]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  if(lv===2){for(let k=0,m=ri(5,12);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.8,5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y-BIO.waterH(x,z)<-1.8||!BIO.clearOf(x,z,.5))continue;
    const h=rr(.5,1.6)+Math.max(0,-y);BIO.put('cone',[x,y-.25,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.45,h+.25,h*.45],rodCol(pick(S.bark)));st.knees++;}}
  T.spread=spread(T,all);reg(T,S);};
+// 27 the SPRING CYPRESS (PLAN-FLORA.md, refs/01-03, the Montezuma cypress's habit): the knee-cypress's bole, many metres wide, fluted and
+// buttressed, its roots sprawling over the bank into the pool, the crown low and wide. Drawn at lv 1 and 2; its far form is the cypress's
+B[27]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
+ const hc=H*rr(.38,.48),bo=bole(fam,T,S,hc,rb*.8,.55,4,ri(9,13),lv===2?18:12,5,0);st.trunk+=bo.tris;
+ const nL=lv===2?ri(8,11):ri(5,6),a0=rr(0,TAU),spots=[],all=[],beards=[];
+ for(let k=0;k<nL;k++){const u=mix(.55,.98,(k+rr(0,.9))/nL),a=a0+k*GOLD+rr(-.3,.3),el=rr(.02,.28),len=T.crownR*rr(.75,1.1),r0=clamp(bo.rAt(u)*.3,.3,1.1);
+  const pts=limbPts({x:T.x+Math.cos(a)*bo.rAt(u)*.7,y:T.y0+hc*u,z:T.z+Math.sin(a)*bo.rAt(u)*.7},a,el,len,r0,.12,5,-.12,.1,.06);
+  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:6,cap:true});all.push(...pts);
+  for(let s=1;s<=5;s++){spots.push(pts[s]);if(lv===2&&s>1)twigs(fam,S,pts[s],a,2,len*.18,-.1,.3,st,spots);if(s>2)beards.push(pts[s]);}}
+ const cy=T.y0+H*.68,sz0=rr(5,7);crownOn('feather',spots,sz0,.42,()=>crownCol(S),T,cy,T.crownR,H*.3,lv===2?1.7:.8,st);
+ if(lv>=1)beards.forEach(p=>{if(lv===1&&rng()<.5)return;mossAt(p,1.2,Math.max(T.wet,.85),st,8);});
+ /* the roots over the bank: tubes from the flare, along the drawn ground, ending under it */
+ if(lv===2)for(let k=0,m=ri(9,14);k<m;k++){const a=rr(0,TAU),L=rb*rr(2.2,4.4),n=6,pts=[];let wob=rr(-.4,.4);
+  for(let i=0;i<=n;i++){const t=i/n,d=rb*.9+L*t,aa=a+wob*t,x=T.x+Math.cos(aa)*d,z=T.z+Math.sin(aa)*d;pts.push({x,y:Math.max(Y(x,z),BIO.waterH(x,z)-1.5)+mix(.5,-.25,t),z,r:mix(.55,.1,t)*rb/4});}
+  st.limb+=BIO.tube(fam,pts,barkC(S),{seg:5,cap:true});}
+ T.spread=spread(T,all);reg(T,S);};
+// 28 the RIBBON-ROOT TREE (PLAN-FLORA.md, refs/04, the swamp bloodwood's habit): a clean bole on plank roots that run far out over the mud in
+// red-brown ribbons, snaking and folding back on themselves. A plank is three stacked runs of a thin tube, each shorter than the one under it
+B[28]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
+ const hc=H*rr(.66,.76),bo=bole(fam,T,S,hc,rb,.7,2,0,lv===2?10:7,5,0);st.trunk+=bo.tris;
+ const nR=lv===2?ri(6,9):ri(3,4),a0=rr(0,TAU),spots=[],all=[];
+ for(let k=0;k<nR;k++){const a=a0+k/nR*TAU+rr(-.25,.25),L=rb*rr(6,12),n=lv===2?12:6,w1=rr(.8,1.6)*(rng()<.5?-1:1),ph=rr(0,TAU),rows=lv===2?3:2;
+  for(let row=0;row<rows;row++){const pts=[],h0=.16+row*.24,end=1-row*.26;
+   for(let i=0;i<=n;i++){const t=end*i/n,d=rb*.8+L*t,aa=a+w1*t+.5*t*Math.sin(t*9+ph),x=T.x+Math.cos(aa)*d,z=T.z+Math.sin(aa)*d,tall=mix(1.5,.2,Math.pow(t,.6));
+    pts.push({x,y:Y(x,z)+h0*tall*(row===0?.6:1),z,r:.15*Math.max(.5,rb)});}
+   st.limb+=BIO.tube(fam,pts,barkC(S),{seg:4,cap:true});}}
+ const nL=lv===2?ri(5,8):ri(3,4);
+ for(let k=0;k<nL;k++){const u=mix(.7,.98,(k+rr(0,.9))/nL),a=a0+k*GOLD,el=rr(.05,.4),len=T.crownR*rr(.6,1),pts=limbPts({x:T.x,y:T.y0+hc*u,z:T.z},a,el,len,clamp(bo.rAt(u)*.45,.14,.5),.08,4,-.1,.1,.06);
+  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:5,cap:true});all.push(...pts);
+  for(let s=1;s<=4;s++){spots.push(pts[s]);if(lv===2&&s>1)twigs(fam,S,pts[s],a,2,len*.2,-.1,.3,st,spots);}}
+ {const L=leader(fam,S,T,bo.top,T.y0+H*.95,bo.rAt(1)*.7,st,all);if(L){spots.push(L[3],L[4]);twigs(fam,S,L[4],rr(0,TAU),3,T.crownR*.25,-.1,.2,st,spots);}}
+ crownOn('broad',spots,rr(4,6),.5,()=>crownCol(S),T,T.y0+H*.84,T.crownR,H*.17,lv===2?1.3:.7,st);
+ T.spread=spread(T,all);reg(T,S);};
 // 0 the LANTERN MANGROVE: a short lacquer-red trunk on a cage of arching prop roots
 // in the brackish shallows, drop roots from the boughs, a wide low dome of glossy leaves
 B[0]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb,gy=T.y0,base=Math.max(gy,0)+rr(.8,1.8);
@@ -346,7 +379,7 @@ B[9]=B[11]=B[24]=B[25]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb
  const cy=T.y0+H*.72,ex=T.crownR,ey=H*.3,sz0=mad?rr(5.5,7):rr(6.5,8.5),item=(mad||T.sp===24)?'glossy':'broad';
  crownOn(item,spots,sz0,.62,()=>crownCol(S,mad?.06:0),T,cy,ex,ey,lv===2?1.6:1,st);
  // the madrone's cream panicles and red berries, at the branch tips
- if(mad&&lv===2)spots.forEach(p=>{if(rng()>.22)return;const fl=rng()<.55,col=C(pick(fl?PAL.cream:PAL.berry));for(let j=0;j<ri(4,8);j++)BIO.put('bloom',[p.x+rr(-1,1)*sz0*.35,p.y+sz0*rr(.25,.5),p.z+rr(-1,1)*sz0*.35],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),fl?rr(.3,.5):rr(.15,.25),col);st.blooms++;});
+ if(mad&&lv===2)spots.forEach(p=>{if(rng()>.22)return;const fl=rng()<.55,col=C(pick(fl?PAL.cream:PAL.berry));for(let j=0;j<ri(4,8);j++)BIO.put('bloom',[p.x+rr(-1,1)*sz0*.2,p.y+sz0*rr(.04,.2),p.z+rr(-1,1)*sz0*.2],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),fl?rr(.3,.5):rr(.15,.25),col);st.blooms++;});
  T.spread=spread(T,all);reg(T,S);};
 // 10 the EMBER MANZANITA: a knot of crooked stems, smooth blood-red and charred
 // black, small grey-green leaves, urn flowers and red berries
@@ -609,8 +642,21 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  // avenue's and the grove's rows: SWLOW.LOD.avenue) and as its lite stand-in past that; a far tree is
  // only ever its impostor, always drawn. trisBySpecies counts the tree itself; the stand-ins are tris.lite.
  const trisS=SP.map(()=>0),cur=()=>{const t=BIO.stats[BIO.cur||'biome'];return t?t.tris:0;};
- const SMALL={4:1,8:1,10:1,13:1,15:1},far=(T,i,lite)=>SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
- TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const t0=cur(),rg=T.row?SWLOW.LOD.avenue:SWLOW.LOD.tree;
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js; GRAPHIC-LOAD.md recommendation 2, nhighlands' lines, the final rebuild): on when the page lists the
+ // fragment and SWLOW.IMPOSTORS is not false; a far tree and a hero's stand-in are one quad of its species seen from the camera's side (two sets of up to 25).
+ // A host's veto (SWLOW.veto, 87-host-kin.js) cuts a tree: it keeps its place in TREES, so nothing else moves; each tree reseeds, so a cut changes no other tree's shape
+ const SMALL={4:1,8:1,10:1,13:1,15:1},farB=(T,i,lite)=>SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
+ const IMPON=SWLOW.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const sets=[BIO.impostorSet('swlowlands.treesA',{label:'Far trees'}),BIO.impostorSet('swlowlands.treesB',{label:'Far trees'})];
+  SP.forEach((S,sp)=>{const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;const set=sets[sp<16?0:1];
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('swlowlands.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H,item:sp<16?'impTreesA':'impTreesB'};});
+  sets.forEach((set,k)=>{if(set.recs.length)BIO.impostorItem(k?'impTreesB':'impTreesA',set,{label:'Far trees'});});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut(I.item,I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ const far=(T,i,lite)=>{if(!farImp(T))farB(T,i,lite);};
+ TREES.forEach((T,i)=>{if(SWLOW.veto&&SWLOW.veto('tree',SP[T.sp].key,T.x,T.z)){T.cut=true;return;}
+  BIO.owner=[T.x,T.z];reseed(T.seed*7919+17);const t0=cur(),rg=T.row?SWLOW.LOD.avenue:SWLOW.LOD.tree;
   if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;}
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
   if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
@@ -626,5 +672,9 @@ SWLOW.treeAt=function(species,x,y,z,opt){opt=opt||{};means();const sp=typeof spe
  const T={x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1])*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),wet:opt.wet==null?.6:opt.wet,lv:2};
  if(opt.bias!=null)T.bias=opt.bias;SWLOW.TREES.push(T);hadd({x:x,z:z,r:T.crownR*.4,rt:T.rb*1.6+.8});
  const o0=BIO.owner;BIO.owner=[x,z];B[T.sp](T,st,2);BIO.owner=o0;return T;};   // under a world's BIO.range the whole tree keys by its foot
+// what BIO.kin reads (core/biome 32): a record for a species at a point, and the record grown; a kin's T.sp stays the source's index, so B[] is its builder
+SWLOW.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+SWLOW.grow=function(T,lv){means();const st={trunk:0,limb:0,far:0,lite:0,limbs:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,knees:0,veils:0,pillars:0,roots:0,epi:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0)buildFar(T,T.seed%7,st,false);else B[T.sp](T,st,lv);return st;};
 SWLOW._canopyH=function(x,z){let h=0;for(const T of SWLOW.TREES){if(Math.hypot(x-T.x,z-T.z)<Math.max(40,T.crownR))h=Math.max(h,T.y0+T.H);}return h||10;};
 })();

@@ -34,5 +34,30 @@ SEA_DRAW.mesh.userData.inspectLabel='The inland sea';
 const INLAND_WATER=WATER.open({name:'The bayou and the river',level:0,swell:[[.015,6,35,0,.02],[.01,3.5,-50,1.3,.02]],field:0,bounds:WATER_BOX,mask:INLAND_MASK});
 const INLAND_DRAW=WATER.draw(INLAND_WATER,{renderOrder:1,roughness:.14,metalness:.05,envMapIntensity:.35,color:lin(BAYOU_COL.clone().lerp(RIVER_COL,.5).multiplyScalar(.8))});
 INLAND_DRAW.mesh.userData.inspectLabel='The bayou and the river';
-const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.08,.3],shallow:lin(RIVER_COL),deep:lin(BAYOU_COL),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:24,across:6,margin:1.2,renderOrder:2});
+// THE CLEAR-WATER LOOK (core/water ext/54; BACKPORT.md's row; ?clearwater=0 for the tea hue): below the springs the hills' river runs clear green over its bed; a station's river its own (ST.riverLook)
+const WQ=new URLSearchParams(location.search),CLEAR=WQ.get('clearwater')!=='0'&&SPRINGS.length&&WATER.LOOKS&&WATER.LOOKS.clear;
+const RIVER_SH=ST&&ST.riverLook?lin(ST.riverLook[0]):CLEAR?lin(WATER.lookHex('clear',.62)):lin(RIVER_COL),RIVER_DP=ST&&ST.riverLook?lin(ST.riverLook[1]):CLEAR?lin(WATER.lookHex('clear',.2)):lin(BAYOU_COL);
+const RIVER_DRAW=WATER.drawFlow(RIVER,{rain:true,rapids:ST&&ST.rapids?ST.rapids:[.08,.3],shallow:RIVER_SH,deep:RIVER_DP,color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:24,across:6,margin:1.2,renderOrder:2,chute:ST&&ST.chute});
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
+// a station's cataracts (ST.falls): every step of its river a fall, all their curtains one mesh and their plunge pools another (WATER.drawFalls), the spray by each fall's drop
+if(ST&&ST.falls){const FS=WATER.fallsOf(RIVER,Object.assign({fit:true},ST.falls)).map(f=>WATER.fall(f));if(FS.length){const D=WATER.drawFalls(FS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,envMapIntensity:.25,renderOrder:3,margin:1.2,spray:'drop'});D.mesh.userData.inspectLabel='The cataracts';if(D.plunge)D.plunge.userData.inspectLabel='The cataracts';}window._falls=FS.length;}
+// a station's flood pulse (ST.flood; core/water's seasonal still, the hyperjungle lake's lines): the level on the world clock's wet season, stepped every frame
+if(ST&&ST.flood){const FL=window._flood=WATER.still({name:'The flood on the bench',poly:ST.flood.poly(),seasonal:{low:ST.flood.low,high:ST.flood.high,lagD:ST.flood.lagD,sharp:ST.flood.sharp}});
+ const D=WATER.drawStill(FL,{color:lin(RIVER_COL),roughness:.14,metalness:.05,envMapIntensity:.35,renderOrder:1,rain:true,pick:true});D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel='The flood on the bench';tick(()=>{if(KHOST.host)WATER.stepSeasons(KHOST.host.clock);});}
+// THE CLEAR SPRINGS (45 SPRINGS; core/water ext/54 W.karstSpring, swbay's lines): each a still pool with the spring look's gradient and the boil at its vent, and its run, a gin-clear flow from the pool's lip down
+// its own bank to the river's edge, a quarter metre over the ground and never climbing
+const SPRING_DRAW=SPRINGS.map((S,i)=>{const R=xzOf(S.s,RIVER_T(S.s)),tx=R[0]-S.x,tz=R[1]-S.z,tl=Math.hypot(tx,tz),dir=[tx/tl,tz/tl],lvl=S.y0-.1;
+ const run=Math.max(8,tl-14),line=[];let yc=lvl;for(let k=0;k<=12;k++){const t=k/12,x=S.x+dir[0]*(S.r*.8+t*run),z=S.z+dir[1]*(S.r*.8+t*run);yc=Math.min(yc,terrainH(x,z)+.25);line.push([x,z,yc]);}
+ const K=WATER.karstSpring({name:'The clear spring '+(i+1),at:[S.x,S.z,lvl],r:S.r,dir,line,width:3.4,speed:.7,seed:8150+i});
+ const G=K.pool.gradient;if(G)K.pool.gradient=WATER.gradientOf(K.pool,{centre:lin(G.centre).getHex(),rim:lin(G.rim).getHex(),power:G.power});
+ const P=WATER.drawStill(K.pool,WATER.lookDraw('spring','still',{color:lin(WATER.lookHex('spring',.3)),envMapIntensity:.3,renderOrder:1,pick:true,rain:true}));
+ const F=WATER.drawFlow(K.flow,WATER.lookDraw('clear','flow',{shallow:lin(WATER.lookHex('clear',.75)),deep:lin(WATER.lookHex('clear',.3)),color:0xffffff,step:2,across:3,margin:.5,envMapIntensity:.4,renderOrder:2,pick:true,rain:true}));
+ return{K,P,F};});
+window._springs=SPRING_DRAW.length;
+// one spring's run meets a station's river in one surface (WATER.confluence, BACKPORT.md section 5: the great gorge); ?confluence=0
+if(ST&&SPRING_DRAW.length&&WQ.get('confluence')!=='0'){try{const K=SPRING_DRAW[0].K.flow,e=K.pts[K.pts.length-1],CF=WATER.confluence({name:'Where the spring meets the river',flows:[RIVER,K],at:[e.x,e.z],ground:terrainH});
+ WATER.drawConfluence(CF,{shallow:RIVER_SH,deep:RIVER_DP,color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,renderOrder:2,rain:true});WATER.fadeRibbons(CF,[RIVER_DRAW,SPRING_DRAW[0].F]);window._confluence=1;}catch(e2){console.warn('confluence: '+(e2&&e2.message));window._confluence=0;}}
+// COMB WEED in the clear river (core/water ext/54, 54b; BACKPORT.md's row; ?weed=0): the look with green weed on the flow's bed; one instanced mesh, swaying on the module clock
+if(CLEAR&&WQ.get('weed')!=='0'&&WATER.LOOKS.clear.weed){const W_L=WATER.weed(RIVER,{look:'clear',seed:8160});if(W_L.length){const WD=WATER.drawWeed(W_L,{});if(WD&&WD.mesh)WD.mesh.userData.inspectLabel='Comb weed';window._weed=W_L.length;}}
+// the sea's and the river's glints broken up (core/water ext/56, the eastabyss look: the owner's zigzag); ?breakup=0
+if(WQ.get('breakup')!=='0'&&WATER.breakupAll){WATER.breakupAll();WATER.breakupFlows();}

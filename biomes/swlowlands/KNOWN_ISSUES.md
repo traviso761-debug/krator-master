@@ -175,11 +175,21 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 
 ## The plants' feet on the drawn ground (KSEAT, 2026-11-02)
 
-The plants stand on the ground mesh's triangles (`drawnH`), and `hostChecks` measures their feet with `KSEAT.contactSweep`. 47 of
-36,733 sampled feet are still off it, recorded as `FEET_OWED` in `src/99-host-take.js` and in `tools/verify_ratchet.json`: 26 floating,
-21 buried, worst 2.29 m up, .97 m down, mostly reed, marsh, mossmat and a few lobes. Not traced. On `terrainH` the same feet give 963.
+The plants stand on the ground mesh's triangles (`drawnH`), and `hostChecks` measures their feet with `KSEAT.contactSweep`. 35 of
+39,274 sampled feet (2026-11-02, the rebuild's turn; it was 47) are still off it, recorded as `FEET_OWED` (38, the ceiling) in `src/99-host-take.js` and in `tools/verify_ratchet.json`: 19 floating,
+16 buried, worst 2.29 m up, 1.21 m down, mostly reed, marsh, mossmat and a few lobes. Not traced. **The stations owe more, on the walls' coarse cells:** gorge 172 of 36,167 (mostly the coral melon's fruit), delta 113 of 36,187 (`feetOwed`, in their `44z`), recorded in the ratchet. On `terrainH` the same feet give 963.
 The check leaves out 1,261 pieces held by something else (a palm's crown, a limb, a log's back, duckweed, the tower's ledges): those
 over .6 m above the ground on `HELD_ITEMS`, or inside an obstacle's footprint. A float over .6 m on those items is not seen here.
 The tower is not a seat surface: with it marked, verify never finished twice, though the stall was not traced to it.
 
 - 2026-11-02, the foliage attach audit: 7.24% to .73%. Flowers in foliage `onLeaf`, the willow's veils held to their limb, pads `free`.
+
+## The final rebuild's turn (2026-11-02)
+
+- [ ] **Ground, as the universal row asks and no further.** `KGROUND` over the paint on documented masks; the three-ground diagnosis has not run. Standard, not Lambert, under KGROUND (`?kground=0` for the old floor).
+- [ ] **Cousins to judge:** the red lattice sprawl, red banksia, red-flake paperbark, flat red puzzle (colours and scale by `BIO.kin`; what a builder does not read stays the source's). The ribbon-root's planks are three stacked tubes, not a true plank. Not taken: nhighlands' two and shighlands' crozier (their later turns), the puya and dust reef (wouterwall unbuilt).
+- [ ] **swbay's receiver rows (mangrove, coastoak) are not wired:** swbay's turn came first; they want a swbay rebuild.
+- `88-host-build.js` is now `89z-host-build.js`: the water must exist before the first plant reads its shore. The tree pass reseeds per tree, so every tree's shape changed once at this turn; placement passes did not move, but `FIELD.wet` and `flow` now read the water, so riparian ground did.
+- bloom's sheet is cut by the geometry (`"sheet": "geometry"`, sedesert's rects), not check_cells' proposal, which the owner marked wrong.
+- Numbers (Arc 140T, D3D11): held 11.25M of 12M, worst view 271 calls, 6.70M tris (was 8.39M, 377); attach audit .83%, gorge .63%, delta .85%; `WATER.edgeAudit` 0 findings on 4,001 trees. Near the 12M ceiling stays below the owner's 15M.
+- [ ] **To look at on the delta:** bright green flecks over the fan from above (`The fan from above`): not traced, probably a floor card at range. The pale feet of the far impostors on bare fan ground.

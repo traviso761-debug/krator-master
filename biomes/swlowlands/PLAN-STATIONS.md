@@ -5,7 +5,7 @@ is the water 4.21 gave the lowlands: **the great river** that leaves the SW lowl
 (about 5,700 m³/s, 200 km, cut up to 627 m deep: `tools/scale-model/README.md`, `OUTLETS`) and **the Lake of Shim** on
 its course. One station; the page as built stays station 1.
 
-**Status: plan, awaiting the owner.**
+**Status: stations 2 and 3 built at the final rebuild's turn (2026-11-02): `python3 build.py --station gorge`, `--station delta` (one station, reading `biomes/swbay` in place; the owner, 2026-11-02). Stations proposed on `claude/alien-biome-proposal-fb0a42` are not in this file.**
 
 ## Station 2: the gorge
 
@@ -52,3 +52,11 @@ a 630,000 km2 catchment, 340 m wide and 9 m deep). Surveyed 2026-11-02:
 W0 site (with Shim's plan); W1 the station; verified and baselined. **W2** (2026-11-02): station 3's site on the bench at
 Wing and the fan at the mouth; the `delta` relief kind if approved; the seasonal flow level; Wing's site published;
 verified and baselined.
+
+## Core adoption (the final rebuild's turn, 2026-11-02)
+
+**Universal set taken:** `INDEX_ITEMS`, `LOD.merge`/`fade`/`cull`, `SWLOW.LOD` shortened and octahedral impostors (`?diet=0`), the card cuts, `R5` ground tint, `R7`, `R8`, height fog, rain cover, `bindWeather`, wet ground and puddles, spray by drop, breakup, `WATER.mirrorSwitch` on the sea (off at page load), `KGROUND`, `KFAR`, `KHORIZON`, the shell's whole interface.
+**The row:** karst springs, comb weed, the clear look, seasons, kin. **Dropped:** `reach` (every cousin stands by a cut in a zone, so no distance field is needed), lightning's own call (the weather binds it).
+**Review lines:** ground layers on documented masks (`45-host-stage.js`, "THE GROUND'S MASKS"); strata and talus feed placement on the stations (`44y-host-stationlib.js`: `S.terrace` makes the ledges, `stationBoulders` reads talus and bars); wet ground and flora read `WATER.fieldAt`'s shore (`89z-host-build.js`, checked by `edgeCheck`).
+
+**For the owner, not blocking:** the `delta` relief kind is proposed, not in core: the fan is written in `stations/delta/44z-host-delta.js`. core/water has no seasonal flow: the flood is a seasonal still over the ribbon. The papyrus-like beds use the kit's reed, not eastabyss's mat reed. swbay's hyper-mangrove is not wired, so the fan's shore has the kit's mangrove. Each page compresses its reach into 6 km: heights are the page's, the model's are in the tables above. No tall fall off the gorge's rim (the 16 m ground mesh cannot hold a vertical face).
