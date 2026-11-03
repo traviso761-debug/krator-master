@@ -13,3 +13,7 @@ const MARSH_POLY=[];for(let k=0;k<64;k++){const a=k/64*TAU;MARSH_POLY.push(upAt(
 const MARSH_WATER=WATER.still({name:'The sulphur marsh\'s acid water',level:MARSH.level,poly:MARSH_POLY,gradient:{centre:0x536556,rim:0x6c6e48,at:[MARSH.x,MARSH.z],radius:(MARSH.ru+MARSH.rp)*.505}});
 const MARSH_DRAW=WATER.drawStill(MARSH_WATER,{roughness:.35,metalness:.05,envMapIntensity:.15,renderOrder:1});
 MARSH_DRAW.mesh.userData.probeSkip=true;MARSH_DRAW.mesh.userData.inspectLabel=MARSH_WATER.name;
+// the reflections switch (core/water/ext/58; 89zz-host-core.js installs it, off at page load): the marsh is the page's largest still
+const MIRROR_STILL={materials:[MARSH_DRAW.mesh.material],level:MARSH.level,center:[MARSH.x,MARSH.z],radius:(MARSH.ru+MARSH.rp)*.5,far:2500};
+// the marsh fizzes while acid rain falls (89-host-atmos.js, ATMOS.acidRain)
+if(ACID_RAIN&&ATMOS.acidOn)ATMOS.acidOn(MARSH_DRAW.mesh.material,{kind:'water'});

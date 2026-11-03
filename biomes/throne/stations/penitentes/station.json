@@ -1,0 +1,15 @@
+{
+ "name": "The lee's penitentes (station 14): the east flank under the summit, its benches of snow carved into penitentes, rock steps between them, the tundra at the snowline",
+ "out": "throne-penitentes.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-8-export.js",
+  "89-atmos-9-host.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js"
+ ]
+}

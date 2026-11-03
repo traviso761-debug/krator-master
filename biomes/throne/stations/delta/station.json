@@ -1,0 +1,23 @@
+{
+ "name": "The lava delta (station 12): an active ocean entry on the south-east coast, the lava over the old sea cliff, the new black land, the laze, littoral cones, pumice rafts",
+ "out": "throne-delta.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-8-export.js",
+  "89-atmos-9-host.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "fx/89-atmos-fx-lava.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js"
+ ]
+}

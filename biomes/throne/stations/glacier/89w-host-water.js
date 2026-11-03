@@ -20,7 +20,7 @@ const LAKE_BOX=(function(){const pu0=TERM.u0-20,pu1=GL.SNOUT+280,pp0=TERM.p0-TER
 const LAKE_SEED=upAt((termU(TERM.p0)+GL.SNOUT)/2,TERM.p0);
 const LAKE_WATER=WATER.open({name:LAKE.name,level:LAKE.level,field:.1,bounds:LAKE_BOX,bed:terrainH,bedBox:LAKE_BOX,
  shore:{cell:4,band:40,seeds:[LAKE_SEED],land:(x,z)=>lakeAt(x,z)<.12}});
-const LAKE_DRAW=WATER.draw(LAKE_WATER,{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.4,surf:false,pick:true,
+const LAKE_DRAW=WATER.draw(LAKE_WATER,{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.4,surf:false,breakers:false,   /* still water: no breaker rings round the islands (HANDOFF-REBUILD.md, 'Still water takes no breakers') */pick:true,
  shallow:new THREE.Color(.3,.56,.6).convertSRGBToLinear(),deep:new THREE.Color(.2,.44,.5).convertSRGBToLinear()});
 LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;LAKE_DRAW.mesh.userData.probeSkip=true;
 // ---- the river's braids
@@ -33,3 +33,7 @@ BRAIDS.forEach((B,bi)=>{let run=[],wid=[];
 const RIVER_DRAWS=RIVER_FLOWS.map(F=>{const d=WATER.drawFlow(F,{rapids:[.04,.15],shallow:new THREE.Color(.42,.54,.56).convertSRGBToLinear(),deep:new THREE.Color(.3,.4,.42).convertSRGBToLinear(),
   color:0xffffff,roughness:.3,metalness:.05,envMapIntensity:.35,step:10,across:2,margin:3.6,renderOrder:1});
  d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel='The meltwater river (flowing down the flank)';return d;});
+// the reflections switch (core/water/ext/58; 89zz-host-core.js installs it, off at page load): the proglacial lake is the page's largest still
+const MIRROR_STILL={materials:[LAKE_DRAW.mesh.material],level:LAKE.level,center:LAKE_SEED,radius:(LAKE_BOX[2]-LAKE_BOX[0]+LAKE_BOX[3]-LAKE_BOX[1])/4,far:3000};
+// the snow lies on this page (89-host-atmos: ATMOS.snowCover), so the warm ground round the shelf's fumaroles stays bare (KTHERM, 89zz)
+const STATION_SNOW=true;

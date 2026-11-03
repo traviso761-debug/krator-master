@@ -35,5 +35,17 @@ THRONE.GLSL_LAY='float _nti(vec2 p){return texture2D(uMacro,p*0.0037).g;}'+
  // ~270 m), and a broad brightness swell (the owner: the snow wanted more dithering)
  'vec3 _layd(sampler2D t,vec2 p,vec2 q,float k,float mt){float x=texture2D(uMacro,p*k*0.04).g,x2=texture2D(uMacro,q*k*0.027+0.5).r;'+
  'vec3 c=mix(_nt(t,p*k,x),_nt(t,q*k*0.47+vec2(0.31,0.17),fract(x2*1.7+0.37)),mt);float sw=texture2D(uMacro,p*0.0023).r;return pow(c*(0.9+0.2*sw),vec3(2.2));}';
+// THE SAME SAMPLER ON KGROUND (core/terrain/43-core-ground.js; the final rebuild, 2026-11-02: BACKPORT.md's ground row): THRONE.layGLSL(kg, own) is
+// the GLSL a host's ground shader declares. With kg (the host's switch, ?kground=0 off) _lay and _layd read each library layer through KGROUND's
+// own functions: Mikkelsen's hex tiling in place of the virtual tiles (no repeat, no second turned read: q and mt are not used) and its distance
+// scale (the tile doubles at each doubling of the distance past 60 m, up to three times, two scales cross-faded; the distance is the fragment's
+// depth, 1/gl_FragCoord.w, since three r128 uploads no cameraPosition to a Lambert ground). _layd keeps its broad brightness swell. The layers'
+// weights stay the host's own masks (the fields, the flows' ages). Without kg (or without KGROUND on the page): own, else GLSL_LAY, as before.
+THRONE.layGLSL=function(kg,own){
+ if(!kg||typeof KGROUND==='undefined')return own==null?THRONE.GLSL_LAY:own;
+ return '\n'+KGROUND.glsl()+'float _kgLv(){return min(3.0,max(0.0,log2(max((1.0/gl_FragCoord.w)/60.0,1.0))));}\n'+
+  '#if __VERSION__>=300\nvec4 _kgS(sampler2D t,vec2 st){return kgSample(t,st,dFdx(st),dFdy(st),_kgLv());}\n#else\nvec4 _kgS(sampler2D t,vec2 st){return kgSample(t,st,vec2(0.0),vec2(0.0),_kgLv());}\n#endif\n'+
+  'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(_kgS(t,p*k).rgb,vec3(2.2));}'+
+  'vec3 _layd(sampler2D t,vec2 p,vec2 q,float k,float mt){float sw=texture2D(uMacro,p*0.0023).r;return pow(_kgS(t,p*k).rgb*(0.9+0.2*sw),vec3(2.2));}\n';};
 THRONE.canopyH=function(x,z){return THRONE._canopyH?THRONE._canopyH(x,z):6;};
 BIO.kitEnd(THRONE);   // its exports run in its registry; the default kit is current again

@@ -208,7 +208,7 @@
     "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "0dc57df1579b14375a1b611938a1138349929c8b858d3dbacb7550db9081dca7",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
@@ -284,6 +284,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/oidong": "d00e1171a0e1b06383c0aef4a90f16e925658f5d68a2cb251b299f76e7fb32f5",
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
     "biomes/oidong/stations/hearths": "1252f2b18a27eeff888bf1276fa272e459995ebd0f7cfbb3e85b0012772df750",
     "biomes/oidong/stations/passes": "03f125849e20d76ff54c10f553e2b407f25107aa40771aba2400f95bb1d6f1c3",
@@ -291,10 +292,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "c3ed141dfb60d7a8b01c07fb591ce9fbd6634aae38249104aeeacbfbddebabae"
+    "biomes/oidong/dist/oidong-hearths.html": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "c3ed141dfb60d7a8b01c07fb591ce9fbd6634aae38249104aeeacbfbddebabae"
+    "biomes/oidong/dist/oidong-hearths.html": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
    }
   },
   "build.py --station passes": {
@@ -355,7 +356,7 @@
     "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "0dc57df1579b14375a1b611938a1138349929c8b858d3dbacb7550db9081dca7",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
@@ -435,10 +436,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-passes.html": "392c5ad907d5ace4266803939b3d9295f7d17a0767342f773fac2d84d6d5997e"
+    "biomes/oidong/dist/oidong-passes.html": "1638e239ba9f5ae9ee3c24448a36f17e1dec7fe8511d7c914d3fd031defb08b9"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-passes.html": "392c5ad907d5ace4266803939b3d9295f7d17a0767342f773fac2d84d6d5997e"
+    "biomes/oidong/dist/oidong-passes.html": "1638e239ba9f5ae9ee3c24448a36f17e1dec7fe8511d7c914d3fd031defb08b9"
    }
   }
  }
