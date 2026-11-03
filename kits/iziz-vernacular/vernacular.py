@@ -50,11 +50,15 @@ def core_path(f):
     raise FileNotFoundError('no Ancients-core file ' + f)
 
 
+# core/door: the doors' records (KDOOR) and the glass (KGLASS) 69e5 draws with; a bundle carries them ahead of the kit
+DOOR = [os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js')]
+
+
 def bundle_files():
     """THE Vernacular bundle (settlements/iziz/VASSAL-KITS.md, "The bundle": one list, no third copy): the Ancients core,
     the kit's foundation and every building fragment, in filename order. Verge's and the isle demo's IZV take it and add
     their own extras (Verge: the Ancients funicular; the isle demo: Iziz's library bind, 88y-iziz-matlib.js)."""
-    return [core_path(f) for f in ANCIENTS_CORE] + [path(f) for f in BUNDLE_BASE] + building_files()
+    return DOOR + [core_path(f) for f in ANCIENTS_CORE] + [path(f) for f in BUNDLE_BASE] + building_files()
 
 
 def building_files():

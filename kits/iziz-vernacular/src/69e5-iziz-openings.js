@@ -14,23 +14,24 @@
 // vnOpening(...) is the same for the openings builders draw as plain boxes (a shop front, a loft door, a hatch, a drum's
 // windows): the call sites that drew vB('vDarkB', ...) for an opening call it instead (the troughs, forges and stains
 // that use vDarkB as water or soot keep it).
-//   IZDOOR.list   [{id, idx (its vDoorLeaf instance), at [x,y,z] (sill, wall middle, world), hinge [x,y,z], yaw (world,
-//                  outward), w, h, t, open 0..1, target 0..1, locked, by, key (the def), r0 (its first REG index)}]
+// The doors' records, rules and walk blocks are core/door's (KDOOR, 10-core-door.js, 2026-11-03): IZDOOR is the Vernacular's
+// drawing of them, a leaf as an instance of its own item, and keeps its names for the builders and the host that call it.
+//   IZDOOR.list   KDOOR.list: [{id, idx (its vDoorLeaf instance), at [x,y,z] (sill, wall middle, world), hinge [x,y,z], yaw
+//                  (world, outward), w, h, t, open 0..1, target 0..1, locked, by, key (the def), r0 (its first REG index)}]
 //   IZDOOR.leaf(x, y, z, ry, w, h, t, c, o)   o: {locked, mirror (hinged on +x: a double door's right leaf), key}
-//   IZDOOR.open(id, o) / close(id, o) / toggle(id, o)   o: {by: 'player' | 'npc' | name, auto: seconds to shut again}
-//   IZDOOR.nearest(x, y, z, r)   the nearest unlocked door whose sill is within r (2.2 m) and 2 m in height, or null
-//   IZDOOR.finish(W)              once the world is built: drops doors a failed placement unwound, registers each door's
-//                                 walk blocks in W (core/walk: shut = blocked, open = clear)
-//   IZDOOR.tick(dt)               eases every moving door (1.6 rad/s) and writes its leaf matrix (FRAME_HOOKS)
+//   IZDOOR.open(id, o) / close(id, o) / toggle(id, o) / nearest(x, y, z, r)   KDOOR's
+//   IZDOOR.finish(W)              once the world is built: drops doors a failed placement unwound (KDOOR.prune), registers
+//                                 each door's walk blocks in W (KDOOR.walk: core/walk, shut = blocked, open = clear)
+//   IZDOOR.tick(dt)               KDOOR.step (1.6 rad/s), then writes each moved leaf's matrix (FRAME_HOOKS)
 // [G data] for the records and the walk; the leaf's matrix (tick) is the draw side.
-MAT.izGlass=new THREE.MeshStandardMaterial({color:0xb4ccd2,metalness:.1,roughness:.05,transparent:true,opacity:.22,depthWrite:false,side:DS});
+MAT.izGlass=KGLASS.material(THREE,'clear');   // core/door's clear glass (the values this line had: 0xb4ccd2, .22, rough .05, metal .1)
 MAT.warmPane.transparent=true;MAT.warmPane.opacity=.42;MAT.warmPane.depthWrite=false;MAT.warmPane.side=DS;   // a lit pane you see the room through (the day/night swap, 90a, still drives its colour)
 MAT.izRoom=new THREE.MeshStandardMaterial({color:0x6e5a46,roughness:.94});   // a room's back, for meshes (79's sentry gallery)
 kdef('vWinClear',VBOX,MAT.izGlass);kdef('vDoorLeaf',VBOX,MAT.wood);
 // (draw calls: the glow pane is vWinLit, the room card a dim vPlaster. The leaves are their own item, vDoorLeaf, which 95j
 // keeps out of core/lod: a moved instance of a shared, LOD-copied item kept its old pose on screen)
 const IZ_ROOMC=vC(0x6e5a46);
-const IZDOOR={list:[],SWING:1.75,RATE:1.6,
+const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},get RATE(){return KDOOR.RATE;},
  // world point / yaw of a local one under the kit transform (KXF, KOFF), as kput places it (69f's W)
  _w(x,y,z){const v=new THREE.Vector3(x,y,z);if(KXF)v.applyMatrix4(KXF.m);return[v.x+KOFF[0],v.y+KOFF[1],v.z+KOFF[2]];},
  _yaw(ry){return KXF?(ry||0)+new THREE.Euler().setFromQuaternion(KXF.q,'YXZ').y:(ry||0);},
@@ -38,32 +39,16 @@ const IZDOOR={list:[],SWING:1.75,RATE:1.6,
  leaf(x,y,z,ry,w,h,t,c,o){o=o||{};const it=KIT.items.vDoorLeaf,idx=it.length;
   kput('vDoorLeaf',[x,y+h/2,z],vQ(ry,0,0),[w,h,t],c||vC(VPAL.woodMid[0]));const R=it[idx];if(!R)return null;
   const hl=loc(x,z,o.mirror?w/2:-w/2,0,ry),C=VERN.cur,s=KXF&&KXF.s?KXF.s:1;
-  const D={id:'door.'+IZDOOR.list.length,idx,ref:R,p0:R.p.slice(),q0:R.q?R.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
-   yaw:IZDOOR._yaw(ry),sign:o.mirror?-1:1,w:w*s,h:h*s,t:t*s,open:0,target:0,locked:!!o.locked,by:null,auto:0,key:C?C.D.key:(o.key||null),r0:C?C.r0:null,blocks:[]};
-  IZDOOR.list.push(D);return D;},
- get(id){return typeof id==='object'?id:IZDOOR.list.find(D=>D.id===id)||null;},
- open(id,o){const D=IZDOOR.get(id);if(!D||D.locked)return false;o=o||{};D.target=1;D.by=o.by||'player';D.auto=o.auto||0;return true;},
- close(id,o){const D=IZDOOR.get(id);if(!D)return false;D.target=0;D.by=(o&&o.by)||D.by;D.auto=0;return true;},
- toggle(id,o){const D=IZDOOR.get(id);if(!D)return false;return D.target>.5?IZDOOR.close(D,o):IZDOOR.open(D,o);},
- nearest(x,y,z,r){r=r==null?2.2:r;let best=null,bd=r*r;for(const D of IZDOOR.list){if(D.locked||Math.abs(y-D.at[1])>2.2)continue;
-  const dx=x-D.at[0],dz=z-D.at[2],d=dx*dx+dz*dz;if(d<bd){bd=d;best=D;}}return best;},
- // the walk: each door's doorway as small blocks along its line (a turned door keeps its width), shut = in place
- _walk(D,on){for(const b of D.blocks){if(IZDOOR.W&&IZDOOR.W.setBlock)IZDOOR.W.setBlock(b,on);
-   else{if(!b._y)b._y=[b.box[4],b.box[5]];b.box[4]=on?b._y[0]:-1e9;b.box[5]=on?b._y[1]:-1e9;}}},
- finish(W){IZDOOR.list=IZDOOR.list.filter(D=>KIT.items.vDoorLeaf[D.idx]===D.ref);IZDOOR.W=W||null;
-  if(W)for(const D of IZDOOR.list){const n=Math.max(2,Math.ceil(D.w/.3)),ux=Math.cos(D.yaw),uz=-Math.sin(D.yaw),hw=D.w/n/2,ht=Math.max(D.t,.3)/2;
-   for(let i=0;i<n;i++){const u=-D.w/2+(i+.5)*D.w/n,cx=D.at[0]+ux*u,cz=D.at[2]+uz*u,r=Math.max(hw,ht);
-    D.blocks.push(W.block([cx-r,cx+r,cz-r,cz+r,D.at[1],D.at[1]+D.h],'door:'+D.id));}}
-  return IZDOOR.list.length;},
- tick(dt){const im=KIT.meshes&&KIT.meshes.vDoorLeaf;if(!im)return;let dirty=false;
-  for(const D of IZDOOR.list){if(D.auto&&D.target===1&&D.open>=1){D.auto-=dt;if(D.auto<=0){D.auto=0;D.target=0;}}
-   if(D.open===D.target)continue;const was=D.open;D.open=D.target>D.open?Math.min(D.target,D.open+dt*IZDOOR.RATE/IZDOOR.SWING*1.2):Math.max(D.target,D.open-dt*IZDOOR.RATE/IZDOOR.SWING*1.2);
-   if((was<.5)!==(D.open<.5)||D.open===0)IZDOOR._walk(D,D.open<.5);
-   IZDOOR._pose(D,im);dirty=true;}
-  if(dirty)im.instanceMatrix.needsUpdate=true;},
- _pose(D,im){const a=(D.sign||1)*IZDOOR.SWING*(D.open*D.open*(3-2*D.open)),c=Math.cos(a),s=Math.sin(a),H=D.hinge;
-  const dx=D.p0[0]-H[0],dz=D.p0[2]-H[2];IZDOOR._p.set(H[0]+dx*c+dz*s,D.p0[1],H[2]-dx*s+dz*c);
-  IZDOOR._q.setFromAxisAngle(IZDOOR._up,a).multiply(D.q0);const S=D.ref.s;IZDOOR._s.set(S[0],S[1],S[2]);
+  return KDOOR.add({id:'door.'+KDOOR.list.length,idx,ref:R,p0:R.p.slice(),q0:R.q?R.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
+   yaw:IZDOOR._yaw(ry),sign:o.mirror?-1:1,w:w*s,h:h*s,t:t*s,locked:!!o.locked,key:C?C.D.key:(o.key||null),r0:C?C.r0:null});},
+ get:id=>KDOOR.get(id),open:(id,o)=>KDOOR.open(id,o),close:(id,o)=>KDOOR.close(id,o),toggle:(id,o)=>KDOOR.toggle(id,o),
+ nearest:(x,y,z,r)=>KDOOR.nearest(x,y,z,r),
+ finish(W){KDOOR.prune(D=>KIT.items.vDoorLeaf[D.idx]===D.ref);IZDOOR.W=W||null;KDOOR.walk(W||null);return KDOOR.list.length;},
+ tick(dt){const im=KIT.meshes&&KIT.meshes.vDoorLeaf;if(!im)return;const moved=KDOOR.step(dt);
+  for(const D of moved)IZDOOR._pose(D,im);
+  if(moved.length)im.instanceMatrix.needsUpdate=true;},
+ _pose(D,im){const P=KDOOR.pose(D);IZDOOR._p.set(P[0],P[1],P[2]);
+  IZDOOR._q.setFromAxisAngle(IZDOOR._up,P[3]).multiply(D.q0);const S=D.ref.s;IZDOOR._s.set(S[0],S[1],S[2]);
   IZDOOR._m.compose(IZDOOR._p,IZDOOR._q,IZDOOR._s);im.setMatrixAt(D.idx,IZDOOR._m);},
  _p:new THREE.Vector3(),_q:new THREE.Quaternion(),_s:new THREE.Vector3(),_m:new THREE.Matrix4(),_up:new THREE.Vector3(0,1,0)};
 // is the point on a hollow body's face? (69e's vnFaceOf, without the side effect of a cut)
