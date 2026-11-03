@@ -122,4 +122,11 @@ page as it was, its leaves in no walk) 422 reached; with the locked ones shut 39
 - [ ] 86 floors no door reaches even open: mostly the stilt houses' upper storeys (`stilt_mid#1.house.floor.1.*`, no stair
       registered reaching them), the warehouse's entry flight. The interiors kit's walk records (`kits/interiors/src/49b-walk.js`).
 - [ ] The doors open on the solid body's face (the kit draws no hollow walls); with the interiors off every door is locked.
+- [ ] **The stairs pass (2026-11-03): unchanged here.** `LDOOR.reach()` on `?interiors=1` (the locked doors shut, core/walk's reach
+      as fixed that day): 390 of 504 floors reached, 114 not, before and after the interiors kit's two walk fixes (a planned ladder
+      as rung floors, an entry flight over a 0.45 m rise): Locus's and the Abyss's sets plan no ladder and no base between 0.45 and
+      0.5 m. On the set alone (each item on flat ground, reach from outside its street doors) every stilt house's storeys are
+      reached but for a sliver of floor beside a stairwell, so what keeps them unreached in the town is the placement: one
+      `stilt_mid#1` (`lc.18`) has its whole upper storey and its stair unreached (the stair's foot is not reached from its ground
+      floor), the warehouse's entry flight and hall, the refinery's still-house. Not traced further in this pass.
 
