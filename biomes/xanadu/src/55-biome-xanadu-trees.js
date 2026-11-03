@@ -105,8 +105,11 @@ function bole(T,S,top,rAt,o){o=o||{};const vs=o.vs||6,ti=T.seed%3,rings=[],ph=rr
   (R,ang)=>1-(fa>0?.25*(.5-.5*Math.cos(nf*ang+R.yy*tw+ph)):0));
  T.stTrunk=(T.stTrunk||0)+1;return{x:pe[0],y:T.y0+top,z:pe[1]};}
 // a LIMB: a tube along pts, twisted flutes if asked, capped
-function limb(S,pts,st,o){o=o||{};const ph=rr(0,TAU),tw=o.twist||0,fa=o.fluteA||0,nf=o.flutes||4;
- st.limb+=BIO.tube(o.fam||fam(S),pts,o.col||barkCol(S,1),{seg:o.seg||(pts[0].r>.5?7:5),cap:true,rfn:fa?(i,ang)=>1+fa*Math.cos(nf*ang+i*tw+ph):null});}
+/* A LIMB'S JOINT (core/biome 31j, BIO.flareJoin; BACKPORT.md's universal set "Limb joints", the owner 2026-11-03): a hero limb's root is sunk into its
+   parent and flared to a collar, with a side more where it is thick; a limb that starts on the ground (o.root) or a stem of its own keeps its foot. No draws */
+function limb(S,pts,st,o){o=o||{};const ph=rr(0,TAU),tw=o.twist||0,fa=o.fluteA||0,nf=o.flutes||4,fj=BIO.flareJoin&&!o.root&&XANADU.JOINTS!==false;
+ const P=fj?BIO.flareJoin(pts,{parentR:o.parentR}):pts,seg=o.seg||(pts[0].r>.5?7:5);
+ st.limb+=BIO.tube(o.fam||fam(S),P,o.col||barkCol(S,1),{seg:fj&&pts[0].r>.15?Math.max(seg,6):seg,cap:true,rfn:fa?(i,ang)=>1+fa*Math.cos(nf*ang+(i-(P.length-pts.length))*tw+ph):null});}
 function limbOk(pts,pad){for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+(pad||1.5),pts[i].r+(pad||1.5)))return false;return true;}
 
 // ---------------------------------------------------------------- the builders
@@ -530,7 +533,7 @@ B[34]=function(T,st,lv){const S=SP[34],H=T.H,rb=T.rb,nS=lv===2?ri(S.stems[0],S.s
  for(let k=0;k<nS;k++){const ph=a0+k/nS*TAU,pts=[],ends=k<nc,ca=ph+tw*hS,R=ends?T.crownR*rr(.6,.85):T.crownR*rr(.25,.4),yE=T.y0+H*(ends?rr(.62,.74):rr(.56,.64));
   for(let i=0;i<=7;i++){const t=i/7,yy=hS*t,ang=ph+tw*yy;pts.push({x:T.x+Math.cos(ang)*rh,y:T.y0-.3+yy,z:T.z+Math.sin(ang)*rh,r:rb*.42*(1-.25*t)});}
   const p0=pts[pts.length-1];for(let i=1;i<=3;i++){const t=i/3,r=mix(rh,R,t*.3+t*t*.7);pts.push({x:T.x+Math.cos(ca+t*tw)*r,y:mix(p0.y,yE,t),z:T.z+Math.sin(ca+t*tw)*r,r:rb*.3*(1-.4*t)+.05});}
-  limb(S,pts,st,{fam:'xbark0',seg:lv===2?6:4,col:barkCol(S,k),flutes:3,fluteA:.08,twist:.5});
+  limb(S,pts,st,{fam:'xbark0',seg:lv===2?6:4,col:barkCol(S,k),flutes:3,fluteA:.08,twist:.5,root:true});
   const e=pts[pts.length-1];if(ends)crowns.push(e);else{clumpAt('blossom',e.x,e.y+.4,e.z,rr(1.6,2.2),.7,C(pick(S.leaf)),e.x,e.y,e.z,2,1.5,bright(C(pick(PAL.irid.PS)),1.05));st.clumps++;}}
  crowns.forEach((e,ci)=>{const Rc=T.crownR*rr(.72,.95),cx=e.x,cy=e.y+Rc*.62,cz=e.z,base=C(S.leaf[(T.seed+ci*2)%S.leaf.length]),m=lv===2?30:10;
   for(let j=0;j<m;j++){const yv=1-2*(j+.5)/m,rv=Math.sqrt(Math.max(0,1-yv*yv)),th=j*GOLD+ci;
@@ -732,17 +735,36 @@ XANADU.buildTrees=function(R,q){
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
  // its chunk and as a stand-in impostor past that; a far tree is only ever its impostor
- TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js; GRAPHIC-LOAD.md recommendation 2, swlowlands' lines, the final rebuild 2026-11-03): on when the
+ // page lists the fragment and XANADU.IMPOSTORS is not false; a far tree and a hero's stand-in are one quad of its species seen from the camera's side
+ // (two sets of up to 25), baked from the species' first hero in the pass on its own stream (reseed), so nothing placed after it moves. A species with
+ // no hero in the pass keeps the blob (buildFar); ?diet=0 the blobs everywhere
+ const IMPON=XANADU.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const sets=[BIO.impostorSet('xanadu.treesA',{label:'Far trees'}),BIO.impostorSet('xanadu.treesB',{label:'Far trees'})];
+  SP.forEach((S,sp)=>{if(!B[sp]||S.noStand)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2);if(!T0)return;const set=sets[sp<25?0:1];
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('xanadu.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;const o0=BIO.owner;try{BIO.owner=null;reseed(T1.seed*7919+17);B[sp](Object.assign({},T1),st1,2);}finally{BIO.owner=o0;if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H,item:sp<25?'impTreesA':'impTreesB'};});
+  sets.forEach((set,k)=>{if(set.recs.length)BIO.impostorItem(k?'impTreesB':'impTreesA',set,{label:'Far trees'});});}
+ const far=(T,i,lite)=>{const I=IMPS[T.sp];if(I){BIO.impostorPut(I.item,I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;}else buildFar(T,i,st,lite);};
+ /* every tree reseeds from its own seed (the final rebuild, swlowlands' rule): one tree's draws no longer move the next one's shape, so an impostor bake
+    or a cut moves nothing else. Every older tree's shape re-rolled once at this change; places, species, keys and indices are unchanged */
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];if(!T.kr)reseed(T.seed*7919+17);
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}
   else{const Sx=SP[T.sp],rg=Sx.range||XANADU.LOD.tree;if(T.kr)reseed(T.seed);   /* a diversity-pass tree draws its own stream (core/rand), not the pass's */
    BIO.range=rg;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
-   if(!Sx.noStand){BIO.range=1e9;BIO.minRange=rg;buildFar(T,i,st,true);}else st.noStand=(st.noStand||0)+1;}
+   if(!Sx.noStand){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}else st.noStand=(st.noStand||0)+1;}
   st.byS[T.sp]++;});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
  groveFloor(st);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,rings:st.rings,arches:st.arches,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris},noStand:st.noStand||0,grove:XANADU.GROVE?XANADU.GROVE.n:null};};
 XANADU._canopyH=function(x,z){let h=0;for(const T of XANADU.TREES){if(Math.hypot(x-T.x,z-T.z)<60)h=Math.max(h,T.y0+T.H);}return h||10;};
+// what BIO.kin reads (core/biome 32; the final rebuild, swlowlands' lines): a record for a species at a point, and the record grown on its own stream. A kin's
+// T.sp stays the source's index, so B[] is its builder (the stations' cousins: the cloud forest's, the conifer belt's; oidong's readers)
+XANADU.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+XANADU.grow=function(T,lv){means();const st={trunk:0,limb:0,far:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fins:0,fans:0,heroes:0,fars:0,rings:0,arches:0,byS:SP.map(()=>0)};
+ T.lv=lv;reseed(T.seed*7919+17);if(lv===0)buildFar(T,T.seed%7,st,false);else B[T.sp](T,st,lv);return st;};
 // ---------------------------------------------------------------- one tree at a point (additive, for a world's gardens)
 // XANADU.treeAt(x,y,z,sp,{H,scale,lv}) builds a single hero of species sp at a world point, outside the zone passes
 // (a garden, a courtyard, an avenue). Draws from the biome's own PRNG; bake it with everything else.

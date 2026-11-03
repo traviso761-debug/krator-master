@@ -493,7 +493,8 @@ G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.at
 // a LILY PAD: a flat disc with a notch, vertex-coloured paler at the rim
 G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
  for(let k=0;k<n;k++){const a0=(k/n)*TAU*.93+.22,a1=((k+1)/n)*TAU*.93+.22;
-  [[0,0,0,.8],[Math.cos(a1),0,Math.sin(a1),1.05],[Math.cos(a0),0,Math.sin(a0),1.05]].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(p[3],p[3],p[3]);});}
+  /* uv: the disc on its card cell (materials.json pad, card.lotus: v runs down the sheet, the notch at the bottom), the notch (+x) to v high */
+  [[0,0,0,.8],[Math.cos(a1),0,Math.sin(a1),1.05],[Math.cos(a0),0,Math.sin(a0),1.05]].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(.5+p[2]*.45,.5+p[0]*.45);col.push(p[3],p[3],p[3]);});}
  return BIO.geo._make(pos,nor,uv,col);};
 // a LOTUS in the round: two rings of cupped petals, vertex-coloured white at the base to full at the tip, unit radius, origin at the base
 G.cup=function(){const pos=[],nor=[],uv=[],col=[];
@@ -603,7 +604,8 @@ const M=XANADU.MAT={
  moss:BIO.leafMat(TX.moss,'x-moss',{swayW:'1.0',swayA:.012,alphaTest:.3}),
  vcol:BIO.leafMat(null,'x-vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'x-vsway',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
- pad:BIO.leafMat(null,'x-pad',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
+ /* the lily pads take card.lotus's plain pad where the pack has the slot (the final rebuild; materials.json pad): a card's placeholder the library fills */
+ pad:BIO.leafMat((typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('xanadu','pad'))?new T3.DataTexture(new Uint8Array([255,255,255,255]),1,1,T3.RGBAFormat):null,'x-pad',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
  pod:BIO.leafMat(null,'x-pod',{swayW:'(-position.y)',swayA:.3,alphaTest:0,vertexColors:true}),
  cactus:BIO.solidMat(XANADU.BARKTEX[6]),
  solid:BIO.solidMat(null,0xffffff),

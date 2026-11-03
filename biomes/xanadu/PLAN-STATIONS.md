@@ -63,3 +63,36 @@ mist from the falls (`core/water` falls with `lipK` and spray, a fog belt in the
 ## Order
 
 `cloud` first (it extends the kit's own flora), then `descent` (the cataract the kit owes), then `ranges`.
+
+## Core adoption (the final rebuild, pair 6, 2026-11-03)
+
+Written before the stations, as `CLAUDE.md` asks. The page and every station take the universal set (`BACKPORT.md` section 1 and 5) and
+xanadu's row; each piece has a `?<name>=0` switch for the owner's before-and-after.
+
+**The land contract.** `src/45-host-stage.js` was split: `45` the renderer, lights and the switches (`XQ`, `XQ_ON`); `45b-host-land.js`
+the Vale's land (the map, the river, `terrainH`, the five fields, and `LAND`: shore distance, mask, spine, snow line, label, the mirror's
+still); `45c-host-bind.js` the field cache and `BIO.init`. A station replaces `45b` (and its sky `89`, water `89w`, views `98`) and keeps
+the rest. `98-host-views.js` holds the Vale's views; `99` is shared.
+
+| Group | Taken | Where | Switch |
+|---|---|---|---|
+| Graphics | `BIO.INDEX_ITEMS`, `LOD.merge`/`minTris`/`fade`/`cull`; octahedral impostors (`34`) for every species with a hero, heroes to 900 m; every tree reseeds from its own seed | `45`, `55`, `89z` | `?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 ?diet=0` |
+| Limb joints | `BIO.flareJoin` (`31j`) on every hero limb (`limb()`), a side more where thick; ground stems (`root`) keep their foot | `55` | `XANADU.JOINTS=false` |
+| Ground | `KGROUND` (shore sand, pebbles, river gravel on documented masks), the kit's GLSL bands kept, marble on hard beds; `KSEAT` (plants on the drawn ground); `KFAR` to 14 km; `KHORIZON` | `46`, `83`, `45c` | `?kground=0 ?seat=0 ?far=0 ?hz=0` |
+| Strata | `KSTRATA` as data: hard beds are ledges the crag plants root on, the talus under the faces (`87-host-ledges.js`); the look stays the kit's bands (16-unit budget) | `46`, `87` | `?strata=0` |
+| Air | height fog with a dawn mist, the **fog belt** on the mountains' north faces (the row), rain cover, the storm's lightning, `bindAtmosWind`, A2C | `89a`, `89z` | `?hfog=0 ?belt=0` |
+| Water | the lake `surf:false, breakers:false`; **the river's plume** (`ext/61` `tintFlow`) from Alph's mouth into the lake; breakup on the lake and river; `WATER.mirrorSwitch` on the lake, off at load; wet ground and puddles | `89w`, `89a`, `99` | `?plume=0 ?breakup=0 ?wet=0 ?mirror=probe\|live` |
+| Fields | `WATER.fields`/`fieldAt` drive `FIELD.wet`, `FIELD.flow` and the ground's wet band; `BIO.env` maps the five fields to the contract; `BIO.envCheck` and `WATER.edgeAudit` in `hostChecks` | `89z`, `99` | `?fields=0` |
+| Shadows | **`core/shadow` (`KSHADOW`)**: one view-following box, 4096 map; the ground receives, the flora casts and receives, the water receives only | `89z` | `?shadow=0 ?shadowmap=2048` |
+| Cards | `check_cells.py`: 0 faults (the card audit's fixes were already in); the raceme and `card.flower.bloom` kept as the owner asked | `materials.json` | |
+| Textures | `card.lotus` on the lily pads; `ice.glacier`, `ice.clear` packed for the stations | `materials.json`, `50` | |
+
+**ChatGPT's three checklist lines.** (1) Ground layers on documented masks: `46`'s header lists every weight (`aGL`, `aGM`) and its
+source. (2) Strata and scour feed placement: the ledges and talus pass (`87`). (3) Wet ground and flora read `WATER.fieldAt`: `89z`, with
+`BIO.envCheck` and `WATER.edgeAudit` as page checks (`99`), on the field contract in `core/biome/README.md`.
+
+**Dropped, and why.** Confluences (`ext/55`): the sacred river has no tributary on the page. Arches (the row's `KSTACKS` arch): the
+uplands have no arch-forming bedrock on this page; the hornbeam arches are the kit's own. Seasons and kin (the row): kin is taken by the
+stations (the cloud forest's cousins, oidong's cherry); seasons wait for the owner's pass, as on the other turns. `ground.shingle` and
+`ground.lilypond`: not wired (the 16 texture units; the pebble set covers the shore, and the page has no pond surface). The red
+riverweed (`EXCHANGES.md` godthrone→xanadu): the blood river (Reḍ Riwā) is on no xanadu page; it is owed to the station that draws it.
