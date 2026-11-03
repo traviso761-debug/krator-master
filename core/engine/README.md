@@ -23,7 +23,7 @@ The engine the Scyvoi lineage of building kits runs on, moved here unchanged fro
 **Doors and glass** (`36o-open.js`; the owner, 2026-11-03: "remove all dark voids and make all windows, doors and portals actual
 doors or windows that have transparency"). A builder draws a doorway with `svLeaf` / `svDoorway` and a window with `svPane` /
 `svPanePoly` in its local frame, as it calls `door()` and `box()`. A leaf is a `KDOOR` record (`core/door`) with a stable id (the
-def's key, its placement ordinal among that key's, `d` and its index: `sc_baelu.0.d2`), drawn as an instance of one InstancedMesh
+def's key, its placement ordinal among that key's, `d` and its index: `baelu.0.d2`), drawn as an instance of one InstancedMesh
 per material key, posed by `KDOORHOST` as it swings; a door on a solid body (nothing behind it) is `locked`. A pane is one of
 `KGLASS`'s kinds as a material key (`paneClear`, `paneLit`, `paneSmoked`, `paneFrosted`, `paneSt<hex>`), with the `room` card
 behind it where the body is solid. `buildWorld` (90-scene.js) clears `KDOOR` and calls `svOpenFlush(WORLD)` after the buckets;

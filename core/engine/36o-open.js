@@ -6,9 +6,9 @@
 // frame, as it calls door() and box() (+z out of the face, y the sill):
 //   svLeaf(x,y,z,yaw,w,h,o)       a door leaf SHUT in the doorway, registered in KDOOR with a stable id (the def's key, how many
 //                                 of that key were placed before it in this world, and the door's index in the def: the
-//                                 Baelu's third cell door is 'sc_baelu.0.d2'). (x,z) the middle of the doorway's line at the
-//                                 sill y, yaw the way out (0 = +z), w x h the opening. o: {t (.06), col (hex: the leaf's
-//                                 colour, under the key's library map; none: the map's own), mk (the key whose map it wears: 'wood'), locked (a solid body:
+//                                 Baelu's third cell door is 'baelu.0.d2'). (x,z) the middle of the doorway's line at the
+//                                 sill y, yaw the way out (0 = +z), w x h the opening. o: {t (.06), col (an sRGB hex or a
+//                                 linear THREE.Color, as box() takes it: the leaf's tint under the key's library map; none: the map's own), mk (the key whose map it wears: 'wood'), locked (a solid body:
 //                                 nothing behind it, drawn shut and never opened), mirror (hinged on +x), split (two leaves,
 //                                 meeting in the middle; default when w > 1.6), shape ('box', or 'tri': a triangle, its apex
 //                                 over the middle: the Lizardmen's caste doors), pivot (turns about its own middle, not a jamb:
@@ -63,7 +63,7 @@ function svLeaf(x,y,z,yaw,w,h,o){o=o||{};const split=o.split==null?w>1.6:!!o.spl
  const D=KDOOR.add({id:o.id==null?base+'.d'+i:o.id,at,hinge,p0,yaw:wy,sign:(o.mirror?-1:1)*(o.out?-1:1),w:w*sc,h:h*sc,t:t*sc,locked:!!o.locked,
   key:CURREC?CURREC.key:null,name:o.name||null});
  if(o.ajar&&!o.locked){const v=Math.min(1,Math.abs(o.ajar)/KDOOR.SWING);let lo=0,hi=1;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(m*m*(3-2*m)<v)lo=m;else hi=m;}D.open=D.target=(lo+hi)/2;}   /* the smoothstep KDOOR.angle eases by, inverted */
- SV_OPEN.leaves.push({D,mk:o.mk||'wood',shape:o.shape==='tri'?'tri':'box',col:o.col==null?0xffffff:o.col,cut:CUTC[3]>.5,q:new THREE.Quaternion().setFromAxisAngle(_up,wy),s:[w*sc,h*sc,t*sc]});
+ SV_OPEN.leaves.push({D,mk:o.mk||'wood',shape:o.shape==='tri'?'tri':'box',col:o.col==null?0xffffff:(typeof o.col==='number'?o.col:o.col.clone()),cut:CUTC[3]>.5,q:new THREE.Quaternion().setFromAxisAngle(_up,wy),s:[w*sc,h*sc,t*sc]});
  return D;}
 function svDoorway(x,y,z,yaw,w,h,o){o=o||{};
  if(o.open){if(!o.hollow)svRoom(x,y,z,yaw,w,h);return null;}
@@ -96,7 +96,7 @@ function svOpenFlush(parent,o){
  for(const [k,G] of groups){const im=new THREE.InstancedMesh(G[0].shape==='tri'?svTriGeo():gbox(),svLeafMat(G[0].mk),G.length);im.name='door leaves '+k;im.userData.doorLeaves=true;
   im.castShadow=true;im.receiveShadow=true;im.frustumCulled=false;   /* r128 culls an InstancedMesh by its geometry's sphere: the unit box at the origin */
   G.forEach((L,i)=>{const P=L.D.p0;_svP.set(P[0],P[1],P[2]);_svS.set(L.s[0],L.s[1],L.s[2]);im.setMatrixAt(i,_svM.compose(_svP,L.q,_svS));
-   im.setColorAt(i,hc(L.col));KDOORHOST.instanced(L.D,im,i,L.q,L.s);});
+   im.setColorAt(i,typeof L.col==='number'?hc(L.col):L.col);   /* a hex is sRGB (hc); a THREE.Color is already linear, as emit() takes it */KDOORHOST.instanced(L.D,im,i,L.q,L.s);});
   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.computeBoundingSphere&&im.computeBoundingSphere();
   parent.add(im);SV_OPEN.meshes.push(im);if(G[0].cut)SV_OPEN.cutMeshes.push(im);}
  for(const D of KDOOR.list)if(D.target>0||D.open>0)KDOORHOST.pose(D);
@@ -106,6 +106,8 @@ function svOpenFlush(parent,o){
    clears every door's line, a locked one's too, and a locked door stands on a solid body's face, whose mass is one block:
    so the clearing runs on a registry of the unlocked doors only, with every door's own blocks set aside while it looks. */
 function svOpenWalk(Wk){KDOOR.walk(Wk);const keep=[];
- for(const D of KDOOR.list)for(const B of D.blocks){keep.push([B,!B.off]);Wk.setBlock(B,false);}
+ /* KDOOR.walk raises every door's blocks, a door the builder drew standing open (ajar) too: that one's are off, as KDOOR.step
+    would leave them had it opened (core/door README: shut = blocked, open = clear) */
+ for(const D of KDOOR.list)for(const B of D.blocks){keep.push([B,!(D.open>0)]);Wk.setBlock(B,false);}
  const R=KDOOR.create();for(const D of KDOOR.list)if(!D.locked)R.add({id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,w:D.w,h:D.h,t:D.t,sign:D.sign});
  const n=R.clearDoorways(Wk);for(const [B,on] of keep)Wk.setBlock(B,on);SV_OPEN.cleared=n;return n;}
