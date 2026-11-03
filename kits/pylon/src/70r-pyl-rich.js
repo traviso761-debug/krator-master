@@ -39,8 +39,8 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  // the front wall and the portal block
  for(const s of[-1,1]){vB('vPlaster',s*(CW/4+1.6),0,FZ,CW/2-3.2,WH,.6,0,wh);vB('vPlaster',s*(CW/4+1.6),WH,FZ,CW/2-3.0,.14,.8,0,or);
   pynPortCluster(s*(CW/4+1.6),.5,FZ+.3,0,CW/2-4.4,WH-.9,5,.62,or,'G',true);}
- vB('vPlaster',0,0,FZ-.4,6.4,WH+2.4,1.4,0,cr);vB('vPlaster',0,WH+2.4,FZ-.4,6.6,.18,1.6,0,or);
- pynDoorway('hex',0,.0,FZ+.3,0,2.2,4.8,{rim:.22,n:4,cs:[wh,or],out:.06});
+ pynPierBox('vPlaster',0,0,FZ-.4,6.4,WH+2.4,1.4,0,cr,2.2,4.8-2.2*.42);vB('vPlaster',0,WH+2.4,FZ-.4,6.6,.18,1.6,0,or);   // the portal block, open through its gate
+ pynDoorway('hex',0,.0,FZ+.3,0,2.2,4.8,{rim:.22,n:4,cs:[wh,or],out:.06,gate:true});   // the court's gate: it opens
  for(const s of[-1,1])vnLamp(s*2.6,3.2,FZ+.3,0);
  // the side and back walls, lower
  for(const s of[-1,1])vB('vPlaster',s*(CW/2-.2),0,0,.4,2.4,CD,0,cr);vB('vPlaster',0,0,-CD/2+.2,CW,2.4,.4,0,cr);
@@ -49,7 +49,7 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  for(const [x,z,w,d,h] of[A,B]){vnBody('vPlaster',x,0,z,w,h,d,0,wh,{t:.3});vB('vPlaster',x,h,z,w+.3,.3,d+.3,0,or);vB('vPlaster',x,h+.3,z,w,.5,d,0,wh);}
  pynFrame('hex',B[0],1.2,B[1]+B[3]/2,0,1.6,5.2,{rim:.2,n:2,c:or,fill:'G',out:.05});
   // the lower block's front: the door on its middle, the triangular gem window over it, a lit window either side
- const ta=loc(A[0],A[1]+A[3]/2,0,.12,0);kput('pyGableG',[ta[0],3.42,ta[1]],vQ(Math.PI/2,0,0),[.1,.72,1.3],null);
+ const ta=loc(A[0],A[1]+A[3]/2,0,.12,0);pynPane('pyGableG',[ta[0],3.42,ta[1]],vQ(Math.PI/2,0,0),[.1,.72,1.3],'pyGableD');
  const tb=loc(A[0],A[1]+A[3]/2,0,.06,0);kput('vGablePl',[tb[0],3.3,tb[1]],vQ(Math.PI/2,0,0),[.1,1.0,1.8],or);
  vnDoor(A[0],0,A[1]+A[3]/2,0,1.3,2.6,'vPlaster',or,vC(vPick(PYPAL.walnut)),false);
  for(const x of[A[0]-3.6,A[0]+3.6])vnWin(x,1,A[1]+A[3]/2,0,1.4,1.6,'lit','vPlaster',or);

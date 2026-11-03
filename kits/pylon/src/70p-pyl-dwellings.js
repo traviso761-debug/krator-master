@@ -134,9 +134,9 @@ function buildPylBlock(G,o){reseed(9041+(o.v|0));const W=11.6,D=9.4,Z0=-.8,GH=3.
  // the side window box: a rounded orange box standing out of the east face, glazed
  pynStadium(W/2,GH+1.4,Z0+1,Math.PI/2,3.0,2.0,.7,.7,'P',or);pynStadium(W/2,GH+1.65,Z0+1,Math.PI/2,2.4,1.5,.74,.06,'G');
  vnWin(W/2,GH+H+1,Z0-2.6,Math.PI/2,1.4,1.4,'glass','vIron',gun);
- // the perforated west end: rows of small dark triangles
+ // the perforated west end: rows of small glazed triangles (glass over the room card)
  for(let r=0;r<5;r++)for(let c=0;c<6;c++){const zz=Z0-D/2+1.2+c*(D-2.4)/5+(r%2?.4:0),yy=GH+.5+r*1.15;const f=loc(-W/2,zz,0,.03,-Math.PI/2);
-  kput('pyGableG',[f[0],yy,f[1]],vQ(0,0,0),[.06,.5,.55],null);}
+  pynPane('pyGableG',[f[0],yy,f[1]],vQ(0,0,0),[.06,.5,.55],'pyGableD');}
  for(let k=0;k<2;k++)vnWin(k?2.5:-2.5,GH+H*.5+.4,Z0-D/2,Math.PI,1.4,1.4,'glass','vIron',gun);
  vnDoor(-W/2+.9,0,zf-SB,0,1.0,2.4,'vIron',gun,gun,false);
  pynTank(3.6,TOP+.7,Z0-2.2,.9,1.6,vC(vPick(PYPAL.rust)));}
