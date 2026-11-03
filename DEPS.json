@@ -9,7 +9,6 @@
   "core/materials -> kits/ringsea",
   "core/sockets -> kits/post-apoc",
   "kits/beast-riders -> settlements/isle-demo",
-  "kits/catalog -> settlements/voth",
   "kits/pylon -> settlements/iziz",
   "kits/ringsea -> settlements/reedlake",
   "kits/talia -> settlements/iziz"
@@ -397,8 +396,7 @@
   ],
   "kits/catalog": [
    "core/atmos",
-   "core/sockets",
-   "settlements/voth"
+   "core/sockets"
   ],
   "kits/crops": [
    "core/rand",

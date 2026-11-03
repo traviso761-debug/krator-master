@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build dist/catalog.html: the master catalog's contact sheet.
 
-The registries stay where other builds load them from (settlements/voth/catalog
-loads the engine, the Voth buildings and the inspector by path), so they are
-NOT moved into src/. src/ holds only the page around them:
+The registries stay where other builds load them from (Voth's building sheet,
+its catalog/ folder, loads the engine, the Voth buildings and the inspector by
+path: Voth reads the kit, the kit reads no settlement), so they are NOT moved into src/. src/ holds only the page around them:
 
   src/00-head.html          page head, toolbar, error panel, three.js r128 loader
   <registries, in order>    SOURCES below (top-level .js files of this folder; a pattern
@@ -47,7 +47,7 @@ OUT = 'catalog'
 # interiors-phase culture file (krator-master-furniture-<culture>.js, in filename order).
 # Not built here any more: krator-master-plants.js (plants live in their biome kits and
 # in each build's own sheet), krator-master-buildings-voth.js (the Voth buildings have
-# their own sheet, settlements/voth/catalog, which loads that file by path) and
+# their own sheet, in Voth's catalog/ folder, which loads that file by path) and
 # krator-master-buildings-beast-rider.js (the Beast Rider buildings). The files stay.
 # The catalog is the furniture sheet.
 SOURCES = [

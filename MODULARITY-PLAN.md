@@ -48,6 +48,8 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
    eternian and lizardmen. A fix to the engine reaches all of them.
 3. **`kits/catalog` is the other hub** (30 dependents) and its registries live in `settlements/voth/catalog`, so
    the catalog depends on a settlement and a settlement on the catalog (`kits/catalog <-> settlements/voth`).
+   *Corrected 2026-11-03 (step 3): there is no knot in code. The catalog's registries are in the kit; Voth's own
+   registries are in Voth; the kit -> Voth edge was the scanner reading a comment in `kits/catalog/build.py`.*
 4. **Settlement-to-settlement chains.** Ancients -> Iziz -> Highlands -> Xanadu / Reed Lake / Ys / Mungo (Locus) /
    Verge, held together by vendored fragments (`70-vern-dwellings`, `88y-iziz-matlib`, `81-glow` from Locus,
    `70-biome-nhighlands` from Highlands). TODO.md already records the re-vendor sessions this costs.
@@ -138,7 +140,33 @@ The plan as written before the step:
   Ancients re-vendor session did), not by overwriting.
 - Done when: `kits/*` list `core/engine` and no kit lists another kit's `src/` for engine code.
 
-**Step 3: break the catalog <-> Voth knot.**
+**Step 3: break the catalog <-> Voth knot.** **Done 2026-11-03: there was no knot in code.**
+- Checked in code, not comments (`check_core_use.code_only` over every `kits/catalog/*.py`; the JS files' `settlements/`
+  strings are `source:` provenance fields and comments): `kits/catalog` reads no settlement. Its registries are its own
+  top-level files (one per culture, plus `krator-master-buildings-voth.js`, Voth's first-generation buildings, a culture
+  file). `settlements/voth/catalog/registry/` holds Voth's own building registries, read by Voth. Voth's sheet
+  (`settlements/voth/catalog/index.html`) and `settlements/voth/build.py` read the kit: the allowed direction. The edge
+  was two comments in `kits/catalog/build.py` that say so; reworded, the allow-list line is gone (13 -> 12 backwards
+  edges), and `kits/catalog` reads only `core/atmos` and `core/sockets`.
+- **The split is not done; it is the owner's call.** `core/catalog` (the engine side: `krator-furniture-core.js`,
+  `krator-asset-engine.js`, `krator-furniture-kit.js`, `-runtime.js`, `-detail.js`, `inspector.js`, `krator-symbols.js`) would
+  follow the rule that what two builds read lives in core, but it fixes no dependency (a kit read by builds above it is
+  allowed, as the biome kits are) and it reaches a dozen builds and the pages that load the files at run time by
+  relative path (`kits/interiors/src/00-head.html` and `src-sets/`, `settlements/voth/catalog/index.html`; the gallery
+  inlines a page's local scripts, `gallery/build_gallery.py`, so publishing follows). Those pages would load
+  `../../../core/catalog/...` instead, and every builder that reads the files by path (Voth, the isle demo, Pinnacle
+  Rock, motor-vehicles, mechs, fauna, interiors, `tools/textures/audit_catalog.js`, `core/tags/test-tags.js`) moves with it.
+  Pages change only in path labels and script tags; the proof would be the fingerprints (core/engine, core/furnish).
+- **Found on the way, for step 5:** `core/tags/52-core-tags-vocab.js` copies the catalog's vocabulary (`FURN_CULTURES`,
+  `BUILDING_TYPES`, `FURN_TIERS`, `FURN_JOBS`, `FURN_SETTINGS`, the culture names) from `kits/catalog/krator-furniture-core.js`,
+  and `core/tags/test-tags.js` reads the kit to check the copy: core depends on a kit (the scanner reads only build.py,
+  so it does not list this). The source should be core/tags, with the catalog checked against it, or both in
+  `core/catalog` if the split is taken.
+- The culture symbols ride-along (`kits/catalog/krator-symbols.js`, vendored from `core/sockets/38-symbols.js`, drifted)
+  stays parked: pages load the copy at run time by relative path, and re-syncing it changes pages, so it goes with the
+  split or the all-builds rebuild.
+
+The plan as written before the step:
 - Move the catalog registries and the Voth-building sheet loader so the dependency is `settlements/voth ->
   kits/catalog` only. `kits/catalog/build.py` stops naming `settlements/voth/catalog`; Voth's catalog sheet reads
   the kit's output file instead.
@@ -158,6 +186,8 @@ The plan as written before the step:
   demo's two towns), not code.
 
 **Step 5: fix the remaining backwards edges.**
+- `core/tags` -> `kits/catalog` (found in step 3; not in `DEPS.json`, which reads only build.py): the vocabulary's source
+  moves to core/tags (or `core/catalog`), and the catalog is checked against it.
 - `core/materials` stops naming `biomes/sedesert`, `kits/ancients`, `kits/ringsea` (move the three fragments into
   `core/materials`, finish the drift decisions in `core/README.md`).
 - `kits/beast-riders` and `kits/ringsea` stop reading `isle-demo` and `reedlake`; `biomes/ringisles` and
@@ -181,7 +211,7 @@ The plan as written before the step:
 | 1 sky | 14 kits + iziz (+ Noah's Regret) | done 2026-11-02 | none (no byte moved) |
 | 2 kit engine | 8 kits + Noah's Regret's geometry | done 2026-11-03 | none committed (proof: fingerprints) |
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
-| 3 catalog / Voth | catalog, Voth, 30 dependents | medium | catalog dependents |
+| 3 catalog / Voth | the catalog's build.py comments | done 2026-11-03 (no knot in code); the core/catalog split open | none |
 | 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
 | 5 backwards edges | 6 builds | low | those builds |
 | 6 guard rails | CI only | none | none |
@@ -252,6 +282,8 @@ dependency moves.
 - Whether `core/engine` is one module or split (scene/world vs. animation vs. materials). One module for now
   (2026-11-03, `engine.py` lists the files); splitting it moves no byte.
 - Whether `core/engine/10-core.js` moves onto `core/rand` (Yeti's version): every kit's buildings change (step 2).
+- Whether to split the catalog's engine into `core/catalog` (step 3): the rule says yes, no dependency needs it, and it
+  moves every page that loads the catalog at run time.
 - Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
   allowed kit -> settlement edge.
 - ~~Whether to take the step 1 gallery republish with the rebuild.~~ Moot: step 1 changed no page. Ask with the next
