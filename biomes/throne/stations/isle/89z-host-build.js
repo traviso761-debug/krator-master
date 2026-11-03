@@ -6,6 +6,8 @@ window._biome=null;
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ /* the isle's woods: a fern floor under the lehua, dense by design near the cameras (KNOWN_ISSUES.md, the isle): it says so to the instance cap (core/biome) */
+ {const D=BIO.kits.throne&&BIO.kits.throne.defs;if(D&&D.fern)Object.assign(D.fern,{cap:500000,capWhy:'the geyser isle: the fern floor of its woods, near the cameras'});}
  try{window._biome=THRONE.build({R:TERR.R-150,quality:q,shallows:true,understory:true});}catch(e){reportErr('throne: '+e.stack);}
  _mark('throne');
  try{ISLE.tap();}catch(e){reportErr('tapping: '+e.stack);}
