@@ -72,8 +72,8 @@ CORE_TERRAIN=['43-core-ground.js','45-core-horizon.js','47-core-therm.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-# 34 the octahedral impostors (the far trees, 55), 41 the environmental fields (src/89y-host-core.js) (2026-11-02)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
+# 31j the limbs' joints (BIO.flareJoin, 55's limb(); 2026-11-03), 34 the octahedral impostors (the far trees, 55), 41 the environmental fields (src/89x-host-fields.js) (2026-11-02)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']

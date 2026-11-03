@@ -140,7 +140,11 @@ function bole(T,S,fam,x,z,h,r0,r1,lean,la,wig,n,st,seg,colFn){const pts=[];const
  st.trunk+=BIO.tube(fam,knot,pts[0].col,{seg:seg,cap:true});return pts;}
 // a limb in its trunk's own bark bucket and colour, at every level (a mid tree's limb is a coarse three-sided tube: an
 // untextured rod there read as a different wood from its trunk)
-function limb(fam,S,pts,k,lv,st){st.limb+=BIO.tube(fam,lv===2?pts:[pts[0],pts[Math.floor(pts.length/2)],tip(pts)],barkCol(S,k),{seg:lv===2?4:3});}
+// THE JOINT (core/biome/31j-core-joint.js, BIO.flareJoin; the owner, 2026-11-03: every build's limbs): a limb's root sunk into its parent and a collar where
+// it leaves it, on the points as grown (no random numbers: nothing else moves). parentR the parent's radius there (a limb grown from a trunk point at
+// .7-.8 of its radius when the caller does not say). A page without 31j (a reader's) draws the limb as before
+const joined=(pts,parentR)=>typeof BIO.flareJoin==='function'&&pts&&pts.length>1?BIO.flareJoin(pts,{parentR:parentR==null?pts[0].r*1.35:parentR}):pts;
+function limb(fam,S,pts,k,lv,st,parentR){st.limb+=BIO.tube(fam,joined(lv===2?pts:[pts[0],pts[Math.floor(pts.length/2)],tip(pts)],parentR),barkCol(S,k),{seg:lv===2?5:3});}
 // a parasol cap (disc on top, gills under it), its stalk's top at p, radius s; tilt a little toward the light
 function cap(p,s,flat,col,st){const q=qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12));
  // with the library's cap skin the colour is mostly the texture's own: the cap's colour only warms it a little
@@ -314,7 +318,7 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;const pts=bole(T,S,'ba
  const hc=C(pick(S.leaf)).lerp(C(0xe6ecf2),Math.min(.6,BIO.field('snow',T.x,T.z)*.9)),cy=T.y0+H*.68;   // dusted where snow lies (the glacier's field; 0 elsewhere)
  const nw=lv===2?ri(8,12):4;for(let w=0;w<nw;w++){const u=lerp(.32,.94,w/(nw-1||1)),p=along(pts,u),Lw=R*(1-.65*(u-.32)/.62)*rr(.85,1.1);
   for(let k=0,n=lv===2?ri(4,6):3;k<n;k++){const a=k/n*TAU+w*1.3+rr(-.3,.3),bp=treeGrow(p,dirOf(a,rr(-.1,.25)),Lw,p.r*.5+.04,.04,2,.04,.08);
-   if(lv===2){bp[0].r=p.r*.35+.03;bp[1].r=(p.r*.35+.03)*.55;bp[2].r=.03;st.limb+=BIO.tube('bark1',bp,barkCol(S,k),{seg:3});}
+   if(lv===2){bp[0].r=p.r*.35+.03;bp[1].r=(p.r*.35+.03)*.55;bp[2].r=.03;st.limb+=BIO.tube('bark1',joined(bp,p.r),barkCol(S,k),{seg:4});}
    const t=tip(bp);clumpHeld(lv===2?[bp]:[pts],'needle',t.x,t.y+.2,t.z,Lw*rr(.7,.95)*(lv===2?1:1.4),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;
    if(lv===2&&rng()<.85){const m=along(bp,.55);clumpAt('needle',m.x,m.y+.2,m.z,Lw*.45,.7,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}}}
  clumpAt('needle',tip(pts).x,tip(pts).y,tip(pts).z,R*.45,.9,hc,T.x,cy,T.z,R,H*.3);
@@ -339,10 +343,10 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),cy=
    clumpHeld([tw],'small',p.x+Math.cos(q)*d,p.y+rr(-1,4),p.z+Math.sin(q)*d,R*rr(.16,.26)*(near?1:1.45),.5,hc,T.x,cy,T.z,R,H*.25);st.clumps++;}};
  for(let k=0,nL=near?ri(9,13):ri(7,9);k<nL;k++){const a=k/nL*TAU+rr(-.3,.3),start=along(pts,rr(.5,1)),L=R*rr(.75,1.05),
    lp=treeGrow(start,dirOf(a,rr(.45,.85)),L,start.r*.5,.25,near?7:4,-.32,.22);
-  st.limb+=BIO.tube('bark0',lp,barkCol(S,k),{seg:near?7:4});fol(lp,near?ri(6,9):3);
+  st.limb+=BIO.tube('bark0',joined(lp,start.r),barkCol(S,k),{seg:near?7:4});fol(lp,near?ri(6,9):3);
   for(let j=0,m=near?ri(3,5):2;j<m;j++){const b=along(lp,rr(.3,.85)),sp=treeGrow(b,dirOf(a+rr(-1.1,1.1),rr(.35,.9)),L*rr(.35,.55),b.r*.6,.15,near?4:3,-.12,.2);
-   st.limb+=BIO.tube('bark0',sp,barkCol(S,k+j),{seg:near?5:3});fol(sp,near?ri(5,8):3);ends.push(tip(sp));
-   if(near&&rng()<.6){const b2=along(sp,rr(.4,.8)),s2=treeGrow(b2,dirOf(a+rr(-1.4,1.4),rr(.3,.9)),L*rr(.2,.3),b2.r*.6,.1,3,-.08,.2);st.limb+=BIO.tube('bark0',s2,barkCol(S,k),{seg:4});fol(s2,ri(3,5));ends.push(tip(s2));}}
+   st.limb+=BIO.tube('bark0',joined(sp,b.r),barkCol(S,k+j),{seg:near?6:3});fol(sp,near?ri(5,8):3);ends.push(tip(sp));
+   if(near&&rng()<.6){const b2=along(sp,rr(.4,.8)),s2=treeGrow(b2,dirOf(a+rr(-1.4,1.4),rr(.3,.9)),L*rr(.2,.3),b2.r*.6,.1,3,-.08,.2);st.limb+=BIO.tube('bark0',joined(s2,b2.r),barkCol(S,k),{seg:5});fol(s2,ri(3,5));ends.push(tip(s2));}}
   ends.push(tip(lp));}
  // THE LEADER: the bole does not stop at the crown's foot (it read as a sawn-off stump): it goes on up through the crown,
  // tapering to a point, leafed along its upper half, a ruff at its tip
