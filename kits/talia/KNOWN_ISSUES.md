@@ -75,16 +75,17 @@
       in the cut on a hollow body and over the room card elsewhere; round heads and fanlights are half discs. Doors are real
       leaves (`tanDoorLeaves` through `IZDOOR.leaf`): operable on a hollow body, locked on a solid one; a door on a frontispiece
       standing forward of a hollow body (the great hall's, the Senate's and the faculty's centre pavilions) is the body's door in
-      the wall behind (`tanDoorBehind`), the frontispiece opened round it (`tanPierBox`). `tanWin` no longer lays a second pane
-      over the Vernacular's; the jali's ground is the room card. The sheet before -> after: doors 96 -> 374 (locked 1 -> 147),
-      panes 4631 (2291 of them opaque) -> 4524 (all transparent), room cards 38 -> 3017; `vWinGlass` 8 left (pools, basins).
+      the wall behind (`tanDoorBehind`), the frontispiece opened round it (`tanPierBox`). The caravanserai's and the inn's gate blocks are opened through their
+      arches (`tanPierBox`): the street gates open (`o.gate`), the court side is a clear arch (`o.open`). `tanWin` no longer lays a second pane
+      over the Vernacular's; the jali's ground is the room card. The sheet before -> after: doors 96 -> 368 (locked 1 -> 135),
+      panes 4631 (2291 of them opaque) -> 4521 (all transparent), room cards 38 -> 3014; `vWinGlass` 8 left (pools, basins).
 - [ ] Glazed double doors (2.4 m and wider) are plain timber leaves now: a `vDoorLeaf` is one box, so the glazing, the raised
       panels and the brass pulls of the old static leaves are gone.
-- [ ] Locked doors: 147, on the solid bodies of types the interiors set does not furnish (P6's owed list) and the walls' gates;
+- [ ] Locked doors: 135, on the solid bodies of types the interiors set does not furnish (P6's owed list) and the walls' gates;
       they open once the type is furnished.
 - [ ] Reachability (core/walk `KWALK.reach` from four points round each plot, every unlocked door open; 2026-11-03): 946 of
       1603 floors before, 1011 of 1612 after (the colleges, sealed before, 29 of 36 each; the faculty, the great hall and the
-      inn one more each). Still sealed: the cloister (0/50: its ranges open through arches with no cut, P6's owed list), the
+      inn one more each; the caravanserai stays 3 of 16 with its gate open: its court ranges are the planner's). Still sealed: the cloister (0/50: its ranges open through arches with no cut, P6's owed list), the
       theatre's tiers and the wall walks (no stair registered to them). Most of the rest are the 'solid top' floors (the tops of
       podiums, terraces and roofs registered by tanWalkSolids, many of them roofs nothing climbs to) and upper floors whose
       interiors stair is not met: the planner's and the walk registration's, not the doors'.

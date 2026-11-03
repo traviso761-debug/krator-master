@@ -38,10 +38,13 @@ const TA_GLZ={G:1,L:1,C:1},TA_GLZD={taWinDisc:'G',taDiscG:'G',taDiscL:'L',taDisc
 // that open on a hollow body and stand shut and locked on a solid one; a glazed fill gets glazing bars (o.bars false: none;
 // o.barC their colour). On a hollow body the opening cuts the wall (vnHole; o.cut false keeps it whole), the window's pane
 // standing in the cut (the room behind it), the door's leaves in the wall's middle; elsewhere a pane has the room card behind.
+// o.gate: a door through a solid block the builder opened (tanPierBox), a court beyond: its leaves stand at the face and open;
+// o.open: no fill at all (a gate passage's far face).
 function tanArch(x,y,z,ry,w,h,o){o=o||{};const kind=o.kind||'round',bw=o.bw==null?.14:o.bw,out=o.out==null?.06:o.out,rev=(o.rev==null?0:o.rev),fc=o.fc||null;
  const r=w/2,rise=kind==='flat'?0:kind==='point'?w*.72:r,hb=Math.max(.05,h-rise),yc=y+hb/2,bi=o.gilt?'taGilt':'vPlaster';
  let fill=o.fill||'D';if(fill==='D')fill=(o.door!=null?o.door:(h>=2&&h>=w*1.15&&!o.sill&&!o.rail))?'DOOR':'G';
- if(fill==='DOOR')tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o);
+ if(o.open){}   /* o.open: a clear arch, no fill (a gate passage's far face, the builder's block opened by tanPierBox) */
+ else if(fill==='DOOR')tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o);
  else{const F=TA_FILL[fill],glz=TA_GLZ[fill],cut=o.cut!==false&&fill!=='W'&&fill!=='M'&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,false);
   if(glz){if(!cut)tanSlab('taRoomB',x,yc,z,ry,w,hb,.016-rev,.086,null);tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.012,fc);}
   else tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.1,fc);
@@ -70,17 +73,17 @@ function tanGlaze(x,y,z,ry,w,hb,kind,r,rise,out,c){c=c||vC(TAPAL.white[0]);const
 // the leaves in a doorway w wide and h high from y on a face (core/door, 69e5's IZDOOR.leaf; the owner, 2026-11-03: doors that
 // open and shut): two, mirrored, over 1.4 m wide. cut: the face is a hollow body's and was cut, so the leaves stand in the wall's
 // middle and open; else shut and locked in front of the solid face (nothing behind it). Returns the records
-function tanDoorLeaves(x,y,z,ry,w,h,wood,cut){const F=cut?vnOnHollow(x,y,z,ry):null,two=w>1.4,lw=two?w/2:w,L=[];
+function tanDoorLeaves(x,y,z,ry,w,h,wood,cut,gate){const F=cut?vnOnHollow(x,y,z,ry):null,two=w>1.4,lw=two?w/2:w,L=[];
  for(const s of two?[-1,1]:[0]){const m=loc(x,z,s*w/4,F?-F.B.t/2:.07,ry);
-  L.push(IZDOOR.leaf(m[0],y,m[1],ry,lw-(F?.03:.02),h-(F?.04:.02),F?.07:.08,wood,{locked:!F,mirror:s>0}));}
+  L.push(IZDOOR.leaf(m[0],y,m[1],ry,lw-(F?.03:.02),h-(F?.04:.02),F?.07:.08,wood,{locked:!F&&!gate,mirror:s>0}));}
  return L;}
 // a door in an arch (tanArch's DOOR fill): the leaves under a glazed fanlight in the head, a timber transom between
-function tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o){const cut=o.cut!==false&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,true);
+function tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o){const cut=!o.gate&&o.cut!==false&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,true);
  const wood=o.leafC||vC(vPick(TAPAL.walnut));
  if(kind==='round'||kind==='cusp'){tanDiscAt('taWinDisc',x,y+hb,z,ry,r,.03,.1,null,true);tanGlaze(x,y+hb-.01,z,ry,w,.01,kind,r,rise,.1,o.barC);}
  else if(kind==='point'){tanWedgeAt('G',x,y+hb,z,ry,w,rise,.02,.08,null);tanGlaze(x,y+hb-.01,z,ry,w,.01,kind,r,rise,.1,o.barC);}
  const t=loc(x,z,0,.06,ry);vB('vWood',t[0],y+hb-.1,t[1],w,.1,.12,ry,wood);
- tanDoorLeaves(x,y,z,ry,w,hb-.1,wood,cut);
+ tanDoorLeaves(x,y,z,ry,w,hb-.1,wood,cut,!!o.gate);
  if(window.DOORS&&VERN.cur){const C=VERN.cur,sc=C.o.scale||1;const wp=loc(C.x,C.z,x*sc,z*sc,C.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+C.ry,y:(C.o.y||0)+y*sc,key:C.D.key});}}
 // a door in a frame (the Vernacular's vnDoor without its dark recess): on a hollow face vnDoor itself (69f draws it open
 // and cuts the wall); elsewhere shut, locked leaves (tanDoorLeaves) in the jambs and lintel, the step, the lamp under vLit()
