@@ -10,7 +10,8 @@
     var byId = {}, q = [], seen = {}, adj = {};
     st.rooms.forEach(function (R) { byId[R.id] = R; adj[R.id] = adj[R.id] || []; });
     st.rooms.forEach(function (R) { R.doors.forEach(function (d) { if (byId[d.to]) { adj[R.id].push(d.to); adj[d.to].push(R.id); } }); });
-    st.rooms.forEach(function (R) { if (R.kind === 'core' || R.id === st.id + '.core') q.push(R.id); });
+    /* reached from a shaft, or from the street (a gate a street door opens on: the Pods' dome has no shaft) */
+    st.rooms.forEach(function (R) { if (R.kind === 'core' || R.id === st.id + '.core' || R.street) q.push(R.id); });
     q.forEach(function (i) { seen[i] = 1; });
     while (q.length) (adj[q.pop()] || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; q.push(n); } });
     return st.rooms.filter(function (R) { return !seen[R.id] && R.kind !== 'corridor'; }).map(function (R) { return R.id; });

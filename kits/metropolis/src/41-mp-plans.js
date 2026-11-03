@@ -21,6 +21,8 @@
   var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, concourse: 1, hallway: 1, wardrobe: 1 };
   MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber', wardrobe: 'store' };
   function kindOf(k) { return MP.ROOMKIND[k] || k; }
+  /* the window a room kind takes, as the facade's bay sizes (MP.BAYSIZE): for plates that set their own */
+  var WINBAY = { office: 'ribbon', meeting: 'ribbon', classroom: 'tall', clinic: 'window', bedroom: 'window', living: 'wide', stall: 'wide', cafe: 'wide', concourse: 'tall', hall: 'tall', reception: 'tall' };
 
   // ---- the round storey: what zone asks what of a ring. R the skin's inner face at this storey, core its record
   function coreR(F, k) { return k > F.core.stepAt ? F.core.rUp : F.core.r; }
@@ -204,23 +206,35 @@
   // one side has a wall there. Sectors at the shafts' angles in the band the shafts stand in are their core bays (Q.shaft); passages (kind
   // 'passage') cross a band between two corridors. The outermost band's rooms carry th0, th1 (the facade's windows); the slab has the court as
   // a hole (st.hole). o: { rOut, rIn, bands: [{ d, n, kinds(i, n), door, corr, passage(i) }], shafts: [{ id, th, band }] }
+  // Batch 4 adds, each off by default: o.id (a plate's own ids, several to a storey), o.cx, o.cz (its centre), o.a0, o.a1 (an arc of a ring: a
+  // curved bar from rIn to rOut, its ends the skin), o.windows (rooms set their own on the skin: the outer band's, and with o.skinIn the inner
+  // band's on rIn), a band's grid (its sectors' angle, laid from a0 the same on every storey, the last cut at a1), rot (a whole ring's sectors
+  // turned: a gate centred on its door), whole (one sector, no partition) and gate(i, n, t0, t1) (a sector that is a way through: a passage to its corridor, `street` when the street's door opens on it)
   function rings(F, L, o) {
-    var id = F.id + '.' + L.k, st = { id: id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], hole: o.rIn, R: o.rOut, rc: o.rIn, n: 0, band: 0 };
-    for (var q = 0; q < 64; q++) st.outline.push(at(o.rOut, TAU * q / 64));
+    var id = o.id || F.id + '.' + L.k, cx = o.cx || 0, cz = o.cz || 0, part = o.a0 != null, a0 = part ? o.a0 : 0, span = part ? o.a1 - o.a0 : TAU;
+    var st = { id: id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], hole: part ? 0 : o.rIn, R: o.rOut, rc: o.rIn, n: 0, band: 0 };
+    if (!part) for (var q = 0; q < 64; q++) st.outline.push(at(o.rOut, TAU * q / 64));
+    else st.outline = arc(o.rOut, a0, a0 + span, Math.max(4, Math.ceil(span * o.rOut / 3))).concat(arc(o.rIn, a0, a0 + span, Math.max(4, Math.ceil(span * o.rIn / 3))).reverse());
     var r = o.rOut, B = o.bands.map(function (b) { var r1 = r, r0 = r - b.d; r = r0; return Object.assign({}, b, { r0: r0, r1: r1 }); });
     B.forEach(function (b, bi) { if (b.corr) b.cid = id + '.corr' + bi; });
     B.forEach(function (b, bi) {
-      if (b.corr) { st.rooms.push({ id: b.cid, kind: 'corridor', mpKind: 'corridor', poly: null, ring: { cx: 0, cz: 0, r0: b.r0, r1: b.r1 }, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false }); return; }
-      var n = Math.max(1, Math.round(b.n * (F.secScale == null ? 1 : F.secScale))), inC = B[bi + 1] && B[bi + 1].corr ? B[bi + 1] : null, outC = B[bi - 1] && B[bi - 1].corr ? B[bi - 1] : null, seg = Math.max(2, Math.ceil(TAU / n * b.r1 / 2.5));
+      if (b.corr) { var nc = Math.max(4, Math.ceil(span * b.r1 / 2.5)); st.rooms.push({ id: b.cid, kind: 'corridor', mpKind: 'corridor', poly: part ? arc(b.r0 + 0.02, a0, a0 + span, nc).concat(arc(b.r1 - 0.05, a0, a0 + span, nc).reverse()) : null, ring: part ? undefined : { cx: 0, cz: 0, r0: b.r0, r1: b.r1 }, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false }); return; }
+      var T0 = [], g = b.grid;
+      if (g) { for (var u = a0; u < a0 + span - 1e-9; u += g) T0.push(u); if (T0.length > 1 && a0 + span - T0[T0.length - 1] < g * 0.4) T0.pop(); }
+      var n = g ? T0.length : Math.max(1, Math.round(b.n * (F.secScale == null ? 1 : F.secScale))), inC = B[bi + 1] && B[bi + 1].corr ? B[bi + 1] : null, outC = B[bi - 1] && B[bi - 1].corr ? B[bi - 1] : null, seg = Math.max(2, Math.ceil(span / n * b.r1 / 2.5));
       for (var i = 0; i < n; i++) {
-        var t0 = TAU * i / n, t1 = TAU * (i + 1) / n, tm = (t0 + t1) / 2, rid = id + '.b' + bi + '.r' + i;
-        var sh = (o.shafts || []).filter(function (s) { if (s.band !== bi) return false; var d = Math.abs(((s.th - tm) % TAU + TAU * 1.5) % TAU - Math.PI); return d < Math.PI / n; })[0];
-        var pass = b.passage && b.passage(i, n) && inC && outC, src = sh ? 'core' : pass ? 'passage' : b.kinds(i, n);
+        var t0 = g ? T0[i] : a0 + (b.rot || 0) + span * i / n, t1 = g ? (i + 1 < n ? T0[i + 1] : a0 + span) : a0 + (b.rot || 0) + span * (i + 1) / n, tm = (t0 + t1) / 2, rid = id + '.b' + bi + '.r' + i;
+        var sh = (o.shafts || []).filter(function (s) { if (s.band !== bi) return false; var d = Math.abs(((s.th - tm) % TAU + TAU * 1.5) % TAU - Math.PI); return d < (t1 - t0) / 2; })[0];
+        var gate = !sh && b.gate ? b.gate(i, n, t0, t1) : null, pass = !gate && b.passage && b.passage(i, n) && inC && outC, src = sh ? 'core' : gate || pass ? 'passage' : b.kinds(i, n);
         var inner = arc(b.r0 + 0.02, t0, t1, seg), outer = arc(b.r1 - 0.05, t0, t1, seg), poly = inner.concat(outer.slice().reverse());
         var Q = { id: rid, kind: src === 'passage' ? 'corridor' : kindOf(src), mpKind: src, poly: poly, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: !UNFURNISHED[src] && src !== 'passage' && src !== 'core', shaft: sh ? sh.id : undefined };
+        if (gate) { Q.gate = true; Q.street = !!gate.street; Q.th = tm; }
         if (bi === 0) { Q.th0 = t0; Q.th1 = t1; }
         var sides = pass ? [inC, outC] : [b.door === 'out' ? (outC || inC) : (inC || outC)];
-        sides.forEach(function (C) { if (!C) return; var rr = C === inC ? b.r0 : b.r1, da = at(rr, tm); Q.doors.push({ at: da, w: src === 'core' ? 1.2 : 1, to: C.cid }); });
+        sides.forEach(function (C) { if (!C) return; var rr = C === inC ? b.r0 : b.r1, da = at(rr, tm); Q.doors.push({ at: da, w: src === 'core' ? 1.2 : gate ? 1.6 : 1, to: C.cid }); });
+        /* its own windows: on the skin, the room's share of it */
+        var wr = bi === 0 ? b.r1 - 0.05 : o.skinIn && bi === B.length - 1 ? b.r0 + 0.02 : null;
+        if (o.windows && wr != null && src !== 'core' && src !== 'passage' && !MP.WINDOWLESS[src]) { var S2 = MP.BAYSIZE[WINBAY[src] || 'window']; Q.windows.push({ at: at(wr, tm), w: r3((t1 - t0) * wr * 0.7), sill: S2[1], h: S2[2] - S2[1] }); }
         st.rooms.push(Q);
         /* the walls: the side on each corridor (with its door), the far side where no corridor is (but the skin's and the court's), the partition at t0 */
         [[inC, b.r0, inner], [outC, b.r1, outer]].forEach(function (E, ei) {
@@ -228,10 +242,46 @@
           if (C) st.walls.push({ id: rid + (ei ? '.wo' : '.wi'), pts: E[2], y: L.y, h: L.h, rooms: [rid, C.cid], door: d ? { at: d.at, w: d.w } : null, broken: false });
           else if (ei === 0 && bi < B.length - 1) st.walls.push({ id: rid + '.wi', pts: E[2], y: L.y, h: L.h, rooms: [rid, null], door: null, broken: false });
         });
-        st.walls.push({ id: rid + '.p0', pts: [at(b.r0, t0), at(b.r1 - 0.05, t0)], y: L.y, h: L.h, rooms: [rid, null], door: null, broken: false });
+        if (!(part && i === 0) && !b.whole) st.walls.push({ id: rid + '.p0', pts: [at(b.r0, t0), at(b.r1 - 0.05, t0)], y: L.y, h: L.h, rooms: [rid, null], door: null, broken: false });
       }
     });
-    st.n = Math.max(1, Math.round(B[0].n * (F.secScale == null ? 1 : F.secScale))); st.band = B[0].d;
+    st.n = Math.max(1, Math.round((B[0].n == null ? 1 : B[0].n) * (F.secScale == null ? 1 : F.secScale))); st.band = B[0].d;
+    if (o.windows) st.windowsOwn = true;
+    /* moved to its centre; its own inside test (a ring's or an arc's) and its slab's part (st.part: parts() gathers them) */
+    if (cx || cz) {
+      var T = function (p) { return [r3(p[0] + cx), r3(p[1] + cz)]; };
+      st.outline = st.outline.map(T);
+      st.rooms.forEach(function (Q) { if (Q.poly) Q.poly = Q.poly.map(T); if (Q.ring) { Q.ring.cx = cx; Q.ring.cz = cz; } Q.doors.forEach(function (d) { d.at = T(d.at); }); Q.windows.forEach(function (w) { w.at = T(w.at); }); });
+      st.walls.forEach(function (W) { W.pts = W.pts.map(T); if (W.door) W.door.at = T(W.door.at); });
+    }
+    if (o.id || cx || cz || part) st.inside = function (x, z) {
+      var dx = x - cx, dz = z - cz, rr = Math.hypot(dx, dz); if (rr > o.rOut + 0.02) return false;
+      if (!part) return !(o.rIn && rr < o.rIn - 0.02);
+      var d = ((Math.atan2(dz, dx) - a0) % TAU + TAU) % TAU, tol = 0.02 / o.rIn;
+      return rr >= o.rIn - 0.02 && (d <= span + tol || d >= TAU - tol);
+    };
+    st.part = { cx: cx, cz: cz, rOut: o.rOut, rIn: o.rIn || 0, a0: part ? a0 : null, a1: part ? a0 + span : null, outline: st.outline };
+    return st;
+  }
+  // ---- a strip: a straight run of floor (the Pods' bridge in their tube), one corridor from a to b, w wide, a glass rail each side (st.rails)
+  function strip(F, L, o) {
+    var a = o.a, b = o.b, dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz), w = o.w / 2, nx = -dz / l * w, nz = dx / l * w;
+    var poly = [[r3(a[0] + nx), r3(a[1] + nz)], [r3(b[0] + nx), r3(b[1] + nz)], [r3(b[0] - nx), r3(b[1] - nz)], [r3(a[0] - nx), r3(a[1] - nz)]];
+    var st = { id: o.id, rooms: [{ id: o.id, kind: 'corridor', mpKind: 'corridor', poly: poly, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false }], walls: [], outline: poly, rails: [[poly[0], poly[1]], [poly[2], poly[3]]] };
+    st.inside = function (x, z) { var u = ((x - a[0]) * dx + (z - a[1]) * dz) / l, v = (-(x - a[0]) * dz + (z - a[1]) * dx) / l; return u >= -0.06 && u <= l + 0.06 && Math.abs(v) <= w + 0.02; };
+    st.part = { strip: true, outline: poly };
+    return st;
+  }
+  // ---- parts: one storey of several plates (the Organ's pipes; the Pods' pods, their bridge and the dome; the Long Curve's arc): their rooms
+  // and walls together, each plate's slab its own (st.parts), the storey's inside any plate's, its outline the largest plate's (the walk's
+  // floor takes every part's: 56)
+  function parts(F, L, P) {
+    var st = { id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], windowsOwn: true, parts: [], rails: [] }, big = -1;
+    P.forEach(function (s) {
+      st.rooms = st.rooms.concat(s.rooms); st.walls = st.walls.concat(s.walls); st.parts.push(s.part); if (s.rails) st.rails = st.rails.concat(s.rails);
+      var a = Math.abs(KratorAncientsInteriors.polyArea(s.outline)); if (a > big) { big = a; st.outline = s.outline; }
+    });
+    st.inside = function (x, z) { return P.some(function (s) { return s.inside(x, z); }); };
     return st;
   }
   // ---- a lobe (the Swell's): a ring plate about the lobe's own centre over the arc outside the middle, its corridor opening on the middle's
@@ -303,7 +353,7 @@
     st.rect = { hw: o.hw, hd: o.hd, cx: cx, cz: cz, yaw: yaw };
     return st;
   }
-  MP.planLib = { sectors: sectors, rings: rings, rectRings: rectRings, lobe: lobe, turn: turn, arc: arc, at: at, kindOf: kindOf, UNFURNISHED: UNFURNISHED, CW: CW, PLAN: PLAN };
+  MP.planLib = { sectors: sectors, rings: rings, rectRings: rectRings, lobe: lobe, strip: strip, parts: parts, turn: turn, arc: arc, at: at, kindOf: kindOf, UNFURNISHED: UNFURNISHED, CW: CW, PLAN: PLAN };
 
   MP.storey = function (F, k) {
     var L = F.levels[k]; if (!L) throw new Error('MP.storey: ' + F.id + ' has no level ' + k);

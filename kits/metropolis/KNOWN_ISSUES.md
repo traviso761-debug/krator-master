@@ -27,5 +27,8 @@
 - [ ] **The Spiral's ramp doorways do not meet a storey:** its portals sit on the ramp every half turn; the cone's storeys (4.25 m) are not at their sills.
 - [ ] **The Terrace's court-side rooms have no windows in their plans** (its service band: stores and plant): its court facade is the design's glass, drawn without rooms behind it in mind.
 - [ ] **The Swell's lobes leave open floor where they meet** (mid-height): no rooms are planned there, the floor is a hall between the lobes' corridors and the concourse.
-- [ ] **A design's ruin states run over its hero budget:** the floor slabs and the rubble add to the cut hero (the Reed's 41 to 66 k, the Wedge's 38 to 61 k, against 60 and 45 k).
+- [ ] **A design's ruin states run over its hero budget:** the floor slabs and the rubble add to the cut hero (the Reed's 41 to 66 k, the Wedge's 38 to 61 k, against 60 and 45 k; the Organ's crown 168 k and broken 153 k against 90 k, five pipes' slabs and their sections lying).
+- [ ] **The Long Curve's shafts stand square to the axes, not to the arc** (`56` draws a shaft's walls and stair as an axis box): in their bays out at the arc's ends they sit up to 31 degrees off the room's walls. A shaft's yaw would need the stair's flights, landings and walk strips turned too.
+- [ ] **A design's tear runs round the origin** (`MP.tearAt`, by angle): on the Organ, the Pods and the Long Curve, whose parts stand off the axis, it jumps where the angle wraps (behind the origin, at -x), so the torn line steps there.
+- [ ] **The Organ's pipes have small rooms:** a pipe of r 9 m leaves a band of 3.1 m between its corridor and the skin (the core takes 3.2 m, the corridor 1.8 m); the wider pipes 4.1 and 5.1 m.
 - [ ] **The Wedge's ruins are mullion cages:** it is all black curtain glass, so with the glass gone its frame stands bare in every ruin state; its slabs show inside.

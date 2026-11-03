@@ -217,6 +217,22 @@ The Arcades (4 storeys, 268 rooms): street rooms behind the arcade's glass and t
 band facing the corridor. A ruin's floors now tear in patches (noise over the plan), the facade along its line; a rect design's rubble holds
 storey-thick slabs, not drum sections.
 
+**Batch 4:** the designs of several parts, on `MP.planLib.parts` (one storey of several plates: their rooms and walls together, each plate's slab
+its own, the storey's inside any plate's, and the walk's floor every plate's). `rings` takes a plate's own centre and ids, an arc of a ring (a
+curved bar, its ends the skin), a fixed sector grid (so shafts' bays line up storey to storey on an arc whose length changes), a turned band (a
+gate centred on its door), its rooms' own windows, and gates (a sector that is a way through; a street gate seeds the audit's reach, for a hall
+with no shaft); `strip` is a straight run of floor with glass rails. The Organ (59 storeys, 3476 rooms): each pipe a ring of rooms round its own
+stair and lift, from a lobby at its foot to 6 m under its cap, a pipe dropping out where it ends; the storeys the bands cross are plant floors,
+and the bands are now a collar round each pipe and a beam between (they ran as a solid slab through the rooms). The Pods (12 storeys, 559
+rooms): a lobby at each stalk's foot, the stair and lift up the stalk, nine storeys in each sphere (the three in the glass belt windowed, plant
+and stacks in the white shell; the wide ones with a middle ring of meeting rooms and stores, passages between its corridors); the storey at the
+tube's floor crosses it by a bridge between gates in the two pods; the dome a market hall, stalls round its glass, its street door the way in.
+The Long Curve (9 storeys, 477 rooms): one plate along the arc as far as the runs that reach over the storey, rooms on both faces, a corridor
+between, two cores of a stair and a lift in the tall run and a stair in the first and last low run; the lobby's doors open on gates. A design's
+rubble can now come from several towers (`towers` on its record: each pipe, each pod and the dome, the curve's runs), each heaped where it
+stood along its own fall line, one the cut passes over standing whole; the Pods' bridge keeps its floor in its ruins, its rings round it.
+The lift takes the nearest shaft that serves both storeys; a record may give its own hit test (`hitIn`) and entry point (`entryAt`).
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

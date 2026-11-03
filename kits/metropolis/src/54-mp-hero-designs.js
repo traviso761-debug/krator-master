@@ -112,8 +112,10 @@ MP.DESIGN_BUILD={
    /* the cap: a bronze cone with a dark mouth cut in its face, a finial */
    DK.lathe(B,'bronze',[[r+.6,h-6],[r+.6,h-5],[r*.92,h-4],[r*.35,h+2],[.3,h+5]],24,{cx:x,cz:z,uv:2});B.obox('dark',x,h-3.6,z+r*.86,0,r*.7,2.6,.4,{uv:2});
    DK.lathe(B,'bronze',[[.5,h+4.5],[.15,h+(k===2?F.height.tip-h:9)]],8,{cx:x,cz:z,uv:1});});
-  /* the bands: a bronze slab through the pipes still standing at each band's height */
-  F.bands.forEach(y=>{const live=F.pipes.filter(p=>p[3]>y+4);if(live.length<2)return;const x0=Math.min(...live.map(p=>p[0])),x1=Math.max(...live.map(p=>p[0]));B.box('bronze',x0,x1,y-1.2,y+1.2,-6,8,{uv:2});});
+  /* the bands: a bronze collar round each pipe still standing at the band's height, a beam from pipe to pipe; the pipe's storey there is
+     its plant floor (blank), the rooms inside left clear (they ran through a solid slab until the plans, batch 4) */
+  F.bands.forEach(y=>{const live=F.pipes.filter(p=>p[3]>y+4);if(live.length<2)return;live.forEach(p=>B.lathe('bronze',[[p[2],y-1.2],[p[2]+1,y-1.2],[p[2]+1,y+1.2],[p[2],y+1.2]],24,{cx:p[0],cz:p[1],uv:2}));
+   for(let i=0;i+1<live.length;i++){const a=live[i],b=live[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz),s0=a[2]+.5,s1=l-b[2]-.5;B.obox('bronze',a[0]+dx/l*(s0+s1)/2,y,a[1]+dz/l*(s0+s1)/2,-Math.atan2(dz,dx),s1-s0,2.4,6,{uv:2});}});
   },
  // S3: a black glass frustum leaning in, one face steeper; a slot of sky lobby two thirds up, set 3 m in, lit
  wedge(F,B,X){const H=F.height.roof,b={hw:F.footprint.w/2,hd:F.footprint.d/2},T=F.top,rect=y=>{const t=y/H;return {cx:0,cz:F.lean*Math.pow(t,1.5),hw:b.hw+(T.hw-b.hw)*t,hd:b.hd+(T.hd-b.hd)*t};},sl=F.slot;

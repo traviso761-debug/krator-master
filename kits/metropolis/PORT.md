@@ -6,33 +6,33 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 108 (37%) | 4 (1%) | 0 (0%) | 23 (8%) | 158 (54%) |
+| KB | 127 (40%) | 4 (1%) | 0 (0%) | 23 (7%) | 161 (51%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/40-mp-records.js` | 18.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/41-mp-plans.js` | 31.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/40-mp-records.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-mp-plans.js` | 36.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-mp-facade.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-mp-shell.js` | 6.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/44-mp-audit.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/44-mp-audit.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 1.5 | [web] | 6 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-mp-designs.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46b-mp-ancients.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/46c-mp-planned.js` | 28.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/46c-mp-planned.js` | 41.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/47-host-land.js` | 1.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/50-mp-kit.js` | 12.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 7 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/52-mp-hero-spindle.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-mp-hero-ledger.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/54-mp-hero-designs.js` | 36.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 67 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/54-mp-hero-designs.js` | 36.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 68 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/55-mp-hero-ancients.js` | 15.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 7 | 4 | 0 | 0 |  |
-| `src/56-mp-interiors.js` | 19.0 | [draw] | 6 | 0 | 0 | 0 | 5 | 13 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/56-mp-interiors.js` | 20.5 | [draw] | 8 | 0 | 0 | 0 | 5 | 16 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/57-mp-debris.js` | 5.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/58-mp-cutaway.js` | 3.8 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 |  |
 | `src/59-mp-floors.js` | 11.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 8 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/59b-mp-ruin-design.js` | 7.4 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/59b-mp-ruin-design.js` | 8.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/60-mp-shell-host.js` | 22.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 15 | 4 | 0 | 0 | 0 |  |
 | `src/70-mp-stage.js` | 20.4 | [web] | 9 | 0 | 0 | 0 | 5 | 2 | 1 | 6 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 0.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

@@ -270,5 +270,132 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
       ruins: ruins({ gutted: { glass: 0, strips: 0, breach: 0.1, stain: 0.75, keep: 1, note: 'the arcade\'s glass gone, burnt out' }, crown: { keep: 0.75, note: 'the top storey fallen into the court' }, broken: { keep: 0.5, note: 'one wing down to the arcade' }, stump: { keep: 0.5, note: 'the arcade standing, its arches' }, skeleton: { keep: 1, bare: 0.5, note: 'the upper storeys\' frame' } })
     };
   })();
-  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell', 'reed', 'wedge', 'arcades'];
+  /* several plates (41's parts): the building's hit test is any plate's on the storey at that height, mg out (MP.heroAt, 56) */
+  function hitIn(F) {
+    var cache = {};
+    return function (x, z, y, mg) {
+      var k = 0, m = mg || 0; F.levels.forEach(function (L) { if (y >= L.y - 0.1) k = L.k; });
+      var st = cache[k] || (cache[k] = MP.storey(F, k));
+      for (var a = -1; a <= 1; a++) for (var b = -1; b <= 1; b++) if (st.inside(x + a * m, z + b * m)) return true;
+      return false;
+    };
+  }
+  var r3 = function (v) { return Math.round(v * 1000) / 1000; }, shaftBand = function () { return { d: 3.2, n: 2, kinds: function () { return 'store'; }, door: 'out' }; };
+
+  // ---- the Organ: five bronze pipes (r 9 to 11 m, 160 to 228 m), each a ring of rooms round its own core (a stair and a lift in two
+  // half-discs at its middle) from a lobby at its foot to 6 m under its cap. The storey a band crosses is the pipe's plant floor (blank in the
+  // hero, the band a collar and beams outside it). Its storeys are parts (41): a pipe that has ended drops out
+  (function () {
+    var D = MP.DESIGNS.organ, sh = D.sh, N = Math.floor((Math.max.apply(null, D.pipes.map(function (p) { return p[3]; })) - 6) / sh + 1e-6);
+    var useAt = function (k) { var y = k * sh; if (!k) return 'lobby'; if (((y + sh * 1.5) % 36) < sh) return 'plant'; if (k === 1) return 'market'; if (k < 4) return 'clinic'; if (k % 10 === 5) return 'records'; return 'offices'; };
+    var zones = []; for (var k = 0; k < N; k++) { var u = useAt(k); if (zones.length && zones[zones.length - 1].use === u) zones[zones.length - 1].n++; else zones.push({ use: u, n: 1, h: sh }); }
+    var L = levels(zones), last = D.pipes.map(function (p) { return Math.floor((p[3] - 6) / sh + 1e-6) - 1; }), shafts = [];
+    D.pipes.forEach(function (p, i) { shafts.push({ id: 'stair.' + i, kind: 'stair', x: p[0], z: p[1] + 1.5, w: 2.8, d: 2.3, from: 0, to: last[i], face: 2 }, { id: 'lift.' + i, kind: 'lift', x: p[0], z: p[1] - 1.45, w: 2.2, d: 2.2, from: 0, to: last[i], face: 0 }); });
+    var F = MP.FAMILY.organ = {
+      id: 'organ', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return 11; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'bronze', fall: Math.PI / 2,
+      core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 },
+      towers: D.pipes.map(function (p, i) { return { x: p[0], z: p[1], r: p[2], sr: p[2], h: p[3], fall: [Math.PI / 2 + 0.25, -Math.PI / 2 + 0.15, Math.PI / 2, -Math.PI / 2 - 0.15, Math.PI / 2 - 0.25][i] }; }),
+      entryAt: function () { var p = D.pipes[2]; return [p[0] + 4.1, p[1]]; },
+      plan: function (F, Lv, lib) {
+        var P = [];
+        D.pipes.forEach(function (p, i) {
+          if (Lv.k > last[i]) return;
+          var Rp = p[2] - 0.9, sb = shaftBand(), bands = Lv.k ? [{ d: Rp - 3.2 - lib.CW, n: Math.max(5, Math.round(2 * Math.PI * Rp / 5)), kinds: kindsOf(Lv.use), door: 'in' }, { d: lib.CW, corr: true }, sb] : [{ d: Rp - 3.2, corr: true }, sb];
+          P.push(lib.rings(F, Lv, { id: F.id + '.' + Lv.k + '.p' + i, cx: p[0], cz: p[1], rOut: Rp, rIn: 0, bands: bands, windows: Lv.use !== 'plant', shafts: [{ id: 'stair.' + i, th: Math.PI / 2, band: bands.length - 1 }, { id: 'lift.' + i, th: -Math.PI / 2, band: bands.length - 1 }] }));
+        });
+        return lib.parts(F, Lv, P);
+      },
+      ruins: ruins({ crown: { keep: 0.82, note: 'the three tallest pipes\' caps fallen' }, broken: { keep: 0.55, note: 'every pipe snapped between the third band and the fourth' }, stump: { keep: 0.2, note: 'the pipes to over their first band' } })
+    };
+    F.hitIn = hitIn(F);
+  })();
+
+  // ---- the Pods: two spheres (r 22 m, centred 30 m up, a glass belt round the middle) on stalks, a glass tube between them, a low dome by them.
+  // A pod: a lobby at the stalk's foot, its stair and lift up the stalk, nine storeys in the sphere, rooms round its core (the three in the belt
+  // windowed; plant and stacks in the white shell). The storey at the tube's floor crosses it by a bridge between gates in the two pods. The
+  // dome is a market hall: stalls round its glass, the hall floor in the middle, the street's door its way in (it has no shaft)
+  (function () {
+    var D = MP.DESIGNS.pods, A = D.pods, Dm = D.dome, hs = 3.85;
+    var zones = [{ use: 'lobby', n: 1, h: 4.2 }, { use: 'stalk', n: 2, h: 4.2 }, { use: 'plant', n: 1, h: hs }, { use: 'records', n: 2, h: hs }, { use: 'offices', n: 1, h: hs }, { use: 'skylobby', n: 1, h: hs },
+      { use: 'clinic', n: 1, h: hs }, { use: 'records', n: 2, h: hs }, { use: 'plant', n: 1, h: hs }];
+    var L = levels(zones), last = L.length - 1, bridgeK = L.filter(function (l) { return l.use === 'skylobby'; })[0].k, AB = 'ab';
+    var rr = function (p, y) { return Math.sqrt(Math.max(0, p.r * p.r - (y - p.y) * (y - p.y))); };
+    var shafts = []; A.forEach(function (p, i) { shafts.push({ id: 'stair.' + AB[i], kind: 'stair', x: p.x, z: p.z + 1.5, w: 2.8, d: 2.3, from: 0, to: last, face: 2 }, { id: 'lift.' + AB[i], kind: 'lift', x: p.x, z: p.z - 1.45, w: 2.2, d: 2.2, from: 0, to: last, face: 0 }); });
+    var podPlate = function (F, Lv, lib, p, i) {
+      var sb = shaftBand(), stalk = Lv.use === 'stalk', R = Lv.k === 0 ? 6.4 : stalk ? 3.2 : Math.min(rr(p, Lv.y), rr(p, Lv.y + Lv.h)) - 0.7, glass = Lv.y >= p.y - 6.2 && Lv.y + Lv.h <= p.y + 6.2, bands;
+      if (Lv.k === 0) bands = [{ d: R - 3.2, corr: true }, sb];
+      else if (stalk) bands = [sb];
+      else {
+        /* the bridge's storey turns the outer band so a sector is centred on the tube: the gate */
+        var n0 = Math.max(6, Math.round(2 * Math.PI * R / 6)), br = Lv.k === bridgeK, outer = { d: R >= 17.3 ? 6 : R - 3.2 - lib.CW, n: n0, kinds: kindsOf(Lv.use), door: 'in', rot: br ? (i ? Math.PI : 0) - Math.PI / n0 : 0, gate: br ? function (q) { return q === 0 ? { street: false } : null; } : null };
+        /* the middle ring has no skin: its rooms are those that want none (meeting rooms and stores by the offices and the clinic) */
+        var inner = Lv.use === 'offices' ? function (q) { return q % 3 ? 'meeting' : 'store'; } : Lv.use === 'clinic' ? function () { return 'store'; } : kindsOf(Lv.use);
+        bands = R >= 17.3 ? [outer, { d: lib.CW, corr: true }, { d: R - 6 - 2 * lib.CW - 3.2, n: Math.max(4, Math.round(2 * Math.PI * (R - 7.8) / 6)), kinds: inner, door: 'out', passage: function (q) { return q % 4 === 0; } }, { d: lib.CW, corr: true }, sb]
+          : [outer, { d: lib.CW, corr: true }, sb];
+      }
+      return lib.rings(F, Lv, { id: F.id + '.' + Lv.k + '.' + AB[i], cx: p.x, cz: p.z, rOut: R, rIn: 0, bands: bands, windows: glass && Lv.use !== 'plant', shafts: [{ id: 'stair.' + AB[i], th: Math.PI / 2, band: bands.length - 1 }, { id: 'lift.' + AB[i], th: -Math.PI / 2, band: bands.length - 1 }] });
+    };
+    var domePlate = function (F, Lv, lib) {
+      var R = Dm.r * Math.sqrt(1 - Math.pow(3.6 / Dm.h, 2)) - 0.7, n = Math.max(8, Math.round(2 * Math.PI * R / 6));
+      return lib.rings(F, Lv, { id: F.id + '.0.dome', cx: Dm.x, cz: Dm.z, rOut: R, rIn: 0, windows: true, bands: [{ d: 5, n: n, kinds: function (q) { return q % 3 ? 'stall' : 'cafe'; }, door: 'in', rot: Math.PI / 2 - Math.PI / n, gate: function (q) { return q === 0 ? { street: true } : null; } }, { d: R - 5, corr: true }] });
+    };
+    var F = MP.FAMILY.pods = {
+      id: 'pods', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return A[0].r; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'white', fall: 0,
+      core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 },
+      towers: [{ x: A[0].x, z: A[0].z, r: A[0].r, h: A[0].y + A[0].r, fall: Math.PI, squat: true }, { x: A[1].x, z: A[1].z, r: A[1].r, h: A[1].y + A[1].r, fall: 0, squat: true }, { x: Dm.x, z: Dm.z, r: Dm.r, h: Dm.h, fall: Math.PI / 2, squat: true }],
+      entryAt: function (k) { var p = A[0]; return k === 0 ? [p.x + 4.8, p.z] : F.levels[k].use === 'stalk' ? [p.x, p.z + 2.85] : [p.x + 4.1, p.z]; },
+      plan: function (F, Lv, lib) {
+        var P = A.map(function (p, i) { return podPlate(F, Lv, lib, p, i); });
+        if (Lv.k === bridgeK) {
+          /* the bridge: a corridor in the tube from gate to gate */
+          var g = P.map(function (s) { return s.rooms.filter(function (Q) { return Q.gate; })[0]; }), xa = A[0].x + P[0].R - 0.05, xb = A[1].x - P[1].R + 0.05;
+          var Bd = lib.strip(F, Lv, { id: F.id + '.' + Lv.k + '.bridge', a: [xa, A[0].z], b: [xb, A[1].z], w: 2.4 }), Q = Bd.rooms[0];
+          [[g[0], [xa, A[0].z]], [g[1], [xb, A[1].z]]].forEach(function (e) { e[0].doors.push({ at: e[1], w: 1.6, to: Q.id }); Q.doors.push({ at: e[1], w: 1.6, to: e[0].id }); });
+          P.push(Bd);
+        }
+        if (Lv.k === 0) P.push(domePlate(F, Lv, lib));
+        return lib.parts(F, Lv, P);
+      },
+      ruins: ruins({ crown: { keep: 0.8, note: 'the pods\' crowns fallen in' }, broken: { keep: 0.55, note: 'the pods torn through the belt, the tube down' }, stump: { keep: 0.2, note: 'the stalks and the dome\'s ring' } })
+    };
+    F.hitIn = hitIn(F);
+  })();
+
+  // ---- the Long Curve: a bar 18 m deep on an arc of 150 m about a centre 150 m behind it, 1.2 rad long; 36 m high for its first 0.84 rad, then
+  // stepping to 28, 20 and 12. A storey is one plate along the arc as far as the runs that reach over it (its end the step's face): rooms on
+  // both faces (each windowed), a corridor between, sectors on a grid laid from the arc's start so the shafts' bays stand on every storey; two
+  // cores of a stair and a lift in the tall run, a stair in the first and the last low run; the hero's lobby doors open on gates
+  (function () {
+    var D = MP.DESIGNS.crescent, R = D.R, cz = R, mid = -Math.PI / 2, a0 = mid - D.span / 2, a1 = mid + D.span / 2, H = D.steps, cut = [a0, a0 + D.span * D.stepAt], CW = MP.planLib.CW;
+    for (var i = 1; i < H.length; i++) cut.push(cut[1] + (a1 - cut[1]) * i / (H.length - 1));
+    var rO = R + D.width / 2 - 0.7, rI = R - D.width / 2 + 0.7, dO = 7, dI = rO - rI - dO - CW, rm = rI + dI / 2, gI = 6 / rm, gO = 6 / (rO - dO / 2), e = 0.004;
+    var zones = [{ use: 'lobby', n: 1, h: D.sh }, { use: 'market', n: 1, h: D.sh }, { use: 'clinic', n: 1, h: D.sh }, { use: 'school', n: 1, h: D.sh }, { use: 'offices', n: 5, h: D.sh }];
+    var L = levels(zones), lastOn = function (j) { return L.filter(function (l) { return l.y + l.h <= H[j] + 0.01; }).length - 1; };
+    var endAt = function (Lv) { var j = 0; while (j + 1 < H.length && H[j + 1] >= Lv.y + Lv.h - 0.01) j++; return cut[j + 1]; };
+    var sAt = function (id, kind, c, to, w, d) { var t = a0 + e + (c + 0.5) * gI; return { id: id, kind: kind, x: r3(rm * Math.cos(t)), z: r3(cz + rm * Math.sin(t)), w: w, d: d, from: 0, to: to, face: 0, th: t }; };
+    var shafts = [sAt('stair.a', 'stair', 4, lastOn(0), 3.2, 2.6), sAt('lift.a', 'lift', 5, lastOn(0), 2.4, 2.6), sAt('stair.b', 'stair', 14, lastOn(0), 3.2, 2.6), sAt('lift.b', 'lift', 15, lastOn(0), 2.4, 2.6),
+      sAt('stair.c', 'stair', 21, lastOn(1), 3.2, 2.6), sAt('stair.d', 'stair', 27, lastOn(3), 3.2, 2.6)];
+    var towers = []; H.forEach(function (h, j) { var n = Math.max(1, Math.round((cut[j + 1] - cut[j]) / 0.12)); for (var q = 0; q < n; q++) { var t = cut[j] + (cut[j + 1] - cut[j]) * (q + 0.5) / n; towers.push({ x: r3(R * Math.cos(t)), z: r3(cz + R * Math.sin(t)), r: 10, h: h, fall: t, squat: true }); } });
+    var F = MP.FAMILY.crescent = {
+      id: 'crescent', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return D.width / 2; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'white', fall: -Math.PI / 2,
+      core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 }, towers: towers,
+      entryAt: function () { return [0, r3(cz - (rI + dI + CW / 2))]; },
+      plan: function (F, Lv, lib) {
+        var doors = Lv.k ? [] : [0.2, 0.5, 0.8].map(function (f) { return a0 + (cut[1] - a0) * f; });
+        var gate = Lv.k ? null : function (q, n, t0, t1) { return doors.some(function (d) { return d >= t0 && d < t1; }) ? { street: true } : null; };
+        var S = F.core.shafts.filter(function (s) { return Lv.k >= s.from && Lv.k <= s.to; }).map(function (s) { return { id: s.id, th: s.th, band: 2 }; });
+        return lib.parts(F, Lv, [lib.rings(F, Lv, { id: F.id + '.' + Lv.k + '.arc', cx: 0, cz: cz, a0: a0 + e, a1: endAt(Lv) - e, rOut: rO, rIn: rI, windows: true, skinIn: true,
+          bands: [{ d: dO, grid: gO, kinds: kindsOf(Lv.use), door: 'in', gate: gate }, { d: CW, corr: true }, { d: dI, grid: gI, kinds: kindsOf(Lv.use), door: 'out' }], shafts: S })]);
+      },
+      ruins: ruins({ crown: { keep: 0.8, note: 'the tall run\'s top storeys fallen in' }, broken: { keep: 0.55, note: 'the tall run torn down to the steps\' height' }, stump: { keep: 0.2, note: 'the ground storeys\' walls' } })
+    };
+    F.hitIn = hitIn(F);
+  })();
+  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell', 'reed', 'wedge', 'arcades', 'organ', 'pods', 'crescent'];
 })();

@@ -55,5 +55,9 @@ ok(ENTRY.indexOf('door') < 0, 'negative: an unknown rule is not one');
   ok(n > 0 && narrow === 0, 'every flat bath 1.2 m wide or more at its narrow end, 1.4 at its middle (' + n + ')'); }
 /* the designs with plans (46c): every storey planned and audited, and the shelled families unchanged by them */
 for (const k of MP.PLANNED_KEYS) { const F = MP.FAMILY[k], A = MP.audit(F); ok(F.design && A.ok, k + ': the plans pass the audit (' + A.rooms + ' rooms, ' + (A.ok ? 0 : A.fails.length) + ' fails)'); }
+/* the designs of parts (batch 4): the Pods' bridge joins a gate in each pod; the Organ's pipes drop out where they end */
+{ const P = MP.FAMILY.pods, k = P.levels.filter(L => L.use === 'skylobby')[0].k, st = MP.storey(P, k), B = st.rooms.filter(r => /\.bridge$/.test(r.id))[0];
+  ok(B && B.doors.length === 2 && B.doors.every(d => st.rooms.some(r => r.id === d.to && r.gate)), 'the Pods: the bridge joins a gate in each pod');
+  const O = MP.FAMILY.organ; ok(MP.storey(O, 1).parts.length === 5 && MP.storey(O, O.levels.length - 1).parts.length === 1, 'the Organ: five pipes low, the tallest alone at the top'); }
 ok(MP.families().every(F => !F.design) && MP.planned().length === MP.families().length + MP.PLANNED_KEYS.length, 'families() are the shelled ones, planned() adds the designs');
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);
