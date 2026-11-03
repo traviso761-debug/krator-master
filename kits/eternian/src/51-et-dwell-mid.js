@@ -66,7 +66,7 @@ defBuilding({key:'et_corner_turret',name:'Corner turret',seed:7006,cut:true,w:11
   pushM(TF(TX,0,TX,PI/4));
    cyl('lime',0,G0,0,TR,R0+1.6-G0,lime,16);cyl('stone',0,0,0,TR+.15,G0,P('stoneD'),16);
    for(const y of [F1,F2,R0])cyl('lime',0,y-.1,0,TR+.1,.16,ls,16);
-   for(const y of [F1+1.0,F2+1.0]){box('lime',0,y-.1,TR-.02,.8,1.5,.12,ls);box('glass',0,y,TR+.03,.5,1.2,.04,P('glass'));}
+   for(const y of [F1+1.0,F2+1.0]){box('lime',0,y-.1,TR-.02,.8,1.5,.12,ls);svPane(0,y,TR+.065,0,.5,1.2,{solid:true,depth:.02,t:.02});}   /* the turret is solid: glass over the room card (core/door) */
    cyl('lime',0,R0+1.6,0,TR+.25,.3,ls,16);cone('verdigris',0,R0+1.9,0,TR+.35,3.4,P('verdigris'),8);
    cone('gold',0,R0+5.2,0,.08,.7,KIT_HAS('gold')?new THREE.Color(1,1,1):P('gold'),6);
    beam('iron',[0,3.3,TR],[0,3.3,TR+1.1],.07,P('iron'));beam('iron',[0,2.7,TR],[0,3.3,TR+.7],.05,P('iron'));

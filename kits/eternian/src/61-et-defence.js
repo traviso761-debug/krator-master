@@ -14,7 +14,7 @@ defBuilding({key:'et_gate',name:'City gate',seed:7110,w:26,d:10,h:30,budget:1800
    pushM(TF(0,1.2,-3));const R=etPierBundle({n:5,w:8,d:6,h0:LY+2,step:1.8,mk:'brick',col:br,niches:true});
     R.niches.forEach((q,i)=>etHead(q[0],q[1]+.04,q[2]-.3,R.pw*.62,{metal:i===2?'gold':'bronze'}));popM();
    etMazeBand(0,LY-1,.02,8,.7);
-   pushM(TF(-s*2.2,0,.02));etWall(2.6,1.2,3.4,'brick',br,[{x:0,w:1.1,h:2.4,door:true,maskMetal:'lead'}],{t:.04,frame:brD});popM();
+   pushM(TF(-s*2.2,0,.02));etWall(2.6,1.2,3.4,'brick',br,[{x:0,w:1.1,h:2.4,door:true,maskMetal:'lead'}],{t:.04,frame:brD,solid:true});popM();
    popM();
    const fx=s*5.6;for(let k=0;k<3;k++)box('stone',fx,k*PL/3,1.2,3.4-k*.5,PL/3,4-k*.5,sd);
    etFigure(fx,PL,1.2,FH,{pose:'lintel',metal:'gold',spread:.26});}   /* arms raised close, each over its own half */
@@ -42,7 +42,7 @@ defBuilding({key:'et_wall_tower',name:'Wall tower',seed:7112,w:11,d:11,h:26,budg
   pushM(TF(0,1.6,0));const R=etPierBundle({n:5,w:9,d:9,h0:H,step:1.6,mk:'brick',col:br,niches:!fr});
    if(!fr)R.niches.forEach((q,i)=>etHead(q[0],q[1]+.04,q[2]-.3,R.pw*.6,{metal:i===2?'silver':'gunmetal'}));popM();
   if(!fr){etLancet(0,8,4.52,.5,3.2,{light:'glass',tracery:false});
-   pushM(TF(0,1.6,4.5));etWall(2.4,0,3,'brick',br,[{x:0,w:1.0,h:2.3,door:true,maskMetal:'lead'}],{t:.04});popM();}
+   pushM(TF(0,1.6,4.5));etWall(2.4,0,3,'brick',br,[{x:0,w:1.0,h:2.3,door:true,maskMetal:'lead'}],{t:.04,solid:true});popM();}
   else box('stone',0,1.6,4.55,1.4,.4,.1,sd);}});
 
 /* the barracks of the frontier army: a quadrangle of pattern block round a drill yard, outside the wall; the gate through
@@ -103,9 +103,9 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
   for(let i=0;i<6;i++){const a=i*PI/3;pushM(TF(R*Math.cos(a),0,R*Math.sin(a)));
    prism('stone',etHex(5.8),0,.6,sd);prism('brick',etHex(5.2),.6,13,br);prism('brick',etHex(5.6),13,13.5,brD);
    etHexFaces(5.2*ET_HEX_AP,(k,ph)=>{const c=Math.cos(ph-a);
-    box('stone',0,3.6,.02,.28,1.8,.06,dark);box('stone',0,9.6,.02,.28,1.4,.06,dark);
+    svRoom(0,3.6,.05,0,.28,1.8);svRoom(0,9.6,.05,0,.28,1.4);   /* the slits: unglazed, the room card behind (the towers are solid: KNOWN_ISSUES.md) */
     if(c>.4)etHead(0,6.1,.35,1.5,{metal:'gold'});
-    else if(c<-.8&&Math.sin(ph-a)>0){box('timber',0,.6,.03,1.2,2.4,.06,P('timber'));box('stone',0,3.0,.06,1.6,.25,.12,sd);door(0,.6,.1,0,1.2);}});
+    else if(c<-.8&&Math.sin(ph-a)>0){svDoorway(0,.6,.03,0,1.2,2.4,{hollow:false,mk:'timber',col:P('timber'),t:.06,name:'tower door'});box('stone',0,3.0,.06,1.6,.25,.12,sd);door(0,.6,.1,0,1.2);}});
    etHexFaces(5.6*ET_HEX_AP-.25,()=>{for(const xx of [-1.4,1.4]){box('brick',xx,13.5,0,1.1,1.1,.5,br);box('brick',xx,14.6,0,.6,.4,.5,brD);}});
    prism('brick',etHex(3.4),13.5,16.6,br);etHexHip(3.4,16.6,2.8,{mk:'celadon',ov:.7});
    cone('verdigris',0,19.4,0,.22,1.2,P('verdigris'),6);popM();}

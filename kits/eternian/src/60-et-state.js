@@ -56,12 +56,12 @@ defBuilding({key:'et_registry',name:'Registry',seed:7102,cut:true,w:30,d:18,h:17
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=26,D=10,H=8;
   box('stone',0,0,0,W+1,G,D+1,sd);for(let k=0;k<3;k++)box('stone',0,0,D/2+.8+k*.3,6-k*.5,G-k*.25,.3,sd);
   box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
-  etWalls(W,D,G,H,'brick',br,{back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],
+  etWalls(W,D,G,H,'brick',br,{front:[{x:0,w:2.0,h:3.9,y:0,gap:true}],back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],   /* the front cut for the civic door (it stood against the wall) */
    left:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}],right:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}]},{frame:brD});
   for(let i=0;i<8;i++){const x=-W/2+.4+i*(W-.8)/7;box('brick',x,G,D/2+.15,.6,H,.3,brD);}
   for(let i=0;i<7;i++){const x=-W/2+.4+(i+.5)*(W-.8)/7;if(i!==3)etLancet(x,G+1.6,D/2+.15,1.3,5.6,{light:'glass'});}
   etFrieze(0,G+H-1.6,D/2+.32,W-1,1.2);
-  pushM(TF(0,G,0));etCivicDoor(0,D/2+.15,2.0,3.9,{metal:'bronze'});popM();
+  pushM(TF(0,G,0));etCivicDoor(0,D/2+.15,2.0,3.9,{metal:'bronze',hollow:true});popM();
   box('stone',0,G+H,0,W+.06,.35,D+.06,sd);
   etHip(W,D,G+H+.35,5.2,{mk:'celadon',ov:.7,flare:.5,under:P('timber'),cap:P('celadon')});
   // the vault
