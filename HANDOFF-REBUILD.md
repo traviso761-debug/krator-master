@@ -29,6 +29,9 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
   - **Mid Basin** takes `maar`, `relay` and `terraces`;
   - **loom-chasms** takes `terraces` (the Cradle);
   - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
+- **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid
+  Basin** (its interbedded loess and tuff) and **wouterwall** (the loess mantle on the bench). The shaders still draw the flat column, so a
+  page reads the varied rock on the CPU.
 
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 

@@ -393,6 +393,17 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
 
   *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
   ground)` gives the ponds, lakes and spring pools.
+- **`KSTRATA.vary`, `KSTRATA.drape`, `KSTRATA.loadVaried`** (`35c-core-strata-vary.js`, `test-strata-vary.js`; GDScript twin
+  `kstrata_vary.gd`, golden `golden-strata-vary.json`, vendored to `godot/tests/terrain/`): a formation whose base varies from place to
+  place. Contacts move by an offset of (x, z), which sums any of a constant, a plane, the stack's table noise, bumps or a grid. The
+  stratigraphic height is remapped piecewise linearly between the moved contacts, so beds keep their place and thin or thicken with their
+  formation. Where two contacts cross, the higher-numbered wins, and the formation between them pinches out. `KSTRATA.drape(S, k, ground,
+  {box, step, th})` lays formation k's base `th` under the ground: a mantle following the land it fell on.
+  - It serves Mid Basin's interbedded loess and tuff and the W outer wall's loess.
+  - *Adopting it:* list it after `35-core-strata.js`, then `const V = KSTRATA.vary(S, {contacts: [{at: 2, by: KSTRATA.drape(S, 2, ground,
+    {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
+  - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes
+    and cliffs: a baked offset texture for the shaders is not done. Keep alterations off a varied stack: their lines read the shifted height.
 
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 
@@ -527,7 +538,7 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
   colour equals `S.surface`'s at every sampled pixel off the bed edges (within 1/255) on ten stacks: canyon, legacy, outland with a
   fault, tibasalt across its alteration line, ringfold folded, megabreccia under loess, two blocks formations with two alterations,
   lateral changes (into blocks too), tepui, and badland's wash on flat ground.
-- **Not yet**: a loess (or any formation) whose base varies from place to place; the alteration of block clasts on the GPU;
+- **Not yet**: a varied contact on the GPU (`35c-core-strata-vary.js` is CPU and Godot data only; above); the alteration of block clasts on the GPU;
   `tools/harness.py smoke` crashed every page on this machine (a bare three.js page too), so the browser checks ran in the app's browser.
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
