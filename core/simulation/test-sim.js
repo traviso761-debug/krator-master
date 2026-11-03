@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -1133,12 +1133,14 @@ function world(seed){
  // spending that follows savings (m1.spend): wealth within the class's band by the household's savings; a treat bought only
  // with money in hand; savings lower the treat's bar, so saved money is spent
  const SP={bands:{poor:[0,0.2]},days:5,treatDrop:15},kv=(W,h)=>W.kava[h]||0;
- const tr=(o)=>{const W=mk(Object.assign({treat:true,calibrate:1},o));W.kava={};const mb=W.S.moneyBuy;W.S.moneyBuy=function(home,place,g,n,s){if(g==='kava'&&W.S.MONEY.m1.live)W.kava[home]=(W.kava[home]||0)+n;return mb.apply(this,arguments);};W.run(1+1/1440);W.run(6);return W;};
+ const tr=(o)=>{const W=mk(Object.assign({treat:true,calibrate:1},o));W.kava={};W.first={};const mb=W.S.moneyBuy;W.S.moneyBuy=function(home,place,g,n,s){if(g==='kava'&&W.S.MONEY.m1.live){W.kava[home]=(W.kava[home]||0)+n;if(W.first[home]==null)W.first[home]=W.S.minute();}return mb.apply(this,arguments);};W.run(1+1/1440);W.run(6);return W;};
  const S1=tr({spend:SP,rich:20000}),S0=tr({spend:null,rich:20000}),S2=tr({spend:Object.assign({},SP,{treatDrop:0}),rich:20000});
  const wA=S1.S.R.actor.gr0.wealth,wC=S1.S.R.actor.id0.wealth;
  ok('wealth follows savings within the class\'s band (the saving household '+wA.toFixed(2)+', the broke one '+wC.toFixed(2)+', the band 0 to 0.2)',Math.abs(wA-0.2)<1e-9&&Math.abs(wC-0)<1e-9,Math.abs(S0.S.R.actor.gr0.wealth-0.2)<1e-9);
  ok('a treat only with money in hand (the broke household '+kv(S1,'hC')+' bowls; without the rule, on the dole, '+kv(S0,'hC')+')',kv(S1,'hC')===0&&kv(S0,'hC')>0,kv(S1,'hC')>0);
- ok('savings lower the treat\'s bar, so saved money is spent (the saving household '+kv(S1,'hA')+' bowls, '+kv(S2,'hA')+' without the drop)',kv(S1,'hA')>kv(S2,'hA'),kv(S1,'hA')<=kv(S2,'hA'));
+ const fb1=S1.first.hA,fb2=S2.first.hA;
+ ok('savings lower the treat\'s bar, so saved money is spent sooner (the saving household\'s first bowl at day '+(fb1/1440).toFixed(2)+', '+kv(S1,'hA')+' bowls; without the drop day '+(fb2/1440).toFixed(2)+', '+kv(S2,'hA')+')',
+   fb1<fb2&&kv(S1,'hA')>=kv(S2,'hA'),!(fb1<fb2));
  // stations (m1.stations): a household whose purse holds the price buys a vacant shop and one of its workers rises to its
  // merchant (its class with it); the owned shop keeps its margin, the rest to the treasury wholesale; a household that
  // cannot cover its shop's wages falls back, the shop to the treasury, its people unhappier; one rise a life (two where fluid)
@@ -1319,5 +1321,61 @@ function world(seed){
   let peak=0,at0=null,at30=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && (m%60<=10 || (m%60>=30 && m%60<=40))) peak=Math.max(peak,made);
     if(m===10*60+15){ const mm=S.minute(); at0=S.all('actor').filter(a=>!a.lagBase && S.desire(a,mm)==='BUY').length; at30=S.all('actor').filter(a=>a.lagBase && S.desire(a,mm)==='BUY').length; } }
   ok('two buckets: the half-hour bucket keeps its old hour until :30; the peak lower again',at30===0&&at0>40&&peak<=B.peak,at30>0);}}
+
+// a vital need (SIM.needs `vital`): past its line hunger caps happiness, to nothing at a full meter, so a starving man is not
+// kept content by his other needs; without it the weighted mean leaves him at three quarters
+{const {S}=world(223);S.needs({list:['eat','rest','talk','pray'],rate:{},weight:{eat:1.5},vital:{eat:60},pain:1});const a=S.actor({id:'v1',role:Object.keys(S.R.role)[0]||'x',home:'homeA'});
+ const h=(e)=>S.happiness(a,[e,0,0,0]),N=S.NEED,v=N.vital;N.vital=[];const flat=h(90);N.vital=v;
+ ok('a vital need past its line caps happiness (hunger 90: '+h(90).toFixed(0)+', 100: '+h(100).toFixed(0)+'; under the line, 50: '+h(50).toFixed(0)+'; without the rule, 90: '+flat.toFixed(0)+')',
+   Math.abs(h(90)-25)<1e-9&&h(100)===0&&Math.abs(h(50)-(100-1.5*50/4.5))<1e-9,flat<=25);}
+// unrest (77-sim-6-unrest.js; PLAN-MONEY.md M6): two towns of one faction, both unwatched; the workers' want rises a little
+// each day and nothing fills it, so their pool sinks and walks the stages (grumbling, demands, strikes, treason) while
+// the merchants stay content; Valapo, short of rice, asks the faction and Kautoa ships it from its spare; the ruler's
+// demand is refused (no political system), and the refused strike
+{const mk=(o)=>{o=o||{};const {S,clock}=world(211);
+   ['WORK','EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:o.kFaction||'town'});S.settlement({id:'valapo',faction:'town'});if(o.kFaction)S.faction({id:o.kFaction});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:6},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vMill',kind:'mill',x:110,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});
+   S.place({id:'kHome',kind:'house',x:0,z:0,activities:{SLEEP:4},settlement:'kautoa'});
+   const cfg=()=>({goods:{rice:{},flour:{}},every:60,window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.recipe('vFarm',{out:['rice'],rate:0,cap:300});S.recipe('vMill',{out:['flour'],rate:0,cap:300});
+   S.R.place.kShed.stock={rice:o.kRice==null?2000:o.kRice};S.R.place.vShed.stock={rice:o.short?60:0};   /* two days' rice, then none */
+   S.needs({list:['want'],rate:{want:o.rate==null?0.5:o.rate},init:0,pain:1});
+   S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});S.role({id:'clerk',org:'folk',sched:[[0,'SLEEP'],[8,'WORK'],[16,'SLEEP']],needs:{rate:{want:0}}});
+   const ps=[];for(let i=0;i<6;i++){const a=S.actor({id:'vw'+i,role:'hand',home:'vHome',work:i<4?'vFarm':'vMill'});a.cls='poor';ps.push(a);}
+   for(let i=0;i<2;i++){const a=S.actor({id:'vc'+i,role:'clerk',home:'vHome',work:'vMill'});a.cls='middle';ps.push(a);}
+   for(let i=0;i<4;i++){const a=S.actor({id:'kw'+i,role:'clerk',home:'kHome'});a.cls='poor';}
+   S.unrest(Object.assign({smooth:1,hyst:5},o.unrest||{}));
+   clock.d=0;clock.h=0;S.level('valapo','abstract');S.level('kautoa','abstract');
+   const run=(days)=>{for(let m=S._m||0,e=m+days*1440;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;
+     if(o.short && m%1440===600) S.withEcon('valapo',()=>S.supply('rice',30));   /* the town draws rice it has none of: short */
+     S.step();S._m=m+1;}};
+   return {S,EV,ps,run};};
+ const A=mk({short:true});A.run(12);const RA=A.S.unrestReport('valapo').towns.valapo,EVA=A.S.unrestReport().events.filter(e=>e.settlement==='valapo'&&e.key==='poor'&&e.kind==='stage').map(e=>e.to);
+ const C=mk({rate:0});C.run(12);const RC=C.S.unrestReport('valapo').towns.valapo;
+ ok('a sinking pool walks the stages in order ('+EVA.join(' > ')+'; the workers\' level '+RA.level.poor.toFixed(0)+') while the content merchants stay calm ('+RA.stage.middle+')',
+   EVA.join(',')==='grumble,demand,strike,treason'&&RA.stage.middle==='calm'&&RA.treason.length===1,RC.stage.poor!=='calm');
+ const B=mk({short:true});B.run(7);const g3=B.S.unrestArrest('valapo'),g0=C.S.unrestArrest('valapo'),sB=B.S.UNREST.towns.valapo.stage.poor;
+ ok('grumbling: the watch\'s arrest odds lower in the town ('+g3+' at '+sB+', against '+g0+' calm)',sB!=='calm'&&g3===0.7&&g0===1,g0!==1);
+ const DG=RA.demands.find(D=>D.kind==='goods'),L0=A.S.ledgerSnap?A.S.ledgerSnap():null;
+ ok('a demand for the rice it lacked, answered by the faction: Kautoa ships five days of its normal use (30 a day) from its spare ('+(DG&&JSON.stringify(DG.sent))+', '+(DG&&DG.came)+' of '+(DG&&DG.asked)+' asked), booked imported',
+   DG&&DG.answer==='granted'&&DG.goods[0]==='rice'&&DG.asked===150&&DG.sent['kautoa>rice']===150&&A.EV.imported.rice===DG.came&&A.S.econ('kautoa').exported.rice===DG.came,!(DG&&DG.came>0));
+ const F=mk({short:true,kFaction:'other'});F.run(9);const DF=F.S.unrestReport('valapo').towns.valapo.demands.find(D=>D.kind==='goods');
+ ok('a town of another faction sends nothing: refused',DF&&DF.answer==='refused'&&!(F.EV.imported.rice>0),!(DF&&DF.answer==='refused'));
+ const N=mk({short:false});N.run(9);const RN=N.S.unrestReport('valapo').towns.valapo,DR=RN.demands.find(D=>D.kind==='ruler');
+ ok('short of nothing, the demand is for a new ruler, refused: there is no political system yet ('+(DR&&DR.why)+')',DR&&DR.answer==='refused'&&DR.why==='no political system yet',!DR);
+ const SK=RN.strikes[0],held=SK?SK.held:[];
+ ok('refused, the workers strike: the workplaces most of them work held, their hours lost ('+held.join(', ')+')',!!SK&&held[0]==='vFarm'&&SK.until-SK.m===1440&&N.S.unrestReport().events.some(e=>e.kind==='strike'),!SK);
+ const NR=mk({short:false,unrest:{ruler:()=>true}});NR.run(9);const RR=NR.S.unrestReport('valapo').towns.valapo;
+ ok('a faction that grants the ruler: no strike follows ('+RR.demands.map(D=>D.kind+' '+D.answer).join(', ')+')',RR.demands.every(D=>D.answer!=='refused')&&!RR.strikes.length,!!RR.strikes.length);
+ const cheer=A.ps.filter(a=>a.cls==='poor').every(a=>(a.hmods||[]).some(h=>h.why==='demand granted'));
+ ok('a granted demand cheers the people who made it, not the others',cheer&&A.ps.filter(a=>a.cls==='middle').every(a=>!(a.hmods||[]).some(h=>h.why==='demand granted')),!cheer);
+ // easing back: a stage leaves only `hyst` over its line (the pool read as it is: smooth near nothing; no cheers)
+ const H=mk({short:false,rate:0,unrest:{smooth:0.01,demand:{granted:{n:0},refused:{n:0}}}}),wk=H.ps.filter(a=>a.cls==='poor'),at=(w)=>{wk.forEach(a=>{H.S.needsOf(a,H.S.minute());a.nd[0]=w;});H.run(1);return H.S.UNREST.towns.valapo.stage.poor;};
+ H.run(1);const seq=[65,58,54,47,40].map(at);
+ ok('a stage eases back only '+H.S.UNREST.cfg.hyst+' points over its line (the pool 35, 42, 46, 53, 60: '+seq.join(', ')+')',seq.join(',')==='demand,demand,grumble,grumble,calm',seq[1]!=='demand');
+}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

@@ -244,6 +244,13 @@ declares both once they are planned, in one order whichever town it draws, and h
   days' keep for three nights buys it, and the worker rises to merchant and runs it (the shop keeps 15%, the rest to the
   treasury wholesale); a household that cannot cover its shop's wages falls, unhappier for a month. Twenty days: 6 rises,
   no fall.
+- **Unrest** (`47u`, core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6, 2026-11-03). Each town's happiness pool, all
+  its people and each class, eased over three days: under 50 it grumbles (the watch less able to arrest), under 40 it
+  demands of the polity a shipment of what it lacked (or a new ruler: refused, no political system yet), under 30 a
+  refused demand brings strikes, under 20 treason. An unwatched town now lives its people's needs by their schedules, so
+  its pool holds (Valapo 86 unwatched, 80 watched), and hunger and thirst past 60 cap happiness (a starving town riots).
+  As they are, both towns calm; under a blight (tests/test-isle-unrest.js) Valapo grumbles on its fifth hungry day,
+  demands food, strikes when the first shipment comes short, reaches treason, and is sent rice and coconut by Kautoa.
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

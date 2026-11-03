@@ -159,6 +159,6 @@ ISLE.moneyStationChecks = function (a, b) {
     if (b.minute - e.m < Z.fall.days * 1440 && !ppl.every(function (y) { return (y.hmods || []).some(function (h) { return h.why === 'fall'; }); })) badF.push(e.household + ' not unhappy'); });
   ok('every fall: the place back with the treasury, its people unhappier', !badF.length, badF.length ? badF.slice(0, 3).join('; ') : falls.length + ' falls');
   var pools = ISLE.SIM.order.map(function (s) { var P = SIM.happinessPool(s); return s + ' ' + Math.round(P.all.mean) + ' (' + Object.keys(P.byClass).map(function (c) { return c + ' ' + Math.round(P.byClass[c].mean); }).join(', ') + ')'; });
-  ok('the happiness pool, collective and by class (unrest below 50: M6; a town nobody watches does not live its needs: read only the watched town)', true, pools.join('; '));
+  ok('the happiness pool, collective and by class (unrest below 50: 47u, M6)', true, pools.join('; '));
   return res;
 };

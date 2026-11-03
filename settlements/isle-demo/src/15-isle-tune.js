@@ -145,6 +145,9 @@ ISLE.TUNE.sim = {
     free: ['SOCIALIZE', 'REST', 'IDLE', 'WORSHIP'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
     bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
     loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
+    /* VITAL needs (2026-11-03, M6): hunger and thirst past 60 cap happiness, to nothing at a full meter: a weighted mean let
+       a starving town stay at 70, content on its other needs, and never riot */
+    vital: { eat: 60, drink: 60 },
     pain: 1.5, init: { material: [0, 55], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }
   },
   items: {
@@ -356,6 +359,14 @@ ISLE.TUNE.sim = {
        households' spending meet the wages and the full rations, at most `level.step` a night; the ration moves with it.
        The wage stays flat (the owner: see how prices shake out first) */
     m2: { k: 0.5, lo: 0.5, hi: 2, smooth: 3, level: false } },
+  /* UNREST (47u; core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6; the owner, 2026-11-03): each town's happiness pool,
+     collective and by class, eased over `smooth` days; under 50 the town grumbles (the watch's arrest odds times
+     `grumble.arrest`), under 40 it demands of the polity a shipment of what it lacked (the other towns and villages send what
+     they hold over `keep` days of their own use, up to `days` days of the asker's) or else a new ruler (refused: no political
+     system yet), under 30 a refused demand brings strikes (`share` of the strikers' workplaces held `days`), under 20
+     treason (an event: the revolution waits for the political system). A stage eases back `hyst` over its line. Placeholders */
+  unrest: { smooth: 3, hyst: 5, stages: { grumble: 50, demand: 40, strike: 30, treason: 20 }, grumble: { arrest: 0.7 },
+    demand: { goods: 2, days: 5, keep: 2, every: 5, grant: 0.4, granted: { n: -10, days: 10 }, refused: { n: 5, days: 10 } }, strike: { after: 5, share: 0.5, days: 1 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

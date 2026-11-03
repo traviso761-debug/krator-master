@@ -258,8 +258,12 @@
       stays off: it spirals against the flat wage (PLAN-MONEY.md).
 - [ ] **No merchant princes or nobles rise on the isles yet:** a trading house has no takings until trade by price (M3); stations
       climb in order. And a riser keeps its home's class name for its household (only the riser's class moves).
-- [ ] **An unwatched town does not live its needs**, so its happiness pool sinks (Valapo 29 after 20 days unwatched): unrest (M6)
-      waits for the abstract level to fill its people's meters.
+- [ ] **An unwatched town is a little happier than watched** (Valapo 86 unwatched, 80 watched, over twelve days): its people
+      never find a temple shut or full and walk ten minutes at each change of activity; contemplation and sleep are the gap.
+- [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
+      its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town falls from calm to
+      treason in about three days once its stores are eaten (the vital rule is steep), and a strike holds workplaces that
+      may already be idle.
 - [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
       Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
       (M1's second part) come next.

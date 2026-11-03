@@ -262,7 +262,17 @@ again at the counter for a treat). **Stations** (`m1.stations`): a person's `sta
 household buys a vacant place of the next station's kinds (its workplace account's `ownedBy` becomes the household's, `merchant` the riser) and its
 runner rises; an owned place pays `wholesale` to the treasury, its takings swept to the household, its wages covered from it; a household that
 cannot cover them falls. `SIM.moneyStations()` -> rises and falls by settlement and station, and their events. Happiness modifiers:
-`SIM.happinessAdd(a, n, days, why)` (a.hmods, fading), `SIM.happinessPool(s, classOf?)` (77-sim-6-needs.js).
+`SIM.happinessAdd(a, n, days, why)` (a.hmods, fading; a negative n a cheer), `SIM.happinessPool(s, classOf?)` (77-sim-6-needs.js).
+
+**Unrest (77-sim-6-unrest.js, PLAN-MONEY.md M6, 2026-11-03).** Per settlement: `level` and `stage` by key (`all`, and each class), the stage one
+of calm, grumble, demand, strike, treason (the deepest line the level is under; eased back `hyst` over a line); `demands` [{id, m, key, keys,
+kind: goods | ruler, goods, due, answer: granted | refused, answered, asked, came, sent: {'<sender>><good>': n}, why}]; `strikes` [{m, key, keys,
+held: [place], until}] (the places' recipes held, reason 'strike'); `treason` [{m, key, level}]. A shipment is booked exported by its sender and
+imported by the asker, so a settlement's books hold. `SIM.unrestReport(s?)`, `SIM.unrestArrest(s)` (crime's arrest odds read it),
+`SIM.unrestSpare(s, g)`. **Needs at the abstract level** (77-sim-6-needs.js `SIM.needsAbstract`): the meters of an unwatched town's people are
+lived by schedule from their clock to the minute asked (`a.absAct`, `a.absIntr` its state), so any reader of an abstract actor's meters gets
+its lived day; a household's abstract meals set `P.absBoost`, its people's EAT. **Vital needs** (`SIM.needs` `vital: {need: line}`): past its
+line a vital meter caps happiness, 100 at the line to 0 full.
 
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a

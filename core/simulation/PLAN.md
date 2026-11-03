@@ -229,8 +229,11 @@ core/simulation/
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
     77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
-    PLAN-MONEY.md         money: research and a proposal (2026-11-02, not built; the owner's questions at its end)
-    77-sim-6-money.js     money (2026-11-03, opt-in: SIM.money): currencies, accounts, mint, burn, pay, exchange (PLAN-MONEY.md M0)
+    PLAN-MONEY.md         money: research, the owner's answers, and what is built (M0-M2, stations, M6 to treason)
+    77-sim-6-money.js     money (2026-11-03, opt-in: SIM.money): currencies, accounts, mint, burn, pay, exchange (M0); wages,
+                          prices, the ration (M1), moving prices (M2), spending by savings, stations (rise and fall)
+    77-sim-6-unrest.js    unrest (2026-11-03, opt-in: SIM.unrest): the happiness pool's stages, grumbling, demands to the
+                          faction (a shipment, a new ruler), strikes, treason (PLAN-MONEY.md M6)
     77-sim-6-crime.js     crime and punishment (2026-11-02, opt-in: SIM.crime): criminals, pickpockets, burglars, fights, witnesses, guards, arrest, jail
     77-sim-6-govern.js    the economy's opt-in rules: a production governor (order-up-to with its supply line), spoilage,
                           keeping (salt), seasoning (lifted from the isle demo 2026-10-26)

@@ -268,13 +268,14 @@
   SIM.itemsAbstractHome = function(P, hrs, town, res){
     var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
     var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
-    var st=P.store||(P.store={});
+    var st=P.store||(P.store={}), M=I.meal, Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; }, bs=0;
     for(var i=0;i<n;i++){
-      if(P.mess){ mealBook(town, SIM.ECON && !SIM.economyMeal() ? 'out' : 'mess'); continue; }
+      if(P.mess){ var out=SIM.ECON && !SIM.economyMeal(); mealBook(town, out ? 'out' : 'mess'); bs+=out ? M.none : M.mess; continue; }
       var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
-      if(have.length>=2){ st[have[0]]--; st[have[1]]--; book(town, 'eaten', have[0], 1); book(town, 'eaten', have[1], 1); mealBook(town, 'meal'); }
-      else if(have.length===1){ st[have[0]]--; book(town, 'eaten', have[0], 1); mealBook(town, 'single'); }
-      else mealBook(town, 'none'); }
+      if(have.length>=2){ st[have[0]]--; st[have[1]]--; book(town, 'eaten', have[0], 1); book(town, 'eaten', have[1], 1); mealBook(town, 'meal'); bs+=M.mult*(Q(have[0])+Q(have[1]))/2; }
+      else if(have.length===1){ st[have[0]]--; book(town, 'eaten', have[0], 1); mealBook(town, 'single'); bs+=M.single*Q(have[0]); }
+      else { mealBook(town, 'none'); bs+=M.none; } }
+    if(n) P.absBoost=bs/n;   /* what its meals were worth: its people's EAT at the abstract level (SIM.needsAbstract) */
     if(P.mess || !SIM.ECON) return;
     var tot=0; for(var f in st) tot+=st[f]; if(tot >= ppl*I.meals*I.perMeal*I.low) return;
     var sold=I.townFoods && I.townFoods[town]; if(!sold){ var u={}; Object.keys(I.sells).forEach(function(id){ if(SIM.settlementOf(id)!==town) return; I.sells[id].forEach(function(k){ if(I.kinds[k] && I.kinds[k].food) u[k]=1; }); });
@@ -299,16 +300,19 @@
       if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
         if(a.tool.w>=1){ var k=a.tool.k, kn=a.tool.base||K.base||k; a.tool=null; a.toolNeed=kn; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, kn, 'work', d*1440); } }
       else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
-    if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
+    if(SIM.NEED){ var Hb=SIM.R.place[a.home]; if(Hb && Hb.absBoost!=null){ a.boost=a.boost||{}; a.boost.EAT=Hb.absBoost; } SIM.needsOf(a, d*1440); }   /* every meter lived to midnight by its schedule (SIM.needsAbstract), the material meter with them */
     if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;
-    day(a, d);
-    var E=a.errand; if(!E) return;
-    if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
-    var H=anchor(a), best=null, bd=Infinity;
-    sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
-    if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
-    E.place=best; E.trip=0; complete(a, E, d*1440);
+    for(var k=0; k<SIM.ITEMS_ABSTRACT_ERRANDS; k++){   /* a day's errands: a tool at work, a set of clothes, a treat in its free hours (one a day), as a watched day has room for */
+      day(a, d);
+      var E=a.errand; if(!E) return;
+      if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
+      var H=anchor(a), best=null, bd=Infinity;
+      sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
+      if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
+      E.place=best; E.trip=0; complete(a, E, d*1440);
+      if(a.errand || (I.treat && I.treat.items.some(function(t){ return t[1]===E.item; }))) return; }   /* one treat a day */
   };
+  SIM.ITEMS_ABSTRACT_ERRANDS = 3;
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
 })(typeof window!=='undefined'?window:globalThis);

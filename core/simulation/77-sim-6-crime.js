@@ -96,7 +96,7 @@
   function witnesses(P, a, v){ var w=0, g=0, gd=SIM.CRIME.cfg.guard||function(){ return false; };
     Object.keys(P.who||{}).forEach(function(id){ if(id===a.id || (v && id===v.id)) return; var x=SIM.R.actor[id]; if(!x) return; if(gd(x)) g++; else w++; }); return { w:w, g:g }; }
   /* the alarm: the nearest guard on duty comes (presented), or the town's guards a head (abstract) */
-  function arrestOdds(a, at, s, minute){ var C=SIM.CRIME, A=C.cfg.arrest||{}, acts=C.cfg.guardActs||['WORK'], base=A.base==null?0.6:A.base;
+  function arrestOdds(a, at, s, minute){ var C=SIM.CRIME, A=C.cfg.arrest||{}, acts=C.cfg.guardActs||['WORK'], base=(A.base==null?0.6:A.base)*(SIM.UNREST ? SIM.unrestArrest(s) : 1);   /* a grumbling town hides its own (77-sim-6-unrest.js) */
     if(abstractTown(s)){ var on=0, h=Math.floor((minute%1440)/60); guardsOf(s).forEach(function(x){ var sc=SIM.schedOf(x, minute); if(sc && acts.indexOf(sc[h])>=0 && !SIM.jailed(x, minute)) on++; });
       var pop=people(s).length||1; return { p:base*Math.min(1, (on/pop)/(A.ratio==null?1/150:A.ratio)), guard:null, d:null }; }
     var best=null, bd=Infinity, reach=A.reach==null?300:A.reach;

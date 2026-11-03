@@ -32,8 +32,25 @@ less happy, fading over 30 days: `SIM.happinessAdd`, read by SIM.happiness), and
 a life (`perLife`, two in the fluid nations). The happiness pool, collective and by class (`SIM.happinessPool`), is ready
 for M6. On the isles over 20 days: 6 rises (shops at 1,980 shells), no fall, rations 93-99%, the price index within 5%.
 No merchant princes on the isles yet: a trading house has no takings until trade by price (M3), so it would fall at once.
-**M6 needs one thing first: the abstract level must live its needs.** A town nobody watches does not fill its people's
-meters, so its pool sinks (Valapo's to 29 in 20 days unwatched): unrest read off it would riot wherever the player is not.
+**M6 is built** (2026-11-03): first the abstract level was made to live its needs (a town nobody watches had its
+people's meters run on whatever they were doing when it was lowered, so its pool sank: Valapo to 29 in 20 days); now
+each person's day is lived by its schedule (77-sim-6-needs.js `SIM.needsAbstract`: the free hours as the resolver picks
+them among the places within reach and open, a labourer's well trip, ten minutes on the way at each change, a meal at what
+its household's last meals were worth), and an unwatched town holds steady near the watched one (Valapo 86 unwatched
+against 80 watched over twelve days: fewer and shorter trips). Second, **hunger and thirst are vital** (`needs.vital`):
+past 60 they cap happiness, to nothing at a full meter; a weighted mean had let a starving town sit at 70, content on its
+other needs, and never riot. Then **unrest** (77-sim-6-unrest.js; the isles' `47u`): each midnight a town's pool,
+collective and by class, eased over three days into a level; under 50 the town grumbles (the watch's arrest odds x0.7),
+under 40 it demands of the polity (one demand a town at a time, for every class in demand: a shipment of what it lacked
+that the others can spare, else a new ruler, refused while there is no political system), under 30 a refused demand
+brings strikes (half the strikers' workplaces held a day), under 20 treason (an event). A granted demand cheers the
+asking people, a refused one angers them; a stage eases back five points over its line. **Proved on the isles** (tests/
+test-isle-unrest.js): as they are, both towns calm (Kautoa 88, Valapo 86); a blight on Valapo (its food works held, its
+warehouses spoiled, no food by canoe) leaves its households to eat their stores down: on day 9 it grumbles, day 10
+demands rice and coconut, the first answer comes short (6,163 of 17,130: refused), strikes, treason on day 12, and the
+next demand is granted (Kautoa ships 13,385 rice and 5,689 coconut); the books hold throughout and Kautoa stays calm.
+**Waiting on the political system** (section 3, question 2): what treason does (a revolution, a faction thrown out or
+invited back), a new ruler granted, the demands' answers by a faction's strength and will rather than by its stock.
 
 **What moving prices taught** (the isles, eight market days, 2026-11-03):
 - **Scarcity pricing alone is stable.** The price index stays within 5% of where it opened; Kautoa's dearest goods are its
@@ -198,7 +215,8 @@ discounted while it is small (proposed: the full rate times min(1, (people - 50)
 later, it sends someone to collect). Wage, sales and land taxes, tolls and harbour dues wait (TODO.md). Temple offerings
 and ceremonial hoards stay the sinks people want.
 
-**M6. Falls, the happiness pool and unrest** (the owner, 2026-11-03, answers 9 and 14). A household that falls a station
+**M6. Falls, the happiness pool and unrest** (the owner, 2026-11-03, answers 9 and 14; built to treason the same day:
+section 1's M6 paragraph; the revolution waits on the political system). A household that falls a station
 (a bankrupt merchant back to worker, a prince to merchant) takes an **unhappiness modifier** on its people's happiness
 (core/simulation's needs already give each person a happiness and a loyalty), fading over months. Each settlement keeps a
 **happiness pool**: the mean happiness of its people, collective and **per class** (workers, merchants, merchant princes,
