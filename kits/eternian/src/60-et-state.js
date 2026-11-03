@@ -55,6 +55,8 @@ defBuilding({key:'et_registry',name:'Registry',seed:7102,cut:true,w:30,d:18,h:17
  note:'a long hall of pale brick, seven lancets between pilasters, a civic door held by two ancestors, a celadon hip; a stone vault behind; the clerks and the registers inside',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=26,D=10,H=8;
   box('stone',0,0,0,W+1,G,D+1,sd);for(let k=0;k<3;k++)box('stone',0,0,D/2+.8+k*.3,6-k*.5,G-k*.25,.3,sd);
+  wkPad(0,0,W+1,D+1,G);wkPad(0,D/2+.725,6,.45,G);   /* the podium and its top step are 0.8 m tall: core/walk/box reads them as blocks, so their tops are
+     declared floors (the reachability audit, 2026-11-03: the hall was unreached through its open door) */
   box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
   etWalls(W,D,G,H,'brick',br,{front:[{x:0,w:2.0,h:3.9,y:0,gap:true}],back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],   /* the front cut for the civic door (it stood against the wall) */
    left:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}],right:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}]},{frame:brD});
