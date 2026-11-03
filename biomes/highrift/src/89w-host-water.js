@@ -67,7 +67,7 @@ if(SKEY==='mirror'){const K=SITE.lake,BOX=[-TERR.R*1.1,-200,TERR.R*1.1,TERR.R*1.
  REGISTER({name:'Lake Verdigris (acid: copper sulfate)',x:0,z:1500,y:K.level-K.depth,r:2600,h:K.depth+3,tags:{hazard:{kind:'acid',danger:.5}}});}
 if(SKEY==='wedge'){const P=L.TN,poly=[],R=P.r*1.4;for(let k=0;k<40;k++){const a=k/40*TAU;poly.push([P.x+Math.cos(a)*R,P.z+Math.sin(a)*R]);}
  const TS=WATER.still({name:'The tarn on the crest',level:P.l,poly,gradient:{centre:lin(0x1e3038).getHex(),rim:lin(0x7a8e90).getHex(),power:1}});
- const D=WATER.drawPools([TS],{name:'The tarn',color:0xffffff,roughness:.03,metalness:.1,envMapIntensity:.6,renderOrder:1,pick:true});D.mesh.userData.inspectLabel='The tarn';W_OUT.tarnDraw=D;}
+ const D=WATER.drawPools([TS],{name:'The tarn',color:0xffffff,roughness:.03,metalness:.1,envMapIntensity:.6,renderOrder:1,pick:true});D.mesh.userData.inspectLabel='The tarn';W_OUT.tarnDraw=true;}
 if(SKEY==='coulee'){const Gc=SITE.gill,pts=[];for(let x=TERR.R*1.05;x>=-TERR.R*1.05;x-=20){const z=L.gz(x)+14*Math.sin(x*.013);pts.push([x,z,L.bedY(x)-Gc.bed+.9]);}
  const GILL=WATER.flow({name:'Brant-Fell Gill',pts,width:Gc.flow,speed:1.6,rapids:[.01,.05]});
  const GD=WATER.drawFlow(GILL,{shallow:lin(0xa4b0aa),deep:lin(0x52706e),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:10,across:6,margin:1,depthBias:2,renderOrder:2,pick:true});

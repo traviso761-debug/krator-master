@@ -164,7 +164,7 @@ function fieldsAt(x,z,h,slope){
  let slot=0;if(SKEY==='gjar'){const l=L.along(x,z),a=Math.abs(L.across(x,z)-L.mOff(l));slot=smooth(L.mHalf(l)-60,L.mHalf(l)-160,a);}
  const rock=clamp(Math.max(smooth(.5,.82,slope),smooth(.35,.6,slope)*.45),0,1);
  const wet=clamp(.18+.6*near+.5*spray+.35*slot+(SKEY==='mirror'?.12:0)-.2*rock+.06*n2(x,z,.002,131),0,1);
- return{wet,flow:0,upland:1,canyon:slot,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold:clamp(.5+(h-SITE.snow[0])/1400,0,1),geo:0,barren:0,fog:0,mist:spray,flat:flat*(1-rock)};}
+ return{wet,flow:0,upland:1,canyon:slot,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold:clamp(.5+(h-SITE.snow[0])/1400+(SITE.temp.mean<3?.25:0),0,1),geo:0,barren:0,fog:0,mist:spray,flat:flat*(1-rock)};}
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','flat'];
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
