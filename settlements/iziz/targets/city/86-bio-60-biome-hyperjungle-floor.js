@@ -297,24 +297,30 @@ HYPERJUNGLE.buildFloor=function(R,q){
  // ---- 2. the understorey: three rings of jittered grid ----
  // type mix (Girder's): sub-canopy tree 7 %, palm 7 %, fern ~30 %, shrub 16 %, aroid 16 %,
  // ground tuft 10 %, fungi 5.5 %, boulders 4 %, the rest shrubs
+ // the inspector's names for the near and mid plants (BIO.nameAt): kind, radius, height in metres
+ // (and HYPERJUNGLE.PLANTS' key, for its tags)
+ const FN={subtrees:['Understorey tree',9,40],palms:['Palm',6,15],treeferns:['Giant tree fern',5,12,'treefern'],screwpines:['Screwpine',4,9,'screwpine'],
+  gingers:['Heliconia and ginger',4,8,'ginger'],ferns:['Fern',4,3],shrubs:['Shrub',4,6],aroids:['Aroid',4,7]},FLOORN=[];
  function plant(x,y,z,d,lv){
+  const ch=(k,fn)=>{charge(k,fn);if(FN[k])FLOORN.push({name:FN[k][0],plant:FN[k][3]||null,x:x,z:z,y:y,r:FN[k][1],h:FN[k][2]});};
   if(!okGround(x,z,1.2))return;
   const t=rng(),patch=fbm(x*.006-11,z*.006+5,31,2);
-  if(t<.05){if(lv>=1&&nearHero(x,z)>12&&okGround(x,z,4)){charge('subtrees',()=>subTree(x,y,z,lv));st.subtrees++;}else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
-  else if(t<.12){if(lv===2||rng()<.5){charge('palms',()=>palm(x,y,z,lv));st.palms++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
-  else if(t<.155){if(okGround(x,z,3)){charge('treeferns',()=>treeFern(x,y,z,lv));st.treeferns++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
-  else if(t<.18){if(dampK(x,z)>.45&&okGround(x,z,3)){charge('screwpines',()=>screwpine(x,y,z,lv));st.screwpines++;}else{charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}}
-  else if(t<.215+.06*(openK(x,z)-.6)){charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}
-  else if(t<.44+.1*(patch-.5)){charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}
-  else if(t<.60){const big=rng()<.2;charge('shrubs',()=>shrub(x,y,z,lv,big));st.shrubs++;}
-  else if(t<.76){charge('aroids',()=>aroid(x,y,z,lv));st.aroids++;}
-  else if(t<.86){charge('tufts',()=>{tuft(x,y,z,rr(2.2,4.2));if(lv===2&&rng()<.25)blooms(x,y+.5,z,1.5,ri(2,4));});st.tufts++;}
-  else if(t<.915){if(dampK(x,z)>.5)charge('fungi',()=>fungi(x,y,z,lv,st));else{charge('tufts',()=>tuft(x,y,z,rr(2,3.5)));st.tufts++;}}
-  else if(t<.945){charge('boulders',()=>boulder(x,y,z,lv,st));}
-  else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
+  if(t<.05){if(lv>=1&&nearHero(x,z)>12&&okGround(x,z,4)){ch('subtrees',()=>subTree(x,y,z,lv));st.subtrees++;}else{ch('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
+  else if(t<.12){if(lv===2||rng()<.5){ch('palms',()=>palm(x,y,z,lv));st.palms++;}else{ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.155){if(okGround(x,z,3)){ch('treeferns',()=>treeFern(x,y,z,lv));st.treeferns++;}else{ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.18){if(dampK(x,z)>.45&&okGround(x,z,3)){ch('screwpines',()=>screwpine(x,y,z,lv));st.screwpines++;}else{ch('gingers',()=>ginger(x,y,z,lv));st.gingers++;}}
+  else if(t<.215+.06*(openK(x,z)-.6)){ch('gingers',()=>ginger(x,y,z,lv));st.gingers++;}
+  else if(t<.44+.1*(patch-.5)){ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}
+  else if(t<.60){const big=rng()<.2;ch('shrubs',()=>shrub(x,y,z,lv,big));st.shrubs++;}
+  else if(t<.76){ch('aroids',()=>aroid(x,y,z,lv));st.aroids++;}
+  else if(t<.86){ch('tufts',()=>{tuft(x,y,z,rr(2.2,4.2));if(lv===2&&rng()<.25)blooms(x,y+.5,z,1.5,ri(2,4));});st.tufts++;}
+  else if(t<.915){if(dampK(x,z)>.5)ch('fungi',()=>fungi(x,y,z,lv,st));else{ch('tufts',()=>tuft(x,y,z,rr(2,3.5)));st.tufts++;}}
+  else if(t<.945){ch('boulders',()=>boulder(x,y,z,lv,st));}
+  else{ch('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
  // near: full detail; mid: fewer parts; both patchy, thinner (never bare) in the openings
  BIO.grid(7.4,0,nearR,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
  BIO.grid(15,nearR,lodR,(x,z,d)=>mix(.6,.3,smooth(nearR,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
+ if(BIO.nameSet)BIO.nameSet('hyperjungle.floor',FLOORN);
  // ground cover between the plants: squashed cards and moss in the damp, cheap, so the litter is never a lawn
  const cover=(x,y,z,s)=>{if(!okGround(x,z,.5))return;
   if(dampK(x,z)>.52&&rng()<.3){charge('moss',()=>groundMoss(x,y,z,rr(1.2,2.8)));st.moss++;}
@@ -361,7 +367,7 @@ HYPERJUNGLE.buildFloor=function(R,q){
    lianaRun([top[0],top[1]+.5,top[2]],mid,r,hc,leafy&&rng()<.5);lianaRun(mid,[gx,gy-.3,gz],r*.9,hc,leafy);
    if(rng()<.6){const L3=rr(10,30),xo=top[0]+rr(-.8,.8),zo=top[2]+rr(-.8,.8);   // a free-hanging aerial root beside it
     BIO.put('strand',[xo,top[1],zo],qUp([rr(-.15,.15),1,rr(-.15,.15)]).multiply(qEuler(0,rr(0,TAU),0)),[rr(.6,1.2),L3,L3*.1],leafCol(PAL.vine,1.4,.06));}
-   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;}});});
+   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;FLOORN.push({name:'Pitch vine',plant:'pitchvine',x:gx,z:gz,y:gy,r:2.5,h:len});}});});
 
  const tt=st.tris;let total=0;for(const k in tt)total+=tt[k];tt.total=total;
  return{under:{ferns:st.ferns,shrubs:st.shrubs,aroids:st.aroids,palms:st.palms,subtrees:st.subtrees,boulders:st.boulders,fungi:st.fungi,logs:st.logs,

@@ -270,10 +270,16 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
 // the scene at once (it is not a store, so it needs no bake).
 BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
  const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
- im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);
+ im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);im.userData.kit=BIO.kitName||'';
  scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);
  if(BIO.host.tags)BIO._tagDynamic(name,im,opt);
+ if(opt.motion)im.userData.motion=opt.motion;
  return im;};
+// opt.motion (2026-10-16, biomes/GODOT.md "Motion"): how the export bakes this mesh's motion, {hz, loop, fade, period}:
+// period(i) -> seconds, instance i's exact period when its pose repeats (a walker's loop), else 0 for a loop of `loop`
+// seconds. The kit's tick must pose it as a pure function of the clock (BIO.WIND.t, or the t its tick is given).
+// BIO.motion(im, opt) sets it on a mesh made otherwise (or later, when the periods are known after the mesh)
+BIO.motion=function(im,opt){im.userData.motion=Object.assign(im.userData.motion||{},opt||{});return im;};
 BIO.tick=function(fn){BIO.host.ticks(fn);};
 
 // ---------------------------------------------------------------- core/tags: what a kit places, as records
