@@ -99,7 +99,8 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
    for(const [a,b] of cuts)box('brick',(a+b)/2,8,-1.6,b-a,1.0,.4,br);   /* the inner parapet, open at a stair's head */
    /* the stair to the walk: a dog-leg of solid brick out from the wall's inner face, arriving through the gap in the inner parapet
       (core/engine svStairCase; the old flight's 0.4 m steps over 0.3 m treads were too steep for a walker) */
-   if(gx!=null)svStairCase({x0:gx-1,x1:gx+1,z0:-8.3,z1:-2.25},[0,8.1],{w:.9,start:'+',style:'solid',mk:'brick',col:brD});});   /* clear of the 4.4 m stone base */
+   /* clear of the 4.4 m stone base (a walker's width off it), a brick landing at the top bridging to the walk over the base's ledge */
+   if(gx!=null){svStairCase({x0:gx-1,x1:gx+1,z0:-8.6,z1:-2.55},[0,8.1],{w:.9,start:'+',style:'solid',mk:'brick',col:brD});svLanding(gx,-2.17,8.1,2.0,.76,{mk:'brick',col:brD,t:.3});}});
   /* the corner towers: points outward, gold faces on the outer faces, slits, a door from the court, a celadon pavilion */
   for(let i=0;i<6;i++){const a=i*PI/3;pushM(TF(R*Math.cos(a),0,R*Math.sin(a)));
    prism('stone',etHex(5.8),0,.6,sd);prism('brick',etHex(5.2),.6,13,br);prism('brick',etHex(5.6),13,13.5,brD);
