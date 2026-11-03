@@ -18,7 +18,7 @@
 //   one atlas), drawn in this fragment's own pool so it changes level with the rest (the core's chunk ranges would not match the variants'). Each
 //   species is grown once more for the bake, after the variants (its own seed: no tree's form moves). Until the bake is in the old far prototype draws.
 var VARIANTS=(function(){
-const K=6,ST={protos:0,growMs:0,drawn:0,levels:[0,0,0],pools:0,tris:0,calls:0};
+const K=6,ST={protos:0,growMs:0,drawn:0,levels:[0,0,0],pools:0,tris:0,calls:0,itemTris:0,harvestTris:0};   /* itemTris: what the kit's items held; harvestTris: what the prototypes kept of them (99's check) */
 const LOD={hero:[14,60,220],mid:[50,300,1000],far:[200,900,3200]};   // [metres per metre of height, at least, at most]
 const lim=(a,H)=>Math.min(a[2],Math.max(a[1],a[0]*H));
 // ---------------------------------------------------------------- materials for instancing (the open world's)
@@ -49,8 +49,11 @@ function worldMat(m){if(WMAT.has(m))return WMAT.get(m);let w=null;const b=m.user
 const _m=new THREE.Matrix4(),_nm=new THREE.Matrix3(),_v=new THREE.Vector3(),_n=new THREE.Vector3();
 function harvest(){const R=BIO.kits.ebadlands,G=new Map();
  const grp=m=>{const w=worldMat(m);let g=G.get(w);if(!g){g={mat:w,P:[],N:[],U:[],C:[],AN:[]};G.set(w,g);}return g;};
- for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name],g=grp(def.mat),geo=def.geo;
+ // an item welded by BIO.INDEX_ITEMS (the final rebuild's universal set) is indexed: copied vertex by vertex it drew scrambled triangles (the stilt pod's
+ // head vanished and its tendrils hung as loose blades, the owner, 2026-11-03), so it is expanded to its triangles first, once per item
+ for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name],g=grp(def.mat),geo=def.geo.index?(def._soup||(def._soup=def.geo.toNonIndexed())):def.geo;
   const P=geo.attributes.position.array,N=geo.attributes.normal?geo.attributes.normal.array:null,U=geo.attributes.uv?geo.attributes.uv.array:null,VC=geo.attributes.color?geo.attributes.color.array:null,nv=geo.attributes.position.count;
+  ST.itemTris+=it.count*(def.geo.index?def.geo.index.count:def.geo.attributes.position.count)/3;ST.harvestTris+=it.count*geo.attributes.position.count/3;
   const hasN=def.attrs&&def.attrs.indexOf('aN')>=0,IM=it.m.a,IC=it.c.a,INN=it.n.a;
   for(let i=0;i<it.count;i++){_m.fromArray(IM,i*16);_nm.getNormalMatrix(_m);
    for(let k=0;k<nv;k++){_v.set(P[k*3],P[k*3+1],P[k*3+2]).applyMatrix4(_m);g.P.push(_v.x,_v.y,_v.z);
