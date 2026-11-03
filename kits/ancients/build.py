@@ -91,6 +91,10 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/door (core/door/README.md): KDOOR's records, KGLASS's glass, KDOORHOST's posing and key; src/8zo-anc-open.js is the
+# kit's drawing of them (the windows' panes and room cards, the doors' records, the interiors' leaves)
+DOOR_DIR = os.path.join(ROOT, 'core', 'door')
+DOOR_FILES = ['10-core-door.js', '20-core-glass.js', '90-core-door-host.js']
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -203,6 +207,7 @@ TARGET_OUT = {
 DETERMINISTIC = {
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-ancients-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
+    '10-core-door.js', '20-core-glass.js', '90-core-door-host.js', '8zo-anc-open.js',   # core/door and the kit's openings (no rng())
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '50-core-furnish.js',
     '52-core-furnish-draw.js', '53-core-furnish-host.js', '8zy-interiors-bundle.js', '8zz-interiors.js', '92z-interior-ui.js',   # interiors
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
@@ -359,6 +364,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(DOOR_DIR, f) for f in DOOR_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)

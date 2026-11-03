@@ -24,6 +24,34 @@ clear, the lab's arcade glazed, no core and no rings of rooms inside. Without it
 the lab's light rings are drawn and dropped, not skipped). Ys and Screamers vendor both fragments and are behind until
 re-vendored; Iziz is re-vendored.
 
+## Real doors and real glass (2026-11-03, core/door)
+
+The second pass on the owner's "remove all dark voids ... actual doors or windows that have transparency", now on core/door
+(`src/8zo-anc-open.js`; build.py reads core/door's 10, 20 and 90 into every target). What each page had before: the window
+items were solid extrusions in a see-through material (four layers of glass over the shell: an opaque blue plate), the
+dead ones dusty plates over the bare wall; `archOpen` a shut alloy door with no record; the arcologies' own arches (Darco,
+Plymouth, Arcube, Trigon, Arcoindian I/II) and their void materials (the `*Void`, `*Dim` items and the merged void liners
+behind holes, the monolith's arch windows and oculi) near-black; `MAT.dark` a light plaster. Now:
+
+- [x] Windows: one pane (KGLASS 'smoked', the Ancients' blue) before a room card (KGLASS 'room'), two intact windows in
+      five lit at night; a ruin's window has its dusty pane in two cases in five and is an empty hole onto the room in the rest.
+- [x] Doors: every arched door is a locked KDOOR record (a solid body: nothing behind it), drawn shut in the alloy (Darco's
+      darker, on its near-black skin); a toppled body's doors are not recorded (`ANC_OPEN.fallen`). The interiors target's
+      partition doorways carry operable leaves (`anLeaf`, the Ancients' white panel; E opens and shuts one within reach of the
+      orbit's target or the eye: the camera's E lift still works anywhere else). `window._api.openings` gives the counts.
+- [x] Voids: the arcologies' `*Void` materials and `MAT.dark` are the card's colour (the voids at two thirds of it).
+- [ ] **The painted windows are not glass.** The arcologies' dwelling grids (Crescent, Monolith, Hill, Wheel, Ledge, Wing, Drum,
+      Sky I/J/K, ...) are canvas textures, "zero triangles a window": their dark panes are painted, lit by an emissive map at
+      night. Real panes there would be tens of thousands of instances a building; left as painted glazing at the megastructures'
+      scale.
+- [ ] **No rooms behind most glass.** A card stands for the room in every window; only the interiors target has rooms (and
+      there the shells are solid: its building's entrance `archOpen` stays a locked door, the partitions' doors open).
+- [ ] **No core/walk in the kit**, so no reachability audit here: the interiors target's floors and partitions are kit
+      instances with no walk records. kits/ancients-interiors' plans are where a `KWALK` registration would start.
+- [ ] **Real voids left dark-ish** (the deep shade, not black): the merged void liners inside a sheared or fallen shell
+      (the Wheel's tower cores, Sky I's broken shaft, the Ledge's cut), the Darco's recess backs and broken interior. They are
+      the inside of a solid model seen through its hole, with no floor plates drawn; the shade stands in for them.
+
 ## Found by the split (pre-existing in the single-file kit)
 
 - [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.

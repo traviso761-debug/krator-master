@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 308 (11%) | 39 (1%) | 176 (6%) | 32 (1%) | 2201 (80%) |
+| KB | 308 (11%) | 39 (1%) | 176 (6%) | 45 (2%) | 2202 (79%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -146,7 +146,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8ap-host-c-arcades.js` | 10.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_ARCADES and hacPlan are data (the Ys host record) |
 | `src/8ap-host-d-stalks.js` | 8.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_STALKS, hstSockets and hstRAt are data (the Ys host record and its sockets) |
 | `src/8ap-host-e-bellhall.js` | 12.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_BELLHALL and hbhRAt are data (the Ys host record) |
-| `src/8zz-interiors.js` | 11.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/8zo-anc-open.js` | 12.8 | [web] | 11 | 0 | 0 | 1 | 2 | 5 | 0 | 0 | 0 | 0 | 0 | split: the openings (panes, room cards, the doors' KDOOR records: data) and their host (the tick, E, the tip) |
+| `src/8zz-interiors.js` | 11.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/90-scene.js` | 8.9 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.7 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |

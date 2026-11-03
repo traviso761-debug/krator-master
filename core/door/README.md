@@ -114,4 +114,14 @@ first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s, or swit
   (83-walk.js wkBuild: `goWalk`); Mav's has no core/walk yet.
 - The Post-Apoc kit: `src/35-pa-open.js` (`poLeaf`, `poCard`; `wallOpen` records its openings, and a `door()` drawn in one is
   operable, one on a solid face a locked record that keeps its drawn leaf).
+- The Ancients kit (`kits/ancients`, every target): `src/8zo-anc-open.js` is its drawing of the records, wrapping `kput` so no
+  builder changes: the window items (winI/winD, winBig, oval, winSm, cellD, paneD) are one pane (KGLASS 'smoked' in the Ancients'
+  blue; a ruin's pane gone in three of five) before a room card (KGLASS 'room'; two in five lit at night, by a hash of the spot),
+  the arched doors (archOpen and the arcologies' dkArch, plyArch, acArch, tgArch, aiPortal) locked records with stable ids
+  ('<type>/<decay>.<item>.<n>'), the arcologies' near-black void materials the card's deep shade; the interiors target's partition
+  doorways get operable leaves (`anLeaf`, from `8zz-interiors.js`). Its forks read the fragment in place: Screamers (its village's
+  door panels, `src/8zp-scr-open.js`), the Ancient Port kit and through it Hook and the Dam Basins (the iron doors, `src/8zp-port-open.js`).
+- Noah's Regret: core/engine's `36o-open.js` read in place (`svLeaf`): the cabin doors and the deck buildings' leaves, cut with the decks.
+- kits/ancients-interiors' sheet: `src/75-ai-doors.js` makes kits/interiors' shell leaves KDOOR records (posed, `KDOORHOST.posed`) and
+  its panes KGLASS 'clear'.
 - The other building kits come onto it in the doors-and-glass pass (TODO.md).
