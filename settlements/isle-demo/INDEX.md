@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `15-isle-tune.js` | 44 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
+| `15-isle-tune.js` | 45 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
 | `30-isle-programme.js` | 16 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
 | `32-isle-city.js` | 48 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
@@ -31,7 +31,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `47-isle-trade.js` | 13 | 7h. THE CANOE LINE BETWEEN THE TOWNS (P7c) (1) |
 | `47c-isle-crime.js` | 11 | 7h1. CRIME AND PUNISHMENT (2026-11-02) (1) |
 | `47h-isle-hamlets.js` | 33 **big** | 7h2. THE HAMLETS IN THE SIM (core/hamlet H5, 202 (1) |
-| `47m-isle-money.js` | 14 | 7h3. MONEY: THE ACCOUNTS (PLAN-MONEY.md M0, 2026 (1) |
+| `47m-isle-money.js` | 16 | 7h3. MONEY: THE ACCOUNTS (PLAN-MONEY.md M0, 2026 (1) |
 | `48-isle-week.js` | 23 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 2 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
 | `50-isle-export.js` | 10 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |

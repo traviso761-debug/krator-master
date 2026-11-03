@@ -1081,16 +1081,19 @@ function world(seed){
 {const mk=(o)=>{o=o||{};const {S,clock}=world(251);S.activity({id:'WORK'});S.settlement({id:'kautoa',faction:'town'});
    const P=(id,kind,x,acts)=>S.place({id,kind,x,z:0,activities:acts,open:[0,24],settlement:'kautoa'});
    P('shed','warehouse',10,{});P('farm','field',60,{WORK:4});P('bake','bakehouse',80,{WORK:2});P('hA','house',100,{SLEEP:4,EAT:4});P('hB','house',120,{SLEEP:4,EAT:4});P('hC','house',140,{SLEEP:4,EAT:4});
-   S.economy(Object.assign({goods:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},o.govern?{govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:1}}:{}),{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
+   S.economy(Object.assign({goods:o.treat?{rice:{},bread:{},kava:{}}:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},o.govern?{govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:1}}:{}),{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
    S.recipe('farm',{out:['rice'],rate:2,cap:5000});S.recipe('bake',{out:['bread'],rate:4,cap:5000});S.R.place.shed.stock={rice:400,bread:200};
-   S.items({kinds:{rice:{cat:'food',food:true},bread:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1});
+   if(o.treat){S.needs({list:['material'],rate:{material:0.5},init:10});P('shop','shop',90,{BUY:6});S.R.place.shed.stock.kava=5000;}
+   S.items(Object.assign({kinds:Object.assign({rice:{cat:'food',food:true},bread:{cat:'food',food:true}},o.treat?{'kava bowl':{cat:'luxury',material:25,good:'kava'}}:{}),free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1},o.treat?{treat:{at:30,items:[[0,'kava bowl']]}}:{}));
+   if(o.treat) S.shop('shop',['kava bowl']);
    S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{WORK:{pin:'work'}}});S.role({id:'idler',org:'folk',sched:[[0,'SLEEP']]});
    const gs=[0,1,2].map(i=>S.actor({id:'gr'+i,role:'grower',home:'hA',work:i<2?'farm':'bake'}));S.actor({id:'gr3',role:'grower',home:'hB',work:'farm'});S.actor({id:'id0',role:'idler',home:'hC'});
+   S.all('actor').forEach(a=>{a.cls='poor';a.wealth=0.1;});
    ['hA','hB','hC'].forEach(h=>{S.R.place[h].store={rice:4};S.R.place[h].people=h==='hA'?3:1;});
-   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration},m2:o.m2||null});
+   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration,spend:o.spend||null},m2:o.m2||null});
    S.account({id:'treasury:kautoa',kind:'treasury',currency:'shell',settlement:'kautoa'});S.mint('treasury:kautoa',o.reserve==null?3000:o.reserve,'reserve');
    ['farm','bake'].forEach(w=>S.account({id:'wp:'+w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
-   ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',60,'endowment');S.mint('hh:hB',30,'endowment');
+   ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,owner:h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',o.rich==null?60:o.rich,'endowment');S.mint('hh:hB',30,'endowment');
    if(o.jail) S.command(gs[0],{act:'SLEEP',place:'hA',until:3*1440,by:'jail'});
    clock.d=0;clock.h=0;S.level('kautoa','abstract');const run=(d)=>{for(let m=S._m||0,e=m+Math.round(d*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
  const A=mk();A.run(1+1/1440);const day0=A.S.moneyReport().currencies.shell.paid,mk0=A.S.moneyM1().markup.kautoa,a0=A.S.ledgerSnap(),hh0=['hA','hB','hC'].map(h=>A.S.acct('hh:'+h).balance);A.run(2);const R=A.S.moneyM1(),L=A.S.ledger(a0,A.S.ledgerSnap());
@@ -1125,6 +1128,15 @@ function world(seed){
  ok('the price level closes the gap between what the treasury owes and what it takes ('+Math.round(100*L0.gap)+'% short at fixed prices, '+Math.round(100*L2.gap)+'% with M2; markup '+L0.mk.toFixed(2)+' to '+L2.mk.toFixed(2)+', ration '+L0.ra+' to '+L2.ra+')',
    Math.abs(L2.gap)<Math.abs(L0.gap)&&L2.mk>L0.mk&&L2.ra>L0.ra,Math.abs(L2.gap)>=Math.abs(L0.gap));
  const L2L=L2.T.S.ledgerSnap();ok('the books still hold with prices moving',L2.T.S.ledger(L2L,L2L).ok,false);
+ // spending that follows savings (m1.spend): wealth within the class's band by the household's savings; a treat bought only
+ // with money in hand; savings lower the treat's bar, so saved money is spent
+ const SP={bands:{poor:[0,0.2]},days:5,treatDrop:15},kv=(W,h)=>W.kava[h]||0;
+ const tr=(o)=>{const W=mk(Object.assign({treat:true,calibrate:1},o));W.kava={};const mb=W.S.moneyBuy;W.S.moneyBuy=function(home,place,g,n,s){if(g==='kava'&&W.S.MONEY.m1.live)W.kava[home]=(W.kava[home]||0)+n;return mb.apply(this,arguments);};W.run(1+1/1440);W.run(6);return W;};
+ const S1=tr({spend:SP,rich:20000}),S0=tr({spend:null,rich:20000}),S2=tr({spend:Object.assign({},SP,{treatDrop:0}),rich:20000});
+ const wA=S1.S.R.actor.gr0.wealth,wC=S1.S.R.actor.id0.wealth;
+ ok('wealth follows savings within the class\'s band (the saving household '+wA.toFixed(2)+', the broke one '+wC.toFixed(2)+', the band 0 to 0.2)',Math.abs(wA-0.2)<1e-9&&Math.abs(wC-0)<1e-9,Math.abs(S0.S.R.actor.gr0.wealth-0.2)<1e-9);
+ ok('a treat only with money in hand (the broke household '+kv(S1,'hC')+' bowls; without the rule, on the dole, '+kv(S0,'hC')+')',kv(S1,'hC')===0&&kv(S0,'hC')>0,kv(S1,'hC')>0);
+ ok('savings lower the treat\'s bar, so saved money is spent (the saving household '+kv(S1,'hA')+' bowls, '+kv(S2,'hA')+' without the drop)',kv(S1,'hA')>kv(S2,'hA'),kv(S1,'hA')<=kv(S2,'hA'));
  const N=mk({calibrate:false});N.run(1+1/1440);ok('without calibration it pays from the first day',(N.S.moneyReport().currencies.shell.paid.wage||0)>0,!((N.S.moneyReport().currencies.shell.paid.wage||0)>0));}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)

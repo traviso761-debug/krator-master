@@ -14,6 +14,16 @@ the rise and fall of a station.
 on everywhere** (the owner, 2026-11-03: the ration is m1's default until households are true households; `ration: false`
 turns it off). **The price level is built but off on the isles**, after what it did (below).
 
+**M1's second part is built** (2026-11-03, `m1.spend`; the isles' `15` money.m1.spend, `47m` spend checks): each night a
+household's savings in days of its keep, over `days` (10), set its people's wealth within their class's band (the class
+stays: the household sits higher or lower in it), which steers the treats a wealth reaches and how often a meal is eaten
+out; the treat's bar on the material meter falls by `treatDrop` (15) at a full purse; a treat or a meal out by choice is
+bought only with money in hand, the purse checked again at the counter (several of a household wish the same day). On the
+isles: rations 93-97% of a full keep (90-92% before), the dole 8-10%, no treat on it; half the households hold a quarter
+of a full purse (ten days' keep), the top tenth half. Money now steers what people do: the week test's 32 checks still
+pass (happiness 83, the material meter 34, was 36), and Godot's isle books were exported again and agree. **Left of M1:**
+the rise and fall of a station (and the falls' unhappiness, M6).
+
 **What moving prices taught** (the isles, eight market days, 2026-11-03):
 - **Scarcity pricing alone is stable.** The price index stays within 5% of where it opened; Kautoa's dearest goods are its
   scarce quarry stone and kava (x1.4), its cheapest the meat and armour it has plenty of (x0.6); 23 of 23 goods point the

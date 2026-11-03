@@ -41,6 +41,9 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
   { const B = cp(m1); B.prices.kautoa.bread = 0; caught('bread at no price', ISLE.moneyM1Checks(m0, B), /prices whole/); }
   { const B = cp(m1), k = Object.keys(B.m1.days)[0]; B.m1.days[k][B.m1.days[k].length - 1].unpaid += 12; caught('a day\'s wages left unpaid', ISLE.moneyM1Checks(m0, B), /paid in full/); }
   ISLE.moneyM2Checks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
+  ISLE.moneySpendChecks(m0, m1).forEach(c => ok(c.name, c.ok, c.detail));
+  { const x = SIM.all('actor').find(q => q.cls === 'poor' && ISLE.SIM.order.indexOf(SIM.settlementOf(q)) >= 0), w = x.wealth; x.wealth = 0.9; caught('a poor man at a rich man\'s wealth', ISLE.moneySpendChecks(m0, m1), /within its class/); x.wealth = w; }
+  { const B = cp(m1), k = Object.keys(B.m1.days)[0], d = B.m1.days[k][B.m1.days[k].length - 1]; d.doleBy = Object.assign({}, d.doleBy, { kava: 50000 }); d.dole += 50000; caught('50,000 shells of kava on the dole', ISLE.moneySpendChecks(m0, B), /on the dole/); }
   { const B = cp(m1); B.rel.kautoa.fish = 3; caught('fish at three times its cost', ISLE.moneyM2Checks(m0, B), /priced within/); }
   { const B = cp(m1), H = B.m1.days.kautoa; H[H.length - 1].cpi *= 1.6; caught('Kautoa\'s prices 60% up', ISLE.moneyM2Checks(m0, B), /price index/); }
   { const B = cp(m1); Object.keys(B.rel.valapo).forEach(g => { B.rel.valapo[g] = 2 - (B.rel.valapo[g] - 1); }); caught('Valapo\'s scarcity turned upside down', ISLE.moneyM2Checks(m0, B), /short of its target/); }

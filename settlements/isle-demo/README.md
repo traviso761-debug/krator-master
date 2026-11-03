@@ -236,7 +236,10 @@ declares both once they are planned, in one order whichever town it draws, and h
   prices (M2):** each night a good's price follows its scarcity, (target / supply line)^0.5 within half and double of its
   cost x markup, eased in over three days: Kautoa's stone and kava dearest (x1.4), its meat and armour cheapest (x0.6); the
   price index holds within 5%, rations at 90-92% of a full keep. The price level is off: against a flat wage it spirals
-  (core/simulation/PLAN-MONEY.md, "What moving prices taught").
+  (core/simulation/PLAN-MONEY.md, "What moving prices taught"). **Spending follows savings:** a household's purse (its
+  savings in days of its keep, ten a full one) sets its people's wealth within their class (the treats it reaches, how
+  often it eats out), a full purse lowers the treat's bar, and treats and meals out by choice need money in hand: rations
+  rose to 93-97% of a full keep, no treat is on the dole, and the people are a little happier (83).
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand

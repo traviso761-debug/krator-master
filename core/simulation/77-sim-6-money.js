@@ -47,6 +47,8 @@
 //                          workplace's account, its owner covering what the till lacks); the rations
 //   SIM.moneyM1(s) -> {markup, live, wages, spent, dole, atCost} the day's numbers by settlement
 //   m2: {k, lo, hi, smooth, level: {gain, step} | false} (opt-in, PLAN-MONEY.md M2): prices that move, each night (m2Day below)
+//   m1.spend: {bands: {cls: [lo, hi]}, days, treatDrop} (opt-in): spending that follows savings (spendDay below); a luxury
+//        bought only with money in hand (SIM.moneyCan, called by the items before a treat or a meal out)
 //   ration: on by default with m1 (the owner, 2026-11-03: the chief's redistribution everywhere until households are true
 //        households); `ration: false` turns it off
 // THE BOOKS, per settlement and currency: opening + minted - burned + in - out = closing, where in and out are payments
@@ -64,7 +66,7 @@
   SIM.money = function(o){
     var M={ cur:{}, acc:{}, order:[], books:{}, flows:{}, spread:o.spread==null ? 0.03 : o.spread };
     if(o.m1) M.m1={ wage:o.m1.wage||null, priceWage:o.m1.priceWage==null ? 1 : o.m1.priceWage, fallback:o.m1.fallback, calibrate:o.m1.calibrate===true ? 1 : typeof o.m1.calibrate==='object' && o.m1.calibrate ? (o.m1.calibrate.days|0) : (o.m1.calibrate|0), calAfter:o.m1.calibrate && typeof o.m1.calibrate==='object' ? (o.m1.calibrate.after|0) : 0, live:!o.m1.calibrate, cal:{}, sweep:o.m1.sweep,
-      household:o.m1.household, seller:o.m1.seller, treasury:o.m1.treasury, cost:{}, price:{}, markup:{}, day:{}, history:{}, busyTown:{}, ration:{}, rationOn:o.m1.ration!==false, keep:o.m1.keep, perKeep:{}, rel:{}, cpi:{},
+      household:o.m1.household, seller:o.m1.seller, treasury:o.m1.treasury, cost:{}, price:{}, markup:{}, day:{}, history:{}, busyTown:{}, ration:{}, rationOn:o.m1.ration!==false, keep:o.m1.keep, perKeep:{}, rel:{}, cpi:{}, spend:o.m1.spend ? { bands:o.m1.spend.bands||{}, days:o.m1.spend.days==null ? 10 : o.m1.spend.days, treatDrop:o.m1.spend.treatDrop==null ? 0 : o.m1.spend.treatDrop } : null, fill:{},
       m2:o.m2 ? { k:o.m2.k==null ? 0.5 : o.m2.k, lo:o.m2.lo==null ? 0.5 : o.m2.lo, hi:o.m2.hi==null ? 2 : o.m2.hi, smooth:o.m2.smooth==null ? 3 : o.m2.smooth,
         gain:(o.m2.level||{}).gain==null ? 0.5 : o.m2.level.gain, step:(o.m2.level||{}).step==null ? 0.05 : o.m2.level.step, level:o.m2.level!==false } : null };
     Object.keys(o.currencies||{}).forEach(function(c){ var C=o.currencies[c]; if(!(C.talent>0)) throw new Error('SIM.money: currency '+c+' needs its value in Talents');
@@ -136,6 +138,7 @@
     var p=priceOf(s, g); if(p==null) return 0; var due=p*n, buyer=I.hh(home), seller=place!=null && M.acc[I.wp(place)] ? I.wp(place) : I.tre(s);
     if(!M.acc[buyer] || !M.acc[seller]) return 0;
     var got=SIM.pay(buyer, seller, due, 'purchase'); D.spent+=got; var rest=due-got; if(!rest) return got;   /* what it holds, then the dole for the rest */
+    var DB=D.doleBy||(D.doleBy={}); DB[g]=(DB[g]||0)+rest;   /* the dole by good: a luxury should never be on it */
     if(seller===I.tre(s)){ D.dole+=rest; return got; }   /* the treasury's own shelves: the rest given, no money moves */
     var dole=SIM.pay(I.tre(s), seller, rest, 'dole', true); if(dole) D.dole+=dole; else D.unpaid+=rest; return got; };
   SIM.moneyM1 = function(s){ var C=m1(); if(!C) return null; var out={}; Object.keys(C.history).forEach(function(k){ if(s===undefined || k===key(s)) out[k]=C.history[k].slice(); });
@@ -167,6 +170,7 @@
         var n=Math.floor(r*dep[h]*share[k]); if(n>0){ var paid=SIM.pay(I.tre(s), I.hh(h), n, 'ration', true), D=day1(s); D.ration=(D.ration||0)+paid; } }); }   /* the chief's redistribution: each member with no work its keep */
     Object.keys(C.day).forEach(function(k){ (C.history[k]||(C.history[k]=[])).push(Object.assign({ day:Math.floor(prev/1440), markup:C.markup[k]==null ? 1 : C.markup[k] }, C.day[k])); });
     if(C.live && C.m2) Object.keys(C.day).forEach(function(k){ m2Day(k, C.day[k]); });
+    if(C.live && C.spend) spendDay();
     C.day={}; };
   /* M2: PRICES THAT MOVE, at midnight after the payroll and the rations (PLAN-MONEY.md M2):
      - a good's SCARCITY: rel = (target / position)^k, clamped to [lo, hi], eased in over `smooth` days, from the governor's
@@ -177,6 +181,21 @@
        day's keep, moves with it (the wages do not: a flat wage, the owner's call of 2026-11-03).
      Prices are whole, at least 1. The households buy what they need whatever the price (no elasticity yet), so the goods'
      economy runs as before; a dearer good makes its seller's takings larger, not the town hungrier */
+  /* SPENDING THAT FOLLOWS SAVINGS (PLAN-MONEY.md M1, second part; `m1.spend`): each night a household's savings in days of its own
+     keep (a person's day at cost x markup, the calibration's) give it a fill, savings / `days`, held to [0, 1]; its people's
+     wealth is their class's band at that fill (`bands[cls]: [lo, hi]`: the class stays, the household sits higher or lower
+     in it), which steers what the items buy (the treats a wealth reaches, how often a meal is eaten out); and the treat's
+     threshold on the material meter falls by `treatDrop` at a full fill (SIM.moneyTreatDrop), so saved money is spent */
+  function spendDay(){ var C=m1(), M=SIM.MONEY, Sp=C.spend, I0=null, ppl={};
+    SIM.all('actor').forEach(function(a){ if(a.home!=null && !a.driven) ppl[a.home]=(ppl[a.home]||0)+1; });
+    Object.keys(M.acc).forEach(function(id){ var A=M.acc[id]; if(A.kind!=='household' || A.owner==null) return; var k=key(A.settlement), keep=(C.perKeep[k]||0)*(C.markup[k]||1), n=ppl[A.owner]||0;
+      var days=keep>0 && n>0 ? A.balance/(keep*n) : 0; A.savingsDays=days; C.fill[A.owner]=Math.max(0, Math.min(1, days/Math.max(1e-9, Sp.days))); });
+    SIM.all('actor').forEach(function(a){ var f=C.fill[a.home], B=Sp.bands[a.cls]; if(f==null || !B) return; a.wealth=B[0]+(B[1]-B[0])*f; }); }
+  SIM.moneyFill = function(home){ var C=m1(); return C && C.fill[home]!=null ? C.fill[home] : null; };
+  SIM.moneyTreatDrop = function(a){ var C=m1(); if(!C || !C.live || !C.spend || !C.spend.treatDrop) return 0; var f=C.fill[a.home]; return f==null ? 0 : C.spend.treatDrop*f; };
+  /* a luxury (a treat, a meal out) is bought only with money in hand: the dole feeds and clothes, it does not treat */
+  SIM.moneyCan = function(a, g, n){ var C=m1(); if(!C || !C.live || !C.spend || a.home==null) return true; var s=SIM.R.settlement ? SIM.settlementOf(a) : null, A=SIM.MONEY.acc[ids(s).hh(a.home)];
+    if(!A) return true; var p=priceOf(s, g); return p==null || A.balance>=p*(n||1); };
   function m2Day(k, D){ var C=m1(), Z=C.m2, s=k==='' ? null : k, E=econKey(s), R=C.rel[k]||(C.rel[k]={});
     var V=E && E.govern && E.govern.view; if(V) Object.keys(V).forEach(function(g){ var v=V[g]; if(!(v && v.target>0)) return;
       var r=Math.pow(v.target/Math.max(v.pos, 1e-6), Z.k), want=Math.max(Z.lo, Math.min(Z.hi, r)), cur=R[g]==null ? 1 : R[g]; R[g]=cur+(want-cur)/Math.max(1, Z.smooth); });

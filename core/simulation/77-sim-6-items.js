@@ -104,9 +104,10 @@
     if(short && I.lack && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, d*1440); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.min(100, a.nd[mi]+I.lack*short); }
     if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
       /* a treat: the material meter high, the best luxury or household good its wealth reaches */
-      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
+      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at-(SIM.moneyTreatDrop ? SIM.moneyTreatDrop(a) : 0)){   /* savings lower the bar (77-sim-6-money.js `spend`) */
         var best=null, can=[]; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]){ best=t[1]; can.push(t[1]); } });
         if(I.treat.mix && can.length) best=can[Math.floor(hash(a.k, d, 23)*can.length)];   /* `mix` (opt-in): any treat its wealth reaches, by a hash of the person and the day; else the dearest */
+        if(best && SIM.moneyCan){ var Kb=I.kinds[best]; if(Kb && Kb.good && !SIM.moneyCan(a, Kb.good, Kb.per==null?1:Kb.per)) best=null; }   /* a treat only with money in hand */
         if(best) errand(a, best, 'free', d*1440); } }
   }
   function errand(a, item, when, minute){
@@ -158,6 +159,8 @@
       if(K.cat==='tool' && K.prefer && SIM.ECON){ for(var pi=0; pi<K.prefer.length; pi++){ var pk=K.prefer[pi], PK=I.kinds[pk];   /* `prefer`: a better tool, when this seller has it and the town holds its good */
         if(!PK || !PK.good || !SIM.ECON.goods[PK.good] || sold.indexOf(pk)<0) continue;
         if(SIM.supply(PK.good, PK.per==null?1:PK.per, true)){ it=pk; K=PK; stat(I.stats.preferred||(I.stats.preferred={}), pk); break; } } }   /* missed, it is booked short of the better good: the town's want of it */
+      if(SIM.moneyCan && I.treat && K.good && I.treat.items.some(function(t){ return t[1]===E.item; }) && !SIM.moneyCan(a, K.good, K.per==null?1:K.per)){   /* a treat the purse cannot pay at the counter: not bought (77-sim-6-money.js `spend`) */
+        stat(I.stats.failed, E.item); stat(I.stats.cantAfford||(I.stats.cantAfford={}), E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
       if(it===E.item && SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
         cum(a, 'outOf', E.item); stat(I.stats.failed, E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
       cum(a, 'bought', it); stat(bs, it); if(SIM.MONEY && SIM.MONEY.m1 && K.good && a.home!=null) SIM.moneyBuy(a.home, E.place, K.good, K.per==null?1:K.per, SIM.settlementOf(E.place));
@@ -195,7 +198,7 @@
          cannot make a meal; at a seller of 'meal' (a tavern, a stall) */
       if(!a.errand && act==='EAT' && a.activity!=='EAT' && I.eatOut && sellersOf('meal').length){ var Hm=SIM.R.place[a.home];
         if(Hm && !Hm.mess && a.mealH!==hr){ a.mealH=hr; var st0=Hm.store||{}, kinds=0; for(var f0 in st0) if(st0[f0]>0) kinds++;
-          if(kinds<2 || hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0)){ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
+          if(kinds<2 || (hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0) && (!SIM.moneyCan || SIM.moneyCan(a, 'meal', 1)))){   /* out by choice only with money in hand; for want of food at home, always */ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
       if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
         if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
           var tot=0; for(var f in H.store) tot+=H.store[f];

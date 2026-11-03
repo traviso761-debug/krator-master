@@ -335,7 +335,12 @@ ISLE.TUNE.sim = {
        member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
        keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
        household cannot pay is fed on its treasury's dole */
-    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true },
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true,
+      /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
+         set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
+         higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
+         out only with money in hand (the dole feeds and clothes, it does not treat) */
+      spend: { days: 10, treatDrop: 15 } },
     /* M2 (2026-11-03): prices move each night: a governed good by its scarcity, (target / supply line)^`k`, held to [lo, hi]
        of its cost x markup and eased in over `smooth` days; the town's markup (its price level) toward what makes the
        households' spending meet the wages and the full rations, at most `level.step` a night; the ration moves with it.

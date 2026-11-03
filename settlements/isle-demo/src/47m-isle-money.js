@@ -16,7 +16,8 @@
                                 below zero; each settlement's money balanced to its books (the ledger) */
 ISLE.simMoney = function () {
   var T = ISLE.TUNE.sim, K = T.money, S = ISLE.SIM; if (!K || !SIM.money) return null;
-  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback, ration: M1.ration !== false } : null, m2: K.m2 || null });
+  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback, ration: M1.ration !== false,
+    spend: M1.spend ? { bands: T.items.wealthSpread, days: M1.spend.days, treatDrop: M1.spend.treatDrop } : null } : null, m2: K.m2 || null });
   Object.keys(K.changers || {}).forEach(function (c) { if (SIM.acct('changer:' + c)) SIM.mint('changer:' + c, K.changers[c], 'reserve'); });
   Object.keys(K.foreign || {}).forEach(function (c) { SIM.account({ id: 'foreign:beyond', owner: 'ships from beyond', kind: 'foreign', currency: c, name: 'the traders from beyond the isles' });
     SIM.mint('foreign:beyond', K.foreign[c], 'reserve'); });
@@ -117,4 +118,19 @@ ISLE.moneyM2Checks = function (a, b, drift) {
     short.map(function (x) { return x.s + ' ' + x.up + ' of ' + x.n + ' goods'; }).join('; '));
   return res;
 };
-
+/* M1's second part (spending that follows savings): every person's wealth within its class's band; no treat's good on
+   the dole, near enough (a purse checked again at the counter); the households' savings */
+ISLE.moneySpendChecks = function (a, b) {
+  var res = [], ok = function (name, pass, detail) { res.push({ name: 'money spend: ' + name, ok: !!pass, detail: detail }); };
+  var T = ISLE.TUNE.sim, B = T.items.wealthSpread, out = [];
+  SIM.all('actor').forEach(function (x) { var W = B[x.cls]; if (!W || x.driven || ISLE.SIM.order.indexOf(SIM.settlementOf(x)) < 0) return; if (!(x.wealth >= W[0] - 1e-9 && x.wealth <= W[1] + 1e-9)) out.push(x.id + ' ' + x.cls + ' ' + x.wealth); });
+  var fills = SIM.accounts({ kind: 'household' }).map(function (A) { return SIM.moneyFill(A.owner); }).filter(function (f) { return f != null; }).sort(function (p, q) { return p - q; });
+  var q = function (p) { return fills.length ? fills[Math.min(fills.length - 1, Math.floor(p * fills.length))] : null; };
+  ok('every person\'s wealth within its class\'s band, the household\'s purse its place in it', !out.length && fills.length > 0,
+    out.length ? out.length + ' outside: ' + out.slice(0, 3).join(', ') : fills.length + ' households: the purse a tenth of the way ' + (q(0.1) || 0).toFixed(2) + ', half ' + (q(0.5) || 0).toFixed(2) + ', nine tenths ' + (q(0.9) || 0).toFixed(2) + ' of a full one');
+  var lux = ['kava', 'mats', 'lamps', 'jewellery'], dl = {}, all = 0;   /* the treats' goods (a meal out is food: eaten out for want of food at home, it may be on the dole) */ Object.keys(b.m1.days).forEach(function (k) { var A0 = (a.m1.days[k] || []).length;
+    (b.m1.days[k] || []).slice(A0).forEach(function (d) { all += d.dole; Object.keys(d.doleBy || {}).forEach(function (g) { if (lux.indexOf(g) >= 0) dl[g] = (dl[g] || 0) + d.doleBy[g]; }); }); });
+  var ld = Object.keys(dl).reduce(function (n, g) { return n + dl[g]; }, 0);
+  ok('no treat on the dole, near enough (under 2% of the dole)', ld <= 0.02 * Math.max(1, all), ld + ' shells of luxuries of ' + all + ' on the dole' + (ld ? ': ' + JSON.stringify(dl) : ''));
+  return res;
+};

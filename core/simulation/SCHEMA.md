@@ -255,7 +255,10 @@ treasury shares out a ration a dependant from what it holds over a day's wages; 
 (`SIM.moneyBuy`, called by the items). `SIM.moneyM1()` gives the markups, rations and each day's wages, rations, spending, dole and anything unpaid. The ration is m1's default (`ration:
 false` turns it off). **M2** (`SIM.money({m2: {k, lo, hi, smooth, level}})`): each night a governed good's price is its cost x markup x its scarcity,
 (target / supply line)^k held to [lo, hi] and eased in over `smooth` days (`SIM.MONEY.m1.rel`); with `level`, the markup moves toward what makes the
-households' spending meet the wages and the full rations, at most `step` a night, the ration with it (a day's history keeps the price index, `cpi`).
+households' spending meet the wages and the full rations, at most `step` a night, the ration with it (a day's history keeps the price index, `cpi`). **Spending** (`m1.spend: {bands: {cls: [lo, hi]}, days, treatDrop}`): each night a household's
+savings in days of its keep set its people's `wealth` within their class's band (`SIM.moneyFill(home)`); the treat's bar falls by `treatDrop` at a
+full purse (`SIM.moneyTreatDrop`); a treat or a meal out by choice only with money in hand (`SIM.moneyCan`, asked by the items before the wish and
+again at the counter for a treat).
 
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a
