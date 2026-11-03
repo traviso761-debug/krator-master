@@ -11,6 +11,10 @@ A backwards edge is:
     core/*   -> anything outside core
     kits/*   -> settlements/* or openworld/*
     biomes/* -> settlements/* or openworld/*
+A backwards edge counts only when the path is in CODE (check_core_use.code_only: a comment or a docstring that cites
+another build's plan is not a read; MODULARITY-PLAN.md step 5). The forward graph keeps the comments, because builds
+compose many paths in code and a comment is often the only text that names them (step 0's follow-up).
+settlements/port is the Ancient Port kit, a kit in a settlement's folder (CLAUDE.md): KIT_FOLDERS classes it as a kit.
 The ones that exist today are listed in tools/dep_allowlist.json. A new one fails; as the plan removes edges,
 delete their lines (a listed edge that is gone is reported as stale).
 
@@ -22,10 +26,15 @@ Usage:
 """
 import glob, json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from check_core_use import code_only  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GROUPS = ('settlements', 'kits', 'biomes', 'openworld', 'core')
 ALLOW = os.path.join(ROOT, 'tools', 'dep_allowlist.json')
 DEPS = os.path.join(ROOT, 'DEPS.json')
+# a module in another group's folder, with the group it is (its reason)
+KIT_FOLDERS = {'settlements/port': 'kits'}   # the Ancient Port kit (CLAUDE.md: a kit, not a settlement)
 PAT = re.compile(r"""\b(core|kits|biomes|settlements|openworld)\s*(?:/|\\\\|\\|['"]\s*,\s*['"])\s*([A-Za-z0-9_.-]+)""")
 
 
@@ -40,7 +49,8 @@ def build_files(mod):
     return sorted(glob.glob(os.path.join(d, 'build*.py')) + glob.glob(os.path.join(d, '*', 'build*.py')))
 
 
-def edges():
+def edges(code=False):
+    """{module: [modules it names]}; code=True reads only the code (no comments or docstrings)."""
     out = {}
     for mod in modules():
         found = set()
@@ -49,6 +59,8 @@ def edges():
                 continue
             try:
                 text = open(f, encoding='utf-8', errors='replace').read()
+                if code:
+                    text = code_only(text)
             except OSError:
                 continue
             for g, n in PAT.findall(text):
@@ -62,7 +74,7 @@ def edges():
 
 
 def group(m):
-    return m.split('/')[0]
+    return KIT_FOLDERS.get(m) or m.split('/')[0]
 
 
 def backwards(a, b):
@@ -86,7 +98,7 @@ def write_json(path, obj):
 
 def main(argv):
     e = edges()
-    back = back_edges(e)
+    back = back_edges(edges(code=True))   # a backwards edge only from code
     if '--init-allowlist' in argv:
         write_json(ALLOW, {'_note': 'Backwards edges that exist today (tools/dep_graph.py). Delete a line when the edge is removed; '
                                     'never add one without a reason in MODULARITY-PLAN.md.', 'backwards': back})

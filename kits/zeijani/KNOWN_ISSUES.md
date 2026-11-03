@@ -10,7 +10,7 @@
       that follows the camera, the wells' shafts and motes) is Dhelv's (P5), after the tube station's.
 - [ ] **`core/walk`'s polygon floor is new.** Godot's walk importer (`godot/`, Verge's) reads `rect` and `strip`; `poly`
       needs adding there (P7).
-- [ ] **The sockets example sheet does not build from today's sources** (`core/sockets/example`: Post-Apoc's geometry now
+- [ ] **The sockets example sheet does not build from today's sources** (`kits/post-apoc/sockets-example`, until 2026-11-03 `core/sockets/example`: Post-Apoc's geometry now
       calls `KMAT`): pre-existing, not this kit's; its committed page predates it.
 - [ ] **The two-storey house's roof terrace is drawn, not planned.** No stair reaches it and it has no walk floor; the
       interiors planner has no roof storey. Its pieces stand on the slab (`46-zj-built.js`).

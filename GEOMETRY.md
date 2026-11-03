@@ -30,7 +30,7 @@
 | `biomes/throne/dist/throne-vents.html` | 185 | 19.15 M |  |  | 19.12 M |  | 188 | 152 | 288 k | 165 |
 | `biomes/throne/dist/throne.html` | 186 | 19.06 M |  |  | 19.06 M |  | 185 | 168 | 532 k | 173 |
 | `biomes/xanadu/dist/xanadu.html` | 116 | 3.70 M |  |  | 30.92 M |  | 1370 | 1164 | 1.42 M | 63 |
-| `core/sockets/example/sockets-example.html` | 34 | 7120 |  |  | 8108 |  | 65 | 0 | 0 | 46 |
+| `kits/post-apoc/sockets-example/sockets-example.html` | 34 | 7120 |  |  | 8108 |  | 65 | 0 | 0 | 46 |
 | `kits/ancients-interiors/dist/ancients-interiors.html` | 17397 | 625 k |  |  | 649 k | 619 k | 18388 | 0 | 0 | 976 |
 | `kits/ancients/dist/alt-civic.html` | 350 | 525 k | 356 / 1.18 M | 350 / 382 k | 1.19 M |  | 367 | 52 | 46 k | 69 |
 | `kits/ancients/dist/alt-domestic.html` | 180 | 563 k | 189 / 871 k | 180 / 459 k | 873 k |  | 192 | 46 | 29 k | 61 |

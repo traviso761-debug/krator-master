@@ -337,19 +337,6 @@
   "seconds": 172,
   "tris": 3697883
  },
- "core/sockets/example/sockets-example.html": {
-  "calls": 34,
-  "errors": 0,
-  "furnTris": 0,
-  "instSets": 0,
-  "instances": 0,
-  "materials": 46,
-  "meshes": 65,
-  "ready": true,
-  "sceneTris": 8108,
-  "seconds": 22,
-  "tris": 7120
- },
  "kits/ancients-interiors/dist/ancients-interiors.html": {
   "calls": 17397,
   "errors": 0,
@@ -1366,6 +1353,19 @@
   "sceneTris": 1272953,
   "seconds": 55,
   "tris": 1256243
+ },
+ "kits/post-apoc/sockets-example/sockets-example.html": {
+  "calls": 34,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 0,
+  "instances": 0,
+  "materials": 46,
+  "meshes": 65,
+  "ready": true,
+  "sceneTris": 8108,
+  "seconds": 22,
+  "tris": 7120
  },
  "kits/ringsea/dist/ringsea.html": {
   "calls": 223,

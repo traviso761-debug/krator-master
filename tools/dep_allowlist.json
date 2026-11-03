@@ -1,17 +1,7 @@
 {
  "_note": "Backwards edges that exist today (tools/dep_graph.py). Delete a line when the edge is removed; never add one without a reason in MODULARITY-PLAN.md.",
  "backwards": [
-  "biomes/dambasins -> settlements/hook",
-  "biomes/dambasins -> settlements/port",
-  "biomes/ringisles -> openworld/isle-demo",
-  "biomes/ringisles -> settlements/isle-demo",
-  "core/materials -> biomes/sedesert",
-  "core/materials -> kits/ancients",
-  "core/materials -> kits/ringsea",
-  "core/sockets -> kits/post-apoc",
-  "kits/beast-riders -> settlements/isle-demo",
   "kits/pylon -> settlements/iziz",
-  "kits/ringsea -> settlements/reedlake",
   "kits/talia -> settlements/iziz"
  ]
 }

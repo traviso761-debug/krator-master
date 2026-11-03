@@ -156,10 +156,6 @@
    "bytes": 6186195,
    "sha256": "0c7f7131ac5f4099132caa2aec5d1225154d4fd2c0ab1f5a0a549bdcfe388b1d"
   },
-  "core/sockets/example/sockets-example.html": {
-   "bytes": 184370,
-   "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
-  },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 306024,
    "sha256": "3dd72745af7e00c8c6385f6299b870ebc66c0df5727815974f89c61943313a6e"
@@ -399,6 +395,10 @@
   "kits/post-apoc/dist/post-apoc.html": {
    "bytes": 8001255,
    "sha256": "13dffde24c922805b701d1b21c90b26b65ed29eb282957e5247a46df1b4b1609"
+  },
+  "kits/post-apoc/sockets-example/sockets-example.html": {
+   "bytes": 184370,
+   "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
   },
   "kits/pylon/dist/pylon.html": {
    "bytes": 2509992,

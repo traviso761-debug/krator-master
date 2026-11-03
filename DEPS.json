@@ -1,16 +1,6 @@
 {
  "backwards": [
-  "biomes/dambasins -> settlements/hook",
-  "biomes/dambasins -> settlements/port",
-  "biomes/ringisles -> openworld/isle-demo",
-  "biomes/ringisles -> settlements/isle-demo",
-  "core/materials -> biomes/sedesert",
-  "core/materials -> kits/ancients",
-  "core/materials -> kits/ringsea",
-  "core/sockets -> kits/post-apoc",
-  "kits/beast-riders -> settlements/isle-demo",
   "kits/pylon -> settlements/iziz",
-  "kits/ringsea -> settlements/reedlake",
   "kits/talia -> settlements/iziz"
  ],
  "edges": {
@@ -349,17 +339,9 @@
   "core/host": [
    "core/simulation"
   ],
-  "core/materials": [
-   "biomes/sedesert",
-   "kits/ancients",
-   "kits/ringsea"
-  ],
   "core/simulation": [
    "core/clock",
    "core/rand"
-  ],
-  "core/sockets": [
-   "kits/post-apoc"
   ],
   "kits/ancients": [
    "core/furnish",
@@ -510,7 +492,7 @@
    "core/materials",
    "core/sockets",
    "core/water",
-   "settlements/reedlake"
+   "kits/ancients"
   ],
   "kits/scyvoi": [
    "core/atmos",

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build the culture socket sheet: the smallest world that uses core/sockets/.
+"""Build the culture socket sheet: the smallest world that uses core/sockets/ (here since 2026-11-03: it was core/sockets/example,
+but it builds on this kit's engine, and core reads no kit; MODULARITY-PLAN.md step 5).
 
 It borrows the post-apoc kit's engine fragments (page shell, rng, textures, materials, geometry, registry, scene, probe, camera) and adds
 core/sockets/ (the socket + culture system) and one tiny demo building. The output shows the same wall dressed in every culture pack side by side.
 
     python3 build.py                      # -> sockets-example.html next to this file
-    python3 ../../../kits/post-apoc/verify.py sockets-example.html --views "Cultures"
+    python3 ../verify.py sockets-example.html --views "Cultures"
 
 To start your own build on the socket system: copy the fragment list below, replace 40-demo.js with your buildings, keep 37-sockets.js, 38-symbols.js and 80-cultures.js from core/sockets/.
 """
@@ -37,7 +38,7 @@ def find_node():
     return None
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
-KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(HERE, '..')
+KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(ROOT, 'core', 'sockets')
 # every post-apoc engine fragment, none of its buildings (4x-5x) or its showcase table (89): a hand-kept list
 # broke twice as the scene grew new dependencies. Nor the two that need what only the kit's build.py generates or reads
 # from core/: the material-library binding (29y: KMAT and the texture pack; the sheet keeps the procedural look, as the

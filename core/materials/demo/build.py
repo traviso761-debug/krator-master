@@ -32,10 +32,13 @@ MAT = os.path.join(ROOT, 'core', 'materials')
 
 
 def find_three():
-    for c in (os.path.join(HERE, 'three.min.js'), os.path.join(ROOT, 'kits', 'ringsea', 'three.min.js'),
-              os.path.join(ROOT, 'kits', 'ancients', 'three.min.js'), os.path.join(ROOT, 'biomes', 'sedesert', 'three.min.js')):
-        if os.path.isfile(c):
-            return c
+    """The pinned three.js r128, from the one place every core demo takes it (tools/harness.py local_three; MODULARITY-PLAN.md
+    step 5): a copy beside this file, else the repo's."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import harness
+    c = harness.local_three(HERE)
+    if os.path.isfile(c):
+        return c
     sys.exit('build.py: no local three.min.js (r128) found')
 
 

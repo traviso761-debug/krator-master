@@ -32,6 +32,9 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   so as not to move every page for a comment: `core/tags/52-core-tags-vocab.js` ("copied from kits/catalog/krator-furniture-core.js"),
   `core/sockets/38-symbols.js` ("vendored there as kits/catalog/krator-symbols.js"), `core/catalog/krator-furniture-kit.js`
   ("vendored as krator-symbols.js"). Reword them in that rebuild.
+- **`kits/ringsea/src/10-core.js`: re-vendor from `kits/ancients/src`** (2026-11-03, MODULARITY-PLAN.md step 5): upstream gained the
+  frame hook (`TICKS`, `tick()`). Voth (`settlements/voth/ringsea.py`) and the isle demo bundle the file, so it moves their pages;
+  check that neither declares its own `TICKS` or `tick` first.
 
 - **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
   (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's

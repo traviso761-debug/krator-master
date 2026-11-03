@@ -189,16 +189,29 @@ The plan as written before the step:
 - Done when: the settlement -> settlement edges in `DEPS.json` are only content links (Voth/Locus lore, the isle
   demo's two towns), not code.
 
-**Step 5: fix the remaining backwards edges.**
-- ~~`core/tags` -> `kits/catalog`~~ (found in step 3): fixed by the core/catalog split.
-- `core/materials` stops naming `biomes/sedesert`, `kits/ancients`, `kits/ringsea` (move the three fragments into
-  `core/materials`, finish the drift decisions in `core/README.md`).
-- `kits/beast-riders` and `kits/ringsea` stop reading `isle-demo` and `reedlake`; `biomes/ringisles` and
-  `biomes/dambasins` stop reading `settlements/*` (their data goes in `openworld/` or the kit itself).
-- `kits/post-apoc <-> core/sockets`: the kit takes the sockets module, the module does not name the kit.
-- `core/atmos -> kits/ancients, kits/ringsea` (on the biome rebuild): `core/atmos/demo/build.py` looks for
-  `three.min.js` in those two kits. Take it from one shared place instead (the harness's local three.js,
-  `tools/harness.py`), as every core demo should.
+**Step 5: fix the remaining backwards edges.** **Done 2026-11-03:** the allow-list is down to Pylon and Talia (12 -> 2).
+- **The scanner:** a backwards edge counts only when the path is in code (`tools/dep_graph.py` runs
+  `check_core_use.code_only` for that check; the forward graph keeps comments, step 0's follow-up). Five entries were
+  a docstring or comment citing another build: Dam Basins -> Hook ("adapted from settlements/hook/build.py"), Ring Isles ->
+  both isle demos (their PLAN.md and build.py named as models), Beast Riders -> the isle demo (a note on how it bundles the kit).
+- **The Ancient Port kit is a kit:** `settlements/port` is classed as one (`KIT_FOLDERS`; CLAUDE.md "a kit, not a settlement"),
+  so Dam Basins reading it is a biome reading a kit. Moving the folder to `kits/port` is the clean form and moves 31 baseline
+  keys, Hook's, Ys's and Dam Basins' paths and the gallery's: not done.
+- **`core/materials` -> Sedesert, Ancients, Ring Sea:** only `core/materials/demo/build.py` looking for a three.js r128; it takes
+  the harness's (`tools/harness.py` `local_three`) now. The five copies in the repo are byte-identical, so the page is unchanged.
+  (The drift notes in `core/README.md` are about material fragments settlements vendor: step 4, the matlib.)
+- **`core/sockets` -> Post-Apoc:** the socket sheet built on Post-Apoc's engine, so it is the kit's now:
+  `kits/post-apoc/sockets-example/` (byte-identical page; the baseline, `geometry.json` and `GEOMETRY.md` re-keyed). It still
+  does not draw whole (`kits/zeijani/KNOWN_ISSUES.md`: Post-Apoc's geometry calls `KMAT`), as before.
+- **Ring Sea -> Reed Lake:** four of the copies (`10-core`, `12-stats`, `30-kit`, `99-tail`) are the Ancients kit's, which
+  Reed Lake vendors too; Ring Sea checks them against `kits/ancients` now (kit -> kit). `10-core.js` drifts by upstream's frame
+  hook, re-vendored with the all-builds rebuild (`TODO.md`: Voth and the isle demo bundle it). The viewer shell (`00-head`,
+  `92-camera`, `93-labels`, `verify.py`, `jscheck.py`, all deliberately drifted) is the kit's own until its host port onto
+  `core/host` and the harness (`kits/ringsea/KNOWN_ISSUES.md`), as Scyvoi's was.
+- **Pylon and Talia -> Iziz** stay: they build inside Iziz's page by design (`settlements/iziz/VASSAL-KITS.md`), the open
+  question below.
+- On the biome rebuild only (not on this branch): `core/atmos/demo/build.py` looks for three.js in Ancients and Ring Sea;
+  it takes `harness.local_three` when that branch lands, as the materials demo does now.
 
 **Step 6: keep it modular.**
 - `tools/check_core_use.py` already blocks bespoke PRNG, noise, sky and water. Add: a build may not list another
@@ -216,7 +229,7 @@ The plan as written before the step:
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
 | 3 catalog / Voth | the catalog's build.py comments; then the engine to core/catalog | done 2026-11-03 | the current runtime-loading pages |
 | 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
-| 5 backwards edges | 6 builds | low | those builds |
+| 5 backwards edges | the scanner, 3 builds' lookups, the sockets sheet's folder | done 2026-11-03 | none (byte-identical) |
 | 6 guard rails | CI only | none | none |
 
 Run steps 2 to 3 on one branch with one all-builds rebuild (CLAUDE.md "Rebuild what a shared change reaches") and
