@@ -9,6 +9,7 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 |---|---|
 | `20-core-hazard.js` | `KHAZ`: `make`, `of`, `shape`, `inside`, `beyond`, `state`, `dose`, `list`, `at`, `zones`, `export`, `STATES`, `speed`; `exposure`, `bindFire`, `fireHazard`, `GROUND`; `taboo`, `taboos`, `forbids`, `tabooOk`, `tabooAudit` |
 | `test-hazard.js` | `node core/hazard/test-hazard.js`: every function, each check with a negative |
+| `21-core-hazard-flow.js` | opt-in: `KHAZ.moveAt`, `drift`, `poolK`: a hazard's `move` read (`move.pull` toward the core) and gas pooled on a band's floor (`shape.pool`); `test-hazard-flow.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):
@@ -270,9 +271,37 @@ pressure by height, and a temperature field when one exists).
 - **Local cases stay records**: a CO2 hollow, a cold sink, a sealed airless chamber are `gas` or `cold` records with a
   shape.
 
+## Moving and pooling (`21-core-hazard-flow.js`, opt-in, 2026-11-03)
+
+The Gills' in-breath (`biomes/gills/PLAN.md` sections 9 and 14 item 5) is a `grab` that pulls a walker toward a throat, and
+their sumps' gas, like the Hearths' fissure lows, kills on the floor and is nothing two metres up. `20-core-hazard.js` kept
+`move {speed, sink, slip}` on the record and nothing read it; a band's dose was the same from its floor to its top. This
+fragment reads both, and adds two fields:
+
+- `move.pull` (m/s) toward `move.to` (`[dx, dy, dz]` from the record's `at`; default the core at the band's floor), easing out
+  within `move.still` (.5 m) of it; `speed`, `sink` and `slip` as before. Each is scaled by the falloff at the point and the
+  state's `k` now, so a throat whose cycle (or `stateFn`) is off pulls nothing.
+- `shape.pool` (m): the band's dose falls smoothly from its floor (`at` y + `shape.y0`) to nothing `pool` m up.
+
+`KHAZ.moveAt(rec, x, z, t, y)` (one record: `{speed, sink, slip, pull: [vx, vy, vz], k}`, null outside), `KHAZ.drift(x, z, t, y,
+T)` (every record at a point: paces multiplied, sinks summed, the worst slip, pulls summed, `by`), `KHAZ.poolK(rec, y)`. Once
+the file is loaded, `KHAZ.at`, `dose`, `doses`, `here` and `exposure().step` take the pooled share (`KHAZ.FLOW` is true); a
+record without `move.pull` or `shape.pool` answers exactly as before (`test-hazard-flow.js` reads one registry at 8 points
+and 5 times before and after loading it). With no `y` the pool is not applied (a plan view). Both fields ride in the export's
+filled `hazard`.
+
+### Adopting it
+
+1. `build.py`: list `core/hazard/21-core-hazard-flow.js` after `20-core-hazard.js`.
+2. The in-breath at a throat: `{kind: 'grab', danger: .7, falloff: 'linear', shape: {type: 'cyl', r, h, y0: -depth}, move:
+   {speed: .5, pull: 1.2, to: [0, -depth, 0]}, stateFn: 'GILLS.suck'}`, with `KHAZ.STATES['GILLS.suck'] = (rec, h, t) =>
+   ({state: k > 0 ? 'drawing' : 'still', k, on: k > 0})` and `k = 1 - GILLS.breath(t)` (the in-breath is the breath's low).
+3. A sump: `{kind: 'gas', danger: 1, falloff: 'none', shape: {type: 'poly', pts, h: 4, pool: 2}}` at the floor's height.
+4. The walker each step: `const D = KHAZ.drift(x, z, t, y)`; its pace times `D.speed`, plus `D.pull` times dt.
+
 ## Tests
 
-`node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
+`node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
 `node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then f8fc8840
 with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
