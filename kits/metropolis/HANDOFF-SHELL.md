@@ -92,3 +92,59 @@ A short diagnosis (the cause, with the debug views or numbers that show it) in t
 (rebuilt, `node kits/metropolis/tests/test-metropolis.js` passing, `python3 tools/test_all.py --no-build` clean for this build) or a proposal
 the owner can choose from. Pictures of before and after from the same camera. GPU work on this machine takes the lock
 (`tools/harness.py`); see `CLAUDE.md` for the heartbeat rule.
+
+## Diagnosis and fix (2026-11-03)
+
+Inspecting the raw atlas targets (`MPS.atlas.A/B/C`) and debug views (`uDbg = 1..4`) from `setView(260,420,260, 0,30,0)` (skirt) and
+`setView(260,420,260, 0,225,0)` (lamp) at `fov = 20` and `fov = 8` showed five interacting causes in `src/60-mp-shell-host.js`:
+
+1. **Top-map vs. side-map branch switching on the flared skirt and sloped lamp (Hypotheses 1 & 5 — confirmed, primary visual cause).**
+   - *Evidence (`uDbg = 4`, branch view, and `spindle.intact.top` readback):* Because `spindle.intact.top` is an orthographic top-down projection of a
+     flaring skirt (`r = 26 m` at `y = 25 m` out to `r = 46.2 m` at `y = 0 m`), the top map across `r = 26..46 m` stores concentric rings of
+     window-reveal floors (`y = 0.45, 6.2, 10, 14, 18, 22 m`), all with upward normals (`ny = 1.0`). When a ray hit the skirt's outer stone ribs or
+     sloping lobby glass (`mpGap(p) ≈ 0`), `p.xz` landed over those reveal-floor rings in `vMpTop`, and `mpGap(p + (0, 2 ey, 0))` was `> 1.2 m` simply
+     because the skirt flares at `~32°` (`Δr ≈ 1.5 m` per `2.45 m` of `y`). The roof test `rf` (`p.y > ty - 1.5 ey && ny > 0.85 && mpGap(...) > 1.2`)
+     therefore flipped to `mpBr = 1.0` (red in `uDbg = 4`) in ragged horizontal bands across the skirt wall and root fins, stamping top-map reveal
+     texels onto the side wall.
+   - On the lamp (`y = 231.3..240 m`), `ty` is quantized in `1.14 m` 8-bit steps (`H = 262 m`), so `p.y > ty - 1.5 ey` and `mpGap(p + (0, 2 ey, 0)) > 1.2`
+     flickered pixel-to-pixel across the bronze disc and white dome in `uDbg = 4`. In addition, the steep circular lower wall of the white dome
+     (`y = 234.05..238.2 m`, `r = 13 m`) aliases into staircase teeth when sampled from the Cartesian top map (`0.34 m` square texels), whereas it is
+     smooth in polar `(θ, y)` coordinates in the side map.
+   - *Fix:* On the polar skirt (`0.65 < p.y < 22 m`), restrict `rf` to the only true horizontal roofs—the three portal canopies at `y = 8.2 m`
+     (`7.6 < ty < 8.7`, `ny > 0.95`, `mpGap(p + (0, 1.8, 0)) > 4.5 m`, since the canopies project `5 m` past the skirt)—and exclude window-tagged
+     top-map texels (`tw < 0.5`) on polar towers. On the lamp (`p.y > 231.3 m`, `r > 1.15 m`), route the flat bronze disc (`p.y < 234.05 m`, with
+     `qxz` clamped to `r >= 13.6 m` so disc hits never sample the `r = 13 m` white dome in the top map) and upper dome cap (`238.2..240.2 m` and
+     `> 247.5 m`) to the top map (`mpBr = 1.0`), and route the steep circular lower dome (`234.05..238.2 m`) to the polar side map (`mpBr = 0.0`).
+
+2. **Bake normal flattening wiped out the dome's and disc's 3D normals in the side map (`BF`, line 29).**
+   - *Evidence (`uDbg = 2`, normal view):* In `BF`, `if (uMode < 1.5 && abs(n.y) > 0.9)` replaced upward-facing normals with horizontal radial normals
+     `normalize(vec3(x, 0, z))` to suppress 1-px window sills. However, all horizontal sills and reveal floors have `abs(n.y) == 1.0`, whereas the
+     lamp's sloped bronze disc (`n.y = 0.956..0.976`) and upper white dome (`n.y = 0.92..0.985`) also exceeded `0.9` and had their normals flattened to
+     horizontal in the side map.
+   - *Fix:* Tighten the sill normal threshold in `BF` from `abs(n.y) > 0.9` to `abs(n.y) > 0.99`.
+
+3. **Bilinear filtering across radial fin cliffs and deep horizontal reveals in `mpGap` (Hypotheses 3 & 6 — confirmed).**
+   - *Evidence (`uDbg = 1, 2` on the skirt):* In `spindle.intact`, the three root fins (`2.2 m` wide = `3..5` texels in `u`, jumping `+6..8 m` in `r`)
+     and the deep skirt tier reveals (`2.2 m` deep in `r` across 1 row in `v` at `y = 6 m` and `22 m`) are sharp cliffs in `uB.a`. Bilinear filtering in
+     `textureLod(uB, mpUV, mpGeo)` turned each fin into a sloped wedge whose boundary stepped across texels and blended fin stone with dark lobby glass,
+     and smeared the `2.2 m` reveals into dark horizontal bands around the skirt.
+   - *Fix:* In `mpGap` (polar mode), sample the 2×2 mip-0 texel quad `(r00, r10, r01, r11)` of `uB.a`. When a radial cliff (`du > 1.0 m`) or deep reveal
+     cliff (`dv > 1.8 m`, above the continuous flare slope of `~0.25 m/row`) is crossed, snap `kx` / `ky`, set `mpCl = 1.0`, and read mip 0 (`sL = 0.0`)
+     at the snapped `mpUV`. In `mpTrace`, rays on the lower polar tower (`p.y < 85 m`) also check `1..2` degrees ahead in `u` so grazing rays do not
+     over-step narrow root fins.
+
+4. **Top-map cliff dilution and colour bleed on the lamp disc rim (`mpIn`, line 80).**
+   - *Evidence (`spindle.intact.top` readback):* At the outer edge of the lamp's bronze disc (`r = 20.6 m`, `y = 232 m`, `a = 0.897`), the adjacent
+     texels in `vMpTop` drop directly to the narrow shaft below (`r = 19 m`, `y = 108 m`, `a = 0.471`). Bilinear filtering of `uB` at `ut` blended `0.897`
+     with `0.471` over a 1-texel (`0.34 m`) ring, dropping `ty` by up to `60 m` at the rim so rays missed or notched the outer `0.35 m` of the disc and
+     bled white shaft colour onto the bronze rim.
+   - *Fix:* In `mpIn`, read the 2×2 mip-0 quad `(a00, a10, a01, a11)` of `vMpTop`. Across a cliff (`am - an > 0.015`, `~3.9 m`), dilate the low texels to
+     `am` before interpolating `ta` and snap `mpTUV` (`mpTCl = 1.0`) to the nearest high texel center so roof colour/normal reads never bleed over a cliff.
+
+5. **Polar bake wrap-pass triangle pollution (`BF`, line 25).**
+   - *Evidence (`MPS.atlas.A/B` readback):* In `KSHELL.bake`, a triangle crossing the `θ = ±π` seam has vertices near `+π` and `-π`. In the `uWrap = ±1`
+     passes (which cut at `θ = 0`), `vTh` for a seam-crossing triangle interpolates across `[-π, -3π]` or `[+π, +3π]`, sweeping right through the middle
+     of the slot `[-π, +π]` where `abs(vTh - (atan(-z, -x) + uWrap * π)) < 0.3` succeeded on the opposite side of the building, writing diagonal spikes
+     and corrupting a strip near the left edge of `spindle.intact`.
+   - *Fix:* Restrict `uWrap == 0.0` to `abs(vTh) <= 2.5` and `uWrap != 0.0` to `abs(vTh) >= 2.2` in `BF` (`> 0.25` seam tolerance).
+

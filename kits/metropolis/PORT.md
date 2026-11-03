@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 59 (28%) | 4 (2%) | 0 (0%) | 23 (11%) | 122 (59%) |
+| KB | 63 (26%) | 4 (2%) | 0 (0%) | 23 (10%) | 148 (62%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,23 +14,24 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/40-mp-records.js` | 15.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/41-mp-plans.js` | 14.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-mp-plans.js` | 17.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-mp-facade.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-mp-shell.js` | 6.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44-mp-audit.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 1.5 | [web] | 6 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/46-mp-designs.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/46b-mp-ancients.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/46-mp-designs.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/46b-mp-ancients.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/47-host-land.js` | 1.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/50-mp-kit.js` | 12.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 7 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/52-mp-hero-spindle.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-mp-hero-ledger.js` | 13.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/54-mp-hero-designs.js` | 32.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 65 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/55-mp-hero-ancients.js` | 6.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/54-mp-hero-designs.js` | 34.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 67 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/55-mp-hero-ancients.js` | 15.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 7 | 4 | 0 | 0 |  |
 | `src/56-mp-interiors.js` | 17.8 | [draw] | 5 | 0 | 0 | 0 | 5 | 11 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/57-mp-debris.js` | 5.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/58-mp-cutaway.js` | 3.8 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 |  |
-| `src/60-mp-shell-host.js` | 19.3 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 15 | 4 | 0 | 0 | 0 |  |
+| `src/59-mp-floors.js` | 11.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 8 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/60-mp-shell-host.js` | 22.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 15 | 4 | 0 | 0 | 0 |  |
 | `src/70-mp-stage.js` | 20.0 | [web] | 9 | 0 | 0 | 0 | 5 | 2 | 1 | 6 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 0.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-host-take.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

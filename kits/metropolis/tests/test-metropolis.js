@@ -47,4 +47,10 @@ const ancOk = A => A && /^build[A-Z]/.test(A.fn) && A.footprint.w > 0 && A.footp
 ok(MP.ANCIENT_KEYS.length === 13 && MP.ANCIENT_KEYS.every(k => MP.ANCIENTS[k] && MP.ANCIENTS[k].id === k && !MP.FAMILY[k] && !MP.DESIGNS[k]), 'thirteen Ancients, keyed, none a design or a family');
 ok(MP.ANCIENT_KEYS.every(k => ancOk(MP.ANCIENTS[k])), "the Ancients' records are sane");
 ok(!ancOk(Object.assign({}, MP.ANCIENTS.houses, { scale: 0.5 })), 'negative: a scale under 1 fails');
+const ENTRY = ['arch', 'auto', 'arch+auto', 'core', 'open'];
+ok(MP.ANCIENT_KEYS.every(k => MP.ANCIENTS[k].entry == null || ENTRY.indexOf(MP.ANCIENTS[k].entry) >= 0), 'every Ancient is entered by a known rule');
+ok(ENTRY.indexOf('door') < 0, 'negative: an unknown rule is not one');
+/* the Spindle's flats: every bath 1.2 m wide or more at its narrow end and 1.4 at its middle (a bath, a basin and a toilet fit), every flat's doors fit (the owner, 2026-11-03) */
+{ let narrow = 0, n = 0; const S = MP.FAMILY.spindle; S.levels.filter(L => /^flats/.test(L.use)).forEach(L => { const st = MP.storey(S, L.k); st.rooms.filter(r => r.mpKind === 'bath').forEach(B => { n++; const rs = B.poly.map(p => Math.hypot(p[0], p[1])), a = Math.abs(B.th1 - B.th0), w0 = a * Math.min(...rs), wm = a * (Math.min(...rs) + Math.max(...rs)) / 2; if (w0 < 1.2 || wm < 1.4) narrow++; }); ok((st.doorFit || []).every(q => q.arc >= q.w + 0.16), 'spindle L' + L.k + ": the flats' doors fit"); });
+  ok(n > 0 && narrow === 0, 'every flat bath 1.2 m wide or more at its narrow end, 1.4 at its middle (' + n + ')'); }
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

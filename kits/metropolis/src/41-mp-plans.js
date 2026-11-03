@@ -45,6 +45,11 @@
       return { id: id + '.' + name, kind: kindOf(kind), mpKind: kind, flat: id, poly: arc(r0, T(f0), T(f1), 2).concat(arc(r1, T(f0), T(f1), 2).reverse()), y: Q.y, h: Q.h, level: Q.level,
         doors: [], windows: [], furnish: !UNFURNISHED[kind], th0: T(f0), th1: T(f1) };
     }
+    /* a narrow sector (the bath past the hall under 1.5 m at the corridor: 0.5 to 1 m on the Spindle's 30-degree flats) is cut the other way
+       (the owner, 2026-11-03: baths wide enough for a bath, a basin and a toilet): the hall is an L, an entry 1.16 m wide at the corridor and a
+       passage along the outer rooms, so it still opens on every room; the bath takes the corridor corner behind the passage */
+    var wide0 = (1 - fb) * (t1 - t0) * ra >= 1.1, rw0 = wide0 ? ra + (rm - ra) * 0.4 : ra;
+    if ((1 - fb) * (t1 - t0) * rw0 < 1.5) return deepBath(st, Q, i, beds, { t0: t0, t1: t1, ra: ra, rb: rb, rm: rm, T: T, splits: splits, room: room, DW: DW });
     var kitchen = room('kitchen', 'kitchen', 0, fk, ra, rm), hall = room('hall', 'hallway', fk, fb, ra, rm), wide = (1 - fb) * (t1 - t0) * ra >= 1.1, rw = wide ? ra + (rm - ra) * 0.4 : ra, ward = wide ? room('ward', 'wardrobe', fb, 1, ra, rw) : null, bath = room('bath', 'bath', fb, 1, rw, rm), out = [room('living', 'living', splits[0], splits[1], rm, rb)];
     for (var b = 1; b < splits.length - 1; b++) out.push(room('bed' + (b - 1), 'bedroom', splits[b], splits[b + 1], rm, rb));
     function wall(name, pts, a, c, d) { st.walls.push({ id: id + '.' + name, pts: pts, y: Q.y, h: Q.h, rooms: [a.id, c ? c.id : null], door: d || null, broken: false }); }
@@ -65,6 +70,31 @@
     }
         if (ward) wall('w.wd', arc(rw, T(fb), T(1), 2), ward, bath);
     return [kitchen, hall, bath].concat(ward ? [ward] : [], out);
+  }
+  // the narrow sector's plan: kitchen [0, fk] the inner band's full depth (a galley widening outward; a one-bedroom flat's keeps its 0.38, where
+  // a hearth fits); the hall an L, its entry [fk, fh] on the corridor (1.06 m: a 0.9 m door and its jambs) and its passage [fh, 1] between rH and rm (1.2 m deep, 1.4 with two bedrooms); the bath
+  // [fh, 1] between ra and rH, its door on the passage
+  function deepBath(st, Q, i, beds, S) {
+    var t0 = S.t0, t1 = S.t1, ra = S.ra, rb = S.rb, rm = S.rm, T = S.T, splits = S.splits, room = S.room, DW = S.DW, id = Q.id, arcA = (t1 - t0) * ra;
+    var fk = beds > 1 ? 0.3 : 0.38, fh = fk + (DW + 0.16) / arcA, rH = rm - (beds > 1 ? 1.4 : 1.2);
+    var kitchen = room('kitchen', 'kitchen', 0, fk, ra, rm), bath = room('bath', 'bath', fh, 1, ra, rH), out = [room('living', 'living', splits[0], splits[1], rm, rb)];
+    var hall = room('hall', 'hallway', fk, 1, ra, rm);
+    hall.poly = arc(ra, T(fk), T(fh), 2).concat(arc(rH, T(fh), T(1), 2), arc(rm, T(1), T(fk), 2));
+    for (var b = 1; b < splits.length - 1; b++) out.push(room('bed' + (b - 1), 'bedroom', splits[b], splits[b + 1], rm, rb));
+    function wall(name, pts, a, c, d) { st.walls.push({ id: id + '.' + name, pts: pts, y: Q.y, h: Q.h, rooms: [a.id, c ? c.id : null], door: d || null, broken: false }); }
+    function door(A, B, p) { A.doors.push({ at: p, w: DW, to: B.id }); B.doors.push({ at: p, w: DW, to: A.id }); return { at: p, w: DW }; }
+    hall.doors.push({ at: at(ra, T((fk + fh) / 2)), w: DW, to: st.id + '.corr' });
+    wall('w.k', [at(ra, T(fk)), at(rm, T(fk))], kitchen, hall, door(hall, kitchen, at((ra + rm) / 2, T(fk))));
+    wall('w.bs', [at(ra, T(fh)), at(rH, T(fh))], bath, hall);
+    wall('w.b2', arc(rH, T(fh), T(1), 2), bath, hall, door(hall, bath, at(rH, T((fh + 1) / 2))));
+    for (var w = 1; w < splits.length - 1; w++) wall('w.o' + w, [at(rm, T(splits[w])), at(rb, T(splits[w]))], out[w - 1], out[w]);
+    var gaps = out.map(function (O, oi) { var lo = Math.max(splits[oi], fk), hi = splits[oi + 1], f = (lo + hi) / 2; (st.doorFit = st.doorFit || []).push({ room: O.id, arc: (hi - lo) * (t1 - t0) * rm, w: DW }); return { f: f, d: door(hall, O, at(rm, T(f))) }; });
+    var cuts = [0, fk, 1].concat(splits.slice(1, -1)).sort(function (p, q) { return p - q; });
+    for (var c = 0; c + 1 < cuts.length; c++) {
+      var gap = gaps.filter(function (g) { return g.f > cuts[c] && g.f < cuts[c + 1]; })[0];
+      wall('w.m' + c, arc(rm, T(cuts[c]), T(cuts[c + 1]), 2), out[0], null, gap ? gap.d : null);
+    }
+    return [kitchen, hall, bath].concat(out);
   }
   function flats(F, L, n, beds) {
     var st = sectors(F, L, n, function () { return 'flat'; }), keep = [];

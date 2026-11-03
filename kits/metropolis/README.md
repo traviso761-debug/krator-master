@@ -27,6 +27,7 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `56-mp-interiors.js` | [draw] | a storey drawn on demand, furnished; at most three open (a ruin's only under its standing skin) |
 | `54-mp-hero-designs.js` | [draw] | the massing kit `DK` (lathes, rings and slabs of storeys, tubes, lobbies with doors) and a builder for each of the fourteen |
 | `55-mp-hero-ancients.js` | [draw] | `MP.heroAncient`: a kit builder run into a hero of its own, its instanced detail baked there |
+| `59-mp-floors.js` | [draw] | `MP.floors`: storeys and a core for the buildings without plans, read off the drawn shape |
 | `58-mp-cutaway.js` | [web] | the cut-away: X cuts the building in front of you at a storey's ceiling, `[` and `]` move it |
 | `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
@@ -151,6 +152,32 @@ door's point, so a door off the room's middle skews it. `mpFrameDoors` (`56`) ha
 (`TODO.md`). A storey on the street lifts its slab and furniture 3 cm, off the street plane it was fighting.
 
 The plaza's walk floor reaches 1.2 km round the eye (it was the whole 16 km ground: 2.3 s each time a view changed) and follows it.
+
+## Storeys, cores and entrances for the buildings without plans (2026-11-03)
+
+The owner asked for a rational inside for the fourteen designs and the thirteen Ancients buildings before their room plans: **a floor plate
+at every storey and a stair and lift core** (`59`, `MP.floors`, run on each hero as it is built). It reads the hero's own drawn geometry, so it
+fits any shape: on a 1 m grid a cell is inside a storey when a flood from outside cannot reach it through the walls cut at two heights in the
+storey (a window's opening at one does not let it in) and something of the building covers it above (an open court or a terrace is not
+inside). The plate is those cells a cell off the walls, merged into rectangles; the core is a 6 m (else 4 m) square inside every storey nearest
+the plan's middle, with a door on each storey. The kit's instanced roof plates and wall panels count (their boxes, under 30 m2 in plan).
+Records can say: `floors: false` (a hall: the Crown Library, the Bell Hall), `floorsY0` (the Cupola's transit hall), `floorsMaxY` (the
+Terrarium's forest), `roof` (the Watch's drum, which the kit left open-topped, gets a roof at 12.6 m), `roofAccess` (a head-house on the core).
+
+**The Terrace's terraces** are worked roofs: each upper ring opens on the terrace below by four glazed doors on the diagonals, each terrace a
+paved walk with a raised planter along its parapet, the roof park a paved ring round its lawn, reached by the core's head-house.
+
+**Entrances for the Ancients' buildings** (`55`, `MP.ancientEntrances`, a record's `entry`): `arch` puts a door (bronze frame, two glass leaves
+that part for a walker) in the kit's own arches that open outward (a partition's arch is passed over), at most four spread round; `auto`
+finds from each side, in lanes 60 m apart on a long building, the wall a walker meets (past columns, and on a podium the wall that stands on
+it, swept along the podium's edge); `core` (the Honeycomb Block on its pilotis, Skyscraper A on its colonnade) leaves the core's ground door as
+the entrance; `open` the Cloisters' walks. A door 0.3 to 3 m over the ground before it takes steps; higher, the kit's ramp reaches it (the
+Redoubt). The Honeycomb Block's roof units (`plateW`) stood 2 m over its roof: a record's `seat` lowers named kit pieces onto what is below.
+
+**The Spindle's flats' baths** were strips 0.55 to 1.05 m wide on the 30-degree sectors: there the hall is now an L (a 1.06 m entry on the
+corridor, a passage along the outer rooms, still opening on every room) and the bath takes the corridor corner behind it, 1.2 to 2 m wide at
+its narrow end (to 1.8 to 3.6 m at its far one) and 3.4 to 6.6 m deep; every bath takes a bath or shower, a toilet and a basin, and the
+one-bedroom flats' kitchens keep the width a hearth needs.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

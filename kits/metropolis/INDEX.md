@@ -17,22 +17,23 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-mp-records.js` | 16 |  |
-| `41-mp-plans.js` | 15 |  |
+| `41-mp-plans.js` | 18 |  |
 | `42-mp-facade.js` | 4 |  |
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
 | `45-host-stage.js` | 1 |  |
 | `46-mp-designs.js` | 5 |  |
-| `46b-mp-ancients.js` | 4 |  |
+| `46b-mp-ancients.js` | 5 |  |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
 | `53-mp-hero-ledger.js` | 14 |  |
-| `54-mp-hero-designs.js` | 33 **big** |  |
-| `55-mp-hero-ancients.js` | 6 |  |
+| `54-mp-hero-designs.js` | 34 **big** |  |
+| `55-mp-hero-ancients.js` | 15 |  |
 | `56-mp-interiors.js` | 18 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
+| `59-mp-floors.js` | 12 |  |
 | `60-mp-shell-host.js` | 22 |  |
 | `70-mp-stage.js` | 20 |  |
 | `89-host-sky.js` | <1 |  |

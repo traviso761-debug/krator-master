@@ -16,10 +16,11 @@ DK.strip=function(B,m,y0,r0,y1,r1,o){const cx=o.cx==null?0:o.cx,cz=o.cz==null?0:
 /* a lathe's flip turns its normals, not its triangles: an inward surface (a court's wall) runs its profile the other way instead, so it is not culled from the court */
 DK.surf=function(B,m,y0,r0,y1,r1,o){if(o.sides)return DK.strip(B,m,y0,r0,y1,r1,o);B.lathe(m,o.flip?[[r1,y1],[r0,y0]]:[[r0,y0],[r1,y1]],o.seg,{cx:o.cx,cz:o.cz,a0:o.a0,a1:o.a1,col:o.col?()=>o.col:null,uv:o.uv,mod:o.mod,skip:o.skip?(t=>o.skip(t)):null});};
 // a storeyed facade on a ring: o.r(y) the face's radius; storeys of sh from y0 to y1; seg bays round (or over a0..a1); sill, head (shares of a storey); dep the glass's
-// set-back; pier the pier's width (0: none), every pierEvery bays; inward: the face looks at the axis (a court); blank(i, y0, y1): a solid storey
+// set-back; pier the pier's width (0: none), every pierEvery bays; inward: the face looks at the axis (a court); blank(i, y0, y1): a solid storey;
+// skip0(t): bays of the first storey left open (a door's, drawn by its caller)
 DK.ring=function(B,o){const R=o.r,inw=o.inward?-1:1,dep=o.dep==null?.5:o.dep,seg=o.seg,full=o.a1==null,a0=o.a0==null?0:o.a0,a1=o.a1==null?PI2:o.a1,cx=o.cx==null?0:o.cx,cz=o.cz==null?0:o.cz,
   S={cx:o.cx,cz:o.cz,a0:o.a0,a1:o.a1,seg,sides:o.sides,flip:!!o.inward,col:o.col,uv:o.uv},m=o.mat||'white',g=o.glass||'glass',n=Math.max(1,Math.round((o.y1-o.y0)/o.sh)),hh=(o.y1-o.y0)/n;
- for(let i=0;i<n;i++){const y0=o.y0+i*hh,y1=y0+hh;
+ const S1=S;for(let i=0;i<n;i++){const y0=o.y0+i*hh,y1=y0+hh,S=i===0&&o.skip0?Object.assign({},S1,{skip:o.skip0}):S1;
   if(o.blank&&o.blank(i,y0,y1)){DK.surf(B,m,y0,R(y0),y1,R(y1),S);continue;}
   const yS=y0+hh*(o.sill==null?.26:o.sill),yT=y0+hh*(o.head==null?.8:o.head),rS=R(yS),rT=R(yT),d=inw*dep;
   DK.surf(B,m,y0,R(y0),yS,rS,S);DK.surf(B,m,yS,rS,yS,rS-d,S);DK.surf(B,g,yS,rS-d,yT,rT-d,S);DK.surf(B,m,yT,rT-d,yT,rT,S);DK.surf(B,m,yT,rT,y1,R(y1),S);
@@ -52,13 +53,13 @@ DK.rectLedge=function(B,m,rect,y,e0,e1,up){const r=rect(y),c=Math.cos(r.yaw==nul
 // ---- the way in. A door: a screen across a chord of the glass line, A to Bp ([x, z]), its outward away from (cx, cz): bronze posts, fixed sidelights, a head, glass over
 // it to top, and a pair of sliding leaves (MP.doorLeaves, pushed to doors). Every lobby records its ground outline and its doors' gaps (B.walk) for the walk's blocks
 const DXH=3.82,DH=2.9;DK.DOOR=DXH;
-DK.door=function(B,doors,A,Bp,top,cx,cz){const C=[(A[0]+Bp[0])/2,(A[1]+Bp[1])/2],dx=Bp[0]-A[0],dz=Bp[1]-A[1],L=Math.hypot(dx,dz),d=[dx/L,dz/L];let n=[d[1],-d[0]];if((C[0]-cx)*n[0]+(C[1]-cz)*n[1]<0)n=[-n[0],-n[1]];
+DK.door=function(B,doors,A,Bp,top,cx,cz,y0){y0=y0==null?0:y0;const C=[(A[0]+Bp[0])/2,(A[1]+Bp[1])/2],dx=Bp[0]-A[0],dz=Bp[1]-A[1],L=Math.hypot(dx,dz),d=[dx/L,dz/L];let n=[d[1],-d[0]];if((C[0]-cx)*n[0]+(C[1]-cz)*n[1]<0)n=[-n[0],-n[1]];
  const yaw=Math.atan2(n[0],n[1]),hw=L/2,at=x=>[C[0]+d[0]*x,C[1]+d[1]*x];
- [-hw+.15,-1.8,1.8,hw-.15].forEach(x=>{const p=at(x);B.obox('bronze',p[0],DH/2,p[1],yaw,.3,DH,.3,{uv:2});});
- if(hw-.3-1.95>.1)[-1,1].forEach(k=>{const p=at(k*(1.95+hw-.3)/2);B.obox('glass',p[0],DH/2,p[1],yaw,hw-.3-1.95,DH,.04,{uv:4});});
- B.obox('bronze',C[0],DH+.2,C[1],yaw,2*hw,.4,.36,{uv:2});
- if(top>DH+.5){const a=at(-hw),b=at(hw),P=(q,y)=>[q[0],y,q[1]];DK.q(B,'glass',P(b,DH+.4),P(a,DH+.4),P(a,top),P(b,top));if(n[0]*(d[1])-n[1]*(d[0])<0)DK.q(B,'glass',P(a,DH+.4),P(b,DH+.4),P(b,top),P(a,top));}
- doors.push({x:C[0],z:C[1],yaw,w:3.3,h:DH});return {x:C[0],z:C[1],hw};};
+ [-hw+.15,-1.8,1.8,hw-.15].forEach(x=>{const p=at(x);B.obox('bronze',p[0],y0+DH/2,p[1],yaw,.3,DH,.3,{uv:2});});
+ if(hw-.3-1.95>.1)[-1,1].forEach(k=>{const p=at(k*(1.95+hw-.3)/2);B.obox('glass',p[0],y0+DH/2,p[1],yaw,hw-.3-1.95,DH,.04,{uv:4});});
+ B.obox('bronze',C[0],y0+DH+.2,C[1],yaw,2*hw,.4,.36,{uv:2});
+ if(top>DH+.5){const a=at(-hw),b=at(hw),P=(q,y)=>[q[0],y,q[1]];DK.q(B,'glass',P(b,y0+DH+.4),P(a,y0+DH+.4),P(a,y0+top),P(b,y0+top));if(n[0]*(d[1])-n[1]*(d[0])<0)DK.q(B,'glass',P(a,y0+DH+.4),P(b,y0+DH+.4),P(b,y0+top),P(a,y0+top));}
+ doors.push({x:C[0],z:C[1],y:y0,yaw,w:3.3,h:DH});return {x:C[0],z:C[1],hw};};
 // a lobby round a ring: the ground storey as a storefront (a curb, the glass set back dep, piers, a head band), gapped at each door (angles, snapped to a bay line; as many
 // bays either side as a 7.6 m screen needs), a floor and a ceiling. o: r(y), cx, cz, h, seg, sides, a0, a1, doors, mat, glass, dep, pier
 DK.lobbyRing=function(B,o,doors){const R=o.r,h=o.h,dep=o.dep==null?.5:o.dep,cx=o.cx==null?0:o.cx,cz=o.cz==null?0:o.cz,a0=o.a0==null?0:o.a0,a1=o.a1==null?PI2:o.a1,seg=o.seg,W=(a1-a0)/seg,m=o.mat||'white',full=o.a1==null;
@@ -96,7 +97,10 @@ DK.walkLine=function(B,pts,closed){(B.walk=B.walk||[]).push({pts,doors:[],closed
 
 MP.heroDesign=function(F,state,lite){const B=MP.builder(lite),W=DK.WALL,PI2=Math.PI*2,u=(i,j)=>MP.u(MP.idHash(F.id)&0xffff,i,j),doors=[];(MP.DESIGN_BUILD[F.id])(F,B,{W,PI2,u,doors});
  /* the doors' leaves are a placed hero's own meshes; the ground outline and its doors' gaps go with the hero for the walk's blocks (56, towerBlocks) */
- const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];return G;};
+ const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];
+ /* storeys and a core (59), from the drawn shape */
+ if(!lite){const Fl=MP.floors(G,{sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
+ return G;};
 MP.DESIGN_BUILD={
  // S2: five bronze pipes in a shallow arc, each its own storeys and a conical cap with a mouth; bronze bands bind them (the owner, 2026-11-03: no transit tube
  // stubs until a tube network joins buildings); a lobby
@@ -156,11 +160,21 @@ MP.DESIGN_BUILD={
    const dp=[];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([lr(H)*Math.cos(b),H+lr(H)*.6*Math.sin(b)]);}DK.lathe(B,'white',dp,24,{cx,cz});}
   const dp=[];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([F.core*Math.cos(b),H+2+F.core*.4*Math.sin(b)]);}DK.lathe(B,'baroque',dp,24,{uv:6});},
  // M2: five terraced rings round an open court, planted decks, a roof park
- terrace(F,B,X){const R=F.rings,hT=F.height.roof/R.length;
-  R.forEach((r,k)=>{const y0=k*hT,y1=y0+hT,sg=Math.round(2*Math.PI*r/4);if(!k)DK.lobbyRing(B,{r:()=>r,h:F.sh,seg:sg,doors:[0,Math.PI/2,Math.PI,Math.PI*1.5],pier:.45},X.doors);DK.ring(B,{r:()=>r,y0:k?y0:F.sh,y1,sh:F.sh,seg:sg,pier:.45,pierEvery:2,sill:.3,head:.82});
-   const rn=k+1<R.length?R[k+1]:F.court;DK.lathe(B,'green',[[r-.3,y1],[rn,y1]],64,{});B.lathe('white',[[r,y1],[r,y1+1.1]],64,{uv:2});B.lathe('white',[[r-.3,y1+1.1],[r-.3,y1]],64,{uv:2});B.lathe('white',[[r,y1+1.1],[r-.3,y1+1.1]],64,{uv:2});});
+ terrace(F,B,X){const R=F.rings,hT=F.height.roof/R.length,PI2=Math.PI*2;
+  /* the terraces (the owner, 2026-11-03: a workable roof on every terrace): each upper ring opens on the terrace below it by four glazed doors on
+     the diagonals (two bays each, off the street doors' lines), and each terrace is a paved walk with a raised planter along its parapet; the
+     top is the roof park, a paved ring inside the parapet round the lawn, reached by the core's head-house (MP.floors, roofAccess) */
+  R.forEach((r,k)=>{const y0=k*hT,y1=y0+hT,sg=Math.round(2*Math.PI*r/4),W=PI2/sg,dA=[1,3,5,7].map(q=>Math.round(q*Math.PI/4/W)*W),isD=t=>dA.some(a=>{const d=Math.abs(((t-a)%PI2+PI2*1.5)%PI2-Math.PI);return d<W-1e-6;});
+   if(!k)DK.lobbyRing(B,{r:()=>r,h:F.sh,seg:sg,doors:[0,Math.PI/2,Math.PI,Math.PI*1.5],pier:.45},X.doors);
+   DK.ring(B,{r:()=>r,y0:k?y0:F.sh,y1,sh:F.sh,seg:sg,pier:.45,pierEvery:2,sill:.3,head:.82,skip0:k?isD:null});
+   if(k)dA.forEach(a=>DK.door(B,X.doors,[Math.cos(a-W)*(r-.5),Math.sin(a-W)*(r-.5)],[Math.cos(a+W)*(r-.5),Math.sin(a+W)*(r-.5)],F.sh*.82,0,0,y0));
+   const rn=k+1<R.length?R[k+1]:F.court,top=k+1===R.length,pl=r-1.7;
+   B.lathe('white',[[r,y1],[r,y1+1.1]],64,{uv:2});B.lathe('white',[[r-.3,y1+1.1],[r-.3,y1]],64,{uv:2});B.lathe('white',[[r,y1+1.1],[r-.3,y1+1.1]],64,{uv:2});
+   /* the planter along the parapet, 1.4 m wide and 0.45 high; then the paving (the whole terrace, or on the roof a 3 m ring round the lawn) */
+   B.lathe('white',[[pl,y1+.45],[pl,y1]],64,{uv:2});DK.lathe(B,'green',[[r-.3,y1+.45],[pl,y1+.45]],64,{});
+   if(top){DK.lathe(B,'concrete',[[pl,y1],[pl-3,y1]],64,{uv:3});DK.lathe(B,'green',[[pl-3,y1],[rn,y1]],64,{});}else DK.lathe(B,'concrete',[[pl,y1],[rn,y1]],64,{uv:3});});
   DK.ring(B,{r:()=>F.court,y0:0,y1:F.height.roof,sh:F.sh,seg:44,inward:true,pier:.45,sill:.3,head:.82});
-  for(let i=0;i<18;i++){const a=X.u(i,1)*Math.PI*2,rr=F.court+3+(R[R.length-1]-F.court-6)*X.u(i,2);DK.cone(B,'green',Math.cos(a)*rr,Math.sin(a)*rr,F.height.roof,1+1.2*X.u(i,3),3.5+4*X.u(i,4),7);}},
+  for(let i=0;i<18;i++){const a=X.u(i,1)*Math.PI*2,rr=F.court+3+(R[R.length-1]-F.court-10)*X.u(i,2);DK.cone(B,'green',Math.cos(a)*rr,Math.sin(a)*rr,F.height.roof,1+1.2*X.u(i,3),3.5+4*X.u(i,4),7);}},
  // M3: a dome on a banded drum: a transit hall under a scalloped dome, four portals
  cupola(F,B,X){const r=F.r,H=F.height.roof;
   DK.lobbyRing(B,{r:()=>r,h:F.hall,seg:48,doors:[0,Math.PI/2,Math.PI,Math.PI*1.5],pier:1.2,dep:.8},X.doors);DK.ring(B,{r:()=>r,y0:F.hall,y1:H,sh:(H-F.hall)/3,seg:72,pier:.5,pierEvery:2,sill:.3,head:.8});
