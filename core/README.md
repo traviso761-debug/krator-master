@@ -361,6 +361,12 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   and the spring's `WATER.karstSpring` arguments; `hazards(N)` the drowning and the falls; `relief(N)` the dolines as a KRELIEF kind.
   *Adopting it:* `const N = KKARST.network({box, ground, world, kind, level, table, joints})`, then `KKARST.build(C, N)` before `C.build()`,
   the ground through `KRELIEF.apply(ground, KKARST.relief(N))`, then `KSPELEO.place(C, {box, y, kinds: KSPELEO.LIMESTONE})`.
+  **`kind: 'hypogene'`** (2026-11-03, the Hearth hold): water rising from depth, hot and sulphurous. Feeders up the faults or joints,
+  big chambers and cupolas over them at the water table, a level rising maze or spongework a storey (older storeys above, at older
+  tables), gypsum crust round the table (replacement gypsum and blocks on the old storeys) tagged `speleo: 'HYPOGENE'`, a warm spring
+  and vents for outlets, no sinks; `hazards(N)` adds scalding pools, pooled bad air and the acid's drips on the existing kinds (heat,
+  gas with `shape.pool`, acid). Dress it with `KSPELEO.place(C, {box: crust.box, y, kinds: KSPELEO.HYPOGENE})` over each of `N.crusts`.
+  The branch and maze outputs are byte-identical to before it (`test-karst.js` holds their digests).
 - **`KSPELEO.LIMESTONE`** (`39b-core-speleo.js`): soda straws in clusters, curtains along the roof, flowstone mounds, and rimstone dams
   across a falling floor, beside the dripstone; the hypogene preset's records are unchanged.
 

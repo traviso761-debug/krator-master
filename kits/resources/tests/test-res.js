@@ -25,6 +25,12 @@ ok(G.prospect('iron', 1000 * PM, 700 * PM) >= 0 && G.at(1000 * PM, 700 * PM) && 
 { const bad = JSON.parse(JSON.stringify(DATA)); bad.layers.iron = bad.layers.iron.slice(0, 40); RES_GEO.load(bad);
   throws(() => RES_GEO.prospect('iron', 0, 0), 'a truncated layer'); RES_GEO.load(DATA); }
 ok(DATA.families.every(f => DATA.layers[f]), 'every family has a layer');
+/* the carbonate (tools/scale-model/geology.py carbonate()): the Hykkousoi platform is the carbonate province, and the
+   limestone layer is a rock family that the node field does not place */
+{ const kg = G.at(508 * PM, 395 * PM), sed = G.at(1000 * PM, 700 * PM);
+  ok(DATA.provinces[6] === 'carbonate' && kg.province === 'carbonate' && kg.p.limestone >= 128, 'k-guilin is the carbonate province');
+  ok(sed.province !== 'carbonate', 'negative: the eastern uplands are not');
+  ok(DATA.rockFamilies.indexOf('limestone') >= 0 && DATA.field.families.indexOf('limestone') < 0, 'limestone is a rock layer, not a node kind'); }
 
 /* ---- the field: deterministic, streamable (any tile alone), every node kept by the rule */
 const T0 = { x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM };   /* 120 km of the eastern uplands */
