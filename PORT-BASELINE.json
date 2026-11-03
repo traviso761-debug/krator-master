@@ -205,48 +205,48 @@
    "sha256": "e64d6951793a5c75390f2b9bbb72a67f0fa3cac460724185b4cdbf6f71d15801"
   },
   "biomes/throne/dist/throne-cloud.html": {
-   "bytes": 1164031,
-   "sha256": "ddd61fbb3e722fae04a6cdaf1a89836c44ef74efef10194deee5d2dce76f2064"
+   "bytes": 1164861,
+   "sha256": "a160346e7b3034f5dad538eae3eaec976268e0ab213e368a76d96955e3099aea"
   },
   "biomes/throne/dist/throne-delta.html": {
-   "bytes": 1140934,
-   "sha256": "fee8c07477af900740c6497bcc1a940166ca202118e4711535043b98b84f2034"
+   "bytes": 1141764,
+   "sha256": "55d6782f6d0f0017e22737375a040a205727038984eca373852e55c2ec2a95dc"
   },
   "biomes/throne/dist/throne-frontier.html": {
-   "bytes": 1299673,
-   "sha256": "48ef3e69d161ca0aeb46cee3248eb4d802453ac09389507578726b9b79c9c84e"
+   "bytes": 1300503,
+   "sha256": "efe29beaef2ca820f5a6094a37b7e8140183e2564c4e46090bcf1cd5473cf92d"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1163572,
-   "sha256": "315cc37449ec188c126cc2f299c7deefecfdb624efad3ae4905bdb74303907e3"
+   "bytes": 1164402,
+   "sha256": "85c82d3f2fbc952a9d2288fe57e8ce5060ef02fcc4963a09eea93e9ec6a6dd46"
   },
   "biomes/throne/dist/throne-isle.html": {
-   "bytes": 1207685,
-   "sha256": "bb257ec6edf215afd92799993adfd0877dcca32781b14701908f5d8b6a1df75c"
+   "bytes": 1208515,
+   "sha256": "9d1d14459fa2d0612027a3bc6167fb198ea005501aecf69b7f04de1718541991"
   },
   "biomes/throne/dist/throne-kipuka.html": {
-   "bytes": 1293986,
-   "sha256": "e4ef6000cfee47b302cba16272b31a16e01257fbb1369d3d8ea712e73780c69f"
+   "bytes": 1294816,
+   "sha256": "6e48f4ce7c0d494ebd48869502114f1042c0beb10a0423238e04621f5a9985ea"
   },
   "biomes/throne/dist/throne-penitentes.html": {
    "bytes": 946988,
    "sha256": "2e62fed132e9bbf4e0a95e7d02026563d72a8f00b040b8681c5fc8a464736843"
   },
   "biomes/throne/dist/throne-savanna.html": {
-   "bytes": 1133934,
-   "sha256": "5c4676899df7b900aa04151d2ed1c00075e9083be5f2597ec0b34ebdd17b9eb9"
+   "bytes": 1134764,
+   "sha256": "fdc7d4fc3a8cd766dc6cfdd68d5909b74682a7cd7c527f337479fa815040e661"
   },
   "biomes/throne/dist/throne-tube.html": {
    "bytes": 916298,
    "sha256": "8ae2984e46615892fe8743a5e934578a1fa5b50446db61ed12aa8b158d8de20b"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1256117,
-   "sha256": "a2b75801aabf1bb895fad2d38c7d69be19333f2c878c99ef074b1227c84148e4"
+   "bytes": 1256947,
+   "sha256": "bac0fe3ca33c8eaa27c26aa3f9f8f2270329d4a5f135222002f22002d0803db2"
   },
   "biomes/throne/dist/throne.html": {
-   "bytes": 1183377,
-   "sha256": "b38bea900a9fe01594bc361203577fccdb12d1524de9a939f76ef8d623666c12"
+   "bytes": 1184207,
+   "sha256": "460d1b8fa5d776783a099a334691a35b8da23694aeeacad8d29f4dce8bdaa30c"
   },
   "biomes/xanadu/dist/xanadu.html": {
    "bytes": 6186195,
