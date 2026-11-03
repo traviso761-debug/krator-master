@@ -59,11 +59,20 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
 // the standing-stone groups, for the raked rings: filled by 88-host-build.js after the floor is placed
 const NSTONE=32,STONE_U={value:Array.from({length:NSTONE},()=>new THREE.Vector3(1e6,1e6,0))};
 function setStones(groups){for(let i=0;i<NSTONE;i++){const G=groups[i];if(G)STONE_U.value[i].set(G.x,G.z,G.r);else STONE_U.value[i].set(1e6,1e6,0);}}
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb4b0a8});
+// THE LIBRARY LAYERS ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild 2026-11-03): the same four surfaces, now hex-tiled, scaled
+// with distance and blended by height over the paint, each on its documented mask (the review's first line), the same per-vertex weights as before:
+//   moss    aGL.x  the zones' moss woods, the mist at the head and the shores (OIDONG.zones: moss, mistZ, shore), off rock
+//   forest  aGL.x times a macro patch (~250 m): the dark forest floor breaking the moss
+//   sand    aGL.y  the flats (the gravel fans off the south wall: FANS, the kit's `flat` field), off rock
+//   marble  aRock times a macro patch: the paler cliff in veins through the granite (the `rock` field: slope and Longsong's rock)
+//   wet     aWet   the water's wet band: WATER.fieldAt's shore distance from the water the eye sees (89z), darkening the ground to the edge
+// Standard under KGROUND (roughness high, as dry ground is) so the rain's gloss and the puddles show; ?kground=0 for the old floor (Lambert, the old mix)
+const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
+const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xb4b0a8,roughness:.95,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb4b0a8});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:OIDONG.ROCKTEX};sh.uniforms.uMacro={value:TEX_MACRO};sh.uniforms.uStones=STONE_U;if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGSand={value:GLAY.sand};if(GLAY.forest)sh.uniforms.uGFor={value:GLAY.forest};if(GLAY.marble)sh.uniforms.uGMar={value:GLAY.marble};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aFlat;varying float vFlat;attribute vec2 aGL;varying vec2 vGL;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vFlat=aFlat;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran;varying vec3 vGWP;varying float vRock;varying float vFlat;varying vec2 vGL;uniform sampler2D uMacro;uniform vec3 uStones['+NSTONE+'];'+(GLAY?'uniform sampler2D uGMoss,uGSand'+(GLAY.forest?',uGFor':'')+(GLAY.marble?',uGMar':'')+';'+
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aFlat;varying float vFlat;attribute vec2 aGL;varying vec2 vGL;attribute float aWet;varying float vWet;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vFlat=aFlat;vGL=aGL;vWet=aWet;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran;varying vec3 vGWP;varying float vRock;varying float vFlat;varying vec2 vGL;uniform sampler2D uMacro;uniform vec3 uStones['+NSTONE+'];varying float vWet;'+(GLAY&&!USE_KG?'uniform sampler2D uGMoss,uGSand'+(GLAY.forest?',uGFor':'')+(GLAY.marble?',uGMar':'')+';'+
    'vec2 gkHash(vec2 v){return fract(sin(vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))))*43758.5453);}'+
    'vec3 gkSample(sampler2D t,vec2 uv,vec2 dx,vec2 dy,vec2 v){vec2 h=gkHash(v);float a=h.x*6.2831853;mat2 R=mat2(cos(a),sin(a),-sin(a),cos(a));'+
    ' return pow('+(renderer.capabilities.isWebGL2?'textureGrad(t,R*uv+h,R*dx,R*dy)':'texture2D(t,R*uv+h)')+'.rgb,vec3(2.2));}'+
@@ -73,15 +82,15 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    ' return gkSample(t,uv,dx,dy,b+vec2(s,s))*w.x+gkSample(t,uv,dx,dy,b+vec2(s,1.0-s))*w.y+gkSample(t,uv,dx,dy,b+vec2(1.0-s,s))*w.z;}':''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+
-  (GLAY?'{vec3 _pd=diffuseColor.rgb;vec2 p=vGWP.xz;vec3 mc2=texture2D(uMacro,p*0.0039+vec2(0.43,0.19)).rgb;'+
+  (USE_KG?'\n/*KGROUND*/\n':'')+(GLAY&&!USE_KG?'{vec3 _pd=diffuseColor.rgb;vec2 p=vGWP.xz;vec3 mc2=texture2D(uMacro,p*0.0039+vec2(0.43,0.19)).rgb;'+
    'float tone=mix(0.8,1.15,mc2.b);vec3 hue=mix(vec3(1.06,0.97,0.9),vec3(0.94,1.04,0.96),smoothstep(0.3,0.7,mc2.r));'+
    'vec3 tm=gkLay(uGMoss,p,'+GLAY.mossK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.5);'+
    'vec3 ts=gkLay(uGSand,p,'+GLAY.sandK.toFixed(4)+')*mix(0.9,1.08,mc2.b);'+
    /* the dark forest floor (library ground106) breaks the moss where a macro noise runs high; the marble (library marble012) shows through the crags in veins of paler cliff */
    (GLAY.forest?'vec3 tf=gkLay(uGFor,p,'+GLAY.forestK.toFixed(4)+')*mix(0.8,1.15,mc2.b);tm=mix(tm,tf,smoothstep(0.5,0.7,mc2.g)*0.8);':'')+
    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tm*1.2,0.42),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*ts*1.25,0.6),vGL.y);}':'')+
-  (GLAY.marble?'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkLay(uGMar,vGWP.xz+vec2(vGWP.y*0.7,0.0),'+GLAY.marbleK.toFixed(4)+')*1.5,vRock*smoothstep(0.42,0.62,texture2D(uMacro,vGWP.xz*0.0061+vec2(0.17,0.61)).g)*0.8);':'')+
-  'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.4,vRock*0.7);'+
+  (GLAY&&GLAY.marble&&!USE_KG?'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkLay(uGMar,vGWP.xz+vec2(vGWP.y*0.7,0.0),'+GLAY.marbleK.toFixed(4)+')*1.5,vRock*smoothstep(0.42,0.62,texture2D(uMacro,vGWP.xz*0.0061+vec2(0.17,0.61)).g)*0.8);':'')+
+  'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.4,vRock*0.7);diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.62,0.58),vWet);'+
   // THE RAKING: on the flats, parallel ripples combed by the wind (a slow bend so they are not ruled lines), and round
   // each standing-stone group concentric rings that win over the parallel ones within its reach
   '{vec2 p=vGWP.xz;float bend=0.35*sin(p.x*0.011+p.y*0.007);vec2 dir=normalize(vec2(0.22+bend,1.0));float rip=sin(dot(p,dir)*7.5+0.6*sin(p.x*0.09+p.y*0.13));'+
@@ -89,6 +98,11 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   ' if(k>rk){rk=k;ring=sin(d*7.0);}}'+
   'float rake=mix(rip,ring,rk);float vis=vFlat*(0.55+0.45*smoothstep(0.0,1.0,1.0-vRock));'+
   'diffuseColor.rgb*=1.0+vis*(0.07*rake-0.03*abs(rake));}}');};
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-ground',at:'/*KGROUND*/',layers:[
+ KGROUND.layer('oidong','ground.moss',{w:'vGL.x',amt:.42,gain:1.2,tint:'diffuse',name:'moss'}),
+ KGROUND.layer('oidong','ground.forest',{w:'vGL.x*smoothstep(0.5,0.7,texture2D(uMacro,vGWP.xz*0.0039+vec2(0.43,0.19)).g)',amt:.36,gain:1.0,tint:'diffuse',name:'forest floor'}),
+ KGROUND.layer('oidong','ground.sand',{w:'vGL.y',amt:.6,gain:1.25,tint:'diffuse',name:'sand'}),
+ KGROUND.layer('oidong','stone.marblecliff',{w:'vRock*smoothstep(0.42,0.62,texture2D(uMacro,vGWP.xz*0.0061+vec2(0.17,0.61)).g)',amt:.8,gain:1.5,tint:'diffuse',name:'marble'})]});
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),fl=new Float32Array(nx*nx),gl=new Float32Array(nx*nx*2);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
@@ -97,8 +111,8 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aFlat',new THREE.BufferAttribute(fl,1));g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Oidong Valley';scene.add(m);return m;})();
+ g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aFlat',new THREE.BufferAttribute(fl,1));g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));   /* aWet: 89z fills it from the water's fields */
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel='The Oidong Valley';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water
 // The pools, the stream and the cataract are core/water's (89w-host-water.js); the records (POOLS, CATARACT, streamOff) are in 45-host-stage.js.

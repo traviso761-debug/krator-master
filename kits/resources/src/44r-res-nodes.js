@@ -1,5 +1,5 @@
 // prefix: res
-// ================================================================= RESOURCE NODES: twelve kinds in three grades
+// ================================================================= RESOURCE NODES: eighteen kinds in three grades
 // The nodes the works draw on (owner, 2026-10-15; the kinds, the rule and the numbers are 42r-res-ore.js). Larger and richer
 // with the grade; a richer node has loose stuff round its foot. Each is a def `node-<kind>-<grade>` (class prop, kind
 // res-node, culture generic: world content), placeable anywhere with place(); its tags carry the kind (rock), the grade
@@ -19,6 +19,8 @@
 //   alkali              a soda pan: pale peach plates of soda crust curling at their edges round a brine pit (pink-teal)
 //                       where the crust is cut, white trona nodules heaped; borates and lithium come out of the same brine
 //   oil                 a seep: a black pool of oil in a tar-crusted stain, bubbles on it, dead ground round it (a derrick's, not a mine's)
+//   gypsum, halite      the evaporite rings' rim and middle (below, resEvap)
+//   nickel, marble      the new rocks' (2026-11-03, below): a dark norite outcrop with brassy sulphide; a marble quarry
 //   RES_LOOK                    per kind: its colours
 //   resOutcrop(S, rich, fn)     the angular outcrop; fn(i, bw, bh, bd) draws a block's dressing in the block's frame
 //   resNode(kind, grade)        draw a node at the origin
@@ -193,3 +195,29 @@ defBuilding({key:'node-gypsum-high',seed:5922,...resNodeDef('gypsum','high')});
 defBuilding({key:'node-halite-low',seed:5930,...resNodeDef('halite','low')});
 defBuilding({key:'node-halite-medium',seed:5931,...resNodeDef('halite','medium')});
 defBuilding({key:'node-halite-high',seed:5932,...resNodeDef('halite','high')});
+/* the new rocks' two kinds (2026-11-03, REBAKE-PLAN.md R3). nickel: a low dark outcrop of norite (the melt sheet's base, green-black),
+   a rust gossan crust over it, brassy-bronze sulphide (pentlandite, pyrrhotite) in blebs and seams on its faces, more and bigger
+   with the grade. marble: a quarry: a stepped face of white and grey veined marble cut in blocks, the cut blocks stacked before
+   it, chips round its foot; the library's rock.marble012 where the page packs it (this kit's materials.json 'marble'), white
+   vertex colour where it does not */
+RES_LOOK.nickel={vein:[0xb08a3a,0xc49a48,0x8a6a2e],lump:0x23261f,pile:0x5a4a34,host:[0x2c3029,0x353a31]};
+RES_LOOK.marble={vein:[0xb8b8bc,0x9a9aa2,0xd8d6d0],lump:0xf2f0ea,pile:0xe0ded8};
+function resNickel(S,rich){const L=RES_LOOK.nickel;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a3e1e));}
+  const nb=2+rich*2;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.018)*S*(1+rich*.25);box('brass',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.4,q,.012,L.vein[k%3]);}
+  if(rich)box('brass',0,bh*rr(.3,.6),bd/2+.007,bw*rr(.4,.7),.008*S*(1+rich*.5),.012,L.vein[0]);},{col:i=>L.host[i%2]});
+ resLoose(S,rich*6,[L.pile,L.lump,L.vein[2]],'plain');}
+function resMarble(S,rich){const L=RES_LOOK.marble,mk=resK('marble','plain'),steps=2+rich,W0=S*1.1,D0=S*.35;
+ for(let s=0;s<steps;s++){const h=S*(.11+.02*rich),y=s*h,back=-s*D0*.55;
+  box(mk,0,y,back-D0*.5,W0*(1-s*.12),h,D0,resC(mk,s%2?L.vein[2]:L.lump));
+  const sw=W0*(1-s*.12);for(let v=0;v<2+rich;v++){const len=rr(.15,.35)*sw;box('plain',rr(-.5,.5)*(sw-len),y+h*rr(.25,.75),back-D0*.5+D0/2+.006,len,.006*S,.006,L.vein[v%2]);}}
+ const nb=2+rich*3;for(let i=0;i<nb;i++){const q=rr(.14,.22)*S,x=rr(-.45,.45)*W0,z=S*rr(.3,.55),y=(i%2)*q*.62;box(mk,x,y,z,q*1.5,q*.6,q,resC(mk,L.lump),rr(-.2,.2));}
+ resLoose(S,4+rich*5,[L.lump,L.pile,L.vein[2]],'plain');}
+{const node0=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='nickel')return resNickel(G.size,G.rank);if(kind==='marble')return resMarble(G.size,G.rank);return node0(kind,grade);};}
+Object.assign(RES_NAME,{nickel:'Nickel ore',marble:'Marble'});Object.assign(RES_H,{nickel:.62,marble:.7});
+defBuilding({key:'node-nickel-low',seed:5940,...resNodeDef('nickel','low')});
+defBuilding({key:'node-nickel-medium',seed:5941,...resNodeDef('nickel','medium')});
+defBuilding({key:'node-nickel-high',seed:5942,...resNodeDef('nickel','high')});
+defBuilding({key:'node-marble-low',seed:5950,...resNodeDef('marble','low')});
+defBuilding({key:'node-marble-medium',seed:5951,...resNodeDef('marble','medium')});
+defBuilding({key:'node-marble-high',seed:5952,...resNodeDef('marble','high')});

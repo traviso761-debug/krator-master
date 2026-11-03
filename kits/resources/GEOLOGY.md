@@ -11,33 +11,62 @@
 | `data/ledger.json` | the ledger of this data (`node kits/resources/tests/test-res.js --ledger`): what core/simulation and Godot read |
 | `godot/kres_field.gd`, `godot/kres_field_test.gd`, `godot/golden-field.json` | the GDScript twin of the field, its test, its vectors |
 | `src/98r-host-geomap.js` | `[web]` the page's geology map (G): provinces, a family's prospectivity, the nodes of a window by family |
-| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 44 checks, each with a negative |
+| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 55 checks, each with a negative |
 
 ## Rebake
 
+**On scale model 5.1** (2026-11-03, `REBAKE-PLAN.md` R0-R2): the model's data folder and its own defaults for the regions
+and settlements (the artifact's database is still on the 4.23 canvas and lacks 5.1's additions: the defaults are the
+database moved by the legacy shift plus 5.1's 19 regions and 5 settlements, so they are the source now):
+
 ```
-# the page: Artifact read of https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q (the saved file); the database: ArtifactData
-# list of `regions` and `settlements` with out_dir (one JSON per document)
-python3 tools/scale-model/geology.py <page.html> <db>/regions <db>/settlements kits/resources/data/geology.json [--preview <dir>]
-node kits/resources/tests/test-res.js --ledger      # rewrites data/ledger.json, then checks everything
-cd kits/resources && python3 build.py
+python3 tools/scale-model/geology.py tools/scale-model/model/data tools/scale-model/model/src/51-region-store.js tools/scale-model/model/src/60-settlements.js kits/resources/data/geology.json [--cell 4] [--preview <dir>]
+node kits/resources/tests/test-res.js --ledger      # rewrites data/ledger.json and godot/golden-field.json, then checks everything
+python3 godot/tools/sync_core.py                    # the Godot test's copies
+python3 tools/build.py kits/resources
 ```
 
-Deterministic: the same page and database give the same bytes. 2026-10-26: scale model 4.23, 97 regions, 109 settlements;
-2.9 MB of data, 11 s.
+Deterministic: the same model and regions give the same bytes. 2026-11-03: scale model 5.1, 118 regions, 117 settlements;
+4 km cells (`--cell 4`: every second pixel of 5.1's 2 km grid, as the 4.23 page's half-resolution grid was), 911 x 862;
+4.4 MB of data, 18 s. Every window the bake uses (relief, the volcanic share, the oil's smoothing, the margins, the
+rings, the rocks' contacts and blocks) is written in km (`cells(km, cell_km)`), so another `--cell` keeps their sizes.
 
+**What the 5.1 rebake moved** (measured against the 4.23 bake over the old canvas):
+- **91.5% of the field's nodes stand exactly where they stood** (the same id, position and keep), thanks to the lattice
+  anchor (below); 22,054 of 260,386 went and 18,559 came where a family's byte changed, 1,384 changed grade (110 tiles
+  of 120 km). Of the ores, iron 94.3%, copper 94.9%, gold 91.6%, tin 88.0% stayed; the salts least (gypsum 45.8%,
+  potash 35.1%, alkali 19.0%: 5.1 moved and redrew the basins).
+- The ore bytes changed by more than 20 on 8-10% of the land, saltpeter 19.7%, stone 29.8%, wood 12.7%, water 18.1%;
+  83.0% of land cells keep their province; 5,040 cells changed between land and water.
+- Gold placers 915 to 1,085, tin 1,012 to 1,184 (5.1's rivers, and the new land); gold lodes 105,271 to 131,317, tin
+  209,664 to 273,718 (the bigger canvas).
+- The provinces on 5.1 (cells of 4 km): water 90,214, sedimentary 191,704, crystalline 263,493, volcanic 40,214,
+  evaporite 6,908, rift 22,202, carbonate 9,205, impact 35,322, basalt 37,497, granite 58,665, quartzite 21,689,
+  ultramafic 8,169 (the Arch, now on the canvas).
+- The fairness audit: 21 findings to 26. "Yuni Emirate: Spindle Fan" is listed twice because the map has two polities
+  named Yuni Emirate (the old one and 5.1's).
+
+**Before 5.1** the bake read a saved 4.23 page and the database (`<page.html> <db>/regions <db>/settlements`). The carbonate
+and the other rocks were first added to that bake in place (`--carbonate`, `--rocks`, below); the 5.1 bake runs both itself.
+
+```
+python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
+python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
+```
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
 
 ```
-format 'krator-geology', version 1, source 'Krator Scale Model 4.23'
-grid      {w: 774, h: 696, fullW: 1549, fullH: 1393, px_m: 2000, cell_km: 4.0052}   the scale model's height grid
-provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift']   a province byte's low 7 bits
+format 'krator-geology', version 1, source 'Krator Scale Model 5.1'
+grid      {w: 911, h: 862, fullW: 1821, fullH: 1723, px_m: 2000, cell_km: 4}   the bake's grid over the scale model's map px
+provinces ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate', 'impact', 'basalt', 'granite',
+           'quartzite', 'ultramafic']   a province byte's low 7 bits
 ruinBit   128                                                                         set on Ancient-ruin ground
 mask      {water: 1, cliff: 2, airless: 4, sea: 8}                                    the mask byte's bits
-field     {world, inset, cells: {family: m}, families: [...], grade: {tilt, high, medium}}   the node field's constants
-families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water)
+field     {world, inset, cells: {family: m}, families: [...], anchor: [ax, az], grade: {tilt, high, medium}}   the node field's constants
+families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water, then rockFamilies)
+rockFamilies ['limestone', 'impactite', 'ultramafic', 'tuff', 'skarn', 'glass']   rock layers no node field or ledger reads yet (nickel and marble are node kinds since R3)
 layers    {province, mask, <family>...}: each a byte raster, run-length coded, base64
 placers   [{id, kind, grade, x, z, placer: true, river, why, load}]   world metres
 basins    [{id, at_px, kind, level_m, top_m, cells, soda, intensity}]   each evaporite basin the bake ringed
@@ -50,7 +79,7 @@ stats     the cells per province, the mean byte per family, the lode digests (co
 `(run - 1, value)` (runs of 1 to 256), then base64. Decode: for each pair, write `value` `run` times; the total must be
 `w x h`.
 
-**World metres:** `x = map px x 2000`, `z = map py x 2000` (the full grid, origin top-left, z south). **The cell of a
+**World metres:** `x = map px x 2000`, `z = map py x 2000` (5.1's map px, origin top-left, z south). **The lattice anchor** `field.anchor` (m; `[0, 0]` when absent, as in the 4.23 bake) is where the node field's cell 0 starts: cell `ix` of a family spans `[ax + ix x C, ax + (ix + 1) x C)`. 5.1's is `[544000, 660000]` (4.23's origin on the bigger canvas), so a cell keeps its index, hash and id from the 4.23 bake. The JS, the GDScript twin and the bake's lodes take it. **The cell of a
 point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with `h`, `fullH`; off the grid when outside
 `[0, w) x [0, h)`.
 
@@ -64,24 +93,43 @@ point:** `i = floor(x / 2000 x (w - 1) / (fullW - 1) + 0.5)`, `j` the same with 
 | 3 | volcanic | within `10 + 4 x radius` km of a `DATA.vents` vent; the biome regions Throne/Volcano, godthrone, Korona / NE, rift rim N and S, godstep valley |
 | 4 | evaporite | a ringed basin's strand where any evaporite byte is over 40 |
 | 5 | rift | the regions rift and The Rift |
+| 6 | carbonate | a sedimentary or crystalline cell whose platform byte (below, limestone) is 128 or more: k-guilin, NW bay, the Neo-Ozarks, Spider Lake |
+| 7 | impact | the crater walls' crystalline (megabreccia, pseudotachylite): the biome regions n highlands, s highlands, e inner wall, w outer wall, NW outer wall, ne outer wall |
+| 8 | basalt | flood basalt: the sedimentary and crystalline cells of n semiarid, Siphon Pits and Region 99 (their dried lake beds stay evaporite) |
+| 9 | granite | the rest of the crystalline that is rugged (stone byte 150 and up) and not airless, in 6-cell pluton blocks whose hash (`rock:granite`) is under .45 |
+| 10 | quartzite | Korona / NE's volcanic cells beyond 8 km of a vent (its tepui tables), and the rest of the crystalline that is flat (stone under 100) and not airless (high plateau sandstone). The painted highlands' volcanic beyond 8 km of a vent goes back to sedimentary |
+| 11 | ultramafic | where mantle is bare: the region the arch (8,169 cells on 5.1) |
+
+`crystalline` (2) is now the **gneiss basement**: what is left after the walls, the plutons and the plateaus, half of it
+airless.
 | +128 | ruin ground | within 12 km of a ruin or ruined arcology settlement, and the region Ruins of Nazar |
 
 ### The families
 
 | Family | Where (byte 0-255) |
 |---|---|
-| copper | volcanic 210, rift 120, crystalline 50, sedimentary 10 (porphyry Cu in arcs) |
-| silver | volcanic 150, crystalline 110, rift 80 |
-| gold (lode) | volcanic 140, crystalline 110, rift 90 |
+| copper | volcanic 210, rift 120, basalt 120 (native copper: Keweenaw), gneiss, granite and impact 50, sedimentary and quartzite 10 (porphyry Cu in arcs), + .6 x skarn |
+| silver | volcanic 150, gneiss and granite 110, rift and impact 80 |
+| gold (lode) | volcanic 140, gneiss and granite 110, rift and impact 90 (the Witwatersrand survived inside Vredefort) |
 | sulfur | `255 exp(-d / 10 km)` within 40 km of a vent, + 60 on volcanic ground |
-| tin | crystalline 180, rift 50, volcanic 20 (granite) |
-| rare-earth | rift 190 (carbonatites), crystalline 140, volcanic 30 |
-| iron | crystalline 160, basin margins (sedimentary within 3 cells of crystalline or volcanic) 140, rift 70, volcanic 60, sedimentary 40 |
+| tin | granite 200, gneiss 60, rift 50, impact 40, volcanic 20 (tin is a granite's ore) |
+| rare-earth | rift 190 (carbonatites), granite 160, gneiss 100, impact 60, volcanic 30 |
+| iron | gneiss 160, granite and impact 120, basin margins (sedimentary within 12 km of the crystalline rocks or volcanic) 140, rift 70, volcanic and basalt 60, sedimentary and quartzite 40, + .7 x skarn |
 | coal | sedimentary x lowland x (0.25 + 0.75 wet) x flat, at most 230 (subsiding wet basins) |
 | oil | 0.9 x coal smoothed over ~44 km, halved off the margins and folds; + 110 on low rift floors |
 | saltpeter | 200 x aridity (rain under 600 mm), + 40 on evaporites |
 | gypsum, halite, potash, alkali | the ringed basins (below); halite also 40 under flat, dry sedimentary basins (bedded rock salt) |
-| stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock; floodplains and lake shores; rain and warmth; rivers, shores and rain |
+| stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock (every province but sedimentary, evaporite and carbonate; sedimentary over 200 m of relief), at least 150 on basalt and granite (building stone on the flat) and 120 on carbonate (ashlar); floodplains and lake shores; rain and warmth; rivers, shores and rain |
+
+**The ores on the new rocks** (R3, 2026-11-03) are read from the final provinces and layers, after `carbonate()` and `rocks()`. What they moved, against the R2 bake over the whole of 5.1 (156 tiles of 120 km): 82.7% of nodes stand where they stood; tin keeps 44.2% (off the gneiss onto the granite), rare earths 71.1%, coal 76.2% (none in basalt, quartzite or carbonate), iron 88.7%, copper 85.5%, gold 87.1%, silver 85.2%, oil 84.2%; the evaporites, sulfur and saltpeter are unchanged; 2,255 nickel and 819 marble nodes are new, with 893 tin, 388 rare-earth, 2,956 copper and 799 iron nodes where the new rocks raised them. Gold lodes 131,317 to 115,845, tin 273,718 to 120,187; gold placers 1,085 to 928, tin 1,184 to 947. The ledger: 25 polities' imports change (mostly nickel and marble becoming goods; the Painted Men and the Coyote Kingdom now import gold, silver, tin and rare earths, their ground now quartzite and sandstone); the fairness audit 26 findings to 25.
+| limestone | a rock layer (no node kind, no ledger basic; `biomes/KARST-SITES-5.1.md`): the strongest of the **platforms** (255 x the biome region's weight: k-guilin 1, NW bay .9, neo-ozarks 1, spider lake .6, sw highlands .45; on sedimentary, crystalline, evaporite and rift ground), **lake limestone and marl** outside each basin's gypsum ring (.6 x the gypsum within 2 cells, where the cell's own gypsum is under 80), **tufa** round the soda lakes (.5 x the alkali within 1 cell), the **rift fill**'s thin limestones (70 on rift ground), **calcrete** in semi-arid basins (50 at ~400 mm of rain, from saltpeter's aridity, on sedimentary ground) |
+| impactite | 255 on the impact province, 140 on the walls' sedimentary benches, 120 on the melt sheet's margin (the Inner Crater floor within 3 cells of a wall) |
+| nickel | **a node kind** (R3): Sudbury's ore (nickel, copper, platinum): 220 at the melt sheet's margin falling to 0 at 12 km, 60 on the impact province, 180 on the ultramafic province |
+| ultramafic | 255 on the ultramafic province; 120 falling to 0 over 20-30 km round the White Gills' root (5.1 px 1015,1438 and the twins 988,1458, 1042,1498: *proposed* deep, not at the surface) |
+| tuff | ash and ignimbrite round every vent: 200 falling to 0 at 2.5 reaches (reach `10 + 4 x radius` km), the apron longest downwind (to the south-east) |
+| marble | **a node kind** (R3, a quarry): .9 x the limestone within 8 km of granite or volcanic ground (where the limestone is 40 or more) |
+| skarn | 200 on the cell beside granite or volcanic ground where the limestone is 30 or more |
+| glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
 

@@ -111,6 +111,21 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   crevasses or séracs.
 - [ ] **The overview's sky site** (old canvas 1043,508) lies in the abyss's rim on scale model 5.1 (-1,648 m): kept, since the sky reads only
   the latitude and the giant's bearing from it.
+- [x] **The variant trees lost their welded items** (the owner, 2026-11-03: "stilt pods not rendering properly"): `BIO.INDEX_ITEMS` (this turn's
+  universal set) welds every item into an indexed geometry, and `86-host-variants.js`'s harvest copied an item vertex by vertex, ignoring the index, so
+  every item drawn through the variants (the stilt pod's head, its tendrils, the trees' leaf clumps and fruit) came out as scrambled triangles: the
+  pod's head was 30 of its 180. The harvest expands an indexed item first. The attach audit could not see it: it samples BIO's baked items, and the
+  variant trees are 86's own pools; a check does now (`the variants keep every triangle of their items`, with its negative). **A trap for the open
+  world:** `openworld/isle-demo/src/world/84-world-nursery.js` harvests the same way; it is safe only while no open world sets `INDEX_ITEMS`.
+- [x] **The ember crown's joins and the needle bloom's seat** (the owner, 2026-11-03): every limb in this kit now leaves its parent through
+  `BIO.flareJoin` (core/biome 31j: the root sunk into the parent, a collar, 6-8 sides at the joint; a reader without the fragment draws the old
+  tube); the ember crown's bottle has a shoulder over the limbs' roots. The needle bloom's head stood .55 of its size over its stem's tip; it sits
+  on it now, the tip inside the core (most of the gap the owner saw was the harvest bug above, which scrambled the head and its eye).
+- [ ] **The painted badlands still read smooth up close** (the owner, 2026-11-03: "too uniformly bright, looks painted on"). Done at page level:
+  the beds' ledges cut into the transect's mounds (KSTRATA `ledge`; `?ledges=0`), a cavity term from the ground's own curvature and slope
+  (`aAO`; `?cavity=0`), chips shed by the beds in each bed's colour within 260 m (`?chips=0`), station 1's ground at 7.9 m cells. Mid and far
+  range now show ribs and gullies; up close a flank is still a smooth band, because the ground's cells (13 m on the overview) cannot carry 0.3-2 m
+  steps: that wants the core ground session's shading (KGROUND normals, roughness, cavity at texel scale), or a finer mesh near the camera.
 - **The transect's land is `src/44w-host-land.js`** (split from `45-host-stage.js`): a station replaces it (`stations/<name>/`); its header is
   the land contract. `88-host-build.js` is `89z-host-build.js` (after the water: the flora reads the water's shore).
 - **Species for readers** (eastabyss, the open world, Yuni): keys and indices unchanged; the item `bloom` is `onLeaf` (held in a leaf card's

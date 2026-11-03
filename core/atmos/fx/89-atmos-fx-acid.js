@@ -56,7 +56,7 @@
    const V='varying vec3 vAtmAcP;varying vec3 vAtmAcN;';
    const AV='vec4 atmAcWp=vec4(transformed,1.0);vec3 atmAcN=objectNormal;\n#ifdef USE_INSTANCING\natmAcWp=instanceMatrix*atmAcWp;atmAcN=mat3(instanceMatrix)*atmAcN;\n#endif\nvAtmAcP=(modelMatrix*atmAcWp).xyz;vAtmAcN=normalize(mat3(modelMatrix)*atmAcN);';
    sh.vertexShader=K.inject(K.rep(sh.vertexShader,'#include <common>','#include <common>\n'+V),{at:'project_vertex',after:AV,fallback:{at:'fog_vertex',before:AV}});   /* a leaf card's sway replaced <project_vertex>: before <fog_vertex> */
-   sh.fragmentShader=A.repLit(this)(K.rep(sh.fragmentShader,'#include <common>','#include <common>\n'+V+(cov?A.rainCoverGLSL()+'\n':'')+A.acidGLSL()),'#include <emissivemap_fragment>',
+   sh.fragmentShader=A.repLit(this)(K.rep(sh.fragmentShader,'#include <common>','#include <common>\n'+V+'\n'+(cov?A.rainCoverGLSL()+'\n':'')+A.acidGLSL()   /* the rain cover's chunk opens with #ifndef: it must start a line (2026-11-02) */),'#include <emissivemap_fragment>',
     '{vec3 atmAcNf=normalize(vAtmAcN);float atmAcO='+(cov?'atmRainOpen(vAtmAcP)':'1.0')+';diffuseColor.rgb=atmAcidAlbedo(diffuseColor.rgb,vAtmAcP,atmAcNf,'+kind+',atmAcO);'+
     (kind===0?'\n#if defined(STANDARD)\nroughnessFactor=mix(roughnessFactor,0.85,atmAcid.x*0.6);\n#endif\n':'')+'}\n#include <emissivemap_fragment>');});};
  A.acidRain=function(o){o=o||{};const T=A.T,U=A.U,h=A.h||{},cam=h.camera,P=A.PRESETS.acid,W=A.W;if(!W)A.err('acidRain: call ATMOS.weather first');

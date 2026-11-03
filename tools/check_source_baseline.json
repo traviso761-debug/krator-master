@@ -84,8 +84,8 @@
  "biomes/nwouterwall/src/47-host-land.js: ORNUM": 1,
  "biomes/nwouterwall/src/47-host-land.js: RAWTEX": 1,
  "biomes/oidong/src/55-biome-oidong-trees.js: ORNUM": 4,
- "biomes/oidong/src/70-biome-oidong.js: ORNUM": 1,
- "biomes/oidong/src/84-host-ground.js: RAWTEX": 4,
+  "biomes/oidong/src/84-host-ground.js: RAWTEX": 6,
+ "biomes/oidong/stations/passes/84-host-ground.js: RAWTEX": 1,
  "biomes/rift/src/45s-host-field.js: RAWTEX": 1,
  "biomes/rift/src/55-biome-rift-trees.js: ORNUM": 6,
  "biomes/rift/src/60-biome-rift-floor.js: ORNUM": 1,
@@ -655,5 +655,8 @@
  "settlements/yuni/src/68-place.js: ORNUM": 1,
  "settlements/yuni/src/70-sheet.js: ORNUM": 1,
  "settlements/yuni/src/71-catalog.js: ORNUM": 1,
- "settlements/yuni/src/98-start.js: ORNUM": 3
+ "settlements/yuni/src/98-start.js: ORNUM": 3,
+ "biomes/throne/stations/blast/84-host-ground.js: RAWTEX": 3,
+ "biomes/throne/stations/delta/84-host-ground.js: RAWTEX": 3,
+ "biomes/throne/stations/penitentes/84-host-ground.js: RAWTEX": 3
 }

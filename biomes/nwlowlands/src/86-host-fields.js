@@ -24,7 +24,7 @@ const SEA_WATER=WATER.open({name:'The lake',level:0,swell:[[.06,45,300,0,.04],[.
  bed:waterBed,bedBox:WATER_BOX,bedCell:WATER_CELL,shore:{seeds:(x,z)=>seaIn(x,z)>=0||Math.hypot(x-SEA_SEED[0],z-SEA_SEED[1])<40},tint:WATER_TINT});
 
 // the gorge's reach, its own ribbon (89w): the points of RIVER's line inside gorgeK
-const GORGE_FLOW=(function(){if(!GORGE.on)return null;const P=RIVER_PTS.filter(p=>gorgeK(sOf(p[0],p[1]))>.5);if(P.length<4)return null;
+const GORGE_FLOW=(function(){if(!GORGE.on)return null;const P=RIVER_PTS.filter(p=>gorgeK(sOf(p[0],p[1]))>.3);if(P.length<4)return null;
  return WATER.flow({name:'The marl gorge',pts:P.map(p=>[p[0],p[1],p[2]+.05]),width:P.map(p=>1.5*riverW(p[0],p[1])),speed:1.8});})();
 const WATER_F=WATER.fields({box:WATER_BOX,cell:8,ground:terrainH,surfaces:[SEA_WATER,RIVER]}),WF=WATER.fieldFns(WATER_F);
 // the water's share of the wetness, by the real edge: full at the edge, gone 60 m in (the rule for wet ground, the audit's `wet`); a seep or a rain stays the kit's old terms

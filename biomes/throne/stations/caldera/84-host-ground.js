@@ -50,7 +50,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  // from above it smeared down the 450 m wall)
  let decl='uniform sampler2D uDetail,uMacro;uniform float uNight;uniform vec3 uSunDir;varying vec3 vGWP,vGN;varying vec4 vL0,vL1,vL2;'+
   'vec3 _tri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}',body;
- if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
+ if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='vec3 _E_veins=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.5);vec3 L;'+
    GL_KEYS.map(k=>'L='+((k==='cliff'||k==='rock037')?'_tri(uG_'+k+',vGWP,normalize(vGN),'+GLAY[k].k.toFixed(4)+');':(k==='snow'||k==='snow2'||k==='ice'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);')+'diffuseColor.rgb=mix(diffuseColor.rgb,'+(k==='cliff'?'diffuseColor.rgb*L*2.2':k==='rock037'?'diffuse*L*1.7':'diffuse*L*1.25')+','+W[k]+');'+(k==='veins'?'_E_veins=L;':'')).join('')+'}';}

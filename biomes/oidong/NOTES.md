@@ -77,3 +77,9 @@ walls stand at head +-90. Without it the showcase is drawn as before (head 90, p
   presets now stand on the north bank and on Longsong's rock.
 - **The bead strings reach the water.** A hanging ribbon's length must be clamped to the drop to the ground or the water
   under it, or the probe's drowned-instance check finds its bell in the pool.
+
+## The vents on the north rim (canon, the owner, 2026-11-02; biomes/hearths/PLAN.md section 5)
+
+The valley's pools are kept open by the vents on its north rim: the Cold Hearths (4,333 m) and the lower vent (3,322 m) on scale model 5.1 are the
+chilly valley's own warmth, the reason its mirror-still pools never freeze. The sentence's wording for `LORE.md` 6.15 is still a proposal; the
+Cold Hearths are station 3 (`--station hearths`).

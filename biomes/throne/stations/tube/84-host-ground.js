@@ -64,7 +64,7 @@ function tubeMesh(T){const du=1.5,NR=Math.floor(T.L/du)+1,MA=44,NF=16,NV=MA+NF,p
  // downstream end the sump (closed by 86's glow)
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setAttribute('aW',new THREE.BufferAttribute(wa,4));
  g.setIndex(idx);g.computeVertexNormals();TUBESTATS.tris+=idx.length/3;
- const m=new THREE.Mesh(g,MAT_TUBE);m.userData.probeSkip=true;m.userData.inspectLabel=T.name;m.frustumCulled=false;scene.add(m);return m;}
+ const m=new THREE.Mesh(g,MAT_TUBE);m.userData.inspectLabel=T.name;m.frustumCulled=false;scene.add(m);return m;}   /* (2026-11-02) no probeSkip: the walls and roof are what the moss and the drips hang from, so the attach audit must see them */
 const TUBEMESH=TUBES.map(tubeMesh);
 // the end plugs: a rough dome of rock closing each end (the main tube's upstream choke, the passage's choke, the sump)
 function endPlug(T,u,dir){const p=T.P(u),t=T.tan(u),f=T.floor(u),W=T.W(u)*1.15,H=T.H(u)*1.1;const g=new THREE.SphereGeometry(1,20,12,0,TAU,0,Math.PI/2);g.rotateX(dir*Math.PI/2);
@@ -105,7 +105,7 @@ const SHAFTS=SKY.map(S=>{const NAa=64,NRr=10,pos=[],col=[],idx=[],f=TUBE.floor(S
  for(let r=0;r<NRr-1;r++)for(let k=0;k<NAa;k++){const k1=(k+1)%NAa,a=r*NAa+k,b=r*NAa+k1,c=(r+1)*NAa+k,d=(r+1)*NAa+k1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
  const wa=new Float32Array(pos.length/3*4);for(let i=0;i<wa.length;i+=4){wa[i]=.9;wa[i+1]=.3;}g.setAttribute('aW',new THREE.BufferAttribute(wa,4));
- g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_TUBE);m.userData.probeSkip=true;m.userData.inspectLabel=S.name;scene.add(m);return m;});
+ g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_TUBE);m.userData.inspectLabel=S.name;scene.add(m);return m;});   /* the same: the skylight's walls hold its hangers */
 // the fog: the cave's dark while the camera is in the rock's shadow, the open air's thin haze when it is above the surface
 const FOG_CAVE={day:new THREE.Color(0x0b0b0d),night:new THREE.Color(0x050608)},FOG_OPEN={day:new THREE.Color(0xc4bdb0),night:new THREE.Color(0x1c2028)};
 TICKS.push(()=>{const c=camera.position,out=c.y>surfH(c.x,c.z)-3,m=LIGHT_MODE==='night'?'night':'day';

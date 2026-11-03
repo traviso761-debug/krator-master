@@ -4,6 +4,27 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The final rebuild's GPU verify (pair 6, 2026-11-03): what is owed.** `verify.py --assert --all-views` on the Arc 140T, base and five stations
+      (cloud, descent, ranges, gills, floor). Fixed on the way: the ledge pass (87), the gills' and the ranges' own placements passed `BIO.put` an
+      array where it takes a Quaternion (NaN instance matrices: fan, mossmat, boulder, the gills' life, the ranges' needles, willows, cushions);
+      the page's region volume sat at y 0 to 1100 while the stations' ground stands 3-6 km up (now it spans the ground); the rod item (the crowns'
+      twigs and midribs that hold the cards, the attach audit's fix) carries `cap 400000` with its `capWhy` (270k on the Vale, 350k on the cloud slopes).
+      The feet check's tolerance now counts an item's own sinking (a trunk set .9 m in that rises .4 m still touches: 99's `rootedFeet`), and a riparian
+      species (frost willow, lotus trumpet; tag `riparian` not 'no') may stand in water under 1 m deep, as the dawn redwood does. All six pages pass
+      `verify.py --assert --all-views` on the GPU (2026-11-03, 10:44-11:20). The attach audit reads 0.80% on the Vale, 0.73% cloud, 0.75% descent,
+      0.01% ranges, 0.53% gills, 0.54% floor (limit 1%).
+      Still owed, by ratchet:
+      - **the feet** (`LAND.feetOwed`, the build's own check, and `seat-sweeps` in `tools/verify_ratchet.json`): the kit's older floor passes seat
+        on a height that is not the drawn mesh on steep ground, and on a station some scatter past the drawn ground's edge ('off'). Vale 239 of
+        59,368 sampled feet; cloud 1,060 of 95,012; descent 305 of 62,001; ranges 483 of 49,108; gills 691 of 37,287; floor 158 of 41,380. Down, never
+        up; the floor pass's seat is the fix (60).
+      - **one cacao 1 m into the lake** at (288, 397) on the Vale (`LAND.edgeOwed.plant` 1): the cacao pass decides on the placement height, not the water
+        the eye sees.
+      - **KSHADOW's cost** (the Vale, Arc 140T, 1280x720, 4096 map; 2026-11-03): `perf_views.py` hung on its timer queries (stopped by the
+        heartbeat), so it was timed as render + a 1-pixel readPixels (the stall counted; read the ratio, not the ms), median of 30:
+        initial 178 -> 203 ms (+14%), Dawn redwoods 290 -> 385 (+33%), From the mountains 207 -> 274 (+32%), Krator rising 235 -> 296 (+26%).
+        Draw calls the same (the world pass). `?shadowmap=2048` is the knob if it is too dear; for the owner to judge.
+
 - [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the cataract at az 112 and its spray (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
 
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are

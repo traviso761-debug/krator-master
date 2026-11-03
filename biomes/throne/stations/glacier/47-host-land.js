@@ -6,16 +6,12 @@ const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:16,baseH:(x,z)=>PROF(uOf(x,z))
 const ageLabel=a=>a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 _mark('stage');
 function spurAt(x,z,u,a){const A=SPUR.A(u);return A*(Math.exp(-Math.pow((a+GL.W(u)+SPUR.west)/170,2))+Math.exp(-Math.pow((a-GL.W(u)-SPUR.east)/190,2)));}
-// the moraines: lateral (sharp crests just outside the ice, from the terminal arc up to the icefall) and terminal
-function moraineAt(u,p,a){const W=GL.W(u),aa=Math.abs(a),tu=termU(p);
- const lat=(15+9*smooth(-300,1200,u))*Math.exp(-Math.pow((aa-W-38)/26,2))*smooth(1800,1300,u)*smooth(tu-10,tu+40,u);
- const term=TERM.h*Math.exp(-Math.pow((u-tu)/42,2))*(1-smooth(TERM.W0*1.5,TERM.W0*2.0,Math.abs(p-TERM.p0)))*(1-.92*Math.exp(-Math.pow((p-TERM.breach)/24,2)));
- return Math.max(lat,term);}
-// the lake's basin: behind the terminal moraine, under the snout
-const lakeK=(u,p,a)=>smooth(termU(p)+15,termU(p)+70,u)*smooth(GL.SNOUT+260,GL.SNOUT+60,u)*(1-smooth(GL.W(u)*.8,GL.W(u)*1.2,Math.abs(a)));
-function bedH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GL.pg(u),W=GL.W(u);
+// the moraines (lateral: sharp crests just outside the ice, from the terminal arc up to the icefall; terminal), the lake's
+// basin (behind the terminal moraine, under the snout), the trough and the ice: core/terrain's KGLACIER (45's GLC)
+const moraineAt=GLC.moraine,lakeK=GLC.lakeK;
+function bedH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GL.pg(u);
  let h=PROF(u)+22*(fbm(x*.0007,z*.0007,91,3)-.5)+6*(fbm(x*.003,z*.003,92,2)-.5)+spurAt(x,z,u,a);
- h-=GL.Dv(u)*(1-smooth(W*.85,W*1.55,Math.abs(a)))*smooth(TERM.u0-520,TERM.u0-60,u);
+ h-=GLC.trough(u,a);
  h+=moraineAt(u,p,a)*(1+.25*(fbm(x*.02,z*.02,93,2)-.5));
  h-=9*lakeK(u,p,a);
  // the shelf: the slope eased into a broad step; the caves' floors levelled
@@ -23,7 +19,7 @@ function bedH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GL.pg(u),W=GL.W(u);
  for(const C of CAVES){const d=Math.hypot(x-C.x,z-C.z);if(d<C.R*1.5)h=mix(h,C.floor==null?h:C.floor,smooth(C.R*1.4,C.R*1.0,d));}
  return h;}
 // the ice: thickest down the middle, thinning to the margins; a cliff at the snout
-function iceAt(x,z){const u=uOf(x,z);if(u<GL.SNOUT-2)return 0;const a=pOf(x,z)-GL.pg(u),W=GL.W(u),t=1-Math.pow(a/W,2);return t<=0?0:GL.T(u)*Math.pow(t,.62);}
+const iceAt=GLC.iceAt;
 CAVES.forEach(C=>{C.floor=null;C.floor=bedH(C.x,C.z);});
 // THE RIVER: out through the breach and braiding down the flank (three channels apart below the moraine)
 const BREACH_U=termU(TERM.breach);

@@ -25,9 +25,9 @@ const VIEWS={
  'The upper fall':fallView(F0,28,3),
  'The great fall':fallView(F1,30,3),
  'A plunge pool':(function(){const P=POOLS[1]||POOLS[0];return[P.x-16,P.level+3,P.z+3,P.x+4,P.level+4,P.z];})(),
- 'Tree ferns in the north ravine':(function(){const V=RAVINES[0],x=-600,z=ravC(V,x);return toward(x-40,z+8,x,z,30,4,2);})(),
+ 'Tree ferns in the north ravine':(function(){const V=RAVINES[0],x=-600,z=ravC(V,x);return toward(x-40,z+8,x,z,46,12,3);})(),   /* (2026-11-02) higher and back: the eye check found it under the ravine's patch */
  'The trail in the cloud':(function(){const p=trAt(.6),q=trAt(.66);return[p[0],gh(p[0],p[1],1.7),p[1],q[0],gh(q[0],q[1],2),q[1]];})(),
- 'The saddle and its cairn':toward(SAD.x-30,SAD.z-25,SAD.x,SAD.z,14,2.5,1.5),
+ 'The saddle and its cairn':toward(SAD.x-30,SAD.z-25,SAD.x,SAD.z,24,5,1.5),   /* (2026-11-02) out of the elfin wood's foliage */
  'The cloud over the ridge':(function(){const x=RIDGE.saddle.x+420,z=RIDGE.zc(x)+300;return[x,gh(x,z,25),z,RIDGE.saddle.x+150,ridgeCrest(RIDGE.saddle.x+150)-10,RIDGE.zc(RIDGE.saddle.x+150)];})(),
  'The heath beyond the ridge':(function(){const x=RIDGE.saddle.x+60,z=RIDGE.zc(x)+260;return toward(x+30,z+60,x,z-120,40,3,4);})(),
  'Above the cloud':[-2600,3800,600,600,3050,-300],

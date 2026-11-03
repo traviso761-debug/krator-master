@@ -54,3 +54,5 @@ function ravDepth(V,x){let d=V.d*smooth(2500,2100,x);if(V.steps)for(const S of V
 const RIDGE={zc:x=>1880+110*Math.sin(x*.0011+.4)+40*Math.sin(x*.003+2),h:x=>95+35*fbm(x*.004,7,23,2),wN:340,wS:160,saddle:{x:-420,w:260,d:58}};
 const ridgeCrest=x=>flankH(x,RIDGE.zc(x))+RIDGE.h(x)-RIDGE.saddle.d*smooth(RIDGE.saddle.w,0,Math.abs(x-RIDGE.saddle.x));
 function plumeAt(x,z){return 0;}
+// THE AIR's height fog (89zz-host-core.js; the final rebuild): the cloud belt is the page's own (85-host-mist.js), so no second mist here
+const ATMOS_AIR={falloff:1/900,sun:.3,sky:.35};

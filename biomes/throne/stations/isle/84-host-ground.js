@@ -62,7 +62,7 @@ function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
   const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x',basalt:'vL2.y'};
   let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
-  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
+  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
    // the sinter, the rims and the sulphur keep the paint's colour (the mats' bands, the white): their texture is detail
    const keep={sinter:1,rim:1,sulphur:1};
    body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+

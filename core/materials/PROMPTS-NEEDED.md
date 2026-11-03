@@ -147,15 +147,6 @@ tinted gold on black or white on black); the fish-scale roofs are `metal.scale` 
 tracery's grid is `patterns/eternian/screen-pierced` (`.b`), a keyed, tiling pierced cast-bronze screen on magenta. Not
 covered: the brick (the kit tints the plain `brick` set today) and the tracery's three window heads.
 
-## 19. The Oidong Valley's carved bark (`biomes/oidong`, 2026-10-26)
-
-The cloud-pad tree (species 17, the diversity pass from the owner's reference photo of patterned trunks) wears a bark
-patterned in bold two-tone motifs. Nothing in the library or `patterns/` has it (`bark.tapestry` is carpet-like,
-`bark.mosaic` full-colour plates, `bark.cratered` grey pits), so `50-biome-oidong-species.js` paints a procedural stand-in
-(`OIDONG.barkTex7`, bucket `bark7`). Lands as the family `bark.carved` in `biomes/oidong/materials.json` (full colour,
-`keep` 1: the species' bark colour is a near-white multiplier), then `LIBBARK[7]` in the species fragment. Two takes
-(`.b` the variant) so a grove does not repeat one trunk.
-
 ## 24. The abyssal savannah (`biomes/abyssal-savannah`, 2026-10-26)
 
 `biomes/abyssal-savannah/PLAN.md` section 10. **Reuse, so no prompt:** `card.grass.dry`, `card.ichu` and `card.rankgrass`
@@ -272,6 +263,36 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
+
+## 31. The Gills (`biomes/gills`, xanadu's station `gills`, 2026-11-03)
+
+The breath pipes and their linings, both countries (`biomes/gills/PLAN.md` section 15 has the reuse list). Five sets, generic ids,
+paste-ready prompts in the plan's section 15 (copy them from there; the lamina and fringe sheets are tintable, so one serves Red and White):
+`rock.lamina.pipe` (the pipe wall's daily couplets: until it comes the pipes draw `KSTRATA.lamina`'s own procedural bands),
+`mineral.crust.ferromanganese` (the Red collar), `mineral.crust.brucite` (the White collar: the station's collars are tinted
+procedural flesh until then), `card.breathfringe` (the fringes, a cut-out on magenta), `card.turf.limed` (the breath meadow's
+crusted grass, a cut-out on magenta).
+
+`rock.lamina.pipe`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished cross-section of a mineral chimney wall made of thousands of hair-fine parallel laminae, alternating pale cream carbonate and near-black oxide, each couplet a fraction of a millimetre, with a slightly thicker pale band every few hundred couplets and one sharp black band; the laminae gently wavy and continuous across the frame, a few hairline cracks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+`mineral.crust.ferromanganese`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wet botryoidal ferromanganese crust, rounded knobs of near-black manganese oxide (#1a1816) packed edge to edge, each knob with a faint grey-blue sheen, rust-brown (#6b3a1e) staining in the hollows between knobs and a few patches where the crust has flaked to show cream carbonate (#d9cfb8) underneath. Full colour: not tinted.
+```
+`mineral.crust.brucite`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a chalky, porous brucite-and-carbonate crust of soft rounded cauliflower-like lobes, bone white (#e9e4d6) to pale cream, with faint grey-green manganese staining (#7f8f78) in the seams between lobes, fine powdery texture, a few damp translucent patches. Full colour: not tinted.
+```
+`card.breathfringe`:
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate tufts of long fine filaments, each tuft rooted at a small grey fleshy knob and streaming to one side as if in a steady wind, the filaments a muted warm orange-brown, translucent at the tips, some beaded with droplets. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.
+```
+`card.turf.limed`:
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
+```
 
 ## Gaps with no prompt yet
 

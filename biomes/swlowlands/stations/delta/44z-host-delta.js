@@ -45,7 +45,7 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
    v:(x,z)=>{const si=seaIn(x,z);if(si>60)return null;const s=sOf(x,z),t=tOf(x,z),nc=nearCh(Math.min(s,APEX),t),side=Math.sign(t-chT(nc[1],Math.min(s,APEX)))||1,
     out=.32*smooth(-1600,0,si)+.04,spread=.14*smooth(240,20,nc[0])*smooth(-1200,0,si),drift=.06;
     const vs=-out,vt=side*spread+drift;return[(vs+vt)*RT2,(vs-vt)*RT2];}}};
- return{sea,terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:113,springs:[],strata:S,
+ return{sea,terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:66,springs:[],strata:S,
   flood:{low:YB-1.2,high:YB+2.2,poly:floodPoly,lagD:45,sharp:1.5},
   kinRules:[{from:'canepalm',to:'swbay.splay',share:.3,salt:0x6e41,zone:Z=>Z.rip>.4}],
   fields:{tropic:(x,z)=>.82*smooth(300,-500,sOf(x,z)),dry:(x,z)=>.8*smooth(60,240,over(x,z))*smooth(-700,-200,sOf(x,z)),wet:(x,z)=>mix(.92,.5,smooth(40,240,over(x,z))),upland:(x,z)=>clamp((over(x,z)-40)/240,0,1)},

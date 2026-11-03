@@ -240,7 +240,7 @@ code and see whether it cuts that slot by hand.
   sheet is meant (a crown card may want a cluster of nine sprays: n semiarid's aspen, blossom, broom, lobed and sage
   crowns are such, unjudged). Biggest first: Throne 39, Crops 44 (it picks cells by code: check how), Korona 15,
   Necanyons 15, Longsong 14, crater-drylands 12, ebadlands 10. Take one screenshot of each judged slot.
-- [ ] **The inline pack writers that drop `cell`**: crater-drylands, ebadlands, ehighlands, shighlands, oidong, Throne,
+- [ ] **The inline pack writers that drop `cell`**: crater-drylands, ebadlands, ehighlands, shighlands, oidong (the Throne's passes it since 2026-11-02),
   Zeijani and Girder each keep a `matlib_pack()` copied from ebadlands that leaves `cell` out of the pack, so a slot
   given a `cell` in `materials.json` still shows the whole sheet. Nothing shows wrong today (their celled slots are cut
   by hand, or not swapped in: ebadlands' `litter`), but it is a trap. Pass `cell` (n semiarid's `build.py`, one line),

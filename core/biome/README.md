@@ -245,6 +245,16 @@ sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.
   tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
   Test: `test-guards.js`.
 
+## A limb's joint to its parent (`31j-core-joint.js`, `BIO.flareJoin`; opt-in; `test-joint.js`)
+
+A limb grown as a polyline and drawn by `BIO.tube` started at its parent as thin as one step up: two pipes pushed together (the owner on
+ebadlands' ember crown, 2026-11-03). `BIO.flareJoin(pts, {parentR, k, sink, cap, len})` returns the limb's points with a root sunk back into the
+parent (`sink` x its radius, along the limb) at `k` x the limb's first radius (capped at `cap` x the parent's, never under the limb's own), and a
+collar point eased into the limb; the rest is the kit's. No random numbers, so a kit's stream does not move. Adopting it: list
+`'31j-core-joint.js'` in `CORE_BIOME`, and pass a limb's points through it before `BIO.tube` (guard `BIO.flareJoin ?` where a reader may not list
+it), with more sides at the joint (6-8 for a limb over ~.15 m). Every kit that grows limbs with a polyline and `BIO.tube` has the seam; ebadlands
+is the first on it.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the
@@ -606,6 +616,25 @@ item starts when the state passes its lag and still reaches all of it with the s
 4. One tick: `BIO.breathState('gills').value = GILLS.breath(t)`, with `t` from the module clock and the state from `ATMOS.libration`.
 
 **Godot:** the record is `userData.bio.opts.breath`, plain data; a port is a global shader parameter per key and the same three lines in the vertex shader. Not written yet: no kit has asked.
+
+## The breath's turn (`35b-core-anim-turn.js`, opt-in, 2026-11-03; `test-breath-turn.js`)
+
+The Stills' sails (`biomes/hearths/PLAN.md` 7b, 14 item 3) stand across the wind and edge-on to the sun, turning with it through
+the day, and fold shut on a geyser's warning: two scalars on one item. `o.breath.turn {key, amp (2 pi), share}` adds a yaw about
+the item's own y axis through its origin, on its own key, after the breath's shape, with the normals turned (fold's stay put):
+`uTurn x amp (x aP0.w with share) + aP1.y`, `aP1.y` the item's own heading. `o.breath.shape: 'turn'` makes the yaw the breath itself
+(`breath.key`, `breath.amp`), nothing else moving. A material that asks for no turn gets the hook's text unchanged, character for
+character. Compiled and turning on SwiftShader (`core/atmos/check_shimmer.py`, the card's pixels).
+
+### Adopting it
+
+1. `build.py`: list `core/biome/35b-core-anim-turn.js` after `35-core-anim.js`.
+2. `BIO.animMat('stills:sail', {mode: 'breath', breath: {key: 'geyser', shape: 'fold', amp: 1.2, turn: {key: 'sails', amp: 2 * Math.PI}}})`;
+   each item's `aP1.y` its fan's heading round the stalk.
+3. One tick: `BIO.breathState('geyser').value` from `WATER.geyser`'s `S.state(t)` (shut in `pre` and `column`), and
+   `BIO.breathState('sails').value = yaw / (2 pi)` with the yaw across `ATMOS.windAt` and edge-on to the sun's bearing.
+
+**Godot:** a second global shader parameter per key; `VERTEX.xz` and `NORMAL.xz` turned by the same angle.
 
 ## The environmental fields (`41-core-env.js`, opt-in; `test-env.js`)
 

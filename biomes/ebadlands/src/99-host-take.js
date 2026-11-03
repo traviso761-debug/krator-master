@@ -87,6 +87,9 @@ const HCHK={
  variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
   for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv))miss.push(EBADLANDS.SPECIES[sp].key+' v'+v+' lv'+lv);
   return{ok:!miss.length&&V.stats.drawn>0&&P.size<=EBADLANDS.SPECIES.length*2*3*V.K,detail:(miss.length?'missing: '+miss.slice(0,6).join(', ')+'; ':'')+P.size+' prototypes for '+T.length+' trees; '+V.stats.drawn+' drawn here (hero '+V.stats.levels[2]+', mid '+V.stats.levels[1]+', far '+V.stats.levels[0]+'), '+V.stats.tris+' triangles, grown in '+V.stats.growMs+' ms'};},
+ // the prototypes keep every triangle of the items they harvested (an indexed item copied vertex by vertex lost them: the stilt pod's head, 2026-11-03).
+ // The attach audit cannot see this: it samples BIO's baked items, and the variant trees are drawn by 86's own pools
+ harvest(V){const a=Math.round(V.stats.itemTris),b=Math.round(V.stats.harvestTris);return{ok:a>0&&a===b,detail:b+' of '+a+' item triangles kept in the prototypes'};},
  // the Throne's brimstone reeds (the owner, 2026-10-06): grown, and only in a band at the sulphur pools' shores, not across the flats
  reeds(P){const T=P.filter(p=>p[3]==='biome:tassel'||/^biome:reedbrim/.test(p[3])),off=T.filter(p=>poolD(p[0],p[2])[0]>1.8||waterH(p[0],p[2])-terrainH(p[0],p[2])>.8);   /* out past a pool's bank, or standing in deep water */
   return{ok:T.length>=300&&!off.length,detail:off.length?off.length+' of '+T.length+' reed tassels off a pool shore (past the bank or in deep water; first at '+off[0].slice(0,3).map(v=>v|0)+')':T.length+' brimstone-reed stems, all at a sulphur pool shore'};},
@@ -108,6 +111,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing grows on barren ground',HCHK.barren(P));
  if(LAND.arcade)add('hanging foliage on the arcade',HCHK.hanging(window._dress,P));
  if(typeof VARIANTS!=='undefined')add('trees drawn as shared variants',HCHK.variants(VARIANTS,EBADLANDS.TREES));
+ if(window._variants)add('the variants keep every triangle of their items',HCHK.harvest(VARIANTS));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(EBADLANDS.SPECIES,EBADLANDS.PLANTS,P));
  add('no tree on a layered cliff face',HCHK.cliffs(EBADLANDS.TREES));
  if(POOLS.length)add('brimstone reeds at the sulphur pools only',HCHK.reeds(P));
@@ -124,6 +128,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(LAND.probes.bed){const b=LAND.probes.bed();add('a plant on the river bed',HCHK.dry([[b[0],b[1],b[2],'test']]));}
  if(LAND.probes.ice){const ic=LAND.probes.ice();add('a plant on the crest',HCHK.barren([[ic[0],terrainH(ic[0],ic[1]),ic[1],'test']]));}
  if(LAND.arcade)add('the dressing never ran',HCHK.hanging(null,P));
+ if(window._variants)add('a prototype that lost triangles',HCHK.harvest({stats:{itemTris:VARIANTS.stats.itemTris,harvestTris:VARIANTS.stats.itemTris*.2}}));
  if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},EBADLANDS.TREES));
  add('a fruiting species with no catalog fruit',HCHK.fruit(EBADLANDS.SPECIES.map(S=>S.key==='pinyon'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),EBADLANDS.PLANTS,P));
  if(POOLS.length&&VENTS)add('a brimstone reed out on the flats',HCHK.reeds(P.concat([[VENTS.x,terrainH(VENTS.x,VENTS.z),VENTS.z,'biome:tassel']])));

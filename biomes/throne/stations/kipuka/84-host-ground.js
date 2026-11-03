@@ -48,7 +48,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;');
  const W={litter:'vL0.x',laterite:'vL0.y',wetmoss:'vL0.z',lava:'vL0.w',glowcarpet:'vL1.x',crust:'vL1.y',obsidian:'vL1.z',mycgold:'vL1.w'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1;',body,emit='';
- if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;   // stochastic tiling: the kit's (70)
+ if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);   // stochastic tiling: the kit's (70)
   body='vec3 _E_glowcarpet=vec3(0.0),_E_crust=vec3(0.0),_E_mycgold=vec3(0.0);\n{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='glowcarpet'?'_E_glowcarpet=L;':k==='crust'?'_E_crust=L;':k==='mycgold'?'_E_mycgold=L;':'')).join('')+'}';
