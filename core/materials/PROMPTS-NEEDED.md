@@ -294,6 +294,17 @@ Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta backgr
 Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
 ```
 
+## 32. The Ring Sea isles' lagoon station (`biomes/ringisles --station lagoon`, 2026-11-03)
+
+The motu's storm ridges and the reef flat's back edge are coral rubble thrown up by the swells; the station paints them as the beach's sand
+(`ground.coast_sand_01`, the paint's beach weight) until this set comes. Wire it as a `ground.rubble` slot in `biomes/ringisles/materials.json` and a layer in
+`src/84-host-ground.js` (the station's storm ridge as its mask) at the next turn; with it the ground reads 17 units, so it must replace `shingle`, not join it.
+
+`ground.coral.rubble`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no Subject: a storm ridge of coral rubble on a tropical atoll islet: broken branching-coral sticks, finger and staghorn fragments 2-15 cm long, worn smooth and bleached to bone white, cream and pale grey, with a few rounded brain-coral cobbles and pink-grey pieces of coralline crust, packed loosely so dark gaps show between them, a little coarse white coral sand in the hollows; no shells larger than a thumbnail, no seaweed, no plants, no water. Even scale across the frame (about 1.5 m across the image).
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
