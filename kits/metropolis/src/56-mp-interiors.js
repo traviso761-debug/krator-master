@@ -9,7 +9,7 @@ MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat)MP.
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;
  // the partitions: a polyline, gapped at its door, with a lintel over the gap
- const stairs=[],landings=[],blocks=[],seg=(a,b,y0,y1,c)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.04)return;if(y0<L.y+.5)for(let q=0,nq=Math.ceil(l/.35);q<nq;q++){const f=(q+.5)/nq;blocks.push([a[0]+dx*f,a[1]+dz*f]);}const nx=-dz/l*T/2,nz=dx/l*T/2,cl={col:c,uv:2},P=(q,s,y)=>[q[0]+nx*s,y,q[1]+nz*s];
+ const stairs=[],landings=[],blocks=[],seg=(a,b,y0,y1,c,free)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.04)return;if(y0<L.y+.5&&!free)for(let q=0,nq=Math.ceil(l/.35);q<nq;q++){const f=(q+.5)/nq;blocks.push([a[0]+dx*f,a[1]+dz*f]);}const nx=-dz/l*T/2,nz=dx/l*T/2,cl={col:c,uv:2},P=(q,s,y)=>[q[0]+nx*s,y,q[1]+nz*s];
   B.quad('white',P(a,1,y0),P(b,1,y0),P(b,1,y1),P(a,1,y1),[-dz/l,0,dx/l],cl);B.quad('white',P(b,-1,y0),P(a,-1,y0),P(a,-1,y1),P(b,-1,y1),[dz/l,0,-dx/l],cl);B.quad('white',P(a,1,y1),P(b,1,y1),P(b,-1,y1),P(a,-1,y1),[0,1,0],cl);B.quad('white',P(a,-1,y0),P(a,1,y0),P(a,1,y1),P(a,-1,y1),[-dx/l,0,-dz/l],cl);B.quad('white',P(b,1,y0),P(b,-1,y0),P(b,-1,y1),P(b,1,y1),[dx/l,0,dz/l],cl);B.quad('white',P(a,-1,y0),P(b,-1,y0),P(b,1,y0),P(a,1,y0),[0,-1,0],cl);};
  const WALL=[.84,.85,.84],y0=L.y+.02,y1=L.y+WH,DH=2.15;
  /* the door is found along the whole polyline, not per piece: a curved wall bends at its middle, which is where a door tends to stand */
@@ -34,7 +34,7 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  F.core.shafts.forEach(function(s){if(k<s.from||k>s.to)return;const c=s.kind==='lift'?[.4,.42,.44]:[.6,.6,.58];
   /* the shaft's door: on the side that faces out of the core (a ring) or to the corridor (a slab): open for a stair, a shut bronze leaf for a lift */
   const out=round?1:-1,face=Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]],top=L.y+L.h-.26;
-  E.forEach((e,i)=>{if(i!==face){seg([e[0],e[1]],[e[2],e[3]],y0,top,c);return;}const l=Math.hypot(e[2]-e[0],e[3]-e[1]),w=Math.min(1.2,l-.4),t0=(1-w/l)/2,t1=1-t0,P=f=>[e[0]+(e[2]-e[0])*f,e[1]+(e[3]-e[1])*f];seg([e[0],e[1]],P(t0),y0,top,c);seg(P(t1),[e[2],e[3]],y0,top,c);seg(P(t0),P(t1),y0+DH,top,c);if(s.kind==='lift')seg(P(t0),P(t1),y0,y0+DH,[.42,.33,.22]);});
+  E.forEach((e,i)=>{if(i!==face){seg([e[0],e[1]],[e[2],e[3]],y0,top,c);return;}const l=Math.hypot(e[2]-e[0],e[3]-e[1]),w=Math.min(1.2,l-.4),t0=(1-w/l)/2,t1=1-t0,P=f=>[e[0]+(e[2]-e[0])*f,e[1]+(e[3]-e[1])*f];seg([e[0],e[1]],P(t0),y0,top,c);seg(P(t1),[e[2],e[3]],y0,top,c);seg(P(t0),P(t1),y0+DH,top,c);if(s.kind==='lift')seg(P(t0),P(t1),y0,y0+DH,[.42,.33,.22],true);});
   /* a stair: a switchback along the shaft, in from the door side up to a half landing, then back up to the door side of the storey above. Its steps are drawn from the record and walked as strips */
   if(s.kind==='stair'&&k<s.to){const sgn=face===2?1:-1,n=9,hd=s.d/2,hw=s.w/2,zD=s.z+sgn*(hd-.55),zI=s.z-sgn*(hd-.55),col={col:[.6,.6,.58],uv:2},H=L.h;
    const flight=(x0,x1,z0,z1,y0,y1)=>{for(let i=0;i<n;i++){const a=i/n,b=(i+1)/n,za=z0+(z1-z0)*a,zb=z0+(z1-z0)*b;B.box('concrete',x0,x1,y0,y0+(y1-y0)*b,Math.min(za,zb),Math.max(za,zb),col);}stairs.push({a:[(x0+x1)/2,z0,y0],b:[(x0+x1)/2,z1,y1],w:x1-x0});};
@@ -48,7 +48,13 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  let tris=0;g.traverse(o=>{if(o.isMesh&&o.geometry){const c=o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count;tris+=c/3*(o.isInstancedMesh?o.count:1);}});
  g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,stairs:stairs,landings:landings,outline:st.outline};return g;};
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes
-MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});
+// a tower at the street: its skin stops a walker, its doors do not. The Spindle's skirt with its three portals; the Ledger's end walls and its arcade's piers
+MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
+ if(F.core.kind==='round'){const r=MP.spindleR(1.5)-.6,N=Math.ceil(2*Math.PI*r/.5);for(let i=0;i<N;i++){const a=2*Math.PI*i/N;if(F.portals.some(p=>{let d=Math.abs(a-p);d=Math.min(d,2*Math.PI-d);return d*r<6;}))continue;b(Math.cos(a)*r,Math.sin(a)*r,.3);}
+  for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*2*Math.PI/F.fins.n;for(let rr=r;rr<MP.finR(F,0);rr+=.5)b(Math.cos(a)*rr,Math.sin(a)*rr,F.fins.t/2);}}
+ else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}for(let x=-hw;x<=hw;x+=F.arcade.every)[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);});}};
+MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});MP.walkDirty=false;
+ (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
   W.poly({pts:o.g.userData.outline.map(p=>{const q=T(p);return [q[0],q[1],y];}),name:o.key+' L'+o.k,tag:'storey'});
   o.g.userData.stairs.forEach(f=>{const a=T(f.a),b=T(f.b);W.strip({a:[a[0],a[1],f.a[2]],b:[b[0],b[1],f.b[2]],w:f.w,name:'a stair',tag:'stair'});});
@@ -68,5 +74,11 @@ MP.enterTick=function(){const now=performance.now();if(now<(MP.nextEnter||0))ret
 MP.goStorey=function(k){const e=camera.position;let H=MP.heroAt(e);if(!H){let b=null,bd=1e9;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const d=Math.hypot(e.x-m.x,e.z-m.z);if(d<bd){bd=d;b=m;}}if(!b)return false;H={m:b,F:MP.FAMILY[b.key.split('.')[0]]};}
  const F=H.F,m=H.m;k=Math.max(0,Math.min(F.levels.length-1,k));const L=F.levels[k],c=Math.cos(m.yaw),n=Math.sin(m.yaw),st=MP.storey(F,k),P=F.core.kind==='round'?[MP.coreR(F,k)+1,0]:[0,0],x=m.x+P[0]*c+P[1]*n,z=m.z-P[0]*n+P[1]*c;
  MP.closeStoreys();MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.nextEnter=performance.now()+800;const C=HOSTED.cam;C.walkAt=[x,z,L.y];HOSTED.ctl.target.set(x,L.y+HOSTED.ctl.eye,z);HOSTED.ctl.walk=true;HOSTED.ctl.phi=Math.PI/2+.05;HOSTED.ctl.theta=(F.core.kind==='round'?Math.PI:-Math.PI/2)+m.yaw;return true;};
-MP.step=function(d){const H=MP.heroAt(camera.position);if(!H)return false;return MP.goStorey(MP.levelAt(H.F,camera.position.y-HOSTED.ctl.eye+.2)+d);};
+MP.ride=function(k){const H=MP.heroAt(camera.position);if(!H||!HOSTED.ctl.walk)return MP.goStorey(k);const F=H.F,m=H.m,c0=MP.levelAt(F,camera.position.y-HOSTED.ctl.eye+.2);k=Math.max(0,Math.min(F.levels.length-1,k));if(k===c0)return false;
+ const lift=F.core.shafts.filter(s=>s.kind==='lift'&&s.from<=Math.min(k,c0)&&s.to>=Math.max(k,c0))[0];if(!lift)return MP.goStorey(k);
+ const c=Math.cos(m.yaw),n=Math.sin(m.yaw),x=m.x+lift.x*c+lift.z*n,z=m.z-lift.x*n+lift.z*c,y0=F.levels[c0].y,y1=F.levels[k].y;
+ MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.ride.on={x,z,y0,y1,t0:performance.now(),ms:Math.max(1500,Math.abs(y1-y0)/6*1000)};return true;};
+MP.rideView=function(){const R=MP.ride.on;if(!R)return;const f=Math.min(1,(performance.now()-R.t0)/R.ms),e=f<.5?2*f*f:1-2*(1-f)*(1-f),y=R.y0+(R.y1-R.y0)*e,C=HOSTED.cam;
+ C.walkAt=[R.x,R.z,y];HOSTED.ctl.target.set(R.x,y+HOSTED.ctl.eye,R.z);camera.position.set(R.x,y+HOSTED.ctl.eye,R.z);MP.nextEnter=performance.now()+600;if(f>=1)MP.ride.on=null;};
+MP.step=function(d){const H=MP.heroAt(camera.position);if(!H)return false;return MP.ride(MP.levelAt(H.F,camera.position.y-HOSTED.ctl.eye+.2)+d);};
 

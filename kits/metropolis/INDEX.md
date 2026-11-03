@@ -17,7 +17,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-mp-records.js` | 9 |  |
-| `41-mp-plans.js` | 12 |  |
+| `41-mp-plans.js` | 13 |  |
 | `42-mp-facade.js` | 4 |  |
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
@@ -26,7 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `50-mp-kit.js` | 8 |  |
 | `52-mp-hero-spindle.js` | 6 |  |
 | `53-mp-hero-ledger.js` | 7 |  |
-| `56-mp-interiors.js` | 11 |  |
+| `56-mp-interiors.js` | 13 |  |
 | `60-mp-shell-host.js` | 14 |  |
 | `70-mp-stage.js` | 14 |  |
 | `89-host-sky.js` | <1 |  |

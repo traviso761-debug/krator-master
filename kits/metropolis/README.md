@@ -12,7 +12,7 @@ KRATOR_GL=gpu python3 tools/perf_views.py kits/metropolis/dist/metropolis.html -
 
 Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). Pick a view from the select: the pairs stand the real building (west) beside its shell (east).
 
-**To look around,** open `dist/metropolis.html?pitch=140` from a local server. The Tiers views are a city of the two families: fly (W A S D, Q E, Shift), F to walk. Walk or fly into a hero and its storey opens; the lift list, or `,` and `.`, changes storey. Walls stop a walker, and the stairs in the core walk up a storey at a time.
+**To look around,** open `dist/metropolis.html?pitch=140` from a local server. The Tiers views are a city of the two families: fly (W A S D, Q E, Shift), F to walk. Walk in through a portal (a tower's skin stops a walker at the street) and its storey opens; the lift list, or `,` and `.`, rides the lift from storey to storey. Walls stop a walker, and the stairs in the core walk up a storey at a time.
 
 | Fragment | Tag | What |
 |---|---|---|

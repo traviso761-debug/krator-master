@@ -32,7 +32,7 @@ MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return fals
 MPS.impTick=function(){if(!MPS.impQ||!MPS.impQ.length)return;const r=MPS.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);MPS.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;MPS.impMs+=Math.round(performance.now()-t0);};
 // a hero placed: a clone that shares the geometry
 function mpHero(key,x,z,yaw,fade){const H=MPS.hero[key],g=new THREE.Group();H.children.forEach(m=>{let c=m.clone();if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;}g.add(c);});g.position.set(x,0,z);g.rotation.y=yaw==null?0:yaw;
- if(fade)mpFade(g,key,x,z,yaw);g.userData.mp={key,x,z,yaw:yaw==null?0:yaw};scene.add(g);MPS.live.push(g);return g;}
+ if(fade)mpFade(g,key,x,z,yaw);g.userData.mp={key,x,z,yaw:yaw==null?0:yaw};scene.add(g);MPS.live.push(g);MP.walkDirty=true;return g;}
 // the hero's half of the dither: BIO.lodFade on a copy of its materials, its box in the aLod attributes, the same band as the shell's. The box is per placed hero, so each hero has a
 // shallow geometry of its own: its own aLod buffer over the shared vertex buffers
 const mpHalf=(key,yaw)=>{const f=MPS.rec[key].frame,h=f.mode?[f.a,f.b]:[f.a*.6,f.a*.6];return Math.abs(Math.cos(yaw==null?0:yaw))<.5?[h[1],h[0]]:h;};
@@ -58,11 +58,11 @@ MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode
  const e=camera.position,T=MPS.towers,near=[],mid=[],MAX=MPS.heroMax==null?10:MPS.heroMax;for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e);t.d=d;if(d<MP_NEAR)near.push(t);if(d>=MP_NEAR*.85&&d<MP_FAR)mid.push(t);}
  near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX),G=MPS.tierGroups;
  /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
- G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85)mid.push(t);});
+ G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85)mid.push(t);});
  mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));
  // an impostor stands for its tower past 850 m, tower by tower, and the shell dithers out in front of it to 1 km (a chunk's fade left half-dithered ghosts at the boundary): nearer, its matrix is zero
  MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR*.85;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
-tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();MP.enterTick();}});
+tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();MP.enterTick();if(MP.walkDirty)MP.walkSync();}});
 // ---- the views. A pair stands 170 m apart, hero to the west, its shell to the east, looked at from 300 m
 const D=300,sp='spindle.intact',sg='spindle.gutted',li='ledger.intact',lg='ledger.gutted';
 const PAIR=(k,dx,yaw)=>({heroes:[[k,-dx,0,yaw]],shells:[[k,dx,0,yaw]]});

@@ -11,7 +11,7 @@
 
   // the room kinds: `store` etc. are kits/interiors programmes; a kind with no programme is furnished false
   var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, bath: 1, concourse: 1, hallway: 1 };
-  MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber' };
+  MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber', wardrobe: 'store' };
   function kindOf(k) { return MP.ROOMKIND[k] || k; }
 
   // ---- the round storey: what zone asks what of a ring. R the skin's inner face at this storey, core its record
@@ -37,22 +37,26 @@
       return { id: id + '.' + name, kind: kindOf(kind), mpKind: kind, flat: id, poly: arc(r0, T(f0), T(f1), 2).concat(arc(r1, T(f0), T(f1), 2).reverse()), y: Q.y, h: Q.h, level: Q.level,
         doors: [], windows: [], furnish: !UNFURNISHED[kind], th0: T(f0), th1: T(f1) };
     }
-    var kitchen = room('kitchen', 'kitchen', 0, fk, ra, rm), hall = room('hall', 'hallway', fk, fb, ra, rm), bath = room('bath', 'bath', fb, 1, ra, rm), out = [room('living', 'living', splits[0], splits[1], rm, rb)];
+    var kitchen = room('kitchen', 'kitchen', 0, fk, ra, rm), hall = room('hall', 'hallway', fk, fb, ra, rm), wide = (1 - fb) * (t1 - t0) * ra >= 1.1, rw = wide ? ra + (rm - ra) * 0.4 : ra, ward = wide ? room('ward', 'wardrobe', fb, 1, ra, rw) : null, bath = room('bath', 'bath', fb, 1, rw, rm), out = [room('living', 'living', splits[0], splits[1], rm, rb)];
     for (var b = 1; b < splits.length - 1; b++) out.push(room('bed' + (b - 1), 'bedroom', splits[b], splits[b + 1], rm, rb));
     function wall(name, pts, a, c, d) { st.walls.push({ id: id + '.' + name, pts: pts, y: Q.y, h: Q.h, rooms: [a.id, c ? c.id : null], door: d || null, broken: false }); }
     function door(A, B, p) { A.doors.push({ at: p, w: DW, to: B.id }); B.doors.push({ at: p, w: DW, to: A.id }); return { at: p, w: DW }; }
     hall.doors.push({ at: at(ra, T((fk + fb) / 2)), w: 1, to: st.id + '.corr' });
     wall('w.k', [at(ra, T(fk)), at(rm, T(fk))], kitchen, hall, door(hall, kitchen, at((ra + rm) / 2, T(fk))));
-    wall('w.b', [at(ra, T(fb)), at(rm, T(fb))], bath, hall, door(hall, bath, at((ra + rm) / 2, T(fb))));
+    /* the service end past the hall: a closet at the narrow corridor end, the bath at the wide end, each with its door on the hall */
+    /* where the service end is under 1.1 m wide at the corridor (the small flats' narrow sectors), no closet: the bath takes the strip */
+    if (ward) wall('w.b', [at(ra, T(fb)), at(rw, T(fb))], ward, hall, door(hall, ward, at((ra + rw) / 2, T(fb))));
+    wall('w.b2', [at(rw, T(fb)), at(rm, T(fb))], bath, hall, door(hall, bath, at((rw + rm) / 2, T(fb))));
     for (var w = 1; w < splits.length - 1; w++) wall('w.o' + w, [at(rm, T(splits[w])), at(rb, T(splits[w]))], out[w - 1], out[w]);
     // the ring between the two bands, cut at every partition that meets it; each piece holds at most one door, the hall's to the room over it
     var gaps = out.map(function (O, oi) { var lo = Math.max(splits[oi], fk), hi = Math.min(splits[oi + 1], fb), f = (lo + hi) / 2; (st.doorFit = st.doorFit || []).push({ room: O.id, arc: (hi - lo) * (t1 - t0) * rm, w: DW }); return { f: f, d: door(hall, O, at(rm, T(f))) }; });
-    var cuts = [0, fk, fb, 1].concat(splits.slice(1, -1)).sort(function (p, q) { return p - q; });
+    var cutsDone = [], cuts = [0, fk, fb, 1].concat(splits.slice(1, -1)).sort(function (p, q) { return p - q; });
     for (var c = 0; c + 1 < cuts.length; c++) {
       var gap = gaps.filter(function (g) { return g.f > cuts[c] && g.f < cuts[c + 1]; })[0];
-      wall('w.m' + c, arc(rm, T(cuts[c]), T(cuts[c + 1]), 2), out[0], null, gap ? gap.d : null);
+      wall('w.m' + c, arc(rm, T(cuts[c]), T(cuts[c + 1]), 2), out[0], null, gap ? gap.d : null); cutsDone.push(st.walls[st.walls.length - 1]);
     }
-    return [kitchen, hall, bath].concat(out);
+        if (ward) wall('w.wd', arc(rw, T(fb), T(1), 2), ward, bath);
+    return [kitchen, hall, bath].concat(ward ? [ward] : [], out);
   }
   function flats(F, L, n, beds) {
     var st = sectors(F, L, n, function () { return 'flat'; }), keep = [];
@@ -143,6 +147,6 @@
     MP.fenestrate(F, st);
     return st;
   };
-  MP.WINDOWLESS = { core: 1, corridor: 1, tank: 1, stack: 1, greenhouse: 1, hallway: 1, bath: 1, kitchen: 1 };
+  MP.WINDOWLESS = { core: 1, corridor: 1, tank: 1, stack: 1, greenhouse: 1, hallway: 1, bath: 1, kitchen: 1, wardrobe: 1 };
   MP.skinR = skinR; MP.coreR = coreR; MP.CORRIDOR = CW;
 })();
