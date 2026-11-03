@@ -66,11 +66,14 @@ if '--station' in sys.argv:
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]   # no carve patches in this showcase
+# 2026-11-02, the final rebuild (BACKPORT.md section 1, every station): KGROUND (43: the ground's layers through THRONE.layGLSL), KFAR (44: the country
+# past the map, src/83f-host-far.js), KHORIZON (45: its shadows), KTHERM (47: the ground's heat between the vents, src/89y-host-core.js)
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+# 34 the octahedral impostors (the far trees, 55), 41 the environmental fields (src/89y-host-core.js) (2026-11-02)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -78,6 +81,8 @@ CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 if STATION:
     # src/89a-host-atmos.js (the atmosphere binding of station 1, 2, 6 and 11) is a station's only when station.json says "atmosHost"
     # (the others bind core/atmos in their own 89-host-atmos.js, with weather)
@@ -108,6 +113,16 @@ else:
     PATH['89-atmos-e-weatherhost.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-e-weatherhost.js'))   # ATMOS.bindWeather (src/89a-host-atmos.js; a station lists it in station.json "atmos")
     # 2026-10-26 (the water migration, station 1): the acid lake on WATER.still, the hot pools on WATER.spring (src/89w-host-water.js)
     for f in S1_WATER: PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+# THE FINAL REBUILD (2026-11-02), every page with core/water: the audit (57), the reflections switch (58, off at page load; src/89y-host-core.js
+# installs it on a station's largest still), the shore's fields (60: WATER.fieldAt for the wet ground and the flora); tools/fragment_needs.json has their order
+if '20-core-water.js' in PATH:
+    for f in ['57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+        PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
+# the air (core/atmos/README.md, "Adopting the final rebuild's atmos items"): height fog, the rain's occlusion map and the branched lightning on every page that
+# binds the weather (every page but the tube, underground); src/89y-host-core.js calls them with each station's numbers (ATMOS_AIR in its 45)
+if not (STATION and STATION=='tube'):
+    for f,d in [('89-atmos-j-heightfog.js','host'),('89-atmos-j-fog.js','sky'),('89-atmos-fx-raincover.js','fx'),('89-atmos-fx-lightning.js','fx'),('89-atmos-3-particles.js','')]:
+        PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','atmos',d,f)))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -199,7 +214,7 @@ html=''.join(out)
 # the sidecars: throne.tex.<pack>.js, the same files for every station (prune=False: one station's build must not
 # delete a pack another station's page loads)
 html=_mp.write_sidecar(SIDE,html,DIST,'throne.tex.js',prune=False)
-open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

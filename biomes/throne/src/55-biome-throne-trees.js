@@ -98,9 +98,21 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+// HELD BY WHAT IS DRAWN (core/biome/README.md, "What held means"; the final rebuild, 2026-11-02): a crown clump jittered round its tree or round a
+// limb's spot, or kept by a tier that draws no limbs, is brought within reach of the nearest point of the wood that is drawn (pl: polylines of
+// {x,y,z}; a single point is a spot), by BIO.holdTo with the audit's reach for a centred card (.55 of its size). Plain arithmetic: no draw from
+// the stream and no triangle, so nothing else on the page moves
+function heldOn(pl,x,y,z,size){let bx=x,by=y,bz=z,bd=1e18;
+ for(const P of pl){if(!P||!P.length)continue;if(P.length===1){const a=P[0],d=(a.x-x)*(a.x-x)+(a.y-y)*(a.y-y)+(a.z-z)*(a.z-z);if(d<bd){bd=d;bx=a.x;by=a.y;bz=a.z;}continue;}
+  for(let i=0;i+1<P.length;i++){const a=P[i],b=P[i+1],dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L2=dx*dx+dy*dy+dz*dz;
+   let t=L2>0?((x-a.x)*dx+(y-a.y)*dy+(z-a.z)*dz)/L2:0;t=t<0?0:t>1?1:t;const px=a.x+dx*t,py=a.y+dy*t,pz=a.z+dz*t,d=(px-x)*(px-x)+(py-y)*(py-y)+(pz-z)*(pz-z);
+   if(d<bd){bd=d;bx=px;by=py;bz=pz;}}}
+ return bd<1e18?BIO.holdTo([bx,by,bz],[x,y,z],size*.55):[x,y,z];}
+// clumpAt, its centre held on pl first (the size is drawn before the hold, as the plain call drew it)
+function clumpHeld(pl,item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){const h=heldOn(pl,x,y,z,size);clumpAt(item,h[0],h[1],h[2],size,flat,col,cx,cy,cz,ex,ey);}
 // DRIPPING FUNGI hung under a cap or a tier (the library's cards; nothing without the pack): n cards round radius r below y
 function drips(x,y,z,r,n,st){const L=THRONE.LIB.cardsOf('drip');if(!L.length)return;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*rr(.15,.8),s=rr(.6,1.4)*Math.min(1.6,r*.35+.4);BIO.put(pick(L),[x+Math.cos(a)*d,y,z+Math.sin(a)*d],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[s,s*rr(1,1.6),s],null);st.drips++;}}
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*rr(.15,.8)*.6,s=rr(.6,1.4)*Math.min(1.6,r*.35+.4);   /* (2026-11-02) inside half the cap's radius: the attach audit holds a hanger in a cap's body there (the caps are leaf cards to it) */BIO.put(pick(L),[x+Math.cos(a)*d,y,z+Math.sin(a)*d],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[s,s*rr(1,1.6),s],null);st.drips++;}}
 // THE RUFF: with the library's fronds, a collar of them radiating from a small dark throat and opening upward, like a
 // frilled lizard's; without, the vertex-coloured pod. s is the collar's radius
 function ruffAt(x,y,z,s,st,lv,petals){const PL=petals?THRONE.LIB.cardsOf('petal'):[];
@@ -134,7 +146,7 @@ function cap(p,s,flat,col,st){const q=qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)
  // with the library's cap skin the colour is mostly the texture's own: the cap's colour only warms it a little
  BIO.put('disc',[p.x,p.y,p.z],q,[s,s*flat,s],THRONE.LIB.disc?C(0xffffff).lerp(col,.25):col);BIO.put('gills',[p.x,p.y,p.z],q,[s,s*flat,s],shade(col,-.25));st.caps++;
  // snare moss hung from the cap's rim (the library's cards; nothing without the pack)
- const MS=THRONE.LIB.cardsOf('moss');if(MS.length&&rng()<.55)for(let k=0,n=ri(1,3);k<n;k++){const a=rr(0,TAU),d=s*rr(.4,.85),h=rr(1,2.2);BIO.put(pick(MS),[p.x+Math.cos(a)*d,p.y-s*.04,p.z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[h*.9,h,h*.9],null);st.drips++;}}
+ const MS=THRONE.LIB.cardsOf('moss');if(MS.length&&rng()<.55)for(let k=0,n=ri(1,3);k<n;k++){const a=rr(0,TAU),d=s*rr(.4,.85)*.55,h=rr(1,2.2);BIO.put(pick(MS),[p.x+Math.cos(a)*d,p.y-s*.04,p.z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[h*.9,h,h*.9],null);st.drips++;}}
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,age} and lv 2 near / 1 mid
@@ -147,11 +159,11 @@ const B=[];
 // narrow and not understood), it grows thin and yellowing and never bleeds: no fungus, so no resin, so no Ranj
 B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR*(T.planted?.8:1),sick=!!T.planted;
  const pts=bole(T,S,'bark10',T.x,T.z,H*.42,T.rb,T.rb*.7,rr(.02,.08),rr(0,TAU),.05,lv===2?4:2,st,lv===2?7:5);
- const e=tip(pts),hc=sick?C(pick(S.leaf)).lerp(C(pick([0xa8a040,0x988a3a,0xb0a050])),rr(.35,.6)):C(pick(S.leaf)),cy=T.y0+H*.66;let top=e.y;
+ const e=tip(pts),hc=sick?C(pick(S.leaf)).lerp(C(pick([0xa8a040,0x988a3a,0xb0a050])),rr(.35,.6)):C(pick(S.leaf)),cy=T.y0+H*.66,WD=[pts];let top=e.y;
  for(let k=0,nL=lv===2?ri(3,5):3;k<nL;k++){const la=k/nL*TAU+rr(-.4,.4),L=H*rr(.3,.42),lp=treeGrow(e,dirOf(la,rr(.7,1.1)),L,e.r*.8,.05,3,-.04,.12);
-  limb('bark10',S,lp,k,lv,st);top=Math.max(top,tip(lp).y);}
+  limb('bark10',S,lp,k,lv,st);WD.push(lp);top=Math.max(top,tip(lp).y);}
  for(let c=0,n=Math.round((lv===2?ri(14,20):6)*(sick?.5:1));c<n;c++){const q=rr(0,TAU),u=rng(),d=R*Math.sqrt(u)*.85,y=cy+(rng()-.4)*H*.32*(1-u*.4);
-  clumpAt('glossy',T.x+Math.cos(q)*d,y,T.z+Math.sin(q)*d,R*rr(.4,.55)*(lv===2?1:1.5),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
+  clumpHeld(WD,'glossy',T.x+Math.cos(q)*d,y,T.z+Math.sin(q)*d,R*rr(.4,.55)*(lv===2?1:1.5),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
  if(lv===2&&!sick){for(let w=0,nw=ri(1,3);w<nw;w++){const p=along(pts,rr(.25,.85)),a=rr(0,TAU),ox=Math.cos(a)*p.r,oz=Math.sin(a)*p.r;
    for(let k=0,m=ri(3,6);k<m;k++){const s=rr(.05,.1);BIO.put('resin',[p.x+ox*1.08+rr(-.05,.05),p.y-rr(0,.5),p.z+oz*1.08+rr(-.05,.05)],qEuler(0,rr(0,TAU),0),[s,s*rr(1.6,3),s],C(pick(PAL.resin)));st.resin++;}
    const SH=THRONE.LIB.cardsOf('shelf');
@@ -178,13 +190,13 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H;let reach=T.crownR;const pts=bole(
 // 2 the RUFF TREE (the frond collar the owner kept, 2026-10-06): a short trunk, a leafy crown, a ruff of spiked fronds at
 // its tips that bursts in a flow's heat and throws its seed over the fresh lava
 B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;const pts=bole(T,S,'bark0',T.x,T.z,H*.5,T.rb,T.rb*.6,rr(.04,.12),rr(0,TAU),.1,lv===2?4:2,st,6);
- const e=tip(pts),hc=C(pick(S.leaf)),cy=T.y0+H*.72;let top=e.y;
- for(let k=0,nb=lv===2?ri(3,5):3;k<nb;k++){const bp=treeGrow(e,dirOf(k/nb*TAU+rr(-.4,.4),rr(.5,.9)),H*rr(.25,.4),e.r*.7,.05,3,-.03,.1);limb('bark0',S,bp,k,lv,st);
+ const e=tip(pts),hc=C(pick(S.leaf)),cy=T.y0+H*.72,WD=[pts];let top=e.y;
+ for(let k=0,nb=lv===2?ri(3,5):3;k<nb;k++){const bp=treeGrow(e,dirOf(k/nb*TAU+rr(-.4,.4),rr(.5,.9)),H*rr(.25,.4),e.r*.7,.05,3,-.03,.1);limb('bark0',S,bp,k,lv,st);WD.push(bp);
   const t=tip(bp);top=Math.max(top,t.y);
   clumpAt('small',t.x,t.y,t.z,R*rr(.45,.6)*(lv===2?1:1.4),.65,hc,T.x,cy,T.z,R,H*.3);st.clumps++;
   // the ruff on the branch's own tip (it floated a metre above it): a short stalk of the branch's bark up to its throat
   if(lv===2&&rng()<.7){const ry=t.y+.35,bc=barkCol(S,k);st.limb+=BIO.tube('bark0',[{x:t.x,y:t.y-.15,z:t.z,r:.07,col:bc},{x:t.x,y:ry,z:t.z,r:.05,col:bc}],bc,{seg:4,cap:true});ruffAt(t.x,ry,t.z,rr(.6,1.0),st,lv);}}
- if(lv===2)for(let c=0;c<ri(3,6);c++){const q=rr(0,TAU),d=R*rr(0,.6);clumpAt('small',T.x+Math.cos(q)*d,cy+rr(-.5,1),T.z+Math.sin(q)*d,R*.5,.6,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
+ if(lv===2)for(let c=0;c<ri(3,6);c++){const q=rr(0,TAU),d=R*rr(0,.6);clumpHeld(WD,'small',T.x+Math.cos(q)*d,cy+rr(-.5,1),T.z+Math.sin(q)*d,R*.5,.6,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
  regTree(T,S,R+1,top-T.y0+R*.5);};
 
 // 3 the GILL-PARASOL (ref 10): a pale smooth trunk that forks into a few rising limbs, each ending in a flat orange cap
@@ -303,7 +315,7 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;const pts=bole(T,S,'ba
  const nw=lv===2?ri(8,12):4;for(let w=0;w<nw;w++){const u=lerp(.32,.94,w/(nw-1||1)),p=along(pts,u),Lw=R*(1-.65*(u-.32)/.62)*rr(.85,1.1);
   for(let k=0,n=lv===2?ri(4,6):3;k<n;k++){const a=k/n*TAU+w*1.3+rr(-.3,.3),bp=treeGrow(p,dirOf(a,rr(-.1,.25)),Lw,p.r*.5+.04,.04,2,.04,.08);
    if(lv===2){bp[0].r=p.r*.35+.03;bp[1].r=(p.r*.35+.03)*.55;bp[2].r=.03;st.limb+=BIO.tube('bark1',bp,barkCol(S,k),{seg:3});}
-   const t=tip(bp);clumpAt('needle',t.x,t.y+.2,t.z,Lw*rr(.7,.95)*(lv===2?1:1.4),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;
+   const t=tip(bp);clumpHeld(lv===2?[bp]:[pts],'needle',t.x,t.y+.2,t.z,Lw*rr(.7,.95)*(lv===2?1:1.4),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;
    if(lv===2&&rng()<.85){const m=along(bp,.55);clumpAt('needle',m.x,m.y+.2,m.z,Lw*.45,.7,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}}}
  clumpAt('needle',tip(pts).x,tip(pts).y,tip(pts).z,R*.45,.9,hc,T.x,cy,T.z,R,H*.3);
  if(lv===2)for(let k=0,m=ri(2,5);k<m;k++){const p=along(pts,rr(.08,.4)),a=rr(0,TAU);clumpAt('needle',p.x+Math.cos(a)*p.r*1.5,p.y,p.z+Math.sin(a)*p.r*1.5,rr(.5,.9),.8,bright(hc,1.1),T.x,cy,T.z,R,H*.3);st.clumps++;}
@@ -324,7 +336,7 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),cy=
  // the tips); the ruffs set into the canopy's top at the forks' ends. A mid tree keeps the shape with fewer, coarser pieces
  const near=lv===2,ends=[];
  const fol=(tw,n)=>{for(let c=0;c<n;c++){const p=along(tw,rr(.3,1)),q=rr(0,TAU),d=R*rr(.04,.16);
-   clumpAt('small',p.x+Math.cos(q)*d,p.y+rr(-1,4),p.z+Math.sin(q)*d,R*rr(.16,.26)*(near?1:1.45),.5,hc,T.x,cy,T.z,R,H*.25);st.clumps++;}};
+   clumpHeld([tw],'small',p.x+Math.cos(q)*d,p.y+rr(-1,4),p.z+Math.sin(q)*d,R*rr(.16,.26)*(near?1:1.45),.5,hc,T.x,cy,T.z,R,H*.25);st.clumps++;}};
  for(let k=0,nL=near?ri(9,13):ri(7,9);k<nL;k++){const a=k/nL*TAU+rr(-.3,.3),start=along(pts,rr(.5,1)),L=R*rr(.75,1.05),
    lp=treeGrow(start,dirOf(a,rr(.45,.85)),L,start.r*.5,.25,near?7:4,-.32,.22);
   st.limb+=BIO.tube('bark0',lp,barkCol(S,k),{seg:near?7:4});fol(lp,near?ri(6,9):3);
@@ -336,7 +348,8 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),cy=
  // tapering to a point, leafed along its upper half, a ruff at its tip
  {const ld=treeGrow({x:e.x,y:e.y-1,z:e.z},dirOf(la,1.45),H*.36,e.r*.95,.25,near?6:3,0,.05);ld[0].r=e.r*1.02;
   st.limb+=BIO.tube('bark0',ld,barkCol(S,2),{seg:near?10:6,cap:true});fol(ld.slice(Math.floor(ld.length/3)),near?ri(8,12):4);ends.push(tip(ld));}
- for(const t of ends){const s=rr(5,8);ruffAt(t.x,t.y+3,t.z,s,st,lv,true);
+ /* the ruff's throat 3 m over the fork's end, on a stalk of the limb's bark (2026-11-02: it floated there with nothing under it) */
+ for(const t of ends){const s=rr(5,8);st.limb+=BIO.tube('bark0',[{x:t.x,y:t.y-.4,z:t.z,r:Math.max(.12,(t.r||.3)*.8)},{x:t.x,y:t.y+3,z:t.z,r:Math.max(.1,(t.r||.3)*.6)}],barkCol(S,1),{seg:near?6:4,cap:true});ruffAt(t.x,t.y+3,t.z,s,st,lv,true);
   top=Math.max(top,t.y+s*.6);reach=Math.max(reach,Math.hypot(t.x-T.x,t.z-T.z)+s);}
  regTree(T,S,reach,top-T.y0+2);};
 
@@ -360,8 +373,10 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),cy=
   const e=tip(pts);
   for(let j=0,m=lv===2?ri(2,4):2;j<m;j++){const bp=treeGrow(e,dirOf(sa+rr(-1,1),rr(.4,1)),h*rr(.25,.4),e.r*.7,.04,3,-.04,.15);limb('bark3',S,bp,j,lv,st);
    const t2=tip(bp);reach=Math.max(reach,Math.hypot(t2.x-T.x,t2.z-T.z)+R*.3);top=Math.max(top,t2.y);
-   for(let c=0,nc=lv===2?ri(2,4):1;c<nc;c++){const q=rr(0,TAU),d=R*rr(0,.3);clumpAt('small',t2.x+Math.cos(q)*d,t2.y+rr(-.4,.8),t2.z+Math.sin(q)*d,R*rr(.35,.5)*(lv===2?1:1.4),.65,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
-   if(lv===2)for(let f=0,nf=ri(2,6);f<nf;f++){const q=rr(0,TAU),d=R*rr(0,.35);BIO.put('pompom',[t2.x+Math.cos(q)*d,t2.y+rr(.3,1.1),t2.z+Math.sin(q)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.45),leafCol(PAL.pompom,1.2,.02,.06,.05),{n:[0,1,0]});st.pods++;}}}
+   for(let c=0,nc=lv===2?ri(2,4):1;c<nc;c++){const q=rr(0,TAU),d=R*rr(0,.3);clumpHeld([bp],'small',t2.x+Math.cos(q)*d,t2.y+rr(-.4,.8),t2.z+Math.sin(q)*d,R*rr(.35,.5)*(lv===2?1:1.4),.65,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
+   /* the pompoms held on the limb's own wood (2026-11-02: they were jittered up to .35 R off its tip; the draws as they were) */
+   if(lv===2)for(let f=0,nf=ri(2,6);f<nf;f++){const q=rr(0,TAU),d=R*rr(0,.35),P0=[t2.x+Math.cos(q)*d,t2.y+rr(.3,1.1),t2.z+Math.sin(q)*d],Q0=qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),s0=rr(.25,.45);
+    BIO.put('pompom',heldOn([bp],P0[0],P0[1],P0[2],s0),Q0,s0,leafCol(PAL.pompom,1.2,.02,.06,.05),{n:[0,1,0]});st.pods++;}}}
  regTree(T,S,reach,top-T.y0+R*.4+1);};
 
 // 15 the TREE FERN: a shaggy trunk, a crown of great fronds arching out from its top, a skirt of dead ones beneath
@@ -454,7 +469,7 @@ B[19]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,rb=T.rb,h0=rr(2.6,4.4)
  // the crown: a broad flat dome of glossy clumps over the limbs' ends and between them
  const ct=tip(trunk),cy=ct.y+R*.15,hc=C(pick(S.leaf));
  for(let k=0,n=lv===2?ri(34,48):12;k<n;k++){const L=pick(tops),p=L[ri(1,L.length-1)],q=rr(0,TAU),d=rr(0,R*.35),x=p.x+Math.cos(q)*d,z=p.z+Math.sin(q)*d,y=Math.max(p.y,cy-R*.2)+rr(.2,2.2);
-  clumpAt('glossy',x,y,z,R*rr(.22,.32)*(lv===2?1:1.5),.6,hc,ct.x,cy,ct.z,R,R*.35);st.clumps++;}
+  clumpHeld([L],'glossy',x,y,z,R*rr(.22,.32)*(lv===2?1:1.5),.6,hc,ct.x,cy,ct.z,R,R*.35);st.clumps++;}
  regTree(T,S,R+2,H+R*.3);};
 
 // 20 the COCONUT PALM (the owner: "an actual coconut palm... hooked into the fruit system"): Earth's coconut, the one tree
@@ -492,7 +507,7 @@ B[21]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,MH=THRONE.LIB.cardsOf(
  for(let k=0,n=lv===2?ri(2,4):1;k<n;k++){const a=rr(0,TAU),base={x:T.x+Math.cos(a)*T.rb*.6,y:T.y0-.3,z:T.z+Math.sin(a)*T.rb*.6};grow(base,dirOf(a,rr(.95,1.3)),H*rr(.4,.55),T.rb*(k?.75:1),0,k*7);}
  // the crown: flat, dense, over the limbs' tips
  const hc=C(pick(S.leaf));let top=T.y0;tips.forEach(t=>top=Math.max(top,t.y));
- tips.forEach(t=>{for(let k=0,n=lv===2?2:1;k<n;k++){const q=rr(0,TAU),d=rr(0,R*.25);clumpAt('small',t.x+Math.cos(q)*d,t.y+rr(-.2,.4),t.z+Math.sin(q)*d,R*rr(.32,.45)*(lv===2?1:1.4),.5,hc,T.x,top,T.z,R,H*.3);st.clumps++;}});
+ tips.forEach(t=>{for(let k=0,n=lv===2?2:1;k<n;k++){const q=rr(0,TAU),d=rr(0,R*.25);clumpHeld([[t]],'small',t.x+Math.cos(q)*d,t.y+rr(-.2,.4),t.z+Math.sin(q)*d,R*rr(.32,.45)*(lv===2?1:1.4),.5,hc,T.x,top,T.z,R,H*.3);st.clumps++;}});
  if(lv===2&&rng()<.5){const t=pick(tips),s=rr(.3,.55);BIO.put('bromeliad',[t.x,t.y-.3,t.z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*.6,s],THRONE.LIB.bromeliad?null:leafCol(PAL.bromeliad,1.2),{n:[0,1,0]});}
  // registered by its real reach (its crooked limbs can carry the crown past crownR)
  let reach=R;tips.forEach(t=>reach=Math.max(reach,Math.hypot(t.x-T.x,t.z-T.z)+R*.5));regTree(T,S,reach+1,top-T.y0+R*.4);};
@@ -698,7 +713,7 @@ THRONE.buildTrees=function(R,q){
   BIO.grid(P.cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=P.accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
    (x,y,z,d)=>{if(blocked(x,z,pad))return;
-    const T=THRONE.make(sp,x,y,z);
+    const T=THRONE.make(sp,x,y,z);if(THRONE.veto&&THRONE.veto(T))return;   /* the host's veto, after the tree's draws (89x-host-fields.js: no bole in the water the eye sees) */
     const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
     if(T.lv===0&&!S.far)return;
     TREES.push(T);hadd({x:x,z:z,r:opt.reach?opt.reach(T):T.rb*1.4+1});n++;},
@@ -706,7 +721,19 @@ THRONE.buildTrees=function(R,q){
   return n;}
  THRONE.PASSES.forEach(pass);
  if(BIO.hasField('riftlife')||BIO.hasField('ashlife'))THRONE.PASSES_NEW.forEach(pass);
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // THE FAR TREES AS OCTAHEDRAL IMPOSTORS (34-core-impostor.js; the final rebuild, 2026-11-02: BACKPORT.md section 1, swbay's lines): one camera-facing
+ // quad a far tree in place of its blob crowns, one set (one material, one atlas) for the kit. Each species bakes one of its own trees (its first hero,
+ // else its first tree), built again in place at BIO.bakeImpostors after every placement, from its own seed, its registration muted; the quad is
+ // scaled by height and turned by the tree's seed. The blobs drew nothing from the stream, so no tree moves. THRONE.IMPOSTORS false (?imp=0): the blobs.
+ const IMPON=THRONE.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[],ISET=IMPON?BIO.impostorSet('throne.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{if(!S.far)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp&&T.lv===1)||TREES.find(T=>T.sp===sp);if(!T0)return;
+  const T1=Object.assign({},T0),st1=newStats();
+  const rec=BIO.impostor('throne.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;
+    try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1,{lv:2}),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(rec)IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach((T,i)=>{if(T.lv===0){if(!farImp(T))buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  THRONE.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),caps:st.caps,funnels:st.funnels,pods:st.pods,stars:st.stars,
   tiers:st.tiers,pitchers:st.pitchers,bells:st.bells,puffs:st.puffs,lamps:st.lamps,resin:st.resin,fruit:st.fruit,clumps:st.clumps,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};

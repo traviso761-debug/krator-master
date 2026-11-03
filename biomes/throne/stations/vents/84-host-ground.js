@@ -94,7 +94,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'else{m=mix(vec3(0.55,0.6,0.3),vec3(0.74,0.58,0.27),smoothstep(1.05,1.3,d));m=mix(m,vec3(0.64,0.4,0.21),smoothstep(1.3,1.6,d));m=mix(m,vec3(0.42,0.31,0.22),smoothstep(1.6,1.9,d));'+
   'm=mix(m,vec3(0.3,0.52,0.56),smoothstep(1.05,0.95,d)*P.w);w=smoothstep(2.05,1.7,d)*smoothstep(0.85,0.98,d)*(0.45+0.4*P.w);}'+
   'm*=0.7+0.55*texture2D(uMacro,p*0.045).g;'+(GTH?'m=mix(m,texture2D(uG_thermal,p*0.33).rgb*(0.8+0.4*smoothstep(1.3,1.9,d)),0.7*smoothstep(1.0,1.25,d));':'')+'diffuseColor.rgb=mix(diffuseColor.rgb,pow(m,vec3(2.2))*(0.85+0.3*texture2D(uDetail,p*0.11).r),w);}}';
- if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
+ if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='vec3 _E_veins=vec3(0.0),_E_crust=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='veins'?'_E_veins=L;':k==='crust'?'_E_crust=L;':'')).join('')+'}'+mats;}

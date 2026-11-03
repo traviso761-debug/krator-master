@@ -44,7 +44,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
  const W={ash:'vL0.x',ripples:'vL0.y',mycelium:'vL0.z',lava:'vL0.w',rhyo:'vL1.x',matfloor:'vL1.y',shoulder:'vL1.z',lichenrock:'vL1.w',mycgold:'vL2.x',mycpale:'vL2.y',toxic:'vL2.z'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
- if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
+ if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='vec3 _E_mg=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='mycgold'?'_E_mg=L;':'')).join('')+'}';}

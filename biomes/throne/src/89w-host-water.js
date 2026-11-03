@@ -23,3 +23,5 @@ const POOL_TEMP=[.95,.75,.6],HOT_POOLS=POOLS.map((P,i)=>WATER.spring({key:'s1poo
 const HOT_DRAWS=HOT_POOLS.map(S=>{const d=WATER.drawSpring(S,{THREE,scene,uniforms:SPRINGU,fog:scene.fog,renderOrder:1});d.mesh.userData.probeSkip=true;return d;});
 TICKS.push(dt=>{SPRINGU.uT.value+=dt;});
 _onLight.push(m=>{SPRINGU.uLight.value=m==='night'?.18:1;});
+// the reflections switch (core/water/ext/58; 89zz-host-core.js installs it, off at page load): the acid lake is the page's largest still
+const MIRROR_STILL={materials:[ACID_DRAW.mesh.material],level:PIT.lake,center:[PIT.x,PIT.z],radius:PIT.r,far:2500};

@@ -33,3 +33,7 @@ BRAIDS.forEach((B,bi)=>{let run=[],wid=[];
 const RIVER_DRAWS=RIVER_FLOWS.map(F=>{const d=WATER.drawFlow(F,{rapids:[.04,.15],shallow:new THREE.Color(.42,.54,.56).convertSRGBToLinear(),deep:new THREE.Color(.3,.4,.42).convertSRGBToLinear(),
   color:0xffffff,roughness:.3,metalness:.05,envMapIntensity:.35,step:10,across:2,margin:3.6,renderOrder:1});
  d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel='The meltwater river (flowing down the flank)';return d;});
+// the reflections switch (core/water/ext/58; 89zz-host-core.js installs it, off at page load): the proglacial lake is the page's largest still
+const MIRROR_STILL={materials:[LAKE_DRAW.mesh.material],level:LAKE.level,center:LAKE_SEED,radius:(LAKE_BOX[2]-LAKE_BOX[0]+LAKE_BOX[3]-LAKE_BOX[1])/4,far:3000};
+// the snow lies on this page (89-host-atmos: ATMOS.snowCover), so the warm ground round the shelf's fumaroles stays bare (KTHERM, 89zz)
+const STATION_SNOW=true;

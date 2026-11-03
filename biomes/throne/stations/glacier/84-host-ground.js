@@ -65,7 +65,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};if(GICE)s
  let decl='uniform sampler2D uDetail,uMacro;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1,vI;'+ICE_GLSL,body;
  // the ice goes on first (over the paint), then the layers: snow over the ice where it lies (the accumulation zone)
  const ice='diffuseColor.rgb=mix(diffuseColor.rgb,pow(_ice(vGWP.xz,vI,diffuseColor.rgb),vec3(2.2))*1.05,vL1.w);';
- if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
+ if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.4);'+ice+'vec3 L;'+
    GL_KEYS.map(k=>'L='+(k==='snow'||k==='snow2'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');').join('')+'}';}
