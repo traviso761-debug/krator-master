@@ -40,14 +40,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
-| `45-kit.js` | 29 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
 | `47-texture.js` | 17 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
-| `53-assets.js` | 18 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
+| `53-assets.js` | 23 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
-| `66-locus-furnish.js` | 11 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `66-locus-furnish.js` | 12 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `67-lo-trades.js` | 6 | = (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
@@ -60,7 +60,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 10 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (101) |
-| `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
+| `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
@@ -71,5 +71,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
 | `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
+| `95-locus-doors.js` | 4 | 31b. THE DOORS: core/door on the Yuni engine's l (1) |
 | `98-start.js` | 7 | 99. START: ON core/host (1) |
 | `99-tail.html` | <1 |  |

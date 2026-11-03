@@ -62,6 +62,7 @@ SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 WALK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
+DOOR_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'door')   # KDOOR, KGLASS, KDOORHOST: the doors and the glass (53-assets.js, 81-glow.js, 95-locus-doors.js)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 MASK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mask')   # KMASK: the placement mask as data (core/mask/README.md)
@@ -98,6 +99,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '66-locus-furnish.js', '67-lo-trades.js'}
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no rnd())
+DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and its binding (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')} | {'90-atmos-host.js', '20-core-clock.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js'}   # core/atmos: IIFE-scoped, its own PRNG; core/clock
 DETERMINISTIC |= {f for f in os.listdir(WATER_DIR) if f.endswith('.js') and not f.startswith('test')} | {'90w-lake.js'}   # core/water (every fragment: no rnd()) and the lake's binding
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '20-core-walk.js'}   # core/rand, core/tags, core/walk (no rnd())
@@ -301,7 +303,7 @@ def main():
             paths.setdefault(f, p)
     for f in RECORD_FILES:
         paths.setdefault(f, os.path.join(RECORD_DIR, f))
-    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, WALK_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR, WATER_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, WALK_DIR, DOOR_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR, WATER_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)

@@ -94,16 +94,24 @@ ASSETS.forEach(function(A){ var b=A.build; A.build=function(F){ if(!LOCF.stack.l
 /* the building's record carries its furniture; a TOP-LEVEL placement with an interior-set item gets its rooms planned and
    furnished there with ?interiors=1 (the plan summary is data on the record: rec.interior) */
 var locfBuildAsset = buildAsset;
-buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length; LOCF.lastTop=null;
+buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length, nd=(typeof KDOOR!=='undefined') ? KDOOR.list.length : 0; LOCF.lastTop=null;
   var rec=locfBuildAsset(key, x,z,ry, opt), F=LOCF.lastTop; if(!rec || !top) return rec;
   rec.furniture = (F && F.furniture) || [];
   if(LOCF.interiors && F){ var it=LOCF.item(key, F.variant|0);
     if(it){ var fi=LOCF.interior(it, x, z, ry||0, LOCF.adapter, { baseY:F.y, prefix:'lc.'+LOCF.buildings.length+'.' }), r=fi.result;
-      rec.interior=fi.summary;
+      rec.interior=fi.summary; rec.interior.doors=locfDoorsIn(nd);
       r.inst.rooms.forEach(function(R){ var P=r.plans[R.id]; (P&&P.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, l.intensity||0.7, l.distance||10, false); }); });
       Object.assign(LOCF.buildings[LOCF.buildings.length-1], { key:key, variant:F.variant|0 }); }
     else { var w=LOCF.why(key, F.variant|0), u=LOCF.unfurnished[w], k=key+((F.variant|0)?'#'+(F.variant|0):''); u[k]=(u[k]||0)+1; } }
   return rec; };
+/* the doors that open onto the rooms just planned (core/door; 53-assets.js F.door draws them locked, as the bodies are solid):
+   a door of this placement whose sill meets one of the interiors' floors 0.6 m inside it is unlocked as built, so the walker,
+   E, an NPC or a quest opens it into the rooms (95-locus-doors.js; Highlands' 89y-hl-furnish.js is the pattern). The leaf opens
+   on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md) */
+function locfDoorsIn(nd){ if(typeof KDOOR==='undefined' || typeof KWALK==='undefined') return 0; var n=0;
+  for(var i=nd;i<KDOOR.list.length;i++){ var D=KDOOR.list[i]; if(!D.locked) continue; var ix=D.at[0]-Math.sin(D.yaw)*0.6, iz=D.at[2]-Math.cos(D.yaw)*0.6;
+    if(KWALK.floorsAt(ix,iz).some(function(f){ return Math.abs(f[0]-D.at[1]) < 0.6; })){ KDOOR.lock(D, false, { asBuilt:true }); n++; } }
+  return n; }
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;
 /* the batch's vertex colours are the catalog's sRGB bytes; this renderer outputs sRGB from LINEAR colours (the kit converts
