@@ -98,7 +98,7 @@ reseed(653001);
         var top=P+FH*n+0.25; LOCUS.parapet(F, 0,top,-1, W,D, 0.22,0.8, col, band);
         F.door(0, -1+D/2+0.02, 0,1, 1.2, 2.3, PAL.abBrightTeal===col?PAL.abSailRed:PAL.abBrightTeal, P);
         [-2.8,2.8].forEach(function(x){ plinthWin(F, x,P+1.7,-1+D/2+0.02, 0,1, 1.0,1.3, band); });
-        for(var fl=1; fl<n; fl++){ var yy=P+FH*fl; [-2.6,0,2.6].forEach(function(x){ plinthWin(F, x,yy+1.6,-1+D/2+0.02, 0,1, 1.0,1.6, band); F.box(x,yy+0.02,-1+D/2+0.06, 1.1,1.9,0.04, 0, VOIDC[1], 'dark'); });
+        for(var fl=1; fl<n; fl++){ var yy=P+FH*fl; [-2.6,0,2.6].forEach(function(x){ plinthWin(F, x,yy+1.6,-1+D/2+0.02, 0,1, 1.0,1.6, band); F.doorway(x,yy+0.02,-1+D/2+0.06, 1.1,1.9,0.04, 0, { out:[0,1] }); });   /* the door onto the balcony: a locked leaf */
           ABYSS.balcony(F, 0,yy+0.02,-1+D/2, 0,1, 7.0, 1.0); }
         [1,-1].forEach(function(s){ for(var fl2=0; fl2<n; fl2++) plinthWin(F, s*(W/2+0.02),P+FH*fl2+1.7,-1, s,0, 0.9,1.2, band); });
         ABYSS.mural(F, W/2+0.02, P+FH*1.2, -1-1.8, 1,0, 2.6, 3.4);

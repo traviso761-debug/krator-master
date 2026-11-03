@@ -90,7 +90,7 @@ reseed(641001);
       F.arcade('plaster', bx, H, fz+0.9, 0, 3, 2.6, WH-0.15, 0.4, wall2, { pier:1.0, head:0.9, colIn:shade(wall2,-0.2) });
       F.box(bx, H+WH-0.15, fz+0.9, 7.9, 0.15, 1.9, 0, pk, 'plank');                                             /* the loggia's roof slab, a balcony above on v1 */
       if(v===1){ F.arcade('plaster', bx, H+WH, fz+0.9, 0, 3, 2.6, WH-0.45, 0.35, wall, { pier:1.05, head:0.85, colIn:shade(wall,-0.2) }); F.box(bx, top-0.3, fz+0.9, 7.9, 0.3, 1.9, 0, band, 'plaster'); }
-      F.box(bx, H, fz+0.02, 0.9, 2.3, 0.4, 0, VOIDC[1], 'dark'); F.door(bx, fz+0.02, 0,1, 1.1, 2.3, PLANKC[3], H);
+      F.card(bx, H, fz+0.02, 0.9, 2.3, 0.4, 0); F.door(bx, fz+0.02, 0,1, 1.1, 2.3, PLANKC[3], H);
       LOCUS.lattice(F, bx-2.6, H+1.9, fz+0.02, 0,1, 1.2, 1.4, tc); LOCUS.lattice(F, bx+2.6, H+1.9, fz+0.02, 0,1, 1.2, 1.4, tc);
       LOCUS.lattice(F, bx-BW/2-0.02, H+1.9, bz+0.8, -1,0, 1.1, 1.3, tc); LOCUS.lattice(F, bx+BW/2+0.02, H+1.9, bz-1.2, 1,0, 1.1, 1.3, tc);
       F.window(bx-1.5, H+1.9, bz-BD/2-0.02, 0,-1, 0.8, 1.1); F.window(bx+1.5, H+1.9, bz-BD/2-0.02, 0,-1, 0.8, 1.1);
@@ -101,7 +101,7 @@ reseed(641001);
       var sy=top+3.0, sp=[[bx-BW/2+0.5, bz-BD/2+0.5],[bx+BW/2-0.5, bz-BD/2+0.5],[bx+BW/2-0.5, bz+BD/2-0.5],[bx-BW/2+0.5, bz+BD/2-0.5]];
       sp.forEach(function(p,i){ LOCUS.pole(F, p[0], p[1], sy+(i%2?0.3:0), 0.09, tc, true); });
       LOCUS.canopy(F, sp.map(function(p,i){ return [p[0], sy+(i%2?0.3:0), p[1]]; }), v===1 ? CANVASDYEC[1] : past(F, [1,0,8][v]), { sag:0.6 });
-      if(v===0) LOCUS.badgir(F, bx-BW/2+1.6, top, bz-BD/2+1.5, 1.8, 4.6, wall2, VOIDC[1]);
+      if(v===0) LOCUS.badgir(F, bx-BW/2+1.6, top, bz-BD/2+1.5, 1.8, 4.6, wall2, ROOMC);
       /* verandah down one side (the left side and the wing's front on v2), under a striped awning tied to the wall */
       var sides = v===2 ? [-1] : [1];
       sides.forEach(function(s){ var ax=bx+s*BW/2, ex=s>0 ? DW/2-0.4 : -DW/2+0.4, ay=H+2.9, py=H+2.45;
@@ -156,7 +156,7 @@ reseed(641001);
         F.mcone('canvas', 0, WH, 0, R+0.3, 0.25, CH-WH, c1, 18, { under:true, underDy:-0.2 });
         F.lathe('canvas', 0,0, [[R+0.34,WH+0.1],[R+0.34-0.9*0.72,WH+0.1+0.9*(CH-WH)/(R+0.3)*0.72+0.0]], c2, { seg:18 });     /* a dyed band round the skirt of the cone */
         F.lathe('cloth', 0,0, [[R,0.0],[R,WH]], c2, { seg:18 });
-        F.box(0, 0, R-0.05, 1.6, WH, 0.4, 0, VOIDC[1], 'dark');
+        F.card(0, 0, R-0.05, 1.6, WH, 0.4, 0);   /* the tent's open door: the room card within */
         for(var g=0;g<12;g++){ var ga=g/12*TAU; LOCUS.guy(F, Math.cos(ga)*R, WH, Math.sin(ga)*R, Math.cos(ga)*(R+1.6), Math.sin(ga)*(R+1.6)); F.cyl(Math.cos(ga)*R, 0, Math.sin(ga)*R, 0.05, WH, 0, tc, 'timber'); }
         FURNISH('eastabyss_tent_rug', 0,0.02,0, PI/4, { v:1, setting:'indoor' }); FURNISH('yuni_court_brass_brazier', 0,0,-2.6, 0, { setting:'room' }); F.lamp(0, 0.7, -2.6, 0.9, 10); }
     } });

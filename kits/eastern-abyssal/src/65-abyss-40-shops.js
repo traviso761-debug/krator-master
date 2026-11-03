@@ -51,7 +51,7 @@ reseed(654001);
         LOCUS.stair(F, 0, 3.5+H*1.15, 0,-1, H, 2.4); ABYSS.sign(F, 3.2,H+2.9,0.12, 0,1, 1.2,0.8, 'shield'); }
       else { var H1=1.0; ABYSS.platform(F, -5.5,5.5, -5.5,2.5, H1);
         F.box(0,H1,-2.4, 8,3.0,5, 0, ABYSS.rust(F), 'corrugate'); ABYSS.tinClad(F, { box:[0,H1,-2.4,8,3.0,5], faces:'flr' });
-        F.box(0,H1+0.1,0.13, 3.4,2.6,0.1, 0, VOIDC[1], 'dark'); ABYSS.trim(F, 0,H1+0.1,0.15, 0,1, 3.4,2.6);
+        F.card(0,H1+0.1,0.13, 3.4,2.6,0.1, 0); ABYSS.trim(F, 0,H1+0.1,0.15, 0,1, 3.4,2.6);
         ABYSS.corrRoof(F, 0,H1+3.0,-2.4, 8.6,5.8, 0.6, ABYSS.rust(F));
         ABYSS.furn(F, 'abyss_armor_stand', -2.8,1.4, 0, { ly:H1, variant:1 }); ABYSS.furn(F, 'abyss_armor_stand', 2.8,1.4, 0, { ly:H1 }); ABYSS.furn(F, 'abyss_armor_stand', -1.6,1.6, 0, { ly:H1 });
         ABYSS.furn(F, 'abyss_shield_wall', 4.4,0, -PI/2, { ly:H1 });
@@ -64,7 +64,7 @@ reseed(654001);
     build:function(F){ var v=F.variant;
       if(v===0){ var H=0.7; ABYSS.platform(F, -6,6, -5.5,2.0, H);
         ABYSS.vessel(F, 'container', 0,H,-3.8, { len:12.2, col:ABYSS.cont(F), win:[[-4.0,1.5]], door:'side', doorAt:1.8 });
-        F.box(-1.0,H+0.2,-2.55, 3.4,2.0,0.05, 0, VOIDC[1], 'dark');                                     /* the shop hatch */
+        F.card(-1.0,H+0.2,-2.55, 3.4,2.0,0.05, 0);                                    /* the shop hatch: the room card */
         [-5.6,5.6].forEach(function(x){ LOCUS.pole(F, x,1.7, H+2.6, 0.08); });
         LOCUS.stripes(F, [-5.9,H+2.7,-2.5],[5.9,H+2.7,-2.5],[5.9,H+2.5,1.7],[-5.9,H+2.5,1.7], 10, PAL.abBrightYellow, CANVASC[2], { sag:0.15 });
         ABYSS.furn(F, 'abyss_counter', -1.0,-1.6, 0, { ly:H }); ABYSS.furn(F, 'abyss_hanging_goods', 3.6,-1.8, 0, { ly:H });
@@ -73,7 +73,7 @@ reseed(654001);
       else { var c=F.pick([PAL.abBrightTeal, PAL.abBrightYellow, PASTELC[3]]), W=8, D=6, FH=3.0;
         F.box(-1,0,-3, W,FH*2,D, 0, c, 'plaster'); F.box(-1,0,-3, W+0.06,0.5,D+0.06, 0, shade(c,-0.3), 'plaster'); F.box(-1,FH,-3, W+0.1,0.18,D+0.1, 0, shade(c,-0.3), 'relief');
         F.box(-1,FH*2,-3, W+0.4,0.2,D+0.4, 0, shade(c,-0.3), 'relief');
-        F.box(-1,0.05,0.02, 5.2,2.6,0.06, 0, VOIDC[1], 'dark'); [-3.6,1.6].forEach(function(x){ F.window(x,FH+1.6,0.02, 0,1, 1.0,1.4); }); ABYSS.balcony(F, -1,FH+0.02,0, 0,1, 3.0,0.9);
+        F.card(-1,0.05,0.02, 5.2,2.6,0.06, 0); [-3.6,1.6].forEach(function(x){ F.window(x,FH+1.6,0.02, 0,1, 1.0,1.4); }); ABYSS.balcony(F, -1,FH+0.02,0, 0,1, 3.0,0.9);
         ABYSS.mural(F, -1-W/2-0.02, FH*1.1, -3, -1,0, 3.4,2.4);
         ABYSS.furn(F, 'abyss_counter', -1,1.2, 0); ABYSS.furn(F, 'abyss_hanging_goods', -1,-1.5, 0, { setting:'room' });
         ABYSS.furn(F, 'abyss_umbrella_canopy', 0.5,1.5, 0, { variant:0 });
@@ -188,7 +188,7 @@ reseed(654001);
         ABYSS.furn(F, 'abyss_bench', -5.0,0.8, PI/2, { ly:0.1, setting:'room' }); signPost(F, 5.6,5.4, 'sail', 3.2); }
       else { var H=0.8, c=F.pick(PASTELC); ABYSS.platform(F, -7.5,7.5, -5.5,2.0, H);
         F.box(-2.5,H,-3.2, 8,5.8,4.4, 0, F.pick(PLANKC), 'plank'); F.box(-2.5,H+5.8,-3.2, 8.6,0.2,5.0, 0, ABYSS.rust(F), 'corrugate');
-        F.box(-2.5,H+0.05,-0.98, 3.6,2.5,0.05, 0, VOIDC[1], 'dark'); F.box(-2.5,H+3.3,-0.98, 2.4,1.8,0.05, 0, VOIDC[1], 'dark');   /* the shop front and the loft door */
+        F.card(-2.5,H+0.05,-0.98, 3.6,2.5,0.05, 0); F.doorway(-2.5,H+3.3,-0.98, 2.4,1.8,0.05, 0);   /* the shop front (the room card) and the loft door (a locked leaf) */
         F.rod(-2.5,H+5.6,-0.9, -2.5,H+5.6,0.4, 0.08, F.pick(TIMBERC), 'timber'); F.rod(-2.5,H+5.5,0.4, -2.5,H+3.0,0.4, 0.015, PAL.people.hair[2], 'timber');   /* the loft hoist */
         /* drying lines with hung canvas between the loft and two posts */
         [3.0,6.8].forEach(function(x){ LOCUS.pole(F, x,1.4, H+4.2, 0.08); });

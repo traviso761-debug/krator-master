@@ -62,9 +62,9 @@ var LOCUS = {}, LOCUS_ANIM = [];
   /* a reed / palm-mat wall panel (the poor style): thatch texture tinted pale, with a timber frame */
   LOCUS.matWall = function(F, cx,cy,cz, w,h, nlx,nlz, col, frame){ var yaw=Math.atan2(nlx,nlz); F.box(cx,cy,cz, w,h,0.12, yaw, col!=null?col:F.pick(REEDMATC), 'thatch');
     if(frame!==false){ var fc=F.pick(TIMBERC), px=-nlz, pz=nlx; F.beam(cx-px*w/2, cy, cz-pz*w/2, cx+px*w/2, cy, cz+pz*w/2, 0.10,0.18, fc, 'timber'); F.beam(cx-px*w/2, cy+h-0.1, cz-pz*w/2, cx+px*w/2, cy+h-0.1, cz+pz*w/2, 0.10,0.18, fc, 'timber'); } };
-  /* a lattice screen (mashrabiya) set in a wall: dark reveal + slats */
+  /* a lattice screen (mashrabiya) set in a wall: the room card behind its slats (53-assets.js ROOMC) */
   LOCUS.lattice = function(F, lx,ly,lz, nlx,nlz, w,h, col){ col=col!=null?col:F.pick(TIMBERC); var yaw=Math.atan2(nlx,nlz), px=-nlz, pz=nlx;
-    F.box(lx-nlx*0.10, ly-h/2, lz-nlz*0.10, w+0.12, h+0.12, 0.26, yaw, VOIDC[1], 'dark');
+    F.box(lx-nlx*0.10, ly-h/2, lz-nlz*0.10, w+0.12, h+0.12, 0.26, yaw, ROOMC, 'dark');
     var nv=Math.max(2,Math.round(w/0.28)), nh=Math.max(2,Math.round(h/0.28));
     for(var i=1;i<nv;i++){ var t=i/nv-0.5; F.box(lx+px*t*w+nlx*0.05, ly-h/2, lz+pz*t*w+nlz*0.05, 0.05, h, 0.05, yaw, col, 'timber'); }
     for(var j=1;j<nh;j++){ var u=j/nh-0.5; F.box(lx+nlx*0.05, ly+u*h, lz+nlz*0.05, w, 0.05, 0.05, yaw, col, 'timber'); }
@@ -79,7 +79,7 @@ var LOCUS = {}, LOCUS_ANIM = [];
     if(band!=null){ F.box(cx, y+h-0.14, cz, w+0.06, 0.14, d+0.06, 0, band, 'relief'); } };
   /* a Persian wind-catcher (badgir): a tower with tall slots on all four sides and a little cap */
   LOCUS.badgir = function(F, cx,y,cz, w,h, col, dark){ F.box(cx,y,cz, w,h,w, 0, col, 'plaster'); var s=w*0.28;
-    [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(n){ for(var k=-1;k<=1;k+=2){ F.box(cx+n[0]*(w/2-0.02)+(-n[1])*k*s*0.75, y+h*0.35, cz+n[1]*(w/2-0.02)+(n[0])*k*s*0.75, n[1]?s*0.5:0.12, h*0.55, n[0]?s*0.5:0.12, 0, dark!=null?dark:VOIDC[1], 'dark'); } });
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(n){ for(var k=-1;k<=1;k+=2){ F.box(cx+n[0]*(w/2-0.02)+(-n[1])*k*s*0.75, y+h*0.35, cz+n[1]*(w/2-0.02)+(n[0])*k*s*0.75, n[1]?s*0.5:0.12, h*0.55, n[0]?s*0.5:0.12, 0, dark!=null?dark:ROOMC, 'dark'); } });
     F.box(cx,y+h,cz, w+0.5,0.18,w+0.5, 0, shade(col,-0.15), 'plaster'); F.pyr(cx,y+h+0.18,cz, w*0.7,0.6,w*0.7, 0, shade(col,-0.05), 'plaster'); };
 
   /* ---------- steel & mud: the petroleum works ---------- */
@@ -129,7 +129,7 @@ var LOCUS = {}, LOCUS_ANIM = [];
     var nP=opt.pilasters==null?Math.max(2,Math.round(W/4)):opt.pilasters;
     for(var i=0;i<nP;i++){ var px=(i/(nP-1)-0.5)*(W-1.2); [1,-1].forEach(function(s){ F.fr5(px,0,s*(D/2)*0.99, 1.0,H+0.5,1.0, 0, col, 'adobe'); F.cone(px,H+0.45,s*(D/2)*0.99, 0.28,1.1, 0, col, 'adobe'); }); }
     if(opt.toron!==false){ var nT=Math.max(3,Math.round(W/1.4)); for(var t=0;t<nT;t++){ var tx=(t/(nT-1)-0.5)*(W-2.2); F.toron(tx, H-1.0, (D/2)*(1-0.16*(H-1.0)/H), 0,1, 0.8); if(opt.toronBack) F.toron(tx, H-1.0, -(D/2)*(1-0.16*(H-1.0)/H), 0,-1, 0.8); } }
-    if(opt.vents){ for(var r=0;r<3;r++) for(var c=0;c<=r;c++){ var vy=H-1.6-r*0.42; F.pyr((c-r/2)*0.62+(opt.ventX||0), vy, (D/2)*(1-0.16*vy/H)-0.10, 0.36,0.32,0.3, 0, VOIDC[0], 'dark'); } } };
+    if(opt.vents){ for(var r=0;r<3;r++) for(var c=0;c<=r;c++){ var vy=H-1.6-r*0.42; F.pyr((c-r/2)*0.62+(opt.ventX||0), vy, (D/2)*(1-0.16*vy/H)-0.10, 0.36,0.32,0.3, 0, ROOMC, 'dark'); } } };
 
   /* ---------- building another registered asset INSIDE this one (a sub-frame, no separate registration) ---------- */
   LOCUS.sub = function(F, key, lx,lz, yaw, opt){ var A=ASSET_BY_KEY[key]; if(!A){ ERR('LOCUS.sub: no asset '+key); return; } opt=opt||{};

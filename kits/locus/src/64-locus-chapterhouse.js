@@ -35,7 +35,7 @@ reseed(645001);
       [0.12,0.36,0.62].forEach(function(t,rI){ var y=Y0+DOME_H*t, r=skinR(y)-0.15, n=[26,22,16][rI]; for(var q=0;q<n;q++){ var qa=q/n*TAU+rI*0.13; F.toron(C[0]+Math.cos(qa)*r, y, C[1]+Math.sin(qa)*r, Math.cos(qa), Math.sin(qa), 0.7, 0.08); } });
       var ty=ys[NR]; F.cyl(C[0], ty-0.2, C[1], ri[NR-1]+0.9, 0.5, 0, dk, 'adobe');
       for(var l=0;l<8;l++){ var la=l/8*TAU; F.cyl(C[0]+Math.cos(la)*1.7, ty+0.3, C[1]+Math.sin(la)*1.7, 0.16, 2.2, 0, ochre, 'adobe'); }
-      F.cyl(C[0], ty+0.3, C[1], 1.25, 2.2, 0, VOIDC[1], 'dark'); F.mcone('adobe', C[0], ty+2.5, C[1], 2.3, 0.0, 1.9, sienna2, 12, { under:true });
+      F.cyl(C[0], ty+0.3, C[1], 1.25, 2.2, 0, ROOMC, 'dark'); F.mcone('adobe', C[0], ty+2.5, C[1], 2.3, 0.0, 1.9, sienna2, 12, { under:true });
       F.ball(C[0], ty+4.6, C[1], 0.32, BRASSC[1], 'metal');
       /* ---- inside: the corbelled rings (a polychrome frieze on the lowest), the oculus glow, electric light strips on the drum ---- */
       for(var r5=0;r5<NR;r5++){ F.sector(r5===0?'paintcol':'adobe', C[0],C[1], ri[r5],ro[r5], 0,TAU, ys[r5],ys[r5+1], r5===0 ? 0xf0e6d0 : (r5%2 ? umber2 : sienna),
@@ -68,7 +68,7 @@ reseed(645001);
         var fz=wz+WD/2; F.door(wx, fz+0.02, 0,1, 1.3, 2.4, PLANKC[0]); F.archband('relief', wx, 0, fz+0.14, 0, 1.7, 2.75, 0.35, 0.16, relU);
         [1.8,-1.8].forEach(function(o){ var wy=4.2, zz=fz*1 - (WD/2)*0.16*wy/WH; F.window(wx+o*1.6, wy, zz+0.02, 0,1, 0.7, 1.3); F.archband('relief', wx+o*1.6, wy-0.65, zz+0.10, 0, 0.9, 1.55, 0.22, 0.1, relU); });
         for(var w2=0;w2<4;w2++){ var wy2=4.2, zo=wz+(w2-1.5)*4.4, xo=wx+s*(WW/2)*(1-0.16*wy2/WH); F.window(xo+s*0.02, wy2, zo, s,0, 0.7, 1.3); F.archband('relief', xo+s*0.10, wy2-0.65, zo, s>0?PI/2:-PI/2, 0.9, 1.55, 0.22, 0.1, relU); }
-        for(var r3=0;r3<3;r3++) for(var c3=0;c3<=r3;c3++){ var vy=WH-1.9-r3*0.42; F.pyr(wx+(c3-r3/2)*0.62, vy, wz+(WD/2)*(1-0.16*vy/WH)-0.1, 0.36,0.32,0.3, 0, VOIDC[0], 'dark'); }
+        for(var r3=0;r3<3;r3++) for(var c3=0;c3<=r3;c3++){ var vy=WH-1.9-r3*0.42; F.pyr(wx+(c3-r3/2)*0.62, vy, wz+(WD/2)*(1-0.16*vy/WH)-0.1, 0.36,0.32,0.3, 0, ROOMC, 'dark'); }
         for(var t2=0;t2<5;t2++) F.toron(wx+(t2-2)*1.6, WH-0.9, wz+(WD/2)*(1-0.16*(WH-0.9)/WH), 0,1, 0.75);
         F.box(s*11.6, 0, -4.0, 2.0, 4.4, 5.0, 0, umber2, 'adobe'); F.box(s*11.6, 4.4, -4.0, 2.2, 0.35, 5.2, 0, dk, 'adobe');                /* the link passage */
         LOCUS.lantern(F, wx-s*2.4, 3.0, fz+0.4, 0.8, 12); });

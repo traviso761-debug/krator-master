@@ -106,7 +106,7 @@ reseed(659001);
         /* the sliding doors on their top rail, one slid open */
         F.box(0,H+4.9,-0.5+D/2+0.25, W-2,0.18,0.18, 0, STEELDC[1], 'rust');
         [[-9,0],[-4.2,0],[5.2,1],[10,0]].forEach(function(d){ F.box(d[0],H+0.05,-0.5+D/2+0.18, 4.6,4.8,0.1, 0, d[1]?shade(c,0.1):shade(c,-0.08), 'corrugate'); });
-        F.box(0.2,H,-0.5+D/2+0.02, 4.6,4.6,0.05, 0, VOIDC[1], 'dark');
+        F.doorway(0.2,H,-0.5+D/2+0.02, 4.6,4.6,0.05, 0, { out:[0,1] });   /* the barn door: a locked leaf */
         ABYSS.furn(F, 'abyss_crates', -8,D/2+0.9, 0, { ly:H }); ABYSS.furn(F, 'abyss_crates', 8,D/2+0.9, 0, { ly:H, variant:2 });
         LOCUS.stair(F, 0.2, D/2+2.4+H*1.15, 0,-1, H, 4.6); ABYSS.sign(F, 13,H+4.4,-0.5+D/2+0.06, 0,1, 1.4,0.8, 'sack'); }
       else { F.box(0,0,0, 34,0.1,18, 0, PAL.abRubble, 'rubble');

@@ -139,7 +139,7 @@ reseed(657501);
       F.window(TX-2.6,2.5,TZ+TS/2, 0,1, 0.8,1.0); F.window(TX+2.6,2.5,TZ+TS/2, 0,1, 0.8,1.0);
       [S1+ST+1.8, S1+2*ST+1.8].forEach(function(y){ [-2.4,0,2.4].forEach(function(o){ F.window(TX+o,y,TZ+TS/2, 0,1, 0.8,1.1); F.window(TX+o,y,TZ-TS/2, 0,-1, 0.8,1.1); F.window(TX-TS/2,y,TZ+o, -1,0, 0.8,1.1); }); });
       F.window(TX-2.6,2.5,TZ-TS/2, 0,-1, 0.8,1.0); F.window(TX-TS/2,2.5,TZ, -1,0, 0.8,1.0);
-      [-2.4,0,2.4].forEach(function(o){ F.box(TX+TS/2+0.02,TOP-1.6,TZ+o, 0.12,1.0,0.25, 0, VOIDC[0], 'dark'); });
+      [-2.4,0,2.4].forEach(function(o){ F.card(TX+TS/2+0.02,TOP-1.6,TZ+o, 0.12,1.0,0.25, 0); });
       F.door(TX, TZ+TS/2+0.05, 0,1, 1.2, 2.3, PLANKC[3], S1); ABYSS.trim(F, TX,S1,TZ+TS/2+0.06, 0,1, 1.2,2.3, true);
       F.box(TX,0,TZ+TS/2+0.55, 2.0,0.22,1.1, 0, PAL.abRubble, 'rubble');
       ABYSS.lantern(F, TX+1.3,3.0,TZ+TS/2+0.45, true);
@@ -171,7 +171,7 @@ reseed(657501);
       F.box(0.75,Y,cz, 3.5,WH,D, 0, bc, 'plaster');
       F.box(-2.75,Y,cz, 3.5,WH,D, 0, PAL.abRubble, 'rubble'); ABYSS.tinClad(F, { box:[-2.75,Y,cz,3.5,WH,D], faces:'fbl' });
       [-3.9,-1.6].forEach(function(x){ F.box(x,Y,cz+D/2+0.07, 0.14,WH,0.06, 0, STEELDC[0], 'rust'); F.box(x,Y,cz-D/2-0.07, 0.14,WH,0.06, 0, STEELDC[0], 'rust'); });
-      F.box(-4.5-0.06,Y+1.6,cz, 0.1,0.5,0.9, 0, VOIDC[0], 'dark'); [-0.3,0,0.3].forEach(function(o){ F.rod(-4.6,Y+1.6,cz+o, -4.6,Y+2.1,cz+o, 0.025, STEELDC[1], 'rust'); });
+      F.card(-4.5-0.06,Y+1.6,cz, 0.1,0.5,0.9, 0); [-0.3,0,0.3].forEach(function(o){ F.rod(-4.6,Y+1.6,cz+o, -4.6,Y+2.1,cz+o, 0.025, STEELDC[1], 'rust'); });
       F.box(cx,Y+WH,cz, W+0.4,0.25,D+0.4, 0, shade(bc,-0.3), 'relief');
       LOCUS.parapet(F, cx,Y+WH+0.25,cz, W+0.4,D+0.4, 0.2,0.5, bc, null);
       /* the door on +z; the toll COUNTER WINDOW on +x (the road): a wide window, a plank counter shelf, a canvas flap above */

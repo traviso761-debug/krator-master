@@ -18,7 +18,7 @@ reseed(646001);
       LOCUS.mudBlock(F, 0, bz, W, H, D, mud, { pilasters:8, vents:true, ventX:-12, toronBack:true });
       /* four parabolic loading doors in the front wall */
       [-13.5,-4.5,4.5,13.5].forEach(function(dx){ var zf=bz+D/2*(1-0.16*1.1/H);
-        F.box(dx, 1.1, zf-0.30, 3.4, 3.6, 0.5, 0, VOIDC[1], 'dark'); F.archband('relief', dx, 1.1, zf+0.06, 0, 3.4, 4.0, 0.42, 0.18, rel);
+        F.card(dx, 1.1, zf-0.30, 3.4, 3.6, 0.5, 0);   /* the store within the open loading door */ F.archband('relief', dx, 1.1, zf+0.06, 0, 3.4, 4.0, 0.42, 0.18, rel);
         F.box(dx-1.9, 1.1, zf+0.35, 0.12, 3.4, 1.4, 0.55, PLANKC[1], 'plank'); });
       (F.doors||(F.doors=[])).push([F.P(0,0,9.2).x, F.y, F.P(0,0,9.2).z]);
       /* a canvas shade on posts over the plinth, and the timber jib crane at one end */

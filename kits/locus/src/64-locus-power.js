@@ -46,7 +46,7 @@ reseed(647001);
       /* the Geomancers' plaque over the arch */
       F.disc(-2, Y+H-1.0, 4.56, 0,1, 0.62, 0.06, BRASSC[1], 'metal'); F.disc(-2, Y+H-1.0, 4.6, 0,1, 0.52, 0.06, GEOBROWNC[0], 'plaster'); F.cone(-2, Y+H-1.3, 4.72, 0.16, 0.5, 0, BRASSC[0], 'metal');
       /* three ventilator domes on drums along the roof, and the two exhaust stacks behind */
-      [-8,-2,4].forEach(function(vx){ F.cyl(vx, Y+H-0.1, -1.5, 1.5, 0.8, 0, wh2, 'plaster'); for(var k=0;k<6;k++){ var a=k/6*TAU; F.box(vx+Math.cos(a)*1.45, Y+H+0.12, -1.5+Math.sin(a)*1.45, 0.34, 0.45, 0.2, -a+PI/2, VOIDC[1], 'dark'); }
+      [-8,-2,4].forEach(function(vx){ F.cyl(vx, Y+H-0.1, -1.5, 1.5, 0.8, 0, wh2, 'plaster'); for(var k=0;k<6;k++){ var a=k/6*TAU; F.card(vx+Math.cos(a)*1.45, Y+H+0.12, -1.5+Math.sin(a)*1.45, 0.34, 0.45, 0.2, -a+PI/2); }
         F.edome(vx, Y+H+0.7, -1.5, 1.55, 1.25, 1.55, 0, MOSBLUEC[1], 'mosaic'); F.cone(vx, Y+H+1.9, -1.5, 0.12, 0.8, 0, BRASSC[0], 'metal'); });
       [-7.5,-3.5].forEach(function(sx){ F.cyl(sx, Y+H-0.2, -5.6, 0.95, 1.3, 0, wh, 'plaster'); F.cyl(sx, Y+H+0.75, -5.6, 1.0, 0.35, 0, MOSBLUEC[0], 'mosaic');
         F.cyl(sx, Y+H+1.1, -5.6, 0.5, 8.2, 0, rust, 'rust'); F.cyl(sx, Y+H+9.2, -5.6, 0.62, 0.4, 0, STEELDC[3], 'rust'); F.cyl(sx, Y+H+5.4, -5.6, 0.58, 0.3, 0, STEELDC[3], 'rust');

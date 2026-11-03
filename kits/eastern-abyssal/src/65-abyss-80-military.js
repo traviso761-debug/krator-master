@@ -36,7 +36,7 @@ reseed(658001);
     F.lathe('corrugate', 0,0, [[R,RUB+0.5],[R,Hh]], plateCol(F), { seg:22 });
     F.lathe('relief', 0,0, [[R+0.08,Hh-0.5],[R+0.08,Hh]], PAL.abLacquer, { seg:22 });
     F.edome(0,Hh,0, R+0.2, R*0.6, R+0.2, 0, PAL.abTin, 'tinmirror'); F.cyl(0,Hh+R*0.6-0.1,0, 0.08,1.6, 0, PAL.abGild, 'metal'); F.ball(0,Hh+R*0.6+1.6,0, 0.2, PAL.abGild, 'metal');
-    for(var k=0;k<8;k++){ var a=k/8*TAU+0.2; F.box(Math.cos(a)*(R+0.02), RUB+2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2, VOIDC[0], 'dark'); F.box(Math.cos(a)*(R+0.02), Hh-2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2, VOIDC[0], 'dark'); }
+    for(var k=0;k<8;k++){ var a=k/8*TAU+0.2; F.card(Math.cos(a)*(R+0.02), RUB+2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2); F.card(Math.cos(a)*(R+0.02), Hh-2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2);   /* arrow slits */ }
     /* doors[i] = [nx,nz] the side it faces, [ox,oz] its offset along the wall line: it opens onto the walkway (1 m inside the axis) */
     doors.forEach(function(d){ var o=-1.0, ax=d[0]?0:o, az=d[1]?0:o, r=Math.sqrt(Math.max(0,(R+0.02)*(R+0.02)-o*o)), x=d[0]*r+ax, z=d[1]*r+az, l=Math.hypot(x,z);
       F.door(x, z, x/l, z/l, 1.0, 2.2, PLANKC[3], WALK); }); }

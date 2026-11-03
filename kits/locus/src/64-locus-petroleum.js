@@ -114,12 +114,12 @@ reseed(644001);
       /* ---- the still-house: a mud-brown Yuni hall with a loading arcade; the great column rises beside it ---- */
       LOCUS.mudBlock(F, -14, -8, 24, 9, 14, mud, { pilasters:6, vents:true, ventX:-7, toronBack:true });
       F.arcade('adobe', -14, 0, -0.2, 0, 4, 4.0, 5.2, 0.5, mud, { pier:1.1, head:0.9, colIn:mud2 });
-      F.box(-14, 5.2, -0.8, 16.6, 0.35, 1.6, 0, mud2, 'adobe'); F.box(-14, 0, -0.9, 16.4, 4.2, 1.2, 0, VOIDC[1], 'dark');   /* the deep shade of the loading dock behind the arcade */
+      F.box(-14, 5.2, -0.8, 16.6, 0.35, 1.6, 0, mud2, 'adobe'); F.card(-14, 0, -0.9, 16.4, 4.2, 1.2, 0);   /* the loading dock behind the arcade: the room card */
       F.lamp(-14, 3.0, -1.6, 1.2, 14); F.window(-4.6, 6.4, -8, 1,0, 0.9, 1.1); F.window(-4.6, 3.2, -11, 1,0, 0.9, 1.1);
       for(var rv=0;rv<5;rv++){ var vx=-22+rv*4.0; F.cyl(vx, 8.9, -9.5, 0.55, 1.2, 0, mud2, 'adobe'); F.cone(vx, 10.1, -9.5, 0.75, 0.7, 0, shade(mud,-0.2), 'adobe'); F.box(vx, 9.3, -9.5, 0.7, 0.5, 0.7, 0, VOIDC[1], 'dark'); }   /* roof vents over the stills */
       F.cyl(-7.5, 8.9, -5.0, 0.6, 5.0, 0, rust2, 'rust'); F.cyl(-7.5, 13.9, -5.0, 0.7, 0.35, 0, STEELDC[3], 'rust');                                                                                /* a second, older stack through the hall roof */
       /* a fitters' workshop against the west wall: mud block, open front under a canvas awning, drums and a bench */
-      F.fr8(-26.5, 0, 3.0, 8.0, 4.4, 9.0, 0, mud, 'adobe'); F.box(-26.5, 4.35, 3.0, 6.3, 0.4, 7.2, 0, mud2, 'adobe'); F.box(-22.7, 0, 3.0, 0.8, 3.0, 5.0, 0, VOIDC[1], 'dark');
+      F.fr8(-26.5, 0, 3.0, 8.0, 4.4, 9.0, 0, mud, 'adobe'); F.box(-26.5, 4.35, 3.0, 6.3, 0.4, 7.2, 0, mud2, 'adobe'); F.card(-22.7, 0, 3.0, 0.8, 3.0, 5.0, 0);
       [-0.5,6.5].forEach(function(pz){ LOCUS.pole(F, -19.6, pz, 3.4, 0.08, TIMBERC[1], false); });
       LOCUS.stripes(F, [-22.4,3.9,-0.9],[-22.4,3.9,6.9],[-19.6,3.4,6.5],[-19.6,3.4,-0.5], 5, CANVASC[1], GEOBROWNC[2], { sag:0.15 });
       FURNISH('yuni_common_workbench', -20.8,0,1.5, 0);                                                                          /* the fitters' bench: FURNITURE (catalog) */
@@ -132,7 +132,7 @@ reseed(644001);
       [6.5,12.0,17.5].forEach(function(y){ LOCUS.platform(F, CX, CZ, 2.25, y, dk); });
       F.dome(CX, 21.4, CZ, 1.3, 1.5, 0, TARNC[1], 'metal'); F.cyl(CX, 22.8, CZ, 0.16, 1.4, 0, dk, 'rust'); F.cone(CX, 24.1, CZ, 0.35, 0.3, 0, dk, 'rust');
       LOCUS.cageLadder(F, CX, CZ, 2.25, PI/2, 1.2, 20.0, dk);
-      for(var q=0;q<6;q++){ var qa=q/6*TAU+0.3; F.box(CX+Math.cos(qa)*2.2, 1.1+q*0.0, CZ+Math.sin(qa)*2.2, 0.5, 0.7, 0.3, -qa, VOIDC[1], 'dark'); }        /* skirt vents */
+      for(var q=0;q<6;q++){ var qa=q/6*TAU+0.3; F.card(CX+Math.cos(qa)*2.2, 1.1+q*0.0, CZ+Math.sin(qa)*2.2, 0.5, 0.7, 0.3, -qa); }        /* skirt vents */
       LOCUS.pipe(F, [[CX-2.3,19.0,CZ],[CX-3.0,19.0,CZ],[CX-3.0,6.2,CZ],[CX-3.0,6.2,CZ+3.5],[CX-8.0,6.2,CZ+3.5]], 0.16, pipe);            /* overhead line back to the still-house */
       LOCUS.pipe(F, [[CX+2.3,13.5,CZ],[CX+3.2,13.5,CZ],[CX+3.2,3.9,CZ],[CX+3.2,3.9,CZ+8.0]], 0.13, pipe);
       /* the second column, the horizontal separator on its saddles, the fired heater and its stack */
@@ -165,8 +165,8 @@ reseed(644001);
       FURNISH('job_oil_drum_rack', LX+1.6,0,LZ+2.25, PI/2, { v:0 });                                                  /* the row of four lying drums: FURNITURE (catalog, Jobs) */
       F.fr8(LX+0.5, 0, LZ+5.8, 6.0, 0.9, 2.2, 0, mud, 'adobe'); LOCUS.stain(F, LX-1.5, LZ+4.4, 1.0);                             /* the loading ramp */
       /* the control shed: Ancient white-metal panels, a strip of blue glass, a cable mast, and ELECTRIC light — the Geomancers have batteries */
-      F.box(11, 0, 13, 6.4, 3.6, 4.6, 0, TARNC[0], 'metal'); F.box(11, 3.6, 13, 6.8, 0.25, 5.0, 0, TARNC[3], 'metal'); F.box(11, 1.9, 15.32, 3.4, 0.8, 0.06, 0, GLASSC[0], 'glass');
-      F.box(13.4, 0, 15.3, 1.0, 2.2, 0.08, 0, VOIDC[0], 'dark'); F.box(13.4, 0, 15.26, 0.9, 2.2, 0.05, 0, TARNC[2], 'metal');
+      F.box(11, 0, 13, 6.4, 3.6, 4.6, 0, TARNC[0], 'metal'); F.box(11, 3.6, 13, 6.8, 0.25, 5.0, 0, TARNC[3], 'metal'); F.paneBox(11, 1.9, 15.32, 3.4, 0.8, 0.06, 0, { kind:'stained', color:GLASSC[0], out:[0,1] });   /* the strip of blue glass, over the room card */
+      F.card(13.4, 0, 15.3, 1.0, 2.2, 0.08, 0); F.doorway(13.4, 0, 15.31, 0.9, 2.2, 0.05, 0, { col:TARNC[2], fam:'metal', out:[0,1] });   /* the shed's metal door: a locked leaf */
       F.cyl(8.6, 3.85, 11.5, 0.05, 5.0, 0, dk, 'rust'); F.disc(8.6, 8.4, 11.5, 0,1, 0.45, 0.08, TARNC[1], 'metal');
       [[8.4,0,15.6],[9.4,0,15.6],[10.4,0,15.6]].forEach(function(p){ F.box(p[0], 0, p[2]+0.6, 0.8, 0.6, 0.9, 0, TARNC[2], 'metal'); F.box(p[0], 0.6, p[2]+0.6, 0.6, 0.05, 0.7, 0, PAL.electricBlue, 'glowmat'); });
       F.cyl(14.8, 3.6, 15.2, 0.04, 1.0, 0, dk, 'rust'); F.ball(14.8, 4.65, 15.2, 0.16, PAL.electric, 'glowmat'); nlLampAdd(F.P(14.8,4.65,15.2).x, F.y+4.65, F.P(14.8,4.65,15.2).z, 1.2, 16, true);

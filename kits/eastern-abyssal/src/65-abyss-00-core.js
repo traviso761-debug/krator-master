@@ -140,7 +140,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
       else { F.mcone('rust', x,y+H,z, R+0.12, 0.35, R*0.28, dk, 22, { under:true }); }
       var top=y+H+(kind==='silo'?R*0.62:R*0.28);
       (opt.win||[]).forEach(function(w){ var a=w[0], nx=Math.cos(a), nz=Math.sin(a), wx=x+nx*(R+0.02), wz=z+nz*(R+0.02);
-        if(opt.port){ F.disc(wx,y+w[1],wz, nx,nz, 0.48, 0.16, STEELDC[0], 'rust'); F.disc(wx+nx*0.03,y+w[1],wz+nz*0.03, nx,nz, 0.34, 0.16, opt.glass!=null?opt.glass:VOIDC[0], opt.glass!=null?'glowmat':'dark');
+        if(opt.port){ F.disc(wx,y+w[1],wz, nx,nz, 0.48, 0.16, STEELDC[0], 'rust'); F.disc(wx+nx*0.03,y+w[1],wz+nz*0.03, nx,nz, 0.34, 0.16, opt.glass!=null?opt.glass:ROOMC_GLASS, opt.glass!=null?'glowmat':'dark');   /* the porthole: the room card under its glass */
           var q=F.p(wx,wz), d=F.dir(nx,nz); WINPANE(q[0]+d[0]*0.12, F.y+y+w[1], q[1]+d[1]*0.12, d[0],d[1], 0.5,0.5, false); }
         else { F.window(wx,y+w[1],wz, nx,nz, 0.9,0.8); F.box(wx+nx*0.05, y+w[1]-0.5, wz+nz*0.05, 1.2,0.1,0.25, Math.atan2(nx,nz), dk, 'rust');
           if(opt.awning!=null) F.box(wx+nx*0.45, y+w[1]+0.15, wz+nz*0.45, 1.4,0.05,0.9, [ 0.35, Math.atan2(nx,nz), 0 ], opt.awning, 'canvas'); } });
