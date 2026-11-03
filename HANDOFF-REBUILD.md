@@ -19,6 +19,17 @@
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
 
+## Core pieces for the unbuilt plans (`claude/core-landforms-cloud`, 2026-11-03; not merged)
+
+The 2026-11-03 audit of the unbuilt biome plans found most need nothing new in core. These are the pieces they did need. Each is
+opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit takes its piece at its own build turn.
+
+- **Landform kinds** (`core/terrain/38c-core-landforms.js`, `LANDFORMS.md`):
+  - **wouterwall** takes `slump`, `runout`, `gully` and `terraces`;
+  - **Mid Basin** takes `maar`, `relay` and `terraces`;
+  - **loom-chasms** takes `terraces` (the Cradle);
+  - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
+
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 
 **State:** `claude/biome-rebuild` (worktree `C:/Users/travi/Documents/krator-biome-rebuild`, unpushed). origin/main is merged in

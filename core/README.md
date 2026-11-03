@@ -380,6 +380,20 @@ any list of the same sources gives the same sprites. `KFAR.spriteMesh(S, {k})` i
 `KFAR.spriteAt(S, i, k, r)` is the shader's arithmetic for a probe or Godot. `KFAR.itemsExport` wraps sets of any `kind`, so the metropolis's district masses (`biomes/ancientsvalley/PLAN-ANOMALIES.md` section 13) are one more kind in this format, with the same placing and `range`. Not built.
 *Adopting it:* `const S = KFAR.sprites({world, sources: [{x, z, y, r, n: 30, size: [300, 700], rise: [100, 400], lag}], shape: (x, z, y) => KFAR.shape(o, x, z, y), range: [3000, 40000]})`, `scene.add(KFAR.spriteMesh(S, {k: uniform}))`, register it (`core/tags`), and set `uniform.value` from the kit's clock.
 
+### The unbuilt plans' pieces (2026-11-03: landforms, strata, seasons, sound)
+
+The 2026-11-03 audit of the unbuilt biome plans found that most need nothing new; these are what they did need. Each piece is in a
+new file, opt-in, and node-tested with negatives. No page takes one yet, so no page's bytes move.
+
+- **`KRELIEF.slump`, `runout`, `gully`, `terraces`, `maar`, `relay`, `stepcut`, `KRELIEF.waters`** (`38c-core-landforms.js`,
+  `test-landforms.js`; `LANDFORMS.md` has the table of parts and plans):
+  - wouterwall's slump terraces, sturzstrom fields, loess gullies with box-canyon heads and yuan, liang and mao, and its terraced fields;
+  - Mid Basin's breached maars and relay benches;
+  - the Siphon Pits' sheer stepped graben and pits (no falloff; KFIELD's brushes stay smooth).
+
+  *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
+  ground)` gives the ponds, lakes and spring pools.
+
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 
 The planned biomes' landforms that are core, not kit: the outlands' C4 (`biomes/outlands/PLAN.md` section 12), Godstep's
