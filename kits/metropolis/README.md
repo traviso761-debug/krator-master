@@ -26,8 +26,10 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `50-53` | [draw] | the hero kit, the Spindle, the Ledger |
 | `56-mp-interiors.js` | [draw] | a storey drawn on demand, furnished; at most three open (a ruin's only under its standing skin) |
 | `54-mp-hero-designs.js` | [draw] | the massing kit `DK` (lathes, rings and slabs of storeys, tubes, lobbies with doors) and a builder for each of the fourteen |
+| `46c-mp-planned.js` | [G data] | the designs with plans: their family records (storeys and uses, core, skin radius `envR`, ruins), `MP.planned()` |
 | `55-mp-hero-ancients.js` | [draw] | `MP.heroAncient`: a kit builder run into a hero of its own, its instanced detail baked there |
 | `59-mp-floors.js` | [draw] | `MP.floors`: storeys and a core for the buildings without plans, read off the drawn shape |
+| `59b-mp-ruin-design.js` | [draw] | `MP.ruinDesign`: a design's hero cut to a ruin state of its record, with slabs, core and rubble |
 | `58-mp-cutaway.js` | [web] | the cut-away: X cuts the building in front of you at a storey's ceiling, `[` and `]` move it |
 | `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
@@ -178,6 +180,22 @@ Redoubt). The Honeycomb Block's roof units (`plateW`) stood 2 m over its roof: a
 corridor, a passage along the outer rooms, still opening on every room) and the bath takes the corridor corner behind it, 1.2 to 2 m wide at
 its narrow end (to 1.8 to 3.6 m at its far one) and 3.4 to 6.6 m deep; every bath takes a bath or shower, a toilet and a basin, and the
 one-bedroom flats' kitchens keep the width a hearth needs.
+
+## Full plans and ruins for the designs, in batches of three (owner, 2026-11-03)
+
+A design given plans gets a family record beside the Spindle's and the Ledger's (`46c`, `design: true`): its storeys and their uses, a core
+(stairs and lifts round the axis, or an atrium ringed by galleries with its towers standing in it), its skin's radius at a height (`envR`,
+which the round plans and the interior's walls read instead of the Spindle's lathe), its facade's bays and its seven ruin states. Its storeys
+open on demand like the Spindle's (walk in, the lift, the cut-away), furnished and audited (`MP.audit`; `tests/test-metropolis.js` runs it on
+every planned design). `MP.families()` stays the shelled families (spindle, ledger); `MP.planned()` adds the designs. Its ruins are its own
+hero cut by `MP.ruinDesign` (`59b`) at `MP.ruin`'s torn line, with floor slabs under the tear, a stump's core, a skeleton's bare piers and
+slabs, and the rubble of a debris plan scaled to it (`40`, the design branch: a tall one falls along its `fall` line with drum sections in
+the mound; a squat one falls in on itself). Views: `Ruins, <name>`, the seven states in a row.
+
+**Batch 1:** the Telescope (45 storeys: lobby, market, clinics, offices, records, school, 204 one-bedroom flats, hydroponics, an observation
+storey under the cap; its 48 bays a turn give a flat four windows, too few for two bedrooms), the Cupola (the transit hall with a concourse
+at each portal; three gallery storeys round the atrium, its four stair and lift towers standing in it, the hall's ceiling open over the
+middle), the Spiral (lobby, market, clinic, school, records, plant and tanks up the cone round a core of one stair and one lift).
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

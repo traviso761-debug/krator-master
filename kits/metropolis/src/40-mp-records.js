@@ -155,6 +155,29 @@ MP.debrisPlan = function (F, state) {
   var seed = function (i) { return MP.idHash(F.id + '.' + state + '.' + i) >>> 0; }, M = [], P = [];
   /* a heap's crest from the old tiers' rise (hs: the plan's numbers), its loose blocks by its area */
   var heap = function (x, z, y0, ry, rx, rz, hs, i) { var h = hs.reduce(function (a, b) { return a + b; }, 0) * 0.8; return { x: x, z: z, y0: y0, ry: ry, rx: rx, rz: rz, h: Math.min(h, Math.min(rx, rz) * 0.7), rough: 0.35, lumps: 8, blocks: Math.min(24, Math.round(rx * rz / 60)), cover: 3, seed: seed('m' + i) }; };
+  /* a design with plans (46c): its heaps scaled to it. A tall one falls along its record's fall line, drum sections lying in the mound; a squat
+     one (the Cupola: wider than tall) falls in on itself, the dome into the hall */
+  if (F.design) {
+    var H = F.height.roof, R0 = F.envR(0), ph2 = F.fall == null ? 0 : F.fall, sq = H < R0 * 1.2, s2 = Math.max(H, R0 * 2), d2 = [Math.cos(ph2), Math.sin(ph2)];
+    var at2 = function (s, o) { return [d2[0] * s - d2[1] * o, d2[1] * s + d2[0] * o]; }, mnd = function (s, o, rx, rz, hs, i) { var c = at2(s, o); M.push(heap(c[0], c[1], 0, ph2, rx, rz, hs, i)); };
+    var sec = function (s, o, y, len, ry, tilt) { var c = at2(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: Math.max(2, F.envR(y) * 0.8), len: len, ry: ph2 + ry, tilt: tilt, mat: F.mat }); };
+    if (sq) {
+      if (state === 'crown') mnd(0, 0, R0 * 0.7, R0 * 0.7, [4, 3, 2.5], 0);
+      if (state === 'broken') { mnd(R0 * 0.45, 0, R0 * 0.55, R0 * 0.4, [5, 4, 3], 0); mnd(R0 + 8, 0, R0 * 0.35, R0 * 0.2, [3, 2], 1); }
+      if (state === 'stump') { mnd(0, 0, R0 * 0.8, R0 * 0.8, [6, 5, 4], 0); mnd(R0 + 6, R0 * 0.3, R0 * 0.3, R0 * 0.15, [3, 2], 1); }
+      if (state === 'skeleton') mnd(0, 0, R0 * 0.45, R0 * 0.45, [3, 2], 0);
+      if (state === 'fallen') { mnd(0, 0, R0 * 1.05, R0 * 1.05, [6, 5, 4], 0); mnd(R0 + 10, 0, R0 * 0.4, R0 * 0.2, [3, 2], 1); }
+    } else {
+      if (state === 'crown') { mnd(R0 + 0.06 * s2, 0, 0.1 * s2, 0.06 * s2, [3, 2.5, 2], 0); sec(R0 + 0.03 * s2, -0.04 * s2, H * 0.9, 0.06 * s2, 0.4, 0.1); }
+      if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); }
+      if (state === 'stump') { mnd(R0 * 0.5, 0, R0 * 1.1, R0 * 0.9, [6, 5, 4], 0); mnd(R0 + 0.15 * s2, 0.1 * s2, 0.12 * s2, 0.07 * s2, [3, 2], 1); sec(R0 + 0.06 * s2, -0.08 * s2, H * 0.4, 0.1 * s2, 0.4, 0.05); }
+      if (state === 'skeleton') { mnd(R0 + 4, 0, 0.08 * s2, 0.05 * s2, [3, 2], 0); mnd(R0 + 2, -0.12 * s2, 0.06 * s2, 0.04 * s2, [2.5, 2], 1); }
+      if (state === 'fallen') { mnd(R0 + 0.35 * s2, 0, 0.4 * s2, Math.max(R0 * 0.7, 0.08 * s2), [7, 5, 4], 0); mnd(R0 * 0.3, 0, R0 * 0.9, R0 * 0.8, [5, 4], 1);
+        [0.15, 0.35, 0.55].forEach(function (q, i) { sec(R0 + q * s2, (i % 2 ? 4 : -4), H * (0.3 + q), 0.11 * s2, (i % 2 ? 0.1 : -0.12), 0.05); }); }
+    }
+    /* a design's skeleton keeps its frame in the hero (MP.ruinDesign), not the rubble */
+    return { mounds: M, pieces: P };
+  }
   if (F.core.kind === 'round') {
     var ph = F.fins.a0, d = [Math.cos(ph), Math.sin(ph)], at = function (s, o) { return [d[0] * s - d[1] * o, d[1] * s + d[0] * o]; }, R0 = MP.spindleR(0), rAt = MP.spindleR;
     var mound = function (s, o, rx, rz, hs, i) { var c = at(s, o); M.push(heap(c[0], c[1], 0, ph, rx, rz, hs, i)); };

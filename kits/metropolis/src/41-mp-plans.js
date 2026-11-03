@@ -24,9 +24,11 @@
 
   // ---- the round storey: what zone asks what of a ring. R the skin's inner face at this storey, core its record
   function coreR(F, k) { return k > F.core.stepAt ? F.core.rUp : F.core.r; }
-  function skinR(F, L) { return (L.use === 'lamp' || L.use === 'roofpark' ? F.crown.r : MP.spindleR(L.y + L.h * 0.5)) - 0.45; }
+  /* a design's skin comes from its record (envR, 46c); the Spindle's from its lathe */
+  function skinR(F, L) { if (F.envR) return F.envR(L.y + L.h * 0.5, L) - 0.45; return (L.use === 'lamp' || L.use === 'roofpark' ? F.crown.r : MP.spindleR(L.y + L.h * 0.5)) - 0.45; }
   function sectors(F, L, n, kinds, o) {
-    o = o || {}; var R = skinR(F, L), rc = coreR(F, L.k), band = o.band == null ? R - rc - CW : o.band;
+    /* a wide ring takes more sectors (a design's secScale: the Cupola's 104 m drum three times the Spindle's count) */
+    o = o || {}; n = Math.max(1, Math.round(n * (F.secScale == null ? 1 : F.secScale))); var R = skinR(F, L), rc = coreR(F, L.k), band = o.band == null ? R - rc - CW : o.band;
     var st = KratorAncientsInteriors.ringPlate({
       id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, rOut: function () { return R; }, depth: band, cw: o.cw == null ? CW : o.cw, n: n,
       kinds: function (i, nn) { return kinds(i, nn); }, seg: o.seg == null ? 4 : o.seg, core: { r: rc, kind: null }, door: o.door
@@ -118,6 +120,14 @@
       st.walls = st.walls.filter(function (W) { return !open[W.id]; });
       return st;
     },
+    /* a transit hall (the Cupola's): a concourse at each portal, open to the ring, stalls between; the ring turned so a concourse faces portal 0 */
+    hall: function (F, L) {
+      var n = Math.max(1, Math.round(16 * (F.secScale == null ? 1 : F.secScale))), q = n / F.portals.length;
+      var st = turn(sectors(F, L, 16, function (i) { return i % q === 0 ? 'concourse' : 'stall'; }, { cw: 5, door: 2.4 }), F.portals[0] - TAU / n / 2);
+      var open = {}; st.rooms.forEach(function (Q) { if (Q.mpKind === 'concourse') open[Q.id + '.cw'] = 1; });
+      st.walls = st.walls.filter(function (W) { return !open[W.id]; });
+      return st;
+    },
     mezzanine: function (F, L) { return sectors(F, L, 12, function (i) { return i % 3 ? 'office' : 'store'; }); },
     market: function (F, L) { return sectors(F, L, 24, function () { return 'stall'; }, { cw: 3.4, door: 2 }); },
     clinic: function (F, L) { return sectors(F, L, 18, function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }); },
@@ -192,6 +202,8 @@
     var T = F.core.kind === 'round' ? PLAN : PLAN_BAR, fn = T[L.use];
     if (!fn) throw new Error('MP.storey: no plan for the use ' + L.use);
     var st = fn(F, L); st.use = L.use; st.family = F.id;
+    /* an atrium's edge is open (a balustrade, 56): the ring's wall on the core side goes */
+    if (F.core.atrium) { var rc = coreR(F, L.k); st.walls = st.walls.filter(function (W) { return !(W.pts && W.pts.every(function (p) { return Math.abs(Math.hypot(p[0], p[1]) - rc) < 0.3; })); }); }
     st.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind] && !(Q.mpKind === 'stack' && Q.side === 'right'); if (Q.mpKind === 'greenhouse') { Q.recipe = 'greenhouse'; Q.kind = 'store'; } if (Q.mpKind === 'reception') { Q.recipe = 'reception'; Q.furnish = true; } });
     MP.fenestrate(F, st);
     return st;

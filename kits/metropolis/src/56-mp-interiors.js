@@ -29,15 +29,18 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   let sd=0,best=1e9;for(let i=0;i+1<P.length;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz;if(!l2)continue;const t=Math.max(0,Math.min(1,((d.at[0]-a[0])*dx+(d.at[1]-a[1])*dz)/l2)),q=Math.hypot(a[0]+dx*t-d.at[0],a[1]+dz*t-d.at[1]);if(q<best){best=q;sd=S[i]+(S[i+1]-S[i])*t;}}
   const g0=Math.max(0,sd-d.w/2),g1=Math.min(end,sd+d.w/2);run(0,g0,y0,y1);run(g1,end,y0,y1);run(g0,g1,y0+DH,y1);});
  // the slab and the ceiling
- const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1]))),sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:1});sl.rotateX(-Math.PI/2);
+ /* an atrium (the Cupola's galleries): the slab and the ceiling ring it, open over the hall */
+ const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if(F.core.atrium&&L.k>0){const rc=MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium?48:1});sl.rotateX(-Math.PI/2);
  /* a storey on the street lifts its slab and furniture 3 cm off the street plane (one plane under the other at y 0 fought) */
  const lift=L.y<.05?.03:0;const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22+lift;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.name='ceiling';ce.position.y=L.y+L.h-.26;g.add(ce);
  // the skin's inner face, where the outside's one-sided strips do not show: spandrel and head, and a dado of the core
  if(round){const R=MP.skinR(F,L)+.1,N=st.facade.ring.length;B.lathe('white',[[R,L.y+L.h],[R,L.y+2.5],],N,{flip:false});B.lathe('white',[[R,L.y+.9],[R,L.y]],N,{flip:false});
   const r=MP.coreR(F,k),ca=st.rooms.filter(R0=>/\.core$/.test(R0.id))[0],da=ca&&ca.doors[0]?Math.atan2(ca.doors[0].at[1],ca.doors[0].at[0]):0;
    const gaps=[da].concat(F.core.shafts.filter(q=>k>=q.from&&k<=q.to).map(q=>Math.atan2(q.z,q.x))).map(t=>(t+6.2832)%6.2832),skip=t=>gaps.some(g=>{let d=Math.abs(t-g);d=Math.min(d,6.2832-d);return d<.17;});
-  B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
-  B.lathe('concrete',[[r-.25,L.y],[r-.25,L.y+L.h]],36,{skip});}
+  /* an atrium's edge is a gallery's glass balustrade, 1.1 m, and its towers stand free in it; a core is walled */
+  if(F.core.atrium){if(L.k>0){for(let q=0,nq=Math.ceil(2*Math.PI*r/.35);q<nq;q++){const a=2*Math.PI*q/nq;blocks.push([Math.cos(a)*(r+.1),Math.sin(a)*(r+.1)]);}B.lathe('glassClear',[[r,L.y+1.1],[r,L.y]],72,{});B.lathe('bronze',[[r+.05,L.y+1.1],[r-.1,L.y+1.1]],72,{uv:2});}}
+  else{B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
+  B.lathe('concrete',[[r-.25,L.y],[r-.25,L.y+L.h]],36,{skip});}}
  else{const hw=F.footprint.w/2-.1,hd=F.footprint.d/2-.1;B.quad('relief',[hw,L.y,-hd],[hw,L.y,hd],[hw,L.y+L.h,hd],[hw,L.y+L.h,-hd],[-1,0,0],{uv:6});B.quad('relief',[-hw,L.y,hd],[-hw,L.y,-hd],[-hw,L.y+L.h,-hd],[-hw,L.y+L.h,hd],[1,0,0],{uv:6});
   if(L.use!=='arcade')[1,-1].forEach(s=>{const z=s*hd;const q=(a,b)=>s>0?B.quad('white',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1]):B.quad('white',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1]);q(L.y,L.y+.9);q(L.y+2.5,L.y+L.h);});}
  // the shafts: a lift's car door, a stair's first flight, each where the record says on every storey
@@ -59,7 +62,7 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,leaves:leaves,stairs:stairs,landings:landings,outline:st.outline};return g;};
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes
 // a tower at the street: its skin stops a walker, its doors do not. The Spindle's skirt with its three portals; the Ledger's end walls and its arcade's piers
-MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
+MP.towerBlocks=function(W,m){const F0=MP.FAMILY[m.key.split('.')[0]],F=F0&&!F0.design?F0:null,c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
  /* the fourteen: the ground outlines their lobbies recorded (54, B.walk), blocked every half metre but at their doors */
  if(!F){const H=MPS.hero[m.key];(H&&H.userData.walk||[]).forEach(o=>{const P=o.pts.concat(o.closed?[o.pts[0]]:[]);for(let i=0;i+1<P.length;i++){const p=P[i],q=P[i+1],k=Math.max(1,Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])/.5));
   for(let j=0;j<k;j++){const x=p[0]+(q[0]-p[0])*j/k,z=p[1]+(q[1]-p[1])*j/k;if(o.doors.some(d=>Math.hypot(x-d.x,z-d.z)<d.hw+.3))continue;b(x,z,.3);}}});return;}
@@ -86,7 +89,7 @@ MP.closeOne=function(){const o=MP.open.shift();if(!o)return;scene.remove(o.g);o.
 MP.closeStoreys=function(){while(MP.open.length)MP.closeOne();MP.walkSync();};
 // going in: a camera inside a hero's skin opens the storey it stands on and the two either side, a camera that left closes them. Nothing runs for a tower nobody is in
 MP.heroAt=function(e,m0){const mg=m0==null?0:m0;for(const g of MPS.live){const m=g.userData.mp;if(!m||!MP.FAMILY[m.key.split('.')[0]])continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
-  if(F.core.kind==='round'?Math.hypot(lx,lz)<MP.spindleR(Math.min(e.y,222))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
+  if(F.core.kind==='round'?Math.hypot(lx,lz)<(F.envR?F.envR(Math.max(0,e.y-1.6)):MP.spindleR(Math.min(e.y,222)))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
 MP.levelAt=function(F,y){let k=0;F.levels.forEach(L=>{if(y>=L.y-.1)k=L.k;});return k;};
 MP.enterTick=function(){if(MP.cut&&MP.cut.on)return;const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;/* 3 m out: the storey opens as the walker reaches a door, so its leaves part onto the lobby, not onto the hollow of a hero */
  const e=camera.position,H=MP.heroAt(e,3);if(MPS.mode&&MP_CFG[MPS.mode].storey&&!MP.entered)return;

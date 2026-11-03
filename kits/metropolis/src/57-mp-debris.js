@@ -24,7 +24,7 @@ MP.debris=function(F,state,coarse){const P=MP.debrisPlan(F,state);if(!P)return n
  P.pieces.forEach(function(pc){const B=MP.builder(),m=new THREE.Matrix4();
   if(pc.kind==='fins'){MP.spindleFins(B,F,pc.y0,pc.y1,true,true);}
   else if(pc.kind==='frame'){MP.hero(F.id,state,false,'frame').children.forEach(c=>{if(!c.isInstancedMesh)put(c.material.name.replace(/^mp\./,''),c.geometry,one);});return;}
-  else if(pc.kind==='shaft'){const r=pc.r,L=pc.len/2,ri=r-.8;B.lathe('white',[[r,-L],[r,L]],20,{uv:4});B.lathe('dark',[[ri,L],[ri,-L]],20,{uv:4});B.lathe('concrete',[[r,L],[ri,L]],20,{uv:2});B.lathe('concrete',[[ri,-L],[r,-L]],20,{uv:2});
+  else if(pc.kind==='shaft'){const r=pc.r,L=pc.len/2,ri=r-.8;B.lathe(pc.mat||'white',[[r,-L],[r,L]],20,{uv:4});B.lathe('dark',[[ri,L],[ri,-L]],20,{uv:4});B.lathe('concrete',[[r,L],[ri,L]],20,{uv:2});B.lathe('concrete',[[ri,-L],[r,-L]],20,{uv:2});
    /* the axis laid along ry, tipped by tilt; the section crushed to under half its height by its own weight, its belly sunk into the mound */
    m.makeRotationY(-pc.ry).multiply(new THREE.Matrix4().makeScale(1,.42,1)).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI/2+pc.tilt));m.setPosition(pc.x,r*.42*.55,pc.z);}
   else if(pc.kind==='disc'){const r=pc.r;B.lathe('white',[[r,0],[r-2,1.6],[r*.45,2.6],[0,2.8]],40,{uv:4});B.lathe('bronze',[[0,-.6],[r,-.6]],40,{uv:2});B.lathe('bronze',[[r,-.6],[r,0]],40,{uv:2});

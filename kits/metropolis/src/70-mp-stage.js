@@ -95,7 +95,10 @@ const MPS_DESIGNVIEWS={cfg:{},views:{}};(function(){const all=['spindle','ledger
  /* the Ancients kit's buildings (46b, 55): one view each, and all of them on a grid of 440 m (the Apartments are 410 m long) */
  const ga=[];MP.ANCIENT_KEYS.forEach((k,i)=>{const F=MP.ANCIENTS[k],H=F.height.tip,d=Math.max(H*1.5,Math.max(F.footprint.w,F.footprint.d)*1.4,90),n='Ancient, '+F.name.replace(/^The /,'');
   MPS_DESIGNVIEWS.cfg[n]={heroes:[[k+'.intact',0,0,0]]};MPS_DESIGNVIEWS.views[n]=[d*.55,Math.max(8,H*.32),d,0,H*.42,0];ga.push([k+'.intact',((i%4)-1.5)*440,(Math.floor(i/4)-1.5)*440,0]);});
- MPS_DESIGNVIEWS.cfg['Ancients, all']={heroes:ga};MPS_DESIGNVIEWS.views['Ancients, all']=[1300,1000,1300,0,40,0];})();
+ MPS_DESIGNVIEWS.cfg['Ancients, all']={heroes:ga};
+ /* the designs with plans (46c): their seven states in a row, intact first, a diameter and a half apart */
+ (MP.PLANNED_KEYS||[]).forEach(k=>{const F=MP.FAMILY[k],D=2*(F.footprint.r||Math.max(F.footprint.w,F.footprint.d)/2),gap=D*1.5+20,n='Ruins, '+F.name.replace(/^The /,''),H=F.height.tip,row=[];
+  MP.RUINS.forEach((s,i)=>row.push([k+'.'+s,(i-3)*gap,0,0]));MPS_DESIGNVIEWS.cfg[n]={heroes:row};const w=gap*6;MPS_DESIGNVIEWS.views[n]=[w*.35,Math.max(H*.8,w*.28),w*.75,0,H*.2,0];});MPS_DESIGNVIEWS.views['Ancients, all']=[1300,1000,1300,0,40,0];})();
 /* a ruin's pair: the hero turned half round, so each one's rubble falls away from the other */
 const MPS_RUINVIEWS={cfg:{},views:{}};['crown','broken','stump','skeleton','fallen'].forEach(s=>{const a='Ruin, Spindle '+s,b='Ruin, Ledger '+s;
  MPS_RUINVIEWS.cfg[a]={heroes:[['spindle.'+s,-150,0,Math.PI]],shells:[['spindle.'+s,150,0,0]]};MPS_RUINVIEWS.views[a]=[0,70,470,0,55,0];

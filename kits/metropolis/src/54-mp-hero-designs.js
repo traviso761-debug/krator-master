@@ -69,7 +69,7 @@ DK.lobbyRing=function(B,o,doors){const R=o.r,h=o.h,dep=o.dep==null?.5:o.dep,cx=o
  const S2=Object.assign({},S,{skip:null});DK.surf(B,m,hT,rg(hT),hT,R(hT),S2);DK.surf(B,m,hT,R(hT),h,R(h),S2);
  const nb=full?seg:seg+1;for(let j=0;j<nb;j++){const t=a0+j*W;if(isD(t)&&D.every(a=>ad(t,a)>k*W-1e-6?true:ad(t,a)<k*W-1e-6?false:true)&&D.some(a=>ad(t,a)<k*W-1e-6))continue;const p=P(t,(R(h/2)+rg(h/2))/2);B.panel(p[0],(.3+hT)/2,p[1],Math.PI/2-t,o.pier==null?.6:o.pier,hT-.3,dep,DK.WALL);}
  /* the floor and the ceiling: a disc, or over an arc the band from rIn (a sector's would fan out from its far centre) */
- const ri=o.rIn==null?0:o.rIn;DK.surf(B,o.ceil||'white',h-.05,ri,h-.05,rg(h),Object.assign({},S2,{seg:Math.max(8,seg)}));DK.surf(B,'concrete',.03,rg(0),.03,ri,Object.assign({},S2,{seg:Math.max(8,seg)}));
+ const ri=o.rIn==null?0:o.rIn,ci=o.ceilIn==null?ri:o.ceilIn;DK.surf(B,o.ceil||'white',h-.05,ci,h-.05,rg(h),Object.assign({},S2,{seg:Math.max(8,seg)}));DK.surf(B,'concrete',.03,rg(0),.03,ri,Object.assign({},S2,{seg:Math.max(8,seg)}));
  const gaps=D.map(a=>DK.door(B,doors,P(a-k*W,rg(0)),P(a+k*W,rg(0)),hT,cx,cz));
  const pts=[];for(let i=0;i<=seg*3;i++){const t=a0+(a1-a0)*i/(seg*3);pts.push(P(t,R(0)-dep*.4));}(B.walk=B.walk||[]).push({pts,doors:gaps,closed:full});};
 // a lobby on a rectangle {cx, cz, hw, hd, yaw}: the same storefront on each face, doors at [face, t] (t -1..1 along it)
@@ -99,7 +99,8 @@ MP.heroDesign=function(F,state,lite){const B=MP.builder(lite),W=DK.WALL,PI2=Math
  /* the doors' leaves are a placed hero's own meshes; the ground outline and its doors' gaps go with the hero for the walk's blocks (56, towerBlocks) */
  const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];
  /* storeys and a core (59), from the drawn shape */
- if(!lite){const Fl=MP.floors(G,{sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
+ /* a design with plans (46c) opens its storeys on demand (56); the rest take the floor plates */
+ if(!lite&&!(MP.FAMILY[F.id]&&MP.FAMILY[F.id].design)){const Fl=MP.floors({sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
  return G;};
 MP.DESIGN_BUILD={
  // S2: five bronze pipes in a shallow arc, each its own storeys and a conical cap with a mouth; bronze bands bind them (the owner, 2026-11-03: no transit tube
@@ -177,7 +178,8 @@ MP.DESIGN_BUILD={
   for(let i=0;i<18;i++){const a=X.u(i,1)*Math.PI*2,rr=F.court+3+(R[R.length-1]-F.court-10)*X.u(i,2);DK.cone(B,'green',Math.cos(a)*rr,Math.sin(a)*rr,F.height.roof,1+1.2*X.u(i,3),3.5+4*X.u(i,4),7);}},
  // M3: a dome on a banded drum: a transit hall under a scalloped dome, four portals
  cupola(F,B,X){const r=F.r,H=F.height.roof;
-  DK.lobbyRing(B,{r:()=>r,h:F.hall,seg:48,doors:[0,Math.PI/2,Math.PI,Math.PI*1.5],pier:1.2,dep:.8},X.doors);DK.ring(B,{r:()=>r,y0:F.hall,y1:H,sh:(H-F.hall)/3,seg:72,pier:.5,pierEvery:2,sill:.3,head:.8});
+  /* the hall's ceiling a band round the atrium (46c: the galleries ring it), open over the hall's middle */
+  const Fp=MP.FAMILY&&MP.FAMILY.cupola,rcA=Fp&&Fp.core.atrium?Fp.core.r:null;DK.lobbyRing(B,{r:()=>r,h:F.hall,seg:48,doors:[0,Math.PI/2,Math.PI,Math.PI*1.5],pier:1.2,dep:.8,ceilIn:rcA},X.doors);DK.ring(B,{r:()=>r,y0:F.hall,y1:H,sh:(H-F.hall)/3,seg:72,pier:.5,pierEvery:2,sill:.3,head:.8});
   [F.hall,H].forEach(y=>{B.lathe('bronze',[[r+.05,y-.6],[r+.6,y-.5],[r+.6,y+.3],[r+.05,y+.4]],72,{uv:2});});
   const dp=[];for(let i=0;i<=14;i++){const b=i/14*Math.PI/2;dp.push([r*Math.cos(b),H+(F.height.tip-H-3)*Math.sin(b)]);}DK.lathe(B,'white',dp,96,{mod:t=>1-.035*(1-Math.abs(Math.cos(F.scallops/2*t)))});
   const ly=F.height.tip-3;B.lathe('glass',[[F.lantern,ly],[F.lantern,ly+2.4]],24,{uv:4});DK.lathe(B,'bronze',[[F.lantern+.4,ly+2.4],[.2,ly+3.4]],24,{uv:2});
