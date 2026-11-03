@@ -380,6 +380,47 @@ any list of the same sources gives the same sprites. `KFAR.spriteMesh(S, {k})` i
 `KFAR.spriteAt(S, i, k, r)` is the shader's arithmetic for a probe or Godot. `KFAR.itemsExport` wraps sets of any `kind`, so the metropolis's district masses (`biomes/ancientsvalley/PLAN-ANOMALIES.md` section 13) are one more kind in this format, with the same placing and `range`. Not built.
 *Adopting it:* `const S = KFAR.sprites({world, sources: [{x, z, y, r, n: 30, size: [300, 700], rise: [100, 400], lag}], shape: (x, z, y) => KFAR.shape(o, x, z, y), range: [3000, 40000]})`, `scene.add(KFAR.spriteMesh(S, {k: uniform}))`, register it (`core/tags`), and set `uniform.value` from the kit's clock.
 
+### The unbuilt plans' pieces (2026-11-03: landforms, strata, seasons, sound)
+
+The 2026-11-03 audit of the unbuilt biome plans found that most need nothing new; these are what they did need. Each piece is in a
+new file, opt-in, and node-tested with negatives. No page takes one yet, so no page's bytes move.
+
+- **`KRELIEF.slump`, `runout`, `gully`, `terraces`, `maar`, `relay`, `stepcut`, `KRELIEF.waters`** (`38c-core-landforms.js`,
+  `test-landforms.js`; `LANDFORMS.md` has the table of parts and plans):
+  - wouterwall's slump terraces, sturzstrom fields, loess gullies with box-canyon heads and yuan, liang and mao, and its terraced fields;
+  - Mid Basin's breached maars and relay benches;
+  - the Siphon Pits' sheer stepped graben and pits (no falloff; KFIELD's brushes stay smooth).
+
+  *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
+  ground)` gives the ponds, lakes and spring pools.
+- **`KSTRATA.vary`, `KSTRATA.drape`, `KSTRATA.loadVaried`** (`35c-core-strata-vary.js`, `test-strata-vary.js`; GDScript twin
+  `kstrata_vary.gd`, golden `golden-strata-vary.json`, vendored to `godot/tests/terrain/`): a formation whose base varies from place to
+  place. Contacts move by an offset of (x, z), which sums any of a constant, a plane, the stack's table noise, bumps or a grid. The
+  stratigraphic height is remapped piecewise linearly between the moved contacts, so beds keep their place and thin or thicken with their
+  formation. Where two contacts cross, the higher-numbered wins, and the formation between them pinches out. `KSTRATA.drape(S, k, ground,
+  {box, step, th})` lays formation k's base `th` under the ground: a mantle following the land it fell on.
+  - It serves Mid Basin's interbedded loess and tuff and the W outer wall's loess.
+  - *Adopting it:* list it after `35-core-strata.js`, then `const V = KSTRATA.vary(S, {contacts: [{at: 2, by: KSTRATA.drape(S, 2, ground,
+    {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
+  - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes
+    and cliffs: a baked offset texture for the shaders is not done. Keep alterations off a varied stack: their lines read the shifted height.
+- **The season's last two pieces (H7)** (`core/biome/30s-core-season-flush.js` and `core/clock/opt/21-core-clock-flush.js`; `test-season-flush.js`,
+  `test-flush.js`):
+  - **the copper flush**, a leaf colour at the start of the rains (`KCLOCK.flush`, `BIO.FLUSH`, `BIO.bindFlush`);
+  - **the Godot leaf twin**: `season_dry` and `season_flush` as global uniforms, `shaders/lib/season.gdshaderinc` in `foliage.gdshader`,
+    `biome_import.gd` reading the leaf's season options, and `KSeason.flush` and `set_globals` in `kseason.gd` (golden `golden-flush.json`).
+
+  `core/biome/README.md`, "The season", has the details and the GPU check.
+- **The `sound` record (H9)** (`core/tags/opt/54-core-tags-sound.js`, `test-sound.js`, twin `ksound.gd`): an aeolian emitter as a record in core/tags,
+  for a core/audio still to be written and Godot's audio. Its modes are an edge tone, an overblown closed pipe and a Helmholtz cavity, with
+  presets for the howl bamboo, the Singing Gjár and the singing buttress. `core/tags/README.md`, "Adopting it: the sound key".
+- **`KSPAN`** (`core/biome/45-core-span.js`, `test-span.js`): catenaries between two anchors, for spiderlake's silk and loom-chasms' living
+  cables. A span is solved by length, slack or sag. `up` makes a buoyant cable arch over its chord; the shape is the mirror, since
+  buoyancy only changes the tension. It gives points, the tangent, the low point and the tension for a weight, and `strands` hangs a
+  curtain of spans between two anchor lines, with each strand's slack drawn by hash.
+  - Data only: a kit draws the points as tubes or ribbons.
+  - *Adopting it:* list the file in `CORE_BIOME`; `KSPAN.points(KSPAN.solve(a, b, {slack: .05}), 24)`.
+
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 
 The planned biomes' landforms that are core, not kit: the outlands' C4 (`biomes/outlands/PLAN.md` section 12), Godstep's
@@ -513,7 +554,7 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
   colour equals `S.surface`'s at every sampled pixel off the bed edges (within 1/255) on ten stacks: canyon, legacy, outland with a
   fault, tibasalt across its alteration line, ringfold folded, megabreccia under loess, two blocks formations with two alterations,
   lateral changes (into blocks too), tepui, and badland's wash on flat ground.
-- **Not yet**: a loess (or any formation) whose base varies from place to place; the alteration of block clasts on the GPU;
+- **Not yet**: a varied contact on the GPU (`35c-core-strata-vary.js` is CPU and Godot data only; above); the alteration of block clasts on the GPU;
   `tools/harness.py smoke` crashed every page on this machine (a bare three.js page too), so the browser checks ran in the app's browser.
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
@@ -799,6 +840,7 @@ vocabulary), for the inspector, the minimap, the exporters and Godot node metada
 | `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
 | `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
 | `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `opt/54-core-tags-sound.js` | [G data] opt-in (a subfolder: the settlements that take every file in `core/tags` do not take it): the `sound` record (H9), aeolian emitters with `KTAGS.sound`, `soundLevel` and `soundAt`; twin `ksound.gd` (`tags/README.md`, "Adopting it: the sound key") |
 | `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
 

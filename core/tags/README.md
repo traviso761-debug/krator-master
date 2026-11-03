@@ -11,6 +11,7 @@ Travis's decisions; this file is what was built.
 | `50-core-tags.js` | [G data] | `KTAGS.create({build})`: the registry (`add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`), the ids, `KTAGS.uid`, `KTAGS.norm` (the input mapping and the checks). No THREE, no DOM: it runs in node. Needs `core/rand` (the uid is a `KRAND.hash`) |
 | `52-core-tags-vocab.js` | [G data] | `KTAGS.VOCAB`: classes, the 23 cultures and their display names, the aliases, types, wealth, states, settings, jobs, Köppen, fixture kinds, the known tag keys, the id prefixes. The catalog's lists are copied, not read |
 | `53-core-tags-host.js` | [web] | `KTAGS.label(rec, instance)`: the inspector's text, generated from the record |
+| `opt/54-core-tags-sound.js` | [G data] | opt-in (a subfolder, so the settlements that take every file in `core/tags` do not take it): the `sound` key and `VOCAB.soundKinds`; `KTAGS.sound` (a record from its kind), `KTAGS.soundLevel` and `soundAt` (gain and pitch for a wind). Its test is `test-sound.js`, its twin `ksound.gd` (`golden-sound.json`) |
 | `test-tags.js` | | the node test: the vocabulary against the catalog's source, each check with a negative, a fixed run's ids, the pinned uid and export digest, the proposal's three labels, `golden.json` |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | | the uid in GDScript and its vectors; copied to `godot/tests/tags/` by `godot/tools/sync_core.py` |
 
@@ -186,6 +187,26 @@ fragment names in `DETERMINISTIC`; a biome kit: `CORE_TAGS`). `godot/tools/expor
 `KTAGS.page` as `tags.json`. Every export node now names its record where one exists: a biome item its set and a uid
 per instance, a bucket the volumes it merges (`BIO.export`), a glTF node its record in its extras and a MultiMesh a
 `krator_records` side table (`godot/tools/spike_export.js`); the Godot importers put them on node metadata.
+
+## Adopting it: the sound key (H9, 2026-11-03)
+
+`opt/54-core-tags-sound.js` is opt-in: list it by path after `52-core-tags-vocab.js`. It sits in a subfolder because a dozen
+settlements take every numbered file in `core/tags`, and those pages must not change. It adds the `sound` key (rule `object`) and
+`VOCAB.soundKinds`, and changes nothing else, so a page without it is untouched. An aeolian emitter is a record like anything placed:
+
+```js
+T.add({class: 'feature', kind: 'sound', key: 'gjar', at: [x, y, z], r: 40, tags: {sound: KTAGS.sound({kind: 'gjar-organ', axis, seed})}});
+```
+
+- **The modes.** `edge` is vortex shedding off a rib or edge (Strouhal: f = .2 u / d). `pipe` is a fissure or a gap closed at its
+  foot (f0 = c / 4 (L + .6 r)), overblown to the odd harmonics as the wind rises. `cavity` is a Helmholtz hole, one tone.
+- **The presets.** `bamboo-howl` is hyperjungle's howl bamboo, about 75 Hz. `gjar-organ` is High Rift's Singing Gjár: its fundamental
+  is under hearing, and its odd harmonics are a drone. `rib-flute` is Outland Gate's singing buttress in the Outland Bore.
+- **The wind.** `axis` makes only the wind across that line count (a fissure's strike). The detune is drawn once, from
+  `KRAND.hash(seed)`, and stored on the record.
+- **Reading it.** `KTAGS.soundLevel(snd, {speed, dir}, {T})` gives `{on, gain, pitch, partials}`; `soundAt` adds the fall with distance.
+  Godot reads the exported record with `ksound.gd`'s `level` and `at`, the same numbers to 1e-13.
+- **Not written:** core/audio, which would play these. The page can do without it (PLAN-LANDS H9).
 
 ## Adopting it: the hazard and taboo keys
 
