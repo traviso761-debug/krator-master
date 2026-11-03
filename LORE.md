@@ -284,6 +284,8 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
+- **A fluid society** (the owner, 2026-11-03): class follows profession everywhere, but the Republic offers more room to rise
+  than most: a worker may climb more than one station in a lifetime (core/simulation/PLAN-MONEY.md).
 - **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland words, worn short and sung with two melodies by their Korona neighbours. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
@@ -403,6 +405,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Look: Gaudí + Burmecia + Sahelian for the rich; Musgum, Mandara and Tiebele mud architecture for the poor; neo-African civic buildings.
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the caravanserai.
 - Sign: the **hyperboloid**, yellow. No ships.
+- **A fluid society** (the owner, 2026-11-03): as in the Iron Republic, a Yuni worker may rise more than one station in a
+  single generation (core/simulation/PLAN-MONEY.md).
 - Controls Locus, Verge lower city, and an outpost to their north [TBD].
 - **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
@@ -529,6 +533,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 - **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi; the Kautoan drua (great double canoe), the western isles' kora-kora (royal war galley) and the pirates' lanong.
   - [the owner, Oct 2026] The denizens of the shores and islands of the Ring Sea. At one time the island kingdom of **Kautoa** was a real competitor to the Hykkousoi for naval hegemony, before the Izani Empire. The Islanders have in many cases regained some independence, but their days as a relatively unified cultural force are over; they remain widespread throughout the Ring Sea, a Polynesian and Austronesian people still known as skilled voyagers and, lately, pirates.
+  - **Money: Kautoan shells** (the owner, 2026-11-03): strung shell money, the Islanders' own currency; traders take the Izani Talent (§6.2).
   - Two subcultures, one people (`kits/islanders`): the **West** (the western Ring Sea) builds after the Indonesian rumah: long houses on piles under horned saddle roofs, a village assembly hall of stacked horned roofs, large elaborate dockyards. The **East**, Kautoa, builds tall peaked houses after Sumba, its own village hall, and a palace complex of several courtyards. Both carve their posts and paint their gables with the same motifs, and both patch their poorer buildings with scrap.
 - **Lizardmen**: now **§6.20** (the deep Rift). The first notes here, kept for the record: "reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Recently united under a warlord according to traveler tales." Where they differ from the kit's design, §12.
 - **The Giant tribes of the SW**: engineered at Dalab (§6.1), from bloodlines stolen from the Talovolci (§6.21). Some rebelled and now live independently in Giant Country: **the Free Giants, the Vrivolci**, who speak Dalab's low tongue full of Talovolci words and imitate the Talovolci's customs and look (§6.21).

@@ -23,6 +23,22 @@ record. Sources are at the end.
    they reach a certain size.**
 5. **The player: all of the above** (buys from the guild's stash, sells to shops, is paid bounties).
 
+**The second round (2026-11-03):**
+6. **The isles' money is Kautoan shells** (strung shell money; LORE.md, the Ring Sea Islanders).
+7. **The employer recommendation stands** (section 2a): an account and an owner for every workplace, the treasury owning
+   them all to start.
+8. **Mobility differs by nation.** Some are more fluid: the **Iron Republic** and **Yuni** offer more room to rise in a
+   single generation (more than one station in a lifetime, or a lower bar). A nation's row says how many stations a life
+   may climb and what each rise takes.
+9. **A bankrupt merchant goes back to being a worker** (downward mobility exists), **and downward mobility is a cause of
+   mass unrest, if not revolution**: falls are counted per settlement, and enough of them in a short time raise unrest
+   (section 2, M6).
+10. **No excise between cities of the same nation** (Kautoa and Valapo, and the villages' carts into their town, pay none);
+    only trade across a border and the ships from beyond.
+11. **Tribute starts above 50 people**, discounted at low population: the full rate only once the settlement is well
+    grown (proposed: the rate times (people - 50) / 450, capped at 1, so a town of 100 pays a ninth and one of 500 pays
+    in full; the owner may set the curve and the rate).
+
 ## 1. What the research says
 
 - **Faucets and sinks.** Money enters through faucets and leaves through sinks; when it enters faster than it leaves,
@@ -81,7 +97,10 @@ within its class's band (the treats, meals out and clothes), and the class moves
 when a household holds enough (a threshold by station, in months of the next station's cost of living) for long enough,
 one of its working adults may change profession upward when there is room (a vacant shop for a worker who becomes a
 merchant; a trading house for a merchant prince; a title, granted, for a true noble), paying what the move costs (the
-shop's stock, the house, the fee for the title). One station a lifetime, so a family climbs over generations.
+shop's stock, the house, the fee for the title). One station a lifetime by default, so a family climbs over generations;
+a fluid nation's row (the Iron Republic, Yuni) allows more in one life or sets the bar lower. A merchant whose
+workplace fails and whose household cannot cover it **falls back to worker** (it takes the next free post of its old
+trade or labour), and its fall is counted (M6).
 
 **M2. Prices that move.** Each settlement keeps a price per good: its base (the labour cost) times
 `(target / position) ^ k`, clamped (say 0.5 to 2 times base), smoothed over a few days. The governor already computes a
@@ -102,12 +121,20 @@ only money that has to exist as a thing (a purse in the drawn town); everything 
 
 **M5. Excise and tribute** (the owner's answer 4). **For now only an excise**: a share of the value of every import and
 export, paid by the carrier to the treasury of the settlement it lands at or leaves (the lakatoi, the villages' carts
-crossing into a town, the ships from beyond), at a rate by nation and perhaps by good. Within one polity (Valapo and
-Kautoa) the owner says whether it applies. **Tribute**: a player settlement inside a nation's core territory (the
-political polygons core/camp's ranges are cut from) pays that nation a monthly tribute once it passes a size (people,
-or buildings), a fixed sum or a share of its excise and trade, in Talents; unpaid, the nation's relation falls (and,
+crossing into a town, the ships from beyond), at a rate by nation and perhaps by good; **none between settlements of the
+same nation** (the owner, 2026-11-03: the lakatoi and the villages' carts pay nothing). **Tribute**: a player settlement inside a nation's core territory (the
+political polygons core/camp's ranges are cut from) pays that nation a monthly tribute **once it passes 50 people**,
+discounted while it is small (proposed: the full rate times min(1, (people - 50) / 450)), in Talents; unpaid, the nation's relation falls (and,
 later, it sends someone to collect). Wage, sales and land taxes, tolls and harbour dues wait (TODO.md). Temple offerings
 and ceremonial hoards stay the sinks people want.
+
+**M6. Falls and unrest** (the owner, 2026-11-03: downward mobility is a cause for mass unrest, if not revolution). Each
+settlement counts the households that fell a station (a bankrupt merchant back to worker, a prince to merchant) over a
+window, as a share of its households of those stations. Unrest rises with that share (and later with hunger, taxes and
+tribute), lowers loyalty (core/simulation's needs already keep a loyalty), and past thresholds becomes events: crowds and
+riots at the squares, the watch overwhelmed (crime's arrest odds fall), a strike, and at the top a revolution (the
+settlement's ruler or faction replaced: core/simulation PLAN.md Phase 4's factions). The thresholds are a nation's
+(a fluid nation's people expect to rise and take a fall harder, or more lightly: the owner's call).
 
 **Balancing and proof (each phase, with negatives, as the economy's checks):** the money ledger balances in every
 settlement and on every route; the money supply per head stays in a band over 90 fast-forwarded days; the price index
@@ -153,12 +180,12 @@ shape: an account and an owner per workplace record, edits as deltas by id.
 
 ## 3. Questions for the owner (answered 2026-11-03: section 0; still open below)
 
-1. **The isles' money:** Kautoan shell strings (proposed), or another? Its name, and its rate to the Talent.
-2. **The employer question**: the recommendation in section 2a (accounts per workplace, owned by the treasury to start)?
-3. **Falling a station:** can a household that loses its means fall back (a bankrupt merchant to worker), or only rise?
-4. **Excise inside a polity:** do the lakatoi's loads between Kautoa and Valapo, and the villages' carts into their
-   town, pay the excise, or only trade across a border and the ships from beyond?
-5. **Tribute:** the size at which a player settlement starts paying, and how much (a fixed sum, or a share of its trade).
+1. **The tribute's curve and rate**: the proposed (people - 50) / 450 ramp, and the full rate (a sum, or a share of the
+   settlement's trade)?
+2. **Mobility by nation**: how many stations a life in the Iron Republic and Yuni (two?), and is the bar lower there too?
+3. **Unrest from falls**: the share of fallen households that starts unrest, and what a revolution does (a new ruler of the
+   same nation, independence, or a change of faction)?
+4. **The Talent's rate** for Kautoan shells (proposed: 20 shells a Talent, the money changer's spread 3%).
 
 ## Sources
 
