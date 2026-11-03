@@ -48,7 +48,7 @@ The cage is a low-poly envelope that holds the building: in polar an 8-sided fru
 box itself (10). The fragment traces the view ray from the cage inward, by relaxed sphere tracing on the heightfield,
 so **the silhouette comes from the map, not the cage.** A round tower is round on an octagonal cage. A heightfield holds
 one surface per `(θ, y)`: the top of a disc, the inside of an arch and anything behind something else are not in it.
-Section 8 says which buildings that hurts.
+Section 8 says which buildings that hurts. A hull map from above bounds it (a roof is a real surface), and a map from below colours a soffit: a tower is hollow, so that one cannot be a bound.
 
 Colour, normal, depth, roughness, metal and a window mask are baked at load. **Interior mapping** puts a room behind every
 window mask texel; the hero's glass uses the same shader chunk, so the two read alike at the switch. Lighting is the same

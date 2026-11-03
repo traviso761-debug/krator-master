@@ -53,6 +53,7 @@ def core(folder, names):
 core('rand', ['08-core-rand.js'])
 core('tags', ['50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'])
 core('space', ['20-core-space.js'])
+core('walk', ['20-core-walk.js'])
 core('furnish', ['50-core-furnish.js', '52-core-furnish-draw.js'])
 core('biome', ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '31b-core-leafset.js', '34-core-impostor.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js'])
 core('export', ['07-core-export.js', '09-core-export-adapters.js'])

@@ -11,7 +11,7 @@
 
   // the room kinds: `store` etc. are kits/interiors programmes; a kind with no programme is furnished false
   var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, bath: 1, concourse: 1, hallway: 1 };
-  MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern' };
+  MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber' };
   function kindOf(k) { return MP.ROOMKIND[k] || k; }
 
   // ---- the round storey: what zone asks what of a ring. R the skin's inner face at this storey, core its record
@@ -123,7 +123,7 @@
     return st;
   }
   var PLAN_BAR = {
-    arcade: function (F, L) { return bar(F, L, 18, function (i) { return i % 3 === 1 ? 'stall' : 'concourse'; }, { cw: 6, door: 3 }); },
+    arcade: function (F, L) { return bar(F, L, 18, function (i, n) { return i === (n >> 1) ? 'reception' : i % 3 === 1 ? 'stall' : 'concourse'; }, { cw: 6, door: 3 }); },
     mezzanine: function (F, L) { return bar(F, L, 6, function (i) { return i % 4 ? 'office' : 'store'; }); },
     market: function (F, L) { return bar(F, L, 6, function () { return 'stall'; }, { cw: 3.4, door: 2 }); },
     clinic: function (F, L) { return bar(F, L, 6, function (i) { return i % 8 === 3 ? 'store' : 'clinic'; }); },

@@ -14,7 +14,7 @@ const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform f
  '#ifdef USE_INSTANCING','vec4 p=instanceMatrix*vec4(position,1.0);vN=normalize(mat3(instanceMatrix)*(normal/vec3(dot(instanceMatrix[0].xyz,instanceMatrix[0].xyz),dot(instanceMatrix[1].xyz,instanceMatrix[1].xyz),dot(instanceMatrix[2].xyz,instanceMatrix[2].xyz))));',
  '#else','vec4 p=vec4(position,1.0);vN=normal;','#endif',
  'vXZ=p.xz;if(uMode<0.5){float th=atan(p.z,p.x)+uWrap*6.2831853;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
- 'else{vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
+ 'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.02+0.98*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
 // a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company
 const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;',
  'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
@@ -27,7 +27,7 @@ function bakeMat(src,P,pass){const m=new THREE.ShaderMaterial({vertexShader:BV,f
 KSHELL.atlas=function(size,renderer){const mk=()=>{const t=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true,format:THREE.RGBAFormat,type:THREE.UnsignedByteType,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,generateMipmaps:false});return t;};
  const a={size,A:mk(),B:mk(),C:mk(),renderer};const old=renderer.getRenderTarget(),oc=renderer.getClearColor(new THREE.Color()),oa=renderer.getClearAlpha();renderer.setClearColor(0,0);
  [a.A,a.B,a.C].forEach(t=>{renderer.setRenderTarget(t);renderer.clear(true,true,true);});renderer.setRenderTarget(old);renderer.setClearColor(oc,oa);return a;};
-KSHELL.bake=function(at,rec,slot,hero){const R=at.renderer,f=rec.frame,pad=8,P={mode:{value:f.mode},H:{value:f.H},A:{value:f.mode?f.D:f.a},wrap:{value:0},xs:{value:1},ys:{value:1},faceN:{value:new THREE.Vector3(0,0,1)},faceD:{value:0},vp:{value:new THREE.Matrix4()}};
+KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,pad=8,P={mode:{value:f.mode},H:{value:f.H},A:{value:f.mode?f.D:f.a},wrap:{value:0},xs:{value:1},ys:{value:1},faceN:{value:new THREE.Vector3(0,0,1)},faceD:{value:0},vp:{value:new THREE.Matrix4()}};
  const sc=new THREE.Scene(),meshes=[];hero.children.forEach(m=>{const k=m.isInstancedMesh?new THREE.InstancedMesh(m.geometry,m.material,m.count):new THREE.Mesh(m.geometry,m.material);if(m.isInstancedMesh){k.instanceMatrix=m.instanceMatrix;k.instanceColor=m.instanceColor;}k.frustumCulled=false;k._src=m.material;sc.add(k);meshes.push(k);});
  const mats=[0,1,2].map(p=>meshes.map(k=>bakeMat(k._src,P,p)));
  const old=R.getRenderTarget(),oAuto=R.autoClear,oc=R.getClearColor(new THREE.Color()),oa=R.getClearAlpha(),tm=R.toneMapping;R.autoClear=false;R.setClearColor(0,0);R.toneMapping=THREE.NoToneMapping;
@@ -41,17 +41,19 @@ KSHELL.bake=function(at,rec,slot,hero){const R=at.renderer,f=rec.frame,pad=8,P={
    faces.forEach(function(q,i){const wPx=W[i]/tot*slot.w,x=Math.round(slot.x+s/tot*slot.w),x1=Math.round(slot.x+(s+W[i])/tot*slot.w);s+=W[i];
     const half=W[i]/2;c.left=-half;c.right=half;c.top=H/2;c.bottom=-H/2;c.position.set(q[0]*(q[3]+1),H/2,q[2]*(q[3]+1));c.up.set(0,1,0);c.lookAt(0,H/2,0);c.near=.5;c.far=q[3]+1+f.D;c.updateProjectionMatrix();c.updateMatrixWorld();
     P.vp.value.multiplyMatrices(c.projectionMatrix,c.matrixWorldInverse);P.faceN.value.set(q[0],q[1],q[2]);P.faceD.value=q[3];vp(x,slot.y,x1-x,slot.h);R.clear(true,true,true);R.render(sc,cam);});}
+  /* the hull maps: a plain projection, x and z to the slot, y to depth: from above the highest surface wins, from below the lowest */
+  const hm=P.mode.value;[[top,1],[bot,-1]].forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
   rt.scissorTest=false;rt.viewport.set(0,0,rt.width,rt.height);});
  R.setRenderTarget(old);R.autoClear=oAuto;R.setClearColor(oc,oa);R.toneMapping=tm;mats.forEach(l=>l.forEach(m=>m.dispose()));return true;};
 // the mips, once every slot is baked
 KSHELL.finish=function(at){const R=at.renderer,gl=R.getContext(),old=R.getRenderTarget();[at.A,at.B,at.C].forEach(t=>{t.texture.generateMipmaps=true;const tx=R.properties.get(t.texture).__webglTexture;gl.bindTexture(gl.TEXTURE_2D,tx);gl.generateMipmap(gl.TEXTURE_2D);gl.bindTexture(gl.TEXTURE_2D,null);});R.setRenderTarget(old);R.state.reset&&0;};
 
-const DV=['attribute vec4 aSlot;attribute vec4 aFrame;varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;uniform vec3 uBand;'].join('\n');
+const DV=['attribute vec4 aSlot;attribute vec4 aFrame;attribute vec4 aTop;attribute vec4 aBot;varying vec4 vMpTop;varying vec4 vMpBot;varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;uniform vec3 uBand;'].join('\n');
 const DM=['vMpP=position;',
- 'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;',
- '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-aFrame.y,max(-e.y,0.0)),ld=length(vec3(dx,dy,dz));',
+ 'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;vMpTop=aTop;vMpBot=aBot;',
+ '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-aFrame.y,max(-e.y,0.0)),ld=length(vec3(dx,dy,dz));',
  ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,uBand.x>0.0?smoothstep(uBand.x*(1.0-uBand.z),uBand.x,ld):1.0);}'].join('\n');
-const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;',
+const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
  'vec2 mpUV;float mpLod;vec3 mpHP;vec3 mpRd;',MP.ROOM_GLSL,
  // the gap: how far p is outside the surface along the map's axis, and the uv it sampled
  'float mpGap(vec3 p){vec4 F=vMpFrame;float v=clamp(p.y/F.y,0.0,1.0);',
@@ -61,7 +63,11 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;','
  ' mpUV=vMpSlot.xy+vMpSlot.zw*vec2(s/per,v);float a=textureLod(uB,mpUV,mpLod).a;if(a<0.02)return 4.0;float S=(1.0-a)*D;return S-d;}',
  'bool mpTrace(){vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));float t=0.0,mn=max(0.25,dist*uPx*.6);',
  ' vec4 F=vMpFrame;float lim=F.x<0.5?F.z*1.08:0.0;',
- ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;float g=mpGap(p);if(g<mn*.5){mpHP=p;return true;}t+=max(g*.85,mn);',
+ ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
+ ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;float g=mpGap(p);',
+ '  if(g<mn*.5){vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h,ub=vMpBot.xy+vMpBot.zw*h,us=mpUV;float ta=textureLod(uB,ut,mpLod+1.0).a,ty=(ta-.02)/.98*F.y;',
+ '   if(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5)){mpHP=p;if(rd.y<0.0&&p.y>ty-ey*1.5)mpUV=ut;else{mpUV=us;if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>0.0&&textureLod(uB,ub,mpLod).a>0.01)mpUV=ub;else mpUV=us;}return true;}}',
+ '  t+=max(g*.85,mn);',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');
 KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)}};m.userData.U=U;
@@ -75,9 +81,9 @@ KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=ne
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nif(mC.b>0.5){totalEmissiveRadiance+=mpRoom(mpHP,mpRd,mN,0.0)*(mC.g>.2?0.55:1.0);}');};
  m.customProgramCacheKey=()=>'kshell'+steps;return m;};
 // placements: [[x, z, yaw], ...]
-KSHELL.draw=function(at,rec,slot,mat,places){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();
- const im=new THREE.InstancedMesh(g,mat,Math.max(n,1)),a=new Float32Array(Math.max(n,1)*4),b=new Float32Array(Math.max(n,1)*4),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1);
+KSHELL.draw=function(at,rec,slot,mat,places,top,bot){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();
+ const im=new THREE.InstancedMesh(g,mat,Math.max(n,1)),a=new Float32Array(Math.max(n,1)*4),b=new Float32Array(Math.max(n,1)*4),ta=new Float32Array(Math.max(n,1)*4),ba=new Float32Array(Math.max(n,1)*4),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1);
  for(let i=0;i<n;i++){const p=places[i];M.compose(new THREE.Vector3(p[0],0,p[1]),Q.setFromAxisAngle(Y,p[2]==null?0:p[2]),one);im.setMatrixAt(i,M);}
- for(let i=0;i<Math.max(n,1);i++){a.set([slot.x/S,slot.y/S,slot.w/S,slot.h/S],i*4);b.set([f.mode,f.H,f.a,f.b],i*4);}
- g.setAttribute('aSlot',new THREE.InstancedBufferAttribute(a,4));g.setAttribute('aFrame',new THREE.InstancedBufferAttribute(b,4));im.count=n;im.frustumCulled=false;im.name='shell.'+rec.id;return im;};
+ for(let i=0;i<Math.max(n,1);i++){a.set([slot.x/S,slot.y/S,slot.w/S,slot.h/S],i*4);b.set([f.mode,f.H,f.a,f.b],i*4);ta.set([top.x/S,top.y/S,top.w/S,top.h/S],i*4);ba.set([bot.x/S,bot.y/S,bot.w/S,bot.h/S],i*4);}
+ g.setAttribute('aSlot',new THREE.InstancedBufferAttribute(a,4));g.setAttribute('aFrame',new THREE.InstancedBufferAttribute(b,4));g.setAttribute('aTop',new THREE.InstancedBufferAttribute(ta,4));g.setAttribute('aBot',new THREE.InstancedBufferAttribute(ba,4));im.count=n;im.frustumCulled=false;im.name='shell.'+rec.id;return im;};
 })();

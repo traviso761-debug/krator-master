@@ -6,7 +6,7 @@
 (function () {
   var TAU = Math.PI * 2;
   var RULE = { living: 'wide', bedroom: 'window', office: 'ribbon', meeting: 'ribbon', classroom: 'tall', stall: 'wide', cafe: 'wide', concourse: 'tall',
-    clinic: 'window', store: 'slit', plant: 'louvre', tank: 'blank', stack: 'blank', greenhouse: 'blank', core: 'blank', hall: 'tall' };
+    clinic: 'window', store: 'slit', plant: 'louvre', tank: 'blank', stack: 'blank', greenhouse: 'blank', core: 'blank', hall: 'tall', reception: 'tall' };
   var SIZE = { wide: [0.92, 0.9, 2.3], ribbon: [0.96, 0.9, 2.3], window: [0.62, 0.9, 1.9], tall: [0.9, 0.3, 2.9], slit: [0.2, 0.9, 1.9], louvre: [0.9, 0.6, 2.2], arcade: [0.9, 0, 5] };
   MP.BAYSIZE = SIZE;                   // share of the bay's width, sill, top of the window
   MP.isGlass = function (k) { return k === 'wide' || k === 'ribbon' || k === 'window' || k === 'tall' || k === 'slit'; };

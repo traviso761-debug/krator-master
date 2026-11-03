@@ -2,9 +2,9 @@
  "kits/metropolis/dist/metropolis.html": {
   "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 140T GPU (8GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "held": {
-   "held": 886,
-   "geometries": 34,
-   "textures": 19
+   "held": 860,
+   "geometries": 96,
+   "textures": 22
   },
   "views": {
    "Hero alone at 300 m": {
@@ -12,120 +12,150 @@
     "tris": 74206,
     "inst": 4858,
     "imesh": 5,
-    "ms": 0.364427,
+    "ms": 0.413125,
     "n": 24,
     "dis": 0,
-    "med": 0.373125
+    "med": 0.69026
    },
    "Shell alone at 300 m": {
     "calls": 2,
     "tris": 58,
     "inst": 1,
     "imesh": 4,
-    "ms": 0.38526,
+    "ms": 0.457604,
     "n": 24,
     "dis": 0,
-    "med": 0.391614
-   },
-   "Pair, Spindle, street": {
-    "calls": 8,
-    "tris": 74262,
-    "inst": 4859,
-    "imesh": 5,
-    "ms": 0.683645,
-    "n": 24,
-    "dis": 0,
-    "med": 0.807447
-   },
-   "Pair, Ledger": {
-    "calls": 10,
-    "tris": 36502,
-    "inst": 3291,
-    "imesh": 5,
-    "ms": 0.636562,
-    "n": 24,
-    "dis": 0,
-    "med": 0.679322
-   },
-   "Switch, in the band (280 m)": {
-    "calls": 8,
-    "tris": 74262,
-    "inst": 4859,
-    "imesh": 5,
-    "ms": 0.546927,
-    "n": 24,
-    "dis": 0,
-    "med": 0.583281
-   },
-   "Far, shell at 900 m": {
-    "calls": 3,
-    "tris": 68,
-    "inst": 2,
-    "imesh": 4,
-    "ms": 0.34276,
-    "n": 24,
-    "dis": 0,
-    "med": 0.354895
+    "med": 0.690937
    },
    "Shell close, 130 m": {
     "calls": 2,
     "tris": 58,
     "inst": 1,
     "imesh": 4,
-    "ms": 0.698177,
+    "ms": 0.878229,
     "n": 24,
     "dis": 0,
-    "med": 0.706354
+    "med": 0.907656
    },
-   "Hero close, 130 m": {
+   "Tiers, the worst street": {
+    "calls": 66,
+    "tris": 48284,
+    "inst": 6151,
+    "imesh": 66,
+    "ms": 1.253541,
+    "n": 24,
+    "dis": 0,
+    "med": 1.369114
+   },
+   "Tiers, from a roof": {
+    "calls": 66,
+    "tris": 48284,
+    "inst": 6151,
+    "imesh": 66,
+    "ms": 1.818645,
+    "n": 24,
+    "dis": 0,
+    "med": 1.893854
+   },
+   "Tiers, from the air": {
+    "calls": 65,
+    "tris": 2314,
+    "inst": 474,
+    "imesh": 64,
+    "ms": 1.146614,
+    "n": 24,
+    "dis": 0,
+    "med": 2.320781
+   },
+   "Inside the Spindle, a flat": {
+    "calls": 17,
+    "tris": 145734,
+    "inst": 4878,
+    "imesh": 6,
+    "ms": 1.079791,
+    "n": 24,
+    "dis": 0,
+    "med": 2.67677
+   }
+  }
+ },
+ "kits/metropolis/dist/metropolis.html?pitch=140": {
+  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 140T GPU (8GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "held": {
+   "held": 2142,
+   "geometries": 119,
+   "textures": 24
+  },
+  "views": {
+   "Hero alone at 300 m": {
     "calls": 7,
     "tris": 74206,
     "inst": 4858,
     "imesh": 5,
-    "ms": 0.416927,
+    "ms": 0.364114,
     "n": 24,
     "dis": 0,
-    "med": 0.446302
+    "med": 0.639791
+   },
+   "Shell alone at 300 m": {
+    "calls": 2,
+    "tris": 58,
+    "inst": 1,
+    "imesh": 4,
+    "ms": 0.483177,
+    "n": 24,
+    "dis": 0,
+    "med": 1.104062
+   },
+   "Shell close, 130 m": {
+    "calls": 2,
+    "tris": 58,
+    "inst": 1,
+    "imesh": 4,
+    "ms": 0.853177,
+    "n": 24,
+    "dis": 0,
+    "med": 2.180156
    },
    "Tiers, the worst street": {
-    "calls": 69,
-    "tris": 114774,
-    "inst": 10721,
-    "imesh": 64,
-    "ms": 0.909843,
+    "calls": 90,
+    "tris": 394920,
+    "inst": 36148,
+    "imesh": 73,
+    "ms": 2.785885,
     "n": 24,
     "dis": 0,
-    "med": 2.588802
+    "med": 4.080156
    },
    "Tiers, from a roof": {
-    "calls": 65,
-    "tris": 84036,
-    "inst": 10721,
-    "imesh": 64,
-    "ms": 1.804165,
+    "calls": 87,
+    "tris": 378350,
+    "inst": 36128,
+    "imesh": 72,
+    "ms": 3.411458,
     "n": 24,
     "dis": 0,
-    "med": 2.531666
+    "med": 4.234635
    },
    "Tiers, from the air": {
-    "calls": 65,
-    "tris": 65122,
-    "inst": 8360,
-    "imesh": 64,
-    "ms": 1.143125,
+    "calls": 63,
+    "tris": 5990,
+    "inst": 1175,
+    "imesh": 62,
+    "ms": 1.837604,
     "n": 24,
     "dis": 0,
-    "med": 1.843177
+    "med": 1.898697
    },
    "Inside the Spindle, a flat": {
     "calls": 17,
-    "tris": 145674,
+    "tris": 145734,
     "inst": 4878,
     "imesh": 6,
-    "ms": 0.954791,
+    "ms": 0.96677,
     "n": 24,
     "dis": 0,
-    "med": 0.98
+    "med": 1.044531
    }
   }
  }

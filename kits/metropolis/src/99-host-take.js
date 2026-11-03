@@ -12,8 +12,11 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
 function hostNegatives(){const R=[];{const F=JSON.parse(JSON.stringify(MP.SPINDLE));F.core.shafts[0].x=9;R.push({name:'a shaft out of the core',failed:!MP.audit(F).ok});}
  R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});return R;}
 KHOST.on(SKY.view,'view');
-const HOSTED=KHOST.take({build:'metropolis',title:'Krator — the metropolis test bed',hint:'Sixteen Ancient towers will test the range tiers; two are built. Pick a view: the pairs set the real building (west) beside its baked shell (east) at 300 m.',
- scene,camera,renderer,ground:terrainH,clear:1.2,registry:REG,views:VIEWS,ticks:TICKS,onView:n=>MP.show(n),start:'Pair, Spindle, street',
+const STOREY_SELECT=[['','take the lift to...']].concat(MP.SPINDLE.levels.map(L=>[String(L.k),'L'+L.k+' '+L.use]));
+KratorAncientsInteriors.DRESS.ancient.coldFrame=null;   /* the cold frame is the post-apoc set's: a hydroponics hall has none */
+MP.walkSync();
+const HOSTED=KHOST.take({build:'metropolis',walk:KWALK,controls:[{select:STOREY_SELECT,id:'mpStorey',on:v=>{if(v!=='')MP.goStorey(+v);}}],keys:{'.':()=>MP.step(1),',':()=>MP.step(-1)},title:'Krator — the metropolis test bed',hint:'Pick a view. The Tiers views are a city: fly (W A S D, Q E, Shift), F to walk. Fly or walk into a tower near you and its storey opens; the lift list and , . change storey. In a pair, west is the real building and east its baked shell.',
+ scene,camera,renderer,ground:terrainH,clear:1.2,registry:REG,views:VIEWS,ticks:TICKS,onView:n=>MP.show(n),start:'Tiers, the worst street',
  clock:{hour:ATMOS.SKY.viewHour},draw:location.search.indexOf('nosky')>=0?undefined:SKY.draw,
  stats:()=>MPS.ready?('shell bake '+MPS.bakeMs+' ms, all '+MPS.bakeAllMs+' ms'+(MPS.tierN?'\nheroes '+MPS.tierN.heroes+', shells '+MPS.tierN.shells:'')):'baking',
  budget:BUDGET,types:()=>BIO.stats,guards:false,

@@ -133,6 +133,18 @@
       ],
       "port": 8843,
       "autoPort": false
+    },
+    {
+      "name": "metropolis",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8796",
+        "--directory",
+        "kits/metropolis/dist"
+      ],
+      "port": 8796
     }
   ]
 }

@@ -3,6 +3,8 @@
 // bake and a draw need, as plain data: the cage (a low-poly envelope that holds the building, 12-60 triangles), the map's frame and its size.
 //   polar  anything star-shaped about its axis: (theta, y) -> surface radius. The cage is a stack of N-sided frustums.
 //   box    a slab: (perimeter, y) -> depth from the box's face. The cage is the box.
+// Both add two hull maps. From above, (x, z) -> y: a point over the highest surface of its column is air, so a roof is a real surface. From below, colour only: a tower is hollow, so
+// the lowest surface of a column inside it is no bound, and the side map already gives a soffit's shape. The map from below gives it its colour.
 // The silhouette comes from the map, not the cage: the fragment traces the view ray down from the cage (60).
 var KSHELL = {};
 (function () {
@@ -51,8 +53,12 @@ var KSHELL = {};
       cage = boxCage(F);
       w = Math.ceil(4 * (cage.hx + cage.hz) / o.texel); frame = { mode: 1, H: H, a: cage.hx, b: cage.hz, D: o.depth || cage.hz };
     }
-    return { id: F.id + '.' + state, family: F.id, state: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame };
+    // the hull maps, seen from straight above and straight below: what the side map cannot hold (a roof, a soffit, a column with nothing in it)
+    var hx = frame.a, hz = o.mode === 'polar' ? frame.a : frame.b, hull = { w: Math.ceil(2 * hx / o.texel), h: Math.ceil(2 * hz / o.texel) };
+    return { id: F.id + '.' + state, family: F.id, state: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame, hull: hull, hx: hx, hz: hz };
   };
+  // the three slots of a record, as things KSHELL.pack can pack
+  KSHELL.slots = function (r) { return [r, { id: r.id + '.top', map: r.hull }, { id: r.id + '.bot', map: r.hull }]; };
   // how a shelf packs records into one square atlas: shelves by height, a gutter round each slot. [{id, x, y, w, h}], in px; throws when full
   KSHELL.pack = function (recs, size, pad) {
     pad = pad == null ? 8 : pad; var x = pad, y = pad, row = 0, out = [];

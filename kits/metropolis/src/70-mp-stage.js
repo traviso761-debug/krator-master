@@ -5,16 +5,16 @@
 const MPS={ready:false,keys:['spindle.intact','spindle.gutted','ledger.intact','ledger.gutted'],hero:{},rec:{},slot:{},mesh:{},live:[],pool:[],mode:null,bakeMs:0};
 const MP_NEAR=300,MP_FAR=1000,MP_IMPFAR=3200;
 // the tiers: a grid of blocks, a tower in about 70% of them, by hash
-MPS.towers=(function(){const P=[],pitch=220;for(let i=-14;i<=14;i++)for(let j=-14;j<=14;j++){if(MP.u(11,i+20,j+20)>.7)continue;if(i===0&&j===0)continue;const x=i*pitch,z=j*pitch;if(Math.hypot(x,z)>3100)continue;
- const f=MP.u(12,i+20,j+20)<.55?'spindle':'ledger',g=MP.u(13,i+20,j+20)<.2;P.push({id:'mp.t.'+i+'.'+j,key:f+(g?'.intact':'.gutted'),x,z,yaw:f==='ledger'&&MP.u(14,i+20,j+20)<.5?Math.PI/2:0});}return P;})();
+MPS.towers=(function(){const P=[],pitch=/[?&]pitch=(\d+)/.test(location.search)?+RegExp.$1:220;MPS.pitch=pitch;const NB=Math.ceil(3100/pitch);for(let i=-NB;i<=NB;i++)for(let j=-NB;j<=NB;j++){if(MP.u(11,i+40,j+40)>.7)continue;if(i===0&&j===0)continue;const x=i*pitch,z=j*pitch;if(Math.hypot(x,z)>3100)continue;
+ const f=MP.u(12,i+40,j+40)<.55?'spindle':'ledger',g=MP.u(13,i+40,j+40)<.2;P.push({id:'mp.t.'+i+'.'+j,key:f+(g?'.intact':'.gutted'),x,z,yaw:f==='ledger'&&MP.u(14,i+40,j+40)<.5?Math.PI/2:0});}return P;})();
 MP.mats();   /* now, not at the bake: the shells and impostors wait for these maps */
 MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return false;const t0=performance.now();
  MPS.keys.forEach(k=>{const p=k.split('.');MPS.hero[k]=MP.hero(p[0],p[1]);MPS.rec[k]=KSHELL.record(MP.FAMILY[p[0]],p[1]);});
  const size=/[?&]atlas=1024\b/.test(location.search)?1024:2048;
- MPS.packed=KSHELL.pack(MPS.keys.map(k=>MPS.rec[k]),size);MPS.packed.forEach((s,i)=>{MPS.slot[s.id]=s;});MPS.atlas=KSHELL.atlas(size,renderer);
- if(!/[?&]nobake/.test(location.search))MPS.keys.forEach(k=>KSHELL.bake(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.hero[k]));if(!/[?&]nomip/.test(location.search))KSHELL.finish(MPS.atlas);
+ MPS.packed=KSHELL.pack([].concat(...MPS.keys.map(k=>KSHELL.slots(MPS.rec[k]))),size);MPS.packed.forEach((s,i)=>{MPS.slot[s.id]=s;});MPS.atlas=KSHELL.atlas(size,renderer);
+ if(!/[?&]nobake/.test(location.search))MPS.keys.forEach(k=>KSHELL.bake(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.hero[k],MPS.slot[k+'.top'],MPS.slot[k+'.bot']));if(!/[?&]nomip/.test(location.search))KSHELL.finish(MPS.atlas);
  MPS.mat=KSHELL.material(MPS.atlas,{steps:/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:24});MPS.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;
- if(!/[?&]noshell\b/.test(location.search))MPS.keys.forEach(k=>{const im=KSHELL.draw(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.mat,new Array(256).fill([0,0,0]));im.count=0;scene.add(im);MPS.mesh[k]=im;});
+ if(!/[?&]noshell\b/.test(location.search))MPS.keys.forEach(k=>{const im=KSHELL.draw(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.mat,new Array(512).fill([0,0,0]),MPS.slot[k+'.top'],MPS.slot[k+'.bot']);im.count=0;scene.add(im);MPS.mesh[k]=im;});
  MPS.bakeMs=Math.round(performance.now()-t0);
  // the impostors: one set, a slot a family and state, built from the hero's own meshes
  const S=BIO.impostorSet('mp',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:4});MPS.impSet=S;BIO.kit('metro');
@@ -32,11 +32,15 @@ MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return fals
 MPS.impTick=function(){if(!MPS.impQ||!MPS.impQ.length)return;const r=MPS.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);MPS.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;MPS.impMs+=Math.round(performance.now()-t0);};
 // a hero placed: a clone that shares the geometry
 function mpHero(key,x,z,yaw,fade){const H=MPS.hero[key],g=new THREE.Group();H.children.forEach(m=>{let c=m.clone();if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;}g.add(c);});g.position.set(x,0,z);g.rotation.y=yaw==null?0:yaw;
- if(fade)mpFade(g,key,x,z);scene.add(g);MPS.live.push(g);return g;}
-// the hero's half of the dither: BIO.lodFade on a copy of its materials, its box in the aLod attributes, the same band as the shell's. The geometry is cloned: a fade is per placed hero
-function mpFade(g,key,x,z){const F=MP.FAMILY[key.split('.')[0]],R=F.footprint.r||0,hw=F.footprint.w?F.footprint.w/2:R*.6,hd=F.footprint.d?F.footprint.d/2:R*.6,H=F.height.tip,a=new Float32Array(12);
- a.set([x-hw,z-hd,x+hw,z+hd,0,H,0,-MP_NEAR,1e9,1e9,1e9,1e9]);const cache=MPS.fadeMats||(MPS.fadeMats=new Map());
- g.children.forEach(m=>{const buf=new THREE.InstancedInterleavedBuffer(a.slice(),12,Math.max(1,m.isInstancedMesh?m.count:1)),G=m.geometry.clone();G.setAttribute('aLodA',new THREE.InterleavedBufferAttribute(buf,4,0));G.setAttribute('aLodB',new THREE.InterleavedBufferAttribute(buf,4,4));G.setAttribute('aLodC',new THREE.InterleavedBufferAttribute(buf,4,8));m.geometry=G;
+ if(fade)mpFade(g,key,x,z,yaw);g.userData.mp={key,x,z,yaw:yaw==null?0:yaw};scene.add(g);MPS.live.push(g);return g;}
+// the hero's half of the dither: BIO.lodFade on a copy of its materials, its box in the aLod attributes, the same band as the shell's. The box is per placed hero, so each hero has a
+// shallow geometry of its own: its own aLod buffer over the shared vertex buffers
+const mpHalf=(key,yaw)=>{const f=MPS.rec[key].frame,h=f.mode?[f.a,f.b]:[f.a*.6,f.a*.6];return Math.abs(Math.cos(yaw==null?0:yaw))<.5?[h[1],h[0]]:h;};
+const mpBoxDist=(key,x,z,yaw,e)=>{const h=mpHalf(key,yaw),dx=Math.max(Math.abs(e.x-x)-h[0],0),dz=Math.max(Math.abs(e.z-z)-h[1],0),dy=Math.max(e.y-MPS.rec[key].frame.H,0);return Math.hypot(dx,dy,dz);};
+function mpFade(g,key,x,z,yaw){const h=mpHalf(key,yaw),H=MPS.rec[key].frame.H,a=new Float32Array(12);
+ a.set([x-h[0],z-h[1],x+h[0],z+h[1],0,H,0,-MP_NEAR,1e9,1e9,1e9,1e9]);const cache=MPS.fadeMats||(MPS.fadeMats=new Map());
+ g.children.forEach(m=>{const S=m.geometry,G=new THREE.BufferGeometry(),buf=new THREE.InstancedInterleavedBuffer(a.slice(),12,Math.max(1,m.isInstancedMesh?m.count:1));for(const n in S.attributes)G.setAttribute(n,S.attributes[n]);G.setIndex(S.index);if(!S.boundingSphere)S.computeBoundingSphere();G.boundingSphere=S.boundingSphere;
+  G.setAttribute('aLodA',new THREE.InterleavedBufferAttribute(buf,4,0));G.setAttribute('aLodB',new THREE.InterleavedBufferAttribute(buf,4,4));G.setAttribute('aLodC',new THREE.InterleavedBufferAttribute(buf,4,8));m.geometry=G;
   let k=cache.get(m.material);if(!k){k=m.material.clone();k.onBeforeCompile=m.material.onBeforeCompile;k.customProgramCacheKey=m.material.customProgramCacheKey;k.userData=Object.assign({},m.material.userData);delete k.userData._lodFade;BIO.lodFade(k);cache.set(m.material,k);}m.material=k;});BIO._lodU.f.value=BIO.LOD.fade;}
 function mpShells(list){const n={};MPS.keys.forEach(k=>n[k]=0);const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
  list.forEach(s=>{const im=MPS.mesh[s[0]];if(!im)return;M.compose(p.set(s[1],0,s[2]),Q.setFromAxisAngle(Y,s[3]==null?0:s[3]),one);im.setMatrixAt(n[s[0]]++,M);});
@@ -46,23 +50,25 @@ function mpClear(){MPS.live.forEach(g=>{scene.remove(g);});MPS.live.length=0;MPS
 MP.show=function(name){if(!MPS.ready){MPS.want=name;return;}const c=MP_CFG[name];if(!c)return;mpClear();MPS.mode=name;
  (c.heroes||[]).forEach(h=>mpHero(h[0],h[1],h[2],h[3],c.fade));mpShells(c.shells||[]);
  if(c.band)MPS.mat.userData.U.uBand.value.set(c.band[0],c.band[1],.15);
- if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(0,0,.15);MPS.nextTier=0;}
+ if(c.tiers){MPS.impMeshes.forEach(o=>o.visible=true);MPS.mat.userData.U.uBand.value.set(MP_NEAR,0,.15);MPS.nextTier=0;MPS.tierGroups=new Map();}
  if(c.storey)MP.openStorey(c.storey[0],c.storey[1],c.storey[2],c.storey[3]);
  if(c.atlas){const m=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshBasicMaterial({map:MPS.atlas[c.atlas].texture,fog:false,toneMapped:false}));m.position.set(0,220,0);m.geometry.attributes.uv;scene.add(m);MPS.live.push(m);}};
 // the tiers each half second: the nearest towers are heroes from a pool; 300 m - 1 km shells
 MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode];if(!c||!c.tiers)return;const now=performance.now();if(now<(MPS.nextTier||0))return;MPS.nextTier=now+500;
- const e=camera.position,T=MPS.towers,near=[],mid=[];for(const t of T){const d=Math.hypot(t.x-e.x,t.z-e.z);if(d<MP_NEAR)near.push(t);else if(d<MP_FAR)mid.push(t);}
- MPS.live.forEach(g=>scene.remove(g));MPS.live.length=0;near.sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z));near.slice(0,10).forEach(t=>mpHero(t.key,t.x,t.z,t.yaw));near.slice(10).forEach(t=>mid.push(t));
+ const e=camera.position,T=MPS.towers,near=[],mid=[],MAX=MPS.heroMax==null?10:MPS.heroMax;for(const t of T){const d=mpBoxDist(t.key,t.x,t.z,t.yaw,e);t.d=d;if(d<MP_NEAR)near.push(t);if(d>=MP_NEAR*.85&&d<MP_FAR)mid.push(t);}
+ near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX),G=MPS.tierGroups;
+ /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
+ G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85)mid.push(t);});
  mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));
  // an impostor stands for its tower past 1 km, tower by tower (a chunk's fade left half-dithered ghosts at the boundary): nearer, its matrix is zero
- MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:Math.min(10,near.length),shells:mid.length,impostors:T.length-near.length-mid.length+Math.max(0,near.length-10)-Math.max(0,near.length-10)};};
-tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();}});
+ MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const x=F[i*16+12],z=F[i*16+14],near=Math.hypot(x-e.x,z-e.z)<MP_FAR;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
+tick(function(){if(!MPS.ready)MPS.boot();else{MPS.impTick();MPS.tiersTick();MP.enterTick();}});
 // ---- the views. A pair stands 170 m apart, hero to the west, its shell to the east, looked at from 300 m
 const D=300,sp='spindle.intact',sg='spindle.gutted',li='ledger.intact',lg='ledger.gutted';
 const PAIR=(k,dx,yaw)=>({heroes:[[k,-dx,0,yaw]],shells:[[k,dx,0,yaw]]});
 const MP_CFG={
  'Pair, Spindle, street':Object.assign(PAIR(sp,85),{}),'Pair, Spindle, raised':PAIR(sp,85),'Pair, Spindle gutted':PAIR(sg,85),'Pair, Spindle gutted, crown':PAIR(sg,85),'Pair, Spindle at 150 m':PAIR(sp,85),
- 'Pair, Ledger':PAIR(li,80),'Pair, Ledger gutted':PAIR(lg,80),'Pair, Ledger end on':{heroes:[[li,0,-60]],shells:[[li,0,60]]},
+ 'Pair, Spindle, the roof':PAIR(sp,85),'Pair, Spindle, under the lamp':PAIR(sp,85),'Pair, Ledger, the roof':PAIR(li,80),'Pair, Ledger':PAIR(li,80),'Pair, Ledger gutted':PAIR(lg,80),'Pair, Ledger end on':{heroes:[[li,0,-60]],shells:[[li,0,60]]},
  'Hero alone at 300 m':{heroes:[[sp,0,0]]},'Shell alone at 300 m':{shells:[[sp,0,0]]},
  'Switch, hero side (240 m)':{heroes:[[sp,0,0]],shells:[[sp,0,0]],band:[MP_NEAR,0],fade:true},'Switch, in the band (280 m)':{heroes:[[sp,0,0]],shells:[[sp,0,0]],band:[MP_NEAR,0],fade:true},'Switch, shell side (320 m)':{heroes:[[sp,0,0]],shells:[[sp,0,0]],band:[MP_NEAR,0],fade:true},
  'Far, shell at 900 m':{shells:[[sp,-120,0],[li,120,0]]},
@@ -73,7 +79,7 @@ const roomAt=(key,k,want)=>{const F=MP.FAMILY[key],st=MP.storey(F,k),R=st.rooms.
 const outward=(p,y,e,o)=>{const l=Math.hypot(p[0],p[2])||1,dx=p[0]/l,dz=p[2]/l;return [p[0]-dx*o,p[1]+e,p[2]-dz*o,p[0]+dx*8,p[1]+y,p[2]+dz*8];};
 const VIEWS={
  'Pair, Spindle, street':[0,1.7,D,0,95,0],'Pair, Spindle, raised':[0,90,D,0,110,0],'Pair, Spindle gutted':[0,1.7,D,0,90,0],'Pair, Spindle gutted, crown':[0,175,D-10,0,170,0],'Pair, Spindle at 150 m':[0,1.7,150,0,120,0],
- 'Pair, Ledger':[0,6,D,0,26,0],'Pair, Ledger gutted':[0,6,D,0,26,0],'Pair, Ledger end on':[D,6,0,0,26,0],
+ 'Pair, Spindle, the roof':[0,340,240,0,225,0],'Pair, Spindle, under the lamp':[0,150,120,0,226,0],'Pair, Ledger, the roof':[0,170,230,0,50,0],'Pair, Ledger':[0,6,D,0,26,0],'Pair, Ledger gutted':[0,6,D,0,26,0],'Pair, Ledger end on':[D,6,0,0,26,0],
  'Hero alone at 300 m':[0,1.7,D,0,110,0],'Shell alone at 300 m':[0,1.7,D,0,110,0],
  'Switch, hero side (240 m)':[0,1.7,240+40,0,110,0],'Switch, in the band (280 m)':[0,1.7,275+40,0,110,0],'Switch, shell side (320 m)':[0,1.7,320+40,0,110,0],
  'Far, shell at 900 m':[0,6,900,0,110,0],
