@@ -4,7 +4,7 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
-**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+**Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the published gallery is not republished for that, so the live page keeps it until the next publish.
 ## The Krator System in the top list (2026-10-26)
 
 The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
@@ -102,6 +102,11 @@ Biomes and Objects v28). Republish the tongues page to the new URL from now on.
 
 `index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
 (https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw) and the Animation Lab (https://claude.ai/artifact/WStXx16aNHT63stCoz331x).
+The therian heads (the coyote, cat, lion, rat, monkey and bird of `core/charactermodels/tools/heads.py` and
+`therian.py`, 2026-11-02) have no room in the Cosmetic Lab's 256 MB, so they are a lab of their own, "Cosmetic Lab:
+therian heads" (https://claude.ai/artifact/S2nPEgRriRyjzCxbecqMeY, private): the same page with the two bodies, their
+clips and default dress, and the six heads and their tails (`tools/tails.py`) as Body mods chips (the chips of the other items show names only: their
+pieces and thumbnails are not there). Publish the heads' pieces there, not to the main lab.
 They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
 `build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the
 owner shares them (each page's Share menu). Only Krator Worlds A–H's index was republished with the two links (version 86, the

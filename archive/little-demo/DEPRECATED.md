@@ -1,4 +1,9 @@
-# Little Demo is deprecated (2026-10-20)
+# Little Demo is deprecated (2026-10-20) and retired (2026-11-03)
+
+**Retired to `archive/little-demo` (owner, 2026-11-03).** It was `openworld/little-demo`; it no longer counts as a build
+(`tools/test_all.py`, `tools/port_baseline.py` and the index tools skip `archive/`), and its rows were dropped from
+`PORT-BASELINE.json`, `PORT-INDEX.md`, `GEOMETRY.md`, `INDEX.md`, `DEPS.json`, `tools/core_use_baseline.json` and the
+gallery list. Paths below that say `openworld/little-demo` are where it stood. Do not build from it.
 
 The owner decided that the eastern-desert open world is not maintained any more. Nothing builds from this folder.
 

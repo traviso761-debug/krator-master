@@ -1406,16 +1406,6 @@
   "seconds": 210,
   "tris": 1568855
  },
- "openworld/little-demo/dist/little-demo.artifact.html": {
-  "errors": 0,
-  "ready": true,
-  "seconds": 57
- },
- "openworld/little-demo/dist/little-demo.html": {
-  "errors": 0,
-  "ready": true,
-  "seconds": 6
- },
  "settlements/dalab/dist/dalab-set.html": {
   "calls": 73,
   "errors": 0,

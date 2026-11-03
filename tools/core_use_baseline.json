@@ -121,7 +121,6 @@
  "openworld/isle-demo: OWN getImageData in src/world/98-world-start.js": 1,
  "openworld/isle-demo: OWN prng in src/world/91-world-probe.js": 1,
  "openworld/isle-demo: OWN sky-dome in src/world/80-world-sky.js": 1,
- "openworld/little-demo: MISSING core/tags": 1,
  "settlements/dalab: OWN getImageData in src/69d-dalab-mat.js": 1,
  "settlements/dalab: OWN getImageData in src/70-hl-tex.js": 1,
  "settlements/dalab: OWN getImageData in targets/city/85-city-paint.js": 3,
