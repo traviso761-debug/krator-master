@@ -5,8 +5,6 @@
 // sulphur round the fumaroles, ash on the wall's terraces, old lava on the floor, scoria on the cones, and round the lake's
 // pit the lava veins, glowing (dull by day, bright at night: the summit glow).
 REGISTER({name:'The penitentes\' benches (snow treads, rock steps)',x:-500,z:0,y:terrainH(-500,0)-120,r:2300,h:420,plateau:true});
-for(let x=-2200;x<=2200;x+=FLANK.tread*.9)for(let z=-1800;z<=1800;z+=1200){const B=benchAt(x,z);if(B.riser>.3)REGISTER({name:'A rock step (an old flow\'s front)',x,z,y:terrainH(x,z)-40,r:160,h:110,rim:true});}
-REGISTER({name:'The snowline and the tundra below it',x:2100,z:0,y:terrainH(2100,0)-60,r:700,h:200,tundra:true});
 // ---------------------------------------------------------------- the paint
 const K=hx=>new THREE.Color(hx);
 const PAINT={SNOW:K(0xeef2f8),SNOW2:K(0xdce4ee),BAS:K(0x3c3836),RED:K(0x6a3426),PALE:K(0x8a8070),ASH:K(0x6e6a64),LAVA:K(0x221e1e),SUL:K(0xd8c040),ICE:K(0xc8dcec),SCOR:K(0x5a2a22)};

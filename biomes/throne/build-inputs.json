@@ -2449,7 +2449,7 @@
     "biomes/throne/stations/penitentes/45-host-stage.js": "168f575b1c20f108fdada07b89f30437e514479cdf242a6b295815d450554ab2",
     "biomes/throne/stations/penitentes/47-host-land.js": "639cd6a881648052b91340d8f1407af38787e60ca5518996f7bb3c36881e9b0f",
     "biomes/throne/stations/penitentes/82-host-sky.js": "5ca49ccf778cd0e18cefb38b2ff8a7bb53c1458a7fa77c841b4660646a4a0e2d",
-    "biomes/throne/stations/penitentes/84-host-ground.js": "224c8e2850e353b5eee4dbd610539008b1decc10a56867df3c316bc57a022658",
+    "biomes/throne/stations/penitentes/84-host-ground.js": "7cd04233bddf22a9d847227108d8104ba79ac157c67bd54f4e7b128fdbbf30c9",
     "biomes/throne/stations/penitentes/86-host-pen.js": "115183e2dd0f32b750ba81eff398dbb6943f592780887d3159e6c2572585e42d",
     "biomes/throne/stations/penitentes/89-host-atmos.js": "3e50f67c971cd2ec6e32cec60dfffa284c321069a160ef7435e4b1e068b2739c",
     "biomes/throne/stations/penitentes/89-host-sky.js": "658e9f7f990a7bddd369d2885a83f335e52e6581960f13724e99878ce2baebda",
@@ -2598,7 +2598,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/host/89-atmos-h-skyhost.js": "0dc57df1579b14375a1b611938a1138349929c8b858d3dbacb7550db9081dca7",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
@@ -2643,12 +2643,12 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/throne/dist/throne-penitentes.html": "c6ffafb199827d28204e90020ced1de8d6bdb75d5c93c13ac6beac298e4494b8",
+    "biomes/throne/dist/throne-penitentes.html": "5bbcb41dbba232a0a9931e282bd01c1c26a45bff919d8c10f4a4e75930b2a2c6",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-penitentes.html": "c6ffafb199827d28204e90020ced1de8d6bdb75d5c93c13ac6beac298e4494b8",
+    "biomes/throne/dist/throne-penitentes.html": "5bbcb41dbba232a0a9931e282bd01c1c26a45bff919d8c10f4a4e75930b2a2c6",
     "biomes/throne/dist/throne.tex.throne-2.js": "19429a0d9c8850f9e38ea711db8bf6b75382ac3592bf9f953497f8e9f73802e6",
     "biomes/throne/dist/throne.tex.throne.js": "51b0c6a408709e02f8cbb6323a317fe660708c4955b84c73bb8d1fc7d49e56f4"
    }
