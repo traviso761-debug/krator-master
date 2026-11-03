@@ -350,9 +350,14 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   function reachOne(b, P){
     var W=KWALK.create(), w2=function(lx,lz){ return intToWorld(b, lx, lz); }, floors={};
     P.rooms.forEach(function(R){ floors[R.id]=W.poly({ pts:R.poly.map(function(q){ var w=w2(q[0],q[1]); return [w[0], w[1], b.y+R.y]; }), name:R.id, tag:R.kind }); });
+    /* a street door's corridor that runs on to a room deeper than 1.6 m (doorIn) is clear of walls, as walkable() lets the walker through
+       it: the inner face of a tapering shell drawn there has no doorway of its own */
+    var corr=P.doors.filter(function(d){ return d.kind==='exterior' && d.fixture && FIX.byId[d.fixture]; }).map(function(d){ var D=FIX.byId[d.fixture];
+      return { at:d.at, nx:Math.sin(d.yaw), nz:Math.cos(d.yaw), hw:Math.max(0.3, d.w/2), din:doorIn(b, P, D) }; }).filter(function(c){ return c.din>1.6+1e-6; });
+    function inCorr(lx, lz){ return corr.some(function(c){ var s=(lx-c.at[0])*c.nx+(lz-c.at[1])*c.nz, u=(lx-c.at[0])*c.nz-(lz-c.at[1])*c.nx; return s<0.05 && s>-c.din && Math.abs(u)<c.hw; }); }
     P.walls.forEach(function(Wl){ var A=Wl.a, B=Wl.b, L=Math.hypot(B[0]-A[0],B[1]-A[1]); if(L<0.05) return; var tx=(B[0]-A[0])/L, tz=(B[1]-A[1])/L;
       var gaps=(Wl.openings||[]).filter(function(o){ return o.door; }).map(function(o){ return [o.u-o.w/2, o.u+o.w/2]; });
-      for(var u=0.1; u<L; u+=0.2){ if(gaps.some(function(g){ return u>g[0]-0.05 && u<g[1]+0.05; })) continue;
+      for(var u=0.1; u<L; u+=0.2){ if(gaps.some(function(g){ return u>g[0]-0.05 && u<g[1]+0.05; })) continue; if(inCorr(A[0]+tx*u, A[1]+tz*u)) continue;
         var w=w2(A[0]+tx*u, A[1]+tz*u), r=Math.max(0.06, (Wl.thick==null?0.12:Wl.thick)/2); W.block([w[0]-r,w[0]+r,w[1]-r,w[1]+r, b.y+Wl.y+0.02, b.y+Wl.y+Wl.h], Wl.id); } });
     /* a stair as the walker climbs it (stairAt above): rising from its foot va to its top vb, then level for 0.35 m either end */
     var ladder=false;
