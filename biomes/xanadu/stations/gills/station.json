@@ -1,0 +1,12 @@
+{
+ "note": "Station gills: Alph's head, the White Gills (Wāiṭ Gīl) on the twins' Xanadu side (biomes/gills/PLAN.md section 11 item 6). The shared life is biomes/gills' (read in place, [G data]); the core pieces of HANDOFF-REBUILD.md 'Taking it, the Gills' by path. The Vale's fountain (src/89x) is replaced by the station's, forced by the breath.",
+ "reads": {
+  "44-gills-life.js": "biomes/gills/src/44-gills-life.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "35b-core-lamina.js": "core/terrain/35b-core-lamina.js",
+  "35c-core-lamina-shade.js": "core/terrain/host/35b-core-lamina-shade.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ },
+ "hazard": true
+}

@@ -158,10 +158,12 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            # a station's tile is its own ground: LAND.exportBox, where it sets one (the base's box is off its map or holds none of a section)
+            box = await pg.evaluate("()=>{try{const b=LAND.exportBox;return b?(typeof b==='function'?b():b):null;}catch(e){return null;}}") or EXPORT_BOX
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % [round(v) for v in box])
             if not pok:
                 fails.append("assert export-profile")
 

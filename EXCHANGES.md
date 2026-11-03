@@ -634,6 +634,9 @@ item (`BIO.def('teabush', ...)` in `50`) and places it itself; there is no one-p
 xanadu session's. **The five shared species** are separate copies in each kit; oidong's changed this turn (keys and indices kept): limb joints on all
 five, the wisteria's racemes held to their limbs (card cell kept), the far tier on octahedral impostors.
 
+**Taken (pair 6, 2026-11-03):** both rows, in xanadu's station `cloud` (`stations/cloud/station.json` reads oidong's 50 and 55): the tea in place,
+the cherry as `BIO.kin('oidong.cherry')` keyed `cloudcherry`, a deeper rose. The five shared species keep their keys and indices in both kits.
+
 ### rift ↔ xanadu
 
 **Existing exchanges: both directions. No proposal needed.**
@@ -722,6 +725,10 @@ its pattern.
 |---|---|---|---|---|---|---|
 | xanadu→godthrone | `frostwillow` | Frost willow | wind (seed fluff up the valley) and water | cousin: a prostrate dwarf willow, ankle-high, with the iridescent leaf kept | the banks of the blood river below the bloodfalls, the head of Qol Ḍrāi in the Godthrone's ET band (5.3-5.7 km) | arctic willows are the last woody plants on Earth's tundra; it is Xanadu's coldest tree, and the blood river joins the two kits |
 | godthrone→xanadu (to complete the plan) | *no key yet* | red riverweed | water | for Xanadu to draw in its rapids, as PLAN.md says | the blood river's rapids and pools through the Vale's dry Csb/Csa country | already planned; it only needs the species written |
+
+**Pair 6 (2026-11-03):** xanadu→godthrone is written: the frost willow's prostrate cousin `dwarfwillow` grows in xanadu's station `ranges`
+(ET) and is exported as `XANADU.builders` for the Godthrone's next turn to read in place. The red riverweed stays owed: the blood river (Reḍ
+Riwā) is on no xanadu page yet; the station that draws it writes the species.
 
 ### swbay ↔ throne
 
