@@ -246,6 +246,8 @@ def build_one(target, do_checks, assert_origin):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f, p in BIO_PATHS.items():   # the biome, read in place (a src/ copy with the same name would win)
+        src.setdefault(f, p)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
@@ -272,7 +274,7 @@ def build_one(target, do_checks, assert_origin):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab', side=side)
     order = sorted(order + [MATLIB_PACK])
-    if any(f.startswith('86-bio-') for f in order):   # the vendored swlowlands biome: its library pack, before the biome code
+    if any(f.startswith('86-bio-') for f in order):   # the swlowlands biome (read in place): its library pack, before the biome code
         bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'swlowlands'), 'swlowlands')
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
@@ -315,15 +317,20 @@ VENDORED_IZIZ = ['90-scene.js', '91-probe.js',
                  '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
 VENDORED_SKY = ['81-sky.js']   # ../../core/atmos/placeholder (KratorSky; Iziz's src/ copy moved there 2026-11-02; read in place with MODULARITY-PLAN.md step 4)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']   # ../highlands/src (the Republican dwellings, for the embassy)
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
-                '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
+# The south-west lowlands biome, READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's
+# ride-along; the copies had fallen behind core/biome's move, the BIO.kit hooks, the harvest data and the runtime LOD):
+# the biome core from core/biome, the kit's species, trees, floor, dress and assembly from biomes/swlowlands/src.
+BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+               '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
+               '65-biome-swlowlands-dress', '70-biome-swlowlands']
+BIO_PATHS = {'86-bio-%s.js' % b: os.path.join(ROOT, *(('core', 'biome') if '-core-' in b else ('biomes', 'swlowlands', 'src')), b + '.js')
+             for b in BIO_INPLACE}
 
 
 def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_VERN + VENDORED_IZIZ + VENDORED_SKY + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
+    for f in VENDORED + VENDORED_VERN + VENDORED_IZIZ + VENDORED_SKY + VENDORED_HL:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -340,12 +347,7 @@ def vendor_check():
                              ('iziz-vernacular', VENDORED_VERN, os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
                              ('core/atmos/placeholder', VENDORED_SKY, os.path.join(ROOT, 'core', 'atmos', 'placeholder')),
-                             ('highlands', VENDORED_HL, os.path.join(ROOT, 'kits', 'highlands', 'src')),   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
-                             # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
-                             ('core/biome', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' in b],
-                              os.path.join(ROOT, 'core', 'biome')),
-                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' not in b],
-                              os.path.join(ROOT, 'biomes', 'swlowlands', 'src'))):
+                             ('highlands', VENDORED_HL, os.path.join(ROOT, 'kits', 'highlands', 'src'))):   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % label)
             continue
