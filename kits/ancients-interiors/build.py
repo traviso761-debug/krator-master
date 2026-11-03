@@ -16,6 +16,7 @@ kits/interiors' demo), then ONE inline script:
   kits/interiors/sets/noahs-regret.js     the arcology's set: the crew, bunkroom and mess programmes
   kits/interiors/adapters/catalog-adapter.js
   kits/interiors/src/50-shell.js, 55-cutaway.js   the room shells and the cut-away
+  core/door/10, 20, 90                   KDOOR, KGLASS, KDOORHOST (the sheet's doors and glass, src/75-ai-doors.js)
   src/10-49*.js                          this kit's core
   src/50-98*.js                          the demo sheet
 
@@ -49,6 +50,8 @@ except Exception:
     pass
 
 IX_VIEWS = ['50-shell.js', '55-cutaway.js']
+# core/door (core/door/README.md): KDOOR, KGLASS, KDOORHOST for the demo sheet's doors and glass (src/75-ai-doors.js); not in the core
+DOOR_FILES = ['10-core-door.js', '20-core-glass.js', '90-core-door-host.js']
 # the arcology's own interior set: its crew, bunkroom and mess programmes (the cabins and the wardroom use them)
 IX_SETS = ['noahs-regret']
 CATALOG_LOADED = ['three.min.js', 'krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js',
@@ -116,7 +119,8 @@ def main():
               [('kits/interiors/src/' + f, read(os.path.join(IXK, 'src', f))) for f in IX_VIEWS]
     core = [(f, read(os.path.join(HERE, f))) for f in core_files()]
     demo = [('src/' + f, read(os.path.join(SRC, f))) for f in frags if f.endswith('.js') and f >= '50']
-    parts = ix_core + ix_rest + core + demo
+    door = [('core/door/' + f, read(os.path.join(ROOT, 'core', 'door', f))) for f in DOOR_FILES]
+    parts = ix_core + ix_rest + door + core + demo
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:
