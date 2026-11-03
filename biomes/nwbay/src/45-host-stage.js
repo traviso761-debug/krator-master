@@ -397,7 +397,7 @@ if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint
 // are drawn), the others core/tags records alone (nothing is drawn in them, so no registered volume). No node model is drawn
 // (kits/resources' node defs are not on this page): the records are what a game reads
 const GEO_NODES=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.nodes:[]).map(n=>{const h=groundBase(n.x,n.z),dry=h>.5&&bayIn(n.x,n.z)>8;
- if(dry)(n.kind==='marble'?REGISTER:BIO.record)({name:'A '+n.kind+' node ('+n.grade+' grade; the geology field, map 5.1)',x:n.x,y:h,z:n.z,r:n.kind==='marble'?(NWBAY_GEO.band.outcrop||46):6,h:4,kind:'resource',
+ if(dry)(n.kind==='marble'?REGISTER:BIO.record)({name:'A '+n.kind+' node ('+n.grade+' grade; the geology field, map 5.1)',x:n.x,y:h,z:n.z,r:n.kind==='marble'?(NWBAY_GEO.band.outcrop==null?46:NWBAY_GEO.band.outcrop):6,h:4,kind:'resource',
   tags:{resource:{id:n.id,kind:n.kind,grade:n.grade,src:'kits/resources/data/geology.json',anchor:NWBAY_GEO.anchor}}});return Object.assign({dry},n);});
 // THE RISERS AS DROPS (2026-10-25): the river's treads and risers worked out here exactly as 89w-host-water.js hands them to
 // WATER.terraces (the samples every 5 m, a tread a run of non-ramp samples on one step, kept when 4 m or longer, a step that

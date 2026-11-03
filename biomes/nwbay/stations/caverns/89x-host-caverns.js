@@ -30,7 +30,7 @@ const CAVES=(function(){const K=typeof NWBAY_KARST_N!=='undefined'?NWBAY_KARST_N
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vSky;')
    .replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.directDiffuse*=vSky;reflectedLight.directSpecular*=vSky;reflectedLight.indirectDiffuse*=mix(.12,1.,vSky);reflectedLight.indirectSpecular*=vSky;');};
  mat.customProgramCacheKey=()=>'nwbay-cave-sky';
- const S=Lw.s||14,TABLE=N.table,LIMEC=new THREE.Color(0xbdb6a8),DROWN=new THREE.Color(0x5f8a84),cc=new THREE.Color();
+ const S=Lw.s==null?14:Lw.s,TABLE=N.table,LIMEC=new THREE.Color(0xbdb6a8),DROWN=new THREE.Color(0x5f8a84),cc=new THREE.Color();
  const grp=new THREE.Group();grp.name='the Hykkousoi karst';scene.add(grp);
  const meshed=new Set();let tris=0,chunks=0;
  function meshKey(key){if(meshed.has(key))return;meshed.add(key);const ch=C.meshChunk(key);if(!ch.idx.length)return;const nv=ch.pos.length/3,G=65535;
@@ -104,7 +104,7 @@ const CAVES=(function(){const K=typeof NWBAY_KARST_N!=='undefined'?NWBAY_KARST_N
   tags:{cave:{part:'chamber',flooded:!!H.flooded,id:H.id},...(H.flooded?{road:ROAD}:{})}}));
  const HZ=KKARST.hazards(N).filter(R=>!(R.tags.hazard.kind==='fall'&&/^nw:cenote/.test(R.id)));   /* a cenote's shaft is under its pool: a swim, not a fall */
  let roads=0;HZ.forEach(R=>{const h=R.tags.hazard,isRoad=h.kind==='drown';if(isRoad){h.spares=BREATHERS;roads++;}
-  const sh=h.shape||{},r=sh.r!=null?sh.r:Math.max(1,(sh.w||2)/2),hh=sh.h!=null?sh.h:2;
+  const sh=h.shape||{},r=sh.r!=null?sh.r:Math.max(1,(sh.w==null?2:sh.w)/2),hh=sh.h!=null?sh.h:2;
   rec({name:isRoad?'A sump (the Hykkousoi road; drowns a land-breather)':'A shaft (a fall)',x:R.at[0],y:R.at[1],z:R.at[2],ry:R.ry||0,r,h:Math.max(.5,hh),kind:'hazard',id:'karst:'+R.id,
    tags:isRoad?{hazard:h,road:ROAD}:{hazard:h}});});
  // ---------------------------------------------------------------- the lamp at the eye, on under the ground

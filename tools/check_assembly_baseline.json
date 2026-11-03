@@ -178,5 +178,9 @@
  "biomes/throne/dist/throne-delta.html: MISSING BIO.leafOn": 1,
  "biomes/throne/dist/throne-delta.html: MISSING BIO.leafQ": 1,
  "biomes/throne/dist/throne-penitentes.html: MISSING BIO.leafOn": 1,
- "biomes/throne/dist/throne-penitentes.html: MISSING BIO.leafQ": 1
+ "biomes/throne/dist/throne-penitentes.html: MISSING BIO.leafQ": 1,
+ "biomes/nwbay/dist/nwbay.html: MISSING BIO.leafOn": 1,
+ "biomes/nwbay/dist/nwbay.html: MISSING BIO.leafQ": 1,
+ "biomes/nwbay/dist/nwbay-caverns.html: MISSING BIO.leafOn": 1,
+ "biomes/nwbay/dist/nwbay-caverns.html: MISSING BIO.leafQ": 1
 }

@@ -47,8 +47,8 @@ Dropped, and why:
 
 The owner asked for nwbay to be brought up to what landed on the core and the map after its pair-1 turn (`HANDOFF-REBUILD.md`, the owner's
 decisions of 2026-11-03: limestone caverns at its next rebuild; `BACKPORT.md`'s universal set; map 5.1). Branch `claude/nwbay-catchup-cloud`
-from `claude/biome-rebuild` (ffe594f9a). Built in a cloud session with no GPU: checked under software GL (`HANDOFF-REBUILD.md`, nwbay's
-catch-up paragraph, has what ran). **Species: none added, removed or re-keyed; `NWBAY.SPECIES` keeps its 20 keys and indices.** Every look
+from `claude/biome-rebuild` (ffe594f9a). Built in a cloud session with no GPU: `verify.py --assert` passes on both pages under software GL (the showcase
+triangles OVER 10 M, a warning: the joints; `HANDOFF-REBUILD.md`, nwbay's catch-up paragraph, has the numbers). The GPU run is the coordinator's. **Species: none added, removed or re-keyed; `NWBAY.SPECIES` keeps its 20 keys and indices.** Every look
 change in the fragments k-guilin reads (`50`, `55`, `56`) is on only where nwbay's host asks (`NWBAY_LOOK.joints`, `NWBAY_LOOK.holds`), so
 k-guilin draws as before until its turn (its page's text moves by the source bytes when it is rebuilt; a scratch build of it passes).
 
