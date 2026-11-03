@@ -557,8 +557,36 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.9,
-    "mean": 0.6,
+    "mean": 0.425244782295975,
     "sourceMean": 0.4252
+   }
+  },
+  "ground.black": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.black.albedo.webp"
+   },
+   "lib": "ground.quartzite.black",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "26046821bf8b5933e13fdef4c6f9879f1b2efb36",
+    "normal": "8db57e1e21ac603729795e5f94ee3db98442d04c",
+    "roughness": "64c26d3ad62780643cc0e3b31fa44db05efe573a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.85,
+    "mean": 0.13961356314266427,
+    "sourceMean": 0.1396
    }
   },
   "ground.clad": {
@@ -585,7 +613,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.6,
+    "mean": 0.47099740624820485,
     "sourceMean": 0.471
    }
   },
@@ -613,7 +641,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.8,
-    "mean": 0.6,
+    "mean": 0.32445605625526575,
     "sourceMean": 0.3245
    }
   },
@@ -641,7 +669,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.7,
-    "mean": 0.6,
+    "mean": 0.44003435192631735,
     "sourceMean": 0.44
    }
   },
@@ -669,7 +697,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.85,
-    "mean": 0.6,
+    "mean": 0.3072730479790183,
     "sourceMean": 0.3073
    }
   },
@@ -697,7 +725,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.9,
-    "mean": 0.6,
+    "mean": 0.5416378887071797,
     "sourceMean": 0.5416
    }
   },
@@ -725,7 +753,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.6,
-    "mean": 0.6,
+    "mean": 0.41579232116699216,
     "sourceMean": 0.4158
    }
   },
@@ -753,7 +781,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.5,
-    "mean": 0.6,
+    "mean": 0.37560365416283703,
     "sourceMean": 0.3756
    }
   },
@@ -781,7 +809,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.7,
-    "mean": 0.6,
+    "mean": 0.10974840004416073,
     "sourceMean": 0.1097
    }
   },
@@ -809,7 +837,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.9,
-    "mean": 0.6,
+    "mean": 0.6354740677568024,
     "sourceMean": 0.6355
    }
   },
@@ -837,7 +865,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.8,
-    "mean": 0.6,
+    "mean": 0.37821776016833736,
     "sourceMean": 0.3782
    }
   },
@@ -865,7 +893,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.5,
-    "mean": 0.6,
+    "mean": 0.42592702716303804,
     "sourceMean": 0.4259
    }
   },

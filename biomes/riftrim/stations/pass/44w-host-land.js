@@ -43,7 +43,7 @@ const LAND={name:'The crossing (riftrim station 5)',title:'Krator biome — the 
  species:[],exportBox:[-150,2500,150,2800],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree grows here: no bucket to export */
  sky:{px:205,py:915},atm:.58,cloud:.08,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330) */
  fog:{falloff:1/2600,sun:.5,sky:.15},climate:{cold:true,dry:true},wet:false,snowLine:[6200,6600],snowBase:0,frozen:true,groundN:540,
- groundLayers:['tundra','lichen','clad','snowalgae','iris'],
+ groundLayers:['black','lichen','clad','snowalgae','iris'],
  talusPalette:[0x5e5a56,0x6e6a66,0x4e4a48,0x7a7672],talusMatrix:0x5a5652,
  far:(x,z,S0)=>{const g=terrainH(clamp(x,-S0,S0),clamp(z,-S0,S0)),dn=Math.max(0,-S0-z),ds=Math.max(0,z-S0),de=Math.max(0,x-S0);
   return g+dn*.45*(1+.4*smooth(0,9000,dn))+de*.15*smooth(0,4000,dn)-ds*.32*smooth(0,9000,ds)+220*(fbm(x*.0008,z*.0008,412,3)-.5)*smooth(0,1500,Math.max(Math.abs(x),Math.abs(z))-S0);},
