@@ -71,10 +71,9 @@ def sources():
     return out
 sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
 import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
-VENDORED = {
-            # the culture symbols, shared with the socket packs; vendored here because other builds load the
-            # catalog's files by relative path from kits/ and cannot reach core/. Re-copy after editing upstream.
-            'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}
+# the culture symbols are core/sockets/38-symbols.js, read in place under their old name krator-symbols.js (core/catalog/catalog.py;
+# MODULARITY-PLAN.md step 3): nothing here is vendored any more
+VENDORED = {}
 
 # the placeholder sky (KratorSky and its h3()), read in place from core/atmos/placeholder (MODULARITY-PLAN.md step 1); the
 # names keep their place in the fragment order. A src/ copy would be ignored: --vendor-check reports it.

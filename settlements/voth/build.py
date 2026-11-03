@@ -42,7 +42,7 @@ VENDOR = [
 # the city page's interiors (40-vc-interiors.js) furnish from the catalog's parametric kit and these culture sets:
 # Voth's common, court, trade and training pieces and its interiors' own (krator-master-furniture-voth.js), then the
 # chain kits/interiors falls back along (Iziz, generic) and the generic goods (containers, food, supplies)
-CITY_VENDOR = VENDOR + [os.path.join(CORECAT if f == 'krator-furniture-kit.js' else CAT, f) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
+CITY_VENDOR = VENDOR + [{'krator-furniture-kit.js': os.path.join(CORECAT, f), 'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}.get(f, os.path.join(CAT, f)) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
                                                      'krator-master-furniture-generic-goods.js', 'krator-master-furniture-iziz.js', 'krator-master-furniture-voth.js')]
 
 

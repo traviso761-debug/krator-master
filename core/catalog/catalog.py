@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT = os.path.join(ROOT, 'kits', 'catalog')
 _FILES = json.load(open(os.path.join(HERE, 'files.json'), encoding='utf-8'))   # the list, shared with the node tools
 ENGINE = _FILES['engine']
-SYMBOLS = 'krator-symbols.js'        # the culture symbols, at files.json "symbols"
+SYMBOLS = 'krator-symbols.js'        # the culture symbols: the name resolves to files.json "symbols", core/sockets/38-symbols.js
 WHERE = {f: os.path.join(HERE, f) for f in ENGINE}
 WHERE[SYMBOLS] = os.path.join(ROOT, *_FILES['symbols'].split('/'))
 
