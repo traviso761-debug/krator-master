@@ -43,6 +43,8 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 LOCUS_SRC = os.path.join(ROOT, 'settlements', 'locus', 'src')
 sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
 import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
+import yunikit              # the Yuni kit's buildings (55-59c), which Locus reads on its frame (step 4b)
 REED_SRC = os.path.join(ROOT, 'settlements', 'reedlake', 'src')
 MAT_DIR = os.path.join(ROOT, 'core', 'materials')
 WORLD_DIR = os.path.join(HERE, 'world')
@@ -301,7 +303,7 @@ def collect():
     for f in os.listdir(LOCUS_SRC):
         if f[0].isdigit() and f not in LOCUS_SKIP:
             paths[f] = os.path.join(LOCUS_SRC, f); origin[f] = 'locus'
-    for kit, name in ((locuskit, 'kits/locus'), (abysskit, 'kits/eastern-abyssal')):   # Locus's two kits, now kits of their own
+    for kit, name in ((yunikit, 'kits/yuni'), (locuskit, 'kits/locus'), (abysskit, 'kits/eastern-abyssal')):   # the Yuni kit and Locus's two, kits of their own
         for f, p in kit.paths().items():
             if f not in LOCUS_SKIP:
                 paths[f] = p; origin[f] = name

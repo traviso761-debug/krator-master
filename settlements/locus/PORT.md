@@ -23,14 +23,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47-texture.js` | 17.0 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-structure.js` | 9.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-assets.js` | 17.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 53 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws; 2026-10-15: buildAsset's site carries key, family, culture and its turned box for its core/tags record |
-| `src/55-mid-example.js` | 3.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/56-mid.js` | 63.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 297 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/57-poor.js` | 25.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 139 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/58-rich.js` | 47.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 212 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59-civic.js` | 19.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 89 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59a-civic-park.js` | 27.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 133 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59b-civic-library.js` | 28.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 163 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59c-civic-furniture.js` | 8.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-flora.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/62-plants.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/63-furniture.js` | 9.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 61 | 0 | 0 | 0 | 0 | 0 |  |

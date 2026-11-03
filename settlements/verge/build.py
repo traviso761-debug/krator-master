@@ -135,15 +135,17 @@ def izv_bundle():
 LOCUS = os.path.join(ROOT, 'settlements', 'locus', 'src')
 sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
 import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
+import yunikit              # the Yuni kit's buildings (56-59c), which Locus draws on its frame (step 4b)
 # Locus fragments cut into parts so they can be read (settlements/locus/build.py CONTINUES): YKIT takes the fragment
 # whole, its parts joined back on under the fragment's own name, so the bundle is the same text as before the cut.
 LOCUS_PARTS = {'59-civic.js': ['59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js']}
 
 
 def ykit_files():
-    names = ['05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js',
-             '56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js']
+    names = ['05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js']
     out = [os.path.join(LOCUS, f) for f in names]
+    out += [yunikit.path(f) for f in ('56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js')]   # their parts: LOCUS_PARTS
     out += [locuskit.path(f) for f in locuskit.FILES]
     out += [abysskit.path(f) for f in abysskit.FILES]
     out.append(os.path.join(LOCUS, '72-lights.js'))
@@ -154,7 +156,7 @@ def ykit_bundle():
     fs = ykit_files()
     parts = []
     for f in fs:
-        s = rd(f) + ''.join(rd(os.path.join(LOCUS, p)) for p in LOCUS_PARTS.get(os.path.basename(f), []))
+        s = rd(f) + ''.join(rd(os.path.join(os.path.dirname(f), p)) for p in LOCUS_PARTS.get(os.path.basename(f), []))
         if f.endswith('10-core.js'):
             n = s.count('window.YUNI_TARGET')
             if n != 1:

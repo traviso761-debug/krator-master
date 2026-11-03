@@ -168,7 +168,14 @@ function assetFrame(x,z,ry,opt){
   /* a door: dark reveal, plank leaf, optional parabolic head; registers the door point for the future life layer */
   F.door=function(lx,lz, nlx,nlz, w,h, col, ly){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0);   /* ly: sill height, for doors up on a plinth */
     BOX(q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); BOX(q[0]+n[0]*0.04, y0, q[1]+n[1]*0.04, w, h, 0.10, a, col!=null?col:PLANKC[3], 'plank');
-    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); };
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(null); };
+  /* The Yuni kit's frame calls (kits/yuni; MODULARITY-PLAN.md step 4b, 2026-11-03): Locus draws the kit's buildings on this
+     frame, which keeps no fixtures registry or interiors planner (Yuni's 51-fixtures.js, 64-interiors.js), so an opening
+     registers its door point as F.door does (F.doors, F.doorIds kept in step) and F.mass, a volume for the interiors
+     planner, draws nothing. Their working doors come with core/door. */
+  F.opening=function(lx,lz, nlx,nlz, w,h, ly, o){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), y0=F.y+(ly||0);
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(null); };
+  F.mass=function(o){};
   /* toron: the projecting timber posts of Sahelian walls — rows of them on a wall plane */
   F.toron=function(lx,ly,lz, nlx,nlz, len, r0){ var q=F.p(lx,lz), n=F.dir(nlx,nlz); ROD(q[0]-n[0]*0.3,F.y+ly,q[1]-n[1]*0.3, q[0]+n[0]*(len||1.1),F.y+ly-0.05,q[1]+n[1]*(len||1.1), r0||0.09, TORONC[0], 'timber'); };
   return F;

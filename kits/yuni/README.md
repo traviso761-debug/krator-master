@@ -24,9 +24,9 @@ planner). The engine is not a kit or a core module: each world that runs it has 
 
 **Who takes it.**
 - Read in place: `settlements/yuni` (the city places the buildings; its `sheet` target, `yuni-assets.html`, is the kit's sheet).
-- Vendored, checked against this kit: `settlements/locus` (`python3 build.py --vendor-check`), whose copies forked before
-  Yuni's buildings took tagged doors and openings: `56`, `57`, `58`, `59` and `59c` drift on purpose until Locus takes Yuni's
-  frame (`settlements/locus/KNOWN_ISSUES.md`). Mungo and Verge's `YKIT` take Locus's copies.
+- Read in place on Locus's frame (2026-11-03): `settlements/locus` (its own frame, `53-assets.js`, has the kit's `F.opening`,
+  `F.mass` and `F.doorIds`, but no fixtures registry or interiors planner, so an opening there is a door point and a mass draws
+  nothing), and through Locus Mungo and Verge's `YKIT`. Until then Locus kept an older fork of these files.
 - The interiors kit's sets `kits/interiors/sets/yuni.js` and `yuni-town.js` furnish these buildings by key.
 
 **Its own sheet.** Not yet: the sheet is Yuni's `sheet` target, on Yuni's page shell, and `verify.py yuni-assets.html

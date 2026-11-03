@@ -117,24 +117,16 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
 import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
-import yunikit              # the Yuni kit: Locus's 55-59c are an older fork of it (--vendor-check; KNOWN_ISSUES.md)
+import yunikit              # the Yuni kit: its buildings (55-59c), read in place on Locus's frame (53-assets.js; MODULARITY-PLAN.md step 4b)
+
 
 
 def vendor_check():
-    """Compare Locus's copies of the Yuni base buildings (src/55-59c) with the Yuni kit (kits/yuni/src). They forked
-    before Yuni gave its buildings tagged doors and openings (F.door, F.opening, F.mass: Yuni's 51-fixtures.js and
-    53-assets.js), so they drift on purpose until Locus takes Yuni's frame (KNOWN_ISSUES.md)."""
-    drift = []
-    for f in yunikit.FILES:
-        mine, up = os.path.join(SRC, f), yunikit.path(f)
-        with open(mine, encoding='utf-8') as a, open(up, encoding='utf-8') as b:
-            la, lb = a.read().splitlines(), b.read().splitlines()
-        if la != lb:
-            import difflib
-            n = sum(1 for d in difflib.ndiff(la, lb) if d[:1] in '+-')
-            drift.append('%s (%d lines)' % (f, n))
-    print('vendor-check kits/yuni: %s' % ('all %d identical' % len(yunikit.FILES) if not drift
-                                         else 'DRIFT in ' + ', '.join(drift)))
+    """Nothing vendored: the Yuni kit's buildings (kits/yuni) and Locus's two kits are read in place."""
+    missing = [p for p in list(yunikit.paths().values()) + list(locuskit.paths().values()) + list(abysskit.paths().values())
+               if not os.path.isfile(p)]
+    print('vendor-check: nothing vendored; kits/yuni, kits/locus and kits/eastern-abyssal read in place%s'
+          % (('; MISSING ' + ', '.join(missing)) if missing else ''))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
 VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
@@ -304,7 +296,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for kit in (locuskit, abysskit):   # the two kits (a src/ copy with the same name would win: none)
+    for kit in (yunikit, locuskit, abysskit):   # the Yuni kit and Locus's two (a src/ copy with the same name would win: none)
         for f, p in kit.paths().items():
             paths.setdefault(f, p)
     for f in RECORD_FILES:
@@ -332,7 +324,7 @@ def main():
                 print('  -', e)
             sys.exit(1)
 
-    BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far (and the Yuni kit, which --vendor-check compares); then exit
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
     if SIDE:   # the pack beside the pages, one file they all share
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))

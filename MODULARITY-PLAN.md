@@ -292,7 +292,12 @@ leaves each settlement folder as its layout and page, building as it does today 
     (`core/rand`, `core/noise`); Yuni keeps them only by the owner's exception (GODOT-PLAN.md, Phase 2 item 1). So no
     `core/yuni-engine`: the lineage converges by porting each world onto core (rand, noise, tags, catalog, host) as it is
     rebuilt on the open world, and the buildings, which are the reusable part, are a kit already.
-  - Left: Locus taking the kit's buildings (it needs Yuni's frame first, and moves Locus's, Mungo's and Verge's pages);
+  - **Locus takes the kit, done 2026-11-03** (owner): not by taking Yuni's frame (its fixtures registry, door script and
+    interiors planner would re-fork the engine into Locus) but by giving Locus's frame the three calls the kit makes that it
+    lacked (`F.opening` registers a door point as `F.door` does, `F.mass` draws nothing, `F.doorIds` kept in step). Locus reads
+    `kits/yuni` in place; Mungo and Verge's `YKIT` with it. The pages move by what Yuni changed in the buildings (the poor
+    shack's frame and height, the mat rack). Their working doors come with core/door's pass.
+  - Left:
     Verge's `YKIT` reading Locus's world core (`10-core`, `50-structure`), which goes when Verge is rebuilt on the open world.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
