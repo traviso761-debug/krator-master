@@ -97,12 +97,15 @@ const CAVES=(function(){const K=typeof NWBAY_KARST_N!=='undefined'?NWBAY_KARST_N
  const BREATHERS=['water-breathers'],ROAD={for:BREATHERS,people:'Hykkousoi',kind:'sump',note:'a flooded passage: the water-breathers\' road through the karst, not a hazard to them'};
  REGISTER({name:'The Hykkousoi karst (a drowned branchwork in thick grey limestone)',x:(K.box[0]+K.box[2])/2,z:(K.box[1]+K.box[3])/2,y:N.spring.y-6,r:Math.hypot(K.box[2]-K.box[0],K.box[3]-K.box[1])/2,h:Math.max(30,N.table-N.spring.y+40),kind:'cave',
   tags:{cave:{rock:'limestone',kind:'branch',drowned:true,level:N.spring.y,table:N.table,passages:N.passages.length,chambers:N.chambers.length,site:'biomes/KARST-SITES-5.1.md site 1'},road:ROAD}});
- N.chambers.forEach(H=>REGISTER({name:(H.station==='tiankeng'?'The old river chamber under the tiankeng':H.station==='cenote'?'The flooded chamber under a cenote':'A chamber')+(H.flooded?' (flooded)':''),x:H.c[0],y:H.c[1],z:H.c[2],r:Math.max(H.rx,H.rz),h:H.h,kind:'cave',
+ /* the chambers and the hazards are core/tags records (BIO.record), not registered volumes: most of the cave is meshed only when the eye
+    comes near, and a registered volume is something drawn (the probe's registered-volumes-non-empty) */
+ const RECS=[];const rec=o=>{RECS.push(o);BIO.record(o);};
+ N.chambers.forEach(H=>rec({name:(H.station==='tiankeng'?'The old river chamber under the tiankeng':H.station==='cenote'?'The flooded chamber under a cenote':'A chamber')+(H.flooded?' (flooded)':''),x:H.c[0],y:H.c[1],z:H.c[2],r:Math.max(H.rx,H.rz),h:H.h,kind:'cave',
   tags:{cave:{part:'chamber',flooded:!!H.flooded,id:H.id},...(H.flooded?{road:ROAD}:{})}}));
  const HZ=KKARST.hazards(N).filter(R=>!(R.tags.hazard.kind==='fall'&&/^nw:cenote/.test(R.id)));   /* a cenote's shaft is under its pool: a swim, not a fall */
  let roads=0;HZ.forEach(R=>{const h=R.tags.hazard,isRoad=h.kind==='drown';if(isRoad){h.spares=BREATHERS;roads++;}
   const sh=h.shape||{},r=sh.r!=null?sh.r:Math.max(1,(sh.w||2)/2),hh=sh.h!=null?sh.h:2;
-  REGISTER({name:isRoad?'A sump (the Hykkousoi road; drowns a land-breather)':'A shaft (a fall)',x:R.at[0],y:R.at[1],z:R.at[2],ry:R.ry||0,r,h:Math.max(.5,hh),kind:'hazard',id:'karst:'+R.id,
+  rec({name:isRoad?'A sump (the Hykkousoi road; drowns a land-breather)':'A shaft (a fall)',x:R.at[0],y:R.at[1],z:R.at[2],ry:R.ry||0,r,h:Math.max(.5,hh),kind:'hazard',id:'karst:'+R.id,
    tags:isRoad?{hazard:h,road:ROAD}:{hazard:h}});});
  // ---------------------------------------------------------------- the lamp at the eye, on under the ground
  const lamp=new THREE.PointLight(0xffe2b8,0,45,1.6);scene.add(lamp);
@@ -110,7 +113,7 @@ const CAVES=(function(){const K=typeof NWBAY_KARST_N!=='undefined'?NWBAY_KARST_N
  window._caves={ms:Math.round(performance.now()-t0),plan:K.ms,passages:N.passages.length,sumps:N.passages.filter(p=>p.section==='sump').length,chambers:N.chambers.length,shafts:N.shafts.length,
   dolines:K.recs.length,cenoteDolines:K.recs.filter(r=>r.form==='cenote').length,sinksDropped:K.dropped,chunks:C.chunks.length,meshed:()=>meshed.size,drawn:()=>chunks,tris:()=>Math.round(tris),
   eager:eager.length,cut,speleo,pools,spring:!!spring,hazards:HZ.length,roads};
- return {C,N,K,grp,mat,meshKey,meshed,show,hazards:HZ};}catch(e){reportErr('caverns: '+(e&&e.stack||e));return null;}})();
+ return {C,N,K,grp,mat,meshKey,meshed,show,hazards:HZ,recs:RECS};}catch(e){reportErr('caverns: '+(e&&e.stack||e));return null;}})();
 // the eye may go down into the cave's voids (KHOST.take clampCam, 99-host-take.js); elsewhere the page's own floor holds it
 const STATION_CLAMP=(p,t)=>{if(CAVES&&p.y<groundH(p.x,p.z)&&CAVES.C.sdf(p.x,p.y,p.z)>.4)return;const f=Math.max(terrainH(p.x,p.z),finTop(p.x,p.z))+1.8;if(p.y<f)p.y=f;};
 // the station's views: written from the plan's own records
@@ -133,7 +136,7 @@ const STATION_CHECKS=()=>{const R=[],X=CAVES;if(!X)return[{name:'caverns-built',
  R.push({name:'a-cave-under-the-tiankeng',ok:!!under&&seen['nw:tiankeng:mouth'],detail:'the old river chamber\'s crown '+(H.c[1]+H.h).toFixed(1)+' m under the floor at '+T.floorY.toFixed(1)+' m; the mouth\'s passage joined: '+!!seen['nw:tiankeng:mouth']+'; '+c.cut.alcove+' wall triangles cut at the alcove'});
  const cen=X.K.cenotes.map(q=>q.ch.c[1]+q.ch.h<q.S.floor-1&&seen[q.ch.node]&&q.ch.flooded);
  R.push({name:'a-flooded-cave-under-each-cenote',ok:cen.length===2&&cen.every(Boolean),detail:cen.length+' cenotes, each a flooded chamber under its bed, joined: '+cen.join(', ')+'; '+c.cut.beds+' bed triangles cut over the shafts'});
- const reg=REG.filter(r=>r.kind==='hazard'&&r.tags&&r.tags.hazard&&r.tags.hazard.kind==='drown'),roads=reg.filter(r=>r.tags.road&&r.tags.road.for.indexOf('water-breathers')>=0&&(r.tags.hazard.spares||[]).indexOf('water-breathers')>=0);
+ const reg=X.recs.filter(r=>r.kind==='hazard'&&r.tags&&r.tags.hazard&&r.tags.hazard.kind==='drown'),roads=reg.filter(r=>r.tags.road&&r.tags.road.for.indexOf('water-breathers')>=0&&(r.tags.hazard.spares||[]).indexOf('water-breathers')>=0);
  R.push({name:'sumps-are-roads-for-water-breathers',ok:reg.length>0&&roads.length===reg.length,detail:roads.length+' of '+reg.length+' drown records carry tags.road and hazard.spares (land-breathers only)'});
  const bad=reg.slice(0,1).map(r=>({tags:{hazard:Object.assign({},r.tags.hazard,{spares:undefined})}})).filter(r=>r.tags.road&&(r.tags.hazard.spares||[]).length);
  R.push({name:'negative: a drown record without the road tag is caught',ok:bad.length===0&&reg.length>0,detail:'a copy stripped of road and spares would fail the check above'});
