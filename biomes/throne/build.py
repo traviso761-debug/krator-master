@@ -94,6 +94,8 @@ if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
+    # core/terrain fragments a station takes by path (station.json "terrain"; 2026-11-03: the glacier's KGLACIER, 44g and host/44h)
+    for f in STN.get('terrain',[]): PATH[os.path.basename(f)]=os.path.join(CORE_T,os.path.normpath(f))
     # core/hazard (core/hazard/README.md, "Adopting it"; 2026-10-26): station.json "hazard": true takes it and the one clock
     # (core/biome/37-core-traps.js KTRAPS.cycle); the station's records carry tags.hazard and its 99 shows the overlay
     if STN.get('hazard'):
