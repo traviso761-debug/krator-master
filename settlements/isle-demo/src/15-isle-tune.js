@@ -236,7 +236,8 @@ ISLE.TUNE.sim = {
        good its buyers could not get is still made); `least` the shelf stock of the treats and the gear a town keeps with
        no demand (a town at the abstract level buys none: watched again, its people find them) */
     govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
-      least: { kava: 600, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
+      least: { kava: 600, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50,
+        cotton: 1000 } },   /* the weavers draw cotton by the batch: a floor (2026-11-03: an unwatched town now buys its clothes at a watched one's pace, and Valapo's cotton swung) */
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
