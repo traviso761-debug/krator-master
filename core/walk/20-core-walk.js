@@ -140,7 +140,7 @@
     // it, so open the doors first. Returns {reached, unreached: [floor records], nodes, capped}: a floor is reached when a
     // sample on it was; one in the box that no sample stood on is unreached (a sealed room, a floor no stair meets).
     function reach(starts,o){
-      o=o||{};var C=o.cell||0.4,S=o.step==null?0.45:o.step,R=o.r==null?0.25:o.r,H=o.h==null?1.7:o.h,G=o.ground||null,M=o.margin==null?6:o.margin,LIM=o.limit||3e6;
+      o=o||{};var C=o.cell==null?0.4:o.cell,S=o.step==null?0.45:o.step,R=o.r==null?0.25:o.r,H=o.h==null?1.7:o.h,G=o.ground||null,M=o.margin==null?6:o.margin,LIM=o.limit==null?3e6:o.limit;
       var bb=o.box||bounds();if(!bb)return{reached:[],unreached:[],nodes:0,capped:false};
       var X0=o.box?bb[0]:bb[0]-M,X1=o.box?bb[1]:bb[1]+M,Z0=o.box?bb[2]:bb[2]-M,Z1=o.box?bb[3]:bb[3]+M;
       var NI=Math.floor((X1-X0)/C),NJ=Math.floor((Z1-Z0)/C),seen=new Set(),hit=new Set(),Q=[],head=0,capped=false;

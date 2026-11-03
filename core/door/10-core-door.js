@@ -64,7 +64,7 @@
         if((was<.5)!==(D.open<.5)||D.open===0)setWalk(D,D.open<.5);
         moved.push(D);}
       return moved;}
-    function angle(D){var s=D.open;return(D.sign||1)*K.SWING*(s*s*(3-2*s));}
+    function angle(D){var s=D.open;return(D.sign==null?1:D.sign)*K.SWING*(s*s*(3-2*s));}
     function pose(D){var a=angle(D),c=Math.cos(a),s=Math.sin(a),H=D.hinge,dx=D.p0[0]-H[0],dz=D.p0[2]-H[2];
       return[H[0]+dx*c+dz*s,D.p0[1],H[2]-dx*s+dz*c,a];}
     function walk(Wk){W=Wk||null;if(!W)return list.length;
