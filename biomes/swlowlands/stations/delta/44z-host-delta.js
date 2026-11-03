@@ -32,7 +32,7 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
  const barK=(x,z)=>{const s=sOf(x,z),d=dCh(s,tOf(x,z)),w=W(s);return s<APEX&&d<w*1.2?bar(x,z):0;};
  const talus=(x,z)=>{const s=sOf(x,z);if(s<-600)return 0;const q=clamp((dCh(s,tOf(x,z))-F(s))/420,0,1);return smooth(0,.06,q)*smooth(.2,.1,q);};
  const floodPoly=()=>{const L=[],R=[];for(let s=345;s<=3500;s+=110){const c=RIVER_T(s),f=F(s)+50;L.push(xzOf(s,c+f));R.unshift(xzOf(s,c-f));}return L.concat(R);};
- return{terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:180,springs:[],strata:S,
+ return{terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:113,springs:[],strata:S,
   flood:{low:YB-1.2,high:YB+2.2,poly:floodPoly,lagD:45,sharp:1.5},
   kinRules:[{from:'canepalm',to:'swbay.splay',share:.3,salt:0x6e41,zone:Z=>Z.rip>.4}],
   fields:{tropic:(x,z)=>.82*smooth(300,-500,sOf(x,z)),dry:(x,z)=>.8*smooth(60,240,over(x,z))*smooth(-700,-200,sOf(x,z)),wet:(x,z)=>mix(.92,.5,smooth(40,240,over(x,z))),upland:(x,z)=>clamp((over(x,z)-40)/240,0,1)},
