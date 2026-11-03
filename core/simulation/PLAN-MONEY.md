@@ -277,8 +277,8 @@ shape: an account and an owner per workplace record, edits as deltas by id.
 ## 3. Questions for the owner (answered 2026-11-03: section 0; still open below)
 
 1. **The tribute's fixed sums**, a nation's, in Talents a month: set once M1's prices give the Talent a meaning.
-2. **The political system** that revolutions need (M6): rulers, a faction's strength and reach, claims. A plan of its own
-   (core/simulation PLAN.md Phase 4), before unrest goes past demands.
+2. **The political system** that revolutions need (M6): rulers, a faction's strength and reach, claims. A plan of its own:
+   PLAN-POLITICS.md (a draft, 2026-11-03: nothing irreversible without the player; the contests the owner named).
 
 ## Sources
 
