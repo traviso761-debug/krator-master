@@ -88,7 +88,11 @@ function bole(T,S,top,rAt,o){o=o||{};const vs=o.vs||6,ti=T.seed%3,rings=[],ph=rr
   (R,ang)=>R.r*(1+fa*Math.cos(nf*ang+R.yy*tw+ph))*(1+bt*Math.exp(-R.yy/bh)*Math.max(0,Math.cos(nb*ang+ph2))),
   (R,ang)=>1-(fa>0?.25*(.5-.5*Math.cos(nf*ang+R.yy*tw+ph)):0));
  return{x:pe[0],y:T.y0+top,z:pe[1],r:re};}
-function limb(S,pts,st,o){o=o||{};st.limb+=BIO.tube(o.fam||fam(S),pts,o.col||barkCol(S,1),{seg:o.seg||(pts[0].r>.5?7:5),cap:true});}
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03, every rebuild turn): the root sunk into the parent and swollen to a
+// collar, so a limb leaves its parent as wood does, not as a pipe pushed into a pipe; 6 sides at least on a limb over .15 m. No random numbers: every tree
+// keeps its form. A page without the fragment (Longsong, the open world) draws the plain tube as before; o.join false for a stem that rises from the ground
+function limb(S,pts,st,o){o=o||{};const j=o.join!==false&&BIO.flareJoin&&pts[0].r>.04,P=j?BIO.flareJoin(pts,{parentR:o.parentR}):pts,sg=o.seg||(pts[0].r>.5?7:5);
+ st.limb+=BIO.tube(o.fam||fam(S),P,o.col||barkCol(S,1),{seg:j&&pts[0].r>.15?Math.max(6,sg):sg,cap:true});}
 function limbOk(pts,pad){for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+(pad||1.5),pts[i].r+(pad||1.5)))return false;return true;}
 
 // ---------------------------------------------------------------- keep-clear between trees
@@ -276,7 +280,8 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hT=H*rr(.45,.6),ph=rr(0,TA
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:5});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rb*.35,.08,rodCol(S.bark[0]));
   for(let i=1;i<=5;i++){const p=pts[i];clumpAt('broad',p.x+rr(-.6,.6),p.y+rr(0,.6),p.z+rr(-.6,.6),rr(1.6,2.4),.45,hc,T.x,cy,T.z,T.crownR,H*.2,null);st.clumps++;
    const m=lv===2?ri(3,6):lv===1?2:1;for(let r=0;r<m;r++){const col=white?C(pick(PAL.ivory)):vary(C(pick(S.leaf)),.02,.06,.05);
-    BIO.put('raceme',[p.x+rr(-1.3,1.3),p.y+rr(-.2,.4),p.z+rr(-1.3,1.3)],qEuler(0,rr(0,TAU),0),[rr(.5,.8),rr(1.1,2.6),1],bright(col,1.15),{c2:bright(C(white?0xe8e0f8:pick(PAL.irid.wisteria)),1.05)});st.racemes++;}}}
+    /* held to its limb (BIO.holdTo, the attach audit: they hung up to 1.3 m off it); the same draws, so nothing moves but the raceme. Its card cell is kept (the owner) */
+    BIO.put('raceme',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-1.3,1.3),p.y+rr(-.2,.4),p.z+rr(-1.3,1.3)],p.r+.35),qEuler(0,rr(0,TAU),0),[rr(.5,.8),rr(1.1,2.6),1],bright(col,1.15),{c2:bright(C(white?0xe8e0f8:pick(PAL.irid.wisteria)),1.05)});st.racemes++;}}}
  regTree(T,S,T.crownR,H+1);};
 
 // 9 the CHALICE TREE: a pale smooth column holding up one great shallow cap, teal above and veined underneath, that fills
@@ -360,7 +365,7 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb;
  const tiers=lv===2?Math.round(H/2.2):Math.round(H/4),hc=vary(pick(S.leaf),.02,.05,.04),rc=rodCol(S.bark[0]);
  for(let t=0;t<tiers;t++){const u=lerp(.26,.97,t/(tiers-1)),y=T.y0+H*u,Rt=T.crownR*Math.pow(1-u,.8)*rr(.85,1.15)+.5,nB=lv===2?ri(4,6):3,a0=t*GOLD;
   for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.25,.25),ex=T.x+Math.cos(a)*Rt,ez=T.z+Math.sin(a)*Rt,ey=y-Rt*.1;
-   if(lv===2&&Rt>1.4)BIO.beam('rod',[T.x,y,T.z],[ex,ey,ez],rAt(u)*.3+.04,.04,rc);
+   if(lv>=1&&Rt>1.4)BIO.beam('rod',[T.x,y,T.z],[ex,ey,ez],rAt(u)*.3+.04,.04,rc);   /* the mid tier draws its limbs too (the attach audit: its needle clumps held nothing) */
    const sz=Math.max(1.3,Rt*rr(.6,.8));clumpAt('darkneedle',T.x+(ex-T.x)*.8,ey+sz*.05,T.z+(ez-T.z)*.8,sz,.45,hc,T.x,y,T.z,Rt+1,Rt*.6+1,null);st.clumps++;}}
  clumpAt('darkneedle',T.x,T.y0+H*.99,T.z,1.4,.9,hc,T.x,T.y0+H,T.z,2,2,null);
  regTree(T,S,T.crownR,H+1);};
@@ -385,7 +390,7 @@ B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  const tiers=lv===2?ri(5,9):4,hc=vary(pick(S.leaf),.02,.05,.04),rc=rodCol(S.bark[0]),a0=rr(0,TAU);
  for(let t=0;t<tiers;t++){const u=lerp(.22,.9,t/(tiers-1)),y=T.y0+H*u,Rt=R*(1-.75*u)*rr(.9,1.1)+.6,nB=lv===2?ri(5,7):4;
   for(let k=0;k<nB;k++){const a=a0+t*.5+k/nB*TAU,ex=T.x+Math.cos(a)*Rt,ez=T.z+Math.sin(a)*Rt;
-   if(lv===2)BIO.beam('rod',[T.x,y,T.z],[ex,y+Rt*.06,ez],rAt(u)*.35+.04,.03,rc);
+   if(lv>=1)BIO.beam('rod',[T.x,y,T.z],[ex,y+Rt*.06,ez],rAt(u)*.35+.04,.03,rc);   /* the mid tier too (as the cedar) */
    const m=lv===2?(Rt>2.5?3:2):1;for(let c=0;c<m;c++){const f=lerp(.35,1,(c+.5)/m),sz=Math.max(1.2,Rt*rr(.42,.55));clumpAt('darkneedle',T.x+(ex-T.x)*f,y+Rt*.06*f+.1,T.z+(ez-T.z)*f,sz,.22,hc,T.x,y-Rt*.3,T.z,Rt+1,Rt*.5+1,null);st.clumps++;}}}
  BIO.put('cone',[T.x,T.y0+H*.94,T.z],qUp([0,1,0]),[rAt(.9)*3,H*.08,rAt(.9)*3],hc);
  regTree(T,S,R,H+1);};
@@ -398,7 +403,7 @@ B[17]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=vary(pick(S
  const run=H*rr(.55,.8),hz=rr(.5,1.1),sx=-Math.sin(a0),sz=Math.cos(a0),pts=[];let reach=2,top=T.y0+1;
  for(let i=0;i<=8;i++){const t=i/8,d=run*t,w=Math.sin(t*TAU*.9+ph)*run*.16,px=T.x+Math.cos(a0)*d+sx*w,pz=T.z+Math.sin(a0)*d+sz*w;
   pts.push({x:px,y:(i?Y(px,pz)+.25:T.y0)+hz*smooth(0,.25,t)+.2*Math.sin(t*9+ph),z:pz,r:rb*(1-.4*t)});}
- limb(S,pts,st,{seg:lv===2?8:5});
+ limb(S,pts,st,{seg:lv===2?8:5,join:false});
  const burl=C(0xa08a6a),nS=lv===2?ri(2,3):2,ats=[1,.48,.76];
  for(let k=0;k<nS;k++){const b=along(pts,ats[k]),h=H*(k?rr(.6,.85):1),la=a0+rr(-1,1),sp=[];
   for(let i=0;i<=6;i++){const t=i/6,w=.12*h*Math.sin(t*Math.PI*1.4+ph+k);sp.push({x:b.x+Math.cos(la)*w,y:b.y+h*t,z:b.z+Math.sin(la)*w,r:mix(b.r*.8,.05,Math.pow(t,.7))});}
@@ -442,7 +447,7 @@ B[19]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,la=rr(0,TAU),l
  for(let s=0;s<nS;s++){const ph=php+s/nS*TAU,dir=s%2?1:-1,pts=[];
   for(let i=0;i<=10;i++){const u=i/10,c=ax(u),r=rb*(1.25-.5*u+.35*Math.exp(-u*7)),a=ph+dir*tw*u;
    pts.push({x:c.x+Math.cos(a)*r,y:c.y-(i?0:.4),z:c.z+Math.sin(a)*r,r:rb*(.15-.04*u)*(1+.5*Math.exp(-u*7))});}
-  limb(S,pts,st,{seg:lv===2?6:4});}
+  limb(S,pts,st,{seg:lv===2?6:4,join:false});}
  const F=ax(1),grn=[S.leaf[0],S.leaf[2]],blu=[S.leaf[1],S.leaf[3],0x98b4d8],vio=[0xb89ad8,0xc4a8e0,0xa890d0],cups=[];let reach=R*.6;
  const nL=lv===2?ri(5,7):4;
  for(let k=0;k<nL;k++){const a=la+k/nL*TAU+rr(-.3,.3)+(k%2?.0:.2),L=R*rr(.55,1.0),e=[F.x+Math.cos(a)*L,F.y+H*rr(.18,.45),F.z+Math.sin(a)*L];
@@ -472,7 +477,7 @@ function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
  const mkT=(sp,x,y,z,s,hk)=>{const S=SP[sp];return{x:x,z:z,y0:y-.35,sp:sp,H:s.range(S.H[0],S.H[1])*(hk==null?1:hk),rb:s.range(S.rb[0],S.rb[1]),crownR:s.range(S.crownR[0],S.crownR[1]),seed:s.int(0,999999),wet:BIO.field('wet',x,z)};};
  const lvOf=(x,z,small)=>{const ld=BIO.lodD(x,z);return ld<LOD.hero*(small?.94:1)?2:(ld<LOD.mid*(small?.87:1)?1:0);};
  const ok=(x,z,pad)=>BIO.mask(x,z)>0&&BIO.clearOf(x,z,pad)&&!blocked(x,z,pad);
- const add=(T,P)=>{T.lv=lvOf(T.x,T.z,P.opt.small);NEW.push(T);hadd({x:T.x,z:T.z,r:P.opt.keep==null?T.rb*1.4+1:P.opt.keep});};
+ const add=(T,P)=>{if(offShore(T))return;T.lv=lvOf(T.x,T.z,P.opt.small);NEW.push(T);hadd({x:T.x,z:T.z,r:P.opt.keep==null?T.rb*1.4+1:P.opt.keep});};
  OIDONG.NEWPASSES.forEach(P=>{const S=SP[P.sp],seed=KRAND.child(550019,'oidong/'+S.key),pad=P.opt.pad==null?4:P.opt.pad;
   if(P.landmarks){const C=[];   // score every point of a coarse lattice, then take the best ones far enough apart
    for(let z=o[1]-R;z<=o[1]+R;z+=40)for(let x=o[0]-R;x<=o[0]+R;x+=40){if(Math.hypot(x-o[0],z-o[1])>R-60)continue;const a=P.accept(zones(x,z),x,z);if(a<=.3)continue;
@@ -492,12 +497,15 @@ function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
     if(j&&zones(px,pz).cliff>.3)continue;
     const T=mkT(P.sp,px,Y(px,pz),pz,s,j?s.range(.55,.9):1);add(T,P);if(!first){first=T;T.saplings=[];}}
    if(first)for(let k=0,m=s.int(2,4);k<m;k++){const aa=s.range(0,TAU),d=s.range(2.5,7);first.saplings.push([x+Math.cos(aa)*d,z+Math.sin(aa)*d,s.range(.8,1.8)]);}}});
- NEW.forEach(T=>{TREES.push(T);const i=TREES.length-1;if(T.lv===0){buildFar(T,i,st);st.fars++;}else{reseed(KRAND.hash(550019,T.sp,T.seed));B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ NEW.forEach(T=>{TREES.push(T);const i=TREES.length-1;if(T.lv===0){FAR(T,i);st.fars++;}else{reseed(KRAND.hash(550019,T.sp,T.seed));B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  st.newTrees=NEW.length;}
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 // far.blobs: icosahedral blobs on a pole (sedesert's recipe, as shighlands)
-let ICO=null;
+// a tree whose bole would reach past the water's edge goes (OIDONG.SHORE: the host's WATER.fieldAt shore distance, the review's third line; a page
+// without it keeps the old mask alone). Tested after the tree's draws, so nothing else moves
+const offShore=T=>{if(!OIDONG.SHORE)return false;const s=OIDONG.SHORE(T.x,T.z);return s===s&&s<Math.min(T.rb==null?.5:T.rb,.6)+.3;};
+let ICO=null,FAR=(T,i)=>{};   /* FAR: a far tree's draw, set by buildTrees (the impostor or the blobs) */
 function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
  let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
@@ -535,10 +543,21 @@ OIDONG.buildTrees=function(R,q){
     const T=OIDONG.make(sp,x,opt.water?BIO.waterH(x,z)+.4:y,z);if(opt.mod)opt.mod(T,zones(x,z));
     const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
     if(T.lv===0&&!S.far)return;
+    if(!opt.water&&offShore(T))return;
     TREES.push(T);hadd({x:x,z:z,r:(opt.water?T.crownR*.9:T.rb*1.4)+1});n++;},gopt);
   return n;}
  OIDONG.PASSES.forEach(pass);
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; nwlowlands' lines; on when the page lists it, OIDONG.IMPOSTORS false or ?diet=0 turns them off):
+ // a far tree is one quad showing its species baked from 8 x 8 directions, in place of the blobs; every species on one atlas, one item. Each species bakes
+ // one of its own heroes, built again in place after the bake with its registration muted (its own stream then, so no tree here moves)
+ const IMPON=OIDONG.IMPOSTORS==null?typeof BIO.impostor==='function':!!OIDONG.IMPOSTORS,IMPS=[],ISET=IMPON?BIO.impostorSet('oidong.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{if(!S.far)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp&&T.lv===1);if(!T0)return;
+  const T1=Object.assign({},T0),st1=newStats();
+  const rec=BIO.impostor('oidong.'+S.key,()=>{const R0=BIO.host.register;BIO.host.register=()=>{};try{reseed(KRAND.hash(550019,sp,T1.seed));B[sp](Object.assign({},T1),st1,2);}finally{BIO.host.register=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(rec)IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ FAR=(T,i)=>{const I=IMPS[T.sp];if(I){BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return;}buildFar(T,i,st);};
+ TREES.forEach((T,i)=>{if(T.lv===0){FAR(T,i);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  placeNew(R,q,st,LOD);   /* the diversity pass (2026-10-26): its own KRAND streams, after everything above, so nothing above moves */
  OIDONG.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,pads:st.pads,blooms:st.blooms,pods:st.pods,

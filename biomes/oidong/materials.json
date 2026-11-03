@@ -14,7 +14,13 @@
     "mean": 0.66
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "cell": [
+    0.333,
+    0.329,
+    0.644,
+    0.671
+   ]
   },
   "leaf.moss": {
    "lib": "card.moss",
@@ -215,7 +221,8 @@
     "mean": null
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "base": "top"
   },
   "bark.marble": {
    "lib": "bark.marble",

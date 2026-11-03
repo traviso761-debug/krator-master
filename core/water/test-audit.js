@@ -60,6 +60,14 @@ const good=()=>{reset();return W.flow({name:'river',pts:line([0,20,40,60,80]),wi
 {reset();const shelf=(x,z)=>bed(x)+(Math.abs(z)<18?.4:5);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
  ok('flow-pocket without a slab: a shelf .2 m under the level out to 18 m',only(W.audit({ground:shelf}),'flow-pocket'),false);}
 
+// flow-graze (opt-in): a bank lying along the level, not crossing it (nwlowlands' hill river, 2026-11-03)
+{reset();const graze=(x,z)=>bed(x)+(Math.abs(z)<4?0:Math.abs(z)<9?.55:3);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
+ const f=W.audit({ground:graze,graze:true}),g=f.filter(f=>f.rule==='flow-graze');
+ ok('flow-graze: a bank .05 m under the level across the ribbon edge ('+g.length+' findings, '+(g.length?Math.max(...g.map(f=>f.by)):0)+' m)',g.length>0&&g.every(f=>f.by>=2),false);
+ ok('flow-graze is opt-in: the same bank without graze has none',!has(W.audit({ground:graze}),'flow-graze'),false);
+ reset();const cross=(x,z)=>bed(x)+Math.max(0,(Math.abs(z)-3.5)*1.2);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
+ ok('flow-graze: a bank that crosses the level at 1.2 m in 1 m has none',!has(W.audit({ground:cross,graze:true}),'flow-graze'),false);}
+
 // still water: a bowl round (0, 300)
 {const bowl=(x,z)=>5+.1*(x*x+(z-300)*(z-300)),pool=lv=>{reset();return W.still({name:'pool',level:lv,bounds:[-5,295,5,305]});};
  pool(7);const f0=W.audit({ground:bowl});pool(8);const f1=W.audit({ground:bowl});pool(4.9);const f2=W.audit({ground:bowl});

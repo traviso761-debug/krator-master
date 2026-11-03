@@ -176,13 +176,27 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 ## The plants' feet on the drawn ground (KSEAT, 2026-11-02)
 
 The plants stand on the ground mesh's triangles (`drawnH`), and `hostChecks` measures their feet with `KSEAT.contactSweep`. 35 of
-39,274 sampled feet (2026-11-02, the rebuild's turn; it was 47) are still off it, recorded as `FEET_OWED` (38, the ceiling) in `src/99-host-take.js` and in `tools/verify_ratchet.json`: 19 floating,
+39,274 sampled feet (2026-11-02, the rebuild's turn; it was 47) are still off it, recorded as `FEET_OWED` (38, the ceiling; 17 since 2026-11-03) in `src/99-host-take.js` and in `tools/verify_ratchet.json`: 19 floating,
 16 buried, worst 2.29 m up, 1.21 m down, mostly reed, marsh, mossmat and a few lobes. Not traced. **The stations owe more, on the walls' coarse cells:** gorge 172 of 36,167 (mostly the coral melon's fruit), delta 113 of 36,187 (`feetOwed`, in their `44z`), recorded in the ratchet. On `terrainH` the same feet give 963.
 The check leaves out 1,261 pieces held by something else (a palm's crown, a limb, a log's back, duckweed, the tower's ledges): those
 over .6 m above the ground on `HELD_ITEMS`, or inside an obstacle's footprint. A float over .6 m on those items is not seen here.
 The tower is not a seat surface: with it marked, verify never finished twice, though the stall was not traced to it.
 
-- 2026-11-02, the foliage attach audit: 7.24% to .73%. Flowers in foliage `onLeaf`, the willow's veils held to their limb, pads `free`.
+- 2026-11-03, with the river's strip (below): the reed clump's outer tufts take the ground under them (`60`, `reed`), not the clump's
+  centre height. Main page 17 of 39,269 (`FEET_OWED` 17), gorge 123, delta 66; the ratchet rewritten for the three.
+- 2026-11-02, the foliage attach audit: 7.24% to .73%.
+
+## The river and its banks (2026-11-03)
+
+- [x] **The hill river's ribbon z-fought its banks** (found by `WATER.audit`'s opt-in `flow-graze` after nwlowlands' flickering ponds; the same fault).
+      Its channel is ~9-15 m wide under one 16.5 m cell: the coarse triangles bridged its banks across the ribbon (on the drawn ground 289 `flow-graze`,
+      272 `flow-under`). Splitting those cells alone (tried, reverted) left the old trench, cut 2.8 m under each point's own ground, so the bank lay along the level on a
+      cross-slope, and its reed clumps' tufts stood up to 2 m off a steep bank at the clump's height: the feet rose 35 to 58. Fixed (`45`): the trench cut from the
+      centreline's ground with a bank that crosses the level (`channelH`, `?channel=0`), the channel's cells drawn 8 x 8 (~2.1 m; the ground grid is now in eighths,
+      waterline cells 2/8 as before) with each side on the coarser neighbour's line (`?riverstrip=0`), `riverD` running to the ribbon's last point (it stopped 150 m short:
+      `flow-under` at the map's upstream edge), and the reeds' tufts on their own ground. Page check `the river and its banks cross` (graze and under, drawn ground): 0;
+      negative on the coarse floor: 126 graze, 561 under. Ground 438k to 578k triangles. The stations draw their own rivers on their own ground and have none (gorge,
+      delta: 0 and 0 on the drawn ground), so the strip and check are the main page's. Flowers in foliage `onLeaf`, the willow's veils held to their limb, pads `free`.
 
 ## The final rebuild's turn (2026-11-02)
 
