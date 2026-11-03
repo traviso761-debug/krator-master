@@ -2,9 +2,9 @@
 bundles.py seals the Iziz Vernacular: IZV), so its globals (MAT, KIT, REG, TAU, clamp, terrainH, rng...) meet neither the
 page's nor another kit's:
 
-    bundle(key='XAK') -> (js, files)   var XAK = (function(){ ... })(): the Ancients core the kit draws through (src/10-69,
+    bundle(key='XAK') -> (js, files)   var XAK = (function(){ ... })(): the Ancients core the kit draws through (kits/ancients,
                                        core/materials), the Vernacular helpers, the Xanadu vocabulary and every builder
-                                       (src/70-89), without the showcase (90-99), the sky (81-sky) or the vendored Vale biome
+                                       (kits/xanadu/src), without the showcase (90-99), the sky (81-sky) or the vendored Vale biome
                                        (86-bio-*: the kit's plants fall back to its own boxes and cones without it)
 
     XAK.proto(key, v)   the def built once at the origin on flat ground into a new group (its kit items baked as
@@ -19,7 +19,10 @@ Writes to `window` from inside the kit land on a shadow of its own (the kit sets
 the page's must not move). The files are read live at build time, never copied."""
 import os
 
+import sys
+
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, 'src')
 MATS = os.path.join(ROOT, 'core', 'materials')
@@ -32,8 +35,13 @@ SKIP_FROM = '90'
 
 
 def files():
-    names = {f: os.path.join(SRC, f) for f in os.listdir(SRC)
-             if f[0].isdigit() and f.endswith('.js') and not f.startswith('86-bio-') and f not in SKIP and f[:2] < SKIP_FROM}
+    """The kit's fragments and what they draw through, in filename order: the Ancients core from kits/ancients/src, the
+    Vernacular's materials and helpers from kits/iziz-vernacular, core/materials (until 2026-11-03 the first two were
+    Xanadu's byte-identical copies in settlements/xanadu/src)."""
+    import xanadu as kxa
+    names = {f: p for f, p in kxa.paths().items() if f not in SKIP and f[:2] < SKIP_FROM}
+    names.update({f: os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in kxa.ANCIENTS_CORE})
+    names.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.VERNACULAR})
     for f in os.listdir(MATS):   # core/materials (a src/ copy of the same name would win: none today)
         if f[0].isdigit() and f.endswith('.js') and f not in names:
             names[f] = os.path.join(MATS, f)
@@ -96,8 +104,8 @@ return { proto: xakProto, dims: xakDims, bind: xakBind, rotors: xakRotors, VERN:
 def bundle(key='XAK'):
     fs = files()
     body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in fs)
-    js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (settlements/xanadu/kit_bundle.py). GENERATED: '
-          'edit settlements/xanadu/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + TAIL +
+    js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (kits/xanadu/kit_bundle.py). GENERATED: '
+          'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + TAIL +
           '})();' + NL)
     return safe(js), [rel(f) for f in fs]
 

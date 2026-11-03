@@ -8,6 +8,10 @@ detailing from **India** (jharokha bay windows on carved brackets, jali screens,
 arches and iwans, tile mosaics, bulbous turquoise domes, the baths and the chahar bagh gardens). Gold is on
 everything wealthy, religious or civic: the valley's mines pay for it.
 
+**The kit's files are `kits/xanadu/src` since 2026-11-03** (`kits/xanadu/README.md`; MODULARITY-PLAN.md step 4), with
+`kit_bundle.py`. This folder is the page that shows them (the `xanadu` target, the kit's sheet) and the city of Erewhon;
+its build reads the kit in place, so everything below holds.
+
 Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (vendored through `../highlands`), so
 the kit drops into a settlement target the same way the Highlands and Iziz sets do.
 

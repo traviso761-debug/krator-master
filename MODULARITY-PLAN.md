@@ -263,6 +263,11 @@ leaves each settlement folder as its layout and page, building as it does today 
   and Roketstad); Reed Lake's, Dalab's and Ys's `--vendor-check` compares their copies with it (Reed Lake identical but its
   adapted `73-hl-carve`; Dalab and Ys drift as before). Highlands' nine outputs byte-identical to the build before;
   `HL_TRADES` passes as the kit's. Next: (3) Xanadu.
+- **(3) Xanadu, done 2026-11-03:** the 23 fragments (foundation `70`-`72`, `88`, `89`; buildings `74`-`87c`) and `kit_bundle.py`
+  moved unchanged to `kits/xanadu`; the bundle takes the Ancients core from `kits/ancients` and `69b`/`69c` from the Vernacular kit
+  (Xanadu's copies were byte-identical), so it reads no settlement. Xanadu reads the kit in place; Longsong takes `XAK` from
+  the kit (its 39 files the same; only path labels and the header's path change). Xanadu's six outputs byte-identical;
+  `XA_TRADES` passes as the kit's. Left with the matlib item: Xanadu's texture pack, which Longsong also reads. Next: (4) Locus.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).

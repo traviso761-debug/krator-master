@@ -78,6 +78,8 @@ except Exception:
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'xanadu'))
+import xanadu as kxa   # the Xanadu kit, read in place (MODULARITY-PLAN.md step 4)
 UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -261,6 +263,7 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src.update({f: p for f, p in kxa.paths().items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})

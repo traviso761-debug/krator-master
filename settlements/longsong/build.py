@@ -223,7 +223,7 @@ def _kchar():
         sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
     data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
     return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
-# the Xanadu kit (settlements/xanadu/kit_bundle.py) and the isle demo's kit-piece flattener (isleFlatten, read in place)
+# the Xanadu kit (kits/xanadu/kit_bundle.py; its texture pack is still settlements/xanadu's) and the isle demo's kit-piece flattener (isleFlatten, read in place)
 XA = os.path.join(ROOT, 'settlements', 'xanadu')
 XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
            'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')   # the MAT keys the village buildings use (2026-10-20)
@@ -232,7 +232,7 @@ def _xa_skip():
         return tuple(k for k in json.load(f)['families'] if k not in XA_FAMS)
 def _xak():   # by path: kits/interiors/kit_bundle.py is already imported as kit_bundle
     import importlib.util
-    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(XA, 'kit_bundle.py'))
+    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))   # the kit's (MODULARITY-PLAN.md step 4)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     js, _ = mod.bundle('XAK')

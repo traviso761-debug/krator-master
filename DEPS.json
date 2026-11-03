@@ -834,10 +834,13 @@
    "core/terrain",
    "core/walk",
    "core/water",
+   "kits/ancients",
    "kits/catalog",
    "kits/crops",
    "kits/fauna",
    "kits/interiors",
+   "kits/iziz-vernacular",
+   "kits/xanadu",
    "openworld/isle-demo",
    "settlements/isle-demo",
    "settlements/pinnacle-rock",
@@ -1048,6 +1051,7 @@
    "core/rand",
    "core/tags",
    "core/water",
+   "kits/xanadu",
    "settlements/highlands"
   ],
   "settlements/ys": [
