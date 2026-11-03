@@ -542,6 +542,16 @@ Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (the sea off the b
 core/water/test-water.js` (it runs the shaders' own GLSL against the twins), then rebuild both and run
 `kits/ringsea/verify.py --assert`. Phases 2 to 6 (shore, flow and falls, still and wet, FFT, Godot) are to do.
 
+
+## `shadow/`
+
+The sun's shadows (2026-11-03, the owner: the valley needs them; first at `kits/metropolis`). One shadow box that follows the view
+instead of a fixed one per build: `10-core-shadow.js` ([G data], global `KSHADOW`) is the numbers (`KSHADOW.fit`: the sun's shadow
+camera placed on the texel grid so a moving eye does not make edges shimmer; `KSHADOW.radiusFor`: the box's half side for the eye's
+height, 90 m round a walker to 600 m from high up, in steps); `host/12-core-shadow-host.js` ([web]) is `KSHADOW.attach({ renderer,
+scene, camera, sun, ground })`, which turns on the renderer's shadow map and moves the page's sun in the scene's `onBeforeRender`
+(after `core/atmos` has set the sun for the frame), and `cast(root)`, which flags a group's lit meshes. `node core/shadow/test-shadow.js`.
+Read `shadow/README.md`.
 ## `lod/`
 
 Level of detail for any three.js r128 build: `09-lod.js` (the `LOD` global) and `97-lod-auto.js` (applies it to the

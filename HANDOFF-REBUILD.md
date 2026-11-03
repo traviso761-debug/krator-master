@@ -10,6 +10,7 @@
 - **Map 5.1 Round 3 is merged here** (68b6aa22b): frozen river names, the valley's seven basins and lake, the southern Inner Wall scarp. shighlands' stations need a re-survey (`biomes/STATIONS-MAP-5.1.md`).
 - **The Deeps** (`biomes/deeps/PLAN.md`) is a late build, expansion-pack territory maybe (the owner, 2026-11-03): not in the queue.
 - **`BIO.flareJoin` on every tree's limb joints where they show** (the owner, 2026-11-03): every future build and every rebuild turn takes it (`BACKPORT.md`'s universal set, "Limb joints"). Turns already merged take it at the close-out rebuild.
+- **core/shadow (KSHADOW)** is on this branch (5b918f62c, from the metropolis test bed): the suns shadows, one view-following box. Pair 6 and the Throne take it (the owner, 2026-11-03); the Godthrone is not rebuilt yet.
 - **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
 - **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
