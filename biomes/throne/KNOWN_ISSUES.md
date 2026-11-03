@@ -242,7 +242,7 @@
 - [ ] **Sixteen texture units.** Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers), the isle's and the vents'
   sixteen. The horizon (two units) goes on a ground only where it fits (`window._horizon.skipped`: station 1, the isle, the ash desert, the vents and the
   caldera keep their grounds' plain light, their flora takes it), and the rain's occlusion map (one) only where the ground has one free
-  (`window._rainCover`: skipped on the isle and the vents, where the rain falls everywhere, as before). A ground on fewer layers, or two layers packed
+  (`window._rainCover`: skipped on the isle and the vents, where the rain falls everywhere, as before). **The sun's shadows** (`KSHADOW`) take one more unit in every lit material (three r128 declares the map whenever the renderer's shadow map is on), so a page whose ground already reads sixteen has none: the isle and the vents (`window._shadow`); the others have them. A ground on fewer layers, or two layers packed
   in one map, would free them.
 - [ ] **What hangs under a cap.** The parasols' caps are drawn on a leaf material (their sway), so the attach audit reads a cap as a card and holds what
   hangs from it only inside half its radius (`onLeaf`). The snare moss and the drips were hung out to .85 of the radius; they now hang inside .47 and
