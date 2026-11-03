@@ -61,7 +61,7 @@ function isPatchWall(L,y0,h,o){o=o||{};let x=-L/2;const mks=o.mks||['reclaimed',
 function isDoorX(x,front){return x!=null?x:((front||[]).find(q=>q&&q.door)||{x:0}).x;}
 /* a flight from y0 (at local z = run, outward) up to y1 (at z = 0), w wide, in a frame turned ry at (x,z). Returns the run. */
 function isStair(x,z,ry,y0,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil((y1-y0)/.21)),rise=(y1-y0)/n,go=o.go||.28,run=n*go,mk=o.mk||'planks',c=o.col||P('planks');
- W(x,0,z,ry,()=>{for(let i=0;i<n;i++)box(mk,0,y0+rise*(i+1)-.06,run-go*(i+.5),w,.06,go+.04,c);
+ W(x,0,z,ry,()=>{svNoWalk(()=>{for(let i=0;i<n;i++)box(mk,0,y0+rise*(i+1)-.06,run-go*(i+.5),w,.06,go+.04,c);});svStripWalk([0,y0,run],[0,y1,go],Math.max(.5,w-.1));   /* the walk: one strip (core/engine), not a floor per tread */
   for(const s of [-1,1]){beam('wood',[s*w/2,y0,run+.05],[s*w/2,y1,0],.12,P('woodD'),false,undefined,.26);
    if(o.rail!==false){beam('wood',[s*(w/2+.04),y0+.95,run],[s*(w/2+.04),y1+.95,0],.06,P('woodD'));box('wood',s*(w/2+.04),y0,run,.07,.95,.07,P('woodD'));}}});return run;}
 /* a ladder leaning from the ground (lean metres out along +z) up to y1, at (x,z) turned ry */

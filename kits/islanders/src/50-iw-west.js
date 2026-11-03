@@ -111,7 +111,9 @@ defBuilding({key:'iw-house-chief',name:"Chief's house (West)",seed:5022,cut:true
   wallMk:'carvedR',wallCol:P('woodD'),band:'patGableW',bandH:.55,front:[{x:0,w:1.3,h:2.2,door:true},...iwOpen(14,5,false).map(q=>Object.assign({},q,{y:.9})),...iwOpen(14,5,false).map(q=>Object.assign({},q,{y:3.1}))],
   back:iwOpen(14,4,false),stair:'stair',stairW:1.6,porch:{w:4.4,d:3.4},finial:'moon',pou:'figure',tier:'rich',beds:2,
   furn:[['islander_court_throne',0,-2.4,0],['islander_court_table',0,0,0],['islander_court_statue',5.6,-3.2,0],['islander_court_statue',-5.6,-3.2,0]],
-  extra:()=>{box('planks',0,1.2+2.3,0,13.6,.12,7.6,P('planks'));}});   /* the upper floor */
+  extra:()=>{/* the upper floor, and the stair up to it along the right wall (core/engine svStair; the floor had none: 2026-11-03), its well left open */
+   const SF=svStair(6.3,3.0,1.2,1.2+2.3+.12,PI,{w:.9,mk:'planks',col:P('planks'),smk:'wood',scol:P('woodD'),rail:'right'});
+   svWell('planks',0,1.2+2.3,0,13.6,.12,7.6,P('planks'),SF);}});
   isNoCut(()=>{for(const s of [-1,1]){isMenhir(s*9.5,7.5,2.2,.35);isLamp(s*4,2.2,8.2,{post:true});}});}});
 defBuilding({key:'iw-house-tongkonan-great',name:'Great tongkonan (West)',seed:5023,cut:true,w:14,d:27,h:16.5,budget:220000,
  tags:{types:['dwelling-single','religious'],wealth:'rich',style:'west',role:'ancestral house'},
