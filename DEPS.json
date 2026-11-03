@@ -8,25 +8,11 @@
   "core/materials -> kits/ancients",
   "core/materials -> kits/ringsea",
   "core/sockets -> kits/post-apoc",
-  "kits/ash-nomads -> settlements/iziz",
   "kits/beast-riders -> settlements/isle-demo",
-  "kits/catalog -> settlements/iziz",
   "kits/catalog -> settlements/voth",
-  "kits/desert-nomads -> settlements/iziz",
-  "kits/eternian -> settlements/iziz",
-  "kits/fauna -> settlements/iziz",
-  "kits/interiors -> settlements/iziz",
-  "kits/islanders -> settlements/iziz",
-  "kits/lizardmen -> settlements/iziz",
-  "kits/mechs -> settlements/iziz",
-  "kits/motor-vehicles -> settlements/iziz",
   "kits/pylon -> settlements/iziz",
-  "kits/resources -> settlements/iziz",
   "kits/ringsea -> settlements/reedlake",
-  "kits/scyvoi -> settlements/iziz",
-  "kits/talia -> settlements/iziz",
-  "kits/yeti -> settlements/iziz",
-  "kits/zeijani -> settlements/iziz"
+  "kits/talia -> settlements/iziz"
  ],
  "edges": {
   "biomes/crater-drylands": [
@@ -401,8 +387,7 @@
    "core/tags",
    "kits/catalog",
    "kits/fauna",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/beast-riders": [
    "core/rand",
@@ -410,8 +395,8 @@
    "settlements/isle-demo"
   ],
   "kits/catalog": [
+   "core/atmos",
    "core/sockets",
-   "settlements/iziz",
    "settlements/voth"
   ],
   "kits/crops": [
@@ -429,8 +414,7 @@
    "core/tags",
    "kits/catalog",
    "kits/fauna",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/eternian": [
    "core/atmos",
@@ -443,16 +427,15 @@
    "core/walk",
    "kits/catalog",
    "kits/islanders",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/fauna": [
-   "kits/catalog",
-   "settlements/iziz"
+   "core/atmos",
+   "kits/catalog"
   ],
   "kits/interiors": [
-   "kits/catalog",
-   "settlements/iziz"
+   "core/atmos",
+   "kits/catalog"
   ],
   "kits/islanders": [
    "core/atmos",
@@ -466,8 +449,7 @@
    "kits/catalog",
    "kits/fauna",
    "kits/resources",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/lizardmen": [
    "core/atmos",
@@ -481,16 +463,15 @@
    "kits/catalog",
    "kits/fauna",
    "kits/islanders",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/mechs": [
-   "kits/catalog",
-   "settlements/iziz"
+   "core/atmos",
+   "kits/catalog"
   ],
   "kits/motor-vehicles": [
-   "kits/catalog",
-   "settlements/iziz"
+   "core/atmos",
+   "kits/catalog"
   ],
   "kits/post-apoc": [
    "core/furnish",
@@ -514,8 +495,7 @@
    "core/tags",
    "kits/catalog",
    "kits/islanders",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/ringsea": [
    "core/atmos",
@@ -533,8 +513,7 @@
    "core/rand",
    "core/tags",
    "kits/catalog",
-   "kits/fauna",
-   "settlements/iziz"
+   "kits/fauna"
   ],
   "kits/talia": [
    "settlements/iziz"
@@ -552,8 +531,7 @@
    "kits/catalog",
    "kits/eternian",
    "kits/islanders",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "kits/zeijani": [
    "core/atmos",
@@ -567,8 +545,7 @@
    "core/walk",
    "kits/catalog",
    "kits/interiors",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "openworld/isle-demo": [
    "biomes/eastabyss",
@@ -580,6 +557,7 @@
    "biomes/throne",
    "core/atmos",
    "core/biome",
+   "core/camp",
    "core/city",
    "core/clock",
    "core/export",
@@ -591,6 +569,7 @@
    "core/tags",
    "core/terrain",
    "core/water",
+   "kits/beast-riders",
    "kits/resources",
    "openworld/little-demo",
    "settlements/isle-demo",
@@ -609,6 +588,7 @@
   ],
   "settlements/dalab": [
    "biomes/swlowlands",
+   "core/atmos",
    "core/biome",
    "core/clock",
    "core/edits",
@@ -682,6 +662,7 @@
    "core/biome",
    "core/city",
    "core/export",
+   "core/hamlet",
    "core/materials",
    "core/rand",
    "core/simulation",
@@ -720,6 +701,7 @@
    "kits/talia"
   ],
   "settlements/jimjam": [
+   "core/atmos",
    "core/clock",
    "core/edits",
    "core/host",
@@ -837,8 +819,7 @@
    "kits/ancients-interiors",
    "kits/catalog",
    "kits/interiors",
-   "kits/scyvoi",
-   "settlements/iziz"
+   "kits/scyvoi"
   ],
   "settlements/pinnacle-rock": [
    "biomes/hyperjungle",

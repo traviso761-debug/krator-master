@@ -36,6 +36,4 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-hover.js` | 5 | Hover inspector (1) |
 | `75-audit.js` | 8 | Page audit: plan + measured geometry (1) |
 | `78-polytool.js` | 3 | Polygon tool (1) |
-| `80-sky-hash.js` | <1 | h3 hash for KratorSky (1) |
-| `81-sky.js` | 10 |  |
 | `99-tail.html` | <1 |  |

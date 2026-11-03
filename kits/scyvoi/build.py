@@ -2,7 +2,7 @@
 """Concatenate src/* into dist/scyvoi.html (the Scyvoi kit: tents, the Baelu, salamanders, chariots and carts).
 
 Usage: python3 build.py [--no-checks]
-       python3 build.py --vendor-check   (the vendored sky against settlements/iziz/src; a core file shadowed by src/)
+       python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
   src/*                 the kit (00-head.html ... 99-tail.html)
@@ -15,8 +15,8 @@ The page is one <script> made of, in filename order:
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-fauna-bundle.js    GENERATED (kits/fauna/fauna_bundle.py): the animals (goats, salamanders) as one closure, KratorFauna
-A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). src/81-sky.js is VENDORED from
-settlements/iziz/src/81-sky.js (KratorSky, the standard Krator sky): --vendor-check reports drift.
+A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). 81-sky.js (KratorSky) is the
+placeholder sky, read from core/atmos/placeholder (its README): a src/ copy is a shadow --vendor-check reports.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -72,8 +72,10 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materi
 # 92-camera.js and 91-probe.js (2026-10-18, KNOWN_ISSUES.md "Host port"). A src/ file with a shell file's name would win.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['scyvoi', 'nomad', 'generic', 'generic-goods']   # the Scyvoi pieces, the Eastern Nomads' for fallbacks, the shared goods
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-fauna-bundle.js'}
@@ -134,6 +136,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: khost.path(f) for f in CORE_HOST})
+    paths.update(psky.paths(psky.SKY))
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core

@@ -43,7 +43,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `53-zj-additions.js` | 9 |  |
 | `54-zj-square.js` | 7 |  |
 | `55-zj-trades.js` | 5 | = (2) |
-| `81-sky.js` | 10 |  |
 | `89-rows.js` | 2 |  |
 | `90-scene.js` | 8 | layout: rows by family, fronts (+z) toward the c (41); (re)build the world (50) |
 | `91-probe.js` | 27 | the cavern and the walk map (P2) (22) |

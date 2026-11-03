@@ -346,9 +346,11 @@ def vendor_check():
         return
     files = VENDORED + IZIZ_VENDORED
     # Highlands keeps no src/ copy of 81-sky.js (its sky is a target fragment), so a file it lacks is
-    # compared with ../iziz/src, where it comes from
+    # compared with ../iziz/src, where it comes from; 81-sky.js itself left Iziz's src/ for core/atmos/placeholder
+    # (2026-11-02; src/ keeps its copy until MODULARITY-PLAN.md step 4)
     iz = os.path.join(UPSTREAM['iziz'], 'src')
-    upf = lambda f: srcpath(f, up) if os.path.exists(srcpath(f, up)) else srcpath(f, iz)
+    sky = os.path.join(ROOT, 'core', 'atmos', 'placeholder')
+    upf = lambda f: srcpath(f, up) if os.path.exists(srcpath(f, up)) else srcpath(f, sky if f == '81-sky.js' else iz)
     drift = [f for f in files if not os.path.exists(upf(f))
              or open(upf(f), 'rb').read() != open(srcpath(f), 'rb').read()]
     print('vendor-check highlands: %s' % ('all %d identical' % len(files) if not drift

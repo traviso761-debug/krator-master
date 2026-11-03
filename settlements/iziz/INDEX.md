@@ -81,7 +81,6 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `79-iziz-original.js` | 23 |  |
 | `80-aa-battery.js` | 1 |  |
 | `81-houses-abc.js` | 6 |  |
-| `81-sky.js` | 10 |  |
 | `82-apartments.js` | 13 |  |
 | `83-amphitheater.js` | 8 |  |
 | `84-fuel.js` | 4 |  |

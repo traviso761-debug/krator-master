@@ -146,8 +146,9 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
-for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
+for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+VENDORED['81-sky.js'] = 'core/atmos/placeholder'   # KratorSky left Iziz's src/ on 2026-11-02; read in place with MODULARITY-PLAN.md step 4
 # the foreign quarter (phase 3, DESIGN §2 and §6; NOTES.md "The foreign quarter"): the Iziz Vernacular dwellings and
 # trade, the Voth embassy and the Historians' chapterhouse (the Yuni-set ports) from Iziz; the Highlands kit's
 # Republican dwellings with the textures, materials, motifs, helpers and carving they need. Byte-identical copies

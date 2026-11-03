@@ -8,7 +8,7 @@ The page is one <script> made of, in filename order:
                         (the nodes), 89-rows.js (the sheet), 99-tail.html
   kits/scyvoi/src       the engine, READ IN PLACE (not vendored: nothing here to drift): 10-core, 27-mat, 30-geo, 36-def,
                         90-scene, 91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take
-  settlements/iziz/src  81-sky.js (KratorSky, the standard Krator sky), read in place
+  core/atmos/placeholder  81-sky.js (KratorSky, the placeholder sky), read in place
   core/rand, core/materials/record, core/tags, core/furnish, core/atmos   as every kit on the engine
   26-matlib-pack.js     GENERATED: the library pack (none yet: the nodes draw on vertex colours)
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py, the generic pieces): the engine's furniture pass needs it
@@ -67,7 +67,9 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materi
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-ENGINE = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
+ENGINE = psky.paths(psky.SKY)
 ENGINE.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
     '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js')})
 # GENERATED fragments, never written to src/

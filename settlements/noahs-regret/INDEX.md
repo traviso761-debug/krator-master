@@ -47,7 +47,6 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `63-nr-trades.js` | 6 | = (2) |
 | `64-nr-flora.js` | 2 |  |
 | `70-nr-interiors.js` | 37 **big** | the CABINS (63); the SHIP'S ROOMS (89); the DECK BUILDINGS (129); the PUBLIC ROOMS: placed piece by piece, in the  (149); the pass (309) |
-| `81-sky.js` | 10 |  |
 | `82-nr-water.js` | 4 | the sea (25) |
 | `89-nr-views.js` | 11 | where a point is (the inspector, the stats panel (61); the walk floors: every level under a point (hull (76) |
 | `90-scene.js` | 5 | (re)build the world (24) |

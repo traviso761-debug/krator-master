@@ -15,8 +15,9 @@ Two kinds of finding, both from the text of a build (no build is run):
   OWN      a fragment of the build's own src/ (vendored 86-bio-* copies and core copies are skipped) writes what a
            core module already is: a PRNG (Math.random, mulberry32, a hand-rolled LCG), a fract(sin()) hash, a value
            noise (fbm / vnoise / perlin / simplex), getImageData (placement reads core/mask), a water ripple shader
-           (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos). Each finding is counted per
-           file and rule.
+           (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos), a copy of the placeholder sky
+           (a KratorSky declared in its own files; core/atmos/placeholder is read by path, MODULARITY-PLAN.md step 1). Each
+           finding is counted per file and rule.
 
 Exceptions, each a table in this file with its reason: NOT_APPLICABLE (a module a build cannot use); PLACED (settlements
 already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the biome-sync rules,
@@ -90,6 +91,7 @@ OWN = {
     'getImageData': re.compile(r'\bgetImageData\s*\('),
     'water-shader': re.compile(r'\bMAT_WATER\s*='),
     'sky-dome': re.compile(r'\bskyTex\b[^;]{0,80}BackSide|BackSide[^;]{0,80}\bskyTex\b'),
+    'sky-copy': re.compile(r'^(?:const|let|var)\s+KratorSky\s*=', re.M),
 }
 
 # directories of a build whose fragments are written by the build (the rest of src/ is vendored or generated)

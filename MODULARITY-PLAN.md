@@ -10,11 +10,13 @@ they show what a build *reads*, not what it calls at run time. Check each item a
 work this plan depends on. `tools/dep_graph.py` on it: 86 modules, 957 edges (main: 76, 826), three edges not in the
 allow-list (step 5 and step 0 below). What it means for the steps:
 
-- **Step 1 has a target now.** The shared sky is built there: `core/atmos/sky/` (model, presets, shader) and
+- **The shared sky is built there:** `core/atmos/sky/` (model, presets, shader) and
   `core/atmos/host/89-atmos-h-skyhost.js` / `89-atmos-i-skybiome.js` (`ATMOS.sky`, `ATMOS.skyBiome`), with every biome
   kit and station on it. Its plan (`core/atmos/SKY-PLAN.md` section 9) covers the painted domes (done) and Voth's
-  `21-sky.js` lineage ("later") but **not Iziz's `81-sky.js` (`KratorSky`)**, which 16 kits still copy. Step 1 is that
-  third lineage: the kits onto `ATMOS.skyBiome`, written as a row in SKY-PLAN.md section 9 by the session that owns it.
+  `21-sky.js` lineage ("later") but not Iziz's `81-sky.js` (`KratorSky`). Step 1 no longer waits for it (revised
+  2026-11-02: the kits' sky is a placeholder, moved into `core/atmos/placeholder`; step 1 below). When the branch lands,
+  check that its `core/atmos/sky/` and this repo's `core/atmos/placeholder/` sit side by side, and that no kit on it
+  re-vendors `81-sky.js`.
 - **Three ride-alongs are done there** (9e86c8dad, "Stage 0 of the biome rebuild"): the probe points, the probe's broad
   phase and the camera's pointer-capture guard. Their `TODO.md` entries come out when the branch lands.
 - **"kit" is taken.** The rebuild calls `core/biome` 20/34/35 (LOD, impostors, animation) its "kit" workstream, and a
@@ -69,18 +71,30 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   `kits/ancients/build.py`; the kit does not read Span. Skip comment-only matches (a `#` comment line, and the part of
   a line after `#` outside a string), then drop any allow-list line that was only a comment.
 
-**Step 1: the kits onto the shared sky (the 81-sky.js move).**
-- Revised 2026-10-27: do not move `KratorSky` into core. The shared sky in `core/atmos/sky` (on the biome rebuild,
-  above) replaces it: each kit binds `ATMOS.skyBiome` from one host fragment, as the biome kits do, with its site and
-  light modes, and its copy of `81-sky.js` goes. The 16 kits: ash-nomads, catalog, desert-nomads, eternian, fauna,
-  interiors, islanders, lizardmen, mechs, motor-vehicles, resources, scyvoi, yeti, zeijani (vendored), plus Pylon and
-  Talia through Iziz's page. Iziz's own page moves with them or in SKY-PLAN's settlement step (S5).
-- Delete each `VENDORED = {'81-sky.js': ...}` and its `--vendor-check` branch. Rebuild everything that takes it (the all-builds rebuild rule in CLAUDE.md) and
-  take the TODO.md "ride along" items with it.
-- Add `sky` to the `README.md` "CORE MODULES ARE NOT OPTIONAL" table and to `tools/check_core_use.py` so a build
-  that skips it fails.
-- Done when: no kit's `build.py` names `settlements/iziz`, and the kit -> iziz edges in `DEPS.json` drop to the
-  `--kit` vassal builds only (Pylon and Talia, which are a documented contract).
+**Step 1: the placeholder sky into core (the 81-sky.js move).** **Done 2026-11-02** for the kits and Iziz.
+- Revised 2026-11-02 (owner): a kit's sky is a placeholder. A kit's pieces go into the open world at a site, and that
+  site's sky lights them there; no kit bundle carries the sky (checked: the vehicle, mech, fauna, interiors and furniture
+  bundles). So the kits do not need the shared sky. What step 1 fixes is the dependency, not the look: `81-sky.js` lived
+  in `settlements/iziz/src`, 13 kits vendored it and one read it in place, so every kit pointed at a settlement and every
+  copy was a `--vendor-check` line that could drift.
+- The move: `81-sky.js` (`KratorSky`) and the `h3()` it reads (`80-sky-hash.js`, from `kits/catalog/src`) went
+  **unchanged** to `core/atmos/placeholder/`, with `placeholder.py` (the file list and paths, as `core/host/host.py`) and a
+  README. Every kit and Iziz read them by path; their `src/` copies (19 files) and `VENDORED` entries are gone. The names
+  keep their place in each build's filename order, so no byte moved: every page, sidecar and build manifest of the 17
+  builds (76 files, Pylon and Talia through Iziz) and of Noah's Regret, and the five kit bundles, came out identical
+  to the build before the move. No all-builds rebuild, so no ride-alongs went with it (they wait for the next one).
+- Taken: kits ash-nomads, catalog, desert-nomads, eternian, fauna, interiors, islanders, lizardmen, mechs, motor-vehicles,
+  resources, scyvoi, yeti, zeijani; `settlements/iziz` (Pylon, Talia); `settlements/noahs-regret` (it has the kits'
+  `sources()`, so it came along).
+- Guard rails: `tools/check_core_use.py` has a `sky-copy` rule (a `KratorSky` declared in a build's own files); the
+  README table has a row for it; a kit's `--vendor-check` reports a `src/` copy as a shadow.
+- **Left for step 4** (baselined as `sky-copy` findings): Dalab, Jimjam, Xanadu and Ys keep their copies, and their
+  `--vendor-check` now compares them with `core/atmos/placeholder` (all identical); Highlands' Roketstad has its own fork
+  (`targets/roketstad/81-rk-sky.js`). Each reads the core file by path when its chain is ported.
+- Not required, later: when the biome rebuild lands, a kit may move onto `ATMOS.skyBiome` with a neutral preset (one host
+  fragment), and the placeholder goes with the last kit. Nothing about a kit's pieces depends on it.
+- Done: no kit's `build.py` names `settlements/iziz` except Pylon and Talia (the `--kit` contract). `DEPS.json`: 826 ->
+  821 edges; the allow-list's backwards edges 27 -> 13.
 
 **Step 2: `core/engine` (the Scyvoi engine) .**
 - Promote the engine fragments Scyvoi, Islanders, Eternian, Lizardmen, Zeijani, the nomad kits and Resources share
@@ -131,7 +145,7 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 | Step | Reaches | Risk | Rebuilds |
 |---|---|---|---|
 | 0 graph check | none | none | none |
-| 1 sky | 16 kits + iziz | low (the sky is built; one host fragment a kit) | all builds that draw a sky |
+| 1 sky | 14 kits + iziz (+ Noah's Regret) | done 2026-11-02 | none (no byte moved) |
 | 2 kit engine | 8 to 10 kits | medium (forks have drifted) | those kits and what bundles them |
 | 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
 | 3 catalog / Voth | catalog, Voth, 30 dependents | medium | catalog dependents |
@@ -139,22 +153,30 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 | 5 backwards edges | 6 builds | low | those builds |
 | 6 guard rails | CI only | none | none |
 
-Run steps 1 to 3 on one branch with one all-builds rebuild (CLAUDE.md "Rebuild what a shared change reaches") and
+Run steps 2 to 3 on one branch with one all-builds rebuild (CLAUDE.md "Rebuild what a shared change reaches") and
 `python3 tools/port_baseline.py` after each; step 4 waits for the Ancients re-vendor chain to be quiet.
+
+**Found on 2026-11-02: committed pages are behind their sources.** Rebuilding the 17 builds of step 1 *before* the
+move gave 20 pages that differ from `PORT-BASELINE.json` (every Scyvoi-engine kit, the catalog, mechs, resources,
+interiors-walk, Iziz's seven, Pylon, Talia; the first difference in Scyvoi is the catalog's biome fruit, which has grown
+since the pages were built). Step 1 left them as they were (its proof is before-and-after, not against the baseline).
+They are the next all-builds rebuild's to commit, with a screenshot check and a baseline rewrite.
 
 ## Ride-alongs (parked work that lands with these steps)
 
 Found 2026-10-26 in `TODO.md`, ROADMAP.md stage 3 and GODOT-PLAN.md's hot-spot table. Do each in the step named,
 rebuild once, rewrite the baseline once; then take the item out of `TODO.md` in the same commit.
 
-**With step 1 (the sky, and the all-builds rebuild it brings).** `TODO.md`, "Ride along with the next all-builds rebuild":
+**With the next all-builds rebuild** (they were step 1's; step 1 moved no byte, so it brought no rebuild: the first of
+steps 2 and 3 to move pages takes them, with the stale pages above). `TODO.md`, "Ride along with the next all-builds rebuild":
 - ~~The probes read a merged mesh's own sample points; a broad phase for `regOccupancy` on `core/space`; guard the
   camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad). When it lands: check the Iziz palace page's
   own guard (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`) came out, and take the three out of `TODO.md`.
 - The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy
   `kits/catalog/krator-symbols.js` goes (the TODO asked for a re-vendor; reading in place removes the vendored file).
 - `core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).
-- ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the same change as step 1.
+- ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the kits' half is step 1 (done, as a placeholder); the
+  settlements' half is SKY-PLAN's S5 and step 4.
 
 **Step 2b (new): `core/door`, opening doors as a core module, beside `core/walk`.** `TODO.md`, "Opening doors as a
 core module", "Real doors and glass across the kits", and "Doors that open" (Viewers):
@@ -173,7 +195,7 @@ core module", "Real doors and glass across the kits", and "Doors that open" (Vie
 - Interiors in every building kit that has them, with a cut-away (`TODO.md`, Viewers): done once in `core/engine`
   through `kits/interiors` and `core/furnish`, not once per kit.
 
-**With step 3 (catalog / Voth).** The symbols item above if step 1 has not taken it.
+**With step 3 (catalog / Voth).** The symbols item above if the all-builds rebuild has not taken it.
 
 **With step 4 (the settlement chains).**
 - `useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js` (Jimjam's open item) before the chain stops
@@ -196,7 +218,10 @@ dependency moves.
 - Whether `core/engine` is one module or split (scene/world vs. animation vs. materials).
 - Whether the Pylon and Talia `--kit` builds (which build *inside* Iziz's page by design) stay as the one
   allowed kit -> settlement edge.
-- Whether to take the step 1 gallery republish with the rebuild (CLAUDE.md "Publishing": ask).
+- ~~Whether to take the step 1 gallery republish with the rebuild.~~ Moot: step 1 changed no page. Ask with the next
+  all-builds rebuild (CLAUDE.md "Publishing").
+- Whether a kit's viewer should ever move from the placeholder onto `ATMOS.skyBiome` (a neutral preset), or keep the
+  placeholder until the kits' viewers are retired into the open world.
 
 ## Caveats
 

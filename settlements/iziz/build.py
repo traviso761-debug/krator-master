@@ -105,6 +105,10 @@ TARGET_CORE = {'city': ['atmos', 'mask', 'export', 'furnish'], 'vernacular': ['f
 # no editor world yet.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+# the placeholder sky (KratorSky; h3() is 10-core.js's), read in place from core/atmos/placeholder since 2026-11-02, where the
+# kits read it too (MODULARITY-PLAN.md step 1); it was src/81-sky.js, the upstream 13 kits and 6 settlements vendored
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 # the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
 # whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
@@ -398,6 +402,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
+    src.update({f: p for f, p in psky.paths(psky.SKY).items() if f not in src})   # the placeholder sky
     if KIT:   # the kit's own fragments join the one order; they may not shadow this build's
         ksrc = os.path.join(KIT['dir'], 'src')
         kf = {f: os.path.join(ksrc, f) for f in os.listdir(ksrc) if f[0].isdigit()} if os.path.isdir(ksrc) else {}

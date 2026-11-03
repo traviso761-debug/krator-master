@@ -36,7 +36,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `58-dw-carts.js` | 4 |  |
 | `59-dh-pens.js` | 5 |  |
 | `60-dn-trades.js` | 6 | = (2) |
-| `81-sky.js` | 10 |  |
 | `89-rows.js` | <1 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `91f-furnish.js` | 6 |  |

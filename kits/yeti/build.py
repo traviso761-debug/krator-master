@@ -4,7 +4,7 @@ Forked from kits/scyvoi (2026-10-25, as kits/eternian and kits/islanders were): 
 kits/scyvoi/src (--vendor-check), all but src/10-core.js, which is the engine's on core/rand (KNOWN_ISSUES.md).
 
 Usage: python3 build.py [--no-checks]
-       python3 build.py --vendor-check   (the vendored sky against settlements/iziz/src; a core file shadowed by src/)
+       python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
   src/*                 the kit (00-head.html ... 99-tail.html)
@@ -18,8 +18,8 @@ The page is one <script> made of, in filename order:
                         core/city is the capital's page's
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
-A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). src/81-sky.js is VENDORED from
-settlements/iziz/src/81-sky.js (KratorSky, the standard Krator sky): --vendor-check reports drift.
+A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). 81-sky.js (KratorSky) is the
+placeholder sky, read from core/atmos/placeholder (its README): a src/ copy is a shadow --vendor-check reports.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -78,8 +78,10 @@ CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js')]
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+VENDORED = {}
 # the engine, shared with the Scyvoi kit it was forked from: fix it there, then copy it here
 VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('30-geo.js', '36-def.js', '90-scene.js',
     '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js', '99-tail.html')})
@@ -140,6 +142,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: khost.path(f) for f in CORE_HOST})
+    paths.update(psky.paths(psky.SKY))
     paths.update({os.path.basename(p): p for p in CORE_FILES})
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one

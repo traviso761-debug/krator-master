@@ -21,6 +21,7 @@ The page is one <script> made of, in filename order:
                          noahs-regret interior set (kits/interiors/sets/noahs-regret.js); then kits/ancients-interiors'
                          core (its kit_bundle.py): KratorAncientsInteriors, the ship's room kinds and the cabin cultures
 A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). VENDORED below: --vendor-check reports drift.
+81-sky.js (KratorSky) is the placeholder sky, read in place from core/atmos/placeholder (its README); a src/ copy is a shadow.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -76,10 +77,11 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materi
 # pieces are merged into the hull-frame batch). Each file is its own scope (an IIFE): left out of the name rules.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
-            '30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}
+VENDORED = {'30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}
 # GENERATED fragments, never written to src/
 # The furniture cultures: the Ancients' own fittings (ancient), the pirates' salvage (ancients-salvage, post-apoc, scrap),
 # the shared poor set and goods (generic, generic-goods): kits/interiors IX.CULTURE_FAMILY chains end in them.
@@ -137,6 +139,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     khost.resolve(paths, CORE_HOST)
+    paths.update(psky.paths(psky.SKY))
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core

@@ -45,7 +45,7 @@ the inspector from here by path.
 
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
-python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
+python3 build.py --vendor-check                     # krator-symbols.js against core/sockets; no src/ copy of the placeholder sky
 python3 verify.py dist/catalog.html --assert        # the gate: each page in turn (indoor, outdoor, both, rugs, jobs); exit 0 = pass
 python3 verify.py dist/catalog.html --assert --page outdoor   # one page (indoor | outdoor | both | rugs | jobs)
 python3 verify.py dist/catalog.html --page jobs --out shots --rows   # one page's rows
