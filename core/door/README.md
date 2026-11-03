@@ -64,4 +64,11 @@ first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s, or swit
 - The Yuni engine's worlds (2026-11-03): Yuni (`settlements/yuni`: its own leaves posed through `KDOORHOST.posed`, its walker,
   `DOORS.reach` on core/walk), Locus and its two kit sheets, Mungo, and Verge's YKIT (the leaves drawn shut; Verge's KDOOR is the
   Vernacular bundle's).
+- Girder and Mav's Refuge (one fork of the Yuni engine each): `src/54-openings.js` (`goLeaf`: a leaf is an instance of its own
+  bucket family, `doorleaf`, which wears the plank map) and `src/81-glow.js` (the panes: KGLASS 'clear', the night's 'lit', the
+  room card on a solid body). Girder's doors stand open as built and its windows are cut through the shells' walls; Mav's doors
+  are drawn shut in openings cut through the lots', levels' and huts' walls. Girder puts the doors in core/walk
+  (83-walk.js wkBuild: `goWalk`); Mav's has no core/walk yet.
+- The Post-Apoc kit: `src/35-pa-open.js` (`poLeaf`, `poCard`; `wallOpen` records its openings, and a `door()` drawn in one is
+  operable, one on a solid face a locked record that keeps its drawn leaf).
 - The other building kits come onto it in the doors-and-glass pass (TODO.md).

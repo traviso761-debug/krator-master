@@ -14,6 +14,12 @@
    The walk mode (83-walk.js) reads the solids the builders register here (gw* in 53-furnish.js).   */
 reseed(550001);
 (function(){
+/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
+   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
+   with windows is drawn whole */
+var gaLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
+  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
+var gaSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
 var ARCH = { dwellings:0, byKind:{}, windows:0, lamps:0, rails:0, washing:0, banners:0, roosts:0, houses:0, plots:0, stalls:0, hall:0, openSky:0 };
 
 /* ------------------------------------------------------------------ helpers */
@@ -61,7 +67,7 @@ function lamp(x,y,z,amp,rad,cool,hang,ry){
   if(hang>0) FURNISHW('br_h_hanging_lantern', x, y-0.28, z, 0, { v:1, noLight:true });
   else FURNISHW('br_h_lamp_bracket', x, y-2.35, z, ry||0, { v:1, noLight:true });
 }
-function pane(x,y,z,nx,nz,w,h,cool){ WINPANE(x,y,z,nx,nz,w,h,cool); ARCH.windows++; }
+function pane(x,y,z,nx,nz,w,h,cool,open){ WINPANE(x,y,z,nx,nz,w,h,cool,open); ARCH.windows++; if(open) ARCH.cut=(ARCH.cut||0)+1; }
 function barrel(x,y,z,s){ var t=ri(0,3); FURNISHW('br_h_water_butt', x, y, z, t*1.3, { v:0, seed:t+1 }); }
 /* a crate: the catalog's pair of crates; one stacked on another (onTop) is already in the pair */
 function crate(x,y,z,s,ry,onTop){ var c=CRATEC.indexOf(pick(CRATEC)); if(onTop) return; FURNISHW('br_h_crate_stack', x, y, z, (ry||0)+Math.PI, { v:1, seed:c+2 }); }
@@ -78,12 +84,36 @@ function fmBox(fam,f,lx,lz,y,w,h,d,col,nb){ var p=LP(f,lx,lz); mBox(fam,p[0],y,p
 function gwF(f,lx,lz,y,w,h,d,tag){ var p=LP(f,lx,lz); gwBox(p[0],y,p[1],w,h,d,f.ry,tag); }    /* a walk-mode solid (53-furnish.js) */
 /* a wall panel on the local rectangle's side: side 'f' front, 'b' back, 'l' left, 'r' right */
 function sideN(f,side){ return side==='f'?[f.fx,f.fz]:side==='b'?[-f.fx,-f.fz]:side==='r'?[f.rx,f.rz]:[-f.rx,-f.rz]; }
-/* window on a wall face. (lx,lz) = point ON the outer wall face */
+/* window on a wall face. (lx,lz) = point ON the outer wall face. A frame round the opening and a sill; where the wall is a
+   shell's (still to be drawn: gaWallHole) the opening is cut through it and the glass stands in it, so the room shows; on a
+   solid body (the shrine's sanctum) the glass stands in front of a room card (81-glow.js) */
 function winAt(f,lx,lz,y,side,w,h,cool,frameCol){
-  var p=LP(f,lx,lz), n=sideN(f,side), along=(side==='f'||side==='b');
-  BOX(p[0],y-h/2-0.09,p[1], along?w+0.2:0.1, h+0.18, along?0.1:w+0.2, f.ry, frameCol||TIMBERC[2], 'timber');
-  BOX(p[0]+n[0]*0.04,y-h/2-0.16,p[1]+n[1]*0.04, along?w+0.34:0.16, 0.08, along?0.16:w+0.34, f.ry, frameCol||TIMBERC[2], 'timber');
-  pane(p[0],y,p[1],n[0],n[1],w,h,cool);
+  var p=LP(f,lx,lz), n=sideN(f,side), along=(side==='f'||side==='b'), fc=frameCol||TIMBERC[2];
+  var open=gaWallHole(f,side,along?lx:lz,y,w+0.02,h+0.02);   /* a hair wider than the glass: the frame's inner faces, not the cut's, line the opening's mouth */
+  [-1,1].forEach(function(sg){ BOX(p[0]+(along?f.rx:f.fx)*sg*(w/2+0.05),y-h/2-0.09,p[1]+(along?f.rz:f.fz)*sg*(w/2+0.05), along?0.1:0.1, h+0.18, along?0.1:0.1, f.ry, fc, 'timber'); });
+  BOX(p[0],y+h/2,p[1], along?w:0.1, 0.09, along?0.1:w, f.ry, fc, 'timber'); BOX(p[0],y-h/2-0.09,p[1], along?w:0.1, 0.09, along?0.1:w, f.ry, fc, 'timber');
+  BOX(p[0]+n[0]*0.04,y-h/2-0.16,p[1]+n[1]*0.04, along?w+0.34:0.16, 0.08, along?0.16:w+0.34, f.ry, fc, 'timber');
+  pane(p[0],y,p[1],n[0],n[1],w,h,cool,open);
+}
+/* a shell's walls wait for their windows: seg() records each wall here, winAt cuts its opening (a hole), and gaFlushWalls
+   draws them with the holes cut once the building is done (the walk solids are the whole walls, written at once) */
+var GA_WALLS = [];
+function gaWallHole(f,side,u,y,w,h){
+  for(var i=0;i<GA_WALLS.length;i++){ var Wl=GA_WALLS[i];
+    if(Wl.f!==f || Wl.side!==side || u-w/2<Wl.a+0.02 || u+w/2>Wl.b-0.02 || y-h/2<Wl.y+0.02 || y+h/2>Wl.y+Wl.h-0.02) continue;
+    Wl.holes.push([u-w/2,u+w/2,y-h/2,y+h/2]); return true; }
+  return false;
+}
+function gaFlushWalls(){
+  GA_WALLS.forEach(function(Wl){
+    var f=Wl.f, along=(Wl.side==='f'||Wl.side==='b'), c=Wl.c, th=Wl.th;
+    function piece(a,b,y0,y1){ if(b-a<0.02||y1-y0<0.02) return; if(along) fBOX(f,(a+b)/2,c,y0,b-a,y1-y0,th,Wl.col,'wall'); else fBOX(f,c,(a+b)/2,y0,th,y1-y0,b-a,Wl.col,'wall'); }
+    var H=Wl.holes.sort(function(p,q){ return p[0]-q[0]; }), M=[];
+    H.forEach(function(q){ var m=M[M.length-1]; if(m && q[0]<=m[1]+0.02){ m[1]=Math.max(m[1],q[1]); m[2]=Math.min(m[2],q[2]); m[3]=Math.max(m[3],q[3]); } else M.push(q.slice()); });
+    var a=Wl.a; M.forEach(function(q){ piece(a,q[0],Wl.y,Wl.y+Wl.h); piece(q[0],q[1],Wl.y,q[2]); piece(q[0],q[1],q[3],Wl.y+Wl.h); a=q[1]; });
+    piece(a,Wl.b,Wl.y,Wl.y+Wl.h);
+  });
+  GA_WALLS.length = 0;
 }
 /* a doorway in a front wall: two jambs and a lintel, the leaf standing OPEN, swung in against the jamb on the
    left as one looks out (the side the interiors keep its swing clear on), so rooms can be seen and walked into */
@@ -95,7 +125,10 @@ function doorAt(f,lx,lz,y,side,w,h,col){
   }
   [-1,1].forEach(function(s){ fBOX(f,lx+s*(w/2+0.075),lz,y,0.15,h+0.16,0.12,TIMBERC[0],'timber'); });
   fBOX(f,lx,lz,y+h,w+0.3,0.16,0.12,TIMBERC[0],'timber');
-  fBOX(f,lx-w/2+0.05,lz-0.12-w/2,y,0.08,h,w,col,'plank');
+  /* the leaf: a door that opens and shuts (54-openings.js, core/door), hinged on the jamb on the left as one looks out and
+     standing open as built, swung in against the wall as it was drawn; E shuts it */
+  var at=L3(f,lx,y,lz-0.08), hg=LP(f,lx-w/2,lz-0.08);
+  gaLeaf(at,[f.fx,f.fz],w,h,{ hinge:hg, ajar:Math.PI/2, col:col, t:0.08 });
 }
 /* hipped / frustum roof on a local rectangle: bottom x0..x1,z0..z1 at yb, top inset (ix,iz) at yt */
 function hipRoof(fam,f,x0,x1,z0,z1,yb,ix,iz,yt,col,soffit){
@@ -135,8 +168,9 @@ var KIND_LABEL = { home:'Home', store:'Storehouse', workshop:'Workshop', common:
 function shell(f,x0,x1,z0,z1,y,H,wcol,tcol,o){
   o=o||{}; var th=0.16, dw=o.doorW||1.1, dh=Math.min(o.doorH||2.15,H-0.3), dx=o.doorX||0;
   function seg(side,a,b,yy,hh,col){ if(b-a<0.05||hh<0.05) return;
-    if(side==='f'||side==='b'){ fBOX(f,(a+b)/2,side==='f'?z1-th/2:z0+th/2,yy,b-a,hh,th,col,'wall'); gwF(f,(a+b)/2,side==='f'?z1-th/2:z0+th/2,yy,b-a,hh,th,'wall'); }
-    else { fBOX(f,side==='r'?x1-th/2:x0+th/2,(a+b)/2,yy,th,hh,b-a,col,'wall'); gwF(f,side==='r'?x1-th/2:x0+th/2,(a+b)/2,yy,th,hh,b-a,'wall'); } }
+    var c = side==='f' ? z1-th/2 : side==='b' ? z0+th/2 : side==='r' ? x1-th/2 : x0+th/2;
+    GA_WALLS.push({ f:f, side:side, a:a, b:b, y:yy, h:hh, col:col, c:c, th:th, holes:[] });    /* drawn by gaFlushWalls, its windows cut */
+    if(side==='f'||side==='b') gwF(f,(a+b)/2,c,yy,b-a,hh,th,'wall'); else gwF(f,c,(a+b)/2,yy,th,hh,b-a,'wall'); }
   var c2=shade(wcol,-0.07);
   if(!o.openFront){
     if(o.noDoor) seg('f',x0,x1,y,H,wcol);
@@ -273,7 +307,7 @@ function buildDwelling(S){
   if(S.id%4===0 || kind==='shrine' || kind==='common')
     REGISTER({ name:name, kind:kind, label:KIND_LABEL[kind]+' — '+T.name+', floor '+(S.k+1), x:S.x, z:S.z, y:y, h:S.H, r:Math.max(bw,depth)*0.62, plat:T.deck.id, lvl:S.k });
 }
-SLOTS.forEach(function(S){ PORT('dwelling', S.id, { x:S.x, y:S.y, z:S.z, ry:Math.atan2(S.ox,S.oz) }, function(){ buildDwelling(S); }); });
+SLOTS.forEach(function(S){ PORT('dwelling', S.id, { x:S.x, y:S.y, z:S.z, ry:Math.atan2(S.ox,S.oz) }, function(){ buildDwelling(S); gaFlushWalls(); }); });
 
 /* ------------------------------------------------------------------ GALLERY DRESSING: rails, washing, banners at the slab edges */
 TOWERS.forEach(function(T){
@@ -353,14 +387,15 @@ function buildKeeper(T){
   P.keeper = { f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, x0:-s, x1:s, zb:-s, zf:s, y:y, H:2.2 };
   REGISTER({ name:'Keeper\'s shelter', kind:'keeper', label:'Roost keeper\'s shelter — feed and tack', x:cx, z:cz, y:y, h:3.2, r:3.0, plat:P.id });
 }
-TOWERS.forEach(function(T){ PORT('roostdeck', T.deck.id, deckFrame(T.deck), function(){ buildKeeper(T); }); });
+TOWERS.forEach(function(T){ PORT('roostdeck', T.deck.id, deckFrame(T.deck), function(){ if(typeof goBuilding==='function') goBuilding('girder.keeper.'+T.id); buildKeeper(T); gaFlushWalls(); if(typeof goBuilding==='function') goBuilding(null); }); });
 
 /* ------------------------------------------------------------------ GROUND HOUSES */
 /* Kashyyyk-style round hut: woven wall ring, ring of posts, tall two-tier thatch cone with a smoke gap */
 function roundHut(x,z,y,r,doorA,o){
   o=o||{}; var P=platFrame(x,z,0), wh=o.wh||2.5, gap=0.62/r, wc=o.wcol||pick(WALLC), tc=o.tcol||pick(TIMBERC), th=o.thatch||pick(THATCHC);
   SECTOR('rock',P,0,r+0.5,0,TAU,y-0.1,y+0.22,shade(ROCKC[1],-0.1),{faces:'to',step:3}); gwDisc(x,z,r+0.5,y+0.22,y-0.1,'floor');
-  SECTOR('wall',P,r-0.18,r,doorA+gap,doorA+TAU-gap,y+0.2,y+0.2+wh,wc,{faces:'tios',step:1.6,colInner:shade(wc,-0.3)});
+  var hwins=(o.wins||[1.15,-1.15,2.6]).map(function(da){ var a=doorA+da; while(a<doorA+gap) a+=TAU; while(a>doorA+TAU-gap) a-=TAU; return { a:a, hw:0.36, y0:y+1.36, y1:y+2.08 }; });
+  gaSectorWins('wall',P,r-0.18,r,doorA+gap,doorA+TAU-gap,y+0.2,y+0.2+wh,wc,{faces:'tios',step:1.6,colInner:shade(wc,-0.3)},hwins);   /* its windows cut (54-openings.js) */
   (function(){ var ns=Math.max(6,Math.ceil((TAU-2*gap)*r/1.0)); for(var q=0;q<ns;q++){ var a0=doorA+gap+(TAU-2*gap)*q/ns, a1=doorA+gap+(TAU-2*gap)*(q+1)/ns, rm=r-0.09;
     gwSeg(x+Math.cos(a0)*rm,z+Math.sin(a0)*rm,x+Math.cos(a1)*rm,z+Math.sin(a1)*rm,0.3,y+0.2,y+0.2+wh,'wall'); } })();
   var np=Math.max(6,Math.round(TAU*r/2.2));
@@ -368,11 +403,16 @@ function roundHut(x,z,y,r,doorA,o){
   /* door: lintel + leaf standing ajar */
   var dx=Math.cos(doorA), dz=Math.sin(doorA);
   BOX(x+dx*(r-0.02),y+0.2+2.0,z+dz*(r-0.02),0.24,0.22,1.6,-doorA,tc,'timber');
-  var ha=doorA-gap*0.85, hr=r-0.2-0.55;                                              /* the leaf open, swung in */
-  BOX(x+Math.cos(ha)*hr,y+0.2,z+Math.sin(ha)*hr,1.1,2.0,0.07,-ha,shade(pick(PLANKC),-0.1),'plank');
+  /* the leaf: a door that opens and shuts (core/door), hinged on the jamb it was drawn against and standing open as built,
+     swung in; E shuts it */
+  var lcol=shade(pick(PLANKC),-0.1), rm=r-0.09, j0=[x+Math.cos(doorA-gap)*rm,z+Math.sin(doorA-gap)*rm], j1=[x+Math.cos(doorA+gap)*rm,z+Math.sin(doorA+gap)*rm];
+  gaLeaf([(j0[0]+j1[0])/2,y+0.22,(j0[1]+j1[1])/2],[dx,dz],Math.hypot(j1[0]-j0[0],j1[1]-j0[1]),1.98,{ hinge:j0, ajar:Math.PI/2, col:lcol, t:0.07 });
   /* windows */
   (o.wins||[1.15,-1.15,2.6]).forEach(function(da){ var a=doorA+da, nx=Math.cos(a), nz=Math.sin(a), px=x+nx*r, pz=z+nz*r;
-    BOX(px,y+1.25,pz,0.12,0.95,0.95,-a,tc,'timber'); pane(px+nx*0.02,y+1.72,pz+nz*0.02,nx,nz,0.7,0.7,false); });
+    var tx=-nz, tz=nx;   /* the frame round the opening (it was a plate behind the pane) */
+    [-1,1].forEach(function(sg){ BOX(px+tx*sg*0.41,y+1.25,pz+tz*sg*0.41,0.12,0.95,0.12,-a,tc,'timber'); });
+    BOX(px,y+2.07,pz,0.12,0.13,0.7,-a,tc,'timber'); BOX(px,y+1.25,pz,0.12,0.12,0.7,-a,tc,'timber');
+    pane(px-nx*0.09,y+1.72,pz-nz*0.09,nx,nz,0.7,0.7,false,true); });
   /* roof */
   var yb=y+0.2+wh-0.25, h1=r*0.95;
   MCONE('thatch',x,yb,z,r+1.15,r*0.34,h1,th,14,{under:true});
@@ -457,7 +497,7 @@ function buildHouse(Hs){
   ARCH.houses++;
   REGISTER({ name:name, kind:'house', label:label, x:Hs.x, z:Hs.z, y:y-0.2, h:top+1, r:Math.max(Hs.w,Hs.d)*0.55 });
 }
-HOUSES.forEach(function(Hs){ PORT('house', Hs.id, { x:Hs.x, y:Hs.y, z:Hs.z, ry:Math.atan2(Hs.ox,Hs.oz) }, function(){ buildHouse(Hs); }); });
+HOUSES.forEach(function(Hs){ PORT('house', Hs.id, { x:Hs.x, y:Hs.y, z:Hs.z, ry:Math.atan2(Hs.ox,Hs.oz) }, function(){ buildHouse(Hs); gaFlushWalls(); }); });
 
 /* ------------------------------------------------------------------ FARM PLOTS */
 var PLOT_LABEL = { crop:'Crop rows', paddy:'Paddy', orchard:'Pod orchard', garden:'Kitchen garden', pen:'Millipede pen' };
@@ -507,7 +547,7 @@ PLOTS.forEach(function(p){
         else if(kind2===2) mCone('leafy',q6[0],y+0.45,q6[1],0.3,0,1.3,CROPC[1],5,gq); else { bush(q6[0],y+0.45,q6[1],0.45,0.5,CROPC[0]); pod(q6[0]+0.2,y+0.6,q6[1],0.17,FRUITC[gq%3]); } } }
     /* shed + trellis arch on the way in */
     var sf=FRM(LP(f,-Lx+2.6,-Lz+2.4)[0],LP(f,-Lx+2.6,-Lz+2.4)[1],f.fx,f.fz);
-    shell(sf,-1.5,1.5,-1.2,1.2,y,2.1,pick(WALLDARKC),TIMBERC[0],{doorW:0.9,doorH:1.8,plain:true}); hipRoof('thatch',sf,-1.9,1.9,-1.6,1.7,y+2.1,99,0.6,y+3.2,pick(THATCHC),true);
+    shell(sf,-1.5,1.5,-1.2,1.2,y,2.1,pick(WALLDARKC),TIMBERC[0],{doorW:0.9,doorH:1.8,plain:true}); gaFlushWalls(); hipRoof('thatch',sf,-1.9,1.9,-1.6,1.7,y+2.1,99,0.6,y+3.2,pick(THATCHC),true);
     [-1.1,1.1].forEach(function(o){ fBOX(f,o,Lz-0.5,y,0.12,2.4,0.12,TIMBERC[2],'timber'); }); fBOX(f,0,Lz-0.5,y+2.35,2.5,0.1,0.5,TIMBERC[2],'timber'); fmBox('leafy',f,0,Lz-0.5,y+2.42,2.7,0.3,0.8,VINEC[p.id%5]);
   } else { /* millipede pen */
     fBOX(f,0,0,y-0.1,2*Lx-0.6,0.18,2*Lz-0.6,shade(PAL.litter[p.id%3],-0.15),'rock');
@@ -544,7 +584,9 @@ function buildHall(H, y){
   var dg=1.45/rw, wc=WALLC[2];
   var ds=doors.slice().sort(function(a,b){ return wrapPi(a)-wrapPi(b); }).map(wrapPi);
   ds.forEach(function(a,i){ var b=i<ds.length-1?ds[i+1]:ds[0]+TAU;
-    SECTOR('wall',P,rw-0.3,rw,a+dg,b-dg,fy,fy+wh,wc,{faces:'ios',step:2.2,colInner:shade(wc,-0.25)});
+    /* the wall, its five windows cut through it (54-openings.js): the glass stands in the openings, the hall shows through */
+    var hw5=[]; for(var w5=0;w5<5;w5++) hw5.push({ a:mix(a+dg,b-dg,(w5+0.5)/5), hw:0.435, y0:fy+1.24, y1:fy+2.96 });
+    gaSectorWins('wall',P,rw-0.3,rw,a+dg,b-dg,fy,fy+wh,wc,{faces:'ios',step:2.2,colInner:shade(wc,-0.25)},hw5);
     for(var ws=0, wn=Math.ceil((b-a-2*dg)*rw/1.2); ws<wn; ws++){ var wa0=mix(a+dg,b-dg,ws/wn), wa1=mix(a+dg,b-dg,(ws+1)/wn), wp0=pt(rw-0.15,wa0,0), wp1=pt(rw-0.15,wa1,0);
       gwSeg(wp0[0],wp0[2],wp1[0],wp1[2],0.34,fy,fy+wh,'wall'); }
     /* the library look: a bone-inlaid sill band and a lacquer-and-gilt frieze (patterns/beast-riders) */
@@ -553,12 +595,18 @@ function buildHall(H, y){
     SECTOR('wall',P,rw-0.3,rw,a-dg,a+dg,fy+3.3,fy+wh,shade(wc,-0.1),{faces:'bio',step:2.2});
     SECTOR(KIT_LOOK?'trim':'timber',P,rw-0.36,rw+0.1,a-dg,a+dg,fy+3.1,fy+3.45,KIT_LOOK?0xffffff:gilt,{faces:'tbio',step:2.2});
     /* windows: five tall panes per quadrant */
-    for(var w=0;w<5;w++){ var wa=mix(a+dg,b-dg,(w+0.5)/5), p=pt(rw,wa,fy+2.1), nx=Math.cos(wa), nz=Math.sin(wa);
-      BOX(p[0],fy+1.1,p[2],0.14,2.0,1.15,-wa,deep,'timber'); pane(p[0]+nx*0.03,fy+2.1,p[2]+nz*0.03,nx,nz,0.85,1.7,false); }
+    for(var w=0;w<5;w++){ var wa=mix(a+dg,b-dg,(w+0.5)/5), p=pt(rw,wa,fy+2.1), nx=Math.cos(wa), nz=Math.sin(wa), tx=-nz, tz=nx;
+      /* the frame round the opening (it was a plate behind the pane): two jambs, a head and a sill */
+      [-1,1].forEach(function(sg){ BOX(p[0]+tx*sg*0.495,fy+1.1,p[2]+tz*sg*0.495,0.14,2.0,0.13,-wa,deep,'timber'); });
+      BOX(p[0],fy+2.95,p[2],0.14,0.15,0.86,-wa,deep,'timber'); BOX(p[0],fy+1.1,p[2],0.14,0.15,0.86,-wa,deep,'timber');
+      pane(p[0]-nx*0.1,fy+2.1,p[2]-nz*0.1,nx,nz,0.85,1.7,false,true); }
     /* door posts, leaves standing open, banners, braziers */
     [-1,1].forEach(function(sd){
       var pp=pt(rw+0.05,a+sd*dg,fy); carvedPost(pp[0],fy,pp[2],3.3,0.36,red,gilt);
-      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,KIT_LOOK?'lacquer':'plank');   /* lacquered door leaves in the library look */ gwBox(lf[0],fy,lf[2],1.4,3.0,0.1,-a,'door');
+      /* the leaves: a double door that opens and shuts (core/door), each hinged on its jamb at the wall's face and standing
+         open as built, swung out against the wall as they were drawn; lacquered in the library look */
+      var ja=a+sd*dg, jp=pt(rw,ja,fy), dm=pt(rw,a,fy), lc=[(jp[0]+dm[0])/2,fy,(jp[2]+dm[2])/2], lw=Math.hypot(jp[0]-dm[0],jp[2]-dm[2]);
+      gaLeaf(lc,[Math.cos(a),Math.sin(a)],lw,3.0,{ hinge:[jp[0],jp[2]], ajar:Math.PI/2, out:true, inset:-0.06, t:0.1, col:deep, fam:'doorlacq' });
       /* a banner pole either side of the door and a brazier on a post below the plinth: catalog pieces */
       var bn=pt(R-0.55,a+sd*3.0/R,fy), ba=a+sd*3.0/R; FURNISHW('br_h_banner_pole', bn[0], fy, bn[2], Math.atan2(Math.cos(ba),Math.sin(ba)), { v:0, seed:(i%2)+1 });
       var bz=pt(R+2.0,a+sd*2.7/R,y); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++; FURNISHW('br_h_post_brazier', bz[0], y, bz[2], 0, { noLight:true });
@@ -577,7 +625,7 @@ function buildHall(H, y){
       if(tip){ var t1=pt(rb+1.4,a,yb+0.95); BEAM(b0[0],b0[1]-0.1,b0[2],t1[0],t1[1],t1[2],0.22,0.26,gilt,'timber'); } } }
   function eave(r,yb,col){ SECTOR('timber',P,r-0.35,r+0.12,0,TAU,yb-0.42,yb+0.06,col,{faces:'tbio',step:3}); }
   function drum(r,yb,h,n,band){ SECTOR('wall',P,r-0.4,r,0,TAU,yb-0.5,yb+h,shade(wc,-0.06),{faces:'o',step:2.2}); SECTOR('timber',P,r-0.4,r+0.06,0,TAU,yb+h-0.3,yb+h,band,{faces:'o',step:2.2});
-    for(var w=0;w<n;w++){ var wa=(w+0.5)/n*TAU, nx=Math.cos(wa), nz=Math.sin(wa), p=pt(r,wa,0); BOX(p[0],yb+0.3,p[2],0.12,h-0.75,1.25,-wa,deep,'timber'); pane(p[0]+nx*0.03,yb+0.3+(h-0.75)/2,p[2]+nz*0.03,nx,nz,1.0,h-1.0,false); } }
+    for(var w=0;w<n;w++){ var wa=(w+0.5)/n*TAU, nx=Math.cos(wa), nz=Math.sin(wa), p=pt(r,wa,0); BOX(p[0],yb+0.3,p[2],0.12,h-0.75,1.25,-wa,deep,'timber'); pane(p[0]+nx*0.06,yb+0.3+(h-0.75)/2,p[2]+nz*0.06,nx,nz,1.0,h-1.0,false); } }   /* a solid drum (over the hall's ceiling): its glass before a room card (81-glow.js) */
   var t1b=R+1.7, t1t=8.8, h1=7.2;
   MCONE('shingle',H.x,yy,H.z,t1b,t1t,h1,sh[0],SEG,{under:true}); eave(t1b,yy,red); ribs(t1b,yy,t1t,yy+h1,16,verd,true); yy+=h1;
   drum(t1t-0.2,yy,2.2,20,red); yy+=2.1;
@@ -633,5 +681,6 @@ ARCH.houseAt = HOUSES.map(function(h){ return [h.kind,h.x,h.z,h.ox,h.oz]; });
 ARCH.plotAt = PLOTS.map(function(p){ return [p.kind,p.x,p.z,p.id%4]; });
 
 /*ARCH-END*/
+gaFlushWalls();   /* nothing should be left; a shell drawn outside the builders above still gets its walls */
 window._arch = ARCH;
 })();
