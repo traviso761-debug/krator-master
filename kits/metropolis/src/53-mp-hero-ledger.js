@@ -18,7 +18,7 @@ MP.heroLedger=function(state,lite,only){const F=MP.LEDGER,S=F.ruins[state]||{},B
  const face=function(s,bays,L){const z=s*hd,n=[0,0,s],y0=L.y,y1=Math.min(L.y+L.h,cut),W=F.bays.width,kinds=bays.map(b=>b.kind),m=L.k<2?'concrete':'white';
   // a quad on the long face between x0 and x1 from y0 to y1, at depth d in (corners so that it faces out)
   const Q=(name,x0,x1,a,b,d,o)=>{const zz=z-s*d;if(s>0)B.quad(name,[x0,a,zz],[x1,a,zz],[x1,b,zz],[x0,b,zz],n,o);else B.quad(name,[x1,a,zz],[x0,a,zz],[x0,b,zz],[x1,b,zz],n,o);};
-  if(L.use==='arcade'){const dp=F.arcade.depth;if(ruin){Q('glassOut',-hw,hw,0,y1,dp,{uv:4});return;}Q('glass',-hw,-DX,0,y1,dp,{uv:4});Q('glass',DX,hw,0,y1,dp,{uv:4});Q('glass',-DX,DX,DH+.4,y1,dp,{uv:4});return;}
+  if(L.use==='arcade'){const dp=F.arcade.depth,gm=ruin?'glassOut':'glass';Q(gm,-hw,-DX,0,y1,dp,{uv:4});Q(gm,DX,hw,0,y1,dp,{uv:4});if(y1>DH+.4)Q(gm,-DX,DX,DH+.4,y1,dp,{uv:4});return;}
   if(!kinds.some(k=>MP.isGlass(k)||k==='louvre')){bays.forEach(b=>{if(ruin&&inBreach(b.x,y0+1.8,s))return;if(torn&&L.y>=tear(b.x))return;if(patch(b.x,y0+1.8))return;Q(m,b.x-W/2,b.x+W/2,y0,y1,0,{col:shade(b.x,y0)||undefined});});return;}
   let sill=9,top=0;kinds.forEach(k=>{const z2=MP.BAYSIZE[k];if(z2){sill=Math.min(sill,z2[1]);top=Math.max(top,z2[2]);}});
   const yS=y0+sill,yT=Math.min(y0+top*(L.h/MP.STOREY),y1-.2);
@@ -74,12 +74,17 @@ MP.heroLedger=function(state,lite,only){const F=MP.LEDGER,S=F.ruins[state]||{},B
  // ---- the arcade's ceiling: the walkway's soffit, 3 m deep under the storey above (without it the eye went up past the one-sided skin into the sky)
  [1,-1].forEach(s=>{const z=s*hd,zi=s*(hd-A.depth),yc=ay-.02;if(s>0)B.quad('concrete',[-hw,yc,zi],[hw,yc,zi],[hw,yc,z],[-hw,yc,z],[0,-1,0],{uv:3});else B.quad('concrete',[-hw,yc,z],[hw,yc,z],[hw,yc,zi],[-hw,yc,zi],[0,-1,0],{uv:3});
   // the entrance's frame on the glass line: posts at the ends and the middle, a head over the leaves; the leaves themselves are MP.doorLeaves'
-  if(!ruin){const yaw=s>0?0:Math.PI,zg=s*(hd-A.depth);[-DX+.15,-1.8,1.8,DX-.15].forEach(px=>B.obox('bronze',px,DH/2,zg,yaw,.3,DH,.3,{uv:2}));[-1,1].forEach(q=>B.obox('glass',q*(1.95+DX-.3)/2,DH/2,zg,yaw,DX-.3-1.95,DH,.04,{uv:4}));B.obox('bronze',0,DH+.2,zg,yaw,2*DX,.4,.36,{uv:2});
-   doors.push({x:0,z:zg,yaw,w:3.3,h:DH});}});
+  {const yaw=s>0?0:Math.PI,zg=s*(hd-A.depth);[-DX+.15,-1.8,1.8,DX-.15].forEach(px=>B.obox('bronze',px,DH/2,zg,yaw,.3,DH,.3,{uv:2}));[-1,1].forEach(q=>B.obox(ruin?'glassOut':'glass',q*(1.95+DX-.3)/2,DH/2,zg,yaw,DX-.3-1.95,DH,.04,{uv:4}));B.obox('bronze',0,DH+.2,zg,yaw,2*DX,.4,.36,{uv:2});
+   /* a ruin's doorway stands open, its leaves gone; where the arcade will not open (a fallen slab's) a dark face 1.5 m in closes the hollow behind */
+   if(!ruin)doors.push({x:0,z:zg,yaw,w:3.3,h:DH});else if(F.levels[0].h>RU.skin+.01)B.obox('dark',0,DH/2,zg-s*1.5,yaw,3.6,DH+.4,.1,{uv:2});else doors.push({x:0,z:zg,yaw,w:3.3,h:DH,dark:true});}});
  // ---- the roof: the parapet and, intact, the stepped metal hall of the council
  if(torn&&!RU.frame){/* each bay's top: a dark floor over the burnt storeys, and a wall down each step to the next bay (seen from either side) */
   for(let i=0;i<F.bays.n;i++){const x0=-hw+i*F.bays.width,x1=x0+F.bays.width,y=topAt(bx(i));if(y<=0)continue;B.quad('dark',[x0,y,hd],[x1,y,hd],[x1,y,-hd],[x0,y,-hd],[0,1,0],{uv:2});
    if(i+1<F.bays.n){const yn=topAt(bx(i+1)),lo=Math.min(y,yn),hi=Math.max(y,yn);if(hi-lo>.1){B.quad('dark',[x1,lo,-hd],[x1,lo,hd],[x1,hi,hd],[x1,hi,-hd],[1,0,0],{uv:2});B.quad('dark',[x1,lo,hd],[x1,lo,-hd],[x1,hi,-hd],[x1,hi,hd],[-1,0,0],{uv:2});}}}}
+ /* a skeleton's skin is closed at the frame's foot by a dark floor: where the tear took the frame's slabs (the rubble's, 57) the eye went down into the hollow building */
+ if(RU.frame){const y=RU.frame[0]-.36;B.quad('dark',[-hw,y,hd],[hw,y,hd],[hw,y,-hd],[-hw,y,-hd],[0,1,0],{uv:2});}
+ /* an impostor (lite) holds the bare frame too: a card has no trouble with free columns, which a shell fans into sheets */
+ if(lite&&RU.frame){F.levels.forEach(L=>{if(L.y>=frame0&&L.y<cut){const o=only;only='frame';frameLevel(L);only=o;}});}
  if(RU.patchy)[1,-1].forEach(s=>{const z=s*(hd-1.2),a=RU.patchy[0],b=RU.patchy[1];if(s>0)B.quad('dark',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1],{uv:2});else B.quad('dark',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1],{uv:2});});
  if(!torn){const pcol=stained(0,top);B.box('white',-hw,hw,top-.1,top+1.2,hd-.8,hd,{col:pcol});B.box('white',-hw,hw,top-.1,top+1.2,-hd,-hd+.8,{col:pcol});[1,-1].forEach(s=>B.box('white',s>0?hw-.8:-hw,s>0?hw:-hw+.8,top-.1,top+1.2,-hd+.8,hd-.8,{col:pcol}));B.quad('concrete',[-hw,top+.2,hd],[hw,top+.2,hd],[hw,top+.2,-hd],[-hw,top+.2,-hd],[0,1,0]);
  }

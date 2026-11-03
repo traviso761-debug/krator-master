@@ -7,6 +7,8 @@
 // KSHELL.draw(atlas, rec, slot, placements, opt) is the cage as an InstancedMesh of a patched MeshStandardMaterial, so a shell is lit by the same lights and
 // fogged by the same fog as the hero. The fragment traces the view ray from the cage inward by relaxed sphere tracing on the map; a ray that leaves discards.
 (function(){
+/* a hull map's height is 0.1 + 0.9 y/H, 0 where nothing is: a surface at the ground (the Spindle's skirt's reveal floor) stands clear of the empty test (0.05), where at
+   0.02 over 0.01 the mips' blur at its edge flickered it between solid and air, as spines round the skirt seen from above */
 const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform float uFaceD;uniform mat4 uVP;',
  'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
 
@@ -14,7 +16,7 @@ const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform f
  '#ifdef USE_INSTANCING','vec4 p=instanceMatrix*vec4(position,1.0);vN=normalize(mat3(instanceMatrix)*(normal/vec3(dot(instanceMatrix[0].xyz,instanceMatrix[0].xyz),dot(instanceMatrix[1].xyz,instanceMatrix[1].xyz),dot(instanceMatrix[2].xyz,instanceMatrix[2].xyz))));',
  '#else','vec4 p=vec4(position,1.0);vN=normal;','#endif',
  'vXZ=p.xz;if(uMode<0.5){float th=atan(p.z,p.x)+uWrap*6.2831853;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
- 'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.02+0.98*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
+ 'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.1+0.9*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
 // a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company
 const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap,uClip;uniform vec3 uFaceN;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;uniform sampler2D uRMap;uniform float uHasRMap;',
  'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
@@ -44,7 +46,7 @@ KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,p
     const half=W[i]/2;c.left=-half;c.right=half;c.top=H/2;c.bottom=-H/2;c.position.set(q[0]*(q[3]+1),H/2,q[2]*(q[3]+1));c.up.set(0,1,0);c.lookAt(0,H/2,0);c.near=.5;c.far=q[3]+1+f.D;c.updateProjectionMatrix();c.updateMatrixWorld();
     P.vp.value.multiplyMatrices(c.projectionMatrix,c.matrixWorldInverse);P.faceN.value.set(q[0],q[1],q[2]);P.faceD.value=q[3];vp(x,slot.y,x1-x,slot.h);R.clear(true,true,true);R.render(sc,cam);});}
   /* the hull maps: a plain projection, x and z to the slot, y to depth: from above the highest surface wins, from below the lowest */
-  const hm=P.mode.value;[[top,1],[bot,-1]].filter(e=>e[0]).forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;P.clip.value=S<0?.02+.98*rec.soffit/f.H:0;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
+  const hm=P.mode.value;[[top,1],[bot,-1]].filter(e=>e[0]).forEach(function(e){const S=e[1];P.vp.value.set(1/rec.hx,0,0,0, 0,0,1/rec.hz,0, 0,-2*S/f.H,0,S, 0,0,0,1);P.mode.value=2;P.clip.value=S<0?.1+.9*rec.soffit/f.H:0;vp(e[0].x,e[0].y,e[0].w,e[0].h);R.clear(true,true,true);R.render(sc,cam);});P.mode.value=hm;
   rt.scissorTest=false;rt.viewport.set(0,0,rt.width,rt.height);});
  R.setRenderTarget(old);R.autoClear=oAuto;R.setClearColor(oc,oa);R.toneMapping=tm;mats.forEach(l=>l.forEach(m=>m.dispose()));return true;};
 // the mips, once every slot is baked
@@ -55,24 +57,29 @@ const DM=['vMpP=position;',
  'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;vMpTop=aTop;vMpBot=aBot;',
  '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-aFrame.y,max(-e.y,0.0)),ld=length(vec3(dx,dy,dz));',
  ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,uBand.x>0.0?smoothstep(uBand.x*(1.0-uBand.z),uBand.x,ld):1.0);}'].join('\n');
-const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;uniform float uDbg;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
- 'vec2 mpUV;float mpLod;vec3 mpHP;vec3 mpRd;float mpBr;',MP.ROOM_GLSL,
+const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;uniform float uTexel;uniform float uDbg;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
+ 'vec2 mpUV;float mpLod;float mpGeo;vec3 mpHP;vec3 mpRd;float mpBr;',MP.ROOM_GLSL,
  // the gap: how far p is outside the surface along the map's axis, and the uv it sampled
- 'float mpGap(vec3 p){vec4 F=vMpFrame;if(p.y>F.y)return 4.0;float v=clamp(p.y/F.y,0.0,1.0);',
- ' if(F.x<0.5){float u=atan(p.z,p.x)/6.2831853+0.5;mpUV=vMpSlot.xy+vMpSlot.zw*vec2(u,v);float r=textureLod(uB,mpUV,mpLod).a*F.z;return length(p.xz)-r;}',
+ /* a side map is read half a texel (at its mip) inside its slot: at the foot or the seam the filter blended in the atlas's empty gutter, which took the radius at the ground
+    from 46 m to a third of it, so the skirt's outer metres were lost and its rim spiked */
+ 'float mpGap(vec3 p){vec4 F=vMpFrame;if(p.y>F.y)return 4.0;vec2 hv=exp2(mpLod)*.5/(vMpSlot.zw*uAt);float v=clamp(p.y/F.y,hv.y,1.0-hv.y);',
+ ' if(F.x<0.5){float u=clamp(atan(p.z,p.x)/6.2831853+0.5,hv.x,1.0-hv.x);mpUV=vMpSlot.xy+vMpSlot.zw*vec2(u,v);float r=textureLod(uB,mpUV,mpGeo).a*F.z;return length(p.xz)-r;}',
  ' float hx=F.z,hz=F.w,D=hz,per=4.0*(hx+hz),dz=hz-abs(p.z),dx=hx-abs(p.x);',
  /* a box is the hull of two of its maps: the long face on the point's side (it reaches the middle) and the end face on its side (it reaches D in). A point is solid only
     inside both; judging by the nearest face alone let a ray over a setback roof read the far face's map. An empty end map deeper than D says nothing, so the long face decides (it returned
     solid with its own empty texel, which drew black bars on a roof) */
  ' float sz=p.z>0.0?(p.x+hx):(2.0*hx+2.0*hz+hx-p.x),sx=p.x>0.0?(2.0*hx+hz-p.z):(4.0*hx+2.0*hz+p.z+hz);',
- ' vec2 uz=vMpSlot.xy+vMpSlot.zw*vec2(sz/per,v),ux=vMpSlot.xy+vMpSlot.zw*vec2(sx/per,v);float az=textureLod(uB,uz,mpLod).a,ax=textureLod(uB,ux,mpLod).a;',
+ ' vec2 uz=vMpSlot.xy+vMpSlot.zw*vec2(clamp(sz/per,hv.x,1.0-hv.x),v),ux=vMpSlot.xy+vMpSlot.zw*vec2(clamp(sx/per,hv.x,1.0-hv.x),v);float az=textureLod(uB,uz,mpGeo).a,ax=textureLod(uB,ux,mpGeo).a;',
  ' float gz=az<0.02?4.0:(1.0-az)*D-dz,gx=ax<0.02?(dx<D?4.0:-1000.0):(1.0-ax)*D-dx;',
  ' if(gz>=gx){mpUV=uz;return gz;}mpUV=ux;return gx;}',
- 'bool mpIn(vec3 p,vec3 rd,float mn,float ey,vec2 hxz,out float g,out float ta,out float ty){g=mpGap(p);vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0);ta=textureLod(uB,vMpTop.xy+vMpTop.zw*h,mpLod+1.0).a;ty=(ta-.02)/.98*vMpFrame.y;return g<mn*.5&&(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5));}',
+  /* inside: in the side hull and, for a ray from above, under the top. The top is read blurred (mpLod + 1), and at a footprint's edge also sharp: there the blurred one falls
+    under the empty test, and the step's limit over a roof (below) let a ray step by the side gap past a curb at the ground */
+ 'bool mpIn(vec3 p,vec3 rd,float mn,float ey,vec2 hxz,out float g,out float ta,out float ty){g=mpGap(p);vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h;ta=textureLod(uB,ut,mpGeo+1.0).a;ty=(ta-.1)/.9*vMpFrame.y;',
+ ' float a0=textureLod(uB,ut,0.0).a;if(a0>0.05&&ta<=0.05){ta=a0;ty=(a0-.1)/.9*vMpFrame.y;}return g<mn*.5&&(rd.y>=0.0||(ta>0.05&&p.y<=ty+ey*2.5));}',
  /* a roof is where the top map is flat for 1.5 m all round; a sill never is (the wall rises behind it). The side map's air above was the only test, and over a box
     it fails on a low roof past a hall's end: the long face's map extrudes the hall over it, which read the side map there as bars */
- 'bool mpFlat(vec2 ut,float ty,vec2 hxz,float ey){vec2 o=vMpTop.zw*1.5/(2.0*hxz);float tol=max(ey,0.5),L=mpLod+1.0;for(int k=0;k<4;k++){vec2 d=k==0?vec2(o.x,0.0):k==1?vec2(-o.x,0.0):k==2?vec2(0.0,o.y):vec2(0.0,-o.y);float a=textureLod(uB,ut+d,L).a;if(a<0.01||abs((a-.02)/.98*vMpFrame.y-ty)>tol)return false;}return true;}',
- 'bool mpTrace(){mpBr=0.0;vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));float t=0.0,tp=0.0,mn=max(0.25,dist*uPx*.6),g,ta,ty;',
+ 'bool mpFlat(vec2 ut,float ty,vec2 hxz,float ey){vec2 o=vMpTop.zw*1.5/(2.0*hxz);float tol=max(ey,0.5),L=mpLod+1.0;for(int k=0;k<4;k++){vec2 d=k==0?vec2(o.x,0.0):k==1?vec2(-o.x,0.0):k==2?vec2(0.0,o.y):vec2(0.0,-o.y);float a=textureLod(uB,ut+d,L).a;if(a<0.05||abs((a-.1)/.9*vMpFrame.y-ty)>tol)return false;}return true;}',
+ 'bool mpTrace(){mpBr=0.0;vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));mpGeo=max(0.0,mpLod-1.0);float t=0.0,tp=0.0,mn=max(0.25,dist*uPx*.6),g,ta,ty;',
  ' vec4 F=vMpFrame;float lim=F.x<0.5?F.z*1.08:0.0;',
  ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
  ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;',
@@ -80,16 +87,19 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;uni
     so the colour is read at the surface's own height (a deep landing read a skirt's side lower down, as spines, and a roof's map flipped with the camera) */
  '  if(mpIn(p,rd,mn,ey,hxz,g,ta,ty)){float a=tp,b=t;for(int j=0;j<5;j++){float m=(a+b)*.5;if(mpIn(ro+rd*m,rd,mn,ey,hxz,g,ta,ty))b=m;else a=m;}',
  '   p=ro+rd*b;mpIn(p,rd,mn,ey,hxz,g,ta,ty);vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h,ub=vMpBot.xy+vMpBot.zw*h,us=mpUV;mpHP=p;',
- '   if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85&&(mpGap(vec3(p.x,p.y+ey*2.0,p.z))>3.5||mpFlat(ut,ty,hxz,ey))){mpUV=ut;mpBr=1.0;}else if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.01){mpUV=ub;mpBr=2.0;}else mpUV=us;return true;}',
- /* the side map's gap is a horizontal distance: a steep ray stepping by it fell through a flared skirt, so a ray going down over a roof steps no further than the roof's height above it */
- '  tp=t;float s=max(g*.85,mn);if(rd.y<0.0&&ta>0.01){if(g<mn*.5)s=clamp((p.y-ty-ey)/(-rd.y),mn,2.0);else if(p.y>ty+ey)s=min(s,max((p.y-ty-ey)/(-rd.y),max(mn,ey*.5)));}t+=s;',
+ '   if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85&&(mpGap(vec3(p.x,p.y+ey*2.0,p.z))>3.5||mpFlat(ut,ty,hxz,ey))){mpUV=ut;mpBr=1.0;}else if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.05){mpUV=ub;mpBr=2.0;}else mpUV=us;return true;}',
+ /* the side map's gap is a horizontal distance: a steep ray stepping by it fell through a flared skirt, so a ray going down over a roof steps no further than the roof's height above it,
+    and none past 5 cm over the ground, where a curb or a fin's foot is a row or two of the map */
+ '  tp=t;float s=max(g*.85,mn);if(rd.y<0.0&&ta>0.05){if(g<mn*.5)s=clamp((p.y-ty-ey)/(-rd.y),mn,2.0);else if(p.y>ty+ey)s=min(s,max((p.y-ty-ey)/(-rd.y),max(mn,ey*.5)));}if(rd.y<0.0&&p.y>.05)s=min(s,max((p.y-.05)/(-rd.y),mn*.5));t+=s;',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');
-KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uDbg:{value:0}};m.userData.U=U;
+KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uAt:{value:at.size},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uDbg:{value:0}};m.userData.U=U;
  m.onBeforeCompile=function(sh){Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+DV).replace('#include <begin_vertex>','#include <begin_vertex>\n'+DM);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define MP_STEPS '+steps+'\n'+DF)
-   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;vec2 sUV=mpUV;vec4 mA=textureLod(uA,sUV,mpLod),mB=textureLod(uB,sUV,mpLod),mC=textureLod(uC,sUV,mpLod);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
+   /* crispness: the colour is read three quarters of a mip under the distance's level, and up to 1.25 coarser where the surface is seen edge-on (the distance alone left a
+      grazing face's windows sparkling from above); the shape (mpGeo) a whole level under the colour's, so a silhouette and its relief are not rounded off */
+   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=max(0.0,mpLod-.75+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=mC.r;').replace('#include <metalnessmap_fragment>','float metalnessFactor=mC.g;')
    .replace('#include <normal_fragment_begin>',['vec3 mN=normalize(mB.xyz*2.0-1.0),mW=vec3(vMpRot.x*mN.x-vMpRot.y*mN.z,mN.y,vMpRot.y*mN.x+vMpRot.x*mN.z);vec3 normal=normalize((viewMatrix*vec4(mW,0.0)).xyz);vec3 geometryNormal=normal;'].join('\n'))
    .replace('#include <normal_fragment_maps>','')

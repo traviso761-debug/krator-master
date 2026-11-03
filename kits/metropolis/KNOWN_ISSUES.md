@@ -11,9 +11,8 @@
 - [ ] **The Ledger shell's roof hall** reads darker on its front faces than the real one's from above; the hall's top is right. Shells are held past 300 m.
 - [ ] **Up to 24 real towers** stand within 300 m (the cap the tiers allow, 2026-11-02, up from 10): in a dense block every near tower is real, so its cost is the city's density. With more than 24, the rest are shells drawn close, which smear.
 - [ ] **`AI.barPlate` draws its cross walls diagonally** (`kits/ancients-interiors/src/35-ai-plates.js`, the `.x` wall: `[inner[0], outer[m]]`, from the room's inner start to its outer end; it should be `outer[0]`). Every bar storey of the Ledger had a wall across each room corner to corner, one of them across the entrance. `41-mp-plans.js` straightens them here; the kit's fix reaches `kits/ancients` (some 30 pages) and Noah's Regret, so it waits for the next all-builds rebuild.
-- [ ] **The entrance doors are only on the intact towers**: a ruin keeps its glass (or its void) across the portal and the arcade.
-- [ ] **A walker goes through the rubble:** the mounds are drawn, not walked (KWALK has the ground only). A mound wants its top as a walk surface (`KSTACKS.topAt`).
-- [ ] **The rubble stops at 1 km;** past it a ruin is its impostor, which has none. A fallen tower's far impostor is its stub.
-- [ ] **The rubble mounds are bedded:** a `KSTACKS` butte's beds read as stepped plates, more a slag heap than loose rubble. A rubble kind in `core/terrain` (loose blocks, no beds) would be truer.
 - [ ] **The arcade outlasts the fallen Ledger** (its arches, piers and flares are not cut by the ruin), so a fallen slab is a colonnade in its mound: by the record's note for M6 that is right for some buildings, not decided for this one.
 - [ ] **Ruined rubble falls into the street at `?pitch=140`:** a broken Spindle's mound runs about 120 m along a fin, into its neighbour's block at 140 m. At the default 220 m it lands in the street.
+- [ ] **The far rubble is chunkless:** past 1 km a ruin's heap is its bed on a 16 m grid, no chunks or pieces (they would be about 20 k triangles a ruin). Its impostor holds a skeleton's frame and a stump's fins.
+- [ ] **A Spindle shell's fins are spiky from above:** a fin is a radial blade three texels wide in the polar map, which the filter draws as a wedge. The hero's are clean; held past 300 m.
+- [ ] **Impostors are 128 px a view** (fourteen states in one set, about 126 MB): soft up close, so shells now stand to 1.4 km. A sharper impostor wants a larger cell (`?impcell=`) and its memory.

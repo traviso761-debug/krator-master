@@ -18,7 +18,7 @@ MP.mats=(function(){let M=null;
  const fam=(name,o)=>{const P=KMAT.mode==='lib'?KMAT.packed('metropolis',name):null,T=P?KMAT.textures(P,{aniso:8}):{};if(P&&P.scale)[T.map,T.normalMap,T.roughnessMap].forEach(t=>{if(t)t.repeat.set(4/P.scale[0],4/P.scale[1]);});
   return new THREE.MeshStandardMaterial(Object.assign({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,vertexColors:true,metalness:P?P.metal||0:0,roughness:1},o||{}));};
  return function(){if(M)return M;
-  M={white:fam('white',{metalness:.12}),concrete:fam('concrete'),relief:fam('relief'),bronze:fam('bronze',{metalness:.35,color:0xd8b48a}),
+  M={white:fam('white',{metalness:.12}),concrete:fam('concrete'),relief:fam('relief'),rubble:fam('rubble'),bronze:fam('bronze',{metalness:.35,color:0xd8b48a}),
    dark:new THREE.MeshStandardMaterial({color:0x17181a,roughness:1,metalness:0,vertexColors:true}),
    cyan:new THREE.MeshStandardMaterial({color:0x8fe9ee,emissive:0x35d8e0,emissiveIntensity:1.1,roughness:.4,metalness:0,vertexColors:true}),
    cyanDead:new THREE.MeshStandardMaterial({color:0x2a3336,roughness:.8,metalness:.1,vertexColors:true}),
@@ -74,7 +74,10 @@ MP.builder=function(lite){const B={b:{},panels:[]};
 // an entrance's leaves: each opening {x, z, yaw, w, h} (its centre at the foot, +z to the outward) takes two glass leaves in bronze frames, which slide apart along the
 // opening when a walker comes near (MP.doorTick). They are meshes of the hero's own, named 'a door leaf', so a placed clone moves its own
 MP.doorLeaves=function(G,list){if(!list.length)return;const M=MP.mats(),glass=MP.doorGlass||(MP.doorGlass=new THREE.MeshStandardMaterial({color:0x1f3038,roughness:.06,metalness:.55,name:'mp.doorGlass'})),cache={};
- list.forEach(function(o){const lw=o.w/2-.02,key=lw.toFixed(2)+'x'+o.h.toFixed(2);
+ list.forEach(function(o){
+  /* a ruin's doorway (o.dark): no leaves, a dark face 1.5 m in that closes the hollow building from afar, gone when the walker comes near (the lobby opens then) */
+  if(o.dark){const c=Math.cos(o.yaw),s=Math.sin(o.yaw),m=new THREE.Mesh(MP.doorDarkGeo||(MP.doorDarkGeo=new THREE.BoxGeometry(1,1,.1)),M.dark);m.scale.set(o.w+.6,o.h+.4,1);m.position.set(o.x-s*1.5,(o.h+.4)/2,o.z-c*1.5);m.rotation.y=o.yaw;m.name='a door leaf';m.userData.door={ax:[0,0],w:o.w/2,dark:true};G.add(m);return;}
+  const lw=o.w/2-.02,key=lw.toFixed(2)+'x'+o.h.toFixed(2);
   if(!cache[key]){const B=MP.builder(),f=.09;B.obox('bronze',-lw/2+f/2,o.h/2,0,0,f,o.h,.1,{uv:2});B.obox('bronze',lw/2-f/2,o.h/2,0,0,f,o.h,.1,{uv:2});B.obox('bronze',0,o.h-f/2,0,0,lw,f,.1,{uv:2});B.obox('bronze',0,.08,0,0,lw,.16,.1,{uv:2});B.obox('bronze',0,1.05,.07,0,lw*.6,.05,.04,{uv:2});
    cache[key]={frame:B.finish({id:'door'},'leaf').children[0].geometry,glass:new THREE.BoxGeometry(lw-2*f,o.h-f-.16,.03).translate(0,(o.h-f+.16)/2,0)};}
   /* 0.27 m inside the screen's plane, behind its posts (0.3 deep), so an open leaf slides behind the jamb and the sidelight, not through them */

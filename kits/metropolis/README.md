@@ -74,9 +74,17 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
 
 - **A shell holds what stands about the axis, and no more.** A stump's fins standing free and a skeleton's columns and slab edges fan into broad sheets in a polar map (a
   blade off the axis interpolates to the core beside it). They are drawn with the rubble instead, real geometry at every distance; the hero and shell keep the skin and core.
-- **The rubble is its own instanced object,** one mesh a material and state, at every ruin within 1 km: it lies off the tower's axis, so it is in neither the shell nor the
+- **The rubble is its own instanced object,** one mesh a material and state, at every ruin within 1 km (a coarse one to 3.2 km): it lies off the tower's axis, so it is in neither the shell nor the
   impostor. At `?pitch=140` the worst street draws 0.94 M triangles in 123 calls with 13 heroes and about 70 ruins' rubble in range (a 1.6 km range took it to 2.2 M); a fallen Spindle's rubble is 22 k.
 - **Each state's shell is as tall as what stands,** and the five past gutted take a 0.5 m map and none from below (no lamp): the fourteen records pack one 2048 atlas.
+- **The rubble is `core/terrain`'s `KRUBBLE`** (opt-in, 2026-11-03): a heap of discrete broken chunks on a dark bed (a butte's beds read as stepped slabs). Its surface is walked
+  (`KRUBBLE.walkTris` into `KWALK`); past 1 km a coarse bed without chunks stands for it to 3.2 km. A ruin's doorway keeps its frame, open; a dark face inside it closes the
+  hollow from afar and goes as the walker comes near, when the lobby opens.
+- **Shell edges** (2026-11-03): a side map was read up to its slot's edge, where the filter blended in the atlas's empty gutter: at the foot that took the Spindle's radius from
+  46 m to a third of it, so its skirt's outer metres went missing and its rim spiked, seen from above. Reads stay half a texel (at their mip) inside the slot. A descending ray
+  steps no further than 5 cm over the ground, and the step's limit over a roof reads the sharp texel too. The roof map's heights are 0.1 + 0.9 y/H (0 empty).
+- **Crisper shells:** the colour is read three quarters of a mip under the distance's level (up to 1.25 coarser on a face seen edge-on, which sparkled), the shape a whole
+  level under that, so silhouettes and relief are not rounded off. Shells stand to 1.4 km (the impostor, 128 px a view, was soft at 1 km).
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):

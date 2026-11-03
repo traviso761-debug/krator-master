@@ -51,7 +51,7 @@ def core(folder, names):
 
 
 core('rand', ['08-core-rand.js'])
-core('terrain', ['37-core-stacks.js'])   # KSTACKS: a ruin's rubble mound (57-mp-debris.js)
+core('terrain', ['37c-core-rubble.js'])   # KRUBBLE: a ruin's rubble heaps (57-mp-debris.js)
 core('tags', ['50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'])
 core('space', ['20-core-space.js'])
 core('walk', ['20-core-walk.js'])

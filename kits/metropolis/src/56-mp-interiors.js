@@ -57,6 +57,9 @@ MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m
   for(let x=-hw;x<=hw;x+=.5)if(Math.abs(x)>3.6)[1,-1].forEach(s=>b(x,s*(hd-F.arcade.depth),.25));}};
 MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});MP.walkDirty=false;
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
+ /* a ruin's heaps are walked on: their surface as triangles (KRUBBLE.walkTris), turned with the tower */
+ (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{const m=g.userData.mp;if(!m)return;const p=m.key.split('.'),c=Math.cos(m.yaw),n=Math.sin(m.yaw);
+  MP.heaps(MP.FAMILY[p[0]],p[1]).forEach((H,i)=>KRUBBLE.walkTris(H,4).forEach(t=>W.poly({pts:t.map(q=>[m.x+q[0]*c+q[1]*n,m.z-q[0]*n+q[1]*c,q[2]]),name:m.key+' rubble '+i,tag:'rubble'})));});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
   W.poly({pts:o.g.userData.outline.map(p=>{const q=T(p);return [q[0],q[1],y];}),name:o.key+' L'+o.k,tag:'storey'});
   o.g.userData.stairs.forEach(f=>{const a=T(f.a),b=T(f.b);W.strip({a:[a[0],a[1],f.a[2]],b:[b[0],b[1],f.b[2]],w:f.w,name:'a stair',tag:'stair'});});
@@ -84,7 +87,7 @@ MP.ride=function(k){const H=MP.heroAt(camera.position);if(!H||!HOSTED.ctl.walk)r
  MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.ride.on={x,z,y0,y1,t0:performance.now(),ms:Math.max(1500,Math.abs(y1-y0)/6*1000)};return true;};
 // the doors: a lift's leaf slides into the wall when the walker comes within 2.5 m, or while the car stands at that storey; an entrance's leaves (a placed hero's) part
 // when the walker is within 3 m of their opening
-MP.doorTick=function(){const e=camera.position,v=new THREE.Vector3();MP.open.map(o=>o.g).concat(typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{(g.userData.leaves||[]).forEach(q=>{v.copy(q.base);q.m.parent.localToWorld(v);const near=Math.hypot(v.x-e.x,v.z-e.z)<(q.r==null?2.5:q.r)&&Math.abs(v.y-(e.y-HOSTED.ctl.eye+1.07))<2;q.open+=((near?1:0)-q.open)*.15;
+MP.doorTick=function(){const e=camera.position,v=new THREE.Vector3();MP.open.map(o=>o.g).concat(typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{(g.userData.leaves||[]).forEach(q=>{v.copy(q.base);q.m.parent.localToWorld(v);const near=Math.hypot(v.x-e.x,v.z-e.z)<(q.r==null?2.5:q.r)&&Math.abs(v.y-(e.y-HOSTED.ctl.eye+1.07))<2;if(q.dark){q.m.visible=!near;return;}q.open+=((near?1:0)-q.open)*.15;
   q.m.position.set(q.base.x+q.ax[0]*q.w*.95*q.open,q.base.y,q.base.z+q.ax[1]*q.w*.95*q.open);});});};
 MP.rideView=function(){MP.doorTick();const R=MP.ride.on;if(!R)return;const f=Math.min(1,(performance.now()-R.t0)/R.ms),e=f<.5?2*f*f:1-2*(1-f)*(1-f),y=R.y0+(R.y1-R.y0)*e,C=HOSTED.cam;
  C.walkAt=[R.x,R.z,y];HOSTED.ctl.target.set(R.x,y+HOSTED.ctl.eye,R.z);camera.position.set(R.x,y+HOSTED.ctl.eye,R.z);MP.nextEnter=performance.now()+600;if(f>=1)MP.ride.on=null;};

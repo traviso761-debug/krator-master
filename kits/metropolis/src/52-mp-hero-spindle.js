@@ -38,7 +38,7 @@ MP.heroSpindle=function(state,lite,only){const F=MP.SPINDLE,S=F.ruins[state]||{}
   const skirt=y0<21,glassy=kinds.some(k=>MP.isGlass(k)||k==='louvre'||k==='arcade');
   const col=stain||undefined,skip=ruin?((t,y)=>inBreach(t,y)||(torn&&L.y>=tear(t))||patch(t,y)):null;
   /* the lobby's doors: at each portal the two bays either side of it (the portal is a bay line) take a door screen, not the sloping glass */
-  const isDoor=L.use==='lobby'&&!ruin?(t=>F.portals.some(p=>{let d=Math.abs(t-p);d=Math.min(d,PI2-d);return d<PI2/N-1e-4;})):null;
+  const isDoor=L.use==='lobby'?(t=>F.portals.some(p=>{let d=Math.abs(t-p);d=Math.min(d,PI2-d);return d<PI2/N-1e-4;})):null;
   if(!glassy||L.use==='lamp'||L.use==='roofpark'){if(L.use==='lamp'||L.use==='roofpark')return;
    B.lathe(bucket,[[R(y0),y0],[R(y1),y1]],N,{col,skip});}
   else{
@@ -46,7 +46,10 @@ MP.heroSpindle=function(state,lite,only){const F=MP.SPINDLE,S=F.ruins[state]||{}
    let sill=9,top=0;kinds.forEach(k=>{const s=MP.BAYSIZE[k];if(s){sill=Math.min(sill,s[1]);top=Math.max(top,s[2]);}});
    const yS=y0+sill,yT=Math.min(y0+top*(L.h/MP.STOREY),y1-.2),rS=R(yS),rT=R(yT),dep=skirt?2.2:D;
    if(sill>.01)B.lathe(bucket,[[R(y0),y0],[rS,yS]],N,{col,skip});
-   B.lathe(bucket,[[rS,yS],[rS-dep,yS]],N,{col,skip,uv:2});
+   /* the lobby's reveal floor is a curb 0.45 m high (none at the doors): a floor at the ground is no height in a side map, so the shell, seen from above, caught its edge
+      in the map's first row bay by bay, as spines round the skirt */
+   if(yS<.01&&L.k===0){const PL=.45,sk=(t,y)=>(isDoor&&isDoor(t))||(skip&&skip(t,y));B.lathe(bucket,[[rS,yS],[rS,PL]],N,{col,skip:sk,uv:2});B.lathe(bucket,[[rS,PL],[rS-dep,PL]],N,{col,skip:sk,uv:2});if(isDoor)B.lathe(bucket,[[rS,yS],[rS-dep,yS]],N,{col,skip:(t,y)=>!isDoor(t),uv:2});}
+   else B.lathe(bucket,[[rS,yS],[rS-dep,yS]],N,{col,skip,uv:2});
    B.lathe(bucket,[[rT-dep,yT],[rT,yT]],N,{col,skip,uv:2});
    B.lathe(bucket,[[rT,yT],[R(y1),y1]],N,{col,skip});
    // what fills the band: glass where a window is, void where the ruin took it
@@ -55,10 +58,11 @@ MP.heroSpindle=function(state,lite,only){const F=MP.SPINDLE,S=F.ruins[state]||{}
       soffit back to the sloping glass, a cheek at each side, the glass again above */
    if(isDoor){const Wd=PI2/N,rg=rS-dep,rAt=y=>rg+(rT-dep-rg)*(y-yS)/(yT-yS),hwd=rg*Math.sin(Wd),Hh=DH+.4,rh=rAt(Hh);
     F.portals.forEach(function(p){const rc0=rg*Math.cos(Wd),cx=rc0*Math.cos(p),cz=rc0*Math.sin(p),yaw=Math.PI/2-p,tx=Math.sin(p),tz=-Math.cos(p),at=x=>[cx+tx*x,cz+tz*x];
-     [-hwd+.15,-1.8,1.8,hwd-.15].forEach(x=>{const q=at(x);B.obox('bronze',q[0],DH/2,q[1],yaw,.3,DH,.3,{uv:2});});[-1,1].forEach(k=>{const q=at(k*(1.95+hwd-.3)/2);B.obox('glass',q[0],DH/2,q[1],yaw,hwd-.3-1.95,DH,.04,{uv:4});});B.obox('bronze',cx,DH+.2,cz,yaw,2*hwd,.4,.36,{uv:2});
-     B.lathe('glass',[[rh,Hh],[rT-dep,yT]],2,{a0:p-Wd,a1:p+Wd,uv:4});B.lathe(bucket,[[rh,Hh],[rg,Hh]],2,{a0:p-Wd,a1:p+Wd,uv:2});
+     [-hwd+.15,-1.8,1.8,hwd-.15].forEach(x=>{const q=at(x);B.obox('bronze',q[0],DH/2,q[1],yaw,.3,DH,.3,{uv:2});});[-1,1].forEach(k=>{const q=at(k*(1.95+hwd-.3)/2);B.obox(ruin?'glassOut':'glass',q[0],DH/2,q[1],yaw,hwd-.3-1.95,DH,.04,{uv:4});});B.obox('bronze',cx,DH+.2,cz,yaw,2*hwd,.4,.36,{uv:2});
+     B.lathe(ruin?'glassOut':'glass',[[rh,Hh],[rT-dep,yT]],2,{a0:p-Wd,a1:p+Wd,uv:4});B.lathe(bucket,[[rh,Hh],[rg,Hh]],2,{a0:p-Wd,a1:p+Wd,uv:2});
      [p-Wd,p+Wd].forEach(a=>{const c=Math.cos(a),s=Math.sin(a),A=[rg*c,yS,rg*s],Bp=[rg*c,Hh,rg*s],C=[rh*c,Hh,rh*s];B.quad(bucket,A,Bp,C,C,[-s,0,c],{uv:2});B.quad(bucket,Bp,A,C,C,[s,0,-c],{uv:2});});
-     doors.push({x:cx,z:cz,yaw,w:3.3,h:DH});});}
+     /* a ruin's doorway stands open, its leaves gone; where its lobby will not open (under the skin that stands) a dark face 1.5 m in closes the hollow behind */
+     if(!ruin)doors.push({x:cx,z:cz,yaw,w:3.3,h:DH});else if(L.y+L.h>RU.skin+.01){const q=at(0),k=1.5;B.obox('dark',q[0]-Math.cos(p)*k,DH/2,q[1]-Math.sin(p)*k,yaw,3.6,DH+.4,.1,{uv:2});}else doors.push({x:cx,z:cz,yaw,w:3.3,h:DH,dark:true});});}
    const W=PI2/N;
    fac.forEach(function(b,bi){const k=b.kind,c=b.th,a=c-W/2,ym=(yS+yT)/2,r=(rS+rT)/2-dep/2,arc=W*r,yaw=Math.PI/2-c;
     if(ruin&&inBreach(c,ym))return;if(torn&&L.y>=tear(c))return;if(patch(c,ym))return;if(isDoor&&isDoor(c))return;
@@ -103,4 +107,9 @@ MP.heroSpindle=function(state,lite,only){const F=MP.SPINDLE,S=F.ruins[state]||{}
     if(Math.abs(y-yn)>.1){const a=a0+W,c=Math.cos(a),s=Math.sin(a),lo=Math.min(y,yn),hi=Math.max(y,yn),r=R(lo)-.05;B.quad('dark',[0,lo,0],[r*c,lo,r*s],[r*c,hi,r*s],[0,hi,0],[s,0,-c],{uv:2});B.quad('dark',[r*c,lo,r*s],[0,lo,0],[0,hi,0],[r*c,hi,r*s],[-s,0,c],{uv:2});}}}
   B.lathe('concrete',[[6.5,c0],[6.5,cTop]],16,{});B.lathe('concrete',[[6.5,cTop],[0,cTop]],12,{});
   for(let i=0;i<14;i++){const a=MP.u(seedK&0xffff,i,77)*PI2,h=1.5+4*MP.u(seedK&0xffff,i,78),w=.6+1.5*MP.u(seedK&0xffff,i,79),y=torn?topAt(a):cut,r=R(y)-.4;B.panel(Math.cos(a)*r,y+h/2-.4,Math.sin(a)*r,Math.PI/2-a,w,h,.5,WALL);}}
+ /* a skeleton's skin is closed at the frame's foot (where the tear took the frame's slabs the eye went into the hollow), and an impostor (lite) holds the bare frame and a
+    stump's free fins, which a card draws well and a shell does not */
+ if(RU.frame){const y=RU.frame[0]-.36;B.lathe('dark',[[R(y)-.05,y],[0,y]],48,{});}
+ if(lite&&RU.frame){F.levels.forEach(L=>{if(L.y>=frame0&&L.y<cut){const o=only;only='frame';frameLevel(L);only=o;}});}
+ if(lite&&RU.finsFree)MP.spindleFins(B,F,RU.finsFree[0],RU.finsFree[1],true,true);
  const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);return G;};

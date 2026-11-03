@@ -3,7 +3,8 @@
 // a tiers view stands a few hundred towers of the two families round the worst street: about ten heroes, about sixty shells, impostors past 1 km.
 // Boots once the library maps are in: the shells and the impostors are baked at load, from the heroes. Everything placed is a KRAND hash and a core/tags record.
 const MPS={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.map(s=>f+'.'+s))),hero:{},rec:{},slot:{},mesh:{},live:[],pool:[],mode:null,bakeMs:0};
-const MP_NEAR=300,MP_FAR=1000,MP_IMPFAR=3200;
+/* shells to 1.4 km (1 km made the impostors, 128 px a view, soft on screen); the near rubble stops at 1 km, the far rubble at 3.2 km */
+const MP_NEAR=300,MP_FAR=1400,MP_IMPFAR=3200,MP_RUBBLE=1000;
 // the tiers: a grid of blocks, a tower in about 70% of them, by hash
 MPS.towers=(function(){const P=[],pitch=/[?&]pitch=(\d+)/.test(location.search)?+RegExp.$1:220;MPS.pitch=pitch;const NB=Math.ceil(3100/pitch);for(let i=-NB;i<=NB;i++)for(let j=-NB;j<=NB;j++){if(MP.u(11,i+40,j+40)>.7)continue;if(i===0&&j===0)continue;const x=i*pitch,z=j*pitch;if(Math.hypot(x,z)>3100)continue;
  /* the states, by hash: a fifth intact, a quarter gutted, the five ruins a tenth or so each; a ruined Spindle turned by quarters, so its rubble does not all fall one way */
@@ -18,8 +19,10 @@ MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return fals
  MPS.mat=KSHELL.material(MPS.atlas,{steps:/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:32});MPS.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);
  if(!/[?&]noshell\b/.test(location.search))MPS.keys.forEach(k=>{const im=KSHELL.draw(MPS.atlas,MPS.rec[k],MPS.slot[k],MPS.mat,new Array(1400).fill([0,0,0]),MPS.slot[k+'.top'],MPS.slot[k+'.bot']);im.count=0;scene.add(im);MPS.mesh[k]=im;});
  /* the rubble: one instanced mesh a material and state, its instances the ruins within 1 km (MP.debris): past it, a ruin is its impostor */
- MPS.debris={};MPS.debrisTris={};MPS.keys.forEach(k=>{const p=k.split('.'),G=MP.debris(MP.FAMILY[p[0]],p[1]);if(!G)return;MPS.debrisTris[k]=G.userData.tris;
-  MPS.debris[k]=G.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,MPS.towers.length+8);im.count=0;im.frustumCulled=false;im.name=m.name;scene.add(im);return im;});});
+ MPS.debris={};MPS.debrisFar={};MPS.debrisTris={};MPS.keys.forEach(k=>{const p=k.split('.'),G=MP.debris(MP.FAMILY[p[0]],p[1]);if(!G)return;MPS.debrisTris[k]=G.userData.tris;
+  MPS.debris[k]=G.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,MPS.towers.length+8);im.count=0;im.frustumCulled=false;im.name=m.name;scene.add(im);return im;});
+  /* the far rubble: the heaps on a 16 m grid, no blocks or pieces, for the ruins past 1 km, whose impostors have none */
+  const Gf=MP.debris(MP.FAMILY[p[0]],p[1],true);MPS.debrisFar[k]=Gf.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,MPS.towers.length+8);im.count=0;im.frustumCulled=false;im.name=m.name+'.far';scene.add(im);return im;});});
  MPS.bakeMs=Math.round(performance.now()-t0);
  // the impostors: one set, a slot a family and state, built from the hero's own meshes
  const S=BIO.impostorSet('mp',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:MPS.keys.length});MPS.impSet=S;BIO.kit('metro');
@@ -36,7 +39,7 @@ MPS.boot=function(){if(MPS.ready)return true;if(window._texPending>0)return fals
 // one impostor a frame: 64 views of a tower, twice, in one call can outlast the GPU watchdog on a slow GPU (the context is lost: see KNOWN_ISSUES.md)
 MPS.impTick=function(){if(!MPS.impQ||!MPS.impQ.length)return;const r=MPS.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);MPS.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;MPS.impMs+=Math.round(performance.now()-t0);};
 // a hero placed: a clone that shares the geometry
-function mpHero(key,x,z,yaw,fade){const H=MPS.hero[key],g=new THREE.Group();H.children.forEach(m=>{let c=m.clone();if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;}g.add(c);});g.userData.leaves=g.children.filter(c=>c.userData.door).map(c=>({m:c,base:c.position.clone(),ax:c.userData.door.ax,w:c.userData.door.w,r:3+c.userData.door.w/2,open:0}));g.position.set(x,0,z);g.rotation.y=yaw==null?0:yaw;
+function mpHero(key,x,z,yaw,fade){const H=MPS.hero[key],g=new THREE.Group();H.children.forEach(m=>{let c=m.clone();if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;}g.add(c);});g.userData.leaves=g.children.filter(c=>c.userData.door).map(c=>({m:c,base:c.position.clone(),ax:c.userData.door.ax,w:c.userData.door.w,r:3+c.userData.door.w/2,dark:!!c.userData.door.dark,open:0}));g.position.set(x,0,z);g.rotation.y=yaw==null?0:yaw;
  if(fade)mpFade(g,key,x,z,yaw);g.userData.mp={key,x,z,yaw:yaw==null?0:yaw};scene.add(g);MPS.live.push(g);MP.walkDirty=true;return g;}
 // the hero's half of the dither: BIO.lodFade on a copy of its materials, its box in the aLod attributes, the same band as the shell's. The box is per placed hero, so each hero has a
 // shallow geometry of its own: its own aLod buffer over the shared vertex buffers
@@ -50,10 +53,10 @@ function mpFade(g,key,x,z,yaw){const h=mpHalf(key,yaw),H=MPS.rec[key].frame.H,a=
 function mpShells(list){const n={};MPS.keys.forEach(k=>n[k]=0);const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
  list.forEach(s=>{const im=MPS.mesh[s[0]];if(!im)return;M.compose(p.set(s[1],0,s[2]),Q.setFromAxisAngle(Y,s[3]==null?0:s[3]),one);im.setMatrixAt(n[s[0]]++,M);});
  MPS.keys.forEach(k=>{if(!MPS.mesh[k])return;MPS.mesh[k].count=n[k];MPS.mesh[k].instanceMatrix.needsUpdate=true;});}
-function mpDebris(list){const n={},M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
- list.forEach(s=>{const D=MPS.debris[s[0]];if(!D)return;const i=n[s[0]]=(n[s[0]]||0);M.compose(p.set(s[1],0,s[2]),Q.setFromAxisAngle(Y,s[3]==null?0:s[3]),one);D.forEach(im=>im.setMatrixAt(i,M));n[s[0]]++;});
- for(const k in MPS.debris)MPS.debris[k].forEach(im=>{im.count=n[k]||0;im.instanceMatrix.needsUpdate=true;});}
-function mpClear(){MPS.live.forEach(g=>{scene.remove(g);});MPS.live.length=0;MPS.pool.length=0;mpShells([]);mpDebris([]);MP.closeStoreys();MPS.impMeshes.forEach(o=>o.visible=false);MPS.mat.userData.U.uBand.value.set(0,0,.15);}
+function mpDebris(list,far){const DB=far?MPS.debrisFar:MPS.debris,n={},M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
+ list.forEach(s=>{const D=DB[s[0]];if(!D)return;const i=n[s[0]]=(n[s[0]]||0);M.compose(p.set(s[1],0,s[2]),Q.setFromAxisAngle(Y,s[3]==null?0:s[3]),one);D.forEach(im=>im.setMatrixAt(i,M));n[s[0]]++;});
+ for(const k in DB)DB[k].forEach(im=>{im.count=n[k]||0;im.instanceMatrix.needsUpdate=true;});}
+function mpClear(){MPS.live.forEach(g=>{scene.remove(g);});MPS.live.length=0;MPS.pool.length=0;mpShells([]);mpDebris([]);mpDebris([],true);MP.closeStoreys();MPS.impMeshes.forEach(o=>o.visible=false);MPS.mat.userData.U.uBand.value.set(0,0,.15);}
 // one view's stage. cfg: {heroes:[[key,x,z,yaw]], shells:[...], band:[near,far], fade, tiers, storey:[family,k,x,z]}
 MP.show=function(name){if(!MPS.ready){MPS.want=name;return;}const c=MP_CFG[name];if(!c)return;mpClear();MPS.mode=name;
  (c.heroes||[]).forEach(h=>mpHero(h[0],h[1],h[2],h[3],c.fade));mpShells(c.shells||[]);mpDebris([].concat(c.heroes||[],c.shells||[]));
@@ -69,7 +72,7 @@ MPS.tiersTick=function(){if(!MPS.ready||!MPS.mode)return;const c=MP_CFG[MPS.mode
  near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX),G=MPS.tierGroups;
  /* a hero placed stays placed: its geometry holds its box, so only the towers that join or leave the ten change */
  G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);MPS.live.splice(MPS.live.indexOf(g),1);MP.walkDirty=true;}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,mpHero(t.key,t.x,t.z,t.yaw,true));});near.slice(MAX).forEach(t=>{if(t.d<MP_NEAR*.85){mid.push(t);t.shell=true;}});
- mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));mpDebris(T.filter(t=>t.d<MP_FAR).map(t=>[t.key,t.x,t.z,t.yaw]));
+ mpShells(mid.map(t=>[t.key,t.x,t.z,t.yaw]));mpDebris(T.filter(t=>t.d<MP_RUBBLE).map(t=>[t.key,t.x,t.z,t.yaw]));mpDebris(T.filter(t=>t.d>=MP_RUBBLE&&t.d<MP_IMPFAR).map(t=>[t.key,t.x,t.z,t.yaw]),true);
  // an impostor stands for exactly the towers that are neither a hero nor a shell, tower by tower (a chunk's fade left half-dithered ghosts; a flat distance hid both from a high camera): for the rest its matrix is zero
  MPS.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=MPS.towerAt[F[i*16+12]+','+F[i*16+14]],near=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=near?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});MPS.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>t.d>=MP_FAR).length,towers:T.length,pitch:MPS.pitch};};
 MPS.towerAt={};MPS.towers.forEach(t=>{MPS.towerAt[t.x+','+t.z]=t;});

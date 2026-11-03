@@ -148,15 +148,16 @@ MP.tearAt = function (F, R, u) {
   if (R.span) { var a = F.levels[1].y - 0.01, d = Math.max(R.span[0] - u, u - R.span[1]); if (d < 0) return a; if (d < 4) return a + (c - a) * d / 4; }
   return c;
 };
-// what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KSTACKS buttes (centre, its tiers, a seed); pieces:
+// what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KRUBBLE heaps (centre, half-lengths, strike, crest, a seed); pieces:
 // a shaft's section lying (r, len, along the yaw ry, tipped by tilt), the lamp's disc on its side, a slab tipped up. A Spindle falls along a fin, the Ledger in on itself
 MP.debrisPlan = function (F, state) {
   var R = MP.ruin(F, state); if (R.state === 'intact' || state === 'gutted') return null;
   var seed = function (i) { return MP.idHash(F.id + '.' + state + '.' + i) >>> 0; }, M = [], P = [];
-  var tiers = function (rx, rz, hs) { var e = rx / rz, r = Math.sqrt(rx * rz); return hs.map(function (h, i) { var k = [1, 0.72, 0.48, 0.3][i]; return { h: h, r: r * k, e: Math.max(1, e * (1 - 0.15 * i)) }; }); };
+  /* a heap's crest from the old tiers' rise (hs: the plan's numbers), its loose blocks by its area */
+  var heap = function (x, z, y0, ry, rx, rz, hs, i) { var h = hs.reduce(function (a, b) { return a + b; }, 0) * 0.8; return { x: x, z: z, y0: y0, ry: ry, rx: rx, rz: rz, h: Math.min(h, Math.min(rx, rz) * 0.7), rough: 0.35, lumps: 8, blocks: Math.min(24, Math.round(rx * rz / 60)), cover: 3, seed: seed('m' + i) }; };
   if (F.core.kind === 'round') {
     var ph = F.fins.a0, d = [Math.cos(ph), Math.sin(ph)], at = function (s, o) { return [d[0] * s - d[1] * o, d[1] * s + d[0] * o]; }, R0 = MP.spindleR(0), rAt = MP.spindleR;
-    var mound = function (s, o, rx, rz, hs, i) { var c = at(s, o); M.push({ x: c[0], z: c[1], ry: ph, tiers: tiers(rx, rz, hs), seed: seed('m' + i) }); };
+    var mound = function (s, o, rx, rz, hs, i) { var c = at(s, o); M.push(heap(c[0], c[1], 0, ph, rx, rz, hs, i)); };
     var shaft = function (s, o, y, len, ry, tilt) { var c = at(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: rAt(y), len: len, ry: ph + ry, tilt: tilt }); };
     var disc = function (s, o, tilt) { var c = at(s, o); P.push({ kind: 'disc', x: c[0], z: c[1], r: F.crown.r, ry: ph, tilt: tilt }); };
     if (state === 'crown') { mound(R0 + 14, 0, 20, 12, [4, 3.5, 3], 0); disc(R0 + 26, 4, 0.42); shaft(R0 + 6, -14, 216, 14, 0.5, 0.1); }
@@ -165,7 +166,7 @@ MP.debrisPlan = function (F, state) {
     if (state === 'skeleton') { mound(R0 + 6, 0, 18, 11, [3.5, 3], 0); mound(R0 + 2, -28, 13, 9, [3, 2], 1); }
     if (state === 'fallen') { mound(R0 + 96, 0, 106, 28, [8, 6, 5], 0); mound(R0 * 0.4, 0, 42, 36, [7, 5], 1); [[30, 30], [80, 70], [130, 115], [180, 160]].forEach(function (q, i) { shaft(R0 + q[0], (i % 2 ? 4 : -4), q[1], 26, (i % 2 ? 0.1 : -0.12), 0.05); }); disc(R0 + 214, 0, 0.35); }
   } else {
-    var hw = F.footprint.w / 2, hd = F.footprint.d / 2, mb = function (x, z, y0, rx, rz, hs, i) { M.push({ x: x, z: z, y0: y0, ry: 0, tiers: tiers(rx, rz, hs), seed: seed('m' + i) }); };
+    var hw = F.footprint.w / 2, hd = F.footprint.d / 2, mb = function (x, z, y0, rx, rz, hs, i) { M.push(heap(x, z, y0, 0, rx, rz, hs, i)); };
     var slab = function (x, y, z, w, dd, ry, tilt, i) { P.push({ kind: 'slab', x: x, y: y, z: z, w: w, d: dd, t: 0.4, ry: ry, tilt: tilt }); };
     if (state === 'crown') { mb(0, 0, R.skin, 40, 8, [1.6, 1.2], 0); mb(0, -(hd + 6), 0, 38, 6, [2, 1.5], 1); slab(-14, R.skin + 1.2, 1, 9, 6, 0.2, 0.3); slab(12, R.skin + 1, -2, 8, 7, -0.3, -0.25); }
     if (state === 'broken') { mb(0, 0, F.levels[1].y, 24, 11, [4, 3, 2], 0); mb(0, hd + 6, 0, 22, 7, [3, 2], 1); mb(0, -(hd + 6), 0, 22, 7, [3, 2], 2); slab(-8, 11, 4, 10, 8, 0.15, 0.45); slab(9, 10, -3, 9, 7, -0.2, -0.35); slab(2, 3, hd + 7, 8, 6, 0.6, 0.6); }
