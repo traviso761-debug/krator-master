@@ -19,10 +19,10 @@ function buildTalUniHall(G,o){reseed(9601+(o.v|0));const BAY=3.6,N=11,W=N*BAY,D=
  vnStairs(0,0,zf+1+SN*.16,0,3*BAY,Y0,SN,'taMarble',mb);
  // the body: an ochre ground storey, a white piano nobile; the centre and end pavilions stand forward of it
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,oc,{t:.4});vnBody('vPlaster',0,Y1,Z0,W,H2,D,0,wh,{t:.4});
- for(const [k0,k1] of[[4,6],[0,0],[N-1,N-1]]){const x=(BX(k0)+BX(k1))/2,w=(k1-k0+1)*BAY,p=PJ(k0);vB('vPlaster',x,Y0,zf+p/2,w,H1,p,0,oc);vB('vPlaster',x,Y1-.3,zf+p/2,w,H2+.3,p,0,wh);}
+ for(const [k0,k1] of[[4,6],[0,0],[N-1,N-1]]){const x=(BX(k0)+BX(k1))/2,w=(k1-k0+1)*BAY,p=PJ(k0);if(k0===4)tanPierBox('vPlaster',x,Y0,zf+p/2,w,H1,p,0,oc,2.0,3.8);else vB('vPlaster',x,Y0,zf+p/2,w,H1,p,0,oc);   /* the centre pavilion: open where its door goes through */vB('vPlaster',x,Y1-.3,zf+p/2,w,H2+.3,p,0,wh);}
  tanString(0,Y0+H1,Z0+.35,W,D+.7,0,wh,.2,.3);
  for(let k=0;k<N;k++){const x=BX(k),fz=zf+PJ(k);
-  if(k===5){tanDoor(x,Y0,fz,0,2.0,3.8,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.8,fz,0,1.1,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.8,fz,0,1.0,.03,.1,null);}
+  if(k===5){tanDoor(x,Y0,fz,0,2.0,3.8,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.8,fz,0,1.1,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.8,fz,0,1.0,.03,.1,null,true);}
   else tanArch(x,Y0+.7,fz,0,1.6,3.9,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});
   if(k%2)tanOculus(x,Y1+2.4,fz,0,.95,'C',gi,true);else tanArch(x,Y1+.6,fz,0,1.4,3.4,{fill:'L',band:or,bw:.14,sill:wh});}
  for(let k=0;k<=N;k++){const x=-W/2+k*BAY,fz=zf+Math.max(PJ(Math.min(N-1,k)),PJ(Math.max(0,k-1)));tanPilaster(x,Y0,fz,0,.55,H1,wh,gi);tanPilaster(x,Y1,fz,0,.5,H2,wh,gi);}
@@ -125,10 +125,10 @@ function buildTalUniSenate(G,o){reseed(9631+(o.v|0));const BAY=3.4,N=7,W=N*BAY,D
  const reach=tanImperialStair(0,0,zf+1,0,3.4,Y0,mb,or,{gilt:gi});
  for(const s of[-1,1]){tanBalustrade(s*8.15,Y0+.12,zf+.9,0,9.4,mb,1.0,{ball:gi,gilt:gi});tanBalustrade(s*(W/2+.9),Y0+.12,Z0,s*Math.PI/2,D+1.8,mb,1.0,{ball:gi,gilt:gi});}
  // the body, the centre bay standing forward
- vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,wh,{t:.35});vnBody('vPlaster',0,Y1,Z0,W,H2,D,0,wh,{t:.35});vB('vPlaster',0,Y0,zf+.4,BAY+1.2,H1+.3+H2,.8,0,wh);
+ vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,wh,{t:.35});vnBody('vPlaster',0,Y1,Z0,W,H2,D,0,wh,{t:.35});tanPierBox('vPlaster',0,Y0,zf+.4,BAY+1.2,H1+.3+H2,.8,0,wh,1.7,3.4);
  tanString(0,Y0+H1,Z0+.4,W,D+.8,0,or,.18,.3);
  for(let k=0;k<N;k++){const x=(k-3)*BAY,fz=k===3?zf+.8:zf;
-  if(k===3){tanDoor(x,Y0,fz,0,1.7,3.4,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.4,fz,0,.95,.18,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.4,fz,0,.85,.03,.1,null);
+  if(k===3){tanDoor(x,Y0,fz,0,1.7,3.4,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.4,fz,0,.95,.18,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.4,fz,0,.85,.03,.1,null,true);
    tanArch(x,Y1+.2,fz,0,1.5,3.0,{kind:'flat',fill:'L',band:or,bw:.16});tanPediment(x,Y1+3.35,fz,0,2.2,.5,wh,.14,.3,gi);continue;}
   tanArch(x,Y0+.6,fz,0,1.5,3.2,{fill:'L',band:or,bw:.16,key:gi,sill:wh});
   tanArch(x,Y1+.5,fz,0,1.3,2.5,{kind:'flat',fill:'L',band:or,bw:.14,sill:wh});tanPediment(x,Y1+3.15,fz,0,1.9,.45,wh,.14,.3,null);}
@@ -157,10 +157,10 @@ function buildTalUniFaculty(G,o){reseed(9641+((o.v|0)%3));const v=(o.v|0)%3,N=[5
  vnReg('University faculty, '+N+' bays (civic)',0,Z0,W/2+.5,v?17:13,{style:'classical'});
  vB('taMarble',0,0,Z0,W+1.6,Y0,D+1.6,0,mb);vnStairs(0,0,zf+.8+SN*.16,0,BAY*1.5,Y0,SN,'taMarble',mb);
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,oc,{t:.35});vnBody('vPlaster',0,Y1,Z0,W,H2,D,0,wh,{t:.35});
- vB('vPlaster',0,Y0,zf+.25,BAY,H1,.5,0,oc);vB('vPlaster',0,Y1-.3,zf+.25,BAY,H2+.3,.5,0,wh);
+ tanPierBox('vPlaster',0,Y0,zf+.25,BAY,H1,.5,0,oc,1.6,3.3);vB('vPlaster',0,Y1-.3,zf+.25,BAY,H2+.3,.5,0,wh);
  tanString(0,Y0+H1,Z0+.25,W,D+.5,0,wh,.16,.3);
  for(let k=0;k<N;k++){const x=(k-C)*BAY,fz=k===C?zf+.5:zf;
-  if(k===C){tanDoor(x,Y0,fz,0,1.6,3.3,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.3,fz,0,.9,.18,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.3,fz,0,.8,.03,.1,null);}
+  if(k===C){tanDoor(x,Y0,fz,0,1.6,3.3,'taMarble',wh,wal,false);tanArcBand(x,Y0+3.3,fz,0,.9,.18,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',x,Y0+3.3,fz,0,.8,.03,.1,null,true);}
   else tanArch(x,Y0+.6,fz,0,1.6,3.3,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});
   tanArch(x,Y1+.5,fz,0,1.4,2.4,{kind:'flat',fill:'L',band:or,bw:.14,sill:wh});tanPediment(x,Y1+3.05,fz,0,2.0,.45,wh,.14,.3,k===C?gi:null);
   tanArch(x,Y0+.6,Z0-D/2,Math.PI,1.6,3.3,{fill:'L',band:wh,bw:.16});tanArch(x,Y1+.5,Z0-D/2,Math.PI,1.4,2.4,{kind:'flat',fill:'L',band:or,bw:.14});}

@@ -20,7 +20,7 @@ function buildTalCustomsHouse(G,o){reseed(9501+(o.v|0));const W=22,D=10,H1=5.2,H
  // the ground storey: ochre, round lit arches in white bands with gilt keystones, white pilasters, the door on the axis
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,oc,{t:.35});
  for(let j=0;j<5;j++){const x=(j-2)*BAY;if(j===2)continue;tanArch(x,Y0+.6,zf,0,1.8,3.4,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});}
- tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,wh,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null);
+ tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,wh,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null,true);
  for(const s of[-1,1])for(const zz of[Z0-2.5,Z0+2.5])tanArch(s*W/2,Y0+.6,zz,s*Math.PI/2,1.5,3.2,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});
  for(let j=0;j<6;j++)tanPilaster((j-2.5)*BAY,Y0,zf,0,.7,H1,wh,gi);
  tanString(0,Y0+H1,Z0,W,D,0,wh,.22,.3);
@@ -67,7 +67,7 @@ function buildTalBourse(G,o){reseed(9511+(o.v|0));const HW=16,HD=16,H=10,Y0=1.0,
  vB('taMarble',0,0,Z0,PW+2.4,Y0,PD+2.4,0,mb);vB('taMarble',0,Y0,Z0,PW+2.6,.12,PD+2.6,0,wh);vnStairs(0,0,pf+2.0,0,8,Y0,5,'taMarble',mb);
  // the hall's ground tier: three lit arches a face in gilt-banded orange, the door on the front axis
  vnBody('vPlaster',0,Y0,Z0,HW,H,HD,0,wh,{t:.4});
- for(const [lx,lz,a] of[[0,HD/2,0],[0,-HD/2,Math.PI],[HW/2,0,Math.PI/2],[-HW/2,0,-Math.PI/2]])for(let j=-1;j<=1;j++){const g=loc(0,Z0,lx,lz,0);const c=loc(g[0],g[1],j*4.6,0,a);if(a===0&&j===0){tanDoor(c[0],Y0,c[1],a,2.0,3.6,'taMarble',wh,wal,false);tanArcBand(c[0],Y0+3.6,c[1],a,1.1,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',c[0],Y0+3.6,c[1],a,1.0,.03,.1,null);continue;}
+ for(const [lx,lz,a] of[[0,HD/2,0],[0,-HD/2,Math.PI],[HW/2,0,Math.PI/2],[-HW/2,0,-Math.PI/2]])for(let j=-1;j<=1;j++){const g=loc(0,Z0,lx,lz,0);const c=loc(g[0],g[1],j*4.6,0,a);if(a===0&&j===0){tanDoor(c[0],Y0,c[1],a,2.0,3.6,'taMarble',wh,wal,false);tanArcBand(c[0],Y0+3.6,c[1],a,1.1,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',c[0],Y0+3.6,c[1],a,1.0,.03,.1,null,true);continue;}
   tanArch(c[0],Y0+.5,c[1],a,2.0,4.0,{fill:'L',band:or,bw:.16,gilt:true,key:gi,sill:mb});}
  // the arcade round it: Corinthian columns at the walk's edge (each corner once), orange arch bands between, the
  // entablature over the walk and its balustrade, a kiosk on each corner
@@ -224,7 +224,7 @@ function buildTalBath(G,o){reseed(9561+(o.v|0));const HW=14,HD=14,H=7,Y0=.8,Z0=-
  // the hall: lit arches in gilt bands on the front, oculi in gilt rings high on the sides, the door and its porch
  vB('taMarble',0,-.1,Z0,HW+1.2,Y0+.1,HD+1.2,0,mb);vnBody('vPlaster',0,Y0,Z0,HW,H,HD,0,wh,{t:.4});
  for(const x of[-4.6,4.6])tanArch(x,Y0+.5,zf,0,1.8,3.8,{fill:'L',band:or,bw:.16,gilt:true,key:gi,sill:mb});
- tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null);
+ tanDoor(0,Y0,zf,0,1.8,3.4,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.4,zf,0,1.0,.2,.14,.08,or,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,Y0+3.4,zf,0,.9,.03,.1,null,true);
  for(const s of[-1,1])for(const zz of[Z0-4,Z0,Z0+4]){tanDiscAt('taDiscL',s*HW/2,Y0+5.9,zz,s*Math.PI/2,.5,.04,.1,null);kput('taRingGi',[s*(HW/2+.08),Y0+5.9,zz],vQ(s*Math.PI/2,Math.PI/2,0),[.58,.58,.58],gi);}
  for(const x of[-4,0,4]){tanDiscAt('taDiscL',x,Y0+5.9,Z0-HD/2,Math.PI,.5,.04,.1,null);kput('taRingGi',[x,Y0+5.9,Z0-HD/2-.08],vQ(Math.PI,Math.PI/2,0),[.58,.58,.58],gi);}
  for(const x of[-4.6,0,4.6])tanArch(x,Y0+.6,Z0-HD/2,Math.PI,1.4,2.8,{fill:'L',band:or,bw:.14,gilt:true,sill:mb});

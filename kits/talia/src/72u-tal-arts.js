@@ -49,7 +49,7 @@ function buildTalAcademy(G,o){reseed(9711+(o.v|0));const BAY=3.6,N=7,W=N*BAY,FD=
  for(const s of[-1,1])for(let k=0;k<4;k++)tanArch(s*W/2,Y0+1,ZS-SD+1.8+k*3.5,s*Math.PI/2,1.6,3.8,{fill:'L',band:or,bw:.14,sill:wh});
  for(let k=-3;k<=3;k++)tanArch(k*3.4,Y0+1,ZS-SD,Math.PI,1.6,3.8,{fill:'L',band:or,bw:.14});
  const sd=SD/NS,rise=1.6,ang=Math.atan2(rise,sd),sl=Math.hypot(sd,rise);
- for(let j=0;j<NS;j++){const zb=ZS-SD+j*sd;vB('vWinGlass',0,Y0+SH,zb+.08,W-.6,rise,.12,0,null);for(let k=1;k<6;k++)vB('vIron',-W/2+k*W/6,Y0+SH,zb+.16,.08,rise,.06,0,vC(vPick(TAPAL.iron)));
+ for(let j=0;j<NS;j++){const zb=ZS-SD+j*sd;vnPlate(0,Y0+SH,zb+.08,W-.6,rise,.12,0);for(let k=1;k<6;k++)vB('vIron',-W/2+k*W/6,Y0+SH,zb+.16,.08,rise,.06,0,vC(vPick(TAPAL.iron)));
   kput('taTileB',[0,Y0+SH+rise/2+.06,zb+sd/2],vQ(0,ang,0),[W-.4,.14,sl],tile);}
  for(const s of[-1,1]){vB('vPlaster',s*(W/2-.15),Y0+SH,ZS-SD/2,.3,rise+.4,SD,0,wh);vB('vPlaster',s*(W/2-.15),Y0+SH+rise+.4,ZS-SD/2,.42,.1,SD+.1,0,or);}
  for(const s of[-1,1])vnLampPost(s*(BAY+.6),0,ZF+2.0,3.0);}
