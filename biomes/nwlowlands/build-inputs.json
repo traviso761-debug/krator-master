@@ -29,7 +29,7 @@
     "biomes/nwlowlands/src/85-host-tower.js": "a339a5646a1138a5afa915ad28fc93a74b8a236cb45ad8991f707005ad9b80e4",
     "biomes/nwlowlands/src/86-host-fields.js": "62c6994f1516647ee69e560d3b1f131942ec5b4be50a53599675b5198aa615d4",
     "biomes/nwlowlands/src/87-host-gorge.js": "8b03c43826415bd8e2b1686be865ddd4f6f041b1334ba8f35ee0b17c729cda30",
-    "biomes/nwlowlands/src/87k-host-kin.js": "ff314725f25b78310d9b32bcd3177b6dc019ceebaba402cafa8d8d81b0c416a7",
+    "biomes/nwlowlands/src/87k-host-kin.js": "1741822704fd3e9892e62fcc5dc747874347950a3282f4f860ec7404f7c425d9",
     "biomes/nwlowlands/src/88-host-build.js": "0f02bb0c26632586988b4032297d37ab87d5994faf2deb9f59af2336b8017fe5",
     "biomes/nwlowlands/src/89-host-sky.js": "9c2f54141722485005bbcf26920af66d3a98dae56d0d58753d6aec3900e4b2d6",
     "biomes/nwlowlands/src/89a-host-atmos.js": "77cd8916e3b16124146af0da68942a470456847d1a0d31185b3072033b6df949",
@@ -184,10 +184,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/nwlowlands/dist/nwlowlands.html": "ef45f64e41ce6e7ff227f3263120c7632d1aebf8a3bbf71f813d33a9f5ab2c00"
+    "biomes/nwlowlands/dist/nwlowlands.html": "3f8d857911b7ba80675283849b5c01047ee412ed3293fb54997ff86201939d32"
    },
    "outputs_raw": {
-    "biomes/nwlowlands/dist/nwlowlands.html": "ef45f64e41ce6e7ff227f3263120c7632d1aebf8a3bbf71f813d33a9f5ab2c00"
+    "biomes/nwlowlands/dist/nwlowlands.html": "3f8d857911b7ba80675283849b5c01047ee412ed3293fb54997ff86201939d32"
    }
   },
   "build.py --station margins": {
@@ -217,7 +217,7 @@
     "biomes/nwlowlands/src/83-host-range.js": "960631e4876f1c041c38675285c2cf72dec92a08b70f5447dadb631f7dc50a10",
     "biomes/nwlowlands/src/86-host-fields.js": "62c6994f1516647ee69e560d3b1f131942ec5b4be50a53599675b5198aa615d4",
     "biomes/nwlowlands/src/87-host-gorge.js": "8b03c43826415bd8e2b1686be865ddd4f6f041b1334ba8f35ee0b17c729cda30",
-    "biomes/nwlowlands/src/87k-host-kin.js": "ff314725f25b78310d9b32bcd3177b6dc019ceebaba402cafa8d8d81b0c416a7",
+    "biomes/nwlowlands/src/87k-host-kin.js": "1741822704fd3e9892e62fcc5dc747874347950a3282f4f860ec7404f7c425d9",
     "biomes/nwlowlands/src/88-host-build.js": "0f02bb0c26632586988b4032297d37ab87d5994faf2deb9f59af2336b8017fe5",
     "biomes/nwlowlands/src/89-host-sky.js": "9c2f54141722485005bbcf26920af66d3a98dae56d0d58753d6aec3900e4b2d6",
     "biomes/nwlowlands/src/89a-host-atmos.js": "77cd8916e3b16124146af0da68942a470456847d1a0d31185b3072033b6df949",
@@ -226,7 +226,7 @@
     "biomes/nwlowlands/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/nwlowlands/stations/margins/44z-host-margins.js": "48c0f72bc9beeb775bc3ee409799464231ed7b2e9156e939ebee6c334d169949",
     "biomes/nwlowlands/stations/margins/85-host-tower.js": "6a295bd6437030bb00d77d0a815bda228a018ae3792d6fe8d34dd4e73cf141f4",
-    "biomes/nwlowlands/stations/margins/87-host-station.js": "07c484a597d8d30b091715aefb3a1353220d9ed94a73cbecd73c694e63e5d2cb",
+    "biomes/nwlowlands/stations/margins/87-host-station.js": "c6753d348844c367b31acd15d418098fca7755d00c8bfd63f46bb0d72b477345",
     "biomes/nwlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/nwlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
     "biomes/nwlowlands/tex/bk.birch.albedo.webp": "ec2be11261aa27b7a978730017c07396c32e4f9eebf46c760bfe44ae20001111",
@@ -376,10 +376,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/nwlowlands/dist/nwlowlands-margins.html": "8458ce4178473f596ed05923ff9a86073254b05914387fafe479f7ac6fe846d0"
+    "biomes/nwlowlands/dist/nwlowlands-margins.html": "ac7a1486127563008a9cd06ff3a86095103ad7682955f508c16ba1c9a815a5e8"
    },
    "outputs_raw": {
-    "biomes/nwlowlands/dist/nwlowlands-margins.html": "8458ce4178473f596ed05923ff9a86073254b05914387fafe479f7ac6fe846d0"
+    "biomes/nwlowlands/dist/nwlowlands-margins.html": "ac7a1486127563008a9cd06ff3a86095103ad7682955f508c16ba1c9a815a5e8"
    }
   }
  }

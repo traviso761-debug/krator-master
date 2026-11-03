@@ -319,7 +319,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 1 | eastabyss, nwbay | pure vendors |
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
-  | 4 | swlowlands, nwlowlands | their exchanges together; nwlowlands vends to the Cut and Farside |
+  | 4 | swlowlands, nwlowlands (**nwlowlands merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu, oidong | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |
@@ -329,6 +329,8 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
   | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
+
+  **nwlowlands' turn, merged 2026-11-02** (`biomes/nwlowlands/PLAN.md`, "Core adoption"): station 2 `margins` is built. `verify.py --assert --all-views` passes on the Arc for both pages (audit .57% and .17%, drawn 7.49M at worst). **Species changed for readers (keys, indices kept, 23 species):** every crown on `crownOn` is held to its limb by `BIO.holdTo`; needle cypress and the spire cedar's mid tier draw a rod to each crown spot; `needle`, `feather`, `ginkgo` and `blossom` are on stems, and `pad` is `free`, `bloom` `onLeaf`. Readers' pages move at their turns (the Cut, Farside, Korona, ringisles). Flagged off for readers (`NWLOW_LOOK`): seasons, back-light, root colour, the culm, the bracket, the lobes' skin. `check_cells --fix` can't see kits that `BIO.def` by forEach: stems were set by hand here, so swlowlands-like kits want checking. **Open:** `bluesycamore` and `pondcypress` grow none until swlowlands' `SWLOW.make` and `grow` merge; whichever kit merges second rebuilds nwlowlands and reads `_kin`.
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).
