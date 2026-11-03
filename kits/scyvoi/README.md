@@ -66,3 +66,9 @@ The engine (`10-core`, `27-mat`, `30-geo`, `36-def`, `90-scene`, `91f-furnish`, 
   the baskets is a placeholder until that biome's fruit is in the catalog.
 
 See `API.md` for the functions and the frame conventions, `KNOWN_ISSUES.md` for what is open.
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. The page has no `core/walk`, so the doors carry no walk blocks here.
+
+What it changed here: the ger's carved double leaves are real leaves (shut; they swing in on E), the Baelu's gate leaves stand open as drawn and shut on E, the Baelu's cell, stable, smokehouse and cistern-house doors are locked leaves (its cells have no interiors yet), its upper slit windows are glass over the room card, and the vardo's windows are clear glass and its double door two real leaves (plain: the glazing and scrolls the old half-open leaves carried are not on the moving ones). The bell, ridge and pavilion tents' flaps stay tied back cloth: an open doorway, no leaf.
