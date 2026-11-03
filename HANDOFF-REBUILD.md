@@ -4,7 +4,7 @@
 
 - **Order:** finish the core pass (below), then the three-ground diagnosis, then pair 4. Pair 4 is free of the map; pair 5 on wait for map 5.1.
 - **Map 5.1** (`gemini-loom-chasms`, Gemini's scale model) merges here after `tools/scale-model/HANDOFF-GEMINI-5.1.md` on that branch is done.
-  `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan needs a rewrite before its station 1.
+  `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan is rewritten on 5.1 and settled (2026-11-03): five stations, three core items owed (below).
 - **Map 5.1 is merged here** (538c814d1, Gemini's Round 2, 3e35e605f, 2026-11-02). Its checks passed; region cuts and the pages that read the model are not re-cut yet (`biomes/STATIONS-MAP-5.1.md`, "Regions needing a re-cut"). The old map is frozen.
 - **The alien biome session's stations are in the queue** (the owner, 2026-11-02; plans merged here). Each is built with its host kit's turn: swlowlands 3 (the delta and Wing's floodplain, one station reading swbay in place), nhighlands 5 (the Footfall bogs), ringisles 3 (the lagoon), outlands 8 (the Mires, when that kit is built). The kits' own plans: `biomes/gills` (stations on godthrone, catch, xanadu), `biomes/hearths` (riftrim, oidong, the Stills at geyser's sites), `biomes/deeps`, `biomes/clifflung`. A turn reads its host's station list and these plans, and asks the owner only about what's still open in them.
 - **Map 5.1 Round 3 is merged here** (68b6aa22b): frozen river names, the valley's seven basins and lake, the southern Inner Wall scarp. shighlands' stations need a re-survey (`biomes/STATIONS-MAP-5.1.md`).
@@ -557,6 +557,12 @@ build that cannot fix it all in its turn sets `KHOST.take({guards: {maxShare: <i
 entry, so the share can only fall. The practices behind this are in the painting-to-3d-world skill, `foliage-kit.md` §15.
 
 ### Still to write (core) before or during step 1
+
+- **Owed to Godstep** (`biomes/godstep/PLAN.md`, "Core adoption"; taken by the owner, 2026-11-03), before the kit's D2:
+  `KLAVA.column` and a `KSTRATA` option to take a baked column as its beds (a front's wall shows the plain's own flows; Godthrone
+  station 2 reads it too); `KRELIEF` kind `rille`, keyed to a `KCAVERN` tube record (the trench where the roof fell, pits and
+  skylights where it stands; the Throne's `tube_hot_05` and the Rift's `tube_rift_08` reuse it); `KRELIEF` kind `tumulus`
+  (tumuli and pressure ridges along `KLAVA.bake`'s lobes).
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`
   in rift and xanadu, the rest TODO lists).
