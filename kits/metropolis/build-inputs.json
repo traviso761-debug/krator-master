@@ -144,7 +144,7 @@
     "kits/metropolis/src/45-host-stage.js": "d5943edc3e7eb5203f302c84c8070e0bd2bc27272bd2cfeb443026abb619559e",
     "kits/metropolis/src/47-host-land.js": "96b563297ee05a37ebca534e3c2282a9deb1648fc8cfd11f0b590e334d2b4f5b",
     "kits/metropolis/src/50-mp-kit.js": "f1f82408905eb8c5552ac57fce45d321ef7f7cef4be3df99b294297825529c1b",
-    "kits/metropolis/src/52-mp-hero-spindle.js": "24685c04bb5ab0d6c8c7ebbcc0ac636bd50e5f3c46bb0f2545da06875dc24a07",
+    "kits/metropolis/src/52-mp-hero-spindle.js": "28afd648c6335605942c0523dc26a93816fcbda813fa09a6682669e9eba462a9",
     "kits/metropolis/src/53-mp-hero-ledger.js": "738b482ed9230fd9941bf5656a81f06bacee48a9afb2c6c680737ef4dd480b24",
     "kits/metropolis/src/56-mp-interiors.js": "555c4f8c8152da98effe65b3b5d575dbe3f1cbc1b132d6f788a592fec53f3b82",
     "kits/metropolis/src/60-mp-shell-host.js": "c98646004b88bd8756ed131e58202d1c0a91fe899c1c274fd1ed8c4b94773b50",
@@ -182,13 +182,13 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/metropolis/build-manifest.json": "0353b85b5138bf1c6ddbc3b62aec0fad56c31d2bef66f67f735ab42043fca61f",
-    "kits/metropolis/dist/metropolis.html": "f361f03ba867caeddd9d415f28457050fe5781a5a3eec4413c893c4061d3e143",
+    "kits/metropolis/build-manifest.json": "e2a5a7e45e28fbbdf700d7021a958334866c16ad1322ef13e708d60a8914b7a4",
+    "kits/metropolis/dist/metropolis.html": "d7574631fae42c50ff6a843b6b5af3fd5ff8e6ccea777fc8e77b4a9a6b06e933",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "c62abeaa268fb884a5087501508c39c9b41a707834fcec27d7ae64631d70ae1f"
    },
    "outputs_raw": {
-    "kits/metropolis/build-manifest.json": "0353b85b5138bf1c6ddbc3b62aec0fad56c31d2bef66f67f735ab42043fca61f",
-    "kits/metropolis/dist/metropolis.html": "f361f03ba867caeddd9d415f28457050fe5781a5a3eec4413c893c4061d3e143",
+    "kits/metropolis/build-manifest.json": "e2a5a7e45e28fbbdf700d7021a958334866c16ad1322ef13e708d60a8914b7a4",
+    "kits/metropolis/dist/metropolis.html": "d7574631fae42c50ff6a843b6b5af3fd5ff8e6ccea777fc8e77b4a9a6b06e933",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "c62abeaa268fb884a5087501508c39c9b41a707834fcec27d7ae64631d70ae1f"
    }
   }

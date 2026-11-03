@@ -40,6 +40,10 @@ MP.heroSpindle=function(state,lite){const F=MP.SPINDLE,S=F.ruins[state]||{},B=MP
   // a plant floor is where the structure transfers: a bronze hoop round it, the ruin's breaking line
   if(hoop(L))B.lathe(ruin?'white':'bronze',[[R(y1)+.02,y1-.9],[R(y1)+.35,y1-.8],[R(y1)+.35,y1+.5],[R(y1)+.02,y1+.6]],N,{uv:2,col});
   if(L.use==='lobby'||L.use==='skylobby')B.lathe(ruin?'cyanDead':'cyan',[[R(y1)+.05,y1-.5],[R(y1)+.05,y1-.1]],N,{uv:2});});
+ // ---- behind each breach, the burnt-out storeys: a face 1.2 m in, drawn as rooms (the window chunk), so a breach is a hole into the building, not through it
+ breaches.forEach(function(b){if(b.y0>=cut)return;const y1=Math.min(b.y1,cut),n=Math.max(2,Math.ceil((y1-b.y0)/3.6)),pts=[];for(let i=0;i<=n;i++){const y=b.y0+(y1-b.y0)*i/n;pts.push([R(y)-1.2,y]);}
+  B.lathe('glassOut',pts,Math.max(4,Math.round(b.w*2*24)),{a0:b.a-b.w,a1:b.a+b.w,uv:4});
+  for(let i=0;i<=n;i++){const y=b.y0+(y1-b.y0)*i/n;B.lathe('dark',[[R(y)-.1,y],[R(y)-1.2,y]],Math.max(4,Math.round(b.w*2*24)),{a0:b.a-b.w,a1:b.a+b.w,uv:2});B.lathe('dark',[[R(y)-1.2,y-.01],[R(y)-.1,y-.01]],Math.max(4,Math.round(b.w*2*24)),{a0:b.a-b.w,a1:b.a+b.w,uv:2});}});
  // ---- the portals: a bronze frame and a canopy out of the skirt at each, between the fins
  F.portals.forEach(function(a){const c=Math.cos(a),s=Math.sin(a),r=44,yaw=Math.PI/2-a,w=12,h=7;
   B.lathe('concrete',[[r+5,h],[r+5,h+1.2],[r-3,h+1.2]],6,{a0:a-.17,a1:a+.17,uv:3});B.lathe('concrete',[[r-3,h],[r+5,h]],6,{a0:a-.17,a1:a+.17,uv:3,flip:true});
