@@ -9,8 +9,8 @@
      - a RAISED base (a plinth, a deck on piles: the body's y above the ground) gets an entry flight from the ground
        outside every street door up to its sill, so the walker can get in; a rise within `step` needs none
    o: { tag, doorBlocks (false: fill every door opening with blocks, a door that is SHUT, and hand them to onBlock; KWALK.setBlock(recs, false) opens it),
-        onBlock (fn(recs, { door: the opening's id (or true), wall, building, room, kind: 'door' })), ground (the ground y outside; default inst.baseY), inset (.3), blockStep (.3: a smaller block leaves a doorway its full width), step (.5: the rise a walker
-        steps unaided; core/walk's floorBelow takes .6), skipRoom (fn(R) -> true to leave a room to someone else,
+        onBlock (fn(recs, { door: the opening's id (or true), wall, building, room, kind: 'door' })), ground (the ground y outside; default inst.baseY), inset (.3), blockStep (.3: a smaller block leaves a doorway its full width), step (.45: the rise a walker
+        steps unaided, core/walk's reach step; it was .5, and a 0.5 m plinth got no flight the reachability audit could climb), skipRoom (fn(R) -> true to leave a room to someone else,
         Zeijani's carved rooms), flightRise (run per metre of rise, 1.4),
         maxRise (3.5: above it the base is a tower, a cliff ledge or a crown, not a plinth or a deck; no flight is
         drawn and the body is listed in `elevated` for the host to route to) }
@@ -99,7 +99,7 @@
     const out = { floors: 0, blocks: 0, strips: 0, entries: 0, elevated: [] };
     if (!inst || !W) return out;
     const tag = o.tag || 'built:' + inst.id, ins = o.inset == null ? 0.3 : o.inset, st = o.blockStep == null ? 0.3 : o.blockStep,
-      stepOK = o.step == null ? 0.5 : o.step, run = o.flightRise == null ? 1.4 : o.flightRise, maxRise = o.maxRise == null ? 3.5 : o.maxRise,
+      stepOK = o.step == null ? 0.45 : o.step, run = o.flightRise == null ? 1.4 : o.flightRise, maxRise = o.maxRise == null ? 3.5 : o.maxRise,
       ground = o.ground != null ? o.ground : (inst.baseY || 0);
     /* a flight from the ground outside a door at `at` up to the floor at y (only when the rise is more than a step) */
     const pending = [];
