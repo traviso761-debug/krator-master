@@ -96,6 +96,11 @@ BIO_CANON = {'69a1-bio-core-head.js': ('core', 'biome', '10-core-head.js'),
              '69c4-bio-ebadlands-dress.js': ('biomes', 'ebadlands', 'src', '65-biome-ebadlands-dress.js'),
              '69c5-bio-ebadlands.js': ('biomes', 'ebadlands', 'src', '70-biome-ebadlands.js')}
 BIO_CANON = {k: os.path.join(_ROOT, *v) for k, v in BIO_CANON.items()}
+# The Yuni kit (kits/yuni: the houses, the poor quarters, the wealthy compounds and the Emir's palace, the Order's civic
+# buildings and park; MODULARITY-PLAN.md step 4b), read in place under its old names, so the page keeps its filename order.
+# Not a core fragment: 59a-59c still continue 59-civic.js as one unit for the build rules.
+sys.path.insert(0, os.path.join(_ROOT, 'kits', 'yuni'))
+import yunikit
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
@@ -250,6 +255,8 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f, p in yunikit.paths().items():   # the Yuni kit (a src/ copy with the same name wins)
+        paths.setdefault(f, p)
     for d in CORE_DIRS:                    # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:

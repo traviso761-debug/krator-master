@@ -273,9 +273,27 @@ leaves each settlement folder as its layout and page, building as it does today 
   `ABYSS-KIT-*`). Locus reads them in place, Mungo by name (its fork of the Locus engine), Verge in `YKIT`. Locus's four pages
   and Mungo's page byte-identical; Verge's differs only in the kits' path labels; Mungo's manifest records the files' new
   origin. Locus's census (`LO_TRADES`) names the kits' buildings, so `tools/check_trades.py` looks there for it.
-  **Next, (4b): the Yuni engine and the Yuni base assets**, still in `settlements/locus/src` (`05-palette`, `10-core`, `20-stage`,
-  `45-kit`, `47-texture`, `50-structure`, `53-assets`, `56`-`59c`) and drawn through by both kits, Mungo and Verge's `YKIT`: an
-  engine extraction like step 2's Scyvoi engine (and `settlements/yuni`'s own copies of it to compare), not a plain move.
+- **(4b) The Yuni kit, done 2026-11-03; the Yuni engine stays where it is.** The survey (Locus's engine files against Yuni's,
+  Mungo's, Girder's, Mav's Refuge's and Voth's library) found two things this step's first wording missed:
+  - **The buildings' upstream is Yuni, not Locus.** Yuni's `55`-`59c` are the newer copies: since Locus forked them, Yuni gave
+    its buildings tagged doors and openings and interior masses (`F.door`, `F.opening`, `F.mass`, on Yuni's `51-fixtures.js` and
+    `53-assets.js`) and fixed the mat rack. So Yuni's eight files moved unchanged to `kits/yuni/src` (`yunikit.py`, README,
+    `PORT.md` with Yuni's tags) and Yuni reads them in place: its five outputs (the city, the sheet, the plants, the texture
+    sidecar, the manifest) byte-identical to the build before. Locus's copies stay Locus's, checked against the kit
+    (`build.py --vendor-check`: `56`, `57`, `58`, `59`, `59c` drift, recorded in Locus's `KNOWN_ISSUES.md`); Mungo and Verge's
+    `YKIT` read Locus's copies as before, so their pages do not move. Yuni's census (`YU_TRADES`) looks its keys up in the kit
+    (`tools/check_trades.py` `EXTRA_SRC`).
+  - **There is no one Yuni engine to extract.** Every world in the lineage forked it: Locus's `10-core.js` opens "LOCUS (forked
+    from Yuni's core)", 98 lines of the lineage's own PRNG, noise and geometry helpers followed by Locus's world (the hill, the
+    river and delta, the canal), and `50-structure.js` holds each world's massing (Yuni's butte and wall, Locus's bridges).
+    Against Locus, Yuni's copies of `05`, `10`, `20`, `45`, `47`, `50` and `53` differ by 110 to 330 lines each, Girder's and
+    Mav's Refuge's by 150 to 400, Voth's library's by 300 to 840. Unlike the Scyvoi engine (one engine, small drift), a shared
+    copy would have to be a new engine merged from six forks, and its PRNG and noise are what core already gives
+    (`core/rand`, `core/noise`); Yuni keeps them only by the owner's exception (GODOT-PLAN.md, Phase 2 item 1). So no
+    `core/yuni-engine`: the lineage converges by porting each world onto core (rand, noise, tags, catalog, host) as it is
+    rebuilt on the open world, and the buildings, which are the reusable part, are a kit already.
+  - Left: Locus taking the kit's buildings (it needs Yuni's frame first, and moves Locus's, Mungo's and Verge's pages);
+    Verge's `YKIT` reading Locus's world core (`10-core`, `50-structure`), which goes when Verge is rebuilt on the open world.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).

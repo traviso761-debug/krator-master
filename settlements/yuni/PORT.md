@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 129 (12%) | 13 (1%) | 16 (1%) | 157 (15%) | 758 (71%) |
+| KB | 129 (15%) | 13 (2%) | 16 (2%) | 157 (19%) | 530 (63%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -26,14 +26,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/52-vault.js` | 14.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-assets.js` | 22.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 53 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws; 2026-10-15: buildFrom's site carries its turned box for its core/tags record; yuniVetoed (the owner's edits log) skips a moved or removed piece |
 | `src/54-under.js` | 7.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 2 | 0 | 0 | 0 | 0 |  |
-| `src/55-mid-example.js` | 3.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/56-mid.js` | 63.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 298 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/57-poor.js` | 28.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 153 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/58-rich.js` | 47.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 212 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59-civic.js` | 19.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 88 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59a-civic-park.js` | 27.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 133 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59b-civic-library.js` | 28.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 163 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/59c-civic-furniture.js` | 9.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 64 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-flora.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/61a-ancients-kit.js` | 28.3 | [draw] | 59 | 9 | 0 | 0 | 0 | 28 | 5 | 6 | 0 | 0 | 0 |  |
 | `src/61a1-ancients-kit-helpers.js` | 20.1 | [draw] | 30 | 1 | 0 | 0 | 0 | 18 | 0 | 1 | 0 | 0 | 0 |  |
@@ -44,7 +36,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/61a6-ancients-kit-works.js` | 29.6 | [draw] | 20 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61a7-ancients-kit-factory.js` | 26.0 | [draw] | 20 | 0 | 0 | 0 | 0 | 29 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61b-ancients-kit-tail.js` | 23.5 | [draw] | 14 | 1 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/61c-ancients-glue.js` | 12.8 | [G shader] | 21 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |  |
+| `src/61c-ancients-glue.js` | 13.4 | [G shader] | 21 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |  |
 | `src/61d-ancients-assets.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/61e-ancients-furniture.js` | 20.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 140 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-plants.js` | 4.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |

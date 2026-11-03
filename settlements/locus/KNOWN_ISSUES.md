@@ -26,6 +26,11 @@
 - [ ] (2026-10-15) Mungo and Verge read Locus's fragments by name: Mungo takes 45-kit, 53-assets, 66-locus-furnish, 86-inspect and
       98-start (it moved onto core/host in the next commit); Verge's YKIT bundle takes 45-kit and 53-assets, whose REGISTER leaves
       core/tags alone when TARGET is 'verge' (rebuilt: `verify.py --assert` as before).
+- [ ] (2026-11-03) Locus's Yuni buildings (`src/55`-`59c`) are an older fork of the Yuni kit (`kits/yuni`, MODULARITY-PLAN.md
+      step 4b). They forked before Yuni gave its buildings tagged doors and openings (`F.door`, `F.opening`, `F.mass`: Yuni's
+      `51-fixtures.js` and `53-assets.js`), so `56`, `57`, `58`, `59` and `59c` drift (`python3 build.py --vendor-check`; Yuni also
+      widened the mat rack and moved its rolls onto it). Taking the kit's copies means taking Yuni's frame first, and it moves
+      Locus's, Mungo's and Verge's pages: a port of its own.
 
 ## Queued by Travis (done 2026-10-01)
 

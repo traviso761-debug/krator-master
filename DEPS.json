@@ -810,7 +810,8 @@
    "kits/eastern-abyssal",
    "kits/interiors",
    "kits/locus",
-   "kits/motor-vehicles"
+   "kits/motor-vehicles",
+   "kits/yuni"
   ],
   "settlements/longsong": [
    "biomes/oidong",
@@ -1091,7 +1092,8 @@
    "core/rand",
    "core/sched",
    "core/space",
-   "core/tags"
+   "core/tags",
+   "kits/yuni"
   ]
  },
  "listed": [

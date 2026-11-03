@@ -111,6 +111,8 @@ EXTRA_SRC = {
     'kits/iziz-vernacular': ['settlements/iziz/src'],
     # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
     'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src'],
+    # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)
+    'settlements/yuni': ['kits/yuni/src'],
 }
 
 
