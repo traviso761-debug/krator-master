@@ -205,9 +205,9 @@ def build():
 
 def vendor_check():
     ancients = os.path.join(ROOT, 'kits', 'ancients', 'src')
-    iziz = os.path.join(ROOT, 'settlements', 'iziz', 'src')
-    checks = [('iziz', f, os.path.join(iziz, f)) for f in MANIFEST_FILES
-              if f not in SHARED_MATERIALS and f not in ('37-sockets.js', '80-cultures.js', '81-sky.js')]
+    # The Ancients core is compared with kits/ancients (below), where it comes from; until 2026-11-03 it was compared
+    # with Iziz's copies of it as well (MODULARITY-PLAN.md step 6: a copy is checked against its upstream, once).
+    checks = []
     # KratorSky moved from Iziz's src/ to core/atmos/placeholder (2026-11-02); src/ keeps its copy until MODULARITY-PLAN.md step 4
     checks.append(('placeholder', '81-sky.js', os.path.join(ROOT, 'core', 'atmos', 'placeholder', '81-sky.js')))
     checks.extend(('materials', f, os.path.join(CORE, f)) for f in SHARED_MATERIALS)

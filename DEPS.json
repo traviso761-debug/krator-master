@@ -784,8 +784,7 @@
    "core/sockets",
    "core/space",
    "core/tags",
-   "kits/ancients",
-   "settlements/iziz"
+   "kits/ancients"
   ],
   "settlements/locus": [
    "biomes/eastabyss",
@@ -961,7 +960,9 @@
    "core/rand",
    "core/tags",
    "core/water",
+   "kits/ancients",
    "kits/highlands",
+   "kits/iziz-vernacular",
    "settlements/highlands"
   ],
   "settlements/screamers": [
@@ -1058,6 +1059,8 @@
    "core/rand",
    "core/tags",
    "core/water",
+   "kits/ancients",
+   "kits/iziz-vernacular",
    "kits/xanadu",
    "settlements/highlands"
   ],
@@ -1209,17 +1212,20 @@
   "settlements/jimjam": [
    "core/atmos",
    "core/sockets",
-   "kits/ancients",
-   "settlements/iziz"
+   "kits/ancients"
   ],
   "settlements/reedlake": [
+   "kits/ancients",
    "kits/highlands",
+   "kits/iziz-vernacular",
    "settlements/highlands"
   ],
   "settlements/shade": [
    "core/biome"
   ],
   "settlements/xanadu": [
+   "kits/ancients",
+   "kits/iziz-vernacular",
    "settlements/highlands"
   ],
   "settlements/ys": [

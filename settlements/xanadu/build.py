@@ -80,7 +80,9 @@ ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kit
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'xanadu'))
 import xanadu as kxa   # the Xanadu kit, read in place (MODULARITY-PLAN.md step 4)
-UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz')}
+UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
+            'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz-vernacular': os.path.join(ROOT, 'kits', 'iziz-vernacular'),
+            'placeholder': os.path.join(ROOT, 'core', 'atmos', 'placeholder')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -345,22 +347,23 @@ def vendor_manifest():
 
 
 def vendor_check():
-    """Compare vendored fragments with ../highlands/src (which itself vendors ancients + iziz)."""
-    up = os.path.join(UPSTREAM['highlands'], 'src')
-    if not os.path.isdir(up):
-        print('vendor-check: ../highlands/src not found; skipped')
-        return
-    files = VENDORED + IZIZ_VENDORED
-    # Highlands keeps no src/ copy of 81-sky.js (its sky is a target fragment), so a file it lacks is
-    # compared with ../iziz/src, where it comes from; 81-sky.js itself left Iziz's src/ for core/atmos/placeholder
-    # (2026-11-02; src/ keeps its copy until MODULARITY-PLAN.md step 4)
-    iz = os.path.join(UPSTREAM['iziz'], 'src')
-    sky = os.path.join(ROOT, 'core', 'atmos', 'placeholder')
-    upf = lambda f: srcpath(f, up) if os.path.exists(srcpath(f, up)) else srcpath(f, sky if f == '81-sky.js' else iz)
-    drift = [f for f in files if not os.path.exists(upf(f))
-             or open(upf(f), 'rb').read() != open(srcpath(f), 'rb').read()]
-    print('vendor-check highlands: %s' % ('all %d identical' % len(files) if not drift
-                                          else 'DRIFT in ' + ', '.join(drift)))
+    """Compare each vendored fragment with the module it comes from."""
+    # Each copy is compared with the module it comes from (MODULARITY-PLAN.md step 6), not with Highlands' copy of it:
+    # the Ancients core with kits/ancients (and core/materials), the Vernacular's two with kits/iziz-vernacular, the sky
+    # with core/atmos/placeholder. The viewer shell (91-93) is Highlands' own (its 91-probe adapted on purpose), so it is
+    # compared with Highlands'.
+    vern, shell = ['69b-vern-mat.js', '69c-vern-helpers.js'], ['91-probe.js', '92-camera.js', '93-labels.js']
+    groups = (('ancients', VENDORED, 'src'), ('iziz-vernacular', vern, 'src'), ('highlands', shell, 'src'),
+              ('placeholder', ['81-sky.js'], ''))
+    for up_name, files, sub in groups:
+        up = os.path.join(UPSTREAM[up_name], sub)
+        if not os.path.isdir(up):
+            print('vendor-check: %s not found; skipped' % os.path.relpath(up, ROOT).replace(os.sep, '/'))
+            continue
+        drift = [f for f in files if not os.path.exists(srcpath(f, up))
+                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
+                                       else 'DRIFT in ' + ', '.join(drift)))
 
 
 def main():

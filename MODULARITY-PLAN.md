@@ -339,6 +339,13 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
     run to hundreds of lines and be rewritten by every re-vendor).
   The plan's first wording ("a build may not list another build's `src/`") is the lateral list plus the backwards one:
   a settlement reading a kit or core is the order the plan wants.
+- **A copy is checked against its upstream, once** (2026-11-03): Reed Lake and Xanadu compared the Ancients core and the
+  Vernacular's `69b`/`69c` with Highlands' copies of them, and Jimjam compared the Ancients core with Iziz's copies as well as
+  with `kits/ancients`. Reed Lake and Xanadu now compare each copy with its home (`kits/ancients` and `core/materials`,
+  `kits/iziz-vernacular`, Xanadu's sky with `core/atmos/placeholder`) and only the viewer shell (`91`-`93`, Highlands'
+  own, its probe adapted on purpose) with Highlands'; Jimjam drops the Iziz comparison. Same verdicts (all identical, Reed
+  Lake's `73-hl-carve` adapted); the vendored list trades Jimjam -> Iziz (and its lateral edge) for Reed Lake and Xanadu
+  -> `kits/ancients`, `kits/iziz-vernacular`: the same copies, named by their real upstream.
 - New kits start from the nearest finished one *and* the `core/engine` engine; they never fork an engine (not checked:
   a fork is copies, which the vendored list catches only when the build checks them).
 
