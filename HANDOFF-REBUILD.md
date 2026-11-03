@@ -209,6 +209,8 @@ PORT row.
 - **`far`:** the live pass is skipped past that distance from `center` (eastabyss 4000 m).
 - **Left:** one cube per lake, the Godot twin, a test of the stand-in pass (GPU shots only so far).
 
+**swlowlands' turn (2026-11-02):** species changed for readers: none of keys 0-26 or their indices; new 27 `springcypress`, 28 `ribbonroot`; new `SWLOW.make`, `grow`, `veto`, `IMPOSTORS`; item `padbloom`; `bk.mottle` is `bark.plane`; the madrone's blooms sit lower in the crown; every tree's shape re-rolled once (per-tree reseed); `88-host-build.js` is `89z-host-build.js`. Owed: swbay's receiver rows (mangrove, coastoak); `biomes/swlowlands/PLAN-STATIONS.md`, "For the owner".
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.
@@ -318,7 +320,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 1 | eastabyss, nwbay | pure vendors |
   | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
   | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
-  | 4 | swlowlands, nwlowlands | their exchanges together; nwlowlands vends to the Cut and Farside |
+  | 4 | swlowlands (**done 2026-11-02:** stations `gorge`, `delta`; all pages pass), nwlowlands | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu, oidong | their five shared species together |
   | 7 | geyser, nhighlands | geyser before ringisles |

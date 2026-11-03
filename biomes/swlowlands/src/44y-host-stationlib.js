@@ -8,10 +8,10 @@ function stationStrata(seed,mat){if(typeof KSTRATA==='undefined'||!BIO.strata||n
    sh.fragmentShader=sh.fragmentShader.replace('/*KGROUND*/','/*KGROUND*/\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+SL+',vec3(0.45),vec3(1.7)),0.6*vGM.x);}');};};
  return S;}
 // the sea's shelf, 45's own lines: a station's ground ends at the same shore
-function stationSea(x,z,h,drop){const si=seaIn(x,z);if(si<30){const bed=-.4-1.6*BIO.fn.smooth(0,-160,si)-(drop||9)*BIO.fn.smooth(-160,-700,si);h=BIO.fn.mix(h,Math.min(bed,-.25),BIO.fn.smooth(30,-12,si));}return h;}
+function stationSea(x,z,h,drop){const si=seaIn(x,z);if(si<30){const bed=-.4-1.6*BIO.fn.smooth(0,-160,si)-(drop==null?9:drop)*BIO.fn.smooth(-160,-700,si);h=BIO.fn.mix(h,Math.min(bed,-.25),BIO.fn.smooth(30,-12,si));}return h;}
 // boulders on a field: KRAND cells, the kit's boulder item, on the drawn ground. `k(x,z)` 0..1
-function stationBoulders(k,o){const cell=o.cell||26,R=TERR.R-150,N=Math.ceil(R/cell),range=o.range||900;let n=0;const r0=BIO.range,c0=BIO.cur;BIO.cur='lowlands/floor';BIO.range=range;BIO.minRange=0;
+function stationBoulders(k,o){const cell=o.cell==null?26:o.cell,R=TERR.R-150,N=Math.ceil(R/cell),range=o.range==null?900:o.range;let n=0;const r0=BIO.range,c0=BIO.cur;BIO.cur='lowlands/floor';BIO.range=range;BIO.minRange=0;
  const pv=BIO.kit('swlowlands');
- try{for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(o.seed,i,j,0x71),u=q=>KRAND.unit(KRAND.hash(h,q,0,0x72)),x=(i+u(1))*cell,z=(j+u(2))*cell;if(Math.hypot(x,z)>R||u(3)>k(x,z)*(o.dens||.7))continue;
-   const r=(o.r||1.2)*(.6+1.6*u(4)*u(4)),y=drawnH(x,z);BIO.put('boulder',[x,y+r*.2,z],new THREE.Quaternion().setFromEuler(new THREE.Euler(u(5),u(6)*6.28,u(7))),[r*(.9+.5*u(8)),r*.7,r],o.tint||0xa08a78,{label:o.label||'Fallen rock'});n++;}}
+ try{for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(o.seed,i,j,0x71),u=q=>KRAND.unit(KRAND.hash(h,q,0,0x72)),x=(i+u(1))*cell,z=(j+u(2))*cell;if(Math.hypot(x,z)>R||u(3)>k(x,z)*(o.dens==null?.7:o.dens))continue;
+   const r=(o.r==null?1.2:o.r)*(.6+1.6*u(4)*u(4)),y=drawnH(x,z);BIO.put('boulder',[x,y+r*.2,z],new THREE.Quaternion().setFromEuler(new THREE.Euler(u(5),u(6)*6.28,u(7))),[r*(.9+.5*u(8)),r*.7,r],o.tint==null?0xa08a78:o.tint,{label:o.label||'Fallen rock'});n++;}}
  finally{BIO.kit(pv);BIO.range=r0;BIO.cur=c0;}return n;}

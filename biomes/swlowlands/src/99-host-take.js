@@ -31,7 +31,7 @@ const VIEWS=ST&&ST.views?ST.views():{
  'Madrone and cork oak':viewTree('madrone',1300,0,1.6,3,.4,.4),
  'Skirt palms':viewTree('skirtpalm',1400,-150,3.2,2.5,.45,1.9),
  'The cork grove':(()=>{const c=CORK_GROVE.center,a=Math.atan2(SUNH[1],SUNH[0]),cx=c[0]+Math.cos(a)*105,cz=c[1]+Math.sin(a)*105;return[cx,terrainH(cx,cz)+5,cz,c[0],terrainH(c[0],c[1])+4,c[1]];})(),
- 'Flame parasol':viewTree('flame',-900,0,1.5,4,.5,.3),
+ 'Flame parasol':viewTree('flame',-900,0,2.3,6,.5,.3),
  'Violet jacaranda':viewTree('jacaranda',400,0,2.6,5,.55,.3),
  'Lantern magnolia':viewTree('magnolia',-400,0,2.4,6,.55,.3),
  'Sunburn tree':viewTree('sunburn',-800,0,1.6,3,.45,.3),

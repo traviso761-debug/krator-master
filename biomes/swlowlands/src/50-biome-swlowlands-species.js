@@ -203,7 +203,7 @@ SWLOW.HARVEST={
  stargum:HV('timber',[],true,'The resin is a cough syrup.'),
  baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (a catalog piece, not drawn on the stage) are roasted.','generic_fruit_bay_laurel'),
  springcypress:HV('timber (rot-proof)',[],false,'Too old and too wide to fell; the springs are named for them.'),
- ribbonroot:HV('planks',[],true,'The plank roots are cut for canoe boards; the red sap stanches wounds.'),
+ ribbonroot:HV('timber',[],true,'The plank roots are cut for canoe boards; the red sap stanches wounds.'),
 };
 SWLOW.SPECIES.forEach(S=>{S.tags.harvest=SWLOW.HARVEST[S.key]||HV('none');});
 // the small plants that bear catalogued fruit (60-floor places them); `items` names the instanced items that draw them

@@ -56,7 +56,7 @@ function growKin(){const out={trees:{},floor:{},bridges:0},KIN={};
  const growOwn=(key,x,z,salt)=>{const sp=SWLOW.SPECIES.findIndex(S=>S.key===key);return place(x,z,salt,(y,lv)=>{const T=SWLOW.make(sp,x,y,z);SWLOW.TREES.push(T);SWLOW.grow(T,lv);
     BIO.range=1e9;BIO.minRange=LT;SWLOW.grow(Object.assign({},T),0);out.trees[key]=(out.trees[key]||0)+1;return T;});};
  const growKinTree=(ref,x,z,salt,extra)=>{const K=kin(ref);if(!K)return null;return place(x,z,salt,(y,lv)=>{const T=K.make(x,y,z);if(extra)Object.assign(T,extra);K.grow(T,lv);
-    REGISTER({name:K.name,kind:'tree',label:K.name,x,z,y:T.y0,r:Math.max(2,T.crownR||3),h:T.H});out.trees[K.key]=(out.trees[K.key]||0)+1;KIN_TREES.push({x,z,r:Math.min(T.rb||.3,.6),name:K.key});return T;});};
+    REGISTER({name:K.name,kind:'tree',label:K.name,x,z,y:T.y0,r:Math.max(2,T.crownR==null?3:T.crownR),h:T.H});out.trees[K.key]=(out.trees[K.key]||0)+1;KIN_TREES.push({x,z,r:Math.min(T.rb==null?.3:T.rb,.6),name:K.key});return T;});};
  KIN_SPOTS.forEach(S=>{if(S.own)growOwn(S.to.split('.')[1],S.x,S.z,S.salt);else growKinTree(S.to,S.x,S.z,S.salt);});
  /* the spring cypresses: on the pool's bank away from the river, each from its spring's hash */
  SPRINGS.forEach((S,i)=>{[0,1].forEach(k=>{const a=Math.atan2(S.z,S.x)+(k?1.5:-1.2)+KRAND.unit(KRAND.hash(KIN_W,i,k,0x6e10)),d=S.r+7+6*KRAND.unit(KRAND.hash(KIN_W,i,k,0x6e11));growOwn('springcypress',S.x+Math.cos(a)*d,S.z+Math.sin(a)*d,0x6e12+i*2+k);});});
