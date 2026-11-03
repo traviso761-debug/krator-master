@@ -39,6 +39,10 @@ W = reg(turn); const dir = [Math.SQRT1_2, -Math.SQRT1_2]; /* the doorway faces +
 const mv = (t) => [-Math.SQRT1_2 * 0 + 0, 0]; void mv;
 ok(!walk(W, line(0 * 1 + 6 * Math.SQRT1_2, 6 * Math.SQRT1_2 * -1 + 0, 0, 0).map(p => p), 0).blocked || true, 'a turned house registers without error');
 ok(W.export().blocks.length > 20, 'a turned wall is cut into blocks along its length (' + W.export().blocks.length + ')');
+/* a thick turned wall (4.4 m, at 60 degrees) blocks its own footprint, not 3 m out of its centre line: a walker 2.6 m off it is free */
+{ const Wt = KWALK.create(), a = Math.PI / 3; KB.add(Wt, box(0, 0, 0, 20, 1.6, 4.4, a).m);
+  const off = (d) => [-Math.sin(a) * 0 + Math.cos(a) * 0 + d * Math.sin(a), d * Math.cos(a)];   /* d along the wall's normal */
+  const p1 = off(2.6), p0 = off(1.5); ok(!Wt.blocked(p1[0], .5, p1[1], .25, 1.6) && !!Wt.blocked(p0[0], .5, p0[1], .25, 1.6), 'a 4.4 m wall turned 60 degrees: blocked 1.5 m off its centre line, free 2.6 m off'); }
 /* tilted and tiny boxes are nothing */
 const tilt = box(0, 1, 0, 2, .1, 2); const c = Math.cos(.6), s = Math.sin(.6); tilt.m[4] = s * .1; tilt.m[5] = c * .1;
 ok(KB.add(KWALK.create(), tilt.m) === null, 'a tilted panel is neither floor nor wall');

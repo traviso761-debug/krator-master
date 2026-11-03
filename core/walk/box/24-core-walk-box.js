@@ -34,9 +34,12 @@
       var minx=Math.min(P[0][0],P[1][0],P[2][0],P[3][0]),maxx=Math.max(P[0][0],P[1][0],P[2][0],P[3][0]),minz=Math.min(P[0][1],P[1][1],P[2][1],P[3][1]),maxz=Math.max(P[0][1],P[1][1],P[2][1],P[3][1]);
       var turned=Math.abs(ax[0]*ax[2])+Math.abs(az[0]*az[2])>1e-3*(lx*lx+lz*lz);
       if(!turned){W.block([minx,maxx,minz,maxz,bot,top],tag);return 'block';}
-      /* turned: blocks along the long side, each as thick as the short side (at least the cut) */
-      var long=lx>=lz,L=long?lx:lz,t=Math.max(thin,T.cut),u=long?[ax[0]/lx,ax[2]/lx]:[az[0]/lz,az[2]/lz],n=Math.min(T.maxCuts,Math.max(1,Math.ceil(L/T.cut))),h=t/2;
-      for(var i=0;i<n;i++){var s=(i+.5)/n-.5,x=c[0]+u[0]*L*s,z=c[2]+u[1]*L*s;W.block([x-h,x+h,z-h,z+h,bot,top],tag);}
+      /* turned: blocks along the long side, each as thick as the short side (at least the cut); a thick one (the short side over
+         twice the cut) is cut across too, in rows a cut apart, so its axis-aligned squares do not stand out past its faces (a 4.4 m
+         base turned 60 degrees reached 3 m out of its centre line, over the stair at its foot) */
+      var long=lx>=lz,L=long?lx:lz,t=Math.max(thin,T.cut),u=long?[ax[0]/lx,ax[2]/lx]:[az[0]/lz,az[2]/lz],v=[-u[1],u[0]],n=Math.min(T.maxCuts,Math.max(1,Math.ceil(L/T.cut)));
+      var m=thin>2*T.cut?Math.max(1,Math.min(Math.ceil(thin/T.cut),Math.floor(T.maxCuts*8/n))):1,h=m>1?Math.max(L/n,thin/m)/2:t/2;
+      for(var i=0;i<n;i++)for(var j=0;j<m;j++){var s=(i+.5)/n-.5,r=m>1?((j+.5)/m-.5)*thin:0,x=c[0]+u[0]*L*s+v[0]*r,z=c[2]+u[1]*L*s+v[1]*r;W.block([x-h,x+h,z-h,z+h,bot,top],tag);}
       return 'block';
     }
     return null;
