@@ -20,7 +20,10 @@ Read before changing anything here. `build.py` prints the open count.
         up; the floor pass's seat is the fix (60).
       - **one cacao 1 m into the lake** at (288, 397) on the Vale (`LAND.edgeOwed.plant` 1): the cacao pass decides on the placement height, not the water
         the eye sees.
-      - **KSHADOW's cost**: below, measured on the GPU.
+      - **KSHADOW's cost** (the Vale, Arc 140T, 1280x720, 4096 map; 2026-11-03): `perf_views.py` hung on its timer queries (stopped by the
+        heartbeat), so it was timed as render + a 1-pixel readPixels (the stall counted; read the ratio, not the ms), median of 30:
+        initial 178 -> 203 ms (+14%), Dawn redwoods 290 -> 385 (+33%), From the mountains 207 -> 274 (+32%), Krator rising 235 -> 296 (+26%).
+        Draw calls the same (the world pass). `?shadowmap=2048` is the knob if it is too dear; for the owner to judge.
 
 - [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the cataract at az 112 and its spray (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
 
