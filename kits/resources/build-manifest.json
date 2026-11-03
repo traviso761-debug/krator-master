@@ -19,8 +19,8 @@
  "42r-res-ore.js": "29f77d5daeb2",
  "43r-res-fields.js": "dec9a5d04d53",
  "44r-res-nodes.js": "fefe457bdbe3",
- "45q-res-geodata.js": "a328af161187",
- "45r-res-field.js": "005fe2501432",
+ "45q-res-geodata.js": "c766e96145c6",
+ "45r-res-field.js": "9a2d34b18b31",
  "46r-res-ledger.js": "7d043415bc60",
  "50-core-furnish.js": "3474c3c8d39a",
  "50-core-tags.js": "351884caf5b4",
@@ -55,7 +55,7 @@
  "93-anim.js": "8a28fabd895e",
  "94-host-polytool.js": "0a9e4cea5b82",
  "95-host-probe.js": "111c9ae5768a",
- "98r-host-geomap.js": "b986c490d2d7",
+ "98r-host-geomap.js": "2d573d8c7aed",
  "99-host-take.js": "c249a1c0845d",
  "99-tail.html": "bf3a2481959e"
 }
