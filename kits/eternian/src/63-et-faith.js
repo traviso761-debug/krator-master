@@ -11,10 +11,13 @@ defBuilding({key:'et_ancestor_gallery',name:'Ancestor gallery',seed:7130,cut:tru
  tags:{types:['religious'],wealth:'rich',style:'ministry'},
  note:'the hall of heads: a pier-bundle front, two rows of heads down each wall by rank, the veiled among them, benches and lamps; the city temple',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=11,D=24,H=9,dk=new THREE.Color(sd).multiplyScalar(.45);
-  box('stone',0,0,0,W+1,G,28,sd);
+  box('stone',0,0,0,W+1,G,28,sd);svFloor([[-(W+1)/2,-14],[(W+1)/2,-14],[(W+1)/2,14],[-(W+1)/2,14]],G);   /* the podium's top (a 0.8 m box is a block to the box reader) */
+  /* the hall's only door was the civic door on the pier bundle, locked on its solid face: the keepers' door in the back wall, beside
+     the niche, with stone steps up the podium (core/engine svStair; the stairs pass, 2026-11-03) */
+  svStair(3.5,-14-1.08,0,G,0,{style:'solid',w:1.8,run:1.08,col:sd});
   pushM(TF(0,0,-1.5));
    box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
-   etWalls(W,D,G,H,'brick',br,{back:[{x:0,w:1.0,h:2.2,y:4.5,steel:true,shut:false}]},{frame:brD});
+   etWalls(W,D,G,H,'brick',br,{back:[{x:0,w:1.0,h:2.2,y:4.5,steel:true,shut:false},{x:-3.5,w:1.2,h:2.5,door:true,mask:false,leaf:P('bronze')}]},{frame:brD,steps:false});
    for(const s of [-1,1]){pushM(TF(s*W/2,0,0,s*PI/2));for(let i=0;i<5;i++)etLancet(-9.6+i*4.8,G+5.2,.01,.9,3.2,{light:'glass'});popM();}
    // the rows of heads, facing the aisle
    let n=0;for(const s of [-1,1])for(const [y,ms] of [[G+1.1,['bronze','gunmetal','stone']],[G+3.6,['gold','silver','bronze']]]){
