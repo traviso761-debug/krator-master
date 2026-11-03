@@ -87,6 +87,36 @@
    "roughLift": 0.05,
    "specular": 0.3,
    "note": "the bed of a ruin's rubble heap, between its concrete chunks (57-mp-debris.js): the owner's demolition rubble (2026-11-03; it replaced rock.rubble.sturzstrom)"
+  },
+  "adobe": {
+   "lib": "stone.adobe.ceramic",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.7
+   },
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3,
+   "note": "the sand ceramic of the Telescope (S6) and the Sand Block (M8)"
+  },
+  "baroque": {
+   "lib": "patterns/ancient/baroque-scroll",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3,
+   "note": "the Swell's (S8) carved rust-red ledges"
   }
  }
 }

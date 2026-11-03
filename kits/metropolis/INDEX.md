@@ -4,7 +4,7 @@
 
 The metropolis test bed: sixteen Ancient towers designed for the range tiers (hero, KSHELL baked shell, impostor, district); two built, with audited interiors. Read PLAN.md.
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `HANDOFF-SHELL.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/metropolis.html`
 
@@ -22,14 +22,19 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
 | `45-host-stage.js` | 1 |  |
-| `47-host-land.js` | <1 |  |
-| `50-mp-kit.js` | 11 |  |
+| `46-mp-designs.js` | 5 |  |
+| `46b-mp-ancients.js` | 4 |  |
+| `47-host-land.js` | 1 |  |
+| `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
-| `53-mp-hero-ledger.js` | 13 |  |
-| `56-mp-interiors.js` | 15 |  |
+| `53-mp-hero-ledger.js` | 14 |  |
+| `54-mp-hero-designs.js` | 33 **big** |  |
+| `55-mp-hero-ancients.js` | 6 |  |
+| `56-mp-interiors.js` | 18 |  |
 | `57-mp-debris.js` | 6 |  |
-| `60-mp-shell-host.js` | 18 |  |
-| `70-mp-stage.js` | 17 |  |
+| `58-mp-cutaway.js` | 4 |  |
+| `60-mp-shell-host.js` | 22 |  |
+| `70-mp-stage.js` | 20 |  |
 | `89-host-sky.js` | <1 |  |
-| `99-host-take.js` | 4 |  |
+| `99-host-take.js` | 5 |  |
 | `99-tail.html` | <1 |  |

@@ -3,9 +3,10 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "kits/ancients-interiors/KNOWN_ISSUES.md": "2ee7630bd4aeb7af443b7fbc63ea88fd5a8e951539a05890025384f2a929a8e9",
-    "kits/ancients-interiors/PORT.md": "da5f5c5719b1ba430c4a91a6f089a3dd80480431decca8942894dcdaabbdeba9",
-    "kits/ancients-interiors/build.py": "3aee7f3be4665b4655a734262a280a1c4363e70753f2fa35b066bd299a79cd89",
+    "kits/ancients-interiors/KNOWN_ISSUES.md": "0de089ce7edf2ee0e2f281a069453c7f76f3abb7642c8c493eab8673239252f3",
+    "kits/ancients-interiors/PORT.md": "604def743d1087efb5e2204cba1ed863109dd88b5852793e4fd22cfa2d954cd9",
+    "kits/ancients-interiors/build.py": "d8c9fd56f70e93306a5e8d24429828088f0223942abac7de9e88d122ca267439",
+    "kits/ancients-interiors/opt/38-ai-reception.js": "1b5fc341a793f35faa69249b5f62082d38e2a40b29c9ea0b09f766e0f4bef779",
     "kits/ancients-interiors/src/00-head.html": "08e62626975a8ad0aee4a29169ee50cedbfddab4570d003ece402f93f557db31",
     "kits/ancients-interiors/src/10-ai-core.js": "2519e6621613167d6fb83ecfbffb8ed6f2488586848124210ff423c35c672b60",
     "kits/ancients-interiors/src/20-ai-dress.js": "c75e021e10465e5ee7f962c0c720a7646314cb58cae582e035e2f7569e0635c7",
@@ -70,8 +71,9 @@
     "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
+    "kits/ancients-interiors/opt": "d182eb2c805b5ff8df8b9433d4b10a6ec74285327c6b685f1dcbe627ae417b02",
     "kits/ancients-interiors/src": "a37d3d4820bfd1a873fe07f7f6a99a1ea42ec5b79054580eb21420730ac31164",
-    "kits/catalog": "82ffc64a98257150f3e5ac4c4e945ee010a1de96491403d04a1cbdfba4f68d69",
+    "kits/catalog": "707e7b4a9c367625e5bd6981645fd823de52c815163b8fcf26ce2c6c346a0061",
     "kits/interiors/src": "c4c456a6858952adde6fdb41c376a3da01583b122c55aa44f11e9c751bbd3051"
    },
    "outputs": {

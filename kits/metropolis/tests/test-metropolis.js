@@ -4,7 +4,8 @@ const ctx = { console, Math, module: {}, exports: {} }; ctx.window = ctx; ctx.gl
 const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), ctx, { filename: p });
 load('core/rand/08-core-rand.js');
 for (const d of ['kits/interiors/src', 'kits/ancients-interiors/src']) for (const f of fs.readdirSync(path.join(ROOT, d)).sort()) if (/^[1-4]\d.*\.js$/.test(f) && !/view|shell|building|outline|cutaway|figures/.test(f)) load(d + '/' + f);
-for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js']) load('kits/metropolis/src/' + f);
+load('kits/ancients-interiors/opt/38-ai-reception.js');   /* the reception recipe, opt-in until the next interiors update */
+for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46b-mp-ancients.js']) load('kits/metropolis/src/' + f);
 const MP = vm.runInContext('MP', ctx), KS = vm.runInContext('KSHELL', ctx), AI = vm.runInContext('KratorAncientsInteriors', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };
 AI.install(vm.runInContext('KratorInteriors', ctx));
@@ -36,4 +37,14 @@ for (const F of MP.families()) for (const s of MP.RUINS) {
   let fits = true; try { KS.pack(all, 2048); } catch (e) { fits = false; } ok(fits, 'the fourteen shells pack a 2048 atlas');
   let tight = true; try { KS.pack(all, 1536); } catch (e) { tight = false; } ok(!tight, 'negative: not a 1536 one'); }
 { const R = MP.ruin(MP.LEDGER, 'broken'); ok(MP.tearAt(MP.LEDGER, R, 0) < MP.LEDGER.levels[1].y && MP.tearAt(MP.LEDGER, R, 50) > MP.LEDGER.levels[1].y + 10, 'the Ledger breaks in its span only'); }
+// the fourteen designs: one record a key, none clashing with a planned family, sane numbers (with a negative)
+const designOk = D => D && D.footprint && D.height.tip >= D.height.roof && D.height.roof > D.sh && D.sh >= 3 && D.sh <= 7 && D.tris > 0 && D.tris <= 110000;
+ok(MP.DESIGN_KEYS.length === 14 && MP.DESIGN_KEYS.every(k => MP.DESIGNS[k] && MP.DESIGNS[k].id === k && !MP.FAMILY[k]), 'fourteen designs, keyed, none a planned family');
+ok(MP.DESIGN_KEYS.every(k => designOk(MP.DESIGNS[k])), "the designs' numbers are sane");
+ok(!designOk(Object.assign({}, MP.DESIGNS.wedge, { height: { roof: 188, tip: 100 } })), 'negative: a tip under the roof fails');
+// the Ancients kit's buildings: one record a key, a builder each, none clashing with a design or a family, sane numbers (with a negative)
+const ancOk = A => A && /^build[A-Z]/.test(A.fn) && A.footprint.w > 0 && A.footprint.d > 0 && A.height.tip >= A.height.roof && A.sh >= 3 && (A.scale == null || (A.scale >= 1 && A.scale <= 2)) && A.tris > 0;
+ok(MP.ANCIENT_KEYS.length === 13 && MP.ANCIENT_KEYS.every(k => MP.ANCIENTS[k] && MP.ANCIENTS[k].id === k && !MP.FAMILY[k] && !MP.DESIGNS[k]), 'thirteen Ancients, keyed, none a design or a family');
+ok(MP.ANCIENT_KEYS.every(k => ancOk(MP.ANCIENTS[k])), "the Ancients' records are sane");
+ok(!ancOk(Object.assign({}, MP.ANCIENTS.houses, { scale: 0.5 })), 'negative: a scale under 1 fails');
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

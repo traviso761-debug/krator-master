@@ -70,7 +70,7 @@ plant floor, core standing higher. *Skeleton:* skin off above the stump, instanc
 | # | Key, name | Language | Height, storeys, footprint | Massing | Cage | Hero budget |
 |---|---|---|---|---|---|---|
 | S1 | `spindle`, the Spindle | 1 white city | 234 / 262 m, 62, r 46 m skirt | a concave rocket on a flared skirt, three root fins to a third of its height, a disc lamp and a needle | polar, 8 x 3 | 80k **built** |
-| S2 | `gantry`, the Gantry | 7 bronze slabs | 196 / 240 m, 52, 72 x 48 m | a flared, buttressed slab of ribbed bronze; a stepped metal crown with a small dome and four finials; a transit tube through its waist | box, stacked (2 boxes) | 90k |
+| S2 | `organ`, the Organ (the Gantry until 2026-11-03: the owner tossed its ribbed slab as dull) | 7 bronze | 228 / 240 m, 60, 96 x 34 m | five bronze pipes of different heights in a shallow arc, each its own storeys and a conical cap with a dark mouth, bound by four bronze bands; a lobby at each pipe's foot (its transit tube dropped until a tube network joins buildings) | polar per pipe (5 x 8 x 3), or box, stacked | 90k |
 | S3 | `wedge`, the Wedge | 2 black wedge | 188 m, 48, 64 x 56 m | a four-sided black glass frustum leaning in, one face steeper; a slot of sky lobby two-thirds up | polar 4 x 2: a frustum is its own cage, 18 tris | 45k |
 | S4 | `yoke`, the Yoke | 3 pastel organic | 172 / 196 m, 44 | two bulbous swollen legs joined over a 60 m through-arch, the upper body one mass with a needle | **two** polar parts plus a bridge box; the arch is the test | 75k |
 | S5 | `reed`, the Reed | 6 twisted slab | 204 m, 54, 58 x 24 m | a faceted slab turning 50 degrees over its height and widening to the top; the facets catch the sun differently on each face | polar 8 x 4: twist is star-shaped | 60k |
@@ -104,7 +104,7 @@ saucers tilt or drop, the stalk stands, and a stump is rare; **S8** lobes peel o
 | M5 | `terrarium`, the Terrarium | 2 sphere | 66 m, 8, r 30 m | a sphere on four splayed legs under a glass dome holding a forest | polar 8 x 4 for the sphere; legs are instanced real geometry at every range | 40k |
 | M6 | `arcades`, the Arcades | 6 concrete | 26 m, 4, 84 x 52 m | great concrete arches round a court with a reflecting pool; relief walls | box; the arches' sky behind is the coverage test | 30k |
 | M7 | `pods`, the Pods | 3 sky-bridges | 48 m, 6, two r 22 m pods | two round pods on stalks joined by a tube, a third low dome | two polar parts, the tube real geometry | 30k |
-| M8 | `sandblock`, the Sand Block | 4 adobe | 32 m, 7, 60 x 48 m | a stepped adobe mass with deep dark openings, three small domes on the roof | box, stacked | 30k |
+| M8 | `spiral`, the Spiral (the Sand Block until 2026-11-03: tossed as dull) | 4 adobe | 30 / 38 m, ramp of 5 turns, r 30 m | an adobe cone wound by an outside ramp from beside its gate to a drum and dome; a bronze-doored portal into the cone every half turn | polar 8 x 3; the ramp's overhang is the test | 30k |
 
 Uses: **M1** below. **M2** flats round a court, a school at the bottom, a roof park. **M3** a transit hall and concourse on
 the ground, offices in the drum. **M4** apartments with a clinic in the low end. **M5** a hydroponic forest (the

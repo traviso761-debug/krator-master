@@ -18,7 +18,11 @@ MP.mats=(function(){let M=null;
  const fam=(name,o)=>{const P=KMAT.mode==='lib'?KMAT.packed('metropolis',name):null,T=P?KMAT.textures(P,{aniso:8}):{};if(P&&P.scale)[T.map,T.normalMap,T.roughnessMap].forEach(t=>{if(t)t.repeat.set(4/P.scale[0],4/P.scale[1]);});
   return new THREE.MeshStandardMaterial(Object.assign({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,vertexColors:true,metalness:P?P.metal||0:0,roughness:1},o||{}));};
  return function(){if(M)return M;
-  M={white:fam('white',{metalness:.12}),concrete:fam('concrete'),relief:fam('relief'),rubble:fam('rubble'),bronze:fam('bronze',{metalness:.35,color:0xd8b48a}),
+  M={white:fam('white',{metalness:.12}),concrete:fam('concrete'),relief:fam('relief'),rubble:fam('rubble'),adobe:fam('adobe'),baroque:fam('baroque'),
+   /* the Wedge's black curtain glass (no room behind it shows: the Ancients at their most closed) and the planted green of a deck or a forest */
+   glassBlack:new THREE.MeshStandardMaterial({color:0x0a0e13,roughness:.07,metalness:.75,vertexColors:true}),green:new THREE.MeshStandardMaterial({color:0x5a7a42,roughness:.95,metalness:0,vertexColors:true}),
+   /* a glass you see through (the Terrarium's dome over its forest): drawn after the solids, no depth written */
+   glassClear:new THREE.MeshStandardMaterial({color:0x9fc3cf,roughness:.05,metalness:.2,transparent:true,opacity:.28,depthWrite:false,vertexColors:true,side:THREE.DoubleSide}),bronze:fam('bronze',{metalness:.35,color:0xd8b48a}),
    dark:new THREE.MeshStandardMaterial({color:0x17181a,roughness:1,metalness:0,vertexColors:true}),
    cyan:new THREE.MeshStandardMaterial({color:0x8fe9ee,emissive:0x35d8e0,emissiveIntensity:1.1,roughness:.4,metalness:0,vertexColors:true}),
    cyanDead:new THREE.MeshStandardMaterial({color:0x2a3336,roughness:.8,metalness:.1,vertexColors:true}),
@@ -37,14 +41,15 @@ MP.windowMat=function(o,gl){const m=new THREE.MeshStandardMaterial(Object.assign
 // lite: the impostors' bake. A tower 128 px tall holds no mullion, and 128 renders of a full hero lost the GPU context (four heroes, 50 M triangles in one call): a third of the sides, only the big panels
 MP.builder=function(lite){const B={b:{},panels:[]};
  const K=n=>B.b[n]||(B.b[n]={p:[],n:[],u:[],c:[],i:[]});
- // a strip of quads from a polyline in two dimensions swept round the axis: pts [[r, y], ...]; seg sides; col(th, y) -> [r, g, b]; skip(th, y); m metres a uv
- B.lathe=function(name,pts,seg,o){o=o||{};if(lite)seg=Math.max(12,Math.ceil(seg/3));const q=K(name),U=o.uv==null?4:o.uv,th0=o.a0||0,th1=o.a1==null?Math.PI*2:o.a1;
+ // a strip of quads from a polyline in two dimensions swept round the axis: pts [[r, y], ...]; seg sides; col(th, y) -> [r, g, b]; skip(th, y); m metres a uv;
+ // cx, cz the axis (0, 0); mod(th) a factor on the radius (a scallop, a polygon: 54's)
+ B.lathe=function(name,pts,seg,o){o=o||{};if(lite)seg=Math.max(12,Math.ceil(seg/3));const q=K(name),U=o.uv==null?4:o.uv,th0=o.a0||0,th1=o.a1==null?Math.PI*2:o.a1,ox=o.cx==null?0:o.cx,oz=o.cz==null?0:o.cz,md=o.mod;
   for(let j=0;j+1<pts.length;j++){const a=pts[j],b=pts[j+1],dr=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dr,dy)||1,nr=dy/L*(o.flip?-1:1),ny=-dr/L*(o.flip?-1:1);
    for(let i=0;i<seg;i++){const t0=th0+(th1-th0)*i/seg,t1=th0+(th1-th0)*(i+1)/seg,tm=(t0+t1)/2,ym=(a[1]+b[1])/2;
     if(o.skip&&o.skip(tm,ym))continue;
     const v=q.p.length/3;
     [[t0,a],[t1,a],[t1,b],[t0,b]].forEach(function(e){const t=e[0],P=e[1],c=Math.cos(t),s=Math.sin(t),cl=o.col?o.col(t,P[1]):null;
-     q.p.push(P[0]*c,P[1],P[0]*s);q.n.push(nr*c,ny,nr*s);q.u.push(t*Math.max(P[0],6)/U,P[1]/U);if(cl)q.c.push(cl[0],cl[1],cl[2]);else q.c.push(1,1,1);});
+     const kk=md?md(t):1;q.p.push(ox+P[0]*c*kk,P[1],oz+P[0]*s*kk);q.n.push(nr*c,ny,nr*s);q.u.push(t*Math.max(P[0],6)/U,P[1]/U);if(cl)q.c.push(cl[0],cl[1],cl[2]);else q.c.push(1,1,1);});
     q.i.push(v,v+3,v+1,v+1,v+3,v+2);}}};
  // a quad, corners in order, seen from the side of n
  B.quad=function(name,A,Bb,C,D,n,o){o=o||{};const q=K(name),U=o.uv==null?4:o.uv,cl=o.col||[1,1,1],v=q.p.length/3,w=Math.hypot(Bb[0]-A[0],Bb[1]-A[1],Bb[2]-A[2]),h=Math.hypot(D[0]-A[0],D[1]-A[1],D[2]-A[2]);

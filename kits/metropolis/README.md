@@ -21,8 +21,13 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `42-mp-facade.js` | [G data] | the facade from the rooms: one source for the room's windows and the drawn glass |
 | `43-mp-shell.js` | [G data] | `KSHELL.record`, cages, atlas packing; the prototype of `core/shell` |
 | `44-mp-audit.js` | [G data] | `MP.audit`: shafts line up, every room reached, flats whole, glass only where rooms want it |
+| `46b-mp-ancients.js` | [G data] | `MP.ANCIENTS`: the Ancients kit's buildings brought in (which builder, its name, measured footprint and heights, budget) |
+| `46-mp-designs.js` | [G data] | `MP.DESIGNS`: the other fourteen as records (footprint, heights, storey height, the shape's numbers), apart from `MP.FAMILY` until each has plans |
 | `50-53` | [draw] | the hero kit, the Spindle, the Ledger |
 | `56-mp-interiors.js` | [draw] | a storey drawn on demand, furnished; at most three open (a ruin's only under its standing skin) |
+| `54-mp-hero-designs.js` | [draw] | the massing kit `DK` (lathes, rings and slabs of storeys, tubes, lobbies with doors) and a builder for each of the fourteen |
+| `55-mp-hero-ancients.js` | [draw] | `MP.heroAncient`: a kit builder run into a hero of its own, its instanced detail baked there |
+| `58-mp-cutaway.js` | [web] | the cut-away: X cuts the building in front of you at a storey's ceiling, `[` and `]` move it |
 | `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
 | `70-mp-stage.js` | [web] | what stands where in each view; impostors, one a frame |
@@ -90,6 +95,62 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 The fallen Ledger keeps its arcade (the owner, 2026-11-03): its arches, piers and flares stand in the mound.
+
+## The other fourteen, close up (2026-11-03)
+
+Every design in `PLAN.md` section 4 now has an intact hero (`46` records, `54` builders): views `Design, <name>`, and `Designs, all sixteen` (a 4 by 4 grid, 300 m apart).
+Each is under its `PLAN.md` budget. They have no plans, shells or impostors yet: those wait on the shell review (`HANDOFF-SHELL.md`). The owner tossed two as dull
+the same day: the Gantry is now **the Organ** (five bronze pipes in an arc) and the Sand Block **the Spiral** (an adobe cone wound by a ramp). The Organ's transit tube
+was dropped: no stubs until a tube network joins buildings.
+
+**Every building has walkable entrances.** Its ground storey is a lobby (`DK.lobbyRing` round a ring, `DK.lobbySlab` on a rectangle): a storefront with doors at given
+angles or faces, a floor and a ceiling. The doors are the Spindle's sliding leaves (`MP.doorLeaves`), and the lobby's outline goes with the hero (`userData.walk`), so
+`towerBlocks` (`56`) blocks it every 0.5 m except across each door. A shape with no lobby that still meets the ground (the Long Curve's arc ends) records its outline with
+`DK.walkLine`. The Spiral's ramp doorways are portals into the slope (`DK.portal`: an adobe frame standing proud, bronze leaves set back in the reveal).
+
+**The cut-away** (`58`): X, or the panel's button, cuts the building under the middle of the screen (else the nearest real one) at a storey's ceiling with a clipping
+plane on copies of its materials, drawn both sides so the walls show their thickness; on the Spindle and the Ledger the storey under the cut opens with its ceiling hidden.
+`[` and `]` move the cut a storey. The fourteen cut at a storey's height and show their walls until they have plans.
+
+## The Ancients kit's buildings (2026-11-03)
+
+The owner asked for the bunker, Sky A, the honeycomb blocks and the laboratories from `kits/ancients`, and the low and mid rises that
+round them out. Thirteen of the kit's builders are read in place (`build.py`, `ANC_RUNTIME` and `ANC_BUILDERS`, as `settlements/span`
+does) and each is run once, intact, into a hero of its own (`55`): **the Redoubt** (the bunker), **Skyscraper A** (420 m), **the
+Honeycomb Block** and **the Apartments** (A, B the honeycomb wall, C), **the Reliquary** and **the Star Laboratory**, then **the
+Offices** (the flared ring and the lobed tower), **the Crown Library**, **the Watch** (police), **the Cloisters**, **the Houses**,
+**the Capsule Stalks** and **the Bell Hall**. Views `Ancient, <name>`, and `Ancients, all` (a grid 440 m apart).
+
+- **Nothing is redrawn:** the records (`46b`) say which builder runs, and the numbers the stage needs, measured off the drawn hero.
+- **Names the kit shares with this page are renamed at build time** (`SUBST`): its error panel, ground, ticks and `onerror` give way to
+  the page's, which have the same signatures, and its registry becomes `ANC_REG`/`ANC_REGISTER`. Its fire flicker reads
+  `window.NIGHT`. `check_assembly` reads no clash.
+- **The kit bakes its instanced detail once a page** (`kbake`); here every hero empties the kit's lists, runs its builder and bakes
+  into its own group, so a hero can be cloned like any other.
+- **Its texture pack** is a second sidecar, `dist/metropolis.tex.ancients.js` (4.9 MB).
+- **The quality pass** (the owner: floating or distorted pieces, room for a working plan). A 1.75 m marker at every building's front,
+  and a test that splits each hero into its connected pieces and flags any above the ground that touches nothing (`MP.ancientFloaters`).
+  The Honeycomb Block's storeys were 2.3 m and its pilotis under 2 m: scaled 1.5 (3.4 m storeys); the Houses, which the owner wanted
+  bigger, 1.5 too (each now about 24 m across, its door about 3.5 m). The rest read at scale (the Reliquary's storeys 4.4 m, the
+  Cloisters' 4 m, the Apartments' about 3). One piece floated, the Crown Library's glass finial (55 to 65 m up over the crown's open
+  top, on nothing): every hero now drops a baked instance that touches nothing within half a metre. The kit's standing figures are not
+  baked (they would scale into giants; the metropolis's people come with its own crowds).
+
+## Shadows (2026-11-03)
+
+The sun casts (`core/shadow`, written for this, the owner's choice of a core module over a local one): one box that follows the view,
+90 m round a walker and up to 600 m from high up, on a 4096 map. The heroes, the open storeys and the near rubble cast and take
+shadows; the baked shells and the impostors draw their own light and take none. `?noshadow` turns them off.
+
+## The Ledger's reception (2026-11-03)
+
+The reception (the arcade's middle bay, both sides of the corridor) is laid out by `kits/ancients-interiors`' new **reception** recipe
+(a counter facing the door, waiting groups, a notice board), opt-in until the next interiors update (`ab.bundle(reception=True)`;
+`TODO.md`). Its furniture had been laid out at 28.6 degrees through the corridor: the kit turns a room's frame toward its first
+door's point, so a door off the room's middle skews it. `mpFrameDoors` (`56`) hands the kit a squared door until the kit is fixed
+(`TODO.md`). A storey on the street lifts its slab and furniture 3 cm, off the street plane it was fighting.
+
+The plaza's walk floor reaches 1.2 km round the eye (it was the whole 16 km ground: 2.3 s each time a view changed) and follows it.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

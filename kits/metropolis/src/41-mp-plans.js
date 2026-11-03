@@ -18,7 +18,7 @@
   function arc(r, t0, t1, n) { var o = []; for (var i = 0; i <= n; i++) o.push(at(r, t0 + (t1 - t0) * i / n)); return o; }
 
   // the room kinds: `store` etc. are kits/interiors programmes; a kind with no programme is furnished false
-  var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, bath: 1, concourse: 1, hallway: 1, wardrobe: 1 };
+  var UNFURNISHED = { core: 1, corridor: 1, plant: 1, tank: 1, concourse: 1, hallway: 1, wardrobe: 1 };
   MP.ROOMKIND = { office: 'study', meeting: 'study', classroom: 'school', clinic: 'sickbay', stack: 'library', stall: 'shop', cafe: 'tavern', reception: 'antechamber', wardrobe: 'store' };
   function kindOf(k) { return MP.ROOMKIND[k] || k; }
 
@@ -162,7 +162,7 @@
     var T = F.core.kind === 'round' ? PLAN : PLAN_BAR, fn = T[L.use];
     if (!fn) throw new Error('MP.storey: no plan for the use ' + L.use);
     var st = fn(F, L); st.use = L.use; st.family = F.id;
-    st.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind] && !(Q.mpKind === 'stack' && Q.side === 'right'); if (Q.mpKind === 'greenhouse') { Q.recipe = 'greenhouse'; Q.kind = 'store'; } if (Q.mpKind === 'reception') { Q.recipe = 'officers-hall'; Q.furnish = true; } });
+    st.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind] && !(Q.mpKind === 'stack' && Q.side === 'right'); if (Q.mpKind === 'greenhouse') { Q.recipe = 'greenhouse'; Q.kind = 'store'; } if (Q.mpKind === 'reception') { Q.recipe = 'reception'; Q.furnish = true; } });
     MP.fenestrate(F, st);
     return st;
   };

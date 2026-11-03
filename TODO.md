@@ -37,6 +37,24 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   `[inner[0], outer[0]]`. `kits/metropolis/src/41-mp-plans.js` straightens them after the fact (drop that once the kit is fixed). The fix reaches
   every page `python3 tools/reach.py kits/ancients-interiors/src/35-ai-plates.js` lists (`kits/ancients`, Noah's Regret, the metropolis), and
   moves their furnishing: rebuild them, rerun their audits.
+- **`AI.furnishPlan` turns a room's frame toward its first door's point, not its door wall** (2026-11-03, `kits/metropolis`): in
+  `kits/ancients-interiors/src/37-ai-kit.js` (the room's own frame, `ang = atan2(door - centroid)`) a door off the room's middle skews the frame,
+  and a recipe's rectangle is then the skewed room's bounding box: the Ledger's reception (18 by 5.5 m, door 1.5 m off centre) was laid out
+  15.8 by 11.5 at 28.6 degrees, through the corridor and the next rooms. Take the normal of the wall the door is on (and the area centroid, not
+  the vertex mean). `kits/metropolis/src/56-mp-interiors.js` (`mpFrameDoors`) hands it a squared first door meanwhile: drop that with the fix.
+  It reaches the 53 pages `python3 tools/reach.py kits/ancients-interiors/src/37-ai-kit.js` lists, and moves every templated room's furnishing.
+- **Make the Ancients' bath fixtures permanent** (kits/catalog, opt-in since 2026-11-03, the owner: "until the catalog is next touched";
+  `krator-optin-furniture-ancient-bath.js`). Move its seven `FURN` blocks into the Ancients section of `kits/catalog/krator-master-furniture.js`
+  ("the intact buildings' interiors"), its PALETTE keys into `FPAL['ancient']` in `krator-furniture-core.js`, and its `bath` programme into
+  `kits/interiors/src/30-programs.js` (`IX.PROGRAMS.bath`, `IX.KIND_WEIGHT.bath = 0.5`). Drop `OPT_IN` / `optin=` from `furniture_bundle.py`,
+  `OPT_IN_FILES` / `--opt-in` from `kits/catalog/build.py`, and `optin=['ancient-bath']` plus the `KratorFurniture.ancientBath.install(...)` call
+  from every caller (kits/metropolis). Delete the file, remove its row from kits/catalog `README.md` "Opt-in sets", `KNOWN_ISSUES.md` and
+  `PORT.md`, then rebuild every build that takes the catalog or kits/interiors and rewrite `PORT-BASELINE.json` for them.
+- **kits/ancients-interiors: make the reception recipe permanent** (opt-in since 2026-11-03, the owner: "until the next interiors update"). Move
+  `opt/38-ai-reception.js` to `src/38-ai-reception.js`, drop the `reception` option from `kit_bundle.py` (and `reception=True` from
+  `kits/metropolis/build.py`, and the `opt/` load from `kits/metropolis/tests/test-metropolis.js`), let the kit's demo sheet and `verify.py
+  --assert` take it with the other halls, update the opt-in notes (fragment header, README "Opt-in", API.md, KNOWN_ISSUES, PORT.md), then rebuild
+  every build that takes the kit (`kits/ancients` and its targets, Noah's Regret, the metropolis) and rewrite their PORT-BASELINE entries.
 - **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
   from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:

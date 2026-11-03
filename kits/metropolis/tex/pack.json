@@ -1,6 +1,66 @@
 {
  "build": "metropolis",
  "families": {
+  "adobe": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "adobe.albedo.webp",
+    "normalMap": "adobe.normal.webp",
+    "roughnessMap": "adobe.rough.webp"
+   },
+   "lib": "stone.adobe.ceramic",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.05,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a061bcf4a509548f7c0e25ffc2aea8e78c6ebdb0",
+    "normal": "240d53ab902654299e3701c3398cdcf9040cbeb3",
+    "roughness": "a7db67eb58a4fc2eea9b447ef3a323f850ea0659"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.6,
+    "mean": 0.7,
+    "sourceMean": 0.6814
+   }
+  },
+  "baroque": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "baroque.albedo.webp",
+    "normalMap": "baroque.normal.webp",
+    "roughnessMap": "baroque.rough.webp"
+   },
+   "lib": "patterns/ancient/baroque-scroll",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.05,
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "88acfd22d1ce691ca50fa9f1aa4cb3cc9fa51632",
+    "normal": "9e2e12d25af72751462abe1b858d19ff43165f70",
+    "roughness": "1a3140256b64985e6b205a96b0793c2c5a70df05"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.6,
+    "sourceMean": 0.737
+   }
+  },
   "bronze": {
    "breakup": null,
    "card": false,

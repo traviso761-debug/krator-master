@@ -4,8 +4,17 @@
 // The furniture is the catalog's, by AI.furnishPlan in the culture `ancient`, its templates shared between like rooms.
 MP.LIVE=3;MP.open=[];
 MP.furnishCat=null;
-MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat)MP.furnishCat=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());
- return AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[st]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});};
+/* AI.furnishPlan turns a room's frame toward its first door's point from the centroid (kits/ancients-interiors 37-ai-kit.js), so an off-centre door skews
+   the frame and a recipe's rectangle with it: the Ledger's reception, 18 by 5.5 m with its door 1.5 m off centre, was laid out 15.8 by 11.5 at 28.6 degrees,
+   through the corridor and the next rooms. Until the kit takes the door wall's normal (TODO.md, the next all-builds rebuild), a recipe room is handed a
+   first door on the door's wall square to its centroid: the frame turns square, the room's real doors are unchanged */
+function mpFrameDoors(st){return Object.assign({},st,{rooms:st.rooms.map(R=>{if(!R.recipe||!R.doors||!R.doors[0]||!R.poly)return R;const P=R.poly,n=P.length,d=R.doors[0].at,c=P.reduce((s,p)=>[s[0]+p[0]/n,s[1]+p[1]/n],[0,0]);
+ let u=null,bd=1e9;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<1e-6)continue;const t=Math.max(0,Math.min(1,((d[0]-a[0])*dx+(d[1]-a[1])*dz)/(l*l))),q=Math.hypot(a[0]+dx*t-d[0],a[1]+dz*t-d[1]);if(q<bd){bd=q;u=[dx/l,dz/l];}}
+ if(!u)return R;const k=(c[0]-d[0])*u[0]+(c[1]-d[1])*u[1];return Object.assign({},R,{doors:[Object.assign({},R.doors[0],{at:[d[0]+u[0]*k,d[1]+u[1]*k]})].concat(R.doors.slice(1))});})});}
+MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat){MP.furnishCat=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());
+  /* the Ancients' bath fixtures and the bath programme: the catalog's opt-in set (build.py optin=['ancient-bath']) until the catalog is next touched (TODO.md) */
+  if(KratorFurniture.ancientBath)KratorFurniture.ancientBath.install(KratorInteriors);}
+ return AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[mpFrameDoors(st)]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});};
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;
  // the partitions: a polyline, gapped at its door, with a lintel over the gap
@@ -21,7 +30,8 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   const g0=Math.max(0,sd-d.w/2),g1=Math.min(end,sd+d.w/2);run(0,g0,y0,y1);run(g1,end,y0,y1);run(g0,g1,y0+DH,y1);});
  // the slab and the ceiling
  const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1]))),sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:1});sl.rotateX(-Math.PI/2);
- const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.position.y=L.y+L.h-.26;g.add(ce);
+ /* a storey on the street lifts its slab and furniture 3 cm off the street plane (one plane under the other at y 0 fought) */
+ const lift=L.y<.05?.03:0;const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22+lift;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.name='ceiling';ce.position.y=L.y+L.h-.26;g.add(ce);
  // the skin's inner face, where the outside's one-sided strips do not show: spandrel and head, and a dado of the core
  if(round){const R=MP.skinR(F,L)+.1,N=st.facade.ring.length;B.lathe('white',[[R,L.y+L.h],[R,L.y+2.5],],N,{flip:false});B.lathe('white',[[R,L.y+.9],[R,L.y]],N,{flip:false});
   const r=MP.coreR(F,k),ca=st.rooms.filter(R0=>/\.core$/.test(R0.id))[0],da=ca&&ca.doors[0]?Math.atan2(ca.doors[0].at[1],ca.doors[0].at[0]):0;
@@ -43,42 +53,47 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  const G=B.finish(F,'storey'+k);G.children.forEach(m=>g.add(m.clone()));leaves.forEach(q=>g.add(q.m));
  // the furniture
  const out=MP.furnish(F,st);let pieces=0;
- if(out.rooms){const Bf=KratorFurniture.batch({indexed:true});out.rooms.forEach(r=>r.placements.forEach(p=>{Bf.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.variant|0,seed:MP.idHash(p.room||'r')&0xffff,wealth:.6,setting:'indoor'});pieces++;}));
+ if(out.rooms){const Bf=KratorFurniture.batch({indexed:true});out.rooms.forEach(r=>r.placements.forEach(p=>{Bf.place(p.key,p.x,p.y+lift,p.z,p.ry,{variant:p.variant|0,seed:MP.idHash(p.room||'r')&0xffff,wealth:.6,setting:'indoor'});pieces++;}));
   const fg=Bf.flush(g);if(fg)fg.traverse(o=>{if(o.isMesh)KFURN.linearColours(o.geometry);});}
  let tris=0;g.traverse(o=>{if(o.isMesh&&o.geometry){const c=o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count;tris+=c/3*(o.isInstancedMesh?o.count:1);}});
  g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,leaves:leaves,stairs:stairs,landings:landings,outline:st.outline};return g;};
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes
 // a tower at the street: its skin stops a walker, its doors do not. The Spindle's skirt with its three portals; the Ledger's end walls and its arcade's piers
 MP.towerBlocks=function(W,m){const F=MP.FAMILY[m.key.split('.')[0]],c=Math.cos(m.yaw),n=Math.sin(m.yaw),T=(x,z)=>[m.x+x*c+z*n,m.z-x*n+z*c],b=(x,z,h)=>{const q=T(x,z);W.block([q[0]-h,q[0]+h,q[1]-h,q[1]+h,0,6],'tower');};
+ /* the fourteen: the ground outlines their lobbies recorded (54, B.walk), blocked every half metre but at their doors */
+ if(!F){const H=MPS.hero[m.key];(H&&H.userData.walk||[]).forEach(o=>{const P=o.pts.concat(o.closed?[o.pts[0]]:[]);for(let i=0;i+1<P.length;i++){const p=P[i],q=P[i+1],k=Math.max(1,Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])/.5));
+  for(let j=0;j<k;j++){const x=p[0]+(q[0]-p[0])*j/k,z=p[1]+(q[1]-p[1])*j/k;if(o.doors.some(d=>Math.hypot(x-d.x,z-d.z)<d.hw+.3))continue;b(x,z,.3);}}});return;}
  if(F.core.kind==='round'){const r=MP.spindleR(1.5)-.6,N=Math.ceil(2*Math.PI*r/.5);for(let i=0;i<N;i++){const a=2*Math.PI*i/N;if(F.portals.some(p=>{let d=Math.abs(a-p);d=Math.min(d,2*Math.PI-d);return d*r<3.6;}))continue;b(Math.cos(a)*r,Math.sin(a)*r,.3);}
   for(let i=0;i<F.fins.n;i++){const a=F.fins.a0+i*2*Math.PI/F.fins.n;for(let rr=r;rr<MP.finR(F,0);rr+=.5)b(Math.cos(a)*rr,Math.sin(a)*rr,F.fins.t/2);}}
  else{const hw=F.footprint.w/2,hd=F.footprint.d/2;for(let z=-hd;z<=hd;z+=.5){b(-hw,z,.4);b(hw,z,.4);}MP.arcadePiers(F).forEach(x=>[1,-1].forEach(s=>{for(let d=0;d<F.arcade.depth;d+=.5)b(x,s*(hd-d),1);}));
   /* the arcade's glass, but for its doors in the middle bay */
   for(let x=-hw;x<=hw;x+=.5)if(Math.abs(x)>3.6)[1,-1].forEach(s=>b(x,s*(hd-F.arcade.depth),.25));}};
-MP.walkSync=function(){const W=KWALK;W.clear();W.floor({rect:[-8000,8000,-8000,8000],y:0,name:'the plaza',tag:'ground'});MP.walkDirty=false;
+/* the plaza's floor reaches 1.2 km round the eye, not the whole 16 km ground: core/walk indexes a floor in 16 m cells, and the whole ground's million took
+   2.3 s every time a view changed. The stage's tick rebuilds it when the eye has gone 800 m (MP.walkAt) */
+MP.walkSync=function(){const W=KWALK,e=camera.position,R=1200;W.clear();W.floor({rect:[e.x-R,e.x+R,e.z-R,e.z+R],y:0,name:'the plaza',tag:'ground'});MP.walkAt=[e.x,e.z];MP.walkDirty=false;
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
  /* a ruin's heaps are walked on: their surface as triangles (KRUBBLE.walkTris), turned with the tower */
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{const m=g.userData.mp;if(!m)return;const p=m.key.split('.'),c=Math.cos(m.yaw),n=Math.sin(m.yaw);
-  MP.heaps(MP.FAMILY[p[0]],p[1]).forEach((H,i)=>KRUBBLE.walkTris(H,4).forEach(t=>W.poly({pts:t.map(q=>[m.x+q[0]*c+q[1]*n,m.z-q[0]*n+q[1]*c,q[2]]),name:m.key+' rubble '+i,tag:'rubble'})));});
+  if(!MP.FAMILY[p[0]])return;MP.heaps(MP.FAMILY[p[0]],p[1]).forEach((H,i)=>KRUBBLE.walkTris(H,4).forEach(t=>W.poly({pts:t.map(q=>[m.x+q[0]*c+q[1]*n,m.z-q[0]*n+q[1]*c,q[2]]),name:m.key+' rubble '+i,tag:'rubble'})));});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
   W.poly({pts:o.g.userData.outline.map(p=>{const q=T(p);return [q[0],q[1],y];}),name:o.key+' L'+o.k,tag:'storey'});
   o.g.userData.stairs.forEach(f=>{const a=T(f.a),b=T(f.b);W.strip({a:[a[0],a[1],f.a[2]],b:[b[0],b[1],f.b[2]],w:f.w,name:'a stair',tag:'stair'});});
   o.g.userData.landings.forEach(l=>{W.poly({pts:[[l.x0,l.z0],[l.x1,l.z0],[l.x1,l.z1],[l.x0,l.z1]].map(p=>{const q=T(p);return [q[0],q[1],l.y];}),name:'a landing',tag:'stair'});});
   o.g.userData.blocks.forEach(p=>{const q=T(p);W.block([q[0]-.09,q[0]+.09,q[1]-.09,q[1]+.09,y,y+3],'wall');});});};
 MP.openStorey=function(key,k,x,z,yaw){yaw=yaw==null?0:yaw;const F=MP.FAMILY[key];if(MP.open.some(o=>o.key===key&&o.k===k&&o.x===x&&o.z===z))return;
- const g=MP.drawStorey(F,k);g.position.set(x,0,z);g.rotation.y=yaw;scene.add(g);MP.open.push({key,k,g,x,z,yaw});while(MP.open.length>MP.LIVE)MP.closeOne();MP.walkSync();};
+ const g=MP.drawStorey(F,k);g.position.set(x,0,z);g.rotation.y=yaw;if(MP.shadow)MP.shadow.cast(g);scene.add(g);MP.open.push({key,k,g,x,z,yaw});while(MP.open.length>MP.LIVE)MP.closeOne();MP.walkSync();};
 MP.closeOne=function(){const o=MP.open.shift();if(!o)return;scene.remove(o.g);o.g.traverse(m=>{if(m.geometry&&!m.isInstancedMesh)m.geometry.dispose();});};
 MP.closeStoreys=function(){while(MP.open.length)MP.closeOne();MP.walkSync();};
 // going in: a camera inside a hero's skin opens the storey it stands on and the two either side, a camera that left closes them. Nothing runs for a tower nobody is in
-MP.heroAt=function(e,m0){const mg=m0==null?0:m0;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
+MP.heroAt=function(e,m0){const mg=m0==null?0:m0;for(const g of MPS.live){const m=g.userData.mp;if(!m||!MP.FAMILY[m.key.split('.')[0]])continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
   if(F.core.kind==='round'?Math.hypot(lx,lz)<MP.spindleR(Math.min(e.y,222))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
 MP.levelAt=function(F,y){let k=0;F.levels.forEach(L=>{if(y>=L.y-.1)k=L.k;});return k;};
-MP.enterTick=function(){const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;/* 3 m out: the storey opens as the walker reaches a door, so its leaves part onto the lobby, not onto the hollow of a hero */
+MP.enterTick=function(){if(MP.cut&&MP.cut.on)return;const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;/* 3 m out: the storey opens as the walker reaches a door, so its leaves part onto the lobby, not onto the hollow of a hero */
  const e=camera.position,H=MP.heroAt(e,3);if(MPS.mode&&MP_CFG[MPS.mode].storey&&!MP.entered)return;
  /* a ruin opens only the storeys under its standing skin (MP.ruin: a fallen tower none) */
  const k0=H?MP.levelAt(H.F,e.y):0,L0=H?H.F.levels[k0]:null;if(!H||L0.y+L0.h>MP.ruin(H.F,H.m.key.split('.')[1]).skin+.01){if(MP.entered){MP.entered=null;MP.closeStoreys();}return;}const key=H.F.id,k=k0,id=key+'@'+H.m.x+','+H.m.z+'#'+k;if(MP.entered===id)return;MP.entered=id;MP.openStorey(key,k,H.m.x,H.m.z,H.m.yaw);};
 // the lift: to storey k of the hero the camera is in, or the nearest: stand at the core's door and walk from there
-MP.goStorey=function(k){const e=camera.position;let H=MP.heroAt(e);if(!H){let b=null,bd=1e9;for(const g of MPS.live){const m=g.userData.mp;if(!m)continue;const d=Math.hypot(e.x-m.x,e.z-m.z);if(d<bd){bd=d;b=m;}}if(!b)return false;H={m:b,F:MP.FAMILY[b.key.split('.')[0]]};}
+MP.goStorey=function(k){const e=camera.position;let H=MP.heroAt(e);if(!H){let b=null,bd=1e9;for(const g of MPS.live){const m=g.userData.mp;if(!m||!MP.FAMILY[m.key.split('.')[0]])continue;const d=Math.hypot(e.x-m.x,e.z-m.z);if(d<bd){bd=d;b=m;}}if(!b)return false;H={m:b,F:MP.FAMILY[b.key.split('.')[0]]};}
  const F=H.F,m=H.m,sk=MP.ruin(F,m.key.split('.')[1]).skin,top=F.levels.filter(L=>L.y+L.h<=sk+.01).length-1;if(top<0)return false;k=Math.max(0,Math.min(top,k));const L=F.levels[k],c=Math.cos(m.yaw),n=Math.sin(m.yaw),st=MP.storey(F,k),P=F.core.kind==='round'?[MP.coreR(F,k)+1,0]:[0,0],x=m.x+P[0]*c+P[1]*n,z=m.z-P[0]*n+P[1]*c;
  MP.closeStoreys();MP.openStorey(F.id,k,m.x,m.z,m.yaw);MP.entered=F.id+'@'+m.x+','+m.z+'#'+k;MP.nextEnter=performance.now()+800;const C=HOSTED.cam;C.walkAt=[x,z,L.y];HOSTED.ctl.target.set(x,L.y+HOSTED.ctl.eye,z);HOSTED.ctl.walk=true;HOSTED.ctl.phi=Math.PI/2+.05;HOSTED.ctl.theta=(F.core.kind==='round'?Math.PI:-Math.PI/2)+m.yaw;return true;};
 MP.ride=function(k){const H=MP.heroAt(camera.position);if(!H||!HOSTED.ctl.walk)return MP.goStorey(k);const F=H.F,m=H.m,c0=MP.levelAt(F,camera.position.y-HOSTED.ctl.eye+.2),sk=MP.ruin(F,m.key.split('.')[1]).skin;k=Math.max(0,Math.min(F.levels.filter(L=>L.y+L.h<=sk+.01).length-1,k));if(k===c0||k<0)return false;
