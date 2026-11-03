@@ -74,7 +74,7 @@ if(SKEY==='coulee'){const Gc=SITE.gill,pts=[];for(let x=TERR.R*1.05;x>=-TERR.R*1
  GD.mesh.userData.inspectLabel='Brant-Fell Gill (between outbursts)';
  spring('vpool','A hot pool by the geyser',SITE.vents[1].x,SITE.vents[1].z,10,terrainH(SITE.vents[1].x,SITE.vents[1].z)+.1,.8,'iron');
  W_OUT.geyser=geyser(SITE.geyser,'A geyser where the Gill meets the warm ground (vent 90)');
- REGISTER({name:'Brant-Fell Gill\'s bed (the outburst floods)',x:0,z:L.gz(0),y:L.bedY(0)-Gc.bed-2,r:2600,h:16,tags:{hazard:{kind:'flood',danger:.7}}});}
+ REGISTER({name:'Brant-Fell Gill\'s bed (the outburst floods)',x:0,z:L.gz(0),y:L.bedY(0)-Gc.bed-2,r:2600,h:16,tags:{hazard:{kind:'drown',danger:.7}}   /* the outburst flood: core/tags has no 'flood' kind */});}
 if(SKEY==='gjar'){const M=SITE.master,BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1];
  // the gja's floor water: gin-clear meltwater and warm seepage over the dropped blocks, where Verdigris Beck rises
  BIGW=WATER.open({name:'The gja\'s water (the source of Verdigris Beck)',level:M.pool,swell:SWELL,field:0,bounds:BOX,bed:terrainH,bedCell:6,mask:maskOf(BOX,6,(x,z)=>L.water(x,z)>-1e8)});
