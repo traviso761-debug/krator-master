@@ -11,7 +11,8 @@ the lip down: depth 0 is the lip's last couplet.
 |---|---|
 | `35b-core-lamina.js` | `[G data]`: `KSTRATA.lamina(o)`, `KSTRATA.laminaLoad(json)`, `KSTRATA.LAMINA` (the countries and the marker kinds) |
 | `host/35b-core-lamina-shade.js` | `[G shader]`: `KSTRATA.laminaShade(L, {THREE, res})`, the bake as a data texture and `laminaColor(depth, px)` in GLSL |
-| `test-lamina.js` | `node core/terrain/test-lamina.js`: 32 checks, each with a negative |
+| `test-lamina.js` | `node core/terrain/test-lamina.js`: every check with a negative, and the golden file `klamina.gd` is held to |
+| `klamina.gd`, `klamina_test.gd`, `golden-lamina.json` | the GDScript twin (`KLamina`) and its golden test |
 
 ```
 const L = KSTRATA.lamina({seed, H, rate (.0003), yearD (KCLOCK.YEAR, 365), wet {at 200, days 40, k 2.2} | false, jitter (.15),
@@ -47,4 +48,6 @@ the foot throws: a pipe too young to hold it should not be given it.
 **Checked:** `test-lamina.js`, and on SwiftShader (headless Chromium, r128): the GLSL compiles and the pixels equal
 `L.shade` at the same depths (16 rows of a 60 m column, worst 0 of 255). **Not judged:** no shot on a real pipe; the
 couplet's phase is depth over its thickness, not the walk's count, so the stripe the eye sees and `L.at`'s half can differ
-inside one couplet. **Godot:** no twin yet; the export is the record and the year walk ports bit for bit (`KRAND.hash`).
+inside one couplet. **Godot:** `klamina.gd` (`class_name KLamina`, `from_export`, `at`, `depth_of`, `bake`), held to `golden-lamina.json` (written by
+`test-lamina.js --write`) by `klamina_test.gd`: 243 depths, 121 days and 2,048 bake bytes, worst difference 0.0 on Godot 4.7.2
+(`godot --headless --path godot --script res://tests/terrain/klamina_test.gd`; `godot/tools/sync_core.py` copies them).

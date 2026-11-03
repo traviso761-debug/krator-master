@@ -273,6 +273,24 @@ when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms
 to `WATER.wetGround(mat, o.wet)` (porosity, puddles, ripples). The terrain workstream's KHORIZON reads the sky's `uSunDir`: a stable name. core/biome's foliage and grass
 sway can read the travelling gusts with `ATMOS.windGLSL()` and `ATMOS.windUniforms(sh.uniforms)` (R8).
 
+## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
+
+**`ATMOS.smokeGroups`** (`fx/89-atmos-fx-smokegroups.js`, `test-smokegroups.js`): one `ATMOS.smoke` cloud a group, each with its own
+strength, so the gills' steam follows the breath, a fumarole's stays steady and a disc's follows the night's work on one page.
+`const G = ATMOS.smokeGroups({breath: {emitters, k: 0}, vents: {emitters, n: 6, k: .6}})`; each frame `G.set('breath', B(t))`. The
+strength multiplies every kind's preset alpha in that cloud (never compounded); the presets are untouched; the export carries a
+`smokeGroups` record for Godot (the group's GPUParticles3D alpha times the same scalar).
+
+**`ATMOS.shimmer`** (`fx/89-atmos-fx-shimmer.js`, `test-shimmer.js`, `check_shimmer.py`): the heat shimmer over warm ground (the
+Hearths' section 12, the Stills' basins). A post pass for `core/host`'s `o.draw` slot: the scene drawn to a target with its depth,
+each pixel over hot ground (a KTHERM bake) taking its colour from a little below and beside it, wavering upward, stronger with
+the heat and with distance (`near` 6 m to `far` 90 m), times a master `S.k` the kit sets (by day, in the work's hours). The sky
+does not shimmer. `const S = ATMOS.shimmer({renderer, field: H.bake({box, cell: 8}), t0: 25, t1: 70})`, then
+`KHOST.start({..., draw: S.draw})`. `ATMOS.shimmerK(F, x, z, d)` is its strength for a probe and Godot. **Checked** on SwiftShader:
+5,801 pixels move over the hot patch, none outside it and none in the sky. **Not judged:** no look at a real station's
+ground; its target is not multisampled (a page that relies on MSAA loses it under the pass); its wavering is a GLSL value noise
+(a look, not placement, so not on KRAND).
+
 ## Tags
 
 The module registers nothing itself, because a host's registry is its own. The Iziz city adds REG entries for what it

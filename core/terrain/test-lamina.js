@@ -1,5 +1,6 @@
-// node core/terrain/test-lamina.js Ã¢â‚¬â€ the lamina column (35b-core-lamina.js, KSTRATA.lamina): a breath pipe's day-rings, each check
+// node core/terrain/test-lamina.js — the lamina column (35b-core-lamina.js, KSTRATA.lamina): a breath pipe's day-rings, each check
 // with a broken input that must fail.
+// --write rewrites golden-lamina.json, which klamina.gd is held to.
 'use strict';
 const fs=require('fs'),path=require('path');
 global.window=global;
@@ -80,4 +81,14 @@ const far=L.shade(12.345,.05,B),near1=L.shade(12.345,1e-6,B),near2=L.shade(12.34
 ok('from afar the couplets blend; close to, they part',Math.abs(far[0]-B.data[k]/255)<1e-9&&Math.abs(near1[0]-near2[0])>.01,Math.abs(near1[0]-near2[0])<1e-6);
 ok('shade wants a bake',throws(()=>L.shade(1,1,{})),false);
 
+
+// ---- the golden file for klamina.gd (--write rewrites it)
+const gL=K.lamina({seed:31,H:20,country:'white',wet:{at:150,days:30,k:2.5},markers:[{kind:'glass',name:'g1',age:30},{kind:'thin',age:80,years:12},{name:'ash',depth:3.3,th:.01,colour:'#303030'}],died:77});
+const gD=[];for(let k=0;k<240;k++)gD.push(+(k*20/239).toFixed(6));gD.push(0,20,19.9999);
+const pick=p=>p&&{year:p.year,yearDay:p.yearDay,day:p.day,daysAgo:p.daysAgo,phase:p.phase,half:p.half,wet:p.wet,layer:p.layer,marker:p.marker,thick:p.thick,colour:p.colour};
+const gDays=[];for(let k=0;k<120;k++)gDays.push(Math.floor(k*gL.days/120));gDays.push(gL.days-1);
+const golden={lamina:gL.export(),years:gL.years,days:gL.days,firstDay:gL.firstDay,depths:gD,at:gD.map(z=>pick(gL.at(z))),dayList:gDays,depthOf:gDays.map(x=>gL.depthOf(x)),bakeRes:.05,bake:Array.from(gL.bake({res:.05}).data)};
+const gF=path.join(__dirname,'golden-lamina.json'),gJ=JSON.stringify(golden);
+if(process.argv.includes('--write')){fs.writeFileSync(gF,gJ);console.log('wrote golden-lamina.json');}
+ok('golden-lamina.json is what the module gives (--write rewrites it)',fs.existsSync(gF)&&fs.readFileSync(gF,'utf8')===gJ,false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
