@@ -1,9 +1,27 @@
-# Money in the sim: research and a proposal (2026-11-02, not built)
+# Money in the sim: research and a proposal (2026-11-02, not built; the owner's answers 2026-11-03)
 
 The owner asked (2026-11-02) for suggestions on implementing and balancing money in the sim, after crime and the
 thieves' guild showed what is missing without it: a pocket picked takes nothing, a fence pays nothing, the guild's stash
 goes nowhere, and a person's wealth is a fixed number by class. This is a proposal for the owner's answers, not a plan of
 record. Sources are at the end.
+
+## 0. The owner's answers (2026-11-03)
+
+1. **Currency: each nation has its own** (lore: LORE.md §6.2 and the open questions). **The Izani Talent is widely
+   accepted by caravaneers and traders, and the player's purchases are made in it.** So the sim keeps an account per
+   holder in its nation's currency, and a rate from each currency to the Talent: locals pay one another in their own
+   money; a caravan, a ship's trader and the player pay in Talents, changed at the rate. The isles' own money is still to
+   be named (proposed: Kautoan shell money; see section 2, M0).
+2. **Class follows profession, not money.** But a person may **rise one station** when its resources are adequate:
+   worker to merchant, merchant to merchant prince, merchant prince to true noble. A rise is a change of profession
+   (a worker opens a shop; a merchant takes up a trading house), so the money is what makes the move possible, and the
+   class follows the new work.
+3. **Who employs** (asked: the advantages and disadvantages of each; answered in section 2a). In the player's towns
+   the player faction will be the main employer, with NPC shopkeepers and others who come to take up residence.
+4. **Taxes: an excise on imports and exports for now**, perhaps more later (noted in TODO.md, "Features", to revisit when
+   things are more fleshed out). **Player settlements in a nation's core territory pay that nation monthly tribute once
+   they reach a certain size.**
+5. **The player: all of the above** (buys from the guild's stash, sells to shops, is paid bounties).
 
 ## 1. What the research says
 
@@ -41,12 +59,16 @@ record. Sources are at the end.
 
 ## 2. A proposal for Krator
 
-**M0. Accounts and the books (no prices yet).** Money is a good of the ledger with a unit (the isles: a strand of shell
-money, `som`) and, for the first time, owners other than the settlement: households, workplaces, the town's treasury
+**M0. Accounts and the books (no prices yet).** Money is a good of the ledger with a unit, one currency a nation (the
+Talent the Empire's and the trade's; the isles' money proposed as Kautoan shell strings, its name for the owner) and,
+for the first time, owners other than the settlement: households, workplaces, the town's treasury
 (its chief's house), the guild, the ships from beyond, the player. An account is `{owner id, settlement, balance}`,
 integers in the smallest unit, keyed by stable ids, edits as deltas by id (core/city's rule), so Godot reads the same.
 Every payment is a transfer between two accounts in one call (`SIM.pay(from, to, n, why)`); only `SIM.mint` (a faucet)
-and `SIM.burn` (a sink) change the total, each booked by kind. The ledger's check grows a line: per settlement, money
+and `SIM.burn` (a sink) change the total, each booked by kind. **Exchange** (the owner's answer 1): a payment between
+accounts of two currencies goes through a money changer at the rate to the Talent (`SIM.CURRENCY[c].talent`), less a
+small spread, the spread booked to the changer; a nation's rate is a number for now, floating later with its trade
+balance. The ledger's check grows a line: per settlement, money
 opening + minted - burned + in - out = closing, with every route leg reconciled (as goods are). A monthly report, the
 EVE way: money supply, faucets and sinks by kind, a price index, velocity.
 
@@ -54,8 +76,12 @@ EVE way: money supply, faucets and sinks by kind, a price index, velocity.
 times a wage, plus its inputs': the governor already knows the chains). The town's treasury pays each worker a wage a
 worked hour (one employer first, so no firm goes bankrupt while the rest is tuned); a household pays for what it buys
 from the shop's till, the shop passes it to the maker. Check the circular flow: wages paid = spending + saving, over a
-week, in each town. A person's `wealth` (now fixed by class) becomes its household's savings, smoothed, with its class
-as the starting point, so the treats, meals out and clothes follow what it has.
+week, in each town. **Class stays by profession** (the owner's answer 2): what a household spends follows its savings
+within its class's band (the treats, meals out and clothes), and the class moves only with a **rise of one station**:
+when a household holds enough (a threshold by station, in months of the next station's cost of living) for long enough,
+one of its working adults may change profession upward when there is room (a vacant shop for a worker who becomes a
+merchant; a trading house for a merchant prince; a title, granted, for a true noble), paying what the move costs (the
+shop's stock, the house, the fee for the title). One station a lifetime, so a family climbs over generations.
 
 **M2. Prices that move.** Each settlement keeps a price per good: its base (the labour cost) times
 `(target / position) ^ k`, clamped (say 0.5 to 2 times base), smoothed over a few days. The governor already computes a
@@ -74,9 +100,14 @@ thief's); a burglar takes coin and goods; the fence pays a share of the town's p
 and sells to the player at a markup; a fine (to the treasury) can stand in for jail for small crimes. Stolen coin is the
 only money that has to exist as a thing (a purse in the drawn town); everything else stays a book entry.
 
-**M5. Taxes, tribute, the polity.** A tax on wages or sales to the treasury, which pays the soldiers, the officials and
-the watch (today the treasury is implicit); tribute from Valapo to Kautoa, or from both to the polity's seat; temple
-offerings and ceremonial hoards as sinks that people want (the shell money's own sink).
+**M5. Excise and tribute** (the owner's answer 4). **For now only an excise**: a share of the value of every import and
+export, paid by the carrier to the treasury of the settlement it lands at or leaves (the lakatoi, the villages' carts
+crossing into a town, the ships from beyond), at a rate by nation and perhaps by good. Within one polity (Valapo and
+Kautoa) the owner says whether it applies. **Tribute**: a player settlement inside a nation's core territory (the
+political polygons core/camp's ranges are cut from) pays that nation a monthly tribute once it passes a size (people,
+or buildings), a fixed sum or a share of its excise and trade, in Talents; unpaid, the nation's relation falls (and,
+later, it sends someone to collect). Wage, sales and land taxes, tolls and harbour dues wait (TODO.md). Temple offerings
+and ceremonial hoards stay the sinks people want.
 
 **Balancing and proof (each phase, with negatives, as the economy's checks):** the money ledger balances in every
 settlement and on every route; the money supply per head stays in a band over 90 fast-forwarded days; the price index
@@ -88,15 +119,46 @@ runs) before any tuning is believed.
 hauls (Dwarf Fortress); per-citizen haggling (BazaarBot's beliefs for the merchants only, if at all); floats in balances
 (integers, with any rounding booked); a closed loop with no drain.
 
-## 3. Questions for the owner
+**The player** (the owner's answer 5): an account in Talents; buys from the guild's stash (at a markup on what the fence
+paid) and from shops (changed into the local money at the rate), sells to shops (from their tills: a shop never buys
+what it cannot pay for, nor at a price below a floor), and is paid bounties. The bounties are a faucet (EVE's largest),
+so they are counted in the report from the first one and matched by sinks the player wants (gear, land, the tribute).
 
-1. **The currency.** Shell money (`som`) on the isles, Voth's coin elsewhere, foreign coin from the ships with an exchange
-   rate? Or one currency for the whole crater to start?
-2. **Wealth.** Should a person's class follow its savings (people can rise and fall), or stay fixed with money on top?
-3. **Who employs.** One employer per town (the treasury) to start, or workplaces as their own accounts from the start
-   (bankruptcy, as BazaarBot replaces a failed trader with the most profitable trade)?
-4. **Taxes and tribute**: wanted on the isles (Valapo to Kautoa), and who is paid from them?
-5. **The player**: buys from the guild's stash, sells to shops, is paid bounties (a faucet to watch)?
+## 2a. Who employs: the two ways, and a recommendation (asked 2026-11-03)
+
+**One employer per town (the treasury pays every wage and owns every workplace's takings).**
+- For: simple and stable: one account to balance, no firm can fail, nobody goes unpaid while prices are being tuned; easy
+  to prove (wages paid = what the treasury took in from sales, excise and tribute, plus its reserve); it fits a
+  command economy (Iziz's state works, a chief's household on the isles) and the player faction running its own town.
+- Against: no shop or workshop has a reason of its own to do well; a bad price hurts nobody in particular; no
+  bankruptcies, no rich merchant, nobody to rise from worker to merchant (the owner's answer 2 needs owned shops); the
+  NPC shopkeepers who come to live in the player's towns have nothing of their own to run.
+
+**Every workplace its own account (it sells, buys its inputs and pays its wages).**
+- For: prices mean something (a shop that overcharges loses custom, a smith short of iron earns less); merchants and
+  merchant princes exist as people with money; the climb of a station has something to climb to (a shop to buy); NPCs
+  who move into a player's town open their own shops; the player can buy, own or tax a business.
+- Against: more state and more tuning; a workplace can run out of money and stop paying (the BazaarBot problem: it
+  needs a rule for failure: close, sell, be replaced by the trade most in profit); a bad first price can empty a
+  town's tills in days; harder to prove the books at first.
+
+**Recommendation: both, as one mechanism.** Every workplace gets an account from the start, and every account an
+**owner** (the town's treasury, a noble house, a merchant, a temple, the player faction). To begin, the treasury owns
+every workplace in a town, so it behaves as one employer and is as easy to tune (the treasury covers a workplace's
+losses from its reserve); then ownership is handed out: shops to their merchants, trading houses to merchant princes,
+a vacant shop bought by a worker who rises. In a player's town the player faction owns what it built and pays its
+workers, and an NPC shopkeeper who moves in owns its shop. A failing owned workplace first draws on its owner, then
+closes and is put up for sale (the rule for failure, needed only once owners are independent). This is also Godot's
+shape: an account and an owner per workplace record, edits as deltas by id.
+
+## 3. Questions for the owner (answered 2026-11-03: section 0; still open below)
+
+1. **The isles' money:** Kautoan shell strings (proposed), or another? Its name, and its rate to the Talent.
+2. **The employer question**: the recommendation in section 2a (accounts per workplace, owned by the treasury to start)?
+3. **Falling a station:** can a household that loses its means fall back (a bankrupt merchant to worker), or only rise?
+4. **Excise inside a polity:** do the lakatoi's loads between Kautoa and Valapo, and the villages' carts into their
+   town, pay the excise, or only trade across a border and the ships from beyond?
+5. **Tribute:** the size at which a player settlement starts paying, and how much (a fixed sum, or a share of its trade).
 
 ## Sources
 
