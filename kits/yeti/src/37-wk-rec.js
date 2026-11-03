@@ -11,7 +11,7 @@ let WKOFF=0;   /* set while a helper draws solid masses it registers itself (ieS
 const _wkEmit0=emit;
 emit=function(mk,geo,lm,col,uvm){_wkEmit0(mk,geo,lm,col,uvm);
  if(WKOFF||PLACE_DRY||!lm||geo.type!=='BoxGeometry'||typeof KWALK==='undefined'||!CURREC||(CURREC.cls!=='building'&&CURREC.cls!=='feature'))return;
- _wkM.copy(CM).multiply(lm);KWALKBOX.add(KWALK,_wkM.elements,{tag:'box:'+CURKEY});};
+ _wkM.copy(CM).multiply(lm);KWALKBOX.add(KWALK,_wkM.elements,{tag:'box:'+CURKEY,ground:CURREC.y});};   /* ground: a box standing on the placement's ground may be a podium (core/walk/box) */
 /* a rectangle cx,cz (w across, d deep) at local height y, as a floor in the current frame */
 function wkPad(cx,cz,w,d,y){
  if(PLACE_DRY||typeof KWALK==='undefined'||!CURREC||(CURREC.cls!=='building'&&CURREC.cls!=='feature'))return;
