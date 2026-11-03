@@ -62,8 +62,8 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38a-core-seat.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.join(CORE,'terrain')
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit. The final rebuild: 31j the limbs' joints (BIO.flareJoin),
-# 33 the fungoid parts (the serpent stalk's caps), 34 the octahedral impostors, 41 the environmental fields
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+# 31b the leaves on stems (20-core-kit reads BIO.leafOn/leafQ behind o.leaf: check_assembly's NEEDS), 33 the fungoid parts (the serpent stalk's caps), 34 the octahedral impostors, 41 the environmental fields
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.join(CORE,'biome')
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']

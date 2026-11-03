@@ -17,7 +17,7 @@ const VIEWS={};
  VIEWS['The cirque tarn']=[T.x-T.r*1.6,RAN.TARNL+18,T.z-T.r*1.6,T.x+T.r*.4,RAN.TARNL+30,T.z+T.r*.8];
  v('The glacier',-100,1700,12,0,2900,60);
  /* the vents' plumes, bearing 35 and 71 degrees, over the north-eastern ranges, from high on the shoulder */
- {const x=1300,z=2000,az=53*Math.PI/180;VIEWS['The vents\' plumes']=[x,G(x,z)+20,z,x+Math.sin(az)*4000,G(x,z)+520,z-Math.cos(az)*4000];}
+ {const x=1300,z=2000,sx=.7986,cz=.6018;VIEWS['The vents\' plumes']=[x,G(x,z)+20,z,x+sx*4000,G(x,z)+520,z-cz*4000];}   /* toward az 53 (sin, cos of it) */
  /* a dwarf willow: the first of the ET band's near the tarn */
  {const s=window._station;VIEWS['Dwarf frost willows']=[T.x+T.r*1.5,RAN.TARNL+2.2,T.z+T.r*.2,T.x+T.r*1.2,RAN.TARNL+.2,T.z+T.r*.8];}
 })();

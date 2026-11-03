@@ -6,7 +6,16 @@ Mediterranean at once. The model's `xanadu` biome polygon (128,856 km²) is thre
 The page as built stays station 1. Stations follow the Throne's and Korona's pattern (`stations/<name>/`,
 `python3 build.py --station <name>`).
 
-**Status: plan, awaiting the owner.**
+**Status: built (pair 6 of the final rebuild, 2026-11-03).** Five stations, each with its own `stations/<name>/NOTES.md` (the gills' in
+`biomes/gills/NOTES.md`); `python3 build.py --station <name>` -> `dist/xanadu-<name>.html`.
+
+| Station | What is on the page | For the owner's eye |
+|---|---|---|
+| `cloud` | a windward face 1,450 m to a crest at ~2,900 m, seven ravines (a stream with three falls), the fog belt at 1,900-2,650 m; cousins `cloudtrumpet`, `cloudhaze`, `mistfern` (beard and moss loads), oidong's cherry as `cloudcherry` (deeper rose) and its mist tea read in place; dry shoulders and terraces behind the crest | the belt's density, the cherry's rose, the fern forest's density |
+| `descent` | the Vale's lake (5.1: -717 m) at its outlet, a 250 m cataract into a 72 m pool, a 65 m lower fall, Ālph (its frozen name, r070) down to the floor's lake (-1,706 m, the page datum) with its plume and the reflections switch; the Vale's species follow the river down; `45a-host-descent-land.js` is the ground block other stations can read | the cataract's spray, the step's amphitheatre against 5.1 (px 635-670, 1230-1265) |
+| `ranges` | 3,000 m to ~6,700 m in 6.8 km: the conifer belt (`agatepine`, the agate tree's banding on a pine, `mistspruce`, krummholz), Ālph's amphitheatre (575,1198) with the conduit spring of `tube_xanadu_nw_09` and a 320 m fall, fell-field and a cirque tarn, the glacier on `ice.glacier`, snow that lies; `dwarfwillow` (EXCHANGES.md xanadu->godthrone) keyed for the Godthrone | the vents' plumes stand NE on the sky (the plan said SE: check the bearing against 5.1) |
+| `gills` | Ālph's head, the White Gills (Wāiṭ Gīl): 785 pipes (`KSTACKS` chimneys with `KSTRATA.lamina`, 244 iced), collars, fringes, bellows pads and beads on the breath, throat lamps on the Suq, steam by `ATMOS.smokeGroups`, Ālph-bi Bhlo (the fountain forced on the Bhlo), KHAZ grab and gas; `biomes/gills` holds the shared life for catch and godthrone to read in place | the breath's timing, the White dress; five texture sets owed (`biomes/gills/NOTES.md`) |
+| `floor` | the Rift floor's easternmost lake (5.1 basins.json: 909,1556, -1,362 m, salt), the cataract a landmark on the 1.9 atm sky; tall Vale cousins (`BIO.kin('xanadu.*')` x1.35-2.2) against the Rift's own species (`BIO.kin('rift.*')`) across a noise-warped front ~900 m wide | the front's width and mix; the Rift's parasol and violet dome trees left out (their crowns float 19%: owed to the Rift's turn) |
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `tools/scale-model/survey_biomes.py`)
 

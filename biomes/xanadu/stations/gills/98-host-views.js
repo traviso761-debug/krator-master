@@ -8,15 +8,15 @@ const VIEWS={};
  const live=SG.L.gills.filter(g=>g.alive).sort((a,b)=>(b.a1-b.a0)*b.r-(a.a1-a.a0)*a.r)[0];
  if(live){const a=(live.a0+live.a1)/2,x=live.c[0]+Math.cos(a)*live.r,z=live.c[1]+Math.sin(a)*live.r,ox=Math.cos(a)*(live.w*.5+70),oz=Math.sin(a)*(live.w*.5+70),ta=a+.035;
   VIEWS['A breathing gill at the Bhlo (the out-breath)']=[...at(x+ox+40*Math.cos(a+1.57),z+oz+40*Math.sin(a+1.57),28),live.c[0]+Math.cos(ta)*live.r,G(x,z)-10,live.c[1]+Math.sin(ta)*live.r];
-  VIEWS['The same gill on the Suq (the in-breath: set the hour 6 h on)']=[...at(x-ox*.6,z-oz*.6,9),x,G(x,z)-live.d*.6,z];}
+  VIEWS['The same gill on the Suq (the in-breath, the hour 6 h on)']=[...at(x-ox*.6,z-oz*.6,9),x,G(x,z)-live.d*.6,z];}
  // the pipes standing out of the glacier's edge: the highest standing pipe, from below it
  const hi=GILLS_DRAW.pipes.filter(o=>o.p.state==='standing').sort((a,b)=>b.p.y0-a.p.y0)[0];
  if(hi){const cx=hi.p.x-D[0]*120,cz=hi.p.z-D[1]*120;VIEWS['Ice pipes at the glacier\'s edge']=[...at(cx,cz,18),hi.p.x,hi.p.y0+hi.p.H*.6,hi.p.z];}
  // a pipe field: the closed gill's pipes, standing, broken and fallen
  const dead=SG.L.gills.find(g=>!g.alive);if(dead){const a=(dead.a0+dead.a1)/2,x=dead.c[0]+Math.cos(a)*dead.r,z=dead.c[1]+Math.sin(a)*dead.r;
-  VIEWS['A pipe field (Phlū-phīlḍ): a closed gill']=[...at(x+Math.cos(a)*90,z+Math.sin(a)*90,35),x,G(x,z)+5,z];}
+  VIEWS['A pipe field (Phlū-phīlḍ), a closed gill']=[...at(x+Math.cos(a)*90,z+Math.sin(a)*90,35),x,G(x,z)+5,z];}
  // Alph's pool in the amphitheatre, the fountain forced up at the Bhlo
- {const h=SG.HEAD,cx=h[0]-D[0]*360+P[0]*60,cz=h[1]-D[1]*360+P[1]*60;VIEWS['Alph\'s breath: the fountain forced at the Bhlo']=[cx,SG.POOLY+70,cz,h[0],SG.POOLY+45,h[1]];}
+ {const h=SG.HEAD,cx=h[0]-D[0]*360+P[0]*60,cz=h[1]-D[1]*360+P[1]*60;VIEWS['Alph\'s breath, the fountain forced at the Bhlo']=[cx,SG.POOLY+70,cz,h[0],SG.POOLY+45,h[1]];}
  // down the chasm to the wildwood at the foot
  {const h=SG.HEAD,cx=h[0]+D[0]*140,cz=h[1]+D[1]*140;VIEWS['Down Alph\'s chasm to the wildwood']=[cx,G(cx,cz)+40,cz,h[0]-D[0]*1800,G(h[0]-D[0]*1800,h[1]-D[1]*1800),h[1]-D[1]*1800];}
  // the breath meadow, white with lime, downwind of the gills
