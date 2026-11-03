@@ -213,6 +213,13 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   function doorway(D, x, z, inMax, outMax){ /* inside the door's corridor? returns signed distance (+ outside) or null */
     var nx=Math.sin(D.yaw), nz=Math.cos(D.yaw), s=(x-D.x)*nx+(z-D.z)*nz, u=(x-D.x)*nz-(z-D.z)*nx;
     if(Math.abs(u) < D.w/2-0.12 && s > -inMax && s < outMax) return s; return null; }
+  /* how far in a street door's corridor runs: 1.6 m, or on to where the room behind it starts (0.3 m into it) when that is deeper (a round
+     or tapering body sizes its room at the top of the taper, so the room can lie more than 1.6 m inside the door: the huts and the
+     tower houses, 2026-11-03). Cached on the fixture; the plan door is the one that names it */
+  function doorIn(b, P, D){ if(D._in!=null) return D._in; var d=P && P.doors.find(function(q){ return q.fixture===D.id; }), inD=1.6;
+    if(d){ var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw);
+      for(var t=0; t<=5; t+=0.05){ if(roomAt(P, 0, d.at[0]-nx*t, d.at[1]-nz*t, 0.32)){ inD=Math.max(1.6, t+0.3); break; } } }
+    D._in=inD; return inD; }
   function stairAt(P, lx, lz){ for(var i=0;i<P.stairs.length;i++){ var s=P.stairs[i], g=P.groups[s.group], f=g.frame, dx=lx-f.O[0], dz=lz-f.O[1], u=dx*f.U[0]+dz*f.U[1], v=dx*f.V[0]+dz*f.V[1];
       if(u>s.u0+0.08 && u<s.u1-0.08 && v>s.va-0.35 && v<s.vb+0.35) return { s:s, t:clamp((v-s.va)/s.run, 0, 1) }; } return null; }
   function roomAt(P, lvl, lx, lz, m){ for(var i=0;i<P.rooms.length;i++){ var R=P.rooms[i]; if(R.lvl===lvl && inPoly(R.poly, lx, lz, m)) return R; } return null; }
@@ -227,7 +234,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
       for(var i=0;i<bs.length;i++){ var b=bs[i], l=intToLocal(b,x,z); if(!bodyHit(b, l[0], l[1])) continue;
         /* inside a body: only through one of its doors, and only into a planned interior */
         var P=interiorPlan(b.id), ds=(b.doors||[]).map(function(id){ return FIX.byId[id]; });
-        for(var k=0;k<ds.length;k++){ var D=ds[k]; if(!D || D.to!=='interior' || D.style==='gate') continue; var sd=doorway(D, x, z, 1.6, 1.2);
+        for(var k=0;k<ds.length;k++){ var D=ds[k]; if(!D || D.to!=='interior' || D.style==='gate') continue; var sd=doorway(D, x, z, P ? doorIn(b, P, D) : 1.6, 1.2);
           if(sd===null) continue; if(!P) return null; if(D.style!=='open' && (D.open||0) < 0.55 && DOORS.mode!=='open') return { wait:true };
           if(sd < 0.0) return { bid:b.id, lvl:0, y:b.y+P.levels[0].y }; return { bid:null, lvl:0, y:Math.max(terrainH(x,z), D.y) }; }
         return null; }
@@ -243,7 +250,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     var R = roomAt(P2, lv, lc[0], lc[1], 0.32);
     if(R) return { bid:WALK.bid, lvl:lv, y:b2.y+R.y };
     if(intDoorOk(P2, lv, lc[0], lc[1])) return { bid:WALK.bid, lvl:lv, y:b2.y+P2.levels[lv].y };
-    if(lv===0) for(var e=0;e<(b2.doors||[]).length;e++){ var D2=FIX.byId[b2.doors[e]]; if(!D2||D2.to!=='interior') continue; var sd2=doorway(D2, x, z, 1.6, 1.4);
+    if(lv===0) for(var e=0;e<(b2.doors||[]).length;e++){ var D2=FIX.byId[b2.doors[e]]; if(!D2||D2.to!=='interior') continue; var sd2=doorway(D2, x, z, doorIn(b2, P2, D2), 1.4);
       if(sd2!==null){ if(D2.style!=='open' && (D2.open||0) < 0.55 && DOORS.mode!=='open') return { wait:true };
         return sd2 > 0.35 ? { bid:null, lvl:0, y:terrainH(x,z) } : { bid:WALK.bid, lvl:0, y:b2.y+P2.levels[0].y }; } }
     return null;
@@ -358,11 +365,11 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     /* the street doors, and a hand-written plan's doorways onto its court (the caravanserai's cells: INTERIOR_CUSTOM) */
     P.doors.forEach(function(d){ if(d.kind!=='exterior' && !(d.rooms && (d.rooms.indexOf('court')>=0 || d.rooms.indexOf('outside')>=0))) return;
       var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw), D=d.fixture ? FIX.byId[d.fixture] : null, g=P.groups[d.group];
-      /* the door step: from 1.8 m out to 1.6 m in, the corridor walkable() lets the walker through a door by (doorway(D, x, z, 1.6, ...)) */
-      var o=w2(d.at[0]+nx*1.8, d.at[1]+nz*1.8), s0=w2(d.at[0]+nx*1.4, d.at[1]+nz*1.4), i=w2(d.at[0]-nx*1.6, d.at[1]-nz*1.6), ys=D ? D.y : b.y+d.y,
+      /* the door step: from 1.8 m out to the corridor's end inside (1.6 m, or on to the room: doorIn), as walkable() lets the walker through */
+      var din=D ? doorIn(b, P, D) : 1.6, o=w2(d.at[0]+nx*1.8, d.at[1]+nz*1.8), s0=w2(d.at[0]+nx*1.4, d.at[1]+nz*1.4), i=w2(d.at[0]-nx*din, d.at[1]-nz*din), ys=D ? D.y : b.y+d.y,
           yi=b.y+(g && g.levels[0] ? g.levels[0].y : P.levels[0] ? P.levels[0].y : d.y);   /* the floor of the door's own group */
       if(!P.walls.some(function(Wl){ return (Wl.openings||[]).some(function(op){ return op.door===d.id; }); })) nogap++;   /* the shell drew no doorway for it */
-      W.strip({ a:[o[0], o[1], ys], b:[i[0], i[1], yi], w:Math.max(0.6, d.w), name:d.id, tag:'doorstep' }); starts.push([s0[0], ys+(yi-ys)*0.4/3.4, s0[1]]); });
+      W.strip({ a:[o[0], o[1], ys], b:[i[0], i[1], yi], w:Math.max(0.6, d.w), name:d.id, tag:'doorstep' }); starts.push([s0[0], ys+(yi-ys)*0.4/(1.8+din), s0[1]]); });
     /* a ladder rises 3 m in about one: walked in 0.1 m cells, a rung is within a step */
     /* r 0.15: Yuni's walker has no body, only margins (a door lets its centre within w/2 - 0.12 of the middle: a hut's 0.72 m mouth) */
     var res=W.reach(starts, { cell:ladder ? 0.1 : 0.15, step:0.45, r:0.15, h:1.7, margin:2 }), hit=new Set(res.reached);
