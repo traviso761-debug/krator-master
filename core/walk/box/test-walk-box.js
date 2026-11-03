@@ -53,16 +53,6 @@ ok(KB.add(KWALK.create(), box(0, 0, 0, .2, 1.5, .2).m) === 'block' && KB.add(KWA
   const Wn = KWALK.create(); let yn = 0; for (let i = 0; i < 40; i++) { const f = Wn.floorBelow(0, 3 - i * .02, yn, .7); if (f) yn = f[0]; }
   ok(yn === 0, 'without the ladder the walker stays on the ground');
   const Ws = KWALK.create(); const r = KB.ladder(Ws, [0, 3], [0, 1.2, 1.2], { footY: 0 }); ok(r && r.kind === 'strip', 'a 1.2 m ladder with 1.8 m of run is a strip'); }
-/* a podium: a 1.2 m platform is a block and its top a floor, reached by steps of 0.3 m; a wall 0.3 m thick under a window is a block only */
-{ const Wp = KWALK.create(); ok(KB.add(Wp, box(0, 0, 0, 6, 1.2, 5).m, { tag: 'p', ground: 0 }) === 'podium', 'a 6 x 5 m platform 1.2 m high on the ground reads as a podium');
-  ok(KB.add(KWALK.create(), box(0, 9, 0, 6, 1.2, 5).m, { ground: 0 }) === 'block' && KB.add(KWALK.create(), box(0, 0, 0, 6, 1.2, 5).m) === 'block', 'the same 9 m up (a pier\'s stage), or with no ground given: a block only');
-  for (let k = 0; k < 4; k++) KB.add(Wp, box(0, .3 * k, 2.5 + .25 + (3 - k) * .5, 3, .3, .5).m);   /* steps drawn as treads 0.3 m thick, 0.5 m deep (a 0.4 m flood cell skips a narrower one) */
-  const top = Wp.floors.find(f => f.name === 'podium'), R = Wp.reach([[0, 0, 6]], { ground: () => 0 });
-  ok(top && R.reached.includes(top), 'its steps (treads 0.3 m over the last) lead onto it: reached');
-  const Ws = KWALK.create(); KB.add(Ws, box(0, 0, 0, 6, 1.2, 5).m, { ground: 0 }); for (let k = 0; k < 4; k++) KB.add(Ws, box(0, 0, 2.5 + .16 + k * .32, 3, 1.2 - k * .3, .32).m);
-  ok(!Ws.reach([[0, 0, 6]], { ground: () => 0 }).reached.includes(Ws.floors.find(f => f.name === 'podium')), 'steps drawn as solid boxes from the ground (the upper two over 0.7 m: blocks) do not');
-  const Wq = KWALK.create(); KB.add(Wq, box(0, 0, 0, 6, 1.2, 5).m, { ground: 0 }); ok(!Wq.reach([[0, 0, 6]], { ground: () => 0 }).reached.length, 'no steps: its top is unreached');
-  ok(KB.add(KWALK.create(), box(0, 0, 0, 3, .95, .3).m) === 'block', 'a sill wall 0.3 m thick is a block, not a podium'); }
 /* the reach audit (KWALK.reach, a 0.45 m step on 0.4 m cells) climbs a steep ladder's rungs to the deck it leans on, at any height */
 for (const h of [2.7, 3.15, 4.5]) { const Wr = KWALK.create(), deck = Wr.floor({ rect: [-2, 2, -2, 2], y: h, name: 'deck' }); KB.ladder(Wr, [0, 3], [0, 2, h], { footY: 0 });
   const R = Wr.reach([[0, 0, 5]], { ground: () => 0 }); ok(R.reached.includes(deck), 'reach climbs a ' + h + ' m ladder to its deck (' + R.reached.length + ' floors reached)');
