@@ -258,6 +258,17 @@ them, the rubble of one tower); the cutter now tests the kit's nested and scaled
 crown stood whole over its ruins). The Redoubt 196 rooms, Sky A 1874 (105 storeys), the Honeycomb Block 501 (lodging: bedrooms at the skin,
 baths and stores inside); audited under `verify.py --assert` (hostChecks), the planner on synthetic plates in node.
 
+**The Ancients kit's buildings, batch 2** (the Apartments, the Reliquary, the Star Laboratory). A building of several parts now has several cores
+(`MP.floors`, 59): the storeys' cells taken together, by connected parts; in each, the square inside the most storeys in a row (its shaft rises
+from the ground to the run's top, its square made floor on the storeys under the run); the part with the longest run has the first core, another
+part one of its own if it has floor on one of the three lowest storeys (the Apartments' blocks, the Star Laboratory's wings), and a part with none
+(Sky A's office ring) is bridged. Every core has a door in the middle of each face, and the plans open each bay through the doors on its own faces
+(the stair's half the north, south and west; the lift's the north, south and east): a core never cuts its storey in two. The planner bands each
+part of a storey by its own depth (a thin block beside a deep one gets its own corridor), folds a pocket corridor into the room round it, lets a
+bridge land on a core's bay where the shaft stands alone on its square, and ends by putting a door through any wall between what is reached and
+what is not, then moves every room's doors onto its own outline for the furnisher. The Apartments 776 rooms (six cores), the Reliquary 521 (`labs`:
+workshops and offices at the skin, stores and meeting rooms inside), the Star Laboratory 124 (seven cores, one to a wing).
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

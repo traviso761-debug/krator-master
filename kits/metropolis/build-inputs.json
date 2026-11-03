@@ -203,7 +203,7 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "58757e0a43a4b03a488da72b1df9fe06898ee5a61a4a01732aa39c13cedec66a",
-    "kits/metropolis/PORT.md": "106a8359c9c22dbbe1a4a92d7653b5e317209dda375588bf7748248ce735c3f5",
+    "kits/metropolis/PORT.md": "b56a1b64d9a1c4ff5436c4dbc226bd26e6d9f1c29b5cfabd6f69050bb066f2de",
     "kits/metropolis/build.py": "0b0610f9f9bf5d694de9d51caa3e136ff16c3c0f543e0d46e771cd9edc4317d7",
     "kits/metropolis/src/00-head.html": "530d4e6f9428a73ff30c7a6cdb9aef50330a1cdcfc2a0f84b4becd5403de5530",
     "kits/metropolis/src/40-mp-records.js": "8c846530523e13de607d4f259fc9cd1f8cf29df03c655831c800b6c10f888a8a",
@@ -215,7 +215,7 @@
     "kits/metropolis/src/46-mp-designs.js": "f0523cf548ff9be72c3a6a76dfae5bad73da162427f2eb2b00999b9ca7ed4d99",
     "kits/metropolis/src/46b-mp-ancients.js": "02690506f3cafeb8488576e4a551f6d4f19fd2a4c6b367b8675d6fa97333273a",
     "kits/metropolis/src/46c-mp-planned.js": "a14644abd231513955f013fac1fc944e9c8e4756c5162a391dc7f87356c77664",
-    "kits/metropolis/src/46d-mp-gridplan.js": "6c2db8a48aaf46a5cd3a129231678a34e70cbe0ea5eb43e4e25cef22681c933f",
+    "kits/metropolis/src/46d-mp-gridplan.js": "87413e9d81fceb78bdec59f49d749eaf1e6d2f60f7c0d7e7c67d8d2192e9f962",
     "kits/metropolis/src/47-host-land.js": "9303d81756f3e2d6d71b562650096bbff9380da8245cf8aa8715036e2eefc28f",
     "kits/metropolis/src/50-mp-kit.js": "2d92c3af8b3eaebb2f1f023a04a34708f09dca565b25828fa17a9ff61e456c60",
     "kits/metropolis/src/52-mp-hero-spindle.js": "b3a4c43925fe714d40e2ab1593b67394fd4a569ba33e45dc70dbba1ca3cae31c",
@@ -225,10 +225,10 @@
     "kits/metropolis/src/56-mp-interiors.js": "bac20bf62385baaa3776aa77f543123697771986baa8ae4751d4837e5f32b011",
     "kits/metropolis/src/57-mp-debris.js": "71322a3c670dc60f96f782050d508aba70ec62da674b1b9d47794f344d072895",
     "kits/metropolis/src/58-mp-cutaway.js": "c96eb4379d1920d5918e0de4dbdfe2c010c62f607342f2d371ddd59ce291a0f2",
-    "kits/metropolis/src/59-mp-floors.js": "eee6186b6609bde3c379640fdfc81e306fbccea5765275c92ecb842f7ee24436",
+    "kits/metropolis/src/59-mp-floors.js": "9484044f7a6a671f6cca8d8b095af6dc2b8d1145679e994f98e8eec2d1ac08b7",
     "kits/metropolis/src/59b-mp-ruin-design.js": "f18daea20f3aba255cc491d7a7295c26f55368492931247a012bfe0c15aa7d6f",
     "kits/metropolis/src/60-mp-shell-host.js": "23c6b58af5db0e9d79b91c58f4a5a60e15797725110e4a081be881677c333edc",
-    "kits/metropolis/src/70-mp-stage.js": "7dfca49061754487897916ee620c8d76696203c1939f4e0e67ac369cf5945558",
+    "kits/metropolis/src/70-mp-stage.js": "4cb9d253bb03c1941fd1c48601671147f319d82befc2293f499ac32335338896",
     "kits/metropolis/src/89-host-sky.js": "07b08465959eb084e9570f512cc898ffbe324c882e1736fc995d70ce61301f16",
     "kits/metropolis/src/99-host-take.js": "2ebdce97484da6e2ab3194d568e136baae3678f4bde50e18bc22f98a7b3f8810",
     "kits/metropolis/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -270,14 +270,14 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/metropolis/build-manifest.json": "f81fde420cbc89fa8248fb62bf98e590016600ebe4109afb28f71d53c064cd4f",
-    "kits/metropolis/dist/metropolis.html": "53959826654ca8a287b95f9396493923bc83ab233a10997d742bb48bd7282ebc",
+    "kits/metropolis/build-manifest.json": "2df6ae40f35073889482aeaa5aac3e7e85326164ed21a9305cfa8059020583b3",
+    "kits/metropolis/dist/metropolis.html": "579850118cfbcb13172e8544d698d21e97dbe387ab07688822ccfde9d0ae75fa",
     "kits/metropolis/dist/metropolis.tex.ancients.js": "917e219ad93e6c385aae65f55e32623d99d156972a58ca0f29045f1e877ad307",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "787a345078b2fdf24fd065437aa2fdae071665d1e027ce216779f1dba8584e97"
    },
    "outputs_raw": {
-    "kits/metropolis/build-manifest.json": "f81fde420cbc89fa8248fb62bf98e590016600ebe4109afb28f71d53c064cd4f",
-    "kits/metropolis/dist/metropolis.html": "53959826654ca8a287b95f9396493923bc83ab233a10997d742bb48bd7282ebc",
+    "kits/metropolis/build-manifest.json": "2df6ae40f35073889482aeaa5aac3e7e85326164ed21a9305cfa8059020583b3",
+    "kits/metropolis/dist/metropolis.html": "579850118cfbcb13172e8544d698d21e97dbe387ab07688822ccfde9d0ae75fa",
     "kits/metropolis/dist/metropolis.tex.ancients.js": "917e219ad93e6c385aae65f55e32623d99d156972a58ca0f29045f1e877ad307",
     "kits/metropolis/dist/metropolis.tex.metropolis.js": "787a345078b2fdf24fd065437aa2fdae071665d1e027ce216779f1dba8584e97"
    }

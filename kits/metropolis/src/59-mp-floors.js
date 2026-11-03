@@ -7,8 +7,8 @@
 //    building covers it above (the highest surface over the cell is over y): an open court or a terrace is not inside.
 //  - the plate is the inside cells a cell off the walls, in rectangles (runs of a row, joined down the rows); its top at y, its
 //    underside (the ceiling of the storey below) 0.25 m lower.
-//  - the core: a 6 x 6 m stair and lift shaft where every storey's inside overlaps, nearest the plan's middle (4 x 4 if 6 does not fit,
-//    none if 4 does not), concrete, with a door on its south face on every storey it serves.
+//  - the cores: a 6 x 6 m stair and lift shaft (4 x 4: a stair) in each part of the plan, inside the most storeys in a row, nearest the part's
+//    middle (below, at the cores), concrete, with a door in the middle of each face on every storey it serves.
 // o: sh (storey height), y0 (the first plate, default sh), top (no plate within a storey of it: default the roof), floors (false: none),
 // maxY (no plate above it), cell (1), roofAccess (a head-house over the core on the roof), roof (a building the kit left open-topped, as the Watch's drum: under this height an enclosed cell
 // counts as covered, and a roof plate is drawn at it), tile (a ruin's: the plates in pieces of 8 m at most, so a tear cuts them). Returns a Group named
@@ -92,17 +92,39 @@ MP.floors = function (G, o) {
   if (roof != null) { const g = inside(roof - 0.3, roof - 1.2, roof - 0.4); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y: roof, g, c, roof: true }); }
   if (!levels.length) return null;
   const B = MP.builder(false), S = { storeys: levels.length, cells: 0, core: null };
-  /* the core: the cells inside every storey, a square of n x n of them nearest the plan's middle */
-  const all = new Uint8Array(N).fill(1); levels.forEach(L => { if (!L.roof) for (let k = 0; k < N; k++) all[k] &= L.g[k]; });
-  let mx = 0, mz = 0, mc = 0; for (let k = 0; k < N; k++) if (levels[0].g[k]) { mx += k % W; mz += Math.floor(k / W); mc++; } mx /= mc; mz /= mc;
-  for (const n of [6, 4]) {
-    let best = null, bd = 1e9;
-    for (let j = 0; j + n <= D; j++) for (let i = 0; i + n <= W; i++) {
-      let okk = true; for (let b = 0; b < n && okk; b++) for (let a = 0; a < n; a++) if (!all[(j + b) * W + i + a]) { okk = false; break; }
-      if (!okk) continue; const d = Math.hypot(i + n / 2 - mx, j + n / 2 - mz); if (d < bd) { bd = d; best = [i, j]; }
-    }
-    if (best) { S.core = { x0: x0 + best[0] * cell, z0: z0 + best[1] * cell, n: n * cell }; break; }
-  }
+  /* the cores: the plan's parts (the storeys' cells taken together, by connected parts: the Apartments' three blocks). In each, the square of n x n
+     cells inside the most storeys in a row (all of them, where one is; nearest the part's middle among the best); its shaft rises from the ground
+     to the top of that run (the plans make its square floor on the storeys under the run, 46d). The part with the longest run has the first core;
+     another has one of its own only if it has floor on one of the three lowest storeys (a building standing apart); one that does not (Sky A's office ring over
+     its atrium) is the plans' to bridge (46d) */
+  const lv0 = levels.filter(L => !L.roof), any = new Uint8Array(N); lv0.forEach(L => { for (let k = 0; k < N; k++) any[k] |= L.g[k]; });
+  const part = new Int32Array(N).fill(-1), parts = [];
+  for (let k = 0; k < N; k++) if (any[k] && part[k] < 0) { const s = [k], cells = []; part[k] = parts.length; while (s.length) { const c = s.pop(); cells.push(c); [c - 1, c + 1, c - W, c + W].forEach(n => { if (n >= 0 && n < N && any[n] && part[n] < 0) { part[n] = parts.length; s.push(n); } }); } parts.push(cells); }
+  const cand = [];
+  parts.forEach((cells, pi) => {
+    if (cells.length < 20) return;
+    const mine = lv0.filter(L => cells.some(k => L.g[k])); if (!mine.length) return;
+    let mx = 0, mz = 0, mc = 0; cells.forEach(k => { mx += k % W; mz += Math.floor(k / W); mc++; }); mx /= mc; mz /= mc;
+    const inPart = new Uint8Array(N); cells.forEach(k => { inPart[k] = 1; });
+    let pick = null; const picks = [];
+    for (const ring of [0]) { pick = null;
+    for (const n of [6, 4]) {
+      const W2 = W - n + 1, M2 = W2 * (D - n + 1), run = new Int16Array(M2), best = new Int16Array(M2), end = new Int16Array(M2), sat = new Int32Array((W + 1) * (D + 1));
+      mine.forEach((L, li) => {
+        for (let j = 0; j < D; j++) { let rs = 0; for (let i = 0; i < W; i++) { rs += L.g[j * W + i] && inPart[j * W + i] ? 1 : 0; sat[(j + 1) * (W + 1) + i + 1] = sat[j * (W + 1) + i + 1] + rs; } }
+        for (let j = ring; j + n + ring <= D; j++) for (let i = ring; i + n + ring <= W; i++) { const q = j * W2 + i, m = n + 2 * ring, a = i - ring, b = j - ring, sum = sat[(b + m) * (W + 1) + a + m] - sat[b * (W + 1) + a + m] - sat[(b + m) * (W + 1) + a] + sat[b * (W + 1) + a]; run[q] = sum === m * m ? run[q] + 1 : 0; if (run[q] > best[q]) { best[q] = run[q]; end[q] = li; } }
+      });
+      let bq = -1, br = 0, bd = 1e9;
+      for (let j = 0; j + n <= D; j++) for (let i = 0; i + n <= W; i++) { const q = j * W2 + i, r = best[q]; if (!r) continue; const d = Math.hypot(i + n / 2 - mx, j + n / 2 - mz); if (r > br || (r === br && d < bd)) { br = r; bd = d; bq = q; } }
+      /* the longer run wins; the 6 m square (a stair and a lift) on a tie with the 4 m one (a stair) */
+      if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2, j = (bq - i) / W2; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
+    } if (pick) picks.push(pick); }
+    pick = picks.length > 1 && picks[1].run > picks[0].run ? picks[1] : picks[0];
+    if (pick) cand.push(pick);
+  });
+  cand.sort((a, b) => (b.run - a.run) || (b.size - a.size));
+  S.cores = cand.filter((C, i) => i === 0 || C.low).map(C => ({ x0: C.x0, z0: C.z0, n: C.n, levels: C.levels }));
+  S.core = S.cores[0] || null;
   /* the plates, in rectangles: runs of a row joined with the same run on the rows after */
   levels.forEach(L => {
     const g = L.g, used = new Uint8Array(N), C = S.core;
@@ -120,25 +142,27 @@ MP.floors = function (G, o) {
       S.cells += (i2 - i + 1) * (j2 - j + 1);
     }
   });
-  /* the core's walls, storey by storey from the ground to the top plate's storey, a door 1.2 by 2.2 m in its south face on each */
-  if (S.core) {
-    const C = S.core, t = 0.25, a = C.x0, b = C.x0 + C.n, c = C.z0, d = C.z0 + C.n, lv = levels.filter(L => !L.roof), yTop = Math.min(lv.length ? lv[lv.length - 1].y + sh : sh, roof == null ? 1e9 : roof), dx = (a + b) / 2;
+  /* each core's walls, storey by storey from the ground to the top plate's storey of its part */
+  S.cores.forEach(C => {
+    const t = 0.25, a = C.x0, b = C.x0 + C.n, c = C.z0, d = C.z0 + C.n, lv = levels.filter(L => !L.roof && C.levels.indexOf(L.y) >= 0), yTop = Math.min(lv.length ? lv[lv.length - 1].y + sh : sh, roof == null ? 1e9 : roof), dx = (a + b) / 2;
     const ys = [0].concat(lv.map(L => L.y)), col = { col: [0.62, 0.62, 0.6], uv: 2 };
     ys.forEach((y, q) => {
       const y1 = q + 1 < ys.length ? ys[q + 1] - 0.25 : yTop;
-      B.box('concrete', a, a + t, y, y1, c, d, col); B.box('concrete', b - t, b, y, y1, c, d, col); B.box('concrete', a, b, y, y1, c, c + t, col);
-      B.box('concrete', a, dx - 0.6, y, y1, d - t, d, col); B.box('concrete', dx + 0.6, b, y, y1, d - t, d, col); B.box('concrete', dx - 0.6, dx + 0.6, y + 2.2, y1, d - t, d, col);
+      /* a door 1.2 by 2.2 m in the middle of every face (the plans open the core on whichever side has floor: a core never cuts its storey in two) */
+      const dz = (c + d) / 2;
+      [[a, a + t], [b - t, b]].forEach(xx => { B.box('concrete', xx[0], xx[1], y, y1, c, dz - 0.6, col); B.box('concrete', xx[0], xx[1], y, y1, dz + 0.6, d, col); B.box('concrete', xx[0], xx[1], y + 2.2, y1, dz - 0.6, dz + 0.6, col); });
+      [[c, c + t], [d - t, d]].forEach(zz => { B.box('concrete', a + t, dx - 0.6, y, y1, zz[0], zz[1], col); B.box('concrete', dx + 0.6, b - t, y, y1, zz[0], zz[1], col); B.box('concrete', dx - 0.6, dx + 0.6, y + 2.2, y1, zz[0], zz[1], col); });
     });
     C.top = yTop;
     /* a roof people use (o.roofAccess): the core rises 3 m over the roof as a head-house, its door to the south, a slab on top */
     if (o.roofAccess) { const y = yTop, y1 = y + 3; B.box('concrete', a, a + t, y, y1, c, d, col); B.box('concrete', b - t, b, y, y1, c, d, col); B.box('concrete', a, b, y, y1, c, c + t, col);
       B.box('concrete', a, dx - 0.6, y, y1, d - t, d, col); B.box('concrete', dx + 0.6, b, y, y1, d - t, d, col); B.box('concrete', dx - 0.6, dx + 0.6, y + 2.2, y1, d - t, d, col); B.box('concrete', a - 0.3, b + 0.3, y1, y1 + 0.3, c - 0.3, d + 0.3, col); }
-  }
+  });
   const F = new THREE.Group(); const H = B.finish({ id: 'floors' }, 'floors'); H.children.forEach(m => F.add(m)); F.name = 'floors';
   let nt = 0; F.traverse(m => { if (m.isMesh) nt += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3; });
   S.tris = Math.round(nt); S.levels = levels.map(L => +L.y.toFixed(2));
   /* the grid kept for the plans (46d): a level whose cells match the one under it shares its array */
-  if (o.grid) { const gl = []; levels.forEach((L, q) => { const p = gl[q - 1]; gl.push({ y: L.y, roof: !!L.roof, g: p && p.g.length === L.g.length && p.g.every((v, n) => v === L.g[n]) ? p.g : L.g }); }); S.grid = { x0, z0, cell, W, D, ground: inside(0), levels: gl, core: S.core }; }
+  if (o.grid) { const gl = []; levels.forEach((L, q) => { const p = gl[q - 1]; gl.push({ y: L.y, roof: !!L.roof, g: p && p.g.length === L.g.length && p.g.every((v, n) => v === L.g[n]) ? p.g : L.g }); }); S.grid = { x0, z0, cell, W, D, ground: inside(0), levels: gl, core: S.core, cores: S.cores }; }
   F.userData = S;
   return F;
 };
