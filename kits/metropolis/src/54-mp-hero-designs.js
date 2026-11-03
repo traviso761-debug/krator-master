@@ -127,9 +127,13 @@ MP.DESIGN_BUILD={
   DK.slab(B,{rect,y0:sl[1],y1:H,sh:F.sh,curtain:true,glass:'glassBlack',bay:3.2,roofMat:'dark'});},
  // S4: two swollen legs joined over a 60 m through-arch; the upper body one mass (a superellipse of revolution) with a needle; pastel
  yoke(F,B,X){const L=F.legs,Bd=F.body,t=F.tints,legR=y=>L.r+L.swell*Math.sin(Math.PI*Math.min(1,y/L.y1)),bodyR=y=>{const v=Math.abs((y-Bd.y)/Bd.ry);return v>=1?0:Bd.rx*Math.pow(1-Math.pow(v,4),.25);},b0=Bd.y-Bd.ry,b1=Bd.y+Bd.ry;
-  [-1,1].forEach((s,k)=>{DK.lobbyRing(B,{r:legR,cx:s*L.x,h:F.sh,seg:28,doors:[Math.PI/2,-Math.PI/2],col:t[k]},X.doors);DK.ring(B,{r:legR,cx:s*L.x,y0:F.sh,y1:L.y1,sh:F.sh,seg:28,pier:.5,col:t[k],sill:.28,head:.78});});
-  /* the body: solid where the profile turns over (its soffit over the arch and its crown), storeys between */
-  const yA=b0+10,yB=b1-12;DK.lathe(B,'white',(()=>{const p=[];for(let i=0;i<=8;i++){const y=b0+(yA-b0)*i/8;p.push([Math.max(.01,bodyR(y)),y]);}return p;})(),48,{col:t[2]});
+  /* the legs' storeys run to the junction (yJ, a whole storey under the legs' tops), the body's from there (batch 5: the plans) */
+  const yJ=Math.floor(L.y1/F.sh+1e-6)*F.sh;
+  [-1,1].forEach((s,k)=>{DK.lobbyRing(B,{r:legR,cx:s*L.x,h:F.sh,seg:28,doors:[Math.PI/2,-Math.PI/2],col:t[k]},X.doors);DK.ring(B,{r:legR,cx:s*L.x,y0:F.sh,y1:yJ,sh:F.sh,seg:28,pier:.5,col:t[k],sill:.28,head:.78});});
+  /* the body: solid where the profile turns over (its soffit over the arch to the junction, and its crown), storeys between; the soffit's bowl
+     is left open where a leg passes up through it (its segments inside a leg skipped), so it never cuts a leg's rooms */
+  const yA=yJ,yB=yJ+Math.floor((b1-12-yJ)/F.sh)*F.sh,inLeg=(t,y)=>{const r=bodyR(y),x=Math.cos(t)*r,z=Math.sin(t)*r;return [-1,1].some(s=>Math.hypot(x-s*L.x,z)<legR(y));};
+  B.lathe('white',(()=>{const p=[];for(let i=0;i<=20;i++){const y=b0+(yA-b0)*i/20;p.push([Math.max(.01,bodyR(y)),y]);}return p;})(),192,{col:()=>t[2],uv:4,skip:inLeg});
   DK.ring(B,{r:bodyR,y0:yA,y1:yB,sh:F.sh,seg:48,pier:.5,pierEvery:2,col:t[2],sill:.3,head:.8});
   DK.lathe(B,'white',(()=>{const p=[];for(let i=0;i<=8;i++){const y=yB+(b1-yB)*i/8;p.push([Math.max(.01,bodyR(y)),y]);}return p;})(),48,{col:t[2]});
   DK.lathe(B,'bronze',[[2.4,b1-1],[1.4,b1+6],[.15,F.height.tip]],12,{uv:1});},
@@ -203,11 +207,14 @@ MP.DESIGN_BUILD={
  // M5: a sphere on four splayed legs, its upper half a glass dome holding a forest
  terrarium(F,B,X){const S=F.sphere,cy=S.y,r=S.r,rr=y=>Math.sqrt(Math.max(0,r*r-(y-cy)*(y-cy))),bot=cy-r;
   DK.lathe(B,'white',(()=>{const p=[];for(let i=0;i<=6;i++){const y=bot+(8)*i/6;p.push([Math.max(.01,rr(y)),y]);}return p;})(),40,{});
-  DK.ring(B,{r:rr,y0:bot+8,y1:cy-.5,sh:F.sh,seg:40,pier:.45,sill:.3,head:.8});B.lathe('bronze',[[rr(cy-.5),cy-.5],[r+.5,cy],[r+.5,cy+.4],[r,cy+.5]],48,{uv:2});
+  DK.ring(B,{r:rr,y0:bot+8,y1:cy,sh:(cy-bot-8)/5,seg:40,pier:.45,sill:.3,head:.8});B.lathe('bronze',[[rr(cy-.5),cy-.5],[r+.5,cy],[r+.5,cy+.4],[r,cy+.5]],48,{uv:2});
   const dp=[];for(let i=0;i<=12;i++){const b=i/12*Math.PI/2;dp.push([r*Math.cos(b),cy+.5+r*Math.sin(b)]);}DK.lathe(B,'glassClear',dp,48,{});
   for(let k=0;k<16;k++){const a=k/16*Math.PI*2;B.lathe('bronze',dp.map(p=>[p[0]+.08,p[1]]),1,{a0:a-.012,a1:a+.012,uv:2});}
-  B.lathe('green',[[r-.2,cy+.5],[0,cy+.5]],40,{uv:3});
-  for(let i=0;i<F.trees;i++){const a=X.u(i,1)*Math.PI*2,d=(r-6)*Math.sqrt(X.u(i,2)),h=6+10*X.u(i,3);DK.cone(B,'green',Math.cos(a)*d,Math.sin(a)*d,cy+.5,1.6+2*X.u(i,4),Math.min(h,r*.85-d*.5),7,[.8+.3*X.u(i,5),1,.8]);}
+  /* the forest floor at the equator, the park storey's (46c); the trees stand clear of the stair and lift's head at the middle */
+  B.lathe('green',[[r-.2,cy+.02],[0,cy+.02]],40,{uv:3});
+  for(let i=0;i<F.trees;i++){const a=X.u(i,1)*Math.PI*2,d=7+(r-13)*Math.sqrt(X.u(i,2)),h=6+10*X.u(i,3);DK.cone(B,'green',Math.cos(a)*d,Math.sin(a)*d,cy,1.6+2*X.u(i,4),Math.min(h,r*.85-d*.5),7,[.8+.3*X.u(i,5),1,.8]);}
+  /* the service stalk: a lobby ring between the legs' feet (its doors on the four ways in), a drum up into the sphere holding the stair and lift */
+  DK.lobbyRing(B,{r:()=>6,h:4.2,seg:20,doors:[0,Math.PI/2,Math.PI,-Math.PI/2],pier:.45},X.doors);DK.lathe(B,'white',[[6,4.2],[3.7,6.4],[3.7,bot+8]],20,{});
   const Lg=F.legs;for(let k=0;k<Lg.n;k++){const a=Math.PI/4+k*Math.PI*2/Lg.n,c=Math.cos(a),s=Math.sin(a);DK.tube(B,'white',[c*(Lg.foot-2),4.2,s*(Lg.foot-2)],[c*Lg.top,Lg.y,s*Lg.top],Lg.r,10);DK.lobbySlab(B,{rect:{cx:c*Lg.foot,cz:s*Lg.foot,hw:5,hd:5,yaw:Math.atan2(c,s)},h:4.2,doors:[[0,0]],dep:.4,bay:2.5},X.doors);DK.q(B,'concrete',[c*Lg.foot-5,4.2,s*Lg.foot+5],[c*Lg.foot+5,4.2,s*Lg.foot+5],[c*Lg.foot+5,4.2,s*Lg.foot-5],[c*Lg.foot-5,4.2,s*Lg.foot-5],{uv:3});}},
  // M6: great concrete arches round a court with a reflecting pool; relief walls above
  arcades(F,B,X){X.gaps=[];const hw=F.footprint.w/2,hd=F.footprint.d/2,cw=F.court.w/2,cd=F.court.d/2,H=F.height.roof,A=F.arch,ay=A.h;

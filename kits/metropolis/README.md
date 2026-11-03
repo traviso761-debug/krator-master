@@ -233,6 +233,17 @@ rubble can now come from several towers (`towers` on its record: each pipe, each
 stood along its own fall line, one the cut passes over standing whole; the Pods' bridge keeps its floor in its ruins, its rings round it.
 The lift takes the nearest shaft that serves both storeys; a record may give its own hit test (`hitIn`) and entry point (`entryAt`).
 
+**Batch 5:** the last two designs; every design now has plans and ruins. The Yoke (41 storeys, 3039 rooms): each leg a lobby and storeys of
+rooms round its own stair and lift up to the junction (89.7 m, a whole storey under the legs' tops); the body's storeys from there, offices at
+the skin onto a hall 8.4 m wide in which the legs' stairs and lifts rise as walled islands (core bays with no slab of their own), a ring of
+meeting rooms and stores, a corridor, plant and stacks at the heart. The hero changed to fit: the body's soffit is one solid bowl from the arch
+to the junction, open where the legs pass up through it (its glass began 14 m lower, over hollow floors), and the leg rooms that face the bowl
+lose their windows and become stores. The Terrarium (9 storeys, 292 rooms): a service stalk at the middle from a lobby between the legs' feet
+(the legs' inclined tubes carry nothing the plans can walk), a plant storey in the sphere's white foot, five storeys in its glass belt (the
+hero's belt now steps with them), and the forest, a park storey with no ceiling (`st.open`), its trees kept clear of the stair's head; the four
+pavilions at the legs' feet are ticket halls on the plaza. `roundBands` lays a round plate of any size: rooms at the skin, middle rings of
+windowless rooms with passages, the core.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

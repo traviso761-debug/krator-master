@@ -397,5 +397,118 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
     };
     F.hitIn = hitIn(F);
   })();
-  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell', 'reed', 'wedge', 'arcades', 'organ', 'pods', 'crescent'];
+  /* a round plate's bands about a core of two half-discs (3.2 m): rooms at the skin opening inward, then a corridor; a wide plate adds middle
+     rings of rooms (passages every fourth to the next corridor in) before the corridor round the core. The middle rooms have no skin: inner kinds */
+  var roundBands = function (R, outerKinds, innerKinds, lib, outer) {
+    var CW = lib.CW, rem = R - 3.2 - 6 - CW, sb = shaftBand(), o = Object.assign({ n: Math.max(6, Math.round(2 * Math.PI * R / 6)), kinds: outerKinds, door: 'in' }, outer || {});
+    if (rem < 5.5) { o.d = R - 3.2 - CW; return [o, { d: CW, corr: true }, sb]; }
+    var nM = Math.ceil(rem / 10.5), dm = rem / nM - CW, B = [Object.assign(o, { d: 6 }), { d: CW, corr: true }], r = R - 6 - CW;
+    for (var i = 0; i < nM; i++) { B.push({ d: dm, n: Math.max(4, Math.round(2 * Math.PI * (r - dm / 2) / 6)), kinds: innerKinds, door: 'out', passage: function (q) { return q % 4 === 0; } }, { d: CW, corr: true }); r -= dm + CW; }
+    B.push(sb); return B;
+  };
+  var innerOf = function (use) { return use === 'offices' || use === 'skylobby' ? function (q) { return q % 3 ? 'meeting' : 'store'; } : use === 'clinic' || use === 'school' || use === 'market' ? function () { return 'store'; } : kindsOf(use); };
+  /* two half-disc core bays (the stair's on +z, the lift's on -z) standing alone in another plate's corridor `to` (the Yoke's legs' cores in its
+     body's hall): walled round, a door out of each, no slab of their own */
+  var island = function (Lv, id, cx, cz, ids, to) {
+    var r = 3.2, n = 12, st = { rooms: [], walls: [], outline: [] };
+    [[0, ids[0], 'n'], [Math.PI, ids[1], 's']].forEach(function (h) {
+      var poly = [], rid = id + '.' + h[2];
+      for (var i = 0; i <= n; i++) { var t = h[0] + Math.PI * i / n; poly.push([r3(cx + (r - 0.05) * Math.cos(t)), r3(cz + (r - 0.05) * Math.sin(t))]); }
+      var dt = h[0] + Math.PI / 2, da = [r3(cx + (r - 0.05) * Math.cos(dt)), r3(cz + (r - 0.05) * Math.sin(dt))];
+      st.rooms.push({ id: rid, kind: 'core', mpKind: 'core', poly: poly, y: Lv.y, h: Lv.h, level: Lv.k, doors: [{ at: da, w: 1.2, to: to }], windows: [], furnish: false, shaft: h[1] });
+      st.walls.push({ id: rid + '.w', pts: poly, y: Lv.y, h: Lv.h, rooms: [rid, to], door: { at: da, w: 1.2 }, broken: false });
+      st.outline = st.outline.concat(poly.slice(0, n));
+    });
+    st.walls.push({ id: id + '.p', pts: [[r3(cx - r + 0.05), cz], [r3(cx + r - 0.05), cz]], y: Lv.y, h: Lv.h, rooms: [id + '.n', id + '.s'], door: null, broken: false });
+    st.inside = function (x, z) { return Math.hypot(x - cx, z - cz) <= r + 0.02; };
+    st.part = { noSlab: true, outline: st.outline };
+    return st;
+  };
+
+  // ---- the Yoke: two swollen legs (r 16 to 21 m, x +-34) to 90 m, one body (an ellipsoid 104 m wide, 66 to 174 m) over a 60 m arch. A leg: a
+  // lobby, then storeys of rooms round its own stair and lift to the junction (89.7 m: the legs end inside the body, under its soffit's solid bowl,
+  // where their rooms lose their windows to the bowl and become stores). The body: storeys from the junction, offices at the skin onto a hall
+  // 8.4 m wide in which the legs' stairs and lifts rise as islands, a ring of meeting rooms and stores, a corridor, the plant and stacks at its heart
+  (function () {
+    var D = MP.DESIGNS.yoke, sh = D.sh, Lg = D.legs, Bd = D.body, b0 = Bd.y - Bd.ry, b1 = Bd.y + Bd.ry;
+    var legR = function (y) { return Lg.r + Lg.swell * Math.sin(Math.PI * Math.min(1, y / Lg.y1)); }, bodyR = function (y) { var v = Math.abs((y - Bd.y) / Bd.ry); return v >= 1 ? 0 : Bd.rx * Math.pow(1 - Math.pow(v, 4), 0.25); };
+    var nL = Math.floor(Lg.y1 / sh + 1e-6), yJ = nL * sh, nB = Math.floor((b1 - 12 - yJ) / sh), kB = nL;
+    var zones = [{ use: 'lobby', n: 1, h: sh }, { use: 'market', n: 1, h: sh }, { use: 'clinic', n: 2, h: sh }, { use: 'offices', n: 6, h: sh }, { use: 'plant', n: 1, h: sh }, { use: 'school', n: 3, h: sh }, { use: 'offices', n: nL - 14, h: sh },
+      { use: 'skylobby', n: 1, h: sh }, { use: 'offices', n: 6, h: sh }, { use: 'plant', n: 1, h: sh }, { use: 'offices', n: nB - 11, h: sh }, { use: 'hydroponics', n: 2, h: sh }, { use: 'skylobby', n: 1, h: sh }];
+    var L = levels(zones), last = L.length - 1, SD = ['w', 'e'], shafts = [];
+    [-1, 1].forEach(function (s, i) { shafts.push({ id: 'stair.' + SD[i], kind: 'stair', x: s * Lg.x, z: 1.5, w: 2.8, d: 2.3, from: 0, to: last, face: 2 }, { id: 'lift.' + SD[i], kind: 'lift', x: s * Lg.x, z: -1.45, w: 2.2, d: 2.2, from: 0, to: last, face: 0 }); });
+    var F = MP.FAMILY.yoke = {
+      id: 'yoke', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return Bd.rx; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'white', fall: Math.PI / 2,
+      core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 },
+      towers: [{ x: -Lg.x, z: 0, r: Lg.r + Lg.swell, sr: Lg.r, h: Lg.y1, fall: Math.PI - 0.3 }, { x: Lg.x, z: 0, r: Lg.r + Lg.swell, sr: Lg.r, h: Lg.y1, fall: 0.3 }, { x: 0, z: 0, r: Bd.rx, sr: Bd.rx * 0.6, h: D.height.roof, fall: Math.PI / 2 }],
+      entryAt: function (k) { return k < kB ? [-Lg.x + 4.1, 0] : [-Lg.x, 4.6]; },
+      plan: function (F, Lv, lib) {
+        var P = [], ym = Lv.y + Lv.h;
+        if (Lv.k < kB) {
+          [-1, 1].forEach(function (s, i) {
+            var R = Math.min(legR(Lv.y), legR(ym)) - 0.9, bands;
+            if (Lv.k === 0) { var n0 = Math.max(8, 2 * Math.round(Math.PI * R / 6)); bands = [{ d: 5, n: n0, kinds: kindsOf('lobby'), door: 'in', rot: Math.PI / 2 - Math.PI / n0, gate: function (q, n) { return q === 0 || q === n / 2 ? { street: true } : null; } }, { d: R - 5 - 3.2, corr: true }, shaftBand()]; }
+            else bands = roundBands(R, kindsOf(Lv.use), innerOf(Lv.use), lib);
+            var st = lib.rings(F, Lv, { id: F.id + '.' + Lv.k + '.' + SD[i], cx: s * Lg.x, cz: 0, rOut: R, rIn: 0, bands: bands, windows: Lv.use !== 'plant', shafts: [{ id: 'stair.' + SD[i], th: Math.PI / 2, band: bands.length - 1 }, { id: 'lift.' + SD[i], th: -Math.PI / 2, band: bands.length - 1 }] });
+            /* under the body's bowl a room's skin faces the bowl, not the sky: no window, a store */
+            st.rooms.forEach(function (Q) { if (!Q.windows.length) return; var w = Q.windows[0].at; if (Math.hypot(w[0], w[1]) < bodyR(Lv.y + Lv.h / 2) + 0.5) { Q.windows = []; if (Q.mpKind === 'office' || Q.mpKind === 'classroom' || Q.mpKind === 'clinic' || Q.mpKind === 'meeting') { Q.mpKind = 'store'; Q.kind = lib.kindOf('store'); } } });
+            P.push(st);
+          });
+        } else {
+          var R = Math.min(bodyR(Lv.y), bodyR(ym)) - 0.9, hall = 38.2, id = F.id + '.' + Lv.k + '.body';
+          var body = lib.rings(F, Lv, { id: id, cx: 0, cz: 0, rOut: R, rIn: 0, windows: true, bands: [{ d: R - hall, n: Math.round(2 * Math.PI * R / 6), kinds: kindsOf(Lv.use), door: 'in' }, { d: 8.4, corr: true },
+            { d: 7, n: Math.round(2 * Math.PI * 26.3 / 6), kinds: innerOf(Lv.use), door: 'out', passage: function (q) { return q % 5 === 0; } }, { d: lib.CW, corr: true }, { d: hall - 8.4 - 7 - lib.CW, n: 8, kinds: function (q) { return q % 2 ? 'stack' : 'plant'; }, door: 'out' }] });
+          P.push(body);
+          [-1, 1].forEach(function (s, i) { P.push(island(Lv, id + '.core' + SD[i], s * Lg.x, 0, ['stair.' + SD[i], 'lift.' + SD[i]], id + '.corr1')); });
+        }
+        return lib.parts(F, Lv, P);
+      },
+      ruins: ruins({ crown: { keep: 0.8, note: 'the body\'s crown and needle fallen in' }, broken: { keep: 0.55, note: 'the body torn off over the junction, fallen through the arch' }, stump: { keep: 0.2, note: 'the two legs to their clinics' }, skeleton: { keep: 0.75, bare: 0.6, note: 'the body\'s skin gone, its floors standing on the legs' } })
+    };
+    F.hitIn = hitIn(F);
+  })();
+
+  // ---- the Terrarium: a sphere (r 30 m, centred 36 m up) on four splayed legs, a glass dome over a forest on its equator. A service stalk at the
+  // middle (batch 5: the legs' inclined tubes do not carry a stair or a lift the plans can walk) from a lobby between the legs' feet; a plant
+  // storey in the sphere's white foot, five storeys in its glass belt round the stalk's stair and lift, and the forest: a park storey with no
+  // ceiling, its stair and lift arriving at the middle. The legs' four pavilions are ticket halls on the plaza (their doors the street's)
+  (function () {
+    var D = MP.DESIGNS.terrarium, S = D.sphere, bot = S.y - S.r, Lg = D.legs, hB = (S.y - bot - 8) / 5;
+    var rr = function (y) { return Math.sqrt(Math.max(0, S.r * S.r - (y - S.y) * (y - S.y))); };
+    var zones = [{ use: 'lobby', n: 1, h: 4.2 }, { use: 'stalk', n: 1, h: bot + 4 - 4.2 }, { use: 'plant', n: 1, h: 4 }, { use: 'market', n: 1, h: hB }, { use: 'clinic', n: 1, h: hB }, { use: 'offices', n: 2, h: hB }, { use: 'school', n: 1, h: hB }, { use: 'park', n: 1, h: 4 }];
+    var L = levels(zones), last = L.length - 1;
+    var shafts = [{ id: 'stair', kind: 'stair', x: 0, z: 1.5, w: 2.8, d: 2.3, from: 0, to: last, face: 2 }, { id: 'lift', kind: 'lift', x: 0, z: -1.45, w: 2.2, d: 2.2, from: 0, to: last, face: 0 }];
+    var pavilion = function (Lv, k) {
+      var a = Math.PI / 4 + k * Math.PI * 2 / Lg.n, c = Math.cos(a), s = Math.sin(a), cx = c * Lg.foot, cz = s * Lg.foot, yaw = Math.atan2(c, s), cy2 = Math.cos(yaw), sy = Math.sin(yaw), h = 4.75;
+      var poly = [[-h, -h], [h, -h], [h, h], [-h, h]].map(function (p) { return [r3(cx + p[0] * cy2 + p[1] * sy), r3(cz - p[0] * sy + p[1] * cy2)]; }), id = F.id + '.0.pav' + k;
+      return { rooms: [{ id: id, kind: 'corridor', mpKind: 'concourse', poly: poly, y: Lv.y, h: Lv.h, level: Lv.k, doors: [], windows: [], furnish: false, street: true }], walls: [], outline: poly,
+        inside: function (x, z) { var dx = x - cx, dz = z - cz; return Math.abs(dx * cy2 - dz * sy) <= h + 0.02 && Math.abs(dx * sy + dz * cy2) <= h + 0.02; }, part: { outline: poly, ruin: false } };
+    };
+    var F = MP.FAMILY.terrarium = {
+      id: 'terrarium', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { w: D.footprint.w, d: D.footprint.d }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return S.r; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'white', fall: 0,
+      core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 },
+      towers: [{ x: 0, z: 0, r: S.r, h: D.height.roof, fall: 0, squat: true }],
+      entryAt: function (k) { return L[k].use === 'stalk' ? [0, 2.85] : [4.1, 0]; },
+      plan: function (F, Lv, lib) {
+        var P = [], u = Lv.use, R, bands, glass = Lv.y >= bot + 8 - 0.1 && u !== 'park';
+        if (u === 'lobby') { R = 5.2; bands = [{ d: R - 3.2, corr: true }, shaftBand()]; }
+        else if (u === 'stalk') { R = 3.2; bands = [shaftBand()]; }
+        else if (u === 'park') { R = S.r - 0.9; bands = [{ d: R - 3.2, corr: true }, shaftBand()]; }
+        else { R = Math.min(rr(Lv.y), rr(Lv.y + Lv.h)) - 0.9; bands = roundBands(R, kindsOf(u), innerOf(u), lib); }
+        var st = lib.rings(F, Lv, { id: F.id + '.' + Lv.k + '.s', cx: 0, cz: 0, rOut: R, rIn: 0, bands: bands, windows: glass && u !== 'plant', shafts: [{ id: 'stair', th: Math.PI / 2, band: bands.length - 1 }, { id: 'lift', th: -Math.PI / 2, band: bands.length - 1 }] });
+        if (u === 'park') st.rooms.forEach(function (Q) { if (Q.kind === 'corridor') Q.mpKind = 'park'; });
+        P.push(st);
+        if (Lv.k === 0) for (var k = 0; k < Lg.n; k++) P.push(pavilion(Lv, k));
+        var out = lib.parts(F, Lv, P); if (u === 'park') out.open = true;
+        return out;
+      },
+      ruins: ruins({ crown: { keep: 0.75, note: 'the dome\'s glass and its forest\'s floor fallen in' }, broken: { keep: 0.5, note: 'the sphere split open to its belt' }, stump: { keep: 0.2, note: 'the stalk, the legs\' stumps and the pavilions' }, skeleton: { keep: 0.6, bare: 0.7, note: 'the belt\'s skin gone, its floors on the stalk' } })
+    };
+    F.hitIn = hitIn(F);
+  })();
+  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell', 'reed', 'wedge', 'arcades', 'organ', 'pods', 'crescent', 'yoke', 'terrarium'];
 })();

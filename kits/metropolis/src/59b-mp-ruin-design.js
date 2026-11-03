@@ -69,7 +69,7 @@ MP.ruinDesign = function (G, F, state) {
     /* a storey of parts (41: the Organ's pipes, the Pods' pods, the Long Curve's arc): each part radial from its own centre, an arc open at
        its ends (a strip is drawn above) */
     if (st.parts) st.parts.forEach(p => {
-      if (p.strip) return; const open = p.a0 != null, n = open ? Math.max(2, Math.ceil((p.a1 - p.a0) * p.rOut / 6)) : 48, O2 = [];
+      if (p.strip || p.noSlab) return; const open = p.a0 != null, n = open ? Math.max(2, Math.ceil((p.a1 - p.a0) * p.rOut / 6)) : 48, O2 = [];
       for (let i = 0; i < (open ? n + 1 : n); i++) O2.push({ t: open ? p.a0 + (p.a1 - p.a0) * i / n : -Math.PI + 2 * Math.PI * i / n, r: p.rOut });
       radial(L, O2, () => p.rIn, p.cx, p.cz, !open);
     });

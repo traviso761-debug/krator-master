@@ -32,8 +32,8 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  /* an atrium (the Cupola's galleries): the slab and the ceiling ring it, open over the hall */
  /* a storey of parts (41's parts: the Organ's pipes, the Pods' pods and bridge, the Long Curve's arc): a slab under each, a ring's court its hole */
  const lift=L.y<.05?.03:0;
- if(st.parts){st.parts.forEach(p=>{const sh=new THREE.Shape(p.outline.map(q=>new THREE.Vector2(q[0],-q[1])));if(p.a0==null&&p.rIn>0){const h=new THREE.Path();h.absarc(p.cx,-p.cz,p.rIn,0,Math.PI*2,true);sh.holes.push(h);}
-  const sg=new THREE.ExtrudeGeometry(sh,{depth:.22,bevelEnabled:false,curveSegments:1});sg.rotateX(-Math.PI/2);const f=new THREE.Mesh(sg,M.slab);f.position.y=L.y-.22+lift;g.add(f);const c2=new THREE.Mesh(sg,M.slab);c2.name='ceiling';c2.position.y=L.y+L.h-.26;g.add(c2);});}
+ if(st.parts){st.parts.forEach(p=>{if(p.noSlab)return;const sh=new THREE.Shape(p.outline.map(q=>new THREE.Vector2(q[0],-q[1])));if(p.a0==null&&p.rIn>0){const h=new THREE.Path();h.absarc(p.cx,-p.cz,p.rIn,0,Math.PI*2,true);sh.holes.push(h);}
+  const sg=new THREE.ExtrudeGeometry(sh,{depth:.22,bevelEnabled:false,curveSegments:1});sg.rotateX(-Math.PI/2);const f=new THREE.Mesh(sg,M.slab);f.position.y=L.y-.22+lift;g.add(f);if(st.open)return;const c2=new THREE.Mesh(sg,M.slab);c2.name='ceiling';c2.position.y=L.y+L.h-.26;g.add(c2);});}
  else{const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if((F.core.atrium&&L.k>0)||st.hole){const rc=st.hole||MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}
  /* a court in a rect plate (the Arcades'): a rectangle in the slab, in the plate's own frame */
  if(st.holeRect&&st.rect){const R=st.rect,c=Math.cos(R.yaw),s=Math.sin(R.yaw),T=(x,z)=>new THREE.Vector2(R.cx+x*c+z*s,-(R.cz-x*s+z*c)),q=st.holeRect,h=new THREE.Path([T(-q.hw,-q.hd),T(-q.hw,q.hd),T(q.hw,q.hd),T(q.hw,-q.hd)]);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium||st.hole?48:1});sl.rotateX(-Math.PI/2);
