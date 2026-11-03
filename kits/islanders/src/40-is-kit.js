@@ -33,7 +33,8 @@ function isRail(a,b,y,o){o=o||{};const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.
 /* ---------------------------------------------------------------- walls */
 /* a wall along local x from -L/2 to L/2 at z = 0, its face +z, from y0 up h. opens: [{x, w, y (sill above y0), h, door}]
    (a door's sill is 0). o.t thickness, o.frame the jamb colour (false: none), o.shut a window's open shutters.
-   A door() is declared for each door (the way out +z). */
+   A door() is declared for each door (the way out +z), and its plank leaf hung in the gap (core/door: shut, it opens into the
+   room on E or an NPC; q.leaf false: an open doorway). A window is a clear opening: the Islanders glaze nothing */
 function isWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||IS_T,fr=o.frame===undefined?P('woodD'):o.frame;opens=(opens||[]).slice().sort((a,b)=>a.x-b.x);let x=-L/2;
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
  let pv=null;   /* the opening before: a window stacked over a door (x ranges overlap) fills the wall between them, not the doorway */
@@ -42,7 +43,7 @@ function isWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||IS_T,fr=o.frame===un
   else{seg(x,a,0,h);seg(a,b,0,sy);seg(a,b,Math.min(h,sy+q.h),h);}
   x=Math.max(x,b);pv={a:a,top:sy+q.h};
   if(fr){for(const s of [a,b])box('wood',s,y0+sy,t*.6,.1,q.h,.06,fr);box('wood',q.x,y0+sy+q.h,t*.6,q.w+.2,.12,.07,fr);if(!q.door)box('wood',q.x,y0+sy-.08,t*.6,q.w+.16,.08,.1,fr);}
-  if(q.door)door(q.x,y0,t/2,0,q.w,q.h);
+  if(q.door){door(q.x,y0,t/2,0,q.w,q.h);if(q.leaf!==false)svLeaf(q.x,y0,0,0,q.w*.96,q.h-.03,{mk:o.leafMk||'planks',col:o.leafCol||P('planks'),t:Math.min(.05,t*.8),name:'door'});}
   else{windowAt(q.x,y0+sy,t/2,0,q.w,q.h,sy);if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}}
  seg(x,L/2,0,h);}
 /* four walls round a w x d room from y0 up h; o.front/back/left/right: openings for each side (isWall), o.mkf(side) a

@@ -131,10 +131,11 @@ function ieGallery(L,gd,o){o=o||{};const ph=o.postH||2.9,pl=.38,cv=P('carvN');
  box('wood',0,pl+ph-.08,gd/2-.32,L,.26,.26,P('woodD'));
  const rf=isGabled({L:L-1.2,W:gd,eaveY:pl+ph+.12,ridgeY:pl+ph+2.2,over:.7,mk:'thatchR',col:P('thatchE'),th:.24,nu:Math.max(8,Math.round(L/1.5)),nv:3});
  for(const s of o.ends||[])rf.gable(s*(L/2-.62),pl+ph+.12,gd/2,'patGableE',{});}
-/* a corner tower: a coral-stone block s x 2 square, bh tall, a painted band, a dark door on the court side, a tall spire */
+/* a corner tower: a coral-stone block s x 2 square, bh tall, a painted band, a locked door on the court side (core/door: the
+   block is solid), a tall spire */
 function ieSpireTower(s,bh,towerH,doorRy){box('coral',0,0,0,2*s,bh,2*s,P('coral'));box('stone',0,bh,0,2*s+.3,.2,2*s+.3,P('stone'));
  for(let k=0;k<4;k++)W(0,0,0,k*PI/2,()=>box('patGableE',0,bh-1.5,s+.01,2*s-.8,1.0,.02,WHITE));
- W(0,0,0,doorRy,()=>{box('plain',0,0,s+.01,1.1,2.1,.02,P('black'));box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
+ W(0,0,0,doorRy,()=>{svDoorway(0,0,s+.03,0,1.1,2.1,{hollow:false,mk:'planks',col:P('woodD'),t:.05,name:'tower door'});box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
  return ieRoofE({hw:s+.7,hd:s+.7,eY:bh+.15,skirtH:1.1,skirtS:.62,towerH,towerS:.56,topSx:.14,topSz:.1,sq:4,th:.26,finial:'horns',facade:'patGableE',tnu:24});}
 defBuilding({key:'ie-square',name:'Ceremonial square (Kautoa)',seed:6102,w:58,d:50,h:24,budget:400000,front:{x:0,z:22.5,yaw:0},
  tags:{types:['plaza','religious','civic'],wealth:'rich',style:'east',role:'ceremonial square'},

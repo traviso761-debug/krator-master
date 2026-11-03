@@ -14,6 +14,8 @@ The page is one <script> made of, in filename order:
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; src/37-wk-rec.js)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
+                        core/engine/36o-open.js draws them)
   kits/resources        42r-res-ore.js, 44r-res-nodes.js, read IN PLACE (the ore nodes and the rule the mines work them by)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
@@ -71,7 +73,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 KIT_ID = 'islanders'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
 # kits/resources' ore (owner, 2026-10-15: the nodes are their own kit): read in place, never copied
 RESOURCES = {f: os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in ('42r-res-ore.js', '44r-res-nodes.js')}
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
