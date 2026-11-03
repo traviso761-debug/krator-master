@@ -40,4 +40,16 @@ ok('an unknown kind does not mesh',throws(()=>S.mesh([{kind:'drapery',x:0,y:0,z:
 // blocks and export
 const Bk=S.blocks(R);ok('stalagmites and columns block a walker; hung ones do not',Bk.length===by('stalagmite').length+by('column').length&&Bk.every(b=>b.box[4]<b.box[5]),Bk.length===R.length);
 const E=S.export(R);ok('the export is the records',E.format==='krator-speleo'&&E.records.length===R.length&&JSON.stringify(E.records)===JSON.stringify(R),false);
+// ---- the limestone dress: a flat-floored hall and a passage whose floor falls 6 m in 60
+const L=KCAVERN.create({ground:()=>40,cell:1,chunk:16,seed:5});L.hall({id:'h',c:[0,0,0],rx:30,rz:24,h:12,belly:0});L.tube({id:'t',pts:[[30,0,0],[90,-6,0]],w:10,h:5});L.build();
+const RL=S.place(L,{box:[-32,-26,92,26],y:1.5,world:4,cell:2,kinds:S.LIMESTONE}),k=n=>RL.filter(r=>r.kind===n);
+ok('the limestone kinds all come ('+['stalactite','stalagmite','column','straw','curtain','flowstone','rimstone'].map(n=>n+' '+k(n).length).join(', ')+')',['straw','curtain','flowstone','rimstone','stalactite'].every(n=>k(n).length>0),k('chandelier').length>0);
+let roofOk=true,floorOk=true;k('straw').concat(k('curtain')).forEach(r=>{if(!(L.sdf(r.x,r.y+.1,r.z)<=0&&L.sdf(r.x,r.y-.1,r.z)>0))roofOk=false;});
+k('flowstone').concat(k('rimstone')).forEach(r=>{if(!(L.sdf(r.x,r.y-.1,r.z)<=0&&L.sdf(r.x,r.y+.1,r.z)>0))floorOk=false;});
+ok('straws and curtains hang from the roof, flowstone and rimstone lie on the floor',roofOk&&floorOk,false);
+ok('rimstone only where the floor falls, its dams stepping down it',k('rimstone').every(r=>r.slope>=.03&&r.x>29&&r.dams.every((D,i)=>i===0||D.y<r.dams[i-1].y)),k('rimstone').some(r=>r.x<25));
+ok('a straw cluster is many thin straws within its spread',k('straw').every(r=>r.arms.length>=6&&r.arms.every(A=>Math.hypot(A.dx,A.dz)<=r.r+1e-9&&A.len<=r.roof-r.floor)),false);
+const ML=S.mesh(RL);let fin2=true;for(const v of ML.pos)if(!isFinite(v))fin2=false;let rng2=true;for(const i of ML.idx)if(i>=ML.pos.length/3)rng2=false;
+ok('the limestone mesh is finite triangles ('+(ML.idx.length/3)+')',fin2&&rng2&&ML.idx.length>0&&new Set(ML.kind).size>=5,false);
+ok('the hypogene preset holds none of them',S.place(C,{box,y:1,world:9}).every(r=>['straw','curtain','flowstone','rimstone'].indexOf(r.kind)<0),false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
