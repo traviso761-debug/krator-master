@@ -6,53 +6,25 @@
 // nearer the LOD spine preferred, and a tree preset frames the nearest built hero of its species
 const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
 const ACC=sp=>EBADLANDS.PASSES.find(p=>p.sp===sp).accept;
+const BADK=(x,z)=>typeof badK==='function'?badK(x,z):0;   /* the transect's badland mounds; a station without them scores none */
 const SCORES={
  waste:(Z,x,z,ld)=>Z.waste*(1-Z.vent)-ld/3000,
- bad:(Z,x,z,ld)=>badK(x,z)*smooth(.35,.15,Z.wet)*(1-Z.can)-ld/4000,
- green:(Z,x,z,ld)=>badK(x,z)*Z.vale*2+Z.vale-ld/4000,
+ bad:(Z,x,z,ld)=>BADK(x,z)*smooth(.35,.15,Z.wet)*(1-Z.can)-ld/4000,
+ green:(Z,x,z,ld)=>BADK(x,z)*Z.vale*2+Z.vale-ld/4000,
  steppe:(Z,x,z,ld)=>Z.steppe*(1-Z.rimZ)-ld/4000,
- vale:(Z,x,z,ld)=>Z.vale*(1-badK(x,z))-ld/4000,
+ vale:(Z,x,z,ld)=>Z.vale*(1-BADK(x,z))-ld/4000,
  pine:(Z,x,z,ld)=>Z.pine-ld/4000,
  boreal:(Z,x,z,ld)=>Z.boreal*(1-Z.rock)-ld/4000,
  tundra:(Z,x,z,ld)=>Z.tundra*smooth(.99,.9,Z.cold)-ld/4000};
 const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
- for(let z=-3000;z<=3000;z+=50)for(let x=-3000;x<=3100;x+=50){const Z=EBADLANDS.zones(x,z),ld=BIO.lodD(x,z);
+ const RR=TERR.R-400;for(let z=-RR;z<=RR;z+=50)for(let x=-RR;x<=RR+100;x+=50){const Z=EBADLANDS.zones(x,z),ld=BIO.lodD(x,z);
   for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const SPI=k=>EBADLANDS.SPECIES.indexOf(EBADLANDS.byKey[k]);
 function nearTree(key,x,z,minH){return EBADLANDS.nearestTree(SPI(key),x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
 // a camera d metres from a tree, looking at its crown
 function atTree(T,d,az,dy){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*.6,T.z];}
-const CX=-200,rimN=(x,k)=>zR(x)-Wc(x,0)*(k==null?1.5:k);
-const POOL0=POOLS[0];
-const VIEWS={
- 'Zion, the river in the canyon':look(150,zR(150)+30,3,-350,zR(-350),12),
- 'From afar':look(-3300,3300,700,600,0,200),
- // from just outside the north wall's top, looking across and down to the floor on the far side
- 'The canyon from the rim':[CX,gh(CX,rimN(CX,1.4),28),rimN(CX,1.4),CX-260,floorC(CX-260)+4,zR(CX-260)+Wc(CX-260,0)*.45],
- 'Sulphur flats':[POOL0[0]-150,POOLL[0]+16,POOL0[1]+120,POOL0[0],POOLL[0]+1,POOL0[1]],
- // the Throne's brimstone reeds on the shore of the largest pool, the camera on its bank looking along the shore
- 'Brimstone reeds at a sulphur pool':(function(){const P=POOL0,a=2.6,c=[P[0]+Math.cos(a)*P[2]*1.32,P[1]+Math.sin(a)*P[2]*1.32],t=[P[0]+Math.cos(a+.55)*P[2]*1.08,P[1]+Math.sin(a+.55)*P[2]*1.08];return[c[0],Math.max(gh(c[0],c[1],3),POOLL[0]+4),c[1],t[0],POOLL[0]+1.4,t[1]];})(),
- 'Stilt pods at the vents':atTree(nearTree('stiltpod',VENTS.x,VENTS.z),26,.8,2),
- 'Ember crowns and sunspires':atTree(nearTree('embercrown',P.waste[0],P.waste[1]),38,2.4,3),
- 'Needle bloom stand':atTree(nearTree('needlebloom',P.waste[0],P.waste[1]),14,1.2,2),
- 'Needle bloom close-up':(function(){const T=nearTree('needlebloom',P.waste[0],P.waste[1],6);return[T.x+Math.cos(1.2)*4.5,T.y0+T.H*.85,T.z+Math.sin(1.2)*4.5,T.x,T.y0+T.H*.85,T.z];})(),
- 'Painted badlands':look(P.bad[0]-260,P.bad[1]+180,40,P.bad[0]+60,P.bad[1]-60,10),
- 'Green badlands':look(P.green[0]-220,P.green[1]-160,30,P.green[0]+60,P.green[1]+40,6),
- 'Sagebrush and pinyon-juniper':atTree(nearTree('juniper',P.steppe[0],P.steppe[1]),22,2.0,2.5),
- 'Rose weepers and giant umbels':atTree(nearTree('weeper',P.vale[0],P.vale[1]),30,1.4,2.5),
- 'Cottonwoods on the floodplain':atTree(nearTree('cottonwood',-1600,zR(-1600)),45,1.8,3),
- 'Ponderosa and aspen':atTree(nearTree('ponderosa',P.pine[0],P.pine[1],20),48,3.2,3),
- 'Aspen grove':atTree(nearTree('aspen',P.pine[0],P.pine[1]),22,.4,2),
- 'Spruce close-up':(function(){const T=nearTree('spruce',P.boreal[0],P.boreal[1],18),a=Math.atan2(-T.z,-T.x)+.4;return atTree(T,16,a,3);})(),
- 'Spruce-fir forest':(function(){const T=nearTree('spruce',P.boreal[0],P.boreal[1],18),a=Math.atan2(-T.z,-T.x)+.4;return atTree(T,75,a,12);})(),
- 'The tarn':[TARN.x-TARN.r*1.15,Math.max(TARNL+5,gh(TARN.x-TARN.r*1.15,TARN.z+TARN.r*.75,3)),TARN.z+TARN.r*.75,TARN.x+TARN.r*.6,TARNL+30,TARN.z-TARN.r*.5],
- 'The treeline, krummholz and bristlecones':atTree(nearTree('bristlecone',P.tundra[0],P.tundra[1]),22,3.4,2),
- 'The hanging garden':(function(){const A=ARCADE,p=A.W(-6,-A.dep/2-16),t=A.W(1,0);return[p[0],A.y0+4.5,p[1],t[0],A.y0+6.5,t[1]];})(),
- 'Hanging garden close-up':(function(){const A=ARCADE,p=A.W(-3,-A.dep/2-5),t=A.W(2,-A.dep/2-1);return[p[0],A.y0+3.2,p[1],t[0],A.y0+5.5,t[1]];})(),
- 'Fruit: pinyon, juniper, prickly pear':atTree(nearTree('pinyon',P.steppe[0],P.steppe[1]),9,2.2,1.6),
- 'The ice and the airless rim':look(2450,1100,320,3300,-400,0),
-};
+const VIEWS=LAND.views({P,look,atTree,nearTree,gh});
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
  // the smallest registered volume round the point, ignoring the map-wide one
@@ -116,44 +88,58 @@ const HCHK={
  // the Throne's brimstone reeds (the owner, 2026-10-06): grown, and only in a band at the sulphur pools' shores, not across the flats
  reeds(P){const T=P.filter(p=>p[3]==='biome:tassel'||/^biome:reedbrim/.test(p[3])),off=T.filter(p=>poolD(p[0],p[2])[0]>1.8||waterH(p[0],p[2])-terrainH(p[0],p[2])>.8);   /* out past a pool's bank, or standing in deep water */
   return{ok:T.length>=300&&!off.length,detail:off.length?off.length+' of '+T.length+' reed tassels off a pool shore (past the bank or in deep water; first at '+off[0].slice(0,3).map(v=>v|0)+')':T.length+' brimstone-reed stems, all at a sulphur pool shore'};},
+ // nothing roots on a KSTACKS body (a dome, a tor) or at its foot: BIO.init's mask (45)
+ offRock(P){const bad=P.filter(p=>{const f=KSTACKS.foot(ROCK,p[0],p[2]);return f&&f.d<.5&&!/^biome:impTrees|^variant:impTrees/.test(p[3]);});
+  return{ok:!bad.length,detail:bad.length?bad.length+' on a rock body (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':ROCK.length+' bodies, none under a plant'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
+// the flora and the ground's wet band read the water's own shore (the review's third line): the env fields in the contract, no tree standing in the water,
+// and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
+function edgeCheck(){const P=[];for(const T of EBADLANDS.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb||.4,.6),name:EBADLANDS.SPECIES[T.sp].key});if(P.length>6000)break;}
+ const bad=BIO.envCheck(ENV,[[0,0],[-1400,-200],[800,300],[-2400,0]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:(x,z)=>Math.max(WET_SHORE(x,z),FIELD.geo(x,z)),band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
+const EDGE_OWED=LAND.edgeOwed||{plant:0,wet:0};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('every species placed',HCHK.placed(EBADLANDS.COUNTS||[]));
  add('every species tagged with its Koppen classes',HCHK.tagged(EBADLANDS.SPECIES));
  add('nothing rooted under the water',HCHK.dry(P));
  add('nothing grows on barren ground',HCHK.barren(P));
- add('hanging foliage on the arcade',HCHK.hanging(window._dress,P));
+ if(LAND.arcade)add('hanging foliage on the arcade',HCHK.hanging(window._dress,P));
  if(typeof VARIANTS!=='undefined')add('trees drawn as shared variants',HCHK.variants(VARIANTS,EBADLANDS.TREES));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(EBADLANDS.SPECIES,EBADLANDS.PLANTS,P));
  add('no tree on a layered cliff face',HCHK.cliffs(EBADLANDS.TREES));
- add('brimstone reeds at the sulphur pools only',HCHK.reeds(P));
+ if(POOLS.length)add('brimstone reeds at the sulphur pools only',HCHK.reeds(P));
+ if(ROCK.length)add('nothing rooted on a rock body (a dome, a tor)',HCHK.offRock(P));
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  const C=(EBADLANDS.COUNTS||[]).slice();C[SPI('umbel')]=0;add('a species never placed',HCHK.placed(C));
  add('a species with no Koppen classes',HCHK.tagged(EBADLANDS.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
  add('a species tagged with the ice cap',HCHK.tagged([Object.assign({},EBADLANDS.SPECIES[0],{tags:Object.assign({},EBADLANDS.SPECIES[0].tags,{koppen:['EF']})})]));
- // the steepest bedded face of the canyon's north wall at x=200 (found, not typed)
- {let bz=zR(200),bs=-1;for(let z=zR(200)-260;z<zR(200);z+=2){const s=FIELD.slope(200,z)*FIELD.strata(200,z);if(s>bs){bs=s;bz=z;}}
-  add('a tree on the canyon wall',HCHK.cliffs([{x:200,z:bz,sp:0}]));}
- const x=200;add('a plant on the river bed',HCHK.dry([[x,floorC(x)-2.8,zR(x),'test']]));
- // the iciest point of the crest (found, not typed: the crest's line wanders)
- let ix=3000,iz=0,ib=-1;for(let z=-3000;z<=3000;z+=100)for(let x=2400;x<=3400;x+=50){const v=FIELD.barren(x,z);if(v>ib){ib=v;ix=x;iz=z;}}
- add('a plant on the crest',HCHK.barren([[ix,terrainH(ix,iz),iz,'test']]));
- add('the dressing never ran',HCHK.hanging(null,P));
+ // the steepest bedded face of a wall, a point on the river's bed, the iciest crest point: the land's (found, not typed)
+ if(LAND.probes.wall){const w=LAND.probes.wall();add('a tree on a canyon wall',HCHK.cliffs([{x:w[0],z:w[1],sp:0}]));}
+ if(LAND.probes.bed){const b=LAND.probes.bed();add('a plant on the river bed',HCHK.dry([[b[0],b[1],b[2],'test']]));}
+ if(LAND.probes.ice){const ic=LAND.probes.ice();add('a plant on the crest',HCHK.barren([[ic[0],terrainH(ic[0],ic[1]),ic[1],'test']]));}
+ if(LAND.arcade)add('the dressing never ran',HCHK.hanging(null,P));
  if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},EBADLANDS.TREES));
  add('a fruiting species with no catalog fruit',HCHK.fruit(EBADLANDS.SPECIES.map(S=>S.key==='pinyon'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),EBADLANDS.PLANTS,P));
- add('a brimstone reed out on the flats',HCHK.reeds(P.concat([[VENTS.x,terrainH(VENTS.x,VENTS.z),VENTS.z,'biome:tassel']])));
- add('a camera under the canyon floor',HCHK.camerasOut([{view:'under',x:x,y:floorC(x)-5,z:zR(x)}]));
+ if(POOLS.length&&VENTS)add('a brimstone reed out on the flats',HCHK.reeds(P.concat([[VENTS.x,terrainH(VENTS.x,VENTS.z),VENTS.z,'biome:tassel']])));
+ if(ROCK.length){const B=ROCK[0];add('a plant on a rock body',HCHK.offRock([[B.x,B.top,B.z,'test']]));}
+ {const g=LAND.probes.bed?LAND.probes.bed():[0,terrainH(0,0),0];add('a camera under the ground',HCHK.camerasOut([{view:'under',x:g[0],y:terrainH(g[0],g[2])-5,z:g[2]}]));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'ebadlands',title:'Krator biome — the eastern badlands',
- hint:'The eastern badlands: sulphur flats and the hot waste in the north, painted badlands, a Zion canyon through the sagebrush plateau, green valleys in the south, pine, spruce-fir and tundra up to the ice of the outer rim (ideal type)',
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45: merge, fade, cull): each chunk mesh by its range */
+/* the land in the tarn (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
+const MIRROR=TARN_DRAW&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[TARN_DRAW.mesh.material].concat(RIVER_DRAW?[RIVER_DRAW.mesh.material]:[]),
+ level:TARNL,center:[TARN.x,TARN.z],radius:TARN.r*2.5,far:2500,tree:o=>o.name==='variant:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
+KHOST.take({build:LAND.build_id||'ebadlands',title:LAND.title||'Krator biome — the eastern badlands',
+ hint:LAND.hint||'The eastern badlands: sulphur flats and the hot waste in the north, painted badlands, a Zion canyon through the sagebrush plateau, green valleys in the south, pine, spruce-fir and tundra up to the ice of the outer rim (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ controls:AIR_CONTROL?[AIR_CONTROL]:[],   /* the air: calm or a dust storm (89a-host-atmos.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

@@ -511,7 +511,7 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Ember-crown flames'});
 BIO.def('weep',BIO.geo.ribbon(4,.6,.12),M.weep,{label:'Rose-weeper strands'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower heads'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   // held inside a leaf card's body (core/biome README, "What held means"): a flower in a shrub or a crown has no bark to hold it
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass'});
 BIO.def('bunch',G.tuft(),M.bunch,{label:'Bunchgrass'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds and sedge'});

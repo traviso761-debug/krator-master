@@ -92,10 +92,11 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col);}
-// a scatter of blooms in a disc of radius r (one colour per head); o.flat lays them on the ground
-function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.flowers),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt;
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1);
-  BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.3):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
+// a scatter of blooms in a disc of radius r (one colour per head); o.flat lays them on the ground: each head at its own spot's height over the ground
+// (the final rebuild: on a slope the cluster's one height left them in the air downhill and under the ground uphill; the stream of draws is the same)
+function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.flowers),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt,g0=o.flat?y-BIO.terrainH(x,z):0;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;
+  BIO.put('bloom',[bx,o.flat?BIO.terrainH(bx,bz)+g0+rr(0,.3):y+rr(-.3,.4)*r,bz],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 EBADLANDS.blooms=blooms;
 // a CANYON GRAPE curtain hung from a point: leafy vine ribbons, grape clusters among them (generic_fruit_canyon_grape).
 // The floor (grape tangles) and the dressing (vines off a ledge) hang the same curtain.
