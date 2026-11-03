@@ -33,7 +33,7 @@ const SPECIES=HRIFT.SPECIES=[
 SPECIES.forEach((S,i)=>{S.i=i;});
 HRIFT.HARVEST={opalcane:HV('canes (pipes, flutes: the Fellgangs\' whistles)',[],false,'A cut cane whistles in the wind: the Fellgangs make pipes of them.'),
  beadcap:HV('none',[],false,'The beads come off as pale grit; nothing eats them.'),verdwort:HV('none',[],true,'Poisonous; burnt, its ash is a copper green pigment.'),
- steamheath:HV('kindling',[],false,''),tussock:HV('thatch, bedding',[],false,'')};
+ steamheath:HV('fuel (kindling)',[],false,''),tussock:HV('thatch (and bedding)',[],false,'')};
 SPECIES.forEach(S=>{S.tags.harvest=HRIFT.HARVEST[S.key];});
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);HRIFT.byKey=byKey;
 HRIFT.plantOfItem=it=>{for(const S of SPECIES)if(S.items.indexOf(it)>=0)return S;return it==='hrblade'?{name:'Bladed quartz (the singing crystals)',tags:null}:null;};

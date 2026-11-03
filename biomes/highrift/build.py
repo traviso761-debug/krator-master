@@ -98,7 +98,7 @@ PATH.setdefault('35s-core-strata-shade.js',J('core','terrain','host','35-core-st
 # the biome core from core/biome (core/README.md): one copy for every kit. The final rebuild adds 31j a limb's joint to its parent (BIO.flareJoin),
 # 32 the variant pools and kin, 33 the fungoid parts, 33b the bamboo parts, 34 the octahedral impostors, 35 the motion modes, 39 the lean,
 # 41 the environmental fields
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js','34-core-impostor.js',
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js','34-core-impostor.js',
  '35-core-anim.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
 # core/space (KSPACE), core/rand and core/tags, core/export: as before
