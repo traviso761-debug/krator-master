@@ -32,7 +32,20 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
  const barK=(x,z)=>{const s=sOf(x,z),d=dCh(s,tOf(x,z)),w=W(s);return s<APEX&&d<w*1.2?bar(x,z):0;};
  const talus=(x,z)=>{const s=sOf(x,z);if(s<-600)return 0;const q=clamp((dCh(s,tOf(x,z))-F(s))/420,0,1);return smooth(0,.06,q)*smooth(.2,.1,q);};
  const floodPoly=()=>{const L=[],R=[];for(let s=345;s<=3500;s+=110){const c=RIVER_T(s),f=F(s)+50;L.push(xzOf(s,c+f));R.unshift(xzOf(s,c-f));}return L.concat(R);};
- return{terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:113,springs:[],strata:S,
+/* THE PLUME (the owner, 2026-11-02: the river's water should swirl and mix into the clear sea, as a real delta's does): the inland water's own colour laid
+   over the sea as a tint, strongest on each distributary's line out from its mouth and spreading as it fades (about 1 km out), with a broad haze
+   along the fan's front; carried on a current (core/water ext/61): out from the fan, spreading off each channel's line, a longshore drift, eddies.
+   No surf (the owner: hard white bands at the shore): the arm is sheltered and the silt-laden shallows break no swell */
+ const nearCh=(s,t)=>{let d=1e9,k0=0;for(let k=0;k<6;k++){const q=Math.abs(t-chT(k,s));if(q<d){d=q;k0=k;}}return[d,k0];};
+ const sea={surf:false,
+  tint:c=>{const hex=c.clone().lerp(new THREE.Color(0x8a7a58).convertSRGBToLinear(),.25).getHex(),B=TERR.R*1.1;
+   return{box:[-B,-B,B,B],cell:12,at:(x,z)=>{const si=seaIn(x,z);if(si>40)return null;const into=Math.max(0,-si),s=sOf(x,z),t=tOf(x,z),d=nearCh(Math.min(s,APEX),t)[0];
+    const a=Math.min(.9,.85*smooth(70+.5*into,8,d)*smooth(-1200,-20,si)+.32*smooth(-650,0,si)*smooth(1500,700,Math.abs(t-RIVER_T(Math.min(s,APEX)))));return a<.004?null:{c:hex,a};}};},
+  flow:{cell:24,period:70,swirl:.14,scale:160,evolve:.8,fil:.5,filScale:28,
+   v:(x,z)=>{const si=seaIn(x,z);if(si>60)return null;const s=sOf(x,z),t=tOf(x,z),nc=nearCh(Math.min(s,APEX),t),side=Math.sign(t-chT(nc[1],Math.min(s,APEX)))||1,
+    out=.32*smooth(-1600,0,si)+.04,spread=.14*smooth(240,20,nc[0])*smooth(-1200,0,si),drift=.06;
+    const vs=-out,vt=side*spread+drift;return[(vs+vt)*RT2,(vs-vt)*RT2];}}};
+ return{sea,terrainH:h,riverY:Y,riverW:W,riverFrom:APEX-60,riverD:(x,z)=>dCh(sOf(x,z),tOf(x,z)),rapids:[.02,.08],riverLook:[0x5a7e62,0x20403a],falls:{steep:.18,minDrop:3.5},feetOwed:113,springs:[],strata:S,
   flood:{low:YB-1.2,high:YB+2.2,poly:floodPoly,lagD:45,sharp:1.5},
   kinRules:[{from:'canepalm',to:'swbay.splay',share:.3,salt:0x6e41,zone:Z=>Z.rip>.4}],
   fields:{tropic:(x,z)=>.82*smooth(300,-500,sOf(x,z)),dry:(x,z)=>.8*smooth(60,240,over(x,z))*smooth(-700,-200,sOf(x,z)),wet:(x,z)=>mix(.92,.5,smooth(40,240,over(x,z))),upland:(x,z)=>clamp((over(x,z)-40)/240,0,1)},
@@ -44,6 +57,6 @@ const STATION_STAGE=(function(){const {smooth,mix,clamp,fbm}=BIO.fn,S=stationStr
   site:()=>{const a=xzOf(SITE_S,RIVER_T(SITE_S)+340);window._wingSite={name:'Wing',px:[699,1042],x:+a[0].toFixed(1),z:+a[1].toFixed(1),y:YB+1.1,r:SITE_R,flood:[YB-1.2,YB+2.2]};},
   checks:add=>{const L=WATER.surfaces.find(q=>q.seasonal);add('the bench floods with the season',(()=>{if(!L)return{ok:false,detail:'no seasonal surface'};const lo=L.levelOf(0),hi=L.levelOf(1),n=WATER.stepSeasons(KHOST.host.clock);return{ok:hi-lo>3&&n>=1,detail:'low '+lo+', high '+hi+', now '+L.level.toFixed(2)+'; '+n+' stepped'};})());},
   views:()=>{const v=(s0,t0,h0,s1,t1,h1)=>{const a=xzOf(s0,RIVER_T(s0)+t0),b=xzOf(s1,RIVER_T(s1)+t1);return[a[0],Math.max(0,h(a[0],a[1]))+h0,a[1],b[0],Math.max(0,h(b[0],b[1]))+h1,b[1]];};
-   return{'The fan from above':v(-2300,-300,420,-1000,0,0),'The braids':v(-1250,120,26,-1500,0,1),'A gravel bar':v(-900,30,6,-1000,0,.5),'The backswamp':v(-1300,420,5,-1200,300,1),'The sand spit':v(-2050,700,40,-1800,600,0),
+   return{'The plume':v(-1450,250,230,-2500,-200,0),'The plume from the shore':v(-1880,520,14,-2300,200,0),'The fan from above':v(-2300,-300,420,-1000,0,0),'The braids':v(-1250,120,26,-1500,0,1),'A gravel bar':v(-900,30,6,-1000,0,.5),'The backswamp':v(-1300,420,5,-1200,300,1),'The sand spit':v(-2050,700,40,-1800,600,0),
     'The last cataracts':v(-420,0,30,120,0,20),'A cataract':v(120,10,14,20,0,0),'The floodplain':v(420,0,60,1800,0,0),'Wing\'s ground':v(1500,180,14,1750,340,1),'The flood forest':v(1100,190,3,1250,240,8),'The bench in full':v(3000,-200,160,500,100,0)};}};})();
 const STATION_FAR={h:(x,z)=>STATION_STAGE.terrainH(x,z),label:'The river\'s country past the map'};
