@@ -28,7 +28,7 @@ const VIEWS={
  // a specimen view: the most open-standing hero of the species, from the side whose sightline no other crown crosses
  const HT=new Map();XANADU.TREES.forEach(T=>{const k=Math.floor(T.x/50)+','+Math.floor(T.z/50);(HT.get(k)||HT.set(k,[]).get(k)).push(T);});
  const around=(x,z,r)=>{const o=[];for(let i=Math.floor((x-r)/50);i<=Math.floor((x+r)/50);i++)for(let j=Math.floor((z-r)/50);j<=Math.floor((z+r)/50);j++){const L=HT.get(i+','+j);if(L)L.forEach(T=>{if(Math.hypot(T.x-x,T.z-z)<r)o.push(T);});}return o;};
- const blockedLine=(T,cx,cz,me)=>{for(const O of around((T.x+cx)/2,(T.z+cz)/2,Math.hypot(T.x-cx,T.z-cz)/2+12)){if(O===me)continue;const dx=cx-T.x,dz=cz-T.z,l2=dx*dx+dz*dz,t=Math.max(0,Math.min(1,((O.x-T.x)*dx+(O.z-T.z)*dz)/l2));if(Math.hypot(T.x+dx*t-O.x,T.z+dz*t-O.z)<(O.crownR||3)*.8+1)return true;}return false;};
+ const blockedLine=(T,cx,cz,me)=>{for(const O of around((T.x+cx)/2,(T.z+cz)/2,Math.hypot(T.x-cx,T.z-cz)/2+12)){if(O===me)continue;const dx=cx-T.x,dz=cz-T.z,l2=dx*dx+dz*dz,t=Math.max(0,Math.min(1,((O.x-T.x)*dx+(O.z-T.z)*dz)/l2));if(Math.hypot(T.x+dx*t-O.x,T.z+dz*t-O.z)<(O.crownR==null?3:O.crownR)*.8+1)return true;}return false;};
  const specimen=(k,dist,h)=>{const C=XANADU.TREES.filter(T=>T.sp===k&&T.lv===2&&BIO.clearOf(T.x,T.z,25));let best=null;
   C.slice(0,400).forEach(T=>{const crowd=around(T.x,T.z,dist+10).length;if(best&&crowd>=best.crowd)return;
    for(let q=0;q<16;q++){const a=q/16*TAU,cx=T.x+Math.cos(a)*dist,cz=T.z+Math.sin(a)*dist;if(G(cx,cz)<.5||blockedLine(T,cx,cz,T))continue;best={T,crowd,cx,cz};break;}});

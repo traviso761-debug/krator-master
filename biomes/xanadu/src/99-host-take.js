@@ -25,9 +25,11 @@ const BUDGET={
 };
 // ---------------------------------------------------------------- the host's own checks (verify.py runs them), each with a broken input that must fail
 // species and plants that yield something edible the kit does not draw as a catalog fruit (seeds, petals, nuts...): named, not hidden
-const FRUIT_NOT_DRAWN=['ginkgo','lotustrumpet','ringbeech','wisteria','hyrcanoak','travelers','cloudfern','maquis'];
+const FRUIT_NOT_DRAWN=['ginkgo','lotustrumpet','ringbeech','wisteria','hyrcanoak','travelers','cloudfern','maquis'].concat(LAND.fruitAbsent||[]);   /* a station names the plants its ground has none of (the lotus where there is no lake) */
 // the instanced items on the stage, by item name, counted
-const itemCounts=()=>{const n={};scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;const k=(M.name||'').replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;});return n;};
+/* as placed, not as shown: the runtime LOD's chunk meshes out of range are off the scene (BIO.lodMeshes holds them all; the descent station counted no olives) */
+const itemCounts=()=>{const n={},seen=new Set(),one=M=>{if(seen.has(M)||!M.isInstancedMesh||!M.userData.biome)return;seen.add(M);const k=(M.name||'').replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;};
+ scene.traverse(one);(BIO.lodMeshes||[]).forEach(L=>{const M=L&&(L.mesh||L);if(M&&M.traverse)M.traverse(one);});return n;};
 const HCHK={
  // fruit: every species and plant carries a harvest tag; every edible one names a catalog piece (or is listed as not
  // drawn); every catalog fruit's item is on the stage, the olives and the lotus seed heads among them
@@ -35,7 +37,7 @@ const HCHK={
    .concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.edible.length&&!PL[k].tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(k)<0));
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
   const fr=SP.filter(S=>S.tags.harvest&&S.tags.harvest.fruit).map(S=>S.key).concat(Object.keys(PL).filter(k=>PL[k].tags.harvest&&PL[k].tags.harvest.fruit));
-  const undrawn=fr.filter(k=>!(N[XANADU.FRUIT_ITEM[k]]>0));
+  const undrawn=LAND.fruitAll===false?[]:fr.filter(k=>!(N[XANADU.FRUIT_ITEM[k]]>0));   /* a station that grows none of the Vale's fruit trees says so (LAND.fruitAll false): the tags are still checked */
   return{ok:!miss.length&&!untagged.length&&!undrawn.length&&fr.length>=9,
    detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(undrawn.length?'fruit not drawn: '+undrawn.join(', ')+'; ':'')+
     fr.length+' fruiting species and plants, '+XANADU.FRUIT_KEYS.length+' catalog keys; whorl olives '+(N.whorlolive||0)+', lotus seed heads '+(N.lotuspod||0)+', pods '+(N.pod||0)+', fruit balls '+(N.ball||0)+', pitaya '+(N.pitayafruit||0)+', catkins '+(N.catkin||0)}}};
@@ -43,7 +45,7 @@ const HCHK={
 // instances stand at one offset from the drawn ground (the median of y - drawnH over up to 400 of them within [-1, .3] m, its quartiles within .25 m);
 // each sampled instance is a record whose foot is that offset under it, measured by the probe's contact sweep (core/host/95b-host-seat.js). old: each
 // foot where terrainH put it, the negative that must float and sink. HELD_ITEMS share a mesh between ground pieces and held ones (a crown, a limb's moss)
-const HELD_ITEMS={'biome:mossmat':1,'biome:frill':1,'biome:banana':1,'biome:fan':1},NOT_FEET={'biome:boulder':1,'biome:rock':1},HELD_UP=.6;
+const HELD_ITEMS={'biome:mossmat':1,'biome:frill':1,'biome:banana':1,'biome:fan':1,'biome:frond':1,'biome:mushroom':1},NOT_FEET={'biome:boulder':1,'biome:rock':1},HELD_UP=.6;
 const FEET_OWED=LAND.feetOwed==null?0:LAND.feetOwed;   // ratchet: the feet still off the drawn ground at this turn (KNOWN_ISSUES.md); down, never up
 let _feet=null;
 function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];let held=0;
@@ -63,7 +65,7 @@ function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatS
 // THE LAND SIDE OF THE WATER (core/water ext/60, PRACTICE.md section 2; the checklist's third line): the env's fields hold their units, the trees stand out of
 // the water the eye sees, and the wet band reaches it. The dawn redwoods (sp 0) stand in the shallows by design (the kit's notes)
 const EDGE_OWED=LAND.edgeOwed||{plant:0,wet:0};   // ratchet: none owed at this turn
-function edgeCheck(neg){const P=[];for(const T of XANADU.TREES){if(T.lv===0||T.sp===0)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:XANADU.SPECIES[T.sp].key});if(P.length>4000)break;}
+function edgeCheck(neg){const P=[];for(const T of XANADU.TREES.concat(LAND.edgeTrees?LAND.edgeTrees():[])){if(T.lv===0||T.sp===0)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:XANADU.SPECIES[T.sp].key});if(P.length>4000)break;}
  if(neg&&WATER_F){const s=XANADU.TREES.find(T=>T.lv>0);const w=(function(){for(let z=TERR.Z0;z<TERR.Z1;z+=40)for(let x=TERR.X0;x<TERR.X1;x+=40)if(WATER_FN.shore(x,z)<-4)return[x,z];return null;})();if(w)P.push({x:w[0],z:w[1],r:.5,name:'the control (in the water)'});}
  const pts=[[0,0],[TERR.X0*.5,TERR.Z0*.5],[TERR.X1*.5,TERR.Z1*.5],[TERR.X0*.5,TERR.Z1*.5]],bad=BIO.envCheck(ENV,pts),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)};}
@@ -75,7 +77,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=itemCounts();
  add('a fruiting species with no catalog fruit',HCHK.fruit(XANADU.SPECIES.map(S=>S.key==='cacao'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),XANADU.PLANTS,N));
- add('no whorl olives drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,Object.assign({},N,{whorlolive:0})));
+ if(LAND.fruitAll!==false)add('no whorl olives drawn',HCHK.fruit(XANADU.SPECIES,XANADU.PLANTS,Object.assign({},N,{whorlolive:0})));
  add('a plant with no harvest tag',HCHK.fruit(XANADU.SPECIES,Object.assign({},XANADU.PLANTS,{lotus:{name:'Lotus',items:[],tags:{}}}),N));
  if(XQ_ON('seat'))add('the plants feet back on terrainH (as before KSEAT): they float and sink',feetCheck(true));
  add('a tree standing in the lake',edgeCheck(true));

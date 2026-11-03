@@ -60,6 +60,16 @@ jungle (XA, ~2,260 mm) and the salt steppe (XS, ~470 mm) on the floor at 1.9 atm
 down as kin; the floor takes eastabyss's and the Rift's lowland flora in place (the Rift is the neighbour). Spray and
 mist from the falls (`core/water` falls with `lipK` and spray, a fog belt in the gorge).
 
+## Station 5: the Rift floor (`--station floor`; the owner, 2026-11-03)
+
+**The easternmost lake of the Rift's floor, under the cataract.** Scale model 5.1 (`basins.json`): a salt lake at 5.1 px 909,1556
+(old canvas ~637,1226), -1,362 m, 176 km², XV, with two hypertropic (XA) salt lakes just west at 869,1558 (-1,645 m) and 883,1552
+(-1,150 m): the foot of the SE cataract step (old px 635-670, 1230-1265) that `descent` comes down. The owner: "we would have native rift
+flora and tall versions of xanadu flora competing for dominance". At 1.9 atm and ~2,260 mm the Vale's species carried down the river grow
+tall (`BIO.kin` cousins of XANADU's, scaled up: `XANADU.make`/`grow`), and the Rift's own lowland flora (`biomes/rift`, read in place by
+`RIFT.make`/`grow`) holds the ground they push into: a front across the shore, mixed in the middle, each side's own at its end.
+`descent` ends where the river reaches the floor and hands this station its land's foot (its `45b`).
+
 ## Order
 
 `cloud` first (it extends the kit's own flora), then `descent` (the cataract the kit owes), then `ranges`.

@@ -20,7 +20,7 @@ if(XQ_ON('wet')){const box=[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],W0=LAND.waterY||0;
 // their north faces, where the kit's mist field already grows its cloud band (the cloud frills, the beard trees); a station sets LAND.belt (or null for none)
 if(XQ_ON('hfog')){const BELT=LAND.belt===undefined?{y0:380,y1:860,windward:[0,-1]}:LAND.belt,W0=LAND.waterY||0;
  ATMOS.heightFog({falloff:1/700,sun:.35,sky:.35,mist:{density:.0012,y:W0+10,depth:14,noise:.7}});
- if(BELT&&XQ_ON('belt')&&ATMOS.fogBelt)window._belt=ATMOS.fogBelt({y0:BELT.y0,y1:BELT.y1,windward:BELT.windward,density:BELT.density||.0009,depth:60,lee:.3,rise:.5,
+ if(BELT&&XQ_ON('belt')&&ATMOS.fogBelt)window._belt=ATMOS.fogBelt({y0:BELT.y0,y1:BELT.y1,windward:BELT.windward,density:BELT.density==null?.0009:BELT.density,depth:60,lee:.3,rise:.5,
   extent:[TERR.X0*3,TERR.Z0*3,TERR.X1*3,TERR.Z1*3],res:128,steps:8});
  ATMOS.heightFogScene(scene);}
 // THE RAIN OCCLUSION MAP (R10): no rain, wet ground or rings under the crowns (the branched lightning rides with the weather's storm: fx/89-atmos-fx-lightning.js)
