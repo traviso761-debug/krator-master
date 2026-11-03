@@ -5,7 +5,7 @@ highlands`, 198,000 km² on 4.21) is mostly **dry in summer**: that forest fits 
 what the map holds and the kit does not draw. The page as built stays station 1. Stations follow the Throne's and
 Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan, awaiting the owner.**
+**Status (2026-11-03, pair 7):** station 5 (the bog country) is built, `--station bogs`. Stations 2-4 are not built yet: station 2 falls to the queue after the pairs (`HANDOFF-REBUILD.md`, "After the pairs"), 3 and 4 wait on the owner. "Core adoption (pair 7)" at the end says what station 1 took.
 
 ## The ground (surveyed 2026-10-23)
 
@@ -69,3 +69,58 @@ N0 sites chosen from the model, texture prompts; N1 station 2 (the largest gap);
 verified and baselined. **N4** (2026-11-02): station 5, the bog country, on the Footfall plateau; its `peat` layer and
 `sink` hazard; verified and baselined. Note: Roketstad reads this kit with the new flora gated off; stations do not change
 station 1.
+
+## Station 5, as built (pair 7, 2026-11-03): `python3 build.py --station bogs` -> `dist/nhighlands-bogs.html`
+
+`stations/bogs/`: its own stage (`45`), plants and passes (`62`), ground hooks (`83`), build (`88`), sky (`89`), water (`89w`) and views and checks
+(`98`); `station.json` drops station 1's tower, pillars and the Cut's natives and adds `core/water` ext/53-53b (`WATER.drawPools`) and `core/hazard`.
+- **The land** (4.8 km square, the kit's page scale: the bench at ~800 m as station 1's boreal band, the crest's rise past the SE edge and the wet face's
+  fall past the NW meeting station 1's ramp at s = +-4900 for the far country): three raised bogs (Ingram domes 4.4-6.2 m over 1-1.5 km), string fen on
+  the SE rise (peat strings along the contours, flarks between), four mineral knolls where the wood stands, a peat stream cut 1.8-3 m into the peat with
+  black hags, no falls, and about 520 pools: concentric pool-and-ridge rows on the domes' flanks, flarks in the string fen, the dubh lochan on the big
+  dome's crown. Every form is a plain record seeded from `KRAND` by index (`DOMES`, `KNOLLS`, `BOG_POOLS`).
+- **The geology**: the bake (`kits/resources/data/geology.json`) puts the plateau on sedimentary ground, not the wall's impact province, so it has no
+  megabreccia (`STATION_BRECCIA=false`); the steep is cut peat.
+- **The forest** (`NHL.STATION_PASSES`, a hook the kit's pass offers; station 1 sets none): the kit's own species. Spruce, fir, larch and birch close on
+  the knolls; birch and larch in the lagg; on the open mire stunted spruce (12-22% of its height), tamarack-like larch, knee-high dwarf birch and a few
+  krummholz spruce on the domes' crowns; the great trumpets alone in the fen. A field `bog` (1 on the open mire) drives it.
+- **The floor** (`NHL.STATION_PLANT`, the same kind of hook in the floor's pass): sphagnum hummocks (the moss cushion in sphagnum's red, ochre and green)
+  with heath and lichen on their tops, cotton-grass lawns, cloudberry, sedge, corn lilies in the lagg; the kit's montane and boreal floors on the knolls.
+  New items `cotton`, `cloudberry`, `cornlily` on the library's `card.cottongrass`, `card.cloudberry` and `card.cornlily` (packed into this page only:
+  `station.json` "families").
+- **The ground**: `ground.sphagnum` on the open mire, `ground.peat.black` on the hags and the pools' lips, the kit's meadow in the lagg (three KGROUND
+  layers, as station 1 has), a sphagnum paint over the kit's (`STATION_PAINT`).
+- **The water**: the pools as one mesh (`WATER.drawPools`: each at its own level, 0.15-0.4 m under the peat round it, peat-black), the peat stream a slow
+  tea-black ribbon, its head pool; the reflections switch on the dubh lochan.
+- **The hazards** (core/hazard records on core/tags, registered before the bake): each raised bog `sink` (danger .35, slows a walker, by weight), each
+  pool over 9 m a quaking `sink` edge (danger .6), the dubh lochan `drown`.
+- **Not done here** (the plan's list): `KFROST`'s polygons as the pool pattern (the pools are their own records), the season's ice on the pools (`ext/54`),
+  peat-cutters' camp, bog finds, bog iron. The look is the owner's to judge.
+
+## Core adoption (pair 7, 2026-11-03)
+
+`BACKPORT.md` section 1 and nhighlands' row, as taken by station 1 (the page as built) and, where it has the feature, station 5:
+- **Build**: `build.py` on the shared lists (oidong's shape): `--station`, `station.json` ("drop", "core", "families"), every page written with `newline='\n'`.
+- **Limb joints**: `BIO.flareJoin` (`31j`) in `limb()` and the crag pine's limbs; stems from the ground (`join:false`) keep their plain foot. No random draw.
+- **The crater wall's rock** (`kits/resources/ROCK-PROPOSAL.md`, "Where the biomes must change" 1): the geology bake puts this flank in the `impact`
+  province, so the crag pillars draw KSTRATA's `megabreccia` recipe (swhighlands' `crest`; `86-host-pillars.js`, `35` and `35z` in `build.py`) and the
+  ground's steep faces KGROUND's `clast` kind in the same rocks (`84-host-ground.js`: no texture unit, where the strata shader's five would not fit with
+  the shadows). `?strata=0` gives the old granite on both.
+- **Shadows**: `KSHADOW` (`89zz-host-shadow.js`), decided by the ground's texture units (11 used under SwiftShader: room on the Arc's 16). Cost not
+  measured here (no GPU in this session): `KNOWN_ISSUES.md`. `?shadow=0` off.
+- **Reflections**: `WATER.mirrorSwitch` on the tarn (station 5: the dubh lochan), off at load. The tarn is a `drawStill`, so the "no breakers on still
+  water" rule has nothing to change.
+- **The water as fields**: `WATER.fields` baked at 8 m before the first tree (`88`); the trees keep off the drawn water by its own shore (`NHL.SHORE`,
+  tested before any draw), and the host check `WATER.edgeAudit` reads the same field. The ground's wet band is the paint's banks and R9's rain, not a
+  water field, so its rules are not run (`KNOWN_ISSUES.md`).
+- **Cards**: `check_cells.py --fix` (14 faults the old pack hid: beard, drape, spray `base: top`; fern, lady `base: bottom`; fin; the clump crowns' stems),
+  then `pack.py`.
+- **Held foliage** (the attach audit): beard lichen from the arm's drawn rod, not its tip; the arms' rods to 80% of an arm over 4 m and on arms from 1.4 m;
+  the candelabra's and the curtains' sprays on their rods; birch rods at mid range; the willow's, gnarl's and serpentwood's mid-range leaves on the rods
+  drawn; the great trumpet's bulbs hung from the funnel's underside.
+- **Instance caps**: `needle` (700k) and `frond` (650k) declared with their reasons (the 32 M budget the owner set).
+- **Kept as it was**: KGROUND (three library layers), KHORIZON, KFAR, the shared sky, height fog, the rain cover, R9, the impostors (`BIO.impostorLook`
+  gain 3.6), `BIO.INDEX_ITEMS`, the LOD merge, fade and cull. **Dropped**: `KHOOK.warp` (nothing here bends), a fog belt on the crest band (the height
+  fog's cloud band at 1950-2100 m already is one), seasons (no deciduous drop is drawn yet: a later pass), ice on the tarn in frozen weather (`ext/54`,
+  a later pass).
+- **The new flora stays off for Roketstad**: `NHL.build` passes `{flora:true}` itself; `NHL.buildTrees` called by a world still places none of it.

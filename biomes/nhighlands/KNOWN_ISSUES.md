@@ -2,7 +2,35 @@
 
 ## Open
 
-- [ ] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**
+- [ ] **Pair 7's turn (2026-11-03, cloud session, no GPU): what is done and what the coordinator's GPU run must look at.** Branch
+      `claude/rebuild-nhighlands-cloud`; `PLAN-STATIONS.md`, "Core adoption (pair 7)" and "Station 5, as built".
+      - Verified here in **software GL only** (SwiftShader, `verify.py --assert` on two or three views, not `--all-views`): station 1 passes every
+        invariant, the attach audit at 0.59% (was 3.89% on the committed page: beard 78 of 133 and spray 45 floated; now broad 31, maple 11, needle 8,
+        spray 6 of 10,701), the edge audit (no tree in the drawn water; 54 were), no card-guard fault, the export profile. Not run: `--all-views`, the GPU.
+      - **Triangles: 31.16 M of the 32 M budget** (was 30.40 M): the rods that now hold the conifers' outer masses, the birches' at mid range and the beard
+        lichen's (+.76 M). Drawn at the overview: 2.89 M (2.78 M before).
+      - **The sun's shadows (KSHADOW) are on**: the ground reads 11 texture units with them (16 on the Arc). **Their cost is not measured** (no GPU here):
+        the coordinator's run should time a view with `?shadow=0` against the default, as the Throne's turn did (+30-38% on its station 1); if it is not
+        affordable, set `STATION_SHADOW=false` in `src/` or drop `89zz-host-shadow.js`.
+      - **The water's fields cost 8.6 s of load in software GL** (`_phases.fields`: `WATER.fields` at 8 m over the 6.6 km map, before the first tree).
+        On the GPU machine it is CPU time too; if it is long there, a 12 m cell (`88-host-build.js`) halves it. `?fields=0` for the old lines.
+      - Placement: only the trees the shore refuses are left out (each still makes its draws and keeps its ground), and the willow's, gnarled oak's,
+        laurel's and serpentwood's mid-range leaves sit on the rods drawn: no other tree moves.
+      - Still open from the core pass's list: about 130 floor plants and 6 trees on full rock faces (the cell form of `BIO.grid` and
+        `BIO.cliffCheck` gate them; the kit is not on the cell form).
+      Stays open: for the coordinator's GPU `--assert --all-views` and the owner's look (the megabreccia, station 5).
+- [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
+      ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
+      (`kits/resources/ROCK-PROPOSAL.md`). The blocks have no grain map yet (`rock.megabreccia` in `core/materials/PROMPTS-NEEDED.md` 32): procedural
+      until it comes. `?strata=0` shows the old granite for comparison.
+- [ ] **Station 5, the bog country (pair 7): the look to judge, and what it does not have yet.** The pools are their own records, not `KFROST`'s polygons;
+      no ice on the pools in winter (`ext/54`); no peat-cutters' camp, bog finds or bog iron (the plan's people and resources); the peat hags are a flat
+      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`PROMPTS-NEEDED.md` 32: `ground.peat.hag`, `card.dwarfbirch`,
+      `card.sedge.fen`). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
+- [ ] **The ground's wet band is not on the water's field.** `WATER.edgeAudit`'s wet rules are not run here: the wet near the water is the paint's banks
+      (`rip`) and R9's rain, not a band from the shore distance. Moving the paint's banks onto `WATER.fieldAt` is a look change for the owner.
+- [x] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**
+      2026-11-03: done in pair 7's turn (the item above): the attach audit 0.59%, `needle` and `frond` declare their caps (`capWhy`: the 32 M budget).
       The page's only failures are these two; the first predates the core pass's cap, the counts behind the second too.
       - The attach audit: 516 of 10,697 cards float (4.82%, limit 1%): `needle` 234 of 5,129, `beard` 81 of 133, `spray` 57 of
         1,323, `broad` 37 of 920. Put them on the twigs with `BIO.tree` and `BIO.clumpOn` or `BIO.snapSeg` (core/biome/README.md).

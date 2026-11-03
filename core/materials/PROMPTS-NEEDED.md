@@ -294,6 +294,30 @@ Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta backgr
 Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
 ```
 
+## 32. The northern highlands' bog country and the crater wall (`biomes/nhighlands`, station 5 and station 1's crags, 2026-11-03)
+
+Pair 7's turn (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)"). The bog station draws the library's `ground.sphagnum`, `ground.peat.black`,
+`card.cottongrass`, `card.cloudberry` and `card.cornlily`; what the mire still lacks, and what the crater wall's rock lacks, are four sets. Until they come:
+the peat hags are a flat procedural peat colour on the steep (`STATION_STEEP`), the dwarf birch is the kit's birch scaled to knee height (its aspen-leaf
+card), the fen sedge is the kit's grass card in sedge colours, and the megabreccia is KSTRATA's and KGROUND's procedural blocks (`clast`, no grain map).
+
+`ground.peat.hag` (the cut face of a peat bank, for a steep layer or a cliff material; vertical in use, so square and tileable both ways):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a vertical cut face of black-brown blanket peat seen straight on, the fibrous dark peat banded faintly in horizontal layers a few centimetres thick, pale bleached root threads and old sphagnum stems hanging out of it, a few wet glistening patches and small crumbled overhangs, the top tenth not special (it tiles); colours from near-black brown to dark umber with a faint red cast, no green except a few tiny moss specks.
+```
+`card.dwarfbirch` (Betula nana: knee-high shrubs on the hummocks):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate low sprawling shrubs of dwarf birch, each a tangle of thin dark red-brown twigs spreading sideways from a short base, densely set with tiny round scalloped leaves about a centimetre across, glossy mid green with a few turning orange and red, each shrub drawn whole and wider than tall, with its base clearly at the bottom centre of its cell, all six the same scale, not touching, evenly spaced in a 3x2 grid.
+```
+`card.sedge.fen` (the fen's tussock sedge and the lagg's lawns):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate tussocks of fen sedge, each a dense fountain of long narrow arching blades from one root, the blades yellow-green to olive with dry straw-brown tips and a few dead brown blades among them, three of the tussocks carrying slender brown flower spikes on stalks above the leaves, each tussock drawn whole with its base clearly at the bottom centre of its cell, all the same scale, not touching, in a 4x2 grid.
+```
+`rock.megabreccia` (the crater wall's rock: a grain map for KGROUND's `clast` blocks and KSTRATA's megabreccia on station 1's crag steps and pillars):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
