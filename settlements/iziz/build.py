@@ -84,6 +84,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -475,6 +476,8 @@ def build_one(target, do_checks, assert_origin):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
     if SIDE:   # the pack beside the pages, one file they all share
@@ -617,7 +620,7 @@ def main():
     if '--vendor-bio' in sys.argv:
         vendor_bio()
         return
-    if not KIT:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
+    if not KIT and not BSRC.LISTING:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
         vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
@@ -629,6 +632,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
+        if BSRC.LISTING:
+            continue
 
         # --- byte-identity with the single file this repo was split out of ---
         origin_note = ''
@@ -661,6 +666,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendored=[] if KIT else [os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in VENDORED] +
+                         [bio_paths(f)[0] for f in BIO_VENDORED])   # --list-sources: every target's files (and the vendored upstreams), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(KIT['dir'] if KIT else HERE, 'KNOWN_ISSUES.md')

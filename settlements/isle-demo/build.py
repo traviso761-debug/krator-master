@@ -22,6 +22,7 @@ import base64, glob, hashlib, json, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 VOTH = os.path.join(ROOT, 'settlements', 'voth')
 VSITE = os.path.join(VOTH, 'targets', 'voth-site')
 WORLD = os.path.join(ROOT, 'openworld', 'isle-demo')
@@ -74,6 +75,8 @@ def sources(accept):
     now = {rel(p): sha(p) for p in VOTH_READ}
     old = json.load(open(REC, encoding='utf-8'))['files'] if os.path.isfile(REC) else None
     if accept or old is None:
+        if BSRC.LISTING:   # --list-sources writes nothing
+            return []
         with open(REC, 'w', encoding='utf-8', newline=NL) as f:
             json.dump({'note': "the Voth files build.py reads in place; the shim (src/10, 56, 98) fits these", 'files': now}, f, indent=1)
             f.write(NL)
@@ -242,6 +245,8 @@ def main():
     parts.append('<script>' + NL + '"use strict";' + NL + body + '</script>' + NL)
     parts.append(read(TAIL))
     html = ''.join(parts)
+    if BSRC.LISTING:   # --list-sources: the site page's files are read; the city page reads its own and reports
+        city_page()
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, 'isle-site.html')
     with open(out, 'w', encoding='utf-8', newline=NL) as f:
@@ -347,6 +352,7 @@ def city_page():
     html = (CITY_HEAD + '<script>/* %s */%s%s%s</script>%s' % (rel(VENDOR[0]), NL, read(VENDOR[0]), NL, NL) +
             sc(data) + sc(core) + sc(mats) + sc(kc) + sc(cat) + sc(isk) + sc(izv) + sc(rs) + sc(own(CITY_DATA_JS)) + sc(own(CITY_WEB_JS)) +
             '</body></html>' + NL)
+    BSRC.report()   # --list-sources: both pages' files, then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(side, html, DIST, 'isle-city.tex.js')
     out = os.path.join(DIST, 'isle-city.html')

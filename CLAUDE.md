@@ -18,7 +18,10 @@ section 10) and the city-layout module (`core/city/PLAN.md`) are next. Every ses
 every node test under `core/`, a rebuild of every build and the hash baseline (`--no-build` skips the rebuilds;
 `--nightly` adds `verify.py --assert` on the critical builds and the Godot tests). CI runs it on every push
 (`.github/workflows/`); the nightly job runs on `main`. A `verify.py` takes the shared harness (`tools/harness.py`:
-the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
+the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Every
+`build*.py` imports `tools/build_sources.py` and calls `report()` before its first write, so `--list-sources` prints
+what it reads; `tools/dep_graph.py` builds `DEPS.json` from those lists (a new build copies the pattern from the
+nearest one; one without it falls back to the comment-counting text scan). Built pages,
 bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
 
 **Who works where.** No separate economy session runs any more (owner, 2026-10-18): `core/simulation/` is edited

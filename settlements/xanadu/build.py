@@ -77,6 +77,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -310,6 +311,8 @@ def build_one(target, do_checks):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'xanadu.tex.js', prune=False)
@@ -361,7 +364,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
     if '--target' in sys.argv:
@@ -371,6 +375,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
 
         # --- syntax check (honest about node being absent) -------------------
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
@@ -393,6 +399,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

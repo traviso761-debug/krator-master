@@ -20,6 +20,7 @@ the world's streaming, sky, camera and probe.
 import base64, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, 'src')
 DATA = os.path.join(HERE, 'data')
@@ -89,6 +90,7 @@ def data_fragment():
 
 
 def main():
+    BSRC.report([os.path.join(ROOT if w != 'src' else HERE, w, f) for w, f in ORDER if w != 'gen'], DATA)   # --list-sources: what the page names, then exit
     out, bad = [], []
     for where, f in ORDER:
         if where == 'gen':

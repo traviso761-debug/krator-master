@@ -61,6 +61,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "pinnacle-rock.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 CORE_TERRAIN=['37-core-stacks.js','38-core-relief.js','39-core-cavern.js']   # KSTACKS (the rock); KRELIEF (the noise the open world's fields take); KCAVERN (the Deep Root cavern, P3d)
@@ -253,6 +254,7 @@ VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
          '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE),
          '44c-host-matlib-pack-beast-riders.js':_mp.fragment(BRK,'beast-riders',exclude=BR_SKIP,side=SIDE)}
 for f in VIRTUAL: PATH[f]=None
+BSRC.report(PATH)   # --list-sources: what the page is made of (every path it names), then exit
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:

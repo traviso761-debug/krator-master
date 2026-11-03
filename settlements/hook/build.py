@@ -31,6 +31,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))            # repo root
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 PORT = os.path.join(ROOT, 'settlements', 'port')         # the Ancient Port kit, read in place
 PORT_SRC = os.path.join(PORT, 'src')
 SRC = os.path.join(HERE, 'src')
@@ -117,6 +118,8 @@ def build_one(target, do_checks):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, target + '.html')
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, target + '.tex.js')
@@ -157,6 +160,8 @@ def main():
             sys.exit('no targets found under targets/*/89z-rows.js')
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         blocks = re.findall(r'<script[^>]*>(.*?)</script>', html, re.S)
         body = max(blocks, key=len) if blocks else ''
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
@@ -187,3 +192,4 @@ if __name__ == '__main__':
     if '--vendor-check' in sys.argv:
         sys.exit(0 if vendor_check() else 1)
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit

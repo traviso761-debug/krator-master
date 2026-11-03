@@ -28,6 +28,7 @@ ImageFile.MAXBLOCK = 1 << 24       # optimize=True with subsampling=0 overflows 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 MAT = os.path.join(ROOT, 'core', 'materials')
 
 
@@ -84,8 +85,9 @@ def main():
     ap.add_argument('--size', type=int, default=512)
     ap.add_argument('--artifact', action='store_true', help='drop the document wrapper (the Artifact host adds its own)')
     ap.add_argument('--out', default=os.path.join(HERE, 'dist', 'materials-demo.html'))
-    a = ap.parse_args()
+    a = ap.parse_args([x for x in sys.argv[1:] if x != BSRC.FLAG])
     man = json.load(open(os.path.join(HERE, 'manifest.json'), encoding='utf-8'))
+    BSRC.report([resolve(e['src'], a.scratch) for e in man['entries']], find_three())   # --list-sources: the sets' folders and the three.js it takes (not encoded: the maps are in Git LFS), then exit
     sets, skipped = [], []
     for e in man['entries']:
         d = resolve(e['src'], a.scratch)

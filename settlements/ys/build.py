@@ -48,6 +48,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -362,6 +363,8 @@ def build_one(target, do_checks):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, TARGET_OUT.get(target, target + '.html'))
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     html = _mp.write_sidecar(SIDE, html, DIST, 'ys.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
@@ -409,7 +412,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
     if '--target' in sys.argv:
@@ -420,6 +424,8 @@ def main():
             sys.exit('no targets found under targets/*/89z-rows.js')
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
         with open(chk, 'w', encoding='utf-8', newline='\n') as fh:
@@ -439,6 +445,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

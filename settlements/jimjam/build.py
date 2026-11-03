@@ -42,6 +42,7 @@ def find_node():
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 TARGET = os.path.join(HERE, 'targets', 'kit')
@@ -177,6 +178,7 @@ def build():
     title_match = re.search(r"const TITLE\s*=\s*'([^']*)'", bodies.get('89z-rows.js', ''))
     if title_match:
         html = re.sub(r'<title>.*?</title>', '<title>' + title_match.group(1) + '</title>', html, count=1)
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     output = os.path.join(DIST, 'jimjam-kit.html')
     with open(output, 'w', encoding='utf-8', newline='') as dst:

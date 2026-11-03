@@ -54,6 +54,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CATALOG = os.path.join(ROOT, 'kits', 'catalog')
@@ -198,6 +199,7 @@ def main():
                '   edit src/ and rebuild. Engine-neutral: no THREE, no DOM. See API.md. */\n' + join(core_parts))
     html = (''.join(read(src_path(f)) for f in head) + '<script>\n' + script +
             ''.join(read(src_path(f)) for f in tail))
+    BSRC.report(vendored=VENDORED.values())   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     # the walk mockup: SELF-CONTAINED (three.js and the catalog inlined, one file to share): the core, the
     # adapter, the views, every set, the real building shells (walk/shells/*.js, from tools/export_shells.py),

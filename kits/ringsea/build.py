@@ -69,6 +69,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
@@ -153,6 +154,7 @@ def main():
                 print('  -', e)
             sys.exit(1)
     html = ''.join(bodies[f] for f in order)
+    BSRC.report(vendored=[os.path.join(ANCIENTS, r) for r in VENDORED] + [SOCKETS, SYMBOLS])   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')
     with open(out, 'w', encoding='utf-8', newline='') as fh:
