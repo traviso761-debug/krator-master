@@ -37,6 +37,12 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
   - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on `savannarim`) takes the flush;
   - **Godstep's redlands** station reads the same species;
   - every kit on the monsoon season gets the Godot `season_dry` with it.
+- **The `sound` record** (H9, `core/tags/54-core-tags-sound.js`, twin `ksound.gd`):
+  - **hyperjungle** takes `bamboo-howl` on its howl-bamboo groves (land `north`, station 3);
+  - **outlandgate** takes `rib-flute` on station 3, the singing buttress;
+  - **High Rift** takes `gjar-organ` on the Singing Gjár.
+
+  There is no core/audio yet: the records are there for it and for Godot.
 
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 
