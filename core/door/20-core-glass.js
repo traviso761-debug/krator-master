@@ -12,7 +12,8 @@
 //   KGLASS.SPEC.stained   a coloured pane (temples, guild halls): the tint is the caller's (opt.color)
 //   KGLASS.SPEC.room      the room's back seen through glass on a solid body (a dim plaster card, opaque): not glass,
 //                         but the one thing a pane on a body with no interior needs behind it, so it lives here
-//   KGLASS.material(THREE, kind, opt)   a shared material (cached by kind and opt.color); opt.color overrides the colour
+//   KGLASS.material(THREE, kind, opt)   a shared material (cached by kind, opt.color and opt.emissive); opt.color overrides the
+//                                       colour, opt.emissive the glow's colour (a lit kind: an electric lamp's cool light, not a flame's)
 //   KGLASS.kinds()                      the kind names
 //   KGLASS.pane(kind)                   {transparent, depthWrite, side} a host needs to sort the pane after the opaque scene
 (function(root){
@@ -27,12 +28,12 @@
   var cache=new Map();
   function material(T,kind,opt){
     var S=SPEC[kind];if(!S)throw new Error('KGLASS.material: no kind '+kind);
-    opt=opt||{};var col=opt.color==null?S.color:opt.color,k=kind+':'+col;
+    opt=opt||{};var col=opt.color==null?S.color:opt.color,em=opt.emissive==null?(S.emissive===0?col:S.emissive):opt.emissive,k=kind+':'+col+':'+em;
     var c=cache.get(T);if(!c){c=new Map();cache.set(T,c);}
     var m=c.get(k);if(m)return m;
     m=new T.MeshStandardMaterial({color:col,roughness:S.roughness,metalness:S.metalness,side:S.transparent?T.DoubleSide:T.FrontSide});
     if(S.transparent){m.transparent=true;m.opacity=S.opacity;m.depthWrite=false;}
-    if(S.glow){m.emissive=new T.Color(S.emissive===0?col:S.emissive);m.emissiveIntensity=S.glow;}
+    if(S.glow){m.emissive=new T.Color(em);m.emissiveIntensity=S.glow;}
     m.name='kglass:'+kind;m.userData.kglass=kind;
     c.set(k,m);return m;}
   root.KGLASS={SPEC:SPEC,material:material,kinds:function(){return Object.keys(SPEC);},

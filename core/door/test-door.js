@@ -74,4 +74,16 @@ ok('every glass kind has a colour and an opacity; panes are transparent, the roo
 ok('the clear pane is Iziz\'s glass (0xb4ccd2, .22)',KGLASS.SPEC.clear.color===0xb4ccd2&&KGLASS.SPEC.clear.opacity===.22,KGLASS.SPEC.clear.opacity!==.22);
 threw=false;try{KGLASS.material({},'nope');}catch(e){threw=true;}
 ok('an unknown glass kind is refused',threw,false);
+// a stub three.js: enough for KGLASS.material and KDOORHOST.posed (the host's other calls need the real one)
+const T0={DoubleSide:2,FrontSide:0,MeshStandardMaterial:function(p){Object.assign(this,p);this.userData={};},Color:function(h){this.hex=h;}};
+const gl=KGLASS.material(T0,'lit'),gc=KGLASS.material(T0,'lit',{emissive:0x9fd8ff}),gs=KGLASS.material(T0,'stained',{color:0x336699});
+ok('a lit pane glows the kind\'s warm colour; opt.emissive gives another glow (cached apart), the kind\'s colour kept',
+  gl.emissive.hex===KGLASS.SPEC.lit.emissive&&gc.emissive.hex===0x9fd8ff&&gc!==gl&&gc.color===KGLASS.SPEC.lit.color&&KGLASS.material(T0,'lit')===gl,gc===gl);
+ok('a stained pane still glows its own colour',gs.emissive.hex===0x336699,gs.emissive.hex!==0x336699);
+eval(fs.readFileSync(path.join(__dirname,'90-core-door-host.js'),'utf8'));
+KDOOR.clear();const P1=KDOOR.add({id:'shop.0.d0',at:[0,0,0],hinge:[-.5,0,0],w:1,h:2});let calls=0,last=null;
+KDOORHOST.posed(P1,(D,p)=>{calls++;last=p;});KDOOR.open(P1);for(let i=0;i<30;i++)KDOORHOST.tick(.1);
+ok('a posed leaf: the page\'s function is called as the door moves, with KDOOR.pose\'s centre and swing',calls>3&&near(last[3],KDOOR.SWING),calls===0);
+calls=0;for(let i=0;i<5;i++)KDOORHOST.tick(.1);
+ok('a door at rest is not posed again',calls===0,calls!==0);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
