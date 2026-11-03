@@ -212,6 +212,13 @@ PORT row.
 
 **swlowlands' turn (2026-11-02):** species changed for readers: none of keys 0-26 or their indices; new 27 `springcypress`, 28 `ribbonroot`; new `SWLOW.make`, `grow`, `veto`, `IMPOSTORS`; item `padbloom`; `bk.mottle` is `bark.plane`; the madrone's blooms sit lower in the crown; every tree's shape re-rolled once (per-tree reseed); `88-host-build.js` is `89z-host-build.js`. Owed: swbay's receiver rows (mangrove, coastoak); `biomes/swlowlands/PLAN-STATIONS.md`, "For the owner".
 
+**Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
+sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
+and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
+k-guilin, xanadu. A river meeting a lake or the sea takes `core/water` ext/61's `tintFlow` (a moving plume). Also new in core: `BIO.bakeImpostors` counts only
+visible frames (a page loaded in a hidden pane reported "textures not in after 180 s"); a plume's texture reads are at an explicit LOD (implicit gradients beside
+the water's discards drew the sea black over land on ANGLE D3D11, seen only in the browser pane, not in headless verify).
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.

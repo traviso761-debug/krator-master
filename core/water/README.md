@@ -820,7 +820,9 @@ whole stands downstream of where it was laid.
 
 - `tintFlow: {v(x, z) -> [vx, vz] m/s | null, cell, period (60 s), swirl (.12 m/s), scale (140 m), evolve (.8), fil (.45), filScale (30 m)}`.
 - `WATER.tintFlowAt(S, x, z, t)` is the shader's twin. The test runs `wtrTintFlow`'s own text against it, to 1e-16.
-- **Adopting it:** list `ext/61-core-water-plume.js` in the build (`tools/fragment_needs.json`: after 20 and 50). Give the surface a tint (the
+### Adopting it
+
+- List `ext/61-core-water-plume.js` in the build (`tools/fragment_needs.json`: after 20 and 50). Give the surface a tint (the
   plume's colour, fading with distance) and a `tintFlow` whose `v` runs out from the mouths, spreads off each channel's line and drifts along the
   shore. swlowlands' delta station is the worked example (`stations/delta/44z-host-delta.js`, `sea`; `?plume=0` without it).
 - **Nothing else moves:** 50's text changes only behind `S.tintFlow`, and the test proves a tint without it draws the same shader, key and

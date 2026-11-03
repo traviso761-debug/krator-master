@@ -29,7 +29,9 @@ const SEA_WATER=WATER.open({name:'The inland sea',level:0,swell:[[.06,45,300,0,.
  bed:waterBed,bedBox:WATER_BOX,bedCell:WATER_CELL,shore:{seeds:[xzOf(-2600,0)]},mask:SEA_MASK,
  /* a station's plume (ST.sea: its tint and the current that carries it, core/water ext/61; ?plume=0 without it) */
  ...(ST&&ST.sea&&ST.sea.tint&&new URLSearchParams(location.search).get('plume')!=='0'?{tint:ST.sea.tint(lin(BAYOU_COL.clone().lerp(RIVER_COL,.5).multiplyScalar(.8))),tintFlow:ST.sea.flow}:{})});
-const SEA_DRAW=WATER.draw(SEA_WATER,{...(ST&&ST.sea&&ST.sea.surf===false?{surf:false,breakers:false}:{}),renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,
+/* the page's 'inland sea' is the SW lowlands' lake (and the delta's arm is sheltered): no surf lap, no shore-grid breakers (the owner, 2026-11-02: the contour rings round
+   islands); the gorge's mouth opens on the Ring Sea itself and keeps them */
+const SEA_DRAW=WATER.draw(SEA_WATER,{...(!ST||ST.sea&&ST.sea.surf===false?{surf:false,breakers:false}:{}),renderOrder:1,roughness:.26,metalness:.05,envMapIntensity:.22,
  shallow:lin(SEA_SHALLOW.clone().lerp(SEA_MID,.3)),deep:lin(SEA_DEEP.clone().multiplyScalar(.75))});
 SEA_DRAW.mesh.userData.inspectLabel='The inland sea';
 // the inland water: three-centimetre ripples on a flat surface, one tea-dark colour between the bayou's and the river's
