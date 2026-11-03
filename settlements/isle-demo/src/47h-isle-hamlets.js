@@ -35,6 +35,7 @@ ISLE.simHamlets = function (villages) {
     try { out.villages.push(ISLE.simHamlet(sp, v, V.resource)); } catch (e) { out.errors.push(sp.id + ': ' + (e && e.stack ? e.stack : e)); }
   });
   out.villages.forEach(function (X) { out.routes.push(X.out, X['in']); });
+  if (SIM.MONEY) out.villages.forEach(function (X) { ISLE.simMoneyTown(X.id); });   /* their accounts (47m) */
   return out;
 };
 /* the towns take the villages' goods: new goods in every economy, the inputs, the recipes, the lakatoi's goods */

@@ -1,4 +1,8 @@
-# Money in the sim: research and a proposal (2026-11-02, not built; the owner's answers 2026-11-03)
+# Money in the sim: research and a proposal (2026-11-02; the owner's answers 2026-11-03; **M0 built 2026-11-03**)
+
+**M0 is built** (`77-sim-6-money.js`, SCHEMA.md "Money"; the isles' accounts: settlements/isle-demo `47m`, `tests/test-isle-money.js`):
+currencies at a rate to the Talent, accounts with owners, mint, burn, pay and exchange, the ledger holding every settlement's money to
+its books. Nothing is paid on the isles yet; M1 (wages and purchases) is next.
 
 The owner asked (2026-11-02) for suggestions on implementing and balancing money in the sim, after crime and the
 thieves' guild showed what is missing without it: a pocket picked takes nothing, a fence pays nothing, the guild's stash

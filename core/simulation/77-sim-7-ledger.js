@@ -10,6 +10,7 @@
 //                       storage), ordered, inbound, outbound; the running flows made, imported, exported, used, bought,
 //                       eaten, spoiled, short
 //   SIM.ledger(a, b, opt) -> {ok, problems:[strings], towns:{key: {good: statement}}, routes:{route: {'a>b': {good: leg}}}, sites:{id: {taken, made, amount}}}
+//   money (77-sim-6-money.js): the snapshot's `money`, the statement's `money: {towns: {s: {currency: {opening, minted, burned, in, out, closing, residual}}}, currencies}`
 //   a site's take less the batches in hand on it (`wip`: taken when the batch starts, made when it ends) is held to what was made
 //                       the statement between two snapshots. opt.tol: the residual allowed (0.5: the stocks round to
 //                       hundredths). A statement: {unit, owner, opening, made, imported, consumed, spoiled, exported,
@@ -49,6 +50,7 @@
       R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
       out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
+    if(SIM.MONEY && SIM.moneySnap) out.money=SIM.moneySnap();   /* money's accounts and books (77-sim-6-money.js), when a world keeps money */
     return out;
   };
   function v(o, k, g){ return ((o||{})[k]||{})[g]||0; }
@@ -79,6 +81,17 @@
       S.goods.forEach(function(g){ made+=(st[g]||{}).made||0; }); (out.sites||(out.sites={}))[id]={ taken:d, made:made, amount:S.amount };
       if(d>made+tol) bad(id+': gave '+d+' but its settlement made '+made+' of '+S.goods.join(', '));
       if(S.amount!=null && A && S.amount>A.amount-d+tol+Math.max(S.regen*Math.ceil((b.minute-a.minute)/1440+1), (S.regrown||0)-(A.regrown||0))) bad(id+': holds more than it gave and regrew'); });   /* `regrown`: what grew back (nightly, or restored: SIM.siteRestore) */
+    /* MONEY (77-sim-6-money.js, PLAN-MONEY.md M0): per settlement and currency, opening + minted - burned + in - out = closing,
+       exactly (integers); across a currency's settlements, what went out came in; no account below zero; none lost */
+    if(b.money && a.money){ var mo=out.money={ towns:{}, currencies:{} };
+      Object.keys(b.money.towns).forEach(function(k){ Object.keys(b.money.towns[k]).forEach(function(c){ var B=b.money.towns[k][c], A0=(a.money.towns[k]||{})[c]||{ total:0, minted:0, burned:0, 'in':0, out:0 };
+        var st={ opening:A0.total, minted:B.minted-A0.minted, burned:B.burned-A0.burned, 'in':B['in']-A0['in'], out:B.out-A0.out, closing:B.total };
+        st.residual=st.closing-(st.opening+st.minted-st.burned+st['in']-st.out); (mo.towns[k]||(mo.towns[k]={}))[c]=st;
+        var C=mo.currencies[c]||(mo.currencies[c]={ 'in':0, out:0, minted:0, burned:0 }); C['in']+=st['in']; C.out+=st.out; C.minted+=st.minted; C.burned+=st.burned;
+        if(st.residual!==0) bad('money '+(k||'(no settlement)')+' '+c+': '+st.opening+' + '+st.minted+' minted - '+st.burned+' burned + '+st['in']+' in - '+st.out+' out is not the '+st.closing+' held (off by '+st.residual+')'); }); });
+      Object.keys(mo.currencies).forEach(function(c){ var C=mo.currencies[c]; if(C['in']!==C.out) bad('money '+c+': '+C.out+' paid out of settlements but '+C['in']+' paid in'); });
+      Object.keys(b.money.accounts).forEach(function(id){ if(b.money.accounts[id]<0) bad('money: account '+id+' below zero ('+b.money.accounts[id]+')'); });
+      Object.keys(a.money.accounts).forEach(function(id){ if(b.money.accounts[id]==null) bad('money: account '+id+' is gone'); }); }
     return out;
   };
 })(typeof window!=='undefined'?window:globalThis);

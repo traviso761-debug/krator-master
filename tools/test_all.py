@@ -63,7 +63,7 @@ BUILD_FIRST = ['kits/interiors']
 # writes it); with --no-build it runs with the other node tests, on the committed output.
 NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js',
                     'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js',
-                    'settlements/isle-demo/tests/test-isle-crime.js']   # dist/isle-city.plan.js
+                    'settlements/isle-demo/tests/test-isle-crime.js', 'settlements/isle-demo/tests/test-isle-money.js']   # dist/isle-city.plan.js
 
 
 def builds():

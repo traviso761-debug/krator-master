@@ -230,6 +230,7 @@ core/simulation/
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
     77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
     PLAN-MONEY.md         money: research and a proposal (2026-11-02, not built; the owner's questions at its end)
+    77-sim-6-money.js     money (2026-11-03, opt-in: SIM.money): currencies, accounts, mint, burn, pay, exchange (PLAN-MONEY.md M0)
     77-sim-6-crime.js     crime and punishment (2026-11-02, opt-in: SIM.crime): criminals, pickpockets, burglars, fights, witnesses, guards, arrest, jail
     77-sim-6-govern.js    the economy's opt-in rules: a production governor (order-up-to with its supply line), spoilage,
                           keeping (salt), seasoning (lifted from the isle demo 2026-10-26)

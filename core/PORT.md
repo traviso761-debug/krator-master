@@ -108,6 +108,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `simulation/77-sim-6-economy.js` | 28.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the economy: goods, stores, production by worked hour and efficiency, carts, consumption, days left, imports |
 | `simulation/77-sim-6-items.js` | 23.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | items, inventory, the six slots, wear, errands to the nearest seller, meals from a household store (opt-in: SIM.items) |
 | `simulation/77-sim-6-crime.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | crime and punishment (opt-in SIM.crime): criminals, the crimes, witnesses, guards, arrest, jail by SIM.command; hashes only; no three.js, no DOM |
+| `simulation/77-sim-6-money.js` | 8.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | money (opt-in SIM.money): currencies at a rate to the Talent, accounts with owners, mint, burn, pay, exchange, the report; integers; no three.js, no DOM |
 | `simulation/77-sim-6-needs.js` | 13.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | needs, happiness, efficiency, loyalty; the free-time clause and the interrupt of SIM.desire (opt-in: SIM.needs) |
 | `simulation/77-sim-6-population.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `simulation/77-sim-6-trade.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

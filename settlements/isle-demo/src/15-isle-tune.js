@@ -318,6 +318,15 @@ ISLE.TUNE.sim = {
        to the guild in a free hour and fences it there (the food into the guild's store, the things on its shelf, the thief's
        material meter down `perServing` a serving and `perItem` a thing); arrested first, the loot goes back */
     guild: { kinds: ['tavern'], hideReach: 300, hideMins: 120, abstractHide: 0.5, items: 1, fence: { acts: ['SOCIALIZE', 'IDLE', 'BUY'], mins: 30, perServing: 0.2, perItem: 8 } } },
+  /* MONEY (47m; core/simulation 77-sim-6-money.js; core/simulation/PLAN-MONEY.md M0; the owner, 2026-11-03): each nation its
+     currency, the Izani Talent the trade's: the Islanders' is Kautoan shells (strung shell money), `talent` its value in
+     Talents. M0 opens the accounts and nothing moves yet (wages and prices are M1): every household in its town's currency
+     with `endow` shells by its home's class, every workplace (a recipe or wares) owned by its town's treasury (PLAN-MONEY
+     2a: the treasury owns them all to start), the treasury with `treasury` shells a person, the guild `guild`, the money
+     changers' reserves, the traders from beyond in Talents. The numbers are placeholders for M1's tuning */
+  money: { currencies: { talent: { name: 'Izani Talent', talent: 1, unit: 'talent' }, shell: { name: 'Kautoan shells', talent: 0.05, unit: 'shell' } },
+    spread: 0.03, nation: { islanders: 'shell' }, endow: { poor: 40, middle: 200, rich: 1000 }, treasury: 20, guild: 500,
+    changers: { shell: 20000, talent: 1000 }, foreign: { talent: 5000 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

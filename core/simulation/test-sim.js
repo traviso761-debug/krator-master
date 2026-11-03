@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -1043,6 +1043,36 @@ function world(seed){
  const Q=mk({crimes:pp,at:['tavern']});Q.run(14);const RQ=Q.S.crimeReport(),inDen=Q.S.R.actor.thief.place;
  const Q2=mk({crimes:{pickpocket:{acts:['SOCIALIZE'],at:['tavern'],hours:[6,20],chance:1}},at:['tavern'],guild:false});Q2.run(14);
  ok('nobody picks a pocket inside the guild (the thief at '+inDen+', '+(RQ.stats[''].attempts.pickpocket||0)+' tried there)',!(RQ.stats[''].attempts.pickpocket>0),Q2.S.crimeReport().stats[''].attempts.pickpocket>0===false);}
+
+// money (77-sim-6-money.js, PLAN-MONEY.md M0): accounts in a nation's currency, integers; mint and burn the only faucet and
+// sink; a payment conserves its currency, never overdraws, is booked out of one settlement and into another; an exchange
+// goes through the changers at the rates to the Talent less their spread; the ledger holds every settlement's money to its
+// books, exactly, and catches a balance changed by hand, an account gone, money paid out of a town that never came in
+{const mk=()=>{const {S,clock}=world(241);S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.money({currencies:{talent:{name:'Izani Talent',talent:1},shell:{name:'Kautoan shells',talent:0.05}},spread:0.03});
+   S.account({id:'hhA',kind:'household',currency:'shell',settlement:'kautoa'});S.account({id:'hhB',kind:'household',currency:'shell',settlement:'valapo'});
+   S.account({id:'tre',kind:'treasury',currency:'shell',settlement:'kautoa'});S.account({id:'shop',kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'tre'});
+   S.account({id:'player',kind:'player',currency:'talent'});
+   S.mint('hhA',200,'endowment');S.mint('hhB',100,'endowment');S.mint('tre',5000,'reserve');S.mint('player',50,'endowment');
+   S.mint('changer:shell',10000,'reserve');S.mint('changer:talent',1000,'reserve');return S;};
+ const S=mk(),a0=S.ledgerSnap();
+ const p1=S.pay('hhA','shop',30,'purchase'),p2=S.pay('hhA','hhB',500,'gift'),p3=S.pay('hhB','tre',90,'tribute',true),p4=S.pay('hhB','tre',500,'tribute',true);
+ const b1=S.burn('tre',100,'offering'),ex=S.exchange('player','hhA',10,'player buys');
+ const L=S.ledger(a0,S.ledgerSnap()),R=S.moneyReport();
+ ok('a payment conserves its currency and never overdraws ('+p1+' paid, '+p2+' of 500 asked, '+p3+' of 90 whole, '+p4+' of 500 whole)',p1===30&&p2===170&&p3===90&&p4===0&&S.acct('hhA').balance===200-30-170+ex&&S.acct('hhB').balance===100+170-90&&S.accounts().every(A=>A.balance>=0),p2===500);
+ ok('only mint and burn change the supply ('+R.currencies.shell.supply+' shells, '+JSON.stringify(R.currencies.shell.minted)+' minted, '+JSON.stringify(R.currencies.shell.burned)+' burned)',
+   R.currencies.shell.supply===200+100+5000+10000-100&&R.currencies.talent.supply===1050,R.currencies.shell.supply!==15200);
+ ok('an exchange goes through the changers at the rates to the Talent, less the spread (10 Talents to '+ex+' shells)',ex===Math.floor(10/0.05*0.97)&&S.acct('changer:talent').balance===1010&&S.acct('changer:shell').balance===10000-ex,ex===200);
+ let threw=false;try{S.pay('player','hhA',1,'x');}catch(e){threw=true;}
+ ok('a payment between currencies is refused (an exchange is the way)',threw,!threw);
+ ok('the ledger holds every settlement\'s money to its books (kautoa: '+JSON.stringify(L.money&&L.money.towns.kautoa.shell)+')',L.ok&&L.money.towns.valapo.shell['in']===170&&L.money.towns.valapo.shell.out===90&&L.money.towns.kautoa.shell.out===170&&L.money.towns.kautoa.shell['in']===90+ex,!L.ok);
+ const T1=mk(),c0=T1.ledgerSnap();T1.acct('hhA').balance+=25;const L1=T1.ledger(c0,T1.ledgerSnap());
+ ok('a balance changed by hand is caught ('+L1.problems[0]+')',!L1.ok&&/off by 25/.test(L1.problems.join()),L1.ok);
+ const T2=mk(),d0=T2.ledgerSnap(),sn=T2.ledgerSnap();sn.money.towns.valapo.shell['in']+=40;sn.money.towns.valapo.shell.total+=40;const L2=T2.ledger(d0,sn);
+ ok('money paid into a town that no town paid out is caught',!L2.ok&&L2.problems.some(p=>/paid out of settlements/.test(p)),L2.ok);
+ const T3=mk(),e0=T3.ledgerSnap(),sg=T3.ledgerSnap();delete sg.money.accounts.hhB;const L3=T3.ledger(e0,sg);
+ ok('an account gone is caught',!L3.ok&&L3.problems.some(p=>/is gone/.test(p)),L3.ok);
+ let bad=false;try{S.mint('hhA',1.5,'x');}catch(e){bad=true;}ok('money is whole numbers only',bad,!bad);}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}

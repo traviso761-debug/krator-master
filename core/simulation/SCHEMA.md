@@ -240,6 +240,15 @@ books balance) and the things (spare clothes kept at home) leave their owners' `
 into the guild's store, the things into its `stash`, its material meter down. Arrested first, the loot goes back. For the world's own actors (the
 player): `SIM.crimeHide(a)`, `SIM.crimeFence(a)`, `SIM.crimeLoot(a, lot)`, `SIM.crimeAlarm(a, kind, at)`; `SIM.guildOf(s)`, `SIM.hidden(a)`.
 
+**Money (`77-sim-6-money.js`, 2026-11-03; opt-in by `SIM.money`; PLAN-MONEY.md M0).** Each nation has its currency, each at a rate to the
+Izani Talent (the trade's money). An account `{id, owner, kind, currency, settlement, ownedBy, balance}` holds a whole number of its currency's
+smallest unit; its id is stable (`hh:<home>`, `wp:<place>`, `treasury:<settlement>`, `guild:<settlement>`, `changer:<currency>`). Money moves four
+ways, each booked by its reason: `SIM.mint` (a faucet), `SIM.burn` (a sink), `SIM.pay` (a transfer within a currency, never overdrawing; between
+settlements booked out of one and into the other) and `SIM.exchange` (two transfers through the money changers, at the rates less their spread).
+The ledger's snapshot carries `money` (every balance, every settlement's books), and its statement holds, exactly, opening + minted - burned + in -
+out = closing per settlement and currency, what left the settlements equal to what came in, and no account below zero. `SIM.moneyReport(s)` is
+the monthly report's numbers: supply, accounts, minted, burned and paid by reason.
+
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a
 site grown back while nobody worked it and books it `regrown` (as the nightly `regen` now is), which the ledger allows. A site feeding a batch

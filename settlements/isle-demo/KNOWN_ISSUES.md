@@ -252,8 +252,8 @@
       seen only by the household.
 - [ ] **The criminal does not walk to the house it burgles**: the burglary is resolved at the hour, where the criminal
       sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
-- [ ] **No money:** a pocket picked is the victim's material meter and the thief's; nothing changes hands. Coin waits for
-      wages: the research and a proposal are in `core/simulation/PLAN-MONEY.md` (questions for the owner at its end).
+- [ ] **No money changes hands yet:** the accounts are open (2026-11-03, `47m`: money's M0, Kautoan shells), but a pocket picked is
+      still the victim's material meter and the thief's; coin waits for M1, wages and purchases (`core/simulation/PLAN-MONEY.md`).
 - [ ] **The guild's stash goes nowhere:** what is fenced sits in the guild's store and on its shelf. With money it would be
       sold on (to the player above all); for now nobody buys it, and its food is still counted in the town's storage.
 - [x] **The guild is marked on the map** (2026-11-02): a landmark "Thieves' guild" under its tavern in each town's registry (the
