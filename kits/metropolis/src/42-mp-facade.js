@@ -48,6 +48,8 @@
     return { south: slabSide(F, st, 'left'), north: slabSide(F, st, 'right') };
   };
   MP.fenestrate = function (F, st) {
+    /* a plan that sets its own windows (the Swell's lobes) keeps them; no facade of bays about the axis */
+    if (st.windowsOwn) { st.facade = { ring: [] }; return st; }
     var fac = MP.facade(F, st), byId = {}; st.rooms.forEach(function (Q) { byId[Q.id] = Q; }); st.facade = fac;
     function win(b, at, wid) { var S = SIZE[b.kind]; if (!S || !MP.isGlass(b.kind) || !b.room) return; var Q = byId[b.room]; if (Q) Q.windows.push({ at: at, w: Math.round(wid * S[0] * 100) / 100, sill: S[1], h: S[2] - S[1] }); }
     if (fac.ring) { var Nn = fac.ring.length, r = st.R; fac.ring.forEach(function (b) { win(b, [r * Math.cos(b.th), r * Math.sin(b.th)], TAU * r / Nn); }); }

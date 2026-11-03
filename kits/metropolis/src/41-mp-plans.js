@@ -140,6 +140,8 @@
     offices: function (F, L) { return sectors(F, L, 8, function (i) { return i % 4 === 3 ? 'meeting' : 'office'; }); },
     skylobby: function (F, L) { return sectors(F, L, 8, function (i) { return i % 2 ? 'stall' : 'concourse'; }, { cw: 4 }); },
     hydroponics: function (F, L) { return sectors(F, L, 6, function () { return 'greenhouse'; }); },
+    /* a hotel's ring (the Stalk's saucer): rooms round the core, a linen store on each side */
+    hotel: function (F, L) { return sectors(F, L, 16, function (i) { return i % 8 === 4 ? 'store' : 'bedroom'; }); },
     records: function (F, L) { return sectors(F, L, 8, function () { return 'stack'; }); },
     lamp: function (F, L) { return sectors(F, L, 6, function () { return 'concourse'; }, { band: 6 }); },
     roofpark: function (F, L) { return sectors(F, L, 4, function () { return 'concourse'; }, { band: 6 }); }
@@ -197,8 +199,57 @@
     council: function (F, L) { return bar(F, L, 9, function (i, n) { return i > n / 2 - 2 && i < n / 2 + 1 ? 'hall' : 'meeting'; }, { door: 1.6 }); }
   };
 
+  // ---- rings in bands, outside in (the Terrace's tiers round their court): rooms bands and corridor bands between the skin (rOut) and the court's
+  // face (rIn). A rooms band's rooms open on the corridor next to them (door: 'in' toward the axis, 'out' away from it); a band with no corridor on
+  // one side has a wall there. Sectors at the shafts' angles in the band the shafts stand in are their core bays (Q.shaft); passages (kind
+  // 'passage') cross a band between two corridors. The outermost band's rooms carry th0, th1 (the facade's windows); the slab has the court as
+  // a hole (st.hole). o: { rOut, rIn, bands: [{ d, n, kinds(i, n), door, corr, passage(i) }], shafts: [{ id, th, band }] }
+  function rings(F, L, o) {
+    var id = F.id + '.' + L.k, st = { id: id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], hole: o.rIn, R: o.rOut, rc: o.rIn, n: 0, band: 0 };
+    for (var q = 0; q < 64; q++) st.outline.push(at(o.rOut, TAU * q / 64));
+    var r = o.rOut, B = o.bands.map(function (b) { var r1 = r, r0 = r - b.d; r = r0; return Object.assign({}, b, { r0: r0, r1: r1 }); });
+    B.forEach(function (b, bi) { if (b.corr) b.cid = id + '.corr' + bi; });
+    B.forEach(function (b, bi) {
+      if (b.corr) { st.rooms.push({ id: b.cid, kind: 'corridor', mpKind: 'corridor', poly: null, ring: { cx: 0, cz: 0, r0: b.r0, r1: b.r1 }, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false }); return; }
+      var n = Math.max(1, Math.round(b.n * (F.secScale == null ? 1 : F.secScale))), inC = B[bi + 1] && B[bi + 1].corr ? B[bi + 1] : null, outC = B[bi - 1] && B[bi - 1].corr ? B[bi - 1] : null, seg = Math.max(2, Math.ceil(TAU / n * b.r1 / 2.5));
+      for (var i = 0; i < n; i++) {
+        var t0 = TAU * i / n, t1 = TAU * (i + 1) / n, tm = (t0 + t1) / 2, rid = id + '.b' + bi + '.r' + i;
+        var sh = (o.shafts || []).filter(function (s) { if (s.band !== bi) return false; var d = Math.abs(((s.th - tm) % TAU + TAU * 1.5) % TAU - Math.PI); return d < Math.PI / n; })[0];
+        var pass = b.passage && b.passage(i, n) && inC && outC, src = sh ? 'core' : pass ? 'passage' : b.kinds(i, n);
+        var inner = arc(b.r0 + 0.02, t0, t1, seg), outer = arc(b.r1 - 0.05, t0, t1, seg), poly = inner.concat(outer.slice().reverse());
+        var Q = { id: rid, kind: src === 'passage' ? 'corridor' : kindOf(src), mpKind: src, poly: poly, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: !UNFURNISHED[src] && src !== 'passage' && src !== 'core', shaft: sh ? sh.id : undefined };
+        if (bi === 0) { Q.th0 = t0; Q.th1 = t1; }
+        var sides = pass ? [inC, outC] : [b.door === 'out' ? (outC || inC) : (inC || outC)];
+        sides.forEach(function (C) { if (!C) return; var rr = C === inC ? b.r0 : b.r1, da = at(rr, tm); Q.doors.push({ at: da, w: src === 'core' ? 1.2 : 1, to: C.cid }); });
+        st.rooms.push(Q);
+        /* the walls: the side on each corridor (with its door), the far side where no corridor is (but the skin's and the court's), the partition at t0 */
+        [[inC, b.r0, inner], [outC, b.r1, outer]].forEach(function (E, ei) {
+          var C = E[0], d = Q.doors.filter(function (x) { return C && x.to === C.cid; })[0];
+          if (C) st.walls.push({ id: rid + (ei ? '.wo' : '.wi'), pts: E[2], y: L.y, h: L.h, rooms: [rid, C.cid], door: d ? { at: d.at, w: d.w } : null, broken: false });
+          else if (ei === 0 && bi < B.length - 1) st.walls.push({ id: rid + '.wi', pts: E[2], y: L.y, h: L.h, rooms: [rid, null], door: null, broken: false });
+        });
+        st.walls.push({ id: rid + '.p0', pts: [at(b.r0, t0), at(b.r1 - 0.05, t0)], y: L.y, h: L.h, rooms: [rid, null], door: null, broken: false });
+      }
+    });
+    st.n = Math.max(1, Math.round(B[0].n * (F.secScale == null ? 1 : F.secScale))); st.band = B[0].d;
+    return st;
+  }
+  // ---- a lobe (the Swell's): a ring plate about the lobe's own centre over the arc outside the middle, its corridor opening on the middle's
+  // concourse; its rooms set their own windows on the lobe's skin (st.windowsOwn)
+  function lobe(F, L, o) {
+    var st = KratorAncientsInteriors.ringPlate({ id: o.id, level: L.k, y: L.y, h: L.h, cx: o.cx, cz: o.cz, rOut: function () { return o.r; }, depth: o.depth, cw: CW, a0: o.a0, a1: o.a1, n: o.n, kinds: function (i, n) { return o.kinds(i, n); }, seg: 4, core: null });
+    st.rooms.forEach(function (Q) {
+      var src = Q.kind; Q.mpKind = src; Q.kind = kindOf(src); if (UNFURNISHED[src]) Q.furnish = false;
+      if (Q.kind !== 'corridor' && !MP.WINDOWLESS[src]) { var S = MP.BAYSIZE[({ office: 'ribbon', meeting: 'ribbon', classroom: 'tall', clinic: 'window', bedroom: 'window', living: 'wide' })[src] || 'window'], tm = Q.th, w = (o.a1 - o.a0) / o.n * o.r * 0.7; Q.windows.push({ at: [o.cx + o.r * Math.cos(tm), o.cz + o.r * Math.sin(tm)], w: Math.round(w * 100) / 100, sill: S[1], h: S[2] - S[1] }); }
+    });
+    return st;
+  }
+  MP.planLib = { sectors: sectors, rings: rings, lobe: lobe, turn: turn, arc: arc, at: at, kindOf: kindOf, UNFURNISHED: UNFURNISHED, CW: CW, PLAN: PLAN };
+
   MP.storey = function (F, k) {
     var L = F.levels[k]; if (!L) throw new Error('MP.storey: ' + F.id + ' has no level ' + k);
+    /* a design may carry its own plan (46c: the Terrace's bands, the Swell's lobes), from the library above */
+    if (F.plan) { var st0 = F.plan(F, L, MP.planLib); st0.use = L.use; st0.family = F.id; st0.rooms.forEach(function (Q) { Q.blank = !!MP.WINDOWLESS[Q.mpKind]; if (Q.mpKind === 'reception') { Q.recipe = 'reception'; Q.furnish = true; } }); MP.fenestrate(F, st0); return st0; }
     var T = F.core.kind === 'round' ? PLAN : PLAN_BAR, fn = T[L.use];
     if (!fn) throw new Error('MP.storey: no plan for the use ' + L.use);
     var st = fn(F, L); st.use = L.use; st.family = F.id;

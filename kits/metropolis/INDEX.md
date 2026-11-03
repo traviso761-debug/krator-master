@@ -16,26 +16,26 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-mp-records.js` | 18 |  |
-| `41-mp-plans.js` | 19 |  |
-| `42-mp-facade.js` | 4 |  |
+| `40-mp-records.js` | 19 |  |
+| `41-mp-plans.js` | 24 |  |
+| `42-mp-facade.js` | 5 |  |
 | `43-mp-shell.js` | 6 |  |
 | `44-mp-audit.js` | 4 |  |
 | `45-host-stage.js` | 1 |  |
 | `46-mp-designs.js` | 5 |  |
 | `46b-mp-ancients.js` | 5 |  |
-| `46c-mp-planned.js` | 8 |  |
+| `46c-mp-planned.js` | 20 |  |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
 | `53-mp-hero-ledger.js` | 14 |  |
-| `54-mp-hero-designs.js` | 35 **big** |  |
+| `54-mp-hero-designs.js` | 36 **big** |  |
 | `55-mp-hero-ancients.js` | 15 |  |
-| `56-mp-interiors.js` | 18 |  |
+| `56-mp-interiors.js` | 19 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 12 |  |
-| `59b-mp-ruin-design.js` | 4 |  |
+| `59b-mp-ruin-design.js` | 6 |  |
 | `60-mp-shell-host.js` | 22 |  |
 | `70-mp-stage.js` | 20 |  |
 | `89-host-sky.js` | <1 |  |

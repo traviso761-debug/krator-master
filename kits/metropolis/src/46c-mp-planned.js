@@ -89,5 +89,117 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
       ruins: ruins({ crown: { keep: 0.75, note: 'the drum and dome fallen in' }, stump: { keep: 0.3, core: 0.4, note: 'the lobby and the first turn' } })
     };
   })();
-  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral'];
+  // ---- the Terrace: five rings of two storeys (8.4 m a tier) stepping in from 64 m to 40 m round a 28 m court. Its storeys are bands, outside
+  // in: rooms at the windows (12 m deep), a corridor, on the wide tiers windowless rooms between and a second corridor with passages across,
+  // and a 4.5 m service band on the court where the four stair and lift shafts stand at one radius on every tier (so they line up)
+  (function () {
+    var D = MP.DESIGNS.terrace, R = D.rings, hT = D.height.roof / R.length, sh = hT / 2, Rc = D.court + 0.5 + 0.45, rS = Rc + 2.25;
+    var zones = [{ use: 'lobby', n: 1, h: sh }, { use: 'clinic', n: 1, h: sh }, { use: 'offices', n: 2, h: sh }, { use: 'school', n: 2, h: sh }, { use: 'records', n: 1, h: sh }, { use: 'offices', n: 3, h: sh }];
+    var L = levels(zones), last = L.length - 1, sth = [0, 1, 2, 3].map(function (q) { return 2 * Math.PI * (6 * q + 1.5) / 24; });
+    var KIND = { lobby: function (i) { return i % 6 === 0 ? 'concourse' : 'stall'; }, clinic: function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }, offices: function (i) { return i % 4 === 3 ? 'meeting' : 'office'; },
+      school: function (i) { return i % 7 === 3 ? 'store' : 'classroom'; }, records: function () { return 'stack'; } };
+    MP.FAMILY.terrace = {
+      id: 'terrace', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'circle', r: R[0] }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function (y) { return R[Math.max(0, Math.min(R.length - 1, Math.floor(y / hT)))] - 0.5; },
+      portals: [0, Math.PI / 2, Math.PI, Math.PI * 1.5], crown: { k: 'park', r: R[R.length - 1] }, secScale: 1, mat: 'white', fall: Math.PI / 4,
+      core: { kind: 'round', r: Rc, stepAt: Infinity, rUp: Rc, bays: true, shafts: sth.map(function (th, q) { return { id: (q % 2 ? 'lift.' : 'stair.') + q, kind: q % 2 ? 'lift' : 'stair', x: +(Math.cos(th) * rS).toFixed(3), z: +(Math.sin(th) * rS).toFixed(3), w: 2.8, d: 2.8, from: 0, to: last }; }) },
+      bays: { low: 100, high: 100, split: Infinity },
+      plan: function (F, Lv, lib) {
+        var k = Math.min(R.length - 1, Math.floor((Lv.y + 0.1) / hT)), rOut = R[k] - 0.5 - 0.45, W = rOut - Rc, kinds = KIND[Lv.use] || KIND.offices, CW = lib.CW, n0 = F.bays.low / 2;   /* two bays a room on every tier: its windows line up */
+        var inner = { d: 4.5, n: 24, kinds: function (i) { return i % 3 ? 'store' : 'plant'; }, door: 'out' }, sh = sth.map(function (th, q) { return { id: (q % 2 ? 'lift.' : 'stair.') + q, th: th, band: 0 }; });
+        var bands = W - 12 - 2 * CW - 4.5 >= 5
+          ? [{ d: 12, n: n0, kinds: kinds, door: 'in' }, { d: CW, corr: true }, { d: W - 12 - 2 * CW - 4.5, n: 12, kinds: function (i) { return i % 2 ? 'stack' : 'store'; }, door: 'out', passage: function (i) { return i % 3 === 0; } }, { d: CW, corr: true }, inner]
+          : [{ d: W - CW - 4.5, n: n0, kinds: kinds, door: 'in' }, { d: CW, corr: true }, inner];
+        sh.forEach(function (s) { s.band = bands.length - 1; });
+        return lib.rings(F, Lv, { rOut: rOut, rIn: Rc, bands: bands, shafts: sh });
+      },
+      ruins: ruins({ crown: { keep: 0.8, note: 'the top tier and its park fallen in' }, broken: { keep: 0.6, note: 'a third of the upper tiers down into the court' }, stump: { keep: 0.2, note: 'the ground tier' }, skeleton: { keep: 0.8, bare: 0.6, note: 'the upper tiers\' slabs and piers' } })
+    };
+  })();
+
+  // ---- the Stalk: a 16 m stalk of lifts and stairs carrying a hotel saucer (two storeys of 3 m in its glazed band at 100.4 m) and an observatory
+  // (one hall of 5 m at 147 m). Its storeys: the lobby round the stalk's foot, then the saucers' (the stalk between is all core)
+  (function () {
+    var D = MP.DESIGNS.stalk, S = D.stalk, sc = D.saucers, s0 = function (y) { return S.r0 + (S.r1 - S.r0) * Math.min(1, y / 170); };
+    var hot = sc[0], obs = sc[1], hy = hot.y - hot.t * 0.3, oy = obs.y - obs.t * 0.3;
+    var L = [{ k: 0, y: 0, h: 4.5, use: 'lobby', zone: 0, nth: 0 }, { k: 1, y: hy, h: hot.t * 0.25, use: 'hotel', zone: 1, nth: 0 }, { k: 2, y: hy + hot.t * 0.25, h: hot.t * 0.25, use: 'hotel', zone: 1, nth: 1 },
+      { k: 3, y: oy, h: obs.t * 0.5, use: 'skylobby', zone: 2, nth: 0 }].map(function (q) { q.y = Math.round(q.y * 1000) / 1000; return q; });
+    var c = core(6, L.length - 1);
+    MP.FAMILY.stalk = {
+      id: 'stalk', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'circle', r: hot.r }, height: D.height, storeys: L.length, levels: L, zones: [{ use: 'lobby', n: 1 }, { use: 'hotel', n: 2 }, { use: 'skylobby', n: 1 }],
+      envR: function (y) {
+        if (y < 4.5) return S.r0 + 5 - 0.5;
+        for (var i = 0; i < sc.length; i++) { var q = sc[i], b0 = q.y - q.t * 0.3, b1 = q.y + q.t * 0.2; if (y >= b0 - 0.5 && y <= b1 + 0.5) return q.r - (Math.min(b1, Math.max(b0, y)) - b0) * 0.25 - 0.4; }
+        return s0(y);
+      },
+      slabR: function (y) { return this.envR(y); }, secR: s0, discs: sc.map(function (q) { return q.r; }),
+      portals: [Math.PI / 2, -Math.PI / 2], crown: { k: 'saucer', r: obs.r }, core: c, secScale: 1, mat: 'white', fall: Math.PI / 2 + 0.6,
+      bays: { low: 56, high: 56, split: Infinity },
+      /* the hotel's storeys in bands: bedrooms at the windows (8 m), a corridor, a ring of restaurant and lounges with passages through it, the
+         lift lobby round the core; the rest the round plates */
+      plan: function (F, Lv, lib) {
+        if (Lv.use !== 'hotel') return lib.PLAN[Lv.use](F, Lv);
+        var rOut = F.envR(Lv.y + Lv.h / 2) - 0.45, rc = F.core.r, CW = lib.CW, W = rOut - rc;
+        var st = lib.rings(F, Lv, { rOut: rOut, rIn: rc, bands: [{ d: 8, n: 28, kinds: function (i) { return i % 14 === 7 ? 'store' : 'bedroom'; }, door: 'in' }, { d: CW, corr: true },
+          { d: W - 8 - 2 * CW, n: 8, kinds: function (i) { return i % 2 ? 'cafe' : 'concourse'; }, door: 'in', passage: function (i) { return i % 4 === 0; } }, { d: CW, corr: true }] });
+        /* the core: its own room on the lift lobby, and its floor (no hole) */
+        var cp = []; for (var q = 0; q < 24; q++) cp.push(lib.at(rc - 0.05, 2 * Math.PI * q / 24));
+        var lob = st.rooms.filter(function (Q) { return Q.kind === 'corridor' && Q.ring && Q.ring.r0 < rc + 0.1; })[0], dp = lib.at(rc, 0);
+        st.rooms.push({ id: st.id + '.core', kind: 'core', mpKind: 'core', poly: cp, y: Lv.y, h: Lv.h, level: Lv.k, doors: [{ at: dp, w: 1.6, to: lob.id }], windows: [], furnish: false });
+        st.hole = null;
+        return st;
+      },
+      ruins: ruins({ gutted: { glass: 0, strips: 0, breach: 0.1, stain: 0.75, keep: 1, note: 'the saucers\' glass gone' }, crown: { keep: 0.72, note: 'the observatory and the needle down' }, broken: { keep: 0.6, note: 'the stalk snapped over the hotel' }, stump: { keep: 0.2, core: 0.25, note: 'the stalk\'s foot' }, skeleton: { keep: 1, bare: 0.5, note: 'the saucers stripped to their frames' } })
+    };
+  })();
+
+  // ---- the Swell: four lobes swelling from 13 to 21 m round a 16 m middle, 50 storeys. The middle is the core (four shafts) and a concourse ring;
+  // each lobe is a ring of rooms about its own centre over the arc outside the middle, its corridor opening on the concourse; the lobes set their
+  // own windows on their skin
+  (function () {
+    var D = MP.DESIGNS.swell, H = D.height.roof, Lb = D.lobes, lr = function (y) { return Lb.r + Lb.swell * Math.pow(Math.sin(Math.PI * Math.min(1, y / H)), 0.6); }, sh = H / Math.round(H / D.sh);
+    var zones = [{ use: 'lobby', n: 1 }, { use: 'market', n: 2 }, { use: 'clinic', n: 3 }, { use: 'offices', n: 15 }, { use: 'plant', n: 1 }, { use: 'records', n: 4 }, { use: 'school', n: 2 }, { use: 'offices', n: 10 }, { use: 'plant', n: 1 }, { use: 'hydroponics', n: 4 }, { use: 'records', n: 4 }, { use: 'offices', n: 2 }, { use: 'skylobby', n: 1 }];
+    zones.forEach(function (z) { z.h = sh; });
+    var L = levels(zones), last = L.length - 1, rMid = D.core - 0.45;
+    var KIND = { lobby: function (i) { return i % 3 ? 'stall' : 'cafe'; }, market: function () { return 'stall'; }, clinic: function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }, offices: function (i) { return i % 4 === 3 ? 'meeting' : 'office'; },
+      plant: function () { return 'plant'; }, records: function () { return 'stack'; }, school: function (i) { return i % 7 === 3 ? 'store' : 'classroom'; }, hydroponics: function () { return 'greenhouse'; }, skylobby: function (i) { return i % 2 ? 'stall' : 'concourse'; } };
+    var lobeAt = function (q) { var a = Math.PI / 4 + q * Math.PI / 2; return { a: a, cx: Math.cos(a) * Lb.at, cz: Math.sin(a) * Lb.at }; };
+    var reach = function (th, y) { var r = rMid; for (var q = 0; q < Lb.n; q++) { var c = lobeAt(q), rl = lr(y) - 0.45, dx = Math.cos(th), dz = Math.sin(th), b = dx * c.cx + dz * c.cz, cc = c.cx * c.cx + c.cz * c.cz - rl * rl, dsc = b * b - cc; if (dsc >= 0) r = Math.max(r, b + Math.sqrt(dsc)); } return r; };
+    MP.FAMILY.swell = {
+      id: 'swell', name: D.name, kind: D.kind, language: D.language, culture: 'ancient', tris: D.tris, design: true,
+      footprint: { shape: 'circle', r: Lb.at + Lb.r + Lb.swell }, height: D.height, storeys: L.length, levels: L, zones: zones,
+      envR: function () { return D.core; }, hitR: function (y) { return Lb.at + lr(y); }, slabR: function () { return D.core; },
+      portals: [0, Math.PI / 2, Math.PI, Math.PI * 1.5], crown: { k: 'domes', r: D.core }, core: core(6.5, last), secScale: 1, mat: 'white', fall: Math.PI / 4,
+      bays: { low: 24, high: 24, split: Infinity },
+      plan: function (F, Lv, lib) {
+        var ym = Lv.y + Lv.h / 2, kinds = KIND[Lv.use] || KIND.offices;
+        var st = lib.sectors(F, Lv, 8, function () { return 'concourse'; }, {});
+        /* the concourse is one open ring: its sectors' partitions go */
+        st.walls = st.walls.filter(function (W) { return !/\.r\d+\.p0$/.test(W.id) || W.id.indexOf('.l') >= 0; });
+        for (var q = 0; q < Lb.n; q++) {
+          /* the lobe's arc: out from its own line, while its rooms (at the corridor's inner edge and at the skin) stay outside the middle and
+             outside every other lobe (at mid-height the lobes overlap; the floor where they meet is left open) */
+          var c = lobeAt(q), ro = lr(ym) - 0.45, rCor = ro - 7 - lib.CW, ok = function (phi) {
+            return [rCor, ro].every(function (rho) { var px = c.cx + rho * Math.cos(phi), pz = c.cz + rho * Math.sin(phi); if (Math.hypot(px, pz) < rMid + 0.6) return false;
+              for (var j = 0; j < Lb.n; j++) { if (j === q) continue; var cj = lobeAt(j); if (Math.hypot(px - cj.cx, pz - cj.cz) < ro + 0.3) return false; } return true; }); };
+          var Aa = 0; while (Aa < Math.PI * 0.95 && ok(c.a + Aa + 0.02) && ok(c.a - Aa - 0.02)) Aa += 0.02;
+          if (Aa < 0.3) continue;
+          var P = lib.lobe(F, Lv, { id: F.id + '.' + Lv.k + '.l' + q, cx: c.cx, cz: c.cz, r: ro, depth: 7, a0: c.a - Aa, a1: c.a + Aa, kinds: kinds });
+          /* the lobe's corridor opens on the concourse sector facing it, at the middle's skin on the lobe's line */
+          var corr = P.rooms.filter(function (Q) { return Q.kind === 'corridor'; })[0], best = null, bd = 1e9;
+          st.rooms.forEach(function (Q) { if (Q.mpKind !== 'concourse' || !Q.poly) return; var m = Q.poly.reduce(function (s, p) { return [s[0] + p[0], s[1] + p[1]]; }, [0, 0]), th = Math.atan2(m[1], m[0]), d = Math.abs(((th - c.a) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI); if (d < bd) { bd = d; best = Q; } });
+          var dp = lib.at(rMid, c.a); corr.doors.push({ at: dp, w: 2.4, to: best.id }); best.doors.push({ at: dp, w: 2.4, to: corr.id });
+          st.rooms = st.rooms.concat(P.rooms); st.walls = st.walls.concat(P.walls);
+        }
+        /* the slab: the middle and the lobes as one outline, by the ray's reach at each angle */
+        st.outline = []; var R = 0; for (var i = 0; i < 128; i++) { var th = 2 * Math.PI * i / 128, r = reach(th, ym); R = Math.max(R, r); st.outline.push(lib.at(r, th)); }
+        st.R = R + 0.05; st.windowsOwn = true;
+        return st;
+      },
+      ruins: ruins({ crown: { keep: 0.8, note: 'the lobes\' domes and the top storeys fallen' }, broken: { keep: 0.55, note: 'two lobes torn off above the middle' } })
+    };
+  })();
+  MP.PLANNED_KEYS = ['telescope', 'cupola', 'spiral', 'terrace', 'stalk', 'swell'];
 })();

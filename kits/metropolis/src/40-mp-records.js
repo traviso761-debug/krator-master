@@ -160,7 +160,9 @@ MP.debrisPlan = function (F, state) {
   if (F.design) {
     var H = F.height.roof, R0 = F.envR(0), ph2 = F.fall == null ? 0 : F.fall, sq = H < R0 * 1.2, s2 = Math.max(H, R0 * 2), d2 = [Math.cos(ph2), Math.sin(ph2)];
     var at2 = function (s, o) { return [d2[0] * s - d2[1] * o, d2[1] * s + d2[0] * o]; }, mnd = function (s, o, rx, rz, hs, i) { var c = at2(s, o); M.push(heap(c[0], c[1], 0, ph2, rx, rz, hs, i)); };
-    var sec = function (s, o, y, len, ry, tilt) { var c = at2(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: Math.max(2, F.envR(y) * 0.8), len: len, ry: ph2 + ry, tilt: tilt, mat: F.mat }); };
+    /* a section lying: the shaft's radius where it broke (secR: the Stalk's stalk, not its saucers); a design's discs (the Stalk's saucers) fall as the Spindle's lamp does */
+    var sec = function (s, o, y, len, ry, tilt) { var c = at2(s, o); P.push({ kind: 'shaft', x: c[0], z: c[1], r: Math.max(2, (F.secR ? F.secR(y) : F.envR(y)) * 0.8), len: len, ry: ph2 + ry, tilt: tilt, mat: F.mat }); };
+    var dsc = function (s, o, r, tilt) { var c = at2(s, o); P.push({ kind: 'disc', x: c[0], z: c[1], r: r, ry: ph2, tilt: tilt }); };
     if (sq) {
       if (state === 'crown') mnd(0, 0, R0 * 0.7, R0 * 0.7, [4, 3, 2.5], 0);
       if (state === 'broken') { mnd(R0 * 0.45, 0, R0 * 0.55, R0 * 0.4, [5, 4, 3], 0); mnd(R0 + 8, 0, R0 * 0.35, R0 * 0.2, [3, 2], 1); }
@@ -168,12 +170,12 @@ MP.debrisPlan = function (F, state) {
       if (state === 'skeleton') mnd(0, 0, R0 * 0.45, R0 * 0.45, [3, 2], 0);
       if (state === 'fallen') { mnd(0, 0, R0 * 1.05, R0 * 1.05, [6, 5, 4], 0); mnd(R0 + 10, 0, R0 * 0.4, R0 * 0.2, [3, 2], 1); }
     } else {
-      if (state === 'crown') { mnd(R0 + 0.06 * s2, 0, 0.1 * s2, 0.06 * s2, [3, 2.5, 2], 0); sec(R0 + 0.03 * s2, -0.04 * s2, H * 0.9, 0.06 * s2, 0.4, 0.1); }
-      if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); }
+      if (state === 'crown') { mnd(R0 + 0.06 * s2, 0, 0.1 * s2, 0.06 * s2, [3, 2.5, 2], 0); sec(R0 + 0.03 * s2, -0.04 * s2, H * 0.9, 0.06 * s2, 0.4, 0.1); if (F.discs) dsc(R0 + 0.12 * s2, 0.02 * s2, F.discs[F.discs.length - 1], 0.4); }
+      if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); if (F.discs) dsc(R0 + 0.5 * s2, 0, F.discs[F.discs.length - 1], 0.5); }
       if (state === 'stump') { mnd(R0 * 0.5, 0, R0 * 1.1, R0 * 0.9, [6, 5, 4], 0); mnd(R0 + 0.15 * s2, 0.1 * s2, 0.12 * s2, 0.07 * s2, [3, 2], 1); sec(R0 + 0.06 * s2, -0.08 * s2, H * 0.4, 0.1 * s2, 0.4, 0.05); }
       if (state === 'skeleton') { mnd(R0 + 4, 0, 0.08 * s2, 0.05 * s2, [3, 2], 0); mnd(R0 + 2, -0.12 * s2, 0.06 * s2, 0.04 * s2, [2.5, 2], 1); }
       if (state === 'fallen') { mnd(R0 + 0.35 * s2, 0, 0.4 * s2, Math.max(R0 * 0.7, 0.08 * s2), [7, 5, 4], 0); mnd(R0 * 0.3, 0, R0 * 0.9, R0 * 0.8, [5, 4], 1);
-        [0.15, 0.35, 0.55].forEach(function (q, i) { sec(R0 + q * s2, (i % 2 ? 4 : -4), H * (0.3 + q), 0.11 * s2, (i % 2 ? 0.1 : -0.12), 0.05); }); }
+        [0.15, 0.35, 0.55].forEach(function (q, i) { sec(R0 + q * s2, (i % 2 ? 4 : -4), H * (0.3 + q), 0.11 * s2, (i % 2 ? 0.1 : -0.12), 0.05); }); if (F.discs) F.discs.forEach(function (r, i) { dsc(R0 + (0.45 + 0.25 * i) * s2, i ? 6 : -6, r, 0.35); }); }
     }
     /* a design's skeleton keeps its frame in the hero (MP.ruinDesign), not the rubble */
     return { mounds: M, pieces: P };

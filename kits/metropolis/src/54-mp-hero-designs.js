@@ -25,7 +25,7 @@ DK.ring=function(B,o){const R=o.r,inw=o.inward?-1:1,dep=o.dep==null?.5:o.dep,seg
   const yS=y0+hh*(o.sill==null?.26:o.sill),yT=y0+hh*(o.head==null?.8:o.head),rS=R(yS),rT=R(yT),d=inw*dep;
   DK.surf(B,m,y0,R(y0),yS,rS,S);DK.surf(B,m,yS,rS,yS,rS-d,S);DK.surf(B,g,yS,rS-d,yT,rT-d,S);DK.surf(B,m,yT,rT-d,yT,rT,S);DK.surf(B,m,yT,rT,y1,R(y1),S);
   if(o.pier!==0){const pw=o.pier==null?.55:o.pier,ym=(yS+yT)/2,rm=(rS+rT)/2-d/2,nb=full?seg:seg+1,ev=(o.pierEvery==null?1:o.pierEvery);
-   for(let j=0;j<nb;j+=ev){const t=a0+(a1-a0)*j/seg,k=DK.polyK(t,o.sides);B.panel(cx+Math.cos(t)*rm*k,ym,cz+Math.sin(t)*rm*k,Math.PI/2-t+(o.inward?Math.PI:0),pw,yT-yS,dep,o.pierCol||WALL);}}}};
+   for(let j=0;j<nb;j+=ev){const t=a0+(a1-a0)*j/seg,k=DK.polyK(t,o.sides);if(S.skip&&S.skip(t)&&S.skip(t-(a1-a0)/seg))continue;B.panel(cx+Math.cos(t)*rm*k,ym,cz+Math.sin(t)*rm*k,Math.PI/2-t+(o.inward?Math.PI:0),pw,yT-yS,dep,o.pierCol||WALL);}}}};
 // a storeyed facade on a rectangle: o.rect(y) -> {cx, cz, hw, hd, yaw}, so a storey can lean, twist and widen; bay the bays' width; faces (0 +z, 1 +x, 2 -z, 3 -x);
 // curtain: the glass flush, mullions and a transom a storey; inward: the faces look into the rectangle (a court); roof: a cap at y1
 DK.slab=function(B,o){const rect=o.rect,dep=o.dep==null?.6:o.dep,m=o.mat||'white',g=o.glass||'glass',n=Math.max(1,Math.round((o.y1-o.y0)/o.sh)),hh=(o.y1-o.y0)/n,faces=o.faces||[0,1,2,3],FY=[0,Math.PI/2,Math.PI,-Math.PI/2],inw=o.inward?-1:1,col=o.col;
@@ -146,17 +146,24 @@ MP.DESIGN_BUILD={
  stalk(F,B,X){const S=F.stalk,tip=F.height.tip;DK.lobbyRing(B,{r:()=>S.r0+5,h:4.5,seg:24,doors:[Math.PI/2,-Math.PI/2]},X.doors);DK.lathe(B,'white',[[S.r0+5,4.5],[S.r0+1,8],[S.r0,12],[S.r1,170],[.6,tip]],24,{});
   for(let k=0;k<4;k++){const a=k*Math.PI/2+.4;B.lathe('glass',[[S.r0+.06,8],[S.r1+.06,166]],2,{a0:a-.18,a1:a+.18,uv:4});}
   F.saucers.forEach((sc,k)=>{const y=sc.y,r=sc.r,t=sc.t,s0=S.r0+(S.r1-S.r0)*(y/170);
-   DK.lathe(B,'white',[[s0,y-t*.5],[r*.55,y-t*.42],[r*.92,y-t*.2],[r,y-t*.08]],56,{});
-   DK.ring(B,{r:yy=>r-(yy-(y-t*.08))*.25,y0:y-t*.08,y1:y+t*.2,sh:(t*.28)/(k?1:2),seg:56,pier:.4,pierEvery:2,sill:.12,head:.9,dep:.4});
-   DK.lathe(B,'white',[[r-t*.07,y+t*.2],[r*.8,y+t*.32],[r*.5,y+t*.42],[s0,y+t*.48]],56,{});
-   B.lathe('bronze',[[r+.05,y-t*.08],[r+.5,y-t*.08],[r+.5,y-t*.02],[r+.05,y-t*.02]],56,{uv:2});
+   /* the glazed band holds real storeys (46c: the hotel's two of 3 m, the observatory's one hall of 5 m), from 0.3 t under the saucer's middle to 0.2 t over it */
+   DK.lathe(B,'white',[[s0,y-t*.5],[r*.55,y-t*.45],[r*.92,y-t*.36],[r,y-t*.3]],56,{});
+   DK.ring(B,{r:yy=>r-(yy-(y-t*.3))*.25,y0:y-t*.3,y1:y+t*.2,sh:k?t*.5:t*.25,seg:56,pier:.4,pierEvery:2,sill:.12,head:.9,dep:.4});
+   DK.lathe(B,'white',[[r-t*.125,y+t*.2],[r*.8,y+t*.32],[r*.5,y+t*.42],[s0,y+t*.48]],56,{});
+   B.lathe('bronze',[[r+.05,y-t*.3],[r+.5,y-t*.3],[r+.5,y-t*.24],[r+.05,y-t*.24]],56,{uv:2});
    if(k===1){const dp=[];for(let i=0;i<=8;i++){const a=i/8*Math.PI/2;dp.push([r*.42*Math.cos(a),y+t*.42+r*.25*Math.sin(a)]);}DK.lathe(B,'glass',dp,32,{});}});},
  // S8: four swollen lobes round a core, a balcony every third storey, rust-red carved ledges, a dome over each lobe
  swell(F,B,X){const H=F.height.roof,Lb=F.lobes,lr=y=>Lb.r+Lb.swell*Math.pow(Math.sin(Math.PI*Math.min(1,y/H)),.6);
-  DK.lathe(B,'white',[[F.core,0],[F.core,H+2]],24,{});
+  /* the middle's drum only where it is outside, in the valleys between the lobes: inside one it would wall the middle off from the lobe (46c's
+     plans open the lobes' corridors on its concourse) */
+  {const n=Math.round(H/F.sh),W=Math.PI*2/48;for(let i=0;i<=n;i++){const y0=i*H/n,y1=i<n?(i+1)*H/n:H+2,ym=(y0+y1)/2;B.lathe('white',[[F.core,y0],[F.core,y1]],48,{skip:t=>{const tm=t+W/2,px=Math.cos(tm)*F.core,pz=Math.sin(tm)*F.core;for(let j=0;j<Lb.n;j++){const aj=Math.PI/4+j*2*Math.PI/Lb.n;if(Math.hypot(px-Math.cos(aj)*Lb.at,pz-Math.sin(aj)*Lb.at)<lr(ym)-.2)return true;}return false;}});}}
   for(let k=0;k<Lb.n;k++){const a=Math.PI/4+k*2*Math.PI/Lb.n,cx=Math.cos(a)*Lb.at,cz=Math.sin(a)*Lb.at;
-   DK.lobbyRing(B,{r:lr,cx,cz,h:F.sh,seg:24,doors:[a]},X.doors);DK.ring(B,{r:lr,cx,cz,y0:F.sh,y1:H,sh:F.sh,seg:24,pier:.5,pierEvery:2,sill:.3,head:.8});
-   const n=Math.round(H/F.sh);for(let i=F.balcony;i<n;i+=F.balcony){const y=i*H/n,r=lr(y);B.lathe('white',[[r+2.6,y],[r+.05,y]],24,{cx,cz,uv:2});B.lathe('white',[[r+2.6,y-.32],[r+2.6,y]],24,{cx,cz,uv:2});B.lathe('white',[[r+.05,y-.32],[r+2.6,y-.32]],24,{cx,cz,uv:2});B.lathe('glass',[[r+2.5,y],[r+2.5,y+1]],24,{cx,cz,uv:2});}
+   /* the lobes meet at mid-height (21 m round centres 30 m apart): each lobe's facade and balconies are drawn storey by storey, leaving out the
+      bays inside another lobe or the middle (46c's plans keep their rooms out of them too) */
+   const inside=(t,r,y)=>{const px=cx+r*Math.cos(t),pz=cz+r*Math.sin(t);if(Math.hypot(px,pz)<F.core-.2)return true;for(let j=0;j<Lb.n;j++){if(j===k)continue;const aj=Math.PI/4+j*2*Math.PI/Lb.n;if(Math.hypot(px-Math.cos(aj)*Lb.at,pz-Math.sin(aj)*Lb.at)<lr(y)-.2)return true;}return false;};
+   DK.lobbyRing(B,{r:lr,cx,cz,h:F.sh,seg:24,doors:[a]},X.doors);
+   const n=Math.round(H/F.sh);for(let i=1;i<n;i++){const y0=i*H/n,y1=(i+1)*H/n,ym=(y0+y1)/2,W=2*Math.PI/24;DK.ring(B,{r:lr,cx,cz,y0,y1,sh:y1-y0,seg:24,pier:.5,pierEvery:2,sill:.3,head:.8,skip0:t=>inside(t+W/2,lr(ym),ym)});}
+   for(let i=F.balcony;i<n;i+=F.balcony){const y=i*H/n,r=lr(y),sk=t=>inside(t+Math.PI/24,r+1.3,y);B.lathe('white',[[r+2.6,y],[r+.05,y]],24,{cx,cz,uv:2,skip:sk});B.lathe('white',[[r+2.6,y-.32],[r+2.6,y]],24,{cx,cz,uv:2,skip:sk});B.lathe('white',[[r+.05,y-.32],[r+2.6,y-.32]],24,{cx,cz,uv:2,skip:sk});B.lathe('glass',[[r+2.5,y],[r+2.5,y+1]],24,{cx,cz,uv:2,skip:sk});}
    F.ledges.forEach(y=>{const r=lr(y)+.45;B.lathe('baroque',[[r,y-1.3],[r,y]],24,{cx,cz,uv:6});B.lathe('baroque',[[r,y],[r-.45,y]],24,{cx,cz,uv:2});});
    const dp=[];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([lr(H)*Math.cos(b),H+lr(H)*.6*Math.sin(b)]);}DK.lathe(B,'white',dp,24,{cx,cz});}
   const dp=[];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([F.core*Math.cos(b),H+2+F.core*.4*Math.sin(b)]);}DK.lathe(B,'baroque',dp,24,{uv:6});},

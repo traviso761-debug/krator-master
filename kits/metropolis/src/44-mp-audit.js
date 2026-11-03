@@ -25,7 +25,7 @@
       // the shafts: each stands in the core on every storey it serves
       F.core.shafts.forEach(function (s) {
         if (L.k < s.from || L.k > s.to) return;
-        if (round) { var r = MP.coreR(F, L.k), far = Math.hypot(Math.abs(s.x) + s.w / 2, Math.abs(s.z) + s.d / 2); if (far > r + 0.01) fails.push(tag + s.id + ' stands out of the core (' + far.toFixed(2) + ' > ' + r + ')'); }
+        if (round && !F.core.bays) { var r = MP.coreR(F, L.k), far = Math.hypot(Math.abs(s.x) + s.w / 2, Math.abs(s.z) + s.d / 2); if (far > r + 0.01) fails.push(tag + s.id + ' stands out of the core (' + far.toFixed(2) + ' > ' + r + ')'); }
         else if (!st.rooms.some(function (R) { return R.shaft === s.id; })) fails.push(tag + s.id + ' has no core bay on this storey');
       });
       // flats whole: a hall, a kitchen, a bath, a living room, a bedroom, and the hall opens on all of them

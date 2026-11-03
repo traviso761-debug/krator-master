@@ -197,6 +197,17 @@ storey under the cap; its 48 bays a turn give a flat four windows, too few for t
 at each portal; three gallery storeys round the atrium, its four stair and lift towers standing in it, the hall's ceiling open over the
 middle), the Spiral (lobby, market, clinic, school, records, plant and tanks up the cone round a core of one stair and one lift).
 
+**Batch 2:** the plans a design carries itself (`plan` on its record, from `MP.planLib`: `rings` for bands outside in, `lobe` for a ring about a
+lobe's own centre). The Terrace (10 storeys, 802 rooms): its tiers are bands, rooms at the windows, a corridor, on the wide tiers windowless
+stores and stacks with passages to a second corridor, and a 4.5 m service band on the court where the four shafts stand at one radius on every
+tier (`core.bays`: a shaft stands in a core bay, not in a middle core); the court a hole in the slab; doors and paved walks on its terraces. The
+Stalk (99 rooms): its saucers' glazed bands now hold real storeys (the hotel's two of 3 m, the observatory's one hall of 5 m); the hotel in
+bands, bedrooms at the windows, a restaurant and lounge ring, the lift lobby round the core; its saucers fall as discs. The Swell (50 storeys,
+2004 rooms): the middle is the core and a concourse ring; each lobe a ring of rooms about its own centre over the arc clear of the middle and
+of the other lobes (at mid-height the lobes meet: the floor there is left open), its corridor opening on the concourse, its rooms setting their
+own windows; its hero draws each lobe's facade and balconies only where they are outside, and the middle's drum only in the valleys. A ruin's
+slabs are now its storeys' own outlines, cut cell by cell.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

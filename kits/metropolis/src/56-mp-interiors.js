@@ -30,16 +30,16 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
   const g0=Math.max(0,sd-d.w/2),g1=Math.min(end,sd+d.w/2);run(0,g0,y0,y1);run(g1,end,y0,y1);run(g0,g1,y0+DH,y1);});
  // the slab and the ceiling
  /* an atrium (the Cupola's galleries): the slab and the ceiling ring it, open over the hall */
- const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if(F.core.atrium&&L.k>0){const rc=MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium?48:1});sl.rotateX(-Math.PI/2);
+ const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1])));if((F.core.atrium&&L.k>0)||st.hole){const rc=st.hole||MP.coreR(F,k),h=new THREE.Path();h.absarc(0,0,rc,0,Math.PI*2,true);shape.holes.push(h);}const sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:F.core.atrium||st.hole?48:1});sl.rotateX(-Math.PI/2);
  /* a storey on the street lifts its slab and furniture 3 cm off the street plane (one plane under the other at y 0 fought) */
  const lift=L.y<.05?.03:0;const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22+lift;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.name='ceiling';ce.position.y=L.y+L.h-.26;g.add(ce);
  // the skin's inner face, where the outside's one-sided strips do not show: spandrel and head, and a dado of the core
- if(round){const R=MP.skinR(F,L)+.1,N=st.facade.ring.length;B.lathe('white',[[R,L.y+L.h],[R,L.y+2.5],],N,{flip:false});B.lathe('white',[[R,L.y+.9],[R,L.y]],N,{flip:false});
+ if(round){const R=(st.R||MP.skinR(F,L))+.1,N=Math.max(24,st.facade.ring.length);if(!st.windowsOwn){B.lathe('white',[[R,L.y+L.h],[R,L.y+2.5],],N,{flip:false});B.lathe('white',[[R,L.y+.9],[R,L.y]],N,{flip:false});}
   const r=MP.coreR(F,k),ca=st.rooms.filter(R0=>/\.core$/.test(R0.id))[0],da=ca&&ca.doors[0]?Math.atan2(ca.doors[0].at[1],ca.doors[0].at[0]):0;
    const gaps=[da].concat(F.core.shafts.filter(q=>k>=q.from&&k<=q.to).map(q=>Math.atan2(q.z,q.x))).map(t=>(t+6.2832)%6.2832),skip=t=>gaps.some(g=>{let d=Math.abs(t-g);d=Math.min(d,6.2832-d);return d<.17;});
   /* an atrium's edge is a gallery's glass balustrade, 1.1 m, and its towers stand free in it; a core is walled */
   if(F.core.atrium){if(L.k>0){for(let q=0,nq=Math.ceil(2*Math.PI*r/.35);q<nq;q++){const a=2*Math.PI*q/nq;blocks.push([Math.cos(a)*(r+.1),Math.sin(a)*(r+.1)]);}B.lathe('glassClear',[[r,L.y+1.1],[r,L.y]],72,{});B.lathe('bronze',[[r+.05,L.y+1.1],[r-.1,L.y+1.1]],72,{uv:2});}}
-  else{B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
+  else if(!F.core.bays){B.lathe('concrete',[[r,L.y+L.h],[r,L.y]],36,{skip});
   B.lathe('concrete',[[r-.25,L.y],[r-.25,L.y+L.h]],36,{skip});}}
  else{const hw=F.footprint.w/2-.1,hd=F.footprint.d/2-.1;B.quad('relief',[hw,L.y,-hd],[hw,L.y,hd],[hw,L.y+L.h,hd],[hw,L.y+L.h,-hd],[-1,0,0],{uv:6});B.quad('relief',[-hw,L.y,hd],[-hw,L.y,-hd],[-hw,L.y+L.h,-hd],[-hw,L.y+L.h,hd],[1,0,0],{uv:6});
   if(L.use!=='arcade')[1,-1].forEach(s=>{const z=s*hd;const q=(a,b)=>s>0?B.quad('white',[hw,a,z],[-hw,a,z],[-hw,b,z],[hw,b,z],[0,0,-1]):B.quad('white',[-hw,a,z],[hw,a,z],[hw,b,z],[-hw,b,z],[0,0,1]);q(L.y,L.y+.9);q(L.y+2.5,L.y+L.h);});}
@@ -89,7 +89,7 @@ MP.closeOne=function(){const o=MP.open.shift();if(!o)return;scene.remove(o.g);o.
 MP.closeStoreys=function(){while(MP.open.length)MP.closeOne();MP.walkSync();};
 // going in: a camera inside a hero's skin opens the storey it stands on and the two either side, a camera that left closes them. Nothing runs for a tower nobody is in
 MP.heroAt=function(e,m0){const mg=m0==null?0:m0;for(const g of MPS.live){const m=g.userData.mp;if(!m||!MP.FAMILY[m.key.split('.')[0]])continue;const F=MP.FAMILY[m.key.split('.')[0]],dx=e.x-m.x,dz=e.z-m.z,c=Math.cos(m.yaw),n=Math.sin(m.yaw),lx=dx*c-dz*n,lz=dx*n+dz*c;
-  if(F.core.kind==='round'?Math.hypot(lx,lz)<(F.envR?F.envR(Math.max(0,e.y-1.6)):MP.spindleR(Math.min(e.y,222)))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
+  if(F.core.kind==='round'?Math.hypot(lx,lz)<(F.hitR?F.hitR(Math.max(0,e.y-1.6)):F.envR?F.envR(Math.max(0,e.y-1.6)):MP.spindleR(Math.min(e.y,222)))+mg:Math.abs(lx)<F.footprint.w/2+mg&&Math.abs(lz)<F.footprint.d/2+mg)return {m,F};}return null;};
 MP.levelAt=function(F,y){let k=0;F.levels.forEach(L=>{if(y>=L.y-.1)k=L.k;});return k;};
 MP.enterTick=function(){if(MP.cut&&MP.cut.on)return;const now=performance.now();if(now<(MP.nextEnter||0))return;MP.nextEnter=now+300;/* 3 m out: the storey opens as the walker reaches a door, so its leaves part onto the lobby, not onto the hollow of a hero */
  const e=camera.position,H=MP.heroAt(e,3);if(MPS.mode&&MP_CFG[MPS.mode].storey&&!MP.entered)return;

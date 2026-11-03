@@ -31,15 +31,31 @@ MP.ruinDesign = function (G, F, state) {
     o.geometry = g2;
   });
   drop.forEach(o => o.parent && o.parent.remove(o));
-  /* inside: a floor slab at every storey under the tear (a skeleton's to its frame's top), a ring from the core (or the atrium) to the skin */
-  const B = MP.builder(false), rc = F.core.r, hi = R.frame ? top : R.cut;
+  /* inside: a floor slab at every storey under the tear (a skeleton's to its frame's top): the storey's own plan outline (the Swell's clover, the
+     Terrace's ring round its court, an atrium's ring), its triangles kept where the tear stands over them */
+  const B = MP.builder(false), rc = F.core.r, hi = R.frame ? top : R.cut, sp = [], sn = [], si = [];
   if (state !== 'gutted') F.levels.forEach(L => {
-    if (L.k === 0 || L.y > hi - 0.5) return; const ro = F.envR(L.y + 0.1) - 0.3, ri = F.core.atrium ? rc : rc + 0.3; if (ro <= ri + 0.5) return;
-    B.lathe('concrete', [[ro, L.y], [ri, L.y]], 48, { uv: 4, skip: t => L.y > Math.min(limit(Math.cos(t) * ro, Math.sin(t) * ro), skin) + 0.3 && !R.frame });
-    B.lathe('white', [[ri, L.y - 0.3], [ro, L.y - 0.3]], 48, { uv: 4 });
+    if (L.k === 0 || L.y > hi - 0.5) return;
+    /* the outline is star-shaped from the axis (a ring, a clover, an atrium's ring): a radial mesh, 3 m steps from the hole (or the axis) out to
+       it, so the tear cuts small cells, not a fan's long triangles */
+    const st = MP.storey(F, L.k), hole = st.hole || (F.core.atrium ? rc : 0), O = st.outline.map(p => ({ t: Math.atan2(p[1], p[0]), r: Math.hypot(p[0], p[1]) })).sort((a, b) => a.t - b.t), N = O.length;
+    for (let i = 0; i < N; i++) {
+      const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, nr = Math.max(1, Math.ceil((Math.max(a.r, b.r) - hole) / 3));
+      for (let j = 0; j < nr; j++) {
+        const f0 = j / nr, f1 = (j + 1) / nr, ra0 = hole + (a.r - 0.2 - hole) * f0, ra1 = hole + (a.r - 0.2 - hole) * f1, rb0 = hole + (b.r - 0.2 - hole) * f0, rb1 = hole + (b.r - 0.2 - hole) * f1;
+        const p = [[ra0 * Math.cos(ta), ra0 * Math.sin(ta)], [rb0 * Math.cos(tb), rb0 * Math.sin(tb)], [rb1 * Math.cos(tb), rb1 * Math.sin(tb)], [ra1 * Math.cos(ta), ra1 * Math.sin(ta)]];
+        const cx = (p[0][0] + p[1][0] + p[2][0] + p[3][0]) / 4, cz = (p[0][1] + p[1][1] + p[2][1] + p[3][1]) / 4;
+        if (!R.frame && L.y > Math.min(limit(cx, cz), skin) + 0.3) continue;
+        [[L.y, 1], [L.y - 0.3, -1]].forEach(fc => { const b0 = sp.length / 3, ord = fc[1] > 0 ? [0, 1, 2, 3] : [0, 3, 2, 1]; ord.forEach(v => { sp.push(p[v][0], fc[0], p[v][1]); sn.push(0, fc[1], 0); }); si.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); });
+      }
+    }
   });
+  if (sp.length) { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(sn, 3)); g.setIndex(si);
+    const uv = new Float32Array(sp.length / 3 * 2); for (let i = 0; i < sp.length / 3; i++) { uv[i * 2] = sp[i * 3] / 4; uv[i * 2 + 1] = sp[i * 3 + 2] / 4; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    const col = new Float32Array(sp.length).fill(stain < 1 ? stain : 1); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const m = new THREE.Mesh(g, MP.mats().concrete); m.name = F.id + '.ruin.slabs'; G.add(m); }
   /* the core, its walls to the cut (a stump's to its own height over the cut) */
-  if (state !== 'gutted' && !F.core.atrium) { const cy = Math.max(R.core || 0, Math.min(hi, F.height.roof)); B.lathe('concrete', [[rc, 0], [rc, cy]], 24, { uv: 4 }); B.lathe('concrete', [[rc - 0.3, cy], [rc - 0.3, 0]], 24, { uv: 4 }); B.lathe('concrete', [[rc, cy], [rc - 0.3, cy]], 24, { uv: 2 }); }
+  if (state !== 'gutted' && !F.core.atrium && !F.core.bays) { const cy = Math.max(R.core || 0, Math.min(hi, F.height.roof)); B.lathe('concrete', [[rc, 0], [rc, cy]], 24, { uv: 4 }); B.lathe('concrete', [[rc - 0.3, cy], [rc - 0.3, 0]], 24, { uv: 4 }); B.lathe('concrete', [[rc, cy], [rc - 0.3, cy]], 24, { uv: 2 }); }
   const H = B.finish(F, 'ruin'); H.children.forEach(c => { c.name = F.id + '.ruin.' + c.name; G.add(c); });
   const D = MP.debris(F, state); if (D) { D.name = 'debris'; G.add(D); }
   G.name = F.id + '.' + state; G.userData.ruin = R;
