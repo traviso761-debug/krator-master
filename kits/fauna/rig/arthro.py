@@ -13,7 +13,7 @@ by coordinates tuned per animal, decimated in one pass and let the join hide the
 
 Frame: +z the snout, y up, +x the animal's left. Needs numpy, scipy, trimesh, fast-simplification.
 """
-import argparse, json, os, struct, sys
+import argparse, json, os, re, struct, sys
 import numpy as np, trimesh, fast_simplification
 from scipy import ndimage
 from scipy.sparse import coo_matrix
@@ -111,7 +111,7 @@ def comps(F, sel, W):
     return connected_components(g, directed=False)[1][Fs[:, 0]]
 
 
-def frame(P, N, F, face, nblob, spider=False):
+def frame(P, N, F, face, nblob, spider=False, flip=False):
     """turn the model so its trunk runs along z with the head on +z (the end nearest what rises highest off the trunk: the antennae; a spider's, the end its legs come from), feet at y = 0"""
     C = P[F].mean(1); t = C[face > 0]; c = t.mean(0); xx, xz, zz = np.cov(t[:, 0], t[:, 2]).ravel()[[0, 1, 3]]
     th = 0.5 * np.arctan2(2 * xz, xx - zz); ax = np.array([np.cos(th), 0, np.sin(th)]); up = np.array([0, 1.0, 0]); side = np.cross(up, ax)
@@ -120,7 +120,7 @@ def frame(P, N, F, face, nblob, spider=False):
     Cz = p[F].mean(1)
     hi = Cz[(face == 0)]; top = hi[hi[:, 1] > np.quantile(hi[:, 1], 0.97)]
     trunk = Cz[face > 0][:, 2]; mid = (trunk.min() + trunk.max()) / 2
-    if (hi[:, 2].mean() if spider else top[:, 2].mean()) < mid:
+    if ((hi[:, 2].mean() if spider else top[:, 2].mean()) < mid) != bool(flip):
         p = p * np.array([-1, 1, -1]); n = n * np.array([-1, 1, -1])
     p[:, 1] -= p[:, 1].min()
     return p, n
@@ -233,23 +233,30 @@ def main():
         P = defur(P, F, spec['defur'])
     P0, N0 = P, N
     # the opening that sets the legs free depends on the animal: try from wide to narrow until the count is the spec's
-    for op in ([spec['open']] if 'open' in spec else [16, 14, 12, 10, 8.8, 7.5, 6.5, 5.5, 4.5]):
+    for op in ([spec['open']] if 'open' in spec else [4.5] if spec.get('rings') else [16, 14, 12, 10, 8.8, 7.5, 6.5, 5.5, 4.5]):
         spec2 = dict(spec, open=op); face, nb, L = segment(P0, F, spec2); face = face.astype(np.int32)
         if not (face > 0).any():
             continue
-        P, N = frame(P0, N0, F, face, nb, bool(spec.get('pedicel')))
-        C = P[F].mean(1); W = weld(P); limb = np.where(face == 0)[0]; lab = comps(F, face == 0, W); ground = P[:, 1].min(); H = np.ptp(P[:, 1])
+        P, N = frame(P0, N0, F, face, nb, bool(spec.get('pedicel')), spec.get('flip'))
+        C = P[F].mean(1); W = weld(P); ground = P[:, 1].min(); H = np.ptp(P[:, 1])
+        if spec.get('rings'):      # legs in a row are a comb: everything below one height comes apart into teeth. The height is the highest that still gives most of the teeth, so each keeps its whole length
+            rows = []
+            for yc in np.linspace(.1, .62, 14):
+                sel = C[:, 1] < ground + yc * H; l2 = comps(F, sel, W); ids, cnt = np.unique(l2, return_counts=True); rows.append((yc, int((cnt > 200).sum())))
+            top_ = max(r[1] for r in rows); yc = spec['comb'] if 'comb' in spec else max(r[0] for r in rows if r[1] >= .9 * top_); print('comb', [(round(float(y), 2), c) for y, c in rows], 'cut at %.2f' % yc)
+            face[:] = 1; face[C[:, 1] < ground + yc * H] = 0
+        limb = np.where(face == 0)[0]; lab = comps(F, face == 0, W)
         # the limbs: a piece that reaches the ground is a leg; the rest go to the nearest blob of the trunk
         legs, other = [], []
         for l in np.unique(lab):
             f = limb[lab == l]
             if len(f) < 6:
                 other.append(f); continue
-            (legs if C[f, 1].min() < ground + 0.06 * H and np.ptp(C[f, 1]) > 0.2 * H else other).append(f)
+            (legs if C[f, 1].min() < ground + 0.06 * H and (spec.get('rings') or np.ptp(C[f, 1]) > 0.2 * H) else other).append(f)
         print('open %.1f: limb pieces %d, legs %d' % (op, len(np.unique(lab)), len(legs)), [(len(f), round(float(C[f, 0].mean()), 3), round(float(C[f, 2].mean()), 3)) for f in legs])
-        if len(legs) == spec['contacts']:
+        if len(legs) == spec['contacts'] or (spec.get('rings') and len(legs) >= spec['contacts']):
             break
-    assert len(legs) == spec['contacts'], 'found %d legs, the spec says %d: look at the mesh or set "open" in the spec' % (len(legs), spec['contacts'])
+    assert len(legs) >= spec['contacts'] if spec.get('rings') else len(legs) == spec['contacts'], 'found %d legs, the spec says %d: look at the mesh or set "open" in the spec' % (len(legs), spec['contacts'])
     arms = []
     if spec.get('raptorial'):
         # limbs held off the ground, a mantis's forelegs. A mantis's neck is as thin as a leg, so the opening takes them all as one piece: widen a strip down
@@ -272,8 +279,21 @@ def main():
             rest = np.setdiff1d(big, np.r_[arms[0], arms[1]]); face[rest] = 1
         print('arms', [(len(f), round(float(C[f, 0].mean()), 3), round(float(C[f, 2].mean()), 3)) for f in arms])
         assert len(arms) == 2, 'the raised forelegs are not a pair'
-    neck = None
-    if spec.get('pedicel'):      # a spider: the abdomen can sit up over the back, so no slice along the body parts it. The cut is square to the line from the hips to the abdomen's tip, at the waist behind the hips
+    neck = None; rings = []; pairs = None
+    if spec.get('rings'):      # a millipede: one ring to a groove in its back, the deepest first, no two closer than most of a leg pair's pitch; the legs pair off front to back, and a leg with no partner is dropped to the trunk
+        L_, R_ = [sorted((f for f in legs if (C[f, 0].mean() > 0) == s), key=lambda f: -C[f, 2].mean()) for s in (True, False)]; pairs = []
+        for fl in L_:
+            fr_ = min(R_, key=lambda f: abs(C[f, 2].mean() - C[fl, 2].mean())) if R_ else None
+            pairs.append((fl, fr_)); R_ = [f for f in R_ if f is not fr_]
+        zp = np.array([C[p[0], 2].mean() for p in pairs]); pitch = np.median(-np.diff(zp)); keep_ = [p for p in pairs if p[1] is not None and abs(C[p[0], 2].mean() - C[p[1], 2].mean()) < .6 * pitch]
+        other += [q for p in pairs if not any(p is k_ for k_ in keep_) for q in p if q is not None] + R_; pairs = keep_; legs = [q for p in pairs for q in p]; print('%d leg pairs, pitch %.3f' % (len(pairs), pitch))
+        face[face > 0] = 1; t = np.where(face > 0)[0]; z = C[t, 2]; zs = np.linspace(z.min(), z.max(), 500); b_ = np.clip(np.digitize(z, zs) - 1, 0, 498); w = np.zeros(499); np.maximum.at(w, b_, C[t, 1]); w = ndimage.gaussian_filter1d(w, 1.5)
+        cand = [i for i in range(3, 496) if w[i] <= w[i - 1] and w[i] <= w[i + 1]]; pick = []
+        for q in sorted(cand, key=lambda i: w[i]):
+            if all(abs(zs[q] - zs[r]) > .7 * pitch for r in pick):
+                pick.append(q)
+        cuts = sorted(float(zs[q]) for q in pick); nb = len(cuts) + 1; face[t] = nb - np.searchsorted(cuts, z); rings = ['seg%d' % i for i in range(nb - 1)]; spec['trunk'] = ['head'] + rings; neck = dict(t=t, z=z, cuts=cuts, tilt=0.0); print('%d rings' % len(rings))
+    elif spec.get('pedicel'):      # a spider: the abdomen can sit up over the back, so no slice along the body parts it. The cut is square to the line from the hips to the abdomen's tip, at the waist behind the hips
         t = np.where(face > 0)[0]; tk = cKDTree(C[t][::max(1, len(t) // 6000)]); hips = np.array([C[f][tk.query(C[f])[0].argmin()] for f in legs]); hc = hips.mean(0)
         tip = C[t][np.linalg.norm(C[t] - hc, axis=1).argmax()]; ax = (hc - tip) / np.linalg.norm(hc - tip); z = C[t] @ ax; zs = np.linspace(z.min(), z.max(), 81); bins = np.clip(np.digitize(z, zs) - 1, 0, 79); w = np.full(80, np.inf)
         for i in range(80):      # each section's area, from the spread of its points square to the axis
@@ -311,11 +331,11 @@ def main():
         th = np.where(part == 'thorax')[0]; th = th[np.abs(C[th, 0] - q[:, 0].mean()) < 0.3 * np.ptp(q[:, 2])]; part[th[s[th] > 0]] = 'jaw'; jawcut = th[np.abs(s[th]) < 0.02]      # near the midline: out to the sides are the leg sockets
     trunkC = C[face == blobs[1 if spec.get('swap') else 0]] if spec.get('pedicel') or spec.get('swap') else C[face > 0]; trunkT = trunkC[::max(1, len(trunkC) // 6000)]
     order = sorted(legs, key=lambda f: -C[f].mean(0)[2])      # pairs front to back; sort each pair by its side
-    groups = [order[i:i + 2] for i in range(0, len(order), 2)]
+    groups = pairs if pairs else [order[i:i + 2] for i in range(0, len(order), 2)]
     tri_parts, LEG, CLONE = {}, {}, {}; chest = cKDTree(trunkT)
     for i, grp in enumerate([arms] + groups if arms else groups):
         for f in grp:
-            held = bool(arms) and i == 0; sd = 'L' if C[f, 0].mean() > 0 else 'R'; nm = 'arm' + sd if held else 'leg%d%s' % (i - (1 if arms else 0), sd); fem, tib, tar, hip, knee, ankle, toe, sk, sa = leg_chain(P, F, f, trunkT)
+            held = bool(arms) and i == 0; sd = 'L' if C[f, 0].mean() > 0 else 'R'; nm = 'arm' + sd if held else 'leg%d' % (2 * i + (sd == 'R')) if pairs else 'leg%d%s' % (i - (1 if arms else 0), sd); fem, tib, tar, hip, knee, ankle, toe, sk, sa = leg_chain(P, F, f, trunkT)
             if spec.get('pedicel') or spec.get('swap'):      # a rear leg of a big-bellied spider comes out from under the abdomen: its femur is drawn out to the chest, so any abdomen can be swapped on
                 to = trunkT[chest.query(hip)[1]]
                 gap = np.linalg.norm(to - hip)
@@ -363,19 +383,37 @@ def main():
     if jawcut is not None and 'jaw' in tri_parts:
         for n in ('jaw', 'thorax'):
             tri_parts[n] = (np.union1d(tri_parts[n][0], jawcut), tri_parts[n][1])
-    assert sorted(n for n in LEG if n.startswith('leg')) == sorted('leg%d%s' % (i, s) for i in range(len(groups)) for s in 'LR'), 'legs do not pair up: %s' % sorted(LEG)
+    assert pairs or sorted(n for n in LEG if n.startswith('leg')) == sorted('leg%d%s' % (i, s) for i in range(len(groups)) for s in 'LR'), 'legs do not pair up: %s' % sorted(LEG)
     # ---- bake each part on its own budget, pivots in the model frame
     MESH = {}
     k = (a.tris / sum(b for _, b in tri_parts.values())) if a.tris else 1.0
     for nm, (f, bud) in sorted(tri_parts.items()):
+        if rings and nm.startswith('leg') and len(f) > 1:      # a sliver the comb cut off goes: a leg is one piece
+            sel_ = np.zeros(len(F), bool); sel_[f] = True; l_ = comps(F, sel_, weld(P)); ids_, cnt_ = np.unique(l_, return_counts=True); f = np.sort(f)[l_ == ids_[cnt_.argmax()]]
         fu = F[f]; u, inv = np.unique(fu, return_inverse=True); sub = inv.reshape(-1, 3)
         MESH[nm] = bake_part(P[u], N[u], UV[u], sub, max(30, int(bud * k)))
+    if rings:      # the legs leave a row of sockets under every ring, too many and too torn to cap: a plain dark core inside each ring closes the body behind them
+        under = np.where(C[:, 1] < np.quantile(C[:, 1], .4))[0][:4000]; dark = UV[F[under[np.argsort(N[F[under, 0]].sum(1))[0]], 0]]
+        for r_ in ['head'] + rings:
+            pos, nrm, uv, nt = MESH[r_]; lo_, hi_ = np.quantile(pos, .02, axis=0), np.quantile(pos, .98, axis=0); c_ = (lo_ + hi_) / 2; ax_, ay_ = (hi_[0] - lo_[0]) * .47, (hi_[1] - lo_[1]) * .47; th_ = np.linspace(0, 2 * np.pi, 11)[:-1]
+            ringv = lambda z_: np.c_[c_[0] + ax_ * np.cos(th_), c_[1] + ay_ * np.sin(th_), np.full(10, z_)]; A_, B_ = ringv(pos[:, 2].min()), ringv(pos[:, 2].max()); tri = []
+            for i in range(10):
+                j = (i + 1) % 10; tri += [(A_[i], B_[j], B_[i]), (A_[i], A_[j], B_[j]), (A_[i], np.array([c_[0], c_[1], A_[i, 2]]), A_[j]), (B_[i], B_[j], np.array([c_[0], c_[1], B_[i, 2]]))]
+            q = np.array(tri).reshape(-1, 3, 3); m_ = q.mean(1); zc = (A_[0, 2] + B_[0, 2]) / 2; cap = np.abs(np.hypot(q[:, :, 0] - c_[0], q[:, :, 1] - c_[1])).min(1) < 1e-9; flat = np.ptp(q[:, :, 1], axis=1) < 1e-9
+            out_ = np.where(flat[:, None], np.tile([0, -1.0, 0], (len(q), 1)), np.where(cap[:, None], np.c_[np.zeros((len(q), 2)), np.sign(m_[:, 2] - zc)], np.c_[m_[:, 0] - c_[0], m_[:, 1] - c_[1], np.zeros(len(q))]))      # sides away from the axis, ends along it
+            fl = (np.cross(q[:, 1] - q[:, 0], q[:, 2] - q[:, 0]) * out_).sum(1) < 0; q[fl] = q[fl][:, ::-1]; q = q.reshape(-1, 3)      # every face outward, as the test's winding reads it
+            nq = np.repeat(np.cross(q[1::3] - q[0::3], q[2::3] - q[0::3]), 3, axis=0); nq /= np.maximum(np.linalg.norm(nq, axis=1, keepdims=True), 1e-12)
+            MESH[r_] = (np.vstack([pos, q]), np.vstack([nrm, nq]), np.vstack([uv, np.tile(dark, (len(q), 1))]), nt + len(tri))
     tot = sum(m[3] for m in MESH.values()); print('baked', tot, 'tris in', len(MESH), 'parts')
     cen = lambda n: MESH[n][0].mean(0)
-    PIV = {'thorax': cen('thorax')}; PAR = {}
+    PIV = {rings[0]: cen(rings[0])} if rings else {'thorax': cen('thorax')}; PAR = {}
     near = lambda p, q: (lambda d, i: (MESH[p][0][d.argmin()] + MESH[q][0][i[d.argmin()]]) / 2)(*cKDTree(MESH[q][0]).query(MESH[p][0]))
+    if rings:      # each ring turns on the one in front of it, about the middle of their groove, back from the first
+        at_ = lambda c: (lambda f: C[f].mean(0))(neck['t'][np.abs(neck['z'] - c) < 0.012 * np.ptp(neck['z'])]); cu = neck['cuts'][::-1]; PIV['head'] = at_(cu[0]); PAR['head'] = rings[0]
+        for i_ in range(1, len(rings)):
+            PIV[rings[i_]] = at_(cu[i_]); PAR[rings[i_]] = rings[i_ - 1]
     for n in ('head', 'jaw'):
-        if n in MESH:
+        if n in MESH and not rings:
             PIV[n] = near(n, 'thorax'); PAR[n] = 'thorax'
     if 'abd' in MESH:
         PIV['abd'] = near('abd', 'thorax'); PAR['abd'] = 'thorax'
@@ -389,16 +427,22 @@ def main():
         if 'jaw' in MESH:
             PIV['jaw'] = mid(jawcut)
         PIV['abd'] = mid(neck['t'][np.abs(neck['z'] - neck['cuts'][0]) < 0.012 * np.ptp(neck['z'])])
-    trunk = ['thorax'] if spec.get('pedicel') or spec.get('swap') else [n for n in ('thorax', 'head', 'abd', 'abd2') if n in MESH]; TR = {n: cKDTree(MESH[n][0]) for n in trunk}
+    trunk = ['head'] + rings if rings else ['thorax'] if spec.get('pedicel') or spec.get('swap') else [n for n in ('thorax', 'head', 'abd', 'abd2') if n in MESH]; TR = {n: cKDTree(MESH[n][0]) for n in trunk}
     for nm, g in LEG.items():
         PIV[nm] = g['hip']; PAR[nm] = min(trunk, key=lambda n: TR[n].query(g['hip'])[0]); print(nm, 'hangs from', PAR[nm])
         PIV[nm + 't'] = g['knee']; PAR[nm + 't'] = nm
         if g['held']:
             continue
         PIV[nm + 'f'] = g['ankle']; PAR[nm + 'f'] = nm + 't'
-    ORDER = ['thorax'] + [n for n in ('head', 'jaw', 'abd', 'abd2') if n in MESH] + sorted(n for n in MESH if n.startswith(('leg', 'arm')))
+    if spec.get('wings'):      # never cut from the body: cards on their own hinges, folded back at rest (PLAN-MESHY.md, section 1)
+        Tv = MESH['thorax'][0]; z0, z1 = Tv[:, 2].min(), Tv[:, 2].max(); span = np.ptp(P[:, 2])
+        for tag, zf, sp, ch in (('wing', .62, .5, .17), ('wing2', .34, .38, .13)):
+            q = Tv[np.abs(Tv[:, 2] - (z0 + zf * (z1 - z0))) < .1 * (z1 - z0)]; q = q[q[:, 1] > np.quantile(q[:, 1], .55)]; hx = np.quantile(np.abs(q[:, 0]), .8); hy = np.quantile(q[:, 1], .75)
+            for sd, sg in (('L', 1), ('R', -1)):
+                MESH[tag + sd] = wing_card(np.array([sg * hx, hy, z0 + zf * (z1 - z0)]), sg, sp * span, ch * span); PIV[tag + sd] = np.array([sg * hx, hy, z0 + zf * (z1 - z0)]); PAR[tag + sd] = 'thorax'
+    ORDER = (rings[:1] + ['head'] + rings[1:] if rings else ['thorax'] + [n for n in ('head', 'jaw', 'abd', 'abd2') if n in MESH]) + sorted(n for n in MESH if n.startswith(('leg', 'arm', 'wing')))
     level = neck['tilt'] if spec.get('level') and neck else None
-    write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, float(P[:, 1].min()), H, np.ptp(P[:, 2]), level)
+    write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, float(P[:, 1].min()), H, np.ptp(P[:, 2]), level, bool(rings), spec.get('crouch', 0))
 
 
 # ---------------------------------------------------------------- rotation helpers and the clips
@@ -429,7 +473,18 @@ def ik(g, target):
     return F1 @ F0.T, T1 @ T0.T
 
 
-def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None):
+def wing_card(at, sg, span, chord, nu=10):
+    """(positions, normals, uvs, tris) of one wing, a flat rounded blade running out along x from its hinge, every corner its own vertex as bake_part returns them"""
+    ts = np.linspace(0, 1, nu + 1); e = np.sqrt(np.maximum(1 - ts ** 3, 0)); lead, trail = .34 * chord * e, -.66 * chord * e * (.45 + .55 * np.sin(np.pi * np.minimum(ts * 1.1, 1) * .5 + .4))
+    V = [(sg * t * span, 0, z) for t, a_, b_ in zip(ts, lead, trail) for z in (a_, b_)]; U = [(t, v) for t in ts for v in (0, 1)]; pos, uv = [], []
+    for i in range(nu):
+        for q in ((2 * i, 2 * i + 1, 2 * i + 3), (2 * i, 2 * i + 3, 2 * i + 2)):
+            q = q if sg > 0 else q[::-1]
+            pos += [V[j] for j in q]; uv += [U[j] for j in q]
+    pos = np.array(pos, float) + at; return pos, np.tile([0, 1.0, 0], (len(pos), 1)), np.array(uv, float), len(pos) // 3
+
+
+def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None, chain=False, crouch=0):
     blob = bytearray(); BV = []; AC = []
 
     def add_bv(data, target=None):
@@ -458,15 +513,18 @@ def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None
     for n in ORDER:
         if n in PAR:
             nodes[idx[PAR[n]]].setdefault('children', []).append(idx[n])
-    T_WALK, DUTY = 1.0, 0.6; STRIDE = 0.2 * L; LIFT = 0.06 * H; I3 = np.eye(3)
+    T_WALK, DUTY = (1.2, 0.7) if chain else (1.0, 0.6); STRIDE = (0.05 if chain else 0.2) * L; LIFT = 0.06 * H; I3 = np.eye(3); WAVE = 0.11      # a chain's legs go in a wave, this share of a stride behind the pair in front
 
     def qa(axis, an):
         q = np.zeros(4); q[:3] = np.asarray(axis, float) * np.sin(an / 2); q[3] = np.cos(an / 2); return q
     # a body generated nose up is levelled in every clip: the trunk turns about the thorax's pivot and the legs reach back to their own feet
     ct, st = (np.cos(level), np.sin(level)) if level is not None else (1.0, 0.0)
-    LV = np.array([[1, 0, 0], [0, ct, -st], [0, st, ct]]); Tc = PIV['thorax']; hipY = np.mean([g['hip'][1] for g in LEG.values() if not g['held']])
+    LV = np.array([[1, 0, 0], [0, ct, -st], [0, st, ct]]); Tc = PIV[ORDER[0]]; hipY = np.mean([g['hip'][1] for g in LEG.values() if not g['held']])
     lift_body = hipY - np.mean([(LV @ (g['hip'] - Tc) + Tc)[1] for g in LEG.values() if not g['held']]) if level is not None else 0.0
-    DROP = np.array([0, lift_body, 0.0])
+    DROP = np.array([0, lift_body - crouch * H, 0.0])      # a leg generated nearly straight has no stride in it: the body is carried this much lower, and the knees take it up
+    def reach(g):      # how far a foot can go fore and aft of its rest place before the leg runs out: a leg nearly straight at rest cannot take a full stride, and an overreached foot slides
+        r_ = .97 * (np.linalg.norm(g['knee'] - g['hip']) + np.linalg.norm(g['ankle'] - g['knee'])); v_ = g['ankle'] - g['hip'] - DROP; return np.sqrt(max(r_ * r_ - v_[0] ** 2 - v_[1] ** 2, 0)) - abs(v_[2])
+    STRIDE = min(STRIDE, 2 * max(min(reach(g) for g in LEG.values() if not g['held']), .01 * L))
     to_trunk = lambda w: LV.T @ (w - Tc - DROP) + Tc      # a world point in the trunk's frame at rest
 
     def leg_q(nm, u):
@@ -474,19 +532,29 @@ def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None
         if u < DUTY:
             z = half * (1 - 2 * u / DUTY); y = 0.0
         else:
-            s = (u - DUTY) / (1 - DUTY); z = -half + STRIDE * (0.5 - 0.5 * np.cos(np.pi * s)); y = LIFT * np.sin(np.pi * s)
+            s = (u - DUTY) / (1 - DUTY); z = -half + STRIDE * (0.5 - 0.5 * np.cos(np.pi * s)); y = LIFT * np.sqrt(np.sin(np.pi * s))      # off the ground at once: a foot that creeps up is still planted while it moves
         target = to_trunk(A0 + np.array([0, y, z]))
         R1, R2 = ik(g, target); return R1, R2
 
+    fly = [False]
+
+    def wing(nm, ph):
+        """folded back along the abdomen, or beating; a hind wing a little behind its fore wing"""
+        sg = 1 if nm.endswith('L') else -1; hind = nm.startswith('wing2')
+        a_, b_ = (0.85 * np.sin(2 * np.pi * (ph - (0.08 if hind else 0))) + 0.2, 0.2 + 0.12 * np.cos(2 * np.pi * ph)) if fly[0] else (0.06, 1.47 if hind else 1.42)
+        ca, sa, cb, sb = np.cos(sg * a_), np.sin(sg * a_), np.cos(sg * b_), np.sin(sg * b_); return mat2q(np.array([[ca, -sa, 0], [sa, ca, 0], [0, 0, 1]]) @ np.array([[cb, 0, sb], [0, 1, 0], [-sb, 0, cb]]))
+
     def pose(nm, ph, walkit):
-        base = nm[:5] if nm.startswith('leg') else nm[:4]
+        if nm.startswith('wing'):
+            return wing(nm, ph)
+        m_ = re.match(r'leg\d+[LR]?|arm[LR]', nm); base = m_.group() if m_ else nm
         if base in LEG:
             g = LEG[base]; tri = (g['i'] + (0 if g['sd'] == 'L' else 1)) % 2
-            u = (ph + 0.5 * tri) % 1.0
-            if g['held'] or (not walkit and level is None):
+            u = ((ph + 0.5 * (g['sd'] == 'R') - WAVE * g['i']) if chain else (ph + 0.5 * tri)) % 1.0
+            if g['held'] or (not walkit and level is None and not crouch):
                 return np.array([0, 0, 0, 1.0])
             R1, R2 = leg_q(base, u) if walkit else ik(g, to_trunk(g['ankle']))
-            if len(nm) == 5:
+            if nm == base:
                 return mat2q(R1)
             if nm.endswith('t'):
                 return mat2q(R1.T @ R2)
@@ -494,7 +562,7 @@ def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None
         if nm == 'thorax' and level is not None:
             return mat2q(LV)
         if nm == 'head':
-            return qa([0, 1, 0], (0.05 if walkit else 0.1) * np.sin(2 * np.pi * ph))
+            return qa([0, 1, 0], (0 if chain or (walkit and any(PAR.get(n) == 'head' for n in LEG)) else 0.05 if walkit else 0.1) * np.sin(2 * np.pi * ph))      # still while any legs hang from it
         if nm == 'abd' and not walkit:      # still in the walk: legs may hang from it, and its sway would drag their feet
             return qa([0, 1, 0], 0.03 * np.sin(2 * np.pi * (ph + 0.25)))
         return np.array([0, 0, 0, 1.0])
@@ -506,8 +574,8 @@ def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None
             if np.allclose(q, [0, 0, 0, 1], atol=1e-6):
                 continue
             sam.append({'input': add_acc(t, 'SCALAR', 5126, None, True), 'output': add_acc(q, 'VEC4', 5126), 'interpolation': 'LINEAR'}); ch.append({'sampler': len(sam) - 1, 'target': {'node': idx[nm], 'path': 'rotation'}})
-        if level is not None:
-            p0 = np.array(nodes[idx['thorax']]['translation'], float) + DROP; sam.append({'input': add_acc(t, 'SCALAR', 5126, None, True), 'output': add_acc(np.tile(p0, (n + 1, 1)).astype('<f4'), 'VEC3', 5126), 'interpolation': 'LINEAR'}); ch.append({'sampler': len(sam) - 1, 'target': {'node': idx['thorax'], 'path': 'translation'}})
+        if level is not None or crouch:
+            p0 = np.array(nodes[idx[ORDER[0]]]['translation'], float) + DROP; sam.append({'input': add_acc(t, 'SCALAR', 5126, None, True), 'output': add_acc(np.tile(p0, (n + 1, 1)).astype('<f4'), 'VEC3', 5126), 'interpolation': 'LINEAR'}); ch.append({'sampler': len(sam) - 1, 'target': {'node': idx[ORDER[0]], 'path': 'translation'}})
         c = {'name': name, 'samplers': sam, 'channels': ch}
         if extras:
             c['extras'] = extras
@@ -517,13 +585,15 @@ def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L, level=None
         """a mantis's strike: a small draw back, the forelegs thrown forward and open, the tibia snapped shut, a slow return"""
         sm = lambda a_, b_, x: (lambda q: q * q * (3 - 2 * q))(min(1.0, max(0.0, (x - a_) / (b_ - a_))))
         if nm in ('armL', 'armR'):
-            e = -0.15 * sm(0, 0.16, ph) + 1.15 * sm(0.16, 0.28, ph) - sm(0.5, 0.95, ph); return qa([1, 0, 0], -1.0 * e)
+            e = -0.15 * sm(0, 0.16, ph) + 1.15 * sm(0.16, 0.28, ph) - sm(0.5, 0.95, ph); return qa([1, 0, 0], e)      # + swings a raised foreleg down and forward, past the face
         if nm in ('armLt', 'armRt'):
             g = LEG[nm[:4]]; n_ = np.cross(g['knee'] - g['hip'], g['ankle'] - g['knee']); n_ /= np.linalg.norm(n_) + 1e-12
             return qa(n_, -1.5 * (sm(0.14, 0.27, ph) - sm(0.33, 0.42, ph)))
         return np.array([0, 0, 0, 1.0])
     SPEED = STRIDE / (DUTY * T_WALK)
-    anims = [clip('perch', 4.0, False, 24), clip('walk', T_WALK, True, 36, {'speed': float(SPEED), 'stride': float(STRIDE), 'duty': DUTY, 'ground': ground, 'note': 'a tripod gait, in place: drive the root forward at speed'})]
+    anims = [clip('perch', 4.0, False, 24), clip('walk', T_WALK, True, 48 if chain else 36, {'speed': float(SPEED), 'stride': float(STRIDE), 'duty': DUTY, 'ground': ground, 'note': 'a tripod gait, in place: drive the root forward at speed'})]
+    if any(n.startswith('wing') for n in ORDER):
+        fly[0] = True; anims.append(clip('flap', 0.16, False, 12)); fly[0] = False
     if any(g['held'] for g in LEG.values()):
         idle_pose, pose_ = pose, pose
         pose = lambda nm, ph, w: strike(nm, ph) if nm.startswith('arm') else idle_pose(nm, 0.0, False)

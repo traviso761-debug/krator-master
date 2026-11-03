@@ -90,6 +90,7 @@ def main():
     ap.add_argument('--tex', type=int, default=1024, help='base colour and normal map size (px)')
     ap.add_argument('--nrmtex', type=int, default=0, help='normal map size (px), when lossless is too large at --tex')
     ap.add_argument('--mrtex', type=int, default=512, help='metallic-roughness map size (px)')
+    ap.add_argument('--merge', action='store_true', help='draw every part as one skinned mesh (the runtime\'s mergedGeo): a model of many parts')
     a = ap.parse_args()
     J, BIN = load_glb(a.glb)
     nodes = J['nodes']
@@ -215,6 +216,8 @@ def main():
 
     doc = {'format': 1, 'key': a.key, 'group': a.group, 'scale': S, 'tris': tris, 'rest': info, 'nodes': out_nodes, 'meshes': meshes, 'anims': anims, 'tex': tex,
            'renamed': rename, 'source': source_record(a.key, a.source)}
+    if a.merge:
+        doc['merge'] = True
     if mats:
         doc['mats'] = mats
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)

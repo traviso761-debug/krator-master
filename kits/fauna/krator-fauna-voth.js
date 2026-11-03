@@ -193,7 +193,7 @@ const FA_VO_STR_HIPZ = [6.0, 0.4, -5.6], FA_VO_STR_DOME = { c: [0, 14.6, 0.2], r
 function faVoStrCol(hex) { return faVoMul(hex, 0.88); }
 function faVoStrDomeTop(z) { const D = FA_VO_STR_DOME, q = (z - D.c[2]) / D.r[2]; return D.c[1] + D.r[1] * Math.sqrt(Math.max(0, 1 - q * q)); }
 ANIMAL({
-  key: 'silt-strider', name: 'Silt strider', group: 'voth',
+  key: 'elephant-bug', name: 'Elephant bug', group: 'voth',
   tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
     domestic: true, herdedBy: ['voth'], diet: 'omnivore', feeding: 'detritivore', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'shallows', 'marsh'], locomotion: ['walks', 'wades'] },
@@ -203,7 +203,10 @@ ANIMAL({
   yields: { meat: { amount: 6000, note: 'only when one dies: the guild sells the flesh in the cantons for a week' },
     hide: { amount: 1, hideM2: 450, note: 'the carapace chitin: armour plates, roof shells, a shell-house\'s hull' } },
   life: { maturity: 30, lifespan: 250, litter: 1, gestation: 540, note: 'invented: a strider is older than the guild that drives it' },
+  variants: 2, variantNames: ['the guild\'s convoys', 'the guild\'s convoys (model)'],
   w: 14.2, d: 25.6, h: 16.6,
+  variantDims: [{ w: 14.2, d: 25.6, h: 16.6 }, { w: 15.76, d: 18.93, h: 19.94 }],
+  models: { 1: 'elephant-bug' }, modelData: { 1: { budget: 14000 } },   /* the Meshy model variant (models/elephant-bug.json, rig/arthro.py) */
   data: { mass: 30000, legs: 6, speed: { walk: 2.4, run: 4.5 }, gait: { type: 'hexapod', freq: 0.22, stride: 4.5 }, idle: { headYaw: 0.07, headPitch: 0.02 }, grazePitch: 0.3,
     herd: 'kept singly by the strider guild; walked in convoys of two or three', fleeDistance: 0, aggression: 0.02,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },

@@ -351,3 +351,34 @@ The sheet's rule for the next membrane flyer: never decimate a membrane. The sam
 - **Only the front of the wing is projected,** so the back shows the same picture.
 - **Nothing is wired:** a skinned path in `models_pack.py` and the runtime, the Godot import, and a gate (closure does not apply; stretch would be the measure).
 
+
+## 13. Hornet, millipede, elephant bug (2026-11-03)
+
+Three Meshy 7.1 models, 39 credits each, the references checked before the 3D step.
+
+**Hornet** (`hornet` family, picks golden, pale and red on `emperor-hornet` #3 to #5): generated with no wings. The rig adds four wing cards on their own hinges (`wing_card`,
+spec `wings`), folded back along the abdomen at rest and beating in a new `flap` clip, drawn with the dragonfly's see-through wing material (`patch_models.py` gives it to any family with
+wing meshes). 7,022 triangles, 0.9 MB for three species.
+
+**Elephant bug** (`elephant-bug`, the renamed `silt-strider`; only the kit used the old key; Voth's handoff asked for the rename everywhere): variant #1. Scaled to about 20 m tall and
+18 m long: at the procedural bug's 25 m length the generated body, a stiltier animal, would stand 25 m tall. Say if it should be longer. Its front legs hang from the head, so the head holds
+still in the walk; it walks with its body carried a little lower (spec `crouch`), since legs generated nearly straight have no stride in them.
+
+**Millipede: not shipped; the 2026-10 model stays.** A new one was generated and rigged (spec `rings`, `rig/sources/draught-millipede/pack-meshy71.json` is the candidate): the legs cut
+as a comb (everything below one height comes apart into one piece per leg), one ring per groove in the back, 18 rings and 23 leg pairs (two to a ring, as on a real millipede), the legs
+walking in a wave, and its 158 parts drawn as **one skinned mesh** (`models_pack.py --merge`, the runtime's `mergedGeo`; the old model is 52 draw calls). Foot slide 0, every leg one piece.
+What stops it: the comb cut leaves a row of sockets under every ring, and nothing tried closed them cleanly. Cores inside the rings got the view in to 1.55% (limit 1.5%), but sized from a
+box that includes the leg roots they show through the shell; belly plates and a lower cut made it worse (the lower cut left legs too short to stride). The next try: cut each leg at its
+own socket, not at one height, so the rings keep their whole shells.
+
+**What the gate learned.**
+
+- **Stride is capped by reach.** A foot sent past where its leg can reach slides; the stride is now the smallest any leg can take (`reach` in `write_glb`).
+- **A swing must leave the ground at once** (`sqrt(sin)`), or its first frame still reads as planted.
+- **A head that legs hang from does not sway in the walk.**
+- **Pivots are measured to the parent's surface,** not its corners: a capped cut is one wide fan with no corner near a leg's root.
+- **Texture density skips faces with no texture area** (caps and cores, one colour by design).
+- **An animal over 6 m** may take 2.5 MB and its density floor falls to 850/length (50 px/m at 17 m): one colour map cannot cover a 20 m animal at 150 px/m. Stated in `tests/test-models.js`.
+
+**The mantis strike** swung its raised forelegs up and back (the owner saw it): the swing's sign was wrong. It now drops them down and forward past the face, the tibia flicked open and
+snapped shut.

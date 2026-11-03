@@ -98,7 +98,7 @@ const KratorFaunaAPI = (function () {
     const anims = {}; for (const c in B.anims) anims[c] = B.anims[c];
     let tris = 0; for (const n in meshes) tris += (meshes[n].wide ? atob(meshes[n].idx).length / 4 : atob(meshes[n].idx).length / 2) / 3;
     const rest = Object.assign({}, B.rest, { w: B.rest.w * p.scale, d: B.rest.d * p.scale, h: B.rest.h * p.scale, extent: { w: B.rest.extent.w * p.scale, d: B.rest.extent.d * p.scale, h: B.rest.extent.h * p.scale } });
-    return { format: 1, key: F.key + '#' + name, group: F.group, scale: p.scale, tris: Math.round(tris), rest: rest, nodes: nodes, meshes: meshes, anims: anims, tex: F.tex[p.body], texs: F.tex, tint: p.tint, anchors: p.anchors, source: F.source, family: F.key, share: Object.keys(F.picks).length };
+    return { format: 1, key: F.key + '#' + name, group: F.group, scale: p.scale, tris: Math.round(tris), rest: rest, nodes: nodes, meshes: meshes, anims: anims, tex: F.tex[p.body], texs: F.tex, tint: p.tint, anchors: p.anchors, source: F.source, family: F.key, share: Object.keys(F.picks).length, mats: F.mats, merge: F.merge };
   }
   const famKey = k => String(k).split('#')[0];
   const faMaps = {};      /* a family's maps, decoded once however many species draw them */
@@ -138,12 +138,26 @@ const KratorFaunaAPI = (function () {
     for (const mn in (M.mats || {})) { const q = M.mats[mn], m2 = new THREE.MeshStandardMaterial({ map: modelTex(q.map, true), transparent: true, alphaTest: 0.02, depthWrite: false, metalness: 0, roughness: q.roughness == null ? 0.5 : q.roughness, side: THREE.DoubleSide }); for (const p of q.parts) partMat[p] = m2; }
     return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips });
   }
+  /* a model of many parts as one draw call (M.merge, a millipede): every part a bone, every vertex wholly its part's. The file and the gate still see parts */
+  function mergedGeo(mc) {
+    if (mc.merged) return mc.merged;
+    const M = mc.M, at = M.nodes.map(() => null), sum = i => at[i] || (at[i] = (p => [p[0] + M.nodes[i].t[0], p[1] + M.nodes[i].t[1], p[2] + M.nodes[i].t[2]])(M.nodes[i].parent < 0 ? [0, 0, 0] : sum(M.nodes[i].parent)));
+    let nv = 0, ni = 0; M.nodes.forEach(nd => { const g = mc.geo[nd.name]; if (g) { nv += g.attributes.position.count; ni += g.index.count; } });
+    const pos = new Float32Array(nv * 3), nrm = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), sk = new Uint16Array(nv * 4), sw = new Float32Array(nv * 4), idx = new Uint32Array(ni); let v0 = 0, i0 = 0;
+    M.nodes.forEach((nd, b) => { const g = mc.geo[nd.name]; if (!g) return; const p = g.attributes.position, c = sum(b);
+      for (let i = 0; i < p.count; i++) { for (let k = 0; k < 3; k++) pos[(v0 + i) * 3 + k] = p.array[i * 3 + k] + c[k]; sk[(v0 + i) * 4] = b; sw[(v0 + i) * 4] = 1; }
+      nrm.set(g.attributes.normal.array, v0 * 3); uv.set(g.attributes.uv.array, v0 * 2); for (let i = 0; i < g.index.count; i++) idx[i0 + i] = g.index.array[i] + v0; v0 += p.count; i0 += g.index.count; });
+    const G = new THREE.BufferGeometry(); G.setAttribute('position', new THREE.BufferAttribute(pos, 3)); G.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); G.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    G.setAttribute('skinIndex', new THREE.BufferAttribute(sk, 4)); G.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4)); G.setIndex(new THREE.BufferAttribute(idx, 1)); G.computeBoundingSphere();
+    const mat = mc.mat.clone(); mat.skinning = true; return (mc.merged = { geo: G, mat: mat, inv: M.nodes.map((_, i) => new THREE.Matrix4().makeTranslation(-sum(i)[0], -sum(i)[1], -sum(i)[2])) });
+  }
   function buildModel(E, key, opt) {
     const v = opt.variant | 0, mc = modelOf(E.models[v]), M = mc.M, S = M.scale, root = new THREE.Group(); root.name = 'fauna:' + key;
     const top = new THREE.Group(); top.scale.setScalar(S); top.position.set(-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S); root.add(top);
-    const gs = M.nodes.map(nd => { const g = new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
-      const geo = mc.geo[nd.name], pm = mc.partMat[nd.name]; if (geo) { const m = new THREE.Mesh(geo, pm || mc.mat); m.castShadow = !pm; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
+    const gs = M.nodes.map(nd => { const g = M.merge ? new THREE.Bone() : new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+      const geo = M.merge ? null : mc.geo[nd.name], pm = mc.partMat[nd.name]; if (geo) { const m = new THREE.Mesh(geo, pm || mc.mat); m.castShadow = !pm; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
     M.nodes.forEach((nd, i) => (nd.parent < 0 ? top : gs[nd.parent]).add(gs[i]));
+    if (M.merge) { const q = mergedGeo(mc), sk = new THREE.SkinnedMesh(q.geo, q.mat); sk.castShadow = sk.receiveShadow = true; sk.userData.family = 'model'; top.add(sk); sk.bind(new THREE.Skeleton(gs, q.inv), new THREE.Matrix4()); }
     const P = { legs: [] }, side = s => (s === 'R' ? 1 : 0);
     M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
       if ((m = /^leg(\d)([LR])$/.exec(n))) P.legs[2 * +m[1] + side(m[2])] = g;           /* hexapod: leg0L, leg0R, leg1L ... = the kit's order */

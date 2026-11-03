@@ -985,12 +985,14 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { chitin: { amount: 0.5, note: 'a sting a hand long: a needle and an awl' } },
   life: { maturity: 0.3, lifespan: 1, litter: 100, gestation: 14, note: 'litter: a queen\'s brood in the paper nest; gestation: egg to larva' },
-  variants: 3, variantNames: ['golden', 'pale and black', 'red'],
+  variants: 6, variantNames: ['golden', 'pale and black', 'red', 'golden (model)', 'pale and black (model)', 'red (model)'],
   w: 1.4, d: 1.4, h: 0.5,
+  variantDims: [{ w: 1.4, d: 1.4, h: 0.5 }, { w: 1.4, d: 1.4, h: 0.5 }, { w: 1.4, d: 1.4, h: 0.5 }, { w: 1.69, d: 1.55, h: 1.3 }, { w: 1.69, d: 1.55, h: 1.3 }, { w: 1.69, d: 1.55, h: 1.3 }],
+  models: { 3: 'hornet#golden', 4: 'hornet#pale', 5: 'hornet#red' }, modelData: { 3: { budget: 9000 }, 4: { budget: 9000 }, 5: { budget: 9000 } },   /* picks of one family with wing cards (models/hornet.json, rig/family.py) */
   data: { mass: 1.0, legs: 6, wings: 2, sizeRange: [0.7, 1.3], speed: { walk: 0.3, run: 0.8, fly: 9 }, gait: { type: 'insect', freq: 6, stride: 0.04 }, grazePitch: 0.05, flap: { freq: 6, amp: 0.45, glide: 0 },
     herd: 'a nest of a hundred; a few hunters on the wing', fleeDistance: 3, aggression: 0.8, schedule: FA_HI_SCH_DAY.map(a => a === 'BROWSE' ? 'HUNT' : a), scheduleNote: '' },
   build: function (A) {
-    const C = FA_HI_HORNET[A.variant] || FA_HI_HORNET[0], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.22;
+    const C = FA_HI_HORNET[A.variant % 3], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.22;
     k.el(0, yb, 0.1, .08, .08, .11, C.b, { seg: 12 });                                                                         /* the thorax */
     k.co([0, yb, -.02], [0, yb - .01, -.1], .03, .02, C.b, 6);                                                                  /* the waist */
     k.rows([[0, yb - .01, -.1, .02, .02], [0, yb - .03, -.22, .09, .08], [0, yb - .06, -.45, .09, .085], [0, yb - .09, -.65, .02, .02]], 16, 14, null, { round: [0.1, 0.05], colf: (t, a) => Math.sin(t * 30) > 0.1 ? C.a : C.b });  /* the striped abdomen */

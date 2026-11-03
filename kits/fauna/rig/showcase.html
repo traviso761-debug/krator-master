@@ -77,7 +77,7 @@ button:disabled { opacity: .4; cursor: default; }
 </aside>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script>window.__MODELS = /*MODELS*/null;window.__NOTES = /*NOTES*/null;window.__SKIN = /*SKIN*/null;</script>
+<script src="models.js"></script>
 <script>var KratorFauna = (function () { const FA_TEX = null; const FA_MODELS = window.__MODELS;
 /*BUNDLE*/
 return KratorFaunaAPI; })();</script>
@@ -101,7 +101,7 @@ return KratorFaunaAPI; })();</script>
   // the skinned trial: one glTF with its own clips, not a catalog animal
   const SK = window.__SKIN, SKS = 4, SKM = { idle: 'glide', walk: 'flap', strike: 'fold' }; let bat = null;
   if (SK) { items.push({ skin: true, key: 'skin', base: 'skin', name: 'Giant bat', vname: SK.label, group: 'Skinned trial', w: SK.w * SKS, d: SK.d * SKS, h: SK.h * SKS }); }
-  const GROUP = { spider: 'Spiders', beetle: 'Beetles', 'staghorn-beetle': 'Beetles', 'bowl-mantis': 'Mantises', 'harvester-ant': 'Ants' }, GROUPS = ['Skinned trial', 'Spiders', 'Beetles', 'Mantises', 'Ants'], PART = { abd: 'abdomen', jaw: 'fangs', head: 'head' };
+  const GROUP = { spider: 'Spiders', beetle: 'Beetles', 'staghorn-beetle': 'Beetles', 'bowl-mantis': 'Mantises', 'harvester-ant': 'Ants', hornet: 'Hornets', 'draught-millipede': 'Millipedes', 'elephant-bug': 'Elephant bugs' }, GROUPS = ['Elephant bugs', 'Millipedes', 'Hornets', 'Skinned trial', 'Spiders', 'Beetles', 'Mantises', 'Ants'], PART = { abd: 'abdomen', jaw: 'fangs', head: 'head' };
   const widthOf = it => { if (it.skin) return it.w; const E = KF.entry(it.key); return E.variantDims ? E.variantDims[it.variant].w : E.w; };
   items.forEach(it => { it.group = it.group || GROUP[it.base] || 'Others'; }); items.sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || widthOf(b) - widthOf(a) || a.variant - b.variant);
   const F = window.__MODELS.spider;

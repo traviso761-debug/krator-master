@@ -120,6 +120,8 @@ def main():
             P = np.vstack(Ps); at = (P.min(0) + P.max(0)) / 2
             m = pack_mesh(P - at, np.vstack(Ns), np.vstack(Fs)); m['at'] = [float(q) for q in at]; F['meshes']['eyes~%s~%s' % (layout, tag)] = m
     F['picks'] = cfg['picks']
+    if cfg.get('merge'):
+        F['merge'] = True
     path = os.path.join(KIT, 'models', name + '.json')
     with open(path, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(F, fh, sort_keys=True, separators=(',', ':'))

@@ -22,7 +22,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
 | `riders` | the Beast Rider tribes' mounts that were missing (2026-10-19): riding tiger, riding raptor, threehorn, hardshell, jungle mammoth (needs the `hyperjungle` file's helpers; the section "The Beast Riders' mounts" below) |
-| `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
+| `voth` | seagull, cliff racer, elephant bug, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
 
@@ -85,7 +85,7 @@ chitin `organic.chitin`); `feather` waits on a set, and `glow` is unlit (a glint
 **For tack**, an animal can publish a body profile and anchors (`KratorFauna.profile`: the salamander's centre line and
 half-sizes along its length; saddle, bridle, chest): the Scyvoi kit draws its saddles, barding and collars against it, so the
 animal and the culture that rides it stay in separate kits. The riding lizard, pack lizard, Dalab lizard, spider, giant flyers
-staghorn beetle (with a profile too) and silt strider carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
+staghorn beetle (with a profile too) and elephant bug carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
 
 ## The Beast Riders' mounts
 

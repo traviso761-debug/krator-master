@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A page of chosen models: python3 rig/showcase.py <out.html> <credits> <model or family>...
 
-Inlines the catalog, the runtime and the named models/*.json into rig/showcase.html, one page with no other files of its own (three.js from cdnjs).
+Inlines the catalog and the runtime into rig/showcase.html, and writes the named models/*.json to models.js beside it (three.js from cdnjs).
 Each animal is drawn by the kit's real build, so what the page shows is what a world gets. The page lists every catalog variant whose model it holds.
 """
 import base64, json, os, sys
@@ -25,10 +25,13 @@ def main():
     assert '</script' not in body
     page = open(os.path.join(HERE, 'showcase.html'), encoding='utf-8').read()
     notes = {'mb': '%.1f' % (size / 1e6), 'credits': credits}      # the credits are the caller's count: a run may spend on models that were not kept
-    page = page.replace('/*MODELS*/null', json.dumps(models, separators=(',', ':'))).replace('/*NOTES*/null', json.dumps(notes)).replace('/*SKIN*/null', json.dumps(skin)).replace('/*BUNDLE*/', body)
+    page = page.replace('/*BUNDLE*/', body)
     with open(out, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(page)
-    print('%s: %.1f MB' % (out, os.path.getsize(out) / 1e6))
+    data = os.path.join(os.path.dirname(os.path.abspath(out)), 'models.js')      # beside the page, which alone would pass the 16 MB a page may be
+    with open(data, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('window.__MODELS=%s;window.__NOTES=%s;window.__SKIN=%s;\n' % (json.dumps(models, separators=(',', ':')), json.dumps(notes), json.dumps(skin)))
+    print('%s: %.1f MB, models.js %.1f MB' % (out, os.path.getsize(out) / 1e6, os.path.getsize(data) / 1e6))
 
 
 if __name__ == '__main__':

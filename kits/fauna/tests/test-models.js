@@ -25,7 +25,9 @@ const LIMITS = {
   lossyNormal: 0,      // C9: 1 when the normal map is a JPEG
   sourceLost: 0,       // C1: 1 when the model carries no source record
 };
-const CHECKS = Object.keys(LIMITS), FLOOR = { density: 1, lift: 1 }, over = (c, v) => (FLOOR[c] ? v < LIMITS[c] : v > LIMITS[c]);
+/* an animal over 6 m has more skin than one colour map can cover at the floor: it may take 2.5 MB, and the floor falls with its length, to 50 px/m at 17 m */
+const bigSide = M => Math.max(M.rest.w, M.rest.d, M.rest.h), LIMIT = (c, M) => (M && bigSide(M) > 6 ? (c === 'mb' ? 2.5 : c === 'density' ? Math.max(50, 850 / bigSide(M)) : LIMITS[c]) : LIMITS[c]);
+const CHECKS = Object.keys(LIMITS), FLOOR = { density: 1, lift: 1 }, over = (c, v, M) => (FLOOR[c] ? v < LIMIT(c, M) : v > LIMIT(c, M));
 const worse = (c, v, w) => (FLOOR[c] ? v < w / 1.02 : v > w * 1.02);   /* a waived number may only get better, past rounding */
 const FRAMES = 7, RES = 240, DIRS = L.dirs();
 
@@ -80,7 +82,12 @@ function through(m) { const c = m.clips.walk; if (!c) return 0; const T = Object
 function pivots(m) {
   const nodes = m.M.nodes, S = m.M.scale, side = Math.max(m.M.rest.w, m.M.rest.d, m.M.rest.h); let worst = 0, who = '';
   for (const n in m.parts) { const nd = nodes[m.parts[n].node]; if (nd.parent < 0) continue; const pn = nodes[nd.parent].name, Q = m.parts[pn]; if (!Q) continue;
-    let d = 1e18; for (let i = 0; i < Q.pos.length; i += 3) d = Math.min(d, (Q.pos[i] - nd.t[0]) ** 2 + (Q.pos[i + 1] - nd.t[1]) ** 2 + (Q.pos[i + 2] - nd.t[2]) ** 2);
+    let d = 1e18; const p = nd.t, I = Q.idx, A = [0, 0, 0], B = [0, 0, 0], C = [0, 0, 0], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    for (let t = 0; t < I.length; t += 3) {      /* to the surface, not its corners: a capped cut has one wide fan with no corner near a leg's root */
+      for (let k = 0; k < 3; k++) { A[k] = Q.pos[I[t] * 3 + k]; B[k] = Q.pos[I[t + 1] * 3 + k]; C[k] = Q.pos[I[t + 2] * 3 + k]; }
+      const ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], ac = [C[0] - A[0], C[1] - A[1], C[2] - A[2]], ap = [p[0] - A[0], p[1] - A[1], p[2] - A[2]], d00 = dot(ab, ab), d01 = dot(ab, ac), d11 = dot(ac, ac), den = d00 * d11 - d01 * d01 || 1e-12, b0 = dot(ap, ab), b1 = dot(ap, ac);
+      let v = Math.max(0, (d11 * b0 - d01 * b1) / den), w = Math.max(0, (d00 * b1 - d01 * b0) / den); const s = v + w; if (s > 1) { v /= s; w /= s; }
+      const q = [A[0] + v * ab[0] + w * ac[0] - p[0], A[1] + v * ab[1] + w * ac[1] - p[1], A[2] + v * ab[2] + w * ac[2] - p[2]]; d = Math.min(d, dot(q, q)); }
     const v = Math.sqrt(d) * S / side; if (v > worst) { worst = v; who = n; } }
   return { pivot: worst, who };
 }
@@ -91,7 +98,8 @@ function density(m) {
   let a3 = 0, a2 = 0; const S = m.M.scale, px = mapWidth(m.M.tex.map);
   for (const n in m.parts) { if (uvOwn(m, n)) continue; const P = m.parts[n], I = P.idx;
     for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3, ux = P.pos[b] - P.pos[a], uy = P.pos[b + 1] - P.pos[a + 1], uz = P.pos[b + 2] - P.pos[a + 2], vx = P.pos[c] - P.pos[a], vy = P.pos[c + 1] - P.pos[a + 1], vz = P.pos[c + 2] - P.pos[a + 2];
-      a3 += 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) * S * S; a2 += 0.5 * uvArea(P, t); } }
+      const u2 = uvArea(P, t); if (u2 < 1e-12) continue;      /* a cap or a core is one colour by design, sampled at a point: no map is stretched over it */
+      a3 += 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) * S * S; a2 += 0.5 * u2; } }
   return px * Math.sqrt(a2 / Math.max(a3, 1e-9));
 }
 const uvOwn = (m, n) => Object.values(m.M.mats || {}).some(q => q.parts.indexOf(n) >= 0);
@@ -104,7 +112,7 @@ function measure(m, file, full) {
   const c = full === false ? { v: 0 } : closure(m), lim = Object.keys(m.parts).filter(isLimb), w = walk(m), piv = pivots(m); let side = 1;
   for (const n of lim) { const q = mirror(n); if (!q || !m.parts[q]) continue; side = Math.max(side, m.parts[n].idx.length / m.parts[q].idx.length); }
   return { closure: c.v, closureAt: c, pieces: lim.filter(n => pieces(m.parts[n]).big > 1).length, sides: side, pivot: piv.pivot, slide: w.slide, below: w.below, lift: w.lift, through: full === false ? 0 : through(m),
-    mb: fs.statSync(file).size / 1e6 / (m.M.share || 1), parts: Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
+    mb: fs.statSync(file).size / 1e6 / (m.M.share || 1), parts: m.M.merge ? 1 : Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
 }
 
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.json')).sort(), MODELS = {}, MEASURED = {};
@@ -115,12 +123,12 @@ const pad = (x, n) => String(x).padEnd(n), num = x => (typeof x === 'number' ? (
 if (arg('--report')) { console.log(pad('model', 21) + CHECKS.map(k => pad(k, 11)).join('')); for (const k in MEASURED) console.log(pad(k, 21) + CHECKS.map(q => pad(num(MEASURED[k][q]), 11)).join('') + (MEASURED[k].closureAt.clip || '')); }
 if (arg('--png')) for (const k in MEASURED) { const a = MEASURED[k].closureAt; if (a.R) L.png(a.R, path.join(argv('--png'), k + '-' + a.clip + '.png')); }
 if (arg('--write-waivers')) { const out = {};
-  for (const k in MEASURED) { const w = {}; for (const c of CHECKS) if (over(c, MEASURED[k][c])) w[c] = num(MEASURED[k][c]); if (Object.keys(w).length) out[k] = w; }
+  for (const k in MEASURED) { const w = {}; for (const c of CHECKS) if (over(c, MEASURED[k][c], MODELS[k].M)) w[c] = num(MEASURED[k][c]); if (Object.keys(w).length) out[k] = w; }
   fs.writeFileSync(WFILE, JSON.stringify({ note: 'The models shipped before tests/test-models.js, as measured. A number here may only fall: see PLAN-MESHY.md. A new model gets no row.', models: out }, null, 1) + '\n'); console.log('wrote', WFILE); process.exit(0); }
 
 // ---------------------------------------------------------------- every model against the limits, or its waiver
 for (const k in MEASURED) { const v = MEASURED[k], w = waivers[k] || {}, bad = [], stale = [];
-  for (const c of CHECKS) { const o = over(c, v[c]); if (o && !(c in w)) bad.push(c + ' ' + num(v[c]) + ' past ' + LIMITS[c]); else if (o && worse(c, v[c], w[c])) bad.push(c + ' ' + num(v[c]) + ' worse than its waiver ' + w[c]); else if (!o && c in w) stale.push(c); }
+  for (const c of CHECKS) { const o = over(c, v[c], MODELS[k].M); if (o && !(c in w)) bad.push(c + ' ' + num(v[c]) + ' past ' + num(LIMIT(c, MODELS[k].M))); else if (o && worse(c, v[c], w[c])) bad.push(c + ' ' + num(v[c]) + ' worse than its waiver ' + w[c]); else if (!o && c in w) stale.push(c); }
   ok(!bad.length && !stale.length, k + ': ' + (bad.concat(stale.map(s => s + ' passes now: remove its waiver')).join('; ') || (Object.keys(w).length ? 'holds its ' + Object.keys(w).length + ' waiver(s): ' + Object.keys(w).join(', ') : 'clear of every limit'))); }
 for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model');
 
@@ -162,7 +170,7 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
 
   // ---------------------------------------------------------------- a candidate, not in the kit yet: --candidate <packed.json> <entry key>, every limit and no waiver
   if (arg('--candidate')) { const file = argv('--candidate'), key = process.argv[process.argv.indexOf('--candidate') + 2], m = L.load(file), E = KF.entry(key), v = measure(m, file), bad = [];
-    for (const c of CHECKS) { const o = over(c, v[c]); console.log((o ? 'FAIL ' : 'ok   ') + pad(c, 12) + pad(num(v[c]), 10) + 'limit ' + LIMITS[c] + (c === 'closure' && v.closureAt.clip ? '   worst: ' + v.closureAt.clip : '') + (c === 'pivot' ? '   worst: ' + pivots(m).who : '') + (c === 'pieces' && v[c] ? '   ' + Object.keys(m.parts).filter(n => isLimb(n) && pieces(m.parts[n]).big > 1).join(' ') : '')); if (o) bad.push(c); }
+    for (const c of CHECKS) { const o = over(c, v[c], m.M); console.log((o ? 'FAIL ' : 'ok   ') + pad(c, 12) + pad(num(v[c]), 10) + 'limit ' + LIMITS[c] + (c === 'closure' && v.closureAt.clip ? '   worst: ' + v.closureAt.clip : '') + (c === 'pivot' ? '   worst: ' + pivots(m).who : '') + (c === 'pieces' && v[c] ? '   ' + Object.keys(m.parts).filter(n => isLimb(n) && pieces(m.parts[n]).big > 1).join(' ') : '')); if (o) bad.push(c); }
     const b = contract(m, { key, variant: 0, model: m.key, E }); console.log((b.length ? 'FAIL ' : 'ok   ') + 'contract    ' + (b.join('; ') || 'legs, clips, budget, anchors, materials and sides'));
     console.log('tris ' + m.M.tris + ', ' + Object.keys(m.parts).length + ' parts, ' + (fs.statSync(file).size / 1e6).toFixed(2) + ' MB');
     if (arg('--png')) { const a = v.closureAt; if (a.R) L.png(a.R, path.join(argv('--png'), path.basename(file, '.json') + '-' + a.clip + '.png')); }

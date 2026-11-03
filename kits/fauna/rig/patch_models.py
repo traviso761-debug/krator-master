@@ -40,8 +40,9 @@ def main():
         for p, q in (M.get('picks') or {}).items():      # a family's species
             if anchors.get(key + '#' + p):
                 q['anchors'] = anchors[key + '#' + p]
-        if key == 'giant-dragonfly':
-            M['mats'] = {'wing': wing_mat()}
+        wings = sorted({n.split('~')[0] for n in M['meshes'] if n.startswith('wing')})
+        if key == 'giant-dragonfly' or (M.get('family') and wings):
+            M['mats'] = {'wing': dict(wing_mat(), parts=wings or ['wing2L', 'wing2R', 'wingL', 'wingR'])}
         with open(path, 'w', encoding='utf-8', newline='\n') as fh:
             json.dump(M, fh, sort_keys=True, separators=(',', ':'))
         print('%s: %d anchors%s, %.2f MB' % (key, len(M.get('anchors', {})), ', wing material' if 'mats' in M else '', os.path.getsize(path) / 1e6))
