@@ -3,7 +3,9 @@
 // boreal giants. BIO.kin on NHL.make/grow (biomes/nhighlands read in place: its species and tree fragments in their own registry), each tree a KRAND cell
 // of the station's seed, its builder's stream reseeded from the same hash; heroes near the spine, the far tier beyond. Off the water, the warm ground,
 // the steep rock and the lake's shore band.
-const STATION_EXTRA=function(Q){const out={larch:0};if(typeof NHL==='undefined')return Object.assign(out,{missing:'NHL not on the page'});
+/* OFF BY DEFAULT (?larch=1): nhighlands' builder sets 9.6% of the larch's cards off their limbs here (the attach audit, software GL, 2026-11-03: 462 of
+   4808, limit 1%); grown again once nhighlands' turn (pair 7) holds them (BIO.holdTo), as xanadu waits on the Rift's parasol tree. KNOWN_ISSUES.md */
+const STATION_EXTRA=function(Q){const out={larch:0};if(new URLSearchParams(location.search).get('larch')!=='1')return Object.assign(out,{off:'?larch=1 (owed: nhighlands holds its crowns)'});if(typeof NHL==='undefined')return Object.assign(out,{missing:'NHL not on the page'});
  const K=BIO.kin('nhighlands.larch',{key:'riftlarch',name:'Rift larch',scale:{H:.42,rb:.7,crownR:.6},tags:{koppen:['Dfb'],aridity:'semiarid'}});if(!K)return Object.assign(out,{missing:'no larch builder'});
  const seed=KRAND.child(1000039,'highrift/larch'),cell=26,R=TERR.R-200,N=Math.ceil(2*R/cell),Lv=BIO.LOD(),c0=BIO.cur;BIO.cur='highrift/larch';
  for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){const cx=-R+(ix+.5)*cell,cz=-R+(iz+.5)*cell;reseed(KRAND.cell(seed,ix,iz));const x=cx+rr(-.45,.45)*cell,z=cz+rr(-.45,.45)*cell;

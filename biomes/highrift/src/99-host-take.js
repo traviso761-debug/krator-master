@@ -9,7 +9,7 @@ const VIEWS=(function(){const S=SITE;
    'From afar':look(-2300,-800,260,P.x,P.z,0)};}
  if(SKEY==='mirror'){const fz=L.faultZ(0);return{'The fault mirror over the lake':look(-300,L.shoreZ(-300)-60,14,0,fz,100),'Under the mirror':look(200,fz+240,2,200,fz-60,120),
   'The acid springs':look(S.springs[0][0]+60,S.springs[0][1]-50,2,S.springs[0][0],S.springs[0][1],0),'The boiling patch':look(S.patch.x-400,L.shoreZ(S.patch.x-400)-40,12,S.patch.x,S.patch.z,0),
-  'The larch on the fans':look(900,fz+700,2,700,fz+300,6),'The geyser on the shore':look(S.geyser.x+60,S.geyser.z-50,3,S.geyser.x,S.geyser.z,8),'From afar':look(2200,L.shoreZ(2200)-500,240,0,fz,60)};}
+  'The fans under the fault':look(900,fz+700,2,700,fz+300,6),'The geyser on the shore':look(S.geyser.x+60,S.geyser.z-50,3,S.geyser.x,S.geyser.z,8),'From afar':look(2200,L.shoreZ(2200)-500,240,0,fz,60)};}
  if(SKEY==='wedge'){const T=L.TN,K=L.TOR[0];return{'The crest':look(-1800,60,6,600,0,4),'Down to the Mirror Graben':look(0,-1150,6,0,-3600,-900),'Down to the Coulee':look(0,1150,6,0,3600,-800),
   'A tor':look(K.x+K.r*1.4,K.z+80,2,K.x,K.z,K.h*.6),'The tarn':look(T.x+T.r*1.7,T.z+T.r*.9,1.8,T.x,T.z,.3),'Patterned ground':look(L.HOL[0].x+L.HOL[0].r*.6,L.HOL[0].z+L.HOL[0].r*.4,3,L.HOL[0].x,L.HOL[0].z,0),
   'From afar':look(-2300,900,220,600,0,40)};}
@@ -33,7 +33,7 @@ const BUDGET={showcase:{tris:10000000,calls:140},cls:{rift:4000000,pass:6000000,
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 const HCHK={
- placed(st){const need=['beads','heath','tussock'].concat(SKEY==='gjar'?['crystals']:[]).concat(SKEY==='cataract'||SKEY==='mirror'?['canes']:[]),
+ placed(st){const need=(SKEY==='wedge'?['tussock']:['beads','heath','tussock']).concat(SKEY==='gjar'?['crystals']:[]).concat(SKEY==='cataract'||SKEY==='mirror'?['canes']:[]),
   zero=need.filter(k=>!(st&&(k==='crystals'?st.crystals&&st.crystals.blades>0:st[k]>0)));return{ok:!zero.length,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+(k==='crystals'?st.crystals.blades:st[k])).join(', ')};},
  // the heat-eaters and the bead caps keep to the warm ground; the tussock off it
  heat(P){const bad=P.filter(p=>(p[3]==='biome:hrbead'&&HEAT_AT(p[0],p[2])<18)||(p[3]==='biome:hrtuss'&&HEAT_AT(p[0],p[2])>22));return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':'bead caps on warm ground, tussock off it'};},
@@ -75,5 +75,5 @@ KHOST.take({build:'highrift'+(SKEY==='cataract'?'':'-'+SKEY),title:'Krator biome
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,sound:()=>HRIFT.SOUND[SKEY],
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
- exportBox:[-200,-200,200,200],
+ exportBox:SKEY==='wedge'?[100,320,300,520]:SKEY==='coulee'?[-200,100,200,500]:SKEY==='mirror'?[-800,0,-400,400]:[-200,-200,200,200],   /* each holds its station's water */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),heat:HEAT_AT(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
