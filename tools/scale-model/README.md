@@ -528,6 +528,11 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
      dykes/chutes.
    - **Cultural River Naming (`smodel/river_names.py`, `smodel/frozen_river_names.json`, `river-names-5.1.md`)**: Names all 885 rivers and wadis across 27
      cultural tongues and records both the `4.21/4.23 Old Name` (`r['old_name']`) and `5.1 New Name` (`r['name']`). River naming is locked in fixed ID order, seeded deterministically on `(river id, tongue)` via SHA-256, and backed by `smodel/frozen_river_names.json` (`r002 = Līng-Mā`) so rerouting or reordering rivers never changes any river's name.
+   - **Xanadui names regenerated to the tongues sheet (the owner, 2026-11-03)**: the 30 generated `xanadui` courses
+     (Xanadu Sultanate, Vale of Xanadu, xanadu, Oidong Valley) had an Arabic-flavoured `Rīfar al-…` / `Gūlī al-…` style the
+     owner ruled wrong. They now follow `lore/tongues-of-krator.html` and the 4.21-4.23 layer: adjective first, *Riwā*
+     river, *Siṭrīm* stream, *Ḍrāi* dry valley (*Reḍ Ḍrāi*, *Solṭ Siṭrīm*, *Keb Riwā*). The fixed *Ālph* (`r070`) is kept;
+     no other river's name changed. Only those 30 entries of `frozen_river_names.json` and `rivers.json` were rewritten.
 4. **Old-Area (`X >= 272, Y >= 330`) Boundary Seam, Station, & River-Bank Notes (5.1 Round 2 & Round 3)**:
    - **Farside's north (`around px 353, 451`, up to `1,247 m` in `203d69d58`) & Farside's `strand` station (`px 302, 570`, `1,718 m` in `203d69d58`)**:
      In `203d69d58`, clearing `old_lake_guard` across the entire `px < 545, py < 625` box and widening `w_coast_new` to `24 px` caused coastal seam smoothing to bleed `20–80 px` inland into old Farside, accidentally lowering northern Farside slopes and dropping Farside's `strand` station (`px 302, 570`) from `2,162.4 m` to `1,717.9 m`. That move was **not intended** and has been **restored** by restricting `old_lake_guard` relaxation strictly to `0.0 m` coastal ocean cells within `12–16 px` of the `X = 272` and `Y = 330` expansion seams (`strand` at `px 302, 570` is back at `2,162.4 m`, within `145.6 m` of its `2,308 m` station datum).
