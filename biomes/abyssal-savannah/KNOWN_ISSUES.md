@@ -30,17 +30,20 @@ Read before changing anything here. `build.py` prints the open count.
       eastabyss kits' way); a free camera standing far off the spine sees the mid and far bands up close.
 - [ ] **The bench reads thin.** Its bunchgrass (paired tussocks, `card.ichu` tinted) is a steppe from the ground but a
       scatter from above; the stub-lycopsid colonies carry it. A denser short-grass card or a second floor layer is a look pass.
-- [ ] **Every view draws the whole scene** (~9.2M triangles, ~50 calls): the meshes are map-wide, so frustum culling
+- [ ] **Every view draws the whole scene** (~9.7M triangles, ~52 calls): the meshes are map-wide, so frustum culling
       saves nothing. The core's chunked LOD (`BIO.range`, as swbay's trees use) would cut it.
 - [ ] **Stations 2 and 3** (the floor's belt, the bench's edge with ebadlands read in place) are planned, not built.
 
 - [ ] **KSHADOW's cost is not measured** (the cloud turn had no GPU): the coordinator times `?shadow=0` against the default on
       the Arc. The Throne's isle and vents skipped it for its cost; oidong measured it within noise.
-- [ ] **The scene's triangles rose** with the crowns held (twig rods on the heroes, the joints' spans): see "The final rebuild".
+- [ ] **The scene's triangles rose** with the crowns held: 8.65M -> 9.67M at the opening view (software GL), over the kit's 9M
+      showcase budget (`BUDGET` in `99-host-take.js`; a warning, not a failure); the tree pass 4.21M -> 5.22M of 6M (the heroes'
+      twigs at 6 triangles, the joints' spans). The owner or the GPU run decides: raise the budget, or thin the twigs (one per
+      two clumps, or none past ~500 m).
 
 ## Done
 
-- [x] 2026-11-03, the final rebuild (pair 8): the universal set (PLAN.md section 11); the attach audit 28.39% -> see below;
+- [x] 2026-11-03, the final rebuild (pair 8): the universal set (PLAN.md section 11); the attach audit 28.39% -> 0.00% (software GL, `verify.py --assert`; a twig to each hero clump, mid clumps held);
       the textures `ground.savanna.litter` and `card.grass.thatch` were delivered and wired on 2026-10-26 (the open item was
       stale); the cycad frond's card is cut and based at its bottom (`check_cells.py --fix`: `cell`, `base: bottom`), not judged
       by eye; `PORT.md` written by `tools/audit_port.py`.
