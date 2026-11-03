@@ -15,7 +15,8 @@
 // 'floors', or null; userData { storeys, cells, core, tris, grid } (grid: the cells, for the plans on it, 46d: x0, z0, cell, W, D, the ground storey's
 // inside cells and each level's, the core).
 MP.floors = function (G, o) {
-  if (o.floors === false) return null;
+  /* floors false (a hall: the Crown Library's reading hall): no plates; with o.grid, the ground storey's cells alone, for its plan (46d) */
+  const noPlates = o.floors === false; if (noPlates && !o.grid) return null;
   const cell = o.cell == null ? 1 : o.cell, sh = o.sh, y0 = o.y0 == null ? sh : o.y0, roof = o.roof == null ? null : o.roof, top = Math.min(roof == null ? o.top : roof, o.maxY == null ? 1e9 : o.maxY);
   const tris = [], v = new THREE.Vector3();
   G.updateMatrixWorld(true);
@@ -87,10 +88,10 @@ MP.floors = function (G, o) {
     return e;
   }
   const levels = [];
-  for (let y = y0; y <= top - sh + 0.01; y += sh) { const g = inside(y); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y, g, c }); }
+  if (!noPlates) for (let y = y0; y <= top - sh + 0.01; y += sh) { const g = inside(y); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y, g, c }); }
   /* an open-topped building's roof: the cells enclosed just under it, a plate drawn there like the others (below, with the levels) */
-  if (roof != null) { const g = inside(roof - 0.3, roof - 1.2, roof - 0.4); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y: roof, g, c, roof: true }); }
-  if (!levels.length) return null;
+  if (roof != null && !noPlates) { const g = inside(roof - 0.3, roof - 1.2, roof - 0.4); let c = 0; for (let k = 0; k < N; k++) c += g[k]; if (c >= 20) levels.push({ y: roof, g, c, roof: true }); }
+  if (!levels.length && !noPlates) return null;
   const B = MP.builder(false), S = { storeys: levels.length, cells: 0, core: null };
   /* the cores: the plan's parts (the storeys' cells taken together, by connected parts: the Apartments' three blocks). In each, the square of n x n
      cells inside the most storeys in a row (all of them, where one is; nearest the part's middle among the best); its shaft rises from the ground
@@ -117,13 +118,16 @@ MP.floors = function (G, o) {
       let bq = -1, br = 0, bd = 1e9;
       for (let j = 0; j + n <= D; j++) for (let i = 0; i + n <= W; i++) { const q = j * W2 + i, r = best[q]; if (!r) continue; const d = Math.hypot(i + n / 2 - mx, j + n / 2 - mz); if (r > br || (r === br && d < bd)) { br = r; bd = d; bq = q; } }
       /* the longer run wins; the 6 m square (a stair and a lift) on a tie with the 4 m one (a stair) */
-      if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2, j = (bq - i) / W2; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
+      if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2, j = (bq - i) / W2; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, box: (() => { let a = 1e9, b = -1e9, c = 1e9, d = -1e9; cells.forEach(k => { const i = k % W, j = (k - i) / W; a = Math.min(a, i); b = Math.max(b, i); c = Math.min(c, j); d = Math.max(d, j); }); return [x0 + a * cell, x0 + (b + 1) * cell, z0 + c * cell, z0 + (d + 1) * cell]; })(), low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
     } if (pick) picks.push(pick); }
     pick = picks.length > 1 && picks[1].run > picks[0].run ? picks[1] : picks[0];
     if (pick) cand.push(pick);
   });
   cand.sort((a, b) => (b.run - a.run) || (b.size - a.size));
-  S.cores = cand.filter((C, i) => i === 0 || C.low).map(C => ({ x0: C.x0, z0: C.z0, n: C.n, levels: C.levels }));
+  /* ... or one more than 40 m from every part with a core (a bridge's reach, 46d: the Offices' ring standing apart on its pilotis) */
+  const kept = [], gap = (a, b) => Math.hypot(Math.max(0, a[0] - b[1], b[0] - a[1]), Math.max(0, a[2] - b[3], b[2] - a[3]));
+  cand.forEach((C, i) => { if (i === 0 || C.low || C.size >= 200 && kept.every(K => gap(K.box, C.box) > 40)) kept.push(C); });
+  S.cores = kept.map(C => ({ x0: C.x0, z0: C.z0, n: C.n, levels: C.levels }));
   S.core = S.cores[0] || null;
   /* the plates, in rectangles: runs of a row joined with the same run on the rows after */
   levels.forEach(L => {

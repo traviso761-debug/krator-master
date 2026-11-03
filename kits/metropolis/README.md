@@ -269,6 +269,16 @@ bridge land on a core's bay where the shaft stands alone on its square, and ends
 what is not, then moves every room's doors onto its own outline for the furnisher. The Apartments 776 rooms (six cores), the Reliquary 521 (`labs`:
 workshops and offices at the skin, stores and meeting rooms inside), the Star Laboratory 124 (seven cores, one to a wing).
 
+**The Ancients kit's buildings, batch 3** (the Offices, the Crown Library, the Watch). A part of the plan also gets a core of its own when it
+stands more than 40 m (a bridge's reach) from every part with one (the Offices' ring on its pilotis: its shaft rises from the ground under it); a
+core left alone on its square at the top of its run (its part's floor drawn back round it) gets a short bridge, 15 m at most, from its nearest
+face to the floor. A hall (`floors: false`, the Crown Library) is planned on its ground storey's cells alone (`MP.floors` reads them and draws no
+plate); `MP.ANCIENT_GROUND` says what a ground storey is for where it is not a lobby (the Library's: `reading`). The owner found the reading
+floor cut into the grid's cells an unwalkable mess: a storey whose use is a hall (`MP.ANCIENT_HALL`) is now one room to each part of it, its outline
+the floor's, laid by `MP.stackLayout` as a reading hall (the Ancients' archives in rows 4.5 m apart along its long side, a cross of aisles, a
+2 m walk round the walls, desks in a reading circle at the middle; 248 pieces, 236 k triangles), and a hall on a plinth stands at its lowest
+door's sill (the Library's 1.83 m). The Offices 575 rooms (three cores), the Watch 155; every planned Ancients building passes the audit.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

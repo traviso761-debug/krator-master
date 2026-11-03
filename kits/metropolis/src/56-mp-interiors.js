@@ -14,7 +14,10 @@ function mpFrameDoors(st){return Object.assign({},st,{rooms:st.rooms.map(R=>{if(
 MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat){MP.furnishCat=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());
   /* the Ancients' bath fixtures and the bath programme: the catalog's opt-in set (build.py optin=['ancient-bath']) until the catalog is next touched (TODO.md) */
   if(KratorFurniture.ancientBath)KratorFurniture.ancientBath.install(KratorInteriors);}
- return AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[mpFrameDoors(st)]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});};
+ const out=AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[mpFrameDoors(st)]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});
+ /* a reading hall (46d, MP.stackLayout): its stacks and desks in rows, not the placer's (which only lines a hall's walls) */
+ st.rooms.forEach(R=>{if(!R.stacks||!R.poly)return;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:MP.stackLayout(R.poly,R.y,MP.idHash(R.id)).map(p=>Object.assign(p,{room:R.id}))});});
+ return out;};
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;
  // the partitions: a polyline, gapped at its door, with a lintel over the gap

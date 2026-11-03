@@ -34,6 +34,7 @@
 - [ ] **The Yoke's ruins run over budget** (crown 87 k, skeleton 67 k, against 75 k) as the other designs' do.
 - [ ] **A grid plan's bridge or joining corridor can meet a wall of the kit's with no opening in it** (46d): the cells say where the floor is, not whether a gap is air or wall, and the hero is not cut. Sky A's bridges cross its atrium (air); the Redoubt's and the Honeycomb Block's may run into a wall.
 - [ ] **Sky A's core stands in its atrium on landings `MP.floors` reads under the spire's cover** (r 11 m, every storey from 60 m): a stair and lift tower with bridges to the office ring, rational, but the landings are the cells' own reading, not the kit's.
+- [ ] **A grid plan cuts a curved floor into many small rooms** (the owner on the Crown Library's: an unwalkable mess, now a hall): the Reliquary's rings, Sky A's office ring and the Watch's drum are still cut cell by cell; a curved plate may want halls or radial plans of its own.
 - [ ] **A grid plan's walls follow 1 m cells, straightened to 0.5 m:** a curved building's partitions are straight lines between steps, and its rooms' outlines are within half a metre of their walls.
 - [ ] **Sky A's widest storeys are about 720 k triangles furnished** (one storey open at a time, three at most).
 - [ ] **The Organ's pipes have small rooms:** a pipe of r 9 m leaves a band of 3.1 m between its corridor and the skin (the core takes 3.2 m, the corridor 1.8 m); the wider pipes 4.1 and 5.1 m.

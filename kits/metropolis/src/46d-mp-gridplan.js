@@ -22,6 +22,17 @@
     var A = dp(P.slice(0, far + 1), tol), B = dp(P.slice(far).concat([P[0]]), tol), Q = A.slice(0, -1).concat(B.slice(0, -1));
     return Q.length >= 3 ? Q : P;
   }
+  /* a plate's inside cells as rectangles (runs of a row joined down the rows): the walk's floor, no slab (the hero's own plates, 59) */
+  function walkRects(M, W, D, wx, wz) {
+    var N = W * D, used = new Uint8Array(N), out = [], i, j, k;
+    for (j = 0; j < D; j++) for (i = 0; i < W; i++) {
+      k = j * W + i; if (!M[k] || used[k]) continue; var i2 = i; while (i2 + 1 < W && M[k + i2 + 1 - i] && !used[k + i2 + 1 - i]) i2++;
+      var j2 = j; for (;;) { var rr = j2 + 1; if (rr >= D) break; var full = true; for (var a2 = i; a2 <= i2; a2++) if (!M[rr * W + a2] || used[rr * W + a2]) { full = false; break; } if (!full) break; j2 = rr; }
+      for (var b3 = j; b3 <= j2; b3++) for (a2 = i; a2 <= i2; a2++) used[b3 * W + a2] = 1;
+      out.push({ noSlab: true, outline: [[r3(wx(i)), r3(wz(j))], [r3(wx(i2 + 1)), r3(wz(j))], [r3(wx(i2 + 1)), r3(wz(j2 + 1))], [r3(wx(i)), r3(wz(j2 + 1))]] });
+    }
+    return out;
+  }
   var WANTS = { office: 'meeting', classroom: 'store', clinic: 'store', bedroom: 'store', living: 'store' };
   /* a cell set's outline: its boundary edges chained into loops (the interior on the left), the largest kept, straight runs merged */
   function trace(cells, W, x0, z0, cs) {
@@ -48,7 +59,49 @@
   }
   /* MP.gridPlan(F, L, o) -> STOREY. o: { id, grid: {x0, z0, cell, W, D}, mask (Uint8Array, 1 inside), core: {x0, z0, n} | null, shafts (the
      record's), kinds(i, n), inner(i, n) (the windowless rooms' kinds), entries ([{x, z, yaw}]: street doors on this storey) } */
+  /* a hall (the owner, 2026-11-03: the Crown Library's reading floor cut into cells was an unwalkable mess): each part of the storey one room of
+     o.hall's kind, its outline the floor's (straightened), open to the street on the ground; the placer furnishes it whole (a library: shelves
+     along its walls, tables in the floor) */
+  function hallPlan(F, L, o) {
+    var G = o.grid, W = G.W, D = G.D, N = W * D, cs = G.cell, X0 = G.x0, Z0 = G.z0, M = o.mask, kindOf = MP.planLib.kindOf;
+    var wx = function (i) { return X0 + i * cs; }, wz = function (j) { return Z0 + j * cs; };
+    var st = { id: o.id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], windowsOwn: true, parts: walkRects(M, W, D, wx, wz) }, seen = new Uint8Array(N), big = 0;
+    for (var k = 0; k < N; k++) if (M[k] && !seen[k]) {
+      var cells = new Set(), s = [k]; seen[k] = 1; while (s.length) { var c = s.pop(); cells.add(c); [c - 1, c + 1, c - W, c + W].forEach(function (n) { if (n >= 0 && n < N && M[n] && !seen[n]) { seen[n] = 1; s.push(n); } }); }
+      if (cells.size * cs * cs < 4) continue;
+      var P = trace(cells, W, X0, Z0, cs); if (!P) continue; P = dpLoop(P, 0.5);
+      st.rooms.push({ id: o.id + '.hall' + st.rooms.length, kind: kindOf(o.hall), mpKind: o.hall, poly: P, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false, stacks: o.hall === 'stack', street: !!o.ground });
+      if (cells.size > big) { big = cells.size; st.outline = P; }
+    }
+    st.inside = function (x, z) { for (var a = -1; a <= 1; a += 2) for (var b = -1; b <= 1; b += 2) { var i = Math.floor((x + a * 0.02 - X0) / cs), j = Math.floor((z + b * 0.02 - Z0) / cs); if (i >= 0 && j >= 0 && i < W && j < D && M[j * W + i]) return true; } return false; };
+    return st;
+  }
+  /* a reading hall's layout (MP.furnish lays it in a hall marked `stacks`): stacks (the Ancients' archive, 1150 triangles: a storey of them is held
+     near 200 k) in rows 4.5 m apart along the hall's long side, each row facing the aisle on alternate sides, 2 m clear of the walls, a cross of
+     3 m aisles to the middle, a reading floor of desks in a circle there (four tenths of the hall's radius).
+     Placements as the placer's ({key, x, y, z, ry}) */
+  MP.stackLayout = function (P, y, seed) {
+    var inPoly = function (x, z) { var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++) { if (((P[i][1] > z) !== (P[j][1] > z)) && (x < (P[j][0] - P[i][0]) * (z - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0])) c = !c; } return c; };
+    var edge = function (x, z) { var b = 1e9; for (var m = 0; m < P.length; m++) { var a = P[m], q = P[(m + 1) % P.length], dx = q[0] - a[0], dz = q[1] - a[1], l2 = dx * dx + dz * dz, t = l2 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0; b = Math.min(b, Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z)); } return b; };
+    var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9, ar = 0, cx = 0, cz = 0;
+    P.forEach(function (p) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
+    for (var m = 0; m < P.length; m++) { var u = P[m], v = P[(m + 1) % P.length], cr = u[0] * v[1] - v[0] * u[1]; ar += cr; cx += (u[0] + v[0]) * cr; cz += (u[1] + v[1]) * cr; } cx /= 3 * ar; cz /= 3 * ar; ar = Math.abs(ar / 2);
+    var out = [], rr = Math.max(4, 0.4 * Math.sqrt(ar / Math.PI)), alongX = x1 - x0 >= z1 - z0;
+    /* the reading floor: desks on a 3.5 m grid in the circle, a low table at its middle */
+    for (var a = -rr; a <= rr; a += 3.5) for (var b = -rr; b <= rr; b += 3.5) { var x = cx + a, z = cz + b; if (Math.hypot(a, b) > rr - 1 || Math.hypot(a, b) < 2.5 || !inPoly(x, z) || edge(x, z) < 2.5) continue; out.push({ key: 'ancients_desk', x: x, y: y, z: z, ry: (Math.round((a + b) / 3.5) % 2) * Math.PI }); }
+    if (inPoly(cx, cz)) out.push({ key: 'ancients_low_table', x: cx, y: y, z: cz, ry: 0 });
+    /* the stacks: a double stack every 2 m along a row, rows every 3 m; none on the cross aisles, the reading floor or within 2 m of a wall */
+    for (var r = (alongX ? z0 : x0) + 2.5, row = 0; r <= (alongX ? z1 : x1) - 2.5; r += 4.5, row++) for (var t = (alongX ? x0 : z0) + 3; t <= (alongX ? x1 : z1) - 3; t += 2) {
+      var px = alongX ? t : r, pz = alongX ? r : t;
+      if (Math.abs(px - cx) < 1.6 || Math.abs(pz - cz) < 1.6 || Math.hypot(px - cx, pz - cz) < rr + 1.5) continue;
+      var ok = true; [[-1.1, -0.35], [1.1, -0.35], [1.1, 0.35], [-1.1, 0.35]].forEach(function (c) { var qx = px + (alongX ? c[0] : c[1]), qz = pz + (alongX ? c[1] : c[0]); if (!inPoly(qx, qz) || edge(qx, qz) < 2) ok = false; });
+      if (!ok) continue;
+      out.push({ key: 'ancients_archive', x: px, y: y, z: pz, ry: (alongX ? 0 : Math.PI / 2) + (row % 2 ? Math.PI : 0) });
+    }
+    return out;
+  };
   MP.gridPlan = function (F, L, o) {
+    if (o.hall) return hallPlan(F, L, o);
     var G = o.grid, W = G.W, D = G.D, N = W * D, cs = G.cell, X0 = G.x0, Z0 = G.z0, M = new Uint8Array(o.mask), id = o.id, kindOf = MP.planLib.kindOf;
     var wx = function (i) { return X0 + i * cs; }, wz = function (j) { return Z0 + j * cs; }, cellAt = function (x, z) { var i = Math.floor((x - X0) / cs), j = Math.floor((z - Z0) / cs); return i < 0 || j < 0 || i >= W || j >= D ? -1 : j * W + i; };
     var st = { id: id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], windowsOwn: true, parts: [] };
@@ -259,14 +312,29 @@
     /* the bridges (the family's, MP.ancientFamily): a corridor from one part of the storey over the gap to another (Sky A's atrium round its
        core), a door at each end on the edge of the cell it lands in, its own slab and glass rails */
     var strips = [];
-    (o.bridges || []).forEach(function (Bg, bi) {
+    /* a core standing alone on its square (the top of its run, where its part's floor has drawn back: no face within two cells of the floor) is
+       bridged too, from its nearest face over the gap to the floor, 15 m at most */
+    var extra = [];
+    cores.forEach(function (C) {
+      var fs = faces(C); if (fs.some(function (Fc) { return Fc.c >= 0 && reg[Fc.c] >= 0; })) return;
+      var best = null;
+      fs.forEach(function (Fc) {
+        if (Fc.c < 0) return; var pv = {}, q = [Fc.c], dist = {}; pv[Fc.c] = -1; dist[Fc.c] = 0;
+        for (var h7 = 0; h7 < q.length; h7++) { var x = q[h7]; if (dist[x] > 15) continue; if (reg[x] >= 0 && !R[reg[x]].gone && R[reg[x]].kind !== 'core') { if (!best || dist[x] < best.d) { var path = [x]; for (var p7 = pv[x]; p7 >= 0; p7 = pv[p7]) path.push(p7); best = { d: dist[x], path: path }; } break; }
+          [x - 1, x + 1, x - W, x + W].forEach(function (n) { if (n >= 0 && n < N && pv[n] === undefined && !inCore[n]) { pv[n] = x; dist[n] = dist[x] + 1; q.push(n); } }); }
+      });
+      if (!best || best.path.length < 2) return;
+      var P = best.path, dv = function (a, b) { var ai = a % W, bi = b % W; return [bi - ai, (b - bi) / W - (a - ai) / W]; }, st0 = P[P.length - 1];
+      extra.push({ s: st0, sd: dv(st0, P[P.length - 2]), e: P[0], ed: dv(P[0], P[1]) });
+    });
+    (o.bridges || []).concat(extra).forEach(function (Bg, bi) {
       /* the region the end lands in: the cell's, or (a core's, a sliver's) the nearest one's within two cells */
-      /* a room or corridor within two cells; else a core bay (a shaft standing alone on its square: its doors are on every face) */
+      /* a room or corridor within three cells; else a core bay (a shaft standing alone on its square: its doors are on every face) */
       var coreAt = {}; R.forEach(function (Q, ri) { if (Q.kind === 'core' && Q.poly) { var P = Q.poly; for (var j6 = 0; j6 < D; j6++) for (var i6 = 0; i6 < W; i6++) { var x6 = wx(i6) + cs / 2, z6 = wz(j6) + cs / 2; if (x6 >= P[0][0] && x6 <= P[1][0] && z6 >= P[0][1] && z6 <= P[2][1]) coreAt[j6 * W + i6] = ri; } } });
       var ok5 = function (r, avoid) { return r >= 0 && r !== avoid && !R[r].gone && R[r].kind !== 'core'; };
       var regNear = function (c, avoid) {
         if (ok5(reg[c], avoid)) return reg[c]; var rr2, dj, di, n;
-        for (rr2 = 1; rr2 <= 2; rr2++) for (dj = -rr2; dj <= rr2; dj++) for (di = -rr2; di <= rr2; di++) { n = c + dj * W + di; if (n >= 0 && n < N && ok5(reg[n], avoid)) return reg[n]; }
+        for (rr2 = 1; rr2 <= 3; rr2++) for (dj = -rr2; dj <= rr2; dj++) for (di = -rr2; di <= rr2; di++) { n = c + dj * W + di; if (n >= 0 && n < N && ok5(reg[n], avoid)) return reg[n]; }
         for (rr2 = 0; rr2 <= 2; rr2++) for (dj = -rr2; dj <= rr2; dj++) for (di = -rr2; di <= rr2; di++) { n = c + dj * W + di; if (n >= 0 && n < N && coreAt[n] != null && coreAt[n] !== avoid) return coreAt[n]; }
         return -1;
       };
@@ -311,13 +379,7 @@
       });
     });
     /* the floor the walk takes: the plate's rows as rectangles (no slab: the hero's own plates, 59) */
-    var usedR = new Uint8Array(N);
-    for (j = 0; j < D; j++) for (i = 0; i < W; i++) {
-      k = j * W + i; if (!M[k] || usedR[k]) continue; var i2 = i; while (i2 + 1 < W && M[k + i2 + 1 - i] && !usedR[k + i2 + 1 - i]) i2++;
-      var j2 = j; for (;;) { var rr = j2 + 1; if (rr >= D) break; var full = true; for (var a2 = i; a2 <= i2; a2++) if (!M[rr * W + a2] || usedR[rr * W + a2]) { full = false; break; } if (!full) break; j2 = rr; }
-      for (var b3 = j; b3 <= j2; b3++) for (a2 = i; a2 <= i2; a2++) usedR[b3 * W + a2] = 1;
-      st.parts.push({ noSlab: true, outline: [[r3(wx(i)), r3(wz(j))], [r3(wx(i2 + 1)), r3(wz(j))], [r3(wx(i2 + 1)), r3(wz(j2 + 1))], [r3(wx(i)), r3(wz(j2 + 1))]] });
-    }
+    st.parts = st.parts.concat(walkRects(M, W, D, wx, wz));
     var all = new Set(); for (k = 0; k < N; k++) if (M[k]) all.add(k); st.outline = trace(all, W, X0, Z0, cs) || [];
     st.inside = function (x, z) { for (var a = -1; a <= 1; a += 2) for (var b = -1; b <= 1; b += 2) { var c = cellAt(x + a * 0.02, z + b * 0.02); if (c >= 0 && M[c]) return true; } return strips.some(function (S) { return S.inside(x, z); }); };
     return st;
@@ -328,7 +390,7 @@
    grid (55 calls MP.ancientFamily the first time it builds one): a ground storey (its inside cells and the core's) and a storey at each of the
    grid's levels, what each is for from the building's programme (MP.ANCIENT_USES: [use, storeys] in turn, the last repeating), the core
    square's stair and lift (a 4 m square holds the stair alone), its ruin states as a design's (40's debris, 59b's cut). */
-MP.ANCIENT_PLANNED = ['bunker', 'skya', 'comb', 'apartments', 'lab', 'starlab'];
+MP.ANCIENT_PLANNED = ['bunker', 'skya', 'comb', 'apartments', 'lab', 'starlab', 'offices', 'library', 'police'];
 MP.ANCIENT_USES = {
   bunker: [['records', 1], ['clinic', 1], ['offices', 2], ['plant', 1], ['offices', 9]],
   skya: [['market', 2], ['clinic', 3], ['offices', 20], ['plant', 1], ['offices', 20], ['records', 2], ['school', 3], ['plant', 1], ['lodging', 30], ['plant', 1], ['offices', 13], ['hydroponics', 4], ['skylobby', 9]],
@@ -336,22 +398,32 @@ MP.ANCIENT_USES = {
   /* batch 2 */
   apartments: [['market', 1], ['lodging', 99]],
   lab: [['clinic', 1], ['labs', 8], ['plant', 1], ['labs', 9]],
-  starlab: [['labs', 9]]
+  starlab: [['labs', 9]],
+  /* batch 3 */
+  offices: [['market', 1], ['clinic', 1], ['offices', 9], ['plant', 1], ['offices', 99]],
+  library: [],
+  police: [['offices', 1], ['records', 1], ['offices', 9]]
 };
+/* what a building's ground storey is for, where it is not a lobby: the Crown Library's reading hall (its stacks at the skin, reading rooms inside) */
+MP.ANCIENT_GROUND = { library: 'reading' };
+/* the storeys that are one hall each part (by use): the Crown Library's reading floor, its stacks a library throughout */
+MP.ANCIENT_HALL = { reading: 'stack' };
 (function () {
   var r3 = function (v) { return Math.round(v * 1000) / 1000; };
   var SKIN = { lobby: function (i) { return i % 4 === 0 ? 'reception' : 'stall'; }, market: function () { return 'stall'; }, clinic: function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }, offices: function (i) { return i % 4 === 3 ? 'meeting' : 'office'; },
     plant: function () { return 'plant'; }, records: function () { return 'stack'; }, school: function (i) { return i % 7 === 3 ? 'store' : 'classroom'; }, hydroponics: function () { return 'greenhouse'; }, skylobby: function (i) { return i % 3 ? 'cafe' : 'concourse'; },
-    lodging: function (i) { return i % 5 === 4 ? 'living' : 'bedroom'; }, labs: function (i) { return i % 3 === 2 ? 'office' : 'workshop'; } };
-  var INNER = { labs: function (i) { return i % 4 === 1 ? 'meeting' : 'store'; }, offices: function (i) { return i % 3 ? 'meeting' : 'store'; }, lodging: function (i) { return i % 2 ? 'bath' : 'store'; }, clinic: function () { return 'store'; }, school: function () { return 'store'; }, market: function () { return 'store'; }, lobby: function () { return 'store'; }, skylobby: function () { return 'store'; } };
+    lodging: function (i) { return i % 5 === 4 ? 'living' : 'bedroom'; }, labs: function (i) { return i % 3 === 2 ? 'office' : 'workshop'; }, reading: function (i) { return i % 4 === 3 ? 'reception' : 'stack'; } };
+  var INNER = { reading: function (i) { return i % 3 ? 'study' : 'store'; }, labs: function (i) { return i % 4 === 1 ? 'meeting' : 'store'; }, offices: function (i) { return i % 3 ? 'meeting' : 'store'; }, lodging: function (i) { return i % 2 ? 'bath' : 'store'; }, clinic: function () { return 'store'; }, school: function () { return 'store'; }, market: function () { return 'store'; }, lobby: function () { return 'store'; }, skylobby: function () { return 'store'; } };
   MP.ancientFamily = function (A, grid, entries) {
     var lv = grid.levels.filter(function (l) { return !l.roof; }), cores = grid.cores || (grid.core ? [grid.core] : []), C = cores[0], W = grid.W, D = grid.D, cs = grid.cell, N = W * D, L = [], masks = [];
     var inSq = function (Q, i, j) { var x = grid.x0 + (i + 0.5) * cs, z = grid.z0 + (j + 0.5) * cs; return x > Q.x0 && x < Q.x0 + Q.n && z > Q.z0 && z < Q.z0 + Q.n; };
     /* the ground storey: its own inside cells and the core's square (a tower on pilotis is entered by its core) */
     var g0 = new Uint8Array(grid.ground);
     for (var j = 0; j < D; j++) for (var i = 0; i < W; i++) if (cores.some(function (Q) { return inSq(Q, i, j); })) g0[j * W + i] = 1;
-    L.push({ k: 0, y: 0, h: lv.length ? lv[0].y : A.sh, use: 'lobby' }); masks.push(g0);
-    var prog = MP.ANCIENT_USES[A.id] || [['offices', 99]], pi = 0, left = prog[0][1];
+    /* a hall on a plinth (floors false, its doors up steps: the Crown Library's at 1.9 m) has its storey at its lowest door's sill */
+    var gy = A.floors === false && (entries || []).length ? Math.max(0, Math.min.apply(null, entries.map(function (E) { return E.y; }))) : 0;
+    L.push({ k: 0, y: r3(gy), h: lv.length ? lv[0].y - gy : A.sh, use: MP.ANCIENT_GROUND[A.id] || 'lobby' }); masks.push(g0);
+    var prog = (MP.ANCIENT_USES[A.id] || []).length ? MP.ANCIENT_USES[A.id] : [['offices', 99]], pi = 0, left = prog[0][1];
     lv.forEach(function (l, q) {
       var nx = lv[q + 1], h = nx && nx.y - l.y <= A.sh * 1.01 ? nx.y - l.y : A.sh;
       if (left <= 0 && pi + 1 < prog.length) { pi++; left = prog[pi][1]; } left--;
@@ -409,7 +481,7 @@ MP.ANCIENT_USES = {
       plan: function (F2, Lv) {
         if (cache[Lv.k]) return cache[Lv.k];
         var en = (entries || []).filter(function (E) { return E.y >= Lv.y - 0.6 && E.y < Lv.y + Lv.h - 0.6; });
-        return (cache[Lv.k] = MP.gridPlan(F2, Lv, { id: F2.id + '.' + Lv.k, grid: grid, mask: masks[Lv.k], cores: cores, shafts: shafts, kinds: SKIN[Lv.use] || SKIN.offices, inner: INNER[Lv.use] || SKIN[Lv.use] || INNER.offices, entries: en, ground: Lv.k === 0, bridges: bridges[Lv.k] }));
+        return (cache[Lv.k] = MP.gridPlan(F2, Lv, { id: F2.id + '.' + Lv.k, grid: grid, mask: masks[Lv.k], cores: cores, shafts: shafts, kinds: SKIN[Lv.use] || SKIN.offices, inner: INNER[Lv.use] || SKIN[Lv.use] || INNER.offices, entries: en, ground: Lv.k === 0, bridges: bridges[Lv.k], hall: MP.ANCIENT_HALL[Lv.use] }));
       },
       hitIn: function (x, z, y, mg) {
         var k = 0, m = mg || 0; L.forEach(function (l) { if (y >= l.y - 0.1) k = l.k; }); var M = masks[k];
