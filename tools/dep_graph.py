@@ -17,7 +17,7 @@ A backwards edge is:
     core/*   -> anything outside core
     kits/*   -> settlements/* or openworld/*
     biomes/* -> settlements/* or openworld/*
-settlements/port is the Ancient Port kit, a kit in a settlement's folder (CLAUDE.md): KIT_FOLDERS classes it as a kit.
+KIT_FOLDERS classes a kit kept in another group's folder as a kit (none since the Ancient Port kit moved to kits/port, 2026-11-03).
 A read of a pinned third-party library (THIRD_PARTY: three.js r128, the same bytes in every copy) is not an edge.
 The ones that exist today are listed in tools/dep_allowlist.json. A new one fails; as the plan removes edges,
 delete their lines (a listed edge that is gone is reported as stale).
@@ -49,7 +49,7 @@ DEPS = os.path.join(ROOT, 'DEPS.json')
 # third-party libraries several modules keep a byte-identical pinned copy of: reading one is not a dependency on the
 # module that holds it (tools/harness.py local_three serves kits/ancients' three.js r128 to every core demo)
 THIRD_PARTY = {'three.min.js'}
-KIT_FOLDERS = {'settlements/port': 'kits'}   # the Ancient Port kit (CLAUDE.md: a kit, not a settlement)
+KIT_FOLDERS = {}   # {folder: group}: a kit kept outside kits/ (the Ancient Port kit was settlements/port until 2026-11-03)
 PAT = re.compile(r"""\b(core|kits|biomes|settlements|openworld)\s*(?:/|\\\\|\\|['"]\s*,\s*['"])\s*([A-Za-z0-9_.-]+)""")
 RE_LISTED = re.compile(r'^[^#\n]*\bimport build_sources\b', re.M)
 

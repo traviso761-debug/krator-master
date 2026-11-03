@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Concatenate src/* + targets/<t>/* into dist/<t>.html (Ys, the half-drowned capital).
 
-Adapted from settlements/iziz/build.py and settlements/port/build.py. The rules
+Adapted from settlements/iziz/build.py and kits/port/build.py. The rules
 that make parallel agent work safe on the Ancients-lineage contract:
 
   1. SEED DISCIPLINE. The PRNG is one global stream. Every builder opens with
@@ -146,7 +146,7 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
         + VENDORED_DROWNED:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
-    VENDORED[_f] = 'settlements/port/src'
+    VENDORED[_f] = 'kits/port/src'
 for _f in ['92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js']:

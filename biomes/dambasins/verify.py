@@ -6,7 +6,7 @@ Usage:
                                   [--assert] [--strict-budget] [--out ./shots]
                                   [--cam=cx,cy,cz,tx,ty,tz] [--eval "()=>..."] [--size 1280x800]
 
-Adapted from settlements/hook/verify.py. The invariants are the Ancient Port kit's (settlements/port/verify.py,
+Adapted from settlements/hook/verify.py. The invariants are the Ancient Port kit's (kits/port/verify.py,
 imported) plus the overlay's own (PLAN.md, section 5), each run on a broken input too, which must fail:
   db-no-sea          no sea sheet and no core/water surface anywhere: the bed is dry
   db-decks-on-line   every coastal segment's land apron stands at the kit's freeboard over the old full level (y = 0)
@@ -33,8 +33,8 @@ except Exception:
 
 
 def port_asserts():
-    """The kit's ASSERT_JS (settlements/port/verify.py), imported so a check added there reaches this build."""
-    spec = importlib.util.spec_from_file_location('port_verify', os.path.join(ROOT, 'settlements', 'port', 'verify.py'))
+    """The kit's ASSERT_JS (kits/port/verify.py), imported so a check added there reaches this build."""
+    spec = importlib.util.spec_from_file_location('port_verify', os.path.join(ROOT, 'kits', 'port', 'verify.py'))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod.ASSERT_JS

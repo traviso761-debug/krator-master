@@ -2,7 +2,7 @@
 
 Hook is the Ancient port city of the Ring Sea's southern shore, the Izani Empire's premier port, retaken from Voth
 a few months before game start. Its lore is in `LORE.md` §6.2 (the Hook entry) and §6.12 ("Hook is lost"). This plan
-says how the city is built: the Ancient Port kit (`settlements/port`) lays the waterfront, `core/city` lays the town
+says how the city is built: the Ancient Port kit (`kits/port`) lays the waterfront, `core/city` lays the town
 behind it, and six building kits dress the layers of its history.
 
 Owner's brief (2026-10-17): the city built around the Ancient port; every segment of the Port kit used at least once;
@@ -15,7 +15,7 @@ Pirate Emperors, Voth, and Iziz again under Vinzenda IX).
 |---|---|
 | Folder | `settlements/hook/` (`src/`, `targets/`, `build.py`, `verify.py`, `materials.json`, `site/`) |
 | Pages | `dist/hook.html` (the city), `dist/hook-site.html` (the site editor, Voth's read in place) |
-| Waterfront | the Port kit's layout (`portRun`, `portBehind`, `portOff`, `portMoor`) in a target fragment, as `targets/harbour/89z-rows.js` does: every Port fragment read in place from `settlements/port/src`, never copied |
+| Waterfront | the Port kit's layout (`portRun`, `portBehind`, `portOff`, `portMoor`) in a target fragment, as `targets/harbour/89z-rows.js` does: every Port fragment read in place from `kits/port/src`, never copied |
 | Town | `core/city` steps 0-12 on the site layer, as Voth and Verge (`core/city/README.md`, "Porting a settlement") |
 | Kits, read in place | `kits/islanders` (West: the Hukoa; East: the Kautoan layer), `settlements/ys` (the Hykkousoi kit: the Tethyan quarter), the Iziz Vernacular and the Ancients core as Verge's `IZV` bundle (`settlements/iziz/VASSAL-KITS.md` section 1), `settlements/voth/catalog` (the Vothic layer's lots, as `core/city` builds Voth) with `settlements/voth/src` lifted by name for its landmarks (`vothlift.py`), `kits/post-apoc` (culture-neutral salvage infill), `kits/ringsea` and the Port vessels (the harbour's ships) |
 | Core | `core/rand`, `core/mask`, `core/tags`, `core/space`, `core/lod`, `core/host`, the shared sky and camera; `core/furnish` once interiors come |
@@ -65,7 +65,7 @@ Heights are untouched (section 6, question 5).
 
 ## 2. Every Port segment, placed once
 
-The kit registers 24 segments and 5 vessels (`grep PORT_SEG settlements/port/src`). Each has one home in Hook; the
+The kit registers 24 segments and 5 vessels (`grep PORT_SEG kits/port/src`). Each has one home in Hook; the
 anchors and the big docks may repeat. Decay `d` (the kit's: 0 intact, 1 ruined, 3 reclaimed). The city mixes them: an
 intact working harbour in the middle, ruined where the reconquest fought (section 6, question 5), reclaimed where the
 salvagers live.

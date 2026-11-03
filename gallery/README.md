@@ -201,7 +201,7 @@ the console.
 
 ## The Ancients and the Port: their own artifact (2026-10-07)
 
-The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`settlements/port`)
+The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`kits/port`)
 are published as their own artifact, https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1 ("The Ancients and the Port":
 61 pages, 103 MB with their two shared library packs), which the Krator Worlds index links to under the Throne. With them
 Krator Worlds hit the artifact's 256 MiB a version once Locus and Mungo took the material library.
@@ -211,7 +211,7 @@ build them for it) and keeps them in any other `--out` site (the LAN host's). Th
 `ENTRIES`. To update:
 
 ```
-python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and settlements/port, writes gallery/ancients-site/
+python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and kits/port, writes gallery/ancients-site/
 ```
 
 Then publish `gallery/ancients-site/index.html` to the URL above with every file in `gallery/ancients-site/worlds/`, in

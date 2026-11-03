@@ -50,7 +50,7 @@
 A spin-off of the Krator Ancients kit (`kits/ancients/`): a set of modular
 **port segments** and **vessels** for an Ancient port, meant to tile along a
 coast and, later, to be folded into a seaside arcology. It lives in
-`settlements/port/`, a sibling of `kits/ancients/`, built the same way (src/
+`kits/port/`, a sibling of `kits/ancients/`, built the same way (src/
 fragments concatenated in filename order into one page, per-target
 `89z-rows.js` / `91z-views.js`, `build.py`, `jscheck.py`, `verify.py`).
 
@@ -147,7 +147,7 @@ shacks, rope bridges, awnings and market stalls, solar panels, dishes, masts,
 gardens, small boats moored alongside. People for scale everywhere.
 ORIGINAL FORMS: take the references' language, never copy a specific image.
 
-References: `settlements/port/refs/` (sheet_0..4.jpg contact sheets of all 61 images, and the four
+References: `kits/port/refs/` (sheet_0..4.jpg contact sheets of all 61 images, and the four
 `boat*` images, which govern the inhabited vessels). Full-size originals of
 everything are in
 /tmp/claude-0/-home-user-krator-master/a8de3ff0-d703-58a9-8390-7f3f9b374dbd/scratchpad/port-refs/

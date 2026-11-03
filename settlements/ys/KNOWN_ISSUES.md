@@ -6,7 +6,7 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - `71-port-terrain.js` also calls `ysGroundTint` (the karst's colours) when the city defines it (Oct 5 2026).
 - `54-mat-concrete.js` (from `kits/ancients/src`, Oct 5 2026): `bodyGroup` passes `ysCutY(d)` to a standing body, so
   every tower that builds through it (D, E, F, H) is cut at a storey when the city names a height. One line.
-- `71-port-terrain.js` (from `settlements/port/src`): `portNatH` delegates to `YS_NAT` when the city target
+- `71-port-terrain.js` (from `kits/port/src`): `portNatH` delegates to `YS_NAT` when the city target
   defines it, and the port's nature scatter is skipped in that case (the biome plants the ground). Two lines.
   Since 2026-10-13 the port's sea is core/water's (`71w-port-sea.js`, vendored byte-identical; the port's
   `portBuildTerrain` calls `portSea` instead of building its flat sheet): this copy takes the same change, so its

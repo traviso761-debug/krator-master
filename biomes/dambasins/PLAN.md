@@ -11,7 +11,7 @@ bed (41,408 km², all in n semiarid) and the east bed (47,792 km²: 23,168 in n 
 | part | where it comes from | state |
 |---|---|---|
 | the bed's marks (levels, sill, bands, strandlines, the ring, salt, silt, yardangs, benches, the beach ridge) | `core/terrain/40-core-basin.js` (`KBASIN`), with its node test | **built** (2026-10-21) |
-| the docks on the old full line, the ferry ramps, the lighthouse on its knoll | the Ancient Port kit (`settlements/port`), read in place, its segments at decay 1 (ruined) and 3 (salvage), dry | D0 |
+| the docks on the old full line, the ferry ramps, the lighthouse on its knoll | the Ancient Port kit (`kits/port`), read in place, its segments at decay 1 (ruined) and 3 (salvage), dry | D0 |
 | the hulks, in three populations by where the falling water left them | the port kit's vessels, grounded: heeled on the slope, buried by silt (a grounding transform round the kit's `kput` and the vessel's group, this build's own) | D1 |
 | the flora | the n semiarid kit, read in place (its fields from `KBASIN.sample`: `bed`, `silt`, `strand`, `ring`, `salt`, `dry`) | D2 |
 | the stranded wrecks: the lake's working boats, whole, snapped, broken up, half buried | this build (`50-db-wrecks.js`), placed by the bands and strandlines | **built** (2026-10-23) |
@@ -23,7 +23,7 @@ bed (41,408 km², all in n semiarid) and the east bed (47,792 km²: 23,168 in n 
 ## 2. The engine
 
 **The Ancient Port kit is the engine**, the way Hook (`settlements/hook`) and Ys take it: `build.py` reads every
-fragment of `settlements/port/src` and the core lists the kit's own `build.py` names, in place, and adds this build's
+fragment of `kits/port/src` and the core lists the kit's own `build.py` names, in place, and adds this build's
 own fragments. A `src/` file with a kit fragment's name shadows it; `python3 build.py --vendor-check` reports the drift.
 
 What has to change for a **dry** port, and where:
@@ -73,7 +73,7 @@ Each station is its own page from the same build (the Throne's and Korona's `--s
 
 ## 5. Checks (`verify.py --assert`)
 
-The kit's own invariants (imported from `settlements/port/verify.py`, as Hook does) and:
+The kit's own invariants (imported from `kits/port/verify.py`, as Hook does) and:
 
 - **no sea**: no sea sheet is drawn, and `WATER.heightAt` is null everywhere on the station;
 - **the old line**: every placed segment's deck stands at the old full level plus the kit's freeboard;

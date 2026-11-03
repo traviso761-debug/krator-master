@@ -27,7 +27,7 @@ Voth branch).
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
 `src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
 whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
-`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+`src/82-nr-water.js`); `kits/port`, the Ancient Port kit (the sea along the coast: a calm
 share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
 seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
 sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
@@ -51,7 +51,8 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `51-core-water-kinds.js` | [draw] + [G shader] | `WATER.drawFlow`, `drawFall`, `drawStill`, `stillMaterial`, `wetGround` and their GLSL (`flowGLSL`, `fallGLSL`, `stillGLSL`, `wetChunk`) |
 | `geyser/52-core-water-geyser.js` | [G data] | `WATER.spring`, `WATER.geyser`: hot pools with a temperature and mineral colour ramp and geyser columns on a period/duration cycle, their CPU twins (`S.colourAt`, `S.state(t)`), the ramp and the cycle as GLSL text, the particles as plain arrays, export records. Optional, and in the SUBFOLDER `core/water/geyser/` on purpose: many builds pool every numbered `*.js` of `core/water` with `os.listdir`, so a new top-level fragment would leak into all of them. A build opts in by path (`biomes/geyser/build.py`: `CORE_WATER_GEYSER`). Needs core/rand (`KRAND`) for particles and phase jitter |
 | `geyser/52b-core-water-geyser-draw.js` | [draw] + [G shader] | `WATER.drawSpring` (the banded disc), `WATER.drawGeyser` (one Points per column), `WATER.thermalUniforms` / `thermalStep` |
-| `geyser/test-geyser.js` | | `node core/water/geyser/test-geyser.js [--golden]`: the ramp and cycle GLSL run as text against the twins, the Old Kettle's schedule, determinism, export; `--golden` (`node core/water/geyser/test-geyser.js --golden`) writes `godot/tests/water/geyser_golden.json` |
+| `geyser/test-geyser.js` | | `node core/water/geyser/test-geyser.js [--golden]`: the ramp and cycle GLSL run as text against the twins, the Old Kettle's schedule, determinism, export; `--golden` (`node core/water/geyser/test-geyser.js --golden`) writes `godot/tests/water/geyser_golden.json` |
+
 | `ext/53-core-water-terraces.js` | [G data] | `WATER.terraces` (a stepped river: a still pool per tread, a fall per riser, linked: `T.heightAt`, `at`, `flowAt`, `export`) and `WATER.mergedFalls` (the arrays of many falls in one). Optional, in the SUBFOLDER `core/water/ext/` for the same reason as `geyser/` (a build opts in by path) |
 | `ext/53b-core-water-terraces-draw.js` | [draw] + [G shader] | `WATER.drawFalls` (two meshes for any number of falls), `WATER.drawPools` (one mesh for many pools), `WATER.drawTerraces`, `WATER.fallGLSLMerged` |
 | `test-gaps.js` | | `node core/water/test-gaps.js`: every new option's default is the old output (snapshots of the shaders' text, the meshes, the materials and the export hashed against `test-gaps.golden.json`, taken from the code of 2026-10-20) and each option, with its negative control (the GLSL against the twins for them is at the end of `test-water.js`) |

@@ -24,7 +24,7 @@
    "core/rand",
    "core/terrain",
    "core/water",
-   "settlements/port"
+   "kits/port"
   ],
   "biomes/eastabyss": [
    "core/atmos",
@@ -472,6 +472,12 @@
    "core/atmos",
    "core/catalog"
   ],
+  "kits/port": [
+   "core/atmos",
+   "core/lod",
+   "core/materials",
+   "core/water"
+  ],
   "kits/post-apoc": [
    "core/catalog",
    "core/furnish",
@@ -718,7 +724,7 @@
    "core/lod",
    "core/materials",
    "core/water",
-   "settlements/port"
+   "kits/port"
   ],
   "settlements/isle-demo": [
    "core/biome",
@@ -944,12 +950,6 @@
    "settlements/isle-demo",
    "settlements/mavs-refuge"
   ],
-  "settlements/port": [
-   "core/atmos",
-   "core/lod",
-   "core/materials",
-   "core/water"
-  ],
   "settlements/reedlake": [
    "core/atmos",
    "core/clock",
@@ -1079,8 +1079,8 @@
    "kits/ancients",
    "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/iziz",
-   "settlements/port"
+   "kits/port",
+   "settlements/iziz"
   ],
   "settlements/yuni": [
    "biomes/ebadlands",
@@ -1142,6 +1142,7 @@
   "kits/lizardmen/build.py",
   "kits/mechs/build.py",
   "kits/motor-vehicles/build.py",
+  "kits/port/build.py",
   "kits/post-apoc/build.py",
   "kits/post-apoc/sockets-example/build.py",
   "kits/pylon/build.py",
@@ -1167,7 +1168,6 @@
   "settlements/mungo/build.py",
   "settlements/noahs-regret/build.py",
   "settlements/pinnacle-rock/build.py",
-  "settlements/port/build.py",
   "settlements/reedlake/build.py",
   "settlements/screamers/build.py",
   "settlements/shade/build.py",
@@ -1232,8 +1232,8 @@
    "kits/ancients",
    "kits/highlands",
    "kits/iziz-vernacular",
-   "settlements/iziz",
-   "settlements/port"
+   "kits/port",
+   "settlements/iziz"
   ]
  }
 }

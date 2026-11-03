@@ -1,4 +1,4 @@
-# settlements/port: port audit
+# kits/port: port audit
 
 *Written by `tools/audit_port.py` (GODOT-PLAN.md, section 3). Edit the **Tag** and **Note** cells and the text under "Notes": a rerun keeps them and refreshes the numbers. `--reset` retags everything.*
 

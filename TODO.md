@@ -38,7 +38,7 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
 
 - **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
   (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
-  (`settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
+  (`kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
   piece among a thousand merged into one mesh, so a registered volume round each reads empty
   (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
   never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics

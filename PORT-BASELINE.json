@@ -544,131 +544,131 @@
    "bytes": 4379855,
    "sha256": "29f49a0406828fd7a818292a2379b56fe622b085258f2593c45310961ba32e83"
   },
-  "settlements/port/dist/cgBox.html": {
+  "kits/port/dist/cgBox.html": {
    "bytes": 884314,
    "sha256": "a31a65e112145ef518b28cf2747cd2cdf0bd4af171b74f6c0d52becfded6799b"
   },
-  "settlements/port/dist/cgCrane.html": {
+  "kits/port/dist/cgCrane.html": {
    "bytes": 884485,
    "sha256": "4780339a4ecc14db6a9ddcf591e64dac8e11bb618e9bf299741a6cd937cef97b"
   },
-  "settlements/port/dist/cgEdges.html": {
+  "kits/port/dist/cgEdges.html": {
    "bytes": 883642,
    "sha256": "3d5984b05d091cb2489e6b7cc6b3a1cdf247c1c95736431d02d04e1f1b24e614"
   },
-  "settlements/port/dist/cgStore.html": {
+  "kits/port/dist/cgStore.html": {
    "bytes": 884324,
    "sha256": "f51255f806d12ad37b939ba972e59e8e9e61af57d306f6b28ccd51ab4e53890e"
   },
-  "settlements/port/dist/chHousing.html": {
+  "kits/port/dist/chHousing.html": {
    "bytes": 885754,
    "sha256": "5e92a1c0c7ea8479bf657d508d2ea1f9037191f4f5982b03a88bba571aba313c"
   },
-  "settlements/port/dist/ddDock.html": {
+  "kits/port/dist/ddDock.html": {
    "bytes": 884725,
    "sha256": "31db74f9208e5f92680fd7c5f5f86f7674c80cc9713ecd6635265a6c01c64563"
   },
-  "settlements/port/dist/ddShed.html": {
+  "kits/port/dist/ddShed.html": {
    "bytes": 884602,
    "sha256": "bf85c6a2873769a00563b1facb07f2666fc46a34b2a7c4e36faba18c6061e61e"
   },
-  "settlements/port/dist/ddYard.html": {
+  "kits/port/dist/ddYard.html": {
    "bytes": 884576,
    "sha256": "525c53b1e46d1bdb0546b47530d3d30ac67790a6e32cc9ada5563b532e8457b0"
   },
-  "settlements/port/dist/edges.html": {
+  "kits/port/dist/edges.html": {
    "bytes": 883633,
    "sha256": "894ca8536c66a2066911244090bf86dd452c255c8854f3c94d62d1b5b05d172e"
   },
-  "settlements/port/dist/harbour.html": {
+  "kits/port/dist/harbour.html": {
    "bytes": 887761,
    "sha256": "0620fbb2ebe665549d97127f1289b5c753be0af0918db6df2caddaf03556bb09"
   },
-  "settlements/port/dist/hbEdges.html": {
+  "kits/port/dist/hbEdges.html": {
    "bytes": 883534,
    "sha256": "ce908ffe30851acd100aba566eeee805065b01e2007d8fbbd6cc89478f0386c2"
   },
-  "settlements/port/dist/hbFish.html": {
+  "kits/port/dist/hbFish.html": {
    "bytes": 884013,
    "sha256": "b692a4ced663df2a4574e450dfbb8894b19a5582eb5b4cafefe96d2b9680b510"
   },
-  "settlements/port/dist/hbHaven.html": {
+  "kits/port/dist/hbHaven.html": {
    "bytes": 883901,
    "sha256": "b66bf30790adc50390342cbfec832c2e95ef8ca5b1d6346c17e52bd9e1ab6a6d"
   },
-  "settlements/port/dist/hbMarina.html": {
+  "kits/port/dist/hbMarina.html": {
    "bytes": 884024,
    "sha256": "ba2b96392154175e89119fcc5055fa7cc944527aede573dd54df25df9bec3309"
   },
-  "settlements/port/dist/lbAuthority.html": {
+  "kits/port/dist/lbAuthority.html": {
    "bytes": 883519,
    "sha256": "6686f20a37eec257c8dd8e58d4e7daeb80dbfd7ba7106918080344bd4bcde332"
   },
-  "settlements/port/dist/lbBlocks.html": {
+  "kits/port/dist/lbBlocks.html": {
    "bytes": 883516,
    "sha256": "21eb58790dcc2b1594d82c26b34ba9185da46adb4685530991cfb4e7c50efdb3"
   },
-  "settlements/port/dist/lbStores.html": {
+  "kits/port/dist/lbStores.html": {
    "bytes": 883422,
    "sha256": "075509a1da928fb51d758895d2d030117df1d69cd67d50c60fd00a63460505bc"
   },
-  "settlements/port/dist/lbTanks.html": {
+  "kits/port/dist/lbTanks.html": {
    "bytes": 883412,
    "sha256": "cd79a47dca770dd7d1af03c5cee46c6d7af673b9af629aab33d0324e6c362d95"
   },
-  "settlements/port/dist/segment.html": {
+  "kits/port/dist/segment.html": {
    "bytes": 884180,
    "sha256": "9cc247b6de2319a10b978e1f34fc5191643c303e07e2b995079bc8f1c00766a7"
   },
-  "settlements/port/dist/showcase.html": {
+  "kits/port/dist/showcase.html": {
    "bytes": 885426,
    "sha256": "dbadcf93784add67802bec46000fa6e75470b20ac98b171ef84f099cb6eff172"
   },
-  "settlements/port/dist/slBerth.html": {
+  "kits/port/dist/slBerth.html": {
    "bytes": 884189,
    "sha256": "ed642d8c9829a306d80167a29368f6f4ad97f5d000c3fbce20a9a7b677530ede"
   },
-  "settlements/port/dist/slCarrier.html": {
+  "kits/port/dist/slCarrier.html": {
    "bytes": 884195,
    "sha256": "c064061eebe81c8e2725f03fa3d7010273a3d1316b3899b18096f609f889c4e2"
   },
-  "settlements/port/dist/slPen.html": {
+  "kits/port/dist/slPen.html": {
    "bytes": 884183,
    "sha256": "23a733570bb7027bf1488212f5966a27eb8795b03eca805e231b471cbdac44c3"
   },
-  "settlements/port/dist/slSub.html": {
+  "kits/port/dist/slSub.html": {
    "bytes": 884183,
    "sha256": "74e4dd4da65c6f4390c09118d71a55083b2a71b783d9e0dafe47bba40b369325"
   },
-  "settlements/port/dist/spYard.html": {
+  "kits/port/dist/spYard.html": {
    "bytes": 886217,
    "sha256": "e78f818154d3bd42e39a29a31b3bb8c246ac012767cede32546895cc408cf686"
   },
-  "settlements/port/dist/tmEdges.html": {
+  "kits/port/dist/tmEdges.html": {
    "bytes": 883639,
    "sha256": "4c06c5fc36f397fa910929d57d6795703b6af753b31010584d36408227ec2d3f"
   },
-  "settlements/port/dist/tmHeli.html": {
+  "kits/port/dist/tmHeli.html": {
    "bytes": 884498,
    "sha256": "a62e4394d017ca33c7a969c1755f6bc919799197e5e7f0ae73a8357a4afafc63"
   },
-  "settlements/port/dist/tmPass.html": {
+  "kits/port/dist/tmPass.html": {
    "bytes": 884522,
    "sha256": "6d9c4464a8b5fcf2de9b398f615da99f533a3051088b3eafa1162a01ab93e4b7"
   },
-  "settlements/port/dist/tmShip.html": {
+  "kits/port/dist/tmShip.html": {
    "bytes": 884628,
    "sha256": "ed1fe2682233e9e488c611ff29f6bab1368a9d3750bf397605c77b90aa913b47"
   },
-  "settlements/port/dist/vsFeeder.html": {
+  "kits/port/dist/vsFeeder.html": {
    "bytes": 884082,
    "sha256": "59a4c19432f5d4c6d403073066eae14bbdef59b5874f18caac5f55d0a770a1d3"
   },
-  "settlements/port/dist/vsGiant.html": {
+  "kits/port/dist/vsGiant.html": {
    "bytes": 884433,
    "sha256": "6c11dba58b2354055c9307da083820547b485fe22215300cf8db4e4511f12231"
   },
-  "settlements/port/dist/vsPanamax.html": {
+  "kits/port/dist/vsPanamax.html": {
    "bytes": 884103,
    "sha256": "42512fb9fab4b13e9e182988a8383fca8744b866a0d35482a72bfd9250c25d7a"
   },

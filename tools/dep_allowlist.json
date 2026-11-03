@@ -39,7 +39,7 @@
   "settlements/ys -> settlements/iziz"
  ],
  "vendored": [
-  "biomes/dambasins -> settlements/port",
+  "biomes/dambasins -> kits/port",
   "kits/ash-nomads -> kits/scyvoi",
   "kits/desert-nomads -> kits/scyvoi",
   "kits/post-apoc -> kits/ancients",
@@ -77,6 +77,6 @@
   "settlements/ys -> kits/highlands",
   "settlements/ys -> kits/iziz-vernacular",
   "settlements/ys -> settlements/iziz",
-  "settlements/ys -> settlements/port"
+  "settlements/ys -> kits/port"
  ]
 }

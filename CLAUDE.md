@@ -81,8 +81,8 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | Path | What |
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
-| `settlements/port/` | **a kit, not a settlement**: the Ancient Port segments and vessels (a sibling of `kits/ancients`), which will build Hook and may be reused on other coasts. Call it the Ancient Port kit |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
+| `kits/port/` | the Ancient Port kit (`settlements/port` until 2026-11-03): the Ancient Port segments and vessels (a sibling of `kits/ancients`), which will build Hook and may be reused on other coasts. Call it the Ancient Port kit |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 31 vessels, one fragment each |
 | `kits/catalog/` | master catalog: 1696 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |

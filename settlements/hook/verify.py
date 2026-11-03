@@ -11,7 +11,7 @@ renderer's counts, runs the invariants with --assert, screenshots the named pres
 and any --cam. Exit code 1 if the error panel is dirty, a page error fired, an invariant failed or (with
 --strict-budget) a budget was exceeded.
 
-The invariants are the Ancient Port kit's (settlements/port/verify.py, imported: the six Ancients invariants and the
+The invariants are the Ancient Port kit's (kits/port/verify.py, imported: the six Ancients invariants and the
 page's own `_api.extra()` checks, port-stamps-inside-footprint and port-clearance) plus Hook's own:
   port-every-key   every key registered with PORT_SEG or PORT_VESSEL is placed at least once (a layout item, or a
                    vessel a berth placed): settlements/hook/PLAN.md, section 2.
@@ -33,8 +33,8 @@ except Exception:
 
 
 def port_asserts():
-    """The kit's ASSERT_JS (settlements/port/verify.py), imported so a check added there reaches Hook."""
-    spec = importlib.util.spec_from_file_location('port_verify', os.path.join(ROOT, 'settlements', 'port', 'verify.py'))
+    """The kit's ASSERT_JS (kits/port/verify.py), imported so a check added there reaches Hook."""
+    spec = importlib.util.spec_from_file_location('port_verify', os.path.join(ROOT, 'kits', 'port', 'verify.py'))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod.ASSERT_JS

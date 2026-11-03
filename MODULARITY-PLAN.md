@@ -304,9 +304,10 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
   step 5 counted a backwards edge only from code; with real reads the rule is not needed. Five entries were
   a docstring or comment citing another build: Dam Basins -> Hook ("adapted from settlements/hook/build.py"), Ring Isles ->
   both isle demos (their PLAN.md and build.py named as models), Beast Riders -> the isle demo (a note on how it bundles the kit).
-- **The Ancient Port kit is a kit:** `settlements/port` is classed as one (`KIT_FOLDERS`; CLAUDE.md "a kit, not a settlement"),
-  so Dam Basins reading it is a biome reading a kit. Moving the folder to `kits/port` is the clean form and moves 31 baseline
-  keys, Hook's, Ys's and Dam Basins' paths and the gallery's: not done.
+- **The Ancient Port kit is a kit:** `settlements/port` was classed as one (`KIT_FOLDERS`; CLAUDE.md "a kit, not a settlement"),
+  so Dam Basins reading it is a biome reading a kit. **Moved to `kits/port` 2026-11-03** (owner): the folder, the baseline's
+  32 keys, `geometry.json`, the core-use baseline, Hook's, Ys's and Dam Basins' paths, the gallery's sources (its page ids
+  are unchanged) and the docs; `KIT_FOLDERS` is empty.
 - **`core/materials` -> Sedesert, Ancients, Ring Sea:** only `core/materials/demo/build.py` looking for a three.js r128; it takes
   the harness's (`tools/harness.py` `local_three`) now. The five copies in the repo are byte-identical, so the page is unchanged.
   (The drift notes in `core/README.md` are about material fragments settlements vendor: step 4, the matlib.)
