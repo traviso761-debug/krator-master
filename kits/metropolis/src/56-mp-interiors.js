@@ -10,12 +10,15 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  g.name=F.id+'.storey.'+k;
  // the partitions: a polyline, gapped at its door, with a lintel over the gap
  const blocks=[],seg=(a,b,y0,y1,c)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.04)return;if(y0<L.y+.5)for(let q=0,nq=Math.ceil(l/.35);q<nq;q++){const f=(q+.5)/nq;blocks.push([a[0]+dx*f,a[1]+dz*f]);}const nx=-dz/l*T/2,nz=dx/l*T/2,cl={col:c,uv:2},P=(q,s,y)=>[q[0]+nx*s,y,q[1]+nz*s];
-  B.quad('white',P(a,1,y0),P(b,1,y0),P(b,1,y1),P(a,1,y1),[-dz/l,0,dx/l],cl);B.quad('white',P(b,-1,y0),P(a,-1,y0),P(a,-1,y1),P(b,-1,y1),[dz/l,0,-dx/l],cl);B.quad('white',P(a,1,y1),P(b,1,y1),P(b,-1,y1),P(a,-1,y1),[0,1,0],cl);};
+  B.quad('white',P(a,1,y0),P(b,1,y0),P(b,1,y1),P(a,1,y1),[-dz/l,0,dx/l],cl);B.quad('white',P(b,-1,y0),P(a,-1,y0),P(a,-1,y1),P(b,-1,y1),[dz/l,0,-dx/l],cl);B.quad('white',P(a,1,y1),P(b,1,y1),P(b,-1,y1),P(a,-1,y1),[0,1,0],cl);B.quad('white',P(a,-1,y0),P(a,1,y0),P(a,1,y1),P(a,-1,y1),[-dx/l,0,-dz/l],cl);B.quad('white',P(b,1,y0),P(b,-1,y0),P(b,-1,y1),P(b,1,y1),[dx/l,0,dz/l],cl);B.quad('white',P(a,-1,y0),P(b,-1,y0),P(b,1,y0),P(a,1,y0),[0,-1,0],cl);};
  const WALL=[.84,.85,.84],y0=L.y+.02,y1=L.y+WH,DH=2.15;
- st.walls.forEach(function(W){if(!W.pts)return;const P=W.pts,d=W.door;let done=false;
-  for(let i=0;i+1<P.length;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,t=d?((d.at[0]-a[0])*dx+(d.at[1]-a[1])*dz)/(l*l):-1,off=d?Math.abs((d.at[0]-a[0])*dz-(d.at[1]-a[1])*dx)/l:9;
-   if(d&&!done&&t>=-.05&&t<=1.05&&off<.5){done=true;const hw=d.w/2/l,p=(f)=>[a[0]+dx*f,a[1]+dz*f],t0=Math.max(0,t-hw),t1=Math.min(1,t+hw);seg(a,p(t0),y0,y1,WALL);seg(p(t1),b,y0,y1,WALL);seg(p(t0),p(t1),y0+DH,y1,WALL);}
-   else seg(a,b,y0,y1,WALL);}});
+ /* the door is found along the whole polyline, not per piece: a curved wall bends at its middle, which is where a door tends to stand */
+ st.walls.forEach(function(W){if(!W.pts)return;const P=W.pts,d=W.door,S=[0];for(let i=0;i+1<P.length;i++)S.push(S[i]+Math.hypot(P[i+1][0]-P[i][0],P[i+1][1]-P[i][1]));const end=S[S.length-1];
+  const at=s=>{let i=0;while(i<P.length-2&&S[i+1]<s)i++;const l=(S[i+1]-S[i])||1,f=(s-S[i])/l;return [P[i][0]+(P[i+1][0]-P[i][0])*f,P[i][1]+(P[i+1][1]-P[i][1])*f];};
+  const run=(s0,s1,a,b)=>{if(s1-s0<.03)return;const c=[s0];S.forEach(v=>{if(v>s0+.01&&v<s1-.01)c.push(v);});c.push(s1);for(let i=0;i+1<c.length;i++)seg(at(c[i]),at(c[i+1]),a,b,WALL);};
+  if(!d){run(0,end,y0,y1);return;}
+  let sd=0,best=1e9;for(let i=0;i+1<P.length;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz;if(!l2)continue;const t=Math.max(0,Math.min(1,((d.at[0]-a[0])*dx+(d.at[1]-a[1])*dz)/l2)),q=Math.hypot(a[0]+dx*t-d.at[0],a[1]+dz*t-d.at[1]);if(q<best){best=q;sd=S[i]+(S[i+1]-S[i])*t;}}
+  const g0=Math.max(0,sd-d.w/2),g1=Math.min(end,sd+d.w/2);run(0,g0,y0,y1);run(g1,end,y0,y1);run(g0,g1,y0+DH,y1);});
  // the slab and the ceiling
  const shape=new THREE.Shape(st.outline.map(p=>new THREE.Vector2(p[0],-p[1]))),sl=new THREE.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:false,curveSegments:1});sl.rotateX(-Math.PI/2);
  const fl=new THREE.Mesh(sl,M.slab);fl.position.y=L.y-.22;g.add(fl);const ce=new THREE.Mesh(sl,M.slab);ce.position.y=L.y+L.h-.26;g.add(ce);

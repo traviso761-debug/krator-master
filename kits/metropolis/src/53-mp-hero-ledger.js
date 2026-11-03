@@ -19,7 +19,7 @@ MP.heroLedger=function(state,lite){const F=MP.LEDGER,S=F.ruins[state]||{},B=MP.b
    Q(m,a,c,y0,yS,0,{col});Q(m,a,c,yT,y1,0,{col});
    const nu=[0,s>0?1:1,0];B.quad(m,[a,yS,z],[c,yS,z],[c,yS,z-s*D],[a,yS,z-s*D],[0,1,0],{col,uv:2});B.quad(m,[a,yT,z-s*D],[c,yT,z-s*D],[c,yT,z],[a,yT,z],[0,-1,0],{col,uv:2});
    Q(ruin?'glassOut':'glass',a,c,yS,yT,D,{uv:4});
-   const P=(px,y,w,h,d,cl)=>B.panel(px,y,z-s*d/2,0,w,h,d,cl);
+   const P=(px,y,w,h,d,cl)=>B.panel(px,y,z-s*d/2,s>0?0:Math.PI,w,h,d,cl);
    if(k==='pier'||k==='blank'){P(x,ym,W*1.01,yT-yS,D,WALL);return;}
    if(k==='louvre'){for(let t=0;t<3;t++)P(x,yS+(yT-yS)*(t+.5)/3,W*.98,.26,D*.8,DARK);return;}
    const Z=MP.BAYSIZE[k],jw=W*(1-Z[0])/2,fs=y0+Z[1],ft=y0+Z[2]*(L.h/MP.STOREY);
@@ -49,7 +49,7 @@ MP.heroLedger=function(state,lite){const F=MP.LEDGER,S=F.ruins[state]||{},B=MP.b
      if(s>0){B.quad('bronze',P(x-t,oa,ya),P(x+t,oa,ya),P(x+t,ob,yb),P(x-t,ob,yb),[0,ny,nz],{col,uv:2});B.quad('bronze',P(x+t,oa,ya),P(x+t,0,ya),P(x+t,0,yb),P(x+t,ob,yb),[1,0,0],{col,uv:2});B.quad('bronze',P(x-t,0,ya),P(x-t,oa,ya),P(x-t,ob,yb),P(x-t,0,yb),[-1,0,0],{col,uv:2});}
      else{B.quad('bronze',P(x+t,oa,ya),P(x-t,oa,ya),P(x-t,ob,yb),P(x+t,ob,yb),[0,ny,nz],{col,uv:2});B.quad('bronze',P(x+t,0,ya),P(x+t,oa,ya),P(x+t,ob,yb),P(x+t,0,yb),[1,0,0],{col,uv:2});B.quad('bronze',P(x-t,oa,ya),P(x-t,0,ya),P(x-t,0,yb),P(x-t,ob,yb),[-1,0,0],{col,uv:2});}}}});}
  // ---- the roof: the parapet and, intact, the stepped metal hall of the council
- const pcol=stained(0,top);B.box('white',-hw,hw,top-.1,top+1.2,hd-.8,hd,{col:pcol});B.box('white',-hw,hw,top-.1,top+1.2,-hd,-hd+.8,{col:pcol});B.quad('dark',[-hw,top+.2,hd],[hw,top+.2,hd],[hw,top+.2,-hd],[-hw,top+.2,-hd],[0,1,0]);
+ const pcol=stained(0,top);B.box('white',-hw,hw,top-.1,top+1.2,hd-.8,hd,{col:pcol});B.box('white',-hw,hw,top-.1,top+1.2,-hd,-hd+.8,{col:pcol});B.quad('concrete',[-hw,top+.2,hd],[hw,top+.2,hd],[hw,top+.2,-hd],[-hw,top+.2,-hd],[0,1,0]);
  if(cut>=roof){const c=F.massing[1];for(let i=0;i<c.steps;i++){const k=1-i*.2,w=c.w*k/2,d=c.d*k/2,y0=roof+i*2.8,y1=y0+2.8;B.box('bronze',-w,w,y0,y1-.5,-d,d,{uv:3});B.box('bronze',-w-.5,w+.5,y1-.5,y1,-d-.5,d+.5,{uv:3});}}
  else{const c=[.6,.58,.54];for(let i=0;i<12;i++){const x=-44+i*8,h=.8+3*MP.u(seedK&0xffff,i,51);B.panel(x,top+h/2,0,0,.5,h,14,c);}}
  return B.finish(F,state);};

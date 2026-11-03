@@ -31,8 +31,8 @@
   // ---- a flat: one sector of a ring, cut. Outer band (the glass): living, then one or two bedrooms. Inner band (the corridor side):
   // kitchen, hall, bath. The hall's span overlaps every outer room, so it has a door to each. Only the outer rooms have glass.
   function flatSector(st, Q, i, beds) {
-    var n = st.n, t0 = TAU * i / n, t1 = TAU * (i + 1) / n, ra = st.R - st.band, rb = st.R - 0.05, rm = ra + Math.min(3.8, st.band * 0.45), T = function (f) { return t0 + (t1 - t0) * f; };
-    var splits = beds > 1 ? [0, 0.46, 0.73, 1] : [0, 0.58, 1], fk = 0.38, fb = beds > 1 ? 0.86 : 0.8, id = Q.id, DW = 0.9;
+    var n = st.n, t0 = TAU * i / n, t1 = TAU * (i + 1) / n, ra = st.R - st.band, rb = st.R - 0.05, rm = ra + Math.min(8, st.band * 0.45), T = function (f) { return t0 + (t1 - t0) * f; };
+    var splits = beds > 1 ? [0, 0.48, 0.74, 1] : [0, 0.58, 1], fk = beds > 1 ? 0.3 : 0.38, fb = beds > 1 ? 0.88 : 0.82, id = Q.id, DW = 0.9;
     function room(name, kind, f0, f1, r0, r1) {
       return { id: id + '.' + name, kind: kindOf(kind), mpKind: kind, flat: id, poly: arc(r0, T(f0), T(f1), 2).concat(arc(r1, T(f0), T(f1), 2).reverse()), y: Q.y, h: Q.h, level: Q.level,
         doors: [], windows: [], furnish: !UNFURNISHED[kind], th0: T(f0), th1: T(f1) };
@@ -46,7 +46,7 @@
     wall('w.b', [at(ra, T(fb)), at(rm, T(fb))], bath, hall, door(hall, bath, at((ra + rm) / 2, T(fb))));
     for (var w = 1; w < splits.length - 1; w++) wall('w.o' + w, [at(rm, T(splits[w])), at(rb, T(splits[w]))], out[w - 1], out[w]);
     // the ring between the two bands, cut at every partition that meets it; each piece holds at most one door, the hall's to the room over it
-    var gaps = out.map(function (O, oi) { var f = (Math.max(splits[oi], fk) + Math.min(splits[oi + 1], fb)) / 2; return { f: f, d: door(hall, O, at(rm, T(f))) }; });
+    var gaps = out.map(function (O, oi) { var lo = Math.max(splits[oi], fk), hi = Math.min(splits[oi + 1], fb), f = (lo + hi) / 2; (st.doorFit = st.doorFit || []).push({ room: O.id, arc: (hi - lo) * (t1 - t0) * rm, w: DW }); return { f: f, d: door(hall, O, at(rm, T(f))) }; });
     var cuts = [0, fk, fb, 1].concat(splits.slice(1, -1)).sort(function (p, q) { return p - q; });
     for (var c = 0; c + 1 < cuts.length; c++) {
       var gap = gaps.filter(function (g) { return g.f > cuts[c] && g.f < cuts[c + 1]; })[0];
@@ -63,7 +63,7 @@
     });
     // the sector's own door on the ring becomes the hall's: the corridor-side wall keeps its gap at the hall
     st.rooms = keep;
-    st.walls.forEach(function (W) { if (/\.cw$/.test(W.id)) { var r = W.rooms[0], i = +/\.r(\d+)\.cw$/.exec(W.id)[1], t = TAU * (i + 0.5 * (0.38 + (beds > 1 ? 0.86 : 0.8))) / n, p = at(st.R - st.band, t); W.door = { at: p, w: 1 }; W.rooms[0] = r + '.hall'; } });
+    st.walls.forEach(function (W) { if (/\.cw$/.test(W.id)) { var r = W.rooms[0], i = +/\.r(\d+)\.cw$/.exec(W.id)[1], t = TAU * (i + 0.5 * (beds > 1 ? 0.3 + 0.88 : 0.38 + 0.82)) / n, p = at(st.R - st.band, t); W.door = { at: p, w: 1 }; W.rooms[0] = r + '.hall'; } });
     return st;
   }
 

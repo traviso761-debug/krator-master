@@ -37,6 +37,8 @@
         if (hall && hall.doors.length !== R.length) fails.push(tag + id + ': the hall has ' + hall.doors.length + ' doors for ' + (R.length - 1) + ' rooms and the corridor');
         R.forEach(function (q) { if (q.mpKind === 'bedroom' && !q.windows.length) fails.push(tag + q.id + ': a bedroom with no window'); });
       });
+      // a door from a flat's hall has its width and 8 cm of wall either side, or it is jammed against the partition
+      (st.doorFit || []).forEach(function (f) { if (f.arc < f.w + 0.16) fails.push(tag + f.room + ': its door has ' + f.arc.toFixed(2) + ' m of wall for ' + f.w + ' m'); });
       // the facade: no glass on a blank room, every habitable skin room has some
       st.rooms.forEach(function (R) {
         if (R.blank && R.windows.length) fails.push(tag + R.id + ' is windowless but has ' + R.windows.length + ' windows');

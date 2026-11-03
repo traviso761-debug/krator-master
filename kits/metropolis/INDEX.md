@@ -25,8 +25,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `47-host-land.js` | <1 |  |
 | `50-mp-kit.js` | 8 |  |
 | `52-mp-hero-spindle.js` | 6 |  |
-| `53-mp-hero-ledger.js` | 6 |  |
-| `56-mp-interiors.js` | 9 |  |
+| `53-mp-hero-ledger.js` | 7 |  |
+| `56-mp-interiors.js` | 10 |  |
 | `60-mp-shell-host.js` | 13 |  |
 | `70-mp-stage.js` | 14 |  |
 | `89-host-sky.js` | <1 |  |

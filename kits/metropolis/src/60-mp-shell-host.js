@@ -53,7 +53,7 @@ const DM=['vMpP=position;',
  'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;vMpTop=aTop;vMpBot=aBot;',
  '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-aFrame.y,max(-e.y,0.0)),ld=length(vec3(dx,dy,dz));',
  ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,uBand.x>0.0?smoothstep(uBand.x*(1.0-uBand.z),uBand.x,ld):1.0);}'].join('\n');
-const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
+const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;uniform float uDbg;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
  'vec2 mpUV;float mpLod;vec3 mpHP;vec3 mpRd;',MP.ROOM_GLSL,
  // the gap: how far p is outside the surface along the map's axis, and the uv it sampled
  'float mpGap(vec3 p){vec4 F=vMpFrame;float v=clamp(p.y/F.y,0.0,1.0);',
@@ -66,11 +66,11 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uPx;uniform float uTexel;','
  ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
  ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;float g=mpGap(p);',
  '  if(g<mn*.5){vec2 h=clamp(p.xz/hxz*.5+.5,0.0,1.0),ut=vMpTop.xy+vMpTop.zw*h,ub=vMpBot.xy+vMpBot.zw*h,us=mpUV;float ta=textureLod(uB,ut,mpLod+1.0).a,ty=(ta-.02)/.98*F.y;',
- '   if(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5)){mpHP=p;if(rd.y<0.0&&p.y>ty-ey*1.5)mpUV=ut;else{mpUV=us;if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>0.0&&textureLod(uB,ub,mpLod).a>0.01)mpUV=ub;else mpUV=us;}return true;}}',
+ '   if(rd.y>=0.0||(ta>0.01&&p.y<=ty+ey*2.5)){mpHP=p;if(rd.y<0.0&&p.y>ty-ey*1.5&&textureLod(uB,ut,mpLod).y>0.85)mpUV=ut;else{mpUV=us;if(rd.y>0.0&&mpGap(vec3(p.x,p.y-ey*2.0,p.z))>3.5&&textureLod(uB,ub,mpLod).a>0.01)mpUV=ub;else mpUV=us;}return true;}}',
  '  t+=max(g*.85,mn);',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');
-KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)}};m.userData.U=U;
+KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uDbg:{value:0}};m.userData.U=U;
  m.onBeforeCompile=function(sh){Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+DV).replace('#include <begin_vertex>','#include <begin_vertex>\n'+DM);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define MP_STEPS '+steps+'\n'+DF)
@@ -78,6 +78,7 @@ KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=ne
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=mC.r;').replace('#include <metalnessmap_fragment>','float metalnessFactor=mC.g;')
    .replace('#include <normal_fragment_begin>',['vec3 mN=normalize(mB.xyz*2.0-1.0),mW=vec3(vMpRot.x*mN.x-vMpRot.y*mN.z,mN.y,vMpRot.y*mN.x+vMpRot.x*mN.z);vec3 normal=normalize((viewMatrix*vec4(mW,0.0)).xyz);vec3 geometryNormal=normal;'].join('\n'))
    .replace('#include <normal_fragment_maps>','')
+   .replace('#include <dithering_fragment>',['#include <dithering_fragment>','if(uDbg>0.5){if(uDbg<1.5)gl_FragColor=vec4(mA.rgb,1.0);else if(uDbg<2.5)gl_FragColor=vec4(mB.rgb,1.0);else if(uDbg<3.5)gl_FragColor=vec4(mC.rgb,1.0);else gl_FragColor=vec4(vec3(mpLod/4.0),1.0);}'].join(String.fromCharCode(10)))
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nif(mC.b>0.5){totalEmissiveRadiance+=mpRoom(mpHP,mpRd,mN,0.0)*(mC.g>.2?0.55:1.0);}');};
  m.customProgramCacheKey=()=>'kshell'+steps;return m;};
 // placements: [[x, z, yaw], ...]

@@ -14,3 +14,4 @@
 - [ ] **The Ledger's reception** is a named room with the antechamber's furniture, in the middle bay of the arcade; the hall round it is still the wide corridor.
 - [ ] **Soffits under 200 m** break up in the shell, inside the hero's range: a problem only if the switch is held closer than 300 m.
 - [ ] **A hero with its doors:** the street does not block on a closed tower: a walker passes a hero's skin until a storey opens inside it.
+- [ ] **Flats' service rooms are long:** with the hall ring deep enough for three doors, a two-bed flat's bath is about 1 m wide and 8 m deep. The plan wants a corridor-side rethink.
