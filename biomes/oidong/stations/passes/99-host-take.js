@@ -14,9 +14,11 @@ const VIEWS={
  'Down to the valley':look(200,-1150,6,200,-3000,-600),
  'From afar':look(-2300,RZ(-2300)+900,220,600,RZ(600),40),
 };
+// a station on this ground (the Cold Hearths) adds its own views, checks and words (STATION_TAKE: {build, title, hint, views(), checks(add), negatives(add), plant(item)})
+const ST=typeof STATION_TAKE!=='undefined'?STATION_TAKE:{};if(ST.views)Object.assign(VIEWS,ST.views());
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
- const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&OIDONG.plantOfItem(item);
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&((ST.plant&&ST.plant(item))||OIDONG.plantOfItem(item));
  const name=PLT?PLT.name+'  ·  '+lab+(best?'  (at '+best.name+')':''):(best?best.name+'  ·  '+lab:lab),tg=PLT?PLT.tags:null;
  return name+'\n'+(isItem?'flora · the high passes':'terrain / water')+(tg?'\n'+tg.climate+' · '+tg.aridity+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\nwet '+(FIELD.wet(p.x,p.z)*100|0)+'% · cold '+(FIELD.cold(p.x,p.z)*100|0)+'%\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
@@ -44,6 +46,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing rooted under the tarn',HCHK.dry(P));
  add('the pilgrims\' road kept clear',HCHK.road(P));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
+ if(ST.checks)ST.checks(add,P);
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
@@ -53,21 +56,23 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a cushion in the tarn',HCHK.dry([[TARN.x,TARN.l-2,TARN.z,'biome:lobe']]));
  add('a cushion on the road',HCHK.road([[0,5050,roadZ(0),'biome:lobe']]));
  add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARN.l-5,z:TARN.z}]));
+ if(ST.negatives)ST.negatives(add,P);
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const MIRROR=WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[POOLS_DRAW.mesh.material],
  level:TARN.l,center:[TARN.x,TARN.z],radius:TARN.r*3,far:1200,hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
-KHOST.take({build:'oidong-passes',title:'Krator biome — the high passes over the Oidong Valley',
- hint:"Station 2: the cold desert 3 km above the Oidong Valley (ET, 5,050 m, 141 mm), where the pilgrims' road from Longsong crosses the shelf: bare gravel and scree under a huge sky, cushion plants, the snow lotus among the stones, sky poppies at a meltwater tarn, sorted stone polygons in the frost hollows, cairns at the saddle and prayer-stone walls (ideal type)",
+KHOST.take({build:ST.build||'oidong-passes',title:ST.title||'Krator biome — the high passes over the Oidong Valley',
+ hint:ST.hint||"Station 2: the cold desert 3 km above the Oidong Valley (ET, 5,050 m, 141 mm), where the pilgrims' road from Longsong crosses the shelf: bare gravel and scree under a huge sky, cushion plants, the snow lotus among the stones, sky poppies at a meltwater tarn, sorted stone polygons in the frost hollows, cairns at the saddle and prayer-stone walls (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
- minimap:{title:'The high passes'},
+ minimap:{title:ST.map||'The high passes'},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,
+ exportBox:[Math.round(TARN.x-150),Math.round(TARN.z-150),Math.round(TARN.x+150),Math.round(TARN.z+150)],   /* verify.py's export box: holds the tarn (the water section) */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

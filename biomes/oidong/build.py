@@ -71,14 +71,19 @@ if STATION:
         with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
+    # a station on another's ground names it as its "base" (the Cold Hearths on the passes' cold desert): the base's fragments first, then its own
+    _base=SJ.get('base')
+    if _base:
+        _bd=os.path.join(HERE,'stations',_base)
+        for f in os.listdir(_bd):
+            if re.match(r'\d',f): PATH[f]=os.path.join(_bd,f)
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
-# core/terrain, opt-in by name (core/README.md "terrain/"); the final rebuild (2026-11-03): 35 KSTRATA (the valley walls' beds), 38 KRELIEF (talus and the
-# passes' pavement), 42 KFROST (the passes' patterned ground), 43 KGROUND, 44 KFAR, 45 KHORIZON. A local src/ copy wins.
-CORE_TERRAIN=['35-core-strata.js','38-core-relief.js','42-core-frost.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+# core/terrain, opt-in by name (core/README.md "terrain/"); the final rebuild (2026-11-03): 43 KGROUND, 44 KFAR, 45 KHORIZON (a station adds its own: the
+# Cold Hearths' 47 KTHERM). A local src/ copy wins.
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KSTRATA left out: the walls are granite and marble, no beds (PLAN-STATIONS.md, Core adoption)
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
-PATH.setdefault('35z-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))   # after 35 (Span's lesson: keyed 35z)
 PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
 # the biome core from core/biome (core/README.md): one copy for every kit. The final rebuild adds 31j a limb's joint to its parent (BIO.flareJoin),

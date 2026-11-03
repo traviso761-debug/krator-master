@@ -10,7 +10,7 @@
       and plant, BSk on the gravel flats' plants and the cloud pine, Csa on the four Xanadu-shared trees of drier ground.
       `CROPS.BIOMES.oidong`'s pressure is the model's (~1.24 atm on the floor: standard). Not yet done: the slopes' Dfc,
       Dsb and Dsc and the floor's Cfa are not tags of any species.
-- [ ] **No core/atmos**: the kit binds no atmosphere (no wind or clock from ATMOS, no cloud deck), so the foliage sways on the
+- [x] **No core/atmos** (closed 2026-11-03, the rebuild turn: `BIO.bindAtmosWind` sways the foliage in core/atmos's wind on its clock, the shared sky draws the cloud): the kit binds no atmosphere (no wind or clock from ATMOS, no cloud deck), so the foliage sways on the
       core's own clock and the mist is this host's sprites. The pools' water is the host's own near-still shader, not the shared
       wave field (biomes/README.md asks for it on open water; these are small still pools, mirror-still by design): bind it
       when the valley joins a world, with `vOpen` 0 on the pools.
@@ -24,8 +24,8 @@
       chalice-cap and moss-ball surfaces; the library dresses the rest (`materials.json`). Still the kit's own canvases: the lotus
       trumpets' ribbed stalks, the haze blossom's and wisteria's cards, the cushion domes, the bead-willow's leaves, the grass and
       iris tufts, the ginseng and tea. Ask the owner before generating any (core/materials/PLAN.md has the template).
-      2026-10-26: the cloud-pad tree's CARVED bark (`OIDONG.barkTex7`, bucket `bark7`) is a procedural stand-in too; its prompt
-      is in `core/materials/PROMPTS-NEEDED.md` section 19 (`bark.carved`, `.b`). Stays open: the textures are the owner's to source.
+      2026-10-26: the cloud-pad tree's CARVED bark (`OIDONG.barkTex7`, bucket `bark7`) was a procedural stand-in too (2026-11-03: the library's `bark.carved` is packed and drawn; the canvas is the fallback without the pack; `bark.carved.b` could alternate, not wired); both takes were delivered
+      (2026-10-27) and section 19 of `core/materials/PROMPTS-NEEDED.md` is gone. Stays open for the other canvases above.
 - [ ] **Longsong is not built**: its rock is kept bare (`KNOLL`, an obstacle of 150 m, the mask zero on the top) and
       registered as the monastery's site; `settlements/longsong` holds the blueprint. A build places its 400 x 400 m grounds on
       and round the rock (the lower ward at its foot on the south side, the terraces up the west flank, the hermits' cells on the
@@ -82,3 +82,19 @@ kit binds none). Add each back when the kit fills it.
       reads it in place with its own OIDONG_SKY; build.py leaves it out here. Draw calls at the default camera (verify.py
       --assert, GPU): 71 before, 70 after.
 
+## The rebuild turn (pair 6, 2026-11-03)
+
+- [ ] **Wet ground (R9) is off by default** (`?wet=1`): `WATER.wetGround` with `rain:true` on this page's KGROUND Standard ground drew the whole ground
+      black in clear weather (the Arc 140T, the browser pane; `?kground=0` and `?wet=0` each clean). Not traced: ebadlands calls the same on its land.
+      The valley is semi-arid on 5.1 (188 mm), so the weather's own wetting stays and the puddles wait for the trace.
+- [ ] **The reflections switch serves one plane**: the Mirror's (the lowest step). The pools on the three steps above stand 11-33 m higher and reflect
+      the Mirror's plane when it is on (off at load, as the owner asked). One cube per still is core/water's open item.
+- [ ] **`BIO.fung` and `BIO.bamboo` are listed but the kit is not on them yet**: the moon caps, the chalice caps and the jade bamboo keep their own
+      geometry. Moving them changes every cap's and cane's shape, not placement: a follow-up to look at.
+- [ ] **The sun's shadows (KSHADOW, `?shadow=0`)**: one 4096 box, 90-600 m; its cost on the Arc is measured in the turn's report (HANDOFF-REBUILD.md
+      pair table) once the GPU run finishes.
+- [ ] **The headwall's face is ground mesh** (the 480 x 480 grid, 12 m a cell): 300 m of wall at 62 degrees on a 12 m grid reads as ribbed
+      ground, not as a cliff; it has gullies and spurs now (`45-host-stage.js`). KSTACKS or a cliff mesh would read better: the owner's look.
+- [ ] **Station 2 and 3 are new**: the passes' look (the gravel's colour, the cushions' size, the far field's snow) and the Cold Hearths' (the
+      fans' fold and silver, the stalks' height, the rings) are the owner's to judge. The Hearths' boil cups, shade caps, animals, gas lows and
+      textures are not built (PLAN-STATIONS.md, station 3).
