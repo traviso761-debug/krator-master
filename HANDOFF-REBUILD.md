@@ -402,8 +402,9 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   and then the first screenshot timed out (10 minutes at 1280x800), so the harness's universal asserts (`shader-programs`, `shader-errors`, seats,
   instance cap) were **not reached**: the coordinator's GPU run owes them. **The lagoon** (`--station lagoon --assert`, 800x500, software GL): error
   panel clean, 256 calls, 17.0 M triangles, every check and negative passes, the attach audit .05% (4 of 7,345); `export-profile` failed on the island's
-  box (open lagoon on this map): verify.py now takes a box per station (the north-east motu's). Its opening shot showed the morning mist as a white wall
-  across the far lagoon: thinned fourfold (`89a`). Both pages are rebuilt on those two fixes; the lagoon's re-run is in `biomes/ringisles/KNOWN_ISSUES.md`. **For readers (the Throne, the hyperjungle, the open world), keys and indices kept:** ringisles'
+  box (open lagoon on this map): verify.py now takes a box per station (the north-east motu's), and **the re-run passes all of it, the universal
+  asserts included** (shader-programs, shader-errors, textures-decoded, winding, instance-cap, the eyes). **Open on the lagoon:** a pale band walls off the
+  far lagoon in 'The lagoon from above'; thinning the mist did not remove it; not traced (`KNOWN_ISSUES.md`: check with `?hfog=0` on the GPU). **For readers (the Throne, the hyperjungle, the open world), keys and indices kept:** ringisles'
   own trees' limbs flare where 31j is on the page; the scrub thorn's and breadfruit's crowns sit on their limbs (no draw moves); `RINGISLES.make/grow`
   serve `strandpandan` (3, owed to the Throne) and `breadfruit` (5, owed to the hyperjungle) on fragments 50, 52, 55, 70. **Found, not this turn's:**
   `core/terrain/test-lava.js` and `test-scarp.js` fail their goldens on this Linux container on the untouched branch tip; the Throne's blast, delta and penitentes stations stale on the branch tip.

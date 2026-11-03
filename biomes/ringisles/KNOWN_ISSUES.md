@@ -143,5 +143,7 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 - [ ] **`export-profile` under software GL** (station 1): "library textures still decoding after 180 s", on both software runs of the rebuilt page;
   the first screenshot then timed out (10 minutes at 1280x800, 26.7 M triangles), so the harness's universal asserts were not reached. The GPU run owes both.
 - [x] **The lagoon's export box** was the island's (`EXPORT_BOX`: open lagoon on its map): `verify.py`'s `STATION_EXPORT_BOX` gives it the north-east motu.
-- [x] **The lagoon's morning mist read as a white wall** across the far lagoon from 'The lagoon from above' (the Throne's isle's density, .001, below
-  14 m: a grazing ray crossed kilometres of it): .00025 below 10 m (`89a`, both pages). The owner's eye: whether any low mist is wanted.
+- [ ] **A pale band walls off the far lagoon** in 'The lagoon from above' (software GL, 800x500): a flat light surface past the far rim up to the
+  horizon. Thinning the morning mist fourfold (`89a`: .001 below 14 m to .00025 below 10 m, both pages) did not remove it, so the mist is not its cause;
+  **not traced**. Suspects: the water's shallow colour or the shore grid's lap over the 600 m of fore reef between the far rim and the map's edge
+  (the bed box ends there), or the sky's horizon haze at a 1.1 km eye. Check on the GPU with `?hfog=0` and from a lower eye first.

@@ -6,8 +6,8 @@
 //                 lagoon and the reef in the morning. The island is at the sea's level and its peak at ~190 m: the haze's falloff is the Throne's isle's
 //   R10           the rain occlusion map (no rain under a crown): 89zz-host-core.js, which counts the ground's texture units first
 //   R9            the sand already drinks the swash and the rain (WATER.wetGround on the sea's surface, 89w): no second wet layer
-/* the mist is thin: at .001 (the Throne's isle's density) a grazing ray across the lagoon crossed kilometres of it and the far side read as a white wall
-   (software GL, 'The lagoon from above', 2026-11-03); ?hfog=0 none of it */
+/* the mist is thin (the Throne's isle's is .001 below 14 m): a low morning mist on the water, not a fog bank; ?hfog=0 none of it. A pale band past the
+   lagoon's far rim is NOT this mist (thinning it fourfold left it: KNOWN_ISSUES.md) */
 const ATMOS_AIR={falloff:1/700,sun:.32,sky:.38,mist:{density:.00025,below:10,depth:8,noise:.7}};
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),seed:5303,viewH:()=>innerHeight,
  hour:()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock.hour:13});
