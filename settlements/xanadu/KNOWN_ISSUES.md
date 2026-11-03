@@ -25,6 +25,12 @@ Open items are `- [ ]` lines; build.py prints them.
       unchanged (every assert and counter the same; the first stats line, sampled while core/lod is still building
       chunks, read 89 / 989k on Xanadu and 9.536 M on Erewhon before and 88 / 888k and 9.532 M after, and the assert's
       own count is 88 both times; Xanadu's opening shot is pixel-identical). `--vendor-check`: all 19 identical.
+- [x] (2026-11-03) `--vendor-check` reported `69-mat-salvage.js` drifted from `../highlands/src` (Highlands took the
+      Ancients kit's on 2026-10-23). Read: this copy was only behind; upstream adds `patchOpening` (the owner, 2026-10-19:
+      an opening a later people filled with boards, sheet or plate), which only the Ancients builders Xanadu does not vendor
+      call. Re-vendored. `verify.py --assert` before and after on both pages: every assert the same; the camera's first
+      stats line moves between runs of the same page (Erewhon's 'before' page read 9.485 M and 9.511 M triangles on two runs),
+      as the 2026-10-13 entry saw. The pages wait for the all-builds rebuild: they were behind their sources before this.
 - [ ] Windows placed on a battered face sit on the base plane of the block, so on tall single blocks (the fortress tower, the strong room) the surround boards can be a few centimetres inside the lean; builders offset them by hand (`hw-.05`).
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-xanadu-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
 - [x] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed

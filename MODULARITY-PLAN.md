@@ -278,11 +278,14 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
 **With step 3 (catalog / Voth).** The symbols item: done in step 3 (3d39ba47).
 
 **With step 4 (the settlement chains).**
-- `useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js` (Jimjam's open item) before the chain stops
-  vendoring.
+- ~~`useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js`~~: done (it is in `50-registry.js`; checked 2026-11-03).
 - Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).
-- The open baseline rewrite from the Ancients re-vendor session (Iziz's `iziz.html`, Xanadu's `xanadu.html` and
-  `erewhon.html`, Reed Lake's two pages), once, here.
+- ~~The open baseline rewrite from the Ancients re-vendor session~~: done (the five pages' entries match the committed
+  pages; checked 2026-11-03).
+- The chain's re-vendors since that session, done 2026-11-03: Xanadu's `69-mat-salvage.js` and Reed Lake's `69-mat-salvage.js`,
+  `71-hl-mat.js` and `71b-hl-motif.js` from Highlands (upstream's `patchOpening`, paving and frieze materials, folk murals).
+  Their pages wait for the all-builds rebuild: they were already behind their sources (`core/water`, `core/tags`, the
+  library packs) before it. Iziz's seven biome copies (`--vendor-bio`): in progress.
 - Settlements that vendor a biome read it by path: Dalab (swlowlands), Shade (sedesert), and Iziz's and Ys's old
   hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
 
