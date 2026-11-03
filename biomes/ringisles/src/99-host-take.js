@@ -147,6 +147,9 @@ HOSTED=KHOST.take({build:'ringisles',title:'Krator biome — the Ring Sea isles'
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'fauna':{match:o=>{let q=o;while(q){if(q.userData&&q.userData.fauna)return true;q=q.parent;}return false;}},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
+ /* the foliage guards: the attach audit's limit raised to the share the borrowed kits' trees leave on this page (KNOWN_ISSUES.md, "The final rebuild":
+    the savanna's blooms and leaflets with no structure near them, the Rift's and swbay's to fix at their kits; this kit's own are held). It may only fall */
+ guards:{maxShare:.016},
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  setLightMode,biome:()=>window._biome,geyser:()=>window._geyser,

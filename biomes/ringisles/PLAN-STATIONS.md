@@ -127,3 +127,15 @@ shelf's islands). The geyser kit's passes do not run; the island's places the ba
 its map, and their checks are skipped (`STATION.skip`). **The plan's scale**: the bank's lagoon is 8-10 km across; this cut is 6.4 x 5.6 km inside the rim.
 **Not built** from the plan: the tide (`WATER.tide`: the core has it, the page's sea is a fixed level), the pass's current as a `flow`, the calm share of the
 wave field inside the rim, the wreck, the pearl beds, the ring shark (planned in `kits/fauna`), the outrigger fishing. **The look is the owner's to judge.**
+
+## For the owner (look decisions of the rebuild turn, each behind a switch)
+
+- **The ground on KGROUND's sampler** (`?kground=0` the old): hex tiling and the distance scale under every layer; the order and the masks unchanged.
+- **The far trees as impostors** (`?imp=0` the borrowed kits' blobs): the gain 2.2 is the Throne's, not set against this page's near crowns on a GPU.
+- **Flared limb joints** on the kit's own trees (`?flare=0`).
+- **Crowns held to their limbs** (`?hold=0`): the scrub thorn's plates now hug its branches (they were a flat umbrella partly in the air), the breadfruit's
+  leaves sit closer in. The thorn may read narrower: the plates could be widened by longer branches instead (a draw change: every tree after it moves).
+- **The dressing on the wood**: lianas hang from boughs, bromeliads sit in the bark (no switch: the old spots floated).
+- **Height fog and the lagoon's morning mist** (`?hfog=0`), **the wrack as one seaweed a pad** (it was the whole sheet of nine).
+- **The lagoon station** as a whole: its scale (a 6.4 x 5.6 km cut of the 8-10 km lagoon), the rim's surf on the true bed, the patch reefs' density, the
+  motu's forest (XA: the kit's rainforest on sand, which an atoll's islets would carry thinner), the ridge for the lee shore's wall.

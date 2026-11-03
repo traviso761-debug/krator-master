@@ -128,3 +128,16 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
   (a lathed bole) keeps the old spot.
 - [x] **Numeric defaults with `||`** (the port lint, 11): eight were defaults and are `x == null ? d : x`; three stay, `Z.xv / (Z.sav || 1)` and its
   kind, which guard a division, not a default.
+- [x] **This kit's crowns off their limbs** (the audit's `thornspray`, 230 of 409, and `breadleaf`, 9 of 10, on the first rebuilt page): the scrub thorn's
+  plates were drawn at a point between a twig tip and a random spot in the crown's disc, the breadfruit's leaves up to a third of the crown off a tip and
+  lifted. Each builder now keeps its own limbs' spans and holds each clump within a stem card's reach of the nearest (`BIO.snapSeg`, `BIO.holdTo`; 55's
+  `held`; `?hold=0` the old spots). The same draws.
+- [ ] **The attach audit's limit is raised to 1.6%** (`99-host-take.js`, `guards.maxShare`; the owner's rule for a turn that cannot fix all in its own kit):
+  on the first rebuilt page (software GL, before the two fixes above) 368 of 9,041 audited cards floated (4.07%; 24.0% before this turn): this kit's
+  thornspray and breadleaf (239), and the borrowed savanna trees' `leaflet` (79 of 204) and `bloom` (41 of 71), 25-45 m up on the lee with no structure near
+  them at all (the Rift's acacia, swbay's thorn and baobab, read in place, scaled .5-.8 by `BORROW`): theirs to fix at their kits, then lower the cap.
+- [ ] **Sixteen texture units on the ground** (`window._units`): fourteen library layers, the macro map and the water's wet sand. On a 16-unit GPU (the
+  Arc's ANGLE) `89zz` skips the sun's shadows, the rain's occlusion map and the ground's horizon (the flora keeps the horizon), as on the Throne's isle;
+  under SwiftShader (32) all three run, so a software verify is not the GPU's page. To take shadows on the Arc the ground must drop a layer (the damp
+  sand and the wet sand are near twins) or pack two into one map.
+- [ ] **`export-profile` under software GL**: "library textures still decoding after 180 s" on the first rebuilt page; not seen on a GPU run yet.

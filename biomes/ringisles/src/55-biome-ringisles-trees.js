@@ -83,6 +83,12 @@ const FLARE=typeof BIO.flareJoin==='function'&&!(typeof location!=='undefined'&&
 function limb(fam,S,bi,pts,lv,st,seg,pr){pts.forEach((p,k)=>{if(!p.col)p.col=barkCol(S,k,bi);});
  const P=FLARE&&pr!=null&&pts[0].r>.04?BIO.flareJoin(pts,{parentR:pr}).map((q,k)=>{if(!q.col)q.col=pts[Math.max(0,Math.min(pts.length-1,k-1))].col;return q;}):pts;
  st.trunk+=BIO.tube(fam,P,P[0].col,{seg:seg||(lv===2?6:4),cap:true});}
+// HOLD A CLUMP TO ITS WOOD (the attach audit, the final rebuild): a builder keeps its own spans (spansOf: the points of each limb it drew) and a clump
+// whose spot was jittered off them is brought within reach of the nearest (BIO.snapSeg, BIO.holdTo: the core's; no draws, so no other tree moves).
+// reach: a stem card's, .2 x its size + .3 m (the audit's limit is .25 x size + .5); ?hold=0 the old spots
+const HOLD=!(typeof location!=='undefined'&&/[?&]hold=0/.test(location.search));
+function spansOf(L,pts){for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];L.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],r0:a.r,r1:b.r,end:i===pts.length-2});}return L;}
+function held(L,x,y,z,size){if(!HOLD||!L.length)return[x,y,z];const S=BIO.snapSeg(L,[x,y,z]);return S?BIO.holdTo(S.p,[x,y,z],size*.2+.3):[x,y,z];}
 const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
 RINGISLES._h={treeGrow,dirOf,tip,along,clumpAt,frondAt,limb,barkCol,leafCol,fruitH,means};
@@ -93,21 +99,21 @@ const B=[];RINGISLES._B=B;RINGISLES._h.regTree=(T,S,r,h)=>BIO.register({name:S.n
 // top into near-level branches that run out to the rim; a flat, wide, layered umbrella of fine sprays over them (the top
 // plate widest and densest, one or two thinner plates under it), a little domed at the middle; the near ones a few pale
 // thorn twigs; each tree its own share of dry yellow-olive sprays (the dry season browning the crown unevenly)
-B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),dc=C(pick(PAL.thornDry)),dry=rr(.05,.4),tips=[];let top=T.y0;
+B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),dc=C(pick(PAL.thornDry)),dry=rr(.05,.4),tips=[],SG=[];let top=T.y0;
  const n=lv===2?ri(3,6):3,a0=rr(0,TAU);
  for(let s=0;s<n;s++){const a=a0+s/n*TAU+rr(-.35,.35),P=treeGrow({x:T.x+rr(-.12,.12),y:T.y0-.15,z:T.z+rr(-.12,.12)},dirOf(a,rr(.85,1.12)),H*rr(.55,.7),T.rb,T.rb*.55,lv===2?4:2,.04,.12);
   limb('bark0',S,0,P,lv,st,lv===2?5:3);const e=tip(P);
   /* the fork: two or three near-level branches out to the rim, and a twig fork off each near */
   for(let k=0,m=lv===2?ri(2,3):2;k<m;k++){const ba=a+(k-(m-1)/2)*rr(.6,.9),Lb=R*rr(.5,.8),Q=treeGrow(e,dirOf(ba,rr(.18,.45)),Lb,e.r*.8,.015,lv===2?3:2,-.06,.1);
-   limb('bark0',S,0,Q,lv,st,3,e.r);tips.push(tip(Q));top=Math.max(top,tip(Q).y);
-   if(lv===2){const c=along(Q,rr(.4,.6)),W=treeGrow(c,dirOf(ba+rr(-1.1,1.1),rr(.1,.4)),R*rr(.25,.4),c.r*.7,.01,2,-.03,.1);limb('bark0',S,0,W,lv,st,3,c.r);tips.push(tip(W));}}}
+   limb('bark0',S,0,Q,lv,st,3,e.r);spansOf(SG,Q);tips.push(tip(Q));top=Math.max(top,tip(Q).y);
+   if(lv===2){const c=along(Q,rr(.4,.6)),W=treeGrow(c,dirOf(ba+rr(-1.1,1.1),rr(.1,.4)),R*rr(.25,.4),c.r*.7,.01,2,-.03,.1);limb('bark0',S,0,W,lv,st,3,c.r);spansOf(SG,W);tips.push(tip(W));}}}
  /* a few pale thorn twigs, short and stiff, under the near ones' crown */
  if(lv===2)for(let k=0;k<6;k++){const p=pick(tips),q=treeGrow({x:p.x,y:p.y-.05,z:p.z},dirOf(rr(0,TAU),rr(-.5,.3)),rr(.25,.45),.012,.004,1,0,0);q.forEach(v=>v.col=C(0xc8c0a8));limb('bark0',S,0,q,lv,st,3);}
  const tiers=lv===2?ri(2,3):1,rim=Math.max(R,...tips.map(p=>Math.hypot(p.x-T.x,p.z-T.z)*1.05));
  for(let t=0;t<tiers;t++){const y=top+.1-t*H*.13,r=rim*(t===0?1:t===1?.72:.5);
   for(let k=0,m=lv===2?(t===0?ri(24,32):ri(8,12)):9;k<m;k++){const p=pick(tips),u=Math.sqrt(rng()),a=rr(0,TAU),d=r*u*.9;
    const x=mix(T.x+Math.cos(a)*d,p.x,.4),z=mix(T.z+Math.sin(a)*d,p.z,.4),col=vary(rng()<dry?dc:hc,.02,.08,.06);
-   clumpAt('thornspray',x,y+.22*(1-u)+rr(-.08,.12),z,r*rr(.32,.45)*(lv===2?1:1.6),.22,col,T.x,y,T.z,r,H*.15);st.clumps++;}}
+   const cy=y+.22*(1-u)+rr(-.08,.12),sz=r*rr(.32,.45)*(lv===2?1:1.6),hp=held(SG,x,cy,z,sz);clumpAt('thornspray',hp[0],hp[1],hp[2],sz,.22,col,T.x,y,T.z,r,H*.15);st.clumps++;}}
  regTree(T,S,rim+.4,top-T.y0+.6);};
 // 1 the CORKWOOD: a short swollen green-bronze trunk shedding papery flakes, three to five stubby twisted limbs up and out,
 // a thin crown of small trifoliate leaves (bare-ish in the dry season)
@@ -150,12 +156,12 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),tips
  if(lv===2)for(let b=0,nb=ri(0,3);b<nb;b++){const p=pick(tips);for(let k=0;k<ri(6,10);k++){const s=rr(.05,.07);BIO.put('fruit',[p.x+rr(-.25,.25),p.y-rr(.2,.7),p.z+rr(-.25,.25)],null,s,C(pick(PAL.grapeFruit)));st.fruit++;}}
  let rc=R*.5;for(const p of tips)rc=Math.max(rc,Math.hypot(p.x-T.x,p.z-T.z)+R*.5);regTree(T,S,rc,H+1);};
 // 5 the BREADFRUIT: a straight grey trunk to a broad dome of huge deeply lobed glossy leaves, the round green fruit among them
-B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));
- const tr=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.42,1.55)),H*.55,T.rb,T.rb*.6,lv===2?5:3,0,.04);limb('bark4',S,4,tr,lv,st,lv===2?7:4);
+B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),SG=[];
+ const tr=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.42,1.55)),H*.55,T.rb,T.rb*.6,lv===2?5:3,0,.04);limb('bark4',S,4,tr,lv,st,lv===2?7:4);spansOf(SG,tr);
  const tips=[tip(tr)];
- for(let k=0,n=lv===2?ri(5,7):3;k<n;k++){const a=k*GOLD+rr(-.2,.2),q=along(tr,rr(.45,.95)),P=treeGrow(q,dirOf(a,rr(.35,.75)),R*rr(.7,.95),q.r*.6,.06,lv===2?4:2,-.05,.08);limb('bark4',S,4,P,lv,st,4,q.r);tips.push(tip(P),along(P,.6));}
+ for(let k=0,n=lv===2?ri(5,7):3;k<n;k++){const a=k*GOLD+rr(-.2,.2),q=along(tr,rr(.45,.95)),P=treeGrow(q,dirOf(a,rr(.35,.75)),R*rr(.7,.95),q.r*.6,.06,lv===2?4:2,-.05,.08);limb('bark4',S,4,P,lv,st,4,q.r);spansOf(SG,P);tips.push(tip(P),along(P,.6));}
  const cy=T.y0+H*.72;
- for(let k=0,n=lv===2?ri(26,36):10;k<n;k++){const p=pick(tips),q=rr(0,TAU),d=rr(0,R*.35);clumpAt('breadleaf',p.x+Math.cos(q)*d,Math.max(p.y,cy-R*.3)+rr(0,R*.4),p.z+Math.sin(q)*d,R*rr(.4,.55)*(lv===2?1:1.5),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
+ for(let k=0,n=lv===2?ri(26,36):10;k<n;k++){const p=pick(tips),q=rr(0,TAU),d=rr(0,R*.35);const lx=p.x+Math.cos(q)*d,ly=Math.max(p.y,cy-R*.3)+rr(0,R*.4),lz=p.z+Math.sin(q)*d,sz=R*rr(.4,.55)*(lv===2?1:1.5),hp=held(SG,lx,ly,lz,sz);clumpAt('breadleaf',hp[0],hp[1],hp[2],sz,.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
  if(lv===2)for(let k=0,n=ri(4,10);k<n;k++){const p=pick(tips),s=rr(.13,.18);BIO.put('fruit',[p.x+rr(-1,1),p.y-rr(.2,.8),p.z+rr(-1,1)],null,s,C(pick(PAL.breadFruit)));st.fruit++;}
  regTree(T,S,R+.5,H+R*.3);};
 // 6 the BANANA: a clump of three to six pseudostems, each crowned with arching paddle leaves torn by the wind, one dead and
