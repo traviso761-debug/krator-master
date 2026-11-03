@@ -77,7 +77,10 @@ veins, seams, pools and grains are vertex colours until their sets arrive (`core
 
 `GEOLOGY.md` has the format, the rules, adoption and the Godot notes. In short:
 - **Two more kinds,** from the evaporite rings: **gypsum** (`node-gypsum-*`, a closed basin's rim: pale bedded crust, selenite
-  blades) and **rock salt** (`node-halite-*`, item `salt`: a pit cut in the pan's white crust, the blocks stacked). Fourteen in all.
+  blades) and **rock salt** (`node-halite-*`, item `salt`: a pit cut in the pan's white crust, the blocks stacked). Fourteen in all,
+then two from the geology's new rocks (2026-11-03, `REBAKE-PLAN.md` R3): **nickel** (`node-nickel-*`, item `nickel_ore`: a dark norite outcrop
+with brassy sulphide, at the crater's melt-sheet margin and on bare mantle) and **marble** (`node-marble-*`, item `marble`, a
+quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs.
 - **The geology** (`tools/scale-model/geology.py` -> `data/geology.json`): a province per scale-model cell (sedimentary,
   crystalline, volcanic, evaporite, rift; ruin ground as a flag) and one prospectivity byte per family per cell.
 - **The node field** (`45r-res-field.js`, `KRES.nodesIn(tile)`): one candidate per family per placement cell, by KRAND, kept

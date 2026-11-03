@@ -33,7 +33,9 @@ const flowerK=(x,z)=>smooth(.45,.66,fbm(x*.0048-5,z*.0048+2,3131,2));      // th
 
 // ---------------------------------------------------------------- small plants
 function card(x,y,z,s,sy,col,tilt){BIO.put('ucard',[x,y,z],qEuler(rr(-(tilt||.2),tilt||.2),rr(0,TAU),rr(-(tilt||.2),tilt||.2)),[s,sy==null?s:sy,s],col);}
-function tuft(item,x,y,z,h,w,col,c2){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col,c2?{c2}:null);}
+/* a tuft stands on its own ground (the final rebuild, KSEAT's feet check): a cluster's tufts lie up to 2.4 m from its centre, whose height they took, so on a slope
+   they floated or sank; one on a log or a ledge (more than 1.5 m over the ground under it) keeps the height it was given. Same draws: nothing moves in x or z */
+function tuft(item,x,y,z,h,w,col,c2){const g=Y(x,z);if(Math.abs(y-g)<1.5)y=g;BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col,c2?{c2}:null);}
 function groundMoss(x,y,z,r,set){BIO.put('mossmat',[x,y+.06,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),r,leafCol(set||PAL.moss,.95,.03));}
 function frondCrown(x,y,z,Rf,n,p0,p1,col,item){const a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.25,.25),L=Rf*rr(.8,1.1);BIO.put(item||'frond',[x,y,z],qEuler(rr(-.18,.18),-a,rr(p0,p1)),[L,L*rr(.85,1.05),L*rr(1.1,1.5)],bright(col,rr(.86,1.1)));}}

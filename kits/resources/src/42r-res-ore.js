@@ -43,6 +43,10 @@ const RES_ORE={
    rim, rock salt (halite) inside it; potash and alkali salts are the last-dry centre. Halite gives the same good as a salt
    pan (RES_FIELD salt): salt. */
 Object.assign(RES_ORE.kinds,{gypsum:{item:'gypsum',name:'gypsum',cls:'mineral',works:'mine'},halite:{item:'salt',name:'rock salt',cls:'mineral',works:'mine'}});
+/* the geology's new rocks (2026-11-03, kits/resources/REBAKE-PLAN.md R3): nickel at the crater's melt-sheet margin and on bare
+   mantle (Sudbury's nickel, copper and platinum come out together: one ore); marble where a pluton or a volcano cooked the
+   limestone, cut in a quarry (a mine works: the brick cities' white trim, LORE.md) */
+Object.assign(RES_ORE.kinds,{nickel:{item:'nickel_ore',name:'nickel',cls:'metal',works:'mine'},marble:{item:'marble',name:'marble',cls:'stone',works:'mine'}});
 function resNodeKey(kind,grade){return 'node-'+kind+'-'+grade;}
 function resWorksOf(rec){if(!rec)return null;if(rec.works&&RES_ORE.works[rec.works])return rec.works;const role=rec.tags&&rec.tags.role||rec.role;
  if(role&&RES_ORE.works[role])return role;for(const w in RES_ORE.works)if(RES_ORE.works[w].keys.includes(rec.key))return w;return null;}

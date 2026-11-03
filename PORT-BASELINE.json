@@ -217,8 +217,8 @@
    "sha256": "efe29beaef2ca820f5a6094a37b7e8140183e2564c4e46090bcf1cd5473cf92d"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1164402,
-   "sha256": "85c82d3f2fbc952a9d2288fe57e8ce5060ef02fcc4963a09eea93e9ec6a6dd46"
+   "bytes": 1178601,
+   "sha256": "673ebfaed70c8e454182e8ab877f6adae0b8c67ea79137cac7acb9534afb2607"
   },
   "biomes/throne/dist/throne-isle.html": {
    "bytes": 1208515,
@@ -248,9 +248,29 @@
    "bytes": 1184207,
    "sha256": "460d1b8fa5d776783a099a334691a35b8da23694aeeacad8d29f4dce8bdaa30c"
   },
+  "biomes/xanadu/dist/xanadu-cloud.html": {
+   "bytes": 8369116,
+   "sha256": "1809a7377897f43798278042af7cc6569c20d845b6d3e2d64d60e2b5fe49dbe5"
+  },
+  "biomes/xanadu/dist/xanadu-descent.html": {
+   "bytes": 7644287,
+   "sha256": "7dc70ed5f202d4a2c51fa73f18f4226f7e0bcc0068db64d4403c1784aa287498"
+  },
+  "biomes/xanadu/dist/xanadu-floor.html": {
+   "bytes": 12603636,
+   "sha256": "43f7188df05d73d44e8970ff83c027e958644c5d3d94a49a200f9a8313d5f9a1"
+  },
+  "biomes/xanadu/dist/xanadu-gills.html": {
+   "bytes": 7770038,
+   "sha256": "5705b00efd494806ee480af4eec5f8334068407149c9d5565ebefc805e1b89ab"
+  },
+  "biomes/xanadu/dist/xanadu-ranges.html": {
+   "bytes": 7657390,
+   "sha256": "8cf706c9f2576c9cc851398c187246fa2447442351f03336209558757e6297d0"
+  },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 6186195,
-   "sha256": "0c7f7131ac5f4099132caa2aec5d1225154d4fd2c0ab1f5a0a549bdcfe388b1d"
+   "bytes": 7654473,
+   "sha256": "70a584c371a6c6c44ef6895550322af8a3152da3828c09de022653e4f867adfe"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 184370,
@@ -489,8 +509,8 @@
    "sha256": "cf5c96c2c14c91cc6a99127488d6f410a689d68446b73d331b9d1798a56badd4"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1615891,
-   "sha256": "310908b1322cc64c34d43691b23c7251e2876dbbfdcb04f766a726c6c30bb690"
+   "bytes": 1680912,
+   "sha256": "a5a3a0d97dfe42c341b373f97d6bfb2ea0e2cfb46c781afa6316bed5ec18270b"
   },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1588821,
@@ -513,8 +533,8 @@
    "sha256": "a4a80fd4eec9827ec13b96c6182ac08c016a4e8595fe1db753ea2591dafeb3d7"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5251019,
-   "sha256": "2acbee0411ec27b87b15d66dbde4c2c9d414e29bada9bdc5e1abce3c6edc9465"
+   "bytes": 5187128,
+   "sha256": "c1b056912e66fa13b88b045843816ccc3119ac5cb667dcb939c4a57df0005e86"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4937437,
@@ -585,12 +605,12 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 5802152,
-   "sha256": "f189eec06fa06f3a30e95e643d56b3f49b07497af9275f0debfd2dede9c78194"
+   "bytes": 5913800,
+   "sha256": "4d51cbbce3dc170a486ef68ecf852d50f7d6df729d8b9dc7bb006fda229c27d1"
   },
   "settlements/isle-demo/dist/isle-site.html": {
-   "bytes": 1269445,
-   "sha256": "260621cfbeab8e2f0b5ecc079f8ba8f800f63ff6daeb955ea40235409b5d7033"
+   "bytes": 1319695,
+   "sha256": "725671395ace4cd55eedb86b68faaae2c75228a0374a117a32f4ddcea71fa878"
   },
   "settlements/iziz/dist/iziz-ixtest.html": {
    "bytes": 2102347,

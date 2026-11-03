@@ -37,7 +37,7 @@ const TEX_GROUND=BIO.canvasTex(2048,2048,(g,w,h)=>{const id=g.createImageData(w,
   // the cliffs and the mountains: rock, scree, a little snow on the high tops
   const rk=Math.max(smooth(.55,.8,up),smooth(.7,1.2,sl)*smooth(.1,.3,up));
   t.copy(ROCK).lerp(ROCK2,clamp(.5+n3*2.4,0,1)).lerp(ROCK3,smooth(.55,.7,fbm(wx*.011,wz*.004,9,2))).lerp(SCREE,smooth(.5,.3,sl)*smooth(.8,1,up)*.5);
-  c.lerp(t,rk);c.lerp(SNOW,smooth(760,860,hh+40*n3)*smooth(.9,.5,sl)*.85);
+  c.lerp(t,rk);c.lerp(SNOW,smooth(LAND.snowH,LAND.snowH+100,hh+40*n3)*smooth(.9,.5,sl)*.85);
   // the mist: moss on everything
   c.lerp(MOSS,mist*smooth(.9,.5,sl)*.55);
   // the shore and the river banks
@@ -50,48 +50,67 @@ const TEX_GROUND=BIO.canvasTex(2048,2048,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-// THE LIBRARY GROUND LAYERS (materials.json ground.shore, ground.pebble, ground.gravel, rock.marble; 2026-10-19): over the
-// painted ground, by weight per vertex (aLay: shore sand, shore pebbles, river gravel, marble): the lake shore's pale sand
-// (ground093c) with patches of pale rounded stones (rock_wall_11) among it, the river bed's dark cobbles (rock_wall_12),
-// and on the high crags grey marble (marble012), the relief the strata paint is multiplied into. Without the pack
-// (?mat=proc, or an open world) the ground is exactly the painted one.
+// THE GROUND ON KGROUND (core/terrain 43; BACKPORT.md's ground row, the final rebuild 2026-11-03): the library's four sets (materials.json ground.shore,
+// ground.pebble, ground.gravel, rock.marble; 2026-10-19) hex-tiled, scaled with distance and blended by height over the painted ground, in place of the
+// page's own two-tile mix. Each weight is a DOCUMENTED MASK of a vertex (the checklist's line: "ground layers driven by documented masks"):
+//   aGL.x  shore sand      the lake's beach band: LAND.sd within 6-70 m of the shore, less the pebble patches
+//   aGL.y  shore pebbles   the same band where a 1/80 m noise puts the pale stones
+//   aGL.z  river gravel    the river's bed and bars: the flow field over .55 (FIELD.flow; 89z moves it onto WATER.fieldAt's flow distance)
+//   aGL.w  marble          the high crags: upland over .6, and on the cliffs the hard beds of the strata (KSTRATA's hardness, below)
+//   aGM.x  exposed rock    BIO.ENV's slope band [.6, 1.2] (the strata's shader share)
+//   aGM.y  the wet band    the water's own shore (WATER.fieldAt, filled by 89z): 1 at the edge, gone by 40 m; it darkens the ground
+// Standard under KGROUND (roughness high, as dry ground is), so the rain's gloss and the puddles show; ?kground=0 for the old floor and its two-tile mix.
+const USE_KG=typeof KGROUND!=='undefined'&&XQ_ON('kground');
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('xanadu',n);
  const a=P('ground.shore'),b=P('ground.pebble'),c=P('ground.gravel'),d=P('rock.marble');if(!a||!b||!c||!d)return null;
  const T=x=>KMAT.textures(x,{aniso:8}).map;
  return{shore:T(a),shoreK:1/a.scale[0],peb:T(b),pebK:1/b.scale[0],grav:T(c),gravK:1/c.scale[0],marb:T(d),marbK:1/d.scale[0],marbM:Math.pow(d.tint&&d.tint.mean!=null?d.tint.mean:.7,2.2)};})();
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};if(GLAY){sh.uniforms.uLShore={value:GLAY.shore};sh.uniforms.uLPeb={value:GLAY.peb};sh.uniforms.uLGrav={value:GLAY.grav};sh.uniforms.uLMarb={value:GLAY.marb};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aLay;varying vec4 vLay;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vLay;'+(GLAY?'uniform sampler2D uLShore,uLPeb,uLGrav,uLMarb;':''))
+const OLDLAY=USE_KG?null:GLAY;
+const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};if(GLAY)sh.uniforms.uLMarb={value:GLAY.marb};if(OLDLAY){sh.uniforms.uLShore={value:GLAY.shore};sh.uniforms.uLPeb={value:GLAY.peb};sh.uniforms.uLGrav={value:GLAY.grav};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute vec2 aGM;varying vec2 vGM;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGM=aGM;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying vec2 vGM;'+(GLAY?'uniform sampler2D uLMarb;':'')+(OLDLAY?'uniform sampler2D uLShore,uLPeb,uLGrav;':''))
   .replace('#include <map_fragment>',['#include <map_fragment>',
    '{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
-   // the library's shore sand and pebbles and the river's cobbles over the painted ground (a custom sampler is not decoded
-   // from sRGB: pow 2.2 by hand), each on two tiles, one turned, blended by a slow wave so the repeat shows no grid
-   GLAY?['{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));',
+   // ?kground=0: the page's old mix of the shore sand, pebbles and the river's cobbles (each on two tiles, one turned, blended by a slow wave)
+   OLDLAY?['{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));',
     'vec3 ts=mix(pow(texture2D(uLShore,p*'+GLAY.shoreK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLShore,q*'+(GLAY.shoreK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);',
     'vec3 tp=mix(pow(texture2D(uLPeb,p*'+GLAY.pebK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLPeb,q*'+(GLAY.pebK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);',
     'vec3 tg=mix(pow(texture2D(uLGrav,p*'+GLAY.gravK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLGrav,q*'+(GLAY.gravK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);',
-    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vLay.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tp*1.3,0.8),vLay.y);',
-    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tg*1.3,0.8),vLay.z);}'].join('\n'):'',
-   // the strata: bands by height, wandering a little, in the petrified palette (the map is sRGB-decoded, so these are linear)
+    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tp*1.3,0.8),vGL.y);',
+    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tg*1.3,0.8),vGL.z);}'].join('\n'):'',
+   '/*KGROUND*/',
+   // the strata: bands by height, wandering a little, in the petrified palette (the map is sRGB-decoded, so these are linear); the kit's own GLSL bands,
+   // kept over KSTRATA's shade (no texture: the page is at the 16-unit limit with the rain cover, the horizon and the shadow map)
    ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+6.0*sin(vGWP.x*0.004+vGWP.z*0.003)+2.0*sin(vGWP.x*0.031);',
    ' float b1=0.5+0.5*sin(y*0.21), b2=smoothstep(0.6,0.95,sin(y*0.07+1.3)), b3=smoothstep(0.75,1.0,sin(y*0.13+vGWP.x*0.001));',
    ' vec3 st=mix(vec3(0.30,0.24,0.20),vec3(0.42,0.26,0.14),b1); st=mix(st,vec3(0.24,0.20,0.28),b2*0.8); st=mix(st,vec3(0.55,0.49,0.38),b3*0.7);',
    ' st*=0.85+0.3*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
    // the marble on the high crags: its veining is the relief of the strata's colour (faces by their height, flats by the ground plane)
-   GLAY?' {vec3 mb=pow(texture2D(uLMarb,mix(vGWP.xz,vec2(vGWP.x+vGWP.z*0.7,vGWP.y),smoothstep(0.3,0.7,steep))*'+GLAY.marbK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.marbM.toFixed(4)+';st*=mix(vec3(1.0),mb,vLay.w);}':'',
-   ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.30+0.25*texture2D(uDetail,vGWP.xz*0.004).r),smoothstep(0.45,0.8,steep));}'].join('\n'));};
+   GLAY?' {vec3 mb=pow(texture2D(uLMarb,mix(vGWP.xz,vec2(vGWP.x+vGWP.z*0.7,vGWP.y),smoothstep(0.3,0.7,steep))*'+GLAY.marbK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.marbM.toFixed(4)+';st*=mix(vec3(1.0),mb,vGL.w);}':'',
+   ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.30+0.25*texture2D(uDetail,vGWP.xz*0.004).r),max(smoothstep(0.45,0.8,steep),vGM.x*0.6));',
+   ' diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vGM.y*0.8);}'].join('\n'));};
+if(USE_KG&&GLAY)KGROUND.hook(MAT_GROUND,{key:'xanadu-ground',at:'/*KGROUND*/',layers:[KGROUND.layer('xanadu','ground.shore',{w:'vGL.x',amt:.8,gain:1.3,tint:'diffuse'}),
+ KGROUND.layer('xanadu','ground.pebble',{w:'vGL.y',amt:.8,gain:1.3,tint:'diffuse'}),
+ KGROUND.layer('xanadu','ground.gravel',{w:'vGL.z',amt:.75,gain:1.3,tint:'diffuse'})]});
+/* THE BEDDED ROCK AS DATA (core/terrain 35, KSTRATA; BACKPORT.md xanadu's row "strata"): the cliffs' petrified-wood beds as a stack the placement reads
+   (the checklist's line: "strata and scour feed placement"): a hard bed stands as a ledge the crag plants root on (XANADU's crag zone, 87-host-ledges.js),
+   a soft one sheds talus at the cliff's foot (KRELIEF.talus there). The look stays the kit's GLSL bands above, which run on the same 0.21 / 0.07 / 0.13
+   wavelengths as these beds' thickness. ?strata=0: no ledges, no talus */
+const STRATA=(typeof KSTRATA!=='undefined'&&XQ_ON('strata'))?KSTRATA.create({seed:2311,formations:[{recipe:'canyon',tint:[1.05,.86,.72]}],range:[-60,1400],dip:[.6,.8,.004],warp:[6,2]}):null;
 (function(){const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,NXg=700,NZg=660,g=new THREE.PlaneGeometry(SX,SZ,NXg,NZg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
- const p=g.attributes.position,lay=new Float32Array(p.count*4);
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));
-  // the library layers' weights (the painted ground's own fields): shore sand and pebbles on the lake shore, cobbles in the river's bed, marble on the high crags
-  const sd=FC.at(FC.a.sd,x,z),shore=smooth(70,6,sd)*smooth(-8,4,sd),peb=smooth(.42,.62,fbm(x*.012+4,z*.012-1,617,2));
+ const p=g.attributes.position,lay=new Float32Array(p.count*4),gm=new Float32Array(p.count*2);
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),h=terrainH(x,z);p.setY(i,h);
+  // the documented masks above
+  const sd=FC.at(FC.a.sd,x,z),shore=smooth(70,6,sd)*smooth(-8,4,sd),peb=smooth(.42,.62,fbm(x*.012+4,z*.012-1,617,2)),sl=FC.at(FC.a.slope,x,z);
   lay[i*4]=shore*(1-peb);lay[i*4+1]=shore*peb;lay[i*4+2]=smooth(.55,.95,FC.at(FC.a.flow,x,z));
-  lay[i*4+3]=smooth(.6,.88,FC.at(FC.a.up,x,z));}
- g.setAttribute('aLay',new THREE.BufferAttribute(lay,4));
+  lay[i*4+3]=Math.max(smooth(.6,.88,FC.at(FC.a.up,x,z)),STRATA&&sl>.6?smooth(.55,.8,STRATA.hardnessAt(x,h,z))*smooth(.6,1,sl):0);
+  gm[i*2]=smooth(.6,1.2,sl);}
+ g.setAttribute('aGL',new THREE.BufferAttribute(lay,4));g.setAttribute('aGM',new THREE.BufferAttribute(gm,2));
  // PlaneGeometry's uv runs v up the plane; the canvas's y runs down it (z south): match them
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++){uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Vale of Xanadu';scene.add(m);})();
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel=LAND.label;scene.add(m);window._groundMesh=m;
+ GROUND_SEAT=KSEAT.tris(p.array,g.index.array,{id:'ground',cls:'ground'});})();   /* the drawn ground: what drawnH and the probe's contact sweep read */
 
 // ---------------------------------------------------------------- the lake
 const WATER_SHALLOW=new THREE.Color().setHSL(XANADU_LAKE.hue,.50,.55),WATER_MID=new THREE.Color().setHSL(XANADU_LAKE.hue+.02,.58,.34),WATER_DEEP=new THREE.Color().setHSL(XANADU_LAKE.hue+.05,.60,.15),WATER_PALE=new THREE.Color().setHSL(XANADU_LAKE.hue-.02,.45,.70);

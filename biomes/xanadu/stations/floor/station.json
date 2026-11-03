@@ -1,0 +1,11 @@
+{
+ "note": "Station 5, the Rift floor (PLAN-STATIONS.md; the owner, 2026-11-03: native Rift flora and tall versions of Xanadu flora competing for dominance). kin: the Rift's species read in place (its species and tree fragments, before this kit, in their own registry; 87-host-floor.js grows them by BIO.kin on RIFT.make/grow), with the pack families its tree builders draw with (all but its ground and the tower's). drop: the Vale's fountain and the dome ruin are not on this ground.",
+ "kin": {
+  "rift": [
+   ["src/50-biome-rift-species.js", "src/55-biome-rift-trees.js"],
+   "RIFT",
+   ["anemone", "bark0", "bark1", "bark2", "bark3", "bark4", "beard", "bigfrond", "bloom", "broad", "broadcloud", "candle", "clubmoss", "croton", "cycfrond", "dragon", "fan", "frill", "frond", "fungus", "grass", "gshead", "hang", "hang1", "leaflet", "lobeleaf", "moss", "needle", "reed", "samphire", "spike", "spray", "under", "wood"]
+  ]
+ },
+ "drop": ["89x-host-fountain.js", "85-host-dome.js"]
+}
