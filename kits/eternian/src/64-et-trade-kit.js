@@ -16,6 +16,9 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
  const H=n*sh,F={G:G,H:H,top:G+H,w:o.w,d:o.d,R:o.R,sh:sh};
  const mask=o.mask===false?false:(o.mask||'terracotta');
  if(plan==='hex'){const R=o.R,ap=R*ET_HEX_AP,fw=R;F.ap=ap;
+  /* the stair's face (two storeys or more): the back (4) unless furniture stands within 1.6 m of it, then the first free of 3, 5, 0,
+     2 (never the door's, 1); a piece still on that face within 1.75 m is set 1.75 m in, off the flight (its band 0.3 to 1.3 m in) */
+  const busy=k=>(o.furn||[]).some(f=>f[1]===k&&f[2]<1.6),fr0=[4,3,5,0,2].find(k=>!busy(k)),fk=n>1?(fr0==null?4:fr0):-1;
   prism('stone',etHex(R+.3),0,G,P('stoneD'));prism('paving',etHex(R-.1),G-.02,G+.03,P('paving'));
   for(let s=0;s<n;s++){const y=G+s*sh,m=s?upMk:mk;
    etHexFaces(ap,(k)=>{const op=[];
@@ -27,14 +30,17 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
      storey along the back face (core/engine svStair), each over the last, the floor above left open over its band */
   svFloor(etHex(R-.1),G+.03);
   if(n>1){const w=.9,zo=-(ap-.3),zi=zo+w+.1,hx=R/2+R/2*(.3/ap)-.17,run=2*hx-.5;
+   /* drawn in a frame turned so the stair's face (fk, below) is -z: a turn of a sixth keeps the hexagon on itself */
+   const ph=PI/6+fk*PI/3;
+   W(0,0,0,Math.atan2(-Math.cos(ph),-Math.sin(ph)),()=>{
    for(let s=1;s<n;s++){const y0=G+(s-1)*sh,y=G+s*sh;svStair(-run/2,zo+(w/2+.05),y0,y,PI/2,{w,run,col:P('timberL'),scol:P('timber'),rail:'left'});
-    const fl=svClip(etHex(R-.2),[0,zi],[0,1]);prism('timber',fl,y-.2,y,P('timber'));svFloor(fl,y);}}
+    const fl=svClip(etHex(R-.2),[0,zi],[0,1]);prism('timber',fl,y-.2,y,P('timber'));svFloor(fl,y);}});}
   if(o.shop){box('timber',0,G,ap-.6,fw-1.2,1.0,.45,P('timber'));door(0,G,ap,0,1.4);}
   const rm=o.roofMk||'tile',ry=G+H;
   if(o.roof==='ogee')etOgee(R+.6,ry,R*.9,{mk:rm,seg:6,a0:0,col:etKeyCol(rm)});
   else{etHexHip(R,ry,R*.62,{mk:rm,ov:.6});
    cone('verdigris',0,ry+R*.6,0,.25,1.2,P('verdigris'),6);}
-  for(const f of (o.furn||[])){const s=f[3]||0,ph=PI/6+f[1]*PI/3,r=ap-f[2];
+  for(const f of (o.furn||[])){const s=f[3]||0,ph=PI/6+f[1]*PI/3,r=ap-(f[1]===fk?Math.max(f[2],1.75):f[2]);
    FURNISH(f[0],r*Math.cos(ph),G+s*sh,r*Math.sin(ph),Math.atan2(-Math.cos(ph),-Math.sin(ph)));}}
  else{const W=o.w,D=o.d;
   box('stone',0,0,0,W+.3,G,D+.3,P('stoneD'));box('paving',0,G-.02,0,W-.5,.05,D-.5,P('paving'));
@@ -48,10 +54,11 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
    if(D>5)side.push({x:0,w:1.0,h:1.2,y:1.1,dark:o.poor,shut:!o.steel,steel:!!o.steel});
    etWalls(W,D,y,sh,m,col(m),{front:front,back:back,left:side,right:o.rightDoor&&s===0?[{x:0,w:1.0,h:2.2,door:true,mask:false}]:side},{frame:fr(m),steps:o.steps});
    }
-  /* the stair: a straight flight a storey up the left wall from the back toward the front, each over the last (core/engine
+  /* the stair: a straight flight a storey up the left wall toward the front, each over the last (core/engine
      svStairCase: the old flight's top met no floor, the floor above stopping short of its line), the floor above open over it */
   if(n>1){const ys=[];for(let s=0;s<n;s++)ys.push(G+s*sh);
-   const SC=svStairCase({x0:-W/2+.3,x1:-W/2+1.4,z0:-D/2+.35,z1:D/2-.35},ys,{w:.95,col:P('timberL'),scol:P('timber'),rail:'right'});
+   /* the zone starts 4.4 m back from the front wall (or at the back wall): the back corner is left to the furniture */
+   const SC=svStairCase({x0:-W/2+.3,x1:-W/2+1.35,z0:Math.max(-D/2+.35,D/2-.35-4.4),z1:D/2-.35},ys,{w:.95,col:P('timberL'),scol:P('timber'),rail:'right'});
    for(let s=1;s<n;s++)svWell('timber',0,G+s*sh-.2,0,W-.6,.2,D-.6,P('timber'),SC.wells[s-1]);}
   if(o.shop){box('timber',-W*.12,G,D/2-.6,Math.min(3.4,W*.42),1.0,.45,P('timber'));box('lime',-W*.12,G+2.75,D/2+.3,Math.min(4.2,W*.5),.12,.7,P('limeShade'));}
   const rm=o.roofMk||'tile',ry=G+H,rf=o.roof||'gable';
