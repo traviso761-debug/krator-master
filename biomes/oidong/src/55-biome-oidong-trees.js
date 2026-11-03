@@ -88,7 +88,11 @@ function bole(T,S,top,rAt,o){o=o||{};const vs=o.vs||6,ti=T.seed%3,rings=[],ph=rr
   (R,ang)=>R.r*(1+fa*Math.cos(nf*ang+R.yy*tw+ph))*(1+bt*Math.exp(-R.yy/bh)*Math.max(0,Math.cos(nb*ang+ph2))),
   (R,ang)=>1-(fa>0?.25*(.5-.5*Math.cos(nf*ang+R.yy*tw+ph)):0));
  return{x:pe[0],y:T.y0+top,z:pe[1],r:re};}
-function limb(S,pts,st,o){o=o||{};st.limb+=BIO.tube(o.fam||fam(S),pts,o.col||barkCol(S,1),{seg:o.seg||(pts[0].r>.5?7:5),cap:true});}
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03, every rebuild turn): the root sunk into the parent and swollen to a
+// collar, so a limb leaves its parent as wood does, not as a pipe pushed into a pipe; 6 sides at least on a limb over .15 m. No random numbers: every tree
+// keeps its form. A page without the fragment (Longsong, the open world) draws the plain tube as before; o.join false for a stem that rises from the ground
+function limb(S,pts,st,o){o=o||{};const j=o.join!==false&&BIO.flareJoin&&pts[0].r>.04,P=j?BIO.flareJoin(pts,{parentR:o.parentR}):pts,sg=o.seg||(pts[0].r>.5?7:5);
+ st.limb+=BIO.tube(o.fam||fam(S),P,o.col||barkCol(S,1),{seg:j&&pts[0].r>.15?Math.max(6,sg):sg,cap:true});}
 function limbOk(pts,pad){for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+(pad||1.5),pts[i].r+(pad||1.5)))return false;return true;}
 
 // ---------------------------------------------------------------- keep-clear between trees
@@ -398,7 +402,7 @@ B[17]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=vary(pick(S
  const run=H*rr(.55,.8),hz=rr(.5,1.1),sx=-Math.sin(a0),sz=Math.cos(a0),pts=[];let reach=2,top=T.y0+1;
  for(let i=0;i<=8;i++){const t=i/8,d=run*t,w=Math.sin(t*TAU*.9+ph)*run*.16,px=T.x+Math.cos(a0)*d+sx*w,pz=T.z+Math.sin(a0)*d+sz*w;
   pts.push({x:px,y:(i?Y(px,pz)+.25:T.y0)+hz*smooth(0,.25,t)+.2*Math.sin(t*9+ph),z:pz,r:rb*(1-.4*t)});}
- limb(S,pts,st,{seg:lv===2?8:5});
+ limb(S,pts,st,{seg:lv===2?8:5,join:false});
  const burl=C(0xa08a6a),nS=lv===2?ri(2,3):2,ats=[1,.48,.76];
  for(let k=0;k<nS;k++){const b=along(pts,ats[k]),h=H*(k?rr(.6,.85):1),la=a0+rr(-1,1),sp=[];
   for(let i=0;i<=6;i++){const t=i/6,w=.12*h*Math.sin(t*Math.PI*1.4+ph+k);sp.push({x:b.x+Math.cos(la)*w,y:b.y+h*t,z:b.z+Math.sin(la)*w,r:mix(b.r*.8,.05,Math.pow(t,.7))});}
@@ -442,7 +446,7 @@ B[19]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,la=rr(0,TAU),l
  for(let s=0;s<nS;s++){const ph=php+s/nS*TAU,dir=s%2?1:-1,pts=[];
   for(let i=0;i<=10;i++){const u=i/10,c=ax(u),r=rb*(1.25-.5*u+.35*Math.exp(-u*7)),a=ph+dir*tw*u;
    pts.push({x:c.x+Math.cos(a)*r,y:c.y-(i?0:.4),z:c.z+Math.sin(a)*r,r:rb*(.15-.04*u)*(1+.5*Math.exp(-u*7))});}
-  limb(S,pts,st,{seg:lv===2?6:4});}
+  limb(S,pts,st,{seg:lv===2?6:4,join:false});}
  const F=ax(1),grn=[S.leaf[0],S.leaf[2]],blu=[S.leaf[1],S.leaf[3],0x98b4d8],vio=[0xb89ad8,0xc4a8e0,0xa890d0],cups=[];let reach=R*.6;
  const nL=lv===2?ri(5,7):4;
  for(let k=0;k<nL;k++){const a=la+k/nL*TAU+rr(-.3,.3)+(k%2?.0:.2),L=R*rr(.55,1.0),e=[F.x+Math.cos(a)*L,F.y+H*rr(.18,.45),F.z+Math.sin(a)*L];
@@ -492,12 +496,12 @@ function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
     if(j&&zones(px,pz).cliff>.3)continue;
     const T=mkT(P.sp,px,Y(px,pz),pz,s,j?s.range(.55,.9):1);add(T,P);if(!first){first=T;T.saplings=[];}}
    if(first)for(let k=0,m=s.int(2,4);k<m;k++){const aa=s.range(0,TAU),d=s.range(2.5,7);first.saplings.push([x+Math.cos(aa)*d,z+Math.sin(aa)*d,s.range(.8,1.8)]);}}});
- NEW.forEach(T=>{TREES.push(T);const i=TREES.length-1;if(T.lv===0){buildFar(T,i,st);st.fars++;}else{reseed(KRAND.hash(550019,T.sp,T.seed));B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ NEW.forEach(T=>{TREES.push(T);const i=TREES.length-1;if(T.lv===0){FAR(T,i);st.fars++;}else{reseed(KRAND.hash(550019,T.sp,T.seed));B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  st.newTrees=NEW.length;}
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 // far.blobs: icosahedral blobs on a pole (sedesert's recipe, as shighlands)
-let ICO=null;
+let ICO=null,FAR=(T,i)=>{};   /* FAR: a far tree's draw, set by buildTrees (the impostor or the blobs) */
 function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
  let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
@@ -538,7 +542,17 @@ OIDONG.buildTrees=function(R,q){
     TREES.push(T);hadd({x:x,z:z,r:(opt.water?T.crownR*.9:T.rb*1.4)+1});n++;},gopt);
   return n;}
  OIDONG.PASSES.forEach(pass);
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; nwlowlands' lines; on when the page lists it, OIDONG.IMPOSTORS false or ?diet=0 turns them off):
+ // a far tree is one quad showing its species baked from 8 x 8 directions, in place of the blobs; every species on one atlas, one item. Each species bakes
+ // one of its own heroes, built again in place after the bake with its registration muted (its own stream then, so no tree here moves)
+ const IMPON=OIDONG.IMPOSTORS==null?typeof BIO.impostor==='function':!!OIDONG.IMPOSTORS,IMPS=[],ISET=IMPON?BIO.impostorSet('oidong.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{if(!S.far)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp&&T.lv===1);if(!T0)return;
+  const T1=Object.assign({},T0),st1=newStats();
+  const rec=BIO.impostor('oidong.'+S.key,()=>{const R0=BIO.host.register;BIO.host.register=()=>{};try{reseed(KRAND.hash(550019,sp,T1.seed));B[sp](Object.assign({},T1),st1,2);}finally{BIO.host.register=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(rec)IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ FAR=(T,i)=>{const I=IMPS[T.sp];if(I){BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return;}buildFar(T,i,st);};
+ TREES.forEach((T,i)=>{if(T.lv===0){FAR(T,i);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  placeNew(R,q,st,LOD);   /* the diversity pass (2026-10-26): its own KRAND streams, after everything above, so nothing above moves */
  OIDONG.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,pads:st.pads,blooms:st.blooms,pods:st.pods,
