@@ -356,6 +356,12 @@ saying what fixed it.
       city now places 612 registered buildings (was 599) at 5.2 M tris. The page renders with a clean error
       panel; `verify.py --assert` was not run after the re-vendor.
       **Round 4:** `verify.py --assert` now passes on the round-4 build (see NOTES round 4).
+- [x] (2026-11-03) **The city reads the hyperjungle biome in place.** The twelve copies in `targets/city/86-bio-*` (the
+      biome kit's and `core/biome`'s fragments, closure-wrapped by `bio_wrap`) are gone: the build wraps the upstream as it
+      reads it (MODULARITY-PLAN.md step 6). `iziz.html`, both texture sidecars and the manifest byte-identical to the build
+      before; `--vendor-bio` is gone and `--vendor-check` says the biome is read in place. A fix to the biome or `core/biome`
+      now reaches the city at its next build; `bio_wrap` fails loudly (`expected one ...`) if an upstream change breaks the
+      wrap's anchors. The entries below that speak of copies and re-vendoring are history.
 - [x] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
       clobber the city's globals (`var BIO`, `BIO.setScene`). Upstream (biomes/hyperjungle) has since added
       fauna (58, `opt.fauna`); porting it means re-applying the closure wrap to the new fragments.

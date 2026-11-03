@@ -55,8 +55,6 @@
   "settlements/highlands -> kits/ancients",
   "settlements/highlands -> kits/iziz-vernacular",
   "settlements/highlands -> settlements/iziz",
-  "settlements/iziz -> biomes/hyperjungle",
-  "settlements/iziz -> core/biome",
   "settlements/iziz -> kits/ancients",
   "settlements/jimjam -> core/atmos",
   "settlements/jimjam -> core/sockets",

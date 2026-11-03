@@ -419,6 +419,11 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
   needs: done, verified (`settlements/iziz/KNOWN_ISSUES.md`). The Ancients chain is quiet: step 4 can start.
 - Settlements that vendor a biome read it by path: Dalab (swlowlands), Shade (sedesert), and Iziz's and Ys's old
   hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
+  **Iziz done 2026-11-03:** its twelve copies were the biome closure-wrapped by `bio_wrap` and matched upstream, so the
+  city wraps the biome as it reads it and the copies are gone (`iziz.html`, sidecars and manifest byte-identical; Iziz's
+  two vendored pairs off the allow-list). **Dalab, Shade and Ys left:** their copies drift from `core/biome` and their
+  biomes (Dalab: the core's four and swlowlands' five; Shade: nine; Ys: its nwbay copies among others), so reading in
+  place changes their pages: each is a re-vendor to read diff by diff, with `verify.py --assert` and a screenshot.
 
 **With step 5 (backwards edges).** Nothing parked beyond the plan's own list.
 

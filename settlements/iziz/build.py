@@ -25,9 +25,8 @@ Also enforces the rules that make subagent work safe on this kit:
   4. MANIFEST. Writes build-manifest.json: a sha1 per fragment, so the planner
      can see which fragments a subagent actually touched.
 
-Usage:  python build.py [--no-checks] [--assert-origin] [--vendor-check] [--vendor-bio]
+Usage:  python build.py [--no-checks] [--assert-origin] [--vendor-check]
 
-  --vendor-bio     rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src (bio_wrap)
 
   --assert-origin  fail unless the build is byte-identical to .origin.html
                    (the single-file kit this repo was split out of). Use it
@@ -420,6 +419,9 @@ def build_one(target, do_checks, assert_origin):
             kf[f] = os.path.join(ROOT, rel)
         src.update(kf)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    if target == 'city':   # the hyperjungle biome and core/biome, read in place and closure-wrapped here (bio_wrap)
+        for f in BIO_VENDORED:
+            tgt.setdefault('86-bio-%s.js' % f, bio_paths(f)[0])
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
@@ -430,7 +432,11 @@ def build_one(target, do_checks, assert_origin):
     order = sorted(paths)
 
     bodies = {}
+    bio = {'86-bio-%s.js' % f: f for f in BIO_VENDORED} if target == 'city' else {}
     for f in order:
+        if f in bio and paths[f] == bio_paths(bio[f])[0]:
+            bodies[f] = bio_wrap(bio[f], bio_read(paths[f]))
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
     bodies[MATLIB_PACK] = matlib_pack(SIDE)
@@ -517,13 +523,14 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '36-core-walker', '40-core-place',   # 36: BIO.walkLoop, the jungle fauna's (2026-11-03)
                 '50-biome-hyperjungle-species', '55-biome-hyperjungle-trees', '58-biome-hyperjungle-fauna',
                 '60-biome-hyperjungle-floor', '65-biome-hyperjungle-dress',
-                '70-biome-hyperjungle']   # ../biomes/hyperjungle/src -> targets/city/86-bio-*.js, through bio_wrap()
+                '70-biome-hyperjungle']   # core/biome and biomes/hyperjungle/src, read in place as 86-bio-*.js through bio_wrap()
 
 # THE CLOSURE WRAP. The city vendors the hyperjungle biome, but the biome's core declares generic globals (rng, clamp,
 # TAU, a const BIO) that would clobber the city's own. bio_wrap() turns an upstream fragment into the city's copy:
 # the core head keeps its helpers in a closure and exports them as BIO.fn, every other fragment runs in a closure
 # that pulls them from BIO.fn, BIO and HYPERJUNGLE become `var`, and BIO.init takes its scene later (BIO.setScene).
-# `--vendor-check` compares bio_wrap(upstream) with the copy; `--vendor-bio` rewrites the copies from upstream.
+# The city reads them in place and wraps them as it builds (2026-11-03, MODULARITY-PLAN.md step 6; until then
+# targets/city/86-bio-*.js held the wrapped copies, which `--vendor-bio` rewrote and `--vendor-check` compared).
 BIO_FN = 'TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm'
 BIO_FNQ = BIO_FN + ',qEuler,qFacing,qUp'
 
@@ -569,11 +576,6 @@ def vendor_manifest():
     for f in VENDORED:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
-    for f in BIO_VENDORED:
-        p = os.path.join(TARGETS, 'city', '86-bio-%s.js' % f)
-        if os.path.exists(p):
-            with open(p, 'rb') as fh:
-                out['targets/city/86-bio-%s.js' % f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out
@@ -595,33 +597,14 @@ def vendor_check():
             drift.append(f)
     print('vendor-check: %s' % ('all %d vendored fragments identical to ../ancients/src' % len(VENDORED)
                                  if not drift else 'DRIFT in ' + ', '.join(drift) + ' - re-vendor or note in KNOWN_ISSUES.md'))
-    bup = os.path.join(ROOT, 'biomes', 'hyperjungle', 'src')
-    if not os.path.isdir(bup):
-        print('vendor-check: ../biomes/hyperjungle/src not found; biome check skipped')
-        return
-    bdrift = [f for f in BIO_VENDORED if not os.path.exists(bio_paths(f)[1])
-              or bio_read(bio_paths(f)[1]) != bio_wrap(f, bio_read(bio_paths(f)[0]))]
-    print('vendor-check: %s' % ('all %d biome fragments match ../biomes/hyperjungle/src (closure-wrapped by bio_wrap)'
-                                 % len(BIO_VENDORED) if not bdrift else 'BIOME DRIFT in ' + ', '.join(bdrift)
-                                 + ' - run build.py --vendor-bio, or note in KNOWN_ISSUES.md'))
-
-
-def vendor_bio():
-    """Rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src through bio_wrap()."""
-    for f in BIO_VENDORED:
-        up, dst = bio_paths(f)
-        s = bio_wrap(f, bio_read(up))   # before the copy is opened: a wrap that fails leaves the copy as it was
-        with open(dst, 'w', encoding='utf-8', newline='') as fh:
-            fh.write(s)
-    print('vendor-bio: wrote %d biome fragments' % len(BIO_VENDORED))
+    missing = [bio_paths(f)[0] for f in BIO_VENDORED if not os.path.isfile(bio_paths(f)[0])]
+    print('vendor-check: the hyperjungle biome (%d fragments of core/biome and biomes/hyperjungle) is read in place, none '
+          'vendored%s' % (len(BIO_VENDORED), ('; MISSING ' + ', '.join(missing)) if missing else ''))
 
 
 def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
-        return
-    if '--vendor-bio' in sys.argv:
-        vendor_bio()
         return
     if not KIT and not BSRC.LISTING:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
         vendor_manifest()
@@ -669,8 +652,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-    BSRC.report(vendored=[] if KIT else [os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in VENDORED] +
-                         [bio_paths(f)[0] for f in BIO_VENDORED])   # --list-sources: every target's files (and the vendored upstreams), then exit
+    BSRC.report(vendored=[] if KIT else [os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in VENDORED])   # --list-sources: every target's files (and the vendored upstreams), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(KIT['dir'] if KIT else HERE, 'KNOWN_ISSUES.md')
