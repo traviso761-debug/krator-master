@@ -1,16 +1,24 @@
 // ================================================================= CORE/SHADOW — the host: the sun casts  [web]
-// KSHADOW.attach(o) turns on the renderer's shadow map and makes the page's sun (a DirectionalLight) cast through one box that follows
+// KSHADOW.attach(o) readies the renderer's shadow map and, once switched on, makes the page's sun (a DirectionalLight) cast through one box that follows
 // the view (KSHADOW.fit, 10-core-shadow.js). It runs in the scene's onBeforeRender (chained, never replaced), after the sky has set the
 // sun for the frame (core/atmos sets its position from the sun's direction just before it renders) and before three renders the shadow
 // maps, so it works whatever order a page's ticks run in. The sun's direction is read from its position and target each frame.
 //
-//   KSHADOW.attach({ renderer, scene, camera, sun, size, min, max, k, step, reach, ground(x, z), bias, normalBias, radius, soft })
+// OFF BY DEFAULT (the owner, 2026-11-03: toggleable, off, in every build): attach sets everything up and turns nothing on. While off the
+// renderer's shadow map is disabled and the sun casts nothing, so three runs no shadow pass and compiles no shadow variant (r128 declares the
+// map's sampler in a lit material only when the shadow map is on and a light casts): the page costs what it cost before it took KSHADOW.
+// The switch is the mirror's pattern (core/water ext/58, WATER.mirrorSwitch): a button on the host's panel ('shadows: off'), ?shadow=1 asks at
+// load, H.set(true|false) from the page; turning it either way recompiles the lit materials once.
+//
+//   KSHADOW.attach({ renderer, scene, camera, sun, on, ui, button, size, min, max, k, step, reach, ground(x, z), bias, normalBias, radius, soft })
+//     on            start on (default false; true when the page's URL carries ?shadow=1)
+//     ui            the panel for the button (default KHOST.ui, looked up once the page has run when it is not there yet); button: false none
 //     size          the map's texels a side (default 4096)
 //     min, max, k, step   the box's half side for the eye's height above the ground (KSHADOW.radiusFor; default 90 to 600 m)
 //     reach         how far toward the sun casters are caught (default 1200 m: towers out of the box still throw into it)
 //     ground(x,z)   the ground height, for the eye's height and the focus (default 0)
 //     bias, normalBias, radius   the shadow's (default -0.0004, 0.6, 1.5); soft: false for hard PCF
-//   -> the handle: { update(), cast(root, o), state, off(), on() }
+//   -> the handle: { update(), cast(root, o), state, set(on), enabled(), off(), on() }
 //     cast(root, { cast, receive })   flags every lit mesh under root (default both): a transparent, unlit, no-depth or shader material
 //                                     neither casts nor receives (the baked shells and the impostors draw their own light)
 //   The focus is where the view ray meets the ground (the host's orbit target when it has one), pulled toward the eye so the box
@@ -18,12 +26,13 @@
 KSHADOW.attach = function (o) {
   const T = THREE, r = o.renderer, scene = o.scene, cam = o.camera, sun = o.sun, gnd = o.ground || (() => 0);
   const size = o.size == null ? 4096 : o.size, reach = o.reach == null ? 1200 : o.reach;
-  r.shadowMap.enabled = true; r.shadowMap.type = o.soft === false ? T.BasicShadowMap : T.PCFShadowMap;
-  sun.castShadow = true; sun.shadow.mapSize.set(size, size);
+  const asked = typeof location !== 'undefined' && /[?&]shadow=1(&|$)/.test(location.search);
+  let enabled = o.on == null ? asked : !!o.on, lastR = -1;
+  r.shadowMap.enabled = enabled; r.shadowMap.type = o.soft === false ? T.BasicShadowMap : T.PCFShadowMap;
+  sun.castShadow = enabled; sun.shadow.mapSize.set(size, size);
   sun.shadow.bias = o.bias == null ? -0.0004 : o.bias; sun.shadow.normalBias = o.normalBias == null ? 0.6 : o.normalBias; sun.shadow.radius = o.radius == null ? 1.5 : o.radius;
   if (!sun.target.parent) scene.add(sun.target);
-  const H = { state: { on: true, radius: 0, texel: 0, focus: [0, 0, 0], frames: 0 } }, v = new T.Vector3(), d = new T.Vector3();
-  let enabled = true, lastR = -1;
+  const H = { state: { on: enabled, radius: 0, texel: 0, focus: [0, 0, 0], frames: 0 } }, v = new T.Vector3(), d = new T.Vector3();
   H.update = function () {
     const lit = enabled && sun.intensity > 0.02;
     sun.castShadow = lit; H.state.on = lit; if (!lit) return;
@@ -56,8 +65,27 @@ KSHADOW.attach = function (o) {
     });
     return root;
   };
-  H.off = function () { enabled = false; sun.castShadow = false; };
-  H.on = function () { enabled = true; };
+  /* the switch: the renderer's map and the sun together, then every lit material once (its shadow define and sampler come and go) */
+  let btn = null;
+  const label = () => { if (btn) btn.textContent = 'shadows: ' + (enabled ? 'on' : 'off'); };
+  H.set = function (on) {
+    on = !!on; if (on === enabled) return H;
+    enabled = on; r.shadowMap.enabled = on; sun.castShadow = on && sun.intensity > 0.02; H.state.on = sun.castShadow;
+    scene.traverse(m => { if (!m.material) return; (Array.isArray(m.material) ? m.material : [m.material]).forEach(M => { if (M && !M.isShaderMaterial) M.needsUpdate = true; }); });
+    label(); return H;
+  };
+  H.enabled = () => enabled;
+  H.off = function () { return H.set(false); };
+  H.on = function () { return H.set(true); };
+  const addBtn = ui => {
+    if (!ui || btn || typeof document === 'undefined') return;
+    btn = document.createElement('button'); btn.id = 'shadow-btn'; btn.title = 'the sun\'s shadows: a second pass over every caster when on';
+    btn.onclick = () => H.set(!enabled); label(); ui.appendChild(btn);
+  };
+  if (o.button !== false) {
+    const ui = () => o.ui || (typeof KHOST !== 'undefined' && KHOST ? KHOST.ui : null);
+    if (ui()) addBtn(ui()); else if (typeof setTimeout !== 'undefined') setTimeout(() => addBtn(ui()), 0);
+  }
   KSHADOW.host = H;
   return H;
 };

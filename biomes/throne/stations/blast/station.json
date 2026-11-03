@@ -11,5 +11,6 @@
   "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js"
- ]
+ ],
+ "hazard": true
 }

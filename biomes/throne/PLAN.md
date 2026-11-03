@@ -26,7 +26,7 @@ fragments no station overrides, so every page takes it the same way; each piece 
 | The row's air: thin air on the caldera (`air.thin`, y0 at the rim), the ash load on the ash desert (`ATMOS.airLoad`), acid rain on the vents (`ATMOS.acidRain`, the marsh's water fizzing) | the stations' `89-host-sky`, `89-host-atmos`, `89w` | `?airload=0`, `?acid=0` |
 | The foliage guards at the 1% limit: crowns held on their drawn wood (`heldOn`, `BIO.holdTo`), the great ruff's throat on a stalk, the raft hairs `free`, the cap hangers `onLeaf` and inside half the cap | `50`, `55`, `60` | none |
 | Limb joints (`BIO.flareJoin`, `core/biome/31j-core-joint.js`; the owner, 2026-11-03): a root sunk into the parent and a collar, on `limb()`, the ash pine's whorls and the great ruff's limbs and forks (station 1: 19.28 to 19.89 M triangles) | `55` | none |
-| The sun's shadows (`core/shadow`, `KSHADOW`; the owner, 2026-11-03): one view-following box (90-600 m), every placed mesh casting and receiving; not on the isle and the vents, whose grounds read all sixteen texture units (three r128 adds the map to every lit material: `window._shadow`); on station 1 they cost about +42 ms a frame on the Arc (+30-38%: `KNOWN_ISSUES.md`), which it cannot afford; the owner decides | `89zz` | `?shadow=0` |
+| The sun's shadows (`core/shadow`, `KSHADOW`; the owner, 2026-11-03): one view-following box (90-600 m), every placed mesh casting and receiving; not on the isle and the vents, whose grounds read all sixteen texture units (three r128 adds the map to every lit material: `window._shadow`); on station 1 they cost about +42 ms a frame on the Arc (+30-38%: `KNOWN_ISSUES.md`), which it cannot afford: so they are **off by default** on every page (the owner, 2026-11-03), the panel's `shadows` button or `?shadow=1` turns them on | `89zz` | the `shadows` button, `?shadow=1` (`?shadow=0` no switch) |
 | Card cells: `check_cells.py` finds 0 faults; the pack writer keeps `cell` (TODO.md's trap) | `build.py` | none |
 
 **Dropped or owed, and why:**
@@ -34,8 +34,13 @@ fragments no station overrides, so every page takes it the same way; each piece 
   is at its triangle ceiling. Owed: a far ring per station from the scale model's heights round its px (`KNOWN_ISSUES.md`, "The far field").
 - **The row's terrain**: `tibasalt` strata on the caldera's wall, pit chains and lava steps, rilles on the kipuka, KLAVA on the vents, kipuka, tube and
   caldera. Each moves a page's ground and every placement on it; the flow model (`46`) is the kit's own mosaic history. Owed for the owner's look pass.
-- **The row's ground kinds** (`clast` on the caldera's walls, `sand` on the ash desert, `polygon` on the glacier) and the water kinds (`ice` on the glacier,
-  `brine` in the vents' pools): not taken this turn.
+- **The row's ground kinds: taken 2026-11-03** (KGROUND's layer kinds, procedural, no texture unit; each after the page's own layers at a
+  `/*KGROUND*/` marker; `?kinds=0` none): `clast` on the caldera's walls (the old flows' basalt, scoria and ash beds as blocks in an ash matrix,
+  on the cliff layer's weight), `sand` on the ash desert's dunes (ripples across the plume's wind; no glints: they read `cameraPosition`, which
+  r128 does not give a Lambert ground), `polygon` on the glacier's outwash bars and tundra (frost polygons with a rim of sorted stones).
+- **The row's water kinds**: the glacier's lake takes core/water's `proglacial` look (ext/54, `WATER.withLook`, `lookDraw`), recorded for the export;
+  it is not frozen (`WATER.ice` would freeze the lake its icebergs float in: the owner's call). `brine` in the vents' pools is not taken: the
+  pools are graded by heat, bluer the hotter, and brine's ramp (red-brown to turquoise) would replace that look (the owner's call).
 - **Life**: seasons, KFIRE and mounds on the savanna (its burn is its own, and moving onto KFIRE re-lights the fires); `BIO.fung` for the caps, the cap tubes
   and the bladders (`TODO.md`: shapes move and want the owner's eye).
 - **Exchanges** (`EXCHANGES.md`): ringisles' strand pandanus on the isle's beaches is not read in place yet (ringisles is pair 8 and reads this kit).
@@ -46,7 +51,8 @@ against the model (`stations/caldera`, `KNOWN_ISSUES.md`); station 11 is `tube_h
 **For readers** (ringisles and the Godthrone read this kit in place; keys and indices of `THRONE.SPECIES` kept, 33 species): the crowns of the Ranj tree,
 the ruff tree, the ash pine (its mid tier), the great ruff, the lehua (and its pompoms), the hyper-mangrove and the elfin tree are held on their wood;
 the great ruff draws a stalk under each ruff; the far trees are impostors on a page that lists `34-core-impostor.js` (else the blobs as before); the snare
-raft's hairs are a new item `rafthair` (its plant record names it); the drips and the snare moss under a cap hang inside half its radius. A reader's page moves
+raft's hairs are a new item `rafthair` (its plant record names it); a new plant `charscrub` (burnt scrub, items `charred0`-`8`) at the end of
+`THRONE.PLANTS`, and a bark bucket `silver`; the drips and the snare moss under a cap hang inside half its radius. A reader's page moves
 when its turn rebuilds it.
 
 ## New stations (the owner, 2026-11-02; `biomes/STATIONS-SURVEY.md`)
@@ -87,6 +93,6 @@ cushion plants. **The cold belt:** its gill-coral trees among conifers grow 1.5 
 alone). Textures: `ground.snow011`, `ground.snow015`, `ice.glacier`, `ice.clear`.
 
 **Built 2026-11-02** (each forked from the caldera's fragments by way of the penitentes page; every check, its negatives and the universal set pass in the browser on the GPU):
-- **12, the delta:** the pali 280 m, the lava as one channel ribbon on core/atmos's lava (the tube's channel mode) down the flank, over the lip and across the bench to the entry; the laze as steam points (white, leaning south-east); three littoral cones; 1,374 static pumice rafts; the old flank planted by the kit's shoulder passes (2,422 trees). Owed: the laze as a core/hazard record (R11; the page registers it as a volume only), the lava fall's own spray, KLAVA's frozen flows on the bench (the bench is the host's own surface), ground.sand.black on the coves (the paint stands in).
-- **13, the blast:** BLAST.at, the field (a fan NNE from the scar, 3.9 km on its axis); 39k logs laid along it (BLAST.logs, the check holds each to the field), 7.7k stumps, 17k seared snags standing, 3.7k pumice blocks; the living forest past the seared edge is the kit's cold-belt pass (THRONE.veto keeps it out of the blast). Owed: wood.silver and card.charred (the logs are the charred and charcoal barks), pioneers beyond lichen (fireweed-like cousins), the hazard keys.
+- **12, the delta:** the pali 280 m, the lava as one channel ribbon on core/atmos's lava (the tube's channel mode) down the flank, over the lip and across the bench to the entry; the laze as steam points (white, leaning south-east); three littoral cones; 1,374 static pumice rafts; the old flank planted by the kit's shoulder passes (2,422 trees). The hazards (core/hazard, 2026-11-03): the lava channel in 200 m pieces (`KHAZ.GROUND.lavaFlow`, each its own height band: the fall over the pali drops 280 m in one), the laze (acid), the entry (heat: spatter and steam blasts), the bench (a fall: it slumps into the sea), the pali (a fall); a check reads each point's kind, with a negative. The coves' black sand (`ground.sand.black`) and the littoral cones' cinder, in the two layer slots the caldera's ground left unweighted here. Owed: the lava fall's own spray, KLAVA's frozen flows on the bench (the bench is the host's own surface).
+- **13, the blast:** BLAST.at, the field (a fan NNE from the scar, 3.9 km on its axis); 39k logs laid along it (BLAST.logs, the check holds each to the field), 7.7k stumps, 17k seared snags standing, 3.7k pumice blocks; the living forest past the seared edge is the kit's cold-belt pass (THRONE.veto keeps it out of the blast). 2026-11-03: the silver logs and snags in their own bucket on `wood.silver` (`bark.silver`), the burnt scrub (a new plant, `charscrub`, on `card.charred`) in the removal and seared zones; the hazards: the scar (a fall: rockfall), the pumice plain (heat, low: still cooling), every seared snag (crush: it falls in the wind), with a check and a negative. Owed: pioneers beyond lichen (fireweed-like cousins).
 - **14, the penitentes:** the east flank in benches (treads of snow, 62 m rock steps); 54k blades near the cameras (on the whole map they were 27 M triangles), boulders on the steps; the tundra at the map's foot. The cold belt stays on the glacier page.
