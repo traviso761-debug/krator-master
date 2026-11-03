@@ -261,9 +261,8 @@
 - [ ] **An unwatched town is a little happier than watched** (Valapo 86 unwatched, 80 watched, over twelve days): its people
       never find a temple shut or full and walk ten minutes at each change of activity; contemplation and sleep are the gap.
 - [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
-      its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town falls from calm to
-      treason in about three days once its stores are eaten (the vital rule is steep), and a strike holds workplaces that
-      may already be idle.
+      its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town reaches treason about a
+      week after its stores are eaten (`smooth` 5), and a strike holds workplaces that may already be idle.
 - [ ] **One wage for every trade** (6 shells an hour) and prices fixed after the calibration: a stone tool costs 704 shells in
       Kautoa (its four stones and the quarry's slow hours), garments 131. The trades' wages and the station's spending band
       (M1's second part) come next.

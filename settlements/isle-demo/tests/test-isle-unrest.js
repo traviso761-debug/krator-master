@@ -1,7 +1,7 @@
 // node settlements/isle-demo/tests/test-isle-unrest.js [calm days] [famine days] — unrest on the isles (src/47u, core/simulation
 // 77-sim-6-unrest.js; core/simulation/PLAN-MONEY.md M6) without a browser. Plans and declares both towns, Kautoa watched,
 // Valapo not. First `calm days` (4) as they are: every town calm (its pool over 50), and ISLE.unrestChecks. Then a blight
-// on Valapo (its food works held, its warehouses' food spoiled, the canoes carrying it no food: the households eat their stores down) for `famine days` (10): its people go
+// on Valapo (its food works held, its warehouses' food spoiled, the canoes carrying it no food: the households eat their stores down) for `famine days` (14): its people go
 // hungry at the abstract level (core/simulation 77-sim-6-needs.js SIM.needsAbstract), its pool falls, it grumbles and
 // demands food of the polity, and Kautoa ships what it holds over its keep. Each check with a negative. Build first.
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -14,7 +14,7 @@ const ok = (name, pass, detail) => { if (!pass) bad++; console.log((pass ? 'PASS
 const cp = x => JSON.parse(JSON.stringify(x));
 const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0]; ok('negative: ' + what + ' is caught', r && !r.ok, r && r.detail); };
 ISLE.initWorld();
-const calm = +(process.argv[2] || 4), famine = +(process.argv[3] || 10);
+const calm = +(process.argv[2] || 4), famine = +(process.argv[3] || 14);
 const plans = ISLE.TOWNS.map(town => { const S0 = SITE_INIT.towns[town], G = ISLE.siteGround(S0, ISLE.PROG[town]);
   return { G, R: ISLE.city(town, { site: S0, ground: G, tags: KTAGS.create({ build: 'isle-demo:' + town }), dims: k => ISLE_DIMS[k] || null, vdims: k => ISLE_VDIMS[k] || null }) }; });
 const S = ISLE.simDeclare(plans);
@@ -44,7 +44,9 @@ const stages = ev.filter(e => e.kind === 'stage' && e.key === 'all').map(e => e.
 ok('blighted, Valapo grows restless and demands food of the polity (' + stages.join(' > ') + '; level ' + Math.round(V.level.all) + '; ' + D.length + ' demands for ' + [...new Set(D.flatMap(x => x.goods))].join(', ') + ')',
   stages.indexOf('demand') >= 0 && D.length > 0 && D.every(x => x.goods.every(g => foods.indexOf(g) >= 0)), JSON.stringify(V.stage));
 const G = D.filter(x => x.answer === 'granted'), sent = {}; D.forEach(x => Object.keys(x.sent || {}).forEach(k => { sent[k] = (sent[k] || 0) + x.sent[k]; }));
-ok('the polity answers: food shipped from the towns and villages with spare (' + JSON.stringify(sent) + '; ' + D.map(x => x.answer + ' ' + x.came + ' of ' + x.asked).join(', ') + ')', G.length > 0 && Object.keys(sent).length > 0, D.map(x => x.answer).join(', '));
+ok('the polity answers: food shipped from the towns and villages with spare, each demand for days of the town\'s normal use, however long the famine (' + JSON.stringify(sent) + '; ' + D.map(x => x.answer + ' ' + x.came + ' of ' + x.asked).join(', ') + ')', G.length > 0 && Object.keys(sent).length > 0 && D.every(x => x.asked >= 1000), D.map(x => x.answer).join(', '));
+const dOf = k => { const e = ev.find(x => x.kind === 'stage' && x.key === 'all' && x.to === k); return e ? e.m / 1440 : null; }, gD = dOf('grumble'), tD = dOf('treason');
+ok('treason comes about a week into the hunger, not in days (grumbling on day ' + gD + ', treason on day ' + tD + ')', gD != null && (tD == null || tD - gD >= 5), tD + ' - ' + gD);
 ok('Kautoa stays calm (' + Math.round(k1.report.towns.kautoa.level.all) + ')', k1.report.towns.kautoa.stage.all === 'calm', k1.report.towns.kautoa.stage.all);
 { const B = cp(k1); const x = B.report.towns.valapo.demands[0]; if (x) { x.answer = null; x.m = k0.minute; } caught('a demand left unanswered for days', ISLE.unrestChecks(k0, B), /answered within a day/); }
 console.log('--- events: ' + ev.map(e => (e.m / 1440).toFixed(1) + ' ' + e.kind + ' ' + e.key + (e.to ? ' ' + e.to : '') + (e.answer ? ' ' + e.answer : '') + (e.goods ? ' ' + e.goods.join('+') : '')).join('; ').slice(0, 1500));

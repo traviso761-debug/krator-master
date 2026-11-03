@@ -40,15 +40,15 @@ its household's last meals were worth), and an unwatched town holds steady near 
 against 80 watched over twelve days: fewer and shorter trips). Second, **hunger and thirst are vital** (`needs.vital`):
 past 60 they cap happiness, to nothing at a full meter; a weighted mean had let a starving town sit at 70, content on its
 other needs, and never riot. Then **unrest** (77-sim-6-unrest.js; the isles' `47u`): each midnight a town's pool,
-collective and by class, eased over three days into a level; under 50 the town grumbles (the watch's arrest odds x0.7),
+collective and by class, eased into a level (over five days on the isles: the owner, a week to treason); under 50 the town grumbles (the watch's arrest odds x0.7),
 under 40 it demands of the polity (one demand a town at a time, for every class in demand: a shipment of what it lacked
 that the others can spare, else a new ruler, refused while there is no political system), under 30 a refused demand
 brings strikes (half the strikers' workplaces held a day), under 20 treason (an event). A granted demand cheers the
 asking people, a refused one angers them; a stage eases back five points over its line. **Proved on the isles** (tests/
 test-isle-unrest.js): as they are, both towns calm (Kautoa 88, Valapo 86); a blight on Valapo (its food works held, its
-warehouses spoiled, no food by canoe) leaves its households to eat their stores down: on day 9 it grumbles, day 10
-demands rice and coconut, the first answer comes short (6,163 of 17,130: refused), strikes, treason on day 12, and the
-next demand is granted (Kautoa ships 13,385 rice and 5,689 coconut); the books hold throughout and Kautoa stays calm.
+warehouses spoiled, no food by canoe) leaves its households to eat their stores down: on day 10 it grumbles, day 11
+demands rice and coconut (granted: Kautoa ships what it can spare), strikes on day 13, reaches treason on day 16, and
+goes on demanding every five days; the books hold throughout and Kautoa stays calm.
 **Waiting on the political system** (section 3, question 2): what treason does (a revolution, a faction thrown out or
 invited back), a new ruler granted, the demands' answers by a faction's strength and will rather than by its stock.
 

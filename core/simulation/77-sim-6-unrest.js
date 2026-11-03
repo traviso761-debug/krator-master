@@ -25,7 +25,7 @@
 // to the faction's authorities, for a SHIPMENT of the goods the town fell short of yesterday (the economy's `short`: of the
 // goods it lacked, the `goods` the faction could spare most of), else for A NEW RULER. Answered the next midnight: a
 // shipment from the faction's other settlements, each sending what it holds over `keep` days of its own use, up to `days`
-// days of the asker's normal use (the most it used in a day over the last week; its short draws count every retry), booked
+// days of the asker's normal use (the most it used in a day over the last month; its short draws count every retry), booked
 // exported by the sender and imported by the asker, so the books hold; granted when `grant` of what was asked came (two
 // days of the five). A new
 // ruler is the faction's `ruler` hook's to grant (none yet: refused, there is no political system: PLAN-MONEY.md section
@@ -67,10 +67,10 @@
   function yesterday(s){ var E=SIM.econ(s); return (E && E.day[Math.floor(SIM.minute()/1440)-1]) || {}; }
   /* a town's use of a good a day (its stock over its days of it) */
   function useOf(s, g){ return SIM.withEcon(s, function(){ var r=SIM.economyDays(g), st=SIM.stockOf(g); return r>0 && r<Infinity ? st/r : 0; }); }
-  /* a town's normal use of g a day: the most it used in a day over the last week (a town in want uses nothing; its short
+  /* a town's normal use of g a day: the most it used in a day over the last month (a town in want uses nothing; its short
      draws count every retry, so they measure the want's persistence, not its size) */
   function normalUse(s, g){ var E=SIM.econ(s), d=Math.floor(SIM.minute()/1440), m=0; if(!E) return 0;
-    for(var k=d-7;k<d;k++){ var D=E.day[k]; if(D && D.used && D.used[g]>m) m=D.used[g]; } return Math.max(m, useOf(s, g)); }
+    for(var k=d-30;k<d;k++){ var D=E.day[k]; if(D && D.used && D.used[g]>m) m=D.used[g]; } return Math.max(m, useOf(s, g)); }
   /* what the faction's other settlements could spare of g (over `keep` days of their own use) */
   function spareOf(s, g){ var S=SIM.R.settlement[s], C=SIM.UNREST.cfg.demand, n=0;
     Object.keys(SIM.R.settlement).forEach(function(f){ var E=SIM.econ(f); if(f===s || SIM.R.settlement[f].faction!==S.faction || !E || !E.goods[g]) return;

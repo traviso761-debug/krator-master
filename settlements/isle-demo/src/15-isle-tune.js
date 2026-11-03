@@ -364,8 +364,10 @@ ISLE.TUNE.sim = {
      `grumble.arrest`), under 40 it demands of the polity a shipment of what it lacked (the other towns and villages send what
      they hold over `keep` days of their own use, up to `days` days of the asker's) or else a new ruler (refused: no political
      system yet), under 30 a refused demand brings strikes (`share` of the strikers' workplaces held `days`), under 20
-     treason (an event: the revolution waits for the political system). A stage eases back `hyst` over its line. Placeholders */
-  unrest: { smooth: 3, hyst: 5, stages: { grumble: 50, demand: 40, strike: 30, treason: 20 }, grumble: { arrest: 0.7 },
+     treason (an event: the revolution waits for the political system). A stage eases back `hyst` over its line. `smooth` 5
+     (the owner, 2026-11-03: a week to treason): a town whose food runs out grumbles in about two days and reaches treason
+     about six days later. Placeholders */
+  unrest: { smooth: 5, hyst: 5, stages: { grumble: 50, demand: 40, strike: 30, treason: 20 }, grumble: { arrest: 0.7 },
     demand: { goods: 2, days: 5, keep: 2, every: 5, grant: 0.4, granted: { n: -10, days: 10 }, refused: { n: 5, days: 10 } }, strike: { after: 5, share: 0.5, days: 1 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
