@@ -17,3 +17,6 @@ const FAMILIES=[
 /* the geology bake's evaporite rings (2026-10-26): gypsum at a closed basin's rim, rock salt inside it */
 FAMILIES.push({name:'Gypsum (a salt basin rim)',keys:['node-gypsum-low','node-gypsum-medium','node-gypsum-high']},
  {name:'Rock salt (halite)',keys:['node-halite-low','node-halite-medium','node-halite-high']});
+/* the new rocks' kinds (2026-11-03, REBAKE-PLAN.md R3) */
+FAMILIES.push({name:'Nickel ore (the melt sheet\'s margin)',keys:['node-nickel-low','node-nickel-medium','node-nickel-high']},
+ {name:'Marble (a quarry)',keys:['node-marble-low','node-marble-medium','node-marble-high']});

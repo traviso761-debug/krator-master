@@ -45,11 +45,12 @@ WORLD = 20261026            # the node field's world seed (KRAND.child(WORLD, 'r
 # per family: the placement cell (m) and the jitter inset (a share of the cell kept clear at each side: a minimum spacing
 # of 2 x inset x cell with no neighbour reads). Rarer kinds take larger cells.
 FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000, 'rare-earth': 6000, 'coal': 3000,
-         'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500}
+         'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500,
+         'nickel': 5000, 'marble': 3000}   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
-ROCK_FAMILIES = ['limestone', 'impactite', 'nickel', 'ultramafic', 'tuff', 'marble', 'skarn', 'glass']
+ROCK_FAMILIES = ['limestone', 'impactite', 'ultramafic', 'tuff', 'skarn', 'glass']   # nickel and marble are node kinds since R3
 FAMILIES = NODE_FAMILIES + LEDGER_FAMILIES + ROCK_FAMILIES
 PROVINCES = ['water', 'sedimentary', 'crystalline', 'volcanic', 'evaporite', 'rift', 'carbonate',
              'impact', 'basalt', 'granite', 'quartzite', 'ultramafic']
@@ -582,6 +583,8 @@ def main(argv):
         f[k] = f[k] * hard
     P = {}
     for k in NODE_FAMILIES + LEDGER_FAMILIES:
+        if k not in f:              # nickel and marble come with the rocks, below
+            continue
         a = np.clip(np.round(f[k]), 0, 255).astype(np.uint8)
         if k not in ('water',):
             a[water] = 0
@@ -594,6 +597,37 @@ def main(argv):
     RL, prov = rocks(prov, mask, P, regions, [(v['px'][0], v['px'][1], v.get('radius', 3)) for v in D['vents']],
                      VW, VH, OW, su, sv, CELL_KM)
     P.update(RL)
+    # ---- the ores on the new rocks (REBAKE-PLAN.md R3; the owner, 2026-11-03): the metals, coal, oil and stone again, from
+    # the final provinces and layers. Native copper in the flood basalt (Keweenaw); tin on granite, not on every crystalline
+    # cell; skarn copper and iron at the limestone's contacts; iron, gold and silver in the walls' breccia (the Witwatersrand
+    # survived inside Vredefort); nickel at the melt sheet's margin (Sudbury) and on bare mantle; marble where it was cooked
+    PI = PROVINCES.index
+    V, Rf, S = prov == PI('volcanic'), prov == PI('rift'), prov == PI('sedimentary')
+    Gn, Gr, Im, Qz, Ba, Um = (prov == PI(k) for k in ('crystalline', 'granite', 'impact', 'quartzite', 'basalt', 'ultramafic'))
+    Cl = Gn | Gr | Im                                   # what 4.23's one crystalline province held
+    margin = S & ndimage.binary_dilation(Cl | V, iterations=cells(12, CELL_KM))
+    sk = P['skarn'].astype(float)
+    g = {}
+    g['copper'] = 210 * V + 120 * Rf + 50 * Cl + 10 * (S | Qz) + 120 * Ba + 0.6 * sk
+    g['silver'] = 150 * V + 110 * (Gn | Gr) + 80 * (Rf | Im)
+    g['gold'] = 140 * V + 110 * (Gn | Gr) + 90 * (Rf | Im)
+    g['tin'] = 200 * Gr + 60 * Gn + 40 * Im + 50 * Rf + 20 * V
+    g['rare-earth'] = 160 * Gr + 100 * Gn + 60 * Im + 190 * Rf + 30 * V
+    g['iron'] = 160 * Gn + 120 * (Gr | Im) + 140 * margin + 60 * (V | Ba) + 40 * (S | Qz) + 70 * Rf + 0.7 * sk
+    coal = 230 * S * low * (0.25 + 0.75 * wet) * flatness
+    g['coal'] = coal
+    g['oil'] = 0.9 * ndimage.uniform_filter(coal, cells(44, CELL_KM)) * (0.5 + 0.5 * (margin | (S & (relief > 200) & (relief < 1200)))) + 110 * Rf * low
+    g['nickel'] = np.maximum(P['nickel'].astype(float), 180.0 * Um)
+    g['marble'] = P['marble'].astype(float)
+    hardp = Cl | V | Rf | Ba | Qz | Um
+    g['stone'] = np.maximum.reduce([60 + 195 * np.clip(relief / 900, 0, 1) * (hardp | (S & (relief > 200))),
+                                    150.0 * (Ba | Gr), 120.0 * (prov == PI('carbonate'))])   # columnar basalt, granite, ashlar
+    hard = ~(prov == PI('evaporite'))
+    for k in g:
+        if k not in ('stone', 'marble'):
+            g[k] = g[k] * hard
+        a = np.clip(np.round(g[k] * land), 0, 255).astype(np.uint8)
+        P[k] = a
     prov_b = prov | np.where(ruin & land, RUIN_BIT, 0).astype(np.uint8)
 
     # ---- the lode nodes of the placer families: the node field itself (45r-res-field.js), on the coarse mask

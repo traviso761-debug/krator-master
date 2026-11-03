@@ -66,7 +66,7 @@ ruinBit   128                                                                   
 mask      {water: 1, cliff: 2, airless: 4, sea: 8}                                    the mask byte's bits
 field     {world, inset, cells: {family: m}, families: [...], anchor: [ax, az], grade: {tilt, high, medium}}   the node field's constants
 families  every layer's family (the node kinds, then ledgerFamilies: stone, clay, wood, water, then rockFamilies)
-rockFamilies ['limestone', 'impactite', 'nickel', 'ultramafic', 'tuff', 'marble', 'skarn', 'glass']   rock layers no node field or ledger reads yet
+rockFamilies ['limestone', 'impactite', 'ultramafic', 'tuff', 'skarn', 'glass']   rock layers no node field or ledger reads yet (nickel and marble are node kinds since R3)
 layers    {province, mask, <family>...}: each a byte raster, run-length coded, base64
 placers   [{id, kind, grade, x, z, placer: true, river, why, load}]   world metres
 basins    [{id, at_px, kind, level_m, top_m, cells, soda, intensity}]   each evaporite basin the bake ringed
@@ -108,24 +108,26 @@ airless.
 
 | Family | Where (byte 0-255) |
 |---|---|
-| copper | volcanic 210, rift 120, crystalline 50, sedimentary 10 (porphyry Cu in arcs) |
-| silver | volcanic 150, crystalline 110, rift 80 |
-| gold (lode) | volcanic 140, crystalline 110, rift 90 |
+| copper | volcanic 210, rift 120, basalt 120 (native copper: Keweenaw), gneiss, granite and impact 50, sedimentary and quartzite 10 (porphyry Cu in arcs), + .6 x skarn |
+| silver | volcanic 150, gneiss and granite 110, rift and impact 80 |
+| gold (lode) | volcanic 140, gneiss and granite 110, rift and impact 90 (the Witwatersrand survived inside Vredefort) |
 | sulfur | `255 exp(-d / 10 km)` within 40 km of a vent, + 60 on volcanic ground |
-| tin | crystalline 180, rift 50, volcanic 20 (granite) |
-| rare-earth | rift 190 (carbonatites), crystalline 140, volcanic 30 |
-| iron | crystalline 160, basin margins (sedimentary within 3 cells of crystalline or volcanic) 140, rift 70, volcanic 60, sedimentary 40 |
+| tin | granite 200, gneiss 60, rift 50, impact 40, volcanic 20 (tin is a granite's ore) |
+| rare-earth | rift 190 (carbonatites), granite 160, gneiss 100, impact 60, volcanic 30 |
+| iron | gneiss 160, granite and impact 120, basin margins (sedimentary within 12 km of the crystalline rocks or volcanic) 140, rift 70, volcanic and basalt 60, sedimentary and quartzite 40, + .7 x skarn |
 | coal | sedimentary x lowland x (0.25 + 0.75 wet) x flat, at most 230 (subsiding wet basins) |
 | oil | 0.9 x coal smoothed over ~44 km, halved off the margins and folds; + 110 on low rift floors |
 | saltpeter | 200 x aridity (rain under 600 mm), + 40 on evaporites |
 | gypsum, halite, potash, alkali | the ringed basins (below); halite also 40 under flat, dry sedimentary basins (bedded rock salt) |
-| stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock; floodplains and lake shores; rain and warmth; rivers, shores and rain |
+| stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock (every province but sedimentary, evaporite and carbonate; sedimentary over 200 m of relief), at least 150 on basalt and granite (building stone on the flat) and 120 on carbonate (ashlar); floodplains and lake shores; rain and warmth; rivers, shores and rain |
+
+**The ores on the new rocks** (R3, 2026-11-03) are read from the final provinces and layers, after `carbonate()` and `rocks()`. What they moved, against the R2 bake over the whole of 5.1 (156 tiles of 120 km): 82.7% of nodes stand where they stood; tin keeps 44.2% (off the gneiss onto the granite), rare earths 71.1%, coal 76.2% (none in basalt, quartzite or carbonate), iron 88.7%, copper 85.5%, gold 87.1%, silver 85.2%, oil 84.2%; the evaporites, sulfur and saltpeter are unchanged; 2,255 nickel and 819 marble nodes are new, with 893 tin, 388 rare-earth, 2,956 copper and 799 iron nodes where the new rocks raised them. Gold lodes 131,317 to 115,845, tin 273,718 to 120,187; gold placers 1,085 to 928, tin 1,184 to 947. The ledger: 25 polities' imports change (mostly nickel and marble becoming goods; the Painted Men and the Coyote Kingdom now import gold, silver, tin and rare earths, their ground now quartzite and sandstone); the fairness audit 26 findings to 25.
 | limestone | a rock layer (no node kind, no ledger basic; `biomes/KARST-SITES-5.1.md`): the strongest of the **platforms** (255 x the biome region's weight: k-guilin 1, NW bay .9, neo-ozarks 1, spider lake .6, sw highlands .45; on sedimentary, crystalline, evaporite and rift ground), **lake limestone and marl** outside each basin's gypsum ring (.6 x the gypsum within 2 cells, where the cell's own gypsum is under 80), **tufa** round the soda lakes (.5 x the alkali within 1 cell), the **rift fill**'s thin limestones (70 on rift ground), **calcrete** in semi-arid basins (50 at ~400 mm of rain, from saltpeter's aridity, on sedimentary ground) |
 | impactite | 255 on the impact province, 140 on the walls' sedimentary benches, 120 on the melt sheet's margin (the Inner Crater floor within 3 cells of a wall) |
-| nickel | Sudbury's ore (nickel, copper, platinum): 220 at the melt sheet's margin falling to 0 three cells out, 60 on the impact province. A prospect only: no node kind yet |
+| nickel | **a node kind** (R3): Sudbury's ore (nickel, copper, platinum): 220 at the melt sheet's margin falling to 0 at 12 km, 60 on the impact province, 180 on the ultramafic province |
 | ultramafic | 255 on the ultramafic province; 120 falling to 0 over 20-30 km round the White Gills' root (5.1 px 1015,1438 and the twins 988,1458, 1042,1498: *proposed* deep, not at the surface) |
 | tuff | ash and ignimbrite round every vent: 200 falling to 0 at 2.5 reaches (reach `10 + 4 x radius` km), the apron longest downwind (to the south-east) |
-| marble | .9 x the limestone within 2 cells of granite or volcanic ground (where the limestone is 40 or more) |
+| marble | **a node kind** (R3, a quarry): .9 x the limestone within 8 km of granite or volcanic ground (where the limestone is 40 or more) |
 | skarn | 200 on the cell beside granite or volcanic ground where the limestone is 30 or more |
 | glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
