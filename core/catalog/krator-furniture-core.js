@@ -415,7 +415,8 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
+  'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];   // the shared culture rebuild (kits/yeti/PLAN.md section 11, 2026-11-03)
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */

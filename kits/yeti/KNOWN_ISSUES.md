@@ -1,6 +1,7 @@
 # kits/yeti: known issues
 
-- [ ] **The culture is not in core/tags yet** (Y1). `khaayken` is not in `core/tags/52-core-tags-vocab.js`, so
+- [x] (2026-11-03: registered with the shared culture rebuild, kits/yeti/PLAN.md section 11; `tags-vocabulary` passes once the
+  page is rebuilt) **The culture is not in core/tags yet** (Y1). `khaayken` is not in `core/tags/52-core-tags-vocab.js`, so
   `verify.py --assert` fails `tags-vocabulary` on every record (`unknown culture:khaayken`) and passes everything else.
   Registering it changes the vocabulary every build takes, so every page that bundles core/tags must be rebuilt and
   `PORT-BASELINE.json` rewritten, with the items in `TODO.md`, "Ride along with the next all-builds rebuild". **Deferred to Y5**
