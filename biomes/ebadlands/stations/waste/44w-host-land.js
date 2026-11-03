@@ -36,7 +36,7 @@ const STATION=(function(){const R=3000;
    for(let i=0;i<2;i++){const b=WB[i];if(x>b[0]&&x<b[2]&&z>b[1]&&z<b[3])h=KRELIEF.shape(LANDF.wadis[i],x,z,h);}}
   return h;}
  const washAt=(x,z,h)=>{if(!LANDF)return 0;let w=0;for(let i=0;i<2;i++){const b=WB[i];if(x>b[0]&&x<b[2]&&z>b[1]&&z<b[3]){const a=KRELIEF.at(LANDF.wadis[i],x,z,h);if(a)w=Math.max(w,a.part==='floor'||a.part==='bar'||a.part==='pool'||a.part==='fan'?1:a.part==='bank'?.5:0);}}return w;};
- const L=stationLand({R,ground,groundN:540,strata:S,ledges:.5,
+ const L=stationLand({R,ground,groundN:760,strata:S,ledges:.5,
   pools:[[-1720,-1700,44,2.2],[-1580,-1590,30,1.8],[-1800,-1530,24,1.5],[-1520,-1790,34,2.0],[-1690,-1880,22,1.3]],vents:VENTS,
   cold:(x,z,h)=>clamp((h-150)/2600+.03*(fbm(x*.002,z*.002,133,2)-.5),0,.16),
   wet:(x,z,h)=>.05+.06*fbm(x*.0016,z*.0016,139,2)+.18*washAt(x,z,h)+.25*smooth(.3,.9,chanWallK(Math.abs(z-slotZ(x))/30,2.2))*smooth(E(z)-200,E(z),x),
@@ -64,11 +64,12 @@ function fieldsAt(x,z,h,slope){const F=STATION.fieldsAt(x,z,h,slope);F.talus=STA
 const LAND={name:'The hot waste (ebadlands station 1)',title:'Krator biome — the eastern badlands: the hot waste',
  hint:'Station 1 of the eastern badlands: the sulphur flats and their acid pools, the painted badlands cut into gullies, two dry washes to a playa, the reg, and the first step of the staircase with a slot canyon (BSh, 1.1 km on the model)',
  region:{name:'The hot waste (station 1)',x:0,z:0,r:TERR.R,h:700},arcade:false,species:['needlebloom','embercrown','sunspire','stiltpod','yucca','juniper','pinyon'],sky:{px:1080,py:514},
- fog:{falloff:1/700,sun:.4,sky:.25},climate:{dry:true},snowLine:null,groundN:540,
+ fog:{falloff:1/700,sun:.4,sky:.25},climate:{dry:true},snowLine:null,groundN:760,
  // the dust's own country: the waste is where the wind lifts it (89a)
  far:(x,z,S0)=>{const g=terrainH(clamp(x,-S0,S0),clamp(z,-S0,S0)),dx=Math.max(0,x-S0),dw=Math.max(0,-S0-x);
   return g+dx*.12*smooth(0,4000,dx)+260*smooth(2000,7000,dx)-dw*.18*smooth(0,5000,dw)+90*(fbm(x*.0009,z*.0009,412,3)-.5)*smooth(0,1500,Math.max(Math.abs(x),Math.abs(z))-S0);},
  farBands:[1e4,1e4,1e4,1e4,1e4],farLabel:'The waste past the map: the abyss\'s rim falling west, the staircase rising east',
+ build:()=>({chips:badlandChips({seed:5902})}),   /* the beds' chips under the gullies' walls and the step (44v) */
  exportBox:[POOLS[0][0]-150,POOLS[0][1]-150,POOLS[0][0]+150,POOLS[0][1]+150],
  // the export's profile without buckets: the waste's trees are variants (instanced prototypes, not baked bark) and its reeds are cards, so no 300 m
  // cell holding water holds a bark bucket (the kin's trees grow on the wadis, far from the pools)

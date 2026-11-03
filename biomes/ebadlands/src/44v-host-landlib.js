@@ -12,12 +12,20 @@ function chanWallK(u,uo){if(u>=uo)return 0;const b=1+.5*(uo-1);return .58*smooth
 // a closed blob's distance in radii (a pool, a cirque, a meadow): wobbled by its index
 function blobD(x,z,X,Z,R,i){const dx=x-X,dz=z-Z,a=Math.atan2(dz,dx);return Math.hypot(dx,dz)*(1+.13*Math.sin(3*a+(i||0))+.06*Math.sin(5*a+2*(i||0)))/R;}
 const discPolyL=(X,Z,R)=>Array.from({length:36},(_,k)=>{const a=k/36*TAU;return[X+Math.cos(a)*R,Z+Math.sin(a)*R];});
-// boulders on a field (a talus, a moraine): KRAND cells, the kit's boulder item, on the ground. k(x,z) 0..1
-function landBoulders(k,o){const cell=o.cell==null?20:o.cell,R=TERR.R-150,N=Math.ceil(R/cell);let n=0;const c0=BIO.cur;BIO.cur='badlands/floor';const pv=BIO.kit('ebadlands');
+// boulders on a field (a talus, a moraine): KRAND cells, the kit's boulder item, on the ground. k(x,z) 0..1; o.tintAt(x,y,z) a colour per stone
+// CHIPS: the badlands' debris (the owner, 2026-11-03): small stones shed by the beds, at the foot of the steep bedded faces and in the gullies, each the
+// colour of the bed above it (KSTRATA's at), within o.near metres of the LOD spine (they are hand-sized: past that the paint carries them)
+function badlandChips(o){if(LQ.get('chips')==='0'||!STRATA.at)return 0;const c=new THREE.Color(),near=o.near==null?700:o.near;
+ return landBoulders((x,z)=>{if(BIO.lodD(x,z)>near)return 0;const st=FIELD.strata(x,z),sl=FIELD.slope(x,z);return st*smooth(.2,.45,sl)*smooth(.95,.75,sl)*(o.k==null?1:o.k);},
+  {seed:o.seed,cell:o.cell==null?5:o.cell,dens:o.dens==null?.45:o.dens,r:o.r==null?.22:o.r,range:o.range==null?260:o.range,label:'Chips shed by the beds',
+   tintAt:(x,y,z)=>{const a=STRATA.at(x,y+2.5,z);c.setRGB(a.colour[0],a.colour[1],a.colour[2]).multiplyScalar(.82);return c.getHex();}});}
+function landBoulders(k,o){const cell=o.cell==null?20:o.cell,R=TERR.R-150,N=Math.ceil(R/cell);let n=0;const c0=BIO.cur,r0=BIO.range,m0=BIO.minRange;BIO.cur='badlands/floor';const pv=BIO.kit('ebadlands');
+ /* the stone's colour normalised by the rock texture's mean, as the kit's own stones are (60: rockTint): a raw colour on that dark map draws near black */
+ const rt=c=>EBADLANDS.tint?EBADLANDS.tint(c,EBADLANDS.means().rock,.55):c;BIO.range=o.range==null?900:o.range;BIO.minRange=0;
  try{if(!BIO.defs.boulder)return 0;for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(o.seed,i,j,0x71),u=q=>KRAND.unit(KRAND.hash(h,q,0,0x72)),x=(i+u(1))*cell,z=(j+u(2))*cell;
-   if(Math.abs(x)>R||Math.abs(z)>R||u(3)>k(x,z)*(o.dens==null?.7:o.dens))continue;if(waterH(x,z)>terrainH(x,z)-.2)continue;
-   const r=(o.r==null?1.2:o.r)*(.6+1.6*u(4)*u(4)),y=terrainH(x,z);BIO.put('boulder',[x,y+r*.15,z],new THREE.Quaternion().setFromEuler(new THREE.Euler(u(5),u(6)*6.28,u(7))),[r*(.9+.5*u(8)),r*.7,r],o.tint==null?0xa08a78:o.tint,{label:o.label||'Fallen rock'});n++;}}
- finally{BIO.kit(pv);BIO.cur=c0;}return n;}
+   if(Math.abs(x)>R||Math.abs(z)>R||u(3)>k(x,z)*(o.dens==null?.7:o.dens))continue;if(waterH(x,z)>terrainH(x,z)-.2||BIO.mask(x,z)<=0)continue;   /* the host's mask: off the water and off a rock body (45: ROCK_MASK) */
+   const r=(o.r==null?1.2:o.r)*(.6+1.6*u(4)*u(4)),y=terrainH(x,z);BIO.put('boulder',[x,y+r*.15,z],new THREE.Quaternion().setFromEuler(new THREE.Euler(u(5),u(6)*6.28,u(7))),[r*(.9+.5*u(8)),r*.7,r],rt(o.tintAt?o.tintAt(x,y,z):o.tint==null?0xa08a78:o.tint),{label:o.label||'Fallen rock'});n++;}}
+ finally{BIO.kit(pv);BIO.cur=c0;BIO.range=r0;BIO.minRange=m0;}return n;}
 // THE STATION'S LAND from its parts. o:
 //   R (3000), ground(x,z) the land without channel, pools or cirque; groundN (the mesh's cells a side)
 //   river {line(x) -> z, bed(x) -> the floor's y, W(x) half-width of the floor, uo(x) the walls' outer edge in half-widths (1.3 a plateau's slot .. 4 a V
