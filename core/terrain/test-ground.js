@@ -142,7 +142,7 @@ ok('a seed is taken below 997 (12 and 1009 the same cells)',G.code({},[{kind:'po
     /aKGAO/.test(onL.s.vertexShader));
   const st=run({relief:{strata:.3}}),stk=run({relief:{strata:.3}},()=>{const s=fake();s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uKSBed;');return s;});
   ok('the bed relief is drawn only on the core strata path (uKSBed); elsewhere it is left out, so the shader still links',
-    /ksRelief\(vSWP/.test(stk.s.fragmentShader)&&/float ksRelief/.test(stk.s.fragmentShader)&&!/ksRelief/.test(st.s.fragmentShader),/ksRelief/.test(onL.s.fragmentShader));
+    /ksRelief\(vSWP/.test(stk.s.fragmentShader)&&/float ksRelief/.test(stk.s.fragmentShader)&&!/ksRelief|kgSF/.test(st.s.fragmentShader),/ksRelief/.test(onL.s.fragmentShader));
   ok('the switch ?kgrelief=1 does nothing without the query (node has no location)',!off.m.userData.kgroundRelief,!onS.m.userData.kgroundRelief);}
 // ---- the mesh's cavities: a hollow reads deeper than a crest, a plane reads 0, the result is deterministic
 {const N=41,pos=new Float32Array(N*N*3),nrm=new Float32Array(N*N*3),idx=[];const h=(x,z)=>-6*Math.exp(-((x-10)*(x-10)+(z-20)*(z-20))/40)+6*Math.exp(-((x-30)*(x-30)+(z-20)*(z-20))/40);

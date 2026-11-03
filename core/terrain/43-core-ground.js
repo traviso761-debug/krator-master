@@ -48,9 +48,10 @@
 //   o.relief  {bump (.05: metres of relief per unit of the layers' blended height), near/far (25/140 m: faded out), cavity (.55: the
 //             sky light lost in the low of the height), direct (.35: the share of that on the sun), mesh (0: the strength of the mesh's
 //             own cavities, attribute aKGAO from KGROUND.cavityMesh), strata (0: metres of bed relief, hard beds proud, on the core
-//             strata path only), strataW (a GLSL float: where the beds show), strataNear/strataFar (120/600 m), h (a GLSL float added
+//             strata path only), strataW (a GLSL float: where the beds show), strataNear/strataFar (120/300 m; skipped past it), h (a GLSL float added
 //             to the height), lambert (1: on a Lambert material, the sun scaled by the bumped facing)}. No texture unit.
-//   o.tri     {from .35, to .7}: on the steep (1 - |n.y|) each layer is sampled from the side as well, two planes blended by facing
+//   o.tri     {from .35, to .7, far 250}: on the steep (1 - |n.y|) and nearer than far m, each layer is sampled from the side as well, two
+//             planes blended by facing
 //   KGROUND.cavity({pos, index, normal, count}, o) / KGROUND.cavityMesh(mesh, o)   the mesh's hollows per vertex, 0..1 ([G data])
 //   ?kgrelief=1 [&kgtri=1]   the before-and-after switch on any page, for judging (the page's own options win); ?kgrelief=2 doubles it
 //
@@ -221,7 +222,7 @@
     var tri=triOf(o),rl=reliefOf(o);
     var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-cameraPosition);',
       ' float kgLv='+(far?'min('+f(lv)+',max(0.0,log2(max(kgD/'+f(d0)+',1.0))))':'0.0')+';float kgHc='+(o.baseH||'0.5')+';'];
-    if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y));');
+    if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y))*(1.0-smoothstep('+f(tri.far*.7)+','+f(tri.far)+',kgD));');
     var smp=function(i,k){return tri?'kgTS(uKG'+i+',kgWP,kgDx,kgDy,kgN,'+k+',kgLv,kgSt)':'kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv)';};
     LY.forEach(function(L,i){
       if(L.kind!=null){if(!KINDS[L.kind])throw new Error('KGROUND: no layer kind \''+L.kind+'\' (clast, sand, polygon)');
@@ -236,15 +237,15 @@
     if(rl){var fd=function(a,b){return '(1.0-smoothstep('+f(a)+','+f(b)+',kgD))';};
       /* the relief's height in metres (kgBH, bumped after the normal is made) and the occlusion (kgOcc, on the light after it is summed) */
       s.push(' {float kgF='+fd(rl.near,rl.far)+';kgBH=(kgHc-0.5+('+rl.h+'))*'+f(rl.bump)+'*kgF;'+
-        (rl.strata?'kgBH+=ksRelief(vSWP,vSWN)*'+f(rl.strata)+'*('+rl.strataW+')*'+fd(rl.strataNear,rl.strataFar)+';':'')+
+        (rl.strata?'float kgSF=('+rl.strataW+')*'+fd(rl.strataNear,rl.strataFar)+';if(kgSF>0.001)kgBH+=ksRelief(vSWP,vSWN)*'+f(rl.strata)+'*kgSF;':'')+
         'kgOcc=(1.0-'+f(rl.cavity)+'*kgF*(1.0-smoothstep(0.12,0.55,kgHc)))'+(rl.mesh?'*(1.0-'+f(rl.mesh)+'*clamp(vKGAO,0.0,1.0))':'')+';}');}
     s.push('}');return s.join('\n');}
   // ---------------------------------------------------------------- relief and triplanar (opt-in, 2026-11-03: the ground diagnosis, GROUND.md)
-  function triOf(o){if(!o.tri)return null;var t=o.tri===true?{}:o.tri;return {from:t.from==null?.35:t.from,to:t.to==null?.7:t.to};}
+  function triOf(o){if(!o.tri)return null;var t=o.tri===true?{}:o.tri;return {from:t.from==null?.35:t.from,to:t.to==null?.7:t.to,far:t.far==null?250:t.far};}
   function reliefOf(o){if(!o.relief)return null;var r=o.relief===true?{}:o.relief;
     return {bump:r.bump==null?.05:r.bump,near:r.near==null?25:r.near,far:r.far==null?140:r.far,cavity:r.cavity==null?.55:r.cavity,
       direct:r.direct==null?.35:r.direct,mesh:r.mesh==null?0:r.mesh,h:r.h||'0.0',strata:r.strata||0,strataW:r.strataW||'1.0',
-      strataNear:r.strataNear==null?120:r.strataNear,strataFar:r.strataFar==null?600:r.strataFar,lambert:r.lambert==null?1:r.lambert};}
+      strataNear:r.strataNear==null?120:r.strataNear,strataFar:r.strataFar==null?300:r.strataFar,lambert:r.lambert==null?1:r.lambert};}
   // a layer sampled on the plane, and on the steep from the side (the two side planes blended by the normal's facing): kgSt is 0 on the flat
   var TRI_GLSL='vec4 kgTS(sampler2D t,vec3 p,vec3 dx,vec3 dy,vec3 n,float k,float lv,float s){vec4 c=vec4(0.0);if(s<1.0)c=kgSample(t,p.xz*k,dx.xz*k,dy.xz*k,lv);'+
     'if(s>0.0){float a=abs(n.x)/(abs(n.x)+abs(n.z)+1e-5),wx=smoothstep(0.3,0.7,a);vec4 sd=vec4(0.0);'+
@@ -323,7 +324,7 @@
       var vdec='varying vec3 kgWP;\n'+(tri?'varying vec3 kgWN;\n':'')+(rl&&rl.mesh?'attribute float aKGAO;varying float vKGAO;\n':'');
       sh.vertexShader=vdec+K.inject(sh.vertexShader,{at:'project_vertex',after:wp,fallback:{at:'fog_vertex',before:wp}},'kground');
       /* the bed relief needs the core strata path's uniforms (KSTRATA.shade); on the legacy strata, or none, it is left out */
-      var b=body,ks=!!(rl&&rl.strata&&sh.fragmentShader.indexOf('uKSBed')>=0);if(rl&&rl.strata&&!ks)b=b.replace(/kgBH\+=ksRelief\([^;]*;/,'');
+      var b=body,ks=!!(rl&&rl.strata&&sh.fragmentShader.indexOf('uKSBed')>=0);if(rl&&rl.strata&&!ks)b=b.replace(/float kgSF=[^;]*;if\(kgSF>0\.001\)kgBH\+=ksRelief\([^;]*;/,'');
       var dec='varying vec3 kgWP;\n'+(tri?'varying vec3 kgWN;\n':'')+(rl?(rl.mesh?'varying float vKGAO;\n':'')+'float kgBH=0.0,kgOcc=1.0;\n':'')+
         LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join('')+'\n'+lib+(ks?STRATA_RELIEF_GLSL:'');
       var fs=K.rep(sh.fragmentShader,'void main() {',dec+'void main() {','kground');

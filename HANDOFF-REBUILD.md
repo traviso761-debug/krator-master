@@ -154,6 +154,25 @@ building engine is now named `core/engine`, not `core/kit`.
      - finer ground mesh near the camera.
   3. **Judge by eye with the owner**, on the three pages with switches for before and after, then add it to every turn's checklist.
   Budget it like the rest: measured, not assumed.
+  **Done 2026-11-03 (core-ground; `core/terrain/GROUND.md` has the diagnosis, the channel audit and the shots).** The cause: no
+  light reaches the ground's texture. KGROUND reads colour only, 262 of 276 ground slots are packed `mapOnly`, most grounds are
+  Lambert (lit per vertex on 9-14 m cells), and the strata are a colour function. The fix, opt-in on `KGROUND.hook`: `relief` (a
+  derivative bump from the layers' height, at no texture unit; cavity occlusion; `strata` bed relief, hard beds proud, on the core
+  strata path), `tri` (side planes on the steep), `KGROUND.cavityMesh(mesh)` (the mesh's hollows, `relief.mesh`). Without them the
+  shader is unchanged. Judge any page with `?kgrelief=1&kgtri=1` (`?kgrelief=2` doubles it); `tools/ground_shots.py` takes the
+  same near, mid and far cameras with and without, with calls, triangles and GPU ms. The owner: "ground quality has definitely
+  improved". Defaults are unchanged until the owner says otherwise. **Every turn's checklist gains: the ground judged with and
+  without `?kgrelief=1`.**
+  **Which builds take it at their turn** (each reads `43-core-ground.js` already, so each page is stale by its source text until
+  rebuilt; adopting is `relief`, `tri` and `cavityMesh` in its ground's `KGROUND.hook`, `core/README.md` "Adopting KGROUND's relief"):
+  - MeshStandard grounds, the full effect: **ebadlands** (and its four stations; `strata` with `strataW: 'vRock'`), **godthrone**
+    (`strata`), **swlowlands** (and delta, gorge; `strata`).
+  - Lambert grounds, where the relief only scales the sun's share: **eastabyss** (+ lakes; `strata`), **hyperjungle** (+ lake,
+    savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay** (`strata`), **nwlowlands** (+ margins; two hooks,
+    ground and marl; `strata`), **sedesert**, **swbay**, **swhighlands** (`strata`). For these the bigger step is moving the ground
+    to MeshStandard (the light per pixel), a page change for the turn.
+  - Not on KGROUND yet (they take KGROUND first): the throne, ringisles, catch, geyser, korona and the other grounds in
+    `GROUND.md`'s audit.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
