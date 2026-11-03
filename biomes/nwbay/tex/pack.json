@@ -299,6 +299,12 @@
    "anchor": "center",
    "breakup": null,
    "card": true,
+   "cell": [
+    0.495,
+    0.022,
+    0.97,
+    0.976
+   ],
    "files": {
     "map": "bloom.albedo.webp"
    },
@@ -1542,6 +1548,7 @@
   },
   "strap": {
    "anchor": "center",
+   "base": "centre",
    "breakup": null,
    "card": true,
    "cell": [
@@ -1576,6 +1583,7 @@
   },
   "sword": {
    "anchor": "center",
+   "base": "centre",
    "breakup": null,
    "card": true,
    "cell": [

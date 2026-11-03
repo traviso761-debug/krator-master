@@ -36,3 +36,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 ## Notes
 
 **Hand pass (2026-10-03): the kit's own copies.** PRNG and noise: none of its own since 2026-10-03; the kit reads `core/biome/` (10, 20, 30, 40, 42, 43) through `CORE_BIOME` like the other nine, so `reseed`/`rng`, `h3`, `vnoise` and `fbm` are the shared ones and `BIO.export` exists (`KNOWN_ISSUES.md`). Terrain: its own `terrainH` (line 149; it reads `stackAt`/`stackTop` before it falls back to `groundH`) in `src/45-host-stage.js` and the climate-field bake `FC`, which is the data `core/terrain` replaces. Palette: its own `NWBAY.PAL`, built in `src/50-biome-nwbay-species.js` (line 39).
+
+**The caverns station (2026-11-03, `stations/caverns/`; not in the table above, which lists `src/`):** `44k-host-karst.js` is the plan
+(KKARST records on the page's ground: `[G data]` in kind, host-named because it reads the stage's records); `89x-host-caverns.js` draws
+it (`[draw]`: KCAVERN's chunks and KSPELEO's arrays into meshes, the records into core/tags). The cave crosses to Godot as KCAVERN's and
+KKARST's exports.
+
