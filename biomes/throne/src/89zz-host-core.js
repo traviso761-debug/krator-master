@@ -40,7 +40,9 @@ const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{
 window._shadow=null;
 const SHADOW=(function(){if(typeof KSHADOW==='undefined'||typeof sun==='undefined'||!sun||!sun.isDirectionalLight||CORE_Q.get('shadow')==='0')return null;
  try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH}),MAXT=(renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures),rec=[],skip=[];
-  GROUND_MATS_ALL.forEach(m=>{if(samplersOf(m)+1<=MAXT){m.userData.twShadow=true;rec.push(m);}else skip.push(m.name||m.type);});
+  /* on a page with open water (a sea's or a lake's shore grid, which wets its ground) a ground keeps one unit spare: the count missed one there (the isle's ground overflowed, 2026-11-03) */
+  const spare=ENV_SURF.some(q=>q.kind==='open')?1:0;
+  GROUND_MATS_ALL.forEach(m=>{if(samplersOf(m)+1+spare<=MAXT){m.userData.twShadow=true;rec.push(m);}else skip.push(m.name||m.type);});
   scene.traverse(o=>{if(o.isMesh&&rec.indexOf(o.material)>=0)o.receiveShadow=true;});
   scene.children.forEach(c=>{if(!(c.userData&&c.userData.farField)&&!(c.isMesh&&GROUND_MATS_ALL.indexOf(c.material)>=0))S.cast(c);});
   window._shadow={grounds:rec.length,skipped:skip};return S;}catch(e){reportErr('shadow: '+e.stack);return null;}})();
