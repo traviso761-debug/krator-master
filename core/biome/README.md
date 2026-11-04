@@ -494,8 +494,27 @@ BIO.bindSeason(null,{sharp:2});   // the monsoon: two seasons, the rains in the 
 
 and on the materials that turn: the grasses `season:{colour:0xc8a860,k:.85}`, a deciduous crown (`monsoonrag`, the
 kapok) `season:{drop:.9,colour:0x9a7040,k:.5}`, the bolster `season:{colour:0xd86a20}`. A material's options are in
-`m.userData.bio.opts`, so the export carries them. Not done yet: the copper flush (a colour at the start of the rains,
-not the dry) and the Godot leaf shader's twin (a global `season_dry`, the same hash and the same two terms).
+`m.userData.bio.opts`, so the export carries them.
+
+**The copper flush and the Godot twin** (2026-11-03; opt-in, `30s-core-season-flush.js`, `test-season-flush.js`).
+
+- **The flush.** It is a colour at the start of the rains, not in the dry. `season: {..., flush: {colour, k, stagger}}` on a `leafMat`
+  reads one more page-wide uniform, `BIO.FLUSH.value`, which `BIO.bindFlush(clock, o)` drives from `KCLOCK.flush`
+  (`core/clock/opt/21-core-clock-flush.js`). That is a pulse keyed to the day the wet last rose through one half: `rise` 5 days, `hold` 18,
+  `fade` 12. Its colour step sits right after the dry's, with the same hash. Without `flush`, every shader is the one it was, character
+  for character (the test compares all of them).
+  *Adopting it* (the rust miombo): load the fragment after `30-core-foliage.js` and `core/clock/opt/21-core-clock-flush.js` after core/clock, then
+  `BIO.bindFlush(null, {sharp: 2})`, and give the crown `season: {flush: {colour: 0xb0502a}}`.
+- **The Godot twin.**
+  - `godot/shaders/lib/season.gdshaderinc` holds the two global uniforms, `season_dry` and `season_flush`, in `project.godot`'s
+    shader_globals, plus the same hash and both terms.
+  - `foliage.gdshader` takes `sn_k`, `sn_c`, `fl_k` and `fl_c`, which `krator/biome_import.gd` sets from the exported options.
+    Their defaults draw what the shader drew.
+  - `KSeason.set_globals(day, hour, o)` (`core/clock/kseason.gd`) sets both globals each frame.
+  - Checked on software GL under Xvfb by `godot/tests/shaders/season_gpu_check.gd`: the include's functions against their GDScript
+    twins, and a card through the importer that vanishes at full dry and turns copper at full flush, with negatives.
+  - The hash is taken at `MODEL_MATRIX[3]`, the instance's world origin; three's is at its `instanceMatrix`. They agree when the
+    MultiMesh node sits at the origin, as the importer places it.
 
 ## Godot
 

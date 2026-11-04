@@ -21,6 +21,33 @@
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
 
+## Core pieces for the unbuilt plans (`claude/core-landforms-cloud`, 2026-11-03; not merged)
+
+The 2026-11-03 audit of the unbuilt biome plans found most need nothing new in core. These are the pieces they did need. Each is
+opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit takes its piece at its own build turn.
+
+- **Landform kinds** (`core/terrain/38c-core-landforms.js`, `LANDFORMS.md`):
+  - **wouterwall** takes `slump`, `runout`, `gully` and `terraces`;
+  - **Mid Basin** takes `maar`, `relay` and `terraces`;
+  - **loom-chasms** takes `terraces` (the Cradle);
+  - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
+- **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid
+  Basin** (its interbedded loess and tuff) and **wouterwall** (the loess mantle on the bench). The shaders still draw the flat column, so a
+  page reads the varied rock on the CPU.
+- **The season's copper flush and its Godot twin** (H7: `core/biome/30s-core-season-flush.js`, `core/clock/opt/21-core-clock-flush.js`,
+  `godot/shaders/lib/season.gdshaderinc`):
+  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on `savannarim`) takes the flush;
+  - **Godstep's redlands** station reads the same species;
+  - every kit on the monsoon season gets the Godot `season_dry` with it.
+- **The `sound` record** (H9, `core/tags/opt/54-core-tags-sound.js`, twin `ksound.gd`):
+  - **hyperjungle** takes `bamboo-howl` on its howl-bamboo groves (land `north`, station 3);
+  - **outlandgate** takes `rib-flute` on station 3, the singing buttress;
+  - **High Rift** takes `gjar-organ` on the Singing Gjár.
+
+  There is no core/audio yet: the records are there for it and for Godot.
+- **`KSPAN`** (`core/biome/45-core-span.js`), catenary spans: **spiderlake** takes it for its silk bridge-curtains, guys and reeling
+  frames, and **loom-chasms** for its living cables across the rifts (`up` where a cable is buoyant).
+
 ## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
 
 **State:** `claude/biome-rebuild` (worktree `C:/Users/travi/Documents/krator-biome-rebuild`, unpushed). origin/main is merged in

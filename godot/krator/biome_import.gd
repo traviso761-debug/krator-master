@@ -415,6 +415,33 @@ static func _sway(expr: String) -> Array:
 	return [1.0, Vector3.ZERO, false]
 
 
+# a leaf's season options (BIO.leafMat's o.season: {drop, colour, k, stagger, flush: {colour, k, stagger}}; true is {}) as
+# foliage.gdshader's sn_k, sn_c, fl_k, fl_c (shaders/lib/season.gdshaderinc). As BIO._seasonOpt and BIO._flushOpt: no colour,
+# no colour step (k 0); a flush's colour defaults to copper. None: the shader's defaults, which draw what they always drew.
+static func _season(sm: ShaderMaterial, sn) -> void:
+	if sn == null or (sn is bool and not sn):
+		return
+	var s: Dictionary = sn if sn is Dictionary else {}
+	var col = s.get("colour")
+	var k := float(s["k"]) if s.get("k") != null else 1.0
+	var st := float(s["stagger"]) if s.get("stagger") != null else 0.5
+	sm.set_shader_parameter("sn_k", Vector4(float(s["drop"]) if s.get("drop") != null else 0.0, k if col != null else 0.0, st, 0.0))
+	if col != null:
+		sm.set_shader_parameter("sn_c", _lin(col))
+	var fl = s.get("flush")
+	if fl != null and not (fl is bool and not fl):
+		var f: Dictionary = fl if fl is Dictionary else {}
+		sm.set_shader_parameter("fl_k", Vector2(float(f["k"]) if f.get("k") != null else 1.0, float(f["stagger"]) if f.get("stagger") != null else 0.5))
+		sm.set_shader_parameter("fl_c", _lin(f["colour"] if f.get("colour") != null else 0xb0502a))
+
+
+# a colour as the options give it (a 0xRRGGBB number, or '#rrggbb'), sRGB, as linear (three: new Color(hex).convertSRGBToLinear())
+static func _lin(v) -> Vector3:
+	var c := Color.html(v) if v is String else Color.hex((int(v) << 8) | 0xff)
+	c = c.srgb_to_linear()
+	return Vector3(c.r, c.g, c.b)
+
+
 static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instanced: bool, report: Dictionary) -> ShaderMaterial:
 	var sm := ShaderMaterial.new()
 	var o: Dictionary = m["options"] if m["options"] != null else {}
@@ -427,6 +454,7 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 		sm.set_shader_parameter("sway_axis", int(o.get("axis", 0)) if o.get("axis") != null else 0)
 		sm.set_shader_parameter("use_an", bool(o.get("aN", false)))
 		sm.set_shader_parameter("irid", bool(o.get("irid", false)))
+		_season(sm, o.get("season"))
 		var sd = m.get("sway")   # the export's sway as data (since 2026-10-05): weight = c + dot(w, position)
 		if sd is Dictionary and sd.has("c"):
 			var w: Array = sd["w"]
