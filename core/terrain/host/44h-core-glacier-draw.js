@@ -37,10 +37,10 @@
       ' gl_FragColor=vec4(mix(day,night,uNight),1.0);','#include <fog_fragment>','}'].join('\n')});
     if(E.tint)inner.fragmentShader=inner.fragmentShader.replace('gl_FragColor=vec4(mix(day,night,uNight),1.0);','gl_FragColor=vec4(mix(day,night,uNight)*vec3('+E.tint.map(v=>v.toFixed(3)).join(',')+'),1.0);');
     inner.uniforms.fogColor.value=scene.fog.color;inner.uniforms.fogDensity.value=scene.fog.density;
-    function cave(C){const NT=48,NP=14,TH=.16,po=[],pi=[],di=[];reseed(8620+Math.round(C.R));
-     const jit=[];for(let i=0;i<=NT;i++){jit[i]=[];for(let j=0;j<=NP;j++)jit[i][j]=(i===NT?jit[0][j]:1+.12*(fbm(i*.35,j*.4,8621+C.R,2)-.5)*2);}
+    function cave(C){const FQ=E.fine==null?1:E.fine,NT=48*FQ,NP=14*FQ,TH=.16,po=[],pi=[],di=[];reseed(8620+Math.round(C.R));   /* E.fine (opt-in): a finer shell, the mouth's edge less stepped */
+     const fq=FQ,jit=[];for(let i=0;i<=NT;i++){jit[i]=[];for(let j=0;j<=NP;j++)jit[i][j]=(i===NT?jit[0][j]:1+.12*(fbm(i/fq*.35,j/fq*.4,8621+C.R,2)-.5)*2);}   /* the same lumps at any fineness */
      const P=(i,j,s)=>{const th=i/NT*TAU,ph=j/NP*Math.PI/2,r=C.R*jit[i][j]*s,y=C.H*Math.cos(ph)*(s<1?.92:1);return[C.x+Math.cos(th)*Math.sin(ph)*r,C.floor-.6+y+(j===NP?0:0),C.z+Math.sin(th)*Math.sin(ph)*r];};
-     const inMouth=(i,j)=>{const th=(i+.5)/NT*TAU,ph=(j+.5)/NP;let d=Math.abs(((th-C.face)%TAU+TAU+Math.PI)%TAU-Math.PI);const lo=.32;   // ph: 0 the top, 1 the ground; the arch opens below lo
+     const inMouth=(i,j)=>{const th=(i+.5)/NT*TAU,ph=(j+.5)/NP;let d=Math.abs(((th-C.face)%TAU+TAU+Math.PI)%TAU-Math.PI);const lo=E.mouthTop==null?.32:E.mouthTop;   /* E.mouthTop (opt-in): how high the mouth opens (a share of the polar angle from the top; larger: a lower opening, more roof) */   // ph: 0 the top, 1 the ground; the arch opens below lo
       if(ph<lo)return false;return d<C.mouth*Math.PI*Math.sqrt(clamp((ph-lo)/(1-lo),0,1));};
      const depth=(i,j)=>{const th=i/NT*TAU;return clamp(Math.abs(((th-C.face)%TAU+TAU+Math.PI)%TAU-Math.PI)/Math.PI,0,1);};
      const tri=(arr,a,b,c)=>{arr.push(...a,...b,...c);};
@@ -52,9 +52,27 @@
       if(i>0&&inMouth(i-1,j)||i===0&&inMouth(NT-1,j))rim(a,d,A,D,depth(i,j),depth(i,j+1));
       if(inMouth((i+1)%NT,j))rim(b,c,B,Cc,depth(i+1,j),depth(i+1,j+1));
       if(j<NP-1&&inMouth(i,j+1))rim(d,c,D,Cc,depth(i,j+1),depth(i+1,j+1));}
-     const go=new THREE.BufferGeometry();go.setAttribute('position',new THREE.Float32BufferAttribute(po,3));{const uv=[];for(let k=0;k<po.length;k+=3){const dx=po[k]-C.x,dz=po[k+2]-C.z;uv.push((Math.atan2(dz,dx)/TAU+.5)*C.R*.35,(po[k+1]-C.floor)*.12);}go.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));}go.computeVertexNormals();
+     // E.skirt (m, opt-in; 2026-11-03, Copper Glacier): the shell's foot carried down past the ground under it (a slope, a coarse ground mesh), so
+     // it never stands on air; both faces, the mouth's threshold left open
+     if(E.skirt)for(let i=0;i<NT;i++){if(inMouth(i,NP-1))continue;const a=P(i,NP,1),b=P(i+1,NP,1),A=P(i,NP,1-TH),B=P(i+1,NP,1-TH);
+      const dn=p=>[p[0],Math.min(p[1],E.ground(p[0],p[2])-.4)-E.skirt,p[2]];tri(po,a,dn(b),b);tri(po,a,dn(a),dn(b));tri(pi,A,B,dn(B));tri(pi,A,dn(B),dn(A));di.push(1,1,1,1,1,1);}
+     // E.apron (a share of R, opt-in; 2026-11-03, Copper Glacier): a fillet of ice from the shell's lower flank out to the ground, so the dome sits in the
+     // terrain, not on it (the ground mesh's cells are as wide as a cave: it cannot carve the join). K rings outward, each falling from the flank's
+     // height to just under the ground there; the mouth's columns left open
+     if(E.apron){const K=5,j0=Math.round(NP*.79),ring=(i,k)=>{const th=i/NT*TAU,f=P(i,j0,1),r0=Math.hypot(f[0]-C.x,f[2]-C.z),t=k/K,r=r0+C.R*E.apron*t,x=C.x+Math.cos(th)*r,z=C.z+Math.sin(th)*r,
+       e=t*t*(3-2*t);return[x,f[1]+(Math.min(f[1],E.ground(x,z))-.35-f[1])*e,z];};
+      const open=i=>inMouth(i,NP-1)||inMouth(i,j0)||inMouth((i+NT-1)%NT,NP-1)||inMouth((i+1)%NT,NP-1);
+      for(let i=0;i<NT;i++){if(open(i)||open((i+1)%NT))continue;for(let k=0;k<K;k++){const a=ring(i,k),b=ring(i+1,k),c=ring(i+1,k+1),d=ring(i,k+1);tri(po,a,c,b);tri(po,a,d,c);}}}     const go=new THREE.BufferGeometry();go.setAttribute('position',new THREE.Float32BufferAttribute(po,3));{const uv=[];for(let k=0;k<po.length;k+=3){const dx=po[k]-C.x,dz=po[k+2]-C.z;
+      if(E.uvWorld)uv.push(po[k]*.11,(po[k+1]*.8+po[k+2]*.6)*.11);   /* opt-in: a planar map, no pole swirl at the dome's top */
+      else uv.push((Math.atan2(dz,dx)/TAU+.5)*C.R*.35,(po[k+1]-C.floor)*.12);}go.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));}go.computeVertexNormals();
      const gi=new THREE.BufferGeometry();gi.setAttribute('position',new THREE.Float32BufferAttribute(pi,3));gi.setAttribute('aD',new THREE.Float32BufferAttribute(di,1));gi.computeVertexNormals();
      const mo=new THREE.Mesh(go,out),mi=new THREE.Mesh(gi,inner);mo.userData.inspectLabel=mi.userData.inspectLabel=C.name;scene.add(mo);scene.add(mi);
+     // E.caveFloor (a material, opt-in): the cave's own floor, a disc under the shell, for a host whose ground runs over the dome (a cave buried in
+     // the glacier, its ice drawn by the ground mesh: the ground is not under the shell any more)
+     if(E.caveFloor){const fp=[],fn=[],R1=C.R*1.02;for(let i=0;i<NT;i++){const t0=i/NT*TAU,t1=(i+1)/NT*TAU,y=C.floor+.03;
+      fp.push(C.x,y,C.z,C.x+Math.cos(t1)*R1,y,C.z+Math.sin(t1)*R1,C.x+Math.cos(t0)*R1,y,C.z+Math.sin(t0)*R1);for(let k=0;k<3;k++)fn.push(0,1,0);}
+      const gf=new THREE.BufferGeometry();gf.setAttribute('position',new THREE.Float32BufferAttribute(fp,3));gf.setAttribute('normal',new THREE.Float32BufferAttribute(fn,3));
+      const mf=new THREE.Mesh(gf,E.caveFloor);mf.userData.inspectLabel=C.name+' (its floor)';mf.receiveShadow=true;scene.add(mf);}
      E.register(Object.assign({name:C.name,x:C.x,z:C.z,y:C.floor-1,r:C.R*1.15,h:C.H+4},C.reg||{}));return[mo,mi];}
     function archAt(A,y){const R0=A.span/2,g=new THREE.TorusGeometry(R0,A.tube,12,48,Math.PI),p=g.attributes.position;reseed(8640);
      // each ring of the tube pushed out from its own centre: thick at the feet, thinner over the top, lumpy all along; the
