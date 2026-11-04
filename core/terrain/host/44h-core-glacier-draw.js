@@ -37,8 +37,8 @@
       ' gl_FragColor=vec4(mix(day,night,uNight),1.0);','#include <fog_fragment>','}'].join('\n')});
     if(E.tint)inner.fragmentShader=inner.fragmentShader.replace('gl_FragColor=vec4(mix(day,night,uNight),1.0);','gl_FragColor=vec4(mix(day,night,uNight)*vec3('+E.tint.map(v=>v.toFixed(3)).join(',')+'),1.0);');
     inner.uniforms.fogColor.value=scene.fog.color;inner.uniforms.fogDensity.value=scene.fog.density;
-    function cave(C){const NT=48*(E.fine||1),NP=14*(E.fine||1),TH=.16,po=[],pi=[],di=[];reseed(8620+Math.round(C.R));   /* E.fine (opt-in): a finer shell, the mouth's edge less stepped */
-     const fq=E.fine||1,jit=[];for(let i=0;i<=NT;i++){jit[i]=[];for(let j=0;j<=NP;j++)jit[i][j]=(i===NT?jit[0][j]:1+.12*(fbm(i/fq*.35,j/fq*.4,8621+C.R,2)-.5)*2);}   /* the same lumps at any fineness */
+    function cave(C){const FQ=E.fine==null?1:E.fine,NT=48*FQ,NP=14*FQ,TH=.16,po=[],pi=[],di=[];reseed(8620+Math.round(C.R));   /* E.fine (opt-in): a finer shell, the mouth's edge less stepped */
+     const fq=FQ,jit=[];for(let i=0;i<=NT;i++){jit[i]=[];for(let j=0;j<=NP;j++)jit[i][j]=(i===NT?jit[0][j]:1+.12*(fbm(i/fq*.35,j/fq*.4,8621+C.R,2)-.5)*2);}   /* the same lumps at any fineness */
      const P=(i,j,s)=>{const th=i/NT*TAU,ph=j/NP*Math.PI/2,r=C.R*jit[i][j]*s,y=C.H*Math.cos(ph)*(s<1?.92:1);return[C.x+Math.cos(th)*Math.sin(ph)*r,C.floor-.6+y+(j===NP?0:0),C.z+Math.sin(th)*Math.sin(ph)*r];};
      const inMouth=(i,j)=>{const th=(i+.5)/NT*TAU,ph=(j+.5)/NP;let d=Math.abs(((th-C.face)%TAU+TAU+Math.PI)%TAU-Math.PI);const lo=E.mouthTop==null?.32:E.mouthTop;   /* E.mouthTop (opt-in): how high the mouth opens (a share of the polar angle from the top; larger: a lower opening, more roof) */   // ph: 0 the top, 1 the ground; the arch opens below lo
       if(ph<lo)return false;return d<C.mouth*Math.PI*Math.sqrt(clamp((ph-lo)/(1-lo),0,1));};
