@@ -29,7 +29,9 @@ window._biome=null;window._cut=null;window._nwlow=null;window._nhl=null;
  if(typeof KHORIZON!=='undefined'&&Q.get('horizon')!=='0'){try{const t1=performance.now(),S=TERR.R*1.1,FR=STAGE.horizonReach==null?70000:STAGE.horizonReach;
    const HZ=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,reach:FR,far:{h:(x,z)=>{const bb=STAGE.toBowl(x,z);return CUT.bowl.h(bb[0],bb[1])-STAGE.yRef;},box:[-FR,-FR,FR,FR],n:240}});
    /* ?horizon=ground or ?horizon=scene: one half only (a look comparison; KNOWN_ISSUES.md, the face's crest) */
-   const only=Q.get('horizon');if(only!=='scene')KHORIZON.shade(GROUND.mat,HZ);
+   /* a station may keep its ground out (STAGE.horizon 'scene': the face, whose ground went near black under it in software GL while the bake reads
+      sky .93 there; KNOWN_ISSUES.md); ?horizon=ground|scene|all overrides */
+   const only=Q.get('horizon')||STAGE.horizon||'all';if(only!=='scene')KHORIZON.shade(GROUND.mat,HZ);
    window._horizon={ms:Math.round(performance.now()-t1),n:HZ.n,mats:only==='ground'?0:KHORIZON.shadeScene(scene,HZ,{filter:m=>!(m.userData&&m.userData.farField)&&m.material!==GROUND.mat})};}catch(e){reportErr('horizon: '+e.stack);}}
  _mark('horizon');
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:STAGE.R,h:600});

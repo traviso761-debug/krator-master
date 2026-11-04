@@ -17,16 +17,16 @@
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"
   },
   "biomes/cut/dist/cut-face.html": {
-   "bytes": 1538586,
-   "sha256": "9b338cbda7b0ad3d1ad7596e351456d09bcb0ca9eec760c12b47eb9e1ffd06b3"
+   "bytes": 1538850,
+   "sha256": "da3a212d532eb67923283580342fd54e5424c157cbe1f10e35b53aac17316f12"
   },
   "biomes/cut/dist/cut-wall.html": {
-   "bytes": 1533351,
-   "sha256": "929bc7ccf18a4c266284946a8a4bf524d7671b62d062fe1b7105424a76b48b00"
+   "bytes": 1533599,
+   "sha256": "bd1fc4580aa1e375e70e740e6b64ea67f582d554cbe4b9e5178896e3c1c35b52"
   },
   "biomes/cut/dist/cut.html": {
-   "bytes": 1373375,
-   "sha256": "4bf4e465781ed9827efc64713cd84ee7f246c60ec04fb27e165b9c86722fa9dd"
+   "bytes": 1373623,
+   "sha256": "246f028544394c07f40e8c503ff1223bd8e3d1d16d4dc6e18db2e4c568e34f6a"
   },
   "biomes/dambasins/dist/port.html": {
    "bytes": 1118363,

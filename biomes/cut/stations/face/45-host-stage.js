@@ -79,4 +79,4 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
     'The face from the air':Vw([1400,-900],600,[LIPX,0],0)};},
   checks:add=>{add('circle lichen: nesting, never touching',CUT.checkLichen(CUT.PLANTS.lichen));add('rowans in the plan\'s ring, with stuck fruit (exchange 5)',rowanCheck(REG,CUT.WARPED));},
   negatives:add=>{add('no rowan in the ring',rowanCheck(REG.filter(r=>r.name!=='Rowan'),CUT.WARPED));add('rowans with no stuck fruit',rowanCheck(REG,Object.assign({},CUT.WARPED,{stuckOf:{}})));add('two thalli touching',CUT.checkLichen(CUT.PLANTS.lichen.slice(0,600).concat([Object.assign({},CUT.PLANTS.lichen[0],{x:CUT.PLANTS.lichen[0].x+.1,nest:null})])));},
-  start:'The cut face (polished, the beds in section)',budgetTris:10500000,hour:14,forestLine:3800,seed:13};})();
+  start:'The cut face (polished, the beds in section)',horizon:'scene',budgetTris:10500000,hour:14,forestLine:3800,seed:13};})();

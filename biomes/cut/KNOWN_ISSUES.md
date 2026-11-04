@@ -17,6 +17,10 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
     show it properly) and the **great trumpets** in the wall's ravine (no organ-pipe ranks at s .2).
 - [ ] **The sun's shadows (KSHADOW) are attached off**: the owner wants them toggleable and off by default, and core/shadow has no off-at-load switch
   yet, so the page attaches them only on `?shadow=1`. When core gains the switch, move onto it. Their cost on these pages is not timed (no GPU).
+- [ ] **KHORIZON darkens the face's ground** (the broken crest past the lip: a pixel 39 -> 16 in the start view, software GL) when the ground's material
+  takes it, while the bake reads sky .93 and the sun unblocked there (a node replay of the face's bake) and station 1's and the wall's grounds shade
+  normally. The face is the cold station (snow cover's hook on its ground), the likeliest difference. Until it is diagnosed on the GPU the face keeps
+  its ground out of the horizon (`STAGE.horizon:'scene'`; the flora and the rock take it); `?horizon=all` puts it back, `?horizon=ground` alone.
 - [ ] **Exchanges 1 and 2** (the tree aloe and the parasol pine, read in place from the crater drylands): wait for the crater drylands' turn (pair 12)
   and its shared sky; the wall station's `station.json` gains its kit then.
 - [ ] **The face's polished grain** is `rock.megabreccia` (a weathered face, lichen patches and all), normalised to its mean; a sawn and polished slab

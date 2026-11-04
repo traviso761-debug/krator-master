@@ -37,7 +37,7 @@ python3 verify.py dist/cut.html --assert --all-views        # and dist/cut-wall.
 
 **Switches** (the final rebuild, pair 10; each compares a new module against what the page drew before, or turns on what is off at load):
 `?shadow=1` the sun's shadows (KSHADOW, off by default), `?bend=1` the field's ripple (KWARP, off by default), `?mirror=probe|live` the reflections
-(off at load), `?strata=0` the face's level beds, `?kground=0` the ground's old mix, `?kfar=0` the old far skirt, `?horizon=0` no terrain shadows,
+(off at load), `?strata=0` the face's level beds, `?kground=0` the ground's old mix, `?kfar=0` the old far skirt, `?horizon=0` no terrain shadows (`=ground`, `=scene`, `=all`: one half or both; the face keeps its ground out by default),
 `?plume=0` the plain lake.
 
 `verify.py` takes the shared harness (`tools/harness.py`); run it with `KRATOR_GL=gpu`. Under `--assert` the kit's own checks
