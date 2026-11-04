@@ -40,6 +40,22 @@
    "bytes": 2012185,
    "sha256": "373f650e50fb1f5da0ea096b42f5a67e0eca6a5de2edbbf04a337fcfc5b0079b"
   },
+  "biomes/farside/dist/farside-cloud.html": {
+   "bytes": 1150577,
+   "sha256": "5f27c6d1fa3a95967de41649c9d8add780d00fd194d0eb212515675bdfa84039"
+  },
+  "biomes/farside/dist/farside-front.html": {
+   "bytes": 1150765,
+   "sha256": "fb0d0a23bb65328025b38bfc9a0bf7b1d8350f34f1fdef59a80129fbf8733efd"
+  },
+  "biomes/farside/dist/farside-strand.html": {
+   "bytes": 1151855,
+   "sha256": "008d272c157a8b3e947fa7e54026cedbd61cb5e208c3eb6dc6b25c71c35365c7"
+  },
+  "biomes/farside/dist/farside.html": {
+   "bytes": 1160973,
+   "sha256": "7bdff29a344596bcb061f8f90b59d8b8f3c615f56c23c8516d638fff22eff1d4"
+  },
   "biomes/geyser/dist/geyser.html": {
    "bytes": 637289,
    "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
