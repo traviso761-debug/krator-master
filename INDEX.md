@@ -60,33 +60,32 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 15 | 177 | 45 | Biome kit: see `biomes/README.md`. |
 | [`biomes/cut`](biomes/cut/INDEX.md) | 19 | 126 | 14 | Biome kit: see `biomes/README.md`. |
 | [`biomes/dambasins`](biomes/dambasins/INDEX.md) | 11 | 74 | 21 | The dam basins, an overlay (biomes/dambasins/PLAN.md): the north basin's drained dam-lake beds, on the Ancient Port kit read in place (Hook's pattern) and core/terrain's KBASIN. Station 1 (targets/port): the old port on the 900 m line, ruined, dry, the bathtub ring under it and the fast-drain slope below, its moored hulks grounded, pitched and listed in their berths. Adapted copies of the kit's terrain and camera (the hooks belong upstream). Verified: build.py, verify.py --assert. |
-| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 18 | 229 | 72 | Biome kit: see `biomes/README.md`. |
-| [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 19 | 252 | 55 | Biome kit: see `biomes/README.md`. |
+| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 18 | 228 | 72 | Biome kit: see `biomes/README.md`. |
+| [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 19 | 251 | 55 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 14 | 137 | 37 | Biome kit: see `biomes/README.md`. |
 | [`biomes/farside`](biomes/farside/INDEX.md) | 18 | 132 | 25 | Biome kit: see `biomes/README.md`. |
-| [`biomes/geyser`](biomes/geyser/INDEX.md) | 20 | 179 | 26 | Biome kit: see `biomes/README.md`. |
+| [`biomes/geyser`](biomes/geyser/INDEX.md) | 19 | 178 | 26 | Biome kit: see `biomes/README.md`. |
 | [`biomes/godthrone`](biomes/godthrone/INDEX.md) | 19 | 116 | 22 | Biome kit: see `biomes/README.md`. |
 | [`biomes/guilin`](biomes/guilin/INDEX.md) | 14 | 113 | 24 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hearths`](biomes/hearths/INDEX.md) | 4 | 28 | 12 | The Hearths, a shared kit of life read in place by host kits (src/: the hearth trees, read by biomes/oidong), and its one page while its host (biomes/riftrim) has no build: the Cave of Crystals (stations/crystals, dist/hearths-crystals.html; PLAN.md section 18), the Hearth hold's drained storey at 525,1400, a Naica on core/terrain's KKARST (hypogene), KCAVERN, KSPELEO (selenite beams and the bladed floor, instanced), KTHERM and KGROUND, lethal heat on core/hazard; the hold's chambers, shelves, galleries and approaches massed and empty as plain records (CAVE.HOLD; ?massing=1). Verified: build.py, verify.py --assert. |
 | [`biomes/highrift`](biomes/highrift/INDEX.md) | 17 | 94 | 18 | Biome kit: see `biomes/README.md`. |
-| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 181 | 36 | Biome kit: see `biomes/README.md`. |
+| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 180 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/k-guilin`](biomes/k-guilin/INDEX.md) | 17 | 137 | 25 | Biome kit: see `biomes/README.md`. |
-| [`biomes/korona`](biomes/korona/INDEX.md) | 14 | 138 | 42 | Biome kit: see `biomes/README.md`. |
-| [`biomes/necanyons`](biomes/necanyons/INDEX.md) | 18 | 155 | 35 | Biome kit: see `biomes/README.md`. |
+| [`biomes/korona`](biomes/korona/INDEX.md) | 16 | 163 | 42 | Biome kit: see `biomes/README.md`. |
+| [`biomes/necanyons`](biomes/necanyons/INDEX.md) | 18 | 154 | 34 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 19 | 266 | 67 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nsemiarid`](biomes/nsemiarid/INDEX.md) | 18 | 244 | 64 | The northern semiarid country, the walking steppe (biomes/nsemiarid/PLAN.md): the north basin round the drained dam lakes, Central Asian in basis (pistachio parkland, crescent saxaul, spring planes, Judas trees and almonds, the feral fruit forest of apple, apricot, pear and walnut, golden poplar on the lake margins, dead on the salt behind) and Krator's own (the dandelion frill, the helicopter trumpet, the drift lantern); everything travels: tumblers and their drifts, crawlers, striders, bead chains, roll-eggs, seeds aloft downwind, and the owner's small and weird in dew gardens. The showcase: an old lake bed with KBASIN's strandlines and bathtub ring down to a salt lake, the steppe, the foothills, the rainy upland. Trees as variants. Verified: build.py, verify.py --assert. |
-| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 20 | 328 | 82 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 19 | 312 | 76 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 19 | 211 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwouterwall`](biomes/nwouterwall/INDEX.md) | 15 | 126 | 31 | Biome kit: see `biomes/README.md`. |
 | [`biomes/oidong`](biomes/oidong/INDEX.md) | 15 | 229 | 73 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 19 | 237 | 82 | Biome kit: see `biomes/README.md`. |
-| [`biomes/riftrim`](biomes/riftrim/INDEX.md) | 16 | 149 | 26 | The rift rim: the high country round the Rift, three biomes on one kit (RRIM.biome n | s | w): the glass rim (N: frost frills and bell firs over algal lakes, glass canes in the shallows), the black rim (S: sun rosettes, sailwort, cushion anemones, lantern lobelias, iris lichen, a frozen lake), the veiled rim (W: mist frills, veil thread and mist cups in the cloud belt, Dalab's planted lowland stands); the staircase of lakes from the great lake at 297 m to the tarns. Six stations on scale model 5.1 (Ledge and the great lake, the north rim's lakes, the cold lake, the gorge, the crossing, the black barrens); the Rift's, the SW lowlands' and the S highlands' species read in place. |
 | [`biomes/ringisles`](biomes/ringisles/INDEX.md) | 23 | 200 | 32 | The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert. |
 | [`biomes/scablands`](biomes/scablands/INDEX.md) | 5 | 46 | 16 | The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's flood tore down, on the n semiarid kit read in place (its build(overlay=...)) and core/terrain's KSCOUR. Station 1 (dist/coulee.html): a coulee and dry falls on the west breach, its walls stepped by the basalt flows, a plunge-pool lake, potholes holding rain, bars with giant current ripples, streamlined loess islands. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 17 | 240 | 49 | Biome kit: see `biomes/README.md`. |
 | [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 13 | 150 | 52 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 18 | 220 | 56 | Biome kit: see `biomes/README.md`. |
-| [`biomes/swhighlands`](biomes/swhighlands/INDEX.md) | 20 | 203 | 29 | Biome kit: see `biomes/README.md`. |
+| [`biomes/swhighlands`](biomes/swhighlands/INDEX.md) | 20 | 201 | 29 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 18 | 247 | 68 | Biome kit: see `biomes/README.md`. |
 | [`biomes/throne`](biomes/throne/INDEX.md) | 22 | 325 | 97 | The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 22 | 261 | 86 | Biome kit: see `biomes/README.md`. |
