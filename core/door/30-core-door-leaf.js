@@ -12,7 +12,8 @@
 //        'glass'   a thin frame round one light (a shop front's, the Ancients' sliding panes)
 //        'louvre'  slats between stiles and rails (a saloon's, a shutter's)
 //        'grille'  bars with nothing between (a portcullis, a cage, a gaol's)
-//        'slat'    horizontal slats (a roller shutter)
+//        'slat'    horizontal slats (a roller shutter, an up-and-over door)
+//        'plate'   a heavy plate with a rim and ribs both sides (a blast door, a floodgate, a vault's)
 //        'disc'    a round plate (an iris)
 //   KDOORLEAF.meshes(THREE, style, {frame, glass}, n)   [frame InstancedMesh, glass InstancedMesh?] of n leaves in that style
 //   KDOORLEAF.STYLES                    the style names
@@ -39,6 +40,8 @@
     glass:function(){return{b:frameBoxes(.06,.05,.08),g:[[0,.015,0,.88,.87,.18]]};},
     louvre:function(){var b=frameBoxes(.14,.1,.12),n=9,top=.4,bot=-.38;for(var i=0;i<n;i++)b.push([0,bot+(i+.5)*(top-bot)/n,0,.72,.045,.7]);return{b:b};},
     grille:function(){var b=[],i;for(i=0;i<7;i++)b.push([-.5+.03+i*(.94/6),0,0,.06,1,1]);for(i=0;i<5;i++)b.push([0,-.45+i*.225,0,1,.05,.8]);return{b:b};},
+    plate:function(){var b=[[0,0,0,1,1,.6]].concat(frameBoxes(.07,.06,.06).map(function(q){return[q[0],q[1],q[2],q[3],q[4],1];}));
+      for(var y of[-.25,0,.25])b.push([0,y,0,.86,.035,.9]);for(var x of[-.22,.22])b.push([x,0,0,.03,.86,.9]);return{b:b};},
     slat:function(){var b=[],n=16,g=.006,h=(1-g*(n-1))/n;for(var i=0;i<n;i++)b.push([0,-.5+h/2+i*(h+g),0,1,h,.8]);return{b:b};},
     disc:function(Tt){return{b:[],x:[new Tt.CylinderGeometry(.5,.5,1,28).rotateX(Math.PI/2)]};}};
   var GEO=new Map();

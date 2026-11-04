@@ -90,6 +90,18 @@ const KK=KDOOR.create(),openFull=(D,o)=>{KK.open(D,o);for(let i=0;i<60;i++)KK.st
  const s0=Kh.leaves(Dh)[0].p.slice();Kh.open(Dh);for(let i=0;i<60;i++)Kh.step(.1);const L=Kh.leaves(Dh)[0];
  ok('a hatch lies in the floor from its hinge edge; open, it turns up about the doorway\'s line (no walk blocks)',
    near(s0[1],3)&&near(s0[2],.5)&&L.p[1]>3.4&&Array.isArray(L.ax)&&Dh.blocks.length===0,L.p[1]<=3);}
+// vertical doors
+{const Db=KK.add({id:'bl',preset:'blast',at:[0,0,50],yaw:0,w:4,h:4,t:.5}),S0=KK.leaves(Db).map(L=>L.p[1]);
+ ok('a blast door is two halves across the middle height, each h/2: shut they meet at 2 m',KK.leafCount(Db)===2&&KK.leafSize(Db)[1]===2&&near(S0[0],3)&&near(S0[1],1),S0.length!==2);
+ KK.open(Db);for(let i=0;i<9;i++)KK.step(.1);const mid=Db.open;for(let i=0;i<60;i++)KK.step(.1);const L=KK.leaves(Db);
+ ok('open, the top half rises its height and the bottom sinks into the floor (slowly: rate .35)',near(L[0].p[1],5)&&near(L[1].p[1],-1)&&mid<.5,mid>=.5);}
+{const Df=KK.add({id:'fg',preset:'floodgate',at:[10,0,50],yaw:0,w:3,h:2}),L=openFull(Df);
+ ok('a floodgate sinks its height into the floor',near(L[0].p[1],-1),near(L[0].p[1],1));}
+{const Dp=KK.add({id:'pc2',preset:'portcullis',at:[20,0,50],yaw:0,w:3,h:4,rise:3.4}),L=openFull(Dp);
+ ok('a portcullis lifts as far as its rise',near(L[0].p[1],2+3.4),near(L[0].p[1],6));}
+{const Dg=KK.add({id:'gar',preset:'garage',at:[30,0,50],yaw:0,w:2.6,h:2.2,t:.06}),L=openFull(Dg);
+ ok('an up-and-over door turns about its head line, its foot swung out and up (near level overhead)',
+   Array.isArray(L[0].ax)&&L[0].p[1]>2&&L[0].p[2]>50.9&&Math.abs(L[0].ang)>1.4,L[0].p[1]<=1.2);}
 threw=false;try{KK.add({preset:'nope',at:[0,0,0],w:1,h:2});}catch(e){threw=true;}
 let threw2=false;try{KK.add({kind:'nope',at:[0,0,0],w:1,h:2});}catch(e){threw2=true;}
 ok('an unknown preset or kind is refused',threw&&threw2,false);

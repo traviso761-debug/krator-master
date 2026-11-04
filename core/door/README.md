@@ -42,13 +42,14 @@ a scale, its shut size), and the host draws leaf i there. `KDOOR.leafCount(D)` a
 |---|---|---|
 | `swing` (default) | about the hinge jamb's vertical line, into the room (`sign` -1: hung on the +x jamb; `both`: away from whoever opens it) | a double door: the two leaves swing apart from the jambs |
 | `slide` | along the doorway's line toward the hinge jamb, its own width (a pocket door, a barn door) | bi-parting: the halves slide apart |
-| `lift` | straight up its height (a portcullis); `roll`: rolls up into the head (a roller shutter) | |
+| `lift` | straight up its `rise` (default its height: a portcullis); `roll`: rolls up into the head (a roller shutter); `drop`: sinks into the floor (a floodgate) | the halves meet across the middle height, the top rising and the bottom sinking (blast doors) |
+| `tilt` | hinged at its head, its foot swings out and up (an up-and-over garage door, a flap) | |
 | `fold` | two panels a side that fold to the jamb, the second turned back (a bifold) | a double bifold |
 | `iris` | shrinks to its middle | |
 | `hatch` | lies in a floor or a roof from its hinge edge (`at`), turns up about the doorway's line (`h` its depth); no walk blocks | |
 
 `both` makes a swing door double-acting (it swings away from `open`'s `from: [x, z]`, the opener's place; the host passes the
-player's), `spring` (seconds) shuts it by itself after every opening, `swing` sets the angle it opens to, `walk: false` gives it
+player's), `spring` (seconds) shuts it by itself after every opening, `rate` sets its speed against the registry's (a blast door .35), `swing` sets the angle it opens to, `walk: false` gives it
 no walk blocks. The presets (`preset` on `add`, `KDOOR.PRESET`) name the usual doors:
 
 | preset | is |
@@ -56,7 +57,9 @@ no walk blocks. The presets (`preset` on `add`, `KDOOR.PRESET`) name the usual d
 | `single`, `double` | a swing door; a pair |
 | `saloon` | a sprung, double-acting pair of louvred half leaves (no walk blocks: a walker pushes through) |
 | `slide`, `pocket`, `barn` (plank), `biparting` | sliding doors |
-| `portcullis` (grille), `roller` (slat, rolls up) | lifting doors |
+| `portcullis` (grille), `roller` (slat, rolls up), `blast` (plate: a vertical pair), `floodgate` (plate, sinks) | vertical doors |
+| `garage` (slat), `flap` (plank) | tilting doors |
+| `blastside` (plate) | a heavy bi-parting slide |
 | `bifold`, `iris` (disc), `hatch` (plank: a trapdoor) | the rest |
 
 A pair is one record over the whole doorway (`w` the doorway's width, each leaf `w/2`): one id, one set of walk blocks, both
@@ -66,7 +69,7 @@ leaves posed together. Two mirrored single records (`sign` 1 and -1) still make 
 
 `30-core-door-leaf.js` (KDOORLEAF, THREE, no DOM; load it ahead of the builders) gives a leaf in a style as a unit geometry,
 its frame and its glass apart: `flat`, `plank`, `panel`, `glazed` (French doors: a kick rail, glazing bars over one light),
-`half` (panels below, glazed above), `glass` (a thin frame round one light), `louvre`, `grille`, `slat`, `disc`.
+`half` (panels below, glazed above), `glass` (a thin frame round one light), `louvre`, `grille`, `slat`, `plate` (a heavy plate with a rim and ribs: blast doors, floodgates), `disc`.
 `KDOORLEAF.meshes(THREE, style, {frame, glass}, n)` makes the two InstancedMeshes; `KDOORHOST.instanced(D, [frame, glass],
 [i0, i1], q0)` poses both (the same index, every leaf of a pair its own). The record's `style` says which a door wears.
 The Vernacular's `IZDOOR.leaf` takes `style` and the kinds (`kits/iziz-vernacular/src/69e5-iziz-openings.js`): Talia's glazed
