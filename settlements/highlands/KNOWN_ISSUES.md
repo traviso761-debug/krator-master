@@ -27,6 +27,17 @@ Open items are `- [ ]` lines; build.py prints them.
       identical, now drifts); not re-vendored. Proof: verify.py --assert keeps every check: the sheet 7 of 7 (voth-trades failed
       before the fix in verify.py: the table moved to kits/highlands), 172 -> 176 draw calls, 2.66 M -> 2.72 M scene triangles;
       Roketstad 7 of 7, 558 -> 561 calls, 20.70 M -> 20.47 M scene triangles (the town differs run to run, as before).
+- [ ] (2026-11-03) **The stairs pass: the interiors kit's walk fixes reach Roketstad.** Two of the "2,761 not reached" causes were the
+      interiors kit's walk records, fixed there (`kits/interiors/src/49b-walk.js`): a planned ladder was one strip too steep for
+      core/walk's reach (rung floors 0.4 m apart now) and a base 0.45 to 0.5 m over the ground got no entry flight (the default step
+      is 0.45 now). On the Highlands set alone (each item on flat ground, KWALK.reach from outside its street doors; the town's own
+      audit was not rerun: Roketstad with `?interiors=1` is a 20 M triangle page) 388 -> 476 of 620 floors are reached: the taverns,
+      the arsenal, the guild halls and the fortress keep on 0.5 m plinths, and the tenement's ladder storey (`hl_rep_house_mid_c`
+      1/9 -> 7/9). Left on the set: slivers of upper floor beside a stairwell (0.1 to 1.7 m2, a walker's width or less), the
+      container stacks', the radome tower's, the kontor's and the tank house's upper units (explicit rooms over the ground with no
+      stair declared: `vnStairs` and `vnLadder` draw them, the set item does not register them), the market hall's council floor
+      and the temple's sanctum (above `maxRise`: elevated, the host routes to them). The pages were rebuilt; `verify.py --assert`
+      on the sheet: 7 of 7 before and after (Roketstad's verify was not rerun).
 - [x] (2026-10-15) Highlands and Roketstad on core/host (ROADMAP.md section 10, step 3), as Iziz: `src/92-camera.js` re-vendored from
       Iziz's (the camera layer), `src/00-head.html` the same, `src/99-start.js` the take, and `src/91h-hl-tags.js` adds every REG site
       to the core/tags registry the furniture is in (so the inspector and minimap read the buildings too), mapping Highlands'
