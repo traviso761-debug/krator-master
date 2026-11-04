@@ -102,14 +102,23 @@ shore to the walls in bands, and the bands are the city's zones; the brief's Meg
 | the belt | 600-1,200 m | about 50,000 km² | 40-100 km | **the planned farmland**: Soleri pods and hub towns every 5-10 km, aqueducts and pylon lines between; Blade stands in it (1,229 m, 68 km from the shore) | 200 a km²: about 10 M |
 | the walls | over 1,200 m and the Outer Wall's slump | about 28,000 km² | 100 km and more | **forest**, with the lines running through it to Span and the Inner Wall tunnel, dishes on the ridges | |
 
-Under it, 87% of the floor and shelf is SW lowlands and 11% NW; the belt is 42% SW, 13% NW and 44% neither (the slump). So **the whole polygon
-is the city, graded by height: the core is a ring round the lake, the farmland the great slope, and forest only on the walls**; that is
-option A below. The alternative, B, keeps the city to the floor and shelf (about 12,600 km²) and makes the terraces farmland and the belt
-forest: a quarter the people, half the built ground. **The owner chooses** (section 13, question 3). Either way the feral forest is everywhere
-inside through the parks and the farmland gone wild, and the brief's rule holds on the walls through the lines.
+Under it, 87% of the floor and shelf is SW lowlands and 11% NW; the belt is 42% SW, 13% NW and 44% neither (the slump). Two readings were
+offered: **A**, the whole polygon as the city graded by height (the table as it stands); **B**, the city kept to the floor and shelf (about 12,600 km²),
+the terraces as the farmland and the belt as forest, a quarter the people and half the built ground.
 
-A finding to settle with the map: **Dorado (px 483,964) stands in the lake on Round 3** (-4 m, under water). Either it is the drowned city of the
-brief's foundations, a ruin seen from the water, or it moves to the shore.
+**The owner's decision (2026-11-03): B first, and measure what it costs the GPU; A stays open if B is cheap enough.** So the first stations are built
+to B: the core on the floor, the residential, service and industrial rings on the shelf to 300 m, the Soleri farmland on the terraces to 600 m, and the
+lowland forest from there, with the lines running up through it. Either way the feral forest is everywhere inside through the parks and the farmland
+gone wild, and the brief's rule holds on the walls through the lines.
+
+**Dorado is the drowned city** (the owner, 2026-11-03): it stands in the lake on Round 3 (px 483,964, -4 m, under water) and stays there, the brief's
+submerged foundations made a place: a ruin seen from the water, its upper storeys and crowns above the surface where they still stand, dived into
+below.
+
+**Names in the code are numbers.** The settlements' names may change, so records, fields and fragments refer to them by index, never by name
+(the owner, 2026-11-03): `city1` Babel (456,908), `city2` Necropolis (406,944), `city3` Dorado (483,964, drowned), `city4` Blade (451,1022); and, by
+the same rule, `basin1`..`basin7` in the order of section 2's table (the model's `anc_blast_specs` order). A name lives in one place, a table in the
+valley's data fragment, and nowhere else.
 
 **Zones** (one field, `zone`, with the five kinds below; the kits read it where they place):
 
@@ -296,11 +305,11 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 1. **A name for the augmented.** Proposed: the Unleft, the Stayed, the Lingerers (section 6).
 2. **The Lizardmen's origin.** The brief has the war unleash them here; LORE 6.20 has them on the Rift floor. Did they come through in the
    Valley and cross the Outer Wall, or were they loosed in both?
-3. **The scale of the city** (section 3, the table): **A**, the whole polygon graded by height (core on the floor, farmland on the great slope,
-   forest only on the walls), or **B**, the city kept to the floor and shelf with farmland on the terraces and forest from 600 m. And Dorado:
-   drowned where it is, or moved to the shore?
-4. **The centres.** Babel, Necropolis, Dorado and Blade as the intact centres; the seven basins as the former ones. Carcosa is just outside
-   the polygon and the Yusar's: is it the valley's northern gate or another place?
+3. ~~The scale of the city~~ **Settled 2026-11-03:** B first (the floor and shelf), measured on the GPU before A is considered; Dorado is the
+   drowned city; the code refers to the settlements and basins by number (section 3).
+4. **The centres.** `city1`-`city4` as the intact centres (`city3` drowned); the seven basins as the former ones. Carcosa is just outside
+   the polygon and the Yusar's: is it the valley's northern gate or another place? Under B, Blade (`city4`, 1,229 m) stands outside the
+   city's bands, in the forest: an outpost arcology on its own, which suits Dalab's story of it.
 5. **One hazard theme per settlement** as proposed in section 9, or themes for the basins only?
 6. **Radiation's rules:** a dose that heals, a dose that doesn't, or a dose that mutates? What the tell is: a geiger click is the obvious
    one, and it says the Ancients left counters lying about.
