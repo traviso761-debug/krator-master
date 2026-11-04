@@ -113,6 +113,19 @@ species.
 The ocean coast where the sea's plants are invading the land (`biomes/farside/PLAN.md` section 9, which lists the many
 marine sets the library already has: the kelp cards, seaweed, seagrass, reef and coral sets).
 
+**Owed by the final rebuild (pair 10, 2026-11-04): the tsunami's scour bench** (station 1, `biomes/farside/src/47-host-land.js`: drawn
+today as the wet-rock layer `ground.rock` whitened by the vertex tint, a procedural stand-in for the bleached bedrock). Slot
+`ground.bench` in `biomes/farside/materials.json` (the ground's eighth layer when it lands; the weight is `FIELD.bench` times the rock's).
+Prompt (the base template, then):
+
+```
+Material: wave-planed coastal bedrock scoured by a tsunami, seen from directly above: a flat, smoothed surface of grey-brown
+volcanic and sedimentary rock bleached pale by salt, a fine white salt crust in the hollows and along hairline cracks, shallow
+scour grooves all running one way, scattered rounded cobbles and a few half-buried boulders worn smooth, patches of dried
+brown wrack and small dark limpet scars. Keep colours natural but slightly muted and even, so the texture can be tinted to
+different palettes without looking stained.
+```
+
 ## 15. Crop and garden cards: the Ring Sea isles and Guilin (2026-10-26)
 
 `biomes/ringisles/KNOWN_ISSUES.md` (rice and cane blades procedural; greens and sweet potato on a wrong `card.paddle` cell)
