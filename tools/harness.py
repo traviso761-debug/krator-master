@@ -19,8 +19,8 @@ console stayed clean:
     python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:20f --start auto --min 2 --dir 0,-1
 
 Locally, KRATOR_GL=gpu launches on the real GPU instead of SwiftShader (`python3 tools/harness.py renderer` says which
-renderer a page gets); `tools/verify_cache.py` skips a verify whose page, verify.py and arguments are unchanged since
-its last pass.
+renderer a page gets); a verify whose page, verify.py and arguments are unchanged since its last pass is skipped (the
+verify cache, below).
 
 and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world container written headless for Godot
 (world.json, world.glb, the library pack's maps; core/export/README.md):
@@ -46,12 +46,25 @@ failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item
 listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
 (--write records them; a page is taken out of the ratchet at its own rebuild turn).
 
-The GPU lock (item 16): with KRATOR_GL=gpu, verify_page takes the one lock (KRATOR_GPU_LOCK, default
-<temp>/claude/krator-verify-gpu.lock, a directory with an `owner` file), waits for it with a timeout
-(KRATOR_GPU_LOCK_TIMEOUT, default 1800 s) and a report, takes over a lock whose harness holder is dead, and releases it
-on the way out. Do not take it in bash around a verify any more; to run another command under it:
+The GPU lanes (item 16; 2026-11-03): with KRATOR_GL=gpu, verify_page takes a GPU lane's lock, a directory with an
+`owner` file. Two lanes: `arc`, the Intel Arc 140T (KRATOR_GPU_LOCK, default <temp>/claude/krator-verify-gpu.lock, the
+path every older harness copy takes), and `rtx`, the RTX 5060 (KRATOR_GPU_LOCK_RTX, default
+<temp>/claude/krator-verify-gpu-rtx.lock; Chromium gets --force_high_performance_gpu). KRATOR_GPU_LANE picks one: arc,
+rtx or auto (whichever frees first); unset, a verify takes auto and a timing run (--timing, perf_views.py,
+ground_shots.py) and `harness.py lock` take arc. Waiters queue first come first served (a ticket each in <lock>.queue;
+a dead waiter's ticket is dropped; KRATOR_GPU_LOCK_TIMEOUT, default 8 h); a lock someone holds is never taken, except
+from a harness that is no longer running. Do not take a lock in bash around a verify; to run another command under one:
 
-    python3 tools/harness.py lock [--timeout 1800] -- python3 biomes/godthrone/perf.py ...
+    python3 tools/harness.py lock [--lane arc|rtx|auto] [--timeout S] [--stall MIN] -- python3 biomes/godthrone/perf.py ...
+    python3 tools/harness.py lock --lane rtx -- godot --path godot ...                # Godot GPU runs (not --headless)
+    python3 tools/harness.py lanes                                                    # who holds each lane, who waits
+
+The stall watchdog: `lock` runs its command, and a verify.py that imports this harness at its top re-runs itself as a
+child (verify_wrap), under run_watched: no output and no file written in its --out folder for KRATOR_GPU_STALL_MIN
+(default 25) minutes kills the job's process tree, releases its lock and exits 124 ("STALLED": rerun it). While the
+job progresses the owner file is touched each minute: the 30-minute heartbeat. The verify cache: an --assert run that
+passed on the same bytes (the page and every file it loaded, the verify.py, this harness, the arguments) prints
+"cached pass" and is skipped; --no-cache reruns; failures are never cached (see "The verify wrapper" below).
 
 Every browser the harness launches is recorded by PID (<temp>/claude/krator-harness/<pid>.json); a later harness kills
 the browsers of a harness that died, by PID and only when the process is a Chromium.
@@ -96,6 +109,19 @@ except Exception:
 # Processes: the GPU lock and the browsers this harness launched (item 16)
 TMP = os.path.join(tempfile.gettempdir(), "claude")
 GPU_LOCK = os.environ.get("KRATOR_GPU_LOCK") or os.path.join(TMP, "krator-verify-gpu.lock")
+# The lanes (2026-11-03): `arc` is the Intel Arc 140T, Chromium's default adapter, on the lock every older harness copy
+# takes; `rtx` is the RTX 5060, which headless Chromium takes with --force_high_performance_gpu (ANGLE D3D11 asks DXGI for
+# the high-performance adapter; WEBGL_debug_renderer_info then reads "NVIDIA GeForce RTX 5060 Laptop GPU"). Godot runs on
+# the RTX too (its default; --gpu-index 1 is the Intel), so a Godot GPU run takes the rtx lane.
+GPU_LOCK_RTX = os.environ.get("KRATOR_GPU_LOCK_RTX") or os.path.join(TMP, "krator-verify-gpu-rtx.lock")
+LANES = {"arc": GPU_LOCK, "rtx": GPU_LOCK_RTX}
+LANE_ARGS = {"arc": [], "rtx": ["--force_high_performance_gpu"]}
+LANE_VENDOR = {"arc": "intel", "rtx": "nvidia"}
+# timing runs stay on arc unless KRATOR_GPU_LANE says otherwise, so their numbers stay comparable
+TIMING_SCRIPTS = ("perf_views.py", "ground_shots.py")
+STALL_MIN = float(os.environ.get("KRATOR_GPU_STALL_MIN") or 25)
+LOCK_POLL = float(os.environ.get("KRATOR_GPU_LOCK_POLL") or 3)
+CACHE_DIR = os.environ.get("KRATOR_VERIFY_CACHE_DIR") or os.path.join(os.environ.get("LOCALAPPDATA") or TMP, "krator-verify-cache")
 BROWSERS_DIR = os.path.join(TMP, "krator-harness")
 CHROME_NAMES = re.compile(r"chrome|chromium|headless_shell", re.I)
 
@@ -252,11 +278,8 @@ def page_crashed(pg):
     killed it (swlowlands, 2026-11-02). Say so, give the lock back if this process took it, and leave with exit code 75."""
     print("harness: THE PAGE CRASHED (the renderer died): %s" % pg.url, flush=True)
     _forget_browsers(kill=True)
-    if _lock_owner().startswith("harness pid=%d " % os.getpid()):
-        with contextlib.suppress(OSError):
-            os.remove(os.path.join(GPU_LOCK, "owner"))
-        with contextlib.suppress(OSError):
-            os.rmdir(GPU_LOCK)
+    for lk in LANES.values():
+        _release(lk)
     os._exit(75)
 
 
@@ -292,85 +315,314 @@ async def watch_renderer(pg):
             page_crashed(pg)
 
 
-def _lock_owner():
+def _lock_owner(lock=None):
     try:
-        with open(os.path.join(GPU_LOCK, "owner"), encoding="utf-8", errors="replace") as fh:
+        with open(os.path.join(lock or GPU_LOCK, "owner"), encoding="utf-8", errors="replace") as fh:
             return fh.read().strip()
     except OSError:
         return ""
 
 
-@contextlib.contextmanager
-def gpu_lock(timeout=None, what=""):
-    """The one GPU lock (HANDOFF-REBUILD.md, "Practical rules"): a directory made with mkdir, an `owner` file inside.
-    Waits up to `timeout` s (KRATOR_GPU_LOCK_TIMEOUT, default 1800), printing who holds it; takes over a lock whose
-    holder is a harness that is no longer running; never removes a lock a live or unknown holder (a bash session) took.
-    Re-entrant: a child of the holder (KRATOR_GPU_LOCK_HELD in its environment) does not wait for its parent."""
-    if os.environ.get("KRATOR_GPU_LOCK_HELD"):
-        yield
-        return
-    timeout = float(os.environ.get("KRATOR_GPU_LOCK_TIMEOUT") or 1800) if timeout is None else timeout
-    os.makedirs(os.path.dirname(GPU_LOCK), exist_ok=True)
-    t0, said = time.time(), 0
-    while True:
-        try:
-            os.mkdir(GPU_LOCK)
-            break
-        except FileExistsError:
-            pass
-        owner = _lock_owner()
-        m = re.match(r"harness pid=(\d+)", owner)
-        if m and not pid_alive(int(m.group(1))):
-            print("harness: GPU lock held by a dead harness (%s): taking it over" % owner, flush=True)
-            with contextlib.suppress(OSError):
-                os.remove(os.path.join(GPU_LOCK, "owner"))
-            with contextlib.suppress(OSError):
-                os.rmdir(GPU_LOCK)
-            continue
-        waited = time.time() - t0
-        if waited >= timeout:
-            try:
-                age = time.time() - os.path.getmtime(GPU_LOCK)
-            except OSError:
-                age = 0
-            raise GpuLockTimeout("GPU lock %s still held after %.0f s by: %s (lock age %.0f min). If that holder is dead "
-                                 "(no process of it running), remove the directory; if it is your own shell, stop taking "
-                                 "the lock in bash: the harness takes it now (or set KRATOR_GPU_LOCK_HELD=1)."
-                                 % (GPU_LOCK, waited, owner or "(no owner file)", age / 60))
-        if waited >= said:
-            print("harness: waiting for the GPU lock (held by: %s) %.0f/%.0f s" % (owner or "(no owner file)", waited, timeout), flush=True)
-            said = waited + 120
-        time.sleep(5)
-    with open(os.path.join(GPU_LOCK, "owner"), "w", encoding="utf-8", newline="\n") as fh:
-        fh.write("harness pid=%d %s %s\n" % (os.getpid(), time.strftime("%Y-%m-%dT%H:%M:%S"), what))
-    os.environ["KRATOR_GPU_LOCK_HELD"] = "harness pid=%d" % os.getpid()
+def _release(lock, pid=None):
+    """Remove `lock` when the harness holding it is `pid` (default this process); never anyone else's."""
+    if re.match(r"harness pid=%d\b" % (pid or os.getpid()), _lock_owner(lock)):
+        with contextlib.suppress(OSError):
+            os.remove(os.path.join(lock, "owner"))
+        with contextlib.suppress(OSError):
+            os.rmdir(lock)
+
+
+def timing_run(argv=None):
+    argv = sys.argv if argv is None else argv
+    return "--timing" in argv or os.path.basename(argv[0] if argv else "") in TIMING_SCRIPTS
+
+
+def pick_lane(lane=None):
+    """The lane asked for (`lane`, else KRATOR_GPU_LANE): arc, rtx or auto (whichever frees first). Unset: arc for a
+    timing run (--timing, perf_views.py, ground_shots.py), auto for everything else."""
+    lane = (lane or os.environ.get("KRATOR_GPU_LANE") or "").lower()
+    if lane in LANES or lane == "auto":
+        return lane
+    return "arc" if timing_run() else "auto"
+
+
+def _ticket_live(path):
+    """A waiter's ticket stands while its process lives (the same process: its start time matches, so a reused PID does
+    not count) and it touched the ticket in the last 15 minutes."""
     try:
-        yield
+        with open(path, encoding="utf-8") as fh:
+            t = json.load(fh)
+        if time.time() - os.path.getmtime(path) > 900 or not pid_alive(t["pid"]):
+            return False
+        st = _proc_start(t["pid"])
+        return not (st and t.get("start") and abs(st - t["start"]) > 2)
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
+def lane_queue(lane):
+    """The lane's live tickets, first come first: <lock>.queue/<time_ns>-<pid>.ticket. Dead waiters' tickets are removed."""
+    q = LANES[lane] + ".queue"
+    out = []
+    for n in sorted(os.listdir(q)) if os.path.isdir(q) else []:
+        if not n.endswith(".ticket"):
+            continue
+        if _ticket_live(os.path.join(q, n)):
+            out.append(n)
+        else:
+            with contextlib.suppress(OSError):
+                os.remove(os.path.join(q, n))
+    return out
+
+
+def _owner_note(lock):
+    """The holder's heartbeat: minutes since the owner file was touched. A holder without the watchdog (an older harness,
+    a bash holder: no lane= in its owner line) never touches it, so that age is only when it took the lock."""
+    try:
+        age = (time.time() - os.path.getmtime(os.path.join(lock, "owner"))) / 60
+    except OSError:
+        return ""
+    if " lane=" in _lock_owner(lock):
+        return " (heartbeat %.0f min ago)" % age
+    return " (taken %.0f min ago; no watchdog or heartbeat: check it by hand, CLAUDE.md)" % age
+
+
+@contextlib.contextmanager
+def gpu_lock(timeout=None, what="", lane=None):
+    """The GPU locks (HANDOFF-REBUILD.md, "Practical rules"; one per lane, LANES): a directory made with mkdir, an `owner`
+    file inside. Waiters queue first come first served (a ticket per waiter in <lock>.queue; a dead waiter's is dropped);
+    the head of a lane's queue takes the lock when it is free. An older harness copy that takes the arc lock directly is
+    respected: a lock directory someone holds is never taken, except from a harness that is no longer running. `lane`:
+    arc, rtx or auto (pick_lane). Waits up to `timeout` s (KRATOR_GPU_LOCK_TIMEOUT, default 8 h), printing its place and
+    the holder. Yields the lane taken and sets KRATOR_GPU_LANE_HELD, which launch_chromium reads. Re-entrant: a child of
+    the holder (KRATOR_GPU_LOCK_HELD in its environment) does not wait for its parent."""
+    if os.environ.get("KRATOR_GPU_LOCK_HELD"):
+        yield os.environ.get("KRATOR_GPU_LANE_HELD") or "arc"
+        return
+    timeout = float(os.environ.get("KRATOR_GPU_LOCK_TIMEOUT") or 28800) if timeout is None else timeout
+    lane = pick_lane(lane)
+    lanes = list(LANES) if lane == "auto" else [lane]
+    me = {"pid": os.getpid(), "start": _proc_start(os.getpid()), "what": what[:200], "lanes": lanes}
+    name = "%020d-%d.ticket" % (time.time_ns(), os.getpid())
+    tickets = [os.path.join(LANES[ln] + ".queue", name) for ln in lanes]
+
+    def write_tickets():
+        for t in tickets:
+            os.makedirs(os.path.dirname(t), exist_ok=True)
+            with open(t, "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(me, fh)
+    write_tickets()
+    t0, said, got = time.time(), 0, None
+    try:
+        while got is None:
+            places = {}
+            for ln in lanes:
+                q = lane_queue(ln)
+                if name not in q:          # dropped (this process was suspended past 15 minutes): queue again
+                    write_tickets()
+                    q = lane_queue(ln)
+                places[ln] = q.index(name) if name in q else 0
+                if places[ln]:
+                    continue
+                lk = LANES[ln]
+                try:
+                    os.mkdir(lk)
+                    got = ln
+                    break
+                except FileExistsError:
+                    pass
+                owner = _lock_owner(lk)
+                m = re.match(r"harness pid=(\d+)", owner)
+                if m and not pid_alive(int(m.group(1))):
+                    print("harness: %s lock held by a dead harness (%s): taking it over" % (ln, owner), flush=True)
+                    with contextlib.suppress(OSError):
+                        os.remove(os.path.join(lk, "owner"))
+                    with contextlib.suppress(OSError):
+                        os.rmdir(lk)
+                    with contextlib.suppress(FileExistsError):
+                        os.mkdir(lk)
+                        got = ln
+                        break
+            if got:
+                break
+            for t in tickets:
+                with contextlib.suppress(OSError):
+                    os.utime(t)
+            waited = time.time() - t0
+            if waited >= timeout:
+                raise GpuLockTimeout("GPU lock (%s) still not free after %.0f s: %s. If a holder is dead (no process of it "
+                                     "running), remove its directory; if it is your own shell, stop taking the lock in bash."
+                                     % (lane, waited, "; ".join("%s held by %s, place %d" % (ln, _lock_owner(LANES[ln]) or "(no owner file)",
+                                                                                              places.get(ln, 0)) for ln in lanes)))
+            if waited >= said:
+                print("harness: waiting for the GPU (%s) %.0f s: %s" % (lane, waited, "; ".join(
+                    "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(LANES[ln]) or "(nobody)", _owner_note(LANES[ln]))
+                    for ln in lanes)), flush=True)
+                said = waited + 120
+            time.sleep(min(LOCK_POLL, 0.5) if 0 in places.values() else LOCK_POLL)   # the head of a queue races older copies, which poll every 5 s
+    finally:
+        for t in tickets:
+            with contextlib.suppress(OSError):
+                os.remove(t)
+    lk = LANES[got]
+    with open(os.path.join(lk, "owner"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write("harness pid=%d %s lane=%s %s\n" % (os.getpid(), time.strftime("%Y-%m-%dT%H:%M:%S"), got, what))
+    os.environ["KRATOR_GPU_LOCK_HELD"] = "harness pid=%d" % os.getpid()
+    os.environ["KRATOR_GPU_LANE_HELD"] = got
+    try:
+        yield got
     finally:
         os.environ.pop("KRATOR_GPU_LOCK_HELD", None)
-        if re.match(r"harness pid=%d\b" % os.getpid(), _lock_owner()):
-            with contextlib.suppress(OSError):
-                os.remove(os.path.join(GPU_LOCK, "owner"))
-            with contextlib.suppress(OSError):
-                os.rmdir(GPU_LOCK)
+        os.environ.pop("KRATOR_GPU_LANE_HELD", None)
+        _release(lk)
+
+
+def _tree(root):
+    """`root` and every process under it, parents first: children by parent PID, and only those started after their
+    parent (a process whose recorded parent is a reused PID is not one). Never by name or by a session id."""
+    tab, out, todo = _proc_table(), [root], [root]
+    while todo:
+        q = todo.pop()
+        sq = _proc_start(q)
+        for pid, (pp, _n) in tab.items():
+            if pp == q and pid not in out and pid != q:
+                s = _proc_start(pid)
+                if s is not None and sq is not None and s + 1 < sq:
+                    continue
+                out.append(pid)
+                todo.append(pid)
+    return out
+
+
+def kill_tree(root):
+    pids = _tree(root)
+    for p in reversed(pids):
+        with contextlib.suppress(Exception):
+            if sys.platform == "win32":
+                subprocess.run(["taskkill", "/F", "/PID", str(p)], capture_output=True, creationflags=0x08000000)
+            else:
+                os.kill(p, 9)
+    return pids
+
+
+def out_dirs(argv, cwd=None):
+    """The output folders a command names (--out, --shots, --outdir): the watchdog counts a file written there as progress."""
+    out = []
+    for i, a in enumerate(argv[:-1]):
+        if a in ("--out", "--shots", "--outdir", "--out-dir"):
+            out.append(os.path.join(cwd or os.getcwd(), argv[i + 1]))
+    return out
+
+
+def _newest(dirs, cap=20000):
+    best, n = 0, 0
+    for d in dirs:
+        for dp, dn, fn in os.walk(d):
+            for f in fn:
+                n += 1
+                with contextlib.suppress(OSError):
+                    best = max(best, os.path.getmtime(os.path.join(dp, f)))
+                if n > cap:
+                    return best
+    return best
+
+
+def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None):
+    """Run `argv`, relaying its output, under the stall watchdog: when it writes nothing to stdout or stderr and no file
+    in `watch` for `stall_min` minutes (KRATOR_GPU_STALL_MIN, default 25), kill its whole process tree (kill_tree),
+    release any GPU lock it holds and return 124. While it progresses, touch the owner file of a lock it or this process
+    holds once a minute: the 30-minute heartbeat (CLAUDE.md)."""
+    stall = (STALL_MIN if stall_min is None else stall_min) * 60
+    p = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=cwd)
+    last = [time.time()]
+
+    def relay(src, dst):
+        while True:
+            b = src.read1(65536)
+            if not b:
+                return
+            last[0] = time.time()
+            with contextlib.suppress(Exception):
+                dst.write(b)
+                dst.flush()
+    th = [threading.Thread(target=relay, args=(p.stdout, getattr(sys.stdout, "buffer", sys.stdout)), daemon=True),
+          threading.Thread(target=relay, args=(p.stderr, getattr(sys.stderr, "buffer", sys.stderr)), daemon=True)]
+    for t in th:
+        t.start()
+    seen, beat = _newest(watch), 0
+    tick = max(0.5, min(15.0, stall / 4))
+    while True:
+        try:
+            p.wait(timeout=tick)
+            break
+        except subprocess.TimeoutExpired:
+            pass
+        nw = _newest(watch)
+        if nw > seen:
+            seen, last[0] = nw, time.time()
+        now = time.time()
+        if now - last[0] > stall:
+            pids = kill_tree(p.pid)
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                p.wait(timeout=10)
+            for lk in LANES.values():
+                _release(lk, p.pid)
+            print("\nharness: STALLED: no output and no file written for %.0f min; killed the job's process tree (%s) and released "
+                  "its GPU lock. Rerun it (a stall is the GPU hanging, not a failed check)." % (stall / 60, pids), flush=True)
+            return 124
+        if now - beat >= 60:
+            beat = now
+            for lk in LANES.values():
+                if re.match(r"harness pid=(%d|%d)\b" % (os.getpid(), p.pid), _lock_owner(lk)):
+                    with contextlib.suppress(OSError):
+                        os.utime(os.path.join(lk, "owner"))
+    for t in th:
+        t.join(5)
+    return p.returncode
 
 
 def lock_main(argv):
-    """python3 tools/harness.py lock [--timeout S] -- <command ...>: run a command under the GPU lock."""
-    timeout = None
-    if argv[:1] == ["--timeout"]:
-        timeout, argv = float(argv[1]), argv[2:]
+    """python3 tools/harness.py lock [--lane arc|rtx|auto] [--timeout S] [--stall MIN] [--watch DIR] -- <command ...>
+    Run a command under a GPU lane's lock (default arc: timing runs stay comparable; Godot's GPU runs take --lane rtx),
+    first come first served, under the stall watchdog (run_watched; --stall 0 turns it off). The command sees the lane in
+    KRATOR_GPU_LANE_HELD, and a harness launch in it picks that GPU."""
+    timeout, lane, stall, watch = None, None, None, []
+    while argv and argv[0] in ("--timeout", "--lane", "--stall", "--watch"):
+        k, v, argv = argv[0], argv[1], argv[2:]
+        if k == "--timeout":
+            timeout = float(v)
+        elif k == "--lane":
+            lane = v
+        elif k == "--stall":
+            stall = float(v)
+        else:
+            watch.append(v)
     if argv[:1] == ["--"]:
         argv = argv[1:]
     if not argv:
         print(lock_main.__doc__)
         return 2
     try:
-        with gpu_lock(timeout, what=" ".join(argv)[:120]):
-            return subprocess.call(argv)
+        with gpu_lock(timeout, what=" ".join(argv)[:120], lane=lane or os.environ.get("KRATOR_GPU_LANE") or "arc") as got:
+            print("harness: lane %s (%s)" % (got, LANES[got]), flush=True)
+            if stall == 0:
+                return subprocess.call(argv)
+            return run_watched(argv, stall, watch + out_dirs(argv))
     except GpuLockTimeout as e:
         print("FAILED: " + str(e))
         return 3
+
+
+def lanes_main(argv):
+    """python3 tools/harness.py lanes: each lane's holder, its heartbeat and its queue."""
+    for ln, lk in LANES.items():
+        print("%s  %s\n  held by: %s%s" % (ln, lk, _lock_owner(lk) or ("(free)" if not os.path.isdir(lk) else "(no owner file)"), _owner_note(lk)))
+        for n in lane_queue(ln):
+            with contextlib.suppress(OSError, ValueError):
+                with open(os.path.join(lk + ".queue", n), encoding="utf-8") as fh:
+                    t = json.load(fh)
+                print("  waiting: pid %s %s" % (t["pid"], t.get("what", "")))
+    return 0
 
 
 def is_gpu():
@@ -387,7 +639,16 @@ async def launch_chromium(p, args=GL_ARGS):
     return b
 
 
+def lane_args(args):
+    """`args` plus the held lane's adapter switch (LANE_ARGS) when they launch on the real GPU (ANGLE)."""
+    extra = LANE_ARGS.get(os.environ.get("KRATOR_GPU_LANE_HELD") or "arc", [])
+    if any(a.startswith("--use-angle") for a in args):
+        return list(args) + [a for a in extra if a not in args]
+    return list(args)
+
+
 async def _launch(p, args):
+    args = lane_args(args)
     for k in CHROME_ENV:
         if os.environ.get(k):
             return await p.chromium.launch(executable_path=os.environ[k], args=args)
@@ -435,6 +696,13 @@ class _Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
+    def do_GET(self):   # what the page loads goes into the verify cache's key (verify_wrap)
+        with contextlib.suppress(Exception):
+            f = self.translate_path(self.path)
+            if os.path.isfile(f):
+                _touched(f)
+        return super().do_GET()
+
 
 @contextlib.contextmanager
 def serve(folder):
@@ -453,6 +721,7 @@ async def route_three(pg, folder, here=None):
     """Serve three.js from the repo instead of the CDN: offline, pinned to r128."""
     three = local_three(folder, here)
     if os.path.exists(three):
+        _touched(three)
         await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
             route.fulfill(path=three, content_type="application/javascript")))
 
@@ -870,7 +1139,9 @@ class VerifyPage:
                 rn = await pg.evaluate(RENDERER_JS)
             except Exception as e:
                 rn = "unknown: " + str(e)[:80]
-            U.append(("gpu-renderer", "swiftshader" not in rn.lower(), rn))
+            ln = os.environ.get("KRATOR_GPU_LANE_HELD") or ""   # the vendor is checked only where a lane was taken
+            U.append(("gpu-renderer", "swiftshader" not in rn.lower() and LANE_VENDOR.get(ln, "") in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
+            _touched({"lane": ln, "renderer": rn})
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
@@ -931,13 +1202,17 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
     if here is None:
         here = os.path.dirname(folder) if os.path.basename(folder) == "dist" else folder
     V = VerifyPage(html, here)
+    for f in (html, os.path.join(here, "BUDGETS.json"), RATCHET):
+        if os.path.isfile(f):
+            _touched(f)
     if is_lfs_pointer(html):
         V.universal.append(("lfs-pointer", False, "%s is a Git LFS pointer, not a page: git lfs pull --include=\"%s\"" % (V.key, V.key)))
         raise SystemExit(V.exit())
     from playwright.async_api import async_playwright
     lk = gpu_lock(what=V.key) if (lock and is_gpu()) else contextlib.nullcontext()
     try:
-        lk.__enter__()
+        if lk.__enter__():
+            print("harness: on the %s lane" % os.environ.get("KRATOR_GPU_LANE_HELD", "arc"), flush=True)
     except GpuLockTimeout as e:
         print("FAILED: " + str(e))
         raise SystemExit(3)
@@ -1365,6 +1640,206 @@ async def renderer_main():
     return 0
 
 
+# --------------------------------------------------------------------------
+# The verify wrapper (2026-11-03): a verify.py that imports this harness at its top re-runs itself as a child under
+# run_watched (the stall watchdog), and skips a run that already passed on the same bytes (the verify cache).
+#
+# The cache key: every file the run read (the pages it opened, every file the page server handed out, three.js, the
+# build's BUDGETS.json, the ratchet), the verify.py and the .py and .json files beside it, this harness, the arguments
+# and KRATOR_GL. A pass is recorded per page and argument list in CACHE_DIR (%LOCALAPPDATA%/krator-verify-cache), with
+# the lane and the GPU that produced it; a failure is never recorded. Only --assert runs are cached (a run without it
+# is for looking), never a timing run; --no-cache (or KRATOR_VERIFY_CACHE=0) reruns; KRATOR_VERIFY_WRAP=0 runs the
+# verify in place, with neither the watchdog nor the cache. A file the verify reads itself without the harness (a
+# route handler's file) is outside the key: its verify.py beside it is in it.
+
+def _touched(rec):
+    """In a wrapped verify, note a file the run read (a path) or the lane and renderer (a dict) for the parent."""
+    f = os.environ.get("KRATOR_VERIFY_TOUCHED")
+    if not f:
+        return
+    with contextlib.suppress(OSError):
+        with open(f, "a", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(rec if isinstance(rec, dict) else {"f": os.path.abspath(rec)}) + "\n")
+
+
+def _sha_file(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for b in iter(lambda: fh.read(1 << 20), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def _rel(path, root):
+    path = os.path.abspath(path)
+    r = os.path.relpath(path, root) if os.path.splitdrive(path)[0].lower() == os.path.splitdrive(root)[0].lower() else path
+    return path if r.startswith("..") else r.replace(os.sep, "/")
+
+
+def cache_args(args, root, cwd=None):
+    """The arguments with every one that names an existing file or folder made repo-relative (the same run from another
+    folder or worktree is the same run)."""
+    cwd = cwd or os.getcwd()
+    outs = {i + 1 for i, a in enumerate(args) if a in ("--out", "--shots", "--outdir", "--out-dir")}   # where shots go is not the check
+    return ["*" if i in outs else _rel(os.path.join(cwd, a), root) if not a.startswith("-") and os.path.exists(os.path.join(cwd, a)) else a
+            for i, a in enumerate(args)]
+
+
+def cache_entry_path(script_rel, args_n):
+    import hashlib
+    page = next((os.path.basename(a) for a in args_n if a.endswith(".html")), os.path.basename(os.path.dirname(script_rel)) or "verify")
+    d = hashlib.sha1(json.dumps([script_rel, args_n]).encode("utf-8")).hexdigest()[:16]
+    return os.path.join(CACHE_DIR, "%s-%s.json" % (re.sub(r"[^\w.-]", "_", page), d))
+
+
+def cache_hash(root, files, args_n):
+    """The key over the files' current bytes, this harness, the arguments and KRATOR_GL; None if a file is gone."""
+    import hashlib
+    h = hashlib.sha256()
+    for rel in sorted(set(files)):
+        p = rel if os.path.isabs(rel) else os.path.join(root, rel)
+        if not os.path.isfile(p):
+            return None
+        h.update(("%s\0%s\n" % (rel, _sha_file(p))).encode("utf-8"))
+    h.update(_sha_file(os.path.abspath(__file__)).encode("utf-8"))
+    h.update(json.dumps([args_n, os.environ.get("KRATOR_GL", "").lower()]).encode("utf-8"))
+    return h.hexdigest()
+
+
+def cache_lookup(script, args, cwd=None):
+    """The recorded pass for this verify and arguments when every file in it still has the bytes it had, else None."""
+    root = _repo_root(script)
+    args_n = cache_args(args, root, cwd)
+    try:
+        with open(cache_entry_path(_rel(script, root), args_n), encoding="utf-8") as fh:
+            e = json.load(fh)
+    except (OSError, ValueError):
+        return None
+    return e if e.get("hash") and e["hash"] == cache_hash(root, e.get("files", []), args_n) else None
+
+
+def cache_record(script, args, touched_lines, cwd=None):
+    """Record a pass: the files the run read (`touched_lines`, the child's notes) plus the verify.py and its neighbours."""
+    root = _repo_root(script)
+    args_n = cache_args(args, root, cwd)
+    here = os.path.dirname(os.path.abspath(script))
+    files, info = set(), {}
+    for f in os.listdir(here):
+        if f.endswith((".py", ".json")) and os.path.isfile(os.path.join(here, f)):
+            files.add(_rel(os.path.join(here, f), root))
+    for ln in touched_lines:
+        with contextlib.suppress(ValueError):
+            r = json.loads(ln)
+            if "f" in r:
+                if os.path.isfile(r["f"]):
+                    files.add(_rel(r["f"], root))
+            else:
+                info.update(r)
+    h = cache_hash(root, files, args_n)
+    if not h:
+        return None
+    e = {"script": _rel(script, root), "args": args_n, "hash": h, "files": sorted(files), "passed": time.strftime("%Y-%m-%dT%H:%M:%S"),
+         "lane": info.get("lane") or ("gpu (no lane)" if is_gpu() else "swiftshader"), "renderer": info.get("renderer", "")}
+    path = cache_entry_path(e["script"], args_n)
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    tmp = path + ".%d.tmp" % os.getpid()
+    with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(e, fh, indent=1)
+    os.replace(tmp, path)
+    return e
+
+
+def verify_wrap(script, args, no_cache=False):
+    """Run verify.py `script` with `args` as a child under the watchdog, after the cache (see above). Returns its code."""
+    cacheable = (not no_cache and "--assert" in args and not timing_run([script] + args)
+                 and os.environ.get("KRATOR_VERIFY_CACHE", "1") != "0")
+    if cacheable:
+        e = cache_lookup(script, args)
+        if e:
+            print("harness: cached pass: %s %s passed %s on the same bytes (lane %s%s); nothing rerun, no shots written. "
+                  "--no-cache to rerun." % (e["script"], " ".join(e["args"]), e["passed"], e["lane"],
+                                             ", " + e["renderer"] if e.get("renderer") else ""), flush=True)
+            return 0
+    os.makedirs(BROWSERS_DIR, exist_ok=True)
+    touched = os.path.join(BROWSERS_DIR, "touched-%d.jsonl" % os.getpid())
+    with contextlib.suppress(OSError):
+        os.remove(touched)
+    env = dict(os.environ, KRATOR_VERIFY_CHILD="%d:%s" % (os.getpid(), _proc_start(os.getpid()) or ""), KRATOR_VERIFY_TOUCHED=touched, PYTHONUNBUFFERED="1", PYTHONIOENCODING="utf-8")
+    try:
+        code = run_watched([sys.executable, script] + args, watch=out_dirs(args), env=env)
+        if code == 0 and cacheable:
+            try:
+                with open(touched, encoding="utf-8") as fh:
+                    lines = fh.read().splitlines()
+            except OSError:
+                lines = []
+            with contextlib.suppress(Exception):
+                cache_record(script, args, lines)
+        return code
+    finally:
+        with contextlib.suppress(OSError):
+            os.remove(touched)
+
+
+def _imported_at_top_of_main():
+    f = sys._getframe(1)
+    while f:
+        if f.f_globals.get("__name__") == "__main__":
+            return f.f_code.co_name == "<module>"
+        f = f.f_back
+    return False
+
+
+def _maybe_wrap_verify():
+    """A verify.py run as the main script, importing this harness at its top level, on the GPU or with --assert: hand it
+    to verify_wrap and leave with its code. Never in the child itself, and never with KRATOR_VERIFY_WRAP=0."""
+    if os.environ.get("KRATOR_VERIFY_CHILD"):
+        _watch_parent(os.environ["KRATOR_VERIFY_CHILD"])
+        return
+    mf = getattr(sys.modules.get("__main__"), "__file__", None)
+    if not mf or os.path.basename(mf) != "verify.py":
+        return
+    no_cache = "--no-cache" in sys.argv
+    sys.argv[:] = [a for a in sys.argv if a != "--no-cache"]   # the verify's own argparse never sees it
+    if os.environ.get("KRATOR_VERIFY_WRAP", "1") == "0" or not _imported_at_top_of_main():
+        return
+    args = sys.argv[1:]
+    if not (is_gpu() or "--assert" in args):
+        return
+    sys.stdout.flush()
+    sys.exit(verify_wrap(os.path.abspath(mf), args, no_cache))
+
+
+def _watch_parent(spec):
+    """In the wrapped child: when the wrapper is gone (stopped by PID), close this run's browsers, give back its GPU lock
+    and leave, so no verify runs on unwatched holding a lane."""
+    pid, _, st = spec.partition(":")
+
+    def gone():
+        if not pid_alive(int(pid)):
+            return True
+        now = _proc_start(int(pid))
+        return bool(st and now and abs(now - float(st)) > 2)
+
+    def loop():
+        while not gone():
+            time.sleep(5)
+        with contextlib.suppress(Exception):   # the wrapper held our stdout: a print can fail on the broken pipe
+            print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
+        with contextlib.suppress(Exception):
+            _forget_browsers(kill=True)
+        for lk in LANES.values():
+            _release(lk)
+        os._exit(130)
+    with contextlib.suppress(ValueError):
+        int(pid)
+        threading.Thread(target=loop, daemon=True).start()
+
+
+_maybe_wrap_verify()
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "renderer":
         sys.exit(asyncio.run(renderer_main()))
@@ -1380,4 +1855,6 @@ if __name__ == "__main__":
         sys.exit(asyncio.run(ratchet_main(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "lock":
         sys.exit(lock_main(sys.argv[2:]))
+    if len(sys.argv) > 1 and sys.argv[1] == "lanes":
+        sys.exit(lanes_main(sys.argv[2:]))
     print(__doc__)

@@ -191,14 +191,15 @@ KKARST.network({box:[-2000,-2000,2000,2000], ground, world, kind:'maze',
 const N = KKARST.network({box:[-900,-900,900,900], ground, world, kind:'hypogene',
   level: G - 70, table: G - 69,               /* the active storey: warm wet floors, hot pools in the lows */
   temp: 55,                                   /* scalding: the vents' sulphur water */
-  levels:[{y: G - 40}],                       /* the older storey: dry, replacement gypsum and blocks */
+  levels:[{y: G - 40}],                       /* the older storey: dry, the Cave of Crystals */
+  crystal:{storeys:[1], speleo:'SELENITE'},    /* its chambers and crusts dressed as a Naica (CRYSTAL-CAVES-5.1.md, site 1) */
   form:'maze', p:.45, joints:{angle:/* the rim's strike */, sp:55},
   feeders:{cell:300, p:.6, depth:200, faults:[/* the rim's faults as [x0, z0, x1, z1] */]},
   chamber:{p:.4, r:[20,60], h:[12,32]},       /* 0.75 g: wider spans than Earth's */
   cupola:{p:.7, n:[1,4], r:[4,10], h:[3,8]}, thin:12,
   outlet:[/* the shelf's lowest edge toward the trough */], w:[3,8], h:[3,7]});
 KKARST.build(C, N, {rock:'gypsum'});
-N.crusts.forEach(c => KSPELEO.place(C, {box:c.box, y:(c.y0 + c.y1) / 2, world, kinds:KSPELEO.HYPOGENE}));
+N.crusts.forEach(c => KSPELEO.place(C, {box:c.box, y:(c.y0 + c.y1) / 2, world, kinds:KSPELEO[c.speleo]}));   /* HYPOGENE below, SELENITE in the crystal storey */
 ```
 
 ## 5. The great river gorge (swlowlands station 2, Shim's ground)

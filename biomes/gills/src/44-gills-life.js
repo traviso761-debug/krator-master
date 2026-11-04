@@ -17,7 +17,7 @@
 //                          w:[min,max], d:[min,max], len:[min,max]} -> {gills:[{id, form, c, r, a0, a1, w, d, alive, age}]}; a gill's span tapers over its
 //                          ends. GILLS.gillAt(L, x, z) -> {g, depth share 0..1, dr (m off the crack's line), along 0..1} or null (the host's terrainH carve)
 //   GILLS.life(L, o)       THE LIFE ON IT, from the gills and the host's ground: {ground(x,z), iceH, treeH, lip: [min,max] m out from a lip, step (m along a lip),
-//                          wind:[x,z], seed, country} -> {pipes, collars, fringes, pads, beads, lamps, dew, cups, wood, steam}, each a list of records with a stable
+//                          wind:[x,z], seed, country} -> {pipes, collars, fringes, pads, beads, lamps, dew, turf, cups, wood, steam}, each a list of records with a stable
 //                          id ('<gill>.<kind>.<k>'); a pipe {id, gill, x, z, y0, H, r, mouths, state, ice, lag, toward, live}. Pipes stand under 90 m
 //                          (PLAN.md section 16, G6), live ones only on a live gill's lip, ice pipes only over iceH
 // GODOT: the same functions on the same records (plain arithmetic and KRAND's hash).
@@ -81,7 +81,7 @@ var GILLS=(function(){
  // ---- the life (sections 6 and 7): the pipes on both lips, the collars and fringes at their mouths, the pads across the narrow ends, the beads drifted
  // in the floors and rolled onto the lips, the lamps in the throats, the meadow downwind (the dew mat, the salt cups at its edge, the limewood inside)
  G.life=function(L,o){const gr=o.ground,ice=o.iceH==null?1e9:o.iceH,lip=o.lip||[3,9],step=o.step==null?18:o.step,wd=o.wind||[.7,.7],seed=o.seed==null?0x6112:o.seed;
-  const R={pipes:[],collars:[],fringes:[],pads:[],beads:[],lamps:[],dew:[],cups:[],wood:[],steam:[]};
+  const R={pipes:[],collars:[],fringes:[],pads:[],beads:[],lamps:[],dew:[],turf:[],cups:[],wood:[],steam:[]};
   const wl=Math.hypot(wd[0],wd[1])||1,wx=wd[0]/wl,wz=wd[1]/wl;
   L.gills.forEach((g,gi)=>{const len=g.r*(g.a1-g.a0),N=Math.max(2,Math.floor(len/step));
    for(let k=0;k<N;k++)for(let side=-1;side<=1;side+=2){const s=H(seed,gi,k,side+2),al=(k+.2+.6*s.next())/N,an=g.a0+(g.a1-g.a0)*al,end=sm(0,.12,al)*sm(1,.88,al);
@@ -110,7 +110,10 @@ var GILLS=(function(){
     if(y>ice+60)continue;
     if(t>.72&&s.next()<.5)R.cups.push({id:g.id+'.cup.'+k,gill:g.id,x,z,y,r:.15+.15*s.next()});
     else if(t>.25&&t<.6&&s.next()<.18&&y<(o.treeH==null?1e9:o.treeH))R.wood.push({id:g.id+'.wood.'+k,gill:g.id,x,z,y,H:3+3*s.next(),r:.2+.15*s.next(),caps:2+Math.floor(s.next()*4),seed:KRAND.hash(seed,gi,k,0x3D)>>>0});
-    else R.dew.push({id:g.id+'.dew.'+k,gill:g.id,x,z,y,r:1+2.2*s.next(),yaw:TAU*s.next()});}}});
+    else{const d={id:g.id+'.dew.'+k,gill:g.id,x,z,y,r:1+2.2*s.next(),yaw:TAU*s.next()};R.dew.push(d);
+     /* the limed turf (card.turf.limed) round the mat's rim, on its own stream so the mats, cups and wood keep their draws */
+     const st=H(seed,gi,k,0x7F2F),nt=3+Math.floor(st.next()*4);for(let q=0;q<nt;q++){const a3=TAU*(q+st.next()*.7)/nt,rq=d.r*(.75+.6*st.next()),tx=x+Math.cos(a3)*rq,tz=z+Math.sin(a3)*rq;
+      R.turf.push({id:g.id+'.turf.'+k+'.'+q,gill:g.id,mat:d.id,x:tx,z:tz,y:gr(tx,tz),h:.3+.35*st.next(),yaw:TAU*st.next()});}}}}});
   return R;};
  return G;})();
 if(typeof module!=='undefined'&&module.exports)module.exports=GILLS;
