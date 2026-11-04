@@ -98,7 +98,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   ' if(k>rk){rk=k;ring=sin(d*7.0);}}'+
   'float rake=mix(rip,ring,rk);float vis=vFlat*(0.55+0.45*smoothstep(0.0,1.0,1.0-vRock));'+
   'diffuseColor.rgb*=1.0+vis*(0.07*rake-0.03*abs(rake));}}');};
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-ground',at:'/*KGROUND*/',layers:[
+// THE RELIEF (KGROUND's opt-in relief, core/terrain/GROUND.md; the ground catch-up 2026-11-04): the layers' height bumps the lit normal near the eye,
+// the low of it and the mesh's hollows (aKGAO, KGROUND.cavityMesh on the mesh below) lose sky light. No side planes (tri): ?relief=0 none
+const KG_REL=new URLSearchParams(location.search).get('relief')!=='0'?{bump:.075,cavity:.8,mesh:1}:null;
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-ground',at:'/*KGROUND*/',relief:KG_REL,layers:[
  KGROUND.layer('oidong','ground.moss',{w:'vGL.x',amt:.42,gain:1.2,tint:'diffuse',name:'moss'}),
  KGROUND.layer('oidong','ground.forest',{w:'vGL.x*smoothstep(0.5,0.7,texture2D(uMacro,vGWP.xz*0.0039+vec2(0.43,0.19)).g)',amt:.36,gain:1.0,tint:'diffuse',name:'forest floor'}),
  KGROUND.layer('oidong','ground.sand',{w:'vGL.y',amt:.6,gain:1.25,tint:'diffuse',name:'sand'}),
@@ -112,7 +115,7 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aFlat',new THREE.BufferAttribute(fl,1));g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));   /* aWet: 89z fills it from the water's fields */
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel='The Oidong Valley';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel='The Oidong Valley';if(USE_KG&&KG_REL)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* aKGAO: relief.mesh */scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water
 // The pools, the stream and the cataract are core/water's (89w-host-water.js); the records (POOLS, CATARACT, streamOff) are in 45-host-stage.js.
