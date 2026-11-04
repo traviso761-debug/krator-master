@@ -19,7 +19,7 @@
     "biomes/swhighlands/src/60-biome-swhighlands-floor.js": "82a2463e1b29e7d4de9d374eb665e4023b7377f2ba9f4d6c5b31898bbec32c5e",
     "biomes/swhighlands/src/70-biome-swhighlands.js": "97de0752fc4fc275522f80f6db18a98067c987cff006261dd9e637f9ab1ab8c6",
     "biomes/swhighlands/src/82-host-far.js": "c164a36058cc589e16f86e444f2144c3e3944255f639bcc49c2380fd6583bb9a",
-    "biomes/swhighlands/src/84-host-ground.js": "f2ab98ba87980fabbe7912f841a1fd8660b4ab7f4dd7a484e12ed48cae5ecd67",
+    "biomes/swhighlands/src/84-host-ground.js": "6bf6568b0c1b962c468c2029048542609d7475785bf668844a05cfd592a8063c",
     "biomes/swhighlands/src/88-host-build.js": "9cd14d004718ed5e9a3506f50fa69f12a8a00bb5004332ab88fba11a4aefe01d",
     "biomes/swhighlands/src/89a-host-atmos.js": "e8a3ad6158cf0bf3e87a0113417066e5892f26d5f5d60ecf038feb35b6b99bf5",
     "biomes/swhighlands/src/89s-host-sky.js": "dc64e3f35ea474d2e993c30845d231cc8f27a2cb92a7db763dccd1b16cc78e47",
@@ -136,10 +136,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands.html": "9f6dc5391c96af8eba28a1076ce828787a94f9a9c1cfea2ddc41871ed30eda2c"
+    "biomes/swhighlands/dist/swhighlands.html": "4f0b878d7dfe882433b9258ccd3741f9a74709657b68411d7595e6e81c03441b"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands.html": "9f6dc5391c96af8eba28a1076ce828787a94f9a9c1cfea2ddc41871ed30eda2c"
+    "biomes/swhighlands/dist/swhighlands.html": "4f0b878d7dfe882433b9258ccd3741f9a74709657b68411d7595e6e81c03441b"
    }
   },
   "build.py --station pillars": {
@@ -161,7 +161,7 @@
     "biomes/swhighlands/stations/pillars/45-host-stage.js": "c78b47ba95ef8f9fb4e745c48325fddec5403bd9e551638441eb6ad3f0b1ed10",
     "biomes/swhighlands/stations/pillars/47-host-land.js": "bc405837eead26cf4bb2623e3d4c3ff42a7c80d28d4e5d52794f109e6749be9b",
     "biomes/swhighlands/stations/pillars/82-host-far.js": "23bdba7a65ed3345caad23bbb03ad5aece8ecd74b102bf4db38b07dace1f7875",
-    "biomes/swhighlands/stations/pillars/84-host-ground.js": "f373a1b76975253b2c143e0afe6cbc2c0f336d9d12c1896bb8224ef90f08aac7",
+    "biomes/swhighlands/stations/pillars/84-host-ground.js": "e7a4c6450ac587041263f34397f8f55627086d1c1675bdb08d32cb3699d39cfc",
     "biomes/swhighlands/stations/pillars/88-host-build.js": "87a14d722a9ad3a5638d194e184d6cb9b47b759471a136566104c4c17a15c622",
     "biomes/swhighlands/stations/pillars/89a-host-atmos.js": "36d0c6b31bd4af58283e857f4c0ef205c1c630d0e9a0de03f01509f066e3256a",
     "biomes/swhighlands/stations/pillars/89s-host-sky.js": "e3854ee02b37aabda73f6a72e6972051e09f5109828441c8b9b55b0a701a7e87",
@@ -279,10 +279,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "b083d8652e9325336d339d4c3f51be33ef4fbf79e52c95511df26c8325f5fc4b"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "3153914c3447fce49841259c552bdc35cec1b804346b397f7341f004ab08f1a4"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "b083d8652e9325336d339d4c3f51be33ef4fbf79e52c95511df26c8325f5fc4b"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "3153914c3447fce49841259c552bdc35cec1b804346b397f7341f004ab08f1a4"
    }
   },
   "build.py --station pillars --preview span": {
@@ -304,7 +304,7 @@
     "biomes/swhighlands/stations/pillars/45-host-stage.js": "c78b47ba95ef8f9fb4e745c48325fddec5403bd9e551638441eb6ad3f0b1ed10",
     "biomes/swhighlands/stations/pillars/47-host-land.js": "bc405837eead26cf4bb2623e3d4c3ff42a7c80d28d4e5d52794f109e6749be9b",
     "biomes/swhighlands/stations/pillars/82-host-far.js": "23bdba7a65ed3345caad23bbb03ad5aece8ecd74b102bf4db38b07dace1f7875",
-    "biomes/swhighlands/stations/pillars/84-host-ground.js": "f373a1b76975253b2c143e0afe6cbc2c0f336d9d12c1896bb8224ef90f08aac7",
+    "biomes/swhighlands/stations/pillars/84-host-ground.js": "e7a4c6450ac587041263f34397f8f55627086d1c1675bdb08d32cb3699d39cfc",
     "biomes/swhighlands/stations/pillars/88-host-build.js": "87a14d722a9ad3a5638d194e184d6cb9b47b759471a136566104c4c17a15c622",
     "biomes/swhighlands/stations/pillars/89a-host-atmos.js": "36d0c6b31bd4af58283e857f4c0ef205c1c630d0e9a0de03f01509f066e3256a",
     "biomes/swhighlands/stations/pillars/89s-host-sky.js": "e3854ee02b37aabda73f6a72e6972051e09f5109828441c8b9b55b0a701a7e87",
@@ -425,10 +425,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "a2edd0e5174355b6d23c94d520c753dd8dbe5f34ccbbe010afb51dacd4c1aeb0"
+    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "2f794763f860845ee777dc899b28c4c7bbdbf4e4d83b6723a29599c6c0c0a4de"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "a2edd0e5174355b6d23c94d520c753dd8dbe5f34ccbbe010afb51dacd4c1aeb0"
+    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "2f794763f860845ee777dc899b28c4c7bbdbf4e4d83b6723a29599c6c0c0a4de"
    }
   },
   "build.py --station treeline": {
@@ -466,7 +466,7 @@
     "biomes/swhighlands/stations/treeline/47-host-land.js": "78b1377e972ef5c44c278ace93ff70fddf82fdafe6c661802221d99d37f6136f",
     "biomes/swhighlands/stations/treeline/47c-host-ehigh-end.js": "780274cb776518cac4e2d280f764e77113a71e310afa36bb7235fe4a77bfb85a",
     "biomes/swhighlands/stations/treeline/82-host-far.js": "6ba0cbd786c0a40425a113765e36cd0aca91c46db35430e3d9ec57efa32eb432",
-    "biomes/swhighlands/stations/treeline/84-host-ground.js": "5b23ff28fdee02e057a5de82eb84c2200654dc657fa5d6bb16fae411f885a554",
+    "biomes/swhighlands/stations/treeline/84-host-ground.js": "099f56debc553b9a6892a2835c39431830b489909c6e380069d532c9eb7d9035",
     "biomes/swhighlands/stations/treeline/88-host-build.js": "8598077c188d9054a71926b4d913463ab719b2b261ccd97dbcfe8cca7bff1852",
     "biomes/swhighlands/stations/treeline/89a-host-atmos.js": "a3070f38ad2d5176e4634bf5115ccc7178fa50b94f52d69b8a73cc6cfac3da49",
     "biomes/swhighlands/stations/treeline/89s-host-sky.js": "5bd4e3fb226d6603213d8d2afa86313a6ae6124da5caad5446decc435a37ae64",
@@ -584,10 +584,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "fa278b96270f5ec1d447c8d105181d49ee2aeb3b14a487dc9670ea4811d1e360"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "24e5c201bd8d4bbe72759b10072da789fb1432595cd6ac1ceeea5eb5db34e751"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "fa278b96270f5ec1d447c8d105181d49ee2aeb3b14a487dc9670ea4811d1e360"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "24e5c201bd8d4bbe72759b10072da789fb1432595cd6ac1ceeea5eb5db34e751"
    }
   }
  }

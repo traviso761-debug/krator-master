@@ -164,8 +164,8 @@ const MAT_GROUND=KG_ON?new THREE.MeshStandardMaterial({color:0xffffff,roughness:
      'float ncN(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);return mix(mix(ncH(i),ncH(i+vec2(1,0)),u.x),mix(ncH(i+vec2(0,1)),ncH(i+vec2(1,1)),u.x),u.y);}').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;'+
      (MOT?'{float m=0.65*ncN(vMW.xz/45.0)+0.35*ncN(vMW.xz/11.0+17.3);m=smoothstep(0.42,0.72,m)*(1.0-vW.x)*(1.0-vW.y);diffuseColor.rgb*=mix(vec3(1.0),'+MOT.tint+','+MOT.amt.toFixed(3)+'*m);}':''));};
    KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg'+(MOT?'-m':''),layers:LY,at:'/*KGROUND*/',
-    relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});   /* the relief (no texture unit) and the mesh's hollows (aKGAO below); no tri: the floor's
-    steepest is the talus (under 20 degrees off level at the walls' feet: below tri's onset); the walls are the rock's meshes */}}}
+    relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});   /* the relief (no texture unit) and the mesh's hollows (aKGAO below); no tri: 2% of the
+    floor's vertices are past tri's onset (1-|n.y| .35, measured 2026-11-04), at the talus's top; the walls are the rock's meshes */}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);

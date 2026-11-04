@@ -38,11 +38,13 @@ function buildGround(){
  const KG_RELIEF=GLY.length>0&&new URLSearchParams(location.search).get('kgrelief')!=='0';
  const MAT=GLY.length?new THREE.MeshStandardMaterial({map:TEX,color:0x84847a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
  /* THE GROUND'S HOLLOWS (KGROUND.cavity, relief.mesh; 2026-11-04, the ground catch-up): one field on a 12 m grid over the square,
-    from the height, read by every piece of the ground (bilinear), so the pieces meet with no seam in the shade */
+    from the height, read by every piece of the ground (bilinear), so the pieces meet with no seam in the shade. The valley term's depth
+    is 30 m, not the core's 4: on these folds and cliffs 4 m saturated a 200 m band at every foot to black (judged on the pillars'
+    cliff, 2026-11-04); with relief.mesh .7 the foot of a cliff and the gullies read a shade darker, no more */
  const KGCAV=KG_RELIEF?(function(){const st=12,nx=Math.round(SX/st),nz=Math.round(SZ/st),W=nx+1,n=W*(nz+1),P=new Float32Array(n*3),I=new Uint32Array(nx*nz*6);let t=0;
   for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*W+i,x=TERR.X0+i*SX/nx,z=TERR.Z0+j*SZ/nz;P[3*k]=x;P[3*k+1]=terrainH(x,z);P[3*k+2]=z;}
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*W+i;I[t++]=a;I[t++]=a+W;I[t++]=a+1;I[t++]=a+1;I[t++]=a+W;I[t++]=a+W+1;}
-  const A=KGROUND.cavity({pos:P,index:I,count:n});
+  const A=KGROUND.cavity({pos:P,index:I,count:n},{rings:[3,18],depth:[1.5,30]});
   return (x,z)=>{const u=clamp((x-TERR.X0)/SX*nx,0,nx),v=clamp((z-TERR.Z0)/SZ*nz,0,nz),i=Math.min(nx-1,Math.floor(u)),j=Math.min(nz-1,Math.floor(v)),fu=u-i,fv=v-j,k=j*W+i;
    return (A[k]*(1-fu)+A[k+1]*fu)*(1-fv)+(A[k+W]*(1-fu)+A[k+W+1]*fu)*fv;};})():null;
  const kgCav=mesh=>{if(!KGCAV)return mesh;const p=mesh.geometry.attributes.position,a=new Float32Array(p.count);for(let i=0;i<p.count;i++)a[i]=KGCAV(p.getX(i),p.getZ(i));
@@ -57,7 +59,7 @@ function buildGround(){
     ' vec3 rn=abs(normalize(vSWN));rn/=rn.x+rn.y+rn.z;vec3 rt=texture2D(uRG,vSWP.zy*uRGs).rgb*rn.x+texture2D(uRG,vSWP.xz*uRGs).rgb*rn.y+texture2D(uRG,vSWP.xy*uRGs).rgb*rn.z;',
     ' vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.72)*1.25*clamp(pow(dot(rt,vec3(0.333))/0.47,1.3),0.4,1.7);',
     ' diffuseColor.rgb=mix(diffuseColor.rgb,sc,smoothstep(0.42,0.7,steep)*0.55);}'].join('\n'));};   /* the beds at half weight: the shattered rock reads through the paint */
- KGROUND.hook(MAT,{layers:GLY,key:'swhi-treeline-ground',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});   /* the relief (no texture unit) and the hollows (kgCav) */
+ KGROUND.hook(MAT,{layers:GLY,key:'swhi-treeline-ground',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:.7}:null});   /* the relief (no texture unit) and the hollows (kgCav) */
  const HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],n:256,h:terrainH,
   far:{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
