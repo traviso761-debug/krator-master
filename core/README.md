@@ -626,8 +626,10 @@ The sun's shadows (2026-11-03, the owner: the valley needs them; first at `kits/
 instead of a fixed one per build: `10-core-shadow.js` ([G data], global `KSHADOW`) is the numbers (`KSHADOW.fit`: the sun's shadow
 camera placed on the texel grid so a moving eye does not make edges shimmer; `KSHADOW.radiusFor`: the box's half side for the eye's
 height, 90 m round a walker to 600 m from high up, in steps); `host/12-core-shadow-host.js` ([web]) is `KSHADOW.attach({ renderer,
-scene, camera, sun, ground })`, which turns on the renderer's shadow map and moves the page's sun in the scene's `onBeforeRender`
-(after `core/atmos` has set the sun for the frame), and `cast(root)`, which flags a group's lit meshes. `node core/shadow/test-shadow.js`.
+scene, camera, sun, ground })`, which readies the renderer's shadow map and moves the page's sun in the scene's `onBeforeRender`
+(after `core/atmos` has set the sun for the frame), and `cast(root)`, which flags a group's lit meshes. **Off by default** (the owner,
+2026-11-03: toggleable, off, in every build and rebuild): while off the renderer's shadow map is disabled, so there is no shadow pass and no
+shadow variant; the panel's `shadows` button, `?shadow=1` or `H.set(true)` turns them on (the mirror switch's pattern). `node core/shadow/test-shadow.js`.
 Read `shadow/README.md`.
 ## `lod/`
 

@@ -70,8 +70,14 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};if(GICE)s
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.4);'+ice+'vec3 L;'+
    GL_KEYS.map(k=>'L='+(k==='snow'||k==='snow2'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');').join('')+'}';}
  else body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.6);'+ice+'}';
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/')
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=uNight*vL1.z*vec3(0.05,0.22,0.16);');};
+// PATTERNED GROUND (core/terrain KGROUND's layer kind 'polygon', BACKPORT.md's row; 2026-11-03): frost polygons with their troughs and a rim of
+// sorted stones on the outwash bars and the tundra below the ice (vL1.x, vL1.y), never on the snow or the ice. Procedural: no texture unit. ?kinds=0 none
+if(typeof KGROUND!=='undefined'&&KGROUND.hook&&CORE_Q.get('kinds')!=='0')KGROUND.hook(MAT_GROUND,{key:'throne-glacier',layers:[{kind:'polygon',name:'frost polygons',
+ w:'max(vL1.x,vL1.y*1.6)',amt:.7,size:9,width:.05,jitter:.7,edgeTint:'vec3(0.55,0.56,0.58)',rim:.12,rimTint:'vec3(1.15,1.12,1.08)',
+ seed:KRAND.hash(571,514,63)%997}]}),THRONE.kgOnce(MAT_GROUND);
+
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),LI=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;

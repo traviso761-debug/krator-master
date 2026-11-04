@@ -55,12 +55,19 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.5);vec3 L;'+
    GL_KEYS.map(k=>'L='+((k==='cliff'||k==='rock037')?'_tri(uG_'+k+',vGWP,normalize(vGN),'+GLAY[k].k.toFixed(4)+');':(k==='snow'||k==='snow2'||k==='ice'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);')+'diffuseColor.rgb=mix(diffuseColor.rgb,'+(k==='cliff'?'diffuseColor.rgb*L*2.2':k==='rock037'?'diffuse*L*1.7':'diffuse*L*1.25')+','+W[k]+');'+(k==='veins'?'_E_veins=L;':'')).join('')+'}';}
  else body='vec3 _E_veins=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.6);}';
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/')
   // the veins round the lake glow (dull by day, bright at night): the summit glow
   // and GLINTS on the snow: a random facet normal per 14 cm cell, a tight highlight of the sun on it (near the camera only)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n {vec2 gc=floor(vGWP.xz*7.0);vec3 rn=fract(sin(vec3(dot(gc,vec2(12.9,78.2)),dot(gc,vec2(39.3,11.1)),dot(gc,vec2(73.1,52.7))))*43758.5)-0.5;'+
    'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(cameraPosition-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
    'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(cameraPosition-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
+// THE WALLS' CLASTS (core/terrain KGROUND's layer kind 'clast', BACKPORT.md's row; 2026-11-03): the wall's rock as blocks of its old flows in a
+// matrix of ash, on the steep faces the cliff layer takes (vL0.z): basalt grey and black, red scoria, the pale ash beds; 3D cells, so no stretch
+// down the 450 m wall. Procedural: no texture unit. ?kinds=0 none
+if(typeof KGROUND!=='undefined'&&KGROUND.hook&&CORE_Q.get('kinds')!=='0')KGROUND.hook(MAT_GROUND,{key:'throne-caldera',layers:[{kind:'clast',name:'the wall\'s clasts',
+ w:'vL0.z',amt:.55,size:5,proj:'tri',jitter:.8,matrix:.08,matrixColor:0x6e6a64,palette:[0x3c3836,0x2a2626,0x4a4440,0x6a3426,0x5a2a22,0x8a8070],sub:.15,fleck:0,
+ seed:KRAND.hash(571,514,61)%997}]}),THRONE.kgOnce(MAT_GROUND);
+
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;

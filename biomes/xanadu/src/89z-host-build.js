@@ -44,7 +44,8 @@ const IMP_GAIN=3.0;   /* the impostors' gain (eastabyss 3.6, swlowlands 2.4, sed
 // THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner 2026-11-03: "the valley does need shadows", pair 6 takes it): one box that follows the view, 90 to
 // 600 m by the eye's height. What casts: the ground receives; the trees' bark, the stand-ins and every lit opaque mesh of the flora cast and receive
 // (cast() leaves out the transparent, unlit and shader materials: the cards with alpha cut-outs cast through the depth pass by their map). The cost is
-// measured in KNOWN_ISSUES.md (perf_views, Arc 140T). ?shadow=0 none, ?shadowmap=2048 a smaller map
+// measured in KNOWN_ISSUES.md (perf_views, Arc 140T). OFF BY DEFAULT (the owner, 2026-11-03: toggleable, off, in every build): the panel's 'shadows'
+// button or ?shadow=1 turns them on, and while off they cost nothing. ?shadow=0 not even the switch, ?shadowmap=2048 a smaller map
 const SHADOW=(typeof KSHADOW!=='undefined'&&XQ_ON('shadow'))?(function(){const H=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH,size:+(XQ.get('shadowmap')||4096)});
  window._groundMesh.receiveShadow=true;scene.children.forEach(o=>{if(o!==window._groundMesh&&!(o.userData&&(o.userData.farField||o.userData.host)))H.cast(o);});
  scene.traverse(o=>{if(o.isMesh&&o.renderOrder>=1&&o.renderOrder<=3)o.castShadow=false;});   /* the water (renderOrder 1-3) receives, it casts nothing */
