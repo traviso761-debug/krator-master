@@ -4,9 +4,6 @@
 // (its mask: off the floor, out of the dead forest, off the beach), then one bake.
 window._biome=null;window._jungle=null;
 const IMP_GAIN=1.6;   /* the hyperjungle's, measured on its page against its near boles and crowns (its 88) */
-/* the shadow map takes a texture unit in every lit material: skipped where the ground has none left (85: samplersOf, window._shadow says so) */
-const SHADOW_ON=SHADOW_WANT&&samplersOf(MAT_GROUND)+1<=MAXT;
-if(SHADOW_WANT&&!SHADOW_ON)window._shadow='skipped: the ground reads '+samplersOf(MAT_GROUND)+' of '+MAXT+' texture units';
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
@@ -29,10 +26,6 @@ if(SHADOW_WANT&&!SHADOW_ON)window._shadow='skipped: the ground reads '+samplersO
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
  /* the terrain's horizon on the flora (85-host-far.js: KHORIZON); not the far field, not the ground (85 did it) */
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
- /* THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03): one 4096 box following the view, 90-600 m by the eye's height; the flora and the ground
-    cast and receive (the ground receives only); the springs, the columns, the plumes, the steam, the water and the impostors draw their own light (shader
-    materials: KSHADOW skips them). ?shadow=0 off (its cost: KNOWN_ISSUES.md) */
- if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});window._shadow.cast(scene);
-  GROUND.forEach(m=>window._shadow.cast(m,{cast:false}));if(typeof FAR!=='undefined'&&FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
+ /* the sun's shadows: 89zz-host-shadow.js, after the sea's weather has hooked the ground (it counts the ground's texture units) */
  window._buildMs=Math.round(performance.now()-t0);
 })();
