@@ -2176,7 +2176,9 @@ For every generated image, write the exact prompt into the batch file's `_source
   "add the muting sentence". Tintable rows leave out the code's tint hexes, which only invite colour into a grey image.
 - `PROMPTS-ready.md` holds only what is still owed: when a delivery is processed, its blocks are deleted there and listed under
   "Delivered and removed" (with the id it landed as). Before handing prompts to the owner, check them against the library and every
-  local worktree; never append without pruning.
+  local worktree; never append without pruning. `tools/textures/libsearch.py search "<what the prompt asks for>"` lists the
+  nearest sets by words, `like <image>` checks a delivered image by picture, and `dupes` lists sets that are near copies of each
+  other (2026-11-03: `shell.abalone.soft` is `shell.abalone`, and `pattern.bogolan` and `patterns/common/mudcloth` share one source).
 - Every cut-out (card, wing, sprite) is asked for on solid flat bright magenta (#ff00ff), and the prompt says so in full:
   "no magenta, pink or purple anywhere in the subject; no grey or white background". (2026-10-06: four sheets came on grey and
   had to be keyed by hand.)
