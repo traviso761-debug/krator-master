@@ -1,5 +1,5 @@
 // node settlements/isle-demo/tests/test-isle-refugees.js [days] — refugees on the isles (src/47r, 33's camp ground; core/
-// simulation 77-sim-6-build.js's growth) without a browser. Plans and declares both towns, runs `days` (30) with Valapo
+// simulation 77-sim-6-build.js's growth) without a browser. Plans and declares both towns, runs `days` (60) with Valapo
 // watched: a ship a week lands its people at the camps, fed at the ration line, the camps' households moved into finished
 // houses before the towns' own, and building answers them. ISLE.refugeeChecks, each with a negative; the camps reported.
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -12,7 +12,7 @@ const ok = (name, pass, detail) => { if (!pass) bad++; console.log((pass ? 'PASS
 const cp = x => JSON.parse(JSON.stringify(x));
 const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0]; ok('negative: ' + what + ' is caught', r && !r.ok, r && r.detail); };
 ISLE.initWorld();
-const days = +(process.argv[2] || 30);
+const days = +(process.argv[2] || 60);
 const plans = ISLE.TOWNS.map(town => { const S0 = SITE_INIT.towns[town], G = ISLE.siteGround(S0, ISLE.PROG[town]);
   return { G, R: ISLE.city(town, { site: S0, ground: G, tags: KTAGS.create({ build: 'isle-demo:' + town }), dims: k => ISLE_DIMS[k] || null, vdims: k => ISLE_VDIMS[k] || null }) }; });
 ok('each town\'s plan has its camp\'s ground, tagged (' + plans.map(p => p.R.town + ' ' + (p.R.camp ? Math.round(p.R.camp.x) + ',' + Math.round(p.R.camp.z) : 'none')).join('; ') + ')', plans.every(p => p.R.camp && p.R.camp.tag), '');

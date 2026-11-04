@@ -258,7 +258,8 @@ declares both once they are planned, in one order whichever town it draws, and h
   found ring by ring out from the town's edge, registered in core/tags), fed at a ration line from the town's warehouses,
   their own class (`refugee`) in the happiness pool, a little unhappier at first. A household of them moves into each
   finished house before the town's own new households, and the camp's households are the demand the builders answer.
-  Their grown-ups join the builders at landing (a house going up for every twelve hands).
+  Their grown-ups join the builders at landing (a house going up for every twelve hands). Living in a tent costs twelve
+  points of happiness; a household 45 days in a tent whose people are under 70 happy moves on (leaves the isles).
 - **Valapo's own timber** (2026-11-04): a second lumber village on Valapo's island (11 km off), its felling crew a work
   camp that migrates as Kautoa's does; the open world draws every crew.
 - **Unrest** (`47u`, core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6, 2026-11-03). Each town's happiness pool, all

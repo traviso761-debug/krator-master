@@ -182,3 +182,9 @@ treasury, paying idle builders and the ration, ran from 57,000 shells to nothing
 the governor drafts the unemployed into WORK CREWS sent to nearby deposits the town lacks or can sell; a crewman in a tent
 is unhappier and seeks a house, buys or builds one near his work, and moves on if he cannot; the hamlets may grow, by
 empty lots, to twice their first size.
+
+**Tents** (2026-11-04, the owner's first of the three): anyone whose home is a tent camp carries twelve points of
+unhappiness while there (refreshed each midnight); a household 45 days in a tent whose people are on the mean under 70
+happy moves on, out of the sim (the camp's count, the builders' posts and the books following). Sixty days of ships with
+the refugees at work: the camps at 63-67 happy against the towns' 81-83, none yet past 45 days unhoused (the camps house
+in the order the ships came).

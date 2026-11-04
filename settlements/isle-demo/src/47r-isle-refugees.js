@@ -36,8 +36,29 @@ ISLE.simRefugees = function () {
   return { camps: Object.keys(out.camps).length, every: K.every, people: K.people };
 };
 ISLE.refugeeStep = function (minute) {
-  var K = ISLE.TUNE.sim.refugees, d = Math.floor(minute / 1440); if (!K || minute % 1440 !== 6 * 60 || d < K.first || (d - K.first) % K.every) return;
+  var K = ISLE.TUNE.sim.refugees, d = Math.floor(minute / 1440); if (!K) return;
+  if (minute % 1440 === 0 && minute > 0) ISLE.tentDay(minute);
+  if (minute % 1440 !== 6 * 60 || d < K.first || (d - K.first) % K.every) return;
   ISLE.refugeeShip(minute);
+};
+/* THE TENTS' DAY (midnight): everyone living in a tent (a home of kind `camp`, or one a host marks `tent`) carries the
+   tent's unhappiness (refreshed, fading over two days); then each household in a tent `stay` days or more whose people's
+   mean happiness is under `leave` moves on: they leave the isles (out of the sim), the camp's count and its builders' posts
+   following (core's rebalance) */
+ISLE.tentDay = function (minute) {
+  var K = ISLE.TUNE.sim.refugees, Tn = K && K.tent, S = ISLE.SIM, R = S.rf; if (!Tn || !SIM.NEED) return;
+  var tented = SIM.all('actor').filter(function (a) { var H = SIM.R.place[a.home]; return H && (H.kind === 'camp' || H.tent) && !a.driven; });
+  tented.forEach(function (a) { a.hmods = (a.hmods || []).filter(function (x) { return x.why !== 'tent'; }); SIM.happinessAdd(a, Tn.n, 2, 'tent'); });
+  var hh = {}; tented.forEach(function (a) { var k = a.refugee ? a.refugee.hh : a.crew ? a.crew.hh : null; if (k) (hh[k] || (hh[k] = [])).push(a); });
+  Object.keys(hh).sort().forEach(function (k) {
+    var L = hh[k], since = Math.min.apply(null, L.map(function (a) { return a.refugee ? a.refugee.landed : a.crew.since; })); if ((minute - since) / 1440 < Tn.stay) return;
+    var mean = L.reduce(function (n, a) { var nd = SIM.needsOf(a, minute); return n + (SIM.happiness(a, nd) || 0); }, 0) / L.length; if (mean >= Tn.leave) return;
+    var H = SIM.R.place[L[0].home], s = SIM.settlementOf(L[0]);
+    L.forEach(function (a) { if (SIM.release) SIM.release(a); a.present = false; SIM.remove('actor', a.id); });
+    H.people = Math.max(0, (H.people || 0) - L.length);
+    if (R) { R.left = (R.left || 0) + L.length; (R.leftBy || (R.leftBy = {}))[s] = ((R.leftBy || {})[s] || 0) + L.length; }
+    SIM.logEvent('moved on', { settlement: s, household: k, people: L.length, days: Math.round((minute - since) / 1440), happiness: Math.round(mean) });
+  });
 };
 ISLE.refugeeShip = function (minute) {
   var S = ISLE.SIM, R = S.rf, K = ISLE.TUNE.sim.refugees, T = ISLE.TUNE.sim; if (!R) return null;
@@ -92,7 +113,7 @@ ISLE.refugeeSettle = function (lot, s) {
   return true;
 };
 ISLE.refugeeBooks = function () {
-  var R = ISLE.SIM.rf || { ships: [], camps: {} }, out = { minute: SIM.minute(), ships: JSON.parse(JSON.stringify(R.ships)), camps: {}, housed: {}, people: {}, pool: {} };
+  var R = ISLE.SIM.rf || { ships: [], camps: {} }, out = { minute: SIM.minute(), ships: JSON.parse(JSON.stringify(R.ships)), camps: {}, housed: {}, people: {}, pool: {}, left: R.left || 0, leftBy: Object.assign({}, R.leftBy || {}), ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
   Object.keys(R.camps).forEach(function (s) {
     var C = SIM.R.place[R.camps[s]], all = SIM.all('actor').filter(function (a) { return a.refugee && SIM.settlementOf(a) === s; });
     out.camps[s] = { people: C.people || 0, here: all.filter(function (a) { return a.home === C.id; }).length, households: ISLE.refugeeWaiting(s) };
@@ -110,7 +131,7 @@ ISLE.refugeeBooks = function () {
 ISLE.refugeeChecks = function (a, b) {
   var out = [], ok = function (name, pass, detail) { out.push({ name: name, ok: !!pass, detail: detail || '' }); };
   var landed = b.ships.reduce(function (n, x) { return n + x.people; }, 0), people = Object.keys(b.people).reduce(function (n, s) { return n + b.people[s]; }, 0);
-  ok('every ship\'s people landed (' + b.ships.length + ' ships, ' + landed + ' people, ' + b.ships.reduce(function (n, x) { return n + x.turned; }, 0) + ' turned away)', landed === people && b.ships.length > 0, landed + ' landed, ' + people + ' counted');
+  ok('every ship\'s people landed and are here or have moved on (' + b.ships.length + ' ships, ' + landed + ' people, ' + b.left + ' moved on, ' + b.ships.reduce(function (n, x) { return n + x.turned; }, 0) + ' turned away)', landed === people + b.left && b.ships.length > 0, landed + ' landed, ' + people + ' here, ' + b.left + ' gone');
   var lost = SIM.all('actor').filter(function (x) { if (!x.refugee) return false; var H = SIM.R.place[x.home], s = x.refugee.town; return !H || H.settlement !== s || !(H.kind === 'camp' || (H.kind === 'home' && H.activities.SLEEP > 0)); });
   ok('every refugee in its town\'s camp or in a house of its town', !lost.length, lost.slice(0, 4).map(function (x) { return x.id + ' at ' + x.home; }).join(', '));
   var off = Object.keys(b.camps).filter(function (s) { return b.camps[s].people !== b.camps[s].here; });
@@ -121,7 +142,8 @@ ISLE.refugeeChecks = function (a, b) {
     Object.keys(b.camps).map(function (s) { return s + ' camp ' + desc(b.camps[s].hunger) + ', town ' + desc(b.camps[s].town); }).join('; '));
   var idle = SIM.all('actor').filter(function (x) { return x.refugee && x.ageBand === 'adult' && ISLE.TUNE.sim.refugees.work && (!x.work || !SIM.R.place[x.work] || !(SIM.R.place[x.work].activities.WORK > 0)); });
   ok('every grown-up refugee at work (' + (ISLE.TUNE.sim.refugees.work || 'none') + ', at a post of its town)', !idle.length, idle.slice(0, 4).map(function (x) { return x.id + ' at ' + x.work; }).join(', '));
+  if (a.ledger && b.ledger) { var Lg = SIM.ledger(a.ledger, b.ledger); ok('the books hold with the ships, the camps and those who moved on', Lg.ok, Lg.ok ? '' : Lg.problems.slice(0, 2).join('; ')); }
   ok('the camps, the housed and the refugees\' happiness (reported)', true, Object.keys(b.camps).map(function (s) { var C = b.camps[s];
-    return s + ': ' + b.people[s] + ' landed, ' + b.housed[s] + ' housed, ' + C.people + ' in the camp (' + C.households + ' households waiting), happiness in the camp ' + (b.pool[s] == null ? '-' : Math.round(b.pool[s])); }).join('; '));
+    return s + ': ' + b.people[s] + ' here, ' + b.housed[s] + ' housed, ' + C.people + ' in the camp (' + C.households + ' households waiting), ' + (b.leftBy[s] || 0) + ' moved on, happiness in the camp ' + (b.pool[s] == null ? '-' : Math.round(b.pool[s])); }).join('; '));
   return out;
 };

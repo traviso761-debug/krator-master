@@ -407,6 +407,11 @@ ISLE.TUNE.sim = {
     /* TO WORK (2026-11-04, the owner: after the first run): the grown-ups join the town's builders at landing, paid as
        builders (into the camp's purse, then their household's); the town keeps a house going for every `build.crewPer` hands */
     work: 'builder',
+    /* TENTS (2026-11-04, the owner: "work crew men are unhappier than people who don't have to live in a tent and will seek
+       housing. if they can't obtain it they may decide to move on"): anyone whose home is a tent camp (the refugee camps,
+       the work crews' camps) is `tent.n` less happy while there; a household of them `stay` days without a house whose
+       people are, on the mean, under `leave` happy moves on (leaves the isles) */
+    tent: { n: 12, stay: 45, leave: 70 },
     camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
