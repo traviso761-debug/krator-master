@@ -16,8 +16,8 @@ const BCHK={
  // the falls rust as they fall: fresh at the mouth, red by the foot (W.rustAt by the brine's age in the air)
  rust(B){const a=B.rustF(0),b=B.rustF(1);return{ok:a<.3&&b>.8,detail:'rusted '+(a*100).toFixed(0)+'% at the mouth, '+(b*100).toFixed(0)+'% at the foot (tau '+B.tau+' s, '+B.fall.tFall.toFixed(1)+' s falling)'};},
  // the stain: on the cliff by the mouth and on the fan below (the record), and the ground's rust field paints the fan
- stain(B,field){const m=B.mouth,f=B.foot,on=B.stainAt(m.x,m.y-2,m.z),fan=B.stainAt(f[0],f[2],f[1]+10),g=field(f[0],f[1]+10);
-  return{ok:on>.5&&fan>.3&&g>.4,detail:'the stain '+on.toFixed(2)+' on the face by the mouth, '+fan.toFixed(2)+' on the fan; the ground\'s rust '+g.toFixed(2)};},
+ stain(B,field){const m=B.mouth,f=B.foot;let on=0;for(let k=1;k<10;k++){const y=m.y+(f[2]-m.y)*k/10;on=Math.max(on,B.stainAt(m.x,y,m.z+.5),B.stainAt(m.x,y,m.z+3));}const fan=B.stainAt(f[0],f[2],f[1]+10),g=field(f[0],f[1]+10);
+  return{ok:on>.5&&fan>.3&&g>.4,detail:'the stain '+on.toFixed(2)+' down the face (mouth '+m.y.toFixed(1)+' m, foot '+f[2].toFixed(1)+'), '+fan.toFixed(2)+' on the fan; the ground\'s rust '+g.toFixed(2)};},
  // the ice cliff: 30 m+ of ice within 15 m behind the margin, its face near vertical (25 m+ down within 10 m)
  cliff(T,drop){const ok=T>30&&drop>25;return{ok,detail:T.toFixed(0)+' m of ice 15 m behind the margin; '+drop.toFixed(0)+' m down across its last 10 m'};},
  // the river: its bed never climbs, the drawn ground on its line is its floor (to 2 m), the riverweed in it

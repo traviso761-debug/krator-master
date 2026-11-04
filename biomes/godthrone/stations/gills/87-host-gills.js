@@ -44,7 +44,7 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
    /* the couplets: the pack's grey (mean 0.5 in sRGB, decoded: 0.218 linear, so x4.59 is a ratio about 1) across the pipe (its plan diagonal) and
       down it (the depth from the lip), so a bed's day lines run round the pipe */
    const det=LT?'lc*=mix(1.0,pow(texture2D(gLamT,vec2((vLW.x+vLW.y)*0.7071,vD.x)*gLamK).r,2.2)*4.59,0.5);':'';
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vD;varying vec2 vLW;\n'+(LT?'uniform sampler2D gLamT;uniform float gLamK;\n':'')+S.glsl).replace('#include <color_fragment>','#include <color_fragment>\n{vec3 lc=laminaColor(vD.x,fwidth(vD.x));'+det+'diffuseColor.rgb=mix(lc,diffuseColor.rgb,mix(0.5,0.1,vD.y));}');};
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vD;varying vec2 vLW;\n'+(LT?'uniform sampler2D gLamT;uniform float gLamK;\n':'')+S.glsl).replace('#include <color_fragment>','#include <color_fragment>\n{vec3 lc=laminaColor(vD.x,fwidth(vD.x));'+det+'diffuseColor.rgb=mix(lc,diffuseColor.rgb,vD.y<0.0?0.94:mix(0.5,0.1,vD.y));}');};
   return m;};
  const MATS=[0,1,2,3].map(pipeMat);
  const CH={};recs.forEach(o=>{const v=(o.p.seed>>>0)%NV,key=Math.floor(o.p.x/600)+','+Math.floor(o.p.z/600)+','+v;o.v=v;(CH[key]||(CH[key]=[])).push(o);});
@@ -52,7 +52,7 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
   CH[key].forEach(o=>{const m=KSTACKS.mesh(o.B,{step:2.2,bore:'open'}),n0=pos.length/3,nv=m.pos.length/3;
    for(let i=0;i<nv;i++){const y=m.pos[i*3+1];pos.push(m.pos[i*3],y,m.pos[i*3+2]);const b=m.bed?m.bed[i]:0,occ=m.occ?m.occ[i]:0,ice=m.ice?m.ice[i]:0,man=(b%3===0)?.32:0;
     const r=(cW.r*(1-man)+cB.r*man)*(1-.75*occ),g=(cW.g*(1-man)+cB.g*man)*(1-.75*occ),bb=(cW.b*(1-man)+cB.b*man)*(1-.75*occ);
-    col.push(r+(cI.r-r)*ice,g+(cI.g-g)*ice,bb+(cI.b-bb)*ice);dd.push(Math.max(0,o.B.top-y),Math.min(1,occ*1.6+ice));}
+    col.push(r+(cI.r-r)*ice,g+(cI.g-g)*ice,bb+(cI.b-bb)*ice);dd.push(Math.max(0,o.B.top-y),ice>.5?-1:Math.min(1,occ*1.6+ice));   /* RED: an iced pipe (the ladder's ice towers) keeps the ice's colour (-1: the lamina under it) */}
    for(let i=0;i<m.idx.length;i++)idx.push(m.idx[i]+n0);});
   const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.setAttribute('aD',new T3.Float32BufferAttribute(dd,2));g.setIndex(idx);g.computeVertexNormals();
   const me=new T3.Mesh(g,MATS[v]);me.userData.host=true;me.userData.inspectLabel='Breath pipes (Phlū) of the Reḍ Gīl: rust and carbonate, one lamina a day, a glass band for each of the summit\'s eruptions';scene.add(me);GILLS_DRAW.meshes.push(me);tris+=idx.length/3;});
@@ -113,7 +113,8 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
  // Suq draws ('GILLS.suck': 1 - the breath); the live gills' sumps, where the Bhlo's gas pools on the floor (gas, the floor's 4 m)
  if(typeof KHAZ!=='undefined'){KHAZ.STATES=KHAZ.STATES||{};KHAZ.STATES['GILLS.suck']=(r,h,t)=>{const k=1-GILLS.breath(gillsClockT());return{state:k>0?'drawing':'still',k,on:k>0};};
   SG.L.gills.filter(g=>g.alive).forEach(g=>{const a=(g.a0+g.a1)/2,x=g.c[0]+Math.cos(a)*g.r,z=g.c[1]+Math.sin(a)*g.r,y=terrainH(x,z),d=8;
-   REGISTER({name:'A throat drawing on the Suq ('+g.id+'): "Suq-ān na-sṭãḍ", do not stand on the suck',x,z,y,r:6,h:d+4,
+   REGISTER({name:'A throat drawing on the Suq ('+g.id+'): "Suq-ān na-sṭãḍ", do not stand on the suck',x,z,y:y-2,r:Math.max(6,g.w*.5),h:d+14,   /* RED: the record's volume the crack's floor across (its probe points); the hazard's shape stays the 6 m throat */
+    
     tags:{hazard:{kind:'grab',danger:.7,falloff:'linear',shape:{type:'cyl',r:6,h:d+4,y0:-d},move:{speed:.5,pull:1.2,to:[0,-d,0]},stateFn:'GILLS.suck',tell:{sign:'dust streaming into the mouth'}}}});
    const pts=[];for(let k=0;k<=8;k++){const an=g.a0+(g.a1-g.a0)*(.3+.4*k/8);pts.push([g.c[0]+Math.cos(an)*(g.r-g.w*.2),g.c[1]+Math.sin(an)*(g.r-g.w*.2)]);}
    for(let k=8;k>=0;k--){const an=g.a0+(g.a1-g.a0)*(.3+.4*k/8);pts.push([g.c[0]+Math.cos(an)*(g.r+g.w*.2),g.c[1]+Math.sin(an)*(g.r+g.w*.2)]);}

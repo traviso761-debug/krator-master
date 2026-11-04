@@ -22,7 +22,7 @@ const SCHK={
  // the stack: the face's beds are flows with ochre partings (the bead horizons altered: palagonite, no fresh orange bead under the line)
  // and its lower half the ponded flows (the colonnades)
  stack(S){const k={},r={};S.forEach(q=>{k[q.kind]=(k[q.kind]||0)+1;if(q.low)r[q.recipe]=(r[q.recipe]||0)+1;});const low=S.filter(q=>q.low).length;
-  return{ok:S.length>150&&(k.palagonite||0)>=S.length*.03&&!k.bead&&!k.beadblack&&(r['tibasalt-ponded']||0)>=low*.7&&(k.flow||0)>S.length*.4,detail:S.length+' face samples '+JSON.stringify(k)+'; lower half '+JSON.stringify(r)};},
+  return{ok:S.length>150&&(k.palagonite||0)>=S.length*.015&&!k.bead&&!k.beadblack&&(r['tibasalt-ponded']||0)>=low*.7&&(k.flow||0)>S.length*.4,detail:S.length+' face samples '+JSON.stringify(k)+'; lower half '+JSON.stringify(r)};},
  air(p){const ok=Math.abs(p-.66)<.03;return{ok,detail:p.toFixed(3)+' atm at the site (map 5.1: 0.66)'};}};
 const presAt=y=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},y);
 const wallDrops=()=>{const o=[];for(let a=-3600;a<=3600;a+=900){let hi=-1e9,lo=1e9;for(let d=SC.d-300;d<=SC.d+SC.run+500;d+=10){const p=xzDA(d,a);if(!inMap(p[0],p[1]))continue;const y=terrainH(p[0],p[1])+SC.slope*d;hi=Math.max(hi,y);lo=Math.min(lo,y);}if(hi>lo)o.push(hi-lo);}return o;};

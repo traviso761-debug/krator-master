@@ -16,7 +16,7 @@ function ridgeAt(x,z,o){const y=LOCAL(x,z),k=smooth(LD.line-40,LD.line-260,y);o.
 // THE FROST JETS: over the line, on a 420 m lattice, one in three cells (KRAND by cell), each a vent in a low mound; the fan downwind
 const WIND=[.56,.83];
 const JETS=(function(){const o=[];for(let j=-12;j<=12;j++)for(let i=-12;i<=12;i++){const h=KR.hash(WORLD,i,j,0xF0E7),u=k=>KR.unit(KR.hash(h,k));if(u(0)>.36)continue;
-  const x=i*420+u(1)*300-150,z=j*420+u(2)*300-150;if(LOCAL(x,z)<LD.line+20)continue;o.push({id:'jet.'+i+'.'+j,x,z,r:6+8*u(3),fan:60+90*u(4)});}return o;})();
+  const x=i*420+u(1)*300-150,z=j*420+u(2)*300-150;if(LOCAL(x,z)<LD.line+20||Math.max(Math.abs(x),Math.abs(z))>4500)continue;o.push({id:'jet.'+i+'.'+j,x,z,r:6+8*u(3),fan:60+90*u(4)});}return o;})();
 function jetAt(x,z){let m=0,f=0;for(const J of JETS){const dx=x-J.x,dz=z-J.z;if(Math.abs(dx)>J.fan+20||Math.abs(dz)>J.fan+20)continue;const d=Math.hypot(dx,dz);m=Math.max(m,smooth(J.r*2.5,J.r*.4,d));
   const a=dx*WIND[0]+dz*WIND[1],c=Math.abs(-dx*WIND[1]+dz*WIND[0]);if(a>0)f=Math.max(f,smooth(J.fan,J.fan*.2,a)*smooth(J.r+a*.35,J.r*.5+a*.15,c));}return{m,f};}
 const _rr={};

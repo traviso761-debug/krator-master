@@ -18,7 +18,7 @@ function STATION_FLOOR(x,z){const C=TUBE_DRAW.C;if(!C)return terrainH(x,z);
  const along=(d)=>x*d[0]+z*d[1],across=d=>Math.abs(-x*d[1]+z*d[0]);
  for(const T of TUBE_DRAW.tubes){const s=along(T.dir);if(s>T.from&&s<T.from+T.len&&across(T.dir)<T.w*.45)return T.y0+T.grade*s;}
  return terrainH(x,z);}
-function stationBuild(){const t0=performance.now(),C=KCAVERN.create({ground:(x,z)=>terrainH(x,z),cell:1.5,chunk:16,seed:KRAND.hash(WORLD,90,0,0xCA7E),minRock:.8});
+function stationBuild(){const t0=performance.now(),C=KCAVERN.create({ground:(x,z)=>terrainH(x,z),cell:1.5,chunk:24,seed:KRAND.hash(WORLD,90,0,0xCA7E),minRock:.8});
  TUBE_DRAW.C=C;
  C.hall({id:'vault',owner:'godthrone',c:[0,VAULT.floor,0],rx:VAULT.rx,rz:VAULT.rz,h:54,belly:.22});
  /* the tubes: along their records' bearings, their floors 10 m over the vault's, graded with the shield (falling north and north-east) */

@@ -293,6 +293,32 @@ the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 a
 **Checks:** `verify.py --assert --all-views` passes on the GPU (RTX 5060 lane, D3D11) for all three pages: station 1 53 checks (9.7 M triangles, 25 calls), the pass 53 (14.8 M, 22), the icefield 50 (1.7 M, 16), attach audit 0.00%. `check_core_use`: no new finding. `test_all --no-build`: the only failures not this work's are interiors' test-walk and `check_assembly`'s NEEDS findings on the Godthrone's, Voth's and Span's committed pages (built before core-shader). The pages are in the hash baseline. **For the owner:** every station's look; the copper (data against lore); the shadows' cost.
 
 
+**The Godthrone's turn (2026-11-04, in the cloud, no GPU; branch `claude/rebuild-godthrone-cloud`, from `claude/biome-rebuild` at 0c4ad8f82 with
+the ground relief 4fd72d64f; `biomes/godthrone/PLAN.md` sections 7a and 9b, `KNOWN_ISSUES.md`):** the owner widened it (relayed 2026-11-04) to every
+planned station. **Ten pages:** stations 1, 1b and 2 rebuilt, and seven new `--station` pages on map 5.1 sites (7a has each px, height, air and class):
+`orange` (the dry-cold line near Pluton: palagonite cliff with tafoni, knife-edged ridges, debris-covered ice, the endoliths in split stones),
+`scarp` (the south-western basal escarpment, a 600 m wall of flows, colonnades below, ochre partings), `rim` (the SW Outer Wall's crest: core's
+megabreccia under an overturned flap, slump scarps, a cirque with relic ice, pavement, sand-wedge polygons, ventifacts), `blood` (core water's
+`WATER.underIceFall` out of the ice belt's cliff, the red pool, Qol Ḍrāi's `bloodriver` with 13k blades of riverweed), `gills` (the Red Gill,
+`biomes/gills` station 1: one 1.6 km x 60 m x 300 m radial crack, 382 tall single-mouthed red pipes, the ferromanganese collars, the breath, KHAZ
+pull and pool), `gills-ladder` (gills station 2's top rungs: iced pipes as fumarolic towers, frost jets with rime fans over the line), `tube`
+(the Ilmenite Pillar Vault on `tube_god_n_12`, KCAVERN, 494 ilmenite columns, the cross-conduit leaving toward Godstep's pit at 52 degrees).
+`blood` and `gills` share one frame, 11.3 km apart. A station's far country is map 5.1's own relief (`biomes/godthrone/tools/region.py`).
+**The universal set:** KGROUND's relief on every page (`relief:{bump:.075,cavity:.8,mesh:1,strata:.45}`, `cavityMesh`; `?kgrelief=0` the old ground),
+KSHADOW off at load (`?shadow=1`, not measured: no GPU), `rock.basalt.titanium` wired as the faces' and blocks' grain, the tuff aprons downwind
+(`tibasalt-ash`, a kit recipe: flank, gills, blood, ladder), the megabreccia on the rim. Dropped with reasons (9b): flareJoin (no limbs),
+mirrorSwitch (the only still is a 26 m pool), the plume (no river meets still water). Card cells: 0 faults. Textures newly wired: `rock.basalt.titanium`,
+`mineral.crust.ferromanganese` (the Red collars), and the library's palagonite, tafoni, megabreccia, debris ice, rust ice, rust terrace, red riverweed,
+pavement, lichen crust, columnar basalt, glacier ice (each page takes only its own: station.json "tex").
+**Species changed for readers:** none renamed or reindexed; `GODT.SPECIES` is still empty. New items `splitstone`, `endolith`, `ventifact`;
+`GODT.GROUND` and `groundAt` gain eight classes (0 on the old stations, so their draws are unchanged). **biomes/gills:** the Red dress is drawn by a
+port of xanadu's `87-host-gills.js` (lifting it into `biomes/gills` is owed).
+**Checks (software GL, SwiftShader, this container):** `verify.py --assert` with two views each (VERIFY_RESULTS). `check_core_use`: no new finding.
+`test_all --no-build`: TEST_ALL_RESULT. **For the coordinator:** `verify.py --assert --all-views` on the GPU for all ten pages, KSHADOW's cost,
+the relief judged with and without `?kgrelief=0`, then the hash baseline for the pages (not rewritten here). **For the owner (look decisions):**
+the rim's site and its flap's rock, the scarp drawn as a 600 m wall on a ~6 degree raster slope, the bloodfalls' rust rate, the Red pipes' height
+(30-85 m), the ladder as its top rungs only, the vault's lamp-only light, and the bead sand's glints under the relief.
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
 and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,

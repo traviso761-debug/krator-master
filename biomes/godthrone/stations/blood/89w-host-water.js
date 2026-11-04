@@ -11,7 +11,8 @@
 {const env=new THREE.Scene(),WENV={environment:null};env.add(new THREE.Mesh(sky.geometry,sky.material));ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x8a8e92)});}
 const BLOOD=(function(){const mx=FALL.x,mz=marginZ(mx),rock=preH(mx,mz-1.5)+.4,foot=[mx,mz+40,QOLBED(0)+.3];
  const B=WATER.underIceFall({name:'The bloodfalls',mouth:[mx,mz-.6,rock],dir:[0,1],width:4.5,drop:Math.max(8,rock-foot[2]),foot,ice:{top:terrainH(mx,mz-12),arch:1.8},
-  pool:{r:26,depth:.9},stain:{length:90,spread:.45,face:2.5},icicles:{count:22,span:16,len:[.5,3.2]},seed:KRAND.hash(WORLD,66,0,0xB100D)});
+  pool:{r:26,depth:.9},tau:.45,   /* the look's 1 s rusts a 1.3 s fall to only 75% by its foot: the plan's fall is blood-red at the foot (a look decision: KNOWN_ISSUES.md) */
+  stain:{length:90,spread:.45,face:2.5},icicles:{count:22,span:16,len:[.5,3.2]},seed:KRAND.hash(WORLD,66,0,0xB100D)});
  const D=WATER.drawBloodFall(B,{pick:true,renderOrder:1});
  if(D.mesh){D.mesh.userData.inspectLabel='The bloodfalls: iron brine out of the ice, rusting red as it falls';}
  if(D.pool&&D.pool.mesh){D.pool.mesh.userData.inspectLabel='The red pool under the falls (steams faintly on cold days)';D.pool.mesh.userData.probeSkip=true;}
