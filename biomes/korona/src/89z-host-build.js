@@ -53,6 +53,30 @@ window._biome=null;window._jungle=null;window._korona=null;window._desert=null;w
  _mark('desert');
  if(!Q.has('nojungle')&&STAGE.jungleQ!==0){try{MASK=jungleMask;window._jungle=HYPERJUNGLE.build({R:STAGE.R-60,quality:q*(STAGE.jungleQ==null?.7:STAGE.jungleQ),heroR:STAGE.heroR==null?1200:STAGE.heroR,fauna:!Q.has('nofauna')});}catch(e){reportErr('hyperjungle: '+e.stack);}finally{MASK=waterMask;}}
  _mark('jungle');
+ /* THE STAGHORNS ON THE DRAWN WALL (the GPU verify, 2026-11-03: 44 of 123 on the gorge's ring walls floated, up to 20 m off): the kit places each at
+    the record's wall (NECANYONS.wall), but KSTACKS draws a wall up to tens of metres inside it on these big bodies. Each is seated on the nearest drawn rock
+    of eight level rays from it (28 m at most), .12 m off the face it hits; its turn and size kept, positions only. ?seat=0 leaves them */
+ if(Q.get('seat')!=='0'){const R=BIO.kits.korona,it=R&&R.items.staghorn,BS=NECANYONS.bodies(),rock=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)rock.push(o);});
+  let seated=0;const rc=new THREE.Raycaster(),O=new THREE.Vector3(),D=new THREE.Vector3();
+  /* the walls' triangles bucketed on core/space (8 m cells) once, so each plant tests only the faces within 28 m (a level ray per eighth of a turn,
+     front faces only); a ray against the whole wall mesh per plant took the hollow past its load timeout */
+  const walls=rock.filter(o=>/^Quartzite/.test(o.userData.inspectLabel||''));
+  if(it&&it.count&&walls.length){const A=it.m.a,TS=KSPACE.create({cell:8}),va=new THREE.Vector3(),vb=new THREE.Vector3(),vc=new THREE.Vector3(),hit=new THREE.Vector3(),ray=new THREE.Ray();
+   walls.forEach(m=>{const P=m.geometry.attributes.position.array,I=m.geometry.index.array;for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+    const cx=(P[a]+P[b]+P[c])/3,cz=(P[a+2]+P[b+2]+P[c+2])/3,r=Math.max(Math.hypot(P[a]-cx,P[a+2]-cz),Math.hypot(P[b]-cx,P[b+2]-cz),Math.hypot(P[c]-cx,P[c+2]-cz));TS.insert({P,a,b,c},cx,cz,r);}});
+   const DIRS=[0,1,2,3,4,5,6,7].map(k=>new THREE.Vector3(Math.cos(k*Math.PI/4),0,Math.sin(k*Math.PI/4)));
+   for(let j=0;j<it.count;j++){const i=j*16;O.set(A[i+12],A[i+13],A[i+14]);let bd=28,bp=null,bdir=null;
+    TS.some(O.x,O.z,28,T=>{const P=T.P;if(Math.min(P[T.a+1],P[T.b+1],P[T.c+1])>O.y||Math.max(P[T.a+1],P[T.b+1],P[T.c+1])<O.y)return false;
+     va.fromArray(P,T.a);vb.fromArray(P,T.b);vc.fromArray(P,T.c);
+     for(const d of DIRS){ray.set(O,d);if(ray.intersectTriangle(va,vb,vc,true,hit)){const q=hit.distanceTo(O);if(q<bd){bd=q;bp=hit.clone();bdir=d;}}}return false;});
+    if(!bp||bd<.3)continue;A[i+12]=bp.x-bdir.x*.12;A[i+14]=bp.z-bdir.z*.12;if(!it.o[j])it.k[j]=BIO._lodKey(A[i+12],A[i+14]);seated++;}}
+  window._seat=Object.assign(window._seat||{},{staghorn:seated});}
+ /* OWED TO THE VENDORS' TURNS (KNOWN_ISSUES.md): two items of kits read in place float on their own pages for the same cause, so this page's attach
+    audit leaves them to those turns rather than raise its cap: the eastern highlands' `bloom` (gentians and the cushions' flowers on the poured
+    cushions, which the audit sees only as their axes; 81.5% on ehighlands' own page; pair 13) and the eastern desert's `bloom` (sedesert's
+    cereus and shrub flowers, d none in reach; 15.4% on its own page; its next turn), and on the trenches' crest the northern highlands' `needle`,
+    `beard`, `spray` and `larch` (crowns and beard lichen off their limbs: 274 of 4,351, 162 of 218, 38 of 477, 29 of 317 here; its own page's top items; its pair-7 turn, not merged yet). Marked free here only: drawn as they are. ?owed=0 audits them */
+ if(Q.get('owed')!=='0'){window._auditOwed=[];[['ehigh','bloom'],['sedesert','bloom'],['nhighlands','needle'],['nhighlands','beard'],['nhighlands','spray'],['nhighlands','larch']].forEach(([k,n])=>{const R=BIO.kits[k],d=R&&R.defs[n];if(d){d.free=true;window._auditOwed.push(k+'.'+n);}});}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  // the punji pits' three draws in their order (mask, body, membrane: 50-biome-korona-species.js); window._punji('torn'|'whole'|'regrowing'|null) holds every pit in one state for a look

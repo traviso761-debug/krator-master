@@ -13,6 +13,7 @@
   "49i3-nhl-floor.js": "../nhighlands/src/60-biome-nhighlands-floor.js",
   "49i4-nhl-build.js": "../nhighlands/src/70-biome-nhighlands.js"
  },
+ "core": ["31b-core-leafset.js","33-core-fungoid.js"],
  "packs": {
   "sedesert": "../sedesert",
   "nhighlands": "../nhighlands"

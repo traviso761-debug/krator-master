@@ -156,9 +156,9 @@ const ROCK_GEOS=[];
    - THE TEPUI'S BEDS (core/terrain KSTRATA, the `tepui` recipe: very thick hard grey, black and rust quartzite, thin softer partings, the
      algal streaks under every lip), one stack for the station, so a bed runs from the table to its stacks; a tint about the beds' mean colour
      under the library's grain and the bodies' own banding. ?strata=0
-   - KSTACKS.contour (37b): joints down the tables' and buttes' walls (their rims stay where the records put them: the carvings, the icefalls
-     and the plants are placed from the records); the stacks' and spires' profiles thinning in and out. ?contour=0
-   - KSTACKS.weather on every body: two grains of KRAND noise, the feet kept on the ground. ?weather=0
+   - KSTACKS.contour (37b) on the stacks and spires: their profiles thinning in and out, their joints; the tables and buttes keep their faces
+     (the staghorns, carvings and icefalls are placed on them from the records). ?contour=0
+   - KSTACKS.weather on every body: two grains of KRAND noise (a light one on the tables and buttes), the feet kept on the ground. ?weather=0
    Scale model 5.1's geology rebake agrees (kits/resources/ROCK-PROPOSAL.md: 73% of Korona's region is now quartzite). The records (STAGE.bodies)
    keep the unworn bodies: terrainH, the zones and the plants read them as before */
 const RQ=new URLSearchParams(location.search);
@@ -178,8 +178,10 @@ function wearRock(B,m){
   if(B.kind==='spire')KSTACKS.contour(B,m,{profile:.12,crown:.18,wander:1,joints:[3,6],jointW:[.5,1.4],jointD:[1,3]});
   else if(B.kind==='fin')KSTACKS.contour(B,m,{profile:.08,crown:.1,wander:.8,joints:[4,7],jointW:[.5,1.2],jointD:[.8,2.2],cleft:false});
   else if(B.kind==='stack')KSTACKS.contour(B,m,{profile:.06,flare:.06,crown:0,wander:1.2,joints:[6,9],jointW:[1,2.5],jointD:[2,5],cleft:false});
-  else if(B.kind==='mesa'||B.kind==='butte')KSTACKS.contour(B,m,{profile:0,flare:0,crown:0,wander:0,joints:[12,20],jointW:[1.2,3],jointD:[2,5],cleft:false});}
- if(ROCK_WEATHER)KSTACKS.weather(B,m,{ground:groundH,amp:B.kind==='balanced'?.8:1.6,pit:.5});
+  /* the tables and buttes keep their faces: the staghorns, the carvings and the icefalls are placed on them from the records (NECANYONS.wall), and
+     joints 2-5 m deep left half the gorge's staghorns in the air (the GPU verify, 2026-11-03) */}
+ const big=B.kind==='mesa'||B.kind==='butte';
+ if(ROCK_WEATHER)KSTACKS.weather(B,m,{ground:groundH,amp:big?.35:B.kind==='balanced'?.8:1.6,pit:big?.15:.5});
  return m;}
 const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=layer('ground.snow');
  const m=new THREE.MeshStandardMaterial({map:Lt.map,normalMap:Lt.normalMap,roughnessMap:Lt.roughnessMap,roughness:1,metalness:0,vertexColors:true});
