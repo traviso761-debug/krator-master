@@ -64,6 +64,15 @@ core('materials/record', ['23-mat-record.js', '25-matlib-host.js'])
 core('atmos', ['89-atmos-0-core.js', '89-atmos-0p-presets.js'])
 core('atmos/sky', ['89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js'])
 core('atmos/host', ['89-atmos-h-skyhost.js', '89-atmos-i-skybiome.js'])
+# THE LOWLAND KITS' PLANTS, read in place (the owner, 2026-11-03: the Terrarium takes plants vended from the southwestern and northwestern
+# lowlands, importing as little of them as possible; 59d-mp-flora.js vends them): each kit's species and trees (its builders) and its last
+# fragment (BIO.kitEnd), the southwest's floor too (its floor plants, SWLOW.plantAt). No pass of theirs runs, no dress, no library pack.
+# A kit's fragments run together (its registry is current from its first to its kitEnd), after core/biome and BIO.init (47-host-land.js)
+FLORA_KITS = [('swlowlands', ['50-biome-swlowlands-species.js', '55-biome-swlowlands-trees.js', '60-biome-swlowlands-floor.js', '70-biome-swlowlands.js']),
+              ('nwlowlands', ['50-biome-nwlowlands-species.js', '55-biome-nwlowlands-trees.js', '70-biome-nwlowlands.js'])]
+for ki, (kit, names) in enumerate(FLORA_KITS):
+    for f in names:
+        PATH['48%s-flora-%s' % ('ab'[ki], f)] = os.path.join(ROOT, 'biomes', kit, 'src', f)
 # THE ANCIENTS KIT, read in place (kits/ancients, as settlements/span does): its runtime and the builders 55-mp-ancients.js places as
 # heroes (the owner, 2026-11-03: the bunker, Sky A, the honeycomb blocks, the laboratories and the low and mid rises round them). Its
 # materials come from core/materials (a copy in the kit's src/ wins, as the kit's own build.py resolves them). Where the kit declares
@@ -77,7 +86,11 @@ ANC_RUNTIME = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-k
 ANC_BUILDERS = ['42-offices.js', '46-bunker.js', '48-library.js', '52-sky-abc.js', '64-houses-def.js', '66-office-c.js', '73-police.js',
                 '80-aa-battery.js', '81-houses-abc.js', '82-apartments.js', '8ak-alt-b-civic.js',
                 '89-lab.js', '8ak-alt-a-houses.js', '8ak-alt-c-works.js', '8am-yv-a-quad.js', '8am-yv-b-comb.js', '8ap-host-d-stalks.js',
-                '8ap-host-e-bellhall.js']
+                '8ap-host-e-bellhall.js',
+                # industry (the owner, 2026-11-03: the ruins need industry): the data center, the robot factory, the factory and the fuel station, each
+                # the kit's two (the Vault and the Perforated Stacks, the Assembler and the Rig, the Foundry and the Pilotis Works, the Well and its alt)
+                '40-factory-extras.js', '62-robotics.js', '72-datacenter.js', '78-factory-silo.js', '84-fuel.js', '88-factory.js',
+                '8al-alt-00-lib.js', '8al-alt-08-robotics.js', '8al-alt-09-datacenter.js']
 ANC_FILES = {}
 for f in ANC_RUNTIME + ANC_BUILDERS:
     ANC_FILES[f] = os.path.join(ANC, 'src', f)

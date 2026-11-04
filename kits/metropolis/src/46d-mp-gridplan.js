@@ -65,15 +65,70 @@
   function hallPlan(F, L, o) {
     var G = o.grid, W = G.W, D = G.D, N = W * D, cs = G.cell, X0 = G.x0, Z0 = G.z0, M = o.mask, kindOf = MP.planLib.kindOf;
     var wx = function (i) { return X0 + i * cs; }, wz = function (j) { return Z0 + j * cs; };
-    var st = { id: o.id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], windowsOwn: true, parts: walkRects(M, W, D, wx, wz) }, seen = new Uint8Array(N), big = 0;
-    for (var k = 0; k < N; k++) if (M[k] && !seen[k]) {
-      var cells = new Set(), s = [k]; seen[k] = 1; while (s.length) { var c = s.pop(); cells.add(c); [c - 1, c + 1, c - W, c + W].forEach(function (n) { if (n >= 0 && n < N && M[n] && !seen[n]) { seen[n] = 1; s.push(n); } }); }
-      if (cells.size * cs * cs < 4) continue;
+    var st = { id: o.id, level: L.k, y: L.y, h: L.h, rooms: [], walls: [], outline: [], windowsOwn: true, parts: walkRects(M, W, D, wx, wz) }, comp = new Int32Array(N).fill(-1), hallOfComp = [], big = 0;
+    var cellAt = function (x, z) { var i = Math.floor((x - X0) / cs), j = Math.floor((z - Z0) / cs); return i < 0 || j < 0 || i >= W || j >= D ? -1 : j * W + i; };
+    var hallOf = function (c) { return c >= 0 && comp[c] >= 0 ? hallOfComp[comp[c]] : null; }, lay = o.hall === 'servers' || o.hall === 'works' ? o.hall : null;
+    /* a machine hall's parts are its floor's, the cores' squares left out (a core standing in the air between a tall hall's floors is no hall) */
+    var cores = o.cores || (o.core ? [o.core] : []), inCore = function (c) { var i = c % W, j = (c - i) / W, x = wx(i) + cs / 2, z = wz(j) + cs / 2; return cores.some(function (C) { return x > C.x0 && x < C.x0 + C.n && z > C.z0 && z < C.z0 + C.n; }); };
+    var floor = new Uint8Array(N); for (var k = 0; k < N; k++) floor[k] = M[k] && !(lay && inCore(k)) ? 1 : 0;
+    for (k = 0; k < N; k++) if (floor[k] && comp[k] < 0) {
+      var ci = hallOfComp.length, cells = new Set(), s = [k]; comp[k] = ci; hallOfComp.push(null);
+      while (s.length) { var c = s.pop(); cells.add(c); [c - 1, c + 1, c - W, c + W].forEach(function (n) { if (n >= 0 && n < N && floor[n] && comp[n] < 0) { comp[n] = ci; s.push(n); } }); }
+      /* a sliver (a ledge, a sill: under 25 m2, which the family's bridges do not join) is no hall */
+      if (cells.size * cs * cs < (lay ? 25 : 4)) continue;
       var P = trace(cells, W, X0, Z0, cs); if (!P) continue; P = dpLoop(P, 0.5);
-      st.rooms.push({ id: o.id + '.hall' + st.rooms.length, kind: kindOf(o.hall), mpKind: o.hall, poly: P, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false, stacks: o.hall === 'stack', street: !!o.ground });
+      var R = { id: o.id + '.hall' + st.rooms.length, kind: kindOf(lay ? (lay === 'servers' ? 'plant' : 'workshop') : o.hall), mpKind: o.hall, poly: P, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: o.hall !== 'stack' && !lay, stacks: o.hall === 'stack', layout: lay, street: !!o.ground };
+      R.area = cells.size * cs * cs; st.rooms.push(R); hallOfComp[ci] = R;
       if (cells.size > big) { big = cells.size; st.outline = P; }
     }
-    st.inside = function (x, z) { for (var a = -1; a <= 1; a += 2) for (var b = -1; b <= 1; b += 2) { var i = Math.floor((x + a * 0.02 - X0) / cs), j = Math.floor((z + b * 0.02 - Z0) / cs); if (i >= 0 && j >= 0 && i < W && j < D && M[j * W + i]) return true; } return false; };
+    /* the core's bays (a machine hall's storeys have shafts), each opening through the core's doors on its own faces into the hall there */
+    var lone = {}, strips = [];
+    (o.shafts || []).filter(function (s) { return L.k >= s.from && L.k <= s.to; }).forEach(function (s) {
+      var C = cores[s.core || 0]; if (!C) return; var x0 = s.bay[0], x1 = s.bay[1], z0 = C.z0, z1 = C.z0 + C.n, m = C.n / 2;
+      var R = { id: o.id + '.' + s.id, kind: 'core', mpKind: 'core', poly: [[r3(x0), r3(z0)], [r3(x1), r3(z0)], [r3(x1), r3(z1)], [r3(x0), r3(z1)]], y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: false, shaft: s.id };
+      st.rooms.push(R);
+      [{ f: 'S', c: cellAt(C.x0 + m, C.z0 + C.n + 0.5), at: [C.x0 + m, C.z0 + C.n] }, { f: 'N', c: cellAt(C.x0 + m, C.z0 - 0.5), at: [C.x0 + m, C.z0] }, { f: 'E', c: cellAt(C.x0 + C.n + 0.5, C.z0 + m), at: [C.x0 + C.n, C.z0 + m] }, { f: 'W', c: cellAt(C.x0 - 0.5, C.z0 + m), at: [C.x0, C.z0 + m] }].forEach(function (Fc) {
+        var on = Fc.f === 'W' ? Math.abs(x0 - C.x0) < 0.01 : Fc.f === 'E' ? Math.abs(x1 - C.x0 - C.n) < 0.01 : x0 <= Fc.at[0] + 0.01 && x1 >= Fc.at[0] - 0.01, H = hallOf(Fc.c);
+        if (!on || !H) return; var at = [r3(Fc.at[0]), r3(Fc.at[1])]; R.doors.push({ at: at, w: 1.2, to: H.id }); H.doors.push({ at: at, w: 1.2, to: R.id });
+      });
+      if (!R.doors.length) (lone[s.core || 0] = lone[s.core || 0] || []).push(R);
+    });
+    /* a core standing alone (its part's floor not at this storey: the Assembler's sheds): bridged from its nearest face over the gap to the
+       nearest hall, 15 m at most (as the room plan does) */
+    var extra = [];
+    Object.keys(lone).forEach(function (ci) {
+      var C = cores[ci], m = C.n / 2, best = null;
+      [[C.x0 + m, C.z0 + C.n + 0.5, 0, 1], [C.x0 + m, C.z0 - 0.5, 0, -1], [C.x0 + C.n + 0.5, C.z0 + m, 1, 0], [C.x0 - 0.5, C.z0 + m, -1, 0]].forEach(function (Fc) {
+        var c0 = cellAt(Fc[0], Fc[1]); if (c0 < 0) return; var dist = {}, q = [c0]; dist[c0] = 0;
+        for (var h = 0; h < q.length; h++) { var x = q[h]; if (dist[x] > 15) break; if (hallOf(x)) { if (!best || dist[x] < best.d) best = { d: dist[x], a: [Fc[0] - Fc[2] * 0.5, Fc[1] - Fc[3] * 0.5], e: x }; break; }
+          [x - 1, x + 1, x - W, x + W].forEach(function (n) { if (n >= 0 && n < N && dist[n] === undefined && !inCore(n)) { dist[n] = dist[x] + 1; q.push(n); } }); }
+      });
+      if (best) extra.push({ core: lone[ci], a: best.a, e: best.e });
+    });
+    /* the bridges between parts (46d's ancientFamily finds them): a walk 2.4 m wide, a door at each end into the hall it lands in */
+    var near = function (c) { if (hallOf(c)) return hallOf(c); for (var r = 1; r <= 3; r++) for (var dj = -r; dj <= r; dj++) for (var di = -r; di <= r; di++) { var n = c + dj * W + di; if (n >= 0 && n < N && hallOf(n)) return hallOf(n); } return null; };
+    extra.forEach(function (Ex, xi) {
+      var i5 = Ex.e % W, j5 = (Ex.e - i5) / W, b = [r3(wx(i5) + cs / 2), r3(wz(j5) + cs / 2)], a = [r3(Ex.a[0]), r3(Ex.a[1])], H = hallOf(Ex.e);
+      var S = MP.planLib.strip(F, L, { id: o.id + '.reach' + xi, a: a, b: b, w: 2.4 }), Q = S.rooms[0];
+      Ex.core.forEach(function (R) { Q.doors.push({ at: a, w: 1.2, to: R.id }); R.doors.push({ at: a, w: 1.2, to: Q.id }); });
+      Q.doors.push({ at: b, w: 1.6, to: H.id }); H.doors.push({ at: b, w: 1.6, to: Q.id });
+      st.rooms.push(Q); st.parts.push(S.part); strips.push(S); st.rails = (st.rails || []).concat(S.rails);
+    });
+    (o.bridges || []).forEach(function (Bg, bi) {
+      var ends = [[Bg.s, Bg.sd], [Bg.e, Bg.ed]].map(function (E) { var c = E[0], i5 = c % W, j5 = (c - i5) / W; return { R: near(c), at: [r3(wx(i5) + cs / 2 + E[1][0] * cs / 2), r3(wz(j5) + cs / 2 + E[1][1] * cs / 2)] }; });
+      if (!ends[0].R || !ends[1].R || ends[0].R === ends[1].R) return;
+      var S = MP.planLib.strip(F, L, { id: o.id + '.bridge' + bi, a: ends[0].at, b: ends[1].at, w: 2.4 }), Q = S.rooms[0];
+      ends.forEach(function (E) { Q.doors.push({ at: E.at, w: 1.6, to: E.R.id }); E.R.doors.push({ at: E.at, w: 1.6, to: Q.id }); });
+      st.rooms.push(Q); st.parts.push(S.part); strips.push(S); st.rails = (st.rails || []).concat(S.rails);
+    });
+    /* a machine hall's part no shaft, bridge or street reaches and under 200 m2 (a shelf of the kit's in a tall hall, a mezzanine's end) is a
+       ledge, walked but not worked, as the room plan's thin parts are corridors */
+    if (lay) {
+      var byId = {}, seen = {}, q = []; st.rooms.forEach(function (R) { byId[R.id] = R; if (R.kind === 'core' || R.street) { seen[R.id] = 1; q.push(R); } });
+      while (q.length) q.pop().doors.forEach(function (d) { var T = byId[d.to]; if (T && !seen[T.id]) { seen[T.id] = 1; q.push(T); } });
+      st.rooms.forEach(function (R) { if (R.layout && !seen[R.id] && R.area < 200) { R.kind = 'corridor'; R.mpKind = 'ledge'; R.layout = null; R.furnish = false; } });
+    }
+    st.inside = function (x, z) { for (var a = -1; a <= 1; a += 2) for (var b = -1; b <= 1; b += 2) { var i = Math.floor((x + a * 0.02 - X0) / cs), j = Math.floor((z + b * 0.02 - Z0) / cs); if (i >= 0 && j >= 0 && i < W && j < D && M[j * W + i]) return true; } if (strips.some(function (S) { return S.inside(x, z); })) return true; return false; };
     return st;
   }
   /* a reading hall's layout (MP.furnish lays it in a hall marked `stacks`): stacks (the Ancients' archive, 1150 triangles: a storey of them is held
@@ -98,6 +153,49 @@
       if (!ok) continue;
       out.push({ key: 'ancients_archive', x: px, y: y, z: pz, ry: (alongX ? 0 : Math.PI / 2) + (row % 2 ? Math.PI : 0) });
     }
+    return out;
+  };
+  /* a machine hall's layout (the owner, 2026-11-03: the ruins need industry; an industrial floor cut into 6 m rooms was thousands of cells on the
+     Vault's 400 m plate): one hall each part, laid in runs. 'servers' the data centers': runs of ten racks back to back (a hot aisle between, 2 m
+     cold aisles), a control stand at each run's head. 'works' the factories' and the fuel stations': bays 6 m by 5 m, each a machine (a lab bench)
+     with a workstation at it, every fifth a store of cargo pods. Runs are kept whole, the nearest the hall's heart (its core, else its middle)
+     first, to `cap` pieces (a storey held near the reading hall's 200 k): a big hall is worked round its core and bare beyond. None within 2 m of
+     a wall or 3 m of a core (o.avoid: [{x0, z0, n}]). Placements as the placer's ({key, x, y, z, ry}) */
+  MP.machineLayout = function (P, y, seed, use, o) {
+    o = o || {}; var avoid = o.avoid || [], cap = o.cap == null ? 240 : o.cap;
+    var inPoly = function (x, z) { var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++) { if (((P[i][1] > z) !== (P[j][1] > z)) && (x < (P[j][0] - P[i][0]) * (z - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0])) c = !c; } return c; };
+    var edge = function (x, z) { var b = 1e9; for (var m = 0; m < P.length; m++) { var a = P[m], q = P[(m + 1) % P.length], dx = q[0] - a[0], dz = q[1] - a[1], l2 = dx * dx + dz * dz, t = l2 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0; b = Math.min(b, Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z)); } return b; };
+    var clear = function (x, z) { if (!inPoly(x, z) || edge(x, z) < 2) return false; for (var a = 0; a < avoid.length; a++) { var Q = avoid[a]; if (x > Q.x0 - 3 && x < Q.x0 + Q.n + 3 && z > Q.z0 - 3 && z < Q.z0 + Q.n + 3) return false; } return true; };
+    var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9, ar = 0, cx = 0, cz = 0;
+    P.forEach(function (p) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
+    for (var m = 0; m < P.length; m++) { var u = P[m], v = P[(m + 1) % P.length], cr = u[0] * v[1] - v[0] * u[1]; ar += cr; cx += (u[0] + v[0]) * cr; cz += (u[1] + v[1]) * cr; }
+    if (Math.abs(ar) > 1e-6) { cx /= 3 * ar; cz /= 3 * ar; } else { cx = (x0 + x1) / 2; cz = (z0 + z1) / 2; }
+    var hx = cx, hz = cz, hb = 1e9; avoid.forEach(function (Q) { var qx = Q.x0 + Q.n / 2, qz = Q.z0 + Q.n / 2, d = inPoly(qx, qz) ? Math.hypot(qx - cx, qz - cz) : 1e9; if (d < hb) { hb = d; hx = qx; hz = qz; } });
+    var alongX = x1 - x0 >= z1 - z0, A0 = alongX ? x0 : z0, A1 = alongX ? x1 : z1, R0 = alongX ? z0 : x0, R1 = alongX ? z1 : x1;
+    var pt = function (t, r) { return alongX ? [t, r] : [r, t]; }, rot = function (ry) { return (alongX ? 0 : Math.PI / 2) + ry; };
+    /* the runs: each a list of pieces (all clear, or the run is dropped), its middle for the sort */
+    var runs = [], run = function (list) { var ok = list.length > 0, sx = 0, sz = 0; list.forEach(function (p) { if (ok && !clear(p.x, p.z)) ok = false; sx += p.x; sz += p.z; }); if (ok) runs.push({ list: list, d: Math.hypot(sx / list.length - hx, sz / list.length - hz) }); };
+    var piece = function (key, t, r, ry) { var q = pt(t, r); return { key: key, x: q[0], y: y, z: q[1], ry: rot(ry) }; };
+    if (use === 'servers') {
+      /* a pair of rows 1.2 m apart (the hot aisle), pairs 4.2 m apart; a run 10 racks (0.85 m each) and a stand, 1.6 m between runs */
+      var nr = Math.floor((R1 - R0 - 5.2) / 4.2) + 1, na = Math.floor((A1 - A0 - 4 - 8.5) / 10.1) + 1, rs = R0 + (R1 - R0 - (nr - 1) * 4.2 - 1.2) / 2, as = A0 + (A1 - A0 - (na - 1) * 10.1 - 8.5) / 2;
+      for (var r = rs, row = 0; row < nr; r += 4.2, row++) for (var t = as, ai = 0; ai < na; t += 10.1, ai++) {
+        var L = []; for (var k = 0; k < 10; k++) { L.push(piece('ancients_server_rack', t + 0.425 + k * 0.85, r, Math.PI)); L.push(piece('ancients_server_rack', t + 0.425 + k * 0.85, r + 1.2, 0)); }
+        /* the stand in the cold aisle at the run's head (none where the aisle is the wall's margin) */
+        if (nr > 1) L.push(piece('ancients_control_stand', t + 7.8, r + 0.6 + (row % 2 ? 1.75 : -1.75), row % 2 ? 0 : Math.PI)); run(L);
+      }
+    } else {
+      /* a bay 6 m along by 5 m across: the machine at its back, its workstation before it; every fifth bay a store, pods in a pair */
+      var nr2 = Math.floor((R1 - R0 - 5.8) / 5) + 1, na2 = Math.floor((A1 - A0 - 6) / 6) + 1, rs2 = R0 + (R1 - R0 - (nr2 - 1) * 5) / 2, as2 = A0 + (A1 - A0 - (na2 - 1) * 6) / 2;
+      for (var r2 = rs2, row2 = 0; row2 < nr2; r2 += 5, row2++) for (var t2 = as2, b = 0; b < na2; t2 += 6, b++) {
+        var u2 = MP.u ? MP.u(seed, row2 * 997 + b, 1) : ((row2 * 7 + b * 3) % 10) / 10, face = row2 % 2 ? Math.PI : 0, sg = row2 % 2 ? -1 : 1;
+        if (u2 < 0.2) run([piece('ancients_cargo_pods', t2 - 1, r2, face), piece('ancients_cargo_pods', t2 + 1, r2, face)]);
+        else run([piece('ancients_lab_bench', t2, r2 - 0.9 * sg, face), piece('ancients_workstation', t2, r2 + 0.7 * sg, face + Math.PI)]);
+      }
+    }
+    runs.sort(function (a, b) { return a.d - b.d; });
+    var out = []; for (var i = 0; i < runs.length && out.length + runs[i].list.length <= cap; i++) out.push.apply(out, runs[i].list);
+    out.forEach(function (p) { p.x = r3(p.x); p.z = r3(p.z); p.ry = r3(p.ry); });
     return out;
   };
   MP.gridPlan = function (F, L, o) {
@@ -413,7 +511,8 @@
    grid (55 calls MP.ancientFamily the first time it builds one): a ground storey (its inside cells and the core's) and a storey at each of the
    grid's levels, what each is for from the building's programme (MP.ANCIENT_USES: [use, storeys] in turn, the last repeating), the core
    square's stair and lift (a 4 m square holds the stair alone), its ruin states as a design's (40's debris, 59b's cut). */
-MP.ANCIENT_PLANNED = ['bunker', 'skya', 'comb', 'apartments', 'lab', 'starlab', 'offices', 'library', 'police'];
+MP.ANCIENT_PLANNED = ['bunker', 'skya', 'comb', 'apartments', 'lab', 'starlab', 'offices', 'library', 'police', 'quad', 'houses', 'stalks', 'bellhall',
+  'datacenter', 'stacks', 'robotics', 'rig', 'foundry', 'works', 'well', 'tankyard', 'coolers', 'gantry', 'furnace', 'spheres'];
 MP.ANCIENT_USES = {
   bunker: [['records', 1], ['clinic', 1], ['offices', 2], ['plant', 1], ['offices', 9]],
   skya: [['market', 2], ['clinic', 3], ['offices', 20], ['plant', 1], ['offices', 20], ['records', 2], ['school', 3], ['plant', 1], ['lodging', 30], ['plant', 1], ['offices', 13], ['hydroponics', 4], ['skylobby', 9]],
@@ -425,18 +524,27 @@ MP.ANCIENT_USES = {
   /* batch 3 */
   offices: [['market', 1], ['clinic', 1], ['offices', 9], ['plant', 1], ['offices', 99]],
   library: [],
-  police: [['offices', 1], ['records', 1], ['offices', 9]]
+  police: [['offices', 1], ['records', 1], ['offices', 9]],
+  /* batch 4: the Cloisters a college (schoolrooms, lodging, its stacks above), the Houses and the Capsule Stalks lodging; the Bell Hall a hall */
+  quad: [['school', 2], ['lodging', 2], ['records', 9]],
+  houses: [['lodging', 9]],
+  stalks: [['lodging', 99]],
+  bellhall: [],
+  /* industry: machine halls in the data centers, workshops and stores in the factories and the fuel stations */
+  datacenter: [['servers', 99]], stacks: [['servers', 99]], robotics: [['works', 99]], rig: [['works', 99]], foundry: [['works', 99]], works: [['works', 99]], well: [['works', 99]], tankyard: [['works', 99]],
+  coolers: [['servers', 99]], gantry: [['works', 99]], furnace: [['works', 99]], spheres: [['works', 99]]
 };
 /* what a building's ground storey is for, where it is not a lobby: the Crown Library's reading hall (its stacks at the skin, reading rooms inside) */
-MP.ANCIENT_GROUND = { library: 'reading' };
-/* the storeys that are one hall each part (by use): the Crown Library's reading floor, its stacks a library throughout */
-MP.ANCIENT_HALL = { reading: 'stack' };
+MP.ANCIENT_GROUND = { library: 'reading', bellhall: 'assembly', datacenter: 'servers', stacks: 'servers', robotics: 'works', rig: 'works', foundry: 'works', works: 'works', well: 'works', tankyard: 'works', coolers: 'servers', gantry: 'works', furnace: 'works', spheres: 'works' };
+/* the storeys that are one hall each part (by use): the Crown Library's reading floor, its stacks a library throughout; industry's machine halls
+   (MP.machineLayout) */
+MP.ANCIENT_HALL = { reading: 'stack', assembly: 'hall', servers: 'servers', works: 'works' };
 (function () {
   var r3 = function (v) { return Math.round(v * 1000) / 1000; };
   var SKIN = { lobby: function (i) { return i % 4 === 0 ? 'reception' : 'stall'; }, market: function () { return 'stall'; }, clinic: function (i) { return i % 6 === 2 ? 'store' : 'clinic'; }, offices: function (i) { return i % 4 === 3 ? 'meeting' : 'office'; },
     plant: function () { return 'plant'; }, records: function () { return 'stack'; }, school: function (i) { return i % 7 === 3 ? 'store' : 'classroom'; }, hydroponics: function () { return 'greenhouse'; }, skylobby: function (i) { return i % 3 ? 'cafe' : 'concourse'; },
-    lodging: function (i) { return i % 5 === 4 ? 'living' : 'bedroom'; }, labs: function (i) { return i % 3 === 2 ? 'office' : 'workshop'; }, reading: function (i) { return i % 4 === 3 ? 'reception' : 'stack'; } };
-  var INNER = { reading: function (i) { return i % 3 ? 'study' : 'store'; }, labs: function (i) { return i % 4 === 1 ? 'meeting' : 'store'; }, offices: function (i) { return i % 3 ? 'meeting' : 'store'; }, lodging: function (i) { return i % 2 ? 'bath' : 'store'; }, clinic: function () { return 'store'; }, school: function () { return 'store'; }, market: function () { return 'store'; }, lobby: function () { return 'store'; }, skylobby: function () { return 'store'; } };
+    lodging: function (i) { return i % 5 === 4 ? 'living' : 'bedroom'; }, labs: function (i) { return i % 3 === 2 ? 'office' : 'workshop'; }, works: function (i) { return i % 4 === 3 ? 'store' : 'workshop'; }, servers: function (i) { return i % 5 === 4 ? 'store' : 'plant'; }, reading: function (i) { return i % 4 === 3 ? 'reception' : 'stack'; } };
+  var INNER = { works: function (i) { return i % 3 ? 'store' : 'plant'; }, servers: function () { return 'plant'; }, reading: function (i) { return i % 3 ? 'study' : 'store'; }, labs: function (i) { return i % 4 === 1 ? 'meeting' : 'store'; }, offices: function (i) { return i % 3 ? 'meeting' : 'store'; }, lodging: function (i) { return i % 2 ? 'bath' : 'store'; }, clinic: function () { return 'store'; }, school: function () { return 'store'; }, market: function () { return 'store'; }, lobby: function () { return 'store'; }, skylobby: function () { return 'store'; } };
   MP.ancientFamily = function (A, grid, entries) {
     var lv = grid.levels.filter(function (l) { return !l.roof; }), cores = grid.cores || (grid.core ? [grid.core] : []), C = cores[0], W = grid.W, D = grid.D, cs = grid.cell, N = W * D, L = [], masks = [];
     var inSq = function (Q, i, j) { var x = grid.x0 + (i + 0.5) * cs, z = grid.z0 + (j + 0.5) * cs; return x > Q.x0 && x < Q.x0 + Q.n && z > Q.z0 && z < Q.z0 + Q.n; };

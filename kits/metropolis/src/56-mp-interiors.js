@@ -17,6 +17,9 @@ MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat){MP
  const out=AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[mpFrameDoors(st)]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});
  /* a reading hall (46d, MP.stackLayout): its stacks and desks in rows, not the placer's (which only lines a hall's walls) */
  st.rooms.forEach(R=>{if(!R.stacks||!R.poly)return;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:MP.stackLayout(R.poly,R.y,MP.idHash(R.id)).map(p=>Object.assign(p,{room:R.id}))});});
+ /* a machine hall (46d, MP.machineLayout): racks or work bays in runs round the core; 240 pieces a storey (near 200 k), the biggest hall first */
+ const avoid=F.grid?(F.grid.cores||(F.grid.core?[F.grid.core]:[])):[];let left=240;
+ st.rooms.filter(R=>R.layout&&R.poly).sort((a,b)=>(b.area||0)-(a.area||0)).forEach(R=>{const P=MP.machineLayout(R.poly,R.y,MP.idHash(R.id),R.layout,{avoid,cap:left});left-=P.length;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:P.map(p=>Object.assign(p,{room:R.id}))});});
  return out;};
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;

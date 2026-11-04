@@ -122,7 +122,8 @@ round them out. Thirteen of the kit's builders are read in place (`build.py`, `A
 does) and each is run once, intact, into a hero of its own (`55`): **the Redoubt** (the bunker), **Skyscraper A** (420 m), **the
 Honeycomb Block** and **the Apartments** (A, B the honeycomb wall, C), **the Reliquary** and **the Star Laboratory**, then **the
 Offices** (the flared ring and the lobed tower), **the Crown Library**, **the Watch** (police), **the Cloisters**, **the Houses**,
-**the Capsule Stalks** and **the Bell Hall**. Views `Ancient, <name>`, and `Ancients, all` (a grid 440 m apart).
+**the Capsule Stalks** and **the Bell Hall**; then the kit's industry, eight more, and four new industrial buildings of this kit's (below,
+"The last of the Ancients' plans, and industry"). Views `Ancient, <name>`, and `Ancients, all` (a grid 440 m apart).
 
 - **Nothing is redrawn:** the records (`46b`) say which builder runs, and the numbers the stage needs, measured off the drawn hero.
 - **Names the kit shares with this page are renamed at build time** (`SUBST`): its error panel, ground, ticks and `onerror` give way to
@@ -290,6 +291,40 @@ Then: a shaft may turn (`yaw` on its record: its walls, steps, walk strips and l
 Curve's shafts stand square to the arc; the Spiral's ramp is walked (strips along its tread, `G.userData.strips`, whole or gutted); a ruin's
 slabs take an outline at 48 points at most, cells about 6 m round and 8 m deep (the Swell's crown was 161 k triangles, now 66 k; the Organ's 168
 k, now 99 k); Sky A's widest storeys are about 65 to 125 k triangles furnished (they were 720 k before its ring was cut by angle).
+
+**The Terrarium's way in and its forest** (the owner, 2026-11-03: a real entrance and a way to the forest deck; plants vended from the
+southwestern and northwestern lowlands, the whole one orderly and at least one ruin overgrown; modular, as little biome code as possible). The
+lobby between the legs' feet is 8 m round (its ring plan 7.2), the main doors under a canopy on two piers with a paved walk out past the sphere,
+and the core comes up on the deck in a glazed kiosk with a bronze roof, open to the walk. The plants: `build.py` reads in place only each kit's
+species, its trees and its last fragment (`FLORA_KITS`: `48a-flora-*` the southwest's four, the floor among them for its floor plants; `48b-flora-*`
+the northwest's three); none of their passes runs, no dress, no library pack. A design's record may say what it plants (`flora(state)`: records
+`{ref, x, y, z, scale, seed}`, `ref` the kit's own name, `'swlowlands.magnolia'` a tree, `'swlowlands:fern'` a floor plant); `MP.flora` (`59d`)
+vends each through the kit's own API (`SWLOW.treeAt`, `SWLOW.plantAt`, else core/biome's `BIO.kitBuilder`), bakes them into a group of the
+hero's with only those two kits in the bake, and takes back the registry entries they added; `MP.floraDress` adds the group after the ruin is
+cut, so the plants stand whole on a ruin. The Terrarium whole and gutted is three rings of trees under the dome (magnolia and tree fern,
+jacaranda and banksia, pompom, grass tree and skirt palm) with beds of floor plants between and four clear walks from the kiosk (112 plants,
+about 58 k triangles); its ruins are overgrown: the deck, while it stands (the crown, the skeleton), thick with trees and floor plants anyhow, and
+the ground round the legs taken back (the crown 160 plants, about 70 k; a ruin without its deck 70). Without the two kits on the page the
+record's own stand-in cones are drawn.
+
+**The last of the Ancients' plans, and industry** (the owner, 2026-11-03: the ruins need industry; the kit's data center, robot factory,
+factory and fuel tanks in all their versions, then a third new one of each). The Cloisters (a college: schoolrooms, lodging, its stacks), the
+Houses and the Capsule Stalks (lodging) and the Bell Hall (one hall) have plans. Eight industrial builders come in from the kit, read in place
+(`ANC_BUILDERS`): **the Vault** and **the Perforated Stacks** (data centers), **the Assembler** and **the Rig** (robot factories), **the Foundry**
+and **the Pilotis Works** (factories), **the Well** and **the Tank Yard** (fuel). The four new ones are drawn on this page in the kit's own manner
+and with its alternates' helpers (`46e-mp-industry.js`, registered like the kit's in `46b`, so they take the same floors, plans and ruins):
+**the Cooling Towers** (a four-storey server hall, four hyperboloid towers on leg rings, pipe bridges), **the Gantry Hall** (a sawtooth assembly
+hall glazed on its north lights, an office block, a yard under five portal gantries), **the Furnace Stacks** (three halls stepping down, five
+banded stacks, a conveyor over an open ore bunker) and **the Spheres** (a domed pump hall, six spherical tanks on leg rings). An industrial floor
+is not cut into rooms (the Vault's 400 m plate made 11,230 of them, 14 s a plan): every storey of an industrial building is a machine hall
+(`MP.ANCIENT_HALL`: `servers`, `works`), one room to each part of the floor, the core's bays opening into the hall each face stands in, the
+parts joined by the family's bridges, a core standing alone mid-air bridged to the nearest hall within 15 m, a sliver under 25 m2 dropped and a
+part under 200 m2 no shaft, bridge or street reaches made a ledge (walked, not worked, as the room plan's thin parts are corridors). `MP.machineLayout`
+lays a hall: runs of ten server racks back to back with a stand at the head (the data centers), or bays of a machine and its workstation, every
+fifth a store of cargo pods (the rest), in runs nearest the core first, 240 pieces a storey shared by hall size (the Vault's floor about 125 k
+triangles). A part's storeys above its core's run (the Rig's deck on its legs, 20 m over the block's roof) get a core of their own when they hold
+200 m2 of floor (`MP.floors`). All twenty-five Ancients buildings' plans pass the audit. Views `Inside the Vault, a server floor` and
+`Inside the Gantry Hall, the floor`.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

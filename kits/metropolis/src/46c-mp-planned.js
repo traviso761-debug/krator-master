@@ -497,7 +497,7 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
       entryAt: function (k) { return L[k].use === 'stalk' ? [0, 2.85] : [4.1, 0]; },
       plan: function (F, Lv, lib) {
         var P = [], u = Lv.use, R, bands, glass = Lv.y >= bot + 8 - 0.1 && u !== 'park';
-        if (u === 'lobby') { R = 5.2; bands = [{ d: R - 3.2, corr: true }, shaftBand()]; }
+        if (u === 'lobby') { R = 7.2; bands = [{ d: R - 3.2, corr: true }, shaftBand()]; }
         else if (u === 'stalk') { R = 3.2; bands = [shaftBand()]; }
         else if (u === 'park') { R = S.r - 0.9; bands = [{ d: R - 3.2, corr: true }, shaftBand()]; }
         else { R = Math.min(rr(Lv.y), rr(Lv.y + Lv.h)) - 0.9; bands = roundBands(R, kindsOf(u), innerOf(u), lib); }
@@ -506,6 +506,33 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
         P.push(st);
         if (Lv.k === 0) for (var k = 0; k < Lg.n; k++) P.push(pavilion(Lv, k));
         var out = lib.parts(F, Lv, P); if (u === 'park') out.open = true;
+        return out;
+      },
+      /* the forest deck's planting (the owner, 2026-11-03), as records for MP.flora (59d) to vend from the lowland kits by their own names
+         ('kit.species' a tree, 'kit:kind' a floor plant). Whole (and gutted) it is orderly: three rings of trees a size under the dome, beds of
+         floor plants between, four clear walks from the core's head; a ruin is overgrown: the deck, while it stands, thick with trees and floor
+         plants anyhow, and the ground round the legs taken back */
+      flora: function (state) {
+        var out = [], yD = S.y + 0.02, n = 0, seed = function (salt) { return (MP.idHash('terrarium.flora.' + salt) + n++) >>> 0; };
+        var walk = function (a, r) { for (var q = 0; q < 4; q++) { var d = Math.abs(((a - Math.PI / 4 - q * Math.PI / 2) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI); if (d * r < 1.8) return true; } return false; };
+        var add = function (ref, a, r, y, sc, salt) { out.push({ ref: ref, x: r3(Math.cos(a) * r), y: y, z: r3(Math.sin(a) * r), scale: sc, seed: seed(salt) }); };
+        var ring = function (r, k, refs, sc, salt) { for (var i = 0; i < k; i++) { var a = 2 * Math.PI * (i + 0.5) / k; if (!walk(a, r)) add(refs[i % refs.length], a, r, yD, sc, salt); } };
+        var TREES = ['swlowlands.magnolia', 'nwlowlands.treefern', 'swlowlands.jacaranda', 'nwlowlands.banksia', 'swlowlands.pompom', 'nwlowlands.grasstree', 'swlowlands.skirtpalm', 'swlowlands.canepalm'];
+        var FLOOR = ['swlowlands:fern', 'swlowlands:azalea', 'swlowlands:iris', 'swlowlands:heliconia', 'swlowlands:giantfern', 'swlowlands:shrub', 'swlowlands:moss', 'swlowlands:grass'];
+        var deck = ['intact', 'gutted', 'crown', 'skeleton'].indexOf(state) >= 0;
+        if (state === 'intact' || state === 'gutted') {
+          ring(10, 8, ['swlowlands.magnolia', 'nwlowlands.treefern'], 0.6, 'a');
+          ring(17, 12, ['swlowlands.jacaranda', 'nwlowlands.banksia'], 0.5, 'b');
+          ring(23.5, 18, ['swlowlands.pompom', 'nwlowlands.grasstree', 'swlowlands.skirtpalm'], 0.8, 'c');
+          ring(13.5, 20, ['swlowlands:fern', 'swlowlands:azalea'], 1, 'd');
+          ring(20.5, 28, ['swlowlands:iris', 'swlowlands:heliconia', 'swlowlands:fern'], 1, 'e');
+          ring(26.5, 32, ['swlowlands:fern', 'swlowlands:moss'], 1, 'f');
+          return out;
+        }
+        /* overgrown: anyhow, thick, the trees of every size (no dome over them now) */
+        var u = function (i, s) { return MP.u(7311, i, s); };
+        if (deck) for (var i = 0; i < 90; i++) { var a = 2 * Math.PI * u(i, 1), r = 4.5 + 24 * Math.sqrt(u(i, 2)); if (i < 32) add(TREES[Math.floor(u(i, 3) * TREES.length)], a, r, yD, 0.6 + 0.6 * u(i, 4), 'g'); else add(FLOOR[Math.floor(u(i, 3) * FLOOR.length)], a, r, yD, 1, 'h'); }
+        for (var j = 0; j < 70; j++) { var a2 = 2 * Math.PI * u(j, 5), r2 = 8 + 46 * Math.sqrt(u(j, 6)); if (j < 18) add(TREES[Math.floor(u(j, 7) * TREES.length)], a2, r2, 0, 0.7 + 0.5 * u(j, 8), 'i'); else add(FLOOR[Math.floor(u(j, 7) * FLOOR.length)], a2, r2, 0, 1, 'k'); }
         return out;
       },
       ruins: ruins({ crown: { keep: 0.75, note: 'the dome\'s glass and its forest\'s floor fallen in' }, broken: { keep: 0.5, note: 'the sphere split open to its belt' }, stump: { keep: 0.2, note: 'the stalk, the legs\' stumps and the pavilions' }, skeleton: { keep: 0.6, bare: 0.7, note: 'the belt\'s skin gone, its floors on the stalk' } })

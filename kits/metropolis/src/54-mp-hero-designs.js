@@ -212,9 +212,14 @@ MP.DESIGN_BUILD={
   for(let k=0;k<16;k++){const a=k/16*Math.PI*2;B.lathe('bronze',dp.map(p=>[p[0]+.08,p[1]]),1,{a0:a-.012,a1:a+.012,uv:2});}
   /* the forest floor at the equator, the park storey's (46c); the trees stand clear of the stair and lift's head at the middle */
   B.lathe('green',[[r-.2,cy+.02],[0,cy+.02]],40,{uv:3});
-  for(let i=0;i<F.trees;i++){const a=X.u(i,1)*Math.PI*2,d=7+(r-13)*Math.sqrt(X.u(i,2)),h=6+10*X.u(i,3);DK.cone(B,'green',Math.cos(a)*d,Math.sin(a)*d,cy,1.6+2*X.u(i,4),Math.min(h,r*.85-d*.5),7,[.8+.3*X.u(i,5),1,.8]);}
+  /* the core's head on the deck: a glazed kiosk over the stair and lift (open to the walk on +z), a bronze roof */
+  B.lathe('glassClear',[[3.7,cy+3],[3.7,cy+.02]],32,{skip:t=>{let d=Math.abs(t-Math.PI/2);d=Math.min(d,Math.PI*2-d);return d<.26;}});B.lathe('bronze',[[4.1,cy+3],[4.1,cy+3.3],[0,cy+3.5]],32,{uv:2});
+  /* the stand-in trees, only where the lowland kits are not on the page (MP.flora, 59d, plants the deck) */
+  if(!(MP.flora&&MP.flora.ok()))for(let i=0;i<F.trees;i++){const a=X.u(i,1)*Math.PI*2,d=7+(r-13)*Math.sqrt(X.u(i,2)),h=6+10*X.u(i,3);DK.cone(B,'green',Math.cos(a)*d,Math.sin(a)*d,cy,1.6+2*X.u(i,4),Math.min(h,r*.85-d*.5),7,[.8+.3*X.u(i,5),1,.8]);}
   /* the service stalk: a lobby ring between the legs' feet (its doors on the four ways in), a drum up into the sphere holding the stair and lift */
-  DK.lobbyRing(B,{r:()=>6,h:4.2,seg:20,doors:[0,Math.PI/2,Math.PI,-Math.PI/2],pier:.45},X.doors);DK.lathe(B,'white',[[6,4.2],[3.7,6.4],[3.7,bot+8]],20,{});
+  DK.lobbyRing(B,{r:()=>8,h:4.2,seg:24,doors:[0,Math.PI/2,Math.PI,-Math.PI/2],pier:.45},X.doors);DK.lathe(B,'white',[[8,4.2],[3.7,6.6],[3.7,bot+8]],24,{});
+  /* the main entrance on +z: a canopy on two piers over the doors and a paved walk out to the plaza past the sphere */
+  B.box('concrete',-4.2,4.2,4.2,4.55,7.6,13.2,{uv:3});[-3.6,3.6].forEach(x=>B.box('concrete',x-.25,x+.25,0,4.2,12.6,13.1,{uv:2}));B.box('concrete',-2.6,2.6,0,.05,8,36,{uv:4});
   const Lg=F.legs;for(let k=0;k<Lg.n;k++){const a=Math.PI/4+k*Math.PI*2/Lg.n,c=Math.cos(a),s=Math.sin(a);DK.tube(B,'white',[c*(Lg.foot-2),4.2,s*(Lg.foot-2)],[c*Lg.top,Lg.y,s*Lg.top],Lg.r,10);DK.lobbySlab(B,{rect:{cx:c*Lg.foot,cz:s*Lg.foot,hw:5,hd:5,yaw:Math.atan2(c,s)},h:4.2,doors:[[0,0]],dep:.4,bay:2.5},X.doors);DK.q(B,'concrete',[c*Lg.foot-5,4.2,s*Lg.foot+5],[c*Lg.foot+5,4.2,s*Lg.foot+5],[c*Lg.foot+5,4.2,s*Lg.foot-5],[c*Lg.foot-5,4.2,s*Lg.foot-5],{uv:3});}},
  // M6: great concrete arches round a court with a reflecting pool; relief walls above
  arcades(F,B,X){X.gaps=[];const hw=F.footprint.w/2,hd=F.footprint.d/2,cw=F.court.w/2,cd=F.court.d/2,H=F.height.roof,A=F.arch,ay=A.h;

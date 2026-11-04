@@ -108,7 +108,7 @@ MP.floors = function (G, o) {
     /* the part's own box: the tables and the search stay in it (a building of many parts, the Honeycomb Block's, was 1.5 s a hero over the grid) */
     let mx = 0, mz = 0, i0 = 1e9, i1 = -1e9, j0 = 1e9, j1 = -1e9; cells.forEach(k => { const i = k % W, j = (k - i) / W; mx += i; mz += j; i0 = Math.min(i0, i); i1 = Math.max(i1, i); j0 = Math.min(j0, j); j1 = Math.max(j1, j); }); mx /= cells.length; mz /= cells.length;
     const BW = i1 - i0 + 1, BD = j1 - j0 + 1, inPart = new Uint8Array(BW * BD); cells.forEach(k => { const i = k % W, j = (k - i) / W; inPart[(j - j0) * BW + i - i0] = 1; });
-    let pick = null;
+    const find = mine => { let pick = null;
     for (const n of [6, 4]) {
       if (BW < n || BD < n) continue;
       const W2 = BW - n + 1, M2 = W2 * (BD - n + 1), run = new Int16Array(M2), best = new Int16Array(M2), end = new Int16Array(M2), sat = new Int32Array((BW + 1) * (BD + 1));
@@ -121,12 +121,17 @@ MP.floors = function (G, o) {
       /* the longer run wins; the 6 m square (a stair and a lift) on a tie with the 4 m one (a stair) */
       if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2 + i0, j = Math.floor(bq / W2) + j0; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, box: [x0 + i0 * cell, x0 + (i1 + 1) * cell, z0 + j0 * cell, z0 + (j1 + 1) * cell], low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
     }
-    if (pick) cand.push(pick);
+    return pick; };
+    const pick = find(mine); if (!pick) return; cand.push(pick);
+    /* the part's storeys above its core's run (the Rig's deck on its legs, 20 m over the block's roof), when they hold a floor (200 m2 on a
+       storey), get a core of their own: its shaft rises from the ground through the block below */
+    const ctop = Math.max.apply(null, pick.levels), up = mine.filter(L => L.y > ctop + 0.01);
+    if (up.some(L => cells.reduce((a, k) => a + (L.g[k] ? 1 : 0), 0) * cell * cell >= 200)) { const P2 = find(up); if (P2) { P2.upper = true; cand.push(P2); } }
   });
   cand.sort((a, b) => (b.run - a.run) || (b.size - a.size));
   /* ... or one more than 40 m from every part with a core (a bridge's reach, 46d: the Offices' ring standing apart on its pilotis) */
   const kept = [], gap = (a, b) => Math.hypot(Math.max(0, a[0] - b[1], b[0] - a[1]), Math.max(0, a[2] - b[3], b[2] - a[3]));
-  cand.forEach((C, i) => { if (i === 0 || C.low || C.size >= 200 && kept.every(K => gap(K.box, C.box) > 40)) kept.push(C); });
+  cand.forEach((C, i) => { if (i === 0 || C.low || C.upper || C.size >= 200 && kept.every(K => gap(K.box, C.box) > 40)) kept.push(C); });
   S.cores = kept.map(C => ({ x0: C.x0, z0: C.z0, n: C.n, levels: C.levels }));
   S.core = S.cores[0] || null;
   /* the plates, in rectangles: runs of a row joined with the same run on the rows after */

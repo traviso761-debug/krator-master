@@ -44,7 +44,7 @@ ok(MP.DESIGN_KEYS.every(k => designOk(MP.DESIGNS[k])), "the designs' numbers are
 ok(!designOk(Object.assign({}, MP.DESIGNS.wedge, { height: { roof: 188, tip: 100 } })), 'negative: a tip under the roof fails');
 // the Ancients kit's buildings: one record a key, a builder each, none clashing with a design or a family, sane numbers (with a negative)
 const ancOk = A => A && /^build[A-Z]/.test(A.fn) && A.footprint.w > 0 && A.footprint.d > 0 && A.height.tip >= A.height.roof && A.sh >= 3 && (A.scale == null || (A.scale >= 1 && A.scale <= 2)) && A.tris > 0;
-ok(MP.ANCIENT_KEYS.length === 13 && MP.ANCIENT_KEYS.every(k => MP.ANCIENTS[k] && MP.ANCIENTS[k].id === k && !MP.FAMILY[k] && !MP.DESIGNS[k]), 'thirteen Ancients, keyed, none a design or a family');
+ok(MP.ANCIENT_KEYS.length === 25 && MP.ANCIENT_KEYS.every(k => MP.ANCIENTS[k] && MP.ANCIENTS[k].id === k && !MP.FAMILY[k] && !MP.DESIGNS[k]), 'twenty-five Ancients (thirteen, the kit\'s industry and four of this kit\'s), keyed, none a design or a family');
 ok(MP.ANCIENT_KEYS.every(k => ancOk(MP.ANCIENTS[k])), "the Ancients' records are sane");
 ok(!ancOk(Object.assign({}, MP.ANCIENTS.houses, { scale: 0.5 })), 'negative: a scale under 1 fails');
 const ENTRY = ['arch', 'auto', 'arch+auto', 'core', 'open'];
