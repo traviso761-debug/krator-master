@@ -20,9 +20,23 @@ const FAR=(function(){
  const mesh=new THREE.Mesh(geo,mat);mesh.userData.host=true;mesh.userData.farField=true;mesh.userData.probeSkip=true;mesh.frustumCulled=false;
  mesh.userData.inspectLabel='The High Rift past the map';scene.add(mesh);
  return{mesh,mat,G,tris:G.count.tris};})();
+// THE GROUND'S TEXTURE UNITS (the Throne's, ringisles' and geyser's samplersOf): the Mirror's six layers, the horizon, the rain cover and the weather passed
+// SwiftShader's 32 units but not the 16 both GPU lanes allow (the GPU verify, 2026-11-04). Counted from a dry run of its onBeforeCompile; window._units
+// says what the ground reads (final: at the end of the build, 89z).
+const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
+const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
+  const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
+  try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
+  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
+const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures;
+window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
+/* what the ground takes after the horizon, measured on the Mirror (2026-11-04): 89a's snow cover and the weather's wetting 4 units, the rain cover 1.
+   In the Throne's order: the rain cover where it fits beside the 4, then the horizon on the ground where its 2 fit too */
+const UNITS_LATER=4,RAIN_FITS=samplersOf(MAT_GROUND)+1+UNITS_LATER<=MAXT;
 // THE TERRAIN'S HORIZON (45-core-horizon.js): eight directions over the ground's square (256 a side, ~22 m) and the far field past it. The ground takes it
-// here, the flora after the bake (89z).
+// here where its two units fit beside what comes later (UNITS_LATER), the flora after the bake (89z).
 const GROUND_HZ=(function(){if(typeof KHORIZON==='undefined'||new URLSearchParams(location.search).get('hz')==='0')return null;
  const t0=performance.now(),S=TERR.R*1.1,H=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,
   far:FAR?{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}:undefined});
- window._horizon={ms:Math.round(performance.now()-t0),n:H.n};KHORIZON.shade(MAT_GROUND,H);return H;})();
+ window._horizon={ms:Math.round(performance.now()-t0),n:H.n,skipped:[]};
+ if(samplersOf(MAT_GROUND)+2+(RAIN_FITS?1:0)+UNITS_LATER<=MAXT)KHORIZON.shade(MAT_GROUND,H);else window._horizon.skipped.push('the ground');return H;})();

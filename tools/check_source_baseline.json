@@ -94,6 +94,7 @@
  "biomes/rift/src/99-host-take.js: ORNUM": 2,
  "biomes/rift/stations/highland/87-host-families.js: ORNUM": 1,
  "biomes/rift/stations/plateau/87-host-families.js: ORNUM": 2,
+ "biomes/riftrim/src/45-host-stage.js: RAWTEX": 2,
  "biomes/ringisles/src/55-biome-ringisles-trees.js: ORNUM": 8,
  "biomes/ringisles/src/60-biome-ringisles-floor.js: ORNUM": 5,
  "biomes/ringisles/src/66-biome-ringisles-world.js: ORNUM": 3,

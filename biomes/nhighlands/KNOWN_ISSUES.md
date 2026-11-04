@@ -28,8 +28,8 @@
       until it comes. `?strata=0` shows the old granite for comparison.
 - [ ] **Station 5, the bog country (pair 7): the look to judge, and what it does not have yet.** The pools are their own records, not `KFROST`'s polygons;
       no ice on the pools in winter (`ext/54`); no peat-cutters' camp, bog finds or bog iron (the plan's people and resources); the peat hags are a flat
-      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`PROMPTS-NEEDED.md` 32: `ground.peat.hag`, `card.dwarfbirch`,
-      `card.sedge.fen`). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
+      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`ground.peat.hag`, `card.dwarfbirch` and
+      `card.sedge.fen` were delivered 2026-11-03 and wait to be wired at the kit's next turn: `core/materials/PLAN.md`, "Delivered 2026-11-03"). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
       Seen in software GL on the first looks (2026-11-03), fixed: the mire painted orange (the library's sphagnum is full colour and was tinted by the
       paint: it is drawn untinted now), hummocks that read as red boulders (the kit's cushion, now low and mostly green and ochre), willows round every
       pool (a pool raised the riparian field), the crest drawn as striped spires (a nearer sky ridge: station 1's restored), pale grey pools (their

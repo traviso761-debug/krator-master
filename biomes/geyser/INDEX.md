@@ -31,10 +31,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `70-biome-geyser.js` | 3 |  |
 | `82-host-sky.js` | <1 |  |
 | `84-host-ground.js` | 23 | the paint (per vertex) (19); the layers (the library, or procedural without i (41); the meshes (131) |
-| `85-host-far.js` | 3 |  |
-| `88-host-build.js` | 4 |  |
+| `85-host-far.js` | 5 |  |
+| `88-host-build.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89w-host-sea.js` | 4 |  |
 | `89w-host-water.js` | 5 |  |
+| `89zz-host-shadow.js` | 1 |  |
 | `99-host-take.js` | 20 | the inspector's words (62); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (161) |
 | `99-tail.html` | <1 |  |

@@ -74,7 +74,11 @@ function buildGround(){
  const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
- const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
+ /* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+    MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+    ?kgrelief=0 drops the relief (the before-and-after) */
+ const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+ const MAT=KG_STD?new THREE.MeshStandardMaterial({map:TEX,color:0x84847a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
  /* the library's ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow, groundCladonia:
     the owner's reindeer lichen over the boreal floor), by zone: on core/terrain's ground shader (KGROUND, 43-core-ground.js, 2026-10-26),
     hex-tiled, scaled with distance and blended by height; the same weights and strengths as the page's own mix before it */
@@ -99,7 +103,7 @@ function buildGround(){
     ' vec3 st=mix(vec3(0.17,0.18,0.17),vec3(0.26,0.27,0.25),b1); st=mix(st,vec3(0.12,0.14,0.11),b2*0.6);',
     ' st*=0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
     BRECCIA_ON?' }':typeof STATION_STEEP==='string'?' diffuseColor.rgb=mix(diffuseColor.rgb,'+STATION_STEEP+',smoothstep(0.14,0.36,steep)*0.92);}':' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};   /* with the megabreccia on, the clast layer above draws the steep */
- KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground'});
+ KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground',relief:KG_RELIEF&&GLY.length?{bump:.075,cavity:.8,mesh:1}:null});
  /* THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
     directions baked over the map (256 texels a side, ~26 m) and, beyond it, over the far country's drawn lattice (FAR.G), so at a
     low sun the ridges and the Inner Wall throw their shadows across the valley; the hollows and the stream's cut see less sky */
@@ -122,7 +126,7 @@ function buildGround(){
  for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);
  {const gl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;if(typeof STATION_GL==='function'){const w=STATION_GL(p.getX(i),p.getZ(i));gl[i*3]=w[0];gl[i*3+1]=w[1];gl[i*3+2]=w[2];continue;}gl[i*3]=zat('montane',u,v);gl[i*3+1]=zat('glade',u,v);gl[i*3+2]=zat('boreal',u,v)*(1-zat('alpine',u,v))*(1-zat('burn',u,v))*(1-zat('rip',u,v));}g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));}   /* z: the boreal floor (cladonia) */
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);if(KG_RELIEF&&GLY.length)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
  // the apron: a vertical skirt 70 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=NXg,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);

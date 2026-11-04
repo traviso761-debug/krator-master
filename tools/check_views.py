@@ -52,8 +52,8 @@ BUILD_TOPS = ('biomes', 'kits', 'settlements', 'openworld')
 
 STR = r"""(?:'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")"""
 BAD_CHARS = set(':\\/*?"<>|')
-DEFINES = re.compile(r"\b(?:[A-Z]+_)?VIEWS\s*(?:=[^=]|\[)|\bSTAGE\.views\s*=|\bget\s+views\s*\(|\bviews\s*:|\bviewList\s*:"
-                     r"|\bviews\s*\([\w\s,]*\)\s*\{")
+DEFINES = re.compile(r"\b(?:[A-Z]+_)?VIEWS\s*(?:=[^=]|\[)|\b(?:STAGE|STATION)\.views\s*=|\bget\s+views\s*\(|\bviews\s*:|\bviewList\s*:"
+                     r"|\bviews\s*\([\w\s,]*\)\s*\{|\bfunction\s+STATION_VIEWS\s*\(")
 
 
 def unq(s):

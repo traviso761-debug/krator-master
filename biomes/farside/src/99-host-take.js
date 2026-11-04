@@ -17,7 +17,9 @@ const VIEWS={};
   if(n)VIEWS['A native tree in the fog (sponges and wine weed)']=[n.x+12,n.y0+4,n.z+9,n.x,n.y0+n.H*.35,n.z];}
  const seen={};WORKS.forEach(o=>{if(seen[o.kind])return;seen[o.kind]=1;const r=Math.max(10,o.r*2.4);
   VIEWS['The works: '+({kelpkiln:'a kelp kiln',limekiln:'a lime kiln',wrackheap:'a wrack heap',wrackcart:'a wrack cart',terraces:'the walled terraces',fold:'a goat fold',rack:'a drying rack',quay:'a quay',pier:'a jetty',slip:'the dockyard slip',tsunamistone:'a tsunami stone'}[o.kind]||o.kind)]=
-   [o.x-w[0]*r+w[1]*r*.5,o.y+Math.max(4,o.r*.8),o.z-w[1]*r-w[0]*r*.5,o.x,o.y+1,o.z];});})();
+   (function(){const ex=o.x-w[0]*r+w[1]*r*.5,ez=o.z-w[1]*r-w[0]*r*.5,ey=o.y+Math.max(4,o.r*.8)+(STAGE.key==='cloud'?32:0);
+    /* the cloud forest's works from over its canopy: at the works' own height the fold's eye stood in a broadleaf (the GPU verify's eye check, 2026-11-04) */
+    return[ex,ey,ez,o.x,o.y+1,o.z];})();});})();
 
 // ---------------------------------------------------------------- the inspector's words: a plant names its species, what it yields, the zone
 function describe(hit){const p=hit.point,o=hit.object;

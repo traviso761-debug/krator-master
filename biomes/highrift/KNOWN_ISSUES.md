@@ -6,10 +6,15 @@ Chromium on software GL (SwiftShader) only; the coordinator runs `verify.py --as
 ## Open
 
 - [ ] **GPU verify owed** on all five pages (`verify.py dist/highrift*.html --assert --all-views`), and the hash baseline entries after it.
-- [ ] **The fault mirror's texture** (`rock.hematite.mirror`, `core/materials/PROMPTS-NEEDED.md` section 32): station `mirror` draws
-      `rock.basalt.oxidised` at roughness 0.22 with a steel-grey tint in its place.
+- [x] **The fault mirror's texture** (`rock.hematite.mirror`, delivered 2026-11-03, `core/materials/PLAN.md` "Delivered 2026-11-03"): wired
+      at the merge as the `mirror` layer's family (roughness 0.22 kept); the procedural hematite tint draws only with `?kground=0`. Its look is the owner's.
 - [ ] **`KSCOUR` on the Gill's bed** (station `coulee`): the channel, its bars and its stream bed are the stage's own carve; KSCOUR's potholes,
       dry falls and current ripples are owed. Aufeis (the Gill's winter ice) is not drawn.
+- [ ] **The ground's texture units** (the GPU verify, 2026-11-04): the Mirror's ground passed SwiftShader's 32 units but not the 16 both GPU lanes allow.
+      85 now counts them (`samplersOf`, `window._units`) and, in the Throne's order, gives the rain cover a unit only where it fits beside the snow and
+      the weather's 4, then the horizon on the ground only where its 2 fit too: the Mirror has neither on its ground, the Caldron and the Coulee the rain
+      cover but no ground horizon (the flora keep the horizon everywhere). The count is of declared samplers, so it errs safe: an exact count
+      (active samplers after the compile) would give some stations their ground horizon back.
 - [ ] **The sound is data only** (`HRIFT.SOUND`, the page's "export sound"): there is no `core/audio`. The owner's call whether to write one
       now or wait for the Godot port (`PLAN.md` section 11, item 7).
 - [ ] **Lake Cinnabar** (3,120 m, the red lake) has no page (`PLAN.md` sections 3 and 11).
