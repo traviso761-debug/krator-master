@@ -164,15 +164,18 @@ building engine is now named `core/engine`, not `core/kit`.
   improved". Defaults are unchanged until the owner says otherwise. **Every turn's checklist gains: the ground judged with and
   without `?kgrelief=1`.**
   **Which builds take it at their turn** (each reads `43-core-ground.js` already, so each page is stale by its source text until
-  rebuilt; adopting is `relief`, `tri` and `cavityMesh` in its ground's `KGROUND.hook`, `core/README.md` "Adopting KGROUND's relief"):
-  - MeshStandard grounds, the full effect: **ebadlands** (and its four stations; `strata` with `strataW: 'vRock'`), **godthrone**
-    (`strata`), **swlowlands** (and delta, gorge; `strata`).
-  - Lambert grounds, where the relief only scales the sun's share: **eastabyss** (+ lakes; `strata`), **hyperjungle** (+ lake,
-    savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay** (`strata`), **nwlowlands** (+ margins; two hooks,
-    ground and marl; `strata`), **sedesert**, **swbay**, **swhighlands** (`strata`). For these the bigger step is moving the ground
-    to MeshStandard (the light per pixel), a page change for the turn.
-  - Not on KGROUND yet (they take KGROUND first): the throne, ringisles, catch, geyser, korona and the other grounds in
-    `GROUND.md`'s audit.
+  rebuilt, recorded in `tools/check_stale_baseline.json`; adopting is `relief`, `tri` and `cavityMesh` in its ground's `KGROUND.hook`,
+  `core/README.md` "Adopting KGROUND's relief"; judge first with `?kgrelief=1.5&kgtri=1`):
+  - MeshStandard grounds under KGROUND, the full effect (`relief: {bump: .075, cavity: .8, mesh: 1}`, `cavityMesh` on the ground):
+    **ebadlands** (+ canyons, montane, tundra, waste; and `strata: .45, strataW: 'vRock'`), **godthrone** (`strata`),
+    **swlowlands** (+ delta, gorge; `strata`), **copperglacier** (+ icefield, pass), **nsemiarid**, **oidong** (+ hearths, passes),
+    **xanadu** (+ gills). `tri: true` only where flanks are steep and near (ebadlands' canyon walls, the glacier's pass).
+  - Lambert grounds, where the relief only scales the sun's share and shows little (measured on nhighlands and eastabyss): move the
+    ground to MeshStandard first (the light per pixel; their `?kground=0` fallbacks may keep Lambert), then `relief` as above:
+    **eastabyss** (+ lakes), **hyperjungle** (+ lake, savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay**,
+    **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
+  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
+    Lambert), **scablands**.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
