@@ -4,6 +4,33 @@ Open items, each with what is owed. The kit was built in one cloud session (2026
 `verify.py --assert` ran in software GL (SwiftShader) on every station; the GPU `--assert --all-views` and the owner's look pass are the
 coordinator's (`HANDOFF-REBUILD.md`, the riftrim paragraph).
 
+## Verified (2026-11-04, the cloud session: SwiftShader, no GPU)
+
+`python3 verify.py <page> --assert --views "<one view>"` on each committed page, 1280x800, software GL (`tools/harness.py`):
+
+| Page | Checks | Scene triangles at the view | Attach audit |
+|---|---|---|---|
+| `dist/riftrim.html` (Ledge) | 43 pass, 0 fail | 2.31 M | 0 of 11,491 cards float |
+| `dist/riftrim-lakes.html` | 43 pass, 0 fail | 15.9 M (the glass canes' view, close over the shallows) | 0 of 411 |
+| `dist/riftrim-ice.html` | 43 pass, 0 fail | 1.27 M | 0 of 145 |
+| `dist/riftrim-gorge.html` | 43 pass, 0 fail | 1.22 M | 4 of 135 needle cards (the Rift's stone pine), under the 1% limit overall |
+| `dist/riftrim-pass.html` | 43 pass, 0 fail | 18 k | none drawn at the view |
+| `dist/riftrim-barrens.html` | 42 pass, 0 fail | 1.94 M | 0 of 17 |
+
+What the checks caught on the way, all fixed: the river line built from (x, y) instead of (x, z) (the river was no water); the lakes'
+outlet carved only to its water line; the gorge's banks under the water past its edge; a ramp reversed on the crossing (its tundra
+under ice); the pack's brightness normalisation lifting the black rim's dark rock to pale (the ground layers keep their own now); the
+frozen lake's ice record in the water fields; three vendors' builders whose crowns or flowers float (their rows commented, below).
+**Owed to the coordinator:** the GPU `--assert --all-views`; the lakes station's 15.9 M at the canes' view is under the 19.5 M
+budget but the heaviest, and worth a look on the Arc.
+
+## The look, seen in SwiftShader (for the owner's pass)
+
+- [ ] Station 1's cloud belt ground reads pale between the mist frills, and the fog-drip cards show as small square plates under the
+  fins at mid range.
+- [ ] The black barrens read dark grey-brown after the ground fix (`ground.quartzite.black` on the S stations); whether "black" enough
+  is the owner's call.
+
 ## Owed to core adoption (`PLAN.md`, "Core adoption", "Not taken this turn")
 
 - [ ] **Ledge's cliff: KCARVE cave mouths, `KSTACKS.contour` benches, and the cliff springs' cave (`KKARST`, karst site 6 of
@@ -40,6 +67,13 @@ coordinator's (`HANDOFF-REBUILD.md`, the riftrim paragraph).
 - [ ] **No Godot twin**; `PORT.md` is the audit's provisional tags.
 
 ## Borrowed species
+
+- [ ] **The beard tree is not grown** (station 2): the Rift's `B[27]` scatters its blooms and anemones up to .8 m round a limb point; with four
+  trees the attach audit failed at 1.86% (12 of 644 cards). Commented, owed as the monkey-puzzle is. Station 2's only borrowed species is now
+  the S highlands' crozier: the N rim's Rift cloud forest (PLAN.md section 3) waits on the Rift's turn.
+- [ ] **The monkey-puzzle is not grown** (station 2): the Rift's builder (`src/55`, `B[9]`) scatters its blooms up to .6 of a pad's width off
+  the pad, and the attach audit failed at 51% on station 2 with it (1,982 of 2,039 blooms floating). Its row is commented; grow it again
+  once the Rift holds them (`BIO.holdTo`).
 
 - [ ] **The tier cedar is not grown** (stations 1 and 4): the SW lowlands' builder (`src/55`, `B[16]`) jitters its 4 m pads up to 1.2 m
   off the limbs, and the attach audit failed at 1.96% on station 1 with it (273 of 6,186 needle cards floating; the limit is 1%). Its row is

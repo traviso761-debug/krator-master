@@ -39,7 +39,7 @@ function rimLand(o){
  const RP=RIV?RIV.pts.map(p=>[p[0],p[1]]):null;   /* the line in plan: [x, z] (pts are [x, z, y]) */
  const _tm={x:NaN,z:NaN,h:0};
  function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=o.ground(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
- function riverAt(x,z){if(!RIV)return null;const n=nearLine(RP,x,z);if(n.d>RIV.width*.5*1.05)return null;const a=RIV.pts[n.i],b=RIV.pts[Math.min(RIV.pts.length-1,n.i+1)];return mix(a[2],b[2],n.u);}
+ function riverAt(x,z){if(!RIV)return null;const n=nearLine(RP,x,z),hw=RIV.half?RIV.half(x,z):RIV.width*.5;if(n.d>hw*1.05)return null;   /* river.half(x, z): its half-width where it changes (the gorge narrows) */const a=RIV.pts[n.i],b=RIV.pts[Math.min(RIV.pts.length-1,n.i+1)];return mix(a[2],b[2],n.u);}
  function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
  const RIVER_SPEC=RIV?{name:RIV.name||'The river',pts:RIV.pts,width:RIV.width==null?24:RIV.width,speed:RIV.speed==null?1.4:RIV.speed}:null;
  function fieldsAt(x,z,h,slope){const wd=waterH(x,z),under=wd>-1e8&&h<wd;

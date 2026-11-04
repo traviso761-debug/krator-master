@@ -625,7 +625,7 @@
    ],
    "tint": {
     "keep": 0.7,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -638,7 +638,7 @@
    ],
    "tint": {
     "keep": 0.8,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -651,7 +651,7 @@
    ],
    "tint": {
     "keep": 0.5,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -664,7 +664,7 @@
    ],
    "tint": {
     "keep": 0.8,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -677,7 +677,7 @@
    ],
    "tint": {
     "keep": 0.5,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -690,7 +690,7 @@
    ],
    "tint": {
     "keep": 0.6,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -703,7 +703,7 @@
    ],
    "tint": {
     "keep": 0.85,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -716,7 +716,7 @@
    ],
    "tint": {
     "keep": 0.9,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -729,7 +729,7 @@
    ],
    "tint": {
     "keep": 0.9,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -742,7 +742,7 @@
    ],
    "tint": {
     "keep": 0.85,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -755,7 +755,7 @@
    ],
    "tint": {
     "keep": 0.9,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -768,7 +768,7 @@
    ],
    "tint": {
     "keep": 0.7,
-    "mean": 0.6
+    "mean": null
    },
    "roughLift": 0.15,
    "mapOnly": true
@@ -783,6 +783,19 @@
     "keep": 0.0,
     "mean": 0.9
    },
+   "mapOnly": true
+  },
+  "ground.black": {
+   "lib": "ground.quartzite.black",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
    "mapOnly": true
   }
  }

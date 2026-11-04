@@ -69,7 +69,7 @@ const HCHK={
  dry(P){const bad=P.filter(p=>{if(/biome:(cane|canejoint|dome)$/.test(p[3]))return false;const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0;});   /* the N lakes' glass canes and algal domes grow in the water (60); everything else stands out of it */
   return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none drowned'};},
  // nothing grows on the barren crest (the ice cap, the airless rim)
- barren(P){const bad=P.filter(p=>FIELD.barren(p[0],p[2])>.95);
+ barren(P){const bad=P.filter(p=>FIELD.barren(p[0],p[2])>.95&&!(LAND.lamps&&p[3]==='biome:glow'));   /* the crossing's signal lamps stand on the portal's apron: an artefact, not a plant */
   return{ok:!bad.length,detail:bad.length?bad.length+' on barren ground (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none on the ice or the bare crest'};},
  // no tree on a layered cliff face: steep (the host's slope) and bedded rock showing (its strata weight)
  cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.strata(t.x,t.z)>.5);
@@ -79,12 +79,12 @@ const HCHK={
   const n=P.filter(p=>/fruit|grapes/.test(p[3])).length,untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
   return{ok:!miss.length&&!untagged.length&&n>=(LAND.fruitMin==null?200:LAND.fruitMin),detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' fruit and grape instances drawn; catalog keys: '+RRIM.FRUIT_KEYS.length};},
  // trees as variants: every placed species has K prototypes at each level, and the drawn trees are instances of them
- variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
+ variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};if(!T.length&&V.protos.size===0&&!(LAND.species||[]).length)return{ok:true,detail:'no tree of this kit grows on this page (LAND.species is empty)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
   for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv))miss.push(RRIM.SPECIES[sp].key+' v'+v+' lv'+lv);
   return{ok:!miss.length&&V.stats.drawn>0&&P.size<=RRIM.SPECIES.length*2*3*V.K,detail:(miss.length?'missing: '+miss.slice(0,6).join(', ')+'; ':'')+P.size+' prototypes for '+T.length+' trees; '+V.stats.drawn+' drawn here (hero '+V.stats.levels[2]+', mid '+V.stats.levels[1]+', far '+V.stats.levels[0]+'), '+V.stats.tris+' triangles, grown in '+V.stats.growMs+' ms'};},
  // the prototypes keep every triangle of the items they harvested (an indexed item copied vertex by vertex lost them: the stilt pod's head, 2026-11-03).
  // The attach audit cannot see this: it samples BIO's baked items, and the variant trees are drawn by 86's own pools
- harvest(V){const a=Math.round(V.stats.itemTris),b=Math.round(V.stats.harvestTris);return{ok:a>0&&a===b,detail:b+' of '+a+' item triangles kept in the prototypes'};},
+ harvest(V){const a=Math.round(V.stats.itemTris),b=Math.round(V.stats.harvestTris);if(a===0&&b===0&&!(LAND.species||[]).length)return{ok:true,detail:'no tree of this kit grows on this page'};return{ok:a>0&&a===b,detail:b+' of '+a+' item triangles kept in the prototypes'};},
  // nothing roots on a KSTACKS body (a dome, a tor) or at its foot: BIO.init's mask (45)
  offRock(P){const bad=P.filter(p=>{const f=KSTACKS.foot(ROCK,p[0],p[2]);return f&&f.d<.5&&!/^biome:impTrees|^variant:impTrees/.test(p[3]);});
   return{ok:!bad.length,detail:bad.length?bad.length+' on a rock body (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':ROCK.length+' bodies, none under a plant'};},
@@ -110,15 +110,15 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
- const C=(RRIM.COUNTS||[]).slice();C[SPI(LAND.species?LAND.species[0]:'frostfrill')]=0;add('a species never placed',LAND.species?HCHK.placedIn(LAND.species,C):HCHK.placed(C));
+ const C=(RRIM.COUNTS||[]).slice();if(!LAND.species||LAND.species.length){C[SPI(LAND.species?LAND.species[0]:'frostfrill')]=0;add('a species never placed',LAND.species?HCHK.placedIn(LAND.species,C):HCHK.placed(C));}
  add('a species with no Koppen classes',HCHK.tagged(RRIM.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
  add('a species tagged with the ice cap',HCHK.tagged([Object.assign({},RRIM.SPECIES[0],{tags:Object.assign({},RRIM.SPECIES[0].tags,{koppen:['EF']})})]));
  // the steepest bedded face of a wall, a point on the river's bed, the iciest crest point: the land's (found, not typed)
  if(LAND.probes.wall){const w=LAND.probes.wall();add('a tree on a canyon wall',HCHK.cliffs([{x:w[0],z:w[1],sp:0}]));}
  if(LAND.probes.bed){const b=LAND.probes.bed();add('a plant on the river bed',HCHK.dry([[b[0],b[1],b[2],'test']]));}
  if(LAND.probes.ice){const ic=LAND.probes.ice();add('a plant on the crest',HCHK.barren([[ic[0],terrainH(ic[0],ic[1]),ic[1],'test']]));}
- if(window._variants)add('a prototype that lost triangles',HCHK.harvest({stats:{itemTris:VARIANTS.stats.itemTris,harvestTris:VARIANTS.stats.itemTris*.2}}));
- if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},RRIM.TREES));
+ if(window._variants&&RRIM.TREES.length)add('a prototype that lost triangles',HCHK.harvest({stats:{itemTris:VARIANTS.stats.itemTris,harvestTris:VARIANTS.stats.itemTris*.2}}));
+ if(window._variants&&RRIM.TREES.length)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},RRIM.TREES));
  add('a fruiting species with no catalog fruit',HCHK.fruit(RRIM.SPECIES.map(S=>S.key==='bellfir'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),RRIM.PLANTS,P));
  if(ROCK.length){const B=ROCK[0];add('a plant on a rock body',HCHK.offRock([[B.x,B.top,B.z,'test']]));}
  {const g=LAND.probes.bed?LAND.probes.bed():[0,terrainH(0,0),0];add('a camera under the ground',HCHK.camerasOut([{view:'under',x:g[0],y:terrainH(g[0],g[2])-5,z:g[2]}]));}

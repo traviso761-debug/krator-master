@@ -38,7 +38,8 @@ const SHADOW_Q=new URLSearchParams(location.search).get('shadow');
  if(typeof growKin==='function'){try{window._kin=growKin();}catch(e){reportErr('kin: '+e.stack);}}   /* the neighbours' species (87-host-kin.js, EXCHANGES.md) */
  /* THE EXPORT BOX (verify.py --assert, core/export "Profiles"): a 300 m cell holding a bucket (a borrowed tree: the kin are the unique trees, in their
     vendors' buckets) and the floor's items, the one nearest the LOD spine; a station with neither names its own (LAND.exportBox, LAND.exportProfile) */
- if(!LAND.exportBox){let best=null,bd=1e9;for(const r of REG){if(!r.label||r.label.indexOf('read in place')<0)continue;const d=BIO.lodD(r.x,r.z);if(d<bd){bd=d;best=r;}}
+ if(!LAND.exportBox){let best=null,bd=1e9;const wet=(x,z)=>{for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const px=x+i*70,pz=z+j*70;if(waterH(px,pz)>terrainH(px,pz))return true;}return false;};   /* a box with water in it, where the page has water */
+  for(const r of REG){if(!r.label||r.label.indexOf('read in place')<0)continue;const d=BIO.lodD(r.x,r.z)+((LAKES.length||RIVER_SPEC)&&!wet(r.x,r.z)?1e5:0);if(d<bd){bd=d;best=r;}}
   if(best)LAND.exportBox=[Math.round(best.x-150),Math.round(best.z-150),Math.round(best.x+150),Math.round(best.z+150)];}
  if(LAND.build){try{window._station=LAND.build();}catch(e){reportErr('station: '+e.stack);}}   /* a station's own placement (its talus, its bars, its ice) */
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
