@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] **The wind setting never took** (closed 2026-11-03, the final rebuild's pair 9). core/atmos's weather (91d) writes `ATMOS.windScale` every
+  tick, so `DB_WIND`'s own write was undone and a calm blew as hard as the stiff wind (`db-dust-in-the-wind` failed: 0.031 in a calm, 0.039 in
+  the stiff wind). The setting is a factor on the weather's wind now (`DB_WIND.k`, `src/91c-db-dust.js`; n semiarid's fix), and the check sets it.
+- [ ] **The final rebuild's universal set is not taken here** (2026-11-03, pair 9). The page is the Ancient Port kit's (`settlements/port`,
+  read in place): its ground, sky and water are the kit's, and the flora that would take `BIO.flareJoin`, impostors and KGROUND is D2's, not
+  built. What a port-kit page takes (the shared sky's height fog, KFAR) belongs to the port kit's own turn; this page rebuilds with it.
+
 - [x] **The probe and the merged debris** (closed 2026-10-25). The kit's probe samples at most 3000 vertices of a merged
   mesh, too few to find one plate among the flood's 1,400-odd pieces. Both probes now read a merged mesh's own sample
   points (`userData.probePoints`); the debris (`52-db-flotsam.js`) sets one a piece on its group and the hidden marker

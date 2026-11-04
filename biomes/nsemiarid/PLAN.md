@@ -303,3 +303,55 @@ joined to the west remnant at any level up to 200 m; it split off as the trapped
 the three named lakes and left it as drawn, so it was settled the same way on the 4.21 page (the owner asked, 2026-10-20):
 it balances at **+1 m over 2,615 km²** (drawn: 0 m, 2,534 km²), fed by ~26 m³/s. The drawn level was right by chance and
 the model is left as it is. The overlay treats it as the west bed's second remnant lake.
+
+## 11. Core adoption: the final rebuild's turn (2026-11-03, pair 9)
+
+`BACKPORT.md` section 1 (the universal set), n semiarid's row in section 2 and section 5, on both pages this kit builds (`dist/nsemiarid.html`
+and the scablands' `dist/coulee.html`, which reads the kit in place). Each look change has its switch.
+
+| What | Where | Switch |
+|---|---|---|
+| `BIO.INDEX_ITEMS`, `BIO.LOD.merge/minTris/fade/cull`, the runtime LOD tick. The floor sets no `BIO.range` (its bands are densities), so the LOD options change nothing yet | `src/46-host-graphics.js` (its own fragment, so the scablands' stage takes it), `99` | `?index=0`, `?lodmerge=0`, `?lodfade=0`, `?lodcull=0` |
+| The variants' far level on octahedral impostors (core/biome 34, one set, drawn in the variants' own pool; a dead poplar keeps its grown-dead variant); gain 2.4; the welded items expanded before the harvest (ebadlands' stilt-pod fix) | `src/86-host-variants.js`, `88` | `?diet=0`, `?impgain=`, `?impwrap=` |
+| KGROUND: the eight library layers on their documented masks (the rain's three bands, the bed's silt, the ring's crust, the dunes' sand, the rock's basalt, the pan's soda crust), now hex-tiled and height-blended; kinds `clast` (the desert's gravel lag off the bed) and `polygon` (the dry bed's mud cracks, the old canvas net's weight); the ground Standard (KGROUND's distance scale reads `cameraPosition`, which r128 never uploads to a Lambert material) | `src/45c-host-ground.js` | `?kground=0` (the old Lambert floor and its hand-written layers) |
+| KFAR (to 14 km on the stage's own land: the plain, the foothills, the upland, the bed's silt north) and KHORIZON (the ground, then the flora) | `src/87-host-far.js`, `88` | `?far=0`, `?hz=0` |
+| R1 height fog, R10 rain cover, lightning (the storm weather's), the air's load with a dust storm (the panel's air select) | `src/89b-host-atmos.js` | `?hfog=0`, `?dust=0`, `?storm=1` |
+| Water: breakup on the stream and the stills; `WATER.mirrorSwitch` on the salt lake (the scablands: the plunge lake), off at page load | `89b`, `99` | `?breakup=0`, `?mirror=probe\|live` |
+| The water as fields (`WATER.fields`, `BIO.env`): wet and flow read the water's own shore, the ground's wet band (`aGL2.z`), trees off the water by its shore, the edge audit as a check | `88`, `99` | `?fields=0` |
+| `BIO.flareJoin` at every limb joint drawn as a tube (the broadleaves' limbs off the stem and their secondaries) | `src/55-biome-nsemiarid-trees.js` (`FJ`) | |
+| `KSHADOW` attached on `?shadow=1` only: the off-by-default switch is on the Throne's branch, not yet here | `88` | `?shadow=1` |
+
+**The species changed (keys and indices kept; no reader outside this kit and its overlay):** the solid bodies (the strider's barrel, the bead
+chains, the sail candelabra's columns, the mace heads, the horn pipes) are drawn with `BIO.barkMat`, not a still leaf material, so the attach audit
+sees them as structure (`?bodies=leaf` for the old material); the glider gourd's seeds in flight are `free`; the sail blades torn loose and kiting
+are a new item `kite` (`free`, the blade's card and material, defined after every other item); the drift's back-row tumblers stand at most half a
+metre up (lifted .9 r they hovered wherever no ball lay under them); same draws, so nothing else moves. Attach audit before: 81.1% (433 of 534).
+
+**Fixed on the way (a regression):** the wind setting (calm, a breeze, high) never took. core/atmos's weather writes `ATMOS.windScale` every tick
+from its own state, so the setting's own write was undone and a calm blew a breeze (the dust and gale checks failed on the committed page). The
+setting is now a factor on the weather's wind (`NSWIND.k`; the probe's checks set it at once with `NSWIND.jump`). The dam basins had the same bug
+(`biomes/dambasins/src/91c-db-dust.js`) and take the same fix.
+
+**The review's three lines.** Ground layers on documented masks: `45c-host-ground.js`, the table above its `USE_KG` (each layer's weight from the
+stage's cached fields; no layer on a bare noise). Strata and scour feed placement: KBASIN's strandlines, ring and salt already zone the flora and
+the ground (`45b`); the scablands' `KSCOUR.strata` steps its walls and zones its scour. Wet ground and flora read the water's shore: `88-host-build.js`
+(`WATER.fieldAt`, the wet band `aGL2.z`), checked by `edgeCheck` in `99-host-take.js`.
+
+**Not taken, and why:** KSTRATA on this page (the basalt is a ground layer on the ridges' rock; the beds would take five texture units the ground
+spends on its eight layers, the horizon, the rain cover and the shadow map; the scablands' coulee has `KSCOUR.strata`, the same flows); KRELIEF's
+wadis (the transect's one watercourse is the perennial stream; a wadi off the foothills is a station's work); `WATER.pan` and the brine look on the
+salt lake (the pan is drawn as ground: the soda layer and the polygons; the lake keeps its teal, a soda lake's, not the red halophile brine: the
+owner's call); seasons and KFIRE (their rows are for station 2, the high country); R9 wet ground (a dry climate never wets the ground here); snow
+(no snow at 700-1,450 m, Cfa's coldest month +12 °C); `BIO.fung` (the censer caps are lathed sponge domes, not one of `BIO.fung`'s nine parts:
+judged not worth a redraw before the owner sees the first passes); a runtime range on the floor's bands (it would move what is drawn where: a
+performance pass of its own).
+
+**Station 2 (`--station high`)** waits, as its plan says, for nhighlands' station 2 (pair 7), so its trees are written once and this side takes kin
+of them. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
+
+**The 5.1 geology** (`kits/resources/data/geology.json`, the province layer, read 2026-11-03): in a box round the region's old canvas px 360-560 x
+60-180, basalt 58%, evaporite 27% (the dam-lake beds), water 8%, the rest sedimentary, crystalline, impact and granite at 1-3% each; the kit's site
+(5.1 px 716,473) and the Cfa upland on basalt, the west lobe's bed on evaporite. That is the plan's ground (flood basalt over the basement, the beds'
+crust): **it agrees**, as `kits/resources/ROCK-PROPOSAL.md` says. Karst site 10 (`biomes/KARST-SITES-5.1.md`: limestone under the basalt near Jimjam,
+"low gain") is not taken: no station stands on a notch where the basement shows; the coulee's spring line at the basalt's base is a note for its
+next pass.

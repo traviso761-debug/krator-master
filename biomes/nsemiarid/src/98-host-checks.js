@@ -74,31 +74,31 @@ const HCHK={
   return{ok:n>100&&bad<=n*.02,detail:n+' points down the stream; the drawn ground over the water at '+bad+(bad?' (worst '+worst.toFixed(2)+' m)':'')};},
  // the DUST (core/atmos 3d-dust): over the dry bed, none in a calm, some in high wind; mask: the page's own, or a test one
  dust(pts,mask){const m=mask||NS_DUST_MASK;
-  const mode=NSWIND.mode,sc=ATMOS.windScale;
-  const run=md=>{NSWIND.set(md);ATMOS.windScale=NSWIND.SCALE[md];let s=0,c=0;for(let i=0;i<40;i++){for(const f of TICKS.slice())f(.15,0);
+  const mode=NSWIND.mode,sc=NSWIND.k;
+  const run=md=>{NSWIND.jump(md);let s=0,c=0;for(let i=0;i<40;i++){for(const f of TICKS.slice())f(.15,0);
     if(i%4===3)for(const p of pts){s+=ATMOS.dustLift(p[0],p[1],m(p[0],p[1]));c++;}}return s/c;};
-  let calm,high;try{calm=run('calm');high=run('high');}finally{NSWIND.set(mode);ATMOS.windScale=sc;}
+  let calm,high;try{calm=run('calm');high=run('high');}finally{NSWIND.jump(mode,sc);}
   return{ok:calm===0&&high>.15,detail:'the dust over the dry ground (mean lift 0..1): '+calm.toFixed(3)+' in a calm, '+high.toFixed(3)+' in high wind'};},
  // THE WATER (core/water): a stream sits in its channel, both banks over its surface a pace either side of its line
  banks(F,halfW,lift){const P=F.pts;let bad=0,n=0,worst=0;for(let i=0;i<P.length;i+=2){const p=P[i],y=p.y+(lift||0),s=Math.max(y-terrainH(p.x-halfW*1.05,p.z),y-terrainH(p.x+halfW*1.05,p.z));n++;if(s>.15)bad++;worst=Math.max(worst,s);}
   return{ok:n>50&&bad/n<=.02,detail:bad+' of '+n+' stream sections spill over a bank (worst '+worst.toFixed(1)+' m)'};},
  // THE WIND (core/atmos): stepped on the module's own clock, a gale tears the winged seeds loose and a calm holds them
  gale(at,hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
-  const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=ATMOS.windScale,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
+  const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=NSWIND.k,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
   if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=B[k].calm?-hold:hold;}   // a calm-lifting kind (the lanterns) the other way
   const lan=()=>window._seeds.bySpecies.lantern||0;
-  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return[heli()-h0,window._seeds.released-a0,lan()-l0];};   // 12 s of the module's clock a run
+  const run=m=>{NSWIND.jump(m);const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return[heli()-h0,window._seeds.released-a0,lan()-l0];};   // 12 s of the module's clock a run
   const tr=nearTree('trumpet',at[0],at[1]),ln=nearTree('lantern',at[0],at[1]);
   let calm,high,lc,lh;try{FLIGHT.pin={x:tr.x,z:tr.z};calm=run('calm');high=run('high');   // a trumpet grove, wherever the camera is
    FLIGHT.pin={x:ln.x,z:ln.z};lc=run('calm');lh=run('high');}   // and a stand of drift lanterns: they go the other way
-  finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
+  finally{for(const k in keep)B[k].hold=keep[k];NSWIND.jump(mode,sc);FLIGHT.pin=null;}
   return{ok:calm[0]===0&&high[0]>=20&&lc[2]>=3&&lh[2]===0,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all); lanterns lifting: '+lc[2]+' in the calm, '+lh[2]+' in the gale'};},
  // the frill's fins: a breeze leaves them on the column, a gale tears them off (12 s of the module's clock a run, at a
  // frill near `at`); hold: the fins' hold replaced (a negative: one no wind reaches)
  fins(at,hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
-  const B=FLIGHT.BEAR.frillFin,keep=B.hold,mode=NSWIND.mode,sc=ATMOS.windScale,n=()=>window._seeds.fins||0;if(hold!=null)B.hold=hold;
-  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const f0=n();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return n()-f0;};
-  const T=nearTree('frill',at[0],at[1]);let br,hi;try{FLIGHT.pin={x:T.x,z:T.z};br=run('breeze');hi=run('high');}finally{B.hold=keep;NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
+  const B=FLIGHT.BEAR.frillFin,keep=B.hold,mode=NSWIND.mode,sc=NSWIND.k,n=()=>window._seeds.fins||0;if(hold!=null)B.hold=hold;
+  const run=m=>{NSWIND.jump(m);const f0=n();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return n()-f0;};
+  const T=nearTree('frill',at[0],at[1]);let br,hi;try{FLIGHT.pin={x:T.x,z:T.z};br=run('breeze');hi=run('high');}finally{B.hold=keep;NSWIND.jump(mode,sc);FLIGHT.pin=null;}
   return{ok:br===0&&hi>=3,detail:'fins torn off the frills: '+br+' in 12 s of a breeze, '+hi+' in 12 s of high wind'};},
  // the trumpets' crowns are drawn with their pivot, so the spin turns them about the stalk
  // (every grown trumpet prototype with a crown, near or mid, carries the pivot; the far impostor has no crown)
@@ -118,5 +118,9 @@ const HCHK={
   return{ok:dead>0&&!bad.length,detail:bad.length?bad.length+' dead poplars off the salt':dead+' dead poplars, all on the salt'};}};
 // the wind-shaped trees drawn now, [x, z, the turn], from the variants' pools; and the furlers' meshes
 function windShapedDrawn(){const o=[];for(const p of VARIANTS.pools.values()){if(!NSEMIARID.SPECIES[p.sp].windShaped)continue;
- for(let i=0;i<p.n;i++){const m=p.arr,k=i*16;o.push([m[k+12],m[k+14],Math.atan2(m[k+8],m[k])]);}}return o;}
+ for(let i=0;i<p.n;i++){const m=p.arr,k=i*16;o.push([m[k+12],m[k+14],Math.atan2(m[k+8],m[k])]);}}
+ /* the far level on impostors (86, VARIANTS.IMP): turned the same way, in its own pool, each instance's species by its slot */
+ const IP=VARIANTS.impPool&&VARIANTS.impPool();if(IP&&IP.n){const ws=new Set();for(const [sp,I] of VARIANTS.imps)if(NSEMIARID.SPECIES[sp].windShaped)ws.add(I.rec.slot);
+  for(let i=0;i<IP.n;i++){if(!ws.has(IP.slot[i*4]))continue;const m=IP.arr,k=i*16;o.push([m[k+12],m[k+14],Math.atan2(m[k+8],m[k])]);}}
+ return o;}
 function furlerMeshes(){const o=[];scene.traverse(m=>{if(m.isInstancedMesh&&m.name==='biome:furler')o.push(m);});return o;}
