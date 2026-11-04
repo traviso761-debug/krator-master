@@ -4,7 +4,9 @@
 // (its mask: off the floor, out of the dead forest, off the beach), then one bake.
 window._biome=null;window._jungle=null;
 const IMP_GAIN=1.6;   /* the hyperjungle's, measured on its page against its near boles and crowns (its 88) */
-const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
+/* the shadow map takes a texture unit in every lit material: skipped where the ground has none left (85: samplersOf, window._shadow says so) */
+const SHADOW_ON=SHADOW_WANT&&samplersOf(MAT_GROUND)+1<=MAXT;
+if(SHADOW_WANT&&!SHADOW_ON)window._shadow='skipped: the ground reads '+samplersOf(MAT_GROUND)+' of '+MAXT+' texture units';
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;

@@ -308,6 +308,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -339,6 +340,7 @@
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "877c86a97336aeafee4db088bf76676e39b7b9a7d1e76b18766a7a034db5edb1",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
+    "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
     "kits/fauna/krator-fauna-bay.js": "b521443a53c3e29b17cef0c596777602b66a2d8c16c26092861e471b190f0585",
     "kits/fauna/krator-fauna-hyperjungle.js": "e417014d9db50575205cf3fa2ba522fcb5e3afbff4f8d03c9a5b00f16b6e18b9",
     "kits/fauna/krator-fauna-ringsea.js": "358e4b7ffce92d41de7273d339c1d27caa02f19b441ca1b3ddf49c9b9a8afdab",
@@ -360,7 +362,8 @@
     "kits/fauna/tex/shag.albedo.webp": "e95592f2e261707203869787b102058e58a7d7a2a3f23be0e63bba4fd27679e7",
     "kits/fauna/tex/skin.albedo.webp": "3ab6d925ecf817078b66c17122eac5f79f81dbe515bc78b54ff110a2f83137d6",
     "kits/fauna/tex/sleek.albedo.webp": "d84a1e76db9bf4b0ff418232509e815ff3bc3c6b02647924f9ec8be952401f0e",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/ringisles/dist": "8bda8de2e435bf28de577dfd6722060826733f7303e41f29d9e7d7eb608e53df",
@@ -702,6 +705,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -733,6 +737,7 @@
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "877c86a97336aeafee4db088bf76676e39b7b9a7d1e76b18766a7a034db5edb1",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
+    "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
     "kits/fauna/krator-fauna-bay.js": "b521443a53c3e29b17cef0c596777602b66a2d8c16c26092861e471b190f0585",
     "kits/fauna/krator-fauna-hyperjungle.js": "e417014d9db50575205cf3fa2ba522fcb5e3afbff4f8d03c9a5b00f16b6e18b9",
     "kits/fauna/krator-fauna-ringsea.js": "358e4b7ffce92d41de7273d339c1d27caa02f19b441ca1b3ddf49c9b9a8afdab",
@@ -754,7 +759,8 @@
     "kits/fauna/tex/shag.albedo.webp": "e95592f2e261707203869787b102058e58a7d7a2a3f23be0e63bba4fd27679e7",
     "kits/fauna/tex/skin.albedo.webp": "3ab6d925ecf817078b66c17122eac5f79f81dbe515bc78b54ff110a2f83137d6",
     "kits/fauna/tex/sleek.albedo.webp": "d84a1e76db9bf4b0ff418232509e815ff3bc3c6b02647924f9ec8be952401f0e",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/ringisles/dist": "3ec3390b2e5ad7f5c0926472029754f371b2b5316b1569872a219909e71ed829",

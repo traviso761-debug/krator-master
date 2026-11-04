@@ -20,10 +20,24 @@ const FAR=(function(){
  const mesh=new THREE.Mesh(geo,mat);mesh.userData.host=true;mesh.userData.farField=true;mesh.userData.probeSkip=true;mesh.frustumCulled=false;
  mesh.userData.inspectLabel='The Steampits past the map (the hyperjungle plateau, the coast)';scene.add(mesh);
  return{mesh,mat,G,tris:G.count.tris};})();
+// THE GROUND'S TEXTURE UNITS (the Throne's and ringisles' samplersOf, 89zz): KGROUND's nine surfaces leave the Lambert ground few of the Arc's sixteen, and
+// SwiftShader's 32 hid it (the cloud build). Counted from a dry run of its onBeforeCompile; the sun's shadow map takes one (88), the horizon two: the shadow
+// first, then the horizon on the ground where both fit (the flora takes the horizon either way). window._units says what the ground reads.
+const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
+const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
+  const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
+  try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
+  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
+const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures;
+const SHADOW_WANT=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
+window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 // THE TERRAIN'S HORIZON (45-core-horizon.js): eight directions over the ground's square (256 a side, ~12 m) and the far field past it. The ground takes it
-// here, the flora after the bake (88).
+// here where it keeps two units past the shadow's, the flora after the bake (88).
 const GROUND_HZ=(function(){if(typeof KHORIZON==='undefined'||new URLSearchParams(location.search).get('hz')==='0')return null;
  const t0=performance.now(),S=TERR.R*1.1,H=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,
   far:FAR?{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}:undefined});
- window._horizon={ms:Math.round(performance.now()-t0),n:H.n};KHORIZON.shade(MAT_GROUND,H);return H;})();
+ window._horizon={ms:Math.round(performance.now()-t0),n:H.n,skipped:[]};
+ if(samplersOf(MAT_GROUND)+2+(SHADOW_WANT?1:0)<=MAXT)KHORIZON.shade(MAT_GROUND,H);else window._horizon.skipped.push('the ground');
+ return H;})();
+window._units.withHorizon=samplersOf(MAT_GROUND);
 window._far=FAR?{tris:FAR.tris}:null;
