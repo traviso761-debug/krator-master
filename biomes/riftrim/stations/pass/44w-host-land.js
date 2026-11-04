@@ -40,7 +40,7 @@ function fieldsAt(x,z,h,slope){const F=STATION.fieldsAt(x,z,h,slope),n=nearLine(
 const LAND={name:'The crossing (riftrim station 5)',title:'Krator biome — the rift rim: the crossing',
  hint:'Station 5 of the rift rim: Dalab\'s road at the Ancient tunnel\'s south portal, 8 km up the Outer Wall under a near-airless sky (0.58 atm), the Tungangs\' signal lamps in its mouth, the road winding down the ice and rock to the high tundra (scale model 5.1, px 477,1245)',
  region:{name:'The crossing (station 5)',x:0,z:0,r:TERR.R},rim:'s',lamps:true,wind:[.3,1],arcade:false,fruitMin:0,
- species:[],exportBox:[-150,2500,150,2800],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree grows here: no bucket to export */
+ species:['lanternlobelia'],exportBox:[-150,2500,150,2800],exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* no tree grows here: no bucket to export */
  sky:{px:205,py:915},atm:.58,cloud:.08,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330) */
  fog:{falloff:1/2600,sun:.5,sky:.15},climate:{cold:true,dry:true},wet:false,snowLine:[6200,6600],snowBase:0,frozen:true,groundN:540,
  groundLayers:['black','lichen','clad','snowalgae','iris'],
@@ -56,9 +56,9 @@ const LAND={name:'The crossing (riftrim station 5)',title:'Krator biome — the 
   return{lamps:n};},
  views:H=>{const {P,look,atTree,nearTree,gh}=H,S=STATION,R=S.ROAD;
   return{
+  'The high tundra':look(P.alpine[0]-10,P.alpine[1]+8,1.6,P.alpine[0]+10,P.alpine[1]-6,0),
   'The portal and its lamps':[S.APRON.x+60,S.PY+14,S.APRON.z+260,S.APRON.x,S.PY+20,S.PZ-30],
   'The road down from the portal':[R[1][0]+40,gh(R[1][0]+40,R[1][1],8),R[1][1],R[5][0],gh(R[5][0],R[5][1],0),R[5][1]],
   'Under a near-airless sky':[0,S.PY+60,S.APRON.z+400,0,S.PY+1600,S.PZ-4000],
-  'The high tundra':look(P.alpine[0]-10,P.alpine[1]+8,1.6,P.alpine[0]+10,P.alpine[1]-6,0),
   'From afar':look(2600,2800,500,0,-1500,600)};},
  probes:{ice(){return[0,STATION.PZ+300];}}};
