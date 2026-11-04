@@ -32,8 +32,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `50-biome-hrift-species.js` | 7 | palettes (sRGB hex; the colour maths is the core (14); the species (21); textures and materials (a card's procedural map  (40); the items (54) |
 | `60-biome-hrift-place.js` | 5 |  |
 | `70-biome-hrift.js` | <1 |  |
-| `84-host-ground.js` | 10 |  |
-| `85-host-far.js` | 3 |  |
+| `84-host-ground.js` | 11 |  |
+| `85-host-far.js` | 5 |  |
 | `88-host-vents.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |

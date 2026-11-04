@@ -13,7 +13,9 @@ if(BIO.bindAtmosWind)BIO.bindAtmosWind();
 const AIR=(function(){const q=new URLSearchParams(location.search),out={hfog:false,raincover:false,wet:false,snow:false};
  const R=TERR.R*1.05,BOX=[-R,-R,R,R],under=(x,z)=>{const w=waterH(x,z);return w>-1e8&&w>=terrainH(x,z)-.3;};
  if(q.get('hfog')!=='0'&&ATMOS.heightFog){ATMOS.heightFog({falloff:1/520,sun:.3,sky:.3});ATMOS.heightFogScene(scene);out.hfog=true;}
- if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
+ /* the rain's occlusion map takes a unit in every lit material: only where the ground keeps it beside the snow and the weather (85: RAIN_FITS) */
+ if(ATMOS.rainCover&&RAIN_FITS){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
+ else if(ATMOS.rainCover)out.raincover='skipped: the ground reads '+samplersOf(MAT_GROUND)+' of '+MAXT+' texture units';
  /* R9 on ?wet=1 only: on this page WATER.wetGround over KGROUND's Standard ground drew the whole ground black in clear weather (seen on the Arc, 2026-11-03,
     not traced; KNOWN_ISSUES.md), and at 188 mm the valley is semi-arid: the weather's own wetting (bindWeather's grounds) stays */
  if(q.get('wet')==='1'&&WATER.hollows&&WATER.wetGround&&typeof USE_KG!=='undefined'&&USE_KG){try{

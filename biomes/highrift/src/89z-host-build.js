@@ -36,6 +36,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);
+ if(typeof samplersOf==='function')window._units.final=samplersOf(MAT_GROUND);   /* the ground's texture units once every hook is on (85) */
  /* the land's whole volume from its own ground (a station stands 2-3 km up): its lowest point to its highest, on a 100 m lattice */
  {let lo=1e9,hi=-1e9;for(let z=-TERR.R;z<=TERR.R;z+=100)for(let x=-TERR.R;x<=TERR.R;x+=100){if(Math.hypot(x,z)>TERR.R)continue;const h=terrainH(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}
   REGISTER({name:(typeof STATION_REGION!=='undefined'&&STATION_REGION)||'The High Rift (ideal type)',x:0,z:0,y:Math.floor(lo-10),r:TERR.R,h:Math.ceil(hi-lo+60)});}
