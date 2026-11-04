@@ -75,6 +75,11 @@ def core_body():
 SHIM_HEAD = """/* ---- apoc_bundle.py: errors go to the host; TEX, which 20-tex.js assigns as a page global, is the closure's ---- */
 const KPA_HOST={err:null};let TEX={};
 function reportErr(m){if(KPA_HOST.err)KPA_HOST.err('post-apoc: '+m);else console.error('post-apoc: '+m);}
+/* ---- apoc_bundle.py: the openings (35-pa-open.js) stay out of the bundle: they clear and own the page's KDOOR registry and
+   its frame hooks, which are the host's. 32-cores.js and 34-adds.js call these: no opening is recorded, so each door is
+   drawn shut as the builder drew it and each window is its glass (Screamers, 2026-11-03) ---- */
+const PO={panes:0,cut:0,cards:0},PO_LITGLASS=new THREE.Color(0x7aa8a0).convertSRGBToLinear();
+function poLive(){return false;}function poOpening(){}function poInOpening(){return null;}function poLeaf(){return null;}function poCard(){}
 """
 
 SHIM_SCENE = """/* ---- apoc_bundle.py: the host shim, standing in for 90-scene.js (no renderer, no scene, no layout) ---- */

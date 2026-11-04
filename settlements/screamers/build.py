@@ -101,6 +101,11 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
               if f[0].isdigit() and f.endswith('.js')}
 # core/walk (KWALK: the interiors' floors, walls, stairs and entry flights; kits/interiors IX.walk, the village's furnishing pass takes it)
 WALK_FILES = {'20-core-walk.js': os.path.join(ROOT, 'core', 'walk', '20-core-walk.js')}
+# core/door (KDOOR, KGLASS, KDOORHOST: core/door/README.md) and the Ancients kit's drawing of them, read in place from
+# kits/ancients/src (8zo-anc-open.js: the kit's windows as panes before room cards, its arched doors as locked records, the
+# voids a room's shade, the E key and tip); src/8zp-scr-open.js adds the village's own door panels to it
+DOOR_FILES = {f: os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js', '90-core-door-host.js')}
+DOOR_FILES['8zo-anc-open.js'] = os.path.join(ROOT, 'kits', 'ancients', 'src', '8zo-anc-open.js')
 # core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks (they replace
 # the old 93-polytool.js), pictures, minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space:
 # the vendored hyperjungle's scatter takes another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13).
@@ -193,6 +198,7 @@ DETERMINISTIC = {
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
 DETERMINISTIC |= set(WALK_FILES)
+DETERMINISTIC |= set(DOOR_FILES) | {'8zp-scr-open.js'}   # core/door and the openings: no rng()
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES)   # core/host, core/rand, core/tags: no rng()
 
 SEED_COLLISION_EXCEPTIONS = {
@@ -306,6 +312,7 @@ def build_one(target, do_checks, assert_origin):
     if target != 'screamers':   # the village's Post-Apoc bundle brings core/rand and core/tags (above)
         src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     src.update({f: p for f, p in WALK_FILES.items() if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
