@@ -227,6 +227,39 @@ from the halos' edges by parties who climb on bottled air or Ancient breathing g
    meltwater channels on the glacier above, the rust terraces and the red pool, the blood river leaving down Qol Ḍrāi
    with the first riverweed in its rapids, the Vale of Xanadu far below.
 
+### 7a. The station list on map 5.1 (the rebuild turn, 2026-11-04; pushed before building, for the owner's review)
+
+The owner widened the turn (relayed 2026-11-04): build every planned, not-yet-built Godthrone station as a `--station` page on the
+universal set, the Gills' two Godthrone stations (`biomes/gills/PLAN.md` section 11, items 1-2) and the lava-tube link toward Godstep
+among them. Sites read from map 5.1's rasters (`tools/scale-model/model/data/h.png`, `c.png`, `p.png`; 2 km a px; air 1.6 atm x
+e^(-h/8 km)). **px are on the 5.1 canvas** (the old canvas + (272, 330)). Heights are the raster's cell, not the page's.
+
+| # | Station | Page (`build.py --station`) | 5.1 px | Height | Air | Class | State |
+|---|---|---|---|---|---|---|---|
+| 1 | the summit vent | `godthrone.html` (src/) | 849.9,1262.6 (the 4.23 vent) | 21.2 km (the pit) | 0.11 | O | built 2026-10-26; rebuilt this turn |
+| 1b | the caldera wall | `godthrone-wall.html` (`wall`) | the same frame, the wall 9.2 km off | 22-25 km | 0.07-0.1 | O | built 2026-10-27; rebuilt this turn |
+| 2 | the high flank | `godthrone-flank.html` (`flank`) | 988,1458 (4.22's flank vent; 5.1: 11,080 m) | 11.1 km | 0.40 | O | built 2026-10-27; rebuilt this turn |
+| 3 | the orange belt | `godthrone-orange.html` (`orange`) | 736,1325, 7 km south-west of Pluton (743,1328, 9,650 m) | 8.35 km | 0.56 | HF | **new** |
+| 4 | the basal escarpment | `godthrone-scarp.html` (`scarp`) | 752,1213, mid-scarp on the south-western bay side (9.5 km at 761,1217 to 4.8 km at 739,1206, ~45 km) | 7.07 km | 0.66 | HT | **new** |
+| 5 | the airless rim | `godthrone-rim.html` (`rim`) | 532,1285, the south-western Outer Wall's crest nearest the Godthrone (a crest cell: no higher ground within 8 km) | 10.86 km | 0.41 | O | **new**; see the note below |
+| 6 | the bloodfalls | `godthrone-blood.html` (`blood`) | 866,1442, the ice belt's southern edge at the head of Qol Drai (the closed lake 843,1398, 6,415 m, 23 km north-north-west) | 5.38 km | 0.82 | EF | **new** |
+| 7 | the Red Gill (gills 1) | `godthrone-gills.html` (`gills`) | 862,1438 (`biomes/gills/PLAN.md` section 5) | 5.44 km | 0.81 | EF | **new**; one frame with station 6 (the fall 9 km east-south-east, on the gill's skyline), as 1 and 1b share one |
+| 8 | the Red ladder (gills 2) | `godthrone-gills-ladder.html` (`gills-ladder`) | 900,1450 to 940,1450 (the page stands at 920,1450, 8.54 km) | 7.2-8.7 km | 0.65-0.54 | EF-HF | **new** |
+| 9 | the Ilmenite Pillar Vault (the tube) | `godthrone-tube.html` (`tube`) | 858,1182 (`tube_god_n_12`'s `cav_god_n_ilmenite`: 290 x 175 m, 54 m high, sealed), its West Godstep Rim Cross-Conduit leaving north-east toward Godstep's vent pit (892.8,1145.2, 2,700 m, 85 km) | 12.15 km at the surface, the vault 58 m down | 0.35 | O | **new**: the lava-tube link toward Godstep (`biomes/godstep/PLAN.md` "The tubes and the rilles") |
+
+Notes for the owner:
+- **The rim (5)**: no wall kit has a built or planned station within 200 km of a 10-12 km crest (nwouterwall's station 1 is 248 km
+  from the nearest, riftrim's 222 km), so section 7's "best where it stands over a station of a wall kit" cannot be met. The site is
+  the crest cell on the south-western Outer Wall nearest the Godthrone's airless body. A different crest is a one-line change.
+- **The scarp (4)**: on 5.1 the escarpment falls ~4.7 km over ~45 km (about 6 degrees on the raster's 2 km cells); the page draws its
+  steepest few kilometres as the cliff of stacked flows the plan describes, on the raster's mean slope.
+- **The bloodfalls (6) and the Red Gill (7)** share one frame, so each page shows the other on its skyline at the model's distance.
+- **The tube (9)** is sealed (`skylight_m` 0) and habitable on the record; the page is the vault and the first few hundred metres of
+  the conduit toward Godstep, lit by the explorer's lamps, with the surface over it as the arrival view. The deep link on to
+  Pluton (`tube_god_07`'s branch) stays lore, as Godstep's plan has it.
+- Not stations here: `tube_god_nw_11`'s Vacuum Glass Cathedral (13.8 km, a skylit gallery) and `tube_god_se_13`'s Sub-Glacial
+  Sulfide Dome are candidates for a later turn; the owner's call.
+
 ## 8. Textures
 
 Already in the library: `ground.lava.aa`, `ground.lava.crust`, `ground.lava.veins`, `ground.obsidian`,
