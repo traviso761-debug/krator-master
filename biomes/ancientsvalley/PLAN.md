@@ -73,8 +73,9 @@ Kept whole, because it is the test every station is judged by.
   | 460,962 | 7 km | -46 | 36 | drowned, breached at -145 degrees | the Fast Water |
   | 420,984 | 6.5 km | -24 north, -6 south | 76 | the north half wet, the south a dry melt sheet | the Bend |
 
-- **The settlements inside the polygon** (`model/src/60-settlements.js`): **Babel** 456,908 (ruined arcology), **Necropolis** 406,944, **Dorado** 483,964,
-  **Blade** 451,1022 (ruined arcology, Dalab's outpost). Just outside: **Carcosa** 395,812 to the north (the Yusar's core population, LORE 6.19), **Span**
+- **The settlements inside the polygon** (`model/src/60-settlements.js`, and the owner's list of 2026-11-04): **Babel** 456,908 (ruined arcology), **Necropolis**
+  406,944, **Dorado** 483,964 (drowned), **Blade** 451,1022 (ruined arcology, Dalab's outpost), **Wheel** 406,886 (ruined arcology), **Thera** 526,955 (ruin, on the
+  eastern rampart). Just outside: **Carcosa** 395,812 to the north (the Yusar's core population, LORE 6.19), **Span**
   554,1010 to the east (Dalab's other outpost and trading post, with the Valley Tunnel portal: `settlements/span/PLAN.md`), **Nazar** 582,1079, **Dalab** 464,1112.
 - **Rivers:** the Kaskejt Rivr (760 m3/s) over a 1,200 m hanging canyon off the rain wall, River 2 (604) and River 3 (268) in red-sandstone defiles, River 4 in from
   the Outer Wall (`biomes/wouterwall/PLAN.md`). Climate in the lake box is WH or Cfa (STEP 5C, l.1189).
@@ -116,9 +117,13 @@ submerged foundations made a place: a ruin seen from the water, its upper storey
 below.
 
 **Names in the code are numbers.** The settlements' names may change, so records, fields and fragments refer to them by index, never by name
-(the owner, 2026-11-03): `city1` Babel (456,908), `city2` Necropolis (406,944), `city3` Dorado (483,964, drowned), `city4` Blade (451,1022); and, by
-the same rule, `basin1`..`basin7` in the order of section 2's table (the model's `anc_blast_specs` order). A name lives in one place, a table in the
-valley's data fragment, and nowhere else.
+(the owner, 2026-11-03): `city1` Babel (456,908), `city2` Necropolis (406,944), `city3` Dorado (483,964, drowned), `city4` Blade (451,1022), and, added by
+the owner's settlement list of 2026-11-04, `city5` **Wheel** (406,886, the ruined Wheel arcology: on the floor at 62 m, 7 km from the shore, on a
+water cell of the model, so it stands in or beside a pond of its own, 44 km from `basin4`) and `city6` **Thera** (526,955, a ruin at 1,653 m on the
+eastern rampart, 77 km from the shore, on the cascade stair toward Span: outside B's bands, in the forest like Blade); and, by the same rule,
+`basin1`..`basin7` in the order of section 2's table (the model's `anc_blast_specs` order). A name lives in one place, a table in the valley's data
+fragment, and nowhere else. Veil (448,838, an outpost at 3,393 m) is on the northern wall outside the polygon, the valley's northern gate from
+Carcosa's side.
 
 **Zones** (one field, `zone`, with the five kinds below; the kits read it where they place):
 
