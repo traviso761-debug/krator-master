@@ -306,9 +306,9 @@ breakers, the cataract as four `WATER.terraces` tiers and a tall fall, Brant-Fel
 geyser) and **the Singing Gjár** (`-gjar`: the 310 m master gjá with gin-clear water, ten singing fissures lined with bladed quartz; the singing as `HRIFT.SOUND` records
 for a `core/audio` that does not exist yet). Every page takes the universal set (`31j` flareJoin, `WATER.mirrorSwitch` off at load, KSHADOW attached **off** at load:
 `?shadow=1`, KSTRATA `rift` on every face, KGROUND, KFAR, KHORIZON, KTHERM on every vent) and reads **the Hearths and Oidong's high country in place**. Not taken:
-<<<<<<< HEAD
-KHOOK.warp (an empty slot), KKARST/KCAVERN (no caves, no carbonate). **Checks (no GPU):** `check_core_use` 0 findings; every page loads clean in headless Chromium on
-software GL (SwiftShader; probes listed in the kit's `KNOWN_ISSUES.md`); **owed to the coordinator:** `verify.py --assert --all-views` on the GPU, the hash baseline,
+KHOOK.warp (an empty slot), KKARST/KCAVERN (no caves, no carbonate). **Checks (no GPU):** `check_core_use` 0 findings; `verify.py --assert` (one view each) **OK on all five pages** on
+software GL (SwiftShader; the kit's `KNOWN_ISSUES.md`, "What ran here"); `test_all --no-build`: the highrift findings fixed, the rest of its failures the base branch's
+(the six LFS pointers, `test-lava`/`test-scarp` goldens, the Throne's three stale stations); **owed to the coordinator:** `verify.py --assert --all-views` on the GPU, the hash baseline,
 KSCOUR on the Gill's bed, Lake Cinnabar's page. Look decisions for the owner: the plan's section 11.
 **Copper Glacier, the new kit (2026-11-03; `biomes/copperglacier/PLAN.md`, `KNOWN_ISSUES.md`):** first, **`KGLACIER` is in core**
 (`core/terrain/44g-core-glacier.js`, [G data], and `host/44h-core-glacier-draw.js`, `test-glacier.js`), lifted from the Throne's glacier station. The data half
@@ -332,12 +332,6 @@ off at load, the shore's fields, and the shared sky at each site. KSHADOW is mea
 the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 and 3, the boulders everywhere) and `ice.glacier.verdigris` (the ice on the copper ground).
 **Checks:** `verify.py --assert --all-views` passes on the GPU (RTX 5060 lane, D3D11) for all three pages: station 1 53 checks (9.7 M triangles, 25 calls), the pass 53 (14.8 M, 22), the icefield 50 (1.7 M, 16), attach audit 0.00%. `check_core_use`: no new finding. `test_all --no-build`: the only failures not this work's are interiors' test-walk and `check_assembly`'s NEEDS findings on the Godthrone's, Voth's and Span's committed pages (built before core-shader). The pages are in the hash baseline. **For the owner:** every station's look; the copper (data against lore); the shadows' cost.
 
-=======
-KHOOK.warp (an empty slot), KKARST/KCAVERN (no caves, no carbonate). **Checks (no GPU):** `check_core_use` 0 findings; `verify.py --assert` (one view each) **OK on all five pages** on
-software GL (SwiftShader; the kit's `KNOWN_ISSUES.md`, "What ran here"); `test_all --no-build`: the highrift findings fixed, the rest of its failures the base branch's
-(the six LFS pointers, `test-lava`/`test-scarp` goldens, the Throne's three stale stations); **owed to the coordinator:** `verify.py --assert --all-views` on the GPU, the hash baseline,
-KSCOUR on the Gill's bed, the fault mirror's texture (`PROMPTS-NEEDED.md` section 32), Lake Cinnabar's page. Look decisions for the owner: the plan's section 11.
->>>>>>> origin/claude/highrift-cloud
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
