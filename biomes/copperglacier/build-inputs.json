@@ -9,7 +9,7 @@
     "biomes/copperglacier/res_site.js": "00c1ca64db71f6fc6b174a3f341b38b7d40135f93b8fbc90177c7b5d30b34f47",
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
-    "biomes/copperglacier/src/45-host-stage.js": "6df4315f7d5dce0749684ca7a4c69bf872c2c345139bd9da4258298aa0cd50b4",
+    "biomes/copperglacier/src/45-host-stage.js": "6f9974e860f8acfeb3709190b8b931f27d9a6b4ff9467862aa8fbe4107e7949a",
     "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
@@ -20,7 +20,7 @@
     "biomes/copperglacier/src/89a-host-atmos.js": "38b798cfd51e84154ae45ae6410686565816a763544ae3369222ad9c2f603151",
     "biomes/copperglacier/src/89w-host-water.js": "40efd69cbaffbb6394684094b28e14f8e9b13bf1999892e9d64691c8ee1dd160",
     "biomes/copperglacier/src/89z-host-build.js": "7ad9b869c3945c82ff28f1cb4ce78a34ec3d179cdbec1e47a5d75555c270830e",
-    "biomes/copperglacier/src/99-host-take.js": "20c5def16a4d4656ce44ff3ce0c34e195250d03f8b8832839636e725b409a617",
+    "biomes/copperglacier/src/99-host-take.js": "b45c927e16b2436e20d3a927158290f2090b503749551b42f9e87af0aaf61c64",
     "biomes/copperglacier/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/copperglacier/tex/bark.coral.albedo.webp": "37f26edb5ee9e2315c8f6decd39c5482d76313e26168fba67cf9d79bb57c2452",
     "biomes/copperglacier/tex/bark.coral.normal.webp": "0407bfa3d6116860c8c12b63c968436730a4c302e32c2b2e9aa7345635ec8e56",
@@ -139,13 +139,13 @@
    "listings": {
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier.html": "851d5d5a16ea8d517bebc0b09ff6d001020b5c975cd960a6f2cf3359b38f38be"
+    "biomes/copperglacier/dist/copperglacier.html": "4e4dd80493aee8324ca88da3edebebb7bad184af88c6dd8cba38ea7948bf0d42"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier.html": "851d5d5a16ea8d517bebc0b09ff6d001020b5c975cd960a6f2cf3359b38f38be"
+    "biomes/copperglacier/dist/copperglacier.html": "4e4dd80493aee8324ca88da3edebebb7bad184af88c6dd8cba38ea7948bf0d42"
    }
   },
   "build.py --station icefield": {
@@ -156,7 +156,7 @@
     "biomes/copperglacier/res_site.js": "00c1ca64db71f6fc6b174a3f341b38b7d40135f93b8fbc90177c7b5d30b34f47",
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
-    "biomes/copperglacier/src/45-host-stage.js": "6df4315f7d5dce0749684ca7a4c69bf872c2c345139bd9da4258298aa0cd50b4",
+    "biomes/copperglacier/src/45-host-stage.js": "6f9974e860f8acfeb3709190b8b931f27d9a6b4ff9467862aa8fbe4107e7949a",
     "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
@@ -167,7 +167,7 @@
     "biomes/copperglacier/src/89a-host-atmos.js": "38b798cfd51e84154ae45ae6410686565816a763544ae3369222ad9c2f603151",
     "biomes/copperglacier/src/89w-host-water.js": "40efd69cbaffbb6394684094b28e14f8e9b13bf1999892e9d64691c8ee1dd160",
     "biomes/copperglacier/src/89z-host-build.js": "7ad9b869c3945c82ff28f1cb4ce78a34ec3d179cdbec1e47a5d75555c270830e",
-    "biomes/copperglacier/src/99-host-take.js": "20c5def16a4d4656ce44ff3ce0c34e195250d03f8b8832839636e725b409a617",
+    "biomes/copperglacier/src/99-host-take.js": "b45c927e16b2436e20d3a927158290f2090b503749551b42f9e87af0aaf61c64",
     "biomes/copperglacier/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/copperglacier/stations/icefield/44z-host-site.js": "d32ddb01b21aab9e82afa585c26f1dd793feb94745f3e5f5e37916ec6f00f493",
     "biomes/copperglacier/stations/icefield/station.json": "e448054b6788f888a9c1154950199fea28b36ad587734c00c0d368af81d8e29c",
@@ -289,13 +289,13 @@
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
     "biomes/copperglacier/stations/icefield": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "5401dde4708323ad96eb135ed59437cce8ddfe8b859cc23d7e9f063bd5bc4a56"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "1d95ed1f553c384464dc71ee5aea6cb1bc7feb24152c4c5a3bf89b1c99897ed1"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "5401dde4708323ad96eb135ed59437cce8ddfe8b859cc23d7e9f063bd5bc4a56"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "1d95ed1f553c384464dc71ee5aea6cb1bc7feb24152c4c5a3bf89b1c99897ed1"
    }
   },
   "build.py --station pass": {
@@ -306,7 +306,7 @@
     "biomes/copperglacier/res_site.js": "00c1ca64db71f6fc6b174a3f341b38b7d40135f93b8fbc90177c7b5d30b34f47",
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
-    "biomes/copperglacier/src/45-host-stage.js": "6df4315f7d5dce0749684ca7a4c69bf872c2c345139bd9da4258298aa0cd50b4",
+    "biomes/copperglacier/src/45-host-stage.js": "6f9974e860f8acfeb3709190b8b931f27d9a6b4ff9467862aa8fbe4107e7949a",
     "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
@@ -317,7 +317,7 @@
     "biomes/copperglacier/src/89a-host-atmos.js": "38b798cfd51e84154ae45ae6410686565816a763544ae3369222ad9c2f603151",
     "biomes/copperglacier/src/89w-host-water.js": "40efd69cbaffbb6394684094b28e14f8e9b13bf1999892e9d64691c8ee1dd160",
     "biomes/copperglacier/src/89z-host-build.js": "7ad9b869c3945c82ff28f1cb4ce78a34ec3d179cdbec1e47a5d75555c270830e",
-    "biomes/copperglacier/src/99-host-take.js": "20c5def16a4d4656ce44ff3ce0c34e195250d03f8b8832839636e725b409a617",
+    "biomes/copperglacier/src/99-host-take.js": "b45c927e16b2436e20d3a927158290f2090b503749551b42f9e87af0aaf61c64",
     "biomes/copperglacier/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/copperglacier/stations/pass/44z-host-site.js": "b021c352d225ee2583159b04c28cca324984bedefebd41cd5b077756ae97c55e",
     "biomes/copperglacier/stations/pass/station.json": "df75ba9b9a2acffadbe9a66d60466571a9790dc602984ba8d453ee2dc10f633a",
@@ -439,13 +439,13 @@
     "biomes/copperglacier/src": "e004b729212031691adb14bbc9fae2b7d2977f53bbdfd455e9bc85c47478ce83",
     "biomes/copperglacier/stations/pass": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "b5cbb7a11fd4619cdac70565b0f9da4f58ea296cd3cd8b3beba86b3cc4ac54ac"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "9c5d1d6f2ca62c53c9316e7b3132e548e66f67c85e8a2dd23998eb920f76afd7"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "b5cbb7a11fd4619cdac70565b0f9da4f58ea296cd3cd8b3beba86b3cc4ac54ac"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "9c5d1d6f2ca62c53c9316e7b3132e548e66f67c85e8a2dd23998eb920f76afd7"
    }
   }
  }

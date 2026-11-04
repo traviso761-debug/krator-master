@@ -1,5 +1,10 @@
 // ================================================================= HOST — the views, inspector words and probe checks (every station), handed to core/host
-const gh=(x,z,dy)=>Math.max(terrainH(x,z),waterH(x,z))+(dy||0);   /* over the water where there is water */
+/* the DRAWN ground's height (84's grid: its two triangles a cell), which rides over terrainH where a feature is finer than its 12 m cells (a cave's levelled floor, a moat):
+   the cameras stand on what the eye sees (the eye check fails a camera under the mesh) */
+const drawnH=(function(){const p=GROUND.geometry.attributes.position.array,N=480,nx=N+1,S=TERR.R*2.2,cs=S/N,H=k=>p[k*3+1];
+ return(x,z)=>{const fu=clamp((x+S/2)/cs,0,N-1e-6),fv=clamp((z+S/2)/cs,0,N-1e-6),i=Math.floor(fu),j=Math.floor(fv),u=fu-i,v=fv-j,a=j*nx+i,b=a+nx,c=b+1,d=a+1;
+  return u+v<=1?H(a)+(H(d)-H(a))*u+(H(b)-H(a))*v:H(c)+(H(b)-H(c))*(1-u)+(H(d)-H(c))*(1-v);};})();
+const gh=(x,z,dy)=>Math.max(terrainH(x,z),drawnH(x,z),waterH(x,z))+(dy||0);   /* over the water where there is water */
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const lookUP=(u0,a0,dyc,u1,a1,dyt)=>{const c=upAt(u0,GS.centre(u0)+a0),t=upAt(u1,GS.centre(u1)+a1);return look(c[0],c[1],dyc,t[0],t[1],dyt);};
 const recOf=re=>REG.find(r=>re.test(r.name));
@@ -9,7 +14,7 @@ const VIEWS=(function(){const V={},sn=GS.snout,W0=G.W(sn+100);
  V['Down the ice']=lookUP(Math.min(2300,SITE.icefall[1]+300),0,40,sn,0,0);
  if(CREV.length){const r=CREV[Math.floor(CREV.length/2)];V['Crevasses']=look(r.x-40,r.z-30,14,r.x,r.z,0);}
  if(CAVES.length){const C=CAVES[0],fx=Math.cos(C.face),fz=Math.sin(C.face);V['An ice cave']=look(C.x+fx*C.R*3.2,C.z+fz*C.R*3.2,4,C.x,C.z,C.H*.4);
-  V['In the ice cave\'s mouth']=[C.x+fx*C.R*1.02,C.floor+1.7,C.z+fz*C.R*1.02,C.x-fx*C.R*.6,C.floor+2.6,C.z-fz*C.R*.6];}   /* under the mouth's open arch, looking in at the blue (the eye check fails a camera under the dome's roof) */
+  {const mx=C.x+fx*C.R*1.25,mz=C.z+fz*C.R*1.25;V['In the ice cave\'s mouth']=[mx,gh(mx,mz,1.7),mz,C.x-fx*C.R*.6,C.floor+2.6,C.z-fz*C.R*.6];}}   /* under the mouth's open arch, looking in at the blue (the eye check fails a camera under the dome's roof) */
  const co=recOf(/frost coral/);if(co)V['A frost coral']=look(co.x+7,co.z+5,2.2,co.x,co.z,1.6);
  const nd=(window._nodes||[]).find(n=>n.drawn&&n.kind==='copper')||(window._nodes||[]).find(n=>n.drawn);
  if(nd)V[(/^[aeiou]/.test(nd.kind)?'An ':'A ')+nd.kind+' node']=look(nd.x+SUN_POS[0]/SUN_POS[0]*-22,nd.z+16,5,nd.x,nd.z,0);   /* from the sun's side (west, south): lit, not backlit */

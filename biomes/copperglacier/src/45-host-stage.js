@@ -72,7 +72,7 @@ function landH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GS.centre(u);
 CAVES.forEach(C=>{C.floor=null;C.floor=landH(C.x,C.z);});
 // the ice: KGLACIER's, gone where a nunatak stands through it, cleared inside a cave
 function iceAt(x,z){let t=G.iceAt(x,z);if(t<=0)return 0;if(RIDGES.length){const r=ridgeAt(x,z);if(r>0)t*=1-smooth(t*.35,t*1.05,r);}
- for(const C of CAVES){const dx=x-C.x,dz=z-C.z,al=dx*Math.cos(C.face)+dz*Math.sin(C.face),pp=-dx*Math.sin(C.face)+dz*Math.cos(C.face),d=Math.hypot(pp,al>0?al*.3:al);   /* the moat: cleared farther out on the mouth's side, so the mouth opens on air */
+ for(const C of CAVES){const dx=x-C.x,dz=z-C.z,al=dx*Math.cos(C.face)+dz*Math.sin(C.face),pp=-dx*Math.sin(C.face)+dz*Math.cos(C.face),d=Math.hypot(al>0?pp*.5:pp,al>0?al*.3:al);   /* the moat: cleared farther out and wider on the mouth's side (wider than the ground mesh's 12 m cells), so the mouth opens on air */
   if(d<C.R*1.4)t*=smooth(C.R*.9,C.R*1.3,d);}return t;}
 function terrainH1(x,z){return landH(x,z)+iceAt(x,z);}
 // THE TARN (a station's own lake, west of the snout) and the POND (KGLACIER's basin behind the terminal moraine)
