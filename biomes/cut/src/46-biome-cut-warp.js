@@ -15,7 +15,7 @@
 //   o.allow: a Set of the read-in species' keys the station keeps (the plan's list for its ring); the rest are taken back
 //   o.allowAt(key, x, z): false takes a tree of a kept species back where the station does not want it (pair 10: the face keeps only the rowan inside
 //                    the lip, PLAN.md section 12 exchange 5); its volume goes too (o.adjust(T, null))
-//   o.stuck {key: {item, share, size, col}}: the stuck fruit (PLAN.md section 3; exchange 5, the rowan): a share of the species' fruit clusters (that
+//   o.stuck {key: {item, share, size, col, where(x, z)}}: (where: only the trees standing where it is true; the face: inside the lip) the stuck fruit (PLAN.md section 3; exchange 5, the rowan): a share of the species' fruit clusters (that
 //                    item's instances in the tree's span, a cluster by its 2 m cell) set small and green and stay so; CUT.WARPED.stuck counts them
 //   CUT.warpDenied(name): true for a read-in species' name the station does not keep (the host's REGISTER skips its volume)
 //   CUT.WARPED  what it did: trees, instances moved, bites, instances bitten, floor instances leaned
@@ -53,7 +53,7 @@
   BIO.tally(-tris,-inst,0);W.dropped=(W.dropped||0)+1;}
  function close(sp,o){const T=sp.T;if(!T){return;}const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}
   if(o.allowAt&&!o.allowAt(S.key,T.x,T.z)){drop(sp);if(o.adjust)o.adjust(T,null);W.droppedAt=(W.droppedAt||0)+1;return;}
-  if(o.stuck&&o.stuck[S.key])stuckFruit(sp,o.stuck[S.key],S.key);
+  if(o.stuck&&o.stuck[S.key]&&(!o.stuck[S.key].where||o.stuck[S.key].where(T.x,T.z)))stuckFruit(sp,o.stuck[S.key],S.key);
   {let any=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}if(!any)for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;break;}
    if(!any){if(o.adjust)o.adjust(T,null);return;}}   /* the kit registered it but drew nothing (a far snag has no impostor): its volume goes */const f=[T.x,o.ground(T.x,T.z),T.z],b=o.toBowl(T.x,T.z);
   const mean=S.H?(S.H[0]+S.H[1])/2:T.H,Wp=CUT.warp(b[0],b[1],{id:T.seed,salt:31,size:T.H/mean}),air=CUT.airScale(o.alt(f[1])),k=Wp.step==null?1:Wp.step/(T.H/mean);

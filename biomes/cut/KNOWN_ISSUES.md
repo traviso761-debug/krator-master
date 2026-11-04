@@ -13,7 +13,8 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
   - the far bowl on **KFAR** (`?kfar=0` the old skirt) and the walls' shadow across the floor at a low sun (KHORIZON, `?horizon=0`);
   - the ground's layers on **KGROUND** (`?kground=0` the old mix);
   - **the bend** (KWARP, `?bend=1`, off at load): whether the field should be felt at all, and how strongly (`STAGE.bendA`, .45 m);
-  - the **rowans' patches** below the face (the sweep has no gullies) and the **great trumpets** in the wall's ravine (no organ-pipe ranks at s .2).
+  - the **rowans** of exchange 5 (few: the four past the face's lip, in the plan's ring, with the stuck fruit; a station on the upper walls' gullies would
+    show it properly) and the **great trumpets** in the wall's ravine (no organ-pipe ranks at s .2).
 - [ ] **The sun's shadows (KSHADOW) are attached off**: the owner wants them toggleable and off by default, and core/shadow has no off-at-load switch
   yet, so the page attaches them only on `?shadow=1`. When core gains the switch, move onto it. Their cost on these pages is not timed (no GPU).
 - [ ] **Exchanges 1 and 2** (the tree aloe and the parasol pine, read in place from the crater drylands): wait for the crater drylands' turn (pair 12)

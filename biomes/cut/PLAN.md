@@ -323,9 +323,12 @@ rebuild (`claude/rebuild-nhighlands-cloud`) is merged into this branch first (a 
 
 **The exchanges (section 12).** 5 and 6 are built: the **great trumpet** on the wall station, nhighlands read in place there for it alone, its colonies
 down the ravine beside the hyperbamboo (the wall's s is .2, so the plan's organ-pipe ranks, which need s > .5, do not show: nothing on the Cut's three
-stations stands both in a ravine and in the strong warp); the **rowan** on the face station, the only nhighlands species kept inside the lip
-(`CUT.warpKit`'s new `allowAt`), in patches in the conifers' band below the face (the sweep has no gullies: the cut is smooth), with **the stuck fruit**
-(`warpKit`'s new `stuck`: a share `CUT.STUCK` of its berry clusters, by the 2 m cell, small and green). Each has a host check and a negative. 1 and 2
+stations stands both in a ravine and in the strong warp); the **rowan** on the face station, thinly: the lip there stands at 66 km, inside the plan's
+64-72 km ring, so the rowans nhighlands grows just past it are the exchange's, and they take **the stuck fruit** (`warpKit`'s new `stuck`: a share
+`CUT.STUCK` of the berry clusters of the trees in the ring, by the 2 m cell, small and green). Inside the lip the page is all bare face (its grade is ~.5
+to the page's edge), so none grow there, and at 4.9 km the lip is boreal, where nhighlands places few rowans (four on the page); the plan's Csa-Dsc
+gullies want a station on the upper walls (the owner's call). `warpKit` also gained `allowAt` (a kept species taken back where a station does not want
+it), unused now. Each has a host check and a negative. 1 and 2
 (the tree aloe and the parasol pine, from the crater drylands) wait for the crater drylands' turn (pair 12); 3 and 4 are that turn's. 7 and 8 are on
 nhighlands (pair 7).
 

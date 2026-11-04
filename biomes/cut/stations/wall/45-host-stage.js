@@ -69,6 +69,7 @@ const STAGE=(function(){const site=CUT.SITES.wall,yRef=CUT.bowl.h(site.x,site.z)
     'The columns leaning along the field':Vw(P(250,250),6,P(700,500),40),
     'Across the bowl (the curve of the far walls)':Vw(P(300,0),260,P(-9000,0),-1500),
     'Down the crater mouth':Vw(P(-100,-200),40,mouth,-300),
+    'The great trumpets by the ravine (exchange 6)':(function(){const T=(typeof REG!=='undefined'?REG:[]).filter(r=>r.name==='Great trumpet')[0];if(!T)return Vw(toward([G.x,G.z],P(0,0),-(G.r+60)),8,[G.x,G.z],30);return Vw([T.x+70,T.z+40],12,[T.x,T.z],22);})(),
     'Hyperbamboo in the ravine':Vw(toward([G.x,G.z],P(0,0),-(G.r+60)),8,[G.x,G.z],30),
     'The cistern at the terraces\' head':Vw(P(-300+TER.r*.82-30,260+24),5,CIS.c,0),
     'The wall from above':Vw(P(-900,300),420,P(600,0),0)};},
