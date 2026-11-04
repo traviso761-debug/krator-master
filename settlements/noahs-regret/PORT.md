@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47-nr-holds.js` | 3.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-nr-top.js` | 3.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/49-nr-arcology.js` | 2.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/54-nr-anc-kit.js` | 8.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/54-nr-anc-kit.js` | 8.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-nr-anc-apt.js` | 6.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-nr-anc-office.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-nr-anc-lab.js` | 8.9 | [draw] | 2 | 2 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 |  |

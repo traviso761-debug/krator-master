@@ -36,8 +36,10 @@ behind holes, the monolith's arch windows and oculi) near-black; `MAT.dark` a li
 - [x] Windows: one pane (KGLASS 'smoked', the Ancients' blue) before a room card (KGLASS 'room'), two intact windows in
       five lit at night; a ruin's window has its dusty pane in two cases in five and is an empty hole onto the room in the rest.
 - [x] Doors: every arched door is a locked KDOOR record (a solid body: nothing behind it), drawn shut in the alloy (Darco's
-      darker, on its near-black skin); a toppled body's doors are not recorded (`ANC_OPEN.fallen`). The interiors target's
-      partition doorways carry operable leaves (`anLeaf`, the Ancients' white panel; E opens and shuts one within reach of the
+      darker, on its near-black skin), its kind core/door's `blastside` (a heavy bi-parting plate: the record says what the door
+      is, for Godot and a world that opens one); a toppled body's doors are not recorded (`ANC_OPEN.fallen`). The interiors target's
+      partition doorways carry operable leaves (`anLeaf`: the Ancients' sliding glass panel, preset `slide`, KDOORLEAF style
+      `glass`, a white frame round a blue light; E opens and shuts one within reach of the
       orbit's target or the eye: the camera's E lift still works anywhere else). `window._api.openings` gives the counts.
 - [x] Voids: the arcologies' `*Void` materials and `MAT.dark` are the card's colour (the voids at two thirds of it).
 - [ ] **The painted windows are not glass.** The arcologies' dwelling grids (Crescent, Monolith, Hill, Wheel, Ledge, Wing, Drum,
@@ -46,8 +48,14 @@ behind holes, the monolith's arch windows and oculi) near-black; `MAT.dark` a li
       scale.
 - [ ] **No rooms behind most glass.** A card stands for the room in every window; only the interiors target has rooms (and
       there the shells are solid: its building's entrance `archOpen` stays a locked door, the partitions' doors open).
-- [ ] **No core/walk in the kit**, so no reachability audit here: the interiors target's floors and partitions are kit
-      instances with no walk records. kits/ancients-interiors' plans are where a `KWALK` registration would start.
+- [ ] **No core/walk in the kit.** The interiors target's floors and partitions are kit instances with no walk records.
+      A first audit (core/walk injected from the probe: each intact site's rooms as `KWALK.poly` floors, its unbroken
+      partitions as blocks with their door gaps left open, flooded from the largest ground room): 1613 rooms in 8 intact
+      sites, 100 reached. 735 of the rest are upper storeys, which no stair reaches (the plans draw none:
+      kits/ancients-interiors KNOWN_ISSUES, "Stairs are not drawn"); the ground rooms left (the Watch's ring, the houses'
+      rooms, the Reliquary's) are not proved either way, as the probe's own wall model (the plan's points, not the drawn
+      kit boxes) may close a gap the drawing leaves. A KWALK registration made where 8zz-interiors.js draws (floors, the
+      partitions' boxes, `KDOOR.walk` for the leaves) is the audit to trust.
 - [ ] **Real voids left dark-ish** (the deep shade, not black): the merged void liners inside a sheared or fallen shell
       (the Wheel's tower cores, Sky I's broken shaft, the Ledge's cut), the Darco's recess backs and broken interior. They are
       the inside of a solid model seen through its hole, with no floor plates drawn; the shade stands in for them.

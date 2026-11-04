@@ -13,7 +13,7 @@ before and after):
 - [x] Every leaf is a door on core/door, drawn by core/engine's `36o-open.js` read in place (`svLeaf`: one InstancedMesh per
       material, posed by KDOORHOST, cut with the decks through `nrCutHook`): 686 doors (the cabins' `cabin.<cabin id>`, standing
       ajar as drawn, the rng draw kept; the deck buildings' inner doors open 75 degrees as the planner hung them, one leaf a
-      doorway; their street doors shut in the Ancients' white panel). E by a door opens or shuts it (else, walking, E still
+      doorway; their street doors the Ancients' bi-parting sliding glass, preset `biparting` with KDOORLEAF's `glass` style, shut). E by a door opens or shuts it (else, walking, E still
       climbs a level); the tip shows near one; `_api.openings`.
 - [x] The chain locker's hatches are gratings, not black plates.
 - [ ] **No reachability audit.** The walker (`NR_WALK`, 92-camera.js) stands on `nrFloorsAt` and is never blocked: there are

@@ -12,6 +12,9 @@ arched doors and, through `src/8zp-scr-open.js`, the village's door panels are l
 grey alloy (the Hexahedron and its huts are solid bodies). `MAT.dark` itself is left as it was here (this fork's fins and
 other true dark surfaces still use it: there is no `MAT.darkSurf` split).
 
+- [ ] **Reach (core/walk, 2026-11-04):** the salvage homes' 26 floors (KWALK, written by kits/interiors' IX.walk as each
+      home is furnished), each flooded from the open ground round it: 21 reached, 5 not: the Bulkhead Manor's three upper
+      floors and the twin silo's two (`lg-bulkhead`, `lg-twinsilo`: no flight registered up to them). The Post-Apoc kit's.
 - [ ] The salvage homes (the Post-Apoc bundle) are the Post-Apoc kit's; their own doors are that kit's pass (the bundle
       carries no 35-pa-open.js), so their doorways are as the bundle draws them.
 

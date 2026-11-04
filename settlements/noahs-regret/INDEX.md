@@ -39,7 +39,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `47-nr-holds.js` | 3 |  |
 | `48-nr-top.js` | 3 |  |
 | `49-nr-arcology.js` | 2 |  |
-| `54-nr-anc-kit.js` | 8 |  |
+| `54-nr-anc-kit.js` | 9 |  |
 | `56-nr-anc-apt.js` | 7 | the RIBBON TERRACE: a glazed block between booke (7); the DRUM TOWER: a glass drum in wavering ribbons (49) |
 | `58-nr-anc-office.js` | 4 |  |
 | `60-nr-anc-lab.js` | 9 |  |

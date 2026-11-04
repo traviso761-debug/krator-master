@@ -80,7 +80,7 @@ function ancDoorRec(nm,p,q,s){const [w0,h0]=ANC_DOOR[nm],S=ancS(s),Wd=ancWorld(p
  const base=(TSTAT.cur||'free')+'.'+nm,n=ANC_OPEN.n[base]=(ANC_OPEN.n[base]==null?0:ANC_OPEN.n[base]+1);
  if(typeof KDOOR==='undefined')return null;
  const D=KDOOR.add({id:base+'.'+n,at,hinge:[at[0]-ux*w/2,at[1],at[2]-uz*w/2],p0:[P[0],P[1],P[2]],yaw,w,h,t:.6*Math.abs(S[2]||1),
-  locked:true,key:TSTAT.cur?TSTAT.cur.split('/')[0]:null,item:nm});
+  locked:true,key:TSTAT.cur?TSTAT.cur.split('/')[0]:null,item:nm,preset:'blastside'});   /* the Ancients' heavy bi-parting plate door (core/door's kinds), locked: drawn shut as the arch the builder put */
  ANC_OPEN.doors++;ANC_OPEN.locked++;return D;}
 /* kput, with the openings: a window's pane takes its card (and loses its glass in a ruin's empty holes), a door its record */
 const ancKput0=kput;
@@ -96,22 +96,28 @@ kput=function(name,p,q,s,c){
  return ancKput0(name,p,q,s,c);};
 /* -------------------------------------------------------------- operable leaves (the interiors target's partition doors)
    anLeaf(gx,gy,gz,yaw,w,h,o): a leaf SHUT in a doorway whose sill middle is the world point (gx,gy,gz), yaw the face's
-   outward yaw (KDOOR's), w x h the opening; o {id, t (.05), key, locked, mirror, name, kind ('slide')}. Registered in KDOOR; drawn as one
-   instance of the 'anLeaf' item (the Ancients' white panel), posed by KDOORHOST as it swings. Returns the record. */
-kdef('anLeaf',new THREE.BoxGeometry(1,1,1),MAT.white);
+   outward yaw (KDOOR's), w x h the opening; o {id, t (.05), key, locked, mirror, name, preset ('slide'), style ('glass')}.
+   Registered in KDOOR: the Ancients' sliding glass panel (core/door's preset 'slide', KDOORLEAF's 'glass': a thin white
+   frame round one light), drawn as one instance of each of the items 'anLeaf' (the frame) and 'anLeafG' (its light, the
+   Ancients' blue pane), posed by KDOORHOST as it slides. Without KDOORLEAF, one white panel. Returns the record. */
+const ANC_LG=typeof KDOORLEAF!=='undefined'?KDOORLEAF.geometry(THREE,'glass'):null;
+kdef('anLeaf',ANC_LG?ANC_LG.frame:new THREE.BoxGeometry(1,1,1),MAT.white);
+if(ANC_LG&&ANC_LG.glass)kdef('anLeafG',ANC_LG.glass,MAT.ancPane);
 const ANC_LEAVES=[];
 function anLeaf(gx,gy,gz,yaw,w,h,o){o=o||{};if(typeof KDOOR==='undefined')return null;if(o.id!=null&&KDOOR.get(o.id)){let k=1;while(KDOOR.get(o.id+'~'+k))k++;o=Object.assign({},o,{id:o.id+'~'+k});}const t=o.t==null?.05:o.t,ux=Math.cos(yaw),uz=-Math.sin(yaw),hs=o.mirror?1:-1;
  const D=KDOOR.add({id:o.id,at:[gx,gy,gz],hinge:[gx+hs*ux*w/2,gy,gz+hs*uz*w/2],p0:[gx,gy+h/2,gz],yaw,sign:o.mirror?-1:1,w,h,t,
-  locked:!!o.locked,key:o.key==null?null:o.key,name:o.name||null,kind:o.kind==null?'slide':o.kind});   /* the Ancients' door slides: kind 'slide' (core/door's kinds are coming; until then it swings) */
+  locked:!!o.locked,key:o.key==null?null:o.key,name:o.name||null,preset:o.preset==null?'slide':o.preset,style:o.style==null?(ANC_LG?'glass':'flat'):o.style});
  const q=new THREE.Quaternion().setFromAxisAngle(_UP,yaw),idx=KIT.items.anLeaf.length;
  /* straight into the item list: the point is already a world one (no KOFF, no KXF) */
- KIT.items.anLeaf.push({p:[gx,gy+h/2,gz],q,s:[w,h,t],c:null});const T=tcur();if(T){T.inst++;T.tris+=ktri('anLeaf');}
+ KIT.items.anLeaf.push({p:[gx,gy+h/2,gz],q,s:[w,h,t],c:null});if(KIT.items.anLeafG)KIT.items.anLeafG.push({p:[gx,gy+h/2,gz],q,s:[w,h,t],c:null});
+ const T=tcur();if(T){T.inst++;T.tris+=ktri('anLeaf');}
  ANC_LEAVES.push({D,idx,q,s:[w,h,t]});ANC_OPEN.leaves++;ANC_OPEN.doors++;if(D.locked)ANC_OPEN.locked++;return D;}
 /* -------------------------------------------------------------- the host: the tick, the E key, the tip, the night cards */
 let ANC_HOSTED=false;
 function ancHost(){if(ANC_HOSTED||typeof KDOOR==='undefined')return;ANC_HOSTED=true;
- const KM=KIT.meshes||{},im=KM.anLeaf;   /* KIT.meshes: kbake's record (a fork's older kit may not keep one) */if(im){im.userData.lodSkip=true;im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.castShadow=im.receiveShadow=true;}   /* core/lod leaves a moving set alone */
- for(const L of ANC_LEAVES)KDOORHOST.instanced(L.D,im,L.idx,L.q,L.s);
+ const KM=KIT.meshes||{},ims=[KM.anLeaf,KM.anLeafG].filter(Boolean);   /* KIT.meshes: kbake's record (a fork's older kit may not keep one) */
+ for(const im of ims){im.userData.lodSkip=true;im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.castShadow=im.receiveShadow=true;}   /* core/lod leaves a moving set alone */
+ for(const L of ANC_LEAVES)KDOORHOST.instanced(L.D,ims,L.idx,L.q,L.s);
  window._openings=ANC_OPEN.stats();if(window._api)Object.defineProperty(window._api,'openings',{get:()=>ANC_OPEN.stats(),configurable:true});}
 /* the reach: the orbit's target (where the camera looks) or the eye, whichever is nearer a door */
 /* the page's orbit: the kit's own ctl (92-camera.js), or core/host's (a fork on KHOST: Screamers) */

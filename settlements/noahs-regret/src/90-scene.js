@@ -37,7 +37,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  flushBuckets(GB,HULLG,true);
  /* the door leaves (core/door through core/engine's 36o-open.js: svLeaf): one InstancedMesh per material, posed by KDOORHOST as
     they swing, cut with the decks (nrCutHook: the leaves' materials are made at the flush, after 27-mat.js hooked the rest) */
- svOpenFlush(HULLG);for(const k in SV_LEAFMAT)if(!SV_LEAFMAT[k].userData.nrCut){SV_LEAFMAT[k].userData.nrCut=1;nrCutHook(SV_LEAFMAT[k],true);}
+ svOpenFlush(HULLG);for(const k in SV_LEAFMAT)nrCutHook(SV_LEAFMAT[k],true);nrCutHook(MAT.paneClear,false);   /* matHook keeps one hook a key */
  /* the clear glass (balustrades) casts no shadow and draws after the solids, as the window glass does (30-geo.js treats
     only the key 'glass' so; it is vendored) */
  HULLG.traverse(o=>{if(o.isMesh&&o.userData.mk==='glassClear'){o.castShadow=false;o.renderOrder=2;}});

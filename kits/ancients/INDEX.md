@@ -151,7 +151,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ap-host-c-arcades.js` | 10 |  |
 | `8ap-host-d-stalks.js` | 9 |  |
 | `8ap-host-e-bellhall.js` | 13 |  |
-| `8zo-anc-open.js` | 13 |  |
+| `8zo-anc-open.js` | 14 |  |
 | `8zz-interiors.js` | 12 |  |
 | `90-scene.js` | 9 | scene (1) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
