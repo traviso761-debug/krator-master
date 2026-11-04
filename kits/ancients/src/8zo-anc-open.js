@@ -110,7 +110,7 @@ function anLeaf(gx,gy,gz,yaw,w,h,o){o=o||{};if(typeof KDOOR==='undefined')return
 /* -------------------------------------------------------------- the host: the tick, the E key, the tip, the night cards */
 let ANC_HOSTED=false;
 function ancHost(){if(ANC_HOSTED||typeof KDOOR==='undefined')return;ANC_HOSTED=true;
- const im=KIT.meshes.anLeaf;if(im){im.userData.lodSkip=true;im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.castShadow=im.receiveShadow=true;}   /* core/lod leaves a moving set alone */
+ const KM=KIT.meshes||{},im=KM.anLeaf;   /* KIT.meshes: kbake's record (a fork's older kit may not keep one) */if(im){im.userData.lodSkip=true;im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.castShadow=im.receiveShadow=true;}   /* core/lod leaves a moving set alone */
  for(const L of ANC_LEAVES)KDOORHOST.instanced(L.D,im,L.idx,L.q,L.s);
  window._openings=ANC_OPEN.stats();if(window._api)Object.defineProperty(window._api,'openings',{get:()=>ANC_OPEN.stats(),configurable:true});}
 /* the reach: the orbit's target (where the camera looks) or the eye, whichever is nearer a door */
@@ -126,7 +126,7 @@ if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{try{ancH
 const ancOnFrame=typeof tick==='function'?tick:fn=>{let last=performance.now();const loop=now=>{const dt=Math.min(.1,(now-last)/1000);last=now;
  try{fn(dt);}catch(e){if(typeof reportErr==='function')reportErr('openings: '+(e.stack||e));return;}requestAnimationFrame(loop);};requestAnimationFrame(loop);};
 ancOnFrame(dt=>{ancHost();KDOORHOST.tick(dt);
- const nt=ancNight();if(nt!==ancNightWas){ancNightWas=nt;for(const nm in ANC_CARD){const L=ANC_CARD[nm].l,m=L&&KIT.meshes[L];if(m)m.material.emissiveIntensity=nt?1.1:0;}}});
+ const nt=ancNight();if(nt!==ancNightWas){ancNightWas=nt;for(const nm in ANC_CARD){const L=ANC_CARD[nm].l,m=L&&KIT.meshes&&KIT.meshes[L];if(m)m.material.emissiveIntensity=nt?1.1:0;}}});
 addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='e'||e.repeat)return;const D=ancNear();if(!D)return;
  KDOOR.toggle(D,{by:'player'});e.stopImmediatePropagation();},true);   /* capture: before 92-camera's E (lift) sees it */
 /* the tip: made on the first frame (core/door's host, 90-core-door-host.js, sorts after this fragment) */
