@@ -56,6 +56,9 @@
     W.poly({pts:[[top[0]-ux0*.35-tpx*w/2,top[1]-uz0*.35-tpz*w/2,top[2]],[top[0]+ux0*.35-tpx*w/2,top[1]+uz0*.35-tpz*w/2,top[2]],[top[0]+ux0*.35+tpx*w/2,top[1]+uz0*.35+tpz*w/2,top[2]],[top[0]-ux0*.35+tpx*w/2,top[1]-uz0*.35+tpz*w/2,top[2]]],name:'landing',tag:tag});
     if(run>1e-6&&rise/run<=T.ladderSlope)return W.strip({a:[foot[0],foot[1],fy],b:[top[0],top[1],top[2]],w:w,name:'ladder',tag:tag});
     var ux=run>1e-6?dx/run:0,uz=run>1e-6?dz/run:1,px=-uz,pz=ux,n=Math.max(2,Math.ceil(rise/T.rung));
+    /* and close enough that a walker stepping 0.2 m down the line never drops more than 0.58 m: a step passes floor(0.2 n / run) + 1
+       rungs at worst (two rungs of 0.36 m to a step dropped 0.72 m on a steep ladder, more than a stepping walker's 0.6) */
+    if(run>.05)while(n<120&&(Math.floor(.2*n/run+1e-9)+1)*rise/n>.58)n++;
     for(var i=1;i<=n;i++){var u=i/n,cx=foot[0]+dx*u,cz=foot[1]+dz*u,y=fy+rise*u,
         /* each rung reaches on from its place to the landing, so a walker walking up the line stays on rungs however fast he goes */
         a0=-.3,a1=Math.hypot(top[0]-cx,top[1]-cz)+.35;

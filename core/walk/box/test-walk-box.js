@@ -61,6 +61,11 @@ ok(KB.add(KWALK.create(), box(0, 0, 0, .2, 1.5, .2).m) === 'block' && KB.add(KWA
 for (const h of [2.7, 3.15, 4.5]) { const Wr = KWALK.create(), deck = Wr.floor({ rect: [-2, 2, -2, 2], y: h, name: 'deck' }); KB.ladder(Wr, [0, 3], [0, 2, h], { footY: 0 });
   const R = Wr.reach([[0, 0, 5]], { ground: () => 0 }); ok(R.reached.includes(deck), 'reach climbs a ' + h + ' m ladder to its deck (' + R.reached.length + ' floors reached)');
   const Wn = KWALK.create(), d2 = Wn.floor({ rect: [-2, 2, -2, 2], y: h }); ok(!Wn.reach([[0, 0, 5]], { ground: () => 0 }).reached.includes(d2), 'no ladder: the ' + h + ' m deck is unreached'); }
+/* down a steep ladder (3.25 m over 1.2 m) a walker stepping 0.2 m along it, taking the highest floor within 0.6 m over its feet,
+   never drops more than 0.6 m (the Zeijani probe's route walker) */
+{ const Wd = KWALK.create(), top = Wd.floor({ rect: [-1, 1, -3, 0], y: 3.25 }); Wd.floor({ rect: [-1, 1, -3, 4], y: 0 }); KB.ladder(Wd, [0, 1.2], [0, 0, 3.25], { footY: 0 });
+  let feet = 3.25, worst = 0; for (let z = -0.5; z <= 1.6; z += 0.2) { const f = Wd.floorBelow(0, z, feet, .6); worst = Math.max(worst, feet - f[0]); feet = f[0]; }
+  ok(worst <= .6 && feet < .1, 'down a 3.25 m ladder in 0.2 m steps: the worst drop ' + worst.toFixed(2) + ' m, arriving at ' + feet.toFixed(2)); void top; }
 /* agreement with the audit: the same scenes, the same verdict on the raised room */
 for (const [name, Bx, reach] of [['stair', room(1.2, true).concat(stair(0, 2.1, 1.2)), true], ['no stair', room(1.2, true), false]]) {
   const a = AUD.audit({ boxes: Bx }), unreachedCovered = a.components.some(cmp => cmp.covered);

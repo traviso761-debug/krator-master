@@ -54,7 +54,12 @@
   const LADDER_SLOPE = 1.1, RUNG = 0.4;
   function rungs(W, f, tp, w, name, tag) {
     const dx = tp.x - f.x, dz = tp.z - f.z, run = Math.hypot(dx, dz), ux = run > 1e-6 ? dx / run : 0, uz = run > 1e-6 ? dz / run : 1, px = -uz, pz = ux,
-      rise = tp.y - f.y, n = Math.max(2, Math.ceil(rise / RUNG - 1e-9));
+      rise = tp.y - f.y;
+    /* rungs 0.4 m apart at most, and close enough that a walker stepping 0.2 m down the line never drops more than 0.58 m: a step
+       passes floor(0.2 n / run) + 1 rungs at worst (two rungs of 0.36 m to a step on a steep ladder dropped 0.72 m, more than a
+       stepping walker's 0.6: the Zeijani probe's route walker) */
+    let n = Math.max(2, Math.ceil(rise / RUNG - 1e-9));
+    if (run > 0.05) while (n < 120 && (Math.floor(0.2 * n / run + 1e-9) + 1) * rise / n > 0.58) n++;
     for (let i = 1; i <= n; i++) {
       const u = i / n, cx = f.x + dx * u, cz = f.z + dz * u, y = f.y + rise * u, a0 = -0.3, a1 = Math.hypot(tp.x - cx, tp.z - cz) + 0.35;
       W.poly({ pts: [[cx + ux * a0 - px * w / 2, cz + uz * a0 - pz * w / 2, y], [cx + ux * a1 - px * w / 2, cz + uz * a1 - pz * w / 2, y],
