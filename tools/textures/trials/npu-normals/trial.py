@@ -17,7 +17,7 @@ import numpy as np
 from PIL import Image
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-import process
+import process, depth
 
 MEAN, STD, WIN = np.array([0.485, 0.456, 0.406]), np.array([0.229, 0.224, 0.225]), 518
 SPLIT, GRAIN = 3.0, 0.5         # the 'split' method's crossover (px, a blur sigma) and the weight of the grain against the shapes
@@ -40,22 +40,8 @@ class Depth:
         return y.astype(np.float64)
 
     def height(self, a):
-        """Relative depth of a periodic image at its own scale: 518 px windows over the torus (3 x 3 for 1024), each
-        standardised (the model's depth is known only up to scale and shift) and feathered into the sum, so the result
-        tiles as the image does. Larger = nearer the viewer = higher."""
-        H, W = a.shape[:2]
-        nx, ny = int(np.ceil(W / (WIN * 0.66))), int(np.ceil(H / (WIN * 0.66)))
-        acc, wsum = np.zeros((H, W)), np.zeros((H, W))
-        f = np.sin(np.pi * (np.arange(WIN) + 0.5) / WIN) ** 2 + 1e-3
-        wt = f[:, None] * f[None, :]
-        for j in range(ny):
-            for i in range(nx):
-                ys, xs = (np.arange(WIN) + j * H // ny) % H, (np.arange(WIN) + i * W // nx) % W
-                d = self.frame(a[np.ix_(ys, xs)])
-                d = (d - d.mean()) / max(d.std(), 1e-6)
-                np.add.at(acc, np.ix_(ys, xs), d * wt)
-                np.add.at(wsum, np.ix_(ys, xs), wt)
-        return acc / wsum
+        """Relative depth of a periodic image, still periodic: depth.py's windows round the torus (what process.py uses)."""
+        return depth.periodic_height(a, self.frame)
 
 
 def highpass(Hraw, size, soften):

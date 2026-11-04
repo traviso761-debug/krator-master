@@ -75,7 +75,12 @@ Notes:
   default for grain (moss, cloth, sand, snow, leather, bark). `split` is the safe middle option for a set that is
   both, or for re-running the library in bulk. It is almost never worse than `lum` and gains a little on average.
 - Run it on the NPU with a CPU fallback (4x slower, still a few seconds a set). The weights stay in `%LOCALAPPDATA%/krator-models/`.
-- Not done yet: the process.py option, its test, and checking the unscanned sets (painted metal, rug, trencadis) by eye.
+- **Done (2026-11-03):** `process.py --height model|split` (or `"height"` in a batch entry's options); the default `lum` is
+  byte-identical to before, meta.json included. The model code is `tools/textures/depth.py` (setup in its docstring:
+  a venv with openvino, then `depth.py --setup`; `depth.py --check` says which device compiles it). Run process.py
+  with that venv's python for these modes. The device is NPU, else CPU; `KRATOR_DEPTH_DEVICE` overrides it, and meta.json
+  records it. Test: `python tools/tests/test_process_height.py`.
+- Still to do: check the unscanned sets (painted metal, rug, trencadis) by eye; choose which library sets to re-run.
 
 ## Reproduce
 
