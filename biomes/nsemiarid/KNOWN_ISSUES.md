@@ -7,7 +7,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **The final rebuild's look, for the owner's eye** (2026-11-03, pair 9; `PLAN.md` section 11). Not judged by the owner: the ground on
       KGROUND (now Standard, the eight layers hex-tiled, the desert's pavement and the bed's mud polygons as KGROUND kinds: `?kground=0` the old
       floor), the far trees as impostors (gain 2.4, `?diet=0`, `?impgain=`), the basin past the map (`?far=0`), the height fog (`?hfog=0`), the
-      solid bodies drawn as wood (`?bodies=leaf` the old still leaf material: the bead chains and the striders may read a touch darker).
+      solid bodies drawn as wood (`?bodies=leaf` the old still leaf material: the bead chains and the striders may read a touch darker), and KGROUND's relief (`?kgrelief=0` without it).
 - [ ] **The sun's shadows are attached on `?shadow=1` only.** core/shadow's off-by-default switch (a panel button, `attach` turning nothing on)
       is on the Throne's branch (0293c8c16), not yet on `claude/biome-rebuild`; when it merges, `88-host-build.js` attaches always and the
       button turns them on. Not measured here.

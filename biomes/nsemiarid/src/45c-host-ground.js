@@ -104,7 +104,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};if(!USE_K
 // the KGROUND layers: GL's eight with their old colour rule as a tint (a keep-0 layer is the paint times its relief over the pack's mean, a keep-1 layer
 // its own colour), then the pavement and the polygons
 if(USE_KG){const w=i=>'vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
- KGROUND.hook(MAT_GROUND,{key:'nsemiarid-ground',at:'/*KGROUND*/',layers:GL.map((l,i)=>({map:l.tex,k:1/l.scale,w:w(i),amt:1,gain:1,name:l.name,
+ /* THE RELIEF (core-ground, 2026-11-03; the owner: every build takes it): the layers' blended height bumps the lit normal (no texture unit), the
+    cavities darken, and the mesh's own hollows (KGROUND.cavityMesh below, aKGAO) with them; the full MeshStandard set. ?kgrelief=0 none */
+ const KGR=new URLSearchParams(location.search).get('kgrelief')!=='0';
+ KGROUND.hook(MAT_GROUND,{key:'nsemiarid-ground',at:'/*KGROUND*/',relief:KGR?{bump:.075,cavity:.8,mesh:1}:undefined,layers:GL.map((l,i)=>({map:l.tex,k:1/l.scale,w:w(i),amt:1,gain:1,name:l.name,
    tint:'mix(nsPd*'+(1/Math.pow(l.mean==null?.78:l.mean,2.2)).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')'})).concat([
   /* the desert pavement: a gravel lag of basalt and tan pebbles packed in sand, where the wind has taken the fines (BWh off the bed) */
   {kind:'clast',w:'vGL2.x',amt:.6,size:.16,proj:'xz',matrix:.16,matrixColor:0xb8a684,palette:[0x4e4844,0x5e5650,0x8a7a62,0xa89474,0x6a5e52],vary:.18,sub:.3,fleck:0,seed:KRAND.hash(17,4301)%997,name:'pavement'},
@@ -136,4 +139,5 @@ const GROUND=(function(){const N=STAGE_GROUND.N,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));
  if(GL){g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));g.setAttribute('aGL2',new THREE.BufferAttribute(g2,3));}
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=STAGE_GROUND.label;scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;
+ if(USE_KG&&KGROUND.cavityMesh&&new URLSearchParams(location.search).get('kgrelief')!=='0')KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* the mesh's hollows for the relief (aKGAO) */m.userData.inspectLabel=STAGE_GROUND.label;scene.add(m);return m;})();
