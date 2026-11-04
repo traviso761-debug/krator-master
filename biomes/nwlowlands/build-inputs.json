@@ -18,7 +18,7 @@
     "biomes/nwlowlands/PORT.md": "09787e31e32ac57328f8608a25ccf0c31f280066e88782d05213c63ed9182819",
     "biomes/nwlowlands/build.py": "fd60ba4ddc6f6b6590ab52f4efc73f3dd96c5815a3e896fb788dddaaa2423abc",
     "biomes/nwlowlands/src/00-head.html": "2a65aa42840bfa2401a1e2eb1f3c7d4ec086c808b4281cdc4dc067a98c51db22",
-    "biomes/nwlowlands/src/45-host-stage.js": "4eb53d2d5a2f54ded71902c7907279d5b8555ebd8f8af9bcce08909526cf78db",
+    "biomes/nwlowlands/src/45-host-stage.js": "6d2bc52f3be97910e8683c4de22e5ab7ec67adb7aac07f7958645c145794c1f2",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/52-biome-nwlowlands-library.js": "55dc5b3e3ddf929209b0fdabb788f30b4453585a35fe75f3473066ef845b9b29",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
@@ -115,7 +115,7 @@
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "0dc57df1579b14375a1b611938a1138349929c8b858d3dbacb7550db9081dca7",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
@@ -142,7 +142,6 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -154,7 +153,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -175,19 +174,18 @@
     "core/water/ext/59-core-water-network.js": "c29d35b449dcc9b1b8e2863f8aacbdb41465e4038b014b300ed9df7a4b8794b1",
     "core/water/ext/59b-core-water-network-draw.js": "fe2e6f3b7d49c2522671d534a6badea0d3f3819287b141e67efa40cbc81cf593",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
     "biomes/nwlowlands/src": "82937487a4f4fd6f57b34edc726b6bc38ea76257f11e72350c9983fa7f901b52",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwlowlands/dist/nwlowlands.html": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
+    "biomes/nwlowlands/dist/nwlowlands.html": "dc2fea62e12374bdf0d1e1736ae01caf6fa5419821ab5d23d29a78b216013934"
    },
    "outputs_raw": {
-    "biomes/nwlowlands/dist/nwlowlands.html": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
+    "biomes/nwlowlands/dist/nwlowlands.html": "dc2fea62e12374bdf0d1e1736ae01caf6fa5419821ab5d23d29a78b216013934"
    }
   },
   "build.py --station margins": {
@@ -207,7 +205,7 @@
     "biomes/nwlowlands/PORT.md": "09787e31e32ac57328f8608a25ccf0c31f280066e88782d05213c63ed9182819",
     "biomes/nwlowlands/build.py": "fd60ba4ddc6f6b6590ab52f4efc73f3dd96c5815a3e896fb788dddaaa2423abc",
     "biomes/nwlowlands/src/00-head.html": "2a65aa42840bfa2401a1e2eb1f3c7d4ec086c808b4281cdc4dc067a98c51db22",
-    "biomes/nwlowlands/src/45-host-stage.js": "4eb53d2d5a2f54ded71902c7907279d5b8555ebd8f8af9bcce08909526cf78db",
+    "biomes/nwlowlands/src/45-host-stage.js": "6d2bc52f3be97910e8683c4de22e5ab7ec67adb7aac07f7958645c145794c1f2",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/52-biome-nwlowlands-library.js": "55dc5b3e3ddf929209b0fdabb788f30b4453585a35fe75f3473066ef845b9b29",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
@@ -306,7 +304,7 @@
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "0dc57df1579b14375a1b611938a1138349929c8b858d3dbacb7550db9081dca7",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
@@ -333,7 +331,6 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -345,7 +342,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -366,20 +363,19 @@
     "core/water/ext/59-core-water-network.js": "c29d35b449dcc9b1b8e2863f8aacbdb41465e4038b014b300ed9df7a4b8794b1",
     "core/water/ext/59b-core-water-network-draw.js": "fe2e6f3b7d49c2522671d534a6badea0d3f3819287b141e67efa40cbc81cf593",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
     "biomes/nwlowlands/src": "82937487a4f4fd6f57b34edc726b6bc38ea76257f11e72350c9983fa7f901b52",
     "biomes/nwlowlands/stations/margins": "35555905a84923824b66718b7fc00a50ba57d7247164db66e082d6f72aaed0e5",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwlowlands/dist/nwlowlands-margins.html": "e0983ee2c36fe6111f591a5bff805db41a90da56d7bc51ca3a49d6c7112e4586"
+    "biomes/nwlowlands/dist/nwlowlands-margins.html": "6f9580e0c793740c008e1da1871ad5637bce0ba3f60b2f3cfe96d2ff4f4a03ea"
    },
    "outputs_raw": {
-    "biomes/nwlowlands/dist/nwlowlands-margins.html": "e0983ee2c36fe6111f591a5bff805db41a90da56d7bc51ca3a49d6c7112e4586"
+    "biomes/nwlowlands/dist/nwlowlands-margins.html": "6f9580e0c793740c008e1da1871ad5637bce0ba3f60b2f3cfe96d2ff4f4a03ea"
    }
   }
  }

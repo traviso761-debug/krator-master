@@ -57,7 +57,11 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
  for(const k of ['lush','forest']){const P=(STATION.layerPack&&KMAT.packed(STATION.layerPack,'ground.'+k))||KMAT.packed('mantis','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0],m:Math.pow(P.tint&&P.tint.mean!=null?P.tint.mean:.78,2.2)};}
  return o;})();
 const TILES=new URLSearchParams(location.search).get('tiles')!=='0';   /* the layers' tile breakup (bowlTex, below) */
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb4aca4});
+/* MeshStandard (2026-11-04, the ground catch-up; core/terrain/GROUND.md: r128's Lambert lights per vertex on the cells, so no relief could show on it): the light per
+   pixel, roughness high as dry ground and salt crust are. ?kgstd=0 the Lambert ground (and no relief), ?kgrelief=0 the Standard ground without the relief: the two
+   before states. Read by the Bowl, Mantis's pocket and the steppe (station.json "base") */
+const KG_GQ=new URLSearchParams(location.search),KG_STD=KG_GQ.get('kgstd')!=='0',KG_RELIEF=KG_STD&&KG_GQ.get('kgrelief')!=='0';
+const MAT_GROUND=KG_STD?new THREE.MeshStandardMaterial({map:null,color:0xb4aca4,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:null,color:0xb4aca4});
 MAT_GROUND.extensions={derivatives:true};
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uKgSun={value:KG_SUN};sh.uniforms.uBowlNoise={value:TEX_NOISE};
  const gl2=renderer.capabilities.isWebGL2;
@@ -107,7 +111,7 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX
  if(BOWL_PAN){Object.assign(sh.uniforms,BOWL_PAN.U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uPanWet;\n'+BOWL_PAN.CH)
   .replace('#include <color_fragment>','#include <color_fragment>\n'+BOWL_PAN.mix);}};
 var BOWL_PAN=null;   /* the shore pan's drawing on this ground (89w) */
-MAT_GROUND.customProgramCacheKey=()=>'bowl-ground3'+(GLAY?'-lib'+(GLAY.lush?'g':''):'');
+MAT_GROUND.customProgramCacheKey=()=>'bowl-ground3'+(GLAY?'-lib'+(GLAY.lush?'g':''):'')+(KG_STD?'-std':'');
 // THE LAYER KINDS (core/terrain 43, KGROUND; the final rebuild 2026-10-27, BACKPORT.md sedesert's row), procedural over the layers above, no
 // sampler of their own: the salt crust's PRESSURE POLYGONS (?polygon=0), metres-wide cells whose edges buckle up into pale ridges over buff
 // troughs, on the white crust (vL0.x) only, the library's crust texture the fine cracks inside them; the dunes' SAND (?sand=0), the wind's
@@ -116,7 +120,11 @@ const KG_SUN=new THREE.Vector3(...(STATION.sun||[-600,900,-400])).normalize();TI
 {const q=new URLSearchParams(location.search),poly=q.get('polygon')!=='0',sand=q.get('sand')!=='0',wl=Math.hypot(WIND[0],WIND[1])||1;
  KGROUND.hook(MAT_GROUND,{key:'bowl-ground-k'+(poly?'p':'')+(sand?'s':''),blend:0,far:false,layers:[
   poly?{kind:'polygon',name:'salt pressure polygons',w:'vL0.x*1.15',amt:.9,size:7,width:.03,warp:.08,jitter:.8,vary:.06,edgeTint:'vec3(0.8,0.76,0.7)',rim:.05,rimTint:'vec3(1.1)',seed:301}:null,
-  sand?{kind:'sand',name:'dune sand',w:'vL1.x*1.1',amt:1,color:0xffffff,tint:'diffuseColor.rgb',ripple:.12,wind:[WIND[0]/wl,WIND[1]/wl],sun:'uKgSun',seed:302}:null]});}
+  sand?{kind:'sand',name:'dune sand',w:'vL1.x*1.1',amt:1,color:0xffffff,tint:'diffuseColor.rgb',ripple:.12,wind:[WIND[0]/wl,WIND[1]/wl],sun:'uKgSun',seed:302}:null],
+  /* THE RELIEF (2026-11-04, the ground catch-up; HANDOFF-REBUILD's adoption list): the layers' height bumps the lit normal (no texture unit), its low and the floor's
+     own hollows (KGROUND.cavityMesh, below) lose sky light, and on the yardangs' flanks where the strata show (vL2.y) the beds stand by hardness on the core strata
+     path. No side planes: no flank here is steep and near */
+  relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1,strata:.45,strataW:'vL2.y'}:null});}
 const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const axis=(lo,hi)=>{const o=[];for(let i=0;i<=N;i++){const a=-S/2+i*cs;o.push(a);if(i<N&&a+cs>lo&&a<hi)for(let k=1;k<M;k++)o.push(a+cs*k/M);}return o;};
  const X=axis(GRID.win.x[0],GRID.win.x[1]),Z=axis(GRID.win.z[0],GRID.win.z[1]),nx=X.length,nz=Z.length;
@@ -134,5 +142,5 @@ const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;MAT_GROUND.
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Bowl';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});m.userData.probeSkip=true;m.userData.inspectLabel='The Bowl';scene.add(m);return m;})();
 _mark('ground');
