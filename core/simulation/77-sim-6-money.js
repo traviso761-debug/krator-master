@@ -196,6 +196,8 @@
     Object.keys(M.acc).forEach(function(id){ var A=M.acc[id]; if(A.kind!=='household' || A.owner==null) return; var k=key(A.settlement), keep=(C.perKeep[k]||0)*(C.markup[k]||1), n=ppl[A.owner]||0;
       var days=keep>0 && n>0 ? A.balance/(keep*n) : 0; A.savingsDays=days; C.fill[A.owner]=Math.max(0, Math.min(1, days/Math.max(1e-9, Sp.days))); });
     SIM.all('actor').forEach(function(a){ var f=C.fill[a.home], B=Sp.bands[a.cls]; if(f==null || !B) return; a.wealth=B[0]+(B[1]-B[0])*f; }); }
+  /* a person whose class changed (a rise, a fall): its wealth in the new class's band at once, by its household's purse */
+  function rewealth(a){ var C=m1(), B=C && C.spend && C.spend.bands[a.cls]; if(!B) return; var f=C.fill[a.home]; a.wealth=B[0]+(B[1]-B[0])*(f==null ? 0 : f); }
   SIM.moneyFill = function(home){ var C=m1(); return C && C.fill[home]!=null ? C.fill[home] : null; };
   SIM.moneyTreatDrop = function(a){ var C=m1(); if(!C || !C.live || !C.spend || !C.spend.treatDrop) return 0; var f=C.fill[a.home]; return f==null ? 0 : C.spend.treatDrop*f; };
   /* a luxury (a treat, a meal out) is bought only with money in hand: the dole feeds and clothes, it does not treat */
@@ -228,7 +230,7 @@
     var h=0, t=String(home); for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return L[(h+(SIM.minute()/1440|0))%L.length]; }   /* by the home and the day: the town's custom spread over its shops */
   function fall(P, s, minute){ var C=m1(), St=C.stations, M=SIM.MONEY, I=ids(s), H=M.acc[P.ownedBy], a=P.merchant!=null ? SIM.R.actor[P.merchant] : null, k=key(s);
     P.ownedBy=I.tre(s); P.merchant=null; var from=a ? a.station : null;
-    if(a){ var j=St.order.indexOf(a.station); if(j>0){ a.station=St.order[j-1]; if(St.cls[a.station]) a.cls=St.cls[a.station]; } }
+    if(a){ var j=St.order.indexOf(a.station); if(j>0){ a.station=St.order[j-1]; if(St.cls[a.station]){ a.cls=St.cls[a.station]; rewealth(a); } } }
     if(H && SIM.happinessAdd) SIM.all('actor').forEach(function(x){ if(x.home===H.owner && !x.driven) SIM.happinessAdd(x, St.fall.unhappy, St.fall.days, 'fall'); });
     bump2(C.falls, k, from || 'unknown'); C.events.push({ m:minute, kind:'fall', settlement:s, household:H ? H.id : null, place:P.owner, actor:a ? a.id : null, from:from, to:a ? a.station : null });
     SIM.logEvent('fall', { household:H ? H.id : null, place:P.owner, actor:a ? a.id : null, from:from }); }
@@ -248,7 +250,7 @@
       H.ready=(H.ready||0)+1; if(H.ready<(R.hold||1)) return;
       if(!SIM.pay(H.id, I.tre(s), price, 'a '+next+"'s place", true) && price>0) return; var Hr=C.history[k], Dr=Hr && Hr.length ? Hr[Hr.length-1] : day1(s); Dr.placeBought=(Dr.placeBought||0)+price;   /* on the day the night closed (its books are written before the rises) */
       if(place){ var A=M.acc[I.wp(place.id)]; A.ownedBy=H.id; A.merchant=who.id; who.work=place.id; }
-      var from=who.station; who.station=next; who.rises=(who.rises||0)+1; if(St.cls[next]) who.cls=St.cls[next]; H.ready=0;
+      var from=who.station; who.station=next; who.rises=(who.rises||0)+1; if(St.cls[next]){ who.cls=St.cls[next]; rewealth(who); } H.ready=0;
       bump2(C.rises, k, next); C.events.push({ m:minute, kind:'rise', settlement:s, household:H.id, actor:who.id, from:from, to:next, place:place ? place.id : null, price:price });
       SIM.logEvent('rise', { household:H.id, actor:who.id, from:from, to:next, place:place ? place.id : null }); }); }
   SIM.moneyStations = function(){ var C=m1(); if(!C || !C.stations) return null; return JSON.parse(JSON.stringify({ rises:C.rises, falls:C.falls, events:C.events })); };

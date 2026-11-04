@@ -7,7 +7,10 @@
 //   SIM.build({ kinds:{kind: {bill:{good: n}, hours, life? (days a building of it lasts on its bill: its upkeep)}},
 //               of?(P) -> the kind a standing building wears as (null: it does not wear), pace? (projects a settlement
 //               keeps going at once: 1), grace? (days of upkeep owed before the first building shows its wear: 30),
-//               onBuilt?(lot, project) (the host turns the lot into its building), onStart?(lot, project) }) -> SIM.BUILD
+//               onBuilt?(lot, project) (the host turns the lot into its building), onStart?(lot, project),
+//               growth?:{rate (a year: 0.02), per (people a household: 5), ahead (houses ready or going up beyond the
+//               households waiting: 2), settle(lot, s) (the host makes the new household's people), people?(s)},
+//               onFull?(s) -> true when the host opened more lots (a street outside the gate) }) -> SIM.BUILD
 //   SIM.buildLot({id, kind, settlement?})   an empty lot: a place of the settlement's (its builders' WORK posts), the
 //               kind of building the plan allows there; its recipe is made (`build`: its worked hours are its project's)
 //   SIM.buildStep(minute)                   SIM.step's: each hour the upkeep drawn, the projects started (`pace`)
@@ -38,11 +41,18 @@
   function strHash(s){ var h=0; s=String(s); for(var i=0;i<s.length;i++) h=Math.imul(h^s.charCodeAt(i), 0x01000193); return h|0; }
   function bump(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
   SIM.build = function(o){ o=o||{};
-    SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null },
+    var Gr=o.growth||null;
+    SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null,
+        growth:Gr ? { rate:Gr.rate==null?0.02:Gr.rate, per:Gr.per==null?5:Gr.per, ahead:Gr.ahead==null?2:Gr.ahead, settle:Gr.settle||null, people:Gr.people||null } : null, onFull:o.onFull||null },
       lots:{}, order:[], projects:{}, towns:{}, events:[], n:0 };
     return SIM.BUILD;
   };
-  function town(s){ var B=SIM.BUILD, T=B.towns[s]; if(!T) T=B.towns[s]={ lots:[], active:[], built:0, carry:{}, owed:{}, day:{}, taken:{}, short:{}, rate:null }; return T; }
+  function town(s){ var B=SIM.BUILD, T=B.towns[s]; if(!T) T=B.towns[s]={ lots:[], active:[], built:0, carry:{}, owed:{}, day:{}, taken:{}, short:{}, rate:null, due:0, settled:0, waiting:0 }; return T; }
+  /* GROWTH (opt-in `growth`): the town's people grow by `rate` a year, a new household of `per` at a time; it moves into a
+     finished house no one lives in (the host's `settle(lot, s)` makes its people); a project starts only while the houses
+     ready or going up are fewer than `ahead` plus the households waiting, so building follows demand */
+  function ready(s){ var B=SIM.BUILD; return town(s).lots.filter(function(id){ var L=B.lots[id]; return L.state==='built' && !L.settled; }); }
+  function needMore(s){ var B=SIM.BUILD, G=B.cfg.growth, T=town(s); if(!G) return true; return T.active.length+ready(s).length < G.ahead+Math.floor(T.due); }
   function event(kind, o){ var B=SIM.BUILD, e=Object.assign({ m:SIM.minute(), kind:kind }, o); B.events.push(e); if(B.events.length>5000) B.events.shift(); SIM.logEvent('build '+kind, o); return e; }
   SIM.buildLot = function(o){ var B=SIM.BUILD, P=SIM.R.place[o.id]; if(!B || !P) return null; var s=o.settlement!=null ? o.settlement : P.settlement;
     if(!B.cfg.kinds[o.kind]) throw new Error('SIM.buildLot '+o.id+': unknown kind '+o.kind);
@@ -72,16 +82,17 @@
     P.state='built'; P.m1=minute; P.done=P.hours; L.state='built'; T.built++; T.rate=null; T.active=T.active.filter(function(x){ return x!==P.id; });
     if(B.cfg.onBuilt) B.cfg.onBuilt(L, P);
     var hands=SIM.all('actor').filter(function(a){ return a.work===L.id; }).length;
-    var next=start(L.settlement, minute); rebalance(L.settlement);
+    var next=needMore(L.settlement) ? start(L.settlement, minute) : null; rebalance(L.settlement);
     event('built', { settlement:L.settlement, lot:L.id, project:P.id, building:P.kind, days:Math.round((minute-P.m0)/144)/10, hands:hands, next:next ? next.lot : null }); }
   /* THE HANDS: every builder of the town (whose work is one of its lots) at a project, the projects' hands kept even
      (a builder at a lot with no project goes to the one with the fewest; nobody moves off a project that has no more than
      its share) */
-  function rebalance(s){ var B=SIM.BUILD, T=town(s); if(!T.active.length) return;
+  function rebalance(s){ var B=SIM.BUILD, T=town(s);
     var mine=SIM.all('actor').filter(function(a){ return a.work!=null && B.lots[a.work] && B.lots[a.work].settlement===s; }), on={}, act={};
     T.active.forEach(function(pid){ var lot=B.projects[pid].lot; act[lot]=1; on[lot]=[]; });
+    if(!T.active.length){ var wait=T.lots.filter(function(id){ return B.lots[id].state==='empty'; })[0]; if(wait==null) return; act[wait]=1; on[wait]=[]; }   /* nothing going up: they wait at the next lot */
     var idle=[]; mine.forEach(function(a){ if(act[a.work]) on[a.work].push(a); else idle.push(a); });
-    var share=Math.ceil(mine.length/T.active.length);
+    var share=Math.ceil(mine.length/Math.max(1, Object.keys(on).length));
     Object.keys(on).sort().forEach(function(lot){ while(on[lot].length>share) idle.push(on[lot].pop()); });
     idle.forEach(function(a){ var best=null; Object.keys(on).sort().forEach(function(lot){ if(best==null || on[lot].length<on[best].length) best=lot; });
       on[best].push(a); a.work=best; if(a.mem) a.mem.WORK=best; });
@@ -95,9 +106,15 @@
       n++; Object.keys(K.bill).forEach(function(g){ r[g]=(r[g]||0)+K.bill[g]/K.life; }); });
     T.rate=r; T.buildings=n; return r; }
   SIM.buildStep = function(minute){ var B=SIM.BUILD; if(!B || minute%60) return;
-    Object.keys(SIM.R.settlement||{}).sort().forEach(function(s){ var E=SIM.econ(s); if(!E) return; var T=town(s);
-      var st=0; while(T.active.length<B.cfg.pace && start(s, minute)) st++;   /* the projects kept going */
-      if(st) rebalance(s);
+    Object.keys(SIM.R.settlement||{}).sort().forEach(function(s){ var E=SIM.econ(s); if(!E) return; var T=town(s), G=B.cfg.growth;
+      if(G && minute>0 && minute%1440===0 && T.lots.length){   /* the day's growth, and the households waiting moved in */
+        var n=G.people ? G.people(s) : SIM.all('actor').filter(function(a){ return !a.driven && SIM.settlementOf(a)===s; }).length;
+        T.due+=n*G.rate/365/G.per;
+        while(T.due>=1){ var R=ready(s); if(!R.length) break; var L=B.lots[R[0]]; L.settled=minute; T.due-=1; T.settled++;
+          if(G.settle) G.settle(L, s); event('settled', { settlement:s, lot:L.id }); }
+        T.waiting=Math.floor(T.due); }
+      var st=0; while(T.active.length<B.cfg.pace && needMore(s)){ if(!start(s, minute)){ if(B.cfg.onFull && T.fullDay!==Math.floor(minute/1440)){ T.fullDay=Math.floor(minute/1440); if(B.cfg.onFull(s)) continue; } break; } st++; }   /* the projects kept going (to demand); the lots out, the host may open more */
+      if(st || T.first==null || minute%1440===0){ T.first=minute; rebalance(s); }   /* and daily: a builder who left (a rise, a cell) leaves no empty post */
       var R=rate(s), d=Math.floor(minute/1440); if(T.dayN!==d){ T.dayN=d; T.day={}; }
       SIM.withEcon(s, function(){ Object.keys(R).sort().forEach(function(g){ if(!E.goods[g]) return;
         var c=(T.carry[g]||0)+R[g]/24, n=Math.floor(c); T.carry[g]=c-n; var ow=T.owed[g]||0; if(n+ow<=0) return;
@@ -113,7 +130,8 @@
   SIM.buildChanged = function(s){ if(SIM.BUILD) town(s).rate=null; };
   SIM.buildReport = function(s){ var B=SIM.BUILD; if(!B) return null; var out={ towns:{}, events:B.events.slice() };
     Object.keys(B.towns).sort().forEach(function(k){ if(s!=null && k!==s) return; var T=B.towns[k], R=rate(k);
-      out.towns[k]={ lots:T.lots.length, building:T.active.length, built:T.built, buildings:T.buildings||0, idle:T.lots.every(function(id){ return B.lots[id].state==='built'; }),
+      out.towns[k]={ lots:T.lots.length, building:T.active.length, built:T.built, buildings:T.buildings||0, settled:T.settled, waiting:T.waiting, due:T.due, ready:ready(k).length,
+        empty:T.lots.filter(function(id){ return B.lots[id].state==='empty'; }).length, idle:T.lots.every(function(id){ return B.lots[id].state==='built'; }),
         projects:Object.keys(B.projects).map(function(id){ return B.projects[id]; }).filter(function(P){ return P.settlement===k; }).map(function(P){ return Object.assign({}, P, { bill:Object.assign({}, P.bill), got:Object.assign({}, P.got), share:P.done/P.hours }); }),
         upkeep:{ day:Object.assign({}, R), taken:Object.assign({}, T.taken), owed:Object.assign({}, T.owed), neglect:neglect(k) }, short:Object.assign({}, T.short) }; });
     return out; };

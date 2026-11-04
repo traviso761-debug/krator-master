@@ -2,7 +2,7 @@
 /* [G data] core/hamlet/PLAN.md section 5: each resource village a settlement of its parent town on core/simulation, at
    the abstract level always (its books, its carts, its households' meals by the hour; nobody posed), tuned by
    ISLE.TUNE.sim.hamlets (15). The villages come from core/hamlet's KHAMLET.village records: the open world hands in its
-   four, laid out on the map (openworld/isle-demo 48: ISLE_HAMLETS.make); the node test hands in the same four on its
+   five, laid out on the map (openworld/isle-demo 48: ISLE_HAMLETS.make); the node test hands in the same five on its
    stand-in ground. A page that hands in none keeps its towns' economies as they were.
      ISLE.simHamlets(villages)   villages: [{spec: {id, name, focus, parent}, village: KHAMLET.village's result}], after
                                  ISLE.simDeclare. For each, in order:
@@ -248,7 +248,7 @@ ISLE.simHamletBooks = function () {
 ISLE.hamletChecks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'the hamlets: ' + name, ok: !!pass, detail: detail }); };
   var ids = Object.keys(b.villages), H = ISLE.SIM.hamlets;
-  ok('four villages declared, each a settlement of its town, at the abstract level', ids.length === 4 && ids.every(function (id) { return b.villages[id].level === 'abstract' && SIM.R.settlement[id].parent === b.villages[id].parent; }),
+  ok('every village declared (' + ids.length + '), each a settlement of its town, at the abstract level', ids.length === (ISLE.SIM.hamlets ? ISLE.SIM.hamlets.villages.length : 0) && ids.length >= 4 && ids.every(function (id) { return b.villages[id].level === 'abstract' && SIM.R.settlement[id].parent === b.villages[id].parent; }),
     ids.map(function (id) { return id + ' (' + b.villages[id].parent + ', ' + b.villages[id].people + ' people)'; }).join('; ') + (H.errors.length ? '; ERRORS ' + H.errors.join('; ') : ''));
   ok('every post staffed and every bed filled', ids.length && ids.every(function (id) { var X = b.villages[id]; return X.workers >= Math.min(X.posts, X.people) && X.people > 0; }),
     ids.map(function (id) { var X = b.villages[id]; return id + ' ' + X.workers + ' of ' + X.posts + ' posts, ' + X.people + ' people'; }).join('; '));

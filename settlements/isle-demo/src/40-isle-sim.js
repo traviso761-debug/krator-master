@@ -60,7 +60,9 @@ ISLE.simPlaces = function (TS, R, G, nav) {
     var tags = { key: L.key, lot: L.id, tag: L.tag, trade: ISLE.tradeOf(L.key), cls: L.cls, district: L.district, role: L.role };
     if (L.vacant && T.build) {   /* an empty lot (32, 47b): its builders' posts, out of doors, until its house is built */
       tags.vacant = true; tags.hh = hh; (ISLE.SIM.lotRecs || (ISLE.SIM.lotRecs = {}))[s + '.' + L.lot] = L;   /* the plan's record: the drawing follows its project (47b) */
-      put(s + '.' + L.lot, 'an empty lot', ['lot', { WORK: T.build.posts * 100 / Math.max(1, L.w * L.d) }, { out: true, wander: 4 }], L.x, L.z, L.ry, L.w * L.d, 0, tags);
+      var crew = (T.build.crew || {})[s] || 0, nl = out.lots = (out.lots || 0) + 1;   /* the town's builders: a post on each of its first `crew` lots (47b moves them to the projects) */
+      var Pl = put(s + '.' + L.lot, 'an empty lot', ['lot', { WORK: 100 / Math.max(1, L.w * L.d) }, { out: true, wander: 4 }], L.x, L.z, L.ry, L.w * L.d, 0, tags);
+      if (nl > crew) { delete Pl.activities.WORK; out.posts -= 1; }
       return; }
     var rec = [s + '.' + L.lot, L.name || ISLE_DIMS[L.key] && ISLE_DIMS[L.key].role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
     if (K[0] === 'home') homes.push({ h: KRAND.hash(T.seed, 71, i), rec: rec }); else put.apply(null, rec);
@@ -117,6 +119,7 @@ ISLE.simDeclare = function (plans, clock) {
     if (!SIM.R.org[TS.id + '.folk']) SIM.org({ id: TS.id + '.folk', faction: TS.faction, name: 'The people of ' + TS.name });
     var PL = ISLE.simPlaces(TS, p.R, p.G, navs[i]);
     S.towns[TS.id] = { town: p.R.town, id: TS.id, frame: p.G.frame, places: PL, nav: navs[i].stats };
+    (S.plans || (S.plans = {}))[TS.id] = { R: p.R, G: p.G, nav: navs[i] };   /* a street outside the gate opened later (47b) needs its plan, ground and doors */
     S.order.push(TS.id);
     S.towns[TS.id].ms = { places: Date.now() - t1 };
   });

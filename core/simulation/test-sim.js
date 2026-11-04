@@ -1370,6 +1370,33 @@ function world(seed){
  U.S.R.place.kShed.stock.stone=100;U.run(1);const q2=U.S.buildReport('kautoa').towns.kautoa.upkeep,worn2=['kH0','kH1','kH2','kH3','kH4','kH5','kH6','kH7','kH8','kH9'].filter(id=>U.S.buildWorn(id)>0);
  ok('the stone back, the debt repaid and the houses kept again ('+q2.owed.stone+' owed, '+worn2.length+' worn)',!q2.owed.stone&&worn2.length===0,worn2.length>0);
  const LU=U.S.ledgerSnap();ok('the upkeep booked used: the books hold',U.S.ledger(LU,LU).ok,false);}
+// growth (77-sim-6-build.js `growth`): building follows demand. A town of 50 growing 365% a year (a household of 5 every
+// ten days, to keep the test short) keeps one house ahead: the first goes up at once, the next only when a household has
+// moved in; when the lots are out the host opens another (onFull)
+{const mk=(o)=>{o=o||{};const {S,clock}=world(233);
+   ['WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});S.place({id:'kHome',kind:'house',x:0,z:40,activities:{SLEEP:60},settlement:'kautoa'});
+   const lot=(i)=>S.place({id:'lot'+i,kind:'lot',x:40*i,z:80,activities:{WORK:1},settlement:'kautoa'});lot(0);lot(1);
+   const EK=S.economy({goods:{stone:{}},every:60,window:1},{settlement:'kautoa'});S.store('kShed',{kind:'warehouse'});S.R.place.kShed.stock={stone:900};
+   const settled=[],opened=[];
+   S.build({kinds:{house:{bill:{stone:5},hours:48}},pace:2,growth:o.noGrowth?null:{rate:3.65,per:5,ahead:1,settle:(L,s)=>settled.push([L.id,S.minute()])},
+     onBuilt:(L)=>{S.R.place[L.id].kind='house';S.R.place[L.id].activities={SLEEP:5};S.buildChanged('kautoa');},
+     onFull:(s)=>{if(opened.length>=1)return false;const P=lot(9);opened.push(P.id);S.buildLot({id:P.id,kind:'house'});return true;}});
+   S.buildLot({id:'lot0',kind:'house'});S.buildLot({id:'lot1',kind:'house'});
+   S.role({id:'builder',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});S.role({id:'kin',org:'folk',sched:[[0,'SLEEP']]});
+   for(let i=0;i<4;i++)S.actor({id:'b'+i,role:'builder',home:'kHome',work:'lot0'});for(let i=0;i<46;i++)S.actor({id:'k'+i,role:'kin',home:'kHome'});
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');
+   const run=(days)=>{for(let m=S._m||0,e=m+Math.round(days*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};
+   return {S,run,settled,opened};};
+ const A=mk();A.run(6);const R6=A.S.buildReport('kautoa').towns.kautoa;
+ ok('building follows demand: one house ahead goes up, then the builders wait ('+R6.built+' built, '+R6.building+' building, '+R6.empty+' lots empty on day 6)',R6.built===1&&R6.building===0&&R6.empty===1,R6.building>0||R6.built!==1);
+ const Z=mk({noGrowth:true});Z.run(6);const RZ=Z.S.buildReport('kautoa').towns.kautoa;
+ ok('without growth the town builds on every lot ('+RZ.built+' built by day 6)',RZ.built>=2,RZ.built<2);
+ A.run(30);const R36=A.S.buildReport('kautoa').towns.kautoa;
+ ok('a household moves in every ten days or so, and the next house goes up as it does ('+A.settled.map(x=>x[0]+' day '+(x[1]/1440).toFixed(0)).join(', ')+'; '+R36.built+' built)',
+   A.settled.length>=2&&A.settled[0][0]==='lot0'&&R36.built>=2,A.settled.length<2);
+ ok('the lots out, the host opens another (onFull: '+A.opened.join(', ')+')',A.opened.length===1&&A.S.BUILD.lots[A.opened[0]],!A.opened.length);}
 // unrest (77-sim-6-unrest.js; PLAN-MONEY.md M6): two towns of one faction, both unwatched; the workers' want rises a little
 // each day and nothing fills it, so their pool sinks and walks the stages (grumbling, demands, strikes, treason) while
 // the merchants stay content; Valapo, short of rice, asks the faction and Kautoa ships it from its spare; the ruler's

@@ -375,15 +375,27 @@ ISLE.TUNE.sim = {
   /* BUILDING AND UPKEEP (47b; core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4; the owner, 2026-11-03: most
      cities should show fillable empty lots while the player is there, adding demand for timber, stone and the other
      building materials, and upkeep as a demand sink). `vacant` of each town's dwellings are left as empty lots in the
-     plan (32: a hash of the town and the lot; the census counts their households out), `posts` builders each; the town
-     keeps `pace` projects going, its builders sent to them. A house is built of `kinds` (a dwelling of one household a
+     plan (32: a hash of the town and the lot; the census counts their households out); `crew` builders a town, sent to
+     its projects (at most `pace` at a time), waiting at the next lot when nothing is going up. A house is built of `kinds` (a dwelling of one household a
      `house`, of three a `longhouse`): its bill (timber for the piles and frame, stone for the footings and hearth, mats
      for the thatch and wall screens) and its worker-hours. Every standing home wears its bill over `life` days (the
      thatch is the first to go; a house on piles needs little stone, its hearth and footing), drawn hourly from the warehouses; owed when they are out, shown on a share of the houses
      after `grace` days. Timber is kept only where the lumber village is (the open world): on the city page a house's
      timber is gathered on the spot and its upkeep skips it. Placeholders */
-  build: { vacant: 0.03, posts: 1, pace: 2, grace: 30,
-    kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 } } },
+  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6 }, pace: 1, grace: 30,
+    /* GROWTH (2026-11-04, the owner: building follows demand, and the lots must last more than a year): each town's people
+       grow by `rate` a year, a household of five at a time (two grown-ups, three children), which moves into a finished
+       house no one lives in; a town builds only while its houses ready or going up are fewer than `ahead` plus the
+       households waiting. At 2% Kautoa forms about 24 households a year (39 lots), Valapo about 9 (12 lots) */
+    growth: { rate: 0.02, per: 5, ahead: 2 },
+    /* THE STREETS OUTSIDE THE GATES (33, 2026-11-04, the owner: an experiment, hamlet-size): at most `max` a town, each a lane
+       `lane` m long branching off a gate's road `from` m out (a town with no gates: near an avenue's outer end), with up
+       to `lots` lots of `key` houses on dry, gentle ground (`drop` m at most across a lot), kept with `least`; laid out
+       with the plan, closed, opened one at a time when the town's empty lots run out */
+    spurs: { max: 2, lots: 8, least: 4, lane: 72, from: 40, drop: 3, key: 'ie-hut-garden' },
+    kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 },
+      /* every other roofed building (2026-11-04): a workplace, a hall, a temple, a barracks, kept over four years */
+      works: { bill: { timber: 30, stone: 4, mats: 20 }, hours: 900, life: 1460 } } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
@@ -402,12 +414,13 @@ ISLE.TUNE.sim = {
   hamlets: {
     kinds: {
       house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
-      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
+      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-quarry': ['quarry', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
       'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
       warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
     },
     producers: {
       saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
+      quarry: { out: ['stone'], rate: 0.25, cap: 1500 },   /* Valapo's quarry (2026-11-04, the owner: less productive than Kautoa's: 0.25 a worker-hour against its 0.4, and a third of the hands) */
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
       byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
     },
@@ -423,8 +436,8 @@ ISLE.TUNE.sim = {
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
     life: { years: 5, minDays: 30 },
-    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
-    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
+    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
+    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, stone: { max: 1500 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
     /* THE FELLING CREW, a work camp that migrates (core/camp 40-camp-work.js; owner, 2026-11-02): the lumber village is the
        yard (its sawpits saw logs into timber, its kilns burn fuelwood into charcoal) and `share` of its sawpits' posts go out
        as a crew that camps at one stand of the forest at a time, fells it down to its seed trees, strikes and marches to the

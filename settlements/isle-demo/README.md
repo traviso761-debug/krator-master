@@ -244,11 +244,15 @@ declares both once they are planned, in one order whichever town it draws, and h
   days' keep for three nights buys it, and the worker rises to merchant and runs it (the shop keeps 15%, the rest to the
   treasury wholesale); a household that cannot cover its shop's wages falls, unhappier for a month. Twenty days: 6 rises,
   no fall.
-- **Building and upkeep** (`47b`, core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4, 2026-11-03). Three in a
-  hundred dwellings are left as empty lots (32: a cleared plot with its materials), one builder each; each town keeps two
-  projects going, and the drawing follows a house up (piles, frame, rafters, the house) over about six days in Kautoa.
-  Its bill (timber, stone, mats) comes out of the warehouses as the work goes; every home wears its bill over three
-  years, drawn hourly (about 32 mats, 2 stone and 43 timber a day in Kautoa). The canoes carry Valapo stone and timber.
+- **Building and upkeep** (`47b`, `33`, core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4, 2026-11-03/04). Three
+  in a hundred dwellings are left as empty lots (32), and each town has up to two streets outside its gates laid out and
+  closed (33), opened when its lots run out. The towns grow 2% a year, a household of five at a time moving into a
+  finished house; a town builds to that demand, one house at a time, with its crew (Kautoa 12, Valapo 6). The lots last
+  2.1 years (Kautoa) and 2.9 (Valapo). A house's bill (timber, stone, mats) comes out of the warehouses as the work goes,
+  and the drawing shows it going up: the Construction kit's site (kits/construction) round the house's own piece, which
+  core/city reveals in build order (footing, frame, walls, roof). Every building wears its bill over three or four years,
+  drawn hourly. The canoes carry Valapo stone and timber; Valapo's own quarry hamlet (on its island) makes stone at a
+  third of Kautoa's pace.
 - **Unrest** (`47u`, core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6, 2026-11-03). Each town's happiness pool, all
   its people and each class, eased over five days (a week to treason): under 50 it grumbles (the watch less able to arrest), under 40 it
   demands of the polity a shipment of what it lacked (or a new ruler: refused, no political system yet), under 30 a

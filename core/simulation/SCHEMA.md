@@ -270,7 +270,10 @@ kind, settlement, bill: {good: n}, got, miss, local (gathered on the spot: a goo
 state}: its materials drawn as the work goes (booked used; what is wanted anew and missing booked short once), `done` never past the share of
 its bill delivered. A town's UPKEEP: each standing building `of` a kind with a `life` wears its bill over it, drawn hourly (`taken`), the
 rest `owed` (drawn first when the good returns); the neglected share (owed over `grace` days of upkeep) shown on a hashed share of the
-buildings (`SIM.buildWorn`). `SIM.buildReport(s?)`, events start and built.
+buildings (`SIM.buildWorn`). `SIM.buildReport(s?)`, events start, built and settled. GROWTH (opt-in): a town's `due` households
+(people x rate / 365 / per a day) settle into finished lots no one lives in (`L.settled`, the host's `settle` makes their people), and a
+project starts only while the houses ready or going up are fewer than `ahead` plus the households waiting; `onFull(s)` asks the host for
+more lots when they are out (the isles' streets outside the gates).
 
 **Unrest (77-sim-6-unrest.js, PLAN-MONEY.md M6, 2026-11-03).** Per settlement: `level` and `stage` by key (`all`, and each class), the stage one
 of calm, grumble, demand, strike, treason (the deepest line the level is under; eased back `hyst` over a line); `demands` [{id, m, key, keys,

@@ -131,3 +131,25 @@ where the lumber village is: the open world), Valapo a third of that; the canoes
 the governor keeps a stone floor. Twenty days without stone leave Kautoa 44 stone owed and two thirds of its houses
 showing wear. **Not yet:** a finished house stands empty (the people to fill it are section 4's flows: refugees, growth);
 workplaces do not wear; a household cannot buy a lot; the works are plain stand-ins for the islanders kit's own pieces.
+
+**The second pass** (2026-11-04, the owner: building follows demand; the lots must last more than a year; streets outside
+the gates, hamlet-size; a quarry for Valapo; the gaps; a construction kit of its own):
+- **Growth fills the houses** (`growth`: 2% a year, a household of five at a time): a new household forms and moves into
+  a finished house no one lives in, set up as the census's people are (dressed, its needs, its class, an empty purse); a
+  town builds only while its houses ready or going up are fewer than two plus the households waiting, one house at a
+  time, with a crew of its own (Kautoa 12 builders, about nine days a house; Valapo 6). Kautoa forms about 24 households a
+  year, Valapo about 9: with the streets outside the gates their lots last 2.1 and 2.9 years.
+- **Streets outside the gates** (`33`, laid out with the plan, closed; core's `onFull` opens the next when a town's empty
+  lots are out): at most two a town, each a 72 m lane with up to eight lots on dry, gentle ground clear of the plan, off a
+  gate's road (Kautoa: the East and South gates, six lots each) or carrying an outer dead-end street on (Valapo, which has
+  no gates: six and six). Registered in core/tags from the start; drawn, with the lane as a dirt track, once open.
+- **Valapo's quarry** (core/hamlet's new `quarry` focus; openworld 48's fifth village, on the island's high ground apart
+  from the mine): 145 people, 10.6 km from Valapo, at 0.25 stone a worker-hour against Kautoa's 0.4, with a third of the hands.
+- **Workplaces wear too** (`works`: every roofed place, a bill of timber 30, stone 4, mats 20 over four years): Kautoa
+  keeps 1,613 buildings for about 38 mats, 52 timber and 3 stone a day.
+- **The Construction kit** (`kits/construction`, KCONS: the plot, the materials piled by what is still on site, the
+  scaffold rising with the walls) round the lot's own kit piece, which **core/city's `KCITY.constructMesh`** reveals in
+  build order read off the piece itself (footing; then upward in bands, the frame before the infill; the roof last, eaves
+  to ridge), with no line of the islanders kit changed. Built, the piece stays drawn by it.
+**Still not:** a household cannot buy a lot; refugees (the camp first) are not modelled; on the city page (no lumber
+village) a house's timber is gathered on the spot; the new quarters (low priority, the owner).

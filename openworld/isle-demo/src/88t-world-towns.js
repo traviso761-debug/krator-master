@@ -139,7 +139,7 @@ function drop(list,g){list.forEach(m=>g.remove(m));list.length=0;}
 function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);drop(X.fullM,X.g);X.hlodAt=at?at.slice():null;X.dirty=false;HL.lastRebuild=performance.now();
  if(!on){X.ves.forEach(v=>{v.g.visible=true;});return;}
  const by={},fb={},n0=D.recs.length;let mid=0,full=0;
- D.recs.forEach((L,i)=>{if(L.vacant&&!L.built)return;   /* an empty lot: its works (60 DRAW.lots) */
+ D.recs.forEach((L,i)=>{if(L.vacant)return;   /* an empty lot: its works and its house going up (60 DRAW.lots) */
   const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<D.nearR||d>=MID_R)return;
   /* the full ring, merged on the texture arrays: a piece in one or two draw calls (and its parts that cannot merge) */
   if(ATL&&d<FULL_R){const id0=L.kit+':'+L.key+'#'+(L.v|0),A=atlasOf(id0,()=>{const Q=D.proto(L.kit,L.key,L.v);return Q?Q.parts:null;});
@@ -180,9 +180,9 @@ function hlodCheck(o){o=o||{};const X=T.find(x=>x.full);if(!X)return{ok:false,de
  D.inst.concat(X.fullM).forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'full')));X.mid.forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'baked')));
  if(o.twice&&X.mid.length)add(X.mid[0].userData.lots[0],'baked');
  D.recs.forEach((L,i)=>{D.massB.getMatrixAt(i,_m);if(_m.elements[0]!==0||_m.elements[5]!==0)add(L.tag,'massing');});
- (D.lotWorks||[]).forEach(W=>{if(W.g.visible&&!W.L.built)add(W.L.tag,'works');});   /* an empty lot: its works (60 DRAW.lots) */
+ (D.lotWorks||[]).forEach(W=>{if(W.L.tag!=null&&D.recs.indexOf(W.L)>=0)add(W.L.tag,'works');});   /* an empty lot: its works and its house going up (60 DRAW.lots) */
  let twice=0,none=0;const missing=[];D.recs.forEach(L=>{const s=seen.get(L.tag)||[];const u=[...new Set(s)];if(s.length>1&&!(u.length===1&&u[0]==='full'))twice++;if(!s.length){none++;missing.push(L.key);}});
- const st=X.stats||{};return{ok:!twice&&!none&&X.mid.length>0,detail:X.P.town+': '+D.recs.length+' lots, '+(st.full||0)+' full, '+(st.mid||0)+' baked, '+(st.massing||0)+' massing, '+(D.lotWorks||[]).filter(W=>W.g.visible&&!W.L.built).length+' empty lots as works; vessels baked '+(st.vesselsBaked||0)+
+ const st=X.stats||{};return{ok:!twice&&!none&&X.mid.length>0,detail:X.P.town+': '+D.recs.length+' lots, '+(st.full||0)+' full, '+(st.mid||0)+' baked, '+(st.massing||0)+' massing, '+(D.lotWorks||[]).length+' lots as works; vessels baked '+(st.vesselsBaked||0)+
   ' of '+X.ves.length+'; '+HL.bakes+' pieces baked in '+Math.round(HL.bakeMs)+' ms'+(twice?'; '+twice+' DRAWN TWICE':'')+(none?'; '+none+' NOT DRAWN ('+missing.slice(0,3).join(', ')+')':'')};}
 HOST.TICKS.push(()=>update());
 /* the empty lots' works follow their projects (settlements/isle-demo 47b, 60 DRAW.lotsTick): a house finished, its town's rings rebuilt */
