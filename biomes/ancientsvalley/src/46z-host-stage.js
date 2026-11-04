@@ -14,7 +14,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
-const {TAU,clamp,lerp,mix,smooth}=BIO.fn;
+const {mix,smooth}=BIO.fn;   /* TAU, clamp and lerp are the Ancients kit's (10-core.js, read in place for the engines; the same definitions) */
 const AVQ=new URLSearchParams(location.search),AVQ_ON=k=>AVQ.get(k)!=='0';
 /* the north-west kit's new look (its 45-host-stage.js sets these on its own page; a reader sets none and gets the old look): the backlit
    leaves, the culms' texture, the fungoid caps, the lobes' material; not the season (BIO.bindSeason) nor the root colour (BIO.setGround) */
@@ -34,18 +34,27 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const VIA=[[2900,-520],[1400,-560],[300,-700],[-900,-1300],[-2900,-2300]];
  const viaDeckY=(x,z,s)=>Math.max(rawGround(x,z)+16,LAKE_Y+38,-2);
  const viaD=(x,z)=>{let d=1e9;for(let k=0;k+1<VIA.length;k++){const a=VIA[k],b=VIA[k+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),px=a[0]+dx*t,pz=a[1]+dz*t;d=Math.min(d,Math.hypot(x-px,z-pz));}return d;};
- // THE PLAN: the towers on a lattice turned 17 degrees, the core's families on the floor, the midrises on the shelf; the designs with no shell
- // stand only round the eye's start (heroes to 300 m); nothing in the viaduct's corridor
- const NEAR={x:300,z:-150,r:420,keys:['terrace','crescent','pods','cupola','arcades']};
- const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,coreKeys:['spindle','spindle','spindle','ledger','ledger'],shelfKeys:['ledger','ledger','ledger','ledger','spindle'],
-  near:NEAR,hero:NEAR.keys,skip:(x,z)=>viaD(x,z)<34||Math.hypot(x-NEAR.x,z-NEAR.z)<70});
+ // THE PLAN: the towers on a lattice turned 17 degrees, the skyscrapers on the floor (the Spindle three in ten, the Ledger, and the designs: the
+ // Wedge, the Reed, the Telescope, the Stalk, the Swell, the Organ, the Yoke), the midrises on the shelf (the Ledger three in ten, the Terrace,
+ // the Long Curve, the Cupola, the Arcades, the Pods, the Spiral, the Terrarium); nothing in the viaduct's corridor or at the eye's start
+ const NEAR={x:300,z:-150,r:420,keys:[]};
+ // THE ENGINES (the owner, 2026-11-04: sparingly, for the sense of scale): the Gyre, a 430 m ring on edge, on the floor to the north-west where the
+ // Overlook looks past it to city1; the Strider, a four-legged walker halted mid-stride, on the shelf to the south-east. Each on a pad of its own
+ const ENGINES=[{key:'gyre',x:-1500,z:-650,yaw:.6},{key:'strider',x:1450,z:1350,yaw:-2.2}].map(e=>Object.assign({},AV.ENGINES[e.key],e,{y:rawGround(e.x,e.z)}));
+ const engineD=(x,z)=>{let d=1e9;for(const E of ENGINES)d=Math.min(d,Math.hypot(x-E.x,z-E.z)-E.r);return d;};
+ const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,
+  coreKeys:['spindle','spindle','spindle','ledger','wedge','reed','telescope','stalk','swell','organ','yoke'],
+  shelfKeys:['ledger','ledger','ledger','spindle','terrace','crescent','cupola','arcades','pods','spiral','terrarium'],
+  skip:(x,z)=>viaD(x,z)<34||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90});
  // the towers' plinths: each stands on a level pad at its own height (a disc round a round tower, a slab round a slab, turned with it), eased
- // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside)
+ // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The
+ // engines take pads too, wide and eased over 60 m
  const PADS=KSPACE.create({cell:300});PLAN.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family]||{},fp=F.footprint||{};
-  if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w||60)/2+6;T.rz=(fp.d||60)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);PADS.insert(T,T.x,T.z,T.padR+16);});
+  if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w||60)/2+6;T.rz=(fp.d||60)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
+ ENGINES.forEach(E=>{E.rx=E.rz=E.padR=E.r+20;E.c=1;E.s=0;E.ease=60;E.family='engine';PADS.insert(E,E.x,E.z,E.padR+64);});
  const padD=(T,x,z)=>{const dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c,mn=Math.min(T.rx,T.rz);return Math.hypot(u*mn/T.rx,v*mn/T.rz)-mn;};
  const _q=[];
- function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<14)h=mix(T.y,h,smooth(0,14,d));}return h;}
+ function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}return h;}
  const yOf=ground;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
  const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);
@@ -61,7 +70,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  return{key:'overlook',name:'The Ancient\'s Valley: the Overlook',title:'Krator biome — the Ancient\'s Valley: the Overlook',
   hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk.',
   R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement
@@ -72,7 +81,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   zone:(x,z)=>{const f=forest(x,z);return{sw:f,nw:f*.33,city:F.density(x,z)};},
   /* the north-west's species kept: the wet country's tall trees and the bamboo; not the grass tree (its lance cards are drawn apart from its
      trunk, so a grown tree left them floating: the core attach audit) nor the dry foothills' banksia */
-  swAllow:null,nwAllow:['kauri','towerash','skybamboo','treefern','ginkgo','glowwillow','meranti','mistpalm','pandan','paperbark'],swQ:1.5,nwQ:.9,
+  swAllow:null,swKeep:['gum'],nwAllow:['kauri','towerash','skybamboo','treefern','ginkgo','glowwillow','meranti','mistpalm','pandan','paperbark'],swQ:1.5,nwQ:.9,
   // the ground's layers (materials.json; KGROUND in 47): a pave, b asphalt, c rubble, d glass; e rainfloor, f oak litter, g mud
   layers:['ground.pave','ground.asphalt','ground.rubble','ground.glass','ground.rainfloor','ground.oaklitter','ground.mud'],
   weights:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),st=street(x,z),b=built(x,z),wet=smooth(10,1.5,y-LAKE_Y),zn=F.zone(x,z),fo=forest(x,z);
@@ -89,8 +98,11 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
       (tx, tz) out to `ahead` metres (each weighted by its nearness and its width in the view) */
    /* a spot to stand: on the EDGE OF A PLINTH near (cx, cz) (the plaza's rim: paved, nothing grows there, the ground falls away), the pad's own
       tower behind the eye, and the fewest other towers filling a 70-degree cone toward (tx, tz) out to `ahead` metres */
+   /* the trees registered so far (the views are made after the build): no eye within 12 m of one */
+   const TR=KSPACE.create({cell:120});if(typeof REG!=='undefined')REG.forEach(rc=>{if(rc.kind==='tree')TR.insert(rc,rc.x,rc.z,Math.max(rc.r||4,4));});const tq=[];
    const openSpot=(cx,cz,r,clear,tx,tz,ahead)=>{let best=null,bs=1e9;const near=[];PADS.query(cx,cz,r,near);const q=[];
-    for(const P of near){for(let k=0;k<24;k++){const a=k/24*TAU,x=P.x+Math.cos(a)*(P.padR+2),z=P.z+Math.sin(a)*(P.padR+2);if(ground(x,z)<LAKE_Y+3||padD(P,x,z)<0)continue;
+    for(const P of near){if(P.family==='engine')continue;for(let k=0;k<24;k++){const a=k/24*TAU,x=P.x+Math.cos(a)*(P.padR-3),z=P.z+Math.sin(a)*(P.padR-3);if(ground(x,z)<LAKE_Y+3||padD(P,x,z)>0)continue;
+      tq.length=0;TR.query(x,z,2,tq);if(tq.some(t=>Math.hypot(t.x-x,t.z-z)<12))continue;
       const dx=tx-x,dz=tz-z,l=Math.hypot(dx,dz)||1,fx=dx/l,fz=dz/l;if(((P.x-x)*fx+(P.z-z)*fz)>-P.padR*.5)continue;   /* the pad's tower behind the eye */
       q.length=0;PADS.query(x,z,ahead,q);let ok=true,score=Math.hypot(x-cx,z-cz)/r;
       for(const T of q){if(T===P)continue;const ex=T.x-x,ez=T.z-z,d=Math.hypot(ex,ez);if(padD(T,x,z)<clear){ok=false;break;}if(d>ahead)continue;const c=(ex*fx+ez*fz)/d;if(c<Math.cos(35*Math.PI/180))continue;score+=(T.padR*2/d)*(1-d/ahead)*6;}
@@ -103,6 +115,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'The viaduct over the inlet':V([-400,-900],22,[-1500,-1700],30),
     'The core from the water':V([-600,2300],6,[-1800,1500],120),
     'The dead lobe':V([900,-100],9,[1600,-250],4),
+    'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
+    'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.5,E.z-E.r*1.3],4,[E.x,E.z],E.h*.4);})(),
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
     'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};},
   start:'The Overlook: city1 and the lake',

@@ -10,9 +10,16 @@
 //   AV.plan(o)                    -> {towers:[{id,key,family,state,x,z,y,yaw,i,j,kind}], pitch, theta}: the towers as records on the ground
 //   AV.viaduct(pts, o)            -> {piers:[{x,z,y0,y1}], decks:[{x,z,y,yaw,len}]}: a transit line's piers and deck along a polyline
 //   AV.RUIN_CUTS                  the ruin states' cumulative shares (PLAN-ANOMALIES.md 13: 10-15% stand to full height)
+//   AV.ENGINES                    the Ancient Engines (kits/ancients 8ah/8ai: cyclopean machines the size of a town) a station may stand, by key:
+//                                 the kit's builder, the footprint's radius and height (its registered volumes), for the stage's pads and records
 var AV={};
+AV.ENGINES={harrow:{fn:'buildHarrow',name:'The Harrow',r:175,h:210},strider:{fn:'buildStrider',name:'The Strider',r:175,h:220},breech:{fn:'buildBreech',name:'The Breech',r:200,h:200},
+ gyre:{fn:'buildGyre',name:'The Gyre',r:235,h:460},press:{fn:'buildPress',name:'The Press',r:300,h:600},sleeper:{fn:'buildSleeper',name:'The Sleeper',r:160,h:260},
+ carapace:{fn:'buildCarapace',name:'The Carapace',r:215,h:130},retorts:{fn:'buildRetorts',name:'The Retorts',r:200,h:270},needle:{fn:'buildNeedle',name:'The Needle',r:240,h:300},ram:{fn:'buildRam',name:'The Ram',r:320,h:110}};
 AV.RUINS=['intact','gutted','crown','broken','stump','skeleton','fallen'];
-AV.RUIN_CUTS=[.13,.38,.50,.63,.77,.87,1.01];
+/* the owner, 2026-11-04: the first cut looked far too intact (half the towers full height from afar). Intact 9%, gutted 11%, crown 12%, broken 20%,
+   stump 18%, skeleton 12%, fallen 18% */
+AV.RUIN_CUTS=[.09,.20,.32,.52,.70,.82,1.01];
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
 AV.band=function(h){for(var i=0;i<AV.BANDS.length;i++)if(h<AV.BANDS[i][1])return AV.BANDS[i][0];return 'forest';};
 AV.smooth=function(a,b,x){var t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
@@ -51,7 +58,7 @@ AV.fields=function(o){var S=AV.smooth,seed=o.seed|0,scars=o.scars||[],basins=o.b
 // the city's plan: the towers as records on a lattice turned by theta, a tower where the density says so, its family by the zone, its state by
 // the ruin shares, its yaw by hash; none under the lake, on a scar or in a park. o: {R, pitch, theta, seed, ground(x,z), lakeY, F (AV.fields),
 // coreKeys:[family...], shelfKeys:[...], near:{x,z,r,keys:[...]} (the designs that stand only as heroes: round the eye's start), skip(x,z)}
-AV.plan=function(o){var P=[],pitch=o.pitch||150,th=o.theta||0,c=Math.cos(th),s=Math.sin(th),R=o.R,seed=o.seed|0,F=o.F,NB=Math.ceil(R/pitch)+1;
+AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:o.theta,c=Math.cos(th),s=Math.sin(th),R=o.R,seed=o.seed|0,F=o.F,NB=Math.ceil(R/pitch)+1;
  var u=function(i,j,salt){return KRAND.unit(KRAND.hash(seed,i+4000,j+4000,salt));};
  for(var i=-NB;i<=NB;i++)for(var j=-NB;j<=NB;j++){var lx=i*pitch,lz=j*pitch,x=lx*c-lz*s,z=lx*s+lz*c;if(Math.hypot(x,z)>R)continue;
   var y=o.ground(x,z);if(y<o.lakeY+1.5)continue;if(o.skip&&o.skip(x,z))continue;
@@ -60,13 +67,13 @@ AV.plan=function(o){var P=[],pitch=o.pitch||150,th=o.theta||0,c=Math.cos(th),s=M
   if(near&&o.near.keys.length&&u(i,j,2)<.5)fam=o.near.keys[Math.floor(u(i,j,3)*o.near.keys.length)];
   else{var keys=kind==='core'?o.coreKeys:o.shelfKeys;fam=keys[Math.floor(u(i,j,3)*keys.length)];}
   var g=u(i,j,4),si=0;while(si<AV.RUIN_CUTS.length-1&&g>=AV.RUIN_CUTS[si])si++;var st=AV.RUINS[si];
-  if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a hero-only design keeps a shape its ruin pass draws */
+  if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a family named in o.hero keeps a shape its ruin pass draws */
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);
   P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind});}
  return{towers:P,pitch:pitch,theta:th};};
 // a transit line: piers every o.step along the polyline pts [[x,z],...] from the ground (o.ground, page y) up to the deck, whose height is
 // o.deckY(x,z,s) (s: the distance along the line); decks between piers. Pure records; 70-av-city.js draws them
-AV.viaduct=function(pts,o){var step=o.step||36,piers=[],decks=[],s=0;
+AV.viaduct=function(pts,o){var step=o.step==null?36:o.step,piers=[],decks=[],s=0;
  for(var k=0;k+1<pts.length;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(L/step)),yaw=Math.atan2(b[1]-a[1],b[0]-a[0]);
   for(var q=0;q<n;q++){var t0=q/n,t1=(q+1)/n,x0=a[0]+(b[0]-a[0])*t0,z0=a[1]+(b[1]-a[1])*t0,x1=a[0]+(b[0]-a[0])*t1,z1=a[1]+(b[1]-a[1])*t1,ya=o.deckY(x0,z0,s+L*t0),yb=o.deckY(x1,z1,s+L*t1);
    piers.push({x:x0,z:z0,y0:o.ground(x0,z0)-2,y1:ya});decks.push({x:(x0+x1)/2,z:(z0+z1)/2,y:(ya+yb)/2,yaw:yaw,len:L/n,pitch:Math.atan2(yb-ya,L/n)});}

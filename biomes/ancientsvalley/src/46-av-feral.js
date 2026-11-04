@@ -28,8 +28,12 @@
    K.pos.length=p0;K.nor.length=p0;K.col.length=p0;K.uv.length=p0/9*6;K.k.length=p0/9;K.tris-=t;}
   BIO.tally(-tris,-inst,0);W.dropped++;}
  function close(sp,o){const T=sp.T;if(!T)return;const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}
-  {let any=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}if(!any)for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;break;}
-   if(!any){if(o.adjust)o.adjust(T,null);return;}}
+  if(o.keep&&o.keep.has(S.key)){W.kept=(W.kept||0)+1;return;}   /* a species kept at its own size (the gum: its foliage clumps float when it is grown) */
+  {let any=false,tris=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;tris=true;break;}
+   if(!any){if(o.adjust)o.adjust(T,null);return;}
+   /* a tree whose span holds cards but no triangles draws its trunk later, outside the span (the cane palm): grown, its fronds would leave the trunk
+      behind (the core attach audit); it keeps its size. W.kept counts them */
+   if(!tris){W.kept=(W.kept||0)+1;return;}}
   const f=[T.x,o.ground(T.x,T.z),T.z],fe=o.feral(T.x,T.z),u=KRAND.unit(KRAND.hash(o.seed|0,T.seed|0,41)),k=1+fe*(.3+.7*u),ky=k*(1+.15*fe*u);
   if(k>1.02)W.grown++;
   const L=diag(k,ky,k),A=affine(L,f);

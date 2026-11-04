@@ -24,7 +24,7 @@ Stations, like the Cut's and the lowland kits': each is its own page from the sa
   48e..48h            the NWLOWLANDS kit, read in place
   50..60              THE METROPOLIS KIT's drawing side, read in place (the hero kit, the heroes, the designs, the rubble,
                       the floors and ruins, the shells' bake and draw); not its stage, land, sky or take
-  70-av-city          HOST: the valley's city stage: the towers as records on the ground, the tiers each frame, the lines
+  70-host-city        HOST: the valley's city stage: the towers as records on the ground, the tiers each frame, the lines
   88-host-build       HOST: the build order (the kits under their masks, feral; one bake; the tint)
   89a, 89s, 89t, 89w  HOST: core/atmos bound; the shared sky (the model's ridges); the weather; the lake
   90..98              HOST (core/host: camera, loop, panel, probe, the authoring tools)
@@ -104,7 +104,22 @@ KITS={'48a-swlow-species.js':(SW,'src/50-biome-swlowlands-species.js'),'48b-swlo
 # the Ancients kit's builders (55, 46e: they bring kits/ancients with them; a later station) and its flora vend (59d)
 MPD=os.path.join(ROOT,'kits','metropolis')
 MP_FRAGS=['40-mp-records.js','41-mp-plans.js','42-mp-facade.js','43-mp-shell.js','44-mp-audit.js','46-mp-designs.js','46b-mp-ancients.js','46c-mp-planned.js','46d-mp-gridplan.js',
-          '50-mp-kit.js','52-mp-hero-spindle.js','53-mp-hero-ledger.js','54-mp-hero-designs.js','57-mp-debris.js','59-mp-floors.js','59b-mp-ruin-design.js','60-mp-shell-host.js']
+          '50-mp-kit.js','52-mp-hero-spindle.js','53-mp-hero-ledger.js','54-mp-hero-designs.js','55-mp-hero-ancients.js','57-mp-debris.js','59-mp-floors.js','59b-mp-ruin-design.js','60-mp-shell-host.js']
+# THE ANCIENTS KIT, read in place for THE ENGINES (the owner, 2026-11-04: an Ancient Engine or two, sparingly, for the sense of scale; kits/ancients
+# 8ah-engines.js, 8ai-engines2.js: cyclopean machines the size of a town), as kits/metropolis/build.py reads it: its runtime, the two engine files,
+# its materials (a copy in the kit's src/ wins, else core/materials), and its names renamed where this page has them (the registry to ANC_REG /
+# ANC_REGISTER, the error panel, the ground, the ticks), so the files on disk are untouched. 70-av-city.js runs a builder into a hero (avEngine)
+ANC=os.path.join(ROOT,'kits','ancients')
+ANC_RUNTIME=['10-core.js','12-stats.js','30-kit.js','32-surfaces.js','34-kitdefs.js','36-decor.js','38-helpers2.js','50-registry.js','54-mat-concrete.js','69-mat-salvage.js','69w-worn.js','88y-ancients-matlib.js','8ap-host-0-lib.js']
+ANC_BUILDERS=['8ah-engines.js','8ai-engines2.js']
+ANC_FILES={}
+for f in ANC_RUNTIME+ANC_BUILDERS: ANC_FILES[f]=os.path.join(ANC,'src',f)
+for f in ['20-textures.js','22-materials.js','68-mat-v5.js']:
+    p=os.path.join(ANC,'src',f); ANC_FILES[f]=p if os.path.isfile(p) else os.path.join(CORE,'materials',f)
+ANC_SUBST=[(r'\bREGISTER\b','ANC_REGISTER'),(r'\bREG\b','ANC_REG')]
+SUBST={f:list(ANC_SUBST) for f in ANC_FILES}
+SUBST['10-core.js']=ANC_SUBST+[(r'\bERRS\b','ANC_ERRS'),(r'\breportErr\b','ancReportErr'),(r'\bterrainH\b','ancTerrainH'),(r'\bTICKS\b','ANC_TICKS'),(r'\btick\b','ancTick'),(r'\bwindow\.onerror\b','window.ancOnerror')]
+SUBST['69-mat-salvage.js']=ANC_SUBST+[(r'!!NIGHT\b','!!window.NIGHT')]
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE,'terrain',f)
@@ -116,6 +131,9 @@ for slot,(d,p) in KITS.items(): PATH[slot]=os.path.join(d,p)
 for f in MP_FRAGS:
     if f in PATH: sys.exit('build.py: the metropolis kit\'s %s shadows a fragment of this page' % f)
     PATH[f]=os.path.join(MPD,'src',f)
+for f,p in ANC_FILES.items():
+    if f in PATH: sys.exit('build.py: the Ancients kit\'s %s shadows a fragment of this page' % f)
+    PATH[f]=p
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE,'biome',f)
 # core/rand and core/tags (core/tags/README.md): with BIO.init({tags}) every item set, instance and registered volume is a record
@@ -160,7 +178,7 @@ for f in CORE_MAT:
 sys.path.insert(0,os.path.join(ROOT,'tools','textures'))
 import matlib_pack as _mp
 SIDE=None if '--inline-packs' in sys.argv else {}
-VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'ancientsvalley',side=SIDE)}
+VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'ancientsvalley',side=SIDE),'88x-matlib-pack-ancients.js':_mp.fragment(ANC,'ancients',side=SIDE)}
 PACKS=dict({'swlowlands':'../swlowlands','nwlowlands':'../nwlowlands','metropolis':'../../kits/metropolis'},**STN.get('packs',{}))
 for _k,(_pn,_pd) in enumerate(sorted(PACKS.items())):
     _pj=os.path.join(HERE,_pd,'tex','pack.json')
@@ -179,8 +197,9 @@ frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf-8').read()
+    for pat,rep in SUBST.get(f,[]): s=re.sub(pat,rep,s)
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f and '-mp-' not in f:
+    if 10<=n<80 and '-host-' not in f and '-mp-' not in f and f not in ANC_FILES:
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

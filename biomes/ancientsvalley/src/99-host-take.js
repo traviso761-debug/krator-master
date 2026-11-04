@@ -23,8 +23,8 @@ const HCHK={
    if(!ok)bad.push(k);}return{ok:!bad.length,detail:bad.length?'no structure ahead in: '+bad.join('; '):Object.keys(views).length+' views, each with a structure in reach ahead'};},
  // every tower stands on dry ground on its plinth (the drowned city is the lake's and comes later), and none on dead ground
  standing(T){let wet=0,dead=0;for(const t of T){if(t.y<STAGE.lakeY+1.5)wet++;if(STAGE.F.scar(t.x,t.z)>.5)dead++;}return{ok:T.length>60&&!wet&&!dead,detail:T.length+' towers; '+wet+' under the lake, '+dead+' on dead ground'};},
- // the ruin share: 10-15% stand to full height (PLAN-ANOMALIES.md 13), measured on the plan
- ruinShare(T){const n=T.length,i=T.filter(t=>t.state==='intact').length,f=i/Math.max(n,1);return{ok:n>60&&f>=.08&&f<=.2,detail:Math.round(f*100)+'% intact of '+n};},
+ // the ruin share (PLAN-ANOMALIES.md 13; the owner, 2026-11-04: far too intact at first): intact towers 5-15% of the plan, and under half standing tall at all
+ ruinShare(T){const n=T.length,i=T.filter(t=>t.state==='intact').length,tall=T.filter(t=>t.state==='intact'||t.state==='gutted'||t.state==='crown').length,f=i/Math.max(n,1);return{ok:n>60&&f>=.05&&f<=.15&&tall/Math.max(n,1)<.5,detail:Math.round(f*100)+'% intact, '+Math.round(tall/Math.max(n,1)*100)+'% standing tall of '+n};},
  // the forest went feral: the read-in trees were grown, and the taint's tint reached the baked foliage
  feral(W,tinted){return{ok:W.trees>50&&W.grown>20&&tinted>0,detail:W.trees+' read-in trees wrapped, '+W.grown+' grown, '+W.floor+' floor plants grown, '+W.dropped+' not this station\'s; '+tinted+' materials tinted'};},
  // no tree stands on a street, a plinth or dead ground

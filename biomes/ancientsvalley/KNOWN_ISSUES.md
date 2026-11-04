@@ -1,13 +1,16 @@
 # biomes/ancientsvalley: known issues
 
-- [ ] **Not yet verified on the GPU** (2026-11-04): `verify.py --assert --all-views` and `tools/perf_views.py` on the Arc 140T are owed; the numbers in
-  `README.md` are the in-app browser's. Station 0 stops for the owner's eye first (`PLAN.md` section 12).
-- [ ] **Only the Spindle and the Ledger have shells and impostors** (`kits/metropolis/KNOWN_ISSUES.md`): the other fourteen designs and the Ancients kit's
-  buildings stand only as heroes, so the plan keeps five of them round the eye's start and the far city is two families in seven states. Variety at
-  range waits on the test bed's shells for the designs.
-- [ ] **The core's attach audit counted 1.3% of the floor's cards floating** when the feral wrap grew the floor's plants (a clump is several card
-  instances, each grown about its own base): the floor growth is off (`AV.feralKit` takes `floor:true` to turn it on); the trees carry the feral look.
-  Check the audit after the next change to the wrap.
+- [ ] **Only the Spindle and the Ledger have shells** (`kits/metropolis/KNOWN_ISSUES.md`): the fourteen designs are heroes to 800 m (the nearest 30:
+  about 2 M triangles of heroes at the worst) and 96 px impostors past that, with no middle tier, so a design switches from a hero to a card at
+  800 m. Their shells wait on the test bed (the shell shader holds the Spindle's own heights).
+- [ ] **The boot takes several seconds and the first half minute janks:** 14 shelled keys and 28 design keys build their heroes at the boot (about 4 s
+  on the Arc), then 42 impostors bake one a frame. A later pass bakes the designs' impostors at build time or shows a loading note.
+- [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or
+  without the feral wrap: the kits' own placement on this page's fields. The gum is kept at its own size (`swKeep`), the floor's plants are not
+  grown (`AV.feralKit` takes `floor:true` to turn that on); the audit sits at its 1% limit. Find the gum's fault in the kit next.
+- [ ] **The rust is in the vertex and instance colours** (`avRust`), so it is per panel, not a streak texture: from the street it reads as staining
+  more than rust. A rust layer in the heroes' materials would not reach the shells (the bake reads colours, not shaders): a rust map in the
+  library (`PROMPTS-NEEDED.md`) blended by the same field is the next step.
 - [ ] **The forest stops at the kits' LOD range** (1.2 km from the eye): from the air the ground past it is the paint, greened where the forest mask is
   high. The far canopy wants the kits' impostor tiers or a far-floor pass of the valley's own.
 - [ ] **The page's registry is 7.6 M triangles** against the lowlands' 7.5 M ceiling (the rainforest zones on everywhere at quality 1.5): the worst view
