@@ -91,14 +91,15 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
 - [ ] 817 unreached (269 big): the palace's platforms and pavilions, the dockyards' slips and lofts, the chiefs' and nobles' houses'
       lofts, the square's stands, the gate's walk; mostly floors reached only by the ladders `door_walk.py` climbs and core/walk's
       reach does not (a ladder registered as rung floors 0.45 m apart is at the edge of the 0.45 m step), and roofs. Not fixed here.
-- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day).** Before: 1634
-      floors reached, 955 unreached (337 big). After: 1395 reached, 857 unreached (336 big). The counts fell on both sides because
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day).** The counts from
+      `reach_dump.js --summary`, which leaves the climbs out (strips, landings, rungs): 1386 floors reached, 864 unreached (337 big)
+      before; 976, 743 (335 big) after (the raw audit, rungs counted: 1634/955/337 -> 3718/1783/336). The counts fell on both sides because
       isStair's treads and ieSteps' pads (a floor each, 0.28-0.32 m deep, most stepped over by the reach's 0.4 m cells and listed
       as unreached) are one strip per flight now (core/engine `svStripWalk`). Unreached floors a walker could stand on (no floor
-      within 1.2 m over them: `reach_dump.js --summary`): 697 -> 584. Fixed: the West chief's upper floor (3.6 m, no way up) gets
+      within 1.2 m over them): 662 -> 541. Fixed: the West chief's upper floor (3.6 m, no way up) gets
       a plank stair up the right wall from the hall, its well cut in the floor (core/engine `svStair`; iw-house-chief 6/3/1 ->
-      9/0/0); every ladder (isLadder, isLogLadder) is climbed by the reach now that core/walk/box spaces a steep ladder's rungs
-      0.4 m apart (the palisade's walk 2/2/1 -> 10/0/0, the tongkonan's and the fisher's huts' lofts, the farms, the watchtowers).
+      5/0/0); every ladder (isLadder, isLogLadder) is climbed by the reach now that core/walk/box spaces a steep ladder's rungs
+      0.4 m apart (the palisade's walk 1/1/1 -> 2/0/0, the tongkonan's and the fisher's huts' lofts, the farms, the watchtowers).
 - [ ] Left: most of the 336 "big" are not places to stand: the piles' beams and joists under the decks (0.3 m wide boxes read as
       floors), the compound walls' copings, the tombs and the granaries' bodies, the palace's platform rims (its 135). Real ones:
       the granary row's and the dockyards' lofts, whose ladders lean into the loft's wall: the last rungs stand within the walker's

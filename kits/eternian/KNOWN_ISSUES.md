@@ -42,20 +42,22 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
       is taller than 0.7 m (the ministry, the customs house, the ancestor gallery, the historians' house): their tops need
       `wkPad` like the Registry's, or core/walk/box a rule for a solid podium's top. The stairs are the interiors set's to plan.
 - [x] **The stairs pass (2026-11-03): a stair to every storey.** Measured with `tools/walk_audit/reach_audit.py` (the audit above;
-      core/walk's reach as fixed that day): 311 floors reached, 719 unreached (289 big) before; 419, 644 (269 big) after, and of the
-      unreached a walker could stand on (no floor within 1.2 m over them, `reach_dump.js --summary`) 596 -> 519. The stairs are
+      core/walk's reach as fixed that day; the counts from `reach_dump.js --summary`, which leaves the climbs out: a stair's strip and
+      landing, a ladder's rungs): 311 floors reached, 719 unreached (289 big) before; 366, 622 (256 big) after; of the unreached a
+      walker could stand on (no floor within 1.2 m over them) 596 -> 497, of the big ones 217 -> 188. The stairs are
       core/engine's (`svStair`, `svStairCase`, `svWell`: open timber treads on stringers, solid stone or brick steps), every flight a
       `KWALK.strip`; no footprint grew (the ministry's steps stand 0.6 m past its declared depth, inside verify's 0.8 m). By kind,
-      reached/unreached/big-standable before -> after: the merchant's house 5/12/3 -> 21/6/1 (a dog-leg a storey in the back right
-      corner: the old flights climbed into the back wall), the canal house 38/50/12 -> 22/40/12 (one flight up the left wall meeting
+      reached/unreached/big-standable before -> after: the merchant's house 5/12/3 -> 11/6/1 (a dog-leg a storey in the back right
+      corner: the old flights climbed into the back wall), the canal house 38/50/12 -> 18/40/12 (one flight up the left wall meeting
       the back landing, the bay's upper floor carried to the room's; the counts fell with the treads, which are no floors now), the
-      corner turret 2/22/11 -> 10/18/7, the canal row 1/19/2 -> 5/2/1 (its stair rose 0.5 m off the ground), the ministry 0/20/9 ->
-      18/13/2 (solid podium steps, its top declared, a flank door into the hall, a dog-leg a storey), the trade buildings on `etTrade`
+      corner turret 2/22/11 -> 6/18/7, the canal row 1/19/2 -> 3/2/1 (its stair rose 0.5 m off the ground), the ministry 0/20/9 ->
+      8/13/2 (solid podium steps, its top declared, a flank door into the hall, a dog-leg a storey), the trade buildings on `etTrade`
       (a flight a storey: rect plans up the left wall, hex plans along a face clear of furniture, the hex floors declared): the
       shophouse, printer, inn, paper mill, hex house and villa, warehouse, market hall, granary; the fort's platform, its wall walk
-      (two dog-legs of solid brick out from the curtain) and its keep. `etWall`: a door on a plinth 0.45 to 1.2 m up gets stone
+      (two dog-legs of solid brick out from the curtain, a landing bridging to the walk) and its keep (the fort 12/258/33 ->
+      30/206/23); the ancestor gallery's keepers' door and podium steps (0/9/7 -> 2/8/6). `etWall`: a door on a plinth 0.45 to 1.2 m up gets stone
       steps; a gap with no sill given is a passage from the floor (it took a window's 0.95 m sill: the customs house's back gate).
-- [ ] Left unreached after the stairs pass (269 big, 201 a walker could stand on), read with `reach_dump.js`: flat roofs behind
+- [ ] Left unreached after the stairs pass (256 big, 188 a walker could stand on), read with `reach_dump.js`: flat roofs behind
       parapets and the parapets' copings (the canal house, the corner turret, the shophouse, the barracks' ranges: a roof terrace
       would want its own stair or hatch), cornices under the hips, the solid bodies by design (the gate's towers, the wall towers,
       the clock's body and balcony, the withdrawal house, the kiln), the relic hall, which has no door at all (its gate is the turbine

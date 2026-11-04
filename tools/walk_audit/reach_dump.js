@@ -11,7 +11,7 @@ const n = args[2] && !args[2].startsWith('--') ? +args[2] : 0, mi = args.indexOf
 const W = KW.create();
 for (const f of D.walk.floors) { if (f.kind === 'rect') W.floor(f); else if (f.kind === 'strip') W.strip(f); else W.poly(f); }
 for (const b of D.walk.blocks) { const r = W.block(b.box, b.tag); if (b.off) W.setBlock(r, false); }
-/* --summary: every top-level building, as reach_audit.py counts them, and a second count that leaves out the floors no one could stand
+/* --summary: every top-level building, as reach_audit.py counts them less the climbs (strips, landings, rungs), and a second count that leaves out the floors no one could stand
    on: one with another registered floor less than 1.2 m over its middle (a joist under a deck, a string course under a floor, a tread
    under a landing) */
 if (key === '--summary') {
@@ -30,8 +30,11 @@ if (key === '--summary') {
     for (const F of R.reached.concat(R.unreached)) { const t = F.tag || '', k = t.slice(t.indexOf(':') + 1); if (!keys.has(k)) continue;
       if (!own.has(F)) own.set(F, { key: r.key, top: b.mx[1] }); if (hit.has(F)) seen.set(F, true); else if (!seen.has(F)) seen.set(F, false); }
   }
+  /* the climbs themselves (a stair's strip and landing, a ladder's rungs) are left out of these counts: how many there are depends on
+     how a flight is registered, not on what is reached */
+  const climb = F => F.kind === 'strip' || /^(rung|landing|stair|ladder)$/.test(F.name || '') || /\.rung\d+$/.test(F.name || '');
   const T = { reached: 0, unreached: 0, big: 0, standable: 0, bigStandable: 0 };
-  for (const [F, ok] of seen) { const o = own.get(F), P = per[o.key] || (per[o.key] = { reached: 0, unreached: 0, big: 0, standable: 0, bigStandable: 0 });
+  for (const [F, ok] of seen) { if (climb(F)) continue; const o = own.get(F), P = per[o.key] || (per[o.key] = { reached: 0, unreached: 0, big: 0, standable: 0, bigStandable: 0 });
     const big = !ok && area(F) >= 2 && topY(F) <= o.top - 1, cov = covered(F);
     if (ok) { P.reached++; T.reached++; } else { P.unreached++; T.unreached++; if (!cov) { P.standable++; T.standable++; } }
     if (big) { P.big++; T.big++; if (!cov) { P.bigStandable++; T.bigStandable++; } } }

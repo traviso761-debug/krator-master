@@ -75,11 +75,11 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
 - [x] Every timber leaf (29: the houses', the shops', the works', the court's double gate) stands open as drawn and is operable;
       its walk blocks are off while it stands open (a door drawn ajar), so the kit's walk routes pass as before. Reach unchanged:
       83 of 102 built floors.
-- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 83 reached, 19
-      unreached (6 big) before; 108, 11 (0 big) after.** The scouts' tower's two ladders (the planner's, drawn by 46-zj-built.js) were
-      registered as strips too steep for the reach; kits/interiors writes a ladder as rung floors 0.4 m apart now, and all three
-      storeys are reached (2/9/5 -> 25/2/0). The wooden house's 0.5 m floor gets its entry step: the interiors' walk takes
-      core/walk's 0.45 m step here (37-zj-walk.js `step: .45`; the kit's default is 0.45 too now) (0/1/1 -> 2/0/0).
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 71 reached, 18
+      unreached (6 big) before; 78, 11 (0 big) after, the climbs left out (`reach_dump.js --summary`; raw 83/19/6 -> 226/11/0).** The scouts' tower's two ladders (the planner's, drawn by 46-zj-built.js) were
+      registered as strips too steep for the reach; kits/interiors writes a ladder as rung floors (0.4 m apart at most, closer on a steep one so the probe's route walker steps down them) now, and all three
+      storeys are reached (1/8/5 -> 7/2/0). The wooden house's 0.5 m floor gets its entry step: the interiors' walk takes
+      core/walk's 0.45 m step here (37-zj-walk.js `step: .45`; the kit's default is 0.45 too now) (0/1/1 -> 1/0/0).
 - [ ] 11 unreached, none big, all slivers: the strip of upper floor 0.1 to 0.2 m wide that `IX.walk.minusHoles` leaves between a
       stairwell and the wall (the row houses', the halls', the inn's), too narrow for a walker. The roof terraces are not walk
       floors at all (see "The two-storey house's roof terrace is drawn, not planned" above).

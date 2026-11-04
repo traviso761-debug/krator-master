@@ -62,12 +62,12 @@ The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m 
 - [ ] The reach audit with core/walk's defaults leaves 331 of 876 floors unreached (68 big): the winter street's sunken tunnels
       at -1.2 m, the fort's walk, the cold traps' dropped floors. The kit's own `walk-reach` (a 0.6 m step, its own targets) passes:
       the difference is the step and the ground rule, not a missing stair.
-- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 542 reached, 307
-      unreached (46 big) before; 653, 218 (28 big) after.** The winter fort's fighting walk gets a flight of solid pycrete blocks
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 541 reached, 287
+      unreached (46 big) before; 640, 198 (28 big) after, the climbs left out (`reach_dump.js --summary`).** The winter fort's fighting walk gets a flight of solid pycrete blocks
       along the back wall's inner face (core/engine `svStair`), arriving beside the walk: the walk all round is reached in both
-      seasons (the fort 4/152/22 -> 84/76/11). The domes' sleeping platform (about 1 m over the floor) had one 0.47 m step: two
-      steps of a third of the rise now (`yt_dome` 33/9/2 -> 41/4/0, the travel dome, the family cluster's centre). The raised
-      cache's ladder is climbed now that core/walk/box spaces a steep ladder's rungs 0.4 m apart (0/3/1 -> 9/0/0). No footprint grew.
+      seasons (the fort 4/152/12 -> 80/76/6, reached/unreached/big-standable). The domes' sleeping platform (about 1 m over the floor) had one 0.47 m step: two
+      steps of a third of the rise now (`yt_dome` 33/9/1 -> 41/4/0, the travel dome, the family cluster's centre). The raised
+      cache's ladder is climbed now that core/walk/box spaces a steep ladder's rungs 0.4 m apart (0/1/1 -> 1/0/0). No footprint grew.
 - [ ] Left (28 big): the satellite domes' dropped floors (-0.6 m) off the clusters' side passages: the passage reaches the shell,
       but a low block stands in the satellite's doorway that the kit's own walk-reach steps over (it allows a 0.45 m step-over) and
       core/walk's reach does not; the isolated tunnel sections on the sheet (-1.2 m, no ramp: in a street they meet the houses);
