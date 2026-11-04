@@ -40,10 +40,13 @@ python3 tools/textures/pack.py biomes/ancientsvalley                 # after a c
 - **The air and the water** (`89s`, `89w`): the shared sky at the pixel with the model's ridges; the lake and the inlets as one open surface, the far
   lake to 30 km where the model has water.
 
-## Numbers (2026-11-04, the in-app browser on the Arc 140T, 1280 x 800)
+## Numbers (2026-11-04, `verify.py --assert --all-views` on the GPU, 1280 x 800)
 
-840 towers, 2,818 read-in trees (2,752 grown), 624k instances, 7.6 M triangles in the registry; the worst view draws about 2.3 M triangles in
-450 calls; the shells bake in 0.55 s, all four tiers in 0.65 s. The GPU verify and the perf run are owed (`KNOWN_ISSUES.md`).
+826 towers (524 of them designs), two Engines, 2,823 read-in trees, 628k instances, 7.7 M triangles in the registry; every assert passes (the
+attach audit at 0.74%). Per view: the Overlook 2.67 M triangles in 397 calls, the dead lobe 5.48 M in 556, the park 4.71 M in 660 (the worst
+calls), the Strider 3.71 M in 469, from the air 2.45 M in 436. The shells bake in about 3 s, the heroes and shells together in 4 s, then 42
+impostors one a frame. Run on the RTX 5060 lane (the first cut, 2 families and no engines, measured the same views on the Arc 140T: the dead lobe
+5.67 M in 522 calls).
 
 ## Read next
 
