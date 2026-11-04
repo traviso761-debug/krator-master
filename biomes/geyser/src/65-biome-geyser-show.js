@@ -65,6 +65,11 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
   const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('aM',new T3.Float32BufferAttribute(aM,3));g.setIndex(idx);
   const m=new T3.Mesh(g,MUD_MAT);m.userData.inspectLabel='A mud pot (it bubbles)';m.frustumCulled=false;scene.add(m);st.pots++;BIO.tally(idx.length/3,0,1);});
  R.acid.forEach(a=>BIO.register({name:a.name,mud:true,x:a.x,z:a.z,y:BIO.terrainH(a.x,a.z)-4,r:a.r,h:14,tags:{hazard:GEYSER.hazard.acid(a)}}));
+ // the springs' crusts, the fumaroles' gas and the mud pots' clay (46: GEYSER.hazard; the final rebuild): records in the registry, as everything placed
+ R.springs.forEach(s=>BIO.register({name:'The crust round '+s.name,crust:s.key,x:s.x,z:s.z,y:s.level-1,r:s.r*1.25+4,h:3,tags:{hazard:GEYSER.hazard.crust(s)}}));
+ R.fumaroles.forEach((f,i)=>{const y=BIO.terrainH(f.x,f.z),sz=.25+.35*f.s,h=KRAND.unit(KRAND.hash(5303,i,77));   /* the mouth's sulphur crust: a bead of the kit's (hashed, no draw) */
+  BIO.put('bead',[f.x,y+.02,f.z],BIO.fn.qEuler(0,h*6.283,0),[sz,sz*.35,sz],h<.5?0xc8b02a:0xd6c440);BIO.register({name:'A fumarole (its gas)',fumarole:i,x:f.x,z:f.z,y:y-1,r:3+5*f.s,h:6+10*f.s,tags:{hazard:GEYSER.hazard.fumarole(f)}});});
+ R.mud.forEach((m,i)=>BIO.register({name:'A mud pot (boiling clay)',mudpot:i,x:m.x,z:m.z,y:(m.level==null?BIO.terrainH(m.x,m.z):m.level)-1,r:m.r*1.1,h:3,tags:{hazard:GEYSER.hazard.mud(m)}}));
  // ---------------------------------------------------------------- the steam
  // a puff loops up from its vent: aS (phase, rate, size, rise); aC its tint (the Prism's steam takes its colours from under)
  const STEAM_MAT=mk({transparent:true,depthWrite:false,uniforms:{uT:U.uT,uScale:U.uScale,uLight:U.uLight,uWind:U.uWind},

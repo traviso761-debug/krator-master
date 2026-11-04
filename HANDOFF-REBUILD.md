@@ -442,7 +442,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne (**merged 2026-11-03:** all fourteen pages, stations 12-14 new; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"), ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu (**merged 2026-11-03:** stations `cloud`, `descent`, `ranges`, `gills`, `floor`), oidong (**merged 2026-11-03:** stations `passes`, `hearths`) | their five shared species together |
-  | 7 | geyser, nhighlands | geyser before ringisles |
+  | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands | geyser before ringisles |
   | 8 | ringisles, abyssal-savannah | after all their sources |
   | 9 | korona (**merged 2026-11-04:** all six pages on the universal set; `biomes/korona/PLAN.md`, "Core adoption"), nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut, farside | both read nwlowlands |

@@ -1,0 +1,8 @@
+{
+ "core": {
+  "35b-core-anim-turn.js": "core/biome/35b-core-anim-turn.js"
+ },
+ "kin": {
+  "hearths": [["src/50-biome-hearths-species.js", "src/57-biome-hearths-stills.js"], "HEARTH", []]
+ }
+}

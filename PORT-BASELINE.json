@@ -52,9 +52,13 @@
    "bytes": 2012185,
    "sha256": "373f650e50fb1f5da0ea096b42f5a67e0eca6a5de2edbbf04a337fcfc5b0079b"
   },
+  "biomes/geyser/dist/geyser-stills.html": {
+   "bytes": 1442849,
+   "sha256": "7f1ba4e8a75b412dc7a7f432cf0a160c0890f7e57abc182e2603a86c98f6be76"
+  },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 637289,
-   "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
+   "bytes": 1412188,
+   "sha256": "ac8852a3cfa59bb3a02d55ece18b42a977ef44305abadf32e30c12fe54abaf87"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
