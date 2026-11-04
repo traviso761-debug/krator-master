@@ -26,16 +26,6 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **The catalog's engine moved to `core/catalog` and its symbols to `core/sockets`** (2026-11-03, MODULARITY-PLAN.md step 3).
-  The pages that inline the furniture bundle (about 30) still carry the old `kits/catalog/...` labels and the old symbols
-  (no Order scroll, Xanadu's wheel): they take both when rebuilt. Stale comments in fragments every page inlines, left
-  so as not to move every page for a comment: `core/tags/52-core-tags-vocab.js` ("copied from kits/catalog/krator-furniture-core.js"),
-  `core/sockets/38-symbols.js` ("vendored there as kits/catalog/krator-symbols.js"), `core/catalog/krator-furniture-kit.js`
-  ("vendored as krator-symbols.js"). Reword them in that rebuild.
-- **`kits/ringsea/src/10-core.js`: re-vendor from `kits/ancients/src`** (2026-11-03, MODULARITY-PLAN.md step 5): upstream gained the
-  frame hook (`TICKS`, `tick()`). Voth (`settlements/voth/ringsea.py`) and the isle demo bundle the file, so it moves their pages;
-  check that neither declares its own `TICKS` or `tick` first.
-
 - **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
   (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
   (`kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
@@ -62,25 +52,9 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
   its first lines): take that out in the same change.
 
-- **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
-  pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
-  Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
-  builds take core/hamlet (Longsong, `openworld/isle-demo`): a comment change was not worth an isle-demo rebuild alone.
-
-- **The waiting cultures** (the owner, 2026-10-26; `kits/yeti/PLAN.md` section 11). The rebuild this list waits for: register
-  `khaayken`, `tungang`, `fellgang`, `talovolci`, `pylon` and `talia` in `core/tags/52-core-tags-vocab.js` (`CATALOG_CULTURES`
-  and `CULTURE_NAMES`, `test-tags.js`'s digest), lift `NO_CATALOG` for `jimjam` and `dalab` with their culture files, and merge
-  the weapon racks (`claude/weapon-racks`, 55c2913f7). It starts once at least two more kits wait on it beside the Yeti kit.
-
-- **kits/catalog: the missing fruit** (2026-10-26, from the kits' own lists). `krator-master-furniture-generic-fruit.js` has no
-  piece for the north basin's apple, walnut, apricot, pear, pomegranate, pistachio and almond (`kits/catalog/KNOWN_ISSUES.md`;
-  `biomes/nsemiarid` `FRUIT_NOT_DRAWN`) nor for Guilin's pomelo, osmanthus flowers and bamboo shoots (`biomes/guilin`
-  `FRUIT_NOT_DRAWN`). Small data pieces in one file; then set each species' `fruit` and empty the two lists. Pistachio and
-  almond go into `kits/crops` too.
-
-- **tools/check_core_use.py: refresh the baseline** (2026-10-26). It reports "252 findings, none new", and some of the 252
-  are already fixed: rerun with `--write-baseline` after the rebuild so the baseline holds only what is still open. No page
-  moves.
+- **The weapon racks** (`claude/weapon-racks`, 55c2913f7; `kits/yeti/PLAN.md` section 11). The waiting cultures were registered in
+  the rebuild of 2026-11-04 (core/tags, core/catalog, the Jimjam and Dalab culture files, the missing fruit); the racks' branch
+  is not in this repository's history: merge it when it is pushed.
 
 - **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
   the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).
