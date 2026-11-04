@@ -264,6 +264,7 @@ DRAW.protoBox = function (P) {
 DRAW.lots = function (R) {
   DRAW.lotWorks = DRAW.lotWorks || []; DRAW.lanes = DRAW.lanes || {}; DRAW.lotsR = R;
   R.lots.forEach(function (L) { if (L.vacant) DRAW.lotWork(L); });
+  DRAW.camp(R);
   DRAW.lotsTick(); DRAW.stats.lots = DRAW.lotWorks.length;
 };
 /* an opened street's lane: a dirt track down its middle, draped on the ground */
@@ -275,8 +276,27 @@ DRAW.lane = function (Sp) {
   var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
   var m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x8e7a5a })); m.name = 'lane ' + Sp.id; scene.add(m); return m;
 };
+/* THE REFUGEE CAMP (47r, 2026-11-04): on the camp's ground of the plan (33), a tent for every `tent` people the sim's camp
+   holds, in rows across the square (a ridge tent of canvas over two poles: a stand-in until a camp kit's tents are drawn
+   here), and a cook shelter for the ration line once anyone is there. It decides nothing: the count is the sim's */
+DRAW.camp = function (R) {
+  var C = R.camp; if (!C) return null; var K = ISLE.TUNE.sim.refugees, sp = 6, n = Math.floor(C.size / sp), G = ISLE.cur && ISLE.cur.G;
+  var tent = new THREE.CylinderGeometry(1, 1, 4, 3, 1); tent.rotateZ(Math.PI / 2); tent.scale(1, 1.3, 1); tent.translate(0, 0.9, 0);
+  var im = new THREE.InstancedMesh(tent, new THREE.MeshLambertMaterial({ color: 0xd8ccb0 }), n * n), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), k = 0;
+  for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) { var x = C.x - C.size / 2 + sp / 2 + i * sp, z = C.z - C.size / 2 + sp / 2 + j * sp, y = G ? G.h(x, z) : C.y;
+    im.setMatrixAt(k++, m4.compose(new THREE.Vector3(x, y, z), q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), (i + j) % 2 ? 0 : 0.08), new THREE.Vector3(1, 1, 1))); }
+  im.count = 0; im.name = 'refugee camp tents'; im.userData.lots = C.tag != null ? [C.tag] : []; scene.add(im);
+  var cook = new THREE.Group(), wood = new THREE.MeshLambertMaterial({ color: 0x7a5a3a }), y0 = G ? G.h(C.x + C.size / 2 + 4, C.z) : C.y;
+  [[-2, -1.5], [2, -1.5], [2, 1.5], [-2, 1.5]].forEach(function (p) { var k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.6, 6), wood); k2.position.set(p[0], 1.3, p[1]); cook.add(k2); });
+  var roof = new THREE.Mesh(new THREE.BoxGeometry(5, 0.15, 4), new THREE.MeshLambertMaterial({ color: 0xc2a868 })); roof.position.y = 2.6; cook.add(roof);
+  cook.position.set(C.x + C.size / 2 + 4, y0, C.z); cook.visible = false; cook.name = 'the camp\'s ration line'; scene.add(cook);
+  DRAW.campDraw = { C: C, im: im, cook: cook, max: n * n, tent: K ? K.camp.tent : 5, s: ISLE.TUNE.sim.towns[R.town] ? ISLE.TUNE.sim.towns[R.town].id : null };
+  return DRAW.campDraw;
+};
 DRAW.lotsTick = function () {
-  var by = {}, R = DRAW.lotsR;
+  var by = {}, R = DRAW.lotsR, CD = DRAW.campDraw;
+  if (CD && CD.s && typeof SIM !== 'undefined' && SIM.R && SIM.R.place) { var CP = SIM.R.place[CD.s + '.camp'], np = CP ? CP.people || 0 : 0, nt = Math.min(CD.max, Math.ceil(np / CD.tent));
+    if (CD.im.count !== nt) { CD.im.count = nt; CD.im.instanceMatrix.needsUpdate = true; } CD.cook.visible = np > 0; DRAW.stats.camp = { people: np, tents: nt }; }
   if (R && R.spurs) R.spurs.forEach(function (Sp) { if (!Sp.open || DRAW.lanes[Sp.id]) return; DRAW.lanes[Sp.id] = DRAW.lane(Sp); Sp.lots.forEach(function (L) { DRAW.lotWork(L); }); });   /* a street opened */
   (DRAW.lotWorks || []).forEach(function (W) {
     var p = typeof ISLE !== 'undefined' && ISLE.lotProgress ? ISLE.lotProgress(W.L) : { f: 0, onSite: null }, st = p.f >= 1 ? 'built' : p.f > 0 ? 'building' : 'cleared';

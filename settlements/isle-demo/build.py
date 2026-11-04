@@ -286,7 +286,7 @@ CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export
 # core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-49
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
 CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47h-isle-hamlets.js', '47m-isle-money.js', '47u-isle-unrest.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47h-isle-hamlets.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
 # the Construction kit (kits/construction, KCONS: a building site's gear) and core/city's build-up of a kit piece
 # (KCITY.constructMesh), read in place for the empty lots' works (60, 2026-11-04)
 CITY_CONSTRUCT = [os.path.join(ROOT, 'core', 'city', '54-city-host-construct.js'), os.path.join(ROOT, 'kits', 'construction', 'src', '10-cons-site.js')]

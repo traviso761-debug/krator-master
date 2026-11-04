@@ -153,3 +153,21 @@ the gates, hamlet-size; a quarry for Valapo; the gaps; a construction kit of its
   to ridge), with no line of the islanders kit changed. Built, the piece stays drawn by it.
 **Still not:** a household cannot buy a lot; refugees (the camp first) are not modelled; on the city page (no lumber
 village) a house's timber is gathered on the spot; the new quarters (low priority, the owner).
+
+**The refugee experiment** (2026-11-04, the owner: a shipload of thirty a week, "to see how things develop"; the isles'
+`47r`; Valapo watched, 180 days on the city page's [G data] half in node). Twenty-six ships, 780 people, none turned away:
+- **Building is the bottleneck.** The camps grew without stop: Kautoa 295 people (59 households), Valapo 345 (69) by day
+  180, against 95 and 45 housed. Kautoa's crew of twelve finishes a house in nine days or so, Valapo's six in twenty: a
+  town houses one household a week or two while the ships bring three. At that pace Kautoa's lots (39, and 12 outside the
+  gates) would last about a year and a half, Valapo's (12 and 12) run out at day 200 or so; neither street outside the
+  gates had opened by day 180 (Valapo's two lots left would open the first soon after).
+- **The ration breaks before anything else.** Every housed refugee household is two grown-ups with no work and three
+  children: the chief's redistribution pays them a day's keep each from the treasury, with no wages paid in. Kautoa's
+  ration fell from 94% of a full keep to 5%, Valapo's to nothing by day 120; the dole (purchases the treasury covers)
+  doubled. The towns' own poor felt it: Kautoa's pool fell from 85 to 74 (still calm), Valapo's stayed near 81.
+- **The refugees themselves are content** (83-93 in the camps: fed at the ration line, a modest hardship that fades), and
+  the food held (the shortest food at 2.4-3.1 days throughout): the warehouses and the governor kept up.
+- **What it suggests** (for the owner): put the refugees to work (the camp's grown-ups as builders, labourers, field hands:
+  the crews double and so does housing), size the crews to demand (a town hiring builders when its camp grows), let the
+  polity relieve a strained treasury (unrest's demands already ship goods; a grant of shells is the same machinery), and
+  cap a camp lower so that ships turn to the other town or away (the cap, 400, was never reached).

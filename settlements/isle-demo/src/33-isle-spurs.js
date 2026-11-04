@@ -74,3 +74,32 @@ ISLE.spurs = function (c) {
   });
   return out;
 };
+/* THE REFUGEE CAMP'S GROUND (2026-11-04, 47r): a square of `refugees.camp.size` metres outside the town where the ships'
+   people pitch until they are housed: the first spot, ring by ring out from the town's edge and round by `step` degrees
+   (east first), dry (1.5 m over the sea at its corners and middle), no steeper than `drop` m across, clear of every lot,
+   way, wall piece and field of the plan and of its streets outside the gates; registered in core/tags (a feature, kind
+   'camp'). -> {x, z, y, size, tag} or null */
+ISLE.campSite = function (c) {
+  var Rf = ISLE.TUNE.sim && ISLE.TUNE.sim.refugees, K = Rf && Rf.camp; if (!K) return null;
+  var h = c.h, half = c.half, sz = K.size, r = sz * 0.75, occ = [], pts = [];
+  c.ways.forEach(function (w) { w.pts.forEach(function (p) { pts.push([p[0], p[1], w.w / 2]); }); });
+  c.lots.forEach(function (L) { occ.push([L.x, L.z, Math.hypot(L.w, L.d) / 2]); });
+  (c.wall || []).forEach(function (Wp) { occ.push([Wp.x, Wp.z, Math.hypot(Wp.w, Wp.d) / 2]); });
+  (c.fields || []).forEach(function (Fr) { occ.push([Fr.x, Fr.z, Fr.size * 0.7]); });
+  (c.spurs || []).forEach(function (Sp) { Sp.lots.forEach(function (L) { occ.push([L.x, L.z, Math.hypot(L.w, L.d) / 2]); });
+    for (var q = 0; q <= 1; q += 0.1) occ.push([Sp.lane[0][0] + (Sp.lane[1][0] - Sp.lane[0][0]) * q, Sp.lane[0][1] + (Sp.lane[1][1] - Sp.lane[0][1]) * q, 3]); });
+  var clear = function (x, z) { var i; for (i = 0; i < occ.length; i++) if (Math.hypot(occ[i][0] - x, occ[i][1] - z) < occ[i][2] + r) return false;
+    for (i = 0; i < pts.length; i++) if (Math.hypot(pts[i][0] - x, pts[i][1] - z) < pts[i][2] + r) return false; return true; };
+  var cx = 0, cz = 0; c.lots.forEach(function (L) { cx += L.x; cz += L.z; }); cx /= Math.max(1, c.lots.length); cz /= Math.max(1, c.lots.length);
+  var ext = 0; c.lots.forEach(function (L) { ext = Math.max(ext, Math.hypot(L.x - cx, L.z - cz)); });
+  for (var d = ext + 40; d < ext + K.reach; d += 40) for (var a = 0; a < 360; a += K.step) {
+    var x = cx + Math.cos(a * Math.PI / 180) * d, z = cz + Math.sin(a * Math.PI / 180) * d; if (Math.abs(x) > half - sz || Math.abs(z) > half - sz) continue;
+    var ys = [[0, 0], [-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (o) { return h(x + o[0] * sz / 2, z + o[1] * sz / 2); }), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    if (y0 < 1.5 || y1 - y0 > K.drop || !clear(x, z)) continue;
+    var S = { x: +x.toFixed(2), z: +z.toFixed(2), y: +ys[0].toFixed(2), size: sz, tag: null };
+    if (c.tags) { var T = c.tags.add({ 'class': 'feature', kind: 'camp', key: 'refugee camp', at: [S.x, S.y, S.z], ry: 0, size: [sz, sz, 0], note: 'the refugee camp\'s ground (empty until a ship comes)', src: 'isle-demo' }); if (T) S.tag = T.id; }
+    return S;
+  }
+  return null;
+};
+

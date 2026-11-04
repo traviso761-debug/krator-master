@@ -9,7 +9,9 @@
 //               keeps going at once: 1), grace? (days of upkeep owed before the first building shows its wear: 30),
 //               onBuilt?(lot, project) (the host turns the lot into its building), onStart?(lot, project),
 //               growth?:{rate (a year: 0.02), per (people a household: 5), ahead (houses ready or going up beyond the
-//               households waiting: 2), settle(lot, s) (the host makes the new household's people), people?(s)},
+//               households waiting: 2), settle(lot, s) (the host makes the new household's people, or moves in one
+//               waiting elsewhere and returns 'moved'), people?(s), waiting?(s) (households waiting outside the houses: a
+//               refugee camp's, counted as demand and housed first)},
 //               onFull?(s) -> true when the host opened more lots (a street outside the gate) }) -> SIM.BUILD
 //   SIM.buildLot({id, kind, settlement?})   an empty lot: a place of the settlement's (its builders' WORK posts), the
 //               kind of building the plan allows there; its recipe is made (`build`: its worked hours are its project's)
@@ -43,7 +45,7 @@
   SIM.build = function(o){ o=o||{};
     var Gr=o.growth||null;
     SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null,
-        growth:Gr ? { rate:Gr.rate==null?0.02:Gr.rate, per:Gr.per==null?5:Gr.per, ahead:Gr.ahead==null?2:Gr.ahead, settle:Gr.settle||null, people:Gr.people||null } : null, onFull:o.onFull||null },
+        growth:Gr ? { rate:Gr.rate==null?0.02:Gr.rate, per:Gr.per==null?5:Gr.per, ahead:Gr.ahead==null?2:Gr.ahead, settle:Gr.settle||null, people:Gr.people||null, waiting:Gr.waiting||null } : null, onFull:o.onFull||null },
       lots:{}, order:[], projects:{}, towns:{}, events:[], n:0 };
     return SIM.BUILD;
   };
@@ -52,7 +54,8 @@
      finished house no one lives in (the host's `settle(lot, s)` makes its people); a project starts only while the houses
      ready or going up are fewer than `ahead` plus the households waiting, so building follows demand */
   function ready(s){ var B=SIM.BUILD; return town(s).lots.filter(function(id){ var L=B.lots[id]; return L.state==='built' && !L.settled; }); }
-  function needMore(s){ var B=SIM.BUILD, G=B.cfg.growth, T=town(s); if(!G) return true; return T.active.length+ready(s).length < G.ahead+Math.floor(T.due); }
+  function elsewhere(s){ var G=SIM.BUILD.cfg.growth; return G && G.waiting ? Math.max(0, G.waiting(s)|0) : 0; }   /* households waiting outside the houses (a refugee camp) */
+  function needMore(s){ var B=SIM.BUILD, G=B.cfg.growth, T=town(s); if(!G) return true; return T.active.length+ready(s).length < G.ahead+Math.floor(T.due)+elsewhere(s); }
   function event(kind, o){ var B=SIM.BUILD, e=Object.assign({ m:SIM.minute(), kind:kind }, o); B.events.push(e); if(B.events.length>5000) B.events.shift(); SIM.logEvent('build '+kind, o); return e; }
   SIM.buildLot = function(o){ var B=SIM.BUILD, P=SIM.R.place[o.id]; if(!B || !P) return null; var s=o.settlement!=null ? o.settlement : P.settlement;
     if(!B.cfg.kinds[o.kind]) throw new Error('SIM.buildLot '+o.id+': unknown kind '+o.kind);
@@ -110,9 +113,10 @@
       if(G && minute>0 && minute%1440===0 && T.lots.length){   /* the day's growth, and the households waiting moved in */
         var n=G.people ? G.people(s) : SIM.all('actor').filter(function(a){ return !a.driven && SIM.settlementOf(a)===s; }).length;
         T.due+=n*G.rate/365/G.per;
-        while(T.due>=1){ var R=ready(s); if(!R.length) break; var L=B.lots[R[0]]; L.settled=minute; T.due-=1; T.settled++;
-          if(G.settle) G.settle(L, s); event('settled', { settlement:s, lot:L.id }); }
-        T.waiting=Math.floor(T.due); }
+        while(T.due>=1 || elsewhere(s)>0){ var R=ready(s); if(!R.length) break; var L=B.lots[R[0]]; L.settled=minute; T.settled++;
+          var how=G.settle ? G.settle(L, s) : null; if(how!=='moved') T.due-=1;   /* a household waiting elsewhere moved in first (the host says 'moved'), else a new one */
+          event('settled', { settlement:s, lot:L.id, from:how==='moved' ? 'elsewhere' : 'growth' }); }
+        T.waiting=Math.floor(T.due)+elsewhere(s); }
       var st=0; while(T.active.length<B.cfg.pace && needMore(s)){ if(!start(s, minute)){ if(B.cfg.onFull && T.fullDay!==Math.floor(minute/1440)){ T.fullDay=Math.floor(minute/1440); if(B.cfg.onFull(s)) continue; } break; } st++; }   /* the projects kept going (to demand); the lots out, the host may open more */
       if(st || T.first==null || minute%1440===0){ T.first=minute; rebalance(s); }   /* and daily: a builder who left (a rise, a cell) leaves no empty post */
       var R=rate(s), d=Math.floor(minute/1440); if(T.dayN!==d){ T.dayN=d; T.day={}; }

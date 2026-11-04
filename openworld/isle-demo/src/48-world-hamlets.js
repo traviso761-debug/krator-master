@@ -1,4 +1,4 @@
-// ================================================================= ISLE DEMO — the hamlets: five resource villages and what they work
+// ================================================================= ISLE DEMO — the hamlets: six resource villages and what they work
 // [G data] core/hamlet/PLAN.md section 4 (H4): the salt village on the big north-west pan (Kautoa's), the iron mine in
 // Valapo's mountains, the lumber village in the wet jungle east of Kautoa, the ranch on the savanna north of it. Each
 // spec names its focus, its parent town and the survey's patch; ISLE_HAMLETS.make() finds the resource in that patch on
@@ -6,7 +6,7 @@
 // iron), places it, sites the village beside it on dry, gentle ground, and lays the village out with KHAMLET.village. No
 // three.js, no DOM: every number is a function of the world's fields and the specs (KRAND inside the generator), so the
 // same villages come out in Godot. 88h-world-hamlets.js draws them; it decides nothing.
-//   ISLE_HAMLETS.SPECS                  the five, in order (Valapo's quarry since 2026-11-04)
+//   ISLE_HAMLETS.SPECS                  the six, in order (Valapo's quarry and lumber village since 2026-11-04)
 //   ISLE_HAMLETS.make(dims, opt)        -> {villages: [{spec, village, resource, link}], resources: [records], errors: []}
 //                                        dims(key) -> {w, d, h} (the kits' boxes)
 //   ISLE_HAMLETS.groundOk(x, z)         dry land, gentle, no cliff, not the salt crust, not a town's ground
@@ -16,7 +16,8 @@ const SPECS=[
  {id:'hamlet-mine',name:'Iron mine',focus:'mine',parent:'Valapo',near:[-18000,66000],look:6000,metal:'iron',grade:'medium'},
  {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:7000},
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
- {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500}];   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
+ {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
+ {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[-8000,56000],look:7000,apart:2500}];   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
 const CELL=150,SLOPE=.3,DRY=1.2;
 const H=(x,z)=>WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>H(x,z)-DRY;
 const slope=(x,z)=>Math.max(Math.abs(H(x+4,z)-H(x-4,z)),Math.abs(H(x,z+4)-H(x,z-4)))/8;
@@ -48,7 +49,8 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    const seed=kind==='salt'?near(L,P):near(L,sp.near);res=field(sp,kind,L,seed,kind==='salt'?2500:3000);
    workers=resFieldWorkers(res);res.x=seed.x;res.z=seed.z;start=[seed.x,seed.z];}
   else if(sp.focus==='lumber'){
-   const L=cells(sp,(x,z)=>{if(wet(x,z))return 0;const z0=Z(x,z);return z0.forest>.6?z0.forest:0;});
+   const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);
+   const L=cells(sp,(x,z)=>{if(wet(x,z)||WORLD.townW(x,z)||!far(x,z))return 0;const z0=Z(x,z);return z0.forest>.6?z0.forest:0;});
    if(!L.length){out.errors.push(sp.id+': no forest in the patch');continue;}
    const seed=near(L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
     forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];}   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */

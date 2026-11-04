@@ -2,7 +2,7 @@
 /* [G data] core/hamlet/PLAN.md section 5: each resource village a settlement of its parent town on core/simulation, at
    the abstract level always (its books, its carts, its households' meals by the hour; nobody posed), tuned by
    ISLE.TUNE.sim.hamlets (15). The villages come from core/hamlet's KHAMLET.village records: the open world hands in its
-   five, laid out on the map (openworld/isle-demo 48: ISLE_HAMLETS.make); the node test hands in the same five on its
+   six, laid out on the map (openworld/isle-demo 48: ISLE_HAMLETS.make); the node test hands in the same six on its
    stand-in ground. A page that hands in none keeps its towns' economies as they were.
      ISLE.simHamlets(villages)   villages: [{spec: {id, name, focus, parent}, village: KHAMLET.village's result}], after
                                  ISLE.simDeclare. For each, in order:

@@ -25,7 +25,9 @@ ISLE.simBuild = function () {
   var T = ISLE.TUNE.sim, B = T.build; if (!B || !SIM.build || !SIM.ECONS) return null;
   var Gr = B.growth;
   SIM.build({ kinds: B.kinds, pace: B.pace, grace: B.grace, of: ISLE.buildKind,
-    growth: Gr ? { rate: Gr.rate, per: Gr.per, ahead: Gr.ahead, settle: function (Lt, s) { ISLE.settleHousehold(Lt.id, s); } } : null,
+    growth: Gr ? { rate: Gr.rate, per: Gr.per, ahead: Gr.ahead,
+      settle: function (Lt, s) { if (ISLE.refugeeSettle && ISLE.refugeeSettle(Lt.id, s)) return 'moved'; ISLE.settleHousehold(Lt.id, s); },   /* the camp's households first (47r) */
+      waiting: function (s) { return ISLE.refugeeWaiting ? ISLE.refugeeWaiting(s) : 0; } } : null,
     onFull: ISLE.openSpur || null,
     onBuilt: function (Lt, Pj) {
       var P = SIM.R.place[Lt.id], K = T.kinds[P.tags.key], hh = P.tags.hh || ISLE.households(P.tags.key), beds = hh * T.home.per;

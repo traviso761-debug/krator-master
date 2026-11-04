@@ -614,7 +614,8 @@ ISLE.city = function (town, o) {
   });
   /* the streets outside the gates, closed until the town needs them (33, 2026-11-04) */
   var spurs = ISLE.spurs ? ISLE.spurs({ town: town, seed: seed, h: h, half: G.half, lots: lots, ways: P.ways, wall: OUT.wall, fields: OUT.fields, tags: tags, dims: dims }) : [];
-  return { town: town, K: K, plan: P, lots: lots, spurs: spurs, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields, cover: cover, prog: PR,
+  var camp = ISLE.campSite ? ISLE.campSite({ town: town, h: h, half: G.half, lots: lots, ways: P.ways, wall: OUT.wall, fields: OUT.fields, spurs: spurs, tags: tags }) : null;   /* the refugee camp's ground (33, 47r) */
+  return { town: town, K: K, plan: P, lots: lots, spurs: spurs, camp: camp, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields, cover: cover, prog: PR,
     hug: function (x, z) { return HUG ? HUG.at(x, z) : null; },
     log: LOG, missing: OUT.missing, failed: OUT.failed, seed: seed, tune: tune };
 };

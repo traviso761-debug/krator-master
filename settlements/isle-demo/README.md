@@ -253,6 +253,13 @@ declares both once they are planned, in one order whichever town it draws, and h
   core/city reveals in build order (footing, frame, walls, roof). Every building wears its bill over three or four years,
   drawn hourly. The canoes carry Valapo stone and timber; Valapo's own quarry hamlet (on its island) makes stone at a
   third of Kautoa's pace.
+- **Refugees** (`47r`, `33`'s camp ground; the owner, 2026-11-04: a shipload a week "to see how things develop"). A ship
+  of thirty lands every seven days, at the towns in turn; its people pitch at the camp outside the town (tents on a square
+  found ring by ring out from the town's edge, registered in core/tags), fed at a ration line from the town's warehouses,
+  their own class (`refugee`) in the happiness pool, a little unhappier at first. A household of them moves into each
+  finished house before the town's own new households, and the camp's households are the demand the builders answer.
+- **Valapo's own timber** (2026-11-04): a second lumber village on Valapo's island (11 km off), its felling crew a work
+  camp that migrates as Kautoa's does; the open world draws every crew.
 - **Unrest** (`47u`, core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6, 2026-11-03). Each town's happiness pool, all
   its people and each class, eased over five days (a week to treason): under 50 it grumbles (the watch less able to arrest), under 40 it
   demands of the polity a shipment of what it lacked (or a new ruler: refused, no political system yet), under 30 a

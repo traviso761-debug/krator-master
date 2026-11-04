@@ -8,7 +8,7 @@
   "watched": "valapo",
   "abstract": "kautoa",
   "decided": 0,
-  "moved": 128298
+  "moved": 128340
  },
  "start": {
   "clock": {
@@ -969,8 +969,8 @@
    }
   },
   "counts": {
-   "places": 2839,
-   "actors": 8195,
+   "places": 2841,
+   "actors": 8225,
    "people": [
     [
      "kautoa",

@@ -26,9 +26,9 @@ ISLE.simWatch('Kautoa');
 const a = ISLE.buildBooks(); ISLE.simRun(days * 1440 + 1); const b = ISLE.buildBooks();
 ISLE.buildChecks(a, b).forEach(c => ok(c.name, c.ok, c.detail));
 const built = b.lots.filter(x => x.built).length, BR = b.report.towns, setl = b.report.events.filter(e => e.kind === 'settled');
-const newcomers = SIM.all('actor').filter(q => /g\d+$/.test(q.id) && SIM.R.place[q.home] && SIM.R.place[q.home].tags && SIM.R.place[q.home].tags.built);
-ok('the towns grow and a household moves into a finished house (' + setl.map(e => (e.m / 1440).toFixed(1) + ' ' + e.lot).join(', ') + '; ' + newcomers.length + ' newcomers, dressed ' + newcomers.filter(q => q.eq && q.eq.torso).length +
-  ', with a purse ' + newcomers.filter(q => SIM.acct('hh:' + q.home)).length + '; waiting: ' + ISLE.SIM.order.map(s => s + ' ' + (BR[s].due || 0).toFixed(2)).join(', ') + ')',
+const newcomers = SIM.all('actor').filter(q => SIM.R.place[q.home] && SIM.R.place[q.home].tags && SIM.R.place[q.home].tags.built);   /* a new household or a refugee household (47r: the camp's first) */
+ok('the towns grow and a household moves into a finished house (' + setl.map(e => (e.m / 1440).toFixed(1) + ' ' + e.lot + ' from ' + e.from).join(', ') + '; ' + newcomers.length + ' in them, ' + newcomers.filter(q => q.refugee).length + ' of them refugees, dressed ' + newcomers.filter(q => q.eq && q.eq.torso).length +
+  ', with a purse ' + newcomers.filter(q => SIM.acct('hh:' + q.home)).length + '; waiting: ' + ISLE.SIM.order.map(s => s + ' ' + (BR[s].waiting || 0)).join(', ') + ')',
   setl.length > 0 && newcomers.length === setl.length * 5 && newcomers.every(q => q.eq && q.eq.torso && SIM.acct('hh:' + q.home) && q.nd), setl.length);
 ok('building follows demand: no more houses going up or ready than the households waiting and two ahead (' + ISLE.SIM.order.map(s => s + ' ' + BR[s].building + ' going up, ' + BR[s].ready + ' ready').join(', ') + ')',
   ISLE.SIM.order.every(s => BR[s].building + BR[s].ready <= ISLE.TUNE.sim.build.growth.ahead + Math.floor(BR[s].due || 0)), '');

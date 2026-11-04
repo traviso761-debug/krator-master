@@ -140,6 +140,7 @@ ISLE.simDeclare = function (plans, clock) {
   S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
   S.money = ISLE.simMoney();   /* the accounts (47m: money's M0), after the crime's guild */
   S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */
+  S.refugees = ISLE.simRefugees ? ISLE.simRefugees() : null;   /* the camps and the weekly ship (47r), after the money's accounts */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

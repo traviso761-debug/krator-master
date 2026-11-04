@@ -264,6 +264,11 @@
       page (no lumber village) a house's timber is gathered on the spot and the upkeep draws none. The Construction kit's
       scaffold is sized from a piece's whole extent (an islanders house with its hearth and stairs: a little wide), its
       piles and poles plain colours; the builders stand by the lot rather than on the scaffold.
+- [ ] **Refugees outrun the builders and break the ration** (the 180-day run: PLAN-POLITICS.md, "the refugee
+      experiment"): the camps grow by three households a week while the towns house one; the refugees do no work, so the
+      treasury's ration to them starves the ration of everyone (Kautoa's to 5%, Valapo's to nothing). Next: refugees to work,
+      crews sized to demand, relief from the polity. The lots-last check in tests/test-isle-build.js counts the towns' own
+      growth, not the ships.
 - [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
       its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town reaches treason about a
       week after its stores are eaten (`smooth` 5), and a strike holds workplaces that may already be idle.

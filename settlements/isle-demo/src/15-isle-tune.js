@@ -396,6 +396,15 @@ ISLE.TUNE.sim = {
     kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 },
       /* every other roofed building (2026-11-04): a workplace, a hall, a temple, a barracks, kept over four years */
       works: { bill: { timber: 30, stone: 4, mats: 20 }, hours: 900, life: 1460 } } },
+  /* REFUGEES (47r; the owner, 2026-11-04: "add a shipload of refugees once a week to see how things develop"; PLAN-POLITICS.md
+     section 4: to a camp first): a ship of `people` every `every` days from day `first`, to the towns in turn (the other
+     when one's camp is full at `cap`). They pitch at the camp's ground outside the town (33: a `camp.size` m square, found
+     ring by ring out from the town's edge), fed at its ration line from the town's warehouses (a mess), their own class in
+     the happiness pool (`refugee`), `unhappy` points down at landing, fading over `days`; a household of five moves into
+     a finished house no one lives in (before the town's own new households), and the camp's households count as the
+     demand the builders answer */
+  refugees: { every: 7, people: 30, first: 3, towns: ['kautoa', 'valapo'], cap: 400, per: 5, unhappy: { n: 10, days: 45 },
+    camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
