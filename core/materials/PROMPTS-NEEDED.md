@@ -396,6 +396,23 @@ The Mirror Graben's fault mirror (`biomes/highrift/PLAN.md` sections 2 and 11): 
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished fault plane (slickenside) coated in specular hematite, steel-grey to blue-black (#3a3c42, #23252b) with a faint metallic grain, long straight parallel grooves and fine striations all running top to bottom, a few low steps across the grooves, patches where the coating has worn through to red-brown earthy hematite (#7a3a26) and rust stains (#9a5a32) bleeding down the grooves, hairline cracks across them. Full colour: not tinted.
 ```
 
+## 32. The NW bay's rock (`biomes/nwbay`, the catch-up pass, 2026-11-03)
+
+The 5.1 geology asks nwbay for ash soils on its old flows and a white marble band at the limestone's volcanic contact
+(`kits/resources/ROCK-PROPOSAL.md`, "Where the biomes must change", rows 3 and 7; `biomes/nwbay/src/44n-host-geology.js`). Both are drawn now
+on STAND-INS: `ground.ash` (a grey volcanic ash) darkened by the layer's tint toward a soil, and `rock.marble012` (a grey trim marble). Wire
+each into `biomes/nwbay/materials.json` (`groundAsh`, `groundMarble`) in place of the stand-in, drop the ash layer's tint in
+`45-host-stage.js` (`NWBAY_GEO.ash.tint`), repack and rebuild. Full colour: the colour is the point.
+
+`ground.ash.soil` (an andosol: the dark, fertile soil volcanic ash weathers to under a wet forest):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a moist, crumbly dark volcanic ash soil seen from above, near-black brown (#2a2420) with a faint olive cast, fine granular crumbs and small rounded aggregates, scattered tiny pale pumice grains (#b8b0a0) and a few dark glassy cinder specks, very fine roots and the odd decayed leaf fragment pressed into it, damp and matte, no stones larger than a pea.
+```
+`rock.marble.white` (a weathered white marble outcrop at ground level, where the platform's limestone was cooked by volcanic heat):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered outcrop of coarse white marble seen from above, sugary crystalline grains (#ece8e0) catching no light, faint grey and pale gold veins (#a8a49c, #c8b48a) running in soft bands, the surface etched and pitted by rain with shallow solution runnels, a few joints filled with dark soil and green-grey lichen spots (#7a8468) toward the cracks, matte.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
