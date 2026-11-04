@@ -18,7 +18,7 @@
 //                                 preset, pair, both, spring (a sliding, lifting, folding, saloon door: KDOOR.add), ajar (radians: drawn standing that far open, as the builder drew it; E shuts it), name}. It draws nothing into the buckets:
 //                                 the leaves are one InstancedMesh per material key (two when the page has tents: a leaf in a
 //                                 cut-away tent hides with the near half), posed by KDOORHOST as they swing. Returns the
-//                                 record (a split door: the left leaf, its pair on .pair).
+//                                 record (a split door: the left leaf, the right one on .mate).
 //   svDoorway(x,y,z,yaw,w,h,o)    the doorway a builder drew as a dark panel: o.hollow (a room behind it) an operable leaf, else
 //                                 a locked one; o as svLeaf's, and o.open: a portal with nothing to shut (an arch, a gate
 //                                 passage) is left a clear opening, the room card (svRoom) behind it when the body is solid
@@ -57,7 +57,7 @@ function svLeaf(x,y,z,yaw,w,h,o){o=o||{};const split=o.split==null?w>1.6:!!o.spl
    if(split)box('iron',0,0,0,.03,h,t+.01,0x2e2a26);});return null;}
  if(split){const ux=Math.cos(yaw||0),uz=-Math.sin(yaw||0),q=w/4;
   const L=svLeaf(x-ux*q,y,z-uz*q,yaw,w/2,h,Object.assign({},o,{split:false,mirror:false}));
-  const R=svLeaf(x+ux*q,y,z+uz*q,yaw,w/2,h,Object.assign({},o,{split:false,mirror:true,id:o.id==null?null:o.id+'.r'}));if(L)L.pair=R;return L;}
+  const R=svLeaf(x+ux*q,y,z+uz*q,yaw,w/2,h,Object.assign({},o,{split:false,mirror:true,id:o.id==null?null:o.id+'.r'}));if(L)L.mate=R;return L;}   /* .mate, not .pair: pair is core/door's two-leaves flag */
  const t=o.t==null?.06:o.t,ux=Math.cos(yaw||0),uz=-Math.sin(yaw||0),hs=o.mirror?1:-1;
  const hw=o.pivot?0:w/2,at=svW(x,y,z),hinge=svW(x+hs*ux*hw,y,z+hs*uz*hw),p0=svW(x,y+h/2,z),wy=svYaw(yaw);
  const e=CM.elements,sc=Math.hypot(e[0],e[1],e[2])||1;

@@ -119,17 +119,17 @@
       return moved;}
     function swingMax(D){return D.swing!=null?D.swing:D.kind==='fold'||D.kind==='tilt'?Math.PI/2*.94:K.SWING;}
     function angle(D){return(D.sign==null?1:D.sign)*(D.dir||1)*swingMax(D)*ease(D.open);}
-    function leafCount(D){return(D.kind==='fold'?2:1)*(D.pair?2:1);}
-    function leafSize(D){if(D.kind==='lift'&&D.pair)return[D.w,D.h/2,D.t];var w=D.pair?D.w/2:D.w;if(D.kind==='fold')w/=2;return[w,D.h,D.t];}
+    function leafCount(D){return(D.kind==='fold'?2:1)*((D.pair===true)?2:1);}
+    function leafSize(D){if(D.kind==='lift'&&(D.pair===true))return[D.w,D.h/2,D.t];var w=(D.pair===true)?D.w/2:D.w;if(D.kind==='fold')w/=2;return[w,D.h,D.t];}
     // every leaf's pose (see the header). Shut: the leaves stand at p0 (a pair's at p0 -/+ a quarter of the width along the line)
     function leaves(D){var e=ease(D.open),yaw=D.yaw,u=[Math.cos(yaw),0,-Math.sin(yaw)],P0=D.p0,sz=leafSize(D),out=[];
       // a lift's pair: the halves meet across the middle height, the top rising its half, the bottom sinking into the floor
-      if(D.kind==='lift'&&D.pair){var hh=D.h/4,r2=(D.rise==null?D.h/2:D.rise/2)*e;
+      if(D.kind==='lift'&&(D.pair===true)){var hh=D.h/4,r2=(D.rise==null?D.h/2:D.rise/2)*e;
         return[{p:[P0[0],P0[1]+hh+r2,P0[2]],ax:'y',ang:0,s:[1,1,1],size:sz},{p:[P0[0],P0[1]-hh-r2,P0[2]],ax:'y',ang:0,s:[1,1,1],size:sz}];}
-      var sides=D.pair?[-1,1]:[D.sign<0?1:-1];   // the jamb each leaf (or panel set) is hung on: -1 the -x jamb, +1 the +x
-      for(var si=0;si<sides.length;si++){var j=sides[si],half=D.pair?D.w/2:D.w,
-          c0=D.pair?[P0[0]+u[0]*D.w/4*j,P0[1],P0[2]+u[2]*D.w/4*j]:P0.slice(),
-          J=D.pair?[P0[0]+u[0]*D.w/2*j,P0[1],P0[2]+u[2]*D.w/2*j]:(D.kind==='swing'?[D.hinge[0],P0[1],D.hinge[2]]:[P0[0]+u[0]*half/2*j,P0[1],P0[2]+u[2]*half/2*j]),
+      var sides=(D.pair===true)?[-1,1]:[D.sign<0?1:-1];   // the jamb each leaf (or panel set) is hung on: -1 the -x jamb, +1 the +x
+      for(var si=0;si<sides.length;si++){var j=sides[si],half=(D.pair===true)?D.w/2:D.w,
+          c0=(D.pair===true)?[P0[0]+u[0]*D.w/4*j,P0[1],P0[2]+u[2]*D.w/4*j]:P0.slice(),
+          J=(D.pair===true)?[P0[0]+u[0]*D.w/2*j,P0[1],P0[2]+u[2]*D.w/2*j]:(D.kind==='swing'?[D.hinge[0],P0[1],D.hinge[2]]:[P0[0]+u[0]*half/2*j,P0[1],P0[2]+u[2]*half/2*j]),
           a=-j*(D.dir||1)*swingMax(D)*e;   // a leaf hung on the -x jamb turns +a (into the room), one on the +x jamb -a
         if(D.kind==='swing'){var v=rotY([c0[0]-J[0],0,c0[2]-J[2]],a);out.push({p:[J[0]+v[0],c0[1],J[2]+v[2]],ax:'y',ang:a,s:[1,1,1],size:sz});}
         else if(D.kind==='slide'){var d=half*e*j;out.push({p:[c0[0]+u[0]*d,c0[1],c0[2]+u[2]*d],ax:'y',ang:0,s:[1,1,1],size:sz});}
@@ -169,7 +169,7 @@
     function exp(){return{format:'krator-doors',version:1,convention:'y up, metres, x east, z south; yaw outward',
       swing:K.SWING,rate:K.RATE,
       doors:list.map(function(D){return{id:D.id,at:D.at,hinge:D.hinge,yaw:D.yaw,sign:D.sign,w:D.w,h:D.h,t:D.t,locked:D.locked,key:D.key,open:D.target,pivot:!!D.pivot,
-        kind:D.kind,pair:D.pair,both:D.both,swing:D.swing,spring:D.spring,walk:D.walk,style:D.style,roll:D.roll,drop:D.drop,rise:D.rise,rate:D.rate};})};}
+        kind:D.kind,pair:D.pair===true,both:D.both,swing:D.swing,spring:D.spring,walk:D.walk,style:D.style,roll:D.roll,drop:D.drop,rise:D.rise,rate:D.rate};})};}
     K.add=function(r){var D=add(r);D.locked0=D.locked;return D;};
     K.get=get;K.leaves=leaves;K.leafSize=leafSize;K.leafCount=leafCount;K.open=open;K.close=close;K.toggle=toggle;K.lock=lock;K.nearest=nearest;K.step=step;K.angle=angle;K.pose=pose;
     K.walk=walk;K.clearDoorways=clearDoorways;K.prune=prune;K.state=state;K.load=load;K.export=exp;
