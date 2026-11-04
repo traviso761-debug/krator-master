@@ -1867,7 +1867,7 @@ Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batc
 - **Still owed from those branches:** `rock.megabreccia` (nhighlands, section 32 on `claude/rebuild-nhighlands-cloud`) was not in the
   delivery; `card.umbrella.plate` (the abyssal savannah).
 
-**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows. **At the cloud kits' merge (2026-11-03):** `rock.hematite.mirror` is wired (High Rift, merged); `ground.ash.soil` and `rock.marble.white` are wired on the coordinator's branch and come with nwbay's merge; the bog's three, the coral rubble and the glass cane need new card families or a new ground layer (and a look), so they wait for their kits' next turns (each kit's `KNOWN_ISSUES.md` names them) (add the
+**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows. **At the cloud kits' merge (2026-11-03):** `rock.hematite.mirror` is wired (High Rift, merged); `ground.ash.soil` and `rock.marble.white` are wired (nwbay, merged 2026-11-04); the bog's three, the coral rubble and the glass cane need new card families or a new ground layer (and a look), so they wait for their kits' next turns (each kit's `KNOWN_ISSUES.md` names them) (add the
 family to the kit's `materials.json`, `python3 tools/textures/pack.py <kit>`, rebuild, verify, delete the stand-in's note).
 
 | id | kit (branch) | slot | stand-in it replaces |

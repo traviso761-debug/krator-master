@@ -180,9 +180,13 @@
    "bytes": 5683900,
    "sha256": "b90f84882767536838a62780c0f86d1a75cf226518aaf9f4ee0c934f27f0d860"
   },
+  "biomes/nwbay/dist/nwbay-caverns.html": {
+   "bytes": 9624626,
+   "sha256": "485dc195f6d0f95f834ac19692df4d8838e8ed7474de9027b27fcf72f5895f10"
+  },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 7967514,
-   "sha256": "38f3d879dae58bf43249896a00f98eeed24c6a236f9fa68bef8e6307d7c84c4b"
+   "bytes": 9385427,
+   "sha256": "77a446391f697ab6263113c72d41a8e447060632fe8b23667d33efc6e892df93"
   },
   "biomes/nwlowlands/dist/nwlowlands-margins.html": {
    "bytes": 10524565,

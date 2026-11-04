@@ -347,7 +347,11 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+/* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+   MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+   ?kgrelief=0 drops the relief (the before-and-after) */
+const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+const MAT_GROUND=KG_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 /* the ground's own hook, kept by name: the sinkholes' lip takes it (not MAT_GROUND.onBeforeCompile, which is KHOOK's composite once a layer is on) */
 const GROUND_HOOK=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;attribute vec2 aGL2;varying vec2 vGL2;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;vGL2=aGL2;');
@@ -388,10 +392,10 @@ function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.6,1.0),L('groundLava','vGL.z',.7,1.0),L('groundTrav','vGL.w',.7,1.1)];
  /* the bay's rock (above): the ash over the cinder on the old flows, the marble last (a band of bare white stone at the contact) */
- const AT=typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.ash.tint:[.46,.40,.35],LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3('+AT.map(v=>v.toFixed(3)).join(',')+')'}),
+ const LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3(1.0)'}),   /* ground.ash.soil, the delivered andosol: no tint (NWBAY_GEO.ash.tint darkened the stand-in) */
   LM=KGROUND.layer('nwbay','groundMarble',{w:'vGL2.x',amt:.9,gain:1.05});
  const LY2=LY.every(Boolean)?LY.concat([GEO_ASH?LA:null,GEO_MARBLE?LM:null].filter(Boolean)):[];
- KGROUND.hook(MAT_GROUND,{layers:LY2,key:'nwbay-ground'+(LY2.length>4?'-rock'+(GEO_ASH&&LA?'a':'')+(GEO_MARBLE&&LM?'m':''):'')});}
+ KGROUND.hook(MAT_GROUND,{layers:LY2,relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,key:'nwbay-ground'+(LY2.length>4?'-rock'+(GEO_ASH&&LA?'a':'')+(GEO_MARBLE&&LM?'m':''):'')});}
 // the resource nodes the field puts in the page's box (NWBAY_GEO.nodes, read from the 5.1 data at the anchor, not invented): each a core/tags
 // record (class feature, kind resource) where it stands on dry ground; the marble's two are the outcrops above (registered volumes: they
 // are drawn), the others core/tags records alone (nothing is drawn in them, so no registered volume). No node model is drawn
@@ -433,7 +437,7 @@ function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smoot
  const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));{const q=riserAt(x,z,14);if(q&&stripK(uv[0],uv[1])>.99)p.setY(i,Math.min(p.getY(i),q.R.yLo-2.5));}const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
  // cut round each sinkhole: drop every triangle with a corner inside a rim (the lip hides the jagged edge)
  {const I=g.index.array,keep=[];for(let t=0;t<I.length;t+=3){if(inS[I[t]]||inS[I[t+1]]||inS[I[t+2]])continue;keep.push(I[t],I[t+1],I[t+2]);}g.setIndex(keep);}
- g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip: along u, across v, uv matched to the big texture by world position
  // rows every 3 m along u, and two more at every riser's lip (the drop is drawn within a metre of it); columns 1.5 m apart over
  // the channel (|v| < 18 m: the pools, the faces' ends), 4 m over the banks, 8 m at the strip's feathered edge
@@ -445,7 +449,7 @@ function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smoot
   pos.push(P[0],riserDrawH(P[0],P[1],groundH(P[0],P[1])),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
  for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const a=i*(NV+1)+j,b=a+NV+1;idx.push(a,a+1,b,a+1,b+1,b);}   // CCW seen from above
  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));sg.setIndex(idx);sg.computeVertexNormals();addGL(sg);
- const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
+ const sm=new THREE.Mesh(sg,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(sm);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
 
 // ---------------------------------------------------------------- the karst stacks (meshes: KSTACKS.mesh, guilin's look)
 // Two meshes for all the stacks: the walls (grey limestone streaked black where the rain runs and ochre where iron

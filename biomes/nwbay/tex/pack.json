@@ -636,27 +636,27 @@
    "files": {
     "map": "groundAsh.albedo.webp"
    },
-   "lib": "ground.ash",
+   "lib": "ground.ash.soil",
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
    "roughLift": 0.35,
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "size": 512,
    "source": {
-    "albedo": "9b5f2f8776d2d6c4ece2408de059ef0446316336",
-    "normal": "39d50f340fc50b790e753a317d2d7de1bfe0b842",
-    "roughness": "99cd9d53d7a5c4594bfadb10edfb31306dd27f3a"
+    "albedo": "b8bff1bddec963f829e730102f33c1e9258b4caa",
+    "normal": "cfa46a69accecd3c6707eb4e74523009499331b6",
+    "roughness": "bb6ee3d3125845aef21af8bbc355e908bd2a2cc7"
    },
    "specular": 0.25,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.5294340841016583,
-    "sourceMean": 0.5294
+    "mean": 0.13638390903547698,
+    "sourceMean": 0.1364
    }
   },
   "groundDetail": {
@@ -751,27 +751,27 @@
    "files": {
     "map": "groundMarble.albedo.webp"
    },
-   "lib": "rock.marble012",
+   "lib": "rock.marble.white",
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
    "roughLift": 0.35,
    "scale": [
-    4.0,
-    4.0
+    2.0,
+    2.0
    ],
    "size": 512,
    "source": {
-    "albedo": "661f413b8410118d0c1d7506712a25ffd2dc7564",
-    "normal": "87730c0daf4101643c400a4e19d20a3ba35e67db",
-    "roughness": "c629c43a41c84285fc804790999cb03633aadb68"
+    "albedo": "76303bd56a2a9484ee494457f73ac11999f70b99",
+    "normal": "4721a569d088d49443138eb0b6411e8df09d2ef3",
+    "roughness": "5eddb78315184690739a6865fe75e14427388949"
    },
    "specular": 0.25,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.6815141174017214,
-    "sourceMean": 0.6815
+    "mean": 0.7749898564686494,
+    "sourceMean": 0.775
    }
   },
   "groundSand": {

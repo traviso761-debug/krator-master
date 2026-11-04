@@ -93,8 +93,8 @@ data moves.
 - **The white marble band** (`?marble=0` off): a KGROUND layer (`groundMarble`, `rock.marble012`) on the limestone at the page's own
   volcanic contact, the outer margin of each old lava tongue and the basalt headland, and an outcrop (46 m) round each of the two marble
   nodes the field puts in the page's box. The stacks stay limestone.
-- **The ash soils** (`?ash=0` off): a KGROUND layer (`groundAsh`, `ground.ash` darkened by its tint) on the volcanic ground itself (the old
-  tongues, the basalt): at this anchor the tuff reaches none of the limestone. A stand-in for a dark ash soil: `PROMPTS-NEEDED.md` section 32.
+- **The ash soils** (`?ash=0` off): a KGROUND layer (`groundAsh`, the delivered `ground.ash.soil`, untinted) on the volcanic ground itself (the old
+  tongues, the basalt): at this anchor the tuff reaches none of the limestone. The andosol set came in the 2026-11-03 delivery (`core/materials/PLAN.md`, "Delivered 2026-11-03").
 - **The nodes** (5 in the box: copper 1, sulfur 2, marble 2, from `KRES.nodesIn` at the anchor, not invented): each a core/tags record (kind
   `resource`, its field id) where it stands on dry ground. No node model is drawn (kits/resources' defs are not on this page).
 - **Map 5.1's stations list** (`biomes/STATIONS-MAP-5.1.md`) flags nothing for nwbay; it quotes no river by name (the region's frozen

@@ -536,10 +536,15 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   nhighlands (its ground now MeshStandard) and High Rift; geyser and ringisles stay Lambert at the Arc's 16 units; the Cut, farside and
   abyssal-savannah take it at their turns. The pages were built on the tip before Ancient's Valley, the metropolis, the Cave of Crystals and korona
   merged: `check_stale` may list them behind those sources by text (owner: no rebuild now). **Left on their branches (GPU failures, not merged):**
-  `riftrim` (five stations fail `shader-programs`: the ground past 16 units; Ledge passes), `nwbay-catchup` (both pages: `view shadows: off`), the ground
+  `riftrim` (five stations fail `shader-programs`: the ground past 16 units in some view's mode; Ledge passes), the ground
   catch-ups `east` (hyperjungle-savanna `instance-cap`, swhighlands `shader-programs`) and `pair56` (xanadu-gills `shader-errors`); their fixes and
   relief wiring are on the coordinator's branch, unverified there. **Skipped, still WIP:** `rebuild-godthrone-cloud` (a WIP turn after the station-list
   plan), `ground-catchup-west-cloud` (WIP commit, no handoff).
+  **Second round (2026-11-04, evening): nwbay's catch-up merged**, both pages passing on the GPU (the ash soil and white marble wired; its verify
+  no longer takes core/shadow's panel switch for a view). Still out: riftrim's five stations, swhighlands and xanadu-gills (each compiles at load and
+  overflows or errors only in a later view's mode: a texture-unit pass, not a small fix), hyperjungle-savanna (tallgrass 555,500 over its 250,000 cap,
+  no capWhy: the owner's budget call), the west catch-up (its own paragraph: swbay and sedesert fail the attach audit and two pages the instance cap,
+  owed by those kits' turns), godthrone (its turn paragraph is a draft with its results unfilled; ten pages, seven new stations).
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).

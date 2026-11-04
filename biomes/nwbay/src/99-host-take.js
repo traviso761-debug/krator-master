@@ -38,7 +38,7 @@ const VIEWS={
  'The mangrove lagoon':V(820,-110,6,960,-60,3),
  'Lotus trumpets':(function(){const u=1290;return V(u-50,vR(u-50)+42,8,u+40,vR(u+40)+16,6);})(),
  'Reed beds':(function(){const d=MOUTH_XZ;let best=null,bd=1e9;for(const B of (NWBAY.REEDBEDS||[])){if(B.n<100)continue;const dd=Math.hypot(B.x-d[0],B.z-d[1]);if(dd<bd){bd=dd;best=B;}}
-  if(!best)return V(840,300,8,900,340,2);return[best.x+best.r*2.2,7,best.z+best.r*1.4,best.x,1,best.z];})(),
+  if(!best)return V(840,300,8,900,340,2);return[best.x+best.r*2.2,13,best.z+best.r*1.4,best.x,1,best.z];})(),   /* 13 m: at 7 the eye stood in a glossy crown once the catch-up held the crowns (the GPU verify, 2026-11-04) */
  'Pandans on the shore':V(990,-40,4,950,-110,3),
  'Flame-crowns on the terraces':V(1480,520,10,1700,600,14),
  'Flame-crowns from above':V(1500,440,70,1750,560,10),
