@@ -81,11 +81,32 @@ listed). The live check (`ground_shots.py`'s `audit`) agrees on the three pages 
 
 ## Before and after
 
-SHOTS_TABLE
+`tools/ground_shots.py`, 2026-11-03, Intel Arc 140T (ANGLE D3D11), 1280x720, on `claude/biome-rebuild` merged in; the PNGs are in
+the session notes' `ground-shots/` (`<page>-<view>-<query>-<near|mid|far>.png`). Calls and triangles are the same with and without
+in every shot (no draw, no triangle, no texture unit added). Every shot loaded with no page error and no GL error, and the linked
+program's audit showed what was asked (bump, occlusion, bed relief where the core strata path is, side planes, mesh cavities).
+
+| Ground | What changes, by eye | `?kgrelief=1` | `?kgrelief=2&kgtri=1` |
+|---|---|---|---|
+| ebadlands, Painted badlands (MeshStandard) | near: the pavement's stones stand, each with a shadow; mid: a lip and a shadow line at each bed's edge, the gullies darker | subtle | clear; some bed lines alias into dashes at mid range |
+| nhighlands, Old wood (Lambert) | next to nothing: the floor stays flat green paint | none seen | barely |
+| eastabyss, Salt flats (Lambert) | the crust's cracks a shade deeper | barely | barely |
+
+Its near camera on nhighlands landed on the stream (the script stands 8 m short of where the view looks): judge the mid and far.
+
+**Cost.** One sample a shot, and the Arc's timer swings far more than its documented 25% (the same page's far view read 23.7 and
+35.3 ms in two runs), so `ground_shots` gives the order only. On the two Lambert grounds relief and tri cost within the noise
+(nhighlands 28.6 / 27.6 / 29.4 ms near, before / relief / relief+tri; eastabyss 4.3 / 5.6 / 5.2 ms mid). On ebadlands the first cut
+cost +17, +23 and +52 ms (near, mid, far), almost all of it the bed relief's lookup run out to 600 m and the side planes at every
+distance; both are now cut off past their fade (300 m, 250 m). PERF_TABLE
 
 ## What I would make the default
 
-DEFAULTS
+- **Keep `relief` off by default for now**, as asked, and offer it per page at its turn: on MeshStandard grounds (ebadlands,
+  godthrone, swlowlands) at about `?kgrelief=1.5` (`bump: .075, strata: .45`), the owner's "definitely improved" being on these.
+- **`tri` only where flanks are steep and near**: it costs most and shows least past 100 m.
+- **On Lambert grounds the switch is not the fix**: their light is per vertex, so the next step is moving each to MeshStandard at its
+  turn (one line plus a roughness), then `relief`. Until then, leave them as they are.
 
 ## Not done, and why
 
