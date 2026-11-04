@@ -184,12 +184,14 @@ async def run(a):
             if not shown:
                 print("  identical")
 
+        # the views are the #ui buttons but the switches (the reflections' water-mirror-btn, the shadows' shadow-btn: ids ending -btn)
+
         presets = await pg.evaluate(
-            "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+            "()=>[...document.querySelectorAll('#ui button:not([id$=-btn])')].map(b=>b.textContent.trim())")
         views = parse_views(a.views, presets)
         if a.all_views:
             views = await pg.evaluate(
-                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+                "()=>[...document.querySelectorAll('#ui button:not([id$=-btn])')].map(b=>b.textContent.trim())")
         if len(views) > 16:
             print("\nNOTE: %d views requested. Software GL makes this slow; "
                   "16 per run is the working limit." % len(views))
