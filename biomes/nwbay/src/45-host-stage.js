@@ -388,7 +388,7 @@ function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.6,1.0),L('groundLava','vGL.z',.7,1.0),L('groundTrav','vGL.w',.7,1.1)];
  /* the bay's rock (above): the ash over the cinder on the old flows, the marble last (a band of bare white stone at the contact) */
- const AT=typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.ash.tint:[.46,.40,.35],LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3('+AT.map(v=>v.toFixed(3)).join(',')+')'}),
+ const LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3(1.0)'}),   /* ground.ash.soil, the delivered andosol: no tint (NWBAY_GEO.ash.tint darkened the stand-in) */
   LM=KGROUND.layer('nwbay','groundMarble',{w:'vGL2.x',amt:.9,gain:1.05});
  const LY2=LY.every(Boolean)?LY.concat([GEO_ASH?LA:null,GEO_MARBLE?LM:null].filter(Boolean)):[];
  KGROUND.hook(MAT_GROUND,{layers:LY2,key:'nwbay-ground'+(LY2.length>4?'-rock'+(GEO_ASH&&LA?'a':'')+(GEO_MARBLE&&LM?'m':''):'')});}

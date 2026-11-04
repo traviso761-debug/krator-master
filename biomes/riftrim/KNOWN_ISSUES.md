@@ -20,8 +20,8 @@ coordinator's (`HANDOFF-REBUILD.md`, the riftrim paragraph).
 - [ ] **The impostors' gain** is ebadlands' 2.4 (`89z IMP_GAIN`): set it against the near crowns on the GPU.
 - [ ] **The frills' fins** are `card.fin.glass` (one fan of fins a card) stood out from the column, tinted teal (N) or copper-teal (W),
   back-lit (`backlit` 1 and .6): whether they read as translucent at a low sun is the look pass's question.
-- [ ] **The glass cane** is a procedural clear material on a jointed cylinder: no library set (`core/materials/PROMPTS-NEEDED.md`,
-  `card.glasscane`).
+- [ ] **The glass cane** is a procedural clear material on a jointed cylinder: `card.glasscane` was delivered 2026-11-03
+  and waits to be wired as a card family at the kit's next turn (`core/materials/PLAN.md`, "Delivered 2026-11-03").
 - [ ] **The prism heath's seasons**: one card (`card.heath`), tinted per rim; the plan's three seasons are not drawn.
 - [ ] **The lantern lobelia's night glow** follows the sun's intensity (`RRIM.night`, 99): check it at dusk on the GPU.
 - [ ] **The rims' ground palettes** (45's painter) and the five ground layers each station shows were chosen without a GPU look.

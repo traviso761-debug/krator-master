@@ -287,32 +287,32 @@
     "sourceMean": 0.6362
    }
   },
-  "rock.basalt.oxidised": {
+  "rock.hematite.mirror": {
    "breakup": null,
    "card": false,
    "files": {
-    "map": "rock.basalt.oxidised.albedo.webp"
+    "map": "rock.hematite.mirror.albedo.webp"
    },
-   "lib": "rock.basalt.oxidised",
+   "lib": "rock.hematite.mirror",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "size": 512,
    "source": {
-    "albedo": "ba199276e054a777accb795c99ca9fcbd04e5852",
-    "normal": "33275e44b8e4a8847959270926ce22d8bf6e6e9f",
-    "roughness": "fb5e87f99be864c9f4e284c8db34309568a70be0"
+    "albedo": "c37da9b34edb3d5ffed495e8dd732076af77d79a",
+    "normal": "9bddcf7670cff19ae4a6527b7477ba514840a93e",
+    "roughness": "bb74ad67765f03759393903a8c10e27d725330a6"
    },
    "specular": 0.25,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.4178146090069939,
-    "sourceMean": 0.4178
+    "mean": 0.34108179914586684,
+    "sourceMean": 0.3411
    }
   },
   "rock.tuff": {

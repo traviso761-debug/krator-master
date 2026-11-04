@@ -370,7 +370,7 @@
     "biomes/ringisles/src": "6086fedf411fdcfff1964aae7a89dcd0e8c870b619332fbfc0ac8759e3b988f7",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/fauna": "48fbee377f9ee7cfec7f573fe62b8d919d153e60cf4dfe98187bdbea63544603",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/ringisles/dist/ringisles.html": "0448fcf1b9806438855185887bae1e71769822a15d9d49b0df9d3aa0e4c6916d",
@@ -768,7 +768,7 @@
     "biomes/ringisles/stations/lagoon": "ef1c9ceb8b57691724f4a3b974d407deab502e4374e8a0b3e611644c6fd3d6f9",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/fauna": "48fbee377f9ee7cfec7f573fe62b8d919d153e60cf4dfe98187bdbea63544603",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/ringisles/dist/ringisles-lagoon.html": "c6fc8b2d5edabef8196a43bb7f9921a43fff85858d7f63f7aa8eab7bc01027e5",

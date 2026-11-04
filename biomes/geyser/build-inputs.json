@@ -173,7 +173,7 @@
     "biomes/geyser/dist": "3928e811df88dddd66dfe545fc58643545771bdd29cb07c5140941b2af43adfe",
     "biomes/geyser/src": "2b995f4b3381981dd95d2f95da570640eb38d563d90c296a5a78a7bae6405831",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/geyser/dist/geyser.html": "75ff44f412e2546d5ac06185225fc4ba90e7c3d319ab20ca0d54bea38eaedea5",
@@ -364,7 +364,7 @@
     "biomes/geyser/src": "2b995f4b3381981dd95d2f95da570640eb38d563d90c296a5a78a7bae6405831",
     "biomes/geyser/stations/stills": "e1bf596fdd020110623e3132d8e969707aeb33bd819149c8feff5ecedfb2c437",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/geyser/dist/geyser-stills.html": "e2175972c6330d7a64fb414d5fb72f22c734c1e6670ffc2998771c7225e33202",

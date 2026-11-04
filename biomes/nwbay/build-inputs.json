@@ -3,12 +3,12 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/nwbay/KNOWN_ISSUES.md": "9485c4ec615ebb81f54ac04c986581fce924b05dad2d600ad9f85c3d2e39c56f",
+    "biomes/nwbay/KNOWN_ISSUES.md": "5eb5bb5cb53c1d57c062429cfc7010d62036cab41b26fa0040a7104c4f474a80",
     "biomes/nwbay/PORT.md": "50c5448c8a3b284d89fbc3c30563f39dd575b26696774f37c0a23d776186be32",
     "biomes/nwbay/build.py": "4c8aa490ac2c616876f90dc80cdb79793bf8be87b7b63e851fa6d2f04ac21741",
     "biomes/nwbay/src/00-head.html": "168d0dc2e092d82a0df6a215e2ff2cba0676509724eae1e04248e4a9a60c5a96",
     "biomes/nwbay/src/44n-host-geology.js": "f9444896d1626634fae23e4e0241ab5402e62f1f6f98a8c3ee3b17c47b79d1a7",
-    "biomes/nwbay/src/45-host-stage.js": "70b9c695312645271c858ad0d1ccfc85dc37909a8176f96ae1d5529f850c17f4",
+    "biomes/nwbay/src/45-host-stage.js": "9a4308303ef94d27a57b4b86aeb0e8034b2886179fa155b38ee9e0e0b400aa51",
     "biomes/nwbay/src/50-biome-nwbay-species.js": "70cceb53aa4e4ebb39e63208ba8c53bb678b94cc28d0adff609cc89c0a60db47",
     "biomes/nwbay/src/52-biome-nwbay-library.js": "463848b388547868edc5373711fa6e50e23f01bb3cd9338aec3f4ff4b219ac59",
     "biomes/nwbay/src/55-biome-nwbay-trees.js": "12074461105e37956e499270b60c233feca3aaaacc18b39cf97177a3cd4c1393",
@@ -44,11 +44,11 @@
     "biomes/nwbay/tex/fungus.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/nwbay/tex/glossy.albedo.webp": "2dda7ad4c689c35e855c1888e29edc131e96ed15ba652bbd0c760be6bba11c2e",
     "biomes/nwbay/tex/grass.albedo.webp": "b27f24947350dd48d16dec54046935b3a7b51bfd3c57771914b5b1fbdf5b8e0f",
-    "biomes/nwbay/tex/groundAsh.albedo.webp": "583a66d7ea6b9cff5df783580ff76dcf924e708fabe478842570c817f8623dc6",
+    "biomes/nwbay/tex/groundAsh.albedo.webp": "648282314401af21422e7a517e08534c26c2c9c6cd71e115ca2b73f340d8e4d0",
     "biomes/nwbay/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/nwbay/tex/groundLava.albedo.webp": "483c270c8639408de542240c53ceca3a865b170040896e9e421d42646bb3c2f0",
     "biomes/nwbay/tex/groundLitter.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
-    "biomes/nwbay/tex/groundMarble.albedo.webp": "17c3cf1a43ba95512db86e02f2f8e41e97764e56b22399fb9bda49d7cdc8b377",
+    "biomes/nwbay/tex/groundMarble.albedo.webp": "28e1da6edc694afde52bc9af92be21b63c3109b5cf76f13e52adb9dc69f3d736",
     "biomes/nwbay/tex/groundSand.albedo.webp": "c827626bbeee80619681498eefab9c645d35110b53fc044a24aacacc4ec9e634",
     "biomes/nwbay/tex/groundTrav.albedo.webp": "7f21ee703f1774ad45207a6ea6b593d859d9506ed0f41c5f8900ea1dd4355df2",
     "biomes/nwbay/tex/hang.albedo.webp": "fcdef61321b365b86d3651fb22c7d881f7c4a953fe44aeb3b82f30ed4348bac1",
@@ -62,7 +62,7 @@
     "biomes/nwbay/tex/matreed.albedo.webp": "7d829c9aca5ffa121db7de2d8cf17ba4c73d47c18046d6cb0e4415e720514775",
     "biomes/nwbay/tex/moss.albedo.webp": "1cd5e9575f2e58608bc0c03849ad932e3beba419d8dbffc28bc4c03569659aaa",
     "biomes/nwbay/tex/needle.albedo.webp": "e1c483f294c4e65126490be7b091624cc99953939cdfb5f0de1f7138de21f0d6",
-    "biomes/nwbay/tex/pack.json": "8d4f1ace2af7fc5ca8a35d5e474e5c54b4e75ddeb7ad55b7718ab8e93d88c2bc",
+    "biomes/nwbay/tex/pack.json": "396a7182a948a85d9cb21e86bd1a9750c9f8a158185252f261ae750260856887",
     "biomes/nwbay/tex/paddle.albedo.webp": "b8c6531e697b3f0a815bd043e246bf281d7bbb2ab1a727a3b1891152b91a96fe",
     "biomes/nwbay/tex/palmate.albedo.webp": "4888506094dcc9156e378b1b96806f27043b80a652d622786f3f3c647aec6c65",
     "biomes/nwbay/tex/prism.albedo.webp": "536f61a0fd19093d881ed893e7c2738582b1f5c19afa0dbba85fbf4eec7f7d87",
@@ -159,23 +159,23 @@
    "listings": {
     "biomes/nwbay/src": "3521c2f6e959c0e2a209611563676db7cdbb5b6c7f8f4887fd04af1a3f4f8996",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay.html": "f0c21f07b107059ac920acd5057d2a22700ca04d6f659f12e5416d57a3371a26"
+    "biomes/nwbay/dist/nwbay.html": "98bef810a8841161c0cbb135c569ffa068cee1894cb22d556abe524b1e09d9b1"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay.html": "b379b5b6ecbf735416c72e2aaa0de0b32220699aee68a45d31d76c462fef148a"
+    "biomes/nwbay/dist/nwbay.html": "ebfe0699f72f2879a8599c98177f5c9ff30186fe4489808e641bf250bbfd1b4d"
    }
   },
   "build.py --station caverns": {
    "inputs": {
-    "biomes/nwbay/KNOWN_ISSUES.md": "9485c4ec615ebb81f54ac04c986581fce924b05dad2d600ad9f85c3d2e39c56f",
+    "biomes/nwbay/KNOWN_ISSUES.md": "5eb5bb5cb53c1d57c062429cfc7010d62036cab41b26fa0040a7104c4f474a80",
     "biomes/nwbay/PORT.md": "50c5448c8a3b284d89fbc3c30563f39dd575b26696774f37c0a23d776186be32",
     "biomes/nwbay/build.py": "4c8aa490ac2c616876f90dc80cdb79793bf8be87b7b63e851fa6d2f04ac21741",
     "biomes/nwbay/src/00-head.html": "168d0dc2e092d82a0df6a215e2ff2cba0676509724eae1e04248e4a9a60c5a96",
     "biomes/nwbay/src/44n-host-geology.js": "f9444896d1626634fae23e4e0241ab5402e62f1f6f98a8c3ee3b17c47b79d1a7",
-    "biomes/nwbay/src/45-host-stage.js": "70b9c695312645271c858ad0d1ccfc85dc37909a8176f96ae1d5529f850c17f4",
+    "biomes/nwbay/src/45-host-stage.js": "9a4308303ef94d27a57b4b86aeb0e8034b2886179fa155b38ee9e0e0b400aa51",
     "biomes/nwbay/src/50-biome-nwbay-species.js": "70cceb53aa4e4ebb39e63208ba8c53bb678b94cc28d0adff609cc89c0a60db47",
     "biomes/nwbay/src/52-biome-nwbay-library.js": "463848b388547868edc5373711fa6e50e23f01bb3cd9338aec3f4ff4b219ac59",
     "biomes/nwbay/src/55-biome-nwbay-trees.js": "12074461105e37956e499270b60c233feca3aaaacc18b39cf97177a3cd4c1393",
@@ -214,11 +214,11 @@
     "biomes/nwbay/tex/fungus.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/nwbay/tex/glossy.albedo.webp": "2dda7ad4c689c35e855c1888e29edc131e96ed15ba652bbd0c760be6bba11c2e",
     "biomes/nwbay/tex/grass.albedo.webp": "b27f24947350dd48d16dec54046935b3a7b51bfd3c57771914b5b1fbdf5b8e0f",
-    "biomes/nwbay/tex/groundAsh.albedo.webp": "583a66d7ea6b9cff5df783580ff76dcf924e708fabe478842570c817f8623dc6",
+    "biomes/nwbay/tex/groundAsh.albedo.webp": "648282314401af21422e7a517e08534c26c2c9c6cd71e115ca2b73f340d8e4d0",
     "biomes/nwbay/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/nwbay/tex/groundLava.albedo.webp": "483c270c8639408de542240c53ceca3a865b170040896e9e421d42646bb3c2f0",
     "biomes/nwbay/tex/groundLitter.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
-    "biomes/nwbay/tex/groundMarble.albedo.webp": "17c3cf1a43ba95512db86e02f2f8e41e97764e56b22399fb9bda49d7cdc8b377",
+    "biomes/nwbay/tex/groundMarble.albedo.webp": "28e1da6edc694afde52bc9af92be21b63c3109b5cf76f13e52adb9dc69f3d736",
     "biomes/nwbay/tex/groundSand.albedo.webp": "c827626bbeee80619681498eefab9c645d35110b53fc044a24aacacc4ec9e634",
     "biomes/nwbay/tex/groundTrav.albedo.webp": "7f21ee703f1774ad45207a6ea6b593d859d9506ed0f41c5f8900ea1dd4355df2",
     "biomes/nwbay/tex/hang.albedo.webp": "fcdef61321b365b86d3651fb22c7d881f7c4a953fe44aeb3b82f30ed4348bac1",
@@ -232,7 +232,7 @@
     "biomes/nwbay/tex/matreed.albedo.webp": "7d829c9aca5ffa121db7de2d8cf17ba4c73d47c18046d6cb0e4415e720514775",
     "biomes/nwbay/tex/moss.albedo.webp": "1cd5e9575f2e58608bc0c03849ad932e3beba419d8dbffc28bc4c03569659aaa",
     "biomes/nwbay/tex/needle.albedo.webp": "e1c483f294c4e65126490be7b091624cc99953939cdfb5f0de1f7138de21f0d6",
-    "biomes/nwbay/tex/pack.json": "8d4f1ace2af7fc5ca8a35d5e474e5c54b4e75ddeb7ad55b7718ab8e93d88c2bc",
+    "biomes/nwbay/tex/pack.json": "396a7182a948a85d9cb21e86bd1a9750c9f8a158185252f261ae750260856887",
     "biomes/nwbay/tex/paddle.albedo.webp": "b8c6531e697b3f0a815bd043e246bf281d7bbb2ab1a727a3b1891152b91a96fe",
     "biomes/nwbay/tex/palmate.albedo.webp": "4888506094dcc9156e378b1b96806f27043b80a652d622786f3f3c647aec6c65",
     "biomes/nwbay/tex/prism.albedo.webp": "536f61a0fd19093d881ed893e7c2738582b1f5c19afa0dbba85fbf4eec7f7d87",
@@ -309,8 +309,8 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "52b02b60ea3e0976b0369c192c9269794bc1310f229f530caee20714f885144d",
-    "core/terrain/39c-core-karst.js": "d101c346a9f646926307fa46bd018effe3255fdc23811f29d971eeceaf5233e2",
+    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -336,13 +336,13 @@
     "biomes/nwbay/src": "3521c2f6e959c0e2a209611563676db7cdbb5b6c7f8f4887fd04af1a3f4f8996",
     "biomes/nwbay/stations/caverns": "61199bf64d95c07bb0676b5b7347e9316ac3778cb7925c7f86c5336c8b05c403",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "2095ac9834b549c6e29e2cf414c9f01bb9a6a75f32592a2350598d7420f03fb1"
+    "biomes/nwbay/dist/nwbay-caverns.html": "0809dd0a647eb1d741c4b4f4bf49fee2dd1eeb81c9487167153678d97005896a"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "1033d2ae9f03ed3f6a401fe95b2e24aa351c09f65e383540b80636c149225273"
+    "biomes/nwbay/dist/nwbay-caverns.html": "9257f7a5f2ef218e729c548d8a69b0c7d5dec0cb1e4252da34623f9583c64141"
    }
   }
  }

@@ -1077,10 +1077,10 @@
    "own": true
   },
   "groundMarble": {
-   "lib": "rock.marble012",
+   "lib": "rock.marble.white",
    "scale": [
-    4.0,
-    4.0
+    2.0,
+    2.0
    ],
    "tint": {
     "keep": 1.0,
@@ -1090,13 +1090,13 @@
    "specular": 0.25,
    "mapOnly": true,
    "own": true,
-   "_note": "2026-11-03, the catch-up pass: the white marble band at the limestone's volcanic contact and the marble nodes' outcrops (45-host-stage.js glWeights2; 44n NWBAY_GEO)"
+   "_note": "2026-11-03, the catch-up pass: the white marble band at the limestone's volcanic contact and the marble nodes' outcrops (45-host-stage.js glWeights2; 44n NWBAY_GEO); rock.marble.white from the 2026-11-03 delivery (was rock.marble012, a grey trim marble)"
   },
   "groundAsh": {
-   "lib": "ground.ash",
+   "lib": "ground.ash.soil",
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "tint": {
     "keep": 1.0,
@@ -1106,7 +1106,7 @@
    "specular": 0.25,
    "mapOnly": true,
    "own": true,
-   "_note": "2026-11-03, the catch-up pass: the ash soils on the old flows, darkened by the layer's tint toward a fertile ash soil: a STAND-IN until an andosol set is sourced (core/materials/PROMPTS-NEEDED.md)"
+   "_note": "2026-11-03, the catch-up pass: the ash soils on the old flows: ground.ash.soil (an andosol) from the 2026-11-03 delivery, untinted (was ground.ash darkened by the layer's tint)"
   }
  }
 }

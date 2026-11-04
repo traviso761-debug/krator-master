@@ -87,11 +87,12 @@
    "specular": 0.25,
    "mapOnly": true
   },
-  "rock.basalt.oxidised": {
-   "lib": "rock.basalt.oxidised",
+  "rock.hematite.mirror": {
+   "lib": "rock.hematite.mirror",
+   "_note": "station mirror's fault face (84-host-ground.js): the 2026-11-03 delivery, in place of rock.basalt.oxidised at a low roughness",
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "tint": {
     "keep": 1.0,

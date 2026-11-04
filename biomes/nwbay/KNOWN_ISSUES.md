@@ -22,8 +22,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **THE CAVE MESHES LAZILY.** 460 chunks near the views at load; the rest (12,000 in all) near the eye, four a frame: a fast flight
       through the network can outrun it. Underground the light is a per-vertex sky term and a lamp at the eye, not real occlusion: the sun's
       shadow box does not reach the cave (its meshes neither cast nor receive).
-- [ ] **STAND-IN TEXTURES.** The ash soil is the library's grey `ground.ash` darkened by the layer's tint, and the marble is
-      `rock.marble012` (a grey trim marble): `core/materials/PROMPTS-NEEDED.md` section 36 has both prompts.
+- [x] **STAND-IN TEXTURES.** Wired at the merge (2026-11-03): `groundAsh` draws the delivered `ground.ash.soil` untinted and `groundMarble`
+      `rock.marble.white` (both 2 m; `core/materials/PLAN.md`, "Delivered 2026-11-03"). Their look is the owner's.
 - [ ] **The final rebuild's looks (2026-10-27): for the owner's look pass.** `PLAN.md` "Core adoption" lists every module taken and its
       switch: the far impostors (gain 2.2: at nhighlands' 3.6 the far avenue baobabs' trunks baked out white while the crowns read
       right; one gain cannot fit bark and leaves until the core's bake is fixed), the sea fog belt, the limestone's beds, the KGROUND

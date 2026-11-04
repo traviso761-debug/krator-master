@@ -179,7 +179,7 @@
    "listings": {
     "biomes/abyssal-savannah/src": "4e65927f87847bf28166b63837dfac702540e8d5c01f3fa9fec88ae8f9612d42",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/abyssal-savannah/dist/abyssal-savannah.html": "003e9d9db7a8975f2739f5ebcd900a65a20e818a8754ab12e929b13d855f8400"

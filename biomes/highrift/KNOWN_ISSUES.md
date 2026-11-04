@@ -6,8 +6,8 @@ Chromium on software GL (SwiftShader) only; the coordinator runs `verify.py --as
 ## Open
 
 - [ ] **GPU verify owed** on all five pages (`verify.py dist/highrift*.html --assert --all-views`), and the hash baseline entries after it.
-- [ ] **The fault mirror's texture** (`rock.hematite.mirror`, `core/materials/PROMPTS-NEEDED.md` section 35): station `mirror` draws
-      `rock.basalt.oxidised` at roughness 0.22 with a steel-grey tint in its place.
+- [x] **The fault mirror's texture** (`rock.hematite.mirror`, delivered 2026-11-03, `core/materials/PLAN.md` "Delivered 2026-11-03"): wired
+      at the merge as the `mirror` layer's family (roughness 0.22 kept); the procedural hematite tint draws only with `?kground=0`. Its look is the owner's.
 - [ ] **`KSCOUR` on the Gill's bed** (station `coulee`): the channel, its bars and its stream bed are the stage's own carve; KSCOUR's potholes,
       dry falls and current ripples are owed. Aufeis (the Gill's winter ice) is not drawn.
 - [ ] **The sound is data only** (`HRIFT.SOUND`, the page's "export sound"): there is no `core/audio`. The owner's call whether to write one

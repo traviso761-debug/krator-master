@@ -25,8 +25,8 @@
       until it comes. `?strata=0` shows the old granite for comparison.
 - [ ] **Station 5, the bog country (pair 7): the look to judge, and what it does not have yet.** The pools are their own records, not `KFROST`'s polygons;
       no ice on the pools in winter (`ext/54`); no peat-cutters' camp, bog finds or bog iron (the plan's people and resources); the peat hags are a flat
-      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`PROMPTS-NEEDED.md` 32: `ground.peat.hag`, `card.dwarfbirch`,
-      `card.sedge.fen`). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
+      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`ground.peat.hag`, `card.dwarfbirch` and
+      `card.sedge.fen` were delivered 2026-11-03 and wait to be wired at the kit's next turn: `core/materials/PLAN.md`, "Delivered 2026-11-03"). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
 - [ ] **The ground's wet band is not on the water's field.** `WATER.edgeAudit`'s wet rules are not run here: the wet near the water is the paint's banks
       (`rip`) and R9's rain, not a band from the shore distance. Moving the paint's banks onto `WATER.fieldAt` is a look change for the owner.
 - [x] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**

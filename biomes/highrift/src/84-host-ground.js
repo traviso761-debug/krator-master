@@ -6,7 +6,7 @@
 //   aGL.z  STATION    the station's own: travertine.white (zone 1's older terraces), travertine.acid (zone 2's springs), polygon (zone 3's hollows),
 //                     lava.aa (zone 4's lobes), tuff (zone 5's plateau)
 //   aGL.w  COVER      ground.tundra (the cold ground's turf and gravel) / zone 4's cobble in the Gill's bed
-//   aMir   THE MIRROR zone 2's fault face: hematite (owed: rock.hematite.mirror; rock.basalt.oxidised at a low roughness stands in, PLAN.md section 11)
+//   aMir   THE MIRROR zone 2's fault face: hematite (rock.hematite.mirror, delivered 2026-11-03; the procedural tint with ?kground=0)
 //   aWet   the water's wet band from WATER.fieldAt's shore (89z)
 // ?kground=0: the paint alone. ?strata=0: no beds on the faces.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
@@ -57,13 +57,13 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=dt*dt2*1.12;'+
   (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*(1.0-vMir)*0.9);':'')+
-  /* the fault mirror: steel-grey hematite, red-brown where it has worn, grooved down the dip */
-  'vec3 hm=mix(vec3(0.05,0.052,0.058),vec3(0.22,0.09,0.05),smoothstep(0.55,0.8,dt.r*dt2.g));diffuseColor.rgb=mix(diffuseColor.rgb,hm,vMir*gSteep);'+
+  /* the fault mirror: steel-grey hematite, red-brown where it has worn, grooved down the dip; with KGROUND the delivered rock.hematite.mirror draws it */
+  (USE_KG?'':'vec3 hm=mix(vec3(0.05,0.052,0.058),vec3(0.22,0.09,0.05),smoothstep(0.55,0.8,dt.r*dt2.g));diffuseColor.rgb=mix(diffuseColor.rgb,hm,vMir*gSteep);')+
   'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');
  if(USE_KG)sh.fragmentShader=sh.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.22,vMir*gSteep);');};
 const LAYERS={
  cataract:[['ground.travertine.white','vGL.z',.75,'terraces (older, white)']],
- mirror:[['ground.travertine.acid','vGL.z',.8,'acid crust'],['rock.basalt.oxidised','vMir*gSteep',.8,'the fault mirror (stand-in)']],
+ mirror:[['ground.travertine.acid','vGL.z',.8,'acid crust'],['rock.hematite.mirror','vMir*gSteep',.8,'the fault mirror']],
  wedge:[],
  coulee:[['ground.lava.aa','vGL.z',.85,'the coulee\'s block field']],
  gjar:[['rock.tuff','vGL.z',.7,'welded tuff']]}[SKEY];

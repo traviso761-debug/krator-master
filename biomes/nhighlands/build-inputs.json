@@ -10,7 +10,7 @@
     "biomes/cut/src/70-biome-cut.js": "5d09b0884633e71f78bd6189813d98faef1daeb031fca0b27544f0f25d94f4cf",
     "biomes/cut/tex/pack.json": "14f5d4137c6fd960a562f612a61bff52504290d299a893304866e6450c1558a6",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
-    "biomes/nhighlands/KNOWN_ISSUES.md": "573fa950cec359585339f964909e25abffd7cd762e8bb9399eaf607a37239723",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "2690da7dd4cae687c43151652193b558e3341561feeb64da4ded64eb262e01e9",
     "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -164,7 +164,7 @@
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
     "biomes/nhighlands/stations": "35d8757fac419b8807af3ba8dd1565552df6f8b72e0c29968eb5f202b08b0a83",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/nhighlands/dist/nhighlands.html": "3853925c2689b1d8d39ade788e561f7794c31d0e4d81ef74c177b6dfdd8df08a"
@@ -175,7 +175,7 @@
   },
   "build.py --station bogs": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "573fa950cec359585339f964909e25abffd7cd762e8bb9399eaf607a37239723",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "2690da7dd4cae687c43151652193b558e3341561feeb64da4ded64eb262e01e9",
     "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -339,7 +339,7 @@
     "biomes/nhighlands/stations": "35d8757fac419b8807af3ba8dd1565552df6f8b72e0c29968eb5f202b08b0a83",
     "biomes/nhighlands/stations/bogs": "5b4164911bf451a84227d4db797c249ac5e91c8cb080b25d57fef547e0bda9b8",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
     "biomes/nhighlands/dist/nhighlands-bogs.html": "7dea16a40142f54a93af26022d4e42804b919fbfee4fac61be1dab537d224265"

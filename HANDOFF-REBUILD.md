@@ -286,7 +286,7 @@ for a `core/audio` that does not exist yet). Every page takes the universal set 
 `?shadow=1`, KSTRATA `rift` on every face, KGROUND, KFAR, KHORIZON, KTHERM on every vent) and reads **the Hearths and Oidong's high country in place**. Not taken:
 KHOOK.warp (an empty slot), KKARST/KCAVERN (no caves, no carbonate). **Checks (no GPU):** `check_core_use` 0 findings; every page loads clean in headless Chromium on
 software GL (SwiftShader; probes listed in the kit's `KNOWN_ISSUES.md`); **owed to the coordinator:** `verify.py --assert --all-views` on the GPU, the hash baseline,
-KSCOUR on the Gill's bed, the fault mirror's texture (`PROMPTS-NEEDED.md` section 35), Lake Cinnabar's page. Look decisions for the owner: the plan's section 11.
+KSCOUR on the Gill's bed, Lake Cinnabar's page. Look decisions for the owner: the plan's section 11.
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
