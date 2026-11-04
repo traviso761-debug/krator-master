@@ -102,16 +102,13 @@ From the library:
 - `ground.snow011` and `ground.snow.algae` (the firn);
 - `ground.gravel042` (the outwash and the moraine);
 - `ground.lichen.crust`;
-- `rock.granite.tor` (the granite and, until the gneiss is delivered, the gneiss);
+- `rock.granite.tor` (station 1's granite walls);
 - `rock.malachite` and `rock.gossan` (the skarn and the copper ground);
 - `card.lichen`, `card.moss`, `card.grass.dry` (the sedge), `card.flowerspike` (the copper flower).
 
-**Owed** (`core/materials/PROMPTS-NEEDED.md`, section "Copper Glacier"):
-- `rock.gneiss.banded`: most of the region is gneiss, and the library has none;
-- `ice.glacier.verdigris`: the banded ice the lore describes, on the skarn-fed glacier of station 2.
-
-Until they come, the granite stands in for the gneiss, and `ice.glacier` tinted by the copper field stands in for the banded ice.
-Both stand-ins are named in `KNOWN_ISSUES.md`.
+**Delivered 2026-11-03** (the owner, from this kit's prompts; library 8e181de19):
+- `rock.gneiss.banded`: the walls where the data cell is gneiss or the rift's edge (stations 2, 3), and the moraine boulders on every station. Station 1's cell is granite, so its walls keep `rock.granite.tor`.
+- `ice.glacier.verdigris`: the bare ice on the copper ground (KGROUND's `verdigris ice` layer, on the copper field).
 
 ## 6. For the owner's eye
 

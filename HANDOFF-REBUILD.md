@@ -266,8 +266,8 @@ no soluble rock. Life: frost coral (the cold lineage, limbs on `BIO.flareJoin`),
 algae, and ice worms that glow at dusk.
 
 The universal set is taken: KGROUND on documented masks, KFAR and KHORIZON, KFROST, still water with no surf or breakers, the stream's plume, `WATER.mirrorSwitch`
-off at load, the shore's fields, and the shared sky at each site. KSHADOW is measured at +20-56% a frame on the Arc (station 1), so it is off at load (`?shadow=1`), for the owner. KSTRATA, KKARST and impostors are dropped, with reasons. **Owed textures**
-(`PROMPTS-NEEDED.md` 32): `rock.gneiss.banded` and `ice.glacier.verdigris`; their stand-ins are named.
+off at load, the shore's fields, and the shared sky at each site. KSHADOW is measured at +20-56% a frame on the Arc (station 1), so it is off at load (`?shadow=1`), for the owner. KSTRATA, KKARST and impostors are dropped, with reasons. The owner delivered
+the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 and 3, the boulders everywhere) and `ice.glacier.verdigris` (the ice on the copper ground).
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands

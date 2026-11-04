@@ -4,14 +4,14 @@
 // the copper ground green and rust, the wet margin dark. On KGROUND (43-core-ground.js), each layer on its documented mask (the review's first line):
 //   snow       ground.snow on aSnow (the snow field: the firn on the ice, the snow on the ground above the station's snow line, the lee)
 //   algae      ground.algae on aAlgae (the summer firn's snow algae: the snow field x the station's algae share x noise, never on steep ground)
-//   ice        ice.glacier on aIce x (1 - aSnow): the bare ice; on copper ground tinted verdigris (the stand-in for ice.glacier.verdigris: PLAN.md 5)
+//   ice        ice.glacier on aIce x (1 - aSnow): the bare ice; on the copper ground ice.verdigris (ice.glacier.verdigris: the banded, copper-stained ice)
 //   debris     ice.debris on aDebris (the snout's last few hundred metres, the margins)
 //   gravel     ground.gravel on (1 - aRock) x (1 - aIce): the moraines and the outwash
-//   granite    rock.granite on aRock (the stand-in for the gneiss until rock.gneiss.banded is delivered: PLAN.md 5)
+//   walls      rock.granite or rock.gneiss on aRock, by the resource data's province at the site (WALL_ROCK)
 //   malachite  rock.malachite on aCu (the copper field: the resource data's skarn and nodes)
 //   POLYGONS   a `polygon` kind on aFlat (the frost's flats, where KFROST draws its sorted circles) (?polygon=0)
 //   wet        aWet: the water's wet band from WATER.fieldAt's shore (89z)
-// Seven library layers and one kind: the page keeps texture units for KHORIZON, the rain cover and the shadows (ebadlands' 16-unit lesson). ?kground=0
+// Eight library layers and one kind: the page keeps texture units for KHORIZON, the rain cover and the shadows (ebadlands' 16-unit lesson). ?kground=0
 // the paint alone.
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
  const c=new THREE.Color(),t=new THREE.Color(),K=hx=>new THREE.Color(hx);
@@ -39,11 +39,14 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=sampleSRGB(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=sampleSRGB(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 _gP=diffuseColor.rgb;'+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.22,vec3(1.0),vIce*0.6);diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
 const KG_POLY=GQ.get('polygon')!=='0';
+/* the walls' rock by the resource data's province at the site: granite where the cell is granite (station 1), the banded gneiss elsewhere (crystalline, the rift's edge) */
+const WALL_ROCK=CG_RES.province==='granite'?'rock.granite':'rock.gneiss';
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'copperglacier-'+SITE.key+'-ground'+(KG_POLY?'g':''),at:'/*KGROUND*/',layers:[
  KGROUND.layer('copperglacier','ground.gravel',{w:'(1.0-vRock)*(1.0-vIce)*(1.0-vSnow)*(1.0-vCu)',amt:.75,gain:1.0,name:'gravel'}),
- KGROUND.layer('copperglacier','rock.granite',{w:'vRock*(1.0-vIce)*(1.0-vSnow*0.8)',amt:.85,gain:1.0,tint:'_gP*1.5',name:'granite (the gneiss\'s stand-in)'}),
+ KGROUND.layer('copperglacier',WALL_ROCK,{w:'vRock*(1.0-vIce)*(1.0-vSnow*0.8)',amt:.85,gain:1.0,tint:'_gP*1.5',name:WALL_ROCK==='rock.granite'?'granite':'banded gneiss'}),
  KGROUND.layer('copperglacier','rock.malachite',{w:'vCu*(1.0-vIce)*(1.0-vSnow)',amt:.8,gain:1.0,name:'malachite (the copper ground)'}),
- KGROUND.layer('copperglacier','ice.glacier',{w:'vIce*(1.0-vSnow)*(1.0-vDebris)',amt:.9,gain:1.0,tint:'mix(vec3(1.0),vec3(0.72,1.02,0.92),clamp(vCu*2.5,0.0,1.0))',name:'bare ice'}),
+ KGROUND.layer('copperglacier','ice.glacier',{w:'vIce*(1.0-vSnow)*(1.0-vDebris)*(1.0-clamp(vCu*2.5,0.0,1.0))',amt:.9,gain:1.0,name:'bare ice'}),
+ KGROUND.layer('copperglacier','ice.verdigris',{w:'vIce*(1.0-vSnow)*(1.0-vDebris)*clamp(vCu*2.5,0.0,1.0)',amt:.9,gain:1.0,name:'verdigris ice (the copper ground)'}),
  KGROUND.layer('copperglacier','ice.debris',{w:'vDebris',amt:.85,gain:1.0,name:'dirty ice'}),
  KGROUND.layer('copperglacier','ground.snow',{w:'vSnow',amt:.9,gain:1.0,name:'snow and firn'}),
  KGROUND.layer('copperglacier','ground.algae',{w:'vAlgae',amt:.85,gain:1.0,name:'snow algae'}),

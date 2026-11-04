@@ -6,9 +6,8 @@
   `geology.json`. Copper is background (50) on the gneiss and granite and rich (240) only on the eastern pass's skarn strip (`PLAN.md`
   section 1). So station 2's slope is green with malachite, while station 1 has one low node and a faint stain on the moraine. A
   porphyry province in the Crook would be a rebake (`kits/resources/REBAKE-PLAN.md`).
-- [ ] **Stand-in textures** (prompts in `core/materials/PROMPTS-NEEDED.md` section 32):
-  - the gneiss is `rock.granite.tor`;
-  - the verdigris banded ice is `ice.glacier` tinted green on the copper ground (`84`, the `bare ice` layer's tint).
+- [x] **The textures are wired** (2026-11-03, the owner's delivery): `rock.gneiss.banded` on the walls (stations 2, 3) and the boulders, and
+  `ice.glacier.verdigris` on the copper ground's ice. Station 1's walls stay granite: its data cell is granite.
 - [ ] **Every station's look has not been judged.**
   - The tarn's turquoise.
   - The glacier's surface reads as white snow with grey patches more than banded ice.

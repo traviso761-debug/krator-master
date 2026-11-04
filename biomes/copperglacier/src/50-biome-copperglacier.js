@@ -57,7 +57,7 @@ const M=COPPERG.MAT={
  'bark.coral':BIO.iridBarkMat(grey(128,11),'copperg-coral',[1.0,1.03,1.04],[1.08,.98,1.12]),
  tip:BIO.leafMat(null,'coraltip',{irid:true,swayW:'0.0',swayA:0,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
- 'rock.granite':BIO.solidMat(grey(128,12)),'rock.malachite':BIO.solidMat(grey(128,13)),'rock.gossan':BIO.solidMat(grey(128,14)),
+ 'rock.granite':BIO.solidMat(grey(128,12)),'rock.gneiss.solid':BIO.solidMat(grey(128,15)),'rock.malachite':BIO.solidMat(grey(128,13)),'rock.gossan':BIO.solidMat(grey(128,14)),
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.4}),
  moss:BIO.leafMat(TX.moss,'mossmat',{swayW:'0.0',swayA:0,alphaTest:.3}),
  sedge:BIO.leafMat(TX.sedge,'sedge',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
@@ -89,7 +89,7 @@ BIO.def('lichen',G.flat(),M.lichen,{label:'Rock lichen'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('sedge',G.cross(3),M.sedge,{label:'Sedge'});
 BIO.def('stone',G.rock(8101),M['rock.granite'],{label:'Moraine stones'});
-BIO.def('boulder',G.rock(8102),M['rock.granite'],{label:'Moraine boulders (gneiss and granite)'});
+BIO.def('boulder',G.rock(8102),M['rock.gneiss.solid'],{label:'Moraine boulders (banded gneiss, carried off the walls)'});
 BIO.def('malachite',G.rock(8103),M['rock.malachite'],{label:'Malachite-stained boulders (the copper ground)'});
 BIO.def('gossan',G.rock(8104),M['rock.gossan'],{label:'Gossan (the rusty cap over the copper\'s sulphides)'});
 })();

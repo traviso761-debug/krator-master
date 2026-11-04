@@ -1,6 +1,6 @@
 {
  "build": "copperglacier",
- "note": "Copper Glacier's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 5). The ground's KGROUND layers (84-host-ground.js): ground.snow (the firn and snow), ground.algae (the summer firn's snow algae), ground.gravel (the moraine and the outwash), ground.lichen (the crust on the old moraine), rock.granite (the walls: granite, and the stand-in for the gneiss until rock.gneiss.banded is delivered), rock.malachite and rock.gossan (the copper ground, on the resource data's copper), ice.glacier (the ice's surface; tinted verdigris on the copper ground: the stand-in for ice.glacier.verdigris), ice.debris (the dirty snout and the medial moraine). ice.clear is the seracs and bergs (86). The cards: lichen, moss, sedge (card.grass.dry), spike (the copper flower, card.flowerspike). bark.coral is the frost coral's skin (the Throne's gill-coral cap, the cold lineage's own). Run python3 tools/textures/pack.py biomes/copperglacier after any change, then python3 build.py.",
+ "note": "Copper Glacier's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 5). The ground's KGROUND layers (84-host-ground.js): ground.snow (the firn and snow), ground.algae (the summer firn's snow algae), ground.gravel (the moraine and the outwash), ground.lichen (the crust on the old moraine), rock.granite (the walls where the data cell is granite: station 1), rock.gneiss (the walls elsewhere; rock.gneiss.solid the boulders, carried off the gneiss), rock.malachite and rock.gossan (the copper ground, on the resource data's copper), ice.glacier (the ice's surface), ice.verdigris (the banded verdigris ice on the copper ground: ice.glacier.verdigris, delivered 2026-11-03), ice.debris (the dirty snout and the medial moraine). ice.clear is the seracs and bergs (86). The cards: lichen, moss, sedge (card.grass.dry), spike (the copper flower, card.flowerspike). bark.coral is the frost coral's skin (the Throne's gill-coral cap, the cold lineage's own). Run python3 tools/textures/pack.py biomes/copperglacier after any change, then python3 build.py.",
  "size": 512,
  "families": {
   "ground.snow": {"lib": "ground.snow011", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
@@ -8,6 +8,9 @@
   "ground.gravel": {"lib": "ground.gravel042", "scale": [2.2, 2.2], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.35, "mapOnly": true},
   "ground.lichen": {"lib": "ground.lichen.crust", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
   "rock.granite": {"lib": "rock.granite.tor", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.62}, "mapOnly": true, "roughLift": 0.3},
+  "rock.gneiss": {"lib": "rock.gneiss.banded", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.62}, "mapOnly": true, "roughLift": 0.3},
+  "rock.gneiss.solid": {"lib": "rock.gneiss.banded", "scale": [2, 2], "tint": {"keep": 0.0, "mean": 0.62}, "roughLift": 0.3},
+  "ice.verdigris": {"lib": "ice.glacier.verdigris", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.5, "mapOnly": true},
   "rock.malachite": {"lib": "rock.malachite", "scale": [1.5, 1.5], "roughLift": 0.1, "specular": 0.2, "mapOnly": true},
   "rock.gossan": {"lib": "rock.gossan", "scale": [2.0, 2.0], "roughLift": 0.1, "specular": 0.2, "mapOnly": true},
   "ice.glacier": {"lib": "ice.glacier", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.5, "mapOnly": true},

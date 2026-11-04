@@ -10,10 +10,10 @@
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
     "biomes/copperglacier/src/45-host-stage.js": "ca69eb19e008e7b996b7df3fbe2b244de7005cb9720bd6434a59924de9de77a4",
-    "biomes/copperglacier/src/50-biome-copperglacier.js": "0c919b5383adfde12c16e9823d90924d88d23ed752049bfc306de8889cc8b1f6",
+    "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
-    "biomes/copperglacier/src/84-host-ground.js": "e8066c2c4336477b1783a4852cfa082b9da67f9ab0148fc385502194fdd2cf36",
+    "biomes/copperglacier/src/84-host-ground.js": "d386b27e32c66ad96fa20803e45ad02061197cda6da0afdcd54b1b7566e86a3a",
     "biomes/copperglacier/src/85-host-far.js": "d63fb0fb88c85e2458719c604ed3365b3541aca1796829ce103dcdd67dfd0db9",
     "biomes/copperglacier/src/86-host-glacier.js": "d9408de72de0dde372c8bdaf7567f1467854b8c9ff3f2e7dfc189a47a89028ad",
     "biomes/copperglacier/src/89-host-sky.js": "50900064cc2d1bc5e38fce379527fd766d912f379d0a6f38abddb36d662586ab",
@@ -34,9 +34,14 @@
     "biomes/copperglacier/tex/ice.clear.rough.webp": "46db80c9a5aefe896303c1cf7b47ed724337163f6ec459d7f844a50abb126b8d",
     "biomes/copperglacier/tex/ice.debris.albedo.webp": "ec0a16a9d9ff366d9ce28719ea727f9c46d7bbfb9756ffd1e041dfdc2fa948c5",
     "biomes/copperglacier/tex/ice.glacier.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
+    "biomes/copperglacier/tex/ice.verdigris.albedo.webp": "f48a3c53f4e91df6dd6d1b8e6235713a222b7cbf9c5986e13925aa6392c9cc5a",
     "biomes/copperglacier/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
     "biomes/copperglacier/tex/moss.albedo.webp": "d18d243d535e05f10f1330a0271744ffea6f8fdf7007da516e85c4538a4e37a8",
-    "biomes/copperglacier/tex/pack.json": "097afb2ec80721b61a3ba7c5a2be71db259784b6d0641f0cd25594417eb058a7",
+    "biomes/copperglacier/tex/pack.json": "71b15737d66e4f7d70e4fca4e7a4ad9bdfd790362c75360685083d425fc44b7a",
+    "biomes/copperglacier/tex/rock.gneiss.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.normal.webp": "eb7ad3b32419d1c67707f95c585e3a17355d1eb5680c0eed606b106c774ad12e",
+    "biomes/copperglacier/tex/rock.gneiss.solid.rough.webp": "ced34816d7d140ca97380c827c1408c71546188b60d6e7a5a91c9dabd98437b5",
     "biomes/copperglacier/tex/rock.gossan.albedo.webp": "998b057ac04b3084b1ebe6a0c17da9660d52a2a2a4610ad2031840fecff77bbc",
     "biomes/copperglacier/tex/rock.granite.albedo.webp": "1225012895dd734166c2ba9a24bae888f20680cae6ae98a1fe43b253b0a9972a",
     "biomes/copperglacier/tex/rock.malachite.albedo.webp": "efda6591d96d37a12a160317dbf8d0159992c037eafb0eca1d03abd7ee14fec3",
@@ -137,10 +142,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier.html": "e47f91b51e43ea1309c86c533fb1b0f80ea7d635e5781a1d8a78d63e7aa40e20"
+    "biomes/copperglacier/dist/copperglacier.html": "1a43570ed3032bed2f4150bf0224b886939607edebd1926c4c2ce8549fca2754"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier.html": "e47f91b51e43ea1309c86c533fb1b0f80ea7d635e5781a1d8a78d63e7aa40e20"
+    "biomes/copperglacier/dist/copperglacier.html": "1a43570ed3032bed2f4150bf0224b886939607edebd1926c4c2ce8549fca2754"
    }
   },
   "build.py --station icefield": {
@@ -152,10 +157,10 @@
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
     "biomes/copperglacier/src/45-host-stage.js": "ca69eb19e008e7b996b7df3fbe2b244de7005cb9720bd6434a59924de9de77a4",
-    "biomes/copperglacier/src/50-biome-copperglacier.js": "0c919b5383adfde12c16e9823d90924d88d23ed752049bfc306de8889cc8b1f6",
+    "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
-    "biomes/copperglacier/src/84-host-ground.js": "e8066c2c4336477b1783a4852cfa082b9da67f9ab0148fc385502194fdd2cf36",
+    "biomes/copperglacier/src/84-host-ground.js": "d386b27e32c66ad96fa20803e45ad02061197cda6da0afdcd54b1b7566e86a3a",
     "biomes/copperglacier/src/85-host-far.js": "d63fb0fb88c85e2458719c604ed3365b3541aca1796829ce103dcdd67dfd0db9",
     "biomes/copperglacier/src/86-host-glacier.js": "d9408de72de0dde372c8bdaf7567f1467854b8c9ff3f2e7dfc189a47a89028ad",
     "biomes/copperglacier/src/89-host-sky.js": "50900064cc2d1bc5e38fce379527fd766d912f379d0a6f38abddb36d662586ab",
@@ -178,9 +183,14 @@
     "biomes/copperglacier/tex/ice.clear.rough.webp": "46db80c9a5aefe896303c1cf7b47ed724337163f6ec459d7f844a50abb126b8d",
     "biomes/copperglacier/tex/ice.debris.albedo.webp": "ec0a16a9d9ff366d9ce28719ea727f9c46d7bbfb9756ffd1e041dfdc2fa948c5",
     "biomes/copperglacier/tex/ice.glacier.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
+    "biomes/copperglacier/tex/ice.verdigris.albedo.webp": "f48a3c53f4e91df6dd6d1b8e6235713a222b7cbf9c5986e13925aa6392c9cc5a",
     "biomes/copperglacier/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
     "biomes/copperglacier/tex/moss.albedo.webp": "d18d243d535e05f10f1330a0271744ffea6f8fdf7007da516e85c4538a4e37a8",
-    "biomes/copperglacier/tex/pack.json": "097afb2ec80721b61a3ba7c5a2be71db259784b6d0641f0cd25594417eb058a7",
+    "biomes/copperglacier/tex/pack.json": "71b15737d66e4f7d70e4fca4e7a4ad9bdfd790362c75360685083d425fc44b7a",
+    "biomes/copperglacier/tex/rock.gneiss.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.normal.webp": "eb7ad3b32419d1c67707f95c585e3a17355d1eb5680c0eed606b106c774ad12e",
+    "biomes/copperglacier/tex/rock.gneiss.solid.rough.webp": "ced34816d7d140ca97380c827c1408c71546188b60d6e7a5a91c9dabd98437b5",
     "biomes/copperglacier/tex/rock.gossan.albedo.webp": "998b057ac04b3084b1ebe6a0c17da9660d52a2a2a4610ad2031840fecff77bbc",
     "biomes/copperglacier/tex/rock.granite.albedo.webp": "1225012895dd734166c2ba9a24bae888f20680cae6ae98a1fe43b253b0a9972a",
     "biomes/copperglacier/tex/rock.malachite.albedo.webp": "efda6591d96d37a12a160317dbf8d0159992c037eafb0eca1d03abd7ee14fec3",
@@ -282,10 +292,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "adaada374f53761fa8bdbf6a4c246d976f7a2e3d832fe98af4adbf95e82f65a4"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "24174d64563dd6b932acd7fc0354a81988ddc6645060f05248c6104b959a8118"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "adaada374f53761fa8bdbf6a4c246d976f7a2e3d832fe98af4adbf95e82f65a4"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "24174d64563dd6b932acd7fc0354a81988ddc6645060f05248c6104b959a8118"
    }
   },
   "build.py --station pass": {
@@ -297,10 +307,10 @@
     "biomes/copperglacier/src/00-head.html": "caacc7d1159b6da86934f00c9e35f0b8c6f058e31134676f54695fd9c73dbb97",
     "biomes/copperglacier/src/44z-host-site.js": "b3b11287c9ebfbeee0a8fbd37b996b43e6dd4ace579461cf32865b7d7ea83ee6",
     "biomes/copperglacier/src/45-host-stage.js": "ca69eb19e008e7b996b7df3fbe2b244de7005cb9720bd6434a59924de9de77a4",
-    "biomes/copperglacier/src/50-biome-copperglacier.js": "0c919b5383adfde12c16e9823d90924d88d23ed752049bfc306de8889cc8b1f6",
+    "biomes/copperglacier/src/50-biome-copperglacier.js": "8db8db6b741c4f9dd8e81366050affab7480a2bc3717c9ddd76f14900c6f3dc9",
     "biomes/copperglacier/src/60-biome-copperglacier-floor.js": "e2da76a3c09ca7ed6fa7028d36cf30cf44d0d872d540ea18f9b72190a6db516e",
     "biomes/copperglacier/src/70-biome-copperglacier.js": "b1ac68d81ff332ddc89f7301dfe0967346945a7825756f5a8248ebebbb6c3d5d",
-    "biomes/copperglacier/src/84-host-ground.js": "e8066c2c4336477b1783a4852cfa082b9da67f9ab0148fc385502194fdd2cf36",
+    "biomes/copperglacier/src/84-host-ground.js": "d386b27e32c66ad96fa20803e45ad02061197cda6da0afdcd54b1b7566e86a3a",
     "biomes/copperglacier/src/85-host-far.js": "d63fb0fb88c85e2458719c604ed3365b3541aca1796829ce103dcdd67dfd0db9",
     "biomes/copperglacier/src/86-host-glacier.js": "d9408de72de0dde372c8bdaf7567f1467854b8c9ff3f2e7dfc189a47a89028ad",
     "biomes/copperglacier/src/89-host-sky.js": "50900064cc2d1bc5e38fce379527fd766d912f379d0a6f38abddb36d662586ab",
@@ -323,9 +333,14 @@
     "biomes/copperglacier/tex/ice.clear.rough.webp": "46db80c9a5aefe896303c1cf7b47ed724337163f6ec459d7f844a50abb126b8d",
     "biomes/copperglacier/tex/ice.debris.albedo.webp": "ec0a16a9d9ff366d9ce28719ea727f9c46d7bbfb9756ffd1e041dfdc2fa948c5",
     "biomes/copperglacier/tex/ice.glacier.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
+    "biomes/copperglacier/tex/ice.verdigris.albedo.webp": "f48a3c53f4e91df6dd6d1b8e6235713a222b7cbf9c5986e13925aa6392c9cc5a",
     "biomes/copperglacier/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
     "biomes/copperglacier/tex/moss.albedo.webp": "d18d243d535e05f10f1330a0271744ffea6f8fdf7007da516e85c4538a4e37a8",
-    "biomes/copperglacier/tex/pack.json": "097afb2ec80721b61a3ba7c5a2be71db259784b6d0641f0cd25594417eb058a7",
+    "biomes/copperglacier/tex/pack.json": "71b15737d66e4f7d70e4fca4e7a4ad9bdfd790362c75360685083d425fc44b7a",
+    "biomes/copperglacier/tex/rock.gneiss.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.albedo.webp": "254ba69d3432bd282870cdb8f9ae5301d06106b8f7e430c4faed62ab4552a157",
+    "biomes/copperglacier/tex/rock.gneiss.solid.normal.webp": "eb7ad3b32419d1c67707f95c585e3a17355d1eb5680c0eed606b106c774ad12e",
+    "biomes/copperglacier/tex/rock.gneiss.solid.rough.webp": "ced34816d7d140ca97380c827c1408c71546188b60d6e7a5a91c9dabd98437b5",
     "biomes/copperglacier/tex/rock.gossan.albedo.webp": "998b057ac04b3084b1ebe6a0c17da9660d52a2a2a4610ad2031840fecff77bbc",
     "biomes/copperglacier/tex/rock.granite.albedo.webp": "1225012895dd734166c2ba9a24bae888f20680cae6ae98a1fe43b253b0a9972a",
     "biomes/copperglacier/tex/rock.malachite.albedo.webp": "efda6591d96d37a12a160317dbf8d0159992c037eafb0eca1d03abd7ee14fec3",
@@ -427,10 +442,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "c9f2cd5d55504f20fba50e0c02a7745b53313f06344716166d5ccb43def56c18"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "a07cde91d242e307c933cd76e4389fd9bf14a65ca91215effb79eb0d92b9cc0b"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "c9f2cd5d55504f20fba50e0c02a7745b53313f06344716166d5ccb43def56c18"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "a07cde91d242e307c933cd76e4389fd9bf14a65ca91215effb79eb0d92b9cc0b"
    }
   }
  }

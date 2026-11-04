@@ -229,6 +229,34 @@
     "sourceMean": 0.8049
    }
   },
+  "ice.verdigris": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ice.verdigris.albedo.webp"
+   },
+   "lib": "ice.glacier.verdigris",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "39559e3b54e339fb97450d8f3d854f38de82af2a",
+    "normal": "d097bd2fd9122a418b33f6f760a18c051faf8b28",
+    "roughness": "cde062557b73b28d8ca7abc46cd43cfac3ed24ae"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6419096714962229,
+    "sourceMean": 0.6419
+   }
+  },
   "lichen": {
    "anchor": "center",
    "breakup": null,
@@ -295,6 +323,64 @@
     "keep": 0.0,
     "mean": 0.63,
     "sourceMean": 0.3812
+   }
+  },
+  "rock.gneiss": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.gneiss.albedo.webp"
+   },
+   "lib": "rock.gneiss.banded",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "1683100bbb5dde9f97f0670cc17dda5a8ce26187",
+    "normal": "2b1d8ae19d5c28b9bcce0be8a9bb3a5c96a7c184",
+    "roughness": "1997fbd9253a8cbfb4a9860e73e84277328df812"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.4896
+   }
+  },
+  "rock.gneiss.solid": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.gneiss.solid.albedo.webp",
+    "normalMap": "rock.gneiss.solid.normal.webp",
+    "roughnessMap": "rock.gneiss.solid.rough.webp"
+   },
+   "lib": "rock.gneiss.banded",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "1683100bbb5dde9f97f0670cc17dda5a8ce26187",
+    "normal": "2b1d8ae19d5c28b9bcce0be8a9bb3a5c96a7c184",
+    "roughness": "1997fbd9253a8cbfb4a9860e73e84277328df812"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.4896
    }
   },
   "rock.gossan": {
