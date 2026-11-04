@@ -176,6 +176,32 @@ building engine is now named `core/engine`, not `core/kit`.
     **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
   - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
     Lambert), **scablands**.
+  **Catch-up, the eastern and jungle kits (2026-11-04, cloud; branch `claude/ground-catchup-east-cloud`, not merged):** eastabyss
+  (+ lakes), hyperjungle (+ lake, savanna), necanyons (+ benches, savanna), swhighlands (+ pillars, treeline, the pillars' Span
+  preview): the KGROUND ground is MeshStandard (roughness .96; Lambert where there is no pack or on `?kground=0`) with
+  `relief: {bump: .075, cavity: .8, mesh: 1}` (swhighlands `mesh: .7`); `?kgrelief=0` on these pages drops the relief for the
+  before-and-after (once a page passes `relief`, `?kgrelief=1.5` changes nothing: the page's options win). Hollows: `cavityMesh` on
+  eastabyss and hyperjungle; necanyons computes `KGROUND.cavity` on the whole coarse grid before its cells are cut and the fine
+  patches read it bilinear (seamless); swhighlands bakes one 12 m field over the square that every ground piece and the cave hood
+  read, at `depth: [1.5, 30]` (the core's 4 m valley depth turned the pillars' cliff foot black over a 200 m band). **No `tri`
+  anywhere:** past its onset are 0% of the ground's vertices on eastabyss and hyperjungle, 2% on necanyons (the talus's top), 2-8%
+  on swhighlands, where the strata colour paints over KGROUND's layers on that steep ground anyway. Species, keys and indices
+  untouched; 13 pages rebuilt with `tools/build.py`. **Judged in software GL only** (`tools/ground_shots.py`, 960x540; the GPU
+  verify is the coordinator's): eastabyss's salt crust gains the most (the cracks cut and shaded near and mid); necanyons and
+  swhighlands read finer and a shade deeper in the hollows; hyperjungle's floor under the canopy changes little. What to look at on
+  the GPU: the grounds read a little paler at grazing angles on MeshStandard; the hollows by necanyons' creek (its fine patches'
+  cavity mean is .43-.49, against .10-.16 on the coarse floor); swhighlands' cliff feet. eastabyss's far camera falls on the lake
+  (no far judgement). `verify.py --assert` in software GL: see the commit that adds this paragraph.
+  **A core bug this found (for the coordinator; not fixed here):** three.js r128 uploads `cameraPosition` only to ShaderMaterial,
+  Phong, Toon, Standard or an env-mapped material. On a **Lambert** ground, KGROUND's `kgD=length(kgWP-cameraPosition)` (and the
+  sand glint's view vector) therefore measure from the world origin: the layers' distance scale coarsens with distance from
+  (0, 0, 0), not from the camera. With only the material changed (new sources, Lambert against Standard), necanyons' litter near the
+  camera drew about 10x too coarse and eastabyss's crack layer vanished into smears. This is probably much of why GROUND.md saw
+  "next to nothing" on the Lambert grounds (nhighlands, eastabyss). Every Lambert KGROUND ground still has it (nhighlands, nwbay,
+  nwlowlands, sedesert, swbay and the others in the list above): either the move to MeshStandard at each turn, or a core fix
+  (KGROUND binds its own camera-position uniform, updated each frame, or derives the camera from `viewMatrix` in the shader) that would move every Lambert page.
+  pinnacle-rock reads necanyons' `47-host-land.js` in place but has no KGROUND, so this pass changes nothing there (its ground stays
+  Lambert); its committed page is behind its sources since 2026-10-20 for other reasons and was not rebuilt here.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
