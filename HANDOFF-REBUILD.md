@@ -191,7 +191,8 @@ building engine is now named `core/engine`, not `core/kit`.
   swhighlands read finer and a shade deeper in the hollows; hyperjungle's floor under the canopy changes little. What to look at on
   the GPU: the grounds read a little paler at grazing angles on MeshStandard; the hollows by necanyons' creek (its fine patches'
   cavity mean is .43-.49, against .10-.16 on the coarse floor); swhighlands' cliff feet. eastabyss's far camera falls on the lake
-  (no far judgement). `verify.py --assert` in software GL: see the commit that adds this paragraph.
+  (no far judgement). `verify.py --assert` in software GL passed on eastabyss, hyperjungle, necanyons, swhighlands and the pillars (one view each;
+  the other eight pages loaded with no page error and their ground as above, not asserted). `PORT-BASELINE.json` not rewritten: after the GPU verify.
   **A core bug this found (for the coordinator; not fixed here):** three.js r128 uploads `cameraPosition` only to ShaderMaterial,
   Phong, Toon, Standard or an env-mapped material. On a **Lambert** ground, KGROUND's `kgD=length(kgWP-cameraPosition)` (and the
   sand glint's view vector) therefore measure from the world origin: the layers' distance scale coarsens with distance from
