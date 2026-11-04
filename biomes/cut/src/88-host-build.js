@@ -17,10 +17,22 @@ window._biome=null;window._cut=null;window._nwlow=null;window._nhl=null;
  if(typeof NWLOW!=='undefined'&&STAGE.nwQ){CUT.warpKit(NWLOW,{ground:terrainH,toBowl:STAGE.toBowl,alt:STAGE.alt,allow:new Set(STAGE.nwAllow),adjust});
   try{window._nwlow=masked((x,z)=>clamp(STAGE.zone(x,z).nw,0,1),()=>NWLOW.build({R:STAGE.R-60,quality:q*STAGE.nwQ,avenues:[]}));}catch(e){reportErr('nwlowlands: '+e.stack);}}
  _mark('nwlowlands');
- if(typeof NHL!=='undefined'&&STAGE.nhlQ){CUT.warpKit(NHL,{ground:terrainH,toBowl:STAGE.toBowl,alt:STAGE.alt,allow:STAGE.nhlAllow?new Set(STAGE.nhlAllow):STAGE.nhlDeny?new Set(NHL.SPECIES.map(S=>S.key).filter(k=>STAGE.nhlDeny.indexOf(k)<0)):null,adjust});
+ if(typeof NHL!=='undefined'&&STAGE.nhlQ){CUT.warpKit(NHL,{ground:terrainH,toBowl:STAGE.toBowl,alt:STAGE.alt,allow:STAGE.nhlAllow?new Set(STAGE.nhlAllow):STAGE.nhlDeny?new Set(NHL.SPECIES.map(S=>S.key).filter(k=>STAGE.nhlDeny.indexOf(k)<0)):null,adjust,
+   allowAt:STAGE.nhlAllowAt||null,stuck:STAGE.nhlStuck||null});   /* the exchanges (PLAN.md section 12: 5 the rowan, 6 the great trumpet; pair 10) */
   try{window._nhl=masked((x,z)=>clamp(STAGE.zone(x,z).nhl||0,0,1),()=>NHL.build(Object.assign({R:STAGE.R-60,quality:q*STAGE.nhlQ},STAGE.nhlOpt||{})));}catch(e){reportErr('nhighlands: '+e.stack);}}
  _mark('nhighlands');
  if(Q.has('nobake')){window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();_mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
+ /* THE TERRAIN'S HORIZON (core/terrain KHORIZON; the final rebuild, pair 10; ?horizon=0 off): baked over the page's square and, beyond it, over the whole
+    bowl (CUT.bowl.h on a coarse grid out to 70 km, the rays reaching as far), so at a low sun the walls' shadow crosses the floor and the lip's crest
+    shades the face; on the ground and every lit material on the land, not the far bowl (which draws its own light) */
+ if(typeof KHORIZON!=='undefined'&&Q.get('horizon')!=='0'){try{const t1=performance.now(),S=TERR.R*1.1,FR=STAGE.horizonReach==null?70000:STAGE.horizonReach;
+   const HZ=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,reach:FR,far:{h:(x,z)=>{const bb=STAGE.toBowl(x,z);return CUT.bowl.h(bb[0],bb[1])-STAGE.yRef;},box:[-FR,-FR,FR,FR],n:240}});
+   /* ?horizon=ground or ?horizon=scene: one half only (a look comparison; KNOWN_ISSUES.md, the face's crest) */
+   /* a station may keep its ground out (STAGE.horizon 'scene': the face, whose ground went near black under it in software GL while the bake reads
+      sky .93 there; KNOWN_ISSUES.md); ?horizon=ground|scene|all overrides */
+   const only=Q.get('horizon')||STAGE.horizon||'all';if(only!=='scene')KHORIZON.shade(GROUND.mat,HZ);
+   window._horizon={ms:Math.round(performance.now()-t1),n:HZ.n,mats:only==='ground'?0:KHORIZON.shadeScene(scene,HZ,{filter:m=>!(m.userData&&m.userData.farField)&&m.material!==GROUND.mat})};}catch(e){reportErr('horizon: '+e.stack);}}
+ _mark('horizon');
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:STAGE.R,h:600});
 })();

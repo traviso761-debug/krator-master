@@ -17,6 +17,9 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
 const {TAU,clamp,lerp,mix,smooth,fbm}=BIO.fn;
+/* exchange 5's check: rowans in the plan's ring (64-72 km from the bowl's centre), their fruit with the bowl's stuck share */
+const rowanCheck=(R,W)=>{const inL=R.filter(r=>r.name==='Rowan'&&STAGE.ringKm(r.x,r.z)>=64&&STAGE.ringKm(r.x,r.z)<=72),st=(W.stuckOf||{}).rowan||0,fr=(W.fruitOf||{}).rowan||0,sh=fr?st/fr:0;
+ return{ok:inL.length>0&&st>0&&sh<.4,detail:inL.length+' rowans in the ring (64-72 km); '+st+' of '+fr+' rowan berries stuck ('+(sh*100).toFixed(0)+'%, the bowl\'s share by cluster '+(CUT.STUCK*100).toFixed(0)+'%)'};};
 const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z),R=1800;
  const toBowl=(x,z)=>[x+site.x,z+site.z];
  const rOf=(x,z)=>{const b=toBowl(x,z);return Math.hypot(b[0],b[1]);},lipR=CUT.lipR(270);
@@ -39,6 +42,7 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
  const above=(x,z)=>smooth(20,160,out(x,z));
  const pc=(x,z)=>{const b=toBowl(x,z);return KRAND.fbm(b[0]*.004+3.3,b[1]*.004-6.1,0,3,CUT.SEED+31);};
  const lichenK=(x,z)=>faceK(x,z)*smooth(.38,.6,pc(x,z));
+ const ringKm=(x,z)=>rOf(x,z)/1000;
  const cold=(x,z)=>clamp(.6+(ground(x,z)+yRef-4600)/2200,.45,.95);
  const tarnLevel=ground(TARN.x,TARN.z)+6.2;
  const up=[-1,0],ac=[0,1],P=(u,v)=>[-u,v];   /* u: up the face (west), v: along it (south) */
@@ -51,6 +55,10 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
   fields:{cold,wet:(x,z)=>.62,mist:(x,z)=>.2,rock:(x,z)=>clamp(smooth(.5,.9,grade(x,z))+.4*faceK(x,z),0,1),flow:(x,z)=>0,upland:(x,z)=>.9,dry:(x,z)=>.3,tropic:(x,z)=>0},
   zone:(x,z)=>{const f=faceK(x,z),a=above(x,z),o=out(x,z),gr=grade(x,z);return{grove:0,reed:0,rank:0,melon:0,
    nw:(1-f)*smooth(-60,-400,o)*smooth(.5,.3,gr),nhl:a*(1-smooth(.75,1,gr))*(1-smooth(TARN.r*1.3,TARN.r*.9,Math.hypot(x-TARN.x,z-TARN.z)))};},
+  /* exchange 5 (PLAN.md section 12: the rowan 64-72 km out): the lip here stands at 66 km, so the rowans nhighlands grows just past it are in the plan's
+     ring, and they take the bowl's stuck fruit (a share of clusters small and green). Inside the lip there is no ground but the face (its grade is ~.5 to
+     the page's edge), so none grows there; they are few (the lip is boreal at 4.9 km: the rowan's boreal share). KNOWN_ISSUES.md */
+  nhlStuck:{rowan:{item:'berry',where:(x,z)=>ringKm(x,z)>=64&&ringKm(x,z)<=72}},ringKm:(x,z)=>ringKm(x,z),
   nwAllow:['spire','needlecypress','cragpine'],nwQ:1.2,nhlQ:.8,nhlOpt:{flora:false},nhlDeny:['burnsnag'],   /* the plan's 'normal forest': no burn above the lip */
   groves:false,reeds:false,rank:false,
   lichen:P=>CUT.planLichen({spine:STAGE.spine,r:260,bare:lichenK,normal,ground}),
@@ -69,6 +77,6 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
     'The snowmelt tarn':Vw([TARN.x+120,TARN.z+80],14,[TARN.x,TARN.z],0),
     'The face from below':Vw([900,0],20,[LIPX,0],60),
     'The face from the air':Vw([1400,-900],600,[LIPX,0],0)};},
-  checks:add=>add('circle lichen: nesting, never touching',CUT.checkLichen(CUT.PLANTS.lichen)),
-  negatives:add=>add('two thalli touching',CUT.checkLichen(CUT.PLANTS.lichen.slice(0,600).concat([Object.assign({},CUT.PLANTS.lichen[0],{x:CUT.PLANTS.lichen[0].x+.1,nest:null})]))),
-  start:'The cut face (polished, the beds in section)',budgetTris:10500000,hour:14,forestLine:3800,seed:13};})();
+  checks:add=>{add('circle lichen: nesting, never touching',CUT.checkLichen(CUT.PLANTS.lichen));add('rowans in the plan\'s ring, with stuck fruit (exchange 5)',rowanCheck(REG,CUT.WARPED));},
+  negatives:add=>{add('no rowan in the ring',rowanCheck(REG.filter(r=>r.name!=='Rowan'),CUT.WARPED));add('rowans with no stuck fruit',rowanCheck(REG,Object.assign({},CUT.WARPED,{stuckOf:{}})));add('two thalli touching',CUT.checkLichen(CUT.PLANTS.lichen.slice(0,600).concat([Object.assign({},CUT.PLANTS.lichen[0],{x:CUT.PLANTS.lichen[0].x+.1,nest:null})])));},
+  start:'The cut face (polished, the beds in section)',horizon:'scene',budgetTris:10500000,hour:14,forestLine:3800,seed:13};})();
