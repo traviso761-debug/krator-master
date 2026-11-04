@@ -24,7 +24,9 @@ const HCHK={
  // every tower stands on dry ground on its plinth (the drowned city is the lake's and comes later), and none on dead ground
  standing(T){let wet=0,dead=0;for(const t of T){if(t.y<STAGE.lakeY+1.5)wet++;if(STAGE.F.scar(t.x,t.z)>.5)dead++;}return{ok:T.length>60&&!wet&&!dead,detail:T.length+' towers; '+wet+' under the lake, '+dead+' on dead ground'};},
  // the ruin share (PLAN-ANOMALIES.md 13; the owner, 2026-11-04: far too intact at first): intact towers 5-15% of the plan, and under half standing tall at all
- ruinShare(T){const n=T.length,i=T.filter(t=>t.state==='intact').length,tall=T.filter(t=>t.state==='intact'||t.state==='gutted'||t.state==='crown').length,f=i/Math.max(n,1);return{ok:n>60&&f>=.05&&f<=.15&&tall/Math.max(n,1)<.5,detail:Math.round(f*100)+'% intact, '+Math.round(tall/Math.max(n,1)*100)+'% standing tall of '+n};},
+ ruinShare(T){const n=T.length,i=T.filter(t=>t.state==='intact').length,tall=T.filter(t=>t.state==='intact'||t.state==='gutted'||t.state==='crown').length,f=i/Math.max(n,1);return{ok:n>60&&f>=.02&&f<=.15&&tall/Math.max(n,1)<.35,detail:Math.round(f*100)+'% intact, '+Math.round(tall/Math.max(n,1)*100)+'% standing tall of '+n};},
+ // the war damage on the ground: the craters are there, each a scar with nothing standing in it
+ craters(C,T){let inside=0;for(const t of T)for(const c of C)if(Math.hypot(t.x-c.x,t.z-c.z)<c.r)inside++;return{ok:C.length>=8&&!inside,detail:C.length+' craters, '+inside+' towers standing in one'};},
  // the forest went feral: the read-in trees were grown, and the taint's tint reached the baked foliage
  feral(W,tinted){return{ok:W.trees>50&&W.grown>20&&tinted>0,detail:W.trees+' read-in trees wrapped, '+W.grown+' grown, '+W.floor+' floor plants grown, '+W.dropped+' not this station\'s; '+tinted+' materials tinted'};},
  // no tree stands on a street, a plinth or dead ground
@@ -35,6 +37,7 @@ const HCHK={
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the viaduct stands',HCHK.lines(AV_LINES.V));
+ add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -43,6 +46,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('no tree grown',HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0));
  add('a tenth of the trees on the plinths',HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z}))));
  add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
+ add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');

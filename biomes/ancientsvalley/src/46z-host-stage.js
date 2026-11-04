@@ -24,11 +24,14 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  // flank gets crags, the floor stays level), finer where the city stands (built ground), none under the lake's level
  const modelY=(x,z)=>M.at(x,z)-BASE;
  const slopeK=(x,z)=>{const s=(M.at(x+600,z)-M.at(x-600,z))/1200,t=(M.at(x,z+600)-M.at(x,z-600))/1200;return Math.hypot(s,t);};
- function rawGround(x,z){const m=modelY(x,z),st=slopeK(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
+ function landGround(x,z){const m=modelY(x,z),st=slopeK(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
   return m+(14+260*Math.min(.5,st))*(r-.45)*smooth(LAKE_Y-30,LAKE_Y+6,m)+2.2*(f-.5);}
- // the fields (41-av-field.js) on the raw ground: the cities and basins from the record, one dead lobe on the ridge's east end
+ // THE CRATERS (the owner, 2026-11-04: war damage): fourteen strikes on the dry land, bowls with raised rims, each a scar of melt glass
+ const CRATERS=AV.craters({R:R+200,n:14,seed:SEED+13,rMin:35,rMax:120,ok:(x,z,r)=>landGround(x,z)>LAKE_Y+r*.2+4&&Math.hypot(x-300,z+150)>r+260});
+ function rawGround(x,z){return landGround(x,z)+AV.craterH(CRATERS,x,z);}
+ // the fields (41-av-field.js) on the raw ground: the cities and basins from the record, one dead lobe on the ridge's east end, the craters
  const cities=RG.cities.map(c=>({n:c.n,x:c.x,z:c.z,h:c.h,theme:c.theme})),basins=RG.basins.map(b=>({n:b.n,x:b.x,z:b.z,r:b.r,kind:b.kind}));
- const scars=[{x:1500,z:-200,rx:520,rz:330,yaw:.5}];
+ const scars=[{x:1500,z:-200,rx:520,rz:330,yaw:.5}].concat(CRATERS.map(c=>({x:c.x,z:c.z,rx:c.r*1.25,rz:c.r*1.25,yaw:0,k:.85})));
  const F=AV.fields({ground:rawGround,base:BASE,lakeY:LAKE_Y,cities,basins,scars,seed:SEED});
  // THE VIADUCT: along the ridge's north flank from the east edge, west and out over the north inlet; its deck 16 m over the ridge, level over the water
  const VIA=[[2900,-520],[1400,-560],[300,-700],[-900,-1300],[-2900,-2300]];
@@ -45,7 +48,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,
   coreKeys:['spindle','spindle','spindle','ledger','wedge','reed','telescope','stalk','swell','organ','yoke'],
   shelfKeys:['ledger','ledger','ledger','spindle','terrace','crescent','cupola','arcades','pods','spiral','terrarium'],
-  skip:(x,z)=>viaD(x,z)<34||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90});
+  skip:(x,z)=>viaD(x,z)<34||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30)});
  // the towers' plinths: each stands on a level pad at its own height (a disc round a round tower, a slab round a slab, turned with it), eased
  // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The
  // engines take pads too, wide and eased over 60 m
@@ -70,7 +73,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  return{key:'overlook',name:'The Ancient\'s Valley: the Overlook',title:'Krator biome — the Ancient\'s Valley: the Overlook',
   hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk.',
   R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement
@@ -115,6 +118,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'The viaduct over the inlet':V([-400,-900],22,[-1500,-1700],30),
     'The core from the water':V([-600,2300],6,[-1800,1500],120),
     'The dead lobe':V([900,-100],9,[1600,-250],4),
+    'A crater':(function(){const c=CRATERS.slice().sort((a,b)=>b.r-a.r)[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
     'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.5,E.z-E.r*1.3],4,[E.x,E.z],E.h*.4);})(),
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),

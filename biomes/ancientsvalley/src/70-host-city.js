@@ -17,11 +17,23 @@ AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.k
 // A thousand years of weather on the heroes' colours, once per hero key, before the shells and impostors are baked from them (the bake reads the
 // vertex and instance colours): rust streaks running down from the panels' joints and a grime that deepens with the state, by core/rand's noise
 // in the tower's own frame, so every clone and every tier agrees. Heavier where the ruin is older.
-const AV_RUST={intact:.3,gutted:.55,crown:.6,broken:.7,stump:.75,skeleton:.8,fallen:.8};
-function avRust(H,key){if(H.userData.avRusted)return H;H.userData.avRusted=true;const st=key.split('.')[1],k=AV_RUST[st]==null?.6:AV_RUST[st],seed=KRAND.hash(1104,MP.idHash?MP.idHash(key):key.length,7);
+/* the owner, 2026-11-04, twice: "more rust", then "even more rust and war damage": a base of rust over everything, streaks to full rust, soot
+   from the burning in black patches, and the grime; an intact tower is a stained one */
+const AV_RUST={intact:.6,gutted:.8,crown:.85,broken:.95,stump:1,skeleton:1,fallen:1};
+function avRust(H,key){if(H.userData.avRusted)return H;H.userData.avRusted=true;const st=key.split('.')[1],k=AV_RUST[st]==null?.8:AV_RUST[st],seed=KRAND.hash(1104,MP.idHash?MP.idHash(key):key.length,7);
  const S3=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
- const T=[.50,.27,.14],at=(x,y,z,c,o)=>{const s=KRAND.vnoise(x*.55+z*.55+y*.02,y*.07,0,seed),g=KRAND.vnoise(x*.12,y*.35+z*.12,3,seed+1),run=S3(.36,.72,s)*(.7+.3*Math.max(0,.5-g)),r=Math.min(1,run*k*(1.25-.5*Math.min(1,y/120))),dirt=1-k*(.22+.35*Math.max(0,g-.4));
-  const l=(c[o]*.3+c[o+1]*.59+c[o+2]*.11);c[o]=(c[o]*(1-r)+T[0]*(.5+l)*r)*dirt;c[o+1]=(c[o+1]*(1-r)+T[1]*(.5+l)*r)*dirt;c[o+2]=(c[o+2]*(1-r)+T[2]*(.5+l)*r)*dirt;};
+ /* the laser burns (the owner: "laser burns, fire damage"): two or three straight cuts through the tower at odd angles, each a plane in its frame,
+    scorched black and glassy along a band; the fire: soot smeared upward from the burnt storeys */
+ const CUTS=[];for(let i=0;i<2+Math.floor(KRAND.unit(KRAND.hash(seed,9,i))*2);i++){const a=KRAND.unit(KRAND.hash(seed,10,i))*Math.PI*2,b=(KRAND.unit(KRAND.hash(seed,11,i))-.5)*1.2,d=(KRAND.unit(KRAND.hash(seed,12,i))-.5)*60,h=20+KRAND.unit(KRAND.hash(seed,13,i))*160;
+  CUTS.push({nx:Math.cos(a)*Math.cos(b),ny:Math.sin(b),nz:Math.sin(a)*Math.cos(b),d:d-h*Math.sin(b),w:1.5+KRAND.unit(KRAND.hash(seed,14,i))*3});}
+ const T=[.46,.22,.10],T2=[.30,.16,.09],SOOT=[.05,.045,.04],PAL=[1.12,.80,.58],at=(x,y,z,c,o)=>{const s=KRAND.vnoise(x*.55+z*.55+y*.02,y*.07,0,seed),g=KRAND.vnoise(x*.12,y*.35+z*.12,3,seed+1),w=KRAND.vnoise(x*.04+7,y*.06+z*.04,5,seed+2),f=KRAND.vnoise(x*.09+3,y*.012+z*.09,8,seed+3);
+  const run=S3(.28,.62,s)*(.75+.25*Math.max(0,.5-g)),r=Math.min(1,(.22+run)*k*(1.3-.5*Math.min(1,y/120))),dirt=1-k*(.3+.4*Math.max(0,g-.35));
+  let soot=Math.min(1,(S3(.58,.8,w)+S3(.62,.85,f)*.8)*k);for(let i=0;i<CUTS.length;i++){const C=CUTS[i],e=Math.abs(x*C.nx+y*C.ny+z*C.nz-C.d);soot=Math.max(soot,S3(C.w*2.2,C.w*.5,e)*k);}
+  const l=(c[o]*.3+c[o+1]*.59+c[o+2]*.11),tw=S3(.4,.6,g),R0=T[0]*(1-tw)+T2[0]*tw,R1=T[1]*(1-tw)+T2[1]*tw,R2=T[2]*(1-tw)+T2[2]*tw;
+  c[o]=(c[o]*(1-r)+R0*(.6+l)*r)*dirt;c[o+1]=(c[o+1]*(1-r)+R1*(.6+l)*r)*dirt;c[o+2]=(c[o+2]*(1-r)+R2*(.6+l)*r)*dirt;
+  /* the palette (the owner: a more uniform rust-shaded palette): every colour drawn half way to a rust-brown of its own brightness */
+  const l2=(c[o]*.3+c[o+1]*.59+c[o+2]*.11);c[o]=c[o]*.5+l2*PAL[0]*.5;c[o+1]=c[o+1]*.5+l2*PAL[1]*.5;c[o+2]=c[o+2]*.5+l2*PAL[2]*.5;
+  c[o]=c[o]*(1-soot)+SOOT[0]*soot;c[o+1]=c[o+1]*(1-soot)+SOOT[1]*soot;c[o+2]=c[o+2]*(1-soot)+SOOT[2]*soot;};
  const M=new THREE.Matrix4();
  H.traverse(m=>{if(!m.isMesh||m.userData.door)return;
   if(m.isInstancedMesh&&m.instanceColor){const c=m.instanceColor.array,a=m.instanceMatrix.array;for(let i=0;i<m.count;i++)at(a[i*16+12],a[i*16+13],a[i*16+14],c,i*3);m.instanceColor.needsUpdate=true;}
@@ -111,14 +123,19 @@ AVC.engines=function(){AV_ENGINES=STAGE.engines.map(E=>{const fn=window[E.fn];if
  G.position.set(E.x,E.y,E.z);G.rotation.y=E.yaw;G.name='engine.'+E.key;G.userData.inspectLabel=E.name;let tris=0;G.traverse(m=>{if(m.isMesh&&m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}});G.userData.tris=Math.round(tris);
  if(MP.shadow)MP.shadow.cast(G);scene.add(G);return G;}).filter(Boolean);return AV_ENGINES;};
 // ---------------------------------------------------------------- the lines: the viaduct (AV.viaduct's records drawn as instanced piers and decks)
+let AV_LINES_GONE=0;
 const AV_LINES=(function(){const V=AV.viaduct(STAGE.viaduct.pts,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});
  const P=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('metropolis','concrete'):null,T=P?KMAT.textures(P,{aniso:8}):{};
  const mat=new THREE.MeshStandardMaterial({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,color:0x9a968c,roughness:.95,metalness:0});
  const rail=new THREE.MeshStandardMaterial({color:0x5a5248,roughness:.6,metalness:.6});
  const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),P3=new THREE.Vector3(),S3=new THREE.Vector3(),E=new THREE.Euler();
- const piers=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,V.piers.length);V.piers.forEach((p,i)=>{const h=Math.max(1,p.y1-p.y0);M.compose(P3.set(p.x,p.y0+h/2,p.z),Q.identity(),S3.set(3.2,h,4.2));piers.setMatrixAt(i,M);});
- const decks=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,V.decks.length);V.decks.forEach((d,i)=>{M.compose(P3.set(d.x,d.y-1.2,d.z),Q.setFromEuler(E.set(0,-d.yaw,d.pitch,'YXZ')),S3.set(d.len+.3,2.4,11));decks.setMatrixAt(i,M);});
- const rails=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),rail,V.decks.length*2);V.decks.forEach((d,i)=>{[-3.6,3.6].forEach((o,k)=>{const ox=-Math.sin(d.yaw)*o,oz=Math.cos(d.yaw)*o;M.compose(P3.set(d.x+ox,d.y+.3,d.z+oz),Q.setFromEuler(E.set(0,-d.yaw,d.pitch,'YXZ')),S3.set(d.len+.3,.6,.4));rails.setMatrixAt(i*2+k,M);});});
+ /* the war damage on the line: a deck in fourteen is down (and the one after it half the time), its pier with it; a fallen deck lies tilted at the foot */
+ const gone=V.decks.map((d,i)=>KRAND.unit(KRAND.hash(STAGE.seed,i,71))<.07||(i>0&&KRAND.unit(KRAND.hash(STAGE.seed,i-1,71))<.07&&KRAND.unit(KRAND.hash(STAGE.seed,i,72))<.5));
+ const piers=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,V.piers.length);V.piers.forEach((p,i)=>{const h=Math.max(1,p.y1-p.y0),down=gone[i]&&gone[Math.max(0,i-1)];M.compose(P3.set(p.x,p.y0+(down?h*.25:h/2),p.z),Q.identity(),S3.set(3.2,down?h*.5:h,4.2));piers.setMatrixAt(i,M);});
+ const decks=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,V.decks.length);V.decks.forEach((d,i)=>{if(gone[i]){const g=terrainH(d.x,d.z);M.compose(P3.set(d.x+8,Math.max(g,STAGE.lakeY-1)+2,d.z-6),Q.setFromEuler(E.set(.5,-d.yaw+.4,.35,'YXZ')),S3.set(d.len*.9,2.4,11));}
+  else M.compose(P3.set(d.x,d.y-1.2,d.z),Q.setFromEuler(E.set(0,-d.yaw,d.pitch,'YXZ')),S3.set(d.len+.3,2.4,11));decks.setMatrixAt(i,M);});
+ const rails=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),rail,V.decks.length*2);V.decks.forEach((d,i)=>{[-3.6,3.6].forEach((o,k)=>{const ox=-Math.sin(d.yaw)*o,oz=Math.cos(d.yaw)*o;if(gone[i])M.compose(P3.set(0,-1e4,0),Q.identity(),S3.set(.01,.01,.01));else M.compose(P3.set(d.x+ox,d.y+.3,d.z+oz),Q.setFromEuler(E.set(0,-d.yaw,d.pitch,'YXZ')),S3.set(d.len+.3,.6,.4));rails.setMatrixAt(i*2+k,M);});});
+ AV_LINES_GONE=gone.filter(Boolean).length;
  [piers,decks,rails].forEach(m=>{m.frustumCulled=false;m.userData.inspectLabel='the transit viaduct';m.userData.host=true;m.castShadow=m.receiveShadow=!!MP.shadow;scene.add(m);});
  REGISTER({name:'The transit viaduct',kind:'line',x:0,z:-800,r:3000,h:60,tags:{kind:'line',line:'viaduct',length:Math.round(V.length)}});
  return{V,piers,decks,rails,tris:(V.piers.length+V.decks.length*3)*12};})();

@@ -36,7 +36,11 @@ ok('every tower has a key, a yaw and a kind',P.towers.every(t=>/^\w+\.\w+$/.test
 {let close=0;const S=new Map();P.towers.forEach(t=>{const k=Math.round(t.x/160)+','+Math.round(t.z/160);S.set(k,(S.get(k)||0)+1);});
  for(let i=0;i<P.towers.length;i++)for(let j=i+1;j<P.towers.length;j++)if(Math.hypot(P.towers[i].x-P.towers[j].x,P.towers[i].z-P.towers[j].z)<160*.95)close++;
  ok('no two towers closer than the pitch',close===0);}
-{const f=P.towers.filter(t=>t.state==='intact').length/P.towers.length;ok('10-15% intact ('+Math.round(f*100)+'%)',f>.07&&f<.2);}
+{const f=P.towers.filter(t=>t.state==='intact').length/P.towers.length,tall=P.towers.filter(t=>/^(intact|gutted|crown)$/.test(t.state)).length/P.towers.length;ok('few intact, under a third standing tall ('+Math.round(f*100)+'%, '+Math.round(tall*100)+'%)',f>.02&&f<.15&&tall<.35);}
+// the craters: on the page, apart, and the bowl below its rim
+{const C=AV.craters({R:2800,n:12,seed:3,ok:(x,z,r)=>ground(x,z)>LAKE+10});ok('craters struck ('+C.length+')',C.length>=8&&C.every(c=>Math.hypot(c.x,c.z)<=2800));
+ let apart=true;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++)if(Math.hypot(C[i].x-C[j].x,C[i].z-C[j].z)<C[i].r+C[j].r)apart=false;ok('no two craters overlap',apart);
+ const c=C[0];ok('a crater is a bowl under a rim',AV.craterH(C,c.x,c.z)<-c.depth*.9&&AV.craterH(C,c.x+c.r,c.z)>0&&AV.craterH(C,c.x+c.r*3,c.z)===0,AV.craterH(C,c.x+c.r*3,c.z)!==0);}
 ok('a hero-only design never stands as a skeleton or fallen',P.towers.every(t=>t.family!=='terrace'||(t.state!=='skeleton'&&t.state!=='fallen')));
 ok('the designs stand only round the eye',P.towers.every(t=>t.family!=='terrace'||Math.hypot(t.x-300,t.z+150)<400));
 // the viaduct

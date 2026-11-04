@@ -17,9 +17,19 @@ AV.ENGINES={harrow:{fn:'buildHarrow',name:'The Harrow',r:175,h:210},strider:{fn:
  gyre:{fn:'buildGyre',name:'The Gyre',r:235,h:460},press:{fn:'buildPress',name:'The Press',r:300,h:600},sleeper:{fn:'buildSleeper',name:'The Sleeper',r:160,h:260},
  carapace:{fn:'buildCarapace',name:'The Carapace',r:215,h:130},retorts:{fn:'buildRetorts',name:'The Retorts',r:200,h:270},needle:{fn:'buildNeedle',name:'The Needle',r:240,h:300},ram:{fn:'buildRam',name:'The Ram',r:320,h:110}};
 AV.RUINS=['intact','gutted','crown','broken','stump','skeleton','fallen'];
-/* the owner, 2026-11-04: the first cut looked far too intact (half the towers full height from afar). Intact 9%, gutted 11%, crown 12%, broken 20%,
-   stump 18%, skeleton 12%, fallen 18% */
-AV.RUIN_CUTS=[.09,.20,.32,.52,.70,.82,1.01];
+/* the owner, 2026-11-04, twice: the first cut looked far too intact, the second still too whole ("really fuck it up"). Intact 4%, gutted 8%,
+   crown 10%, broken 22%, stump 22%, skeleton 14%, fallen 20%: four in five towers cut */
+AV.RUIN_CUTS=[.04,.12,.22,.44,.66,.80,1.01];
+/* THE CRATERS (the war damage on the ground): n strikes on the page by hash, each a bowl with a raised rim and a scar of melt glass (a scar record
+   for AV.fields: nothing grows there, the density is 0). o: {R, n, seed, ok(x,z) (true where a strike may land), rMin, rMax}
+   AV.craters(o) -> [{x, z, r, depth, rim}];  AV.craterH(list, x, z) -> the height change (m): the bowl below, the rim above */
+AV.craters=function(o){var out=[],n=o.n==null?10:o.n,seed=o.seed|0,R=o.R,tries=0;
+ while(out.length<n&&tries<n*40){var i=tries++;var x=(KRAND.unit(KRAND.hash(seed,i,1))*2-1)*R,z=(KRAND.unit(KRAND.hash(seed,i,2))*2-1)*R;if(Math.hypot(x,z)>R)continue;
+  var r=(o.rMin==null?35:o.rMin)+KRAND.unit(KRAND.hash(seed,i,3))*((o.rMax==null?110:o.rMax)-(o.rMin==null?35:o.rMin));if(o.ok&&!o.ok(x,z,r))continue;
+  var clash=false;for(var k=0;k<out.length;k++)if(Math.hypot(out[k].x-x,out[k].z-z)<out[k].r+r+60){clash=true;break;}if(clash)continue;
+  out.push({x:x,z:z,r:r,depth:r*.16+2,rim:r*.05+.6});}return out;};
+AV.craterH=function(list,x,z){var h=0;for(var i=0;i<list.length;i++){var c=list[i],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
+  if(u<1){var b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
 AV.band=function(h){for(var i=0;i<AV.BANDS.length;i++)if(h<AV.BANDS[i][1])return AV.BANDS[i][0];return 'forest';};
 AV.smooth=function(a,b,x){var t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
