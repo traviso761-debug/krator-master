@@ -66,3 +66,5 @@ seeds, the variants), and the station's:
 - **the pools' flora in its places**: lilies on their pool's water, quills on the waterline, ferns at the falls' foot;
 - **the water held**: the plunge lake's and every pothole pool's shore over its level all round;
 - each with a broken input that must fail.
+
+**Geodes** (planned, 2026-11-03): the coulee walls cut through the flows' geode-bearing tops, so station 1 can show small amethyst geodes in the entablature and one walk-in geode (`KSPELEO.AMETHYST`). See `biomes/CRYSTAL-CAVES-5.1.md`, site 3.

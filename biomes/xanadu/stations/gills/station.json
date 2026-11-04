@@ -8,5 +8,8 @@
   "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
   "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
  },
- "hazard": true
+ "hazard": true,
+ "packs": [
+  "biomes/gills"
+ ]
 }

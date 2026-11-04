@@ -41,7 +41,8 @@
 //            or is not placed)}), chamber ({p (.3: where three passages meet; always over a feeder), r: [15, 45], h: [10, 30]:
 //            a feeder's chamber takes the upper half}), cupola ({p (.6), n: [1, 4], r: [3, 9], h: [2, 7]} or false), crust
 //            ([-1, 6]: the gypsum band round the table, m), outlet ([x, z]: the warm spring; default the box's lowest-ground
-//            edge middle), thin (10 m: a cupola's roof under this is a vent), w, h})
+//            edge middle), thin (10 m: a cupola's roof under this is a vent), w, h, crystal ({storeys: [1], speleo: 'SELENITE'}: the
+//            storeys that grew megacrystals, their chambers and crusts dressed with that KSPELEO preset; omitted: none)})
 //     -> the same record, kind 'hypogene', sinks and dolines empty, and: form, temp, feeders:[{id, x, z, y0, top (the highest
 //         storey it reaches), r}], shafts' kinds 'feeder' (from depth to the storey-0 head) and 'level' (storey to storey),
 //         chambers' {storey, feeder (id or null), dress:{speleo:'HYPOGENE', crust:'gypsum'|'replacement'}}, cupolas:[{id,
@@ -97,6 +98,9 @@
     var CH=o.chamber||{},chR=pair(CH.r||[15,45],'chamber r'),chH=pair(CH.h||[10,30],'chamber h'),chP=d(CH.p,.3);
     var CU=o.cupola===false?null:(o.cupola||{}),cuP=d(CU&&CU.p,.6),cuN=pair((CU&&CU.n)||[1,4],'cupola n'),cuR=pair((CU&&CU.r)||[3,9],'cupola r'),cuH=pair((CU&&CU.h)||[2,7],'cupola h');
     var band=pair(o.crust||[-1,6],'crust'),thin=d(o.thin,10),an=d(o.joints&&o.joints.angle,0),sp=d(o.joints&&o.joints.sp,40);
+    /* the crystal cave (2026-11-03): storeys whose water stood warm and saturated long enough to grow megacrystals, dressed
+       with a KSPELEO crystal preset in place of HYPOGENE (biomes/CRYSTAL-CAVES-5.1.md: the Hearth hold's drained storey) */
+    var CRY=o.crystal||null,cryS=CRY?(CRY.storeys||[1]):[],cryP=CRY?d(CRY.speleo,'SELENITE'):null,dressOf=function(lv){return cryS.indexOf(lv)>=0?cryP:'HYPOGENE';};
     var storeys=[{y:y0,table:table,form:form,p:o.p}].concat((o.levels||[]).map(function(l){var y=fin(l.y,'a level\'s y');return {y:y,table:d(l.table,y+2),form:d(l.form,form),p:l.p};}));
     storeys.forEach(function(s){if(s.form!=='maze'&&s.form!=='sponge')throw new Error('KKARST.network: a hypogene form is maze or sponge');});
     var out=o.outlet||o.spring||lowEdge(o),feeders=[],fmin=null;
@@ -129,10 +133,10 @@
       ks.forEach(function(k){var n=G.nodes[k];if(!seen[n.id])return;var u=function(s){return K.unit(K.hash(W,n.level,n.i,n.j,0x5100+s));},big=!!n.feeder;
         if(!big&&(n.nb.length<3||u(0)>=chP))return;var t0=big?.5:0,t1=big?1:.5,rx=chR[0]+(chR[1]-chR[0])*(t0+(t1-t0)*u(1)),rz=rx*(.6+.4*u(2)),h=chH[0]+(chH[1]-chH[0])*(t0+(t1-t0)*u(3));
         var C={id:'ch:'+n.id,node:n.id,c:[n.x,n.y,n.z],rx:rx,rz:rz,h:h,flooded:lv===0&&n.y<table,storey:lv,feeder:n.feeder||null,
-          dress:{speleo:'HYPOGENE',crust:lv===0?'gypsum':'replacement'}};chambers.push(C);
+          dress:{speleo:dressOf(lv),crust:lv===0?'gypsum':'replacement'}};chambers.push(C);
         /* the acid's band round the table it formed at: a crust now on the active storey, replacement gypsum on the old ones */
         var c0=Math.max(n.y,st.table+band[0]),c1=Math.min(n.y+h,st.table+band[1]);
-        if(c1>c0)crusts.push({id:'crust:'+C.id,kind:lv===0?'gypsum':'replacement',on:C.id,box:[n.x-rx,n.z-rz,n.x+rx,n.z+rz],y0:c0,y1:c1,speleo:'HYPOGENE'});
+        if(c1>c0)crusts.push({id:'crust:'+C.id,kind:lv===0?'gypsum':'replacement',on:C.id,box:[n.x-rx,n.z-rz,n.x+rx,n.z+rz],y0:c0,y1:c1,speleo:dressOf(lv)});
         if(lv>0){var nb=2+Math.floor(4*u(4));for(var b=0;b<nb;b++){var ub=function(s){return K.unit(K.hash(W,n.level,n.i*64+b,n.j,0x5200+s));},ba=ub(0)*6.2832,brr=.7*Math.sqrt(ub(1));
           blocks.push({id:'block:'+C.id+':'+b,on:C.id,c:[n.x+Math.cos(ba)*brr*rx,n.y,n.z+Math.sin(ba)*brr*rz],size:[1+3*ub(2),.8+2.2*ub(3),1+3*ub(4)]});}}
         if(CU&&u(5)<cuP){var nc=cuN[0]+Math.floor((cuN[1]-cuN[0]+1)*u(6));for(var m=0;m<nc;m++){var uc=function(s){return K.unit(K.hash(W,n.level,n.i*64+m,n.j,0x5300+s));},ca=uc(0)*6.2832,crr=.6*Math.sqrt(uc(1));
@@ -153,7 +157,7 @@
     return {format:'krator-karst',version:1,world:W,kind:'hypogene',form:form,table:table,temp:temp,box:B.slice(),
       nodes:allN.map(function(n){return {id:n.id,x:n.x,y:n.y,z:n.z,level:n.level,deg:n.deg};}),passages:passages,chambers:chambers,shafts:shafts,sinks:[],
       spring:spring,dolines:[],feeders:feeders.map(function(f){return {id:f.id,x:f.x,z:f.z,y0:f.y0,top:f.top,r:f.r};}),cupolas:cupolas,crusts:crusts,blocks:blocks,
-      outlets:outlets,storeys:storeys.map(function(s,i){return {level:i,y:s.y,table:s.table,form:s.form,active:i===0};})};}
+      outlets:outlets,storeys:storeys.map(function(s,i){var S0={level:i,y:s.y,table:s.table,form:s.form,active:i===0};if(cryS.indexOf(i)>=0)S0.crystal=cryP;return S0;})};}
 
   function network(o){o=o||{};var K=KR(),B=o.box;if(!Array.isArray(B)||B.length!==4||!(B[2]>B[0])||!(B[3]>B[1]))throw new Error('KKARST.network: box is [x0, z0, x1, z1]');
     if(typeof o.ground!=='function')throw new Error('KKARST.network: ground(x, z)');var W=d(o.world,0)>>>0,kind=d(o.kind,'branch');

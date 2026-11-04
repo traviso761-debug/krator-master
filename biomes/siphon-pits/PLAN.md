@@ -121,3 +121,7 @@ To physically deliver the owner's brief, three targeted terrain edits are propos
 4. **Performance Targets (`GRAPHIC-LOAD.md`):**
    * Geometry welding (`BIO.INDEX_ITEMS = true`) on all siphon chimneys and fleece meshes.
    * MultiMesh instance budgets: Station 3 floor capped at 250 active trees per chunk; zero trees on Stations 2 and 4.
+
+## Crystal caves (planned, 2026-11-03)
+
+The basalt plateau's flows hold amethyst geodes, the maars' hot water the silica that fills them: one or two walk-in geodes on the pit rims (a `KCAVERN` hall 2-5 m across, `KSPELEO.AMETHYST`). See `biomes/CRYSTAL-CAVES-5.1.md`, site 3.

@@ -3,12 +3,15 @@
 //   THE PIPES (Phlū)   each a KSTACKS chimney record (core/terrain 37, kind 'chimney': the White form, squat, bulbous, branching to three mouths; the
 //                      dead field's broken, fallen and rubble; the ice pipes over the glacier's edge in their ice dress), registered in core/tags
 //                      (BIO.record) before it is drawn, its mesh KSTACKS.mesh's own, merged by 600 m chunk; banded bone-white and cream with grey-green
-//                      manganese every third bed (the lamina recipe is owed: KSTRATA.lamina is on claude/core-gills-hearths-c44212, not merged)
+//                      manganese every third bed, cut by KSTRATA.lamina's daily couplets (the gills pack's pipe.lamina: rock.lamina.pipe as a detail map)
 //   ON THE BREATH      BIO.animMat mode 'breath' (core/biome 35) on one state, BIO.breathState('gills'), written once a frame from GILLS.breath(t):
 //                      the collars (Qolar) brighten from the charged grey-green to tan as they discharge on the out-breath (albedo), the fringes
 //                      stream out of the mouths (stream), the bellows pads swell over the narrow cracks (bulge), the tide beads roll out from the
 //                      floors (stream along each bead's own vector); the throat lamps glow faint blue on the in-breath only (the owner, 2026-11-02)
-//   THE MEADOW         downwind (south-east): the dew mat, the salt cups at its edge, the limewood inside
+//   THE MEADOW         downwind (south-east): the dew mat and the limed turf round it (card.turf.limed), the salt cups at its edge, the limewood inside
+//   THE LIBRARY        biomes/gills' own pack (station.json "packs"; KMAT.packed('gills', f)): pipe.lamina, collar (mineral.crust.brucite), fringe
+//                      (card.breathfringe), turf (card.turf.limed). Without it (no pack, ?lib=0) the pipes, collars and fringes keep their procedural dress
+//                      and no turf is drawn
 //   THE STEAM          core/atmos's steam (ATMOS.smoke, kind 'steam') at the live mouths, drawn through the out-breath only
 // The checks (99 calls stationChecks / stationNegatives): PLAN.md section 16 G6's invariants that apply on this page, each with a negative.
 const GILLS_DRAW={pipes:[],steam:null,lampMat:null,meshes:[],counts:{}};
@@ -30,11 +33,16 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('white'),T3=THREE,t
     The outside weathers toward the crust colour (the vertex colour); the bore and a broken lip show them clean (occ). ?lamina=0 the banded colour alone */
  const NV=4,LAM=(typeof KSTRATA!=='undefined'&&KSTRATA.lamina&&KSTRATA.laminaShade&&XQ_ON('lamina'))?[0,1,2,3].map(v=>{const Lc=KSTRATA.lamina({seed:KRAND.hash(23,v,0x1a),H:90,country:'white',markers:[{name:GILLS.NAMES.thin,kind:'thin',age:300}]});return{L:Lc,S:KSTRATA.laminaShade(Lc,{THREE:T3})};}):null;
  GILLS_DRAW.lamina=LAM;
+ const PK=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('gills',n):null,PL={lam:PK('pipe.lamina'),collar:PK('collar'),fringe:PK('fringe'),turf:PK('turf')};
+ const PT=k=>PL[k]?KMAT.textures(PL[k],{aniso:8}).map:null,LT=PT('lam'),LK=PL.lam?1/(PL.lam.scale&&PL.lam.scale[0]||1.5):0;GILLS_DRAW.lib=Object.keys(PL).filter(k=>PL[k]);
  const pipeMat=v=>{const m=new T3.MeshLambertMaterial({vertexColors:true});m.userData.gills='pipe';if(!LAM)return m;const S=LAM[v].S;
-  m.extensions={derivatives:true};m.customProgramCacheKey=()=>'gills-pipe-lamina-'+v;
-  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,S.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 aD;varying vec2 vD;').replace('#include <begin_vertex>','#include <begin_vertex>\nvD=aD;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vD;\n'+S.glsl).replace('#include <color_fragment>','#include <color_fragment>\n{vec3 lc=laminaColor(vD.x,fwidth(vD.x));diffuseColor.rgb=mix(lc,diffuseColor.rgb,mix(0.5,0.1,vD.y));}');};
+  m.extensions={derivatives:true};m.customProgramCacheKey=()=>'gills-pipe-lamina-'+v+(LT?'-t':'');
+  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,S.uniforms);if(LT){sh.uniforms.gLamT={value:LT};sh.uniforms.gLamK={value:LK};}
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 aD;varying vec2 vD;varying vec2 vLW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvD=aD;vLW=(modelMatrix*vec4(transformed,1.0)).xz;');
+   /* the couplets: the pack's grey (mean 0.5 in sRGB, decoded: 0.218 linear, so x4.59 is a ratio about 1) across the pipe (its plan diagonal) and
+      down it (the depth from the lip), so a bed's day lines run round the pipe */
+   const det=LT?'lc*=mix(1.0,pow(texture2D(gLamT,vec2((vLW.x+vLW.y)*0.7071,vD.x)*gLamK).r,2.2)*4.59,0.5);':'';
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vD;varying vec2 vLW;\n'+(LT?'uniform sampler2D gLamT;uniform float gLamK;\n':'')+S.glsl).replace('#include <color_fragment>','#include <color_fragment>\n{vec3 lc=laminaColor(vD.x,fwidth(vD.x));'+det+'diffuseColor.rgb=mix(lc,diffuseColor.rgb,mix(0.5,0.1,vD.y));}');};
   return m;};
  const MATS=[0,1,2,3].map(pipeMat);
  const CH={};recs.forEach(o=>{const v=(o.p.seed>>>0)%NV,key=Math.floor(o.p.x/600)+','+Math.floor(o.p.z/600)+','+v;o.v=v;(CH[key]||(CH[key]=[])).push(o);});
@@ -51,7 +59,16 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('white'),T3=THREE,t
  const white=g=>{const n=g.attributes.position.count,c=new Float32Array(n*3).fill(1);g.setAttribute('color',new T3.BufferAttribute(c,3));return g;};
  const lathe=(pts,seg)=>white(new T3.LatheGeometry(pts.map(p=>new T3.Vector2(p[0],p[1])),seg||12));
  const collarG=lathe([[1.0,-.15],[1.18,0],[1.22,.18],[1.08,.32],[.92,.3]],14);
- const fringeG=(function(){const g=new T3.PlaneGeometry(.12,1,1,4);g.translate(0,.5,0);return white(g);})();
+ if(PL.collar){const uv=collarG.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*8,uv.getY(i)*1.5);}   /* the crust about a metre and a half a tile round a 2-5 m collar */
+ /* a card's cell [x0,y0,x1,y1] (fractions from the sheet's top left; the map's v is 1 at the top) at (u, w) inside it, w up from the cell's bottom */
+ const cellUV=(c,u,w)=>[c[0]+(c[2]-c[0])*u,1-(c[3]-(c[3]-c[1])*w)];
+ /* the fringe: with the card a tuft (knob at the mouth, the filaments along the card's length: the cell's x along y, its height across), else a strip */
+ const fringeG=(function(){const g=new T3.PlaneGeometry(PL.fringe?.45:.12,1,1,4);g.translate(0,.5,0);
+  if(PL.fringe){const uv=g.attributes.uv,c=PL.fringe.cell||[0,0,1,1];for(let i=0;i<uv.count;i++){const q=cellUV(c,uv.getY(i),uv.getX(i));uv.setXY(i,q[0],q[1]);}}return white(g);})();
+ /* the turf: two crossed quads, base at 0, one clump of the sheet's cell */
+ const turfG=PL.turf?(function(){const c=PL.turf.cell||[0,0,1,1],pos=[],uv=[],idx=[];[0,Math.PI/2].forEach(a=>{const ca=Math.cos(a)*.5,sa=Math.sin(a)*.5,n0=pos.length/3;
+   [[-1,0],[1,0],[-1,1],[1,1]].forEach(([u,h])=>{pos.push(u*ca,h,u*sa);const q=cellUV(c,(u+1)/2,h);uv.push(q[0],q[1]);});idx.push(n0,n0+1,n0+2,n0+2,n0+1,n0+3);});
+  const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return white(g);})():null;
  const padG=(function(){const g=new T3.SphereGeometry(1,14,6,0,Math.PI*2,0,Math.PI*.42);g.scale(1,.35,1);g.translate(0,-.25,0);return white(g);})();
  const beadG=white(new T3.IcosahedronGeometry(1,1));
  const dewG=(function(){const g=new T3.CircleGeometry(1,10);g.rotateX(-Math.PI/2);g.translate(0,.03,0);return white(g);})();
@@ -60,10 +77,11 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('white'),T3=THREE,t
  const capG=(function(){const g=new T3.SphereGeometry(1,10,6,0,Math.PI*2,0,Math.PI*.55);g.scale(1,.45,1);return white(g);})();
  const lampG=(function(){const g=new T3.CircleGeometry(1,10);g.rotateX(-Math.PI/2);return white(g);})();
  const BM=(key,o)=>BIO.animMat('gills:'+key,Object.assign({mode:'breath',vertexColors:true},o));
- BIO.def('gcollar',collarG,BM('collar',{breath:{key:'gills',shape:'bulge',amp:.05,albedo:1.55}}),{attrs:['aP0','aP1'],label:'Lime collar (Qolar): grey-green charged, tan as it discharges on the Bhlo'});
- BIO.def('gfringe',fringeG,BM('fringe',{side:T3.DoubleSide,breath:{key:'gills',shape:'stream',amp:1.3,top:1}}),{attrs:['aP0','aP1'],label:'Breath fringe: streams out on the Bhlo, sucked flat on the Suq'});
+ BIO.def('gcollar',collarG,BM('collar',{tex:PT('collar'),breath:{key:'gills',shape:'bulge',amp:.05,albedo:1.55}}),{attrs:['aP0','aP1'],label:'Lime collar (Qolar): grey-green charged, tan as it discharges on the Bhlo'});
+ BIO.def('gfringe',fringeG,BM('fringe',{side:T3.DoubleSide,tex:PT('fringe'),alphaTest:PL.fringe?.4:0,breath:{key:'gills',shape:'stream',amp:1.3,top:1}}),{attrs:['aP0','aP1'],label:'Breath fringe: streams out on the Bhlo, sucked flat on the Suq'});
  BIO.def('gpad',padG,BM('pad',{breath:{key:'gills',shape:'bulge',amp:.45}}),{attrs:['aP0','aP1'],label:'Bellows pad: swells on the out-breath'});
  BIO.def('gbead',beadG,BM('bead',{breath:{key:'gills',shape:'stream',amp:1}}),{attrs:['aP0','aP1'],label:'Tide beads: rolled out on the Bhlo and back on the Suq (roasted, they are food)'});
+ if(turfG)BIO.def('gturf',turfG,new T3.MeshLambertMaterial({map:PT('turf'),alphaTest:.5,side:T3.DoubleSide,vertexColors:true}),{label:'Limed turf: steppe grass and mat crusted with the breath\'s lime'});
  BIO.def('gdew',dewG,new T3.MeshLambertMaterial({vertexColors:true}),{label:'Dew mat, crusted with the mist\'s lime'});
  BIO.def('gcup',cupG,new T3.MeshLambertMaterial({vertexColors:true,side:T3.DoubleSide}),{label:'Salt cup: the breath-water (Bhlo-wāṭar), drinkable'});
  BIO.def('gtrunk',trunkG,new T3.MeshLambertMaterial({vertexColors:true}),{label:'Limewood'});
@@ -77,6 +95,7 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('white'),T3=THREE,t
  BIO.range=900;L.pads.forEach(p=>{BIO.owner=[p.x,p.z];put('gpad',[p.x,p.y,p.z],Q(0,p.yaw,0),[p.r,p.r,p.r*.6],C([.86,.84,.78]),{aP0:[0,0,0,1],aP1:[p.lag,0,0,0]});});
  BIO.range=400;L.beads.forEach(b=>{const y=drawnH(b.x,b.z);BIO.owner=[b.x,b.z];put('gbead',[b.x,y+b.r*.8,b.z],null,b.r,C(D.bead),{aP0:[b.dir[0]*1.6,0,b.dir[1]*1.6,1],aP1:[b.lag,0,0,0]});});
  BIO.range=800;L.dew.forEach(d=>{BIO.owner=[d.x,d.z];put('gdew',[d.x,drawnH(d.x,d.z),d.z],Q(0,d.yaw,0),[d.r,1,d.r*.8],C(D.dew));});
+ if(turfG)(L.turf||[]).forEach(t=>{BIO.owner=[t.x,t.z];put('gturf',[t.x,drawnH(t.x,t.z)-.03,t.z],Q(0,t.yaw,0),[t.h*1.1,t.h,t.h*1.1],C([1,1,1]));});
  L.cups.forEach(c=>{BIO.owner=[c.x,c.z];put('gcup',[c.x,drawnH(c.x,c.z)-.02,c.z],null,[c.r,c.r,c.r],C(D.cup));});
  L.wood.forEach(w=>{BIO.owner=[w.x,w.z];const y=drawnH(w.x,w.z),s=KRAND.stream(w.seed);put('gtrunk',[w.x,y-.2,w.z],null,[w.r,w.H,w.r],C(D.wood));
   for(let k=0;k<w.caps;k++){const a=s.next()*Math.PI*2,h=w.H*(.55+.45*s.next()),off=w.r*(1+2*s.next())*(k?1:0),cr=.5+.9*s.next();put('gcap',[w.x+Math.cos(a)*off,y+h,w.z+Math.sin(a)*off],null,[cr,cr,cr],C(D.cap));}});

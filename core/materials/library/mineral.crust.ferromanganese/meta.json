@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.188,
+    1.159
+   ],
+   "seam_before": [
+    1.57,
+    1.91
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.3,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "mineral.crust.ferromanganese",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "mineral.crust.ferromanganese.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wet botryoidal ferromanganese crust, rounded knobs of near-black manganese oxide (#1a1816) packed edge to edge, each knob with a faint grey-blue sheen, rust-brown (#6b3a1e) staining in the hollows between knobs and a few patches where the crust has flaked to show cream carbonate (#d9cfb8) underneath. Full colour: not tinted.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "reuse": "the Red Gills' collars (the rust collar's wet crust); any black botryoidal oxide crust, deep-sea nodules, desert varnish close up",
+  "sha1": "7ba03ac52d1657d41ce6716bea160f90ee7bab7f"
+ }
+}

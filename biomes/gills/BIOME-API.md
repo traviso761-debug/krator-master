@@ -16,7 +16,7 @@ worked example.
 | `GILLS.NAMES` | the Xanadui words (`PLAN.md` section 9a): Gīl, Wāiṭ Gīl, Reḍ Gīl, Bhlo, Suq, Noḍ, Phlū, Bhon Phlū, Phlū-phīlḍ, Lãg Solṭ, Qolar, Bhlo-wāṭar, Ālph-bi Bhlo, Qãḍal, Thin Yīr |
 | `GILLS.layout(o)` | the swarm: `{centre, band, arc, n, dead, seed, form, w, d, len}` -> `{gills: [{id, form, c, r, a0, a1, w, d, alive, age}]}` (ring cracks; `form: 'radial'` is recorded for the Red Gills, its geometry still ring arcs: owed) |
 | `GILLS.gillAt(L, x, z)` | `{g, k, dr, along, half}`: the crack under a point and its depth share (1 on the floor), for the host's `terrainH` carve; null off the swarm |
-| `GILLS.life(L, o)` | the life on the swarm, from the host's ground: `{ground, iceH, treeH, lip, step, wind, seed}` -> `{pipes, collars, fringes, pads, beads, lamps, dew, cups, wood, steam}`, each record with a stable id `'<gill>.<kind>.<k>'`; a pipe `{id, gill, x, z, y0, H, r, mouths, state, ice, live, lag, toward, lean, seed}` (under 90 m; live only on a live gill, never iced; iced only over `iceH`) |
+| `GILLS.life(L, o)` | the life on the swarm, from the host's ground: `{ground, iceH, treeH, lip, step, wind, seed}` -> `{pipes, collars, fringes, pads, beads, lamps, dew, turf, cups, wood, steam}` (turf: the limed clumps round a dew mat, `{id, gill, mat, x, z, y, h, yaw}`, on their own stream), each record with a stable id `'<gill>.<kind>.<k>'`; a pipe `{id, gill, x, z, y0, H, r, mouths, state, ice, live, lag, toward, lean, seed}` (under 90 m; live only on a live gill, never iced; iced only over `iceH`) |
 
 A host opens the registry around its items (`BIO.kit('gills')` ... `BIO.kitEnd(GILLS)`), so the kit's items never collide with the host's.
 
