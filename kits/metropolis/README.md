@@ -286,6 +286,10 @@ rays, and the part keeps two rings of rooms, deeper being one open floor round t
 circle, so it no longer jumps where the angle wraps. A grid plan's bridge of 8 m or less crosses a wall: the hero's small pieces in its path go
 (`MP.ancientDoorways`). The Terrace's court band holds meeting rooms and stores windowed on the court; the Spiral's portals stand where its ramp
 passes each storey's floor. The core search in `MP.floors` works in each part's own box (a building of many parts was 1.5 s a hero).
+Then: a shaft may turn (`yaw` on its record: its walls, steps, walk strips and landing laid square and turned about its middle), and the Long
+Curve's shafts stand square to the arc; the Spiral's ramp is walked (strips along its tread, `G.userData.strips`, whole or gutted); a ruin's
+slabs take an outline at 48 points at most, cells about 6 m round and 8 m deep (the Swell's crown was 161 k triangles, now 66 k; the Organ's 168
+k, now 99 k); Sky A's widest storeys are about 65 to 125 k triangles furnished (they were 720 k before its ring was cut by angle).
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

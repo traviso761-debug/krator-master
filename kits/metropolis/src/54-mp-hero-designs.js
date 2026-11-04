@@ -97,7 +97,7 @@ DK.walkLine=function(B,pts,closed){(B.walk=B.walk||[]).push({pts,doors:[],closed
 
 MP.heroDesign=function(F,state,lite){const B=MP.builder(lite),W=DK.WALL,PI2=Math.PI*2,u=(i,j)=>MP.u(MP.idHash(F.id)&0xffff,i,j),doors=[];(MP.DESIGN_BUILD[F.id])(F,B,{W,PI2,u,doors});
  /* the doors' leaves are a placed hero's own meshes; the ground outline and its doors' gaps go with the hero for the walk's blocks (56, towerBlocks) */
- const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];
+ const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);G.userData.walk=B.walk||[];G.userData.strips=B.strips||[];
  /* storeys and a core (59), from the drawn shape */
  /* a design with plans (46c) opens its storeys on demand (56); the rest take the floor plates */
  if(!lite&&!(MP.FAMILY[F.id]&&MP.FAMILY[F.id].design)){const Fl=MP.floors(G,{sh:F.sh,top:F.height.roof,y0:F.floorsY0,floors:F.floors,maxY:F.floorsMaxY,roofAccess:F.roofAccess});if(Fl){G.add(Fl);G.userData.floors=Fl.userData;}}
@@ -255,7 +255,9 @@ MP.DESIGN_BUILD={
   for(let i=0;i<n;i++){const t0=ts+i/n*F.turns*Math.PI*2,t1=ts+(i+1)/n*F.turns*Math.PI*2,y0=H*i/n,y1=H*(i+1)/n,r0=R(y0),r1=R(y1),ra=r0+rw,rb=r1+rw;
    DK.q(B,'adobe',P(t0,ra,y0+.6),P(t1,rb,y1+.6),P(t1,r1,y1+.6),P(t0,r0,y0+.6),{uv:3});DK.q(B,'adobe',P(t0,ra,y0-.4),P(t0,ra,y0+1.5),P(t1,rb,y1+1.5),P(t1,rb,y1-.4),{uv:3});
    DK.q(B,'adobe',P(t0,r0,y0-.4),P(t1,r1,y1-.4),P(t1,rb,y1-.4),P(t0,ra,y0-.4),{uv:3});DK.q(B,'adobe',P(t0,ra-.4,y0+.6),P(t0,ra-.4,y0+1.5),P(t1,rb-.4,y1+1.5),P(t1,rb-.4,y1+.6),{uv:3});
-   if(at?at.has(i):i%32===16&&y0>F.sh)DK.portal(B,t0,y0+.6,R(y0+.6),r0);}
+   if(at?at.has(i):i%32===16&&y0>F.sh)DK.portal(B,t0,y0+.6,R(y0+.6),r0);
+   /* the tread walked: a strip every eight steps along its middle (B.strips, 56's walk) */
+   if(i%8===0){const j=Math.min(n,i+8),t2=ts+j/n*F.turns*Math.PI*2,y2=H*j/n,rm0=r0+rw/2,rm1=R(y2)+rw/2;(B.strips=B.strips||[]).push({a:[Math.cos(t0)*rm0,Math.sin(t0)*rm0,y0+.6],b:[Math.cos(t2)*rm1,Math.sin(t2)*rm1,y2+.6],w:rw-.6});}}
   const dp=[[F.r1,H],[F.r1-.6,H],[F.r1-.6,H+2.4]];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([F.dome*Math.cos(b),H+2.4+F.dome*Math.sin(b)]);}DK.lathe(B,'adobe',dp,32,{col:[.86,.72,.56]});}
 
 };

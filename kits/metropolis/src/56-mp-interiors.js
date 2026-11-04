@@ -58,13 +58,16 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  // the shafts: a lift's car door, a stair's first flight, each where the record says on every storey
  F.core.shafts.forEach(function(s){if(k<s.from||k>s.to)return;const c=s.kind==='lift'?[.4,.42,.44]:[.6,.6,.58];
   /* the shaft's door: on the side that faces out of the core (a ring) or to the corridor (a slab): open for a stair, a shut bronze leaf for a lift */
-  const out=round?1:-1,face=s.face!=null?s.face:Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]],top=L.y+L.h-.26;
+  /* a shaft may turn (s.yaw: the Long Curve's, square to its arc): its walls, steps, strips and landing laid square and turned about its middle */
+  const yaw=s.yaw||0,cY=Math.cos(yaw),sY=Math.sin(yaw),Rt=p=>yaw?[s.x+(p[0]-s.x)*cY+(p[1]-s.z)*sY,s.z-(p[0]-s.x)*sY+(p[1]-s.z)*cY]:p;
+  const out=round?1:-1,face=s.face!=null?s.face:Math.abs(s.x)>Math.abs(s.z)&&round?(s.x*out>0?1:3):(s.z*out>0?2:0),E=[[s.x-s.w/2,s.z-s.d/2,s.x+s.w/2,s.z-s.d/2],[s.x+s.w/2,s.z-s.d/2,s.x+s.w/2,s.z+s.d/2],[s.x+s.w/2,s.z+s.d/2,s.x-s.w/2,s.z+s.d/2],[s.x-s.w/2,s.z+s.d/2,s.x-s.w/2,s.z-s.d/2]].map(e=>{const a=Rt([e[0],e[1]]),b=Rt([e[2],e[3]]);return [a[0],a[1],b[0],b[1]];}),top=L.y+L.h-.26;
   E.forEach((e,i)=>{if(i!==face){seg([e[0],e[1]],[e[2],e[3]],y0,top,c);return;}const l=Math.hypot(e[2]-e[0],e[3]-e[1]),w=Math.min(1.2,l-.4),t0=(1-w/l)/2,t1=1-t0,P=f=>[e[0]+(e[2]-e[0])*f,e[1]+(e[3]-e[1])*f];seg([e[0],e[1]],P(t0),y0,top,c);seg(P(t1),[e[2],e[3]],y0,top,c);seg(P(t0),P(t1),y0+DH,top,c);if(s.kind==='lift'){const a=P(t0),b=P(t1),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz),m=new THREE.Mesh(new THREE.BoxGeometry(l,DH,.07),M.bronze);m.position.set((a[0]+b[0])/2,y0+DH/2,(a[1]+b[1])/2);m.rotation.y=-Math.atan2(dz,dx);m.name='a lift door';leaves.push({m,base:m.position.clone(),ax:[dx/l,dz/l],w:l,open:0});}});
   /* a stair: a switchback along the shaft, in from the door side up to a half landing, then back up to the door side of the storey above. Its steps are drawn from the record and walked as strips */
   if(s.kind==='stair'&&k<s.to){const sgn=face===2?1:-1,n=9,hd=s.d/2,hw=s.w/2,zD=s.z+sgn*(hd-.55),zI=s.z-sgn*(hd-.55),col={col:[.6,.6,.58],uv:2},H=L.h;
-   const flight=(x0,x1,z0,z1,y0,y1)=>{for(let i=0;i<n;i++){const a=i/n,b=(i+1)/n,za=z0+(z1-z0)*a,zb=z0+(z1-z0)*b;B.box('concrete',x0,x1,y0,y0+(y1-y0)*b,Math.min(za,zb),Math.max(za,zb),col);}stairs.push({a:[(x0+x1)/2,z0,y0],b:[(x0+x1)/2,z1,y1],w:x1-x0});};
+   const box=(x0,x1,ya,yb,z0,z1)=>{if(!yaw){B.box('concrete',x0,x1,ya,yb,z0,z1,col);return;}const c=Rt([(x0+x1)/2,(z0+z1)/2]);B.obox('concrete',c[0],(ya+yb)/2,c[1],yaw,x1-x0,yb-ya,z1-z0,col);};
+   const flight=(x0,x1,z0,z1,y0,y1)=>{for(let i=0;i<n;i++){const a=i/n,b=(i+1)/n,za=z0+(z1-z0)*a,zb=z0+(z1-z0)*b;box(x0,x1,y0,y0+(y1-y0)*b,Math.min(za,zb),Math.max(za,zb));}const pa=Rt([(x0+x1)/2,z0]),pb=Rt([(x0+x1)/2,z1]);stairs.push({a:[pa[0],pa[1],y0],b:[pb[0],pb[1],y1],w:x1-x0});};
    flight(s.x-hw+.1,s.x-.08,zD,zI,L.y,L.y+H/2);flight(s.x+.08,s.x+hw-.1,zI,zD,L.y+H/2,L.y+H);
-   const z0=Math.min(zI,s.z-sgn*hd),z1=Math.max(zI,s.z-sgn*hd);B.box('concrete',s.x-hw+.1,s.x+hw-.1,L.y+H/2-.2,L.y+H/2,z0,z1,col);landings.push({x0:s.x-hw+.1,x1:s.x+hw-.1,z0,z1,y:L.y+H/2});}});
+   const z0=Math.min(zI,s.z-sgn*hd),z1=Math.max(zI,s.z-sgn*hd);box(s.x-hw+.1,s.x+hw-.1,L.y+H/2-.2,L.y+H/2,z0,z1);landings.push({x0:s.x-hw+.1,x1:s.x+hw-.1,z0,z1,y:L.y+H/2,pts:[[s.x-hw+.1,z0],[s.x+hw-.1,z0],[s.x+hw-.1,z1],[s.x-hw+.1,z1]].map(Rt)});}});
  const G=B.finish(F,'storey'+k);G.children.forEach(m=>g.add(m.clone()));leaves.forEach(q=>g.add(q.m));
  // the furniture
  const out=MP.furnish(F,st);let pieces=0;
@@ -87,13 +90,16 @@ MP.towerBlocks=function(W,m){const F0=MP.FAMILY[m.key.split('.')[0]],F=F0&&!F0.d
    2.3 s every time a view changed. The stage's tick rebuilds it when the eye has gone 800 m (MP.walkAt) */
 MP.walkSync=function(){const W=KWALK,e=camera.position,R=1200;W.clear();W.floor({rect:[e.x-R,e.x+R,e.z-R,e.z+R],y:0,name:'the plaza',tag:'ground'});MP.walkAt=[e.x,e.z];MP.walkDirty=false;
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{if(g.userData.mp)MP.towerBlocks(W,g.userData.mp);});
+ /* a hero's walked strips (the Spiral's ramp), whole or gutted only (a ruin's ramp is torn), turned with the tower */
+ (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{const m=g.userData.mp,H=m&&MPS.hero[m.key];if(!H||!(H.userData.strips||[]).length)return;const st=m.key.split('.')[1];if(st!=='intact'&&st!=='gutted')return;
+  const c=Math.cos(m.yaw||0),n=Math.sin(m.yaw||0),T=p=>[m.x+p[0]*c+p[1]*n,m.z-p[0]*n+p[1]*c];H.userData.strips.forEach((q,i)=>{const a=T(q.a),b=T(q.b);W.strip({a:[a[0],a[1],q.a[2]],b:[b[0],b[1],q.b[2]],w:q.w,name:m.key+' ramp '+i,tag:'stair'});});});
  /* a ruin's heaps are walked on: their surface as triangles (KRUBBLE.walkTris), turned with the tower */
  (typeof MPS!=='undefined'?MPS.live:[]).forEach(g=>{const m=g.userData.mp;if(!m)return;const p=m.key.split('.'),c=Math.cos(m.yaw),n=Math.sin(m.yaw);
   if(!MP.FAMILY[p[0]])return;MP.heaps(MP.FAMILY[p[0]],p[1]).forEach((H,i)=>KRUBBLE.walkTris(H,4).forEach(t=>W.poly({pts:t.map(q=>[m.x+q[0]*c+q[1]*n,m.z-q[0]*n+q[1]*c,q[2]]),name:m.key+' rubble '+i,tag:'rubble'})));});
  MP.open.forEach(function(o){const L=MP.FAMILY[o.key].levels[o.k],c=Math.cos(o.yaw),n=Math.sin(o.yaw),T=p=>[o.x+p[0]*c+p[1]*n,o.z-p[0]*n+p[1]*c],y=L.y;
   (o.g.userData.outlines||[o.g.userData.outline]).forEach(ol=>W.poly({pts:ol.map(p=>{const q=T(p);return [q[0],q[1],y];}),name:o.key+' L'+o.k,tag:'storey'}));
   o.g.userData.stairs.forEach(f=>{const a=T(f.a),b=T(f.b);W.strip({a:[a[0],a[1],f.a[2]],b:[b[0],b[1],f.b[2]],w:f.w,name:'a stair',tag:'stair'});});
-  o.g.userData.landings.forEach(l=>{W.poly({pts:[[l.x0,l.z0],[l.x1,l.z0],[l.x1,l.z1],[l.x0,l.z1]].map(p=>{const q=T(p);return [q[0],q[1],l.y];}),name:'a landing',tag:'stair'});});
+  o.g.userData.landings.forEach(l=>{W.poly({pts:(l.pts||[[l.x0,l.z0],[l.x1,l.z0],[l.x1,l.z1],[l.x0,l.z1]]).map(p=>{const q=T(p);return [q[0],q[1],l.y];}),name:'a landing',tag:'stair'});});
   o.g.userData.blocks.forEach(p=>{const q=T(p);W.block([q[0]-.09,q[0]+.09,q[1]-.09,q[1]+.09,y,y+3],'wall');});});};
 MP.openStorey=function(key,k,x,z,yaw){yaw=yaw==null?0:yaw;const F=MP.FAMILY[key];if(MP.open.some(o=>o.key===key&&o.k===k&&o.x===x&&o.z===z))return;
  const g=MP.drawStorey(F,k);g.position.set(x,0,z);g.rotation.y=yaw;if(MP.shadow)MP.shadow.cast(g);scene.add(g);MP.open.push({key,k,g,x,z,yaw});while(MP.open.length>MP.LIVE)MP.closeOne();MP.walkSync();};

@@ -377,7 +377,8 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
     var zones = [{ use: 'lobby', n: 1, h: D.sh }, { use: 'market', n: 1, h: D.sh }, { use: 'clinic', n: 1, h: D.sh }, { use: 'school', n: 1, h: D.sh }, { use: 'offices', n: 5, h: D.sh }];
     var L = levels(zones), lastOn = function (j) { return L.filter(function (l) { return l.y + l.h <= H[j] + 0.01; }).length - 1; };
     var endAt = function (Lv) { var j = 0; while (j + 1 < H.length && H[j + 1] >= Lv.y + Lv.h - 0.01) j++; return cut[j + 1]; };
-    var sAt = function (id, kind, c, to, w, d) { var t = a0 + e + (c + 0.5) * gI; return { id: id, kind: kind, x: r3(rm * Math.cos(t)), z: r3(cz + rm * Math.sin(t)), w: w, d: d, from: 0, to: to, face: 0, th: t }; };
+    /* a shaft square to the arc (yaw: its width along the arc's tangent, its door face out to the corridor) */
+    var sAt = function (id, kind, c, to, w, d) { var t = a0 + e + (c + 0.5) * gI; return { id: id, kind: kind, x: r3(rm * Math.cos(t)), z: r3(cz + rm * Math.sin(t)), w: w, d: d, from: 0, to: to, face: 0, th: t, yaw: r3(Math.atan2(-Math.cos(t), -Math.sin(t))) }; };
     var shafts = [sAt('stair.a', 'stair', 4, lastOn(0), 3.2, 2.6), sAt('lift.a', 'lift', 5, lastOn(0), 2.4, 2.6), sAt('stair.b', 'stair', 14, lastOn(0), 3.2, 2.6), sAt('lift.b', 'lift', 15, lastOn(0), 2.4, 2.6),
       sAt('stair.c', 'stair', 21, lastOn(1), 3.2, 2.6), sAt('stair.d', 'stair', 27, lastOn(3), 3.2, 2.6)];
     var towers = []; H.forEach(function (h, j) { var n = Math.max(1, Math.round((cut[j + 1] - cut[j]) / 0.12)); for (var q = 0; q < n; q++) { var t = cut[j] + (cut[j + 1] - cut[j]) * (q + 0.5) / n; towers.push({ x: r3(R * Math.cos(t)), z: r3(cz + R * Math.sin(t)), r: 10, h: h, fall: t, squat: true }); } });

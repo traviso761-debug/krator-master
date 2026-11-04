@@ -47,7 +47,7 @@ MP.ruinDesign = function (G, F, state) {
   const radial = (L, O, holeAt, ox, oz, closed) => {
     const N = O.length;
     for (let i = 0; i < (closed ? N : N - 1); i++) {
-      const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, ha = holeAt(ta), hb = holeAt(tb), nr = Math.max(1, Math.ceil((Math.max(a.r - ha, b.r - hb)) / 6));
+      const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, ha = holeAt(ta), hb = holeAt(tb), nr = Math.max(1, Math.ceil((Math.max(a.r - ha, b.r - hb)) / 8));
       for (let j = 0; j < nr; j++) {
         if (a.r - 0.2 <= ha || b.r - 0.2 <= hb) break;
         const f0 = j / nr, f1 = (j + 1) / nr, ra0 = ha + (a.r - 0.2 - ha) * f0, ra1 = ha + (a.r - 0.2 - ha) * f1, rb0 = hb + (b.r - 0.2 - hb) * f0, rb1 = hb + (b.r - 0.2 - hb) * f1;
@@ -68,16 +68,17 @@ MP.ruinDesign = function (G, F, state) {
       [[L.y, 1], [L.y - 0.3, -1]].forEach(fc => { const b0 = sp.length / 3, ord = fc[1] > 0 ? [0, 1, 2, 3] : [0, 3, 2, 1]; ord.forEach(v => { sp.push(q[v][0], fc[0], q[v][1]); sn.push(0, fc[1], 0); }); si.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); });
     });
     if (state === 'gutted') return;
-    /* the outline is star-shaped from the axis (a ring, a clover, an atrium's ring): a radial mesh, 6 m steps from the hole (or the axis) out to
+    /* the outline is star-shaped from the axis (a ring, a clover, an atrium's ring): a radial mesh, 8 m steps from the hole (or the axis) out to
        it, so the tear cuts small cells, not a fan's long triangles */
     const st = st0, hole0 = st.hole || (F.core.atrium ? rc : 0), Hr = st.holeRect, O0 = st.outline.map(p => ({ t: Math.atan2(p[1], p[0]), r: Math.hypot(p[0], p[1]) })).sort((a, b) => a.t - b.t);
     /* a rect outline is four corners: sample its edges so the mesh follows them; a rect court's reach is its edge's at each angle */
-    const O = O0.length >= 16 ? O0 : (() => { const o = []; for (let i = 0; i < 48; i++) { const t = -Math.PI + 2 * Math.PI * i / 48; let best = 0; for (let j = 0; j < st.outline.length; j++) { const a = st.outline[j], b = st.outline[(j + 1) % st.outline.length], dx = Math.cos(t), dz = Math.sin(t), ex = b[0] - a[0], ez = b[1] - a[1], den = dx * ez - dz * ex; if (Math.abs(den) < 1e-9) continue; const u = (a[0] * ez - a[1] * ex) / den, v = (a[0] * dz - a[1] * dx) / den; if (u > 0 && v >= 0 && v <= 1) best = Math.max(best, u); } o.push({ t, r: best }); } return o; })(), N = O.length;
+    /* an outline of many points (the Swell's clover, 128) taken at 48 at most: its slab's cells about 6 m round, as the ruin budgets want */
+    const O = O0.length >= 16 ? (O0.length > 48 ? O0.filter((q, i) => i % Math.ceil(O0.length / 48) === 0) : O0) : (() => { const o = []; for (let i = 0; i < 48; i++) { const t = -Math.PI + 2 * Math.PI * i / 48; let best = 0; for (let j = 0; j < st.outline.length; j++) { const a = st.outline[j], b = st.outline[(j + 1) % st.outline.length], dx = Math.cos(t), dz = Math.sin(t), ex = b[0] - a[0], ez = b[1] - a[1], den = dx * ez - dz * ex; if (Math.abs(den) < 1e-9) continue; const u = (a[0] * ez - a[1] * ex) / den, v = (a[0] * dz - a[1] * dx) / den; if (u > 0 && v >= 0 && v <= 1) best = Math.max(best, u); } o.push({ t, r: best }); } return o; })(), N = O.length;
     const holeAt = t => { if (!Hr) return hole0; const R2 = st.rect, lt = t + R2.yaw, cx2 = Math.abs(Math.cos(lt)), sz2 = Math.abs(Math.sin(lt)); return Math.min(cx2 > 1e-6 ? Hr.hw / cx2 : 1e9, sz2 > 1e-6 ? Hr.hd / sz2 : 1e9); };
     /* a storey of parts (41: the Organ's pipes, the Pods' pods, the Long Curve's arc): each part radial from its own centre, an arc open at
        its ends (a strip is drawn above) */
     if (st.parts) st.parts.forEach(p => {
-      if (p.strip || p.noSlab) return; const open = p.a0 != null, n = open ? Math.max(2, Math.ceil((p.a1 - p.a0) * p.rOut / 6)) : 48, O2 = [];
+      if (p.strip || p.noSlab) return; const open = p.a0 != null, n = open ? Math.max(2, Math.ceil((p.a1 - p.a0) * p.rOut / 6)) : Math.max(12, Math.min(48, Math.ceil(2 * Math.PI * p.rOut / 6))), O2 = []; /* a part's cells about 6 m round its rim (a pipe of r 10 m had 48, as a 50 m drum) */
       for (let i = 0; i < (open ? n + 1 : n); i++) O2.push({ t: open ? p.a0 + (p.a1 - p.a0) * i / n : -Math.PI + 2 * Math.PI * i / n, r: p.rOut });
       radial(L, O2, () => p.rIn, p.cx, p.cz, !open);
     });
