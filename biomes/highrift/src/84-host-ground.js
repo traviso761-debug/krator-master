@@ -10,6 +10,9 @@
 //   aWet   the water's wet band from WATER.fieldAt's shore (89z)
 // ?kground=0: the paint alone. ?strata=0: no beds on the faces.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
+/* KGROUND's relief (core/terrain/GROUND.md; the cloud kits' merge, 2026-11-04): the bump from the layers' height (no texture unit) and the ground mesh's
+   hollows (KGROUND.cavityMesh), on the MeshStandard ground; ?kgrelief=0 the before-and-after */
+const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4100+SITE.zone,recipe:'rift',range:[SITE.base-900,SITE.base+1800],
  dip:SKEY==='mirror'?[0,1,.1]:SKEY==='coulee'?[0,-1,.06]:[.3,.95,.08],warp:[8,2]});
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x9a8c78}):null;
@@ -67,7 +70,7 @@ const LAYERS={
  wedge:[],
  coulee:[['ground.lava.aa','vGL.z',.85,'the coulee\'s block field']],
  gjar:[['rock.tuff','vGL.z',.7,'welded tuff']]}[SKEY];
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'highrift-'+SKEY+'-ground',at:'/*KGROUND*/',layers:[
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'highrift-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:[
  KGROUND.layer('highrift','ground.sinter',{w:'vGL.x',amt:.9,gain:1.1,tint:'vec3(1.0)',name:'sinter'}),
  KGROUND.layer('highrift','ground.mat.thermal',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'thermophile mats'}),
  SKEY==='coulee'?KGROUND.layer('highrift','ground.wadi.cobble',{w:'vGL.w',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'the Gill\'s cobble'}):KGROUND.layer('highrift','ground.tundra',{w:'vGL.w*0.8',amt:.6,gain:1.0,tint:'_gT',name:'tundra'}),
@@ -82,7 +85,7 @@ const GROUND=(function(){const N=SKEY==='gjar'?720:560,S=TERR.R*2.2,cs=S/N,nx=N+
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aMir',new THREE.BufferAttribute(mir,1));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.name;scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.name;scene.add(m);return m;})();
 // the places, as records the inspector and the export read
 REGISTER({name:SITE.name,x:0,z:0,y:terrainH(0,0)-40,r:600,h:200});
 if(SKEY==='cataract'){const P=SITE.pool;REGISTER({name:'The Caldron Pool (2,580 m)',x:P.x,z:P.z,y:P.level-P.depth-2,r:P.r,h:P.depth+6});

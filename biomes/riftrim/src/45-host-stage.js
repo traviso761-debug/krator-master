@@ -106,6 +106,9 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 // times its relief (popcorn clay on the badland mounds, Navajo cross-bedding under the strata on the walls), a keep-1 layer its own colour (the
 // sulphur crust, the acid pools' travertine rims). ?kground=0: the old plain mix. Without the pack (?mat=proc, or no tex/) the ground is the paint.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
+/* KGROUND's relief (core/terrain/GROUND.md; the cloud kits' merge, 2026-11-04): the bump from the layers' height (no texture unit) and the ground mesh's
+   hollows (KGROUND.cavityMesh), on the MeshStandard ground; ?kgrelief=0 the before-and-after */
+const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 const GLW=(function(){
  // each layer on a documented mask (the review's first line): the zones' own cold bands, wet, fog, the farm field, rock and slope, snow
  const open=F=>(1-F.snow)*(1-F.ice),shoreK=F=>smooth(.34,.24,F.cold),monK=F=>smooth(.24,.32,F.cold)*smooth(.64,.54,F.cold),alpK=F=>smooth(.54,.62,F.cold);
@@ -157,7 +160,7 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
 // (`clast`, the Outlands' recipe: small varnished stones packed in the reg, ?pave=0), MUD POLYGONS on the playa (`polygon`, pale cracks between
 // curled plates, ?polygon=0) and the TALUS's red scree (`clast` in 3D cells, blocks a hand to a metre across)
 const KG_Q=GQ,KG_PAVE=KG_Q.get('pave')!=='0',KG_POLY=KG_Q.get('polygon')!=='0';
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'riftrim-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',layers:(GL?GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2),w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'riftrim-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:(GL?GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2),w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
   return KGROUND.layer('riftrim','ground.'+l.name,{w,amt:1,gain:1,tint:'mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',name:l.name});}):[]).concat([
  KG_PAVE?{kind:'clast',w:'vGM.x*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb08a6a,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
@@ -190,7 +193,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
    const sl=Math.hypot(pos[(k+1)*3+1]-pos[(k-1)*3+1],pos[(k+nx)*3+1]-pos[(k-nx)*3+1])/(2*cs),bed=rk[k];
    ao[k]=clamp(1-clamp(lap/cs*1.6,0,.42)*(.6+.4*bed)+clamp(-lap/cs*.5,0,.08)-.14*bed*smooth(.35,.85,sl),.5,1.08);}
   g.setAttribute('aAO',new THREE.BufferAttribute(ao,1));}
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel=LAND.name.replace(' (ideal type)','');scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel=LAND.name.replace(' (ideal type)','');scene.add(m);return m;})();
 function ST_GROUND_N(){return LAND.groundN==null?560:LAND.groundN;}
 
 // ---------------------------------------------------------------- the rock bodies (KSTACKS, 44w: the plateau's slickrock domes, the tundra's tors)

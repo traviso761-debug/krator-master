@@ -100,6 +100,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -119,9 +120,11 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
     "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/hyperjungle": "71995386b1cb26681ccaf5517dea713ba9e316a160d52ec51a79b993dbbde356",
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
@@ -130,15 +133,15 @@
     "biomes/hyperjungle/dist/hyperjungle.html": "2aaca71afe4bdc61cc460a0d341036d247b87d0d53a3202660267b16aef17079"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle.html": "2aaca71afe4bdc61cc460a0d341036d247b87d0d53a3202660267b16aef17079"
+    "biomes/hyperjungle/dist/hyperjungle.html": "08a940f135d981babbb57f026bb5f0b5fbfdbee8eaf34894c4837b8684814d62"
    }
   },
   "build.py --station lake": {
    "inputs": {
     "biomes/geyser/src/50-biome-geyser-species.js": "f7b9f9d7c5a88643c0190e24157a8195c51a7e79dfda45a84c4bac622c680fea",
-    "biomes/geyser/src/55-biome-geyser-trees.js": "28b4468b1ea8cb1a5ecc0d3509f95f5afed2f0018018666d3a4b7e8629fb4ed1",
+    "biomes/geyser/src/55-biome-geyser-trees.js": "5a7b42f096adb3b7475ad00f45f98e11321836b11164989026f12d878dddc833",
     "biomes/geyser/tex/bark0.albedo.webp": "452bfa61436e378dc5d8956f012bb2b7ffa5afe8d53474324d5bfc874b228351",
-    "biomes/geyser/tex/pack.json": "d51fca8136df1e802d9163e8327c0530b9fa6d2287ef714f67cd06d31573673e",
+    "biomes/geyser/tex/pack.json": "3c607fd44a5dfb6c402bb2e164d571effd1e30d3a132fe5b6cc6b7d2ed81f631",
     "biomes/geyser/tex/rosette.albedo.webp": "e7b5d68f18fe713f33839e0922b354d1a6e7f8393a9f9913202d267a64d5537b",
     "biomes/geyser/tex/strap.albedo.webp": "430aa3766da7c02406d5fa3eded5a572eab69a31a84c85eb52266876c52bc7aa",
     "biomes/hyperjungle/KNOWN_ISSUES.md": "49e3d16c1fcd4f2229b81431b538dbe86fa463cc44dafcfbe4f8748b9466dd8b",
@@ -239,6 +242,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -260,7 +264,8 @@
     "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "ca563afe5dc1f87d6bd9d67d838f66e7f71c6646e1ebbd94cda75fbb6246de26",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
@@ -269,10 +274,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "5de7207f445bf4b8359e8c41257767c2cb7e0c76791bb93d3bc26c8b279ddfca"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "5372afbd74b7258f72032ccf7f756d49e9ec37f9001f13f621fea0ec02d9b9b0"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "5de7207f445bf4b8359e8c41257767c2cb7e0c76791bb93d3bc26c8b279ddfca"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "481eaf2eb43d23e1bd2547fc89f03c06dbe89d9aaa5a454931d6367ec9d14776"
    }
   },
   "build.py --station savanna": {
@@ -401,6 +406,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -421,7 +427,8 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
     "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
@@ -433,7 +440,7 @@
     "biomes/hyperjungle/dist/hyperjungle-savanna.html": "9a09250dd5693e0efbc8c371decff4461f1096686c723c2a5db3507ea3b9779b"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "9a09250dd5693e0efbc8c371decff4461f1096686c723c2a5db3507ea3b9779b"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "1ed3f84e35153c747f78c04cce379a5429f6587041433bb3fbf6b6f221a4f2ba"
    }
   }
  }
