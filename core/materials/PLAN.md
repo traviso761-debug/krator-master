@@ -1845,9 +1845,10 @@ Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batc
 (copied from the branch that asked for it: `source.prompt_where`) and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-03/` (`surfaces-*.jpg`, `card-*.jpg`, 1024 px).
 - **Keying.** `card.breathfringe` and `card.sedge.fen` are unmixed (key_hi 200): the default spill pass took the green out of the blended
   filaments and blade tips and turned them salmon-red (150 turned the fringe pink). `card.glasscane`'s canes are translucent, so the magenta
-  showed through them (lavender canes under the default key): keyed onto the line from the key to the cane colour its prompt names
-  (`#d8efe9`, key_hi 90), the canes come out pale cyan at their blend alpha (opaque enough to alpha-test), the green joints keyed by distance.
-  Saved; no redo needed. `card.turf.limed` and `card.dwarfbirch` take the default key (spill all); the turf keeps a few pinkish stems.
+  showed through them (lavender canes under the default key). Re-keyed the same day with `cards.py`'s `spill: 'vlahos'` (`key_gain` 1.3;
+  npu-cutout's trial, `tools/textures/trials/npu-cutout`): the canes keep their glass shading and clean edges, with a faint lavender cast
+  (gain 1.0 leaves more), and 25% of the sheet is over alpha 0.5, so it alpha-tests. The first take, keyed onto a line to the prompt's
+  `#d8efe9`, flattened the canes and left broken dark rims on a light ground. Saved; no redo needed. `card.turf.limed` and `card.dwarfbirch` take the default key (spill all); the turf keeps a few pinkish stems.
 - **Wired now: the Gills' four**, as a pack of the shared kit (`biomes/gills/materials.json`, `tex/`), read by xanadu's station `gills` as a
   second pack (`stations/gills/station.json` `"packs"`; `KMAT.packed('gills', f)`), so xanadu's other pages keep their bytes and the Red twin
   can take the same pack: `pipe.lamina` (`rock.lamina.pipe`, a grey detail map multiplied into `KSTRATA.laminaShade`'s colour), `collar`
