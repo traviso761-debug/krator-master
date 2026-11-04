@@ -1,4 +1,4 @@
-// ================================================================= ISLE DEMO — the hamlets: four resource villages and what they work
+// ================================================================= ISLE DEMO — the hamlets: five resource villages and what they work
 // [G data] core/hamlet/PLAN.md section 4 (H4): the salt village on the big north-west pan (Kautoa's), the iron mine in
 // Valapo's mountains, the lumber village in the wet jungle east of Kautoa, the ranch on the savanna north of it. Each
 // spec names its focus, its parent town and the survey's patch; ISLE_HAMLETS.make() finds the resource in that patch on
