@@ -24,7 +24,7 @@
     "biomes/nwbay/src/89a-host-atmos.js": "1ea1faa771de7b0fed3d497a70973c31ccc41f10f38ef1ccd80fbe001dad0e28",
     "biomes/nwbay/src/89s-host-sky.js": "e75eb2939135e3cccd8df922c8c72ef6344476122efac6e8991b06d2957371b7",
     "biomes/nwbay/src/89w-host-water.js": "bd9550b4165f84c472b16758b17399e1842a2a0f66f1735e38c608e2fd38aecb",
-    "biomes/nwbay/src/99-host-take.js": "3f6a9601914c397a8d30143b0a9c808d995afeb09d8034733e4684db683b894a",
+    "biomes/nwbay/src/99-host-take.js": "2de404c591e515417ea2932aba1266f476cdc34a4357a9b842f198932c0eb213",
     "biomes/nwbay/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/nwbay/tex/bark0.albedo.webp": "398b718948721ff61f0474a3da76d944edb10bc5d0cc9316dd7c25ce08e6729b",
     "biomes/nwbay/tex/bark1.albedo.webp": "2e7f8f1cebf69ed78c5c16c3fafae144f39e87e8709b7b2489a97833809c8da6",
@@ -162,10 +162,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay.html": "f6cbb867501394c07e5db08b21ee92ffc052ebab595fe396df5c304885f6d738"
+    "biomes/nwbay/dist/nwbay.html": "099db39c9d2b8a27b7de0bfabddfeb30d7496553f0fdab3822ae57b68432eef6"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay.html": "2be324ce02b8c6d09dbcb8fef5547c9c60781922c3d16e5702081a1bec07d75b"
+    "biomes/nwbay/dist/nwbay.html": "907c8a1e8b3ec876dce1e30622853a34ea4670ecafeb8ae53d0891c0b45b5ca4"
    }
   },
   "build.py --station caverns": {
@@ -191,7 +191,7 @@
     "biomes/nwbay/src/89a-host-atmos.js": "1ea1faa771de7b0fed3d497a70973c31ccc41f10f38ef1ccd80fbe001dad0e28",
     "biomes/nwbay/src/89s-host-sky.js": "e75eb2939135e3cccd8df922c8c72ef6344476122efac6e8991b06d2957371b7",
     "biomes/nwbay/src/89w-host-water.js": "bd9550b4165f84c472b16758b17399e1842a2a0f66f1735e38c608e2fd38aecb",
-    "biomes/nwbay/src/99-host-take.js": "3f6a9601914c397a8d30143b0a9c808d995afeb09d8034733e4684db683b894a",
+    "biomes/nwbay/src/99-host-take.js": "2de404c591e515417ea2932aba1266f476cdc34a4357a9b842f198932c0eb213",
     "biomes/nwbay/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/nwbay/stations/caverns/44k-host-karst.js": "d034b1c82c2fbadab780f0789cbeacc2a208eb02637b26e3ed49a248280bb562",
     "biomes/nwbay/stations/caverns/89x-host-caverns.js": "7fead077d6cf67c998c0db939415799f1b0368315d93028f30dd19e778b32dcd",
@@ -339,10 +339,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "9f46bf3731203f2ce2350b0bd2b230c5b1b9ed093da9488685e05c166d2c8c6a"
+    "biomes/nwbay/dist/nwbay-caverns.html": "0ec16aa4ae62bbe71fd960bc85cb723fa9499dd3708d63fb9457bb8fc41f5da5"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "dd1a34a90a182a6551c6964539423c961684a2570a5522ed13451905d7547b5a"
+    "biomes/nwbay/dist/nwbay-caverns.html": "79013b57ace8f5b2d7e4ab4fdf2f3067e02339556312fd05dfa415284e96e75c"
    }
   }
  }
