@@ -200,7 +200,7 @@ Godot (`biomes/GODOT.md`).
 | `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
 | `test-farfield.js` | `node core/terrain/test-farfield.js`, each check with a negative |
 | `44g-core-glacier.js` | a valley glacier (global `KGLACIER`, [G data], needs `KRAND`; 2026-11-03, lifted from the Throne's glacier station): along an axis (`up`, the centre line, half-width and thickness as functions of u, the snout) it gives `iceAt`, the `trough` the ice cut, lateral and terminal `moraine`s (breached for the river), the proglacial lake's basin (`lakeK`, `lakeAt`), `bed` (all three in the Throne's order); placement on `KRAND.hash` per kind and index (`seracs`, `bergs`, `crevasses`, `caves` from specs) and `records()`. Every part but the ice is optional (`null`: none). The shape uses `Math.exp`/`pow` as the Throne did (a port matches to a hair, not the bit); the draws are bit-exact |
-| `host/44h-core-glacier-draw.js` | its three.js half (`KGLACIER.drawer`, [draw]): the serac and ice-tower items, ice-cave shells lit blue through the ice (an optional `tint`), the ice arch, crevasse slots, the steam. The Throne's glacier station draws through it with its own placement draws, and its page draws exactly what it drew (a scene fingerprint of every mesh, instance, record and a terrain grid: 39 of 39 lines the same) |
+| `host/44h-core-glacier-draw.js` | its three.js half (`KGLACIER.drawer`, [draw]): the serac and ice-tower items, ice-cave shells lit blue through the ice (an optional `tint`; opt-in, 2026-11-03, Copper Glacier: `apron` (a fillet of ice from the shell's flank to the ground, a share of R), `skirt` (m: the foot carried into the ground), `mouthTop` (how high the mouth opens), `fine` (a finer shell), `uvWorld` (a planar map), `caveFloor` (a floor disc); all off by default, the Throne's caves draw as they did), the ice arch, crevasse slots, the steam. The Throne's glacier station draws through it with its own placement draws, and its page draws exactly what it drew (a scene fingerprint of every mesh, instance, record and a terrain grid: 39 of 39 lines the same) |
 | `test-glacier.js` | `node core/terrain/test-glacier.js`, each check with a negative: the Throne's numbers give its old formulas to the bit, placement deterministic and independent of run length |
 | `45-core-horizon.js` | horizon maps (global `KHORIZON`, [G data]; HEIGHT-RESEARCH item 2): `bake` (the horizon's elevation in eight directions over a heightfield, two RGBA8 arrays, and the sky visibility; an optional coarse far grid the rays read past the map; about 1 s at 256 x 256), `at`/`skyAt`/`horizon` (what the shader computes, for tests and placement). Its three.js side is `host/45-core-horizon-shade.js` (`KHORIZON.shade(mat, Hz)`: the sun's direct light cut and the ambient darkened; `uniforms`, `glsl` for a material with its own shading) |
 | `test-horizon.js` | `node core/terrain/test-horizon.js`, each check with a negative |
@@ -269,6 +269,22 @@ map in 3D; `sand` the layer's hex sample, 2 value-noise lookups (8 hashes) and 2
 sample with a map. No draw calls, no textures past the page's own.
 Textures: `rock.megabreccia`, `ground.sand.black`, `ground.beads.orange` and `rock.palagonite` are in the library; the kinds need no
 new set (the polygons' fill and the pavement's stones are tints of the ground under them).
+
+**Adopting KGROUND's relief and triplanar sides** (2026-11-03, opt-in; the ground diagnosis and the shots are in `core/terrain/GROUND.md`).
+Without `relief` or `tri` the shader is the same byte for byte (`test-ground.js`'s FROZEN hashes).
+1. **Judge first, with no change to the page:** load it with `?kgrelief=1` (relief, the mesh cavities found on the scene, and the bed
+   relief on steep ground where the core strata path is on) and `?kgrelief=1&kgtri=1` (the side planes too). `tools/ground_shots.py`
+   takes the same near, mid and far cameras with and without, with their calls, triangles and GPU ms.
+2. **Adopt:** `KGROUND.hook(MAT, {..., relief: {bump: .05, near: 25, far: 140, cavity: .55, direct: .35, mesh: .7, strata: .3,
+   strataW: '<GLSL: where the beds show, e.g. vRock>', h: '<GLSL: a height of the page's own, metres-free, added>'}, tri: {from: .35,
+   to: .7}})`, and after the ground mesh is built `KGROUND.cavityMesh(mesh, {rings: [3, 18], depth: [.5, 4]})` (the attribute `aKGAO`
+   that `relief.mesh` reads; skip it and set `mesh: 0`). `strata` needs the core strata path (`KSTRATA.shade`, the uniform `uKSBed`);
+   on the legacy column it is left out by itself.
+   - `relief` costs **no texture unit** (it bumps the normal by the screen derivatives of the layers' blended height), so a page at the
+     Arc's 15-sampler limit (ebadlands) can take it. On MeshStandard it bumps the lit normal; on Lambert (r128 lights per vertex) it
+     scales the sun's share by the bumped facing, which is weaker: a Lambert ground gains more by moving to MeshStandard.
+   - `tri` samples each layer from the side on the steep (two side planes blended by facing): up to 2 more hex samples a layer there.
+3. Rebuild, run the page's verify, and take the shots again on the same cameras.
 
 **Adopting KFAR** (a far field round the ground square; the pilots are `biomes/nwlowlands/src/83-host-range.js` and
 `biomes/nhighlands/src/82-host-sky.js`):

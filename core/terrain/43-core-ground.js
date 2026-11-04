@@ -44,6 +44,16 @@
 //              map (the troughs' fill), warp (.12, cell units: the cracks wander), rim (0: a band of sorted stones beside the
 //              trough), rimTint
 // Every kind takes seed (a number below 997: the page's KRAND.hash of its world and a salt) so two layers differ.
+// Relief and triplanar sides (opt-in, 2026-11-03: the ground diagnosis, core/terrain/GROUND.md; without them the shader is unchanged):
+//   o.relief  {bump (.05: metres of relief per unit of the layers' blended height), near/far (25/140 m: faded out), cavity (.55: the
+//             sky light lost in the low of the height), direct (.35: the share of that on the sun), mesh (0: the strength of the mesh's
+//             own cavities, attribute aKGAO from KGROUND.cavityMesh), strata (0: metres of bed relief, hard beds proud, on the core
+//             strata path only), strataW (a GLSL float: where the beds show), strataNear/strataFar (120/300 m; skipped past it), h (a GLSL float added
+//             to the height), lambert (1: on a Lambert material, the sun scaled by the bumped facing)}. No texture unit.
+//   o.tri     {from .35, to .7, far 250}: on the steep (1 - |n.y|) and nearer than far m, each layer is sampled from the side as well, two
+//             planes blended by facing
+//   KGROUND.cavity({pos, index, normal, count}, o) / KGROUND.cavityMesh(mesh, o)   the mesh's hollows per vertex, 0..1 ([G data])
+//   ?kgrelief=1 [&kgtri=1]   the before-and-after switch on any page, for judging (the page's own options win); ?kgrelief=2 doubles it
 //
 // Godot: ground.gdshader with the same layers as uniforms and the same functions (the godotshaders hex-tiling port, MIT,
 // is the same algorithm); core/terrain/README.md, "Godot".
@@ -209,32 +219,120 @@
 
   // ---------------------------------------------------------------- the hook
   function code(o,LY){var far=o.far===false?null:(o.far||{}),d0=far?(far.d==null?60:far.d):0,lv=far?(far.levels==null?3:far.levels):0,bl=o.blend==null?.18:o.blend,f=function(v){return (+v).toFixed(4);};
+    var tri=triOf(o),rl=reliefOf(o);
     var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-cameraPosition);',
       ' float kgLv='+(far?'min('+f(lv)+',max(0.0,log2(max(kgD/'+f(d0)+',1.0))))':'0.0')+';float kgHc='+(o.baseH||'0.5')+';'];
+    if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y))*(1.0-smoothstep('+f(tri.far*.7)+','+f(tri.far)+',kgD));');
+    var smp=function(i,k){return tri?'kgTS(uKG'+i+',kgWP,kgDx,kgDy,kgN,'+k+',kgLv,kgSt)':'kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv)';};
     LY.forEach(function(L,i){
       if(L.kind!=null){if(!KINDS[L.kind])throw new Error('KGROUND: no layer kind \''+L.kind+'\' (clast, sand, polygon)');
         s.push(' {float kgA0=clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+';if(kgA0>0.0){'+kindBody(L,i,f)+
           'float kgA=kgHL(kgA0,kgHc,kgH,'+f(bl)+');diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}}');return;}
       var h=L.h||{},from=h.from||'lum',hc=h.contrast==null?1.6:h.contrast,k=f(L.k);
-      s.push(' {vec4 kgT=kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv);'+
+      s.push(' {vec4 kgT='+smp(i,k)+';'+
         'vec3 kgC='+(L.lin===false?'kgT.rgb':'pow(kgT.rgb,vec3(2.2))')+'*('+(L.tint||'vec3(1.0)')+')*'+f(L.gain==null?1:L.gain)+';'+
         'float kgH='+(from==='a'?'kgT.a':'clamp(0.5+(kgLum(kgT.rgb)-kgLum(KG_LOD(uKG'+i+',vec2(0.5),16.0).rgb))*'+f(hc)+',0.02,1.0)')+';'+
         'float kgA=kgHL(clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+',kgHc,kgH,'+f(bl)+');'+
         'diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}');});
+    if(rl){var fd=function(a,b){return '(1.0-smoothstep('+f(a)+','+f(b)+',kgD))';};
+      /* the relief's height in metres (kgBH, bumped after the normal is made) and the occlusion (kgOcc, on the light after it is summed) */
+      s.push(' {float kgF='+fd(rl.near,rl.far)+';kgBH=(kgHc-0.5+('+rl.h+'))*'+f(rl.bump)+'*kgF;'+
+        (rl.strata?'float kgSF=('+rl.strataW+')*'+fd(rl.strataNear,rl.strataFar)+';if(kgSF>0.001)kgBH+=ksRelief(vSWP,vSWN)*'+f(rl.strata)+'*kgSF;':'')+
+        'kgOcc=(1.0-'+f(rl.cavity)+'*kgF*(1.0-smoothstep(0.12,0.55,kgHc)))'+(rl.mesh?'*(1.0-'+f(rl.mesh)+'*clamp(vKGAO,0.0,1.0))':'')+';}');}
     s.push('}');return s.join('\n');}
+  // ---------------------------------------------------------------- relief and triplanar (opt-in, 2026-11-03: the ground diagnosis, GROUND.md)
+  function triOf(o){if(!o.tri)return null;var t=o.tri===true?{}:o.tri;return {from:t.from==null?.35:t.from,to:t.to==null?.7:t.to,far:t.far==null?250:t.far};}
+  function reliefOf(o){if(!o.relief)return null;var r=o.relief===true?{}:o.relief;
+    return {bump:r.bump==null?.05:r.bump,near:r.near==null?25:r.near,far:r.far==null?140:r.far,cavity:r.cavity==null?.55:r.cavity,
+      direct:r.direct==null?.35:r.direct,mesh:r.mesh==null?0:r.mesh,h:r.h||'0.0',strata:r.strata||0,strataW:r.strataW||'1.0',
+      strataNear:r.strataNear==null?120:r.strataNear,strataFar:r.strataFar==null?300:r.strataFar,lambert:r.lambert==null?1:r.lambert};}
+  // a layer sampled on the plane, and on the steep from the side (the two side planes blended by the normal's facing): kgSt is 0 on the flat
+  var TRI_GLSL='vec4 kgTS(sampler2D t,vec3 p,vec3 dx,vec3 dy,vec3 n,float k,float lv,float s){vec4 c=vec4(0.0);if(s<1.0)c=kgSample(t,p.xz*k,dx.xz*k,dy.xz*k,lv);'+
+    'if(s>0.0){float a=abs(n.x)/(abs(n.x)+abs(n.z)+1e-5),wx=smoothstep(0.3,0.7,a);vec4 sd=vec4(0.0);'+
+    'if(wx<1.0)sd+=(1.0-wx)*kgSample(t,p.xy*k,dx.xy*k,dy.xy*k,lv);if(wx>0.0)sd+=wx*kgSample(t,p.zy*k,dx.zy*k,dy.zy*k,lv);c=mix(c,sd,s);}return c;}\n';
+  // the bed's relief at a point (core/terrain/host/35-core-strata-shade.js's core path: the same bed as strataColor): a hard bed stands
+  // proud and a soft one is recessed, each bed's nose rounded at its top and foot, a faint lamination; 0 in a blocks formation
+  var STRATA_RELIEF_GLSL=['float ksRelief(vec3 wp,vec3 wn){',
+   ' wn=normalize(wn);float w1;float wsh=uKSWash.x*smoothstep(uKSWash.y,uKSWash.z,wn.y);',
+   ' float yy=ksYY(wp,w1)+wsh,side=0.0;',
+   ' if(uKSLB.w>0.5){float w=smoothstep(uKSLat2.x,uKSLat2.y,(wp.x-uKSLat.z)*uKSLat.x+(wp.z-uKSLat.w)*uKSLat.y);',
+   '  if(w>=1.0)side=1.0;else if(w>0.0)side=w>ksNoise(vec4(0,0,1,0),yy/uKSLat2.z,((wp.z-uKSLat.w)*uKSLat.x-(wp.x-uKSLat.z)*uKSLat.y)/500.0)?1.0:0.0;}',
+   ' float y0=side>0.5?uKSLB.x:uKSCR.x,yl=yy;vec4 rp=side>0.5?uKSRepB:uKSRep;',
+   ' if(rp.x>0.0&&yl<y0)yl=y0+mod(yl-y0,rp.x);if(rp.y>0.0&&yl>=rp.w)yl=rp.z+mod(yl-rp.z,rp.y);',
+   ' float idx=side>0.5?uKSLB.z+clamp(floor((yl-uKSLB.x)/uKSCR.y),0.0,uKSLB.y-1.0):clamp(floor((yl-uKSCR.x)/uKSCR.y),0.0,uKSN-1.0);',
+   ' float ci=mod(idx,uKSCR.z),cj=floor(idx/uKSCR.z);vec4 bi=KSFETCH(uKSBed,ci,cj,uKSCR.z,uKSCR.w);if(bi.a>0.9)return 0.0;',
+   ' float nose=smoothstep(0.0,0.14,bi.r)*smoothstep(1.0,0.8,bi.r);',
+   ' return (bi.b-0.5)*(0.3+0.7*nose)+0.04*sin(yy*5.1+w1*31.0);}'].join('\n')+'\n';
+  // the normal bumped by the relief's height (Mikkelsen 2010, "Bump Mapping Unparametrized Surfaces on the GPU": the height's screen
+  // derivatives on the surface's own), in view space; no texture unit, so a page at its sampler limit can take it
+  var BUMP_GLSL='vec3 kgBump(vec3 vp,vec3 n,float h){vec3 px=dFdx(vp),py=dFdy(vp),r1=cross(py,n),r2=cross(n,px);float dt=dot(px,r1);'+
+    'vec3 g=sign(dt)*(dFdx(h)*r1+dFdy(h)*r2);return normalize(abs(dt)*n-g);}\n';
+  function reliefFrag(sh,rl,K){var fs=sh.fragmentShader,std=fs.indexOf('#include <normal_fragment_maps>')>=0,
+      vp='(viewMatrix*vec4(kgWP,1.0)).xyz';
+    /* MeshStandard (and Phong): the lit normal is bumped. Lambert (r128 lights per vertex): the sun's share is scaled by the bumped
+       normal's facing over the face's own, the nearest a per-vertex material can come */
+    if(std)fs=K.rep(fs,'#include <normal_fragment_maps>','#include <normal_fragment_maps>\nnormal=kgBump('+vp+',normal,kgBH);','kground');
+    var light='{reflectedLight.indirectDiffuse*=kgOcc;reflectedLight.indirectSpecular*=kgOcc;float kgOd=mix(1.0,kgOcc,'+(+rl.direct).toFixed(4)+');';
+    if(!std&&rl.lambert)light+='\n#if NUM_DIR_LIGHTS > 0\n{vec3 kgV='+vp+',kgN0=normalize(cross(dFdx(kgV),dFdy(kgV))),kgL=directionalLights[0].direction;'+
+      'vec3 kgNb=kgBump(kgV,kgN0,kgBH);float kgR=clamp(max(dot(kgNb,kgL),0.0)/max(dot(kgN0,kgL),0.08),0.0,2.0);kgOd*=mix(1.0,kgR,'+(+rl.lambert).toFixed(4)+');}\n#endif\n';
+    light+='reflectedLight.directDiffuse*=kgOd;reflectedLight.directSpecular*=kgOd;}';
+    sh.fragmentShader=K.rep(fs,'#include <aomap_fragment>','#include <aomap_fragment>\n'+light,'kground');}
+  // ---------------------------------------------------------------- the mesh's own cavities (data: plain arrays, no THREE; Godot bakes the same)
+  // KGROUND.cavity({pos, index, normal, count}, o) -> Float32Array of 0 (open) .. 1 (in a hollow) per vertex: each vertex against its
+  // neighbourhood smoothed by `rings` passes of the umbrella operator (o.rings [3, 18]: two scales, a gully and a valley), the depth
+  // below it along the normal over o.depth metres ([.5, 4]), mixed by o.mix ([.5, .5]); a crest reads 0. Deterministic, no draws.
+  function cavity(g,o){o=o||{};var P=g.pos,I=g.index,n=g.count||P.length/3,N=g.normal,rings=o.rings||[3,18],dep=o.depth||[.5,4],mx=o.mix||[.5,.5];
+    var deg=new Uint32Array(n+1),i,j,a,b,c,t;
+    var edge=function(cb){if(I){for(t=0;t<I.length;t+=3){a=I[t];b=I[t+1];c=I[t+2];cb(a,b);cb(b,c);cb(c,a);}}else for(t=0;t<n;t+=3){cb(t,t+1);cb(t+1,t+2);cb(t+2,t);}};
+    edge(function(u,v){deg[u+1]++;deg[v+1]++;});for(i=0;i<n;i++)deg[i+1]+=deg[i];
+    var adj=new Uint32Array(deg[n]),fill=deg.slice(0,n);edge(function(u,v){adj[fill[u]++]=v;adj[fill[v]++]=u;});
+    var S=new Float64Array(P),T2=new Float64Array(n*3),out=new Float32Array(n),last=Math.max.apply(null,rings);
+    for(var r=1;r<=last;r++){for(i=0;i<n;i++){var s0=deg[i],s1=deg[i+1],k=s1-s0;if(!k){T2[i*3]=S[i*3];T2[i*3+1]=S[i*3+1];T2[i*3+2]=S[i*3+2];continue;}
+        var x=0,y=0,z=0;for(j=s0;j<s1;j++){var q=adj[j]*3;x+=S[q];y+=S[q+1];z+=S[q+2];}T2[i*3]=x/k;T2[i*3+1]=y/k;T2[i*3+2]=z/k;}
+      var sw=S;S=T2;T2=sw;
+      for(var m=0;m<rings.length;m++)if(rings[m]===r)for(i=0;i<n;i++){var nx=N?N[i*3]:0,ny=N?N[i*3+1]:1,nz=N?N[i*3+2]:0,
+        d=(S[i*3]-P[i*3])*nx+(S[i*3+1]-P[i*3+1])*ny+(S[i*3+2]-P[i*3+2])*nz;out[i]+=mx[m]*Math.min(1,Math.max(0,d/dep[m]));}}
+    return out;}
+  // the same on a THREE mesh: sets the attribute aKGAO (relief.mesh reads it) and returns it
+  function cavityMesh(mesh,o){var g=mesh.geometry,p=g.attributes.position;if(!g.attributes.normal)g.computeVertexNormals();
+    var a=cavity({pos:p.array,index:g.index?g.index.array:null,normal:g.attributes.normal.array,count:p.count},o),T=root.THREE||(root.BIO&&root.BIO.host&&root.BIO.host.THREE);
+    g.setAttribute('aKGAO',new T.BufferAttribute(a,1));return a;}
+  // the before-and-after switch without the page's word (?kgrelief=1 [&kgtri=1]): the relief and the triplanar sides on every KGROUND
+  // material whose page did not set them, and the mesh cavities found on the scene when the shader is first made. For judging only:
+  // a page adopts by passing o.relief / o.tri and calling cavityMesh itself
+  // the preview finds its meshes as they are first drawn (a page's scene is not always a global): Object3D's onBeforeRender, wrapped
+  // once and only under ?kgrelief=1
+  var PV=[];function pvCatch(mat){if(PV.indexOf(mat)<0)PV.push(mat);var T=root.THREE;if(!T||!T.Object3D||T.Object3D.prototype._kgPv)return;
+    var P=T.Object3D.prototype,was=P.onBeforeRender;P._kgPv=true;
+    P.onBeforeRender=function(r,s,c,g,m){if(m&&PV.indexOf(m)>=0&&g&&!g.attributes.aKGAO&&this.isMesh)cavityMesh(this);return was.apply(this,arguments);};}
+  function preview(){try{var q=new URLSearchParams(root.location&&root.location.search||'');var k=parseFloat(q.get('kgrelief'));return {relief:k>0,k:k>0?k:1,tri:q.get('kgtri')==='1'};}catch(e){return {};}}
   function hook(mat,o){o=o||{};var LY=(o.layers||[]).filter(function(L){return L&&(L.map||L.kind!=null);});if(!mat)return mat;
     mat.userData.kground=LY.map(function(L){return L.name||'layer';});if(!LY.length)return mat;
-    var K=kh(),at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),lib=glsl(o)+(kinds?kindsGlsl():''),body=code(o,LY);
+    var pv=preview(),pvMesh=false;
+    if((pv.relief&&o.relief==null)||(pv.tri&&o.tri==null)){var o2={};for(var q in o)o2[q]=o[q];
+      if(pv.relief&&o.relief==null){o2.relief={bump:.05*pv.k,cavity:Math.min(.9,.55*pv.k),mesh:Math.min(1,.7*pv.k),strata:.3*pv.k,strataW:'smoothstep(0.06,0.3,1.0-abs(normalize(vSWN).y))'};pvMesh=true;}
+      if(pv.tri&&o.tri==null)o2.tri=true;o=o2;}
+    var K=kh(),at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),tri=triOf(o),rl=reliefOf(o),body=code(o,LY);
+    var lib=glsl(o)+(kinds?kindsGlsl():'')+(tri?TRI_GLSL:'')+(rl?BUMP_GLSL:'');
     if(kinds)mat.userData.kgroundKinds=LY.map(function(L){return L.kind||null;});
+    if(rl||tri)mat.userData.kgroundRelief={relief:!!rl,tri:!!tri};
     /* a KHOOK layer (core/shader): after the page's own hook and the layers before it, keyed by its layers; a missing anchor throws */
     return K.add(mat,'kground',function(sh,r){if(/varying vec3 kgWP;/.test(sh.vertexShader))return;LY.forEach(function(L,i){if(L.map)sh.uniforms['uKG'+i]={value:L.map};});
       var wp='vec4 kgW4=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkgW4=instanceMatrix*kgW4;\n#endif\nkgWP=(modelMatrix*kgW4).xyz;\n';
-      sh.vertexShader='varying vec3 kgWP;\n'+K.inject(sh.vertexShader,{at:'project_vertex',after:wp,fallback:{at:'fog_vertex',before:wp}},'kground');
-      var dec='varying vec3 kgWP;\n'+LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join('')+'\n'+lib;
+      if(tri)wp+='kgWN=normalize(mat3(modelMatrix)*objectNormal);\n';
+      if(rl&&rl.mesh)wp+='vKGAO=aKGAO;\n';
+      var vdec='varying vec3 kgWP;\n'+(tri?'varying vec3 kgWN;\n':'')+(rl&&rl.mesh?'attribute float aKGAO;varying float vKGAO;\n':'');
+      sh.vertexShader=vdec+K.inject(sh.vertexShader,{at:'project_vertex',after:wp,fallback:{at:'fog_vertex',before:wp}},'kground');
+      /* the bed relief needs the core strata path's uniforms (KSTRATA.shade); on the legacy strata, or none, it is left out */
+      var b=body,ks=!!(rl&&rl.strata&&sh.fragmentShader.indexOf('uKSBed')>=0);if(rl&&rl.strata&&!ks)b=b.replace(/float kgSF=[^;]*;if\(kgSF>0\.001\)kgBH\+=ksRelief\([^;]*;/,'');
+      var dec='varying vec3 kgWP;\n'+(tri?'varying vec3 kgWN;\n':'')+(rl?(rl.mesh?'varying float vKGAO;\n':'')+'float kgBH=0.0,kgOcc=1.0;\n':'')+
+        LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join('')+'\n'+lib+(ks?STRATA_RELIEF_GLSL:'');
       var fs=K.rep(sh.fragmentShader,'void main() {',dec+'void main() {','kground');
-      fs=fs.indexOf(at)>=0?fs.replace(at,body):K.rep(fs,'#include <map_fragment>','#include <map_fragment>\n'+body,'kground');
-      sh.fragmentShader=fs;},{key:'kground-'+(o.key||'')+'-'+LY.length+'-'+body.length});}
+      fs=fs.indexOf(at)>=0?fs.replace(at,b):K.rep(fs,'#include <map_fragment>','#include <map_fragment>\n'+b,'kground');
+      sh.fragmentShader=fs;if(rl)reliefFrag(sh,rl,K);
+      if(pvMesh)pvCatch(mat);},
+      {key:'kground-'+(o.key||'')+'-'+LY.length+'-'+body.length+(rl||tri?'-r'+(rl?1:0)+(tri?1:0):'')});}
   function kh(){var K=root.KHOOK;if(!K)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');return K;}
-  root.KGROUND={layer:layer,hook:hook,glsl:glsl,code:code,kindsGlsl:kindsGlsl,KINDS:Object.keys(KINDS),BRECCIA:BRECCIA,
+  root.KGROUND={layer:layer,hook:hook,glsl:glsl,code:code,kindsGlsl:kindsGlsl,KINDS:Object.keys(KINDS),BRECCIA:BRECCIA,cavity:cavity,cavityMesh:cavityMesh,
     fn:{hash:hash,tri:tri,heightLerp:heightLerp,lod:lod,hash3:hash3,vor2:vor2,vor3:vor3,vnoise:vnoise,ripple:ripple}};
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -63,7 +63,9 @@ function boulder(x,y,z,lv,set,st){if(!okGround(x,z,1.5))return null;const s=rr(.
 function tumbler(x,y,z,lv,st,rooted){const r=rr(.5,1.5)*(rooted?.8:1);BIO.put('tumbler',[x,y+r*(rooted?.85:.7),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r*rr(.8,1),r],leafCol(rooted?PAL.tumblerGreen:PAL.tumbler,1.2,.03,.08,.06));if(st)st.tumblers++;}
 function drift(ox,oz,orad,lv,st){const w=W(ox,oz),cx=ox-w[0]*(orad+.8),cz=oz-w[1]*(orad+.8),n=lv===2?ri(4,10):ri(2,4);
  for(let i=0;i<n;i++){const side=rr(-1,1)*(orad+1),back=rr(0,1.6),x=cx-w[1]*side-w[0]*back,z=cz+w[0]*side-w[1]*back;if(BIO.mask(x,z)<=0)continue;
-  const y=Y(x,z),r=rr(.5,1.3);BIO.put('tumbler',[x,y+r*.7+(i>n*.6?r*.9:0),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r,r],leafCol(PAL.tumbler,1.15,.03,.08,.06));if(st)st.tumblers++;}
+  /* the drift's back row stands a little higher, never more than half a metre: lifted .9 r it hovered wherever no ball happened to lie under it (the
+     final rebuild, 2026-11-03: the attach audit's floating tumblers); the same draws, so no other plant moves */
+  const y=Y(x,z),r=rr(.5,1.3);BIO.put('tumbler',[x,y+r*.7+(i>n*.6?Math.min(r*.9,.45+.05*r):0),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r,r],leafCol(PAL.tumbler,1.15,.03,.08,.06));if(st)st.tumblers++;}
  if(st)st.drifts++;}
 // seed and cotton drifts: a pale mat in the lee (downwind) of an obstacle
 function seedDrift(ox,oz,orad,st){const w=W(ox,oz),x=ox+w[0]*(orad+1.2),z=oz+w[1]*(orad+1.2);if(BIO.mask(x,z)<=0)return;
@@ -125,7 +127,7 @@ function sail(x,y,z,lv,st){const h=rr(1.6,3.4),r=h*rr(.08,.12),col=leafCol(PAL.s
   BIO.put('column',[x+Math.cos(a)*r,ay,z+Math.sin(a)*r],qEuler(Math.cos(a)*.0,0,0),[r*1.4,r*3,r*1.4],col);
   BIO.put('column',[ax,ay,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah,r*1.4],col);
   for(let b=0;b<2;b++)BIO.put('blade',[ax,ay+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
- if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);BIO.put('blade',[px,py,pz],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),[.7,.6,.8],bc);}}
+ if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);const e=qEuler(rr(-1,1),rr(0,TAU),rr(-1,1));if(py<BIO.waterH(px,pz)+.6)continue;BIO.put('kite',[px,py,pz],e,[.7,.6,.8],bc);}}   /* never under a lake's surface (the scablands' plunge lake): the same draws */
  if(st)st.sails++;}
 // a STAR DRIFTER: a pale star of fronds on a thin stalk; the whole crown is the parachute: some stalks stand bare, their
 // crowns lying downwind
