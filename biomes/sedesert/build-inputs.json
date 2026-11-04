@@ -13,7 +13,7 @@
     "biomes/sedesert/PORT.md": "9d9da168544d3b6c58a4e7c490d4b9374367ee90b378ceae73329b085c4b683d",
     "biomes/sedesert/build.py": "c5acee795c72d79d47792bc3fa02db4e7666fb9eda2f656d0b983c6e31a5d77f",
     "biomes/sedesert/src/00-head.html": "b4d3f2fd06e4486fcb7200714471684f404e0a4e8d286f7c71ff9c87233784ed",
-    "biomes/sedesert/src/45-host-stage.js": "58401a4dad8b705e48185b7f469afe65e2196340b3995fe8b4523c5236d3cfa8",
+    "biomes/sedesert/src/45-host-stage.js": "463d5bcc6e45f5c52072a9f775f4e327df6c92e3277f45c308938af5e8e1b9f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
     "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
@@ -152,10 +152,10 @@
     "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert.html": "da9e71de9174ae9f6400cab714c17de524051e0a28ca3c0dd68d892fea5c867c"
+    "biomes/sedesert/dist/sedesert.html": "7d20daf79f9aede5892829a6c738b701f9580fa972a699dc17defd84d9ea318c"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert.html": "da9e71de9174ae9f6400cab714c17de524051e0a28ca3c0dd68d892fea5c867c"
+    "biomes/sedesert/dist/sedesert.html": "7d20daf79f9aede5892829a6c738b701f9580fa972a699dc17defd84d9ea318c"
    }
   },
   "build.py --station bowl": {
