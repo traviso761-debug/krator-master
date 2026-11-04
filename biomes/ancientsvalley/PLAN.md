@@ -195,26 +195,26 @@ All *proposed* until the owner settles them; the lore is in LORE.md 4 (l.149), 6
   `core/charactermodels` with body mods (the non-human spike's precedent: tails, heads; new mods for the *mutants* folder's fused mouths,
   starfish heads, extra joints, raw grafts), a few in rags with a gun. Savage, in bands, hunting the feral animals; in the subways by day.
   Camps on `core/camp` when the bands are built.
-- **The augmented ("cyberfreaks"; the owner wrote "cyberliches" on 2026-11-04).** Distant cousins of the Yusar (the cybernetics tribe of Carcosa
+- **The Cyberliches** (the owner's name, settled 2026-11-04; "cyberfreaks" in the brief). Distant cousins of the Yusar (the cybernetics tribe of Carcosa
   and Henge, LORE l.694; their speech l.667-674). Former Ancients or their near descendants, kept alive lich-like by their technology, having lost
   something of their humanity for it. Few. **Their major haunt is Wheel (`city5`)**, among the machines. The `core/charactermodels` cybernetic arm
   mods are the tribe's; these take them further: metal below the neck, cables for a spine, a cloak of arms. Cool, calculating, self-preserving;
-  they bargain and may not keep the bargain. **A name is still wanted.** *Proposed*, in the Yusar's own way of making words (LORE l.668-673):
-  **the Unleft** (the ones who never left, against LORE l.138 "did they mean to leave?"), **the Stayed**, or **the Lingerers**; by others,
-  *cyberliches*, *tin-liches*, *the Long*, *coldbloods*.
+  they bargain and may not keep the bargain. *Cyberliches* is what others call them; a name of their own in the Yusar's way of making words
+  (LORE l.668-673: *the Unleft*, *the Stayed*) can come with their speech.
 - **Feral robots.** Three behaviours on the same chassis families, so the far view cannot tell them apart: **keepers** (a thousand-year routine:
   a sweeper, a crane that loads nothing, a tram that runs), **hunters** (attack on sight: the Stalkers of `kits/mechs`, `st_harpooner`,
   `st_blade`, are the model of the kind), and **feigners** (docile until the moment). *Proposed*: the valley's own robots are a kit file on
   `kits/mechs` (the *robo* folder: the stilt tripod, the shrouded walker in a coat of tubes, the hunched trooper), and the Ancients kit's
   machines where they already exist. Eternian influence through the Call (LORE l.623-628) is a game system: the biome gives the robots a
   `calls` flag and a tell, nothing more.
-- **Extraplanar entities.** New to the repo. The folder: stilted walkers, haloed hooded figures, voids with eyes, a sun-headed giant,
-  geometric solids with their own weather. *Proposed*: a kit of their own (`kits/extraplanar`), because they are neither fauna nor
-  characters; some are **phenomena** (a void that drifts, a solid that hums) and belong with the anomalies' records; the hostile ones are
-  hunters on the fauna kit's gaits with the `centaur` and stilt builders. Where they come through: **portals**, an anomaly kind
-  (`PLAN-ANOMALIES.md` 4).
-- **The Lizardmen.** The brief: the war likely unleashed them here. LORE 6.20 has them on the Rift floor beyond the Outer Wall. The two
-  agree if the Valley was where they came through and the Rift where they went (or were driven); a lore question below.
+- **Extraplanar entities** (settled 2026-11-04: a kit of their own, both kinds). New to the repo. The folder: stilted walkers, haloed hooded
+  figures, voids with eyes, a sun-headed giant, geometric solids with their own weather. `kits/extraplanar`, because they are neither fauna nor
+  characters: the **hunters** on the fauna kit's gaits with the `centaur` and stilt builders, and the **phenomena** (a void that drifts, a solid
+  that hums, a haloed presence) as anomaly records. Where they come through: **portals**, an anomaly kind (`PLAN-ANOMALIES.md` 4), thickest at
+  `city3`. Their far-tier silhouettes are shared with the mutants' and the robots' (section 9).
+- **The Lizardmen** (settled 2026-11-04). The war loosed them **here**: they came through in the Valley and crossed the Outer Wall to the Rift
+  floor, where LORE 6.20 has them now. A few remnants stay in the Valley, and Thera's stair (`city6`) is the way they went. LORE 6.20 gets a
+  line to say so when the valley's lore is written up.
 - **Visitors:** salvagers under the State's licence (LORE l.681), Dalab's patrols from Blade and Span, the Yusar from Carcosa, the rare bandit.
 
 ## 7. Fields (from the first plan, 2026-10-29, revised)
@@ -250,8 +250,12 @@ pressure, a creaking building's groan. The first plan's picks from the sound lib
 
 `PLAN-ANOMALIES.md` is the detail. The brief adds to it:
 
-- **Radiation**, the run-of-the-mill hazard: a `hazardKinds` row `rad` (a dose field with a long soak, danger by dose, no nav avoid at the
-  rim, a geiger tell on the audio and a shimmer of dead ground), on `KHAZ` like heat or gas.
+- **Radiation**, the run-of-the-mill hazard: a `hazardKinds` row `rad` on `KHAZ` like heat or gas. **Its rules (the owner, 2026-11-04):** a
+  slow dose with a long soak. Past a high threshold it is **fatal at once**; below that it **sickens**, and past a lower threshold it **mutates**, with
+  a bad mutation more likely than a useful one (a body mod from the mutants' list). If it did not kill, the load **decreases slowly over time**, faster
+  or slower with certain medications. **Dalab has a genemod** that raises the tolerable dose, and **shielding** slows the intake considerably. The
+  record holds `dose`, `soak`, the two thresholds and a `shield` factor; the game rules (genemod, medications) read them. The tell: a geiger click
+  on the audio (the Ancients left counters about) and the dead-ground shimmer; no nav avoid at the rim, so a player can walk in.
 - **Portals**, an anomaly kind: a door to elsewhere, some on Krator (a teleport to another station's coordinates) and some not (an interior with
   no world coordinates, as the House's depth). Where the extraplanars come through.
 - **Space distorted** as a hazard to life, not only a look: the Bend's and the Broken Country's cores carry a `taint` dose.
@@ -322,23 +326,22 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 
 ## 13. Open questions for the owner
 
-1. **A name for the augmented.** Proposed: the Unleft, the Stayed, the Lingerers (section 6).
-2. **The Lizardmen's origin.** The brief has the war unleash them here; LORE 6.20 has them on the Rift floor. Did they come through in the
-   Valley and cross the Outer Wall, or were they loosed in both?
+1. ~~A name for the augmented~~ **Settled 2026-11-04:** the Cyberliches (section 6).
+2. ~~The Lizardmen's origin~~ **Settled 2026-11-04:** loosed here, crossed to the Rift; remnants stay (section 6).
 3. ~~The scale of the city~~ **Settled 2026-11-03:** B first (the floor and shelf), measured on the GPU before A is considered; Dorado is the
    drowned city; the code refers to the settlements and basins by number (section 3).
 4. **The centres.** `city1`-`city6` as the intact centres (`city3` drowned); the seven basins as the former ones. Carcosa is just outside
    the polygon and the Yusar's: is it the valley's northern gate or another place? Under B, Blade (`city4`, 1,229 m) and Thera (`city6`,
    1,653 m) stand outside the city's bands, in the forest: outposts on their own, which suits Dalab's story of Blade.
 5. ~~One hazard theme per settlement~~ **Settled 2026-11-04:** yes; the table in section 9.
-6. **Radiation's rules:** a dose that heals, a dose that doesn't, or a dose that mutates? What the tell is: a geiger click is the obvious
-   one, and it says the Ancients left counters lying about.
-7. **The extraplanars:** a kit of their own, as proposed? Creatures that hunt, phenomena that drift, or both? Any you want from the folder
-   first? And the "hard to tell apart" rule (section 9): one shared silhouette set for mutants, entities and machines at the far tiers?
+6. ~~Radiation's rules~~ **Settled 2026-11-04:** section 9.
+7. ~~The extraplanars~~ **Settled 2026-11-04:** a kit of their own, hunters and phenomena (section 6). Still open: which of the folder's
+   figures to build first.
 8. ~~The flora's tint~~ **Settled 2026-11-04:** the shader layer, and a short list of mutant species beside it (section 5).
 9. ~~Where the farm pods and the industrial family live~~ **Settled 2026-11-04:** new families in `kits/metropolis` (section 3).
 10. ~~Stations first or streaming~~ **Settled 2026-11-04:** stations first (section 12).
-11. **The questions of `PLAN-ANOMALIES.md` 12 still stand:** the eigenweapon's family as the cause; Press fatal or not; the time cap; the ruin
-    share (10-15%); and whether `crush` serves the Press or a `crushing` row is wanted.
-12. **The fields' names:** `taint` for the purple leak and `scar` for the dead ground; say if you want other words, since they will be in
-    every record.
+11. ~~The questions of `PLAN-ANOMALIES.md` 12~~ **Settled 2026-11-04:** the eigenweapon's family is the cause; the Press is fatal; time owed is
+    capped at a day; 10-15% of towers stand; the Press gets its own `crushing` row.
+12. ~~The fields' names~~ **Settled 2026-11-04:** `taint` and `scar`.
+
+**Every question of the plan is settled as of 2026-11-04**, except Carcosa's part (4) and which extraplanar figures come first (7). Station 0 can start.

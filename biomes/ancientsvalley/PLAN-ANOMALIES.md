@@ -4,7 +4,7 @@ The owner's brief: make the valley particularly weird and hazardous, with region
 faster or slower, gravity reverses or grows several times stronger, spaces behave like *House of Leaves*, and, if the engine allows it,
 the landscape bends into a cracked Escher version of itself.
 
-**Status: plan, nothing built.** Lore here is *proposed* until the owner settles it. **`PLAN.md` is the valley's master plan** (the owner's
+**Status: plan, nothing built; every question settled 2026-11-04 (section 12).** **`PLAN.md` is the valley's master plan** (the owner's
 brief of 2026-11-03: the megalopolis, its zones, the scars, the feral flora, the people); this file is the detail of the anomalies and of the
 metropolis's drawing tiers. The test bed for the towers is `kits/metropolis` (branch `claude/metropolis-testbed-2b4995`).
 
@@ -69,9 +69,9 @@ KANOM.zones() -> navigation zones for core/walk's export
 
 - **Kinds:** `gravity`, `time`, `bend`, `space`, and (2026-11-03) `portal`. They're a new vocabulary in `core/tags`, beside `hazardKinds`.
 - **Damage goes through `KHAZ`.** An anomaly that hurts also registers a hazard record, so the inspector, overlay, zones and export work as they do
-  now. `hazardKinds` already has `crush` and `time` (a stasis field: `KHAZ.timeScale`, `here().time`; checked 2026-11-03). New rows: `aging` (fast time),
-  `lift` (reversed gravity), `rad` (radiation, `PLAN.md` 9); `crush` serves the Press unless the owner wants a `crushing` row of its own. `KHAZ.here` then
-  reports them like heat or gas.
+  now. `hazardKinds` already has `crush` and `time` (a stasis field: `KHAZ.timeScale`, `here().time`; checked 2026-11-03). New rows: `crushing` (the Press: its own
+  row, the owner's choice 2026-11-04, so heavy gravity is a kind of its own in the inspector and the export; `crush` stays the ordinary press of a
+  falling block), `aging` (fast time), `lift` (reversed gravity), `rad` (radiation, `PLAN.md` 9). `KHAZ.here` then reports them like heat or gas.
 - **Determinism:** `KRAND.hash(world, cell, index, salt)`. A rewired House depends on seed and visit count, not on draw order.
 - **Node test:** `core/anomaly/test-anomaly.js`, with negatives: strength is 0 outside the shape, overlaps combine in a fixed order, and no reader changes
   anything when no record is in reach.
@@ -209,13 +209,9 @@ Superseded by `PLAN.md` 12 (2026-11-03): a station with no anomaly comes first, 
 
 ## 12. Open questions for the owner
 
-Still open on 2026-11-03 (the rest moved to `PLAN.md` 13):
-
-1. **Lore:** the eigenweapon's family, as proposed, or another cause?
-2. **The basin assignments:** The House at Babel feels right; are the others?
-3. **Fatal or merely punishing?** Does the Press kill, or just stop you?
-4. **Time jumps:** the cap on time owed when leaving, proposed at a day.
-5. **The metropolis's ruin:** how much of the city still stands (section 13 proposes 10-15%).
+**All settled by the owner on 2026-11-04:** the cause is the eigenweapon's family (section 1 stands as lore); the Press is **fatal** at its core;
+time owed on leaving is **capped at a day**; **10-15%** of the metropolis's towers stand (section 13). The basin assignments of section 3 stand
+until the owner moves one. The settlements' own themes are in `PLAN.md` 9.
 
 ## 13. The metropolis (the owner, 2026-11-02)
 
