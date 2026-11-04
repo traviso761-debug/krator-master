@@ -116,9 +116,13 @@
    "bytes": 1581053,
    "sha256": "8e606a222423320da0d497336f3398c4ef9e574e53328c351817479dbe2b8e04"
   },
+  "biomes/nhighlands/dist/nhighlands-bogs.html": {
+   "bytes": 8590131,
+   "sha256": "cb7997d7e4b5deffed6dd10c33f81a8d74aade4cdd68dbafec35c90b5a83ce28"
+  },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 6308440,
-   "sha256": "0783c4c6bda9ff80eb1e2fcff5df2665c7df0f97377fd88f39b37a1d5e7d271e"
+   "bytes": 8530523,
+   "sha256": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
    "bytes": 5683900,

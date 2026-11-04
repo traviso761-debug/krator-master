@@ -491,7 +491,7 @@ BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
    quad, three cells a card at .75, the needles .88 (core BIO.geo.cells; the owner, 2026-10-26: whole sheets read as a grid). The
    library's cell is in the geometry, so these slots carry no cell in materials.json (without the pack each quad shows a ninth of the stand-in) */
 const SHEET=(g,about,scale)=>BIO.geo.cells?BIO.geo.cells(g,{n:3,about,scale:scale==null?.75:scale}):g;   /* .75: the sprigs overlap into a mass (.6 read sparse) */
-BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles'});
+BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles',cap:700000,capWhy:'every conifer\'s needle masses (17 species, ~25k trees: the boreal band is closed spruce and fir) and the snow on the high crowns, within the 32 M budget the owner set (KNOWN_ISSUES.md, Density): 632k at 2026-11-01, the mid tier at 2.2x the hero\'s step, impostors past 800 m'});
 BIO.def('spray',BIO.geo.frond(3),M.spray,{label:'Cedar and hemlock sprays'});
 BIO.def('maple',NHL.LEAFSET&&NHL.LEAFSET.maple?SHEET(BIO.geo.clump({stem:true}),'origin'):SHEET(BIO.geo.clump()),M.maple,{attrs:['aN'],label:'Maple leaves'});
 BIO.def('broad',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.broad?{stem:true}:null),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
@@ -502,7 +502,7 @@ BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN'],label:'Willow leaves'});
 BIO.def('pinnate',SHEET(BIO.geo.clump()),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
 BIO.def('drape',BIO.geo.ribbon(4,.7,.14),M.drape,{label:'Hanging moss'});
 BIO.def('beard',BIO.geo.ribbon(4,.55,.10),M.beard,{label:'Beard lichen'});
-BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns'});
+BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns',cap:650000,capWhy:'the fern sea under the old growth (HANDOFF-FLORA.md), its cell already cut from 3 m to 5 m to hold the 32 M budget, and the far floor band to 1.1 km: 595k at 2026-11-01'});
 BIO.def('lady',BIO.geo.frond(3),M.lady,{label:'Lady ferns'});
 BIO.def('lace',BIO.geo.frond(3),M.lace,{attrs:['aC2'],label:'Lace ferns'});
 BIO.def('bracken',G.flat(),M.bracken,{label:'Bracken'});
@@ -589,4 +589,5 @@ BIO.def('fan',BIO.geo.clump(),M.fan,{attrs:['aN'],label:'Fan-leaf leaves'});
 BIO.def('staghorn',NHL.LIB.staghorn?G.antler():BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
 BIO.def('wheel',G.flat(),M.wheel,{label:'Sun-wheels'});
 BIO.def('sporepin',G.spore(),M.spore,{label:'Spore lamps'});
+NHL.TG=TG;NHL.HV=HV;   /* the tag makers, for a station's own plants (stations/bogs/62) */
 })();
