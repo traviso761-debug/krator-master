@@ -176,6 +176,40 @@ building engine is now named `core/engine`, not `core/kit`.
     **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
   - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
     Lambert), **scablands**.
+  - **Adopted 2026-11-04 (the west catch-up, branch `claude/ground-catchup-west-cloud`): swlowlands, nwlowlands, swbay, sedesert**,
+    all eleven pages rebuilt (`tools/build.py`), `PORT-BASELINE.json` updated for them, their seven `check_stale` baseline entries
+    dropped. Settings, each in its ground's `KGROUND.hook`, and `KGROUND.cavityMesh(m, {rings: [3, 18], depth: [.5, 4]})` on every
+    ground mesh (the floor and each strip):
+    - **swlowlands** (+ delta, gorge): already MeshStandard; `relief: {bump: .075, cavity: .8, mesh: 1, strata: .45, strataW: 'vGM.x'}`;
+      `tri` on the gorge only (its stage's `groundTri`: the 620 m walls).
+    - **nwlowlands** (+ margins): the ground (and the marl strip's material) Lambert -> MeshStandard (roughness .96); ground and margins
+      hooks `relief: {bump: .075, cavity: .8, mesh: 1}`; the marl hook adds `strata: .45, strataW: 'vGL2.z'` and `tri` (the gorge's walls).
+    - **swbay**: Lambert -> MeshStandard; `relief: {bump: .075, cavity: .8, mesh: 1}`; no `tri` (no flank steep and near).
+    - **sedesert**: Lambert -> MeshStandard on the kit's ground (the vertex's sun share `vSun` now scales the direct light after
+      `lights_fragment_end`, as `getShadowMask()*vSun` did) and on the Bowl's (`stations/bowl/84-host-ground.js`, read by the Bowl, Mantis
+      and the steppe); `relief: {bump: .075, cavity: .8, mesh: 1, strata: .45}` with `strataW: 'vRock'` (kit) and `'vL2.y'` (the Bowl's
+      yardangs); no `tri` (the layers lie on the flat; the steep faces' detail is `GROUND_TRI`'s already).
+    - **Switches on every page:** `?kgrelief=0` the relief off (still MeshStandard); `?kgstd=0` the Lambert ground and no relief
+      (nwlowlands, swbay, sedesert and the Bowl; their `?kground=0` keeps Lambert too). The page's own `relief` wins over
+      `?kgrelief=1.5`; `?kgtri=1` still adds the side planes where the page set none.
+    - **Fixed on the way:** sedesert's carve material (`MAT_CARVE`) runs the ground's composed hook, so the sky's cloud shade and height fog,
+      added to each lit material, ran twice on its shader: on MeshStandard the shade threw (the page drew two calls) and the fog's varyings
+      were declared twice. Their names are held on the carve by empty layers. swbay and sedesert list `31b-core-leafset.js` (`check_assembly`:
+      `20-core-kit.js` calls `BIO.leafOn`).
+    - **Checks:** `check_core_use` no new finding; `check_assembly`, `check_stale` 0 over; `test_all --no-build` fails only steps outside
+      this pass (gpu lanes, test-lava and test-scarp goldens, the isle demo's missing `dist/isle-city.plan.js`, interiors test-walk).
+      `verify.py --assert` in software GL (SwiftShader, 12-28 min a page) on all ten pages: error panel clean and no shader error on every
+      one. swlowlands (all three) and nwlowlands (both) pass; swbay and the four sedesert pages fail only the core attach audit (foliage
+      floating, 7-18%) and Mantis and the steppe the instance cap (grass, bunchgrass): not the ground, owed by those kits' own turns.
+      **The GPU `--all-views` verify is the coordinator's.**
+    - **Judged** (`tools/ground_shots.py` in SwiftShader, 960x540, no GPU timing; the audit shows bump, occlusion, mesh cavities, side
+      planes and bed relief linked where set): the gorge's walls gain the most (each bed a lip and a shade line, the wall's foot and its
+      hollows darker), but the near slope's bed lines alias into fine stripes and the valley-scale cavity darkens the whole lower wall:
+      judge on the GPU, and lower `mesh` or the second ring's depth if it reads too dark. The plain's leaf litter and nwlowlands' lake shore
+      gain a fine stony grain near the eye (in SwiftShader, without anisotropy, it reads partly as noise). MeshStandard alone makes
+      nwlowlands' floor lighter and evener than Lambert's mottled per-vertex light: check it against the owner's "too uniformly bright".
+      One swbay frame showed its litter washed out on MeshStandard; a direct load shows the litter as on Lambert (the frame caught the
+      texture before it streamed). sedesert and the Bowl: shots being taken (this paragraph is updated when they land).
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
