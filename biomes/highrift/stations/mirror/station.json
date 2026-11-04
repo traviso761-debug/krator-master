@@ -1,0 +1,6 @@
+{
+ "note": "Zone 2, the Mirror (PLAN.md section 4). kin: nhighlands' larch read in place as the rift larch (BIO.kin, stations/mirror/87-host-larch.js), with the pack families its builder draws with.",
+ "kin": {
+  "nhighlands": [["src/50-biome-nhighlands-species.js", "src/55-biome-nhighlands-trees.js"], "NHL", ["larch", "nbark0", "needle", "moss", "beard", "nwood"]]
+ }
+}
