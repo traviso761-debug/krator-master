@@ -135,7 +135,7 @@ function ieGallery(L,gd,o){o=o||{};const ph=o.postH||2.9,pl=.38,cv=P('carvN');
    block is solid), a tall spire */
 function ieSpireTower(s,bh,towerH,doorRy){box('coral',0,0,0,2*s,bh,2*s,P('coral'));box('stone',0,bh,0,2*s+.3,.2,2*s+.3,P('stone'));
  for(let k=0;k<4;k++)W(0,0,0,k*PI/2,()=>box('patGableE',0,bh-1.5,s+.01,2*s-.8,1.0,.02,WHITE));
- W(0,0,0,doorRy,()=>{svDoorway(0,0,s+.03,0,1.1,2.1,{hollow:false,mk:'planks',col:P('woodD'),t:.05,name:'tower door'});box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
+ W(0,0,0,doorRy,()=>{svDoorway(0,0,s+.03,0,1.1,2.1,{hollow:false,mk:'planks',col:P('woodD'),t:.05,style:'plank',name:'tower door'});box('wood',0,2.1,s+.04,1.5,.2,.08,P('woodD'));});
  return ieRoofE({hw:s+.7,hd:s+.7,eY:bh+.15,skirtH:1.1,skirtS:.62,towerH,towerS:.56,topSx:.14,topSz:.1,sq:4,th:.26,finial:'horns',facade:'patGableE',tnu:24});}
 defBuilding({key:'ie-square',name:'Ceremonial square (Kautoa)',seed:6102,w:58,d:50,h:24,budget:400000,front:{x:0,z:22.5,yaw:0},
  tags:{types:['plaza','religious','civic'],wealth:'rich',style:'east',role:'ceremonial square'},

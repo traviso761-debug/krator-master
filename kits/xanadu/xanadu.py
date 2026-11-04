@@ -26,7 +26,7 @@ VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js']                         
 # the real doors and glass (71c-xa-openings.js) draw through the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and
 # vWinClear items, kits/iziz-vernacular/src) and core/door's records and glass (KDOOR, KGLASS), read in place
 OPENINGS_VERN = ['69e5-iziz-openings.js']                                               # kits/iziz-vernacular/src
-DOOR = ['10-core-door.js', '20-core-glass.js']                                          # core/door
+DOOR = ['10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js']                  # core/door (30: the leaves' look, KDOORLEAF)
 
 
 def path(f):

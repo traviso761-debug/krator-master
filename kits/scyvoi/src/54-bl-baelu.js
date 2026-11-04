@@ -82,7 +82,7 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
   // the gate passage through the wall and the ring: stone sides, a dark ceiling, the two gate leaves (core/door: drawn open, E shuts them)
   W(0,Yc,R,0,()=>{const D=R-BL.Rin+.6;for(const s of [-1,1])box('stone',s*(G0+.3),0,-D/2,.6,GH,D,P('stoneD'));
    box('stone',0,GH,-D/2,G0*2+1.2,.6,D,P('stoneD'));box('patStep',0,-.05,-D/2+.5,G0*2,.08,D+1,null);   // the gate passage paved in black and cream
-   svLeaf(0,.05,-1.2,0,2*(G0-.1),4.9,{split:true,ajar:1.35,mk:'wood',col:P('woodD'),t:.16,name:'Baelu gate'});});
+   svLeaf(0,.05,-1.2,0,2*(G0-.1),4.9,{split:true,ajar:1.35,mk:'wood',col:P('woodD'),t:.16,style:'plank',name:'Baelu gate'});});
   door(0,Yc,R,0,G0*2);
   // the slit windows of the upper cells: glass over the room card (the wall is solid: the cells have no interiors), a stone hood over each
   for(let i=0;i<36;i++){const a=PI/2+(i+.5)/36*TAU;if(tkNearDoor(a,.12))continue;for(const lv of [1,2]){const v=BL.lv[lv]+1.6,r=R-v*BL.batter+.14;
@@ -99,7 +99,7 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
    for(let lv=0;lv<3;lv++){if(gate&&lv===0)continue;const y=Yc+BL.lv[lv],stable=lv===0&&Math.sin(a)<-.15;   // the north half of the ground floor is stabling
     W(Math.cos(a)*(ri-.02),y,Math.sin(a)*(ri-.02),-a-PI/2,()=>{const w=stable?2.1:1.0,h=stable?2.8:2.05;
      /* the cell's door, locked: the cells have no interiors yet (KNOWN_ISSUES.md); a stable's a pair of leaves */
-     box('stone',0,h,.04,w+.5,.32,.16,P('stone'));svDoorway(0,.02,0,0,w*.98,h-.03,{hollow:false,mk:'wood',col:P('woodD'),t:.05,name:stable?'stable door':'cell door'});});}
+     box('stone',0,h,.04,w+.5,.32,.16,P('stone'));svDoorway(0,.02,0,0,w*.98,h-.03,{hollow:false,mk:'wood',col:P('woodD'),t:.05,style:stable?'half':'plank',name:stable?'stable door':'cell door'});});}
    for(const lv of [1,2]){const y=Yc+BL.lv[lv];W(Math.cos(a)*ri,y-.55,Math.sin(a)*ri,-a-PI/2,()=>{box('stone',0,0,.35,.38,.55,.7,P('stone'));box('stone',0,.25,.85,.32,.3,.4,P('stone'));});}}
   for(const lv of [1,2]){const y=Yc+BL.lv[lv];sector('stone',0,0,ri-BL.gal,ri,0,TAU,y-.3,y,P('stone'),96);sector('stone',0,0,ri-BL.gal,ri-BL.gal+.22,0,TAU,y,y+1.0,P('stone'),96);}
   sector('stone',0,0,ri-1.0,ri+.05,0,TAU,Yc+BL.roofY-.35,Yc+BL.roofY,P('stone'),96);   // the eave over the top gallery
@@ -113,8 +113,8 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
    cyl('patQuatre',0,-.2,0,3.6,.26,null,32);sector('stone',0,0,1.7,2.1,0,TAU,0,.9,P('stone'),32);cyl('stone',0,0,0,1.72,.3,P('stoneD'),24);cyl('water',0,.3,0,1.72,.02,0x2a4a4a,24);   // a ring wall round the waterring('stone',0,.9,0,1.95,.18,P('stoneD'));
    for(const s of [-1,1])box('stone',s*1.85,.9,0,.4,1.6,.4,P('stone'));beam('wood',[-2.05,2.4,0],[2.05,2.4,0],.12,P('woodD'),true,8);cyl('wood',0,1.9,0,.18,.5,P('woodD'),8);sagRope('rope',[0,1.9,0],[0,.7,0],0,.02,0xa88a5a,2);
    // a round corbelled store (the smokehouse) and the cistern house
-   W(-9,0,-8,.4,()=>{cyl('stone',0,0,0,2.6,2.4,P('stone'),20);sph('stone',0,2.3,0,2.6,P('stone'),.62,16);svDoorway(0,0,2.55,0,1.0,1.9,{hollow:false,mk:'wood',col:P('woodD'),t:.15,name:'smokehouse door'});smokeAt(0,4,0,{r:.25});});
-   W(10,0,-7.5,-.5,()=>{box('stone',0,0,0,5.5,2.8,4.0,P('stone'));box('stone',0,2.8,0,6.0,.35,4.5,P('stoneD'));svDoorway(0,0,2.04,0,1.1,2.0,{hollow:false,mk:'wood',col:P('woodD'),t:.05,name:'cistern house door'});});
+   W(-9,0,-8,.4,()=>{cyl('stone',0,0,0,2.6,2.4,P('stone'),20);sph('stone',0,2.3,0,2.6,P('stone'),.62,16);svDoorway(0,0,2.55,0,1.0,1.9,{hollow:false,mk:'wood',col:P('woodD'),t:.15,style:'plank',name:'smokehouse door'});smokeAt(0,4,0,{r:.25});});
+   W(10,0,-7.5,-.5,()=>{box('stone',0,0,0,5.5,2.8,4.0,P('stone'));box('stone',0,2.8,0,6.0,.35,4.5,P('stoneD'));svDoorway(0,0,2.04,0,1.1,2.0,{hollow:false,mk:'wood',col:P('woodD'),t:.05,style:'plank',name:'cistern house door'});});
    // the tent platforms: a raised stone ring of fitted kerbs, a felt floor where a tent stands
    const pads=[[-11,6,4.0,'tent-hunter-ger'],[11.5,6.5,3.6,'tent-bell'],[0,-13,4.2,null],[-14,-3,3.4,null],[14,-1,3.4,null]];
    for(const [x,z,r,key] of pads){cyl('stone',x,0,z,r,.55,P('stone'),28);ring('stone',x,.55,z,r-.1,.12,P('stoneD'),0,0,0,28);if(!key)cyl('earth',x,.551,z,r-.25,.01,P('earth'),24);}

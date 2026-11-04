@@ -18,7 +18,11 @@
 // drawing of them, a leaf as an instance of its own item, and keeps its names for the builders and the host that call it.
 //   IZDOOR.list   KDOOR.list: [{id, idx (its vDoorLeaf instance), at [x,y,z] (sill, wall middle, world), hinge [x,y,z], yaw
 //                  (world, outward), w, h, t, open 0..1, target 0..1, locked, by, key (the def), r0 (its first REG index)}]
-//   IZDOOR.leaf(x, y, z, ry, w, h, t, c, o)   o: {locked, mirror (hinged on +x: a double door's right leaf), key, id}. The id is
+//   IZDOOR.leaf(x, y, z, ry, w, h, t, c, o)   o: {locked, mirror (hinged on +x: a double door's right leaf), key, id, and
+//                                 core/door's kind, pair, both, spring, swing, roll, walk, preset (KDOOR.add), style (a leaf
+//                                 style, core/door's KDOORLEAF: 'panel', 'glazed', 'half', 'louvre'..., where the page carries
+//                                 30-core-door-leaf.js; else the plain leaf)}. A pair (or a fold) is one record over the whole doorway,
+//                                 w wide, its leaves drawn and posed together. The id is
 //                                 stable: o.id, or the def's key, where the placement stands and the door's number in it
 //                                 ('iz_house_rich@12,-40.0'), so a save or a quest names the same door when other buildings
 //                                 move; outside a placement 'door.<n>'
@@ -31,6 +35,10 @@ MAT.izGlass=KGLASS.material(THREE,'clear');   // core/door's clear glass (the va
 MAT.warmPane.transparent=true;MAT.warmPane.opacity=.42;MAT.warmPane.depthWrite=false;MAT.warmPane.side=DS;   // a lit pane you see the room through (the day/night swap, 90a, still drives its colour)
 MAT.izRoom=KGLASS.material(THREE,'room');   // a room's back, for meshes (79's sentry gallery): KGLASS's card, its colour taken as sRGB as IZ_ROOMC is
 kdef('vWinClear',VBOX,MAT.izGlass);kdef('vDoorLeaf',VBOX,MAT.wood);
+// the leaf styles as kit items (core/door's KDOORLEAF, where the page carries 30-core-door-leaf.js): 'vDoorLeaf.<style>'
+// the leaf in the wood, 'vDoorGlass.<style>' its lights in the clear glass; an item no door used bakes nothing
+const IZ_LEAFSTYLES=typeof KDOORLEAF!=='undefined'?KDOORLEAF.STYLES.filter(st=>st!=='flat'):[];
+for(const st of IZ_LEAFSTYLES){const G=KDOORLEAF.geometry(THREE,st);kdef('vDoorLeaf.'+st,G.frame,MAT.wood);if(G.glass)kdef('vDoorGlass.'+st,G.glass,MAT.izGlass);}
 // (draw calls: the glow pane is vWinLit, the room card a dim vPlaster in IZ_ROOMC, KGLASS.SPEC.room's colour. The leaves are their own item, vDoorLeaf, which 95j
 // keeps out of core/lod: a moved instance of a shared, LOD-copied item kept its old pose on screen)
 const IZ_ROOMC=vC(0x6e5a46);
@@ -39,21 +47,38 @@ const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},ge
  _w(x,y,z){const v=new THREE.Vector3(x,y,z);if(KXF)v.applyMatrix4(KXF.m);return[v.x+KOFF[0],v.y+KOFF[1],v.z+KOFF[2]];},
  _yaw(ry){return KXF?(ry||0)+new THREE.Euler().setFromQuaternion(KXF.q,'YXZ').y:(ry||0);},
  // draw a leaf in the doorway and register it. (x, z): the middle of the doorway's line in the builder's frame; y the sill
- leaf(x,y,z,ry,w,h,t,c,o){o=o||{};const it=KIT.items.vDoorLeaf,idx=it.length;
-  kput('vDoorLeaf',[x,y+h/2,z],vQ(ry,0,0),[w,h,t],c||vC(VPAL.woodMid[0]));const R=it[idx];if(!R)return null;
-  const hl=loc(x,z,o.mirror?w/2:-w/2,0,ry),C=VERN.cur,s=KXF&&KXF.s?KXF.s:1;
+ leaf(x,y,z,ry,w,h,t,c,o){o=o||{};if(o.preset!=null)o=Object.assign({},KDOOR.PRESET[o.preset]||{},o);
+  if(o.kind==='hatch')throw new Error('IZDOOR.leaf: a hatch is not drawn here');
+  const st=o.style&&KIT.defs['vDoorLeaf.'+o.style]?o.style:null,fr=st?'vDoorLeaf.'+st:'vDoorLeaf',gl=st&&KIT.defs['vDoorGlass.'+st]?'vDoorGlass.'+st:null;
+  // the shut leaves in the builder's frame: a scratch record at the origin facing +z (KDOOR.leaves, the same rules as the real one)
+  const Ks=IZDOOR._k||(IZDOOR._k=KDOOR.create());Ks.clear();
+  const S=Ks.add({at:[0,0,0],yaw:0,w,h,t,sign:o.mirror?-1:1,kind:o.kind,pair:o.pair,roll:o.roll}),parts=[],col=c||vC(VPAL.woodMid[0]);
+  for(const L of Ks.leaves(S)){const m=loc(x,z,L.p[0],L.p[2],ry),P=[],q=vQ(ry,0,0);
+   for(const item of gl?[fr,gl]:[fr]){const it=KIT.items[item],idx=it.length;kput(item,[m[0],y+L.p[1],m[1]],q,L.size,item===gl?null:col);const R=it[idx];if(!R)return null;P.push({item,idx,ref:R});}
+   parts.push(P);}
+  const R0=parts[0][0].ref,hl=loc(x,z,o.mirror?w/2:-w/2,0,ry),C=VERN.cur,s=KXF&&KXF.s?KXF.s:1;
   let id=o.id;if(id==null&&C){C._door=(C._door||0)+1;const b=C.D.key+'@'+Math.round(C.x)+','+Math.round(C.z)+'.'+(C._door-1);id=b;for(let k=1;KDOOR.get(id);k++)id=b+'#'+k;}
-  return KDOOR.add({id:id==null?'door.'+KDOOR.list.length:id,idx,ref:R,p0:R.p.slice(),q0:R.q?R.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
-   yaw:IZDOOR._yaw(ry),sign:o.mirror?-1:1,w:w*s,h:h*s,t:t*s,locked:!!o.locked,key:C?C.D.key:(o.key||null),r0:C?C.r0:null});},
+  return KDOOR.add({id:id==null?'door.'+KDOOR.list.length:id,idx:parts[0][0].idx,ref:R0,parts,
+   p0:parts.length===1?R0.p.slice():IZDOOR._w(x,y+h/2,z),q0:R0.q?R0.q.clone():new THREE.Quaternion(),at:IZDOOR._w(x,y,z),hinge:IZDOOR._w(hl[0],y,hl[1]),
+   yaw:IZDOOR._yaw(ry),sign:o.mirror?-1:1,w:w*s,h:h*s,t:t*s,locked:!!o.locked,key:C?C.D.key:(o.key||null),r0:C?C.r0:null,
+   kind:o.kind,pair:o.pair,both:o.both,spring:o.spring,swing:o.swing,roll:o.roll,walk:o.walk,style:st});},
  get:id=>KDOOR.get(id),open:(id,o)=>KDOOR.open(id,o),close:(id,o)=>KDOOR.close(id,o),toggle:(id,o)=>KDOOR.toggle(id,o),
  nearest:(x,y,z,r)=>KDOOR.nearest(x,y,z,r),
- finish(W){KDOOR.prune(D=>KIT.items.vDoorLeaf[D.idx]===D.ref);IZDOOR.W=W||null;KDOOR.walk(W||null);return KDOOR.list.length;},
- tick(dt){const im=KIT.meshes&&KIT.meshes.vDoorLeaf;if(!im)return;const moved=KDOOR.step(dt);
-  for(const D of moved)IZDOOR._pose(D,im);
-  if(moved.length)im.instanceMatrix.needsUpdate=true;},
- _pose(D,im){const P=KDOOR.pose(D);IZDOOR._p.set(P[0],P[1],P[2]);
-  IZDOOR._q.setFromAxisAngle(IZDOOR._up,P[3]).multiply(D.q0);const S=D.ref.s;IZDOOR._s.set(S[0],S[1],S[2]);
-  IZDOOR._m.compose(IZDOOR._p,IZDOOR._q,IZDOOR._s);im.setMatrixAt(D.idx,IZDOOR._m);},
+ // the leaves' meshes a door is posed in: the kit's (KIT.meshes) unless bound to others (a chunked bake's own: Erewhon)
+ bind(D,meshes){D._meshes=meshes;return D;},
+ finish(W){KDOOR.prune(D=>(D.parts||[[{item:'vDoorLeaf',idx:D.idx,ref:D.ref}]]).every(P=>P.every(q=>KIT.items[q.item][q.idx]===q.ref)));IZDOOR.W=W||null;KDOOR.walk(W||null);return KDOOR.list.length;},
+ tick(dt){if(!KIT.meshes)return;const moved=KDOOR.step(dt);for(const D of moved)IZDOOR._pose(D);IZDOOR._flush();},
+ // write a door's leaves (every part: the leaf, its glass) into their meshes as it moves: leaf i at KDOOR.leaves' pose,
+ // turned about its axis from its shut rotation, scaled by its shut size times the leaf's own scale (a roller, an iris)
+ _pose(D){const M=typeof D._meshes==='function'?D._meshes():D._meshes||KIT.meshes;if(!M)return;const LL=KDOOR.leaves(D),parts=D.parts||[[{item:'vDoorLeaf',idx:D.idx,ref:D.ref}]];
+  for(let i=0;i<LL.length&&i<parts.length;i++){const L=LL[i];IZDOOR._p.set(L.p[0],L.p[1],L.p[2]);
+   if(L.ax==='y')IZDOOR._ax.set(0,1,0);else IZDOOR._ax.set(L.ax[0],L.ax[1],L.ax[2]);
+   for(const q of parts[i]){const im=M[q.item];if(!im)continue;IZDOOR._q.setFromAxisAngle(IZDOOR._ax,L.ang).multiply(q.ref.q||IZDOOR._q0);const S=q.ref.s;
+    IZDOOR._s.set(S[0]*L.s[0],S[1]*L.s[1],S[2]*L.s[2]);IZDOOR._m.compose(IZDOOR._p,IZDOOR._q,IZDOOR._s);im.setMatrixAt(q.idx,IZDOOR._m);IZDOOR._dirty.add(im);}}},
+ _flush(){IZDOOR._dirty.forEach(im=>{im.instanceMatrix.needsUpdate=true;});IZDOOR._dirty.clear();},
+ // the meshes that hold leaves (core/lod keeps its hands off them: they move)
+ meshes(M){M=M||KIT.meshes||{};return Object.keys(M).filter(k=>/^vDoor(Leaf|Glass)/.test(k)).map(k=>M[k]);},
+ _dirty:new Set(),_ax:new THREE.Vector3(),_q0:new THREE.Quaternion(),
  _p:new THREE.Vector3(),_q:new THREE.Quaternion(),_s:new THREE.Vector3(),_m:new THREE.Matrix4(),_up:new THREE.Vector3(0,1,0)};
 // is the point on a hollow body's face? (69e's vnFaceOf, without the side effect of a cut)
 function vnOnHollow(x,y,z,ry){return typeof vnFaceOf==='function'?vnFaceOf(x,y,z,ry):null;}

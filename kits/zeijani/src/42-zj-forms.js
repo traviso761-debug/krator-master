@@ -45,7 +45,7 @@ function zfSteps(mk,x,y,z,w,n,col,rise,tread){rise=rise||.17;tread=tread||.32;fo
 /* a timber door leaf in a doorway of width w, height h, its face at z, hinged on its -x jamb and standing open by `open`
    radians toward -z (negative: out toward +z), as drawn. It is core/door's (KDOOR, core/engine/36o-open.js svLeaf): E or an NPC
    shuts and opens it. A plain leaf: the two battens it carried are not drawn on a leaf that moves */
-function zfLeaf(x,y,z,w,h,col,open){return svLeaf(x,y,z-.03,0,w,h,{split:false,mk:'gate',col,t:.06,ajar:Math.abs(open||0),out:(open||0)<0,name:'door'});}
+function zfLeaf(x,y,z,w,h,col,open){return svLeaf(x,y,z-.03,0,w,h,{split:false,mk:'gate',col,t:.06,ajar:Math.abs(open||0),out:(open||0)<0,style:'plank',name:'door'});}
 /* a lamp niche (a dark recess) on a face at z: w by h at height y */
 function zfNiche(x,y,z,w,h){box('basaltPol',x,y,z-.02,w,h,.04,P('soot'));box('tuffPol',x,y-.06,z+.03,w+.16,.06,.1,P('white'));}
 /* a carved block of host rock for a carved def on the sheet (cvMass): its plan [x0,x1] x [z0,z1] with the front at z1 */

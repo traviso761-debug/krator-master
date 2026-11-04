@@ -95,7 +95,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
                  '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
                  '20-core-walk.js',    # core/walk (no rnd())
-                 '10-core-door.js', '20-core-glass.js', '90-core-door-host.js',   # core/door (no rnd())
+                 '10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js',   # core/door (no rnd())
                  '54-openings.js',     # the doors and the glass on core/door (no rnd())
                  '44-core-ports.js',   # core/ports: the buildings' marks (no rnd())
                  '90-atmos-host.js',   # binds core/atmos

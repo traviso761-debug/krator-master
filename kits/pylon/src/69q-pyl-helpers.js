@@ -75,7 +75,7 @@ function pynFrame(shape,x,y,z,ry,w,h,o){o=o||{};const F=PY_SHAPE[shape],n=o.n==n
  for(let k=0;k<n;k++){const g=rim*(n-k);F(x,y-g,z,ry,w+2*g,h+2*g,st*(k+1),d+st*k,o.kind||'P',o.cs?o.cs[k%o.cs.length]:o.c);}
  F(x,y,z,ry,w,h,st*(n+.4),d,o.fill||'G',o.fc||null);}
 // a doorway in a profile (the owner, 2026-11-03: doors that open and shut; core/door). The profile's rectangle is the doorway:
-// cut through a hollow body's wall (vnHole) and hung with real leaves (69e5's IZDOOR.leaf: two, mirrored, from 1.5 m wide),
+// cut through a hollow body's wall (vnHole) and hung with real leaves (69e5's IZDOOR.leaf: a pair from 1.5 m wide),
 // which open on a hollow body (the leaf in the wall's middle) and stand shut and locked on a solid one (nothing behind it); the
 // head over it (the tombstone's half disc, the point) is a glazed fanlight over the room card behind a timber transom. The
 // frame's rims are drawn round the doorway, not across it: for each rim its two jambs, and its head. A pointed hexagon's foot
@@ -99,10 +99,9 @@ function pynDoorway(shape,x,y,z,ry,w,h,o){o=o||{};
  else pynWedgeK('G',x,yh,z,ry,w,rise,ff,hd,null,false);
  {const p=loc(x,z,0,ff-.05,ry);vB(o.metal?'vIron':'vWood',p[0],yh-.06,p[1],w+.04,.12,.1,ry,fc);}
  // the leaves: in the cut wall's middle (operable), or shut and locked in front of a solid face
- const two=w>1.5,lw=two?w/2:w,t=.07,L=[];
- for(const s of two?[-1,1]:[0]){const m=loc(x,z,s*w/4,F?-F.B.t/2:.01+t/2,ry);
-  L.push(IZDOOR.leaf(m[0],y,m[1],ry,lw-(F?.03:.01),lh-.1,t,fc,{locked:!F&&!o.gate,mirror:s>0}));}
- return L;}
+ // (from 1.5 m wide a double door: one record, its pair of leaves swinging apart; timber panelled, steel plain: core/door's leaf styles)
+ const two=w>1.5,t=.07,m=loc(x,z,0,F?-F.B.t/2:.01+t/2,ry);
+ return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel'})];}
 // a box (vB's arguments) with a doorway dw wide and dh high through the foot of its middle: two piers and a lintel (a gate's
 // block, pynDoorway's o.gate)
 function pynPierBox(item,x,y,z,w,h,d,ry,c,dw,dh){const pw=(w-dw)/2;

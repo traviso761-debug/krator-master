@@ -95,9 +95,9 @@ LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 # core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-iziz-tags.js)
 TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags', 'walk') for f in os.listdir(os.path.join(ROOT, 'core', d))
               if f[0].isdigit() and f.endswith('.js')}
-# core/door: the doors' records (KDOOR) and the glass (KGLASS) the Vernacular's openings (69e5) draw with; the host side
-# (90-core-door-host.js) is Iziz's own 99-start.js and 95j
-TAGS_FILES.update({f: os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js')})
+# core/door: the doors' records (KDOOR), the glass (KGLASS) and the leaves' look (KDOORLEAF: panelled, glazed, louvred leaves)
+# the Vernacular's openings (69e5) draw with; the host side (90-core-door-host.js) is Iziz's own 99-start.js and 95j
+TAGS_FILES.update({f: os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js')})
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
@@ -226,7 +226,7 @@ DETERMINISTIC = {
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
-DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js'}   # core/door: records and materials, no rnd()
+DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js'}   # core/door: records and materials, no rnd()
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)
 if KIT:
     DETERMINISTIC |= set(KIT.get('deterministic', [])) | {'69dz-kit-matlib-pack.js'}

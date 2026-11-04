@@ -49,7 +49,7 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
   for(const s of [a-.09,b+.09])box('lime',s,y0+sy,fz+.03,.18,top-sy,.08,sc);
   if(!q.door)box('lime',q.x,y0+sy-.1,fz+.06,q.w+.4,.12,.18,sc);                          /* the sill */
   if(q.head!=='flat')etStepHead(q.x,y0+top,fz+.03,q.w,{col:sc});
-  if(q.door){svDoorway(q.x,y0,-.02,0,q.w-.06,top-.04,{hollow:!o.solid,mk:'timber',col:q.leaf||P('timber'),t:.08});   /* the leaf, set back (core/door) */
+  if(q.door){svDoorway(q.x,y0,-.02,0,q.w-.06,top-.04,{hollow:!o.solid,mk:'timber',col:q.leaf||P('timber'),t:.08,style:'panel'});   /* the leaf, set back (core/door) */
    door(q.x,y0,fz,0,q.w);
    if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.1,.46,q.maskMetal);}
   else if(q.dark){if(o.solid)svRoom(q.x,y0+sy,-.06,0,q.w-.04,top-sy);   /* unglazed: the poor's, a clear hole into the room (a card on a solid mass) */

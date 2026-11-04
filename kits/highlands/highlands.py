@@ -35,6 +35,7 @@ FILES = sorted(FOUNDATION + [f for s in SETS.values() for f in s])
 _ROOT = os.path.dirname(os.path.dirname(HERE))
 OPENINGS = {'10-core-door.js': os.path.join(_ROOT, 'core', 'door', '10-core-door.js'),
             '20-core-glass.js': os.path.join(_ROOT, 'core', 'door', '20-core-glass.js'),
+            '30-core-door-leaf.js': os.path.join(_ROOT, 'core', 'door', '30-core-door-leaf.js'),   # the leaves' look (KDOORLEAF)
             '69e5-iziz-openings.js': os.path.join(_ROOT, 'kits', 'iziz-vernacular', 'src', '69e5-iziz-openings.js')}
 
 

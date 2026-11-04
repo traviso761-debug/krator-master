@@ -120,7 +120,7 @@ defBuilding({key:'zj_caravanserai',name:'The caravanserai: a tower over a half-r
   for(const [a0,a1] of [[PI,PI+3*step],[PI+4*step,2*PI]]){sector('plank',0,CZ,11.55,R1+.45,a0,a1,3.4,3.6,P('wood'),10);sector('ashlar',0,CZ,R1+.05,R1+.45,a0,a1,3.6,4.2,c,10);sector('tuffPol',0,CZ,11.55,11.8,a0,a1,3.25,3.6,wt,10);}
   /* the front wall and the gate */
   for(const s of [-1,1]){box('ashlar',s*7.05,0,CZ,10.7,3.2,.45,c);box('tuffPol',s*7.05,3.2,CZ,10.8,.12,.55,wt);box('tuffPol',s*1.66,0,CZ,.32,3.8,.6,wt);zcLantern(s*2.6,CZ+1.6,wt);}
-  zfStepLintel('tuffPol',0,3.8,CZ,3.0,wt,{n:3,h:.3,d:.6});svLeaf(0,0,CZ-.13,0,2.9,3.0,{split:true,ajar:1.4,mk:'gate',col:P('wood'),t:.06,name:'court gate'});   /* the leaves stand open into the court (core/door: E shuts them) */
+  zfStepLintel('tuffPol',0,3.8,CZ,3.0,wt,{n:3,h:.3,d:.6});svLeaf(0,0,CZ-.13,0,2.9,3.0,{split:true,ajar:1.4,mk:'gate',col:P('wood'),t:.06,style:'plank',name:'court gate'});   /* the leaves stand open into the court (core/door: E shuts them) */
   /* the tower over the taproom: its wall, a band of windows, a corbelled crown, a dome; the spout and the waterfall */
   zfDrum('ashlar',0,0,TZ,3.65,17,c,{a0:PI/2+.2,a1:PI/2+TAU-.2,seg:28});zfDrum('plaster',0,.25,TZ,3.3,3.15,P('plaster'),{a0:PI/2+.19,a1:PI/2+TAU-.19,seg:28,inward:true});
   cyl('ashlar',0,3.4,TZ,3.62,.3,c,28);box('tuffPol',0,3.0,TZ+3.6,1.5,.4,.4,wt);

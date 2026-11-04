@@ -9,5 +9,5 @@ IZDOOR.finish(typeof KWALK!=='undefined'?KWALK:null);
 if(typeof KWALK!=='undefined')window._doorwaysCleared=KDOOR.clearDoorways(KWALK);   // core/door: the doorways' other blocks switched off
 FRAME_HOOKS.push(dt=>IZDOOR.tick(dt));
 if(typeof IZPATCH!=='undefined')IZPATCH.finish();   // the reclaimed towers' seals (78v), one mesh
-if(KIT.meshes.vDoorLeaf)KIT.meshes.vDoorLeaf.userData.lodSkip=true;   // core/lod keeps its hands off the leaves: they move
+for(const im of IZDOOR.meshes())im.userData.lodSkip=true;   // core/lod keeps its hands off the leaves: they move
 window._doors={doors:IZDOOR.list.length,locked:IZDOOR.list.filter(D=>D.locked).length,blocks:IZDOOR.list.reduce((a,D)=>a+D.blocks.length,0)};

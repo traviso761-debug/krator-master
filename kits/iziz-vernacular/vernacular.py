@@ -51,7 +51,7 @@ def core_path(f):
 
 
 # core/door: the doors' records (KDOOR) and the glass (KGLASS) 69e5 draws with; a bundle carries them ahead of the kit
-DOOR = [os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js')]
+DOOR = [os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js')]   # KDOORLEAF: the leaf styles' geometry
 
 
 def bundle_files():

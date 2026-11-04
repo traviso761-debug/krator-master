@@ -94,7 +94,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js', '88c-mungo-minimap.js', '88d-mungo-trades.js'}
 DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
-DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and Locus's binding of it (no rnd())
+DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and Locus's binding of it (no rnd())
 DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and Locus's lake binding (no rnd())
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}

@@ -105,7 +105,7 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
    etHexFaces(5.2*ET_HEX_AP,(k,ph)=>{const c=Math.cos(ph-a);
     svRoom(0,3.6,.05,0,.28,1.8);svRoom(0,9.6,.05,0,.28,1.4);   /* the slits: unglazed, the room card behind (the towers are solid: KNOWN_ISSUES.md) */
     if(c>.4)etHead(0,6.1,.35,1.5,{metal:'gold'});
-    else if(c<-.8&&Math.sin(ph-a)>0){svDoorway(0,.6,.03,0,1.2,2.4,{hollow:false,mk:'timber',col:P('timber'),t:.06,name:'tower door'});box('stone',0,3.0,.06,1.6,.25,.12,sd);door(0,.6,.1,0,1.2);}});
+    else if(c<-.8&&Math.sin(ph-a)>0){svDoorway(0,.6,.03,0,1.2,2.4,{hollow:false,mk:'timber',col:P('timber'),t:.06,style:'plank',name:'tower door'});box('stone',0,3.0,.06,1.6,.25,.12,sd);door(0,.6,.1,0,1.2);}});
    etHexFaces(5.6*ET_HEX_AP-.25,()=>{for(const xx of [-1.4,1.4]){box('brick',xx,13.5,0,1.1,1.1,.5,br);box('brick',xx,14.6,0,.6,.4,.5,brD);}});
    prism('brick',etHex(3.4),13.5,16.6,br);etHexHip(3.4,16.6,2.8,{mk:'celadon',ov:.7});
    cone('verdigris',0,19.4,0,.22,1.2,P('verdigris'),6);popM();}

@@ -33,6 +33,45 @@ const save = KDOOR.state(); KDOOR.load(save);   // deltas by id
 - `KDOOR.step(dt)` eases the moving doors (1.6 rad/s over a 1.75 rad swing) and switches their walk blocks as they pass half
   open; it returns the doors that moved, which the host poses.
 
+## Kinds of door
+
+A record says how its leaves move; `KDOOR.leaves(D)` gives every leaf's pose now (centre, an axis and a turn about it from shut,
+a scale, its shut size), and the host draws leaf i there. `KDOOR.leafCount(D)` and `KDOOR.leafSize(D)` say how many and how big.
+
+| `kind` | moves | with `pair` |
+|---|---|---|
+| `swing` (default) | about the hinge jamb's vertical line, into the room (`sign` -1: hung on the +x jamb; `both`: away from whoever opens it) | a double door: the two leaves swing apart from the jambs |
+| `slide` | along the doorway's line toward the hinge jamb, its own width (a pocket door, a barn door) | bi-parting: the halves slide apart |
+| `lift` | straight up its height (a portcullis); `roll`: rolls up into the head (a roller shutter) | |
+| `fold` | two panels a side that fold to the jamb, the second turned back (a bifold) | a double bifold |
+| `iris` | shrinks to its middle | |
+| `hatch` | lies in a floor or a roof from its hinge edge (`at`), turns up about the doorway's line (`h` its depth); no walk blocks | |
+
+`both` makes a swing door double-acting (it swings away from `open`'s `from: [x, z]`, the opener's place; the host passes the
+player's), `spring` (seconds) shuts it by itself after every opening, `swing` sets the angle it opens to, `walk: false` gives it
+no walk blocks. The presets (`preset` on `add`, `KDOOR.PRESET`) name the usual doors:
+
+| preset | is |
+|---|---|
+| `single`, `double` | a swing door; a pair |
+| `saloon` | a sprung, double-acting pair of louvred half leaves (no walk blocks: a walker pushes through) |
+| `slide`, `pocket`, `barn` (plank), `biparting` | sliding doors |
+| `portcullis` (grille), `roller` (slat, rolls up) | lifting doors |
+| `bifold`, `iris` (disc), `hatch` (plank: a trapdoor) | the rest |
+
+A pair is one record over the whole doorway (`w` the doorway's width, each leaf `w/2`): one id, one set of walk blocks, both
+leaves posed together. Two mirrored single records (`sign` 1 and -1) still make a double door whose leaves open apart.
+
+## The leaves' look
+
+`30-core-door-leaf.js` (KDOORLEAF, THREE, no DOM; load it ahead of the builders) gives a leaf in a style as a unit geometry,
+its frame and its glass apart: `flat`, `plank`, `panel`, `glazed` (French doors: a kick rail, glazing bars over one light),
+`half` (panels below, glazed above), `glass` (a thin frame round one light), `louvre`, `grille`, `slat`, `disc`.
+`KDOORLEAF.meshes(THREE, style, {frame, glass}, n)` makes the two InstancedMeshes; `KDOORHOST.instanced(D, [frame, glass],
+[i0, i1], q0)` poses both (the same index, every leaf of a pair its own). The record's `style` says which a door wears.
+The Vernacular's `IZDOOR.leaf` takes `style` and the kinds (`kits/iziz-vernacular/src/69e5-iziz-openings.js`): Talia's glazed
+double doors and panelled leaves, Pylon's panelled pairs.
+
 ## Glass
 
 `KGLASS.material(THREE, 'clear')` is the shared pane; the kinds are `clear` (Iziz's glass), `lit` (a night window you still see
@@ -43,7 +82,8 @@ after the opaque scene. `KGLASS.SPEC` is the data the Godot side reads (a Standa
 ## The host
 
 ```js
-KDOORHOST.instanced(D, im, idx, q0, s);   // the leaf is instance idx of InstancedMesh im (or a function returning it)
+KDOORHOST.instanced(D, im, idx, q0, s);   // the leaf is instance idx of InstancedMesh im (or a function returning it;
+                                          // im an array: a glazed leaf's frame and glass; idx an array: one per leaf)
 KDOORHOST.object(D, mesh);                // or its own mesh
 KDOORHOST.posed(D, (D, pose) => ...);     // or the page poses it itself (a leaf instanced from its hinge, a rolled mat)
 FRAME_HOOKS.push(dt => KDOORHOST.tick(dt));

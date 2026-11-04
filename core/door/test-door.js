@@ -15,8 +15,10 @@ const C=K.add({at:[0,3,0],hinge:[-.5,3,0],w:1,h:2});
 ok('a door keeps its stable id; one without gets door.<n>',K.get('house.front')===A&&C.id==='door.2',K.get('house.back')!==null);
 let threw=false;try{K.add({id:'house.front',at:[0,0,0],hinge:[0,0,0],w:1,h:2});}catch(e){threw=true;}
 ok('a taken id is refused',threw,false);
-threw=false;try{K.add({at:[0,0,0],w:1,h:2});}catch(e){threw=true;}
-ok('a door without a hinge is refused',threw,false);
+threw=false;try{K.add({w:1,h:2});}catch(e){threw=true;}
+ok('a door without at is refused',threw,false);
+{const Kh=KDOOR.create(),Dh=Kh.add({at:[0,0,0],yaw:0,w:1,h:2}),Dm=Kh.add({at:[3,0,0],yaw:0,w:1,h:2,sign:-1});
+ ok('a door without a hinge hangs on its -x jamb (+x when sign -1)',near(Dh.hinge[0],-.5)&&near(Dm.hinge[0],3.5),!near(Dh.hinge[0],-.5));}
 ok('the shut leaf stands at its doorway, half its height up',near(A.p0[1],1)&&near(K.pose(A)[0],0)&&near(K.pose(A)[3],0),near(K.pose(A)[3],1));
 ok('a locked door does not open',K.open(B)===false&&B.target===0,K.open(A)===false);
 ok('open by id, by the record, and toggle back',K.open('house.front',{by:'npc'})&&A.by==='npc'&&K.toggle(A)&&A.target===0,A.target!==0);
@@ -58,6 +60,40 @@ K4.clearDoorways(W4);
 ok('clearDoorways switches off the wall in an unlocked doorway, not the mass behind a locked one',wallG.off&&!mass.off,mass.off);
 K4.clearDoorways(W4,{locked:true});
 ok('o.locked true clears the locked doorways too',mass.off,!mass.off);
+// the kinds: each opened fully (step to rest), its leaves read
+const KK=KDOOR.create(),openFull=(D,o)=>{KK.open(D,o);for(let i=0;i<60;i++)KK.step(.1);return KK.leaves(D);};
+{const Dd=KK.add({id:'dbl',preset:'double',at:[0,0,0],yaw:0,w:2,h:2.2});
+ const L0=KK.leaves(Dd);
+ ok('a double door is two leaves, each half the doorway, shut a quarter-width either side of the middle',
+   L0.length===2&&KK.leafSize(Dd)[0]===1&&near(L0[0].p[0],-.5)&&near(L0[1].p[0],.5)&&L0[0].ang===0,L0.length!==2);
+ const L=openFull(Dd);
+ ok('open, the left leaf turns +SWING about the -x jamb, the right -SWING about the +x jamb, each half its width from its jamb',
+   near(L[0].ang,KK.SWING)&&near(L[1].ang,-KK.SWING)&&near(Math.hypot(L[0].p[0]+1,L[0].p[2]),.5,1e-6)&&near(Math.hypot(L[1].p[0]-1,L[1].p[2]),.5,1e-6),near(L[0].ang,0));}
+{const Ds=KK.add({id:'sal',preset:'saloon',at:[5,0,0],yaw:0,w:1.2,h:1.1});
+ KK.open(Ds,{from:[5,3]});for(let i=0;i<12;i++)KK.step(.1);let L=KK.leaves(Ds);const inward=L[0].ang>0&&L[1].ang<0;for(let i=0;i<60;i++)KK.step(.1);
+ ok('a saloon door is a sprung pair: open, then shut by itself',KK.leafCount(Ds)===2&&Ds.open===0,Ds.open!==0);
+ KK.open(Ds,{from:[5,-3]});for(let i=0;i<8;i++)KK.step(.1);L=KK.leaves(Ds);
+ ok('a double-acting door swings away from its opener: from outside into the room, from inside out',inward&&L[0].ang<0&&L[1].ang>0,!inward);}
+{const Dsl=KK.add({id:'pk',preset:'pocket',at:[10,0,0],yaw:0,w:1,h:2}),L=openFull(Dsl);
+ ok('a sliding door slides its width along the line toward its hinge jamb, unturned',near(L[0].p[0],9)&&near(L[0].p[2],0)&&L[0].ang===0,near(L[0].p[0],10));}
+{const Db=KK.add({id:'bp',preset:'biparting',at:[0,0,10],yaw:0,w:2,h:2}),L=openFull(Db);
+ ok('a bi-parting door slides its halves apart, each its own width',near(L[0].p[0],-1.5)&&near(L[1].p[0],1.5),near(L[0].p[0],-.5));}
+{const Dp=KK.add({id:'pc',preset:'portcullis',at:[0,0,20],yaw:0,w:3,h:4}),L=openFull(Dp),
+   Dr=KK.add({id:'rs',preset:'roller',at:[5,0,20],yaw:0,w:3,h:3}),R=openFull(Dr);
+ ok('a portcullis lifts its height; a roller shutter rolls up into its head',near(L[0].p[1],6)&&R[0].s[1]<.05&&R[0].p[1]>2.9,near(L[0].p[1],2));}
+{const Df=KK.add({id:'bf',preset:'bifold',at:[0,0,30],yaw:0,w:1.2,h:2}),L=openFull(Df);
+  ok('a bifold is two panels a side: they fold to the hinge jamb, the second turned back the other way',
+   L.length===2&&near(L[0].ang,-L[1].ang)&&L[0].ang>1.3&&L[1].p[0]<-.4&&L[0].p[2]<29.8&&near(L[1].p[2],L[0].p[2],1e-6),L.length!==2);}
+{const Di=KK.add({id:'ir',preset:'iris',at:[0,0,40],yaw:0,w:2,h:2}),L=openFull(Di);
+ ok('an iris shrinks to its middle',L[0].s[0]<.05&&near(L[0].p[0],0),L[0].s[0]>.5);}
+{const Wh=KWALK.create(),Kh=KDOOR.create(),Dh=Kh.add({id:'tr',preset:'hatch',at:[0,3,0],yaw:0,w:1,h:1,t:.06});Kh.walk(Wh);
+ const s0=Kh.leaves(Dh)[0].p.slice();Kh.open(Dh);for(let i=0;i<60;i++)Kh.step(.1);const L=Kh.leaves(Dh)[0];
+ ok('a hatch lies in the floor from its hinge edge; open, it turns up about the doorway\'s line (no walk blocks)',
+   near(s0[1],3)&&near(s0[2],.5)&&L.p[1]>3.4&&Array.isArray(L.ax)&&Dh.blocks.length===0,L.p[1]<=3);}
+threw=false;try{KK.add({preset:'nope',at:[0,0,0],w:1,h:2});}catch(e){threw=true;}
+let threw2=false;try{KK.add({kind:'nope',at:[0,0,0],w:1,h:2});}catch(e){threw2=true;}
+ok('an unknown preset or kind is refused',threw&&threw2,false);
+ok('export carries each door\'s kind, pair and style',KK.export().doors.find(d=>d.id==='sal').kind==='swing'&&KK.export().doors.find(d=>d.id==='sal').pair&&KK.export().doors.find(d=>d.id==='pc').style==='grille',false);
 // prune, state, load, export
 const keepList=K.list;K.prune(D=>D.id!=='door.2');
 ok('prune drops in place (the same array) and frees the id',K.list===keepList&&K.get('door.2')===null&&K.list.length===3,K.list.length!==3);
@@ -89,4 +125,21 @@ KDOORHOST.posed(P1,(D,p)=>{calls++;last=p;});KDOOR.open(P1);for(let i=0;i<30;i++
 ok('a posed leaf: the page\'s function is called as the door moves, with KDOOR.pose\'s centre and swing',calls>3&&near(last[3],KDOOR.SWING),calls===0);
 calls=0;for(let i=0;i<5;i++)KDOORHOST.tick(.1);
 ok('a door at rest is not posed again',calls===0,calls!==0);
+// the host (90-core-door-host.js) and the leaves' look (30-core-door-leaf.js): the leaf styles' geometry and a pair's two instances, on the repo's three.js r128 (skipped without it)
+{const T3=path.join(__dirname,'..','..','kits','ancients','three.min.js');let THREE=null;
+ try{const src=fs.readFileSync(T3,'utf8');if(src.length>100000){const m={exports:{}};new Function('module','exports',src)(m,m.exports);THREE=m.exports;}}catch(e){}
+ if(!THREE||!THREE.BoxGeometry)console.log('SKIP  the host checks (no three.js at kits/ancients/three.min.js: git lfs pull it)');
+ else{global.THREE=THREE;delete global.KDOORHOST;eval(fs.readFileSync(path.join(__dirname,'90-core-door-host.js'),'utf8'));eval(fs.readFileSync(path.join(__dirname,'30-core-door-leaf.js'),'utf8'));
+  const bb=g=>{g.computeBoundingBox();const b=g.boundingBox;return[b.min.x,b.min.y,b.min.z,b.max.x,b.max.y,b.max.z];};
+  let allIn=true,glazedOk=false;for(const st of KDOORLEAF.STYLES){const G=KDOORLEAF.geometry(THREE,st),B=bb(G.frame);
+   if(B.some(v=>!isFinite(v)||Math.abs(v)>.5001))allIn=false;if(st==='glazed')glazedOk=!!G.glass&&bb(G.glass).every(v=>Math.abs(v)<=.5);}
+  ok('every leaf style is a unit leaf (its frame within [-.5, .5]); glazed carries a light of glass',allIn&&glazedOk&&KDOORLEAF.STYLES.length>=9,!allIn);
+  const Kh=KDOOR,save=Kh.list.slice();Kh.clear();
+  const Dg=Kh.add({id:'glz',preset:'double',style:'glazed',at:[0,0,0],yaw:0,w:2,h:2.2,t:.06}),ms=KDOORLEAF.meshes(THREE,'glazed',{frame:new THREE.MeshStandardMaterial(),glass:new THREE.MeshStandardMaterial()},2);
+  KDOORHOST.instanced(Dg,ms,[0,1],new THREE.Quaternion());Kh.open(Dg);for(let i=0;i<40;i++)KDOORHOST.tick(.1);
+  const m0=new THREE.Matrix4(),m1=new THREE.Matrix4(),g0=new THREE.Matrix4();ms[0].getMatrixAt(0,m0);ms[0].getMatrixAt(1,m1);ms[1].getMatrixAt(0,g0);
+  const p0=new THREE.Vector3().setFromMatrixPosition(m0),p1=new THREE.Vector3().setFromMatrixPosition(m1),sc=new THREE.Vector3().setFromMatrixScale(m0);
+  ok('a glazed double door: two leaves posed open about their jambs, each half the doorway, its glass set with its frame',
+   ms.length===2&&near(Math.hypot(p0.x+1,p0.z),.5,1e-5)&&near(Math.hypot(p1.x-1,p1.z),.5,1e-5)&&near(sc.x,1,1e-5)&&m0.equals(g0),ms.length!==2);
+  Kh.clear();}}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

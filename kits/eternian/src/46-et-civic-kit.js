@@ -15,7 +15,7 @@ function etHexFaces(ap,fn){for(let k=0;k<6;k++){const ph=PI/6+k*PI/3;pushM(TF(ap
    arms spread, standing on plinths either side (o.metal: their rank, gold by default) */
 function etCivicDoor(x,z,w,h,o){o=o||{};const m=o.metal||'gold',pl=.5,fh=(h-pl)/1.18,sd=P('stoneD');
  /* the two bronze leaves (core/door): they open on E or an NPC where o.hollow (a room behind the face), else locked */
- svDoorway(x,0,z+.04,0,w,h,{hollow:!!o.hollow,split:true,mk:'bronze',col:P('bronze'),t:.1,name:'civic door'});
+ svDoorway(x,0,z+.04,0,w,h,{hollow:!!o.hollow,split:true,mk:'bronze',col:P('bronze'),t:.1,style:'panel',name:'civic door'});
  door(x,0,z+.1,0,w);
  for(const s of [-1,1]){const fx=x+s*(w/2+fh*.32);box('stone',fx,0,z+.45,fh*.55,pl,.9,sd);
   etFigure(fx,pl,z+.45,fh,{pose:'lintel',metal:m});}
