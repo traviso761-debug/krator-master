@@ -124,10 +124,9 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/hyperjungle": "71995386b1cb26681ccaf5517dea713ba9e316a160d52ec51a79b993dbbde356",
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
     "biomes/hyperjungle/dist/hyperjungle.html": "2aaca71afe4bdc61cc460a0d341036d247b87d0d53a3202660267b16aef17079"
@@ -271,7 +270,7 @@
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
     "biomes/hyperjungle/stations/lake": "6769b792aaeb5ab37c31132b8c6c3e091977f87e06b64bf931ae63ac48c752e2",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
     "biomes/hyperjungle/dist/hyperjungle-lake.html": "5372afbd74b7258f72032ccf7f756d49e9ec37f9001f13f621fea0ec02d9b9b0"
@@ -434,7 +433,7 @@
     "biomes/hyperjungle/src": "12c65d60e8261d05c0708c3a147fba0276d5693499e784771edac40968e7a50a",
     "biomes/hyperjungle/stations/savanna": "6769b792aaeb5ab37c31132b8c6c3e091977f87e06b64bf931ae63ac48c752e2",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
     "biomes/hyperjungle/dist/hyperjungle-savanna.html": "9a09250dd5693e0efbc8c371decff4461f1096686c723c2a5db3507ea3b9779b"

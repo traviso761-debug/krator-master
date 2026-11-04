@@ -151,10 +151,9 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/eastabyss": "6f4ae2eef56be881e6ad8a066d16d1a15c8a4c999177d0bc8c3746a8010a7c5e",
     "biomes/eastabyss/src": "db6b3ddbe028c45e42e4ddac8ec6b29f155cc6aed2f2604cb2f7532416a18339",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
     "biomes/eastabyss/dist/eastabyss.html": "f97099302521c88c009043af8fea618235249187a97374292584800aaca1b5c5"
@@ -316,7 +315,7 @@
     "biomes/eastabyss/src": "db6b3ddbe028c45e42e4ddac8ec6b29f155cc6aed2f2604cb2f7532416a18339",
     "biomes/eastabyss/stations/lakes": "d1f38bf8bcf749ce034d3607f6a1a5cde26740337ad41592adec623aaeb506bb",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
     "biomes/eastabyss/dist/eastabyss-lakes.html": "936be42f3e7ffe805d79b59c285e9b0edecc08a44d399438eacacb8eb6deea9c"
