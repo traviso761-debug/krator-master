@@ -7,8 +7,11 @@ window._biome=null;window._geyser=null;
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it; ?nogeyser=1 leaves the vent bare
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ // ?imp=0: the borrowed kits' far trees as their own blobs instead of octahedral impostors (34-core-impostor.js; the final rebuild)
+ if(Q.get('imp')==='0')[typeof THRONE!=='undefined'&&THRONE,typeof SWBAY!=='undefined'&&SWBAY,typeof EASTABYSS!=='undefined'&&EASTABYSS,typeof SEDESERT!=='undefined'&&SEDESERT,
+  typeof RIFT!=='undefined'&&RIFT,typeof NWLOW!=='undefined'&&NWLOW,typeof HYPERJUNGLE!=='undefined'&&HYPERJUNGLE].forEach(K=>{if(K)K.IMPOSTORS=false;});
  // the geyser kit's passes run round the vent (GEYSER.build's center, 2026-10-26: it puts the host's centre back itself)
- if(!Q.has('nogeyser')){try{window._geyser=GEYSER.build({R:VENT.r*1.6,quality:q,center:[VENT.x,VENT.z]});}catch(e){reportErr('geyser: '+e.stack);}}
+ if(!Q.has('nogeyser')&&!(typeof STATION!=='undefined'&&STATION.geyser===false)){try{window._geyser=GEYSER.build({R:VENT.r*1.6,quality:q,center:[VENT.x,VENT.z]});}catch(e){reportErr('geyser: '+e.stack);}}
  _mark('geyser');
  if(GEYSER.SHOW){GEYSER.SHOW.U.uSun.value.set(...SUN_POS).normalize();_onLight.push(m=>GEYSER.SHOW.setLight(m==='night'?.25:1));}
  (GEYSER.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.rb*2+1.5,y0:T.y0-3,y1:T.y0+T.H}));
