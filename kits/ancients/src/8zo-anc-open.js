@@ -24,6 +24,10 @@
 // The frame tick, the E key (when no door is within reach E still lifts the camera, as before) and its tip are at the
 // foot of this fragment; window._openings and window._api.openings give the counts for verify.py.
 // Interiors (8zz-interiors.js, the interiors target): each partition doorway gets an operable leaf (anLeaf below).
+/* a guest in a page that hosts its own doors (window.ANC_OPEN_GUEST, set by a fragment ahead of this one: Highlands' Roketstad,
+   whose 95-hl-doors.js ticks KDOORHOST and whose 99-start.js takes E): the records, panes and cards as here, the tick, E and the
+   tip the host's (two ticks would swing a door twice as fast, two E handlers toggle it back) */
+const ANC_GUEST=typeof window!=='undefined'&&!!window.ANC_OPEN_GUEST;
 const ANC_OPEN={doors:0,locked:0,leaves:0,panes:0,cards:0,lit:0,holes:0,fallen:0,n:{},
  stats(){const L=typeof KDOOR!=='undefined'?KDOOR.list:[];
   return {doors:L.length,locked:L.filter(D=>D.locked).length,leaves:this.leaves,panes:this.panes,cards:this.cards,lit:this.lit,holes:this.holes,fallen:this.fallen};}};
@@ -131,10 +135,10 @@ if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{try{ancH
 /* the frame hook: the kit's tick (10-core.js); a fork of the kit without one (the Ancient Port) gets its own frame */
 const ancOnFrame=typeof tick==='function'?tick:fn=>{let last=performance.now();const loop=now=>{const dt=Math.min(.1,(now-last)/1000);last=now;
  try{fn(dt);}catch(e){if(typeof reportErr==='function')reportErr('openings: '+(e.stack||e));return;}requestAnimationFrame(loop);};requestAnimationFrame(loop);};
-ancOnFrame(dt=>{ancHost();KDOORHOST.tick(dt);
+ancOnFrame(dt=>{ancHost();if(!ANC_GUEST)KDOORHOST.tick(dt);
  const nt=ancNight();if(nt!==ancNightWas){ancNightWas=nt;for(const nm in ANC_CARD){const L=ANC_CARD[nm].l,m=L&&KIT.meshes&&KIT.meshes[L];if(m)m.material.emissiveIntensity=nt?1.1:0;}}});
-addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='e'||e.repeat)return;const D=ancNear();if(!D)return;
+if(!ANC_GUEST)addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='e'||e.repeat)return;const D=ancNear();if(!D)return;
  KDOOR.toggle(D,{by:'player'});e.stopImmediatePropagation();},true);   /* capture: before 92-camera's E (lift) sees it */
 /* the tip: made on the first frame (core/door's host, 90-core-door-host.js, sorts after this fragment) */
 let ancTip=null;
-ancOnFrame(()=>{if(!ancTip)ancTip=KDOORHOST.tip(()=>{const D=ancNear();return D?{x:D.at[0],y:D.at[1]+1.2,z:D.at[2]}:camera.position;},()=>false);ancTip();});
+if(!ANC_GUEST)ancOnFrame(()=>{if(!ancTip)ancTip=KDOORHOST.tip(()=>{const D=ancNear();return D?{x:D.at[0],y:D.at[1]+1.2,z:D.at[2]}:camera.position;},()=>false);ancTip();});

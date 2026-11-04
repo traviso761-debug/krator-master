@@ -35,6 +35,9 @@ behind holes, the monolith's arch windows and oculi) near-black; `MAT.dark` a li
 
 - [x] Windows: one pane (KGLASS 'smoked', the Ancients' blue) before a room card (KGLASS 'room'), two intact windows in
       five lit at night; a ruin's window has its dusty pane in two cases in five and is an empty hole onto the room in the rest.
+      (Checked 2026-11-04: the position hash lights 0.39 to 0.41 of windows on grids 1.5 to 3 m by 3 to 4 m, and of random points;
+      it is not biased. A night view of an arcology looks mostly unlit because its arch openings, the `*Void` items with no card,
+      outnumber its windows.)
 - [x] Doors: every arched door is a locked KDOOR record (a solid body: nothing behind it), drawn shut in the alloy (Darco's
       darker, on its near-black skin), its kind core/door's `blastside` (a heavy bi-parting plate: the record says what the door
       is, for Godot and a world that opens one); a toppled body's doors are not recorded (`ANC_OPEN.fallen`). The interiors target's

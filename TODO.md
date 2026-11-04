@@ -82,130 +82,33 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   are already fixed: rerun with `--write-baseline` after the rebuild so the baseline holds only what is still open. No page
   moves.
 
-- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
-  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
-  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
-  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
-  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
-    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
-    rebuild and verify Talia when it merges main.
-  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
-    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
-    and takes none of it.
-  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
-    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
-  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
-    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
-
-- **Opening doors as a core module** (the owner, 2026-10-20). Door open/shut lives in Iziz's page: `IZDOOR` (69e5: the
-  leaf records, swing, `open` / `close` / `toggle` / `nearest`), `95j-iziz-doors.js` (each leaf's walk blocks in
-  `core/walk`, cleared doorways) and the key in `99-start.js`. Lift it into a core module every build takes (beside
-  `core/walk`): leaves as plain records keyed by stable ids (hinge, width, swing, state, locked), open and close as
-  plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
-  host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
-
-## With the final biome rebuild *(the owner, 2026-10-26)*
-
-Work parked for the coming rebuild of every biome kit: do it there, rebuild each page once, rewrite each baseline once and on
-purpose. Take an item out when it is done.
-
-- **Rebuild the old fungoid flora on `BIO.fung`** (the owner, 2026-10-26). `core/biome/33-core-fungoid.js` (planned in
-  `biomes/outlands/PLAN.md` section 12, C2: `cap`, `bracket`, `bladder`, `pod`, `stalk`, `fringe`, `comb`, `tube`, `crust`)
-  replaces the copies each kit carries: `bracket()` in the swbay, nwbay, rift and hyperjungle `65-*-dress.js`; the Throne's
-  `cap`, `capTube` (`throne/src/55-biome-throne-trees.js`) and `bladders` (its floor file); swbay's `capTop`
-  (`swbay/src/55-biome-swbay-trees.js`); nhighlands' `mushrooms`/`discStalks`; the `crust` in ebadlands and ringisles; the
-  hyperjungle's `fungi`; the `stalk` in rift and xanadu trees. Each kit switches to the core parts, its own copy goes, and
-  its page is checked by eye against the old one before the baseline is rewritten (the shapes will move a little). Needs
-  the fragment built first (the Outlands' phase O3); the kits that read those fragments in place (Korona's stations, the
-  Throne's) follow automatically.
-
-## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
-
-The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),
-`biomes/WORLD.md` (the biome order), `core/materials/PLAN.md` (the library), `core/simulation/PLAN.md` (the sim),
-`settlements/ys/GODOT.md` (Ys). When one of them changes the order, change it here in the same commit.
-
-1. **DONE 2026-10-02:** the audit tool sees the shared exporters; Iziz's and Dalab's city build passes retagged;
-   the minimap split into data and host (port lint 16 warnings to 2); the Voth lineage in the hash baseline;
-   `core/rand` with golden vectors and its GDScript twin; Ys's city takes it.
-2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"). **Underway 2026-10-05:** `godot/` holds the project,
-   five exports (hyperjungle and rift tiles, Girder and Iziz as glTF, Iziz's atmosphere, Yuni's records) and their
-   importers; `krand_test.gd` passes in Godot 4.5; the first gap list is in GODOT-PLAN.md ("The spike: first findings").
-   Open: the look on Travis's machine in Forward+ (`godot/CHECKLIST.md`), the editor's glTF import, and the route
-   Travis's friend used for the Voth kit (ask what it was).
-3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
-   and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
-   material work (M5).
-   **DONE 2026-10-13** (on `full-refactor`). The Ancients fragments were already current down the chain (the 2026-10-06
-   re-vendor holds: Iziz 35, Highlands 13, Jimjam all match); the session cleared the chain's other drift, each copy's
-   diff read: Iziz's four `core/biome` copies were only behind (re-vendored, `--vendor-bio`); Xanadu's and Reed Lake's
-   `91-probe.js` were behind Highlands (re-vendored; the new line is inert without `HLF`); Highlands' `91-probe.js` and
-   Reed Lake's `73-hl-carve.js` (pre-catalog furniture; Reed Lake has no `FURNISH`) are kept on purpose and named in a
-   new `ADAPTED` set in their build.py. Nothing was fixed upstream in `kits/ancients`. `verify --assert` before and
-   after: identical on Iziz's city, Xanadu, Erewhon and Reed Lake (each build's KNOWN_ISSUES.md); Iziz's verify.py runs
-   again (stage 0b had taken its `GL_ERR`). Every chain build's `--vendor-check` shows only recorded ADAPTED drift.
-   Open: the baseline rewrite for the five changed pages (Iziz's `iziz.html`, Xanadu's `xanadu.html` and `erewhon.html`,
-   Reed Lake's two) when the pages are committed; the composing `useGroupXF` (Iziz's 69c) is still not in
-   `kits/ancients`' 50-registry.js (Jimjam's open item); Dalab and Ys, outside this chain, keep their non-Ancients drift.
-4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). **Iziz DONE 2026-10-05** (its `PORT.md`: tags corrected by reading the code, split notes on 90a, 90b, 90c, 85 and the mask readers, the own-copies Notes; Voth's `68-props.js` split note added). Still to do: Ys. Other builds
-   keep provisional tags until a port session touches them.
-5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
-   records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
-   field with one kit as its first consumer. Needs the spike's findings on terrain.
-6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass. **First pass
-   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types (needs
-   the Ancients chain re-vendored into Ys) and the foreign sets (settlements/ys/KNOWN_ISSUES.md).
-7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
-   `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
-   four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **Iziz, the second pilot, DONE 2026-10-13**
-   (its city materials on the library, every KMAT record naming its hook; two gaps with prompts: `settlements/iziz/KNOWN_ISSUES.md`). **`core/furnish` DONE 2026-10-05:**
-   Girder, Mav's Refuge, Locus, Highlands and Post-Apoc place through it, fingerprints unchanged (`core/furnish/README.md`).
-   **`core/tags` steps 1 and 2 DONE 2026-10-05:** the registry, vocabulary, label, node test and uid twin; Yuni on it,
-   its records arriving in Godot as node metadata (`core/tags/README.md`). Steps 3 and 4 DONE the same day: core/furnish's five
-   builds register their furniture (fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in. Next: the biome kits, with the
-   reseeding event (`core/tags/PROPOSAL.md`).
-8. **`core/mask` DONE 2026-10-05** (Iziz, Dalab, Erewhon, Roketstad place from it; Voth since 2026-10-08; `core/mask/README.md`). Next: Iziz's export
-   on the `KRATOR_EXPORT` shape (M5). **M5 DONE 2026-10-13** (`core/export/README.md`, "Iziz"; `godot/tests/export/iziz_test.gd`).
-9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
-
-**Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
-normal maps became `normal.jpg` (JPEG q95, 4:4:4) in `9b46d9e`. Godot does not read the library yet: `godot/krator/kmat.gd`
-loads each build's `tex/` pack, which is WebP. What is left:
-- **40 sets still on `normal.png`**: the ones added on main after the switch (the eastern badlands' and Ys's sets among them;
-  `git grep -l '"normalMap": "normal.png"' -- 'core/materials/**/meta.json'`). Convert them the same way (Pillow,
-  `quality=95, subsampling=0`) and point their `meta.json` at `normal.jpg`, so the library has one format.
-- **`kmat.gd`'s `_tex()` reads only WebP and PNG** (`load_png_from_buffer` for anything not `.webp`). Add a
-  `load_jpg_from_buffer` branch before Godot reads library sets directly, as `GODOT-PLAN.md` plans.
-- **Packed normals are lossy WebP, which is always 4:2:0** (`tools/textures/pack.py`, `webp(..., 92, 'RGB')`): X and Y
-  live in red and green, so the pack halves their resolution, a bigger loss than the JPEG switch avoided. Write packed
-  normals as lossless WebP or PNG.
-- **Re-packing moves the baseline.** A build that re-runs `pack.py` on a converted set gets very slightly different
-  normals (decoded from the JPEG), so its `PORT-BASELINE.json` hash changes with nothing to see. Re-pack Girder, Iziz,
-  Ys, Yuni, Mechs and Motor Vehicles in one change with one baseline rewrite, after the packed-normal format above.
-- `core/materials/record/23-mat-record.js:59` still names `normal.png` in its convention string; change it in that
-  same change, since it alters Girder's built page.
-
-## Features
-
-- **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
-  rather than from the rendered scene. A base layer is painted once into an offscreen canvas: every walkable
-  floor, sorted by height so upper levels cover lower, coloured by level, with labels. Each update (at most
-  4 Hz, only while the panel is open) copies the base layer and draws the viewer's dot and view wedge.
-  Hovering names the floor under the pointer; clicking walks there.
-  - For Krator: a shared `core/` fragment that paints from each build's `PLACED` list (footprint, rotation,
-    tag) plus hill shading sampled from `terrainH()`, and water. Colour by tag, click to fly or walk.
-    Start with Voth, whose `PLACED` list is already exposed (`settlements/voth/src/85-probe.js:73`).
-  - Godot: the same records drawn in a `Control._draw()`, almost line for line. Better still, bake the base
-    layer to a PNG at export time and ship it with the tile.
-  - Optional: a one-time overhead orthographic bake to a texture as the background, for the painted look.
-    Hide the sky, fog and inspector helpers during the bake.
+- **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
+  the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).
+  - Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
+    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).
+  - `kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
+    and its glass in KGLASS (`kits/ancients-interiors/src/75-ai-doors.js` matches the shell's leaves by order meanwhile), and
+    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.
+  - Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
+    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.
+  - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
+    building's `F.door`).
+  - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.
+  - Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.
+  - Beast Riders (`kits/beast-riders`): its town copies draw Girder's and Mav's leaves shut and their walls whole (fallbacks in
+    their `55-arch.js` / `56-levels.js`); the faithful port bundles `54-openings.js`, the glass of `81-glow.js` and core/door.
+  - Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
+    hardware, or a socket on the leaf).
+  - The arcologies' painted windows (canvas glazing, Crescent, Monolith, Hill, ...) stay painted: real panes would be tens
+    of thousands of instances a building.
+  - Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
+    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).
 
 ## Viewers, interaction and effects *(the owner, 2026-10-07; raised during the Zeijani kit, not started)*
 
-- **Doors that open.** Doors, hatches, gates, shutters and every door-like object open and close with an interact
-  button (in walk mode: look at it, press the key). The door records already exist (`door()`, the interiors kit's
-  door leaves, `core/walk` gaps); a closed leaf is a walk block, an open one is not. **[G data]** for the state and
-  the block, **[G native]** for the animation.
+- ~~**Doors that open.**~~ Done (2026-11-03/04): `core/door` (KDOOR's kinds: swing, slide, lift, tilt, fold, iris, hatch,
+  pairs, double-acting, sprung; KDOORLEAF's styles; KDOORHOST's E and tip) in every building kit. What is left is under
+  "Doors and glass: what is left" above.
 - **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
   floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
   builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).

@@ -16,16 +16,21 @@
 //   PO.stats()                  {doors, locked, leaves, panes, cut, cards} for the probe (_api.openings())
 // The leaves become their mesh once per buildWorld (poFlush), the doors' walk blocks go into core/walk where it has floors (the
 // interiors, ?interiors=1), and E opens the door within reach (92-camera.js's walker or the orbit camera).
+/* a guest in another page (apoc_bundle.py: KPA_HOST is the bundle's): the doors join the HOST's registry (their ids prefixed 'apoc:',
+   only this kit's own records dropped on a rebuild), and the frame tick, E, the tip and the walk blocks are the host's (Screamers'
+   8zo-anc-open.js). Without core/door in the page (PO_CAN false) nothing is recorded: each door is drawn shut as the builder drew it */
+const PO_GUEST=typeof KPA_HOST!=='undefined',PO_CAN=typeof KDOOR!=='undefined'&&typeof KGLASS!=='undefined'&&typeof KDOORHOST!=='undefined';
 const PO={opens:[],leaves:[],mesh:null,per:{},stack:[],cur:null,panes:0,cut:0,cards:0,cleared:0,
  stats(){const L=KDOOR.list;return {doors:L.length,locked:L.filter(D=>D.locked).length,leaves:this.leaves.length,panes:this.panes,cut:this.cut,cards:this.cards,cleared:this.cleared};}};
-MAT.room=KGLASS.material(THREE,'room');TILE.room=1;
+if(PO_CAN){MAT.room=KGLASS.material(THREE,'room');TILE.room=1;
 /* the glass: KGLASS's 'frosted' kind (scrap glazing is salvaged, scratched and grimy: light through, little view), tinted per pane by the
    builder's vertex colour (PAL.glass, the bottle greens); the lit-window schedule (22-mat.js animPatch 'glass') patches it as before. The panes
    emit() moves to 'winlit' (about half: the evening schedule's lit windows) are glass by day too: see through, opaque only when lit (91n-night.js) */
 {const g=KGLASS.material(THREE,'frosted').clone();g.vertexColors=true;g.color.set(0xffffff);g.emissive.set(0x061012);g.emissiveIntensity=.5;g.name='kglass:frosted:post-apoc';MAT.glass=g;}
-MAT.winlit.transparent=true;MAT.winlit.depthWrite=false;MAT.winlit.opacity=KGLASS.SPEC.frosted.opacity;
+MAT.winlit.transparent=true;MAT.winlit.depthWrite=false;MAT.winlit.opacity=KGLASS.SPEC.frosted.opacity;}
+else{MAT.room=new THREE.MeshStandardMaterial({color:0x6e5a46,roughness:.94});TILE.room=1;}
 const PO_LITGLASS=SRGB2LIN(new THREE.Color(0x7aa8a0));   /* the glass over a lit room (34-adds.js win o.lit) */
-function poLive(){return GTARGET===GB;}   /* a throwaway build (frontOf) or a spinner records nothing */
+function poLive(){return PO_CAN&&GTARGET===GB;}   /* a throwaway build (frontOf) or a spinner records nothing */
 function poOpening(x0,x1,y0,y1,th){if(!poLive())return;
  const c=new THREE.Vector3((x0+x1)/2,(y0+y1)/2,0).applyMatrix4(CM),u=new THREE.Vector3(1,0,0).transformDirection(CM),n=new THREE.Vector3(0,0,1).transformDirection(CM);
  PO.opens.push({c,u,n,hw:(x1-x0)/2,hh:(y1-y0)/2,th:th==null?.15:th});}
@@ -39,7 +44,7 @@ function poLeaf(x,y,z,w,h,o){o=o||{};if(!poLive()||!PO.cur)return null;
  const at=poW(x,y,z),hinge=poW(x+hs*w/2,y,z),p0=poW(x,y,z);
  let open=0;if(o.ajar&&!o.locked){const v=Math.min(1,Math.abs(o.ajar)/KDOOR.SWING);let lo=0,hi=1;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(m*m*(3-2*m)<v)lo=m;else hi=m;}open=(lo+hi)/2;}   /* the smoothstep KDOOR.angle eases by, inverted */
  const base=PO.cur.key+'.'+PO.cur.ord,i=PO.cur.n++;
- const D=KDOOR.add({id:base+'.d'+i,at,hinge,p0,yaw:wy,sign:(hs>0?-1:1)*(o.out?-1:1),w:w*sc,h:h*sc,t:t*sc,locked:!!o.locked,open,key:PO.cur.key,drawn:!!o.record});
+ const D=KDOOR.add({id:(PO_GUEST?'apoc:':'')+base+'.d'+i,po:true,at,hinge,p0,yaw:wy,sign:(hs>0?-1:1)*(o.out?-1:1),w:w*sc,h:h*sc,t:t*sc,locked:!!o.locked,open,key:PO.cur.key,drawn:!!o.record});
  if(o.record)return D;   /* a locked door on a solid face: the builder's leaf stays as drawn, the record is the door */
  const c=o.col==null?jc(0x7a2e28,.05):(typeof o.col==='number'?hc(o.col):o.col);
  PO.leaves.push({D,col:c.clone?c.clone():c,q:new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),wy),s:[(w-.04)*sc,(h-.02)*sc,t*sc]});
@@ -54,7 +59,7 @@ place=function(key,x,z,ry,o){if(!poLive()||!DEFS[key])return poPlace0.apply(this
 let poGeo=null;
 let poHooked=false;
 function poFlush(parent){
- if(!poHooked){poHooked=true;FRAME_HOOKS.push(dt=>{KDOORHOST.tick(Math.min(dt,.06));});   /* the leaves ease on the frame (90-scene.js's hooks exist by the first build) */
+ if(!poHooked&&!PO_GUEST){poHooked=true;FRAME_HOOKS.push(dt=>{KDOORHOST.tick(Math.min(dt,.06));});   /* the leaves ease on the frame (90-scene.js's hooks exist by the first build) */
   FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,()=>WALK.on));   /* "E: open the door" at the foot of the page */
   addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='TEXTAREA')return;if(e.key==='e'||e.key==='E')KDOORHOST.toggleNear(camera.position,WALK.on);});}
  if(PO.mesh){PO.mesh.parent&&PO.mesh.parent.remove(PO.mesh);PO.mesh=null;}
@@ -65,10 +70,11 @@ function poFlush(parent){
   im.castShadow=true;im.receiveShadow=true;im.frustumCulled=false;im.userData.doorLeaves=true;im.userData.probeSkip=true;
   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;parent.add(im);PO.mesh=im;
   for(const D of KDOOR.list)if(D.open>0)KDOORHOST.pose(D);}
+ if(PO_GUEST||typeof KWALK==='undefined')return;   /* a guest's walk blocks are the host's (its KDOOR.walk) */
  KDOOR.walk(KWALK);PO.cleared=KDOOR.clearDoorways(KWALK);
  /* a locked door on a solid face stands in a shell core/walk does not hold (only the interiors' rooms are in it, ?interiors=1): its block
     would be the only wall there, so it is switched off and the walker keeps the way in it had */
  for(const D of KDOOR.list)if(D.locked&&D.drawn)KWALK.setBlock(D.blocks,false);}
 const poBuildWorld0=buildWorld;
-buildWorld=function(k){KDOOR.clear();PO.opens.length=0;PO.leaves.length=0;PO.per={};PO.panes=0;PO.cut=0;PO.cards=0;
- const W0=poBuildWorld0.apply(this,arguments);poFlush(W0);return W0;};
+buildWorld=function(k){if(PO_CAN){if(PO_GUEST)KDOOR.prune(D=>!D.po);else KDOOR.clear();}PO.opens.length=0;PO.leaves.length=0;PO.per={};PO.panes=0;PO.cut=0;PO.cards=0;
+ const W0=poBuildWorld0.apply(this,arguments);if(PO_CAN)poFlush(W0);return W0;};

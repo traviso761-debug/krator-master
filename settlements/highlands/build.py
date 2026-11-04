@@ -133,6 +133,9 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost   # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the shell and the whole interface, as Iziz takes it
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]   # not core/space (Roketstad's band reads its own copy); no editor world yet
 TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
+# kit fragments a target reads in place: Roketstad's Ancients pieces (82a-82e) take the Ancients kit's openings (8zo: a window a pane
+# before the room card, an arched door a locked core/door record), as a guest of the page's own door host (its 8zn sets that)
+TARGET_KIT = {'roketstad': {'8zo-anc-open.js': os.path.join(ROOT, 'kits', 'ancients', 'src', '8zo-anc-open.js')}}
 # A target's BIOME, read IN PLACE (biomes/WORLD.md: several kits on one page; as biomes/geyser reads the hyperjungle):
 # core/space, core/biome and one biome kit's fragments, under slot names in the 86-bio- band, so they load after the
 # terrain (84) and the painted masks (85), round the target's own host binding (86-bio-45-init.js, kept local), and
@@ -196,6 +199,7 @@ DETERMINISTIC = {
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js', '89-hl-trades.js'}   # core/host (no rnd()); the take; the sites into core/tags
+DETERMINISTIC |= {'8zn-rk-open-guest.js', '8zo-anc-open.js'}   # Roketstad's Ancients openings (a hash, no rnd())
 DETERMINISTIC |= set(DOOR_FILES) | {'71c-hl-openings.js', '95-hl-doors.js'}   # core/door, the openings (69e5, 71c), their finish: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -329,6 +333,7 @@ def build_one(target, do_checks, assert_origin):
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
+    tgt.update(TARGET_KIT.get(target, {}))
     bio = TARGET_BIO.get(target)
     if bio:
         twice = set(bio['files']) & set(tgt)

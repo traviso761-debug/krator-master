@@ -66,7 +66,7 @@ const IZDOOR={get list(){return KDOOR.list;},get SWING(){return KDOOR.SWING;},ge
  nearest:(x,y,z,r)=>KDOOR.nearest(x,y,z,r),
  // the leaves' meshes a door is posed in: the kit's (KIT.meshes) unless bound to others (a chunked bake's own: Erewhon)
  bind(D,meshes){D._meshes=meshes;return D;},
- finish(W){KDOOR.prune(D=>(D.parts||[[{item:'vDoorLeaf',idx:D.idx,ref:D.ref}]]).every(P=>P.every(q=>KIT.items[q.item][q.idx]===q.ref)));IZDOOR.W=W||null;KDOOR.walk(W||null);return KDOOR.list.length;},
+ finish(W){KDOOR.prune(D=>!D.ref||(D.parts||[[{item:'vDoorLeaf',idx:D.idx,ref:D.ref}]]).every(P=>P.every(q=>KIT.items[q.item][q.idx]===q.ref)));   /* a door IZDOOR did not draw (no ref: the Ancients' records in Roketstad) is kept */IZDOOR.W=W||null;KDOOR.walk(W||null);return KDOOR.list.length;},
  tick(dt){if(!KIT.meshes)return;const moved=KDOOR.step(dt);for(const D of moved)IZDOOR._pose(D);IZDOOR._flush();},
  // write a door's leaves (every part: the leaf, its glass) into their meshes as it moves: leaf i at KDOOR.leaves' pose,
  // turned about its axis from its shut rotation, scaled by its shut size times the leaf's own scale (a roller, an iris)
