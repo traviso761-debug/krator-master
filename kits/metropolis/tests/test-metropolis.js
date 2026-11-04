@@ -63,12 +63,16 @@ for (const k of MP.PLANNED_KEYS) { const F = MP.FAMILY[k], A = MP.audit(F); ok(F
    parts with 10 m between (a bridge), a ring round a court cut by the core; every one audited. The buildings' own run under verify.py (hostChecks) */
 { const S = { rect: [64, 44, (i, j) => i >= 2 && i < 62 && j >= 2 && j < 42, { x0: 28, z0: 16, n: 6 }], ell: [70, 70, (i, j) => (i >= 2 && i < 68 && j >= 2 && j < 22) || (i >= 2 && i < 22 && j >= 2 && j < 68), { x0: 8, z0: 8, n: 6 }],
     bar: [80, 20, (i, j) => i >= 2 && i < 78 && j >= 3 && j < 17, { x0: 37, z0: 4, n: 4 }], twin: [70, 30, (i, j) => j >= 2 && j < 28 && ((i >= 2 && i < 30) || (i >= 40 && i < 68)), { x0: 12, z0: 10, n: 6 }],
-    ring: [60, 60, (i, j) => i >= 2 && i < 58 && j >= 2 && j < 58 && !(i >= 22 && i < 38 && j >= 22 && j < 38), { x0: 8, z0: 26, n: 6 }] };
+    ring: [60, 60, (i, j) => i >= 2 && i < 58 && j >= 2 && j < 58 && !(i >= 22 && i < 38 && j >= 22 && j < 38), { x0: 8, z0: 26, n: 6 }],
+    disc: [64, 64, (i, j) => Math.hypot(i + 0.5 - 32, j + 0.5 - 32) < 28, { x0: 29, z0: 29, n: 6 }] };
   for (const name in S) { const [W, D, f, core] = S[name], g = new Uint8Array(W * D); for (let j = 0; j < D; j++) for (let i = 0; i < W; i++) g[j * W + i] = f(i, j) ? 1 : 0;
     const id = 'gridtest_' + name; MP.ANCIENT_USES[id] = [['offices', 9]];
     const F = MP.ancientFamily({ id, name, kind: 'midrise', sh: 4, footprint: { w: W, d: D }, height: { roof: 12, tip: 12 }, tris: 1 }, { x0: 0, z0: 0, cell: 1, W, D, ground: g, levels: [{ y: 4, g }, { y: 8, g }], core }, [{ x: W / 2, z: 2, y: 0, yaw: Math.PI }]);
     const A = MP.audit(F), st = MP.storey(F, 1);
     ok(A.ok && st.rooms.some(r => r.kind === 'core') && (name !== 'twin' || st.rooms.some(r => /bridge/.test(r.id))), 'grid plan, ' + name + ': audited (' + A.rooms + ' rooms' + (A.ok ? '' : ', ' + A.fails[0]) + ')');
+    /* a round floor is cut by angle (the owner: a curved floor cut by its corridor's seeds was a maze): its skin rooms are wedges of about 6 m at the band's middle, so few and even */
+    if (name === 'disc') { const sk = st.rooms.filter(r => r.mpKind === 'office' || r.mpKind === 'meeting'), area = p => { let a = 0; for (let i = 0; i < p.length; i++) { const u = p[i], v = p[(i + 1) % p.length]; a += u[0] * v[1] - v[0] * u[1]; } return Math.abs(a / 2); }, as = sk.map(r => area(r.poly)).sort((a, b) => a - b);
+      ok(sk.length >= 20 && sk.length <= 60 && as[Math.floor(as.length / 2)] >= 20, 'grid plan, disc: wedges (' + sk.length + ' rooms, median ' + (as[Math.floor(as.length / 2)] || 0).toFixed(0) + ' m2)'); }
     delete MP.FAMILY[id]; delete MP.ANCIENT_USES[id]; } }
 ok(MP.families().every(F => !F.design) && MP.planned().length === MP.families().length + MP.PLANNED_KEYS.length, 'families() are the shelled ones, planned() adds the designs');
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

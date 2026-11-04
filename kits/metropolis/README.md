@@ -279,6 +279,14 @@ the floor's, laid by `MP.stackLayout` as a reading hall (the Ancients' archives 
 2 m walk round the walls, desks in a reading circle at the middle; 248 pieces, 236 k triangles), and a hall on a plinth stands at its lowest
 door's sill (the Library's 1.83 m). The Offices 575 rooms (three cores), the Watch 155; every planned Ancients building passes the audit.
 
+**Curved floors and open issues** (the owner, 2026-11-03: fix the curved plans and the other open issues). A grid plan's round or lobed part
+(its outline never under 0.55 of its farthest reach from its middle, filling under 0.9 of its box: the Watch's drum, the Reliquary's flower,
+Sky A's office ring) is cut by angle about its middle: each band's rooms are wedges about 6 m wide at the band's middle, their partitions straight
+rays, and the part keeps two rings of rooms, deeper being one open floor round the core. A design's tear (`MP.tearAtXZ`) takes its noise round a
+circle, so it no longer jumps where the angle wraps. A grid plan's bridge of 8 m or less crosses a wall: the hero's small pieces in its path go
+(`MP.ancientDoorways`). The Terrace's court band holds meeting rooms and stores windowed on the court; the Spiral's portals stand where its ramp
+passes each storey's floor. The core search in `MP.floors` works in each part's own box (a building of many parts was 1.5 s a hero).
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

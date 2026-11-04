@@ -107,12 +107,13 @@ MP.families = function () { return Object.keys(MP.FAMILY).map(function (k) { ret
       bays: { low: 100, high: 100, split: Infinity },
       plan: function (F, Lv, lib) {
         var k = Math.min(R.length - 1, Math.floor((Lv.y + 0.1) / hT)), rOut = R[k] - 0.5 - 0.45, W = rOut - Rc, kinds = KIND[Lv.use] || KIND.offices, CW = lib.CW, n0 = F.bays.low / 2;   /* two bays a room on every tier: its windows line up */
-        var inner = { d: 4.5, n: 24, kinds: function (i) { return i % 3 ? 'store' : 'plant'; }, door: 'out' }, sh = sth.map(function (th, q) { return { id: (q % 2 ? 'lift.' : 'stair.') + q, th: th, band: 0 }; });
+        /* the service band on the court: meeting rooms (two in three) and stores, windowed on the court's glass (the shafts' bays among them) */
+        var inner = { d: 4.5, n: 24, kinds: function (i) { return i % 3 ? 'meeting' : 'store'; }, door: 'out' }, sh = sth.map(function (th, q) { return { id: (q % 2 ? 'lift.' : 'stair.') + q, th: th, band: 0 }; });
         var bands = W - 12 - 2 * CW - 4.5 >= 5
           ? [{ d: 12, n: n0, kinds: kinds, door: 'in' }, { d: CW, corr: true }, { d: W - 12 - 2 * CW - 4.5, n: 12, kinds: function (i) { return i % 2 ? 'stack' : 'store'; }, door: 'out', passage: function (i) { return i % 3 === 0; } }, { d: CW, corr: true }, inner]
           : [{ d: W - CW - 4.5, n: n0, kinds: kinds, door: 'in' }, { d: CW, corr: true }, inner];
         sh.forEach(function (s) { s.band = bands.length - 1; });
-        return lib.rings(F, Lv, { rOut: rOut, rIn: Rc, bands: bands, shafts: sh });
+        return lib.rings(F, Lv, { rOut: rOut, rIn: Rc, bands: bands, shafts: sh, windows: true, skinIn: true });
       },
       ruins: ruins({ crown: { keep: 0.8, note: 'the top tier and its park fallen in' }, broken: { keep: 0.6, note: 'a third of the upper tiers down into the court' }, stump: { keep: 0.2, note: 'the ground tier' }, skeleton: { keep: 0.8, bare: 0.6, note: 'the upper tiers\' slabs and piers' } })
     };

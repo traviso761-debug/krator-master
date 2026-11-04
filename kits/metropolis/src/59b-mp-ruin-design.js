@@ -7,7 +7,7 @@
 MP.ruinDesign = function (G, F, state) {
   const R = MP.ruin(F, state); if (R.state === 'intact') return G;
   const glassy = n => /glass/.test(n), stain = state === 'intact' ? 1 : (F.ruins[state] && F.ruins[state].stain != null ? F.ruins[state].stain : 0.72);
-  const u = (x, z) => Math.atan2(z, x) * 24, limit = (x, z) => (state === 'gutted' ? Infinity : MP.tearAt(F, R, u(x, z)));
+  const limit = (x, z) => (state === 'gutted' ? Infinity : MP.tearAtXZ(F, R, x, z));
   const skin = R.frame ? R.skin : Infinity, top = R.frame ? R.frame[1] : Infinity, v = new THREE.Vector3(), m = new THREE.Matrix4(), Z = new THREE.Matrix4().makeScale(0, 0, 0);
   const drop = [];
   /* every test in the hero's own frame: the Ancients kit's meshes sit in groups of their own, moved and scaled (55) */

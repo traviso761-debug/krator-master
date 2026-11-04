@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-mp-records.js` | 19 |  |
+| `40-mp-records.js` | 20 |  |
 | `41-mp-plans.js` | 37 **big** |  |
 | `42-mp-facade.js` | 5 |  |
 | `43-mp-shell.js` | 6 |  |
@@ -25,13 +25,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46-mp-designs.js` | 5 |  |
 | `46b-mp-ancients.js` | 5 |  |
 | `46c-mp-planned.js` | 53 **big** |  |
-| `46d-mp-gridplan.js` | 50 **big** |  |
+| `46d-mp-gridplan.js` | 53 **big** |  |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
 | `53-mp-hero-ledger.js` | 14 |  |
-| `54-mp-hero-designs.js` | 37 **big** |  |
-| `55-mp-hero-ancients.js` | 15 |  |
+| `54-mp-hero-designs.js` | 38 **big** |  |
+| `55-mp-hero-ancients.js` | 19 |  |
 | `56-mp-interiors.js` | 21 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |

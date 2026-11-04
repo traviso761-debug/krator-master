@@ -33,8 +33,36 @@ MP.heroAncient = function (A, state) {
   G.userData.entrances = MP.ancientEntrances(G, A);
   /* a building with plans (46d): its family is made from this first hero's grid, once */
   if (planned && !MP.FAMILY[A.id] && Fl && Fl.userData.grid) MP.ancientFamily(A, Fl.userData.grid, G.userData.entrances);
+  if (planned && MP.FAMILY[A.id]) G.userData.doorways = MP.ancientDoorways(G, MP.FAMILY[A.id]);
   G.name = A.id + '.' + (state == null ? 'intact' : state); G.userData.walk = []; G.userData.size = S; G.userData.dropped = dropped; G.userData.seated = seated;
   return G;
+};
+/* the doorways a grid plan's short bridges need (46d: a bridge of 8 m or less crosses a wall of the kit's): the kit's triangles and pieces in a box
+   1.6 m wide along the bridge, from its floor to 2.3 m, are taken out (a triangle over 16 m2, a whole wall's, is left: a hole that size is no door).
+   Returns how many went */
+MP.ancientDoorways = function (G, F) {
+  if (!F.doorways || !F.doorways.length) return 0;
+  G.updateMatrixWorld(true); const inv = new THREE.Matrix4().copy(G.matrixWorld).invert(), Mw = new THREE.Matrix4(), mI = new THREE.Matrix4(), Z = new THREE.Matrix4().makeScale(0, 0, 0), va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3(), e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
+  /* one box round them all first: most triangles are nowhere near a doorway */
+  let X0 = 1e9, X1 = -1e9, Y0 = 1e9, Y1 = -1e9, Z0 = 1e9, Z1 = -1e9; F.doorways.forEach(D => { X0 = Math.min(X0, D.a[0], D.b[0]) ; X1 = Math.max(X1, D.a[0], D.b[0]); Z0 = Math.min(Z0, D.a[1], D.b[1]); Z1 = Math.max(Z1, D.a[1], D.b[1]); Y0 = Math.min(Y0, D.y0); Y1 = Math.max(Y1, D.y1); });
+  X0 -= 1.2; X1 += 1.2; Z0 -= 1.2; Z1 += 1.2;
+  const inBox = (x, y, z) => x >= X0 && x <= X1 && z >= Z0 && z <= Z1 && y >= Y0 && y <= Y1 && F.doorways.some(D => { if (y < D.y0 || y > D.y1) return false; const dx = D.b[0] - D.a[0], dz = D.b[1] - D.a[1], l = Math.hypot(dx, dz) || 1, u = ((x - D.a[0]) * dx + (z - D.a[1]) * dz) / l, v = (-(x - D.a[0]) * dz + (z - D.a[1]) * dx) / l; return u > -0.3 && u < l + 0.3 && Math.abs(v) < 0.8; });
+  let n = 0;
+  G.traverse(o => {
+    if (!o.isMesh || !o.geometry || (o.parent && o.parent.name === 'floors') || o.name === 'floors') return;
+    Mw.multiplyMatrices(inv, o.matrixWorld);
+    if (o.isInstancedMesh) { if (!o.geometry.boundingBox) o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox, c = new THREE.Vector3(); for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, mI); if (mI.determinant() === 0) continue; b.getCenter(c); c.applyMatrix4(mI).applyMatrix4(Mw); if (inBox(c.x, c.y, c.z)) { o.setMatrixAt(i, Z); n++; } } o.instanceMatrix.needsUpdate = true; return; }
+    const g = o.geometry, P = g.attributes.position, I = g.index, nI = I ? I.count : P.count, at = q => (I ? I.getX(q) : q), keep = []; let cut = 0;
+    for (let t = 0; t + 2 < nI; t += 3) {
+      const a = at(t), b = at(t + 1), c = at(t + 2);
+      /* the centroid alone moved into the hero's frame (the transform is affine); the triangle's area only for one in a doorway */
+      va.set((P.getX(a) + P.getX(b) + P.getX(c)) / 3, (P.getY(a) + P.getY(b) + P.getY(c)) / 3, (P.getZ(a) + P.getZ(b) + P.getZ(c)) / 3).applyMatrix4(Mw);
+      if (inBox(va.x, va.y, va.z)) { vb.fromBufferAttribute(P, a).applyMatrix4(Mw); vc.fromBufferAttribute(P, b).applyMatrix4(Mw); e2.fromBufferAttribute(P, c).applyMatrix4(Mw); const area = e1.subVectors(vc, vb).cross(e2.sub(vb)).length() / 2; if (area < 16) { cut++; continue; } }
+      keep.push(a, b, c);
+    }
+    if (cut) { const g2 = g.clone(); g2.setIndex(keep); o.geometry = g2; n += cut; }
+  });
+  return n;
 };
 /* the kit items a record names (A.seat) that stand off the surface under them: each instance is lowered onto what a ray straight down
    from its foot's middle meets, when that is between 5 cm and 8 m below (the Honeycomb Block's roof units, plateW, stood 1.35 m over

@@ -148,6 +148,14 @@ MP.tearAt = function (F, R, u) {
   if (R.span) { var a = F.levels[1].y - 0.01, d = Math.max(R.span[0] - u, u - R.span[1]); if (d < 0) return a; if (d < 4) return a + (c - a) * d / 4; }
   return c;
 };
+// the tear for a design or an Ancients building (59b): the same, its noise over the angle round the axis taken on a circle (continuous all round:
+// by the angle alone it jumped where the angle wraps, behind the axis at -x, on the parts standing off it: the Organ's pipes, the Pods, the Long Curve)
+MP.tearAtXZ = function (F, R, x, z) {
+  if (!R.torn) return R.cut;
+  var seed = MP.idHash(F.id + '.' + R.state) & 0xffff, t = Math.atan2(z, x), cx = Math.cos(t) * 24, sz = Math.sin(t) * 24;
+  var f = (KRAND.vnoise(cx / 9, sz / 9, 1.7, seed) + 0.5 * KRAND.vnoise(cx / 3.3, sz / 3.3, 4.1, seed)) / 1.5;
+  return R.cut - R.torn * Math.min(1, Math.max(0, (f - 0.2) / 0.6));
+};
 // what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KRUBBLE heaps (centre, half-lengths, strike, crest, a seed); pieces:
 // a shaft's section lying (r, len, along the yaw ry, tipped by tilt), the lamp's disc on its side, a slab tipped up. A Spindle falls along a fin, the Ledger in on itself
 MP.debrisPlan = function (F, state) {

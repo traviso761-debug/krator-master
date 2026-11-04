@@ -105,22 +105,22 @@ MP.floors = function (G, o) {
   parts.forEach((cells, pi) => {
     if (cells.length < 20) return;
     const mine = lv0.filter(L => cells.some(k => L.g[k])); if (!mine.length) return;
-    let mx = 0, mz = 0, mc = 0; cells.forEach(k => { mx += k % W; mz += Math.floor(k / W); mc++; }); mx /= mc; mz /= mc;
-    const inPart = new Uint8Array(N); cells.forEach(k => { inPart[k] = 1; });
-    let pick = null; const picks = [];
-    for (const ring of [0]) { pick = null;
+    /* the part's own box: the tables and the search stay in it (a building of many parts, the Honeycomb Block's, was 1.5 s a hero over the grid) */
+    let mx = 0, mz = 0, i0 = 1e9, i1 = -1e9, j0 = 1e9, j1 = -1e9; cells.forEach(k => { const i = k % W, j = (k - i) / W; mx += i; mz += j; i0 = Math.min(i0, i); i1 = Math.max(i1, i); j0 = Math.min(j0, j); j1 = Math.max(j1, j); }); mx /= cells.length; mz /= cells.length;
+    const BW = i1 - i0 + 1, BD = j1 - j0 + 1, inPart = new Uint8Array(BW * BD); cells.forEach(k => { const i = k % W, j = (k - i) / W; inPart[(j - j0) * BW + i - i0] = 1; });
+    let pick = null;
     for (const n of [6, 4]) {
-      const W2 = W - n + 1, M2 = W2 * (D - n + 1), run = new Int16Array(M2), best = new Int16Array(M2), end = new Int16Array(M2), sat = new Int32Array((W + 1) * (D + 1));
+      if (BW < n || BD < n) continue;
+      const W2 = BW - n + 1, M2 = W2 * (BD - n + 1), run = new Int16Array(M2), best = new Int16Array(M2), end = new Int16Array(M2), sat = new Int32Array((BW + 1) * (BD + 1));
       mine.forEach((L, li) => {
-        for (let j = 0; j < D; j++) { let rs = 0; for (let i = 0; i < W; i++) { rs += L.g[j * W + i] && inPart[j * W + i] ? 1 : 0; sat[(j + 1) * (W + 1) + i + 1] = sat[j * (W + 1) + i + 1] + rs; } }
-        for (let j = ring; j + n + ring <= D; j++) for (let i = ring; i + n + ring <= W; i++) { const q = j * W2 + i, m = n + 2 * ring, a = i - ring, b = j - ring, sum = sat[(b + m) * (W + 1) + a + m] - sat[b * (W + 1) + a + m] - sat[(b + m) * (W + 1) + a] + sat[b * (W + 1) + a]; run[q] = sum === m * m ? run[q] + 1 : 0; if (run[q] > best[q]) { best[q] = run[q]; end[q] = li; } }
+        for (let j = 0; j < BD; j++) { let rs = 0; for (let i = 0; i < BW; i++) { rs += inPart[j * BW + i] && L.g[(j + j0) * W + i + i0] ? 1 : 0; sat[(j + 1) * (BW + 1) + i + 1] = sat[j * (BW + 1) + i + 1] + rs; } }
+        for (let j = 0; j + n <= BD; j++) for (let i = 0; i + n <= BW; i++) { const q = j * W2 + i, sum = sat[(j + n) * (BW + 1) + i + n] - sat[j * (BW + 1) + i + n] - sat[(j + n) * (BW + 1) + i] + sat[j * (BW + 1) + i]; run[q] = sum === n * n ? run[q] + 1 : 0; if (run[q] > best[q]) { best[q] = run[q]; end[q] = li; } }
       });
       let bq = -1, br = 0, bd = 1e9;
-      for (let j = 0; j + n <= D; j++) for (let i = 0; i + n <= W; i++) { const q = j * W2 + i, r = best[q]; if (!r) continue; const d = Math.hypot(i + n / 2 - mx, j + n / 2 - mz); if (r > br || (r === br && d < bd)) { br = r; bd = d; bq = q; } }
+      for (let j = 0; j + n <= BD; j++) for (let i = 0; i + n <= BW; i++) { const q = j * W2 + i, r = best[q]; if (!r) continue; const d = Math.hypot(i + i0 + n / 2 - mx, j + j0 + n / 2 - mz); if (r > br || (r === br && d < bd)) { br = r; bd = d; bq = q; } }
       /* the longer run wins; the 6 m square (a stair and a lift) on a tie with the 4 m one (a stair) */
-      if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2, j = (bq - i) / W2; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, box: (() => { let a = 1e9, b = -1e9, c = 1e9, d = -1e9; cells.forEach(k => { const i = k % W, j = (k - i) / W; a = Math.min(a, i); b = Math.max(b, i); c = Math.min(c, j); d = Math.max(d, j); }); return [x0 + a * cell, x0 + (b + 1) * cell, z0 + c * cell, z0 + (d + 1) * cell]; })(), low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
-    } if (pick) picks.push(pick); }
-    pick = picks.length > 1 && picks[1].run > picks[0].run ? picks[1] : picks[0];
+      if (bq >= 0 && (!pick || br > pick.run)) { const i = bq % W2 + i0, j = Math.floor(bq / W2) + j0; pick = { x0: x0 + i * cell, z0: z0 + j * cell, n: n * cell, levels: mine.slice(0, end[bq] + 1).map(L => L.y), run: br, size: cells.length, box: [x0 + i0 * cell, x0 + (i1 + 1) * cell, z0 + j0 * cell, z0 + (j1 + 1) * cell], low: lv0.slice(0, 3).some(L => cells.some(k => L.g[k])) }; }
+    }
     if (pick) cand.push(pick);
   });
   cand.sort((a, b) => (b.run - a.run) || (b.size - a.size));

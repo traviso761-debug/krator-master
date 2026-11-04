@@ -119,12 +119,27 @@
     /* each part of the storey banded by its own depth (a thin block beside a deep one gets its own corridor) */
     var pc = new Int32Array(N).fill(-1), pmax = [];
     for (k = 0; k < N; k++) if (M[k] && pc[k] < 0) { var sp = [k], mxd = 0; pc[k] = pmax.length; while (sp.length) { var x3 = sp.pop(); mxd = Math.max(mxd, dep[x3]); [x3 - 1, x3 + 1, x3 - W, x3 + W].forEach(function (n) { if (n >= 0 && n < N && M[n] && pc[n] < 0) { pc[n] = pmax.length; sp.push(n); } }); } pmax.push(mxd); }
+    /* a round or lobed part (the Watch's drum, the Reliquary's flower, Sky A's office ring; the owner, 2026-11-03: a curved floor cut by its
+       corridor's seeds was a maze of small jagged rooms) is cut by angle about its middle instead: each band's rooms are wedges about 6 m wide at
+       the band's middle, their partitions straight rays. A part is round when its outline is never under 0.55 of its farthest reach from its
+       middle and it fills under 0.9 of its box (a rectangle keeps the corridor's cut) */
+    var radial = pmax.map(function (md, pi) {
+      var cells = new Set(), sx = 0, sz = 0, i0 = 1e9, i1 = -1e9, j0 = 1e9, j1 = -1e9;
+      for (var c = 0; c < N; c++) if (pc[c] === pi) { cells.add(c); var ci = c % W, cj = (c - ci) / W; sx += ci + 0.5; sz += cj + 0.5; i0 = Math.min(i0, ci); i1 = Math.max(i1, ci); j0 = Math.min(j0, cj); j1 = Math.max(j1, cj); }
+      if (cells.size < 150) return null; var mx = sx / cells.size, mz = sz / cells.size;
+      var P = trace(cells, W, 0, 0, 1); if (!P) return null;
+      var dmin = 1e9, dmax = 0; P.forEach(function (p) { var d = Math.hypot(p[0] - mx, p[1] - mz); dmin = Math.min(dmin, d); dmax = Math.max(dmax, d); });
+      if (dmin / dmax < 0.55 || cells.size / ((i1 - i0 + 1) * (j1 - j0 + 1)) >= 0.9) return null;
+      return { x: mx, z: mz, rb: {} };
+    });
     var r0Of = function (md) { return md <= 3 ? 0 : md <= 8 ? Math.max(2, md - 2) : 6; }, band = new Int16Array(N).fill(-1), r0;
     for (k = 0; k < N; k++) {
       if (!M[k] || inCore[k]) continue; var d = dep[k]; r0 = r0Of(pmax[pc[k]]);
       if (!r0) { band[k] = 1; continue; }
       if (d <= r0) { band[k] = 0; continue; }
       var e = d - r0 - 1, p8 = Math.floor(e / 8), w8 = e % 8; band[k] = w8 < 2 ? 2 * p8 + 1 : 2 * p8 + 2;
+      /* a round part keeps two rings of rooms; deeper is one open floor round the core (the Reliquary's middle was ring on ring of small rooms) */
+      if (radial[pc[k]] && band[k] > 2) band[k] = 3;
     }
     /* in each part, its deepest band, when it is thin (under 3 cells), joins the corridor outside it */
     pmax.forEach(function (md, pi) {
@@ -195,15 +210,23 @@
     }
     /* cells no door corridor reaches (a thin wing) take any corridor's */
     for (h = 0; h < qs2.length; h++) { k = qs2[h]; [k - 1, k + 1, k - W, k + W].forEach(function (n) { if (n >= 0 && n < N && M[n] && !inCore[n] && from[n] < 0 && band[n] % 2 === 0) { from[n] = from[k]; qs2.push(n); } }); }
-    var byLab = {};
-    for (k = 0; k < N; k++) if (band[k] >= 0 && band[k] % 2 === 0 && from[k] >= 0) { var key2 = band[k] + ':' + seedOf[from[k]]; (byLab[key2] = byLab[key2] || []).push(k); }
+    /* each band's middle radius in a round part, so its wedges are about 6 m wide there */
+    for (k = 0; k < N; k++) { var rp = radial[pc[k]]; if (!rp || band[k] < 0 || band[k] % 2) continue; var ki = k % W, rb = rp.rb[band[k]] = rp.rb[band[k]] || [0, 0]; rb[0] += Math.hypot(ki + 0.5 - rp.x, (k - ki) / W + 0.5 - rp.z); rb[1]++; }
+    var byLab = {}, meta = {};
+    for (k = 0; k < N; k++) if (band[k] >= 0 && band[k] % 2 === 0 && from[k] >= 0) {
+      var rp2 = radial[pc[k]], key2, sec = null;
+      if (rp2) { var kx = k % W, rbb = rp2.rb[band[k]], rm = rbb[0] / rbb[1] * cs, nS = Math.max(4, Math.round(2 * Math.PI * rm / 6)); sec = Math.floor((Math.atan2((k - kx) / W + 0.5 - rp2.z, kx + 0.5 - rp2.x) + Math.PI) / (2 * Math.PI) * nS) % nS; key2 = band[k] + ':p' + pc[k] + 'a' + sec; }
+      else key2 = band[k] + ':' + seedOf[from[k]];
+      if (!byLab[key2]) { byLab[key2] = []; meta[key2] = { seed: seedOf[from[k]], sec: sec }; }
+      byLab[key2].push(k);
+    }
     /* the rooms; a sliver (under 5 m2) joins its corridor */
     var nRooms = 0, keys = Object.keys(byLab).sort(function (a, b) { return byLab[a][0] - byLab[b][0]; });
     keys.forEach(function (kk) {
-      var cells = byLab[kk], b2 = +kk.split(':')[0], sd = seeds[+kk.split(':')[1]];
+      var cells = byLab[kk], b2 = +kk.split(':')[0], sd = seeds[meta[kk].seed];
       if (cells.length * cs * cs < 5) { cells.forEach(function (c) { reg[c] = sd.corr; }); return; }
       var inner = b2 > 0, src = inner ? o.inner(nRooms, keys.length) : o.kinds(nRooms, keys.length);
-      var ri2 = add({ id: id + '.r' + nRooms, kind: kindOf(src), mpKind: src, poly: null, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: true, band: b2, corr: sd.corr, cells: cells, seed: +kk.split(':')[1] });
+      var ri2 = add({ id: id + '.r' + nRooms, kind: kindOf(src), mpKind: src, poly: null, y: L.y, h: L.h, level: L.k, doors: [], windows: [], furnish: true, band: b2, corr: sd.corr, cells: cells, seed: meta[kk].sec != null ? meta[kk].sec : meta[kk].seed });
       cells.forEach(function (c) { reg[c] = ri2; }); nRooms++;
     });
     /* a room in pieces (its cells cut apart by a corridor or the core) keeps its largest; a smaller piece goes to the region it touches most */
@@ -470,10 +493,12 @@ MP.ANCIENT_HALL = { reading: 'stack' };
     };
     var bridges = masks.map(bridgesFor);
     MP.ancientBridges = MP.ancientBridges || {}; MP.ancientBridges[A.id] = bridges;
+    /* a bridge of 8 m or less crosses a wall of the kit's, not the air: the hero gets a doorway cut there (55, MP.ancientDoorways) */
+    var doorways = []; bridges.forEach(function (Bs, k) { Bs.forEach(function (b) { var ax = grid.x0 + (b.s % W + 0.5) * cs, az = grid.z0 + (Math.floor(b.s / W) + 0.5) * cs, bx = grid.x0 + (b.e % W + 0.5) * cs, bz = grid.z0 + (Math.floor(b.e / W) + 0.5) * cs; if (Math.hypot(bx - ax, bz - az) <= 8) doorways.push({ a: [r3(ax), r3(az)], b: [r3(bx), r3(bz)], y0: L[k].y, y1: L[k].y + 2.3 }); }); });
     var cache = {}, tall = A.height.roof > Math.min(A.footprint.w, A.footprint.d);
     var F = MP.FAMILY[A.id] = {
       id: A.id, name: A.name, kind: A.kind, language: 0, culture: 'ancient', tris: A.tris, design: true, anc: true,
-      footprint: { w: A.footprint.w, d: A.footprint.d }, height: A.height, storeys: L.length, levels: L, zones: [], grid: grid,
+      footprint: { w: A.footprint.w, d: A.footprint.d }, height: A.height, storeys: L.length, levels: L, zones: [], grid: grid, doorways: doorways,
       envR: function () { return Math.min(A.footprint.w, A.footprint.d) / 2; }, portals: [], crown: { k: 'flat' }, secScale: 1, mat: 'concrete', fall: 0,
       core: { kind: 'rects', shafts: shafts }, bays: { width: 3, n: 0 },
       towers: [{ x: 0, z: 0, r: Math.min(A.footprint.w, A.footprint.d) / 2, sr: Math.min(A.footprint.w, A.footprint.d) / 3, h: A.height.roof, fall: Math.PI / 2, squat: !tall }],

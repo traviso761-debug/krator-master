@@ -250,12 +250,12 @@ MP.DESIGN_BUILD={
   [-1,1].forEach(k=>B.obox('adobe',-(g0-.2),2.4,k*gt,-Math.PI/2,1.5,4.8,2.6,{uv:3}));B.obox('adobe',-(g0+.5),4.5,0,-Math.PI/2,2*gt+1.5,.6,1.6,{uv:3});
   B.obox('bronze',-(g0+1.34),3.95,0,-Math.PI/2,2*gt-1.5,.3,.08,{uv:2});
   /* the ramp: a helix rw wide round the cone from beside the gate, rising H in the turns; its tread, its outer face and parapet, its underside; a portal into the cone
-     every half turn */
-  const P=(t,r,y)=>[Math.cos(t)*r,y,Math.sin(t)*r];
+     where the tread passes each storey's floor (its plans, 46c; until those, every half turn), so a portal's sill is a floor */
+  const P=(t,r,y)=>[Math.cos(t)*r,y,Math.sin(t)*r],Fp=MP.FAMILY&&MP.FAMILY.spiral,at=Fp?new Set(Fp.levels.filter(l=>l.k&&l.y>F.sh-.01).map(l=>Math.round((l.y-.6)*n/H))):null;
   for(let i=0;i<n;i++){const t0=ts+i/n*F.turns*Math.PI*2,t1=ts+(i+1)/n*F.turns*Math.PI*2,y0=H*i/n,y1=H*(i+1)/n,r0=R(y0),r1=R(y1),ra=r0+rw,rb=r1+rw;
    DK.q(B,'adobe',P(t0,ra,y0+.6),P(t1,rb,y1+.6),P(t1,r1,y1+.6),P(t0,r0,y0+.6),{uv:3});DK.q(B,'adobe',P(t0,ra,y0-.4),P(t0,ra,y0+1.5),P(t1,rb,y1+1.5),P(t1,rb,y1-.4),{uv:3});
    DK.q(B,'adobe',P(t0,r0,y0-.4),P(t1,r1,y1-.4),P(t1,rb,y1-.4),P(t0,ra,y0-.4),{uv:3});DK.q(B,'adobe',P(t0,ra-.4,y0+.6),P(t0,ra-.4,y0+1.5),P(t1,rb-.4,y1+1.5),P(t1,rb-.4,y1+.6),{uv:3});
-   if(i%32===16&&y0>F.sh)DK.portal(B,t0,y0+.6,R(y0+.6),r0);}
+   if(at?at.has(i):i%32===16&&y0>F.sh)DK.portal(B,t0,y0+.6,R(y0+.6),r0);}
   const dp=[[F.r1,H],[F.r1-.6,H],[F.r1-.6,H+2.4]];for(let i=0;i<=8;i++){const b=i/8*Math.PI/2;dp.push([F.dome*Math.cos(b),H+2.4+F.dome*Math.sin(b)]);}DK.lathe(B,'adobe',dp,32,{col:[.86,.72,.56]});}
 
 };
