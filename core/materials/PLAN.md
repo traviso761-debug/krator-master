@@ -1838,6 +1838,45 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-11-03 and processed: the Gills, High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier (15 images, 1254 px WebP)
+
+Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batches `tools/textures/batches/owner-2026-11-03.json` (10 surfaces,
+`process.py`) and `owner-2026-11-03-cards.json` (5 cut-out sheets on magenta, `cards.py`, anchor none); each `meta.json` carries the full prompt
+(copied from the branch that asked for it: `source.prompt_where`) and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-03/` (`surfaces-*.jpg`, `card-*.jpg`, 1024 px).
+- **Keying.** `card.breathfringe` and `card.sedge.fen` are unmixed (key_hi 200): the default spill pass took the green out of the blended
+  filaments and blade tips and turned them salmon-red (150 turned the fringe pink). `card.glasscane`'s canes are translucent, so the magenta
+  showed through them (lavender canes under the default key): keyed onto the line from the key to the cane colour its prompt names
+  (`#d8efe9`, key_hi 90), the canes come out pale cyan at their blend alpha (opaque enough to alpha-test), the green joints keyed by distance.
+  Saved; no redo needed. `card.turf.limed` and `card.dwarfbirch` take the default key (spill all); the turf keeps a few pinkish stems.
+- **Wired now: the Gills' four**, as a pack of the shared kit (`biomes/gills/materials.json`, `tex/`), read by xanadu's station `gills` as a
+  second pack (`stations/gills/station.json` `"packs"`; `KMAT.packed('gills', f)`), so xanadu's other pages keep their bytes and the Red twin
+  can take the same pack: `pipe.lamina` (`rock.lamina.pipe`, a grey detail map multiplied into `KSTRATA.laminaShade`'s colour), `collar`
+  (`mineral.crust.brucite`, the White collar), `fringe` (`card.breathfringe`, one tuft), `turf` (`card.turf.limed`, crossed quads on
+  `GILLS.life`'s new `turf` records round each dew mat). `mineral.crust.ferromanganese` (the Red collar) is in the library, not packed: no
+  page draws the Red country yet.
+- **Still owed from those branches:** `rock.megabreccia` (nhighlands, section 32 on `claude/rebuild-nhighlands-cloud`) was not in the
+  delivery; `card.umbrella.plate` (the abyssal savannah).
+
+**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows (add the
+family to the kit's `materials.json`, `python3 tools/textures/pack.py <kit>`, rebuild, verify, delete the stand-in's note).
+
+| id | kit (branch) | slot | stand-in it replaces |
+|---|---|---|---|
+| `rock.hematite.mirror` | `biomes/highrift` (`claude/highrift-cloud`) | station `mirror`'s fault face (the family `rock.basalt.oxidised` stands in; a `rock.hematite.mirror` family, full colour, 2 m, low roughness) | `rock.basalt.oxidised` at a low roughness |
+| `ground.ash.soil` | `biomes/nwbay` (`claude/nwbay-catchup-cloud`) | `groundAsh` | `ground.ash` darkened by the layer's tint: drop `NWBAY_GEO.ash.tint` in `45-host-stage.js` |
+| `rock.marble.white` | `biomes/nwbay` (`claude/nwbay-catchup-cloud`) | `groundMarble` | `rock.marble012` (grey trim marble) |
+| `ground.peat.hag` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's steep layer (`STATION_STEEP`), a new family | a flat procedural peat colour |
+| `card.dwarfbirch` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's dwarf birch, a new card family (3 x 2 sheet, base bottom centre) | the kit's birch at knee height on its aspen card (`birch`: `card.aspen`) |
+| `card.sedge.fen` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's fen sedge, a new card family (4 x 2 sheet) | the kit's grass card in sedge colours |
+| `ground.coral.rubble` | `biomes/ringisles` (`claude/rebuild-ringisles-cloud`) | a `ground.rubble` family and a layer in `src/84-host-ground.js` (the storm ridge as its mask), in place of `ground.shingle` (17 units otherwise) | the beach's sand (`ground.coast_sand_01`) |
+| `card.glasscane` | `biomes/riftrim` (`claude/riftrim-cloud`) | the glass cane (`50-biome-riftrim-species.js`, `M.glass`), a new card family (3 x 3 sheet) | a procedural clear material on a jointed cylinder |
+| `rock.gneiss.banded` | `biomes/copperglacier` (`claude/infallible-colden-1316a8`) | `rock.granite` (or a new `rock.gneiss` family): the walls, nunataks, boulders | `rock.granite.tor` |
+| `ice.glacier.verdigris` | `biomes/copperglacier` (`claude/infallible-colden-1316a8`) | `ice.glacier` | `ice.glacier` tinted green on the copper ground |
+
+Scales and roughness as processed: lamina 1.5 m (tintable, mute 0.5), the crusts 1 m (ferromanganese roughness 0.35 with dark gloss, brucite
+0.9), hematite 2 m (0.3), ash soil, marble and peat 2 m, coral rubble 1.5 m, gneiss and the verdigris ice 3 m. Each prompt's PROMPTS-NEEDED
+entry is on its branch: the merging session deletes it there (the branch's section 32, or the rift rim's "The rift rim's build").
+
 #### Delivered 2026-10-27 and processed: every prompt still owed (pasted, 20 images, 1254 px WebP)
 
 Batches `tools/textures/batches/owner-2026-10-27.json` (12 surfaces, `process.py`) and `owner-2026-10-27-cards.json` (5 cut-out sheets on

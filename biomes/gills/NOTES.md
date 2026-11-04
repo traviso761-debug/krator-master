@@ -34,8 +34,9 @@ Built from `PLAN.md` (sections 3, 6, 7, 9a, 11, 13, 16) in the xanadu turn of pa
 - The far gills' steam as `KFAR.spriteMesh` sprites; the mist wall as `fogPool` scaled by the breath; the candles (catch); the hermitage and
   gas-house sites as data (catch); `kits/crops` (lung salt), `kits/resources` (owner nodes).
 - `KCAVERN` throats and the pipes' bores into them; the `fall` hazard on rotten lips; the maw's lair.
-- **Textures to source** (`PLAN.md` section 15, prompts written there): `rock.lamina.pipe` (the laminae are procedural through `KSTRATA.lamina`
-  meanwhile: say so at the look pass), `mineral.crust.brucite` (the lime collar: a flat colour on the page now), `mineral.crust.ferromanganese`
-  (Red), `card.breathfringe` (the fringe is a flat strip now), `card.turf.limed` (the dew mat is a flat disc now). For
-  `core/materials/PROMPTS-NEEDED.md`. The reuse list (travertine, aufeis, ice.glacier: xanadu's pack now carries `ice.glacier`) is not wired yet:
+- **Textures: delivered 2026-11-03** (`core/materials/PLAN.md`, "Delivered 2026-11-03"). The kit's own pack (`materials.json`, `tex/`;
+  `python3 tools/textures/pack.py biomes/gills`, then rebuild every station that lists it in its `station.json` `"packs"`): `pipe.lamina`
+  (`rock.lamina.pipe`, the couplets as a detail map in `KSTRATA.laminaShade`'s colour), `collar` (`mineral.crust.brucite`), `fringe`
+  (`card.breathfringe`, one tuft), `turf` (`card.turf.limed`, on `GILLS.life`'s `turf` records). xanadu's station `gills` reads it.
+  `mineral.crust.ferromanganese` (the Red collar) is in the library, not yet packed: add it when a page draws the Red country. The reuse list (travertine, aufeis, ice.glacier: xanadu's pack now carries `ice.glacier`) is not wired yet:
   the ice pipes and the glacier's edge are vertex colour and the ground's snow paint.
