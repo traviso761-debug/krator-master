@@ -12,7 +12,11 @@
   - The tarn's turquoise.
   - The glacier's surface reads as white snow with grey patches more than banded ice.
   - The pass's malachite tint covers most of the bare rock: the cell's prospectivity is 240 everywhere on the page.
-  - The frost coral's shape (a stout fork of three or four limbs, three levels near the eye).
+  - The frost coral's shape: limbs taper to a point with a bead of iridescence (2026-11-03, the owner: they were blunt), three fork levels near the eye, two far off.
+  - The ice caves (reworked 2026-11-03, the owner: they did not touch the ground nor blend in): each shell sits on a levelled pad (2.5 R) with an apron of
+    ice from its flank to the ground (KGLACIER.drawer `apron`), its foot carried 2.5 m into the ground (`skirt`), a lower and narrower mouth facing down the
+    glacier (`mouthTop`, `mouth` .2), a finer shell (`fine` 2) and a planar map (`uvWorld`). The mouth's edge is still stepped by the shell's grid;
+    burying the shell under the ground's ice was tried and dropped: the ground mesh's 12 m cells are as wide as a cave and could not open its mouth.
   - The nunataks are rounded ridges (`KRELIEF.range`), not jagged gneiss.
 - [ ] **The ice cliffs** at station 1's snout (in the tarn) and station 3's edge are ground mesh, so a steep face stretches the ground's
   textures. Station 2's snout is tapered over 110 m to avoid it.
