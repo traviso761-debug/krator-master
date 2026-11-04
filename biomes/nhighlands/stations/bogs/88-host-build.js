@@ -7,13 +7,15 @@
 // structures, then one bake. The ground is painted last: it bakes the canopy's
 // shade from the trees the biome placed.
 // THE MIRE'S HAZARDS: one record for the open mire (a polygon per dome and the string fen), one per pool of any size, the lochan its own
+const BOG_HAZARDS=[];   /* every hazard record placed (98's check reads it) */
 function bogHazards(){let n=0;const ring=(cx,cz,R,k)=>Array.from({length:k},(_,i)=>{const a=i/k*TAU;return[Math.cos(a)*R,Math.sin(a)*R];});
- DOMES.forEach((D,i)=>{REGISTER({name:'The raised bog '+(i+1)+' (soft ground)',kind:'hazard',x:D.x,z:D.z,y:terrainH(D.x,D.z)-2,r:D.R,h:4,
-  tags:{hazard:{kind:'sink',danger:.35,falloff:'smooth',shape:{type:'poly',pts:ring(0,0,D.R*.92,24),h:4,edge:40},move:{speed:.55,sink:.02},trigger:{by:'weight',mass:60}}}});n++;});
+ DOMES.forEach((D,i)=>{const o={name:'The raised bog '+(i+1)+' (soft ground)',kind:'hazard',x:D.x,z:D.z,y:terrainH(D.x,D.z)-2,r:D.R,h:4,
+  tags:{hazard:{kind:'sink',danger:.35,falloff:'smooth',shape:{type:'poly',pts:ring(0,0,D.R*.92,24),h:4,edge:40},move:{speed:.55,sink:.02},trigger:{by:'weight',mass:60}}}};REGISTER(o);BOG_HAZARDS.push(o);n++;});
  BOG_POOLS.forEach(P=>{if(P.a<9&&P.kind!=='lochan')return;
-  REGISTER({name:P.kind==='lochan'?'The dubh lochan (deep, quaking edge)':'A bog pool (quaking edge)',kind:'hazard',x:P.x,z:P.z,y:P.level-P.depth,r:P.a+3,h:P.depth+2,
+  /* a pool's record is a core/tags record (BIO.record) but not a registered volume: it holds water, which the probe does not sample */
+  {const o={name:P.kind==='lochan'?'The dubh lochan (deep, quaking edge)':'A bog pool (quaking edge)',kind:'hazard',x:P.x,z:P.z,y:P.level-P.depth,r:P.a+3,h:P.depth+2,
    tags:{hazard:P.kind==='lochan'?{kind:'drown',danger:.8,falloff:'none',shape:{type:'poly',pts:P.poly.map(q=>[q[0]-P.x,q[1]-P.z]),h:P.depth+2}}
-    :{kind:'sink',danger:.6,falloff:'linear',shape:{type:'poly',pts:P.poly.map(q=>[q[0]-P.x,q[1]-P.z]),h:P.depth+2,edge:1.5},move:{speed:.3,sink:.08},trigger:{by:'weight',mass:40}}}});n++;});
+    :{kind:'sink',danger:.6,falloff:'linear',shape:{type:'poly',pts:P.poly.map(q=>[q[0]-P.x,q[1]-P.z]),h:P.depth+2,edge:1.5},move:{speed:.3,sink:.08},trigger:{by:'weight',mass:40}}}};BIO.record(o);BOG_HAZARDS.push(o);}n++;});
  return n;}
 var NHL_WATER_F=null;   /* the water's fields (below; 99's edge check reads them) */
 window._biome=null;window._dress=null;

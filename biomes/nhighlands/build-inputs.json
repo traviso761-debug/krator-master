@@ -10,8 +10,8 @@
     "biomes/cut/src/70-biome-cut.js": "5d09b0884633e71f78bd6189813d98faef1daeb031fca0b27544f0f25d94f4cf",
     "biomes/cut/tex/pack.json": "14f5d4137c6fd960a562f612a61bff52504290d299a893304866e6450c1558a6",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
-    "biomes/nhighlands/KNOWN_ISSUES.md": "2690da7dd4cae687c43151652193b558e3341561feeb64da4ded64eb262e01e9",
-    "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "513361c2d1853d2426c8a3a3a489b789a5c5286868fdb90ada00c31cae38ad55",
+    "biomes/nhighlands/PORT.md": "cc97ec7c4e8048ce8c93887246e7f296eb8022cd52fc8594576182946d784c2c",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
     "biomes/nhighlands/src/45-host-stage.js": "aa3a15428855a90a39c61fd88f57895edf699b50851974a6a6734eeb12574498",
@@ -21,7 +21,7 @@
     "biomes/nhighlands/src/65-biome-nhighlands-dress.js": "8c18d2c03f4b69ba9475dfb5f473d1dac976780796a0bfae13354e5ccb062417",
     "biomes/nhighlands/src/70-biome-nhighlands.js": "ede9e879b99d3946e4b304176b57969ef49e52d16b9f0ec1dd7fc6b30e60ccad",
     "biomes/nhighlands/src/82-host-sky.js": "4eddf96503e0d4816eca65acbc446e80b2312b92190e8b13d9efd5ff057dbee3",
-    "biomes/nhighlands/src/84-host-ground.js": "99547eb851e6a3fdc7cd72a5ef6e0fd9a2c5312d658755f78df5b7723da14aeb",
+    "biomes/nhighlands/src/84-host-ground.js": "ce73c9e032a0e7a2a9eef6cb4ed5f20ffccf991c97a31ae6867a3d7fa1ccbf57",
     "biomes/nhighlands/src/85-host-tower.js": "3197fa484599bf7d8bebcd20a811cfec007054a5780168b3038373d6ef7f9c5f",
     "biomes/nhighlands/src/86-host-pillars.js": "6193be075140515b57961b04300da10a86bd8ed2cf1bc51ab4cb9d0bbd69f5af",
     "biomes/nhighlands/src/87-host-cut.js": "78403c6eb513c77ecb5bdce8b64c480218f43fbaf5125ce324d764156bceb7c1",
@@ -127,7 +127,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -157,26 +156,25 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
     "biomes/nhighlands/stations": "35d8757fac419b8807af3ba8dd1565552df6f8b72e0c29968eb5f202b08b0a83",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands.html": "3853925c2689b1d8d39ade788e561f7794c31d0e4d81ef74c177b6dfdd8df08a"
+    "biomes/nhighlands/dist/nhighlands.html": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands.html": "3853925c2689b1d8d39ade788e561f7794c31d0e4d81ef74c177b6dfdd8df08a"
+    "biomes/nhighlands/dist/nhighlands.html": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
    }
   },
   "build.py --station bogs": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "2690da7dd4cae687c43151652193b558e3341561feeb64da4ded64eb262e01e9",
-    "biomes/nhighlands/PORT.md": "6e83f18d0bb49e6159844906ec668ac32de0601b68f758c44a743a8296dcfb13",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "513361c2d1853d2426c8a3a3a489b789a5c5286868fdb90ada00c31cae38ad55",
+    "biomes/nhighlands/PORT.md": "cc97ec7c4e8048ce8c93887246e7f296eb8022cd52fc8594576182946d784c2c",
     "biomes/nhighlands/build.py": "86d5e6f2a7a5a7ef2b92d8d860b61ac14e96cf43e390a691bd1bbf544ee89181",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
     "biomes/nhighlands/src/50-biome-nhighlands-species.js": "7e52635bc5c6f0e197f6685680ff264774a9618df2344f3081ee36d66ff5341d",
@@ -185,18 +183,18 @@
     "biomes/nhighlands/src/65-biome-nhighlands-dress.js": "8c18d2c03f4b69ba9475dfb5f473d1dac976780796a0bfae13354e5ccb062417",
     "biomes/nhighlands/src/70-biome-nhighlands.js": "ede9e879b99d3946e4b304176b57969ef49e52d16b9f0ec1dd7fc6b30e60ccad",
     "biomes/nhighlands/src/82-host-sky.js": "4eddf96503e0d4816eca65acbc446e80b2312b92190e8b13d9efd5ff057dbee3",
-    "biomes/nhighlands/src/84-host-ground.js": "99547eb851e6a3fdc7cd72a5ef6e0fd9a2c5312d658755f78df5b7723da14aeb",
+    "biomes/nhighlands/src/84-host-ground.js": "ce73c9e032a0e7a2a9eef6cb4ed5f20ffccf991c97a31ae6867a3d7fa1ccbf57",
     "biomes/nhighlands/src/89a-host-atmos.js": "4b9e532e156b5ad9d150109f97b474f41caa7f5af999e627453349cb6f183b74",
     "biomes/nhighlands/src/89zz-host-shadow.js": "61ae2931603f8b268ef52d0638bc1baa6d103518c580c5df9c807982ea418622",
     "biomes/nhighlands/src/99-host-take.js": "640fe4401414e4d0b50acc563ce3e26f98384fadea63714c6ef02110490440d8",
     "biomes/nhighlands/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
-    "biomes/nhighlands/stations/bogs/45-host-stage.js": "ac3cd3f6a654c88c44471bfd1689ec55d09fd68aa215bf50ea4f4d9be69d0af3",
-    "biomes/nhighlands/stations/bogs/62-biome-nhighlands-bog.js": "0d3907195f61a65989475e987da3444c6a7505a0657723ac19bbfd9823d10e5c",
-    "biomes/nhighlands/stations/bogs/83-host-bog-ground.js": "cb914c13c3991a8a7d38683ed25883353d61131ad67d294d33d23ce7782658bd",
-    "biomes/nhighlands/stations/bogs/88-host-build.js": "de199961b136d975d2112ead8148a73d97a4d3007037c1e44f5dcf7f6c8a4ab1",
-    "biomes/nhighlands/stations/bogs/89-host-sky.js": "a822e443b3d1132fada37ed1c7c04f67b5f71ae73876ce6bd5c9975ac8a8c644",
-    "biomes/nhighlands/stations/bogs/89w-host-water.js": "31e457b54d6712a8f5424226a81dd6b1762a8d4ee486f0123046fdc6f0690260",
-    "biomes/nhighlands/stations/bogs/98-host-bog-take.js": "b47ff724ff9c4fe989f45901ef62dd8814c317b0e00adb02488bab97dc0ae626",
+    "biomes/nhighlands/stations/bogs/45-host-stage.js": "7fec4b7eca07073f9390636e07c1a54cdd65f0559c5d12ed7ecd325a864edee5",
+    "biomes/nhighlands/stations/bogs/62-biome-nhighlands-bog.js": "62078d49a4704fa0610f020fbcfe6b96142b9221fcf48311eaafca03cbf62270",
+    "biomes/nhighlands/stations/bogs/83-host-bog-ground.js": "0e42f9d8ad9f7dc7c841c1fb46a1534b490c229f6585b8347872ad5c4cd7b8f2",
+    "biomes/nhighlands/stations/bogs/88-host-build.js": "1a6cf7c0be9bb1221ff9074eb0ea62d97b69ebe80cdcc5836306305044539a98",
+    "biomes/nhighlands/stations/bogs/89-host-sky.js": "a334c1b3f63b544bfae75cfffa64792d718e932ae47c11e4c36ab2e3cd304b19",
+    "biomes/nhighlands/stations/bogs/89w-host-water.js": "02890956f36012ecf586e9de56010ec808fc11f4b14c5cfc02a0968545db21cd",
+    "biomes/nhighlands/stations/bogs/98-host-bog-take.js": "de15358d84d9c05fb0aa14a53b4c23f618d274537a949765f1c5b7b42ffc0237",
     "biomes/nhighlands/stations/bogs/station.json": "f24636e902270619567d06ce0970cfa0cf72411a6b810a881ca34828b6078798",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/birch.albedo.webp": "5a37d5c20360c335ad667e31c3276b3e9325b6a5ce0116a231b97b59df544aec",
@@ -299,7 +297,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -331,21 +328,20 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
     "biomes/nhighlands/src": "b0cdcaa1484376afc84d0fc6cdc54cecc30bd9c0bdbe9d06d2cf1c49e65b119d",
     "biomes/nhighlands/stations": "35d8757fac419b8807af3ba8dd1565552df6f8b72e0c29968eb5f202b08b0a83",
     "biomes/nhighlands/stations/bogs": "5b4164911bf451a84227d4db797c249ac5e91c8cb080b25d57fef547e0bda9b8",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-bogs.html": "7dea16a40142f54a93af26022d4e42804b919fbfee4fac61be1dab537d224265"
+    "biomes/nhighlands/dist/nhighlands-bogs.html": "cb7997d7e4b5deffed6dd10c33f81a8d74aade4cdd68dbafec35c90b5a83ce28"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-bogs.html": "7dea16a40142f54a93af26022d4e42804b919fbfee4fac61be1dab537d224265"
+    "biomes/nhighlands/dist/nhighlands-bogs.html": "cb7997d7e4b5deffed6dd10c33f81a8d74aade4cdd68dbafec35c90b5a83ce28"
    }
   }
  }
