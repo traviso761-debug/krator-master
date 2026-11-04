@@ -58,8 +58,9 @@ function avDebris(list,far){const DB=far?AVC.debrisFar:AVC.debris,n={},M=new THR
 // the tiers each 150 ms: the nearest towers heroes from a pool; 300 m to 1.4 km shells (to 3.2 km seen steeply); the rest impostors
 AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now<(AVC.nextTier||0))return;AVC.nextTier=now+150;
  const e=camera.position,T=AVC.towers,near=[],mid=[];
- for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;if(d<AV_NEAR)near.push(t);if(!ns&&d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
- near.sort((a,b)=>a.d-b.d);const keep=near.slice(0,AV_HEROMAX),G=AVC.tierGroups;
+ /* a design with no shell or impostor (the few round the eye's start) is a hero at any range: nothing else would stand in its record's volume */
+ for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;if(d<AV_NEAR||!t.shelled)near.push(t);if(!ns&&d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+ near.sort((a,b)=>(a.shelled?1:0)-(b.shelled?1:0)||a.d-b.d);const keep=near.slice(0,AV_HEROMAX+near.filter(t=>!t.shelled).length),G=AVC.tierGroups;
  G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id))G.set(t.id,avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled));});
  near.slice(AV_HEROMAX).forEach(t=>{if(t.shelled&&t.d<AV_NEAR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);

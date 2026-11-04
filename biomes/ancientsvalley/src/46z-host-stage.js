@@ -70,7 +70,9 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   fields:{wet:(x,z)=>clamp(.8+.12*smooth(12,2,yOf(x,z)-LAKE_Y)+.1*F.park(x,z)-.12*F.density(x,z)*(1-F.park(x,z)),0,.98),tropic:(x,z)=>.92,dry:(x,z)=>clamp(.1*F.density(x,z)+.5*F.scar(x,z)+.1*smooth(25,50,yOf(x,z)),0,1),
    flow:(x,z)=>0,upland:(x,z)=>clamp((yOf(x,z)-LAKE_Y)/300,0,1),salt:(x,z)=>.35*smooth(6,1,yOf(x,z)-LAKE_Y)},
   zone:(x,z)=>{const f=forest(x,z);return{sw:f,nw:f*.33,city:F.density(x,z)};},
-  swAllow:null,nwAllow:['kauri','towerash','grasstree','banksia','skybamboo','treefern','ginkgo','glowwillow'],swQ:1.5,nwQ:.9,
+  /* the north-west's species kept: the wet country's tall trees and the bamboo; not the grass tree (its lance cards are drawn apart from its
+     trunk, so a grown tree left them floating: the core attach audit) nor the dry foothills' banksia */
+  swAllow:null,nwAllow:['kauri','towerash','skybamboo','treefern','ginkgo','glowwillow','meranti','mistpalm','pandan','paperbark'],swQ:1.5,nwQ:.9,
   // the ground's layers (materials.json; KGROUND in 47): a pave, b asphalt, c rubble, d glass; e rainfloor, f oak litter, g mud
   layers:['ground.pave','ground.asphalt','ground.rubble','ground.glass','ground.rainfloor','ground.oaklitter','ground.mud'],
   weights:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),st=street(x,z),b=built(x,z),wet=smooth(10,1.5,y-LAKE_Y),zn=F.zone(x,z),fo=forest(x,z);
