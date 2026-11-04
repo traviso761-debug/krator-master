@@ -188,6 +188,8 @@ Godot (`biomes/GODOT.md`).
 | `test-chimney.js` | `node core/terrain/test-chimney.js`: KSTACKS kind `chimney` (below), each check with a negative |
 | `37b-core-stacks-contour.js` | opt-in companion of `37-core-stacks.js` ([G data], 2026-10-27, first at `settlements/span`): `KSTACKS.contour(B, m, o)` moves a drawn mesh about the body's axis by angle and height (a profile in and out, a flared foot, a crown drawn in, the axis wandering, vertical joints as grooves, a cleft down from the crown; `o.keep` keeps a held top whole). The record is not changed. A build lists it to use it: no other page moves |
 | `test-stacks-contour.js` | `node core/terrain/test-stacks-contour.js`, each check with a negative |
+| `37c-core-rubble.js` | opt-in ([G data], 2026-11-03, first at `kits/metropolis`): loose rubble on the ground (global `KRUBBLE`): a heap is a lumpy dome at the talus angle over an ellipse, roughened by value noise, its loose blocks and a `cover` of broken chunks (a jittered grid, each piece its own size, tilt and shade, its corners jittered) lying on it; one surface function (`heightAt`, `at`, its noise no finer than the heap's `cell` can draw) makes the mesh (`mesh`: the heap as a polar grid, then the pieces) and the walk triangles (`walkTris`, for `core/walk`'s `poly`); `bedAt` is the drawn mesh's own height, and each piece is laid along it, sunk a third (none floats); `export`/`load`. Not bedded rock: `KSTACKS` is for that. A build lists it to use it |
+| `test-rubble.js` | `node core/terrain/test-rubble.js`, each check with a negative |
 | `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam). Since 2026-10-26 (with core/rand): the landform kinds as records, drawn by `shape` and read by `at`: `wadi` (+ fan), `talus`, `pit`, `pavement` + `paintCover`, `stair` (+ `flowAt`), `rille`, `tube`, `columns`, `gap`, `joints` + `tableland`, `meander` |
 | `test-relief.js` | `node core/terrain/test-relief.js`, each check with a negative |
 | `SCARP.md`, `test-scarp.js`, `golden-scarp.json` | `KRELIEF.scarp`: a wall along a polyline, and its profile published for the scale model (`--write` rewrites the golden file) |
@@ -631,6 +633,10 @@ scene, camera, sun, ground })`, which readies the renderer's shadow map and move
 2026-11-03: toggleable, off, in every build and rebuild): while off the renderer's shadow map is disabled, so there is no shadow pass and no
 shadow variant; the panel's `shadows` button, `?shadow=1` or `H.set(true)` turns them on (the mirror switch's pattern). `node core/shadow/test-shadow.js`.
 Read `shadow/README.md`.
+
+**Used by** `kits/metropolis`. About twenty builds still wire their own shadow map (`settlements/girder`, `voth`, `yuni`, the kits'
+`90-scene.js`): each can move onto this when it is next touched.
+
 ## `lod/`
 
 Level of detail for any three.js r128 build: `09-lod.js` (the `LOD` global) and `97-lod-auto.js` (applies it to the

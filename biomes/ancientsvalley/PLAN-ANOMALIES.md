@@ -4,10 +4,11 @@ The owner's brief: make the valley particularly weird and hazardous, with region
 faster or slower, gravity reverses or grows several times stronger, spaces behave like *House of Leaves*, and, if the engine allows it,
 the landscape bends into a cracked Escher version of itself.
 
-**Status: plan, nothing built.** Lore here is *proposed* until the owner settles it. It sits beside `biomes/ancientsvalley/PLAN.md` (the
-overlay's ground, ruins and sound). The valley is expansion-neutral old-map ground, but it isn't in the current queue.
+**Status: plan, nothing built; every question settled 2026-11-04 (section 12).** **`PLAN.md` is the valley's master plan** (the owner's
+brief of 2026-11-03: the megalopolis, its zones, the scars, the feral flora, the people); this file is the detail of the anomalies and of the
+metropolis's drawing tiers. The test bed for the towers is `kits/metropolis` (branch `claude/metropolis-testbed-2b4995`).
 
-Every px here is on the **5.1 canvas** (1821x1723), sampled at Gemini's 203d69d58. The map may still move.
+Every px here is on the **5.1 canvas** (1821x1723, 2 km a px). Section 3 was rechecked against the model's Round 3 on 2026-11-03.
 
 ## 1. The idea
 
@@ -33,21 +34,26 @@ plan: the anomalies show what it did, never why. It also explains why the Ancien
 
 ## 3. The basins
 
-Each takes one kind, so a player learns one rule per place. The owner may reassign them.
+Each takes one kind, so a player learns one rule per place. The owner may reassign them. Floors and rims are the model's (`tools/scale-model/
+build_425_master.py` STEP 5C, `anc_blast_specs`, l.1125: cut last in the pipeline, with guards and a test), in absolute metres; the lake is 17.4 m.
+Every basin was a major centre of the city before the war (`PLAN.md` 3), so each floor is glass over foundations.
 
-| Basin (5.1 px) | Radius | Centre | Climate | Anomaly | Near |
-|---|---|---|---|---|---|
-| **476,915** | 6 km | 572 m, dry | Cfa, 1,650 mm | **The Press:** gravity up to 3 g | Dorado, about 100 km |
-| **398,966** | 5.5 km | 602 m, dry | Csa, 1,050 mm | **The Stilled Ground:** time slows to a stop | Necropolis, about 45 km |
-| **450,896** | 5 km | 128 m, dry | Af, 2,290 mm | **The House:** spaces larger inside than out | **Babel, about 25 km** |
-| **428,948** | 7.5 km | -431 m, drowned | water | **The Lake That Falls:** reversed gravity on water | Necropolis, about 45 km |
-| **460,962** | 7 km | -521 m, drowned | water | **The Fast Water:** time runs fast | Dorado, about 45 km |
-| **420,984** | 6.5 km | -25 m, half drowned | water | **The Bend:** landscape curving up, seen | |
-| **406,908** | 6.5 km | 212 m, dry | Aw, 880 mm | **The Broken Country:** the Escher set-piece, the worst basin | Carcosa, about 190 km |
+| Basin (5.1 px) | Radius | Floor | Rim | Water | Anomaly | Near |
+|---|---|---|---|---|---|---|
+| **476,915** | 6 km | -22 m | 132 m | dry | **The Press:** gravity up to 3 g | Dorado, about 100 km |
+| **398,966** | 5.5 km | -26 m | 126 m | dry | **The Stilled Ground:** time slows to a stop | Necropolis, about 47 km |
+| **450,896** | 5 km | -14 m | 140 m | dry | **The House:** spaces larger inside than out | **Babel, about 27 km** |
+| **428,948** | 7.5 km | -44 m | 38 m | drowned, breached at 35 degrees | **The Lake That Falls:** reversed gravity on water | Necropolis, about 45 km |
+| **460,962** | 7 km | -46 m | 36 m | drowned, breached at -145 degrees | **The Fast Water:** time runs fast | Dorado, about 46 km |
+| **420,984** | 6.5 km | -24 m north, -6 m south | 76 m | the north half wet, the south a dry melt sheet | **The Bend:** landscape curving up, seen | Blade, about 98 km |
+| **406,908** | 6.5 km | -20 m | 134 m | dry | **The Broken Country:** the Escher set-piece, the worst basin | Necropolis, about 72 km; Carcosa, about 193 km |
 
-**A map problem to fix first.** Later passes have overwritten these basins. On 203d69d58, 406,908 stands *above* its rim (212 m against 111 m), 398,966
-is about level with its own, and 450,896 reads only 50 m down. Two lie under water at -431 m and -521 m, though `biomes/ancientsvalley/PLAN.md` describes a
-17 m lake. This needs a Gemini ticket: re-cut the basins last so they read, with vitrified rims, and settle the lake's level.
+The map problem this section once opened (basins above their rims, two floors at -431 and -521 m) was fixed by Round 3 (68b6aa22b): the basins read, the
+lake is settled. Two drowned basins lie under the lake with their rims awash, which is the Lake That Falls' and the Fast Water's setting as written.
+
+**Added by the owner's brief (2026-11-03):** two more kinds, not tied to a basin: **radiation**, the ordinary hazard (a `KHAZ` row, `PLAN.md` 9), and
+**portals**, doors to elsewhere on Krator or off it, where the extraplanar entities come through. A marked settlement or a lone arcology may take a
+hazard theme of its own (*proposed* in `PLAN.md` 9: Babel the House, Necropolis radiation, Dorado a stilled core, Blade machines).
 
 ## 4. `core/anomaly` (`KANOM`)
 
@@ -61,9 +67,11 @@ KANOM.near(x, z, r) -> records in reach, for the host's tick and the shader's un
 KANOM.zones() -> navigation zones for core/walk's export
 ```
 
-- **Kinds:** `gravity`, `time`, `bend`, `space`. They're a new vocabulary in `core/tags`, beside `hazardKinds`.
+- **Kinds:** `gravity`, `time`, `bend`, `space`, and (2026-11-03) `portal`. They're a new vocabulary in `core/tags`, beside `hazardKinds`.
 - **Damage goes through `KHAZ`.** An anomaly that hurts also registers a hazard record, so the inspector, overlay, zones and export work as they do
-  now. New `hazardKinds` rows: `crushing` (the Press), `aging` (fast time), `lift` (reversed gravity). `KHAZ.here` then reports them like heat or gas.
+  now. `hazardKinds` already has `crush` and `time` (a stasis field: `KHAZ.timeScale`, `here().time`; checked 2026-11-03). New rows: `crushing` (the Press: its own
+  row, the owner's choice 2026-11-04, so heavy gravity is a kind of its own in the inspector and the export; `crush` stays the ordinary press of a
+  falling block), `aging` (fast time), `lift` (reversed gravity), `rad` (radiation, `PLAN.md` 9). `KHAZ.here` then reports them like heat or gas.
 - **Determinism:** `KRAND.hash(world, cell, index, salt)`. A rewired House depends on seed and visit count, not on draw order.
 - **Node test:** `core/anomaly/test-anomaly.js`, with negatives: strength is 0 outside the shape, overlaps combine in a fixed order, and no reader changes
   anything when no record is in reach.
@@ -149,7 +157,8 @@ Each is a station page on `biomes/ancientsvalley`, not streamed terrain. Open-wo
 | 6 | **The Bend** | The land curling up, cracks | `KHOOK` warp | Medium |
 | 7 | **The Broken Country** | Slabs, seams, the stair | `KSHARD`, the walker's frames | Large |
 
-Each also takes the valley's own content from `biomes/ancientsvalley/PLAN.md`: `ruin`, `machine` and `toxic` fields, mutants, killer robots.
+Each is also a district of the city (`PLAN.md` 3): its basin was a centre once, and the station carries the valley's own content round it, the
+fields, the feral flora, the lines, the people, as `PLAN.md` 5-7 have them. `PLAN.md` 12 puts a station with no anomaly before these seven.
 
 ## 7. Life and people
 
@@ -194,22 +203,15 @@ there). `tools/check_port.py` holds `core/anomaly` to `[G data]`.
 
 ## 11. Order of work
 
-1. Gemini re-cuts the basins and settles the lake (section 3).
-2. `core/anomaly` and its node test.
-3. Stations 1 and 2 together: the first look at whether this reads as wrongness or as bugs. **Stop for the owner's eye here.**
-4. Station 3, the House.
-5. Stations 4-6.
-6. Station 7, after the rest have shown what the valley's language is.
+Superseded by `PLAN.md` 12 (2026-11-03): a station with no anomaly comes first, to prove the city's look and the budget split; then
+`core/anomaly` and stations 1 and 2 together (**stop for the owner's eye**); the House; stations 4-6; the Broken Country last. The basins' re-cut
+(the old step 1) is done.
 
 ## 12. Open questions for the owner
 
-1. **Lore:** the eigenweapon's family, as proposed, or another cause?
-2. **The basin assignments:** The House at Babel feels right; are the others?
-3. **Fatal or merely punishing?** Does the Press kill, or just stop you?
-4. **Time jumps:** the cap on time owed when leaving, proposed at a day.
-5. **Does the valley stay a set of stations,** or do you want its rim tells on the open world?
-6. **Where in the queue?** It's unscheduled, behind the rebuild pairs and new kits.
-7. **The metropolis's ruin:** how much of the city still stands (section 13 proposes 10-15%).
+**All settled by the owner on 2026-11-04:** the cause is the eigenweapon's family (section 1 stands as lore); the Press is **fatal** at its core;
+time owed on leaving is **capped at a day**; **10-15%** of the metropolis's towers stand (section 13). The basin assignments of section 3 stand
+until the owner moves one. The settlements' own themes are in `PLAN.md` 9.
 
 ## 13. The metropolis (the owner, 2026-11-02)
 
@@ -258,6 +260,8 @@ Near-range cost depends on how many towers a player can stand close to, so stree
 3. The impostor set and the ruin states.
 4. District bakes, then the fog pass and a measured view from the worst street.
 5. The anomalies' House and Babel can then stand in the same city.
+
+**The test bed:** `kits/metropolis` (2026-11-02): sixteen towers designed for these tiers, two built, and the spike's findings (`kits/metropolis/README.md`). A box shell does not fit a curved tower: `KSHELL` grew a polar mode.
 
 **Core adoption:** adds `KSHELL` (new) and `core/terrain`'s `KFAR` to section 8's table, plus `kits/ancients` read in place, `core/city` for the street layout (read `core/city/README.md`, "Porting a settlement", first), and `core/lod` if `BIO.LOD` doesn't fit
 buildings. It's independent of `core/anomaly`, so either can go first.

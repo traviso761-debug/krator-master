@@ -17,6 +17,14 @@ files are picked the same way and only when named: 'generic-goods', 'generic-fru
 'generic-fruit' adds 'generic-goods', whose KGEN shapes and fruit* colours the fruit file uses) and
 'jobs' (krator-master-furniture-jobs.js, the work items by trade: each keeps its own culture and adds its colours
 to that culture's palette itself, so it needs no culture file beside it). Files load in filename order.
+
+OPT-IN SETS (optin=[...], 2026-11-03): pieces kept out of every default (not krator-master-furniture-*.js, so neither
+cultures=None nor any culture name picks them, nor the catalog page, nor the builds that glob the culture files) until the
+next time the catalog is touched, when they are folded into the default set and every build that takes the catalog is
+rebuilt (the file's header says how). Named in OPT_IN; each joins after the runtime (so it may extend KF_API) and before
+the detail maps. Without optin the bundle is byte-identical to what it was.
+    'ancient-bath'   krator-optin-furniture-ancient-bath.js: the Ancients' bath fixtures and the `bath` room programme
+                     (KratorFurniture.ancientBath.install(KratorInteriors) before furnishing)
 """
 import base64, json, os
 
@@ -77,13 +85,22 @@ PLANTS_ADAPTER = ('/* ---- the plants as pieces (furniture_bundle.py plants=True
                   'PLANTS.forEach(function (p) { if (!FURN_BY_KEY[p.key]) { if (!p.type) p.type = \'plant\'; FURN_BY_KEY[p.key] = p; } });\n')
 
 
-def bundle(cultures=None, harvested=False, tex=False, plants=False):
+OPT_IN = {'ancient-bath': 'krator-optin-furniture-ancient-bath.js'}
+
+
+def bundle(cultures=None, harvested=False, tex=False, plants=False, optin=None):
     """tex=True adds the library detail maps (KF_TEX and krator-furniture-detail.js): a batch's flush then gives each
     family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte. plants=True adds
-    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing."""
+    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing.
+    optin=['ancient-bath', ...] adds the named OPT_IN sets after the runtime (header); None or [] changes nothing."""
     fs = files(cultures, harvested)
     if plants:
         fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
+    for n in (optin or []):
+        if n not in OPT_IN:
+            raise ValueError('furniture_bundle: no opt-in set %r (have: %s)' % (n, ', '.join(sorted(OPT_IN))))
+        if OPT_IN[n] not in fs:
+            fs = fs + [OPT_IN[n]]
     body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]

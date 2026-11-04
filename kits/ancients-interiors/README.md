@@ -33,8 +33,21 @@ catalog at the same time: the "Ancients kit extras" block of `kits/catalog/krato
 | `src/30-ai-recipes.js` | the hall recipes and `recipe()` |
 | `src/40-ai-audit.js` | `audit()` |
 | `src/70-ai-demo.js` | the demo sheet (not the kit) |
+| `opt/38-ai-reception.js` | **opt-in**: the `reception` hall recipe and the dress role `board` (below) |
+| `tests/test-reception.js` | the reception recipe's node test (`node tests/test-reception.js [--map]`) |
 | `build.py` | builds `dist/ancients-interiors.html` and `dist/ancients-interiors-core.js` |
-| `kit_bundle.py` | the core as text for another build |
+| `kit_bundle.py` | the core as text for another build (`bundle(reception=True)` adds the opt-in reception) |
+
+## Opt-in: the reception (until the next interiors update)
+
+`opt/38-ai-reception.js` adds a fifteenth hall recipe, `reception` (an office's front hall: a counter run facing the
+door with chairs behind it, the approach kept clear, waiting groups in the wings, a notice board, banners, statues,
+planting beds and lamps), laid out for shallow bar rooms (4.5-6 m deep, 12-20 m wide) and deep ones (8-12 m). It is
+**opt-in only**: `kit_bundle.bundle()` and this kit's own pages leave it out, byte for byte as before, so none of the
+pages that take the kit change; a build that wants it calls `kit_bundle.bundle(reception=True)` (the metropolis test
+bed's Ledger). **At the next interiors update** (the next all-builds rebuild) it is to be made permanent: move it to
+`src/38-ai-reception.js`, drop the `reception` option, add it to the demo sheet and `verify.py`'s halls, and rebuild
+every build that takes the kit.
 | `verify.py` | the headless check |
 
 ## Build and verify
