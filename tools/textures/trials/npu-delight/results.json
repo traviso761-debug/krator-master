@@ -4,7 +4,7 @@
    "left": 0.998,
    "rmse": 20.96
   },
-  "depth_s": 0.55,
+  "depth_s": 0.65,
   "device": "NPU",
   "fit_model": {
    "az": 286.6,
@@ -25,10 +25,16 @@
    "left": 0.153,
    "rmse": 23.17
   },
+  "marigold-npu": {
+   "left": 0.908,
+   "rmse": 19.06
+  },
   "marigold-ratio": {
    "left": 0.919,
    "rmse": 18.48
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 20.1,
   "none": {
    "left": 1.0,
    "rmse": 23.21
@@ -47,7 +53,7 @@
    "left": 0.981,
    "rmse": 16.98
   },
-  "depth_s": 0.55,
+  "depth_s": 0.68,
   "device": "NPU",
   "fit_model": {
    "az": 297.4,
@@ -68,10 +74,16 @@
    "left": 0.196,
    "rmse": 18.03
   },
+  "marigold-npu": {
+   "left": 0.954,
+   "rmse": 13.04
+  },
   "marigold-ratio": {
    "left": 0.951,
    "rmse": 12.63
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 22.2,
   "none": {
    "left": 0.998,
    "rmse": 21.44
@@ -90,7 +102,7 @@
    "left": 1.0,
    "rmse": 13.08
   },
-  "depth_s": 0.55,
+  "depth_s": 0.57,
   "device": "NPU",
   "fit_model": {
    "az": 270.8,
@@ -111,10 +123,16 @@
    "left": 0.335,
    "rmse": 12.86
   },
+  "marigold-npu": {
+   "left": 0.935,
+   "rmse": 12.03
+  },
   "marigold-ratio": {
    "left": 0.916,
    "rmse": 12.24
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 30.8,
   "none": {
    "left": 1.0,
    "rmse": 13.8
@@ -133,7 +151,7 @@
    "left": 0.988,
    "rmse": 12.78
   },
-  "depth_s": 0.66,
+  "depth_s": 0.74,
   "device": "NPU",
   "fit_model": {
    "az": 301.6,
@@ -154,10 +172,16 @@
    "left": 0.055,
    "rmse": 21.64
   },
+  "marigold-npu": {
+   "left": 0.801,
+   "rmse": 9.97
+  },
   "marigold-ratio": {
    "left": 0.881,
    "rmse": 9.54
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 37.5,
   "none": {
    "left": 0.999,
    "rmse": 15.38
@@ -176,7 +200,7 @@
    "left": 1.0,
    "rmse": 19.27
   },
-  "depth_s": 0.7,
+  "depth_s": 0.6,
   "device": "NPU",
   "fit_model": {
    "az": 243.6,
@@ -197,10 +221,16 @@
    "left": -0.044,
    "rmse": 21.32
   },
+  "marigold-npu": {
+   "left": 0.858,
+   "rmse": 17.48
+  },
   "marigold-ratio": {
    "left": 0.712,
    "rmse": 20.64
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.2,
   "none": {
    "left": 1.0,
    "rmse": 20.28
@@ -219,7 +249,7 @@
    "left": 0.999,
    "rmse": 14.47
   },
-  "depth_s": 2.44,
+  "depth_s": 2.39,
   "device": "NPU",
   "fit_model": {
    "az": 194.9,
@@ -240,10 +270,16 @@
    "left": -0.158,
    "rmse": 18.05
   },
+  "marigold-npu": {
+   "left": 0.721,
+   "rmse": 13.77
+  },
   "marigold-ratio": {
    "left": 0.7,
    "rmse": 13.88
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 27.4,
   "none": {
    "left": 1.0,
    "rmse": 16.24
@@ -262,7 +298,7 @@
    "left": 0.845,
    "rmse": 8.19
   },
-  "depth_s": 0.55,
+  "depth_s": 0.6,
   "device": "NPU",
   "fit_model": {
    "az": 90.9,
@@ -283,10 +319,16 @@
    "left": -0.043,
    "rmse": 7.71
   },
+  "marigold-npu": {
+   "left": 0.261,
+   "rmse": 4.07
+  },
   "marigold-ratio": {
    "left": 0.288,
    "rmse": 4.64
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 21.8,
   "none": {
    "left": 0.904,
    "rmse": 10.49
@@ -305,7 +347,7 @@
    "left": 1.0,
    "rmse": 11.05
   },
-  "depth_s": 0.54,
+  "depth_s": 0.64,
   "device": "NPU",
   "fit_model": {
    "az": 272.5,
@@ -326,10 +368,16 @@
    "left": 0.614,
    "rmse": 11.75
   },
+  "marigold-npu": {
+   "left": 0.976,
+   "rmse": 9.96
+  },
   "marigold-ratio": {
    "left": 0.983,
    "rmse": 10.05
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 24.4,
   "none": {
    "left": 1.0,
    "rmse": 12.21
@@ -348,7 +396,7 @@
    "left": 0.999,
    "rmse": 37.68
   },
-  "depth_s": 0.55,
+  "depth_s": 1.14,
   "device": "NPU",
   "fit_model": {
    "az": 211.3,
@@ -369,10 +417,16 @@
    "left": 0.614,
    "rmse": 17.01
   },
+  "marigold-npu": {
+   "left": 0.965,
+   "rmse": 31.23
+  },
   "marigold-ratio": {
    "left": 0.94,
    "rmse": 29.8
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 30.5,
   "none": {
    "left": 1.0,
    "rmse": 41.36
@@ -391,7 +445,7 @@
    "left": 0.988,
    "rmse": 12.85
   },
-  "depth_s": 0.55,
+  "depth_s": 0.97,
   "device": "NPU",
   "fit_model": {
    "az": 288.5,
@@ -412,10 +466,16 @@
    "left": 0.007,
    "rmse": 7.15
   },
+  "marigold-npu": {
+   "left": 0.945,
+   "rmse": 6.43
+  },
   "marigold-ratio": {
    "left": 0.949,
    "rmse": 6.26
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.7,
   "none": {
    "left": 0.995,
    "rmse": 17.45
@@ -434,7 +494,7 @@
    "left": 1.0,
    "rmse": 25.11
   },
-  "depth_s": 0.6,
+  "depth_s": 0.69,
   "device": "NPU",
   "fit_model": {
    "az": 226.0,
@@ -455,10 +515,16 @@
    "left": -0.01,
    "rmse": 22.48
   },
+  "marigold-npu": {
+   "left": 0.759,
+   "rmse": 16.6
+  },
   "marigold-ratio": {
    "left": 0.756,
    "rmse": 18.21
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.2,
   "none": {
    "left": 1.0,
    "rmse": 25.74
@@ -477,7 +543,7 @@
    "left": 1.0,
    "rmse": 6.84
   },
-  "depth_s": 0.54,
+  "depth_s": 0.77,
   "device": "NPU",
   "fit_model": {
    "az": 217.2,
@@ -498,10 +564,16 @@
    "left": -0.309,
    "rmse": 10.63
   },
+  "marigold-npu": {
+   "left": 0.841,
+   "rmse": 7.48
+  },
   "marigold-ratio": {
    "left": 0.83,
    "rmse": 7.91
   },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 20.7,
   "none": {
    "left": 1.0,
    "rmse": 7.41

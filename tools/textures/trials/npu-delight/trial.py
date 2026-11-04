@@ -14,6 +14,7 @@ slow periodic brightness swell (+-20%). Each method then has to give back the co
   marigold        Marigold-IID lighting's albedo, read from OUT/<set>/marigold.png when marigold.py has written it
   marigold-ratio  only the light from Marigold: the baked image divided by (its luminance over Marigold's, both blurred
                   RATIO_BLUR px), so the baked image keeps its own fine detail
+  marigold-npu    (--npu) the same through tools/textures/marigold_iid.py, as process.py --light-from marigold runs it
 Scores, after a per-channel gain (exposure is unknowable): 'rmse' against the true colour map (0-255), and 'left' = the
 correlation between what the method left in (its log luminance over the truth's) and the baked shading: 1 is all the light
 still there, 0 all of it gone, below 0 overcorrected. Writes OUT/<set>/{truth,baked,<method>}.png, OUT/results.json.
@@ -108,6 +109,7 @@ def main():
     ap.add_argument('sets')
     ap.add_argument('--out', default=os.path.join(os.environ.get('LOCALAPPDATA', '.'), 'krator-models', 'trial-npu-delight'))
     ap.add_argument('--size', type=int, default=512)
+    ap.add_argument('--npu', action='store_true', help="also score 'marigold-npu': process.py's --light-from marigold")
     a = ap.parse_args()
     import depth
     res = {}
@@ -140,6 +142,10 @@ def main():
             # baked image's luminance over Marigold's, both blurred past the smear) and keep the baked image's own detail
             R = process.blur(process.lum(I), sigma=RATIO_BLUR) / np.maximum(process.blur(process.lum(M), sigma=RATIO_BLUR), 1e-3)
             out['marigold-ratio'] = I / np.maximum(R, 0.05)[..., None]
+        if a.npu:     # what process.py --light-from marigold runs: marigold_iid.py on OpenVINO (wrap border, the UNet on the NPU)
+            import marigold_iid
+            t = time.time(); R, r['marigold_device'] = marigold_iid.baked_light(I, process.blur); r['marigold_s'] = round(time.time() - t, 1)
+            out['marigold-npu'] = I / R[..., None]
         for m, E in out.items():
             r[m] = score(E, A, S)
             if m != 'none':
