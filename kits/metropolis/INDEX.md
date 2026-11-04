@@ -25,7 +25,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46-mp-designs.js` | 5 |  |
 | `46b-mp-ancients.js` | 9 |  |
 | `46c-mp-planned.js` | 56 **big** |  |
-| `46d-mp-gridplan.js` | 66 **big** |  |
+| `46d-mp-gridplan.js` | 68 **big** |  |
 | `46e-mp-industry.js` | 10 |  |
 | `47-host-land.js` | 2 |  |
 | `50-mp-kit.js` | 12 |  |

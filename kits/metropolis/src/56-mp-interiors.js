@@ -18,8 +18,9 @@ MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat){MP
  /* a reading hall (46d, MP.stackLayout): its stacks and desks in rows, not the placer's (which only lines a hall's walls) */
  st.rooms.forEach(R=>{if(!R.stacks||!R.poly)return;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:MP.stackLayout(R.poly,R.y,MP.idHash(R.id)).map(p=>Object.assign(p,{room:R.id}))});});
  /* a machine hall (46d, MP.machineLayout): racks or work bays in runs round the core; 240 pieces a storey (near 200 k), the biggest hall first */
+ /* the runs past the cap come back as blocks (out.far, 4000 a storey at most: about 48 k triangles), drawn as one instanced box (drawStorey) */
  const avoid=F.grid?(F.grid.cores||(F.grid.core?[F.grid.core]:[])):[];let left=240;
- st.rooms.filter(R=>R.layout&&R.poly).sort((a,b)=>(b.area||0)-(a.area||0)).forEach(R=>{const P=MP.machineLayout(R.poly,R.y,MP.idHash(R.id),R.layout,{avoid,cap:left});left-=P.length;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:P.map(p=>Object.assign(p,{room:R.id}))});});
+ st.rooms.filter(R=>R.layout&&R.poly).sort((a,b)=>(b.area||0)-(a.area||0)).forEach(R=>{const far=[],P=MP.machineLayout(R.poly,R.y,MP.idHash(R.id),R.layout,{avoid,cap:left,far});out.far=(out.far||[]).concat(far.slice(0,Math.max(0,4000-(out.far?out.far.length:0))).map(b=>Object.assign(b,{y:R.y})));left-=P.length;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:P.map(p=>Object.assign(p,{room:R.id}))});});
  return out;};
 MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder(),g=new THREE.Group(),M=MP.mats(),round=F.core.kind==='round',WH=L.h-.3,T=.14;
  g.name=F.id+'.storey.'+k;
@@ -76,6 +77,9 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  const out=MP.furnish(F,st);let pieces=0;
  if(out.rooms){const Bf=KratorFurniture.batch({indexed:true});out.rooms.forEach(r=>r.placements.forEach(p=>{Bf.place(p.key,p.x,p.y+lift,p.z,p.ry,{variant:p.variant|0,seed:MP.idHash(p.room||'r')&0xffff,wealth:.6,setting:'indoor'});pieces++;}));
   const fg=Bf.flush(g);if(fg)fg.traverse(o=>{if(o.isMesh)KFURN.linearColours(o.geometry);});}
+ /* a machine hall's runs past its furnished cluster: one dark box each (a run of racks, a bay), 12 triangles */
+ if(out.far&&out.far.length){const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,.5,0),MP.mats().dark,out.far.length),m4=new THREE.Matrix4(),q4=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0);
+  out.far.forEach((b,i)=>{q4.setFromAxisAngle(Y,b.ry);m4.compose(new THREE.Vector3(b.x,b.y+lift,b.z),q4,new THREE.Vector3(b.w,b.h,b.d));im.setMatrixAt(i,m4);});im.name=F.id+'.storey'+k+'.far';g.add(im);}
  let tris=0;g.traverse(o=>{if(o.isMesh&&o.geometry){const c=o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count;tris+=c/3*(o.isInstancedMesh?o.count:1);}});
  g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,leaves:leaves,stairs:stairs,landings:landings,outline:st.outline,outlines:st.parts?st.parts.map(p=>p.outline):null};return g;};
 // the walk records: the ground, and for each open storey its slab and every wall as a chain of small blocks (so a doorway stays a gap). Rebuilt when a storey opens or closes

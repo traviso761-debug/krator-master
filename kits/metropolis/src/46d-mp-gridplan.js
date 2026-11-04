@@ -159,22 +159,35 @@
      Vault's 400 m plate): one hall each part, laid in runs. 'servers' the data centers': runs of ten racks back to back (a hot aisle between, 2 m
      cold aisles), a control stand at each run's head. 'works' the factories' and the fuel stations': bays 6 m by 5 m, each a machine (a lab bench)
      with a workstation at it, every fifth a store of cargo pods. Runs are kept whole, the nearest the hall's heart (its core, else its middle)
-     first, to `cap` pieces (a storey held near the reading hall's 200 k): a big hall is worked round its core and bare beyond. None within 2 m of
-     a wall or 3 m of a core (o.avoid: [{x0, z0, n}]). Placements as the placer's ({key, x, y, z, ry}) */
+     first, to `cap` pieces (a storey held near the reading hall's 200 k): a big hall is furnished round its core, and the runs past the cap
+     go into o.far as blocks ({x, z, ry, w, d, h}: a run of racks one box), so the rest of the floor is not bare. None within 2 m of a wall
+     or 3 m of a core (o.avoid: [{x0, z0, n}]). Placements as the placer's ({key, x, y, z, ry}) */
   MP.machineLayout = function (P, y, seed, use, o) {
     o = o || {}; var avoid = o.avoid || [], cap = o.cap == null ? 240 : o.cap;
-    var inPoly = function (x, z) { var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++) { if (((P[i][1] > z) !== (P[j][1] > z)) && (x < (P[j][0] - P[i][0]) * (z - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0])) c = !c; } return c; };
-    var edge = function (x, z) { var b = 1e9; for (var m = 0; m < P.length; m++) { var a = P[m], q = P[(m + 1) % P.length], dx = q[0] - a[0], dz = q[1] - a[1], l2 = dx * dx + dz * dz, t = l2 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0; b = Math.min(b, Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z)); } return b; };
+    /* the outline's edges in buckets 4 m square (a 400 m hall's outline has some 200 edges; a run asks about each of its pieces): inPoly asks
+       only the edges across its row, edge only those within reach of its square */
+    var inPoly, edge;
     var clear = function (x, z) { if (!inPoly(x, z) || edge(x, z) < 2) return false; for (var a = 0; a < avoid.length; a++) { var Q = avoid[a]; if (x > Q.x0 - 3 && x < Q.x0 + Q.n + 3 && z > Q.z0 - 3 && z < Q.z0 + Q.n + 3) return false; } return true; };
     var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9, ar = 0, cx = 0, cz = 0;
     P.forEach(function (p) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
+    var BC = 4, BW = Math.max(1, Math.ceil((x1 - x0) / BC) + 1), BD = Math.max(1, Math.ceil((z1 - z0) / BC) + 1), rows = [], near = [];
+    for (var e0 = 0; e0 < P.length; e0++) { var ea = P[e0], eb = P[(e0 + 1) % P.length];
+      for (var rj = Math.max(0, Math.floor((Math.min(ea[1], eb[1]) - z0) / BC)); rj <= Math.min(BD - 1, Math.floor((Math.max(ea[1], eb[1]) - z0) / BC)); rj++) (rows[rj] = rows[rj] || []).push(e0);
+      for (var bj = Math.max(0, Math.floor((Math.min(ea[1], eb[1]) - 2 - z0) / BC)); bj <= Math.min(BD - 1, Math.floor((Math.max(ea[1], eb[1]) + 2 - z0) / BC)); bj++)
+        for (var bi = Math.max(0, Math.floor((Math.min(ea[0], eb[0]) - 2 - x0) / BC)); bi <= Math.min(BW - 1, Math.floor((Math.max(ea[0], eb[0]) + 2 - x0) / BC)); bi++) (near[bj * BW + bi] = near[bj * BW + bi] || []).push(e0); }
+    inPoly = function (x, z) { var rj = Math.floor((z - z0) / BC), E = rj >= 0 && rj < BD ? rows[rj] : null, c = false; if (!E) return false;
+      for (var q = 0; q < E.length; q++) { var a = P[E[q]], b = P[(E[q] + 1) % P.length]; if (((a[1] > z) !== (b[1] > z)) && (x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0])) c = !c; } return c; };
+    edge = function (x, z) { var bi = Math.floor((x - x0) / BC), bj = Math.floor((z - z0) / BC), E = bi >= 0 && bj >= 0 && bi < BW && bj < BD ? near[bj * BW + bi] : null, b = 1e9; if (!E) return b;
+      for (var q = 0; q < E.length; q++) { var a = P[E[q]], qq = P[(E[q] + 1) % P.length], dx = qq[0] - a[0], dz = qq[1] - a[1], l2 = dx * dx + dz * dz, t = l2 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0; b = Math.min(b, Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z)); } return b; };
     for (var m = 0; m < P.length; m++) { var u = P[m], v = P[(m + 1) % P.length], cr = u[0] * v[1] - v[0] * u[1]; ar += cr; cx += (u[0] + v[0]) * cr; cz += (u[1] + v[1]) * cr; }
     if (Math.abs(ar) > 1e-6) { cx /= 3 * ar; cz /= 3 * ar; } else { cx = (x0 + x1) / 2; cz = (z0 + z1) / 2; }
     var hx = cx, hz = cz, hb = 1e9; avoid.forEach(function (Q) { var qx = Q.x0 + Q.n / 2, qz = Q.z0 + Q.n / 2, d = inPoly(qx, qz) ? Math.hypot(qx - cx, qz - cz) : 1e9; if (d < hb) { hb = d; hx = qx; hz = qz; } });
     var alongX = x1 - x0 >= z1 - z0, A0 = alongX ? x0 : z0, A1 = alongX ? x1 : z1, R0 = alongX ? z0 : x0, R1 = alongX ? z1 : x1;
     var pt = function (t, r) { return alongX ? [t, r] : [r, t]; }, rot = function (ry) { return (alongX ? 0 : Math.PI / 2) + ry; };
     /* the runs: each a list of pieces (all clear, or the run is dropped), its middle for the sort */
-    var runs = [], run = function (list) { var ok = list.length > 0, sx = 0, sz = 0; list.forEach(function (p) { if (ok && !clear(p.x, p.z)) ok = false; sx += p.x; sz += p.z; }); if (ok) runs.push({ list: list, d: Math.hypot(sx / list.length - hx, sz / list.length - hz) }); };
+    /* each run also as one block (its pieces' box: a run of racks, a bay's bench and station), which o.far takes for the runs past the cap */
+    var runs = [], run = function (list, blk) { var ok = list.length > 0, sx = 0, sz = 0; list.forEach(function (p) { if (ok && !clear(p.x, p.z)) ok = false; sx += p.x; sz += p.z; }); if (ok) runs.push({ list: list, blk: blk, d: Math.hypot(sx / list.length - hx, sz / list.length - hz) }); };
+    var block = function (t, r, w, d, h) { var q = pt(t, r); return { x: r3(q[0]), z: r3(q[1]), ry: r3(rot(0)), w: w, d: d, h: h }; };
     var piece = function (key, t, r, ry) { var q = pt(t, r); return { key: key, x: q[0], y: y, z: q[1], ry: rot(ry) }; };
     if (use === 'servers') {
       /* a pair of rows 1.2 m apart (the hot aisle), pairs 4.2 m apart; a run 10 racks (0.85 m each) and a stand, 1.6 m between runs */
@@ -182,19 +195,20 @@
       for (var r = rs, row = 0; row < nr; r += 4.2, row++) for (var t = as, ai = 0; ai < na; t += 10.1, ai++) {
         var L = []; for (var k = 0; k < 10; k++) { L.push(piece('ancients_server_rack', t + 0.425 + k * 0.85, r, Math.PI)); L.push(piece('ancients_server_rack', t + 0.425 + k * 0.85, r + 1.2, 0)); }
         /* the stand in the cold aisle at the run's head (none where the aisle is the wall's margin) */
-        if (nr > 1) L.push(piece('ancients_control_stand', t + 7.8, r + 0.6 + (row % 2 ? 1.75 : -1.75), row % 2 ? 0 : Math.PI)); run(L);
+        if (nr > 1) L.push(piece('ancients_control_stand', t + 7.8, r + 0.6 + (row % 2 ? 1.75 : -1.75), row % 2 ? 0 : Math.PI)); run(L, block(t + 4.25, r + 0.6, 8.5, 2.2, 2.2));
       }
     } else {
       /* a bay 6 m along by 5 m across: the machine at its back, its workstation before it; every fifth bay a store, pods in a pair */
       var nr2 = Math.floor((R1 - R0 - 5.8) / 5) + 1, na2 = Math.floor((A1 - A0 - 6) / 6) + 1, rs2 = R0 + (R1 - R0 - (nr2 - 1) * 5) / 2, as2 = A0 + (A1 - A0 - (na2 - 1) * 6) / 2;
       for (var r2 = rs2, row2 = 0; row2 < nr2; r2 += 5, row2++) for (var t2 = as2, b = 0; b < na2; t2 += 6, b++) {
         var u2 = MP.u ? MP.u(seed, row2 * 997 + b, 1) : ((row2 * 7 + b * 3) % 10) / 10, face = row2 % 2 ? Math.PI : 0, sg = row2 % 2 ? -1 : 1;
-        if (u2 < 0.2) run([piece('ancients_cargo_pods', t2 - 1, r2, face), piece('ancients_cargo_pods', t2 + 1, r2, face)]);
-        else run([piece('ancients_lab_bench', t2, r2 - 0.9 * sg, face), piece('ancients_workstation', t2, r2 + 0.7 * sg, face + Math.PI)]);
+        if (u2 < 0.2) run([piece('ancients_cargo_pods', t2 - 1, r2, face), piece('ancients_cargo_pods', t2 + 1, r2, face)], block(t2, r2, 3.7, 1.2, 1.3));
+        else run([piece('ancients_lab_bench', t2, r2 - 0.9 * sg, face), piece('ancients_workstation', t2, r2 + 0.7 * sg, face + Math.PI)], block(t2, r2 - 0.1 * sg, 2, 2.6, 1.6));
       }
     }
     runs.sort(function (a, b) { return a.d - b.d; });
-    var out = []; for (var i = 0; i < runs.length && out.length + runs[i].list.length <= cap; i++) out.push.apply(out, runs[i].list);
+    var out = [], i; for (i = 0; i < runs.length && out.length + runs[i].list.length <= cap; i++) out.push.apply(out, runs[i].list);
+    if (o.far) for (; i < runs.length; i++) o.far.push(runs[i].blk);
     out.forEach(function (p) { p.x = r3(p.x); p.z = r3(p.z); p.ry = r3(p.ry); });
     return out;
   };
