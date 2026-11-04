@@ -188,3 +188,9 @@ unhappiness while there (refreshed each midnight); a household 45 days in a tent
 happy moves on, out of the sim (the camp's count, the builders' posts and the books following). Sixty days of ships with
 the refugees at work: the camps at 63-67 happy against the towns' 81-83, none yet past 45 days unhoused (the camps house
 in the order the ships came).
+
+**The countryside** (2026-11-04, the owner: move agriculture into the countryside, the requisite number of farming
+hamlets; planned, not built): `settlements/isle-demo/PLAN.md` section 11 has the estimate (about 610 ha in crop and
+2,400 ha farmed for the islands' 8,100 people, against 81 ha today) and the plan (the fields within the walls removed,
+the farm ring left alone, about four farming hamlets for Kautoa and two for Valapo, a plantation each). The hamlets that
+grow and the work crews (the owner's earlier three) come after, on the same machinery.

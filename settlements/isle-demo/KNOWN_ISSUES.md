@@ -230,6 +230,11 @@
       core/simulation on `claude/isle-p7a-rest` and merged here. The checks read each town's own meals
       (`SIM.ITEMS.statsBy[town].meals`), every role takes `work.near`, the 01:00 start is gone; `SIM.REACH` (6 km) stays
       as a walking limit (nobody looks for a place in the other town).
+- [ ] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11): about 81 ha in crop
+      for some 8,100 people, against about 610 ha in crop and 2,400 ha of farmed countryside on historical yields; the
+      governor raises a handful of parcels' rates instead. Valapo still has 49 fields inside the village. Planned (not
+      built): the fields within the walls removed, the farm ring left as it is, about four farming hamlets for Kautoa and
+      two for Valapo, and a plantation each for the cash crops.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track
       from the highways, until core/hamlet's farming villages (H6) take it. Valapo's farms beyond the village (its
