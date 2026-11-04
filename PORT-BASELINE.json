@@ -129,16 +129,16 @@
    "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3644167,
-   "sha256": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
+   "bytes": 3646629,
+   "sha256": "154c8a396aeb81a6bb7d877591dac51965317d7ccfcbee3084eae0f0694a9f8d"
   },
   "biomes/oidong/dist/oidong-passes.html": {
-   "bytes": 3602278,
-   "sha256": "1638e239ba9f5ae9ee3c24448a36f17e1dec7fe8511d7c914d3fd031defb08b9"
+   "bytes": 3604740,
+   "sha256": "df4205860d9cf205bd3a6ace7cbb855a08529d4f1f49ed4d95f42af172c892b9"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 3625063,
-   "sha256": "1cbb8370a94f7d84d660ce679dc00c8e1eaf7b41dbc45cb194bfb7f88dffffe7"
+   "bytes": 3627856,
+   "sha256": "67bbb2ec2a12dba4af62f3559a0d5a19caae9bf598849b03d13aaffa5f1be301"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 6327489,
@@ -205,84 +205,84 @@
    "sha256": "b106d48dc319fffb3b5c0457805f244c083c093a8fbc474bd499c3544b41db17"
   },
   "biomes/throne/dist/throne-ash.html": {
-   "bytes": 1019007,
-   "sha256": "24bff396528e653009b5bd03d952d6dedf4abae1e38c5058a5a20241a40ae8a6"
+   "bytes": 1023938,
+   "sha256": "606abc7b9824f95c196cbcdc9649f948db1c384c1bb8fdaa7375d185753a9cd7"
   },
   "biomes/throne/dist/throne-blast.html": {
-   "bytes": 950189,
-   "sha256": "5a797d42aba751483431571221dd38eda16ee46cadbee3e79683778a9765f299"
+   "bytes": 1013710,
+   "sha256": "d2d75eac6e4fe6f367b68b6ec1ead56ae7ccf6787bf7703c371de02f1d4208f1"
   },
   "biomes/throne/dist/throne-caldera.html": {
-   "bytes": 981343,
-   "sha256": "e64d6951793a5c75390f2b9bbb72a67f0fa3cac460724185b4cdbf6f71d15801"
+   "bytes": 986322,
+   "sha256": "d7c74a8d4ba0df3b2074ed9f1ffc9e926985d529dae5d665ea97e10531aa668b"
   },
   "biomes/throne/dist/throne-cloud.html": {
-   "bytes": 1164861,
-   "sha256": "a160346e7b3034f5dad538eae3eaec976268e0ab213e368a76d96955e3099aea"
+   "bytes": 1169073,
+   "sha256": "f206168475fed6850a9714c6cdde45f2f659fc67b65352186e805a83e20bbcd1"
   },
   "biomes/throne/dist/throne-delta.html": {
-   "bytes": 1141764,
-   "sha256": "55d6782f6d0f0017e22737375a040a205727038984eca373852e55c2ec2a95dc"
+   "bytes": 1205869,
+   "sha256": "3f57f8110fe6b2ce3d8d525d81011a2aa3b0ef57392d8ee859f1ba5d1e1a0ba7"
   },
   "biomes/throne/dist/throne-frontier.html": {
-   "bytes": 1300503,
-   "sha256": "efe29beaef2ca820f5a6094a37b7e8140183e2564c4e46090bcf1cd5473cf92d"
+   "bytes": 1304715,
+   "sha256": "617d0dc22349b3922e39ab7eb70c2c3f55f40cf452e7c609981722f7e9e8ce98"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1178770,
-   "sha256": "35cf31e6d43f34408f0b5e1c3c1540fe1c40ce69050d76accc19c1ae4155c8c2"
+   "bytes": 1214988,
+   "sha256": "43678f587ff61397829ddf82c68ae2aa0e83af942482ce53d3c1f885ec7b03d2"
   },
   "biomes/throne/dist/throne-isle.html": {
-   "bytes": 1208515,
-   "sha256": "9d1d14459fa2d0612027a3bc6167fb198ea005501aecf69b7f04de1718541991"
+   "bytes": 1212727,
+   "sha256": "f7ae3080ebdc483109f8f473fcbdced757cb72b20f6ed8498f6377053d1fac75"
   },
   "biomes/throne/dist/throne-kipuka.html": {
-   "bytes": 1294816,
-   "sha256": "6e48f4ce7c0d494ebd48869502114f1042c0beb10a0423238e04621f5a9985ea"
+   "bytes": 1299028,
+   "sha256": "1c2e934c9acea436e3bcffe9acfecf500b54904788999ad5062f48b2bd83b7dd"
   },
   "biomes/throne/dist/throne-penitentes.html": {
-   "bytes": 946988,
-   "sha256": "2e62fed132e9bbf4e0a95e7d02026563d72a8f00b040b8681c5fc8a464736843"
+   "bytes": 951200,
+   "sha256": "d8fff87dc315c50badce6193253e40c3c3c32515a1c3fe78a217625696342d7e"
   },
   "biomes/throne/dist/throne-savanna.html": {
-   "bytes": 1134764,
-   "sha256": "fdc7d4fc3a8cd766dc6cfdd68d5909b74682a7cd7c527f337479fa815040e661"
+   "bytes": 1138976,
+   "sha256": "647f234c752600e44cd9452b4a5d31d710e9555521f2abdfe8e308d7f9cab880"
   },
   "biomes/throne/dist/throne-tube.html": {
-   "bytes": 916298,
-   "sha256": "8ae2984e46615892fe8743a5e934578a1fa5b50446db61ed12aa8b158d8de20b"
+   "bytes": 920510,
+   "sha256": "e20494466e216b835a4fa2ba296efd1dc479ace2600af38c669573fd9e2f48e6"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1256947,
-   "sha256": "bac0fe3ca33c8eaa27c26aa3f9f8f2270329d4a5f135222002f22002d0803db2"
+   "bytes": 1261159,
+   "sha256": "44815abb8ad0e9de68c537967d84a1ec225675f047a90037606747838355e33f"
   },
   "biomes/throne/dist/throne.html": {
-   "bytes": 1184207,
-   "sha256": "460d1b8fa5d776783a099a334691a35b8da23694aeeacad8d29f4dce8bdaa30c"
+   "bytes": 1188419,
+   "sha256": "ab41bcb22895966418d0b0f3108801d51a796d0bff6a8176a59d34f7d8660b40"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
-   "bytes": 8369116,
-   "sha256": "1809a7377897f43798278042af7cc6569c20d845b6d3e2d64d60e2b5fe49dbe5"
+   "bytes": 8371568,
+   "sha256": "80dba2ea9989ef59d109520b10a9a596f4dc6cc78ec051577ffc2db8e9e51892"
   },
   "biomes/xanadu/dist/xanadu-descent.html": {
-   "bytes": 7644287,
-   "sha256": "7dc70ed5f202d4a2c51fa73f18f4226f7e0bcc0068db64d4403c1784aa287498"
+   "bytes": 7646739,
+   "sha256": "56b2c8cddeec6c6cf5489c3f5a1040e968146b7e95d3e891dc74c2f2c885f54a"
   },
   "biomes/xanadu/dist/xanadu-floor.html": {
-   "bytes": 12603636,
-   "sha256": "43f7188df05d73d44e8970ff83c027e958644c5d3d94a49a200f9a8313d5f9a1"
+   "bytes": 12606088,
+   "sha256": "c1ea9d7506872471860acc2a37d69f08e1592846ac285363c1bd2fb64a1813bf"
   },
   "biomes/xanadu/dist/xanadu-gills.html": {
-   "bytes": 8141107,
-   "sha256": "4cb57a287f03bf495051cd38ded15606a816e1034641455627db3df13a3c573d"
+   "bytes": 8143559,
+   "sha256": "2ae12265c1fc73f49632fe31772b4e06dae9e0c9a642a0710aa1b4ceb8dafb55"
   },
   "biomes/xanadu/dist/xanadu-ranges.html": {
-   "bytes": 7657390,
-   "sha256": "8cf706c9f2576c9cc851398c187246fa2447442351f03336209558757e6297d0"
+   "bytes": 7659842,
+   "sha256": "3ea5f7177747e79c86dba8c4ea0ebf9ff22fd0a7e8c86c836876fca265c40f18"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 7654473,
-   "sha256": "70a584c371a6c6c44ef6895550322af8a3152da3828c09de022653e4f867adfe"
+   "bytes": 7656925,
+   "sha256": "2ff067e805bbc23b73d0d7e19114bddc799672c41997afe40267397fe7b1c176"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 184370,
