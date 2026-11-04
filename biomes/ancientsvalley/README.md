@@ -1,0 +1,43 @@
+# biomes/ancientsvalley: the Ancient's Valley
+
+The overlay on the two lowlands where the Ancients' war left the land weird and hazardous, and the Ancients' capital stands as a megalopolis in
+ruin (`PLAN.md`: the owner's brief, the valley on the model, the city's zones, the scars, the feral forest, the people; `PLAN-ANOMALIES.md`: the
+basins where physics fails, and the metropolis's drawing tiers). **Station 0, the Overlook, is built: the city on a normal day, no anomaly**, the
+test of the brief's rule (the hand of man in every view) and of the budget.
+
+```
+python3 tools/build.py biomes/ancientsvalley                         # dist/ancientsvalley.html (+ dist/ancientsvalley.tex.<pack>.js, the packs' sidecars)
+node biomes/ancientsvalley/tests/test-av.js                          # the data side: the model's ground, the fields, the plan, the viaduct, each with a negative
+python3 biomes/ancientsvalley/verify.py biomes/ancientsvalley/dist/ancientsvalley.html --assert --all-views --out shots
+python3 biomes/ancientsvalley/region/site.py                         # after the model moves: region/station-<name>.json from tools/scale-model/model/data
+python3 tools/textures/pack.py biomes/ancientsvalley                 # after a change to materials.json
+```
+
+## What the page is
+
+- **The site** (`region/site.py`, `region/station-overlook.json`): px 457,907 on the 5.1 model, the ridge east of city1 over its drowned inlet: 84 m,
+  1.58 atm, Af, +24 degC, 2,980 mm. The record holds the model's heights on its 2 km cells round the pixel, the lake's level (17.4 m, y -66.4 on
+  the page), the horizon's ridges for the shared sky, and the cities and basins by NUMBER: the names live in that one table (`PLAN.md` section 3).
+- **The ground** (`46z-host-stage.js`, `47-host-land.js`): the model's heights by bicubic plus the page's own relief, every tower on a level plinth
+  (a disc or a slab, turned with it); core/terrain's KGROUND lays seven library layers (pavement, asphalt streets, rubble, the scar's glass, the
+  two lowlands' soils, the shore's mud) over a paint that is also the canopy seen from afar.
+- **The fields** (`41-av-field.js`, [G data]): the zone by the model's height (option B: the floor is the core, the shelf the residential rings),
+  the density, the parks, the scar (one dead lobe on the ridge's east end), the feral depth, the taint; `tests/test-av.js`.
+- **The city** (`41-av-field.js` AV.plan, `70-av-city.js`): 840 towers on a lattice turned 17 degrees, records before anything is drawn, their
+  states by the ruin shares (12% intact). Drawn by kits/metropolis read in place: the nearest 16 as heroes with the dither at 300 m, to 1.4 km as
+  baked shells (KSHELL), beyond as impostors, the ruins' rubble to 1 km. The designs with no shell (the Terrace, the Long Curve, the Pods, the
+  Cupola, the Arcades) stand only round the eye's start. The viaduct (AV.viaduct) runs the ridge's north flank and out over the inlet.
+- **The forest** (`46-av-feral.js`, `88-host-build.js`): swlowlands and nwlowlands read in place under the stage's masks, their rainforest zones on
+  everywhere (wet .8-.98, tropic .92), every tree grown by the feral field (1.3-2 x), and the taint's tint on the baked foliage (a KHOOK layer:
+  green turns toward red-purple and blue-purple by a field of the world position).
+- **The air and the water** (`89s`, `89w`): the shared sky at the pixel with the model's ridges; the lake and the inlets as one open surface, the far
+  lake to 30 km where the model has water.
+
+## Numbers (2026-11-04, the in-app browser on the Arc 140T, 1280 x 800)
+
+840 towers, 2,818 read-in trees (2,752 grown), 624k instances, 7.6 M triangles in the registry; the worst view draws about 2.3 M triangles in
+450 calls; the shells bake in 0.55 s, all four tiers in 0.65 s. The GPU verify and the perf run are owed (`KNOWN_ISSUES.md`).
+
+## Read next
+
+`PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.

@@ -310,6 +310,31 @@ The table in `PLAN-ANOMALIES.md` 8 and 13 stands (`KANOM` new, `KSHELL` new from
 `core/charactermodels` for the mutants and the augmented, `kits/mechs` for the robots, `kits/crops` for the farmland. `tools/check_core_use.py`
 needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the overlay owns no ground (the dam basins are the precedent).
 
+**Station 0 as built (2026-11-04; `build.py`, `README.md`):**
+
+| Module | Takes | For |
+|---|---|---|
+| `core/biome` | `BIO.init`, `BIO.kit` / `kitEnd` (the two lowlands and `metro`), `BIO.impostor*`, `BIO.lodFade`, `BIO.bake` | the forest, the towers' impostors, the heroes' dither |
+| `core/host` | `khost.SHELL` + the polygon tool | the page shell, `KHOST.take` |
+| `core/rand` | `KRAND.hash`, `unit`, `fbm` | every draw of the valley's own (the plan, the fields, the relief); the kits keep their streams |
+| `core/tags` | `BIO.init({tags:'ancientsvalley'})`; towers and lines as records | records before anything is drawn |
+| `core/space` | `KSPACE` | the plinths in reach of a point (the ground, the masks, the views) |
+| `core/terrain` | `KGROUND` (seven layers), `KRUBBLE` (the ruins' heaps, through the metropolis kit), `KRELIEF` listed for its noise | the ground, the rubble |
+| `core/water` | `WATER.open` x 2 | the lake and the inlets, the far lake |
+| `core/atmos` | the shared sky with the model's ridges, `bindHost`, `bindWeather`, `skylight`, `cloudShade` | the air |
+| `core/shader` | `KHOOK.add` (the taint's tint), `KGROUND.hook` | the shader layers; the warp (`KWARP`) waits for the Bend |
+| `core/shadow` | `KSHADOW.attach` behind `?shadow=1` | off by default (the owner) |
+| `core/walk` | listed for the metropolis kit's floors | nothing walks a storey on this page yet |
+| `core/materials` | `KMAT` packs: the valley's, the two lowlands', the metropolis's (sidecars) | the library |
+| `core/export` | `BIO.export` | the export profile |
+| `kits/metropolis` | records, plans, facades, shells, designs, heroes, rubble, floors, ruins, the shell bake and draw; not its stage, land, sky, take, interiors, cut-away or the Ancients builders | the towers |
+| `kits/interiors`, `kits/ancients-interiors` | bundled | the plans the heroes' windows come from |
+| `biomes/swlowlands`, `biomes/nwlowlands` | 50/55/60/70 in place, wrapped by `AV.feralKit` | the forest |
+
+Not taken yet: `core/anomaly` (none on station 0), `core/hazard`, `core/clock` beyond the host's, `core/city` (the plan is a lattice on
+records until the streets want lots), `core/mask` (every field is a function), `core/furnish`, `core/hamlet`, `core/camp`, `core/charactermodels`,
+`kits/fauna`, `kits/mechs`, `kits/crops`.
+
 ## 12. Order of work
 
 1. **Plans settled** (this file, the questions below). `extract_region.py`'s row, the metropolis merge and `core/anomaly` can start in
@@ -317,6 +342,8 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 2. **Station 0, the Overlook: no anomaly.** The look of the valley on a normal day: the city's tiers from a residential edge toward a core, a
    park district gone feral in purple-green, a dead lobe, a viaduct line across the view, the lake's steam, a keeper robot at its routine.
    **This is the test of the brief: the hand of man in every view, and the feel. Stop for the owner's eye.** It also measures the budget split.
+   *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake; not yet the steam
+   or the robot. Waiting on the owner's eye and the GPU verify.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
