@@ -496,6 +496,12 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | korona→ebadlands | `frosttank` | Frost tank | water (snowmelt) and birds | read in place | the melt pools of ebadlands' ET/Dfc high band (5.1-5.9 km) | Korona's ET/Dsc ice-table trap, already tagged for exactly this ground |
 
 **Waiting on Korona's turn (pair 9)** for both rows: Korona is the later vendor and reader (ebadlands' turn, 2026-11-02, left them).
+**Status (pair 9, 2026-11-03, Korona's side):** the vendor's half of `frosttank` is ready: `KORONA.plant('frosttank', x, y, z, {lv, seed, id})`
+(`biomes/korona/src/57-biome-korona-carnivores.js`) grows one with the kit's own builder and registers its trap; a reader takes Korona's `50` and
+`57` in place. The same call takes `butterwort`, `cobralily` and `greatsundew` (the nwouterwall, nhighlands and crater-drylands rows); `wallfern` and
+`bladderpool` are placed by the kit's passes against walls and pools and are owed. **Not taken (receiver):** the bristlecone on the hoar table (it
+wants ebadlands' 50 and 55 read in place on a station that already reads ehighlands: the hoar's next pass); the caribou moss, the ghost gum and the
+sea buckthorn wait on their vendors' turns (nwouterwall, crater-drylands; nsemiarid runs beside this turn). `biomes/korona/PLAN.md`, "Core adoption".
 
 ### ebadlands ↔ sedesert (the Bowl and main)
 
