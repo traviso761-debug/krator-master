@@ -86,6 +86,7 @@ const STAGE=(function(){const site=CUT.SITES.floor,yRef=CUT.LAKES[0].level,R=280
     'The cutters\' camp':V(toward(camp,P(0,0),-26).map((v,i)=>v+(i?ac[1]:ac[0])*14),5,camp,2),
     'The ring reeds':V(P(-40,-600),3,P(-30,-200),0),
     'The creek and its she-oaks':V(P(1100,CR.x0-140),14,P(400,CR.x0),4),
+    'The creek\'s mouth and its plume (pair 10)':(function(){const M=STAGE.creek.line().mouth,o=[M[0]+up[0]*260+ac[0]*120,M[1]+up[1]*260+ac[1]*120];return V(o,70,[M[0]-up[0]*220,M[1]-up[1]*220],0);})(),
     'Out the crater mouth (no wall there)':V(P(1400,0),8,P(9000,0),300),
     'The walls round the horizon (the ENE lip, 6.4 km)':(function(){const b=67*Math.PI/180,R=CUT.lipR(67),t=[Math.sin(b)*R-site.x,-Math.cos(b)*R-site.z],l=Math.hypot(...t),c=[t[0]/l*400,t[1]/l*400];return[c[0],Y(c[0],c[1])+30,c[1],t[0],CUT.lipH(67)-yRef-2500,t[1]];})(),
     'Echoes at dusk':(function(){const E=(CUT.PLANTS&&CUT.PLANTS.groves||[]).flatMap(G=>G.culms.filter(c=>c.echo).map(c=>[G,c]))[0];if(!E)return{cam:V(toward([g.x,g.z],[0,0],g.r+40),6,[g.x,g.z],20),hour:18.1};
