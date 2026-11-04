@@ -270,6 +270,22 @@ sample with a map. No draw calls, no textures past the page's own.
 Textures: `rock.megabreccia`, `ground.sand.black`, `ground.beads.orange` and `rock.palagonite` are in the library; the kinds need no
 new set (the polygons' fill and the pavement's stones are tints of the ground under them).
 
+**Adopting KGROUND's relief and triplanar sides** (2026-11-03, opt-in; the ground diagnosis and the shots are in `core/terrain/GROUND.md`).
+Without `relief` or `tri` the shader is the same byte for byte (`test-ground.js`'s FROZEN hashes).
+1. **Judge first, with no change to the page:** load it with `?kgrelief=1` (relief, the mesh cavities found on the scene, and the bed
+   relief on steep ground where the core strata path is on) and `?kgrelief=1&kgtri=1` (the side planes too). `tools/ground_shots.py`
+   takes the same near, mid and far cameras with and without, with their calls, triangles and GPU ms.
+2. **Adopt:** `KGROUND.hook(MAT, {..., relief: {bump: .05, near: 25, far: 140, cavity: .55, direct: .35, mesh: .7, strata: .3,
+   strataW: '<GLSL: where the beds show, e.g. vRock>', h: '<GLSL: a height of the page's own, metres-free, added>'}, tri: {from: .35,
+   to: .7}})`, and after the ground mesh is built `KGROUND.cavityMesh(mesh, {rings: [3, 18], depth: [.5, 4]})` (the attribute `aKGAO`
+   that `relief.mesh` reads; skip it and set `mesh: 0`). `strata` needs the core strata path (`KSTRATA.shade`, the uniform `uKSBed`);
+   on the legacy column it is left out by itself.
+   - `relief` costs **no texture unit** (it bumps the normal by the screen derivatives of the layers' blended height), so a page at the
+     Arc's 15-sampler limit (ebadlands) can take it. On MeshStandard it bumps the lit normal; on Lambert (r128 lights per vertex) it
+     scales the sun's share by the bumped facing, which is weaker: a Lambert ground gains more by moving to MeshStandard.
+   - `tri` samples each layer from the side on the steep (two side planes blended by facing): up to 2 more hex samples a layer there.
+3. Rebuild, run the page's verify, and take the shots again on the same cameras.
+
 **Adopting KFAR** (a far field round the ground square; the pilots are `biomes/nwlowlands/src/83-host-range.js` and
 `biomes/nhighlands/src/82-host-sky.js`):
 1. `build.py`: `CORE_TERRAIN` gets `'44-core-farfield.js'`, and after the `CORE_TERRAIN` loop

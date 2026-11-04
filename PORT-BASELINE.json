@@ -1,8 +1,16 @@
 {
  "pages": {
-  "biomes/abyssal-savannah/dist/abyssal-savannah.html": {
-   "bytes": 11216432,
-   "sha256": "003e9d9db7a8975f2739f5ebcd900a65a20e818a8754ab12e929b13d855f8400"
+  "biomes/copperglacier/dist/copperglacier-icefield.html": {
+   "bytes": 5113233,
+   "sha256": "5a6ed3a7427e4a801cf472b2ded2d686300ed6e599d9ce4e7acdabb91e9ff15c"
+  },
+  "biomes/copperglacier/dist/copperglacier-pass.html": {
+   "bytes": 5113958,
+   "sha256": "a245f4f94a943b757ce8c24b4d241f095b0e4620127586e5848d943527a9b9a5"
+  },
+  "biomes/copperglacier/dist/copperglacier.html": {
+   "bytes": 5113802,
+   "sha256": "5c2d5bc21d415555ee064cc2673e3c998496b1c3f6dc8d55c7a9e6cf683c8444"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -44,13 +52,9 @@
    "bytes": 2012185,
    "sha256": "373f650e50fb1f5da0ea096b42f5a67e0eca6a5de2edbbf04a337fcfc5b0079b"
   },
-  "biomes/geyser/dist/geyser-stills.html": {
-   "bytes": 1442849,
-   "sha256": "7f1ba4e8a75b412dc7a7f432cf0a160c0890f7e57abc182e2603a86c98f6be76"
-  },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 1412188,
-   "sha256": "ac8852a3cfa59bb3a02d55ece18b42a977ef44305abadf32e30c12fe54abaf87"
+   "bytes": 637289,
+   "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
@@ -109,8 +113,8 @@
    "sha256": "0783c4c6bda9ff80eb1e2fcff5df2665c7df0f97377fd88f39b37a1d5e7d271e"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
-   "bytes": 5672140,
-   "sha256": "6c9beb5d4b2f75135e2308f39096628858b5059c38303d7c33633ef78f91949a"
+   "bytes": 5683900,
+   "sha256": "b90f84882767536838a62780c0f86d1a75cf226518aaf9f4ee0c934f27f0d860"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 7967514,
@@ -125,8 +129,8 @@
    "sha256": "43b19de94b404ff6826d607cf604e89c8f85ee7ea48d78535c4849533ab2b5f2"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3648759,
-   "sha256": "e7be140ee90b66b71023638ea755b8eaaab34aff66d20f9b1093fcdbb50455c7"
+   "bytes": 3644167,
+   "sha256": "3c94f285c81991dae7f3b584a01b11a62ab9f260ad0f5538ab6998f25c74dcf3"
   },
   "biomes/oidong/dist/oidong-passes.html": {
    "bytes": 3602278,
@@ -140,37 +144,13 @@
    "bytes": 6327489,
    "sha256": "b321e556031b17569e2b358d69717f5d753fdf4e59e895e9f9c999ac0c13c967"
   },
-  "biomes/riftrim/dist/riftrim-barrens.html": {
-   "bytes": 8171602,
-   "sha256": "5cbc1a57b41399ad6c4e81327e26ed0fac4892618e83aad9ea3ea30386e7b7fb"
-  },
-  "biomes/riftrim/dist/riftrim-gorge.html": {
-   "bytes": 8732508,
-   "sha256": "e2a245299a12f07b3bd14e296b8cf2d6b2cebe0408ee9760339ca8d357da4328"
-  },
-  "biomes/riftrim/dist/riftrim-ice.html": {
-   "bytes": 8172987,
-   "sha256": "dba101ba7de4879ca91d5d415ec33d2de7633329f8e559dba127c6d4ae3d24c8"
-  },
-  "biomes/riftrim/dist/riftrim-lakes.html": {
-   "bytes": 9178164,
-   "sha256": "360ad40682815349326f1e897f2294620b4ef43615346cafbe828b314d7998a1"
-  },
-  "biomes/riftrim/dist/riftrim-pass.html": {
-   "bytes": 7542234,
-   "sha256": "253f77769523e096f8d24cc49c0cf729933bdad7b408ad37faf8d88f2d0dff27"
-  },
-  "biomes/riftrim/dist/riftrim.html": {
-   "bytes": 9350789,
-   "sha256": "1310236a926b283c956a65c3f6c451b60b1b0c578fe22c8db1f0984f4caec1c0"
-  },
   "biomes/ringisles/dist/ringisles.html": {
    "bytes": 2210611,
    "sha256": "04a9e0ee9e02fa0811c7327f389b919cc8e03e7440cc71c9d8816ce26e46b4d8"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 7573097,
-   "sha256": "f7af724268e330133d3d5d35120c46eca05a2a63451bdb838317648232fac9c4"
+   "bytes": 7584857,
+   "sha256": "ce10f40c5ee1574cf2dc123964e4a40cb643980889d0ae4fe790086e2660e241"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8223489,
@@ -249,8 +229,8 @@
    "sha256": "efe29beaef2ca820f5a6094a37b7e8140183e2564c4e46090bcf1cd5473cf92d"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1178601,
-   "sha256": "673ebfaed70c8e454182e8ab877f6adae0b8c67ea79137cac7acb9534afb2607"
+   "bytes": 1178770,
+   "sha256": "35cf31e6d43f34408f0b5e1c3c1540fe1c40ce69050d76accc19c1ae4155c8c2"
   },
   "biomes/throne/dist/throne-isle.html": {
    "bytes": 1208515,
