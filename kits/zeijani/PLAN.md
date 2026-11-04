@@ -812,3 +812,5 @@ Commit at the end of each phase, and update the progress log below.
 | `8f8c7c5c3e10383f1b0b79f2fa11d05a.jpg` | a tower in a town | the watchtower |
 | `b148fa731bbcd3051bbb85ea3369e522.jpg` | a cube shrine (a variant) | kiva and shrine fronts |
 | `islander port.jpg` | the Islanders' port | not Zeijani |
+
+**The stone-egg shrines** (the owner, 2026-11-03: the Throne's thundereggs and vugs are revered as shrines by the Zeijani; the details *proposed*: `biomes/CRYSTAL-CAVES-5.1.md` site 4, `LORE.md` "The Zeijani's stone eggs"). Pieces owed to this kit: a **thunderegg wall** (split eggs half-cut in a gallery wall, agate stars on their faces, lamp niches and offerings), one in each village's galleries; and **Nūru-Šaplu's great vug**, a `KCAVERN` hall a person can stand in, dressed with `KSPELEO.VUG` (quartz points, the odd topaz).

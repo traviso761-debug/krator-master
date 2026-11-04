@@ -88,5 +88,13 @@ ok('spongework is denser and narrower than a rising maze ('+HS.passages.length+'
 const HC=KCAVERN.create({ground,cell:1,chunk:16,seed:4});K.build(HC,H);HC.build();
 const bc=big[0],cu=H.cupolas[0];
 ok('in KCAVERN a big chamber is open air, and a cupola opens above its crown',HC.sdf(bc.c[0],bc.c[1]+bc.h*.5,bc.c[2])>0&&HC.sdf(cu.c[0],cu.c[1]+cu.h*.5,cu.c[2])>0,!(HC.sdf(bc.c[0],bc.c[1]+bc.h*.5,bc.c[2])>0));
+/* the crystal cave: the old storey dressed for megacrystals; the default unchanged */
+{ const fnv2=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
+  ok('the hypogene default is unchanged by the crystal option',fnv2(JSON.stringify([H,K.water(H),K.hazards(H)]))==='386fe2cd',false);
+  const HX=K.network(Object.assign({},ho,{crystal:{storeys:[1],speleo:'SELENITE'}}));
+  ok('a crystal storey dresses its chambers and crusts with the crystal preset, the active storey keeps HYPOGENE',
+    HX.chambers.every(c=>c.dress.speleo===(c.storey===1?'SELENITE':'HYPOGENE'))&&HX.crusts.every(c=>c.speleo===(HX.chambers.find(x=>x.id===c.on).storey===1?'SELENITE':'HYPOGENE'))&&HX.storeys[1].crystal==='SELENITE'&&!HX.storeys[0].crystal,
+    HX.chambers.every(c=>c.dress.speleo==='HYPOGENE'));
+  ok('the crystal option changes only the dress',JSON.stringify(HX.passages)===JSON.stringify(H.passages)&&HX.chambers.length===H.chambers.length,false); }
 ok('a bad hypogene form or feeder cell throws',throws(()=>K.network(Object.assign({},ho,{form:'vadose'})))&&throws(()=>K.network(Object.assign({},ho,{feeders:{cell:0}}))),throws(()=>K.network(ho)));
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
