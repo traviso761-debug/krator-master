@@ -400,10 +400,11 @@ const GROUND_HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[-GR
   far:FAR?{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}:undefined});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
 KHORIZON.shade(MAT_GROUND,GROUND_HZ);
 /* the carve's material runs the ground's composed hook (every layer on MAT_GROUND, those added later too: the wet ground, the sky's cloud shade). The sky
-   adds its cloud shade to each lit material it finds, so the carve would run it twice on one shader, which throws on MeshStandard (2026-11-04): its name
-   is held here by an empty layer, the ground's chain drawing it */
+   adds its cloud shade and its height fog to each lit material it finds, so the carve would run them twice on one shader: on MeshStandard the shade throws
+   and the fog's varyings are declared twice (2026-11-04; on Lambert the carve's own copies never ran). Their names are held here by empty layers, the
+   ground's chain drawing them */
 const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_CARVE.customProgramCacheKey=()=>'sedesert-carve';
-if(KG_STD)KHOOK.add(MAT_CARVE,'atmos-cloudshade-1',function(){},{key:'via-ground'});
+if(KG_STD)['atmos-cloudshade-1','atmos-heightfog'].forEach(k=>KHOOK.add(MAT_CARVE,k,function(){},{key:'via-ground'}));
 const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{sun:SUNV,gridNormals:true});   /* gridNormals: the normals from the sampled grid, not from terrainBase (core/terrain 36, 2026-10-25) */
  for(const m of M){const g=m.geometry,P=g.attributes.position,Nr=g.attributes.normal,n=P.count,uv=new Float32Array(n*2),rk=new Float32Array(n);
   for(let v=0;v<n;v++){const x=P.getX(v),z=P.getZ(v);uv[v*2]=x/S+.5;uv[v*2+1]=.5-z/S;rk[v]=Math.max(PA('strata',x,z),caveK(x,P.getY(v),z));}
