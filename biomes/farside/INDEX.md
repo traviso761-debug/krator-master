@@ -11,8 +11,8 @@ Build: `cd biomes/farside && python3 build.py --all` (one station: `python3 buil
 Fragments are concatenated in filename order; a station's `stations/<name>/` files replace `src/`'s of the same name.
 Textures: `python3 gen_materials.py` writes `materials.json`; `python3 tools/textures/pack.py biomes/farside` (from the root) writes `tex/`.
 
-From `core/biome/`: `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
-From `core/rand`, `core/tags`, `core/export`, `core/space`, `core/materials/record`; `core/atmos` (`89-atmos-0-core`, `0p-presets`, `3-particles`, `4-weather`, `8-export`, `9-host`, `a-waves`, `b-skylight`; `host/` `c-hostbind`, `e-weatherhost`, `h-skyhost`; `sky/` `e-skymodel`, `f-skypresets`, `g-sky`); `core/water` (`20`, `21`, `22`, `50`, `51`)
+From `core/biome/`: `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31-core-dither.js`, `31j-core-joint.js`, `32-core-variants.js`, `34-core-impostor.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/rand`, `core/tags`, `core/export`, `core/space`, `core/materials/record`; `core/atmos` (`89-atmos-0-core`, `0p-presets`, `3-particles`, `4-weather`, `8-export`, `9-host`, `a-waves`, `b-skylight`; `host/` `c-hostbind`, `e-weatherhost`, `h-skyhost`; `sky/` `e-skymodel`, `f-skypresets`, `g-sky`); `core/water` (`20`, `21`, `22`, `50`, `51`; ext `57`, `58` mirror and shore, `61` plume); `core/terrain` (`43` KGROUND, `44` KFAR and its draw, `45` KHORIZON and its shade); `core/shadow` (`10`, host `12`); `core/atmos` height fog, fog belt, rain cover, lightning
 From `core/host/` (with `core/clock`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
 Read in place: `biomes/nwlowlands/src/` `50`, `55`, `60`, `70` (slots `49a`..`49d`), and its `tex/` pack
 
@@ -22,7 +22,7 @@ Read in place: `biomes/nwlowlands/src/` `50`, `55`, `60`, `70` (slots `49a`..`49
 |---|---|---|
 | `00-head.html` | 1 | page shell |
 | `44z-host-shell.js` | 2 | errors, ticks, the register, renderer, scene, camera, lights (every station) |
-| `45-host-stage.js` | 6 | station 1, Farport's kelp coast: the coast (u inland, v along it) (18); the station's say: STAGE (43) |
+| `45-host-stage.js` | 14 | station 1, Farport's kelp coast on map 5.1: the tsunami (TSU), the harbour estuary, the bench's chevrons and chutes, the lagoon, the city's site; the station's say: STAGE (harbour, lagoon, tsunami, sites, works) |
 | `47-host-land.js` | 11 | the height and the water's levels (7); the fields (16); the masks (26); the library layers (42); the ground (61); the far country (90) |
 | `50-biome-farside-species.js` | 16 | palettes (19); harvest (31); the species (33); procedural fallbacks (77); geometries (85); materials (117); the buckets and items (134) |
 | `55-biome-farside-trees.js` | 11 | zones (16); the grid on core/rand (23); colour (33); the land kelp (45); the dead at the front (77); the passes (87) |
@@ -33,6 +33,7 @@ Read in place: `biomes/nwlowlands/src/` `50`, `55`, `60`, `70` (slots `49a`..`49
 | `88-host-build.js` | 2 | the build order |
 | `89a-host-atmos.js` | 1 | ATMOS.bindHost |
 | `89s-host-sky.js` | 3 | the shared sky at the station's pixel, the weather into it |
+| `89t-host-air.js` | 2 | the final rebuild's air: wind, A2C, height fog and the sea mist, the fog belt (STAGE.belt), the rain cover |
 | `89w-host-water.js` | 4 | the sea (open + shore grid + tint), the outer sea, the streams |
 | `89x-host-weather.js` | 1 | ATMOS.bindWeather |
 | `99-host-take.js` | 9 | the views (5); the inspector's words (22); budgets and the kit's checks (34); the page (70) |

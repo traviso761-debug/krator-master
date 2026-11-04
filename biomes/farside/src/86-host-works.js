@@ -12,6 +12,13 @@
 //   terraces   walled terraces up a slope, the fields manured with wrack (the stone walls follow the ground)
 //   fold       a goat fold: a ring of dry-stone wall with a gap for the gate (the goats are the coast's wealth)
 //   rack       a drying rack: kelp and wine weed hung on poles to dry (as nori, as kombu)
+// Farport's harbour (station 1, map 5.1; the owner, 2026-11-01: the harbour stays at the water, in the tsunami's reach):
+//   quay       a stretch of stone quay along the estuary's bank, its face down to the bed, bollards along its edge (kits/eternian et_quay)
+//   pier       a timber jetty on piles out across the arm (et_dock's)
+//   slip       the dockyard's slip: a stone ramp into the water and a hull in frame on it (et_dock)
+//   tsunamistone  a stone stele on the run-up line (100 m): the State's warning not to build below it (Earth's tsunami stones, Japan)
+// A STATION'S SITES (STAGE.sites: the old city on the plateau, the factory quarter by the quays) are registered, not drawn: a settlement
+// build places them (kits/eternian), and the plants keep clear of the city's.
 // Every work is a registered volume (REGISTER) and a core/tags record, and an obstacle the plants keep clear of.
 const WORKS=[];
 (function(){
@@ -71,12 +78,35 @@ const WORKS=[];
   rack(x,z,ry){const y=G(x,z);for(const e of [-2.4,2.4]){const o=rot(e,0,ry);add('wood',BOX,[x+o[0],y-.2,z+o[1]],ry,[.12,2.3,.12]);}
    const tp=rot(0,0,ry);add('wood',BOX,[x+tp[0],y+2,z+tp[1]],ry,[5,.1,.1]);
    for(let k=0;k<14;k++){const o=rot(-2.2+k*.34,0,ry);add(k%3===0?'wine':'weed',PLANE,[x+o[0],y+1.95,z+o[1]],ry,[.28,1.2+.3*(k%2),1],0,.0);}
-   return {r:3,h:2.3,name:'A drying rack (kelp and wine weed hung to dry)',job:'farming'};}};
- (STAGE.works||[]).forEach((w,i)=>{const kind=w[0],p=STAGE.XZ(w[1],w[2]),ry=windA+(w[3]||0),f=KIND[kind];if(!f)return;
+   return {r:3,h:2.3,name:'A drying rack (kelp and wine weed hung to dry)',job:'farming'};},
+  quay(x,z,ry){const L=56,D=4.5,top=2.4;   /* the face from the bed to 2.4 m over the sea, a coping course, bollards along the water side */
+   add('stone',BOX,[x,-9,z],ry,[L,top+9,D]);add('lime',BOX,[x,top,z],ry,[L,.25,D+.2]);
+   for(let k=0;k<5;k++){const o=rot(-L/2+5.6+k*11.2,-D/2+.6,ry);add('dark',CYL,[x+o[0],top+.25,z+o[1]],ry,[.45,.7,.45]);}
+   return {r:L/2,h:top+1,name:'A quay (Farport\'s harbour: in the tsunami\'s reach, as the harbour must be)',job:'trading'};},
+  pier(x,z,ry){const L=34,Wd=3.2,top=1.8;   /* piles and a deck out over the arm from the bank (local -z: across it) */
+   const o=rot(0,-L/2,ry);add('wood',BOX,[x+o[0],top,z+o[1]],ry,[Wd,.22,L]);
+   for(let k=0;k<=6;k++)for(const e of [-1,1]){const q=rot(e*(Wd/2-.2),-k*L/6,ry);add('wood',CYL,[x+q[0],-8,z+q[1]],ry,[.36,top+8,.36]);}
+   return {r:L/2+2,h:top+1,name:'A jetty (Farport\'s harbour)',job:'fishing'};},
+  slip(x,z,ry){const L=40,Wd=9;   /* a stone ramp down into the water across the arm, a hull's keel and ribs in frame on it */
+   const o=rot(0,-L/2,ry);add('stone',BOX,[x+o[0],-2.2,z+o[1]],ry,[Wd,1.2,L],-.08,0);
+   const kq=rot(0,-12,ry);add('wood',BOX,[x+kq[0],1.1,z+kq[1]],ry,[.4,.5,22],-.08,0);
+   for(let k=0;k<9;k++){const q=rot(0,-3-k*2.3,ry),y=.9-k*.18;for(const e of [-1,1])add('wood',BOX,[x+q[0]+rot(e*1.8,0,ry)[0],y+1.4,z+q[1]+rot(e*1.8,0,ry)[1]],ry,[.22,3.4,.22],0,e*.32);}
+   return {r:L/2+2,h:5,name:'The dockyard\'s slip (a hull in frame)',job:'carpentry'};},
+  tsunamistone(x,z,ry){const y=foot(x,z,1);   /* a dressed stele on a plinth, its face to the sea */
+   add('stone',BOX,[x,y-.3,z],ry,[1.6,.6,1.6]);add('stone',BOX,[x,y+.25,z],ry,[.9,2.6,.36]);add('lime',BOX,[x,y+2.85,z],ry,[1.05,.2,.46]);
+   return {r:1.4,h:3,name:'A tsunami stone (on the run-up line, 100 m: "do not build below this stone")',job:null};}};
+ // a work whose u is null stands on the station's run-up line at its v (STAGE.tsunami.contour)
+ const RES=w=>{if(w[1]!=null)return w;const T=STAGE.tsunami,u=T&&T.contour?T.contour(w[2],T.runup):null;return u==null?null:[w[0],u,w[2],w[3]];};
+ const WL=(STAGE.works||[]).map(RES).filter(Boolean);window._worksNamed=WL.length;
+ WL.forEach((w,i)=>{const kind=w[0],p=STAGE.XZ(w[1],w[2]),ry=windA+(w[3]||0),f=KIND[kind];if(!f)return;
   const n=WORKS.filter(o=>o.kind===kind).length,info=f(p[0],p[1],ry,n),y=G(p[0],p[1]);
   const rec={name:info.name,key:'farside_'+kind,cls:'furniture',x:p[0],y,z:p[1],r:info.r,h:info.h+1,
-   tags:{culture:'eternian',setting:'outdoor',job:info.job,biome:'farside',backport:'kits/eternian'}};
+   tags:Object.assign({culture:'eternian',setting:'outdoor',biome:'farside',backport:'kits/eternian'},info.job?{job:info.job}:{})};
   WORKS.push({kind,x:p[0],z:p[1],y,r:info.r});REGISTER(rec);OBSTACLES.push({x:p[0],z:p[1],r:info.r+1.5,y0:y-3,y1:y+info.h+4});});
+ // the sites (registered landmarks, not drawn; the city's held clear of the plants)
+ window._sites=(STAGE.sites||[]).map(s=>{const p=STAGE.XZ(s[1],s[2]),y=G(p[0],p[1]);
+  REGISTER({name:s[0],key:'farport_'+s[4],cls:'landmark',x:p[0],y,z:p[1],r:s[3],h:40,tags:{culture:'eternian',biome:'farside',backport:'settlement build'}});
+  if(s[4]==='city')OBSTACLES.push({x:p[0],z:p[1],r:s[3],y0:y-20,y1:y+60});return {key:s[4],x:p[0],z:p[1],y,r:s[3]};});
  for(const k in BUF){const B=BUF[k];if(!B.pos.length)continue;const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(B.pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(B.nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(B.uv,2));
   const m=new THREE.Mesh(g,MATS[k]);m.userData.host=true;m.userData.inspectLabel='The works ('+k+')';
