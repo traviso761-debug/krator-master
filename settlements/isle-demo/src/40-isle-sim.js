@@ -106,6 +106,11 @@ ISLE.simPlaces = function (TS, R, G, nav) {
       { key: 'canoe stop', lot: Ld.id, trade: ISLE.tradeOf('ie-quay'), cls: 'canoe stop', district: 'harbour', role: 'canoe stop', berths: (Ld.berths || []).map(function (B) { return Object.assign({}, B); }) });
   });
   homes.sort(function (a, b) { return a.h - b.h || (a.rec[0] < b.rec[0] ? -1 : 1); }).forEach(function (H) { put.apply(null, H.rec); });
+  /* the doors of what opens later (2026-11-04): the refugee camp (47r) and the streets outside the gates (33, 47b) get their
+     doors on the walking graph now, while it is still being made, so their people can walk home */
+  var doorOf = function (x, z) { var dn = nav.door(x, z, 3000), w = world(x, z); return dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z }; };
+  if (R.camp) R.camp.door = doorOf(R.camp.x, R.camp.z);
+  (R.spurs || []).forEach(function (Sp) { Sp.lots.forEach(function (L) { L.door = doorOf(L.x, L.z); }); });
   return out;
 };
 /* the towns declared: plans [{R, G}], in ISLE.TOWNS order whatever the order given (so every page deals the same) */

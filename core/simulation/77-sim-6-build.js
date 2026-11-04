@@ -6,7 +6,8 @@
 //
 //   SIM.build({ kinds:{kind: {bill:{good: n}, hours, life? (days a building of it lasts on its bill: its upkeep)}},
 //               of?(P) -> the kind a standing building wears as (null: it does not wear), pace? (projects a settlement
-//               keeps going at once: 1), grace? (days of upkeep owed before the first building shows its wear: 30),
+//               keeps going at once: 1), crewPer? (then one project for every crewPer builders, at least `pace`),
+//               grace? (days of upkeep owed before the first building shows its wear: 30),
 //               onBuilt?(lot, project) (the host turns the lot into its building), onStart?(lot, project),
 //               growth?:{rate (a year: 0.02), per (people a household: 5), ahead (houses ready or going up beyond the
 //               households waiting: 2), settle(lot, s) (the host makes the new household's people, or moves in one
@@ -44,7 +45,7 @@
   function bump(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
   SIM.build = function(o){ o=o||{};
     var Gr=o.growth||null;
-    SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null,
+    SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, crewPer:o.crewPer||null, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null,
         growth:Gr ? { rate:Gr.rate==null?0.02:Gr.rate, per:Gr.per==null?5:Gr.per, ahead:Gr.ahead==null?2:Gr.ahead, settle:Gr.settle||null, people:Gr.people||null, waiting:Gr.waiting||null } : null, onFull:o.onFull||null },
       lots:{}, order:[], projects:{}, towns:{}, events:[], n:0 };
     return SIM.BUILD;
@@ -54,6 +55,9 @@
      finished house no one lives in (the host's `settle(lot, s)` makes its people); a project starts only while the houses
      ready or going up are fewer than `ahead` plus the households waiting, so building follows demand */
   function ready(s){ var B=SIM.BUILD; return town(s).lots.filter(function(id){ var L=B.lots[id]; return L.state==='built' && !L.settled; }); }
+  /* a town's projects at once: `pace`, or one for every `crewPer` of its builders when more have come (2026-11-04: the
+     refugees join the crews) */
+  function paceOf(s){ var B=SIM.BUILD, T=town(s); return B.cfg.crewPer ? Math.max(B.cfg.pace, Math.floor((T.hands||0)/B.cfg.crewPer)) : B.cfg.pace; }
   function elsewhere(s){ var G=SIM.BUILD.cfg.growth; return G && G.waiting ? Math.max(0, G.waiting(s)|0) : 0; }   /* households waiting outside the houses (a refugee camp) */
   function needMore(s){ var B=SIM.BUILD, G=B.cfg.growth, T=town(s); if(!G) return true; return T.active.length+ready(s).length < G.ahead+Math.floor(T.due)+elsewhere(s); }
   function event(kind, o){ var B=SIM.BUILD, e=Object.assign({ m:SIM.minute(), kind:kind }, o); B.events.push(e); if(B.events.length>5000) B.events.shift(); SIM.logEvent('build '+kind, o); return e; }
@@ -95,7 +99,7 @@
     T.active.forEach(function(pid){ var lot=B.projects[pid].lot; act[lot]=1; on[lot]=[]; });
     if(!T.active.length){ var wait=T.lots.filter(function(id){ return B.lots[id].state==='empty'; })[0]; if(wait==null) return; act[wait]=1; on[wait]=[]; }   /* nothing going up: they wait at the next lot */
     var idle=[]; mine.forEach(function(a){ if(act[a.work]) on[a.work].push(a); else idle.push(a); });
-    var share=Math.ceil(mine.length/Math.max(1, Object.keys(on).length));
+    T.hands=mine.length; var share=Math.ceil(mine.length/Math.max(1, Object.keys(on).length));
     Object.keys(on).sort().forEach(function(lot){ while(on[lot].length>share) idle.push(on[lot].pop()); });
     idle.forEach(function(a){ var best=null; Object.keys(on).sort().forEach(function(lot){ if(best==null || on[lot].length<on[best].length) best=lot; });
       on[best].push(a); a.work=best; if(a.mem) a.mem.WORK=best; });
@@ -117,7 +121,7 @@
           var how=G.settle ? G.settle(L, s) : null; if(how!=='moved') T.due-=1;   /* a household waiting elsewhere moved in first (the host says 'moved'), else a new one */
           event('settled', { settlement:s, lot:L.id, from:how==='moved' ? 'elsewhere' : 'growth' }); }
         T.waiting=Math.floor(T.due)+elsewhere(s); }
-      var st=0; while(T.active.length<B.cfg.pace && needMore(s)){ if(!start(s, minute)){ if(B.cfg.onFull && T.fullDay!==Math.floor(minute/1440)){ T.fullDay=Math.floor(minute/1440); if(B.cfg.onFull(s)) continue; } break; } st++; }   /* the projects kept going (to demand); the lots out, the host may open more */
+      var st=0; while(T.active.length<paceOf(s) && needMore(s)){ if(!start(s, minute)){ if(B.cfg.onFull && T.fullDay!==Math.floor(minute/1440)){ T.fullDay=Math.floor(minute/1440); if(B.cfg.onFull(s)) continue; } break; } st++; }   /* the projects kept going (to demand); the lots out, the host may open more */
       if(st || T.first==null || minute%1440===0){ T.first=minute; rebalance(s); }   /* and daily: a builder who left (a rise, a cell) leaves no empty post */
       var R=rate(s), d=Math.floor(minute/1440); if(T.dayN!==d){ T.dayN=d; T.day={}; }
       SIM.withEcon(s, function(){ Object.keys(R).sort().forEach(function(g){ if(!E.goods[g]) return;
@@ -134,7 +138,7 @@
   SIM.buildChanged = function(s){ if(SIM.BUILD) town(s).rate=null; };
   SIM.buildReport = function(s){ var B=SIM.BUILD; if(!B) return null; var out={ towns:{}, events:B.events.slice() };
     Object.keys(B.towns).sort().forEach(function(k){ if(s!=null && k!==s) return; var T=B.towns[k], R=rate(k);
-      out.towns[k]={ lots:T.lots.length, building:T.active.length, built:T.built, buildings:T.buildings||0, settled:T.settled, waiting:T.waiting, due:T.due, ready:ready(k).length,
+      out.towns[k]={ lots:T.lots.length, building:T.active.length, built:T.built, buildings:T.buildings||0, hands:T.hands||0, pace:paceOf(k), settled:T.settled, waiting:T.waiting, due:T.due, ready:ready(k).length,
         empty:T.lots.filter(function(id){ return B.lots[id].state==='empty'; }).length, idle:T.lots.every(function(id){ return B.lots[id].state==='built'; }),
         projects:Object.keys(B.projects).map(function(id){ return B.projects[id]; }).filter(function(P){ return P.settlement===k; }).map(function(P){ return Object.assign({}, P, { bill:Object.assign({}, P.bill), got:Object.assign({}, P.got), share:P.done/P.hours }); }),
         upkeep:{ day:Object.assign({}, R), taken:Object.assign({}, T.taken), owed:Object.assign({}, T.owed), neglect:neglect(k) }, short:Object.assign({}, T.short) }; });

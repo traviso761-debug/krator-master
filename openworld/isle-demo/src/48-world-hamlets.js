@@ -17,7 +17,7 @@ const SPECS=[
  {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:7000},
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
  {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
- {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[-8000,56000],look:7000,apart:2500}];   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
+ {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[0,58000],look:4000,apart:2500}];   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
 const CELL=150,SLOPE=.3,DRY=1.2;
 const H=(x,z)=>WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>H(x,z)-DRY;
 const slope=(x,z)=>Math.max(Math.abs(H(x+4,z)-H(x-4,z)),Math.abs(H(x,z+4)-H(x,z-4)))/8;

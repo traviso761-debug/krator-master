@@ -24,7 +24,7 @@ ISLE.buildKind = function (P) {
 ISLE.simBuild = function () {
   var T = ISLE.TUNE.sim, B = T.build; if (!B || !SIM.build || !SIM.ECONS) return null;
   var Gr = B.growth;
-  SIM.build({ kinds: B.kinds, pace: B.pace, grace: B.grace, of: ISLE.buildKind,
+  SIM.build({ kinds: B.kinds, pace: B.pace, crewPer: B.crewPer || null, grace: B.grace, of: ISLE.buildKind,
     growth: Gr ? { rate: Gr.rate, per: Gr.per, ahead: Gr.ahead,
       settle: function (Lt, s) { if (ISLE.refugeeSettle && ISLE.refugeeSettle(Lt.id, s)) return 'moved'; ISLE.settleHousehold(Lt.id, s); },   /* the camp's households first (47r) */
       waiting: function (s) { return ISLE.refugeeWaiting ? ISLE.refugeeWaiting(s) : 0; } } : null,
@@ -72,7 +72,7 @@ ISLE.openSpur = function (s) {
   var F = Pn.G.frame, h = Pn.G.h; Sp.open = SIM.minute();
   Sp.lots.forEach(function (L) {
     var id = s + '.' + L.lot, w = { x: +(L.x + F.x).toFixed(2), y: +(h(L.x, L.z) + F.sea).toFixed(2), z: +(L.z + F.z).toFixed(2) };
-    var m0 = Sp.lane[0], door = { x: +(m0[0] + F.x).toFixed(2), y: +(h(m0[0], m0[1]) + F.sea).toFixed(2), z: +(m0[1] + F.z).toFixed(2) }, hh = ISLE.households(L.key);   /* its door the street's mouth on the road (the walking graph is the declared one) */
+    var m0 = Sp.lane[0], door = L.door || { x: +(m0[0] + F.x).toFixed(2), y: +(h(m0[0], m0[1]) + F.sea).toFixed(2), z: +(m0[1] + F.z).toFixed(2) }, hh = ISLE.households(L.key);   /* its door on the walking graph, made when the town was declared (40) */
     var P = SIM.place({ id: id, name: 'an empty lot outside the gate', kind: 'lot', x: w.x, y: w.y, z: w.z, ry: L.ry, door: door, activities: {}, indoor: {}, wander: 4, settlement: s,
       tags: { key: L.key, lot: L.id, tag: L.tag, trade: null, cls: L.cls, district: L.district, role: null, vacant: true, hh: hh, spur: Sp.id } });
     P.cls = L.cls; L.closed = false; (S.lotRecs || (S.lotRecs = {}))[id] = L;

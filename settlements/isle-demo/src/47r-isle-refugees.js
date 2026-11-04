@@ -23,7 +23,7 @@ ISLE.simRefugees = function () {
   S.order.forEach(function (s) {
     var Pn = S.plans[s], site = Pn && Pn.R.camp; if (!site) return;
     var F = Pn.G.frame, h = Pn.G.h, w = { x: +(site.x + F.x).toFixed(2), y: +(h(site.x, site.z) + F.sea).toFixed(2), z: +(site.z + F.z).toFixed(2) }, cap = K.cap;
-    var P = SIM.place({ id: s + '.camp', name: 'the refugee camp', kind: 'camp', x: w.x, y: w.y, z: w.z, door: { x: w.x, y: w.y, z: w.z },
+    var P = SIM.place({ id: s + '.camp', name: 'the refugee camp', kind: 'camp', x: w.x, y: w.y, z: w.z, door: site.door || { x: w.x, y: w.y, z: w.z },   /* its door on the walking graph (40) */
       activities: { SLEEP: cap, EAT: cap, REST: cap, IDLE: cap, HOUSEWORK: cap, SOCIALIZE: Math.ceil(cap / 4) }, indoor: {}, wander: site.size / 3, settlement: s,
       tags: { key: 'refugee camp', lot: null, tag: site.tag, trade: null, cls: 'refugee', district: 'outside the town', role: 'camp' } });
     P.mess = true; P.cls = 'refugee'; P.people = 0;
@@ -54,12 +54,25 @@ ISLE.refugeeShip = function (minute) {
     if (NE && SIM.NEED) { var TR = Object.keys(NE.traits); a.trait = TR[KRAND.hash(T.seed, 67, a.k) % TR.length];
       a.nd = NE.list.map(function (nm, q) { var r = NE.init[nm]; return NE.rate[nm] && r ? r[0] + (r[1] - r[0]) * KRAND.unit(KRAND.hash(T.seed, 68, a.k, q)) : 0; });
       if (K.unhappy && K.unhappy.n) SIM.happinessAdd(a, K.unhappy.n, K.unhappy.days, 'camp'); }
+    if (grown && K.work) ISLE.refugeeToWork(a, s, K.work);
     if (SIM.ITEMS && T.items.worn) ISLE.dressPerson(a, s);
   }
   camp.people = (camp.people || 0) + K.people;
   if (SIM.placesChanged) SIM.placesChanged();
   SIM.logEvent('refugees landed', { settlement: s, people: K.people, ship: k });
   return ship;
+};
+/* a grown-up refugee to work (`work`, 2026-11-04): its town's role of that trade, at the lot of the project with the
+   fewest hands (the builders' crew; core's rebalance keeps them even and the lots' posts following); employed */
+ISLE.refugeeToWork = function (a, s, job) {
+  var R = SIM.R.role[s + '.' + job]; if (!R) return false;
+  var B = SIM.BUILD, lots = B ? Object.keys(B.lots).filter(function (id) { return B.lots[id].settlement === s && B.lots[id].state !== 'built'; }) : [];
+  var on = {}; SIM.all('actor').forEach(function (q) { if (q.work != null && B.lots[q.work]) on[q.work] = (on[q.work] || 0) + 1; });
+  var at = lots.filter(function (id) { return B.lots[id].state === 'building'; }).concat(lots).sort(function (p, q) { return (B.lots[q].state === 'building') - (B.lots[p].state === 'building') || (on[p] || 0) - (on[q] || 0) || (p < q ? -1 : 1); })[0];
+  if (at == null) return false;
+  a.role = R.id; a.work = at; if (a.mem) a.mem.WORK = at; a.status = 'employed'; a.job = job; a.refugee.work = job;
+  var P = SIM.R.place[at]; P.activities.WORK = (P.activities.WORK || 0) + 1;   /* its post (core's rebalance evens them out) */
+  return true;
 };
 ISLE.refugeesAt = function (s) {
   var R = ISLE.SIM.rf, id = R && R.camps[s]; if (!id) return [];
@@ -106,6 +119,8 @@ ISLE.refugeeChecks = function (a, b) {
   var hungry = Object.keys(b.camps).filter(function (s) { var C = b.camps[s], h = C.hunger, t = C.town; return h && (h.median >= V * 0.6 || (t && h.p90 > t.p90 + 35)); });
   ok('the camps fed at their ration lines as well as the town feeds its own (hunger: the camp\'s median under ' + Math.round(V * 0.6) + ', its nine in ten within 35 of the town\'s: a camp of a few dozen has its outliers)', !hungry.length,
     Object.keys(b.camps).map(function (s) { return s + ' camp ' + desc(b.camps[s].hunger) + ', town ' + desc(b.camps[s].town); }).join('; '));
+  var idle = SIM.all('actor').filter(function (x) { return x.refugee && x.ageBand === 'adult' && ISLE.TUNE.sim.refugees.work && (!x.work || !SIM.R.place[x.work] || !(SIM.R.place[x.work].activities.WORK > 0)); });
+  ok('every grown-up refugee at work (' + (ISLE.TUNE.sim.refugees.work || 'none') + ', at a post of its town)', !idle.length, idle.slice(0, 4).map(function (x) { return x.id + ' at ' + x.work; }).join(', '));
   ok('the camps, the housed and the refugees\' happiness (reported)', true, Object.keys(b.camps).map(function (s) { var C = b.camps[s];
     return s + ': ' + b.people[s] + ' landed, ' + b.housed[s] + ' housed, ' + C.people + ' in the camp (' + C.households + ' households waiting), happiness in the camp ' + (b.pool[s] == null ? '-' : Math.round(b.pool[s])); }).join('; '));
   return out;

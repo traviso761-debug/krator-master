@@ -1396,7 +1396,11 @@ function world(seed){
  A.run(30);const R36=A.S.buildReport('kautoa').towns.kautoa;
  ok('a household moves in every ten days or so, and the next house goes up as it does ('+A.settled.map(x=>x[0]+' day '+(x[1]/1440).toFixed(0)).join(', ')+'; '+R36.built+' built)',
    A.settled.length>=2&&A.settled[0][0]==='lot0'&&R36.built>=2,A.settled.length<2);
- ok('the lots out, the host opens another (onFull: '+A.opened.join(', ')+')',A.opened.length===1&&A.S.BUILD.lots[A.opened[0]],!A.opened.length);}
+ ok('the lots out, the host opens another (onFull: '+A.opened.join(', ')+')',A.opened.length===1&&A.S.BUILD.lots[A.opened[0]],!A.opened.length);
+ // a crew sized pace (crewPer): four builders at two a project keep two houses going; at four a project, one
+ const P2=mk({noGrowth:true});P2.S.BUILD.cfg.crewPer=2;P2.S.BUILD.cfg.pace=1;P2.run(0.3);const R2=P2.S.buildReport('kautoa').towns.kautoa;
+ const P1=mk({noGrowth:true});P1.S.BUILD.cfg.crewPer=4;P1.S.BUILD.cfg.pace=1;P1.run(0.3);const R1=P1.S.buildReport('kautoa').towns.kautoa;
+ ok('a town keeps a project for every crewPer hands ('+R2.hands+' hands at two a project: '+R2.building+' going up; at four: '+R1.building+')',R2.building===2&&R1.building===1,R1.building===2);}
 // unrest (77-sim-6-unrest.js; PLAN-MONEY.md M6): two towns of one faction, both unwatched; the workers' want rises a little
 // each day and nothing fills it, so their pool sinks and walks the stages (grumbling, demands, strikes, treason) while
 // the merchants stay content; Valapo, short of rice, asks the faction and Kautoa ships it from its spare; the ruler's

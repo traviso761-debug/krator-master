@@ -171,3 +171,14 @@ village) a house's timber is gathered on the spot; the new quarters (low priorit
   the crews double and so does housing), size the crews to demand (a town hiring builders when its camp grows), let the
   polity relieve a strained treasury (unrest's demands already ship goods; a grant of shells is the same machinery), and
   cap a camp lower so that ships turn to the other town or away (the cap, 400, was never reached).
+
+**The refugees to work** (2026-11-04, the owner: "yes do so"). Every grown-up refugee joins its town's builders at
+landing, paid as a builder; a town keeps a house going for every twelve hands (`build.crewPer`). The camp and the
+streets outside the gates got their doors on the walking graph when the town is declared (a watched camp's people, walking
+to work and back, had been unable to get home to eat). The 180-day run again: housing three times as fast (Kautoa housed
+225 and Valapo 120 by day 105, against 95 and 45 by day 180 before), every lot and both streets outside the gates of each
+town built by day 100, and then the camps filled again (165 and 270 by day 180) with the builders idle: Valapo's
+treasury, paying idle builders and the ration, ran from 57,000 shells to nothing. The owner's next answer (2026-11-04):
+the governor drafts the unemployed into WORK CREWS sent to nearby deposits the town lacks or can sell; a crewman in a tent
+is unhappier and seeks a house, buys or builds one near his work, and moves on if he cannot; the hamlets may grow, by
+empty lots, to twice their first size.

@@ -382,7 +382,7 @@ ISLE.TUNE.sim = {
      thatch is the first to go; a house on piles needs little stone, its hearth and footing), drawn hourly from the warehouses; owed when they are out, shown on a share of the houses
      after `grace` days. Timber is kept only where the lumber village is (the open world): on the city page a house's
      timber is gathered on the spot and its upkeep skips it. Placeholders */
-  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6 }, pace: 1, grace: 30,
+  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6 }, pace: 1, crewPer: 12, grace: 30,
     /* GROWTH (2026-11-04, the owner: building follows demand, and the lots must last more than a year): each town's people
        grow by `rate` a year, a household of five at a time (two grown-ups, three children), which moves into a finished
        house no one lives in; a town builds only while its houses ready or going up are fewer than `ahead` plus the
@@ -404,6 +404,9 @@ ISLE.TUNE.sim = {
      a finished house no one lives in (before the town's own new households), and the camp's households count as the
      demand the builders answer */
   refugees: { every: 7, people: 30, first: 3, towns: ['kautoa', 'valapo'], cap: 400, per: 5, unhappy: { n: 10, days: 45 },
+    /* TO WORK (2026-11-04, the owner: after the first run): the grown-ups join the town's builders at landing, paid as
+       builders (into the camp's purse, then their household's); the town keeps a house going for every `build.crewPer` hands */
+    work: 'builder',
     camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level

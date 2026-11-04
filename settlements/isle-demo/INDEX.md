@@ -34,7 +34,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `47c-isle-crime.js` | 11 | 7h1. CRIME AND PUNISHMENT (2026-11-02) (1) |
 | `47h-isle-hamlets.js` | 33 **big** | 7h2. THE HAMLETS IN THE SIM (core/hamlet H5, 202 (1) |
 | `47m-isle-money.js` | 20 | 7h3. MONEY: THE ACCOUNTS (PLAN-MONEY.md M0, 2026 (1) |
-| `47r-isle-refugees.js` | 11 | 7h6. REFUGEES (PLAN-POLITICS.md section 4, 2026- (1) |
+| `47r-isle-refugees.js` | 13 | 7h6. REFUGEES (PLAN-POLITICS.md section 4, 2026- (1) |
 | `47u-isle-unrest.js` | 4 | 7h4. UNREST: THE HAPPINESS POOL (PLAN-MONEY.md M (1) |
 | `48-isle-week.js` | 23 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 2 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
