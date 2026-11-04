@@ -14,7 +14,7 @@ is that kit.
 | | |
 |---|---|
 | Folder | `biomes/abyssal-savannah/` (`src/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `INDEX.md`) |
-| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope); stations 2 and 3 (section 8) to follow as `python3 build.py --station <name>`, the Throne's way |
+| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope, px 1026,350 on map 5.1); stations 2 and 3 (section 8) to follow as `python3 build.py --station <name>`, the Throne's way |
 | Object | `ABSAV` (`build`, `zones`, `burn`, `make`, `grow`, `SPECIES`, `HARVEST`, `PASSES`), on the biome contract (`biomes/eastabyss/BIOME-API.md`) |
 | Its own | the savannah's species (section 5), its zones and burn mosaic (sections 4 and 6), the rim slope's ground (section 7) |
 | Read in place | `biomes/eastabyss` (its jungle species at the slope's foot and in the gullies, by `EASTABYSS.make` / `grow`) |
@@ -212,21 +212,24 @@ grass: straw litter on red soil; `ground.redsoil` stands in) and `card.grass.tha
 
 ## 11. Core adoption
 
-| module | what it does here |
-|---|---|
-| `core/biome` (`CORE_BIOME`) | the kit contract: items, buckets, foliage materials, placement helpers, bake, export |
-| `core/rand` (`KRAND`) | every placement draw: each cell of each pass reseeds the stream from `KRAND.hash(world, salt, ix, iz)`, so a tile draws what it draws in a full build; the terrain's and the burn's noise is `KRAND.fbm` (portable, not the sin-based `BIO.fn.fbm`) |
-| `core/tags` (`KTAGS`) | every item set, instance and registered volume is a record (`BIO.init({tags})`) |
-| `core/space` (`KSPACE`) | the keep-clear between trees and kopjes (one grid, not a hash of the kit's own) |
-| `core/host` (`KHOST`) | camera, frame loop, clock, panel, inspector, probe (`99-host-take.js` hands it the page) |
-| `core/atmos` | the shared sky at the station's pixel (`ATMOS.sky`, `89s-host-sky.js`) with the air at 1.7 atm, the fog and lights from its colour script, the bind (`ATMOS.bindHost`), the skylight for the water |
-| `core/water` | the gully stream (`WATER.flow`), its foot pools and the pan (`WATER.still`) |
-| `core/materials` | the library through `materials.json` (`KMAT`, the generated pack) |
-| `core/export` | `BIO.export` (the export profile in `verify.py`) |
-| `core/clock` | through `core/host` (the host's clock) |
-| `core/terrain` | not taken: the rim slope is an analytic height function on `KRAND.fbm` with the survey's profile; KLAND (the scale model's ground, on another branch) is not in this checkout. The page moves onto it when it lands (S7) |
-| `core/mask` | not taken: no placement raster (nothing reads canvas pixels; the ground canvas is painted only) |
-| `core/lod`, `core/minimap` | not taken: a station page (the eastabyss kits take neither) |
+The final rebuild's turn (pair 8, 2026-11-03, `claude/rebuild-abyssal-cloud`) took `BACKPORT.md`'s universal set and its row on station 1. Each look
+change has a switch, so the owner can compare.
+
+| module | what it does here | switch |
+|---|---|---|
+| `core/biome` (`CORE_BIOME`) | the kit contract: items, buckets, foliage materials, placement helpers, bake, export; **new:** 31j `BIO.flareJoin` on every bough (umbrella, tongue tree, fig; its roots too), 34 octahedral impostors for the far trees (the umbrella and tongue trees: one atlas, one item `impTrees`), 41 the field contract (`BIO.env`); 33, 35, 39 listed for the readers' parts | `ABSAV.JOINTS=false`, `?diet=0` (the old blobs) |
+| the crowns held | the attach audit's 28.4% (leaflet 35,463 of 52,120): a hero's clump gets a twig rod from its plate's hub or the nearest bough end; a mid tree's clump is held toward it (`BIO.holdTo`); a bough's end runs into its plate's hub, and a plate no bough reached gets one. No random numbers: nothing placed moves | `ABSAV.HOLD=false` |
+| `core/rand` (`KRAND`) | every placement draw: each cell of each pass reseeds the stream from `KRAND.hash(world, salt, ix, iz)`; the terrain's and the burn's noise is `KRAND.fbm` | |
+| `core/tags`, `core/space`, `core/export`, `core/clock` | as before; `core/host` is now `khost.FULL` (the inspector, the edit marks) with the generated edits fragment | |
+| `core/terrain` | **new:** 43 `KGROUND` (four library layers on documented masks: red soil, this year's burn, the pan's salt, the bench's gravel; `45-host-stage.js`, "the ground"), 44 `KFAR` (the country past the map to 36 km on 5.1's grade: the floor falling west to the lake, the bench and plateau east; it replaces the page's own far mesh), 45 `KHORIZON` (the risers' and the rim's shadow on the treads at a low sun, the ground and the flora), 35 `KSTRATA` (the caprock's beds, the `canyon` column, coloured into the ground's paint on the rim's steep faces on the CPU: no texture unit). KLAND is still not here: the rim slope is the page's own function on 5.1's grade | `?kground=0`, `?far=0`, `?hz=0`, `?strata=0` |
+| `core/shadow` (`KSHADOW`) | the sun's shadows in one view-following box (oidong's lines); its cost on the GPU is the coordinator's to measure (this turn ran in the cloud, no GPU) | `?shadow=0` |
+| `core/atmos` | the shared sky at px 1026,350; **new:** height fog, the rain cover, lightning and the particles, the foliage in the atmosphere's wind (`BIO.bindAtmosWind`); the clouds' shadows now go on after the bake, so the flora takes them too | `?hfog=0` |
+| `core/water` | the gully stream (`WATER.flow`), its foot pools and the pan (`WATER.drawStill`: no shore grid, so no surf or breakers); **new:** breakup on the stream (ext/56), the audit (57), the reflections switch on the pan, off at load (58), the water as fields (60): the wet band on the ground (`aWet`), `FIELD.wet` and `FIELD.flow` near the water and `WATER.edgeAudit` in the host checks read the water the eye sees | `?fields=0`, `?mirror=probe|live` |
+| `core/materials` | the library through `materials.json` (`KMAT`); four new ground slots (`ground.soil`, `ground.burn`, `ground.salt`, `ground.gravel`); card cells by `check_cells.py --fix` (leaflet and saltbush stems, the plate's one cell, the cycad frond's cell and `base: bottom`) | `?mat=proc` |
+| not taken | `core/mask` (no placement raster), `core/lod` and `core/minimap` (a station page), `KFIRE` (the burn mosaic stays the kit's static `ABSAV.burn`: moving it onto `KFIRE.history` re-rolls every patch and so every plant that reads it; S6), mounds (station 2's clay ants), seasons, the river-mouth plume (no river meets a lake on the map) | |
+
+**The build order moved** (the final rebuild's rule): `80-host-ground.js` builds the ground, the far field and the horizon after the kits; the sky, the
+air and the water follow; `89z-host-build.js` (was 88) places the flora last, on the water's fields.
 
 ## 12. Open questions for the owner (each with the default the build uses)
 
@@ -234,6 +237,9 @@ grass: straw litter on red soil; `ground.redsoil` stands in) and `card.grass.tha
    savanna on Earth's classes. **(default)** the kit is both: station 1 the rim slope (what the eastabyss sketch drew),
    station 2 the floor's belt.
 2. **Station 1's site**: the gentle east rim at px ~1021,350 (the gentlest transect, a 46 km climb). **(default)**
+   **Map 5.1 (2026-11-03):** the climb moved ~5 px east, so the site is px 1026,350 (-638 m, Aw, ~1,240 mm, +30 degC). On 5.1 row 350 reads
+   XV at -1,256 to -1,007 m (old px 1019-1022), Aw at -879 to -493 m (1023-1028), BSh from -328 m (1029); the plan's rain figures above are 4.22's
+   (`KNOWN_ISSUES.md`: 5.1 is wetter).
 3. **The risers, gullies and kopjes are the page's, not the model's** (it cannot resolve them at 4 km a cell).
    **(default)** two risers and a caprock rim on the model's grade.
 4. **Fire as a static mosaic**, not a moving fire. **(default)** static; a fire model and the people who burn are S6.

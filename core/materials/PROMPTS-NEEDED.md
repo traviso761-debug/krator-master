@@ -161,6 +161,17 @@ fronds), `bark.cork`, `bark.lepido`, `bark.armored`, `bark.smooth`, `rock.granit
 `ground.redsoil`. Two gaps: the ground under the tall grass and the tall grass itself (its stand-ins: `ground.redsoil`,
 and `card.grass.dry`'s knee-high bunchgrass drawn three metres tall).
 
+**Owed from the final rebuild's turn (pair 8, 2026-11-03):** the umbrella tree's crown plate (slot `plate`, `G.plate` in
+`50-biome-absav-species.js`: a flat disc 5-14 m across, its UVs radial over the whole card). `check_cells.py --fix` cut `card.acacia`'s
+sheet to one plant (`cell` [.343, .345, .663, .655]), so the plate now shows one sprig stretched over the disc; before, it showed all
+nine sprigs at once. Wire it as `plate` in `biomes/abyssal-savannah/materials.json` (keep 0, mean .7, no `cell`: the whole sheet is the
+plate), then `pack.py` and rebuild.
+
+`card.umbrella.plate`:
+```
+Square, 2048x2048. Orthographic view looking straight down on a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: the flat-topped crown layer of an umbrella thorn tree (Vachellia tortilis) seen from directly above, one roughly circular, slightly lobed plate filling about 90% of the frame: a dense, flat mat of tiny bipinnate leaflets on fine interlaced twigs, thick and even in the middle, breaking up toward the rim into separate sprays with magenta showing between them, a few small gaps inside, no trunk or branches showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
 ## 27. The southern highlands' last canvases (`biomes/shighlands`, 2026-10-26)
 
 The known-issues pass wired the library over most of the kit's own canvases (the ferns, straps, daisies, the paramo's
