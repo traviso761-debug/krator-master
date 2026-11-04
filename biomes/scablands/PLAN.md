@@ -67,6 +67,8 @@ seeds, the variants), and the station's:
 - **the water held**: the plunge lake's and every pothole pool's shore over its level all round;
 - each with a broken input that must fail.
 
+**Geodes** (planned, 2026-11-03): the coulee walls cut through the flows' geode-bearing tops, so station 1 can show small amethyst geodes in the entablature and one walk-in geode (`KSPELEO.AMETHYST`). See `biomes/CRYSTAL-CAVES-5.1.md`, site 3.
+
 ## 6. Core adoption: the final rebuild's turn (2026-11-03, pair 9)
 
 The coulee takes the kit's turn as it reads the kit (`biomes/nsemiarid/PLAN.md` section 11): the graphics set (`46-host-graphics.js`), the

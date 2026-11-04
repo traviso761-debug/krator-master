@@ -631,9 +631,14 @@ entry, so the share can only fall. The practices behind this are in the painting
 ### Practical rules (learned this session)
 
 - **The lock's heartbeat** (the owner, 2026-11-02; `CLAUDE.md`): check a GPU job every 30 minutes; no progress in 30 minutes means hung: stop it by PID and release the lock.
-- **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
-  in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
-  process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
+- **Two GPU lanes since 2026-11-03** (take it after you merge `claude/biome-rebuild`: your verifies then use the new harness):
+  `arc` (the Intel iGPU, `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, the lock older copies take) and
+  `rtx` (the RTX 5060, `krator-verify-gpu-rtx.lock`). Run `KRATOR_GL=gpu python3 verify.py ... --assert` as before: the
+  harness queues you first come first served on whichever lane frees first (`KRATOR_GPU_LANE=arc|rtx` to pin one; timing
+  runs and `harness.py lock` stay on arc), kills a job that writes nothing for 25 minutes (exit 124 "STALLED": rerun it),
+  and skips an `--assert` run that already passed on the same bytes ("cached pass"; `--no-cache` reruns). `python3
+  tools/harness.py lanes` shows who holds and who waits. Never take a lock in bash; never remove a lock you did not take
+  unless no process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
 - **Span's lessons** (the Span arcology session, 2026-10-27; the full twenty in the side-session notes,
   `span-build-lessons.md`):
   - A fresh worktree holds LFS pointers: a page builds black without an error. Pull the build's `tex/` and library sets first,

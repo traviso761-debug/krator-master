@@ -9,7 +9,7 @@ For each page and each preset view (the page's #ui buttons): draw calls, triangl
 minimum over --frames frames. The timer swings ~25% while other work shares the GPU, so the pages are measured in turn,
 --rounds times, and each view keeps its minimum over every round. A page may carry a query (`?diet=0`) for an A/B.
 Instances drawn: the sum of `count` over the instanced meshes the renderer submitted (a per-instance cull in the shader
-still runs those vertices). Run it under the GPU lock (HANDOFF-REBUILD.md, "Practical rules").
+still runs those vertices). Run it under the GPU lock on the arc lane, so its numbers stay comparable: `python3 tools/harness.py lock -- python3 tools/perf_views.py ...`.
 """
 import argparse, asyncio, json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
