@@ -10,6 +10,16 @@
 
 ## Open
 
+- [ ] **The Ancients' bath fixtures are OPT-IN until the next time the catalog is touched** (2026-11-03,
+  `krator-optin-furniture-ancient-bath.js`, README "Opt-in sets"). They are on no default page or bundle, so no committed page
+  moved; a build takes them with `furniture_bundle.bundle(..., optin=['ancient-bath'])` and installs the `bath` programme with
+  `KratorFurniture.ancientBath.install(KratorInteriors)`. **Make them permanent the next time the catalog is touched**: the
+  pieces into the Ancients section of `krator-master-furniture.js`, the palette keys into `FPAL['ancient']`, the programme into
+  `kits/interiors/src/30-programs.js`, drop `optin` from every caller, delete the file, rebuild every build that takes the
+  catalog (`TODO.md`, "Ride along"). Until then the default sheet (`dist/catalog.html`) does not show them: `build.py --opt-in`.
+- [ ] **The bare towel ladder warns under-size** (`ancients_bath_towel_rail` variant 1, depth 0.09 of 0.16): the declared
+  depth is the towels'. Expected, like the other under-size warnings.
+
 - [x] **The fruit's colours live in the goods file** (fixed 2026-10-20). `krator-master-furniture-generic-fruit.js` reads
   `fruit*` colours and the `KGEN` shapes that only `krator-master-furniture-generic-goods.js` defines. `furniture_bundle.files()`
   now adds `generic-goods` whenever `generic-fruit` is asked for (the fruit file needs its code as well as its colours, so moving

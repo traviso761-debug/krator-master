@@ -82,9 +82,11 @@ def _exe():
 
 
 def furn_files():
-    """krator-master-furniture.js and every per-culture file (krator-master-furniture-<culture>.js)"""
+    """krator-master-furniture.js, every per-culture file (krator-master-furniture-<culture>.js) and the opt-in sets
+    (krator-optin-furniture-*.js: on the sheet only in build.py --opt-in's page, checked from source always)"""
     return ['krator-master-furniture.js'] + sorted(f for f in os.listdir(HERE)
-                                                 if f.startswith('krator-master-furniture-') and f.endswith('.js'))
+                                                 if f.startswith('krator-master-furniture-') and f.endswith('.js')) + sorted(
+        f for f in os.listdir(HERE) if f.startswith('krator-optin-furniture-') and f.endswith('.js'))
 
 
 PALETTE_BLOCK = re.compile(r'/\* PALETTE \*/.*?/\* END PALETTE \*/', re.S)

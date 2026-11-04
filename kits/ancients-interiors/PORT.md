@@ -26,4 +26,5 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-(none yet: the split lists and the overrides go here)
+- `opt/38-ai-reception.js` (opt-in, outside `src/` so this audit does not list it): [G data], like `30-ai-recipes.js`;
+  no three.js, no geometry, no DOM. It moves to `src/` at the next interiors update.
