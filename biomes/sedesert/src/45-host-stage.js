@@ -276,11 +276,15 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
 // below ~35 degrees). The cracks and the library's dune and rim sand stay on x-z (they lie on the flat)
 const GROUND_TRI='vec3 triDetail(sampler2D t,vec3 p,vec3 n,float s,float o){vec3 w=pow(abs(normalize(n)),vec3(4.0));w/=w.x+w.y+w.z;'+
  'return texture2D(t,p.zy*s+o).rgb*w.x+texture2D(t,p.xz*s+o).rgb*w.y+texture2D(t,p.xy*s+o).rgb*w.z;}\n';
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
+/* MeshStandard (2026-11-04, the ground catch-up; core/terrain/GROUND.md: r128's Lambert lights per vertex on the cells, so no relief could show on it): the light per
+   pixel, roughness high as dry ground is; the vertex's sun share (vSun, the gorge's and the cave's shade) scales the direct light after the lights are summed, as
+   getShadowMask()*vSun did on Lambert. ?kgstd=0 the Lambert ground (and no relief), ?kgrelief=0 the Standard ground without the relief: the two before states */
+const KG_Q=new URLSearchParams(location.search),KG_STD=KG_Q.get('kgstd')!=='0',KG_RELIEF=KG_STD&&KG_Q.get('kgrelief')!=='0';
+const MAT_GROUND=KG_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xa89e94,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uKgSun={value:KG_SUN};sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  if(GLAY){sh.uniforms.uLDune={value:GLAY.dune};sh.uniforms.uLRim={value:GLAY.rim};sh.uniforms.uLWall={value:GLAY.wall};sh.uniforms.uLLedge={value:GLAY.ledge};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;attribute vec2 aLay;varying vec2 vLay;attribute float aPave;varying float vPave;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vPave=aPave;vOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;varying vec2 vLay;varying float vPave;uniform vec3 uKgSun;\n'+GROUND_TRI+(GLAY?'uniform sampler2D uLDune,uLRim,uLWall,uLLedge;':'')).replace('getShadowMask();','getShadowMask()*vSun;')
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;varying vec2 vLay;varying float vPave;uniform vec3 uKgSun;\n'+GROUND_TRI+(GLAY?'uniform sampler2D uLDune,uLRim,uLWall,uLLedge;':'')).replace('getShadowMask();','getShadowMask()*vSun;').replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.directDiffuse*=vSun;reflectedLight.directSpecular*=vSun;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=triDetail(uDetail,vGWP,vSWN,0.165,0.0);vec3 dt2=triDetail(uDetail,vGWP,vSWN,0.021,0.37);vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   // the strata's relief from the library (a custom sampler is not decoded from sRGB: pow 2.2 by hand): the steep faces
@@ -298,12 +302,16 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uKgSun={value:KG_S
 // z*.021+x*.004); the red desert's PAVEMENT (?pave=0: the paint's darker patches alone) is a mosaic of varnished stones packed in the sand
 // where the paint lays its pavement (aPave), the Outlands' recipe: small, packed, no sub-clasts or glass, a desert-varnish palette
 const KG_SUN=new THREE.Vector3(-1000,1150,-560).normalize();TICKS.push(()=>KG_SUN.copy(sun.position).normalize());
-const KG_Q=new URLSearchParams(location.search),KG_SAND=KG_Q.get('sand')!=='0',KG_PAVE=KG_Q.get('pave')!=='0';
+const KG_SAND=KG_Q.get('sand')!=='0',KG_PAVE=KG_Q.get('pave')!=='0';
 KGROUND.hook(MAT_GROUND,{key:'sedesert-ground'+(KG_SAND?'s':'')+(KG_PAVE?'p':''),layers:GLAY?[KGROUND.layer('sedesert','ground.dune',Object.assign({w:'vLay.x*(1.0-vRock)',amt:.75,gain:1.35,tint:'diffuse'},
    KG_SAND?{kind:'sand',wind:[.187,.982],ripple:.11,sun:'uKgSun',seed:211}:{})),
  KGROUND.layer('sedesert','ground.rim',{w:'vLay.y*(1.0-vRock)',amt:.8,gain:1.35,tint:'diffuse'}),
  KG_PAVE?{kind:'clast',w:'vPave*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb07a54,sub:0,fleck:0,jitter:.95,vary:.3,
-  palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:212}:null]:[]});   // the cave: occlusion, steepened (ambient is all the light there)
+  palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:212}:null]:[],
+ /* THE RELIEF (2026-11-04, the ground catch-up; HANDOFF-REBUILD's adoption list): the layers' height bumps the lit normal (no texture unit), its low and the floor's
+    own hollows (KGROUND.cavityMesh, below) lose sky light, and where the strata show (vRock) the beds stand by hardness on the core strata path. No side planes:
+    the layers lie on the flat (1 - vRock), and the steep faces' detail is GROUND_TRI's already */
+ relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1,strata:.45,strataW:'vRock'}:null});   // the cave: occlusion, steepened (ambient is all the light there)
 // The layers above, described once for a port (core/export's EXPORT.groundLayers: a material record with hook 'world-uv',
 // its maps by library reference, the crack weight sampled on the tile's grid; Godot multiplies them in ground.gdshader
 // through godot/shaders/lib/world-uv.gdshaderinc). Not described yet: the strata (vRock) and the cave's occlusion.
@@ -355,7 +363,7 @@ const GROUND=(function(){const t0=performance.now(),N=GRID.N,S=GRID.S,cs=GRID.cs
  g.setAttribute('position',new THREE.BufferAttribute(F(pos),3));g.setAttribute('uv',new THREE.BufferAttribute(F(uv),2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(F(ck),1));g.setAttribute('aRock',new THREE.BufferAttribute(F(rk),1));g.setAttribute('aOcc',new THREE.BufferAttribute(F(oc),1));g.setAttribute('aSun',new THREE.BufferAttribute(F(sn),1));g.setAttribute('aLay',new THREE.BufferAttribute(F(lay),2));g.setAttribute('aPave',new THREE.BufferAttribute(F(pv),1));
  g.setIndex(new THREE.BufferAttribute(n>65535?new Uint32Array(idx):new Uint16Array(idx),1));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);
+ const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);
  // the drawn height: the triangles of the cell under (x,z), by barycentric test (NaN off the map)
  const P=g.attributes.position.array,X=g.index.array;
  m.userData.hAt=(x,z)=>{const i=Math.floor((x+S/2)/cs),j=Math.floor((z+S/2)/cs);if(i<0||j<0||i>=N||j>=N)return NaN;const c=j*N+i;
