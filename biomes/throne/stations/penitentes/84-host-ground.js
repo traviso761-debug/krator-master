@@ -34,9 +34,10 @@ const GROUNDU={uNight:{value:0}};
 const GL_KEYS=['snow','snow2','cliff','lava','veins','scoria','sulphur','ash','ice','obsidian','cinder','rock037'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb0aaa4});
+let KGI=null;   /* the layers' uKG indices once KGROUND.hook has them (THRONE.kgGround, 70): the page then leaves the layers to it */
+const MAT_GROUND=new THREE.MeshStandardMaterial({roughness:.95,metalness:0,map:null,color:0xb0aaa4});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uNight=GROUNDU.uNight;sh.uniforms.uMacro={value:TEX_MACRO};
- if(GLAY)GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});
+ if(GLAY)if(!KGI)GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});
  sh.uniforms.uSunDir={value:new THREE.Vector3(...SUN_POS).normalize()};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP,vGN;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGN=normal;vL0=aL0;vL1=aL1;vL2=aL2;');
@@ -45,18 +46,21 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  // from above it smeared down the 450 m wall)
  let decl=KHOOK.EYE+'uniform sampler2D uDetail,uMacro;uniform float uNight;uniform vec3 uSunDir;varying vec3 vGWP,vGN;varying vec4 vL0,vL1,vL2;'+
   'vec3 _tri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}',body;
- if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
+ if(GLAY&&KGI){body='vec3 _E_veins='+THRONE.kgE(KGI,GLAY,'veins')+';{vec3 dt=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.5);}';}
+ else if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG);
   body='vec3 _E_veins=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.5);vec3 L;'+
    GL_KEYS.map(k=>'L='+((k==='cliff'||k==='rock037')?'_tri(uG_'+k+',vGWP,normalize(vGN),'+GLAY[k].k.toFixed(4)+');':(k==='snow'||k==='snow2'||k==='ice'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);')+'diffuseColor.rgb=mix(diffuseColor.rgb,'+(k==='cliff'?'diffuseColor.rgb*L*2.2':k==='rock037'?'diffuse*L*1.7':'diffuse*L*1.25')+','+W[k]+');'+(k==='veins'?'_E_veins=L;':'')).join('')+'}';}
  else body='vec3 _E_veins=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.6);}';
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/')
   // the veins round the lake glow (dull by day, bright at night): the summit glow
   // (the eye is kEye(), core/shader's, from the view matrix: r128 uploads no cameraPosition to a Lambert ground; the caldera's own copy still reads 0)
   // and GLINTS on the snow: a random facet normal per 14 cm cell, a tight highlight of the sun on it (near the camera only)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n {vec2 gc=floor(vGWP.xz*7.0);vec3 rn=fract(sin(vec3(dot(gc,vec2(12.9,78.2)),dot(gc,vec2(39.3,11.1)),dot(gc,vec2(73.1,52.7))))*43758.5)-0.5;'+
    'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(kEye()-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
    'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(kEye()-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
+const GW={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x',obsidian:'vL2.y',cinder:'vL2.z',rock037:'vL2.w'};
+KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-penitentes',keys:GL_KEYS,W:GW,GLAY,gain:{cliff:2.2,rock037:1.7},tint:{cliff:'diffuseColor.rgb'},tri:true});
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
@@ -72,5 +76,6 @@ const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s east flank under the summit, ~5.4 km up';scene.add(m);return m;})();
+THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 _mark('ground');

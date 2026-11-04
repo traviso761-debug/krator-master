@@ -69,14 +69,17 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
 const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb0aaa4});
+let KGI=null;   /* the layers' uKG indices once KGROUND.hook has them (THRONE.kgGround, 70): the page then leaves the layers to it */
+const MAT_GROUND=new THREE.MeshStandardMaterial({roughness:.95,metalness:0,map:TEX_GROUND,color:0xb0aaa4});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uNight=GROUNDU.uNight;
- if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}else{sh.uniforms.uRock={value:THRONE.ROCKTEX};sh.uniforms.uVein={value:TEX_VEIN};}
+ if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};if(!KGI)GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}else{sh.uniforms.uRock={value:THRONE.ROCKTEX};sh.uniforms.uVein={value:TEX_VEIN};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock,aGlow;varying float vRock,vGlow;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vGlow=aGlow;vL0=aL0;vL1=aL1;vL2=aL2;');
  const W={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying float vRock,vGlow;varying vec4 vL0,vL1,vL2;',body,emit;
- if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
+ if(GLAY&&KGI){body='vec3 _E_veins='+THRONE.kgE(KGI,GLAY,'veins')+',_E_glowcarpet='+THRONE.kgE(KGI,GLAY,'glowcarpet')+',_E_mycelium='+THRONE.kgE(KGI,GLAY,'mycelium')+';{vec3 dt=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);}';
+  emit='{totalEmissiveRadiance+=uNight*(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*'+W.veins+'*2.2+_E_glowcarpet*smoothstep(0.05,0.3,_E_glowcarpet.b-_E_glowcarpet.r)*'+W.glowcarpet+'*2.0+_E_mycelium*smoothstep(0.08,0.3,_E_mycelium.r-_E_mycelium.b)*'+W.mycelium+'*0.55*vGlow);}';}
+ else if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
   body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='veins'||k==='glowcarpet'||k==='mycelium'?'vec3 _E_'+k+'=L;':'')).join('')+'}';
@@ -88,7 +91,9 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;vec3 rk=pow(texture2D(uRock,vGWP.xz*0.13+vGWP.y*0.04).rgb,vec3(2.2));diffuseColor.rgb*=mix(dt*dt2*1.12,rk*2.2,vRock*0.75);}';
   emit='{float v=max(texture2D(uVein,vGWP.xz*0.11).r,texture2D(uVein,vGWP.xz*0.037+0.41).r*0.7);totalEmissiveRadiance+=vec3(1.0,0.62,0.22)*v*vGlow*uNight*0.32;}';}
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
-  .replace('#include <map_fragment>','#include <map_fragment>\n'+body).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+emit);};
+  .replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+emit);};
+const GW={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
+KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-src',keys:GL_KEYS,W:GW,GLAY});
 const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),gw=new Float32Array(nx*nx),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
@@ -107,6 +112,7 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aGlow',new THREE.BufferAttribute(gw,1));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s south-east shoulder';scene.add(m);return m;})();
+THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
 
 // ---------------------------------------------------------------- the water: the acid lake, the hot pools
 // 2026-10-26: on core/water (src/89w-host-water.js, after core/atmos is bound in 89a): the lake a WATER.still, the pools WATER.spring.

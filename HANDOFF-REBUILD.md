@@ -176,8 +176,8 @@ building engine is now named `core/engine`, not `core/kit`.
     ground to MeshStandard first (the light per pixel; their `?kground=0` fallbacks may keep Lambert), then `relief` as above:
     **eastabyss** (+ lakes), **hyperjungle** (+ lake, savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay**,
     **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
-  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
-    Lambert), **scablands**.
+  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **scablands**. **throne: done 2026-11-03**
+    (every station's ground but the tube's on `KGROUND.hook` through `THRONE.kgGround` and MeshStandard, `relief: {bump: .075, cavity: .8, mesh: 1}`, `cavityMesh`, `tri` on the cliff stations; `biomes/throne/PLAN.md`).
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
