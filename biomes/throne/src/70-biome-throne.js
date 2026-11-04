@@ -47,5 +47,9 @@ THRONE.layGLSL=function(kg,own){
   '#if __VERSION__>=300\nvec4 _kgS(sampler2D t,vec2 st){return kgSample(t,st,dFdx(st),dFdy(st),_kgLv());}\n#else\nvec4 _kgS(sampler2D t,vec2 st){return kgSample(t,st,vec2(0.0),vec2(0.0),_kgLv());}\n#endif\n'+
   'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(_kgS(t,p*k).rgb,vec3(2.2));}'+
   'vec3 _layd(sampler2D t,vec2 p,vec2 q,float k,float mt){float sw=texture2D(uMacro,p*0.0023).r;return pow(_kgS(t,p*k).rgb*(0.9+0.2*sw),vec3(2.2));}\n';};
+// KGROUND's layer kinds on a ground that already takes its library through layGLSL (2026-11-03: the caldera, the ash desert, the glacier):
+// KGROUND.hook adds the library again, so a KHOOK layer after 'kground' drops the second copy (the two are the same text: KGROUND.glsl()'s defaults)
+THRONE.kgOnce=function(mat){if(typeof KHOOK==='undefined'||typeof KGROUND==='undefined')return mat;const L=KGROUND.glsl();
+ return KHOOK.add(mat,'throne-kgonce',sh=>{const f=sh.fragmentShader,a=f.indexOf(L),b=f.lastIndexOf(L);if(a>=0&&b>a)sh.fragmentShader=f.slice(0,b)+f.slice(b+L.length);},{key:'throne-kgonce'});};
 THRONE.canopyH=function(x,z){return THRONE._canopyH?THRONE._canopyH(x,z):6;};
 BIO.kitEnd(THRONE);   // its exports run in its registry; the default kit is current again

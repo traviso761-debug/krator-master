@@ -5,8 +5,8 @@
 // sulphur round the fumaroles, ash on the wall's terraces, old lava on the floor, scoria on the cones, and round the lake's
 // pit the lava veins, glowing (dull by day, bright at night: the summit glow).
 REGISTER({name:'The blast zone (a lateral blast\'s fan)',x:0,z:-200,y:terrainH(0,-200)-100,r:2300,h:420,blast:true});
-REGISTER({name:'The scar (the collapsed dome\'s horseshoe)',x:BLAST.x,z:BLAST.z,y:terrainH(BLAST.x,BLAST.z)-60,r:BLAST.r*1.25,h:320,scar:true});
-REGISTER({name:'The pumice plain (the pyroclastic flows\' fill)',x:BLAST.x+AX[0]*900,z:BLAST.z+AX[1]*900,y:terrainH(BLAST.x+AX[0]*900,BLAST.z+AX[1]*900)-30,r:650,h:120,plain:true});
+REGISTER({name:'The scar (the collapsed dome\'s horseshoe)',x:BLAST.x,z:BLAST.z,y:terrainH(BLAST.x,BLAST.z)-60,r:BLAST.r*1.25,h:320,scar:true,tags:{hazard:{kind:'fall',danger:.8,tell:{sign:'fresh rockfall below the horseshoe\'s walls'}}}});
+REGISTER({name:'The pumice plain (the pyroclastic flows\' fill)',x:BLAST.x+AX[0]*900,z:BLAST.z+AX[1]*900,y:terrainH(BLAST.x+AX[0]*900,BLAST.z+AX[1]*900)-30,r:650,h:120,plain:true,tags:{hazard:{kind:'heat',danger:.2,dose:.3,tell:{sign:'warm under the crust: the fill is still cooling'}}}});
 // ---------------------------------------------------------------- the paint
 const K=hx=>new THREE.Color(hx);
 const PAINT={SNOW:K(0xeef2f8),SNOW2:K(0xdce4ee),BAS:K(0x3c3836),RED:K(0x6a3426),PALE:K(0x8a8070),ASH:K(0x6e6a64),LAVA:K(0x221e1e),SUL:K(0xd8c040),ICE:K(0xc8dcec),SCOR:K(0x5a2a22),FOREST:K(0x3a3a24),NEEDLE:K(0x5a4a30),PUMICE:K(0xb0a898)};

@@ -98,7 +98,9 @@ Its near camera on nhighlands landed on the stream (the script stands 8 m short 
 35.3 ms in two runs), so `ground_shots` gives the order only. On the two Lambert grounds relief and tri cost within the noise
 (nhighlands 28.6 / 27.6 / 29.4 ms near, before / relief / relief+tri; eastabyss 4.3 / 5.6 / 5.2 ms mid). On ebadlands the first cut
 cost +17, +23 and +52 ms (near, mid, far), almost all of it the bed relief's lookup run out to 600 m and the side planes at every
-distance; both are now cut off past their fade (300 m, 250 m). PERF_TABLE
+distance; both are now cut off past their fade (300 m, 250 m). The cut was not re-timed: an alternating `perf_views.py` run
+(`python3 tools/harness.py lock -- python3 tools/perf_views.py <page> "<page>?kgrelief=1" "<page>?kgrelief=1&kgtri=1" --rounds 3`)
+died twice with the app. **Each build times it at its adoption turn, on its own views, before it turns relief on.**
 
 ## What I would make the default
 

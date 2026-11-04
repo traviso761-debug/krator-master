@@ -1,0 +1,595 @@
+{
+ "compile_s": 0.7,
+ "device": "NPU",
+ "per_frame_s": 0.117,
+ "sets": {
+  "bark.bark015": {
+   "blend": {
+    "cos": 0.189,
+    "deg": 15.86,
+    "flat_deg": 16.18
+   },
+   "lum": {
+    "cos": 0.184,
+    "deg": 15.88,
+    "flat_deg": 16.18
+   },
+   "model": {
+    "cos": 0.081,
+    "deg": 16.12,
+    "flat_deg": 16.18
+   },
+   "model_s": 1.28,
+   "scanned": true,
+   "split": {
+    "cos": 0.19,
+    "deg": 15.86,
+    "flat_deg": 16.18
+   }
+  },
+  "bark.palm_tree_bark": {
+   "blend": {
+    "cos": 0.008,
+    "deg": 5.02,
+    "flat_deg": 4.53
+   },
+   "lum": {
+    "cos": 0.007,
+    "deg": 5.21,
+    "flat_deg": 4.53
+   },
+   "model": {
+    "cos": 0.014,
+    "deg": 4.54,
+    "flat_deg": 4.53
+   },
+   "model_s": 1.2,
+   "scanned": true,
+   "split": {
+    "cos": -0.015,
+    "deg": 4.99,
+    "flat_deg": 4.53
+   }
+  },
+  "cloth.quatrefoil_jacquard_fabric": {
+   "blend": {
+    "cos": 0.384,
+    "deg": 6.01,
+    "flat_deg": 6.38
+   },
+   "lum": {
+    "cos": 0.384,
+    "deg": 6.01,
+    "flat_deg": 6.38
+   },
+   "model": {
+    "cos": -0.001,
+    "deg": 6.39,
+    "flat_deg": 6.38
+   },
+   "model_s": 1.18,
+   "scanned": true,
+   "split": {
+    "cos": 0.375,
+    "deg": 6.03,
+    "flat_deg": 6.38
+   }
+  },
+  "cloth.rug.wool": {
+   "model_s": 1.28,
+   "scanned": false
+  },
+  "concrete.cracked_concrete_wall": {
+   "blend": {
+    "cos": 0.366,
+    "deg": 8.25,
+    "flat_deg": 8.54
+   },
+   "lum": {
+    "cos": 0.337,
+    "deg": 8.29,
+    "flat_deg": 8.54
+   },
+   "model": {
+    "cos": 0.258,
+    "deg": 8.41,
+    "flat_deg": 8.54
+   },
+   "model_s": 1.15,
+   "scanned": true,
+   "split": {
+    "cos": 0.325,
+    "deg": 8.32,
+    "flat_deg": 8.54
+   }
+  },
+  "ground.coast_sand_rocks_02": {
+   "blend": {
+    "cos": 0.215,
+    "deg": 19.37,
+    "flat_deg": 19.73
+   },
+   "lum": {
+    "cos": 0.201,
+    "deg": 19.41,
+    "flat_deg": 19.73
+   },
+   "model": {
+    "cos": 0.133,
+    "deg": 19.62,
+    "flat_deg": 19.73
+   },
+   "model_s": 1.13,
+   "scanned": true,
+   "split": {
+    "cos": 0.184,
+    "deg": 19.47,
+    "flat_deg": 19.73
+   }
+  },
+  "ground.gravel042": {
+   "blend": {
+    "cos": 0.107,
+    "deg": 10.94,
+    "flat_deg": 10.98
+   },
+   "lum": {
+    "cos": 0.091,
+    "deg": 11.1,
+    "flat_deg": 10.98
+   },
+   "model": {
+    "cos": 0.096,
+    "deg": 10.93,
+    "flat_deg": 10.98
+   },
+   "model_s": 1.16,
+   "scanned": true,
+   "split": {
+    "cos": 0.099,
+    "deg": 10.95,
+    "flat_deg": 10.98
+   }
+  },
+  "ground.moss002": {
+   "blend": {
+    "cos": 0.565,
+    "deg": 23.67,
+    "flat_deg": 29.23
+   },
+   "lum": {
+    "cos": 0.565,
+    "deg": 23.63,
+    "flat_deg": 29.23
+   },
+   "model": {
+    "cos": 0.01,
+    "deg": 29.23,
+    "flat_deg": 29.23
+   },
+   "model_s": 2.09,
+   "scanned": true,
+   "split": {
+    "cos": 0.57,
+    "deg": 23.54,
+    "flat_deg": 29.23
+   }
+  },
+  "ground.snow011": {
+   "blend": {
+    "cos": 0.28,
+    "deg": 9.88,
+    "flat_deg": 10.2
+   },
+   "lum": {
+    "cos": 0.341,
+    "deg": 9.74,
+    "flat_deg": 10.2
+   },
+   "model": {
+    "cos": -0.194,
+    "deg": 10.3,
+    "flat_deg": 10.2
+   },
+   "model_s": 1.16,
+   "scanned": true,
+   "split": {
+    "cos": 0.251,
+    "deg": 9.98,
+    "flat_deg": 10.2
+   }
+  },
+  "hide.leather008": {
+   "blend": {
+    "cos": -0.934,
+    "deg": 32.03,
+    "flat_deg": 30.58
+   },
+   "lum": {
+    "cos": -0.936,
+    "deg": 33.01,
+    "flat_deg": 30.58
+   },
+   "model": {
+    "cos": -0.208,
+    "deg": 30.62,
+    "flat_deg": 30.58
+   },
+   "model_s": 1.39,
+   "scanned": true,
+   "split": {
+    "cos": -0.85,
+    "deg": 31.62,
+    "flat_deg": 30.58
+   }
+  },
+  "metal.metal_grate_rusty": {
+   "blend": {
+    "cos": -0.749,
+    "deg": 11.67,
+    "flat_deg": 10.65
+   },
+   "lum": {
+    "cos": -0.603,
+    "deg": 11.65,
+    "flat_deg": 10.65
+   },
+   "model": {
+    "cos": -0.808,
+    "deg": 11.5,
+    "flat_deg": 10.65
+   },
+   "model_s": 1.29,
+   "scanned": true,
+   "split": {
+    "cos": -0.652,
+    "deg": 11.66,
+    "flat_deg": 10.65
+   }
+  },
+  "metal.metalplates001": {
+   "blend": {
+    "cos": 0.494,
+    "deg": 2.1,
+    "flat_deg": 2.52
+   },
+   "lum": {
+    "cos": 0.486,
+    "deg": 2.09,
+    "flat_deg": 2.52
+   },
+   "model": {
+    "cos": 0.052,
+    "deg": 2.56,
+    "flat_deg": 2.52
+   },
+   "model_s": 1.24,
+   "scanned": true,
+   "split": {
+    "cos": 0.592,
+    "deg": 2.19,
+    "flat_deg": 2.52
+   }
+  },
+  "metal.painted.chipped": {
+   "model_s": 1.16,
+   "scanned": false
+  },
+  "metal.rusty_metal_04": {
+   "blend": {
+    "cos": -0.007,
+    "deg": 6.47,
+    "flat_deg": 6.26
+   },
+   "lum": {
+    "cos": -0.007,
+    "deg": 6.88,
+    "flat_deg": 6.26
+   },
+   "model": {
+    "cos": -0.0,
+    "deg": 6.27,
+    "flat_deg": 6.26
+   },
+   "model_s": 1.28,
+   "scanned": true,
+   "split": {
+    "cos": 0.022,
+    "deg": 6.43,
+    "flat_deg": 6.26
+   }
+  },
+  "mosaic.trencadis": {
+   "model_s": 1.34,
+   "scanned": false
+  },
+  "paving.brick_wall_001": {
+   "blend": {
+    "cos": 0.296,
+    "deg": 18.37,
+    "flat_deg": 18.71
+   },
+   "lum": {
+    "cos": 0.061,
+    "deg": 18.73,
+    "flat_deg": 18.71
+   },
+   "model": {
+    "cos": 0.583,
+    "deg": 15.41,
+    "flat_deg": 18.71
+   },
+   "model_s": 1.3,
+   "scanned": true,
+   "split": {
+    "cos": 0.221,
+    "deg": 18.49,
+    "flat_deg": 18.71
+   }
+  },
+  "paving.cobblestone_01": {
+   "blend": {
+    "cos": 0.251,
+    "deg": 11.08,
+    "flat_deg": 11.35
+   },
+   "lum": {
+    "cos": 0.123,
+    "deg": 11.32,
+    "flat_deg": 11.35
+   },
+   "model": {
+    "cos": 0.63,
+    "deg": 8.42,
+    "flat_deg": 11.35
+   },
+   "model_s": 1.19,
+   "scanned": true,
+   "split": {
+    "cos": 0.22,
+    "deg": 11.2,
+    "flat_deg": 11.35
+   }
+  },
+  "paving.marble_mosaic_tiles": {
+   "blend": {
+    "cos": 0.32,
+    "deg": 5.13,
+    "flat_deg": 5.18
+   },
+   "lum": {
+    "cos": 0.332,
+    "deg": 5.37,
+    "flat_deg": 5.18
+   },
+   "model": {
+    "cos": 0.176,
+    "deg": 5.19,
+    "flat_deg": 5.18
+   },
+   "model_s": 1.18,
+   "scanned": true,
+   "split": {
+    "cos": 0.336,
+    "deg": 5.17,
+    "flat_deg": 5.18
+   }
+  },
+  "paving.old_mosaic_floor": {
+   "blend": {
+    "cos": 0.193,
+    "deg": 3.24,
+    "flat_deg": 2.77
+   },
+   "lum": {
+    "cos": 0.18,
+    "deg": 3.75,
+    "flat_deg": 2.77
+   },
+   "model": {
+    "cos": 0.073,
+    "deg": 2.79,
+    "flat_deg": 2.77
+   },
+   "model_s": 1.17,
+   "scanned": true,
+   "split": {
+    "cos": 0.188,
+    "deg": 3.12,
+    "flat_deg": 2.77
+   }
+  },
+  "paving.tiles144": {
+   "blend": {
+    "cos": 0.226,
+    "deg": 0.93,
+    "flat_deg": 0.53
+   },
+   "lum": {
+    "cos": 0.242,
+    "deg": 0.94,
+    "flat_deg": 0.53
+   },
+   "model": {
+    "cos": -0.076,
+    "deg": 0.62,
+    "flat_deg": 0.53
+   },
+   "model_s": 1.2,
+   "scanned": true,
+   "split": {
+    "cos": 0.234,
+    "deg": 1.2,
+    "flat_deg": 0.53
+   }
+  },
+  "plaster.patterned_clay_plaster": {
+   "blend": {
+    "cos": 0.051,
+    "deg": 5.02,
+    "flat_deg": 4.61
+   },
+   "lum": {
+    "cos": 0.05,
+    "deg": 5.12,
+    "flat_deg": 4.61
+   },
+   "model": {
+    "cos": 0.017,
+    "deg": 4.66,
+    "flat_deg": 4.61
+   },
+   "model_s": 1.36,
+   "scanned": true,
+   "split": {
+    "cos": 0.074,
+    "deg": 5.0,
+    "flat_deg": 4.61
+   }
+  },
+  "rock.marble012": {
+   "blend": {
+    "cos": 0.008,
+    "deg": 1.46,
+    "flat_deg": 0.32
+   },
+   "lum": {
+    "cos": 0.008,
+    "deg": 2.05,
+    "flat_deg": 0.32
+   },
+   "model": {
+    "cos": 0.0,
+    "deg": 0.38,
+    "flat_deg": 0.32
+   },
+   "model_s": 1.31,
+   "scanned": true,
+   "split": {
+    "cos": 0.007,
+    "deg": 1.58,
+    "flat_deg": 0.32
+   }
+  },
+  "rock.rock_face": {
+   "blend": {
+    "cos": -0.059,
+    "deg": 14.42,
+    "flat_deg": 14.28
+   },
+   "lum": {
+    "cos": -0.061,
+    "deg": 14.41,
+    "flat_deg": 14.28
+   },
+   "model": {
+    "cos": 0.015,
+    "deg": 14.27,
+    "flat_deg": 14.28
+   },
+   "model_s": 1.18,
+   "scanned": true,
+   "split": {
+    "cos": -0.052,
+    "deg": 14.42,
+    "flat_deg": 14.28
+   }
+  },
+  "rock.sandstone_blocks_04": {
+   "blend": {
+    "cos": 0.033,
+    "deg": 12.79,
+    "flat_deg": 12.78
+   },
+   "lum": {
+    "cos": 0.03,
+    "deg": 12.79,
+    "flat_deg": 12.78
+   },
+   "model": {
+    "cos": 0.044,
+    "deg": 12.77,
+    "flat_deg": 12.78
+   },
+   "model_s": 1.25,
+   "scanned": true,
+   "split": {
+    "cos": 0.029,
+    "deg": 12.8,
+    "flat_deg": 12.78
+   }
+  },
+  "roof.clay_roof_tiles": {
+   "blend": {
+    "cos": 0.488,
+    "deg": 32.12,
+    "flat_deg": 38.54
+   },
+   "lum": {
+    "cos": 0.19,
+    "deg": 37.45,
+    "flat_deg": 38.54
+   },
+   "model": {
+    "cos": 0.718,
+    "deg": 20.73,
+    "flat_deg": 38.54
+   },
+   "model_s": 1.25,
+   "scanned": true,
+   "split": {
+    "cos": 0.402,
+    "deg": 34.45,
+    "flat_deg": 38.54
+   }
+  },
+  "wood.old_wooden_floor_02": {
+   "blend": {
+    "cos": 0.058,
+    "deg": 3.15,
+    "flat_deg": 2.56
+   },
+   "lum": {
+    "cos": 0.066,
+    "deg": 3.12,
+    "flat_deg": 2.56
+   },
+   "model": {
+    "cos": -0.068,
+    "deg": 2.67,
+    "flat_deg": 2.56
+   },
+   "model_s": 1.17,
+   "scanned": true,
+   "split": {
+    "cos": 0.072,
+    "deg": 3.21,
+    "flat_deg": 2.56
+   }
+  },
+  "wood.wooden_gate": {
+   "blend": {
+    "cos": 0.276,
+    "deg": 6.97,
+    "flat_deg": 6.92
+   },
+   "lum": {
+    "cos": 0.134,
+    "deg": 7.06,
+    "flat_deg": 6.92
+   },
+   "model": {
+    "cos": 0.403,
+    "deg": 6.52,
+    "flat_deg": 6.92
+   },
+   "model_s": 1.17,
+   "scanned": true,
+   "split": {
+    "cos": 0.182,
+    "deg": 7.04,
+    "flat_deg": 6.92
+   }
+  }
+ }
+}

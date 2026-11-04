@@ -49,9 +49,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='mycgold'?'_E_mg=L;':'')).join('')+'}';}
  else body='vec3 _E_mg=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/')
   // at night the mat glows its pink and the mycelium a faint gold (the plume's own life)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=uNight*(vL1.y*vec3(0.55,0.08,0.3)+vL0.z*vec3(0.42,0.34,0.1)*0.6+vL2.x*_E_mg*smoothstep(0.08,0.3,_E_mg.r-_E_mg.b)*0.5);');};
+// THE DUNES' BLACK SAND (core/terrain KGROUND's layer kind 'sand', BACKPORT.md's row; 2026-11-03): wind ripples on the ash dunes
+// (vL0.y, where the ripples layer lies), the ripples across the plume's wind; no glints (they read cameraPosition, which r128 does not give a
+// Lambert ground). Procedural: no texture unit. ?kinds=0 none
+if(typeof KGROUND!=='undefined'&&KGROUND.hook&&CORE_Q.get('kinds')!=='0')KGROUND.hook(MAT_GROUND,{key:'throne-ash',layers:[{kind:'sand',name:'the dunes\' black sand',
+ w:'vL0.y',amt:.6,color:0x2e2c2a,ripple:.14,wind:[1,.35],sun:'normalize(vec3('+SUN_POS.map(v=>(+v).toFixed(1)).join(',')+'))',glint:0,
+ seed:KRAND.hash(571,514,62)%997}]}),THRONE.kgOnce(MAT_GROUND);
+
 const GROUND=(function(){const N=760,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;

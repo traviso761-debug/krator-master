@@ -38,7 +38,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const fl=THRONE.flowAt(p.x,p.z),gr=fl?fl.name+', '+ageLabel(fl.age)+' old':'old ground (no flow in the record)';
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · '+tg.origin+' · lives: '+tg.plume+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
-  '\nground: '+(FIELD.floor(p.x,p.z)>.5?'the pumice plain':FIELD.direct(p.x,p.z)>.5?'the direct-blast zone':FIELD.removal(p.x,p.z)>.5?'the tree-removal zone':FIELD.blowdown(p.x,p.z)>.5?'the blowdown':FIELD.seared(p.x,p.z)>.5?'the seared zone':'the living forest')+' · blast '+FIELD.blast(p.x,p.z).toFixed(2)+' · '+Math.round(terrainH(p.x,p.z))+' m'+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  '\nground: '+(FIELD.floor(p.x,p.z)>.5?'the pumice plain':FIELD.direct(p.x,p.z)>.5?'the direct-blast zone':FIELD.removal(p.x,p.z)>.5?'the tree-removal zone':FIELD.blowdown(p.x,p.z)>.5?'the blowdown':FIELD.seared(p.x,p.z)>.5?'the seared zone':'the living forest')+' · blast '+FIELD.blast(p.x,p.z).toFixed(2)+' · '+Math.round(terrainH(p.x,p.z))+' m'+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): each one's kind, danger and state now */
+function hazardWords(p){const w=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';return w?'\n'+w:'';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
@@ -59,7 +61,11 @@ const HCHK={
   return{ok:L.length>2000&&!bad.length,detail:L.length+' logs'+(bad.length?', '+bad.length+' across the blast or out of its zones (first at '+[bad[0].x|0,bad[0].z|0]+')':', every one laid along the blast')};},
  // no living tree inside the blast: the kit's trees only where the field says the forest stands
  living(T){const bad=T.filter(t=>FIELD.live(t.x,t.z)<.5);const n=T.length;
-  return{ok:n>200&&!bad.length,detail:n+' living trees'+(bad.length?', '+bad.length+' inside the blast (first '+THRONE.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':', all past the seared edge')};}, weather(W,U){const ok=!!W&&['snowfall','blizzard'].every(m=>W.MODES.indexOf(m)>=0)&&!!U&&!!U.snow;
+  return{ok:n>200&&!bad.length,detail:n+' living trees'+(bad.length?', '+bad.length+' inside the blast (first '+THRONE.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':', all past the seared edge')};}, // the hazards (core/hazard): each point reads the kind it should (want null: none), and the count of a kind is what was placed
+ hazards(Q,n){const bad=Q.filter(q=>{const k=KHAZ.at(q.x,q.z,0,q.y).map(h=>h.kind);return q.want?k.indexOf(q.want)<0:k.length>0;});
+  const ok=!bad.length&&(!n||n.got>=n.want);
+  return{ok,detail:(bad.length?'wrong at: '+bad.map(q=>q.what+' (want '+(q.want||'none')+')').join(', '):Q.map(q=>q.what+': '+(q.want||'none')).join(', '))+(n?' · '+n.got+' '+n.what+' of '+n.want:'')};},
+ weather(W,U){const ok=!!W&&['snowfall','blizzard'].every(m=>W.MODES.indexOf(m)>=0)&&!!U&&!!U.snow;
   return{ok,detail:ok?'modes '+W.MODES.join(', ')+' ('+W.mode+')':'no snow or no ash'};},
  tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
   for(const S of L){const t=S.tags||{},k=t.koppen||[];
@@ -67,15 +73,20 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
+const HZQ=(function(){const px=BLAST.x+AX[0]*900,pz=BLAST.z+AX[1]*900;
+ return[{what:'the scar',x:BLAST.x,z:BLAST.z,y:terrainH(BLAST.x,BLAST.z)+1,want:'fall'},{what:'the plain',x:px,z:pz,y:terrainH(px,pz)+1,want:'heat'}];})();
+const HZN=()=>({what:'seared snags',want:Math.round(DEAD.snags*.99),got:KHAZ.list().filter(r=>r.tags.hazard.kind==='crush').length});
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the logs lie along the blast (BLAST.logs)',HCHK.logs(BLAST.logs));
  add('the living forest only past the seared edge',HCHK.living(THRONE.TREES));
  add('the snow (core/atmos, opt-in) is here',HCHK.weather(ATMOS.W,ATMOS.U));
+ add('the hazards: the scar, the plain, the seared snags (core/hazard)',HCHK.hazards(HZQ,HZN()));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('a log laid across the blast',HCHK.logs(BLAST.logs.concat([Object.assign({},BLAST.logs[0],{yaw:BLAST.logs[0].yaw+Math.PI/2})])));
+ add('snags with no hazard',HCHK.hazards(HZQ,Object.assign(HZN(),{got:0})));
  add('a living tree in the blowdown',HCHK.living(THRONE.TREES.concat([{sp:SPK('ashpine'),x:BD.x,z:BD.z}])));
  add('a weather without the snow',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.filter(m=>m!=='blizzard'&&m!=='snowfall')}),ATMOS.U));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
@@ -92,7 +103,7 @@ KHOST.take({build:'throne-blast',title:'Krator biome — the Throne: the blast z
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
