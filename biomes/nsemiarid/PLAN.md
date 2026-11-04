@@ -127,6 +127,8 @@ table both modules read:
 
 The open world's ground already has a bedded-rock weight (the strata shader, `41-world-fields.js`).
 
+**Geodes** (planned, 2026-11-03): the flood basalt's flow tops hold amethyst geodes, a few big enough to step into: a cliff and ground dressing, and one walk-in geode where a cut opens it (`KSPELEO.AMETHYST`; `biomes/CRYSTAL-CAVES-5.1.md`, site 3).
+
 ## 5. Overlay: the dam basins (`biomes/dambasins`)
 
 The west bed (41,408 km², all in n semiarid) and the east bed (47,792 km²: 23,168 in n semiarid, 24,564 in Korona).
