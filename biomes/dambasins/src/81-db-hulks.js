@@ -3,7 +3,7 @@
 // the scene, a berth's by portPlaceVessel), then GROUNDED: pitched and rolled to the ground under its
 // bow, stern and beams, listed further toward the downslope side, and sunk so its keel lies buried in the silt.
 //   How, without touching the kit: a vessel builder keeps its group G unrotated at its midship (gx, 0, gz) and sets
-//   KOFF to that point (settlements/port/CONTRACT.md, "Vessel frame"). Its meshes and its batches are children of G, so
+//   KOFF to that point (kits/port/CONTRACT.md, "Vessel frame"). Its meshes and its batches are children of G, so
 //   they take the pose on G. Its batched items (kput) are placed in world space as KXF(p) + KOFF: while it builds,
 //   DB_GXF folds the pose into both (KXF' = R KXF, KOFF' = KOFF + dy), which is the same pose about the same point.
 // The pose's draws are KRAND hashes of the hulk's place (no stream is touched): the list, the burial.

@@ -23,7 +23,7 @@ build"), so nothing of the catalog is copied. Then ONE inline <script>:
   src/50-59*.js                  THREE views: shells, planned buildings, outline debug view,
                                  cut-away and storey selector, walker figures
   src/70-98*.js                  the demo sheet, hover inspector, page audit, polygon tool
-  src/80-sky-hash.js, 81-sky.js  VENDORED (see VENDORED below; --vendor-check)
+  80-sky-hash.js, 81-sky.js  the placeholder sky, read in place from core/atmos/placeholder (labelled src/ in the pages)
 
 The sets sheet is the same core, adapter and views, then sets/*.js (the data, inlined), then
 src-sets/7x (its sheet and audit) and the shared src/72-hover, 78-polytool and the sky.
@@ -54,9 +54,12 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CATALOG = os.path.join(ROOT, 'kits', 'catalog')
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
 OUT = 'interiors'
 
 ADAPTERS = ['adapters/catalog-adapter.js']
@@ -67,10 +70,18 @@ SETS_SHARED = ['72-hover.js', '78-polytool.js', '80-sky-hash.js', '81-sky.js']  
 # the catalog files the page loads by path (00-head.html): our names must not clash with theirs
 CATALOG_LOADED = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js', 'inspector.js'] + sorted(
     f for f in os.listdir(CATALOG) if f.startswith('krator-master-furniture-') and f.endswith('.js'))
-VENDORED = {
-    '80-sky-hash.js': os.path.join(ROOT, 'kits', 'catalog', 'src', '80-sky-hash.js'),
-    '81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
-}
+VENDORED = {}
+
+# the placeholder sky (KratorSky and its h3()), read in place from core/atmos/placeholder (MODULARITY-PLAN.md step 1); the
+# names keep their place in the fragment order. A src/ copy would be ignored: --vendor-check reports it.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky  # noqa: E402
+SKY = psky.paths(psky.SKY_H3)
+
+
+def src_path(f):
+    return SKY.get(f) or os.path.join(SRC, f)
+
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
@@ -97,23 +108,27 @@ def check(parts):
         if len(fs) > 1:
             errs.append('top-level name `%s` declared in more than one file: %s' % (d, ', '.join(fs)))
     for f in CATALOG_LOADED:
-        p = os.path.join(CATALOG, f)
+        p = kcat.path(f)
         if not os.path.exists(p):
-            errs.append('catalog file missing: kits/catalog/%s' % f)
+            errs.append('catalog file missing: %s' % kcat.rel(f))
             continue
         for d in sorted(decls(read(p)) & set(seen)):
-            errs.append('top-level name `%s` (%s) clashes with kits/catalog/%s' % (d, ', '.join(seen[d]), f))
+            errs.append('top-level name `%s` (%s) clashes with %s' % (d, ', '.join(seen[d]), kcat.rel(f)))
     return errs
 
 
 def vendor_check():
     drift = 0
+    for f in sorted(SKY):
+        if os.path.exists(os.path.join(SRC, f)):
+            print('vendor-check: src/%s shadows core/atmos/placeholder/%s (the build ignores it): delete it' % (f, f))
+            drift += 1
     for f, up in sorted(VENDORED.items()):
         if not os.path.exists(up):
             print('vendor-check: %s: upstream %s missing' % (f, os.path.relpath(up, ROOT)))
             drift += 1
             continue
-        same = read(up) == read(os.path.join(SRC, f))
+        same = read(up) == read(src_path(f))
         drift += not same
         print('vendor-check: %-16s %s (%s)' % (f, 'identical' if same else 'DRIFTED', os.path.relpath(up, ROOT)))
     return drift
@@ -136,14 +151,14 @@ def node_check(name, text):
 def main():
     if '--vendor-check' in sys.argv:
         sys.exit(1 if vendor_check() else 0)
-    frags = sorted(f for f in os.listdir(SRC) if f[0].isdigit())
+    frags = sorted({f for f in os.listdir(SRC) if f[0].isdigit()} | set(SKY))
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
     core = [f for f in js if f < '50']
     view = [f for f in js if f >= '50']
-    core_parts = [('src/' + f, read(os.path.join(SRC, f))) for f in core]
-    parts = core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] + [('src/' + f, read(os.path.join(SRC, f))) for f in view]
+    core_parts = [('src/' + f, read(src_path(f))) for f in core]
+    parts = core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] + [('src/' + f, read(src_path(f))) for f in view]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:
@@ -163,10 +178,10 @@ def main():
                 print('no such set file: sets/' + f); sys.exit(1)
     sets_js = sorted(f for f in os.listdir(SRC_SETS) if f.endswith('.js'))
     sets_parts = (core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] +
-                  [('src/' + f, read(os.path.join(SRC, f))) for f in view if f < '70'] +
+                  [('src/' + f, read(src_path(f))) for f in view if f < '70'] +
                   [('sets/' + f, read(os.path.join(SETS_DIR, f))) for f in set_files] +
                   [('src-sets/' + f, read(os.path.join(SRC_SETS, f))) for f in sets_js] +
-                  [('src/' + f, read(os.path.join(SRC, f))) for f in SETS_SHARED])
+                  [('src/' + f, read(src_path(f))) for f in SETS_SHARED])
     if '--no-checks' not in sys.argv:
         errs = check(sets_parts)
         if errs:
@@ -182,8 +197,9 @@ def main():
     sets_html = (read(os.path.join(SRC_SETS, '00-head.html')) + '<script>\n' + sets_script + read(os.path.join(SRC_SETS, '99-tail.html')))
     core_js = ('/* kits/interiors/dist/interiors-core.js: GENERATED by build.py from src/10-49. Do not edit;\n'
                '   edit src/ and rebuild. Engine-neutral: no THREE, no DOM. See API.md. */\n' + join(core_parts))
-    html = (''.join(read(os.path.join(SRC, f)) for f in head) + '<script>\n' + script +
-            ''.join(read(os.path.join(SRC, f)) for f in tail))
+    html = (''.join(read(src_path(f)) for f in head) + '<script>\n' + script +
+            ''.join(read(src_path(f)) for f in tail))
+    BSRC.report(vendored=VENDORED.values())   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     # the walk mockup: SELF-CONTAINED (three.js and the catalog inlined, one file to share): the core, the
     # adapter, the views, every set, the real building shells (walk/shells/*.js, from tools/export_shells.py),
@@ -191,12 +207,12 @@ def main():
     shells_dir = os.path.join(HERE, 'walk', 'shells')
     shell_files = sorted(f for f in os.listdir(shells_dir) if f.endswith('.js')) if os.path.isdir(shells_dir) else []
     walk_parts = (core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] +
-                  [('src/' + f, read(os.path.join(SRC, f))) for f in view if f < '70'] +
+                  [('src/' + f, read(src_path(f))) for f in view if f < '70'] +
                   [('sets/' + f, read(os.path.join(SETS_DIR, f))) for f in sorted(os.listdir(SETS_DIR)) if f.endswith('.js')] +
                   [('src-walk/' + f, read(os.path.join(SRC_WALK, f))) for f in sorted(os.listdir(SRC_WALK)) if f.endswith('.js')] +
-                  [('src/' + f, read(os.path.join(SRC, f))) for f in SETS_SHARED])
+                  [('src/' + f, read(src_path(f))) for f in SETS_SHARED])
     walk_libs = ['three.min.js'] + CATALOG_LOADED + ['krator-master-buildings-beast-rider.js']
-    lib_tags = ''.join('<script>/* kits/catalog/%s */\n%s\n</script>\n' % (f, read(os.path.join(CATALOG, f))) for f in walk_libs)
+    lib_tags = ''.join('<script>/* %s */\n%s\n</script>\n' % (kcat.rel(f), read(kcat.path(f))) for f in walk_libs)
     lib_tags += ''.join('<script>/* walk/shells/%s */\n%s\n</script>\n' % (f, read(os.path.join(shells_dir, f))) for f in shell_files)
     walk_script = join(walk_parts)
     walk_head = read(os.path.join(SRC_WALK, '00-head.html')).replace('<!--CATALOG-->', lib_tags)
@@ -228,7 +244,7 @@ def main():
     for f in shell_files:
         manifest['walk/shells/' + f] = hashlib.sha1(read(os.path.join(shells_dir, f)).encode()).hexdigest()[:12]
     for f in head + tail:
-        manifest['src/' + f] = hashlib.sha1(read(os.path.join(SRC, f)).encode()).hexdigest()[:12]
+        manifest['src/' + f] = hashlib.sha1(read(src_path(f)).encode()).hexdigest()[:12]
     manifest['dist/interiors.html'] = hashlib.sha1(html.encode()).hexdigest()[:12]
     manifest['dist/interiors-core.js'] = hashlib.sha1(core_js.encode()).hexdigest()[:12]
     with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8') as fh:

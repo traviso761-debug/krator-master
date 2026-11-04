@@ -83,6 +83,27 @@ function PLANT(o){
 }
 function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:'')+(A.use?' · use: '+A.use:''); }
 
+/* ---------- 13b-iv. OPENINGS ON core/door: real doors, real glass (the owner, 2026-11-03) -------------------
+   "Remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency", doors
+   that open "with a keypress nearby or by an NPC", and "real glass". The records and rules are core/door's (KDOOR, KGLASS;
+   core/door/README.md); this is the engine's drawing of them, so every builder on the frame draws an opening one way:
+     F.door      a working door: its leaf (or two) in the 'leaf' bucket, hung from the hinge, and a KDOOR record with a
+                 stable id, <asset key>.<how many of that key were placed before it>.d<n> ('mid_washed_house.3.d0'); 76-doors.js
+                 locks the ones with no room behind (no interior plan: a solid body) and swings the rest
+     F.window    a pane of glass (81-glow.js: KGLASS 'clear' by day, 'lit' on the evening schedule) over the room card
+                 (ROOMC: the room you would see, not a black plate)
+     F.card(...)      F.box's arguments without the colour: the room card alone (an unglazed vent or hatch on a solid face)
+     F.paneBox(...)   F.box's arguments without the colour: a dark glazing panel made a card with glass in front of it
+                      (o.kind 'clear' | 'smoked' | 'frosted' | 'stained' {color}; o.out: the local outward normal [x,z],
+                      else the face away from the footprint's centre)
+     F.pane(lx,ly,lz, nlx,nlz, w,h, o)   glass alone over a card a builder drew itself (F.window's placement)
+     F.doorway(...)   F.box's arguments without the colour: a doorway the builder drew as a dark panel, made a LOCKED leaf
+                      (a KDOOR record, never opened: the body behind it is solid); o.col the leaf's colour, o.fam its family
+                      ('plank'; 'metal'), o.out as paneBox
+   A void that is not an opening stays dark: a smoke hole, a flue, a well, a trough's water, a furnace mouth (KNOWN_ISSUES.md).
+   YOPEN counts them for the probe (window._openings). Under INTERIOR_SINK (an interior built lazily) nothing registers. */
+/* ROOMC, YOPEN and the yopen* helpers are 45-kit.js's (the city wall's towers and the Vault, 50-52, draw openings before this) */
+
 function assetFrame(x,z,ry,opt){
   opt=opt||{};
   var F={ x:x, z:z, ry:ry||0, y:opt.y!=null?opt.y:terrainH(x,z), seed:opt.seed||1, variant:opt.variant||0, wealth:opt.wealth==null?0.5:opt.wealth, name:opt.name||'' };
@@ -131,8 +152,8 @@ function assetFrame(x,z,ry,opt){
   F.lamp=function(lx,ly,lz, amp,rad){ var q=F.p(lx,lz); nlLampAdd(q[0],F.y+ly,q[1], amp,rad, false); };
   /* a window: dark reveal + a pane that lights on the evening schedule. nlx,nlz = the LOCAL outward normal of the wall it is in */
   F.window=function(lx,ly,lz, nlx,nlz, w,h, opt){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]); opt=opt||{};
-    if(!opt.noReveal) BOX(q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, VOIDC[0], 'dark');
-    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool); };
+    if(!opt.noReveal){ BOX(q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, ROOMC_GLASS, 'dark'); YOPEN.cards++; }   /* the room card behind the glass */
+    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool); YOPEN.panes++; };   /* its glass: 81-glow.js */
   /* a disc lying in a wall: oculus, medallion, round-window frame. nlx,nlz = LOCAL outward normal; it stands OUT from (lx,lz) by `thick`. */
   F.disc=function(lx,ly,lz, nlx,nlz, r0, thick, col, fam){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), y=F.y+ly, t=thick||0.3;
     push('cyl', fam||'plaster', [q[0],y,q[1], r0,t,r0, beamQuat(q[0],y,q[1], q[0]+n[0],y,q[1]+n[1]), col]); };
@@ -140,7 +161,7 @@ function assetFrame(x,z,ry,opt){
   F.roundWindow=function(lx,ly,lz, nlx,nlz, r0, colFrame, spokes){
     var q=F.p(lx,lz), n=F.dir(nlx,nlz), y=F.y+ly, ns=spokes==null?8:spokes, cf=colFrame!=null?colFrame:WHITEC[0];
     F.disc(lx,ly,lz, nlx,nlz, r0+0.34, 0.42, cf, 'relief');
-    F.disc(lx,ly,lz, nlx,nlz, r0, 0.26, VOIDC[0], 'dark');
+    F.disc(lx,ly,lz, nlx,nlz, r0, 0.26, ROOMC_GLASS, 'dark'); if(yopenLive()){ YOPEN.cards++; YOPEN.panes++; }   /* the room card, and the glass over it (81-glow.js) */
     WINPANE(q[0]+n[0]*0.18, y, q[1]+n[1]*0.18, n[0],n[1], r0*1.34, r0*1.34, false);
     for(var k=0;k<ns;k++){ var th=Math.PI*k/ns, ux=Math.cos(th)*r0, uy=Math.sin(th)*r0;
       BEAM(q[0]-n[1]*ux, y-uy, q[1]+n[0]*ux, q[0]+n[1]*ux, y+uy, q[1]-n[0]*ux, 0.10, 0.22, cf, 'relief'); } };
@@ -166,9 +187,38 @@ function assetFrame(x,z,ry,opt){
       CONE(q[0], y+h*0.10, q[1], R, h*0.62, 0, c, 'leafy');
       CONE(q[0], y+h*0.40, q[1], R*0.78, h*0.60, 0, shade(c,0.06), 'leafy'); } };
   /* a door: dark reveal, plank leaf, optional parabolic head; registers the door point for the future life layer */
+  /* the leaf is an instance of the 'leaf' bucket hung from its -x jamb (45-kit.js SHAPES.leaf), drawn shut where the plank box was,
+     with its record in core/door: locked (the bodies are solid; 98-start.js unlocks a door that opens onto a room the interiors
+     planned, ?interiors=1) and posed by its handle (_leaf: the bucket and index) as it swings. The reveal is the room's colour */
   F.door=function(lx,lz, nlx,nlz, w,h, col, ly){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0);   /* ly: sill height, for doors up on a plinth */
-    BOX(q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); BOX(q[0]+n[0]*0.04, y0, q[1]+n[1]*0.04, w, h, 0.10, a, col!=null?col:PLANKC[3], 'plank');
-    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); };
+    var ux=Math.cos(a), uz=-Math.sin(a), hx=q[0]+n[0]*0.04-ux*w/2, hzz=q[1]+n[1]*0.04-uz*w/2;
+    BOX(q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, ROOMC, 'dark');
+    var k=kitIndex('leaf','plank'); push('leaf','plank',[hx, y0, hzz, w, h, 0.10, a, col!=null?col:PLANKC[3]]);
+    var D=yopenDoor({ id:yopenId(F), at:[q[0],y0,q[1]], hinge:[hx,y0,hzz], yaw:a, w:w, h:h, t:0.10, p0:[q[0]+n[0]*0.04, y0+h/2, q[1]+n[1]*0.04],
+      locked:true, key:F.asset?F.asset.key:null, _leaf:k });
+    if(D) YOPEN.leaves++;
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(null); return D; };
+  /* the room card alone, F.box's arguments without colour or family (an unglazed vent, a hatch, a portal on a solid face) */
+  F.card=function(lx,ly,lz,w,h,d,r){ F.box(lx,ly,lz,w,h,d,r,ROOMC,'dark'); if(yopenLive()) YOPEN.cards++; };
+  /* a dark glazing panel: the card, with glass standing proud of its outward face */
+  F.paneBox=function(lx,ly,lz,w,h,d,r,o){ o=o||{}; F.box(lx,ly,lz,w,h,d,r,ROOMC_GLASS,'dark'); if(yopenLive()) YOPEN.cards++;
+    var f=yopenFace(lx,lz,w,d,r,o), off=f.thick/2+0.02, q=F.p(lx+f.n[0]*off, lz+f.n[1]*off), n=F.dir(f.n[0],f.n[1]);
+    yopenGlass(q[0], F.y+ly+h/2, q[1], n[0],n[1], f.wide, h, o); };
+  /* glass alone, centred at (lx,ly,lz) on a face whose local outward normal is (nlx,nlz) */
+  F.pane=function(lx,ly,lz, nlx,nlz, w,h, o){ var q=F.p(lx,lz), n=F.dir(nlx,nlz); yopenGlass(q[0], F.y+ly, q[1], n[0],n[1], w,h, o); };
+  /* a doorway the builder drew as a dark panel: a locked leaf where the panel was (the body behind it is solid) */
+  F.doorway=function(lx,ly,lz,w,h,d,r,o){ o=o||{}; F.box(lx,ly,lz,w,h,d,r,o.col!=null?o.col:PLANKC[3],o.fam||'plank');
+    var f=yopenFace(lx,lz,w,d,r,o), q=F.p(lx+f.n[0]*f.thick/2, lz+f.n[1]*f.thick/2), n=F.dir(f.n[0],f.n[1]), a=Math.atan2(n[0],n[1]);
+    var D=yopenDoor({ id:yopenId(F), at:[q[0],F.y+ly,q[1]], hinge:[q[0]-Math.cos(a)*f.wide/2, F.y+ly, q[1]+Math.sin(a)*f.wide/2], yaw:a, w:f.wide, h:h, t:f.thick,
+      locked:true, key:F.asset?F.asset.key:null, style:'panel' });
+    if(D) YOPEN.leaves++; return D; };
+  /* The Yuni kit's frame calls (kits/yuni; MODULARITY-PLAN.md step 4b, 2026-11-03): Locus draws the kit's buildings on this
+     frame, which keeps no fixtures registry or interiors planner (Yuni's 51-fixtures.js, 64-interiors.js), so an opening
+     registers its door point as F.door does (F.doors, F.doorIds kept in step) and F.mass, a volume for the interiors
+     planner, draws nothing. Their working doors come with core/door. */
+  F.opening=function(lx,lz, nlx,nlz, w,h, ly, o){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), y0=F.y+(ly||0);
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(null); };
+  F.mass=function(o){};
   /* toron: the projecting timber posts of Sahelian walls — rows of them on a wall plane */
   F.toron=function(lx,ly,lz, nlx,nlz, len, r0){ var q=F.p(lx,lz), n=F.dir(nlx,nlz); ROD(q[0]-n[0]*0.3,F.y+ly,q[1]-n[1]*0.3, q[0]+n[0]*(len||1.1),F.y+ly-0.05,q[1]+n[1]*(len||1.1), r0||0.09, TORONC[0], 'timber'); };
   return F;

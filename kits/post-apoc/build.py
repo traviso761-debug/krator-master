@@ -52,9 +52,10 @@ except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 CORE_FURNISH = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # shared: the furniture placement pass (core/furnish/README.md)
-CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags', 'walk')]   # shared: KRAND, the tag registry the furniture is registered in (core/tags/README.md), and KWALK (the interiors' floors, walls and stairs)
+CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags', 'walk', 'door')]   # shared: KRAND, the tag registry the furniture is registered in (core/tags/README.md), KWALK (the interiors' floors, walls and stairs), and core/door (KDOOR, KGLASS, KDOORHOST: src/35-pa-open.js)
 OUT = os.path.join(DIST, 'post-apoc.html')
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and
 # the interiors core with this kit's interior set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom).
 # Inserted at build time after the registry (36-def, 37-sockets); never written to src/. 91f-furnish.js is the glue
@@ -120,6 +121,7 @@ def main():
     if errs:
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
+    BSRC.report(vendored=[os.path.join(ANCIENTS, f) for f in SHELL])   # --list-sources: every file read so far is what the page is made of (and the shell's upstream --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
     json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8'), indent=1, sort_keys=True)

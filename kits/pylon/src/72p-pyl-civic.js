@@ -18,14 +18,14 @@ function buildPylSalvagersGuild(G,o){reseed(9201+(o.v|0));const W=26,D=14,H=9.5,
  vnReg('Salvagers\' Guild — the hall',0,Z,14,H+1,{role:'guild'});vnReg('Salvagers\' Guild — tower',-W/2-1.5,Z-1,3.6,17);vnReg('Salvagers\' Guild — the vault of finds',W/2+3.2,Z+1,4,5);
  vB('vStone',0,0,Z,W+1,.35,D+1,0,st);vB('vStone',0,0,zf+2.2,W-4,.2,3.6,0,st);vB('vStone',0,0,zf+1,W-2,.35,1.6,0,st);
  vnBody('vPlaster',0,.35,Z,W,H,D,0,cr,{t:.4});
- for(let k=0;k<N;k++){const x=-W/2+(k+.5)*W/N;pynFrame('tomb',x,.35,zf,0,2.4,4.6,{rim:.22,n:2,cs:[sf,or],fill:k===3?'W':'G',fc:k===3?vC(PYPAL.walnut[0]):null,out:.05});if(k%2===1)vnLamp(x+1.85,4.2,zf+.02,0);}
+ for(let k=0;k<N;k++){const x=-W/2+(k+.5)*W/N;if(k===3)pynDoorway('tomb',x,.35,zf,0,2.4,4.6,{rim:.22,n:2,cs:[sf,or],fc:vC(PYPAL.walnut[0]),out:.05});else pynFrame('tomb',x,.35,zf,0,2.4,4.6,{rim:.22,n:2,cs:[sf,or],fill:'G',out:.05});   /* the middle bay is the hall's door (it was a blind timber fill) */if(k%2===1)vnLamp(x+1.85,4.2,zf+.02,0);}
  pynBand(0,5.6,Z,W,D,.3,.15,0,or);
  pynPortCluster(0,6.2,zf,0,W-1.5,H-6.6,11,1.25,sf,'G');
  vB('vPlaster',0,H+.35,Z,W+.3,.4,D+.3,0,or);vB('vPlaster',0,H+.75,Z,W,.6,D,0,cr);
  // the tower: rounded merlons and slot-window strips
  const tx=-W/2-1.5,tz=Z-1;vB('vPlaster',tx,.35,tz,5,16,5.4,0,wh);
  for(let k=0;k<3;k++)pynVault(tx-1.65+k*1.65,16.35,tz,1.4,5.4,.9,0,'pyHalf',wh);
- for(const dx of[-1.1,0,1.1])for(let j=0;j<11;j++)vB('vWinGlass',tx+dx,2.2+j*1.2,tz+2.72,.34,.7,.06,0,null);
+ for(const dx of[-1.1,0,1.1])for(let j=0;j<11;j++)vnPlate(tx+dx,2.2+j*1.2,tz+2.72,.34,.7,.06,0);
  vB('vPlaster',tx,.35,tz+2.75,5.2,.3,.1,0,or);
  // the vault of finds: a concrete block with a round vault door
  const vx=W/2+3.2;vB('pyConc',vx,0,Z+1,6,4.6,6.4,0,conc);vB('vPlaster',vx,4.6,Z+1,6.2,.2,6.6,0,or);
@@ -53,12 +53,12 @@ function buildPylWatch(G,o){reseed(9221+(o.v|0));const R=3,H=15,GX=6,GW=6,BY=7.2
  vnReg('The watch — gate fort',0,0,10,H+1.5,{role:'watch'});
  for(const s of[-1,1]){const x=s*GX;vPst('vTankW',x,0,0,R,H,wh);vPst('vTankW',x,H,0,R+.25,.5,wh);
   for(let k=0;k<10;k++){const a=k*TAU/10;vB('vPlaster',x+Math.sin(a)*(R+.05),H+.5,Math.cos(a)*(R+.05),.9,.9,.5,a,wh);}
-  for(const a of[-.32,.32])for(let j=0;j<14;j++){const p=[x+Math.sin(a)*(R+.02),Math.cos(a)*(R+.02)];vB('vWinGlass',p[0],1.6+j*.9,p[1],.26,.55,.08,a,null);}
+  for(const a of[-.32,.32])for(let j=0;j<14;j++){const p=[x+Math.sin(a)*(R+.02),Math.cos(a)*(R+.02)];vnPlate(p[0],1.6+j*.9,p[1],.26,.55,.08,a);}
   // the saffron leg: a slab clasping the tower's gate side, rising to the bridge
   vB('vPlaster',s*(GW/2+.35),0,0,.7,BY,R*1.6,0,sf);}
  // the bridge block over the gate, its arch, the gate's leaves
  vB('vPlaster',0,BY,0,GW+.2,BH,R*1.4,0,wh);vB('vPlaster',0,BY+BH,0,GW+.6,.3,R*1.6,0,or);
- for(let k=0;k<5;k++)vB('vWinGlass',-2.4+k*1.2,BY+1.4,R*.7+.02,.5,1.4,.06,0,null);
+ for(let k=0;k<5;k++)vnPlate(-2.4+k*1.2,BY+1.4,R*.7+.02,.5,1.4,.06,0);
  for(const zz of[R*.7,-R*.7])pynArc(0,BY-GW/2,zz,zz>0?0:Math.PI,GW/2-.2,.5,.4,sf,16);
  for(const s of[-1,1])vB('vWood',s*1.5,0,-R*.5,2.9,BY-.6,.15,0,vC(0x5a3a24));
  for(const s of[-1,1])vnLamp(s*(GW/2-.1),4.2,R*.8,0);vnBannerPole(0,BY+BH+.3,0,0,4,vC(vPick(VPAL.orange)));}
@@ -70,7 +70,7 @@ function buildPylCultShrine(G,o){reseed(9231+(o.v|0));const Z=-1.5;
  vnReg('Shrine of the Ancients',0,Z,6.5,10,{type:['religious'],role:'priest'});
  vB('vStone',0,0,Z,12.4,.4,7.6,0,st);vnStairs(0,0,Z+4.4,0,3.2,.4,2,'vStone',st);
  for(const s of[-1,1]){kput('vBatterP',[s*3.7,.4,Z],null,[3.6,9,4.6],wh);vB('vPlaster',s*3.7,7.2,Z,3.3,.35,4.2,0,or);
-  const lean=Math.atan(.32/9),hz=2.3-.32*3.5/9;vBq('pyPaneB',s*3.7,3.9,Z+hz+.03,.4,5.8,.08,vQ(0,-lean,0),null);vB('vPlaster',s*3.7,.4,Z+2.1,3.2,.35,.2,0,or);}
+  const lean=Math.atan(.32/9),hz=2.3-.32*3.5/9;pynPane('pyPaneB',[s*3.7,3.9,Z+hz+.03],vQ(0,-lean,0),[.4,5.8,.08]);vB('vPlaster',s*3.7,.4,Z+2.1,3.2,.35,.2,0,or);}
  vB('vPlaster',0,.4,Z-.4,4,6.2,3.2,0,wh);
  pynDoorway('point',0,.4,Z+1.2,0,1.8,4.6,{rim:.2,n:2,cs:[sf,or],out:.05});
  const pf=loc(0,Z+1.0,0,0,0);kput('vGablePl',[pf[0],6.6,pf[1]],vQ(Math.PI/2,0,0),[.6,1.8,7.6],or);

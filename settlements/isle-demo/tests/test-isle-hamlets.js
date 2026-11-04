@@ -25,7 +25,8 @@ const SPECS = [
   { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993] },
   { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] }];
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
-const villages = SPECS.map(sp => ({ spec: sp, village: KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus,
+const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand' }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' } };
+const villages = SPECS.map(sp => ({ spec: sp, resource: STANDIN[sp.id], village: KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus,
   site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] }, resource: { x: sp.near[0] - 200, z: sp.near[1] }, dims, ground: { ok: () => true } }) }));
 villages.forEach(V => ok('the ' + V.spec.name.toLowerCase() + ' laid out', !V.village.error && V.village.records.length > 10, V.village.error || V.village.census.pop + ' people, ' + V.village.records.length + ' buildings'));
 const t0 = Date.now(), H = ISLE.simHamlets(villages);
@@ -39,10 +40,22 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const B = cp(b); B.villages['hamlet-salt'].goods.salt.made = a.villages['hamlet-salt'].goods.salt.made; caught('a salt village that made no salt', ISLE.hamletChecks(a, B), /makes its goods/); }
 { const B = cp(b); B.villages['hamlet-mine'].landed.ore = (B.villages['hamlet-mine'].landed.ore || 0) - 20; caught('20 ore lost on the road', ISLE.hamletChecks(a, B), /landed in its town/); }
 { const B = cp(b); B.villages['hamlet-ranch'].meals.none += 5; caught('five meals without food at the ranch', ISLE.hamletChecks(a, B), /fed by its town/); }
+{ const B = cp(b); B.ledger.towns['hamlet-mine'].ore.total += 30; caught('30 ore from nowhere in the mine\'s books', ISLE.hamletChecks(a, B), /the ledger/); }
+{ const B = cp(b); B.villages['hamlet-mine'].site.id = 'somewhere-else'; caught('a mine on another record', ISLE.hamletChecks(a, B), /its record from the map/); }
+{ const B = cp(b); B.villages['hamlet-salt'].site.taken += 40; caught('a pan that gave more than was made', ISLE.hamletChecks(a, B), /its record from the map/); }
+{ const B = cp(b); B.ledger.towns.kautoa.salt.total += 90000; caught('a town heaped with salt past the ceiling', ISLE.hamletChecks(a, B), /ceiling/); }
 { const B = cp(b); B.villages['hamlet-lumber'].workers = 3; caught('a lumber village with three workers', ISLE.hamletChecks(a, B), /staffed/); }
 /* the towns' goods from the villages put to use */
 const KA = SIM.econ('kautoa'), VA = SIM.econ('valapo');
 ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber; Valapo smelts the mine\'s ore with the charcoal the lakatoi brings',
   (KA.used.hides || 0) > 0 && (KA.used.timber || 0) > 0 && (VA.used.ore || 0) > 0 && (VA.imported.charcoal || 0) > 0 && (VA.made.iron || 0) > 0,
   'Kautoa hides used ' + (KA.used.hides || 0) + ', timber used ' + (KA.used.timber || 0) + '; Valapo ore used ' + (VA.used.ore || 0) + ', charcoal landed ' + (VA.imported.charcoal || 0) + ', iron made ' + (VA.made.iron || 0));
+{ const IR = SIM.econ('kautoa'); ok('the chain runs to its end: Valapo smelts, the lakatoi carries the iron, Kautoa\'s smithies work it into tools', (VA.made.iron || 0) > 0 && (IR.imported.iron || 0) > 0 && (IR.used.iron || 0) > 0,
+    'iron made ' + (VA.made.iron || 0) + ', landed in Kautoa ' + (IR.imported.iron || 0) + ', worked ' + (IR.used.iron || 0) + ', tools made there ' + (IR.made.tools || 0)); }
+/* depletion: the mine's node all but emptied: it stops, says why, Valapo's smithies run out and say what they miss */
+{ const EM = SIM.econ('hamlet-mine'), St = EM.resSites['hamlet-mine:node'], m0 = EM.made.ore || 0; St.amount = 40; ISLE.simRun(4 * 1440);
+  const gone = (EM.made.ore || 0) - m0, R = SIM.sitesReport('hamlet-mine')[0], BL = EM.blocked['depleted: hamlet-mine:node'] || 0;
+  ok('a mine emptied stops, and says why', gone === 40 && R.amount === 0 && BL > 0, gone + ' more ore, ' + R.amount + ' left, blocked ' + BL + ' times');
+  const why = Object.values(SIM.blockedReport('valapo')).filter(w => w.reason === 'missing' && w.goods.indexOf('ore') >= 0).length, v0 = SIM.stockOf('ore', 'valapo');
+  console.log('--- after the mine: Valapo holds ' + v0 + ' ore, ' + why + ' smithies say they miss it'); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');

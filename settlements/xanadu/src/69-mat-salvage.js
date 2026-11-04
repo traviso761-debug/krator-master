@@ -34,6 +34,16 @@ kdef('patchSheet',new THREE.PlaneGeometry(1,1),MAT.corrugate);
 kdef('patchPlate',new THREE.PlaneGeometry(1,1),MAT.rust);
 kdef('patchBoard',new THREE.PlaneGeometry(1,1),MAT.timber);
 kdef('patchTarp',new THREE.PlaneGeometry(1,1),MAT.tarp);
+// AN OPENING A LATER PEOPLE FILLED (the owner, 2026-10-19: "where a plate glass window existed in the original, it will be
+// replaced with wood/metal sheets, usually but not always with a window cut out"): centre p, the quaternion q turning +z to
+// its outward face, w x h. Boards, corrugated sheet or rusted plate (by a hash of where it is: no rng); one in six is
+// boarded whole, the rest keep a window about 0.4 of the opening a little above its middle, a dead pane in some
+function patchOpening(p,q,w,h,seed){const hs=h3(p[0]*.37+(seed||0),p[1]*.53,p[2]*.29),it=['patchBoard','patchSheet','patchPlate'][Math.floor(hs*7)%3];
+ const pc=(lx,ly,sw,sh)=>{if(sw<.05||sh<.05)return;const v=new THREE.Vector3(lx,ly,.03).applyQuaternion(q);kput(it,[p[0]+v.x,p[1]+v.y,p[2]+v.z],q,[sw,sh,1],null);};
+ if(hs<.17){pc(0,0,w,h);return;}
+ const ww=Math.min(w*.42,1.4),wh=Math.min(h*.42,1.4),wy=Math.min(h*.08,h/2-wh/2-.05),sw=(w-ww)/2;
+ pc(0,(wy+wh/2+h/2)/2,w,h/2-wy-wh/2);pc(0,(-h/2+wy-wh/2)/2,w,wy-wh/2+h/2);pc(-(ww/2+sw/2),wy,sw,wh);pc(ww/2+sw/2,wy,sw,wh);
+ if(hs>.78){const v=new THREE.Vector3(0,wy,-.02).applyQuaternion(q);kput('paneD',[p[0]+v.x,p[1]+v.y,p[2]+v.z],q,[ww,wh,1],null);}}
 kdef('shantyBox',new THREE.BoxGeometry(1,1,1),MAT.corrugate);
 kdef('shantyRoof',new THREE.BoxGeometry(1,.09,1),MAT.tarp);
 kdef('spipe',new THREE.CylinderGeometry(1,1,1,7),MAT.rust);

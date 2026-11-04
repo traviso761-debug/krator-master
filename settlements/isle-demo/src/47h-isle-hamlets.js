@@ -32,7 +32,7 @@ ISLE.simHamlets = function (villages) {
   villages.forEach(function (V) {
     var sp = V.spec, v = V.village;
     if (!v || v.error || !v.records) { out.errors.push(sp.id + ': ' + (v && v.error || 'no village')); return; }
-    try { out.villages.push(ISLE.simHamlet(sp, v)); } catch (e) { out.errors.push(sp.id + ': ' + (e && e.stack ? e.stack : e)); }
+    try { out.villages.push(ISLE.simHamlet(sp, v, V.resource)); } catch (e) { out.errors.push(sp.id + ': ' + (e && e.stack ? e.stack : e)); }
   });
   out.villages.forEach(function (X) { out.routes.push(X.out, X['in']); });
   return out;
@@ -42,12 +42,14 @@ ISLE.simHamletTowns = function () {
   var S = ISLE.SIM, HT = ISLE.TUNE.sim.hamlets;
   S.order.forEach(function (s) {
     var E = SIM.econ(s), TW = HT.town[s] || {}, X = S.towns[s];
-    HT.goods.forEach(function (g) { if (!E.goods[g]) E.goods[g] = { id: g, minLoad: HT.minLoad[g] }; });
+    HT.goods.forEach(function (g) { if (!E.goods[g]) E.goods[g] = { id: g, minLoad: HT.minLoad[g], unit: 'lot' }; });
     Object.keys(TW.inputs || {}).forEach(function (g) { E.inputs[g] = TW.inputs[g]; });
     Object.keys(TW.recipes || {}).forEach(function (kind) { var R0 = TW.recipes[kind];
       X.places.places.forEach(function (P) { if (P.kind !== kind || E.recipes[P.id] || !P.activities.WORK) return;
-        SIM.recipe(P.id, { out: R0.out.slice(), rate: R0.rate, cap: R0.cap });
-        R0.out.forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });
+        SIM.recipe(P.id, R0);
+        Object.keys(R0.batch.out).forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });
+    Object.keys(TW.batches || {}).forEach(function (kind) { var R1 = TW.batches[kind], n = 0;
+      X.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (n++ % R1.every)) return; SIM.recipe(P.id, { batch: R1.batch, cap: R1.cap }); }); });
     var W = E.warehouses[0]; if (W) Object.keys(TW.startLots || {}).forEach(function (g) { W.stock[g] = (W.stock[g] || 0) + TW.startLots[g]; });
   });
   /* the lakatoi carries the charcoal to Valapo's smithies and their iron back; Valapo expects its charcoal before any has come */
@@ -65,7 +67,7 @@ ISLE.simHamletUses = function (minute) {
     Object.keys(us).forEach(function (g) { var k = s + ':' + g, c = (U.carry[k] || 0) + us[g] * X.pop.actors / 24, n = Math.floor(c); U.carry[k] = c - n; if (n <= 0) return;
       var got = SIM.supply(g, n, false, s); U.drawn[k] = (U.drawn[k] || 0) + got; if (got < n) U.short[k] = (U.short[k] || 0) + n - got; }); });
 };
-ISLE.simHamlet = function (sp, v) {
+ISLE.simHamlet = function (sp, v, res) {
   var S = ISLE.SIM, T = ISLE.TUNE.sim, HT = T.hamlets, I = T.items, id = sp.id, TSp = T.towns[sp.parent], ps = TSp.id, Xp = S.towns[ps];
   var row = KHAMLET.row('islander_east'), C = v.census, h = function (x, z) { return typeof WORLD !== 'undefined' && WORLD.H ? WORLD.H(x, z) : 0; };
   SIM.settlement({ id: id, faction: TSp.faction, name: sp.name, parent: ps });
@@ -93,16 +95,23 @@ ISLE.simHamlet = function (sp, v) {
   var mine = SIM.all('actor').filter(function (a) { return SIM.settlementOf(a) === id && !a.driven; });
   mine.forEach(function (a) { a.cls = 'poor'; a.wealth = 0; });
   /* its economy: the parent's goods, its works' recipes, the governor (49) */
-  var EP = SIM.econ(ps), goods = {}; Object.keys(EP.goods).forEach(function (g) { goods[g] = EP.goods[g].minLoad != null ? { minLoad: EP.goods[g].minLoad } : {}; });
+  var EP = SIM.econ(ps), goods = {}; Object.keys(EP.goods).forEach(function (g) { goods[g] = EP.goods[g].minLoad != null ? { minLoad: EP.goods[g].minLoad } : {}; goods[g].unit = EP.goods[g].unit; });
   var foods = Xp.econ.foods.slice(), makes = {};
   var rules = ISLE.simRules(id); if (rules.govern) rules.govern = Object.assign({}, rules.govern, { exported: false, pool: [ps] });   /* it works to its town's need, its town's stock its own */
   var E = SIM.economy(Object.assign({ goods: goods, inputs: {}, every: T.economy.every, window: T.economy.window, imports: T.economy.imports, cart: T.economy.cart,
     meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, rules), { settlement: id });
+  /* the resource it works, by the map record's own id: its grade the yield (nothing runs out: the owner's rule) */
+  var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) Pr.out.forEach(function (g) { outs[g] = 1; }); });
+  var siteId = res && res.id ? res.id : null;
+  var SK = (HT.sites || {})[res && res.kind] || {}, amt = SK.amount != null && typeof SK.amount === 'object' ? SK.amount[res.grade || 'medium'] : SK.amount;
+  if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: amt, regen: SK.regen,
+    yield: res.grade != null && HT.gradeYield[res.grade] != null ? HT.gradeYield[res.grade] : 1, capacity: res.cap == null ? null : res.cap });
   places.forEach(function (P) {
     if (P.kind === 'warehouse') { SIM.store(P.id, { kind: 'warehouse' }); return; }
     var Pr = HT.producers[P.kind]; if (!Pr || !P.activities.WORK) return;
-    SIM.recipe(P.id, { out: Pr.out.slice(), rate: Pr.rate, cap: Pr.cap }); Pr.out.forEach(function (g) { makes[g] = (makes[g] || 0) + 1; });
+    SIM.recipe(P.id, Object.assign({ out: Pr.out.slice(), rate: Pr.rate, cap: Pr.cap }, siteId ? { site: siteId } : {})); Pr.out.forEach(function (g) { makes[g] = (makes[g] || 0) + 1; });
   });
+  var pol = {}; Object.keys(makes).forEach(function (g) { if (HT.stockpile && HT.stockpile[g]) pol[g] = HT.stockpile[g]; }); SIM.stockpile(id, pol);
   var W = E.warehouses; if (!W.length) throw new Error('no warehouse');
   var people = mine.length, need = people * I.meals * I.perMeal * HT.startDays;
   foods.forEach(function (f, j) { var n = Math.round(need / foods.length); W[j % W.length].stock[f] = (W[j % W.length].stock[f] || 0) + n; });
@@ -131,22 +140,23 @@ ISLE.simHamlet = function (sp, v) {
     keep: R.keep, want: R.want, goods: gIn, expect: eIn });
   SIM.level(id, 'abstract');
   return { id: id, name: sp.name, focus: sp.focus, parent: ps, people: people, workers: mine.filter(function (a) { return a.work; }).length, posts: posts, beds: beds,
-    census: { pop: C.pop, workers: C.workers }, kinds: kinds, makes: goodsOut, foods: foods, minutes: mins, km: Math.round(bd / 100) / 10, out: Ro.id, 'in': Ri.id, landing: Wp.id, warehouse: W0.id, populate: pop };
+    census: { pop: C.pop, workers: C.workers }, kinds: kinds, makes: goodsOut, foods: foods, minutes: mins, km: Math.round(bd / 100) / 10, out: Ro.id, 'in': Ri.id, landing: Wp.id, warehouse: W0.id, populate: pop, resource: siteId };
 };
 /* a snapshot of the villages' books */
 ISLE.simHamletBooks = function () {
-  var S = ISLE.SIM, H = S && S.hamlets, out = { minute: SIM.minute(), villages: {}, towns: {} }; if (!H) return out;
+  var S = ISLE.SIM, H = S && S.hamlets, out = { minute: SIM.minute(), villages: {}, towns: {}, ledger: SIM.ledgerSnap() }; if (!H) return out;
   var I = SIM.ITEMS;
   H.villages.forEach(function (X) {
     var E = SIM.econ(X.id), B = (I.statsBy || {})[X.id] || {}, M = Object.assign({ meal: 0, single: 0, none: 0, mess: 0, out: 0 }, B.meals || {});
     var R1 = SIM.tradeReport(X.out), R2 = SIM.tradeReport(X['in']), stock = function (g) { var n = 0; E.warehouses.concat(E.sites).forEach(function (P) { n += P.stock[g] || 0; }); return n; };
     var rows = {}; Object.keys(E.goods).forEach(function (g) { rows[g] = { made: E.made[g] || 0, used: E.used[g] || 0, imported: E.imported[g] || 0, exported: E.exported[g] || 0,
       short: E.short[g] || 0, stock: stock(g) + SIM.all('place').reduce(function (n, P) { return n + (P.settlement === X.id && P.store ? P.store[g] || 0 : 0); }, 0) }; });
-    out.villages[X.id] = { parent: X.parent, people: X.people, workers: X.workers, posts: X.posts, makes: X.makes, foods: X.foods, meals: M, goods: rows,
+    var Si = SIM.sitesReport(X.id)[0] || null;
+    out.villages[X.id] = { resource: X.resource, site: Si, policy: JSON.parse(JSON.stringify(E.policy || {})), parent: X.parent, people: X.people, workers: X.workers, posts: X.posts, makes: X.makes, foods: X.foods, meals: M, goods: rows,
       shipped: (R1.shipped[X.id + '>' + X.parent]) || {}, landed: (R1.landed[X.id + '>' + X.parent]) || {}, fed: (R2.landed[X.parent + '>' + X.id]) || {},
       atSea: R1.carriers.concat(R2.carriers).reduce(function (n, C) { C.cargo.forEach(function (c) { n[c.good] = (n[c.good] || 0) + c.n; }); return n; }, {}), level: SIM.levelOf(X.id) };
   });
-  S.order.forEach(function (s) { var E = SIM.econ(s); out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used) }; });
+  S.order.forEach(function (s) { var E = SIM.econ(s); (out.blocked || (out.blocked = {}))[s] = SIM.blockedReport(s); out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used) }; });
   return out;
 };
 /* the checks over two snapshots (a at the start, b at the end of a run) */
@@ -168,5 +178,16 @@ ISLE.hamletChecks = function (a, b) {
     return { id: id, meals: M.meal - M0.meal + M.single - M0.single, none: M.none - M0.none, short: short, fed: Object.keys(X.fed).reduce(function (n, g) { return n + X.fed[g]; }, 0) }; });
   ok('every village fed by its town (no meal without food, none of its food short)', fed.every(function (f) { return f.meals > 0 && f.none === 0 && f.short === 0 && f.fed > 0; }),
     fed.map(function (f) { return f.id + ' ' + f.meals + ' meals, ' + f.none + ' without food, ' + f.short + ' short, ' + f.fed + ' servings landed'; }).join('; '));
+  /* Phase 1: each village works the record the map gave it, its grade setting the yield, its take what its books made;
+     nothing past its stockpile ceiling by more than a load already on its way */
+  var sites = ids.map(function (id) { var X = b.villages[id], A = a.villages[id], Si = X.site || {}, A0 = A.site || {}, mk = X.makes.reduce(function (n, g) { return n + X.goods[g].made - A.goods[g].made; }, 0);
+    return { id: id, ok: !!X.resource && Si.id === X.resource, gave: (Si.taken || 0) - (A0.taken || 0), made: mk, grade: Si.grade, yield: Si.yield }; });
+  ok('each village works its record from the map, all its goods from it', sites.every(function (s) { return s.ok && s.gave > 0 && s.gave === s.made; }),
+    sites.map(function (s) { return s.id + ': ' + (s.ok ? '' : 'NOT ITS RECORD ') + s.gave + ' taken, ' + s.made + ' made, grade ' + s.grade + ' x' + s.yield; }).join('; '));
+  var over = []; ids.forEach(function (id) { var X = b.villages[id], T = b.ledger.towns[X.parent] || {}, V = b.ledger.towns[id] || {}, CAP = (ISLE.TUNE.sim.hamlets.road || {}).cap || 0;
+    Object.keys(X.policy).forEach(function (g) { var m = X.policy[g].max, h = ((T[g] || {}).total || 0) + ((V[g] || {}).total || 0) + ((T[g] || {}).inbound || 0); if (m != null && h > m + CAP * 0.5 && (X.goods[g].made - a.villages[id].goods[g].made) > 0 && h > (((a.ledger.towns[X.parent] || {})[g] || {}).total || 0) + 0.2 * m + m) over.push(id + ' ' + g + ' ' + Math.round(h) + ' over ' + m); }); });
+  ok('no village piles its goods past its stockpile ceiling', !over.length, over.length ? over.join('; ') : ids.map(function (id) { return id + ' ' + JSON.stringify(b.villages[id].policy); }).join('; '));
+  var LG = SIM.ledger(a.ledger, b.ledger);
+  ok('the books balance in every town and village, every road and sea leg reconciled (the ledger)', LG.ok, LG.ok ? Object.keys(LG.towns).length + ' settlements, ' + Object.keys(LG.routes).length + ' routes' : LG.problems.slice(0, 3).join('; '));
   return res;
 };

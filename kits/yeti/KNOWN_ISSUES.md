@@ -1,6 +1,7 @@
 # kits/yeti: known issues
 
-- [ ] **The culture is not in core/tags yet** (Y1). `khaayken` is not in `core/tags/52-core-tags-vocab.js`, so
+- [x] (2026-11-03: registered with the shared culture rebuild, kits/yeti/PLAN.md section 11; `tags-vocabulary` passes once the
+  page is rebuilt) **The culture is not in core/tags yet** (Y1). `khaayken` is not in `core/tags/52-core-tags-vocab.js`, so
   `verify.py --assert` fails `tags-vocabulary` on every record (`unknown culture:khaayken`) and passes everything else.
   Registering it changes the vocabulary every build takes, so every page that bundles core/tags must be rebuilt and
   `PORT-BASELINE.json` rewritten, with the items in `TODO.md`, "Ride along with the next all-builds rebuild". **Deferred to Y5**
@@ -50,6 +51,25 @@
 - **`src/10-core.js` on core/rand.** The Scyvoi engine's `10-core.js` writes its own mulberry32 stream, a `Math.sin`
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
-  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file not in build.py's
-  `VENDORED`. The fix belongs upstream in `kits/scyvoi/src/10-core.js` (and the kits vendoring it: Islanders, Eternian,
-  the nomads), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
+  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
+  (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] The balagan's porch door: `verify.py` `walk-reach` now walks with every unlocked door open (it failed with the door shut).
+- [ ] The reach audit with core/walk's defaults leaves 331 of 876 floors unreached (68 big): the winter street's sunken tunnels
+      at -1.2 m, the fort's walk, the cold traps' dropped floors. The kit's own `walk-reach` (a 0.6 m step, its own targets) passes:
+      the difference is the step and the ground rule, not a missing stair.
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 541 reached, 287
+      unreached (46 big) before; 640, 198 (28 big) after, the climbs left out (`reach_dump.js --summary`).** The winter fort's fighting walk gets a flight of solid pycrete blocks
+      along the back wall's inner face (core/engine `svStair`), arriving beside the walk: the walk all round is reached in both
+      seasons (the fort 4/152/12 -> 80/76/6, reached/unreached/big-standable). The domes' sleeping platform (about 1 m over the floor) had one 0.47 m step: two
+      steps of a third of the rise now (`yt_dome` 33/9/1 -> 41/4/0, the travel dome, the family cluster's centre). The raised
+      cache's ladder is climbed now that core/walk/box spaces a steep ladder's rungs 0.4 m apart (0/1/1 -> 1/0/0). No footprint grew.
+- [ ] Left (28 big): the satellite domes' dropped floors (-0.6 m) off the clusters' side passages: the passage reaches the shell,
+      but a low block stands in the satellite's doorway that the kit's own walk-reach steps over (it allows a 0.45 m step-over) and
+      core/walk's reach does not; the isolated tunnel sections on the sheet (-1.2 m, no ramp: in a street they meet the houses);
+      the watch tower, whose doorway is plugged by its slab door (a box, not a core/door leaf) and whose floor, a cylinder, is not
+      registered; the 0.12 m pads under the fort's walk boxes, which read as their own floors (the walk itself is reached).

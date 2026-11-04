@@ -106,6 +106,7 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
  const negs=[];let B=cp(b);B.villages['hamlet-mine'].goods.ore.made=a.villages['hamlet-mine'].goods.ore.made;negs.push(Object.assign({neg:'unmade'},pick(ISLE.hamletChecks(a,B),/makes its goods/)));
  B=cp(b);B.villages['hamlet-lumber'].landed.timber=(B.villages['hamlet-lumber'].landed.timber||0)-15;negs.push(Object.assign({neg:'lost'},pick(ISLE.hamletChecks(a,B),/landed in its town/)));
+ B=cp(b);B.villages['hamlet-mine'].site.id='elsewhere';negs.push(Object.assign({neg:'record'},pick(ISLE.hamletChecks(a,B),/its record from the map/)));
  B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 

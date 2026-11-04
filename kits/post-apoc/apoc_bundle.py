@@ -36,7 +36,7 @@ CORE = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core')
 # the shared folders build.py reads (sockets and cultures; the furniture pass and the tag registry it records into,
 # with KRAND): every digit-named .js in them goes in, in the kit's own filename order; a src/ copy with the same name wins
 CORE_DIRS = [os.path.join(CORE, d) for d in ('sockets', 'furnish', 'rand', 'tags')]
-ENGINE = ['10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '32-cores.js', '34-adds.js', '36-def.js']
+ENGINE = ['10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '32-cores.js', '34-adds.js', '35-pa-open.js', '36-def.js']   # 35: the openings, a guest in the host's core/door
 GLUE = '91f-furnish.js'
 
 
@@ -75,6 +75,8 @@ def core_body():
 SHIM_HEAD = """/* ---- apoc_bundle.py: errors go to the host; TEX, which 20-tex.js assigns as a page global, is the closure's ---- */
 const KPA_HOST={err:null};let TEX={};
 function reportErr(m){if(KPA_HOST.err)KPA_HOST.err('post-apoc: '+m);else console.error('post-apoc: '+m);}
+/* ---- apoc_bundle.py: the openings (35-pa-open.js) come in as a guest (PO_GUEST: KPA_HOST is defined): its doors join the host's
+   KDOOR registry, whose frame tick, E and walk blocks are the host's (Screamers' 8zo-anc-open.js) ---- */
 """
 
 SHIM_SCENE = """/* ---- apoc_bundle.py: the host shim, standing in for 90-scene.js (no renderer, no scene, no layout) ---- */

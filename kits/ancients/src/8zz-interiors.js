@@ -6,7 +6,8 @@
 //   interiorBegin(k, d, gx, gz)  before the builder: a mark of every kit list, so the intact dark mass the builder put
 //                                inside a shell (a boxD block where the rooms go: B.hollow) can be cleared after it
 //   interiorPass(m, G)           floors where the builder draws none (B.floors), partitions as kit instances (white
-//                                panel: Yuni's Ancient partition, 0.12 m, doors 1.0 x 2.1 with a lintel), a broken
+//                                panel: Yuni's Ancient partition, 0.12 m, doors 1.0 x 2.1 with a lintel and, in an intact
+//                                building, a leaf on core/door: anLeaf, 8zo-anc-open.js; id '<type>/<decay>.<wall id>'), a broken
 //                                partition as a stub of the height the plan left and a scatter of rubble; core/tags
 //                                records for the building and its rooms; the furniture RECORDS of an intact building
 // Furniture is data first (core/furnish: KFURN records, tagged in core/tags): an intact building's rooms are furnished
@@ -16,11 +17,11 @@
 // their rooms empty (sockets). Each placed ruin breaks a little differently: its site position seeds AI.ruinStorey.
 // No rng(): every choice is a hash, so this pass moves no other structure's randomness.
 // Without the bundle (8zy-interiors-bundle.js, INTERIOR_TARGETS in build.py) both functions return at once.
-const AIK={on:false,sites:[],byId:{},T:null,F:null,furnished:0,pieces:0,walls:0,stubs:0,floors:0,cleared:0,errors:[],
+const AIK={on:false,sites:[],byId:{},T:null,F:null,furnished:0,pieces:0,walls:0,leaves:0,stubs:0,floors:0,cleared:0,errors:[],
  PART_H:.12,DOOR_H:2.15,DARK:{boxD:1},
  /* what a ruin's civRooms (42-offices.js) puts in a shell to fake rooms: machinery silhouettes, touch panels, conduit,
     and floor discs in CIV_FLOOR. Inside a planned building the plan's rooms replace it */
- FAKE:{boxD:1,cell:1,cellD:1,tube:1,slab:1}};
+ FAKE:{boxD:1,cell:1,cellD:1,'cellD~c':1,tube:1,slab:1}};   /* cellD~c: a dead cell's room card (8zo-anc-open.js) */
 function interiorBegin(k,d,gx,gz){
  if(typeof KratorAncientsInteriors==='undefined')return null;
  const AI=KratorAncientsInteriors;if(!AI.KIT[k])return null;
@@ -41,14 +42,18 @@ function aikSlab(poly,y0,t,hole){const sh=new THREE.Shape(poly.map(p=>new THREE.
 function aikWall(name,a,b,y0,y1,th){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.05||y1-y0<.05)return;
  kput(name,[(a[0]+b[0])/2,(y0+y1)/2,(a[1]+b[1])/2],qEuler(0,Math.atan2(-dz,dx),0),[L,y1-y0,th],null);AIK.walls++;}
 /* a polyline wall with an optional door gap (and lintel) centred on door.at */
-function aikPolyWall(name,W,top){const P=W.pts,y=W.y,D=W.door;let gap=null;
+function aikPolyWall(name,W,top,leaf){const P=W.pts,y=W.y,D=W.door;let gap=null;
  if(D){let best=1e9;for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1;
    const t=Math.max(0,Math.min(1,((D.at[0]-a[0])*dx+(D.at[1]-a[1])*dz)/L2)),qx=a[0]+dx*t-D.at[0],qz=a[1]+dz*t-D.at[1],e=qx*qx+qz*qz;
    if(e<best){best=e;gap={i,t,L:Math.sqrt(L2)};}}}
  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];
   if(gap&&gap.i===i){const h=Math.min(.5,(D.w/2)/gap.L),t0=Math.max(0,gap.t-h),t1=Math.min(1,gap.t+h),pa=[a[0]+(b[0]-a[0])*t0,a[1]+(b[1]-a[1])*t0],pb=[a[0]+(b[0]-a[0])*t1,a[1]+(b[1]-a[1])*t1];
    aikWall(name,a,pa,y,y+top,AIK.PART_H);aikWall(name,pb,b,y,y+top,AIK.PART_H);
-   if(top>AIK.DOOR_H+.1)aikWall(name,pa,pb,y+AIK.DOOR_H,y+top,AIK.PART_H);}
+   if(top>AIK.DOOR_H+.1)aikWall(name,pa,pb,y+AIK.DOOR_H,y+top,AIK.PART_H);
+   /* the doorway's leaf (8zo-anc-open.js anLeaf: core/door, shut, E opens it), in an intact building's partitions */
+   if(leaf&&typeof anLeaf==='function'){const gw=Math.hypot(pb[0]-pa[0],pb[1]-pa[1]);
+    if(gw>.5){AIK.leaves++;anLeaf(KOFF[0]+(pa[0]+pb[0])/2,y,KOFF[2]+(pa[1]+pb[1])/2,Math.atan2(-(b[1]-a[1]),b[0]-a[0]),gw-.04,Math.min(AIK.DOOR_H,top)-.03,
+     {id:leaf+'.'+(W.id==null?i:W.id),key:leaf.split('/')[0],name:'door'});}}}
   else aikWall(name,a,b,y,y+top,AIK.PART_H);}}
 function interiorPass(m,G){
  const AI=KratorAncientsInteriors,k=m.k,d=m.d;
@@ -86,7 +91,7 @@ function interiorPass(m,G){
      else if(R.ring){const o=[],h=[];for(let i=0;i<48;i++){const th=i/48*TAU;o.push([R.ring.cx+R.ring.r1(th)*Math.cos(th),R.ring.cz+R.ring.r1(th)*Math.sin(th)]);h.push([R.ring.cx+R.ring.r0(th)*Math.cos(th),R.ring.cz+R.ring.r0(th)*Math.sin(th)]);}floors.push(aikSlab(o,st.y-.3,.3,h.reverse()));}}}
    /* the partitions: whole, or a stub with rubble where the ruin broke it */
    for(const W of st.walls){
-    if(!W.broken){aikPolyWall(partN,W,st.h);continue;}
+    if(!W.broken){aikPolyWall(partN,W,st.h,ruin?null:site.id);continue;}
     if(!(W.stub>0))continue;
     const S=Object.assign({},W,{door:null});aikPolyWall(partN,S,W.stub);AIK.stubs++;
     const q=W.pts[W.pts.length>>1],hh=AI.h01(W.id+'r');

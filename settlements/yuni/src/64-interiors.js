@@ -470,6 +470,9 @@ function addShell(plan, b, g, L, A, B, doors){
   function project(px, pz, qnx, qnz, w, y0, y1, ref){
     if(qnx*nx+qnz*nz < 0.82) return;
     var dist=(px-A[0])*nx+(pz-A[1])*nz, u=(px-A[0])*tx+(pz-A[1])*tz;
+    /* a door wider than the face it meets (a hut's mouth on a ten-sided room's short side) takes the whole face, so the shell
+       is never drawn across a doorway (the reachability audit, 2026-11-03: 87 doors had no doorway in their shell) */
+    if(ref.door && dist >= -0.2 && dist <= 1.6 && u > -0.1 && u < len+0.1 && len < w+0.04){ w = Math.max(0.3, len-0.06); u = len/2; }
     if(dist < -0.2 || dist > 1.6 || u < w/2+0.02 || u > len-w/2-0.02) return;
     ops.push({ u:+u.toFixed(3), w:+w.toFixed(3), y0:+Math.max(0,y0).toFixed(3), y1:+Math.min(L.H-0.12, y1).toFixed(3), depth:+Math.max(0.05,dist).toFixed(3), door:ref.door||null, window:ref.window||null });
   }
@@ -478,7 +481,9 @@ function addShell(plan, b, g, L, A, B, doors){
     if(yl-W.h/2 < 0.2 || yl+W.h/2 > L.H-0.1) return;
     project(p[0], p[1], Math.sin(yawL), Math.cos(yawL), W.w, yl-W.h/2, yl+W.h/2, { window:wid }); });
   ops.sort(function(p,q){ return p.u-q.u; });
-  for(var i=1;i<ops.length;i++) if(ops[i].u-ops[i].w/2 < ops[i-1].u+ops[i-1].w/2+0.12){ ops.splice(i,1); i--; }
+  /* two openings that overlap: the later one goes, unless it is a door and the earlier a window (a door's doorway is never walled
+     up for a window: the reachability audit, 2026-11-03, 76-doors.js DOORS.reach) */
+  for(var i=1;i<ops.length;i++) if(ops[i].u-ops[i].w/2 < ops[i-1].u+ops[i-1].w/2+0.12){ ops.splice((ops[i].door && !ops[i-1].door) ? i-1 : i, 1); i--; }
   plan.walls.push({ id:plan.bid+'.wall.'+plan.walls.length, kind:'shell', module:plan.finish, a:[+A[0].toFixed(3),+A[1].toFixed(3)], b:[+B[0].toFixed(3),+B[1].toFixed(3)],
     out:[+nx.toFixed(4),+nz.toFixed(4)], lvl:L.k, y:L.y, h:L.H, thick:0.12, openings:ops, group:plan.groups.indexOf(g) });
 }

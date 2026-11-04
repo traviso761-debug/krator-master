@@ -35,6 +35,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/sky/89-atmos-g-sky.js` | 15.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the atmos_sky chunk, every layer in one fragment: becomes atmos_sky.gdshaderinc for a shader_type sky |
 | `atmos/host/89-atmos-h-skyhost.js` | 7.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sky as a three.js background pass driving the page light; Godot: the Sky material and krator/sky.gd |
 | `atmos/host/89-atmos-c-hostbind.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/placeholder/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `atmos/placeholder/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `biome/10-core-head.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 33.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
 | `biome/30-core-foliage.js` | 18.7 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
@@ -52,6 +54,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `camp/10-camp-cultures.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the culture rows (KCAMP.CULTURES): plain data |
 | `camp/20-camp-census.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a band's census (KCAMP.census): no three.js, no geometry, no DOM; test-camp.js |
 | `camp/30-camp-pitch.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the pitch (KCAMP.pitch, check): plain records, no three.js (its 'box' is a footprint's corners); test-camp.js |
+| `catalog/catalog-files.js` | 0.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | node tools only: a catalog name to its file (files.json) |
+| `catalog/inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
+| `catalog/krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `catalog/krator-furniture-core.js` | 75.4 | [draw] | 54 | 3 | 0 | 0 | 0 | 115 | 0 | 0 | 0 | 0 | 0 |  |
+| `catalog/krator-furniture-detail.js` | 4.1 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | optional (`bundle(tex=True)`); the detail-map shader is a three.js stand-in for StandardMaterial3D triplanar, one texture per family from `tex/pack.json` |
+| `catalog/krator-furniture-kit.js` | 156.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 765 | 0 | 0 | 0 | 0 | 0 |  |
+| `catalog/krator-furniture-runtime.js` | 14.5 | [draw] | 23 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `city/10-city-core.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/12-city-index.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/15-city-ground.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -67,6 +76,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/52-city-host-buildings.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | lots as instanced LOD prototypes |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `edits/40-core-edits.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
+| `engine/10-core.js` | 3.4 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `engine/27-mat.js` | 6.4 | [G shader] | 12 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
+| `engine/30-geo.js` | 22.2 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
+| `engine/36-def.js` | 5.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `engine/90-scene.js` | 6.2 | [web] | 15 | 0 | 1 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `engine/91f-furnish.js` | 6.0 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `engine/91n-night.js` | 2.6 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `engine/92-world.js` | 0.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | builds the world and names the views; before 93-anim.js, which reads the smoke sources the build records |
+| `engine/93-anim.js` | 2.5 | [draw] | 5 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `engine/99-host-take.js` | 7.2 | [web] | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): views, inspector words, controls, the probe's fields; after core/host's 95-host-probe.js |
 | `export/07-core-export.js` | 36.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
 | `export/09-core-export-adapters.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos', the material records' and core/water's parts until those modules register themselves (water: the surfaces, bed bytes, the twin's probes); EXPORT.ground for a build without its own terrain part; EXPORT.groundLayers for a ground hook's world-uv layers |
 | `export/10-core-export-scene.js` | 15.4 | [web] | 6 | 3 | 0 | 0 | 0 | 1 | 4 | 3 | 0 | 0 | 0 | the scene reader (lifted from Iziz's 94, 2026-10-20): reads a page's three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing; Iziz's 94 and the isle demo's 62 use it |
@@ -124,6 +143,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `simulation/77-sim-6-population.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `simulation/77-sim-6-trade.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `simulation/77-sim-7-lod.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the levels: SIM.level(s, 'abstract' or 'presented'), a town nobody watches on its books only; raising it (opt-in) |
+| `simulation/77-sim-6-govern.js` | 11.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the economy's opt-in rules: the production governor, spoilage, keeping, seasoning |
+| `simulation/77-sim-7-ledger.js` | 7.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the accounting contract: statements and route reconciliation (SIM.ledgerSnap, SIM.ledger); read only |
 | `simulation/77-sim-7-stocks.js` | 19.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what things hold and the settlement's stocks: SIM.contents, SIM.stocks (by state, the daily snapshot's change and flows, the low and out marks), SIM.holders; read only |
 | `simulation/77-sim-8-export.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `simulation/77-sim-9-debug.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -165,6 +186,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/host/45-core-horizon-shade.js` | 5.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | opt-in (subfolder): KHORIZON.shade, the GLSL that cuts the sun and the ambient; a .gdshaderinc in light() |
 | `terrain/host/46-core-lava-draw.js` | 5.6 | [G shader] | 2 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 | opt-in (subfolder): KLAVA.surface, the flow's surface on core/atmos's lava chunk; an ArrayMesh and the lava .gdshaderinc in Godot |
 | `terrain/host/46-core-lava-gpu.js` | 10.3 | [G shader] | 2 | 0 | 0 | 0 | 0 | 1 | 4 | 0 | 0 | 0 | 0 | opt-in (subfolder): KLAVA.gpu, the step as render passes on float textures; a compute shader in Godot (LAVA.md, "Godot") |
+| `door/10-core-door.js` | 7.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KDOOR: doors as records by stable id, open/close/toggle/nearest, the swing, walk blocks in KWALK, save deltas, export() |
+| `door/20-core-glass.js` | 3.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KGLASS: the glass kinds as data (SPEC) for a StandardMaterial3D with alpha; material(THREE, kind) is the three.js side |
+| `door/90-core-door-host.js` | 3.0 | [web] | 3 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KDOORHOST: pose a leaf (an instance or an Object3D), the frame tick, the E key and its tip |
 | `walk/20-core-walk.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
 | `walk/box/24-core-walk-box.js` | 5.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

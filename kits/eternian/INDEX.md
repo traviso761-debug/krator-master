@@ -20,46 +20,34 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 5 |  |
-| `27-mat.js` | 6 |  |
 | `28-et-mat.js` | 2 |  |
-| `30-geo.js` | 22 |  |
-| `36-def.js` | 5 |  |
 | `37-wk-rec.js` | 2 |  |
 | `38-et-alt.js` | 2 |  |
-| `40-et-kit.js` | 9 |  |
+| `40-et-kit.js` | 10 |  |
 | `41-et-profile.js` | 8 |  |
 | `42-et-head.js` | 12 |  |
 | `43-et-statue.js` | 5 |  |
 | `44-et-roof.js` | 11 |  |
 | `45-et-samples.js` | 6 |  |
 | `46-et-civic-kit.js` | 4 |  |
-| `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (68) |
+| `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (69) |
 | `51-et-dwell-mid.js` | 7 |  |
 | `52-et-dwell-rich.js` | 9 |  |
 | `53-et-court.js` | 5 |  |
 | `54-et-dwell-hex.js` | 3 |  |
-| `60-et-state.js` | 11 |  |
-| `61-et-defence.js` | 13 |  |
+| `60-et-state.js` | 12 |  |
+| `61-et-defence.js` | 14 |  |
 | `62-et-machine.js` | 10 |  |
 | `63-et-faith.js` | 9 |  |
-| `64-et-trade-kit.js` | 6 |  |
+| `64-et-trade-kit.js` | 8 |  |
 | `65-et-works.js` | 6 |  |
 | `66-et-trades.js` | 14 |  |
 | `67-et-land.js` | 7 |  |
 | `68-et-trades.js` | 6 |  |
 | `70-et-canal.js` | 6 |  |
 | `71-et-harbour.js` | 11 |  |
-| `81-sky.js` | 10 |  |
 | `89-rows.js` | 3 |  |
-| `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `91c-et-clock.js` | 3 |  |
 | `91d-et-water.js` | 2 |  |
-| `91f-furnish.js` | 6 |  |
-| `91n-night.js` | 3 |  |
-| `92-world.js` | <1 |  |
-| `93-anim.js` | 3 |  |
 | `93e-et-export.js` | 4 |  |
-| `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
-| `99-tail.html` | <1 |  |

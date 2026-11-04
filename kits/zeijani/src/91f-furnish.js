@@ -96,7 +96,7 @@ function zjContactShadows(parent){if(!ZJ_SHTEX){ZJ_SHTEX=canvasTex(64,64,(g,w,h)
  m.userData.probeSkip=true;m.raycast=()=>{};m.renderOrder=1;parent.add(m);ZJF.shadowPatches=pos.length/18;}
 // ---- the batch becomes meshes once per world build, after every def is placed
 const svfBuildWorld=buildWorld;
-buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();zjInteriors();
+buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();zjInteriors();svOpenWalk(KWALK);   /* the doors' walk blocks, the doorways cleared, once every floor and wall is in */
  const g=ZJF.group=ZJF.batch.flush(WORLD);g.userData.furniture=true;
  ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);else if(m.material.map&&m.name==='furniture:decal')svfWeave(m.material);}});
  zjContactShadows(g);

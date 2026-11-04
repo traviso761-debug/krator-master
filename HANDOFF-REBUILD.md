@@ -912,7 +912,7 @@ little-demo, isle-demo), eastabyss's (isle-demo, Locus, Mungo, Verge), swbay's s
 - **The ride-along fixes** (`TODO.md`, "Ride along with the next all-builds rebuild": do them in this change, rebuild once, rewrite the
   baseline once):
   - the probes read `userData.probePoints` (`core/host/95-host-probe.js` `_probePoints`, 24 builds, and the Ancient Port kit's
-    `settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed); then the dam bed's flotsam markers
+    `kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed); then the dam bed's flotsam markers
     (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics (`biomes/scablands/src/87-host-erratics.js`) set it and
     drop their hidden markers;
   - guard `setPointerCapture` in `core/host/90-host-camera.js` (138 builds); remove the Iziz palace page-only guard
@@ -946,7 +946,7 @@ biome files change**; this stage comes last, after the biomes and kits they read
   `.claude/worktrees/inspiring-swanson-212800`, unpushed) edits the same files: replay the 17 `git mv` renames of
   `little-demo` -> `openworld/isle-demo/src/world/` there first, then its content edits.
 - **Hook**: missing `core/rand` and `core/tags` in `build.py` (`check_core_use`); it reads the Port kit's fragments and the scale
-  model (`KLAND`); rebuild with `settlements/port` and Ys's vendored copy.
+  model (`KLAND`); rebuild with `kits/port` and Ys's vendored copy.
 - **Pinnacle Rock**: no findings; rebuild and verify.
 - **Longsong**: no findings; its biome is the Oidong valley. Rebuild and verify; the core/city single-complex mode is separate.
 - The gallery: `gallery/build_gallery.py` labels little-demo deprecated; republish only after the owner's yes (the Throne, Korona and

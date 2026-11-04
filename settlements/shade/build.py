@@ -2,14 +2,14 @@
 """Concatenate src/* (filename order) into dist/shade.html.
 
   00-head.html          page shell, opens <script>
-  10..40                BIOME CORE      vendored from biomes/sedesert/src
+  10..40                BIOME CORE      read in place from core/biome (CORE_BIOME), with core/space
   20-core-clock, -sched read from core/clock and core/sched (CORE_MODULES, one shared copy each, like Mungo)
   36-core-carve         the carve patches, read from core/terrain (one shared copy, not vendored)
   44-host-layout        HOST: where everything is (terrainH, waterH, the places, the switchback)
   45-host-stage         HOST: renderer, fields, flora mask, BIO.init, ground, water
-  50..75                BIOME LEAVES    vendored from biomes/sedesert/src (flora and fauna)
+  50..75                BIOME LEAVES    read in place from biomes/sedesert/src (flora and fauna)
   77-sim-*              the simulation records (SIM), read from core/simulation (CORE_MODULES)
-  82-host-sky           HOST: the standard Krator sky (vendored from biomes/sedesert/src)
+  82-host-sky           HOST: the standard Krator sky (read in place from biomes/sedesert/src)
   83-host-world-json    generated: settlements/shade/world/*.json inlined as SHADE_WORLD_JSON for SIM.load
   84-host-life          HOST: the life layer declared into SIM (places, ports, the walkable grid as its
                         'pedestrian' layer, the population) and Shade's own audits
@@ -24,8 +24,8 @@
   99-shade-take         HOST: the take (KHOST.take: views, ground, layers, inspector words, the probe's fields)
   99-tail.html          closes <script>
 
-  python3 build.py                 build, syntax-check, write VENDOR.json
-  python3 build.py --vendor-check  also compare the vendored fragments with biomes/sedesert/src
+  python3 build.py                 build, syntax-check
+  python3 build.py --vendor-check  say what is read in place (nothing is vendored)
 
 The biome fragments never reference a host global except through BIO.host
 (see biomes/sedesert/BIOME-API.md); the grep below fails the build if one does.
@@ -44,6 +44,7 @@ if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
         _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
     _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'))
 OUT = 'shade.html'
 CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain (opt-in by name; a local copy wins)
@@ -55,24 +56,26 @@ import host as khost
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
 MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
-VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
-            '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
-            '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js',
-            '82-host-sky.js', '99-tail.html']
+# The south-east desert biome, READ IN PLACE (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/ held
+# copies that had fallen behind core/biome's move and the kits' BIO.kit hooks): the biome core from core/biome as the
+# biome's own build lists it (CORE_BIOME, less its export and stage), core/space for its keep-clear and scatter grids,
+# and the biome's flora, fauna, sky and tail from biomes/sedesert/src. A src/ copy with the same name still wins.
+CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js']
+CORE_B = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'biome'))
+CORE_SPACE = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'space', '20-core-space.js'))
+BIOME = ['35-core-strata.js', '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
+         '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js', '82-host-sky.js', '99-tail.html']
+VENDORED = []
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'PLACES', 'SWB.', 'LIFE.', 'POOL.', 'BASIN.']
 
 def sha(p): return hashlib.sha1(open(p, 'rb').read()).hexdigest()[:12]
 
 def vendor_check():
-    if not os.path.isdir(UP):
-        print('vendor-check: %s not found; skipped' % UP); return 0
-    # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
-    CORE_UP = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'biome'))
-    up = lambda f: os.path.join(CORE_UP if f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js') else UP, f)
-    drift = [f for f in VENDORED if not os.path.exists(up(f)) or sha(up(f)) != sha(os.path.join(SRC, f))]
-    print('vendor-check: ' + ('all %d vendored fragments identical to core/biome and biomes/sedesert/src' % len(VENDORED) if not drift
-                              else 'DRIFT in ' + ', '.join(drift) + ' - fix upstream and re-vendor, or record it in KNOWN_ISSUES.md'))
-    return 1 if drift else 0
+    missing = [p for p in [os.path.join(CORE_B, f) for f in CORE_BIOME] + [CORE_SPACE] + [os.path.join(UP, f) for f in BIOME]
+               if not os.path.isfile(p)]
+    print('vendor-check: nothing vendored; the biome (core/biome, core/space, biomes/sedesert/src: %d fragments) is read in place%s'
+          % (len(CORE_BIOME) + 1 + len(BIOME), ('; MISSING ' + ', '.join(missing)) if missing else ''))
+    return 1 if missing else 0
 
 def world_json():
     """settlements/shade/world/*.json -> SHADE_WORLD_JSON, the argument of SIM.load (as Mungo's build.py). Each file
@@ -97,6 +100,11 @@ def world_json():
 
 def main():
     path = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
+    for f in CORE_BIOME:
+        path.setdefault(f, os.path.join(CORE_B, f))
+    path.setdefault('20-core-space.js', CORE_SPACE)
+    for f in BIOME:
+        path.setdefault(f, os.path.join(UP, f))
     for f in CORE_TERRAIN:
         if f not in path: path[f] = os.path.join(CORE_T, f)
     for mod in CORE_MODULES:
@@ -127,6 +135,7 @@ def main():
         out.append('\n// ==================== %s\n' % f if f.endswith('.js') else ''); out.append(s)
     if bad:
         print('BIOME FRAGMENT DEPENDS ON THE HOST:\n  ' + '\n  '.join(bad)); return 1
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8').write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)
@@ -137,7 +146,6 @@ def main():
         print('node is not installed: the syntax check did NOT run'); return 2
     print('built dist/%s  (%d fragments, %d KB, sha %s)  %s' % (OUT, len(frags), len(html) // 1024,
           hashlib.sha1(html.encode('utf8')).hexdigest()[:12], 'syntax OK' if r.returncode == 0 else 'SYNTAX ERROR\n' + r.stderr[:800]))
-    json.dump({f: sha(os.path.join(SRC, f)) for f in VENDORED}, open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8'), indent=1)
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         op = [l for l in open(ki, encoding='utf8') if l.startswith('- [ ]')]

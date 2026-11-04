@@ -33,13 +33,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `30-layout.js` | 30 | 5. LAYOUT (1); PLATFORMS (102); SATELLITES + BRIDGES (167); STAIR BAYS (246); DECK LOTS + ROOMS (281); SPIRALS: gate ramps + the council stair (349); ROOSTS (393); NAV GRAPH (415) |
 | `32-branches.js` | 8 | 6. BRANCH SKELETONS (1) |
 | `45-kit.js` | 37 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
-| `47-texture.js` | 10 | 11. TEXTURES (1) |
+| `47-texture.js` | 11 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE (1) |
 | `53-furnish.js` | 10 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
-| `55-arch.js` | 63 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (377); 3. MAV'S CROWN (530); 4. THE COUNCIL CHAMBER (its front: the first doo (665); 5. SATELLITES (786) |
-| `56-levels.js` | 70 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (586) |
+| `54-openings.js` | 7 | 13d. OPENINGS: real doors and real glass on core (1) |
+| `55-arch.js` | 66 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (136); 2. FURNITURE + MIDDLE ZONES (394); 3. MAV'S CROWN (547); 4. THE COUNCIL CHAMBER (its front: the first doo (682); 5. SATELLITES (805) |
+| `56-levels.js` | 73 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (152); GOAL B: THE GATE TREES (611) |
 | `57a-interiors.js` | 30 **big** | 13c. INTERIORS (DATA): rooms people live and wor (1) |
-| `57c-interiors-draw.js` | 26 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
+| `57c-interiors-draw.js` | 27 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |
@@ -49,7 +50,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `78-life.js` | 51 **big** | 78. LIFE (2) |
 | `79-spiders.js` | 60 **big** | 19. SPIDER-RIDERS (1) |
 | `80-camera.js` | 7 | 25. CAMERA: MAV'S REFUGE ON core/host (1) |
-| `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
+| `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `84-flyers.js` | 23 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 15 |  |
@@ -59,5 +60,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 3 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
-| `98-start.js` | 8 | 99. START: MAV'S REFUGE ON core/host (1) |
+| `98-start.js` | 9 | 99. START: MAV'S REFUGE ON core/host (1) |
 | `99-tail.html` | <1 |  |

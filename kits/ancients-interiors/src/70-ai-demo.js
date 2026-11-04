@@ -15,7 +15,7 @@
   AI.install(IX);
   const catalog = IX.catalogAdapter({ lights: 'strip' });
   const FLOOR_Y = 0.2, GAP = 7, ROW_GAP = 12;
-  const halls = [], rooms = [], plans = [], labels = [];
+  const halls = [], rooms = [], plans = [], labels = [], shells = [];   /* shells: {room, group} for the doors and glass (75-ai-doors.js) */
 
   /* ---------- a label on the ground */
   function label(text, sub, x, z, w) {
@@ -48,7 +48,7 @@
       else {
         const room = ROOM({ id: 'hall.' + dress + '.' + name, kind: 'hall', culture: 'ancient', wealth: 0.5, y: FLOOR_Y, h: res.h, poly: rect(cx, cz, res.w, res.d),
           doors: [{ at: [cx + res.door.x, cz + res.d / 2], w: res.door.w }], windows: name === 'bridge' ? [{ at: [cx, cz - res.d / 2], w: res.w - 2, sill: 0.9, h: 2.4 }] : [] });
-        const s = IX.view.shell(room); scene.add(s); IX.view.cutaway.add(s);
+        const s = IX.view.shell(room); scene.add(s); IX.view.cutaway.add(s); shells.push({ room, group: s });
       }
       for (const r of res.reserved) {
         const m = slab(cx + (r.x0 + r.x1) / 2, cz + (r.z0 + r.z1) / 2, r.x1 - r.x0 - 0.4, r.z1 - r.z0 - 0.4, 0x4a5056);
@@ -78,7 +78,7 @@
       spec.poly = spec.poly.map(p => [p[0] + cx, p[1] + z]);
       spec.doors = spec.doors.map(dr => Object.assign({}, dr, { at: [dr.at[0] + cx, dr.at[1] + z] }));
       spec.windows = spec.windows.map(wn => Object.assign({}, wn, { at: [wn.at[0] + cx, wn.at[1] + z] }));
-      const R = ROOM(spec), s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s);
+      const R = ROOM(spec), s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); shells.push({ room: R, group: s });
       const P = furnishRoom(R, catalog, { seed: 5 }); IX.buildRoom(P, catalog, R);
       rooms.push({ id: S.id, name: S.name, kind: S.kind, room: R, plan: P, audit: IX.audit(R, P, catalog) });
       label(S.name, P.placements.length + ' pieces', cx, z + depth / 2 + 2.4, Math.min(12, wb));
@@ -96,7 +96,7 @@
       spec.poly = spec.poly.map(p => [p[0] + cx, p[1] + z]);
       spec.doors = spec.doors.map(dr => Object.assign({}, dr, { at: [dr.at[0] + cx, dr.at[1] + z] }));
       spec.windows = spec.windows.map(wn => Object.assign({}, wn, { at: [wn.at[0] + cx, wn.at[1] + z] }));
-      const R = ROOM(spec), s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s);
+      const R = ROOM(spec), s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); shells.push({ room: R, group: s });
       const P = furnishRoom(R, catalog, { seed: 3 }); IX.buildRoom(P, catalog, R);
       rooms.push({ id: spec.id, name: kind + ' ' + w + ' m', kind, room: R, plan: P, audit: IX.audit(R, P, catalog) });
       label(kind, w + ' m · ' + P.placements.length + ' pieces', cx, z + 5.4, 6);
@@ -130,6 +130,6 @@
   (window._frameHooks = window._frameHooks || []).push(function () { IX.view.cutaway.update(camera); });
   $('count').textContent = halls.length + ' halls · ' + rooms.length + ' rooms';
   overview();
-  window._ancientsInteriors = { halls, rooms, gotoHall, gotoRoom, overview, AI };
+  window._ancientsInteriors = { halls, rooms, shells, gotoHall, gotoRoom, overview, AI };
   window._ready = true;
 })();

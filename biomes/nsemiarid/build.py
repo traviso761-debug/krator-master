@@ -50,6 +50,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
@@ -182,6 +183,7 @@ def build(OUT='nsemiarid.html',overlay=None):
         out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
     if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
     dist=overlay['dist'] if overlay else DIST
+    BSRC.report(PATH)   # --list-sources: what the page is made of (an overlay's too), then exit
     os.makedirs(dist,exist_ok=True)
     html=''.join(out)
     if overlay and overlay.get('title'):   # an overlay's own page title (the gallery lists a page by it)

@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "634dbfe625a3"
+  "37b2934850e3"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -13,7 +13,7 @@
  ],
  "05-palette.js": [
   "locus",
-  "b8da4cef18ae"
+  "7a561042d5fa"
  ],
  "05b-mungo-palette.js": [
   "mungo",
@@ -27,6 +27,10 @@
   "core/lod",
   "e1f7db612b83"
  ],
+ "10-core-door.js": [
+  "core/door",
+  "22190472180d"
+ ],
  "10-core.js": [
   "mungo (overrides locus)",
   "75c9afdd6dc4"
@@ -34,6 +38,10 @@
  "20-core-clock.js": [
   "core/clock",
   "5616fb106090"
+ ],
+ "20-core-glass.js": [
+  "core/door",
+  "53ceb6333ccb"
  ],
  "20-core-sched.js": [
   "core/sched",
@@ -45,7 +53,7 @@
  ],
  "20-core-walk.js": [
   "core/walk",
-  "d09ebeabcfa5"
+  "7c9372de82ac"
  ],
  "20-core-water.js": [
   "core/water",
@@ -87,6 +95,10 @@
   "virtual",
   "23240bb0a0cb"
  ],
+ "30-core-door-leaf.js": [
+  "core/door",
+  "dc475fefea8f"
+ ],
  "30-layout.js": [
   "mungo (overrides locus)",
   "bb63f1e7d2d9"
@@ -105,7 +117,7 @@
  ],
  "45-kit.js": [
   "locus",
-  "82f0c9eb275e"
+  "bb42ccc1da1f"
  ],
  "46-matlib-pack.js": [
   "virtual",
@@ -133,7 +145,7 @@
  ],
  "50-structure.js": [
   "locus",
-  "c5bf052f0346"
+  "add087dcc88d"
  ],
  "51-core-water-kinds.js": [
   "core/water",
@@ -145,11 +157,11 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "8d9d4d23231e"
+  "4c957002eb6d"
  ],
  "53-assets.js": [
   "locus",
-  "394b56e86e01"
+  "0e05b4f6669f"
  ],
  "53-core-furnish-host.js": [
   "core/furnish",
@@ -160,36 +172,36 @@
   "e2cd8a672016"
  ],
  "55-mid-example.js": [
-  "locus",
-  "9d4751b6b7d1"
+  "kits/yuni",
+  "d17984ba3873"
  ],
  "56-mid.js": [
-  "locus",
-  "cc1b5d0f2799"
+  "kits/yuni",
+  "bc9e8d4f1a34"
  ],
  "57-poor.js": [
-  "locus",
-  "850979623919"
+  "kits/yuni",
+  "e472ec7883c4"
  ],
  "58-rich.js": [
-  "locus",
-  "c73ffba16bd9"
+  "kits/yuni",
+  "d1c5432ff378"
  ],
  "59-civic.js": [
-  "locus",
-  "e39e582747f8"
+  "kits/yuni",
+  "8eecec0fdf35"
  ],
  "59a-civic-park.js": [
-  "locus",
-  "2325d0531216"
+  "kits/yuni",
+  "4950cf6a4369"
  ],
  "59b-civic-library.js": [
-  "locus",
-  "55f3b6d8d558"
+  "kits/yuni",
+  "b6ff3627d665"
  ],
  "59c-civic-furniture.js": [
-  "locus",
-  "bffa210fcce6"
+  "kits/yuni",
+  "e96a245eff47"
  ],
  "60-flora.js": [
   "locus",
@@ -204,76 +216,76 @@
   "bf68cad2a480"
  ],
  "64-locus-chapterhouse.js": [
-  "locus",
-  "47e79381a102"
+  "kits/locus",
+  "68bcc688a678"
  ],
  "64-locus-core.js": [
-  "locus",
-  "78a2b3e723de"
+  "kits/locus",
+  "1b5c4a083347"
  ],
  "64-locus-dwellings.js": [
-  "locus",
-  "619078277bbc"
+  "kits/locus",
+  "5cfe7160c772"
  ],
  "64-locus-farm.js": [
-  "locus",
+  "kits/locus",
   "c07e2388e419"
  ],
  "64-locus-infra.js": [
-  "locus",
-  "888fe2d1e510"
+  "kits/locus",
+  "a8b637d39f6a"
  ],
  "64-locus-petroleum.js": [
-  "locus",
-  "610bea0a7963"
+  "kits/locus",
+  "6591579d5016"
  ],
  "64-locus-plants.js": [
-  "locus",
+  "kits/locus",
   "fc0551ec404f"
  ],
  "64-locus-power.js": [
-  "locus",
-  "594b17f6fb38"
+  "kits/locus",
+  "400e0f153b06"
  ],
  "65-abyss-00-core.js": [
-  "locus",
-  "d37734d5a5f2"
+  "kits/eastern-abyssal",
+  "7dd65999941f"
  ],
  "65-abyss-20-plants.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "ef9feb9249fe"
  ],
  "65-abyss-30-housing.js": [
-  "locus",
-  "535eff8c49ba"
+  "kits/eastern-abyssal",
+  "4c8d8a723a22"
  ],
  "65-abyss-40-shops.js": [
-  "locus",
-  "e45e77b4a1cd"
+  "kits/eastern-abyssal",
+  "6f092184fd30"
  ],
  "65-abyss-50-civic.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "f65f9d5dbfd5"
  ],
  "65-abyss-60-temple.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "7e06db023902"
  ],
  "65-abyss-70-palace.js": [
-  "locus",
+  "kits/eastern-abyssal",
   "34a95b8ac0a6"
  ],
  "65-abyss-75-verge.js": [
-  "locus",
-  "da2ab5b03584"
+  "kits/eastern-abyssal",
+  "337a6d6b0813"
  ],
  "65-abyss-80-military.js": [
-  "locus",
-  "2c449f12edfa"
+  "kits/eastern-abyssal",
+  "b79afbfe3fc8"
  ],
  "65-abyss-90-farm.js": [
-  "locus",
-  "30123e08cdf7"
+  "kits/eastern-abyssal",
+  "c5fff9b065f7"
  ],
  "65r-reed-village.js": [
   "mungo",
@@ -281,15 +293,15 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "fa979dc17387"
+  "9297c252e306"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "00102fcc6041"
+  "77add6fb1b7d"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "b8a7348b1b79"
+  "13acf75856fa"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -393,15 +405,15 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "2b48f30282fc"
+  "41e0298ca3e2"
  ],
  "77-sim-6-govern.js": [
   "core/simulation",
-  "0a1a4e4e7b7a"
+  "6916bc2cf15e"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "701a4d451e63"
+  "9e18e6de5906"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -413,7 +425,11 @@
  ],
  "77-sim-6-trade.js": [
   "core/simulation",
-  "ca003233a000"
+  "6270845dd155"
+ ],
+ "77-sim-7-ledger.js": [
+  "core/simulation",
+  "3a65e47a05fa"
  ],
  "77-sim-7-lod.js": [
   "core/simulation",
@@ -445,7 +461,7 @@
  ],
  "81-glow.js": [
   "locus",
-  "2855bbbae09d"
+  "e4c349abf624"
  ],
  "82-daynight.js": [
   "locus",
@@ -555,6 +571,10 @@
   "locus",
   "5a5166f0db52"
  ],
+ "90-core-door-host.js": [
+  "core/door",
+  "647e103d16fa"
+ ],
  "90-host-camera.js": [
   "core/host",
   "5ee8af014319"
@@ -587,6 +607,10 @@
   "core/host",
   "94fec2e5025a"
  ],
+ "95-locus-doors.js": [
+  "locus",
+  "2524170541fb"
+ ],
  "96-host-pictures.js": [
   "core/host",
   "1c6b36cc7ca2"
@@ -605,7 +629,7 @@
  ],
  "98-start.js": [
   "locus",
-  "3f1411f79a13"
+  "afe3809fa719"
  ],
  "99-host-cutaway.js": [
   "core/host",

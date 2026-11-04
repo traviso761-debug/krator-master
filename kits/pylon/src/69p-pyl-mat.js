@@ -29,16 +29,21 @@ const PYHALF=(()=>{const s=new THREE.Shape();s.moveTo(-1,0);s.absarc(0,0,1,Math.
  const g=new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:18});g.translate(0,0,-.5);return g;})();
 // a hexagonal prism, axis local z, centred, a flat side down (scale [r, r, length]): the honeycomb pods
 const PYHEX=new THREE.CylinderGeometry(1,1,1,6).rotateX(Math.PI/2).rotateZ(Math.PI/6);
-// Pylon's pane: the Vernacular's dark glass lifted to a sky grey, so a glazed profile reads as glass, not a hole
-MAT.pyPane=MAT.darkGlass.clone();MAT.pyPane.color.set(0x7d97a3);MAT.pyPane.roughness=.15;MAT.pyPane.metalness=.55;kdef('pyPaneB',VBOX,MAT.pyPane);
+// Pylon's pane: core/door's clear glass (KGLASS 'clear', 69e5's MAT.izGlass: the Vernacular's own pane, so a Pylon window and
+// a Vernacular one beside it are the same glass), transparent, over the room's dim back (the card, MAT.izRoom: KGLASS.SPEC.room)
+// where nothing real is behind it (the owner, 2026-11-03: "real glass"; it was the dark glass lifted to an opaque sky grey)
+MAT.pyPane=MAT.izGlass;kdef('pyPaneB',VBOX,MAT.pyPane);
+// the room card: 69e5's MAT.izRoom (KGLASS 'room', its colour taken as sRGB: the Vernacular's IZ_ROOMC card's colour)
+MAT.pyRoomS=MAT.izRoom;
 kdef('pyConc',VBOX,MAT.pyConc);
-kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.pyPane);kdef('pyDiscD',PYDISC,MAT.void);kdef('pyDiscR',PYDISC,MAT.rust);
+kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.pyPane);kdef('pyDiscD',PYDISC,MAT.pyRoomS);kdef('pyDiscR',PYDISC,MAT.rust);
 kdef('pyRing',PYRING,MAT.plaster);kdef('pyRingI',PYRING,MAT.iron);
 kdef('pyHalf',PYHALF,MAT.plaster);kdef('pyHalfC',PYHALF,MAT.pyConc);
-kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHEX,MAT.void);kdef('pyHexG',PYHEX,MAT.pyPane);
-// the gable wedge's faces are wound for double-sided roof materials: the void and glass wedges take double-sided copies
-MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.pyPane.clone();MAT.pyGlass.side=THREE.DoubleSide;
-kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyVoid);kdef('pyGableC',VGABLE,MAT.pyConc);
+kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHEX,MAT.pyRoomS);kdef('pyHexG',PYHEX,MAT.pyPane);
+// the gable wedge's faces are wound for double-sided roof materials: the room card's wedge takes a double-sided copy (the
+// glass is double-sided already). The D kind (69q) is the room card, no longer the void (MAT.void)
+MAT.pyRoom=MAT.pyRoomS.clone();MAT.pyRoom.side=THREE.DoubleSide;MAT.pyGlass=MAT.pyPane;
+kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyRoom);kdef('pyGableC',VGABLE,MAT.pyConc);
 kdef('pyDomeR',VDOME,MAT.rust);
 // a smooth render cylinder standing on y = 0 (scale [r, h, r]): the palace's round pavilions and the dome's drum
 kdef('pyCyl',new THREE.CylinderGeometry(1,1,1,36).translate(0,.5,0),MAT.plaster);
@@ -58,6 +63,12 @@ kdef('pyHexTile',VBOX,MAT.pyHexTile);kdef('pyGrille',VPLANE,MAT.pyGrille);kdef('
 
 // ---------------------------------------------------------------- doors in the profiles (the owner, 2026-10-18: no black voids)
 // A profiled opening is a door leaf, a pane or a glow, never MAT.void: timber (walnut, tinted per instance) and steel kinds for
-// the discs, wedges and hex ends, double-sided for the wedges like pyVoid. pynDoorway (69q) draws the leaf and cuts the wall.
+// the discs, wedges and hex ends, double-sided for the wedges like pyRoom. pynDoorway (69q) cuts the wall and hangs real leaves (core/door).
 MAT.pyWood=MAT.wood.clone();MAT.pyWood.color.set(0xffffff);MAT.pyWood.side=THREE.DoubleSide;MAT.pyIron=MAT.iron.clone();MAT.pyIron.side=THREE.DoubleSide;
 kdef('pyDiscW',PYDISC,MAT.pyWood);kdef('pyGableW',VGABLE,MAT.pyWood);kdef('pyDiscM',PYDISC,MAT.pyIron);kdef('pyGableM',VGABLE,MAT.pyIron);kdef('pyHexL',PYHEX,MAT.pyLit);
+
+// ---------------------------------------------------------------- real glass (the owner, 2026-11-03; core/door's KGLASS)
+// A glazed profile (69q, the G and L kinds) is the room card (pyRoomB, pyDiscD, pyGableD, pyHexD) with the pane in front of it;
+// a round head's pane is a half disc (pyHalfG, pyHalfL) so it does not lie over the rectangle's pane (two panes over one
+// another read as a darker patch). The half disc's flat is on y = 0 (PYHALF).
+kdef('pyRoomB',VBOX,MAT.pyRoomS);kdef('pyHalfG',PYHALF,MAT.pyPane);kdef('pyHalfL',PYHALF,MAT.pyLit);kdef('pyHalfD',PYHALF,MAT.pyRoom);

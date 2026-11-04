@@ -55,53 +55,62 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   `biomes/nsemiarid` and `biomes/throne` (their `50-*-species.js`, and their trees fragment where it has a column tree) and
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
   pages' hashes and their per-type triangle counts (the hero column doubles). **2026-11-02:** ebadlands' moonflower column is ported (its turn); nsemiarid, the Throne and Shade are left.
+- **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
+  (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
+  (`kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
+  piece among a thousand merged into one mesh, so a registered volume round each reads empty
+  (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
+  never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics
+  (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
+  sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
+  KNOWN_ISSUES items close.
+- **core/host: a broad phase for the probe's `regOccupancy`** (2026-10-23; the owner asked for it here). It tests every
+  registered volume against every probe point (every instance, every mesh's box centre): 118 s of Rift's verify, all of
+  its invariants (`EFFICIENCY.md`, "Rift's checks, profiled"). Index the volumes by their circle (x, z, r) on
+  `core/space` (KSPACE, not a new hash) and call `has` only on the candidates near each point; every build's `regHas`
+  found is the same cylinder test as `inCyl`, so the counts stay the same (if one is not, keep the full loop for that
+  build). Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) buckets by z for reference. Prove it: the
+  `registered-volumes-non-empty` lines (counts and thinnest) unchanged on Rift, Hyperjungle, Sedesert, Iziz, Girder and
+  Yuni, and their wall times before and after written into `EFFICIENCY.md`. Do it with the probe-points item above (same
+  file). With it, try a smaller sky in `tools/harness.py` `check_profile` (`sky` 64, not 256: the stage capture is 37 s
+  of Rift's verify), kept only if every export-profile check still passes.
+- **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
+  `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
+  arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
+  `releasePointerCapture`) in `try { } catch (e) { }`, as `core/host/98-host-edit.js` already does. About 138 builds take
+  core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
+  its first lines): take that out in the same change.
 
-- **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
-  pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
-  Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
-  builds take core/hamlet (Longsong, `openworld/isle-demo`): a comment change was not worth an isle-demo rebuild alone.
+- **The weapon racks** (`claude/weapon-racks`, 55c2913f7; `kits/yeti/PLAN.md` section 11). The waiting cultures were registered in
+  the rebuild of 2026-11-04 (core/tags, core/catalog, the Jimjam and Dalab culture files, the missing fruit); the racks' branch
+  is not in this repository's history: merge it when it is pushed.
 
 - **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
   Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
   Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
-- **The waiting cultures** (the owner, 2026-10-26; `kits/yeti/PLAN.md` section 11). The rebuild this list waits for: register
-  `khaayken`, `tungang`, `fellgang`, `talovolci`, `pylon` and `talia` in `core/tags/52-core-tags-vocab.js` (`CATALOG_CULTURES`
-  and `CULTURE_NAMES`, `test-tags.js`'s digest), lift `NO_CATALOG` for `jimjam` and `dalab` with their culture files, and merge
-  the weapon racks (`claude/weapon-racks`, 55c2913f7). It starts once at least two more kits wait on it beside the Yeti kit.
-
-- **kits/catalog: the missing fruit** (2026-10-26, from the kits' own lists). `krator-master-furniture-generic-fruit.js` has no
-  piece for the north basin's apple, walnut, apricot, pear, pomegranate, pistachio and almond (`kits/catalog/KNOWN_ISSUES.md`;
-  `biomes/nsemiarid` `FRUIT_NOT_DRAWN`) nor for Guilin's pomelo, osmanthus flowers and bamboo shoots (`biomes/guilin`
-  `FRUIT_NOT_DRAWN`). Small data pieces in one file; then set each species' `fruit` and empty the two lists. Pistachio and
-  almond go into `kits/crops` too.
-
-- **tools/check_core_use.py: refresh the baseline** (2026-10-26). It reports "252 findings, none new", and some of the 252
-  are already fixed: rerun with `--write-baseline` after the rebuild so the baseline holds only what is still open. No page
-  moves.
-
-- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
-  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
-  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
-  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
-  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
-    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
-    rebuild and verify Talia when it merges main.
-  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
-    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
-    and takes none of it.
-  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
-    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
-  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
-    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
-
-- **Opening doors as a core module** (the owner, 2026-10-20). Door open/shut lives in Iziz's page: `IZDOOR` (69e5: the
-  leaf records, swing, `open` / `close` / `toggle` / `nearest`), `95j-iziz-doors.js` (each leaf's walk blocks in
-  `core/walk`, cleared doorways) and the key in `99-start.js`. Lift it into a core module every build takes (beside
-  `core/walk`): leaves as plain records keyed by stable ids (hinge, width, swing, state, locked), open and close as
-  plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
-  host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
+- **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
+  the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).
+  - Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
+    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).
+  - `kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
+    and its glass in KGLASS (`kits/ancients-interiors/src/75-ai-doors.js` matches the shell's leaves by order meanwhile), and
+    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.
+  - Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
+    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.
+  - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
+    building's `F.door`).
+  - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.
+  - Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.
+  - Beast Riders (`kits/beast-riders`): its town copies draw Girder's and Mav's leaves shut and their walls whole (fallbacks in
+    their `55-arch.js` / `56-levels.js`); the faithful port bundles `54-openings.js`, the glass of `81-glow.js` and core/door.
+  - Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
+    hardware, or a socket on the leaf).
+  - The arcologies' painted windows (canvas glazing, Crescent, Monolith, Hill, ...) stay painted: real panes would be tens
+    of thousands of instances a building.
+  - Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
+    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).
 
 ## With the final biome rebuild *(the owner, 2026-10-26)*
 
@@ -204,10 +213,9 @@ loads each build's `tex/` pack, which is WebP. What is left:
 
 ## Viewers, interaction and effects *(the owner, 2026-10-07; raised during the Zeijani kit, not started)*
 
-- **Doors that open.** Doors, hatches, gates, shutters and every door-like object open and close with an interact
-  button (in walk mode: look at it, press the key). The door records already exist (`door()`, the interiors kit's
-  door leaves, `core/walk` gaps); a closed leaf is a walk block, an open one is not. **[G data]** for the state and
-  the block, **[G native]** for the animation.
+- ~~**Doors that open.**~~ Done (2026-11-03/04): `core/door` (KDOOR's kinds: swing, slide, lift, tilt, fold, iris, hatch,
+  pairs, double-acting, sprung; KDOORLEAF's styles; KDOORHOST's E and tip) in every building kit. What is left is under
+  "Doors and glass: what is left" above.
 - **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
   floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
   builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).

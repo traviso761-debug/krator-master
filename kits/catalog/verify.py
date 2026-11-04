@@ -58,6 +58,8 @@ except Exception:
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 from harness import verify_page
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'))
+import catalog as kcat   # the engine's names resolve to core/catalog (MODULARITY-PLAN.md step 3)
 TOL_M, TOL_FRAC, UNDER_FRAC, ROOT_FRAC = 0.05, 0.04, 0.30, 0.10
 # key -> reason; only for pieces recorded as deferred in KNOWN_ISSUES.md
 ALLOW = {}
@@ -111,7 +113,7 @@ def kit_checks():
     res = []
     bad = []
     for f in ['krator-furniture-kit.js'] + furn_files():
-        src = PALETTE_BLOCK.sub('', open(os.path.join(HERE, f), encoding='utf-8').read())
+        src = PALETTE_BLOCK.sub('', open(kcat.path(f), encoding='utf-8').read())
         n = len(HEX.findall(src))
         if n:
             bad.append('%s: %d' % (f, n))

@@ -11,7 +11,7 @@ Rebuild first (`cd <build> && python3 build.py`; every build is deterministic). 
 hash differs after a refactor needs a screenshot diff before the baseline is rewritten.
 The file records every `dist/*.html` of every build, the page a build without a dist/ writes beside
 its build.py (the Voth lineage: yuni*.html, locus*.html, girder.html, mavs-refuge.html),
-plus `core/sockets/example/*.html`.
+plus `kits/post-apoc/sockets-example/*.html` (the socket sheet; it was core/sockets/example until 2026-11-03).
 
 --write keeps the entry of a page that is not built in this checkout (a gitignored dist/, such as
 Port's and Ys's), so a partial rebuild never silently drops pages from the baseline; --prune drops them.
@@ -49,7 +49,7 @@ def pages():
                 for f in sorted(os.listdir(os.path.join(d, name))):
                     if f.endswith('.html') and not f.startswith('.'):
                         out.append(os.path.relpath(os.path.join(d, name, f), ROOT))
-    ex = os.path.join(ROOT, 'core', 'sockets', 'example')
+    ex = os.path.join(ROOT, 'kits', 'post-apoc', 'sockets-example')
     if os.path.isdir(ex):
         out += [os.path.relpath(os.path.join(ex, f), ROOT) for f in sorted(os.listdir(ex)) if f.endswith('.html')]
     return [p.replace(os.sep, '/') for p in out]   # the baseline's keys use '/'; relpath gives '\' on Windows

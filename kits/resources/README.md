@@ -93,3 +93,8 @@ quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the
 - `node kits/resources/tests/test-res.js` checks all of it (44 checks, each with a negative); `godot/kres_field_test.gd`
   checks the GDScript twin against it.
 
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. The page has no `core/walk`, so the doors carry no walk blocks here.
+
+What it changed here: nothing to change (the nodes are props: no doorway or window); the page loads `core/door` because the engine draws through it.

@@ -34,24 +34,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-office-c.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/67-cultural.js` | 7.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69-mat-salvage.js` | 16.7 | [draw] | 34 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
-| `src/69b-vern-mat.js` | 14.4 | [draw] | 28 | 8 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69c-vern-helpers.js` | 22.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69e-vern-hollow.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69e5-iziz-openings.js` | 16.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69f-iziz-fixtures.js` | 3.0 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | M5: notes the vernacular helpers' doors, windows and lamps in the world frame (THREE.Vector3 for the kit transform only); 91t registers them |
-| `src/70-vern-dwellings.js` | 23.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71-vern-trade.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71a-vern-food.js` | 22.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71b-vern-cloth.js` | 22.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71c-vern-craft.js` | 28.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/72-vern-civic.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/73-police.js` | 8.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-vern-infra.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/73b-vern-works.js` | 31.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73c-vern-land.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74-vern-guilds.js` | 35.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74b-vern-frontier.js` | 38.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/74z-vern-trades.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-hotel.js` | 15.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-port-embassy.js` | 24.8 | [draw] | 16 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-campus.js` | 10.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
@@ -70,7 +53,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/79-iziz-original.js` | 22.9 | [draw] | 17 | 0 | 0 | 0 | 0 | 14 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-houses-abc.js` | 6.3 | [draw] | 9 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/82-apartments.js` | 12.8 | [draw] | 9 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/83-amphitheater.js` | 8.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/84-fuel.js` | 4.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
@@ -94,18 +76,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/84-city-geo.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/85-city-paint.js` | 5.4 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `targets/city/86-bio-10-core-head.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-20-core-kit.js` | 32.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: data candidate that also draws |
-| `targets/city/86-bio-30-core-foliage.js` | 18.3 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-35-core-anim.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-40-core-place.js` | 10.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/86-bio-45-init.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/86-bio-50-biome-hyperjungle-species.js` | 27.7 | [draw] | 9 | 3 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `targets/city/86-bio-55-biome-hyperjungle-trees.js` | 29.7 | [draw] | 2 | 1 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-58-biome-hyperjungle-fauna.js` | 14.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 21 | 0 | 1 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-60-biome-hyperjungle-floor.js` | 33.2 | [draw] | 1 | 1 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-65-biome-hyperjungle-dress.js` | 6.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/86-bio-70-biome-hyperjungle.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/87-city-layout.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/88-city-place.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

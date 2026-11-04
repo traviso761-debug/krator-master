@@ -38,7 +38,8 @@ import harness as _harness
 from check_trades import trades_check   # the Voth census table (tools/check_trades.py)
 
 def _voth_trades():
-    ok, detail, _ = trades_check(os.path.dirname(os.path.abspath(__file__)))
+    # the trades table moved with the kit (kits/highlands/src/89-*-trades.js, 2026-11-03: MODULARITY-PLAN.md step 4)
+    ok, detail, _ = trades_check(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'kits', 'highlands'))
     return {'name': 'voth-trades', 'ok': ok, 'detail': detail}
 from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, verify_page, Abort
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))

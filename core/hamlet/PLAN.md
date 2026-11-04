@@ -159,9 +159,10 @@ year**, so the owner can watch how it behaves and adjust.
   year the delta is dropped and the tree is whole again.
 - **The regrowth time is a tunable** (`TUNE.hamlet.regrowDays: 365`). Setting it per species later (fast bamboo,
   slow hardwood) changes nothing else.
-- **Nothing runs out for now** (owner, 2026-10-18). Nodes never run out (kits/resources, as now), and **pasture and
-  fish are effectively infinite** too: a field's `gather` weight sets how many can work it, not a stock that drains.
-  Salt pans the same. Depletion, if it comes, is a tunable added later, as timber's regrowth is.
+- **Resources deplete** (owner, 2026-11-02, over the rule of 2026-10-18 that nothing runs out). The isle demo is the first
+  to set it, a tunable by resource kind (`ISLE.TUNE.sim.hamlets.sites`, on core's `SIM.site` `amount` and `regen`): an ore
+  node holds an amount by grade and does not come back; a salt pan, a pasture and a timber stand drain and regrow a night.
+  A field's `gather` weight still sets how many can work it. Fish are not yet a site.
 
 ## 3. Cultures and the works
 

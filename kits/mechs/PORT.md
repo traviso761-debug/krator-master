@@ -13,8 +13,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 4.7 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/90-sheet.js` | 15.7 | [web] | 22 | 6 | 8 | 2 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-hover.js` | 2.9 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/93-polygon.js` | 4.7 | [web] | 6 | 0 | 9 | 9 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |

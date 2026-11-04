@@ -79,11 +79,11 @@ function BLUNT_TOWER(x,y,z, R,h, opt){
   [0.50,0.74].forEach(function(t,k){ var r=bluntR(R,t)*(1+amp)+0.10; TUBE('mosaic', [{x:x,y:y+h*t-0.55,z:z,r:r},{x:x,y:y+h*t+0.55,z:z,r:r*(k?0.985:1.0)}], k?MOSBLUEC[3]:band, { seg:20 }); });
   var tc=0.93, rc=bluntR(R,tc)+0.12; DOME(x, y+h*tc, z, rc, h*(1-tc)+0.9, 0, band, 'mosaic');
   if(opt.finial!==false){ CYL(x, y+h+0.4, z, 0.16, 2.6, 0, BRASSC[0], 'metal'); BALL(x, y+h+3.3, z, 0.55, opt.glow?PAL.electricBlue:BRASSC[1], opt.glow?'glowmat':'metal'); }
-  /* parabolic lookout windows: dark sockets sunk into the skin */
+  /* parabolic lookout windows: unglazed sockets sunk into the skin, the room card's colour (53-assets.js ROOMC) */
   (opt.windows||[0.40,0.62]).forEach(function(t,k){ var nw = k? 6 : 8, r=bluntR(R,t)*(1-amp);
     for(var w=0;w<nw;w++){ var a=(w+0.5*k)/nw*TAU+ph, wx=x+Math.cos(a)*(r-0.55), wz=z+Math.sin(a)*(r-0.55);
-      BOX(wx, y+h*t-1.1, wz, 0.95, 2.1, 1.3, -a+Math.PI/2, VOIDC[0], 'dark');
-      CONE(wx, y+h*t+1.0, wz, 0.62, 0.9, 0, VOIDC[0], 'dark'); } });
+      BOX(wx, y+h*t-1.1, wz, 0.95, 2.1, 1.3, -a+Math.PI/2, ROOMC, 'dark');
+      CONE(wx, y+h*t+1.0, wz, 0.62, 0.9, 0, ROOMC, 'dark'); } });
 }
 
 /* ------------------------------------------------------------------ LOCUS: bridges

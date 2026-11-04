@@ -124,6 +124,8 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  if(neg==='rate'){const a=cp(w1);a.b.towns.kautoa.food=a.a.towns.kautoa.food;return pick(ISLE.weekChecks(a,w2),/a worker a day/);}
  if(neg==='decided'){const a=cp(w1);a.decided=3;return pick(ISLE.weekChecks(a,w2),/decided/);}
 if(neg==='wave'){const a=cp(w1);let add=0;a.days.forEach((x,j)=>{if(j%3===2)add+=9000;x.towns.valapo.goods.fish.bought+=add;});return pick(ISLE.weekChecks(a,w2),/steadily/);}
+if(neg==='ledger'){const a=cp(w1);a.b.ledger.towns.valapo.fish.total+=40;return pick(ISLE.weekChecks(a,w2),/the ledger: every good/);}
+if(neg==='abroad'){const a=cp(w1);a.b.ledger.towns.kautoa.clove.exported+=25;return pick(ISLE.weekChecks(a,w2),/left the map/);}
 if(neg==='diet'){const a=cp(w1),b=cp(w2);[a,b].forEach(W=>{W.b.towns.valapo.goods.rice.bought=W.a.towns.valapo.goods.rice.bought;});return pick(ISLE.weekChecks(a,b),/foods eaten/);}
  if(neg==='late'){const a=cp(w1);a.days[4].towns.valapo.goods.fish.short+=5;return pick(ISLE.weekChecks(a,w2),/short after the second day/);}
  if(neg==='swing'){const a=cp(w1);a.days.forEach((x,j)=>{if(j%2)x.towns.kautoa.goods.rice.total*=1.6;});return pick(ISLE.weekChecks(a,w2),/stock steady/);}
@@ -133,7 +135,7 @@ if(neg==='diet'){const a=cp(w1),b=cp(w2);[a,b].forEach(W=>{W.b.towns.valapo.good
  if(neg==='clad'){const a=cp(w1);a.b.towns.valapo.wear.hurtOld=4;return pick(ISLE.weekChecks(a,w2),/keep their clothes/);}
  if(neg==='ships'){const a=cp(w1),b=cp(w2);a.b.towns.kautoa.sold=Object.assign({},a.a.towns.kautoa.sold);b.b.towns.kautoa.sold=Object.assign({},b.a.towns.kautoa.sold);return pick(ISLE.weekChecks(a,b),/ships from beyond/);}
  return [];}"""
-WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad', 'diet', 'wave')
+WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad', 'diet', 'wave', 'ledger', 'abroad')
 # P7e: the `sim` export section (src/50) after the week: src/50's checks on ISLE.simExport(), each with a negative, and
 # EXPORT.check under the profile ['sim'] failing on a stubbed section and passing filled
 SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pick=(rs,re)=>rs.filter(c=>re.test(c.name));

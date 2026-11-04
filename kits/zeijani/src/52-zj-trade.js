@@ -43,11 +43,11 @@ defBuilding({key:'zj_inn_built',name:'Inn (constructed)',seed:5204,cut:true,tags
   zvDoorway(0,.3,5,1.4,{n:3});sock('sign',2.2,2.2,5.1,0,{w:1.4,h:.6,trade:'INN'});
   for(const s of [-1,1])FURNISH('zeijani_stone_bench',s*3.6,0,6.2,0,{setting:'outdoor'});}});
 
-/* the market stalls. (a) a niche cut in a wall: a block of the wall (drawn: no void), the recess dark behind a counter, a shutter
+/* the market stalls. (a) a niche cut in a wall: a block of the wall (drawn: no void), the recess's back the room card behind a counter, a shutter
    propped open over it, a lamp; (b) a free-standing frame: four poles, a counter, a felt awning (v 0) or a fungus-cap canopy (v 1) */
 defBuilding({key:'zj_stall_a',name:'Market stall in a wall niche',seed:5205,tags:{types:['market'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:5,d:2.2,h:3.6,
  build(o){const c=P('tuffDark'),wt=P('white'),wd=P('woodD');
-  box('tuffHewn',0,0,-.6,4.4,3.4,.8,c);box('basaltPol',0,.9,-.19,2.6,1.6,.02,P('soot'));
+  box('tuffHewn',0,0,-.6,4.4,3.4,.8,c);svRoom(0,.9,-.19,0,2.6,1.6);
   for(const s of [-1,1])box('tuffHewn',s*1.5,.9,-.05,.4,1.6,.3,c);box('tuffHewn',0,2.5,-.05,3.4,.9,.3,c);box('tuffHewn',0,0,-.05,3.4,.9,.3,c);
   box('tuffPol',0,.9,.05,3.0,.1,.5,wt);
   W(0,2.5,.12,0,()=>{WX(0,0,0,0,-1.0,0,()=>{box('plank',0,-.05,0,2.8,.06,1.2,P('wood'));});});for(const s of [-1,1])beam('log',[s*1.2,.95,.55],[s*1.2,2.5,.95],.04,wd,true,5);

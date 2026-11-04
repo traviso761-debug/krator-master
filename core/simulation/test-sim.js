@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -831,6 +831,83 @@ function world(seed){
  ok('stagger: twenty homes buy between 1.5 and 4.5 days of food, no two rounds alike ('+Math.min(...A)+'-'+Math.max(...A)+' servings)',Math.min(...A)>=30&&Math.max(...A)<=90&&new Set(A).size>=10,new Set(A).size===1);
  ok('without it every home buys three days (60 servings)',B.every(x=>x===60),!B.every(x=>x===60));}
 
+// the ledger (77-sim-7-ledger.js, SCHEMA.md "The books"): deterministic small scenarios, each with a negative: a town's goods
+// balance with spoilage on its own line, a load is in one town, at sea or in the other, what leaves the map is abroad
+{const two=()=>{const {S,clock}=world(179);
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{unit:'serving'},salt:{unit:'lot'}},window:1,spoil:{rice:0.1}});const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:1000,salt:100};S.R.place.vShed.stock={rice:10,salt:5};
+   const R=S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:300,minutes:300,mins:30,keep:0,want:3,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   const run=(m0,m1)=>{for(let m=m0;m<m1;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0)S.supply('rice',2,false,'valapo');S.step();}};
+   return {S,run,R,EK,EV};};
+ let W=two(),a=W.S.ledgerSnap();W.run(0,200);
+ let mid=W.S.ledgerSnap(),L=W.S.ledger(a,mid);
+ ok('the ledger: both towns balance with a load at sea, the load in neither',L.ok&&mid.sea.line['kautoa>valapo'].rice>0&&L.towns.valapo.rice.inbound===mid.sea.line['kautoa>valapo'].rice,!L.ok);
+ ok('a statement says whose, in what unit, and the opening',L.towns.kautoa.rice.unit==='serving'&&L.towns.kautoa.rice.owner==='kautoa'&&L.towns.kautoa.rice.opening===1000,L.towns.kautoa.rice.owner!=='kautoa');
+ W.run(200,1500);const c=W.S.ledgerSnap(),L2=W.S.ledger(a,c);
+ ok('over a day: spoilage on its own line, not in consumed',L2.ok&&L2.towns.kautoa.rice.spoiled>0&&L2.towns.kautoa.rice.consumed===0,L2.towns.kautoa.rice.consumed>0);
+ ok('a route\'s leg: shipped = landed + the change at sea',L2.routes.line['kautoa>valapo'].rice.shipped>0&&L2.towns.kautoa.rice.abroadOut===0&&L2.towns.valapo.rice.abroadIn===0,L2.towns.kautoa.rice.abroadOut!==0);
+ W.S.R.place.kShed.stock.rice+=7;const P1=W.S.ledger(a,W.S.ledgerSnap());W.S.R.place.kShed.stock.rice-=7;
+ ok('negative: 7 rice from nowhere is caught, and named',!P1.ok&&/kautoa rice/.test(P1.problems[0]),P1.ok);
+ const lost=JSON.parse(JSON.stringify(c));lost.routes.line.landed['kautoa>valapo'].rice-=10;const P2=W.S.ledger(a,lost);
+ ok('negative: 10 lost on the road is caught',!P2.ok&&P2.problems.some(p=>/line kautoa>valapo rice/.test(p)),P2.ok);
+ const unb=JSON.parse(JSON.stringify(c));unb.towns.valapo.rice.imported-=20;unb.towns.valapo.rice.total-=20;const P3=W.S.ledger(a,unb);
+ ok('negative: a load landed but never booked imported is caught',!P3.ok&&P3.problems.some(p=>/never booked imported/.test(p)),P3.ok);
+ W.S.withEcon('kautoa',()=>{const n=W.S.economyTake('salt',30);W.S.economyBook('exported','salt',n);});const c2=W.S.ledgerSnap(),L3=W.S.ledger(c,c2);
+ ok('what leaves the map is abroad, on no route',L3.ok&&L3.towns.kautoa.salt.abroadOut===30,L3.towns.kautoa.salt.abroadOut!==30);}
+{const {S}=world(181);S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.economy({goods:{corn:{}},window:1});S.store('shed',{kind:'warehouse'});S.R.place.shed.stock={corn:50};
+ const a=S.ledgerSnap();S.supply('corn',5);const L=S.ledger(a,S.ledgerSnap());
+ ok('an unkeyed page has one ledger, under _',L.ok&&L.towns._.corn.consumed===5&&L.towns._.corn.closing===45,!L.ok);
+ ok('no economy, an empty ledger',Object.keys(world(183).S.ledgerSnap().towns).length===0,false);}
+
+// resource sites and stockpile policies (PLAN-ECONOMY.md Phase 1): a site's grade sets the yield, its id keys its take, an
+// endless site never stops (the owner's rule), a finite one blocks and says so, regrows by night; a policy's max stops the
+// makers, its reserve stays out of a route, its min holds a shelf
+{const mk=(site,pol,gov)=>{const {S,clock}=world(191);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'pit',kind:'mine',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'miner',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   const E=S.economy(Object.assign({goods:{ore:{unit:'lot'}},every:60,window:1,cart:{cap:500,load:5,unload:5,minLoad:5}},gov?{govern:{every:60,cover:3,ti:1.5,alpha:.3,min:.3,max:1.5}}:{}));
+   S.store('shed',{kind:'warehouse'});if(site)S.site(Object.assign({id:'world:node-7',kind:'iron',goods:['ore']},site));
+   S.recipe('pit',Object.assign({out:['ore'],rate:2,cap:100000},site?{site:'world:node-7'}:{}));S.R.place.shed.stock={ore:0};if(pol)S.stockpile(null,pol);
+   [0,1].forEach(i=>S.actor({id:'m'+i,role:'miner',home:'homeA',work:'pit'}));S.cart(S.actor({id:'c',role:'carter',home:'homeA'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const P=mk(null),H=mk({grade:'high',yield:2}),L=mk({grade:'low',yield:.5});[P,H,L].forEach(W=>W.run(10));
+ ok('a site\'s grade sets the yield ('+H.E.made.ore+' high, '+P.E.made.ore+' plain, '+L.E.made.ore+' low)',H.E.made.ore>1.8*P.E.made.ore&&L.E.made.ore<.6*P.E.made.ore,H.E.made.ore<=P.E.made.ore);
+ const R0=H.S.sitesReport()[0];ok('a site reports by its world id what it gave, and an endless one has no amount',R0.id==='world:node-7'&&R0.taken===H.E.made.ore&&R0.amount===null,R0.taken!==H.E.made.ore);
+ const a=H.S.ledgerSnap();H.run(5);const LG=H.S.ledger(a,H.S.ledgerSnap());ok('the ledger reconciles a site\'s take with what was made',LG.ok&&LG.sites['world:node-7'].taken>0,!LG.ok);
+ const bad=JSON.parse(JSON.stringify(H.S.ledgerSnap()));bad.sites['world:node-7'].taken+=50;ok('negative: a site that gave more than was made is caught',!H.S.ledger(a,bad).ok,H.S.ledger(a,bad).ok);
+ const F=mk({amount:30});F.run(12);ok('a finite site stops at nothing left and says why',F.E.made.ore===30&&F.S.sitesReport()[0].amount===0&&F.E.blocked['depleted: world:node-7']>0,F.E.made.ore>30);
+ const Fr=mk({amount:30,regen:10});Fr.run(30);ok('a site with regen grows back by night',Fr.E.made.ore>30,Fr.E.made.ore<=30);
+ const noMax=mk(null,null,true),Mx=mk(null,{ore:{max:60}},true);[noMax,Mx].forEach(W=>W.run(72));
+ ok('a policy\'s max stops the makers ('+Mx.E.made.ore+' made, '+noMax.E.made.ore+' without; rate '+Mx.E.recipes.pit.rate+')',Mx.E.recipes.pit.rate===0&&Mx.E.made.ore<noMax.E.made.ore,Mx.E.recipes.pit.rate>0);
+ const Mn=mk(null,{ore:{min:100}},true);Mn.run(72);const sm=Mn.S.economyGoverned().ore;ok('a policy\'s min holds a shelf with no demand',sm.target===100&&noMax.S.economyGoverned().ore.target===0,sm.target!==100);}
+{const go=(pol)=>{const {S,clock}=world(193);S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{}},window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:400};
+   if(pol)S.stockpile('kautoa',pol);S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:1000,minutes:60,mins:30,keep:0,want:100,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}return EV.imported.rice||0;};
+ const r=go({rice:{reserve:300}}),n=go(null);ok('a policy\'s reserve stays out of a route ('+r+' sent, '+n+' without)',r===100&&n===400,r>100);}
+
+// batch recipes (PLAN-ECONOMY.md Phase 2): inputs claimed once at the start, outputs and byproducts at the end, and what
+// stops a batch said by place: no input, a partial input, no workers, a full store, an empty site
+{const mk=(o)=>{o=o||{};const {S,clock}=world(197);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'forge',kind:'smithy',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'smith',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{ore:{},coal:{},iron:{},slag:{}},every:60,window:1});S.store('shed',{kind:'warehouse'});if(o.site)S.site(Object.assign({id:'n1',goods:['iron']},o.site));
+   S.recipe('forge',Object.assign({batch:{'in':{ore:2,coal:1},out:{iron:1},by:{slag:1},hours:2},cap:o.cap==null?1000:o.cap},o.site?{site:'n1'}:{}));S.R.place.shed.stock=o.stock||{ore:20,coal:10};
+   if(o.smiths!==0)[0,1].forEach(i=>S.actor({id:'s'+i,role:'smith',home:'homeA',work:'forge'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const A=mk();const a0=A.S.ledgerSnap();A.run(30);const L=A.S.ledger(a0,A.S.ledgerSnap());
+ ok('a batch makes its outputs and byproduct from its inputs (10 batches from 20 ore and 10 coal)',A.E.made.iron===10&&A.E.made.slag===10&&A.E.used.ore===20&&A.E.used.coal===10,A.E.made.iron!==10);
+ ok('the ledger balances over batches',L.ok,!L.ok);
+ ok('out of input it says what is missing',A.S.blockedReport().forge.reason==='missing'&&A.S.blockedReport().forge.goods.indexOf('ore')>=0,!A.S.blockedReport().forge);
+ const P=mk({stock:{ore:1,coal:9}});P.run(10);ok('a partial input claims nothing',!(P.E.used.coal>0)&&P.S.R.place.shed.stock.coal===9&&P.S.blockedReport().forge.goods.join()==='ore',P.E.used.coal>0);
+ const N=mk({smiths:0});N.run(3);ok('nobody at work is said',N.S.blockedReport().forge.reason==='no workers',!N.S.blockedReport().forge);
+ const F=mk({cap:3});F.run(10);ok('a full store stops it and says so',F.S.blockedReport().forge.reason==='full'&&F.E.made.iron<=2,F.E.made.iron>3);
+ const D=mk({site:{amount:3}});D.run(20);ok('an empty site stops it, its batch whole',D.S.blockedReport().forge.reason==='depleted'&&D.E.made.iron===3&&D.S.sitesReport()[0].amount===0,D.E.made.iron!==3);
+ const R=mk();R.run(30);R.S.R.place.shed.stock.ore=4;R.S.R.place.shed.stock.coal=2;R.run(10);ok('fed again it runs',R.E.made.iron===12,R.E.made.iron!==12);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 
@@ -898,7 +975,23 @@ function world(seed){
  S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const e=S.actor({id:'e1',role:'eater',home:'cot'});
  S.R.place.cot.store={milk:5,bread:5};e.wanted=null;S.decide(e,S.minute(),clock.t);const b1=e.boost.EAT;
  S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
- ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
+ ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);
+ // a kitchen without its pot (meal.pot): what it cooks is worth noPot; with the pot, or no rule, a full meal
+ const c0=S.place({id:'cot2',kind:'home',x:0,z:0,activities:{EAT:3,SLEEP:3}});S.ITEMS.kinds.pot={id:'pot',cat:'household',slot:'lhand',life:60};
+ const e2=S.actor({id:'e2',role:'eater',home:'cot2'});c0.potBy='e2';S.ITEMS.meal.pot='pot';S.ITEMS.meal.noPot=0.6;
+ const bite=(m)=>{c0.store={milk:5,bread:5};e2.wanted=null;S.decide(e2,S.minute()+m,clock.t);return e2.boost.EAT;};
+ const none=bite(2);S.equip(e2,'pot',0);const has=bite(3);
+ ok('a kitchen without its pot cooks a poorer meal ('+none.toFixed(1)+'), with it a full one ('+has.toFixed(1)+')',Math.abs(none-1.8)<1e-9&&has===3,none>=has);}
+// the treat's mix (treat.mix): over days a person buys any treat its wealth reaches, by a hash; without it only the dearest
+{const {S}=world(173);S.needs({list:['material'],rate:{material:1},fill:{}});
+ S.items({kinds:{kava:{cat:'luxury',material:1},mat:{cat:'household',material:1},gem:{cat:'luxury',material:1}},free:['IDLE'],secPerMinute:1});S.shop('market',['kava','mat','gem']);
+ S.role({id:'buyer',org:'folk',sched:[[0,'IDLE']]});const a=S.actor({id:'t1',role:'buyer',home:'homeA'});a.wealth=0.5;
+ const seen=(mix)=>{S.ITEMS.treat={at:10,items:[[0,'kava'],[0.3,'mat'],[0.9,'gem']],mix:mix};const n={};a.itDay=0;a.nd=[60];a.ndT=S.minute();
+   for(let d=1;d<=40;d++){a.errand=null;a.errCool=null;a.nd=[60];S.itemsAbstractDay(a,d,null);}
+   Object.keys(S.ITEMS.stats.errands).forEach(k=>{n[k]=S.ITEMS.stats.errands[k];});S.ITEMS.stats.errands={};return n;};
+ const M=seen(true),D=seen(false);
+ ok('mix: a person of middling wealth buys both treats it reaches ('+JSON.stringify(M)+'), not the one past it',M.kava>5&&M.mat>5&&!M.gem,!(M.kava>0));
+ ok('without it only the dearest it reaches',D.mat===40&&!D.kava,D.kava>0);}
 
 
 // what things hold and the settlement's stocks (77-sim-7-stocks.js): SIM.contents(id) by record, SIM.stocks() by item

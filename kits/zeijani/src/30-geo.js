@@ -194,6 +194,6 @@ function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in bucket
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));
  if(b.f)g.setAttribute('aFlut',new THREE.Float32BufferAttribute(b.f,3));if(b.k)g.setAttribute('aCut',new THREE.Float32BufferAttribute(b.k,4));if(b.w)g.setAttribute('aFlk',new THREE.Float32BufferAttribute(b.w,1));
  g.setIndex(b.p.length/3>65535?new THREE.Uint32BufferAttribute(b.i,1):new THREE.Uint16BufferAttribute(b.i,1));g.computeBoundingSphere();
- const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;if(mk==='glass'||mk==='water')mesh.renderOrder=2;
- if(shadow&&mk!=='glass'&&mk!=='glow'&&mk!=='water'){mesh.castShadow=true;mesh.receiveShadow=true;}
+ const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;const pane=!!(m.userData.kglass&&m.transparent);if(mk==='glass'||mk==='water'||pane)mesh.renderOrder=2;   /* pane: core/door's glass (core/engine/36o-open.js) */
+ if(shadow&&mk!=='glass'&&mk!=='glow'&&mk!=='water'&&!pane){mesh.castShadow=true;mesh.receiveShadow=true;}
  parent.add(mesh);out.push(mesh);}return out;}

@@ -101,7 +101,7 @@ defBuilding({key:'et_lighthouse',name:'Lighthouse',seed:7712,w:14,d:14,h:34,budg
   pushM(TF(0,22.6,0));etHexFaces(2.6*ET_HEX_AP,()=>{box('alabaster',0,0,0,2.4,3.2,.1,new THREE.Color(1,1,1));etTracery(0,0,.08,2.4,3.2,{head:'flat',mw:.4,th:.5});});
    for(const q of etHex(2.6))box('bronze',q[0],0,q[1],.25,3.3,.25,P('bronze'));box('glow',0,.6,0,1.2,1.8,1.2,new THREE.Color(0xffe6bc));
    etOgee(3.1,3.3,3,{mk:'scale',seg:6,a0:0,col:P('bronze'),finial:1.2});popM();
-  pushM(TF(0,1,4.8));etWall(2.6,0,2.6,'brick',P('brick'),[{x:0,w:1.0,h:2.2,door:true,maskMetal:'lead'}],{t:.04});popM();}});
+  pushM(TF(0,1,4.8));etWall(2.6,0,2.6,'brick',P('brick'),[{x:0,w:1.0,h:2.2,door:true,maskMetal:'lead'}],{t:.04,solid:true});popM();}});
 
 /* the factory quarter: the walled quarter of Farport its foreign traders are confined to, a gate under watch, two
    warehouses and a hall inside, nothing of theirs outside */

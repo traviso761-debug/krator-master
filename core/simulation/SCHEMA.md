@@ -193,6 +193,41 @@ A page may hold several settlements, each with its own economy (`settlements/isl
   or `'closed'`; without `trade`, a stance of wary or better). `SIM.tradeReport(id?)`: voyages, refused, what went
   each way, landed, each carrier's load.
 
+## The books (the accounting contract; PLAN-ECONOMY.md Phase 0)
+
+`77-sim-7-ledger.js`: read only, on the existing books; it adds no counter. `SIM.ledgerSnap()` takes a snapshot of plain data, `SIM.ledger(a, b)`
+gives the statement between two.
+
+**A good.** Every good of an economy has a **unit** (`goods[g].unit`: the isles' servings of food and lots of the rest) and an **owner**: for now the
+settlement whose economy holds it (no private or faction ownership yet: the row carries the field so a later phase fills it, not adds it). Its
+**location** is a stocks state: `production` (a maker's store), `transit` (a cart, a carrier on the map, a landing), `storage` (warehouses and
+households' food). **Items** (a shirt, a tool) are not goods: a purchase consumes the good it is made of, and the ledger stops there.
+
+**The balance, per good and settlement.** opening + made + imported - consumed - spoiled - exported = closing, where consumed = used - bought +
+eaten - spoiled (a household's purchase moves food, it is eaten later). Spoilage has its own line, though it stays booked `used`, so older
+readers of `used` are unchanged. Inbound, outbound and ordered stand beside it, in no settlement's closing.
+
+**Across settlements.** For each route leg and good, shipped = landed + the change at sea: a load is counted once, in one settlement, on a route,
+or off the map. A sender's exports less what it shipped is **abroad** (never negative); so is a receiver's imports less what landed. A good
+leaving the map has no counterparty yet: the isles' check holds abroad equal to what the ships bought.
+
+**Resource sites and stockpiles (Phase 1).** `SIM.site({id, kind, goods, grade, yield, amount, regen, capacity, settlement})` keys a resource to its
+world record's stable id, and a recipe's `site` draws on it: `yield` multiplies the rate, `taken` counts what it gave, and the ledger holds that
+to what its settlement made. `amount` unset is endless; a number (the owner's rule since 2026-11-02: core/hamlet/PLAN.md)
+depletes, blocks as `depleted: id`, and takes `regen` back a night. `SIM.stockpile(settlement, {good: {min, target, max, reserve}})` is a settlement's
+policy: `min` floors the governor's target, `target` replaces it, at `max` the good's makers stop (its supply line, with the governor's `pool`), and no
+trade route takes `reserve`.
+
+**Batch recipes (Phase 2).** `SIM.recipe(place, {batch:{in, out, by, hours}, cap, site})`: `hours` worker-hours make one batch. A place holds one batch in hand
+(`P.order`). Its `in` are claimed once when it starts, all or none, its own store first and then the warehouses, booked `used`; its `out` and byproducts `by` land
+when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` is batches a worker-hour, so the governor sets it as any, and `in` become the good's
+derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
+A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
+
+**Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
+does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields
+join a row; an existing field's meaning does not change. The export takes the statement as an added section when Godot needs it.
+
 ## The three levels (the contract for a settlement nobody is watching; P7d builds it)
 
 A settlement runs at one of three levels, chosen by the player's window, never by what it holds:

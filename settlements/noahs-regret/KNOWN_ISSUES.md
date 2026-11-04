@@ -2,6 +2,26 @@
 
 `build.py` prints the open ones (`- [ ]`) after every build.
 
+## Real doors and real glass (2026-11-03, core/door)
+
+The owner's "remove all dark voids ... actual doors or windows that have transparency", doors that open "with a keypress
+nearby or by an NPC", and "real glass". Before: the cabin doors (D3-D4) and the deck buildings' inner doors were static
+boxes in the buckets, hung open; the street doors of the deck buildings were open bays; the chain locker's hatches black
+plates. The glass was already transparent (MAT.glass, .42; the balustrades' glassClear). Now (`verify.py --assert` passes
+before and after):
+
+- [x] Every leaf is a door on core/door, drawn by core/engine's `36o-open.js` read in place (`svLeaf`: one InstancedMesh per
+      material, posed by KDOORHOST, cut with the decks through `nrCutHook`): 686 doors (the cabins' `cabin.<cabin id>`, standing
+      ajar as drawn, the rng draw kept; the deck buildings' inner doors open 75 degrees as the planner hung them, one leaf a
+      doorway; their street doors the Ancients' bi-parting sliding glass, preset `biparting` with KDOORLEAF's `glass` style, shut). E by a door opens or shuts it (else, walking, E still
+      climbs a level); the tip shows near one; `_api.openings`.
+- [x] The chain locker's hatches are gratings, not black plates.
+- [ ] **No reachability audit.** The walker (`NR_WALK`, 92-camera.js) stands on `nrFloorsAt` and is never blocked: there are
+      no walls or doors in core/walk to audit against. Registering the decks, cabin walls and stair cores in `KWALK` (and
+      `svOpenWalk`) is the step that makes `KWALK.reach` meaningful here.
+- [ ] The dark surfaces left are surfaces, not openings: the service core's shafts and tanks (a dark band seen in the cut),
+      the hawse plates, the fenders, the dead control screens, the funnels' crowns.
+
 ## Scope (the brief)
 
 - [ ] **No life layer.** The brief asked for furniture and no people yet. `NR_FACTION` (36-def.js) holds the pirates'

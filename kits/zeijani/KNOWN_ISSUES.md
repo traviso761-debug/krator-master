@@ -10,7 +10,7 @@
       that follows the camera, the wells' shafts and motes) is Dhelv's (P5), after the tube station's.
 - [ ] **`core/walk`'s polygon floor is new.** Godot's walk importer (`godot/`, Verge's) reads `rect` and `strip`; `poly`
       needs adding there (P7).
-- [ ] **The sockets example sheet does not build from today's sources** (`core/sockets/example`: Post-Apoc's geometry now
+- [ ] **The sockets example sheet does not build from today's sources** (`kits/post-apoc/sockets-example`, until 2026-11-03 `core/sockets/example`: Post-Apoc's geometry now
       calls `KMAT`): pre-existing, not this kit's; its committed page predates it.
 - [ ] **The two-storey house's roof terrace is drawn, not planned.** No stair reaches it and it has no walk floor; the
       interiors planner has no roof storey. Its pieces stand on the slab (`46-zj-built.js`).
@@ -68,3 +68,20 @@
       no pigsty or duck yard).
 - [x] **Not here (na):** shipwrights, coast guard, dockers, river bargemen, fishers, ferrymen (no water to work), chinampa
       growers, power-house stokers, elephant bug handlers (the Voth city's beast), monks (no order), embassy staff (tabled).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] Every timber leaf (29: the houses', the shops', the works', the court's double gate) stands open as drawn and is operable;
+      its walk blocks are off while it stands open (a door drawn ajar), so the kit's walk routes pass as before. Reach unchanged:
+      83 of 102 built floors.
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 71 reached, 18
+      unreached (6 big) before; 78, 11 (0 big) after, the climbs left out (`reach_dump.js --summary`; raw 83/19/6 -> 226/11/0).** The scouts' tower's two ladders (the planner's, drawn by 46-zj-built.js) were
+      registered as strips too steep for the reach; kits/interiors writes a ladder as rung floors (0.4 m apart at most, closer on a steep one so the probe's route walker steps down them) now, and all three
+      storeys are reached (1/8/5 -> 7/2/0). The wooden house's 0.5 m floor gets its entry step: the interiors' walk takes
+      core/walk's 0.45 m step here (37-zj-walk.js `step: .45`; the kit's default is 0.45 too now) (0/1/1 -> 1/0/0).
+- [ ] 11 unreached, none big, all slivers: the strip of upper floor 0.1 to 0.2 m wide that `IX.walk.minusHoles` leaves between a
+      stairwell and the wall (the row houses', the halls', the inn's), too narrow for a walker. The roof terraces are not walk
+      floors at all (see "The two-storey house's roof terrace is drawn, not planned" above).
+- [ ] The lamp niches and the ancestor niche keep their dark backs (niches, not openings); the shop's dark transom band under
+      its sign too.

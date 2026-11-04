@@ -90,6 +90,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `87-mega.js` | 5 |  |
 | `88-factory.js` | 6 |  |
 | `89-lab.js` | 6 |  |
+| `8zp-scr-open.js` | <1 |  |
 | `90-scene.js` | 17 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 2 | what stays of the camera: setView, the title, LO (1) |

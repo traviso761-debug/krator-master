@@ -519,7 +519,7 @@ Voth, owner-written:
 | `patterns/voth/inlay` | Flat, front-on decorative panel of a stone inlay band: stepped chevrons and hooks cut from jade (#3f6b56), lapis (#1f3f6e), red-purple porphyry (#5e1e2d) and basalt (#2b2a28), set into a polished marble ground (#e8e1d2), with thin dark joints between the stones. The pattern repeats horizontally. Full colour. |
 | `patterns/voth/banner` | Flat, front-on decorative panel of banner cloth woven in stepped bands and hooked spirals in ash yellow (#e8d9a0), dark red (#7a2028) and charcoal (#2b2a28), visible weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour. |
 
-The Ancient Port (`settlements/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
+The Ancient Port (`kits/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
 
 Port palette: container white #dcd8cf, blue #2f5f8a, oxide red #9a3a28, mustard #c89a3a (`74-port-dress.js:6`); hazard
 yellow #d9a12c (`89y-sp-1-yard.js:43`); iron #2c2e32; antifouling red #8c3026, topsides slate #3c4652, red-oxide

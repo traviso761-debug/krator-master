@@ -33,8 +33,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/72-hover.js` | 5.3 | [web] | 1 | 0 | 7 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/75-audit.js` | 8.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/78-polytool.js` | 2.8 | [web] | 3 | 0 | 2 | 4 | 0 | 1 | 0 | 0 | 1 | 0 | 0 |  |
-| `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

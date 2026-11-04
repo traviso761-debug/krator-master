@@ -12,12 +12,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
-| `krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-furniture-core.js` | 75.4 | [draw] | 54 | 3 | 0 | 0 | 0 | 115 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-furniture-detail.js` | 4.1 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | optional (`bundle(tex=True)`); the detail-map shader is a three.js stand-in for StandardMaterial3D triplanar, one texture per family from `tex/pack.json` |
-| `krator-furniture-kit.js` | 156.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 765 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-furniture-runtime.js` | 14.5 | [draw] | 23 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-beast-rider.js` | 69.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 508 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-voth.js` | 127.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 940 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-ashnomad.js` | 120.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 608 | 0 | 0 | 0 | 0 | 0 |  |
@@ -51,10 +45,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-zeijani.js` | 49.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture.js` | 280.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 2249 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-plants.js` | 91.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 755 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `krator-symbols.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/00-head.html` | 4.1 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/90-sheet.js` | 12.7 | [web] | 3 | 3 | 8 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-hover.js` | 3.3 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/93-polygon.js` | 4.7 | [web] | 6 | 0 | 9 | 9 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |

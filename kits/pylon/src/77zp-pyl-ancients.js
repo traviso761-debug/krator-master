@@ -15,7 +15,7 @@ function pyaFin(pts,z,t,d,c){for(let k=0;k<pts.length-1;k++){const [x0,y0]=pts[k
  vBq('vPlaster',(x0+x1)/2,(y0+y1)/2,z,L+t*.6,t,d,vQ(0,0,Math.atan2(y1-y0,x1-x0)),c);}}
 // slit windows round a lathe of radius rFn(y), facing out, at heights ys and angles in [a0, a1] (0 = +x, PI/2 = +z)
 function pyaSlits(x,z,rFn,ys,a0,a1,n,item,w,h){for(const y of ys)for(let k=0;k<n;k++){const a=a0+(a1-a0)*(k+.5)/n,r=rFn(y)+.06;
- kput(item||'vWinLit',[x+Math.cos(a)*r,y,z+Math.sin(a)*r],qFacing([Math.cos(a),0,Math.sin(a)]),[w||.6,h||1.6,.12],null);}}
+ pynPane(item==='vWinGlass'?'pyPaneB':item||'vWinLit',[x+Math.cos(a)*r,y,z+Math.sin(a)*r],qFacing([Math.cos(a),0,Math.sin(a)]),[w||.6,h||1.6,.12]);}}   // glass over the room card (pynPane)
 
 // Fortress block (refs/fortress.jpg, at the Ancients' scale): a cluster of tall white slab towers with rounded corners
 // and battlemented tops, the two in front clasped by saffron legs and an arch band over a great round-headed tunnel
@@ -27,7 +27,7 @@ function pyaTower(P,x,z,W,D,H,cc){const g=gridSurface((u,v)=>{const th=u*TAU,r=s
  const n=Math.round((W+D)/1.6);for(let k=0;k<n;k++){const th=(k+.5)/n*TAU,r=se(th,7)-.04;kput('vPanelB',[x+W/2*r*Math.cos(th),H+.6,z+D/2*r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,1.2,.6],vC(cc));}}
 // punch-card window strips on a face at z (front of a tower centred at x, w wide), from y0 to y1: c columns
 function pyaStrips(x,z,w,y0,y1,c){const red=vC(0x8e2b22),or=vC(vPick(PYPAL.orange));for(let j=0;j<c;j++){const px=x-w/2+(j+.5)*w/c;
- for(let y=y0;y<y1;y+=.9){if(rng()<.25)continue;const t=rng();kput(t<.5?'vWinGlass':t<.75?'vWinLit':'vPlaster',[px,y,z+.04],null,[.42,.6,.08],t<.75?null:(t<.88?red:or));}}}
+ for(let y=y0;y<y1;y+=.9){if(rng()<.25)continue;const t=rng();if(t<.75)pynPane(t<.5?'pyPaneB':'vWinLit',[px,y,z+.04],null,[.42,.6,.08]);else kput('vPlaster',[px,y,z+.04],null,[.42,.6,.08],t<.88?red:or);}}}
 izsFamily('pyl_fort','Fortress block',66,true,(P,x,z)=>{const sf=vC(PYA.saffron),or=vC(vPick(PYPAL.orange)),red=vC(0x8e2b22),wh=PYA.white;
  const GW=11,GH=19,T=[[-12,4,13,11,50],[12,4,13,11,44],[-6,-9,12,10,62],[8,-10,11,10,56],[25,-3,10,9,32]];
  kput('pyConc',[x+3,.3,z-2],null,[64,.6,34],vC(0xd8d2c6));
@@ -38,7 +38,7 @@ izsFamily('pyl_fort','Fortress block',66,true,(P,x,z)=>{const sf=vC(PYA.saffron)
   pynPointed(cx,22,zf,0,2.4,H-30,.12,.12,'P',or,1.6,true);pyaStrips(x+tx-s*3.4,zf,2.6,22,H-4,2);
   for(let k=0;k<2;k++)pynFrame('tomb',x+tx+s*(k?4.6:-1.2),6+k*.0,zf,0,1.6,7.5,{rim:.25,c:red,fill:'G',out:.05});
   const px=x+tx+s*(W/2-1.2);kput('vPlaster',[px,7,zf+1.4],null,[2.6,14,2.6],sf);
-  for(let r=0;r<6;r++)for(const u of[-.6,.6])pynEnd('pyDiscL',px+u,2+r*2.1,zf+2.7,0,.42,.05,.08,null);}
+  for(let r=0;r<6;r++)for(const u of[-.6,.6])pynEndK('L',px+u,2+r*2.1,zf+2.7,0,.42,.05,.08,null);}
  // the gate: saffron legs on the towers' inner faces, an arch band front and back, the tunnel's dark soffit, a bridge
  for(const s of[-1,1])kput('vPlaster',[x+s*(GW/2+.9),GH/2-3,z+4],null,[1.8,GH-6,13],sf);
  for(const zz of[z+4+6.6,z+4-6.6])pynArc(x,GH-GW/2-3,zz,zz>z+4?0:Math.PI,GW/2+.9,1.8,1.2,sf,18);
@@ -70,18 +70,18 @@ izsFamily('pyl_slab','Arch slab',46,true,(P,x,z)=>{const H=40,W0=28,W1=23,D=10,A
   if(Math.abs(px-AX)<AW/2+.6&&py<AH+.6)return false;for(const [ox,oy,r] of OC){const dx=Math.max(Math.abs(px-ox)-pw/2,0),dy=Math.max(Math.abs(py+ph/2-oy)-ph/2,0);if(Math.hypot(dx,dy)<r+.8)return false;}return true;};
  for(const s of[-1,1])for(let py=.6;py<H-1.4;py+=CH+.12)for(let px=-W0/2+CW/2;px<W0/2;px+=CW+.12){if(!clear(px,py,CW,CH)||rng()<.12)continue;
   const zz=z+s*(D/2+.12+rng()*.18),c=rng()<.55?or:och;kput('vPlaster',[x+px,py+CH/2,zz],null,[CW,CH,.25],c);
-  const t=rng();if(t<.18)kput('pyPaneB',[x+px,py+CH/2,zz+s*.14],null,[CW*.7,.16,.04],null);else if(t<.3)pynPorthole(x+px,py+CH/2,zz+s*.12,s>0?0:Math.PI,.42,gun,'G',0);}
+  const t=rng();if(t<.18)pynPane('pyPaneB',[x+px,py+CH/2,zz+s*.14],null,[CW*.7,.16,.04]);else if(t<.3)pynPorthole(x+px,py+CH/2,zz+s*.12,s>0?0:Math.PI,.42,gun,'G',0);}
  // the carved west end: white blocks stepped out in three layers, windows and balconies
  for(let k=0;k<9;k++){const by=k*4.2+.2,bw=hw(by)-hw(by)+0,ex=-hw(by)+3.4;for(let j=0;j<3;j++){const bx=ex-1.2+j*1.6,bd=D+1.2-j*.8,bh=3.6-j*.5;
   kput('vPanelB',[x+bx,by+bh/2,z],null,[2,bh,bd],wh);}
-  for(const s of[-1,1]){kput('pyPaneB',[x+ex-.6,by+1.6,z+s*(D/2+.62)],null,[1.2,1.4,.04],null);if(k%2)kput('vPanelB',[x+ex-.6,by+.2,z+s*(D/2+1.2)],null,[1.6,.15,1.1],wh);}}});
+  for(const s of[-1,1]){pynPane('pyPaneB',[x+ex-.6,by+1.6,z+s*(D/2+.62)],null,[1.2,1.4,.04]);if(k%2)kput('vPanelB',[x+ex-.6,by+.2,z+s*(D/2+1.2)],null,[1.6,.15,1.1],wh);}}});
 
 // Pod cluster (refs/pylon6.jpg, re-skinned): truncated cones of white shell with orange-rimmed glass skylights, a ring of
 // slit windows, joined by covered bridges.
 izsFamily('pyl_pods','Pod cluster',44,false,(P,x,z)=>{const or=vC(vPick(PYPAL.orange)),wh=vC(PYA.white);
  const C=[[-12,-6,5,7],[0,-9,6.2,9],[12,-5,4.6,6.5],[-6,6,4.2,6],[8,7,5,7.5],[19,5,3.6,5]];
  for(const [cx,cz,R,h] of C){const rF=y=>R*(1-.4*y/h);mesh(lathe({rFn:rF,H:h,nu:32,nv:4}),tsand(PYA.white),P,x+cx,0,z+cz);
-  kput('pyRing',[x+cx,h,z+cz],qEuler(Math.PI/2,0,0),[R*.5,R*.5,R*.5],or);kput('pyDiscG',[x+cx,h-.02,z+cz],qEuler(Math.PI/2,0,0),[R*.5,R*.5,.1],null);
+  kput('pyRing',[x+cx,h,z+cz],qEuler(Math.PI/2,0,0),[R*.5,R*.5,R*.5],or);pynPane('pyDiscG',[x+cx,h-.02,z+cz],qEuler(Math.PI/2,0,0),[R*.5,R*.5,.1],'pyDiscD');
   pyaSlits(x+cx,z+cz,rF,[2.6],0,TAU,10,'vWinGlass',.9,1.3);}
  const L=[[0,1],[0,2],[1,4],[3,4],[0,3],[4,5]];
  for(const [a,b] of L){const A=C[a],Bq=C[b];vBeam([x+A[0],3.4,z+A[1]],[x+Bq[0],3.4,z+Bq[1]],1.8,wh,'vPanelB');}});
@@ -92,7 +92,7 @@ izsFamily('pyl_vaults','Vault chapel',44,true,(P,x,z)=>{const tile=vC(PYA.tile),
  for(let i=0;i<5;i++){const span=10+3.2*i,rise=span/2,zc=z+8-i*4.6;
   pynVault(x,0,zc,span,4.6,rise,0,'pyHalf',tile);pynArc(x,0,zc+2.3,0,rise-.35,.8,.7,wh,16);
   if(i===0)pynTomb(x,0,zc+2.32,0,span-1.6,rise-.8+(span-1.6)/2,.06,.1,'L');}
- kput('vPanelB',[x+2,18,z-15],null,[3.6,36,3.6],wh);for(let y=6;y<34;y+=3)kput('vWinLit',[x+2,y,z-13.15],null,[1.6,1.6,.1],null);});
+ kput('vPanelB',[x+2,18,z-15],null,[3.6,36,3.6],wh);for(let y=6;y<34;y+=3)pynPane('vWinLit',[x+2,y,z-13.15],null,[1.6,1.6,.1]);});
 
 // Gem shrine (refs/ancient massing.jpg): a tall pointed bay of glass between two lower pointed wings, each wing set with
 // an elongated hexagonal gem window; amber lines tracing the gables; a reflecting pool.

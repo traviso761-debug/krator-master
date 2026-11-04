@@ -144,10 +144,15 @@ not ask for them. Three ways, cheapest first:
 
 The lore names kinds, not yet tribes: a beaked people, a muzzled people, a throat-sac people. Each tribe is a head, a
 tail (or none) and a skin:
-- **Heads**: the head generator is a profile and its parts; a beak (horn material, no teeth, a nostril on top), a muzzle
+- **Heads**: **built** (2026-11-02, `tools/therian.py`; README "Therian heads"): a bird (beaked), a cat, a lion, a rat and a
+  monkey, each a test mod on both bodies, beside the coyote. Still to do for a tribe: a people entry wearing one, and
+  what the first plan asked for, below.
+  The head generator is a profile and its parts; a beak (horn material, no teeth, a nostril on top), a muzzle
   with animal ears (the ears on Head, or on one or two spring joints like the tail's), a throat sac (a mesh on the neck
   that the figure swells on a call). 1 session each.
-- **Tails**: the same joints and spring chain; a mammal's is shorter, livelier (lower stiffness, more sway) and maybe
+- **Tails**: **built** (2026-11-02, `tools/tails.py`): a tail per head on the same joints, each with its own rest chain
+  (the item's `tail.rest`), the furred ones bushy by the fur shells, the bird's a fan of feathers.
+  The first plan: the same joints and spring chain; a mammal's is shorter, livelier (lower stiffness, more sway) and maybe
   bushy (hair cards along it). Hours each.
 - **Skins**: scales and bare skin are textures (as the Lizardmen's). **Fur and feathers** are the expensive part: over a
   whole body they want a shell or card layer that follows the morphs and the cloth (a new shader in both runtimes), or a

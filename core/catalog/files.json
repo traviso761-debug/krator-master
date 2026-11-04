@@ -1,0 +1,5 @@
+{
+ "_note": "The catalog engine's files (core/catalog/README.md): a name here lives in core/catalog, any other catalog name in kits/catalog. catalog.py and the node tools read this list. symbols: the file the name krator-symbols.js resolves to.",
+ "engine": ["krator-furniture-core.js", "krator-asset-engine.js", "krator-furniture-kit.js", "krator-furniture-runtime.js", "krator-furniture-detail.js", "inspector.js"],
+ "symbols": "core/sockets/38-symbols.js"
+}

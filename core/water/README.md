@@ -29,7 +29,7 @@ Voth branch).
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
 `src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
 whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
-`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+`src/82-nr-water.js`); `kits/port`, the Ancient Port kit (the sea along the coast: a calm
 share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
 seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
 sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
