@@ -5,8 +5,11 @@
 // stiff wind (dust in every gust). ?wind=calm|breeze|stiff|high, and g cycles them.
 const DB_WIND=(function(){const SCALE={calm:.4,breeze:1,stiff:1.6,high:2.6},ORDER=['calm','breeze','stiff','high'];
  const q=new URLSearchParams(location.search).get('wind');let mode=SCALE[q]!=null?q:'stiff';ATMOS.windScale=SCALE[mode];
- const W={SCALE,get mode(){return mode;},set(m){if(SCALE[m]!=null)mode=m;},cycle(){mode=ORDER[(ORDER.indexOf(mode)+1)%ORDER.length];}};
- ATMOS.hook((t,hr,dt)=>{ATMOS.windScale+=(SCALE[mode]-ATMOS.windScale)*Math.min(1,dt*.4);});   // eases, as n semiarid's
+ // k: the setting's share of the wind, eased toward SCALE[mode]; it multiplies what the weather (91d, core/atmos 4-weather) writes to ATMOS.windScale every
+ // tick (2026-11-03, n semiarid's fix: it set the scale outright, the weather's write undid it, and a calm blew as hard as the stiff wind)
+ const W={SCALE,k:SCALE[mode],get mode(){return mode;},set(m){if(SCALE[m]!=null)mode=m;},cycle(){mode=ORDER[(ORDER.indexOf(mode)+1)%ORDER.length];}};
+ W.apply=()=>{ATMOS.windScale=(ATMOS.W&&ATMOS.W.wind!=null?ATMOS.W.wind:1)*W.k;};   // idempotent: 91d hooks it again after the weather's own write
+ ATMOS.hook((t,hr,dt)=>{W.k+=(SCALE[mode]-W.k)*Math.min(1,dt*.4);W.apply();});   // eases, as n semiarid's
  addEventListener('keydown',e=>{if(e.key.toLowerCase()==='g'){W.cycle();const c=document.getElementById('cap');if(c)c.dataset.wind=mode;}});
  return W;})();
 const DB_DUST_MASK=(x,z)=>terrainH(x,z)>.5?.33:1;

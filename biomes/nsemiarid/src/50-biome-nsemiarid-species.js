@@ -596,8 +596,12 @@ BIO.def('sword',G.rosette(),M.vcol,{label:'Roll-egg sword leaves'});
 // waxy skin, the sail candelabra's columns banded joints, the mace heads' spikes horny plates, the horn pipes ribbed rings
 // a keep-0 skin is grey relief about its pack's mean (sRGB): the material's colour divides that out, as the ground's layers
 // do, so a species keeps the colour it had and gains the relief. A three.js rod or cone has no vertex colours: solidMat
+// the final rebuild (2026-11-03): these bodies are solid, so they are drawn as wood (BIO.barkMat, vertex-coloured), not as a still leaf card: the
+// core's attach audit took a leaf material for a card, so a bead chain's upper beads and the blooms on a strider's crown read as floating with nothing
+// under them (the handoff's 81%). The host's ?bodies=leaf (BIO.host.bodyLeaf, 46-host-graphics.js) for the old leaf material
+const BODY_LEAF=!!BIO.host.bodyLeaf;
 const libMat=(n,key,solid)=>{const L=LIBP(n),t=L?KMAT.textures(L,{aniso:4}).map:null;
- const m=solid?BIO.solidMat(t):BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});
+ const m=solid?BIO.solidMat(t):BODY_LEAF?BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}):BIO.barkMat(t);
  if(L)m.color.setScalar(Math.min(4,1/Math.pow(L.mean||.5,2.2)));return m;};
 M.strider=libMat('skin.cactus','strider');M.stilt=libMat('bark.gnarled','stilt',true);M.bead=libMat('skin.smooth','bead');
 M.column=libMat('skin.banded','column');M.mace=libMat('organic.chitin','mace');M.horn=libMat('organic.coil.ribbed','horn');
@@ -609,6 +613,9 @@ BIO.def('stilt',G.rod(),M.stilt,{label:'Strider stilts'});
 BIO.def('stub',G.cone(),M.stilt,{label:'Dead stilt stubs (a strider\'s trail)'});
 BIO.def('column',G.column(),M.column,{label:'Sail candelabra'});
 BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(M.fin.map,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
+// the blades torn loose and kiting downwind (a still frame of flight, 60-biome-nsemiarid-floor.js sail()): free, as seed fluff is (the attach audit's
+// rule); the same card and material, a new item after the kit's own so no item's index moves (the final rebuild, 2026-11-03)
+BIO.def('kite',BIO.geo.frond(2),BIO.defs.blade.mat,{label:'Sail blades aloft',free:true});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
 BIO.def('horn',G.horn(),M.horn,{label:'Horn pipes'});
@@ -629,7 +636,7 @@ BIO.def('crawlerSpines',G.cactusSpines(6),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});
-BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds'});
+BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds',free:true});   /* only ever in flight (seedsAloft): free, as seed fluff (2026-11-03) */
 BIO.def('samara',G.samara(),M.vcol,{label:'Kite-ash seeds'});
 // the trumpet's crown turns in the wind: spin materials (86-host-variants.js turns them about the crown's own origin)
 M.spin=BIO.leafMat(null,'spin',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true,spin:true});

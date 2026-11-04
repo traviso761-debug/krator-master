@@ -3,7 +3,12 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 15 prompt blocks** (counted 2026-11-03, after the cloud kits' merge: `card.umbrella.plate` (section 24), the Gills' five (31), nhighlands (32), ringisles' lagoon (33), the rift rim with `card.glasscane` (34), High Rift's fault mirror (35), nwbay's ash soil and white marble (36); the line below it is the 2026-10-27 count, before the later entries). Then **0 prompts** (2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+**Count: 2 prompt blocks** (counted 2026-11-03, after the cloud kits' merge and the 2026-11-03 delivery below: `card.umbrella.plate` (section 24) and `rock.megabreccia` (section 32); the line below it is the 2026-10-27 count, before the later entries). Then **0 prompts** (2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+
+**Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
+`card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
+`PLAN.md` "Delivered 2026-11-03": the ten are wired at their merge, and their entries are deleted on their branches then. Still owed from that
+day: `rock.megabreccia` (nhighlands' branch) and `card.umbrella.plate` (the abyssal savannah).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -275,108 +280,14 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
 
-## 31. The Gills (`biomes/gills`, xanadu's station `gills`, 2026-11-03)
-
-The breath pipes and their linings, both countries (`biomes/gills/PLAN.md` section 15 has the reuse list). Five sets, generic ids,
-paste-ready prompts in the plan's section 15 (copy them from there; the lamina and fringe sheets are tintable, so one serves Red and White):
-`rock.lamina.pipe` (the pipe wall's daily couplets: until it comes the pipes draw `KSTRATA.lamina`'s own procedural bands),
-`mineral.crust.ferromanganese` (the Red collar), `mineral.crust.brucite` (the White collar: the station's collars are tinted
-procedural flesh until then), `card.breathfringe` (the fringes, a cut-out on magenta), `card.turf.limed` (the breath meadow's
-crusted grass, a cut-out on magenta).
-
-`rock.lamina.pipe`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished cross-section of a mineral chimney wall made of thousands of hair-fine parallel laminae, alternating pale cream carbonate and near-black oxide, each couplet a fraction of a millimetre, with a slightly thicker pale band every few hundred couplets and one sharp black band; the laminae gently wavy and continuous across the frame, a few hairline cracks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-`mineral.crust.ferromanganese`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wet botryoidal ferromanganese crust, rounded knobs of near-black manganese oxide (#1a1816) packed edge to edge, each knob with a faint grey-blue sheen, rust-brown (#6b3a1e) staining in the hollows between knobs and a few patches where the crust has flaked to show cream carbonate (#d9cfb8) underneath. Full colour: not tinted.
-```
-`mineral.crust.brucite`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a chalky, porous brucite-and-carbonate crust of soft rounded cauliflower-like lobes, bone white (#e9e4d6) to pale cream, with faint grey-green manganese staining (#7f8f78) in the seams between lobes, fine powdery texture, a few damp translucent patches. Full colour: not tinted.
-```
-`card.breathfringe`:
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate tufts of long fine filaments, each tuft rooted at a small grey fleshy knob and streaming to one side as if in a steady wind, the filaments a muted warm orange-brown, translucent at the tips, some beaded with droplets. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.
-```
-`card.turf.limed`:
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
-```
-
 ## 32. The northern highlands' bog country and the crater wall (`biomes/nhighlands`, station 5 and station 1's crags, 2026-11-03)
 
-Pair 7's turn (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)"). The bog station draws the library's `ground.sphagnum`, `ground.peat.black`,
-`card.cottongrass`, `card.cloudberry` and `card.cornlily`; what the mire still lacks, and what the crater wall's rock lacks, are four sets. Until they come:
-the peat hags are a flat procedural peat colour on the steep (`STATION_STEEP`), the dwarf birch is the kit's birch scaled to knee height (its aspen-leaf
-card), the fen sedge is the kit's grass card in sedge colours, and the megabreccia is KSTRATA's and KGROUND's procedural blocks (`clast`, no grain map).
+Pair 7's turn (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)"). The 2026-11-03 delivery brought the bog's three (`ground.peat.hag`, `card.dwarfbirch`, `card.sedge.fen`: `core/materials/PLAN.md`, "Delivered 2026-11-03"); the crater wall's
+rock is still owed. Until it comes the megabreccia is KSTRATA's and KGROUND's procedural blocks (`clast`, no grain map).
 
-`ground.peat.hag` (the cut face of a peat bank, for a steep layer or a cliff material; vertical in use, so square and tileable both ways):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a vertical cut face of black-brown blanket peat seen straight on, the fibrous dark peat banded faintly in horizontal layers a few centimetres thick, pale bleached root threads and old sphagnum stems hanging out of it, a few wet glistening patches and small crumbled overhangs, the top tenth not special (it tiles); colours from near-black brown to dark umber with a faint red cast, no green except a few tiny moss specks.
-```
-`card.dwarfbirch` (Betula nana: knee-high shrubs on the hummocks):
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate low sprawling shrubs of dwarf birch, each a tangle of thin dark red-brown twigs spreading sideways from a short base, densely set with tiny round scalloped leaves about a centimetre across, glossy mid green with a few turning orange and red, each shrub drawn whole and wider than tall, with its base clearly at the bottom centre of its cell, all six the same scale, not touching, evenly spaced in a 3x2 grid.
-```
-`card.sedge.fen` (the fen's tussock sedge and the lagg's lawns):
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate tussocks of fen sedge, each a dense fountain of long narrow arching blades from one root, the blades yellow-green to olive with dry straw-brown tips and a few dead brown blades among them, three of the tussocks carrying slender brown flower spikes on stalks above the leaves, each tussock drawn whole with its base clearly at the bottom centre of its cell, all the same scale, not touching, in a 4x2 grid.
-```
 `rock.megabreccia` (the crater wall's rock: a grain map for KGROUND's `clast` blocks and KSTRATA's megabreccia on station 1's crag steps and pillars):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
-```
-
-## 33. The Ring Sea isles' lagoon station (`biomes/ringisles --station lagoon`, 2026-11-03)
-
-The motu's storm ridges and the reef flat's back edge are coral rubble thrown up by the swells; the station paints them as the beach's sand
-(`ground.coast_sand_01`, the paint's beach weight) until this set comes. Wire it as a `ground.rubble` slot in `biomes/ringisles/materials.json` and a layer in
-`src/84-host-ground.js` (the station's storm ridge as its mask) at the next turn; with it the ground reads 17 units, so it must replace `shingle`, not join it.
-
-`ground.coral.rubble`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no Subject: a storm ridge of coral rubble on a tropical atoll islet: broken branching-coral sticks, finger and staghorn fragments 2-15 cm long, worn smooth and bleached to bone white, cream and pale grey, with a few rounded brain-coral cobbles and pink-grey pieces of coralline crust, packed loosely so dark gaps show between them, a little coarse white coral sand in the hollows; no shells larger than a thumbnail, no seaweed, no plants, no water. Even scale across the frame (about 1.5 m across the image).
-```
-
-## 34. The rift rim's build (`biomes/riftrim`, built 2026-11-03)
-
-Every surface and card section 13 asked for was delivered on 2026-10-26 and is wired (`biomes/riftrim/materials.json`). One gap the build
-found: **the glass cane** (the N rim's water-filled horsetail canes in the lake shallows, `PLAN.md` section 3) is drawn as a procedural
-clear material on a jointed cylinder (`50-biome-riftrim-species.js`, `M.glass`), with no library set. A cut-out sheet would let a grove read
-as canes rather than tubes at close range (the joints' green rings, the water inside). Full colour, so its hexes stay.
-
-`card.glasscane`:
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: a 3 x 3 grid of nine separate clumps of tall jointed glassy canes like a horsetail, each clump of three to seven straight unbranched canes standing upright from the bottom edge of its cell and filling its height, the canes clear and colourless like water-filled glass (#d8efe9), faintly refracting, each joint a narrow ring of green (#3a8a5a) with a thin dark collar, a few canes with water beads at the joints; no leaves, no flowers. Keep colours natural but slightly muted and even. No text, no border, no watermark.
-```
-
-## 35. High Rift (`biomes/highrift`, 2026-11-03)
-
-The Mirror Graben's fault mirror (`biomes/highrift/PLAN.md` sections 2 and 11): until it comes, station `mirror`'s fault face draws
-`rock.basalt.oxidised` at a low roughness. Full colour, 2 m a tile, roughness low (the sheen is the point).
-
-`rock.hematite.mirror`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished fault plane (slickenside) coated in specular hematite, steel-grey to blue-black (#3a3c42, #23252b) with a faint metallic grain, long straight parallel grooves and fine striations all running top to bottom, a few low steps across the grooves, patches where the coating has worn through to red-brown earthy hematite (#7a3a26) and rust stains (#9a5a32) bleeding down the grooves, hairline cracks across them. Full colour: not tinted.
-```
-
-## 36. The NW bay's rock (`biomes/nwbay`, the catch-up pass, 2026-11-03)
-
-The 5.1 geology asks nwbay for ash soils on its old flows and a white marble band at the limestone's volcanic contact
-(`kits/resources/ROCK-PROPOSAL.md`, "Where the biomes must change", rows 3 and 7; `biomes/nwbay/src/44n-host-geology.js`). Both are drawn now
-on STAND-INS: `ground.ash` (a grey volcanic ash) darkened by the layer's tint toward a soil, and `rock.marble012` (a grey trim marble). Wire
-each into `biomes/nwbay/materials.json` (`groundAsh`, `groundMarble`) in place of the stand-in, drop the ash layer's tint in
-`45-host-stage.js` (`NWBAY_GEO.ash.tint`), repack and rebuild. Full colour: the colour is the point.
-
-`ground.ash.soil` (an andosol: the dark, fertile soil volcanic ash weathers to under a wet forest):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a moist, crumbly dark volcanic ash soil seen from above, near-black brown (#2a2420) with a faint olive cast, fine granular crumbs and small rounded aggregates, scattered tiny pale pumice grains (#b8b0a0) and a few dark glassy cinder specks, very fine roots and the odd decayed leaf fragment pressed into it, damp and matte, no stones larger than a pea.
-```
-`rock.marble.white` (a weathered white marble outcrop at ground level, where the platform's limestone was cooked by volcanic heat):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered outcrop of coarse white marble seen from above, sugary crystalline grains (#ece8e0) catching no light, faint grey and pale gold veins (#a8a49c, #c8b48a) running in soft bands, the surface etched and pitted by rain with shallow solution runnels, a few joints filled with dark soil and green-grey lichen spots (#7a8468) toward the cracks, matte.
 ```
 
 ## Gaps with no prompt yet

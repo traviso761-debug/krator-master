@@ -185,3 +185,5 @@ def displace_heights(E, OW, OH, VW, VH, poly_mask):
 1. **Basin Closure Asserted:** The minimum spill elevation along Region 99's polygon perimeter must exceed $+3,850\text{ m}$, verifying that zero surface water leaks outward into adjacent lowlands.
 2. **Playa Lake Equilibrium:** Lake Nim surface area must stabilize between $35\text{ and }55\text{ km}^2$, perfectly balancing runoff against $880\text{ mm/yr}$ evaporation.
 3. **Seam-Free Gradient:** Slope magnitude $\nabla h$ across the outer polygon perimeter cannot exceed $0.08$ ($4.5^\circ$), guaranteeing complete contiguity with surrounding biomes.
+
+**Geodes** (planned, 2026-11-03): the Weave-Step's basalt terraces hold amethyst geodes; one walk-in geode in a chasm wall (`KSPELEO.AMETHYST`). See `biomes/CRYSTAL-CAVES-5.1.md`, site 3.

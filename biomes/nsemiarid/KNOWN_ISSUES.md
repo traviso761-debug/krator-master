@@ -4,6 +4,17 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The final rebuild's look, for the owner's eye** (2026-11-03, pair 9; `PLAN.md` section 11). Not judged by the owner: the ground on
+      KGROUND (now Standard, the eight layers hex-tiled, the desert's pavement and the bed's mud polygons as KGROUND kinds: `?kground=0` the old
+      floor), the far trees as impostors (gain 2.4, `?diet=0`, `?impgain=`), the basin past the map (`?far=0`), the height fog (`?hfog=0`), the
+      solid bodies drawn as wood (`?bodies=leaf` the old still leaf material: the bead chains and the striders may read a touch darker).
+- [ ] **The sun's shadows are attached on `?shadow=1` only.** core/shadow's off-by-default switch (a panel button, `attach` turning nothing on)
+      is on the Throne's branch (0293c8c16), not yet on `claude/biome-rebuild`; when it merges, `88-host-build.js` attaches always and the
+      button turns them on. Not measured here.
+- [ ] **The attach audit cannot see the trees.** The variants' pools (86) are drawn outside the kit's registry, so their crowns are neither
+      audited nor counted as structure (ebadlands has the same); the audit covers the floor and its travellers (329 cards above 2 m). A
+      tumbler caught against a variant tree's windward face reads as floating with nothing near it.
+
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. 1.42 atm (PLAN.md), a milky dust haze. Kept from the dome: the

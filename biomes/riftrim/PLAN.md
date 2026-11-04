@@ -331,6 +331,7 @@ strata plan's `rift` recipe: `core/terrain/STRATA-PLAN.md`). So the caverns are 
 | **Lava tubes** | round the vents (on the rim at px 205,1037, 158,1058 and 253,1070; nine on the floor) | excellent | long, level, smooth-walled galleries, kilometres to tens of kilometres (Earth's longest is 65 km): the readiest-made tunnels |
 | **Gypsum and salt mazes** | in the evaporite beds of the rift's fill, and by the terminal seas | excellent, the most Krator-like | gypsum dissolves fast and forms vast horizontal mazes (Ukraine's Optymistychna: 260 km and more), salt faster still |
 | **Hypogene chambers** | where the vents' sulphur water meets the lake limestones and gypsum | good | sulphuric acid dissolving from below: huge chambers, gypsum blocks and chandeliers, few entrances, warm and wet |
+| **The Cave of Crystals** (the owner, 2026-11-03) | the hold's drained older storey (hearths station 2) | the owner's choice | a Naica: selenite beams across the chambers, grown under warm water for ages, now dry, hot and humid (`biomes/CRYSTAL-CAVES-5.1.md`) |
 | Deep limestone shafts | where lake limestone is thick enough | weak | Alpine shafts want hundreds of metres of marine limestone a dry world seldom has |
 | Ice caves | the high rim's glaciers | where the ice is | meltwater caves and ice-filled shafts |
 
