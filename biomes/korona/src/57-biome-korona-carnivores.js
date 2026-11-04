@@ -181,4 +181,17 @@ KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.
   BIO.register({name:'The safe path (keep to the cairns)',key:'path',x:Pth[0][0],z:Pth[0][1],y:BIO.terrainH(Pth[0][0],Pth[0][1]),r:12,h:3});}
  KORONA.NAMED=NAMES.slice();BIO.nameSet('korona.carnivores',NAMES.slice());
  return{hell:st};};
+// ONE PLANT FOR A READER (EXCHANGES.md, Korona as vendor; the final rebuild, 2026-11-03): KORONA.plant(key, x, y, z, {lv, seed, id}) grows one of the
+// plants the exchange rows name with this kit's own builder, its stream reseeded from KRAND.hash(seed) so a reader's placement decides nothing here:
+// frosttank (-> ebadlands' melt pools), butterwort (-> nwouterwall's bog), cobralily (-> nhighlands' seeps, a cousin), greatsundew (-> the crater
+// drylands' seeps, a cousin). It registers the plant (core/tags, its trap record) unless o.reg is false; it returns the plant's radius. A reader takes
+// the KORONA kit's fragments in place (50, 57) and calls it inside its own pass; nothing on Korona's pages calls it, so they do not move
+const ONE={frosttank:(x,y,z,lv,st,id)=>frosttank(x,y,z,lv,st,id),butterwort:(x,y,z,lv,st)=>{butterwort(x,y,z,lv,st);return 1;},
+ cobralily:(x,y,z,lv,st)=>{cobra(x,y,z,lv,st);return 1.2;},greatsundew:(x,y,z,lv,st,id)=>{greatsundew(x,y,z,lv,st,id);return 1.5;}};
+KORONA.PLANT_KEYS=Object.keys(ONE);
+KORONA.plant=function(key,x,y,z,o){o=o||{};const f=ONE[key];if(!f){BIO.err('KORONA.plant: no plant '+key+' (KORONA.PLANT_KEYS)');return 0;}
+ const lv=o.lv==null?2:o.lv,id=o.id==null?key+':'+Math.round(x)+','+Math.round(z):o.id,st=new Proxy({},{get:(t,k)=>t[k]==null?0:t[k]});
+ reseed(o.seed==null?KRAND.hash(SEED,77,Math.round(x*10),Math.round(z*10)):o.seed);const r=f(x,y,z,lv,st,id);
+ if(o.reg!==false&&P[key])reg(key,x,y,z,r+.2,1.4,o.zone||'floor',id);
+ return r;};
 })();
