@@ -88,9 +88,28 @@ Kept whole, because it is the test every station is judged by.
 
 **Density.** Two sets of centres, each a peak of the field: the **marked settlements** (Babel, Necropolis, Dorado, Blade), where buildings stand
 more intact, and the **seven basins**, which were major centres and are now glass. Between and round them the city thins from core to
-suburb to the planned farmland, and past the farmland to the lowland forest. The brief's Mega-City One scale means the core zones run for
-tens of kilometres, not blocks: at 300-600 people a hectare in the core the valley would have held hundreds of millions. The lake's
-foundations are the drowned part of the same city.
+suburb to the planned farmland, and past the farmland to the lowland forest. The lake's foundations are the drowned part of the same city.
+
+**The scale, measured on the model** (2026-11-03, the 5.1 heights and water in the polygon; the script is in this turn's scratchpad, its numbers
+here). The polygon is 123,900 km². The lake is **18,600 km²** (px 400-489 by 883-1035: 180 by 300 km, a Lake Ontario). The land climbs from the
+shore to the walls in bands, and the bands are the city's zones; the brief's Mega-City One (800 million in the 2012 film) fits them:
+
+| Band | Height | Land | Median distance from the shore | *Proposed* use | People, at the density named |
+|---|---|---|---|---|---|
+| the floor | under 100 m | 3,600 km² (plus the drowned foundations) | under 10 km | **the core**: the skyscrapers, the civic centre; Babel and Necropolis stand 4 km from the shore; every basin is on it | 40,000 a km² (megablocks): about 150 M |
+| the shelf | 100-300 m | about 9,000 km² | 10-20 km | **residential, service and industrial** rings; the subway's reach | 15,000 a km²: about 130 M |
+| the terraces | 300-600 m | about 15,000 km² | 20-40 km | **parks, garden suburbs and the first Soleri terraces** on the slope | 2,000 a km²: about 30 M |
+| the belt | 600-1,200 m | about 50,000 km² | 40-100 km | **the planned farmland**: Soleri pods and hub towns every 5-10 km, aqueducts and pylon lines between; Blade stands in it (1,229 m, 68 km from the shore) | 200 a km²: about 10 M |
+| the walls | over 1,200 m and the Outer Wall's slump | about 28,000 km² | 100 km and more | **forest**, with the lines running through it to Span and the Inner Wall tunnel, dishes on the ridges | |
+
+Under it, 87% of the floor and shelf is SW lowlands and 11% NW; the belt is 42% SW, 13% NW and 44% neither (the slump). So **the whole polygon
+is the city, graded by height: the core is a ring round the lake, the farmland the great slope, and forest only on the walls**; that is
+option A below. The alternative, B, keeps the city to the floor and shelf (about 12,600 km²) and makes the terraces farmland and the belt
+forest: a quarter the people, half the built ground. **The owner chooses** (section 13, question 3). Either way the feral forest is everywhere
+inside through the parks and the farmland gone wild, and the brief's rule holds on the walls through the lines.
+
+A finding to settle with the map: **Dorado (px 483,964) stands in the lake on Round 3** (-4 m, under water). Either it is the drowned city of the
+brief's foundations, a ruin seen from the water, or it moves to the shore.
 
 **Zones** (one field, `zone`, with the five kinds below; the kits read it where they place):
 
@@ -277,8 +296,9 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 1. **A name for the augmented.** Proposed: the Unleft, the Stayed, the Lingerers (section 6).
 2. **The Lizardmen's origin.** The brief has the war unleash them here; LORE 6.20 has them on the Rift floor. Did they come through in the
    Valley and cross the Outer Wall, or were they loosed in both?
-3. **The scale of the city.** Is the whole 400 km polygon city, farmland and suburb, with forest only at its edges, or a city of tens of
-   kilometres round the lake with the rest farmland and forest? The density field needs its radii.
+3. **The scale of the city** (section 3, the table): **A**, the whole polygon graded by height (core on the floor, farmland on the great slope,
+   forest only on the walls), or **B**, the city kept to the floor and shelf with farmland on the terraces and forest from 600 m. And Dorado:
+   drowned where it is, or moved to the shore?
 4. **The centres.** Babel, Necropolis, Dorado and Blade as the intact centres; the seven basins as the former ones. Carcosa is just outside
    the polygon and the Yusar's: is it the valley's northern gate or another place?
 5. **One hazard theme per settlement** as proposed in section 9, or themes for the basins only?
