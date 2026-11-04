@@ -14,7 +14,7 @@ const VIEWS=(function(){const V={},sn=GS.snout,W0=G.W(sn+100);
  V['Down the ice']=lookUP(Math.min(2300,SITE.icefall[1]+300),0,40,sn,0,0);
  if(CREV.length){const r=CREV[Math.floor(CREV.length/2)];V['Crevasses']=look(r.x-40,r.z-30,14,r.x,r.z,0);}
  if(CAVES.length){const C=CAVES[0],fx=Math.cos(C.face),fz=Math.sin(C.face);V['An ice cave']=look(C.x+fx*C.R*3.2,C.z+fz*C.R*3.2,4,C.x,C.z,C.H*.4);
-  {const mx=C.x+fx*C.R*1.25,mz=C.z+fz*C.R*1.25;V['In the ice cave\'s mouth']=[mx,gh(mx,mz,1.7),mz,C.x-fx*C.R*.6,C.floor+2.6,C.z-fz*C.R*.6];}}   /* under the mouth's open arch, looking in at the blue (the eye check fails a camera under the dome's roof) */
+  {const k=SITE.caveView==null?1.25:SITE.caveView,mx=C.x+fx*C.R*k,mz=C.z+fz*C.R*k;   /* how far out of the mouth (a station's own: the icefield's moat is deep) */V['In the ice cave\'s mouth']=[mx,gh(mx,mz,1.7),mz,C.x-fx*C.R*.6,C.floor+2.6,C.z-fz*C.R*.6];}}   /* under the mouth's open arch, looking in at the blue (the eye check fails a camera under the dome's roof) */
  const co=recOf(/frost coral/);if(co)V['A frost coral']=look(co.x+7,co.z+5,2.2,co.x,co.z,1.6);
  const nd=(window._nodes||[]).find(n=>n.drawn&&n.kind==='copper')||(window._nodes||[]).find(n=>n.drawn);
  if(nd)V[(/^[aeiou]/.test(nd.kind)?'An ':'A ')+nd.kind+' node']=look(nd.x+SUN_POS[0]/SUN_POS[0]*-22,nd.z+16,5,nd.x,nd.z,0);   /* from the sun's side (west, south): lit, not backlit */
