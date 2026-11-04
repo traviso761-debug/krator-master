@@ -9,7 +9,7 @@ const VIEWS=(function(){const V={},sn=GS.snout,W0=G.W(sn+100);
  V['Down the ice']=lookUP(Math.min(2300,SITE.icefall[1]+300),0,40,sn,0,0);
  if(CREV.length){const r=CREV[Math.floor(CREV.length/2)];V['Crevasses']=look(r.x-40,r.z-30,14,r.x,r.z,0);}
  if(CAVES.length){const C=CAVES[0],fx=Math.cos(C.face),fz=Math.sin(C.face);V['An ice cave']=look(C.x+fx*C.R*3.2,C.z+fz*C.R*3.2,4,C.x,C.z,C.H*.4);
-  V['Inside the ice cave']=[C.x+fx*C.R*.5,C.floor+2.2,C.z+fz*C.R*.5,C.x-fx*C.R,C.floor+3,C.z-fz*C.R];}
+  V['In the ice cave\'s mouth']=[C.x+fx*C.R*1.02,C.floor+1.7,C.z+fz*C.R*1.02,C.x-fx*C.R*.6,C.floor+2.6,C.z-fz*C.R*.6];}   /* under the mouth's open arch, looking in at the blue (the eye check fails a camera under the dome's roof) */
  const co=recOf(/frost coral/);if(co)V['A frost coral']=look(co.x+7,co.z+5,2.2,co.x,co.z,1.6);
  const nd=(window._nodes||[]).find(n=>n.drawn&&n.kind==='copper')||(window._nodes||[]).find(n=>n.drawn);
  if(nd)V[(/^[aeiou]/.test(nd.kind)?'An ':'A ')+nd.kind+' node']=look(nd.x+SUN_POS[0]/SUN_POS[0]*-22,nd.z+16,5,nd.x,nd.z,0);   /* from the sun's side (west, south): lit, not backlit */
@@ -80,7 +80,7 @@ KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const MS=STILLS[0];
 /* verify.py's export box: the largest still (the water section) and the nearest frost coral (the buckets), at most 900 m a side */
-const EXPORT_BOX=(function(){const c=MS?MS.center:[0,0];let x0=c[0]-150,z0=c[1]-150,x1=c[0]+150,z1=c[1]+150;const co=REG.filter(r=>/frost coral/.test(r.name)).sort((a,b)=>Math.hypot(a.x-c[0],a.z-c[1])-Math.hypot(b.x-c[0],b.z-c[1]))[0];
+const EXPORT_BOX=(function(){const c=MS?MS.center:RIDGES.length?[(SITE.ridges[0].a[0]+SITE.ridges[0].b[0])/2,(SITE.ridges[0].a[1]+SITE.ridges[0].b[1])/2]:[0,0];   /* no still (the icefield): a nunatak, where its stones and lichen are */let x0=c[0]-150,z0=c[1]-150,x1=c[0]+150,z1=c[1]+150;const co=REG.filter(r=>/frost coral/.test(r.name)).sort((a,b)=>Math.hypot(a.x-c[0],a.z-c[1])-Math.hypot(b.x-c[0],b.z-c[1]))[0];
  if(co&&Math.hypot(co.x-c[0],co.z-c[1])<750){x0=Math.min(x0,co.x-20);z0=Math.min(z0,co.z-20);x1=Math.max(x1,co.x+20);z1=Math.max(z1,co.z+20);}return[x0,z0,x1,z1].map(Math.round);})();
 const MIRROR=MS&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[MS.mat],level:MS.level,center:MS.center,radius:MS.radius,far:MS.far,
  hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;   /* the reflections switch: off at page load (the owner, 2026-11-01) */
