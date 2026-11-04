@@ -20,7 +20,10 @@ function groundH(x,z){const p=UV(x,z),u=p[0],v=p[1],a=Math.abs(u-crestU(v)),n=fb
  const sd=Math.abs(u-valleyU(v));h-=22*smooth(90,6,sd);return h;}
 const STAGE={
  key:'cloud',name:'Farside: the fog belt (Yith\'s ridge)',R:1600,seed:2659,
- site:{px:74,py:88},air:{pressure:1.0,humidity:.98},clouds:{cover:.85},fogDensity:.0011,weather:'fog',
+ site:{px:74,py:88},air:{pressure:1.0,humidity:.98},clouds:{cover:.85},fogDensity:.0011,weather:'fog',   /* 5.1 px 346,418: 1,611 m (the plan's 1,615) */
+ /* THE FOG BELT (core/atmos: ATMOS.fogBelt; BACKPORT.md's row): the belt over the page's ridge (the page's heights run ~70-330 m; the real belt
+    is ~1.8-3 km): the north-wester's windward face west, a broken top the crest pierces, thinner in the lee */
+ belt:{y0:110,y1:520,windward:[-Math.SQRT1_2,-Math.SQRT1_2],density:.0012,depth:70,lee:.35,rise:.5},
  ground:groundH,coastD:null,UV,XZ,sea:null,
  fields:{
   spray:(x,z)=>.04,invade:(x,z)=>0,front:(x,z)=>0,native:(x,z)=>1,
