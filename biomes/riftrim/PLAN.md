@@ -338,7 +338,7 @@ strata plan's `rift` recipe: `core/terrain/STRATA-PLAN.md`). So the caverns are 
 At 0.75 g a roof carries three-quarters of Earth's load, so chambers span about a third wider. **What it gives the
 region**: long, level galleries make a natural transit network, and **the Ancients' tunnels join them** where they can;
 the warm, wet hypogene chambers are refuges from the rim's winters and **the Tungangs' holds** (section 6); the
-springs at the great lake's foot are the caves' outflow. The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
+springs at the great lake's foot are the caves' outflow. (How the Rift line's bores meet these caves, and which the Tungangs live in: `openworld/ANCIENT-TUNNELS.md`, 2026-11-03.) The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
 Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
 
 ## 5. Ledge: the hub and the bridge (settled 2026-10-23 unless marked)

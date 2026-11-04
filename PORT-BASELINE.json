@@ -88,6 +88,10 @@
    "bytes": 675886,
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
+  "biomes/hearths/dist/hearths-crystals.html": {
+   "bytes": 1382210,
+   "sha256": "181659b00e7dc81af1ccc7d63c9a566ad2be7409648a6b7f578fa0747a451b4a"
+  },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
    "bytes": 5818133,
    "sha256": "feaadb26e6077a23dd067bf149c3a636cca3273f4c479c8559510210ff7a1d66"

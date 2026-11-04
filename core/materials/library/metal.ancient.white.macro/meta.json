@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    35.276,
+    48.323
+   ],
+   "seam_before": [
+    20.671,
+    21.455
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.08,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.ancient.white.macro",
+  "metal": 0.12,
+  "roughness": 0.6,
+  "scale": [
+   16,
+   16
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "14.webp",
+  "generator": "supplied by the owner (pasted in the session, 2026-11-02)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Flat, front-on, evenly lit surface texture of a futuristic white enamelled metal building facade, seen square on. Very large rectangular panels in staggered courses, thin dark recessed seams between them, each panel a slightly different off-white (#ecebe6, #e4e3de, #f1f0ec), a faint fine vertical brushing, no rivets, no windows, no text, no shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.",
+  "reuse": "any Ancient tower's skin seen at a tower's scale (the 4 m metal.ancient.white reads as noise on a 230 m face): kits/metropolis, and the Ancients kit's skyscrapers",
+  "sha1": "26cb635a5cdf5e0d2bfabed956f1b75709a6285a"
+ }
+}
