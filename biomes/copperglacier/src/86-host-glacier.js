@@ -21,7 +21,7 @@ const iceCol=(x,z)=>{const k=FIELD.copper(x,z)>.2||(SITE.skarn&&CU.p(x,z)>.5);re
 // the crevasses: slots across the ice where it stretches, each a fall hazard
 const CREV=[];(SITE.crevasses||[]).forEach(u=>CREV.push(...G.crevasses({u})));
 GD.crevasses(CREV,(x,z)=>terrainH(x,z));GLACIER.crevasses=CREV.length;
-CREV.forEach(r=>REGISTER({name:'A crevasse (hidden under the snow where it bridges)',x:r.x,z:r.z,y:terrainH(r.x,r.z)-6,r:r.len*.5,h:8,tags:{hazard:{kind:'fall',danger:.9}}}));
+CREV.forEach(r=>BIO.record({name:'A crevasse (hidden under the snow where it bridges)',x:r.x,z:r.z,y:terrainH(r.x,r.z)-6,r:r.len*.5,h:8,tags:{hazard:{kind:'fall',danger:.9}}}));   /* a core/tags record (core/hazard reads it), not a volume of the inspector's: a slot is too thin for the probe's occupancy */
 // the ice caves: KGLACIER's records, the drawer's shells (cold inside: blue ice, bare)
 G.caves(CAVES).forEach((C,i)=>GD.cave(Object.assign({},C,{reg:{cave:i}})));
 // the ice cliff where the snout breaks off (over the tarn, or over the icefield's edge): it calves
@@ -51,7 +51,7 @@ const WORMS=SITE.worms?(function(){const P=[],seed=KRAND.child(8730,'copperglaci
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
  const m=new THREE.PointsMaterial({color:0x6effd8,size:.09,sizeAttenuation:true,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,fog:true});
  const pts=new THREE.Points(g,m);pts.userData.probeSkip=true;pts.userData.inspectLabel='Ice worms (they come up at dusk and glow)';pts.renderOrder=2;scene.add(pts);GLACIER.worms=P.length/3;
- REGISTER({name:'Ice worms (the glacier\'s own animal: up at dusk, faintly lit)',x:SPINE[0][0],z:SPINE[0][1],y:terrainH(SPINE[0][0],SPINE[0][1])-4,r:300,h:10,kind:'fauna'});
+ BIO.record({name:'Ice worms (the glacier\'s own animal: up at dusk, faintly lit)',x:SPINE[0][0],z:SPINE[0][1],y:terrainH(SPINE[0][0],SPINE[0][1])-4,r:300,h:10,kind:'fauna'});
  return{pts,m};})():null;
 let NIGHT=null;
 TICKS.push(dt=>{const hr=typeof ATMOS!=='undefined'&&ATMOS.clock?ATMOS.clock.hour:12,n=hr<5.5||hr>19.5;

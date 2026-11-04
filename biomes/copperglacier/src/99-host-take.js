@@ -79,6 +79,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const MS=STILLS[0];
+/* verify.py's export box: the largest still (the water section) and the nearest frost coral (the buckets), at most 900 m a side */
+const EXPORT_BOX=(function(){const c=MS?MS.center:[0,0];let x0=c[0]-150,z0=c[1]-150,x1=c[0]+150,z1=c[1]+150;const co=REG.filter(r=>/frost coral/.test(r.name)).sort((a,b)=>Math.hypot(a.x-c[0],a.z-c[1])-Math.hypot(b.x-c[0],b.z-c[1]))[0];
+ if(co&&Math.hypot(co.x-c[0],co.z-c[1])<750){x0=Math.min(x0,co.x-20);z0=Math.min(z0,co.z-20);x1=Math.max(x1,co.x+20);z1=Math.max(z1,co.z+20);}return[x0,z0,x1,z1].map(Math.round);})();
 const MIRROR=MS&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[MS.mat],level:MS.level,center:MS.center,radius:MS.radius,far:MS.far,
  hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;   /* the reflections switch: off at page load (the owner, 2026-11-01) */
 KHOST.take({build:'copperglacier-'+SITE.key,title:'Krator biome — Copper Glacier: '+SITE.name,
@@ -95,5 +98,5 @@ KHOST.take({build:'copperglacier-'+SITE.key,title:'Krator biome — Copper Glaci
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome,nodes:()=>window._nodes,glacier:()=>GLACIER,
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos'].concat(SITE.coral[1]>SITE.coral[0]?['buckets']:[]).concat(MS?['water']:[]),   /* no coral on the icefield: no bucket; no still there: no water */
- exportBox:MS?[Math.round(MS.center[0]-150),Math.round(MS.center[1]-150),Math.round(MS.center[0]+150),Math.round(MS.center[1]+150)]:[-150,-150,150,150],
+ exportBox:EXPORT_BOX,
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),ice:iceAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
