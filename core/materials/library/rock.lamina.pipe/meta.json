@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.172,
+    1.353
+   ],
+   "seam_before": [
+    4.264,
+    1.161
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.lamina.pipe",
+  "metal": 0,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock.lamina.pipe.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished cross-section of a mineral chimney wall made of thousands of hair-fine parallel laminae, alternating pale cream carbonate and near-black oxide, each couplet a fraction of a millimetre, with a slightly thicker pale band every few hundred couplets and one sharp black band; the laminae gently wavy and continuous across the frame, a few hairline cracks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "reuse": "the Gills' breath pipes (the pipe wall cut: the daily couplets), both countries tinted; any finely laminated chimney, sinter or banded travertine section",
+  "sha1": "1d072c18f3d2c053e47267f439fcc8d4c0787922"
+ }
+}

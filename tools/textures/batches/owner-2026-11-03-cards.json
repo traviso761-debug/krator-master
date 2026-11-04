@@ -1,0 +1,170 @@
+[
+ {
+  "src": "card.breathfringe.webp",
+  "out": "core/materials/library/card.breathfringe",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "spill": "unmix",
+   "key_hi": 200
+  },
+  "record": {
+   "id": "card.breathfringe",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate tufts of long fine filaments, each tuft rooted at a small grey fleshy knob and streaming to one side as if in a steady wind, the filaments a muted warm orange-brown, translucent at the tips, some beaded with droplets. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "reuse": "the Gills' breath fringes (a fringe tuft streaming from a mouth), tinted orange-brown (White) or red (Red); any windblown filament tuft",
+    "note": "a six-cell sheet (2 across, 3 down), kept whole: each tuft's knob at its cell's left, streaming right",
+    "key_note": "keyed by unmixing (key_hi 200): the default spill pass took the green out of the blended filaments and turned them salmon-red; 150 turned them pink"
+   }
+  }
+ },
+ {
+  "src": "card.turf.limed.webp",
+  "out": "core/materials/library/card.turf.limed",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.turf.limed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "reuse": "the Gills' breath meadow (the limed turf downwind of the gills); any lime- or salt-crusted steppe grass",
+    "note": "an eight-cell sheet (4 x 2), kept whole: each clump on its cell's bottom"
+   }
+  }
+ },
+ {
+  "src": "card.dwarfbirch.webp",
+  "out": "core/materials/library/card.dwarfbirch",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.dwarfbirch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate low sprawling shrubs of dwarf birch, each a tangle of thin dark red-brown twigs spreading sideways from a short base, densely set with tiny round scalloped leaves about a centimetre across, glossy mid green with a few turning orange and red, each shrub drawn whole and wider than tall, with its base clearly at the bottom centre of its cell, all six the same scale, not touching, evenly spaced in a 3x2 grid.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "reuse": "nhighlands' bog: dwarf birch (Betula nana) on the hummocks; any arctic or alpine dwarf shrub",
+    "note": "a six-cell sheet (3 x 2), kept whole: each shrub's base at its cell's bottom centre"
+   }
+  }
+ },
+ {
+  "src": "card.sedge.fen.webp",
+  "out": "core/materials/library/card.sedge.fen",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "spill": "unmix",
+   "key_hi": 200
+  },
+  "record": {
+   "id": "card.sedge.fen",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate tussocks of fen sedge, each a dense fountain of long narrow arching blades from one root, the blades yellow-green to olive with dry straw-brown tips and a few dead brown blades among them, three of the tussocks carrying slender brown flower spikes on stalks above the leaves, each tussock drawn whole with its base clearly at the bottom centre of its cell, all the same scale, not touching, in a 4x2 grid.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "reuse": "nhighlands' fen tussock sedge and the lagg's lawns; any wetland tussock sedge",
+    "note": "an eight-cell sheet (4 x 2), kept whole: each tussock's base at its cell's bottom centre; three with flower spikes",
+    "key_note": "keyed by unmixing (key_hi 200): the default spill pass took the green out of the blended filaments and turned them salmon-red; 150 turned them pink"
+   }
+  }
+ },
+ {
+  "src": "card.glasscane.webp",
+  "out": "core/materials/library/card.glasscane",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "spill": "line",
+   "subject": "#d8efe9",
+   "key_hi": 90
+  },
+  "record": {
+   "id": "card.glasscane",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md on claude/riftrim-cloud, \"The rift rim's build\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: a 3 x 3 grid of nine separate clumps of tall jointed glassy canes like a horsetail, each clump of three to seven straight unbranched canes standing upright from the bottom edge of its cell and filling its height, the canes clear and colourless like water-filled glass (#d8efe9), faintly refracting, each joint a narrow ring of green (#3a8a5a) with a thin dark collar, a few canes with water beads at the joints; no leaves, no flowers. Keep colours natural but slightly muted and even. No text, no border, no watermark.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md on claude/riftrim-cloud, \"The rift rim's build\"",
+    "reuse": "the rift rim's glass cane groves in the N rim's lake shallows; any clear jointed cane",
+    "note": "a nine-cell sheet (3 x 3), kept whole: each clump standing on its cell's bottom edge",
+    "key_note": "the canes are translucent, so the magenta showed through them (lavender canes under the default key); keyed onto the line from the key to the cane colour the prompt names (#d8efe9, key_hi 90): the canes come out their own pale cyan at their blend alpha, the green joints keyed by distance with the spill taken out. Usable; checked on a contact sheet"
+   }
+  }
+ }
+]
