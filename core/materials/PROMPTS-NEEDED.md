@@ -290,6 +290,17 @@ rock is still owed. Until it comes the megabreccia is KSTRATA's and KGROUND's pr
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
 ```
 
+## 33. The Cut's polished face (`biomes/cut`, station `face`, the final rebuild pair 10, 2026-11-04)
+
+The geology bake puts the Cut's west lip in the `impact` province, so the sphere's clean section through it is megabreccia sawn flat and polished
+(KSTRATA's blocks, `stations/face/48z-host-face.js`). Its grain is the library's `rock.megabreccia` for now: a weathered face with lichen, true to the
+rock but not to the polish. Wire it as `ground.breccia` in `biomes/cut/materials.json` (replace the lib) and rerun `pack.py biomes/cut`.
+
+`rock.megabreccia.polished` (the cut face's grain under KSTRATA's block colours; seen close up from the face's views, satin-polished, never weathered):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and finely polished slab of impact megabreccia, like a polished breccia countertop, perfectly flat and smooth: angular clasts of many different rocks from fist size to half a metre packed together at every angle in a fine grey crushed matrix, each clast cut clean through so its inner texture shows: black basalt with tiny pale crystals, rusty red basalt, banded pale grey gneiss with fine wavy foliation, cream tuff, brick-red sandstone with faint lamination, pale grey limestone, a few clasts themselves made of smaller clasts; thin black glassy veins (pseudotachylite) cutting straight across several clasts; scattered tiny bottle-green and black glass flecks in the matrix; sharp crisp clast edges; no lichen, no dirt, no weathering, no cracks, no pits, no saw marks; every rock type clearly different in colour.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

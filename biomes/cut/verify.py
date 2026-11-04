@@ -117,7 +117,7 @@ async def run(a):
     from playwright.async_api import async_playwright
     here = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(a.out, exist_ok=True)
-    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size) as V:
+    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size, query=a.query) as V:
         pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
         if not V.ready:
             print("timed out waiting for the kit to build")
@@ -263,5 +263,6 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--query", default="", help="a query string for the page, e.g. '?strata=0&kground=0' (the switches: README.md)")
     ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))

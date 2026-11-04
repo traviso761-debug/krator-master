@@ -16,6 +16,18 @@
    "bytes": 4190377,
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"
   },
+  "biomes/cut/dist/cut-face.html": {
+   "bytes": 1538586,
+   "sha256": "9b338cbda7b0ad3d1ad7596e351456d09bcb0ca9eec760c12b47eb9e1ffd06b3"
+  },
+  "biomes/cut/dist/cut-wall.html": {
+   "bytes": 1533351,
+   "sha256": "929bc7ccf18a4c266284946a8a4bf524d7671b62d062fe1b7105424a76b48b00"
+  },
+  "biomes/cut/dist/cut.html": {
+   "bytes": 1373375,
+   "sha256": "4bf4e465781ed9827efc64713cd84ee7f246c60ec04fb27e165b9c86722fa9dd"
+  },
   "biomes/dambasins/dist/port.html": {
    "bytes": 1118363,
    "sha256": "b7265d2c667b9593f0631baea6e6d60ea814f2d601a37a14b711febe3377aa9b"
@@ -113,8 +125,8 @@
    "sha256": "cb7997d7e4b5deffed6dd10c33f81a8d74aade4cdd68dbafec35c90b5a83ce28"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 8530523,
-   "sha256": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
+   "bytes": 8531590,
+   "sha256": "9399c5cfd09128e41e8456d0863a82ecd7347b93c46443a1f026b329ad497451"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
    "bytes": 5683900,

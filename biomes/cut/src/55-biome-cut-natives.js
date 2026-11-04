@@ -82,7 +82,9 @@
     /* the leaf: a spray at every node from 40% up, alternating sides: in straight ranks (180 degrees) where the warp is strong, else a
        spiral; the mid tier every second node, larger, the far tier every fourth, larger again (the same sides, so it does not jump) */
     const n0=Math.ceil(c.n*.42),stepA=c.ranked?Math.PI:2.4,size=CUT.quant(mix(3.2,4.4,u),.4,G.s);
-    for(const [ev,k0,r0,r1] of [[1,1,0,LD.near+50],[2,1.3,LD.near+50,LD.mid],[4,1.65,LD.mid,1e9]]){tier(r1,r0);
+    /* each spray tier switches with its culm's tier, at the same distances (the core's guard, one LOD key per tree: the near sprays ran 50 m past
+       the near culm and the mid ones started 50 m late, so 43% of the sprays switched apart from their culms; the final rebuild, pair 10) */
+    for(const [ev,k0,r0,r1] of [[1,1,0,LD.near],[2,1.3,LD.near,LD.mid],[4,1.65,LD.mid,1e9]]){tier(r1,r0);
      for(let k=n0;k<c.n;k+=ev){const lp=CUT.apply(c.m,[0,k*G.L,0]),a=c.yaw+k*stepA,sz=size*k0*(.75+.25*(k-n0)/(c.n-n0));
       CUT.putM('hleaf'+(k%3),M4(c.m,[c.x+lp[0],c.y+lp[1],c.z+lp[2]],RS(a,sz,sz*1.15,sz)),new BIO.host.THREE.Color(col(PAL.leaf,(u*7+k*.13)%1)));st.sprays++;}}}
    BIO.owner=null;}
