@@ -1,0 +1,26 @@
+{
+ "name": "The Red ladder (station 8; biomes/gills/PLAN.md section 11 item 2): up the Godthrone's south-east flank at 8.2-8.9 km, the Red Gills' cracks iced over, the out-breath frozen into fumarolic ice towers on their lips, frost jets on the bare ground over the dry-cold line with rime fans on their lee, palagonite ridges under the line; the breath still comes on the hour",
+ "out": "godthrone-gills-ladder.html",
+ "water": [],
+ "region": "region.json",
+ "tex": [
+  "iceGlacier",
+  "palagonite",
+  "lichenCrust",
+  "ferroCrust"
+ ],
+ "packs": [
+  "biomes/gills"
+ ],
+ "reads": {
+  "44-gills-life.js": "biomes/gills/src/44-gills-life.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "35b-core-lamina.js": "core/terrain/35b-core-lamina.js",
+  "35c-core-lamina-shade.js": "core/terrain/host/35b-core-lamina-shade.js",
+  "37-core-stacks.js": "core/terrain/37-core-stacks.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js",
+  "87-host-gills.js": "biomes/godthrone/stations/gills/87-host-gills.js",
+  "89y-host-gills-late.js": "biomes/godthrone/stations/gills/89y-host-gills-late.js"
+ }
+}

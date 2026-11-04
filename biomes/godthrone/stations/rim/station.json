@@ -1,0 +1,11 @@
+{
+ "name": "The airless rim (station 5): the south-western Outer Wall's crest at 10.9 km, the crater's megabreccia and its overturned flap, slump scarps falling into the crater, tafoni, ventifacts on desert pavement, sand-wedge polygons, a blockfield, relic debris-covered ice in a cirque, hoarfrost",
+ "out": "godthrone-rim.html",
+ "water": [],
+ "tex": [
+  "rockMega",
+  "pavement",
+  "iceDebris"
+ ],
+ "region": "region.json"
+}
