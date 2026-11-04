@@ -372,6 +372,12 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   The branch and maze outputs are byte-identical to before it (`test-karst.js` holds their digests).
 - **`KSPELEO.LIMESTONE`** (`39b-core-speleo.js`): soda straws in clusters, curtains along the roof, flowstone mounds, and rimstone dams
   across a falling floor, beside the dripstone; the hypogene preset's records are unchanged.
+- **The crystal caves' presets** (`39b-core-speleo.js`, 2026-11-03; `biomes/CRYSTAL-CAVES-5.1.md`): three new kinds, `beam` (a megacrystal
+  rising from the floor across the void until it meets rock), `block` (stubby crystals on the floor) and `druse` (points on
+  their own floor or roof), each record with its mineral; presets `KSPELEO.SELENITE` (Naica), `AMETHYST` (a basalt geode),
+  `CALCITE` (Mississippi Valley: calcite, celestine) and `VUG` (thundereggs, rhyolite vugs). Beams and blocks block a walker.
+  The old presets' records, meshes and blocks are byte-identical (`test-speleo.js` holds their digests). `KKARST`'s hypogene kind
+  takes `crystal: {storeys, speleo}` to dress the storeys that grew megacrystals with a crystal preset.
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 
