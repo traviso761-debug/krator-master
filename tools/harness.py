@@ -459,7 +459,7 @@ def gpu_lock(timeout=None, what="", lane=None):
                     "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(LANES[ln]) or "(nobody)", _owner_note(LANES[ln]))
                     for ln in lanes)), flush=True)
                 said = waited + 120
-            time.sleep(LOCK_POLL)
+            time.sleep(min(LOCK_POLL, 0.5) if 0 in places.values() else LOCK_POLL)   # the head of a queue races older copies, which poll every 5 s
     finally:
         for t in tickets:
             with contextlib.suppress(OSError):
@@ -1825,8 +1825,10 @@ def _watch_parent(spec):
     def loop():
         while not gone():
             time.sleep(5)
-        print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
-        _forget_browsers(kill=True)
+        with contextlib.suppress(Exception):   # the wrapper held our stdout: a print can fail on the broken pipe
+            print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
+        with contextlib.suppress(Exception):
+            _forget_browsers(kill=True)
         for lk in LANES.values():
             _release(lk)
         os._exit(130)

@@ -139,6 +139,11 @@ harness._touched(page)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "runs.log"), "a") as fh:
     fh.write("run\\n")
 print("ran", flush=True)
+if os.environ.get("FAKE_SLEEP"):
+    open(os.environ["FAKE_SLEEP"], "w").write(str(os.getpid()))
+    import time
+    for i in range(120):
+        print(i, flush=True); time.sleep(1)
 sys.exit(int(os.environ.get("FAKE_CODE", "0")))
 '''
 
@@ -181,6 +186,19 @@ def test_cache():
     check('the key moves with the arguments', k1 != harness.cache_hash(ROOT, files, ['page.html', '--assert', '--all-views']))
     check('a missing file is no key', harness.cache_hash(ROOT, files + [os.path.join(b, 'gone.js')], []) is None)
     e = json.load(open(next(os.path.join(ENV['KRATOR_VERIFY_CACHE_DIR'], f) for f in os.listdir(ENV['KRATOR_VERIFY_CACHE_DIR'])), encoding='utf-8'))
+    pidf = os.path.join(TMP, 'child.pid')
+    w = subprocess.Popen([PY, 'verify.py', 'page.html', '--assert'], cwd=b, env=dict(ENV, FAKE_SLEEP=pidf), stdout=subprocess.DEVNULL)
+    t0 = time.time()
+    while not os.path.isfile(pidf) and time.time() - t0 < 20:
+        time.sleep(0.2)
+    time.sleep(0.5)
+    with open(pidf) as fh:
+        child = int(fh.read())
+    subprocess.run(['taskkill', '/F', '/PID', str(w.pid)] if sys.platform == 'win32' else ['kill', '-9', str(w.pid)], capture_output=True)
+    t0 = time.time()
+    while harness.pid_alive(child) and time.time() - t0 < 20:
+        time.sleep(0.5)
+    check('a verify whose wrapper is stopped stops too', not harness.pid_alive(child))
     check('a pass names its lane', e.get('lane') == 'swiftshader' and page.replace(os.sep, '/') in [f.replace(os.sep, '/') for f in e['files']], str(e))
 
 
