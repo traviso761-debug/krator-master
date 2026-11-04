@@ -22,8 +22,12 @@
   // ---- the leaf styles: boxes [cx, cy, cz, sx, sy, sz] in the unit leaf, merged into one geometry
   function merge(Tt,boxes,extra){var pos=[],nor=[],uv=[],idx=[],n=0,parts=boxes.map(function(b){return new Tt.BoxGeometry(b[3],b[4],b[5]).translate(b[0],b[1],b[2]);});
     if(extra)parts=parts.concat(extra);
-    parts.forEach(function(g){var P=g.attributes.position.array,N=g.attributes.normal.array,U=g.attributes.uv.array,I=g.index?g.index.array:null,c=P.length/3;
-      for(var i=0;i<P.length;i++){pos.push(P[i]);nor.push(N[i]);}for(i=0;i<U.length;i++)uv.push(U[i]);
+    parts.forEach(function(g){var P=g.attributes.position.array,N=g.attributes.normal.array,I=g.index?g.index.array:null,c=P.length/3;
+      for(var i=0;i<P.length;i++){pos.push(P[i]);nor.push(N[i]);}
+      /* the leaf's UVs projected across the whole leaf (not each part's own 0..1): the grain runs on through stile, rail and
+         panel as on one board, the face as the plain leaf's was */
+      for(i=0;i<P.length;i+=3){var ax=Math.abs(N[i]),ay=Math.abs(N[i+1]),az=Math.abs(N[i+2]);
+        if(az>=ax&&az>=ay)uv.push(P[i]+.5,P[i+1]+.5);else if(ax>=ay)uv.push(P[i+2]+.5,P[i+1]+.5);else uv.push(P[i]+.5,P[i+2]+.5);}
       if(I)for(i=0;i<I.length;i++)idx.push(I[i]+n);else for(i=0;i<c;i++)idx.push(i+n);n+=c;g.dispose&&g.dispose();});
     var G=new Tt.BufferGeometry();G.setAttribute('position',new Tt.Float32BufferAttribute(pos,3));G.setAttribute('normal',new Tt.Float32BufferAttribute(nor,3));
     G.setAttribute('uv',new Tt.Float32BufferAttribute(uv,2));G.setIndex(idx);G.computeBoundingSphere();return G;}
