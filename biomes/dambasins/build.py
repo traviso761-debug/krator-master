@@ -78,6 +78,7 @@ def kit_paths():
     src.update({f: os.path.join(PB.ATMOS_DIR, f) for f in PB.CORE_ATMOS if f not in src})
     src.update({f: os.path.join(PB.WATER_DIR, f) for f in PB.CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in PB.RECORD_FILES if f not in src})
+    src.update({f: q for f, q in PB.DOOR_FILES.items() if f not in src})   # core/door and the kit's openings (kits/port/build.py)
     src.update({f: p for f, p in EXTRA_CORE.items() if f not in src})
     return src
 

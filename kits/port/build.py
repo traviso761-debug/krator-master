@@ -99,11 +99,18 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
+# core/door (KDOOR, KGLASS, KDOORHOST: core/door/README.md) and the Ancients kit's drawing of them, read in place from
+# kits/ancients/src (8zo-anc-open.js: the kit's windows as panes before room cards, the dead cells and panes' black glass
+# gone, arched doors as locked records, the E key and tip); src/8zp-port-open.js adds the port's iron doors (pkDoor).
+# Hook and the Dam Basins read this list too (their kit_paths)
+DOOR_FILES = {f: os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js', '90-core-door-host.js')}
+DOOR_FILES['8zo-anc-open.js'] = os.path.join(ROOT, 'kits', 'ancients', 'src', '8zo-anc-open.js')
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell,
 # the port core, the per-target tables. Anything else must contain a builder.
 DETERMINISTIC = {
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-port-matlib.js',   # the material library (no rnd())
+    '10-core-door.js', '20-core-glass.js', '90-core-door-host.js', '8zo-anc-open.js', '8zp-port-open.js',   # core/door and the openings (no rnd())
     '00-head.html', '09-lod.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -225,6 +232,7 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:

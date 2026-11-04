@@ -15,6 +15,22 @@ Open items start with `- [ ]` (build.py prints them after every build).
 - [x] The segment-boundary labels are screen-sized sprites: at showcase overview distance neighbouring labels overlap. - 2026-10-20: `portBoundsDeclutter` (92-camera.js, called from `frame`): every 4th frame the labels are projected, nearest first (ties by build order), and one overlapping a kept label eases out (opacity), so neighbours no longer pile up. Hook takes the same fragment.
 - [ ] A coastal segment does not finish its N (land) edge: with no land block behind, its apron meets natural ground through its stamp's soft ring, as before; with a block behind, the two decks are flush (nothing needed).
 
+## Real doors and real glass (2026-11-03, core/door)
+
+The owner's "remove all dark voids ... actual doors or windows that have transparency". Before: the dead window cells
+(`cellD`) and dead panes (`paneD`) were near-black plates (this fork's `MAT.winDead` is core/materials' opaque 0x07090c), the
+iron doors (`pkDoor`) and the kit's `archOpen` plates with no record. Now `build.py` reads core/door (10, 20, 90) and the
+Ancients kit's `kits/ancients/src/8zo-anc-open.js` in place (`DOOR_FILES`, which Hook and the Dam Basins read too), and
+`src/8zp-port-open.js` adds the iron door to it:
+
+- [x] A dead cell or pane is a room card behind its glass (a dusty pane in two of five, an empty hole onto the room in the
+      rest); an intact window item is a pane before a card, two in five lit at night.
+- [x] Every `pkDoor` and `archOpen` is a locked KDOOR record (`<type>/<decay>.pkDoor.<n>`): the buildings are solid bodies;
+      a door the ruin threw down flat is not recorded. `window._openings` gives the counts.
+- [ ] The lit windows (`dot`, an unlit warm box) and the curtain glass (`pane`, MAT.glass) are as they were: lit cells and
+      real transparent glass. The terminals' and the authority's own glazing (their fragments' MAT.glass bands) likewise.
+- [ ] No walls in core/walk and no interiors: no reachability audit here.
+
 ## Level of detail (core/lod)
 
 - [x] No LOD: every triangle was drawn at every distance. `core/lod` now takes over the scene (README, "Level of
