@@ -134,7 +134,7 @@ Carcosa's side.
 | **service** | the civic slabs (the Ledger), transit halls (the Cupola), markets, hospitals, the subway stations | `kits/metropolis`, `kits/ancients` |
 | **industrial** | tanks, pipe racks, the Organ's bronze pipes, cooling towers, gantries, the dish arrays of the references, rail yards | **new**: an industrial family in `kits/metropolis` or a target of `kits/ancients` |
 | **park / garden** | the ruined parks: lakes gone to marsh, pavilions, the Terrarium's sphere, follies, avenues of a planted species gone feral | the two lowland kits' flora at 1.3-2 x, the Terrarium, the Arcades |
-| **farmland** (the outskirts) | **Soleri's planned developments**: hexagonal and terraced growing pods round a civic hub (reference *landscape* 8), aqueducts, pump houses, the crop rows gone to thicket | **new**: farm pods and terraces, `kits/crops` for what grew there (`CROPS.forBiome` on the Cfa/Af climate) |
+| **farmland** (the outskirts) | **Soleri's planned developments**: hexagonal and terraced growing pods round a civic hub (reference *landscape* 8), aqueducts, pump houses, the crop rows gone to thicket | **new families in `kits/metropolis`** (the owner, 2026-11-04), as is the industrial family: farm pods and terraces, with shells, impostors and ruin states by the towers' machinery; `kits/crops` for what grew there (`CROPS.forBiome` on the Cfa/Af climate) |
 
 **Lines.** The cheapest way to keep a structure in every view is long linear infrastructure, which costs little and spans kilometres:
 **transit viaducts** with their guideway (the reference's yellow train), **pylon lines**, **canal aqueducts**, the **causeways**, and the
@@ -173,13 +173,13 @@ their placement. The valley adds one wrapper, *proposed* `AV.feralKit`, on the C
   soil the deepest; the swlowlands' sprawl oak and pillar fig and nwlowlands' kauri and tower ash at the top of the range.
 - **Species allow lists per zone**: a park's avenue is one species in a row gone feral; a farm pod is its crop's bucket run wild
   (`CROPS.pick`); the core's streets take the cracking-pavement species (grass tree, banksia, manzanita, rattlepod, the bamboos).
-- **Tint**: red-purple and blue-purple undertones with the green. *Proposed*: a `KHOOK` layer on the read-in kits' leaf and frond materials
-  (a hue rotation toward purple by the `taint` field and a per-instance seed, strongest on the undersides and the new growth), so that no
-  species is copied or re-authored, and the tint fades to the kits' own greens at the valley's edge. The kits' species keep their keys and
+- **Tint** (the owner agreed, 2026-11-04): red-purple and blue-purple undertones with the green, as a `KHOOK` layer on the read-in kits' leaf and
+  frond materials (a hue rotation toward purple by the `taint` field and a per-instance seed, strongest on the undersides and the new growth), so
+  that no species is copied or re-authored, and the tint fades to the kits' own greens at the valley's edge. The kits' species keep their keys and
   indices, as every reader of them does (`HANDOFF-REBUILD.md` l.410). `NWLOW_LOOK` is set before fragment 50 so nwlowlands draws its new look.
-- **Mutant plants:** *proposed*, a short list of the valley's own, in the Cut's grammar of wrongness (a tree whose two halves are different
-  ages, a fig that grew round and through a tower, a bloom that is an eye of the *extraplanar* folder's kind), each a species of
-  `biomes/ancientsvalley` and tagged `mutant`.
+- **Mutant plants** (the owner, 2026-11-04: yes, beside the layer): a short list of the valley's own, in the Cut's grammar of wrongness (a tree
+  whose two halves are different ages, a fig that grew round and through a tower, a bloom that is an eye of the *extraplanar* folder's kind, a
+  thicket that grows toward the nearest machine), each a species of `biomes/ancientsvalley` tagged `mutant`, densest round `city4`.
 - **Overgrowth** on the buildings: vines and epiphytes on the ruin states' torn edges, trees rooted on the stumps (reference *landscape* 23), the
   rubble mounds (`KRUBBLE`) seeded as ground.
 
@@ -195,12 +195,13 @@ All *proposed* until the owner settles them; the lore is in LORE.md 4 (l.149), 6
   `core/charactermodels` with body mods (the non-human spike's precedent: tails, heads; new mods for the *mutants* folder's fused mouths,
   starfish heads, extra joints, raw grafts), a few in rags with a gun. Savage, in bands, hunting the feral animals; in the subways by day.
   Camps on `core/camp` when the bands are built.
-- **The augmented ("cyberfreaks").** Distant cousins of the Yusar (the cybernetics tribe of Carcosa and Henge, LORE l.694; their speech
-  l.667-674). Former Ancients or their near descendants, kept alive lich-like by their technology, having lost something of their humanity for
-  it. Few. The `core/charactermodels` cybernetic arm mods are the tribe's; these take them further: metal below the neck, cables for a spine,
-  a cloak of arms. Cool, calculating, self-preserving; they bargain and may not keep the bargain. **A name is wanted.** *Proposed*, in the
-  Yusar's own way of making words (LORE l.668-673): **the Unleft** (the ones who never left, against LORE l.138 "did they mean to leave?"),
-  **the Stayed**, or **the Lingerers**; by others, *tin-liches*, *the Long*, *coldbloods*.
+- **The augmented ("cyberfreaks"; the owner wrote "cyberliches" on 2026-11-04).** Distant cousins of the Yusar (the cybernetics tribe of Carcosa
+  and Henge, LORE l.694; their speech l.667-674). Former Ancients or their near descendants, kept alive lich-like by their technology, having lost
+  something of their humanity for it. Few. **Their major haunt is Wheel (`city5`)**, among the machines. The `core/charactermodels` cybernetic arm
+  mods are the tribe's; these take them further: metal below the neck, cables for a spine, a cloak of arms. Cool, calculating, self-preserving;
+  they bargain and may not keep the bargain. **A name is still wanted.** *Proposed*, in the Yusar's own way of making words (LORE l.668-673):
+  **the Unleft** (the ones who never left, against LORE l.138 "did they mean to leave?"), **the Stayed**, or **the Lingerers**; by others,
+  *cyberliches*, *tin-liches*, *the Long*, *coldbloods*.
 - **Feral robots.** Three behaviours on the same chassis families, so the far view cannot tell them apart: **keepers** (a thousand-year routine:
   a sweeper, a crane that loads nothing, a tram that runs), **hunters** (attack on sight: the Stalkers of `kits/mechs`, `st_harpooner`,
   `st_blade`, are the model of the kind), and **feigners** (docile until the moment). *Proposed*: the valley's own robots are a kit file on
@@ -254,8 +255,22 @@ pressure, a creaking building's groan. The first plan's picks from the sound lib
 - **Portals**, an anomaly kind: a door to elsewhere, some on Krator (a teleport to another station's coordinates) and some not (an interior with
   no world coordinates, as the House's depth). Where the extraplanars come through.
 - **Space distorted** as a hazard to life, not only a look: the Bend's and the Broken Country's cores carry a `taint` dose.
-- **One theme per place.** The basins keep their seven. *Proposed*: the marked settlements and the lone arcologies each take a theme too
-  (Babel the House, Necropolis radiation, Dorado a stilled core, Blade machines), so a player learns a place by its weapon.
+- **One theme per place.** The basins keep their seven. **The settlements' themes (the owner, 2026-11-04):**
+
+  | City | Theme | What it means on the page |
+  |---|---|---|
+  | `city1` Babel | **the House** | the space anomaly: interiors larger than their shells, loops, rewiring, the depth below the subway |
+  | `city2` Necropolis | **radiation** | the `rad` hazard at its strongest; dead ground; the geiger tell; the richest unspoiled salvage because nothing lives to take it |
+  | `city3` Dorado (drowned) | **extraplanar** | where the entities come through: portals in the drowned halls, phenomena over the water, the lake's steam as their weather |
+  | `city4` Blade | **mutagenic** | the mutants' country: the `taint` dose that changes living things; the most wrongly grown flora; Dalab's outpost holds its edge |
+  | `city5` Wheel | **machines**, and the augmented's major haunt | the feral robots' keepers at their routines, hunters and feigners among them; the augmented live here among the machines they understand |
+  | `city6` Thera | **temporal** | time anomalies on the stair toward Span: stilled and fast pockets, a place a traveller loses days in |
+
+  A player learns a place by its weapon; a theme is the dominant hazard, not the only one.
+- **Hard to tell apart** (the owner, 2026-11-04): in some places a mutated creature, an extraplanar entity and a machine cannot be told from one another
+  at a distance, and sometimes not up close. This is a design rule for the three kits: **shared silhouettes and shared tells** (a stilted walker may be
+  a robot tripod, a stilt-legged entity or a mutant on grafted legs; a hum may be a servo, a presence or a growl), with the difference shown late, by
+  behaviour. The far tiers (impostors, far instances) draw the three from one silhouette set on purpose.
 - **Normal ground between**: the field's troughs, where the natives are the danger and the page costs nothing for anomalies (rule 5 of
   `PLAN-ANOMALIES.md` 2).
 
@@ -303,7 +318,7 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
 6. The Broken Country.
 7. The people: mutants, the augmented, the robots, the extraplanars, each when its kit exists.
-8. Streaming into the open world, after the stations have shown what the valley's language is.
+8. Streaming into the open world, after the stations have shown what the valley's language is (the owner, 2026-11-04: stations first).
 
 ## 13. Open questions for the owner
 
@@ -312,19 +327,17 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
    Valley and cross the Outer Wall, or were they loosed in both?
 3. ~~The scale of the city~~ **Settled 2026-11-03:** B first (the floor and shelf), measured on the GPU before A is considered; Dorado is the
    drowned city; the code refers to the settlements and basins by number (section 3).
-4. **The centres.** `city1`-`city4` as the intact centres (`city3` drowned); the seven basins as the former ones. Carcosa is just outside
-   the polygon and the Yusar's: is it the valley's northern gate or another place? Under B, Blade (`city4`, 1,229 m) stands outside the
-   city's bands, in the forest: an outpost arcology on its own, which suits Dalab's story of it.
-5. **One hazard theme per settlement** as proposed in section 9, or themes for the basins only?
+4. **The centres.** `city1`-`city6` as the intact centres (`city3` drowned); the seven basins as the former ones. Carcosa is just outside
+   the polygon and the Yusar's: is it the valley's northern gate or another place? Under B, Blade (`city4`, 1,229 m) and Thera (`city6`,
+   1,653 m) stand outside the city's bands, in the forest: outposts on their own, which suits Dalab's story of Blade.
+5. ~~One hazard theme per settlement~~ **Settled 2026-11-04:** yes; the table in section 9.
 6. **Radiation's rules:** a dose that heals, a dose that doesn't, or a dose that mutates? What the tell is: a geiger click is the obvious
    one, and it says the Ancients left counters lying about.
 7. **The extraplanars:** a kit of their own, as proposed? Creatures that hunt, phenomena that drift, or both? Any you want from the folder
-   first?
-8. **The flora's tint:** a shader layer on the read-in kits (no new species, fades at the edge) as proposed, or distinct mutant species
-   beside the kits' own? Both are possible; the layer is cheap and reaches everything.
-9. **The farmland and the industrial zone need buildings that exist nowhere:** Soleri farm pods and terraces, tanks, pipe racks, cooling
-   towers, dish arrays. Do they go to the metropolis test bed as new families, or to a target of `kits/ancients`?
-10. **Stations first, then streaming** (section 12), or does "on screen at all times" mean the open world from the start?
+   first? And the "hard to tell apart" rule (section 9): one shared silhouette set for mutants, entities and machines at the far tiers?
+8. ~~The flora's tint~~ **Settled 2026-11-04:** the shader layer, and a short list of mutant species beside it (section 5).
+9. ~~Where the farm pods and the industrial family live~~ **Settled 2026-11-04:** new families in `kits/metropolis` (section 3).
+10. ~~Stations first or streaming~~ **Settled 2026-11-04:** stations first (section 12).
 11. **The questions of `PLAN-ANOMALIES.md` 12 still stand:** the eigenweapon's family as the cause; Press fatal or not; the time cap; the ruin
     share (10-15%); and whether `crush` serves the Press or a `crushing` row is wanted.
 12. **The fields' names:** `taint` for the purple leak and `scar` for the dead ground; say if you want other words, since they will be in
