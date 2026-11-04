@@ -10,14 +10,20 @@
 //     kinds   {name: {p (a cell's chance), len:[a, b], r:[a, b], arms:[a, b] (chandelier), minGap (m of open below it)}}; default
 //             KSPELEO.HYPOGENE: gypsum chandeliers, a few stalactites and stalagmites, columns where the two would meet;
 //             KSPELEO.LIMESTONE (a solution cave, KKARST's): dripstone, soda straws {n, r: the cluster's spread}, curtains {r: the span,
-//             folds}, flowstone mounds, rimstone dams {n, slope: the floor's least fall} on a sloping floor. A cell takes the first kind
-//             its hash falls in, in the order chandelier, stalactite, straw, curtain, flowstone, rimstone
+//             folds}, flowstone mounds, rimstone dams {n, slope: the floor's least fall} on a sloping floor;
+//             the crystal caves' (2026-11-03): KSPELEO.SELENITE (Naica: beams {el: [a, b] rad} rising from the floor across the
+//             void, stopping at the rock they reach; blocks {n}; druse), KSPELEO.AMETHYST (a basalt geode's lining), KSPELEO.CALCITE
+//             (Mississippi Valley: calcite druse and blocks, celestine beams), KSPELEO.VUG (a thunderegg's or a rhyolite vug's
+//             quartz points, a topaz or two). A cell takes the first kind its hash falls in, in the order chandelier, stalactite,
+//             straw, curtain, flowstone, rimstone, beam, block, druse; every crystal record carries its mineral
 //     accept  (rec) -> bool: the kit's last word (a hazard's taboo, a path kept clear)
 //   -> [{id, kind, x, y (where it is fixed: the ceiling, or the floor), z, len, r, roof, floor, arms?, seed}]. A point under the sky
 //      (no roof), or in rock, gets nothing. kind: 'chandelier' (selenite blades fanning down from the roof), 'stalactite'
-//      (a cone down), 'stalagmite' (a cone up from the floor), 'column' (floor to roof: where a stalactite and its stalagmite meet)
+//      (a cone down), 'stalagmite' (a cone up from the floor), 'column' (floor to roof: where a stalactite and its stalagmite meet),
+//      'beam' {az, el, mineral} (a four-sided prism from the floor), 'block' {parts: [{dx, dz, y, len, r, tilt, az}], mineral},
+//      'druse' {pts: [{dx, dz, y, len, up}], mineral} (six-sided points on each point's own floor or roof)
 //   KSPELEO.mesh(recs, {seg (6)}) -> {pos (Float32), nrm (Float32), idx (Uint32), kind (Uint8 a vertex: KSPELEO.KINDS' index)}
-//   KSPELEO.blocks(recs) -> [{id, box:[x0, x1, z0, z1, y0, y1]}]: the ones a walker cannot pass (stalagmites, columns), in
+//   KSPELEO.blocks(recs) -> [{id, box:[x0, x1, z0, z1, y0, y1]}]: the ones a walker cannot pass (stalagmites, columns, beams, blocks), in
 //      C.fixture's box order, for core/walk
 //   KSPELEO.export(recs) -> {format:'krator-speleo', version:1, records}
 // Godot: the records and the mesh arrays cross as data (an ArrayMesh), no twin needed to draw.
@@ -25,7 +31,7 @@
   'use strict';
   function KR(){var K=root.KRAND;if(!K)throw new Error('KSPELEO: load core/rand/08-core-rand.js first');return K;}
   function d(v,x){return v==null?x:v;}
-  var KINDS=['chandelier','stalactite','stalagmite','column','straw','curtain','flowstone','rimstone'];
+  var KINDS=['chandelier','stalactite','stalagmite','column','straw','curtain','flowstone','rimstone','beam','block','druse'];
   var HYPOGENE={chandelier:{p:.22,len:[1.5,4.5],r:[.6,1.6],arms:[7,14],minGap:3},stalactite:{p:.12,len:[.6,2.4],r:[.08,.3],minGap:1},
     stalagmite:{p:.5,len:[.3,1.6],r:[.15,.45]}};
   /* a limestone cave's dress (2026-11-03, KKARST's caves): the dripstone, soda straws in clusters, curtains along a sloping roof,
@@ -33,6 +39,39 @@
   var LIMESTONE={stalactite:{p:.16,len:[.4,3],r:[.06,.35],minGap:1},stalagmite:{p:.6,len:[.3,2.5],r:[.12,.5]},
     straw:{p:.12,len:[.15,.9],r:[.4,1.6],n:[6,20]},curtain:{p:.08,len:[.6,3],r:[1.5,6],folds:[3,7],minGap:2},
     flowstone:{p:.07,len:[.4,1.6],r:[1.5,5]},rimstone:{p:.1,len:[.08,.3],r:[1,4],n:[2,5],slope:.03}};
+  /* the crystal caves' dress (2026-11-03, biomes/CRYSTAL-CAVES-5.1.md): a crystal grows huge where warm water stays saturated in an
+     open void for a very long time. beam: a megacrystal from the floor across the void (Naica's selenite, to 14 m; longer at
+     0.75 g); block: stubby crystals clustered on the floor; druse: crystal points lining the floor and the roof (a geode's or a
+     vug's lining). Every record carries its mineral for the dressing. Each preset is a kinds object for place() */
+  var SELENITE={beam:{p:.14,len:[4,14],r:[.25,1],el:[.05,.55],minGap:3,mineral:'selenite'},block:{p:.2,len:[.4,1.8],r:[.3,1.2],n:[2,6],mineral:'selenite'},
+    druse:{p:.15,len:[.05,.3],r:[.8,2],n:[10,30],mineral:'gypsum'}};
+  var AMETHYST={druse:{p:.9,len:[.04,.35],r:[.8,2],n:[20,50],mineral:'amethyst'},block:{p:.05,len:[.2,.6],r:[.2,.5],n:[1,3],mineral:'calcite'}};
+  var CALCITE={beam:{p:.04,len:[1,3],r:[.08,.25],el:[.2,1.2],minGap:2,mineral:'celestine'},block:{p:.2,len:[.3,1.4],r:[.3,1],n:[2,5],mineral:'calcite'},
+    druse:{p:.35,len:[.1,.6],r:[.8,2.5],n:[10,30],mineral:'calcite'}};
+  var VUG={druse:{p:.9,len:[.02,.12],r:[.3,.9],n:[10,30],mineral:'quartz'},block:{p:.04,len:[.05,.2],r:[.05,.15],n:[1,2],mineral:'topaz'}};
+  var CRYSTAL=['beam','block','druse'];
+  /* the crystal kinds a cell may hold once every other kind passed it: each its share of `pick` after theirs */
+  function crystal(KS,C,o,x,z,g,gap,pick,acc,u,id,seed,K){
+    function rng(a,t){return a[0]+(a[1]-a[0])*t;}
+    for(var q=0;q<CRYSTAL.length;q++){var k=CRYSTAL[q],S=KS[k];if(!S)continue;if(pick>=acc+S.p){acc+=S.p;continue;}var mn=S.mineral||(k==='druse'?'quartz':'selenite');
+      if(k==='beam'){if(gap<d(S.minGap,3))return null;var az=u(20)*2*Math.PI,el=rng(S.el||[.05,.55],u(21)),L0=rng(S.len,u(22)),r=rng(S.r,u(23));
+        var dx=Math.cos(el)*Math.cos(az),dy=Math.sin(el),dz=Math.cos(el)*Math.sin(az),y0=g[0]+r*.5,t=0;
+        /* march along the beam while the void holds it: a beam ends at the rock it reaches, or at its length */
+        while(t<L0&&C.sdf(x+dx*(t+.5),y0+dy*(t+.5),z+dz*(t+.5))>r*.5)t+=.5;if(t<S.len[0]*.5)return null;
+        return {id:id,kind:'beam',x:x,y:g[0],z:z,len:t,r:r,az:az,el:el,mineral:mn};}
+      if(k==='block'){var n=Math.round(rng(S.n||[2,6],u(20))),sp=rng(S.r,u(21)),parts=[];
+        for(var a=0;a<n;a++){var w=function(s){return K.unit(K.hash(seed,a,0x5300+s));},an=w(1)*2*Math.PI,dd=sp*Math.sqrt(w(2));
+          var qx=Math.cos(an)*dd,qz=Math.sin(an)*dd,gb=gapAt(C,x+qx,o.y,z+qz);if(!gb)continue;
+          parts.push({dx:qx,dz:qz,y:gb[0],len:Math.min(rng(S.len,w(3)),(gb[1]-gb[0])*.5),r:sp*(.25+.25*w(4)),tilt:.35*w(5),az:w(6)*2*Math.PI});}
+        if(!parts.length)return null;
+        return {id:id,kind:'block',x:x,y:g[0],z:z,len:Math.max.apply(null,parts.map(function(m){return m.len;})),r:sp,parts:parts,mineral:mn};}
+      var nd=Math.round(rng(S.n||[10,30],u(20))),sd=rng(S.r,u(21)),pts=[];
+      for(var b=0;b<nd;b++){var v=function(s){return K.unit(K.hash(seed,b,0x5400+s));},ab=v(1)*2*Math.PI,db=sd*Math.sqrt(v(2));
+        var px=Math.cos(ab)*db,pz=Math.sin(ab)*db,gg=gapAt(C,x+px,o.y,z+pz),up=v(4)<.5;if(!gg)continue;   /* each point on its own floor or roof */
+        pts.push({dx:px,dz:pz,len:Math.min(rng(S.len,v(3)),(gg[1]-gg[0])*.2),up:up,y:up?gg[0]:gg[1]});}
+      if(!pts.length)return null;
+      return {id:id,kind:'druse',x:x,y:g[1],z:z,len:Math.max.apply(null,pts.map(function(m){return m.len;})),r:sd,pts:pts,mineral:mn};}
+    return null;}
   /* the limestone kinds a cell may hold once neither a chandelier nor a stalactite took it: each its share of `pick` after theirs */
   function limestone(KS,C,o,x,z,g,gap,pick,acc,u,id,seed,K){var order=['straw','curtain','flowstone','rimstone'];
     function rng(a,t){return a[0]+(a[1]-a[0])*t;}
@@ -74,6 +113,8 @@
           else{var rs={id:id+':up',kind:'stalagmite',x:x,y:g[0],z:z,len:L2,r:r2,roof:g[1],floor:g[0],seed:K.hash(W,i,j,11)};if(!o.accept||o.accept(rs))out.push(rs);}}
         if(!rec)rec={id:id,kind:'stalactite',x:x,y:g[1],z:z,len:Math.min(L1,gap*.9),r:r1};}
       else rec=limestone(KS,C,o,x,z,g,gap,pick,d(ch&&ch.p,0)+d(sc&&sc.p,0),function(s){return u(i,j,s);},id,seed,K);
+      if(!rec&&(KS.beam||KS.block||KS.druse)){var acc=d(ch&&ch.p,0)+d(sc&&sc.p,0);['straw','curtain','flowstone','rimstone'].forEach(function(q){if(KS[q])acc+=KS[q].p;});
+        if(pick>=acc)rec=crystal(KS,C,o,x,z,g,gap,pick,acc,function(s){return u(i,j,s);},id,seed,K);}
       if(!rec)continue;rec.roof=g[1];rec.floor=g[0];rec.seed=seed;if(!o.accept||o.accept(rec))out.push(rec);}
     return out;}
   // ---- the meshes: a cone (stalactite down, stalagmite up), a column waisted in the middle, a chandelier's blades (flat
@@ -103,12 +144,24 @@
               v([x+ca*s-sa*off*(1+tv),r.y+.03-drop,z+sa*s+ca*off*(1+tv)],[-sa*sg*(1-.5*Math.abs(dn)),0,ca*sg*(1-.5*Math.abs(dn))],k);}}
           for(iu=0;iu<nu;iu++)for(iv=0;iv<nv;iv++){var p0=sb+iu*(nv+1)+iv,p1=p0+nv+1;if(side)I.push(p0,p0+1,p1,p1,p0+1,p1+1);else I.push(p0,p1,p0+1,p0+1,p1,p1+1);}}
         }
+      else if(r.kind==='beam'){/* a four-sided prism (a selenite blade's section), its foot sunk in the floor, its end a low point */
+        var bx=Math.cos(r.el)*Math.cos(r.az),by=Math.sin(r.el),bz=Math.cos(r.el)*Math.sin(r.az),y0=r.y+r.r*.5,sv3=seg;seg=4;
+        tube([[x-bx*r.r,y0-by*r.r-r.r*.4,z-bz*r.r,r.r],[x+bx*r.len*.9,y0+by*r.len*.9,z+bz*r.len*.9,r.r*.9],[x+bx*r.len,y0+by*r.len,z+bz*r.len,r.r*.25]],k);seg=sv3;}
+      else if(r.kind==='block'){var sv4=seg;seg=4;r.parts.forEach(function(B){var tx=Math.sin(B.tilt)*Math.cos(B.az),tz=Math.sin(B.tilt)*Math.sin(B.az),ty=Math.cos(B.tilt),bx0=x+B.dx,bz0=z+B.dz;
+          tube([[bx0,B.y-.05,bz0,B.r],[bx0+tx*B.len*.8,B.y+ty*B.len*.8,bz0+tz*B.len*.8,B.r*.95],[bx0+tx*B.len,B.y+ty*B.len,bz0+tz*B.len,B.r*.3]],k);});seg=sv4;}
+      else if(r.kind==='druse'){/* six-sided points: up from the floor and down from the roof */
+        var sv5=seg;seg=6;r.pts.forEach(function(D){var py=D.y,sg=D.up?1:-1,w=Math.max(.01,D.len*.28);
+          tube([[x+D.dx,py-sg*.02,z+D.dz,w],[x+D.dx,py+sg*D.len*.7,z+D.dz,w],[x+D.dx,py+sg*D.len,z+D.dz,eps]],k);});seg=sv5;}
       else{tube([[x,r.y+.05,z,r.r*.35],[x,r.y-r.r*.3,z,r.r*.3],[x,r.y-r.r*.6,z,eps]],k);
         r.arms.forEach(function(A){var dx=Math.cos(A.az)*Math.sin(A.tilt),dz=Math.sin(A.az)*Math.sin(A.tilt),dy=-Math.cos(A.tilt),o0=[x+dx*r.r*.25,r.y-r.r*.2,z+dz*r.r*.25];
           var save=seg;seg=4;tube([[o0[0],o0[1],o0[2],A.w],[o0[0]+dx*A.len*.7,o0[1]+dy*A.len*.7,o0[2]+dz*A.len*.7,A.w*.8],[o0[0]+dx*A.len,o0[1]+dy*A.len,o0[2]+dz*A.len,eps]],k);seg=save;});}});
     return {pos:new Float32Array(P),nrm:new Float32Array(N),idx:new Uint32Array(I),kind:new Uint8Array(Kd)};}
-  function blocks(R){return R.filter(function(r){return r.kind==='stalagmite'||r.kind==='column';}).map(function(r){var w=r.kind==='column'?r.r*1.3:r.r;
+  function blocks(R){return R.filter(function(r){return r.kind==='stalagmite'||r.kind==='column'||r.kind==='block'||r.kind==='beam';}).map(function(r){
+    if(r.kind==='beam'){var ex=r.x+Math.cos(r.el)*Math.cos(r.az)*r.len,ez=r.z+Math.cos(r.el)*Math.sin(r.az)*r.len,ey=r.y+r.r*.5+Math.sin(r.el)*r.len;
+      return {id:r.id,box:[Math.min(r.x,ex)-r.r,Math.max(r.x,ex)+r.r,Math.min(r.z,ez)-r.r,Math.max(r.z,ez)+r.r,r.y,Math.max(r.y+r.r*2,ey+r.r)]};}
+    var w=r.kind==='column'?r.r*1.3:r.kind==='block'?r.r*1.25:r.r;
     return {id:r.id,box:[r.x-w,r.x+w,r.z-w,r.z+w,r.y,r.y+r.len]};});}
   function exp(R){return {format:'krator-speleo',version:1,convention:{units:'m',up:'+y',x:'east',z:'south'},kinds:KINDS.slice(),records:JSON.parse(JSON.stringify(R))};}
-  root.KSPELEO={place:place,mesh:mesh,blocks:blocks,export:exp,KINDS:KINDS,HYPOGENE:HYPOGENE,LIMESTONE:LIMESTONE,gapAt:gapAt};
+  root.KSPELEO={place:place,mesh:mesh,blocks:blocks,export:exp,KINDS:KINDS,HYPOGENE:HYPOGENE,LIMESTONE:LIMESTONE,
+    SELENITE:SELENITE,AMETHYST:AMETHYST,CALCITE:CALCITE,VUG:VUG,gapAt:gapAt};
 })(typeof window!=='undefined'?window:globalThis);
