@@ -27,17 +27,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46c-mp-planned.js` | 56 **big** |  |
 | `46d-mp-gridplan.js` | 66 **big** |  |
 | `46e-mp-industry.js` | 10 |  |
-| `47-host-land.js` | 1 |  |
+| `47-host-land.js` | 2 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
 | `53-mp-hero-ledger.js` | 14 |  |
 | `54-mp-hero-designs.js` | 39 **big** |  |
-| `55-mp-hero-ancients.js` | 19 |  |
+| `55-mp-hero-ancients.js` | 24 |  |
 | `56-mp-interiors.js` | 23 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
-| `59-mp-floors.js` | 17 |  |
-| `59b-mp-ruin-design.js` | 10 |  |
+| `59-mp-floors.js` | 18 |  |
+| `59b-mp-ruin-design.js` | 11 |  |
 | `59d-mp-flora.js` | 4 |  |
 | `60-mp-shell-host.js` | 22 |  |
 | `70-mp-stage.js` | 22 |  |

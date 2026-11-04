@@ -8,7 +8,7 @@ MP.ruinDesign = function (G, F, state) {
   const R = MP.ruin(F, state); if (R.state === 'intact') return G;
   const glassy = n => /glass/.test(n), stain = state === 'intact' ? 1 : (F.ruins[state] && F.ruins[state].stain != null ? F.ruins[state].stain : 0.72);
   const limit = (x, z) => (state === 'gutted' ? Infinity : MP.tearAtXZ(F, R, x, z));
-  const skin = R.frame ? R.skin : Infinity, top = R.frame ? R.frame[1] : Infinity, v = new THREE.Vector3(), m = new THREE.Matrix4(), Z = new THREE.Matrix4().makeScale(0, 0, 0);
+  const skin = R.frame ? R.skin : Infinity, top = R.frame ? R.frame[1] : Infinity, v = new THREE.Vector3(), m = new THREE.Matrix4();
   const drop = [];
   /* every test in the hero's own frame: the Ancients kit's meshes sit in groups of their own, moved and scaled (55) */
   G.updateMatrixWorld(true); const inv = new THREE.Matrix4().copy(G.matrixWorld).invert(), Mw = new THREE.Matrix4(), mm = new THREE.Matrix4(), va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3();
@@ -22,8 +22,12 @@ MP.ruinDesign = function (G, F, state) {
       /* the piers: cut at the tear; a skeleton's stand to the frame's top */
       if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
       const gh = o.geometry.boundingBox.max.y;
-      for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, m); mm.multiplyMatrices(Mw, m); v.setFromMatrixPosition(mm); const yTop = v.y + Math.max(Math.abs(mm.elements[5]) / 2, Math.abs(mm.elements[5] * gh)), lim = R.frame ? top : limit(v.x, v.z); if (yTop > lim) o.setMatrixAt(i, Z); }
-      o.instanceMatrix.needsUpdate = true; return;
+      /* the ones standing kept at the front and the count cut to them (hidden at zero scale they were still drawn: the Organ's 36 k of
+         panels in every state) */
+      const col = new THREE.Color(); let w = 0;
+      for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, m); mm.multiplyMatrices(Mw, m); v.setFromMatrixPosition(mm); const yTop = v.y + Math.max(Math.abs(mm.elements[5]) / 2, Math.abs(mm.elements[5] * gh)), lim = R.frame ? top : limit(v.x, v.z); if (yTop > lim) continue;
+        if (w !== i) { o.setMatrixAt(w, m); if (o.instanceColor) { o.getColorAt(i, col); o.setColorAt(w, col); } } w++; }
+      o.count = w; o.instanceMatrix.needsUpdate = true; if (o.instanceColor) o.instanceColor.needsUpdate = true; return;
     }
     /* the merged surfaces: keep a triangle under the torn line (a skeleton's skin under its skin line); the stone stained. A mesh with no index
        (the kit's) is cut as one, its kept triangles given one */
@@ -48,14 +52,19 @@ MP.ruinDesign = function (G, F, state) {
     const N = O.length;
     for (let i = 0; i < (closed ? N : N - 1); i++) {
       const a = O[i], b = O[(i + 1) % N], ta = a.t, tb = i + 1 < N ? b.t : b.t + Math.PI * 2, ha = holeAt(ta), hb = holeAt(tb), nr = Math.max(1, Math.ceil((Math.max(a.r - ha, b.r - hb)) / 8));
+      if (a.r - 0.2 <= ha || b.r - 0.2 <= hb) continue;
+      const at = (f, t, h, r) => [ox + (h + (r - 0.2 - h) * f) * Math.cos(t), oz + (h + (r - 0.2 - h) * f) * Math.sin(t)];
+      /* the cells the tear leaves, a run of them along the strip drawn as one quad (they lie on the same two lines: the same floor, fewer
+         triangles; the Wedge's crown was 28 k triangles of slabs) */
+      const quad = (j0, j1) => { const f0 = j0 / nr, f1 = j1 / nr, p = [at(f0, ta, ha, a.r), at(f0, tb, hb, b.r), at(f1, tb, hb, b.r), at(f1, ta, ha, a.r)];
+        [[L.y, 1], [L.y - 0.3, -1]].forEach(fc => { const b0 = sp.length / 3, ord = fc[1] > 0 ? [0, 1, 2, 3] : [0, 3, 2, 1]; ord.forEach(v => { sp.push(p[v][0], fc[0], p[v][1]); sn.push(0, fc[1], 0); }); si.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); }); };
+      let run = -1;
       for (let j = 0; j < nr; j++) {
-        if (a.r - 0.2 <= ha || b.r - 0.2 <= hb) break;
-        const f0 = j / nr, f1 = (j + 1) / nr, ra0 = ha + (a.r - 0.2 - ha) * f0, ra1 = ha + (a.r - 0.2 - ha) * f1, rb0 = hb + (b.r - 0.2 - hb) * f0, rb1 = hb + (b.r - 0.2 - hb) * f1;
-        const p = [[ox + ra0 * Math.cos(ta), oz + ra0 * Math.sin(ta)], [ox + rb0 * Math.cos(tb), oz + rb0 * Math.sin(tb)], [ox + rb1 * Math.cos(tb), oz + rb1 * Math.sin(tb)], [ox + ra1 * Math.cos(ta), oz + ra1 * Math.sin(ta)]];
-        const cx = (p[0][0] + p[1][0] + p[2][0] + p[3][0]) / 4, cz = (p[0][1] + p[1][1] + p[2][1] + p[3][1]) / 4;
-        if (!R.frame && L.y > Math.min(slabLimit(cx, cz), skin) + 0.3) continue;
-        [[L.y, 1], [L.y - 0.3, -1]].forEach(fc => { const b0 = sp.length / 3, ord = fc[1] > 0 ? [0, 1, 2, 3] : [0, 3, 2, 1]; ord.forEach(v => { sp.push(p[v][0], fc[0], p[v][1]); sn.push(0, fc[1], 0); }); si.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); });
+        const fm = (j + 0.5) / nr, pa = at(fm, ta, ha, a.r), pb = at(fm, tb, hb, b.r), cx = (pa[0] + pb[0]) / 2, cz = (pa[1] + pb[1]) / 2;
+        const kept = R.frame || L.y <= Math.min(slabLimit(cx, cz), skin) + 0.3;
+        if (kept && run < 0) run = j; else if (!kept && run >= 0) { quad(run, j); run = -1; }
       }
+      if (run >= 0) quad(run, nr);
     }
   };
   /* an Ancients building's slabs are its hero's own plates (59, in pieces), cut with the rest */
