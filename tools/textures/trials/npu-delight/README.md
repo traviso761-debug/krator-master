@@ -77,6 +77,23 @@ to OpenVINO IR with a fixed shape, then times one step per device. **It runs on 
 So the four steps would take about 7 s on the NPU, against about 60 s now. Not done yet: the VAE encode and decode and the
 text embedding (small, one pass each), and wiring the converted UNet into the pipeline.
 
+## Wired in (2026-11-04): `process.py --light-from marigold`
+
+`tools/textures/marigold_iid.py` runs Marigold-IID with no PyTorch. The VAE encoder, UNet and decoder are OpenVINO IR at
+768 px, the empty-prompt embedding is a .npy file, and the DDIM loop is in numpy. Its setup (a one-time `--export` in the
+PyTorch venv) is in its docstring.
+- **Matches diffusers:** the albedo differs by 0.5/255 on average, at most 1 (`marigold_iid.py --compare`).
+- **Devices:** the encoder runs on the NPU (1.0 s, against 4.6 s on the CPU) and the UNet on the NPU (1.7 s a step; the
+  first step in a process costs about 18 s more). The decoder runs on the CPU (12 to 16 s): on the NPU it hangs the
+  device ("device lost"). Any part that fails on the NPU mid-run is recompiled on the CPU, and the run goes on.
+- **Speed:** about 20 to 25 s a set once warm (median 24 s over the 12 sets), against 70 to 85 s for diffusers on the CPU.
+- **Tiling:** the texture goes in as 640 px inside a 64 px wrap border, so the light at one edge sees the other, and the
+  set still tiles (checked with `preview.py` on the delivery's banded gneiss).
+- **Scored through this code path** (`trial.py --npu`, method `marigold-npu`): mean error **13.4** against 16.6 for the blur,
+  better on **11 of 12** sets (only the plank gate is worse, 7.5 against 6.8). That is a little better than the trial's
+  diffusers-based `marigold-ratio` (13.7, 10 of 12).
+- **The default (`blur`) is byte-identical to before**, meta.json included. Tests: `python tools/tests/test_process_height.py`.
+
 ## Recommendation
 
 - **When a delivery comes with a real normal map** (scans, Poly Haven, a photogrammetry set): fit the light on it and divide
@@ -85,8 +102,8 @@ text embedding (small, one pass each), and wiring the converted UNet into the pi
   in error, on 10 of 12 sets, with no loss of detail. It needs the PyTorch venv and about a minute a set on the CPU, or
   about 10 s once the NPU UNet above is wired into the pipeline. Run it per set, by eye, as an opt-in: worse on 2 of 12 sets.
 - **Not worth it:** `shadefit-model`. The depth model's slopes are too coarse for light fitting.
-- Nothing is wired into `process.py` yet. The opt-in would be `--delight marigold` (with the venv) or `--delight normals
-  NORMAL_MAP`; ask before adding it.
+- `--light-from marigold` is wired in (above). The fit on a delivered normal map is not: it would be a
+  `--light-from normals` with a normal map path, worth adding when a delivery with scanned normals arrives.
 
 ## Reproduce
 
