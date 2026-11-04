@@ -77,10 +77,14 @@ F with no magenta excess (the classic Vlahos screen key). That is exactly the ph
 
 ## Recommendation
 
-- For glass, water, ice and fine blades with a tinted fringe, use `"spill": "vlahos"` in the batch entry (`"key_gain": 1.2` to
+- For glass, water and ice (and, judged by eye, fine blades with a tinted fringe), use `"spill": "vlahos"` in the batch entry (`"key_gain": 1.2` to
   1.5 makes see-through parts clearer).
 - Keep `edge` as the default. Do not use `vlahos` on a sheet with pink, purple or magenta subjects: it turns them pale and half
   clear (the same caveat as spill `all`).
+- **What the library took (textures-1103, 2026-11-03):** `card.glasscane` re-keyed with `vlahos` at `key_gain` 1.3. Against
+  1.0 this halved the lavender cast; 25% of the sheet is still above alpha 0.5. The sedge and the breathfringe stayed on `unmix`:
+  judged by eye, `vlahos` left the sedge tips red-pink and the fringe salmon. So `vlahos` is the key for see-through subjects.
+  For fine blades, compare it with `unmix` by eye.
 - Shelve the NPU for cut-outs. Revisit it only if a sheet comes on a busy or non-flat background, where a key can't work.
   For that, IS-Net runs on the NPU today, per blob.
 
