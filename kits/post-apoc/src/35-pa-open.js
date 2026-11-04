@@ -19,7 +19,7 @@
 /* a guest in another page (apoc_bundle.py: KPA_HOST is the bundle's): the doors join the HOST's registry (their ids prefixed 'apoc:',
    only this kit's own records dropped on a rebuild), and the frame tick, E, the tip and the walk blocks are the host's (Screamers'
    8zo-anc-open.js). Without core/door in the page (PO_CAN false) nothing is recorded: each door is drawn shut as the builder drew it */
-const PO_GUEST=typeof KPA_HOST!=='undefined',PO_CAN=typeof KDOOR!=='undefined'&&typeof KGLASS!=='undefined'&&typeof KDOORHOST!=='undefined';
+const PO_GUEST=typeof KPA_HOST!=='undefined',PO_CAN=typeof KDOOR!=='undefined'&&typeof KGLASS!=='undefined';   /* KDOORHOST (90-core-door-host.js) sorts after this fragment: it is there by the first build */
 const PO={opens:[],leaves:[],mesh:null,per:{},stack:[],cur:null,panes:0,cut:0,cards:0,cleared:0,
  stats(){const L=KDOOR.list;return {doors:L.length,locked:L.filter(D=>D.locked).length,leaves:this.leaves.length,panes:this.panes,cut:this.cut,cards:this.cards,cleared:this.cleared};}};
 if(PO_CAN){MAT.room=KGLASS.material(THREE,'room');TILE.room=1;
