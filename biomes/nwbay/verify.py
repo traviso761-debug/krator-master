@@ -199,7 +199,7 @@ async def run(a):
         views = [v.strip() for v in a.views.split(",") if v.strip()]
         if a.all_views:
             views = await pg.evaluate(
-                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+                "()=>[...document.querySelectorAll('#ui button')].filter(b=>b.id!=='shadow-btn').map(b=>b.textContent.trim())")   # core/shadow's switch is not a view
         if len(views) > 16:
             print("\nNOTE: %d views requested. Software GL makes this slow; "
                   "16 per run is the working limit." % len(views))
