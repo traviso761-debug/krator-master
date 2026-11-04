@@ -11,7 +11,8 @@ Steps:
               `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out), or 'unmix' (key_unmix:
               each blended pixel split back into the subject's colour and an alpha; key_hi is then the distance from the
               key beyond which a pixel is solid subject), or 'line' (key_line: a near-colourless subject finer than a pixel,
-              every blended pixel taken as `subject` at some alpha); `choke` (n pixels) then
+              every blended pixel taken as `subject` at some alpha), or 'vlahos' (key_vlahos: glass and other see-through
+              subjects, and tinted fringes: alpha from the key's tint in each pixel, `key_gain` its strength); `choke` (n pixels) then
               shrinks the alpha to drop a tinted fringe the spill pass leaves.
   1. crop     (anchor 'none': no crop at all, the frame kept, for a 3 x 3 sheet a host cuts into equal cells or a
               keyed surface that tiles; anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
@@ -161,11 +162,41 @@ def key_line(im, key, subject, tol):
     return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
 
 
+def key_vlahos(im, key, gain=1.0, floor=0.06):
+    """Chroma key by the subject's colour having none of the key's tint (option `spill`: 'vlahos', with `key_gain`): for glass,
+    water and other see-through subjects drawn over the key, whose pixels show the key through them, and for fine blades with a
+    tinted fringe. Every pixel P is a*F + (1 - a)*K with F free of the key's excess (for magenta: G >= min(R, B)), and the largest
+    such alpha is taken, a = 1 - gain*excess/255, F = (P - (1 - a)K)/a: a green or brown subject stays a = 1 as it is, glass keeps
+    a partial alpha and its own white or cyan. `gain` above 1 makes see-through parts clearer. Like spill 'all', it eats a subject
+    of the key's own family (pink petals turn pale and half clear). Trial: tools/textures/trials/npu-cutout/README.md."""
+    k = np.array([int(key.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float64)
+    P = np.asarray(im.convert('RGB')).astype(np.float64)
+    if k[0] > 200 and k[2] > 200 and k[1] < 60:
+        ex = np.maximum(np.minimum(P[..., 0], P[..., 2]) - P[..., 1], 0)
+    elif k[1] > 200 and k[0] < 60 and k[2] < 60:
+        ex = np.maximum(P[..., 1] - np.maximum(P[..., 0], P[..., 2]), 0)
+    else:
+        raise ValueError("spill 'vlahos' takes a magenta or green key, not %s" % key)
+    a = np.clip(1 - gain * ex / 255, 0, 1)
+    F = (P - (1 - a[..., None]) * k) / np.maximum(a[..., None], 1e-3)
+    if k[1] < 60:
+        s = np.maximum(np.minimum(F[..., 0], F[..., 2]) - F[..., 1], 0)[..., None] * 0.9
+        F = F - np.concatenate([s, 0 * s, s], -1)
+    else:
+        s = np.maximum(F[..., 1] - np.maximum(F[..., 0], F[..., 2]), 0)[..., None] * 0.9
+        F = F - np.concatenate([0 * s, s, 0 * s], -1)
+    a = np.where(a < floor, 0.0, a)
+    out = np.concatenate([np.clip(F, 0, 255), (a * 255)[..., None]], -1)
+    return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
+
+
 def run_one(src, out_dir, rec, opt):
     size, anchor, pad = int(opt.get('size', 1024)), opt.get('anchor', 'center'), float(opt.get('pad', 0.03))
     im = Image.open(src).convert('RGBA')
     if opt.get('key') and opt.get('spill') == 'line':
         im = key_line(im, opt['key'], opt.get('subject', '#ffffff'), float(opt.get('key_hi', 60)))
+    elif opt.get('key') and opt.get('spill') == 'vlahos':
+        im = key_vlahos(im, opt['key'], float(opt.get('key_gain', 1.0)))
     elif opt.get('key') and opt.get('spill') == 'unmix':
         im = key_unmix(im, opt['key'], float(opt.get('key_hi', 200)))
     elif opt.get('key'):
@@ -183,7 +214,7 @@ def run_one(src, out_dir, rec, opt):
     meta = {'record': rec, 'maps': {'map': 'albedo.png'},
             'source': dict({'file': os.path.basename(src), 'sha1': sha}, **src_meta),
             'processing': {'script': 'tools/textures/cards.py', 'version': VERSION,
-                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'spill', 'subject', 'choke') if k in opt}), 'source_size': list(im.size)}}
+                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'key_gain', 'spill', 'subject', 'choke') if k in opt}), 'source_size': list(im.size)}}
     with open(os.path.join(out_dir, 'meta.json'), 'w') as fh:
         json.dump(meta, fh, indent=1, sort_keys=True)
     cover = float((arr[..., 3] > 127).mean())
