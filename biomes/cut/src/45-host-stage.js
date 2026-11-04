@@ -46,7 +46,14 @@ const STAGE=(function(){const site=CUT.SITES.floor,yRef=CUT.LAKES[0].level,R=280
  return{key:'floor',name:'The Cut: the floor, by the upper lake',title:'Krator biome — the Cut: the floor',
   hint:'The floor of the Cut by the upper lake (-1,456 m, 1.92 atm): hyperbamboo combed into rings, rankgrass ruled across the salt, the walls round the horizon',
   site,yRef,R,px:[468,322],air:{pressure:1.92,humidity:.78},toBowl,alt:y=>y+yRef,ground,bowlY,up,across:ac,
-  creek:{d:creekD,centre:creekC,s:creekS,up,ac,CR},campAt:CAMP,
+  creek:{d:creekD,centre:creekC,s:creekS,up,ac,CR,
+   /* its water (89w, core/water's flow; pair 10): the centre line from past the page's edge down to the mouth, where the surface 0.6 m over the bed's floor
+      meets the lake's level; heights never rise downstream. mouth: where the plume starts */
+   line(){const P=s=>[up[0]*s+ac[0]*creekC(s),up[1]*s+ac[1]*creekC(s)],sy=s=>{const p=P(s);return ground(p[0],p[1])+.6;};
+    let lo=-250,hi=2000;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(sy(m)>0)hi=m;else lo=m;}
+    const pts=[],w=[];let y=1e9;for(let s=R*1.08;s>hi;s-=24){const p=P(s);y=Math.min(y,sy(s));pts.push([p[0],p[1],y]);w.push(2*CR.w+1.5);}
+    const m=P(hi);pts.push([m[0],m[1],0]);w.push(2*CR.w+1.5);const m2=P(hi-30);pts.push([m2[0],m2[1],0]);w.push(2*CR.w+6);
+    return{pts,width:w,mouth:m};}},campAt:CAMP,
   water:{level:0,shallow:0x467e76,deep:0x1a3e4c,name:'The upper lake (-1,456 m: endorheic, salt at its far end)'},
   floorLabel:y=>y>15?'The salt steppe (abyssal salt flats, XS)':y>.6?'The lake shore':'The shallows',
   // what the kits read: NW lowlands' fields (tropic on the hot wet shore, dry on the salt and the creek's banks so its
@@ -55,7 +62,7 @@ const STAGE=(function(){const site=CUT.SITES.floor,yRef=CUT.LAKES[0].level,R=280
    flow:(x,z)=>clamp(smooth(60,8,creekD(x,z)),0,1),upland:(x,z)=>0,salt:(x,z)=>salt(x,z)},
   zone:(x,z)=>{const y=yOf(x,z),s=salt(x,z),cd=creekD(x,z);
    return{grove:groveK(x,z)*(campD(x,z)<30?0:1),reed:smooth(-.6,-.2,y)*smooth(.9,.4,y)*(1-smooth(30,8,cd)),rank:smooth(.2,.7,s)*(campD(x,z)<40?0:1),melon:0,
-    nw:(1-s)*smooth(.5,1.2,y)*(1-groveK(x,z))+smooth(70,20,cd)*smooth(.3,1,y)};},
+    nw:((1-s)*smooth(.5,1.2,y)*(1-groveK(x,z))+smooth(70,20,cd)*smooth(.3,1,y))*smooth(CR.w+1.5,CR.w+4,cd)};},   /* no read-in tree in the creek's water (89w draws it since pair 10) */
   nwAllow:['glowwillow','paperbark','pandan','mistpalm','treefern','sheoak','wattle'],nwQ:1,
   // the ground's layers (materials.json): a ground.salt, b ground.efflorescence, c the shore's shell sand, d the litter
   layers:['ground.salt','ground.efflor','ground.shore','ground.litter'],layerMul:[0,0,0,1],
