@@ -96,13 +96,13 @@ kput=function(name,p,q,s,c){
  return ancKput0(name,p,q,s,c);};
 /* -------------------------------------------------------------- operable leaves (the interiors target's partition doors)
    anLeaf(gx,gy,gz,yaw,w,h,o): a leaf SHUT in a doorway whose sill middle is the world point (gx,gy,gz), yaw the face's
-   outward yaw (KDOOR's), w x h the opening; o {id, t (.05), key, locked, mirror, name}. Registered in KDOOR; drawn as one
+   outward yaw (KDOOR's), w x h the opening; o {id, t (.05), key, locked, mirror, name, kind ('slide')}. Registered in KDOOR; drawn as one
    instance of the 'anLeaf' item (the Ancients' white panel), posed by KDOORHOST as it swings. Returns the record. */
 kdef('anLeaf',new THREE.BoxGeometry(1,1,1),MAT.white);
 const ANC_LEAVES=[];
 function anLeaf(gx,gy,gz,yaw,w,h,o){o=o||{};if(typeof KDOOR==='undefined')return null;if(o.id!=null&&KDOOR.get(o.id)){let k=1;while(KDOOR.get(o.id+'~'+k))k++;o=Object.assign({},o,{id:o.id+'~'+k});}const t=o.t==null?.05:o.t,ux=Math.cos(yaw),uz=-Math.sin(yaw),hs=o.mirror?1:-1;
  const D=KDOOR.add({id:o.id,at:[gx,gy,gz],hinge:[gx+hs*ux*w/2,gy,gz+hs*uz*w/2],p0:[gx,gy+h/2,gz],yaw,sign:o.mirror?-1:1,w,h,t,
-  locked:!!o.locked,key:o.key==null?null:o.key,name:o.name||null});
+  locked:!!o.locked,key:o.key==null?null:o.key,name:o.name||null,kind:o.kind==null?'slide':o.kind});   /* the Ancients' door slides: kind 'slide' (core/door's kinds are coming; until then it swings) */
  const q=new THREE.Quaternion().setFromAxisAngle(_UP,yaw),idx=KIT.items.anLeaf.length;
  /* straight into the item list: the point is already a world one (no KOFF, no KXF) */
  KIT.items.anLeaf.push({p:[gx,gy+h/2,gz],q,s:[w,h,t],c:null});const T=tcur();if(T){T.inst++;T.tris+=ktri('anLeaf');}
@@ -120,6 +120,8 @@ function ancNight(){return typeof NIGHT!=='undefined'&&!!(NIGHT&&typeof NIGHT===
 function ancNear(){if(typeof KDOOR==='undefined'||!KDOOR.list.length)return null;const C=ancCtl(),c=camera.position,t=C?C.target:c;
  return KDOOR.nearest(t.x,t.y-1.2,t.z,3)||KDOORHOST.near(c,false);}
 let ancNightWas=null;
+/* the host also takes the page on its first animation frame, should the page's frame hook not run (a fork on core/host whose clock is paused) */
+if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{try{ancHost();}catch(e){if(typeof reportErr==='function')reportErr('openings: '+(e.stack||e));}});
 /* the frame hook: the kit's tick (10-core.js); a fork of the kit without one (the Ancient Port) gets its own frame */
 const ancOnFrame=typeof tick==='function'?tick:fn=>{let last=performance.now();const loop=now=>{const dt=Math.min(.1,(now-last)/1000);last=now;
  try{fn(dt);}catch(e){if(typeof reportErr==='function')reportErr('openings: '+(e.stack||e));return;}requestAnimationFrame(loop);};requestAnimationFrame(loop);};
