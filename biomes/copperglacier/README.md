@@ -15,6 +15,8 @@ python3 build.py [--station pass|icefield]
 python3 verify.py dist/copperglacier.html --assert --all-views
 ```
 
+Verified 2026-11-03 on the GPU (RTX 5060 lane): all three pages pass `--assert --all-views` (53, 53 and 50 checks; 9.7, 14.8 and 1.7 M triangles).
+
 ## How it is put together
 
 - **One stage for every station.** `src/45-host-stage.js` makes the land from a station's numbers in `44z-host-site.js`. A station replaces

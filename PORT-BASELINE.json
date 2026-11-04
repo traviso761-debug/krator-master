@@ -1,5 +1,17 @@
 {
  "pages": {
+  "biomes/copperglacier/dist/copperglacier-icefield.html": {
+   "bytes": 5113233,
+   "sha256": "5a6ed3a7427e4a801cf472b2ded2d686300ed6e599d9ce4e7acdabb91e9ff15c"
+  },
+  "biomes/copperglacier/dist/copperglacier-pass.html": {
+   "bytes": 5113958,
+   "sha256": "a245f4f94a943b757ce8c24b4d241f095b0e4620127586e5848d943527a9b9a5"
+  },
+  "biomes/copperglacier/dist/copperglacier.html": {
+   "bytes": 5113802,
+   "sha256": "5c2d5bc21d415555ee064cc2673e3c998496b1c3f6dc8d55c7a9e6cf683c8444"
+  },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"

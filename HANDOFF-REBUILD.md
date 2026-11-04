@@ -268,6 +268,8 @@ algae, and ice worms that glow at dusk.
 The universal set is taken: KGROUND on documented masks, KFAR and KHORIZON, KFROST, still water with no surf or breakers, the stream's plume, `WATER.mirrorSwitch`
 off at load, the shore's fields, and the shared sky at each site. KSHADOW is measured at +20-56% a frame on the Arc (station 1), so it is off at load (`?shadow=1`), for the owner. KSTRATA, KKARST and impostors are dropped, with reasons. The owner delivered
 the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 and 3, the boulders everywhere) and `ice.glacier.verdigris` (the ice on the copper ground).
+**Checks:** `verify.py --assert --all-views` passes on the GPU (RTX 5060 lane, D3D11) for all three pages: station 1 53 checks (9.7 M triangles, 25 calls), the pass 53 (14.8 M, 22), the icefield 50 (1.7 M, 16), attach audit 0.00%. `check_core_use`: no new finding. `test_all --no-build`: the only failures not this work's are interiors' test-walk and `check_assembly`'s NEEDS findings on the Godthrone's, Voth's and Span's committed pages (built before core-shader). The pages are in the hash baseline. **For the owner:** every station's look; the copper (data against lore); the shadows' cost.
+
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
