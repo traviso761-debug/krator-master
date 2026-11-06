@@ -721,6 +721,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |
 | `tests/check_kit.py` | every kit entry against its pieces: the GLB and morphs present, its cloth chains' bones in the skin, their anchors inside the mesh and bound on them (build.py runs it; `tests/kit-known-bad.json` names what may fail, with the reason) | |
 | `tools/check_twin.py` | the push shader in `50-figure.js` against `godot/krator/character/kchar_push.gdshaderinc`: the uniforms must match, the literals' gap is held to `tests/twin-baseline.json` (build.py runs it; `--baseline` after a port that narrows it) | |
+| `tools/cloth_probe.py` | verify.py's court-skirt check taken apart: which cloth item the count is on, the deepest chain points against the thigh's median and tapered radius, with the wind, the dynamics or the torso off | |
 | `tests/ui-inventory.json` | the lab's sections per tab, which `verify.py --assert` requires to still be there (`--ui-baseline` rewrites it) | |
 | `tools/import_props.py` | Meshy weapon models as props in the grip frame: scaled to a real length, the handle found from the width profile, the edge turned to +Z; textures re-encoded small | |
 | `tools/garments/` | the Python garment pipeline (Gemini, 2026-11): `core.py` fits and skins parts on the base body and registers kit entries (`made_by: garments`), `types/` the part builders, `paint.py` the textures, `cultures/` every outfit builder, `build_all.py` runs them by culture. `REVIEW-GARMENTS-2026-11-06.md` is its audit | |

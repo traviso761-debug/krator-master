@@ -2145,7 +2145,9 @@ function KCharFigure(body, sliders, load){
         '\t\t\tif(cl < cr0 && csh > 0.0 && col > 1e-4){ co = normalize(mix(co / col, vec3(0.0, 1.0, 0.0), ccr)); if(ci < 14 && dot(objectNormal, co) < 0.0 && ccr < 0.5) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
         '\t\t\t\tfloat cw = 1.0 - cl / cr0; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
         // (the legs' capsules hand over to the hull in a stride: the two together tore the cloth where they disagreed)
-        '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup * csl * (ci < 6 ? 1.0 - ceo : 1.0));\n\t\t}\n\t}\n' +
+        // (held at full strength in a stride beside the hull, 2026-11-02 to 06, the two together put the trade skirt's shin
+        // through its back in a run and the court gown's underskirt through the gown: the audit, REVIEW-GARMENTS-2026-11-06.md)
+        '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup * csl * (ci < 6 ? 1.0 - max(kcM, ceo) : 1.0));\n\t\t}\n\t}\n' +
         // the hull: pushed out of a capsule, cloth a limb has gone through opens round it like a collar and the limb stays
         // through (a run's shin kicked straight back through a robe, with the sole on the end of it). So the leg's points
         // (legCaps) also set how far out from the body's axis the cloth must reach at their bearing: the row of the point
@@ -2240,9 +2242,11 @@ function KCharFigure(body, sliders, load){
       if(i < 4) stride = Math.max(stride, 1 - Math.abs(cV2.y - cV.y) / Math.max(cV.distanceTo(cV2), 1e-5));
     });
     pushU.kcM.value = THREE.MathUtils.smoothstep(stride, 0.02, 0.1);
-    // the hull's points (the shader, the hull), six a leg: mid-thigh, knee, mid-shin, lower-shin/ankle, heel, toes
+    // the hull's points (the shader, the hull), six a leg: mid-thigh, knee, mid-shin, ankle, heel, toes (the fourth
+    // moved up the shin to 0.8, 2026-11-02 to 06, the hull stopped short of a kicked-back ankle and the shin came through
+    // the trade skirt in a run: back at the ankle)
     for(var e = 0; e < 2; e++){
-      var eT = [[e, 0.5], [e, 1], [2 + e, 0.42], [2 + e, 0.80], [4 + e, 0], [4 + e, 1]];
+      var eT = [[e, 0.5], [e, 1], [2 + e, 0.5], [2 + e, 1], [4 + e, 0], [4 + e, 1]];
       eT.forEach(function(q, j){
         var ca = pushU.kcA.value[q[0]], cb = pushU.kcB.value[q[0]], o = pushU.kcE.value[e * 6 + j];
         o.set(ca.x + (cb.x - ca.x) * q[1], ca.y + (cb.y - ca.y) * q[1], ca.z + (cb.z - ca.z) * q[1],

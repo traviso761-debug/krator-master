@@ -873,14 +873,16 @@ def seat(c, J, P, V, npz, tgts, bones):
     return out
 
 
-def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0, boundary_margin=0.022):
+def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0, boundary_margin=0.0):
     """the base triangles an item covers when it has no delete group: each base vertex casts a ray out along its normal
     (the garment lies over it) and one in (the skin already pokes through it); a triangle whose three vertices both
     find the garment close is hidden. enclose > 0 also takes a vertex the garment closes round front and back (rays
     along +z and -z both meet it within enclose): the crotch and the cleft of the buttocks, whose normals point between
     the legs, where a trouser seam bridges them.
-    boundary_margin > 0 protects upper-chest/clavicle/shoulder skin within boundary_margin of an open neckline or collar
-    boundary edge from being hidden (preventing transparent gaps at open necklines/shoulders)."""
+    boundary_margin > 0 keeps the upper-chest skin within boundary_margin of the garment's open neckline drawn (a lapel
+    that stands off the skin showed a hole into the body: the kimono's V-neck). Opt in per garment, never the default:
+    at 2.2 cm on every top it left a band of 100 to 180 triangles bare under the Chichani huipils, gown, robe and
+    cloak, and the skin came through them in a run (the audit, 2026-11-06: the trade huipil 0 to 4887 px)."""
     from make_kit import ray_hits
     N = np.zeros_like(BP)
     fn = np.cross(BP[BT[:, 1]] - BP[BT[:, 0]], BP[BT[:, 2]] - BP[BT[:, 0]])

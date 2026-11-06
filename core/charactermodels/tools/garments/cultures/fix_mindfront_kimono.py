@@ -276,7 +276,8 @@ def fix_one(sex_label, src_path, dst_path):
     kit_path = f'data/{sex_label}/kit.json'
     kit = json.load(open(kit_path, encoding='utf-8'))
     _, BP, BT = make_mpfb.body_primitive(f'pieces/{sex_label}/base.glb')
-    tris = make_mpfb.covered(BP, BT, dst_path, out=0.035, inward=0.020)
+    # the V-neck's lapels stand off the skin: the chest within 2.2 cm of the open edge stays drawn (opt-in, make_mpfb.covered)
+    tris = make_mpfb.covered(BP, BT, dst_path, out=0.035, inward=0.020, boundary_margin=0.022)
     tc = BP[BT[tris]].mean(axis=1)
     y_min_body = float(BP[:, 1].min())
     y_span = float(BP[:, 1].max() - y_min_body)

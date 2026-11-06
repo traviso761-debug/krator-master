@@ -2580,7 +2580,7 @@ func _leg_caps() -> void:
 	# the hull's points, six a leg: mid-thigh, knee, mid-shin, lower-shin/ankle, heel, toes
 	var E := []
 	for e in 2:
-		for q in [[e, 0.5], [e, 1.0], [2 + e, 0.42], [2 + e, 0.80], [4 + e, 0.0], [4 + e, 1.0]]:
+		for q in [[e, 0.5], [e, 1.0], [2 + e, 0.5], [2 + e, 1.0], [4 + e, 0.0], [4 + e, 1.0]]:
 			var ea: Vector4 = A[q[0]]
 			var eb: Vector4 = Bv[q[0]]
 			var ep := Vector3(ea.x, ea.y, ea.z).lerp(Vector3(eb.x, eb.y, eb.z), q[1])

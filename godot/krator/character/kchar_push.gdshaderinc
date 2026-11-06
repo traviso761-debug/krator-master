@@ -121,7 +121,8 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 					d = normalize(d) * (1.0 - w) + o * w;
 				}
 				// a thin band: [0, r + sh] into [r - sh, r + sh]; the legs' capsules stay active on chain-equipped garments (ceo < 0.5)
-				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - ceo : 1.0));
+				// (the legs' capsules hand over to the hull in a stride: held at full strength beside it they put a shin through a skirt)
+				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - max(kcM, ceo) : 1.0));
 			}
 		}
 		if (ceo > 0.5) {

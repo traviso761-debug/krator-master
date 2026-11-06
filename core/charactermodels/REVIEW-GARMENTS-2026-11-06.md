@@ -226,8 +226,28 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   imports in 2.5 s with 17 cultures and 46 builders. The thirteen vendored copies are still in them: stripping them
   rebuilds half the kit and wants the before/after sheet and the owner's eye (section 5).
 - Not done: the `Part.role` refactor and the non-mutating checks (Phase 0.5), and every Phase 1 and 2 fix.
-- **A regression the verifier would have caught.** `verify.py dist/cosmetic-lab.html --assert` fails on the current
-  page and on the checkpoint's (Gemini's build) with the Chichani court skirt's chains inside a thigh in a walk
-  (16 points on the woman, 115 on the man); the round-5 page (23a83693d, before the session) passes that check. It
-  came in with the session's cloth changes and was never run. It is the first fix of Phase 1, before the shin
-  heading: find which change by toggling (the wind, `rigidTargets`, `collide`, `layered`), not by widening a pad.
+- **The verifier's court-skirt failure, chased (2026-11-06, later).** `verify.py --assert` failed on the current page and
+  on the checkpoint's alike with the Chichani court skirt's chains "inside a thigh" in a walk (16 points on the woman,
+  115 on the man), and the round-5 page passed. Toggled on the page (`cloth_probe.py`: the wind off, the dynamics off,
+  the torso off): the wind and the torso change nothing; measured against the thigh's *tapered* radius (colliders
+  `ra..rb`, which `collide()` has kept the points at, plus 1.5 cm, since the session's change to `rLimb`) the count is
+  2 point-frames at 1 mm on the man and 4 at 4 mm on the woman; against the old median radius it is 144 and 42, worst
+  2.2 cm. So the chains are not in the leg: the check measured against the median cylinder the solver had stopped
+  using. The check now takes the tapered radius. Whether the tighter knee reads well is the audit's call
+  (`garment_audit.py --match chichani`), not the verifier's.
+- **The audit's call, and the real regression under it.** `garment_audit.py --match chichani --check` against the
+  round-5 baseline: the woman's court gown "under" in motion 480 to 2570, the peasant skirt 1471 to 2071, and the
+  trade skirt showing skin in a run, 0 to 4887 px (the trailing shin and sandal out through the skirt's back). Not
+  the hide masks (the old masks put back: the same numbers), not the solver (Gemini's solver under the round-5
+  shader side brings the gown to 21): the shader side. Of its changes, two together are the cause and the fix: the
+  legs' capsules were held at full strength in a stride beside the hull (`1 - ceo` where it was `1 - kcM`), and the
+  hull's fourth point moved from the ankle to 0.8 of the shin. With both back (`1 - max(kcM, ceo)`, the point at the
+  ankle) every gated Chichani row is at or under the baseline on the woman, and "inside" falls on all three outfits
+  (noble 15902 to 10972); the ungated "hole" count on the gown rises (741 to 1091). The round-5 hull block whole, the
+  pad term alone and the ankle point alone each fix one fault and worsen another (the variants: `cosmetic-v-*.html`
+  were the pages, the counts are in the commit). The same two lines are in the Godot twin.
+- **Open, and a tool fault found on the way.** The trade skirt's shin in a run is bistable: 0, 774 and 5473 px in
+  three audits of the same build (woman only twice, both bodies once), and the man's court robe shows 798 px of the
+  same at its hem on the two-body sweep. So `garment_audit.py` is not "the same every run" for a fault that hangs on
+  the chains' state from the outfit before: give it a full cloth reset per outfit (`clothStep()` with no dt, then a
+  settle from rest) before trusting a skin count under 1000 px. The shin itself is Phase 1's hull work.
