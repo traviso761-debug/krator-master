@@ -630,6 +630,24 @@
       sortMode = id || 'culture'; buildPanel();
     }, true);
   }
+  /* what the hands hold (data/props.json, fig.hold): a prop per hand, kept in the record as hold {R, L}. A named
+     character's own props (props.json owner: Tzintzun's weapons, tools/import_props.py) come first when it is that
+     character; the Animation Lab picks props by clip instead (data/clips.json hold) */
+  var HAND_LABEL = { R:'Right hand', L:'Left hand' };
+  function handChips(gear){
+    var all = D.props || [];
+    if(!all.length) return;
+    var hold = rec.hold || {};
+    ['R', 'L'].forEach(function(side){
+      var list = all.filter(function(p){ return p.hand === side; }).slice();
+      list.sort(function(a, b){ return (b.owner === rec.id ? 1 : 0) - (a.owner === rec.id ? 1 : 0); });
+      var cur = list.filter(function(p){ return p.id === hold[side]; })[0];
+      var s = section(gear, HAND_LABEL[side], cur ? cur.label : 'Empty');
+      chips(s, [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
+        return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:p.owner ? 'Made for ' + p.owner : '' };
+      })), hold[side] || null, function(id){ rec.hold = rec.hold || {}; rec.hold[side] = id; apply(); buildPanel(); }, true);
+    });
+  }
   /* body mods (tools/mods.py): a genetic or cybernetic second pair of arms, rib gills; on or off, one pair of arms at
      a time. With four arms the torso picker offers only four-armed tops (KCHAR.fits), and a top that no longer fits
      comes off */
@@ -742,7 +760,7 @@
     var BUILTIN_LIST = [
       // Sovereign & Important NPCs
       { id:'tzintzun', name:'Tzintzun (High Sovereign)', char_type:'important_npc', people:'chichani', tier:'tzintzun', body:'mpfb_male', seed:101,
-        morph:{ stature:0.35, muscle:0.42, proportions:0.25, age:0.15, nose_size:0.18, chin_prominence:0.25 } },
+        morph:{ stature:0.35, muscle:0.42, proportions:0.25, age:0.15, nose_size:0.18, chin_prominence:0.25 }, hold:{ R:'tz_scepter' } },
       { id:'phil', name:'Phil (Izani Corsair Lord)', char_type:'important_npc', people:'izani', tier:'phil', body:'mpfb_male', seed:202,
         morph:{ stature:0.18, muscle:0.32, weight:0.12, age:0.22, jaw_width:0.24 } },
       { id:'gilded_sentinel', name:'Gilded Sentinel (Imperial Sun-Guard)', char_type:'important_npc', people:'eternian', tier:'gilded_sentinel', body:'mpfb_male', seed:203,
@@ -885,6 +903,7 @@
       if(def.morph) Object.keys(def.morph).forEach(function(mk){ r.morph[mk] = def.morph[mk]; });
       if(def.facepaint) r.facepaint = JSON.parse(JSON.stringify(def.facepaint));
       if(def.makeup) r.makeup = JSON.parse(JSON.stringify(def.makeup));
+      if(def.hold) r.hold = JSON.parse(JSON.stringify(def.hold));
       r.id = def.id; r.name = def.name; r.char_type = def.char_type;
       r.tier = def.tier; r.outfit_id = def.people + '.' + def.tier;
       seen[def.id] = 1;
@@ -1394,6 +1413,7 @@
     modChips(kit, gear);
     outfitChips(kit, gear);
     ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
+    handChips(gear);
     var gh = document.createElement('p'); gh.className = 'hint';
     gh.textContent = 'MakeHuman library clothing: MPFB fitted each piece to this body, it takes its weights from the body, and it hides the skin it covers. Loose pieces (the kimono, harem trousers, skirts) hang from the body. The body and face sliders reshape the clothes with it.';
     gear.appendChild(gh);
@@ -1627,6 +1647,8 @@
   function apply(){
     syncPanel();
     return fig.apply(rec).then(function(){
+      var h = rec.hold || {};
+      fig.hold({ R:h.R || null, L:h.L || null });
       var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
       if(p.stature){
         var who = rec.people && PEOPLE[rec.people];

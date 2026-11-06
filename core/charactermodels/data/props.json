@@ -284,6 +284,111 @@
    "hand": "L",
    "glb": "pieces/props/bread.glb",
    "grip": "wide"
+  },
+  {
+   "id": "tz_scepter",
+   "label": "Sunforged Scepter (Tzintzun's staff of power)",
+   "hand": "R",
+   "glb": "pieces/props/tz_scepter.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Sunforged_Scepter_1106025115_texture.glb",
+   "support": [
+    0.0,
+    0.2,
+    0.0,
+    0.0,
+    0.5,
+    0.0
+   ],
+   "blade": [
+    0.632,
+    0.952
+   ]
+  },
+  {
+   "id": "tz_scimitar",
+   "label": "Tzintzun's scimitar",
+   "hand": "R",
+   "glb": "pieces/props/tz_scimitar.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Curved_Scimitar_Low_P_1106030831_texture.glb",
+   "blade": [
+    0.158,
+    0.86
+   ]
+  },
+  {
+   "id": "tz_sword",
+   "label": "Tzintzun's straight sword",
+   "hand": "R",
+   "glb": "pieces/props/tz_sword.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Straight_Sword_Low_Po_1106030741_texture.glb",
+   "blade": [
+    0.202,
+    0.885
+   ]
+  },
+  {
+   "id": "tz_axe",
+   "label": "Tzintzun's battle axe",
+   "hand": "R",
+   "glb": "pieces/props/tz_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Battle_Axe_Low_Poly_1106030750_texture.glb",
+   "support": [
+    0.0,
+    -0.12,
+    0.0,
+    0.0,
+    0.386,
+    0.0
+   ],
+   "blade": [
+    0.49,
+    0.76
+   ]
+  },
+  {
+   "id": "tz_spear",
+   "label": "Tzintzun's spear",
+   "hand": "R",
+   "glb": "pieces/props/tz_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Spear_Low_Poly_1106030733_texture.glb",
+   "support": [
+    0.0,
+    0.3,
+    0.0,
+    0.0,
+    0.606,
+    0.0
+   ],
+   "blade": [
+    0.72,
+    1.365
+   ]
+  },
+  {
+   "id": "tz_shield",
+   "label": "Tzintzun's shield",
+   "hand": "L",
+   "glb": "pieces/props/tz_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Shield_Low_Poly_1106030822_texture.glb",
+   "low_turn": 90
   }
  ]
 }

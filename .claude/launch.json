@@ -133,6 +133,18 @@
       ],
       "port": 8843,
       "autoPort": false
+    },
+    {
+      "name": "cosmetic-lab",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8799",
+        "--directory",
+        "core/charactermodels/dist"
+      ],
+      "port": 8799
     }
   ]
 }
