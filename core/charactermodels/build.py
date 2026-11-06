@@ -59,7 +59,15 @@ def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
-    data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'),
+    peoples_raw = J('peoples.json')
+    comments_file = os.path.join(HERE, 'data', 'comments.json')
+    saved_state = json.loads(read(comments_file)) if os.path.isfile(comments_file) else {}
+    data = {'sliders': J('sliders.json'), 'peoples': peoples_raw['peoples'],
+            'named_characters': peoples_raw.get('named_characters', []),
+            'geomancers': peoples_raw.get('geomancers', {}),
+            'comments': saved_state.get('comments', {}),
+            'baked_models': saved_state.get('baked', {}),
+            'clips': J('clips.json'),
             'props': J('props.json')['props'], 'posture': J('posture.json'), 'fur': J('fur.json'), 'bodies': {}}
     inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb')
               for f in ('sliders.json', 'peoples.json', 'clips.json', 'props.json', 'posture.json', 'fur.json')}
@@ -167,8 +175,10 @@ def pack_thumbs(size=128, cols=16):
         for i, n in enumerate(names):
             im = Image.open(os.path.join(root, body, n + '.png')).convert('RGBA').resize((size, size), Image.LANCZOS)
             atlas.paste(im, ((i % cols) * size, (i // cols) * size))
-        atlas.save(os.path.join(root, body + '.png'), optimize=True)
-        json.dump({'cols': cols, 'rows': rows, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w', encoding='utf-8', newline='\n'),
+        atlas_path = os.path.join(root, body + '.png')
+        atlas.save(atlas_path, optimize=True)
+        ver = hashlib.sha1(open(atlas_path, 'rb').read()).hexdigest()[:10]
+        json.dump({'cols': cols, 'rows': rows, 'v': ver, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w', encoding='utf-8', newline='\n'),
                   separators=(',', ':'))
 
 

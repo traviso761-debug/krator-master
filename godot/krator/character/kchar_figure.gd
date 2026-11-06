@@ -1470,9 +1470,11 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 	# a layer within its slot's: a legs item's chains under a torso item's, under a head item's (as clothOf in 50-figure.js)
 	# (an item worn over a higher slot's under-layers ranks with it: kit item over, pteruges)
 	var rank: int = 3 * int(SLOT_RANK.get(it.get("over", it.get("slot", "")), 0))
+	var s0 := 0.0
 	for pt in c["parts"]:
+		s0 = maxf(s0, float(pt["stiff"]))
 		for g in pt["chains"]:
-			c["chains"][int(g)]["stiff"] = float(pt["stiff"])
+			c["chains"][int(g)]["stiff"] = s0 if int(pt.get("layer", 0)) > 0 else float(pt["stiff"])
 			c["chains"][int(g)]["layer"] = rank + int(pt.get("layer", 0))
 	_cloth[part["key"]] = c
 	return c
@@ -1794,8 +1796,9 @@ func _rigid(ch: Dictionary) -> Transform3D:
 		F = Transform3D(hb, _gp(hi).origin - hb * hm)
 		var off: Vector3 = (tw[0] as Vector3) - F * (ch["p"][0] as Vector3)
 		var y0: float = (ch["p"][0] as Vector3).y
+		var span := maxf(maxf(1e-4, y0 - hm.y), off.length() * 3.5)
 		for k in range(1, tw.size()):
-			var fk := clampf(((ch["p"][k] as Vector3).y - hm.y) / maxf(1e-4, y0 - hm.y), 0.0, 1.0)
+			var fk := clampf(1.0 - (y0 - (ch["p"][k] as Vector3).y) / span, 0.0, 1.0)
 			tw[k] = F * (ch["p"][k] as Vector3) + off * fk
 	ch["tw"] = tw
 	# the root joint where its point is
@@ -1810,6 +1813,7 @@ func _cloth_step(dt: float) -> void:
 			items.append(_cloth[key])
 	if items.is_empty():
 		return
+	items.sort_custom(func(a, b): return int(a["chains"][0].get("layer", 0)) < int(b["chains"][0].get("layer", 0)))
 	if spring_sim:
 		var w0 := Vector3.ZERO
 		for cm in skel.get("clips", []):
@@ -1832,8 +1836,10 @@ func _cloth_step(dt: float) -> void:
 			continue                        # not the arms (an elbow at the waist pushed one chain of a cape out as a spike)
 		var ends := _cap_ends(cp)
 		var nm := skeleton.get_bone_name(cp["a"])
-		W.append({"a": ends[0], "b": ends[1], "r": float(cp["r"]) + C_PAD / size, "r0": float(cp["r"]),
-			"leg": nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe"), "seat": cp.get("pa") != null})
+		var ra := float(cp.get("ra", cp["r"]))
+		var rb := float(cp.get("rb", cp["r"]))
+		W.append({"a": ends[0], "b": ends[1], "aBone": int(cp["a"]), "r": float(cp["r"]) + C_PAD / size, "r0": float(cp["r"]),
+			"ra": ra, "rb": rb, "leg": nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe"), "seat": cp.get("pa") != null})
 	# the seat's two upright capsules as one across the buttocks, for the chains (a skirt's point at the back between them
 	# went out of one toward the other, sideways: the fold; clothStep in 50-figure.js)
 	var seats := W.filter(func(e): return e.get("seat", false))
@@ -1846,11 +1852,21 @@ func _cloth_step(dt: float) -> void:
 		var fa := skeleton.find_bone(side + "Foot")
 		var ft := skeleton.find_bone(side + "ToeBase")
 		var sh := skeleton.find_bone(side + "Leg")
+		var ul := skeleton.find_bone(side + "UpLeg")
 		for cp in _caps:
 			if cp["a"] == sh and cp["b"] == fa and ft >= 0:
 				var fr := _foot_r(cp)
 				var fe := _foot_ends(i, fr, _gp(fa).origin, _gp(ft).origin)
-				W.append({"a": fe[0], "b": fe[1], "r": fr + C_PAD / size, "r0": fr, "leg": true, "seat": false})
+				W.append({"a": fe[0], "b": fe[1], "r": fr + C_PAD / size, "r0": fr, "ra": fr, "rb": fr, "leg": true, "seat": false})
+				var th_w = null
+				var sh_w = null
+				for w in W:
+					if w.get("aBone", -1) == ul:
+						th_w = w
+					elif w.get("aBone", -1) == sh:
+						sh_w = w
+				if th_w != null and sh_w != null and absf((sh_w["b"] as Vector3).y - (sh_w["a"] as Vector3).y) < 0.7 * (sh_w["a"] as Vector3).distance_to(sh_w["b"]):
+					W.append({"a": (th_w["a"] + th_w["b"]) * 0.5, "b": (sh_w["a"] + sh_w["b"]) * 0.5, "r": float(sh_w["rb"]) + C_PAD / size, "r0": float(sh_w["rb"]), "leg": true, "seat": false})
 	var ground := 0.008 - skeleton.position.y
 	var wind := Vector3.ZERO
 	for cm in skel.get("clips", []):
@@ -1888,7 +1904,9 @@ func _cloth_step(dt: float) -> void:
 					xp[k] = x[k]
 					var nx: Vector3 = x[k] + v * (1.0 - C_DAMP) + acc
 					x[k] = nx.lerp(ch["tw"][k], kS)
+		for c in items:
 			for it in 2:
+				_layered(c, items)
 				for ch in c["chains"]:
 					_keep_len(ch)
 				for r in c["ring"]:
@@ -1908,6 +1926,25 @@ func _cloth_step(dt: float) -> void:
 			for ch in c["chains"]:
 				_keep_len(ch)
 				_collide(ch, W, ground)
+				var x: Array = ch["x"]
+				for k in range(x.size() - 2, 0, -1):
+					if (x[k] as Vector3).y < (x[k + 1] as Vector3).y + 0.015:
+						var p: Vector3 = x[k]
+						p.y = minf((x[k - 1] as Vector3).y - 0.01, (x[k + 1] as Vector3).y + 0.015)
+						x[k] = p
+				_collide(ch, W, ground)
+			for r in c["ring"]:
+				var xa: Array = r[0]["x"]
+				var xb: Array = r[1]["x"]
+				var k: int = r[2]
+				var d: float = (xa[k] - xb[k]).length()
+				var lo: float = r[3] * 0.6
+				var hi: float = r[3] * 1.2
+				if d > hi or (d < lo and d > 1e-6):
+					var want := hi if d > hi else lo
+					var mv: Vector3 = (xb[k] - xa[k]) * ((d - want) / d * 0.5)
+					xa[k] += mv
+					xb[k] -= mv
 			_layered(c, items)
 	for c in items:
 		for ch in c["chains"]:
@@ -1928,7 +1965,7 @@ func _cloth_step(dt: float) -> void:
 					var dk := dv.length()
 					var lk: float = ch["len"][k - 1]
 					if dk > lk:
-						dv *= (lk + 0.35 * (dk - lk)) / dk
+						dv *= (lk + (0.5 if int(ch.get("layer", 0)) > 0 else 0.35) * (dk - lk)) / dk
 					skeleton.set_bone_pose_position(bones[k], prev.inverse() * dv)
 				prev = wq
 
@@ -1962,19 +1999,26 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 				var d := p - q
 				var ax := ab.normalized()
 				var o := (up - q) - ax * (up - q).dot(ax)
-				if absf(ax.y) < 0.7 and o.length() > 1e-4:
-					o = o.normalized()
-				elif cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
+				var ol := o.length() if absf(ax.y) < 0.7 and o.y > 0.0 else 0.0
+				if ol > 1e-4:
+					o /= ol
+					var sd := d.dot(o)
+					if sd < 0.0:
+						d -= 2.0 * sd * o
+				if cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
 					# the legs only (on the trunk's, the chest leaning forward of the hips, it threw a mantle's points at
 					# the back of the neck through the body to the front), and not for a point whose rest lies on the
 					# thigh's inner side, between the legs (a skirt's back centre, thrown out through the thigh: the fold)
+					var mid := 1.0 - smoothstep(0.03, 0.11, absf((rw - hip).dot(lat)))
 					o = Vector3(q.x - hip.x, 0.0, q.z - hip.z)
-					o = o.normalized() if o.length_squared() > 9e-4 else Vector3.ZERO
-				else:
-					o = Vector3.ZERO
-				var sd := d.dot(o)
-				if sd < 0.0:
-					d -= 2.0 * sd * o
+					o -= lat * (o.dot(lat) * mid * 0.85)
+					if o.length_squared() > 9e-4:
+						o = o.normalized()
+						var sd := d.dot(o)
+						if sd < 0.0:
+							d -= 2.0 * sd * o
+					if mid > 0.0:
+						d += lat * (((rw - q).dot(lat) - d.dot(lat)) * mid * 0.7)
 				p = q + d.normalized() * r
 		if p.y < ground:
 			p.y = ground
@@ -1983,39 +2027,44 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 
 # a cape or mantle (layer 2) stays outside a hem or flap (1), which stays outside a skirt (0): measured out from the
 # body's vertical axis, against the lower layers' chain segments near it (as layered() in 50-figure.js)
+const LGAP := 0.042
 func _layered(c: Dictionary, items: Array) -> void:
 	var hip := _gp(_hips).origin
 	var segs := []
 	for o in items:
 		for ch in o["chains"]:
 			for k in ch["x"].size() - 1:
-				segs.append([ch["x"][k], ch["x"][k + 1], int(ch.get("layer", 0))])
+				segs.append([ch["x"][k], ch["x"][k + 1], int(ch.get("layer", 0)), bool(ch.get("whole", false))])
 	for ch in c["chains"]:
 		var L: int = int(ch.get("layer", 0))
 		if L == 0:
 			continue
+		var whole := bool(ch.get("whole", false))
 		var x: Array = ch["x"]
 		for k in range(1, x.size()):
 			var p: Vector3 = x[k]
-			var best = null
-			var bd := 0.14
+			var rx := p.x - hip.x
+			var rz := p.z - hip.z
+			var r := Vector2(rx, rz).length()
+			if r <= 1e-4:
+				continue
+			var rq := 0.0
 			for sg in segs:
-				if sg[2] >= L:
+				if sg[2] >= L or (sg[3] and not whole):
 					continue
 				var ab: Vector3 = sg[1] - sg[0]
 				var t := clampf((p - sg[0]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
 				var q: Vector3 = sg[0] + ab * t
 				var d := p.distance_to(q)
-				if d < bd:
-					bd = d
-					best = q
-			if best == null:
-				continue
-			var r := Vector2(p.x - hip.x, p.z - hip.z).length()
-			var rq := Vector2(best.x - hip.x, best.z - hip.z).length() + 0.03
-			if r < rq and r > 1e-4:
-				p.x = hip.x + (p.x - hip.x) / r * rq
-				p.z = hip.z + (p.z - hip.z) / r * rq
+				var sx := q.x - hip.x
+				var sz := q.z - hip.z
+				if absf(p.y - q.y) < 0.14 and d < 0.20 and rx * sx + rz * sz > 0.0:
+					var sr := Vector2(sx, sz).length() + LGAP * (1.0 - 0.5 * maxf(0.0, d - 0.08) / 0.12)
+					if sr > rq:
+						rq = sr
+			if r < rq:
+				p.x = hip.x + rx / r * rq
+				p.z = hip.z + rz / r * rq
 				x[k] = p
 
 
@@ -2052,15 +2101,19 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("rough", m2.roughness)
 	pm.set_shader_parameter("metal", m2.metallic)
 	var loose := _is_loose(part)
-	pm.set_shader_parameter("kcL", 1.0 if loose else 0.0)
+	var ip0: Array = _item_of(part).get("cloth", {}).get("parts", [])
+	pm.set_shader_parameter("kcL", 1.0 if loose else (0.25 if not ip0.is_empty() and int(ip0[0].get("layer", 0)) >= 4 else 0.0))
 	pm.set_shader_parameter("kcEO", 1.0 if loose and _item_of(part).get("cloth") == null else 0.0)
 	var top = null
 	var legs = null
+	var feet = null
 	for x in kit["items"]:
 		if x["id"] == rec.get("armour", {}).get("torso"):
 			top = x
 		if x["id"] == rec.get("armour", {}).get("legs"):
 			legs = x
+		if x["id"] == rec.get("armour", {}).get("feet"):
+			feet = x
 	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and up to 3.5 cm more over trousers
 	# with the stride (PAD_TOP, PAD_OVER in 50-figure.js; kcM in _leg_caps)
 	var pad := 0.0
@@ -2068,10 +2121,10 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	var slot0: String = _item_of(part).get("over", part["slot"])     # pteruges push as the top they hang over does
 	if loose and slot0 == "torso":
 		pad = 0.02
-		if part["slot"] == "torso" and legs != null:          # not the pteruges themselves
-			if legs.get("loose", false):
+		if part["slot"] == "torso":          # not the pteruges themselves
+			if legs != null and legs.get("loose", false):
 				pad += 0.02
-			else:
+			if (legs != null and not legs.get("loose", false)) or (feet != null and top != null and top.get("long", false)):
 				pad_over = 0.035
 	elif loose:
 		pad = 0.02           # a skirt, as a robe (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
@@ -2085,7 +2138,7 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches
 	# below the knees, else down to its hem (kit item hem)
 	var squeeze: bool = slot0 == "legs" and top != null and top.get("loose", false) \
-		and legs != null and not legs.get("loose", false)
+		and legs != null and (not legs.get("loose", false) or (top.get("long", false) and not top.has("cloth")))
 	# boots under one, whatever the legs wear (SQUEEZE_FEET)
 	var long_top: bool = top != null and top.get("loose", false) and top.get("long", false)
 	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else SQUEEZE_FEET if part["slot"] == "feet" and long_top else 0.0)
@@ -2524,10 +2577,10 @@ func _leg_caps() -> void:
 		var r1 := (_gp(sp).origin - hip).normalized()
 		if r0.dot(r1) < 0.99999:
 			up = Quaternion(r0, r1) * Vector3.UP
-	# the hull's points, six a leg: mid-thigh, knee, mid-shin, ankle, heel, toes
+	# the hull's points, six a leg: mid-thigh, knee, mid-shin, lower-shin/ankle, heel, toes
 	var E := []
 	for e in 2:
-		for q in [[e, 0.5], [e, 1.0], [2 + e, 0.5], [2 + e, 1.0], [4 + e, 0.0], [4 + e, 1.0]]:
+		for q in [[e, 0.5], [e, 1.0], [2 + e, 0.42], [2 + e, 0.80], [4 + e, 0.0], [4 + e, 1.0]]:
 			var ea: Vector4 = A[q[0]]
 			var eb: Vector4 = Bv[q[0]]
 			var ep := Vector3(ea.x, ea.y, ea.z).lerp(Vector3(eb.x, eb.y, eb.z), q[1])
@@ -2582,15 +2635,23 @@ const FOOT_TOE := 0.03
 
 # the way the feet face, level: heel to toes, both feet (at rest, or now)
 func _foot_face(rest: bool) -> Vector3:
+	var lu := skeleton.find_bone("LeftUpLeg")
+	var ru := skeleton.find_bone("RightUpLeg")
+	var hL := skeleton.get_bone_global_rest(lu).origin if rest else _gp(lu).origin
+	var hR := skeleton.get_bone_global_rest(ru).origin if rest else _gp(ru).origin
+	var hF := Vector3(hR.z - hL.z, 0.0, hL.x - hR.x)
+	hF = hF.normalized() if hF.length_squared() > 1e-8 else Vector3(0, 0, 1)
 	var v := Vector3.ZERO
 	for side in ["Left", "Right"]:
 		var a := skeleton.find_bone(side + "Foot")
 		var b := skeleton.find_bone(side + "ToeBase")
 		if a < 0 or b < 0:
 			continue
-		v += (skeleton.get_bone_global_rest(b).origin - skeleton.get_bone_global_rest(a).origin) if rest else (_gp(b).origin - _gp(a).origin)
-	v.y = 0.0
-	return v.normalized() if v.length_squared() > 1e-8 else Vector3(0, 0, 1)
+		var d := (skeleton.get_bone_global_rest(b).origin - skeleton.get_bone_global_rest(a).origin) if rest else (_gp(b).origin - _gp(a).origin)
+		d.y = 0.0
+		if d.dot(hF) > 0.02:
+			v += d
+	return v.normalized() if v.length_squared() > 1e-8 else hF
 
 
 func _foot_r(cp: Dictionary) -> float:
@@ -2605,7 +2666,7 @@ func _foot_ends(sd: int, r: float, pa: Vector3, pb: Vector3) -> Array:
 	var n := (pa - knee).normalized()
 	var f := (pb - pa).normalized()
 	n = (n - f * n.dot(f)).normalized()
-	return [pa + n * (ya + FOOT_SOLE - r), pb + n * (yb + FOOT_SOLE - r) + f * FOOT_TOE]
+	return [pa + n * (ya + FOOT_SOLE - r) - f * 0.022, pb + n * (yb + FOOT_SOLE - r) + f * FOOT_TOE]
 
 
 # twin of bodyFix in 50-figure.js: each limb a segment with its capsule's radius (the body's tapered ra to rb, an arm

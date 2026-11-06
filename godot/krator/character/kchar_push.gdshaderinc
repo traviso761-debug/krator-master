@@ -45,13 +45,19 @@ uniform mat3 kcTl = mat3(1.0);
 
 // kv the skinned vertex, kn its normal, ry and rr its rest height and its rest distance from the axis (CUSTOM1)
 void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
-	if (kcL > 0.5) {
-		// behind the hips: the seat's capsules (14, 15) lie behind them
-		vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
-		bk.y = 0.0;
-		bk *= kcA[14].w > 0.0 ? 1.0 / max(length(bk), 1e-5) : 0.0;
+	// behind the hips: the seat's capsules (14, 15) lie behind them
+	vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
+	bk.y = 0.0;
+	bk *= kcA[14].w > 0.0 ? 1.0 / max(length(bk), 1e-5) : 0.0;
+	vec3 clat = vec3(bk.z, 0.0, -bk.x);
+	float cflap = kcL > 0.1 && kcL < 0.5 && kcS > 0.0 && kcSH < 1.0 && rr > 0.142 && ry > 0.45 && abs(dot(kv - kcH, bk)) > abs(dot(kv - kcH, clat)) * 1.1 ? 1.0 : 0.0;
+	float cloose = (kcL > 0.5 && !(kcS > 0.0 && kcSH > 10.0)) || cflap > 0.5 ? 1.0 : 0.0;
+	float ceo = kcEO > 0.5 && cloose > 0.5 ? 1.0 : 0.0;
+	float cshort = smoothstep(0.32, 0.44, kcHm);
+	if (cloose > 0.5) {
+		float ctier = clamp(rr - (0.24 - 0.12 * clamp(ry, 0.0, 0.80)), 0.0, 0.16) * smoothstep(0.15, 0.32, ry) * (1.0 - smoothstep(1.02, 1.12, ry)) * (1.0 - smoothstep(0.25, 0.29, rr * smoothstep(0.75, 0.88, ry)));
 		for (int i = 0; i < 16; i++) {
-			if (kcA[i].w <= 0.0 || (kcEO > 0.5 && i < 6)) {
+			if (kcA[i].w <= 0.0 || (ceo > 0.5 && i < 6) || (i >= 6 && i < 14 && ry < 0.92)) {
 				continue;
 			}
 			vec3 a = kcA[i].xyz;
@@ -80,7 +86,11 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 				}
 			}
 			t = clamp(t, 0.0, 1.0);
-			float pd = sh > 0.0 ? kcP + kcPO * kcM : 0.0;
+			vec3 q = a + ab * t;
+			vec3 d = kv - q;
+			float l = length(d);
+			float ccr = i < 2 ? smoothstep(0.55, 0.75, 1.0 - abs(ab.y) / max(length(ab), 1e-5)) * smoothstep(-0.03, 0.04, d.y) : 0.0;
+			float pd = sh > 0.0 ? kcP + cflap * 0.035 + kcPO * kcM + (i >= 14 ? (ctier + cflap * 0.035) * 0.9 * kcM : 0.0) + smoothstep(0.03, 0.04, kcP) * 0.04 * ccr : 0.0;
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + pd;
 			if (i < 4 && sh > 0.0) {
 				// a bent knee's corner, which the thigh's and the shin's capsules leave uncovered (pushOut in 50-figure.js)
@@ -89,16 +99,15 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 				r += KNEE * bend * (i < 2 ? smoothstep(0.7, 1.0, t) : 1.0 - smoothstep(0.0, 0.3, t));
 			}
 			float R = r + sh;
-			vec3 q = a + ab * t;
-			vec3 d = kv - q;
-			float l = length(d);
 			if (l < R && l > 1e-5) {
+				float cmid = i < 6 ? 1.0 - smoothstep(0.03, 0.11, abs(dot(kv - kcH, clat))) : 0.0;
 				vec3 o = vec3(q.x - kcH.x, 0.0, q.z - kcH.z);
+				o -= clat * dot(o, clat) * cmid * 0.85;
 				float ol = length(o);
 				float r0 = r - pd * (1.0 - lift);
 				if (l < r0 && sh > 0.0 && ol > 1e-4) {
-					o /= ol;
-					if (dot(kn, o) < 0.0) {
+					o = normalize(mix(o / ol, vec3(0.0, 1.0, 0.0), ccr));
+					if (i < 14 && dot(kn, o) < 0.0 && ccr < 0.5) {
 						o = -o;          // the side the cloth faces (pushOut in 50-figure.js)
 					}
 					float s = dot(d, o);
@@ -109,21 +118,22 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 					w *= w;
 					d = normalize(d) * (1.0 - w) + o * w;
 				}
-				// a thin band: [0, r + sh] into [r - sh, r + sh]; the legs' capsules hand over to the hull in a stride
-				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - kcM : 1.0));
+				// a thin band: [0, r + sh] into [r - sh, r + sh]; the legs' capsules stay active on chain-equipped garments (ceo < 0.5)
+				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - ceo : 1.0));
 			}
 		}
-		// the hull: the leg's points set how far out from the body's axis the cloth must reach at their bearing, the row of
-		// the point and all below hanging from it, the rows above running up to the waist (pushOut in 50-figure.js)
-		if (kcEO > 0.5) {
+		// the hull: for a garment with no chains (ceo > 0.5), the leg's points set how far out from the body's axis the cloth
+		// must reach at their bearing (pushOut in 50-figure.js)
+		if (ceo > 0.5) {
 			kv = mix(kv, kcH + kcTl * (kv - kcH), smoothstep(0.03, 0.55, kcH.y - kv.y));
 		}
-		if (max(kcM, kcEO) > 0.0) {
+		if (ceo > 0.5) {
 			vec2 ep = kv.xz - kcH.xz;
 			float er = length(ep);
 			float ew = 0.0;
 			float ehy = kcH.y + 0.12;
 			if (er > 1e-4 && kv.y < ehy) {
+				vec2 eu = ep / er;
 				for (int i = 0; i < 12; i++) {
 					vec4 es = kcE[i];
 					vec2 esp = es.xz - kcH.xz;
@@ -131,21 +141,23 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 					if (es.w <= 0.0 || esr < 1e-3) {
 						continue;
 					}
-					float ehw = atan(es.w + 0.04, esr);
-					float ea = acos(clamp(dot(ep, esp) / (er * esr), -1.0, 1.0));
-					float ewa = 1.0 - smoothstep(ehw, ehw + 0.28, ea);
-					float ewy = 1.0 - smoothstep(0.0, max(ehy - es.y - es.w, 0.05), kv.y - es.y - es.w);
-					ew = max(ew, smoothstep(max(kcHm, 0.12) - 0.02, max(kcHm, 0.12) + 0.06, es.y + es.w) * ewa * ewy * (esr + es.w + kcP + kcPO * kcM + 0.01 + 4.0 * smoothstep(0.03, 0.04, kcP) * 0.015));
+					float ehw = atan(es.w + 0.045, clamp(esr, 0.16, 0.22)) + smoothstep(0.03, 0.04, kcP) * 0.10 + ceo * 0.04;
+					float ea = acos(clamp(dot(eu, esp) / esr, -1.0, 1.0));
+					float ewa = 1.0 - smoothstep(ehw, ehw + 0.30, ea);
+					float eytop = es.y + (1.0 - ceo * cshort) * es.w;
+					float ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.05), kv.y - eytop);
+					float eh0 = kcHm - (i == 0 || i == 6 ? 0.08 : 0.04);
+					ew = max(ew, smoothstep(eh0, eh0 + 0.08, es.y + es.w) * ewa * ewy * (esr + es.w + kcP + ceo * 0.028 + cflap * 0.035 + kcPO * kcM + 0.01 + 4.0 * smoothstep(0.03, 0.04, kcP) * 0.015));
 				}
-			}
-			ew = max(ew * max(kcM, kcEO) - 0.02, 0.0);
-			if (ew > 0.0) {
-				float eb = mix(er, min(rr, er + 0.06), clamp((ew - er) / 0.1, 0.0, 1.0));
-				kv.xz = kcH.xz + ep / er * pow(eb * eb * eb + ew * ew * ew, 1.0 / 3.0);
+				ew = max(ew * max(kcM, ceo) - 0.02, 0.0);
+				if (ew > 0.0) {
+					float eb = mix(er, min(rr, er + 0.06), clamp((ew - er) / 0.1, 0.0, 1.0));
+					kv.xz = kcH.xz + eu * pow(eb * eb * eb + ew * ew * ew, 1.0 / 3.0);
+				}
 			}
 		}
 	}
-	if (kcS > 0.0 && kv.y < kcH.y) {
+	if (kcS > 0.0 && cflap < 0.5 && kv.y < max(kcH.y + 0.08, max(kcB[0].y, kcB[1].y) + 0.08)) {
 		// to the nearest capsule only (to all six, a shin was pulled into a ball round the knee)
 		float best = 1e9;
 		vec3 bq = vec3(0.0);
@@ -159,7 +171,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
 			float st = clamp(dot(kv - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
-			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) + kcS;
+			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) * (i >= 4 && kcSH > 10.0 && kcM > 0.3 ? 0.72 : 1.0) + kcS;
 			vec3 q = a + ab * st;
 			float l = length(kv - q);
 			if (l - r < best) {
@@ -174,15 +186,16 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 		int di = bi < 2 ? bi : bi < 4 ? bi - 2 : bi - 4;
 		float lt = length(kcB[di].xyz - kcA[di].xyz);
 		float ls = length(kcB[di + 2].xyz - kcA[di + 2].xyz);
+		float slift = bi < 2 && kcSH < 1.0 ? smoothstep(0.1, 0.5, 1.0 - abs(kcB[di].y - kcA[di].y) / max(lt, 1e-5)) : 0.0;
 		float dd = bi < 2 ? bt * lt : bi < 4 ? lt + bt * ls : lt + ls + bt * 0.1;
-		float hm = kcSH * (lt + ls);
+		float hm = (kcSH + slift * 0.28) * (lt + ls);
 		float f = 1.0 - smoothstep(hm - 0.02, hm + 0.02, dd);
-		if (best > 0.0 && best < 0.3) {
+		if (best > 0.0 && best < 0.6) {
 			vec3 d = kv - bq;
 			kv = mix(kv, bq + d * (br / length(d)), f);
 		}
 	}
-	if (kcT > 0.0) {
+	if (kcT > 0.0 && cflap < 0.5) {
 		// the way in is the trunk's (kcU), the height above the hips the greater of the trunk's and the world's
 		vec3 tr = kv - kcH;
 		float th = dot(tr, kcU);

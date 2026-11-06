@@ -949,7 +949,8 @@ def build(gid, label, parts, slot='torso'):
     hips, o = [], 0
     for p in parts:
         n = p.P.shape[0] * p.P.shape[1]
-        if '_belt' in p.name or '_trophy' in p.name:
+        if '_belt' in p.name or '_trophy' in p.name or '_pouch' in p.name or '_sequin' in p.name or (
+                '_sash' in p.name and float(p.P[..., 2].max() - p.P[..., 2].min()) < 0.12):
             hips.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o)])
         elif '_zen' in p.name or '_bandolier' in p.name:
             # a band from the hip to the shoulder: below the waist only (the third number: that height over the hip
@@ -1210,7 +1211,8 @@ def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, row
     x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
     fs = np.linspace(low, 1.0, rows)
     eases = np.interp(fs, [low, 0.1, 1.0], [ease_low, ease, ease])
-    opens = np.interp(fs, [low, 0.55, 0.92], [open_front, open_front, 0.03])
+    # Close horizontally across the brow (f 0.48 to 0.62) rather than narrowing in an inverted-V up to the crown
+    opens = np.interp(fs, [low, 0.45, 0.58, 0.92], [open_front, open_front, 0.0, 0.0])
     Q = np.array([ring_points(a + (b - a) * f, x, y, np.linspace(-(math.pi - o), math.pi - o, n), e, rmin=0.04, rmax=0.22)
                   for f, e, o in zip(fs, eases, opens)])
     c = a + (b - a) * 1.0
@@ -1244,6 +1246,298 @@ def pauldron(name, side, paint, reach=0.5, ease=0.028):
     c = math.atan2(y[2], x[2])
     return limb_tube(name, None, None, ease, paint, n=12, rows=6, ease_end=ease * 0.7, start_back=0.06,
                      path=[a, a + (e - a) * reach], arc=(c - 1.7, c + 1.7), bvh=BVH_A, rmax=0.16)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Shared garment-type primitives & surface helpers (consolidated from mid-file and culture sections so no culture
+# vendors functions to another culture; mirrors tools/garments/types/*)
+FRONT = np.array([0, -1.0, 0])
+COTTON, WOOL = 'cloth.cotton.coarse', 'cloth.wool'
+
+
+def surface_out(c, d, extra):
+    h = first_hit(c, d)
+    return c + d * ((h or 0.12) + extra)
+
+
+_out = surface_out
+
+
+def chest_front(z, extra):
+    """a point out from the front of the body at height z"""
+    c = spine_at(z)
+    d = np.array([0, -1.0, 0])
+    h = first_hit(c, d)
+    return c + d * ((h or 0.12) + extra)
+
+
+_front = chest_front
+
+
+def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=3, iters=2):
+    """a band round the torso on a tilted plane: highest (z_high) on the side at angle 'high' (0 the back, +pi/2 the
+    body's left), lowest opposite: a bandolier or a himation over the left shoulder to the right hip, the strap of an
+    exomis"""
+    zm, amp = (z_high + z_low) / 2, (z_high - z_low) / 2
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    Q = []
+    for r in range(rows):
+        dz = (r / (rows - 1) - 0.5) * width
+        row = []
+        for a in angles:
+            z = zm + amp * math.cos(a - high) - dz
+            c = spine_at(z)
+            d = x * math.cos(a) + y * math.sin(a)
+            h = first_hit(c, d, bvh=BVH_T)
+            row.append(c + d * ((h if h is not None else 0.14) + ease))
+        Q.append(row)
+    Q = smooth_push(np.array(Q), True, ease, iters=iters, bvh=BVH_T)
+    return Part(name, Q, True, ['body'] * rows, paint)
+
+
+def horn(name, path, r0, r1, paint, n=10, rows=10):
+    """a tapering tube along a path, closed at its tip: a horn, a quill, a spike"""
+    pts = np.array(path, float)
+    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
+    x, _ = frame(pts[1] - pts[0])
+    Q = []
+    for k in range(rows):
+        sd = cum[-1] * k / (rows - 1)
+        i = min(len(seg) - 1, int(np.searchsorted(cum, sd, side='right') - 1))
+        c = pts[i] + (pts[i + 1] - pts[i]) * (sd - cum[i]) / seg[i]
+        t = (pts[i + 1] - pts[i]) / seg[i]
+        x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
+        r = r0 + (r1 - r0) * k / (rows - 1)
+        Q.append([c + (x * math.cos(a) + y * math.sin(a)) * r for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
+    return Part(name, np.array(Q), True, ['body'] * rows, paint)
+
+
+def head_frame():
+    a, b = J('Head'), J('Head', 'tail')
+    up = (b - a) / np.linalg.norm(b - a)
+    bk = np.array([0, 1.0, 0]) - up * up[1]; bk /= np.linalg.norm(bk)
+    left = np.cross(bk, up); left /= np.linalg.norm(left)
+    if left[0] < 0: left = -left
+    return a, b, up, bk, left
+
+
+def brim(name, f, width, paint, ease=0.025, rows=4, n=36, droop=0.0, lift=0.0, scallop=0.0):
+    """a flat ring round the head at fraction f of its height, out 'width' past the skin: a hat's brim; its edge
+    droops (or lifts) and can be scalloped"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    Q = []
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    inner = []
+    for an in angles:
+        d = bk * math.cos(an) + left * math.sin(an)
+        h = first_hit(c, d) or 0.09
+        inner.append((d, h + ease))
+    for k in range(rows):
+        s = k / (rows - 1)
+        Q.append([c + d * (r + s * width * (1 + scallop * math.cos(12 * an))) + up * (lift - droop) * s * s for (d, r), an in zip(inner, angles)])
+    return Part(name, np.array(Q), True, ['body'] * rows, paint)
+
+
+def wing(name, side, span, height, paint, rows=6, cols=9, rise=0.04, curl=0.05, f=0.62):
+    """a flat wing out from the side of the head (side +1 left, -1 right): span out, height down, curling back"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    h = first_hit(c, left * side) or 0.08
+    root = c + left * side * (h + 0.02)
+    Q = []
+    for i in range(rows):
+        v = i / (rows - 1)
+        row = []
+        for j in range(cols):
+            u = j / (cols - 1)
+            out = left * side * span * u
+            down = -up * height * (v - 0.25) * (1 + 0.4 * u)
+            row.append(root + out + down + up * rise * u * u + bk * curl * u * u)
+        Q.append(row)
+    return Part(name, np.array(Q), False, ['body'] * rows, paint)
+
+
+def collar_disc(name, width, paint, drop=0.05, rows=4, n=48, scallop=0.12, ease=0.02):
+    """a broad flat collar round the neck lying over the shoulders, its edge scalloped: a shell"""
+    zs = TOP + 0.005
+    c = spine_at(zs)
+    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
+    Q = []
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    for k in range(rows):
+        s = k / (rows - 1)
+        row = []
+        for an in angles:
+            d = x * math.cos(an) + y * math.sin(an)
+            h = first_hit(c, d, bvh=BVH) or 0.07
+            r = h + ease + s * width * (1 + scallop * abs(math.cos(8 * an)))
+            row.append(c + d * r + np.array([0, 0, -drop * s * s]))
+        Q.append(row)
+    Q = smooth_push(np.array(Q), True, ease, iters=1, fix_top=True)
+    return Part(name, Q, True, ['body'] * rows, paint)
+
+
+def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9):
+    """a crest standing on the head front to back (a helmet's plume): from the skull out by 'height', sweeping back"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * 0.55
+    Q = []
+    for i in range(rows):
+        v = i / (rows - 1)
+        row = []
+        for j in range(cols):
+            phi = a0 + (a1 - a0) * j / (cols - 1)
+            d = up * math.cos(phi) + bk * math.sin(phi)
+            base = first_hit(c, d) or 0.1
+            hh = height * math.sin(math.pi * (j + 0.5) / cols) ** 0.6
+            row.append(c + d * (base + 0.03 + hh * v) + bk * sweep * v)
+        Q.append(row)
+    return Part(name, np.array(Q), False, ['body'] * rows, paint)
+
+
+def tower_hat(name, height, profile, paint, f=0.64, ease=0.014, rows=12, n=32):
+    """a tall hat on the head's axis: its band fitted round the head at fraction f, then rings up 'height' with radius
+    profile(s) x the band's (s 0 at the band, 1 at the top), closed flat on top: a mitre, the hyperboloid of Yuni"""
+    a, b, up, bk, left = head_frame()
+    c = a + (b - a) * f
+    height = max(height, (first_hit(c, up) or 0.0) + 0.015)
+    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    base = []
+    for an in angles:
+        d = bk * math.cos(an) + left * math.sin(an)
+        base.append((d, (first_hit(c, d) or 0.09) + ease))
+    Q = []
+    for k in range(rows):
+        sk = k / (rows - 1)
+        Q.append([c + up * height * sk + d * r * profile(sk) for d, r in base])
+    top = c + up * height
+    Q.append([top + (q - top) * 0.02 for q in Q[-1]])
+    return Part(name, np.array(Q), True, ['body'] * (rows + 1), paint)
+
+
+def eye_disc(name, at, out, size, paint, iris_paint):
+    """The God's one eye: a flat almond facing 'out', a teal iris standing on it"""
+    out = out / np.linalg.norm(out)
+    return [blob(name, at, (size, size * 0.18, size * 0.6), paint, n=14, rows=6, out=out),
+            blob(name + '_iris', at + out * size * 0.1, (size * 0.36, size * 0.12, size * 0.36), iris_paint, n=10, rows=5, out=out)]
+
+
+def pendants(name, z, angles, size, paint, ease=0.04):
+    """small hanging trophies (claws, teeth, shells) round the body at height z, by angle (0 the back, +pi/2 left)"""
+    c = spine_at(z)
+    out = []
+    for k, an in enumerate(angles):
+        d = np.array([math.sin(an), math.cos(an), 0])
+        h = first_hit(c, d, bvh=BVH_T) or 0.14
+        out.append(blob('%s%d' % (name, k), c + d * (h + ease) + np.array([0, 0, -size[2] * 0.6]), size, paint, n=8, rows=5, out=d))
+    return out
+
+
+def sash_with_tail(gid, paint, tail_paint, ease=0.026, tail=0.34):
+    c = spine_at(WAIST - 0.02)
+    d = np.array([0.85, -0.5, 0]); d /= np.linalg.norm(d)
+    t = flap(gid + '_sash_tail', _out(c, d, ease + 0.01), 0.09, tail, d, tail_paint, cols=4, rows=8, ease=0.02, sway=0.02)
+    t.cloth['layer'] = 2                      # over the robe's hem (at 1, the same layer, a stride's robe came through it)
+    return [torso_tube(gid + '_sash', WAIST + 0.03, WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1), t]
+
+
+izani_sash = sash_with_tail
+
+
+def pouch_belt(gid, paint, pouch_paint, ease=0.042):
+    c = spine_at(WAIST - 0.015)
+    parts = [torso_tube(gid + '_belt', WAIST + 0.02, WAIST - 0.05, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1)]
+    for k, d in enumerate((np.array([-0.75, -0.66, 0]), np.array([0.8, 0.6, 0]), np.array([0.98, -0.2, 0]))):
+        d = d / np.linalg.norm(d)
+        parts.append(blob('%s_pouch%d' % (gid, k), _out(c, d, ease + 0.03), (0.075, 0.04, 0.085), pouch_paint, out=d))
+    return parts
+
+
+izani_belt = pouch_belt
+
+
+def stand_collar(gid, paint, high=0.07, arc=None):
+    return torso_tube(gid + '_collar', TOP + high, TOP - 0.005, 0.02, paint, n=32, rows=4, ease_bottom=0.034, arc=arc)
+
+
+izani_collar = stand_collar
+
+
+def armbands(gid, paint, f=0.45, w=0.035):
+    out = []
+    for sd in (L, R):
+        a, e = J(sd + 'Arm'), J(sd + 'ForeArm')
+        c = a + (e - a) * f
+        out.append(limb_tube('%s_armband_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A))
+    return out
+
+
+def armbands2(gid, paint, f=0.45, w=0.035):
+    """armbands on the lower pair (as armbands())"""
+    out = []
+    for sd in (L, R):
+        a, e = low(J(sd + 'Arm'), sd), low(J(sd + 'ForeArm'), sd)
+        c = a + (e - a) * f
+        out.append(limb_tube('%s_armband2_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A2))
+    return out
+
+
+def button_row(gid, zs, xs, col='brass', ease=0.022, r=0.020):
+    """flat 3D button discs on the chest so buttons do not stretch with cloth UVs"""
+    p = P(col, 0.02)
+    return [blob('%s_btn%d' % (gid, k), _front(z, ease) + np.array([x, 0, 0]), (r, 0.005, r), p, n=10, rows=4)
+            for k, (z, x) in enumerate((z, x) for z in zs for x in xs)]
+
+
+_buttons = button_row
+
+
+def turban(gid, base_paint, wrap_paint, jewel_paint, size=1.0, ribbons=4):
+    """a great wrapped turban: a dome of cloth rising from the brow and swelling past the head's width, its folds
+    crossed by ribbons of a second colour and a band at the brow, a brooch with a crescent standing over it at front"""
+    a, b, up, bk, left = head_frame()
+    H = np.linalg.norm(b - a)
+    angles = np.linspace(0, 2 * math.pi, 44, endpoint=False)
+    hug = ring_points(a + (b - a) * 0.62, left, bk, angles, 0.016, rmin=0.04, rmax=0.2)
+    c0 = a + (b - a) * 0.62
+    r0 = float(np.mean(np.linalg.norm(hug - c0, axis=1)))
+    R = r0 + 0.055 * size
+    f0, f1 = 0.62, 1.05 + 0.85 * size
+    rows = 18
+
+    def rad(f):
+        t = (f - f0) / (f1 - f0)
+        if t < 0.3: return r0 + (R - r0) * (0.5 - 0.5 * math.cos(math.pi * t / 0.3))
+        u = (t - 0.3) / 0.7
+        return R * (1 - u ** 1.6) ** 0.55 * (1 - 0.25 * u) + 0.004
+
+    def at(f, an, extra=0.0):
+        c = a + up * H * f + bk * 0.012 * (f - f0)
+        return c + (left * math.cos(an) * 1.0 + bk * math.sin(an) * 1.06) * (rad(f) + extra)
+    fs = np.linspace(f0, f1, rows)
+    P_grid = np.array([[at(f, an) for an in angles] for f in fs])
+    P_grid[0] = hug
+    P_grid[1] = hug + (P_grid[1] - hug) * 0.6
+    P_grid[-1] = P_grid[-1].mean(0)
+    P_grid = smooth_push(P_grid, True, 0.016, iters=2)
+    parts = [Part(gid, P_grid, True, ['body'] * rows, base_paint)]
+    for k in range(ribbons):
+        ph, amp, fm = k * math.pi / ribbons * 2 + 0.4, 0.2 * size, f0 + (f1 - f0) * (0.3 + 0.08 * (k % 2))
+        Q = []
+        for w in (-0.04, 0.04):
+            Q.append([at(fm + amp * math.sin(an + ph) + w * (1 + 0.3 * math.cos(an)), an, 0.008) for an in angles])
+        parts.append(Part('%s_wrap%d' % (gid, k), np.array(Q), True, ['body'] * 2, wrap_paint))
+    Q = [hug + (hug - c0) / np.linalg.norm(hug - c0, axis=1)[:, None] * e + up * dz for e, dz in ((0.012, -0.012), (0.02, 0.03))]
+    parts.append(Part(gid + '_brow', np.array(Q), True, ['body'] * 2, wrap_paint))
+    fb = f0 + (f1 - f0) * 0.3
+    front = at(fb, -math.pi / 2, 0.02)
+    parts.append(blob(gid + '_brooch', front, (0.07 * size, 0.024, 0.08 * size), jewel_paint, out=-bk))
+    tip = front + up * 0.11 * size
+    parts.append(horn(gid + '_crescentL', [front + up * 0.03, front + up * 0.06 + left * 0.035, tip + left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
+    parts.append(horn(gid + '_crescentR', [front + up * 0.03, front + up * 0.06 - left * 0.035, tip - left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
+    return parts
 
 
 GARMENTS = {}
@@ -1427,204 +1721,10 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# shapes for the Moebius line (LORE.md 5): bands across the body, horns, wings, brims, collars and crests
-def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=3, iters=2):
-    """a band round the torso on a tilted plane: highest (z_high) on the side at angle 'high' (0 the back, +pi/2 the
-    body's left), lowest opposite: a bandolier or a himation over the left shoulder to the right hip, the strap of an
-    exomis"""
-    zm, amp = (z_high + z_low) / 2, (z_high - z_low) / 2
-    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    Q = []
-    for r in range(rows):
-        dz = (r / (rows - 1) - 0.5) * width
-        row = []
-        for a in angles:
-            z = zm + amp * math.cos(a - high) - dz
-            c = spine_at(z)
-            d = x * math.cos(a) + y * math.sin(a)
-            h = first_hit(c, d, bvh=BVH_T)
-            row.append(c + d * ((h if h is not None else 0.14) + ease))
-        Q.append(row)
-    Q = smooth_push(np.array(Q), True, ease, iters=iters, bvh=BVH_T)
-    return Part(name, Q, True, ['body'] * rows, paint)
-
-
-def horn(name, path, r0, r1, paint, n=10, rows=10):
-    """a tapering tube along a path, closed at its tip: a horn, a quill, a spike"""
-    pts = np.array(path, float)
-    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
-    x, _ = frame(pts[1] - pts[0])
-    Q = []
-    for k in range(rows):
-        sd = cum[-1] * k / (rows - 1)
-        i = min(len(seg) - 1, int(np.searchsorted(cum, sd, side='right') - 1))
-        c = pts[i] + (pts[i + 1] - pts[i]) * (sd - cum[i]) / seg[i]
-        t = (pts[i + 1] - pts[i]) / seg[i]
-        x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
-        r = r0 + (r1 - r0) * k / (rows - 1)
-        Q.append([c + (x * math.cos(a) + y * math.sin(a)) * r for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
-    return Part(name, np.array(Q), True, ['body'] * rows, paint)
-
-
-def head_frame():
-    a, b = J('Head'), J('Head', 'tail')
-    up = (b - a) / np.linalg.norm(b - a)
-    bk = np.array([0, 1.0, 0]) - up * up[1]; bk /= np.linalg.norm(bk)
-    left = np.cross(bk, up); left /= np.linalg.norm(left)
-    if left[0] < 0: left = -left
-    return a, b, up, bk, left
-
-
-def brim(name, f, width, paint, ease=0.025, rows=4, n=36, droop=0.0, lift=0.0, scallop=0.0):
-    """a flat ring round the head at fraction f of its height, out 'width' past the skin: a hat's brim; its edge
-    droops (or lifts) and can be scalloped"""
-    a, b, up, bk, left = head_frame()
-    c = a + (b - a) * f
-    Q = []
-    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    inner = []
-    for an in angles:
-        d = bk * math.cos(an) + left * math.sin(an)
-        h = first_hit(c, d) or 0.09
-        inner.append((d, h + ease))
-    for k in range(rows):
-        s = k / (rows - 1)
-        Q.append([c + d * (r + s * width * (1 + scallop * math.cos(12 * an))) + up * (lift - droop) * s * s for (d, r), an in zip(inner, angles)])
-    return Part(name, np.array(Q), True, ['body'] * rows, paint)
-
-
-def wing(name, side, span, height, paint, rows=6, cols=9, rise=0.04, curl=0.05, f=0.62):
-    """a flat wing out from the side of the head (side +1 left, -1 right): span out, height down, curling back"""
-    a, b, up, bk, left = head_frame()
-    c = a + (b - a) * f
-    h = first_hit(c, left * side) or 0.08
-    root = c + left * side * (h + 0.02)
-    Q = []
-    for i in range(rows):
-        v = i / (rows - 1)
-        row = []
-        for j in range(cols):
-            u = j / (cols - 1)
-            out = left * side * span * u
-            down = -up * height * (v - 0.25) * (1 + 0.4 * u)
-            row.append(root + out + down + up * rise * u * u + bk * curl * u * u)
-        Q.append(row)
-    return Part(name, np.array(Q), False, ['body'] * rows, paint)
-
-
-def collar_disc(name, width, paint, drop=0.05, rows=4, n=48, scallop=0.12, ease=0.02):
-    """a broad flat collar round the neck lying over the shoulders, its edge scalloped: a shell"""
-    zs = TOP + 0.005
-    c = spine_at(zs)
-    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    Q = []
-    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    for k in range(rows):
-        s = k / (rows - 1)
-        row = []
-        for an in angles:
-            d = x * math.cos(an) + y * math.sin(an)
-            h = first_hit(c, d, bvh=BVH) or 0.07
-            r = h + ease + s * width * (1 + scallop * abs(math.cos(8 * an)))
-            row.append(c + d * r + np.array([0, 0, -drop * s * s]))
-        Q.append(row)
-    Q = smooth_push(np.array(Q), True, ease, iters=1, fix_top=True)
-    return Part(name, Q, True, ['body'] * rows, paint)
-
-
-def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9):
-    """a crest standing on the head front to back (a helmet's plume): from the skull out by 'height', sweeping back"""
-    a, b, up, bk, left = head_frame()
-    c = a + (b - a) * 0.55
-    Q = []
-    for i in range(rows):
-        v = i / (rows - 1)
-        row = []
-        for j in range(cols):
-            phi = a0 + (a1 - a0) * j / (cols - 1)
-            d = up * math.cos(phi) + bk * math.sin(phi)
-            base = first_hit(c, d) or 0.1
-            hh = height * math.sin(math.pi * (j + 0.5) / cols) ** 0.6
-            row.append(c + d * (base + 0.03 + hh * v) + bk * sweep * v)
-        Q.append(row)
-    return Part(name, np.array(Q), False, ['body'] * rows, paint)
-
-
-def tower_hat(name, height, profile, paint, f=0.64, ease=0.014, rows=12, n=32):
-    """a tall hat on the head's axis: its band fitted round the head at fraction f, then rings up 'height' with radius
-    profile(s) x the band's (s 0 at the band, 1 at the top), closed flat on top: a mitre, the hyperboloid of Yuni"""
-    a, b, up, bk, left = head_frame()
-    c = a + (b - a) * f
-    # a short hat still closes 1.5 cm above the crown: the cloth cap's flat top sat inside the head, and the hair
-    # (then the scalp) came through it
-    height = max(height, (first_hit(c, up) or 0.0) + 0.015)
-    angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    base = []
-    for an in angles:
-        d = bk * math.cos(an) + left * math.sin(an)
-        base.append((d, (first_hit(c, d) or 0.09) + ease))
-    Q = []
-    for k in range(rows):
-        sk = k / (rows - 1)
-        Q.append([c + up * height * sk + d * r * profile(sk) for d, r in base])
-    top = c + up * height
-    Q.append([top + (q - top) * 0.02 for q in Q[-1]])
-    return Part(name, np.array(Q), True, ['body'] * (rows + 1), paint)
-
-
-def eye_disc(name, at, out, size, paint, iris_paint):
-    """The God's one eye: a flat almond facing 'out', a teal iris standing on it"""
-    out = out / np.linalg.norm(out)
-    return [blob(name, at, (size, size * 0.18, size * 0.6), paint, n=14, rows=6, out=out),
-            blob(name + '_iris', at + out * size * 0.1, (size * 0.36, size * 0.12, size * 0.36), iris_paint, n=10, rows=5, out=out)]
-
-
-def pendants(name, z, angles, size, paint, ease=0.04):
-    """small hanging trophies (claws, teeth, shells) round the body at height z, by angle (0 the back, +pi/2 left)"""
-    c = spine_at(z)
-    out = []
-    for k, an in enumerate(angles):
-        d = np.array([math.sin(an), math.cos(an), 0])
-        h = first_hit(c, d, bvh=BVH_T) or 0.14
-        out.append(blob('%s%d' % (name, k), c + d * (h + ease) + np.array([0, 0, -size[2] * 0.6]), size, paint, n=8, rows=5, out=d))
-    return out
-
-
-# ---------------------------------------------------------------------------------------------------------------
 # the Izani (Iziz): science fantasy without the machines. A thousand years in the Ancients' ruins in a rain jungle:
 # wrap tunics, sashes, hoods and leg wraps for the poor; long open coats, belts and pouches and a salvaged Ancient
 # shoulder plate for the guilds; the court in long robes with high collars and the sun of Iziz on a tabard, a gold
 # circlet with the palace's orb and a sun halo behind the head
-FRONT = np.array([0, -1.0, 0])
-
-
-def _out(c, d, extra):
-    h = first_hit(c, d)
-    return c + d * ((h or 0.12) + extra)
-
-
-def izani_sash(gid, paint, tail_paint, ease=0.026, tail=0.34):
-    c = spine_at(WAIST - 0.02)
-    d = np.array([0.85, -0.5, 0]); d /= np.linalg.norm(d)
-    t = flap(gid + '_sash_tail', _out(c, d, ease + 0.01), 0.09, tail, d, tail_paint, cols=4, rows=8, ease=0.02, sway=0.02)
-    t.cloth['layer'] = 2                      # over the robe's hem (at 1, the same layer, a stride's robe came through it)
-    return [torso_tube(gid + '_sash', WAIST + 0.03, WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1), t]
-
-
-def izani_belt(gid, paint, pouch_paint, ease=0.042):
-    c = spine_at(WAIST - 0.015)
-    parts = [torso_tube(gid + '_belt', WAIST + 0.02, WAIST - 0.05, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1)]
-    for k, d in enumerate((np.array([-0.75, -0.66, 0]), np.array([0.8, 0.6, 0]), np.array([0.98, -0.2, 0]))):
-        d = d / np.linalg.norm(d)
-        parts.append(blob('%s_pouch%d' % (gid, k), _out(c, d, ease + 0.03), (0.075, 0.04, 0.085), pouch_paint, out=d))
-    return parts
-
-
-def izani_collar(gid, paint, high=0.07, arc=None):
-    return torso_tube(gid + '_collar', TOP + high, TOP - 0.005, 0.02, paint, n=32, rows=4, ease_bottom=0.034, arc=arc)
-
-
 def izani_crown(gid, band, halo, orb, big):
     a, b = J('Head'), J('Head', 'tail')
     c = a + (b - a) * 0.66
@@ -1767,15 +1867,17 @@ BELTS = {'tiger': lambda: P('saffron', 0.03, [B('top', 0.0, 0.2, 'tiger', 'darkf
          'beads': lambda: P('turq', 0.07, [B('top', 0.0, 0.2, 'beads', 'rose', 'turq', 0.03)], fabric='beads.glass')}
 
 
-def animal_belts(gid, kinds, ease0=0.028, z0=None, trophies=3):
-    """belts stacked from the waist down over the hips, each a beast's (BELTS), and trophies hanging off the lowest"""
+def animal_belts(gid, kinds, ease0=0.028, z0=None, trophies=3, sequins=0):
+    """belts stacked from the waist down over the hips, each a beast's (BELTS), and flat trophies/sequins hanging off the lowest"""
     z = WAIST + 0.02 if z0 is None else z0
     parts = []
     for k, kind in enumerate(kinds):
-        parts.append(torso_tube('%s_belt%d' % (gid, k), z, z - 0.04, ease0 + 0.008 * k, BELTS[kind](), rows=3, n=40, hull_from=WAIST + 0.1))
-        z -= 0.042
+        parts.append(torso_tube('%s_belt%d' % (gid, k), z, z - 0.032, ease0 + 0.008 * k, BELTS[kind](), rows=3, n=40, hull_from=WAIST + 0.1))
+        z -= 0.028
     if trophies:
-        parts += pendants(gid + '_trophy', z + 0.01, np.linspace(-0.9, 0.9, trophies) + math.pi, (0.02, 0.012, 0.05), P('bone', 0.02), ease=ease0 + 0.03)
+        parts += pendants(gid + '_trophy', z + 0.015, np.linspace(-0.9, 0.9, trophies) + math.pi, (0.022, 0.006, 0.048), P('bone', 0.02), ease=ease0 + 0.036)
+    if sequins:
+        parts += pendants(gid + '_sequin', z + 0.018, np.linspace(-0.72, 0.72, sequins) + math.pi, (0.026, 0.005, 0.030), P('turq', 0.02), ease=ease0 + 0.038)
     return parts
 
 
@@ -1872,18 +1974,21 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         gid = 'beast_%s_noble_deel' % sex
         deel = P('jungle', 0.03, [B('top', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.0, 0.02, 'solid', 'saffron'),
                                   B('bottom', 0.02, 0.12, 'claw', 'saffron', 'jungle', 0.12), B('bottom', 0.12, 0.135, 'solid', 'mint')],
-                 [PN(0.40, 0.43, 'beads', 'turq', 'saffron', 0.04)])
+                 [PN(0.40, 0.43, 'solid', 'saffron', 'saffron')])
         sl = P('jungle', 0.03, [B('bottom', 0.0, 0.07, 'feather', 'mint', 'jungle', 0.03), B('bottom', 0.07, 0.085, 'solid', 'saffron')])
         mantle = P('turq', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'saffron'), B('bottom', 0.03, 0.4, 'feather', 'jungle', 'turq', 0.05),
                                   B('top', 0.0, 0.03, 'solid', 'saffron')])
         bonep = P('bone', 0.03, [B('top', 0.0, 0.3, 'stripes', 'peach', 'bone', 0.0)])
+        lapel_seq = [blob('%s_lapel_seq%d' % (gid, k), _front(z, 0.018) + np.array([0.065 if sex == 'm' else 0.055, 0, 0]),
+                          (0.022, 0.005, 0.022), P('turq' if k % 2 == 0 else 'saffron', 0.02))
+                     for k, z in enumerate(np.linspace(WAIST + 0.06, TOP - 0.05, 5))]
         parts = [torso_tube(gid, TOP, ANKLE + 0.1, 0.014, deel, hang_from=WAIST - 0.04, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                  izani_collar(gid, P('saffron', 0.02, [B('top', 0.0, 0.012, 'solid', 'jungle')]), high=0.085),
-                 cape(gid + '_mantle', KNEE - 0.05, mantle, flare=0.25, span=1.35, ease=0.036, top=TOP - 0.03)] + \
+                 cape(gid + '_mantle', KNEE - 0.05, mantle, flare=0.25, span=1.35, ease=0.042, top=TOP - 0.03)] + \
             sleeves(gid, 'wrist', 0.016, sl, ease_end=0.04, rows=9) + \
             [torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.026, P('saffron', 0.03), rows=3, n=40, hull_from=WAIST + 0.1)] + \
-            animal_belts(gid, ['claw', 'tiger', 'snake', 'teeth'], ease0=0.034, z0=WAIST - 0.035, trophies=6) + \
-            [band(gid + '_bandolier', WAIST + 0.0, SHOULDER + 0.03, 0.045, 0.034, BELTS['teeth']())]
+            animal_belts(gid, ['claw', 'tiger', 'snake', 'teeth'], ease0=0.034, z0=WAIST - 0.02, trophies=6, sequins=5) + \
+            [band(gid + '_bandolier', WAIST + 0.0, SHOULDER + 0.03, 0.045, 0.024, BELTS['teeth']())] + lapel_seq
         if sex == 'm':                        # bone plates over both shoulders, outsized
             # over the mantle (at 4 cm off the arm, the mantle's 3.6 over the shoulders, they came through it)
             parts += [pauldron(gid + '_plateL', L, bonep, reach=0.6, ease=0.065), pauldron(gid + '_plateR', R, bonep, reach=0.6, ease=0.065)]
@@ -2032,15 +2137,6 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 # line. Commoners dress for the sun, the skin bare to it: a kilt or wrap skirt, a sash, armbands; traders in a
 # sleeveless tabard with the step fret, a belt and pouches; the genepriests in white with the holy red, a gold
 # pectoral, and The God's image as a mitre: one great eye before a halo of rays
-def armbands(gid, paint, f=0.45, w=0.035):
-    out = []
-    for sd in (L, R):
-        a, e = J(sd + 'Arm'), J(sd + 'ForeArm')
-        c = a + (e - a) * f
-        out.append(limb_tube('%s_armband_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A))
-    return out
-
-
 for b, sex in (('male', 'm'), ('female', 'f')):
     def _dtop(sex=sex):
         gid = 'dalab_%s_peasant_sash' % sex
@@ -2096,14 +2192,16 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         gid = 'dalab_%s_noble_robe' % sex
         robe = P('white', 0.03, [B('top', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'holyred'), B('bottom', 0.025, 0.1, 'steps', 'holyred', 'white', 0.1),
                                  B('bottom', 0.105, 0.115, 'solid', 'gold')],
-                 [PN(0.46, 0.54, 'eye', 'godteal', 'holyred', 0.22)])
+                 [PN(0.46, 0.54, 'solid', 'holyred', 'holyred'), PN(0.455, 0.46, 'solid', 'gold', 'gold'), PN(0.54, 0.545, 'solid', 'gold', 'gold')])
         pect = P('gold', 0.02, [B('top', 0.0, 0.3, 'rays', 'holyred', 'gold', 0.03), B('bottom', 0.0, 0.015, 'solid', 'holyred')])
         sl = P('white', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'holyred'), B('bottom', 0.02, 0.05, 'steps', 'holyred', 'white', 0.05)])
+        eyes = (eye_disc(gid + '_eye0', _front(WAIST + 0.12, 0.016), FRONT, 0.068, P('white', 0.02), P('godteal', 0.02)) +
+                eye_disc(gid + '_eye1', _front(CHEST - 0.01, 0.016), FRONT, 0.068, P('white', 0.02), P('godteal', 0.02)))
         parts = [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, robe, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                  collar_disc(gid + '_pectoral', 0.12, pect, drop=0.06, scallop=0.0),
                  torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.024, P('holyred', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]),
                             rows=3, n=40, hull_from=WAIST + 0.1)] + \
-            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.07, rows=9)
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.07, rows=9) + eyes
         if sex == 'f':
             parts.append(cape(gid + '_cape', 0.05, P('holyred', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.02, 0.1, 'steps', 'gold', 'holyred', 0.1)]),
                               flare=0.28, span=1.1, ease=0.034, top=TOP - 0.03))
@@ -2240,14 +2338,6 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 # cloth cap or a plain headscarf; guildsfolk (Salvagers, Smiths, Mechanics, Rocketeers) in a quilted drab jacket with
 # salvage plates and a leather apron, an ushanka; the Hall of the Republic in a double-breasted iron-black greatcoat
 # piped in red, a cross-belt, plain epaulettes and a grey papakha
-def _front(z, extra):
-    """a point out from the front of the body at height z"""
-    c = spine_at(z)
-    d = np.array([0, -1.0, 0])
-    h = first_hit(c, d)
-    return c + d * ((h or 0.12) + extra)
-
-
 def _rep_belt(gid, ease=0.03):
     """a plain leather belt with a brass buckle at the front"""
     return torso_tube(gid + '_belt', WAIST + 0.025, WAIST - 0.025, ease, P('leather', 0.05, [], [PN(0.47, 0.53, 'solid', 'brass', 'leather', 1.0)]),
@@ -2260,19 +2350,22 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             gid = 'rep_m_peasant_tunic'
             tun = P('repgrey', 0.06, [B('top', 0.0, 0.03, 'solid', 'repgreyd'), B('top', 0.0, 0.006, 'solid', 'repred'),
                                       B('bottom', 0.0, 0.012, 'solid', 'repgreyd')],
-                    [PN(0.485, 0.515, 'buttons', 'brass', 'repgreyd', 0.07, down=TOP - WAIST - 0.02)])
+                    [PN(0.485, 0.515, 'solid', 'repgreyd', 'repgreyd', 1.0, down=TOP - WAIST - 0.02)])
             sl = P('repgrey', 0.06, [B('bottom', 0.0, 0.03, 'solid', 'repgreyd')])
+            btns = _buttons(gid, np.linspace(WAIST + 0.055, TOP - 0.055, 5), (0.0,), 'brass', ease=0.022, r=0.018)
             return [torso_tube(gid, TOP, CROTCH - 0.07, 0.018, tun, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-                    _rep_belt(gid)] + sleeves(gid, 'wrist', 0.018, sl, ease_end=0.022, rows=9)
+                    _rep_belt(gid)] + sleeves(gid, 'wrist', 0.018, sl, ease_end=0.022, rows=9) + btns
         # a plain dark wool dress to mid-calf, high collar, long sleeves, a belt; a plain apron for work
         gid = 'rep_f_peasant_dress'
         dress = P('repgreyd', 0.06, [B('top', 0.0, 0.025, 'solid', 'repblack'), B('top', 0.0, 0.005, 'solid', 'repred'),
-                                     B('bottom', 0.0, 0.015, 'solid', 'repblack')], [PN(0.485, 0.515, 'buttons', 'repblack', 'repgreyd', 0.06, down=TOP - WAIST - 0.02)])
+                                     B('bottom', 0.0, 0.015, 'solid', 'repblack')], [PN(0.485, 0.515, 'solid', 'repgreyd', 'repgreyd', 1.0, down=TOP - WAIST - 0.02)])
         sl = P('repgreyd', 0.06, [B('bottom', 0.0, 0.03, 'solid', 'repblack')])
+        ap = flap(gid + '_apron', _front(WAIST - 0.01, 0.036), 0.28, WAIST - KNEE + 0.02, np.array([0, -1.0, 0]), P('drab', 0.06),
+                  group_below=CROTCH + 0.02, sway=0.02)
+        ap.cloth['layer'] = 2
+        btns = _buttons(gid, np.linspace(WAIST + 0.05, TOP - 0.05, 5), (0.0,), 'iron', ease=0.018, r=0.018)
         return [torso_tube(gid, TOP, KNEE - 0.24, 0.014, dress, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.18, group_below=CROTCH + 0.02,
-                           hull_from=CHEST + 0.02), _rep_belt(gid, 0.022),
-                flap(gid + '_apron', _front(WAIST - 0.01, 0.03), 0.28, WAIST - KNEE + 0.02, np.array([0, -1.0, 0]), P('drab', 0.06),
-                     group_below=CROTCH + 0.02, sway=0.02)] + sleeves(gid, 'wrist', 0.016, sl, ease_end=0.02, rows=9)
+                           hull_from=CHEST + 0.02), _rep_belt(gid, 0.022), ap] + sleeves(gid, 'wrist', 0.016, sl, ease_end=0.02, rows=9) + btns
     GARMENTS['rep_%s_peasant_%s' % (sex, 'tunic' if sex == 'm' else 'dress')] = ('torso', b, 'Citizen\'s tunic' if sex == 'm' else 'Plain wool dress', _rtop)
 
     if sex == 'm':
@@ -2347,15 +2440,17 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         # buttons, plain epaulettes, a cross-belt and a belt; the triskelion small, on the collar tabs
         gid = 'rep_%s_noble_greatcoat' % sex
         coat = P('repblack', 0.04, [B('top', 0.0, 0.04, 'triskele', 'repred', 'repblack', 0.045), B('top', 0.04, 0.046, 'solid', 'repred'),
-                                    B('bottom', 0.0, 0.006, 'solid', 'repred')], [PN(0.42, 0.58, 'buttons2', 'brass', 'repblack', 0.13)])
+                                    B('bottom', 0.0, 0.006, 'solid', 'repred')])
         sl = P('repblack', 0.04, [B('bottom', 0.0, 0.05, 'solid', 'repblack'), B('bottom', 0.05, 0.056, 'solid', 'repred')])
         ep = P('repblack', 0.03, [B('bottom', 0.0, 0.01, 'solid', 'repred')])
         hem = KNEE - 0.1 if sex == 'm' else KNEE - 0.18
+        xs = (-0.048, 0.048) if sex == 'm' else (-0.042, 0.042)
+        btns = _buttons(gid, np.linspace(WAIST + 0.06, TOP - 0.08, 4), xs, 'brass', ease=0.026, r=0.022)
         return [torso_tube(gid, TOP, hem, 0.022, coat, hang_from=WAIST - 0.03, hang_side=WAIST, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 band(gid + '_crossbelt', WAIST - 0.01, SHOULDER + 0.04, 0.035, 0.034, P('leather', 0.04), high=-math.pi / 2, rows=3),
                 _rep_belt(gid, 0.034),
                 pauldron(gid + '_ep_L', L, ep, reach=0.22, ease=0.032), pauldron(gid + '_ep_R', R, ep, reach=0.22, ease=0.032)] + \
-            sleeves(gid, 'wrist', 0.02, sl, ease_end=0.03, rows=9)
+            sleeves(gid, 'wrist', 0.02, sl, ease_end=0.03, rows=9) + btns
     GARMENTS['rep_%s_noble_greatcoat' % sex] = ('torso', b, 'Greatcoat and cross-belt', _rnob)
 
     def _rnlegs(sex=sex):
@@ -2399,11 +2494,13 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         blouse = P('linen', 0.06, [B('top', 0.0, 0.035, 'cross', 'repred', 'linen', 0.04)])
         sl = P('linen', 0.06, [B('bottom', 0.0, 0.05, 'cross', 'repred', 'linen', 0.045)])
         apron = P('velvet', 0.05, [B('bottom', 0.0, 0.015, 'solid', 'repochre'), B('bottom', 0.02, 0.09, 'rose', 'repred', 'velvet', 0.08)])
+        ap = flap(gid + '_apron', _front(WAIST - 0.01, 0.036), 0.3, WAIST - KNEE + 0.02, np.array([0, -1.0, 0]), apron,
+                  group_below=CROTCH + 0.02, sway=0.02)
+        ap.cloth['layer'] = 2
         return [torso_tube(gid, CHEST + 0.06, ANKLE + 0.05, 0.014, saraf, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.22, group_below=CROTCH + 0.02,
                            hull_from=CHEST + 0.07),
                 torso_tube(gid + '_blouse', TOP, CHEST + 0.03, 0.012, blouse, hull_from=CHEST + 0.02, rows=8),
-                flap(gid + '_apron', _front(WAIST - 0.01, 0.03), 0.3, WAIST - KNEE + 0.02, np.array([0, -1.0, 0]), apron,
-                     group_below=CROTCH + 0.02, sway=0.02)] + \
+                ap] + \
             sleeves(gid, 'wrist', 0.022, sl, ease_end=0.05, rows=9)
     GARMENTS['rep_%s_fest_peasant_%s' % (sex, 'shirt' if sex == 'm' else 'sarafan')] = ('torso', b, 'Kosovorotka and sash' if sex == 'm' else 'Sarafan and apron', _frtop)
 
@@ -2434,9 +2531,11 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             sl = P('repochre', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'umber')], [PN(0.0, 1.0, 'quilt', 'ochre', 'repochre', 0.07)])
             plate = P('iron', 0.03, [B('top', 0.0, 0.3, 'dots', 'ancient', 'iron', 0.04), B('bottom', 0.0, 0.01, 'solid', 'rust')])
             apron = P('leather', 0.06, [B('top', 0.0, 0.012, 'solid', 'brass'), B('bottom', 0.0, 0.015, 'solid', 'umber')])
+            ap = flap(gid + '_apron', _front(WAIST + 0.02, 0.055), 0.32, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
+                      group_below=CROTCH + 0.02, sway=0.01)
+            ap.cloth['layer'] = 2
             return [torso_tube(gid, TOP, CROTCH - 0.02, 0.026, quilt, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-                    flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
-                         group_below=CROTCH + 0.02, sway=0.01),
+                    ap,
                     pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.068), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.068)] + \
                 izani_belt(gid, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')]), P('umber', 0.06),
                            ease=0.06) + sleeves(gid, 'wrist', 0.026, sl, ease_end=0.03, rows=8)
@@ -2538,16 +2637,6 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 # the god's gold over bare skin; the Free Giants of Giant Country dress as Gauls: a belted tunic, checked braccae, a
 # sagum pinned at the shoulder, a torc for a chief, a horned bronze helmet for a war leader. Their four-armed tops
 # (four_armed, sleeves2) are the only tops a four-armed body takes; two-armed ones leave the lower arms out
-def armbands2(gid, paint, f=0.45, w=0.035):
-    """armbands on the lower pair (as armbands())"""
-    out = []
-    for sd in (L, R):
-        a, e = low(J(sd + 'Arm'), sd), low(J(sd + 'ForeArm'), sd)
-        c = a + (e - a) * f
-        out.append(limb_tube('%s_armband2_%s' % (gid, sd[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint, n=16, rows=2, bvh=BVH_A2))
-    return out
-
-
 def _free_tunic(gid, arms, body, sl):
     parts = [torso_tube(gid, TOP, CROTCH - 0.14, 0.014, body, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
              torso_tube(gid + '_belt', WAIST + 0.03, WAIST - 0.03, 0.026, P('leather', 0.05, [B('top', 0.0, 0.008, 'solid', 'bronze'),
@@ -2667,59 +2756,6 @@ def _():
 #   ELDER    a maroon robe, the saffron shawl (the zen) over the left shoulder edged in gold, a crested saffron hat
 #   AGENT    a knee-length quilted coat in the Order's blue with a maroon sash, dark trousers, boots: for the road
 # Plain cotton and wool, not silk: the Order is not rich in its dress.
-COTTON, WOOL = 'cloth.cotton.coarse', 'cloth.wool'
-
-
-def turban(gid, base_paint, wrap_paint, jewel_paint, size=1.0, ribbons=4):
-    """a great wrapped turban (rich Xanadui; the owner's references, at about a third to a half of their size): a dome
-    of cloth rising from the brow and swelling past the head's width, its folds crossed by ribbons of a second colour
-    and a band at the brow, a silver brooch with a crescent standing over it at the front"""
-    a, b, up, bk, left = head_frame()
-    H = np.linalg.norm(b - a)
-    angles = np.linspace(0, 2 * math.pi, 44, endpoint=False)
-    hug = ring_points(a + (b - a) * 0.62, left, bk, angles, 0.016, rmin=0.04, rmax=0.2)
-    c0 = a + (b - a) * 0.62
-    r0 = float(np.mean(np.linalg.norm(hug - c0, axis=1)))
-    R = r0 + 0.055 * size                      # the widest: about a head and a half across
-    f0, f1 = 0.62, 1.05 + 0.85 * size          # from the brow to about a head's height over the crown
-    rows = 18
-
-    def rad(f):
-        t = (f - f0) / (f1 - f0)
-        if t < 0.3: return r0 + (R - r0) * (0.5 - 0.5 * math.cos(math.pi * t / 0.3))
-        u = (t - 0.3) / 0.7                            # then drawn in to a rounded crown, a little peaked
-        return R * (1 - u ** 1.6) ** 0.55 * (1 - 0.25 * u) + 0.004
-
-    def at(f, an, extra=0.0):
-        c = a + up * H * f + bk * 0.012 * (f - f0)          # leaning a little back, as a wound turban sits
-        return c + (left * math.cos(an) * 1.0 + bk * math.sin(an) * 1.06) * (rad(f) + extra)
-    fs = np.linspace(f0, f1, rows)
-    P = np.array([[at(f, an) for an in angles] for f in fs])
-    P[0] = hug                                       # the first row hugs the brow
-    P[1] = hug + (P[1] - hug) * 0.6
-    P[-1] = P[-1].mean(0)                            # closed over the top
-    P = smooth_push(P, True, 0.016, iters=2)
-    parts = [Part(gid, P, True, ['body'] * rows, base_paint)]
-    # the ribbons: bands wound round the dome on tilted courses, each crossing the others, standing just off the cloth
-    for k in range(ribbons):
-        ph, amp, fm = k * math.pi / ribbons * 2 + 0.4, 0.2 * size, f0 + (f1 - f0) * (0.3 + 0.08 * (k % 2))
-        Q = []
-        for w in (-0.04, 0.04):
-            Q.append([at(fm + amp * math.sin(an + ph) + w * (1 + 0.3 * math.cos(an)), an, 0.008) for an in angles])
-        parts.append(Part('%s_wrap%d' % (gid, k), np.array(Q), True, ['body'] * 2, wrap_paint))
-    # the brow band
-    Q = [hug + (hug - c0) / np.linalg.norm(hug - c0, axis=1)[:, None] * e + up * dz for e, dz in ((0.012, -0.012), (0.02, 0.03))]
-    parts.append(Part(gid + '_brow', np.array(Q), True, ['body'] * 2, wrap_paint))
-    # the brooch at the front (the front is -bk) and the crescent standing on it
-    fb = f0 + (f1 - f0) * 0.3
-    front = at(fb, -math.pi / 2, 0.02)
-    parts.append(blob(gid + '_brooch', front, (0.07 * size, 0.024, 0.08 * size), jewel_paint, out=-bk))
-    tip = front + up * 0.11 * size
-    parts.append(horn(gid + '_crescentL', [front + up * 0.03, front + up * 0.06 + left * 0.035, tip + left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
-    parts.append(horn(gid + '_crescentR', [front + up * 0.03, front + up * 0.06 - left * 0.035, tip - left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
-    return parts
-
-
 for b, sex in (('male', 'm'), ('female', 'f')):
     # ---- the novice
     def _onshirt(sex=sex):

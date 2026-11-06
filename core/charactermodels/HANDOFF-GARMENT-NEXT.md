@@ -73,6 +73,7 @@ rounds 4 and 3 (the history, with the reasons each rule exists), then the `pushO
   sessions use it). `.garment-live/scripts/cmpf.py <dir> <sweepA> <sweepB>` compares two sweeps by clip and class.
 - `python verify.py dist/cosmetic-lab.html --assert`; the Animation Lab page times out there (it waits on a hook it has not got): load it instead.
 - Godot: `python godot/tools/sync_core.py`, then `C:\Users\travi\Downloads\Godot_v4.7.2-stable_win64_console.exe --path godot --gpu-index 1 --script res://tests/character/kchar_test.gd` (not headless: headless does not compile shaders). Godot's picture has never been compared with the page.
+- Blender through MCP, as Claude has it: `HANDOFF-BLENDER-MCP.md`.
 - Library pieces cannot be re-exported with `tools/rebuild.sh --only` (`merged 0 items`); a whole rebuild takes about 75 minutes with Blender at `C:\Users\travi\Tools\blender-4.5`.
 
 ## Rules that bit

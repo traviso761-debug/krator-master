@@ -94,6 +94,20 @@ textarea { width: 100%; min-height: 220px; box-sizing: border-box; font: 12px/1.
 .batch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
 .batch label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
 .batch select, .batch input { font: 500 13px/1.2 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px; min-width: 0; }
+.bake-box { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; padding: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.bake-box input, .bake-box select { font: 500 13px/1.2 var(--body); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+.bake-box .row { grid-column: 1 / -1; margin-top: 2px; }
+.bake-box .btn-bake { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.comment-box { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding: 9px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.comment-box.active-comment { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.comment-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.comment-head b { color: var(--ink); font-weight: 700; }
+.comment-head .badge { font: 600 11px/1 var(--mono); color: var(--accent); }
+#model-comment-input { min-height: 54px; height: 54px; padding: 7px 9px; font: 400 13px/1.35 var(--body); background: var(--panel); }
+.comment-box .row button { padding: 6px 9px; font-size: 12px; }
+.comment-box .btn-save-comment { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.chip.has-comment { border-color: var(--accent); background: var(--chip-on); }
+.chip.has-comment span::before { content: "💬 "; }
 #batch-text { min-height: 140px; }
 code { font: 12px var(--mono); }
 

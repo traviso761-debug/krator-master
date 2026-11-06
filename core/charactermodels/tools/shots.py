@@ -18,13 +18,15 @@ import verify
 STEP = '''async (s)=>{ var K = window._kchar, f = K.fig, c = K.cam;
   // the clip from a stop, with no fade from the last shot's
   var btn = document.getElementById('clip-' + (s.clip || 'idle'));
-  await f.play(null); await f.play(btn ? btn.dataset.clip || null : s.clip);
-  c.yaw = s.yaw; c.spin = false; c.at = s.at; c.want.dist = c.dist = s.dist; c.want.pitch = c.pitch = s.pitch;
+  await f.play(null); await f.play(btn ? (btn.dataset.clip || s.clip || 'idle') : (s.clip || 'idle'));
+  c.face = false; c.yaw = s.yaw; c.spin = false; c.at = s.at;
+  if(s.at && s.at.length >= 2) c.want.ty = c.ty = s.at[1];
+  c.want.dist = c.dist = s.dist; c.want.pitch = c.pitch = s.pitch;
   f.cloth = s.cloth !== false; if(s.pre) eval(s.pre);
   Object.values(f.clothState().items).forEach(function(it){ it.reset = true; });
   var t = s.t == null ? 2 : s.t;
   // wrapped back 2 s from t, so the 2 s of cloth end on t (garment_audit.py STEP)
-  var d = f.action ? f.action.getClip().duration : 0, once = f.action && f.action.loop === THREE.LoopOnce;
+  var d = (f.action && f.action.getClip().duration) || 1, once = f.action && f.action.loop === THREE.LoopOnce;
   if(f.action){ f.action.paused = false; f.action.time = once ? Math.max(0, t - 2) : (((t - 2) % d) + d) % d; }
   for(var i = 0; i < 60; i++) f.update(1 / 30);
   if(f.action){ f.action.paused = true; f.action.time = once ? t : t % d; f.update(0); } }'''
@@ -34,8 +36,10 @@ async def main(outdir, spec, page):
     from playwright.async_api import async_playwright
     os.makedirs(outdir, exist_ok=True)
     chrome = os.environ.get('KRATOR_CHROME') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
+    gl = os.environ.get('AUDIT_GL', 'swiftshader')
+    gl_args = ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] if gl == 'swiftshader' else ['--use-gl=angle', f'--use-angle={gl}', '--enable-webgl', '--ignore-gpu-blocklist']
     async with async_playwright() as p:
-        b = await p.chromium.launch(executable_path=chrome, args=['--use-gl=swiftshader', '--enable-unsafe-swiftshader'])
+        b = await p.chromium.launch(executable_path=chrome, args=gl_args)
         pg = await b.new_page(viewport={'width': 800, 'height': 600})
         pg.on('pageerror', lambda e: print('page error', e))
         await pg.route('**/three.min.js', lambda r: r.fulfill(path=verify.THREE, content_type='text/javascript'))
@@ -51,6 +55,7 @@ async def main(outdir, spec, page):
         await pg.goto('http://127.0.0.1:%d/%s' % (srv.server_address[1], os.path.basename(page)))
         await pg.wait_for_function('window._kchar', timeout=120000)
         await pg.evaluate('window._kchar.ready')
+        await pg.wait_for_timeout(800)
         body = 'mpfb_male'
         for s in spec:
             if s.get('body', 'mpfb_male') != body:

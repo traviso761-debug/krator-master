@@ -338,6 +338,7 @@ def skirt_weights(j, b, y0, band=0.12, rigid=False):
         hips = idx('Hips')
         lup, rup = idx('LeftUpLeg'), idx('RightUpLeg')
         chain = {k for key in ('LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase') for k in idx(key)}
+        arms = {k for key in ('LeftArm', 'LeftForeArm', 'LeftHand', 'RightArm', 'RightForeArm', 'RightHand') for k in idx(key)} if rigid else set()
         if not (hips and lup and rup):
             continue
         for p in j['meshes'][node['mesh']]['primitives']:
@@ -348,15 +349,16 @@ def skirt_weights(j, b, y0, band=0.12, rigid=False):
             aj, dj, oj, JJ = arr(at['JOINTS_0'])
             aw, dw, ow, WW = arr(at['WEIGHTS_0'])
             Wf = WW.astype(np.float64) / (np.iinfo(dw).max if aw.get('normalized') else 1.0)
-            f = np.clip((y0 - P[:, 1]) / band, 0, 1) * (1.0 if rigid else SKIRT_POOL)
+            f = np.ones(len(P)) if rigid else np.clip((y0 - P[:, 1]) / band, 0, 1) * SKIRT_POOL
             for v in np.nonzero(f > 0)[0]:
                 dense = {}
                 for jj, ww in zip(JJ[v], Wf[v]):
                     if ww > 0: dense[int(jj)] = dense.get(int(jj), 0) + ww
-                legs = sum(w for k, w in dense.items() if k in chain)
+                drop = chain | (arms if (P[v, 1] < y0 and abs(P[v, 0]) < 0.21) else set())
+                legs = sum(w for k, w in dense.items() if k in drop)
                 if legs <= 0:
                     continue
-                want = {k: w for k, w in dense.items() if k not in chain}
+                want = {k: w for k, w in dense.items() if k not in drop}
                 keep = 0.0 if rigid else SKIRT_KEEP
                 want[hips[0]] = want.get(hips[0], 0) + legs * (1 - keep)
                 want[lup[0]] = want.get(lup[0], 0) + legs * keep / 2
@@ -413,12 +415,34 @@ def head_weights(j, b, y0):
                         lab[ra] = rb
                 comp = np.array([root(x) for x in range(n)])[wid]
                 low = np.full(n, np.inf); np.minimum.at(low, comp, P[:, 1])
-                up |= low[comp] > y0 - 0.06
+                up |= low[comp] > y0 - 0.03
             if not up.any():
                 continue
             one = np.iinfo(WW.dtype).max if np.issubdtype(WW.dtype, np.integer) else 1.0
-            JJ[up] = 0; WW[up] = 0
-            JJ[up, 0] = hj; WW[up, 0] = one
+            # Components whose lowest vertex reaches down onto the neck/shoulders (low[comp] <= y0 - 0.03, e.g. a hood or cowl)
+            # smoothly blend from Spine2/Neck at their bottom collar rim up to 100% Head above the jaw (y0 + 0.065),
+            # so turning the head does not swing the hood's neck/shoulder skirt out sideways like rigid wings!
+            cowl_comp = (low[comp] <= y0 - 0.03) if 'indices' in prim else np.zeros(len(P), bool)
+            rigid_up = up & (~cowl_comp)
+            JJ[rigid_up] = 0; WW[rigid_up] = 0
+            JJ[rigid_up, 0] = hj; WW[rigid_up, 0] = one
+            if cowl_comp.any() and 'Neck' in names:
+                nj = names.index('Neck')
+                sj = names.index('Spine2') if 'Spine2' in names else nj
+                y_top = y0 + 0.065
+                for v in np.nonzero(cowl_comp)[0]:
+                    y_bot = float(low[comp[v]])
+                    t = float(np.clip((P[v, 1] - y_bot) / max(y_top - y_bot, 0.05), 0.0, 1.0))
+                    s = t * t * (3.0 - 2.0 * t)
+                    w_head = s
+                    w_neck = (1.0 - s) * (0.28 + 0.48 * math.sin(s * math.pi))
+                    w_spine = max(0.0, 1.0 - w_head - w_neck)
+                    JJ[v] = [hj, nj, sj, 0]
+                    w_vec = np.array([w_head, w_neck, w_spine, 0.0])
+                    if np.issubdtype(WW.dtype, np.integer):
+                        WW[v] = np.round(w_vec * one).astype(WW.dtype)
+                    else:
+                        WW[v] = w_vec.astype(WW.dtype)
             for acc, arr in ((aj, JJ), (aw, WW)):
                 bv = j['bufferViews'][acc['bufferView']]
                 if bv.get('byteStride') and bv['byteStride'] != arr.itemsize * 4:
@@ -442,9 +466,10 @@ def take_weights(JJ, WW, gi, src, f):
 
 
 def cover_weights(P, V, where, spec, JJ, WW, names=()):
-    """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1): each of its vertices the outer
-    part covers takes the nearest outer vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm
-    from it, so where the two overlap they move as one and the under-tier cannot swing through.
+    """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1), or a tunic's skirt (layer 1)
+    under a coat, apron or mantle (layer 2): each of its vertices the outer part covers takes the nearest outer
+    vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm from it, so where the two overlap they
+    move as one and the under-tier cannot swing through.
     A part that does not hang (the grand boubou's under-tunic, a robe's body under its mantle) under one that does
     over the arms (layer 2): each of its vertices inside the outer part and within 8 cm of it takes the nearest outer
     vertex's weights (in full within 5 cm), so a seated or crouching body cannot carry it out through the sheet the
@@ -452,11 +477,12 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
     layer = [pt.get('layer', 0) for pt in spec['parts']]
     part = np.array([where.get(int(v), (-1,))[0] for v in V])
     arm = [any(s in n for s in ('Arm', 'Hand')) for n in names]
-    # what does not hang: a part without chains, and a hanging part's rows above where its chains start (a tunic's
-    # body, which hangs below the waist only: counted as hanging whole, the trader's tunic kept the shoulders' weights
-    # under the mantle and came out through it at the shoulder blades as the posture drew them back)
+    hip_v = set()
+    for h_rng in spec.get('hips', []):
+        if len(h_rng) == 2:
+            hip_v.update(range(int(h_rng[0]), int(h_rng[1])))
     top = {pi: min((ch['rows'][0] for ch in pt['chains']), default=1 << 30) for pi, pt in enumerate(spec['parts'])}
-    still = np.array([part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]])
+    still = np.array([int(V[gi]) not in hip_v and (part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]]))
                       for gi in range(len(V))])
     free = [gi for gi in np.nonzero(still)[0]
             if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm) and arm[int(jj)]) < 0.5]
@@ -468,23 +494,36 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
         for gi in free:
             d = np.linalg.norm(P[O] - P[gi], axis=1)
             k = int(np.argmin(d))
-            f = float(np.clip((0.08 - d[k]) / 0.03, 0, 1))
+            f = float(np.clip((0.085 - d[k]) / 0.035, 0, 1))
             out = np.array([P[gi, 0], 0, P[gi, 2]]) / max(rad[gi], 1e-6)
             # covered: the outer vertex lies outward of it, not off to one side (a belt across an open coat's gap)
-            if f > 0 and rad[gi] < rad[O[k]] - 0.005 and (P[O[k]] - P[gi]) @ out > 0.6 * d[k]:
+            if f > 0 and rad[gi] < rad[O[k]] - 0.002 and (P[O[k]] - P[gi]) @ out > 0.25 * d[k]:
                 take_weights(JJ, WW, gi, O[k], f)
-    for po in [q for q in range(len(layer)) if layer[q] == 1]:
-        O = np.nonzero(part == po)[0]
-        if not len(O):
-            continue
-        hem = P[O, 1].min()
-        for pi in [q for q in range(len(layer)) if layer[q] == 0]:
-            for gi in np.nonzero(part == pi)[0]:
-                d = np.linalg.norm(P[O] - P[gi], axis=1)
-                k = int(np.argmin(d))
-                f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
-                if f > 0:
-                    take_weights(JJ, WW, gi, O[k], f)
+    for lo_lay, hi_lay in ((0, 1), (1, 2)):
+        for po in [q for q in range(len(layer)) if layer[q] == hi_lay]:
+            O = np.nonzero(part == po)[0]
+            if not len(O):
+                continue
+            hem = P[O, 1].min()
+            for pi in [q for q in range(len(layer)) if layer[q] == lo_lay]:
+                for gi in np.nonzero(part == pi)[0]:
+                    if int(V[gi]) in hip_v:
+                        continue
+                    d = np.linalg.norm(P[O] - P[gi], axis=1)
+                    k = int(np.argmin(d))
+                    f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
+                    if f > 0:
+                        take_weights(JJ, WW, gi, O[k], f)
+    cloth_v = np.nonzero(part >= 0)[0]
+    if len(cloth_v):
+        ctree = cKDTree(P[cloth_v])
+        for gi in free:
+            if part[gi] == -1:
+                d, k = ctree.query(P[gi])
+                ck = cloth_v[int(k)]
+                f = float(np.clip((0.065 - float(d)) / 0.020, 0.0, 1.0))
+                if f > 0 and rad[gi] >= rad[ck] - 0.008:
+                    take_weights(JJ, WW, gi, ck, f)
 
 
 # metres off the skin: cloth nearer than the first keeps the body's weights, past the second the chains'. Wide: a cloak
@@ -603,7 +642,12 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         top = {pi: min(ch['rows'][0] for ch in chains if ch['part'] == pi) for pi in by_part}
         hang = np.array([int(v) in where and where[int(v)][0] in top and where[int(v)][1] >= top[where[int(v)][0]]
                          for v in V])
-        under = ~outer & ~hang
+        arm_j = np.array([any(s in n for s in ('Arm', 'Hand')) for n in names], dtype=bool)
+        has_arm_w = np.array([
+            sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm_j) and arm_j[int(jj)]) >= 0.15
+            for gi in range(len(P))
+        ], dtype=bool)
+        under = ~outer & ~hang & ~has_arm_w
         # nor does a mantle lie on an arm: a cape's flared side near the A-posed forearm took its weights, and at the
         # idle, the hand at the hip, it was drawn out into a spike
         gap[outer & (body[2][near] > 0.5)] = 1.0
@@ -829,12 +873,14 @@ def seat(c, J, P, V, npz, tgts, bones):
     return out
 
 
-def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
+def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0, boundary_margin=0.022):
     """the base triangles an item covers when it has no delete group: each base vertex casts a ray out along its normal
     (the garment lies over it) and one in (the skin already pokes through it); a triangle whose three vertices both
     find the garment close is hidden. enclose > 0 also takes a vertex the garment closes round front and back (rays
     along +z and -z both meet it within enclose): the crotch and the cleft of the buttocks, whose normals point between
-    the legs, where a trouser seam bridges them"""
+    the legs, where a trouser seam bridges them.
+    boundary_margin > 0 protects upper-chest/clavicle/shoulder skin within boundary_margin of an open neckline or collar
+    boundary edge from being hidden (preventing transparent gaps at open necklines/shoulders)."""
     from make_kit import ray_hits
     N = np.zeros_like(BP)
     fn = np.cross(BP[BT[:, 1]] - BP[BT[:, 0]], BP[BT[:, 2]] - BP[BT[:, 0]])
@@ -848,6 +894,28 @@ def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
     if enclose > 0:
         Z = np.tile([0.0, 0.0, 1.0], (len(BP), 1))
         hit |= np.isfinite(ray_hits(BP, Z, AP, AT, enclose, step=0.01)[0]) & np.isfinite(ray_hits(BP, -Z, AP, AT, enclose, step=0.01)[0])
+    if boundary_margin > 0 and len(AT) > 0:
+        # Weld garment vertices by 0.1mm to find true open boundary edges (excluding UV seams)
+        _, wid = np.unique(np.round(AP, 4), axis=0, return_inverse=True)
+        wid = wid.ravel()
+        tw = wid[AT]
+        edges = np.vstack([tw[:, [0, 1]], tw[:, [1, 2]], tw[:, [2, 0]]])
+        edges_sorted = np.sort(edges, axis=1)
+        edges_sorted_view = np.ascontiguousarray(edges_sorted).view(np.dtype((np.void, edges_sorted.dtype.itemsize * 2)))
+        _, idx_u, counts = np.unique(edges_sorted_view, return_index=True, return_counts=True)
+        b_edges = edges_sorted[idx_u[counts == 1]]
+        if len(b_edges) > 0:
+            # Map welded IDs back to garment vertex positions
+            u_pos = np.zeros((int(wid.max()) + 1, 3), dtype=float)
+            u_pos[wid] = AP
+            b_mids = 0.5 * (u_pos[b_edges[:, 0]] + u_pos[b_edges[:, 1]])
+            # Only consider open neckline/collar/shoulder boundaries in the upper chest/neck zone (y >= 1.24)
+            upper_b = b_mids[(b_mids[:, 1] >= 1.24) & (np.abs(b_mids[:, 0]) <= 0.25)]
+            if len(upper_b) > 0:
+                upper_skin = np.nonzero(hit & (BP[:, 1] >= 1.24) & (np.abs(BP[:, 0]) <= 0.25))[0]
+                if len(upper_skin) > 0:
+                    d_bnd, _ = cKDTree(upper_b).query(BP[upper_skin])
+                    hit[upper_skin[d_bnd < boundary_margin]] = False
     return np.nonzero(hit[BT].all(1))[0]
 
 
@@ -1399,7 +1467,7 @@ def main():
         # down, from the hip joint (with its thighs' weights from there to the crotch, a loincloth's front flap swung
         # forward with the thigh in a stride and stood off it like a plank), and the library's loose garments too (the
         # kimono's two front panels followed one thigh each and parted at the midline in the idle's sway)
-        pool_from = c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
+        pool_from = (c.jpos[c.J['Hips']][1] + 0.10) if it['id'] in LOOSE else c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
         if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
