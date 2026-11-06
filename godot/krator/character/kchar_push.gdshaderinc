@@ -52,12 +52,14 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 	vec3 clat = vec3(bk.z, 0.0, -bk.x);
 	float cflap = kcL > 0.1 && kcL < 0.5 && kcS > 0.0 && kcSH < 1.0 && rr > 0.142 && ry > 0.45 && abs(dot(kv - kcH, bk)) > abs(dot(kv - kcH, clat)) * 1.1 ? 1.0 : 0.0;
 	float cloose = (kcL > 0.5 && !(kcS > 0.0 && kcSH > 10.0)) || cflap > 0.5 ? 1.0 : 0.0;
-	float ceo = kcEO > 0.5 && cloose > 0.5 ? 1.0 : 0.0;
+	float ceo = kcEO > 0.5 && cloose > 0.5 && (rr < 0.22 || ry < 0.88) ? 1.0 : 0.0;
 	float cshort = smoothstep(0.32, 0.44, kcHm);
 	if (cloose > 0.5) {
-		float ctier = clamp(rr - (0.24 - 0.12 * clamp(ry, 0.0, 0.80)), 0.0, 0.16) * smoothstep(0.15, 0.32, ry) * (1.0 - smoothstep(1.02, 1.12, ry)) * (1.0 - smoothstep(0.25, 0.29, rr * smoothstep(0.75, 0.88, ry)));
+		float ctier = clamp(rr - (0.24 - 0.12 * clamp(ry, 0.0, 0.80)), 0.0, 0.16) * smoothstep(0.15, 0.32, ry) * (1.0 - smoothstep(0.82, 1.04, ry));
 		for (int i = 0; i < 16; i++) {
-			if (kcA[i].w <= 0.0 || (ceo > 0.5 && i < 6) || (i >= 6 && i < 14 && ry < 0.92)) {
+			// a chainless garment (ceo) takes the hull in place of every limb's capsule; the arms' hard capsules (kcB.w 1) push
+			// only what hangs out near them at rest (pushOut in 50-figure.js: |x| there, the rest distance from the axis here)
+			if (kcA[i].w <= 0.0 || (ceo > 0.5 && i < 14) || (kcB[i].w > 0.5 && (kcEO > 0.5 || rr < 0.20 || ry < 1.05))) {
 				continue;
 			}
 			vec3 a = kcA[i].xyz;
@@ -89,8 +91,8 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			vec3 q = a + ab * t;
 			vec3 d = kv - q;
 			float l = length(d);
-			float ccr = i < 2 ? smoothstep(0.55, 0.75, 1.0 - abs(ab.y) / max(length(ab), 1e-5)) * smoothstep(-0.03, 0.04, d.y) : 0.0;
-			float pd = sh > 0.0 ? kcP + cflap * 0.035 + kcPO * kcM + (i >= 14 ? (ctier + cflap * 0.035) * 0.9 * kcM : 0.0) + smoothstep(0.03, 0.04, kcP) * 0.04 * ccr : 0.0;
+			float ccr = i < 2 ? smoothstep(0.42, 0.68, 1.0 - abs(ab.y) / max(length(ab), 1e-5)) * smoothstep(-0.04, 0.03, d.y) : (i >= 10 && kcB[i].w < 0.5 ? smoothstep(-0.02, 0.04, ry - 0.88) : 0.0);
+			float pd = sh > 0.0 ? kcP + cflap * 0.035 + kcPO * kcM + (i >= 14 ? (ctier + cflap * 0.035) * 0.9 * kcM : 0.0) + smoothstep(0.03, 0.04, kcP) * 0.075 * ccr : 0.0;
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + pd;
 			if (i < 4 && sh > 0.0) {
 				// a bent knee's corner, which the thigh's and the shin's capsules leave uncovered (pushOut in 50-figure.js)
@@ -122,37 +124,43 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu * (i < 6 ? 1.0 - ceo : 1.0));
 			}
 		}
-		// the hull: for a garment with no chains (ceo > 0.5), the leg's points set how far out from the body's axis the cloth
-		// must reach at their bearing (pushOut in 50-figure.js)
 		if (ceo > 0.5) {
-			kv = mix(kv, kcH + kcTl * (kv - kcH), smoothstep(0.03, 0.55, kcH.y - kv.y));
+			kv = mix(kv, kcH + kcTl * (kv - kcH), smoothstep(0.06, 0.58, kcH.y - kv.y));
 		}
-		if (ceo > 0.5) {
+		// the hull (pushOut in 50-figure.js): the legs' points (kcE: six a leg, and the six midpoints between the two
+		// legs' pairs) set how far out from the body's axis the cloth must reach at their bearing, as a ray from the axis
+		// against a circle round each point; every loose garment takes it, a chainless one (ceo) at rest too
+		if (rr < 0.22 || ry < 0.88) {
 			vec2 ep = kv.xz - kcH.xz;
 			float er = length(ep);
 			float ew = 0.0;
-			float ehy = kcH.y + 0.12;
+			float ehy = kcH.y + (ceo > 0.5 ? 0.06 : 0.12);
 			if (er > 1e-4 && kv.y < ehy) {
 				vec2 eu = ep / er;
-				for (int i = 0; i < 12; i++) {
-					vec4 es = kcE[i];
-					vec2 esp = es.xz - kcH.xz;
-					float esr = length(esp);
-					if (es.w <= 0.0 || esr < 1e-3) {
+				for (int i = 0; i < 18; i++) {
+					vec4 es = i < 12 ? kcE[i] : 0.5 * (kcE[i - 12] + kcE[i - 6]);
+					if (es.w <= 0.0) {
 						continue;
 					}
-					float ehw = atan(es.w + 0.045, clamp(esr, 0.16, 0.22)) + smoothstep(0.03, 0.04, kcP) * 0.10 + ceo * 0.04;
-					float ea = acos(clamp(dot(eu, esp) / esr, -1.0, 1.0));
-					float ewa = 1.0 - smoothstep(ehw, ehw + 0.30, ea);
-					float eytop = es.y + (1.0 - ceo * cshort) * es.w;
-					float ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.05), kv.y - eytop);
-					float eh0 = kcHm - (i == 0 || i == 6 ? 0.08 : 0.04);
-					ew = max(ew, smoothstep(eh0, eh0 + 0.08, es.y + es.w) * ewa * ewy * (esr + es.w + kcP + ceo * 0.028 + cflap * 0.035 + kcPO * kcM + 0.01 + 4.0 * smoothstep(0.03, 0.04, kcP) * 0.015));
+					vec2 esp = es.xz - kcH.xz;
+					float esR = es.w + kcP + (ceo > 0.5 ? 0.020 : 0.022) + cflap * 0.035 + kcPO * max(kcM, 0.45);
+					float erpad = esR + 0.055;
+					float eproj = dot(esp, eu);
+					float eperp2 = max(0.0, dot(esp, esp) - eproj * eproj);
+					if (eperp2 >= erpad * erpad) {
+						continue;
+					}
+					float ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, erpad * erpad, eperp2));
+					int ej = i >= 12 ? i - 12 : (i >= 6 ? i - 6 : i);
+					float eytop = ceo > 0.5 && ej == 0 ? es.y + 0.42 * es.w : es.y + (1.0 - ceo * cshort) * es.w;
+					float ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.14), kv.y - eytop);
+					float eh0 = kcHm - (ej == 0 ? 0.08 : 0.04);
+					ew = max(ew, smoothstep(eh0, eh0 + 0.08, es.y + es.w) * ewy * ehit);
 				}
-				ew = max(ew * max(kcM, ceo) - 0.02, 0.0);
 				if (ew > 0.0) {
-					float eb = mix(er, min(rr, er + 0.06), clamp((ew - er) / 0.1, 0.0, 1.0));
-					kv.xz = kcH.xz + eu * pow(eb * eb * eb + ew * ew * ew, 1.0 / 3.0);
+					float elayer = clamp(rr - 0.165, -0.045, 0.045) * 0.25;
+					float ed = (ew + elayer) - er;
+					kv.xz = kcH.xz + eu * (er + 0.5 * (ed + sqrt(ed * ed + 0.00025)));
 				}
 			}
 		}
@@ -171,7 +179,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
 			float st = clamp(dot(kv - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
-			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) * (i >= 4 && kcSH > 10.0 && kcM > 0.3 ? 0.72 : 1.0) + kcS;
+			float r = (mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) - (kcSH > 10.0 ? 0.01 : 0.0)) * (i >= 4 && kcSH > 10.0 && kcM > 0.3 ? 0.72 : (kcSH > 10.0 ? 0.92 : 1.0)) + kcS;
 			vec3 q = a + ab * st;
 			float l = length(kv - q);
 			if (l - r < best) {

@@ -204,3 +204,30 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   owner sees v75/v55, not `dist/`) are not in the plan; a fix the owner cannot see is not done.
 - **Keep the exclusion list out of the gate.** Skip a missing GLB only when the manifest marks it local-only, not
   by naming `mod_head_coyote` and `mod_head_frog`.
+
+## 6. What landed on 2026-11-06 (Phase 0, first pass)
+
+- The checkpoint commit, then Tzintzun's six Meshy weapons (`tools/import_props.py`, with a prop per hand in the
+  Cosmetic Lab's record), then the guards:
+- `make_mpfb.write_kit` is the one writer of every kit (LF, one indent); every entry carries `made_by` (`mpfb`,
+  `mods`, `garments`; `make_mpfb.py made_by` marked the existing ones). `make_mpfb.py` keeps `garments` entries and
+  their pieces through a whole or merged Blender build, and `mpfb_build.py` does not export them, unless
+  `--force-replace id,id` says so.
+- `tests/check_kit.py` (the integrity gate) and `tools/check_twin.py` (the shader twin, by uniforms and the multiset of
+  literals, held to `tests/twin-baseline.json`) run from `build.py`; `verify.py --assert` checks the lab's sections
+  against `tests/ui-inventory.json` (`--ui-baseline` rewrites it).
+- The gate found eleven faults: ten legacy garments' chains rebound in place (`make_mpfb.py anchors`), the giant's
+  chief4 allowed by name (`tests/kit-known-bad.json`, KNOWN_ISSUES.md).
+- The Godot push shader took the page's changes (the capsule skips, the tier and crotch fades, the chainless turn's
+  fade, the page's ray-against-circle hull on every loose garment, the squeeze's factors); the twin gap went from 85
+  literals to 25, all structural. Godot's character test runs with its one known failure (the giant on the ladder).
+  Not yet compared by eye between the two runtimes.
+- The ten scratch builders are in `tools/garments/cultures/` with their paths relative to the file; the package
+  imports in 2.5 s with 17 cultures and 46 builders. The thirteen vendored copies are still in them: stripping them
+  rebuilds half the kit and wants the before/after sheet and the owner's eye (section 5).
+- Not done: the `Part.role` refactor and the non-mutating checks (Phase 0.5), and every Phase 1 and 2 fix.
+- **A regression the verifier would have caught.** `verify.py dist/cosmetic-lab.html --assert` fails on the current
+  page and on the checkpoint's (Gemini's build) with the Chichani court skirt's chains inside a thigh in a walk
+  (16 points on the woman, 115 on the man); the round-5 page (23a83693d, before the session) passes that check. It
+  came in with the session's cloth changes and was never run. It is the first fix of Phase 1, before the shin
+  heading: find which change by toggling (the wind, `rigidTargets`, `collide`, `layered`), not by widening a pad.

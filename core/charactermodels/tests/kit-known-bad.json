@@ -1,0 +1,4 @@
+{
+ "mpfb_male/giant_free_m_chief4": "seven chains anchor on the lower sleeves, split off into .sleeves2.glb after the chains were bound (make_mpfb.py main: split_lower after turn_glb); a Blender rebuild with the split before the chains clears it",
+ "mpfb_giant/giant_free_m_chief4": "the same entry, copied to the giant kit"
+}

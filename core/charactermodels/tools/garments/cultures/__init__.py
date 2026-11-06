@@ -8,9 +8,11 @@ and rig/GLB assembly from `garments.core`.
 from pathlib import Path
 import sys
 
-SCRATCH = Path(r'C:\Users\travi\.gemini\antigravity\brain\90fc1231-0f9f-4770-9ae3-2ed1dc1add67\scratch')
-if str(SCRATCH) not in sys.path:
-    sys.path.insert(0, str(SCRATCH))
+# the batch builders live beside this file (brought in from Gemini's scratch folder on 2026-11-06; the review,
+# section 1): they put their own folder on sys.path and import each other by name, so this does the same
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
 
 import build_inspired_outfits as _b1
 import build_batch2_outfits as _b2

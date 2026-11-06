@@ -1386,6 +1386,47 @@ def rot_axis(a, t):
     return np.eye(3) + math.sin(t) * K + (1 - math.cos(t)) * K @ K
 
 
+def write_kit(path, kit):
+    """the one writer of data/<body>/kit.json (main, merge_kit, tools/garments register_entries): LF, one indent, so a
+    change to one entry is one readable diff (written two ways, the whole 260k-line file changed on every build and
+    the Dalab robe's broken chains were not seen: REVIEW-GARMENTS-2026-11-06.md)"""
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(kit, f, indent=1)
+
+
+# who made an entry (kit item made_by): 'mpfb' this file from a Blender export, 'mods' tools/mods.py and tools/heads.py,
+# 'garments' tools/garments (register_entries). main and merge_kit leave 'garments' entries and their pieces alone
+# unless --force-replace names them: a stale .cloth.json in MPFB's user data overwrote the Dalab robe's chains
+MADE_BY = 'made_by'
+
+
+def force_replace():
+    a = sys.argv
+    return set(a[a.index('--force-replace') + 1].split(',')) if '--force-replace' in a else set()
+
+
+def owned(kit):
+    """the entries tools/garments made, by id"""
+    return {e['id']: e for e in kit.get('items', []) if e.get(MADE_BY) == 'garments'}
+
+
+def mark_made_by(kit, body):
+    """made_by on a kit written before there was one: 'mods' by slot, 'mpfb' for what mpfb_build.py's table and giant.py
+    name, 'garments' for the rest (tools/garments registered them with no mark)"""
+    import re
+    src = open(os.path.join(HERE, 'tools', 'mpfb_build.py'), encoding='utf-8').read()
+    blender = {m.group(1) for m in re.finditer(r"\('\w+',\s*(?:'[^']*'|\"[^\"]*\"),\s*'([\w.\-]+)'\)", src)}
+    n = {'mpfb': 0, 'mods': 0, 'garments': 0}
+    for e in kit['items']:
+        if e.get(MADE_BY):
+            continue
+        who = 'mods' if e.get('slot') == 'mods' or e['id'].startswith('mod_') else \
+              'mpfb' if e['id'] in blender or e['id'].startswith(giant.PREFIX) or body == 'giant' else 'garments'
+        e[MADE_BY] = who
+        n[who] += 1
+    return n
+
+
 def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
     """main()'s --merge: the partial export's items, their morph deltas packed, into data/<body>/kit.json, and their pieces
     into pieces/<body>/ beside the rest. The Godot twin's base cover regions (base.gshapes.bin) are not remade: a merged
@@ -1401,18 +1442,24 @@ def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
             open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(mesh_entries(g, lambda n: it['id']), npz))
             open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(g, lambda n: it['id'], npz))
     have = {e['id']: i for i, e in enumerate(kit['items'])}
+    keep, force = owned(kit), force_replace()
+    kept = [e['id'] for e in items if e['id'] in keep and e['id'] not in force]
+    items = [e for e in items if e['id'] not in kept]
     for e in items:
+        e[MADE_BY] = 'mpfb'
         if e['id'] in have:
             kit['items'][have[e['id']]] = e
         else:
             kit['items'].append(e)
+    if kept:
+        print(name, 'kept as tools/garments made them (--force-replace to overwrite):', ', '.join(kept))
     kit['tint']['roles'].update({k: v for k, v in roles.items() if k not in kit['tint']['roles']})
     out = os.path.join(HERE, 'pieces', name)
     os.makedirs(out, exist_ok=True)
     for f in os.listdir(pieces):
         if f.split('.')[0] in {e['id'] for e in items}:
             shutil.copy(os.path.join(pieces, f), os.path.join(out, f))
-    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    write_kit(os.path.join(data, 'kit.json'), kit)
     print(name, 'merged', len(items), 'items:', len(kit['items']), 'in the kit')
 
 
@@ -1427,8 +1474,16 @@ def main():
     data = os.path.join(HERE, 'data', name)
     if merge:
         pieces = os.path.join(src, 'pieces')
+    # the entries tools/garments made, and their pieces, stay through a whole Blender build
+    kit_path = os.path.join(data, 'kit.json')
+    keep = owned(json.load(open(kit_path, encoding='utf-8'))) if os.path.exists(kit_path) else {}
+    for k in force_replace():
+        keep.pop(k, None)
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
-        shutil.rmtree(pieces)
+        for f in os.listdir(pieces):
+            if f.split('.')[0] not in keep:
+                q = os.path.join(pieces, f)
+                shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     os.makedirs(pieces, exist_ok=True)
     os.makedirs(data, exist_ok=True)
     man = json.load(open(os.path.join(src, 'manifest.json')))
@@ -1546,9 +1601,16 @@ def main():
             entry['hide_parts'] = hide_parts(entry, under, len(BT))
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
+    for e in items:
+        e[MADE_BY] = 'mpfb'
+    for e in mod_items:
+        e[MADE_BY] = 'mods'
     items += mod_items
     if merge:
         return merge_kit(body, src, pieces, data, items, roles, mat, len(BT))
+    if keep:
+        items += [e for e in keep.values() if e['id'] not in {x['id'] for x in items}]
+        print(name, 'kept as tools/garments made them:', len(keep), 'entries')
     npz_path = os.path.join(src, 'morphs.npz')
     morph = {}
     if os.path.exists(npz_path):
@@ -1617,12 +1679,75 @@ def main():
         kit['tint']['gain']['coat'] = round(kit['tint']['gain']['hair'] / heads.SHADE, 4)
     if big:
         kit.update(giant.kit_extra())
-    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    write_kit(os.path.join(data, 'kit.json'), kit)
     print(name, 'height %.2f m' % (c.jpos[c.J['HeadTop_End']][1] if 'HeadTop_End' in c.J else -1), len(items), 'items')
 
 
+def rebind_chains(body, ids=None, tol=0.0015):
+    """python3 tools/make_mpfb.py anchors <body> [id,id]: every cloth chain bone's inverse bind put back on the vertex it
+    anchors (cloth_bones: T(-p) at pts[k]). The settle pass moved the vertices of ten legacy garments after their
+    chains were bound, by 8 to 85 mm (tests/check_kit.py found them: REVIEW-GARMENTS-2026-11-06.md), so each chain
+    hung from a point beside its cloth. Rewrites the GLB in place; the kit entry is unchanged"""
+    name = 'mpfb_' + body
+    kit = json.load(open(os.path.join(HERE, 'data', name, 'kit.json'), encoding='utf-8'))
+    for it in kit['items']:
+        if 'cloth' not in it or (ids and it['id'] not in ids):
+            continue
+        path = os.path.join(HERE, it['glb'])
+        if not os.path.exists(path):
+            continue
+        j, b = glbio.read_glb(open(path, 'rb').read())
+        b = bytearray(b)
+        node = next(n for n in j['nodes'] if 'mesh' in n and 'skin' in n)
+        skin = j['skins'][node['skin']]
+        names = [j['nodes'][k].get('name', '') for k in skin['joints']]
+        prim = j['meshes'][node['mesh']]['primitives'][0]
+        P = glbio.accessor(j, bytes(b), prim['attributes']['POSITION'])
+        a = j['accessors'][skin['inverseBindMatrices']]
+        v = j['bufferViews'][a['bufferView']]
+        off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+        ibm = np.frombuffer(bytes(b), np.float32, a['count'] * 16, off).reshape(-1, 4, 4).copy()
+        worst, moved = 0.0, 0
+        for g, ch in enumerate(it['cloth']['chains']):
+            if max(ch['pts']) >= len(P):
+                continue
+            for k in range(len(ch['pts']) - 1):
+                jn = 'cloth:%s:%d:%d' % (it['id'], g, k)
+                if jn not in names:
+                    continue
+                q = names.index(jn)
+                d = float(np.linalg.norm(-ibm[q][3, :3] - P[ch['pts'][k]]))
+                worst = max(worst, d)
+                if d > tol:
+                    ibm[q][3, :3] = -P[ch['pts'][k]]
+                    moved += 1
+        if moved:
+            b[off:off + ibm.nbytes] = ibm.astype(np.float32).tobytes()
+            open(path, 'wb').write(glbio.write_glb(j, b) if hasattr(glbio, 'write_glb') else _glb_bytes(j, b))
+            print('%-8s %-34s %d chain bones rebound, the worst was %.3f m off' % (name, it['id'], moved, worst))
+
+
+def _glb_bytes(j, b):
+    js = json.dumps(j, separators=(',', ':')).encode()
+    js += b' ' * ((-len(js)) % 4)
+    b = bytes(b) + b'\0' * ((-len(b)) % 4)
+    j_len, b_len = len(js), len(b)
+    return (struct.pack('<III', 0x46546C67, 2, 12 + 8 + j_len + 8 + b_len) + struct.pack('<II', j_len, 0x4E4F534A) + js
+            + struct.pack('<II', b_len, 0x004E4942) + b)
+
+
 if __name__ == '__main__':
-    if sys.argv[1] == 'hides':
+    if sys.argv[1] == 'anchors':
+        rebind_chains(sys.argv[2], set(sys.argv[3].split(',')) if len(sys.argv) > 3 else None)
+    elif sys.argv[1] == 'made_by':
+        # python3 tools/make_mpfb.py made_by: made_by on every kit's entries written before there was one
+        for b in sorted(os.listdir(os.path.join(HERE, 'data'))):
+            kp = os.path.join(HERE, 'data', b, 'kit.json')
+            if b.startswith('mpfb_') and os.path.exists(kp):
+                k = json.load(open(kp, encoding='utf-8'))
+                print(b, mark_made_by(k, b.replace('mpfb_', '')))
+                write_kit(kp, k)
+    elif sys.argv[1] == 'hides':
         refresh_hides(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'gshapes':
         refresh_gshapes(sys.argv[2])

@@ -32,7 +32,9 @@ blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
 blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
 python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
 tools/rebuild.sh [--only <male ids> <female ids>]                  # all of the above in order, both bodies at once, then the pages
-python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
+python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js,
+                                                                   # tests/check_kit.py (the kits against their pieces) and tools/check_twin.py (the push shader against Godot's)
+python3 tools/import_props.py [<downloads dir>]                    # Meshy weapon models as hand-held props (Tzintzun's), into data/props.json and clips.json
 python3 build.py --pages-only                                      # the pages alone where pieces/ is missing (the manifest keeps the pieces' hashes)
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
@@ -717,6 +719,11 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |
+| `tests/check_kit.py` | every kit entry against its pieces: the GLB and morphs present, its cloth chains' bones in the skin, their anchors inside the mesh and bound on them (build.py runs it; `tests/kit-known-bad.json` names what may fail, with the reason) | |
+| `tools/check_twin.py` | the push shader in `50-figure.js` against `godot/krator/character/kchar_push.gdshaderinc`: the uniforms must match, the literals' gap is held to `tests/twin-baseline.json` (build.py runs it; `--baseline` after a port that narrows it) | |
+| `tests/ui-inventory.json` | the lab's sections per tab, which `verify.py --assert` requires to still be there (`--ui-baseline` rewrites it) | |
+| `tools/import_props.py` | Meshy weapon models as props in the grip frame: scaled to a real length, the handle found from the width profile, the edge turned to +Z; textures re-encoded small | |
+| `tools/garments/` | the Python garment pipeline (Gemini, 2026-11): `core.py` fits and skins parts on the base body and registers kit entries (`made_by: garments`), `types/` the part builders, `paint.py` the textures, `cultures/` every outfit builder, `build_all.py` runs them by culture. `REVIEW-GARMENTS-2026-11-06.md` is its audit | |
 | `tests/make-golden.js` | writes `golden-mpfb.json` (morphs, strangers, parts), which `godot/tests/character/kchar_test.gd` checks Godot against | |
 | `CREDITS.md` | the CC-BY items | |
 

@@ -1480,10 +1480,11 @@ def register_entries(new_entries):
         items = kit['items']
         by_id = {it['id']: idx for idx, it in enumerate(items)}
         for e in b_entries:
+            e[make_mpfb.MADE_BY] = 'garments'
             if e['id'] in by_id:
                 items[by_id[e['id']]] = e
             else:
                 items.append(e)
                 by_id[e['id']] = len(items) - 1
-        kit_path.write_text(json.dumps(kit, indent=2) + '\n', encoding='utf-8')
+        make_mpfb.write_kit(str(kit_path), kit)
         print(f'Updated {kit_path} with {len(b_entries)} pieces (total items: {len(items)}).')

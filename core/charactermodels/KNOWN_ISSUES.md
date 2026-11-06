@@ -1,5 +1,17 @@
 # core/charactermodels: known issues
 
+- **The giant chief's four-armed coat (`giant_free_m_chief4`) has seven dead cloth chains.** Its lower sleeves are split
+  off into `.sleeves2.glb` after the chains are bound (`make_mpfb.py main`: `split_lower` runs after `turn_glb`), so
+  seven chains' anchor indices run past the coat's mesh and the page cannot drive them; `tests/check_kit.py` allows the
+  entry by name (`tests/kit-known-bad.json`). A Blender rebuild that binds the chains after the split clears it; until
+  then the lower sleeves hang rigid.
+- **Ten legacy garments' chain bones were rebound on 2026-11-06** (`make_mpfb.py anchors`): the settle pass had moved their
+  vertices 8 to 140 mm after the chains were bound (the Izani trade coats, the Beast Rider deels, the Republic jackets,
+  peasant dress and sarafan). The pieces are gitignored, so the fix lives in this checkout's `pieces/` and the built
+  `dist/pieces/`; the published labs carry the old binds until their pieces are republished.
+- **The UI inventory covers the Gear and Head tabs only** (`verify.py`, `tests/ui-inventory.json`): the Body, Face and
+  Record tabs draw no `.slot` sections, so a loss there is not caught yet.
+
 - **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
   Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
   labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab

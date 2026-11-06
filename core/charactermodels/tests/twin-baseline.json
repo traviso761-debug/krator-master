@@ -1,0 +1,4 @@
+{
+ "gap": 25,
+ "note": "literals in one push shader copy and not the other (tools/check_twin.py); lower it as the twin converges"
+}

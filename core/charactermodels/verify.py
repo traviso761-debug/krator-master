@@ -38,6 +38,14 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
 
+# every tab's section titles (the h3 of each .slot, without its <small>), by tab id: the UI inventory
+UI_INV = r'''async () => { const out = {};
+  for (const t of document.querySelectorAll('[role=tab]')) { t.click(); await new Promise(r => setTimeout(r, 60));
+    const page = document.getElementById(t.getAttribute('aria-controls')); if (!page) continue;
+    out[t.id] = Array.from(page.querySelectorAll('.slot > h3')).map(h => (h.firstChild && h.firstChild.nodeType === 3 ? h.firstChild.textContent : h.textContent).trim()); }
+  const g = document.getElementById('tab-gear'); if (g) g.click();
+  return out; }'''
+
 CHECKS = r'''async () => {
   const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {}, nonhuman: [] };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
@@ -370,6 +378,23 @@ async def run(page_path, do_assert, out_dir):
             os.makedirs(out_dir, exist_ok=True)
             await pg.wait_for_timeout(1500)
             await pg.screenshot(path=os.path.join(out_dir, 'cosmetic-lab.png'))
+        if do_assert or '--ui-baseline' in sys.argv:
+            # the lab's sections (every tab's h3 titles) against tests/ui-inventory.json: a section that vanishes
+            # fails the run (the Backpacks row and the Izani tiers went missing from the lab more than once:
+            # REVIEW-GARMENTS-2026-11-06.md). --ui-baseline rewrites the golden from the page as it stands
+            import re
+            inv = await pg.evaluate(UI_INV)
+            inv = {k: sorted(set(re.sub(r'\s*\(\d+\)\s*$', '', t) for t in v)) for k, v in inv.items()}
+            gp = os.path.join(HERE, 'tests', 'ui-inventory.json')
+            if '--ui-baseline' in sys.argv:
+                with open(gp, 'w', encoding='utf-8', newline='\n') as f:
+                    json.dump(inv, f, indent=1)
+                print('ui: baseline written, %d sections over %d tabs' % (sum(len(v) for v in inv.values()), len(inv)))
+            elif os.path.exists(gp):
+                for tab, titles in json.load(open(gp, encoding='utf-8')).items():
+                    lost = [t for t in titles if t not in inv.get(tab, [])]
+                    if lost:
+                        fails.append('ui: %s lost %s' % (tab, '; '.join(lost)))
         if do_assert:
             r = await pg.evaluate(CHECKS)
             print(json.dumps(r))
