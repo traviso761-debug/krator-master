@@ -37,9 +37,25 @@ function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypo
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}return pts;}
 KGUILIN.grow=grow;
 const dirOf=(a,el)=>[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)];KGUILIN.dirOf=dirOf;
+// THE CROWNS HELD TO THEIR LIMBS (2026-11-09; the coordinator's GPU verify: the attach audit, 3783 of 11257 cards floating, 33.61%:
+// oakleaf, pomeloleaf, osmleaf, camphorleaf). crown() scatters its clumps over a dome round the tree's middle, whatever the limbs
+// say, so most hung in the air beside the wood. While a held scope runs (KGUILIN.held(fn): the six broadleaf and bamboo builders,
+// not the pines, whose pads sit on their limbs' ends; 57's rock figs) BIO.segs logs its BIO.tube and BIO.beam spans, and each card
+// further from the nearest span than the audit allows is brought toward it on its own line (BIO.snapSeg, BIO.holdTo;
+// core/biome/README.md "What held means": .55 of its size for a centred clump, .2 of it + .3 m for a stem card, read from its def
+// as the audit reads it). Its shade and normal stay those of its place on the dome; no draw is added or moved. ?hold=0
+// (KGUILIN.HOLD=false) leaves them where crown() puts them.
+let HOLD=null;const HELDN={cards:0,moved:0};KGUILIN.HELDN=HELDN;
+const isStem=item=>{const R=BIO.kits&&BIO.kits.kguilin,d=(R&&R.defs&&R.defs[item])||(BIO.defs&&BIO.defs[item]),c=d&&d.raw&&d.raw.userData&&d.raw.userData.card;return !!(d&&(d.fit||c&&c.kind!=='clump'));};
+const holdP=(item,p,size)=>{if(!HOLD||!HOLD.length)return p;const r=BIO.snapSeg(HOLD,p),reach=isStem(item)?size*.2+.3:size*.55;HELDN.cards++;
+ if(r&&r.d>reach){HELDN.moved++;return BIO.holdTo(r.p,p,reach);}return p;};
+KGUILIN.holdP=holdP;
+KGUILIN.held=function(fn){if(KGUILIN.HOLD===false||typeof BIO.snapSeg!=='function'||typeof BIO.holdTo!=='function')return fn();
+ const s0=BIO.segs,h0=HOLD,L=[];BIO.segs=L;HOLD=L;try{return fn();}finally{BIO.segs=s0;HOLD=h0;if(s0)for(const s of L)s0.push(s);}};
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+ const p=holdP(item,[x,y,z],size);
+ BIO.put(item,p,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 KGUILIN.clumpAt=clumpAt;
 // a crown of clumps on a dome round (cx,cy,cz)
 function crown(item,T,st,cx,cy,cz,R,Ry,n,colFn,size,flat){for(let k=0;k<n;k++){const a=k*GOLD+rr(-.3,.3),u=rr(.12,1),rad=R*Math.sqrt(u)*rr(.7,1.05),y=cy+Ry*(1-u)*rr(.6,1.05)-Ry*.15;
@@ -84,7 +100,8 @@ B[3]=function(T,st,lv){const S=SP[3],bc=bright(pick(PAL.osmBark),1);
  const cy=T.y0+T.H*.55;
  crown('osmleaf',T,st,T.x,cy,T.z,T.crownR,T.H*.45,lv===2?ri(22,32):10,()=>lc('osmleaf',S.leaf,1.15),T.crownR*.75,.9);
  if(lv===2&&fruitH(T,0,4)<.7)for(let f=0,nf=ri(10,24);f<nf;f++){const a=rr(0,TAU),r=T.crownR*rr(.6,1.0);
-  BIO.put('osmbloom',[T.x+Math.cos(a)*r,cy+rr(-T.H*.2,T.H*.3),T.z+Math.sin(a)*r],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.1,.16),KGUILIN.libCol('osmbloom',pick(PAL.osmFlower)));st.flowers++;}
+  const fp=[T.x+Math.cos(a)*r,cy+rr(-T.H*.2,T.H*.3),T.z+Math.sin(a)*r],fq=qEuler(rr(-.5,.5),rr(0,TAU),0),fs=rr(.1,.16);   /* held on the twigs: the flowers grow in the leaf axils */
+  BIO.put('osmbloom',holdP('osmbloom',fp,fs),fq,fs,KGUILIN.libCol('osmbloom',pick(PAL.osmFlower)));st.flowers++;}
  regTree(T,S,T.crownR,T.H);};
 // 4 the POMELO: a short trunk, a rounded crown, the great pale fruit hanging under it
 B[4]=function(T,st,lv){const S=SP[4],bc=bright(pick(PAL.pomeloBark),1),hf=T.H*rr(.22,.32),top={x:T.x,y:T.y0+hf,z:T.z};
@@ -123,6 +140,7 @@ B[7]=function(T,st,lv){const S=SP[7],bc=bright(pick(PAL.pineBark),1),pts=grow({x
   if(lv===2)st.limb+=BIO.tube('bark.pine',p,bc,{seg:3});pads(T,st,lv,p,S,lv===2?2:1,L*1.15);}
  pads(T,st,lv,[pts[4],pts[5]],S,1,T.crownR*.5);
  regTree(T,S,T.crownR,T.H);};
+[0,1,2,3,4,5].forEach(sp=>{const f=B[sp];B[sp]=function(){const a=arguments;return KGUILIN.held(()=>f.apply(this,a));};});
 KGUILIN.B=B;
 
 // ---------------------------------------------------------------- impostors (the far trees)

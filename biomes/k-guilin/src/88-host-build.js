@@ -8,6 +8,7 @@ window._biome=null;
  /* THE FAR BAND'S DIET (the final rebuild, pair 13, 2026-11-09; ?diet=0 for the old page): the far trees, this kit's tall species (55) and nwbay's
     borrowed ones (biomes/nwbay/src/56: NWBAY.IMPOSTORS, asked for by the host), octahedral impostors of their species instead of blobs */
  if(Q.get('diet')==='0')KGUILIN.IMPOSTORS=false;else if(typeof NWBAY!=='undefined')NWBAY.IMPOSTORS=true;
+ if(Q.get('hold')==='0')KGUILIN.HOLD=false;   /* ?hold=0: the crowns where crown() puts them, not held to their limbs (55: KGUILIN.held) */
  try{window._biome=KGUILIN.build({R:TERR.R-60,quality:q,pond:{level:POND.level,at:pondE},lake:{level:LAKE.level}});}catch(e){reportErr('kguilin: '+e.stack);}
  _mark('kguilin');
  (KGUILIN.TREES||[]).concat(KGUILIN.BTREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.5+1,y0:T.y0-3,y1:T.y0+T.H}));

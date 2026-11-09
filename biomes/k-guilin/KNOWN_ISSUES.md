@@ -32,6 +32,15 @@ file is the whole list for this kit.
 - [ ] **No villages, rafts or people; no fauna.** The bay people's farm villages would be `core/hamlet`; nwbay's fauna
       (soarers, darters) could be read in place as its species are.
 - [ ] **Not in Godot yet**: the rock is meshes made from KSTACKS records (exported as `KGUILIN.records()`).
+- [x] **Crowns floating off their limbs** (2026-11-09; the GPU verify's core attach audit: 3783 of 11257 cards, 33.61%, oakleaf,
+      pomeloleaf, osmleaf, camphorleaf; then scrub, bambooleaf, osmbloom under them). `crown()` (55) scatters clumps over a dome
+      round the tree's middle, not on the limbs; the cliff scrub's stem stood .35 of the cushion out from the wall. Now
+      `KGUILIN.held(fn)` (55) logs each builder's spans (`BIO.segs`) and `holdP` brings a card past the audit's reach toward the
+      nearest one (`BIO.snapSeg`, `BIO.holdTo`: .55 of its size centred, .2 of it + .3 m for a stem card); wraps bamboo, banyan,
+      camphor, osmanthus, pomelo, oak (not the pines) and the rock figs (57, with their grip on the wall as a span); the osmanthus
+      blooms sit on the twigs; the scrub's stem is .2 m inside the layout's wall. No draw added or moved; `?hold=0` for the old
+      crowns. Audit after: 71 of 10048 (0.71%; left: orchidbloom 42/165, needle, fernleaf, lotus 6 each). The crowns are tighter
+      round their limbs: the look moved, not yet judged by the owner.
 
 ## The final rebuild (pair 13, 2026-11-09; cloud session, no GPU: built and CPU-checked only)
 
