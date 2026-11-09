@@ -63,7 +63,7 @@ const ring=(dh)=>{let inRing=0,above=0,deep=0;
  for(const [x,z] of ringPts){const h=terrainH(x,z)+dh,s=DB_BASIN.sample(x,z,h,{});
   if(s.ring>.5){inRing++;if(h>1)above++;if(h<-DB.ring-2)deep++;}}
  return{ok:inRing>50&&!above&&!deep,detail:inRing+' ring samples; '+above+' above the old line, '+deep+' deeper than '+DB.ring+' m'};};
-add('db-ring-under-line',ring(0),{ok:(()=>{let n=0;for(const [x,z] of ringPts){const h=terrainH(x,z)+45;if(DB_BASIN.sample(x,z,h-45,{}).ring>.5&&h>1)n++;}return n===0;})(),detail:'the ring's samples lifted 45 m stand above the line'});
+add('db-ring-under-line',ring(0),{ok:(()=>{let n=0;for(const [x,z] of ringPts){const h=terrainH(x,z)+45;if(DB_BASIN.sample(x,z,h-45,{}).ring>.5&&h>1)n++;}return n===0;})(),detail:'the ring\'s samples lifted 45 m stand above the line'});
 // the bed falls to the sill across the drain band (on the natural ground either side of the run)
 const falls=(zEnd)=>{const bad=[];for(const x of [PORT_LAYOUT.runs[0].x0-400,PORT_LAYOUT.runs[0].x1+400]){
   const top=terrainH(x,zs(x)+60),end=terrainH(x,zs(x)+zEnd);if(!(top>-12&&top<2&&end<DB.sill+25&&end>DB.sill-40))bad.push('x '+x.toFixed(0)+': '+top.toFixed(0)+' m at the line, '+end.toFixed(0)+' m at '+zEnd+' m out');}

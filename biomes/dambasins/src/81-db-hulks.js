@@ -12,6 +12,12 @@ const dbKput0=kput;
 kput=function(name,p,q,s,c){if(!DB_GXF)return dbKput0(name,p,q,s,c);
  const k0=KXF,o0=KOFF,m=DB_GXF.R.clone(),qq=DB_GXF.q.clone();if(k0){m.multiply(k0.m);qq.multiply(k0.q);}
  KXF={m,q:qq};KOFF=[o0[0],o0[1]+DB_GXF.dy,o0[2]];try{return dbKput0(name,p,q,s,c);}finally{KXF=k0;KOFF=o0;}};
+// and its probe volumes: the kit's REGISTER (70-port-core.js) takes the vessel's KXF and KOFF but not the pose, so a hulk's parts
+// were registered where the ship floated, not where it lies (2026-11-08: the graveyard's hulks lie 420 m under the old line, and
+// 86 of the giants' volumes stood empty). While a hulk builds, each new volume is turned about the midship (KOFF) and lowered by dy
+const dbReg0=REGISTER;
+REGISTER=function(o){if(!DB_GXF)return dbReg0(o);const n0=REG.length;dbReg0(o);const v=new THREE.Vector3();
+ for(let i=n0;i<REG.length;i++){const e=REG[i];v.set(e.x-KOFF[0],e.y,e.z-KOFF[2]).applyMatrix4(DB_GXF.R);e.x=v.x+KOFF[0];e.y=v.y+DB_GXF.dy;e.z=v.z+KOFF[2];}};
 // the pose of a hulk of length L, beam B, draft D at (x,z), bow along heading h (0: +z, PI/2: +x), on the ground g(x,z)
 const DB_HULKS=[];
 function dbHulkPose(key,x,z,h,L,B,D,g){const fx=Math.sin(h),fz=Math.cos(h),sx=Math.cos(h),sz=-Math.sin(h),u=KRAND.unit;
