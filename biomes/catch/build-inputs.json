@@ -604,7 +604,7 @@
     "biomes/catch/tex/saltbush.albedo.webp": "52365f6dc89d5a90b862daf731a4685767b9b352d53778bd5303e84d83fdc872",
     "biomes/catch/tex/tamarisk.albedo.webp": "16f70d131cc3c78725c8e42ba122a1b19f1ec9cd0f895d9aae8547a31aea0d65",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
     "biomes/sedesert/tex/aloe.albedo.webp": "e6b5c2769602459f62448888403adc8a156262e2ef7b589e7c24c65d4e43ece7",
@@ -729,10 +729,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "f5dc8fc73d3cead69e5d4b1af1bc8beb8b107fd77cab056ba43c8ee1de372366"
+    "biomes/catch/dist/catch-oasis.html": "d69300aeaf0a5d9c5756e61e5bd985fd680c15bfe1c18a27b3777ce9e4a537bf"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "f5dc8fc73d3cead69e5d4b1af1bc8beb8b107fd77cab056ba43c8ee1de372366"
+    "biomes/catch/dist/catch-oasis.html": "d69300aeaf0a5d9c5756e61e5bd985fd680c15bfe1c18a27b3777ce9e4a537bf"
    }
   }
  }

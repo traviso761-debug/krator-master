@@ -18,7 +18,9 @@ const AIR=(function(){const q=new URLSearchParams(location.search),F=n=>typeof F
  // the box the wet ground's hollows are baked over: the page's ground square (TERR.R*1.1 each way: the paint's square)
  const R=TERR.R*1.05,BOX=[-R,-R,R,R];
  if(q.get('hfog')!=='0'&&ATMOS.heightFog){ATMOS.heightFog({falloff:1/850,sun:.35,sky:.25});ATMOS.heightFogScene(scene);out.hfog=true;}
- if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
+ /* STATION.rainCover false (the Bowl, 2026-11-08): its ground takes all nine library layers, and with the occlusion map the cloud shade adds
+    to it the fragment shader needed 17 texture units; D3D gives 16 (the GPU verify: the ground did not compile). Rain is rare there */
+ if(ATMOS.rainCover&&(typeof STATION==='undefined'||STATION.rainCover!==false)){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
  // not on the stations (STATION: the Bowl's ground shader, which Mantis and the steppe take, already holds 15 of a fragment shader's 16
  // texture units with its library layers; the wet ground's puddle mask and rain map would push it over and the ground would not compile)
  if(q.get('wet')!=='0'&&WATER.hollows&&MAT_GROUND&&(typeof STATION==='undefined'||STATION.wet===true)){try{

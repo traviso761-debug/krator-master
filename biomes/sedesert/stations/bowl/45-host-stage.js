@@ -25,7 +25,7 @@
 // the Bowl's stations): STATION (its tags, boxes, lattice and LOD), groundH (the ground before the channels), extraH (what stands on
 // it after them: the kaluts), fieldsAt and FNAMES (the fields), SPINE (the LOD spine).
 const STATION={key:'bowl',tags:'sedesert-bowl',seed:2,chanBox:[-1700,-1800,1900,3550],grid:{N:640,M:2,win:{x:[-1150,1400],z:[-1500,3300]}},
- lod:{hero:520,mid:1150,far:2600,floor:[340,820]},water:[-1700,-1800,1900,3550],sun:[-900,600,700],mantisFar:true,heat:1,
+ lod:{hero:520,mid:1150,far:2600,floor:[340,820]},water:[-1700,-1800,1900,3550],sun:[-900,600,700],mantisFar:true,heat:1,rainCover:false,   /* the ground's 16 texture units (src/89x-host-air.js) */
  budget:{tris:21000000,calls:150}};   /* the owner's ceiling for the Bowl's stations, 2026-10-26 */
 // ---------------------------------------------------------------- the layout (data)
 const TERR={R:3000};
