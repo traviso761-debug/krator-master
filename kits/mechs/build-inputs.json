@@ -26,14 +26,14 @@
     "kits/mechs/krator-mechs-iziz-talpa.js": "df93e5d896ad230092418e2f09ba25e022be6f3c00bf815442af1ce0a42f478e",
     "kits/mechs/krator-mechs-iziz-testudo.js": "9fda3547b9e7739c4773ac5cd81e6f5dcf2a4980cee1e3d9902b01700e51af13",
     "kits/mechs/krator-mechs-iziz-turris.js": "54cc55392a91c6e8b8502c73235dfa0fd77a303ccf8c95e16bd0329da04fcaa3",
-    "kits/mechs/krator-mechs-iziz.js": "3bb9886dad33fab397ac31bae8eb59ff566f6d3bc77c5d20444d2f1e375938a9",
+    "kits/mechs/krator-mechs-iziz.js": "4f92611e83eafd5a9f0fa437a49053c396679d81ff32bc623ffbd11b9ba5f044",
     "kits/mechs/krator-mechs-stalker-blade.js": "eaf092f47f7fb3d311699c010e86bd1cdf04444a43d7cdf05c0186a101761fb4",
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
     "kits/mechs/mech_bundle.py": "7a1efd484660f034baa2e98b26518fa181f167516c19e64a4d41f55f23f7706a",
-    "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
-    "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
-    "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
+    "kits/mechs/mechs-core.js": "ef68dfb1db9dcf72b66e2c58d5e46416af5893e08cb8cb2d657e06e1383b837a",
+    "kits/mechs/mechs-parts.js": "a9f2d4a7758ca9f1bf0a337f52beeeaea1b7caaa51149d1832fd8665bc7c6f23",
+    "kits/mechs/mechs-runtime.js": "7a8747f840ae987c2f10a36ca0adaa9329416a75aa2cb16d9d8d47cfdc53e2af",
     "kits/mechs/src/00-head.html": "622fc12aa18f8c3628129c3c9382ff0736c6c07ba8ca8ed2d2efe1feb51c04cd",
     "kits/mechs/src/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "kits/mechs/src/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
@@ -58,14 +58,14 @@
     "kits/mechs/src": "e71f5b75eb3d7c283777ba45e3998da9c6242bbeb78f01d976014e9e4e9da244"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "9db88d55e61781ab37f36c61a8f40b40c5cc9d7ef8e8f91b078a772164748f9d",
-    "kits/mechs/dist/krator-mechs.js": "eb818fbd3feaa88cd832eef2605123c0a3f0306ac8f7dd2c99ac91171dcfd91c",
-    "kits/mechs/dist/mechs.html": "588cc939ff49aa7097a2ef4455f1928c25f9ca1cffad32585bfe70ad07351760"
+    "kits/mechs/build-manifest.json": "856696bee16fcd55cfef2066fd91335e2826bd2d970a7a4244e926922da6bd38",
+    "kits/mechs/dist/krator-mechs.js": "35ac9b347b50814a83a69fb585d10e0c50db5239a992a12a733eedb2460e0a4f",
+    "kits/mechs/dist/mechs.html": "8801f8994022ab5eae1459183ce67e245257bd1d82ea190654dea396c58342a8"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "7ce623b06a6f4f4505f688f19c11b795ab2d2ff7c039aa9c61a07efbdb67c3e2",
-    "kits/mechs/dist/krator-mechs.js": "eb818fbd3feaa88cd832eef2605123c0a3f0306ac8f7dd2c99ac91171dcfd91c",
-    "kits/mechs/dist/mechs.html": "588cc939ff49aa7097a2ef4455f1928c25f9ca1cffad32585bfe70ad07351760"
+    "kits/mechs/build-manifest.json": "1c5c27072226b8d129164668b153119e3122e898527abd0251206a233936c641",
+    "kits/mechs/dist/krator-mechs.js": "35ac9b347b50814a83a69fb585d10e0c50db5239a992a12a733eedb2460e0a4f",
+    "kits/mechs/dist/mechs.html": "8801f8994022ab5eae1459183ce67e245257bd1d82ea190654dea396c58342a8"
    }
   }
  }

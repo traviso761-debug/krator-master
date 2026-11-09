@@ -155,6 +155,7 @@ function mechRig() {
     R.links.push({ a: R.by[a].index, b: R.by[b].index, A: A, B: B, group: g });
   };
   R.banner = function (o) {
+    if (R.bare) return;   /* a bare build hangs no banner */
     if (!R.by[o.bone]) throw new Error('mech rig: banner on missing bone ' + o.bone);
     R.banners.push(Object.assign({ kind: 'hang', x: 0, y: 0, z: 0, ry: 0, w: 0.8, h: 1.2, paint: {} }, o));
   };

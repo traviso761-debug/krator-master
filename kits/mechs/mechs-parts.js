@@ -223,6 +223,7 @@ MP.ballista = function (F, R, name, parent, x, y, z, o, rx, ry, rz) {
    bone; a bone <bone>_pilotHead (made here) carries the head, so the idle layer can turn it. o: { tunic, skin,
    helm, crest, harness, crestDir ('across' | 'along'), lean } */
 MP.pilot = function (F, R, bone, x, y, z, o) {
+  if (F.bare) return;   /* a bare build has no rider */
   R.on(bone);
   const lean = o.lean || 0.1;
   /* thighs and shins */

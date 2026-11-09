@@ -15,7 +15,7 @@ Origin at the footprint centre on the ground. **+z is forward**, y up, x across:
 KratorMechs.list()            // -> [{ key, name, culture, role, origin, lore, tags, variants, variantNames, w, d, h, data }]
 KratorMechs.tagsOf(key, v)    // the variant's tags (list() carries variant 0's, plus variantTags[v] for each)
 KratorMechs.dataOf(key, v)    // data (with speed, gait, attack { kind, dur })
-KratorMechs.build(key, { variant, seed, linear }) -> THREE.Group, posed standing
+KratorMechs.build(key, { variant, seed, linear, bare }) -> THREE.Group, posed standing (bare: the chassis alone, no rider, no feathers, standards, numerals or banners: the Ancient's Valley's keepers)
 KratorMechs.update(group, dt, { ground(x, z) -> y })   // advance and pose; returns this step's events
 KratorMechs.setState(group, 'idle' | 'walk')
 KratorMechs.attack(group)     // starts the attack clip (stops walking for its length, then resumes); returns its length in s

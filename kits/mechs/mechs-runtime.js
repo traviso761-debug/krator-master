@@ -277,6 +277,8 @@ const KM_API = (function () {
     const F = mechFrame({ seed: seed, variant: v });
     F.asset = A; F.data = data;
     const R = mechRig();
+    /* bare (the owner, 2026-11-09, for the Ancient's Valley's keepers): the chassis alone, no rider, no regalia (feathers, standards, numerals, banners) */
+    F.bare = !!o.bare; R.bare = !!o.bare;
     const prev = _target;
     try { A.build(F, R); } finally { _target = prev; }
     if (!R.by.body) throw new Error('mech ' + key + ': no body bone');
