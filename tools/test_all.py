@@ -105,12 +105,14 @@ def node_tests():
     tests = sorted(glob.glob(os.path.join(ROOT, 'core', '**', 'test-*.js'), recursive=True))
     tests += sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'tests', 'test-*.js')))
     tests += sorted(glob.glob(os.path.join(ROOT, 'kits', '*', 'tests', 'test-*.js')))
+    tests += sorted(glob.glob(os.path.join(ROOT, 'openworld', '*', 'tests', 'test-*.js')))   # the outpost registry (openworld/outposts/PLAN.md)
     tests += [os.path.join(ROOT, 'tools', 'walk_audit', 'test_audit.js')]   # the geometry walk audit (tools/walk_audit/README.md)
     return [os.path.relpath(t, ROOT) for t in tests]
 
 
 def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
+         ('port lint (openworld/outposts: shared data, not a build)', [PY, 'tools/check_port.py', 'openworld/outposts']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('dependencies run one way (MODULARITY-PLAN.md)', [PY, 'tools/dep_graph.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),

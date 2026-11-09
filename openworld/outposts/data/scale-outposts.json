@@ -1,0 +1,14 @@
+{"format": "krator-scale-settlements/1", "map": "5.1",
+ "source": "tools/scale-model/model/src/60-settlements.js (defSetts), type outpost, read 2026-11-09",
+ "settlements": [
+  {"id":"s10ioj4r5u","name":"Veil","type":"outpost","px":448,"py":838,"notes":""},
+  {"id":"s2iq6zqe2x","name":"Furrow","type":"outpost","px":1276,"py":639,"notes":""},
+  {"id":"se4hiep1n7","name":"Fort Vaklu","type":"outpost","px":984,"py":912,"notes":""},
+  {"id":"sjqk469u0k","name":"Bastion","type":"outpost","px":536,"py":627,"notes":""},
+  {"id":"slfozs6c7z","name":"Shade","type":"outpost","px":1229,"py":885,"notes":""},
+  {"id":"smqy5z5eek","name":"Tallhouse","type":"outpost","px":683,"py":1184,"notes":""},
+  {"id":"soctr12hfz","name":"Tzunfort","type":"outpost","px":670,"py":886,"notes":""},
+  {"id":"srg92iy8js","name":"Boatmurder","type":"outpost","px":766,"py":404,"notes":""},
+  {"id":"sthegate","name":"The Gate","type":"outpost","px":1408,"py":414,"notes":"The one way into the Outlands: the lowest crest over the rim in Korona's corner (7.7 km, 0.60 atm). The Tierhounds' toll fort and the trickster's shrine; the god's road (Sleeping City to Trickster's House) runs through it. biomes/outlands/PLAN.md, SURVEY.md; the owner, 2026-10-26."},
+  {"id":"sxan7r1sln","name":"Strongwall","type":"outpost","px":914,"py":1634,"notes":""}
+ ]}
