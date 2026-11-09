@@ -42,9 +42,16 @@ async function previews(clips) {
   });
   let done = 0, failed = 0;
   const one = async c => {
-    const kbps = c.duration > 600 ? '48k' : '80k', dst = path.join(OUT, 'previews', c.id + '.mp3');
-    try { await ffmpeg(['-y', '-v', 'error', '-i', path.join(LIB, c.file), '-vn', '-ac', '2', '-ar', '44100', '-b:a', kbps, dst]); }
-    catch (e) { failed++; console.log('FAILED ' + c.id + ': ' + e.message); }
+    const kbps = c.duration > 600 ? '48k' : '80k', dst = path.join(OUT, 'previews', c.id + '.mp3'), src = path.join(LIB, c.file);
+    try {
+      await ffmpeg(['-y', '-v', 'error', '-i', src, '-vn', '-ac', '2', '-ar', '44100', '-b:a', kbps, dst]);
+    } catch (e) {
+      try {
+        fs.copyFileSync(src, dst);
+      } catch (err2) {
+        failed++; console.log('FAILED ' + c.id + ': ' + e.message);
+      }
+    }
     if (++done % 20 === 0) console.log('previews ' + done + '/' + todo.length);
   };
   const q = todo.slice(), workers = Array.from({ length: 4 }, async () => { while (q.length) await one(q.shift()); });
@@ -55,20 +62,31 @@ async function previews(clips) {
 (async () => {
   const clips = cat.filter(c => K.inGame(c.license) && (ALL || c.share));
   const r = await previews(clips);
-  const have = clips.filter(c => fs.existsSync(path.join(OUT, 'previews', c.id + '.mp3')));
+  const have = clips.filter(c => fs.existsSync(path.join(OUT, 'previews', c.id + '.mp3')) || fs.existsSync(path.join(OUT, 'previews', c.id + '.wav')));
   const data = {
     built: new Date().toISOString().slice(0, 10), local: ALL,
     categories: cats.categories, statuses: cats.status,
+    music: read(path.join(AUDIO, 'data', 'music.json')),
     clips: have.map(c => ({ id: c.id, legacy: c.legacy || null, title: c.title, user: c.creator, page: c.source, src: site(c),
+      origFile: c.origFile || path.basename(c.file || ''),
       license: c.license, lic: shortLic(c.license), credit: K.creditRequired(c.license) ? c.attribution : '', share: !!c.share,
-      category: c.category, tags: c.tags || [], note: c.notes || '', duration: c.duration, file: 'previews/' + c.id + '.mp3' }))
+      category: c.category, tags: c.tags || [], note: c.notes || '', duration: c.duration,
+      file: 'previews/' + c.id + (fs.existsSync(path.join(OUT, 'previews', c.id + '.wav')) ? '.wav' : '.mp3') }))
   };
   const legacy = {}; data.clips.forEach(c => { if (c.legacy) legacy[c.legacy] = c.id; }); data.legacy = legacy;
-  /* The page runs the module's own code: core/rand and the cue picker are embedded, not copied. */
-  const modules = [path.join(ROOT, 'core', 'rand', '08-core-rand.js'), path.join(AUDIO, '22-core-audio-cues.js')].map(p => fs.readFileSync(p, 'utf8')).join('\n');
+  /* The page runs the module's own code: core/rand, cue picker, soundscape blender, and music director are embedded. */
+  const modules = [
+    path.join(ROOT, 'core', 'rand', '08-core-rand.js'),
+    path.join(AUDIO, '22-core-audio-cues.js'),
+    path.join(AUDIO, '24-core-audio-soundscape.js'),
+    path.join(AUDIO, '26-core-audio-music.js')
+  ].map(p => fs.readFileSync(p, 'utf8')).join('\n');
   const page = fs.readFileSync(path.join(HERE, 'template.html'), 'utf8').replace('/*MODULES*/', () => modules).replace('/*DATA*/', () => JSON.stringify(data));
   fs.writeFileSync(path.join(OUT, 'index.html'), page, 'utf8');
-  const mb = have.reduce((a, c) => a + fs.statSync(path.join(OUT, 'previews', c.id + '.mp3')).size, 0) / 1e6;
+  const mb = have.reduce((a, c) => {
+    const p = fs.existsSync(path.join(OUT, 'previews', c.id + '.wav')) ? path.join(OUT, 'previews', c.id + '.wav') : path.join(OUT, 'previews', c.id + '.mp3');
+    return a + fs.statSync(p).size;
+  }, 0) / 1e6;
   console.log('lab: ' + have.length + ' clips' + (ALL ? ' (LOCAL build: includes clips that must never be published)' : '') +
     ', previews ' + mb.toFixed(1) + ' MB (' + r.made + ' made, ' + r.failed + ' failed) -> ' + path.join(OUT, 'index.html'));
 })();

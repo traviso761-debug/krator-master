@@ -131,20 +131,63 @@ speed, pitch, timbre, fades, interval plus or minus randomness, chance), plus:
 Two ways to ship a soundscape (*proposed*: both): **live** (the beds and calls are played by the director at run time,
 so it never repeats exactly) and **baked** (rendered to one seamless loop, for low-end hardware or a distant layer).
 
-### 4.4 Music: the director, as Kenshi does it
+### 4.4 The Three-Layer Sound & Music Architecture
+
+The game's soundscape and music operate on three simultaneous, dynamically blended layers:
+
+```
+[ Layer 3: Situation ]          Peaceful / Exploration  <-->  Proximity Danger  <-->  Full Combat
+                               (Sparse motifs & quiet)       (Tension pulse/drone)   (Full tactical beat)
+                                       ▲                               ▲                     ▲
+                                       │                               │                     │
+[ Layer 2: Culture / Location ] Site Proximity Injection: Minor Beds | Environmental Tracks | Musical Stings
+                               (Iziz Violin, Arcology Synthesizers, Rift Alien Bells, Voth Bassoon/Flute...)
+                                       ▲                               ▲                     ▲
+                                       │                               │                     │
+[ Layer 1: Biome Background ]  Base Environmental Soundscape: Continuous Day/Night Beds & Weather Elements
+                               (Hyperjungle canopy, Savannah wind, Coastal surf, Desert dunes...)
+```
+
+#### Layer 1: Biome Sound (Base Environmental Background)
+- Continuous ambient beds representing the natural biome (hyperjungle, savannah, desert, mountains).
+- Follows the day/night cycle (`KCLOCK.hour`) and weather intensity (`ATMOS.weather` rain, wind, fog).
+- Blends seamlessly as the listener moves between biomes using ground blend weights (`W.biomeAt`).
+
+#### Layer 2: Culture & Location Motif (Site & Faction Proximity Injection)
+As the player approaches specific settlements, ruins, faction landmarks, or territorial borders, site-specific cultural motifs dynamically **interweave into three destinations**:
+1. **Minor Beds**: Tonal musical pads and melodic textures that fade up over distance ($W_{site}(d)$) and subtly color the biome's background.
+2. **Environmental Tracks**: Localized emitter stems and ambient elements (e.g., ritual temple gongs, prayer calls, hums of ancient generators, rift tears).
+3. **Musical Stings**: Episodic melodic phrases and stingers triggered on discovery or milestone distance thresholds.
+
+**Regional & Faction Signatures:**
+- **Iziz**: Melodic, virtuosic, and expressive violin ostinatos, arpeggios, and bowed string phrases interwoven into the Hyperjungle canopy.
+- **Ancient Arcology / Ancient's Valley**: Spacey modular electronic synth themes (ARP 2600), subterranean bedrock geophone hums, and alien quantum telemetry.
+- **Lizardmen / The Rift**: Extradimensional alien presence: discordant metallic bells, unsettling microtonal tones, eerie sub-resonances, and guttural reptilian hisses.
+- **Coyoteman Lands**: Native American cedar pipes and wooden flutes, rhythmic ceremonial rattles, and traditional vocal chants.
+- **Voth**: Traditional woodwind flutes and hollow resonant bassoons, paired with pre-Columbian Mesoamerican percussion (teponaztli slit drums, clay ocarinas, Aztec death whistles).
+- **Hykkousoi Region**: Classical Greek motifs featuring plucked lyre/kithara leads over an uneven Mediterranean dance rhythm (kalamatianos 7/8 or 5/8 time).
+- **Scyvoi Lands**: Deep guttural Tuvan and Mongolian overtone throat singing (kargyraa, sygyt) and hypnotic shamanic frame drums.
+- **Beast Riders**: Raw metal-string guitars, banjos, resonator/dobro twangs, overdriven pickup interference, and grinding rotary power tools.
+
+#### Layer 3: Situation (Threat & Intensity State)
+- **Peaceful / Exploration**: Long silences between sparse musical cues, letting natural ambience and site motifs breathe.
+- **Proximity Danger / Tension**: Triggered by enemy alert or stealth near threats; ambient music ducks, introducing low sub-drones, rising stress pulses, and ticking percussion.
+- **Full Combat**: Synchronized combat beat entered on the bar; stems scale dynamically with intensity (intensity 1 skirmish -> intensity 2 battle); leaves on a musical tail rather than an abrupt cutoff.
+
+### 4.5 Music: the director, as Kenshi does it
 Kenshi's music is sparse on purpose: its composer's talk is called "Unscoring the World of Kenshi" (GDC 2016). Pieces
-come in now and then, depend on the biome (some places are nearly silent), and are put together from layers at run time
+come in now and then, depend on the biome and site (some places are nearly silent), and are put together from layers at run time
 rather than looped; the player sets how often music plays.
 
 **Ambient music** (*proposed* rules, all data per biome or region):
 - a pool of pieces, each a set of stems (pad, melody, texture) that can be combined;
 - **when**: on arriving in a new region (a chance), and otherwise at random after a silence of `min`..`max` minutes;
   a frequency setting scales the silences (the player's "how often");
-- **which**: weighted by hour and weather; no repeat within a window;
+- **which**: weighted by hour, weather, and active site proximity; no repeat within a window;
 - fades in and out over seconds, and lowers the ambience a little while it plays.
 
 **Combat music** (*proposed*):
-- each biome has a **combat beat**: a loop in stems (percussion, bass, lead), entered on the beat;
+- each biome and culture has a **combat beat**: a loop in stems (percussion, bass, lead), entered on the beat;
 - the game gives the director an **intensity** (0 none, 1 skirmish, 2 battle); stems are added and removed with it;
 - on entering combat, ambient music fades out fast; on leaving, the beat holds for a few seconds, then ends on a tail
   rather than a cut;
@@ -153,11 +196,8 @@ rather than looped; the player sets how often music plays.
 (Godot 4.3+ has `AudioStreamInteractive` for clips with transitions and `AudioStreamSynchronized` for stems that play
 together: the director's records map onto those directly.)
 
-**Source of the music itself:** none is on the board yet. Music needs either a composer, or CC0 or CC BY music,
-which exists but is thin (question 3).
-
-### 4.5 The director and the mixer
-One pure function, the **director**: `step(state, inputs, dt) -> {state, commands}`. Inputs: biome weights, hour,
+### 4.6 The director and the mixer
+One pure function, the **director**: `step(state, inputs, dt) -> {state, commands}`. Inputs: biome weights, site proximity weights, hour,
 weather, indoors, combat intensity, listener position, the settings. Commands: start, stop, fade, and set a bus
 level, by id. No engine code in it, so the node test runs it and Godot gets a GDScript twin.
 
