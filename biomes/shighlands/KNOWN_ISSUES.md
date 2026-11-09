@@ -69,3 +69,76 @@ EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the b
       and the Throne's plume are not drawn; 89z's cloud deck keeps its fixed sun. Draw calls at the default camera
       (verify.py --assert, GPU): 98 before, 95 after.
 
+
+## The final rebuild (pair 12)
+
+Built 2026-11-09 in a cloud session (`claude/rebuild-shighlands-cloud`, from `claude/integration-b91c04` b4edff31): **no GPU here**, so
+the page was built and run through the CPU checks and one SwiftShader load only; `verify.py --assert --all-views` is the coordinator's.
+No new station or feature (PLAN-STATIONS.md stays a plan; map 5.1's re-survey of the stations waits for them). Every change is in
+`src/`, `build.py`, `materials.json` and `tex/pack.json`.
+
+**What changed (the universal set, BACKPORT.md section 1 and the kit's row):**
+- `build.py` on the core lists, nhighlands' shape: `--station` (none built), LF writes, `khost.FULL` (the polygon tool gives way to marks),
+  the shared pack writer (`tools/textures/matlib_pack.py`), core/biome `31b` (the leaf set: `check_assembly`'s MISSING `BIO.leafOn`/`leafQ` gone),
+  `31j`, `34`; core/terrain 43 KGROUND, 44 KFAR, 45 KHORIZON; core/shadow; core/atmos height fog, rain cover, lightning; core/water ext 56, 57, 58, 60.
+- **Limb joints** (`55`, `joint()`): `BIO.flareJoin` on every near limb tube (coilbark, trumpet candelabra, volute, screw palm and
+  groundsel forks). Side limbs start on their trunk's axis here, so they sink only .3 of the parent's radius and their collar reaches
+  past the bark (`len` 3); forks at a trunk's top take the defaults. Mid-tier rods unchanged.
+- **Octahedral impostors** for the far trees (lv 0): one set, ten species, item `impTrees`; `?diet=0` the old blobs (`SHIGH.IMPOSTORS=false`).
+  Gain 2.6 (`IMP_GAIN` in `89zx`; `?impgain=`), as oidong and korona.
+- **Each tree from its own seed** (`reseed(T.seed*7919+17)` before its builder, nhighlands' rule): every tree's form was re-rolled once;
+  places, sizes, species and hands are unchanged.
+- **Trees off the water** by its own surfaces (`WATER.fields`, `SHIGH.SHORE`, `offShore` in 55): a tree whose bole would stand in a ravine
+  stream, the tarn or a bog pool is made (draws and keep-clear kept) but not drawn; `?fields=0` the old trees. New host check
+  `the trees keep out of the water the eye sees` and its negative (a tree in the tarn).
+- The build is `89zx-host-build.js` (it was `88`): after the water (89zw), which the fields read.
+- **The ground on KGROUND** (`84`): the page's own hex tiling is gone; the four library layers (moss, wet soil, paramo grass, sphagnum) with the
+  old weights and strengths, the macro tone and hue drift kept over them, KGROUND's relief (`bump .075, cavity .8, mesh 1`, `cavityMesh`).
+  **The ground is MeshStandard now** (roughness .96; it was Lambert): `?kground=0` the old Lambert painted ground, `?kgrelief=0` no relief.
+- **KFAR** (`85-host-far.js`): the stage's `landH` carried to 9 km, sunk 14 m under the square, coloured by the same zones (moss near the rim,
+  paramo gold and olive, the dry side's ochre) and fading to the haze; north of the rim it lies under the cloud deck. `?far=0`.
+  **KHORIZON** over the square and the far lattice, on the ground and (after the bake) the flora; `?hz=0`.
+- **Air** (`89z`): `BIO.bindAtmosWind`, height fog (`?hfog=0`), **the fog belt on the scarp** (the row's ask: deck top -20 m to +440 m,
+  windward from the north, `?belt=0`), the rain cover; A2C after the bake. R9 (wet ground) not taken (oidong's black-ground finding over KGROUND).
+  **The rain wall is not taken** (no page takes `fx/89-atmos-fx-rainwall.js` yet, and its shader uses `uint`: WebGL2 only).
+- **KSHADOW attached, off by default** (`?shadow=1` or the panel's button), behind the texture-unit guard (`window._shadow` says what was decided).
+- **Water:** the breakup on the tarn and bog pools (`?breakup=0`); `WATER.mirrorSwitch` on the tarn, off at load (`?mirror=probe|live`).
+- **Graphics switches** (`45`): `BIO.INDEX_ITEMS` (`?index=0`), `BIO.LOD.merge/minTris/fade/cull` (`?lodmerge=0`, `?lodfade=0`, `?lodcull=0`), and `lodTick` on the view.
+- **Card cells** (`check_cells` 6 to 0, its baseline rows can go): the cells the code cuts are now the slots' own in `materials.json`
+  (and the pack, as `pack.py` writes them; `libCell` reads `L.cell`): fern, strap, tussock, escargot and the groundsel's green leaf on the
+  plant's measured box (a shave of a percent or two); **the daisy is the whole cupflower** (the card is one flower now: the old third-cell
+  cut drew a fragment of it); the crown clumps (`leaf.small`, card.sage, a sheet of nine) are cut by `BIO.geo.cells` (`"sheet": "geometry"`):
+  they drew the whole grid on every card.
+- KSTRATA **not taken**: the tors are granite and the scarp is drawn as ground (no beds; oidong's call). Kin and seasons (the row's life
+  column) not taken: a pass of their own, after the owner's look.
+
+**Species changed for readers** (riftrim reads `50` and `55` through `SHIGH.make/grow`): keys and indices unchanged; near limbs flare where
+31j is on the page (riftrim lists it); the crown clumps take one sage sprig a quad and the daisy is the whole flower where shigh's pack is on
+the page; `grow` does not reseed per tree, so riftrim's trees keep their forms. `SHIGH.SHORE` unset there: every tree drawn as before. One
+new item, `impTrees`, is defined only by `buildTrees` (not on riftrim's page). Riftrim's three pages are left for its turn (they move in
+text when rebuilt).
+
+**Checked here (CPU, SwiftShader; not the verify):** `tools/build.py` (syntax OK), `check_core_use`, `check_assembly` (shighlands' two
+MISSING rows gone), `check_port`, `check_source` (none over; two keys shrank), `check_cells biomes/shighlands` (0; the library cards pulled
+for it). One SwiftShader load at `?q=0.3`: error panel clean, no page or GL errors, every host check passes (attach audit 0.01%, one cereus
+card), every negative fails, 8,995 trees (668 far, all ten far species baked as impostors), 49 bake calls, `window._shadow` attached and off
+(the ground reads 14 texture units; 15 with the map: tight on the Arc's 16, so watch the guard there), the fog belt on, KHORIZON on 31
+materials. No baseline was rewritten.
+
+- [ ] **The tarn lies mostly under its own ground, and there are no bog pools** (found 2026-11-09, older than this turn, not fixed:
+      it moves the land). `TARNL` is the lowest point of the tarn's rim less .4 m (1452.6 m), but the plateau climbs across it, so the
+      ground at the tarn's centre stands at 1460.9 m: the water shows only on its downhill side (the field's shore is 110 m from the
+      centre). `POOLS` comes out empty (`window._water.pools` 0): no bog hollow passes the pools' test, so `BOG_DRAW` draws nothing and
+      the export's water is the tarn and the streams. The fix is the stage's (45): level the tarn's bowl (dig it to below its rim) and
+      relax the pools' test, then look at it; every placement near them moves, so it is a turn of its own. The edge check's negative
+      puts its tree at the water field's deepest node for this reason.
+
+**What the GPU verify should look at:**
+- That the page loads clean and every host check passes, the new edge check above all (screw palms and tree ferns stand by the streams).
+- The ground: Lambert to Standard changes its light; the KGROUND layers against the old hex tiling; the relief. Compare `?kground=0`.
+- The impostors' brightness against the near crowns (`?impgain=`); `?diet=0` for the old blobs.
+- The fog belt's height and density on the scarp and from 'Above the cloud sea' (the deck's hard line, item 3 above, may read differently).
+- KFAR's colours and its seam at the square's edge ('From afar'); the far field north of the rim must stay under the deck.
+- KSHADOW: `window._shadow` (attached, not skipped?) and its cost with `?shadow=1`.
+- The budget (19.5M ceiling in `99`): the flared joints add a few triangles a limb; the impostors replace the blobs (fewer).
+- The joints' look on the coilbark and the volute (side limbs leaving the trunk's axis).
