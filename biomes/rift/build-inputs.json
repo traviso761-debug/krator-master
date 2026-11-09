@@ -92,7 +92,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -137,10 +137,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift.html": "5fe0b319d30219a79a54103ad3a3fa9b2c8b651ca24faf0d008349cc888bdd61"
+    "biomes/rift/dist/rift.html": "880c5d7959e987e09ee1cef0e42bbe604d3c545528d460a419503e87aeca31f4"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift.html": "83149e343c50f426c2c7213549e7e28171bb844746cceff20e596d359688a755"
+    "biomes/rift/dist/rift.html": "dd7e65fdf1f84fb31ac833b6d96d789a907be4c549e5a2ca8b02a4f578770e21"
    }
   },
   "build.py --station highland": {
@@ -238,7 +238,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -284,10 +284,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-highland.html": "0ab1561830a307b25b1af25ed5244b1667905429fdc99f7b010cdeeee2adc55b"
+    "biomes/rift/dist/rift-highland.html": "bd3b36ff9979de72d956888c98de795a9c5ce1cd793c8fcfce1da709ca92e151"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-highland.html": "752fa38c7162ef415de02b739ef65882028befe52dbe1f17fe812ed3c1d8ccd6"
+    "biomes/rift/dist/rift-highland.html": "cbf3d20fc8d28f23d5c4f19525fe5bb89fd72c86373a990409a9bc446b5bf841"
    }
   },
   "build.py --station jungle": {
@@ -384,7 +384,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -430,10 +430,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-jungle.html": "9100c075d637a78cae8814a371778a879cb1493a54d3e31fa8c8b8a43472ba60"
+    "biomes/rift/dist/rift-jungle.html": "0db64baf05433de7b27c2cdacecd5b15fff1d56763d3b0934f4fc4a937eb9d84"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-jungle.html": "c01c540cf1a47ef4a71dfaa4919802d05100d9cd235ed2f23e3a6c699e1ff3a3"
+    "biomes/rift/dist/rift-jungle.html": "14e361a7051736f0167f637b5f49e7213fdb1e1739998f5c9f47c239af5e01ef"
    }
   },
   "build.py --station plateau": {
@@ -532,7 +532,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -578,10 +578,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-plateau.html": "9514a0c600cacb95790142861cf93a781074785e0d691eb59beb2d27a279c798"
+    "biomes/rift/dist/rift-plateau.html": "059ebd749186b570a75bd03cdfb758ef51a5caae675e2631309c4694129c5f29"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-plateau.html": "63d1b67f1129b92e6e0d3bca8f3ea4e345198f8264b498e4c5b28488af5981e6"
+    "biomes/rift/dist/rift-plateau.html": "4abb57f8e630efb711220b1836d400780cf4bebcefe348a0e50c91e93302c84e"
    }
   },
   "build.py --station savannah": {
@@ -687,7 +687,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -733,10 +733,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-savannah.html": "9b1788ea16927afcd13d3b2f3ce7ab5b781df8b1da5f3defcf271dc651b6404e"
+    "biomes/rift/dist/rift-savannah.html": "cdd888e666659c9603bbe9d1691171d67099c3848cdf0c4bc4affc386cdab67a"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-savannah.html": "18c28a7808f8a813cb5c7e6eca9fb3889c5159262b8ccd753361e34c00d15e77"
+    "biomes/rift/dist/rift-savannah.html": "85460afa1d3d6f693ad28cca6fd343adc60c6b24ca443154a42bdece2b45c9e7"
    }
   }
  }

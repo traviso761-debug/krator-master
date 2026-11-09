@@ -57,7 +57,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
@@ -95,10 +95,10 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands.html": "ae57a77882fe9c13461b830bad481fea767fc94065228948aa2c96b24ca44d92"
+    "biomes/shighlands/dist/shighlands.html": "291483d9824c3eeb9dc9a080ca07bdc4a7ba11dc77fa19db02c25da25f7c9cfc"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands.html": "a8076ca884357cffac4624e53f820efffcec84f860b5d9b89a8b5d76abcf9679"
+    "biomes/shighlands/dist/shighlands.html": "b883e1674265f86383fb81573a95901a531135df5bd25acf64363b4377838b9c"
    }
   }
  }

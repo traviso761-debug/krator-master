@@ -126,7 +126,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
@@ -174,12 +174,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/k-guilin/dist/k-guilin.html": "f9e612993e621d8a0c0b1593146a802ca4dcf922adf60b527050d149b5eda1ff",
+    "biomes/k-guilin/dist/k-guilin.html": "2b3565f8cdfa389a8593cfb14653e997db0865902413e68f1931aa46afa06a10",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "289ce87c275e9e111d6503618de2b905758d62a74578479e7d98ce38db6d116c",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    },
    "outputs_raw": {
-    "biomes/k-guilin/dist/k-guilin.html": "1573c9a99db012893bfd62fdad7c917f26e7c801dd103aeffeadc842c34a3402",
+    "biomes/k-guilin/dist/k-guilin.html": "b3d62d68a7545e65e804cad7cb386bc41a7e963f0462df7d6be00dbd44a30e41",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "289ce87c275e9e111d6503618de2b905758d62a74578479e7d98ce38db6d116c",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    }

@@ -67,7 +67,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
@@ -354,28 +354,28 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/locus/abyss-kit.html": "3a24ba960886517e321ab3f595dbab28005f76c637bf9d44ee126394a6f6a22b",
-    "settlements/locus/build-manifest.json": "b0ab41fcfef0806cc7071b7ee64c099365bccc0b2b3b8bb3c10934c28a54b5f9",
-    "settlements/locus/locus-kit.html": "59147f374f80713284aecd0ee26d2826a7eca9da3fc49204d1d6ed0aa1db24eb",
-    "settlements/locus/locus-plants.html": "20b092e6152c6d24b8a4dfd11e4cab41713acc9e5f60d0e447418270eb56ac30",
-    "settlements/locus/locus.html": "425e1169dc9b885b20e1481fd7058633780394f23f71bb14ff734b99ed764aa4",
+    "settlements/locus/abyss-kit.html": "d4e8883cb07f1f0c540bc37c83f294f5ea2ba6ce667a5983f9776b4ab66f9397",
+    "settlements/locus/build-manifest.json": "dfab38f0cfb0325572bed188f42d6abd0a81f9ab433ecad35245db269e9f75f4",
+    "settlements/locus/locus-kit.html": "a6401c132a18236d1b0c6bf08263daff30041dd7e798f7b3505e00b35f3d932b",
+    "settlements/locus/locus-plants.html": "3859a5e6d98b56eae8ecf684161ba4b87c33206ba463e3a8d1ddaad3c738ea26",
+    "settlements/locus/locus.html": "fd4add57d3ed00a97f7e8b3d75c37999fdee494e578da0ee8453f911e1f6a383",
     "settlements/locus/locus.tex.locus.js": "e1d2481175aa51fdb4950c2739cfdc10e8f1dda399fe93d1dd878f06d452ec82",
-    "settlements/locus/publish/abyss-building-kit.html": "6c96bbe7fa4b83ee7bee47940d50d87bf01e7f90175da4f22eabcb074db351a5",
-    "settlements/locus/publish/locus-building-kit.html": "f9e595ccf026ca5ac6aec7949085c8a757bef309cf2fa1de0c907df713686c96",
-    "settlements/locus/publish/locus-plants.html": "8b51334a0d419a8fd44a56d91fb5418c34774e1eaa48322fc4fb3fe5ef8a6ced",
-    "settlements/locus/publish/locus.html": "a3e011ba37b2460acb086c8ccceb8f76abf1cf95cce95cc748560cf766c4ac48"
+    "settlements/locus/publish/abyss-building-kit.html": "e999e505630ea7f07e0e60f9d28d9a624261345ce515d22fdfcbcc6254b7e439",
+    "settlements/locus/publish/locus-building-kit.html": "26816ddb46a523f35898479041a41c88ac9d225ac819647329721fee80c45e64",
+    "settlements/locus/publish/locus-plants.html": "e33d83d35c775a4ac583b48c821209dbfea2a9ab3c7d664394a5823f8817eb25",
+    "settlements/locus/publish/locus.html": "81ecf352f5fdec3e81cc13f0f5bedd287ade5350dd147bd1ca4b134ec7d14ebf"
    },
    "outputs_raw": {
-    "settlements/locus/abyss-kit.html": "3a24ba960886517e321ab3f595dbab28005f76c637bf9d44ee126394a6f6a22b",
-    "settlements/locus/build-manifest.json": "b0ab41fcfef0806cc7071b7ee64c099365bccc0b2b3b8bb3c10934c28a54b5f9",
-    "settlements/locus/locus-kit.html": "59147f374f80713284aecd0ee26d2826a7eca9da3fc49204d1d6ed0aa1db24eb",
-    "settlements/locus/locus-plants.html": "20b092e6152c6d24b8a4dfd11e4cab41713acc9e5f60d0e447418270eb56ac30",
-    "settlements/locus/locus.html": "425e1169dc9b885b20e1481fd7058633780394f23f71bb14ff734b99ed764aa4",
+    "settlements/locus/abyss-kit.html": "d4e8883cb07f1f0c540bc37c83f294f5ea2ba6ce667a5983f9776b4ab66f9397",
+    "settlements/locus/build-manifest.json": "dfab38f0cfb0325572bed188f42d6abd0a81f9ab433ecad35245db269e9f75f4",
+    "settlements/locus/locus-kit.html": "a6401c132a18236d1b0c6bf08263daff30041dd7e798f7b3505e00b35f3d932b",
+    "settlements/locus/locus-plants.html": "3859a5e6d98b56eae8ecf684161ba4b87c33206ba463e3a8d1ddaad3c738ea26",
+    "settlements/locus/locus.html": "fd4add57d3ed00a97f7e8b3d75c37999fdee494e578da0ee8453f911e1f6a383",
     "settlements/locus/locus.tex.locus.js": "e1d2481175aa51fdb4950c2739cfdc10e8f1dda399fe93d1dd878f06d452ec82",
-    "settlements/locus/publish/abyss-building-kit.html": "6c96bbe7fa4b83ee7bee47940d50d87bf01e7f90175da4f22eabcb074db351a5",
-    "settlements/locus/publish/locus-building-kit.html": "f9e595ccf026ca5ac6aec7949085c8a757bef309cf2fa1de0c907df713686c96",
-    "settlements/locus/publish/locus-plants.html": "8b51334a0d419a8fd44a56d91fb5418c34774e1eaa48322fc4fb3fe5ef8a6ced",
-    "settlements/locus/publish/locus.html": "a3e011ba37b2460acb086c8ccceb8f76abf1cf95cce95cc748560cf766c4ac48"
+    "settlements/locus/publish/abyss-building-kit.html": "e999e505630ea7f07e0e60f9d28d9a624261345ce515d22fdfcbcc6254b7e439",
+    "settlements/locus/publish/locus-building-kit.html": "26816ddb46a523f35898479041a41c88ac9d225ac819647329721fee80c45e64",
+    "settlements/locus/publish/locus-plants.html": "e33d83d35c775a4ac583b48c821209dbfea2a9ab3c7d664394a5823f8817eb25",
+    "settlements/locus/publish/locus.html": "81ecf352f5fdec3e81cc13f0f5bedd287ade5350dd147bd1ca4b134ec7d14ebf"
    }
   }
  }

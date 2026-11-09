@@ -70,7 +70,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
@@ -120,11 +120,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/guilin/dist/guilin.html": "de95e03c5070eb0f273236ecc7d64158e5035c4724838efafc6e88007931eaba",
+    "biomes/guilin/dist/guilin.html": "98370656014e26ad058456fe64f381b602083614f4848080de30faed94106c07",
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    },
    "outputs_raw": {
-    "biomes/guilin/dist/guilin.html": "f1c5e51bd20670bcb21acf3d9205d6de5909f986a94fd237b505969b4266e91a",
+    "biomes/guilin/dist/guilin.html": "a5983fb62ee3e352638acbec0b261dfee7a2ddcd543ab4f3c96aa7334442532d",
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    }
   }

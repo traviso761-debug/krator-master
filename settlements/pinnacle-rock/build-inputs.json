@@ -109,7 +109,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
     "core/biome/37-core-traps.js": "50e90f6c662ee4e92a19d48f8c2ed66497dd27574e3b81f02372f969f846b2d6",
@@ -532,7 +532,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/pinnacle-rock/dist/pinnacle-rock.html": "15142d6b93cf4a5867f46aafb895bdd4be71deb8ed6076e2b667a8f55df6fb35",
+    "settlements/pinnacle-rock/dist/pinnacle-rock.html": "4aeb7c262d2e819ceb876ee82b81d9a516c9c6f4e20ec06eef3199c31bd30bfa",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.beast-riders.js": "ba87aef1cf1c51eb601318f643fb9e204a33a6f46fb9b2f38acc54c6a88e477c",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.brtowns.js": "eab5cbe6d53857fdb0d23a73e9cf8da30ce589aae53ad313103d70d37609e0c4",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.girder.js": "16026f686a35a205868b3a6c94c8c2fe9bc069ad65335d60b68064af21439a96",
@@ -541,7 +541,7 @@
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.necanyons.js": "391f2c8161c8c3af0bcc1e89f0cbf4eeb480398af5c478387468be1ed91d7e3a"
    },
    "outputs_raw": {
-    "settlements/pinnacle-rock/dist/pinnacle-rock.html": "15142d6b93cf4a5867f46aafb895bdd4be71deb8ed6076e2b667a8f55df6fb35",
+    "settlements/pinnacle-rock/dist/pinnacle-rock.html": "4aeb7c262d2e819ceb876ee82b81d9a516c9c6f4e20ec06eef3199c31bd30bfa",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.beast-riders.js": "ba87aef1cf1c51eb601318f643fb9e204a33a6f46fb9b2f38acc54c6a88e477c",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.brtowns.js": "eab5cbe6d53857fdb0d23a73e9cf8da30ce589aae53ad313103d70d37609e0c4",
     "settlements/pinnacle-rock/dist/pinnacle-rock.tex.girder.js": "16026f686a35a205868b3a6c94c8c2fe9bc069ad65335d60b68064af21439a96",

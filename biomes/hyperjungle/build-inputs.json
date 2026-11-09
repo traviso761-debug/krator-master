@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "0e100e69cea06d8b1744a7f0fe134332b3ba59c5bd34b179a9e7cab4b78050ad",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "424d1e9f91bc5d6f90051ed8dade412a5ff68cf32ba96cfbe5efe9fe82bfcdfc",
     "biomes/hyperjungle/PORT.md": "a0876da87064ff4981346e27c4bac7bdf2a48d346fa7b1728506974205fce271",
     "biomes/hyperjungle/build.py": "630364971e86627b0aa7fe6d2869f68c38bb10cb360be8d04ba080791976730a",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
@@ -82,7 +82,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -110,7 +110,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -131,10 +131,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle.html": "b2260811c6e13d3c27abf4430ee266ef08336cda2711e71ee530afd8bd60c082"
+    "biomes/hyperjungle/dist/hyperjungle.html": "cfb1bfbc147a8bc39c9e5c50a1a075e6a26b38eae2222632cc294912a2fdabfe"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle.html": "fd5938a3bce6153549acc06b20264c7c9f7ba081649e4b14519d42305a4c203c"
+    "biomes/hyperjungle/dist/hyperjungle.html": "1e93eb4f601a22e7e60a59fcc9c0a1af7c52fc461717694a32cde386259001b5"
    }
   },
   "build.py --station lake": {
@@ -145,7 +145,7 @@
     "biomes/geyser/tex/pack.json": "3c607fd44a5dfb6c402bb2e164d571effd1e30d3a132fe5b6cc6b7d2ed81f631",
     "biomes/geyser/tex/rosette.albedo.webp": "e7b5d68f18fe713f33839e0922b354d1a6e7f8393a9f9913202d267a64d5537b",
     "biomes/geyser/tex/strap.albedo.webp": "430aa3766da7c02406d5fa3eded5a572eab69a31a84c85eb52266876c52bc7aa",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "0e100e69cea06d8b1744a7f0fe134332b3ba59c5bd34b179a9e7cab4b78050ad",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "424d1e9f91bc5d6f90051ed8dade412a5ff68cf32ba96cfbe5efe9fe82bfcdfc",
     "biomes/hyperjungle/PORT.md": "a0876da87064ff4981346e27c4bac7bdf2a48d346fa7b1728506974205fce271",
     "biomes/hyperjungle/build.py": "630364971e86627b0aa7fe6d2869f68c38bb10cb360be8d04ba080791976730a",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
@@ -225,7 +225,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -253,7 +253,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -277,10 +277,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "f0802f835544b8090f2922ae8a94cc725a790dc2ff44a4220eb65bb6500a4705"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "4afd1cdea04e998e02bd9adc745cd160fbc90c8f86b6618d1855fab28c3323eb"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "95223334028110792ee57f2139eafd39761ae94275523c83c393b9c6709bf409"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "bc71d1cdf9a2aefb1f0fdf1626dee1180d497cfeca8ec2b1c53961600c0c1746"
    }
   },
   "build.py --station savanna": {
@@ -311,7 +311,7 @@
     "biomes/eastabyss/tex/strap.albedo.webp": "239c1711955791d357f52e8df4d5a510283e28b35aa07cfc26cecb3cdd49ff49",
     "biomes/eastabyss/tex/strapfrond.albedo.webp": "297af55b1d22641fcef36a74ea88b899a65bacec248c78782f259adfc12fb0d8",
     "biomes/eastabyss/tex/wood.albedo.webp": "795145ca323cf91bb2d05c131c700a66903a1c5df927836aaa8b99553049ea11",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "0e100e69cea06d8b1744a7f0fe134332b3ba59c5bd34b179a9e7cab4b78050ad",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "424d1e9f91bc5d6f90051ed8dade412a5ff68cf32ba96cfbe5efe9fe82bfcdfc",
     "biomes/hyperjungle/PORT.md": "a0876da87064ff4981346e27c4bac7bdf2a48d346fa7b1728506974205fce271",
     "biomes/hyperjungle/build.py": "630364971e86627b0aa7fe6d2869f68c38bb10cb360be8d04ba080791976730a",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
@@ -391,7 +391,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -420,7 +420,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -442,10 +442,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "772ea554e9f571728777c64a1b70dd963808f67a9a1af53adba28f3cb6b94948"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "e948a047d9ba93a6bacd41a67bf3fca1a81210a5bb9968c8bcf7ccbfd9b21fc1"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "995904eae15c3af0be779db399c358b3170fb523fa6f89f07ea95eccdc63bbe4"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "72d7c987c8dda86ef4b436dec1d6ace9f568cdf6941028b15cb0f05c712290d7"
    }
   }
  }

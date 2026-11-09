@@ -4,6 +4,11 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
+      the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two
+      tufts a 3 m cell near, two a 6 m cell mid, one a 13 m cell far, over the whole burn-aged savanna. So the item declares
+      `cap: 650000` with its `capWhy` (`stations/savanna/87-host-station.js`) instead of a coarser cell or a shorter reach.
+
 - [ ] **The final rebuild's turn (2026-10-27): looks for the owner's pass.** Station 1 and stations 2 and 3 (PLAN-STATIONS.md,
       "Core adoption") pass `verify.py --assert --all-views` on the GPU. To judge: the impostors' light (`IMP_GAIN` 1.6 in 88, against
       the near boles; `?impgain=`), the far canopy's roof past the map (83; `?far=0`), the diet's ranges (`?diet=0`); station 2's
@@ -11,7 +16,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **Stand-in textures on the stations** (PROMPTS-NEEDED.md section 37): the sky lily's pads are a vertex-coloured disc
       (`card.lily.victoria` owed), the moriche crowns the kit's fern fronds (`card.palm.fan` owed), the termite cathedrals vertex
       colour (`earth.termite`, section 32).
-- [ ] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (`core/biome/30-core-foliage.js`, the two-sided light's
+- [x] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (fixed 2026-11-08 in the integration pass: `30-core-foliage.js` and KGROUND, `43-core-ground.js`, take the eye from `viewMatrix`, as `KHOOK.EYE`; the test hashes refrozen) (`core/biome/30-core-foliage.js`, the two-sided light's
       view vector and the back-light's): three r128 uploads it only to Phong, Toon, Standard, shader and env-mapped materials, so both
       read (0,0,0) on every page. The ground tint's fade had the same fault (every ground-tinted card more than ~700 m from the world's
       origin dissolved, wherever the camera stood: the savanna station's tall grass was invisible); that one is fixed here (the eye from

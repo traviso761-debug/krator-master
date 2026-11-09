@@ -57,7 +57,7 @@
  ],
  "30-core-foliage.js": [
   "core/biome/30-core-foliage.js",
-  "afa83d883601"
+  "2c4da8ac56aa"
  ],
  "35-core-strata.js": [
   "biomes/sedesert/src/35-core-strata.js",
@@ -137,7 +137,7 @@
  ],
  "54b-bio-biome-sedesert-trees.js": [
   "biomes/sedesert/src/55-biome-sedesert-trees.js",
-  "6424f1724b96"
+  "7f1efc8dbd4f"
  ],
  "54c-bio-biome-sedesert-floor.js": [
   "biomes/sedesert/src/60-biome-sedesert-floor.js",
