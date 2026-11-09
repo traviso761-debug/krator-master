@@ -25,7 +25,7 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
    if(M.top-M.y0>5)REGISTER({name:'A termite mound',key:'mound',x:M.x,z:M.z,y:M.y0-1,r:M.R*1.1,h:M.top-M.y0+2});});
   if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
    g.setIndex(idx);g.computeVertexNormals();const mat=new THREE.MeshLambertMaterial({vertexColors:true});mat.customProgramCacheKey=()=>'craterdry-mounds';
-   const me=new THREE.Mesh(g,mat);me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel='Termite mounds';scene.add(me);E.mesh=me;}
+   const me=new THREE.Mesh(g,mat);me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel='Termite mounds';me.userData.probePoints=[].concat(...E.mounds.map(M=>[M.x,(M.y0+M.top)/2,M.z]));   /* one point a mound in the merged mesh (core/host's probe) */scene.add(me);E.mesh=me;}
   return E.mounds.length;}
  function kinTrees(q){if(Q.get('kin')==='0'||typeof BIO.kin!=='function'||typeof SWBAY==='undefined')return{thorn:0,baobab:0};
   const KIN=[{K:BIO.kin('swbay.thorn',{key:'edgethorn',name:'Umbrella thorn (SW Bay, at the edge)',scale:.8,tags:{koppen:['Aw','BSh']}}),cell:75,p:.42,pad:7,salt:1,n:'thorn'},
@@ -44,7 +44,7 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
     OBSTACLES.push({x,z,r:T.crownR*.6+1,y0:y-3,y1:y+T.H});
     if(lv>0)REGISTER({name:k.K.record.name,key:k.K.record.key,x,z,y:y-1,r:T.crownR*1.1,h:T.H+2});}}
   return out;}
- E.build=function(q){const out=CRATERDRY.build({R:TERR.R-150,quality:q});
+ E.build=function(q){{const D=BIO.kits&&BIO.kits.craterdry&&BIO.kits.craterdry.defs;if(D&&D.bloom)Object.assign(D.bloom,{cap:1000000,capWhy:'the savannah edge: younger, oftener-burnt ground, its mosaic mostly bloom and regrowth (PLAN-STATIONS.md station 3; the instance-cap rule, 2026-11-08): 904,208 at 2026-11-09'});}const out=CRATERDRY.build({R:TERR.R-150,quality:q});
   BIO.cur='edge/mounds';out.mounds=mounds();BIO.cur='edge/kin';out.kin=kinTrees(q);BIO.cur=null;
   /* OWED TO SWBAY'S TURN (KNOWN_ISSUES.md; korona's way): the bay's `leaflet` and `bloom` cards float on the thorn and the baobab for want of a
      structure near them in swbay's own builders (221 of 351 and 121 of 206 here on software GL; ringisles found the same on these two trees), so
