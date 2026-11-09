@@ -22,7 +22,7 @@ const BOG_DRAW=BOG_STILLS.length?WATER.drawPools(BOG_STILLS,{color:lin(0x2a2a1c)
 if(BOG_DRAW)BOG_DRAW.mesh.userData.inspectLabel='A bog pool';
 // ---- the ravine streams: from just above each head down the floor to the foot of the drawn ground (the deck's top)
 const STREAM_FLOWS=RAV.map((R,i)=>{const pts=[],W=[];let y=1e9,s=0,px=0,pz=0;
- for(let z=R.head+60;z>rimZ(R.x0)-400;z-=14){const x=ravX(R,z),h=terrainH(x,z);if(h<CLOUD_Y+6)break;
+ for(let z=R.head+60;z>R.foot-400;z-=14){const x=ravX(R,z),h=terrainH(x,z);if(h<CLOUD_Y+6)break;
   y=Math.min(y,h+.45);if(pts.length){s+=Math.hypot(x-px,z-pz);}px=x;pz=z;pts.push([x,z,y]);W.push([s,Math.min(1.5+s*.03,6.5)]);}
  if(pts.length<3)return null;
  const F=WATER.flow({name:'A ravine stream '+(i+1),pts,width:W,speed:1.4,rapids:[.04,.2]});

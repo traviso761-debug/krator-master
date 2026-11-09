@@ -23,6 +23,18 @@
   "ground.sphagnum": {"lib": "ground.sphagnum", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
   "ground.moss": {"lib": "ground.moss002", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
   "ground.paramo": {"lib": "ground.steppe", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.wetmoss": {"lib": "ground.ground047", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+  "ground.wetmoss": {"lib": "ground.ground047", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "bark.rope": {"lib": "bark.twisted.red", "scale": [1.2, 1.6], "tint": {"keep": 0.35, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true, "own": true},
+  "bark.helix": {"lib": "bark.whorled", "scale": [1.0, 1.4], "tint": {"keep": 0.25, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true, "own": true},
+  "bark.juniper": {"lib": "bark.juniper", "scale": [0.8, 1.2], "tint": {"keep": 0.3, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true, "own": true},
+  "needle.pine": {"lib": "card.pine", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.62}, "roughLift": 0, "specular": 0.2, "sheet": "geometry", "own": true},
+  "needle.spruce": {"lib": "card.spruce", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.62}, "roughLift": 0, "specular": 0.2, "sheet": "geometry", "own": true},
+  "needle.juniper": {"lib": "card.juniper", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2, "sheet": "geometry", "own": true},
+  "ground.needles": {"lib": "ground.needles", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true, "own": true},
+  "ground.snow": {"lib": "ground.snow.drift", "scale": [4.0, 4.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.3, "mapOnly": true, "own": true},
+  "ground.lichen": {"lib": "ground.lichen.crust", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true, "own": true},
+  "ground.scree": {"lib": "rock.rubble.sturzstrom", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true, "own": true},
+  "surface.cushion": {"lib": "surface.cushion", "scale": [0.6, 0.6], "tint": {"keep": 0.5, "mean": 0.62}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true, "own": true},
+  "ice.glacier": {"lib": "ice.glacier", "scale": [9.0, 9.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.0, "specular": 0.5, "mapOnly": true, "own": true}
  }
 }

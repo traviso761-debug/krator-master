@@ -304,6 +304,10 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('shigh: no builder for species '+i+' '+S.key);});
+// THE BUILDERS' TOOLS, for a station's own species (stations/<name>/5x-*.js: they append to SHIGH.SPECIES and SHIGH.B before the build). Read only:
+// the cloud forest's builders above are unchanged by them
+SHIGH.B=B;
+SHIGH.TOOLS={twistTrunk,corkscrew,along,dirOf,joint,clumpAt,mossAt,epiphytes,regTree,hs,hz,leafCol,rodCol,nearW,blocked,hadd};
 const newStats=()=>({fins:0,trunk:0,limb:0,far:0,clumps:0,trumpets:0,scrolls:0,fronds:0,croziers:0,straps:0,stilts:0,frills:0,cabbages:0,columns:0,aloes:0,epi:0,bells:0,heroes:0,fars:0,mirrors:0,byS:SP.map(()=>0)});
 // MIRROR-HANDED trees: about one in MIRROR_EVERY, and the host may ask for one at a point (SHIGH.mirrorAt: the nearest
 // hero of a species there turns mirror-handed), so a camera can find one

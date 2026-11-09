@@ -61,7 +61,7 @@ function log(x,y,z,st){const a=rr(0,TAU),L=rr(5,13),r0=rr(.25,.5),hx=Math.cos(a)
  BIO.tube('wood',pts,col,{seg:6,cap:true});st.logs++;
  for(let i=0;i<n;i++){const p=pts[i];BIO.put('moss',[p.x,p.y+p.r*.7,p.z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[p.r*3,p.r*1.1,p.r*3],leafCol(PAL.moss,1.15,.03,.08,.05),{n:[0,1,0]});}
  return true;}
-SHIGH.small={tuft,swirl,daisies,fern,coral};
+SHIGH.small={tuft,swirl,daisies,fern,coral,stone,boulder,mossMat,cushion,rosette,around,rockTint};   /* a station's floor (stations/<name>/) reuses them */
 
 // ---------------------------------------------------------------- the zone planters
 // Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.

@@ -125,7 +125,8 @@ card), every negative fails, 8,995 trees (668 far, all ten far species baked as 
 (the ground reads 14 texture units; 15 with the map: tight on the Arc's 16, so watch the guard there), the fog belt on, KHORIZON on 31
 materials. No baseline was rewritten.
 
-- [ ] **The tarn lies mostly under its own ground, and there are no bog pools** (found 2026-11-09, older than this turn, not fixed:
+- [x] **The tarn lies mostly under its own ground, and there are no bog pools** (fixed 2026-11-09 with the re-stage below: the tarn is dug
+      as a bowl, its level over its whole floor, and the pools are dug as dishes at KRAND spots in each bog: 20 pools) (found 2026-11-09, older than this turn, not fixed:
       it moves the land). `TARNL` is the lowest point of the tarn's rim less .4 m (1452.6 m), but the plateau climbs across it, so the
       ground at the tarn's centre stands at 1460.9 m: the water shows only on its downhill side (the field's shore is 110 m from the
       centre). `POOLS` comes out empty (`window._water.pools` 0): no bog hollow passes the pools' test, so `BOG_DRAW` draws nothing and
@@ -142,3 +143,50 @@ materials. No baseline was rewritten.
 - KSHADOW: `window._shadow` (attached, not skipped?) and its cost with `?shadow=1`.
 - The budget (19.5M ceiling in `99`): the flared joints add a few triangles a limb; the impostors replace the blobs (fewer).
 - The joints' look on the coilbark and the volute (side limbs leaving the trunk's axis).
+
+## Stations 2 and 3 (built 2026-11-09, the same cloud session; PLAN-STATIONS.md, "The re-survey on map 5.1" and "Built")
+
+`python3 build.py --station conifers` (`dist/shighlands-conifers.html`) and `--station fellfield` (`dist/shighlands-fellfield.html`). Both run on
+src/'s host through hooks that station 1 never sets (`STATION_PAINT`, `STATION_GL`, `STATION_KGL`, `STATION_GROUND_GLSL`, `STATION_TUFT` in 84,
+`STATION_FARCOL` in 85, `STATION_MIRROR` in 89zx), a shared stage, atmosphere and take (`stations/common/`), and each station's land, plants,
+sky and views. 55 and 60 now export their builders' tools (`SHIGH.B`, `SHIGH.TOOLS`, more of `SHIGH.small`); nothing they draw changed.
+Families a station names are packed into its page only (`station.json` "families", `"own": true`; riftrim's copy of the pack leaves them out).
+
+**Checked here (SwiftShader, full quality; not the verify):** both load clean, every host check passes and every negative fails.
+Station 2: 21,261 trees (rope pine 6,474, helix fir 14,291, coil juniper 496; 3 species baked as impostors), 16.4 M triangles (19.5 M budget),
+attach audit 0.23% (the cones). Station 3: no trees, 46k instances, 3.6 M triangles, 1,133 m of ice with 38 crevasses, 5,764 stones on 347
+sorted-spiral cells.
+
+- [x] **Station 1 no longer matches map 5.1** (re-staged 2026-11-09, the owner: "rebuild as band on the 3 km face and move paramo up the
+      rim"; the next section) (the re-survey): its site is now the hyperjungle's floor (550 m, Af) under a ~3 km scarp whose
+      top is a 3.5-3.9 km ET plateau; no 1.4 km rim over a cloud deck is left. The owner's call: keep the page as an ideal type with its old
+      sky site, or rebuild its stage as a band of the 3 km face with the paramo moved up to the rim (PLAN-STATIONS.md).
+- [ ] **The icefall is the host's own mesh** (`stations/fellfield/86-host-ice.js`): no core ice kind is approved. It is not core/water and not
+      exported as water; its crevasses are cut into a 1.5 m grid, so they read best from tens of metres, not at the lip.
+- [ ] **The sorted spirals' fines are the lichen crust**, the snail rosettes wear the groundsel sheet's silver leaf, and the dwarf heath is the
+      kit's plain lobe: three prompts owed (`core/materials/PROMPTS-NEEDED.md`, section 37).
+- [ ] **No streams on either station** (the meltwater runs under the scree and the needles; a stream off the snout and the snowbeds is a later pass).
+- [ ] **No snow lies on the stage by itself**: the snowbeds are painted and on KGROUND's snow layer; the weather's snow cover (fx snowcover) only
+      adds snow while it snows (`snowBase` .25 / .45 for the season's old snow on lit materials).
+- [ ] **For the GPU verify:** both stations' looks (the rope pine's three strands, the helix fir's stair, the cones' size, the snowbeds, the
+      sorted spirals against their stones, the icefall's crevasses and its blue), the texture units (the ground reads 13), the triangle count on
+      the Arc at station 2 (16.4 M), and `--all-views` on both.
+
+## Station 1 re-staged on the 3 km face (2026-11-09)
+
+`src/45-host-stage.js`: the face from the cloud deck (`CLOUD_Y` 1250 m, the north edge) to the rim (~3.5 km, `RIMH`, round z +700), its
+drop quantised into benches ~150 m tall (forest shelves, bare-rock risers: the slope field's scale is now 1.0, `SLOPEK`, so a 30-degree tread
+is forest ground and only the risers over ~40 degrees are rock); the ravines run down the face (`R.head` under the rim, `R.foot` in the deck);
+the paramo, the tors, the bogs and the tarn on the plateau behind the rim (3.5-3.7 km); the fog band 750-1950 m above the deck (`FOG_BAND`:
+the cloud forest to ~2.4 km, 5.1's Cfb band, the elfin forest above). The sky's site is old px 486,700 (5.1 px 758,1030), 1.15 atm. The
+kit's code is unchanged (its zones read the fields); 84, 85, 89z, 89zw and 99 follow the new names (`DECK_Z`, `R.foot`, `FOG_BAND`).
+Views added: 'Down the face', 'Up the face from the cloud'. Checked on SwiftShader at the default quality: clean, every host check passes,
+every negative fails, 25,447 trees, 18.65 M triangles (19.5 M budget).
+
+- [ ] **The face is ~1.4x steeper than the model's** (2.3 km in 3.5 km; 5.1 has ~3 km in ~6 km) so the band from the deck to the rim fits a
+      5.2 km map. A wider map (R 3600) would hold the model's slope at about twice the trees: the owner's call.
+- [ ] **The default quality is .76** (`89zx`; `?q=1` the full density, 24.7 M triangles): the face holds far more forest than the old
+      plateau did. The stations set `STATION_Q` 1.
+- [ ] **For the GPU verify:** the face's look (the benches' rock bands, the forest shelves, the ravines' streams down a 2 km drop: rapids,
+      no falls drawn), the deck from the rim ('Above the cloud sea'), the fog belt's band (to 1.3 km above the deck), the far field north of the
+      deck's edge, the impostors on the face, and that every pool and the tarn read as water.

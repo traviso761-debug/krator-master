@@ -1,0 +1,11 @@
+{
+ "note": "Station 2, the spiral conifers (PLAN-STATIONS.md; 5.1 px 762,1059, 3,786 m, Dsc). src/ with the shared station stage, atmosphere and take (stations/common/), this station's land (44s), species and floor (57), sky (89) and views (98). The cloud forest's eleven species stay defined, with no pass.",
+ "drop": ["45-host-stage.js", "89z-host-atmos.js", "99-host-take.js"],
+ "core": {
+  "45-host-stage.js": "biomes/shighlands/stations/common/45-host-stage.js",
+  "89z-host-atmos.js": "biomes/shighlands/stations/common/89z-host-atmos.js",
+  "99-host-take.js": "biomes/shighlands/stations/common/99-host-take.js"
+ },
+ "fx": ["89-atmos-fx-snowcover.js"],
+ "families": ["bark.rope", "bark.helix", "bark.juniper", "needle.pine", "needle.spruce", "needle.juniper", "ground.needles", "ground.snow"]
+}

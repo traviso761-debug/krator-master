@@ -4,7 +4,7 @@
 // pools, ochre gravel on the dry side, grey granite on the tors. Then the tarn and the bog pools, and the mist that
 // drifts up the ravines and along the cloud deck's edge (the deck is core/atmos's: 89z-host-atmos.js).
 TOR.forEach(K=>REGISTER({name:K.name||'A granite tor',x:K.x,z:K.z,y:plateauH(K.x,K.z)-5,r:K.r*1.05,h:K.h+40}));
-RAV.forEach((R,i)=>REGISTER({name:'A ravine of the cloud forest',x:ravX(R,R.head-400),z:R.head-400,y:plateauH(ravX(R,R.head-400),R.head-400)-200,r:R.w*2.2,h:240}));
+RAV.forEach((R,i)=>{const z=(R.head+R.foot)/2,x=ravX(R,z);REGISTER({name:'A ravine of the cloud forest',x,z,y:terrainH(x,z)-200,r:R.w*2.2,h:400});});   /* down the face, its middle */
 
 // ---------------------------------------------------------------- the ground
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
@@ -27,6 +27,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the granite (darker in its joints, by slope)
   // the granite (darker in its joints, by slope), mossed over where the cloud reaches it
   t.copy(GRAN).lerp(GRAN2,clamp(.3+n*1.4+smooth(.5,.9,slope)*.45,0,1)).lerp(MOSSD,smooth(.35,.7,fog)*(.55+.3*smooth(.4,.6,pav2)));c.lerp(t,smooth(.3,.65,rock));
+  if(typeof STATION_PAINT==='function')STATION_PAINT(c,wx,wz,n,pav,pav2);   /* a station's own ground colours (stations/<name>/), in place of the zones' above */
   const k=1+n*.10+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -63,6 +64,7 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const KG_ON=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_ON&&new URLSearchParams(location.search).get('kgrelief')!=='0';
 const KGL=(function(){if(!KG_ON)return[];
+ if(typeof STATION_KGL==='function')return STATION_KGL();   /* a station's layers on the same three weights (STATION_GL fills them) */
  const m=KGROUND.layer('shigh','ground.moss',{w:'vGL.x*(1.0-kgWet)',amt:.55,gain:1.3,tint:'diffuse',name:'forest moss'}),
   w=KGROUND.layer('shigh','ground.wetmoss',{w:'clamp(vGL.x*kgWet+vGL.z*kgWetB,0.0,1.0)',amt:.6,gain:1.3,tint:'diffuse',name:'wet soil'}),
   p=KGROUND.layer('shigh','ground.paramo',{w:'vGL.y',amt:.5,gain:1.3,tint:'diffuse',name:'paramo grass'}),
@@ -82,13 +84,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'vec3 hueB=mix(vec3(1.1,0.94,0.89),vec3(0.91,1.06,0.93),smoothstep(0.3,0.7,mc2.r));float lw=clamp(vGL.x*0.55+vGL.y*0.5,0.0,1.0),bw=clamp(vGL.z*0.85,0.0,1.0);'+
    'vec3 vary=mix(vec3(1.0),tone*hue,lw);vary=mix(vary,mix(0.8,1.12,mc2.b)*hueB,bw);diffuseColor.rgb*=vary;}':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.6,vRock*0.7);'+
-  'vec2 t1=texture2D(uTuft,vGWP.xz*0.21).rg,t2=texture2D(uTuft,vGWP.xz*0.083+vec2(0.41,0.17)).rg;float tb=max(t1.r,t2.r*0.8),ts=max(t1.g,t2.g*0.8);'+
-  'diffuseColor.rgb*=1.0-ts*0.4*vPar;diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.24)*(1.0+0.5*tb),tb*vPar*0.75);}');};
+  /* the tussock print (a station with STATION_TUFT false uses vPar for its own term instead) */
+  (typeof STATION_TUFT!=='undefined'&&!STATION_TUFT?'':'vec2 t1=texture2D(uTuft,vGWP.xz*0.21).rg,t2=texture2D(uTuft,vGWP.xz*0.083+vec2(0.41,0.17)).rg;float tb=max(t1.r,t2.r*0.8),ts=max(t1.g,t2.g*0.8);'+
+  'diffuseColor.rgb*=1.0-ts*0.4*vPar;diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.24)*(1.0+0.5*tb),tb*vPar*0.75);')+
+  (typeof STATION_GROUND_GLSL==='string'?STATION_GROUND_GLSL:'')+'}');};   /* a station's own ground term (the fellfield's sorted-stone spirals) */
 if(KG_ON)KGROUND.hook(MAT_GROUND,{layers:KGL,key:'shigh-ground',relief:KG_RELIEF&&KGL.length?{bump:.075,cavity:.8,mesh:1}:null});
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),par=new Float32Array(nx*nx),gl=new Float32Array(nx*nx*3);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   rk[k]=smooth(.3,.65,FC.at(FC.a.rock,x,z));par[k]=(1-smooth(.4,.7,FC.at(FC.a.fog,x,z)))*(1-smooth(.4,.75,FC.at(FC.a.oasis,x,z)))*(1-rk[k]);
+  if(typeof STATION_GL==='function'){const w=STATION_GL(x,z,rk[k]);gl[k*3]=w[0];gl[k*3+1]=w[1];gl[k*3+2]=w[2];par[k]*=w[3]==null?0:w[3];continue;}
   {const fog=FC.at(FC.a.fog,x,z),bog=smooth(.45,.8,FC.at(FC.a.oasis,x,z))*(1-rk[k]),open=(1-bog)*(1-rk[k]),f=smooth(.32,.62,fog);gl[k*3]=f*open;gl[k*3+1]=(1-f)*open;gl[k*3+2]=bog;}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
@@ -120,7 +125,7 @@ const MIST=(function(){const c=document.createElement('canvas');c.width=c.height
  // along the deck's edge: where the ground stands just above CLOUD_Y
  let tries=0,n=0;while(n<44&&tries++<9000){const x=rr(-2700,2700),z=rr(-2800,0),h=FC.at(FC.a.h,x,z);if(Math.abs(h-CLOUD_Y-20)>40)continue;place('sprite',x,z,rr(6,30),rr(120,260));n++;}
  // up the ravines
- RAV.forEach(R=>{for(let z=rimZ(R.x0)+100;z<R.head;z+=rr(110,180))place('sprite',ravX(R,z)+rr(-30,30),z,rr(8,26),rr(70,160));});
+ RAV.forEach(R=>{for(let z=Math.max(R.foot,DECK_Z)+60;z<R.head-200;z+=rr(110,180))if(FC.at(FC.a.fog,ravX(R,z),z)>.3)place('sprite',ravX(R,z)+rr(-30,30),z,rr(8,26),rr(70,160));});   /* up the ravines while the cloud reaches them */
  // the bog hollows: low sheets
  BOGS.forEach(B=>{for(let k=0;k<3;k++)place('sheet',B.x+rr(-B.r*.4,B.r*.4),B.z+rr(-B.r*.4,B.r*.4),rr(2,6));});
  tick((dt,t)=>{for(const m of L){const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;m.o.position.x=x;m.o.position.z=z;m.o.position.y=Math.max(FC.at(FC.a.h,x,z),CLOUD_Y-10)+m.lift;}});
