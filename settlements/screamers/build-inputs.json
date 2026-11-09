@@ -69,7 +69,7 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
+    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
@@ -254,7 +254,6 @@
     "kits/interiors/sets": "1bdefc8c84d12d89305c3191a37cb67874320bdf687403427b51b5eaff9c5b17",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/post-apoc": "19071375fa232acb6833543345098ce4eae840d12e6ddcdc5402c9e877e0ca29",
-    "settlements/screamers": "7727c6b15c01777e1356b81dee6541f5731baff758ca649c4461a80a713f6984",
     "settlements/screamers/src": "2fb9f88ac77580845e4d2bdb119f02abde1bf1d968047bad769333e1c0619a92",
     "settlements/screamers/targets": "ed53d255c0a9857884d93e14e48233a5dedf2dcdf7307a3f7d26ec6f1327efce",
     "settlements/screamers/targets/furniture": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
@@ -263,15 +262,15 @@
    },
    "outputs": {
     "settlements/screamers/build-manifest-furniture.json": "0e6948c788e31df61853324ab92205e36a399b00bc6a8a435d2c98003c45d293",
-    "settlements/screamers/build-manifest-screamers.json": "aa5b43c8549e6134497f06ff1629ff6927f9826c85ee0a19c740cd1144c91c8c",
+    "settlements/screamers/build-manifest-screamers.json": "dd12ade3e6bf2a82ed0a2e75e808b99f32d0573fe3ae417677d6612201455803",
     "settlements/screamers/dist/furniture.html": "f248f05f5c71d499fe0333af0b616b78b4f1561601973c45f36ebe476a6ad77d",
-    "settlements/screamers/dist/screamers.html": "73b347106761d8e84d2e001206684f01bc58c2795945bd4d0ebbbdf1366a10d7"
+    "settlements/screamers/dist/screamers.html": "7ccc4ce57456d0ac163def79d49c25c25ed396f3e0e564b272bd08369ff810bc"
    },
    "outputs_raw": {
     "settlements/screamers/build-manifest-furniture.json": "0e6948c788e31df61853324ab92205e36a399b00bc6a8a435d2c98003c45d293",
-    "settlements/screamers/build-manifest-screamers.json": "aa5b43c8549e6134497f06ff1629ff6927f9826c85ee0a19c740cd1144c91c8c",
+    "settlements/screamers/build-manifest-screamers.json": "dd12ade3e6bf2a82ed0a2e75e808b99f32d0573fe3ae417677d6612201455803",
     "settlements/screamers/dist/furniture.html": "f248f05f5c71d499fe0333af0b616b78b4f1561601973c45f36ebe476a6ad77d",
-    "settlements/screamers/dist/screamers.html": "73b347106761d8e84d2e001206684f01bc58c2795945bd4d0ebbbdf1366a10d7"
+    "settlements/screamers/dist/screamers.html": "7ccc4ce57456d0ac163def79d49c25c25ed396f3e0e564b272bd08369ff810bc"
    }
   }
  }

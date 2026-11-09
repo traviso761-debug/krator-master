@@ -50,7 +50,7 @@
  "80-camera.js": "8b1b9fc1762f",
  "81-glow.js": "9d619b4a4128",
  "82-daynight.js": "7d7be11fb7c8",
- "83-mr-walk.js": "84cef767a45f",
+ "83-mr-walk.js": "dd39a03850ed",
  "84-flyers.js": "bb33e74f7841",
  "84a-flyers-routes.js": "a43e710721ae",
  "84b-flyers-animals.js": "422465d4da65",
@@ -73,7 +73,7 @@
  "97-host-minimap.js": "bb80eeaa8a43",
  "97-lod-auto.js": "88ec9e581127",
  "98-host-edit.js": "66535c6a9cdd",
- "98-start.js": "f5c6865f65da",
+ "98-start.js": "446eae9910c3",
  "99-host-cutaway.js": "5fc10889d24e",
  "99-tail.html": "7501a65f821c"
 }

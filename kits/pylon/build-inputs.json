@@ -102,7 +102,7 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
+    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
@@ -477,18 +477,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/pylon/build-manifest-kit.json": "5d825affc4101097dfdc6f7ea75285534333b7123e35cd1bcd66517d6ba100c5",
+    "kits/pylon/build-manifest-kit.json": "b9a75b6ebde3daa5d9763acb1e5d4f1270f681ba801f2c8a2b17cf62d2c43ecc",
     "kits/pylon/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/pylon/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/pylon/dist/iziz.tex.pylon.js": "b55002cc7cadea946a90eae4ae8210246a5635dab63c413e1ea803b75d05fa6f",
-    "kits/pylon/dist/pylon.html": "55c3028149530b9eace0c25bff45fe54384d9f22b3315701cf419944e53737d2"
+    "kits/pylon/dist/pylon.html": "2ec9ce0665bf993161b1250bb47a9580763677941ce50b38d79800708bb27b88"
    },
    "outputs_raw": {
-    "kits/pylon/build-manifest-kit.json": "5d825affc4101097dfdc6f7ea75285534333b7123e35cd1bcd66517d6ba100c5",
+    "kits/pylon/build-manifest-kit.json": "b9a75b6ebde3daa5d9763acb1e5d4f1270f681ba801f2c8a2b17cf62d2c43ecc",
     "kits/pylon/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/pylon/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/pylon/dist/iziz.tex.pylon.js": "b55002cc7cadea946a90eae4ae8210246a5635dab63c413e1ea803b75d05fa6f",
-    "kits/pylon/dist/pylon.html": "55c3028149530b9eace0c25bff45fe54384d9f22b3315701cf419944e53737d2"
+    "kits/pylon/dist/pylon.html": "2ec9ce0665bf993161b1250bb47a9580763677941ce50b38d79800708bb27b88"
    }
   }
  }
