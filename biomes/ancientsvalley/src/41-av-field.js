@@ -100,6 +100,10 @@ AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:
   var fam,near=o.near&&Math.hypot(x-o.near.x,z-o.near.z)<o.near.r;
   if(near&&o.near.keys.length&&u(i,j,2)<.5)fam=o.near.keys[Math.floor(u(i,j,3)*o.near.keys.length)];
   else{var keys=kind==='core'?o.coreKeys:o.shelfKeys;fam=keys[Math.floor(u(i,j,3)*keys.length)];}
+  /* the lake-front (the owner, 2026-11-09: "the height of the average building rises as we approach the lake"): o.lakeK(x, z) 1 at the shore, 0 inland;
+     over .5 a pick turns to o.tall with a chance rising to .7 at the shore, under .4 to o.short with a chance rising to .4 inland; the near keys stand */
+  if(!near&&o.lakeK&&(o.tall||o.short)){var lk=o.lakeK(x,z),r8=u(i,j,8);if(o.tall&&o.tall.length&&lk>.5&&r8<(lk-.5)*1.4)fam=o.tall[Math.floor(u(i,j,9)*o.tall.length)];
+   else if(o.short&&o.short.length&&lk<.4&&r8<(.4-lk))fam=o.short[Math.floor(u(i,j,9)*o.short.length)];}
   var g=u(i,j,4),si=0;while(si<AV.RUIN_CUTS.length-1&&g>=AV.RUIN_CUTS[si])si++;var st=AV.RUINS[si];
   if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a family named in o.hero keeps a shape its ruin pass draws */
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);

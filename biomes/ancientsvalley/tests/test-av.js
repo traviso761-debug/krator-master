@@ -41,6 +41,11 @@ ok('every tower has a key, a yaw and a kind',P.towers.every(t=>/^\w+\.\w+$/.test
  for(let i=0;i<P.towers.length;i++)for(let j=i+1;j<P.towers.length;j++)if(Math.hypot(P.towers[i].x-P.towers[j].x,P.towers[i].z-P.towers[j].z)<160*.95)close++;
  ok('no two towers closer than the pitch',close===0);}
 {const f=P.towers.filter(t=>t.state==='intact').length/P.towers.length,tall=P.towers.filter(t=>/^(intact|gutted|crown)$/.test(t.state)).length/P.towers.length;ok('few intact, under a third standing tall ('+Math.round(f*100)+'%, '+Math.round(tall*100)+'%)',f>.005&&f<.15&&tall<.35);}
+// the lake-front (the owner, 2026-11-09): with lakeK, tall and short, the tall family's share rises toward the lake and falls inland
+{const mkL=(lk)=>AV.plan({R:3000,pitch:160,theta:.3,seed:5,ground,lakeY:LAKE,F,coreKeys:['spindle','ledger'],shelfKeys:['spindle','ledger'],lakeK:lk,tall:['spindle'],short:['ledger']});
+ const share=(P,f)=>{const T=P.towers.filter(f);return T.length?T.filter(t=>t.family==='spindle').length/T.length:0;};
+ const L=mkL((x,z)=>x>400?1:x<-400?0:.5),near=share(L,t=>t.x>400),far=share(L,t=>t.x<-400),L0=mkL(null),n0=share(L0,t=>t.x>400),f0=share(L0,t=>t.x<-400);
+ ok('the tall family wins toward the lake and loses inland ('+Math.round(near*100)+'% by the lake, '+Math.round(far*100)+'% inland; '+Math.round(n0*100)+'% and '+Math.round(f0*100)+'% with no lake)',near>far+.25&&near>n0+.1&&far<f0-.1,Math.abs(n0-f0)>.25);}
 // the craters: on the page, apart, and the bowl below its rim
 {const C=AV.craters({R:2800,n:12,seed:3,ok:(x,z,r)=>ground(x,z)>LAKE+10});ok('craters struck ('+C.length+')',C.length>=8&&C.every(c=>Math.hypot(c.x,c.z)<=2800));
  let apart=true;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++)if(Math.hypot(C[i].x-C[j].x,C[i].z-C[j].z)<C[i].r+C[j].r)apart=false;ok('no two craters overlap',apart);

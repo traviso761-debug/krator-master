@@ -61,6 +61,10 @@ const HCHK={
    const at=m.alphaTest!=null?m.alphaTest:(m.uniforms&&m.uniforms.alphaTest?m.uniforms.alphaTest.value:0),s=share(map.image);if(s<0||s>.98){unread++;return;}   /* a read that comes back empty (a bitmap the 2D canvas will not draw, the headless lane) is no verdict */
    if(s>.03&&!(at>0)&&!m.transparent&&!m.alphaToCoverage)bad.push((o.name||o.userData.inspectLabel||m.type)+': alpha in the map ('+Math.round(s*100)+'%), no cut');else if(s<.005&&at>0)bad.push((o.name||o.userData.inspectLabel||m.type)+': a cut on a map with no alpha');});});
   return{ok:!bad.length&&maps-unread>20,detail:maps+' mapped materials of '+seen.size+(unread?' ('+unread+' unreadable here)':'')+(bad.length?'; '+bad.slice(0,5).join('; '):'; every alpha map tested, no test without alpha')};},
+ /* the lake-front property values (the owner, 2026-11-09): the towers' mean tip height within lakeK .6 of the shore against the towers under .35 */
+ lakeFront(T){if(!T||!T.lakeK)return{ok:false,detail:'no lake'};const tip=t=>{const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];return F&&F.height?(F.height.tip||F.height.roof||0):0;};let hs=0,hn=0,ls=0,ln=0;
+  STAGE.plan.towers.forEach(t=>{const k=T.lakeK(t.x,t.z),h=tip(t);if(!h)return;if(k>.6){hs+=h;hn++;}else if(k<.35){ls+=h;ln++;}});const mh=hn?hs/hn:0,ml=ln?ls/ln:0;
+  return{ok:hn>=20&&ln>=20&&mh>ml*1.2,detail:hn+' towers by the lake at a mean tip of '+Math.round(mh)+' m, '+ln+' inland at '+Math.round(ml)+' m'};},
  transit(T,n){if(!T)return{ok:false,detail:'no transit'};const J=T.net.junctions.length,kinds={};T.net.junctions.forEach(j=>{kinds[j.kind]=(kinds[j.kind]||0)+1;});
   const ok=J>=300&&T.highway.ramps.length>=3&&T.highway.spans.length>=80&&T.cargo.crossings.length>=8&&T.subway.stations.length>=3&&T.trains.length>=4&&(n?n.dressed>=20:true);
   const rj=T.net.junctions.filter(j=>j.ramp).length;
@@ -71,7 +75,7 @@ const HCHK={
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());
-if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
+if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
  add('the grid runs between the buildings',HCHK.grid(T));if(!STAGE.transit)add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
@@ -83,7 +87,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('every tower intact',HCHK.ruinShare(T.map(t=>Object.assign({},t,{state:'intact'}))));
  add('no tree grown',HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0));
  add('a tenth of the trees on the plinths',HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z}))));
- if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));}
+ if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));add('the towers the same height everywhere',HCHK.lakeFront({lakeK:(x,z)=>KRAND.unit(KRAND.hash(x|0,z|0,1,0))}));}
  else add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
  add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));

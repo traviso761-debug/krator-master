@@ -25,13 +25,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `41-av-field.js` | 14 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `46-av-feral.js` | 13 |  |
-| `46z-host-stage.js` | 29 |  |
+| `46z-host-stage.js` | 30 |  |
 | `47-host-land.js` | 9 | the ground (27); the far ground (the model's country out to 24 km (61) |
 | `70-host-city.js` | 41 **big** | the rust (the owner, 2026-11-04: more rust) (62); the engines (kits/ancients 8ah, 8ai, read in pla (216); the lines: the viaduct (AV.viaduct's records dra (231) |
 | `71-host-creepers.js` | 5 |  |
 | `72-host-keepers.js` | 6 |  |
 | `73-host-wrecks.js` | 7 |  |
-| `74-host-transit.js` | 10 |  |
+| `74-host-transit.js` | 13 |  |
 | `88-host-build.js` | 7 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |
@@ -39,5 +39,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89u-host-steam.js` | 2 |  |
 | `89v-host-smog.js` | 2 |  |
 | `89w-host-water.js` | 3 |  |
-| `99-host-take.js` | 17 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (97) |
+| `99-host-take.js` | 17 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (101) |
 | `99-tail.html` | <1 |  |
