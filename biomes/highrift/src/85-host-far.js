@@ -23,12 +23,8 @@ const FAR=(function(){
 // THE GROUND'S TEXTURE UNITS (the Throne's, ringisles' and geyser's samplersOf): the Mirror's six layers, the horizon, the rain cover and the weather passed
 // SwiftShader's 32 units but not the 16 both GPU lanes allow (the GPU verify, 2026-11-04). Counted from a dry run of its onBeforeCompile; window._units
 // says what the ground reads (final: at the end of the build, 89z).
-const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
-const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
-  const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
-  try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
-  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
-const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures;
+const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
+const MAXT=KSHADOW.maxUnits(renderer);
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 /* what the ground takes after the horizon, measured on the Mirror (2026-11-04): 89a's snow cover and the weather's wetting 4 units, the rain cover 1.
    In the Throne's order: the rain cover where it fits beside the 4, then the horizon on the ground where its 2 fit too */
