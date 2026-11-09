@@ -38,7 +38,7 @@
   },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
    "bytes": 5135671,
-   "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
+   "sha256": "6b0f7976d7624576022ce40f97752aa2956b18d1c08130ada713eb80eaae3711"
   },
   "biomes/copperglacier/dist/copperglacier-pass.html": {
    "bytes": 5136413,
@@ -993,8 +993,8 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5250600,
-   "sha256": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045"
+   "bytes": 5512910,
+   "sha256": "130ee01404988516b196032936396fe70b501b00c36e1264f361ca16cb1fe475"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 5033320,

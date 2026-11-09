@@ -26,6 +26,13 @@ python3 godot/tools/sync_core.py                    # the Godot test's copies
 python3 tools/build.py kits/resources
 ```
 
+**Rebaked 2026-11-09** on scale model 5.1 after edit 3 (`tools/scale-model/edit_513.py`; the owner asked for it with the
+Firebliss Range's decisions). The 11-03 bake predated 5.1 round 3, edit 1 and the Firebliss Range's carving: it masked that
+range airless. Now the range is 1,432 volcanic cells round its cones (its vent records have a radius at last), sulphur to 255
+at the vents. Across the map the provinces moved on 30,000 cells (crystalline 263,493 to 242,495, sedimentary 191,704 to
+203,082, granite 58,665 to 67,456, volcanic 40,214 to 41,644); gold lodes 115,845 to 112,268, tin 120,187 to 121,169; the
+ledger rewritten (`test-res.js --ledger`: all 55 checks pass), the Godot field test passes on it.
+
 Deterministic: the same model and regions give the same bytes. 2026-11-03: scale model 5.1, 118 regions, 117 settlements;
 4 km cells (`--cell 4`: every second pixel of 5.1's 2 km grid, as the 4.23 page's half-resolution grid was), 911 x 862;
 4.4 MB of data, 18 s. Every window the bake uses (relief, the volcanic share, the oil's smoothing, the margins, the
