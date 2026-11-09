@@ -213,7 +213,8 @@ loads each build's `tex/` pack, which is WebP. What is left:
 - **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
   floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
   builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).
-  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference. **[web]**
+  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference (retired 2026-10-18: the kit's sheet and Dhelv
+  are on core/host, whose `90-host-camera.js` carries those controls; `kits/zeijani/README.md`, "The engine"). **[web]**
 - **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
   furniture placer through `core/furnish`) into every building kit whose buildings have a corresponding interior
   set, each with a cut-away that opens them. **[G data]** for the plans.

@@ -162,7 +162,8 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   now collide with their buildings (the step's ride-along, half done: Scyvoi, the nomads and Resources do not take
   `core/walk`). `verify.py --assert`: Eternian and Scyvoi pass; Yeti fails only `tags-vocabulary` (`khaayken`, its
   KNOWN_ISSUES.md; it fails the same before).
-- **Not yet on it:** `kits/zeijani` (its own fork: most files differ, its `92-camera.js` is the controls' reference) and
+- **Not yet on it:** `kits/zeijani` (its own fork: most files differ; its `92-camera.js`, the controls' reference, was retired
+  for core/host on 2026-10-18, `kits/zeijani/README.md` "The engine", status 2026-11-09) and
   `settlements/noahs-regret` (its own fork of everything but `30-geo.js`). Each is a port with its own fingerprint.
 - **Open, the owner's:** `core/engine/10-core.js` writes its own mulberry32, a `Math.sin` hash and a value noise (the
   check no longer counts them: it reads builds, not core; 18 baseline entries moved with the file). Yeti's `10-core.js`
@@ -415,7 +416,8 @@ core module", "Real doors and glass across the kits", and "Doors that open" (Vie
 **With step 2 (`core/engine`).** Half of the first is done (the host gets `KWALK` where the page takes `core/walk`); the
 rest waits for Zeijani's port onto the engine, whose controls are the reference.
 - One walk mode and one set of controls in every viewer (`TODO.md`, Viewers): the engine takes `core/host` and
-  `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` is the reference for the controls).
+  `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` was the reference for the controls; core/host's
+  `90-host-camera.js` carries them since 2026-10-18).
   GODOT-PLAN.md counts `camera.js` copied in 16 builds, `probe.js` in 15, `stats.js` in 10.
 - Interiors in every building kit that has them, with a cut-away (`TODO.md`, Viewers): done once in `core/engine`
   through `kits/interiors` and `core/furnish`, not once per kit.

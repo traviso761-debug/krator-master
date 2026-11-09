@@ -24,6 +24,23 @@
       (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
       no `marksUrl`.
 
+- [x] (2026-11-09) **The page did not load: "KratorSky is not defined".** The kit's `src/81-sky.js` moved to
+      `core/atmos/placeholder` (MODULARITY-PLAN.md step 1) and the kit's `build.py` reads it from there; this `build.py` did
+      not, so the committed page was the last one that drew. `build.py` takes the placeholder sky as the kit's does.
+- [ ] (2026-11-09) **core/biome's `BIO.geo.stemClump` leaks globals** (`30-core-foliage.js`: its const list ends a line early,
+      so `bk`, `box`, `poly` and `kk` are assigned as globals). `box` overwrote the kit's `box()` (`30-geo.js`) once a clump
+      was made, and every building placed after it threw "box is not a function". `src/45-dhelv-bio.js` wraps the call so the
+      kit's `box` is put back; the fix is one character in core/biome (`;` to `,`), which every page that takes core/biome
+      (160 build commands, 377 pages by `tools/reach.py`) would rebuild for: the coordinator's or the owner's, with the
+      all-builds rebuild. Any other page with a global `box` and a clump is hit the same way.
+- [x] (2026-11-09) **The kit's doors threw "svLeaf is not defined".** The kit's doors pass (2026-11-03) added `core/door` and
+      `core/engine/36o-open.js` to the kit's `build.py`, not to this one, so every built def with a leaf failed to build. `build.py`
+      takes both now.
+- [ ] (2026-11-09) **The doors stand as drawn on this page** (open or ajar, their walk blocks off): `src/99-start.js` does not hand
+      `KDOORHOST.tick` and its E key to core/host as the kit's sheet does (`kits/zeijani/src/99-host-take.js`), so they do not
+      open or shut here.
+- [x] (2026-11-09) **The port lint's numeric defaults** (four `x||n` in `[G data]` fragments): the ways' widths take
+      `w==null?2:w`; the two segment projections guard a zero length with `Math.max(1e-12, ...)` (the same result).
 - [ ] **Meshing the rock is slow: about 7 ms a chunk** (16 m, 32 cells a side). The page meshes near the camera within a
       budget a frame, so a jump to a far view fills in over a few seconds. A worker (P5c) or coarser chunks far off would help.
 - [ ] **The direct sun's beam is shadowed only by the meshed rock.** Its spot through an opening casts shadows from the

@@ -13,6 +13,7 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/sockets          37-sockets.js, 38-symbols.js, 80-cultures.js (fillSockets: each def's signs, banners and emblems; the zeijani pack)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass)
   core/engine           36o-open.js only (svLeaf, svDoorway, svPane: the engine's drawing of core/door, read in place by this fork)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
