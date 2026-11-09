@@ -79,6 +79,14 @@ section > p { color: var(--muted); margin: 2px 0 12px; }
 .cueed { display: grid; gap: 12px; min-width: 0; }
 .cuelog { margin: 0; padding-left: 22px; font: 400 12px var(--mono); color: var(--muted); max-height: 220px; overflow: auto; }
 .cuelog li:first-child { color: var(--fg); }
+.picker { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; }
+.picker h3 { margin: 0; font-size: 13px; }
+.picklist { max-height: 340px; overflow: auto; border-top: 1px solid var(--line); }
+.pk { display: flex; gap: 10px; align-items: center; padding: 6px 2px; border-bottom: 1px solid var(--line); }
+.pk .nm { flex: 1; min-width: 0; font-size: 13px; }
+.pk .nm small { display: block; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk.in .nm { color: var(--accent); }
+.pk .dur { font: 400 11px var(--mono); color: var(--muted); flex: none; }
 code { font: 400 0.92em var(--mono); }
 @media (max-width: 760px) { .cuecols { grid-template-columns: 1fr; } }
 .grp > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 10px; padding: 4px 0; border-radius: 6px; }
@@ -287,7 +295,7 @@ legend { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 
   <section id="tab-cues" class="panel" role="tabpanel" hidden data-comment-target>
     <div class="head">
       <h2>Cues</h2>
-      <p>A cue is a sound the game asks for by name, like <code>sfx.combat.hit.metal</code>. It holds several variants and plays a different one each time, with a little random pitch and volume, never repeating the last few. Add variants with "+ Cue" in the Library or "Add to cue" in Cut, then fire it to hear the variety.</p>
+      <p>A cue is a sound the game asks for by name, like <code>sfx.combat.hit.metal</code>. It holds several variants and plays a different one each time, with a little random pitch and volume, never repeating the last few. Pick its variants below: the picker filters the Library by words, category, license, length and tags, Play auditions a clip and Add makes it a variant; "+ Cue" in the Library and "Add to cue" in Cut do the same. Then fire it to hear the variety.</p>
     </div>
     <div class="cuecols">
       <div class="list cuelist">
@@ -310,12 +318,24 @@ legend { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 
           <label class="field">Silent beyond (m)<input type="number" id="cue-dmax" min="1" max="500" step="1"></label>
           <label class="field grow">Notes<input type="text" id="cue-notes" maxlength="300" placeholder="what triggers it, where it is used"></label>
         </div>
-        <div class="row">
-          <label class="field grow">Add a variant<input type="search" id="cue-add" list="cue-clips" placeholder="type a clip's title, then Add"></label>
-          <datalist id="cue-clips"></datalist>
-          <button class="btn" id="cue-add-btn" type="button">Add</button>
-        </div>
         <div class="layers" id="cue-vars"></div>
+        <div class="picker" id="cue-picker" aria-label="Clip picker: find clips for this cue's variants">
+          <div class="row"><h3>Pick clips for this cue</h3><span class="readout" id="pk-count"></span></div>
+          <div class="row">
+            <label class="field grow">Find<input type="search" id="pk-q" placeholder="title, creator, tag, note..." autocomplete="off"></label>
+            <label class="field">Category<select id="pk-cat"></select></label>
+            <label class="field">License<select id="pk-lic"><option value="">Any</option><option value="free">Public domain / CC0</option><option value="by">CC BY (credit)</option></select></label>
+            <label class="field">Length<select id="pk-len"></select></label>
+            <label class="check" title="Only clips that already have a usage note"><input type="checkbox" id="pk-noted"> Noted</label>
+            <button class="btn mini" type="button" id="pk-clear">Clear</button>
+          </div>
+          <div class="chips" id="pk-tags" aria-label="Tags: click to require a tag"></div>
+          <div class="picklist" id="pk-list"></div>
+          <div class="row">
+            <button class="btn mini" type="button" id="pk-addall">Add every clip shown</button>
+            <span class="msg" id="pk-msg" role="status"></span>
+          </div>
+        </div>
         <div class="transport">
           <button class="btn primary" id="cue-fire" type="button">Fire</button>
           <button class="btn" id="cue-fire10" type="button">Fire &times;10</button>
@@ -1537,8 +1557,7 @@ function fillCueForm() {
   const cs = $('cue-cat'); cs.textContent = '';
   DATA.categories.filter(c => c.kind === 'sfx' || c.kind === 'amb').forEach(c => { const o = el('option', '', esc(c.name)); o.value = c.id; cs.appendChild(o); });
   KCUE.BUSES.forEach(b => { const o = el('option', '', b); o.value = b; $('cue-bus').appendChild(o); });
-  const dl = $('cue-clips');
-  DATA.clips.slice().sort((a, b) => a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1).forEach(c => { const o = el('option'); o.value = c.title + ' [' + c.id + ']'; dl.appendChild(o); });
+  fillPicker();
   $('cue-seed').value = cueSeed;
   $('cue-seed').onchange = () => { cueSeed = Math.max(0, Math.round(+$('cue-seed').value || 0)); cueStates.clear(); };
   $('cue-dist').oninput = () => { $('cue-dist-v').textContent = $('cue-dist').value + ' m'; };
@@ -1548,11 +1567,6 @@ function fillCueForm() {
     ['cue-dmin', v => { cue.distance.min = +v; }], ['cue-dmax', v => { cue.distance.max = +v; }], ['cue-notes', v => { cue.notes = v; }]];
   F.forEach(([id, set]) => { $(id).onchange = () => { set($(id).value); cue = KCUE.clean(cue); syncCueForm(); cueStates.delete(cue.id); changed(); }; });
   $('cue-new').onclick = () => { cue = newCue(); cueDoc = null; syncCueForm(); renderCueVars(); cueMsg('A new cue: give it a dotted name, then add variants.'); $('cue-id').focus(); };
-  $('cue-add-btn').onclick = () => {
-    const v = $('cue-add').value, m = v.match(/\[([^\]]+)\]$/), id = m ? m[1] : (DATA.clips.find(c => c.title === v) || {}).id;
-    if (!id || !CLIPS[id]) { cueMsg('Pick a clip from the list as you type.'); return; }
-    cueAddVariant({ clip: id, start: 0, end: 0, name: CLIPS[id].title }); $('cue-add').value = '';
-  };
   $('cue-fire').onclick = () => fireCue();
   $('cue-fire10').onclick = () => { for (let i = 0; i < 10; i++) setTimeout(fireCue, i * 450); };
   $('cue-save').onclick = saveCue;
@@ -1566,6 +1580,82 @@ function syncCueForm() {
   $('cue-norep').value = c.noRepeat; $('cue-cool').value = c.cooldown; $('cue-voices').value = c.maxVoices;
   $('cue-dmin').value = c.distance.min; $('cue-dmax').value = c.distance.max; $('cue-notes').value = c.notes;
   $('cue-dist').max = Math.max(10, Math.ceil(c.distance.max * 1.2));
+  if (pf.auto) { const want = DATA.clips.some(x => x.category === c.category) ? c.category : ''; if (pf.cat !== want) { pf.cat = want; $('pk-cat').value = want; } }   /* follow the cue's category while it has clips; else everything */
+  renderPicker();
+}
+/* ---------- The clip picker: the Library's filters on a short list beside the cue, Play to audition, Add to make a variant ---------- */
+let pf = { q: '', cat: '', lic: '', len: '', noted: false, tags: [], auto: true };
+const PICK_MAX = 40;
+function pickMatching() {
+  const words = pf.q.toLowerCase().split(/\s+/).filter(Boolean), len = pf.len ? pf.len.split('-').map(Number) : null;
+  return DATA.clips.filter(c => {
+    if (pf.cat && c.category !== pf.cat) return false;
+    if (pf.lic === 'free' && !(c.license === 'cc0' || c.license.startsWith('pd-'))) return false;
+    if (pf.lic === 'by' && !c.license.startsWith('cc-by')) return false;
+    if (pf.noted) { const n = noteOf(c.id); if (!n || !(n.text || n.use)) return false; }
+    if (len && !(c.duration >= len[0] && c.duration < len[1])) return false;
+    for (const t of pf.tags) if (!c.tags.includes(t)) return false;
+    if (words.length) {
+      const n = noteOf(c.id) || {}, hay = [c.id, c.title, c.user, c.note, c.tags.join(' '), c.category, c.src, n.use, n.text].join(' ').toLowerCase();
+      for (const w of words) if (!hay.includes(w)) return false;
+    }
+    return true;
+  }).sort((a, b) => a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1);
+}
+function fillPicker() {
+  const opt = (s, v, l) => { const o = el('option', '', esc(l)); o.value = v; s.appendChild(o); };
+  const cs = $('pk-cat'); cs.textContent = ''; opt(cs, '', 'All categories');
+  DATA.categories.forEach(c => opt(cs, c.id, c.name));
+  const ls = $('pk-len'); ls.textContent = ''; LENS.forEach(([v, l]) => opt(ls, v, l));
+  const touched = () => { pf.auto = false; };
+  $('pk-q').oninput = () => { pf.q = $('pk-q').value; renderPicker(); };
+  $('pk-cat').onchange = () => { pf.cat = $('pk-cat').value; touched(); renderPicker(); };
+  $('pk-lic').onchange = () => { pf.lic = $('pk-lic').value; renderPicker(); };
+  $('pk-len').onchange = () => { pf.len = $('pk-len').value; renderPicker(); };
+  $('pk-noted').onchange = () => { pf.noted = $('pk-noted').checked; renderPicker(); };
+  $('pk-clear').onclick = () => { pf = { q: '', cat: '', lic: '', len: '', noted: false, tags: [], auto: false }; $('pk-q').value = ''; $('pk-cat').value = ''; $('pk-lic').value = ''; $('pk-len').value = ''; $('pk-noted').checked = false; renderPicker(); };
+  $('pk-addall').onclick = () => {
+    const list = pickMatching().filter(c => !cue.variants.some(v => v.clip === c.id)).slice(0, PICK_MAX);
+    if (!list.length) { pkMsg('Nothing shown that is not already in the cue.'); return; }
+    if (list.length > 12 && !confirm('Add all ' + list.length + ' shown clips as variants of this cue?')) return;
+    list.forEach(c => { cue.variants.push({ clip: c.id, start: 0, end: 0, weight: 1, fx: {}, name: c.title }); });
+    cue = KCUE.clean(cue); cueStates.delete(cue.id); syncCueForm(); renderCueVars(); changed(); pkMsg('Added ' + list.length + ' variants.');
+  };
+}
+function pkMsg(t) { $('pk-msg').textContent = t || ''; }
+function renderPickerTags(list) {
+  const box = $('pk-tags'), count = {};
+  list.forEach(c => c.tags.forEach(t => { count[t] = (count[t] || 0) + 1; }));
+  pf.tags.forEach(t => { if (!count[t]) count[t] = 0; });
+  const top = Object.keys(count).sort((a, b) => pf.tags.includes(b) - pf.tags.includes(a) || count[b] - count[a] || (a < b ? -1 : 1)).slice(0, 24);
+  box.textContent = '';
+  top.forEach(t => {
+    const b = el('button', 'chip', esc(t) + ' <span>' + count[t] + '</span>'); b.type = 'button';
+    b.setAttribute('aria-pressed', pf.tags.includes(t));
+    b.onclick = () => { pf.tags = pf.tags.includes(t) ? pf.tags.filter(x => x !== t) : [...pf.tags, t]; renderPicker(); };
+    box.appendChild(b);
+  });
+}
+function renderPicker() {
+  const box = $('pk-list'); if (!box || !cue) return;
+  const list = pickMatching(), inCue = new Set(cue.variants.map(v => v.clip));
+  renderPickerTags(list);
+  $('pk-count').textContent = list.length + ' clip' + (list.length === 1 ? '' : 's') + (list.length > PICK_MAX ? ', the first ' + PICK_MAX + ' shown' : '') + (inCue.size ? ' (' + inCue.size + ' in the cue)' : '');
+  box.textContent = '';
+  if (!list.length) { box.appendChild(el('p', 'empty', 'No clip matches. Loosen the filters, or search the Library and use "+ Cue" there.')); return; }
+  list.slice(0, PICK_MAX).forEach(c => {
+    const p = playerFor(c), row = el('div', 'pk' + (inCue.has(c.id) ? ' in' : ''));
+    const play = el('button', 'play', PLAY); play.type = 'button'; play.setAttribute('aria-label', 'Play ' + c.title);
+    const sync = () => { const a = p.a; play.innerHTML = a && !a.paused ? PAUSE : PLAY; };
+    play.onclick = async () => { const a = p.audio(); a.addEventListener('play', sync); a.addEventListener('pause', sync); a.addEventListener('ended', sync);
+      if (a.paused) { await p.route(); a.currentTime = 0; a.play().catch(() => {}); } else a.pause(); };
+    sync();
+    const nm = el('div', 'nm', esc(c.title) + '<small>' + esc(c.user) + ' &middot; ' + esc(c.lic) + (c.tags.length ? ' &middot; ' + c.tags.slice(0, 6).map(esc).join(', ') : '') + '</small>');
+    const add = el('button', 'btn mini' + (inCue.has(c.id) ? '' : ' primary'), inCue.has(c.id) ? 'Add again' : 'Add'); add.type = 'button';
+    add.onclick = () => { cueAddVariant({ clip: c.id, start: 0, end: 0, name: c.title }); };
+    row.append(play, nm, el('span', 'dur', fmt(c.duration)), add);
+    box.appendChild(row);
+  });
 }
 function cueAddVariant(v) {
   if (!cue) cue = newCue();
@@ -1574,8 +1664,8 @@ function cueAddVariant(v) {
   cueMsg('Added "' + (v.name || CLIPS[v.clip].title) + '" as variant ' + cue.variants.length + (cue.id ? ' of ' + cue.id : '') + '.');
 }
 function renderCueVars() {
-  const box = $('cue-vars'); box.textContent = '';
-  if (!cue.variants.length) { box.appendChild(el('p', 'empty', 'No variants yet. Use "+ Cue" on clips in the Library, "Add to cue" in Cut, or the box above.')); return; }
+  const box = $('cue-vars'); box.textContent = ''; renderPicker();
+  if (!cue.variants.length) { box.appendChild(el('p', 'empty', 'No variants yet. Pick clips below (Play to hear one, Add to make it a variant), use "+ Cue" on clips in the Library, or "Add to cue" in Cut.')); return; }
   cue.variants.forEach((v, i) => {
     const c = CLIPS[v.clip], row = el('div', 'layer');
     const fxs = Object.keys(v.fx).filter(k => k !== 'reverse').map(k => k + ' ' + (+v.fx[k]).toFixed(2)).join(', ') + (v.fx.reverse ? ', reversed' : '');
