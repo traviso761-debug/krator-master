@@ -23,6 +23,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
+  declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
+  renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
+  (`biomes/throne/src/89zz-host-core.js`) does all three right since 2026-11-09: move that into core, cap at min(16, GL), and drop the copies.
+  It moves every KSHADOW page.
+
 - **kits/interiors: a residence's food on the floor or a wall** (2026-11-09, the integration pass): `IX.sets.auditResidence` does not count
   table-top pieces, but the placer may fill the `food` need with one (beast-rider `br_bldg_girder_dwelling` at seed 2 on the full sets
   sheet: `br_h_stall_goods` on the low table). Add `anchors: ['floor', 'wall']` to the food requirement of `cottage`, `living` and `kitchen`
