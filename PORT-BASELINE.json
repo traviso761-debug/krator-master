@@ -556,6 +556,10 @@
    "bytes": 1208278,
    "sha256": "b3618758c70692ecb2ceeba6fe4ae346b13fcadef27351a989e38495284f6e49"
   },
+  "biomes/wouterwall/dist/wouterwall.html": {
+   "bytes": 1362410,
+   "sha256": "8e006edd63df9eb64ed2b6f43924c86887fbdd28ebd5352a73e4cea759a5bfef"
+  },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "bytes": 8387583,
    "sha256": "9fe4dc1394ffc2355afbcc30f717c5e63eb072597a0f2527d69b1859340059ca"

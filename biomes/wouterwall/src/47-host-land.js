@@ -121,8 +121,8 @@ LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrappin
 // THE SEASON'S GROUND (sRGB tints over each layer's map): the steppe straw-gold in autumn, green-gold in summer; the larch litter fresh
 // gold under the autumn larch; the loess buff all year (a little darker wet in spring); the terraces' stubble in autumn, green in summer
 const TINT={
- autumn:{steppe:0xc8b690,needles:0xa48a66,gravel:0xb4ac9e,loess:0xe8d4b0,terrace:0xb89a74,tundra:0xa09078,lichen:0xb0ac9c},
- summer:{steppe:0xaeb07a,needles:0x9a8466,gravel:0xb4aca0,loess:0xead8b6,terrace:0x98a466,tundra:0x8e9466,lichen:0xb4ae9c},
+ autumn:{steppe:0xc8b690,needles:0xa48a66,gravel:0xb4ac9e,loess:0xe8d4b0,terrace:0xe0c49a,tundra:0xa09078,lichen:0xb0ac9c},
+ summer:{steppe:0xaeb07a,needles:0x9a8466,gravel:0xb4aca0,loess:0xead8b6,terrace:0xc0c88a,tundra:0x8e9466,lichen:0xb4ae9c},
  winter:{steppe:0xbcb09a,needles:0x7a6a58,gravel:0xa4a09a,loess:0xd8c8ac,terrace:0xa08a70,tundra:0x8a8070,lichen:0xa4a29a},
  spring:{steppe:0xb2aa88,needles:0x8e7a62,gravel:0xa8a49c,loess:0xd4bc98,terrace:0x8a7458,tundra:0x8a8064,lichen:0xa8a494}}[SEASON];
 
@@ -198,10 +198,11 @@ NWOW.zoneAt=(x,z)=>WOW.nwZone(WOW.zoneAt(x,z));
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=f.x0+i*f.step,z=f.z0+j*f.step;pos[3*k]=x;pos[3*k+1]=f.at(i,j);pos[3*k+2]=z;
   const F=fieldsAt(x,z);const W=groundW(F,x,z);w1.set(W[0],4*k);w2.set(W[1],4*k);ZR[k]=ZONE_IDS.indexOf(WOW.zoneOf(F));}
  // the walls widened by one grid point in the raster: the passes read the nearest point's zone, so a candidate on a wall's face could
- // take its neighbour's larch or gully (verify, 2026-11-09: 115 trees on the walls); nothing roots within a cell of a face now
+ // take its neighbour's larch or gully (verify, 2026-11-09: 115 trees on the walls; 1 with the four neighbours); nothing roots within a
+ // cell of a face now, the diagonals included
  {const WALL=ZONE_IDS.indexOf('wall'),WATER=ZONE_IDS.indexOf('water'),Z0=ZR.slice();
   for(let j=1;j<nz-1;j++)for(let i=1;i<nx-1;i++){const k=j*nx+i;if(Z0[k]===WALL||Z0[k]===WATER)continue;
-   if(Z0[k-1]===WALL||Z0[k+1]===WALL||Z0[k-nx]===WALL||Z0[k+nx]===WALL)ZR[k]=WALL;}}
+   if(Z0[k-1]===WALL||Z0[k+1]===WALL||Z0[k-nx]===WALL||Z0[k+nx]===WALL||Z0[k-nx-1]===WALL||Z0[k-nx+1]===WALL||Z0[k+nx-1]===WALL||Z0[k+nx+1]===WALL)ZR[k]=WALL;}}
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aW',new THREE.BufferAttribute(w1,4));g.setAttribute('aW2',new THREE.BufferAttribute(w2,4));
  g.setIndex(idx);g.computeVertexNormals();

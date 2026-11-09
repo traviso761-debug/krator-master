@@ -28,10 +28,10 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44s-host-site.js` | 7 | one record a point (memo of the last): the heigh (54) |
+| `44s-host-site.js` | 8 | one record a point (memo of the last): the heigh (59) |
 | `45-host-stage.js` | 7 | the station, its air and its season (22); the model's ground (bicubic over its 1 km cells) (36); the ground's height (46); renderer, light, camera (62) |
 | `46-biome-wow-layout.js` | 7 |  |
-| `47-host-land.js` | 25 | the near box and a coarse look at the ground (7); the brook (its line, its water level never climb (15); the water: the brook, the model's water (a sag p (35); the earth pillars (core/terrain KSTACKS 'balance (47); the fields (biomes/WORLD.md; BIOME-API.md) (65); the host binding (before the meshes: their paint (95); the library layers (or procedural without the pa (105); the ground material (one shader for the near and (129); the near ground: the baked field's own grid, one (190); the mid ground: the model's country to 20 km, th (205) |
+| `47-host-land.js` | 26 | the near box and a coarse look at the ground (7); the brook (its line, its water level never climb (15); the water: the brook, the model's water (a sag p (35); the earth pillars (core/terrain KSTACKS 'balance (47); the fields (biomes/WORLD.md; BIOME-API.md) (65); the host binding (before the meshes: their paint (95); the library layers (or procedural without the pa (105); the ground material (one shader for the near and (129); the near ground: the baked field's own grid, one (191); the mid ground: the model's country to 20 km, th (212) |
 | `70-biome-wow.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |

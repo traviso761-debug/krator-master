@@ -19,18 +19,19 @@ const SITE={
  trunk:{a:[-1500,-650],b:[2700,950],amp:110,wave:900,depth:150,w:18},
  // the knolls' gully system to the south: shallower, branchier, its tops mao
  south:{a:[-1300,820],b:[2700,1500],amp:80,wave:700,depth:85,w:10},
- // the terraces: a step of `rise` m on the knolls' flanks, inside the zone (a polygon south of the trunk) and the band (page y)
- terraces:{rise:3.2,riser:.3,zone:[[-1500,420],[1800,680],[1900,1900],[-1500,1900]],band:[-140,60]},
+ // the terraces: a step of `rise` m on the knolls' flanks, in patches (a field system round a few knolls, not every slope: refs/03),
+ // each patch a KRELIEF.terraces record with its own circle and the band (page y) it is cut in
+ terraces:{rise:3.2,riser:.3,band:[-140,60],patches:[[-700,1050,260],[150,880,230],[650,1250,300],[1250,1000,220],[-150,1500,240]]},
  // the earth pillars (refs/05): loess columns under a capstone, on the trunk gully's dry upper floor
  pillars:{n:12,seed:5211},
  snow:{autumn:[700,1200],winter:[-2000,-1900],spring:[-2000,-1900],summer:[2200,3000]},
  eye:30,
  views:V=>{const T=SITE_TRUNK_AT,P0=(typeof PILLARS!=='undefined'&&PILLARS[0])||null,a=T(.25),b=T(.45),s=SITE_SPRING||T(.65),c=T(.8);const o={
-  'The gully from its rim':V([a[0]-30,a[1]-240,6],[b[0],b[1],-60]),
+  'The gully from its rim':V(SITE_RIM(.3,-1,6),[b[0],b[1],0]),
   'Down the gully to the spring':V([b[0],b[1],5],[s[0],s[1],2]),
   'The brook below the spring':V([c[0]+40,c[1]+30,5],[s[0],s[1],0]),
-  'Larch on the shaded wall':V([a[0]+10,a[1]+120,4],[a[0],a[1]-60,30]),
-  'Terraced knolls (mao)':V([200,560,14],[300,1200,0]),
+  'Larch on the shaded wall':V(SITE_RIM(.35,1,3),SITE_RIM(.38,-1,-40)),
+  'Terraced knolls (mao)':V([150,600,30],[150,880,0]),
   'The yuan (feather-grass flat)':V([-600,-1100,2.2],[-100,-1500,0]),
   'The tablelands from above':V([0,-1700,480],[0,300,0]),
   'West to the wall':V([800,700,40],[-6000,-400,600])};
@@ -44,11 +45,15 @@ let SITE_RECS=null,SITE_SPRING=null;
 function siteBuild(ground){const T=SITE.trunk,S=SITE.south;
  const trunk=KRELIEF.gully({pts:KRELIEF.meander(T.a,T.b,{amp:T.amp,wave:T.wave,seed:SITE.seed+1}),ground,depth:T.depth,w:T.w,tops:'yuan',seed:SITE.seed+2});
  const south=KRELIEF.gully({pts:KRELIEF.meander(S.a,S.b,{amp:S.amp,wave:S.wave,seed:SITE.seed+3}),ground,depth:S.depth,w:S.w,tops:'mao',knoll:150,seed:SITE.seed+4});
- const terr=KRELIEF.terraces({rise:SITE.terraces.rise,riser:SITE.terraces.riser,zone:{poly:SITE.terraces.zone},band:SITE.terraces.band,seed:SITE.seed+5});
+ const TE=SITE.terraces,terr=TE.patches.map((c,i)=>KRELIEF.terraces({rise:TE.rise,riser:TE.riser,zone:{c:[c[0],c[1]],r:c[2]},fade:60,band:TE.band,seed:SITE.seed+5+i}));
  SITE_RECS={trunk,south,terr};
  // the spring: where the trunk's floor lies the loess's depth under the yuan (WOW.springAt), the first such point down the trunk
  const L=trunk.lines[0].pts;for(let i=0;i<L.length;i++){if(ground(L[i][0],L[i][1])-L[i][2]>=SITE.loess){SITE_SPRING=[L[i][0],L[i][1],i];break;}}
  return SITE_RECS;}
+// a point on the trunk's rim at u, on the north (-1) or south (+1) side (the views): out from the thalweg till the cut is gone
+function SITE_RIM(u,side,h){const L=SITE_RECS.trunk.lines[0].pts,i=Math.min(L.length-2,Math.round(u*(L.length-1))),a=L[i],b=L[i+1],dx=b[0]-a[0],dz=b[1]-a[1],n=Math.hypot(dx,dz)||1;
+ let d=10;for(;d<300;d+=4){const x=a[0]-dz/n*side*d,z=a[1]+dx/n*side*d;if(sitePoint(x,z).cut<3)break;}
+ return [a[0]-dz/n*side*(d+6),a[1]+dx/n*side*(d+6),h];}
 // a point at u (0 head .. 1 mouth) along the trunk's thalweg (the views)
 function SITE_TRUNK_AT(u){if(!SITE_RECS)return [0,0];const L=SITE_RECS.trunk.lines[0].pts,i=Math.min(L.length-1,Math.round(u*(L.length-1)));return [L[i][0],L[i][1]];}
 // ---------------------------------------------------------------- one record a point (memo of the last): the height and each record's part
@@ -60,7 +65,8 @@ function sitePoint(x,z){if(x===_sp.x&&z===_sp.z)return _sp.P;const R=SITE_RECS,m
  const g1=KRELIEF.shape(R.trunk,x,z,g0),a1=KRELIEF.at(R.trunk,x,z,g0);
  const g2=KRELIEF.shape(R.south,x,z,g1),a2=KRELIEF.at(R.south,x,z,g1);
  const c1=!!(a1&&_cutPart(a1.part)),c2=!!(a2&&_cutPart(a2.part));
- let g3=g2,a3=null;if(!c1&&!c2){g3=KRELIEF.shape(R.terr,x,z,g2);a3=KRELIEF.at(R.terr,x,z,g2);}
+ let g3=g2,a3=null;if(!c1&&!c2)for(const T of R.terr){const zc=T.zone.c,r=T.zone.r;if(Math.abs(x-zc[0])>r||Math.abs(z-zc[1])>r)continue;
+  g3=KRELIEF.shape(T,x,z,g2);a3=KRELIEF.at(T,x,z,g2);break;}
  // the part that wins: the deeper cut's (the trunk's where both cut), else the terraces', else the tops
  const A=c1&&(!c2||g0-g1>=g1-g2)?{rec:'trunk',a:a1}:c2?{rec:'south',a:a2}:null;
  const top=a2&&a2.part==='mao'?'mao':'yuan';

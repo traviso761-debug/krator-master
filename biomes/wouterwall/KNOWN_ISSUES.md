@@ -5,7 +5,9 @@
       steps but not the crest standing over them. Fix: cut again with `--add` a polygon reaching the crest (or the godthrone's region)
       and rerun `far.py`.
 - [ ] **The terraces are on an 8 m grid.** `KRELIEF.terraces` steps 3.2 m; on the steeper flanks a riser falls between two grid
-      points and reads as a slope. A finer mesh over the terraced zone only would sharpen them.
+      points and reads as a slope (verify 2026-11-09: the risers show as darker bands in the ground's weights, the treads do not step).
+      A finer mesh over the terrace patches only would sharpen them. The field texture's furrows lie on a fixed world axis, not along
+      the contour, and the tilled soil reads dark brown from afar (`ground.terrace.field`, tinted `0xe0c49a`).
 - [ ] **The loess's soil bands are a shader stand-in.** The plan draws the loess as `KSTRATA`'s `loess` recipe draped on the ground
       (`KSTRATA.vary`/`drape`), which needs the core amendment PLAN.md section 8 names (a baked offset texture). Until then the
       ground shader darkens faint bands by height on the steep (`47-host-land.js`, aW2.w).
