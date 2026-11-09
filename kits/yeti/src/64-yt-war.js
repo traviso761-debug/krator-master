@@ -29,7 +29,7 @@ defBuilding({key:'yt_fort_dome',name:"Winter fort's command dome",seed:9807,w:8,
   ytDome(mk,3.4,3.6,P('ice'),{doors:dr,rTop:.14,spiral:.5,seg:36,slump:sl*.6});ytDome('pycrete',3.0,3.2,P('ice'),{doors:dr,rTop:.14,inward:true,seg:36,slump:sl*.6});
   ytDome('hideCap',2.8,3.0,P('ice'),{doors:dr,rTop:.12,inward:true,seg:36,slump:sl*.6});ytCrownVent(.12,2.95-sl*.5,3.65-sl*.6);
   cyl('flag',0,0,0,2.8,.06,P('flag'),24);ytLamp(0,.06,-1.6,0);
-  FURNISH('generic_chest',-1.4,.06,-1.2,.5);FURNISH('generic_rations',1.3,.06,-1.1,-.5);FURNISH('generic_writing_supplies',0,.06,-1.9,0);FURNISH('generic_water',1.6,.06,.6,0);
+  FURNISH('khaayken_common_chest',-1.4,.06,-1.2,.5);FURNISH('generic_rations',1.3,.06,-1.1,-.5);FURNISH('generic_writing_supplies',0,.06,-1.9,0);FURNISH('generic_water',1.6,.06,.6,0);
   door(0,0,3.4,0,1.6);}});
 defBuilding({key:'yt_winter_fort',name:'Winter fort (seasonal pycrete)',seed:9801,w:30,d:30,h:7.5,budget:200000,
  tags:{types:['civic'],wealth:'middle',style:'state',role:'fort'},
