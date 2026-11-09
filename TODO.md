@@ -239,9 +239,36 @@ loads each build's `tex/` pack, which is WebP. What is left:
   builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).
   The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference (retired 2026-10-18: the kit's sheet and Dhelv
   are on core/host, whose `90-host-camera.js` carries those controls; `kits/zeijani/README.md`, "The engine"). **[web]**
+  *Under way (2026-11-09, branch `ccr-55bd6ee1-p1si44-walk`).* The one key map and the one walk mode are
+  `core/host/92k-host-keys.js` (`khost.KEYS`; `core/host/README.md`, "The one key map" and "The one walk mode"): a build
+  names its controls by id (`KHOST.standard({std: {night, cutaway, door, interiors, shadows}})`) and gets the same button,
+  words and key; the walker is sub-stepped (it went through thin walls), `window._walk` lets `tools/harness.py walk`
+  drive any page, and every `verify.py` checks `one-key-map` and `walk` (a raised floor stood on, a wall that stops the
+  walker) on a page that takes it. A build is **adopted** when its page takes `khost.KEYS`, its controls go through `std`
+  and its `--assert` passes both checks.
+  - [x] core/engine and every kit on it (`kengine.HOST`, `CORE_DIRS` with `core/walk/box`): Scyvoi, Ash Nomads, Desert
+        Nomads, Islanders, Lizardmen, Resources, Post-Apoc (moved onto core/host), Eternian (with interiors), Yeti (its own
+        `walk-reach` fails before and after: Y5/Y6), Tents (its own `interiors-reachable` fails before and after)
+  - [x] Construction (build.py only)
+  - [ ] the rest of this list is filled in as the verifies end (see below)
+  - [ ] not yet: the biome kits but Guilin and Necanyons (`khost.KEYS` in `build.py`, the take's Night through `std`;
+        Geyser and Godthrone have Day / Night buttons of their own, so N wants a std entry with no button: a 92k option);
+        crater-drylands binds L to its fire tool (the polygon tool's key: `keysCheck` reports it); Metropolis (its X);
+        Dhelv (its C and N; the Zeijani session); Highlands, Xanadu, Noah's Regret (C and T: record the clash), Voth's
+        city target; the sheets with their own camera (kits/ancients, kits/port and biomes/dambasins's copy, kits/ringsea,
+        the catalog engine's pages) move onto core/host first. Then `KEYS` joins `khost.SHELL` at an all-builds rebuild.
+  - [ ] tents and round bodies drawn from cylinders and cones register nothing in `core/walk` (the nomads' tents, Tents):
+        the walker walks through their cloth (`core/engine/README.md`, "Controls and walk")
 - **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
   furniture placer through `core/furnish`) into every building kit whose buildings have a corresponding interior
   set, each with a cut-away that opens them. **[G data]** for the plans.
+  - [x] Done once in `core/engine` (`91i-interiors.js`; `core/engine/README.md`, "Interiors", 2026-11-09): a kit names its sets in
+        `build.py` (`kengine.interiors([...])`); X opens the building nearest the view storey by storey (the host's cut-away),
+        `?interiors=1` / U plans and furnishes every building with an item through `core/furnish`, rooms and pieces in core/tags,
+        floors and walls in `core/walk`. Wired: Eternian (checked: 58 buildings, 172 rooms, 1021 pieces, no errors);
+        Post-Apoc takes its units for the cut-away.
+  - [ ] the other sets belong to kits on other engines (Highlands, Iziz, Talia, Pylon, Reed Lake, Yuni, Locus, the Eastern
+        Abyssal, the Beast Riders; Zeijani and Noah's Regret on their forks): each wires its own, or moves onto core/engine
 - **One flame and heat-haze effect.** Look at `biomes/crater-drylands` and `biomes/throne` (the caldera) and make a
   standard flame plus heat-shimmer effect shared by every build (fires, braziers, burners, lamps, lava). **[G shader]**
 - **Water: an audit and one best solution.** Audit the water effects across the builds and settle on the
