@@ -1617,6 +1617,9 @@ function KCharFigure(body, sliders, load){
      move them, so a stride still cannot open a skirt (with no clip playing they hang rigid) */
   this.cloth = true;
   this.clothState = function(){ return { items:clothItems, caps:caps }; };      // verify.py, the labs
+  // the cloth as if the figure had just been dressed: the chains at their rigid rest, the clock and the step accumulator
+  // at zero, so a shot (tools/shots.py, tools/garment_audit.py) is the same whatever ran before it
+  this.clothReset = function(){ clothStep(); clothAcc = 0; nhT = 0; };
   this.pushState = function(){ return pushU; };                                  // tools: the push's capsules (w 0: off)
   var GRAV = 7.4, DRAG = 1.6, DAMP = 0.04, STEP = 1 / 60, PAD = 0.022;
   var clothItems = {}, itemByKey = {}, caps = [], groundY = 0, clothAcc = 0;
@@ -1871,11 +1874,9 @@ function KCharFigure(body, sliders, load){
       } else if(atm.U && atm.U.wind && atm.U.wind.value){
         wind.x += (atm.U.wind.value.x || 0) * sc; wind.z += (atm.U.wind.value.y || 0) * sc;
       }
-    } else {
-      // Subtle ambient atmospheric breeze + gust ripples when ATMOS is not loaded (e.g. standalone Cosmetic Lab)
-      wind.x += (0.28 * Math.sin(nhT * 1.7) + 0.14 * Math.cos(nhT * 3.9)) * sc;
-      wind.z += (0.18 * Math.cos(nhT * 1.3) - 0.12 * Math.sin(nhT * 2.8)) * sc;
     }
+    // (no made-up breeze without ATMOS: one ran on the page's clock here from 2026-11-02 to 06, so robes never rested in
+    // the lab and the audit's shots depended on how long the sweep had run: REVIEW-GARMENTS-2026-11-06.md, issue 10)
     items.forEach(function(c){
       placeChains(c, !!self.action);
       c.chains.forEach(function(ch){

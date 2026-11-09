@@ -67,6 +67,9 @@ STEP = '''async (s)=>{ var K = window._kchar, f = K.fig;
   var btn = document.getElementById('clip-' + (s.clip || 'idle'));
   await f.play(null); if(s.clip !== 'none') await f.play(btn ? btn.dataset.clip || null : s.clip);
   f.cloth = s.cloth !== false; if(s.pre) eval(s.pre);
+  // the cloth from its rigid rest with the clock at zero (fig.clothReset): the chains' state from the outfit before, and
+  // a breeze on the page's clock, gave one build 0, 774 and 5473 px of a shin through a skirt in three sweeps
+  if(f.clothReset) f.clothReset();
   Object.values(f.clothState().items).forEach(function(it){ it.reset = true; });
   var t = s.t == null ? 2 : s.t;
   // the clip wrapped back 2 s from t, so the 2 s of cloth end on t: from 0 they ended wherever 2 s fell in the loop, the
@@ -75,7 +78,10 @@ STEP = '''async (s)=>{ var K = window._kchar, f = K.fig;
   var d = f.action ? f.action.getClip().duration : 0, once = f.action && f.action.loop === THREE.LoopOnce;
   if(f.action){ f.action.paused = false; f.action.time = once ? Math.max(0, t - 2) : (((t - 2) % d) + d) % d; }
   for(var i = 0; i < 60; i++) f.update(1 / 30);
-  if(f.action){ f.action.paused = true; f.action.time = once ? t : t % d; f.update(0); } }'''
+  if(f.action){ f.action.paused = true; f.action.time = once ? t : t % d; f.update(0); }
+  // the cloth's state as a number (the chains' points summed, 1e-6), so two sweeps can be told apart in the records
+  var sum = 0, n = 0; Object.values(f.clothState().items).forEach(function(c){ if(!c.on) return; c.chains.forEach(function(ch){ ch.x.forEach(function(x){ sum += x.x + x.y + x.z; n++; }); }); });
+  return { cloth: Math.round(sum * 1e6) / 1e6, points: n }; }'''
 
 VIEW = '''async ([yaw, at, dist]) => { var c = window._kchar.cam; c.yaw = yaw; c.spin = false; c.at = at; c.want.dist = c.dist = dist; c.want.pitch = c.pitch = 0.05;
   await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); }); }'''
@@ -206,7 +212,7 @@ async def main(outdir, page, clips, bodies, match, morph, shards, shard, pre, ex
             big = 1.6 if body == 'mpfb_giant' else 1.0
             bare = set()
             for clip, t in clips:
-                await pg.evaluate(STEP, {'clip': clip, 't': t, 'pre': pre})
+                cloth = await pg.evaluate(STEP, {'clip': clip, 't': t, 'pre': pre})
                 low = clip in ('ual_crouch', 'crouch_walk', 'dodge_roll', 'ual_roll')
                 at, dist = [0, (0.62 if low else 0.92) * big, 0], (3.3 if not low else 3.0) * big
                 for v, yaw in VIEWS.items():
@@ -222,7 +228,7 @@ async def main(outdir, page, clips, bodies, match, morph, shards, shard, pre, ex
                     if not ps:
                         os.remove(path)
                     log.write(json.dumps({'outfit': o['name'], 'clip': clip, 't': t, 'view': v, 'armour': o['armour'], 'patches': ps,
-                                          'px': int((lab != NAMES.index('bg')).sum())}) + '\n')
+                                          'px': int((lab != NAMES.index('bg')).sum()), 'cloth': cloth}) + '\n')
                 log.flush()
             print(o['name'], flush=True)
         await b.close()

@@ -23,6 +23,7 @@ STEP = '''async (s)=>{ var K = window._kchar, f = K.fig, c = K.cam;
   if(s.at && s.at.length >= 2) c.want.ty = c.ty = s.at[1];
   c.want.dist = c.dist = s.dist; c.want.pitch = c.pitch = s.pitch;
   f.cloth = s.cloth !== false; if(s.pre) eval(s.pre);
+  if(f.clothReset) f.clothReset();            // the chains from rest, the clock at zero (garment_audit.py STEP)
   Object.values(f.clothState().items).forEach(function(it){ it.reset = true; });
   var t = s.t == null ? 2 : s.t;
   // wrapped back 2 s from t, so the 2 s of cloth end on t (garment_audit.py STEP)

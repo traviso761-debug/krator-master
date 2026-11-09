@@ -251,3 +251,18 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   same at its hem on the two-body sweep. So `garment_audit.py` is not "the same every run" for a fault that hangs on
   the chains' state from the outfit before: give it a full cloth reset per outfit (`clothStep()` with no dt, then a
   settle from rest) before trusting a skin count under 1000 px. The shin itself is Phase 1's hull work.
+- **Repeatability of the audit, chased (2026-11-08).** Done: the made-up breeze on the page's clock is gone from
+  `clothStep`; `fig.clothReset()` (chains at their rigid rest, the clock and the step accumulator at zero) runs before
+  every shot in `garment_audit.py` and `shots.py`; every audit record carries a hash of the chains' state (`cloth`),
+  so two sweeps can be told apart in their records, not only in their pixels. Measured: within one process, a shot
+  stepped twice is bit-identical for every clip (the no-clip rest alone carries 17 cm from the shot before: a
+  separate fault). Across processes on the GPU backend (`AUDIT_GL=d3d11`) the chains still diverge: with the frame
+  loop stopped, every dumped input equal (rests, targets, lengths, rings, colliders, bones and push uniforms at
+  every update), one point's previous-position buffer differs after the first substep and the ring and layering
+  spread it; switching off collision, layering, the ring and the vertical ordering each leaves the spread; the JIT
+  off (`--js-flags=--jitless`) makes the first update agree but not the sixtieth; two software-rendered processes
+  agree exactly. So something the Verlet core reads differs between GPU-backed processes over the updates and is
+  not in the dump. Next: an instrumented build that writes every chain point after every substep in two processes
+  and names the first operation that differs (`tools/cloth_probe.py` and the session's `det_probe.py` are the
+  harness). Until then a skin count under about a thousand pixels on the GPU is not evidence, and the baseline's
+  `--check` should be read on "under" and "inside", which were stable in every run here.
