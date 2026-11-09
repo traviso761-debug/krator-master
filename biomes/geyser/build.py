@@ -70,6 +70,7 @@ if STATION:
     _sj=os.path.join(_sd,'station.json')
     if os.path.isfile(_sj):
         with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
+    if SJ.get('baseOnly'): sys.exit('build.py: stations/'+STATION+'/ is a shared base, never built alone (its stations name it as their "base")')
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     # a station on another's ground names it as its "base" (stations 2-5 share stations/field: a geyser field on any ground, set by the station's site record);
