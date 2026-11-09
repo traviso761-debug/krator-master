@@ -29,6 +29,9 @@ const HCHK={
  craters(C,T){let inside=0;for(const t of T)for(const c of C)if(Math.hypot(t.x-c.x,t.z-c.z)<c.r)inside++;return{ok:C.length>=8&&!inside,detail:C.length+' craters, '+inside+' towers standing in one'};},
  // the lean: a leaning tower leans no more than 5 degrees (further and the shell's trace would leave its pad), none that stands whole or lies fallen
  lean(T){let bad=0,n=0;for(const t of T){if(t.lean){n++;if(t.lean>5.01||t.state==='intact'||t.state==='fallen')bad++;}}return{ok:n>20&&!bad,detail:n+' towers lean, '+bad+' wrongly'};},
+ // the grid runs between the buildings (the owner, 2026-11-08): no plinth's centre on a street, and the street under no plinth
+ grid(T){let on=0;for(const t of T)if(STAGE.streetK(t.x,t.z)>.05)on++;return{ok:T.length>60&&!on,detail:T.length+' towers, '+on+' standing on a street'};},
+ lamps(L){const up=L.filter(l=>l.state==='up').length;return{ok:L.length>100&&up>L.length*.3&&up<L.length*.7,detail:L.length+' lamp standards, '+up+' standing'};},
  // the forest went feral: the read-in trees were grown, and the taint's tint reached the baked foliage
  feral(W,tinted){return{ok:W.trees>50&&W.grown>20&&tinted>0,detail:W.trees+' read-in trees wrapped, '+W.grown+' grown, '+W.floor+' floor plants grown, '+W.dropped+' not this station\'s; '+tinted+' materials tinted'};},
  // no tree stands on a street, a plinth or dead ground
@@ -41,6 +44,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T
  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the viaduct stands',HCHK.lines(AV_LINES.V));
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
+ add('the grid runs between the buildings',HCHK.grid(T));add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -51,6 +55,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
  add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
+ add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
+ add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');

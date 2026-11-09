@@ -60,17 +60,25 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;const dq=[];PADS.query(x,z,0,dq);for(let i=0;i<dq.length;i++){const T=dq[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
  const padD=(T,x,z)=>{const dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c,mn=Math.min(T.rx,T.rz);return Math.hypot(u*mn/T.rx,v*mn/T.rz)-mn;};
  const _q=[];
- function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}return h;}
+ function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}
+  /* the roadbed: sunk 0.45 m behind a kerb where the city is dense enough for streets (the ground is finalised after the streets' functions below) */
+  if(typeof streetK==='function'&&h>LAKE_Y+2)h-=.45*streetK(x,z)*smooth(.1,.3,F.density(x,z));return h;}
  const yOf=ground;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
  const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);
  /* THE STREET GRID (the owner, 2026-11-08: a clear Ancient grid, destroyed and overgrown): the lattice's lines are the streets, 11 m wide, and every
     third line an avenue of 26 m; drawn as asphalt with rubble at the kerbs, the forest thinned to a third on them (cracks and saplings), where the
     city is dense enough to have them */
- const streetD=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,a=Math.abs(((lx+p/2)%p+p)%p-p/2),b=Math.abs(((lz+p/2)%p+p)%p-p/2);return Math.min(a,b);};
- const streetK=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,ix=Math.round(lx/p),iz=Math.round(lz/p),a=Math.abs(lx-ix*p),b=Math.abs(lz-iz*p),ha=((ix%3)+3)%3===0?13:5.5,hb=((iz%3)+3)%3===0?13:5.5;
-  return Math.max(smooth(ha+2.5,ha-1,a),smooth(hb+2.5,hb-1,b));};
+ /* the owner, 2026-11-08: the grid must run BETWEEN the buildings. The towers stand on the lattice's nodes (i p, j p), so the streets run on the
+    half lines ((k + 1/2) p), between the plinths; every third half line is an avenue (blocks of three lots). A street is 12 m, an avenue 28 m; the
+    roadbed is sunk 0.45 m behind a kerb (ground), lamp standards stand along the avenues (70) */
+ const SW=6,AW=14;
+ const lineOf=(v,p)=>{const k=Math.round(v/p-.5);return{k,d:Math.abs(v-(k+.5)*p),av:((k%3)+3)%3===1};};
+ const streetD=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch;return Math.min(lineOf(lx,p).d,lineOf(lz,p).d);};
+ const streetK=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,A=lineOf(lx,p),B=lineOf(lz,p),ha=A.av?AW:SW,hb=B.av?AW:SW;
+  return Math.max(smooth(ha+1.5,ha-.5,A.d),smooth(hb+1.5,hb-.5,B.d));};
  const street=(x,z)=>streetK(x,z)*smooth(.1,.3,F.density(x,z));
+ const avenueLines=()=>{const p=PLAN.pitch,n=Math.ceil((R+400)/p)+2,out=[];for(let k=-n;k<=n;k++)if(((k%3)+3)%3===1)out.push((k+.5)*p);return out;};
  // the kits' masks (zones): the south-west lowlands' forest wherever the ground is dry land and not built or dead, thick in the parks, thin on the
  // core's cracked plazas; the north-west's trees mixed in at a third (PLAN.md section 5: a mix of the two). 0 on a street or a plinth
  const built=(x,z)=>{_q.length=0;PADS.query(x,z,0,_q);let k=0;for(let i=0;i<_q.length;i++){k=Math.max(k,smooth(10,-6,padD(_q[i],x,z)));}return k;};
@@ -81,7 +89,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  return{key:'overlook',name:'The Ancient\'s Valley: the Overlook',title:'Krator biome — the Ancient\'s Valley: the Overlook',
   hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk.',
   R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement

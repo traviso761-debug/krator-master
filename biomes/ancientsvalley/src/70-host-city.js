@@ -11,7 +11,7 @@ const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
 /* the owner, 2026-11-08: the foreground towers looked low-res (a design's impostor, 96 px a view, stood where a hero should) and floors floated (the
    impostor's slabs seen apart from their skin at a near, steep angle): a design is a hero to 1.4 km, to 3.2 km seen steeply from above, the nearest
    48 of them; its impostor is 128 px a view */
-const AV_NEAR=300,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_DNEAR=1400,AV_DHEROMAX=48;
+const AV_NEAR=300,AV_NEAR_STEEP=1000,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_HEROMAX_STEEP=40,AV_DNEAR=1400,AV_DHEROMAX=48;
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
 const avImpKey=t=>t.shelled?t.key:t.family+'.'+(t.state==='intact'||t.state==='gutted'||t.state==='crown'?'intact':'broken');
@@ -106,16 +106,18 @@ function avDebris(list,far){const DB=far?AVC.debrisFar:AVC.debris,n={},M=new THR
 // the tiers each 150 ms: the nearest towers heroes from a pool; 300 m to 1.4 km shells (to 3.2 km seen steeply); the rest impostors
 AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now<(AVC.nextTier||0))return;AVC.nextTier=now+150;
  const e=camera.position,T=AVC.towers,near=[],mid=[];
- /* a design (no shell) is a hero to AV_DNEAR, the nearest AV_DHEROMAX of them, then its impostor */
- const dnear=[];
+ /* a design (no shell) is a hero to AV_DNEAR, the nearest AV_DHEROMAX of them, then its impostor. Seen steeply from above (the owner, 2026-11-08: the
+    shells' top maps smeared from the air) a shelled tower is a hero to AV_NEAR_STEEP, unfaded, and its shell starts there; the hero pool is wider */
+ const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>120,nearR=steepEye?AV_NEAR_STEEP:AV_NEAR,MAX=steepEye?AV_HEROMAX_STEEP:AV_HEROMAX;
  for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;
-  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<AV_NEAR)near.push(t);if(!ns&&d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
- near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,AV_HEROMAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
- G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id)){const g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled);if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
- near.slice(AV_HEROMAX).forEach(t=>{if(t.shelled&&t.d<AV_NEAR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
+  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<nearR)near.push(t);if(!ns&&d>=nearR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+ near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups,fadeNow=!steepEye;
+ G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||(t.shelled&&g.userData.fade!==fadeNow)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
+ keep.forEach(t=>{if(!G.has(t.id)){const g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled&&fadeNow);g.userData.fade=fadeNow;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
+ near.slice(MAX).forEach(t=>{if(t.shelled&&t.d<nearR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
- AVC.tierN={heroes:keep.length,designHeroes:Math.min(dnear.length,AV_DHEROMAX),shells:mid.length,impostors:T.filter(t=>(t.shelled&&t.d>=AV_FAR)||(!t.shelled&&!G.has(t.id))).length,towers:T.length,designs:T.filter(t=>!t.shelled).length};};
+ AVC.tierN={heroes:keep.length,designHeroes:Math.min(dnear.length,AV_DHEROMAX),shells:mid.length,impostors:T.filter(t=>(t.shelled&&t.d>=AV_FAR)||(!t.shelled&&!G.has(t.id))).length,towers:T.length,designs:T.filter(t=>!t.shelled).length,steep:steepEye};};
 tick(function(){if(!AVC.ready)AVC.boot();else{AVC.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);AVC.impTick();AVC.tiersTick();}});
 // ---------------------------------------------------------------- the engines (kits/ancients 8ah, 8ai, read in place: the owner, 2026-11-04)
 // A builder run once into a group of its own at decay 1 (the machine coming apart), the kit's instanced detail baked into that group, its pieces
@@ -133,7 +135,7 @@ AVC.engines=function(){AV_ENGINES=STAGE.engines.map(E=>{const fn=window[E.fn];if
  G.position.set(E.x,E.y,E.z);G.rotation.y=E.yaw;G.name='engine.'+E.key;G.userData.inspectLabel=E.name;let tris=0;G.traverse(m=>{if(m.isMesh&&m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}});G.userData.tris=Math.round(tris);
  if(MP.shadow)MP.shadow.cast(G);scene.add(G);return G;}).filter(Boolean);return AV_ENGINES;};
 // ---------------------------------------------------------------- the lines: the viaduct (AV.viaduct's records drawn as instanced piers and decks)
-let AV_LINES_GONE=0;
+let AV_LINES_GONE=0,AV_LAMPS=[];
 const AV_LINES=(function(){const V=AV.viaduct(STAGE.viaduct.pts,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});
  const P=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('metropolis','concrete'):null,T=P?KMAT.textures(P,{aniso:8}):{};
  const mat=new THREE.MeshStandardMaterial({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,color:0x9a968c,roughness:.95,metalness:0});
@@ -152,6 +154,19 @@ const AV_LINES=(function(){const V=AV.viaduct(STAGE.viaduct.pts,{step:36,ground:
  D.forEach((d,i)=>{const g=terrainH(d.x,d.z);M.compose(P3.set(d.x,g+d.sy*.3,d.z),Q.setFromEuler(E.set(d.tilt*.6,d.yaw,d.tilt,'YXZ')),S3.set(d.sx,d.sy,d.sz));deb.setMatrixAt(i,M);});
  deb.frustumCulled=false;deb.userData.inspectLabel='fallen slabs';deb.userData.host=true;deb.castShadow=deb.receiveShadow=!!MP.shadow;scene.add(deb);
  STAGE.craters.forEach((c,i)=>REGISTER({name:'A blast crater ('+Math.round(c.r)+' m)',kind:'crater',x:c.x,z:c.z,y:terrainH(c.x,c.z)-2,r:c.r*2.4,h:c.depth+c.rim+6,tags:{kind:'crater',n:i+1}}));
+ /* THE LAMP STANDARDS (the owner, 2026-11-08: the grid carried by rows the eye follows): along both kerbs of every avenue, one every 30 m, 7 m tall, a
+    bracket and a head; a third of them bent, a sixth fallen, by hash; none on a plinth, a scar, the water or the viaduct's corridor */
+ const LT=STAGE.lattice,lamps=[],lampQ=[];const toW=(lx,lz)=>[lx*LT.c-lz*LT.s,lx*LT.s+lz*LT.c];
+ STAGE.avenueLines().forEach((lv,li)=>{for(let s=-STAGE.R-300;s<=STAGE.R+300;s+=30){[[lv+LT.AW+1.5,s,0],[lv-LT.AW-1.5,s,0],[s,lv+LT.AW+1.5,1],[s,lv-LT.AW-1.5,1]].forEach((e,q)=>{const w=toW(e[0],e[1]),x=w[0],z=w[1];
+   if(Math.hypot(x,z)>STAGE.R)return;if(STAGE.F.density(x,z)<.3||STAGE.F.scar(x,z)>.3||STAGE.built(x,z)>.05||STAGE.viaduct.d(x,z)<16)return;const g=terrainH(x,z);if(g<STAGE.lakeY+2)return;
+   const h=KRAND.hash(STAGE.seed,li,Math.round(s/30),q+50),u=KRAND.unit(h);lamps.push({x,z,y:g,yaw:e[2]?Math.PI/2:0,state:u<.17?'fallen':u<.5?'bent':'up',u:KRAND.unit(KRAND.hash(h,3))});});}});
+ const lampMat=new THREE.MeshStandardMaterial({color:0x4a4038,roughness:.9,metalness:.5}),LP=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),lampMat,lamps.length*2);
+ lamps.forEach((l,i)=>{const H=7;if(l.state==='fallen'){M.compose(P3.set(l.x+Math.cos(l.u*6.28)*3,l.y+.2,l.z+Math.sin(l.u*6.28)*3),Q.setFromEuler(E.set(0,l.u*6.28,Math.PI/2*.97,'YXZ')),S3.set(.3,H,.3));LP.setMatrixAt(i*2,M);M.compose(P3.set(0,-1e4,0),Q.identity(),S3.set(.01,.01,.01));LP.setMatrixAt(i*2+1,M);return;}
+  const tilt=l.state==='bent'?(.25+.5*l.u):0;M.compose(P3.set(l.x,l.y+H/2,l.z),Q.setFromEuler(E.set(tilt*Math.cos(l.u*4),l.yaw,tilt*Math.sin(l.u*4),'YXZ')),S3.set(.3,H,.3));LP.setMatrixAt(i*2,M);
+  const ax=Math.sin(l.yaw),az=Math.cos(l.yaw),bx=l.x-Math.sin(tilt*Math.sin(l.u*4))*H*.5,bz=l.z+Math.sin(tilt*Math.cos(l.u*4))*H*.5;M.compose(P3.set(bx+ax*1.2,l.y+H*(1-.15*tilt)-.3,bz+az*1.2),Q.setFromEuler(E.set(0,l.yaw,0,'YXZ')),S3.set(.25,.35,2.6));LP.setMatrixAt(i*2+1,M);});
+ LP.frustumCulled=false;LP.userData.inspectLabel='a lamp standard';LP.userData.host=true;scene.add(LP);
+ if(lamps.length)REGISTER({name:'The avenues\' lamp standards',kind:'line',x:0,z:0,r:STAGE.R,h:8,tags:{kind:'line',line:'lamps',count:lamps.length}});
+ AV_LAMPS=lamps;
  [piers,decks,rails].forEach(m=>{m.frustumCulled=false;m.userData.inspectLabel='the transit viaduct';m.userData.host=true;m.castShadow=m.receiveShadow=!!MP.shadow;scene.add(m);});
  REGISTER({name:'The transit viaduct',kind:'line',x:0,z:-800,r:3000,h:60,tags:{kind:'line',line:'viaduct',length:Math.round(V.length)}});
  return{V,piers,decks,rails,debris:deb,tris:(V.piers.length+V.decks.length*3+D.length)*12};})();
