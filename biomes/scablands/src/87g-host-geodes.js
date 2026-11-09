@@ -53,7 +53,7 @@ const GEODES=(function(){const t0=performance.now(),T=SC.strata.tops,B0=SC.strat
  // ---- every geode drawn (KGEODE.draw), the lining with them
  const LAMP={value:.5};
  const D=KGEODE.draw(R,{THREE,points:LINING,lamp:LAMP,tint:0x7240b8,maps:{skin:(lib('basalt')||{}).map||null,agate:(lib('agate')||{}).map||null,amethyst:(lib('amethyst')||{}).map||null}});
- const pp=[];R.forEach(r=>pp.push(r.x,r.y,r.z));LINING.forEach(q=>pp.push(q.x,q.y,q.z));D.group.userData.probePoints=pp;scene.add(D.group);
+ const pp=[];R.forEach(r=>pp.push(r.x,r.y,r.z));LINING.forEach(q=>pp.push(q.x,q.y,q.z));D.group.userData.probePoints=pp;scene.add(D.group);tick(()=>D.update(camera.position));D.update(camera.position);
  // ---- the records registered: the block (the inspector's volume), the geodes as one record a band
  REGISTER({name:BK.name+' (a pocket '+(P.r*2).toFixed(1)+' m across, '+LINING.length+' amethyst points)',key:'geode.block',x:BK.x,z:BK.z,y:BK.y0,r:6,h:BK.y1-BK.y0+2,
   tags:{geode:{kind:'block',pocket:{c:P.c,r:P.r,h:P.h},face:BK.face}}});
