@@ -5,7 +5,14 @@
    of its footprint on its floor, front +z. An ASSET's build places a copy of that group (its geometry and materials
    shared) at the frame the catalog gives it, so buildAsset(key, x, z, ry, {variant, y}) works as for any building.
    The declared box of each variant is DIMS below (w, d, h; verify.py checks the measured box against it).
-   BR_PORTS: { key: [ { name, group, def, box, furn } ] }, and each town's tracker, for the in-town check (verify.py).
+   BR_PORTS: { key: [ { name, group, def, box, furn, doors, panes } ] }, and each town's tracker, for the in-town check
+   (verify.py).
+   The openings are the towns' own (their 54-openings.js and core/door, sealed: towns.py): the walls are cut for the doors
+   and windows, each pane is KGLASS, and each door leaf is a mesh of its own posed as its town built it (Girder's stand
+   open, Mav's are shut). A page that wants the doors to open hands each placed copy to BR_PORTS.host(g, base): every door
+   of the copy becomes a record in the page's KDOOR (core/door/10-core-door.js), its id base + '/' + the town's id, in
+   the page's world, and its leaf is posed by the page's KDOORHOST (90-core-door-host.js) as it swings. A page that does
+   not (the isle demo) shows the leaves as built.
    ====================================================================== */
 var BR_PORTS = (function(){
   /* the box each variant declares [w, d, h] (metres): the measured box rounded up (verify.py checks it, +1.6 m) */
@@ -25,6 +32,22 @@ var BR_PORTS = (function(){
     br_port_mavs_gate_facade: [[11.5,4,29],[8,4,16.5],[7,4,7],[9.5,6,27],[8,4.5,6],[9,4.5,29.5],[9.5,3.5,25.5]]
   };
   var out = { towns: { girder: BR_GIRDER, 'mavs-refuge': BR_MAVS }, built: {}, keys: [], errors: [] };
+  /* a placed copy's doors as the page's KDOOR records (the copy's place: g.position, g.rotation.y), each leaf posed by
+     KDOORHOST about the copy's own frame; returns the records */
+  out.host = function(g, base){
+    var ry = g.rotation.y, c = Math.cos(ry), s = Math.sin(ry), P = g.position, leaf = {}, recs = [];
+    function W(p){ return [P.x + p[0]*c + p[2]*s, P.y + p[1], P.z - p[0]*s + p[2]*c]; }
+    g.traverse(function(m){ if(m.userData && m.userData.brDoorId != null) leaf[m.userData.brDoorId] = m; });
+    (g.userData.brDoors || []).forEach(function(L){
+      var D = KDOOR.add({ id: base + '/' + L.id, at: W(L.at), hinge: W(L.hinge), p0: W(L.p0), yaw: L.yaw + ry, sign: L.sign, w: L.w, h: L.h, t: L.t,
+        kind: L.kind, locked: L.locked, open: L.open, key: base, s: L.s, town: L.id, leafless: !L.leaf });
+      var m = leaf[L.id];
+      if(m) KDOORHOST.posed(D, function(D2, pose, Ls){ var q = Ls[0], dx = q.p[0] - P.x, dz = q.p[2] - P.z;
+        m.position.set(dx*c - dz*s, q.p[1] - P.y, dx*s + dz*c); m.rotation.set(0, L.yaw + q.ang, 0); });
+      D.mesh = m || null; recs.push(D);
+    });
+    return recs;
+  };
   [BR_GIRDER, BR_MAVS].forEach(function(T){
     var B; try { B = T.build(); } catch (e) { out.errors.push(T.town + ': ' + (e && e.stack || e)); return; }
     T.defs.forEach(function(D){

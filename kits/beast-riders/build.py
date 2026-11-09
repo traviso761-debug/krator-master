@@ -63,7 +63,10 @@ OWN = ['50-br-mounts.js',
        '51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js']   # the sedentary trades and the larger houses (2026-10-19)
 # the tent set (2026-10-19): the tent kit, the tents, the pens and trainers, the bands' grounds, the boundaries, BR_CAMP;
 # core/rand first (KRAND: every varying choice in the tents is hashed from its own indices)
-CORE_JS = ['core/rand/08-core-rand.js']
+CORE_JS = ['core/rand/08-core-rand.js',
+           # core/door: the page's door records and their host (the ports' doors open: src/60-br-ports.js host, the sheet's E);
+           # the towns' own KDOOR and KGLASS are sealed in their closures (towns.py)
+           'core/door/10-core-door.js', 'core/door/90-core-door-host.js']
 TENTS = ['70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js',
          '75-br-tents-bounds.js', '79-br-camp.js']
 OWN_PREFIX = ('br_bldg_', 'br_tent_', 'br_hedge_', 'br_fence_')
