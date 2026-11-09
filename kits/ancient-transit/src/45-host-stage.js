@@ -42,15 +42,17 @@ const TR_NET=KTRANSIT.network(TR_DEFS,{ground:TR_RELIEF,shift:TR_SHIFT,carve:TR_
 const TR_ROADS=TR_NET.roads;
 const TR_STREETS=TR_DEFS.map((d,i)=>({id:d.id,pts:d.pts,width:TR_ROADS[i].width,pavement:TR_ROADS[i].pavement,shift:TR_SHIFT,ground:TR_ROADS[i].levelAt}));
 /* THE WAR on each: the avenue from a riot to smithereens with a barricade of wrecks at its east; the first side street shelled, military, barricaded;
-   the second a riot with a checkpoint; the small streets a riot, one of the diagonals with a position or two */
-const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5,military:true,positions:[900],blockades:true,seed:902},{damage:0.18,military:0.5,positions:[900],seed:903},
+   the second a riot with a checkpoint (at the avenue's junction: just short of its cut); the small streets a riot, one of the diagonals with a position or two.
+   Every war keeps its pieces off the junctions (network, road) */
+const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5,military:true,positions:[860],blockades:true,seed:902},{damage:0.18,military:0.5,positions:[860],seed:903},
  {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908}];
-TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,TR_WAR_O[i]));
+TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,Object.assign({network:TR_NET,road:i},TR_WAR_O[i])));
 /* the cargo line too comes before the ground: its cutting through the knoll is carved */
 const TR_CARGO=KTRANSIT.rail([[-1750,-150],[650,-150],[1750,-900]],{id:'cargo',ground:TR_RELIEF,streets:TR_STREETS.slice(1),catenary:true,shift:TR_SHIFT,quake:TR_QUAKE});
 const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});return h;},waterH=()=>-1e6;
 /* everything carved: where the ground mesh refines itself (47): the subway's holes, the craters, the fault's line, the cuttings */
 const TR_CARVED=[].concat(KTRANSIT.carved(TR_SUBWAY),...TR_WAR.map(W=>W.craters.map(c=>({x:c.x,z:c.z,r:c.r}))));
 for(let s=0;s<TR_QUAKE.L;s+=18){const p=TR_QUAKE.path.at(s);TR_CARVED.push({x:p.x,z:p.z,r:12,k:8});}
-/* the graded lines: refined along their whole length (a cutting's edge, an embankment's foot and a drift are all finer than a coarse cell) */
-[].concat(TR_ROADS,[TR_CARGO]).forEach(L=>{for(let s=0;s<L.L;s+=16){const p=L.path.at(s);TR_CARVED.push({x:p.x,z:p.z,r:L.width/2+(L.pavement==null?0:L.pavement)+10});}});
+/* the graded lines: refined where they CUT the ground (a cutting's edge and its slopes are finer than a coarse cell); a line at grade or on a fill
+   changes no ground (the owner, 2026-11-09, triangles: refining every road's whole length cost 0.8 M) */
+[].concat(TR_ROADS,[TR_CARGO]).forEach(L=>{const half=L.width/2+(L.pavement==null?0:L.pavement)+1,fo=L===TR_CARGO?{form:0.45}:undefined;for(let s=0;s<L.L;s+=16){const p=L.path.at(s),cx=Math.cos(p.yaw),sz=-Math.sin(p.yaw);let cut=0;[-half,0,half].forEach(o=>{cut=Math.min(cut,KTRANSIT.lineH(L,p.x+cx*o,p.z+sz*o,fo));});if(cut<-0.15)TR_CARVED.push({x:p.x,z:p.z,r:half+(-cut)*2+5});}});

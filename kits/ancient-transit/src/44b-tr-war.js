@@ -12,7 +12,8 @@
 //                                    o.blockades (true: every 250-400 m; or [s...]): barricades of wrecked vehicles across the road (W.blockades,
 //                                    KTRANSIT.blockade: {id, s, x, z, yaw, y, wide, r, rows, vehicles: [{id, key, variant, seed, state, x, z, y, yaw, roll, lat, ext (half its
 //                                    extent across the way), along, row, across (turned side-on), w, d, h}]}),
-//                                    o.positions [s...] (positions here, a checkpoint each: a crossing), o.seed, o.step (a slot every 10 m)
+//                                    o.positions [s...] (positions here, a checkpoint each: a crossing), o.network and o.road (a KTRANSIT.network and this
+//                                    street's index in it: no piece inside a junction, no barricade or position drawn by hash near one), o.seed, o.step (a slot every 10 m)
 //     W = {id, path, damageAt(s), craters: [{id, s, x, z, r, depth}], scorch: [{id, x, z, r}], pieces: [{id, kind, state, variant, seed, x, z,
 //          y, yaw, s, r, role}], rubble: [{id, x, z, y, yaw, w, h, d, tilt}], positions: [{id, kind, s, x, z, yaw, side, pieces: [ids]}]}
 //   KTRANSIT.craterH(W, x, z)        the depression at (x, z): a bowl inside each crater (the deepest wins), a low rim round it
@@ -36,6 +37,7 @@
       if (state != null && K.states.indexOf(state) < 0) state = ['crushed', 'burnt', 'fallen', 'bent', 'intact'].filter(function (st) { return K.states.indexOf(st) >= 0; })[0];   /* a kind without that state takes the nearest ruin it has */
       var pk = T.pick(KRAND.hash(seed, n, salt), kind, state, shares), q = at(s, off);
       if (T.inCrater(out, q.x, q.z, 0.5)) return null;
+      if (o.network && T.junctionAt(o.network, q.x, q.z, Math.max(K.w, K.d) / 2)) return null;
       var rec = { id: id + '.w' + n, kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, x: q.x, z: q.z, y: ground(q.x, q.z), yaw: q.yaw + yawExtra, s: s, r: Math.max(K.w, K.d) / 2 + 0.3, role: role };
       n++; out.pieces.push(rec); return rec;
     }
@@ -52,7 +54,7 @@
     for (s = step / 2, k = 0; s < P.L; s += step, k++) {
       var d2 = Math.max(0, Math.min(1, dmg(s))); if (d2 <= 0.02) continue;
       if (u(k, 20, 0) < 0.9 * d2) { var so = (u(k, 20, 1) - 0.5) * W, sq = at(s, so); if (!T.inCrater(out, sq.x, sq.z, -1)) out.scorch.push({ id: id + '.sc' + out.scorch.length, x: sq.x, z: sq.z, r: 1.5 + 3.5 * d2 * (0.5 + u(k, 20, 2)) }); }
-      var heaps = Math.floor(d2 * 2.5 + u(k, 21, 0)); for (var h = 0; h < heaps; h++) piece(['tr_rubble_pave', 'tr_rubble_glass', 'tr_rubble_cable', 'tr_rubble_pave'][Math.floor(u(k, 22, h) * 4) % 4], 'intact', s + (u(k, 23, h) - 0.5) * step, (u(k, 24, h) - 0.5) * (W + 2), u(k, 25, h) * Math.PI, 'heap', 30 + h);
+      var heaps = Math.floor(d2 * 1.7 + u(k, 21, 0)); for (var h = 0; h < heaps; h++) piece(['tr_rubble_pave', 'tr_rubble_glass', 'tr_rubble_cable', 'tr_rubble_pave'][Math.floor(u(k, 22, h) * 4) % 4], 'intact', s + (u(k, 23, h) - 0.5) * step, (u(k, 24, h) - 0.5) * (W + 2), u(k, 25, h) * Math.PI, 'heap', 30 + h);
       if (u(k, 26, 0) < 0.6 * d2) piece(['tr_bench', 'tr_bin', 'tr_barrier', 'tr_cabinet', 'tr_sign', 'tr_bollard', 'tr_planter'][Math.floor(u(k, 26, 1) * 7) % 7], null, s + (u(k, 26, 2) - 0.5) * step, (u(k, 26, 3) - 0.5) * (W - 1), u(k, 26, 4) * Math.PI * 2, 'strewn', 40, T.RUIN.wreckage);
       /* a barricade: a line of furniture dragged across most of the road, a riot's work (less of it once the shells came) */
       if (k % 8 === 3 && u(k, 27, 0) < (d2 < 0.6 ? 0.7 : 0.25) && d2 > 0.08) { var nb = 3 + Math.floor(u(k, 27, 1) * 3), span = W * 0.6, start = (u(k, 27, 2) - 0.5) * (W - span);
@@ -61,12 +63,12 @@
     /* the military positions: at the s given (a crossing: a checkpoint), then every 180 to 300 m by hash when asked */
     var mil = o.military === true ? 1 : (o.military ? +o.military : 0), posAt = [];
     (o.positions || []).forEach(function (ps) { posAt.push([ps, 'checkpoint']); });
-    if (mil > 0) for (var ms = 90 + 120 * u(0, 60, 0), mk = 0; ms < P.L - 40; ms += 180 + 120 * u(mk, 60, 1), mk++) { if (u(mk, 60, 2) > mil) continue; if (posAt.some(function (q) { return Math.abs(q[0] - ms) < 60; })) continue; var ku = u(mk, 60, 3); posAt.push([ms, ku < 0.4 ? 'checkpoint' : ku < 0.75 ? 'emplacement' : 'post']); }
+    if (mil > 0) for (var ms = 90 + 120 * u(0, 60, 0), mk = 0; ms < P.L - 40; ms += 180 + 120 * u(mk, 60, 1), mk++) { if (u(mk, 60, 2) > mil) continue; if (posAt.some(function (q) { return Math.abs(q[0] - ms) < 60; })) continue; if (o.network && o.road != null && T.nearJunction(o.network, o.road, ms, 14)) continue; var ku = u(mk, 60, 3); posAt.push([ms, ku < 0.4 ? 'checkpoint' : ku < 0.75 ? 'emplacement' : 'post']); }
     /* the blockades (the owner, 2026-11-09): improvised barricades of wrecked vehicles across the road, where o.blockades says (s values), or, when
        true, every 250 to 400 m by hash, each with heaps and sandbags round it */
     out.blockades = [];
     var bkAt = Array.isArray(o.blockades) ? o.blockades.slice() : [];
-    if (o.blockades === true) for (var bs = 120 + 200 * u(0, 62, 0), bk = 0; bs < P.L - 40; bs += 250 + 150 * u(bk, 62, 1), bk++) bkAt.push(bs);
+    if (o.blockades === true) for (var bs = 120 + 200 * u(0, 62, 0), bk = 0; bs < P.L - 40; bs += 250 + 150 * u(bk, 62, 1), bk++) { if (o.network && o.road != null && T.nearJunction(o.network, o.road, bs, 14)) continue; bkAt.push(bs); }
     bkAt.forEach(function (bs2, bi) { if (bs2 < 10 || bs2 > P.L - 10) throw new Error('KTRANSIT.war: blockade ' + bi + ' is off the street'); var B = T.blockade(P, bs2, W - 0.6, null, KRAND.hash(seed, bi, 600) >>> 0, id + '.bk' + bi, false);
       B.vehicles.forEach(function (v) { v.y = ground(v.x, v.z); });
       [-1, 1].forEach(function (sd) { piece('tr_sandbags', null, bs2 + sd * 4, sd * (W / 2 + 1.4), 0, 'barricade', 110 + bi * 2 + (sd > 0 ? 1 : 0), T.RUIN.military); piece('tr_rubble_pave', 'intact', bs2 + sd * 2.5, sd * (W / 2 - 2.5), u(bi, 63, sd + 1) * 3, 'heap', 112 + bi * 2 + (sd > 0 ? 1 : 0)); });
@@ -78,7 +80,7 @@
         add(piece('tr_barrier', null, ps - 7, -W * 0.22, Math.PI / 2 + 0.3, 'position', 70, M)); add(piece('tr_barrier', null, ps - 7, -W * 0.22 + 3.2, Math.PI / 2 + 0.3, 'position', 71, M));
         add(piece('tr_barrier', null, ps + 7, W * 0.22, Math.PI / 2 - 0.3, 'position', 72, M)); add(piece('tr_barrier', null, ps + 7, W * 0.22 - 3.2, Math.PI / 2 - 0.3, 'position', 73, M));
         add(piece('tr_boom', null, ps, side * (W / 2 - 3.6), side > 0 ? Math.PI : 0, 'position', 74, M));
-        add(piece('tr_sentry', 'intact', ps + 2, side * kerb, side > 0 ? -Math.PI / 2 : Math.PI / 2, 'position', 75, M)); out.pieces[out.pieces.length - 1].variant = 0;
+        var hut = piece('tr_sentry', 'intact', ps + 2, side * kerb, side > 0 ? -Math.PI / 2 : Math.PI / 2, 'position', 75, M); add(hut); if (hut) hut.variant = 0;
         add(piece('tr_sandbags', null, ps - 4, side * (kerb + 0.4), 0, 'position', 76, M)); add(piece('tr_sandbags', null, ps + 8, side * (kerb + 0.4), 0, 'position', 77, M));
         add(piece('tr_wire', null, ps, -side * kerb, 0, 'position', 78, M));
       } else if (kind === 'emplacement') {

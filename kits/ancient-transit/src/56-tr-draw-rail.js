@@ -9,7 +9,7 @@
 //   KTRANSIT.draw.rail(R, o) -> Group       o.shadow; userData: {tris, ties, rails, crossings, stations}
 //   KTRANSIT.draw.train(Tn, o) -> Group     userData: {tris, cars}
 (function () {
-  const T = KTRANSIT, C = () => T.COL, RAIL_PROF = [[-0.07, 0], [0.07, 0], [0.07, 0.03], [0.035, 0.03], [0.035, 0.13], [0.045, 0.16], [-0.045, 0.16], [-0.035, 0.13], [-0.035, 0.03], [-0.07, 0.03]].reverse();
+  const T = KTRANSIT, C = () => T.COL, RAIL_PROF = [[-0.07, 0], [0.07, 0], [0.04, 0.05], [0.045, 0.16], [-0.045, 0.16], [-0.04, 0.05]].reverse();   /* foot, web, head: six points (ten cost a third more and read the same at 2 m) */
   const jersey = (x, h, t) => [[x - t, 0], [x + t, 0], [x + t, h], [x - t, h]].reverse();
   const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k], scale = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
   /* frames along a line from s0 to s1 every `step`, at the deck height plus `up` */
@@ -98,13 +98,16 @@
       [-1, 1].forEach((s, k) => { const f = frames(R, sec.s0, sec.s1, 6, R.elevated ? 0.2 : 0.16, (q, t) => s * R.gauge / 2 + (bent && k === 0 ? sec.bend * Math.sin(Math.PI * t) : 0));
         B.sweep(bent ? 'rust' : 'steel', RAIL_PROF, f, bent ? col.rust : col.steel, { u0: sec.s0, caps: true }); }); });
     /* the sleepers */
-    let tieN = 0; const tieG = new THREE.BoxGeometry(2.6, 0.14, 0.26), live = R.ties.filter(t => t[1] !== 1);
+    /* a sleeper: its top and its two long sides (six triangles; a box's ends and bottom are in the ballast) */
+    let tieN = 0; const tieG = (() => { const hw = 1.3, hh = 0.07, hd = 0.13, P = [], Nn = [], U = [], q = (a, b, c, d, nx, ny, nz) => { [a, b, c, a, c, d].forEach(v => { P.push(v[0], v[1], v[2]); Nn.push(nx, ny, nz); U.push(v[0], v[2] + v[1]); }); };
+      q([-hw, hh, -hd], [-hw, hh, hd], [hw, hh, hd], [hw, hh, -hd], 0, 1, 0); q([-hw, -hh, hd], [-hw, hh, hd], [hw, hh, hd], [hw, -hh, hd], 0, 0, 1); q([hw, -hh, -hd], [hw, hh, -hd], [-hw, hh, -hd], [-hw, -hh, -hd], 0, 0, -1);
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(Nn, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); return g; })(), live = R.ties.filter(t => t[1] !== 1);
     if (live.length) { const im = new THREE.InstancedMesh(tieG, T.mats().concrete, live.length), m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), e = new THREE.Euler(), p3 = new THREE.Vector3(), s3 = new THREE.Vector3(1, 1, 1), c3 = new THREE.Color(); im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(live.length * 3), 3);
       live.forEach((t, i) => { const p = R.path.at(t[0]), y = R.deckAt(t[0]) + (R.elevated ? 0.1 : 0.08); e.set(0, p.yaw, 0, 'YXZ'); m4.compose(p3.set(p.x, y, p.z), q4.setFromEuler(e), s3); im.setMatrixAt(i, m4); const cc = t[1] === 2 ? col.soot : col.concDark, k = 0.85 + 0.3 * T.u(R.seed, i, 77); im.setColorAt(i, c3.setRGB(cc[0] * k, cc[1] * k, cc[2] * k)); });
       im.frustumCulled = false; im.name = 'rail ' + R.id + '.ties'; im.userData.host = true; im.userData.inspectLabel = 'sleepers'; B.ties = im; tieN = live.length; }
     R.signals.forEach(S => signal(B, S, R));
     R.catenary.forEach((M, i) => mast(B, M, R, R.catenary[i + 1]));
-    const G = B.finish('rail ' + R.id); if (B.ties) { G.add(B.ties); G.userData.tris += tieN * 12; }
+    const G = B.finish('rail ' + R.id); if (B.ties) { G.add(B.ties); G.userData.tris += tieN * 6; }
     const im = T.draw.rubble(R.rubble, { seed: R.seed, name: 'rail ' + R.id + '.rubble' }); if (im) { G.add(im); G.userData.tris += 12 * R.rubble.length; }
     G.userData.ties = tieN; G.userData.rails = R.rails.filter(r => r.state !== 'gone').length; G.userData.crossings = R.crossings.length; G.userData.stations = R.stations.length; G.userData.id = R.id;
     if (o.shadow) o.shadow.cast(G);

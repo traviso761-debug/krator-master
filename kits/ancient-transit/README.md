@@ -43,37 +43,38 @@ puts the war where it wants it: `o.ruin` may be a function of the distance along
 ## Numbers (the GPU verify, 2026-11-09, the RTX 5060 lane, 1280 x 800)
 
 `verify.py --assert` passes: every kit check with its negative and every universal assert (shaders, textures, NaN, the registered volumes,
-the eye of every view). The page builds in about 3 s in the browser (the eight roads' furniture and war; `tools/build.py`: 2.3 MB with the
-vehicles bundle, and a 4 MB pack sidecar). A view draws 1.7 to 2.2 M triangles: 1.37 M are the kit's groups (below), the rest the demo's
-ground refined round everything the kit carves (every graded road now) and the shadow pass.
+the eye of every view). The page builds in about 2.5 s in the browser (the eight roads' furniture and war; `tools/build.py`: 2.3 MB with the
+vehicles bundle, and a 4 MB pack sidecar). The kit's groups are 0.95 M triangles and the demo's ground 0.37 M (refined only where a line
+cuts it, in 64 tiles); a view culls by the ground's tiles and the builder's 400 m chunks, so a street-level view draws 0.2 to 0.9 M and the
+air view everything (the owner, 2026-11-09: "mostly just a dang road"; `KNOWN_ISSUES.md` "Numbers" says what was done).
 
 | Group | Triangles | Meshes | Group | Triangles | Meshes |
 |---|---|---|---|---|---|
-| the avenue, 3 km, and its war (a barricade of wrecks) | 108 k, 266 k | 6, 10 | the highway h1: 147 spans over 3.4 km, two ramps, a barricade on the deck | 43 k | 9 |
-| the side roads, 1.8 km, and their wars (three barricades, drifts) | 52 k + 201 k, 66 k + 68 k | 6, 11 | the highway h2 (over h1, patchily overgrown) | 28 k | 10 |
-| the T street, the corner's two, the two diagonals, with their wars | 16 k + 25 k, 14 k + 14 k, 8 k + 10 k, 26 k + 56 k, 21 k + 45 k | | the cargo line (rails every 6 m), four crossings | 89 k | 9 |
-| the junctions: two crosses, a T, a six, a corner | 1.9 k | 4 | the passenger line, two stations, the overgrowth | 102 k | 12 |
-| the block: every kind in every state | 23 k | 9 | the subway, two stations, three trains | 76 k + 6 k | 10 |
+| the avenue, 3 km, and its war (a barricade of wrecks) | 78 k, 160 k | 21, 123 | the highway h1: 147 spans over 3.4 km, two ramps, a barricade on the deck | 43 k | 29 |
+| the side roads, 1.8 km, and their wars (three barricades, drifts) | 38 k + 135 k, 45 k + 40 k | | the highway h2 (over h1, patchily overgrown) | 28 k | 20 |
+| the T street, the corner's two, the two diagonals, with their wars | 13 k + 16 k, 9 k + 8 k, 7 k + 5 k, 16 k + 34 k, 17 k + 26 k | | the cargo line (sleepers of six triangles), four crossings | 49 k | 31 |
+| the junctions: two crosses, a T, a six, a corner | 1.9 k | 4 | the passenger line, two stations, the overgrowth | 74 k | 48 |
+| the block: every kind in every state | 23 k | 9 | the subway, two stations, three trains | 76 k + 6 k | 46 |
 | the freight wreck, 8 cars | 3.6 k | 5 | | | |
 
 | View | Calls | Triangles | View | Calls | Triangles |
 |---|---|---|---|---|---|
-| The block | 164 | 1.99 M | A riot broke out here | 219 | 2.15 M |
-| The block, close | 147 | 1.98 M | Shelled | 196 | 2.12 M |
-| The avenue | 196 | 2.12 M | Bombed to smithereens | 100 | 1.76 M |
-| The highway | 131 | 1.94 M | A checkpoint | 120 | 1.91 M |
-| The off ramp | 95 | 1.77 M | An emplacement | 78 | 1.74 M |
-| The interchange | 134 | 1.83 M | The fault, the avenue | 107 | 1.89 M |
-| The level crossing | 169 | 2.08 M | The fault, the cargo line | 132 | 1.94 M |
-| The freight wreck | 162 | 2.03 M | The cutting | 189 | 2.09 M |
-| The station | 76 | 1.74 M | A road under sand | 261 | 2.20 M |
-| The fallen train | 178 | 2.00 M | A barricade of wrecks | 79 | 1.74 M |
-| The line, half buried | 187 | 2.01 M | The highway blocked | 117 | 1.91 M |
-| The line, overgrown | 166 | 2.07 M | A six-arm junction | 185 | 2.09 M |
-| The subway station, fallen in | 178 | 2.01 M | A T junction | 140 | 1.95 M |
-| A subway entrance | 94 | 1.81 M | A corner of two streets | 126 | 1.81 M |
-| A sinkhole | 25 | 1.10 M | A city street | 228 | 2.15 M |
-| From the air | 277 | 2.20 M | | | |
+| The block | 326 | 686 k | A riot broke out here | 571 | 1.02 M |
+| The block, close | 258 | 561 k | Shelled | 397 | 614 k |
+| The avenue | 394 | 612 k | Bombed to smithereens | 107 | 185 k |
+| The highway | 205 | 383 k | A checkpoint | 189 | 491 k |
+| The off ramp | 122 | 333 k | An emplacement | 81 | 251 k |
+| The interchange | 199 | 343 k | The fault, the avenue | 150 | 403 k |
+| The level crossing | 262 | 534 k | The fault, the cargo line | 239 | 502 k |
+| The freight wreck | 291 | 592 k | The cutting | 467 | 868 k |
+| The station | 122 | 257 k | A road under sand | 535 | 933 k |
+| The fallen train | 339 | 690 k | A barricade of wrecks | 84 | 249 k |
+| The line, half buried | 395 | 781 k | The highway blocked | 137 | 389 k |
+| The line, overgrown | 308 | 467 k | A six-arm junction | 356 | 717 k |
+| The subway station, fallen in | 274 | 612 k | A T junction | 251 | 576 k |
+| A subway entrance | 83 | 222 k | A corner of two streets | 206 | 390 k |
+| A sinkhole | 25 | 104 k | A city street | 502 | 821 k |
+| From the air | 731 | 1.26 M | | | |
 
 ## Taking the kit into a world
 

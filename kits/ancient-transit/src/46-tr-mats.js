@@ -21,7 +21,7 @@
 //     B.dome(fam, m, r, h, col, seg)         a dome of radius r and height h on the matrix's origin (a stand-in bush)
 //     B.mesh(fam, mesh, m, o)                a built mesh (a furniture piece's) copied into the bucket, through matrix m, its own colours and
 //                                            UVs kept (o.col overrides the colour, o.mul multiplies it)
-//     B.finish(name, o) -> Group             one THREE.Mesh a family, KTRANSIT.mats() by family (o.mats overrides); userData.tris
+//     B.finish(name, o) -> Group             one THREE.Mesh a family (a family of 3000 triangles or more: one a 400 m chunk, o.chunk; 0 none), KTRANSIT.mats() by family (o.mats overrides); userData.tris
 (function () {
   const T = KTRANSIT;
   const lin = c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -119,11 +119,20 @@
         if (col) q.c.push(col[0], col[1], col[2]); else if (C) q.c.push(C.getX(i) * mul, C.getY(i) * mul, C.getZ(i) * mul); else q.c.push(1, 1, 1); if (U) q.u.push(U.getX(i), U.getY(i)); else q.u.push(0, 0); }
       B.tris += n / 3;
     };
+    /* finish: one mesh a family, or, for a family of 3000 triangles or more, one mesh a family a CHUNK (o.chunk metres square, 400; 0: none),
+       so a view culls the far stretches of a 3 km road instead of drawing it whole (the owner, 2026-11-09: triangles) */
     B.finish = function (name, o) {
-      const G = new THREE.Group(), M = (o && o.mats) || T.mats(); G.name = name == null ? 'transit' : name; let tris = 0;
-      for (const fam in B.b) { const q = B.b[fam]; if (!q.p.length) continue; const g = new THREE.BufferGeometry();
+      const G = new THREE.Group(), M = (o && o.mats) || T.mats(), CS = o && o.chunk != null ? o.chunk : 400; G.name = name == null ? 'transit' : name; let tris = 0;
+      const parts = [];
+      for (const fam in B.b) { const q0 = B.b[fam]; if (!q0.p.length) continue; const nT = q0.p.length / 9;
+        if (!(CS > 0) || nT < 3000) { parts.push([fam, q0, null]); continue; }
+        const by = {}; for (let t = 0; t < nT; t++) { const key = Math.floor(q0.p[t * 9] / CS) + ',' + Math.floor(q0.p[t * 9 + 2] / CS); (by[key] || (by[key] = [])).push(t); }
+        for (const key in by) { const ts = by[key], q = { p: new Array(ts.length * 9), n: new Array(ts.length * 9), u: new Array(ts.length * 6), c: new Array(ts.length * 9) };
+          ts.forEach((t, i) => { for (let k = 0; k < 9; k++) { q.p[i * 9 + k] = q0.p[t * 9 + k]; q.n[i * 9 + k] = q0.n[t * 9 + k]; q.c[i * 9 + k] = q0.c[t * 9 + k]; } for (let k = 0; k < 6; k++) q.u[i * 6 + k] = q0.u[t * 6 + k]; });
+          parts.push([fam, q, key]); } }
+      for (const part of parts) { const fam = part[0], q = part[1]; const g = new THREE.BufferGeometry();
         g.setAttribute('position', new THREE.Float32BufferAttribute(q.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(q.n, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(q.u, 2)); g.setAttribute('color', new THREE.Float32BufferAttribute(q.c, 3));
-        const m = new THREE.Mesh(g, M[fam] || M.paint); m.name = G.name + '.' + fam; m.userData.family = fam; m.userData.host = true; G.add(m); tris += q.p.length / 9; }
+        const m = new THREE.Mesh(g, M[fam] || M.paint); m.name = G.name + '.' + fam; m.userData.family = fam; m.userData.host = true; if (part[2] != null) m.userData.chunk = part[2]; G.add(m); tris += q.p.length / 9; }
       G.userData.tris = tris; return G;
     };
     return B;
