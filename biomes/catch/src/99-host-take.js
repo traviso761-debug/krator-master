@@ -80,7 +80,7 @@ KHOST.on(function sky(dt){skyView(dt);STORM.apply(dt||0);},'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'catch',title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:groundAll,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:STAGE.hour==null?9:STAGE.hour},draw:()=>SKY.render(),
+ clock:{hour:STAGE.hour==null?9:STAGE.hour},draw:HOST_DRAW,   /* the reflections switch (98z), then the shared sky's pass and the world */
  inspect:describe,stats:()=>'inst '+window._instances+'  air '+STORM.mode,controls:[STORM_CONTROL],
  layers:{'hazards':KTAGS.hazardLayer(),'flora':{match:o=>!!(o.userData&&o.userData.biome)},'rock and Stalkers':{match:o=>!!(o.userData&&o.userData.host&&!o.userData.probeSkip)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
