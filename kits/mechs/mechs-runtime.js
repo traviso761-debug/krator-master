@@ -357,9 +357,19 @@ const KM_API = (function () {
     const e = 0.06;
     return smooth(p / e) * smooth((duty - p) / e) + (p > duty ? smooth((p - 1 + e) / e) * 0 : 0);
   }
+  /* a hovering machine (an entry with `hover`, no legs): it rides at its body bone's height, bobs, and leans into its motion */
+  const _hv = new V3(), _hq = new Q();
+  function layerHover(st, P, t) {
+    const H = st.A.hover;
+    add(P, 's', 'body', 0, (H.bob == null ? 0.05 : H.bob) * (Math.sin(t * 1.6) + 0.5 * Math.sin(t * 2.7 + 1)) / 1.5, 0);
+    _hv.copy(st.vel).applyQuaternion(_hq.copy(st.gq).invert());
+    const lean = H.lean == null ? 0.12 : H.lean, roll = H.roll == null ? 0.1 : H.roll;
+    add(P, 'b', 'body', clamp(_hv.z * lean, -0.5, 0.5), 0, clamp(-_hv.x * roll, -0.4, 0.4));
+  }
   function layerWalk(st, P, ph, w) {
     if (w <= 0) return;
     const G = st.gait, n = st.legs.length;
+    if (!n) { if (st.A.anim.walk) st.A.anim.walk(P, ph, w, st); return; }
     let bob = 0, side = 0, tw = 0;
     st.legs.forEach(function (L, i) {
       const p = (ph + (G.offsets[i] || 0)) % 1, s = L.def.hip[0] >= 0 ? 1 : -1;
@@ -561,6 +571,7 @@ const KM_API = (function () {
     const P = { b: {}, s: {}, sc: {} };
     layerIdle(st, P, st.t, 1 - 0.75 * st.walkW);
     layerWalk(st, P, st.phase, st.walkW);
+    if (st.A.hover) layerHover(st, P, st.t);
     if (st.atk >= 0) layerAttack(st, P, st.atk, 1);
     /* spins */
     for (const S of st.spins) {

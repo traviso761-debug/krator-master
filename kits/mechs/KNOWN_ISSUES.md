@@ -1,6 +1,6 @@
 # kits/mechs: known issues
 
-`verify.py --assert` passes with nothing deferred (26 mechs, 32 builds with the Castra's two variants and the Ancients' feigners, seeds 1..2), z-fighting included.
+`verify.py --assert` passes with nothing deferred (31 mechs, 43 builds with the Castra's two variants, the Ancients' feigners and the Loader, seeds 1..2), z-fighting included.
 
 ## Open
 
@@ -47,6 +47,12 @@
   the host should read the `call` event (kind `tell`) and flare its own light or sound; the head's turn is the far tell.
 - [ ] **The keepers' routines do not touch anything.** The porter's hook stops 0.8 m above the ground and the sweeper's
   brushes clear nothing; a host that wants dust plays it on the `impact` events (the routines carry them).
+- [ ] **A hovering machine does not climb or descend of itself** (2026-11-09): it rides at a fixed height over `ground(x, z)`
+  (the host's y), so a lifter crossing a wreck rides up it as a walker's body would, and a drop onto something is the clip's
+  `s.body` key, not a path. A host that wants a real approach lowers the group itself. The fans' pitch and the hover's lean
+  are cosmetic: no thrust model.
+- [ ] **`MP.fan` at a small radius** had its inner wall 2% inside the duct, under the audit's 4 mm (the watcher's 17 cm fans
+  fought themselves); it stands at least 8 mm inside now. The Iziz fans (the Aquilifer's) are unchanged in look.
 - [ ] **No buried or dormant pose for the Ancients** either: a hunter standing dead in a street until it wakes wants a
   slumped idle and a rising clip, as the Stalkers do (above).
 

@@ -13,7 +13,8 @@ MECH({
   lore: 'A hunched soldier frame with heavy forearms and a gun on its shoulder, still at its post. It raises a forearm and fires a burst of three over it.',
   tags: { class: 'mech', type: ['war machine', 'line'], drive: 'biped', crew: 0, pilot: 'none', weapon: ['gun'], role: 'hunter',
     setting: 'outdoor', guild: 'none' },
-  variants: 1, variantNames: ['Trooper'],
+  variants: 2, variantNames: ['Trooper', 'Loader'],
+  variantData: [{}, { armour: 'work-yellow composite plate: a loader frame the war armed' }],
   w: 2.0, d: 2.6, h: 3.05,
   data: { height: 2.9, mass: 1.6, crew: 0, pilot: 'none', reach: 80, weapon: 'a shoulder gun with a drum magazine; heavy forearms',
     engine: 'Ancient cell', armour: 'white composite plate, heavy on the forearms' },
@@ -51,26 +52,31 @@ MECH({
   build: function (F, R) {
     const c = F.col;
     const fr = c('frame'), frd = c('frameDk'), jt = c('joint'), st = c('steel');
+    /* the Loader (variant 1) is the same frame in the service livery: a loader the war armed, so the far view reads a work machine */
+    const loader = F.variant === 1, pl = function (p) { return loader ? ANC.work(F, p) : ANC.wear(F, p); };
+    const pld = function (p) { return loader ? ANC.work(F, p) : ANC.wearDk(F, p); };
 
     /* ---- the pelvis */
     R.bone('body', null, 0, 1.4, -0.35);
     R.on('body');
     F.chb(0, 0, 0, 0.72, 0.34, 0.5, 0.08, fr, 'metal', 'x');
-    F.chb(0, -0.02, 0.27, 0.5, 0.26, 0.05, 0.02, ANC.wear(F, 0.4), 'paint', 'z');
-    for (const s of [-1, 1]) F.chb(s * 0.38, -0.06, -0.05, 0.08, 0.3, 0.36, 0.02, ANC.wearDk(F, 0.5), 'paint', 'x');
+    F.chb(0, -0.02, 0.27, 0.5, 0.26, 0.05, 0.02, pl(0.4), 'paint', 'z');
+    for (const s of [-1, 1]) F.chb(s * 0.38, -0.06, -0.05, 0.08, 0.3, 0.36, 0.02, pld(0.5), 'paint', 'x');
 
     /* ---- the torso, hunched: a chest shell, the cell pack, the pauldron, the gun mount */
     R.bone('torso', 'body', 0, 0.16, 0, 0.3, 0, 0);
     R.on('torso');
     F.cy(0, 0.08, 0, 0.17, 0.2, 0.2, jt, 'metal', 'y', 12);
-    F.chb(0, 0.58, 0.05, 1.0, 0.72, 0.64, 0.14, ANC.wear(F, 0.25), 'paint', 'x');
-    F.chb(0, 0.45, 0.38, 0.62, 0.3, 0.04, 0.02, ANC.wearDk(F, 0.4), 'paint', 'z');
-    ANC.visor(F, 0, 0.7, 0.378, 0.5, 0.1);
-    ANC.plate(F, -0.3, 0.5, 0.378, 0.16, 0.1);
-    ANC.streak(F, 0.3, 0.9, 0.378, 0.35, 0.05);
+    F.chb(0, 0.58, 0.05, 1.0, 0.72, 0.64, 0.14, pl(0.25), 'paint', 'x');
+    F.chb(0, 0.42, 0.38, 0.62, 0.24, 0.04, 0.02, pld(0.4), 'paint', 'z');
+    ANC.visor(F, 0, 0.64, 0.378, 0.5, 0.08);
+    ANC.twinLamps(F, 0, 0.84, 0.372, 0.055, 0.3, 'amber', 0);
+    ANC.plate(F, -0.3, 0.45, 0.378, 0.16, 0.1);
+    ANC.streak(F, 0.3, 0.9, 0.378, 0.3, 0.05);
     F.chb(0, 0.55, -0.45, 0.8, 0.62, 0.3, 0.06, frd, 'metal', 'y');
     for (const s of [-1, 1]) F.cy(s * 0.22, 0.95, -0.5, 0.07, 0.06, 0.3, fr, 'metal', 'y', 8);
-    F.chb(0.62, 1.0, 0.02, 0.5, 0.2, 0.5, 0.06, ANC.wear(F, 0.35), 'paint', 'x', 0, 0, -0.2);
+    F.chb(0.62, 1.0, 0.02, 0.5, 0.2, 0.5, 0.06, pl(0.35), 'paint', 'x', 0, 0, -0.2);
+    if (loader) ANC.hazard(F, 0.62, 1.106, 0.02, 0.4, 0.1, 'yb', -Math.PI / 2, 0, -0.2);
     F.chb(-0.55, 1.02, -0.02, 0.3, 0.14, 0.4, 0.04, frd, 'metal', 'x');
 
     /* ---- the head: a low helm, a visor slit */
@@ -102,13 +108,14 @@ MECH({
       R.bone(A + '_sh', 'torso', s * 0.6, 0.85, 0.04, -0.15, 0, s * 0.12);
       R.on(A + '_sh');
       MP.joint(F, 0, 0, 0, 0.11, 0.2, 'x', jt, null);
-      F.cy(0, -0.3, 0, 0.09, 0.1, 0.5, ANC.wear(F, 0.35), 'paint', 'y', 10);
+      F.cy(0, -0.3, 0, 0.09, 0.1, 0.5, pl(0.35), 'paint', 'y', 10);
       R.bone(A + '_el', A + '_sh', 0, -0.56, 0, -0.5, 0, 0);
       R.on(A + '_el');
       MP.joint(F, 0, 0, 0, 0.09, 0.18, 'x', jt, null);
-      F.chb(0, -0.34, 0.02, 0.36, 0.6, 0.4, 0.09, ANC.wear(F, 0.3), 'paint', 'y');
-      F.chb(0, -0.3, -0.22, 0.26, 0.4, 0.06, 0.02, ANC.wearDk(F, 0.5), 'paint', 'z');
+      F.chb(0, -0.34, 0.02, 0.36, 0.6, 0.4, 0.09, pl(0.3), 'paint', 'y');
+      F.chb(0, -0.3, -0.22, 0.26, 0.4, 0.06, 0.02, pld(0.5), 'paint', 'z');
       ANC.streak(F, s * 0.08, -0.15, 0.226, 0.25, 0.04);
+      if (loader) ANC.hazard(F, 0, -0.5, 0.226, 0.28, 0.1, 'yb');
       F.chb(0, -0.7, 0.0, 0.3, 0.16, 0.32, 0.05, frd, 'metal', 'y');
       for (let k = 0; k < 3; k++) F.cb((k - 1) * 0.09, -0.82, 0.06, 0.07, 0.1, 0.16, jt, 'metal');
     }
@@ -119,14 +126,14 @@ MECH({
       R.leg(Lg, { parent: 'body', hip: [s * 0.27, -0.06, 0], L1: 0.72, L2: 0.7, knee: 1, ankleH: 0.14, rest: [s * 0.32, -0.33], phase: s > 0 ? 0 : 0.5, toe: 0.3 });
       R.on(Lg + '_hip');
       MP.joint(F, 0, 0, 0, 0.13, 0.2, 'x', jt, null);
-      F.chb(0, -0.36, 0, 0.26, 0.6, 0.3, 0.06, ANC.wear(F, 0.35), 'paint', 'y');
-      F.chb(0, -0.3, 0.16, 0.22, 0.4, 0.04, 0.02, ANC.wearDk(F, 0.5), 'paint', 'z');
+      F.chb(0, -0.36, 0, 0.26, 0.6, 0.3, 0.06, pl(0.35), 'paint', 'y');
+      F.chb(0, -0.3, 0.16, 0.22, 0.4, 0.04, 0.02, pld(0.5), 'paint', 'z');
       R.on(Lg + '_knee');
       MP.joint(F, 0, 0, 0, 0.1, 0.18, 'x', jt, null);
       F.cy(0, -0.15, 0, 0.09, 0.08, 0.3, ANC.soot(F), 'metal', 'y', 10);
       ANC.sleeve(F, -0.64, -0.3, 0.1, c('rubber'), 3);
       F.cy(0, -0.67, 0, 0.07, 0.075, 0.1, frd, 'metal', 'y', 10);
-      F.chb(0, -0.25, 0.09, 0.2, 0.34, 0.05, 0.02, ANC.wear(F, 0.5), 'paint', 'z');
+      F.chb(0, -0.25, 0.09, 0.2, 0.34, 0.05, 0.02, pl(0.5), 'paint', 'z');
       MP.piston(F, R, Lg + '_hip', [0, -0.3, -0.15], Lg + '_knee', [0, -0.25, -0.1], 0.03, frd, c('chrome'));
       R.on(Lg + '_ankle');
       F.cy(0, -0.02, 0, 0.07, 0.08, 0.1, jt, 'metal', 'y', 10);

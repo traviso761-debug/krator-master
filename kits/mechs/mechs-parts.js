@@ -120,7 +120,9 @@ MP.fan = function (F, R, name, parent, x, y, z, r, depth, duct, blade, spinner, 
   R.bone(name + '_duct', parent, x, y, z, rx, ry, rz);
   R.on(name + '_duct');
   F.cy(0, 0, 0, r, r, depth, duct, 'paint', 'z', 20, 0, 0, 0, true);
-  F.cy(0, 0, 0, r * 0.98, r * 0.98, depth * 0.96, F.shade(duct, -0.5), 'metal', 'z', 20, 0, 0, 0, true);
+  /* the inner wall stands at least 8 mm inside the duct: at a small radius 2% is under the audit's tolerance and the two walls fight */
+  const ri = r - Math.max(r * 0.02, 0.008);
+  F.cy(0, 0, 0, ri, ri, depth * 0.96, F.shade(duct, -0.5), 'metal', 'z', 20, 0, 0, 0, true);
   F.tor(0, 0, depth / 2, r, 0.05, duct, 'paint', 'z', 20);
   F.tor(0, 0, -depth / 2, r, 0.05, duct, 'paint', 'z', 20);
   for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + 0.4; F.rod(0, 0, -depth * 0.3, Math.cos(a) * r, Math.sin(a) * r, -depth * 0.3, 0.025, F.shade(duct, -0.4), 'metal'); }

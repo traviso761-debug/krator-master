@@ -79,25 +79,29 @@ MECH({
     /* ---- the hull and its underframe */
     R.bone('body', null, 0, 3.1, 0);
     R.on('body');
-    F.chb(0, 0, -0.1, 2.4, 1.0, 3.4, 0.25, ANC.wear(F, 0.25), 'paint', 'z');
+    F.chb(0, 0, -0.1, 2.4, 1.0, 3.4, 0.25, ANC.work(F, 0.25), 'paint', 'z');
     F.chb(0, -0.6, -0.1, 1.8, 0.3, 3.0, 0.1, frd, 'metal', 'z');
     for (const s of [-1, 1]) {
-      F.chb(s * 1.21, -0.1, -0.1, 0.06, 0.6, 2.6, 0.02, ANC.wearDk(F, 0.5), 'paint', 'x');
-      F.cb(s * 1.25, 0.3, 0.8, 0.02, 0.2, 0.9, ANC.soot(F), 'paint');
+      F.chb(s * 1.21, -0.1, -0.1, 0.06, 0.6, 2.6, 0.02, ANC.work(F, 0.5), 'paint', 'x');
+      ANC.hazard(F, s * 1.246, -0.1, 0.4, 1.4, 0.18, 'yb', 0, s * Math.PI / 2, 0);
       ANC.streak(F, s * 0.6, 0.5, 1.62, 0.6, 0.06);
       F.chb(s * 1.16, -0.2, -1.3, 0.2, 0.5, 0.5, 0.05, fr, 'metal', 'x');
     }
+    ANC.ladder(F, 1.24, 0.0, -1.0, 1, 0.4, 0.9, 5);
     ANC.plate(F, 0.0, 0.2, -1.81, 0.6, 0.3, 0, Math.PI, 0);
     F.cb(0, -0.78, 0.6, 1.2, 0.08, 1.2, ANC.soot(F), 'metal');
+    ANC.beacon(F, -0.9, 0.5, 1.4, 0.08);
 
     /* ---- the sensor wedge at the front: a visor, two amber lamps, the tell on top */
     R.bone('head', 'body', 0, 0.1, 1.6);
     R.on('head');
     F.cy(0, -0.05, -0.1, 0.35, 0.4, 0.3, jt, 'metal', 'z', 12);
-    F.prism(0, 0, 0.45, [[-0.7, -0.35], [0.7, -0.35], [0.75, 0.25], [0.45, 0.42], [-0.45, 0.42], [-0.75, 0.25]], 0.9, ANC.wear(F, 0.3), 'paint', 'z');
-    ANC.visor(F, 0, 0.12, 0.908, 1.0, 0.18);
-    for (const s of [-1, 1]) ANC.lens(F, s * 0.5, -0.15, 0.9, s * 0.15, -0.05, 1, 0.12, 'amber', frd);
-    F.cb(0, -0.3, 0.905, 1.1, 0.06, 0.03, fr, 'metal');
+    F.prism(0, 0, 0.45, [[-0.7, -0.35], [0.7, -0.35], [0.75, 0.25], [0.45, 0.42], [-0.45, 0.42], [-0.75, 0.25]], 0.9, ANC.work(F, 0.3), 'paint', 'z');
+    ANC.visor(F, 0, 0.16, 0.908, 1.1, 0.26);
+    for (const s of [-1, 1]) ANC.visor(F, s * 0.73, 0.1, 0.45, 0.5, 0.2, 0, s * Math.PI / 2, 0);
+    ANC.twinLamps(F, 0, -0.15, 0.905, 0.09, 0.9, 'amber', 0);
+    F.cb(0, -0.32, 0.905, 1.3, 0.05, 0.03, fr, 'metal');
+    ANC.hazard(F, 0, -0.32, 0.924, 1.2, 0.04, 'rw');
     R.point('head_pt', 'head', 0, 0, 1.0);
     ANC.tell(F, R, 'head', 0, 0.43, 0.3, 0, 1, 0.35, 0.06);
 
@@ -112,15 +116,19 @@ MECH({
       for (const sz of [-1, 1]) F.chb(0.3 * sz, 0.68, -0.2 + sz * 0.9, 0.4, 0.14, 0.2, 0.04, ANC.soot(F), 'paint', 'x');
     } else {
       /* ---- the crane: a slewing ring, the boom, its cable and hook */
+      /* the counterweight behind the slewing ring */
+      F.chb(0, 0.68, -1.45, 1.6, 0.5, 0.8, 0.08, ANC.work(F, 0.4), 'paint', 'x');
+      ANC.hazard(F, 0, 0.68, -1.856, 1.3, 0.2, 'rw', 0, Math.PI, 0);
       R.bone('crane', 'body', 0, 0.5, -0.5);
       R.on('crane');
       F.cy(0, 0.06, 0, 0.55, 0.6, 0.14, jt, 'metal', 'y', 18);
-      F.chb(0, 0.34, 0, 0.8, 0.42, 1.0, 0.1, ANC.wearDk(F, 0.4), 'paint', 'z');
+      F.chb(0, 0.34, 0, 0.8, 0.42, 1.0, 0.1, ANC.work(F, 0.4), 'paint', 'z');
       R.bone('boom', 'crane', 0, 0.45, 0.25, -0.6, 0, 0);
       R.on('boom');
       MP.joint(F, 0, 0, 0, 0.17, 0.62, 'x', fr, null);
       const BL = 3.6;
-      for (const sx of [-1, 1]) for (const sy of [-1, 1]) F.cb(sx * 0.17, sy * 0.15, BL / 2, 0.06, 0.06, BL, ANC.wear(F, 0.5), 'metal');
+      for (const sx of [-1, 1]) for (const sy of [-1, 1]) F.cb(sx * 0.17, sy * 0.15, BL / 2, 0.06, 0.06, BL, ANC.work(F, 0.5), 'metal');
+      for (const sx of [-1, 1]) ANC.hazard(F, sx * 0.206, 0.15, 3.0, 0.7, 0.06, 'rw', 0, sx * Math.PI / 2, 0);
       for (let i = 0; i < 8; i++) {
         const z0 = i * BL / 8, z1 = (i + 1) * BL / 8;
         for (const sx of [-1, 1]) F.rod(sx * 0.17, -0.15, z0, sx * 0.17, 0.15, z1, 0.016, frd, 'metal');
@@ -131,7 +139,7 @@ MECH({
       MP.piston(F, R, 'crane', [0, 0.2, 0.5], 'boom', [0, -0.18, 1.3], 0.075, frd, c('chrome'));
       R.dangle('hook', 'boom', 0, -0.05, BL, { mode: 'hang', len: 1.5, k: 5, c: 0.9, wind: 0.01, max: 1.5 });
       R.on('hook');
-      F.rod(0, 0, 0, 0, -1.1, 0, 0.02, st, 'metal');
+      ANC.chain(F, 0, 0, 0, 1.1, 0.03);
       R.bone('grab', 'hook', 0, -1.15, 0);
       R.on('grab');
       F.chb(0, 0, 0, 0.36, 0.26, 0.26, 0.06, frd, 'metal', 'y');
@@ -157,8 +165,9 @@ MECH({
       F.cy(0, 0, 0, 0.28, 0.28, 0.24, jt, 'metal', 'y', 12);
       R.on(n + '_hip');
       MP.joint(F, 0, 0, 0, 0.26, 0.42, 'x', fr, null);
-      F.chb(0, -0.75, 0, 0.42, 1.2, 0.46, 0.1, ANC.wear(F, 0.4), 'paint', 'y');
+      F.chb(0, -0.75, 0, 0.42, 1.2, 0.46, 0.1, ANC.work(F, 0.4), 'paint', 'y');
       ANC.streak(F, 0.08, -0.3, 0.236, 0.5, 0.05);
+      ANC.hazard(F, 0, -1.15, 0.236, 0.3, 0.12, 'yb');
       R.on(n + '_knee');
       MP.joint(F, 0, 0, 0, 0.22, 0.44, 'x', fr, null);
       F.cy(0, -0.8, 0, 0.17, 0.12, 1.4, ANC.soot(F), 'metal', 'y', 12);

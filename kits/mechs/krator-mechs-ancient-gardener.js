@@ -29,6 +29,7 @@ MECH({
       ANC.hiddenIdle(P, st, ['tell']);
       P.b.arm_r_el = [0.1 * Math.sin(t * 0.6) * w, 0, 0]; P.b.arm_l_el = [0.1 * Math.sin(t * 0.6 + 2) * w, 0, 0];
       P.b.sh_a = [0, 0.04 * (1 + Math.sin(t * 0.9)) * w, 0]; P.b.sh_b = [0, -0.04 * (1 + Math.sin(t * 0.9)) * w, 0];
+      P.b.rig_l_el = [0.08 * Math.sin(t * 0.4) * w, 0, 0]; P.b.rig_r_el = [0.08 * Math.sin(t * 0.4 + 1.7) * w, 0, 0];
     }
   },
   /* the routine: the hand reaches for the branch, the shears open and snap twice */
@@ -36,7 +37,7 @@ MECH({
     kind: 'prune', dur: 2.6,
     keys: [
       [0, {}],
-      [0.5, { b: { body: [-0.08, 0, 0], head: [-0.15, 0, 0], arm_l_sh: [-0.9, 0, 0.2], arm_l_el: [-0.5, 0, 0], arm_r_sh: [-0.8, 0, -0.1], arm_r_el: [-0.6, 0, 0], sh_a: [0, 0.5, 0], sh_b: [0, -0.5, 0] }, s: { body: [0, 0.04, 0.05] } }, 's'],
+      [0.5, { b: { body: [-0.08, 0, 0], head: [-0.15, 0, 0], arm_l_sh: [-0.9, 0, 0.2], arm_l_el: [-0.5, 0, 0], arm_r_sh: [-0.8, 0, -0.1], arm_r_el: [-0.6, 0, 0], sh_a: [0, 0.5, 0], sh_b: [0, -0.5, 0], rig_l: [-0.5, 0, 0], rig_l_el: [0.6, 0, 0] }, s: { body: [0, 0.04, 0.05] } }, 's'],
       [0.8, { b: { body: [-0.08, 0, 0], head: [-0.15, 0, 0], arm_l_sh: [-0.9, 0, 0.2], arm_l_el: [-0.5, 0, 0], arm_r_sh: [-1.0, 0, -0.1], arm_r_el: [-0.4, 0, 0], sh_a: [0, -0.05, 0], sh_b: [0, 0.05, 0] }, s: { body: [0, 0.04, 0.05] } }, 'i'],
       [1.2, { b: { body: [-0.08, 0, 0], head: [-0.2, 0.15, 0], arm_l_sh: [-0.9, 0, 0.2], arm_l_el: [-0.5, 0, 0], arm_r_sh: [-1.1, 0.2, -0.1], arm_r_el: [-0.5, 0, 0], sh_a: [0, 0.5, 0], sh_b: [0, -0.5, 0] }, s: { body: [0, 0.04, 0.05] } }, 's'],
       [1.45, { b: { body: [-0.08, 0, 0], head: [-0.2, 0.15, 0], arm_l_sh: [-0.9, 0, 0.2], arm_l_el: [-0.5, 0, 0], arm_r_sh: [-1.2, 0.2, -0.1], arm_r_el: [-0.3, 0, 0], sh_a: [0, -0.05, 0], sh_b: [0, 0.05, 0] }, s: { body: [0, 0.04, 0.05] } }, 'i'],
@@ -68,12 +69,30 @@ MECH({
     /* ---- the pod */
     R.bone('body', null, 0, 1.45, 0);
     R.on('body');
-    F.sph(0, 0, 0, 0.46, 0.3, 0.52, ANC.wear(F, 0.25), 'paint', 18, 12);
+    F.sph(0, 0, 0, 0.46, 0.3, 0.52, ANC.work(F, 0.25), 'paint', 18, 12);
     F.chb(0, -0.22, 0, 0.6, 0.16, 0.7, 0.05, frd, 'metal', 'z');
     F.cy(0, 0.3, -0.1, 0.1, 0.12, 0.12, fr, 'metal', 'y', 8);
     F.knob(0, 0.4, -0.1, 0.035, c('lensDead'), 'metal');
     ANC.streak(F, -0.15, 0.1, 0.47, 0.2, 0.04);
-    for (const s of [-1, 1]) ANC.plate(F, s * 0.4, 0.05, 0.2, 0.2, 0.1, 0, s * Math.PI / 2, 0);
+    for (const s of [-1, 1]) {
+      F.chb(s * 0.42, -0.02, 0.0, 0.08, 0.2, 0.5, 0.02, ANC.work(F, 0.4), 'paint', 'x');
+      ANC.hazard(F, s * 0.466, -0.02, 0.0, 0.4, 0.1, 'yb', 0, s * Math.PI / 2, 0);
+    }
+    /* the rigger's arms: two long arms folded up over the back, each ending in a hook, for the branches it once hauled */
+    for (const s of [-1, 1]) {
+      const G = s > 0 ? 'rig_l' : 'rig_r';
+      R.bone(G, 'body', s * 0.2, 0.18, -0.15, 2.2, 0, s * 0.25);
+      R.on(G);
+      MP.joint(F, 0, 0, 0, 0.05, 0.1, 'x', jt, null);
+      F.cy(0, -0.46, 0, 0.035, 0.04, 0.86, ANC.work(F, 0.4), 'paint', 'y', 8);
+      R.bone(G + '_el', G, 0, -0.92, 0, -2.4, 0, 0);
+      R.on(G + '_el');
+      MP.joint(F, 0, 0, 0, 0.04, 0.09, 'x', jt, null);
+      F.cy(0, -0.42, 0, 0.028, 0.034, 0.8, fr, 'metal', 'y', 8);
+      F.rod(0, -0.82, 0, 0, -0.95, 0.07, 0.014, st, 'metal');
+      F.rod(0, -0.95, 0.07, 0, -0.9, 0.14, 0.012, st, 'metal');
+    }
+    R.on('body');
 
     /* ---- the sensor dome at the front: three lenses, the tell on top */
     R.bone('head', 'body', 0, 0.06, 0.5);

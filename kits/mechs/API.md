@@ -32,7 +32,7 @@ KratorMechs.clip(key, v)      // a variant's attack clip (variantAttack[v] or th
 KratorMechs.audit(key, { variant, seed, tol, pen })   // z-fighting at rest: [{ bone, a, b, n, meshes, at }]
 KratorMechs.useTextures({ plate, livery, metal, bronze, cloth, hair: { src, scale, mean, bump, chip }, banner: { src, cell }, sunbanner: { src, size } })
 KratorMechs.has, .get(key) (the entry), .cultures(), .palette(culture), .setDetail(k), .dispose(group)
-KratorMechs.CLASSES, .TYPES, .DRIVES, .PILOTS, .WEAPONS, .ROLES, .BUCKETS   // the tag vocabularies (DRIVES has 'tripod'; WEAPONS 'lance', 'beam', 'cannon', 'gun')
+KratorMechs.CLASSES, .TYPES, .DRIVES, .PILOTS, .WEAPONS, .ROLES, .BUCKETS   // the tag vocabularies (DRIVES has 'tripod', 'hexapod', 'hover'; WEAPONS 'lance', 'beam', 'cannon', 'gun')
 ```
 
 Call `update` every frame, after moving the group. The first update after `build` plants the feet wherever the
@@ -75,6 +75,9 @@ and `arm_r_*` on the arms, `leg_<n>_yaw/_hip/_knee/_ankle` per leg (`leg_l`, `le
 MECH({
   key, name, culture, role, origin, lore,
   feign: [v, ...],                    the variants that are feigners (their `tell` bone shows during the attack clip)
+  hover: { bob, lean, roll },         a HOVERING machine (drive 'hover', no legs): it rides at its body bone's height, bobs by `bob` m,
+                                      pitches `lean` rad per m/s of forward speed and rolls `roll` per m/s sideways; its gait is a speed
+                                      alone ({ period: 1, duty: 1, stride: m/s }); feet(g) is []; the host moves it exactly as a walker
   tags: { class: 'mech', type: [...], drive, crew, pilot, weapon: [...], role, setting, guild },
   variants, variantNames, w, d, h,
   variantData: [{ ... }],             per variant, merged over data

@@ -77,7 +77,9 @@ MECH({
     R.on('torso');
     F.cy(0, 0.75, 0, 0.13, 0.16, 1.5, frd, 'metal', 'y', 10);
     for (let i = 0; i < 6; i++) F.cy(0, 0.15 + i * 0.24, 0, 0.19, 0.19, 0.08, fr, 'metal', 'y', 10);
-    F.chb(0, 1.78, 0.04, 0.9, 0.62, 0.52, 0.12, ANC.wear(F, 0.25), 'paint', 'x');
+    F.chb(0, 1.78, 0.04, 0.9, 0.62, 0.52, 0.12, ANC.work(F, 0.25), 'paint', 'x');
+    for (const s of [-1, 1]) ANC.aerial(F, R, s > 0 ? 'ant_l' : 'ant_r', 'torso', s * 0.42, 2.2, -0.08, 0.7, -0.12);
+    R.on('torso');
     F.chb(0, 1.5, 0.05, 0.6, 0.12, 0.4, 0.03, whd, 'paint', 'x');
     ANC.visor(F, 0, 1.85, 0.308, 0.4, 0.12);
     ANC.plate(F, -0.25, 1.68, 0.308, 0.18, 0.1);
@@ -151,8 +153,9 @@ MECH({
       R.leg(Lg, { parent: 'body', hip: [s * 0.26, -0.05, 0], L1: 1.5, L2: 1.5, knee: 1, ankleH: 0.12, rest: [s * 0.3, 0.02], phase: s > 0 ? 0 : 0.5, toe: 0.3 });
       R.on(Lg + '_hip');
       MP.joint(F, 0, 0, 0, 0.13, 0.2, 'x', jt, null);
-      F.chb(0, -0.75, 0, 0.26, 1.3, 0.3, 0.06, ANC.wear(F, 0.35), 'paint', 'y');
+      F.chb(0, -0.75, 0, 0.26, 1.3, 0.3, 0.06, ANC.work(F, 0.35), 'paint', 'y');
       ANC.streak(F, 0.05, -0.4, 0.156, 0.4, 0.04);
+      ANC.hazard(F, 0, -1.2, 0.156, 0.2, 0.08, 'yb');
       R.on(Lg + '_knee');
       MP.joint(F, 0, 0, 0, 0.11, 0.18, 'x', jt, null);
       F.cy(0, -0.8, 0, 0.09, 0.07, 1.4, ANC.soot(F), 'metal', 'y', 10);

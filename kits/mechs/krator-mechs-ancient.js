@@ -38,7 +38,10 @@ MECH_CULTURE('ancient', {
     rust: 0x7b4526, rustDk: 0x4f2b17, rustLt: 0x9a5d31, soot: 0x2a2725, grime: 0x6b6256, oxide: 0x4e7a6c,
     glass: 0x1a2128, glassDk: 0x0f1317, lensDead: 0x3a3a38,
     amber: 0xffb45a, lensWarm: 0xffd59a, lensRed: 0xff3a2a, lensAmber: 0xffa040, cyan: 0x66d9e2, glowBlue: 0x66d9e2, eye: 0x66d9e2,
-    rubber: 0x262628, hose: 0x4a4744, hoseDk: 0x343230, bristle: 0x6e5a3a, bristleDk: 0x4a3c26
+    rubber: 0x262628, hose: 0x4a4744, hoseDk: 0x343230, bristle: 0x6e5a3a, bristleDk: 0x4a3c26,
+    /* the service livery (the owner's references, 2026-11-09: the yellow work machines): a safety yellow faded to ochre, and
+       the hazard stripes' black, red and white */
+    work: 0xc49a3c, workDk: 0x9a782c, workLt: 0xd6b25a, hazard: 0x1f1d1b, hazardRed: 0xa83a2a, hazardWhite: 0xe6e0d2
   }
 });
 
@@ -52,6 +55,55 @@ ANC.wear = function (F, p) {
 ANC.wearDk = function (F, p) { const c = ANC.wear(F, p); return c === F.col('white') ? F.col('whiteDk') : c; };
 /* a sooted part: the feet, the undersides, anything near a burn */
 ANC.soot = function (F) { return F.col(F.chance(0.5) ? 'soot' : 'grime'); };
+/* a work-livery panel (the keepers, and the service frames the war armed): faded yellow, or rusted through with chance p */
+ANC.work = function (F, p) {
+  if (!F.chance(p == null ? 0.3 : p)) return F.col(F.chance(0.3) ? 'workDk' : 'work');
+  return F.col(F.pick(['rust', 'rustDk', 'rustLt', 'grime']));
+};
+/* hazard stripes: diagonal bands on a w x h panel centred at (x, y, z) facing +z (turned rx, ry, rz), standing 6 mm proud of
+   the surface they lie on (put them at surface + 0.006). kind 'yb' black on yellow (industrial), 'rw' red on white (the
+   booms and bumpers) */
+ANC.hazard = function (F, x, y, z, w, h, kind, rx, ry, rz) {
+  const cols = kind === 'rw' ? [F.col('hazardRed'), F.col('hazardWhite')] : [F.col('hazard'), F.col('work')];
+  F.bands(x, y, z, w, h, 0.785, Math.max(0.04, h * 0.55), cols, 'paint', rx, ry, rz);
+};
+/* twin round lamps (the service machines' faces: two bezels side by side): radius r, gap g, facing +z, turned ry */
+ANC.twinLamps = function (F, x, y, z, r, g, kind, ry) {
+  ry = ry == null ? 0 : ry;
+  const c = Math.cos(ry), s = Math.sin(ry);
+  for (const t of [-1, 1]) {
+    const lx = x + t * (g / 2) * c, lz = z - t * (g / 2) * s;
+    F.cy(lx, y, lz, r * 1.2, r * 1.2, 0.05, F.col('frameDk'), 'metal', 'z', 14, 0, ry, 0);
+    ANC.lens(F, lx + s * 0.03, y, lz + c * 0.03, s, 0, c, r, kind || 'amber', null);
+  }
+};
+/* a rotating beacon on a short post: an amber dome (glow) under a dark cap */
+ANC.beacon = function (F, x, y, z, r) {
+  r = r == null ? 0.06 : r;
+  F.cy(x, y + r * 0.3, z, r * 1.1, r * 1.0, r * 0.6, F.col('frameDk'), 'metal', 'y', 10);
+  F.sph(x, y + r * 0.6, z, r * 0.85, r * 1.1, r * 0.85, F.col('lensAmber'), 'lampAmber', 10, 6, 0, TAU, 0, Math.PI / 2);
+  F.cy(x, y + r * 1.75, z, r * 0.9, r * 0.6, r * 0.2, F.col('frameDk'), 'metal', 'y', 10);
+};
+/* a whip aerial on a swinging bone `name` from (x, y, z) of parent, len tall, a bead at the tip */
+ANC.aerial = function (F, R, name, parent, x, y, z, len, lean) {
+  R.dangle(name, parent, x, y, z, { mode: 'whip', len: len, k: 36, c: 3.5, wind: 0.02, max: 0.3, rx: lean == null ? -0.15 : lean });
+  R.on(name);
+  F.cy(0, 0.04, 0, 0.02, 0.02, 0.08, F.col('frameDk'), 'metal', 'y', 6);
+  F.rod(0, 0, 0, 0, len, 0, 0.007, F.col('steel'), 'metal');
+  F.knob(0, len, 0, 0.014, F.col('frameDk'), 'metal');
+  R.on(parent);
+};
+/* a ladder of n rungs up a flank: rails and rungs standing off a face at (x, y, z) that faces (sx, 0, 0), h tall, w wide */
+ANC.ladder = function (F, x, y, z, sx, w, h, n) {
+  for (const t of [-1, 1]) F.cb(x + sx * 0.05, y, z + t * w / 2, 0.025, h, 0.025, F.col('frameDk'), 'metal');
+  for (let i = 0; i < n; i++) F.cb(x + sx * 0.035, y - h / 2 + h * (i + 0.5) / n, z, 0.02, 0.02, w, F.col('steel'), 'metal');
+};
+/* a chain: a line of links (beads) from the top down len on the current bone, radius r */
+ANC.chain = function (F, x, y, z, len, r) {
+  const n = Math.max(2, Math.round(len / (r * 3)));
+  F.rod(x, y, z, x, y - len, z, r * 0.45, F.col('frameDk'), 'metal');
+  for (let i = 0; i < n; i++) F.cy(x, y - len * (i + 0.5) / n, z, r, r, r * 1.6, F.col('steel'), 'metal', i % 2 ? 'x' : 'z', 6);
+};
 
 /* a lens. kind: 'amber' | 'cyan' | 'red' live (the glow bucket), 'dead' a grey glass gone blind. Facing (dx, dy, dz),
    radius r, with a dark housing when `housing` is given */
@@ -62,7 +114,7 @@ ANC.lens = function (F, x, y, z, dx, dy, dz, r, kind, housing) {
     F.face(x + ux * 0.006, y + uy * 0.006, z + uz * 0.006, ux, uy, uz, r, F.col('lensDead'), 'metal', 10);
     return;
   }
-  MP.lamp(F, x, y, z, dx, dy, dz, r, kind === 'cyan' ? 'cell' : kind === 'red' ? 'tail' : 'amber', housing);
+  MP.lamp(F, x, y, z, dx, dy, dz, r, kind === 'cyan' ? 'cell' : kind === 'red' ? 'tail' : kind === 'white' ? 'head' : 'amber', housing);
 };
 /* a ring of n small lenses round a dome of radius R centred at (x, y, z), at latitude lat (radians up from the
    equator), facing outward: the many-eyed sensor heads */
