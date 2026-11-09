@@ -119,7 +119,7 @@
     "biomes/ringisles/tex/wrack.albedo.webp": "209196a28095fde208d0fbddf64747b171a55dc42036f27f2d2a3574842dc680",
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "c2da12045d85482bba41d0b3b397aaf63f2215d2c39f67e1629df299f6967b3f",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -145,8 +145,8 @@
     "biomes/sedesert/tex/small.albedo.webp": "aa19f7598922a485528141c667cefd50278bea5f84281e2bdaf7f925b4e303a5",
     "biomes/sedesert/tex/strap.albedo.webp": "200edf7b8332a80eef6db9f1257af6019b8be47143a53897e4872749d6bc9dac",
     "biomes/sedesert/tex/wood.albedo.webp": "d6262fbd50ca60efb74a8d0b79c70c7e7956c0a0c48be762c6f880c48ccb935f",
-    "biomes/swbay/src/50-biome-swbay-species.js": "c3e87aff737a52718556257604148b1816d2c50a4f0bd09f860891f33196cde4",
-    "biomes/swbay/src/55-biome-swbay-trees.js": "945a272707add51a67ed191c3c8ffc0ca4ac0f7eff4dc7927aea5bb73152aa36",
+    "biomes/swbay/src/50-biome-swbay-species.js": "153d864833b8189e553218e0a8354d42f25f09578ecdeb3df8cbe6a30ae94536",
+    "biomes/swbay/src/55-biome-swbay-trees.js": "44072906054451099d05fbc15b42351be0dbabc9c51bec4e14e9e38186a23ec6",
     "biomes/swbay/src/60-biome-swbay-floor.js": "a89714c766c778094a843cbc49648ac0b5dc1f680f35107c3173918e7a0b31d6",
     "biomes/swbay/src/65-biome-swbay-dress.js": "32e3eca60c6ca9cb819175b7595dc1dce57b96b9309dfeac11e5dc18e16eb1dd",
     "biomes/swbay/src/70-biome-swbay.js": "eba90e7f1c93c8a67bf5660c515861da24ccf28945ff0815cc09908244106007",
@@ -1164,8 +1164,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "61ffa99436b8253a66768f12c323f63be49325478dffa06371a4c95d0be99e21",
-    "openworld/isle-demo/dist/isle-demo.html": "c5e6acb230a0a6dbcadc8f3d0633355391e9512b1421a95067352d10fdca14a0",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "71df41aa93a2d90d68319b1942bf3e5f05e66e314e9bf259755fa8030ac90031",
+    "openworld/isle-demo/dist/isle-demo.html": "c118142c76a3d68129938edb6d5f05a9aeb708fd3aa84ed2258793afd92aeccd",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "5b75eede09bcb2944396c9fd15de91b0a0fb5bcf30bb93a7d7df50c175afbddc",
@@ -1180,8 +1180,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.throne.js": "29c079af3b475e1e1cfc8a9189ab96bacb679fa91dbc8f9e45f6705a99313f56"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "61ffa99436b8253a66768f12c323f63be49325478dffa06371a4c95d0be99e21",
-    "openworld/isle-demo/dist/isle-demo.html": "c5e6acb230a0a6dbcadc8f3d0633355391e9512b1421a95067352d10fdca14a0",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "71df41aa93a2d90d68319b1942bf3e5f05e66e314e9bf259755fa8030ac90031",
+    "openworld/isle-demo/dist/isle-demo.html": "c118142c76a3d68129938edb6d5f05a9aeb708fd3aa84ed2258793afd92aeccd",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "5b75eede09bcb2944396c9fd15de91b0a0fb5bcf30bb93a7d7df50c175afbddc",

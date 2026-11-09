@@ -174,7 +174,7 @@
     "biomes/ringisles/tex/wood.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
     "biomes/ringisles/tex/wrack.albedo.webp": "209196a28095fde208d0fbddf64747b171a55dc42036f27f2d2a3574842dc680",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "c2da12045d85482bba41d0b3b397aaf63f2215d2c39f67e1629df299f6967b3f",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -200,8 +200,8 @@
     "biomes/sedesert/tex/small.albedo.webp": "aa19f7598922a485528141c667cefd50278bea5f84281e2bdaf7f925b4e303a5",
     "biomes/sedesert/tex/strap.albedo.webp": "200edf7b8332a80eef6db9f1257af6019b8be47143a53897e4872749d6bc9dac",
     "biomes/sedesert/tex/wood.albedo.webp": "d6262fbd50ca60efb74a8d0b79c70c7e7956c0a0c48be762c6f880c48ccb935f",
-    "biomes/swbay/src/50-biome-swbay-species.js": "c3e87aff737a52718556257604148b1816d2c50a4f0bd09f860891f33196cde4",
-    "biomes/swbay/src/55-biome-swbay-trees.js": "945a272707add51a67ed191c3c8ffc0ca4ac0f7eff4dc7927aea5bb73152aa36",
+    "biomes/swbay/src/50-biome-swbay-species.js": "153d864833b8189e553218e0a8354d42f25f09578ecdeb3df8cbe6a30ae94536",
+    "biomes/swbay/src/55-biome-swbay-trees.js": "44072906054451099d05fbc15b42351be0dbabc9c51bec4e14e9e38186a23ec6",
     "biomes/swbay/src/60-biome-swbay-floor.js": "a89714c766c778094a843cbc49648ac0b5dc1f680f35107c3173918e7a0b31d6",
     "biomes/swbay/src/65-biome-swbay-dress.js": "32e3eca60c6ca9cb819175b7595dc1dce57b96b9309dfeac11e5dc18e16eb1dd",
     "biomes/swbay/src/70-biome-swbay.js": "eba90e7f1c93c8a67bf5660c515861da24ccf28945ff0815cc09908244106007",
@@ -375,7 +375,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ringisles/dist/ringisles.html": "eb0e409e175b398b1dfbca5de5d4a8a32410d8dea7820efb0aa71c5f7cbb0668",
+    "biomes/ringisles/dist/ringisles.html": "4c9b427e90b92fe40121ed7b72eec460e9d2af33505014e19d6a22b1e97ca268",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "aac3b67ffc30eaab4c74cdae3306b455475c13d6da3450342f18a549c853bee7",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "9f76ef85f8a930f1679dd3412c56098e29fb27a4156268c6a2774750e52ec815",
@@ -387,7 +387,7 @@
     "biomes/ringisles/dist/ringisles.tex.throne.js": "c256175a6d2235ae1a2cc71fa4092162a2b0275db7affe89b08675a7bcf2ffb5"
    },
    "outputs_raw": {
-    "biomes/ringisles/dist/ringisles.html": "eb0e409e175b398b1dfbca5de5d4a8a32410d8dea7820efb0aa71c5f7cbb0668",
+    "biomes/ringisles/dist/ringisles.html": "4c9b427e90b92fe40121ed7b72eec460e9d2af33505014e19d6a22b1e97ca268",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "aac3b67ffc30eaab4c74cdae3306b455475c13d6da3450342f18a549c853bee7",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "9f76ef85f8a930f1679dd3412c56098e29fb27a4156268c6a2774750e52ec815",
@@ -573,7 +573,7 @@
     "biomes/ringisles/tex/wood.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
     "biomes/ringisles/tex/wrack.albedo.webp": "209196a28095fde208d0fbddf64747b171a55dc42036f27f2d2a3574842dc680",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -599,8 +599,8 @@
     "biomes/sedesert/tex/small.albedo.webp": "aa19f7598922a485528141c667cefd50278bea5f84281e2bdaf7f925b4e303a5",
     "biomes/sedesert/tex/strap.albedo.webp": "200edf7b8332a80eef6db9f1257af6019b8be47143a53897e4872749d6bc9dac",
     "biomes/sedesert/tex/wood.albedo.webp": "d6262fbd50ca60efb74a8d0b79c70c7e7956c0a0c48be762c6f880c48ccb935f",
-    "biomes/swbay/src/50-biome-swbay-species.js": "c3e87aff737a52718556257604148b1816d2c50a4f0bd09f860891f33196cde4",
-    "biomes/swbay/src/55-biome-swbay-trees.js": "945a272707add51a67ed191c3c8ffc0ca4ac0f7eff4dc7927aea5bb73152aa36",
+    "biomes/swbay/src/50-biome-swbay-species.js": "153d864833b8189e553218e0a8354d42f25f09578ecdeb3df8cbe6a30ae94536",
+    "biomes/swbay/src/55-biome-swbay-trees.js": "44072906054451099d05fbc15b42351be0dbabc9c51bec4e14e9e38186a23ec6",
     "biomes/swbay/src/60-biome-swbay-floor.js": "a89714c766c778094a843cbc49648ac0b5dc1f680f35107c3173918e7a0b31d6",
     "biomes/swbay/src/65-biome-swbay-dress.js": "32e3eca60c6ca9cb819175b7595dc1dce57b96b9309dfeac11e5dc18e16eb1dd",
     "biomes/swbay/src/70-biome-swbay.js": "eba90e7f1c93c8a67bf5660c515861da24ccf28945ff0815cc09908244106007",
@@ -775,7 +775,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ringisles/dist/ringisles-lagoon.html": "721c0cc3f6ffda70abb39b15f5f73bb49950cc2a336e0060964874ab8cfeb551",
+    "biomes/ringisles/dist/ringisles-lagoon.html": "a6d55fcafef4575c4b9f275010a53dde514e8634c66462f816d1f3ba029458b5",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "aac3b67ffc30eaab4c74cdae3306b455475c13d6da3450342f18a549c853bee7",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "9f76ef85f8a930f1679dd3412c56098e29fb27a4156268c6a2774750e52ec815",
@@ -787,7 +787,7 @@
     "biomes/ringisles/dist/ringisles.tex.throne.js": "c256175a6d2235ae1a2cc71fa4092162a2b0275db7affe89b08675a7bcf2ffb5"
    },
    "outputs_raw": {
-    "biomes/ringisles/dist/ringisles-lagoon.html": "721c0cc3f6ffda70abb39b15f5f73bb49950cc2a336e0060964874ab8cfeb551",
+    "biomes/ringisles/dist/ringisles-lagoon.html": "a6d55fcafef4575c4b9f275010a53dde514e8634c66462f816d1f3ba029458b5",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "aac3b67ffc30eaab4c74cdae3306b455475c13d6da3450342f18a549c853bee7",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "9f76ef85f8a930f1679dd3412c56098e29fb27a4156268c6a2774750e52ec815",
