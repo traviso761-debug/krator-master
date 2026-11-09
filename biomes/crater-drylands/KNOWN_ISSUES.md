@@ -61,6 +61,10 @@ with no station they are not taken, and station 1 runs as before.
 - [ ] **Owed to swbay's turn:** its `leaflet` and `bloom` cards float on the umbrella thorn and the baobab (221 of 351 and 121 of 206 on
       `edge`, software GL: 7.3% of the page's cards; ringisles saw the same on these trees). `edge` marks the two free on its page only
       (`window._auditOwed`, korona's way; `?owed=0` audits them); the fix is `BIO.holdTo` in swbay's thorn and baobab builders.
+- **Headless loads after the known-issues pass** (2026-11-09, software GL): all three pages clean, every check and negative passing
+  (station 1 30, attach audit .14%; `edge` 34, .27%, 873 thorns, 57 baobabs and 19 flame-crowns, the season bound; `salt` 34, .05%, the
+  trees at 1.2x); `KratorFauna` on each with 153 animals. On the way it caught the fauna bundle's missing group (above) and the edge's
+  season fragment sorting after `99-tail.html` (outside the script: renamed `99-host-zseason.js`).
 - **Headless loads of the stations** (software GL, `tools/harness.py`'s launcher; the page's own host checks and negatives run, not the
   verify): `salt` clean, every check and negative passes (34), the two kits on their own ground (77,113 and 9,739 sampled instances, 1 off),
   nothing on a pan, attach audit .24%; `edge` clean, every check and negative passes (34: 873 umbrella thorns and 57 baobabs as kin, 362
