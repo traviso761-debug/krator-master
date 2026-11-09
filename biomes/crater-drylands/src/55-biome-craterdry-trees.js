@@ -449,7 +449,9 @@ CRATERDRY.PASSES=[
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
 // make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed from the kit's stream, the age of the ground's
 // last burn from the fire history). grow(T,lv): build that one tree at level lv (2 hero, 1 mid, 0 the impostor).
-CRATERDRY.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
+// BIO.host.treeScale (a station's stage: the salt floor's dense air grows the kiln's scrub at its largest, 1.2): every size times it, after the
+// draws, so no random number moves. No host asking: 1, as before
+CRATERDRY.make=function(sp,x,y,z){const S=SP[sp],k=BIO.host.treeScale==null?1:BIO.host.treeScale;return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1])*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
 CRATERDRY.grow=function(T,lv){means();const st=newStats();
  T.lv=lv;if(lv===0){if(!SP[T.sp].far)return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();

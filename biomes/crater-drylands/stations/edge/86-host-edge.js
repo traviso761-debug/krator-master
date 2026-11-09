@@ -30,10 +30,14 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
  function kinTrees(q){if(Q.get('kin')==='0'||typeof BIO.kin!=='function'||typeof SWBAY==='undefined')return{thorn:0,baobab:0};
   const KIN=[{K:BIO.kin('swbay.thorn',{key:'edgethorn',name:'Umbrella thorn (SW Bay, at the edge)',scale:.8,tags:{koppen:['Aw','BSh']}}),cell:75,p:.42,pad:7,salt:1,n:'thorn'},
    {K:BIO.kin('swbay.baobab',{key:'edgebaobab',name:'Gate baobab (SW Bay, at the edge)',scale:.65,tags:{koppen:['Aw','BSh']}}),cell:260,p:.5,pad:10,salt:2,n:'baobab'}];
+  // nwbay's flame-crown at the waterhole (EXCHANGES.md "nwbay → crater", read in place: 48n0..48n9): a planted shade tree, so a few, round the seep
+  if(typeof NWBAY!=='undefined'){const F=BIO.kin('nwbay.flamecrown',{key:'edgeflamecrown',name:'Flame-crown (nwbay\'s, planted at the waterhole)',tags:{koppen:['Aw','BSh']}});
+   if(F)KIN.push({K:F,cell:60,p:.9,pad:9,salt:3,n:'flamecrown',near:[SEEP.x,SEEP.z,240]});}
   const LOD=BIO.LOD(),R=TERR.R-200,out={};
-  for(const k of KIN){out[k.n]=0;if(!k.K)continue;const n=Math.ceil(R/k.cell);
+  for(const k of KIN){out[k.n]=0;if(!k.K)continue;const n=Math.ceil(R/k.cell);   /* k.near [x, z, r]: only round that point (the flame-crowns' waterhole) */
    for(let j=-n;j<n;j++)for(let i=-n;i<n;i++){reseed(KRAND.hash(W,k.salt,i,j));const x=(i+.15+.7*rng())*k.cell,z=(j+.15+.7*rng())*k.cell;
-    if(Math.hypot(x,z)>R||rng()>k.p*q*open(x,z)||BIO.mask(x,z)<=0)continue;
+    if(k.near&&Math.hypot(x-k.near[0],z-k.near[1])>k.near[2])continue;
+    if(Math.hypot(x,z)>R||rng()>k.p*q*(k.near?Math.max(open(x,z),.6*(1-CRATERDRY.zones(x,z).kop)):open(x,z))||BIO.mask(x,z)<=0)continue;
     if(CRATERDRY.blocked(x,z,k.pad)||nearMound(x,z,k.pad)||E.trees.some(T=>Math.hypot(T.x-x,T.z-z)<T.crownR+k.pad))continue;
     const y=terrainH(x,z),T=k.K.make(x,y,z,{wet:.4,sav:1}),ld=BIO.lodD(x,z),lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
     k.K.grow(T,lv);T.kin=k.n;E.trees.push(T);out[k.n]++;
@@ -52,6 +56,7 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
  E.views=function(h){const V={},c=BIO.center?BIO.center():[0,0],t=nearKin('thorn',c[0],c[1]),b=nearKin('baobab',c[0],c[1]);
   if(t)V['Umbrella thorns over the grass']=h.atTree(t,t.crownR*3.2,.8,2.4,.55);
   if(b)V['A gate baobab at the edge']=h.atTree(b,b.crownR*3.4,2.1,3,.5);
+  const f=nearKin('flamecrown',SEEP.x,SEEP.z);if(f)V['Flame-crowns at the waterhole']=h.atTree(f,f.crownR*2.6,2.6,3,.5);
   let M=null;for(const m of E.mounds)if(!M||m.top-m.y0>M.top-M.y0)M=m;
   if(M)V['Termite mounds in the grass']=[M.x+18,h.gh(M.x+18,M.z+11,2.2),M.z+11,M.x,M.y0+(M.top-M.y0)*.5,M.z];
   const K0=KOP[0];V['The waterhole kopje']=h.look(K0.x+K0.r*2.2,K0.z+K0.r*1.4,10,K0.x,K0.z,K0.h*.5);

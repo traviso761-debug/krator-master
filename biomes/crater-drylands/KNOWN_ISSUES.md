@@ -68,9 +68,17 @@ with no station they are not taken, and station 1 runs as before.
   one: made steeper), and the edge's audit then found **the sword spire's flowers floating** (123 there, 20 on station 1): its flower spike
   is a leaf-material item, which the audit counts as a card. The spike now has a stalk (a `rod` up its axis, inside it, as the yucca's
   spike has; no random number drawn, so nothing else moves).
-- [ ] **Owed on the stations** (PLAN-STATIONS.md): seasons on `edge` (straw and flush) and its other exchange rows (k-guilin's banyan and
-      silvergrass, nwbay's flame-crown); on `salt` the Steampits' geyser field reaching in, nwbay's cinder pine on basalt, the kiln's scrub
-      at its largest, the dry season driving the dust.
+- Done on the stations (2026-11-09): **seasons on `edge`** (the kit's grass takes core/biome's season through `BIO.host.seasons`, bound
+  to the clock in `99b-host-season.js`: straw and thinned in the dry, green in the wet; `?season=0`); **nwbay's flame-crown** at the
+  waterhole (`BIO.kin('nwbay.flamecrown')`, nwbay's species, trees and variants read in place in their own registry, k-guilin's way; only
+  the pack's bark3, fernleaf and bloom families); **the kiln's scrub at its largest on `salt`** (`BIO.host.treeScale` 1.2, applied in
+  55's make after its draws); the salt floor's placement mask now keeps the core's water rule.
+- [ ] **Owed on the stations**, each to another kit or to core: k-guilin's **banyan** (a cousin) and **silvergrass** (read in place) on
+      `edge`: k-guilin exports no `make`/`grow` for its trees and no function for one floor plant (k-guilin's turn); nwbay's **cinder pine**
+      on `salt` as the row's cousin ("upright and unsheared"): its builder always leans and shears to the lee, so the cousin needs a habit
+      option in nwbay's B[10] (nwbay's turn); the **Steampits' geyser field** reaching into `salt` (the geyser kit's run-off and sinter
+      apron: a station of its own size); **the dry season driving the dust** (core/atmos's air load takes a storm, not a season: a core
+      option).
 
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
@@ -87,9 +95,11 @@ with no station they are not taken, and station 1 runs as before.
 
 ## The region and the open world
 
-- [ ] **The Koppen classes are an estimate** (BSh .6, BWh .25, Aw .15). The scale model's climate rasters were not
-  read for this kit; take the two regions' real class shares (and their pressure and rain) from the scale model with
-  `tools/scale-model/extract_region.py` before the kit goes into an open world.
+- [x] **The Koppen classes** (2026-11-09): `CRATERDRY.KOPPEN` is the scale model's (4.23, `survey_biomes.py`; PLAN-STATIONS.md "The
+  ground"): BSh .70, Aw .18, XS .04, BWh .04, Csa .03, XV .01 over both lands, and each land's own in `CRATERDRY.KOPPEN_LANDS` (the
+  estimate was BSh .6, BWh .25, Aw .15). Only the probe's tag check reads it: no placement moved. The lands' pressure (N 1.72 atm at its
+  median, S 1.54 on its BSh) and rain are in the same survey; the showcase's sky keeps 1.9 atm (the deep floor's). An open world still
+  takes its region's fields from `tools/scale-model/extract_region.py` (the next item).
 - [ ] **Not slotted into an open world.** `openworld/little-demo` is the eastern desert. A world that takes this kit
   calls `CRATERDRY.fireHistory` over its region once (a 20 m grid) or binds an age field of its own.
 - [x] **Catalog fruit (2026-10-06).** The frill-tree's fireseed (`generic_fruit_fireseed`: three seeds in every living
@@ -98,9 +108,13 @@ with no station they are not taken, and station 1 runs as before.
   hash of the tree so no other tree moved; the yucca and the Joshua tree take the shared roasted-stalk piece
   (`generic_fruit_yucca`, its flowers drawn as before). The probe checks it (`fruit tagged, catalogued and drawn`).
   Nectar (mallee, tree aloe, pincushion), the pillar's pith and the jade's leaves are named in the tags, not catalogued.
-- [ ] **No fauna, no Scyvoi.** The owner's plan puts all fauna in one fauna kit (`biomes/README.md`); the Scyvoi's
-  theropod mounts, fire-chasing birds and the beetles that breed in fresh char belong there. A Scyvoi camp on a kopje
-  is a settlement, not part of a biome.
+- [x] **Fauna** (2026-11-09; sedesert's way): `kits/fauna`'s wild, ash, livestock and mounts groups are on every page of this kit
+  (`39-host-fauna.js`, no texture pack), for the editor's fauna mode: the palette lists this biome's animals first (the bison, the ash
+  runner, the salamander, the Scyvoi's mounts...), each put down is drawn, registered as a core/tags life record and idles and grazes on
+  the host's clock (99-host-take.js, `CD_WORLD`). Nothing is placed at load: herds belong to a world.
+- [ ] **Fauna still owed:** the burn-hawk and the hot-spring axolotl (`kits/fauna/BIOME-FAUNA-PLAN.md`: not built yet); the char beetle
+  (the fauna kit's hyperjungle group) and the farm group's crater animal are not bundled (120 KB and 80 KB more for one each). A Scyvoi camp
+  on a kopje is a settlement, not part of a biome.
 
 ## The fire
 
@@ -148,7 +162,9 @@ with no station they are not taken, and station 1 runs as before.
 
 ## The host (core/host, 2026-10-12)
 
-- [ ] **F arms a fire, not the walk.** The camera, loop, panel and probe are core/host's (`src/99-host-take.js` hands the
+- [x] **L arms a fire, F walks** (2026-11-09): the fire's key is L now (`keys.l`; no core/host key uses it), so F walks here as on
+      every page. What follows is the old note.
+- **F armed a fire, not the walk.** The camera, loop, panel and probe are core/host's (`src/99-host-take.js` hands the
       page to `KHOST.take`; no core/host file is overridden). The host's F walks; this kit hands F to the fire
       (`keys.f`, 89-host-fire.js's click-to-light), so this page has no walking (a build's keys win over the camera's;
       walking wants another key, or the fire another). An armed click lights a fire before the inspector

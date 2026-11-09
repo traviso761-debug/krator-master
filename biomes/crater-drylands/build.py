@@ -160,14 +160,20 @@ for f in CORE_MAT:
 # Named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
 sys.path.insert(0,os.path.join(ROOT,'tools','textures'))
 import matlib_pack as _mp
+sys.path.insert(0,os.path.join(ROOT,'kits','fauna'))
+import fauna_bundle as _fb
 def _mp_fams(d):
     import json as _j
     pj=os.path.join(d,'tex','pack.json')
     return sorted(_j.load(open(pj,encoding='utf-8')).get('families',{})) if os.path.isfile(pj) else []
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'craterdry'),
-         **{'44b-host-matlib-pack-%s.js'%_pn:_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=[f for f in _mp_fams(os.path.normpath(os.path.join(HERE,_pd))) if f.startswith(('ground','tower','jetty'))])
-            for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers
-         khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands')}   # the host's edit layer (core/host FULL)
+         **{'44b-host-matlib-pack-%s.js'%_pn:_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=[f for f in _mp_fams(os.path.normpath(os.path.join(HERE,_pd)))
+             if f.startswith(('ground','tower','jetty')) or (_pn in STN.get('packOnly',{}) and f not in STN['packOnly'][_pn])])
+            for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers; "packOnly" {pack: [families]} keeps only those
+         khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands'),   # the host's edit layer (core/host FULL)
+         # kits/fauna's groups that hold this biome's animals (KratorFauna: the bison, the ash runner, the salamander, the Scyvoi's mounts and the
+         # wild steppe's), for the editor's fauna mode (99-host-take.js; sedesert's way); no texture pack, as sedesert's
+         '39-host-fauna.js':_fb.bundle(['wild','ash','livestock','mounts'],tex=False)}
 for f in VIRTUAL: PATH[f]=None
 for f in STN.get('drop',[]): PATH.pop(f,None)
 frags=sorted(PATH)

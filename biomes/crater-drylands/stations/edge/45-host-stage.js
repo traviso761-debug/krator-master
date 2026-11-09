@@ -36,7 +36,7 @@ const fill=new THREE.DirectionalLight(0xb8c4dc,.22);fill.position.set(900,400,90
 // ---------------------------------------------------------------- the station (read by src/'s knobs; its build in 86-host-edge.js)
 const STATION={key:'edge',site:{px:437,py:457},oldFires:4,
  title:'Krator biome — the crater drylands: the savannah edge',
- hint:"The savannah edge (crater drylands N, toward SW Bay): the kiln opens into grass that burns every year or two; SW Bay's umbrella thorns and baobabs stand over it as kin, termite mounds on the open ground, a waterhole under the kopje. F arms a fire: click the ground to light it",
+ hint:"The savannah edge (crater drylands N, toward SW Bay): the kiln opens into grass that burns every year or two; SW Bay's umbrella thorns and baobabs stand over it as kin, termite mounds on the open ground, a waterhole under the kopje. L arms a fire: click the ground to light it; F walks",
  build:q=>EDGE.build(q),views:h=>EDGE.views(h),dropViews:['The Scyvoi Rock'],checks:(add,o)=>EDGE.checks(add,o),negatives:(add,o)=>EDGE.negatives(add,o)};
 
 // ---------------------------------------------------------------- the land
@@ -114,3 +114,6 @@ BIO.init({tags:'crater-drylands',THREE:THREE,scene:scene,terrainH:terrainH,water
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:[SEEP.x-60,SEEP.z-60,SEEP.x+60,SEEP.z+60]}});
 BIO.setSun([-1000,900,-700]);
+// THE SEASON (PLAN-STATIONS.md: the dry season's straw, the wet season's flush): the kit's grass takes core/biome's season (50), bound to the
+// clock in 99b-host-season.js. ?season=0 for none
+BIO.host.seasons=new URLSearchParams(location.search).get('season')!=='0';

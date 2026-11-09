@@ -123,9 +123,10 @@ recent fires (three weeks to four years) and four older ones, so the mosaic is f
 thorn and gate baobab as kin** (`BIO.kin('swbay.thorn')`, `'swbay.baobab'`; EXCHANGES.md "swbay → crater"): grown by swbay's builders
 (its fragments read in place) with the kin's record, the thorn at .8 and the baobab at .65 of the bay's size, tagged Aw and BSh, by
 hashed cell on the open grass. **Termite mounds** (`KSTACKS.mounds`, the H10 mound kind): fluted clay spires on a skirt, 2.5-7 m,
-by 90 m cell on the open grass, in the plain's red soil, one merged mesh. `?mounds=0`, `?kin=0`. Not taken: the dry season's straw and
-the wet season's flush (seasons on the clock), k-guilin's banyan and silvergrass and nwbay's flame-crown (EXCHANGES.md rows for this
-station: each needs its kit read in place), the grass taller than the steppe's (the kit's floor is station 1's).
+by 90 m cell on the open grass, in the plain's red soil, one merged mesh. **The season** on the clock: the grass straw and thinned in the
+dry, green in the wet (core/biome's season on the kit's grass, `BIO.bindSeason`; `?season=0`). **nwbay's flame-crown** planted round the
+waterhole (`BIO.kin('nwbay.flamecrown')`, nwbay read in place). `?mounds=0`, `?kin=0`. Not taken: k-guilin's banyan and silvergrass
+(k-guilin exports no `make`/`grow` or floor-plant function yet), the grass taller than the steppe's (the kit's floor is station 1's).
 
 **Station 4, the salt floor** (`dist/crater-drylands-salt.html`; px 485, 376). A flat floor (8 m swells), two low kopjes, **six salt
 pans** in its lows (core/water ext 54, `WATER.pan`: crust cracked in polygons, the cracks and low cells flooding with brine after rain;
@@ -134,6 +135,7 @@ washes and the seep. **Two kits share the floor** under their own placement mask
 **abyssal savannah** (`biomes/abyssal-savannah`, read in place) on the fresher **XV islands** (a few metres proud of the floor) and on
 the pans' rims, where its pan zone puts its pan saltbush and blue pan-grass. Its zone bands are opened to the flat floor
 (`ABSAV.setZoneBands`) and its burn mosaic is this page's fire history, so one fire map runs over both. Few fires (four recent, five
-older). `?absav=0`. Not taken: the Steampits' geyser field reaching in (the geyser kit's run-off and sinter apron), nwbay's cinder pine
-on basalt kopjes (EXCHANGES.md), the kiln's scrub at its largest in the dense air, the dry season's dust (the air's load is on, with
-the storm on the panel, but no season drives it).
+older). **The kiln's scrub at its largest** in the dense air: the kit's trees a fifth bigger (`BIO.host.treeScale`). `?absav=0`. Not taken:
+the Steampits' geyser field reaching in (the geyser kit's run-off and sinter apron), nwbay's cinder pine as the row's upright, unsheared
+cousin (nwbay's builder has no such option), the dry season's dust (the air's load is on, with the storm on the panel, but no season
+drives it).

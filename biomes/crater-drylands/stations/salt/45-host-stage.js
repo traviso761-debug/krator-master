@@ -38,7 +38,7 @@ const fill=new THREE.DirectionalLight(0xb8c4dc,.22);fill.position.set(900,400,90
 // ---------------------------------------------------------------- the station (read by src/'s knobs; its build in 86-host-salt.js)
 const STATION={key:'salt',site:{px:485,py:376},oldFires:5,
  title:'Krator biome — the crater drylands: the salt floor',
- hint:"The salt floor by the Steampits (crater drylands N, -1,270 m, 1.88 atm, +32 °C): salt pans cracked in polygons, red brine pools, the kiln's scrub on the salt steppe and the abyssal savannah on the fresher islands. F arms a fire: click the ground to light it",
+ hint:"The salt floor by the Steampits (crater drylands N, -1,270 m, 1.88 atm, +32 °C): salt pans cracked in polygons, red brine pools, the kiln's scrub on the salt steppe and the abyssal savannah on the fresher islands. L arms a fire: click the ground to light it; F walks",
  build:q=>SALT.build(q),views:h=>SALT.views(h),dropViews:['The Scyvoi Rock'],checks:(add,o)=>SALT.checks(add,o),negatives:(add,o)=>SALT.negatives(add,o)};
 
 // ---------------------------------------------------------------- the land
@@ -125,9 +125,12 @@ KOP.forEach(K=>SPINE.push([K.x,K.z]));
 FIRES.forEach(F=>SPINE.push([F.x+FIRE_WIND[0]*260,F.z+FIRE_WIND[1]*260]));
 for(let x=-1800;x<=1800;x+=1200)SPINE.push([x,zA(x)]);
 SPINE.push([xB(-1400),-1400],[SEEP.x,SEEP.z]);
-let MASK=()=>1;   /* the placement mask: 86-host-salt.js sets it for each kit it builds */
-BIO.init({tags:'crater-drylands',mask:(x,z)=>MASK(x,z),THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+let MASK=()=>1;   /* the placement mask: 86-host-salt.js sets it for each kit it builds; the core's water rule kept (nothing roots under the water) */
+const WMASK=(x,z)=>{const w=waterH(x,z);if(w<-1e8)return 1;const d=terrainH(x,z)-w;return d<.15?0:d<.7?(d-.15)/.55:1;};
+BIO.init({tags:'crater-drylands',mask:(x,z)=>MASK(x,z)*WMASK(x,z),THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:29,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:280,mid:760,far:2400,floor:[250,620]},
  windows:{water:[SEEP.x-60,SEEP.z-60,SEEP.x+60,SEEP.z+60]}});
 BIO.setSun([-1000,900,-700]);
+// THE KILN'S SCRUB AT ITS LARGEST in the dense air (PLAN-STATIONS.md, station 4): the kit's trees a fifth bigger (55's make, after its draws)
+BIO.host.treeScale=1.2;
