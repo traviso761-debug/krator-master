@@ -10,9 +10,9 @@
 const DHB={obstacles:[],buildings:[],seed:41,G:{x0:-1150,z0:-800,x1:1700,z1:1100,cs:8},THC:[275,150],THR:1500,HJC:[0,100],HJR:720};
 /* core/biome's BIO.geo.stemClump (30-core-foliage.js) ends its const list a line early (a ';' for a ','), so its bk, box, poly and
    kk are assigned as globals: box overwrote the kit's box() (30-geo.js) and every building placed after a clump was made threw
-   "box is not a function" (2026-11-09). Until core/biome is fixed (a rebuild of every page that takes it; KNOWN_ISSUES.md), each
-   call puts the kit's box back. */
-{const f=BIO.geo.stemClump,keep=box;BIO.geo.stemClump=function(){try{return f.apply(this,arguments);}finally{box=keep;}};}
+   "box is not a function" (2026-11-09), and poly overwrote the kit's poly() the same way (the sockets' flags, the huts).
+   Until core/biome is fixed (a rebuild of every page that takes it; KNOWN_ISSUES.md), each call puts the kit's box and poly back. */
+{const f=BIO.geo.stemClump,keepBox=box,keepPoly=poly;BIO.geo.stemClump=function(){try{return f.apply(this,arguments);}finally{box=keepBox;poly=keepPoly;}};}
 DHB.dk=(x,z)=>{const K=DH.APRON;return Math.hypot(x-K.c[0],(z-K.c[1])*1.3)/K.r;};
 /* the outpost's clearing (inside its palisade, and the straight runs to the west face), the stream's banks, the pasture */
 DHB.off=function(x,z){const P=DH.PAL;if(Math.hypot(x-P.c[0],z-P.c[1])<P.r+10||(x>P.c[0]&&x<DH.PLAT.cliffX+2&&Math.abs(z)<P.r+10))return true;

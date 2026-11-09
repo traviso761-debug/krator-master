@@ -29,8 +29,9 @@
       not, so the committed page was the last one that drew. `build.py` takes the placeholder sky as the kit's does.
 - [ ] (2026-11-09) **core/biome's `BIO.geo.stemClump` leaks globals** (`30-core-foliage.js`: its const list ends a line early,
       so `bk`, `box`, `poly` and `kk` are assigned as globals). `box` overwrote the kit's `box()` (`30-geo.js`) once a clump
-      was made, and every building placed after it threw "box is not a function". `src/45-dhelv-bio.js` wraps the call so the
-      kit's `box` is put back; the fix is one character in core/biome (`;` to `,`), which every page that takes core/biome
+      was made, and every building placed after it threw "box is not a function"; `poly` overwrote the kit's `poly()` the same
+      way (the sockets' flags, the domed hut, the outpost's barracks: "poly is not a function"). `src/45-dhelv-bio.js` wraps the
+      call so the kit's `box` and `poly` are put back; the fix is one character in core/biome (`;` to `,`), which every page that takes core/biome
       (160 build commands, 377 pages by `tools/reach.py`) would rebuild for: the coordinator's or the owner's, with the
       all-builds rebuild. Any other page with a global `box` and a clump is hit the same way.
 - [x] (2026-11-09) **The kit's doors threw "svLeaf is not defined".** The kit's doors pass (2026-11-03) added `core/door` and
