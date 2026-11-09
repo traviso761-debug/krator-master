@@ -127,6 +127,9 @@ const B=[];
 // decTree, with blossom, cauliflory (flowers on the old wood: the Judas tree), fruit, samaras and dead trees added).
 // cfg: fam, item, stems [a,b], forkU, limbs [a,b], el, limbK, sec, curve, wig, tuftK, flat; col(T); mixCol [p,set];
 // fruit {p, s[a,b], long, col}; blossom {p,set}; cauli {n,set}; samara {p}; dead (no leaves, deadwood); vine (gourds)
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03: every rebuild): the tube sinks into its parent and swells to a
+// collar there; the limb's own points (its spots, its secondaries) stay as grown, so no draw moves. A page without 31j draws the plain tube
+const FJ=(pts,parentR)=>typeof BIO.flareJoin==='function'?BIO.flareJoin(pts,{parentR}):pts;
 function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,dead=!!cfg.dead,fam=dead?'wood':cfg.fam;
  const nS=ri(cfg.stems[0],cfg.stems[1]),a0=rr(0,TAU),hc=cfg.col?cfg.col(T):C(pick(S.leaf)),spots=[];let reach=R*.6,topY=T.y0+H*.8;
  const bk=k=>dead?deadCol():barkCol(S,k);
@@ -139,12 +142,12 @@ function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,dead=!!c
   for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),el=cfg.el*rr(.8,1.2),L=(H-fh)*cfg.limbK*rr(.8,1.15)/(nS>1?1.15:1),r0=top.r*rr(.55,.75);
    const o=k<2?top:along(pts,rr(.75,.98)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.04,r0*.35),3,cfg.curve,cfg.wig);
    let ok=true;for(let i=1;i<lp.length;i++)if(!clear3(lp[i].x,lp[i].y,lp[i].z,lp[i].r+1,lp[i].r+1)){ok=false;break;}if(!ok)continue;
-   if(lv===2||r0>.3)st.limb+=BIO.tube(fam,lp,bk(k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
+   if(lv===2||r0>.3)st.limb+=BIO.tube(fam,FJ(lp,o.r),bk(k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
    spots.push({p:lp[3],s:L*.3,tip:true},{p:lp[2],s:L*.25});
    const nSec=lv===2?cfg.sec:0;
    for(let q=0;q<nSec;q++){const p=lp[ri(1,2)],a2=la+rr(-1.3,1.3),el2=el+rr(-.3,.5),L2=L*rr(.4,.65);
     const sp2=treeGrow({x:p.x,y:p.y,z:p.z},dirOf(a2,el2),L2,Math.max(.03,p.r*.55),.03,2,cfg.curve,.12);
-    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(fam,sp2,bk(q),{seg:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,dead?deadCol():rodCol(S.bark[0]));
+    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(fam,FJ(sp2,p.r),bk(q),{seg:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,dead?deadCol():rodCol(S.bark[0]));
     spots.push({p:sp2[2],s:L2*.4,tip:true},{p:sp2[1],s:L2*.3});}
    reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);topY=Math.max(topY,lp[3].y+R*cfg.tuftK);}
   spots.push({p:{x:top.x,y:top.y+R*.15,z:top.z},s:R*.3,tip:true});}

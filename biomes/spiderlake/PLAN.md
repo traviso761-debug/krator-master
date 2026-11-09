@@ -133,3 +133,7 @@ When the interactive 3D/2.5D biome viewer kit is instantiated in `biomes/spiderl
 - `biomes/spiderlake/foliage.js` — Spindle-willow, buttressed crown-cypress, amber-mulberry, and hydrothermal sedge placement.
 - `biomes/spiderlake/atmosphere.js` — Morning lake-fog, warm hydrothermal steam plumes, and dusk "lake-smoke" chironomid swarm particle systems.
 - `biomes/spiderlake/index.html` — Standalone station preview harness loading `core/` (`core/biome`, `core/terrain`, `core/water`, `core/atmos`, `core/host`).
+
+## Crystal caves (planned, 2026-11-03)
+
+The Neo-Ozarks' dolomite, fed by the lake's warm seeps, grows Mississippi Valley crystal caverns (calcite druse and blocks, celestine beams, galena and sphalerite). `tube_ozarks_15`'s Cathedral of the Red Porphyry Vein and Onyx labyrinth are the sites; `KSPELEO.CALCITE` dresses them. See `biomes/CRYSTAL-CAVES-5.1.md`, site 2.

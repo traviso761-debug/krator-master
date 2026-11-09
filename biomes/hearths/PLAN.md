@@ -302,6 +302,7 @@ Three vents on the rim and the western highland, 100-190 km apart, each on its o
   hearth trees' feet showing in the chamber's ceiling as warm pale domes, the Tungangs' dark crops (the mat, pale fungi,
   alecap, glow mushrooms: `kits/crops`' dark-grown crops) on the warm floor, a fumarole's shaft through it; walkable
   (`core/walk` written from the plan); the rift rim kit's caverns are the same module.
+- **The Cave of Crystals** (the owner, 2026-11-03): the hold's **drained older storey** is a Naica. Selenite beams cross its chambers and blocky crystals stand on its floors, grown when the water stood there just under 58 degC for ages, then left when the table fell. It is still hot and close to saturated, so a `heat` hazard with `soak` covers it (the station's to add) and `slip` lies on the beams. `KKARST` `crystal:{storeys:[1], speleo:'SELENITE'}`, then `KSPELEO.SELENITE` over its crusts (`biomes/CRYSTAL-CAVES-5.1.md`, site 1). The active storey below keeps the hold's hypogene dress.
 - **The far field and the horizon** (`KFAR`, `KHORIZON`): the rim's crest, the trough's far wall, the lakes, the other
   discs' steam as sprites; on Oidong's rim the valley's lake and the Vale's walls.
 

@@ -1,0 +1,287 @@
+[
+ {
+  "src": "rock.lamina.pipe.webp",
+  "out": "core/materials/library/rock.lamina.pipe",
+  "record": {
+   "id": "rock.lamina.pipe",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished cross-section of a mineral chimney wall made of thousands of hair-fine parallel laminae, alternating pale cream carbonate and near-black oxide, each couplet a fraction of a millimetre, with a slightly thicker pale band every few hundred couplets and one sharp black band; the laminae gently wavy and continuous across the frame, a few hairline cracks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "reuse": "the Gills' breath pipes (the pipe wall cut: the daily couplets), both countries tinted; any finely laminated chimney, sinter or banded travertine section"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "mineral.crust.ferromanganese.webp",
+  "out": "core/materials/library/mineral.crust.ferromanganese",
+  "record": {
+   "id": "mineral.crust.ferromanganese",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wet botryoidal ferromanganese crust, rounded knobs of near-black manganese oxide (#1a1816) packed edge to edge, each knob with a faint grey-blue sheen, rust-brown (#6b3a1e) staining in the hollows between knobs and a few patches where the crust has flaked to show cream carbonate (#d9cfb8) underneath. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "reuse": "the Red Gills' collars (the rust collar's wet crust); any black botryoidal oxide crust, deep-sea nodules, desert varnish close up"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "dark_gloss": 0.3,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "mineral.crust.brucite.webp",
+  "out": "core/materials/library/mineral.crust.brucite",
+  "record": {
+   "id": "mineral.crust.brucite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a chalky, porous brucite-and-carbonate crust of soft rounded cauliflower-like lobes, bone white (#e9e4d6) to pale cream, with faint grey-green manganese staining (#7f8f78) in the seams between lobes, fine powdery texture, a few damp translucent patches. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+    "reuse": "the White Gills' collars (the lime collar); any chalky carbonate or cauliflower crust, Lost City's chimneys, tufa"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "rock.hematite.mirror.webp",
+  "out": "core/materials/library/rock.hematite.mirror",
+  "record": {
+   "id": "rock.hematite.mirror",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/highrift-cloud (High Rift)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished fault plane (slickenside) coated in specular hematite, steel-grey to blue-black (#3a3c42, #23252b) with a faint metallic grain, long straight parallel grooves and fine striations all running top to bottom, a few low steps across the grooves, patches where the coating has worn through to red-brown earthy hematite (#7a3a26) and rust stains (#9a5a32) bleeding down the grooves, hairline cracks across them. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/highrift-cloud (High Rift)",
+    "reuse": "High Rift's Mirror Graben fault face; any slickenside or polished fault plane, specular hematite"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "dark_gloss": 0.2,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "ground.ash.soil.webp",
+  "out": "core/materials/library/ground.ash.soil",
+  "record": {
+   "id": "ground.ash.soil",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/nwbay-catchup-cloud (nwbay)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a moist, crumbly dark volcanic ash soil seen from above, near-black brown (#2a2420) with a faint olive cast, fine granular crumbs and small rounded aggregates, scattered tiny pale pumice grains (#b8b0a0) and a few dark glassy cinder specks, very fine roots and the odd decayed leaf fragment pressed into it, damp and matte, no stones larger than a pea.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/nwbay-catchup-cloud (nwbay)",
+    "reuse": "nwbay's ash soils on the old flows; any andosol under a wet forest on a volcano"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.12,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "rock.marble.white.webp",
+  "out": "core/materials/library/rock.marble.white",
+  "record": {
+   "id": "rock.marble.white",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/nwbay-catchup-cloud (nwbay)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered outcrop of coarse white marble seen from above, sugary crystalline grains (#ece8e0) catching no light, faint grey and pale gold veins (#a8a49c, #c8b48a) running in soft bands, the surface etched and pitted by rain with shallow solution runnels, a few joints filled with dark soil and green-grey lichen spots (#7a8468) toward the cracks, matte.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/nwbay-catchup-cloud (nwbay)",
+    "reuse": "nwbay's marble band at the limestone's contact; any weathered white marble outcrop, karren"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "ground.peat.hag.webp",
+  "out": "core/materials/library/ground.peat.hag",
+  "record": {
+   "id": "ground.peat.hag",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a vertical cut face of black-brown blanket peat seen straight on, the fibrous dark peat banded faintly in horizontal layers a few centimetres thick, pale bleached root threads and old sphagnum stems hanging out of it, a few wet glistening patches and small crumbled overhangs, the top tenth not special (it tiles); colours from near-black brown to dark umber with a faint red cast, no green except a few tiny moss specks.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+    "reuse": "nhighlands' peat hags (a steep layer, a cliff material); any cut peat bank, a bog's erosion face"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.25,
+   "dark_gloss": 0.15,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "ground.coral.rubble.webp",
+  "out": "core/materials/library/ground.coral.rubble",
+  "record": {
+   "id": "ground.coral.rubble",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-ringisles-cloud (ringisles lagoon)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no Subject: a storm ridge of coral rubble on a tropical atoll islet: broken branching-coral sticks, finger and staghorn fragments 2-15 cm long, worn smooth and bleached to bone white, cream and pale grey, with a few rounded brain-coral cobbles and pink-grey pieces of coralline crust, packed loosely so dark gaps show between them, a little coarse white coral sand in the hollows; no shells larger than a thumbnail, no seaweed, no plants, no water. Even scale across the frame (about 1.5 m across the image).",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-ringisles-cloud (ringisles lagoon)",
+    "prompt_note": "the template text on that branch is garbled (the base template breaks off at \"no\" and runs into \"Subject:\"); the image matches the intended prompt: the surface template with this Material",
+    "reuse": "ringisles' lagoon: the motu's storm ridges and the reef flat's back edge; any atoll's coral rubble beach"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.15
+  }
+ },
+ {
+  "src": "rock.gneiss.banded.webp",
+  "out": "core/materials/library/rock.gneiss.banded",
+  "record": {
+   "id": "rock.gneiss.banded",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a glacier-polished banded gneiss outcrop, its foliation running diagonally across the frame in wavy, folded bands a finger to a hand wide: dark grey-black biotite-rich bands (#3a3836) alternating with pale grey and pinkish-white quartz-feldspar bands (#cfc8bd, #d8c3b4), a few augen of pink feldspar the size of a thumbnail, fine glacial striations scratched across the bands, a dusting of pale rock flour in the hollows. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+    "reuse": "Copper Glacier's walls, nunataks and boulders; any banded gneiss, glacier-polished crystalline outcrop"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "lift": 0.12
+  }
+ },
+ {
+  "src": "ice.glacier.verdigris.webp",
+  "out": "core/materials/library/ice.glacier.verdigris",
+  "record": {
+   "id": "ice.glacier.verdigris",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the surface of old glacier ice, dense and bubble-poor, in parallel wavy bands (ogives and foliation) running across the frame: bands of milky blue-white ice (#cfe3ea) alternating with bands stained verdigris and emerald by copper minerals carried in the ice (#5fae94, #3f8f78), a few thin dark streaks of fine rock debris (#5a5a52) and scattered fragments of blue azurite (#3a62a8) and green malachite frozen in, fine meltwater runnels and cryoconite holes across it. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+    "reuse": "Copper Glacier's banded verdigris ice; any copper-stained glacier"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "delight": 0.2,
+   "lift": 0.12
+  }
+ }
+]

@@ -154,6 +154,28 @@ building engine is now named `core/engine`, not `core/kit`.
      - finer ground mesh near the camera.
   3. **Judge by eye with the owner**, on the three pages with switches for before and after, then add it to every turn's checklist.
   Budget it like the rest: measured, not assumed.
+  **Done 2026-11-03 (core-ground; `core/terrain/GROUND.md` has the diagnosis, the channel audit and the shots).** The cause: no
+  light reaches the ground's texture. KGROUND reads colour only, 262 of 276 ground slots are packed `mapOnly`, most grounds are
+  Lambert (lit per vertex on 9-14 m cells), and the strata are a colour function. The fix, opt-in on `KGROUND.hook`: `relief` (a
+  derivative bump from the layers' height, at no texture unit; cavity occlusion; `strata` bed relief, hard beds proud, on the core
+  strata path), `tri` (side planes on the steep), `KGROUND.cavityMesh(mesh)` (the mesh's hollows, `relief.mesh`). Without them the
+  shader is unchanged. Judge any page with `?kgrelief=1&kgtri=1` (`?kgrelief=2` doubles it); `tools/ground_shots.py` takes the
+  same near, mid and far cameras with and without, with calls, triangles and GPU ms. The owner: "ground quality has definitely
+  improved". Defaults are unchanged until the owner says otherwise. **Every turn's checklist gains: the ground judged with and
+  without `?kgrelief=1`.**
+  **Which builds take it at their turn** (each reads `43-core-ground.js` already, so each page is stale by its source text until
+  rebuilt, recorded in `tools/check_stale_baseline.json`; adopting is `relief`, `tri` and `cavityMesh` in its ground's `KGROUND.hook`,
+  `core/README.md` "Adopting KGROUND's relief"; judge first with `?kgrelief=1.5&kgtri=1`):
+  - MeshStandard grounds under KGROUND, the full effect (`relief: {bump: .075, cavity: .8, mesh: 1}`, `cavityMesh` on the ground):
+    **ebadlands** (+ canyons, montane, tundra, waste; and `strata: .45, strataW: 'vRock'`), **godthrone** (`strata`),
+    **swlowlands** (+ delta, gorge; `strata`), **copperglacier** (+ icefield, pass), **nsemiarid**, **oidong** (+ hearths, passes),
+    **xanadu** (+ gills). `tri: true` only where flanks are steep and near (ebadlands' canyon walls, the glacier's pass).
+  - Lambert grounds, where the relief only scales the sun's share and shows little (measured on nhighlands and eastabyss): move the
+    ground to MeshStandard first (the light per pixel; their `?kground=0` fallbacks may keep Lambert), then `relief` as above:
+    **eastabyss** (+ lakes), **hyperjungle** (+ lake, savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay**,
+    **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
+  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
+    Lambert), **scablands**.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
@@ -247,6 +269,29 @@ where `34-core-impostor.js` is on the page; new item `rafthair` (the snare raft'
 never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lambert ground reads `cameraPosition` (0) for its snow glints; the new stations' copies use `kEye`.
 **Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
 pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
+
+**Copper Glacier, the new kit (2026-11-03; `biomes/copperglacier/PLAN.md`, `KNOWN_ISSUES.md`):** first, **`KGLACIER` is in core**
+(`core/terrain/44g-core-glacier.js`, [G data], and `host/44h-core-glacier-draw.js`, `test-glacier.js`), lifted from the Throne's glacier station. The data half
+holds the ice, the trough, the moraines and the pond basin, plus seracs, bergs, crevasses and caves on `KRAND.hash` per kind and index. The drawing half has the
+serac and ice-tower items, the cave shells, the arch, the crevasse slots and the steam. The station takes both (station.json `"terrain"`, a new key in the
+Throne's `build.py`) and keeps its own placement draws. A scene fingerprint (every mesh, instance, registered record and a terrain grid) reads 39 of 39 lines the
+same before and after, so the page draws exactly what it drew; its hash moved for the code that moved, and its baseline entry is rewritten.
+
+Then the kit. It is three pages on map 5.1 sites, one stage making each station's land from the numbers in its `44z-host-site.js`:
+- `dist/copperglacier.html`, Copper Tarn (px 156,1150): a glacier calving into the turquoise tarn;
+- `-pass`, the copper slope (px 320,1248, the skarn): a hanging glacier, its moraine pond, malachite and gossan, the nodes, copper flowers;
+- `-icefield` (px 213,1225, 6.5 km): plateau ice, nunataks, the ice cliff, ice caves.
+
+**The copper is read from `geology.json` at build time** (`res_site.js` writes `CG_RES` into the page), not invented. **The lore's porphyry is not in the data**: copper
+is 50 on the gneiss and 240 only on the eastern pass's rift skarn. The kit follows the data, and that is for the owner (`PLAN.md` section 1). Ice caves only: there is
+no soluble rock. Life: frost coral (the cold lineage, limbs on `BIO.flareJoin`), verdigris cushions, copper flowers on the copper ground, lichen, moss, sedge, snow
+algae, and ice worms that glow at dusk.
+
+The universal set is taken: KGROUND on documented masks, KFAR and KHORIZON, KFROST, still water with no surf or breakers, the stream's plume, `WATER.mirrorSwitch`
+off at load, the shore's fields, and the shared sky at each site. KSHADOW is measured at +20-56% a frame on the Arc (station 1), so it is off at load (`?shadow=1`), for the owner. KSTRATA, KKARST and impostors are dropped, with reasons. The owner delivered
+the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 and 3, the boulders everywhere) and `ice.glacier.verdigris` (the ice on the copper ground).
+**Checks:** `verify.py --assert --all-views` passes on the GPU (RTX 5060 lane, D3D11) for all three pages: station 1 53 checks (9.7 M triangles, 25 calls), the pass 53 (14.8 M, 22), the icefield 50 (1.7 M, 16), attach audit 0.00%. `check_core_use`: no new finding. `test_all --no-build`: the only failures not this work's are interiors' test-walk and `check_assembly`'s NEEDS findings on the Godthrone's, Voth's and Span's committed pages (built before core-shader). The pages are in the hash baseline. **For the owner:** every station's look; the copper (data against lore); the shadows' cost.
+
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
@@ -369,7 +414,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 6 | xanadu (**merged 2026-11-03:** stations `cloud`, `descent`, `ranges`, `gills`, `floor`), oidong (**merged 2026-11-03:** stations `passes`, `hearths`) | their five shared species together |
   | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands | geyser before ringisles |
   | 8 | ringisles, abyssal-savannah | after all their sources |
-  | 9 | korona, nsemiarid (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
+  | 9 | korona, nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut, farside | both read nwlowlands |
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
   | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
@@ -396,6 +441,8 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   hyperjungle's lake station), keys and indices kept:** `55`'s limbs flare only where `31j` is on the page; `46` gains `GEYSER.hazard.crust`, `fumarole`,
   `mud` and `65` registers them (with a sulphur bead at each fumarole's mouth, hashed: no draw moves); `materials.json`'s `rosette` cell (the whole
   screwpine crown, not a quarter), `strap` (plain cell, base bottom) and `small` (stems) move the readers' packs. No reader page is rebuilt here.
+
+  **nsemiarid's turn, merged 2026-11-03** (pair 9; `biomes/nsemiarid/PLAN.md` section 11, `KNOWN_ISSUES.md`; `biomes/scablands/PLAN.md` section 6): no new station (station 2, `high`, waits for nhighlands' station 2, as its plan says; map 5.1 asks nothing of this kit). `verify.py --assert --all-views` passes on the GPU for all three pages: nsemiarid (Arc; attach audit 0.00%, was 81.1%; 16.3 M triangles at worst), the scablands' coulee (Arc; 0.00%, was 66.5%), the dam basins' port (RTX lane). The universal set is in on the kit's two pages: `BIO.INDEX_ITEMS` and the LOD switches (`46-host-graphics.js`, its own fragment so the overlay's stage takes it; the floor sets no `BIO.range`, so the LOD options change nothing yet), the variants' far level on impostors (gain 2.4; ebadlands' stilt-pod expansion of welded items), KGROUND (the eight library layers on documented masks, kinds `clast` for the desert's pavement and `polygon` for the dry bed's mud cracks; the ground is Standard because KGROUND's distance scale reads `cameraPosition`, which r128 never uploads to Lambert), KFAR to 14 km and KHORIZON, height fog, the rain cover, the air's load with a dust-storm select, breakup, `WATER.mirrorSwitch` off at load (the salt lake; the coulee's plunge lake), the water as fields with the edge audit, `BIO.flareJoin` on the broadleaves' limbs. **KSHADOW** is attached on `?shadow=1` only: the off-by-default switch was on the Throne's branch, not here, when this turn was built. **Fixed on the way, a regression on three pages:** core/atmos's weather writes `ATMOS.windScale` every tick, so a page's own wind setting (n semiarid's calm/breeze/high, the dam basins' stiff wind) never took, and their dust and gale checks failed on the committed pages; the setting is now a factor on the weather's wind (`NSWIND.k`/`jump`, `DB_WIND.k`/`apply`, re-applied after the weather's hook on the dam basins). Any other page that sets `ATMOS.windScale` itself and also binds the weather has the same bug. **Species changed (keys and indices kept; read only by this kit and its overlays):** the solid bodies (strider barrels, bead chains, sail columns, maces, horn pipes) are `BIO.barkMat`, not a still leaf material (`?bodies=leaf`); the glider seeds are `free`; the kiting sail blades are a new item `kite` (`free`, defined last); the drift's back-row tumblers stand at most half a metre up. **Not taken:** KSTRATA (the texture units; the coulee has `KSCOUR.strata`), wadis, `WATER.pan`, the brine look (the salt lake keeps its teal: the owner's call), seasons and KFIRE (station 2's), R9, snow, `BIO.fung`. **Geology 5.1 checked:** basalt 58% and evaporite 27% round the region, the site on basalt and the bed on evaporite, as the plan draws; karst site 10 not taken (low gain, no station on a notch). **The dam basins** take no universal set (the Ancient Port kit's page; its flora is D2): their wind fix and verify only. **Open (the owner's eye):** the ground on KGROUND, the far trees, the far field's pale horizon band from afar, the bodies drawn as wood. **The attach audit cannot see the variants' trees** (as on ebadlands).
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).
@@ -648,9 +695,14 @@ entry, so the share can only fall. The practices behind this are in the painting
 ### Practical rules (learned this session)
 
 - **The lock's heartbeat** (the owner, 2026-11-02; `CLAUDE.md`): check a GPU job every 30 minutes; no progress in 30 minutes means hung: stop it by PID and release the lock.
-- **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
-  in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
-  process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
+- **Two GPU lanes since 2026-11-03** (take it after you merge `claude/biome-rebuild`: your verifies then use the new harness):
+  `arc` (the Intel iGPU, `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, the lock older copies take) and
+  `rtx` (the RTX 5060, `krator-verify-gpu-rtx.lock`). Run `KRATOR_GL=gpu python3 verify.py ... --assert` as before: the
+  harness queues you first come first served on whichever lane frees first (`KRATOR_GPU_LANE=arc|rtx` to pin one; timing
+  runs and `harness.py lock` stay on arc), kills a job that writes nothing for 25 minutes (exit 124 "STALLED": rerun it),
+  and skips an `--assert` run that already passed on the same bytes ("cached pass"; `--no-cache` reruns). `python3
+  tools/harness.py lanes` shows who holds and who waits. Never take a lock in bash; never remove a lock you did not take
+  unless no process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
 - **Span's lessons** (the Span arcology session, 2026-10-27; the full twenty in the side-session notes,
   `span-build-lessons.md`):
   - A fresh worktree holds LFS pointers: a page builds black without an error. Pull the build's `tex/` and library sets first,

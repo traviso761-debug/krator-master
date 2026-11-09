@@ -5,6 +5,11 @@ as it is, one image per block. **Everything delivered lives in `PROMPTS-archived
 
 **Count: 0 prompts** (2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
 
+**Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
+`card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
+`PLAN.md` "Delivered 2026-11-03": the ten are wired at their merge, and their entries are deleted on their branches then. Still owed from that
+day: `rock.megabreccia` (nhighlands' branch) and `card.umbrella.plate` (the abyssal savannah).
+
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
 ## How to deliver
@@ -263,36 +268,6 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
-
-## 31. The Gills (`biomes/gills`, xanadu's station `gills`, 2026-11-03)
-
-The breath pipes and their linings, both countries (`biomes/gills/PLAN.md` section 15 has the reuse list). Five sets, generic ids,
-paste-ready prompts in the plan's section 15 (copy them from there; the lamina and fringe sheets are tintable, so one serves Red and White):
-`rock.lamina.pipe` (the pipe wall's daily couplets: until it comes the pipes draw `KSTRATA.lamina`'s own procedural bands),
-`mineral.crust.ferromanganese` (the Red collar), `mineral.crust.brucite` (the White collar: the station's collars are tinted
-procedural flesh until then), `card.breathfringe` (the fringes, a cut-out on magenta), `card.turf.limed` (the breath meadow's
-crusted grass, a cut-out on magenta).
-
-`rock.lamina.pipe`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished cross-section of a mineral chimney wall made of thousands of hair-fine parallel laminae, alternating pale cream carbonate and near-black oxide, each couplet a fraction of a millimetre, with a slightly thicker pale band every few hundred couplets and one sharp black band; the laminae gently wavy and continuous across the frame, a few hairline cracks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-`mineral.crust.ferromanganese`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wet botryoidal ferromanganese crust, rounded knobs of near-black manganese oxide (#1a1816) packed edge to edge, each knob with a faint grey-blue sheen, rust-brown (#6b3a1e) staining in the hollows between knobs and a few patches where the crust has flaked to show cream carbonate (#d9cfb8) underneath. Full colour: not tinted.
-```
-`mineral.crust.brucite`:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a chalky, porous brucite-and-carbonate crust of soft rounded cauliflower-like lobes, bone white (#e9e4d6) to pale cream, with faint grey-green manganese staining (#7f8f78) in the seams between lobes, fine powdery texture, a few damp translucent patches. Full colour: not tinted.
-```
-`card.breathfringe`:
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate tufts of long fine filaments, each tuft rooted at a small grey fleshy knob and streaming to one side as if in a steady wind, the filaments a muted warm orange-brown, translucent at the tips, some beaded with droplets. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.
-```
-`card.turf.limed`:
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate clumps of short steppe grass and low fleshy mat, each dusted and crusted with fine white lime so the blades are pale grey-white on their upper sides and dull green-brown underneath, a few blades clean green; no flowers. No text, no border, no watermark.
-```
 
 ## Gaps with no prompt yet
 
