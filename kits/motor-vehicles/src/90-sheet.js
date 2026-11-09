@@ -65,13 +65,15 @@ const INSTANCES = [];
     let x = 0, depth = E.d;
     const placed = [];
     figure(-1.2, z);
-    for (let v = 0; v < E.variants; v++) {
-      const cx = x + E.w / 2;
-      const g = KV.build(E.key, { variant: v, seed: 1, state: state });
+    /* at least three slots a row (seeds 1, 2, 3; the variants cycle), so a ruin state shows three fates of one vehicle */
+    const slots = Math.max(E.variants, 3);
+    for (let i = 0; i < slots; i++) {
+      const v = i % E.variants, cx = x + E.w / 2;
+      const g = KV.build(E.key, { variant: v, seed: 1 + i, state: state });
       g.position.set(cx, 0, z);
       g.userData.x = cx; g.userData.z = z; g.userData.ry = 0;
       scene.add(g); INSTANCES.push(g); placed.push(g);
-      label(E.name + ' #' + (v + 1) + (E.variantNames[v] ? ' ' + E.variantNames[v] : ''),
+      label(E.name + ' #' + (v + 1) + (E.variantNames[v] ? ' ' + E.variantNames[v] : '') + (i >= E.variants ? ' · seed ' + (1 + i) : ''),
         E.culture + ' · ' + KV.dataOf(E.key, v).seats + ' seats · ' + g.userData.tris + ' tris', cx, z + E.d / 2 + 0.7, Math.max(E.w * 1.4, 2.6), false);
       x += E.w + GAP;
     }

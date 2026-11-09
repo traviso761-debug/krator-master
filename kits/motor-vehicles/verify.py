@@ -251,7 +251,9 @@ for(const E of KV.list()){
       const t=cfg.tol;
       /* the settled box: the declared one widened for the tilt and the torn halves, and for an overturned body
          (rolled by pi +- 0.25 rad) a share of its height across and of its width up */
-      const hx=E.w/2+0.6+0.13*E.h, hz=E.d/2+0.8, hy=Math.max(E.h+0.25*E.w, E.w+0.2*E.h)+0.3;
+      const R0=g.userData.ruin||{}, skid=R0.form==='skidded'||R0.form==='piled';
+      /* a skidded airframe's furrow and trail run a vehicle's length behind it */
+      const hx=E.w/2+0.6+0.13*E.h, hz=E.d/2+0.8+(skid?E.d:0), hy=Math.max(E.h+0.25*E.w, E.w+0.2*E.h)+0.3;
       if(box.min.x<-hx-t||box.max.x>hx+t||box.min.z<-hz-t||box.max.z>hz+t||box.max.y>hy+t)
         r.fail.push('ruin: outside the settled box ('+f2(2*hx)+' x '+f2(2*hz)+' x '+f2(hy)+'): x '+f2(box.min.x)+'..'+f2(box.max.x)+' y '+f2(box.min.y)+'..'+f2(box.max.y)+' z '+f2(box.min.z)+'..'+f2(box.max.z));
       const BG=E.budget||{meshes:cfg.maxMeshes,tris:cfg.maxTris};
@@ -261,9 +263,9 @@ for(const E of KV.list()){
       const u=g.userData,R=u.ruin||{};
       if(u.state!==st||R.state!==st)r.fail.push('ruin: userData.state '+u.state+', ruin.state '+R.state);
       if(KV.lights(g,true)!==false||u.lightsOn)r.fail.push('ruin: the lamps still light');
-      const want=E.data.wheels.length-(st==='wreck'&&R.missing>=0?1:0);
+      const want=R.gearGone?0:E.data.wheels.length-(st==='wreck'&&R.missing>=0?1:0);
       if((u.wheels||[]).length!==want)r.fail.push('ruin: '+(u.wheels||[]).length+' wheels listed, '+want+' expected'+(R.missingWheel?' ('+R.missingWheel+' missing)':''));
-      if(st==='wreck'&&R.missing>=0&&!R.missingWheel)r.fail.push('ruin: wreck names no missing wheel');
+      if(st==='wreck'&&(R.missing>=0||R.gearGone)&&!R.missingWheel)r.fail.push('ruin: wreck names no missing wheel');
       for(const w of u.wheels||[]){const o=g.getObjectByName(w.name);if(!o){r.fail.push('ruin: no mesh '+w.name);continue;}
         if(R.tyres!=='ok'&&w.tyre!==R.tyres)r.fail.push('ruin: '+w.name+' record does not say tyre '+R.tyres);}
       const s1=sig(g), g2=KV.build(E.key,{variant:v,seed,state:st}), s2=sig(g2);
@@ -313,8 +315,9 @@ async def run(a):
             paint = {'geo_dune_buggy': ['paintBrown', 'paintBlack', 'paintSand'], 'rep_crawler': ['hullCream', 'hullOchre'],
                      'iz_six_wheeler': ['ochreOrange', 'creamPaint'], 'ab_caravan_truck': ['sandPaint', 'tealPaint'],
                      'pa_crawler_hab': ['rust', 'fadedTeal'],
-                     'anc_pod': ['white', 'white'], 'anc_saloon': ['white', 'white'], 'anc_van': ['white', 'white'],
-                     'anc_utility': ['white', 'white'], 'anc_hauler': ['white', 'white'], 'anc_tram': ['white']}
+                     'anc_pod': ['white', 'white'], 'anc_saloon': ['white', 'white'], 'anc_police': ['white', 'whiteDark'],
+                     'anc_van': ['white', 'white'], 'anc_utility': ['white', 'white'], 'anc_hauler': ['white'] * 4,
+                     'anc_tram': ['white'], 'anc_tank': ['white', 'whiteDark'], 'anc_heli': ['white', 'white'], 'anc_jet': ['white']}
             res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
                                                 'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS, 'bigTris': BIG_TRIS, 'paint': paint,
                                                 'tex': await pg.evaluate("()=>KratorVehicles.textures().on")})

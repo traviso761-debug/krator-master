@@ -23,7 +23,8 @@ KratorVehicles.build(key, { variant, seed, linear, state }) -> THREE.Group | nul
   // linear (default true): vertex colours converted sRGB -> linear for a renderer with outputEncoding = sRGBEncoding,
   // state (default 'intact'): 'weathered' | 'burnt' | 'wreck', the ruin states (below): the same vehicle, ruined.
 KratorVehicles.STATES                      // ['intact', 'weathered', 'burnt', 'wreck']
-KratorVehicles.WRECK_FORMS                 // ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside']
+KratorVehicles.WRECK_FORMS                 // ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside',
+                                           //  'skidded', 'nosedived', 'broken', 'piled', 'gutted' (the last five, and overturned: the airframes')
 KratorVehicles.ruinOf(state, seed, key)    // the ruin record a build(key, { state, seed }) takes (a copy; data, no drawing)
 KratorVehicles.roll(group, metres)         // spins every wheel by metres / r (+ = forward); call with the distance moved
 KratorVehicles.steer(group, radians)       // turns the steered wheels; clamped to data.maxSteer; returns the angle used
@@ -78,7 +79,7 @@ is general: every culture's vehicles take it. What each state does:
 | `intact` | | | kept | | as designed | work |
 | `weathered` | blooms over 30-60 % of the paint, grime over the rest | | gone | flat (the hub drops) | a little trim sprung, a small roll | dead |
 | `burnt` | 35-60 % under the char | charred black nearly all over, on the `char` detail (blistered, cracked; `metal.scorched` when it lands) | gone | burnt off the rims | the roof and upper panels caved, trim sprung | dead |
-| `wreck` | 80-100 % | by seed (an exploded one is charred) | gone | flat or gone, **one wheel missing** | one of seven forms by seed (`KratorVehicles.WRECK_FORMS`): `crushed` (pressed down and sheared), `overturned` (on its roof, askew), `torn` (cut across, the halves parted and yawed), `crashed` (the nose or tail crumpled to half its length, buckled, pitched onto it), `tboned` (one flank caved in round the blow, the roof lifted over it), `exploded` (holes blown through the upper body, the rest bulged, nearly every trim piece flung, burnt out), `onside` (lying on one flank); trim sprung and some fallen | dead |
+| `wreck` | 80-100 % | by seed (an exploded one is charred) | gone | flat or gone, **one wheel missing** | one of seven forms by seed (`KratorVehicles.WRECK_FORMS`): `crushed` (pressed down and sheared), `overturned` (on its roof, askew), `torn` (cut across, the halves parted and yawed), `crashed` (the nose or tail crumpled to half its length, buckled, pitched onto it), `tboned` (one flank caved in round the blow, the roof lifted over it), `exploded` (holes blown through the upper body, the rest bulged, nearly every trim piece flung, burnt out), `onside` (lying on one flank). An airframe (`data.airframe`) draws from `VEHICLE_AIR_FORMS` instead and lies on the ground, its gear gone (`ruin.gearGone`, no wheels built): `skidded` (the nose crumpled, flat on its belly at the end of the furrow it ploughed, a trail of wreckage behind it: the build's `ancFurrow`, a vehicle's length back from the tail), `nosedived` (pitched into the ground about its nose, what is under the ground cut away, the tail in the air), `broken` (torn in two, holed, both halves belly down, a heap at the break), `piled` (the nose crumpled to a quarter into a heap of torn panels and earth), `overturned` (on its roof, the helicopter's rotor sheared off, the gear up), `gutted` (burnt to a heap: the helicopter's build draws the collapsed remains with the rotor head and a bent blade standing out of them; the jet is holed and charred over a heap); trim sprung and some fallen | dead |
 
 A collision is two wrecks placed by the host: a `crashed` one nose-on to a `tboned` one's flank (`ruin.end` says which end
 crumpled, `ruin.side` which flank caved and `ruin.cut` where along it), the pair yawed a quarter turn to each other.
@@ -93,8 +94,10 @@ which is `group.userData.ruin`:
   sag, sprung,                       // 0..1: how far the body caved, the share of small trim knocked askew
   lamps,                             // false: lights() leaves them dark and returns false
   tilt,                              // the roll about z, radians
-  form: null | 'crushed' | 'overturned' | 'torn' | 'crashed' | 'tboned' | 'exploded' | 'onside',
-  missing, missingWheel,             // a wreck's missing wheel: its index draw, and the wheel's name (null if none)
+  form: null | 'crushed' | 'overturned' | 'torn' | 'crashed' | 'tboned' | 'exploded' | 'onside'
+        | 'skidded' | 'nosedived' | 'broken' | 'piled' | 'gutted',
+  missing, missingWheel, gearGone,   // a wreck's missing wheel: its index draw, and the wheel's name (null if none);
+                                     // gearGone (airframes): every wheel left out, missingWheel 'all'
   cut, side, end, seed }             // torn: where it tore, tboned: where the blow landed (fractions of the length);
                                      // side +-1 (tboned, onside), end +-1 (crashed: nose or tail); the record's seed
 ```
@@ -207,7 +210,7 @@ centres), track 3.4, clearance 0.55, belt 0.08`. Four bogies at x +-1.7, z 3.2 a
 (r 0.36, offsets -0.8, 0, 0.8, `lift` 0.08); none steers. A host turns it on the spot by yaw alone and calls
 `roll()` with the distance its centre moved: the road wheels turn and the belts run (the sprockets do not).
 
-## The Ancients' six (`krator-vehicles-ancient.js`, culture `ancient`)
+## The Ancients' ten (`krator-vehicles-ancient.js`, culture `ancient`)
 
 The metropolis kit's house style on the road (`kits/metropolis/PLAN.md` 2): white seamed panel (`white`,
 `whiteDark`, `whiteShade` on `ancientWhite`), a bronze belt band and posts (`bronze`, `bronzeDark` on `bronze`), a
@@ -220,22 +223,42 @@ The shared pieces (`ancSkin`, `ancBand`, `ancPosts`, `ancGlass`, `ancStrip`, `an
 
 | Key | Box (w x d x h) | Seats | Wheels | Variants | Triangles (intact; weathered / burnt / wreck) |
 |---|---|---|---|---|---|
-| `anc_pod` | 2.1 x 3.3 x 1.68 | 2 | 4, r 0.32, x +-0.64 (front, steer 0.38) and +-0.68, z +-0.95 | Civic, Hire (bronze roof, cyan sign; `trade: 'hire'`) | 3 616 / 3 628; 3 496 / 2 408 / 2 134 |
-| `anc_saloon` | 2.4 x 6.0 x 1.56 | 4 | 4, r 0.36, x +-0.7, z +-1.95 (front steer 0.32) | Saloon, Statesman (bronze roof, dishes and bonnet spine) | 3 688 / 3 700; 3 568 / 2 512 / 3 078 |
-| `anc_van` | 2.5 x 6.0 x 2.8 | 2 | 4, r 0.42, x +-0.72, z +-1.75 (front steer 0.35) | Van (crates; `cargo` 1600), Courier (a roof pod) | 4 376 / 4 432; 4 256 / 3 168 / 3 722 |
-| `anc_utility` | 2.55 x 6.2 x 2.6 | 3 | 6, r 0.48, x +-0.8, z 1.95 (steer 0.3), -0.3, -1.9 | Works (two tanks, a locker), Patrol (an amber lamp bar, a dish) | 5 416 / 5 610; 5 344 / 3 712 / 3 484 |
-| `anc_hauler` | 2.75 x 9.2 x 2.8, `budget.tris` 7 500 | 2 | 6: front r 0.5, x +-0.95, z 3.3 (steer 0.38); rear r 0.55, x +-1.05, z -1.5 and -2.8 | Flatbed, Laden (four cargo pods, a crate; `cargo` 2400, `mass` 16400) | 5 128 / 6 292; 5 056 / 3 408 / 4 510 |
-| `anc_tram` | 2.95 x 13.4 x 3.5, `budget.tris` 7 500 | 40 (+30 standing) | 8, r 0.5, x +-1.0, z +-5.6 and +-4.0, none steers, `maxSteer` 0 (guided) | Tram-car | 7 136; 7 160 / 5 240 / 4 766 |
+| `anc_pod` | 2.3 x 3.3 x 1.68 | 2 | 4, r 0.32, x +-0.64 (front, steer 0.38) and +-0.68, z +-0.95 | Civic, Hire (bronze roof, cyan sign; `trade: 'hire'`) | 3 744 / 3 756; 3 624 / 2 536 / 2 158 |
+| `anc_saloon` | 2.6 x 6.0 x 1.56 | 4 | 4, r 0.36, x +-0.7, z +-1.95 (front steer 0.32) | Saloon, Statesman (bronze roof, dishes and bonnet spine) | 3 816 / 3 828; 3 696 / 2 640 / 3 055 |
+| `anc_police` | 2.6 x 6.1 x 1.72 | 4 | the saloon's | Patrol (white, a lamp bar of three blue cells and two amber lamps, a bull bar, a belt stripe, a searchlight), Pursuit (darker, bronze roof; `speed` 50) | 4 240 / 4 252; 4 120 / 3 064 / 2 758 |
+| `anc_van` | 2.7 x 6.0 x 2.8 | 2 | 4, r 0.42, x +-0.72, z +-1.75 (front steer 0.35) | Van (crates; `cargo` 1600), Courier (a roof pod) | 4 440 / 4 496; 4 320 / 3 232 / 3 754 |
+| `anc_utility` | 2.8 x 6.2 x 2.6 | 3 | 6, r 0.48, x +-0.8, z 1.95 (steer 0.3), -0.3, -1.9 | Works (two tanks, a locker), Patrol (an amber lamp bar, a dish) | 5 608 / 5 802; 5 536 / 3 904 / 3 676 |
+| `anc_hauler` | 2.75 x 9.2 x 2.8, `budget.tris` 7 500 | 2 | 6: front r 0.5, x +-0.95, z 3.3 (steer 0.38); rear r 0.55, x +-1.05, z -1.5 and -2.8 | Flatbed; Pods (four cargo pods, a crate; `cargo` 2400); Crates (two tiers of lashed crates, four drums; `cargo` 3000); Container (one sealed container with bronze corner posts; `cargo` 1200) | 5 128 / 6 292 / 5 868 / 5 376; 5 056 / 3 408 / 2 776 |
+| `anc_tram` | 3.1 x 13.4 x 3.5, `budget.tris` 9 000 | 40 (+30 standing) | 8, r 0.5, x +-1.0, z +-5.6 and +-4.0, none steers, `maxSteer` 0 (guided) | Tram-car | 7 428; 7 484 / 5 564 / 5 138 |
+| `anc_tank` | 3.6 x 11.6 x 2.7, `budget.tris` 9 000 | 3 | tracked: 10 road wheels (r 0.34, `lift` 0.08) on two belts, a sprocket and an idler each side; `maxSteer` 0 (skid) | Line, Command (a dish, a second aerial) | 4 304 / 4 360; 4 304 / 3 664 / 4 066 |
+| `anc_heli` | 10.6 x 14.2 x 4.2, `budget.tris` 7 500 | 6 | 3 (landing gear): a nose wheel r 0.3, two mains r 0.36; none steers | Transport, Patrol (a searchlight, blue cells) | 3 792 / 4 000; 3 720 / 2 976 / 2 250 |
+| `anc_jet` | 26 x 32 x 7.6, `budget.tris` 7 500 | 120 | 3 (landing gear): a nose wheel r 0.45, two mains r 0.55; none steers | Liner | 3 934; 3 874 / 3 034 / 2 744 |
+
+**The tank** is the kit's second tracked vehicle (after the hab): a low hull between the belts, sponsons over them
+under skirts, a turret on a bronze ring with the energy lance (its emitter a cyan cell) and a hatch; `data.belt` 0.08.
+In a wreck the turret is knocked round and the lance droops; exploded, the turret is gone and the open well shows.
+**The aircraft** stand on their gear (the wheels are real wheels for the kit's checks; `data.airframe: true`, `rotor`
+or `span`): the helicopter a glazed nose, a cabin, a tail boom with a fin and tail rotor, a four-blade rotor on a
+mast; the jet a tube with a nose cone, an upswept tail, swept wings with a ducted fan under each (a cyan glow at
+the back), a T-tail, a cockpit visor band and cabin window bands. In a ruin the rotor droops (one blade gone in a
+wreck) and the boom kinks; a wrecked jet has one wing torn off, lying beside it when the body is upright, the stub
+dark. Their wrecks lie on the ground (`VEHICLE_AIR_FORMS`, above): skidded at the end of a furrow (a dark trough,
+berms of thrown earth) with wheels, a fan or a blade, panels and seats strewn along it, 30 m behind the jet, 12 m
+behind the helicopter; nosedived with the nose in the ground and the tail up; broken in two; piled into a heap at the
+nose; overturned; gutted to a charred heap. The furrows and heaps are geometry, not the host's terrain. Neither steers
+(`maxSteer` 0): a host places them, nose down a street, on a roof, across a square.
 
 **The cabins are hollow.** A hull tub is open at the belt; an inward-facing liner (`F.tub`'s `inside`, the
 `interior` key) gives the cabin its walls, a low floor sits between shelves over the wheels (the pod and the saloon:
 you sit at knee height, as in a car), and the seats, dash and yoke stand on it under the canopy. A cab pod on a deck
-(the van, the utility, the hauler) is the same without the shelves. **The wheels hang from running gear** (`ancGear`):
-an axle beam between each pair (ending 6 cm short of the wheels' inner faces, clear of a steered wheel's swing), a
-knuckle and an upright from each wheel to the shelf, pan or chassis above it, and a trailing link; a bronze arch on the
-skin round every shrouded wheel (`ancArch`, a half torus), and a mudguard shell with arch trim over the exposed cab-over
-wheels of the van and the hauler (`ancFender`). The glazing is a canopy on bronze posts, never a flat pane (the van's
-cab is a pod before its box).
+(the van, the utility, the hauler) is the same without the shelves; the tram's liner is two bands, below and above
+its window ribbon, so the car is open through its windows. **The wheels hang from running gear** (`ancGear`): an axle
+beam between each pair (ending 6 cm short of the wheels' inner faces, clear of a steered wheel's swing), a knuckle and
+an upright from each wheel to the shelf, pan or chassis above it, and a trailing link (a single nose wheel gets a
+fork); a flared wheel well on the skin round every shrouded wheel (`ancFlare`: a short shell straddling the skin with a
+bronze arch on its lip), and a mudguard shell with arch trim over the exposed wheels of the cab-over pods and the
+aircraft (`ancFender`). The glazing is a canopy on bronze posts, never a flat pane (the van's cab is a pod before its
+box). The sheet lays every vehicle in at least three slots (seeds 1, 2, 3), so a ruin state shows three fates of it.
 When the glass is gone (every ruin state), the frames stay and `ancGlass` / `ancPaneShards` leave shards of dark glass
 (`shard`, a key the ruin pass neither rusts nor drops) standing in them.
 

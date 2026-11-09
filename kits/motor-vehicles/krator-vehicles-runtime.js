@@ -48,7 +48,12 @@
                    half; 'crashed': the nose (or the tail) crumpled to half its length, buckling up and sideways, the
                    vehicle pitched onto it; 'tboned': one flank caved in by a quarter of the width round the blow, the
                    roof lifting over it; 'exploded': holes blown through the upper body, the rest bulging outward,
-                   nearly every trim piece flung, burnt out; 'onside': lying on one flank
+                   nearly every trim piece flung, burnt out; 'onside': lying on one flank. An airframe
+                   (VEHICLE_AIR_FORMS, its gear gone) lies on the ground instead: 'skidded' (the nose crumpled, flat
+                   on its belly, the build's furrow and trail behind it), 'nosedived' (pitched into the ground about
+                   its nose, what is under the ground cut away, the tail in the air), 'broken' (torn in two, holed,
+                   both halves belly down), 'piled' (the nose crumpled to a quarter into the build's heap), 'gutted'
+                   (holed, charred; the build draws the burnt heap) and 'overturned'
      missing       (wreck) one wheel is not built (userData.ruin.missingWheel names it; it is not in userData.wheels)
      tilt          a small roll about z (the suspension gone), then the whole thing grounded: lowest point y = 0
    Normals follow: a non-rigid deformation rotates each triangle's three normals by the turn its face normal made
@@ -234,7 +239,7 @@ const KV_API = (function () {
         const up = wheel ? 0.4 : Math.max(0, Math.min(1, cy / Math.max(0.5, h)));
         /* a burnt-out body is charcoal: 90 to 99 % of the way to soot (a quarter of white is still a mid grey
            on screen), a little less at the sill, where the rust shows through */
-        const charred = burnt || R.form === 'exploded';
+        const charred = burnt || R.form === 'exploded' || R.form === 'gutted';
         const k = charred ? 0.9 + 0.06 * up + 0.03 * n2 : R.soot * (0.5 + 0.45 * up) * (0.75 + 0.25 * n2);
         for (let q = 0; q < 3; q++) mix((i + q) * 3, soot, Math.min(0.99, k));
         if (k > 0.6 && !glassy && !m.tyre) for (let q = 0; q < 3; q++) D[i + q] = charS;
@@ -279,11 +284,11 @@ const KV_API = (function () {
         x = x * (1 - 0.12 * R.sag * t) + shear * (P[i * 3 + 1] - y0);
         if (form === 'crushed') z += (n - 0.5) * 0.1 * t;
       }
-      if (form === 'crashed') {
-        const f = R.end * (z - zc) / L;
+      if (form === 'crashed' || form === 'skidded' || form === 'piled' || form === 'nosedived') {
+        const f = R.end * (z - zc) / L, keep = form === 'piled' ? 0.25 : form === 'nosedived' ? 0.7 : 0.45;
         if (f > 0) {
           const n = vnoise(x * 4, y * 4, z * 4 + 3, s), n2 = vnoise(x * 3 + 9, y * 3, z * 3, s + 2);
-          z = zc + (z - zc) * 0.45;
+          z = zc + (z - zc) * keep;
           x += (n - 0.5) * 0.3 * f * w * 0.5;
           y += Math.abs(n2 - 0.5) * 0.25 * f * h + 0.06 * f * f * h;
         }
@@ -302,14 +307,23 @@ const KV_API = (function () {
     }
     fixNormals(b, P0);
   }
-  /* an exploded wreck: holes blown through the upper body (the triangles dropped, ragged) */
-  function ruinBlow(b, R, A) {
+  /* an exploded wreck: holes blown through the upper body (the triangles dropped, ragged); `thr` sets how much
+     goes (0.47 an explosion, 0.56 a broken airframe's holes) */
+  function ruinBlow(b, R, A, thr) {
     const P = b.pos, h = A.h, hw = A.w / 2, s = (R.seed * 17 + 4) | 0;
     return dropTris(b, function (i) {
       const cx = (P[i * 3] + P[i * 3 + 3] + P[i * 3 + 6]) / 3, cy = (P[i * 3 + 1] + P[i * 3 + 4] + P[i * 3 + 7]) / 3, cz = (P[i * 3 + 2] + P[i * 3 + 5] + P[i * 3 + 8]) / 3;
       if (cy < 0.42 * h || Math.abs(cx) > 0.92 * hw) return true;
-      return vnoise(cx * 1.6 + 2, cy * 1.6, cz * 1.6, s) < 0.47;
+      return vnoise(cx * 1.6 + 2, cy * 1.6, cz * 1.6, s) < thr;
     });
+  }
+  /* a nosedived airframe: what went under the ground is cut away (the triangles dropped) and the rest clamped to it */
+  function ruinBury(b) {
+    const P = b.pos;
+    const out = dropTris(b, function (i) { return (P[i * 3 + 1] + P[i * 3 + 4] + P[i * 3 + 7]) / 3 >= 0; });
+    const Q = out.pos;
+    for (let i = 1; i < Q.length; i += 3) if (Q[i] < 0) Q[i] = 0;
+    return out;
   }
   /* a torn wreck: the triangles at the cut dropped; returns the cut's z and the two halves' transforms */
   function ruinTear(b, R, A) {
@@ -336,7 +350,17 @@ const KV_API = (function () {
       out.push({ test: function () { return true; }, m: mk(R.side * (Math.PI / 2 + (hash3(1, 1, 1, s) - 0.5) * 0.3), (hash3(2, 2, 2, s) - 0.5) * 0.12, 0, R.side * A.h * 0.5, A.w / 2, 0) });
     } else if (R.form === 'crashed') {
       out.push({ test: function () { return true; }, m: mk(R.tilt * 0.5, -R.end * (0.05 + 0.05 * hash3(6, 6, 6, s)), (hash3(7, 7, 7, s) - 0.5) * 0.2, 0, 0, 0) });
-    } else if (R.form === 'torn') {
+    } else if (R.form === 'skidded' || R.form === 'piled' || R.form === 'gutted') {
+      out.push({ test: function () { return true; }, m: mk(R.tilt, 0, 0, 0, 0, 0) });   /* flat: the furrow or heap stays on the ground */
+    } else if (R.form === 'nosedived') {
+      /* pitched nose-down into the ground, turned about the nose point so it ends a third of its height under
+         (ruinBury cuts that away), the tail in the air */
+      const p = 0.5 + 0.25 * hash3(8, 8, 8, s), roll = (hash3(9, 9, 9, s) - 0.5) * 0.3, nz = A.d / 2, ny = A.h * 0.4;
+      const m = mk(roll, p, 0, 0, 0, 0);
+      _v.set(0, ny, nz).applyMatrix4(m);
+      m.setPosition(-_v.x, -A.h * 0.35 - _v.y, nz - _v.z);
+      out.push({ test: function () { return true; }, m: m });
+    } else if (R.form === 'torn' || R.form === 'broken') {
       const zc = -A.d / 2 + A.d * R.cut, gap = 0.25 + 0.5 * hash3(3, 3, 3, s), yaw = (hash3(4, 4, 4, s) - 0.5) * 0.5;
       const half = function (sign) {
         const m = mk(R.tilt * sign, 0, yaw * sign * 0.5, 0, 0, 0);
@@ -450,7 +474,7 @@ const KV_API = (function () {
   API.CLASSES = VEHICLE_CLASSES; API.TYPES = VEHICLE_TYPES; API.DRIVES = VEHICLE_DRIVES; API.FUELS = VEHICLE_FUELS; API.TERRAIN = VEHICLE_TERRAIN;
   /* the ruin states (vehicles-core.js): the names, and the record a build(key, { state, seed }) takes */
   API.STATES = VEHICLE_STATES; API.WRECK_FORMS = VEHICLE_WRECK_FORMS;
-  API.ruinOf = function (state, seed, key) { return vehicleRuin(state, seed, key); };
+  API.ruinOf = function (state, seed, key) { const A = VEHICLE_BY_KEY[key]; return vehicleRuin(state, seed, key, !!(A && A.data && A.data.airframe)); };
   /* round primitives' detail for everything built after the call (1 = full; a crowded world may halve it) */
   /* the library detail maps (vehicles-detail.js): on by default when the bundle carries them; off = vertex colours
      only (the look before 2026-10-06, and ?mat=proc on the sheet). For vehicles built after the call. */
@@ -464,8 +488,8 @@ const KV_API = (function () {
     if (!A) { console.error('KratorVehicles: no such vehicle', key); return null; }
     const v = Math.max(0, Math.min(A.variants - 1, (o.variant | 0))), seed = o.seed || 1, linear = o.linear !== false;
     const tex = VEHICLE_DETAIL.on() && o.textures !== false;
-    const state = VEHICLE_STATES.indexOf(o.state) > 0 ? o.state : 'intact', R = vehicleRuin(state, seed, key), ruined = state !== 'intact';
     const data = vehicleData(A, v);
+    const state = VEHICLE_STATES.indexOf(o.state) > 0 ? o.state : 'intact', R = vehicleRuin(state, seed, key, !!data.airframe), ruined = state !== 'intact';
     const F = vehicleFrame({ seed: seed, variant: v });
     F.asset = A; F.data = data; F.state = state; F.ruin = R;
     /* the body */
@@ -481,13 +505,14 @@ const KV_API = (function () {
       for (const k of ['matte', 'metal']) {
         if (!B[k]) continue;
         B[k] = ruinSprung(B[k], R, 1.2);
-        if (R.form === 'exploded') B[k] = ruinBlow(B[k], R, A);
+        if (R.form === 'exploded' || R.form === 'gutted') B[k] = ruinBlow(B[k], R, A, 0.47);
+        else if (R.form === 'broken') B[k] = ruinBlow(B[k], R, A, 0.56);
         if (R.sag > 0 || R.form) ruinDeform(B[k], R, A);
-        if (R.form === 'torn') B[k] = ruinTear(B[k], R, A);
+        if (R.form === 'torn' || R.form === 'broken') B[k] = ruinTear(B[k], R, A);
         ruinColour(B[k], R, linear, A.h, false);
       }
       rig = ruinRigid(R, A);
-      for (const k of ['matte', 'metal']) if (B[k]) applyRigid(B[k], rig);
+      for (const k of ['matte', 'metal']) if (B[k]) { applyRigid(B[k], rig); if (R.form === 'nosedived') B[k] = ruinBury(B[k]); }
     }
     const g = new THREE.Group();
     g.name = 'vehicle:' + key;
@@ -517,6 +542,7 @@ const KV_API = (function () {
     for (let wi = 0; wi < data.wheels.length; wi++) {
       const W = data.wheels[wi];
       if (ruined && R.missing >= 0 && wi === R.missing % data.wheels.length) { missingWheel = W.name; continue; }
+      if (ruined && R.gearGone) { missingWheel = 'all'; continue; }                     /* an airframe's gear torn off: it lies in the trail */
       const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1;
       _target = wg;
       try { A.wheel(F, Object.assign({ side: side }, W)); } finally { _target = prev; }
