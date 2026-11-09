@@ -1,11 +1,11 @@
-// node core/water/test-flood-front.js - the gorge flood's one law, held across its two modules: core/water's WATER.flood
+// node core/water/ext/test-flood-front.js - the gorge flood's one law, held across its two modules: core/water's WATER.flood
 // (ext/62-core-water-flood.js: the water that rises) and core/hazard's KHAZ.front (22-core-hazard-env.js: the drowning),
 // both written from the same law. The flood's own hazard record (S.hazardRecord) is read by KHAZ, and its level, wetness and
 // front must agree with the water's at every point and time; each check has a negative (a record whose law was changed).
 'use strict';
-require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
+require('../../shader/06-core-khook.js');require('../../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
-const ROOT=path.join(__dirname,'..','..');
+const ROOT=path.join(__dirname,'..','..','..');
 const rd=f=>fs.readFileSync(path.join(ROOT,f),'utf8');
 global.window=global;
 eval(['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js',

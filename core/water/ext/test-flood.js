@@ -1,10 +1,10 @@
-// node core/water/test-flood.js - the gorge flood (core/water/ext/62-core-water-flood.js, 62b draw), each check with a broken input that must
+// node core/water/ext/test-flood.js - the gorge flood (core/water/ext/62-core-water-flood.js, 62b draw), each check with a broken input that must
 // fail. The law (KHAZ.front, written out in 62's header) is written again here from its text and the record is held to it; its GLSL
 // (WATER.floodGLSL) is run as text in glsl-interp.js against S.levelAt. First: loading the fragments moves nothing.
-require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
+require('../../shader/06-core-khook.js');require('../../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
-const ROOT=path.join(__dirname,'..','..');
-const {glslProgram}=require('./glsl-interp.js');
+const ROOT=path.join(__dirname,'..','..','..');
+const {glslProgram}=require('../glsl-interp.js');
 const rd=f=>fs.readFileSync(path.join(ROOT,f),'utf8');
 global.window=global;
 eval(['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js',

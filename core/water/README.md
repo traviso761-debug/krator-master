@@ -68,7 +68,7 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `test-kinds-ext.js` | | `node core/water/test-kinds-ext.js`: ext/54 and 54b, each check with a negative, each chunk run as text against its twin; first, that loading them moves no export, preset or shader (`test-gaps.js` also loads them) |
 | `ext/62-core-water-flood.js` | [G data] | `WATER.flood` (kind `flood`: a gorge flood whose water rises and falls on the `KHAZ.front` law, shared with core/hazard), `WATER.frontK`, `frontLevel`, `frontProject`, `floodGLSL`; `S.hazard()`. Opt-in by path. "A gorge flood" below |
 | `ext/62b-core-water-flood-draw.js` | [draw] + [G shader] | `WATER.drawFlood`: a ribbon the vertex shader lifts to the flood's level, on drawFlow's look |
-| `test-flood.js` | | `node core/water/test-flood.js`: 62 and 62b against the law written again from its text, the GLSL as text, the hazard body and the export |
+| `ext/test-flood.js`, `ext/test-flood-front.js` | | `node core/water/ext/test-flood.js`: 62 and 62b against the law written again from its text, the GLSL as text, the hazard body and the export; `node core/water/ext/test-flood-front.js` holds core/hazard's KHAZ.front to the same records (level, s, k) |
 | `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
 
 ## core/shader (2026-11-02)
@@ -881,7 +881,7 @@ level); `WATER.terraces(rec.terraces)` (ext/53) builds the pools and falls. The 
 - **Not judged by eye yet:** no page lists these files; the shaders are proven against their twins as text and the drawings built on a stub,
   never compiled on a GPU. The first taker should screenshot a mud pot near and far and a fumarole at dawn.
 
-## A gorge flood (2026-11-09: ext/62 and 62b; `node core/water/test-flood.js`)
+## A gorge flood (2026-11-09: ext/62 and 62b; `node core/water/ext/test-flood.js`)
 
 Firebliss, midbasin, outlandgate, paintedhighlands and wouterwall want a flood that runs a gorge on a cycle. `WATER.flood` is a surface of kind
 `flood` whose water actually rises: a front comes down the channel at `speed`, the water rises behind it over `rise` s, holds `hold` s and falls

@@ -1,4 +1,4 @@
-// node core/atmos/test-ashplume.js — a volcanic plume as a weather source (fx/89-atmos-fx-ashplume.js), each check with a negative.
+// node core/atmos/fx/test-ashplume.js — a volcanic plume as a weather source (fx/89-atmos-fx-ashplume.js), each check with a negative.
 // Plain data: no THREE, no page. core/rand for the far sprites' sources.
 const fs=require('fs'),path=require('path'),ATM=path.join(__dirname,'..');
 const FRAGS=['../shader/06-core-khook.js','../shader/06b-core-kcolor.js','../rand/08-core-rand.js'].concat(fs.readdirSync(ATM).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort());

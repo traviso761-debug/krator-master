@@ -1,4 +1,4 @@
-// node core/atmos/test-slopewind.js — cold-air, katabatic, anabatic and gap wind (fx/89-atmos-fx-slopewind.js), each check with a
+// node core/atmos/fx/test-slopewind.js — cold-air, katabatic, anabatic and gap wind (fx/89-atmos-fx-slopewind.js), each check with a
 // negative. Plain data: no THREE, no page; ATMOS's own windAt is driven by stand-in uniforms for attach and detach.
 const fs=require('fs'),path=require('path'),ATM=path.join(__dirname,'..');
 const FRAGS=['../shader/06-core-khook.js','../shader/06b-core-kcolor.js'].concat(fs.readdirSync(ATM).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort());

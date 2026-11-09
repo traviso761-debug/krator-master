@@ -578,7 +578,7 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
   colour equals `S.surface`'s at every sampled pixel off the bed edges (within 1/255) on ten stacks: canyon, legacy, outland with a
   fault, tibasalt across its alteration line, ringfold folded, megabreccia under loess, two blocks formations with two alterations,
   lateral changes (into blocks too), tepui, and badland's wash on flat ground.
-- **Not yet**: a varied contact on the GPU (`35c-core-strata-vary.js` is CPU and Godot data only; above); the alteration of block clasts on the GPU;
+- **Not yet**: Godot's side of a varied contact on the GPU (`35d-core-strata-bake.js` bakes it for three.js, 2026-11-09: "The 2026-11-09 plans' pieces"); the alteration of block clasts on the GPU;
   `tools/harness.py smoke` crashed every page on this machine (a bare three.js page too), so the browser checks ran in the app's browser.
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
@@ -677,7 +677,97 @@ the builds that list those folders, so they go in `fx/`, `ext/` and `geyser/`; `
 - **The wind-sounding rock** (outlandgate): proposed as a `core/audio` source; no audio module yet.
 - **Greenstep** asks for nothing core does not have.
 
-The "Adopting it" line for each piece is below, as it lands.
+**Built** (2026-11-09; every piece below is opt-in, listed by no build, node-tested with negatives; nothing is judged on a GPU
+yet, so the first page to take a drawn piece screenshots it and reads the console: a shader that fails to compile just vanishes):
+
+- **Geothermal surfaces** (`core/water/geyser/52c-core-water-thermal.js`, `52d` draw, `geyser/test-thermal.js`; item 1): `WATER.mudpot`
+  (a grey swelling mud surface whose bubbles rise and burst at hashed places and times), `WATER.fumarole` (its puffing steam, and
+  a run-off traced downhill by `WATER.downhill`, ready for `WATER.flow`), `WATER.thermalAprons` (sinter, travertine, sulfur, clay and
+  microbial mats banded by temperature, from `KTHERM` when given). *Adopting it:* list `geyser/52`, `52b`, `52c`, `52d` by path after
+  core/rand and core/water's `20` and `50`; `WATER.mudpot({key, x, z, r, level, kind})`, `WATER.fumarole({key, x, z, ground})`, draw
+  with `WATER.drawMudpot` / `drawFumarole`, give `F.runoff.flow` to `WATER.flow`; `A = WATER.thermalAprons({springs, geysers,
+  fumaroles, mudpots, ground, therm})`, then `A.apronAt` or `A.bake` into KGROUND layers (mats coloured by `WATER.matGLSL()`); a
+  travertine apron's `terraces` goes to `WATER.terraces` as it is. `core/water/README.md`, "Geothermal surfaces".
+- **Crusts, night and fronts** (`core/hazard/22-core-hazard-env.js`, `test-hazard-env.js`; items 2a-2c): `KHAZ.crust` and `KHAZ.under`
+  (harmless until a load breaks it, then broken for good or until it heals, over the heat, lava or mud below), `KHAZ.night` (gas or
+  cold air that pools at night and in still air, on the world clock and a bound wind; with 21's `shape.pool` it is the cold-air
+  pool), `KHAZ.front` (a gorge flood a walker can stand above, or a stampede's band bound to its herd: `charge.fauna`,
+  `KHAZ.bindHerd`). *Adopting it:* list it after `20-core-hazard.js` (and after `21` when both); register the bodies
+  `KHAZ.ENV.crust`, `nightGas`, `coldPool`, `flood`, `stampede`, `rockDrop` give; once `KHAZ.bindClock(clock)` and `bindWind(fn)`;
+  `KHAZ.load(crust, mass, t)` on a step; pass the walker's height to the queries. `core/hazard/README.md`, "Crusts, night and fronts".
+- **The gorge flood's water** (`core/water/ext/62-core-water-flood.js`, `62b` draw, `ext/test-flood.js`; item 2c): `WATER.flood` on
+  the very law `KHAZ.front` reads (`ext/test-flood-front.js` holds the two to each other: level, arc length and k agree to 1e-14 on
+  three floods, and a record with a changed law is caught). *Adopting it:* list `ext/62` after `20` (and `62b` after `22`, `50`, `51`,
+  with core/atmos bound); `const F = WATER.flood({key, path: [[x, bedY, z], ...], w, speed, period, rise, hold, fall, depth})`,
+  `WATER.drawFlood(F)`, and register `F.hazardRecord()` in core/tags: the water and the drowning are one record.
+- **The volcanic plume** (`core/atmos/fx/89-atmos-fx-ashplume.js`, `fx/test-ashplume.js`; item 3): a Gaussian plume from vents along
+  an azimuth (or the wind): ash fall, fog, its shade, the deposit, far sprites. *Adopting it:* list it (with core/rand for the
+  sprites); `const PL = ATMOS.ashPlume({vents: [{x, z, y, top, rate}], azimuth, reach})`, then `ATMOS.airLoad({ashAt: PL.under})` (or
+  `PL.provide(KHAZ)`), `PL.deposit` as a KGROUND mask, `PL.shade(x, z, sunDir)`, `KFAR.sprites({sources: PL.sources(), kind:
+  'cloud'})`. Godot loads `PL.export()`. Firebliss first; the Throne and the Godthrone can take it.
+- **The wind the ground makes** (`core/atmos/fx/89-atmos-fx-slopewind.js`, `fx/test-slopewind.js`; item 4): katabatic flow down the
+  fall line by night, anabatic up it by day, gap winds that reverse with the day, and cold-air pools in hollows, on baked grids.
+  *Adopting it:* `const W = ATMOS.slopeWind({ground, box, cell, katabatic, gaps, pool})`; `W.attach(ATMOS, hourFn)` adds the field to
+  `ATMOS.windAt` (CPU readers only: the shaders' `atmWind` keeps the base wind), `W.provide(KHAZ, baseC, hourFn)` gives core/hazard's
+  `temperature` its pools, and `KHAZ.bindWind` takes `W.windAt` for the night gas. Godot loads `W.export()`.
+- **Skarn and the rock glaze** (`core/terrain/35e-core-strata-skarn.js`, `test-strata-skarn.js`; items 5-6). The plan asked whether
+  `KSTRATA.vary` was enough for skarn: it is. Lens formations on its `pts` and `noise` pinch out at their rims and swell inside,
+  zoned from the intrusion front (garnet and magnetite near, epidote farther). The glaze is a thin-film tint by view angle and film
+  thickness on the rock a stack names (kinds, formations, fault faces: the pseudotachylite mirrors). *Adopting it:* list it after
+  `35c`; `const V = KSTRATA.skarn({seed, base, top, front: {pts}, lenses, scale})`, read as any varied stack, and register the
+  magnetite pods in `V.skarn.lenses` as ore; for the glaze, `KSTRATA.glazeAt(S, G, x, y, z)` per vertex into an attribute and
+  `KSTRATA.glazeGLSL()` in the fragment shader. `STRATA-PLAN.md` section 10.
+- **Landforms** (item 7). **The chasm head:** `stepcut` lines take `head: {at: 'end'|'start'|'both', len, amph, wall}` (in place in
+  `38c`, which no build lists; a record without it is unchanged: `test-landforms.js` freezes the old records' digest, `55247ac0`):
+  the depth tapers and the walls close round an amphitheatre with their steps, `wall` keeping a sapped headwall. **`KRELIEF.grabenNet`**
+  (`38d-core-landforms-net.js`, `test-landforms-net.js`): grabens on several fault trends as en-echelon `stepcut` segments with chasm
+  heads, hashed per (world, trend, line, segment), with their corridors, crossings and the horst bastions between; its own `shape`
+  unions the cuts (the deeper floor wins at a crossing; the cuts applied one by one would add up there). **`KRELIEF.ripples`** (same
+  file): giant current ripples, gentle stoss and steep lee, crests that wander and fork without a seam. *Adopting it:* list `38d`
+  after `38c`; put `KRELIEF.grabenNet({box, world, id, trends: [{az, spacing, w, depth, len}], keep, ground})` or
+  `KRELIEF.ripples({poly, flow, wl, h, seed})` into `KRELIEF.apply`; `N.corridors` feeds `KSIGN`'s cost, `N.bastions` the flora and
+  `KGLACIER`. `LANDFORMS.md`.
+- **Varied strata on the GPU** (`core/terrain/35d-core-strata-bake.js`, `test-strata-bake.js`; item 8): a varied stack's moved
+  contacts baked over a box into an RGBA8 texture (16 bits a contact, only the moved ones), `ksVaryYY` written as GLSL with a JS twin
+  on the same bytes (they agree to the last bit; the bake's error against `V.yy` is measured into `B.err`). *Adopting it:* list `35c`
+  and `35d` after `35`; shade the flat stack, `const B = KSTRATA.varyBake(V, {box, step})` (shrink `step` until `B.err` fits), and in
+  `onBeforeCompile` after `M.inject(sh)`: `sh.fragmentShader = KSTRATA.varyPatch(sh.fragmentShader, B)`, `uKSVary` a NEAREST
+  `DataTexture(B.data, B.W, B.H)`, `KSTRATA.varyKey(B)` in the cache key. Godot's bake and `ks_vary_yy` are owed. `STRATA-PLAN.md`
+  section 9.
+- **Animal sign** (`core/biome/46-core-sign.js`, `test-sign.js`; item 9): `KSIGN.make` reads kits/fauna's herd records (or plain
+  herds) and gives trails (least-cost paths from bedding to pasture and water that follow cheap corridors, avoid cliffs and widen
+  where herds share them), wallows, dung, browse lines, trample and bone yards; every draw a hash per cell on one lattice, so a tile
+  agrees with the whole box. *Adopting it:* add `'46-core-sign.js'` to `CORE_BIOME`; `const S = KSIGN.make({herds, ground, cost,
+  water, box, world})`, bake `KSIGN.maskAt(S, x, z)` into the weights the KGROUND layers read, decals from `S.dung` and
+  `S.boneyards`, the flora's browse line from `S.browse`. `core/biome/README.md`.
+- **The defended platform village and the trade post** (`core/hamlet/32-hamlet-platform.js`, `34-hamlet-trade.js`,
+  `test-hamlet-platform.js`, `test-hamlet-trade.js`; item 10): `KHAMLET.platform` lays roomblocks on a plinth or in a cliff alcove,
+  stepped back in storeys round a plaza, entered by hatches and ladders with no door on the outer face, the pen and court at the
+  foot; `KHAMLET.tradePost` lays two cultures' halves either side of a line, the serai and the market on it. *Adopting it:* list `32`
+  (and `34`) after `30`; `KHAMLET.platform({...village spec, plinth: {pts, top, foot}})` or `alcove: {line, depth, floor, height}`;
+  `KHAMLET.tradePost({id, world, cultures: [a, b], links: [A, B], caravans})`; register `records` and `ladders`. No Kimr, Painted
+  Men, Yuni or Coyote row exists: their keys come back `pending` with boxes (`KHAMLET.pendingRow`), and a future row names
+  `platform {...}` and `trade {...}`. The `trade` focus is kept in `34` (`KHAMLET.TRADE_FOCUS`), not added to `KHAMLET.FOCI`.
+- **Outlaw bands** (`core/camp/50-camp-outlaw.js`, `test-camp-outlaw.js`; item 11): the `outlaw` war-camp row, a band size per row
+  (`band: [10, 30]`; a row without it is unchanged), `KCAMP.lookout` (sees the road, is not seen from it: cover at the lookout and no
+  skyline behind it), `KCAMP.outlawCamp` (the hidden camp within reach of its best lookout). *Adopting it:* list it after `40`;
+  `KCAMP.outlawCamp({id, world, road, ground: {h, ok}, cover, box, water})`, register the lookouts and the camp's records, stand-ins
+  for the pending ones until a Yuni camp kit exists.
+
+**What each plan can now call:** Labyrinth: `KRELIEF.grabenNet`, `KSIGN`, `KHAZ.ENV.stampede` and `rockDrop`, `KHAMLET.platform`.
+Firebliss: the thermal surfaces, `KHAZ.crust`, `KHAZ.night`, `WATER.flood` with `KHAZ.ENV.flood`, `ATMOS.ashPlume`. Mid Basin: the
+thermal surfaces, `KHAZ.night`, `KHAZ.crust`, the flood, `stepcut`'s `head`, `KSTRATA.varyBake`, `KCAMP.outlawCamp` and `lookout`.
+NE outer wall: `KSTRATA.skarn`, `KSTRATA.glaze`, the thermal surfaces, `KHAZ.night`, `KHAZ.crust`. Outland Gate: `ATMOS.slopeWind`'s
+gaps, the flood, `KRELIEF.ripples`. Painted Highlands: the flood, `KHAMLET.platform`'s alcove. W outer wall: `KSTRATA.varyBake`,
+`ATMOS.slopeWind`, the flood. Loom-Chasms: `grabenNet`, `stepcut`'s `head`. Great Chasm: `KHAMLET.tradePost`, `KHAZ.night`, the
+thermal surfaces. Godshearth: the thermal surfaces, `KHAZ.crust`, `KHAZ.night`, `ATMOS.slopeWind`. Opal Valley: `KSTRATA.glaze`,
+`KHAZ.crust`, the thermal aprons. SE outer wall and the Twins: `ATMOS.slopeWind` (and its pools), the thermal surfaces, `KHAZ.crust`,
+`KHAZ.night`.
+
+**Owed:** the Godot twins (each piece exports plain data; GDScript for the slope wind, the plume, the glaze, `ks_vary_yy` and the
+relief kinds is not written), a GPU look at every drawn piece, the slope wind in the shaders' `atmWind` (it needs a baked wind
+texture), the flood's `WATER.flowAt` (it takes no time: use `F.flowAt(x, z, t)`), and the rows for the Kimr, the Painted Men, the
+Yuni and the Coyote Men.
 
 ## `atmos/`
 
