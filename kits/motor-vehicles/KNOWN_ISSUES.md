@@ -38,6 +38,15 @@
   interior its walls; the canopy glass is single-sided too, so through the near pane the far pane is not drawn (it
   reads as clear glass). The running gear is a beam axle, a knuckle, an upright and a trailing link per wheel, not a
   modelled suspension: like every other vehicle's, it does not move with `roll()` or `steer()`.
+- [ ] **The aircraft are ground props.** The helicopter and the jet are `VEHICLE`s on their landing gear (the kit has
+  no airframe kind): `speed` is their flying speed but `roll()` only turns the wheels, the rotor and the fans do not
+  turn, and nothing flies. Their boxes are large (the rotor 10.6 m, the span 26 m): a host placing them in a street
+  checks the box against the buildings. The tank's lance and turret are static (a wreck's turn is baked by the build).
+  A `skidded` wreck's furrow is drawn geometry (a trough and berms on y = 0), not a cut in the host's terrain: on a
+  slope it floats or sinks; the host's ground should be flat under the trail (the settled box runs a vehicle's length
+  behind the tail).
+- [ ] **A castoring nose wheel does not steer.** The aircraft's nose wheels are `steer: false` with `maxSteer` 0
+  because a steered single wheel has no room for a fork that clears its swing (the clearance check).
 - [ ] **A ruin is a prop.** After a tilt or an overturn a wheel's `rotation.x` spin is no longer about its axle (the
   holder carries the settle as a quaternion and three.js composes the Euler on top); `steer()` turns the pivots the
   same way; a tracked ruin's belts do not run (`roll()` leaves them). A host drives intact vehicles and places ruins.

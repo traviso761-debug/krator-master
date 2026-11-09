@@ -50,7 +50,7 @@
     "kits/mechs/tex/pack.json": "8520471c394b5a762d727171f5e879c470f970c38a21836bf9f9ecec6ff16eea",
     "kits/mechs/tex/plate.albedo.webp": "5da438689601eaa550b8b2522c70e9c82fa13f93a53810a537f07ccd6183d0d3",
     "kits/mechs/tex/sunbanner.albedo.webp": "7ab86d89d9df6cd059ca4bc8dfd55c262b653d576dabc0f5f05904b5fc3887a3",
-    "kits/motor-vehicles/vehicles-core.js": "4103621b91d5faf955f9086612d63c7de2146014fc0d57bebb0beb38d84bf73e",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
@@ -58,14 +58,14 @@
     "kits/mechs/src": "e71f5b75eb3d7c283777ba45e3998da9c6242bbeb78f01d976014e9e4e9da244"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "0b54143a4835a4757558fab4c2cb972ed3321c14db0573a27fb4bb2bd520b737",
-    "kits/mechs/dist/krator-mechs.js": "427d97f89b49b5640efb8479ac1f7ab828a0cff6b0a24d7835ff99c1f77bb640",
-    "kits/mechs/dist/mechs.html": "ab791496f8c65a9bdc1bdf0e7ad779b59d6a28724b2033723306258075c92a7b"
+    "kits/mechs/build-manifest.json": "9db88d55e61781ab37f36c61a8f40b40c5cc9d7ef8e8f91b078a772164748f9d",
+    "kits/mechs/dist/krator-mechs.js": "eb818fbd3feaa88cd832eef2605123c0a3f0306ac8f7dd2c99ac91171dcfd91c",
+    "kits/mechs/dist/mechs.html": "588cc939ff49aa7097a2ef4455f1928c25f9ca1cffad32585bfe70ad07351760"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "47608ed7deb51b7186e0f4cc887b197e9997f28f02fd7b59fa99a9e5eefbe951",
-    "kits/mechs/dist/krator-mechs.js": "427d97f89b49b5640efb8479ac1f7ab828a0cff6b0a24d7835ff99c1f77bb640",
-    "kits/mechs/dist/mechs.html": "ab791496f8c65a9bdc1bdf0e7ad779b59d6a28724b2033723306258075c92a7b"
+    "kits/mechs/build-manifest.json": "7ce623b06a6f4f4505f688f19c11b795ab2d2ff7c039aa9c61a07efbdb67c3e2",
+    "kits/mechs/dist/krator-mechs.js": "eb818fbd3feaa88cd832eef2605123c0a3f0306ac8f7dd2c99ac91171dcfd91c",
+    "kits/mechs/dist/mechs.html": "588cc939ff49aa7097a2ef4455f1928c25f9ca1cffad32585bfe70ad07351760"
    }
   }
  }

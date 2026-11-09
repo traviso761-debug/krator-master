@@ -25,7 +25,9 @@ add `ancientWhite` (`metal.ancient.white`: their seamed white panel), `bronze` (
 `KratorVehicles.build(key, { state: 'intact' | 'weathered' | 'burnt' | 'wreck' })`: the same vehicle (same seed,
 same variant) rusted over, grimed, its glass gone and its tyres flat; burnt out, sooted, sagging, the interior open;
 or a wreck in one of seven forms by seed (crushed, overturned, torn in two, crashed nose-first, t-boned, exploded,
-on its side), a wheel missing, trim sprung and fallen. The ruin is a record
+on its side; an airframe has its own six, all on the ground with its gear gone: skidded at the end of a furrow with a
+wreckage trail, nosedived with the tail in the air, broken in two, piled into a heap at the nose, overturned, gutted
+to a charred heap), a wheel missing, trim sprung and fallen. The ruin is a record
 (`vehicles-core.js` `vehicleRuin`, `KratorVehicles.ruinOf(state, seed, key)`) that the runtime's general pass draws
 onto the merged body of any culture, so a ruined vehicle costs the same draw calls and fewer triangles; a culture's
 `build(F)` may read `F.ruin` to draw its own damage (the Ancients skip their glass and char their seats). The sheet's
@@ -34,19 +36,23 @@ streets (`biomes/ancientsvalley`), where every vehicle is a thousand years dead.
 
 | Key | Name | Culture | Wheels | Variants |
 |---|---|---|---|---|
-| `anc_pod` | Ancient pod car | `ancient` | 4 under arches, front steers | Civic (white), Hire (bronze roof, a cyan sign) |
-| `anc_saloon` | Ancient saloon | `ancient` | 4 under arches, front steers | Saloon (white), Statesman (bronze roof and dishes, a bonnet spine) |
-| `anc_van` | Ancient delivery van | `ancient` | 4 under arches, front steers | Van (crates aboard), Courier (a roof pod) |
+| `anc_pod` | Ancient pod car | `ancient` | 4 in flared wells, front steers | Civic (white), Hire (bronze roof, a cyan sign) |
+| `anc_saloon` | Ancient saloon | `ancient` | 4 in flared wells, front steers | Saloon (white), Statesman (bronze roof and dishes, a bonnet spine) |
+| `anc_police` | Ancient watch car | `ancient` | the saloon's | Patrol (lamp bar, bull bar, belt stripe, searchlight), Pursuit (darker, bronze roof) |
+| `anc_van` | Ancient delivery van | `ancient` | 4: the cab-over fronts under mudguards, the rears in wells | Van (crates aboard), Courier (a roof pod) |
 | `anc_utility` | Ancient six-wheeled utility | `ancient` | 6, front axle steers | Works (two tanks in a bronze cage), Patrol (a lamp bar and a dish) |
-| `anc_hauler` | Ancient flatbed hauler | `ancient` | 6, front axle steers | Flatbed (empty), Laden (four cargo pods and a crate) |
-| `anc_tram` | Ancient guideway tram-car | `ancient` | 8 under arches, none steers (guided) | Tram-car |
+| `anc_hauler` | Ancient flatbed hauler | `ancient` | 6, front axle steers | Flatbed, Pods, Crates (and drums), Container |
+| `anc_tram` | Ancient guideway tram-car | `ancient` | 8 in wells, none steers (guided) | Tram-car |
+| `anc_tank` | Ancient lance tank | `ancient` | tracked: 10 road wheels, two belts, skid steer | Line, Command (a dish) |
+| `anc_heli` | Ancient helicopter | `ancient` | 3 (landing gear), none steers | Transport, Patrol (searchlight, blue cells) |
+| `anc_jet` | Ancient passenger jet | `ancient` | 3 (landing gear), none steers | Liner |
 | `geo_dune_buggy` | Geomancer dune buggy | `geomancer` | 4 | Scout (2 seats, tarp), Crew (4 seats, longer cage), Drill rig (auger mast, drill pipe) |
 | `rep_crawler` | Republic salvage crawler | `republic` | 8 wire-mesh, front and rear axles steer | Survey (cream, solar lid open), Hauler (ochre, lid shut under crates and drums) |
 | `iz_six_wheeler` | Izani armoured six-wheeler | `iziz` | 6, front axle steers | Lancer (orange, four-tube rocket rack), Courier (cream, striped awning, the palace orb) |
 | `ab_caravan_truck` | Abyssal caravan truck | `eastabyss` | 4 big sand tyres | Caravan (sand, pastel tarps), Headman's (teal, lacquer and gold, tin-mirror cladding) |
 | `pa_crawler_hab` | Post-Apoc crawler hab | `post-apoc` | tracked: 12 road wheels on four bogies, skid steer | Hab (rust and olive), Trader (faded teal, mustard, awning, crates) |
 
-**The Ancients' six** (2026-11-08, for the Ancient's Valley; `krator-vehicles-ancient.js`) are in the metropolis
+**The Ancients' ten** (2026-11-08, for the Ancient's Valley; `krator-vehicles-ancient.js`) are in the metropolis
 kit's house style (`kits/metropolis/PLAN.md` 2, "The family": Cyclopean, Modernist, Organic): smooth monocoque
 bodies of stacked superellipse sections (`F.tub`), white seamed panel, a bronze belt band at the waist, a blue-glass
 canopy on bronze posts, cyan strips along the sills and across the nose (a lamp family: they glow with `lights()`
@@ -59,8 +65,12 @@ the long low saloon (4 seats, 6.0 m, bronze fins), the delivery van (a cab pod b
 the six-wheeled utility (a cab pod and an open bay under a bronze cage, two tanks), the flatbed hauler (a cab pod over
 the front wheels, a board-formed composite deck with bronze rails and stakes) and the guideway tram-car (13.4 m, forty
 seats, a window ribbon all round on bronze mullions, a bronze hoop every 3.6 m where the structure transfers, two doors
-a side, guide skids under the floor; `maxSteer` 0: the viaduct guides it). 3 600 to 7 100 triangles intact, fewer
-ruined. In a ruin the glass is gone but its frames stay and shards of dark glass stand in them.
+a side, guide skids under the floor; `maxSteer` 0: the viaduct guides it). Then the watch's car (the saloon with a
+lamp bar, a bull bar and a searchlight), the lance tank (tracked: a low hull, sponsons and skirts, a turret with an
+energy lance that a wreck knocks round and an explosion takes off), a helicopter (a glazed nose, a tail boom, a
+four-blade rotor that droops in a ruin) and a passenger jet (swept wings with ducted fans, a T-tail, a cockpit visor;
+a wreck's wing lies torn off beside it), both standing on their landing gear for a host to place. 3 700 to 7 400
+triangles intact, fewer ruined. In a ruin the glass is gone but its frames stay and shards of dark glass stand in them.
 
 The buggy: a welded tube roll cage, a low tub of salvaged plate, two bucket seats, a big exposed Ancient-salvage
 flat-four at the rear with twin exhaust stacks and an upright radiator, four 0.85 m balloon sand tyres with chunky

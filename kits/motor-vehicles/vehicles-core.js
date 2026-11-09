@@ -98,9 +98,23 @@ const VEHICLE_STATES = ['intact', 'weathered', 'burnt', 'wreck'];
 /* a wreck's shape (R.form), by seed: crushed (the upper body pressed down and sheared), overturned (on its roof),
    torn (cut across, the halves parted), crashed (the nose, or the tail, crumpled: R.end), tboned (one flank caved
    in round R.cut: R.side), exploded (blown open: holes in the upper body, panels flung, burnt out), onside (lying on
-   one flank: R.side). A street pairs them: a crashed one nose-on to a tboned one's flank is a collision */
-const VEHICLE_WRECK_FORMS = ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside'];
-function vehicleRuin(state, seed, key) {
+   one flank: R.side), skidded (airframes: gear torn off, nose crumpled, belly down at the end of its furrow, wreckage
+   strewn behind). A street pairs them: a crashed one nose-on to a tboned one's flank is a collision */
+const VEHICLE_WRECK_FORMS = ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside',
+  'skidded', 'nosedived', 'broken', 'piled', 'gutted'];
+/* an airframe (data.airframe: the helicopter, the jet) draws its form from this list instead; it came down, so it
+   lies on the ground (its gear gone: R.gearGone), never perched on wheels or a wingtip:
+     skidded     the belly on the ground at the end of the furrow it ploughed, the nose crumpled, wreckage strewn
+                 behind it (the build draws the furrow and the trail)
+     nosedived   pitched nose-down into the ground, the nose buried (what is under the ground is cut away), the tail
+                 in the air
+     broken      in two, both halves belly down, holes through the fuselage
+     piled       belly down, the nose crumpled to a quarter of its length into a heap of torn panels and earth
+     overturned  on its roof (the helicopter's rotor sheared off); the gear stays up in the air
+     gutted      burnt to a heap: the build draws the collapsed remains, the rotor head and a bent blade standing
+                 out of them                                                                             */
+const VEHICLE_AIR_FORMS = ['skidded', 'nosedived', 'broken', 'piled', 'overturned', 'gutted', 'skidded', 'broken'];
+function vehicleRuin(state, seed, key, airframe) {
   state = VEHICLE_STATES.indexOf(state) >= 0 ? state : 'intact';
   seed = seed == null ? 1 : seed;
   /* the vehicle's key salts the draws, so two vehicles of one seed (a sheet, a street built from one seed) do not
@@ -110,7 +124,7 @@ function vehicleRuin(state, seed, key) {
   let st = ((Math.imul(seed | 0, 2654435761) >>> 0) + VEHICLE_STATES.indexOf(state) * 40503 + (Math.imul(salt, 2246822519) >>> 0) + 7) >>> 0;
   const rnd = function () { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   const R = { state: state, rust: 0, soot: 0, grime: 0, glass: true, tyres: 'ok', sag: 0, sprung: 0, lamps: true, tilt: 0,
-    form: null, missing: -1, cut: 0.5, seed: seed };
+    form: null, missing: -1, cut: 0.5, side: 1, end: 1, gearGone: false, seed: seed };
   if (state === 'intact') return R;
   R.glass = false; R.lamps = false;
   if (state === 'weathered') {
@@ -121,11 +135,18 @@ function vehicleRuin(state, seed, key) {
   } else {
     R.rust = 0.8 + rnd() * 0.2; R.soot = rnd() < 0.6 ? 0.45 + rnd() * 0.4 : 0.1 + rnd() * 0.15; R.grime = 0.4;
     R.tyres = rnd() < 0.5 ? 'gone' : 'flat'; R.sag = 0.5 + rnd() * 0.4; R.sprung = 0.55 + rnd() * 0.25;
-    R.form = VEHICLE_WRECK_FORMS[Math.floor(rnd() * VEHICLE_WRECK_FORMS.length) % VEHICLE_WRECK_FORMS.length];
+    const forms = airframe ? VEHICLE_AIR_FORMS : VEHICLE_WRECK_FORMS.slice(0, 7);     /* the rest are the airframes' */
+    R.form = forms[Math.floor(rnd() * forms.length) % forms.length];
     R.missing = Math.floor(rnd() * 64);
     R.tilt = (rnd() - 0.5) * 0.24; R.cut = 0.35 + rnd() * 0.3;
     R.side = rnd() < 0.5 ? 1 : -1; R.end = rnd() < 0.7 ? 1 : -1;
     if (R.form === 'exploded') { R.soot = 0.8 + rnd() * 0.2; R.sprung = 0.9; R.tyres = 'gone'; R.sag = 0.3; }
+    if (airframe) {
+      R.end = 1; R.tyres = 'gone'; R.missing = -1; R.gearGone = R.form !== 'overturned'; R.sag = 0.25; R.sprung = 0.5;
+      if (R.form === 'skidded' || R.form === 'piled') R.tilt = (rnd() - 0.5) * 0.08;
+      if (R.form === 'gutted') { R.soot = 0.9 + rnd() * 0.1; R.sprung = 0.9; R.sag = 0.6; }
+      if (R.form === 'broken') R.soot = rnd() < 0.5 ? 0.6 + rnd() * 0.3 : 0.1 + rnd() * 0.15;
+    }
   }
   return R;
 }
