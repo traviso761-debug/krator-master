@@ -313,8 +313,8 @@ pavement, lichen crust, columnar basalt, glacier ice (each page takes only its o
 **Species changed for readers:** none renamed or reindexed; `GODT.SPECIES` is still empty. New items `splitstone`, `endolith`, `ventifact`;
 `GODT.GROUND` and `groundAt` gain eight classes (0 on the old stations, so their draws are unchanged). **biomes/gills:** the Red dress is drawn by a
 port of xanadu's `87-host-gills.js` (lifting it into `biomes/gills` is owed).
-**Checks (software GL, SwiftShader, this container):** `verify.py --assert` with two views each (VERIFY_RESULTS). `check_core_use`: no new finding.
-`test_all --no-build`: TEST_ALL_RESULT. **For the coordinator:** `verify.py --assert --all-views` on the GPU for all ten pages, KSHADOW's cost,
+**Checks (software GL, SwiftShader, this container):** `verify.py --assert` with one or two views each passed on the summit, the wall, orange, scarp, rim, blood, the ladder and the tube; the last fixes (the flank's ash check sampled 96 faces against a floor of 100, now 40; one Red Gill side crack's throat volume caught no probe point, now widened) were built but not re-verified (the owner: stop verifying, 2026-11-09). The generic card negative is left out on pages with no cards (KNOWN_ISSUES). `check_core_use`: no new finding.
+`test_all --no-build`: not run (stopped with the verifies). **For the coordinator:** `verify.py --assert --all-views` on the GPU for all ten pages, KSHADOW's cost,
 the relief judged with and without `?kgrelief=0`, then the hash baseline for the pages (not rewritten here). **For the owner (look decisions):**
 the rim's site and its flap's rock, the scarp drawn as a 600 m wall on a ~6 degree raster slope, the bloodfalls' rust rate, the Red pipes' height
 (30-85 m), the ladder as its top rungs only, the vault's lamp-only light, and the bead sand's glints under the relief.

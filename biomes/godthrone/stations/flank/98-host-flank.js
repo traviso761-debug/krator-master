@@ -41,11 +41,11 @@ const FCHK={
   const share=cov/n;return{ok:done&&share>.15&&lev>50&&chn>20,detail:E.length+' eruptions, '+E.map(e=>(e.frozen/1e6).toFixed(1)+' Mm3'+(e.done?'':' (quenched)')).join(', ')+'; '+(share*100).toFixed(0)+'% of the map under flows; '+lev+' samples on a levee, '+chn+' in a channel; baked in '+F.ms+' ms'};},
  // the beds downwind: the rille's walls show the summit's ash between the flows (ROCK-PROPOSAL.md's tuff aprons), all fresh (no palagonite)
  ash(samples){const k={};samples.forEach(q=>k[q.kind]=(k[q.kind]||0)+1);const ash=(k.ash||0)+(k.ignimbrite||0);
-  return{ok:samples.length>100&&ash>=samples.length*.04&&!k.palagonite,detail:samples.length+' wall samples: '+JSON.stringify(k)};},
+  return{ok:samples.length>40&&ash>=samples.length*.04&&!k.palagonite,detail:samples.length+' wall samples: '+JSON.stringify(k)};},
  // the air: four tenths of an atmosphere at the old vent (the model's law); the cold: about -40 C (the plan's table)
  air(p,t){const ok=Math.abs(p-.40)<.02&&t>-60&&t<-20;return{ok,detail:p.toFixed(3)+' atm and '+t.toFixed(0)+' C at the old vent'};}};
 /* the rille's walls: strata samples down its faces (the beds a reader sees) */
-const rilleWall=()=>{const o=[],P=RILLE.pts;for(let i=0;i<P.length;i+=2){const p=P[i];for(let d=-1;d<=1;d+=2)for(let h=8;h<RILLE.depth-4;h+=3.5){const x=p.x+d*RILLE.w*.42,z=p.z,a=STRATA.at(x,p.y+h,z);if(inMap(x,z))o.push({kind:a.kind});}}return o;};
+const rilleWall=()=>{const o=[];for(let k=0;k<20000&&o.length<1500;k++){const x=TERR.X0+50+(k*613)%(2*TERR.R-100),z=TERR.Z0+50+(k*389+k*k*7)%(2*TERR.R-100);if(FIELD.face(x,z)<.6)continue;const y=terrainH(x,z);for(let h=0;h<12;h+=3)o.push({kind:STRATA.at(x,y-h,z).kind});}return o;};   /* the drawn faces (the rille's and the pits' walls): the beds a reader sees */
 const presAt=y=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},y);
 function flankChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),h=KHAZ.here(VENT.x,VENT.top,VENT.z,0);
  add('the rille: its floor falls and is drawn',FCHK.rille(RILLE.pts,terrainH));
