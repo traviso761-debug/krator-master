@@ -20,6 +20,10 @@ AV.RUINS=['intact','gutted','crown','broken','stump','skeleton','fallen'];
 /* the owner, 2026-11-04, twice: the first cut looked far too intact, the second still too whole ("really fuck it up"). Intact 4%, gutted 8%,
    crown 10%, broken 22%, stump 22%, skeleton 14%, fallen 20%: four in five towers cut */
 AV.RUIN_CUTS=[.04,.12,.22,.44,.66,.80,1.01];
+/* the third time (2026-11-08, "further still"): intact 2%, gutted 5%, crown 8%, broken 22%, stump 25%, skeleton 16%, fallen 22% */
+AV.RUIN_CUTS=[.02,.07,.15,.37,.62,.78,1.01];
+/* a broken tower leans (the owner's third pass): a tilt in degrees by hash, 0 for what stands whole or lies fallen */
+AV.lean=function(seed,i,j,state){if(state==='intact'||state==='fallen'||state==='gutted')return 0;var u=KRAND.unit(KRAND.hash(seed,i+4000,j+4000,8));return (state==='skeleton'?2:state==='stump'?3:5)*u;};
 /* THE CRATERS (the war damage on the ground): n strikes on the page by hash, each a bowl with a raised rim and a scar of melt glass (a scar record
    for AV.fields: nothing grows there, the density is 0). o: {R, n, seed, ok(x,z) (true where a strike may land), rMin, rMax}
    AV.craters(o) -> [{x, z, r, depth, rim}];  AV.craterH(list, x, z) -> the height change (m): the bowl below, the rim above */
@@ -28,6 +32,17 @@ AV.craters=function(o){var out=[],n=o.n==null?10:o.n,seed=o.seed|0,R=o.R,tries=0
   var r=(o.rMin==null?35:o.rMin)+KRAND.unit(KRAND.hash(seed,i,3))*((o.rMax==null?110:o.rMax)-(o.rMin==null?35:o.rMin));if(o.ok&&!o.ok(x,z,r))continue;
   var clash=false;for(var k=0;k<out.length;k++)if(Math.hypot(out[k].x-x,out[k].z-z)<out[k].r+r+60){clash=true;break;}if(clash)continue;
   out.push({x:x,z:z,r:r,depth:r*.16+2,rim:r*.05+.6});}return out;};
+/* the scorch: the ground blackened round the craters (to 2.4 r) and in burn patches of its own; 0..1 */
+AV.scorch=function(list,x,z,seed){var s=0;for(var i=0;i<list.length;i++){var c=list[i],u=Math.hypot(x-c.x,z-c.z)/c.r;if(u<2.6){var k=AV.smooth(2.6,1.0,u);if(k>s)s=k;}}
+ var n=KRAND.fbm(x*.0033+1.7,z*.0033-6.2,0,3,(seed|0)+29);return AV.clamp(Math.max(s,AV.smooth(.6,.72,n)*.85),0,1);};
+/* the debris: slabs and blocks thrown from the craters onto the ground round them, and lying in the streets; records {x,z,yaw,tilt,sx,sy,sz}.
+   o: {craters, R, n (the street debris), seed, ok(x,z)} */
+AV.debris=function(o){var out=[],seed=o.seed|0,C=o.craters||[];
+ for(var k=0;k<C.length;k++){var c=C[k],m=10+Math.floor(KRAND.unit(KRAND.hash(seed,k,1))*14);for(var i=0;i<m;i++){var a=KRAND.unit(KRAND.hash(seed,k,i*3+2))*Math.PI*2,d=c.r*(1.05+KRAND.unit(KRAND.hash(seed,k,i*3+3))*1.4),x=c.x+Math.cos(a)*d,z=c.z+Math.sin(a)*d;
+   if(o.ok&&!o.ok(x,z))continue;var s=1+KRAND.unit(KRAND.hash(seed,k,i*3+4))*2.2;out.push({x:x,z:z,yaw:a+KRAND.unit(KRAND.hash(seed,k,i+70))*2,tilt:(KRAND.unit(KRAND.hash(seed,k,i+90))-.5)*1.1,sx:2.5*s,sy:.6*s,sz:4*s,kind:'ejecta'});}}
+ var n=o.n==null?300:o.n;for(var j=0;j<n*3&&out.length<n+C.length*24;j++){var x2=(KRAND.unit(KRAND.hash(seed,j,5))*2-1)*o.R,z2=(KRAND.unit(KRAND.hash(seed,j,6))*2-1)*o.R;if(Math.hypot(x2,z2)>o.R)continue;if(o.ok&&!o.ok(x2,z2))continue;
+  var s2=.8+KRAND.unit(KRAND.hash(seed,j,7))*2.6;out.push({x:x2,z:z2,yaw:KRAND.unit(KRAND.hash(seed,j,8))*Math.PI*2,tilt:(KRAND.unit(KRAND.hash(seed,j,9))-.5)*.8,sx:3*s2,sy:.5*s2,sz:5*s2,kind:'slab'});}
+ return out;};
 AV.craterH=function(list,x,z){var h=0;for(var i=0;i<list.length;i++){var c=list[i],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
   if(u<1){var b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
@@ -79,7 +94,7 @@ AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:
   var g=u(i,j,4),si=0;while(si<AV.RUIN_CUTS.length-1&&g>=AV.RUIN_CUTS[si])si++;var st=AV.RUINS[si];
   if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a family named in o.hero keeps a shape its ruin pass draws */
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);
-  P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind});}
+  P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind,lean:AV.lean(seed,i,j,st),leanDir:u(i,j,7)*Math.PI*2});}
  return{towers:P,pitch:pitch,theta:th};};
 // a transit line: piers every o.step along the polyline pts [[x,z],...] from the ground (o.ground, page y) up to the deck, whose height is
 // o.deckY(x,z,s) (s: the distance along the line); decks between piers. Pure records; 70-av-city.js draws them

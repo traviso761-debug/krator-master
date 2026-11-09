@@ -27,7 +27,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  function landGround(x,z){const m=modelY(x,z),st=slopeK(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
   return m+(14+260*Math.min(.5,st))*(r-.45)*smooth(LAKE_Y-30,LAKE_Y+6,m)+2.2*(f-.5);}
  // THE CRATERS (the owner, 2026-11-04: war damage): fourteen strikes on the dry land, bowls with raised rims, each a scar of melt glass
- const CRATERS=AV.craters({R:R+200,n:14,seed:SEED+13,rMin:35,rMax:120,ok:(x,z,r)=>landGround(x,z)>LAKE_Y+r*.2+4&&Math.hypot(x-300,z+150)>r+260});
+ const CRATERS=AV.craters({R:R+200,n:24,seed:SEED+13,rMin:35,rMax:150,ok:(x,z,r)=>landGround(x,z)>LAKE_Y+r*.2+4&&Math.hypot(x-300,z+150)>r+260});
+ const scorch=(x,z)=>AV.scorch(CRATERS,x,z,SEED);
  function rawGround(x,z){return landGround(x,z)+AV.craterH(CRATERS,x,z);}
  // the fields (41-av-field.js) on the raw ground: the cities and basins from the record, one dead lobe on the ridge's east end, the craters
  const cities=RG.cities.map(c=>({n:c.n,x:c.x,z:c.z,h:c.h,theme:c.theme})),basins=RG.basins.map(b=>({n:b.n,x:b.x,z:b.z,r:b.r,kind:b.kind}));
@@ -55,25 +56,32 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const PADS=KSPACE.create({cell:300});PLAN.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family]||{},fp=F.footprint||{};
   if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w||60)/2+6;T.rz=(fp.d||60)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
  ENGINES.forEach(E=>{E.rx=E.rz=E.padR=E.r+20;E.c=1;E.s=0;E.ease=60;E.family='engine';PADS.insert(E,E.x,E.z,E.padR+64);});
+ // THE DEBRIS: slabs thrown from the craters and lying in the streets (41: AV.debris), off the plinths, the viaduct and the water
+ const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
  const padD=(T,x,z)=>{const dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c,mn=Math.min(T.rx,T.rz);return Math.hypot(u*mn/T.rx,v*mn/T.rz)-mn;};
  const _q=[];
  function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}return h;}
  const yOf=ground;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
  const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);
+ /* THE STREET GRID (the owner, 2026-11-08: a clear Ancient grid, destroyed and overgrown): the lattice's lines are the streets, 11 m wide, and every
+    third line an avenue of 26 m; drawn as asphalt with rubble at the kerbs, the forest thinned to a third on them (cracks and saplings), where the
+    city is dense enough to have them */
  const streetD=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,a=Math.abs(((lx+p/2)%p+p)%p-p/2),b=Math.abs(((lz+p/2)%p+p)%p-p/2);return Math.min(a,b);};
- const street=(x,z)=>smooth(7,4,streetD(x,z))*smooth(.15,.45,F.density(x,z));
+ const streetK=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,ix=Math.round(lx/p),iz=Math.round(lz/p),a=Math.abs(lx-ix*p),b=Math.abs(lz-iz*p),ha=((ix%3)+3)%3===0?13:5.5,hb=((iz%3)+3)%3===0?13:5.5;
+  return Math.max(smooth(ha+2.5,ha-1,a),smooth(hb+2.5,hb-1,b));};
+ const street=(x,z)=>streetK(x,z)*smooth(.1,.3,F.density(x,z));
  // the kits' masks (zones): the south-west lowlands' forest wherever the ground is dry land and not built or dead, thick in the parks, thin on the
  // core's cracked plazas; the north-west's trees mixed in at a third (PLAN.md section 5: a mix of the two). 0 on a street or a plinth
  const built=(x,z)=>{_q.length=0;PADS.query(x,z,0,_q);let k=0;for(let i=0;i<_q.length;i++){k=Math.max(k,smooth(10,-6,padD(_q[i],x,z)));}return k;};
  /* the overgrowth is the rule, not the exception (PLAN.md section 5: wild overgrowth wherever the ground is not scarred): the forest takes
     every lot between the towers, thinner only where the core's pavement is thickest */
  const forest=(x,z)=>{const y=yOf(x,z);if(y<LAKE_Y+.6)return 0;const zn=F.zone(x,z),pk=F.park(x,z),sc=F.scar(x,z);
-  const open=zn==='floor'?.8+.2*pk:zn==='shelf'?.95+.05*pk:1;return clamp(open*(1-sc),0,1)*(1-street(x,z))*(1-built(x,z));};
+  const open=zn==='floor'?.8+.2*pk:zn==='shelf'?.95+.05*pk:1;return clamp(open*(1-sc)*(1-.85*scorch(x,z)),0,1)*(1-.65*street(x,z))*(1-built(x,z));};
  return{key:'overlook',name:'The Ancient\'s Valley: the Overlook',title:'Krator biome — the Ancient\'s Valley: the Overlook',
   hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk.',
   R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetD,built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement
@@ -88,12 +96,12 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   // the ground's layers (materials.json; KGROUND in 47): a pave, b asphalt, c rubble, d glass; e rainfloor, f oak litter, g mud
   layers:['ground.pave','ground.asphalt','ground.rubble','ground.glass','ground.rainfloor','ground.oaklitter','ground.mud'],
   weights:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),st=street(x,z),b=built(x,z),wet=smooth(10,1.5,y-LAKE_Y),zn=F.zone(x,z),fo=forest(x,z);
-   const pave=clamp(Math.max(b,(zn==='floor'?.3:.1)*d*(1-pk)*(1-.8*fo)*smooth(.3,.7,KRAND.fbm(x*.004+5,z*.004,0,2,SEED+8))),0,1)*(1-sc)*(1-st),rub=clamp(.45*d*(1-pk)*(1-.6*fo)*smooth(.3,.65,KRAND.fbm(x*.02,z*.02,0,2,SEED+9)),0,1)*(1-sc)*(1-b);
+   const sco=scorch(x,z),pave=clamp(Math.max(b,(zn==='floor'?.3:.1)*d*(1-pk)*(1-.8*fo)*smooth(.3,.7,KRAND.fbm(x*.004+5,z*.004,0,2,SEED+8))),0,1)*(1-sc)*(1-st),rub=clamp(Math.max(.45*d*(1-pk)*(1-.6*fo)*smooth(.3,.65,KRAND.fbm(x*.02,z*.02,0,2,SEED+9)),.9*sco,.5*smooth(.15,.5,st)*(1-smooth(.6,.9,st))),0,1)*(1-sc)*(1-b);
    const soilNW=clamp(.5*pk+.25,0,1)*(1-pave)*(1-sc),soilSW=clamp(.9-.5*pk,0,1)*(1-pave)*(1-sc);
    return[pave,st*(1-sc),rub,sc,soilNW*(1-wet),soilSW*(1-wet),wet*(1-sc)];},
   /* the paint is also the canopy seen from afar (the kits' trees stop at their LOD range): the forest's dark green where the mask is high */
-  paint:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),wet=smooth(10,1.5,y-LAKE_Y),t=F.taint(x,z),fo=forest(x,z);let c=[.30,.33,.22];
-   c=c.map((v,i)=>mix(v,[.44,.42,.38][i],.35*d*(1-pk)));c=c.map((v,i)=>mix(v,[.15,.24,.12][i],.75*fo));c=c.map((v,i)=>mix(v,[.22,.20,.16][i],wet));c=c.map((v,i)=>mix(v,[.13,.12,.14][i],sc));
+  paint:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),wet=smooth(10,1.5,y-LAKE_Y),t=F.taint(x,z),fo=forest(x,z),sco=scorch(x,z);let c=[.30,.33,.22];
+   c=c.map((v,i)=>mix(v,[.44,.42,.38][i],.35*d*(1-pk)));c=c.map((v,i)=>mix(v,[.15,.24,.12][i],.75*fo));c=c.map((v,i)=>mix(v,[.21,.21,.20][i],.7*street(x,z)));c=c.map((v,i)=>mix(v,[.22,.20,.16][i],wet));c=c.map((v,i)=>mix(v,[.09,.08,.07][i],.85*sco));c=c.map((v,i)=>mix(v,[.13,.12,.14][i],sc));
    c=c.map((v,i)=>mix(v,[.30,.24,.30][i],.35*t*(1-sc)));return c;},
   views:()=>{const Y=(x,z)=>Math.max(ground(x,z),LAKE_Y),V=(c,cy,t,ty)=>[c[0],Y(c[0],c[1])+cy,c[1],t[0],Y(t[0],t[1])+ty,t[1]];
    const c1=cities.find(c=>c.n===1)||{x:-2000,z:2000};
