@@ -108,13 +108,17 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now
  const e=camera.position,T=AVC.towers,near=[],mid=[];
  /* a design (no shell) is a hero to AV_DNEAR, the nearest AV_DHEROMAX of them, then its impostor. Seen steeply from above (the owner, 2026-11-08: the
     shells' top maps smeared from the air) a shelled tower is a hero to AV_NEAR_STEEP, unfaded, and its shell starts there; the hero pool is wider */
- const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>120,nearR=steepEye?AV_NEAR_STEEP:AV_NEAR,MAX=steepEye?AV_HEROMAX_STEEP:AV_HEROMAX;
+ /* the owner, 2026-11-08: heroes and shells drew on top of each other from the air. The dither band (the shell from .85 nearR, the hero fading out
+    over it) is for the walker's view, where the hero fades; from above the heroes are unfaded, so a shell starts only where the heroes stop */
+ const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>120,nearR=steepEye?AV_NEAR_STEEP:AV_NEAR,MAX=steepEye?AV_HEROMAX_STEEP:AV_HEROMAX,sh0=steepEye?nearR:nearR*.85;
  for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;
-  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<nearR)near.push(t);if(!ns&&d>=nearR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<nearR)near.push(t);if(!ns&&d>=sh0&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
  near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups,fadeNow=!steepEye;
  G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||(t.shelled&&g.userData.fade!==fadeNow)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
  keep.forEach(t=>{if(!G.has(t.id)){const g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled&&fadeNow);g.userData.fade=fadeNow;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
- near.slice(MAX).forEach(t=>{if(t.shelled&&t.d<nearR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
+ near.slice(MAX).forEach(t=>{if(t.shelled&&t.d<sh0&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
+ /* a hero that stays placed past the shell's start (the pool holds it until the set changes) must not have its shell too: the shell list drops the heroes' ids */
+ {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--)if(held.has(mid[i].id)&&(steepEye||mid[i].d>=nearR)){mid[i].shell=false;mid.splice(i,1);}}
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
  AVC.tierN={heroes:keep.length,designHeroes:Math.min(dnear.length,AV_DHEROMAX),shells:mid.length,impostors:T.filter(t=>(t.shelled&&t.d>=AV_FAR)||(!t.shelled&&!G.has(t.id))).length,towers:T.length,designs:T.filter(t=>!t.shelled).length,steep:steepEye};};
