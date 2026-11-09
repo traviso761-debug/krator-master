@@ -2,8 +2,9 @@
 
 The Labyrinth (`rmw8bqrn3dnx4`) is a canyon maze cut into the SW Glaciated Dome, in the far south-west of map 5.1. The
 Historians suspect it was once a ranch or a preserve of the Ancients. Its animals are Earth's Ice Age megafauna, grown larger
-than Earth ever had them, and they live nowhere else on Krator. A people descended from the arcology at its eastern entrance
-lives among them, in raised pueblos.
+than Earth ever had them, and they live nowhere else on Krator. A people descended from the arcology at its eastern entrance,
+the **Kimr** (the owner, 2026-11-09), lives among them, in raised pueblos. Kimr hunters range north into the Firebliss Range
+(`biomes/firebliss/PLAN.md`).
 
 This is a seed from the owner's brief (2026-11-09) and the map. Its names marked **TBD** are the owner's to give. Nothing here is
 built; it is a kit for the rebuild's queue, after the frozen integration pass.
@@ -130,9 +131,9 @@ patient player might glimpse, never as anything explained:
 **The natives' rule:** every part of every animal is used (section 5). So the fauna kit wants each animal's carcass, hide,
 horn and bone as pieces and resources, not just the live animal.
 
-## 5. The people (names TBD)
+## 5. The people: the Kimr
 
-The natives (**TBD**) descend from the arcology's people. They live in small villages in the manner of the Zuni and Hopi
+The Kimr descend from the arcology's people. They live in small villages in the manner of the Zuni and Hopi
 pueblos.
 - **The pueblo is a platform.** Each village is a raised fortress against rampaging megafauna:
   - **The rock:** it stands on a chaos knob, a mesa bench or a built stone plinth, 6-15 m above the floor.
@@ -220,8 +221,8 @@ at once.
 
 ## 9. For the owner
 
-- **Names:** the natives, the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are
-  named in Tungang (`smodel/river_names.py`): are the natives Tungang-speaking, or does the Labyrinth have its own tongue
+- **Names:** the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are
+  named in Tungang (`smodel/river_names.py`): do the Kimr speak Tungang, or a tongue of their own
   (`lore/tongues-of-krator.html`)?
 - **Pins:** the natives' villages and the arcology go on the map as settlements (`model/src/60-settlements.js`). How many
   villages, and how many people? The floors could feed a few tens of thousands.
