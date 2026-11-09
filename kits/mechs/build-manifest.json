@@ -1,6 +1,6 @@
 {
  "00-head.html": "aa75e2859b89",
- "50-mechs-bundle.js": "9ace766cae6a",
+ "50-mechs-bundle.js": "5e8b47ed4f6e",
  "55-mechs-tex.js": "ffa14662e7a8",
  "80-sky-hash.js": "67919cbcd4fa",
  "81-sky.js": "b13975f23277",
@@ -12,7 +12,7 @@
  "bundle:kits/catalog/krator-symbols.js": "317e5bf2682f",
  "bundle:kits/mechs/krator-mechs-iziz-aquilifer.js": "11010c9e6ef8",
  "bundle:kits/mechs/krator-mechs-iziz-baiulus.js": "42153a48d866",
- "bundle:kits/mechs/krator-mechs-iziz-castra.js": "b8240acf14bc",
+ "bundle:kits/mechs/krator-mechs-iziz-castra.js": "64e2a730b1f6",
  "bundle:kits/mechs/krator-mechs-iziz-catulus.js": "5c62a1962b4f",
  "bundle:kits/mechs/krator-mechs-iziz-centurion.js": "0b31596d293b",
  "bundle:kits/mechs/krator-mechs-iziz-clipeus.js": "f462f3114a08",
@@ -31,9 +31,9 @@
  "bundle:kits/mechs/krator-mechs-stalker-blade.js": "d2017af1da45",
  "bundle:kits/mechs/krator-mechs-stalker-harpooner.js": "c074e57fba9b",
  "bundle:kits/mechs/krator-mechs-stalker.js": "50dbfaa0b446",
- "bundle:kits/mechs/mechs-core.js": "74f1440a4bf9",
+ "bundle:kits/mechs/mechs-core.js": "32225650a144",
  "bundle:kits/mechs/mechs-parts.js": "5ddbfac1ea1e",
- "bundle:kits/mechs/mechs-runtime.js": "5e807ae9ba90",
- "bundle:kits/motor-vehicles/vehicles-core.js": "0ffaa17292b0",
+ "bundle:kits/mechs/mechs-runtime.js": "4820556bc011",
+ "bundle:kits/motor-vehicles/vehicles-core.js": "49cee911568a",
  "krator-asset-engine.js": "ea11ad7890ea"
 }
