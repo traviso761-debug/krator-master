@@ -1101,7 +1101,37 @@ shells of haul against 20,592 of wages, 4,364 of provisions and 1,800 of charter
 head household. In that test the towns have no hamlets (the city page's own farms feed them) and Valapo's house declined
 every week: its food is twice Kautoa's at wholesale there. On the world, where the hamlets feed Valapo, both sail.
 
-**The money's fix on the way.** The world page costed Valapo's staples at money's placeholder (30 shells a serving, not 1)
+**The houses' wider trade (built 2026-11-09; the owner: "I like all these ideas let's implement them").**
+- **Three kinds of camp** (`expeditions.kinds`): the FOREST's crew (core/camp's work camp: mahogany, with gum, kapok and
+  now MEDICINAL bark by it), the VENTS' diggers (SULPHUR at a geyser vent off the town's own island) and the REEF's
+  divers (PEARLS from a fishing reef within 1.5 km of a routed shore); the vents and the reef are a works at one node,
+  its site a SIM.site. The house weighs every kind not already out by its expected margin and sends the best, up to
+  `house.maxOut` (two) at once; a kind that came home rests `rest` days. On the world: Kautoa's forest camp on the east
+  island, a reef camp off the north-east islet, a vents camp at the vent on the south of Valapo's island (72.9 km by
+  sea); Valapo's forest camp on the west island and a vents camp 137 km out (its reef beach is its forest camp's).
+- **Their buyers** (`expeditions.yards`, a batch on every `every`th place of a kind, only where expeditions sail): a town's
+  second healer makes poultices of the bark, every eighth potter lamps of kapok oil, every fourth workshop jewellery of
+  pearls; the households use the bark and the sulphur a person a day (`expeditions.uses`); each good has a ceiling and
+  a cost at a crew's hours (`money.m1.fallback`).
+- **The ships from beyond** (`house.exports`): every week a trader calls at each town with a purse of Talents; the house
+  buys the cash crops the town holds over 20 days of its own use (cloves, cacao, coffee, sugar) at wholesale and sells
+  them for Talents when the ship's price beats wholesale by a tenth; the Talents are the house's (a Talent account),
+  changed to shells at the money changers when its purse runs short.
+- **The lines between the towns** (`house.carry`): every load the lakatoi and the oruwa land is the sending town's
+  house's, bought at the sender's wholesale and sold to the receiving town at its own, settled each night; a house that
+  cannot pay, or a load that would sell for less than it cost, it leaves to the towns, which settle at the sender's price.
+  What sails is still the towns' want: choosing the goods by price is M3 proper, not this.
+- **The 40-day test (a 30-day season at most)**: Kautoa's house made 20,098 on its forest season and 9,943 on its vents
+  season, 2,808 carrying, and sold 43,750 shells of cash crops for 3,520 Talents (about 68,000 shells at the changers);
+  Valapo's made 641 on its forest season, lost 6,144 on its vents season, made 8,430 carrying and took 1,255 Talents.
+  Before the house could leave a losing load to the towns, Valapo's lost 13,297 carrying and went nearly bankrupt.
+
+**The money's fixes on the way.** (1) The cost tables: money's cost of a good a settlement does not make is found by
+recursing into the maker's table, and a table first computed while the asker is mid-way keeps the placeholder; so the
+second town priced the first's rice and salt at 30 shells against 1 and 3, and the carrying trade saw tenfold gaps that
+would have emptied Valapo's treasury into Kautoa's house in weeks. `47m` `ISLE.moneyRecost` recomputes each table in
+turn after the money opens, and again once the hamlets exist; Valapo's markup moved from 7.4 to 8.6.
+(2) **The money's first fix on the way.** The world page costed Valapo's staples at money's placeholder (30 shells a serving, not 1)
 since the farming hamlets took over its food (section 11): the towns' cost tables were fixed before the hamlets existed,
 and a table computed while a village it buys from is mid-way keeps the placeholder. `47h` recomputes the tables once the
 villages are declared, in two passes (the villages' first, then the towns' again).

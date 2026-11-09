@@ -135,12 +135,21 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    R.push({name:'the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto',ok:!bad.length,detail:bad.length?bad.join('; '):recs.length+' pieces: '+recs.map(r=>r.key.replace('ie-','')).join(', ')});}}
  /* the expeditions' shores (48x; PLAN.md 12): each town finds a forest island shore with a sea route from its landing, the camp
     inland of it on dry ground with forest enough round it, apart from every village */
- {const bad=[],lines=[],EX=typeof ISLE_EXPEDITIONS!=='undefined'?ISLE_EXPEDITIONS:null;if(!EX)bad.push('no expeditions (48x)');else for(const t of ISLE.TOWNS){const L=EX.shores[t]||[],S0=L.find(x=>!x.none)||EX.shoreFor(t,1);
+ {const bad=[],lines=[],EX=typeof ISLE_EXPEDITIONS!=='undefined'?ISLE_EXPEDITIONS:null;if(!EX)bad.push('no expeditions (48x)');else for(const t of ISLE.TOWNS){const L=EX.shores[t+'|forest']||[],S0=L.find(x=>!x.none)||EX.shoreFor(t,1,'forest');
    if(!S0){bad.push(t+': no shore ('+JSON.stringify((L[0]||{}).tried||[]).slice(0,200)+')');continue;}const f=neg==='shore'?0.1:EX.forestAround(S0.x,S0.z);
    const near=ISLE_HAMLETS.made.villages.filter(E=>E.village&&E.village.site).map(E=>Math.hypot(E.village.site.x-S0.x,E.village.site.z-S0.z)).sort((a,b)=>a-b)[0];
    if(!(S0.seaKm>0))bad.push(t+': no sea route');if(f<EX.FOREST_MIN)bad.push(t+': forest '+f.toFixed(2)+' round the camp');if(near<EX.APART)bad.push(t+': '+Math.round(near)+' m from a village');if(WORLD.water(S0.x,S0.z)>WORLD.H(S0.x,S0.z)-1)bad.push(t+': the camp in the water');
    lines.push(t+' -> '+S0.name+' at '+Math.round(S0.x)+','+Math.round(S0.z)+', '+S0.seaKm+' km by sea, forest '+f.toFixed(2)+', nearest village '+(near/1000).toFixed(1)+' km');}
   R.push({name:'the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* the vents' and the reef's camps (48x, the owner 2026-11-09): some town has a vent off its own island with a routed shore
+    within a walk of it, and a reef the isles kit fishes within 1.5 km of a routed shore; every camp on dry ground apart */
+ {const bad=[],lines=[],EX=typeof ISLE_EXPEDITIONS!=='undefined'?ISLE_EXPEDITIONS:null;if(!EX)bad.push('no expeditions (48x)');else for(const kind of ['vents','reef']){let n=0;
+   for(const t of ISLE.TOWNS){const S0=EX.shoreFor(t,1,kind);if(!S0){lines.push(t+' '+kind+': none');continue;}n++;const node=neg==='node'&&kind==='reef'?{x:S0.x,z:S0.z}:S0.node;
+    const fish=kind==='reef'?(RINGISLES.gather(node.x,node.z).fish||0):null,walk=Math.hypot(node.x-S0.x,node.z-S0.z);
+    if(WORLD.water(S0.x,S0.z)>WORLD.H(S0.x,S0.z)-1)bad.push(t+' '+kind+': the camp in the water');if(kind==='reef'&&fish<EX.REEF_MIN)bad.push(t+' reef: its bed fishes '+fish.toFixed(2));if(kind==='vents'&&walk>5000)bad.push(t+' vents: '+Math.round(walk)+' m from the camp');
+    lines.push(t+' '+kind+' -> '+S0.name+', '+S0.seaKm+' km by sea, the node '+Math.round(walk)+' m from the camp'+(fish!=null?', reef '+fish.toFixed(2):''));}
+   if(!n)bad.push('no town has a '+kind+' camp\'s shore');}
+  R.push({name:'the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
  return R;}"""
 
 
@@ -233,7 +242,8 @@ async def run(a):
                                 ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
                                 ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
                                 ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto"),
-                                ('shore', "the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village")):
+                                ('shore', "the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village"),
+                                ('node', "the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

@@ -365,3 +365,10 @@
       buyers (the owner, 2026-11-09).
 - [ ] **The houses' expected haul is a guess until they have sailed** (`house.prior`, a hand a day); a house that never
       sails never learns better. A second house, or a town's treasury sending a first crew, would.
+- [ ] **Valapo's reef camp has no beach** (2026-11-09): its forest island's one routed beach is its forest camp's, and the
+      jungle island's beach point stands in the water; its house sends the vents instead (137 km by sea). A second
+      candidate point on each island's coast would give it one.
+- [ ] **The money's cost-table quirk is worked round, not fixed** (core/simulation/PLAN-MONEY.md): `47m` recomputes the
+      tables in turn; the fix belongs in core's `costs`.
+- [ ] **The vent and reef works are not drawn**: the camp's shelters are, the diggers' pit and the divers' bed are records
+      with no piece yet (the Resources kit's sulfur node would do for the pit).

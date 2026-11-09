@@ -37,6 +37,13 @@ merchant house chartered from its treasury, which buys the provisions and sells 
 live price over the markup) each night, pays the crew through the camp's workplaces it owns, and decides to sail on the
 expected margin: a trade with takings, so a house that can fail (it recalls its crew on a thin purse) and pays its head a
 dividend. Not yet M3: the towns' own lakatoi still sails by want; the house's trade is the first priced one.
+**The isles' houses, wider (2026-11-09):** the houses also sell the plantations' cash crops to the ships from beyond for
+Talents (M3's faucet, a weekly purse) and settle every load of the canoe line at the two towns' wholesale prices (the
+goods still sail by want). **A core quirk found on the way:** a cost table first computed while a settlement it buys
+from is mid-way (the recursion in `costs`) keeps the `fallback` for that good, so the second town's imports were costed
+at the placeholder (30 shells for rice that costs 1). The isles work round it (`47m` `ISLE.moneyRecost`: each table
+recomputed in turn); the fix belongs in `77-sim-6-money.js` (memoize a table only when no settlement it asked was busy),
+with every build that bundles core/simulation rebuilt.
 **M6 is built** (2026-11-03): first the abstract level was made to live its needs (a town nobody watches had its
 people's meters run on whatever they were doing when it was lowered, so its pool sank: Valapo to 29 in 20 days); now
 each person's day is lived by its schedule (77-sim-6-needs.js `SIM.needsAbstract`: the free hours as the resolver picks

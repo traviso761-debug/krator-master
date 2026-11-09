@@ -24,7 +24,9 @@ ISLE.simMoney = function () {
   Object.keys(K.foreign || {}).forEach(function (c) { SIM.account({ id: 'foreign:beyond', owner: 'ships from beyond', kind: 'foreign', currency: c, name: 'the traders from beyond the isles' });
     SIM.mint('foreign:beyond', K.foreign[c], 'reserve'); });
   S.order.forEach(function (s) { ISLE.simMoneyTown(s); });
-  if (M1) S.order.forEach(function (s) { SIM.moneyPrices(s); });   /* the towns' costs first: a village's foods are costed at its town's */
+  if (M1) { S.order.forEach(function (s) { SIM.moneyPrices(s); });   /* the towns' costs first: a village's foods are costed at its town's */
+    ISLE.moneyRecost(S.order); }
+
   var R = SIM.moneyReport(), sup = {}; S.order.forEach(function (s) { sup[s] = (R.towns[s] || {}); });
   return { currencies: Object.keys(K.currencies), accounts: SIM.accounts().length, towns: sup };
 };
@@ -32,6 +34,15 @@ ISLE.simMoney = function () {
 ISLE.stationOf = function (a) { var Z = ISLE.TUNE.sim.money.m1.stations, s = SIM.settlementOf(a), job = s != null && a.role.indexOf(s + '.') === 0 ? a.role.slice(s.length + 1) : a.role;
   if (Z.merchants.indexOf(job) >= 0) return 'merchant'; if (Z.nobles.indexOf(job) >= 0 && a.cls === 'rich') return 'noble'; return 'worker'; };
 ISLE.currencyOf = function (s) { var K = ISLE.TUNE.sim.money, St = SIM.R.settlement[s], f = St && St.faction; return (K.nation || {})[f] || Object.keys(K.currencies)[0]; };
+/* THE COST TABLES AGAIN, one settlement at a time (2026-11-09). Money's cost of a good a settlement does not make is its
+   cost where it is made, found by recursing into that settlement's table; a table first computed while the settlement
+   asking is mid-way finds it busy, takes the placeholder (m1 `fallback`) and keeps it. So the second town priced Kautoa's
+   rice and salt at 30 shells against 1 and 3, and anything that buys at one town's price and sells at the other's saw a
+   tenfold gap. Recomputed in turn, each table reads the others' finished ones. `keys`: the settlements, in order */
+ISLE.moneyRecost = function (keys) {
+  var C = SIM.MONEY && SIM.MONEY.m1; if (!C) return;
+  for (var pass = 0; pass < 2; pass++) keys.forEach(function (k) { delete C.cost[k]; SIM.moneyPrices(k === '' ? null : k); });
+};
 /* o.fundedBy: an account that pays the new settlement's reserve and its households' endowments (a settlement founded after
    the start: its money comes from its town, it is not minted) */
 ISLE.simMoneyTown = function (s, o) {

@@ -54,7 +54,7 @@ ISLE.simHamlets = function (villages) {
     /* twice: a town's table first computed while a village it buys from is mid-way (money's costs recurse through the
        settlements that make a good) keeps the placeholder; the second pass reads every village's finished table */
     CM.cost = {}; S.order.concat(ks).forEach(function (k) { SIM.moneyPrices(k === '' ? null : k); });
-    S.order.forEach(function (k) { delete CM.cost[k]; }); S.order.forEach(function (k) { SIM.moneyPrices(k); }); }
+    ISLE.moneyRecost(S.order.concat(ks)); }   /* each in turn (47m) */
   return out;
 };
 /* the hamlets' state and the towns' part, once (a village founded later, 47f, finds them ready) */

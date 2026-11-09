@@ -226,13 +226,13 @@ ISLE.TUNE.sim = {
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
       'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats',
-      'mahogany', 'gum', 'kapok', 'canoes'],   /* the forest islands' goods the expedition camps bring (47x, PLAN.md 12) and the hulls the dockyard builds of them */
+      'mahogany', 'gum', 'kapok', 'canoes', 'medicinals', 'sulphur', 'pearls'],   /* the other isles' goods the expedition camps bring (47x, PLAN.md 12: the forest's timber, gum, kapok and medicinal bark, the vents' sulphur, the reefs' pearls) and the hulls the canoe sheds build */
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 }, nets: { cotton: 2 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40, urgent: 1 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
+    minLoad: { pearls: 2, medicinals: 10, sulphur: 20, clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
     /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
        below holds the rest to what is wanted */
     cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1 },
@@ -352,7 +352,7 @@ ISLE.TUNE.sim = {
     m1: { wage: 6, calibrate: { after: 2, days: 3 }, ration: true,
       /* a good no settlement makes: its labour cost (`_` the rest); the forest islands' goods at what a crew's hours make them
          (the expeditions of 2026-11-09: about 10 crew-hours a load of mahogany, the gum and the kapok by it) */
-      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30 },
+      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30, medicinals: 40, sulphur: 80, pearls: 320 },   /* the vents' and the reefs' at a digger's and a diver's hours (a load of sulphur a hand a day, a pearl in four) and a little over */
       /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
          set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
          higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
@@ -441,12 +441,26 @@ ISLE.TUNE.sim = {
      the jungle as the lumber village's crew works its stands (core/camp 40: `crew`, the batch mahogany with gum and kapok
      by it), its goods home and its food out on a sea leg (`boat`); after `days` (a season) the crew comes home and the
      camp is struck; `rest` days later the next sails */
-  expeditions: { hands: 12, firstDay: 1, days: 90, rest: 30, maxPerTown: 1, startDays: 6,
-    /* the canoe sheds build canoes of the islands' mahogany and gum (Kautoa three, Valapo one; the dockyard keeps its
-       woodtools), each town's ceilings on the goods and the hulls */
-    yards: { canoeshed: { batch: { 'in': { mahogany: 2, gum: 1 }, out: { canoes: 1 }, hours: 40 }, cap: 20 } },
-    stockpile: { canoes: { max: 10 }, mahogany: { max: 600 }, gum: { max: 300 }, kapok: { max: 600 } },
-    crew: { range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40, batch: { 'in': {}, out: { mahogany: 1 }, by: { gum: 0.3, kapok: 0.3 }, hours: 2 }, cap: 1500, share: 0, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
+  expeditions: { hands: 12, firstDay: 1, days: 90, rest: 30, maxPerTown: 99, startDays: 6,
+    /* THE WORKSHOPS that take the camps' goods (`yards`: a batch on every `every`th place of a kind, counting from `from`;
+       `expOnly`: only where expeditions sail, so a page without them keeps its makers as they were): the canoe sheds build
+       canoes of the mahogany and gum (Kautoa three, Valapo one; the dockyard keeps its woodtools); a town's second healer
+       makes poultices of the medicinal bark; every eighth potter kapok-oil lamps; every fourth workshop pearl jewellery */
+    yards: { canoeshed: { batch: { 'in': { mahogany: 2, gum: 1 }, out: { canoes: 1 }, hours: 40 }, cap: 20 },
+      healer: { every: 2, from: 1, expOnly: true, batch: { 'in': { medicinals: 1 }, out: { poultices: 4 }, hours: 4 }, cap: 200 },
+      potter: { every: 8, from: 7, expOnly: true, batch: { 'in': { kapok: 1 }, out: { lamps: 2 }, hours: 3 }, cap: 400 },
+      workshop: { every: 4, from: 3, expOnly: true, batch: { 'in': { pearls: 1 }, out: { jewellery: 3 }, hours: 6 }, cap: 200 } },
+    /* what the households use of them a person a day (the bark teas, the sulphur against rot and for the fires) */
+    uses: { medicinals: 0.003, sulphur: 0.002 },
+    stockpile: { canoes: { max: 10 }, mahogany: { max: 600 }, gum: { max: 300 }, kapok: { max: 600 }, medicinals: { max: 300 }, sulphur: { max: 300 }, pearls: { max: 120 } },
+    /* THE KINDS of camp: the FOREST's crew (core/camp 40's work camp ranging the stands: mahogany, the gum, kapok and the
+       medicinal bark by it), the VENTS' diggers and the REEF's divers (a works at one node: a SIM.site of `amount`, its
+       `regen` a night); each its hands, its main good (the season's length is the room for it) and its `prior` a hand a day */
+    kinds: {
+      forest: { hands: 12, main: 'mahogany', prior: { mahogany: 1.0, gum: 0.3, kapok: 0.3, medicinals: 0.15 },
+        crew: { range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40, batch: { 'in': {}, out: { mahogany: 1 }, by: { gum: 0.3, kapok: 0.3, medicinals: 0.15 }, hours: 2 }, cap: 1500, share: 0, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } } },
+      vents: { hands: 8, main: 'sulphur', prior: { sulphur: 1.0 }, node: { place: 'sulphur pit', kind: 'sulfur', batch: { 'in': {}, out: { sulphur: 1 }, hours: 4 }, cap: 1500, amount: 200000, regen: 0 } },
+      reef: { hands: 8, main: 'pearls', prior: { pearls: 0.25 }, node: { place: 'pearl bed', kind: 'pearl bed', batch: { 'in': {}, out: { pearls: 1 }, hours: 20 }, cap: 400, amount: 5000, regen: 2 } } },
     boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 },
     /* THE MERCHANT HOUSE (47y; the owner, 2026-11-09: "make each city's long distance expeditions organized by a merchant
        house"): each town charters one from its treasury with `capital` shells, headed by its richest household. It runs
@@ -455,7 +469,16 @@ ISLE.TUNE.sim = {
        boat's `charter` a day), pays the crew (the camp's workplaces are its own), buys the provisions and sells the haul to
        the town at wholesale (the town's price over its markup) each night; recalls the crew when its purse holds less than
        `recallDays` of wages; sails for as long as its town will buy (at least `minDays`); after a season pays its head `dividend` of what it holds over its capital and `keep` */
-    house: { capital: 40000, charter: 60, prior: { mahogany: 1.0, gum: 0.3, kapok: 0.3 }, minDays: 10, reserveDays: 10, recallDays: 2, retryDays: 7, dividend: 0.5, keep: 0.25 } },
+    house: { capital: 40000, charter: 60, maxOut: 2, minDays: 10, reserveDays: 10, recallDays: 2, retryDays: 7, dividend: 0.5, keep: 0.25,
+      /* THE SHIPS FROM BEYOND (PLAN-MONEY M3's faucet; the owner, 2026-11-09): every `every` days a trader calls at each town
+         with `purse` Talents; the house sells it the plantations' cash crops, what the town holds over `keepDays` of its own
+         use, up to `load` of each, when the foreign price (Talents, at the changers' rate) beats the town's wholesale by
+         `margin`; the Talents are the house's (a Talent account), changed to shells when its purse runs short */
+      exports: { every: 7, purse: 2000, keepDays: 20, load: 400, margin: 0.1, prices: { clove: 1.0, cacao: 0.8, coffee: 0.12, sugar: 1.5 } },
+      /* THE LINES BETWEEN THE TOWNS: each load the canoe line lands is the SENDING town's house's: bought at the sender's
+         wholesale, sold at the receiver's, settled each night (the goods still sail by the towns' want: M3's choosing by
+         price is not this) */
+      carry: ['lakatoi', 'oruwa'] } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
