@@ -4,8 +4,8 @@
   "build.py": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/k-guilin/KNOWN_ISSUES.md": "751b4fc758dd6f093be49f0e0a05bc611d2c701bc7bfa239eb9b2e2a41a377e4",
-    "biomes/k-guilin/PORT.md": "5497bf76b2bad4cf34809008fdca35e90ef5f3afcb612f6238dc450eaff50f40",
+    "biomes/k-guilin/KNOWN_ISSUES.md": "962a77e7a23c96cc889c4a01a451406862011b038ab8fb908ac115da5001738d",
+    "biomes/k-guilin/PORT.md": "b356919bc9c392b6976a85626e440497118f703266ed23dfa78d9a26deae8d0f",
     "biomes/k-guilin/build.py": "1ecb770bfaed0f19384205be82478370071e58e88f104f2db8fd320a091f422d",
     "biomes/k-guilin/src/00-head.html": "1b9d2a42624e0c737ff0804a027d8a3e2790b2c1442ae2a920457e4552630698",
     "biomes/k-guilin/src/45-host-stage.js": "d7a72fc139895828b27f61493cb0e6dc97b44439b4c2c5246d9acb09d9fdad4d",
@@ -130,7 +130,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -156,6 +156,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -171,7 +172,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
@@ -182,7 +183,9 @@
     "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/k-guilin/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -192,12 +195,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/k-guilin/dist/k-guilin.html": "75069423ec707edecf3867105cf35d200de780e0671ffaffb81af1111e611b6e",
+    "biomes/k-guilin/dist/k-guilin.html": "d2a119cbd909848ffed0f0d9800ce6d2470093300742b51e2fe47b31779b41bf",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "8ad6dc81aa12c9397c2867f8404fd516ecbf9a62d8ff30890f4b82a112959776",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    },
    "outputs_raw": {
-    "biomes/k-guilin/dist/k-guilin.html": "75069423ec707edecf3867105cf35d200de780e0671ffaffb81af1111e611b6e",
+    "biomes/k-guilin/dist/k-guilin.html": "d2a119cbd909848ffed0f0d9800ce6d2470093300742b51e2fe47b31779b41bf",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "8ad6dc81aa12c9397c2867f8404fd516ecbf9a62d8ff30890f4b82a112959776",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    }
