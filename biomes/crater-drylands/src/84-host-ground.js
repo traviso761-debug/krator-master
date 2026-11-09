@@ -7,7 +7,7 @@ function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='li
 // mesh is painted by the mosaic it made, so the burns read from any distance: black char with grey ash, the bloom's
 // green flush and its drifts of pink, orange, violet, yellow and crimson, red soil under young scrub, straw and olive
 // in the old scrub; pink-grey granite on the kopjes, pale sand in the washes, green at the seep.
-const FIRE=CRATERDRY.fireHistory({R:TERR.R,cell:20,wind:FIRE_WIND,fires:FIRES,old:9,seed:520031});
+const FIRE=CRATERDRY.fireHistory({R:TERR.R,cell:20,wind:FIRE_WIND,fires:FIRES,old:typeof STATION!=='undefined'&&STATION.oldFires!=null?STATION.oldFires:9,seed:520031});
 const ageLabel=a=>a<.15?Math.max(1,Math.round(a*52))+' weeks':a<1.5?Math.round(a*12)+' months':a.toFixed(1)+' years';
 // where each recent fire actually burned (its cells' centre and extent), registered so the inspector names a burn
 FIRE.fires.forEach((f,fi)=>{if(f.failed||f.ago>7)return;let sx=0,sz=0,n=0;

@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/crater-drylands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/crater-drylands-edge.html`, `dist/crater-drylands-salt.html`, `dist/crater-drylands.html`
 
 Build: `cd biomes/crater-drylands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -39,5 +39,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 4 |  |
 | `89w-host-water.js` | 1 |  |
-| `99-host-take.js` | 17 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (66); the page, handed to the host (147) |
+| `99-host-take.js` | 18 | the inspector's words (51); the probe's budgets and the kit's own checks (ve (68); the page, handed to the host (152) |
 | `99-tail.html` | <1 |  |

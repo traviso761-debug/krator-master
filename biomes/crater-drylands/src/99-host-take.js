@@ -45,6 +45,8 @@ const VIEWS={
  // the live fire (89): this view lights it, four minutes in, and frames its front from the side
  'A wildfire running':FIREFX.presetView(),
 };
+// A STATION (stations/<name>/45-host-stage.js: STATION) drops the views its ground has no place for and adds its own
+if(typeof STATION!=='undefined'){(STATION.dropViews||[]).forEach(k=>delete VIEWS[k]);if(STATION.views)Object.assign(VIEWS,STATION.views({look,across,atTree,nearTree,gh,burnOf,P}));}
 const VIEW_ACT={'A wildfire running':()=>FIREFX.preset()};
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -125,6 +127,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('a live fire runs downwind and stops at the refuges',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:FIRE_WIND,maxT:900})));
  add('every plant material carries the fire',HCHK.patched(FIREFX.patched()));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ /* a station's own checks, and the kit's it has no ground for (STATION.skipChecks: named, so the page says what it skipped) */
+ if(typeof STATION!=='undefined'){const sk=STATION.skipChecks||[];for(let i=R.length-1;i>=0;i--)if(sk.indexOf(R[i].name)>=0)R.splice(i,1);if(STATION.checks)STATION.checks(add,{HCHK,P});}
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  const C=(CRATERDRY.COUNTS||[]).slice();C[SPI('swordspire')]=0;add('a species never placed',HCHK.placed(C));
@@ -143,13 +147,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fire blown back on itself',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900})&&Object.assign(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900}),{wind:FIRE_WIND})));
  add('no plant material patched',HCHK.patched(0));
  add('a camera under the seep',HCHK.camerasOut([{view:'under',x:SEEP.x,y:SEEPL-5,z:SEEP.z}]));
+ if(typeof STATION!=='undefined'&&STATION.negatives)STATION.negatives(add,{HCHK,P});   /* each station check's broken input */
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands',
- hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). F arms a fire: click the ground to light it",
+KHOST.take({build:typeof STATION!=='undefined'?'crater-drylands-'+STATION.key:'crater-drylands',title:typeof STATION!=='undefined'?STATION.title:'Krator biome — the crater drylands',
+ hint:typeof STATION!=='undefined'?STATION.hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). F arms a fire: click the ground to light it",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:k=>{if(VIEW_ACT[k])VIEW_ACT[k]();},                        // 'A wildfire running' lights the preset fire
  // the fire's controls (89-host-fire.js): its bar after the view select, F arms a click-to-light (it wins over walking),

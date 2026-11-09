@@ -15,7 +15,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it (for budgeting)
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  if(Q.get('diet')==='0')CRATERDRY.IMPOSTORS=false;   /* ?diet=0: every far tree keeps its blob (55) */
- try{window._biome=CRATERDRY.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}
+ try{window._biome=typeof STATION!=='undefined'&&STATION.build?STATION.build(q):CRATERDRY.build({R:TERR.R-150,quality:q});}   /* a station orders its kits itself (stations/<name>/) */catch(e){reportErr('biome: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;

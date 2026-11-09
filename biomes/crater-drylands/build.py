@@ -88,8 +88,11 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
-    for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
-    for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))   # another kit read in place
+    # station.json: "core" {fragment name: its path from the repo root} (more core modules), "kits" {slot: a fragment of another kit, from this
+    # folder} (a kit read in place: the salt floor's abyssal savannah, the edge's swbay trees), "packs" {pack: that kit's folder} (its library),
+    # "drop" [names] (a src/ fragment the station has no use for)
+    for f,p in STN.get('core',{}).items(): PATH[f]=os.path.join(ROOT,p)
+    for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f,h in (('44-core-farfield-draw.js','44-core-farfield-draw.js'),('45-core-horizon-shade.js','45-core-horizon-shade.js')):
@@ -156,9 +159,16 @@ for f in CORE_MAT:
 # Named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
 sys.path.insert(0,os.path.join(ROOT,'tools','textures'))
 import matlib_pack as _mp
+def _mp_fams(d):
+    import json as _j
+    pj=os.path.join(d,'tex','pack.json')
+    return sorted(_j.load(open(pj,encoding='utf-8')).get('families',{})) if os.path.isfile(pj) else []
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'craterdry'),
+         **{'44b-host-matlib-pack-%s.js'%_pn:_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=[f for f in _mp_fams(os.path.normpath(os.path.join(HERE,_pd))) if f.startswith(('ground','tower','jetty'))])
+            for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers
          khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands')}   # the host's edit layer (core/host FULL)
 for f in VIRTUAL: PATH[f]=None
+for f in STN.get('drop',[]): PATH.pop(f,None)
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
