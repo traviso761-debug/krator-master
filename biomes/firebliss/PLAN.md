@@ -142,8 +142,10 @@ Each valley is a different bargain:
 | **West Bliss Cauldron** (2,639 m) | the most hidden and defensible: a crater moat under Mount Pyre | the highest, coldest and most remote; a crater, so the worst gas trap |
 
 **No spot is picked for the player** (the owner, 2026-11-09): the player sets up where they like. What the world needs is an
-**outpost registry**: a record of every outpost, the player's or anyone's, with its place, its owner and what it holds. The
-registry belongs to the open world, not to this kit; it is being built as core work (owner's request, 2026-11-09). This kit only
+**outpost registry**: "outpost" is the owner's shorthand for any **player settlement**, from a camp to a town. NPC outposts
+stay conceptually and mechanically distinct: they are the world's settlements and camps (`core/hamlet`, `core/camp`), not
+registry records. The registry belongs to the open world, not to this kit; it is being built as core work (the owner,
+2026-11-09). This kit only
 supplies its candidates: the oases' benches (water, warmth, gas and flood safety) as hints the registry may read, and nothing
 drawn on the ground for them.
 
