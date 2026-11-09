@@ -18,6 +18,11 @@
     for (const k of Object.keys(T)) t.push(k + ': ' + (Array.isArray(T[k]) ? T[k].join(', ') : T[k]));
     t.push('top speed ' + D.speed + ' m/s', 'seats ' + D.seats, 'cargo ' + D.cargo + ' kg', 'tank ' + D.tank + ' L',
       'wheels ' + (u.wheels || []).length + ' (' + (D.drive || '?') + ' drive)', u.tris + ' tris');
+    if (u.state && u.state !== 'intact') {
+      const R = u.ruin || {};
+      t.push('state ' + u.state + (R.form ? ' (' + R.form + ')' : '') + ': rust ' + Math.round((R.rust || 0) * 100) + '%, soot ' +
+        Math.round((R.soot || 0) * 100) + '%, tyres ' + R.tyres + (R.missingWheel ? ', ' + R.missingWheel + ' missing' : ''));
+    }
     return t;
   }
   function describe(g) {

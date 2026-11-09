@@ -18,9 +18,13 @@ KratorVehicles.list()
   // -> [{ key, name, culture, tags, variants, variantNames, w, d, h, data, budget }]   (data of variant 0; copies)
   //    budget: { meshes, tris } verify.py holds the vehicle to (two body meshes + one per wheel; 6 000 or its own)
 KratorVehicles.dataOf(key, variant)        // that variant's data (variantData merged over data)
-KratorVehicles.build(key, { variant, seed, linear }) -> THREE.Group | null
+KratorVehicles.build(key, { variant, seed, linear, state }) -> THREE.Group | null
   // variant 0..variants-1 (clamped), seed (default 1) varies small things (jerry cans, tarp colour, a pack),
-  // linear (default true): vertex colours converted sRGB -> linear for a renderer with outputEncoding = sRGBEncoding.
+  // linear (default true): vertex colours converted sRGB -> linear for a renderer with outputEncoding = sRGBEncoding,
+  // state (default 'intact'): 'weathered' | 'burnt' | 'wreck', the ruin states (below): the same vehicle, ruined.
+KratorVehicles.STATES                      // ['intact', 'weathered', 'burnt', 'wreck']
+KratorVehicles.WRECK_FORMS                 // ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside']
+KratorVehicles.ruinOf(state, seed, key)    // the ruin record a build(key, { state, seed }) takes (a copy; data, no drawing)
 KratorVehicles.roll(group, metres)         // spins every wheel by metres / r (+ = forward); call with the distance moved
 KratorVehicles.steer(group, radians)       // turns the steered wheels; clamped to data.maxSteer; returns the angle used
                                            // (each steered wheel turns by angle x its steerRatio; maxSteer 0: skid steer, nothing turns)
@@ -54,13 +58,66 @@ Wheel names: `wheel_fl/fr/rl/rr` on a four-wheeler; more axles add `wheel_l2/r2`
 
 ```js
 { key, name, culture, tags, kind: 'vehicle', variant, variantName, seed, w, d, h, tris, lightsOn, textured,
-  wheels: [{ name, r, x, y, z, front, steer, drive, lift?, steerRatio? }],   // y = r + lift: the hub
+  wheels: [{ name, r, x, y, z, front, steer, drive, lift?, steerRatio?, tyre? }],   // y = r + lift: the hub (intact)
   lamps:  [{ x, y, z, dx, dy, dz, kind }],                  // lens centres and facing; kind head | bar | tail | cell
-  data }                                                    // dataOf(key, variant)
+  data,                                                     // dataOf(key, variant)
+  state, ruin }                                             // 'intact' and ruinOf('intact'), or the ruin (below)
 ```
 
 A host that wants real light at night puts a SpotLight at each `head`/`bar` lamp facing (dx, dy, dz), or one per
 vehicle at their mean; the kit adds no light objects.
+
+## Ruin states
+
+`build(key, { state })` builds the same vehicle (its seed and variant decide the body as they always did) and runs the
+kit's ruin pass over it before the meshes are made, so a ruin costs the same draw calls and fewer triangles. The pass
+is general: every culture's vehicles take it. What each state does:
+
+| State | Rust | Soot | Glass | Tyres | Body | Lamps |
+|---|---|---|---|---|---|---|
+| `intact` | | | kept | | as designed | work |
+| `weathered` | blooms over 30-60 % of the paint, grime over the rest | | gone | flat (the hub drops) | a little trim sprung, a small roll | dead |
+| `burnt` | 35-60 % under the char | charred black nearly all over, on the `char` detail (blistered, cracked; `metal.scorched` when it lands) | gone | burnt off the rims | the roof and upper panels caved, trim sprung | dead |
+| `wreck` | 80-100 % | by seed (an exploded one is charred) | gone | flat or gone, **one wheel missing** | one of seven forms by seed (`KratorVehicles.WRECK_FORMS`): `crushed` (pressed down and sheared), `overturned` (on its roof, askew), `torn` (cut across, the halves parted and yawed), `crashed` (the nose or tail crumpled to half its length, buckled, pitched onto it), `tboned` (one flank caved in round the blow, the roof lifted over it), `exploded` (holes blown through the upper body, the rest bulged, nearly every trim piece flung, burnt out), `onside` (lying on one flank); trim sprung and some fallen | dead |
+
+A collision is two wrecks placed by the host: a `crashed` one nose-on to a `tboned` one's flank (`ruin.end` says which end
+crumpled, `ruin.side` which flank caved and `ruin.cut` where along it), the pair yawed a quarter turn to each other.
+
+The ruin is a record first (`vehicles-core.js` `vehicleRuin(state, seed, key)`; `KratorVehicles.ruinOf`), a copy of
+which is `group.userData.ruin`:
+
+```js
+{ state, rust, soot, grime,          // 0..1 shares
+  glass,                             // false: the panes were left out
+  tyres: 'ok' | 'flat' | 'gone',
+  sag, sprung,                       // 0..1: how far the body caved, the share of small trim knocked askew
+  lamps,                             // false: lights() leaves them dark and returns false
+  tilt,                              // the roll about z, radians
+  form: null | 'crushed' | 'overturned' | 'torn' | 'crashed' | 'tboned' | 'exploded' | 'onside',
+  missing, missingWheel,             // a wreck's missing wheel: its index draw, and the wheel's name (null if none)
+  cut, side, end, seed }             // torn: where it tore, tboned: where the blow landed (fractions of the length);
+                                     // side +-1 (tboned, onside), end +-1 (crashed: nose or tail); the record's seed
+```
+
+Its draws come from a generator of their own on (seed, state, key), never from the body's `F.rnd`, so the intact and
+the ruined builds of one seed are one vehicle, and two vehicles of one seed do not share one fate. The group keeps
+its shape: `body:matte`, `body:metal`, `steer_*`, `wheel_*` (the missing one absent from the children and from
+`userData.wheels`; a flat or burnt wheel's record says `tyre: 'flat' | 'gone'` and its `y` is where the hub settled),
+`belts`; every mesh carries its detail slot and the atlas hook; the body materials are double-sided (the insides show
+through the empty windows). **A ruin is a prop:** it is grounded (its lowest point on y = 0 after the settle), its
+lamps are dead, `roll()` still spins what wheels there are but after a tilt or an overturn the spin axis is no longer
+the axle, `steer()` turns the pivots the same way, and a tracked vehicle's belts no longer run. Place it, turn it,
+leave it. The bounding box grows with the settle: up to 0.6 m + 0.13 h across, 0.8 m along, 0.3 m + 0.25 w up (an
+overturned body lies on its roof, askew), which `verify.py`'s `ruin` check holds every vehicle to.
+
+Which surfaces rust: the paint and plate families (`paint`, `paintWorn`, `paintFlake`, `whitePaint`,
+`ancientWhite`, `plate`, `foil`, `metal`, `corrugated`, `bluePlate`) take the `rustHeavy` slot (or `rust`) and the
+rust's colour where a value noise on the body's own position falls under the state's share (soft edges); the copper
+alloys (`brass`, `gilt`, `bronze`) go `verdigris`; canvas, tarp, wood, rubber, solar and concrete only take grime and
+soot; lenses and the cyan strips go dark. The ruin families ride in every bundle (`vehicle_bundle.py` `RUIN_SLOTS`).
+
+A culture's `build(F)` may read `F.ruin` and `F.state` to draw its own damage on top (the Ancients leave their glass
+out and draw charred seat frames when burnt or wrecked) as long as it draws from `F.rnd` the same way in every state.
 
 ## The geo_dune_buggy
 
@@ -150,6 +207,46 @@ centres), track 3.4, clearance 0.55, belt 0.08`. Four bogies at x +-1.7, z 3.2 a
 (r 0.36, offsets -0.8, 0, 0.8, `lift` 0.08); none steers. A host turns it on the spot by yaw alone and calls
 `roll()` with the distance its centre moved: the road wheels turn and the belts run (the sprockets do not).
 
+## The Ancients' six (`krator-vehicles-ancient.js`, culture `ancient`)
+
+The metropolis kit's house style on the road (`kits/metropolis/PLAN.md` 2): white seamed panel (`white`,
+`whiteDark`, `whiteShade` on `ancientWhite`), a bronze belt band and posts (`bronze`, `bronzeDark` on `bronze`), a
+blue-glass canopy (`blueGlass`, left out of every ruin), cyan strips (`cyan`, the `lampBlue` family: they glow with
+`lights()`), board-formed composite (`concrete`), shrouded slick wheels (`ancWheel`: a white dish, a bronze hub). All
+`fuel: 'battery'` (Ancient cells, hub motors), all `terrain: ['road']` but the utility and the tram. Every `build`
+reads `F.ruin`: no glass when `F.ruin.glass` is false, charred seat frames when burnt or wrecked, nothing from `F.rnd`.
+The shared pieces (`ancSkin`, `ancBand`, `ancPosts`, `ancGlass`, `ancStrip`, `ancSeat`, `ancDash`, `ancWheel`,
+`ancPod`) are the file's own.
+
+| Key | Box (w x d x h) | Seats | Wheels | Variants | Triangles (intact; weathered / burnt / wreck) |
+|---|---|---|---|---|---|
+| `anc_pod` | 2.1 x 3.3 x 1.68 | 2 | 4, r 0.32, x +-0.64 (front, steer 0.38) and +-0.68, z +-0.95 | Civic, Hire (bronze roof, cyan sign; `trade: 'hire'`) | 3 616 / 3 628; 3 496 / 2 408 / 2 134 |
+| `anc_saloon` | 2.4 x 6.0 x 1.56 | 4 | 4, r 0.36, x +-0.7, z +-1.95 (front steer 0.32) | Saloon, Statesman (bronze roof, dishes and bonnet spine) | 3 688 / 3 700; 3 568 / 2 512 / 3 078 |
+| `anc_van` | 2.5 x 6.0 x 2.8 | 2 | 4, r 0.42, x +-0.72, z +-1.75 (front steer 0.35) | Van (crates; `cargo` 1600), Courier (a roof pod) | 4 376 / 4 432; 4 256 / 3 168 / 3 722 |
+| `anc_utility` | 2.55 x 6.2 x 2.6 | 3 | 6, r 0.48, x +-0.8, z 1.95 (steer 0.3), -0.3, -1.9 | Works (two tanks, a locker), Patrol (an amber lamp bar, a dish) | 5 416 / 5 610; 5 344 / 3 712 / 3 484 |
+| `anc_hauler` | 2.75 x 9.2 x 2.8, `budget.tris` 7 500 | 2 | 6: front r 0.5, x +-0.95, z 3.3 (steer 0.38); rear r 0.55, x +-1.05, z -1.5 and -2.8 | Flatbed, Laden (four cargo pods, a crate; `cargo` 2400, `mass` 16400) | 5 128 / 6 292; 5 056 / 3 408 / 4 510 |
+| `anc_tram` | 2.95 x 13.4 x 3.5, `budget.tris` 7 500 | 40 (+30 standing) | 8, r 0.5, x +-1.0, z +-5.6 and +-4.0, none steers, `maxSteer` 0 (guided) | Tram-car | 7 136; 7 160 / 5 240 / 4 766 |
+
+**The cabins are hollow.** A hull tub is open at the belt; an inward-facing liner (`F.tub`'s `inside`, the
+`interior` key) gives the cabin its walls, a low floor sits between shelves over the wheels (the pod and the saloon:
+you sit at knee height, as in a car), and the seats, dash and yoke stand on it under the canopy. A cab pod on a deck
+(the van, the utility, the hauler) is the same without the shelves. **The wheels hang from running gear** (`ancGear`):
+an axle beam between each pair (ending 6 cm short of the wheels' inner faces, clear of a steered wheel's swing), a
+knuckle and an upright from each wheel to the shelf, pan or chassis above it, and a trailing link; a bronze arch on the
+skin round every shrouded wheel (`ancArch`, a half torus), and a mudguard shell with arch trim over the exposed cab-over
+wheels of the van and the hauler (`ancFender`). The glazing is a canopy on bronze posts, never a flat pane (the van's
+cab is a pod before its box).
+When the glass is gone (every ruin state), the frames stay and `ancGlass` / `ancPaneShards` leave shards of dark glass
+(`shard`, a key the ruin pass neither rusts nor drops) standing in them.
+
+`tags`: all `class: 'motor vehicle'`, `drive: 'wheeled'`, `fuel: 'battery'`, `setting: 'outdoor'`; `type`
+`['vehicle', 'transport']` (pod, saloon, tram), `['vehicle', 'cargo', 'transport']` (van, hauler), `['vehicle',
+'utility', 'patrol']` (utility). `data` (variant 0; m, m/s, m/s^2, kg, kWh, km, rad): pod `speed 25, accel 3.0,
+turnRadius 4.2, maxSteer 0.38, cargo 80, mass 760, battery 40, range 300, wheelbase 1.9, track 1.32`; saloon `38, 3.5,
+7.5, 0.32, 220, 1650, 110, 600, 3.9, 1.4`; van `28, 2.0, 7.2, 0.35, 1600, 2600, 160, 450, 3.5, 1.44`; utility `24, 1.8,
+8.5, 0.3, 1800, 4200, 260, 500, 3.85, 1.6`; hauler `22, 1.2, 9.5, 0.38, 9000, 9800, 420, 420, 5.45, 2.1`; tram `20,
+1.0, 0, 0, 0, 18000, 600, 0 (the guideway feeds it), 9.6, 2.0, standing 30`. `tank` is 0 on all six.
+
 ## Adding a vehicle
 
 A culture file `krator-vehicles-<culture>.js`: `VEHICLE_CULTURE(key, { name, sign, lore, detail, palette })` once, then
@@ -162,9 +259,10 @@ bezel)` (records the lamp), `F.spareWheel(x, y, z, axisX, axisY, axisZ, W)`, and
 - `F.slab(pts, color, family)`: a solid from a side profile, `pts` `[[z, y, hx], ...]` (any winding, may be concave),
   each vertex extruded to x = +hx and -hx; give a band's bottom and top vertices one hx each and its flanks are planar
   (the six-wheeler's hull, the cabs, the hab's wedge nose).
-- `F.tub(sections, segs, color, family, caps)`: horizontal superellipse sections `[{ y, a, b, n, z }]` bottom to top
-  (half-width a, half-length b, exponent n: 2 an ellipse, 3 to 4 a rounded rectangle), smooth sides, flat caps
-  `'top' | 'bottom' | 'both'` (the crawler's bowl, rim and deck).
+- `F.tub(sections, segs, color, family, caps, inside)`: horizontal superellipse sections `[{ y, a, b, n, z }]` bottom
+  to top (half-width a, half-length b, exponent n: 2 an ellipse, 3 to 4 a rounded rectangle), smooth sides, flat caps
+  `'top' | 'bottom' | 'both'` (the crawler's bowl, rim and deck); `inside` turns the faces inward (a cabin's liner
+  inside a single-sided hull, so the interior has walls: the Ancients' cabins).
 - `F.track(x, w, t, circles, pitch, color, family)`: a belt of shoes round the convex hull of `circles` `[[z, y, r]]`;
   with the road wheels' hubs at r + t (`lift: t` in their records) its bottom run sits on y = 0. It is recorded
   (`F.belts`) and drawn by the runtime as the `belts` mesh, which `roll()` runs.
@@ -172,7 +270,12 @@ bezel)` (records the lamp), `F.spareWheel(x, y, z, axisX, axisY, axisZ, W)`, and
 **Textures:** a culture's `detail` table maps palette keys to `materials.json` families (`canvas: 'canvas'`,
 `glass: null` for none); a primitive can name a family as its family (`F.box(..., col, 'tarp')`) when one colour
 covers two surfaces. Unmapped keys take `metal` on the metal families and `paint` otherwise; lamps never take one.
-A new family: add it to `materials.json` (append to `slots`), pack, rebuild.
+A new family: add it to `materials.json` (append to `slots`; the atlas takes 32), pack, rebuild.
+
+**Ruin states come free.** The runtime's pass finds the glass by palette key (any key matching /glass/i, or the
+catalog family `glass`) and the tyres by family `rubber` (or a key `rubber`, `tyre`, `tire`): name them so. Read
+`F.ruin` in `build` only to leave things out or swap a piece for its charred twin; never draw from `F.rnd` in one
+state and not another.
 
 `wheel` draws ONE wheel at the origin, axle along x (`vehicleBalloonTyre()` for a sand tyre; the crawler's wire wheel
 and the hab's road wheel are in their culture files). A wheel record may add `lift` (the hub at r + lift: a road

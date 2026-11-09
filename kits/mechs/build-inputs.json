@@ -50,7 +50,7 @@
     "kits/mechs/tex/pack.json": "8520471c394b5a762d727171f5e879c470f970c38a21836bf9f9ecec6ff16eea",
     "kits/mechs/tex/plate.albedo.webp": "5da438689601eaa550b8b2522c70e9c82fa13f93a53810a537f07ccd6183d0d3",
     "kits/mechs/tex/sunbanner.albedo.webp": "7ab86d89d9df6cd059ca4bc8dfd55c262b653d576dabc0f5f05904b5fc3887a3",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/motor-vehicles/vehicles-core.js": "4103621b91d5faf955f9086612d63c7de2146014fc0d57bebb0beb38d84bf73e",
     "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
    },
    "listings": {
@@ -58,14 +58,14 @@
     "kits/mechs/src": "e71f5b75eb3d7c283777ba45e3998da9c6242bbeb78f01d976014e9e4e9da244"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "b6418f1eefa573cbcc4547d4219f03678ac731da0e97f8580d44ace7c89f6b1d",
-    "kits/mechs/dist/krator-mechs.js": "d8ee6ef0895852264bfa9f430ae923676dbda55c6dad725a5f37868c58aa679c",
-    "kits/mechs/dist/mechs.html": "a55367ad9b404b63c9be2591507182bab6dae3a4f3fbb91a56c8c063be8bb6bd"
+    "kits/mechs/build-manifest.json": "0b54143a4835a4757558fab4c2cb972ed3321c14db0573a27fb4bb2bd520b737",
+    "kits/mechs/dist/krator-mechs.js": "427d97f89b49b5640efb8479ac1f7ab828a0cff6b0a24d7835ff99c1f77bb640",
+    "kits/mechs/dist/mechs.html": "ab791496f8c65a9bdc1bdf0e7ad779b59d6a28724b2033723306258075c92a7b"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "a8f079d3863f15a8f9ec13284109cb424196b99ff5a021d3aecc426228a5e2ea",
-    "kits/mechs/dist/krator-mechs.js": "d8ee6ef0895852264bfa9f430ae923676dbda55c6dad725a5f37868c58aa679c",
-    "kits/mechs/dist/mechs.html": "a55367ad9b404b63c9be2591507182bab6dae3a4f3fbb91a56c8c063be8bb6bd"
+    "kits/mechs/build-manifest.json": "47608ed7deb51b7186e0f4cc887b197e9997f28f02fd7b59fa99a9e5eefbe951",
+    "kits/mechs/dist/krator-mechs.js": "427d97f89b49b5640efb8479ac1f7ab828a0cff6b0a24d7835ff99c1f77bb640",
+    "kits/mechs/dist/mechs.html": "ab791496f8c65a9bdc1bdf0e7ad779b59d6a28724b2033723306258075c92a7b"
    }
   }
  }
