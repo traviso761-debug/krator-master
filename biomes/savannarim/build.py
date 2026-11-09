@@ -80,7 +80,7 @@ CORE_T=os.path.join(ROOT,'core','terrain')
 # the biome core from core/biome (core/README.md), as crater-drylands takes it (31b the leafset, 31j a limb's joint, 32 the variants and kin, 34 the
 # impostors, 41 the environmental fields, 44 the stage as data), plus what the savannah needs (PLAN-LANDS.md section 12): 33 BIO.fung (the
 # hyperjungle's brackets, read in place), 38 KFIRE (H3: the burn mosaic), 39 the lean toward the giant (H4: the e rim's cousins)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js',
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','30s-core-season-flush.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js',
             '38-core-fire.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.join(ROOT,'core','biome')
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
@@ -145,6 +145,8 @@ for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherho
 # the final rebuild's air (BACKPORT.md section 1, and the row's dust): height fog (R1), the rain occlusion map (R10), lightning, the air's load
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-airload.js']:
     PATH[f]=os.path.join(ROOT,'core','atmos','fx',f)
+# core/clock's flush (H7: the start of the rains, the rust miombo's copper; core/clock/opt), after the clock the host shell takes
+PATH.setdefault('21-core-clock-flush.js',os.path.join(ROOT,'core','clock','opt','21-core-clock-flush.js'))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -172,7 +174,7 @@ NEIGH_KITS={'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-tr
             'ehighlands':(['50-biome-ehigh-species.js','55-biome-ehigh-trees.js'],'EHIGH',['bark.ragbark','leaf.broad','leaf.rag','skin.cushion','leaf.ichu','lichen']),
             'sedesert':(['50-biome-sedesert-species.js','55-biome-sedesert-trees.js'],'SEDESERT',['bark0','bark1','bark2','bark3','bark4','aloe','bloom','column','needle','paddle','small','strap','pods']),
             'crater-drylands':(['50-biome-craterdry-species.js','55-biome-craterdry-trees.js'],'CRATERDRY',['bark.mallee','bark.gum','bark.pillar','leaf.frond','leaf.lance','leaf.small','leaf.twigs','leaf.bloom'])}
-STATION1_NEIGH=[]   # station 1's (src/) own neighbours: the se rim's cousins (J6)
+STATION1_NEIGH=['sedesert','crater-drylands']   # station 1's (src/) own neighbours: the se rim's cousins and the drylands by reach (J6)
 NEIGH=dict(NEIGH_ALL);NEIGH.update({k:NEIGH_KITS[k] for k in (STN.get('neigh',[]) if STATION else STATION1_NEIGH)})
 import json as _json
 ORDER=['hyperjungle']+sorted(k for k in NEIGH if k not in NEIGH_ALL)

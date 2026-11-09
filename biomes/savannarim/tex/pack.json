@@ -132,6 +132,34 @@
     "sourceMean": 0.4628
    }
   },
+  "incensebark": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "incensebark.albedo.webp"
+   },
+   "lib": "bark.paperbark",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "70547b9d231d9b9a4e0dd1bde4af27f83d12a025",
+    "normal": "c045d71f6724115c4b065e3193950d21dd6bf20f",
+    "roughness": "67d9ff1809ad5e67f4f5acc8d73fdcaddcab5ccb"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.636
+   }
+  },
   "palmbark": {
    "breakup": null,
    "card": false,

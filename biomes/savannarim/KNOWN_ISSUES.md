@@ -46,3 +46,23 @@ Read before changing anything here. `build.py` prints the open count.
       bolsters' orange in the dry season (`#day=`), the ragbark's drop, the page's size (7.6 MB: eastabyss's and the e highlands' packs).
     - Taken as proposed, owner to confirm: PLAN-LANDS.md section 14 question 4 (the abyss's lineages as fire-hardened relics; the
       highlands' pull fading west; the glass wand and Fridon's wormwick trade: LORE.md section 8, a proposal).
+  - **J6, the se rim, the incense country** (station 1, `dist/savannarim.html`; `src/56`, `src/87e`): the zones from the Bowl's side to the
+    wet face along the rise: incense trees and rain roses (on the kopjes) on the dry slopes with the Bowl's cardon and candelabra by reach
+    (H1); rain bottles and rain dragons over the red oat grass; the rust miombo woods on the laterite; cloud avocados (their moss on the
+    giant's side, H4: `BIO.GIANT`) and leaning tree ferns (`BIO.leanTo`, all tipped toward the giant) at the wet face's foot; the drylands'
+    frill-tree and prism mallee by reach near Pylon (the west). 9.4M triangles, 339 calls at the default camera on the CPU load.
+    - **The rust miombo is defined here** (`SAVRIM.builders.rustmiombo`, `BIO.kitBuilder('savannarim', 'rustmiombo')` for Godstep's redlands
+      station): its crown on its own leaf material with the dry-season drop and the copper flush at the rains' start (H7: core/biome 30s,
+      core/clock's flush, `BIO.bindFlush` in 99).
+    - **The red guyed stalk is Godstep's** and Godstep has no kit yet (`biomes/godstep` holds only its PLAN.md): its row here is a reference
+      (`kind: 'ref'`), none is drawn in the laterite's gullies until Godstep's D3 builds it; then this page reads it in place.
+    - **Page-local, the neighbours' builders:** the Bowl's dragon, rose and bottle hang their strap tufts and blooms clear of their limbs at
+      the rim's sizes; here they are held to the nearest limb (`held` in `87e`: the builder's draws in its own order, only those cards
+      moved); the drylands' `CRATERDRY.ageAt` (its own fire history, not on this page) is the page's burn age.
+    - **For the GPU verify:** the copper flush (set `#day=` to the rains' start), the zones' sequence (views "The incense country", "The rust
+      miombo", "The wet face's foot"), the rain bottles' size against the gate baobab, the page's size (7.9 MB: the Bowl's and the drylands'
+      packs) and its triangles (9.4M of the 11M budget).
+    - **Stand-ins:** the rust miombo's and the incense tree's leaflets are painted (card.leaf.miombo owed; PROMPTS-NEEDED.md section 37), the
+      leaning fern's trunk and the miombo's bark vertex colour; the incense bark is the library's bark.paperbark (`incensebark`).
+    - Taken as proposed, owner to confirm: questions 5 (Talia's trade in incense and dragon's blood: LORE.md section 6.2, a proposal) and 6
+      (the rust miombo defined here, the red guyed stalk Godstep's).

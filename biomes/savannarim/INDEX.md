@@ -26,15 +26,17 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44l-host-land.js` | 2 |  |
+| `44l-host-land.js` | 3 |  |
 | `45-host-stage.js` | 12 | the map (24); the burn mosaic (core/biome 38, KFIRE: H3) (56); the host binding (65); the ground: straw over red soil, the burns by ag (78); the land past the map (83 reads it): the forest' (111) |
 | `50-biome-savrim-species.js` | 9 | materials (the library's when the pack carries t (25); the items (56) |
 | `52-biome-savrim-east.js` | 6 |  |
 | `55-biome-savrim-trees.js` | 4 |  |
+| `56-biome-savrim-southeast.js` | 12 |  |
 | `60-biome-savrim-floor.js` | 3 |  |
 | `70-biome-savrim.js` | <1 |  |
 | `83-host-far.js` | 4 |  |
 | `87-host-land.js` | 11 |  |
+| `87e-host-own.js` | 10 |  |
 | `88-host-build.js` | 1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |

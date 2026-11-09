@@ -56,5 +56,5 @@ KHOST.take({build:'savannarim',title:LAND.title,hint:LAND.hint,
   land:()=>window._land}});
 // THE SEASON (core/clock, BIO.bindSeason, H7): the monsoon, two seasons, the rains in the southern summer. The grass bleaches toward straw
 // in the dry season (SAVRIM.MAT's season), the monsoon kapoks and baobabs drop (the hyperjungle's own, read in place). ?season=0 as before
-if(new URLSearchParams(location.search).get('season')!=='0'&&BIO.bindSeason)BIO.bindSeason(null,{sharp:2});
+if(new URLSearchParams(location.search).get('season')!=='0'&&BIO.bindSeason){BIO.bindSeason(null,{sharp:2});if(BIO.bindFlush)BIO.bindFlush(null,{sharp:2});}   /* the flush: the rust miombo's copper at the rains' start (30s) */
 if(LAND.after)LAND.after();

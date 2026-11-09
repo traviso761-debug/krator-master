@@ -276,6 +276,11 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   lightly held; their tribute was people, recruited into **the Legion**, and a fair number still come to join it, which
   is why the Empire leaves them alone now that they are independent in all but name.
 
+- **Talia's resins** (*proposed*, `biomes/hyperjungle/PLAN-LANDS.md` section 5.2; built as savannarim's station 1, the incense country, 2026-11-08;
+  the owner to confirm): on the se savannah rim the Bowl's Socotran lineage meets the rains and its dwarfs grow into trees. Talia gets rich on their
+  resins: **frankincense** from the incense trees of the dry rocky slopes and **dragon's blood** (a red dye and varnish) from the rain dragons, carried
+  east by its caravans with the rain rose's arrow poison and the rust miombo's honey.
+
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 
 - The most settled, developed highland state. Russian and Transylvanian Saxon architecture; Peleș villas for the grand; East-Asian dougong on civic eaves; Tlingit/PNW-coast formline carving.
