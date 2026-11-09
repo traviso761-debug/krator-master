@@ -60,12 +60,42 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "k-guilin.html"
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+# A STATION (the final rebuild, pair 13: the universal set's --station; python3 build.py --station <name> -> dist/k-guilin-<name>.html):
+# stations/<name>/'s numbered fragments are added to src/'s (a name in both is the station's), and its station.json may name more core
+# ("core": {"<fragment name>": "<path from the repo root>"}) or drop one of src/'s ("drop": [names]). k-guilin has no station yet
+# (PLAN.md section 7: none planned); the flag is here so a station is a folder, not a build change.
+import json as _json
+_STD=os.path.join(HERE,'stations')
+BSRC.variants([['--station',_s] for _s in (sorted(os.listdir(_STD)) if os.path.isdir(_STD) else []) if os.path.isdir(os.path.join(_STD,_s))])   # every station's page
+_args=sys.argv[1:]
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+_args=[a for a in _args if not a.startswith('--')]
+OUT=_args[0] if _args else ('k-guilin-%s.html'%STATION if STATION else 'k-guilin.html')
+SJ={}
+if STATION:
+    _sd=os.path.join(_STD,STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    _sj=os.path.join(_sd,'station.json')
+    if os.path.isfile(_sj):
+        with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
+ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
+J=lambda *p:os.path.normpath(os.path.join(ROOT,*p))
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the towers, the fengcong's base and the stone forest (core/terrain/37-core-stacks.js)
+# core/terrain: KSTACKS (37: the towers, the fengcong's base and the stone forest); the final rebuild (pair 13, 2026-11-09; PLAN.md, "Core adoption"):
+# 35 KSTRATA (the limestone's beds on the walls, its shader keyed 35z after it: Span's lesson), 43 KGROUND (the plain's layers), 45 KHORIZON
+# (the towers' shadows on the plain at a low sun). Not taken: KFAR (44: the page draws its own karst beyond, 47, and the lake runs on north) and
+# KSTACKS.contour (37b: the cliff scrub, figs and orchids are placed on the records' walls, so a contoured wall would leave them off it;
+# KNOWN_ISSUES.md, the pair-13 section)
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','43-core-ground.js','45-core-horizon.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 44: KSTAGE, the export's light, air and sky
+# The final rebuild (pair 13, 2026-11-09; PLAN.md, "Core adoption"): 31b leaves on stems (BIO.leafOn, leafQ: the core's opt-in leaf path),
+# 31j a limb's joint to its parent (BIO.flareJoin: nwbay's limbs, NWBAY_LOOK.joints), 32 the variant pools and kin, 33 the fungoid parts (nwbay's
+# species), 34 the octahedral impostors (this kit's far trees and nwbay's: BIO.impostor*), 41 the environmental fields (BIO.env); 44 KSTAGE
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js',
+ '40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -80,8 +110,18 @@ KITS={'41-hyperjungle-globals.js':os.path.join(HJ,'src/41-hyperjungle-globals.js
       '48n1-nwbay-species.js':os.path.join(NWB,'src/50-biome-nwbay-species.js'),'48n2-nwbay-trees.js':os.path.join(NWB,'src/55-biome-nwbay-trees.js'),
       '48n3-nwbay-variants.js':os.path.join(NWB,'src/56-biome-nwbay-variants.js')}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+    for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+# KSTRATA's three.js half keyed 35z (it reads KSTRATA when it loads), KHORIZON's
+PATH.setdefault('35z-core-strata-shade.js',os.path.join(CORE_T,'host','35-core-strata-shade.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
+# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable, OFF by default: ?shadow=1 attaches it, src/88-host-build.js)
+PATH.setdefault('10-core-shadow.js',J('core','shadow','10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js',J('core','shadow','host','12-core-shadow-host.js'))
 for slot,p in KITS.items(): PATH[slot]=p
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
@@ -102,6 +142,8 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+# the final rebuild's water ext: the audit (57), the reflections switch (58: off at load), by path (tools/fragment_needs.json orders them)
+for f in ['57-core-water-audit.js','58-core-water-mirror.js']: PATH.setdefault(f,J('core','water','ext',f))
 # core/atmos: the core, presets, the weather (4) and its selector (9), the export, the waves, the skylight; ATMOS.bindHost,
 # ATMOS.bindWeather and the shared sky's host (core/atmos/host) and the shared sky (core/atmos/sky, SKY-PLAN.md step S1), as
 # biomes/swbay and biomes/nwouterwall take them: src/89a-host-atmos.js binds, src/89s-host-sky.js draws the sky and the weather
@@ -110,8 +152,12 @@ for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
-for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+# the final rebuild's air (src/89a-host-atmos.js): height fog with the valley mist (R1: the sky's chunk above and its host), the rain occlusion
+# map (R10) and the branched lightning (the weather's storm)
+PATH['89-atmos-j-heightfog.js']=J('core','atmos','host','89-atmos-j-heightfog.js')
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']: PATH[f]=J('core','atmos','fx',f)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
@@ -138,24 +184,27 @@ SIDE=None if '--inline-packs' in sys.argv else {}
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'kguilin',side=SIDE),'44-host-matlib-pack-nwbay.js':_mp.fragment(NWB,'nwbay',side=SIDE),
          khost.EDITS_JS:khost.edits_js(HERE,'kguilin')}   # the page's edits (edits.json or this browser's draft)
 for f in VIRTUAL: PATH[f]=None
+for f in SJ.get('drop',[]): PATH.pop(f,None)   # a station's dropped fragments
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f:
+    if 10<=n<80 and '-host-' not in f and not (PATH[f] and os.sep+'core'+os.sep in os.path.normpath(PATH[f])):   # the kit's own fragments (core/ is scanned by its own tests)
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
-if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'k-guilin.tex.js')
-open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+# a station's page shares the main page's sidecars: it writes them again, identical, and prunes nothing
+if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'k-guilin.tex.js',prune=not STATION)
+open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''
-chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
+chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8',newline='\n').write(js)
 node=find_node()
 r=subprocess.run([node,'--check',chk],capture_output=True,text=True) if node else None
 print(f'built dist/{OUT}  ({len(frags)} fragments, {len(html)//1024} KB)  '+('syntax NOT CHECKED (no node: set NODE=/path/to/node)' if r is None else 'syntax OK' if r.returncode==0 else 'SYNTAX ERROR\n'+r.stderr[:800]))

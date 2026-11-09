@@ -29,7 +29,8 @@ KGUILIN.place=function(cell,salt,accept,fn,opt){opt=opt||{};const R=opt.R==null?
 const SPACE=KSPACE.create({cell:24});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad);
 KGUILIN.blocked=blocked;
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});
+let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing */
+const regTree=(T,S,r,h)=>{if(!BAKING)BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});};
 const leafCol=(set,k)=>bright(vary(pick(set),.04,.12,.07),k==null?1.25:k);KGUILIN.leafCol=leafCol;
 const lc=(slot,set,k)=>KGUILIN.libCol(slot,leafCol(set,k));
 function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
@@ -250,8 +251,21 @@ KGUILIN.buildTrees=function(R,q){q=q==null?1:q;R=R||1500;
    if(Z.rock&&(P.sp===5||P.sp===6)){const k=.75+.5*Z.up;T.H*=k;}   // the crests' trees stand taller than the low ledges'
    const ld=BIO.lodD(x,z);T.lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
    TREES.push(T);SPACE.insert({x,z,r:(P.sp===0?1.2:P.sp===1?T.crownR*.5:T.crownR*.45)+.4},x,z,T.crownR+2);},{R});});
+ // OCTAHEDRAL IMPOSTORS FOR THE FAR TIER (core/biome 34; the final rebuild, pair 13, 2026-11-09; korona's lines): a far tree of the five tall species
+ // (the bamboo, the banyan, the camphor, the two pines) is one quad of its species baked from 8 x 8 directions in place of the blobs, baked from the
+ // hero nearest the middle, built again where it stands at BIO.bakeImpostors (after every placement: 88), so no draw before it moves. The osmanthus,
+ // the pomelo and the ring-cupped oak keep their blobs (4-11 m, near the 7 m the stand-ins start at: BACKPORT.md's graphics row). KGUILIN.IMPOSTORS=false
+ // (?diet=0 in 88) keeps the blobs for all of them
+ const IMPON=KGUILIN.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('kguilin.trees',{label:'Far trees'}),c=BIO.center?BIO.center():[0,0];
+  [0,1,2,6,7].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=newStats();
+   const rec=BIO.impostor('kguilin.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
  // each tree drawn from its own stream (its seed), so its shape does not depend on the trees before it
- TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){if(!farImp(T))buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  KGUILIN.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,fruit:st.fruit,flowers:st.flowers,borrowed:st.borrowed,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
