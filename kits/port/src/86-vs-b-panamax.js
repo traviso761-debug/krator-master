@@ -75,7 +75,7 @@ function vsPanamaxTown(C,S){const hb=S.hb,yb=S.yb,H=S.house,hs=S.hs,fw=S.bays.fi
  const hi=fw.filter(z=>vsPmTerr(S,z)>=4);hi.forEach((z,i)=>{C.at(z);const top=yb+vsPmTerr(S,z)*VS.TP+.5;vsWindmill((i%2?1:-1)*(hb-5),top,z-3,rr(9,13),rr(-.4,.4));
   kput('waterButt',[(i%2?-1:1)*(hb-5),top+1.8,z+2],null,[2,3.6,2],null);});
  const fz0=fw[fw.length-1],fz1=fw[0];
- C.reg('Garden ship — terraces',0,(fz0+fz1)/2,(fz1-fz0)/2+7,20,S.F);
+ C.reg('Garden ship — terraces',0,(fz0+fz1)/2,Math.abs(fz1-fz0)/2+7,20,S.F);
  // --- aft of the house: two bays of stacked homes, a garden and a tank on top
  for(const z of aft){C.at(z);const nr=S.rowsAt(z);for(let r=0;r<nr;r++){const x=(r-(nr-1)/2)*VS.RP,nt=3;
    for(let t=0;t<nt;t++)vsHome(x,yb+t*VS.TP,z,Math.PI/2,true,{sides:[1,-1],door:t===0&&rng()<.5,lit:.35});}
