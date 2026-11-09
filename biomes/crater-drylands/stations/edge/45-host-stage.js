@@ -42,7 +42,7 @@ const STATION={key:'edge',site:{px:437,py:457},oldFires:4,
 // ---------------------------------------------------------------- the land
 const TERR={R:2600};
 // the kopjes: x, z, radius, height, terrace step, seed. KOP[0] is the Scyvoi Rock
-const KOP=[{x:-650,z:-320,r:170,h:44,step:7,s:1.3,name:'The waterhole kopje'},{x:1250,z:-1150,r:110,h:30,step:6,s:2.1},{x:-1500,z:1200,r:95,h:24,step:6,s:3.3}];
+const KOP=[{x:-650,z:-320,r:140,h:50,step:7,s:1.3,name:'The waterhole kopje'},{x:1250,z:-1150,r:110,h:30,step:6,s:2.1},{x:-1500,z:1200,r:95,h:24,step:6,s:3.3}];
 // the washes: A runs west across the south of the map, B comes down the east side and joins it
 function zA(x){return 980+240*Math.sin(x*.0011+.5)+80*Math.sin(x*.0031+1.2)+25*Math.sin(x*.009);}
 function xB(z){return 1150+190*Math.sin(z*.0013+.3)+60*Math.sin(z*.0041)+18*Math.sin(z*.011);}

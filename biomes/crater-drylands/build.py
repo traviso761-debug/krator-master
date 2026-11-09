@@ -3,7 +3,8 @@
 
   python3 build.py                     station 1, the burn mosaic (src/ as it is) -> dist/crater-drylands.html
   python3 build.py --station <name>    a station (stations/<name>/: its host fragments replace src/'s of the same name; its
-                                       station.json names the page, "out"). None is built yet (PLAN-STATIONS.md: south, edge, salt)
+                                       station.json names the page, "out"): edge (station 3, the savannah edge) and salt (station 4, the
+                                       salt floor); south (station 2) waits on biomes/savannarim (PLAN-STATIONS.md)
 
   00-head.html      page shell, opens <script>
   10..49            BIOME CORE  (biome-core: engine-independent kit)
@@ -55,7 +56,7 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # STATIONS (PLAN-STATIONS.md; the Throne's and Korona's pattern): python3 build.py --station <name> builds stations/<name>/, whose host
-# fragments replace src/'s of the same name; its station.json names the page ("out"). None is built yet: `south`, `edge` and `salt` are planned
+# fragments replace src/'s of the same name; its station.json names the page ("out"). Built: `edge`, `salt`; `south` waits (PLAN-STATIONS.md)
 STN_ROOT=os.path.join(HERE,'stations')
 if os.path.isdir(STN_ROOT):
     BSRC.variants([['--station',_s] for _s in sorted(os.listdir(STN_ROOT)) if os.path.isfile(os.path.join(STN_ROOT,_s,'station.json'))])   # every station's page

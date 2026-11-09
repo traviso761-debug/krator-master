@@ -44,7 +44,7 @@ const STATION={key:'salt',site:{px:485,py:376},oldFires:5,
 // ---------------------------------------------------------------- the land
 const TERR={R:2600};
 // the kopjes: x, z, radius, height, terrace step, seed. KOP[0] is the Scyvoi Rock
-const KOP=[{x:-700,z:-260,r:150,h:30,step:6,s:1.3,name:'The Steampits kopje'},{x:1500,z:900,r:95,h:20,step:5,s:2.1}];
+const KOP=[{x:-700,z:-260,r:120,h:42,step:6,s:1.3,name:'The Steampits kopje'},{x:1500,z:900,r:95,h:20,step:5,s:2.1}];
 // THE SALT PANS: ellipses (centre, half-axes a and b, turn, wobble seed), their crust flattened to their level (the lowest of the floor round them,
 // less .6 m); PANS[k].level is set below, once landH is known. THE BRINE POOLS: smaller lows, carved 1.4 m, their water at the rim's level less .3 m
 const PANS=[{x:300,z:-900,a:430,b:260,t:.4,s:1},{x:-1300,z:700,a:330,b:210,t:-.7,s:2},{x:1350,z:-200,a:260,b:180,t:1.1,s:3},

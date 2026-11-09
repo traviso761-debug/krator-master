@@ -5,7 +5,8 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 ## The final rebuild (pair 12, 2026-11-09; a cloud session: built and linted, NOT verified on a GPU)
 
 Branch `claude/rebuild-crater-drylands-cloud`, from `claude/integration-b91c04` (b4edff31, the sky's `giant` from `SKY.legacy`, kept).
-`PLAN-STATIONS.md`, "Core adoption (pair 12)", has the table. Station 1 only; every change in `src/` and `build.py`.
+`PLAN-STATIONS.md`, "Core adoption (pair 12)", has the table, and "Stations 3 and 4, as built" the two new pages. Every change in `src/`,
+`stations/` and `build.py`.
 
 **What changed.**
 - `build.py` on the universal set's lists: core/biome 31b (the leafset: `check_assembly`'s MISSING `BIO.leafOn`/`leafQ` gone), 31j, 32, 34,
@@ -33,11 +34,11 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 `test-fire.js` (52, unchanged).
 
 **Not done this turn, and why** (PLAN-STATIONS.md says more):
-- [ ] **The N/S split and stations `south`, `edge`, `salt`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim` (J4-J6, not
-      built) whose se-rim species it takes; the black mallee is still a proposal. The page keeps its name until `south` exists.
+- [ ] **The N/S split and station `south`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim` (J4-J6, not built) whose
+      se-rim species it takes; the black mallee is still a proposal. The page keeps its name until `south` exists.
 - [ ] **KFIRE (H3).** `core/biome/test-fire.js` proves KFIRE against this kit's `52` loaded in place; the move needs that test changed
       first (a core change: the test would take a frozen copy of `52`, or its golden grids).
-- [ ] **Mounds, wadi, talus, polygon pans, tibasalt strata**: the row's kinds belong to the stations (`edge`, `salt`, `south`).
+- [ ] **Wadi, talus, tibasalt strata**: the row's other kinds; the strata are S's (`south`). The mounds are on `edge`, the pans on `salt`.
 - [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
       it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
 
@@ -46,6 +47,19 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 `node core/biome/test-fire.js` passes. One headless load, software GL (`tools/harness.py smoke`, not the verify): the first caught the ground's
 shader failing to compile (`KHOOK.EYE`'s `#ifndef` spliced mid-line: fixed); the second loads with a clean error panel, 50 calls, 18.8 M
 triangles at the opening view (the budget's 18.5 M was measured before the far field: `showcase-triangle-budget` may want its number moved).
+
+**Stations 3 and 4 (`edge`, `salt`), built this turn** (`python3 build.py --station edge|salt`; PLAN-STATIONS.md has what each draws).
+`src/` reads the station through guarded `STATION` knobs (89's sky site, 84's older fires, 88's build call, 99's title, views and checks);
+with no station they are not taken, and station 1 runs as before.
+- `edge`: swbay's six fragments read in place (its species, trees, floor, dress, build, fauna: its registry closes in the fauna file) for
+  `BIO.kin('swbay.thorn')` and `'swbay.baobab'` only (SWBAY.build is not called); core/biome 35 and 36 for swbay's fauna file; KSTACKS for
+  the mounds. The bay's trees take no char (their builders know no burn age).
+- `salt`: abyssal-savannah's four fragments read in place and built (`ABSAV.build`) under its own mask; its burn is this page's fire history
+  (`ABSAV.burn` replaced on the page), its parkland band opened to the flat floor; core/biome 33, 35, 39 for its species; water ext 54/54b
+  for the pans and the brine look.
+- [ ] **Owed on the stations** (PLAN-STATIONS.md): seasons on `edge` (straw and flush) and its other exchange rows (k-guilin's banyan and
+      silvergrass, nwbay's flame-crown); on `salt` the Steampits' geyser field reaching in, nwbay's cinder pine on basalt, the kiln's scrub
+      at its largest, the dry season driving the dust.
 
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
@@ -56,6 +70,9 @@ triangles at the opening view (the budget's 18.5 M was measured before the far f
 - the dust: none at load in calm air, the storm on the air select; `?shadow=1` once for its cost;
 - the attach audit: the limbs' collars should take nothing away; any floater it reports is this kit's (no other kit is on the page);
 - the budgets: `showcase` (18.5M tris, 120 calls) was measured before the impostors and the far field.
+- **the stations** (`verify.py dist/crater-drylands-edge.html --assert --all-views`, and `-salt`): their budgets are station 1's numbers;
+  the edge's mounds (one mesh) and umbrella trees, the salt floor's pans (their crust's polygons and the brine after rain: the weather's
+  rain) and brine pools, the two kits' boundary on the islands, the attach audit on swbay's and abyssal-savannah's own cards.
 
 ## The region and the open world
 
