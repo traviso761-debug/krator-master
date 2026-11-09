@@ -23,6 +23,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/host's `regOccupancy` honours `ground` and `far` records** (2026-11-09, the integration pass): a volume drawn on the ground mesh
+  (a wallow, a throat on a crack's floor) or past the far field has no scene sample, so `registered-volumes-non-empty` fails it.
+  godthrone's own probe (`99-host-take.js`) counts `r.ground || r.far` as occupied; core's (`core/host/95-host-probe.js`) does not, so
+  hyperjungle's `savage` adds an empty Object3D with `userData.probePoints`, one point a wallow. Teach core the flag, then drop that
+  object and godthrone's own copy. It moves every page on core/host.
+
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
