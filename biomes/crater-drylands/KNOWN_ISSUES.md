@@ -69,7 +69,7 @@ with no station they are not taken, and station 1 runs as before.
   is a leaf-material item, which the audit counts as a card. The spike now has a stalk (a `rod` up its axis, inside it, as the yucca's
   spike has; no random number drawn, so nothing else moves).
 - Done on the stations (2026-11-09): **seasons on `edge`** (the kit's grass takes core/biome's season through `BIO.host.seasons`, bound
-  to the clock in `99b-host-season.js`: straw and thinned in the dry, green in the wet; `?season=0`); **nwbay's flame-crown** at the
+  to the clock in `99-host-zseason.js`: straw and thinned in the dry, green in the wet; `?season=0`); **nwbay's flame-crown** at the
   waterhole (`BIO.kin('nwbay.flamecrown')`, nwbay's species, trees and variants read in place in their own registry, k-guilin's way; only
   the pack's bark3, fernleaf and bloom families); **the kiln's scrub at its largest on `salt`** (`BIO.host.treeScale` 1.2, applied in
   55's make after its draws); the salt floor's placement mask now keeps the core's water rule.
