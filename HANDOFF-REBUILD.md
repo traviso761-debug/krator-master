@@ -550,20 +550,10 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne (**merged 2026-11-03:** all fourteen pages, stations 12-14 new; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"), ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu (**merged 2026-11-03:** stations `cloud`, `descent`, `ranges`, `gills`, `floor`), oidong (**merged 2026-11-03:** stations `passes`, `hearths`) | their five shared species together |
-<<<<<<< ours
-  | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands (**pushed 2026-11-03, cloud session, for the coordinator's GPU verify and merge:** `claude/rebuild-nhighlands-cloud`; station 5 `bogs`, the Footfall bog country) | geyser before ringisles |
-  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1 and station 3 `lagoon`; built on geyser's 079716f3), abyssal-savannah (**pushed 2026-11-03, cloud:** `claude/rebuild-abyssal-cloud`, station 1 re-sited on 5.1; GPU verify and merge owed) | after all their sources |
+  | 7 | geyser (**built 2026-11-03 and 2026-11-09 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase, station `stills` and stations 2-5 `puna`, `basin`, `corona`, `ice`), nhighlands | geyser before ringisles |
+  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1, station 3 `lagoon` and (2026-11-09, unverified) station 2 `high`; built on geyser's 079716f3), abyssal-savannah | after all their sources |
   | 9 | korona (**merged 2026-11-04:** all six pages on the universal set; `biomes/korona/PLAN.md`, "Core adoption"), nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut (**pushed 2026-11-04, cloud session, for the coordinator's GPU verify and merge:** `claude/rebuild-cut-cloud`, on nhighlands' pair-7 branch; the universal set, exchanges 5 and 6), farside (**turn on `claude/rebuild-farside-cloud`, 2026-11-04, not merged:** station 1 rebuilt for the tsunami and Farport's move; software GL only, the GPU run is the coordinator's) | both read nwlowlands |
-  | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands | geyser before ringisles |
-  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1, station 3 `lagoon` and (2026-11-09, unverified) station 2 `high`; built on geyser's 079716f3), abyssal-savannah | after all their sources |
-  | 9 | korona, nsemiarid (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
-=======
-  | 7 | geyser (**built 2026-11-03 and 2026-11-09 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase, station `stills` and stations 2-5 `puna`, `basin`, `corona`, `ice`), nhighlands | geyser before ringisles |
-  | 8 | ringisles, abyssal-savannah | after all their sources |
-  | 9 | korona, nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
->>>>>>> theirs
-  | 10 | cut, farside | both read nwlowlands |
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
   | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
