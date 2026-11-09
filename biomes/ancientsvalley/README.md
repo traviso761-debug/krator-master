@@ -119,7 +119,7 @@ the growth and shrinks a tree whose own height is past it (to .4 at the least), 
 **The transit (the owner, 2026-11-09; `PLAN.md` section 14; `kits/ancient-transit` read in place):** the lattice is a real road network (`46z`:
 64 streets, avenues of 26 m and roads of 11 m, 824 kerb-line junctions with pavement corners and crosswalks), the war along every street rising
 toward the lake (scorch, craters, barricades of the Ancients' wrecked vehicles, military positions; a riot inland, bombed at the shore), the
-elevated highway across the page with three ramps, the elevated passenger line (two stations, a fallen train), the cargo line at grade (37 level
+elevated highway across the page with three ramps whose feet are T junctions of the grid (`KTRANSIT.joinRamps`), the elevated passenger line (two stations, a fallen train), the cargo line at grade (37 level
 crossings, a derailed train), the subway under an avenue (three stations, sinkholes, two metro trains), the ground carved by the kit's craters,
 sinkholes and gradings. `74-host-transit.js` draws it: every surface in one builder in 1.5 km chunks (the kit's 400 m chunks a street were
 3,000 draw calls here), the junctions and the kit's own draws chunked the same, far chunks hidden past 3.6 km, and the furniture and the war

@@ -113,6 +113,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   AVT.highway=KTRANSIT.highway(VIA2,{id:'h1',ground:ground,clearance:9,ramps,ruin:s=>{const q=HP.at(s),k=AVT.lakeK(q.x,q.z),sc=F.scar(q.x,q.z);return sc>.3?{intact:0,cracked:.1,collapsed:.5,gone:.4}:k>.6?{intact:.1,cracked:.3,collapsed:.35,gone:.25}:{intact:.45,cracked:.35,collapsed:.12,gone:.08};},
    overgrowth:s=>{const q=HP.at(s);return 2*F.feral(q.x,q.z)*F.wild(q.x,q.z);},blockades:[Math.round(HP.L*.62)],seed:SEED+77});AVT.rampCrossings=ramps;AVT.highwayPath=HP;}
  /* the elevated passenger line on the north viaduct's line, two stations, overgrown where the land is wild */
+ /* the ramps' feet join the grid (the transit session's answer, 2026-11-09, kit 49674696b): each landing road a road of kind `ramp` in the network, a T on the
+    avenue it lands on with the kerb corners, cuts, crosswalk and signals, the avenue regraded flat through it in place; a landing road that stops short
+    of its avenue by more than 12 m stays a free end (junction.ramp marks the joined ones) */
+ if(KTRANSIT.joinRamps)try{AVT.rampJoins=KTRANSIT.joinRamps(AVT.net,AVT.highway);}catch(e){AVT.rampJoinErr=e.message||String(e);}
  {const PP=KTRANSIT.path(VIA,{ground:relief,radius:160});AVT.pax=KTRANSIT.rail(VIA,{id:'pax',ground:ground,elevated:true,stations:[1500,3400],overgrowth:s=>{const q=PP.at(Math.min(s,PP.L));return 2*F.feral(q.x,q.z)*F.wild(q.x,q.z);},seed:SEED+79});}
  AVT.trains=[KTRANSIT.train(AVT.cargo,{id:'freight',s:Math.round(AVT.cargo.L*.42),kind:'freight',state:'derailed',from:2}),KTRANSIT.train(AVT.pax,{id:'pax1',s:2400,kind:'passenger',state:'fallen',from:2}),
   KTRANSIT.train(AVT.subway,{id:'metro1',s:AVT.subway.stations[0].s+30,kind:'passenger',cars:4,state:'standing'}),KTRANSIT.train(AVT.subway,{id:'metro2',s:AVT.subway.stations[1].s-260,kind:'passenger',cars:4,state:'derailed',from:1})];

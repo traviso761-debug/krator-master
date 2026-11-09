@@ -417,5 +417,5 @@ fallen train), the cargo line at grade (37 crossings, a derailed train), the sub
 sinkholes, two metro trains), the ground carved by the kit's `craterH`, `sinkholeH` and `lineH`. The draw: every road's surface in one builder
 finished in 1.5 km chunks, the kit's own draws chunked the same (the kit's 400 m chunks a street were 3,000 draw calls here), the furniture and
 the war bucketed into 400 m cells and drawn as the eye comes within 750 m. The triangle budget is 20 M (`BUDGETS.json`), the call ceiling 900.
-**Not yet:** the family mix leaning tall toward the lake, the towers placed to the kit's kerb lines, a junction record where a ramp lands
-(`KNOWN_ISSUES.md`).
+The ramps' feet are T junctions of the grid (`KTRANSIT.joinRamps`, the transit session's answer the same day). **Not yet:** the family mix
+leaning tall toward the lake, the towers placed to the kit's kerb lines (`KNOWN_ISSUES.md`).

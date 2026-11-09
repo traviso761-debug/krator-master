@@ -73,9 +73,10 @@
 - [ ] **The family mix does not yet lean tall toward the lake** (the owner's "nice lake front property values", `PLAN.md` 14): the war and the
   wrecks rise toward the shore, the towers' heights do not; `AV.plan`'s family weights by `lakeK` are the next transit item, with the towers
   placed to the kit's kerb lines rather than the lattice's bare lines.
-- [ ] **The ramps meet the avenues beside the network, not in it:** a ramp's foot lands on an avenue's surface (the kit's ramp record at grade),
-  but no junction record joins it to the grid, so there is no kerb corner or crosswalk where it lands. Asked of the transit session when the
-  junction kinds take a one-sided arm.
+- [x] **The ramps meet the avenues beside the network, not in it** closed 2026-11-09: the transit session answered the same day (kit commit
+  49674696b, `KTRANSIT.joinRamps`): each landing road is a road of kind `ramp` in the network and its foot a T on the avenue it lands on, with
+  the kerb corners, the cuts, the crosswalk and the signals, the avenue regraded flat through it in place; the valley's three ramps all join
+  (827 junctions: 824 crossings, 3 tees).
 - [ ] **A tower retiers at once only on a jump of 60 m or more** (`AVC.tiersTick`, 2026-11-09): a frame drawn with the last eye's tiers once
   showed a far telescope's impostor, its 4 m stalk lost to the sheet's resolution, where its hero belonged ("floating structural elements"); a
   walker crossing the 3.2 km shell boundary still sees a thin stalk thin out on the impostor sheet.
