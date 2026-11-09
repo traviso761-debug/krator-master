@@ -109,7 +109,7 @@
  ],
  "50-core-furnish.js": [
   "core/furnish/50-core-furnish.js",
-  "3474c3c8d39a"
+  "2bd26bf99a15"
  ],
  "50-core-tags.js": [
   "core/tags/50-core-tags.js",
@@ -117,7 +117,7 @@
  ],
  "52-core-furnish-draw.js": [
   "core/furnish/52-core-furnish-draw.js",
-  "949213456277"
+  "1baf4b1363ee"
  ],
  "52-core-tags-vocab.js": [
   "core/tags/52-core-tags-vocab.js",
@@ -189,7 +189,7 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "302b02754c6f"
+  "c21b6dcc7a5a"
  ],
  "64-izv-bundle.js": [
   "GENERATED: core/door/10-core-door.js, core/door/20-core-glass.js, core/door/30-core-door-leaf.js, kits/ancients/src/10-core.js, kits/ancients/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, kits/ancients/src/30-kit.js, kits/ancients/src/32-surfaces.js, kits/ancients/src/34-kitdefs.js, kits/ancients/src/38-helpers2.js, kits/ancients/src/50-registry.js, kits/ancients/src/54-mat-concrete.js, core/materials/68-mat-v5.js, kits/ancients/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, kits/iziz-vernacular/src/69b-vern-mat.js, kits/iziz-vernacular/src/69c-vern-helpers.js, kits/iziz-vernacular/src/69e-vern-hollow.js, kits/iziz-vernacular/src/69e5-iziz-openings.js, kits/iziz-vernacular/src/70-vern-dwellings.js, kits/iziz-vernacular/src/71-vern-trade.js, kits/iziz-vernacular/src/71a-vern-food.js, kits/iziz-vernacular/src/71b-vern-cloth.js, kits/iziz-vernacular/src/71c-vern-craft.js, kits/iziz-vernacular/src/72-vern-civic.js, kits/iziz-vernacular/src/73-vern-infra.js, kits/iziz-vernacular/src/73b-vern-works.js, kits/iziz-vernacular/src/73c-vern-land.js, kits/iziz-vernacular/src/74-vern-guilds.js, kits/iziz-vernacular/src/74b-vern-frontier.js, kits/iziz-vernacular/src/74z-vern-trades.js, kits/ancients/src/8ap-funicular.js",
@@ -275,6 +275,10 @@
   "core/host/92-host-panel.js",
   "8066aefad370"
  ],
+ "92k-host-keys.js": [
+  "core/host/92k-host-keys.js",
+  "95f7538e4448"
+ ],
  "93-host-inspect.js": [
   "core/host/93-host-inspect.js",
   "30374027dc5d"
@@ -289,7 +293,7 @@
  ],
  "95-host-probe.js": [
   "core/host/95-host-probe.js",
-  "111c9ae5768a"
+  "4c60a9746384"
  ],
  "95-verge-doors.js": [
   "settlements/verge/src/95-verge-doors.js",
@@ -313,7 +317,7 @@
  ],
  "99-start.js": [
   "settlements/verge/src/99-start.js",
-  "5e9d1db2aae0"
+  "4eecd02b2599"
  ],
  "99-tail.html": [
   "settlements/verge/src/99-tail.html",

@@ -65,6 +65,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 SHARED_CORE = set(TAGS_FILES) | set(CORE_HOST)   # shared modules: each its own scope (IIFEs), left out of the name rules
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',

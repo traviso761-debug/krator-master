@@ -89,7 +89,7 @@ CORE = {
 # src/99-start.js is the take; a src/ file with a host file's name would win (none)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')] + khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for _f in CORE_HOST:
     CORE.setdefault(_f, os.path.relpath(khost.path(_f), ROOT).replace(os.sep, '/'))
 # the two biome kits: slot prefix, kit folder, the kit's fragments in its own order (a missing one is skipped)

@@ -113,7 +113,7 @@ import host as khost
 # viewer"): host.FULL, the shell and the record inspector, stocks, marks (they supersede the polytool), pictures, the
 # minimap, the editor and the cutaway, with core/edits, core/space and core/minimap; the page's edits log inlined
 # (host.edits_js: <build>/edits.json, or a newer browser draft)
-CORE_HOST=khost.FULL
+CORE_HOST=khost.FULL+khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 khost.resolve(PATH,CORE_HOST)
 # core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
 # Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
