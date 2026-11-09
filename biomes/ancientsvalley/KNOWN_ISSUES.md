@@ -46,10 +46,9 @@
 - [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists), no subway, no Soleri farmland (the terraces
   are off this page). The keepers are kits/mechs' Iziz walkers of Ancient origin (the Hoist, the Fossor, the Catulus), rusted; the valley's own
   chassis (the stilt tripod, the shrouded walker, the hunched trooper) are a kit file to come, and the hunters and feigners with them.
-- [ ] **The smog is one page-wide setting** (`89v-host-smog.js`, `STAGE.smog`): the height fog's mist has no spatial density, so the owner's
-  "universal near the cities" is universal on this all-city page; a station on the terraces wants it thinned by `F.density`, which needs a density
-  field in the mist (core/atmos: the fog belt has one for its own band; a mist field is the same kind of change). From the air the floor lies
-  under the pool and reads pale; the owner asked for the LOD sold this way, judge it by eye. No glow in the cloud yet (no city lights).
+- [x] **The smog is one page-wide setting** closed 2026-11-09: core/atmos (session atmos-smog) gave the mist a density field (the valley passes
+  `F.density`: universal in the cores, thin on the terraces) and the clouds a mood (dark, the taint's tint, violent turbulence, the fires' glow at
+  night, shifting episodes by `ATMOS.cloudMood`). From the air the floor lies under the pool and reads pale; judge it by eye.
 - [ ] **The foul half is paint and rubble** (dark oily paint, the taint's purple, a sick scrub where the kits' wet falls under the rainforest
   zone): no oil pools, no slicks on the water, no dead trunks standing. The feral half's overgrowth is the kits' trees grown and the streets
   taken, trees copied onto the ruins' tops and curtains of creeper and moss hung on the towers (2026-11-09). What the overgrowth still lacks: a

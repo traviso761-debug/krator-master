@@ -9,7 +9,8 @@
 // that recolours its own fog. A later station varies the smog by F.density (thinner on the terraces, universal in the cores).
 (function(){const S=STAGE.smog;if(!S||typeof ATMOS.heightFog!=='function')return;const LY=STAGE.lakeY;
  ATMOS.heightFog({falloff:1/760,sun:.3,sky:.45,
-  mist:{density:S.mist.density,y:LY+S.mist.above,depth:S.mist.depth,noise:S.mist.noise},
+  mist:Object.assign({density:S.mist.density,y:LY+S.mist.above,depth:S.mist.depth,noise:S.mist.noise,day:S.mist.day==null?0:S.mist.day},
+   S.mist.field?{field:{at:(x,z)=>STAGE.F.density(x,z),centre:[0,0],radius:7000,res:128},samples:6}:{}),   /* the field: core/atmos 2026-11-09; an older core ignores the keys */
   band:{density:S.band.density,y:[LY+S.band.y[0],LY+S.band.y[1]],cover:S.band.cover,noise:S.band.noise}});
  ATMOS.heightFogScene(scene);
  const C=new THREE.Color().setRGB(S.colour[0],S.colour[1],S.colour[2]),k=S.mix==null?.6:S.mix;

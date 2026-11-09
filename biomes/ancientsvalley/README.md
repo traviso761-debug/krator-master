@@ -98,7 +98,9 @@ its Iziz walkers of Ancient origin, the Hoist, the Fossor and the Catulus, ruste
 stopping at the corners as if to work). **The smog** (the owner: "dark, unnaturally turbulent, coloured cloudiness and medium-distance smog,
 universal near cities; it should sell the LOD"; `89v`): the sky's clouds low, heavy and fast, the air turbid and dust-coloured toward the
 taint's purple, the page's fog thick (2 km half veiled, 4 km gone: the far tiers with it), the height fog's mist pooled on the floor and a broken
-band of dark cloud at the tallest towers' height, the fog's colour drawn to a brown-purple grey each frame.
+band of dark cloud at the tallest towers' height, the fog's colour drawn to a brown-purple grey each frame; since 2026-11-09 the mist's density is a
+field of `F.density` and the clouds have a mood (core/atmos `clouds.dark/tint/turbulence/glow`, `ATMOS.cloudMood`: shifting episodes of tint,
+turbulence and the fires' glow at night).
 
 **Overgrown like Midgar (the owner, 2026-11-09, with the end of FF7 as the reference; the triangle budget raised to 15 M, `BUDGETS.json`):** in
 the wild half the ruins themselves are swallowed. The feral wrap's **perches** (`46-av-feral.js` o.perch, assigned in `88-host-build.js`): every

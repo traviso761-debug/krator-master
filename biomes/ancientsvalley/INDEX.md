@@ -25,12 +25,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `41-av-field.js` | 14 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `46-av-feral.js` | 12 |  |
-| `46z-host-stage.js` | 20 |  |
+| `46z-host-stage.js` | 21 |  |
 | `47-host-land.js` | 9 | the ground (27); the far ground (the model's country out to 24 km (61) |
 | `70-host-city.js` | 38 **big** | the rust (the owner, 2026-11-04: more rust) (62); the engines (kits/ancients 8ah, 8ai, read in pla (202); the lines: the viaduct (AV.viaduct's records dra (217) |
 | `71-host-creepers.js` | 5 |  |
 | `72-host-keepers.js` | 5 |  |
-| `73-host-wrecks.js` | 6 |  |
+| `73-host-wrecks.js` | 7 |  |
 | `88-host-build.js` | 4 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 2 |  |

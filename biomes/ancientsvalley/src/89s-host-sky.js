@@ -11,6 +11,8 @@ const SKY_RIDGES=AV_REGION.ridges.slice().reverse().map((b,i)=>({profile:b.profi
 const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:STAGE.px[0],py:STAGE.px[1]},air:Object.assign({pressure:STAGE.air.pressure,humidity:STAGE.air.humidity},STAGE.airLook||{}),
  clouds:Object.assign({cover:STAGE.cloudCover==null?.48:STAGE.cloudCover},STAGE.clouds||{}),fogDensity:STAGE.fogDensity==null?.000075:STAGE.fogDensity,ridges:SKY_RIDGES}),
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true});
+/* the clouds' mood (core/atmos ATMOS.cloudMood, 2026-11-09): episodes of tint, glow and turbulence, the tint by the taint field at the eye */
+if(STAGE.cloudMood&&typeof ATMOS.cloudMood==='function')ATMOS.cloudMood(SKY,Object.assign({seed:STAGE.seed|0,tintAt:(x,z)=>{const t=STAGE.F.taint(x,z);return t>.55?[.46,.28,.38]:t>.3?[.42,.33,.30]:null;}},STAGE.cloudMood));   /* tintAt -> [r,g,b] | null: the taint's red-purple where it runs deep, its brown-purple where it is felt, the palette's episodes elsewhere */
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}
 {const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){

@@ -166,7 +166,7 @@ for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyho
 # the height fog (the smog: 89v-host-smog.js): the chunk in sky/, its host binding in host/
 PATH['89-atmos-j-fog.js']=os.path.join(CORE,'atmos','sky','89-atmos-j-fog.js')
 PATH['89-atmos-j-heightfog.js']=os.path.join(CORE,'atmos','host','89-atmos-j-heightfog.js')
-for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-k-cloudmood.js']:   # k: the clouds' mood (2026-11-09)
     PATH[f]=os.path.join(CORE,'atmos','sky',f)
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,os.path.join(CORE,'host'))

@@ -96,8 +96,11 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   /* the owner, 2026-11-08: dark, unnaturally turbulent, coloured cloudiness and a medium-distance smog, universal near the cities (this whole page is
      city1): the sky's clouds low, heavy and fast, the air turbid and dust-coloured toward the taint's purple, the page's fog thick enough that 2 km is
      half veiled and 4 km gone (it also hides the far tiers), the smog itself the height fog's mist on the floor (89v-host-smog.js) */
-  clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
-  smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.00042,above:110,depth:110,noise:.85},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
+  /* core/atmos's smog additions (2026-11-09, session atmos-smog): the cloud's mood (dark, the taint's brown-purple tint, violent turbulence, the
+     fires' glow at night, shifting episodes) and the mist's density field: F.density, universal in the cores, thin on the terraces */
+  clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022,dark:.8,tint:[.42,.33,.30],turbulence:.7,turbKind:'violent',glow:.5,glowColour:[1,.55,.2]},
+  cloudMood:{period:300,glowColour:[1,.55,.2]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
+  smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.0011,above:110,depth:110,noise:.85,day:1,field:true},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
   ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';if(F.foul(x,z)>.6&&F.park(x,z)<.5)return 'polluted ground (the foul half)';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
