@@ -3,7 +3,7 @@
 The Firebliss Range (`rmw8hj62nmugn`) is a volcanic arc on the Labyrinth's northern rim, in the far south-west of map 5.1.
 Along its spine stand five volcanoes; under it lie four warm valleys, each with its own tarn. Nobody lives there. Fellgang
 hunters and Kimr hunters from the Labyrinth come and go by season. Its dangers are the land itself: gas, heat, ash, ice and
-thin air. A player who reaches one of its oases has found the best outpost site in the range (section 7).
+thin air. A player who reaches one of its oases has found a good place for an outpost (section 6).
 
 This is a seed from the owner's brief (2026-11-09) and the map. Nothing is built; it is a kit for the rebuild's queue, after
 the frozen integration pass, and a neighbour of `biomes/labyrinth/PLAN.md`.
@@ -141,15 +141,11 @@ Each valley is a different bargain:
 | **Solfatara Glen** (2,119 m) | the sulphur, the range's richest resource | acid, fumes and hot ground: a works, not a home |
 | **West Bliss Cauldron** (2,639 m) | the most hidden and defensible: a crater moat under Mount Pyre | the highest, coldest and most remote; a crater, so the worst gas trap |
 
-**The recommendation:** Great Firebliss Vale as the outpost, on a bench above the gas line on its windward side. East Bliss Vale
-is its trade post, and Solfatara Glen its mine.
-
-**What the kit draws for it:**
-- outpost sites, each a flat pad above the gas line, with water and a keep-clear, as plain records (`[G data]`) for Godot;
-- each site rated for water, warmth, gas safety, flood safety and defence;
-- the pads empty, ready for whatever the player builds.
-
-`core/city` is to become the player's settlement builder (`CLAUDE.md`); until then the sites are records and keep-clears.
+**No spot is picked for the player** (the owner, 2026-11-09): the player sets up where they like. What the world needs is an
+**outpost registry**: a record of every outpost, the player's or anyone's, with its place, its owner and what it holds. The
+registry belongs to the open world, not to this kit; it is being built as core work (owner's request, 2026-11-09). This kit only
+supplies its candidates: the oases' benches (water, warmth, gas and flood safety) as hints the registry may read, and nothing
+drawn on the ground for them.
 
 ## 7. Stations (proposed, on the 5.1 map)
 
@@ -157,12 +153,12 @@ World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330)
 
 | Station | 5.1 px | Ground | What |
 |---|---|---|---|
-| 1 **Great Firebliss Vale** | 184,1318 | the tarn at 2,279 m; walls to 3.5 km | the oasis: the warm tarn and its sinter, meadow and groves under the ash slopes, a Fellgang camp, the outpost benches marked; gas in the hollows at night |
+| 1 **Great Firebliss Vale** | 184,1318 | the tarn at 2,279 m; walls to 3.5 km | the oasis: the warm tarn and its sinter, meadow and groves under the ash slopes, a Fellgang camp; gas in the hollows at night |
 | 2 **Solfatara Glen** | 238,1322 | the tarn at 2,119 m in a shallow glen | the fumarole field: sulphur chimneys, acid pools, mud pots, sulphur gatherers' tracks; the Tlahn Warra through it |
 | 3 **East Bliss Vale** | 284,1318 | the tarn at 1,960 m | the way in: the Weyt Warra's gorge up from the Labyrinth, a Kimr camp, strays from the Labyrinth at the water, the lahar marks in the gorge |
 | 4 **Firebliss Mons** | 206,1284 | the crater floor at 5,480 m, the rim at 6,380 m | fire and ice: the glaciated cone, the steaming crater breached south-east, fumarolic ice caves, the plume overhead, thin air |
 
-Station 1 comes first: it holds the oasis, the hazards and the outpost all at once. A fifth station could be West Bliss
+Station 1 comes first: it holds the oasis, the hazards and the hunters all at once. A fifth station could be West Bliss
 Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
 
 ## 8. Core adoption (written first, as the working rules ask)
@@ -184,7 +180,7 @@ Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
 | resources | `kits/resources` (`KRES`) | sulphur, obsidian, copper at the Copper-Fissure; read the geology when the kit starts |
 | shadows | `core/shadow` | off at load |
 | tags, space, mask, host, export, materials | as every kit | |
-| city, hamlet | `core/city`, `core/hamlet` | no: nobody lives here. The outpost sites are records (section 6) |
+| city, hamlet | `core/city`, `core/hamlet` | no: nobody lives here. Outposts go in the open world's registry (section 6) |
 
 **Core amendments the range needs** (no new module; most are shared with the region plans reviewed 2026-11-09):
 1. **Geothermal surfaces:** mud pots, the fumarole kind with steam and runoff, sinter and mat decals. Already owed in
@@ -195,13 +191,13 @@ Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
    - a flood that runs a gorge on a cycle (lahar or outburst).
 3. **A volcanic plume:** fog, ash fall and its shade along an azimuth from the vents, as a weather source in `core/atmos`. It
    would serve the Godthrone and the Throne's vents as well.
-4. **Outpost sites:** a plain record kind for a site a player may build on (pad, water, ratings, keep-clear), in
-   `core/hamlet` or `core/camp`. It is the first piece of the player's settlement builder.
+4. **The outpost registry** (open world, not this kit): every outpost as a record, with this kit's oases offered as candidate
+   sites (section 6).
 
 ## 9. For the owner
 
-- **The outpost:** is Great Firebliss Vale the right valley for it? Should the kit draw an outpost started, such as a
-  ruined hunters' lodge to rebuild, or only empty pads?
+- **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, registered as an abandoned
+  outpost?
 - **The volcanoes' activity:** which vents are live (steaming, puffing ash, lava) and which are quiet? The plan takes all
   five as degassing and only the Copper-Fissure Vent as flowing.
 - **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud?
