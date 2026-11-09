@@ -350,7 +350,7 @@
     "biomes/nwouterwall/src/99-host-take.js": "b78c64113ae75419e25f37722c9fb8a236fce2d0fb6b38b8e4f9201194b59d01",
     "biomes/nwouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/nwouterwall/stations/yeti/44s-host-site.js": "5968338d2010255298a155eb15590836e405dc6f2a403e1d1c048b40192e8c28",
-    "biomes/nwouterwall/stations/yeti/86y-host-yeti.js": "61d3e8884da6ce360a51ccf6f16dbb177e5da56fa5f8be2650f6d1f1984dd698",
+    "biomes/nwouterwall/stations/yeti/86y-host-yeti.js": "25804fcec52adb28e67d0d7e57642b5e64d5849833070162391ba1116ce4b298",
     "biomes/nwouterwall/stations/yeti/station.json": "defcc4fe6acc2293c3268d6abce2e41abe5898089e05cda7c36ef38bb1d0abeb",
     "biomes/nwouterwall/tex/bark.larch.albedo.webp": "b39a68f1e7110e913459fc879f00a70bad207edf7f23310eac695fc9be858d86",
     "biomes/nwouterwall/tex/bark.pine.albedo.webp": "cb5186b53603401fcea40dc37ecbf0cae7a4252ebb13f2cadb732df2b85f4748",
@@ -656,13 +656,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "c6383a0e4d7ed25236b3851b1be80169a3d743a9b39b5918a571d599a15c662f",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "cfd54844c679207776c3c4eb0fff50157a5bc9ff0943981fc0453e7628d04caa",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "c6383a0e4d7ed25236b3851b1be80169a3d743a9b39b5918a571d599a15c662f",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "cfd54844c679207776c3c4eb0fff50157a5bc9ff0943981fc0453e7628d04caa",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"

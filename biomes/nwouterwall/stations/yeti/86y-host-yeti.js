@@ -35,5 +35,8 @@ const YETI_TOWN=(function(){const out={sites:[],group:null,missing:null};
  catch(e){reportErr('yeti: '+(e&&e.stack||e));return out;}
  KratorYeti.REG().filter(r=>!r.parent).forEach(r=>{OBSTACLES.push({x:r.x,z:r.z,r:r.r+3,y0:r.y-2,y1:r.y+r.h});
   REGISTER({name:r.name+' (the Khaayken: kits/yeti)',key:'yeti.'+r.key,x:r.x,z:r.z,y:r.y-1,r:Math.max(2,r.r),h:r.h+1});});
+ /* the kit's buildings are merged meshes, so the probe's box centres miss most houses: one point a record at its middle (core/host's probePoints;
+    the group sits at the origin, the records are world positions) */
+ out.group.userData.probePoints=[].concat(...KratorYeti.REG().filter(r=>!r.parent).map(r=>[r.x,r.y+r.h/2,r.z]));
  return out;})();
 _mark('yeti');
