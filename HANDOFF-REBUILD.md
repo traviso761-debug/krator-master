@@ -1,5 +1,19 @@
 # Handoff: the all-builds rebuild
 
+## Godstep station 1 and Greenstep's first page (2026-11-09, branch `ccr-f2b9901e-grrx3e`, a cloud session with no GPU; not merged)
+
+- **Godstep station 1, the stair** (`biomes/godstep/dist/godstep.html`; `biomes/godstep/PLAN.md` "Station 1, as built"): the kit's first page,
+  on the owner's queue ("build station 1 of godstep"). A 719 m trap stair of 18 benches (`KRELIEF.stair`), four flows baked at build
+  (`KLAVA.bakeLayers`, `src/flows.json`), tumuli (`KRELIEF.tumuli`), step 2's black sand and moss cones, the cairned way, late-winter snow.
+  `verify.py --assert` passes in software GL only. Open (`KNOWN_ISSUES.md`): the front's beds from the bake are wired but no baked lobe
+  reaches the lip; snow cover (16/16 texture units), aura geodes, mirror switch and the Godthrone's crusts not taken; the overview shows the map's square.
+- **Greenstep** (`biomes/greenstep`, a new kit; the owner said "proceed" on its plan, 2026-11-09): its first page `dist/greenstep.html` is
+  station 3's ground (`--station tallwalls` is the default): Terrace III, the Great Veil with the Clodosriba and the Western Rille falling
+  side by side, the rilles' confluence, Terraces II and IV; swlowlands' and shighlands' trees read in place. **Tallwalls' fortress is not
+  drawn**: the kit publishes its site (`site.tallwalls`) and its buildings are owed to a settlement build on `core/city`. `verify.py --assert`
+  passes in software GL only; 11.6 MB page (the neighbours' packs taken whole: narrow them). Model 5.1's divergences from the plan are in its PLAN.md.
+- **Owed:** GPU `--assert --all-views` on both pages; the gallery when they reach `main` (both are new biomes).
+
 ## The integration pass (2026-11-08 to 2026-11-09, `claude/integration-b91c04`; read first)
 
 **Merged, in order:**

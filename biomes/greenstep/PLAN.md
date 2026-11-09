@@ -7,11 +7,21 @@
 > *"give me a plan for Green Valley (renamed Greenstep) to be a rainer, lusher version of the Godstep, with multiple levels of lava terraces. it is the greatest refuge of the free Giants, home to their greatest haven, the fortress of Tallwalls"*
 > *"tallwalls is not just a home to free giants but other escaped slaves from Voth and Dalab as well"*
 
-**Status: plan, awaiting the owner.**
+**Status: the owner said proceed (2026-11-09).** First page built: station 3's ground, the Citadel Step (`dist/greenstep.html`,
+section "Station 3, as built"). Tallwalls' buildings are not the biome kit's (below, and "Still open"). Stations 1, 2, 4, 5 and 6 are later turns.
+
+**Decided at the build (2026-11-09):**
+- **The first page is station 3's ground**: the Citadel Step (Terrace III) round 5.1 px 650,1268, the Great Veil riser with the Clodosriba's
+  curtain falls into their plunge pool, the Western Skylight Rille joining the Clodosriba round the promontory, Terrace II below and the
+  Upper Citadel Scarp (riser 3) with Terrace IV above it.
+- **Tallwalls is drawn by a settlement build, not this kit.** A city's placement goes on `core/city` (CLAUDE.md), so the kit publishes
+  Tallwalls' site as data (a `core/tags` site record and its footprint on the promontory, kept clear of flora) and its ramparts, gates,
+  round-halls and freedmen's courts are owed to `settlements/tallwalls` (to be planned). As Godstep's plan leaves Daridel's old site to
+  the settlement plan.
 
 ---
 
-## 0. What the kit is (`GREENSTEP` on `BIOME-API.md`)
+## 0. What the kit is (`GSTEP` on `BIOME-API.md`)
 
 | | |
 |---|---|
@@ -19,9 +29,93 @@
 | **Polygon** | `Greenstep` (`rmw5n1w1rx0u2`, renamed from `"Green Valley"`; `8,545 px` = `34,180 km²` on the `1821×1723` `5.1` canvas; `X = 578..692, Y = 1195..1349`) |
 | **Settlement Added** | **Tallwalls** (`id: "stallwalls01"`, `type: "city"`, `px: 650, py: 1268`, `+1,980 m`, `Cfa`/`Cfb`): the greatest haven and cyclopean basalt-terrace fortress of the Free Giants (*Vrivolci*), commanding Terrace III above the confluence of the two lava-tube rilles, `170 km` SSW of the outer watch-post **Tallhouse** (`smqy5z5eek` at `px 683, 1184`) |
 | **Pages** | Six stations (Section 6): the Lower Mare Gate-Step & Watch-Rille (`gatestep`), the Hanging Cataracts & Giant Terrace Farms (`loamstep`), the Fortress of Tallwalls on the Citadel Step (`tallwalls`, default page), the Collapsed Lava-Tube Rille & Four-Arm Smithies (`rilleforge`), the Spiral-Fern Cloud Bench (`cloudstep`), and the Greenstep Fissure Shield & Headwall Falls (`headvent`) |
-| **Core** | `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (`KSTRATA`'s `basalt` hexagonal entablature/colonnade recipe across five lobate mare steps, plus sinuous collapsed lava-tube rilles and skylight arches), `core/water` (multi-tier curtain waterfalls plunging over columnar basalt scarps, plunge pools, and subterranean rille streams), `core/atmos`, `core/haz`, `core/charactermodels` (four-armed and two-armed green-skinned Vrivolci Giants in oversized Talovolci checked wool and bronze torcs) |
+| **Core** | `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (`KSTRATA`'s `basalt` hexagonal entablature/colonnade recipe across five lobate mare steps, plus sinuous collapsed lava-tube rilles and skylight arches), `core/water` (multi-tier curtain waterfalls plunging over columnar basalt scarps, plunge pools, and subterranean rille streams), `core/atmos`, `core/hazard`, `core/charactermodels` (four-armed and two-armed green-skinned Vrivolci Giants in oversized Talovolci checked wool and bronze torcs) |
 | **Read in place** | `biomes/swlowlands` (sprawl oak, tier cedar, veil willow, cork grove, red bay, giant fern, spanish moss) and `biomes/shighlands` (right-handed coilbark, spiral trumpet, volute tree, spiral frill tree, crozier tree fern, screw palm, ruffle-crown, escargot begonia); nothing copied |
-| **Object** | `GREENSTEP` on the `BIOME-API.md` contract |
+| **Object** | `GSTEP` on the `BIOME-API.md` contract (`build`, `zones`, `PLANTS`, `TREES`) |
+
+---
+
+## Core adoption (written before the first fragment, 2026-11-09)
+
+Started from `biomes/riftrim` (the newest full adoption with the neighbours' kin read in place: its gorge station is a river leaving a
+plain in a staircase of falls, the nearest ground to this one) and `biomes/godthrone`'s rock (`tibasalt-ponded`). The modules station 3
+takes, and for each it does not, why:
+
+| Module | Takes | For |
+|---|---|---|
+| `core/biome` | `10-core-head`, `20-core-kit` (`BIO.INDEX_ITEMS`, LOD merge/fade/cull), `30-core-foliage`, `31b-core-leafset`, `31j-core-joint`, `32-core-variants` (**`BIO.kin`**: every tree is a neighbour's species grown by its own builder), `33-core-fungoid`, `34-core-impostor`, `40-core-place`, `41-core-env` (the field contract: `BIO.env` with `water: WATER.fieldFns`), `42`/`43-core-export(-host)`, `44-core-stage` | the kit's floor on the core's items; the kin trees; one field table placement and the ground read |
+| `core/rand` | `KRAND` | every placement cell and every kin tree (`KRAND.hash(world, i, j, salt)`); no sin hash, no stream order |
+| `core/tags` | `50`, `52`, `53` | every item set, instance and registered volume a record; **Tallwalls' site** (`site.tallwalls`) a record with its footprint |
+| `core/space` | `KSPACE` | the keep-clear between the kin trees |
+| `core/terrain` | `35-core-strata` + host shade (**`tibasalt-ponded`**: thick flows in colonnades, bead partings altered to palagonite in this wet country), `37-core-stacks`, `38-core-relief`, `43-core-ground` (`KGROUND`, at most five library layers), `44-core-farfield` + draw, `45-core-horizon` + shade | the ground, the risers' columnar walls, the far country, the shading |
+| `core/water` | `20`, `21`, `22`, `50`, `51`; ext `54`, `54b`, `56`, `57` (the audit), `58` (the mirror switch, off at load), `60` (`WATER.fields`) | the Clodosriba and the Western Rille's stream as flows, every fall a `WATER.fall` with its plunge pool, the flora's and the wet band's shore |
+| `core/atmos` | the core, presets, export, waves, skylight, `bindHost`, the shared sky (`skyBiome` at 5.1 px 650,1268), `bindWeather` (a wet climate), height fog (the falls' spray and the cloud deck), the rain cover and the wet ground (R9, R10), particles | the sky, the rain, the mist |
+| `core/hazard` | `KHAZ` | the ambient bridge (the air's load); the risers' edges are the probe's |
+| `core/clock` | through `core/host` | the hour |
+| `core/host` | `FULL` + `94-host-polytool` | the page shell, the probe, the inspector |
+| `core/materials` | `record` (`KMAT`) and the pack (`materials.json`, `tools/textures/pack.py biomes/greenstep`) | the floor's cards, the ground's layers |
+| `core/export` | `07`, `09` | the krator-world container |
+| `core/shadow` | `KSHADOW`, off at load | the sun's shadows on the switch |
+
+Not taken: `core/mask` (nothing is placed from a canvas), `core/city` (**Tallwalls is the settlement build's**: the kit only publishes its
+site), `core/hamlet`, `core/camp`, `core/simulation`, `core/furnish`, `core/lod` (the biome core's runtime LOD covers it), `36-core-carve`,
+`39-core-cavern` and `KRELIEF.tubeRille` (**the Hollow Way's roofed tube and skylights are station 4's**, `rilleforge`: on this page the
+Western Rille is the open, collapsed stretch where it meets the Clodosriba), `46-core-lava` (every flow is old: the ground is drawn as the
+model's benches, not baked), `47-core-therm` (no heat here: the fissure shield is station 6's), `42-core-frost`, `41-core-scour`,
+`38-core-fire`, the seasons beyond the wet and dry.
+
+`tools/check_core_use.py` runs on the page before it is called done; `tools/check_port.py` before every build.
+
+---
+
+## Station 3, as built (2026-11-09; `dist/greenstep.html`)
+
+### What scale model 5.1 has (surveyed through `tools/scale-model/smodel/page.py`, 2026-11-09)
+
+Gemini sculpted the polygon (`smodel/nw_expansion.py`): the staircase is on the model. At and round the site:
+
+| Point (5.1 px) | Height | Mean (warm/cold) | Rain | Class |
+|---|---|---|---|---|
+| Tallwalls, 650,1268 | **1,985 m** | +15 °C (+28/+2) | 1,522 mm | Dfb |
+| Terrace II (`loamstep`), 644,1242 | 1,465 m | +19 (+32/+6) | 1,396 | Cfa |
+| Terrace I (`gatestep`), 638,1212 | 805 m | +23 (+36/+10) | 1,522 | Cfa |
+| Terrace IV (`cloudstep`), 662,1304 | 2,595 m | +11 (+24/-2) | 925 | Cfa |
+| The fissure shield's floor (`headvent`), 668,1338 | 3,280 m | +7 (+20/-6) | 769 | Cfa |
+| 668,1344 (the plan's shield centre) | 4,656 m | -2 | 643 | |
+
+On a transect down x = 650: Terrace II's floor at 1,430-1,490 m (y 1,230-1,254), **the Great Veil at y ~1,254-1,257** (~1,450 ->
+~1,950 m), Terrace III at 1,940-2,040 m (y 1,257-1,287), riser 3 at y ~1,287-1,293, Terrace IV at 2,590-2,620 m. **The Clodosriba
+(`r030`)** is on the model: 668,1338 -> 666,1325 -> 662,1304 -> 654,1286 -> 646,1268 -> 644,1242 -> 641,1226 -> 638,1212 -> 642,1196,
+its bed 3,280 -> 3,104 -> 2,595 -> 2,089 -> 1,924 -> 1,465 -> 805 m, 126 m³/s at Tallwalls, 480 m³/s at its mouth (`q_mouth`; the
+record's `q_mouth_m3s` reads 131.3), 52 m wide; its gloss on the model is *Clodos* (cloud-bench) + *Riba* (river). It ends in a lake at
+646.5,1159.2 (-9 m), not past Tallhouse into the Lake of Shim. **The Western Rille has no river record**; the kit draws its stream.
+
+### Where the plan's numbers and the model part (the kit follows the ground as drawn, as Godstep's plan does)
+
+- **The class at the site is Dfb**, not Cfa/Cfb (its cold month is +2 °C, so Dfb is the model's rule at work, not a fault); Cfa
+  holds on Terraces I, II and IV. The kit's flora is the plan's (the spiral belt on Terrace III) on the model's temperatures.
+- **The plan's rain is high**: the site has 1,522 mm (the plan's median 1,449 holds), but Terrace IV has 925 mm and the shield 769,
+  not the plan's 1,500-2,400 and 950-1,350. The cloud deck is drawn by fog, not by more rain.
+- **The plan's shield centre (668,1344) is 4,656 m** on the model, over its 3,420 m rim: the warm crater floor is at 668,1338 (3,280 m,
+  as the plan says). Station 6 should stand at 668,1338.
+- **Terrace I** is ~805-920 m at 638,1212 and 632,1195 (the plan: 940-1,140); the Clodosriba's bed is flat at 804.5 m over three points
+  there (a pond or a dam on the model).
+- **The Clodosriba's gloss**: "cloud-bench river" on the model; the plan's "River of the Ditch/Rille" is a second reading.
+
+### What the page draws
+
+The page compresses ~60 km of the staircase into 6 km (`stations/tallwalls/44w-host-land.js` says how): Terrace II at ~1,480 m in the
+north with the Veil Basin and the joined Clodosriba crossing the Free Giants' paddies; **the Great Veil**, a lobate stair of three
+columnar flow fronts (~470 m), and over it, side by side at the promontory's prow, **the twin curtains** of the Clodosriba (~430 m) and
+the Western Rille's stream; **Terrace III** (1,960-2,040 m) with the Clodosriba's slot rille from the south-east and the Western Rille's
+open stretch from the west converging on the brink; **Tallwalls' promontory**, a kipuka ~25 m over the bench between them, kept clear
+and published as a site; **the Upper Citadel Scarp** in two tiers with the hanging ledge's pool, the Clodosriba falling over both;
+**Terrace IV** (~2,560 m) in the cloud deck. Rock: `tibasalt-ponded` on every riser and rille wall (bead partings altered to palagonite).
+Trees, all read in place: the SW lowlands' sprawl oak, cork oak, red bay and veil willow on Terrace II and the lower edges; the S
+highlands' coilbark, spiral trumpet, volute tree and crozier tree fern on Terrace III and in the rilles; spiral frill trees and screw
+palms in the deck. The kit's floor: ground fern, spray moss, hanging moss, sedge and reed, bench grass, escargot begonia, paddy rice,
+basalt boulders and fallen columns. The wet season's sky (`LAND.climate` wet; rain cover and wet ground on), the falls' spray and the
+deck as height fog.
 
 ---
 
@@ -141,7 +235,7 @@ flowchart LR
 To realize this plan cleanly and honestly in [`build_425_master.py`](../../tools/scale-model/build_425_master.py) and [`smodel/nw_expansion.py`](../../tools/scale-model/smodel/nw_expansion.py):
 
 1. **Rename Region `rmw5n1w1rx0u2` to `"Greenstep"`:**
-   - Update `name: "Greenstep"` in `smodel/nw_expansion.py`, `openworld/little-demo/source/regions.json`, and `tools/scale-model/model/src/51-region-store.js`, with notes describing the five ponded flood-basalt lava terraces, the twin collapsed lava-tube rilles, and the Free Giant fortress of **Tallwalls**.
+   - Update `name: "Greenstep"` in `smodel/nw_expansion.py`, `openworld/isle-demo/source/regions.json` (the little demo is retired to `archive/`), and `tools/scale-model/model/src/51-region-store.js`, with notes describing the five ponded flood-basalt lava terraces, the twin collapsed lava-tube rilles, and the Free Giant fortress of **Tallwalls**.
 2. **Sculpt the Five Ponded Flood-Basalt Mare Terraces & Twin Lava-Tube Rilles (`Step 5B` in `build_425_master.py`):**
    - Mirroring the mathematical form of **Godstep Valley** in [`smodel/volcanoes.py`](../../tools/scale-model/smodel/volcanoes.py) (`lines 509–566`), define the NNW flood-basalt flow axis `(s_gs, p_gs)` from the **Greenstep Fissure Shield** at `(668.0, 1344.0)` (`+3,420 m` rim / `+3,280 m` floor) down to the northern mouth `(632.0, 1195.0)`:
      - **5 Lobate Mare Benches:**
@@ -170,3 +264,18 @@ To realize this plan cleanly and honestly in [`build_425_master.py`](../../tools
 | **4** | `rilleforge` | **The Hollow Way Skylight & Four-Arm Rille-Forges** (*Da-Holwey*) | `(636, 1274)` | **`+1,860 m`** (`1.27 atm`, `Cfb`, `~1,680 mm/yr`) | Inside the `35 m`-wide collapsed/uncollapsed transition of the **Western & Central Lava Tubes** beneath Tallwalls: a `90 m` circular roof skylight pouring rain and sunbeams onto tree ferns, underscored by four `14 m` subterranean waterfall waterwheels driving the trip-hammers of the four-armed Giant smiths |
 | **5** | `cloudstep` | **The Spiral-Fern Cloud Bench & Basalt Bridges** (*Da-Klaudstep*) | `(662, 1304)` | **`+2,580 m`** (`1.15 atm`, `Cfb` / `Dfb`, `~1,540 mm/yr`) | **Terrace IV**: mist-drenched montane cloud forest of right-handed **coilbarks**, **spiral frill trees**, **crozier tree ferns**, and **screw palms** (`biomes/shighlands`) arching over three natural columnar-basalt roof bridges spanning the steaming upper Clodosriba rille |
 | **6** | `headvent` | **The Greenstep Fissure Shield & Mist-Wall Amphitheater** (*Da-Fayerhed*) | `(668, 1338)` | **`+3,280 m`** (`1.05 atm`, `Dfc`, `~1,220 mm/yr`) | **Terrace V**: the low basaltic spatter-and-fissure shield (`+3,420 m` rim around the `+3,280 m` warm crater-bog source of the *Clodosriba*) where the five flood-basalt flows erupted, ringed by **ruffle-crowns**, **giant groundsels**, and steaming fumarolic moss mounds under the Outer Wall headscarp |
+
+---
+
+## 7. Still open (2026-11-09)
+
+- **Tallwalls' buildings** are owed to a settlement build (`settlements/tallwalls`, to be planned on `core/city`): the triple *murus
+  gallicus*, the trilithon gates, the round-halls and freedmen's courts, the Hall of the Unchained, the Undergate's forges. The kit
+  publishes the site (`site.tallwalls`: id `stallwalls01`, its footprint and level).
+- **Stations 1, 2, 4, 5 and 6** (`gatestep`, `loamstep`, `rilleforge`, `cloudstep`, `headvent`). Station 4 takes `KCAVERN` and
+  `KRELIEF.tubeRille` (the Hollow Way's roofed tube and skylights); station 6 `KTHERM` (the shield's warm bog).
+- **The tier cedar** (`swlowlands.cedar`, the ramparts' timber) is not grown: riftrim's gorge found its pads off the limbs (its
+  `KNOWN_ISSUES.md`); grown when `swlowlands` holds them.
+- **The model notes** above (the shield's centre, Terrace I's height, the river's mouth and its two discharge fields) go to Gemini
+  when the model is next touched; none blocks the kit.
+- The *proposed* Vrivolci and Talovolci words in sections 2-4 are the plan's, unchanged; the owner's yes before they go into `LORE.md`.

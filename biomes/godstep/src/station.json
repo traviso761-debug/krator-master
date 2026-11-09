@@ -1,0 +1,25 @@
+{
+ "name": "Station 1, the stair (PLAN.md section 7): front 1, the head step's lip at ~3,150 m over step 2's floor at ~2,430 m; the trap stair of ponded flows, an old frozen lava fall, black sand dunes and moss-skinned cones below, tumuli, a playa behind a lobe, the procession's cairned way; late winter",
+ "out": "godstep.html",
+ "region": "region.json",
+ "water": [],
+ "bake": {
+  "script": "bake-flows.js",
+  "out": "flows.json",
+  "name": "FLOWS_DATA",
+  "slot": "45a2-host-flows-data.js",
+  "inputs": [
+   "core/rand/08-core-rand.js",
+   "core/terrain/30-core-field.js",
+   "core/terrain/38-core-relief.js",
+   "core/terrain/46-core-lava.js",
+   "core/terrain/46b-core-lava-layers.js",
+   "biomes/godstep/src/bake-flows.js"
+  ],
+  "block": [
+   "45b-host-model.js",
+   "/*FLOWS-INPUT-BEGIN",
+   "/*FLOWS-INPUT-END*/"
+  ]
+ }
+}
