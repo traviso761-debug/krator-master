@@ -4,6 +4,12 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- **The painted leaf cards (2026-11-09, from crater-drylands' south, where the owner saw the incense tree "like a texture glitch"):** `56`'s
+  `pinnate` painter drew five parallel pinnate leaves filling the square card, which on the 2.5-7 m crossed quads of a clump read as flat
+  panels of strips. It now paints a cluster: seven pinnate leaves fanning out from the card's centre, leaflets shrinking to each tip, gaps
+  between (256 px, fixed angles: nothing drawn from the stream). The rust miombo and the incense tree take it. Still a stand-in for a
+  library card (PROMPTS-NEEDED: card.leaf.miombo). Changed on `claude/rebuild-crater-drylands-cloud` (savannarim's branch merged there).
+
 - [ ] **J2-J6 (2026-11-08): the kit, built in a cloud session on CPU checks only** (`biomes/hyperjungle/PLAN-LANDS.md` section 13). Checked
       here: every page builds (`tools/build.py`), the lints pass (`check_core_use`, `check_assembly`, `check_port`, `check_source`,
       `check_cells`), and each page was loaded in Chromium on SwiftShader (no GPU) with its host checks, negatives and the core guards (the

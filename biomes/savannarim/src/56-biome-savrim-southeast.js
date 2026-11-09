@@ -38,8 +38,16 @@ SAVRIM.LANDS=SAVRIM.LANDS||{};
  // tree fern's trunk and fronds. Leaf cards painted here are stand-ins (card.leaf.miombo owed; PROMPTS-NEEDED.md section 37)
  L.def=SAVRIM.inKit(function(){if(L._d)return L._d;const D=L._d={},LIB=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('savannarim',n):null;
   const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,noSeason=LQ&&LQ.get('season')==='0';
-  const pinnate=(cols,w)=>BIO.alphaTex(128,(g,S)=>{for(let k=0;k<5;k++){const x0=S*(.14+.72*k/4);g.strokeStyle='#4a4a2a';g.lineWidth=1.2;g.beginPath();g.moveTo(x0,S*.04);g.lineTo(x0+S*.03,S*.94);g.stroke();
-    for(let j=0;j<9;j++){const y=S*(.08+j*.095),x=x0+S*.03*j/9;g.fillStyle=cols[j%cols.length];g.beginPath();g.ellipse(x-S*w,y,S*w,S*.022,-.3,0,TAU);g.fill();g.beginPath();g.ellipse(x+S*w,y,S*w,S*.022,.3,0,TAU);g.fill();}}},[100,96,60]);
+  // a CLUSTER of pinnate leaves fanning out from the card's centre (the clump is three tilted quads crossed about it): 7 leaves, each a rachis
+  // with 7 pairs of leaflets shrinking to its tip, gaps between them so the crown reads as leaves, not as a panel. 2026-11-09 (crater-drylands'
+  // south, the owner: "incense tree looks like texture glitch"): it was five parallel leaves filling the square, a flat grid on a 2.5-4 m card.
+  // Fixed angles, no draw from the page's stream. Still a stand-in for a library card (PROMPTS-NEEDED: card.leaf.miombo)
+  const pinnate=(cols,w)=>BIO.alphaTex(256,(g,S)=>{const c=S/2;
+   for(let k=0;k<7;k++){const a=k/7*TAU+.35*Math.sin(k*2.3),L=S*(.34+.08*((k*5)%3)/2),ca=Math.cos(a),sa=Math.sin(a),nx=-sa,nz=ca;
+    g.strokeStyle='#4a4a2a';g.lineWidth=S*.006;g.beginPath();g.moveTo(c+ca*S*.04,c+sa*S*.04);g.lineTo(c+ca*L,c+sa*L);g.stroke();
+    for(let j=0;j<7;j++){const t=.22+.74*j/6,x=c+ca*L*t,y=c+sa*L*t,lw=S*w*(1.15-.55*t),ll=S*.026*(1.1-.4*t);g.fillStyle=cols[(j+k)%cols.length];
+     for(const sd of [-1,1]){g.beginPath();g.ellipse(x+nx*sd*lw*1.1,y+nz*sd*lw*1.1,lw,ll,a+sd*1.1,0,TAU);g.fill();}}
+    g.fillStyle=cols[k%cols.length];g.beginPath();g.ellipse(c+ca*L*1.02,c+sa*L*1.02,S*w*.5,S*.022,a,0,TAU);g.fill();}},[100,96,60]);
   D.miomboMat=BIO.leafMat(pinnate(['#7a8a44','#6a7a3a','#8a9a50'],.05),'rustmiombo',{aN:true,swayW:'1.0',swayA:.08,alphaTest:.4,
    season:noSeason?null:{drop:.6,colour:0x9a7040,k:.5,stagger:.5,flush:{colour:0xb0502a,k:.9,stagger:.4}}});
   BIO.def('miomboclump',BIO.geo.clump(),D.miomboMat,{attrs:['aN'],label:'Rust miombo leaves (copper-red in the flush)',kind:'rustmiombo'});

@@ -53,6 +53,9 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 - [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); S's fields and
       hazards from the scale model's S polygon (the stage is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are
       painted stand-ins: its PROMPTS-NEEDED entry); the scrub oak does not resprout after a fire (nhighlands' builder knows no burn age).
+- **The incense tree's and the rust miombo's crowns** (the owner, 2026-11-09: "incense tree looks like texture glitch"): savannarim's painted
+  leaf card filled the square with five parallel leaves, flat panels of strips on the crown's crossed quads. Fixed at the source
+  (`biomes/savannarim/src/56`, its `pinnate` painter: a cluster of seven leaves fanning from the centre; savannarim's KNOWN_ISSUES.md says so).
 - [x] **KFIRE (H3), 2026-11-09 (the owner asked for the core test change):** `src/52` is an adapter onto core/biome's KFIRE, handing it
       the kit's own burnability (BIO fbm patch), edge warp and older fires (drawn as before, `old:0`), so the page keeps its fires. The
       original fragment is frozen as `core/biome/ref/craterdry-fire-52.js.txt`; `core/biome/test-fire.js` reads it as the reference and
