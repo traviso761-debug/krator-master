@@ -81,7 +81,8 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing (korona's guard) */
+const regTree=(T,S,r,h)=>{if(!BAKING)BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});};
 // the height of the unit dome (G.cushion's body) at radius r along the giant axis component ca: for things set on it
 const domeY=(r,ca,shift)=>Math.pow(Math.max(0,1-r*r),.55)*(1+(shift||.2)*ca*(1-r));
 
@@ -143,6 +144,14 @@ B[3]=function(T,st,lv){const S=SP[T.sp],R=T.crownR,st0=EHIGH.vigilStage(T.x,T.z)
  // the spike: green-gold in flower, dark and a little thinner as a torch (some torches broken off)
  const H=dead?T.H*rr(.55,1):T.H,sw=R*rr(.42,.55)*(dead?.8:1),b=[top.x,top.y+Rr*.25,top.z];
  BIO.put('spire',b,qUp(dir),[sw,H,sw],dead?leafCol(PAL.torch,1.0,.02,.05,.05):bright(vary(pick(PAL.spike),.02,.06,.05),st0==='flower'?.85:1.2));st.spikes++;
+ /* THE SPIKE'S RACHIS (the final rebuild, pair 13, 2026-11-09; the GPU verify's attach audit: 1,737 of 1,756 `bloom` cards floating, 81.5%): the spike
+    is drawn on a swaying vertex-coloured leaf material, so the attach audit counts it a card, not structure, and its flowers find nothing to hold
+    them. The spike's own stalk is drawn inside it: a tube at .85 of the spike's least radius (G.spire's profile; the bumps only stand out from it),
+    so it never shows, in the trunk's bucket. Every flower then sits within (1.18 - .85) x that radius of it. No random number is drawn: nothing
+    else moves. A flowering spike only (the torches carry no flowers) */
+ if(st0==='flower'){const prof=t=>.5*Math.pow(Math.sin(Math.PI*Math.min(1,t*.96+.03)),.45)*(1-.55*t);
+  st.trunk+=BIO.tube('bark3',(lv===2?[.03,.1,.2,.32,.45,.58,.7,.8,.88,.94,.97]:[.03,.2,.45,.7,.88,.97]).map(t=>({x:b[0]+dir[0]*H*t,y:b[1]+dir[1]*H*t,z:b[2]+dir[2]*H*t,r:sw*.85*prof(t)})),
+   rodCol(PAL.spike[0],-.1),{seg:lv===2?5:4});}
  if(st0==='flower')for(let k=0,n=lv===2?ri(110,160):ri(24,36);k<n;k++){const u=rr(.04,.94),q=rr(0,TAU),r=sw*.5*Math.pow(Math.sin(Math.PI*Math.min(1,u*.96+.03)),.45)*(1-.55*u)*1.18;
   BIO.put('bloom',[b[0]+dir[0]*H*u+Math.cos(q)*r,b[1]+dir[1]*H*u,b[2]+dir[2]*H*u+Math.sin(q)*r],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),rr(.3,.5)*(lv===2?1:1.6),leafCol(PAL.floret,1.3,.02,.06,.05));st.blooms++;}
  regTree(T,S,Math.max(Rr,H*Math.abs(dir[0])+1),tH+H+1);};
@@ -162,13 +171,18 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,dir=leanDir(T,S.lean,.2
    // most limbs go out on the giant's side
    const la=k<nL*.7?gaz+rr(-1.1,1.1):gaz+Math.PI+rr(-1.2,1.2),far=k<nL*.7?1:.55,el=rr(.25,.75),L=(H-fh)*rr(.7,1.1)*far,r0=top.r*rr(.5,.7);
    const o=k<2?top:along(pts,rr(.6,.95)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.03,r0*.3),3,-.05,.22);
-   if(lv===2&&r0>.05)st.limb+=BIO.tube('bark1',lp,barkCol(S,k+2),{seg:4,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],r0*2,r0*.7,rodCol(S.bark[0]));
+   /* the limb's root sunk into its parent and swollen to a collar (core/biome 31j, BIO.flareJoin; the final rebuild): no random number, the
+      spots below read the limb as grown (lp), so no clump moves */
+   if(lv===2&&r0>.05)st.limb+=BIO.tube('bark1',BIO.flareJoin?BIO.flareJoin(lp,{parentR:o.r==null?top.r:o.r}):lp,barkCol(S,k+2),{seg:4,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],r0*2,r0*.7,rodCol(S.bark[0]));
    spots.push({p:lp[3],s:L*.35*far,tip:true},{p:lp[2],s:L*.25*far});
    reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);topY=Math.max(topY,lp[3].y);}}
  const hc=EHIGH.LIB&&EHIGH.LIB.rag?bright(C(0xffffff),rr(.82,1.0)):C(pick(S.leaf)),cx=T.x+Math.cos(gaz)*R*.35,cz=T.z+Math.sin(gaz)*R*.35,cy=T.y0+H*.72,sz0=R*.38*(lv===2?1:1.5);let mine=0;
  for(const s of spots){const n=lv===2?(s.tip?3:1):(s.tip?1:0);
-  for(let c=0;c<n;c++){const a=rr(0,TAU),d=s.s*.5*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.1,.35)*s.s;
-   clumpAt('rag',x,y,z,sz0*rr(.8,1.2),.62,hc,cx,cy,cz,R,H*.3);st.clumps++;mine++;}}
+  /* each clump held within .55 of its size of its spot on the limb (BIO.holdTo; the GPU verify: 1 of 292 floated): its draws as they were, in the
+     same order (the size is drawn after the spot, as before) */
+  for(let c=0;c<n;c++){const a=rr(0,TAU),d=s.s*.5*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.1,.35)*s.s,sz=sz0*rr(.8,1.2);
+   const h=BIO.holdTo?BIO.holdTo([s.p.x,s.p.y,s.p.z],[x,y,z],sz*.55):[x,y,z];
+   clumpAt('rag',h[0],h[1],h[2],sz,.62,hc,cx,cy,cz,R,H*.3);st.clumps++;mine++;}}
  if(!mine){clumpAt('rag',cx,cy,cz,sz0,.62,hc,cx,cy,cz,R,H*.3);st.clumps++;}
  regTree(T,S,reach+1,topY-T.y0+R*.3+1);};
 
@@ -267,7 +281,22 @@ EHIGH.buildTrees=function(R,q){
    {patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:pad+1});
   return n;}
  EHIGH.PASSES.forEach(pass);
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS FOR THE FAR TIER (core/biome 34; the final rebuild, pair 13, 2026-11-09; korona's lines): a far ragbark (4-10.5 m) and a far
+ // flowering vigil spike (8-17 m) are one quad each, baked from the hero nearest the middle, built again where it stands at BIO.bakeImpostors (after
+ // every placement, its own reseed), so no draw before it moves: buildFar draws no random number for these two (no torch colour), so leaving it out
+ // moves nothing. Every plant here leans to the giant and the bake leans with it, so the quad is put unturned (yaw 0). The cushions, woolbacks,
+ // thorns, glass towers and cereus (under the 7 m the stand-ins start at) and the rosettes and torches keep their blobs. EHIGH.IMPOSTORS=false (?diet=0
+ // in 89z) keeps the blobs for all; a page without core/biome 34 keeps them too
+ const IMPON=EHIGH.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('ehigh.trees',{label:'Far ragbarks and flowering spikes'}),c=BIO.center?BIO.center():[0,0];
+  const want={4:T=>true,3:T=>EHIGH.vigilStage(T.x,T.z)==='flower'};
+  [4,3].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&want[sp](T)&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=newStats();
+   const rec=BIO.impostor('ehigh.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H,ok:want[sp]};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far ragbarks and flowering spikes'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I||!I.ok(T))return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],0,T.H/I.H,null);T.lean=EHIGH.GIANT.slice();st.far+=2;return true;};
+ TREES.forEach((T,i)=>{if(T.lv===0){if(!farImp(T))buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  EHIGH.COUNTS=SP.map((S,i)=>st.byS[i]);
  const mo=EHIGH.buildMother(q);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,spikes:st.spikes,

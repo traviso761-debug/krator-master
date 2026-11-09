@@ -2,8 +2,9 @@
 
 - [ ] **Not placed on the scale model.** The region has no polygon yet (`biomes/WORLD.md`: "to be placed"); its
       neighbours and its pressure (~0.6 atm assumed) wait for it. The Koppen weights (`EHIGH.KOPPEN`) are an estimate.
-- [ ] **`ground.puna` not delivered.** Nine of the ten library sets are in (`materials.json`, `tex/`, 2026-10-06); the
+- [x] **`ground.puna` not delivered.** Nine of the ten library sets are in (`materials.json`, `tex/`, 2026-10-06); the
       puna's own ground waits for `ground.puna` (`PROMPTS-ready.md` section 7) and keeps its painted colour until then.
+      2026-11-09: it is delivered and packed (`tex/ground.puna.*`); the ground draws it (since the final rebuild, as a KGROUND layer).
 - [x] **No catalog fruit** (`biomes/FRUIT.md`): the cereus's fruit, the vigil spike's heart, wormwick and tower honey
       are not catalog pieces yet. 2026-10-20: they are (`generic_fruit_cereus`, `generic_fruit_vigil_heart`, `generic_fruit_wormwick`,
       `generic_fruit_tower_honey`), named in `tags.harvest.fruit` (`EHIGH.FRUIT_KEYS`) and held by the probe's `fruit tagged and catalogued` check;
@@ -36,4 +37,63 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       volcanoes at az 300 and 128 and the plateau edges (ridges); the volcano at az 18 with its lenticular cloud, the
       fumarole plume and the cones behind the real south range are not drawn. Draw calls at the default camera (verify.py
       --assert, GPU): 32 before, 29 after.
+
+## The final rebuild (pair 13, 2026-11-09; a cloud session, no GPU: built and CPU-checked only, `claude/rebuild-ehighlands-cloud`)
+
+One page, `dist/ehighlands.html` (the showcase: station 1 as built). No station is built: `PLAN-STATIONS.md` is still a plan awaiting the
+owner (E0), so `build.py` takes `--station <name>` (korona's mechanism: `stations/<name>/` overrides `src/` by name, `station.json` names the
+page) but no `stations/` folder exists yet. Every change is in `src/`, `build.py`, `PORT.md`; each look change has its switch.
+
+**The universal set (`BACKPORT.md` section 1):**
+
+| Group | Taken | Where | Switch |
+|---|---|---|---|
+| Lists | core/biome 31, 31b (`BIO.leafOn`, `leafQ`: check_assembly's two MISSING are gone), 31j, 32, 34, 41; core/terrain 43, 44, 45 and their host halves; core/shadow; core/atmos height fog, rain cover, lightning; water ext 56, 57, 60; `khost.FULL` (the inspector, marks, pictures, the minimap, the editor) beside the polygon tool; `--station`; LF writes | `build.py` | |
+| Build order | `88-host-build.js` is `89z-host-build.js`, after the water (its fields read the water's surfaces). Both kit passes reseed, so nothing placed moves | `89z` | |
+| Limb joints | `BIO.flareJoin` on the ragbark's limbs (lv 2 tubes; the clumps read the limb as grown, so none moves) | `55` | none |
+| Graphics | octahedral impostors for the far ragbark and the far **flowering** vigil spike (`EHIGH.IMPOSTORS`; the bake builds the hero nearest the middle again after every placement). Put unturned (yaw 0): every plant here leans to the giant and the bake leans with it. Cushions, woolbacks, thorns, glass towers, cereus (all under 7 m), rosettes and torches keep their blobs. Gain 2.6; A2C after the bake | `55`, `89z` | `?diet=0`, `?impgain=` |
+| Sky and air | height fog (thin, falloff 1/900) with a dawn mist over the bofedal's water; the rain cover; lightning with the weather's storms; the foliage in core/atmos's wind (`BIO.bindAtmosWind`); core/atmos's hour follows the host clock (it was pinned at 13) | `89a` | `?hfog=0` |
+| Water | the stream's glint broken up (ext/56); the water as fields (ext/60, `WATER.fields` over the square, 8 m), `BIO.env`, and the edge audit as a host check (`EDGE_OWED` 0/0: **not measured**, no page was run) | `89w`, `89z`, `99` | `?fields=0` |
+| Reflections | not taken: no still over 400 m (the tarn is ice, the bog's pools 5-17 m) | | |
+| Shadows | `KSHADOW` attached **off by default** (the owner, 2026-11-03) | `89z` | `?shadow=1` |
+| Ground | the four library layers (puna, verge, turf, sinter) on `KGROUND` (hex tiling, distance scale, height blend) at the old mix's strengths and tints (the puna's third of paint kept by its amount .7); the old two-scale mix behind the switch; `kEye` for KGROUND's distance on this Lambert ground (korona's redirect; the core fix is owed, below). `KFAR` to 12 km from the page's own `plainH` + `rangeH` (the range's crest flat past the square), sunk 12 m under it, coloured by the paint's rule (puna, scree, snow) into the haze. `KHORIZON` over the square and the far field, on the ground and, after the bake, every lit material but the ice | `84`, `85`, `89z` | `?kground=0`, `?far=0`, `?hz=0` |
+
+**The attach audit (the coordinator's GPU verify: 81.52%; `bloom` 1,737 of 1,756, `rag` 1 of 292).** The floaters were the vigil spike's
+flowers: the spike is drawn on a swaying vertex-coloured *leaf* material (`M.vsway`), so the audit counts it a card and its 110-160 flowers a
+spike found no structure. Fixed in the kit: **the spike's rachis**, a tube in the trunk's bucket (`bark3`) inside each flowering spike at
+.85 of `G.spire`'s least radius (11 rings at lv 2, 6 at lv 1, 5 or 4 sides), never seen; the flowers lie within .20-.22 m of it against the
+audit's .68-.79 m (worked out from the formulas, not measured on a page). ~80 triangles a flowering spike. The one ragbark clump: every clump
+is held within .55 of its size of its spot on the limb (`BIO.holdTo`; the size is drawn after the spot as before, so the stream is the same).
+`bloom` is `{onLeaf:true}` (ebadlands' and nwlowlands' rule: the floor's tola flowers in their bushes). **A core fix would be better:** a def
+flag that counts a solid body drawn on a leaf material (the spike, the cushions, the thorn, the glass tower) as structure; then the rachis can go.
+
+**Species for readers (keys and indices unchanged; no draw before or after moves).** `EHIGH.make` and `EHIGH.grow` are as they were for
+the glass tower (swhighlands' treeline reads only those). `B[3]` (vigil, flowering) adds the rachis tube; `B[4]` (ragbark) flares its lv-2
+limbs and holds its clumps; `bloom` is `onLeaf`; in `EHIGH.build` a far ragbark or flowering spike is an impostor where the page lists core/biome
+34 (korona's hoar does, and bakes them) unless `EHIGH.IMPOSTORS=false`. **Rebuilt here, pages only (their sources untouched):** korona's hoar
+(`--station hoar`) and swhighlands' treeline (`--station treeline`), so `check_stale` stays at its baseline. Korona's `89z` still marks
+`ehigh.bloom` free on the hoar (`window._auditOwed`): drop it at korona's next turn once `?owed=0` shows it held there. **k-guilin does not read
+this kit** (`tools/reach.py biomes/ehighlands/src/55-biome-ehigh-trees.js`: ehighlands, korona's hoar, swhighlands' treeline only).
+
+**Not taken:** KSTRATA (the range is basalt flows under scree and snow, painted by the ground; no bedded wall, and the cut gullies are 12 m a cell),
+the fog belt (the dry side stands above its cloud: station 2's), `WATER.mirrorSwitch` (above), R9 wet ground (oidong's black-ground finding over
+KGROUND), `KFIRE`, seasons, the stations (`PLAN-STATIONS.md`, awaiting the owner). The seven `||` numeric defaults in `60` and `70` stay
+(port lint warnings, not new): changing them could move a draw.
+
+**For core (not edited here):** KGROUND's distance should read `kEye` in `core/terrain/43-core-ground.js` (korona's finding; this page redirects
+`cameraPosition` as korona does); the leaf-material-as-structure flag above.
+
+**What the GPU verify should look at** (`verify.py dist/ehighlands.html --assert --all-views`; nothing was run in the cloud):
+- [ ] the attach audit under 1% (`bloom`, `rag` held); the lod pairing (this kit sets no `BIO.range`, so none expected).
+- [ ] the ground's shader compiles (KGROUND + KHORIZON + the weather and cloud hooks on a Lambert ground with eight samplers of its own: map,
+      detail, rock, fleck, four layers; plus horizon's two and the rain cover's); the look against `?kground=0`; the far field's colour and the
+      flat crest past the square against the sky's ridges ('From afar').
+- [ ] the impostors: the far ragbarks' and flowering spikes' brightness (gain 2.6), the lean read from afar ('Every spike leans to the giant'),
+      against `?diet=0`.
+- [ ] the height fog and the dawn mist over the bofedal (the page opens at 06:00; `?hfog=0`), the rain cover in the Weather selector.
+- [ ] the edge audit host check (`EDGE_OWED` 0/0 is a guess: the stream runs through the west gully's ragbark wood; raise it with a reason if
+      ragbarks stand on the bank), and every other host check and negative.
+- [ ] `KSHADOW`'s cost with `?shadow=1`; the export profile (atmos, water) with the new modules on the page.
+- [ ] the sky's landmarks (the open item above), folded into this verify.
+- [ ] korona's hoar and swhighlands' treeline, rebuilt here: their own `--assert`.
 

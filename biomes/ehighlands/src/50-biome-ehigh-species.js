@@ -367,7 +367,7 @@ BIO.def('ichu',G.tuft(),M.ichu,{label:'Ichu'});
 BIO.def('turf',G.disc(),M.turf,{label:'Sedge turf'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichens and mat algae'});
 BIO.def('sinter',BIO.geo.mat(),M.lichen,{label:'Mat algae (the geysers\' run-off)'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers',onLeaf:true});   /* onLeaf (the final rebuild): a flower in a bush may be held in its leaf card's body (core/biome/README.md) */
 BIO.def('broad',G.leafquad(),M.broad,{attrs:['aN'],label:'Glass-tower leaves'});
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Poured cushions'});
 BIO.def('bogq',G.bogq(),M.cushion,{label:'Bog cushions'});

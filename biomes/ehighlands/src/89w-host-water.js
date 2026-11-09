@@ -29,4 +29,5 @@ const STREAM_FLOWS=(function(){const runs=[[]];let y=1e9;
  return runs.filter(r=>r.length>2).map((pts,i)=>{const F=WATER.flow({name:'The stream '+(i+1),pts,width:STREAMW*2+1,speed:1.2,rapids:[.03,.15]});
   const D=WATER.drawFlow(F,{shallow:lin(0x2a4a58),deep:lin(0x14283a),color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.5,step:8,across:5,margin:1.2,depthBias:1.5,renderOrder:2,pick:true});
   D.mesh.userData.inspectLabel='The stream';return{F,D};});})();
+if(STREAM_FLOWS.length&&WATER.breakupFlows)WATER.breakupFlows();   /* core/water ext/56: the stream's glint broken up (the final rebuild) */
 window._water={tarn:!!TARN_DRAW,pools:BOG_STILLS.length,streams:STREAM_FLOWS.length};

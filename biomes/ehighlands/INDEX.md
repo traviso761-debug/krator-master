@@ -9,11 +9,19 @@ Built output (never open it; edit `src/` and rebuild): `dist/ehighlands.html`
 Build: `cd biomes/ehighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
+
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31-core-dither.js`, `31b-core-leafset.js`, `31j-core-joint.js`, `32-core-variants.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`, `94-host-polytool.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
@@ -22,14 +30,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 15 | the land (47); the climate fields (cached below; these are the  (137); the host binding (169) |
 | `50-biome-ehigh-species.js` | 37 **big** | the giant (29); palettes (38); the tree species (60); harvest (biomes/FRUIT.md) (84); the small plants (the floor), tagged (99); leaf and surface textures (116); bark textures (166); geometries local to this biome (197); materials (298); the library (core/materials/PLAN.md, Eastern hig (329) |
-| `55-biome-ehigh-trees.js` | 27 | zones from the fields (12); colour (the maths is the core's, BIO.col) (43); the lean toward the giant (55); polyline helpers (Girder's) (62); keep-clear between plants (71); helpers (78); the builders (88); the Mother Cushion (196); impostors (the far plants) (221); the pass (250) |
+| `55-biome-ehigh-trees.js` | 30 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (43); the lean toward the giant (55); polyline helpers (Girder's) (62); keep-clear between plants (71); helpers (78); the builders (89); the Mother Cushion (210); impostors (the far plants) (235); the pass (264) |
 | `60-biome-ehigh-floor.js` | 13 | small plants (24); the zone planters (50); the pass (101) |
 | `70-biome-ehigh.js` | <1 |  |
-| `84-host-ground.js` | 15 | the ground (20); the water (121) |
+| `84-host-ground.js` | 17 | the ground (20); the water (138) |
+| `85-host-far.js` | 3 |  |
 | `86-host-geysers.js` | 5 |  |
-| `88-host-build.js` | 1 |  |
 | `89-host-sky.js` | 2 |  |
-| `89a-host-atmos.js` | 1 |  |
+| `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 3 |  |
-| `99-host-take.js` | 16 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (127) |
+| `89z-host-build.js` | 4 |  |
+| `99-host-take.js` | 17 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (135) |
 | `99-tail.html` | <1 |  |

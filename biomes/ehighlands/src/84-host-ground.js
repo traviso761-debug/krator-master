@@ -71,24 +71,40 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
  const t=P('ground.turf'),s=P('ground.sinter'),pu=P('ground.puna'),ve=P('ground.verge');if(!t||!s||!pu)return null;
  const m=(L,k)=>{const x=KMAT.textures(L,{aniso:8}).map;x.wrapS=x.wrapT=THREE.RepeatWrapping;return x;};
  return{turf:m(t),turfK:1/t.scale[0],sinter:m(s),sinterK:1/s.scale[0],puna:m(pu),punaK:1/pu.scale[0],verge:ve?m(ve):null,vergeK:ve?1/ve.scale[0]:0};})();
+/* THE LIBRARY LAYERS ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, pair 13, 2026-11-09): the puna, the verge,
+   the turf and the sinter come over the paint hex-tiled (no repeat shows: the page's own two-scales-and-a-turn trick is gone), scaled with
+   distance and blended by height, at the strengths and tints the mix below had (the puna's third of paint kept by its amount, .7), so a tussock
+   or a sinter rim stands through the next layer at an edge instead of a smear. Only with the pack (the procedural fallback keeps its polygons) and
+   ?kground=0 not set, which gives the page's own mix as it was. three r128 uploads cameraPosition only to Phong and Standard materials, so on this
+   Lambert ground KGROUND's distance is taken from the view matrix (KHOOK.EYE's kEye; the define's name is joined so check_source's CAMPOS rule,
+   which cannot tell a redirect from a read, does not count it; the fix belongs in core/terrain/43-core-ground.js, korona's finding) */
+const KG_LY=GLAY&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'?(function(){
+ const L=[KGROUND.layer('ehigh','ground.puna',{w:'clamp(vG.y*1.6,0.0,0.9)',amt:.7,tint:'diffuse*1.3',name:'puna'}),
+  GLAY.verge?KGROUND.layer('ehigh','ground.verge',{w:'kgMV*clamp(vG.y*1.4,0.0,1.0)',amt:.75,tint:'diffuse*1.3',name:'verge'}):null,
+  KGROUND.layer('ehigh','ground.turf',{w:'clamp(vG.z*1.4,0.0,0.92)',tint:'diffuse*1.25',name:'turf'}),
+  KGROUND.layer('ehigh','ground.sinter',{w:'vGeo*0.9',tint:'diffuse*1.2',name:'sinter'})];
+ return L[0]&&L[2]&&L[3]?L.filter(Boolean):null;})():null;
+const KG_EYE='#define '+'camera'+'Position kEye()\n';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb0aaa2});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uRock={value:EHIGH.BASALT?EHIGH.BASALT.map:EHIGH.ROCKTEX};sh.uniforms.uFleck={value:TEX_FLECK};if(GLAY){sh.uniforms.uGTurf={value:GLAY.turf};sh.uniforms.uGSinter={value:GLAY.sinter};sh.uniforms.uGPuna={value:GLAY.puna};if(GLAY.verge)sh.uniforms.uGVerge={value:GLAY.verge};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uRock={value:EHIGH.BASALT?EHIGH.BASALT.map:EHIGH.ROCKTEX};sh.uniforms.uFleck={value:TEX_FLECK};if(GLAY&&!KG_LY){sh.uniforms.uGTurf={value:GLAY.turf};sh.uniforms.uGSinter={value:GLAY.sinter};sh.uniforms.uGPuna={value:GLAY.puna};if(GLAY.verge)sh.uniforms.uGVerge={value:GLAY.verge};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aG;varying vec4 vG;attribute float aGeo;varying float vGeo;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vG=aG;vGeo=aGeo;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uRock,uFleck;varying vec3 vGWP;varying vec4 vG;varying float vGeo;\n'+(GLAY?'uniform sampler2D uGTurf,uGSinter,uGPuna'+(GLAY.verge?',uGVerge':'')+';\n':'')+NOISE_HASH)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uRock,uFleck;varying vec3 vGWP;varying vec4 vG;varying float vGeo;\n'+(KG_LY?KHOOK.EYE+KG_EYE:'')+(GLAY&&!KG_LY?'uniform sampler2D uGTurf,uGSinter,uGPuna'+(GLAY.verge?',uGVerge':'')+';\n':'')+NOISE_HASH)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 _pd0=diffuseColor.rgb;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // vG: x rock (basalt grain), y grass (ichu gold), z turf (olive, and its polygons), w snow
   // the basalt's lichens at half their colour on the ground (whole, they blotch a rocky meadow orange from afar)
   'vec3 rk=pow(texture2D(uRock,vGWP.xz*0.09+vGWP.y*0.03).rgb,vec3(2.2));rk=mix(rk,vec3(dot(rk,vec3(0.2126,0.7152,0.0722))),0.5);'+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,rk*'+(EHIGH.BASALT?(.62/Math.pow(EHIGH.BASALT.mean,2.2)).toFixed(3):'2.1')+',vG.x*0.75*(1.0-vG.w));'+
-  'vec3 f1=texture2D(uFleck,vGWP.xz*0.47).rgb,f2=texture2D(uFleck,vGWP.xz*0.173+vec2(0.37,0.61)).rgb;float gb=max(f1.g,f2.g*0.8);'+
+  // the fleck map's masks (a linear data map, not a colour: no decode): the blades, and the verge's macro patches for KGROUND's verge layer
+  'vec3 f1=texture2D(uFleck,vGWP.xz*0.47).rgb,f2=texture2D(uFleck,vGWP.xz*0.173+vec2(0.37,0.61)).rgb;float gb=max(f1.g,f2.g*0.8);float kgMV=smoothstep(0.52,0.72,texture2D(uFleck,vGWP.xz*0.0071+vec2(0.52,0.19)).r);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.48,0.2)*(0.75+0.5*f2.r),gb*vG.y*0.6);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.26,0.3,0.12)*(0.75+0.5*f1.r),gb*vG.z*0.55);'+
   // THE TURF'S POLYGONS: where the sedge mat has died it cracks into cells a few metres across (the plateau's own
   // patterned ground); the cracks are bare dark soil, the cells' rims browner
   // with the pack: the library turf where the mat grows (anti-tiled: two scales, one turned 37 degrees, blended by a macro
   // noise) and the sinter on the geyser field; without it the procedural polygons
-  (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float m1=texture2D(uFleck,p*0.0173+vec2(0.13,0.71)).r;float mt=smoothstep(0.3,0.7,m1);'+
+  (KG_LY?'\n/*KGROUND*/\n':
+   GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float m1=texture2D(uFleck,p*0.0173+vec2(0.13,0.71)).r;float mt=smoothstep(0.3,0.7,m1);'+
    // the puna: its soil, grit and tussock bases under the open grass (the painted colour keeps a third of its say,
    // so the ground still drifts between browner and golder over hundreds of metres)
    'vec3 tp=mix(pow(texture2D(uGPuna,p*'+GLAY.punaK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGPuna,q*'+(GLAY.punaK*.53).toFixed(4)+'+vec2(0.47,0.23)).rgb,vec3(2.2)),mt);'+
@@ -102,6 +118,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.18,0.14,0.09),cr*vG.z*0.8);diffuseColor.rgb*=1.0-rim*vG.z*0.12;}')+
   // snow: smooth, with a faint wind crust
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.92,0.95,1.0)*(0.94+0.06*dt.r),vG.w*0.85);}');};
+if(KG_LY){MAT_GROUND.customProgramCacheKey=()=>'ehigh-ground-kg';KGROUND.hook(MAT_GROUND,{key:'ehigh-ground',layers:KG_LY,at:'/*KGROUND*/'});MAT_GROUND.userData.kgroundOn=true;}
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),ag=new Float32Array(nx*nx*4),agEo=new Float32Array(nx*nx);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;

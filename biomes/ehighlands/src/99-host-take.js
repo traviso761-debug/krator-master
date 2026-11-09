@@ -97,7 +97,15 @@ const FRUIT_NOT_DRAWN=['thorn'];   /* the thorn cushion's edible part is its flo
 HCHK.fruit=(SP,PL)=>{const id=x=>x.key||x.name,miss=SP.concat(PL).filter(x=>x.tags.harvest&&x.tags.harvest.edible.length&&!x.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(id(x))<0).map(id),untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id);
  return{ok:!miss.length&&!untagged.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+'catalog keys: '+EHIGH.FRUIT_KEYS.join(', ')};};
 const T5=()=>EHIGH.TREES.filter(t=>t.sp===SPI('glasstower'));
+// the flora and the wet band read the water's own shore (the final rebuild; nsemiarid's and oidong's lines): the env fields in the contract, no plant
+// standing in the water, and the wet band wet at the water's edge (WATER.edgeAudit on 89z's fields). EDGE_OWED: what this turn leaves (a ratchet)
+const EDGE_OWED={plant:0,wet:0};
+function edgeCheck(){if(typeof WATER_F==='undefined'||!WATER_F)return{ok:true,detail:'no water fields on this page'};const P=[];
+ for(const T of EHIGH.TREES){P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:EHIGH.SPECIES[T.sp].key});if(P.length>8000)break;}
+ const bad=ENV&&BIO.envCheck?BIO.envCheck(ENV,[[0,0],[BOG.x,BOG.z],[GEO.x,GEO.z],[MOTHER.x,MOTHER.z]]):[],F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' plants, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),b=window._biome||{};
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('every species placed',HCHK.placed(EHIGH.COUNTS||[]));
  add('every species tagged',HCHK.tagged(EHIGH.SPECIES));
  add('fruit tagged and catalogued',HCHK.fruit(EHIGH.SPECIES,Object.values(EHIGH.PLANTS)));
