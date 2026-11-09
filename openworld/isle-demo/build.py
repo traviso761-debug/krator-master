@@ -74,7 +74,7 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
 ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',
                 '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
-                '46-isle-stocks.js', '47-isle-trade.js', '47h-isle-hamlets.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+                '46-isle-stocks.js', '47-isle-trade.js', '47c-isle-crime.js', '47h-isle-hamlets.js', '47m-isle-money.js', '47u-isle-unrest.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util
@@ -111,7 +111,7 @@ ORDER = (
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
     # the camps (core/camp, PLAN.md section 10, "the first build"): the census and the pitch, the Beast Riders' camp table
     # (BR_CAMP, read in place: [G data]), and this world's bands; CAT carries the kit's tent set (cat_bundle(tents=True))
-    + [('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
+    + [('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '40-camp-work.js'),
        ('kits/beast-riders/src', '79-br-camp.js'), ('src', '48k-world-camps.js')]
     # M7 (settlements/isle-demo/PLAN.md section 7): the two towns planned live here, as the city page plans them: the city
     # page's data (the kits' boxes, the census trades, the site file), the Iziz Vernacular and its pack, core/city (KCITY),

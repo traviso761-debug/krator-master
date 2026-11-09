@@ -34,14 +34,16 @@
     if(SIM.levelOf(s)===lv) return lv;
     var minute=SIM.minute(), t=SIM.time();
     if(lv==='abstract'){ lower(s, minute); (SIM.ABSTRACT||(SIM.ABSTRACT={}))[s]=true; }
-    else { delete SIM.ABSTRACT[s]; raise(s, minute, t); }
+    else { if(SIM.NEED) mine(s).forEach(function(a){ if(!a.driven && a.nd) SIM.needsAbstract(a, minute); });   /* the meters lived to now, still abstract */
+      delete SIM.ABSTRACT[s]; raise(s, minute, t); }
     SIM.logEvent('level', { settlement:s, level:lv });
     return lv;
   };
   /* lowering: each actor's efficiency now; the town's households and their residents */
   function lower(s, minute){
     var res={};
-    mine(s).forEach(function(a){ var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
+    mine(s).forEach(function(a){ if(SIM.NEED && a.nd && !a.driven) SIM.needsOf(a, minute);   /* the meters to now as watched, before the abstract rule takes them */
+      var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
     HOMES[s]=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); })
       .map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
     HOMES[s].last=minute; HOMES[s].hr=Math.floor(minute/60);

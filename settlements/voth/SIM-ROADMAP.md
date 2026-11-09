@@ -358,6 +358,13 @@ house. Phase B is done: every kind of work meets the 90% rule.
 1. Guards and night watch: orgs, watchhouses as DRAW_TOOLS places, patrol routes as `cycle` over avenue and market
    places, wall posts; the crime model (criminals as a role on 1‰ of actors, a per-minute attempt, observation odds by
    hour and witnesses, the alarm as a `SIM.event`, arrest, the jail as a place with a stay).
+   **The crime model is built in core (2026-11-02, `core/simulation/77-sim-6-crime.js`, opt-in `SIM.crime`), proved on the
+   isle demo first** (`settlements/isle-demo` 47c, `tests/test-isle-crime.js`): criminals a hashed 1‰, an hourly attempt (not
+   per minute), witnesses and night in the odds, the alarm bringing the nearest guard on duty, arrest by its distance, the
+   jail a `SIM.command` with a stay (a week; a month resisting), assault from the unhappy. Left for Voth: its watchhouses
+   and patrols as places and cycles (the guards here are whoever is on duty near), the fortress and garrison as jails,
+   murder and its sentence, and turning it on (`TUNE.sim.crime`). **The thieves' guild** (owner, 2026-11-02: one tavern a
+   city where criminals and the player hide from the guards and fence stolen goods) is in core too (`guild`); Voth picks its tavern.
 2. Ordinators: Palace and Temple posts, the avenue circuit, the flagship on a transport route Fortress → harbour → Fortress.
 3. Monks and priests: the monastery schedule, the 10% wanderers, the rest-day procession; priests resident at shrines
    with a RITUAL activity that multiplies visitors' contemplation fill.

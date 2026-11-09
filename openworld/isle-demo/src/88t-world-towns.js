@@ -27,6 +27,12 @@ const T=W.plans.map(P=>{const F=P.G.frame,g=new THREE.Group();g.position.set(F.x
  try{D.streets(P.R,P.G);D.orchards(P.R,P.G);D.records(P.R);D.vessels(P.R);}catch(e){S.errors.push(P.town+' draw: '+(e&&e.stack?e.stack:e));}
  finally{ISLE.cur=keep;}
  const X={P,F,g,D,full:false};cull(X);return X;});
+/* the thieves' guild on the map (settlements/isle-demo 47c, ISLE.tagGuilds): under its tavern in its town's registry, its sign
+   and pin drawn with the town (60 DRAW.guild, in the town's frame), a diamond on the region map with a Go to entry (MAP_MARKS) */
+try{const gm=ISLE.tagGuilds(t=>{const P=W.plans.find(p=>p.town===t);return P?P.tags:null;});S.guilds=gm.map(m=>({town:m.town,place:m.place,record:m.record}));
+ gm.forEach(m=>{const X=T.find(x=>x.P.town===m.town);if(X&&m.at)X.D.guild(m);
+  (window.MAP_MARKS=window.MAP_MARKS||[]).push({x:m.x,z:m.z,label:"Thieves' guild · "+m.town,legend:"Thieves' guild",color:'#c050a0',view:[m.x+120,m.z+160,90,0,-.3]});});}
+catch(e){S.errors.push('guilds: '+(e&&e.stack?e.stack:e));}
 function cull(X){X.g.traverse(m=>{if(m.isInstancedMesh)m.frustumCulled=false;});}   /* an instanced mesh's bounds are its piece's at the origin: unculled until bounded() (below) */
 /* ---------------------------------------------------------------- keep-clear: the built area, and lots, streets and fields */
 const clear=KSPACE.create({cell:32}),zones=[];
