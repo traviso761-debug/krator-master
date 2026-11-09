@@ -88,8 +88,6 @@ function buildGround(){
     owner's before-and-after (the shader is then the pre-relief one byte for byte). No triplanar sides: the faces are KSTRATA's beds on
     the face's own plane already (the rock below), so the layers' side planes would only show on the bead drifts */
  const RELIEF=new URLSearchParams(location.search).get('kgrelief')!=='0';
- KGROUND.hook(MAT,Object.assign({layers:GLY,key:'godt-ground'},RELIEF?{relief:{bump:.075,cavity:.8,mesh:1,strata:.45,
-  strataW:'smoothstep(0.30,0.58,1.0-clamp(normalize(vGWN).y,0.0,1.0))'}}:{}));
  // ---- the meshes: the base lattice (its cells under the inset left out) and the inset
  const mkMesh=(F,skip,label)=>{const nx=F.nx,nz=F.nz,n=nx*nz,pos=new Float32Array(n*3),uv=new Float32Array(n*2),aGL=new Float32Array(n*3),aGM=new Float32Array(n*4),aGX=new Float32Array(n*4),aGY=new Float32Array(n*4);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=F.x0+i*F.step,z=F.z0+j*F.step;
@@ -103,6 +101,27 @@ function buildGround(){
  const ibs=INSETS.map(I=>[Math.round((I.box[0]-TERR.X0)/FIELD_STEP),Math.round((I.box[1]-TERR.Z0)/FIELD_STEP),Math.round((I.box[2]-TERR.X0)/FIELD_STEP),Math.round((I.box[3]-TERR.Z0)/FIELD_STEP)]);
  const m=mkMesh(GROUND_F,ibs.length?(i,j)=>ibs.some(ib=>i>=ib[0]&&i<ib[2]&&j>=ib[1]&&j<ib[3]):null,'The summit (ground)');
  INSETS.forEach(I=>mkMesh(I.field,null,I.label?I.label:I.name==='vent'?'The summit vent\'s cone (ground)':'A scarp of the caldera wall (ground, 2 m)'));
+ /* THE TEXTURE UNITS (GPU verify 2026-11-08): the ground's fixed samplers are eleven (the paint, the detail, the rock face, the band,
+    KSTRATA's five, KHORIZON's two), core/atmos's cloud shade adds its noise volume (twelve), and each KGROUND layer with a map
+    takes one more: four layers fill it; the GPUs link at most 16
+    (MAX_TEXTURE_IMAGE_UNITS on the Arc and the RTX; SwiftShader allows more, which is how the rebuild turn's stations passed in
+    the cloud and failed on the GPU). So a layer whose weight is zero on every vertex of the ground as drawn is left out: the
+    summit's four (beads, glass, spatter) where a station has no halo, rampart or glass, which frees the units its own layers take.
+    Each weight is the layer's own GLSL expression evaluated per vertex on the meshes' attributes (vGL, vGM, vGX, vGY), so a layer
+    that is drawn anywhere is kept. The count is window._groundUnits; verify.py asserts it against 16 in any GL */
+ /* the scalar GLSL a weight may call (a station's rim pavement: smoothstep); an expression this cannot evaluate keeps its layer */
+ const GF={smoothstep:(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);},clamp:(x,a,b)=>Math.min(b,Math.max(a,x)),
+  mix:(a,b,t)=>a+(b-a)*t,step:(e,x)=>x<e?0:1,min:Math.min,max:Math.max,abs:Math.abs,pow:Math.pow,sqrt:Math.sqrt};
+ const kgLive=L=>{if(!L)return false;let f;try{f=new Function(...Object.keys(GF),'return function(vGL,vGM,vGX,vGY){return '+L.w+';};')(...Object.values(GF));}catch(e){return true;}
+  const P=[{},{},{},{}],C='xyzw',A=['aGL','aGM','aGX','aGY'];
+  try{for(const m of GROUND_MESHES){const at=A.map(k=>m.geometry.attributes[k]),n=at[0].count;
+   for(let v=0;v<n;v++){for(let a=0;a<4;a++){const s=at[a].itemSize,d=at[a].array;for(let c=0;c<s;c++)P[a][C[c]]=d[v*s+c];}
+    if(f(P[0],P[1],P[2],P[3])>1e-3)return true;}}}catch(e){return true;}
+  return false;};
+ const GLY_LIVE=GLY.filter(kgLive);
+ KGROUND.hook(MAT,Object.assign({layers:GLY_LIVE,key:'godt-ground'},RELIEF?{relief:{bump:.075,cavity:.8,mesh:1,strata:.45,
+  strataW:'smoothstep(0.30,0.58,1.0-clamp(normalize(vGWN).y,0.0,1.0))'}}:{}));
+ window._groundLayers={kept:GLY_LIVE.map(L=>L.name||L.slot||'?'),dropped:GLY.filter(L=>L&&GLY_LIVE.indexOf(L)<0).map(L=>L.name||L.slot||'?')};
  /* the mesh's own hollows for the relief (relief.mesh: the aKGAO attribute), per mesh, once it is built */
  if(RELIEF)GROUND_MESHES.forEach(g=>KGROUND.cavityMesh(g,{rings:[3,18],depth:[.5,4]}));
  // ---- the apron: a vertical skirt 160 m deep round the map's edge, in the paint's edge colour
@@ -117,6 +136,15 @@ function buildGround(){
  const HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],n:256,h:terrainH,
   far:{h:(x,z)=>{const v=FAR.at(x,z);return v===v?v:baseH(x,z);},box:[TERR.cx-30000,TERR.cz-30000,TERR.cx+30000,TERR.cz+30000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;
+ /* the ground's texture units, counted by core/shadow's dry run of its hooks (KSHADOW.units), against the GPUs' 16 (above); counted
+    when read, so the hooks core/atmos and core/water add after this (snow and rain cover, fog belts, the wet beds) are in it */
+ /* KSHADOW.units' pattern (uniform sampler2D|samplerCube) misses a precision-qualified or 3D sampler: core/atmos's cloud shade on the
+    ground declares `uniform highp sampler3D uNoise`, so it read one short of what links (16 where the GPU linked 17 on the bloodfalls).
+    Its dry run is taken here with a pattern that sees every sampler (the core fix is owed: KNOWN_ISSUES.md) */
+ const unitsOf=M=>{try{const L=THREE.ShaderLib.standard,sh={uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader},f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
+   try{if(M.onBeforeCompile)M.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}
+   let n=M.map?1:0;sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?(?:i|u)?sampler\w*\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
+ Object.defineProperty(window,'_groundUnits',{configurable:true,enumerable:true,get:()=>({n:unitsOf(MAT),max:16,layers:GLY_LIVE.length})});
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:o=>!o.userData.farField});
  REGISTER({name:STN.title.replace('Krator Godthrone: ','The ground of ')+' (the field as drawn)',x:TERR.cx,z:TERR.cz,y:GROUND_F.stats().min-50,r:TERR.R*1.42,h:GROUND_F.max-GROUND_F.min+100,ground:true});
  GROUND=m;return m;}

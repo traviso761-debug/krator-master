@@ -113,8 +113,12 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
  // Suq draws ('GILLS.suck': 1 - the breath); the live gills' sumps, where the Bhlo's gas pools on the floor (gas, the floor's 4 m)
  if(typeof KHAZ!=='undefined'){KHAZ.STATES=KHAZ.STATES||{};KHAZ.STATES['GILLS.suck']=(r,h,t)=>{const k=1-GILLS.breath(gillsClockT());return{state:k>0?'drawing':'still',k,on:k>0};};
   SG.L.gills.filter(g=>g.alive).forEach(g=>{const a=(g.a0+g.a1)/2,x=g.c[0]+Math.cos(a)*g.r,z=g.c[1]+Math.sin(a)*g.r,y=terrainH(x,z),d=8;
-   REGISTER({name:'A throat drawing on the Suq ('+g.id+'): "Suq-ān na-sṭãḍ", do not stand on the suck',x,z,y:y-2,r:Math.max(6,g.w*.5),h:d+14,   /* RED: the record's volume the crack's floor across (its probe points); the hazard's shape stays the 6 m throat */
-    
+   REGISTER({name:'A throat drawing on the Suq ('+g.id+'): "Suq-ān na-sṭãḍ", do not stand on the suck',x,z,y:y-2,r:Math.max(6,g.w*.5),h:d+14,   /* RED: the record's volume the crack's floor across; the hazard's shape stays the 6 m throat */
+    /* the throat is a place on the crack's drawn floor (y is drawnH there), and the floor is the ground mesh, which the probe skips: the
+       volume's content is the ground (ground:true, as the field's own record), not whatever pipe happens to stand inside it. The great
+       gill (gill0: 300 m deep, 60 m across) has no pipe within 30 m of its throat, so its volume read empty on the GPU verify (2026-11-08) */
+    ground:true,
+
     tags:{hazard:{kind:'grab',danger:.7,falloff:'linear',shape:{type:'cyl',r:6,h:d+4,y0:-d},move:{speed:.5,pull:1.2,to:[0,-d,0]},stateFn:'GILLS.suck',tell:{sign:'dust streaming into the mouth'}}}});
    const pts=[];for(let k=0;k<=8;k++){const an=g.a0+(g.a1-g.a0)*(.3+.4*k/8);pts.push([g.c[0]+Math.cos(an)*(g.r-g.w*.2),g.c[1]+Math.sin(an)*(g.r-g.w*.2)]);}
    for(let k=8;k>=0;k--){const an=g.a0+(g.a1-g.a0)*(.3+.4*k/8);pts.push([g.c[0]+Math.cos(an)*(g.r+g.w*.2),g.c[1]+Math.sin(an)*(g.r+g.w*.2)]);}

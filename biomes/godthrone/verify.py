@@ -107,6 +107,13 @@ const R=[];
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 
+// 5a. the ground's texture units (84-host-ground.js, window._groundUnits): the GPUs link at most 16 in a fragment program;
+//     software GL allows more, so the count is checked against 16 here, not against this renderer's own limit
+{ const U=window._groundUnits;
+  R.push({name:'ground-texture-units', ok:!!U&&U.n<=U.max,
+          detail: U ? U.n+' of '+U.max+' units on the ground ('+U.layers+' KGROUND layers; dropped as unweighted: '
+                      +((window._groundLayers&&window._groundLayers.dropped.join(', '))||'none')+')' : 'window._groundUnits missing'}); }
+
 // 5b. the host's own checks, when it has any, and their negatives (each must FAIL)
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
   /* core/biome's card negative audits the page's cards: on a page with none (every station but the summit's: no Pele's hair) it has

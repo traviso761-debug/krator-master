@@ -44,8 +44,13 @@ const FCHK={
   return{ok:samples.length>100&&ash>=samples.length*.04&&!k.palagonite,detail:samples.length+' wall samples: '+JSON.stringify(k)};},
  // the air: four tenths of an atmosphere at the old vent (the model's law); the cold: about -40 C (the plan's table)
  air(p,t){const ok=Math.abs(p-.40)<.02&&t>-60&&t<-20;return{ok,detail:p.toFixed(3)+' atm and '+t.toFixed(0)+' C at the old vent'};}};
-/* the rille's walls: strata samples down its faces (the beds a reader sees) */
-const rilleWall=()=>{const o=[],P=RILLE.pts;for(let i=0;i<P.length;i+=2){const p=P[i];for(let d=-1;d<=1;d+=2)for(let h=8;h<RILLE.depth-4;h+=3.5){const x=p.x+d*RILLE.w*.42,z=p.z,a=STRATA.at(x,p.y+h,z);if(inMap(x,z))o.push({kind:a.kind});}}return o;};
+/* the rille's walls: strata samples down its faces (the beds a reader sees), from 8 m over its floor to 4 m under the rim, on both
+   walls across the rille's line. The rille's record (KRELIEF.rille) keeps no depth (its depth is the ground over its floor), so the
+   wall's height is read at each point: the plain's ground (flowGround, before the cut) over the floor. It read RILLE.depth, which is
+   undefined, so the check sampled nothing (GPU verify 2026-11-08: "0 wall samples") */
+const rilleWall=()=>{const o=[],P=RILLE.pts;for(let i=0;i<P.length;i+=2){const p=P[i],a0=P[Math.max(0,i-1)],a1=P[Math.min(P.length-1,i+1)],
+  tx=a1.x-a0.x,tz=a1.z-a0.z,l=Math.hypot(tx,tz)||1,D=flowGround(p.x,p.z)-p.y;
+  for(let d=-1;d<=1;d+=2)for(let h=8;h<D-4;h+=3.5){const x=p.x-tz/l*d*RILLE.w*.42,z=p.z+tx/l*d*RILLE.w*.42,a=STRATA.at(x,p.y+h,z);if(inMap(x,z))o.push({kind:a.kind});}}return o;};
 const presAt=y=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},y);
 function flankChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),h=KHAZ.here(VENT.x,VENT.top,VENT.z,0);
  add('the rille: its floor falls and is drawn',FCHK.rille(RILLE.pts,terrainH));

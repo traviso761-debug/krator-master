@@ -45,6 +45,18 @@ Open:
 - [ ] **Station 2 has no lithic texture of its own**: it shares station 1's (the black beads, the titanium basalt's grain).
 
 The rebuild turn (2026-11-04, in the cloud: no GPU; software GL only, PLAN.md section 9b):
+- [x] **The GPU verify (2026-11-08) found three faults SwiftShader hid**: (1) the stations' ground read 17-20 texture units over the GPUs'
+  16 (twelve fixed: the paint, detail, rock face, band, KSTRATA's five, KHORIZON's two, core/atmos's cloud-shade noise volume; one per
+  KGROUND layer with a map): `84-host-ground.js` now leaves out a layer whose weight is zero on every vertex of the ground as drawn (the
+  summit's beads, glass and spatter on stations with no halo, rampart or glass), and `verify.py` asserts `ground-texture-units`
+  (window._groundUnits, counted when read) against 16 in any GL. Four mapped layers fill a page: the bloodfalls had five, and its
+  palagonite layer went (3.5% of its ground; the paint and the faces' tint still carry it). (2) The Red Gill's throat records counted pipes
+  as their content; the great gill's throat has none within 30 m: the record is the crack's floor (`ground:true`). (3) The flank's ash check
+  read `RILLE.depth`, which KRELIEF.rille's record does not keep, so it sampled nothing: it now reads the wall's height per point (the plain
+  over the floor) and samples across the rille's line (1304 samples, 14% ash and ignimbrite).
+- [ ] **core/shadow's `KSHADOW.units` undercounts**: its pattern (`uniform sampler2D|samplerCube`) misses `uniform highp sampler3D uNoise`
+  (core/atmos's cloud shade), one short on every ground that takes it, so its "fits" can pass a material that will not link. 84 counts with
+  its own pattern until the core fix (outside this kit).
 - [ ] **Not GPU-verified**: every page passed its checks in SwiftShader (HANDOFF-REBUILD.md's turn paragraph lists what ran); the coordinator's
   GPU lane runs `verify.py --assert --all-views` and measures KSHADOW (`?shadow=1`) and the relief's cost. PERF.md has no new rows.
 - [ ] **The ground's relief is on by default** (`?kgrelief=0` turns it off): judge it on the owner's eye. In software GL the bead sand's glints

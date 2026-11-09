@@ -11,8 +11,10 @@ const STN={key:'blood',title:'Krator Godthrone: the bloodfalls',
  layers:sd=>[KGROUND.layer('godthrone','iceGlacier',{w:'vGX.y*(1.0-vGX.z)',amt:.9,gain:1,tint:'vec3(1.0)'}),
   KGROUND.layer('godthrone','iceRust',{w:'vGX.y*vGX.z',amt:.95,gain:1.1,tint:'vec3(1.0)'}),
   KGROUND.layer('godthrone','rustTerrace',{w:'vGX.z*(1.0-vGX.y)',amt:.95,gain:1,tint:'vec3(1.0)'}),
-  KGROUND.layer('godthrone','palagonite',{w:'vGX.x',amt:.85,gain:1,tint:'vec3(1.0)'}),
   KGROUND.layer('godthrone','lichenCrust',{w:'vGY.w',amt:.8,gain:1,tint:'vec3(1.0)'})],
+ /* four layers, not five: the ground's program has twelve fixed texture units and the GPUs link 16 (84-host-ground.js; the GPU verify of
+    2026-11-08 failed at 17). Palagonite went (3.5% of the ground, the least of the five after the stained ice and the terraces, which are
+    the station): the paint still colours it and the faces take its tint (84's vGX.x); its set is left out of this page's pack (station.json "tex") */
  /* the ice cliff and the falls at 2 m (the base lattice's 8 m draws a 40 m cliff in five cells) */
  insets:()=>[{x:FALL.x,z:FALL.z+40,r:260,st:2,name:'falls',label:'The ice cliff, the falls and the pool (ground, 2 m)'}],
  spine:()=>[[FALL.x,FALL.z],[FALL.x,FALL.z+500],[FALL.x-1500,FALL.z-1200],[8000,10500],[9500,12000],[6000,6000],[11000,7000]]};
