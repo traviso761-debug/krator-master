@@ -21,8 +21,8 @@ const GEODES=(function(){const t0=performance.now(),T=SC.strata.tops,B0=SC.strat
   return (ad>FLOOR.half-90&&ad<FLOOR.half+330)||Math.abs(u)<130;};
  const box=(function(){let b=[1e9,1e9,-1e9,-1e9];for(let s=FALL.s-2000;s<=FALL.s+2000;s+=100)for(const d of[-FLOOR.half-340,FLOOR.half+340]){const p=courseAt(s,d);b=[Math.min(b[0],p[0]),Math.min(b[1],p[1]),Math.max(b[2],p[0]),Math.max(b[3],p[1])];}return b;})();
  /* MINERALS: the coulee's palette (PLAN.md, "Geodes"): mostly the flood basalts' amethyst, some quartz and blue chalcedony, a few celestine
-    and watermelon-banded ones, and rare aura and bismuth hoppers (no basalt grows those two: the owner's references, 2026-11-09) */
- const MINERALS={amethyst:.55,quartz:.12,chalcedony:.1,watermelon:.1,celestine:.07,aura:.04,bismuth:.02};
+    and watermelon-banded ones (aura and bismuth, which no basalt grows, moved on 2026-11-09: the Throne's vents, Godstep's plan) */
+ const MINERALS={amethyst:.6,quartz:.12,chalcedony:.1,watermelon:.1,celestine:.08};
  const R=KGEODE.scatter({box,world:211,cell:4,bands,ground:(x,z)=>drawn(x,z).y,normal:(x,z)=>drawn(x,z).n,near,
   wall:{p:.06,steep:.45},loose:{p:.015,steep:.32,below:60},r:[.12,.42],split:.45,minerals:MINERALS,
   accept:r=>waterH(r.x,r.z)<-1e8&&!ERRATICS.some(e=>Math.hypot(r.x-e.x,r.z-e.z)<Math.max(e.sx,e.sz)*.7+r.r)});

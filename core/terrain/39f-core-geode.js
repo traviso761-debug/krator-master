@@ -22,6 +22,11 @@
 //        `rind` the band palette round the cavity (agate, chalk, chrysocolla, watermelon, aura, metal), `natural` false for the two a basalt
 //        never grows (aura and bismuth hoppers: a fantasy or an Ancient anomaly's palette). KGEODE.ORDER: their ids in the order a palette
 //        draws them (fixed, so a palette's pick is the same in any engine).
+//   KGEODE.around({sources: [{x, z, R, s}], world, ground, normal, n [0, 3] (pockets a source: s (0..1, its strength) scales the
+//        count), reach (.6: of R), r [.1, .3], minerals ({bismuth: 1}), steep (.6: none on ground steeper), accept})
+//     pockets broken open round a set of sources (a vent's fumaroles: no flow band, the heat decides): each a 'vent' record as a
+//     broken loose geode's, its `source` the index it came from. Drawn by KGEODE.draw as any broken one.
+//     -> [{id, kind:'vent', x, y, z, r, split: true, n, az, tilt, rind, mineral, shape, source}]
 //   KGEODE.block(C, {id, x, z, ground, face (rad: the broken face's outward bearing, x toward z), w (9), d (8), h (7), r (2.3), ph (4.4),
 //        world, name})   an unbuilt KCAVERN: adds the block (C.mass, irregular in plan, capped), the pocket (C.hall: a round geode cavity its
 //        broken face cuts open) and a door opening on that face. Call before C.build().
@@ -94,6 +99,17 @@
     C.opening({id:id+':door',kind:'door',c:[fx,fz],y:fy,r:r,h:ph});
     return {id:id,kind:'block',name:o.name||'A fallen block of a flow top, split open along its geode',x:o.x,z:o.z,y:g0,poly:poly,y0:y0,y1:y1,face:fa,n:[nx,nz],
       pocket:{id:id+':pocket',c:[cx,fy,cz],r:r,h:ph,door:[fx,fz],y:fy}};}
+  function around(o){var K=KR();o=o||{};if(!o.sources||typeof o.ground!=='function'||typeof o.normal!=='function')throw new Error('KGEODE.around: sources, ground and normal');
+    if(o.minerals)Object.keys(o.minerals).forEach(function(k){if(!MINERALS[k])throw new Error('KGEODE.around: no mineral '+k);});
+    var world=d(o.world,1),NR=o.n||[0,3],reach=d(o.reach,.6),R=o.r||[.1,.3],st=d(o.steep,.6),pal=o.minerals||{bismuth:1},out=[];
+    o.sources.forEach(function(S,si){var h=K.hash(world,0x6E3,si),u=function(k){return K.unit(K.hash(h,k));},s=S.s==null?1:S.s,
+      n=Math.floor((NR[0]+(NR[1]+1-NR[0])*u(0))*s);
+      for(var k=0;k<n;k++){var a=u(10+k)*2*Math.PI,dd=Math.sqrt(u(20+k))*S.R*reach,x=S.x+Math.cos(a)*dd,z=S.z+Math.sin(a)*dd,nn=o.normal(x,z);
+        if(1-nn[1]>st)continue;
+        var rr=rng(R,u(30+k)),rec={id:'vent:'+si+':'+k,kind:'vent',x:x,y:o.ground(x,z),z:z,r:rr,split:true,n:nn.slice(),az:u(40+k)*2*Math.PI,tilt:u(50+k)*.7,
+          rind:rr*(.1+.08*u(60+k)),mineral:pickMineral(pal,u(70+k)),shape:[1,.6+.4*u(80+k)],source:si};
+        if(o.accept&&!o.accept(rec))continue;out.push(rec);}});
+    return out;}
   /* the lining: points on a Fibonacci sphere of directions out from the pocket's middle, each marched to the rock it meets (within 1.7 r: a
      ray that leaves by the broken face finds none and grows nothing), set on the wall aimed back at the middle, as a geode's crystals grow.
      (KSPELEO's druse stands up or hangs down, and KCAVERN's ceilingAt reads a void above the ground as under the sky, so KSPELEO does not
@@ -112,5 +128,5 @@
       var px=c[0]+dx*t,pz=c[2]+dz*t,back=-((px-P.door[0])*nx+(pz-P.door[1])*nz),dp=Math.max(0,Math.min(1,back/(P.r*1.55)));
       out.push({id:P.id+':pt'+i,kind:'point',x:px,y:c[1]+dy*t*(P.h*.5/P.r),z:pz,d:[-dx,-dy,-dz],len:rng(L,u(1)*u(2))*(.45+.85*dp),w:.5+.3*u(3),spin:u(4)*2*Math.PI,depth:dp,mineral:o.mineral||'amethyst'});}
     return out;}
-  root.KGEODE={MINERALS:MINERALS,ORDER:ORDER,pick:pickMineral,scatter:scatter,block:block,line:line,export:function(R){return {format:'krator-geodes',version:1,records:JSON.parse(JSON.stringify(R))};}};
+  root.KGEODE={MINERALS:MINERALS,ORDER:ORDER,pick:pickMineral,scatter:scatter,around:around,block:block,line:line,export:function(R){return {format:'krator-geodes',version:1,records:JSON.parse(JSON.stringify(R))};}};
 })(typeof window!=='undefined'?window:globalThis);

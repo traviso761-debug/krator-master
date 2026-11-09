@@ -71,8 +71,10 @@ At 0.75 g a crystal beam carries three-quarters of Earth's load, so beams longer
 
 ## 3. The flood basalts: amethyst geodes
 
-**Aura and bismuth** (2026-11-09: `KGEODE.MINERALS` has both, `natural: false`; the coulee keeps them rare, 6 per cent). Neither grows in a
-flood basalt's gas bubbles. Where they would belong (*proposed*):
+**Aura and bismuth** (2026-11-09: `KGEODE.MINERALS` has both, `natural: false`). Neither grows in a flood basalt's gas bubbles, so the
+owner moved them out of the scablands' coulee (2026-11-09): **bismuth is built at the Throne's vents** (`biomes/throne/stations/vents/
+87g-host-bismuth.js`: `KGEODE.around` round every fumarole, 98 pockets at 72 vents, checked with a negative); **aura is in Godstep's
+plan** (`biomes/godstep/PLAN.md` section 2), built with its first station. Why there:
 - **Aura: the Godthrone's titanium basalt**, Godstep's four ponded steps (`biomes/godstep/PLAN.md`). Aura quartz is quartz under a
   titanium oxide film; geodes in a titanium-rich flow whose crystals took a film from the rock make that a place, not a trick. The
   Rift ("iridescence is the rule", `LORE.md`) is the second choice. Not the Gills: their plan keeps iridescence out.

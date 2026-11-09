@@ -33,7 +33,7 @@
     chrysocolla:[[.66,.71,[.76,.89,.93]],[.71,.74,[.92,.94,.95]],[.74,.84,[.14,.55,.56]],[.84,.92,[.1,.44,.3]],[.92,.97,[.42,.48,.42]]],
     watermelon:[[.66,.71,[.9,.86,.93]],[.71,.8,[.86,.44,.6]],[.8,.82,[.94,.92,.92]],[.82,.88,[.36,.58,.42]],[.88,.93,[.14,.3,.25]],[.93,.97,[.36,.38,.4]]],
     aura:[[.66,.97,[.2,.55,.62]]],
-    metal:[[.66,.97,[.62,.62,.65]]]};
+    metal:[[.66,.97,[.4,.4,.43]]]};
   var SEG=14;
   function wob(a){return 1+.035*Math.sin(3*a+.7)+.025*Math.sin(5*a+2.1);}   /* the bands' shared wave (the druse's rim takes it too) */
   K.draw=function(recs,o){o=o||{};var T=o.THREE||root.THREE;if(!T)throw new Error('KGEODE.draw: THREE');var R=root.KRAND,M=o.maps||{},pts=o.points||[];

@@ -42,5 +42,9 @@ ok('one mineral unless a palette is given; shapes are ovals',R.every(r=>r.minera
  ok('every mineral has a crust and a rind, and ORDER lists them all',KGEODE.ORDER.length===Object.keys(KGEODE.MINERALS).length&&KGEODE.ORDER.every(k=>KGEODE.MINERALS[k].crust&&KGEODE.MINERALS[k].rind),false);}
 ok('the lining grows deeper inward: depth 0..1, the deep points longer than at the rim',D.every(q=>q.depth>=0&&q.depth<=1)&&(()=>{const a=D.filter(q=>q.depth<.3),b=D.filter(q=>q.depth>.7),m=x=>x.reduce((s,q)=>s+q.len,0)/x.length;return a.length&&b.length&&m(b)>m(a);})(),false);
 ok('some broken loose geodes lie with their other half beside them, on the ground',L.some(r=>r.pair)&&L.filter(r=>r.pair).every(r=>r.split&&Math.abs(r.pair.y-ground(r.pair.x,r.pair.z))<1e-9&&Math.hypot(r.pair.x-r.x,r.pair.z-r.z)>r.r*2),false);
+{const S=[{x:0,z:0,R:40,s:1},{x:200,z:0,R:30,s:.5},{x:-200,z:50,R:30,s:0}],o2={sources:S,world:3,ground,normal,n:[1,4]},V=KGEODE.around(o2);
+ ok('pockets round the vents ('+V.length+'), bismuth by default, each within reach of its source and on the ground',V.length>0&&V.every(r=>r.kind==='vent'&&r.split&&r.mineral==='bismuth'&&Math.hypot(r.x-S[r.source].x,r.z-S[r.source].z)<=S[r.source].R*.6+1e-9&&Math.abs(r.y-ground(r.x,r.z))<1e-9),V.length===0);
+ ok('a source of no strength has none; the same sources, the same pockets',V.every(r=>r.source!==2)&&JSON.stringify(KGEODE.around(o2))===JSON.stringify(V),false);
+ ok('refuses no sources and a mineral it does not know',throws(()=>KGEODE.around({ground,normal}))&&throws(()=>KGEODE.around(Object.assign({},o2,{minerals:{ruby:1}}))),false);}
 ok('the export is plain JSON',KGEODE.export(R).records.length===R.length&&KGEODE.export(R).format==='krator-geodes',false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

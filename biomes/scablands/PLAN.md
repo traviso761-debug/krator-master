@@ -96,9 +96,9 @@ station 1 shows small amethyst geodes in the walls and on the talus, and one wal
 - **The minerals** (the owner's references, 2026-11-09): `KGEODE.MINERALS` names seven fillings, each a crust habit and a rind palette:
   amethyst (white quartz at the rim, purple deepening inward: most of them), quartz, celestine (blue blades in a chalky rind),
   chalcedony (blue botryoidal pillars in a green crust), watermelon (pink and green bands, tourmaline prisms green at the foot and pink at
-  the tip standing out of the face), and two no basalt grows, kept rare here: aura (a teal, blue and violet film) and bismuth (stepped
-  hopper crystals in a rainbow film). The coulee's palette: amethyst .55, quartz .12, chalcedony .1, watermelon .1, celestine .07, aura
-  .04, bismuth .02. Geodes are ovals, not balls; half the broken loose ones lie with their other half beside them; the walk-in geode's
+  the tip standing out of the face), and two no basalt grows: aura (a teal, blue and violet film) and bismuth (stepped hopper crystals
+  in a rainbow film), moved out of the coulee on 2026-11-09 (bismuth to the Throne's vents, aura to Godstep's plan). The coulee's
+  palette: amethyst .6, quartz .12, chalcedony .1, watermelon .1, celestine .08. Geodes are ovals, not balls; half the broken loose ones lie with their other half beside them; the walk-in geode's
   lining grows longer and darker toward the back of its pocket.
 - **Drawn by distance** (2026-11-09): every piece is chunked (240 m squares) and a chunk shows only while the eye is within its piece's
   range (shells and nodules 240 m, faces 170, druse and tourmaline 90, the other crystals 60: `KGEODE.draw`'s `update`, this page's tick).

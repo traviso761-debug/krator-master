@@ -23,8 +23,8 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **The geodes' textures are reused sets.** The agate rind is `stone.onyx` toned, the druse `stone.geode.druze` (the Throne's)
   coloured by the material; a banded-agate set and an amethyst druse set of their own would read better close up. The ground's
   mesh is not cut round a wall geode: it stands half proud of the cliff with a druse disc for its cavity. GPU verify (`verify.py
-  --assert`) deferred at the build (2026-11-09); the host checks and negatives pass in the browser pane. Aura and bismuth geodes are
-  not a basalt's (kept rare, 6 per cent, from the owner's references; better homes: `biomes/CRYSTAL-CAVES-5.1.md` site 3, "Aura and bismuth").
+  --assert`) deferred at the build (2026-11-09); the host checks and negatives pass in the browser pane. Aura and bismuth geodes, which no
+  basalt grows, moved out on 2026-11-09 (`biomes/CRYSTAL-CAVES-5.1.md` site 3, "Aura and bismuth").
 
 ## Closed
 

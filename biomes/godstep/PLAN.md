@@ -229,6 +229,12 @@ thin flank flows above the head are plain `tibasalt`.
   Australia's breakaways are in 200-300 mm country (`refs/05`). On the north wall, with ~1,000 mm, red soil is **still forming**
   under forest and the laterite there is living. `tibasalt-ponded`'s `laterite` kind, altered by height at the low end (the
   recipe's `alter` `below`) and laid on the north wall's cliffs, does both; the red soil is a `KGROUND` layer.
+- **Aura geodes** (the owner, 2026-11-09; `biomes/CRYSTAL-CAVES-5.1.md` site 3, "Aura and bismuth"). The ponded flows' vesicular tops
+  hold geodes, and here their quartz took a film from the titanium rock: **aura**, teal, blue and violet with a little gold
+  (`KGEODE.MINERALS.aura`). Placed as the scablands' coulee places its geodes (`biomes/scablands/src/87g-host-geodes.js`):
+  `KGEODE.scatter` in a band under each flow top (`tibasalt-ponded`'s flow tops) on every front and rille wall, the talus under
+  them, with this valley's palette (*proposed*: aura .6, quartz .3, amethyst .1), drawn by `KGEODE.draw` with its `update` on the
+  page's tick. Core adoption: `core/terrain/39-core-cavern.js`, `39f-core-geode.js`, `host/39g-core-geode-draw.js`.
 
 ## 3. The flora
 
