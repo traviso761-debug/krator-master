@@ -15,6 +15,7 @@ const EXT=FROM?[]:['53-core-water-terraces.js','53b-core-water-terraces-draw.js'
 global.window=global;
 eval(files.concat(EXT).map(rd).join('\n')+';global.ATMOS=ATMOS;global.WATER=WATER;');
 const A=ATMOS,W=WATER;
+W.BREAKUP_AUTO=false;   // ext/56's breakup is on by default since 2026-11-09 (it moves every drawing on purpose; test-breakup.js checks it): the snapshot is of the gaps' defaults
 
 // ---------------------------------------------------------------- a three.js stub: what the drawings touch, and records what they set
 class Color{constructor(h){h=h==null?0:h;this.r=((h>>16)&255)/255;this.g=((h>>8)&255)/255;this.b=(h&255)/255;}getHexString(){return'000000';}}

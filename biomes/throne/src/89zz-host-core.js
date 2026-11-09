@@ -29,22 +29,11 @@ if(THERM&&typeof ATMOS!=='undefined'&&ATMOS.snowBare&&typeof STATION_SNOW!=='und
 // After the air, so the count below sees every layer: a ground takes it only where its fragment shader keeps two texture units free for it (the
 // horizon's two maps). Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers): the limit is sixteen, so its
 // ground keeps the plain light and its flora takes the horizon (window._horizon.skipped names what was left out)
-const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
-const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
-  const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;   /* a dry run: what it misses is not a real compile's (that one records its own) */
-  try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}
-  let n=['map','emissiveMap','alphaMap','lightMap','aoMap','normalMap','bumpMap','roughnessMap','metalnessMap','specularMap','envMap'].filter(k=>m[k]).length;
-  if(!m.envMap&&m.isMeshStandardMaterial&&scene.environment)n++;   /* three gives a standard material the scene's environment at compile */
-  /* every sampler a hook declares: 2D, 3D, Cube and their array, shadow and integer forms, with or without a precision qualifier (2026-11-09:
-     core/atmos's cloud shade declares `uniform highp sampler3D uNoise`, which the first pattern missed: the isle's and the vents' grounds
-     read seventeen on the GPU while this said sixteen; KSHADOW.units' pattern) */
-  /* a sampler declared and never read (the delta's uMacro under KGROUND) is dropped by the GLSL compiler and takes no unit: only a name the
-     text reads again counts */
-  const fs=sh.fragmentShader;fs.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g,(a,b)=>{
-   b.split(',').forEach(s=>{const k=s.trim().replace(/\[.*$/,'');if(k&&(fs.match(new RegExp('\\b'+k+'\\b','g'))||[]).length>1)n++;});return a;});
-  return n+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);}catch(e){return 99;}};   /* +1: the sun's shadow map, in every lit material once it is on (three adds it at compile) */
-/* the texture units a lit program may read: this GL's, and never more than the GPUs' 16 (SwiftShader's 32 would offer what the GPU cannot link) */
-const TEX_UNITS=Math.min(16,renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures);
+/* the texture units a program links: core/shadow's dry run of its hooks (KSHADOW.units: its maps, scene.environment on a standard material,
+   every sampler a hook declares and reads; this page's samplersOf moved into core on 2026-11-09), +1 for the sun's shadow map in every lit
+   material once the switch is offered (three adds it at compile); the limit is this GL's and never more than the GPUs' 16 (KSHADOW.maxUnits) */
+const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);
+const TEX_UNITS=KSHADOW.maxUnits(renderer);
 let SHADOW_ON=false;   /* the switch is offered (KSHADOW attached): the map's texture unit is kept free whether it is on or off */
 // THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03): one box that follows the view (90-600 m), every placed mesh casting and receiving.
 // OFF BY DEFAULT (the owner, 2026-11-03: toggleable, off, in every build; station 1 could not afford them, +42 ms a frame on the Arc): the panel's

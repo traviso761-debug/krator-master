@@ -97,7 +97,7 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
  function ownPlace(p){const s=p.shape,b=SPAN.bbox(s),par=p.in?SPAN.byId(L)[p.in]:null,y0=par?par.y+par.h:p.y;
   const cu=(b[0]+b[1])/2,cv=(b[2]+b[3])/2,w=W(cu,cv,0),ry=(p.ry!=null?p.ry:(cv>0?Math.PI:0))-F.ang,v=KRAND.hash(seedOf(p),7)%3,args=p.args||{};
   const rec={id:p.id,key:p.key,w:b[1]-b[0],d:b[3]-b[2],ry:p.ry||0,args:args};
-  if(p.key.indexOf('pa:')===0){PA_SITES.push({key:p.key.slice(3),x:w[0],z:w[2],ry:ry,o:Object.assign({v:v,y:y0},args)});rec.kit='post-apoc';OWN_PLACED.push(rec);placed.push(p.id);return;}
+  if(p.key.indexOf('pa:')===0){PA_SITES.push({key:p.key.slice(3),x:w[0],z:w[2],ry:ry,o:Object.assign({v:v,y:y0},p.by==='dalab'?{culture:'dalab'}:{},args)});rec.kit='post-apoc';OWN_PLACED.push(rec);placed.push(p.id);return;}
   if(typeof VERN!=='undefined'&&VERN.defs[p.key]){TSTAT.cur=p.kind+'/'+p.id;const G=VERN.place(scene,p.key,w[0],w[2],ry,Object.assign({y:y0,v:v},args));
    if(G){rec.kit='dalab';rec.def=[VERN.defs[p.key].w,VERN.defs[p.key].d];OWN_PLACED.push(rec);}else missing.push(p.id);placed.push(p.id);return;}
   missing.push(p.id);}
@@ -172,7 +172,8 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
    STEPS[w.id]=stairWay(w,P.map((p,i)=>{const c=W(p[0],p[1],p[2]);return on[i]?[c[0],p[2],c[2]]:[B.x+Math.cos(A[i])*R[i],p[2],B.z+Math.sin(A[i])*R[i]];}),()=>[B.x,B.z]);}
   else STEPS[w.id]=stairWay(w,P.map(p=>{const c=W(p[0],p[1],p[2]);return [c[0],p[2],c[2]];}),(x,z)=>[x-10,z]);});
  TSTAT.cur=null;kbake(scene);
- // the Post-Apoc kit's buildings in one build (generic marks: the highlanders' own wait on who they are). Its furniture pass
+ // the Post-Apoc kit's buildings in one build (generic marks: the highlanders' own wait on who they are; what Dalab raises, the
+ // Line and the arena, flies Dalab's red: core/sockets' `dalab` pack, by the site's o.culture). Its furniture pass
  // makes its own core/tags registry as KTAGS.page: the page's is put back after it
  let PA=null;if(PA_SITES.length&&typeof KratorPostApoc!=='undefined'){const keep=KTAGS.page;KratorPostApoc.setError(reportErr);
   try{PA=KratorPostApoc.build(PA_SITES,{culture:'generic'});scene.add(PA);}catch(e){reportErr('post-apoc: '+(e.stack||e));}

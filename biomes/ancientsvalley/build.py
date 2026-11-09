@@ -153,6 +153,7 @@ for f,d in CORE_SHADOW.items():
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.join(CORE,'water',f)
+PATH.setdefault('56-core-water-breakup.js',os.path.join(CORE,'water','ext','56-core-water-breakup.js'))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # core/atmos: the core, presets, export, waves, skylight, the weather (4) and its selector (9); the host binding, the weather
 # binding (ATMOS.bindWeather) and the shared sky (SKY-PLAN.md S1: model, presets, shader, host), by path
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']

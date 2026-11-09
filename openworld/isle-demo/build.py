@@ -93,7 +93,7 @@ ORDER = (
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
-     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
+     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/ext', '56-core-water-breakup.js'),
      ('core/water/geyser', '52-core-water-geyser.js'), ('core/water/geyser', '52b-core-water-geyser-draw.js'),
      ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
      ('core/materials/record', '26-matlib-bind.js'),

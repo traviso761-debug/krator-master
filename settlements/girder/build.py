@@ -74,7 +74,7 @@ RAND_DIR = os.path.join(ROOT, 'core', 'rand')   # KRAND: the tags' uid is its ha
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 PORTS_DIR = os.path.join(ROOT, 'core', 'ports')   # PORT: each building's draw marked, for kits/beast-riders (core/ports/README.md)
 WATER_DIR = os.path.join(ROOT, 'core', 'water')   # WATER: the brook's flow ribbon (core/water/README.md; src/90w-brook-water.js)
-CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js', '56-core-water-breakup.js']   # 56 from ext/ (main), on by default since 2026-11-09
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 2), with core/edits, core/space, core/minimap
@@ -253,6 +253,7 @@ def main():
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    paths.setdefault('56-core-water-breakup.js', os.path.join(WATER_DIR, 'ext', '56-core-water-breakup.js'))   # the breakup (core/water ext/56)
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)

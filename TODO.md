@@ -28,6 +28,19 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+**Sources done on `worktree-agent-ab4c79ffcb7301d42` (2026-11-09), awaiting the all-builds rebuild** (the coordinator rebuilds once,
+rewrites the baseline once, then deletes these items):
+- `KSHADOW.units`: done (core counts read samplers and `scene.environment`, `KSHADOW.maxUnits` = min(16, GL); the copies in the Throne,
+  geyser, highrift, nhighlands, cut, shighlands, catch and ringisles now call core; `node core/shadow/test-shadow.js`). Moves every KSHADOW page.
+- kits/interiors food anchors: done (`cottage`, `living`, `kitchen`). Moves every page that furnishes rooms.
+- `regOccupancy` honours `ground` / `far`: done in core/host (`node core/host/test-probe.js`); savage's probe object gone (its licks are
+  `ground` volumes now), godthrone's copy gone. Moves every page on core/host.
+- The `dalab` pack: done (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line and arena pass `culture:'dalab'`). Moves the
+  pages that take core/sockets (and through 38-symbols every catalog page).
+- Water breakup on by default: done (`W.BREAKUP_AUTO=true`; ext/56 now listed in all 43 builds that take core/water: 24 were missing it,
+  not 25). Moves every page that takes core/water.
+- The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

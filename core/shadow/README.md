@@ -22,6 +22,11 @@ it took `KSHADOW`. The switch follows `WATER.mirrorSwitch` (core/water ext/58):
 
 Turning it either way recompiles the lit materials once (their shadow define and sampler come and go). A page whose materials have no texture
 unit to spare for the map must not offer the switch (the Throne's isle and vents: `biomes/throne/src/89zz-host-core.js`).
+`KSHADOW.units(material, renderer, scene)` counts the units a material's program links (its maps, `scene.environment` on a standard
+material, every sampler its hooks declare and read again: one declared and never read is dropped by the compiler) and
+`KSHADOW.maxUnits(renderer)` is the limit, min(16, this GL's): SwiftShader allows 32, the GPUs 16. `H.fits` uses both; a page that keeps
+units free for its own passes (the rain cover, the horizon) counts with them, not with its own copy (2026-11-09: the Throne's `samplersOf`
+moved here; geyser, highrift, nhighlands, cut, shighlands, catch and ringisles dropped theirs).
 
 ## Taking it
 

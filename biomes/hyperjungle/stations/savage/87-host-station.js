@@ -62,8 +62,7 @@ function stationBuild(){
     const T=L.bailawn.make(x,terrainH(x,z),z,h);BIO.range=Math.hypot(x-CEN[0],z-CEN[1])<((LD.floor==null?800:LD.floor))?LD.floor:LD.mid;try{L.bailawn.grow(T,2);}finally{BIO.range=null;}cnt('bailawn');}
    REGISTER({name:'A bai (a clearing the herds keep open: sedge lawn, wallows, salt licks)',key:'landform.bai',kind:'landform',x:B.x,z:B.z,y:terrainH(B.x,B.z),r:B.r,h:4});});
   WALLOWS.forEach(Wl=>REGISTER({name:Wl.dry?'A wallow (a mud pan dried and cracked)':'A wallow (wet mud)',key:'landform.wallow',kind:'landform',x:Wl.x,z:Wl.z,y:terrainH(Wl.x,Wl.z),r:Wl.r,h:1,ground:true}));
-  {const pp=new THREE.Object3D();pp.name='wallow and lick probe points';pp.userData.probePoints=[].concat(...WALLOWS.map(Wl=>[Wl.x,terrainH(Wl.x,Wl.z)+.3,Wl.z]),...LICKS.map(Lk=>[Lk.x,terrainH(Lk.x,Lk.z)+.3,Lk.z]));scene.add(pp);}   /* the pans are painted on the ground mesh the probe skips: one point a wallow (core/host's probePoints) */
-  LICKS.forEach(Lk=>REGISTER({name:'A salt lick (red clay chewed into the bank)',key:'landform.lick',kind:'landform',x:Lk.x,z:Lk.z,y:terrainH(Lk.x,Lk.z),r:Lk.r,h:3}));}
+  LICKS.forEach(Lk=>REGISTER({name:'A salt lick (red clay chewed into the bank)',key:'landform.lick',kind:'landform',x:Lk.x,z:Lk.z,y:terrainH(Lk.x,Lk.z),r:Lk.r,h:3,ground:true}));}   /* wallows and licks are painted on the ground mesh: core/host's probe counts `ground` volumes occupied */
  catch(e){reportErr('station bai sedge: '+e.stack);}
  // ---- THE SKY PITCHERS: in the heroes' bough gardens (perches over 60 m), within the trees' near range
  try{(HYPERJUNGLE.TREES||[]).forEach((T,ti)=>{if(!T.hero||!T.perch||BIO.lodD(T.x,T.z)>((LT==null?1200:LT)))return;

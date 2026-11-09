@@ -67,6 +67,7 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
 # core/rand and core/tags (every target): the registry core/host's inspector and minimap read (src/91t-ys-tags.js fills
 # KTAGS.page from REG). The city took core/rand already (TARGET_CORE below); the same files, so no clash.
 TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
@@ -231,7 +232,7 @@ DETERMINISTIC = {
     '89x-ys-trades.js',   # the Voth census table (data only: YS_TRADES, read by tools/check_trades.py)
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
-DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'91t-ys-tags.js', '99-start.js'}   # core/host, core/tags (no rnd()); the records; the take
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
@@ -332,6 +333,7 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: os.path.join(WATER_DIR, 'ext', f) for f in CORE_WATER_EXT if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     for mod in TARGET_CORE.get(target, []):

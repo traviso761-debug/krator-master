@@ -108,6 +108,7 @@ PATH['89-atmos-c-hostbind.js']=J('core','atmos','host','89-atmos-c-hostbind.js')
 # core/water: the hot water in the feeder well, a still WATER.open
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER: PATH.setdefault(f,J('core','water',f))
+PATH.setdefault('56-core-water-breakup.js',J('core','water','ext','56-core-water-breakup.js'))   # the breakup (core/water ext/56), on by default since 2026-11-09
 miss=[f for f in ('10-core-head.js','20-core-kit.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME)'); sys.exit(1)
 CORE_MAT=['23-mat-record.js','25-matlib-host.js']

@@ -130,7 +130,7 @@ for f in ['52-core-water-geyser.js','52b-core-water-geyser-draw.js']:   # core/w
     PATH[f]=J('core','water','geyser',f)
 # core/water/ext/: the pools in one mesh (drawPools, 53), and the final rebuild's: the audit (57: the creek on its ground, 99's check) and the outflows'
 # plume on the sea (61, tintFlow). Not taken: the reflections switch (58: no large still the mirror can patch; PLAN-STATIONS.md, "Core adoption")
-for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','57-core-water-audit.js','61-core-water-plume.js']:
+for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','56-core-water-breakup.js','57-core-water-audit.js','61-core-water-plume.js']:
     PATH.setdefault(f,J('core','water','ext',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
