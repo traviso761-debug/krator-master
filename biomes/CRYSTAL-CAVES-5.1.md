@@ -29,7 +29,7 @@ At 0.75 g a crystal beam carries three-quarters of Earth's load, so beams longer
 |---|---|---|---|---|---|
 | 1 | **The Hearth hold's drained storey** | 525,1400 | a Naica: selenite beams and blocks in the hypogene chambers the water left | `SELENITE` via `KKARST` `crystal` | **the owner's choice**: hearths station 2 |
 | 2 | **The Neo-Ozarks' caverns** | 988-1132, 290-364 (`tube_ozarks_15`) | Mississippi Valley: calcite druse and blocks, celestine beams, galena and sphalerite | `CALCITE` | planned; the new north (low priority) |
-| 3 | **The flood basalts' geodes** | n semiarid ~800,470; the Siphon Pits' rims; the Loom-Chasms terraces | amethyst geodes in thick flows, a few big enough to step into | `AMETHYST` | planned |
+| 3 | **The flood basalts' geodes** | n semiarid ~800,470; the Siphon Pits' rims; the Loom-Chasms terraces | amethyst geodes in thick flows, a few big enough to step into | `AMETHYST` | **built** in the scablands' coulee (2026-11-09: `KGEODE`, the walk-in geode a fallen block); the plateau and the other rims later |
 | 4 | **The Throne's thundereggs and vugs** (Zeijani shrines) | the Throne/Volcano region, 760-940 x 758-927 | thunderegg walls in the galleries, vugs a person can stand in | `VUG` | planned; the shrines are the owner's (lore: `LORE.md`, "The Zeijani's stone eggs") |
 
 ---
