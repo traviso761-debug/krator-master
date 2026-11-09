@@ -406,11 +406,12 @@ rebuild once, rewrite the baseline once; then take the item out of `TODO.md` in 
 **With the next all-builds rebuild** (they were step 1's; step 1 moved no byte, so it brought no rebuild: the first of
 steps 2 and 3 to move pages takes them, with the stale pages above). `TODO.md`, "Ride along with the next all-builds rebuild":
 - ~~The probes read a merged mesh's own sample points; a broad phase for `regOccupancy` on `core/space`; guard the
-  camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad). When it lands: check the Iziz palace page's
-  own guard (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`) came out, and take the three out of `TODO.md`.
+  camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad), and in `main`: core/host's probe has the sample points
+  and the KSPACE broad phase, its camera the guarded capture; the Iziz palace page's own guard is gone and `TODO.md` has no entries
+  for them (checked 2026-11-09).
 - ~~The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy goes.~~ Done in step 3
   (3d39ba47); the bundled pages take the new symbols in the rebuild (`TODO.md`'s first ride-along).
-- `core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).
+- ~~`core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).~~ Done (9445d626).
 - ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the kits' half is step 1 (done, as a placeholder); the
   settlements' half is SKY-PLAN's S5 and step 4.
 

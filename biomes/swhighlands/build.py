@@ -161,7 +161,7 @@ CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.
 for f in CORE_WATER:
     PATH.setdefault(f, core('water', f))
 # core/water/ext: the cave stream's mouth on the river as one water (WATER.confluence: the ground's shore, one current)
-for f in ['55-core-water-confluence.js', '55b-core-water-confluence-draw.js']:
+for f in ['55-core-water-confluence.js', '55b-core-water-confluence-draw.js', '56-core-water-breakup.js']:
     PATH[f] = core('water', 'ext', f)
 miss = [f for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js') if f not in PATH]
 if miss:

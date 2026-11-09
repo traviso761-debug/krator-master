@@ -175,9 +175,6 @@ KHOST.take({build:'godthrone',title:STN.title,hint:STN.hint,
  budget:BUDGET,types:()=>BIO.stats,
  probeSample:4000,
  api:{hostChecks,hostNegatives,biomeChecks,itemPositions,
-  regOccupancy(){const n=new Array(REG.length).fill(0);const P=KHOST.probe.probePoints();
-   REG.forEach((r,i)=>{if(r.far||r.ground){n[i]=1;return;}for(const p of P){const dx=p[0]-r.x,dz=p[2]-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p[1]>=(r.y||0)-2&&p[1]<=(r.y||0)+r.h+5)n[i]++;}});
-   return REG.map((r,i)=>({name:r.name,type:r.kind,n:n[i]}));},
   get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome}});
 // the Weather selector in the host's panel (ATMOS.bindWeather finds KHOST.ui once it exists)

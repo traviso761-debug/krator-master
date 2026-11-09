@@ -169,7 +169,7 @@ for f in CORE_SPACE:
 # the shared atmosphere and core/water: the sea is a WATER.open surface (89w-host-sea.js)
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']   # 2026-10-20 (phase 3): the shore grid (21), the still pools and the wet beach (51; 22 is its flow half)
-CORE_WATER_EXT=['57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']   # the final rebuild: the audit, the reflections switch (off at load), the shore's fields (tools/fragment_needs.json orders them)
+CORE_WATER_EXT=['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']   # the final rebuild: the audit, the reflections switch (off at load), the shore's fields (tools/fragment_needs.json orders them)
 CORE_WATER_GEYSER=['52-core-water-geyser.js','52b-core-water-geyser-draw.js']   # core/water/geyser/: opt-in, NOT pooled by builds that list core/water (README)   # 52 and 52b: the geyser kit's show draws its springs and columns through them
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(ROOT,'core','atmos',f)

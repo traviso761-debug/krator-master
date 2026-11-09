@@ -132,7 +132,8 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
-TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER)]}
+CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
+TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT)]}
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
@@ -159,7 +160,7 @@ DETERMINISTIC = {
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
-DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 

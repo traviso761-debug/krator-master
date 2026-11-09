@@ -23,12 +23,8 @@ const FAR=(function(){
 // THE GROUND'S TEXTURE UNITS (the Throne's and ringisles' samplersOf, 89zz): KGROUND's nine surfaces leave the Lambert ground few of the Arc's sixteen, and
 // SwiftShader's 32 hid it (the cloud build). Counted from a dry run of its onBeforeCompile; the sun's shadow map takes one (88), the horizon two: the shadow
 // first, then the horizon on the ground where both fit (the flora takes the horizon either way). window._units says what the ground reads.
-const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
-const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
-  const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
-  try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
-  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
-const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures;
+const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+const MAXT=KSHADOW.maxUnits(renderer);
 const SHADOW_WANT=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 // THE TERRAIN'S HORIZON (45-core-horizon.js): eight directions over the ground's square (256 a side, ~12 m) and the far field past it. The ground takes it

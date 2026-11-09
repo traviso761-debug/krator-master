@@ -13,6 +13,8 @@
 //                     With KSPACE in the page the volumes are indexed by their circle (x, z, r) and `has` runs only on
 //                     the candidates near each point: the same counts, so o.regHas must hold nothing outside the
 //                     volume's circle; a build whose shapes reach past it passes o.regHasWide for the full loop
+//                     A volume flagged `ground` (drawn on the ground mesh, which has no sample: a wallow, a throat on a
+//                     crack's floor) or `far` (the far field) counts as occupied (n at least 1)
 //     nanSweep()      meshes with a NaN vertex, instanced meshes with a NaN matrix
 //     typeStats()     per type (o.types(): {type: {tris, inst, meshes}}, e.g. () => BIO.stats), its class, limit and whether over
 //     setView(cx,cy,cz,tx,ty,tz), views(), go(name)
@@ -41,7 +43,8 @@ K.probeTake=function(H){const o=H.o,THREE=o.THREE||root.THREE,scene=H.scene,REG=
    const d=REG.map(r=>2*Math.abs(+r.r)).filter(isFinite).sort((a,b)=>a-b),med=d.length?d[d.length>>1]:32;
    const S=KS.create({cell:Math.min(256,Math.max(16,med))}),c=[];REG.forEach((r,i)=>S.insert(i,r.x,r.z,Math.abs(+r.r)));
    for(const p of P){S.query(p[0],p[2],0,c);for(const i of c)if(has(REG[i],p[0],p[1],p[2]))n[i]++;}}
-  return REG.map((r,i)=>({name:r.name,type:r.type,n:n[i]}));}
+  REG.forEach((r,i)=>{if((r.ground||r.far)&&!n[i])n[i]=1;});   // drawn on the ground mesh or in the far field: no scene sample, occupied by flag
+  return REG.map((r,i)=>({name:r.name,type:r.type!=null?r.type:r.kind,n:n[i]}));}
  function nanSweep(){const bad=[];let badInst=0;
   scene.traverse(ob=>{if(!ob.isMesh&&!ob.isInstancedMesh)return;if(ob.userData&&ob.userData.probeSkip)return;
    const p=ob.geometry&&ob.geometry.attributes&&ob.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:ob.name||ob.geometry.type,at:i});break;}}

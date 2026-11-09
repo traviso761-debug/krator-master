@@ -770,7 +770,7 @@ All opt-in; `test-gaps.js` loads every new fragment and its default snapshot sti
 |---|---|---|
 | 2, a flow network | `WATER.network({flows: [{flow, parent}], ground, open, reach, mouth: {len}, confluence})` (ext/59), `WATER.drawNetwork(N, {flow, flows, confluence})` (ext/59b) | each flow names the flow it leaves or joins; the network finds each join's kind (a tributary ends on its parent, a distributary starts from it) and its overlap, refuses a child that does not reach its parent, gives a fork's siblings one confluence placed and sized from their overlaps, fades every flow that ends in one of `open` over `len` m (45) round where it enters (its rows refined), and orders each child over its parent. `drawNetwork` draws the flows, the discs and the fades. `WATER.audit`'s overlap rule finds nothing left in the test's river system (295 findings drawn loose) |
 | 4, the shore from the ground | `WATER.maskFromGround({box, cell, level, ground, seed, limit, dilate})` (ext/58) | an open surface's mask flooded over the ground from its seeds (where the ground is under the level, and `limit` allows) and dilated a cell: every mask edge then lies over ground above the level, so the shore is the ground's contour (`WATER.audit`'s open-edge: 516 cut edges for a shape-drawn mask, 0 for this). A `limit` (a river's band left to its ribbon) is the only place a straight edge stays |
-| 5, breakup by default | `WATER.BREAKUP_AUTO = true` before the water is drawn (ext/56) | every open, still, pool, ribbon and confluence drawing made after it takes the breakup (`BREAKUP`, ribbons `BREAKUP_FLOW`; `o.breakup` an object laid over them, `false` to keep one out). The default flip waits for the all-builds rebuild (`TODO.md`) |
+| 5, breakup by default | `WATER.BREAKUP_AUTO = true` before the water is drawn (ext/56) | every open, still, pool, ribbon and confluence drawing made after it takes the breakup (`BREAKUP`, ribbons `BREAKUP_FLOW`; `o.breakup` an object laid over them, `false` to keep one out). On by default since 2026-11-09: every build that takes core/water lists ext/56; `WATER.BREAKUP_AUTO = false` before the first drawing keeps the old ripple |
 | 8, ribbon rows that follow their effects | `drawFlow({keep, refine: true})`, `W.ribbon(S, {refine: {f, tol, min}})` (22, 51) | rows where `keep` changes (no row's step over about `tol`, .08; never closer than `min`, 2 m), the rest of the line at `step`: a fade resolves without densifying the whole line. The record keeps `{tol, min}` |
 
 **Adopting it** (eastabyss station 1 is the worked page, `src/89w-host-water.js` and `build.py`):
@@ -781,8 +781,8 @@ All opt-in; `test-gaps.js` loads every new fragment and its default snapshot sti
   A flow's `densify` kept only for its fade can go: the mouths refine their own rows.
 - A lake or sea whose mask is drawn from a shape: `mask: WATER.maskFromGround({box, cell, level, ground: terrainH, seed: (x, z) => inside(x, z),
   limit: (x, z) => !inARiverBand(x, z)})`.
-- A page that wants the breakup everywhere now: `WATER.BREAKUP_AUTO = true;` before its first water drawing (in place of `breakupAll()` and
-  `breakupFlows()` after them).
+- The breakup is on by default (2026-11-09): a page that takes ext/56 breaks up every drawing it makes; `WATER.BREAKUP_AUTO = false;` before
+  its first water drawing keeps the old regular ripple (`breakupAll()` and `breakupFlows()` still patch drawings made while it was off).
 
 ## The water as fields, and the land side of its edge (2026-11-02: ext/60; `node core/water/test-edge.js`)
 

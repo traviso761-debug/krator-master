@@ -72,10 +72,10 @@ KSHADOW.attach = function (o) {
   let btn = null;
   const label = () => { if (btn) btn.textContent = 'shadows: ' + (H.state.skipped ? 'n/a' : enabled ? 'on' : 'off'); if (btn && H.state.skipped) btn.title = H.state.skipped; };
   H.fits = function () {
-    const cap = r.capabilities || {}, max = cap.maxTextures == null ? 16 : cap.maxTextures, seen = new Set(); let worst = 0, who = '';
+    const max = KSHADOW.maxUnits(r), seen = new Set(); let worst = 0, who = '';
     scene.traverse(m => { if (!m.isMesh || !m.material) return; (Array.isArray(m.material) ? m.material : [m.material]).forEach(M => {
       if (!M || seen.has(M) || M.isShaderMaterial || M.isMeshBasicMaterial) return; seen.add(M);
-      const n = KSHADOW.units(M, r); if (n > worst) { worst = n; who = (M.name || M.type) + (m.name ? ' on ' + m.name : ''); } }); });
+      const n = KSHADOW.units(M, r, scene); if (n > worst) { worst = n; who = (M.name || M.type) + (m.name ? ' on ' + m.name : ''); } }); });
     H.state.skipped = worst + 1 > max ? 'the ' + who + ' reads ' + worst + ' of ' + max + ' texture units' : null;
     return !H.state.skipped;
   };
@@ -102,20 +102,32 @@ KSHADOW.attach = function (o) {
   KSHADOW.host = H;
   return H;
 };
-/* KSHADOW.units(material, renderer): the texture units a material's fragment program reads, by a dry run of its onBeforeCompile on the
-   library shader (the Throne's samplersOf, 2026-11-03): its own maps plus every sampler its hooks declare (2D, 3D, Cube and their
-   array, shadow and integer forms, with or without a precision qualifier: core/atmos's cloud shade declares `uniform highp sampler3D`,
-   which the first pattern missed, 2026-11-08). A failure counts as 99 */
-KSHADOW.units = function (M, r) {
-  const LIB = { MeshLambertMaterial: 'lambert', MeshStandardMaterial: 'standard', MeshPhysicalMaterial: 'physical', MeshPhongMaterial: 'phong', MeshToonMaterial: 'toon' };
+/* KSHADOW.units(material, renderer, scene): the texture units a material's fragment program links, by a dry run of its onBeforeCompile on the
+   library shader (a ShaderMaterial: its own text). The Throne's samplersOf moved here (2026-11-09, the all-builds ride-along), with what it
+   learned: its own maps; scene.environment on a standard material without its own envMap (three gives it the scene's at compile); and every
+   sampler its hooks declare (2D, 3D, Cube and their array, shadow and integer forms, with or without a precision qualifier: core/atmos's
+   cloud shade declares `uniform highp sampler3D`), counted only when the text reads the name again: a sampler declared and never read (the
+   delta's uMacro under KGROUND) is dropped by the GLSL compiler and takes no unit. A failure counts as 99.
+   KSHADOW.maxUnits(renderer): the units a lit program may read, this GL's and never more than the GPUs' 16 (SwiftShader allows 32, which
+   offered shadows the Arc and the RTX could not link) */
+KSHADOW.maxUnits = function (r) {
+  const c = (r && r.capabilities) || {};
+  return Math.min(16, c.maxTextures == null ? 16 : c.maxTextures);
+};
+KSHADOW.units = function (M, r, scene) {
+  const LIB = { MeshLambertMaterial: 'lambert', MeshStandardMaterial: 'standard', MeshPhysicalMaterial: 'physical', MeshPhongMaterial: 'phong', MeshBasicMaterial: 'basic', MeshToonMaterial: 'toon' };
   try {
-    const L = THREE.ShaderLib[LIB[M.type]]; if (!L) return 0;
-    const sh = { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader };
-    const f0 = typeof KHOOK !== 'undefined' ? KHOOK.failures.length : 0;
+    const L = THREE.ShaderLib[LIB[M.type]];
+    const sh = L ? { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader } : { uniforms: {}, vertexShader: M.vertexShader || '', fragmentShader: M.fragmentShader || '' };
+    const f0 = typeof KHOOK !== 'undefined' ? KHOOK.failures.length : 0;   /* a dry run: what it misses is not a real compile's (that one records its own) */
     try { if (M.onBeforeCompile) M.onBeforeCompile(sh, r); } finally { if (typeof KHOOK !== 'undefined') KHOOK.failures.length = f0; }
     let n = 0;
     ['map', 'emissiveMap', 'alphaMap', 'lightMap', 'aoMap', 'normalMap', 'bumpMap', 'roughnessMap', 'metalnessMap', 'specularMap', 'envMap'].forEach(k => { if (M[k]) n++; });
-    sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g,(a, b) => { n += b.split(',').length; return a; });
+    if (!M.envMap && M.isMeshStandardMaterial && scene && scene.environment) n++;
+    const fs = sh.fragmentShader || '';
+    fs.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g, (a, b) => {
+      b.split(',').forEach(x => { const k = x.trim().replace(/\[.*$/, ''); if (k && (fs.match(new RegExp('\\b' + k + '\\b', 'g')) || []).length > 1) n++; });
+      return a; });
     return n;
   } catch (e) { return 99; }
 };
