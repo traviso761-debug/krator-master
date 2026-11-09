@@ -8,10 +8,11 @@
 //   reachAudit()   with every door open, each tent's floors are reached from the ground outside its door (KWALK.reach)
 //   fingerprint()  a hash over the records, the furniture, the interiors' pieces and the doors: two builds must match
 //   rebuild()      buildWorld() again, then the fingerprint
+//   combos()       every core/camp culture row x role and trade, furnished off the sheet: required pieces and the residence rule
 (function(){
  const A=window._api||(window._api={});
  const front=r=>{const f=r.front&&r.front.world;if(!f)return null;const y=f.yaw;return [f.x+Math.sin(y)*1.4,terrainH(f.x+Math.sin(y)*1.4,f.z+Math.cos(y)*1.4),f.z+Math.cos(y)*1.4];};
- const settle=n=>{for(let i=0;i<(n||40);i++)KDOOR.step(.1);};
+ const settle=n=>{for(let i=0;i<(n==null?40:n);i++)KDOOR.step(.1);};
  function fp(){let h=0x811c9dc5;const mix=s=>{for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}};
   for(const r of REG)mix(r.key+'|'+r.x.toFixed(3)+'|'+r.z.toFixed(3)+'|'+r.ry.toFixed(4)+'|'+r.tris+'|'+(r.tent?r.tent.dress+r.tent.wear+r.tent.patches:''));
   for(const f of SVF.placed)mix(f.key+'|'+f.x.toFixed(3)+'|'+f.z.toFixed(3)+'|'+(f.variant|0));
@@ -28,7 +29,7 @@
   doorsAudit(){const L=KDOOR.list.filter(D=>!D.locked),bad=[];for(const D of L)KDOOR.open(D,{by:'probe'});settle(40);
    for(const D of L){const l=KDOOR.leaves(D)[0];if(D.open<.99||(D.blocks.length&&!D.blocks.every(b=>b.off)))bad.push(D.id+' open '+D.open.toFixed(2));if(!l||![l.p[0],l.p[1],l.p[2]].every(isFinite))bad.push(D.id+' no pose');}
    for(const D of L)KDOOR.close(D,{by:'probe'});settle(40);for(const D of L)if(D.open>.01||(D.blocks.length&&D.blocks.some(b=>b.off)))bad.push(D.id+' did not shut');
-   const kinds={};for(const D of L)kinds[D.kind+(D.roll?'/roll':'')+(D.pair?'/pair':'')]=(kinds[D.kind+(D.roll?'/roll':'')+(D.pair?'/pair':'')]||0)+1;
+   const kinds={};for(const D of L){const kk=D.kind+(D.roll?'/roll':'')+(D.pair?'/pair':'');kinds[kk]=(kinds[kk]==null?0:kinds[kk])+1;}
    return {doors:L.length,locked:KDOOR.list.length-L.length,kinds,bad};},
   reachAudit(){const L=KDOOR.list.filter(D=>!D.locked);for(const D of L)KDOOR.open(D,{by:'probe'});settle(40);const out=[];
    for(const r of REG){if(!r.interior||!r.interior.floors)continue;const s=front(r);if(!s){out.push({key:r.key,tid:r.tid,why:'no front'});continue;}
@@ -37,6 +38,18 @@
     if(un.length||!ok.length)out.push({key:r.key,tid:r.tid,dress:r.tent&&r.tent.dress,reached:ok.length,unreached:un.length});}
    for(const D of L)KDOOR.close(D,{by:'probe'});settle(40);
    return {tents:REG.filter(r=>r.interior&&r.interior.floors).length,bad:out};},
+  /* every culture row of core/camp's mapping x every role and trade, planned and furnished off the sheet (furnishRoom plans; nothing
+     is drawn): the required pieces of each room kind, and the residence rule for a family tent */
+  combos(){const IX=KratorInteriors,T=KCAMP.TENTS,bad=[];let n=0;
+   for(const c in T.CULTURES){const D=tnDress(T.CULTURES[c].dress);
+    for(const [role,trade] of Object.keys(T.ROLES).map(r=>[r,null]).concat(Object.keys(T.TRADES).map(t=>['workshop',t]))){
+     const t=KCAMP.tentFor(role,{culture:c,trade}),R=TN_ROLES[role],TT=trade&&TN_TRADES[trade],kind=TT?TT.kind:R.kind;if(!kind)continue;
+     const item=IX.TENTS.item(t.key,{kind,culture:D.furn,wealth:tnWealthOf(role,D)});if(!item||item.skip)continue;n++;
+     const inst=IX.sets.instantiate(item,0,0,0,{baseY:0,prefix:'combo'+n+'.',register:false,seed:n}),plans={},miss=[];let pcs=0;
+     for(const Rm of inst.rooms){const P=furnishRoom(Rm,SVF.adapter,{seed:n});plans[Rm.id]=P;for(const m of P.report.missing)miss.push(m.need);pcs+=P.placements.length;}
+     const res=IX.sets.auditResidence(inst,plans);
+     if(miss.length||res.fails.length)bad.push(c+'/'+role+(trade?':'+trade:'')+' '+t.key+' as '+kind+': '+miss.concat(res.fails.length?['residence']:[]).join('/'));}}
+   return {combos:n,bad};},
   fingerprint:fp,
   rebuild(){buildWorld();return fp();}
  });

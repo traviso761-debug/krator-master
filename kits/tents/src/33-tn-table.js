@@ -13,9 +13,9 @@
 //                       cover: what a walker and the furniture may use; posts the poles standing in it), or {skip: reason}
 const TN_FORMS={
  ridge:{name:'Ridge tent',style:'ridge-tent',door:'roll',sizes:{s:{W:3,D:4,wall:1.5,ridge:2.6,door:1.0},m:{W:4,D:5.6,wall:1.7,ridge:3.0,door:1.1},l:{W:5,D:8,wall:1.9,ridge:3.6,door:1.2}}},
- bell:{name:'Bell tent',style:'bell-tent',door:'roll',sizes:{s:{r:2.2,wall:1.35,peak:3.3,door:1.0},m:{r:3,wall:1.45,peak:3.9,door:1.1},l:{r:4,wall:1.55,peak:4.7,door:1.2}}},
+ bell:{name:'Bell tent',style:'bell-tent',door:'roll',sizes:{s:{r:3,wall:1.35,peak:3.6,door:1.0},m:{r:3.6,wall:1.45,peak:4.2,door:1.1},l:{r:4.3,wall:1.55,peak:4.9,door:1.2}}},
  yurt:{name:'Yurt',style:'ger',door:'leaf',sizes:{s:{r:2.6,wall:1.5,crown:2.7,door:.9},m:{r:3.3,wall:1.6,crown:3.1,door:.9},l:{r:4.5,wall:1.8,crown:3.8,door:1.0,posts:true}}},
- cone:{name:'Conical tent',style:'tipi',door:'flap',sizes:{s:{r:2.2,h:4.2,door:.8},m:{r:3,h:5.6,door:.9},l:{r:4,h:7,door:1.0}}},
+ cone:{name:'Conical tent',style:'tipi',door:'flap',sizes:{s:{r:2.6,h:4.2,door:.8},m:{r:3,h:5.6,door:.9},l:{r:4,h:7,door:1.0}}},
  black:{name:'Black tent',style:'beit-shaar',open:true,sizes:{m:{w:7,d:4.5,rows:1,ph:2.3,front:1.7,back:.75},l:{w:11,d:5.5,rows:2,ph:2.5,front:1.8,back:.8}}},
  marquee:{name:'Marquee',style:'marquee',door:'tieback',sizes:{m:{s:6,wall:2.2,peak:4.2,door:2.0},l:{s:9,wall:2.4,peak:5.5,door:2.4}}},
  wedge:{name:'Wedge tent',style:'wedge',door:'roll',nest:'too low to furnish: two bedrolls are its own (FURNISH)',sizes:{s:{W:1.5,D:2.2,h:1.1,door:.8},m:{W:2,D:2.8,h:1.4,door:.9}}},
@@ -69,12 +69,14 @@ function tnDims(key){const S=tnSpec(key);if(!S)return null;const f=S.form;
 /* the room inside (local frame, inner face of the cover), or why there is none */
 function tnRoom(key){const S=tnSpec(key);if(!S)return null;const F=TN_FORMS[S.form];if(F.nest)return {skip:F.nest};
  const circ=(r,n)=>{const out=[];for(let i=0;i<n;i++){const a=(i+.5)/n*Math.PI*2;out.push([TN_R3(r*Math.sin(a)),TN_R3(r*Math.cos(a))]);}return out;};
+ /* a small round room is an octagon: a 16-gon's 0.8 m sides are narrower than a bed, so the placer could stand none against them */
+ const sides=r=>r<2.5?8:16;
  const rect=(w,d)=>[[TN_R3(-w/2),TN_R3(-d/2)],[TN_R3(w/2),TN_R3(-d/2)],[TN_R3(w/2),TN_R3(d/2)],[TN_R3(-w/2),TN_R3(d/2)]];
  const f=S.form;
  if(f==='ridge'){const w=S.W-.2,d=S.D-.2;return {poly:rect(w,d),h:S.wall,door:{at:[0,TN_R3(d/2)],w:S.door,swing:'none'},posts:[]};}
- if(f==='bell'){const r=S.r-.15;return {poly:circ(r,16),h:S.wall,door:{at:[0,TN_R3(r)],w:S.door,swing:'none'},posts:[[0,0]]};}
- if(f==='yurt'){const r=S.r-.18,cR=Math.max(.5,S.r*.17);return {poly:circ(r,16),h:S.wall,door:{at:[0,TN_R3(r)],w:S.door,swing:'in'},posts:S.posts?[[TN_R3(-cR*.5),0],[TN_R3(cR*.5),0]]:[]};}
- if(f==='cone'){const r=S.r*.72;return {poly:circ(r,12),h:TN_R3(S.h*.27),door:{at:[0,TN_R3(r)],w:S.door,swing:'none'},posts:[]};}
+ if(f==='bell'){const r=S.r-.15;return {poly:circ(r,sides(r)),h:S.wall,door:{at:[0,TN_R3(r)],w:S.door,swing:'none'},posts:[[0,0]]};}
+ if(f==='yurt'){const r=S.r-.18,cR=Math.max(.5,S.r*.17);return {poly:circ(r,sides(r)),h:S.wall,door:{at:[0,TN_R3(r)],w:S.door,swing:'in'},posts:S.posts?[[TN_R3(-cR*.5),0],[TN_R3(cR*.5),0]]:[]};}
+ if(f==='cone'){const r=S.r*.72;return {poly:circ(r,r<2?8:12),h:TN_R3(S.h*.27),door:{at:[0,TN_R3(r)],w:S.door,swing:'none'},posts:[]};}
  if(f==='black'){const w=S.w-.5,d=S.d-.6,rows=S.rows===1?[[-.3,3]]:[[-1,4],[1,4]],posts=[];
   for(const q of rows)for(let i=0;i<q[1];i++)posts.push([TN_R3(-S.w/2+S.w*(i+.5)/q[1]),q[0]]);
   return {poly:rect(w,d),h:TN_R3(S.back+.85),door:{at:[0,TN_R3(d/2)],w:TN_R3(S.w*.55),swing:'none'},posts};}

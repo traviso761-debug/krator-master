@@ -36,7 +36,7 @@ function tnGroundY(x,z){TN_TMP.set(x,0,z).applyMatrix4(CM);return terrainH(TN_TM
 function tnLogStake(x,y0,z,y1){if(PLACE_DRY||GTARGET!==GB)return;const a=new THREE.Vector3(x,y0,z).applyMatrix4(CM),b=new THREE.Vector3(x,y1,z).applyMatrix4(CM);
  TN_STAKES.push({key:CURKEY,tid:CURREC?CURREC.tid:null,x:+a.x.toFixed(3),z:+a.z.toFixed(3),foot:+a.y.toFixed(3),top:+b.y.toFixed(3),ground:+terrainH(a.x,a.z).toFixed(3)});}
 /* the toolkit's stake and guy rope (kits/scyvoi/src/40-tk-tentkit.js), wrapped: on the ground, in the dress */
-tkStake=function(x,z,col){const g=tnGroundY(x,z),D=TN_CUR&&TN_CUR.dress;const k=D?D.stake.key:'wood',c=D&&D.stake.col!=null?D.stake.col:(col||0x8a6a44);
+tkStake=function(x,z,col){const g=tnGroundY(x,z),D=TN_CUR&&TN_CUR.dress;const k=D?D.stake.key:'wood',c=D&&D.stake.col!=null?D.stake.col:(col==null?0x8a6a44:col);
  beam(k,[x,g-.05,z],[x+.05,g+.32,z+.02],.05,c,false);tnLogStake(x,g-.05,z,g+.32);};
 tkGuy=function(a,gx,gz,col){tkStake(gx,gz);const g=tnGroundY(gx,gz);
  sagRope('rope',a,[gx+.03,g+.28,gz+.01],Math.hypot(a[0]-gx,a[2]-gz)*.012,.012,(TN_CUR&&TN_CUR.rope)||col||TK_ROPE,6);};
@@ -56,7 +56,7 @@ function tnCloth(S,nu,nv,o){o=o||{};const C=TN_CUR,key=o.key||C.coverKey,n=o.pan
 /* a point on S lifted d metres off the surface, away from cx */
 function tnLift(S,u,v,d,cx){const p=S(u,v),e=.002,pu=S(Math.min(1,u+e),v),qu=S(Math.max(0,u-e),v),pv=S(u,Math.min(1,v+e)),qv=S(u,Math.max(0,v-e));
  const du=[pu[0]-qu[0],pu[1]-qu[1],pu[2]-qu[2]],dv=[pv[0]-qv[0],pv[1]-qv[1],pv[2]-qv[2]];let n=[du[1]*dv[2]-du[2]*dv[1],du[2]*dv[0]-du[0]*dv[2],du[0]*dv[1]-du[1]*dv[0]];
- let L=Math.hypot(n[0],n[1],n[2])||1;n=[n[0]/L,n[1]/L,n[2]/L];cx=cx||[0,0,0];if((p[0]-cx[0])*n[0]+(p[1]-cx[1])*n[1]+(p[2]-cx[2])*n[2]<0)n=[-n[0],-n[1],-n[2]];
+ let L=Math.max(1e-9,Math.hypot(n[0],n[1],n[2]));n=[n[0]/L,n[1]/L,n[2]/L];cx=cx||[0,0,0];if((p[0]-cx[0])*n[0]+(p[1]-cx[1])*n[1]+(p[2]-cx[2])*n[2]<0)n=[-n[0],-n[1],-n[2]];
  return [p[0]+n[0]*d,p[1]+n[1]*d,p[2]+n[2]*d];}
 /* the wear's patches (a square of another cloth or the same faded, sewn on) and tears (a dark rent): KRAND from the seed and a
    salt per call (counted within the tent, from tnBegin), so a tent keeps its patches wherever it is pitched */
@@ -74,14 +74,14 @@ function tnFlap(x,z,yaw,w,h,form){const C=TN_CUR,st=C.dress.door||TN_FORMS[form|
  else if(st==='tieback')Object.assign(o,{kind:'slide',pair:true});
  else Object.assign(o,{kind:'tilt'});
  if(st==='roll')beam(C.coverKey,[x-w/2,h+.08,z+.04],[x+w/2,h+.08,z+.04],.07,tnWorn(C.cover,'worn'),true,8);   // the rolled cloth over the head, tied
- return svLeaf(x,0,z,yaw||0,w,h,o);}
+ return svLeaf(x,0,z,yaw==null?0:yaw,w,h,o);}
 function tnFinial(x,y,z){const F=TN_CUR.dress.finial||{kind:'none'};if(F.kind==='none')return;const k=F.key||'brass',c=F.col;
  if(F.kind==='ball'){sph(k,x,y+.08,z,.09,c,1,10);}
  else if(F.kind==='spear'){sph(k,x,y+.05,z,.05,c,1,8);cone(k,x,y+.09,z,.045,.32,c,6);}
  else if(F.kind==='horns'){for(const s of [-1,1])beam(k,[x,y+.02,z],[x+s*.16,y+.22,z+.03],.035,c,true,5,.012),beam(k,[x+s*.16,y+.22,z+.03],[x+s*.1,y+.36,z+.02],.022,c,true,5,.008);}}
-function tnPennant(x,y,z,len){const D=TN_CUR.dress;if(!D.emblem)return;const k='emb_'+D.key;if(!MAT[k])return;len=len==null?.9:len;const tl=TILE[k]||1;
+function tnPennant(x,y,z,len){const D=TN_CUR.dress;if(!D.emblem)return;const k='emb_'+D.key;if(!MAT[k])return;len=len==null?.9:len;const tl=TILE[k]==null?1:TILE[k];
  beam(TN_CUR.poleKey,[x,y-.6,z],[x,y+.08,z],.025,TN_CUR.poleCol,true,6);
  withCloth(clothFlag(len),()=>W(x,y,z,0,()=>psurf(k,(u,v)=>[u*len,-v*len*.6*(1-u*.4),0],6,3,0xffffff,{uvf:(u,v)=>[u*tl,(1-v)*tl]})));}
 function tnFloorOf(){const F=TN_CUR.dress.floor||{key:'earth'};return {key:F.key,col:F.col==null?null:tnWorn(F.col,TN_CUR.wear==='new'?'new':'worn')};}
 /* a scalloped valance in the dress's colours (or none), along a polyline */
-function tnValance(pts,drop,per){const V=TN_CUR.dress.valance;if(!V)return;tkValance(pts,drop,'flag',tnWorn(tnPick(V.cols,TN_CUR.seed,7),TN_CUR.wear),{per:per||1.6,tassels:V.tassels});}
+function tnValance(pts,drop,per){const V=TN_CUR.dress.valance;if(!V)return;tkValance(pts,drop,'flag',tnWorn(tnPick(V.cols,TN_CUR.seed,7),TN_CUR.wear),{per:per==null?1.6:per,tassels:V.tassels});}
