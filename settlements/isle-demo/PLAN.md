@@ -1075,5 +1075,36 @@ village (24.3 km by sea), Valapo's on the forest island west (23.2 km); `88h` pi
 lands and strikes them when the crew sails home, and draws the crew's camp among the trees as the lumber village's;
 `88c` puts the goods boat and the food boat on the line; `verify.py` checks the shores and the sim's first check.
 
+**The merchant houses (built 2026-11-09; the owner: "experiment with intra-city factions by making each city's long
+distance expeditions organized by a merchant house"; core/simulation/PLAN-MONEY.md 2a's "trading houses to merchant
+princes").** `47y-isle-houses.js`: each town charters a house from its treasury (`expeditions.house.capital`, paid, not
+minted), headed by its richest household, which runs the town's expeditions as a business. It decides to sail on the
+season's expected margin: the haul (its last season's catch a hand a day, else `prior`) at the town's WHOLESALE price
+(its live price over its markup: the goods' cost with M2's scarcity in it, nothing for a good already at its ceiling),
+against the crew's wages, the provisions at wholesale and the boat's `charter`; it declines and tries again a week later
+when the margin is not there or its purse is short. The camp's workplaces are its own, so core's payroll pays the crew
+from them and the house covers them; the camp's treasury opens empty (no money is made for a camp: the farming camps
+and their hamlets are now funded by their town's treasury the same way, `47m` `fundedBy`). Each night it settles with
+the town: the haul landed bought by the town at wholesale, the provisions paid for, the charter; the crew's mess sends its
+wages home to the households they left. A thin purse recalls the crew. When the crew is home and the boats' last loads
+are in, the season is booked and the house pays its head household half of what it holds over its capital and a
+quarter (the merchant family's wealth). The island goods are costed at a crew's hours (`money.m1.fallback`: mahogany
+60, gum 45, kapok 30 shells), no longer the placeholder every unmade good had.
+
+**How long it sails.** The house plans its season to what its town will buy: as many days as the haul of its main good
+(mahogany) takes to fill the room under the town's ceiling, net of what the town uses meanwhile, at most `expeditions.days`
+and at least `minDays`; a stocked town sends none. On the world both houses plan 50 days on their first season
+(600 mahogany of room at 12 a day) and expect about 4,000 shells of profit each.
+
+**What the runs say.** In tests/test-isle-expeditions.js (40 days, a 30-day season at most) Kautoa's house sold 43,504
+shells of haul against 20,592 of wages, 4,364 of provisions and 1,800 of charter: a profit of 16,748 and a dividend to its
+head household. In that test the towns have no hamlets (the city page's own farms feed them) and Valapo's house declined
+every week: its food is twice Kautoa's at wholesale there. On the world, where the hamlets feed Valapo, both sail.
+
+**The money's fix on the way.** The world page costed Valapo's staples at money's placeholder (30 shells a serving, not 1)
+since the farming hamlets took over its food (section 11): the towns' cost tables were fixed before the hamlets existed,
+and a table computed while a village it buys from is mid-way keeps the placeholder. `47h` recomputes the tables once the
+villages are declared, in two passes (the villages' first, then the towns' again).
+
 **Not this:** no colony yet (a camp strikes; a village on another island is the owner's "Voth and Hykkousoi colonies"
 question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is dealt where a camp digs, as the mine's).

@@ -16,7 +16,7 @@
                                 below zero; each settlement's money balanced to its books (the ledger) */
 ISLE.simMoney = function () {
   var T = ISLE.TUNE.sim, K = T.money, S = ISLE.SIM; if (!K || !SIM.money) return null;
-  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback, ration: M1.ration !== false,
+  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback && typeof M1.fallback === 'object' ? function (g) { var v = M1.fallback[g]; return v == null ? M1.fallback._ : v; } : M1.fallback, ration: M1.ration !== false,
     spend: M1.spend ? { bands: T.items.wealthSpread, days: M1.spend.days, treatDrop: M1.spend.treatDrop } : null,
     stations: M1.stations ? { of: ISLE.stationOf, cls: M1.stations.cls, rise: M1.stations.rise, perLife: M1.stations.perLife, margin: M1.stations.margin, reserve: M1.stations.reserve, fall: M1.stations.fall } : null } : null,
     m2: K.m2 || null });
@@ -32,18 +32,21 @@ ISLE.simMoney = function () {
 ISLE.stationOf = function (a) { var Z = ISLE.TUNE.sim.money.m1.stations, s = SIM.settlementOf(a), job = s != null && a.role.indexOf(s + '.') === 0 ? a.role.slice(s.length + 1) : a.role;
   if (Z.merchants.indexOf(job) >= 0) return 'merchant'; if (Z.nobles.indexOf(job) >= 0 && a.cls === 'rich') return 'noble'; return 'worker'; };
 ISLE.currencyOf = function (s) { var K = ISLE.TUNE.sim.money, St = SIM.R.settlement[s], f = St && St.faction; return (K.nation || {})[f] || Object.keys(K.currencies)[0]; };
-ISLE.simMoneyTown = function (s) {
+/* o.fundedBy: an account that pays the new settlement's reserve and its households' endowments (a settlement founded after
+   the start: its money comes from its town, it is not minted) */
+ISLE.simMoneyTown = function (s, o) {
+  o = o || {}; var mint = function (id, n, why) { if (!(n > 0)) return 0; return o.fundedBy ? SIM.pay(o.fundedBy, id, n, why === 'reserve' ? 'grant' : why, true) : SIM.mint(id, n, why); };
   var K = ISLE.TUNE.sim.money, c = ISLE.currencyOf(s), tre = 'treasury:' + s, I = SIM.ITEMS, E = SIM.econ(s), out = { households: 0, workplaces: 0 };
   if (SIM.acct(tre)) return out;
   var places = SIM.all('place').filter(function (P) { return SIM.settlementOf(P.id) === s; }).sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
   var people = places.reduce(function (n, P) { return n + (P.people || 0); }, 0);
   var clsOf = {}; SIM.all('actor').forEach(function (a) { if (a.home != null && clsOf[a.home] == null && a.cls) clsOf[a.home] = a.cls; });   /* a home's class, from its people */
   SIM.account({ id: tre, owner: s, kind: 'treasury', currency: c, settlement: s, name: 'the treasury of ' + ((SIM.R.settlement[s] || {}).name || s) });
-  SIM.mint(tre, Math.round((K.treasury || 0) * people), 'reserve');
+  mint(tre, Math.round((K.treasury || 0) * people), 'reserve');
   places.forEach(function (P) {
     if (P.people && P.mess) { SIM.account({ id: 'hh:' + P.id, owner: P.id, kind: 'mess', currency: c, settlement: s }); }   /* a barracks: its soldiers' wages (M1) */
     if (P.people && !P.mess) { var cls = P.cls || clsOf[P.id] || 'poor';
-      SIM.account({ id: 'hh:' + P.id, owner: P.id, kind: 'household', currency: c, settlement: s }); SIM.mint('hh:' + P.id, (K.endow || {})[cls] || 0, 'endowment'); out.households++; }
+      SIM.account({ id: 'hh:' + P.id, owner: P.id, kind: 'household', currency: c, settlement: s }); mint('hh:' + P.id, (K.endow || {})[cls] || 0, 'endowment'); out.households++; }
     var works = (E && E.recipes && E.recipes[P.id]) || (I && I.sells && I.sells[P.id] && I.sells[P.id].length);
     if (works) { SIM.account({ id: 'wp:' + P.id, owner: P.id, kind: 'workplace', currency: c, settlement: s, ownedBy: tre }); out.workplaces++; }
   });

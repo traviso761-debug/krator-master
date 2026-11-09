@@ -349,7 +349,10 @@ ISLE.TUNE.sim = {
        member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
        keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
        household cannot pay is fed on its treasury's dole */
-    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true,
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, ration: true,
+      /* a good no settlement makes: its labour cost (`_` the rest); the forest islands' goods at what a crew's hours make them
+         (the expeditions of 2026-11-09: about 10 crew-hours a load of mahogany, the gum and the kapok by it) */
+      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30 },
       /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
          set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
          higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
@@ -444,7 +447,15 @@ ISLE.TUNE.sim = {
     yards: { canoeshed: { batch: { 'in': { mahogany: 2, gum: 1 }, out: { canoes: 1 }, hours: 40 }, cap: 20 } },
     stockpile: { canoes: { max: 10 }, mahogany: { max: 600 }, gum: { max: 300 }, kapok: { max: 600 } },
     crew: { range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40, batch: { 'in': {}, out: { mahogany: 1 }, by: { gum: 0.3, kapok: 0.3 }, hours: 2 }, cap: 1500, share: 0, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
-    boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 } },
+    boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 },
+    /* THE MERCHANT HOUSE (47y; the owner, 2026-11-09: "make each city's long distance expeditions organized by a merchant
+       house"): each town charters one from its treasury with `capital` shells, headed by its richest household. It runs
+       the expeditions as a business: it decides to sail on the expected margin (the haul at the town's wholesale price, by
+       its last season's catch or `prior` a hand a day, against the crew's wages, the provisions at wholesale and the
+       boat's `charter` a day), pays the crew (the camp's workplaces are its own), buys the provisions and sells the haul to
+       the town at wholesale (the town's price over its markup) each night; recalls the crew when its purse holds less than
+       `recallDays` of wages; sails for as long as its town will buy (at least `minDays`); after a season pays its head `dividend` of what it holds over its capital and `keep` */
+    house: { capital: 40000, charter: 60, prior: { mahogany: 1.0, gum: 0.3, kapok: 0.3 }, minDays: 10, reserveDays: 10, recallDays: 2, retryDays: 7, dividend: 0.5, keep: 0.25 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

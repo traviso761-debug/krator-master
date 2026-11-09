@@ -4,7 +4,9 @@
 // 48x), sets the test's fast season (30 days), runs `days` (default 40) with Kautoa watched and checks ISLE.expChecks:
 // each town's crew sailed and pitched, made mahogany with gum and kapok from its stands, the goods landed at the town
 // and booked imported, the camp fed by the boat, the canoe sheds' canoes built of them, the crew home after the season;
-// each with a negative (the towns' own checks: tests/test-isle-week.js). Build first (python3 build.py).
+// each with a negative; and the merchant houses' (47y): chartered from the treasury, running the camps' money, the haul and
+// provisions settled at wholesale, sailing on a margin, each season's profit or loss reported (the towns' own checks:
+// tests/test-isle-week.js). Build first (python3 build.py).
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const HERE = path.join(__dirname, '..'), PLAN = path.join(HERE, 'dist', 'isle-city.plan.js');
 if (!fs.existsSync(PLAN) || fs.readFileSync(PLAN, 'utf8').startsWith('version https://git-lfs')) { console.log('FAIL  dist/isle-city.plan.js is missing (python3 build.py)'); process.exit(1); }
@@ -32,8 +34,15 @@ ISLE.simWatch('Kautoa');
 const a = ISLE.expBooks(), t0 = Date.now(); ISLE.simRun(days * 1440 + 1); const b = ISLE.expBooks();
 console.log('ran ' + days + ' days in ' + Math.round((Date.now() - t0) / 1000) + ' s; log ' + JSON.stringify(b.log.slice(0, 4)) + '; pitched ' + pitched.join(',') + '; struck ' + struck.join(','));
 const checks = ISLE.expChecks(a, b); checks.forEach(c => ok(c.name, c.ok, c.detail));
-ok('both towns\' crews sailed on day ' + X.firstDay + ' and came home after the season; the page was told of each pitch and strike', b.camps.length === 2 && b.camps.every(C => C.struck) && pitched.length === 2 && struck.length === 2,
-  b.camps.map(C => C.id + ' sailed day ' + Math.round(C.sailed / 1440) + (C.struck ? ', struck day ' + Math.round(C.struck / 1440) : '')).join('; '));
+/* THE MERCHANT HOUSES (47y): the house runs each town's expeditions as a business */
+const ha = ISLE.houseBooks(), hb = ISLE.houseBooks();
+ISLE.houseChecks(ha, hb).forEach(c => ok(c.name, c.ok, c.detail));
+{ const B = cp(hb); const s = Object.keys(B.houses)[0]; B.houses[s].flows['in']['charter capital'] = 0; caught('a house whose capital no treasury paid', ISLE.houseChecks(ha, B), /chartered a merchant house/); }
+{ const B = cp(hb); Object.keys(B.houses).forEach(s => Object.keys(B.houses[s].camps).forEach(c => { B.houses[s].camps[c].minted = 720; })); caught('a camp given money made from nothing', ISLE.houseChecks(ha, B), /no money made/); }
+{ const B = cp(hb); const s = Object.keys(B.houses)[0]; B.houses[s].flows['in'].haul = Math.round((B.houses[s].flows['in'].haul || 0) / 2); caught('a haul bought at half its price', ISLE.houseChecks(ha, B), /bought by the town/); }
+{ const B = cp(hb); const s = Object.keys(B.houses)[0]; B.houses[s].decisions.push({ go: true, profit: -500, purse: 1e6, need: 1 }); caught('a house sailing on a loss', ISLE.houseChecks(ha, B), /positive expected margin/); }
+ok('every town\'s crew that sailed came home after the season, the page told of each pitch and strike; a town that sent none, its house declined on its margin', b.camps.length >= 1 && b.camps.every(C => C.struck) && pitched.length === b.camps.length && struck.length === b.camps.length && Object.keys(b.towns).every(s => b.camps.some(C => C.town === s) || b.towns[s].declined > 0),
+  b.camps.map(C => C.id + ' sailed day ' + Math.round(C.sailed / 1440) + (C.struck ? ', struck day ' + Math.round(C.struck / 1440) : '')).concat(Object.keys(b.towns).filter(s => b.towns[s].declined).map(s => s + '\'s house declined ' + b.towns[s].declined + ' times')).join('; '));
 /* THE NEGATIVES */
 { const B = cp(b); B.camps.forEach(C => { C.here = C.people - 2; C.struck = null; }); caught('two hands nobody can find', ISLE.expChecks(a, B), /sent a crew/); }
 { const B = cp(b); B.camps.forEach(C => { C.made.gum = 0; }); caught('a camp that tapped no gum', ISLE.expChecks(a, B), /made the island/); }

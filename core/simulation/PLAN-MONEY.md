@@ -32,6 +32,11 @@ less happy, fading over 30 days: `SIM.happinessAdd`, read by SIM.happiness), and
 a life (`perLife`, two in the fluid nations). The happiness pool, collective and by class (`SIM.happinessPool`), is ready
 for M6. On the isles over 20 days: 6 rises (shops at 1,980 shells), no fall, rations 93-99%, the price index within 5%.
 No merchant princes on the isles yet: a trading house has no takings until trade by price (M3), so it would fall at once.
+**The first trading houses (2026-11-09, the isles' `47y`):** each town's expeditions to the forest islands are run by a
+merchant house chartered from its treasury, which buys the provisions and sells the haul to its town at wholesale (the
+live price over the markup) each night, pays the crew through the camp's workplaces it owns, and decides to sail on the
+expected margin: a trade with takings, so a house that can fail (it recalls its crew on a thin purse) and pays its head a
+dividend. Not yet M3: the towns' own lakatoi still sails by want; the house's trade is the first priced one.
 **M6 is built** (2026-11-03): first the abstract level was made to live its needs (a town nobody watches had its
 people's meters run on whatever they were doing when it was lowered, so its pool sank: Valapo to 29 in 20 days); now
 each person's day is lived by its schedule (77-sim-6-needs.js `SIM.needsAbstract`: the free hours as the resolver picks

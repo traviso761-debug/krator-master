@@ -93,7 +93,7 @@ ISLE.foundCamp = function (s, hhs, minute) {
   foods.forEach(function (f) { if (f !== crop.good) eI[cid][f] = np * I.meals * I.perMeal / foods.length; });
   var Ro = SIM.trade({ id: cid + ':out', stops: [{ settlement: cid, place: store.id }, { settlement: s, place: Wp.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins, keep: 1, want: 1e6, goods: gO, expect: eO });
   var Ri = SIM.trade({ id: cid + ':in', stops: [{ settlement: s, place: Wp.id }, { settlement: cid, place: store.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins, keep: R.keep, want: R.want, goods: gI, expect: eI });
-  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(cid);
+  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(cid, { fundedBy: 'treasury:' + s });   /* its money from its town's treasury, not minted */
   SIM.level(cid, 'abstract');
   if (SIM.placesChanged) SIM.placesChanged();
   /* the land it works, for the drawing and the village to come (core/hamlet 14): the campers' hands */
@@ -120,7 +120,7 @@ ISLE.foundConvert = function (C, minute) {
   var X = ISLE.simHamlet(spec, L.village, L.resource, nm ? nm.name : null, { people: people, road: road ? { km: road.length_m / 1000, townKm: road.townKm, rec: road } : null });
   X.founded = C.founded; X.converted = minute; X.camp = C.id;
   S.hamlets.villages.push(X); S.hamlets.routes.push(X.out, X['in']);
-  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(X.id);
+  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(X.id, { fundedBy: 'treasury:' + s });
   /* the camp struck: its tents empty, its fields the village's now, its carts' roads idle */
   var camp = SIM.R.place[C.places.camp]; camp.people = 0;
   var E = SIM.econ(C.id); if (E && E.recipes[C.places.farm]) E.recipes[C.places.farm].rate = 0;

@@ -20,6 +20,7 @@ ISLE.simExpeditions = function () {
   var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions; if (!X) return null;
   S.exp = { camps: [], n: {}, rest: {}, noShore: {}, log: [] };
   if (!S.yards) ISLE.expYards();   /* a page that declared without them (40 calls it before the money) */
+  if (ISLE.simHouses && X.house && SIM.MONEY && SIM.MONEY.m1 && ISLE.hooks.expeditionShore) ISLE.simHouses();   /* the towns' merchant houses (47y), after the money; only where expeditions can sail */
   if (SIM.stepHooks.indexOf(ISLE.expStep) < 0) SIM.stepHooks.push(ISLE.expStep);
   return S.exp;
 };
@@ -42,11 +43,13 @@ ISLE.expStep = function (minute) {
     if ((S.exp.n[s] || 0) >= X.maxPerTown) return;
     if (S.exp.rest[s] != null && minute < S.exp.rest[s]) return;
     if (S.exp.noShore[s] != null && minute - S.exp.noShore[s] < 1440) return;
+    /* the town's merchant house decides (47y): it sails on a positive expected margin with the purse to pay for it */
+    if (S.houses && S.houses[s]) { var D = ISLE.houseDecide(s, minute); if (!D.go) { S.exp.rest[s] = minute + (X.house.retryDays || 7) * 1440; return; } }
     ISLE.expSail(s, minute);
   });
   S.exp.camps.forEach(function (C) { if (C.struck) return;
     var E = SIM.econ(C.id), R = E && E.recipes[C.crew.place], out = R && R.hold && R.hold.reason === 'range worked out';
-    if (minute >= C.sailed + X.days * 1440 || out) ISLE.expReturn(C, minute, out ? 'range worked out' : 'the season');
+    if (minute >= C.sailed + (C.days || X.days) * 1440 || out) ISLE.expReturn(C, minute, out ? 'range worked out' : 'the season');   /* the house's planned season (47y), else the tune's */
   });
 };
 /* the crew: the town's grown-ups with no post first, then its dockers, never a refugee or an elder -> actors */
@@ -89,7 +92,7 @@ ISLE.expSail = function (s, minute) {
   var foods = Xp.econ.foods.slice(), rules = ISLE.simRules(cid); if (rules.govern) rules.govern = Object.assign({}, rules.govern, { exported: false, pool: [s] });
   SIM.economy(Object.assign({ goods: goods, inputs: {}, every: T.economy.every, window: T.economy.window, imports: T.economy.imports, cart: T.economy.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, rules), { settlement: cid });
   SIM.store(store.id, { kind: 'warehouse' });
-  ISLE.carryFood(s, cid, store, foods, np * I.meals * I.perMeal * X.startDays);   /* the voyage's food from the town's warehouses, booked out of it and into the camp */
+  var carried = ISLE.carryFood(s, cid, store, foods, np * I.meals * I.perMeal * X.startDays);   /* the voyage's food from the town's warehouses, booked out of it and into the camp */
   var life = ISLE.simCrewStart(cr, CR, cid);
   /* a hand-cart (as a hamlet's, 47h): the crew's felled goods from its camp among the trees to the store on the shore, where
      the boat loads; without it the goods stay where they were made */
@@ -102,24 +105,25 @@ ISLE.expSail = function (s, minute) {
   foods.forEach(function (f) { eI[cid][f] = np * I.meals * I.perMeal / foods.length; });
   var Ro = SIM.trade({ id: cid + ':out', stops: [{ settlement: cid, place: store.id }, { settlement: s, place: Wp.id }], cap: B.cap, carriers: B.carriers == null ? 1 : B.carriers, minutes: smin, mins: B.mins, keep: B.keep == null ? 0 : B.keep, want: 1e6, goods: gO, expect: eO });
   var Ri = SIM.trade({ id: cid + ':in', stops: [{ settlement: s, place: Wp.id }, { settlement: cid, place: store.id }], cap: B.cap, carriers: 1, minutes: smin, mins: B.mins, keep: HT.road.keep, want: HT.road.want, goods: gI, expect: eI });
-  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(cid);
   SIM.level(cid, 'abstract');
   if (SIM.placesChanged) SIM.placesChanged();
   var C = { id: cid, town: s, townName: TSp.name, n: n, site: { x: site.x, z: site.z, name: site.name || null }, shore: { x: sh.x, z: sh.z, ux: sh.ux, uz: sh.uz }, seaKm: site.seaKm, minutes: smin, sailed: minute, lands: minute + smin,
-    people: crew.map(function (a) { return a.id; }), places: { camp: camp.id, store: store.id, crew: cr.place }, crew: cr, life: life, goods: ship.slice(), out: Ro.id, 'in': Ri.id, vessel: B.vessel, struck: null, why: null };
+    days: S.houses && S.houses[s] && S.houses[s].plan ? S.houses[s].plan.days : X.days, people: crew.map(function (a) { return a.id; }), places: { camp: camp.id, store: store.id, crew: cr.place }, crew: cr, life: life, goods: ship.slice(), out: Ro.id, 'in': Ri.id, vessel: B.vessel, struck: null, why: null };
   S.exp.camps.push(C); S.exp.n[s] = n;
+  /* its money: the town's merchant house runs it (47y), or a grant from the town's treasury on a page without one */
+  if (SIM.MONEY && S.houses && S.houses[s]) ISLE.houseOpen(C, carried, minute); else if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(cid, { fundedBy: 'treasury:' + s });
   SIM.logEvent('expedition sailed', { settlement: s, camp: cid, people: np, seaKm: site.seaKm, to: site.name || null, stands: life.stands });
   if (ISLE.hooks.expeditionPitched) ISLE.hooks.expeditionPitched(C);
   return C;
 };
 /* food carried from a town to a new settlement of its own (an expedition, a farming camp): taken from the town's warehouses
    and booked out of it, put in the new place's store and booked in, so the ledger's balance holds for both (a settlement
-   declared after a snapshot opens at nothing) -> what was carried */
+   declared after a snapshot opens at nothing) -> what was carried, by good */
 ISLE.carryFood = function (s, to, store, foods, need) {
-  var got = 0; foods.forEach(function (f) { var want = Math.round(need / foods.length); if (want <= 0) return;
+  var got = {}; foods.forEach(function (f) { var want = Math.round(need / foods.length); if (want <= 0) return;
     var k = SIM.withEcon(s, function () { var n = SIM.economyTake(f, want); if (n > 0) SIM.economyBook('exported', f, n); return n; });
     if (k > 0) SIM.withEcon(to, function () { store.stock[f] = (store.stock[f] || 0) + k; SIM.economyBook('imported', f, k); });
-    got += k; });
+    if (k > 0) got[f] = k; });
   return got;
 };
 /* the crew home: its people to the places they left, the camp's places emptied, the boats' goods cleared, the stands' site
@@ -134,6 +138,7 @@ ISLE.expReturn = function (C, minute, why) {
   S.crews = (S.crews || []).filter(function (c) { return c !== C.crew; });
   C.struck = minute; C.why = why; S.exp.rest[C.town] = minute + X.rest * 1440;
   if (SIM.placesChanged) SIM.placesChanged();
+  if (S.houses && S.houses[C.town]) ISLE.houseSettle(C, minute, false);   /* settled at once; the season is booked when the boats' last loads are in (47y) */
   SIM.logEvent('expedition home', { camp: C.id, why: why, days: Math.round((minute - C.sailed) / 144) / 10 });
   if (ISLE.hooks.expeditionStruck) ISLE.hooks.expeditionStruck(C);
 };
@@ -147,19 +152,19 @@ ISLE.expBooks = function () {
     var R = SIM.tradeReport(C.out), landed = R.landed[C.id + '>' + C.town] || {}, atSea = {}; R.carriers.forEach(function (K) { K.cargo.forEach(function (c) { atSea[c.good] = (atSea[c.good] || 0) + c.n; }); });
     var Rc = E && E.recipes[C.places.crew], made = {}; C.goods.forEach(function (g) { made[g] = E ? (E.made[g] || 0) : 0; });
     var site = ISLE.crewSite({ crew: C.crew, id: C.id, resource: C.crew.id });
-    out.camps.push({ id: C.id, town: C.town, n: C.n, to: C.site.name, seaKm: C.seaKm, sailed: C.sailed, lands: C.lands, struck: C.struck, why: C.why, people: C.people.length, here: here, home: home,
+    out.camps.push({ id: C.id, town: C.town, n: C.n, to: C.site.name, seaKm: C.seaKm, days: C.days, sailed: C.sailed, lands: C.lands, struck: C.struck, why: C.why, people: C.people.length, here: here, home: home,
       state: C.struck ? 'struck' : Rc && Rc.hold ? Rc.hold.reason : 'at work', made: made, landed: landed, atSea: atSea, meals: M, stands: C.life.stands, stand: site.camp, taken: site.taken, moves: C.crew.moves });
   });
-  S.order.forEach(function (s) { var E = SIM.econ(s); out.towns[s] = { canoes: E.made.canoes || 0, mahogany: { imported: E.imported.mahogany || 0, used: E.used.mahogany || 0 }, gum: { imported: E.imported.gum || 0, used: E.used.gum || 0 }, kapok: { imported: E.imported.kapok || 0 },
+  S.order.forEach(function (s) { var E = SIM.econ(s), Hh = S.houses && S.houses[s]; out.towns[s] = { declined: Hh ? Hh.decisions.filter(function (D) { return !D.go; }).length : 0, canoes: E.made.canoes || 0, mahogany: { imported: E.imported.mahogany || 0, used: E.used.mahogany || 0 }, gum: { imported: E.imported.gum || 0, used: E.used.gum || 0 }, kapok: { imported: E.imported.kapok || 0 },
     dockyards: SIM.all('place').filter(function (P) { return P.settlement === s && (ISLE.TUNE.sim.expeditions.yards || {})[P.kind] && P.activities.WORK; }).length }; });
   return out;
 };
 ISLE.expChecks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'expeditions: ' + name, ok: !!pass, detail: detail }); }, X = ISLE.TUNE.sim.expeditions, camps = b.camps;
   var towns = Object.keys(b.towns);
-  ok('each town sent a crew of ' + X.hands + ' by boat to an island shore with a sea route, the camp pitched at a stand of its forest, its people the town\'s own at work', camps.length >= towns.length && towns.every(function (s) { return camps.some(function (C) { return C.town === s; }); }) &&
+  ok('each town sent a crew of ' + X.hands + ' by boat to an island shore with a sea route (or its merchant house declined on its margin: 47y), the camp pitched at a stand of its forest, its people the town\'s own at work', towns.length > 0 && towns.every(function (s) { return camps.some(function (C) { return C.town === s; }) || b.towns[s].declined > 0; }) &&
     camps.every(function (C) { return C.people === X.hands && C.seaKm > 0 && C.stands > 0 && (C.struck ? true : C.here === C.people); }),
-    camps.map(function (C) { return C.id + (C.to ? ' to ' + C.to : '') + ': ' + C.people + ' hands, ' + C.seaKm + ' km by sea, ' + C.stands + ' stands, ' + C.state + (C.stand && C.stand.stand ? ' at ' + C.stand.stand.split(':').slice(-2).join(':') : ''); }).join('; ') || ('no camp' + (b.log.length ? '; log ' + JSON.stringify(b.log.slice(0, 3)) : '')));
+    camps.map(function (C) { return C.id + (C.to ? ' to ' + C.to : '') + ': ' + C.people + ' hands, ' + C.seaKm + ' km by sea, ' + C.stands + ' stands, ' + C.state + (C.stand && C.stand.stand ? ' at ' + C.stand.stand.split(':').slice(-2).join(':') : ''); }).concat(towns.filter(function (s) { return b.towns[s].declined; }).map(function (s) { return s + '\'s house declined ' + b.towns[s].declined + ' times'; })).join('; ') || ('no camp' + (b.log.length ? '; log ' + JSON.stringify(b.log.slice(0, 3)) : '')));
   var landedCamps = camps.filter(function (C) { return b.minute >= C.lands + 2 * 1440; });
   if (landedCamps.length) ok('every camp landed two days or more made the island\'s mahogany with gum and kapok by it, from its stand', landedCamps.every(function (C) { return C.made.mahogany > 0 && C.made.gum > 0 && C.made.kapok > 0 && C.taken > 0; }),
     landedCamps.map(function (C) { return C.id + ': ' + Object.keys(C.made).map(function (g) { return g + ' ' + Math.round(C.made[g]); }).join(', ') + '; ' + Math.round(C.taken) + ' taken from its stands, ' + C.moves + ' moves'; }).join('; '));
@@ -171,8 +176,8 @@ ISLE.expChecks = function (a, b) {
   var yards = towns.filter(function (s) { return b.towns[s].dockyards > 0; }), late = camps.filter(function (C) { return b.minute >= C.lands + 12 * 1440; });
   if (yards.length && late.length) ok('the canoe sheds build canoes of the mahogany and gum (expeditions.yards)', yards.some(function (s) { return b.towns[s].canoes > 0 && b.towns[s].mahogany.used > 0 && b.towns[s].gum.used > 0; }),
     yards.map(function (s) { var T = b.towns[s]; return s + ': ' + T.canoes + ' canoes from ' + Math.round(T.mahogany.used) + ' mahogany and ' + Math.round(T.gum.used) + ' gum (' + T.dockyards + ' canoe sheds)'; }).join('; '));
-  var due = camps.filter(function (C) { return b.minute >= C.sailed + X.days * 1440 + 1440; });
-  if (due.length) ok('after ' + X.days + ' days the crew came home: every hand back in its own home and post, the camp struck', due.every(function (C) { return C.struck && C.home === C.people && C.here === 0; }),
+  var due = camps.filter(function (C) { return b.minute >= C.sailed + (C.days || X.days) * 1440 + 1440; });
+  if (due.length) ok('after its season (the house\'s plan, at most ' + X.days + ' days) the crew came home: every hand back in its own home and post, the camp struck', due.every(function (C) { return C.struck && C.home === C.people && C.here === 0; }),
     due.map(function (C) { return C.id + (C.struck ? ' struck day ' + Math.round(C.struck / 1440) + ' (' + C.why + '): ' + C.home + ' of ' + C.people + ' home' : ' still out'); }).join('; '));
   return res;
 };

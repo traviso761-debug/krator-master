@@ -48,6 +48,13 @@ ISLE.simHamlets = function (villages) {
   });
   out.villages.forEach(function (X) { out.routes.push(X.out, X['in']); if (X.sea) out.routes.push(X.sea.route); });
   if (SIM.MONEY) out.villages.forEach(function (X) { ISLE.simMoneyTown(X.id); });   /* their accounts (47m) */
+  /* the towns' costs again, now the villages make their goods: a town whose food comes from its villages (Valapo's
+     staples) was costed before they existed, at the placeholder every unmade good gets (money's m1 `fallback`) */
+  if (SIM.MONEY && SIM.MONEY.m1) { var CM = SIM.MONEY.m1, ks = Object.keys(CM.price).filter(function (k) { return S.order.indexOf(k) < 0; });
+    /* twice: a town's table first computed while a village it buys from is mid-way (money's costs recurse through the
+       settlements that make a good) keeps the placeholder; the second pass reads every village's finished table */
+    CM.cost = {}; S.order.concat(ks).forEach(function (k) { SIM.moneyPrices(k === '' ? null : k); });
+    S.order.forEach(function (k) { delete CM.cost[k]; }); S.order.forEach(function (k) { SIM.moneyPrices(k); }); }
   return out;
 };
 /* the hamlets' state and the towns' part, once (a village founded later, 47f, finds them ready) */

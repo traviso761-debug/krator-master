@@ -356,3 +356,12 @@
       KNOWN_ISSUES.md): the flora tiles built before the boat landed are not rebuilt; the crew's stumps are the lumber
       village's drawing, read from the tiles near the camera only.
 - [ ] **No politics yet** (PLAN.md 12 step 4): the two towns' camps never meet; a camp on the other's island raises nothing.
+- [x] **Valapo's merchant house never sailed** (2026-11-09): its provisions were priced at money's placeholder, because
+      the world page's cost tables were fixed before Valapo's farming hamlets existed. Fixed the same day (`47h` recomputes
+      them); both houses now plan 50-day seasons on the world.
+- [ ] **The houses' seasons are sized to the mahogany ceiling** (600, `expeditions.stockpile`): the ceiling is a guess,
+      and with nothing but the canoe sheds using mahogany a town fills it in one season and its house stops sailing.
+      The fishers' canoes (worn out and replaced like nets) or the house buying its own lakatoi would give it steady
+      buyers (the owner, 2026-11-09).
+- [ ] **The houses' expected haul is a guess until they have sailed** (`house.prior`, a hand a day); a house that never
+      sails never learns better. A second house, or a town's treasury sending a first crew, would.
