@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 440 (85%) | 0 (0%) | 0 (0%) | 70 (14%) | 9 (2%) |
+| KB | 441 (85%) | 0 (0%) | 0 (0%) | 70 (14%) | 9 (2%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,7 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/32-isle-city.js` | 49.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/33-isle-spurs.js` | 10.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the streets outside the gates (laid out with the plan, closed until the sim opens them), their lots registered in core/tags; no three.js, no DOM |
 | `src/34-isle-census.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/40-isle-sim.js` | 15.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/40-isle-sim.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41-isle-nav.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-isle-people.js` | 11.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-isle-items.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -34,7 +34,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47m-isle-money.js` | 20.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the isles' accounts (money's M0: Kautoan shells, the treasury owning every workplace), their books and checks; no three.js, no DOM |
 | `src/47r-isle-refugees.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the weekly refugee ship, the camps (a ration line, their own class), their households housed first; books and checks; no three.js, no DOM |
 | `src/47u-isle-unrest.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the isles' unrest (PLAN-MONEY M6: the happiness pool's stages, demands to the polity, strikes, treason), its books and checks; no three.js, no DOM |
-| `src/47x-isle-expeditions.js` | 18.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/47x-isle-expeditions.js` | 18.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/48-isle-week.js` | 23.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/49-isle-govern.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/50-isle-export.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sim export section (krator-sim: SIM.export and the towns' books, routes); no three.js, no DOM |

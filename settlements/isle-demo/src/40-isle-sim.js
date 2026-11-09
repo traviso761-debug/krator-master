@@ -163,6 +163,7 @@ ISLE.simDeclare = function (plans, clock, opts) {
   S.trade = ISLE.simTrade();
   S.build = ISLE.simBuild();   /* the empty lots and upkeep (47b), before the money opens the lots' accounts */
   S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
+  S.yards = ISLE.expYards ? ISLE.expYards() : null;   /* the canoe sheds' canoes of the islands' goods (47x), before the money prices them and opens their accounts */
   S.money = ISLE.simMoney();   /* the accounts (47m: money's M0), after the crime's guild */
   S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */
   S.refugees = ISLE.simRefugees ? ISLE.simRefugees() : null;   /* the camps and the weekly ship (47r), after the money's accounts */

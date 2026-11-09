@@ -11,6 +11,7 @@
    The canoe sheds build canoes of the mahogany and gum (`expeditions.yards`). The page's hooks (ISLE.hooks):
    expeditionShore(townName, n) -> {x, z (the camp, inland of the shore), shore: {x, z, ux, uz}, seaKm, forest(x, z),
    h?(x, z), name?} | null; expeditionPitched(C), expeditionStruck(C) (the drawing). A page without the shore hook sends none.
+     ISLE.expYards()            before the money (40): the canoe sheds' batch and the towns' ceilings
      ISLE.simExpeditions()      after the founding (40): the state, the hourly step
      ISLE.expBooks()            a snapshot: the camps (state, people, made, landed, fed, the stand), the towns' canoes
      ISLE.expChecks(a, b)       over two snapshots, each with a negative in tests/test-isle-expeditions.js */
@@ -18,14 +19,20 @@ ISLE.hooks = ISLE.hooks || {};
 ISLE.simExpeditions = function () {
   var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions; if (!X) return null;
   S.exp = { camps: [], n: {}, rest: {}, noShore: {}, log: [] };
-  /* the towns' canoe sheds build canoes of what the camps bring (`yards`), the towns' ceilings on the goods (`stockpile`) */
-  S.order.forEach(function (s) { var E = SIM.econ(s), Xs = S.towns[s];
-    Object.keys(X.yards || {}).forEach(function (kind) { var Y = X.yards[kind];
-      Xs.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (E.recipes[P.id] && !E.recipes[P.id].batch)) return; SIM.recipe(P.id, { batch: Y.batch, cap: Y.cap });
-        Object.keys(Y.batch.out).forEach(function (g) { Xs.econ.goods[g] = (Xs.econ.goods[g] || 0) + 1; }); }); });
-    if (X.stockpile) SIM.stockpile(s, X.stockpile); });
+  if (!S.yards) ISLE.expYards();   /* a page that declared without them (40 calls it before the money) */
   if (SIM.stepHooks.indexOf(ISLE.expStep) < 0) SIM.stepHooks.push(ISLE.expStep);
   return S.exp;
+};
+/* the towns' canoe sheds build canoes of what the camps bring (`yards`), the towns' ceilings on the goods (`stockpile`);
+   declared before the money (40), so the canoes are priced on their mahogany and gum and the sheds get their accounts -> {s: sheds} */
+ISLE.expYards = function () {
+  var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions, out = {}; if (!X) return null;
+  S.order.forEach(function (s) { var E = SIM.econ(s), Xs = S.towns[s]; out[s] = 0;
+    Object.keys(X.yards || {}).forEach(function (kind) { var Y = X.yards[kind];
+      Xs.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (E.recipes[P.id] && !E.recipes[P.id].batch)) return; SIM.recipe(P.id, { batch: Y.batch, cap: Y.cap }); out[s]++;
+        Object.keys(Y.batch.out).forEach(function (g) { Xs.econ.goods[g] = (Xs.econ.goods[g] || 0) + 1; }); }); });
+    if (X.stockpile) SIM.stockpile(s, X.stockpile); });
+  S.yards = out; return out;
 };
 ISLE.expStep = function (minute) {
   var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions; if (!S.exp || minute % 60) return;

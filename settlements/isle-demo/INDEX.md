@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `32-isle-city.js` | 50 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
 | `33-isle-spurs.js` | 11 | 3a. THE STREETS OUTSIDE THE GATES (2026-11-04) (1) |
 | `34-isle-census.js` | 11 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
-| `40-isle-sim.js` | 15 | 7. THE TOWNS ON core/simulation: THE BINDING, TH (1) |
+| `40-isle-sim.js` | 16 | 7. THE TOWNS ON core/simulation: THE BINDING, TH (1) |
 | `41-isle-nav.js` | 9 | 7b. THE PEDESTRIAN NAV FROM THE PLAN'S WAYS (P7b (1) |
 | `42-isle-people.js` | 11 | 7c. THE PEOPLE: ROLES BY KIND OF WORK AND BY AGE (1) |
 | `43-isle-items.js` | 8 | 7d. THE FOODS, THE SHOPS AND THE HOUSEHOLDS (P7b (1) |
@@ -37,7 +37,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `47m-isle-money.js` | 20 | 7h3. MONEY: THE ACCOUNTS (PLAN-MONEY.md M0, 2026 (1) |
 | `47r-isle-refugees.js` | 16 | 7h6. REFUGEES (PLAN-POLITICS.md section 4, 2026- (1) |
 | `47u-isle-unrest.js` | 4 | 7h4. UNREST: THE HAPPINESS POOL (PLAN-MONEY.md M (1) |
-| `47x-isle-expeditions.js` | 18 | 7h8. EXPEDITIONS: CAMPS BY BOAT TO THE OTHER ISL (1) |
+| `47x-isle-expeditions.js` | 19 | 7h8. EXPEDITIONS: CAMPS BY BOAT TO THE OTHER ISL (1) |
 | `48-isle-week.js` | 23 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 2 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
 | `50-isle-export.js` | 10 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |
