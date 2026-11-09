@@ -4,7 +4,6 @@ const ctx = { console, Math, module: {}, exports: {} }; ctx.window = ctx; ctx.gl
 const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), ctx, { filename: p });
 load('core/rand/08-core-rand.js');
 for (const d of ['kits/interiors/src', 'kits/ancients-interiors/src']) for (const f of fs.readdirSync(path.join(ROOT, d)).sort()) if (/^[1-4]\d.*\.js$/.test(f) && !/view|shell|building|outline|cutaway|figures/.test(f)) load(d + '/' + f);
-load('kits/ancients-interiors/opt/38-ai-reception.js');   /* the reception recipe, opt-in until the next interiors update */
 for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46b-mp-ancients.js', '46c-mp-planned.js', '46d-mp-gridplan.js']) load('kits/metropolis/src/' + f);
 const MP = vm.runInContext('MP', ctx), KS = vm.runInContext('KSHELL', ctx), AI = vm.runInContext('KratorAncientsInteriors', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };

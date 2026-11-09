@@ -413,7 +413,7 @@
         var sk = Q.cells.filter(function (c) { return dep[c] === 1; });
         if (sk.length && !MP.WINDOWLESS[Q.mpKind]) { var c0 = sk[Math.floor(sk.length / 2)], ci4 = c0 % W, cj4 = (c0 - ci4) / W, S2 = MP.BAYSIZE.window; Q.windows.push({ at: [r3(wx(ci4) + cs / 2), r3(wz(cj4) + cs / 2)], w: Math.min(3, Math.max(1, sk.length * cs * 0.4)), sill: S2[1], h: S2[2] - S2[1] }); }
         else if (!sk.length && WANTS[Q.mpKind]) { Q.mpKind = WANTS[Q.mpKind]; Q.kind = kindOf(Q.mpKind); }
-        /* the reception's recipe is laid in a rectangle, its door squared to the middle (56, mpFrameDoors): a room of more corners is a stall */
+        /* the reception's recipe is laid in a rectangle, its frame square to the door's wall (kits/ancients-interiors 37-ai-kit.js): a room of more corners is a stall */
         if (Q.mpKind === 'reception' && Q.poly && Q.poly.length !== 4) { Q.mpKind = 'stall'; Q.kind = kindOf('stall'); }
       }
     });

@@ -39,29 +39,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
-- **`AI.barPlate`'s cross walls run diagonally** (2026-11-02, `kits/metropolis`): in `kits/ancients-interiors/src/35-ai-plates.js` the `.x` wall
-  is `[inner[0], outer[m]]`, the room's inner start to its outer end, a wall corner to corner across every room of a bar storey; it should be
-  `[inner[0], outer[0]]`. `kits/metropolis/src/41-mp-plans.js` straightens them after the fact (drop that once the kit is fixed). The fix reaches
-  every page `python3 tools/reach.py kits/ancients-interiors/src/35-ai-plates.js` lists (`kits/ancients`, Noah's Regret, the metropolis), and
-  moves their furnishing: rebuild them, rerun their audits.
-- **`AI.furnishPlan` turns a room's frame toward its first door's point, not its door wall** (2026-11-03, `kits/metropolis`): in
-  `kits/ancients-interiors/src/37-ai-kit.js` (the room's own frame, `ang = atan2(door - centroid)`) a door off the room's middle skews the frame,
-  and a recipe's rectangle is then the skewed room's bounding box: the Ledger's reception (18 by 5.5 m, door 1.5 m off centre) was laid out
-  15.8 by 11.5 at 28.6 degrees, through the corridor and the next rooms. Take the normal of the wall the door is on (and the area centroid, not
-  the vertex mean). `kits/metropolis/src/56-mp-interiors.js` (`mpFrameDoors`) hands it a squared first door meanwhile: drop that with the fix.
-  It reaches the 53 pages `python3 tools/reach.py kits/ancients-interiors/src/37-ai-kit.js` lists, and moves every templated room's furnishing.
-- **Make the Ancients' bath fixtures permanent** (kits/catalog, opt-in since 2026-11-03, the owner: "until the catalog is next touched";
-  `krator-optin-furniture-ancient-bath.js`). Move its seven `FURN` blocks into the Ancients section of `kits/catalog/krator-master-furniture.js`
-  ("the intact buildings' interiors"), its PALETTE keys into `FPAL['ancient']` in `krator-furniture-core.js`, and its `bath` programme into
-  `kits/interiors/src/30-programs.js` (`IX.PROGRAMS.bath`, `IX.KIND_WEIGHT.bath = 0.5`). Drop `OPT_IN` / `optin=` from `furniture_bundle.py`,
-  `OPT_IN_FILES` / `--opt-in` from `kits/catalog/build.py`, and `optin=['ancient-bath']` plus the `KratorFurniture.ancientBath.install(...)` call
-  from every caller (kits/metropolis). Delete the file, remove its row from kits/catalog `README.md` "Opt-in sets", `KNOWN_ISSUES.md` and
-  `PORT.md`, then rebuild every build that takes the catalog or kits/interiors and rewrite `PORT-BASELINE.json` for them.
-- **kits/ancients-interiors: make the reception recipe permanent** (opt-in since 2026-11-03, the owner: "until the next interiors update"). Move
-  `opt/38-ai-reception.js` to `src/38-ai-reception.js`, drop the `reception` option from `kit_bundle.py` (and `reception=True` from
-  `kits/metropolis/build.py`, and the `opt/` load from `kits/metropolis/tests/test-metropolis.js`), let the kit's demo sheet and `verify.py
-  --assert` take it with the other halls, update the opt-in notes (fragment header, README "Opt-in", API.md, KNOWN_ISSUES, PORT.md), then rebuild
-  every build that takes the kit (`kits/ancients` and its targets, Noah's Regret, the metropolis) and rewrite their PORT-BASELINE entries.
 - **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
   from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
@@ -79,15 +56,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   `biomes/nsemiarid` and `biomes/throne` (their `50-*-species.js`, and their trees fragment where it has a column tree) and
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
   pages' hashes and their per-type triangle counts (the hero column doubles). **2026-11-02:** ebadlands' moonflower column is ported (its turn); nsemiarid, the Throne and Shade are left.
-
-- **The weapon racks** (`claude/weapon-racks`, 55c2913f7; `kits/yeti/PLAN.md` section 11). The waiting cultures were registered in
-  the rebuild of 2026-11-04 (core/tags, core/catalog, the Jimjam and Dalab culture files, the missing fruit); the racks' branch
-  is not in this repository's history: merge it when it is pushed.
-
-- **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
-  Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
-  is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
-  Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
 - **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
   the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).

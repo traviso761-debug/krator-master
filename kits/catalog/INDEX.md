@@ -19,6 +19,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 128 **big** |  |
+| `krator-master-furniture-arms.js` | 54 **big** |  |
 | `krator-master-furniture-ashnomad.js` | 120 **big** | Seating (390); Tables and vessels (514); Storage (658); Light (840); Textiles and screens (934); Fire (1009); Riders and herders (1090); Work: the chitin-cutters (1226); Tanning: the hide and chitin worker (job tanning (1325); Smithy (1419) |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
 | `krator-master-furniture-dalab.js` | 33 **big** |  |
@@ -54,9 +55,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-xanadu.js` | 44 **big** |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture-zeijani.js` | 49 **big** | home (112); brewing and fungi (183); the alchemist (258); light (330); crafts (369); the sacred (549); the dead (675); the scouts and the cistern (735) |
-| `krator-master-furniture.js` | 281 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |
+| `krator-master-furniture.js` | 294 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |
 | `krator-master-plants.js` | 92 **big** | Voth (21 species) (10); Iziz (7 species) (870); Beast-Rider (Mav's Refuge / Girder) (11 species) (1188); Yuni (9 species) (1700) |
-| `krator-optin-furniture-ancient-bath.js` | 17 |  |
 
 ## src/
 

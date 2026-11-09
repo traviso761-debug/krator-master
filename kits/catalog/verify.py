@@ -84,8 +84,8 @@ def _exe():
 
 
 def furn_files():
-    """krator-master-furniture.js, every per-culture file (krator-master-furniture-<culture>.js) and the opt-in sets
-    (krator-optin-furniture-*.js: on the sheet only in build.py --opt-in's page, checked from source always)"""
+    """krator-master-furniture.js, every per-culture file (krator-master-furniture-<culture>.js) and any opt-in set
+    (krator-optin-furniture-*.js: none since the Ancients' bath was folded in, 2026-11-08)"""
     return ['krator-master-furniture.js'] + sorted(f for f in os.listdir(HERE)
                                                  if f.startswith('krator-master-furniture-') and f.endswith('.js')) + sorted(
         f for f in os.listdir(HERE) if f.startswith('krator-optin-furniture-') and f.endswith('.js'))

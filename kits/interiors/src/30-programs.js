@@ -131,12 +131,20 @@
     barracks: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
                 optional: [{ types: ['bed'], max: 4 }, { types: ['storage', 'rack', 'banner'], max: 2 }],
                 extra: 4 },
-    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }, { types: ['art', 'banner', 'statue'], max: 2 }], extra: 6 }
+    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }, { types: ['art', 'banner', 'statue'], max: 2 }], extra: 6 },
+    /* a bath (2026-11-03, the catalog's Ancients' bath fixtures; here since 2026-11-08): a tub or a shower, a toilet and a
+       basin, the big piece first (the placer reorders a slot that finds no fit), then a towel rail, a mirror and a bench
+       while there is room (one optional piece per 1.5 m2 at wealth 0.5) */
+    bath:     { require: [{ need: 'bath or shower', types: ['vessel'], roles: ['bathtub', 'shower'], n: 1 },
+                          { need: 'toilet', types: ['vessel'], roles: ['toilet'], n: 1 },
+                          { need: 'basin', types: ['vessel'], roles: ['washbasin'], n: 1 }],
+                optional: [{ types: ['rack'], max: 1 }, { types: ['art'], max: 1 }, { types: ['bench'], max: 1 }],
+                extra: 1.5 }
   };
   /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
   IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
     kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6,
-    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8 };
+    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8, bath: 0.5 };
   /* what a building of a given type is divided into, per storey (Yuni's ROOM_PROGRAM table,
      64-interiors.js): fn(level, area, shell) -> [kind, ...], the first kind holds the street door
      (ground floor) or the stair's top (upper floors). planBuilding() takes a name from here, an

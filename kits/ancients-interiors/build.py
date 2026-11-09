@@ -20,9 +20,6 @@ kits/interiors' demo), then ONE inline script:
   src/10-49*.js                          this kit's core
   src/50-98*.js                          the demo sheet
 
-opt/*.js (the reception recipe) is OPT-IN and goes into neither output: kit_bundle.bundle(reception=True) appends it for
-a build that asks; build.py only checks its syntax.
-
 build.py refuses a top-level name declared twice or already declared by the catalog files, runs the port lint
 (tools/check_port.py, PORT.md), `node --check` on the script and the core, then loads the core in node on top of
 the interiors core.
@@ -156,11 +153,6 @@ def main():
         fh.write('\n')
     syn = node_check('page', script)
     node_check('core', core_js)
-    # the OPT-IN fragments (opt/: the reception recipe) are in neither output; check their syntax on the core
-    # (node tests/test-reception.js checks the recipe itself)
-    for f in sorted(os.listdir(os.path.join(HERE, 'opt'))):
-        if f.endswith('.js'):
-            node_check('opt-' + f[:-3], core_js + read(os.path.join(HERE, 'opt', f)))
     load = ''
     try:
         ixc = os.path.join(IXK, 'dist', 'interiors-core.js')

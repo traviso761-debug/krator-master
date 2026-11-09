@@ -1,9 +1,5 @@
-/* ======================== Ancients interiors: the reception (OPT-IN) ========================
-   OPT-IN ONLY, UNTIL THE NEXT INTERIORS UPDATE. This fragment is NOT in the kit's default bundle: kit_bundle.bundle()
-   leaves it out, so the ~53 pages that take the kit are byte for byte as before. A build that wants the recipe asks
-   for it: kit_bundle.bundle(reception=True) appends this file after src/10-49 (a node test loads it after them). At
-   the next interiors update (the next all-builds rebuild, TODO.md), move it to src/ (as src/38-ai-reception.js), drop
-   the `reception` option from kit_bundle.py, and rebuild every build that takes the kit.
+/* ======================== Ancients interiors: the reception ========================
+   In the kit's core since 2026-11-08 (opt-in from 2026-11-03, as opt/38-ai-reception.js and kit_bundle.bundle(reception=True)).
 
    AI.RECIPES.reception: an office's front hall. Frame and rules as every hall recipe (30-ai-recipes.js): origin at the
    floor's centre, x across w, z along d, the door at (0, d/2) on the +z wall, the -z wall the back (glass or wall);

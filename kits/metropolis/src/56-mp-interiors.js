@@ -4,17 +4,9 @@
 // The furniture is the catalog's, by AI.furnishPlan in the culture `ancient`, its templates shared between like rooms.
 MP.LIVE=3;MP.open=[];
 MP.furnishCat=null;
-/* AI.furnishPlan turns a room's frame toward its first door's point from the centroid (kits/ancients-interiors 37-ai-kit.js), so an off-centre door skews
-   the frame and a recipe's rectangle with it: the Ledger's reception, 18 by 5.5 m with its door 1.5 m off centre, was laid out 15.8 by 11.5 at 28.6 degrees,
-   through the corridor and the next rooms. Until the kit takes the door wall's normal (TODO.md, the next all-builds rebuild), a recipe room is handed a
-   first door on the door's wall square to its centroid: the frame turns square, the room's real doors are unchanged */
-function mpFrameDoors(st){return Object.assign({},st,{rooms:st.rooms.map(R=>{if(!R.recipe||!R.doors||!R.doors[0]||!R.poly)return R;const P=R.poly,n=P.length,d=R.doors[0].at,c=P.reduce((s,p)=>[s[0]+p[0]/n,s[1]+p[1]/n],[0,0]);
- let u=null,bd=1e9;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<1e-6)continue;const t=Math.max(0,Math.min(1,((d[0]-a[0])*dx+(d[1]-a[1])*dz)/(l*l))),q=Math.hypot(a[0]+dx*t-d[0],a[1]+dz*t-d[1]);if(q<bd){bd=q;u=[dx/l,dz/l];}}
- if(!u)return R;const k=(c[0]-d[0])*u[0]+(c[1]-d[1])*u[1];return Object.assign({},R,{doors:[Object.assign({},R.doors[0],{at:[d[0]+u[0]*k,d[1]+u[1]*k]})].concat(R.doors.slice(1))});})});}
-MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat){MP.furnishCat=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());
-  /* the Ancients' bath fixtures and the bath programme: the catalog's opt-in set (build.py optin=['ancient-bath']) until the catalog is next touched (TODO.md) */
-  if(KratorFurniture.ancientBath)KratorFurniture.ancientBath.install(KratorInteriors);}
- const out=AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[mpFrameDoors(st)]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});
+MP.furnish=function(F,st){const AI=KratorAncientsInteriors;if(!MP.furnishCat)MP.furnishCat=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());
+ /* the bath fixtures are the catalog's and the bath programme kits/interiors' (both permanent since 2026-11-08); a room's frame faces its door's wall (37-ai-kit.js) */
+ const out=AI.furnishPlan({type:F.id,furnish:true,culture:'ancient',buildings:[{storeys:[st]}]},MP.furnishCat,{cultures:['ancient','generic'],seed:MP.idHash(F.id)&0xffff});
  /* a reading hall (46d, MP.stackLayout): its stacks and desks in rows, not the placer's (which only lines a hall's walls) */
  st.rooms.forEach(R=>{if(!R.stacks||!R.poly)return;out.rooms=out.rooms||[];out.rooms.push({synthetic:true,R,placements:MP.stackLayout(R.poly,R.y,MP.idHash(R.id)).map(p=>Object.assign(p,{room:R.id}))});});
  /* a machine hall (46d, MP.machineLayout): racks or work bays in runs round the core; 240 pieces a storey (near 200 k), the biggest hall first */

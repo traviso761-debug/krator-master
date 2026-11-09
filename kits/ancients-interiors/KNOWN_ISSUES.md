@@ -6,12 +6,15 @@
   onto the recipes needs each hall's floor as a rectangle in its own frame (several are curved or wrap a stair).
 - [ ] **No engines.** The engine room reserves the engines' floor for the host; the demo draws a grey block there.
   A machinery piece (a turbine casing, a gearbox) would let the recipe furnish it.
-- [ ] **The reception recipe is opt-in** (2026-11-03). `opt/38-ai-reception.js` (`reception`, and the dress role
-  `board`) is appended only by `kit_bundle.bundle(reception=True)`, so the pages that take the kit stay byte for byte as
-  they were; this kit's demo sheet and `verify.py` do not show it (`node tests/test-reception.js` checks it). At the next
-  interiors update (the next all-builds rebuild): move it to `src/38-ai-reception.js`, drop the option from
-  `kit_bundle.py` (and `reception=True` from the builds that pass it), let the demo sheet and `verify.py --assert` take it
-  with the other halls, and rebuild every build that takes the kit.
+- [x] **The reception recipe is permanent** (opt-in 2026-11-03, folded in 2026-11-08): `src/38-ai-reception.js`, in
+  `kit_bundle.bundle()`, the demo sheet and `verify.py --assert`; the `reception` option is gone. Every page that takes
+  the kit moves at its next rebuild.
+- [x] **`AI.barPlate`'s cross walls ran diagonally** (fixed 2026-11-08): the `.x` wall is `[inner[0], outer[0]]`, straight
+  across at the room's start (it was `outer[m]`, corner to corner). kits/metropolis's straightening pass is dropped.
+- [x] **`AI.furnishPlan` turned a room's frame toward its first door's point** (fixed 2026-11-08): the frame now faces the
+  outward normal of the wall the door is on (`AI.doorWallNormal`), about the area centroid (`AI.polyCentroid`), so a door
+  off a wall's middle no longer skews it. kits/metropolis's `mpFrameDoors` is dropped. Every templated room's furnishing
+  moves at its pages' next rebuild.
 - [ ] **The Ancients' own set is thin.** The `ancient` dress borrows the salvage lords' chairs, tables, carpets,
   divans, bookcases, statues and banners where the Ancients have no piece of their own (`20-ai-dress.js`).
 
