@@ -39,7 +39,17 @@
       var rec = { id: id + '.f' + n, kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, x: x, z: z, y: street.ground(x, z), yaw: p.yaw + yawExtra, side: side, s: s, r: r };
       if (span != null) rec.span = span;
       n++; pieces.push(rec); if (S) S.insert(rec, x, z, r);
+      /* a piece across the street stands on two legs, one on each pavement: each keeps 1.1 m clear, so no kerb piece lands under a leg */
+      if (span != null && S) [-1, 1].forEach(function (sd) { var lx = x + Math.cos(p.yaw) * sd * span / 2, lz = z - Math.sin(p.yaw) * sd * span / 2; S.insert({ id: rec.id + (sd > 0 ? '.legR' : '.legL'), x: lx, z: lz, r: 1.1, leg: rec.id }, lx, lz, 1.1); });
       return rec;
+    }
+    /* across the street first: a gantry or a footbridge every 120 m or so, by hash, its length (its x) across the street from pavement to pavement
+       (the owner, 2026-11-08): the piece's x is the path's side axis at yaw, so no turn. Laid before the kerb pieces, so those keep off its legs */
+    if (o.across !== false) for (var sa = 60 + 60 * T.u(seed, 0, 3, 0); sa < P.L - 40; sa += 110 + 60 * T.u(seed, Math.round(sa), 3, 1)) {
+      var ak = T.u(seed, Math.round(sa), 3, 2) < 0.7 ? 'tr_gantry' : 'tr_footbridge';
+      if (o.only && o.only.indexOf(ak) < 0) continue;
+      if (o.network && o.road != null && T.nearJunction(o.network, o.road, sa, 4)) continue;
+      lay(ak, null, sa, 0, 0, 0, 3, Math.min(T.KINDS[ak].w, W + 2.4));
     }
     var lampStep = T.KINDS.tr_lamp.step, k = 0;
     for (var s = step / 2; s < P.L; s += step, k++) {
@@ -55,17 +65,10 @@
       /* a kerb piece faces the street (its front +z toward the carriageway); a median piece runs along it */
       lay(kind, null, s, side, off, K.where === 'median' ? 0 : (side > 0 ? -Math.PI / 2 : Math.PI / 2), 2);
     }
-    /* across the street: a gantry or a footbridge every 120 m or so, by hash, its length (its x) across the street from pavement to pavement
-       (the owner, 2026-11-08): the piece's x is the path's side axis at yaw, so no turn */
-    if (o.across !== false) for (var sa = 60 + 60 * T.u(seed, 0, 3, 0); sa < P.L - 40; sa += 110 + 60 * T.u(seed, Math.round(sa), 3, 1)) {
-      var ak = T.u(seed, Math.round(sa), 3, 2) < 0.7 ? 'tr_gantry' : 'tr_footbridge';
-      if (o.only && o.only.indexOf(ak) < 0) continue;
-      lay(ak, null, sa, 0, 0, 0, 3, Math.min(T.KINDS[ak].w, W + 2.4));
-    }
     /* the junctions' corners (o.network): a traffic signal on each pavement corner of a junction of three arms or more, facing the junction, and a
        street sign on a corner of a smaller one */
     if (o.network && o.road != null) o.network.junctions.forEach(function (J, ji) { if (!J.arms.some(function (a) { return a.road === o.road; })) return; var home = J.arms.filter(function (a) { return a.road === o.road; })[0];
-      J.corners.forEach(function (c, ci) { if (c.straight || Math.min(J.arms[c.between[0]].road, J.arms[c.between[1]].road) !== o.road) return; var am = c.yaw, x = c.x, z = c.z, kind = J.n >= 3 ? 'tr_signal' : 'tr_sign', K = T.KINDS[kind], pk = T.pick(KRAND.hash(seed, ji, 900 + ci), kind, null, sharesAt(home.s));
+      J.corners.forEach(function (c, ci) { if ((c.straight && J.n < 3) || Math.min(J.arms[c.between[0]].road, J.arms[c.between[1]].road) !== o.road) return;   /* a T's straight side has its signal too, facing the stem */ var am = c.yaw, x = c.x, z = c.z, kind = J.n >= 3 ? 'tr_signal' : 'tr_sign', K = T.KINDS[kind], pk = T.pick(KRAND.hash(seed, ji, 900 + ci), kind, null, sharesAt(home.s));
         if (o.blocked && o.blocked(x, z, 1)) return;
         var rec = { id: id + '.f' + n, kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, x: x, z: z, y: street.ground(x, z), yaw: am, side: 0, s: home.s, r: Math.max(K.w, K.d) / 2 + 0.3, junction: J.id }; n++; pieces.push(rec); if (S) S.insert(rec, x, z, rec.r); }); });
     /* the rubble heaps on the carriageway */

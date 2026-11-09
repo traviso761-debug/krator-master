@@ -92,14 +92,21 @@
        (a street given as points, a ramp) is one run, resampled every `step` metres and carried by the shift */
     const runs = [];
     if (rd) { const ranges = o.network && o.road != null ? T.cutsOf(o.network, o.road) : []; let s0 = 0;
-      const runFrom = (a, b) => { if (b - a < 0.5) return; const r = [], n = Math.max(1, Math.round((b - a) / step)); for (let k = 0; k <= n; k++) { const s = a + (b - a) * k / n, p = rd.path.at(s); r.push({ x: p.x, z: p.z, s: s, yaw: p.yaw }); } runs.push(r); };
+      /* the rows ADAPT: 4 steps apart (12 m) where the road is straight and its surface flat between them, split down to one step where the
+         heading turns or the surface bends across the width (a crater, a scarp, a fillet), so a straight stretch costs a quarter of the rows */
+      const levAt = (s, off) => { const p = rd.path.at(s), x = p.x + Math.cos(p.yaw) * off, z = p.z - Math.sin(p.yaw) * off; return lev(x, z); };
+      const bends = (a, b) => { const m = (a + b) / 2, pa = rd.path.at(a), pb = rd.path.at(b); let dy = pb.yaw - pa.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; if (Math.abs(dy) > 0.03) return true;
+        for (const off of [-w / 2 - pave, 0, w / 2 + pave]) if (Math.abs(levAt(m, off) - (levAt(a, off) + levAt(b, off)) / 2) > 0.02) return true; return false; };
+      const runFrom = (a, b) => { if (b - a < 0.5) return; const ss = [], coarse = step * 4, n = Math.max(1, Math.round((b - a) / coarse)), sub = (s0, s1) => { if (s1 - s0 <= step * 1.01 || !bends(s0, s1)) { ss.push(s0); return; } const m = (s0 + s1) / 2; sub(s0, m); sub(m, s1); };
+        for (let k = 0; k < n; k++) sub(a + (b - a) * k / n, a + (b - a) * (k + 1) / n); ss.push(b);
+        runs.push(ss.map(s => { const p = rd.path.at(s); return { x: p.x, z: p.z, s: s, yaw: p.yaw }; })); };
       ranges.forEach(rg => { runFrom(s0, rg[0]); s0 = rg[1]; }); runFrom(s0, rd.L); }
     else { const given = (road.pts || road.path.pts).map(p => Array.isArray(p) ? { x: p[0], z: p[1] } : { x: p.x, z: p.z }); if (given.length < 2) return; const pts = [], shift = road.shift || o.shift;
       for (let i = 0; i + 1 < given.length; i++) { const a = given[i], b = given[i + 1], len = Math.hypot(b.x - a.x, b.z - a.z), n = Math.max(1, Math.round(len / step)); for (let k = 0; k < n; k++) pts.push({ x: a.x + (b.x - a.x) * k / n, z: a.z + (b.z - a.z) * k / n }); }
       pts.push({ x: given[given.length - 1].x, z: given[given.length - 1].z });
       if (shift) pts.forEach(p => { const sh = shift(p.x, p.z); p.x += sh[0]; p.z += sh[1]; });
       pts.forEach((p, i) => { const q = pts[Math.min(pts.length - 1, i + 1)], r = pts[Math.max(0, i - 1)]; p.yaw = Math.atan2(q.x - r.x, q.z - r.z); p.s = i ? pts[i - 1].s + Math.hypot(p.x - r.x, p.z - r.z) : 0; }); runs.push(pts); }
-    const yl = 0.06, bands = Math.max(2, Math.round(w / 3)), pb = Math.max(1, Math.round(pave / 1.2));
+    const yl = 0.06, bands = Math.max(2, Math.round(w / 3)), pb = Math.max(1, Math.round(pave / 2.4));
     runs.forEach(pts => { if (pts.length < 2) return;
       const L = [], R = [], PL = [], PR = [], KL = [], KR = [], CL = [], CR = [], EL = [], ER = [], lanesL = [], paveL = [], paveR = []; for (let b = 0; b <= bands; b++) lanesL.push([]); for (let b = 0; b <= pb; b++) { paveL.push([]); paveR.push([]); }
       pts.forEach(p => { const cx = Math.cos(p.yaw), sz = -Math.sin(p.yaw);

@@ -16,13 +16,12 @@
   every graded line (`47-host-land.js`; 0.7 M of the page's triangles are that ground); a host with a coarser ground sees them only as far as its
   mesh allows (the valley's KGROUND is 2 m cells: fine). The scorch rings and the road's bands follow the ground at 3 m. The owner saw the
   coarse ground lapping over a cut road before the lines were refined (2026-11-09): a host must refine its ground along a cutting too.
-- [ ] **A junction of arms at an acute angle is cut far back**: the kerb-line corner between two arms meeting under 30 degrees lies
-  `(w1 cos + w2) / sin` along each, so a lane meeting the avenue at 20 degrees is cut some 40 m from the centre (clamped there), and the
-  junction's patch is long and thin. The road tools widen such a junction or refuse the angle; the demo's shallowest is 53 degrees.
-- [ ] **No signal on the straight side of a T**: a signal stands on each filleted pavement corner, and the far side of a T has none (its
-  pavement runs straight across). A real T has a signal facing the stem there; one line in `44-tr-dress.js` once the owner wants it.
-- [ ] **A drift or a war's piece may lie across a junction**: the drifts are laid along the whole road (a drift's wedge may cross a junction's
-  patch), and the war's heaps and strewn pieces are laid by distance along the street, not kept off the junctions as the dress's pieces are.
+- [ ] **A junction of arms under 30 degrees is a paved gore, not a widened junction**: the kerb-line corner between two such arms would lie
+  `(w1 cos + w2) / sin` along each (40 m and more), so it is capped at twice the two widths plus 8 m and the kerbs end there on a slanted edge
+  across a paved gore (`corner.sliver`). The road tools widen such a junction or refuse the angle; a host may rather turn one road. The demo's
+  shallowest is 53 degrees.
+- [ ] **The war's craters may lie in a junction** (its pieces, barricades and positions keep off one): the junction's patch dips into a crater
+  as a road does, but the crater's rim rubble and the crosswalk paint are drawn over each other there.
 - [ ] **The vehicles kit's textures arrive as LFS pointers in a fresh worktree** (`kits/motor-vehicles/tex/`): `tools/build.py` refuses the
   build until `git lfs checkout -- kits/motor-vehicles/tex` (or `git lfs pull --include="kits/motor-vehicles/tex/*"`). The blockades' wrecks
   come from that kit's `ancient` culture (merged here from the vehicles session's branch, 2026-11-09); without its bundle the draw puts burnt hulks.
@@ -42,15 +41,16 @@
 - [ ] **The ramps' landing roads run 80 m and stop**: a host joins them to its street grid (the repo README: roads connect to the network).
   The demo's ramp roads end in the plain.
 - [ ] **Lamps on a cracked span stand on both sides**: only the cracked side's are dropped; a lamp standing at a cracked edge should lean out.
-- [ ] **A gantry or footbridge across a street keeps only its own depth clear in KSPACE** (its legs may land on a kerb piece): the dress lays
-  the kerb first, so a bench can stand under a gantry's leg. A second pass that moves a kerb piece out from under a leg is one line in `lay`.
-- [ ] **The rails are a sweep every 6 m with a 10-point profile**: the cargo line's 88 k triangles are mostly rail. A line of 10 km wants
-  the rails thinned past a few hundred metres (a 4-point profile, 12 m frames) or a LOD; the sleepers are already one instanced mesh.
+- [ ] **The rails are a sweep every 6 m with a six-point profile**, the sleepers one instanced mesh of six triangles each: the cargo line is
+  49 k triangles over 3.4 km, half of it sleepers. A line of 10 km wants the sleepers dropped past a few hundred metres (a LOD), and the
+  builder's 400 m chunks (`B.finish`) already let a view cull the far stretches.
 - [ ] **The furniture bundle builds each piece from the catalog frame** (about 1-2 ms a piece): a valley's thousands of pieces take seconds
   at the boot. The draw caches by (kind, state, variant, seed) but every `pick` gives its own seed; a host that wants speed passes
   `o.kinds` weights that favour fewer kinds, or buckets seeds (`seed % 8`) before `dress`.
-- [ ] **No shells or impostors**: a line is drawn whole to the page's edge (fine at a few kilometres: the demo's worst view is under half
-  a million triangles). The metropolis's `KSHELL` would carry a station or a span at range when a world needs it.
+- [ ] **No shells or impostors**: every mesh is drawn at full detail wherever the view holds it; a view culls by the builder's 400 m chunks
+  and the ground's tiles, so a street-level view draws 0.3 to 0.7 M triangles and the air view everything (about 1.3 M). The metropolis's
+  `KSHELL` would carry a station or a span at range when a world needs it; the war's heaps and strewn pieces (160 k on the avenue) are the
+  first thing to shell or thin by distance.
 - [ ] **The level crossing's panel is a box across the bed**, not cut into the ballast; the gates' arms are boxes. The warning lights glow
   while the crossing is `intact`.
 - [ ] **The trains' bogies do not come off**: a derailed car keeps its wheels under it. The cars are one merged mesh a family, so a host
@@ -60,10 +60,12 @@
   for now, `line` quads), rail ballast with sleeper shadows (`ground.gravel042` stands in), a rusted rail head (`metal.rust.heavy`).
 - [ ] **The pavements read bright from the air** (`concrete.slab` at mean 0.62 under the kerb's vertex colour): the valley will tint them
   with its rust and grime as it does the towers (`avRust`); the kit leaves the colours plain.
-- [ ] **`.claude/launch.json`** gained an `ancient-transit` static-server entry (port 8877) for the in-app browser; harmless, but a
-  worktree note: it is tracked.
 
-## Numbers (the GPU verify, 2026-11-08)
+## Numbers (the GPU verify, 2026-11-09)
 
-The per-view calls and triangles are in `README.md` "Numbers": the worst view (from the air) 520 k triangles in 102 calls, the lightest (the
-station) 393 k in 52; the page under 0.52 M everywhere.
+The per-view calls and triangles are in `README.md` "Numbers". The owner (2026-11-09): "this is mostly just a dang road, there must be a way
+to optimize it". What was done: the demo's ground refines only where a line cuts it (not along every road: 835 k to 365 k) and is drawn in
+64 tiles with their own bounds, so a view culls the rest; the builder finishes a family of 3000 triangles or more in 400 m chunks, so a 3 km
+road's far stretches are culled too; a road's rows adapt (12 m where straight and flat, 3 m where the heading or the surface bends); one
+pavement band instead of three; sleepers of six triangles; a six-point rail; the war's heaps a seven-sided mound (a 250-triangle dome
+before) and fewer of them. A street-level view went from about 2 M triangles to 0.3-0.7 M.

@@ -21,8 +21,16 @@ const GROUND=(function(){const N=180,S=4000,h=S/N,K=12,c0=KTRANSIT.rgb(0x7a7268)
    if(a===0&&pinW)y=y00+(y01-y00)*b/k;else if(a===k&&pinE)y=y10+(y11-y10)*b/k;else if(b===0&&pinS)y=y00+(y10-y00)*a/k;else if(b===k&&pinN)y=y01+(y11-y01)*a/k;else y=H(x,z);
    grid[a].push(vert(x,y,z));}}
   for(let a=0;a<k;a++)for(let b=0;b<k;b++){const p=grid[a][b],q=grid[a+1][b],r=grid[a+1][b+1],s=grid[a][b+1];I.push(p,s,q,q,s,r);}}
+ /* one vertex buffer, normals over the whole; then TILES (TN x TN) of its triangles, each a geometry on the shared attributes with its own
+    bounds, so a view draws the tiles in its frustum and not the whole 4 km square (the owner, 2026-11-09: triangles) */
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setAttribute('color',new THREE.Float32BufferAttribute(Cc,3));g.setIndex(I);g.computeVertexNormals();
- const m=new THREE.Mesh(g,KTRANSIT.mats().rubble);m.name='ground';m.userData.host=true;m.userData.inspectLabel='the ground';m.userData.tris=I.length/3;scene.add(m);return m;})();
+ const TN=8,TW=S/TN,tiles=[];for(let t=0;t<TN*TN;t++)tiles.push([]);
+ for(let t=0;t<I.length;t+=3){const x=(P[I[t]*3]+P[I[t+1]*3]+P[I[t+2]*3])/3,z=(P[I[t]*3+2]+P[I[t+1]*3+2]+P[I[t+2]*3+2])/3,a=Math.max(0,Math.min(TN-1,Math.floor((x+S/2)/TW))),b=Math.max(0,Math.min(TN-1,Math.floor((z+S/2)/TW)));tiles[a*TN+b].push(I[t],I[t+1],I[t+2]);}
+ const G=new THREE.Group();G.name='ground';G.userData.host=true;G.userData.tris=I.length/3;const mat=KTRANSIT.mats().rubble;
+ tiles.forEach((ti,t)=>{if(!ti.length)return;const tg=new THREE.BufferGeometry();tg.setAttribute('position',g.attributes.position);tg.setAttribute('normal',g.attributes.normal);tg.setAttribute('uv',g.attributes.uv);tg.setAttribute('color',g.attributes.color);tg.setIndex(ti);
+  const bb=new THREE.Box3();for(let q=0;q<ti.length;q++){const v=ti[q]*3;bb.expandByPoint(new THREE.Vector3(P[v],P[v+1],P[v+2]));}tg.boundingBox=bb;tg.boundingSphere=bb.getBoundingSphere(new THREE.Sphere());
+  const m=new THREE.Mesh(tg,mat);m.name='ground';m.userData.host=true;m.userData.inspectLabel='the ground';m.userData.tris=ti.length/3;m.userData.tile=t;G.add(m);});
+ scene.add(G);return G;})();
 /* the sun's shadows (core/shadow): one box that follows the view. A deck's shadow on the street is half the reading of an elevated line. ?noshadow leaves them off */
 const TR_SHADOW=/[?&]noshadow/.test(location.search)?null:KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
-if(TR_SHADOW)GROUND.receiveShadow=true;
+if(TR_SHADOW)GROUND.traverse(m=>{if(m.isMesh)m.receiveShadow=true;});

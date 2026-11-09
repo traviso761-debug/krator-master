@@ -262,11 +262,11 @@ TR_ASSET('tr_wire', function (F) {
 /* ---- the wreckage: a heap of pavement slabs on a mound; a heap of glass; a tangle of cable round a torn junction box. Drawn from F.rnd: one
    state, so the seed is the whole piece */
 TR_ASSET('tr_rubble_pave', function (F) {
-  const c = F.col, n = F.variant ? 14 : 9;
-  F.dome(0, -0.1, 0, F.variant ? 1.3 : 1.0, 0.55, 0, c('concDark'), 'rubble');
+  const c = F.col, n = F.variant ? 9 : 6;
+  F.frustum(0, -0.1, 0, F.variant ? 1.3 : 1.0, F.variant ? 0.55 : 0.42, 0.55, F.rr(0, 1), c('concDark'), 'rubble', 7);   /* a seven-sided mound (a dome cost 250 triangles; a war lays hundreds of heaps) */
   for (let i = 0; i < n; i++) { const a = F.rr(0, F.TAU), r = F.rr(0.1, 0.9), x = Math.cos(a) * r, z = Math.sin(a) * r * 0.85, y0 = F.rr(0.02, 0.4), dx = F.rr(-0.6, 0.6), dz = F.rr(-0.5, 0.5), dy = F.rr(0.05, 0.5);
     F.beam(x, y0, z, x + dx, y0 + dy, z + dz, F.rr(0.5, 1.0), 0.12, c(F.chance(0.6) ? 'paveGrey' : 'concGrey'), F.chance(0.6) ? 'pave' : 'concrete'); }
-  for (let i = 0; i < 3; i++) { const a = F.rr(0, F.TAU); F.rod(Math.cos(a) * 0.5, 0.2, Math.sin(a) * 0.5, Math.cos(a) * 0.5 + F.rr(-0.6, 0.6), F.rr(0.6, 0.95), Math.sin(a) * 0.5 + F.rr(-0.6, 0.6), 0.02, c('rustBrown'), 'rust'); }
+  for (let i = 0; i < 2; i++) { const a = F.rr(0, F.TAU); F.rod(Math.cos(a) * 0.5, 0.2, Math.sin(a) * 0.5, Math.cos(a) * 0.5 + F.rr(-0.6, 0.6), F.rr(0.6, 0.95), Math.sin(a) * 0.5 + F.rr(-0.6, 0.6), 0.02, c('rustBrown'), 'rust'); }
 });
 TR_ASSET('tr_rubble_glass', function (F) {
   const c = F.col, n = F.variant ? 26 : 16;

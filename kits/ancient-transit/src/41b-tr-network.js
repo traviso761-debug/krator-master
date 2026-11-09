@@ -18,7 +18,7 @@
 //     J = {id, x, z, y, n (the arms), kind: 'end' | 'corner' | 'tee' | 'cross' | 'six' | 'multi', r (the outline's radius about the centre),
 //          arms: [{road (index), id, s, yaw (outward), dir (+1 along the road's s, -1 against), width, pavement, end, cut (the distance from
 //          the centre to the arm's cut line)}] sorted by yaw,
-//          corners: [{between: [arm, arm], straight, apex: [x, z] | null (where the kerb lines meet), inner: [[x, z]...] (the kerb from the first
+//          corners: [{between: [arm, arm], straight, sliver (arms under 30 degrees: the corner capped), apex: [x, z] | null (where the kerb lines meet), inner: [[x, z]...] (the kerb from the first
 //          arm's cut round the fillet to the next arm's cut), outer: [[x, z]...] (the pavement's outer edge), x, z, yaw (where a signal stands,
 //          facing the centre)}], patch: [[x, z]...] (the asphalt outline, star-shaped about the centre: cut lines and apexes),
 //          outline: [[x, z]...] (the whole junction: the pavements' outer edges), levelAt(x, z) (the junction's surface: its level, dipping by o.carve there, as the roads' levelAt)}
@@ -60,8 +60,12 @@
         P.tA2 = clampFar(((A.w + A.p) * cs + (B.w + B.p)) / s2); P.uB2 = clampFar(((B.w + B.p) * cs + (A.w + A.p)) / s2);
         /* the fillet: the angle between the two kerbs at the corner, a radius a quarter of the narrower road (4 m at most), the tangent length;
            the cut lies beyond the corner by the tangent length and a margin, so every fillet has its kerb to stand on */
-        P.phi = Math.max(0.35, Math.acos(Math.max(-1, Math.min(1, cs)))); P.R = Math.min(4, 0.25 * Math.min(A.width, B.width)); P.dt = Math.min(12, P.R / Math.tan(P.phi / 2)); P.R = P.dt * Math.tan(P.phi / 2);
-        A.cut = Math.max(A.cut, P.tA + P.dt + 0.3); B.cut = Math.max(B.cut, P.uB + P.dt + 0.3);
+        /* two arms under about 30 degrees apart would meet far out: the corner is capped at twice the widths plus 8 m and the kerbs end there on a
+           slanted edge across a paved gore (the road tools widen such a junction; a host may rather turn one road) */
+        var cap = 2 * (A.w + B.w) + 8; P.sliver = Math.abs(P.tA) > cap || Math.abs(P.uB) > cap;
+        if (P.sliver) { var cl = function (v, c) { return Math.max(-c, Math.min(c, v)); }; P.tA = cl(P.tA, cap); P.uB = cl(P.uB, cap); P.tA2 = cl(P.tA2, cap + A.p + B.p); P.uB2 = cl(P.uB2, cap + A.p + B.p); P.dt = 0; A.cut = Math.max(A.cut, P.tA + 0.3); B.cut = Math.max(B.cut, P.uB + 0.3); }
+        else { P.phi = Math.max(0.35, Math.acos(Math.max(-1, Math.min(1, cs)))); P.R = Math.min(4, 0.25 * Math.min(A.width, B.width)); P.dt = Math.min(12, P.R / Math.tan(P.phi / 2)); P.R = P.dt * Math.tan(P.phi / 2);
+          A.cut = Math.max(A.cut, P.tA + P.dt + 0.3); B.cut = Math.max(B.cut, P.uB + P.dt + 0.3); }
       }
       pairs.push(P);
     }
@@ -70,6 +74,7 @@
     pairs.forEach(function (P) {
       var A = arms[P.a], B = arms[P.b], inner, outer, apex = null, cA = pt(J, A.yaw, A.cut, A.w), cB = pt(J, B.yaw, B.cut, -B.w), oA = pt(J, A.yaw, A.cut, A.w + A.p), oB = pt(J, B.yaw, B.cut, -(B.w + B.p));
       if (P.straight) { inner = [cA, cB]; outer = [oA, oB]; }
+      else if (P.sliver) { apex = pt(J, A.yaw, P.tA, A.w); inner = [cA, apex, cB]; outer = [oA, pt(J, A.yaw, P.tA2, A.w + A.p), oB]; }
       else {
         apex = pt(J, A.yaw, P.tA, A.w);
         var fA = [Math.sin(A.yaw), Math.cos(A.yaw)], fB = [Math.sin(B.yaw), Math.cos(B.yaw)], bis = [fA[0] + fB[0], fA[1] + fB[1]], bl = Math.hypot(bis[0], bis[1]) || 1, cd = P.R / Math.sin(P.phi / 2), C = [apex[0] + bis[0] / bl * cd, apex[1] + bis[1] / bl * cd];
@@ -80,7 +85,7 @@
       }
       /* where a signal or a sign stands: between the kerb's middle and the outer edge's middle, facing the centre */
       var im = inner[Math.floor(inner.length / 2)], om = P.straight ? lerp(outer[0], outer[1], 0.5) : outer[1], sx = im[0] * 0.45 + om[0] * 0.55, sz = im[1] * 0.45 + om[1] * 0.55;
-      J.corners.push({ between: [P.a, P.b], straight: P.straight, apex: apex, inner: inner, outer: outer, x: sx, z: sz, yaw: Math.atan2(J.x - sx, J.z - sz) });
+      J.corners.push({ between: [P.a, P.b], straight: P.straight, sliver: !!P.sliver, apex: apex, inner: inner, outer: outer, x: sx, z: sz, yaw: Math.atan2(J.x - sx, J.z - sz) });
       J.patch.push(pt(J, A.yaw, A.cut, -A.w), cA); if (apex) J.patch.push(apex);
       J.outline.push(pt(J, A.yaw, A.cut, -(A.w + A.p)), oA); if (apex) J.outline.push(outer[1]);
     });
@@ -127,6 +132,11 @@
       delete J.armsRaw;
     });
     defs.forEach(function (d, k) { if (pinsFor[k].length) roads[k] = make(d, pinsFor[k]); });
+    /* the drifts keep off the junctions: a drift over a cut is trimmed to it, or split round it, and dropped when under 8 m remains */
+    roads.forEach(function (R, k) { var cuts = T.cutsOf(N, k); if (!cuts.length || !R.drifts.length) return; var kept = [];
+      R.drifts.forEach(function (d) { var parts = [[d.s0, d.s1]]; cuts.forEach(function (c) { var next = []; parts.forEach(function (p) { if (p[1] <= c[0] - 2 || p[0] >= c[1] + 2) next.push(p); else { if (c[0] - 2 - p[0] > 8) next.push([p[0], c[0] - 2]); if (p[1] - (c[1] + 2) > 8) next.push([c[1] + 2, p[1]]); } }); parts = next; });
+        parts.forEach(function (p, i) { var e = {}; for (var key in d) e[key] = d[key]; e.id = d.id + (i ? 'b' + i : ''); e.s0 = p[0]; e.s1 = p[1]; kept.push(e); }); });
+      R.drifts = kept; });
     nodes.forEach(function (J) { J.y = roads[J.level.road].yAt(J.level.s); var y = J.y; J.levelAt = function (x, z) { return o.carve ? y + Math.min(0, o.carve(x, z)) : y; }; });
     /* the segments: each road between its cuts, in order along it */
     roads.forEach(function (R, k) {
