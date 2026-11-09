@@ -73,7 +73,26 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     'vec3 sd=pow(texture2D(uS,p/'+Ls.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Ls.lib,0xa89c88)+';',
     'vec3 md=pow(texture2D(uM,p/'+Lm.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lm.lib,0x5a4a38)+';',
     'vec3 c=mix(gr*0.6,lt*0.5,vW.x);c=mix(c,sd*0.8,vW.y);c=mix(c,md*0.55,vW.w);diffuseColor.rgb*=c*vW.z;}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'kguilin-ground';}
+ MAT_GROUND.customProgramCacheKey=()=>'kguilin-ground';
+ /* THE PLAIN ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, pair 13, 2026-11-09; korona's lines): the grass stays
+    the base, read as above, and the litter, the sand and the mud come over it hex-tiled, scaled with distance and blended by height, at the same
+    strengths and tints and under the same weights as the mix above (a pebble stands through the grass at a bar's edge instead of a smear). Only
+    with all four layers from the pack (the procedural fallback keeps its mix) and ?kground=0 not set. three r128 uploads cameraPosition only to
+    Phong and Standard materials, so on this Lambert ground KGROUND's distance reads KHOOK.EYE's kEye (the define below; the fix belongs in
+    core/terrain/43-core-ground.js: korona's core finding, owed) */
+ const KG_LY=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'&&Lg.lib&&Lt.lib&&Ls.lib&&Lm.lib?
+  [KGROUND.layer('kguilin','ground.litter',{w:'vW.x',tint:'vec3(0.5)',name:'litter'}),KGROUND.layer('kguilin','ground.sand',{w:'vW.y',tint:'vec3(0.8)',name:'sand'}),
+   KGROUND.layer('kguilin','ground.mud',{w:'vW.w',tint:'vec3(0.55)',name:'mud'})]:null;
+ const KG_EYE='#define '+'camera'+'Position kEye()\n';   /* joined so check_source's CAMPOS rule, which cannot tell a redirect from a read, does not count it */
+ if(KG_LY&&KG_LY.every(Boolean)){
+  MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uG={value:Lg.map};
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;varying vec4 vW;varying vec3 vGWP;')
+    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uG;varying vec4 vW;varying vec3 vGWP;\n'+KHOOK.EYE+KG_EYE)
+    .replace('#include <map_fragment>','{vec2 p=vGWP.xz;diffuseColor.rgb=pow(texture2D(uG,p/'+Lg.s.toFixed(2)+').rgb,vec3(2.2))*vec3(0.95)*0.6;}\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
+  MAT_GROUND.customProgramCacheKey=()=>'kguilin-ground-kg';
+  KGROUND.hook(MAT_GROUND,{key:'kguilin-ground',layers:KG_LY,at:'/*KGROUND*/'});
+  MAT_GROUND.userData.kgroundOn=true;}}
 (function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*4);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=KGUILIN.footD(x,z),rd=riverD(x,z),Z=KGUILIN.at(x,z);
@@ -104,6 +123,24 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 // leans in enough to hold soil, the soil's dark green-brown under its forest, so a gap between the shrubs is not bare rock),
 // the towers' tops (soil and moss under the scrub), the stone forest's blades (grooved, darker) and their tops.
 const ROCK_GEOS=[];
+// THE LIMESTONE'S BEDS (core/terrain KSTRATA; BACKPORT.md k-guilin's row, "strata (the tower limestone)"; the final rebuild, pair 13, 2026-11-09):
+// nwbay's recipe, the same limestone province as the bay's drowned stacks (one landscape: the owner, 2026-10-26): a massive grey limestone in thick
+// beds, darker and paler by bed, thin marl partings and iron-stained bands, near level. One stack for the map, so a bed runs from tower to tower and
+// through the stone forest's blades; drawn on the walls and the blades as a tint about the beds' mean, under the library's grain, the rain's streaks
+// and the soil's green (the vertex colours). The tops keep their soil and moss. ?strata=0 without it
+if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['kguilin-karst'])KSTRATA.add({name:'kguilin-karst',main:'lime',kinds:{
+ lime:{p:.5,th:[4,16],col:[0xc4bfb5,0xbab5aa,0xcdc8bd],hard:.95,xbed:0,varnish:.2},
+ dark:{p:.24,th:[2,8],col:[0x9a978f,0x8e8b84,0xa39f96],hard:.9,xbed:0,varnish:.2},
+ marl:{p:.14,th:[.3,1.4],col:[0xa69a84,0x9c907a],hard:.3,xbed:0,varnish:0,between:true},
+ iron:{p:.12,th:[.3,1.2],col:[0xb8946c,0xae8a62],hard:.6,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:.2}});
+const ROCK_STRATA=new URLSearchParams(location.search).get('strata')!=='0'&&typeof KSTRATA!=='undefined'&&BIO.strata?(function(){let lo=1e9,hi=-1e9;ROCK.forEach(B=>{lo=Math.min(lo,B.y0);hi=Math.max(hi,B.top);});
+ return BIO.strata({recipe:'kguilin-karst',seed:8117,range:[Math.floor(lo-20),Math.ceil(hi+20)],dip:[.8,-.6,.03],warp:[5,1.6],res:.25,private:true});})():null;
+// strataColor is linear; the tint is the bed's colour over the lime's mean (.47), held to [.45, 1.7] and taken at half strength (korona's)
+function rockStrata(m,key){if(!ROCK_STRATA)return m;const prev=m.onBeforeCompile;
+ m.onBeforeCompile=(sh,r)=>{if(prev)prev.call(m,sh,r);ROCK_STRATA.inject(sh);
+  if(sh.fragmentShader.indexOf('#include <map_fragment>')<0)throw new Error('kguilin rock strata: no anchor');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/0.47,vec3(0.45),vec3(1.7)),0.5);}');};
+ m.customProgramCacheKey=()=>key;return m;}
 (function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lb=layer('rock.blade'),Lt=layer('rock.top');
  const GREY=new THREE.Color(0xa6a298),DARK=new THREE.Color(0x3c3c38),OCHRE=new THREE.Color(0xb08a5e),MOSS=new THREE.Color(0x6a7a48),
   BLADE=new THREE.Color(0xb4b4ae),TOPC=new THREE.Color(0x5a5a3c),SOIL=new THREE.Color(0x34422a),WHITE=new THREE.Color(0xffffff),c=new THREE.Color(),
@@ -134,6 +171,7 @@ const ROCK_GEOS=[];
   const cl=new THREE.Float32BufferAttribute(A.col,3);for(let i=0;i<cl.count;i++){c.setRGB(cl.getX(i),cl.getY(i),cl.getZ(i)).convertSRGBToLinear();cl.setXYZ(i,c.r,c.g,c.b);}
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
   const mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+  if(A===acc.wall||A===acc.blade)rockStrata(mat,'kguilin-rock-strata-'+(A===acc.wall?'wall':'blade'));   /* the beds on the walls and the blades, not the tops */
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
  // one sample per body at its middle for the probe (userData.probePoints, core/host/95-host-probe.js): the rock is merged
  // meshes, so the probe's samples (a mesh's box centre) would leave each body's registered volume to whatever grows on it
@@ -154,13 +192,13 @@ const ROCK_GEOS=[];
    for(let i=0;i<seg;i++){const a=i/seg*TAU;pos.push(f.x+Math.cos(a)*f.R*pr,f.y0+t*(f.H+6),f.z+Math.sin(a)*f.R*pr);c.copy(r0).lerp(g,smooth(f.tw-.15,f.tw+.1,t)).convertSRGBToLinear();col.push(c.r,c.g,c.b);}}
   for(let j=0;j<rows;j++)for(let i=0;i<seg;i++){const a=n+j*seg+i,b=n+j*seg+(i+1)%seg;idx.push(a,b,a+seg,b,b+seg,a+seg);}});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.probeSkip=true;m.userData.host=true;m.userData.inspectLabel='The karst beyond (towers into the mist)';scene.add(m);
+ const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.probeSkip=true;m.userData.host=true;m.userData.farField=true;m.userData.inspectLabel='The karst beyond (towers into the mist)';scene.add(m);
  // the plain beyond: a ring rising from the lake as the page's plain does, under the far water where the lake runs on
  const rg=new THREE.RingGeometry(TERR.R*1.05,9000,96,24).rotateX(-Math.PI/2),rp=rg.attributes.position;
  for(let i=0;i<rp.count;i++){const x=rp.getX(i),z=rp.getZ(i),ld=lakeD(x,z);rp.setY(i,ld>0?riseAt(ld)*smooth(0,400,ld)-2:Math.max(-30,ld*.05)-2);}
  rg.computeVertexNormals();
  const d=new THREE.Mesh(rg,new THREE.MeshLambertMaterial({color:new THREE.Color(0x56663e).convertSRGBToLinear()}));   /* linear, as the far towers' colours: a raw hex reads near white under the shared sky's sun */
- d.userData.probeSkip=true;d.userData.host=true;d.userData.inspectLabel='The plain beyond';scene.add(d);})();
+ d.userData.probeSkip=true;d.userData.host=true;d.userData.farField=true;d.userData.inspectLabel='The plain beyond';scene.add(d);})();   /* farField: no KHORIZON, no shadow (88) */
 
 // ---------------------------------------------------------------- the water: the lake, the wadi, the pond, the paddies
 // On a page with core/water (core/water/README.md) they are its records: the lake open water (WATER.open at its level over its

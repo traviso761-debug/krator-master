@@ -9,9 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/k-guilin.html`
 Build: `cd biomes/k-guilin && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`
-
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `43-core-ground.js`, `45-core-horizon.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -28,19 +26,19 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 12 | the lake, the plain, the wadi, the stone forest' (47); the rock (KSTACKS records: core/terrain/37-core- (83) |
+| `45-host-stage.js` | 13 | the lake, the plain, the wadi, the stone forest' (52); the rock (KSTACKS records: core/terrain/37-core- (88) |
 | `46-biome-kguilin-layout.js` | 17 | lay: the grid of beds and wall distances (25); the height of the rock (77); the zone of a point (90); the wall: a point on a bed's face, and its outwa (116); the cliffs' dressing (data: where the scrub hold (120); the paddies (data: fields by the wadi and the la (148) |
-| `47-host-land.js` | 19 | the fields (biomes/WORLD.md): wet, flow, rock, u (17); the host binding (before the meshes: their paint (29); the library layers (or procedural without the pa (41); the ground (one mesh: grass, litter at the tower (61); the paddies' bunds: low earth walls round every  (86); the rock (KSTACKS meshes): four meshes, by mater (102); the horizon: the karst going on into the mist, t (144); the water: the lake, the wadi, the pond, the pad (165) |
+| `47-host-land.js` | 24 | the fields (biomes/WORLD.md): wet, flow, rock, u (17); the host binding (before the meshes: their paint (29); the library layers (or procedural without the pa (41); the ground (one mesh: grass, litter at the tower (61); the paddies' bunds: low earth walls round every  (105); the rock (KSTACKS meshes): four meshes, by mater (121); the horizon: the karst going on into the mist, t (182); the water: the lake, the wadi, the pond, the pad (203) |
 | `48n0-kguilin-nwbay-open.js` | <1 |  |
 | `48n9-kguilin-nwbay-close.js` | <1 |  |
 | `50-biome-kguilin-species.js` | 24 | palettes (sRGB; a library card carries its own c (20); the tree-scale species (37); harvest (biomes/FRUIT.md; kits/crops) (61); the small plants, tagged (76); leaf textures (procedural, greyscale: the fallba (92); bark textures (grey, mean ~.6) (130); geometries (kit-local), and cell mapping (139); materials (165); instanced items (195) |
-| `55-biome-kguilin-trees.js` | 25 | the placement grid (15); keep-clear between trees (core/space) (28); the builders: (T, st, lv) with lv 2 near, 1 mid (49); impostors (the far trees) (127); the passes (data: species, cell, acceptance by z (141); nwbay's species, read in place (PLAN.md section  (156); roots on the rock (the owner, 2026-10-26) (180) |
+| `55-biome-kguilin-trees.js` | 27 | the placement grid (15); keep-clear between trees (core/space) (28); the builders: (T, st, lv) with lv 2 near, 1 mid (50); impostors (the far trees) (128); the passes (data: species, cell, acceptance by z (142); nwbay's species, read in place (PLAN.md section  (157); roots on the rock (the owner, 2026-10-26) (181) |
 | `57-biome-kguilin-cliffs.js` | 5 |  |
 | `60-biome-kguilin-floor.js` | 5 |  |
 | `70-biome-kguilin.js` | 1 |  |
-| `88-host-build.js` | 1 |  |
-| `89a-host-atmos.js` | <1 |  |
+| `88-host-build.js` | 3 |  |
+| `89a-host-atmos.js` | 3 |  |
 | `89s-host-sky.js` | 4 |  |
-| `89w-host-water.js` | 3 |  |
+| `89w-host-water.js` | 4 |  |
 | `99-host-take.js` | 18 | the inspector's words: a plant names its species (35); the probe's budgets and the kit's own checks (ve (49); the page, handed to the host (140) |
 | `99-tail.html` | <1 |  |

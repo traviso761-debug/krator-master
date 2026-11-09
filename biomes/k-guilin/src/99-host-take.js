@@ -143,7 +143,7 @@ KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (8
 KHOST.take({build:'kguilin',title:'Krator biome — the Hykkousoi hinterlands (k-guilin)',
  hint:'The Hykkousoi hinterlands: limestone towers on the lakeshore by Trigon, the wadi and its paddies, the fengcong, the stone forest',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:10},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js); the page opens at 10:00 */
+ clock:{hour:10},draw:HOST_DRAW,   /* the reflections switch (89w), the shared sky's pass, then the world (89s-host-sky.js); the page opens at 10:00 */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[SKY.mesh]}},
