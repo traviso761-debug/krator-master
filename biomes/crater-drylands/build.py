@@ -173,9 +173,10 @@ VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'craterdry'),
              if f.startswith(('ground','tower','jetty')) or (_pn in STN.get('packOnly',{}) and f not in STN['packOnly'][_pn])])
             for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers; "packOnly" {pack: [families]} keeps only those
          khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands'),   # the host's edit layer (core/host FULL)
-         # kits/fauna's groups that hold this biome's animals (KratorFauna: the bison, the ash runner, the salamander, the Scyvoi's mounts and the
-         # wild steppe's), for the editor's fauna mode (99-host-take.js; sedesert's way); no texture pack, as sedesert's
-         '39-host-fauna.js':_fb.bundle(['wild','ash','livestock','mounts'],tex=False)}
+         # kits/fauna's groups that hold this biome's animals (KratorFauna: the ash runner, the salamander, the burn-hawk, the hot-spring axolotl,
+         # the char beetle, the Scyvoi's mounts, the wild steppe's), for the editor's fauna mode (99-host-take.js; sedesert's way); no texture pack,
+         # as sedesert's. The hyperjungle group is needed by the wild one (its species call faHiMix at load: a page without it threw there)
+         '39-host-fauna.js':_fb.bundle(['wild','ash','livestock','mounts','hyperjungle'],tex=False)}
 for f in VIRTUAL: PATH[f]=None
 for f in STN.get('drop',[]): PATH.pop(f,None)
 frags=sorted(PATH)

@@ -115,5 +115,5 @@ BIO.init({tags:'crater-drylands',THREE:THREE,scene:scene,terrainH:terrainH,water
  windows:{water:[SEEP.x-60,SEEP.z-60,SEEP.x+60,SEEP.z+60]}});
 BIO.setSun([-1000,900,-700]);
 // THE SEASON (PLAN-STATIONS.md: the dry season's straw, the wet season's flush): the kit's grass takes core/biome's season (50), bound to the
-// clock in 99b-host-season.js. ?season=0 for none
+// clock in 99-host-zseason.js. ?season=0 for none
 BIO.host.seasons=new URLSearchParams(location.search).get('season')!=='0';
