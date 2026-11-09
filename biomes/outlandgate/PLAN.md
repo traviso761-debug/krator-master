@@ -9,9 +9,10 @@ air, the climate and the river from the model, and adds the people, the hazards 
 owner wants a kit here (2026-11-02, `HANDOFF-GEMINI-5.1.md` item 5). It goes in the rebuild's queue after the frozen
 integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
 
-**The plan has one open conflict, for the owner (section 9):** the gap is not the Gate. The Gate of the Outlands plan is a
-7.7 km pass about 110 km to the south-west. On 5.1 the gap gives the Outlands a second, far lower way in, which breaks the
-Outlands' "one crossing" rule. This plan states both and does not choose.
+**The conflict is settled (the owner, 2026-11-09): the gap stays, and The Gate moves into it.** The Tierhounds' toll fort
+now stands at the Narrows (px 1438,326) and closes the floor with a long wall; the Outlands' rule becomes "one crossing,
+the gap, held by the toll fort" (section 9). The god's road runs through the gap. The Outlands' lost Nursery Plateau comes
+back as a station shared with this kit, on the dry bench at the gap's head (section 7).
 
 ## 1. What the map carves (Gemini, map 5.1)
 
@@ -51,13 +52,21 @@ The trough is sculpted in `tools/scale-model/smodel/nw_expansion.py` (section 6A
 - **Side streams:** seven short dry channels (`r460`, `r547`, `r686`, `r689`, `r769`, `r851`, `r852`, Hum names, 0 m³/s) on
   the east benches at px 1465-1561, y 414-478.
 - **No vents, tubes or volcanoes** inside.
-- **No settlements** inside. **The Gate** (outpost, px 1408,414) stands outside, in the N Outlands polygon (section 9).
+- **No settlements** inside on the model yet. **The Gate** (`sthegate`, outpost) stands at px 1408,414 (8,002 m) in the N
+  Outlands polygon; **it moves to px 1438,326 on the Narrows' floor** (the owner, 2026-11-09; the map edit moves the marker:
+  section 9).
 - **Neighbours on the model:** spider lake (`rmvyj4v2ozgb1`), ria valley (`rmvriavalley`), N Outlands (`rmvp5489oiy6z`),
   tharn uplands (`rmvtharnuplands`); the NE Outer Wall (`rmvymakpc0pft`) touches it at the west wall's shoulder. The
   polygon **overlaps Spider Lake's** at the mouth, and the ria valley's and N Outlands' at its ends. The sketch's id for
   Outland (`rmuqmb59f1f14`) is not in the region store.
 - **Lost station:** the Outlands' planned station 5, the Nursery Plateau (old px 1269,130 = 5.1 px 1541,460), now lies in
-  this polygon. The carve took it from 3,783 m BWk to 1,676 m Cfa (`biomes/STATIONS-MAP-5.1.md`).
+  this polygon. The carve took it from 3,783 m BWk to 1,676 m Cfa (`biomes/STATIONS-MAP-5.1.md`); the model now gives
+  1,719 m, Cfa, 1,552 mm there. **It comes back on the gap's head** (section 7, the Nursery Bench).
+- **The gap's head** (the model, 2026-11-09). South of the Upper Gate Tarn the floor climbs to the N Outlands' lake
+  (2,345 m) and the ground south-west of the lake's outlet rises in a 2.1-2.2 km scarp to a **dry tableland at 3.9-4.0 km**:
+  along x 1558, Cfa 1,785 m and 1,160 mm at y 500, Csa 2,423 m at y 506, Dsc 3,285 m at y 510, BWk 3,881 m and 203 mm at
+  the rim (y 513), BWk 3,963 m and **94 mm** at y 520, mean 6 °C (19/-7). It is part of the N Outlands' largest cold desert
+  (BWk and BSk, 5,524 km² round px 1585,544, median 3,886 m, 203 mm).
 
 ## 2. Geology and landforms
 
@@ -89,18 +98,26 @@ Basalt dikes from the Arachnoids may cross the west wall as ribs (`KSTACKS.row` 
 - **Climate classes**, whole polygon: Cfa 36%, O (airless) 27%, ET 8%, HF 7%, Dfc 6%, EF 5%, Csa 4%, HT 3%. Ground under
   4.5 km: **Cfa 71%**, Dfc 12%, Csa 7%, Dsc 3%; median rain 1,035 mm; mean 19 °C, warmest month 29 °C, coldest 8 °C.
 - **The floor is warm and humid (Cfa), not Cfb/Dfb as the sketch had it.** Floor under 2 km: median rain 1,066 mm, mean
-  20 °C. At the narrows (px 1442,336) the model gives a mean of 25 °C and a warmest month of 38 °C: hot. Read again at build.
-- **Wetter at the mouth, drier on the west benches:** Spider Lake's end 1,929 mm; the narrows 956 mm; the west benches'
-  Csa strip 666-776 mm; the Upper Gate Tarn only 313 mm (a dry pocket).
+  20 °C. At px 1442,336 the model gives a mean of 25 °C and a warmest month of 38 °C, but rows 314-328 (the Gate's
+  stretch, 1438,326) give 19 °C (29/8): the temperature raster steps at y 330. Read again at build.
+- **Wetter at the mouth, drier on the west benches:** Spider Lake's end 1,929 mm; the narrows 956-988 mm; the west benches'
+  Csa strip 666-776 mm; the Upper Gate Tarn's cells 313 mm (the lake class's own figure; its shores take 1,300-1,600 mm).
+- **The gap's head is the dry edge:** 1,160 mm on the upper floor (1558,500), 203 mm on the rim (1558,513), 94 mm on the
+  tableland (1558,520). The rain falls in the gap and stops at its head.
 - **The wind** (the sketch's "Bellows of the North", a proposal): a trough this deep between airless walls channels air.
   Daytime up-valley flow from Spider Lake (the "Silk-Draught", with ballooning spiderlings); night and winter down-valley flow
-  from the higher Outlands (the "Outland Bore"). It needs the shared cold-air and katabatic wind amendment.
+  from the higher Outlands (the "Outland Bore"). It needs the shared cold-air and katabatic wind amendment. The Bore now
+  carries two jobs (2026-11-09): it cuts the Nursery Bench's yardangs at the gap's head, and it keeps the leak of plants one
+  way, out of the Outlands (section 9).
 
 ## 4. Life
 
 The gap joins two worlds: the Outlands' native, fungoid flora to the south (`biomes/outlands/PLAN.md` section 2) and Spider
-Lake's and the crater's flora to the north. **It is an ecotone**, and what crosses it depends on the owner's ruling
-(section 9).
+Lake's and the crater's flora to the north. **It is an ecotone.** With the gap kept (the owner, 2026-11-09), the plan
+proposes that the leak runs **one way, north**: the Outlands' natives come down the gap on the night wind and the river,
+while the crater's lowland plants stop at the gap's head, where every way on into the basins climbs into cold steppe and
+cold desert (section 9, "the new isolation"). So the southern floor carries fungoid stragglers among Earth-like woods, and
+the Nursery Bench above the head is wholly native.
 
 | Zone | Life | From |
 |---|---|---|
@@ -116,16 +133,35 @@ side is the same open question.
 
 ## 5. People
 
-- **Nobody lives here** on the model.
-- **Who passes**, on the plan's present lore:
-  - the **Coyote Men** of the N Outlands (Hum speakers; the rivers here have Hum names) and the **Tierhounds** who keep the
-    Gate (`biomes/outlands/PLAN.md` section 6; not yet in `LORE.md`);
-  - **Izani caravans** carrying the Outlands' trade (emeralds, turquoise, feathers out; grain, metal, cloth in), if the gap
-    is a trade road (section 9);
+- **The Gate** (the owner, 2026-11-09: moved here). The **Tierhounds' toll fort** stands on the Narrows' floor at **px
+  1438,326** (1,423 m, 1.34 atm, Cfa, 988 mm, 19 °C (29/8)), with the trickster's shrine.
+  - **Why there:** it is the narrowest stretch of floor on the gap's northern run. Across row 326 the floor within 300 m of
+    the river is 30 km wide (1431 to 1446; 1,760 and 1,763 m at its edges); within 1 km, 62 km; the walls stand 5.2 km at
+    1411,326 and 4.9 km at 1465,326, and 10-14 km beyond. The +300 m floor is 22-24 km at a few points further south
+    (1526-1538, 456-465), but those lie 300 km up the gap with no shoulder beside them. The Narrows has the NE Outer Wall's
+    **Gate shoulder** (a low lobe at 2.6-3.8 km, centre 1427,351) on its west side for a citadel over the floor.
+  - **How it closes the valley** (*proposed*): a fort cannot close 30 km of floor alone. The Tierhounds close it as Derbent
+    closed the Caspian Gates: a **long wall** from wall foot to wall foot (1431,326 to 1446,326), the fort and its toll gate on
+    the river at its middle, towers every few kilometres, a citadel on the Gate shoulder. The river passes under a water
+    gate. Every caravan, and the god's road, goes through the gate.
+  - **Reaching it:** the Tierhounds' own country (the Tiers) reaches the gap's floor over crests no higher than about 3.9 km
+    (a minimax flood fill from the Tiers' centre, 1275,495), so the fort is theirs to supply.
+  - **The old pass** at 1408,414 (8,002 m) loses the fort. *Proposed*: it keeps a cairn and a trickster's shrine as the
+    "old gate" of the stories, crossed by nobody but pilgrims.
+- **Who passes:**
+  - the **Coyote Men** of the N Outlands (Hum speakers; the rivers here have Hum names) and the **Tierhounds**
+    (`biomes/outlands/PLAN.md` section 6; not yet in `LORE.md`);
+  - **Izani caravans** carrying the Outlands' trade (emeralds, turquoise, feathers out; grain, metal, cloth in): the gap is
+    the trade road, and the Tierhounds take the toll at the wall;
+  - **the god's road** (the owner's, 2026-10-26, re-routed here 2026-11-09): from the Sleeping City by Spider Lake, up the
+    gap, through the gate at the Narrows, past the Upper Gate Tarn and the N Outlands' lake to Trickster's House. Its highest
+    point falls from 7.7 km to about 3.6 km (the crest between the lake and Trickster's House); `god_road.py` re-routes it and
+    rewrites `openworld/gods-road.json` (the map session's work);
   - **Spider Lake's people** (Spider Lake's plan) at the mouth.
-- **NPC sites** (drawn by the kit only after the ruling): caravan camps on the floor (`core/camp`, `KCAMP`); cairns and
-  milestones with Coyote contour carvings. The sketch's **Skarn-Seep Hanging Caravanserai** is a proposed NPC caravanserai on
-  the west bench (station 2). A Tierhound toll post here is the owner's call (section 9).
+- **NPC sites:** the fort, the wall and the shrine are a settlement (the culture kit `kits/coyote`, later); until then the
+  station carries them as plain records, as the Outlands plan does. Caravan camps outside the wall (`core/camp`, `KCAMP`);
+  cairns and milestones with Coyote contour carvings. The sketch's **Skarn-Seep Hanging Caravanserai** is a proposed NPC
+  caravanserai on the west bench (station 2), north of the wall, where caravans wait for the toll.
 - **Player outposts:** the floor's benches have water, warmth and dense air. The kit only offers them as candidate sites to
   the player-settlement registry and draws nothing for them.
 
@@ -142,19 +178,31 @@ side is the same open question.
 | **Cold and thin air** | the walls; airless crest | `'temperature'`, `'pressure'` |
 | **Gap wind** | the narrows | weather (the shared katabatic amendment); a `slip`/push on exposed benches is kit work |
 | **Predators** | spider ground at the mouth | `hunter` (the fauna kit's places predators hold) |
+| **The wall's guards** (the toll, the seed law) | the Narrows | not a `KHAZ` kind: the open world's faction rules |
 
 ## 7. Stations (proposed, on the 5.1 map)
 
 | Station | 5.1 px | Ground | What |
 |---|---|---|---|
-| 1 **The Narrows** | 1442,336 | floor 1,447 m; 1.34 atm; Cfa, 956 mm | the gap itself: the braided river on a 50 km floor, walls climbing to 4-5 km within the view and to 10-14 km beyond (`KFAR`); the wind |
-| 2 **West Bench** | 1441,306 | 2,100 m bench (125 cells); 1.23 atm; Cfa, ~1,100 mm | the warm seeps and travertine alcoves on the west wall; the proposed caravanserai; the dike ribs |
-| 3 **Upper Gate Tarn** | 1544,474 | tarn 1,521 m; 1.33 atm; WH, 313 mm | the south end: the tarn, flood-scoured ground (ripple bars, erratics), the fungoid flora coming in from the Outlands |
+| 1 **The Narrows and the Gate** | **1438,326** (was 1442,336) | floor 1,423 m; 1.34 atm; Cfa, 988 mm, 19 °C (29/8) | the gap itself: the braided river on a 30 km floor, walls climbing to 4-5 km 48-54 km out on either side and to 10-14 km beyond (`KFAR`); the wind; **the Tierhounds' long wall across the floor, the toll fort and water gate on the river, the shrine** (plain records until `kits/coyote`) |
+| 2 **West Bench** | 1441,306 | 2,100 m bench (125 cells); 1.23 atm; Cfa, ~1,100 mm | the warm seeps and travertine alcoves on the west wall; the proposed caravanserai outside the wall; the dike ribs |
+| 3 **Upper Gate Tarn** | 1544,474 | tarn 1,521 m; 1.33 atm; WH (the 313 mm is the lake cell's; the shores take 1,300-1,600 mm) | the south end: the tarn, flood-scoured ground (ripple bars, erratics), the fungoid flora coming in from the Outlands; the Nursery Bench's scarp on the skyline to the south |
 | 4 **Spider Lake Threshold** | 1331,230 | 1,396 m; 1.35 atm; Cfa, 1,929 mm | the mouth: the river into Spider Lake's eastern bay, silk in the woods |
+| 5 **The Nursery Bench** (shared; **owned by `biomes/outlands`**, its station 5) | **1558,516**, the rim at 1558,513 | 3,960-4,007 m; 0.98 atm; BWk/BSk, 94-109 mm, 6 °C (19/-7) | the old Nursery Plateau's idea on the gap's head: pod towers, brood pads and gall stacks on desert pavement, yardangs cut by the gap's night wind, the rim and the 2.2 km scarp down to the gap's upper floor; this kit reads it in place and draws the floor below it as its far field |
 
-**Station 1 comes first:** it shows what the kit is (a low, wide gap under airless walls), it needs only `KRELIEF.gap`,
-`WATER.flow` and `KFAR`, and its picture is what the owner's ruling turns on. Gemini's "Gate Narrows and Mirror-Scarp" and
+**Station 1 comes first:** it shows what the kit is (a low, wide gap under airless walls) and now the Gate, the reason the
+gap matters. Its ground needs only `KRELIEF.gap`, `WATER.flow` and `KFAR`. Gemini's "Gate Narrows and Mirror-Scarp" and
 "Singing Basalt Organ-Buttress" are folded into stations 1 and 2.
+
+**The Nursery Bench, combined** (the owner asked, 2026-11-09: "can we combine the ideas maybe?"). The old station was the
+Outlands' driest ground (BWk, 3,802 m, 31 mm, 8 °C (21/-5)): the hexapods' nests among pod towers, brood pads and gall stacks
+on desert pavement, with yardangs. The gap's floor cannot hold that: every bench in the gap's south end is wet Cfa
+(1,000-1,600 mm). The gap's **head** can. The tableland above the scarp at 1558,513-524 is BWk at 3.9-4.0 km with 94-203 mm,
+as close to the old N2 as any ground left (3,963 m, 94 mm, 6 °C against 3,802 m, 31 mm, 8 °C). It stands over the place
+where the gap begins, and the gap gives it what the old plateau only claimed: **a wind to cut the yardangs.** The night and
+winter down-valley flow (the "Outland Bore", section 3) drains off the Outlands' plateau into the gap through its head, so
+the yardangs line up with the gap's axis (NNW-SSE, *proposed*). The nursery and the gap are then one story: the hexapods
+breed on the dry bench, and the spores they carry ride the same wind down the gap.
 
 ## 8. Core adoption (written first, as the working rules ask)
 
@@ -170,7 +218,9 @@ side is the same open question.
 | flora | `core/biome` | read in place: Outlands (fungoid), Spider Lake, swbay, geyser, Korona, nwouterwall, ebadlands, Copper Glacier |
 | sky, weather | `core/atmos` | the standard sky; valley fog at the mouth |
 | hazards | `core/hazard` (`KHAZ`) | section 6 |
-| camps | `core/camp` (`KCAMP`) | caravan camps, after the ruling |
+| camps | `core/camp` (`KCAMP`) | caravan camps outside the wall |
+| the Gate | plain records (`core/tags`) until `kits/coyote` | the long wall, the toll fort, the water gate, the shrine (section 5); the kit places no settlement of its own |
+| the Nursery Bench | `biomes/outlands`, read in place | station 5 is the Outlands kit's; this kit draws only the floor and the scarp's foot |
 | fauna | `kits/fauna` | section 4 |
 | shadows | `core/shadow` | off at load |
 | tags, space, mask, host, export, materials | as every kit | |
@@ -188,39 +238,52 @@ side is the same open question.
 
 ## 9. For the owner
 
-**The conflict: the gap and the Gate.**
-- **They are different places.** The Gate (outpost, px 1408,414) stands at **8,002 m** on the 5.1 model (0.59 atm), in the
-  N Outlands polygon, about **110 km** south-west of the gap's floor. The god's road's high point (old px 1171,106 = 5.1 px
-  1443,436) is 7,745 m, about 70 km from the floor. The gap's floor is 1,400-1,700 m.
-- **The Outlands plan says the Gate is the one way in** (`biomes/outlands/PLAN.md` section 1; `SURVEY.md` section 3: "one
-  way in ... a high pass in thin air"). Its island rule rests on that: a lowland lineage cannot cross 7.7 km.
-- **On 5.1 that is no longer true.** A flood fill on the model gives the lowest crest a walker must climb: Spider Lake to
-  the Sleeping City, 1,747 m; the N Outlands' lake to Spider Lake, 2,345 m (the lake's own level); Trickster's House to the
-  N Outlands' lake, 3,617 m. So **Trickster's House is reachable from the crater floor with no crest over 3.6 km**.
-- **The sketch also claims the gap is "the sole low-altitude breach"** of the NE rim, and the river's Hum name means
-  "Coyote-Gate River": Gemini seems to have meant the gap as the Coyotes' gate.
+**The gap and the Gate: settled (the owner, 2026-11-09): keep the gap, move The Gate into it** (option (a) of this plan's
+first draft). What was found: the old Gate (px 1408,414) stands at 8,002 m, about 110 km south-west of the gap's floor; on
+5.1 a walker reaches Trickster's House from the crater with no crest over 3.6 km (Spider Lake to the Sleeping City 1,747 m;
+the N Outlands' lake to Spider Lake 2,345 m; Trickster's House to the lake 3,617 m). The river's Hum name means "Coyote-Gate
+River": Gemini meant the gap as the Coyotes' gate.
 
-Ways forward, for the owner to choose (the plan does not):
-- **(a) Keep the gap.** Move the Gate (the Tierhounds' toll fort) down into it, re-route the god's road, and rewrite the
-  Outlands' isolation (for example: the outburst floods are young, so the native flora was cut off before the gap opened).
-- **(b) Keep the Outlands sealed.** Gemini closes the gap on the model: a high sill or a plug, and the river re-routed or
-  ended in the lake.
-- **(c) Keep both,** with the gap closed by something other than height (a taboo, the Tierhounds' wall, Spider Lake's
-  spiders). The island rule then needs a reason for the plants as well as the people.
+**What changes:**
+- **The Gate's new pin: px 1438,326** (section 5): the Narrows' floor, 1,423 m. The map edit moves `sthegate` there and
+  rewrites its note ("The one way into the Outlands: the gap's Narrows, held by the Tierhounds' long wall and toll fort").
+- **The rule:** "one crossing at 7.7 km" becomes **"one crossing, the gap, held by the toll fort"**.
+- **The god's road** runs through the gap (section 5); `god_road.py` re-routes it with the old 8.2 km surface cap dropped.
+- **The Outlands' isolation must rest on something else. The new isolation (*proposed*, for the owner):**
+  1. **A climate wall at the gap's head.** The gap is warm and wet (Cfa, 1,000-1,600 mm, 19-22 °C), but every way on into
+     the basins climbs into cold steppe and cold desert: the head's scarp rises 2.2 km to BWk at 4 km (94 mm, 6 °C) in
+     30 km, and the lowest way from the N Outlands' lake to Trickster's House (471 km, top 3,749 m) crosses two dry ridges (Dsc at
+     3.3 km and 188-298 mm round 1605,537; BSk at 3.4-3.7 km and 203-235 mm round 1610,600) and the salt basin's steppe
+     (BSk, 420-520 mm) before the Cfa slopes under Trickster's House. A crater lowland lineage that reaches the lake still dies on the steppe.
+     The pressure step is smaller than before (1.34 atm on the floor, about 1.0 on the steppe) but still a third.
+  2. **A wind that blows out.** The gap's night and winter flow (the Outland Bore) drains the Outlands' plateau north down
+     the gap. Spores and seeds go out with it; little rides in. The leak is one way, which is why the southern floor has
+     fungoid stragglers and the basins have no crater plants.
+  3. **The gap is young.** The outburst floods (section 2) cut the head's sill late; the natives' long isolation came first,
+     behind the old crest. *Proposed*: a few thousand years of contact, too short to undo millions.
+  4. **The fort.** The Tierhounds' toll includes a **seed law** (*proposed*): no live plant, seed or fodder passes the wall
+     inward; caravans burn their fodder at the gate and buy the Kingdom's. A trickster's taboo backs it: what grows behind
+     the wall is the god's.
+  The owner chooses which of these carry the rule; the plan uses all four.
 
 **Also open:**
 - the air curve (Copper Glacier's or `WORLD.md`'s);
-- the Outlands' lost Nursery Plateau station (re-site it, `STATIONS-MAP-5.1.md`);
+- ~~the Outlands' lost Nursery Plateau station~~ combined on the gap's head as the Nursery Bench (section 7, station 5),
+  owned by the Outlands kit: confirm the site (1558,516) and the ownership;
+- the long wall (Derbent's pattern) and the citadel on the Gate shoulder: wanted, or a fort alone?
+- the old pass (1408,414): a pilgrims' cairn and shrine, or dropped from the model?
 - the flat 150 km floor: grade it on the model, or let the kit grade it;
 - overlaps with Spider Lake's, the ria valley's and N Outlands' polygons;
 - names: the river is Hau-Gèl; the tarn, benches and stations keep Gemini's English names until Hum names are given.
-- **Order:** the ruling first; then station 1.
+- **Order:** the map edit (the Gate's marker, the god's road) first; then station 1.
 
 ## Sources
 
 - Gemini's sketch (this file, 2026-11-02) and the region note (`smodel/nw_expansion.py`, ~lines 1487, 1655, 2628);
 - the model's data at `gemini/scale-model-5.1-r3`, read with `smodel.page` (heights, `wl`, `c`, `p`, `tm`, `tw`, `tc`);
-  the crest figures by a flood fill on the heights with lake levels;
+  the crest figures by a flood fill on the heights with lake levels; the Gate's pin by the river's cross-sections (floor
+  width within 300 m and 1 km of the river, every 8 km of its line) and the Tiers' reach by a minimax flood fill
+  (2026-11-09); the Nursery Bench by the class and rain rasters at the gap's head;
 - `model/data/rivers.json` (9106 and the side channels), `vents.json`, `tubes.json`; `model/src/51-region-store.js`,
   `60-settlements.js` (The Gate, Trickster's House);
 - `smodel/river_names.py` (Hau-Gèl);

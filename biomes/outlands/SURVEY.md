@@ -55,6 +55,11 @@ A least-cost route from the Tiers (px 960,200) to the N basin, taking the lowest
 from the Tiers or Korona's south-east goes through that same crest**, at 7,724 m. So there is **one way in**, as the brief
 says, and it is **a high pass in thin air**, not a low gap: the corner of Korona is where the rim is lowest, not low.
 
+**Superseded on map 5.1 (2026-11-09).** Map 5.1 cut the Outland Gate's gap through the NE Outer Wall (Spider Lake to the
+N Outlands' lake, floor 1.4-1.7 km). The pass above is now 5.1 px 1408,414 at 8,002 m, and no longer the lowest way in: the
+owner kept the gap and moved **The Gate** (the toll fort) into it, at **5.1 px 1438,326** on the Narrows' floor. The rule is
+now "one crossing, the gap, held by the toll fort" (`PLAN.md` sections 1 and 2; `biomes/outlandgate/PLAN.md` section 9).
+
 ## 4. What this does to the plan
 
 - The "outside the wall, dense air" assumption holds **for the deep ground only**: the basin floor in general is a **high
@@ -125,7 +130,7 @@ temperature; px, then elevation and air, rain, mean (warm / cold; hottest aftern
 | Station | Class | px | Elevation, air | Rain | Mean (warm / cold; hi / lo) | For |
 |---|---|---|---|---|---|---|
 | **N1** the cold steppe | BSk | (1344, 209) | 3,693 m, 1.01 atm | 235 mm | 8 (21 / -5; 30 / -14) | the Plains of Runners: ostrich herds, the nomads' ground |
-| **N2** the cold desert | BWk | (1269, 130) | 3,802 m, 0.99 | 31 mm | 8 (21 / -5; 31 / -15) | the Nursery Plateau: the driest ground, the hexapods' nests |
+| **N2** the cold desert | BWk | (1269, 130) | 3,802 m, 0.99 | 31 mm | 8 (21 / -5; 31 / -15) | the Nursery Plateau: the driest ground, the hexapods' nests (**lost to the gap's carve on 5.1**; combined with the gap as the Nursery Bench at 5.1 px 1558,516, 3,963-4,007 m, BWk/BSk, 94-109 mm, 6 (19 / -7): `PLAN.md` section 9) |
 | **N3** the lake shore | WH | (1356, 240) | 1,121 m, 1.39 | 596 mm | 22 (29 / 14; 35 / 8) | the deep valley's lake: the lush end |
 | **S1** the montane woods | Dfb | (1337, 393) | 3,883 m, 0.98 | 1,176 mm | 5 (18 / -8; 25 / -15) | the Fog Rim: the tall fog-combers, the most endemic flora |
 | **S2** the wet valley | Cfa | (1369, 346) | 2,858 m, 1.12 | 1,318 mm | 11 (24 / -2; 31 / -9) | the Farmland: the sedentary tribe's irrigated valley |
@@ -157,6 +162,11 @@ road and the Coyote Men's are two different ways over the rim: the Ancients' und
 the north pass. (The owner settled it: **the god's road runs from the Sleeping City through the Gate to Trickster's House**, section 7b: the Ancient road's tunnel is a separate way.)
 
 ## 7b. The god's road (settled, 2026-10-26)
+
+**Re-routed (the owner, 2026-11-09):** the Gate moved into the gap (section 3's note), so the god's road now runs from the
+Sleeping City by Spider Lake, up the gap, through the Gate at 5.1 px 1438,326, by the N Outlands' lake to Trickster's House;
+its highest point falls to about 3.6 km. `god_road.py` re-routes it and rewrites `openworld/gods-road.json` (the map
+session's work). The route below is the 2026-10-26 one, kept for the record.
 
 **The god's road (the owner, 2026-10-26): from the Sleeping City, through the Gate, to Trickster's House.** `tools/scale-model/god_road.py` routes it on the Ancient profile with the surface capped at 8.2 km (so it crosses by the Gate, not by a higher crest): **1,938 km, all on the surface** (no tunnel; 4 km of causeway), the highest point **7,728 m at px (1171, 106)**, beside the Gate; leg 1, Sleeping City (px 772,446) to the Gate (px 1136,84): 1,265 km; leg 2, the Gate to Trickster's House (px 1240,330): 672 km. The route is `openworld/gods-road.json` (the polyline in map px with the ground under it) and `gods-road.jpg`. It is **not** the Ancient network's own road to Trickster's House, which comes in by a rim tunnel from the south-west (`SURVEY.md` section 7): the Ancients' road and the god's are two roads, and the god's is the one the Coyote Men run.
 

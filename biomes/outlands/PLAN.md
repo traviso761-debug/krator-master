@@ -1,8 +1,9 @@
 # outlands: the plan (2026-10-26)
 
-The **Outlands**: the walled basin east of the main crater, outside the Outer Wall, reached only over **the Gate**, a
-7.7 km pass in Korona's corner. The most isolated ground on Krator and its **Socotra**: a native flora cut off for millions
-of years. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
+The **Outlands**: the walled basin east of the main crater, outside the Outer Wall, reached only through **the gap** of the
+Outland Gate, where **the Gate**, the Tierhounds' toll fort, closes the floor (the owner, 2026-11-09; it was a 7.7 km pass in
+Korona's corner until map 5.1 cut the gap). The most isolated ground on Krator and its **Socotra**: a native flora cut off
+for millions of years. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
 **Tierhounds** keeps the threshold. Exports: **emeralds, turquoise, ostrich feathers**.
 
 **Status: plan, awaiting the owner's yes.** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. Nothing
@@ -14,7 +15,7 @@ is built. Settled points carry the owner's date; *proposed* marks this plan's ow
 |---|---|
 | Folder | `biomes/outlands/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `refs/`) |
 | Pages | stations, as Korona's and the Throne's (`build.py --station <name>`): `dist/outlands.html` (station 1, the Fog Rim) and `dist/outlands-<name>.html` (section 9) |
-| Regions on the model | `N Outlands` and `S Outlands` (biome), `Tiers` (biome, its own kit), `Coyote Kingdom` (political); markers **Trickster's House** (ruined arcology, px 1240,330) and **The Gate** (outpost, px 1136,84) |
+| Regions on the model | `N Outlands` and `S Outlands` (biome), `Tiers` (biome, its own kit), `Coyote Kingdom` (political); markers **Trickster's House** (ruined arcology, px 1240,330) and **The Gate** (outpost, px 1136,84; **moving to 5.1 px 1438,326** in the gap, section 1) |
 | Object | `OUTL` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `plantOfItem`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape) |
 | Core | `biome`, `rand`, `tags`, `space`, `host`, `atmos`, `water`, `mask`, `terrain` (`KFIELD`, `KCARVE`, `KSTACKS`, `KRELIEF`, `KBASIN`), the shared sky; section 13 |
 | Read in place | `ebadlands` (banded walls at the margins), `sedesert` (the coyote walker; nothing of its flora in the basin), `kits/fauna`, `kits/ancients` (Arcoindian II) |
@@ -27,8 +28,11 @@ A new biome: it goes in the gallery when it first reaches `main`.
 
 - **Outside the Outer Wall** (the owner, 2026-10-26). The basin floors stand mostly at **3.2-3.9 km (1.0-1.07 atm)**; valleys
   run down to **289 m (1.54 atm)**. The rim and plateau round them are ET tundra, ice and the airless crest: 82% of the
-  N polygon and 75% of the S polygon stand over 4.5 km. **The barrier is the Gate: 7,724 m, 0.60 atm**, the one crossing;
-  a pressure-adapted lowland lineage cannot cross it, which is why the flora is alone.
+  N polygon and 75% of the S polygon stand over 4.5 km. ~~The barrier is the Gate: 7,724 m, 0.60 atm, the one crossing~~
+  (4.22). **On map 5.1 the barrier is the gap** (the owner, 2026-11-09): **one crossing, the gap, held by the toll fort.**
+  The Outland Gate's trough (`biomes/outlandgate/PLAN.md`) runs from Spider Lake to the N Outlands' lake (2,345 m) on a
+  floor of 1.4-1.7 km, so a walker reaches Trickster's House from the crater with no crest over 3.6 km. Height no longer
+  explains why the flora is alone; section 2, "the isolation", gives what does.
 - **Two basins, two climates** (the climate histogram, `SURVEY.md` section 6): **N Outlands is dry and open** (cold steppe
   BSk 34% and cold desert BWk 31% of its basin ground, median 235 mm, the driest cells 31 mm); **S Outlands is wet and
   wooded** (Dfb 43%, Cfa 13%, ~1,000-1,300 mm) with a hot valley floor (BSh, 21 °C mean) and a cold-desert shoulder.
@@ -36,11 +40,17 @@ A new biome: it goes in the gallery when it first reaches `main`.
   (1,348 km², px 1314,320); a Cfa lake at 2,345 m (px 1316,186); frozen lakes at 6.1-7.1 km on the plateau; ~60 dry wadis.
 - **Trickster's House** (the owner, 2026-10-26): **Arcoindian II, ruined**, built into the **west wall of the N main basin**
   (px ~1240,330), over a lake at 2,132 m at the wall's foot; the wall rises ~1,650 m. 1.2 atm at the quay.
-- **The Gate** (an outpost on the map, the owner, 2026-10-26): px 1136,84, 7.7 km. The Tierhounds' toll fort and the
-  trickster's shrine.
+- **The Gate** (an outpost on the map, the owner, 2026-10-26): the Tierhounds' toll fort and the trickster's shrine.
+  **Moved (the owner, 2026-11-09) from the 7.7 km pass (px 1136,84 = 5.1 px 1408,414, 8,002 m on 5.1) to the gap's Narrows,
+  5.1 px 1438,326** (1,423 m, 1.34 atm, Cfa; legacy px would be 1166,-4, off the 4.22 canvas). The floor there is 30 km wide
+  within 300 m of the river; *proposed*, the Tierhounds close it with a long wall from wall foot to wall foot, the fort and
+  its water gate at the middle, a citadel on the NE Outer Wall's Gate shoulder (`biomes/outlandgate/PLAN.md` section 5).
+  The old pass keeps a cairn and shrine (*proposed*).
 - **The god's road** (the owner, 2026-10-26): from **the Sleeping City** (px 772,446) **through the Gate to Trickster's
-  House**: 1,938 km on the surface, highest 7,728 m beside the Gate (`openworld/gods-road.json`). The Ancients' own way in is
-  a separate rim tunnel from the south-west (`SURVEY.md` section 7).
+  House**. It was 1,938 km on the surface, highest 7,728 m beside the old pass (`openworld/gods-road.json`). **It now runs
+  through the gap** (2026-11-09): by Spider Lake, up the gap, through the gate at the Narrows, by the N Outlands' lake to
+  Trickster's House; its highest point falls to about 3.6 km. `god_road.py` re-routes it (the map session's work). The
+  Ancients' own way in is a separate rim tunnel from the south-west (`SURVEY.md` section 7).
 
 ## 2. Air, scale and the island rule
 
@@ -57,6 +67,20 @@ A new biome: it goes in the gallery when it first reaches `main`.
 - **Hexapods and plants evolved together**: they graze, tend, nest in and carry the spores of the native flora (the nursery
   plants). The Earth-like animals came late, with people.
 - **Scale**: dense valley air allows size, but **no giants**: the tallest fog-combers reach 16 m.
+- **The isolation (2026-11-09; *proposed*, for the owner).** The old rule ("a pressure-adapted lowland lineage cannot cross
+  7.7 km") went with the pass. The gap is warm and wet all the way to the N Outlands' lake, so the island rule now rests on
+  four things (the evidence is in `biomes/outlandgate/PLAN.md` section 9):
+  1. **A climate wall at the gap's head:** the floor's Cfa (1,000-1,600 mm, 19-22 °C) ends under a 2.2 km scarp to cold
+     desert at 4 km (94 mm, 6 °C), and every way on into the basins crosses dry ridges and steppe (Dsc and BSk at 188-520 mm).
+     A crater lowland plant that reaches the lake still dies on the steppe. The pressure step remains a third (1.34 atm on the
+     floor, about 1.0 on the steppe).
+  2. **A wind that blows out:** the gap's night and winter flow (the Outland Bore) drains the plateau north. Spores ride
+     out; little rides in. The leak is one way: fungoid stragglers on the gap's southern floor, no crater plants in the basins.
+  3. **The gap is young:** the outburst floods cut the head's sill late. The flora's millions of years of isolation came
+     first, behind the old crest.
+  4. **The fort's seed law:** no live plant, seed or fodder passes the Tierhounds' wall inward; a trickster's taboo says
+     what grows behind the wall is the god's.
+  The three Earth-like plants (section 4) came in with the Coyote Men's ancestors before the seed law, as before.
 
 ## 3. Zones by height and water
 
@@ -69,10 +93,11 @@ derives from height, rain and the fog belt; every zone is a `core/tags` area.
 | **Z2 Wet valley** | 2.0-3.0 km | Cfa | 1.1-1.2 | 800-1,300 mm, 11-14 °C | the valleys' sides, Trickster's House | S2 |
 | **Z3 Fog woods** | 3.5-4.4 km | Dfb, the fog belt | 0.95-1.0 | 900-1,200 mm, 5 °C | the S basin's windward wall | S1 |
 | **Z4 Cold steppe** | 3.5-4.0 km | BSk | 1.0 | ~235 mm, 8 °C | the N basin's plains | N1 |
-| **Z5 Cold desert** | 2.3-3.9 km | BWk | 1.0-1.2 | 30-150 mm, 8-14 °C | N2's plateau, S4's gem shoulder | N2, S4 |
+| **Z5 Cold desert** | 2.3-4.0 km | BWk | 1.0-1.2 | 30-150 mm, 6-14 °C | the Nursery Bench on the gap's head (5.1 px 1558,516, 94-109 mm), S4's gem shoulder | 5 (the Nursery Bench), S4 |
 | **Z6 Salt** | ~2.2 km | BSk | 1.2 | dry | the salt lake and the pans | N1 (edge) |
 | **Z7 Wadis** | all | (follows) | | episodic | ~60 dry channels, fans at every wall's foot | all |
-| **Z8 Plateau and rim** | 4.5-7.5 km; crest over 9 km | Dfc, ET, EF; O | 0.9-0.6; none | 0-450 mm, 2 to -15 °C | the frozen lakes, patterned ground, the Gate | the Gate |
+| **Z8 Plateau and rim** | 4.5-7.5 km; crest over 9 km | Dfc, ET, EF; O | 0.9-0.6; none | 0-450 mm, 2 to -15 °C | the frozen lakes, patterned ground, the old pass (its cairn and shrine) | none (the Gate moved into the gap) |
+| **Z9 The gap's southern floor** (2026-11-09) | 1.4-2.3 km | Cfa, WH | 1.34-1.2 | 1,000-1,600 mm, 19-22 °C | the Outland Gate's floor south of the Narrows, the N Outlands' lake shore: Earth-like woods with fungoid stragglers | the Outland Gate kit's (read in place) |
 
 ## 4. The plant list (34 native, 3 Earth-like: 92% native)
 
@@ -172,7 +197,9 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
 | **Springs and seeps**: hanging gardens on the fog wall | Z1-Z3 | `WATER.spring`, `WATER.wet` |
 | **The fog belt**: a cloud band hugging the windward wall | S1 | **new**: `ATMOS.fogBelt` |
 | **The frozen lakes and patterned ground** on the plateau | Z8 | ground-cover ice first (`ice.lake.saltrim`, `ground.turf.polygon`); **new** (later): an ice kind in `core/water` |
-| **The Gate**: a high defile through the rim, snow, cairns, the toll fort | px 1136,84 | `KRELIEF`, snow cover; the road as a record (a flattened strip on `KFIELD`) |
+| **The Gate** (moved, 2026-11-09): the gap's Narrows, the long wall, the toll fort | 5.1 px 1438,326 | the Outland Gate kit's (`KRELIEF.gap`, `WATER.flow`); the wall and fort as records; the road as a record (a flattened strip on `KFIELD`) |
+| **The old pass**: a high defile, snow, a cairn and shrine | px 1136,84 | `KRELIEF`, snow cover (no station) |
+| **Yardangs on the Nursery Bench**, cut by the gap's night wind | 5.1 px 1558,516 | `KBASIN.land` (existing), aligned NNW-SSE with the gap (*proposed*) |
 
 ## 6. The people's side (settled unless marked)
 
@@ -183,7 +210,8 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
   farmers, on the river (S2-S3); the **Peak** tribe on the fog wall and the gem hills (miners and tappers, S1, S4); **Sunrise**
   and **Sunset**, nomadic goat-and-ostrich herders on the N plains (N1), east and west.
 - **The Tierhounds** rule the **Kingdom of the Tiers** (the "Coyote Kingdom" to outsiders) on the threshold and keep the Gate
-  (*proposed*: hound-headed therians, kin to the Coyote Men).
+  (*proposed*: hound-headed therians, kin to the Coyote Men). The Gate is now their toll fort and long wall in the gap's
+  Narrows (2026-11-09); the Tiers reach the gap's floor over crests no higher than about 3.9 km.
 - **The trickster** is a god in the shape of **the runner bird**, who runs the ancient roads (the easter egg: it reads as the
   cartoon Road Runner, drawn as the Outlands' own bird, not a copy). **The god's road** runs from the Sleeping City through the
   Gate to Trickster's House, where **the god lives**: the Coyote Men **shun the ruin** as cursed, and misfortune is a **real
@@ -193,8 +221,8 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
   bird** (an Earth-like great raptor, the owner, 2026-10-26), is wholly sacred: **anyone known to have killed one is attacked on sight**; *proposed* in play: carrying its
   feathers makes every Coyote tribe and the Tierhounds hostile.
 - **Feathers**: the runner bird's are sacred and the dearest; the ostrich's are the common export.
-- **The trade**: Izani caravans over the Gate; emeralds, turquoise and feathers out; grain, metal and cloth in; the Tierhounds
-  take the toll.
+- **The trade**: Izani caravans up the gap and through the Gate; emeralds, turquoise and feathers out; grain, metal and cloth
+  in; the Tierhounds take the toll, and (*proposed*) enforce the seed law at the wall (section 2).
 - **Lore status**: none of this is in `LORE.md` yet (P1).
 - **The culture kit** (`kits/coyote`, its own plan later): the Tierhounds' stepped towns and toll fort, the Valley tribe's
   mud-brick villages, the herders' camps, the shrines and milestones, dress, and a people for
@@ -207,7 +235,7 @@ About 14 species: **8 native, 6 Earth-like**.
 | Key | Animal | Kind | Where | Note |
 |---|---|---|---|---|
 | `plaingrazer` | plains grazing hexapod | native, herds | N1 | on `faWdHex` with the `amb` anatomy (hide, vertebrate eyes, padded feet: not insects) |
-| `nurser` | nursery-tender | native | N2 | keeps the pod towers and brood pads |
+| `nurser` | nursery-tender | native | the Nursery Bench (station 5) | keeps the pod towers and brood pads |
 | `fogdrinker` | fog-drinker | native | S1 | drinks at the veil caps' drip |
 | `rockgrazer` | rock-grazer | native | S4 | scrapes lace crust off the copper rock |
 | `pandigger` | pan-digger | native | Z6 | digs brine shrimp-analogues from the salt |
@@ -240,18 +268,26 @@ Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and 
 | 2 | **The River** (`-river`) | S2 px 1369,346 (Cfa 2.9 km) down to S3 px 1384,389 (BSh 1.1 km) | the Valley tribe's terraced fields on the perennial river, deck caps on the slopes, pipe reeds, mire pads on the 705 m lake; the Earth-like three |
 | 3 | **The Gem Hills** (`-gems`) | S4, px 1352,391, BWk 2.3 km | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
 | 4 | **The Plains of Runners** (`-plains`) | N1, px 1344,209, BSk 3.7 km | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
-| 5 | **The Nursery Plateau** (`-nursery`) | N2, px 1269,130, BWk 3.8 km | pod towers, brood pads and gall stacks on desert pavement, yardangs; the strangest page |
-| 6 | **The Gate** (`-gate`) | px 1136,84, 7.7 km | the defile, snow, the toll fort and shrine, cairns, the god's road; frozen lakes and patterned ground near |
+| 5 | **The Nursery Bench** (`-nursery`; combined with the gap, 2026-11-09; **this kit owns it**, the Outland Gate kit lists it as its station 5 and reads it in place) | **5.1 px 1558,516** (legacy 1286,186), the rim at 1558,513: 3,960-4,007 m, 0.98 atm, BWk/BSk, 94-109 mm, 6 °C (19/-7) | the old Nursery Plateau's idea on the gap's head: pod towers, brood pads and gall stacks on desert pavement, the `nurser` hexapods; yardangs cut by the gap's night wind (the Outland Bore) and lined up with the gap; at the rim, the 2.2 km scarp down to the gap's upper floor (Cfa, 1,785 m at 1558,500) and the N Outlands' lake 30 km east: the dry nursery over the wet gap, the strangest page |
+| 6 | **The Gate** (`-gate`; **moved, 2026-11-09**) | **5.1 px 1438,326**, the gap's Narrows, 1,423 m | now the Outland Gate kit's station 1 ("The Narrows and the Gate"): the long wall, the toll fort and water gate, the shrine, the god's road, on the gap's floor. This kit drops its own Gate page; the old pass (px 1136,84) keeps a cairn and shrine, no page |
 | 7 | **Trickster's House** (`-house`) | px 1240,330 | the ruined half-cave arcology over its lake, overgrown; the keep-out ring of turned-away stones (*proposed*); the luck hazard |
 | 8 | **The Mires** (`-mires`; asked for by the owner, 2026-11-02) | S Outlands, the boreal plateau at 5.1 px ~1605-1625 by 669-762 (legacy ~1333-1353 by 339-432): three flats of 540-1,530 km2 at 3,850-3,930 m, 0.98 atm, 1,130-1,190 mm, +4 to +6 degC (17-19/-7 to -9), Dfb; the wettest flat cold ground on the whole model | the Outlands' **muskeg**: a boreal bog country of sphagnum, sedge and black spruce-like fog-combers (the kit's own at their smallest: the comb mast as a bog pine), string bogs and pool-and-ridge patterns (`KFROST`), palsas with ice cores on the plateau's cold side, peat faces at the streams, the frost puff and mire pad (section 4) at home, the Coyote Men's winter trapping camps (a published site); hazards `sink` (the quaking mire by `move` and `weight`), `cold`, the fog; peat and bog iron as the tribes' fuel and the smiths' ore; the 705 m lake's warm oasis is N3 below, this is the cold one |
 
 Optional later: N3, the 705 m lake shore (a warm oasis page), if station 2 cannot hold it.
 
+**Why the Nursery Bench, and why here** (the owner asked, 2026-11-09: "can we combine the ideas maybe?"). The old N2 site
+(5.1 px 1541,460) is now on the gap's floor: 1,719 m, Cfa, 1,552 mm. No bench in the gap's south end is dry (all Cfa,
+1,000-1,600 mm). The gap's head is: the tableland south-west of the N Outlands' lake's outlet is the nearest ground left that
+matches N2 (3,963 m, 94 mm, 6 °C, against N2's 3,802 m, 31 mm, 8 °C), part of the N basin's largest cold desert (5,524 km² of
+BWk and BSk round 1585,544). The gap gives the nursery a wind for its yardangs and a reason for the leak: the hexapods breed
+on the dry bench, and the spores they carry ride the Outland Bore down the gap. The Outlands kit owns the page (its flora, its
+`nurser`); the Outland Gate kit lists it and draws the floor below as its far field.
+
 ## 10. The Tiers (`biomes/tiers`, its own plan)
 
 The owner's decision (2026-10-26): **`tiers` is a biome of its own**, on the `Tiers` biome polygon (px 886-1118 by 52-278;
 the same ground as Korona's NE and the Coyote Kingdom). The dry, terraced country of the Tierhounds between Korona's rings
-and the Gate: sedesert and ebadlands scrub (read in place) with Outlands species leaking out by the Gate (pleat columns and
+and the Gate: sedesert and ebadlands scrub (read in place) with Outlands species leaking out by the gap (pleat columns and
 cap-shrubs in gardens and as stragglers), terraced fields, the stepped towns. It gets its own `PLAN.md` before it is built
 (phase O8).
 
@@ -321,7 +357,7 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 | **O4** | **Station 1, the Fog Rim** (the owner's reference images arrive at build time, into `refs/`, before each station's flora): the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
 | **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery); the fauna and resource additions | each verified |
 | **O6** | **C5**; **station 2, the River** (fields as records, the Earth-like three, the lake) | verified |
-| **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II), **station 6, the Gate** | verified |
+| **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II); the Gate is the Outland Gate kit's station 1 now (2026-11-09) | verified |
 | **O8** | `biomes/tiers` plan and build; `kits/coyote` plan | the owner's yes on each |
 | **O9** | `PORT.md`, index tools, the Godot export check, the gallery (the owner allows once) | published |
 
@@ -333,7 +369,12 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 4. **Gem ranges**: emerald and turquoise both in the S gem hills (this plan), or emerald in the N?
 5. ~~The golden bird~~ Earth-like (the owner, 2026-10-26): a great golden raptor.
 6. **Names still open**: the Kingdom's capital, the pass's own name (beyond "the Gate"), the rivers and lakes in Coyote speech.
-7. **Station count**: seven, or fold the Gate into the Tiers' build?
+7. ~~**Station count**: seven, or fold the Gate into the Tiers' build?~~ The Gate moved into the gap (the owner, 2026-11-09)
+   and is the Outland Gate kit's page; this kit keeps seven (1-5, 7, 8), station 5 now the Nursery Bench.
+8. **The isolation** (section 2, 2026-11-09): which of the four (the climate wall at the gap's head, the outbound wind, the
+   gap's youth, the fort's seed law) carry the island rule? The plan uses all four.
+9. **The Nursery Bench**: confirm the site (5.1 px 1558,516) and that this kit owns it.
+10. **The old pass** (px 1136,84): a pilgrims' cairn and shrine, or nothing?
 
 ## Core changes to take (reconciled 2026-10-27)
 

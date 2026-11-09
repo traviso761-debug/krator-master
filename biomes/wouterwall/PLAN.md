@@ -214,10 +214,47 @@ The fauna kit owns them all.
 
 ### Crops
 
-`kits/crops` has a `nwouterwall` entry but **no `wouterwall` entry**. *Proposed*: a `wouterwall` entry (`atm: 1`) with zones
-`terrace` (the irrigated loess, Dsb, +5 to +8 °C), `steppe` and `upper`. The terraces take what `CROPS.forBiome` gives for a
-cool, summer-dry steppe, irrigated from the spring line. Where it is colder they take the NW outer wall's Thule package
-(sweetroot, snow potato, goldroot, bistort, pine nuts).
+`kits/crops` has a `nwouterwall` entry but **no `wouterwall` entry**. **A proposal (2026-11-09)**, from what the kit itself
+answers: `CROPS.at` run in node over each band's climate (section 3's table; `kits/crops/src/*`, loaded as
+`tests/test-crops.js` loads them), with iron and copper nodes in reach. The bands are **assumed** (the kit names bands, not
+numbers): warmth by the warmest month (polar under 10 °C, cool 10-20, temperate 20-26); aridity by rain (arid under 250 mm,
+semiarid 250-500, subhumid 500-900); atm `standard` (0.83-1.07 atm on the bench; `thin` only over ~5.5 km).
+
+**The entry it needs** (*proposed*, in `10-crop-core.js`):
+`wouterwall: {atm: 1, zones: {terrace: {warmth: [2, 2], arid: [2, 2]}, bench: {warmth: [1, 1], arid: [1, 2]},
+upper: {warmth: [1, 1], arid: [1, 1]}, fell: {warmth: [0, 0], arid: [1, 1]}, edge: {warmth: [3, 3], arid: [2, 2]}}}`
+- `terrace`: the loess at 3-3.5 km (601 mm, +7.9 °C (20/-4), Dsb); `bench`: 3.5-4.5 km (457-532 mm, 15-18/-8 to -11, Dsb,
+  Dsc, Dfb); `upper`: 4.5-5 km (362 mm, 12/-14, Dfc); `fell`: 5-5.5 km (264 mm, 9/-17, ET; 0.83 atm, still standard);
+  `edge`: the foot of the edge under 3 km (680 mm, Csa, Csb).
+
+**What grows** (by bucket; crops that are clearly other cultures' own are left out):
+
+| Bucket | Rain-fed | Irrigated (the spring line, the terraces) |
+|---|---|---|
+| grain | emmer, frostoat (terraces); bistort (bench up to the fell) | frostoat (bench) |
+| pulse | helix bean (terraces, lower bench) | helix bean (mid bench) |
+| tuber | murnong (terraces); frostroot, sweetroot, snow potato (bench to fell) | |
+| nut | pinyon, acorn, wingnut (terraces); stonepine (bench, upper) | |
+| fruit | apricot, crabapple, cherry, canyon grape (terraces); apricot (mid bench) | crabapple, cherry (mid bench) |
+| berry | serviceberry, sunthorn, rowan, bilberry, silverthorn; crowberry (bench up) | cloudberry, rowan, bilberry (upper) |
+| greens, herb | greens, monk's sage (terraces); mountain sorrel, goldroot, snow lotus (bench) | |
+| spice | juniper, umbel seed, saffron (terraces) | |
+| fibre | flax, cairn nettle (terraces, lower bench) | flax (mid bench) |
+| weaving, thatch | willow, woolly willow; ichu thatch (bench up) | |
+| beverage | ivan-chai, rattlepod | |
+| dye | woad, broom, lichen; larch bark (red-brown), birch tar (black) on the bench | alder bark (red) |
+| edge foot only | pomegranate, fig, olive (whorl olive), cotton, carob, sweet potato | rice, tea |
+
+So the **terraces** take a cool, summer-dry package rain-fed at 601 mm (emmer, frostoat, flax, apricot, pinyon), more
+with the spring line's water; over ~3.5 km the Thule package of the NW outer wall's entry takes over (sweetroot, snow
+potato, frostroot, goldroot, bistort, stonepine nuts), as the draft said; the fell grows tubers, bistort, crowberry
+and stonepine rain-fed, and little else. The model's upper bench is Dfc, not Ds (section 9): it is wetter in summer than the theme, which the
+list reflects.
+- **Dyes:** woad (blue), broom (yellow), larch bark (red-brown), birch tar (black) and lichen rain-fed on the bench, iron
+  red (`falu-red`, `hill-terracotta`) and copper teal (`verdigris`) where `kits/resources` places the nodes: the Hayrant can
+  make a plaid (`CROPS.canPlaid`).
+- **Native records to add** (*proposed*, `home: ['wouterwall']`): none needed for food; the dust tower and the puya are
+  not crops. The puya's century spike as a seasonal fibre or a thatch is a lore choice.
 
 ## 5. People
 
@@ -327,6 +364,9 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 - **The Hayrant's cave houses**, and the Eternal State's hand on the bench.
 - **Station 3:** the flagship lobe at 4.9 km, or the northern lobe at 5.9 km?
 - **The upper bench is Dfc, not Ds.** Keep the model's classes, or ask Gemini for a drier upper bench to match the theme?
+- **The crops** (section 4, a proposal from `CROPS.at`, 2026-11-09): accept the `wouterwall` entry and its five zones
+  (`terrace`, `bench`, `upper`, `fell`, `edge`), and the band thresholds it assumes (the kit's bands have no numbers yet:
+  they belong in `kits/crops/PLAN.md` section 2)?
 - **The river names** changed on 5.1 (Waywater Ironblack and the rest). Are the draft's English-gloss names (Okbruk, the
   -guli series) retired?
 
@@ -362,4 +402,5 @@ To source or generate (generic ids; the prompts go into `core/materials/PROMPTS-
 - `core/README.md`, "The unbuilt plans' pieces (2026-11-03)"; `core/terrain/LANDFORMS.md`; `35-core-strata.js` (`loess`, `megabreccia`);
   `35c-core-strata-vary.js`; `core/hazard/README.md`; `BACKPORT.md`; `biomes/KARST-SITES-5.1.md`;
 - `LORE.md` §4 (the Rift line), §6.1 (Dalab, Ledge, the Tungangs), §6.19 (the Eternal State, its dialects, the Yeti Kingdom);
-- `openworld/ANCIENT-ROADS.md`; `biomes/nwouterwall/PLAN.md`; `biomes/ancientsvalley/PLAN.md`; `kits/crops/src/10-crop-core.js`.
+- `openworld/ANCIENT-ROADS.md`; `biomes/nwouterwall/PLAN.md`; `biomes/ancientsvalley/PLAN.md`; `kits/crops/src/10-crop-core.js`,
+  `40-crop-query.js`, `API.md`, `PLAN.md`; `CROPS.at` run in node over section 3's bands (2026-11-09).

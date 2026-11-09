@@ -149,17 +149,52 @@ Earth models, renamed as each kit does:
 | `cushion` | over 4 km | `ehighlands`' cushions, read in place |
 | `ecotone` | the moat's lip (station 4) | Korona's western ring species read in place, thinning upward |
 
-**One fruit, one staple, one medicine** from the kit's flora go into `kits/crops`. It has no `paintedhighlands` entry yet.
-*Proposed*: `paintedhighlands: {atm: 1, zones: {steppe, bloom, rim}}` in `10-crop-core.js`, with:
-- a juniper berry as the fruit;
-- a bulb (a camas or a mariposa lily) as the staple;
-- the paintbrush or a sage as the medicine.
+### Crops (a proposal, 2026-11-09)
 
-**The Painted Men's pigments come from these rocks.** Mineral dyes go into `kits/crops`, and into DYES.md, which gives the
-Painted Men black, red and teal:
-- manganese black;
-- iron red (beside the existing `falu-red`);
-- a teal from the teal bed: celadonite, or malachite where it is copper (`rock.malachite` is in the library).
+`kits/crops` has no `paintedhighlands` entry. The list below is what the kit itself answers: `CROPS.at` run in node over
+each zone's climate (`kits/crops/src/*`, loaded as `tests/test-crops.js` loads them), with iron and copper nodes in reach.
+The model's `tm`, `tw`, `tc` and `p` rasters were read; the bands are **assumed** (the kit names bands, not numbers):
+warmth by the warmest month (polar under 10 °C, cool 10-20, temperate 20-26, subtropic 26-30); aridity by rain (arid under
+250 mm, semiarid 250-500, subhumid 500-900, humid 900-1,600, wet over); atm `standard` (1.0-1.13 atm).
+
+**The entry it needs** (*proposed*, in `10-crop-core.js`):
+`paintedhighlands: {atm: 1, zones: {steppe: {warmth: [2, 2], arid: [0, 0]}, high: {warmth: [1, 1], arid: [0, 0]},
+lower: {warmth: [2, 2], arid: [1, 1]}, wash: {warmth: [2, 2], arid: [0, 1], wet: true}, ledge: {warmth: [3, 3], arid: [2, 2]}}}`
+- `steppe`: the plateau at 3-3.5 km (231 mm, +9.5 °C (22/-3), BSk); `high`: 3.5-4.5 km (231-248 mm, 17-20/-6 to -9, Dsb, Dfb);
+  `lower`: 2.5-3 km (455 mm, 25/1); `wash`: the canyon floor and the washes on the melt (125-190 mm, irrigable);
+  `ledge`: the cliff towns' gardens at 2-2.5 km on the moat and canyon-mouth walls (800 mm, 27/4, Cfa).
+
+**What grows** (the kit's answer, by bucket; crops that are clearly other cultures' own are left out):
+
+| Bucket | Rain-fed | Irrigated (washes, seeps, the melt) |
+|---|---|---|
+| grain | basin amaranth (plateau); emmer (lower plateau, ledges) | emmer, frostoat, bistort (high) |
+| pulse | | helix bean |
+| tuber | sweetroot, snow potato (high); murnong (lower); sweet potato, ashroot (ledges) | murnong |
+| nut | pinyon (lower, ledges); acorn, wingnut (ledges) | pinyon, stonepine (high) |
+| fruit | apricot, canyon grape (lower); pomegranate, fig, cherry (ledges) | apricot, crabapple, cherry, canyon grape |
+| berry | silverthorn; serviceberry, sunthorn, madrone (lower) | serviceberry, rowan, bilberry |
+| spice, herb | juniper, umbel seed; monk's sage, circle lichen; goldroot (high) | saffron, monk's sage |
+| oil | whorl olive (ledges) | |
+| fibre | cotton, flax (ledges) | flax |
+| cordage, weaving | rope-puff (ledges); willow (ledges) | willow, rope-puff |
+| beverage | rattlepod, ivan-chai | |
+
+The plateau itself (231 mm, `arid`) grows little rain-fed: basin amaranth, juniper, silverthorn and lichen. The Painted
+Men's food comes from the **ledge gardens** at their cliff towns, the **washes and the canyon floor** on the melt, and the
+herds; that fits their towns on the edges (section 5). The draft's own three (a juniper berry, a bulb, a medicine) stay as
+the kit's natives to add: `juniper` is in the kit already; a camas or mariposa-lily bulb and a paintbrush medicine are new
+records with `home: ['paintedhighlands']`.
+
+**The Painted Men's paint** (black, red and teal, `LORE.md` §6.5): the kit's mineral dyes answer two of the three.
+- **Red:** `falu-red` and `hill-terracotta` (iron node: the red `danxia` beds; `kits/resources` must place the iron).
+- **Teal:** `verdigris` (copper node) if the teal bed is copper (section 9); if it is celadonite clay, a new record,
+  *proposed* `celadonite-teal` (`node: null`, a clay dug from the bed).
+- **Black:** nothing on the plateau. `birch-tar` (black) grows only irrigated on the high ground; `tar-black` needs oil.
+  *Proposed*: a new mineral record, `lignite-black`, from the `badland` stack's own lignite partings (`node: 'coal'`), or
+  `manganese-black` if `kits/resources` gains a manganese node. Soot from pinyon and juniper is the fallback.
+- **Plant dyes beside them:** rabbitbrush and ghost gum (yellow, gold) rain-fed; woad (blue) and broom (yellow) irrigated
+  on the plateau and rain-fed below 3 km. With iron red, copper teal and a black, `CROPS.canPlaid` passes.
 
 ### Fauna (for `kits/fauna`)
 
@@ -179,9 +214,56 @@ The fauna kit owns them all, as `BIO.record` records; the kit only names where t
   thunderbird finials and stone circles. Their sign is the raven.
   - They sit on the Inner Wall beside Korona and have long traded and married with its tepui tribes.
   - Their speech is the pitch-accent highland tongue (`lore/tongues-of-krator.html`, the Republic tab).
-- **The logs.** The plateau grows junipers, not timber. *Proposed*: the logs and bamboo come up from Korona's moat forest
-  (Cfa, 800-1,500 mm), and the cliffs they hang their villages on are the moat's and the canyon's. That puts their towns on
-  the plateau's edges, not on it; the plateau is their grazing, raiding and pigment ground. The owner's call (section 9).
+- **They live on the cliff edges, and some are truly cliff-dwelling** (the owner, 2026-11-09). The plateau grows junipers,
+  not timber; the logs and bamboo come up from Korona's moat forest (Cfa, 800-1,500 mm). So their towns stand on the
+  plateau's edges, on the moat's and the canyon's walls, and the plateau is their grazing, raiding and pigment ground.
+
+### 5a. The cliff towns (the owner, 2026-11-09; sites *proposed* from the model)
+
+**Why the cliffs hold houses.** The plateau's rock is `danxia` (thick, hard sandstones) over `badland` (soft clays and ash):
+section 2. That is Mesa Verde's geology: the Cliff House sandstone over the Menefee shale. Rain and melt soak down through
+the sandstone, stop on the clay and seep out along the contact; frost and the seep spall the sandstone above it into deep
+**alcoves**, with a spring at the back of each. The Painted Men build in the alcoves, and on the ledges and talus the
+contact leaves below them, as the Dogon do under the Bandiagara escarpment.
+
+| Site | 5.1 px | The model | What stands there |
+|---|---|---|---|
+| **1. The canyon-mouth town** (the chief cliff town; working name) | the north-facing wall at **1098-1104, 622-628**, steepest at 1101,624 | the wall rises from ~1.5 km at its foot to 3,406 m at the rim (1104,626): **2,224 m of relief within 6 km**; 2,061 m at 1101,624, Cfa, 862 mm, 17 °C (27/6); the rim Dsb, 533 mm, 7 °C; the canyon's mouth lake (516 m, 80 km²) at its foot (1091-1100, 622) | **Mesa Verde-style alcove houses** in tiers up the wall's sunny face (Krator is near 40°S: north faces take the sun), at each seep line; ledge gardens and terraces at 2-2.5 km; fields on the lake's fan; the moat forest's timber at hand. The largest and oldest |
+| **2. The canyon ledge villages** | the Painted Canyon's north-facing (south) wall at **1011-1019, 610-612** | 2,983-3,229 m, BSk, 125-141 mm, 10-11 °C (23-24/-2 to -3); ~600 m of relief within 6 km; the canyon floor below at ~2.9 km (station 3, 1034,615, is 15-45 km downstream) | **Bandiagara-style villages**: houses on the talus and the ledges at the wall's foot, granaries and the dead in niches high in the cliff, the fields on the canyon floor watered by the melt stream |
+| **3. The moat-wall villages** | the west wall of Korona's moat at **1054-1062, 598-606** (just outside both polygons, on Korona's side) | 1,199 m at 1058,600, Cfa, 1,113 mm, 20 °C (27/12), 1,756 m of relief within 6 km, over the moat's lakes (y 590-598) | the lore's **hung villages**: log houses on cantilever beams driven into the face, tiers joined by stairs and ladders, the timber-cutters' and the trading town with the tepui tribes. *For the owner*: it stands on Korona's ground |
+| **4. The hogback eyries** | the east-facing hogback scarps at **977,618** and **954,611** | 3,155 m (BSk, 141 mm, 607 m of relief) and 3,671 m (BSk, 219 mm, 810 m); over the playas at 974,594 and 1008,626 | small, seasonal: lookouts, granaries and a shrine in shallow alcoves, the raiders' watch over the bloom flats and the stone circles |
+
+**What the dwellings look like.**
+- **Alcove houses:** the alcove's mouth walled off with a front of raw logs and split bamboo, two or three storeys under the
+  overhang, the whole front painted in formline (black, red, teal), thunderbird finials on the posts at the lip, a totem
+  at each ledge's end, the raven sign. Where the logs run short (high on the wall), the front is dry-stone and clay daub,
+  still painted. Round towers at the alcove's ends; a sunken stone circle (the shamans' house) in the largest.
+- **Ledge villages:** clustered houses and flat-roofed granaries on the talus and the ledges, the granaries with conical
+  thatch, the cliff above pocked with niche granaries and the dead's caves.
+- **Hung villages:** the Highlands Tribal kit's cliff settlement (below): decks on log cantilevers and raking struts.
+
+**How they climb.**
+- **Notched-log ladders** (the Dogon's: one trunk, steps cut in it) between ledges, and pole ladders lashed with rawhide;
+  the top ones drawn up at night: the towns are raiders' and fear raiders.
+- **Toeholds:** hand-and-toe holds pecked up the rock between alcoves (Mesa Verde's), the quick way and the secret one.
+- **Log stair-walks** on beams driven into the face along each tier; rope and bamboo bridges across clefts.
+- **Calls:** they whistle across the cliffs in the Hum (`LORE.md` §6.5).
+
+**How the biome kit marks the sites.** The kit draws no building. It draws the landform and leaves it ready:
+- the **alcoves** as `KCARVE` alcoves (`36-core-carve.js`) in the `danxia` faces at the sandstone-clay contact, with a seep
+  (`WATER.spring`) at each back wall;
+- the **ledges** as `KRELIEF.stepcut` treads on the wall, the **talus** as `KRELIEF` talus at its foot;
+- each alcove, ledge and talus bench registered in `core/tags` as a site record (*proposed*: `site: 'cliff-alcove' |
+  'cliff-ledge' | 'talus-bench'`, with its floor height, depth, width, aspect, the seep's position and a ladder line to the
+  next), and masked bare of flora in `KMASK`;
+- nothing placed in them: the settlement plan reads the records.
+
+**Who builds the buildings.** A settlement plan (one per town, on `core/city` where it has streets, `core/hamlet` for the
+villages) with the **Highlands Tribal kit** (`settlements/highlands`, `84-tri-dwell.js`: the dwellings, the cliff
+cantilever base and the reusable cliff settlement with its ladders, shrine and lookout) and the catalog's **`painted`**
+culture (`kits/catalog`, the Painted Men's furniture, Tlingit-influenced). The alcove house, the stone-and-daub front, the
+niche granary and the notched-log ladder are **new pieces for that kit**, not this one. *Proposed*: the four sites go on
+the model as settlement markers (`60-settlements.js`) when the owner names them.
 - **The paint.** Their house-fronts are painted from the beds: red, black, teal. *Proposed*: pigment pits and quarry
   benches cut into the bright beds (a `KCAMP` work camp, `core/camp`), and stone circles on the playas' rims.
 - **Nomad Country** (5,120 km²) touches the south-west: nomad camps by season (`core/camp`).
@@ -216,7 +298,7 @@ World km = 5.1 px × 2. Each page is the usual 5.2 km square. Heights are the mo
 | **1 The stripe badlands** (`paintedhighlands.html`) | **986,635** | 2,926 m; 2,470-3,358 m within 6 km; BSk, 157 mm, +11 (21/0) | rounded banded `badland` hills and rills, a hogback's `danxia` scarp with fins, the bloom in the washes, popcorn clay |
 | **2 The bloom flats** (`-bloom`) | **1008,626** | the playa at 3,393 m, flat to 31 m; Dsb, 173 mm, +9 (22/-4) | the playa in full spring flower against a banded scarp; mud cracks after the melt; stone circles on the rim; a pigment pit |
 | **3 The banded canyon** (`-canyon`) | **1034,615** | floor 2,900 m, rims 3,253-3,411 m; BSk, 125 mm | the canyon cut through the whole column, the colours deepest on its walls; junipers on the ledges; the flood's marks |
-| **4 The moat cliff** (`-cliff`, optional, the ecotone) | **1113,624** | the rim at 3,093 m; 2,245 m within 6 km; Korona's moat lake at 517 m, 15 km west | the plateau's edge over Korona's moat: a Painted Men's cliff village's ledges (for a settlement plan), Korona's ring species climbing the face |
+| **4 The cliff town** (`-cliff`, the ecotone; re-sited 2026-11-09 from 1113,624) | **1101,624** | on the wall at 2,061 m, Cfa, 862 mm, 17 °C (27/6); the rim 3,406 m at 1104,626; the canyon's mouth lake (516 m) at its foot; 2,224 m of relief within 6 km | the canyon-mouth town's wall (section 5a, site 1): tiers of alcoves at the seep lines, ledges and talus, all empty for the settlement plan to fill; seeps and hanging gardens; Korona's ring species climbing the face; the lake below |
 
 **Station 1 comes first:** it holds the kit's centre (the two strata recipes, the bloom and the steppe) in one view, and it
 is the strata upgrade's test bed for ebadlands and sedesert as well. Station 2 follows because the bloom needs the
@@ -236,7 +318,8 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 | tags | `core/tags` | every plant, stack and hazard registered before it is drawn |
 | space | `core/space` (`KSPACE`) | the biome core's occupancy |
 | the beds | `KSTRATA` (35), recipes `badland` and `danxia`, `fold` | one folded stack; the canyon cuts it |
-| relief | `KRELIEF` (38): `dome`, `wadi`, `talus`; `38c` `stepcut` for the canyon's bench if needed | the clay hills, the washes, the scarps' feet |
+| relief | `KRELIEF` (38): `dome`, `wadi`, `talus`; `38c` `stepcut` for the canyon's bench and the cliff towns' ledges | the clay hills, the washes, the scarps' feet; the ledges (section 5a) |
+| alcoves | `KCARVE` alcoves (36), with `WATER.spring` seeps | the cliff towns' alcoves at the sandstone-clay contact (section 5a), registered as site records |
 | stacks | `KSTACKS`, `KSTACKS.contour`, `KSTACKS.weather` | fins, hoodoos, buttes, the moat cliff |
 | ground | `KGROUND` (43): `polygon` (playa cracks), `clast` (scree) | the ground shader; the strata wash on the slopes |
 | horizon, far | `KHORIZON` (45), `KFAR` (44) | the far hogbacks, Korona's tepuis on the eastern horizon |
@@ -252,7 +335,7 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 | resources | `kits/resources` | *proposed*: copper (low grade) at the teal bed; read the geology at build |
 | shadows | `core/shadow` | off at load |
 | host, export, materials | as every kit | `materials.json`, `tools/textures/pack.py` |
-| city, hamlet | `core/city`, `core/hamlet` | no: the kit places no settlement |
+| city, hamlet | `core/city`, `core/hamlet` | no: the kit places no settlement; the cliff towns' settlement plans take them, with the Highlands Tribal kit and the catalog's `painted` culture |
 
 **Core amendments needed:**
 1. **The gorge flood** (a timed `drown` and `crush` that runs a channel): already listed by other plans (firebliss and
@@ -263,15 +346,25 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 
 ## 9. For the owner
 
-- **Where the Painted Men live.** On the plateau, or on its cliff edges with timber from Korona's moat forest (section 5)?
-  The lore's logs and bamboo point to the edges.
+- ~~**Where the Painted Men live.**~~ **Settled (the owner, 2026-11-09): on the cliff edges, some truly cliff-dwelling.**
+  Section 5a proposes four sites: the canyon-mouth town (1098-1104, 622-628), the canyon ledge villages (1011-1019,
+  610-612), the moat-wall villages (1054-1062, 598-606) and the hogback eyries (977,618; 954,611). Still open:
+  - the sites, and their names (the `painted` tongue);
+  - the moat-wall villages stand just outside both polygons, on Korona's ground: theirs by treaty with the tepui tribes, or
+    moved onto the plateau's side?
+  - markers on the model (`60-settlements.js`) for the four;
+  - the new pieces (alcove house, daub front, niche granary, notched-log ladder): in the Highlands Tribal kit, or a new
+    Painted Men building kit on the catalog?
+- **The crops** (section 4, a proposal from `CROPS.at`): accept the `paintedhighlands` entry and its five zones; add the
+  bulb and the paintbrush as native records; add a black (`lignite-black` on a coal node, or manganese) and, if the teal bed
+  is clay, `celadonite-teal`.
 - **The lost playa.** Gemini's fourth playa fell into Korona's moat on 5.1. Keep three, or ask for one moved?
 - **The polygon.** It takes in part of Korona's moat and a strip of the crater's edge. Trim it to the plateau, or let the kit
   hand those edges to Korona and the crater kits as ecotones?
 - **Names.** The canyon, the playas and the hogbacks have only English names. Do they take Painted Men names (the `painted`
   tongue)?
 - **The teal bed.** Copper (a resource node, `kits/resources`) or a clay (pigment only)?
-- **The fourth station:** wanted, or does Korona's kit cover the moat cliff?
+- **The fourth station:** re-sited to the canyon-mouth town's wall (1101,624) as the cliff dwellers' page: wanted?
 
 ## 10. Textures
 
@@ -300,4 +393,8 @@ In the library: `ground.clay.popcorn`, `rock.sandstone.bedded.red`, `ground.play
 - `biomes/STATIONS-MAP-5.1.md`; `BACKPORT.md` sections 1 and 5;
 - `core/terrain/35-core-strata.js` (`badland`, `danxia`), `core/terrain/LANDFORMS.md`, `core/hazard/README.md`;
 - `LORE.md` §6.5 (the Painted Men);
-- `kits/crops/src/10-crop-core.js` (no entry yet).
+- `kits/crops/src/10-crop-core.js` (no entry yet), `40-crop-query.js`, `API.md`, `PLAN.md`; `CROPS.at` run in node over the
+  zones (2026-11-09);
+- the cliff sites by relief within 6 km and slope aspect on the model, inside the biome and the Painted Men's polygons
+  (2026-11-09); `settlements/highlands/src/84-tri-dwell.js` (the Tribal cliff settlement); `kits/catalog/README.md` (the
+  `painted` culture); Mesa Verde's alcoves (Cliff House sandstone over Menefee shale) and the Bandiagara escarpment.

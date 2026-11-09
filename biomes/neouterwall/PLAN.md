@@ -50,13 +50,16 @@ The numbers were read from the model (`smodel.page`, 2026-11-09, branch `gemini/
   | **Epidote-Steam Tarn** | 1342,338 | 2,670 m (19 cells) | to 10,457 m | **11,535 m** | 1,929 mm | 11 / 18 / 3 °C |
 
   "Lowest crest out" is the lowest height a walker must climb to reach Spider Lake or Korona (a flood fill on the model).
-  **The Epidote-Steam Tarn is sealed:** airless walls ring it, so nobody walks in (section 9).
+  **The Epidote-Steam Tarn is sealed on the model:** airless walls ring it. **The owner opened it (2026-11-09)**: a cave
+  through the wall and a carved approach of small valleys (section 2a). Until the map edit lands, the model still seals it.
 - **Water:** no river in `rivers.json` crosses the polygon. The **Web-Cleaver River** (Hām-Tsēk, `id 9102`, 1,092 km,
   380-1,650 m³/s) runs 12 km off its north-west edge, from Spider Lake west to the Ria. The **Outland Gate River** (Hau-Gèl,
   `id 9106`) runs 32 km off its east edge, in the gap. The tarns have no outflow on the model; their streams are kit work.
 - **No vents, tubes or volcanoes** inside (`vents.json`, `tubes.json`, `volc.json`). The heat is geothermal, not volcanic.
 - **No settlements** inside (`60-settlements.js`). The nearest: **The Gate** (outpost, px 1408,414, just past the polygon's
-  south-east corner in N Outlands, 8,002 m on the model) and **Coyote Canyon** (village, px 1265,500, in Korona, 1,603 m).
+  south-east corner in N Outlands, 8,002 m on the model; **moving into the gap at the Narrows, 1438,326**, the owner's
+  decision of 2026-11-09, `biomes/outlandgate/PLAN.md` section 9) and **Coyote Canyon** (village, px 1265,500, in Korona,
+  1,603 m).
 - **Neighbours on the model** (polygons touching or overlapping): Korona / NE (`rmuqm3urh0mo6`), arachnoid canyons
   (`rmvarachnoids`), Tiers (`rmvp5il0uz1yf`), N Outlands (`rmvp5489oiy6z`), ria valley (`rmvriavalley`), spider lake
   (`rmvyj4v2ozgb1`), the Coyote Kingdom (political). The polygon overlaps N Outlands, the Arachnoids and the Tiers along its
@@ -91,6 +94,57 @@ The sketch's four-way story holds, and it is good geology. In the order the rock
 
 The fifth sketch zone (`fumarole_crest`, fumarolic ice caves at 4.5-5.8 km) has no vent on the model. It is kept as a
 proposal for the owner: a few warm fractures reaching the ice (section 9).
+
+## 2a. The way to the Epidote-Steam Tarn (the owner, 2026-11-09)
+
+The owner asked: "can it be reached by cave somehow? we can carve a path with some small valleys to it too." Both, then.
+This section is **the spec for the map edit** (a scale-model session carves it); the kit draws the 1:1 detail.
+
+**Where the wall is thinnest.** The tarn (1342,338, 2,670 m) sits in a pit 9 km deep in a plateau of 10-13 km. A flood fill
+and a least-cost search on the model (carving and tunnelling priced against each other) both choose the same line: **due
+north, along x 1330-1340**. Ground under 6 km is 40 cells (81 km) north of the tarn's shore at its nearest; east (to the gap)
+and west (to the north-west lowland) are 55 cells and more. The north line's crest is 11.6-12.1 km at y 329-330, 9 cells
+(18 km) from the tarn. North of the crest the wall's back falls steadily: 10.0 km at y 312, 8.2 km at y 306, 7.0 km at y 300,
+5.5 km at 1330,295 (EF), 4.5 km at y 290 (ET), 3.1 km at y 280 (Dfc), 2.3 km at y 270 (Cfa), Spider Lake's shore at 1328,228.
+**"Under ~6 km" is read as the walk's highest point** (0.75 atm on the Copper Glacier curve): no carve on the model can make
+the walk short.
+
+**The route, proposed** (every px on the 5.1 canvas; heights from the model):
+
+| Leg | Line (px) | Ground or floor | Length | What |
+|---|---|---|---|---|
+| **1. The north slope** (natural) | 1328,228 (Spider Lake's shore) south along x 1330-1336 to 1330,295 | 1,396 m rising to 5,530 m; Cfa, Dfc, ET, then EF at the top | ~134 km | no edit: the back of the wall is already a walk under 6 km |
+| **2. The Portal Valley** (carved) | 1330,295 to 1331,302 | floor 5,530 m at 295, 5,750 at 298, 5,850 at 300, **5,900 m at 302**; the cut is 0, 0.5, 0.9 and 1.3 km deep at those rows | 14 km | a small trough one to two cells wide, cut into the wall's back; the kit gives it two short hanging side valleys at 1:1 (`KRELIEF.gully`), a snowfield and the portal's ice |
+| **3. The Epidote Cave** (a tube record) | **portal 1331,302** (5,900 m) by 1333,312, 1335,322, 1337,330 to the **inner mouth 1340,336** (~2,700 m, on the tarn's north shore, 30 m over the water) | the upper level holds 5.6-5.9 km to under the cauldron's rim (y 333), then the lower level falls ~2.9 km to the tarn in its last 6-8 km | ~71 km | rock overhead peaks at about **6.4 km** under the crest at 1336,329 (12.1 km) |
+| **4. The cauldron** | 1340,336 to the tarn | 2,670 m | | the walls stand 6.9-9.3 km within 2 cells north; a bench at 4.0-4.9 km on the south shore (1339-1346, 339-342) |
+
+So the walk from the polygon's north edge to the tarn is about **85 km** (14 km of valley, 71 km of cave), and from Spider Lake
+about 220 km. **No point of it stands over 5.9 km.**
+
+**For the map edit:** (a) lower the cells 1330-1331 x 296-302 to the floor heights above, one to two cells wide; (b) add a
+`tubes.json` record in the shape of `tube_ozarks_15`, *proposed*: `id 'tube_epidote_16'`, `name 'Epidote Cave'`, `region
+'rmvymakpc0pft'`, `rock 'skarn_marble'`, `state 'geothermal'`, `km 71`, `px [[1331,302],[1333,312],[1335,322],[1337,330],
+[1340,336]]`, one cavern (`kind 'bottle_hall'`, *proposed* "the Marble Hall", at 1336,326 under the crest). Its `depth_m`
+does not describe a passage 6 km down: the session records the floor heights above in its notes instead.
+
+**The geology of the cave.** The cave follows the plan's own plumbing (section 2, item 4): the **Outland Gate fault** keeps
+deep fractures open, and the line runs NNW-SSE, the fault's strike. Hot, CO₂- and H₂S-charged water rising up the fault
+dissolved the **marble bands of the skarn** (the white bands of section 2, item 2): that is the soluble path.
+`biomes/KARST-SITES-5.1.md` already notes the skarns "could be a marble cave". It is a **hypogene** cave (water from below,
+not rain from above), as Carlsbad and Lechuguilla are: a rising maze of passages and cupolas, gypsum crust, no sinks. The upper
+level is the older, dry one (an old water table); the lower is still hot and wet, and feeds the tarn its warm water.
+- **Drawn by:** `KKARST.network({kind: 'hypogene', ...})` for the passages, chambers, cupolas, crust and the warm-spring
+  outlet; `KKARST.build` into a `KCAVERN`; `KCAVERN.floorFn` and `drawRock` for a cave page's floor and rock;
+  `KSPELEO.place(..., {kinds: KSPELEO.HYPOGENE})` for the gypsum and the crystals; `KCARVE` mouths for the portal and the
+  inner mouth.
+- **The stretch, said plainly:** no Earth cave runs 6 km down (the deepest, Veryovkina, is 2.2 km), and rock 6 km down is
+  normally 150 °C or more. The plan leans on 0.75 g, on the fault holding the fractures open, and (*proposed*) on meltwater
+  from the crest's ice draining down the fault and cooling the upper level. The owner may prefer a shorter, deeper-carved
+  valley (below) or the Ancients' hand in the cave.
+
+**An alternative for the owner:** carve the valley to the crest's foot instead: floor under 6 km as far as y 318 cuts the
+wall's back up to **4.5 km deep** (a gorge, not a small valley), and shortens the cave to about 40 km, from 1330,318 to the
+inner mouth, under the crest band (y 318-334, all over 10.5 km). The plan prefers the small valley and the long cave, as the owner asked.
 
 ## 3. Air and climate
 
@@ -130,6 +184,8 @@ the spider lineage is the fauna kit's to define). **Proposed:** warm-water inver
   - the **Coyote Men** and the **Tierhounds** (`biomes/outlands/PLAN.md` section 6; not yet in `LORE.md`), from the N Outlands
     and the Gate to the south-east. The Gate shoulder faces their country;
   - **Spider Lake's silk-gatherers** (Spider Lake's plan) on the north-west lowland.
+- **The Epidote Cave** (section 2a) is known to few: *proposed*, a pilgrims' and prospectors' way, with cairns in the Portal
+  Valley and a camp at the portal (`KCAMP`). Who keeps it is open (section 9).
 - **What they would come for:** the skarns' ores (magnetite iron, copper, garnet as an abrasive, epidote and garnet as gem
   rough) and the warm cauldrons. **Proposed:** quarrymen's and prospectors' camps (`core/camp`, `KCAMP`), temporary; skarn
   ore nodes from `kits/resources` (iron, copper; the grade read at build).
@@ -149,6 +205,8 @@ Each maps to a `KHAZ` kind (`core/hazard/README.md`).
 | **Rockfall** | under the dike walls and scarps | `crush` |
 | **Cold and thin air** | everything over the cauldrons; airless crest | `KHAZ.provide('temperature')`, `'pressure'` |
 | **Drowning** | the tarns | `drown` |
+| **The Epidote Cave** (section 2a): scalding pools, pooled CO₂ and H₂S, acid drips, shafts, the dark, 71 km of it | the cave's lower level most | `KKARST.hazards(N)` for the hypogene kind gives `heat`, `gas` (`shape.pool`) and `acid`; `fall` and `pit` at the shafts |
+| **Ice and avalanche** at the portal (5.5-5.9 km, EF) | the Portal Valley | `slip`, `crush`; `cold` |
 
 Signs: dead birds and bare hollows for gas; mat colour for heat; a hollow ring for the crust; fresh talus under a wall.
 
@@ -162,18 +220,22 @@ World km = 5.1 px x 2. Each page is the usual 5.2 km square.
 | 2 **Garnet-Mirror Cauldron** | 1186,344 | tarn 2,810 m; walls to 6,308 m; 1.13 atm | the deep cauldron: red garnet skarn cliffs and black dikes over a still tarn, the wettest station (2,211 mm) |
 | 3 **Epidote Badlands** | 1200,330 | 4,780 m (ET); 0.88 atm | the skarn ribs between the two cauldrons: green, red, black and white bands in gullies, ore outcrops, a prospectors' camp |
 | 4 **Gate Shoulder** | 1430,345 | 2,867 m (Csa, 643 mm), 1,972-4,538 m within 8 km | the mirror scarp: slump blocks with glassy faces, looking east down into the Outland Gate (the border with `biomes/outlandgate`) |
+| 5 **The Epidote-Steam Tarn** (opened by the owner, 2026-11-09) | 1342,338, the inner mouth at 1340,336 | tarn 2,670 m; 1.15 atm; WH, 1,929 mm, 11 °C (18/3); walls to 10.5 km | the sealed cauldron reached by the cave: the inner mouth steaming over the tarn, the hypogene cave's warm outlet, sinter and mats round it, walls rising into the airless crest on every side; the most hidden page on the map |
+| 5a **The Portal** (optional, a cave page) | 1331,302 | valley floor 5,900 m; 0.77 atm; EF | the Portal Valley's ice and the cave's mouth; inside, the dry upper level's gypsum and the Marble Hall (a `KCAVERN` page, as the Hearths' Cave of Crystals) |
 
 **Station 1 comes first:** it is the reachable cauldron (lowest crest out 3,728 m), it holds the kit's signature (a warm
 tarn in a dike box), and its geothermal surfaces are the shared amendment the other plans want. Gemini's "Pseudotachylite
-Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. The sealed
-Epidote-Steam Tarn gets no station unless the owner opens it (section 9).
+Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. **Station 5
+waits for the map edit** (section 2a) and for the cave pieces below; it comes last, with 5a if the owner wants the cave
+walked as a page.
 
 ## 8. Core adoption (written first, as the working rules ask)
 
 | Need | Module | How |
 |---|---|---|
 | randomness | `core/rand` (`KRAND`) | every placement seeded by (world, cell, index, salt) |
-| relief | `KRELIEF` (38, 38c) | `slump`, `scarp`, `talus`, `gully`, `joints`, `waters` |
+| relief | `KRELIEF` (38, 38c) | `slump`, `scarp`, `talus`, `gully`, `joints`, `waters`; `gully` for the Portal Valley's side valleys |
+| the cave | `KKARST` (`kind: 'hypogene'`), `KCAVERN` (`floorFn`, `drawRock`), `KSPELEO` (`HYPOGENE`), `KCARVE` mouths | the Epidote Cave (section 2a): stations 5 and 5a |
 | dikes | `KSTACKS.row` (`kind:'fin'`) | the dike walls on one strike; a second row across for the boxwork |
 | strata | `KSTRATA` (`create`, `vary`, `drape`) | the skarn bands and the gneiss; a skarn recipe (amendment 1) |
 | glacier and frost | `KGLACIER` (44g), `KFROST` (42) | the rim crest |
@@ -205,16 +267,23 @@ fault mirror, contact marble. `stone.obsidian` exists and may serve the glass.
 
 ## 9. For the owner
 
-- **The sealed tarn.** The Epidote-Steam Tarn (1342,338) is ringed by airless walls (lowest crest out 11,535 m). Keep it as
-  a sealed, unreachable cauldron (seen from the air, or reached by a tunnel), or ask Gemini to cut a notch?
+- ~~**The sealed tarn.**~~ **Settled (the owner, 2026-11-09): opened by a cave and a carved approach of small valleys.**
+  The route is section 2a: the Portal Valley (1330,295 to 1331,302, floor 5,530-5,900 m), the Epidote Cave (portal 1331,302
+  to the inner mouth 1340,336, ~71 km, a hypogene marble cave on the Outland Gate fault), and station 5. Still open:
+  - the route's length: about 85 km from the polygon's edge, 220 km from Spider Lake. Accept it, or the alternative (a
+    gorge cut 4.5 km deep and a 40 km cave)?
+  - the cave's depth (6.4 km of rock overhead) is past any Earth cave: keep it natural, or give it the Ancients' hand?
+  - who keeps the cave: nobody, pilgrims, or the Tierhounds from the gap?
+  - names: "the Epidote Cave", "the Portal Valley" and "the Marble Hall" are working names.
 - **The heat.** The model has no vent here. Is the cauldrons' warmth hot springs only (the plan), or also fumaroles on the
   crest (Gemini's `fumarole_crest`)?
 - **The air curve.** Copper Glacier's (used here and in the Outlands plan) or `WORLD.md`'s (used by Gemini's sketches)?
 - **Overlaps.** The polygon overlaps N Outlands, the Arachnoids and the Tiers. Trim it on the model?
 - **Who quarries the skarns:** the Tierhounds, Spider Lake's people, or nobody yet?
 - **Names:** the tarns keep Gemini's English names. Hum names (the Coyote tongue, as the rivers have) are open.
-- **Order:** after Korona's 5.1 station sites (`STATIONS-MAP-5.1.md`) and the owner's ruling on the Outland Gate
-  (`biomes/outlandgate/PLAN.md` section 9), since station 4 looks into it.
+- **Order:** after Korona's 5.1 station sites (`STATIONS-MAP-5.1.md`). The Outland Gate ruling is made (the owner,
+  2026-11-09: the gap stays and The Gate moves into it, `biomes/outlandgate/PLAN.md` section 9): station 4 looks down on the
+  Tierhounds' Long Wall at the Narrows, about 20 px (40 km) to the north.
 
 ## Sources
 
@@ -223,5 +292,8 @@ fault mirror, contact marble. `stone.obsidian` exists and may serve the glass.
 - `model/data/rivers.json`, `vents.json`, `tubes.json`, `volc.json`; `model/src/51-region-store.js`, `60-settlements.js`;
 - `smodel/river_names.py` (Hām-Tsēk, Hau-Gèl);
 - `biomes/outlands/PLAN.md`, `SURVEY.md`; `biomes/spiderlake/PLAN.md`; `biomes/korona/PLAN.md`; `biomes/firebliss/PLAN.md`;
-- `core/README.md`, `core/terrain/LANDFORMS.md`, `core/hazard/README.md`, `core/water/README.md`;
+- `core/README.md` (`KKARST` hypogene, `KCAVERN`, `KSPELEO`), `core/terrain/LANDFORMS.md`, `core/hazard/README.md`,
+  `core/water/README.md`; `biomes/KARST-SITES-5.1.md` (the skarns as a possible marble cave); `model/data/tubes.json`
+  (`tube_ozarks_15`, the record's shape); the route by a least-cost search over the heights (carving against tunnelling),
+  2026-11-09;
 - `HANDOFF-REBUILD.md`, `tools/scale-model/HANDOFF-GEMINI-5.1.md`.
