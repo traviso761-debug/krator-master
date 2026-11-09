@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `45-host-stage.js` | 10 | the land (43); the climate fields (cached below; these are the  (75); the recent fires (the showcase's choice) (97); the host binding (105) |
 | `50-biome-craterdry-species.js` | 45 **big** | palettes (23); the tree species (55); harvest (biomes/FRUIT.md) (89); the small plants (the floor), tagged (110); leaf textures (132); bark, rock, wood textures (219); geometries local to this biome (260); materials (340); the library (core/materials/PLAN.md, Crater dryl (373); instanced items (431) |
 | `52-biome-craterdry-fire.js` | 11 |  |
-| `55-biome-craterdry-trees.js` | 42 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (99); impostors (the far canopy) (352); the pass (379); the passes (data: species, cell, acceptance from (424) |
+| `55-biome-craterdry-trees.js` | 42 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (99); impostors (the far canopy) (355); the pass (382); the passes (data: species, cell, acceptance from (427) |
 | `60-biome-craterdry-floor.js` | 15 | fields local to the floor (26); small plants (33); the zone planters (86); the pass (140) |
 | `70-biome-craterdry.js` | 1 |  |
 | `84-host-ground.js` | 20 | the ground (22); the water (the seep) (169) |
