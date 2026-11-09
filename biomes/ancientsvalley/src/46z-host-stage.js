@@ -57,7 +57,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w||60)/2+6;T.rz=(fp.d||60)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
  ENGINES.forEach(E=>{E.rx=E.rz=E.padR=E.r+20;E.c=1;E.s=0;E.ease=60;E.family='engine';PADS.insert(E,E.x,E.z,E.padR+64);});
  // THE DEBRIS: slabs thrown from the craters and lying in the streets (41: AV.debris), off the plinths, the viaduct and the water
- const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
+ const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;const dq=[];PADS.query(x,z,0,dq);for(let i=0;i<dq.length;i++){const T=dq[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
  const padD=(T,x,z)=>{const dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c,mn=Math.min(T.rx,T.rz);return Math.hypot(u*mn/T.rx,v*mn/T.rz)-mn;};
  const _q=[];
  function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}return h;}
@@ -126,7 +126,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'The viaduct over the inlet':V([-400,-900],22,[-1500,-1700],30),
     'The core from the water':V([-600,2300],6,[-1800,1500],120),
     'The dead lobe':V([900,-100],9,[1600,-250],4),
-    'A crater':(function(){const c=CRATERS.slice().sort((a,b)=>b.r-a.r)[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
+    /* the largest crater whose rim spot stands clear of every tower's pad and rubble (a fallen tower's heap reaches 120 m from its foot) */
+    'A crater':(function(){const q=[];for(const c of CRATERS.slice().sort((a,b)=>b.r-a.r)){const ex=c.x+c.r*1.9,ez=c.z+c.r*1.4;if(ground(ex,ez)<LAKE_Y+3)continue;q.length=0;PADS.query(ex,ez,140,q);if(q.some(T=>Math.hypot(T.x-ex,T.z-ez)<T.padR+130))continue;return V([ex,ez],5,[c.x,c.z],-c.depth*.5);}const c=CRATERS[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
     'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.5,E.z-E.r*1.3],4,[E.x,E.z],E.h*.4);})(),
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),

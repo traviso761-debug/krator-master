@@ -1,8 +1,10 @@
 # biomes/ancientsvalley: known issues
 
-- [ ] **Only the Spindle and the Ledger have shells** (`kits/metropolis/KNOWN_ISSUES.md`): the fourteen designs are heroes to 800 m (the nearest 30:
-  about 2 M triangles of heroes at the worst) and 96 px impostors past that, with no middle tier, so a design switches from a hero to a card at
-  800 m. Their shells wait on the test bed (the shell shader holds the Spindle's own heights).
+- [ ] **Only the Spindle and the Ledger have shells** (`kits/metropolis/KNOWN_ISSUES.md`): the fourteen designs are heroes to 1.4 km (3.2 km seen
+  from above; the nearest 48) and 128 px impostors past that, with no middle tier, so a design switches from a hero to a card at 1.4 km and the
+  air view carries up to 48 real towers. Their shells wait on the test bed (the shell shader holds the Spindle's own heights).
+- [ ] **A leaning tower's impostor stands straight** (the lean is on the heroes and the shells only): the switch at 1.4 km or 3.2 km pops by up to
+  5 degrees at the top. The impostor bake would need a slot per lean, or the lean kept under 2 degrees.
 - [ ] **The boot takes several seconds and the first half minute janks:** 14 shelled keys and 28 design keys build their heroes at the boot (about 4 s
   on the Arc), then 42 impostors bake one a frame. A later pass bakes the designs' impostors at build time or shows a loading note.
 - [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or

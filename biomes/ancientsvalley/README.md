@@ -48,13 +48,22 @@ passes. Per view: the Overlook 3.07 M triangles in 465 calls, the dead lobe 5.23
 42 impostors one a frame. Run on the RTX 5060 lane (the first cut, 2 families and no engines, measured on the Arc 140T: the dead lobe 5.67 M in
 522 calls).
 
-**The war damage (the owner, 2026-11-07, "really fuck it up"):** the ruin shares (`AV.RUIN_CUTS`: 4% intact, 8% gutted, 10% crown gone, 22%
-broken, 22% stumps, 14% skeletons, 20% fallen); `avRust` (`70-host-city.js`): rust over everything with streaks to full rust, soot in patches
-and smeared upward from the burnt storeys, two or three laser cuts through each tower (planes in its frame, scorched black along a band), and
-every colour drawn half way to a rust-brown of its own brightness, so the city reads as one rust-shaded palette; `AV.craters` (`41-av-field.js`):
-fourteen strikes on the dry land, bowls with raised rims, each a scar of melt glass with nothing standing in it; the viaduct with a deck in
-fourteen down and lying tilted at the foot. Ruined vehicles in the streets are a kit's work (`kits/motor-vehicles`, an Ancients culture with
-ruin states: in its own session) and come to the valley when it exists.
+**The war damage (the owner, 2026-11-07 and 08, three passes: "really fuck it up", "further still"):** the ruin shares (`AV.RUIN_CUTS`: 2% intact,
+5% gutted, 8% crown gone, 22% broken, 25% stumps, 16% skeletons, 22% fallen; 14% standing tall of 797); the broken towers lean up to 5 degrees
+(`AV.lean`, one quaternion shared by hero and shell; the rubble lies flat); `avRust` (`70-host-city.js`): rust over everything with streaks to
+full rust, soot in patches and smeared upward from the burnt storeys, three to five laser cuts through each tower (planes in its frame, scorched
+black along a band), and every colour drawn two thirds of the way to a rust-brown of its own brightness, so the city reads as one rust-shaded
+palette; the Wedge's black glass and dark piers swapped for the others' grey before the rust (the owner: it stood out); `AV.craters` and
+`AV.scorch` (`41-av-field.js`): 24 strikes on the dry land, bowls with raised rims, each a scar of melt glass with the ground blackened to 2.6 r
+and nothing standing in it; `AV.debris`: slabs thrown from the craters and lying in the streets (one instanced mesh); the viaduct with a deck in
+seven down and lying tilted at the foot. **The street grid** (the owner, 2026-11-08): the lattice's lines are 11 m streets and every third an
+avenue of 26 m, asphalt with rubble at the kerbs, the forest thinned to a third on them: a clear Ancient grid, destroyed and overgrown. Ruined
+vehicles in the streets are a kit's work (`kits/motor-vehicles`, an Ancients culture with ruin states: in its own session) and come to the valley
+when it exists.
+
+**The designs' tiers** (the owner, 2026-11-08: the foreground towers looked low-res and floors floated): a design with no shell is a hero to
+1.4 km, to 3.2 km seen steeply from above, the nearest 48 of them; its impostor is 128 px a view. Per view after that: the Overlook 3.56 M
+triangles in 517 calls, the dead lobe 4.41 M in 571, the park 4.16 M in 682 (the worst calls), from the air 2.88 M in 511.
 
 ## Read next
 

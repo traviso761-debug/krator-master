@@ -32,8 +32,9 @@ const HCHK={
  // the forest went feral: the read-in trees were grown, and the taint's tint reached the baked foliage
  feral(W,tinted){return{ok:W.trees>50&&W.grown>20&&tinted>0,detail:W.trees+' read-in trees wrapped, '+W.grown+' grown, '+W.floor+' floor plants grown, '+W.dropped+' not this station\'s; '+tinted+' materials tinted'};},
  // no tree stands on a street, a plinth or dead ground
- // (the kits decide a foot on the mask's probability, so a tree can land where the mask is half: two in a hundred is the allowance)
- clear(recs){let bad=0,n=0;for(const r of recs){if(r.kind!=='tree')continue;n++;if(STAGE.street(r.x,r.z)>.8||STAGE.built(r.x,r.z)>.8||STAGE.F.scar(r.x,r.z)>.8)bad++;}return{ok:n>50&&bad<=n*.02,detail:n+' trees, '+bad+' on a street, a plinth or a scar'};},
+ // (the kits decide a foot on the mask's probability, so a tree can land where the mask is half: two in a hundred is the allowance). The streets are
+ // overgrown by design (the owner, 2026-11-08: a destroyed, overgrown grid), so a tree on one is counted apart and allowed to a sixth of the forest
+ clear(recs){let bad=0,st=0,n=0;for(const r of recs){if(r.kind!=='tree')continue;n++;if(STAGE.built(r.x,r.z)>.8||STAGE.F.scar(r.x,r.z)>.8)bad++;else if(STAGE.street(r.x,r.z)>.8)st++;}return{ok:n>50&&bad<=n*.02&&st<=n/6,detail:n+' trees, '+bad+' on a plinth or a scar, '+st+' on a street (overgrown)'};},
  // the lines: the viaduct's deck never dips under the lake and every pier reaches the ground
  lines(V){let low=0,short=0;for(const d of V.decks)if(d.y<STAGE.lakeY+20)low++;for(const p of V.piers)if(p.y1-p.y0<2)short++;return{ok:V.decks.length>50&&!low&&!short,detail:V.decks.length+' decks, '+V.piers.length+' piers; '+low+' low, '+short+' short'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;

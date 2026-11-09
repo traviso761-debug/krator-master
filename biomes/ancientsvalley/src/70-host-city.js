@@ -8,7 +8,10 @@
 const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.map(s=>f+'.'+s))),hero:{},rec:{},slot:{},mesh:{},live:[],mode:null,bakeMs:0,towers:STAGE.plan.towers,tierGroups:new Map(),tierN:null};
 /* the shelled families' tiers, and the designs': a design has no shell (kits/metropolis/KNOWN_ISSUES.md), so it is a hero to 800 m (the nearest
    AV_DHEROMAX) and an impostor past that, in two looks (intact, broken) */
-const AV_NEAR=300,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_DNEAR=800,AV_DHEROMAX=30;
+/* the owner, 2026-11-08: the foreground towers looked low-res (a design's impostor, 96 px a view, stood where a hero should) and floors floated (the
+   impostor's slabs seen apart from their skin at a near, steep angle): a design is a hero to 1.4 km, to 3.2 km seen steeply from above, the nearest
+   48 of them; its impostor is 128 px a view */
+const AV_NEAR=300,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_DNEAR=1400,AV_DHEROMAX=48;
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
 const avImpKey=t=>t.shelled?t.key:t.family+'.'+(t.state==='intact'||t.state==='gutted'||t.state==='crown'?'intact':'broken');
@@ -74,7 +77,7 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  BIO.impostorItem('avImp',S,{label:'a far tower'});
  /* the designs' impostors: the keys the plan uses, two looks each (intact for intact, gutted and crown; broken for the rest), in sets of 14 */
  AVC.dkeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!t.shelled&&!seen.has(t.ikey)){seen.add(t.ikey);AVC.dkeys.push(t.ikey);}});}
- AVC.dsets=[];AVC.dset={};for(let i=0;i<AVC.dkeys.length;i+=14){const n=Math.min(14,AVC.dkeys.length-i),S2=BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:96,slots:n});
+ AVC.dsets=[];AVC.dset={};for(let i=0;i<AVC.dkeys.length;i+=14){const n=Math.min(14,AVC.dkeys.length-i),S2=BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:128,slots:n});
   AVC.dkeys.slice(i,i+n).forEach(k=>{AVC.imp[k]=impOf(k,S2);AVC.dset[k]='avImpD'+AVC.dsets.length;});BIO.impostorItem('avImpD'+AVC.dsets.length,S2,{label:'a far tower'});AVC.dsets.push(S2);}
  BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(T.shelled?'avImp':AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],T.yaw,1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
  {const mine={metro:BIO.kits.metro};BIO.kits=mine;try{BIO.bake();}finally{BIO.kits=savedKits;}}BIO.kit('');AVC.impQ=BIO.IMP.list.slice();BIO.IMP.list.length=0;AVC.impN=0;
@@ -106,7 +109,7 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now
  /* a design (no shell) is a hero to AV_DNEAR, the nearest AV_DHEROMAX of them, then its impostor */
  const dnear=[];
  for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;
-  if(!t.shelled){if(d<AV_DNEAR)dnear.push(t);continue;}if(d<AV_NEAR)near.push(t);if(!ns&&d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<AV_NEAR)near.push(t);if(!ns&&d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
  near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,AV_HEROMAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
  G.forEach((g,id)=>{if(!keep.some(t=>t.id===id)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});keep.forEach(t=>{if(!G.has(t.id)){const g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled);if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
  near.slice(AV_HEROMAX).forEach(t=>{if(t.shelled&&t.d<AV_NEAR*.85&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
