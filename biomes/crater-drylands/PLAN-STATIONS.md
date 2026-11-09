@@ -156,6 +156,8 @@ clock. **The swap** (PLAN-LANDS.md 5.3), by hashed cell:
   (its cousin of sedesert's rose) on the kopjes there. Savannarim's species, trees and se rim (`50`, `55`, `56`) are read in place, with the
   hyperjungle (its seven fragments: savannarim builds on its lands' geometry) and sedesert's species and trees (the rose's source), each in
   its own registry; the hyperjungle's helpers are the stage's globals (its `41` would clash with them).
-`?black=0`, `?serim=0`, `?season=0`. Not taken (KNOWN_ISSUES.md, "Owed on south"): Godstep's red guyed stalk and lava pioneers (Godstep's kit
-is a plan), the Af gully galleries, the Csa and Csb oak scrub at the top, the tibasalt strata at the southern edge, S's fields from the
-scale model's polygon.
+Then (the same day): **the Af gallery** in a north-western gully (the hyperjungle's trees at .3-.5 of their size), **the lava step** along the
+southern edge (Godstep's first, 30 m) with its face in KSTRATA's **tibasalt** beds (a mesh coloured from `KSTRATA.at`, no texture unit), and
+**scrub oak** on the step's top (nhighlands' gnarled oak as a 3-6 m kin). `?black=0`, `?serim=0`, `?gallery=0`, `?oak=0`, `?step=0`,
+`?season=0`. Not taken (KNOWN_ISSUES.md, "Owed on south"): Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan), S's fields
+from the scale model's polygon.

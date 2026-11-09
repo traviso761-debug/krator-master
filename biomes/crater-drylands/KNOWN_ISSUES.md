@@ -44,16 +44,22 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
   attach audit .14%; the season and flush bound, the trees at .85); station 1 30, edge 34, salt 34, their fire mosaics unchanged. On the way:
   `84`'s flow knob was read before its declaration (every page threw at load: fixed), and one base tree stood on a flow (the mask now
   reaches zero by half a flow).
-- [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); the Af gully
-      galleries on the north-western side; the Csa and Csb oak scrub on the topmost slopes; the `tibasalt` strata at the southern edge (the
-      flows' fronts are drawn by the ground, no KSTRATA bed shader on them); S's fields and hazards from the scale model's S polygon (the stage
-      is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are painted stand-ins: its PROMPTS-NEEDED entry).
+- Done on `south` (2026-11-09): **the Af gallery** in a north-western gully (the hyperjungle's trees at .3-.5 of their size, read in place,
+  as savannarim's gallery forest; `?gallery=0`); **the tibasalt beds at the southern edge**: a 30 m lava step there (Godstep's first), its
+  face a mesh of its own coloured vertex by vertex from KSTRATA's `tibasalt` recipe (`KSTRATA.at`: no texture unit; the core strata shade
+  would take 3-5 and the ground reads 14 of the Arc's 16; `?step=0`); **the oak scrub** on the step's top (a kin of nhighlands' gnarled
+  oak, 3-6 m, dusty, no moss: EXCHANGES.md's row; `?oak=0`).
+- [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); S's fields and
+      hazards from the scale model's S polygon (the stage is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are
+      painted stand-ins: its PROMPTS-NEEDED entry); the scrub oak does not resprout after a fire (nhighlands' builder knows no burn age).
 - [x] **KFIRE (H3), 2026-11-09 (the owner asked for the core test change):** `src/52` is an adapter onto core/biome's KFIRE, handing it
       the kit's own burnability (BIO fbm patch), edge warp and older fires (drawn as before, `old:0`), so the page keeps its fires. The
       original fragment is frozen as `core/biome/ref/craterdry-fire-52.js.txt`; `core/biome/test-fire.js` reads it as the reference and
       now proves the adapter gives its grids, lookups, shares and live fire bit for bit (33 pass). Moving to KFIRE's portable defaults
       (KRAND noise, hashed old fires: what Godot reproduces) would change the page once; not done.
-- [ ] **Wadi, talus, tibasalt strata**: the row's other kinds; the strata are S's (`south`). The mounds are on `edge`, the pans on `salt`.
+- [ ] **Wadi and talus (KRELIEF's kinds), for the owner:** station 1 already has both as its own forms (the washes are wadis, sand floors
+      between banks; each kopje has a talus apron), so the row's kinds are not taken: drawing them by KRELIEF would reshape station 1's ground
+      and move every plant on it. Taking them is a look decision (the strata are done on `south`; the mounds on `edge`, the pans on `salt`).
 - [x] **A core finding (korona's too):** `core/terrain/43-core-ground.js` read the eye uniform three r128 leaves at 0 on a Lambert material.
       Fixed in core on savannarim's branch (merged here 2026-11-09: the view matrix's eye); this page's own redirect (`KG_EYE`) is gone.
 
