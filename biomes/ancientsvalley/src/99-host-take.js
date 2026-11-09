@@ -30,6 +30,13 @@ const HCHK={
  // the lean: a leaning tower leans no more than 5 degrees (further and the shell's trace would leave its pad), none that stands whole or lies fallen
  lean(T){let bad=0,n=0;for(const t of T){if(t.lean){n++;if(t.lean>5.01||t.state==='intact'||t.state==='fallen')bad++;}}return{ok:n>20&&!bad,detail:n+' towers lean, '+bad+' wrongly'};},
  // the grid runs between the buildings (the owner, 2026-11-08): no plinth's centre on a street, and the street under no plinth
+ /* the kerb lines (the owner, 2026-11-09; 41 AV.kerbPlace): most towers front a street, their plinths 3 m behind its pavement, and no plinth reaches into
+    a roadway or a pavement (the plinth's extent across each of the cell's half lines against the line's half width plus its pavement, inside the network) */
+ kerb(T){const L=STAGE.lattice,p=L.pitch,th=Math.atan2(L.s,L.c),R=STAGE.R-110;let on=0,bad=0,ex0=null,gaps=[];
+  for(const t of T){if(t.kerb)on++;if(t.rx==null)continue;const lx=t.x*L.c+t.z*L.s,lz=-t.x*L.s+t.z*L.c,ang=t.yaw-th,ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*t.rx+sa*t.rz,sa*t.rx+ca*t.rz];
+   [lx,lz].forEach((v,a)=>{if(Math.hypot(t.x,t.z)>R)return;const k=Math.round(v/p-.5),d=Math.abs(v-(k+.5)*p),av=((k%3)+3)%3===1,hw=av?16.5:9,g=d-ex[a]-hw;if(Math.abs((k+.5)*p)>STAGE.R-140)return;if(g<-.5){bad++;if(!ex0)ex0=t.id+' '+g.toFixed(1)+' m';}else if(t.kerb&&g<10)gaps.push(g);});}
+  const share=T.length?on/T.length:0,mg=gaps.length?gaps.reduce((s,v)=>s+v,0)/gaps.length:0;
+  return{ok:share>=.6&&!bad,detail:on+' of '+T.length+' towers on a kerb ('+Math.round(share*100)+'%), plinths a mean '+mg.toFixed(1)+' m behind the pavement; '+bad+' reach into a street'+(STAGE.plan.kerbDropped?' ('+STAGE.plan.kerbDropped+' not built: no room off the street)':'')+(ex0?' ('+ex0+')':'')};},
  grid(T){let on=0;for(const t of T)if(STAGE.streetK(t.x,t.z)>.05)on++;return{ok:T.length>60&&!on,detail:T.length+' towers, '+on+' standing on a street'};},
  lamps(L){const up=L.filter(l=>l.state==='up').length;return{ok:L.length>100&&up>L.length*.3&&up<L.length*.7,detail:L.length+' lamp standards, '+up+' standing'};},
  // the ruined vehicles (41b, 73): at least 150 records, none on a plinth or under the lake, most of those on scorched ground burnt
@@ -61,6 +68,10 @@ const HCHK={
    const at=m.alphaTest!=null?m.alphaTest:(m.uniforms&&m.uniforms.alphaTest?m.uniforms.alphaTest.value:0),s=share(map.image);if(s<0||s>.98){unread++;return;}   /* a read that comes back empty (a bitmap the 2D canvas will not draw, the headless lane) is no verdict */
    if(s>.03&&!(at>0)&&!m.transparent&&!m.alphaToCoverage)bad.push((o.name||o.userData.inspectLabel||m.type)+': alpha in the map ('+Math.round(s*100)+'%), no cut');else if(s<.005&&at>0)bad.push((o.name||o.userData.inspectLabel||m.type)+': a cut on a map with no alpha');});});
   return{ok:!bad.length&&maps-unread>20,detail:maps+' mapped materials of '+seen.size+(unread?' ('+unread+' unreadable here)':'')+(bad.length?'; '+bad.slice(0,5).join('; '):'; every alpha map tested, no test without alpha')};},
+ /* the lake-front property values (the owner, 2026-11-09): the towers' mean tip height within lakeK .6 of the shore against the towers under .35 */
+ lakeFront(T){if(!T||!T.lakeK)return{ok:false,detail:'no lake'};const tip=t=>{const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];return F&&F.height?(F.height.tip||F.height.roof||0):0;};let hs=0,hn=0,ls=0,ln=0;
+  STAGE.plan.towers.forEach(t=>{const k=T.lakeK(t.x,t.z),h=tip(t);if(!h)return;if(k>.6){hs+=h;hn++;}else if(k<.35){ls+=h;ln++;}});const mh=hn?hs/hn:0,ml=ln?ls/ln:0;
+  return{ok:hn>=20&&ln>=20&&mh>ml*1.2,detail:hn+' towers by the lake at a mean tip of '+Math.round(mh)+' m, '+ln+' inland at '+Math.round(ml)+' m'};},
  transit(T,n){if(!T)return{ok:false,detail:'no transit'};const J=T.net.junctions.length,kinds={};T.net.junctions.forEach(j=>{kinds[j.kind]=(kinds[j.kind]||0)+1;});
   const ok=J>=300&&T.highway.ramps.length>=3&&T.highway.spans.length>=80&&T.cargo.crossings.length>=8&&T.subway.stations.length>=3&&T.trains.length>=4&&(n?n.dressed>=20:true);
   const rj=T.net.junctions.filter(j=>j.ramp).length;
@@ -85,9 +96,9 @@ const HCHK={
   for(const r of O){if(r.key==='drowned'){drowned++;if(!(r.at[1]<LY-1&&r.at[1]+r.h>LY+1))bad.push("a drowned portal's arch is not cut by the lake's line");if(!drawnWater(r))bad.push('no lake drawn at a drowned portal');}else if(STAGE.rawGround(r.at[0],r.at[2])<LY+1)bad.push('the '+r.key+' under the lake');}
   return{ok:P.length>=3&&O.length>=3&&voids>=1&&drowned>=2&&!bad.length,detail:P.length+' phenomena ('+voids+' over the water), '+O.length+' portals ('+drowned+' drowned halls), '+c.drawn+' drawn after registering'+(bad.length?'; '+bad.slice(0,4).join('; '):'; the weather bound on core/atmos; the void on the water, the drowned arches cut by the lake')};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
- add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
+ add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());
-if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
+if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
  add('the grid runs between the buildings',HCHK.grid(T));if(!STAGE.transit)add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
@@ -100,10 +111,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('every tower intact',HCHK.ruinShare(T.map(t=>Object.assign({},t,{state:'intact'}))));
  add('no tree grown',HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0));
  add('a tenth of the trees on the plinths',HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z}))));
- if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));}
+ if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));add('the towers the same height everywhere',HCHK.lakeFront({lakeK:(x,z)=>KRAND.unit(KRAND.hash(x|0,z|0,1,0))}));}
  else add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
  add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
+ add('the towers on their nodes, no kerb',HCHK.kerb(T.map(t=>Object.assign({},t,{kerb:null}))));add('a plinth across a road',HCHK.kerb(T.filter(t=>Math.hypot(t.x,t.z)<1500&&t.rx!=null).slice(0,1).map(t=>{const L=STAGE.lattice,p=L.pitch,v=(Math.round((t.x*L.c+t.z*L.s)/p-.5)+.5)*p,w=-t.x*L.s+t.z*L.c;return Object.assign({},t,{x:v*L.c-w*L.s,z:v*L.s+w*L.c,kerb:{}});}).concat(T)));
  add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
  if(!STAGE.transit)add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
  add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));

@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 4674391,
-   "sha256": "eabaf2026c80232f85eb81f684aedf68c26ff10e48909f15707b656d782787a8"
+   "bytes": 4381248,
+   "sha256": "6c46b0962836b4332bde8fb306ce41f3a94161463c41176a1b1ca0812f1f1869"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -495,10 +495,6 @@
   "kits/eternian/dist/eternian.html": {
    "bytes": 1035390,
    "sha256": "ec795bf4244793627a8cff40657b36255d026cbb4836ae7be8d76adc8218992f"
-  },
-  "kits/extraplanar/dist/extraplanar.html": {
-   "bytes": 816835,
-   "sha256": "911fbe766de19d6ec1ac4864669c4135742f55958af20b8adad0f09e1150e4cf"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,

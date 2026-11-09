@@ -85,11 +85,16 @@
   crossings and a derailed train, the subway under an avenue with three stations and 44 sinkholes, the war along every street rising toward the
   lake. The old boxes and lamps stay in the source for a station without the kit (`STAGE.transit` unset).
 - [ ] **The transit's furniture and war pop in at 750 m** (`74`, `AV_TR_NEAR`): 20,000 furniture pieces and 30,000 war pieces are records at the
-  boot (10 s) and are drawn by 400 m cell as the eye comes near, one cell a frame, one mesh a family a cell; past 750 m a street is its surface,
-  its junctions, its craters and scorch only. A far tier for the furniture (the lamp standards and signals as impostor cards) would hide the pop.
-- [ ] **The family mix does not yet lean tall toward the lake** (the owner's "nice lake front property values", `PLAN.md` 14): the war and the
-  wrecks rise toward the shore, the towers' heights do not; `AV.plan`'s family weights by `lakeK` are the next transit item, with the towers
-  placed to the kit's kerb lines rather than the lattice's bare lines.
+  boot (10 s) and are drawn by 400 m cell as the eye comes near, one cell a frame, one mesh a family a cell. *Since 2026-11-09 the far tier:* every
+  standing piece 3 m and taller (lamp standards, signals, signs, kiosks, shelters, gantries, footbridges, sentry posts) is a dark post in one
+  InstancedMesh from the boot, zeroed in a cell while its real pieces are drawn, so the lamps' rhythm holds to the fog's edge; the war's low
+  pieces (sandbags, wire, bollards, benches) and the barricades still arrive at 750 m.
+- [x] **The family mix does not yet lean tall toward the lake** closed 2026-11-09: `AV.plan` takes `lakeK`, `tall` and `short` (41): within
+  lakeK .5 of the shore a pick turns to a tall family (tips of 180 m and more: the Spindle, the Organ, the Stalk, the Reed, the Swell, the
+  Yoke, the Telescope, the Wedge) with a chance rising to .7 at the water, inland to a short one (the Ledger twice, the Pods, the Terrace,
+  the Crescent, the Cupola) with a chance rising to .4; the page checks the mean tip by the lake against inland (`HCHK.lakeFront`), the data
+  test the shares. The residential quarter round the start (NEAR, 620 m) keeps its own mix: the lean there set fallen giants beside the
+  residential street. The towers on the kit's kerb lines: closed the same day (`AV.kerbPlace`, the README's transit paragraph).
 - [x] **The ramps meet the avenues beside the network, not in it** closed 2026-11-09: the transit session answered the same day (kit commit
   49674696b, `KTRANSIT.joinRamps`): each landing road is a road of kind `ramp` in the network and its foot a T on the avenue it lands on, with
   the kerb corners, the cuts, the crosswalk and the signals, the avenue regraded flat through it in place; the valley's three ramps all join

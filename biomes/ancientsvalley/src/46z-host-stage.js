@@ -52,10 +52,20 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  // Overlook looks past it to city1; the Strider, a four-legged walker halted mid-stride, on the shelf to the south-east. Each on a pad of its own
  const ENGINES=[{key:'gyre',x:-1500,z:-650,yaw:.6},{key:'strider',x:1450,z:1350,yaw:-2.2}].map(e=>Object.assign({},AV.ENGINES[e.key],e,{y:rawGround(e.x,e.z)}));
  const engineD=(x,z)=>{let d=1e9;for(const E of ENGINES)d=Math.min(d,Math.hypot(x-E.x,z-E.z)-E.r);return d;};
- const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,
+ /* the lake's pull, for the plan and the transit: the distance to the nearest water cell (a 120 m sample of the raw ground), 1 at the shore, 0 beyond 2.6 km */
+ const LAKE=(function(){const W=KSPACE.create({cell:400}),pts=[];for(let x=-R-1200;x<=R+1200;x+=120)for(let z=-R-1200;z<=R+1200;z+=120){if(rawGround(x,z)<LAKE_Y-1){const q={x,z};pts.push(q);W.insert(q,x,z,1);}}
+  const wq=[];const d=(x,z)=>{wq.length=0;W.query(x,z,2800,wq);let m=4000;for(const q of wq)m=Math.min(m,Math.hypot(q.x-x,q.z-z));return m;};return{d,k:(x,z)=>smooth(2600,250,d(x,z)),cells:pts.length};})();
+ /* the lake-front property values (the owner, 2026-11-09): the tall families (tips of 180 m and more) win toward the shore, the short ones inland (AV.plan's lakeK, tall, short) */
+ /* the residential quarter round NEAR keeps its own mix (the lean put fallen giants across the residential street's view, 2026-11-09): the plan's pull
+    reads .45 there, between the short (under .4) and the tall (over .5) swaps, so neither applies */
+ const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,lakeK:(x,z)=>Math.hypot(x-NEAR.x,z-NEAR.z)<NEAR.r+200?.45:LAKE.k(x,z),
+  tall:['spindle','organ','stalk','reed','swell','yoke','telescope','wedge'],short:['ledger','ledger','pods','terrace','crescent','cupola'],
   coreKeys:['spindle','spindle','spindle','ledger','wedge','reed','telescope','stalk','swell','organ','yoke'],
   shelfKeys:['ledger','ledger','ledger','spindle','terrace','crescent','cupola','arcades','pods','spiral','terrarium'],
-  skip:(x,z)=>viaD(x,z)<34||railD(x,z)<30||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30)});
+  skip:(x,z)=>viaD(x,z)<34||railD(x,z)<30||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30),
+  /* the kerb lines (41, AV.kerbPlace): the roadway's half width plus its pavement, the kit's kinds (an avenue 26 m and 3.5, a road 11 and 3.5); the
+     plinth 3 m behind the pavement; the plinth's half extents as the PADS below make them (the footprint and 6 m); the network's disc and lines */
+  kerb:{avenue:13+3.5,road:5.5+3.5,gap:3,corner:.35,R:R-110,lineMax:R-140,extent:fam=>{const F=MP.FAMILY[fam]||MP.DESIGNS[fam]||{},fp=F.footprint||{};return fp.r?[fp.r+6,fp.r+6]:[(fp.w==null?60:fp.w)/2+6,(fp.d==null?60:fp.d)/2+6];}}});
  const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);   /* the lattice's turn, used by the transit below and the streets after it */
  // the towers' plinths: each stands on a level pad at its own height (a disc round a round tower, a slab round a slab, turned with it), eased
  // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The
@@ -81,9 +91,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
    const a=axis===0?toXZ(v,-half):toXZ(-half,v),b=axis===0?toXZ(v,half):toXZ(half,v);
    defs.push({id:(axis?'w':'u')+(k<0?'m':'')+Math.abs(k),pts:[a,b],kind:av?'avenue':'road',axis,k,av});ix[axis][k]=defs.length-1;}
   AVT.defs=defs;AVT.ix=ix;}
- /* the lake's pull: the distance to the nearest water cell (a 120 m sample of the raw ground), 1 at the shore, 0 beyond 2.6 km */
- {const W=KSPACE.create({cell:400}),pts=[];for(let x=-R-1200;x<=R+1200;x+=120)for(let z=-R-1200;z<=R+1200;z+=120){if(rawGround(x,z)<LAKE_Y-1){const q={x,z};pts.push(q);W.insert(q,x,z,1);}}
-  const wq=[];AVT.lakeD=(x,z)=>{wq.length=0;W.query(x,z,2800,wq);let d=4000;for(const q of wq)d=Math.min(d,Math.hypot(q.x-x,q.z-z));return d;};AVT.lakeK=(x,z)=>smooth(2600,250,AVT.lakeD(x,z));AVT.waterCells=pts.length;}
+ AVT.lakeD=LAKE.d;AVT.lakeK=LAKE.k;AVT.waterCells=LAKE.cells;   /* the lake's pull (LAKE, above the plan) */
  /* the subway under the avenue nearest the Overlook's line of sight (a w-line avenue through the core), three stations, most of it blocked */
  {let best=null;for(const d of AVT.defs){if(!d.av||d.axis!==1)continue;const v=(d.k+.5)*PLAN.pitch;if(best==null||Math.abs(v-900)<Math.abs((best.k+.5)*PLAN.pitch-900))best=d;}
   const a=best.pts[0],b=best.pts[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),f=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
@@ -193,7 +201,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
       q.length=0;PADS.query(x,z,ahead,q);let ok=true,score=Math.hypot(x-cx,z-cz)/r;
       for(const T of q){if(T===P)continue;const ex=T.x-x,ez=T.z-z,d=Math.hypot(ex,ez);if(padD(T,x,z)<clear){ok=false;break;}if(d>ahead)continue;const c=(ex*fx+ez*fz)/d;if(c<Math.cos(35*Math.PI/180))continue;score+=(T.padR*2/d)*(1-d/ahead)*6;}
       if(!ok)continue;if(score<bs){bs=score;best=[x,z];}}}return best||[cx,cz];};
-   const o1=openSpot(140,460,400,18,c1.x*.6,c1.z*.6,420),o2=openSpot(NEAR.x-60,NEAR.z+170,300,14,NEAR.x-900,NEAR.z+620,120);
+   const o1=openSpot(140,460,400,18,c1.x*.6,c1.z*.6,420),o2r=openSpot(NEAR.x-60,NEAR.z+170,300,14,NEAR.x-900,NEAR.z+620,120);
+   /* the residential street's eye stood on a broken Cupola's plinth rim with the Cupola's rubble heap spilling 6 m in front of it, 60% of the frame
+      (2026-11-09): it steps 15 m across the street, to the left of its line of sight, where the first thing ahead is 75 m off */
+   const o2=(()=>{const dx=NEAR.x-900-o2r[0],dz=NEAR.z+620-o2r[1],l=Math.hypot(dx,dz)||1;return[o2r[0]+dz/l*15,o2r[1]-dx/l*15];})();
    const V0={
     'The Overlook: city1 and the lake':V(o1,9,[c1.x*.6,c1.z*.6],60),
     'A residential street':V(o2,1.8,[NEAR.x-900,NEAR.z+620],28),
@@ -205,10 +216,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     /* the largest crater whose rim spot stands clear of every tower's pad and rubble (a fallen tower's heap reaches 120 m from its foot) */
     'A crater':(function(){const q=[];for(const c of CRATERS.slice().sort((a,b)=>b.r-a.r)){const ex=c.x+c.r*1.9,ez=c.z+c.r*1.4;if(ground(ex,ez)<LAKE_Y+3)continue;q.length=0;PADS.query(ex,ez,140,q);if(q.some(T=>Math.hypot(T.x-ex,T.z-ez)<T.padR+130))continue;return V([ex,ez],5,[c.x,c.z],-c.depth*.5);}const c=CRATERS[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
-    'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.26,E.z-E.r*1.1],4,[E.x,E.z],E.h*.4);})(),   /* 1.5, 1.3 stood inside a Pods stump's 120 x 84 footprint (the eye check, 2026-11-09, once the tiers retiered at once) */
+    'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.94,E.z-E.r*.98],4,[E.x,E.z],E.h*.4);})(),   /* 1.5, 1.3 stood inside a Pods stump's footprint, 1.26, 1.1 in a palm's fronds once the plan leaned tall toward the lake (the eye check, 2026-11-09) */
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(.3+.7*F.wild(x,z))*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
     'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};
-   /* the views a later host fragment adds (75: the extraplanars' drowned hall, void and solid), absolute eyes it stood on dry ground itself */
+   /* the views a later host fragment adds (75: the extraplanars' drowned hall), absolute eyes it chose itself */
    return Object.assign(V0,STAGE.extraViews||{});},
   start:'The Overlook: city1 and the lake',
   /* the LOD spine: a lattice over the whole page (the kits drop a species past its mid range from the spine unless it has an impostor; the

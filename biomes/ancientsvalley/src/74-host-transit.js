@@ -10,9 +10,13 @@
 // the eye first comes within AV_TR_NEAR of it, one cell a frame, and shown only while the eye is near: a street dressed whole was 300-400 pieces
 // over five kilometres that no view could cull (the whole grid at once was 16,000 pieces, 46 s at the boot and 3,200 draw calls a view).
 // Everything placed is registered before it is drawn: the streets (with their piece counts), the lines and the trains at the boot; a cell's war
-// and furniture as the cell is built (a record for a cell not yet drawn would be an empty volume to the probe).
+// and furniture as the cell is built (a record for a cell not yet drawn would be an empty volume to the probe). THE FAR TIER (2026-11-09, the
+// pop-in at 750 m): every standing piece 3 m and taller (lamp standards, signals, signs, kiosks, shelters, the gantries' and footbridges'
+// legs, sentry posts) is a dark post in ONE InstancedMesh from the boot, its instances zeroed in a cell while the cell's real pieces are
+// drawn, so a street keeps its lamps to the fog's edge.
 const AV_TR_NEAR=750,AV_TR_CELL=400,AV_TR_CHUNK=1500,AV_TR_FAR=3600;
-const AVTR={ready:false,groups:[],cells:{},cellList:[],ms:0,n:{},built:0,cache:{}};
+const AVTR={ready:false,groups:[],cells:{},cellList:[],ms:0,n:{},built:0,cache:{},far:null};
+const AV_TR_FAR_H=3;   /* a piece this tall and standing (not fallen or crushed) has a far post */
 AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return false;if(typeof KTRANSIT==='undefined'||!STAGE.transit)return AVTR.ready=true;
  const t0=performance.now(),T=STAGE.transit,furn=typeof KratorTransitFurniture!=='undefined'?KratorTransitFurniture:null,veh=typeof KratorVehicles!=='undefined'?KratorVehicles:null,sh=MP.shadow;
  const mark=(G,name)=>{G.userData.host=true;G.traverse(m=>{if(m.isMesh){m.userData.host=true;m.userData.inspectLabel=name;m.frustumCulled=true;}});return G;};
@@ -33,9 +37,16 @@ AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return f
   D.pieces.forEach(p=>{const C=cellOf(p.x,p.z);C.dress.push([p,i]);C.streets[i]=1;});W.pieces.forEach(p=>{const C=cellOf(p.x,p.z);C.war.push([p,i]);C.streets[i]=1;});
   W.scorch.forEach(sc=>cellOf(sc.x,sc.z).scorch.push([sc,i]));W.craters.forEach(c=>cellOf(c.x,c.z).scorch.push([{x:c.x,z:c.z,r:c.r*1.6,deep:true},i]));
   (W.blockades||[]).forEach(bk=>bk.vehicles.forEach(v=>cellOf(v.x,v.z).vehicles.push(v)));W.rubble.forEach(r=>cellOf(r.x,r.z).rubble.push(r));
+  D.pieces.concat(W.pieces).forEach(p=>{const K=KTRANSIT.KINDS[p.kind];if(!K||!(K.h>=AV_TR_FAR_H)||p.state==='fallen'||p.state==='crushed')return;const C=cellOf(p.x,p.z);(C.far||(C.far=[])).push(p);});
   const a=st.pts[0],b=st.pts[1],mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,ys=[terrainH(a[0],a[1]),terrainH(mx,mz),terrainH(b[0],b[1])];
   REGISTER({name:'the street '+st.id+(st.av?' (an avenue)':''),kind:'street',x:mx,z:mz,y:Math.min(...ys)-3,r:Math.hypot(b[0]-a[0],b[1]-a[1])/2+st.width,h:Math.max(...ys)-Math.min(...ys)+12,tags:{kind:'street',pieces:D.pieces.length,craters:W.craters.length,positions:W.positions.length,avenue:!!st.av,id:st.id}});});
  add(SB.finish('streets',{chunk:AV_TR_CHUNK}),'the streets of the grid','street-surface',{roads:T.streets.length});
+ /* the far tier: one post an eligible piece, a bent one shorter, coloured like the kit's rusted steel; zeroed where a cell's pieces are drawn */
+ {let nF=0;AVTR.cellList.forEach(C=>{if(C.far)nF+=C.far.length;});if(nF){const g=new THREE.BoxGeometry(1,1,1);g.translate(0,.5,0);const col=KTRANSIT.COL&&KTRANSIT.COL.rust?KTRANSIT.COL.rust:[.35,.25,.2];
+   const im=new THREE.InstancedMesh(g,new THREE.MeshLambertMaterial({color:new THREE.Color(col[0]*.8,col[1]*.8,col[2]*.8)}),nF),M=new THREE.Matrix4(),P=new THREE.Vector3(),Q=new THREE.Quaternion(),Sc=new THREE.Vector3(),Y=new THREE.Vector3(0,1,0);let i=0;
+   AVTR.cellList.forEach(C=>{if(!C.far)return;C.farI=[];C.far.forEach(p=>{const K=KTRANSIT.KINDS[p.kind],h=K.h*(p.state==='bent'||p.state==='leaning'?.8:1),w=Math.min(.6,Math.max(.3,K.w*.3));P.set(p.x,p.y,p.z);Q.setFromAxisAngle(Y,p.yaw||0);Sc.set(w,h,w);M.compose(P,Q,Sc);im.setMatrixAt(i,M);C.farI.push(i);i++;});});
+   im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;im.userData.host=true;im.userData.inspectLabel='a street\'s furniture, far';im.name='transit.far';scene.add(im);AVTR.far=im;AVTR.groups.push(im);
+   REGISTER({name:'the streets\' furniture, the far tier',kind:'street-far',x:0,z:0,r:STAGE.R+400,h:12,tags:{kind:'street-far',posts:nF}});}}
  /* the junctions: a patch, the filleted pavement corners, the crosswalks */
  {const JB=KTRANSIT.builder();KTRANSIT.draw.junctions(JB,T.net,terrainH);add(JB.finish('junctions',{chunk:AV_TR_CHUNK}),'the junctions of the grid','junction',{count:T.net.junctions.length});}
  /* the highway, its ramps, the piers culled where they meet a plinth */
@@ -65,5 +76,7 @@ AVTR.frame=0;AVTR.farTick=function(){const e=camera.position,R=AV_TR_FAR+AV_TR_C
 AVTR.dressTick=function(){if(!AVTR.ready)return;if(!(AVTR.frame++%15))AVTR.farTick();if(!AVTR.cellList.length)return;const e=camera.position;let builtOne=false;
  for(const C of AVTR.cellList){const near=Math.hypot(C.cx-e.x,C.cz-e.z)<AV_TR_NEAR;
   if(near&&!C.built&&!builtOne){builtOne=true;C.built=true;try{C.g=AVTR.buildCell(C);AVTR.built++;}catch(err){reportErr('transit cell '+C.key+': '+(err.message||err));}}
-  if(C.g)C.g.visible=near;}};
+  if(C.g)C.g.visible=near;
+  /* the far posts of a cell go while its pieces are drawn, and come back when they are not */
+  if(C.farI&&AVTR.far){const hide=!!(C.g&&near);if(C.farHid!==hide){C.farHid=hide;const A=AVTR.far.instanceMatrix.array;for(const k of C.farI){if(hide){if(!C.farSave)C.farSave={};C.farSave[k]=Array.prototype.slice.call(A,k*16,k*16+16);for(let q=0;q<16;q++)A[k*16+q]=0;}else if(C.farSave&&C.farSave[k]){const s=C.farSave[k];for(let q=0;q<16;q++)A[k*16+q]=s[q];}}AVTR.far.instanceMatrix.needsUpdate=true;}}}};
 tick(function(){if(!AVTR.ready)AVTR.build();else AVTR.dressTick();});

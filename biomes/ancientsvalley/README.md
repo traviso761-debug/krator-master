@@ -123,7 +123,17 @@ elevated highway across the page with three ramps whose feet are T junctions of 
 crossings, a derailed train), the subway under an avenue (three stations, sinkholes, two metro trains), the ground carved by the kit's craters,
 sinkholes and gradings. `74-host-transit.js` draws it: every surface in one builder in 1.5 km chunks (the kit's 400 m chunks a street were
 3,000 draw calls here), the junctions and the kit's own draws chunked the same, far chunks hidden past 3.6 km, and the furniture and the war
-(50,000 piece records at the boot) bucketed into 400 m cells and drawn as the eye comes within 750 m, one cell a frame, one mesh a family.
+(50,000 piece records at the boot) bucketed into 400 m cells and drawn as the eye comes within 750 m, one cell a frame, one mesh a family; every
+standing piece 3 m and taller is a dark post in one InstancedMesh beyond that (the far tier). **The lake-front property values:** `AV.plan` leans
+the family mix tall toward the shore (`lakeK`, `tall`, `short`: the Spindle, the Organ, the Stalk, the Reed, the Swell, the Yoke, the Telescope
+and the Wedge win within 1.3 km of the water, the Ledger, the Pods, the Terrace, the Crescent and the Cupola inland), so the skyline climbs to the lake.
+**The towers on the kerb lines** (the owner, 2026-11-09; `AV.kerbPlace` in `41`, data side): the streets run on the lattice's half lines, so a tower
+on its node stood alone in the middle of its 165 m cell, 50 m of plinth from any street. Each now slides off its node until its plinth stops 3 m
+behind the pavement of one street (an avenue three times as often as a road), and about a third of them into the corner of a second street; on
+the axis it does not slide along, its plinth centres between that axis's kerbs, so a wide one no longer reaches into an avenue. A tower whose
+landing the plan forbids (the lines' corridors, the craters, the start, the lake) stays where it was, and one whose plinth still reaches into a
+roadway after every try is not built (`PLAN.kerbDropped`). The page checks it (`HCHK.kerb`: three in
+four towers on a kerb, no plinth into a roadway or pavement), the data test too.
 
 **Numbers (2026-11-09, `verify.py --assert --all-views` on the Arc 140T lane, 1280 x 800, with the transit):** 824 junctions, the highway 222 spans
 and 3 ramps, the cargo line 37 crossings, the subway 3 stations, 4 trains; the war at mean damage 0.57 on 59 lakeward streets against 0.31 on 5 inland;

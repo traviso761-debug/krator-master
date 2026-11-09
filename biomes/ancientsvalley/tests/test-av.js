@@ -41,6 +41,19 @@ ok('every tower has a key, a yaw and a kind',P.towers.every(t=>/^\w+\.\w+$/.test
  for(let i=0;i<P.towers.length;i++)for(let j=i+1;j<P.towers.length;j++)if(Math.hypot(P.towers[i].x-P.towers[j].x,P.towers[i].z-P.towers[j].z)<160*.95)close++;
  ok('no two towers closer than the pitch',close===0);}
 {const f=P.towers.filter(t=>t.state==='intact').length/P.towers.length,tall=P.towers.filter(t=>/^(intact|gutted|crown)$/.test(t.state)).length/P.towers.length;ok('few intact, under a third standing tall ('+Math.round(f*100)+'%, '+Math.round(tall*100)+'%)',f>.005&&f<.15&&tall<.35);}
+// the lake-front (the owner, 2026-11-09): with lakeK, tall and short, the tall family's share rises toward the lake and falls inland
+{const mkL=(lk)=>AV.plan({R:3000,pitch:160,theta:.3,seed:5,ground,lakeY:LAKE,F,coreKeys:['spindle','ledger'],shelfKeys:['spindle','ledger'],lakeK:lk,tall:['spindle'],short:['ledger']});
+ const share=(P,f)=>{const T=P.towers.filter(f);return T.length?T.filter(t=>t.family==='spindle').length/T.length:0;};
+ const L=mkL((x,z)=>x>400?1:x<-400?0:.5),near=share(L,t=>t.x>400),far=share(L,t=>t.x<-400),L0=mkL(null),n0=share(L0,t=>t.x>400),f0=share(L0,t=>t.x<-400);
+ ok('the tall family wins toward the lake and loses inland ('+Math.round(near*100)+'% by the lake, '+Math.round(far*100)+'% inland; '+Math.round(n0*100)+'% and '+Math.round(f0*100)+'% with no lake)',near>far+.25&&near>n0+.1&&far<f0-.1,Math.abs(n0-f0)>.25);}
+// the kerb lines (the owner, 2026-11-09): the towers slide off their nodes to a kerb, the plinth gap metres behind the pavement, never across a street
+{const ext=f=>f==='ledger'?[66,48]:[26,26],mkK=k=>AV.plan({R:3000,pitch:160,theta:.3,seed:5,ground,lakeY:LAKE,F,coreKeys:['spindle','ledger'],shelfKeys:['ledger'],kerb:k});
+ const K=mkK({avenue:16.5,road:9,gap:3,corner:.35,R:2900,lineMax:2850,extent:ext}),N=mkK(null),p=160,c=Math.cos(.3),s=Math.sin(.3);let on=0,cross=0,corner=0,gapOk=0;
+ K.towers.forEach(t=>{const e=ext(t.family),ang=t.yaw-.3,ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*e[0]+sa*e[1],sa*e[0]+ca*e[1]],l=[t.x*c+t.z*s,-t.x*s+t.z*c],gs=[1e9,1e9];
+  l.forEach((v,a)=>{if(Math.hypot(t.x,t.z)>2900)return;const k=Math.round(v/p-.5);if(Math.abs((k+.5)*p)>2850)return;const d=Math.abs(v-(k+.5)*p),hw=((k%3)+3)%3===1?16.5:9,g=d-ex[a]-hw;if(g<-.5)cross++;gs[a]=g;});
+  if(!t.kerb)return;on++;if(t.kerb.corner)corner++;if(Math.abs(gs[t.kerb.axis]-3)<.01)gapOk++;});
+ ok('the towers front the kerb lines ('+on+' of '+K.towers.length+', '+corner+' on corners, '+gapOk+' 3 m behind the pavement, '+cross+' plinths into a street)',on>K.towers.length*.6&&!cross&&gapOk===on&&corner>on*.15&&corner<on*.55,N.towers.filter(t=>t.kerb).length>N.towers.length*.6);
+ ok('the kerb pass is deterministic',JSON.stringify(mkK({avenue:16.5,road:9,gap:3,corner:.35,R:2900,lineMax:2850,extent:ext}).towers)===JSON.stringify(K.towers));}
 // the craters: on the page, apart, and the bowl below its rim
 {const C=AV.craters({R:2800,n:12,seed:3,ok:(x,z,r)=>ground(x,z)>LAKE+10});ok('craters struck ('+C.length+')',C.length>=8&&C.every(c=>Math.hypot(c.x,c.z)<=2800));
  let apart=true;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++)if(Math.hypot(C[i].x-C[j].x,C[i].z-C[j].z)<C[i].r+C[j].r)apart=false;ok('no two craters overlap',apart);
