@@ -14,6 +14,7 @@ const FAR=(function(){
  const colr=(x,z,y,q)=>{const n=clamp(KRAND.fbm(x*.003,.5,z*.003,2,4717)*.8+KRAND.fbm(x*.013,.5,z*.013,2,4718)*.4-.1,0,1);
   const fog=smooth(420,60,q.h-CLOUD_Y),dry=smooth(900,2600,x*.6+z*.8);
   let c=mixC(GOLD,OLIVE,n);c=mixC(c,OCHRE,dry*.8);c=mixC(c,MOSS,fog);
+  if(typeof STATION_FARCOL==='function')c=STATION_FARCOL(x,z,q.h,n,L);   /* a station's far colours (linear) */
   return mixC(c,HZ,.55*smooth(3500,9000,q.r));};
  const G=KFAR.grid({lines:KFAR.lines({cell:50,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
   h:(x,z)=>Math.abs(x)<S0&&Math.abs(z)<S0?terrainH(x,z)-SINK:landH(x,z),

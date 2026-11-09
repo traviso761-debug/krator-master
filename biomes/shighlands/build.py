@@ -114,7 +114,14 @@ khost.resolve(PATH,CORE_HOST)
 for f in ('23-mat-record.js','25-matlib-host.js'): PATH.setdefault(f,J('core','materials','record',f))
 sys.path.insert(0,J('tools','textures'))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'shigh'),khost.EDITS_JS:khost.edits_js(HERE,'shighlands')}
+# a family a station names in its station.json ("families") is packed into that station's page only: station 1 and the other stations leave it out
+_sfam=set()
+if os.path.isdir(_SD):
+    for _st in sorted(os.listdir(_SD)):
+        _p=os.path.join(_SD,_st,'station.json')
+        if os.path.isfile(_p):
+            with open(_p,encoding='utf-8') as _fh: _sfam.update(_json.load(_fh).get('families',[]))
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'shigh',exclude=sorted(_sfam-set(SJ.get('families',[]))),own=True),khost.EDITS_JS:khost.edits_js(HERE,'shighlands')}
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md): its core, presets, export, the open-water wave field, the sky's light, the weather and its selector,
 # and the cloud deck (89-atmos-d-clouddeck.js), bound by 89z-host-atmos.js. The deck is a field written from the presets, so a game engine draws

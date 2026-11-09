@@ -21,8 +21,10 @@ window._shadow=null;
  // THE FAR BAND'S DIET (GRAPHIC-LOAD.md recommendation 2): the far trees as octahedral impostors (core/biome 34; 55); ?diet=0 the old blobs
  if(Q.get('diet')==='0')SHIGH.IMPOSTORS=false;
  // one mirror-handed coilbark where a camera finds it: the nearest to the deepest cloud forest on the spine
- {let bx=0,bz=-1200,bs=-1e9;for(let z=-2400;z<=0;z+=40)for(let x=-2400;x<=2400;x+=40){if(BIO.mask(x,z)<=0)continue;const s=SHIGH.zones(x,z).forest-BIO.lodD(x,z)/400;if(s>bs){bs=s;bx=x;bz=z;}}
-  SHIGH.mirrorAt.push({key:'coilbark',x:bx,z:bz});}
+ // (a station names its own: STATION_MIRROR {key, score(x,z), box}; none for a station without trees)
+ {const MR=typeof STATION_MIRROR!=='undefined'?STATION_MIRROR:{key:'coilbark',score:(x,z)=>SHIGH.zones(x,z).forest,box:[-2400,-2400,2400,0]};
+  if(MR){let bx=0,bz=-1200,bs=-1e9;for(let z=MR.box[1];z<=MR.box[3];z+=40)for(let x=MR.box[0];x<=MR.box[2];x+=40){if(BIO.mask(x,z)<=0)continue;const s=MR.score(x,z)-BIO.lodD(x,z)/400;if(s>bs){bs=s;bx=x;bz=z;}}
+   SHIGH.mirrorAt.push({key:MR.key,x:bx,z:bz});}}
  try{window._biome=SHIGH.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();

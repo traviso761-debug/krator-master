@@ -27,6 +27,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the granite (darker in its joints, by slope)
   // the granite (darker in its joints, by slope), mossed over where the cloud reaches it
   t.copy(GRAN).lerp(GRAN2,clamp(.3+n*1.4+smooth(.5,.9,slope)*.45,0,1)).lerp(MOSSD,smooth(.35,.7,fog)*(.55+.3*smooth(.4,.6,pav2)));c.lerp(t,smooth(.3,.65,rock));
+  if(typeof STATION_PAINT==='function')STATION_PAINT(c,wx,wz,n,pav,pav2);   /* a station's own ground colours (stations/<name>/), in place of the zones' above */
   const k=1+n*.10+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -63,6 +64,7 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const KG_ON=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_ON&&new URLSearchParams(location.search).get('kgrelief')!=='0';
 const KGL=(function(){if(!KG_ON)return[];
+ if(typeof STATION_KGL==='function')return STATION_KGL();   /* a station's layers on the same three weights (STATION_GL fills them) */
  const m=KGROUND.layer('shigh','ground.moss',{w:'vGL.x*(1.0-kgWet)',amt:.55,gain:1.3,tint:'diffuse',name:'forest moss'}),
   w=KGROUND.layer('shigh','ground.wetmoss',{w:'clamp(vGL.x*kgWet+vGL.z*kgWetB,0.0,1.0)',amt:.6,gain:1.3,tint:'diffuse',name:'wet soil'}),
   p=KGROUND.layer('shigh','ground.paramo',{w:'vGL.y',amt:.5,gain:1.3,tint:'diffuse',name:'paramo grass'}),
@@ -82,13 +84,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'vec3 hueB=mix(vec3(1.1,0.94,0.89),vec3(0.91,1.06,0.93),smoothstep(0.3,0.7,mc2.r));float lw=clamp(vGL.x*0.55+vGL.y*0.5,0.0,1.0),bw=clamp(vGL.z*0.85,0.0,1.0);'+
    'vec3 vary=mix(vec3(1.0),tone*hue,lw);vary=mix(vary,mix(0.8,1.12,mc2.b)*hueB,bw);diffuseColor.rgb*=vary;}':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.6,vRock*0.7);'+
-  'vec2 t1=texture2D(uTuft,vGWP.xz*0.21).rg,t2=texture2D(uTuft,vGWP.xz*0.083+vec2(0.41,0.17)).rg;float tb=max(t1.r,t2.r*0.8),ts=max(t1.g,t2.g*0.8);'+
-  'diffuseColor.rgb*=1.0-ts*0.4*vPar;diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.24)*(1.0+0.5*tb),tb*vPar*0.75);}');};
+  /* the tussock print (a station with STATION_TUFT false uses vPar for its own term instead) */
+  (typeof STATION_TUFT!=='undefined'&&!STATION_TUFT?'':'vec2 t1=texture2D(uTuft,vGWP.xz*0.21).rg,t2=texture2D(uTuft,vGWP.xz*0.083+vec2(0.41,0.17)).rg;float tb=max(t1.r,t2.r*0.8),ts=max(t1.g,t2.g*0.8);'+
+  'diffuseColor.rgb*=1.0-ts*0.4*vPar;diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.24)*(1.0+0.5*tb),tb*vPar*0.75);')+
+  (typeof STATION_GROUND_GLSL==='string'?STATION_GROUND_GLSL:'')+'}');};   /* a station's own ground term (the fellfield's sorted-stone spirals) */
 if(KG_ON)KGROUND.hook(MAT_GROUND,{layers:KGL,key:'shigh-ground',relief:KG_RELIEF&&KGL.length?{bump:.075,cavity:.8,mesh:1}:null});
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),par=new Float32Array(nx*nx),gl=new Float32Array(nx*nx*3);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   rk[k]=smooth(.3,.65,FC.at(FC.a.rock,x,z));par[k]=(1-smooth(.4,.7,FC.at(FC.a.fog,x,z)))*(1-smooth(.4,.75,FC.at(FC.a.oasis,x,z)))*(1-rk[k]);
+  if(typeof STATION_GL==='function'){const w=STATION_GL(x,z,rk[k]);gl[k*3]=w[0];gl[k*3+1]=w[1];gl[k*3+2]=w[2];par[k]*=w[3]==null?0:w[3];continue;}
   {const fog=FC.at(FC.a.fog,x,z),bog=smooth(.45,.8,FC.at(FC.a.oasis,x,z))*(1-rk[k]),open=(1-bog)*(1-rk[k]),f=smooth(.32,.62,fog);gl[k*3]=f*open;gl[k*3+1]=(1-f)*open;gl[k*3+2]=bog;}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
