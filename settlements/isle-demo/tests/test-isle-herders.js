@@ -27,7 +27,7 @@ ISLE.simWatch('Kautoa');
 const a = ISLE.herdBooks(), t0 = Date.now(); ISLE.simRun(days * 1440 + 1); const b = ISLE.herdBooks();
 console.log('ran ' + days + ' days in ' + Math.round((Date.now() - t0) / 1000) + ' s');
 ISLE.herdChecks(a, b).forEach(c => ok(c.name, c.ok, c.detail));
-ok('over ' + days + ' days every band grazed a cell down and moved its camp at least once', b.bands.every(x => x.moves >= 1 && x.moved >= 1), b.bands.map(x => x.id + ' ' + x.moves + ' moves').join('; '));
+if (days >= 15) ok('over ' + days + ' days every band grazed a cell down and moved its camp at least once', b.bands.every(x => x.moves >= 1 && x.moved >= 1), b.bands.map(x => x.id + ' ' + x.moves + ' moves').join('; '));   /* a cell lasts a week or more: a shorter run need not see a move */
 /* THE NEGATIVES */
 { const B = cp(b); B.bands[0].here -= 3; caught('three herders missing from the camp', ISLE.herdChecks(a, B), /its herding band/); }
 { const B = cp(b); B.bands[0].meals.none = 6; caught('a band going hungry', ISLE.herdChecks(a, B), /every band fed/); }
