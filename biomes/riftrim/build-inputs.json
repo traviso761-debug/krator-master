@@ -9,7 +9,7 @@
     "biomes/rift/tex/fan.albedo.webp": "48893ba0417e8601f8c05b4b283a357bd6240ae5170f6e48bdef54aeb94dca17",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "d208c7d6af50075b0665ba5c4a991e1cb5ba4683a344e441438debc02cd14dd8",
+    "biomes/riftrim/KNOWN_ISSUES.md": "3f10f05a46d25fdd813e93ad352834ada1b829f3f8f133b03a8792dc6823e8ea",
     "biomes/riftrim/PORT.md": "5f624a000615a58ea2f1e88eae1e63b3bdc689beba112c542a51ffba995da681",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -73,13 +73,13 @@
     "biomes/riftrim/tex/sedge.albedo.webp": "942b968c7cb1eb774c8e442a3e63fb41aa65826fb763dc143aa54c3be837411e",
     "biomes/riftrim/tex/tussock.albedo.webp": "e9543b310d7b6b4f27a515018f0158415161cad8e26bafc9834467cf3060887a",
     "biomes/riftrim/tex/veil.albedo.webp": "914cfc1c0ca950d815ed4f5e9243caf6aca61ffc57a8dff0adeef01cc1ac3bff",
-    "biomes/shighlands/src/50-biome-shigh-species.js": "14bdd92ac8629c122c30686cae6d93540df95af558a22e0c74cf7b80cf3b17d7",
-    "biomes/shighlands/src/55-biome-shigh-trees.js": "22ee2a8d93409fb3680b112304daf9a2629d028c907a9df44c7a68191671153d",
+    "biomes/shighlands/src/50-biome-shigh-species.js": "90a5b968b6b8b9f176dd3d042cb51e6a5c6241e20ff3477e17b480922a481d28",
+    "biomes/shighlands/src/55-biome-shigh-trees.js": "7ae31190d2b73a120bd8355b6f1f2af32273a13dc4f8efcd85ec8405a5c9ac76",
     "biomes/shighlands/tex/bark.wrung.albedo.webp": "997b92a233cba8fdfeb17b64cd9107f9b0371ee384303221ddaed63a546e3bdd",
     "biomes/shighlands/tex/leaf.groundsel.albedo.webp": "e3bc858ea9cd50347f2b3921d2ece3561bd2ac82503220a857a17ed1629c434e",
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
-    "biomes/shighlands/tex/pack.json": "81b1652921d256b6bc962d270c46165888fb22c46b6b8aac42b60551d5f4e6aa",
+    "biomes/shighlands/tex/pack.json": "e6bde169ad733a2847b8ade807b47c379380133dbf0fec56790e72dc35a41a03",
     "biomes/swlowlands/src/50-biome-swlowlands-species.js": "07d71056e969086b5f5866a1b517e2845de19d81b8b1de02f4588af1aee38f65",
     "biomes/swlowlands/src/52-biome-swlowlands-library.js": "e59d37bd8ae5902227982186b674bc0f785cf248d60835ef5bf629306e9f6278",
     "biomes/swlowlands/src/55-biome-swlowlands-trees.js": "09f26c68456db4077a8e3b80228195842621107be34af23d4fbbc87df2a4c5ff",
@@ -187,10 +187,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim.html": "160364cdf7d0c5fdd7de83398d95417a516d07e03b4d33d234894114e69b9b0a"
+    "biomes/riftrim/dist/riftrim.html": "771c7c7479cb63bf625ed5a4e414acf585475e1f6c0ac2c37c9d674bb434571c"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim.html": "160364cdf7d0c5fdd7de83398d95417a516d07e03b4d33d234894114e69b9b0a"
+    "biomes/riftrim/dist/riftrim.html": "771c7c7479cb63bf625ed5a4e414acf585475e1f6c0ac2c37c9d674bb434571c"
    }
   },
   "build.py --station barrens": {
@@ -202,7 +202,7 @@
     "biomes/rift/tex/hang.albedo.webp": "acba982d72c5b9c6b9f5f9ccf35d45588441bd6469a9803ec743a08384e1d61c",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "d208c7d6af50075b0665ba5c4a991e1cb5ba4683a344e441438debc02cd14dd8",
+    "biomes/riftrim/KNOWN_ISSUES.md": "3f10f05a46d25fdd813e93ad352834ada1b829f3f8f133b03a8792dc6823e8ea",
     "biomes/riftrim/PORT.md": "5f624a000615a58ea2f1e88eae1e63b3bdc689beba112c542a51ffba995da681",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -377,7 +377,7 @@
     "biomes/rift/tex/fan.albedo.webp": "48893ba0417e8601f8c05b4b283a357bd6240ae5170f6e48bdef54aeb94dca17",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "d208c7d6af50075b0665ba5c4a991e1cb5ba4683a344e441438debc02cd14dd8",
+    "biomes/riftrim/KNOWN_ISSUES.md": "3f10f05a46d25fdd813e93ad352834ada1b829f3f8f133b03a8792dc6823e8ea",
     "biomes/riftrim/PORT.md": "5f624a000615a58ea2f1e88eae1e63b3bdc689beba112c542a51ffba995da681",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -563,7 +563,7 @@
     "biomes/rift/tex/hang.albedo.webp": "acba982d72c5b9c6b9f5f9ccf35d45588441bd6469a9803ec743a08384e1d61c",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "d208c7d6af50075b0665ba5c4a991e1cb5ba4683a344e441438debc02cd14dd8",
+    "biomes/riftrim/KNOWN_ISSUES.md": "3f10f05a46d25fdd813e93ad352834ada1b829f3f8f133b03a8792dc6823e8ea",
     "biomes/riftrim/PORT.md": "5f624a000615a58ea2f1e88eae1e63b3bdc689beba112c542a51ffba995da681",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -743,7 +743,7 @@
     "biomes/rift/tex/leaflet.albedo.webp": "7727416533e76ec5f925780d88529e27e3ae778271d4c32f088751a55a51c55a",
     "biomes/rift/tex/moss.albedo.webp": "66be08cf6afd0860c5a14edec1a6fab70ffaadda435a5c5e7602b1ced26044cf",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
-    "biomes/riftrim/KNOWN_ISSUES.md": "d208c7d6af50075b0665ba5c4a991e1cb5ba4683a344e441438debc02cd14dd8",
+    "biomes/riftrim/KNOWN_ISSUES.md": "3f10f05a46d25fdd813e93ad352834ada1b829f3f8f133b03a8792dc6823e8ea",
     "biomes/riftrim/PORT.md": "5f624a000615a58ea2f1e88eae1e63b3bdc689beba112c542a51ffba995da681",
     "biomes/riftrim/build.py": "8fc63eb3366b57d42e3e0455cc13aaaac9a19c56d1adc445527c849ba8595aa1",
     "biomes/riftrim/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
@@ -807,11 +807,11 @@
     "biomes/riftrim/tex/sedge.albedo.webp": "942b968c7cb1eb774c8e442a3e63fb41aa65826fb763dc143aa54c3be837411e",
     "biomes/riftrim/tex/tussock.albedo.webp": "e9543b310d7b6b4f27a515018f0158415161cad8e26bafc9834467cf3060887a",
     "biomes/riftrim/tex/veil.albedo.webp": "914cfc1c0ca950d815ed4f5e9243caf6aca61ffc57a8dff0adeef01cc1ac3bff",
-    "biomes/shighlands/src/50-biome-shigh-species.js": "14bdd92ac8629c122c30686cae6d93540df95af558a22e0c74cf7b80cf3b17d7",
-    "biomes/shighlands/src/55-biome-shigh-trees.js": "22ee2a8d93409fb3680b112304daf9a2629d028c907a9df44c7a68191671153d",
+    "biomes/shighlands/src/50-biome-shigh-species.js": "90a5b968b6b8b9f176dd3d042cb51e6a5c6241e20ff3477e17b480922a481d28",
+    "biomes/shighlands/src/55-biome-shigh-trees.js": "7ae31190d2b73a120bd8355b6f1f2af32273a13dc4f8efcd85ec8405a5c9ac76",
     "biomes/shighlands/tex/bark.scars.albedo.webp": "a02728fc371f3f52f5a6f227237b2c50bbfac87234f8de955872d4fa6b4a91d3",
     "biomes/shighlands/tex/fern.albedo.webp": "5c7a491e98a57ca7b39aa256dfe701e43c49a517fdf02738288b3458f1eead2c",
-    "biomes/shighlands/tex/pack.json": "81b1652921d256b6bc962d270c46165888fb22c46b6b8aac42b60551d5f4e6aa",
+    "biomes/shighlands/tex/pack.json": "e6bde169ad733a2847b8ade807b47c379380133dbf0fec56790e72dc35a41a03",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-3-particles.js": "ed08034d9740cf17939d83d56750b7e7b6746cff370e002fd99cdd9525e1d9a4",
@@ -909,10 +909,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "1e5d38e4e2113b9e20f0744879e78b85f8f53ecb941c9fcb81204aca06778ec3"
+    "biomes/riftrim/dist/riftrim-lakes.html": "9d27bbb7a510aceb4ecd641a57ada2868fd94119eef4ac30d52ec484a7d0e3b4"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "1e5d38e4e2113b9e20f0744879e78b85f8f53ecb941c9fcb81204aca06778ec3"
+    "biomes/riftrim/dist/riftrim-lakes.html": "9d27bbb7a510aceb4ecd641a57ada2868fd94119eef4ac30d52ec484a7d0e3b4"
    }
   },
   "build.py --station ledge": {
