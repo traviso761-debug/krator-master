@@ -22,7 +22,7 @@
     "biomes/nsemiarid/src/89b-host-atmos.js": "84a0bfc690148d78ee19ccfb2554269bf82a462ee91531f94190b892288c0d5f",
     "biomes/nsemiarid/src/89c-host-seeds.js": "f3247d6cb02dd46b64872f87b932858d618c144480db537c6f8ab7359fddbb20",
     "biomes/nsemiarid/src/98-host-checks.js": "d92671d0e5e84417d21dc0f6357b121ce0e649e474d3d1dea2f0fb4b7af90f54",
-    "biomes/nsemiarid/src/99-host-take.js": "c68fcf89404ecc91793ad2ea668258d4677c7aa75b4caa08a499d72a35d719ac",
+    "biomes/nsemiarid/src/99-host-take.js": "6063621815fb61ad0f0b129e80e215e8553fdd63ec97f57d4106c924239ed495",
     "biomes/nsemiarid/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/nsemiarid/tex/bark.alien.albedo.webp": "4869d989fca0d5bfb81014c015ca8ccbbdf21661777afffda3397420acd15391",
     "biomes/nsemiarid/tex/bark.furrowed.albedo.webp": "5e47bc8aa35223e2214afe2c676126c7017b9f30b68ef4c263444629d191afb2",
@@ -147,10 +147,10 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/nsemiarid/dist/nsemiarid.html": "9e8020d1128af4dc942876d817c0b03cb8e748b2610fa66aa90f84112bac966c"
+    "biomes/nsemiarid/dist/nsemiarid.html": "07c78eb735358bba6e3ca1d9f92b2e62473376622393e2c1be56e0329a1ed620"
    },
    "outputs_raw": {
-    "biomes/nsemiarid/dist/nsemiarid.html": "9e8020d1128af4dc942876d817c0b03cb8e748b2610fa66aa90f84112bac966c"
+    "biomes/nsemiarid/dist/nsemiarid.html": "07c78eb735358bba6e3ca1d9f92b2e62473376622393e2c1be56e0329a1ed620"
    }
   }
  }
