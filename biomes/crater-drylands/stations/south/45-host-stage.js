@@ -53,6 +53,14 @@ function segD(px,pz,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=L2?Mat
 FLOWS.forEach(F=>{const xs=F.pts.map(p=>p[0]),zs=F.pts.map(p=>p[1]),m=F.w*1.4;F.box=[Math.min(...xs)-m,Math.min(...zs)-m,Math.max(...xs)+m,Math.max(...zs)+m];});   /* each flow's box: most points are outside every one */
 function flowAt(x,z){let f=0;for(const F of FLOWS){if(x<F.box[0]||x>F.box[2]||z<F.box[1]||z>F.box[3])continue;let best=1e9,end=0;for(let i=0;i<F.pts.length-1;i++){const [d,t]=segD(x,z,F.pts[i],F.pts[i+1]);if(d<best){best=d;end=i===F.pts.length-2?t:0;}}
   const w=F.w*(.8+.4*fbm(x*.004+F.s,z*.004,300+F.s,2))*(1-.35*end*end);f=Math.max(f,smooth(w*1.02,w*.88,best));}return f;}
+// THE AF GULLY (PLAN-STATIONS.md, station 2: gully galleries on the north-western side, ~2,300 mm, fed from SW Bay's air): a ravine cut ~7 m into
+// the plain from the north-west corner, wet and running with the bay's air; the hyperjungle's trees grow along it as a gallery (86)
+const GULLY=[[-2700,-700],[-2150,-1000],[-1750,-1500],[-1350,-1750],[-900,-2350],[-700,-2700]];
+function gullyD(x,z){if(x>-400||z>-400)return 1e9;let d=1e9;for(let i=0;i<GULLY.length-1;i++)d=Math.min(d,segD(x,z,GULLY[i],GULLY[i+1])[0]);return d;}
+// THE LAVA STEP at the southern edge (Godstep's first step; BACKPORT.md's row: tibasalt strata at the southern edge): the ground rises ~30 m on a
+// steep face along stepZ(x); the old flows come down off it. Its face is drawn in the tibasalt beds (85-host-step.js)
+const stepZ=x=>2120+90*Math.sin(x*.0013+.4)+35*Math.sin(x*.004+1.1)+14*Math.sin(x*.011);
+const STEP_H=30;
 // the se rim's air on the northern and eastern edges: the wetter ground its trees come in on
 function wetEdge(x,z){return Math.max(smooth(-900,-2300,z),smooth(1000,2300,x))*(.75+.25*fbm(x*.002,z*.002,77,2));}
 // the washes: A runs west across the south of the map, B comes down the east side and joins it
@@ -71,11 +79,12 @@ function kopAt(x,z){let h=0,rock=0,foot=0;
   hh+=K.h*.1*smooth(1.42,.92,d)*smooth(.6,1.0,d)+2.5*(fbm(x*.05,z*.05,210+i,2)-.5)*core;
   h=Math.max(h,hh);rock=Math.max(rock,smooth(1.12,.88,d));foot=Math.max(foot,smooth(1.0,1.12,d)*smooth(1.5,1.18,d));}
  return{h,rock,foot};}
-function plainH(x,z){return 150+260*smooth(-1600,2600,z)+3.2*flowAt(x,z)+22*(fbm(x*.0006+3,z*.0006-1,17,3)-.5)+9*(fbm(x*.0023-5,z*.0023+2,19,2)-.5)+40*smooth(-1000,-2700,z)-14*smooth(400,2400,z);}
+function plainH(x,z){return 150+260*smooth(-1600,2600,z)+STEP_H*smooth(-10,9,z-stepZ(x))+3.2*flowAt(x,z)+22*(fbm(x*.0006+3,z*.0006-1,17,3)-.5)+9*(fbm(x*.0023-5,z*.0023+2,19,2)-.5)+40*smooth(-1000,-2700,z)-14*smooth(400,2400,z);}
 function landH(x,z){return plainH(x,z)+kopAt(x,z).h;}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function terrainH0(x,z){let h=landH(x,z);
+ {const g=gullyD(x,z);if(g<40)h-=7*smooth(40,4,g)+.6*(fbm(x*.05,z*.05,93,2)-.5)*smooth(20,2,g);}
  const d=washD(x,z);if(d<WASHW+14)h-=3.4*smooth(WASHW+14,WASHW*.6,d)+.5*(fbm(x*.03,z*.03,88,2)-.5)*smooth(WASHW+4,WASHW*.3,d);
  const ds=Math.hypot(x-SEEP.x,z-SEEP.z);if(ds<SEEP.r*2.2)h-=1.6*smooth(SEEP.r*1.9,SEEP.r*.5,ds);
  return h;}
@@ -88,10 +97,11 @@ function waterH(x,z){if(Math.hypot(x-SEEP.x,z-SEEP.z)<SEEP.r*1.4)return SEEPL;re
 function fieldsAt(x,z,h,slope){const K=kopAt(x,z),d=washD(x,z),ds=Math.hypot(x-SEEP.x,z-SEEP.z);
  const wash=smooth(WASHW+10,WASHW*.5,d),seep=smooth(SEEP.r*5,SEEP.r*1.2,ds);
  const rock=clamp(Math.max(K.rock*smooth(.12,.35,slope+.2*K.rock),smooth(.6,.9,slope)*.7,.3*flowAt(x,z)),0,1);   /* a flow: rough basalt, not a refuge */
- const wet=clamp(.11+.22*wetEdge(x,z)+.05*(fbm(x*.0015,z*.0015,131,2)-.5)+.42*wash+.16*K.foot+.85*seep,0,1);
- return{wet,flow:Math.max(wash,seep*.8),upland:clamp((h-130)/300,0,1),canyon:0,rim:0,rock,dune:0,oasis:seep,slope,abyss:0,salt:0,
-  cold:clamp(.02+(h-150)/1600,0,1),geo:0,barren:0,lava:flowAt(x,z),wetedge:wetEdge(x,z)};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','lava','wetedge'];
+ const gl=smooth(70,12,gullyD(x,z));
+ const wet=clamp(.11+.22*wetEdge(x,z)+.6*gl+.05*(fbm(x*.0015,z*.0015,131,2)-.5)+.42*wash+.16*K.foot+.85*seep,0,1);
+ return{wet,flow:Math.max(wash,seep*.8,gl*.85),upland:clamp((h-130)/300,0,1),canyon:0,rim:0,rock,dune:0,oasis:seep,slope,abyss:0,salt:0,
+  cold:clamp(.02+(h-150)/1600,0,1),geo:0,barren:0,lava:flowAt(x,z),wetedge:wetEdge(x,z),gully:gl};}
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','lava','wetedge','gully'];
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}

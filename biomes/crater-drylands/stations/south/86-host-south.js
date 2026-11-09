@@ -8,9 +8,11 @@
 //   3. THE SE RIM COMES IN on the wetter northern and eastern edges (reach ~60 km, PLAN-LANDS 5.3): savannarim's rust miombo and incense tree
 //      (SAVRIM.builders, read in place) on the open ground there, and its rain rose (savannarim's cousin of sedesert's rose) on the kopjes there.
 //   Each by hashed cell (KRAND, world 0x5007), so nothing hangs on a draw order; heroes near the LOD spine, each kit's far form beyond.
-//   Not here (owed: KNOWN_ISSUES.md): Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan), the Af gully galleries, the Csa and
-//   Csb oak scrub on the topmost slopes, the tibasalt strata at the southern edge. ?black=0 and ?serim=0 leave either out.
-const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E={black:[],serim:[]};
+//   4. THE AF GALLERY in the north-western gully (45: GULLY): the hyperjungle's trees at .3-.5 of their size along it, as savannarim's gallery
+//      forest takes them (HYPERJUNGLE.make / grow, read in place), with the kit's own wash trees.
+//   Not here (owed: KNOWN_ISSUES.md): Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan), the Csa and Csb oak scrub on the
+//   topmost slopes. ?black=0, ?serim=0 and ?gallery=0 leave each out.
+const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E={black:[],serim:[],gallery:[]};
  const lava=(x,z)=>FIELD.lava(x,z),wedge=(x,z)=>FIELD.wetedge(x,z);
  const crMask=(x,z)=>1-smooth(.2,.5,lava(x,z));   /* the kit's base keeps off the flows (none past half a flow: the check counts trees over .6) */
  E.crMask=crMask;
@@ -38,13 +40,16 @@ const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E=
   if(IB)out.incense=pass(3,42,.4*q,4,(x,z)=>smooth(.3,.65,wedge(x,z))*Math.max(open(x,z)*.7,CRATERDRY.zones(x,z).kop*.5),own(IB,'incense'),E.serim);
   if(RR)out.rainrose=pass(4,30,.5*q,4,(x,z)=>smooth(.25,.55,wedge(x,z))*CRATERDRY.zones(x,z).kop,(x,y,z,lv)=>{const T=RR.make(x,y,z);RR.grow(T,lv);T.name=RR.record.name;T.key='rainrose';T.lv=lv;return T;},E.serim);
   return out;}
+ function gallery(q){if(Q.get('gallery')==='0'||typeof HYPERJUNGLE==='undefined'||!HYPERJUNGLE.make||!HYPERJUNGLE.grow)return 0;const HJ=HYPERJUNGLE,GSP=[0,4,5,0,1,4,5,2,3];
+  return pass(5,55,.6*q,7,(x,z)=>smooth(.35,.75,FIELD.gully(x,z)),(x,y,z,lv,seed)=>{const sp=GSP[seed%GSP.length],T=HJ.make(sp,x,y,z),k=.3+.2*((seed>>4)%100)/100;
+   T.H*=k;T.rb*=k;T.crownR*=k;HJ.grow(T,Math.max(1,lv));T.name='Gallery forest: a '+HJ.SPECIES[sp].name.toLowerCase()+' (the hyperjungle\'s, at '+k.toFixed(2)+' of its size)';T.key=HJ.SPECIES[sp].key;T.lv=lv;return T;},E.gallery);}
  E.build=function(q){let out;
   try{MASK=crMask;out=CRATERDRY.build({R:TERR.R-150,quality:q});}finally{MASK=()=>1;}
   (CRATERDRY.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));
-  try{BIO.cur='south/blackmallee';out.blackmallee=black(q);BIO.cur='south/serim';out.serim=serim(q);}catch(e){reportErr('south: '+e.stack);}finally{BIO.cur=null;}
+  try{BIO.cur='south/blackmallee';out.blackmallee=black(q);BIO.cur='south/serim';out.serim=serim(q);BIO.cur='south/gallery';out.gallery=gallery(q);}catch(e){reportErr('south: '+e.stack);}finally{BIO.cur=null;}
   return out;};
  // the views
- const near=(list,key,x,z,lv)=>{let b=null,bd=1e9;for(const T of list){if(T.key!==key||(lv!=null&&T.lv<lv))continue;const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;};
+ const near=(list,key,x,z,lv)=>{let b=null,bd=1e9;for(const T of list){if((key!=null&&T.key!==key)||(lv!=null&&T.lv<lv))continue;const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;};
  const tree=T=>Object.assign({y0:terrainH(T.x,T.z),H:T.H==null?8:T.H,crownR:T.crownR==null?3:T.crownR},T);
  E.views=function(h){const V={},c=BIO.center?BIO.center():[0,0];
   const b=near(E.black,'blackmallee',FLOWS[1].pts[2][0],FLOWS[1].pts[2][1],2);if(b)V['The black mallee on an old flow']=h.atTree(tree(b),9,.8,2,.35);
@@ -53,13 +58,17 @@ const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E=
   const K0=KOP[0],r=near(E.serim,'rainrose',K0.x,K0.z,1);if(r)V['A rain rose on its kopje']=h.atTree(tree(r),r.H*1.8,2.6,3,.5);
   V['The rose kopje']=h.look(K0.x+K0.r*2.2,K0.z+K0.r*1.4,10,K0.x,K0.z,K0.h*.5);
   const F=FLOWS[0].pts;V['An old flow coming down from the south']=h.look(F[3][0]+260,F[3][1]-120,30,F[1][0],F[1][1],0);
+  const gp=GULLY[2],g=near(E.gallery,null,gp[0],gp[1]);if(g)V['The Af gallery in the gully']=h.atTree(tree(g),(g.crownR||8)*2.5,.9,3,.45);
+  const sx=600,sz=stepZ(600);V['The lava step: titanium basalt in its beds']=h.look(sx+40,sz-140,6,sx,sz,STEP_H*.5);
   V['The south from above']=h.look(2400,-2300,800,-200,600,0);return V;};
  // the station's checks, each with its broken input
  const CH={black:L=>{const off=L.filter(T=>lava(T.x,T.z)<.4);return{ok:L.length>=40&&!off.length,detail:L.length+' black mallees'+(off.length?', '+off.length+' off the old flows':', all on the old flows')};},
   serim:o=>({ok:o.miombo>=15&&o.incense>=15&&o.rainrose>=3,detail:'rust miombo '+o.miombo+', incense '+o.incense+', rain roses '+o.rainrose+' (the se rim, from savannarim)'}),
+  gallery:L=>{const off=L.filter(T=>FIELD.gully(T.x,T.z)<.25);return{ok:L.length>=10&&!off.length,detail:L.length+' gallery trees (the hyperjungle\'s)'+(off.length?', '+off.length+' out of the gully':', all in the north-western gully')};},
   base:T=>{const on=T.filter(t=>lava(t.x,t.z)>.6);return{ok:!on.length,detail:on.length?on.length+' of the kit\'s trees on an old flow':T.length+' trees of the kit\'s base, none on an old flow'};}};
  E.checks=add=>{add('the black mallee on the old flows only',CH.black(E.black));add('the se rim\'s trees on the wet edges',CH.serim((window._biome&&window._biome.serim)||{}));
-  add('the kit\'s base off the old flows',CH.base(CRATERDRY.TREES||[]));};
+  add('the kit\'s base off the old flows',CH.base(CRATERDRY.TREES||[]));add('the Af gallery in the gully',CH.gallery(E.gallery));
+  add('the lava step\'s face in its beds',{ok:!!(window._stepFace&&window._stepFace.tris>2000),detail:window._stepFace?window._stepFace.tris+' triangles of tibasalt face':'no face drawn'});};
  E.negatives=add=>{const P=FLOWS[1].pts[2];add('no black mallee',CH.black([]));add('a black mallee off the flows',CH.black(E.black.concat([{x:KOP[0].x,z:KOP[0].z}])));
-  add('no se rim',CH.serim({miombo:0,incense:0,rainrose:0}));add('a prism mallee on a flow',CH.base([{x:P[0],z:P[1],sp:0}]));};
+  add('no se rim',CH.serim({miombo:0,incense:0,rainrose:0}));add('a gallery tree out on the plain',CH.gallery(E.gallery.concat([{x:0,z:0}])));add('a prism mallee on a flow',CH.base([{x:P[0],z:P[1],sp:0}]));};
  return E;})();

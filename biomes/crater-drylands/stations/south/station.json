@@ -1,11 +1,12 @@
 {
- "name": "The south (station 2, crater drylands S): the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee, the se rim's rust miombo, incense and rain roses on the wet edges",
+ "name": "The south (station 2, crater drylands S): the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee, the se rim's rust miombo, incense and rain roses on the wet edges, the Af gallery in the north-western gully, the lava step in its tibasalt beds",
  "out": "crater-drylands-s.html",
  "core": {
   "30s-core-season-flush.js": "core/biome/30s-core-season-flush.js",
   "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
   "39-core-lean.js": "core/biome/39-core-lean.js",
-  "21-core-clock-flush.js": "core/clock/opt/21-core-clock-flush.js"
+  "21-core-clock-flush.js": "core/clock/opt/21-core-clock-flush.js",
+  "35-core-strata.js": "core/terrain/35-core-strata.js"
  },
  "kits": {
   "47a0-hj-50-biome-hyperjungle-species.js": "../hyperjungle/src/50-biome-hyperjungle-species.js",
@@ -24,7 +25,8 @@
  "packs": {
   "savannarim": "../savannarim",
   "sedesert": "../sedesert",
-  "throne": "../throne"
+  "throne": "../throne",
+  "hyperjungle": "../hyperjungle"
  },
  "packOnly": {
   "savannarim": [
@@ -47,6 +49,32 @@
   ],
   "throne": [
    "ground.sandblack"
+  ],
+  "hyperjungle": [
+   "bark0",
+   "bark1",
+   "bark2",
+   "bark3",
+   "bark4",
+   "bark5",
+   "leaf0",
+   "leaf1",
+   "leaf2",
+   "leaf3",
+   "leaf4",
+   "leaf5",
+   "limb",
+   "raceme",
+   "under",
+   "under1",
+   "under2",
+   "under3",
+   "frond",
+   "hang",
+   "hang1",
+   "moss",
+   "bract",
+   "wood"
   ]
  }
 }
