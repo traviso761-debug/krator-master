@@ -20,10 +20,17 @@
        - lowered to the abstract level.
      Before the first village, the towns take the villages' goods (`goods`), their new inputs, recipes and uses (`town`),
      and the lakatoi the charcoal and the iron (`lakatoi`, `expect`), and the iron tools go on sale (`wares`).
+     A FARMING VILLAGE (PLAN.md section 11, 2026-11-09; `farming` in the tune): its farmsteads each grow one of its crop
+     rows (ISLE.hamletCrops, dealt by weight), its granaries are stores, its farmland (core/hamlet 14's record, handed in
+     as the resource) a site that regrows all it gives; its road keeps a day of its own food back and carries the rest to
+     its town, which counts the crops as its own (44) and, Valapo, drops its farms stand-in (40). A plantation is a farming
+     village on the town's cash crops (`spec.plantation`).
      ISLE.simHamletBooks()       a snapshot: each village's people, workers, made, shipped and landed by good, its food
      ISLE.hamletChecks(a, b)     over two snapshots: each village staffed and fed (no meal without food, its food never
                                  out after its first day), making its goods, every load it sent landed in its town or at
-                                 sea, its town's books showing them imported, the books balancing in the village */
+                                 sea, its town's books showing them imported, the books balancing in the village; the
+                                 countryside's land in crop within a fifth of the estimate, its crops landed and booked,
+                                 a town without fields growing none of them itself */
 ISLE.simHamlets = function (villages) {
   var S = ISLE.SIM, T = ISLE.TUNE.sim, HT = T.hamlets, I = T.items, out = { villages: [], routes: [], errors: [] };
   if (!S || !HT || !villages || !villages.length) return out;
@@ -32,7 +39,7 @@ ISLE.simHamlets = function (villages) {
   villages.forEach(function (V) {
     var sp = V.spec, v = V.village;
     if (!v || v.error || !v.records) { out.errors.push(sp.id + ': ' + (v && v.error || 'no village')); return; }
-    try { out.villages.push(ISLE.simHamlet(sp, v, V.resource)); } catch (e) { out.errors.push(sp.id + ': ' + (e && e.stack ? e.stack : e)); }
+    try { out.villages.push(ISLE.simHamlet(sp, v, V.resource, V.name)); } catch (e) { out.errors.push(sp.id + ': ' + (e && e.stack ? e.stack : e)); }
   });
   out.villages.forEach(function (X) { out.routes.push(X.out, X['in']); });
   if (SIM.MONEY) out.villages.forEach(function (X) { ISLE.simMoneyTown(X.id); });   /* their accounts (47m) */
@@ -74,11 +81,18 @@ ISLE.simHamletUses = function (minute) {
     Object.keys(us).forEach(function (g) { var k = s + ':' + g, c = (U.carry[k] || 0) + us[g] * X.pop.actors / 24, n = Math.floor(c); U.carry[k] = c - n; if (n <= 0) return;
       var got = SIM.supply(g, n, false, s); U.drawn[k] = (U.drawn[k] || 0) + got; if (got < n) U.short[k] = (U.short[k] || 0) + n - got; }); });
 };
-ISLE.simHamlet = function (sp, v, res) {
+ISLE.simHamlet = function (sp, v, res, name) {
   var S = ISLE.SIM, T = ISLE.TUNE.sim, HT = T.hamlets, I = T.items, id = sp.id, TSp = T.towns[sp.parent], ps = TSp.id, Xp = S.towns[ps];
+  var label = name ? name + ' (' + sp.name.toLowerCase() + ')' : sp.name;   /* its dealt name (core/hamlet 18), its role after */
   var row = KHAMLET.row('islander_east'), C = v.census, h = function (x, z) { return typeof WORLD !== 'undefined' && WORLD.H ? WORLD.H(x, z) : 0; };
-  SIM.settlement({ id: id, faction: TSp.faction, name: sp.name, parent: ps });
-  if (!SIM.R.org[id + '.folk']) SIM.org({ id: id + '.folk', faction: TSp.faction, name: 'The people of the ' + sp.name.toLowerCase() });
+  /* a farming village's crops (the tune's rows for its town, or the spec's own): one a farmstead, dealt by weight in order */
+  var FC = sp.focus === 'farming' ? ISLE.hamletCrops(ps, sp) : null, FG = [];
+  if (FC) FC.forEach(function (Cr) { var g = T.economy.crops[Cr.crop]; if (g && FG.indexOf(g) < 0) FG.push(g); });
+  var cropOf = function (k, n) { var tot = 0, i; for (i = 0; i < FC.length; i++) tot += FC[i].w == null ? 1 : FC[i].w;
+    var r = (k + 0.5) / n * tot; for (i = 0; i < FC.length; i++) { r -= FC[i].w == null ? 1 : FC[i].w; if (r <= 0) return FC[i]; } return FC[FC.length - 1]; };
+  var outsOf = function (Pr, k, n) { if (Pr.out !== 'crops') return Pr.out.slice(); if (!FC || !FC.length) return null; var g = T.economy.crops[cropOf(k, n).crop]; return g ? [g] : null; };
+  SIM.settlement({ id: id, faction: TSp.faction, name: label, parent: ps });
+  if (!SIM.R.org[id + '.folk']) SIM.org({ id: id + '.folk', faction: TSp.faction, name: 'The people of ' + (name || 'the ' + sp.name.toLowerCase()) });
   /* the places */
   var jobsOf = {}; (row.works[sp.focus] || []).forEach(function (w) { jobsOf[w.key] = w.jobs; });
   var places = [], beds = 0, kinds = {};
@@ -88,7 +102,7 @@ ISLE.simHamlet = function (sp, v, res) {
     if (role === 'house') { var b = Math.round((r.households || 1) * row.household); Object.keys(acts).forEach(function (a) { acts[a] = b; }); beds += b; }
     else if (role === 'works') acts.WORK = jobsOf[r.key] || 4;
     else acts.WORK = (row.services[role] || 2);
-    var P = SIM.place({ id: r.id, name: sp.name + ': ' + (role === 'works' ? K[0] : role), kind: K[0], x: r.x, y: y, z: r.z, ry: r.ry || 0, door: { x: r.x, y: y, z: r.z },
+    var P = SIM.place({ id: r.id, name: (name || sp.name) + ': ' + (role === 'works' ? K[0] : role), kind: K[0], x: r.x, y: y, z: r.z, ry: r.ry || 0, door: { x: r.x, y: y, z: r.z },
       activities: acts, indoor: true, settlement: id, tags: { key: r.key, role: role, hamlet: id, focus: sp.focus } });
     places.push(P); kinds[K[0]] = (kinds[K[0]] || 0) + 1;
   });
@@ -111,15 +125,18 @@ ISLE.simHamlet = function (sp, v, res) {
   var E = SIM.economy(Object.assign({ goods: goods, inputs: CR ? Object.assign({}, CR.inputs) : {}, every: T.economy.every, window: T.economy.window, imports: T.economy.imports, cart: T.economy.cart,
     meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, rules), { settlement: id });
   /* the resource it works, by the map record's own id: its grade the yield (nothing runs out: the owner's rule) */
-  var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) Pr.out.forEach(function (g) { outs[g] = 1; }); });
+  var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) (Pr.out === 'crops' ? FG : Pr.out).forEach(function (g) { outs[g] = 1; }); });
   var siteId = res && res.id && !crew ? res.id : null;   /* a crew's range is its stands' sites (below) */
   var SK = (HT.sites || {})[res && res.kind] || {};
-  if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: null, regen: SK.regen,
+  if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: null, regen: typeof SK.regen === 'number' ? SK.regen : 0,
     yield: res.grade != null && HT.gradeYield[res.grade] != null ? HT.gradeYield[res.grade] : 1, capacity: res.cap == null ? null : res.cap });   /* its amount set from its life once its works are known (below) */
+  var nFarm = places.filter(function (P) { var Pr = HT.producers[P.kind]; return Pr && Pr.out === 'crops' && P.activities.WORK; }).length, kFarm = 0, CR0 = T.economy.cropRate || {};
   places.forEach(function (P) {
-    if (P.kind === 'warehouse') { SIM.store(P.id, { kind: 'warehouse' }); return; }
+    if (P.kind === 'warehouse' || P.kind === 'granary') { SIM.store(P.id, { kind: 'warehouse' }); return; }   /* a farming village's granaries are stores too */
     var Pr = HT.producers[P.kind]; if (!Pr || !P.activities.WORK) return;
-    SIM.recipe(P.id, Object.assign({ out: Pr.out.slice(), rate: Pr.rate, cap: Pr.cap }, siteId ? { site: siteId } : {})); Pr.out.forEach(function (g) { makes[g] = (makes[g] || 0) + 1; });
+    var o = outsOf(Pr, Pr.out === 'crops' ? kFarm++ : 0, nFarm); if (!o) return;
+    var cr = Pr.out === 'crops' && CR0[o[0]] != null ? CR0[o[0]] : 1;   /* a crop's own rate (the spice and the cane cut tenfold, as the towns' parcels) */
+    SIM.recipe(P.id, Object.assign({ out: o.slice(), rate: Pr.rate * cr, cap: Pr.cap }, siteId ? { site: siteId } : {})); o.forEach(function (g) { makes[g] = (makes[g] || 0) + 1; });
   });
   /* the site's amount from its life (`life`, `sites[kind].years`): what its works draw flat out a day, less its regrowth */
   var life = null; if (crew) life = ISLE.simCrewStart(crew, CR, id);
@@ -128,9 +145,18 @@ ISLE.simHamlet = function (sp, v, res) {
       yield: life.yield, capacity: res.cap == null ? null : res.cap }); }
   var pol = {}; Object.keys(makes).concat(crew ? crew.goods.concat(Object.keys(CR.batch.by || {})) : []).forEach(function (g) { if (HT.stockpile && HT.stockpile[g]) pol[g] = HT.stockpile[g]; }); SIM.stockpile(id, pol);
   var W = E.warehouses; if (!W.length) throw new Error('no warehouse');
-  var people = mine.length, need = people * I.meals * I.perMeal * HT.startDays;
+  /* the road's time (below: the baked highway's length where the page has it) sets how many days of its town's food a
+     village opens with: `startDays`, or a round trip and a day for a far one (the lumber village, 170 km round the gulf) */
+  var R = HT.road, Wp = null, bd = Infinity;
+  EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - W[0].x, P.z - W[0].z); if (d < bd) { bd = d; Wp = P; } });
+  var roadM = sp.roadKm != null ? sp.roadKm * 1000 : bd * R.detour, mins = Math.max(60, Math.round(roadM / (R.kmh * 1000 / 60)));
+  var openDays = Math.max(HT.startDays, Math.ceil(2 * mins / 1440) + 1);
+  var people = mine.length, need = people * I.meals * I.perMeal * openDays;
   foods.forEach(function (f, j) { var n = Math.round(need / foods.length); W[j % W.length].stock[f] = (W[j % W.length].stock[f] || 0) + n; });
   Object.keys(HT.startLots).forEach(function (g) { if (makes[g]) W[0].stock[g] = (W[0].stock[g] || 0) + HT.startLots[g]; });
+  /* a farming village's granaries open with `farming.startDays` of each food crop it grows (the first loads roll before the first harvest) */
+  if (FC) { var FD = HT.farming || {}, per = Math.round(people * I.meals * I.perMeal * (FD.startDays == null ? HT.startDays : FD.startDays));
+    FG.forEach(function (g, j) { if (makes[g] && foods.indexOf(g) >= 0) W[j % W.length].stock[g] = (W[j % W.length].stock[g] || 0) + per; }); }
   for (var c = 0; c < HT.carts; c++) { var Hw = W[c % W.length], a = SIM.actor({ id: id + '.cart' + c, role: 'cart', org: id + '.folk', home: Hw.id, cls: 'cart', job: 'carters' });
     a.pos = { x: Hw.x, y: Hw.y || 0, z: Hw.z }; SIM.cart(a); }
   /* the households and the food store */
@@ -142,20 +168,51 @@ ISLE.simHamlet = function (sp, v, res) {
     var days = I.storeDays[0] + (I.storeDays[1] - I.storeDays[0]) * u(i, 1), serv = Math.round(P.people * I.meals * I.perMeal * days), k = 2 + Math.floor(u(i, 2) * 2);
     P.store = {}; for (var j = 0; j < k; j++) { var f = foods[Math.floor(u(i, 3, j) * foods.length) % foods.length]; P.store[f] = (P.store[f] || 0) + Math.round(serv / k); }
   });
-  /* the road: OUT what it makes, IN the parent's foods; the parent's warehouse nearest the village */
-  var R = HT.road, W0 = W[0], Wp = null, bd = Infinity;
-  EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - W0.x, P.z - W0.z); if (d < bd) { bd = d; Wp = P; } });
-  var mins = Math.max(60, Math.round(bd * R.detour / (R.kmh * 1000 / 60))), goodsOut = Object.keys(makes), expect = {}, expIn = {};
+  /* the road: OUT what it makes, IN the parent's foods; the parent's warehouse nearest the village; its time along the
+     baked highway network where the page has it (48: `roadKm` to the town), else the straight distance with a detour factor */
+  var W0 = W[0], goodsOut = Object.keys(makes), expect = {}, expIn = {};
   goodsOut.forEach(function (g) { expect[g] = 1; });
   foods.forEach(function (f) { if (!makes[f]) expIn[f] = people * I.meals * I.perMeal / foods.length; });
   var gOut = {}, gIn = {}, eOut = {}, eIn = {}; gOut[id] = goodsOut; gOut[ps] = []; gIn[ps] = foods.filter(function (f) { return !makes[f]; }); gIn[id] = []; eOut[ps] = expect; eIn[id] = expIn;   /* not what it makes (the ranch's meat) */
+  var keepOut = FC ? ((HT.farming || {}).keep == null ? 1 : HT.farming.keep) : 0;   /* a farming village keeps a day of its own food back */
   var Ro = SIM.trade({ id: id + ':out', stops: [{ settlement: id, place: W0.id }, { settlement: ps, place: Wp.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins,
-    keep: 0, want: 1e6, goods: gOut, expect: eOut });
+    keep: keepOut, want: 1e6, goods: gOut, expect: eOut });
   var Ri = SIM.trade({ id: id + ':in', stops: [{ settlement: ps, place: Wp.id }, { settlement: id, place: W0.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins,
     keep: R.keep, want: R.want, goods: gIn, expect: eIn });
   SIM.level(id, 'abstract');
-  return { id: id, name: sp.name, focus: sp.focus, parent: ps, people: people, workers: mine.filter(function (a) { return a.work; }).length, posts: posts, beds: beds,
-    census: { pop: C.pop, workers: C.workers }, kinds: kinds, makes: goodsOut, foods: foods, minutes: mins, km: Math.round(bd / 100) / 10, out: Ro.id, 'in': Ri.id, landing: Wp.id, warehouse: W0.id, populate: pop, resource: crew ? res.id : siteId, life: life, crew: crew, siteGoods: crew ? crew.goods.slice() : null };
+  return { id: id, name: label, focus: sp.focus, parent: ps, people: people, workers: mine.filter(function (a) { return a.work; }).length, posts: posts, beds: beds,
+    census: { pop: C.pop, workers: C.workers }, kinds: kinds, makes: goodsOut, foods: foods, minutes: mins, km: Math.round(roadM / 100) / 10, openDays: openDays, out: Ro.id, 'in': Ri.id, landing: Wp.id, warehouse: W0.id, populate: pop, resource: crew ? res.id : siteId, life: life, crew: crew, siteGoods: crew ? crew.goods.slice() : null,
+    farm: FC && res && res.kind === 'farmland' ? { inCropHa: res.inCropHa == null ? 0 : res.inCropHa, farmedHa: res.farmedHa == null ? 0 : res.farmedHa, hands: res.hands == null ? null : res.hands, parcels: res.parcels ? res.parcels.length : 0, crops: FG.slice() } : null, plantation: !!sp.plantation };
+};
+/* A FARMING VILLAGE'S FARMLAND (core/hamlet 14), from its laid-out village: the parcels round `o.centre` (the resource point
+   the village was laid out toward; its site when none) on `o.ground` ({ok, h, slope}: the page's; everywhere flat and dry when
+   none), keeping off the village's own buildings, lanes and green (`o.avoid`, else ISLE.farmAvoid(v)), the hands its works'
+   posts (the census's focus jobs), the crops its town's rows (ISLE.hamletCrops). The farmsteads the village kept out of its
+   layout (`worksOut: ['ie-farm']`, 30's `outWorks`) stand one on each holding, a farm track to each from the village's
+   works lane (the owner, 2026-11-09): their records join the village's (`v.records`) and the tracks its lanes (`v.lanes`,
+   kind 'track'), so the drawing, the tags and the sim take them as the village's own. Returns the record the sim takes as
+   the village's resource ({id, kind 'farmland', x, z, grade, radius, parcels, holdings, inCropHa, farmedHa, ...}): the
+   open world (48) and the node test both call it, so one rule lays the land on either ground */
+ISLE.farmlandOf = function (sp, v, o) {
+  o = o || {}; var T = ISLE.TUNE.sim, ps = T.towns[sp.parent].id, c = o.centre || v.site;
+  var farms = (v.outWorks || []).filter(function (w) { return w.key === 'ie-farm'; })[0] || null;
+  var wl = (v.lanes || []).filter(function (l) { return l.works; })[0], ux = c.x - v.site.x, uz = c.z - v.site.z, uL = Math.hypot(ux, uz) || 1;
+  var from = wl ? { x: wl.pts[1][0], z: wl.pts[1][1] } : { x: v.site.x + ux / uL * 30, z: v.site.z + uz / uL * 30 };
+  var F = KHAMLET.farmland({ id: sp.id + ':farmland', world: o.world == null ? 4242 : o.world, centre: { x: c.x, z: c.z }, hands: v.census.focusJobs, crops: ISLE.hamletCrops(ps, sp),
+    ground: o.ground || {}, avoid: o.avoid || ISLE.farmAvoid(v), grade: o.grade, farms: farms ? { key: farms.key, n: farms.n, box: farms.box } : null, from: from });
+  var r = 0; F.parcels.forEach(function (p) { r = Math.max(r, Math.hypot(p.x - c.x, p.z - c.z) + p.size / 2); });
+  F.x = c.x; F.z = c.z; F.radius = Math.round(r); F.workers = v.census.focusJobs;
+  if (F.records.length) { v.records = v.records.concat(F.records); v.lanes = (v.lanes || []).concat(F.tracks.map(function (t) { return { id: t.id, kind: 'track', w: t.w, pts: t.pts, main: false, works: false, track: true, farm: t.farm }; })); }
+  return F;
+};
+/* the village's footprint as a keep-off test (x, z, r) -> bool: its buildings (their boxes grown by 3 m), its lanes (every 6 m) and its green */
+ISLE.farmAvoid = function (v) {
+  var S = KSPACE.create({ cell: 32 }), put = function (x, z, r) { S.insert({ x: x, z: z, r: r }, x, z, r); };
+  (v.records || []).forEach(function (r) { put(r.x, r.z, Math.hypot(r.w, r.d) / 2 + 3); });
+  (v.lanes || []).forEach(function (l) { var a = l.pts[0], b = l.pts[1], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    for (var t = 0; t <= L; t += 6) put(a[0] + (b[0] - a[0]) * t / L, a[1] + (b[1] - a[1]) * t / L, l.w / 2 + 3); });
+  if (v.green) put(v.green.x, v.green.z, Math.hypot(v.green.w, v.green.d) / 2 + 3);
+  return function (x, z, r) { return S.some(x, z, r, function (it) { return Math.hypot(x - it.x, z - it.z) < it.r + r; }); };
 };
 /* THE FELLING CREW (`crew`; core/camp 40-camp-work.js). Its place (kind `fellcamp`, out of doors) stands at the stand the camp
    is pitched at; its posts are `share` of the sawpits' (taken off them, so the village's workers are the same people);
@@ -224,7 +281,8 @@ ISLE.siteLife = function (places, res, SK) {
   var yld = res.grade != null && HT.gradeYield[res.grade] != null ? HT.gradeYield[res.grade] : 1, full = 0;
   places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) full += P.activities.WORK * Pr.rate * hours * yld; });
   var Y = SK.years != null && typeof SK.years === 'object' ? SK.years[res.grade || 'medium'] : SK.years, years = Math.max(L.years == null ? 5 : L.years, Y == null ? 0 : Y);
-  var regen = SK.regen || 0, amount = Math.ceil(Math.max(years * 365 * Math.max(0, full - regen), (L.minDays == null ? 30 : L.minDays) * full));
+  var gmax = T.economy.govern && T.economy.govern.max != null ? T.economy.govern.max : 1;   /* farmland regrows all its hands can take, the governor's ceiling included */
+  var regen = SK.regen === 'full' ? Math.round(full * gmax) : (SK.regen || 0), amount = Math.ceil(Math.max(years * 365 * Math.max(0, full - regen), (L.minDays == null ? 30 : L.minDays) * full));
   return { full: Math.round(full), regen: regen, years: years, yield: yld, amount: amount };
 };
 /* a snapshot of the villages' books */
@@ -237,11 +295,13 @@ ISLE.simHamletBooks = function () {
     var rows = {}; Object.keys(E.goods).forEach(function (g) { rows[g] = { made: E.made[g] || 0, used: E.used[g] || 0, imported: E.imported[g] || 0, exported: E.exported[g] || 0,
       short: E.short[g] || 0, stock: stock(g) + SIM.all('place').reduce(function (n, P) { return n + (P.settlement === X.id && P.store ? P.store[g] || 0 : 0); }, 0) }; });
     var Si = X.crew ? ISLE.crewSite(X) : SIM.sitesReport(X.id)[0] || null;
-    out.villages[X.id] = { resource: X.resource, site: Si, life: X.life, siteGoods: X.siteGoods, policy: JSON.parse(JSON.stringify(E.policy || {})), parent: X.parent, people: X.people, workers: X.workers, posts: X.posts, makes: X.makes, foods: X.foods, meals: M, goods: rows,
+    out.villages[X.id] = { resource: X.resource, site: Si, life: X.life, siteGoods: X.siteGoods, farm: X.farm || null, plantation: !!X.plantation, policy: JSON.parse(JSON.stringify(E.policy || {})), parent: X.parent, people: X.people, workers: X.workers, posts: X.posts, makes: X.makes, foods: X.foods, meals: M, goods: rows,
       shipped: (R1.shipped[X.id + '>' + X.parent]) || {}, landed: (R1.landed[X.id + '>' + X.parent]) || {}, fed: (R2.landed[X.parent + '>' + X.id]) || {},
       atSea: R1.carriers.concat(R2.carriers).reduce(function (n, C) { C.cargo.forEach(function (c) { n[c.good] = (n[c.good] || 0) + c.n; }); return n; }, {}), level: SIM.levelOf(X.id) };
   });
-  S.order.forEach(function (s) { var E = SIM.econ(s); (out.blocked || (out.blocked = {}))[s] = SIM.blockedReport(s); out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used) }; });
+  S.order.forEach(function (s) { var E = SIM.econ(s), X = S.towns[s]; (out.blocked || (out.blocked = {}))[s] = SIM.blockedReport(s);
+    out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used), short: Object.assign({}, E.short),
+      pop: X && X.pop ? X.pop.actors : 0, standinOff: (S.standinOff || {})[s] || null, brought: X && X.econ && X.econ.brought ? X.econ.brought.slice() : [] }; });
   return out;
 };
 /* the checks over two snapshots (a at the start, b at the end of a run) */
@@ -263,6 +323,30 @@ ISLE.hamletChecks = function (a, b) {
     return { id: id, meals: M.meal - M0.meal + M.single - M0.single, none: M.none - M0.none, short: short, fed: Object.keys(X.fed).reduce(function (n, g) { return n + X.fed[g]; }, 0) }; });
   ok('every village fed by its town (no meal without food, none of its food short)', fed.every(function (f) { return f.meals > 0 && f.none === 0 && f.short === 0 && f.fed > 0; }),
     fed.map(function (f) { return f.id + ' ' + f.meals + ' meals, ' + f.none + ' without food, ' + f.short + ' short, ' + f.fed + ' servings landed'; }).join('; '));
+  /* THE COUNTRYSIDE (PLAN.md section 11): the farming hamlets' land in crop within a fifth of the historical estimate for the
+     towns they feed (KHAMLET.farmNeed on each town's people; the plantations' cash crops not counted); every crop the
+     countryside grows landed in its town by road and booked imported; a town whose own farms gave way to its hamlets
+     (ISLE.SIM.standinOff: Valapo) grows none of their crops itself */
+  var farms = ids.filter(function (id) { return b.villages[id].farm && !b.villages[id].plantation; });
+  if (farms.length) {
+    var fedTowns = {}; farms.forEach(function (id) { fedTowns[b.villages[id].parent] = 1; });
+    var need = 0, have = 0; Object.keys(fedTowns).forEach(function (s) { need += KHAMLET.farmNeed(b.towns[s].pop).inCrop; }); farms.forEach(function (id) { have += b.villages[id].farm.inCropHa; });
+    ok('the countryside: the farming hamlets\' land in crop within a fifth of the estimate for the towns they feed', need > 0 && have >= 0.8 * need && have <= 1.2 * need,
+      Math.round(have) + ' ha in crop in ' + farms.length + ' hamlets (' + farms.map(function (id) { return b.villages[id].farm.inCropHa + ' ha, ' + b.villages[id].farm.parcels + ' parcels'; }).join('; ') + ') against ' + Math.round(need) + ' ha for ' +
+        Object.keys(fedTowns).map(function (s) { return s + ' (' + b.towns[s].pop + ' people)'; }).join(' and '));
+    /* a run under three days may not have carried every crop yet (a village keeps a day of its own food back first): then a
+       crop made and still held or on the road passes */
+    var short = (b.minute - a.minute) < 3 * 1440;
+    var crops = ids.filter(function (id) { return b.villages[id].farm; }).map(function (id) { var X = b.villages[id], Tw = b.towns[X.parent], T0 = a.towns[X.parent];
+      return { id: id, by: X.farm.crops.map(function (g) { var md = X.goods[g].made - a.villages[id].goods[g].made; return { g: g, la: (X.landed[g] || 0) - (a.villages[id].landed[g] || 0), imp: (Tw.imported[g] || 0) - (T0.imported[g] || 0), made: md, held: (X.goods[g].stock || 0) + (X.atSea[g] || 0) }; }) }; });
+    ok('every crop the countryside grows landed in its town by road and was booked imported there' + (short ? ' (a short run: or made and on its way)' : ''),
+      crops.every(function (c) { return c.by.length && c.by.some(function (x) { return x.la > 0; }) && c.by.every(function (x) { return (x.la > 0 && x.imp >= x.la) || (short && x.made > 0 && x.held > 0); }); }),
+      crops.map(function (c) { return c.id + ' ' + c.by.map(function (x) { return x.g + ' ' + x.la + (x.la ? '' : ' (' + x.made + ' made, ' + x.held + ' held)'); }).join(', '); }).join('; '));
+    var off = Object.keys(b.towns).filter(function (s) { return b.towns[s].standinOff; }), grew = [];
+    off.forEach(function (s) { (b.towns[s].brought || []).forEach(function (g) { var m = (b.towns[s].made[g] || 0) - (a.towns[s].made[g] || 0); if (m > 0) grew.push(s + ' ' + g + ' ' + m); }); });
+    ok('a town whose fields went to the countryside grows none of its hamlets\' crops itself (' + (off.join(', ') || 'none such') + ')', off.length > 0 && !grew.length,
+      grew.length ? grew.join('; ') : off.map(function (s) { return s + ' (its ' + b.towns[s].standinOff + ' stand-in off): ' + (b.towns[s].brought || []).join(', ') + ' all by road'; }).join('; '));
+  }
   /* Phase 1: each village works the record the map gave it, its grade setting the yield, its take what its books made;
      nothing past its stockpile ceiling by more than a load already on its way */
   var sites = ids.map(function (id) { var X = b.villages[id], A = a.villages[id], Si = X.site || {}, A0 = A.site || {}, mk = (X.siteGoods || X.makes).reduce(function (n, g) { return n + X.goods[g].made - A.goods[g].made; }, 0);

@@ -11,8 +11,14 @@ highway, no town tile). The isle's own checks:
   - the towns stand on land, the climate the assay found (Kautoa Af, Valapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
-  - the hamlets (core/hamlet H4): the resource villages (five since 2026-11-04: Valapo's quarry) made with no error, on dry ground, at most 500 people each,
+  - the hamlets (core/hamlet H4): the resource villages (six since 2026-11-04: Valapo's quarry and lumber village) made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
+  - the countryside (settlements/isle-demo PLAN.md section 11, 2026-11-09): six farming hamlets and two plantations laid out
+    in the towns' hinterlands, their land in crop within a fifth of the estimate on the towns' census, every parcel dry,
+    a farmhouse on every holding and a track to each (the negative drops two of Kautoa's hamlets' land).
+  - the highway network (48r, bake.py): baked (WORLD_DATA.roads), every village's main lane end the end of a baked road,
+    every road's far end on its town's head or on another road, no village building on a carriageway (the negative
+    moves a village's lane end 500 m).
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
     ore made, timber lost on the road, meals without food);
@@ -77,7 +83,28 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     if(v.site&&WORLD.water(v.site.x,v.site.z)>WORLD.H(v.site.x,v.site.z)-.5)bad.push(v.id+': its green is in the water');}
    HM.stats.errors.forEach(e=>bad.push(e));const A=HM.tags();if(A.unknown)bad.push(A.unknown+' unknown tag values');}
   R.push({name:'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
-   detail:bad.length?bad.join('; '):HM.villages.map(v=>v.focus+' '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
+   detail:bad.length?bad.join('; '):HM.villages.map(v=>(v.name||v.id)+' ('+v.focus+') '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
+ {const HM=window._hamlets,bad=[];let F=[],have=0,need=0,wet=0,n=0;if(!HM)bad.push('no hamlets on the page');else{
+   F=HM.villages.filter(v=>v.focus==='farming'&&!v.error);const farms=F.filter(v=>v.farm&&!v.plantation&&!(neg==='farm'&&/k[12]$/.test(v.id))),pl=F.filter(v=>v.plantation);
+   if(farms.length<6)bad.push(farms.length+' farming hamlets');if(pl.length!==2)bad.push(pl.length+' plantations');
+   F.forEach(v=>{if(!v.farm||!(v.farm.parcels>0))bad.push(v.id+': no farmland');else if(v.farm.capped)bad.push(v.id+': short of land');if(v.census&&!(v.census.pop<=500))bad.push(v.id+': '+v.census.pop+' people');});
+   const T=window._isleTowns;need=KHAMLET.farmNeed((T?T.towns:[]).reduce((q,t)=>q+(t.census?t.census.citizens:0),0)).inCrop;have=farms.reduce((q,v)=>q+v.farm.inCropHa,0);
+   if(!(need>0&&have>=.8*need&&have<=1.2*need))bad.push(Math.round(have)+' ha in crop against the estimate\'s '+Math.round(need));
+   HM.resources.filter(r=>r.parcels).forEach(r=>r.parcels.forEach((p,i)=>{if(i%5)return;n++;if(WORLD.water(p.x,p.z)>WORLD.H(p.x,p.z)-.5)wet++;}));if(wet)bad.push(wet+' of '+n+' parcels in the water');
+   /* a farmhouse on every holding, a track to each (the owner, 2026-11-09) */
+   HM.resources.filter(r=>r.holdings).forEach(r=>{const V=HM.villages.find(v=>v.resource===r);if(!(r.holdings.length>=5&&r.records.length===r.holdings.length&&r.tracks.length===r.holdings.length))bad.push(r.id+': '+r.holdings.length+' holdings, '+r.records.length+' farmhouses, '+r.tracks.length+' tracks');
+    if(r.holdings.some(h=>h.parcels<3))bad.push(r.id+': a holding of under three parcels');});}
+  R.push({name:"the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
+   detail:bad.length?bad.join('; '):Math.round(have)+' ha in crop against '+Math.round(need)+' estimated; '+F.map(v=>v.id+' '+v.census.pop+' people, '+v.farm.inCropHa+' ha in crop of '+v.farm.farmedHa+' ('+v.farm.parcels+' parcels, fit '+(v.farm.fit==null?'-':v.farm.fit.toFixed(2))+')').join('; ')+'; '+n+' parcels sampled dry'});}
+ {const HM=window._hamlets,RD=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],bad=[],lines=[];if(!RD.length)bad.push('no baked roads (python3 bake.py roads)');
+  const near=(p,q,r)=>Math.hypot(p[0]-q[0],p[1]-q[1])<=r,HD=WORLD_DATA.roads&&WORLD_DATA.roads.heads||{},heads=[].concat(...Object.keys(HD).map(t=>HD[t].map(h=>[h.x,h.z])));
+  const onRoad=(p,r)=>RD.some(q=>q.pts.some((a,i)=>{if(!i)return false;const b=q.pts[i-1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1])<=r;}));
+  if(HM)for(const v of HM.villages){if(v.error||!v.site)continue;const M=ISLE_HAMLETS.made.villages.find(E=>E.spec.id===v.id),ends=(M.village.lanes||[]).filter(l=>!l.track).map(l=>l.pts[1].slice());if(!ends.length){bad.push(v.id+': no lane');continue;}
+   if(neg==='road'&&v.id==='hamlet-farm-k1')ends.forEach(e=>{e[0]+=500;});const r=RD.find(q=>q.from===v.id);
+   if(!r)bad.push(v.id+': no road');else{const a=r.pts[0],b=r.pts[r.pts.length-1],atA=ends.some(e=>near(a,e,5)),atB=ends.some(e=>near(b,e,5));if(!atA&&!atB)bad.push(v.id+': no lane end is its road\'s end');
+    const far=atA?b:a;if(!heads.some(h=>near(far,h,5))&&!onRoad(far,12))bad.push(v.id+': its road ends in the open');lines.push(v.id+' '+Math.round(r.length_m/1000)+' km, '+r.townKm+' km to '+r.town);}
+   const hit=M.village.records.filter(b=>onRoad([b.x,b.z],Math.hypot(b.w,b.d)/2*.6+WORLD_DATA.roads.roads[0].hw)).length;if(hit)bad.push(v.id+': '+hit+' buildings on a carriageway');}
+  R.push({name:'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway',ok:!bad.length,detail:bad.length?bad.join('; '):RD.length+' roads; '+lines.join('; ')});}
  return R;}"""
 
 
@@ -118,6 +145,8 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  B=cp(b);B.villages['hamlet-mine'].site.id='elsewhere';negs.push(Object.assign({neg:'record'},pick(ISLE.hamletChecks(a,B),/its record from the map/)));
  B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
  B=cp(b);{const K=B.ledger.towns.kautoa;(K.irontools||(K.irontools={total:0})).total+=500;}negs.push(Object.assign({neg:'iron pile'},pick(ISLE.hamletChecks(a,B),/ceiling/)));
+ B=cp(b);{const X=B.villages['hamlet-farm-v1'];X.landed['sweet-potato']=a.villages['hamlet-farm-v1'].landed['sweet-potato']||0;X.goods['sweet-potato'].stock=0;X.atSea['sweet-potato']=0;}negs.push(Object.assign({neg:'crops lost'},pick(ISLE.hamletChecks(a,B),/crop the countryside grows landed/)));
+ B=cp(b);B.villages['hamlet-farm-k1'].farm.inCropHa=1;B.villages['hamlet-farm-k2'].farm.inCropHa=1;negs.push(Object.assign({neg:'land'},pick(ISLE.hamletChecks(a,B),/land in crop/)));
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 
@@ -159,7 +188,9 @@ async def run(a):
                     if not r['ok']: fails.append(r['name'])
                 print('--- negative controls (each must fail) ---')
                 for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
-                                ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged')):
+                                ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged'),
+                                ('farm', "the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
+                                ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway')):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

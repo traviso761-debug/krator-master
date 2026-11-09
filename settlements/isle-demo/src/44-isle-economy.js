@@ -28,6 +28,11 @@ ISLE.simEconomy = function (TS, places) {
   /* what the town can make: a listed good whose inputs it can make, to a fixed point (Kautoa grows no cotton, so its
      weavers make no cloth, so no garments or nets: their mats and hats only); a maker makes only those of its list */
   var made = {}; places.forEach(function (P) { (listed(P) || []).forEach(function (g) { made[g] = 1; }); });
+  /* the crops the town's farming hamlets will bring by road (PLAN.md section 11; ISLE.simDeclare opts.hamlets, 47h): counted
+     as the town's own for what it can make and keep (Valapo's bread from their sweet potato, its sugar and cloth from the
+     plantation's cane and cotton), and opened at an average producer's share of the town's food */
+  var byRoad = {}; ISLE.hamletSpecs('farming', TS.name).forEach(function (sp) { ISLE.hamletCrops(s, sp).forEach(function (C) { var g = T.crops[C.crop]; if (g) byRoad[g] = 1; }); });
+  Object.keys(byRoad).forEach(function (g) { made[g] = 1; });
   for (var drop = true; drop;) { drop = false; Object.keys(made).forEach(function (g) { var q = inputs[g];
     if (q && !Object.keys(q).every(function (x) { return made[x]; })) { delete made[g]; drop = true; } }); }
   var can = function (g) { return !!made[g]; }, outOf = function (P) { var L = listed(P); L = L && L.filter(can); return L && L.length ? L : null; };
@@ -50,6 +55,8 @@ ISLE.simEconomy = function (TS, places) {
      not short before the first landing) */
   var share = {}, tot = 0;
   places.forEach(function (P) { var g = outOf(P); if (!g || !E.recipes[P.id]) return; g.forEach(function (x) { if (foods.indexOf(x) < 0) return; var w = P.activities.WORK * E.recipes[P.id].rate / g.length; share[x] = (share[x] || 0) + w; tot += w; }); });
+  var nSh = Object.keys(share).length, avg = nSh ? tot / nSh : 0;
+  Object.keys(byRoad).forEach(function (g) { if (foods.indexOf(g) >= 0 && !share[g]) { share[g] = avg; tot += avg; } });
   /* the town's diet (core's SIM.itemsDiet): its imported foods at their servings a person a day over a day's servings;
      the rest bought by the warehouses' stock as ever, and opened by the share of the town's making */
   var per = I.meals * I.perMeal, imp = 0, diet = {}; Object.keys(DI).forEach(function (f) { if (foods.indexOf(f) >= 0) { diet[f] = DI[f] / per; imp += diet[f]; } });
@@ -68,6 +75,6 @@ ISLE.simEconomy = function (TS, places) {
     a.pos = { x: H.door.x, y: H.door.y || 0, z: H.door.z }; SIM.cart(a); out.carts++;
   }
   if (imp > 0) SIM.itemsDiet(s, diet); out.diet = diet;   /* its imported foods at their planned shares */
-  out.people = pop;
+  out.people = pop; out.brought = Object.keys(byRoad);
   return out;
 };

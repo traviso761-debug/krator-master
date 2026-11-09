@@ -149,10 +149,10 @@ ISLE.PROG.Valapo = {
   lot: { side: 5, setback: 2.5, rear: 7, inset: 1.0, step: 3 },
   classes: { poor: [['ie-hut-garden', 0], ['ie-hut-scrap', 0]], middle: [['ie-house-uma', 0], ['ie-house-cross', 0]], rich: [['ie-house-wealthy', 0]] },
   tune: { voidMax: 45, voidIters: 18, sideSpacing: 50, interiorDepth: 9, interiorRounds: 2 },
-  /* the farmland on what open ground is left (8c: sugar cane and cotton on the dry savanna, coffee upland, sweet potato) */
-  farm: { cell: 24, crops: [{ crop: 'sugar cane', kind: 'field', w: 4, maxSlope: 0.12 }, { crop: 'cotton', kind: 'field', w: 3, maxSlope: 0.12 },
-    { crop: 'coffee', kind: 'orchard', w: 3, minH: 180 }, { crop: 'sweet potato', kind: 'field', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 },
-    { crop: 'banana', kind: 'orchard', w: 1 }] },
+  /* no farmland within the village (the owner, 2026-11-04; PLAN.md section 11, built 2026-11-09): its 49 parcels (2.8 ha of
+     sugar cane, cotton, coffee, sweet potato, coconut and banana) went to the countryside, its farming hamlets and its
+     plantation on the open world (openworld/isle-demo 48) and the `farms` record below as the city page's stand-in
+     (15 `farms`); the ground they stood on is the village's to build on */
   aligned: [],
   fixed: [
     { marker: 'VILLAGE HALL', keys: ['ie-hall'], role: 'village hall' },
@@ -179,6 +179,6 @@ ISLE.PROG.Valapo = {
     { kind: 'iron mine camp', note: "the iron mining settlement in the mountains 12-18 km south-west (8b), on a kits/resources iron node, grade x1, the owner's call",
       box: [[-13000, 9000], [-5000, 17000]], minH: 700, node: 'node-iron-medium' },
     { kind: 'cart road', note: 'the cart road down from the mine camp to the harbour smelter, about 15-20 km (8b)', from: 'iron mine camp', to: 'smelter' },
-    { kind: 'farms', note: 'the farms beyond the village (8b, 8c: coffee upland, sugar cane, cotton)', ring: [300, 2500], count: 25 }
+    { kind: 'farms', note: 'the farms beyond the village (8b, 8c: coffee upland, sugar cane, cotton); the city page\'s food stand-in since 2026-11-09 (15 `farms`), kept within a track of the streets', ring: [200, 1200], count: 25 }
   ]
 };

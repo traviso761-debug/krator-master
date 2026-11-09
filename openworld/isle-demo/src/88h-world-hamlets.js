@@ -5,6 +5,12 @@
 // land. Each frame: a village within FULL of the camera draws its kits' pieces (ISK / CAT, built once each and flattened:
 // settlements/isle-demo/src/58-isle-protos.js), farther ones a massing box and roof per building, out to FAR. The lanes
 // and greens are ribbons on the ground. The iron node is the Resources kit's own piece.
+// THE COUNTRYSIDE (settlements/isle-demo/PLAN.md section 11, 2026-11-09): a farming hamlet's farmland (48: its parcels in
+// crop and fallow, core/hamlet 14) is painted on the world's ground (WORLD.ground, wrapped as the towns' fields are in
+// 88t: a parcel in crop its crop's tone from the city page's table, a fallow parcel the dun of regrowing garden scrub),
+// every parcel registered in core/tags under its farmland's record, and the flora kept off the parcels in crop (the
+// fallow keep their scrub). No orchard trees yet on the hamlets' orchards (the towns' 60 DRAW.orchards draws records the
+// city plan makes; the hamlets' is a follow-up).
 // THE FELLING: the lumber village fells its stand (the timber trees within its reach, by their kit's harvest.wood tag,
 // core/hamlet 10) in the order KHAMLET.standOrder gives, on the world clock (HOST.clock: core/clock, 72-minute days):
 // KHAMLET.fellState says, for the hour, which are stumps (drawn here) and which saplings (the flora draws its kit's
@@ -18,7 +24,7 @@
 // window._hamlets holds the counts and errors a check reads.
 var HAMLETS_DRAW;LATE.push(()=>{HAMLETS_DRAW=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,FULL=3500,FAR=30000;
-const S={villages:0,buildings:0,pending:0,lanes:0,resources:0,errors:[],ms:0,full:0,protos:0,stand:0,gone:0,young:0,day:null};
+const S={villages:0,buildings:0,pending:0,lanes:0,resources:0,parcels:0,inCrop:0,farms:0,errors:[],ms:0,full:0,protos:0,stand:0,gone:0,young:0,day:null};
 const t0=performance.now();
 /* the kits' boxes: the Islanders' (ISK.dims), the Beast Riders' (CAT.ASSET_BY_KEY) */
 const IDIMS=ISK.dims(),CATK=(CAT&&CAT.ASSET_BY_KEY)||{};
@@ -30,8 +36,8 @@ const H=(x,z)=>WORLD.H(x,z);
 /* ---------------------------------------------------------------- the records: heights, tags, keep-clear */
 const TAGS=KTAGS.create({build:'isle-demo'}),clear=KSPACE.create({cell:32});
 const V=M.villages.map(E=>{const v=E.village,recs=v.records||[];
- const base=TAGS.add({class:'landmark',kind:'hamlet',key:v.id,name:E.spec.name,at:[v.site?v.site.x:0,v.site?H(v.site.x,v.site.z):0,v.site?v.site.z:0],r:220,h:20,
-  tags:{culture:'islander',types:['civic'],role:E.spec.focus},note:E.spec.focus+' village of '+E.spec.parent+': '+(v.census?v.census.pop:0)+' people'});
+const base=TAGS.add({class:'landmark',kind:'hamlet',key:v.id,name:E.name||E.spec.name,at:[v.site?v.site.x:0,v.site?H(v.site.x,v.site.z):0,v.site?v.site.z:0],r:220,h:20,
+  tags:{culture:'islander',types:['civic'],role:E.spec.focus},note:(E.name?E.name+' ("'+E.gloss+'"), ':'')+E.spec.name.toLowerCase()+': '+E.spec.focus+' village of '+E.spec.parent+', '+(v.census?v.census.pop:0)+' people'});
  for(const r of recs){r.y=H(r.x,r.z)-.15;r.kit=kitOf(r.key);const d=IDIMS[r.key]||{};
   TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,r.y,r.z],ry:r.ry,size:[r.w,r.d,r.h],
    tags:{culture:r.kit==='cat'?'beast-rider':'islander',types:d.types||['industry'],wealth:d.wealth||'poor',role:d.role||r.role,job:d.job||undefined}});
@@ -41,10 +47,23 @@ const V=M.villages.map(E=>{const v=E.village,recs=v.records||[];
   for(let t=0;t<=L;t+=6){const x=a[0]+(b[0]-a[0])*t/L,z=a[1]+(b[1]-a[1])*t/L;clear.insert({x,z,r:l.w/2+1.5},x,z,l.w/2+1.5);}}
  if(v.green){clear.insert({x:v.green.x,z:v.green.z,r:Math.hypot(v.green.w,v.green.d)/2+2},v.green.x,v.green.z,Math.hypot(v.green.w,v.green.d)/2+2);}
  S.buildings+=recs.length;S.lanes+=(v.lanes||[]).length;return{E,v,recs,base,state:null,group:null,mass:[]};});
+/* the farmland's parcels: tagged under their farmland, painted on the ground (below), the ones in crop kept clear of the flora */
+const FMAP={},FP=KHAMLET.FARM.parcel,fkey=(x,z)=>Math.floor(x/FP)+','+Math.floor(z/FP);
+const CROPC=(()=>{try{return typeof ISLE_DRAW_FACTORY==='function'?ISLE_DRAW_FACTORY(new THREE.Group()).CROP:null;}catch(e){return null;}})()||{_:[.2,.25,.1]};
+const FALLOWC=[.3,.28,.13];
 for(const R of M.resources){const y=R.x!=null?H(R.x,R.z):0;S.resources++;
- TAGS.add({class:'feature',kind:R.node?'resource node':R.kind==='stand'?'timber stand':'resource field',key:R.key||R.id,name:R.id,at:[R.x,y,R.z],r:R.node?6:R.radius==null?300:R.radius,h:4,
-  tags:{types:['infrastructure'],role:R.kind},note:R.node?R.kind+' node, '+R.grade:R.kind+(R.cap!=null?', '+R.cap+' km2 at full weight, grade '+R.grade:'')});}
+ const tag=TAGS.add({class:'feature',kind:R.node?'resource node':R.kind==='stand'?'timber stand':'resource field',key:R.key||R.id,name:R.id,at:[R.x,y,R.z],r:R.node?6:R.radius==null?300:R.radius,h:4,
+  tags:{types:['infrastructure'],role:R.kind},note:R.node?R.kind+' node, '+R.grade:R.kind+(R.cap!=null?', '+R.cap+' km2'+(R.inCropHa!=null?' farmed, '+R.inCropHa+' ha in crop':' at full weight')+', grade '+R.grade:'')});
+ if(R.parcels){S.farms++;for(const p of R.parcels){S.parcels++;const py=H(p.x,p.z);
+  TAGS.child(tag.id,{class:'feature',kind:'field',key:'field:'+p.crop,at:[p.x,py,p.z],ry:0,size:[p.size,p.size,0],note:p.state+' '+p.kind+' of '+p.crop});
+  FMAP[fkey(p.x,p.z)]=p.state==='crop'?(CROPC[p.crop]||CROPC._):null;
+  if(p.state==='crop'){S.inCrop++;clear.insert({x:p.x,z:p.z,r:p.size*.71},p.x,p.z,p.size*.71);}}}}
 WORLD.clearHook=(x,z)=>clear.some(x,z,0,it=>Math.hypot(x-it.x,z-it.z)<it.r);
+if(S.parcels){const ground0=WORLD.ground;
+ WORLD.ground=function(x,z,Sm,out){ground0(x,z,Sm,out);if(Sm.depth>0)return out;const k=fkey(x,z);if(!(k in FMAP))return out;const c=FMAP[k];
+  if(c){out[0]=out[0]*.35+c[0]*.65;out[1]=out[1]*.35+c[1]*.65;out[2]=out[2]*.35+c[2]*.65;}
+  else{out[0]+=(FALLOWC[0]-out[0])*.45;out[1]+=(FALLOWC[1]-out[1])*.45;out[2]+=(FALLOWC[2]-out[2])*.45;}
+  return out;};}
 S.villages=V.length;
 /* ---------------------------------------------------------------- lanes and greens: ribbons on the ground */
 const laneMat=new THREE.MeshLambertMaterial({color:new THREE.Color(0x9a7e5a).convertSRGBToLinear(),polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}),greenMat=new THREE.MeshLambertMaterial({color:new THREE.Color(0x7f9a4e).convertSRGBToLinear(),polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
@@ -131,6 +150,7 @@ function update(){const P=camera.position;let nf=0;
  else if(LUM&&LUM.v.site&&Math.hypot(P.x-LUM.v.site.x,P.z-LUM.v.site.z)<FULL*2){buildStand();felling();}}
 HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
-window._hamlets={stats:S,villages:V.map(X=>({id:X.v.id,focus:X.E.spec.focus,parent:X.E.spec.parent,site:X.v.site,census:X.v.census,error:X.v.error||null,
- buildings:X.recs.length,resource:X.E.resource})),resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
+window._hamlets={stats:S,villages:V.map(X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,site:X.v.site,census:X.v.census,error:X.v.error||null,
+ buildings:X.recs.length,resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null})),
+ resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
 return{update,stats:S,tags:TAGS};})();});

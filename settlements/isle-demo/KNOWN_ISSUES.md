@@ -230,15 +230,25 @@
       core/simulation on `claude/isle-p7a-rest` and merged here. The checks read each town's own meals
       (`SIM.ITEMS.statsBy[town].meals`), every role takes `work.near`, the 01:00 start is gone; `SIM.REACH` (6 km) stays
       as a walking limit (nobody looks for a place in the other town).
-- [ ] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11): about 81 ha in crop
-      for some 8,100 people, against about 610 ha in crop and 2,400 ha of farmed countryside on historical yields; the
-      governor raises a handful of parcels' rates instead. Valapo still has 49 fields inside the village. Planned (not
-      built): the fields within the walls removed, the farm ring left as it is, about four farming hamlets for Kautoa and
-      two for Valapo, and a plantation each for the cash crops.
+- [x] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11; built 2026-11-09): on the
+      open world six farming hamlets and two plantations now farm about 610 ha in crop (2,400 ha with the fallow) for
+      some 8,100 people, the historical estimate; Valapo's 49 fields inside the village are gone, and the farm ring is
+      left as it is. Open from it:
+      - [ ] **The city page's Valapo eats from a stand-in** (its programme's `farms` record, 25 holdings beyond the
+            village, `ISLE.TUNE.sim.farms`), since that page declares no hamlets; the open world's Valapo eats by road.
+      - [ ] **The hamlets' orchards have no trees** on the open world (ground colour only); the farmsteads stand round the
+            farmland's centre, the parcels are not fenced or pathed; the ground is not flattened under them.
+      - [ ] **The freed ground in Valapo is not yet lots**: the builders take only the plan's empty lots (`47b`).
+      - [ ] **The fallow is a dial** (`KHAMLET.FARM.fallow`: three years for each in crop) pending the owner's answer.
+      - [ ] **The lumber village is 171 km from Kautoa by road** (the baked highway network, 2026-11-09): 20 km of sea 140 m
+            deep lies between them, so the road runs round the gulf by the north trunk (the ranch at 72 km and the salt
+            village at 101 km share it); its timber takes 43 hours a way by cart. A sea leg (a timber line on
+            `SIM.transport` between a landing by the village and Kautoa's harbour) is the rational carrier; the road stays
+            as the owner asked (every hamlet on the network).
+      - [ ] **The farm tracks are ribbons** on the ground (as the villages' lanes), not graded roads; the highways are.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track
-      from the highways, until core/hamlet's farming villages (H6) take it. Valapo's farms beyond the village (its
-      `farms` record) are not in the sim: its parcels inside the zone feed it.
+      from the highways. The owner (2026-11-04) keeps it as it is beside the farming hamlets (PLAN.md section 11).
 - [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
       core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
       until then so no other page moves.

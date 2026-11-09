@@ -105,8 +105,8 @@ ORDER = (
     # bundles.py, as the city page takes them), their packs, core/city's primitives, the village generator, the resource
     # fields, the kit-piece instancer the city page shares (58-isle-protos.js), and this world's hamlet specs
     + [('islpack', 'islanders'), ('bundle', 'isk'), ('bundle', 'cat'),
-       ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
-       ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
+       ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'), ('core/hamlet', '14-hamlet-farmland.js'),
+       ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'), ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
     # the camps (core/camp, PLAN.md section 10, "the first build"): the census and the pitch, the Beast Riders' camp table
     # (BR_CAMP, read in place: [G data]), and this world's bands; CAT carries the kit's tent set (cat_bundle(tents=True))
@@ -122,7 +122,7 @@ ORDER = (
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
        ('core/biome', '44-core-stage.js')]
-    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
+    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js'), ('src', '48r-world-roads.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
     + [('core/city', '54-city-host-construct.js'), ('kits/construction/src', '10-cons-site.js')]   # the empty lots' works (settlements/isle-demo 60): a building site and a piece going up

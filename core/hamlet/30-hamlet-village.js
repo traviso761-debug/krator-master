@@ -10,7 +10,9 @@
           (what the works take: a node's point or a field's nearest point; workers its capacity, resFieldWorkers),
           popMax (default and ceiling 500), dims(key) -> {w, d, h} (the kit's boxes; the row's pending boxes answer
           for keys the kit lacks), ground {ok(x, z) -> bool} (dry, not a cliff, not too steep; default everywhere),
-          siteReach (m to look for dry flat ground round site when site itself is not: default 600)}
+          siteReach (m to look for dry flat ground round site when site itself is not: default 600),
+          worksOut (keys of works the village counts and staffs but does not lay out: a farming village's farmsteads
+          stand on their holdings in the farmland, 14-hamlet-farmland.js; returned as `outWorks` for the host to place)}
 
    The parts are kept apart for the other small settlements to come (a nomad camp swaps layout and siting):
      KHAMLET.census(spec, row)      what it needs and how many people staff it
@@ -42,9 +44,10 @@ KHAMLET.census = function (spec, row) {
   warehouses = 1 + Math.floor(focusJobs / 80);
   focusJobs = Math.max(0, Math.min(focusJobs, maxWorkers - services()));
   /* the works buildings: each kind takes its share of the focus jobs, rounded up to whole buildings */
+  var outK = spec.worksOut || [];
   var works = (row.works[spec.focus] || []).map(function (w) {
     var n = focusJobs > 0 ? Math.max(1, Math.ceil(focusJobs * w.share / w.jobs)) : 0;
-    return {key: w.key, n: n, jobs: w.jobs};
+    return {key: w.key, n: n, jobs: w.jobs, out: outK.indexOf(w.key) >= 0};
   });
   var workers = focusJobs + services(), pop = Math.min(popMax, Math.ceil(workers / row.workShare));
   return {popMax: popMax, pop: pop, workers: workers, focusJobs: focusJobs, serviceJobs: services(), warehouses: warehouses,
@@ -56,7 +59,7 @@ KHAMLET.program = function (C, row, st) {
   var P = [{role: 'civic', key: row.civic}, {role: 'religious', key: row.religious}, {role: 'general', key: row.general},
            {role: 'food', key: row.food}];
   for (var i = 0; i < C.warehouses; i++) P.push({role: 'warehouse', key: row.warehouse});
-  C.works.forEach(function (w) { for (var j = 0; j < w.n; j++) P.push({role: 'works', key: w.key}); });
+  C.works.forEach(function (w) { if (w.out) return; for (var j = 0; j < w.n; j++) P.push({role: 'works', key: w.key}); });
   /* houses: the headman's, then drawn by weight (middling at middlingShare) until every household has a roof */
   var H = row.houses, left = C.households - H.head[0][1], draw = function (list) {
     var tot = 0, k; for (k = 0; k < list.length; k++) tot += list[k][2];
@@ -270,7 +273,8 @@ KHAMLET.village = function (spec) {
 
   var out = {id: spec.id, culture: row.kit, focus: spec.focus, site: site, frame: {u: [ux, uz], v: [vx, vz]},
              green: {x: site.x, z: site.z, w: T.green[1], d: T.green[0], ry: Math.atan2(ux, uz)},
-             census: C, records: records.filter(Boolean), lanes: lanes};
+             census: C, records: records.filter(Boolean), lanes: lanes,
+             outWorks: C.works.filter(function (w) { return w.out && w.n > 0; }).map(function (w) { return {key: w.key, n: w.n, jobs: w.jobs, box: KHAMLET.box(spec, row, w.key)}; })};
   if (fail.length) out.error = 'could not place: ' + fail.join(', ');
   return out;
 };

@@ -79,11 +79,17 @@ ISLE.TUNE.sim = {
   stop: ['canoe stop', { WORK: 3 }, { out: true, wander: 6 }, 200],
   field: { field: ['field', { WORK: 0.9 }, { out: true, wander: 8, open: [5, 19] }], orchard: ['orchard', { WORK: 0.55 }, { out: true, wander: 8, open: [5, 19] }] },
   /* a town's farm ring (a world record of `kind` beyond the square: R.world's sites): each site a holding of `size` metres
-     square with one crop by a hash of the town and the site (core/rand), weighted; a stand-in until core/hamlet's farming
-     villages (H6) take the ring over; `posts` its hands. Only Kautoa's programme has one */
+     square with one crop by a hash of the town and the site (core/rand), weighted; `posts` its hands. Kautoa's `ring` is
+     the owner's stand-in, kept as it is (2026-11-04: "leave the farming ring alone"), worked from the town on every page.
+     Valapo's `farms` (its programme's farms beyond the village) is the city page's stand-in for the fields that left the
+     village (PLAN.md section 11, 2026-11-09): `unlessHamlets` drops it on a page that declares Valapo's farming hamlets
+     (the open world, the node test), where its food comes in by road instead (47h, 44) */
   ring: { kind: 'farm ring', size: 140, posts: { field: 20, orchard: 13 },
     crops: [{ crop: 'rice', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 2 }, { crop: 'coconut', kind: 'orchard', w: 1 },
       { crop: 'cloves', kind: 'orchard', w: 2 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
+  farms: { kind: 'farms', size: 140, posts: { field: 12, orchard: 8 }, unlessHamlets: true,
+    crops: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1 },
+      { crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1 }] },   /* coconut: the potters' lamp oil (economy.inputs) */
   jobs: {
     farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
@@ -267,7 +273,8 @@ ISLE.TUNE.sim = {
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 3, startLots: { cloth: 1000, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 400, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200 },
+    startDays: 3, startLots: { cloth: 1000, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 400, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200,
+      'sugar-cane': 400, cotton: 600 },   /* the mill's and the weavers' raw crops (2026-11-09): grown by the plantation and brought by road, so a town opens with some */
     /* salt (owner, 2026-10-19): a preserver, so `keep` of the fish and the meat that would spoil in a night is salted
        instead where the town's warehouses hold salt, a salt for `per` servings kept; and an improver of meals: while a
        town holds salt its people season their food (`uses`), and a meal at home counts `season` times its foods' quality */
@@ -433,13 +440,17 @@ ISLE.TUNE.sim = {
       house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
       'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-quarry': ['quarry', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
       'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
+      'ie-farm': ['farm', {}], 'ie-granary': ['granary', {}],   /* a farming village's farmsteads and granaries (the granary a store too) */
       warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
     },
     producers: {
       saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
       quarry: { out: ['stone'], rate: 0.25, cap: 1500 },   /* Valapo's quarry (2026-11-04, the owner: less productive than Kautoa's: 0.25 a worker-hour against its 0.4, and a third of the hands) */
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
-      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
+      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 },
+      /* a farmstead grows one of its village's crops (`farming.crops`, dealt by weight over the farmsteads: 47h), at the
+         town's field rate a worker-hour times the crop's own (economy.cropRate) */
+      farm: { out: 'crops', rate: 6, cap: 3000 }
     },
     goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools', 'logs', 'fuelwood'],
     /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
@@ -453,7 +464,8 @@ ISLE.TUNE.sim = {
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
     life: { years: 5, minDays: 30 },
-    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
+    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 },
+      farmland: { regen: 'full' } },   /* farmland regrows what its hands take: the fallow (core/hamlet 14) keeps it; a site that never runs down */
     stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, stone: { max: 1500 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
     /* THE FELLING CREW, a work camp that migrates (core/camp 40-camp-work.js; owner, 2026-11-02): the lumber village is the
        yard (its sawpits saw logs into timber, its kilns burn fuelwood into charcoal) and `share` of its sawpits' posts go out
@@ -480,7 +492,21 @@ ISLE.TUNE.sim = {
       valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 },
         stockpile: { iron: { max: 120 } } }
     },
-    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } },
+    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60, irontools: 2 }, kautoa: { iron: 10 } },   /* irontools (2026-11-09): Valapo's planned use, so a load leaves before its people have missed many (its errands fell under a load once its fields went) */
+    /* THE FARMING HAMLETS (PLAN.md section 11; the owner, 2026-11-04: agriculture moves to the countryside; built 2026-11-09).
+       A farming village (core/hamlet's `farming` focus) grows `crops[town][list]` (the programme's crop names, PLAN 8c:
+       `staples` what the town eats, `cash` its plantation's export crops), one crop a farmstead dealt by weight, on the
+       farmland core/hamlet 14 lays round it (the land estimate: KHAMLET.FARM). Its road OUT keeps `keep` days of its own
+       food back for its people; its granaries open with `startDays` of each crop so the first loads roll before the first
+       harvest is in. The towns' own stand-ins: Kautoa's farm ring stays; Valapo's farms (`farms` above) go when its
+       hamlets are declared */
+    farming: { startDays: 6, keep: 1,
+      crops: {
+        kautoa: { staples: [{ crop: 'rice', kind: 'field', w: 3, maxSlope: 0.08 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }],
+          cash: [{ crop: 'cloves', kind: 'orchard', w: 1 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
+        valapo: { staples: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 }],
+          cash: [{ crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1, minH: 180 }] }
+      } },
     /* the iron tools' sellers in both towns (items.tools 'iron tool'): added to these kinds' wares once the villages are declared */
     wares: { market: ['iron tool'], shop: ['iron tool'], smithy: ['iron tool'] }
   }

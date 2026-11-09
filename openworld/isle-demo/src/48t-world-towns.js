@@ -38,12 +38,16 @@ function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.ini
  for(const town of ISLE.TOWNS){try{plans.push(plan(town));}catch(e){S.errors.push(town+': '+(e&&e.stack?e.stack:e));}}
  const prev=WORLD.landHook;
  WORLD.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);const g=ground(x,z);return g.w>0?h+(g.h-h)*g.w:h;};
- try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})));}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
+ /* the sim declared with the villages' specs (settlements/isle-demo 40: Valapo drops its farms stand-in, both towns count
+    the countryside's crops as their own, PLAN.md section 11) */
+ const HSPECS=typeof ISLE_HAMLETS!=='undefined'?ISLE_HAMLETS.SPECS:[];
+ try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})),null,{hamlets:HSPECS});}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
  /* the hamlets on the map (48: ISLE_HAMLETS.make, here once; 88h draws the same villages) join the sim as their towns'
-    settlements (settlements/isle-demo 47h: core/hamlet H5) */
+    settlements (settlements/isle-demo 47h: core/hamlet H5); the farming hamlets sized from each town's census */
  if(S.sim&&typeof ISLE_HAMLETS!=='undefined'){try{const IDIMS=ISK.dims(),CATK=(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY)||{};
    const dims=k=>{const d=IDIMS[k];if(d)return{w:d.w,d:d.d,h:d.h};const a=CATK[k];return a?{w:a.w,d:a.d,h:a.h}:null;};
-   ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims);S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);}
+   const people={};plans.forEach(P=>{people[P.town]=P.census.citizens;});
+   ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims,{people});S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);}
   catch(e){S.hamletError=String(e&&e.stack?e.stack:e);}}
  if(plans.length)select(plans[0].town);
  return plans;}

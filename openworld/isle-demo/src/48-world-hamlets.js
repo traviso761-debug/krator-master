@@ -1,4 +1,4 @@
-// ================================================================= ISLE DEMO — the hamlets: six resource villages and what they work
+// ================================================================= ISLE DEMO — the hamlets: the resource villages, the farming hamlets and the plantations
 // [G data] core/hamlet/PLAN.md section 4 (H4): the salt village on the big north-west pan (Kautoa's), the iron mine in
 // Valapo's mountains, the lumber village in the wet jungle east of Kautoa, the ranch on the savanna north of it. Each
 // spec names its focus, its parent town and the survey's patch; ISLE_HAMLETS.make() finds the resource in that patch on
@@ -6,10 +6,24 @@
 // iron), places it, sites the village beside it on dry, gentle ground, and lays the village out with KHAMLET.village. No
 // three.js, no DOM: every number is a function of the world's fields and the specs (KRAND inside the generator), so the
 // same villages come out in Godot. 88h-world-hamlets.js draws them; it decides nothing.
-//   ISLE_HAMLETS.SPECS                  the six, in order (Valapo's quarry and lumber village since 2026-11-04)
+// THE COUNTRYSIDE (settlements/isle-demo/PLAN.md section 11; the owner, 2026-11-04; built 2026-11-09): the towns' food
+// grows in farming hamlets round them, four for Kautoa and two for Valapo, sized from the land estimate on each town's
+// census (KHAMLET.farmNeed: 0.075 ha in crop a person, 0.75 ha a hand), and one plantation each for the cash crops (8c:
+// Kautoa's cloves and cacao, Valapo's cane, cotton and upland coffee). A farming spec names no patch: its site comes from
+// the town's HINTERLAND SURVEY (farmSite): cells of FARM.cell m in the ring FARM.rMin beyond the town's square to FARM.rMax,
+// each scored by the share of its 3 x 3 sub-samples that are dry, gentle, off the town and take one of the hamlet's crops
+// (their slope and height rows), the best score less half its distance's share taken, at least FARM.apart from every
+// village and resource placed before it (so the four spread round the town). The village stands on the cell, its
+// farmsteads toward the farmland's centre FARM.off m beyond it (away from the town), and the farmland (core/hamlet 14, by
+// settlements/isle-demo 47h ISLE.farmlandOf) is laid round that centre on the same ground rule, parcels in crop and
+// fallow, until the hands' land is in crop; the farmland record is the village's resource in the sim.
+//   ISLE_HAMLETS.SPECS                  the villages, in order: the six resource villages (Valapo's quarry and lumber
+//                                        village since 2026-11-04), then the farming hamlets and the plantations
 //   ISLE_HAMLETS.make(dims, opt)        -> {villages: [{spec, village, resource, link}], resources: [records], errors: []}
-//                                        dims(key) -> {w, d, h} (the kits' boxes)
+//                                        dims(key) -> {w, d, h} (the kits' boxes); opt.people {town: its census} sizes the
+//                                        farming hamlets (the plan's figures when absent); opt.world the seed
 //   ISLE_HAMLETS.groundOk(x, z)         dry land, gentle, no cliff, not the salt crust, not a town's ground
+//   ISLE_HAMLETS.farmFit(x, z, crops)   the hinterland survey's score at a point, 0..1
 var ISLE_HAMLETS=(function(){
 const SPECS=[
  {id:'hamlet-salt',name:'Salt village',focus:'salt',parent:'Kautoa',near:[-14776,-107820],look:7000},
@@ -17,9 +31,23 @@ const SPECS=[
  {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:7000},
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
  {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
- {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[0,58000],look:4000,apart:2500}];   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
+ {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[0,58000],look:4000,apart:2500},   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
+ /* the countryside (PLAN.md section 11): `crops` names the town's rows in the tune (settlements/isle-demo 15 hamlets.farming.crops),
+    `share` the hamlet's share of its town's farm hands, a plantation its own `hands` */
+ {id:'hamlet-farm-k1',name:'Kautoa farming hamlet 1',focus:'farming',parent:'Kautoa',crops:'staples',share:1/4},
+ {id:'hamlet-farm-k2',name:'Kautoa farming hamlet 2',focus:'farming',parent:'Kautoa',crops:'staples',share:1/4},
+ {id:'hamlet-farm-k3',name:'Kautoa farming hamlet 3',focus:'farming',parent:'Kautoa',crops:'staples',share:1/4},
+ {id:'hamlet-farm-k4',name:'Kautoa farming hamlet 4',focus:'farming',parent:'Kautoa',crops:'staples',share:1/4},
+ {id:'hamlet-plant-k',name:'Kautoa plantation',focus:'farming',parent:'Kautoa',crops:'cash',plantation:true,hands:60},
+ {id:'hamlet-farm-v1',name:'Valapo farming hamlet 1',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
+ {id:'hamlet-farm-v2',name:'Valapo farming hamlet 2',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
+ {id:'hamlet-plant-v',name:'Valapo plantation',focus:'farming',parent:'Valapo',crops:'cash',plantation:true,hands:60}];
+const FARM={cell:500,rMin:2000,rMax:14000,apart:3000,subStep:150,minFit:.7,off:350};
+const DEFAULT_PEOPLE={Kautoa:6040,Valapo:2095};   /* the plan's census (PLAN.md section 11) when the page hands none in */
 const CELL=150,SLOPE=.3,DRY=1.2;
-const H=(x,z)=>WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>H(x,z)-DRY;
+/* the land without the roads (WORLD.Hland): the highways are baked over the villages' lane ends (48r, bake.py), so the
+   survey must read the same ground before and after the bake, or a baked road would miss a village that moved */
+const H=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>H(x,z)-DRY;
 const slope=(x,z)=>Math.max(Math.abs(H(x+4,z)-H(x-4,z)),Math.abs(H(x,z+4)-H(x,z-4)))/8;
 const G=(x,z)=>RINGISLES.gather(x,z),Z=(x,z)=>RINGISLES.zones(x,z);
 function groundOk(x,z){if(wet(x,z)||slope(x,z)>SLOPE)return false;const z0=Z(x,z);if(z0.cliff>.3||z0.pan>.3||z0.mangal>.3)return false;return !WORLD.townW(x,z);}
@@ -40,9 +68,21 @@ function field(sp,kind,L,seed,R){const own=L.filter(c=>Math.hypot(c.x-seed.x,c.z
  if(kind==='salt'){const rain=WORLD.at?WORLD.at(seed.x,seed.z).rain:null;grade=rain==null?'medium':rain<800?'high':rain<1200?'medium':'low';}
  return{id:sp.id+':field',kind,grade,cap:Math.round(cap*100)/100,cells:own.length,poly:hull(own.map(c=>[c.x,c.z]))};}
 
+/* the hinterland survey for a farming hamlet (above): the best cell round the town, or null */
+const cropRows=sp=>{const T=typeof ISLE!=='undefined'&&ISLE.TUNE&&ISLE.TUNE.sim,TS=T&&T.towns[sp.parent];return TS&&ISLE.hamletCrops?ISLE.hamletCrops(TS.id,sp):[];};
+const takes=(crops,x,z)=>{const s=slope(x,z),h=H(x,z);return crops.some(C=>s<=(C.maxSlope==null?KHAMLET.FARM.slopeMax:C.maxSlope)&&(C.minH==null||h>=C.minH)&&(C.maxH==null||h<=C.maxH));};
+function farmFit(x,z,crops){let n=0,k=0;for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const px=x+i*FARM.subStep,pz=z+j*FARM.subStep;n++;if(WORLD.inside(px,pz)&&groundOk(px,pz)&&takes(crops,px,pz))k++;}return k/n;}
+function farmSite(sp,P,out,crops){const half=typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[sp.parent]?ISLE.PROG[sp.parent].half:4400,r0=half+FARM.rMin,n=Math.ceil(FARM.rMax/FARM.cell);
+ const taken=out.villages.filter(V=>V.village&&V.village.site).map(V=>V.village.site).concat(out.resources.filter(r=>r.x!=null).map(r=>({x:r.x,z:r.z})));
+ let best=null;
+ for(let j=-n;j<=n;j++)for(let i=-n;i<=n;i++){const x=P[0]+i*FARM.cell,z=P[1]+j*FARM.cell,d=Math.hypot(i*FARM.cell,j*FARM.cell);if(d<r0||d>FARM.rMax||!WORLD.inside(x,z))continue;
+  if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))continue;const fit=farmFit(x,z,crops);if(fit<FARM.minFit)continue;const score=fit-.5*d/FARM.rMax;
+  if(!best||score>best.score+1e-9)best={x,z,d,fit,score};}
+ return best;}
+
 function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[]};
  for(const sp of SPECS){const P=parentOf(sp.parent);if(!P){out.errors.push(sp.id+': no parent '+sp.parent);continue;}
-  let res=null,start=null,workers=null;
+  let res=null,start=null,workers=null,farmCrops=null,farmFitAt=null;
   if(sp.focus==='salt'||sp.focus==='ranch'){
    const kind=sp.focus==='salt'?'salt':'pasture',L=cells(sp,(x,z)=>{if(wet(x,z))return 0;const g=G(x,z);return kind==='salt'?(g.salt||0):(g.pasture>.5?g.pasture:0);});
    if(!L.length){out.errors.push(sp.id+': no '+kind+' in the patch');continue;}
@@ -59,13 +99,27 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    const L=cells(sp,(x,z)=>wet(x,z)||WORLD.townW(x,z)||!far(x,z)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch');continue;}
    let top=L[0];for(const c of L)if(c.v>top.v)top=c;
    res=sp.focus==='quarry'?{id:sp.id+':face',kind:'stone',grade:sp.grade,x:top.x,z:top.z,key:null,node:true}:{id:sp.id+':node',kind:sp.metal,grade:sp.grade,x:top.x,z:top.z,key:resNodeKey(sp.metal,sp.grade),node:true};start=[top.x,top.z];}
-  /* the village starts beside its resource, toward its town; siteFor finds dry flat ground from there */
-  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=sp.focus==='mine'||sp.focus==='quarry'?180:sp.focus==='ranch'?0:260;
-  const site={x:start[0]+ux*off,z:start[1]+uz*off};
+  else if(sp.focus==='farming'){
+   const crops=cropRows(sp);if(!crops.length){out.errors.push(sp.id+': no crop rows for '+sp.parent);continue;}
+   const c=farmSite(sp,P,out,crops);if(!c){out.errors.push(sp.id+': no farmland site in the hinterland of '+sp.parent);continue;}
+   const people=(opt.people||{})[sp.parent]||DEFAULT_PEOPLE[sp.parent]||2000;
+   workers=sp.plantation?(sp.hands==null?60:sp.hands):Math.ceil(KHAMLET.farmNeed(people).hands*(sp.share==null?1:sp.share));
+   start=[c.x,c.z];farmCrops=crops;farmFitAt=c.fit;}
+  /* the village starts beside its resource, toward its town; siteFor finds dry flat ground from there. A farming hamlet
+     stands on its survey cell, its farmland's centre FARM.off m beyond it (away from the town), its farmsteads toward it */
+  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=farmCrops?0:sp.focus==='mine'||sp.focus==='quarry'?180:sp.focus==='ranch'?0:260;
+  const site={x:start[0]+ux*off,z:start[1]+uz*off},rp=res?{x:res.x,z:res.z}:{x:start[0]-ux*FARM.off,z:start[1]-uz*FARM.off};
   const v=KHAMLET.village({id:sp.id,world:opt.world==null?4242:opt.world,culture:'islander_east',focus:sp.focus,site,
-   link:{x:site.x+ux*400,z:site.z+uz*400},resource:{x:res.x,z:res.z,workers:workers==null?undefined:workers},dims,
-   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'?300:900});
+   link:{x:site.x+ux*400,z:site.z+uz*400},resource:{x:rp.x,z:rp.z,workers:workers==null?undefined:workers},dims,
+   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'?300:900,worksOut:farmCrops?['ie-farm']:undefined});   /* the farmsteads stand on their holdings (core/hamlet 14) */
   if(v.error)out.errors.push(sp.id+': '+v.error);
-  out.villages.push({spec:sp,village:v,resource:res,parent:P});out.resources.push(res);}
+  if(farmCrops&&!v.error){res=ISLE.farmlandOf(sp,v,{world:opt.world==null?4242:opt.world,centre:rp,ground:{ok:groundOk,h:H,slope}});res.fit=farmFitAt;
+   if(res.capped)out.errors.push(sp.id+': only '+res.inCropHa+' ha of '+res.target+' in crop within '+KHAMLET.FARM.rMax+' m');}
+  /* the baked highway to the village (48r, data/roads.json): its length to the town sets the sim's road time (47h) */
+  const rd=typeof WORLD_DATA!=='undefined'&&WORLD_DATA.roads&&WORLD_DATA.roads.roads?WORLD_DATA.roads.roads.find(r=>r.from===sp.id):null;
+  if(rd&&rd.townKm!=null)sp.roadKm=rd.townKm;
+  out.villages.push({spec:sp,village:v,resource:res,parent:P,road:rd?{to:rd.to,km:rd.length_m/1000,townKm:rd.townKm}:null});if(res)out.resources.push(res);}
+ /* the villages' names (core/hamlet 18: the Sikau list, dealt by a hash of the world and the village's id) */
+ if(KHAMLET.dealNames){const D=KHAMLET.dealNames('islander',opt.world==null?4242:opt.world,out.villages.map(E=>E.spec.id));out.villages.forEach(E=>{const d=D[E.spec.id];if(d){E.name=d.name;E.gloss=d.gloss;}});}
  return out;}
-return{SPECS,make,groundOk,CELL};})();
+return{SPECS,make,groundOk,farmFit,CELL,FARM};})();

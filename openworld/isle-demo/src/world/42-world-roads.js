@@ -14,6 +14,9 @@
 // road cuts through rises and fills hollows.
 //
 //   ROADS.route(a, b, opts)   a, b: {name, x, z, r} (r: the settlement's radius, where its own streets take over)
+//                             opts.avoid(x, z) -> truthy where the fine route may not pass (a village's own ground, so a
+//                             through road does not cut across its houses: openworld/isle-demo 48r); the two ends are
+//                             always open
 //                             -> {from, to, hw, pts: [[x, z, e], ...], length_m, climb_m, maxGrade, cells}
 //   ROADS.routeAll(pairs, places, opts)  every pair once (A-B and B-A are one road); places: name -> {x, z, r}
 var ROADS=(function(){'use strict';
@@ -43,6 +46,8 @@ function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep){
  while(H.size){const u=H.pop();if(u===T)break;if(done.has(u))continue;done.add(u);n++;
   const du=dist.get(u),ui=u%nx,uj=(u-ui)/nx,hu=hOf(u);
   for(const [di,dj] of NB16){const vi=ui+di,vj=uj+dj;if(vi<0||vj<0||vi>=nx||vj>=ny)continue;const v=id(vi,vj);if(!ok(v)||done.has(v))continue;
+   /* a knight's step crosses two more cells on its way: both must be open too (else a keep-off a cell wide is hopped) */
+   if(Math.abs(di)===2){if(!ok(id(ui+di/2,uj))||!ok(id(ui+di/2,uj+dj)))continue;}else if(Math.abs(dj)===2){if(!ok(id(ui,uj+dj/2))||!ok(id(ui+di,uj+dj/2)))continue;}
    const L=Math.hypot(di,dj)*cs,g=Math.abs(hOf(v)-hu)/L;
    const c=du+L*(gradeCost(g,steep)+(wOf(v)&&v!==T?40:0));
    if(c<(dist.has(v)?dist.get(v):Infinity)){dist.set(v,c);prev.set(v,u);H.push(c+hz(v),v);}}}
@@ -83,7 +88,8 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  const hC=new Map(),wC=new Map();
  const hOf=k=>{let v=hC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx,x=bx0+i*cs,z=bz0+j*cs;v=WORLD.Hland(x,z,300);hC.set(k,v);wC.set(k,WORLD.water(x,z)>v+.5?1:0);}return v;};
  const wOf=k=>{hOf(k);return wC.get(k);};
- const c2=search(nx,ny,cs,bx0,bz0,k=>ok[k]===1,hOf,wOf,a,b,true);
+ const av=opts.avoid,aC=new Map(),avoidAt=k=>{let v=aC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx;v=av(bx0+i*cs,bz0+j*cs)?1:0;aC.set(k,v);}return v;};
+ const c2=search(nx,ny,cs,bx0,bz0,av?k=>ok[k]===1&&!avoidAt(k):k=>ok[k]===1,hOf,wOf,a,b,true);
  if(!c2)return {from:a.name,to:b.name,error:'no fine route'};
  // 3. the line: the cells smoothed, trimmed at the settlements, every 20 m
  let L=chaikin(c2.cells,4);L=trim(L,a,b);L=resample(L,20);

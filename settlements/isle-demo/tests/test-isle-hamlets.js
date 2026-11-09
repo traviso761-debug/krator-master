@@ -1,5 +1,7 @@
 // node settlements/isle-demo/tests/test-isle-hamlets.js [days] — the hamlets in the sim (core/hamlet H5, src/47h) without a
-// browser. Plans and declares both towns (src/40-49), lays out the six resource villages with core/hamlet's
+// browser. Plans and declares both towns (src/40-49) with the villages' specs (so Valapo drops its farms stand-in and both
+// towns count the countryside's crops as their own), lays out the six resource villages, the six farming hamlets and the
+// two plantations (PLAN.md section 11) with core/hamlet's
 // KHAMLET.village on STAND-IN ground (the open world's survey points, every place dry: the real layout needs the open
 // world's fields and the isles' zones, openworld/isle-demo 48; its verify.py checks the villages there), declares them
 // (ISLE.simHamlets), runs `days` with Kautoa watched and checks ISLE.hamletChecks: six villages, each its town's, at the
@@ -19,24 +21,45 @@ ISLE.initWorld();
 const days = +(process.argv[2] || 5);
 const plans = ISLE.TOWNS.map(town => { const S0 = SITE_INIT.towns[town], G = ISLE.siteGround(S0, ISLE.PROG[town]);
   return { G, R: ISLE.city(town, { site: S0, ground: G, tags: KTAGS.create({ build: 'isle-demo:' + town }), dims: k => ISLE_DIMS[k] || null, vdims: k => ISLE_VDIMS[k] || null }) }; });
-ISLE.simDeclare(plans);
-/* the six villages of openworld/isle-demo 48 (ISLE_HAMLETS.SPECS), laid out at their survey points on stand-in ground */
+/* the villages of openworld/isle-demo 48 (ISLE_HAMLETS.SPECS), laid out at their survey points on stand-in ground; the farming
+   hamlets and plantations (PLAN.md section 11) 5 to 7 km out from each town's frame, four ways, as the world's survey would
+   set them on flat dry ground; their hands from the land estimate on the towns' census (KHAMLET.farmNeed) */
+const frame = town => plans[ISLE.TOWNS.indexOf(town)].G.frame, people = {}; plans.forEach((p, i) => { people[ISLE.TOWNS[i]] = ISLE.census(p.R).citizens; });
+const farmAt = (town, dx, dz) => [frame(town).x + dx, frame(town).z + dz];
 const SPECS = [
   { id: 'hamlet-salt', name: 'Salt village', focus: 'salt', parent: 'Kautoa', near: [-14776, -107820] },
   { id: 'hamlet-mine', name: 'Iron mine', focus: 'mine', parent: 'Valapo', near: [-18000, 66000] },
   { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993] },
   { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] },
   { id: 'hamlet-quarry', name: 'Quarry', focus: 'quarry', parent: 'Valapo', near: [-12500, 61500] },   /* 2026-11-04: Valapo's stone */
-  { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] }];   /* and its timber, a felling crew of its own */
+  { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] },   /* and its timber, a felling crew of its own */
+  { id: 'hamlet-farm-k1', name: 'Kautoa farming hamlet 1', focus: 'farming', parent: 'Kautoa', crops: 'staples', share: 1 / 4, near: farmAt('Kautoa', 6500, 0) },
+  { id: 'hamlet-farm-k2', name: 'Kautoa farming hamlet 2', focus: 'farming', parent: 'Kautoa', crops: 'staples', share: 1 / 4, near: farmAt('Kautoa', -6500, 0) },
+  { id: 'hamlet-farm-k3', name: 'Kautoa farming hamlet 3', focus: 'farming', parent: 'Kautoa', crops: 'staples', share: 1 / 4, near: farmAt('Kautoa', 0, 6500) },
+  { id: 'hamlet-farm-k4', name: 'Kautoa farming hamlet 4', focus: 'farming', parent: 'Kautoa', crops: 'staples', share: 1 / 4, near: farmAt('Kautoa', 0, -6500) },
+  { id: 'hamlet-plant-k', name: 'Kautoa plantation', focus: 'farming', parent: 'Kautoa', crops: 'cash', plantation: true, hands: 60, near: farmAt('Kautoa', 5000, 5000) },
+  { id: 'hamlet-farm-v1', name: 'Valapo farming hamlet 1', focus: 'farming', parent: 'Valapo', crops: 'staples', share: 1 / 2, near: farmAt('Valapo', 6000, 0) },
+  { id: 'hamlet-farm-v2', name: 'Valapo farming hamlet 2', focus: 'farming', parent: 'Valapo', crops: 'staples', share: 1 / 2, near: farmAt('Valapo', -6000, 0) },
+  { id: 'hamlet-plant-v', name: 'Valapo plantation', focus: 'farming', parent: 'Valapo', crops: 'cash', plantation: true, hands: 60, near: farmAt('Valapo', 0, 6000) }];
+ISLE.simDeclare(plans, null, { hamlets: SPECS });
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
 const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
-const villages = SPECS.map(sp => ({ spec: sp, resource: STANDIN[sp.id], village: KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus,
-  site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] }, resource: { x: sp.near[0] - 200, z: sp.near[1] }, dims, ground: { ok: () => true } }) }));
-villages.forEach(V => ok('the ' + V.spec.name.toLowerCase() + ' laid out', !V.village.error && V.village.records.length > 10, V.village.error || V.village.census.pop + ' people, ' + V.village.records.length + ' buildings'));
+const hands = sp => sp.plantation ? sp.hands : Math.ceil(KHAMLET.farmNeed(people[sp.parent]).hands * sp.share);
+const villages = SPECS.map(sp => { const farm = sp.focus === 'farming', res = farm ? { x: sp.near[0] - 350, z: sp.near[1] } : { x: sp.near[0] - 200, z: sp.near[1] };
+  const village = KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus, site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] },
+    resource: farm ? { x: res.x, z: res.z, workers: hands(sp) } : res, dims, ground: { ok: () => true }, worksOut: farm ? ['ie-farm'] : undefined });
+  return { spec: sp, village, resource: farm ? (village.error ? null : ISLE.farmlandOf(sp, village, { centre: res, ground: {} })) : STANDIN[sp.id] }; });
+const NAMES = KHAMLET.dealNames('islander', 4242, SPECS.map(sp => sp.id)); villages.forEach(V => { V.name = NAMES[V.spec.id].name; });
+ok('every village dealt a Sikau name of its own (' + villages.slice(0, 4).map(V => V.name + ' the ' + V.spec.name.toLowerCase()).join('; ') + '...)', new Set(villages.map(V => V.name)).size === villages.length && villages.every(V => /^\S+ \S+$/.test(V.name)), '');
+villages.forEach(V => ok('the ' + V.spec.name.toLowerCase() + ' laid out', !V.village.error && V.village.records.length > 10 && (!V.spec.plantation && V.spec.focus === 'farming' ? V.resource.records.length >= 9 && V.resource.tracks.length === V.resource.records.length : true),
+  V.village.error || V.village.census.pop + ' people, ' + V.village.records.length + ' buildings' + (V.resource && V.resource.kind === 'farmland' ? ', ' + V.resource.inCropHa + ' ha in crop of ' + V.resource.farmedHa + ' farmed (' + V.resource.parcels.length + ' parcels), ' + V.resource.records.length + ' farmsteads on their holdings, ' + V.resource.tracks.length + ' tracks' : '')));
+ok('Valapo has no farm parcel within the village and its farms stand-in is off; Kautoa keeps its farm ring (PLAN.md section 11)',
+  plans[ISLE.TOWNS.indexOf('Valapo')].R.fields.length === 0 && ISLE.SIM.standinOff && ISLE.SIM.standinOff.valapo === 'farms' && !ISLE.SIM.standinOff.kautoa && ISLE.SIM.towns.kautoa.places.places.some(P => P.tags.district === 'farm ring') && !ISLE.SIM.towns.valapo.places.places.some(P => P.tags.district === 'farms'),
+  JSON.stringify(ISLE.SIM.standinOff) + '; Valapo counts ' + ISLE.SIM.towns.valapo.econ.brought.join(', ') + ' as its own, by road');
 const t0 = Date.now(), H = ISLE.simHamlets(villages);
 ok('declared with no errors', !H.errors.length, H.errors.join('; ') || H.villages.map(X => X.id + ': ' + X.people + ' people, ' + X.km + ' km to ' + X.parent + ' (' + Math.round(X.minutes / 60) + ' h on the road)').join('; '));
 ISLE.simWatch('Kautoa');
-const a = ISLE.simHamletBooks(); ISLE.simRun(days * 1440); const b = ISLE.simHamletBooks();
+const a = ISLE.simHamletBooks(); ISLE.simRun(1440); const short1 = JSON.parse(JSON.stringify(SIM.econ('valapo').short)); ISLE.simRun((days - 1) * 1440); const b = ISLE.simHamletBooks();
 console.log('--- ' + days + ' days with Kautoa watched, the villages abstract: ' + (Date.now() - t0) + ' ms');
 ISLE.hamletChecks(a, b).forEach(c => ok(c.name, c.ok, c.detail));
 const cp = x => JSON.parse(JSON.stringify(x));
@@ -53,6 +76,13 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const B = cp(b); B.villages['hamlet-salt'].site.start = 40000; caught('a salt pan sized as before (40,000 lots, 300 back a night)', ISLE.hamletChecks(a, B), /lasts at least/); }
 { const B = cp(b); B.villages['hamlet-lumber'].site.camp.x += 500; caught('a felling camp not where its log puts it', ISLE.hamletChecks(a, B), /felling crew/); }
 { const B = cp(b); B.villages['hamlet-lumber'].workers = 3; caught('a lumber village with three workers', ISLE.hamletChecks(a, B), /staffed/); }
+/* the town fed by road: Valapo, its fields gone to the countryside, ran short of none of its staples after the first day */
+{ const E = SIM.econ('valapo'), st = ISLE.SIM.towns.valapo.econ.brought.filter(g => ISLE.TUNE.sim.items.foods.indexOf(g) >= 0).map(g => g + ' ' + ((E.short[g] || 0) - (short1[g] || 0)));
+  ok('Valapo, fed by road, ran short of none of the countryside\'s staples after the first day (' + st.join(', ') + ')', st.every(x => / 0$/.test(x)), 'bread short ' + ((E.short.bread || 0) - (short1.bread || 0))); }
+/* the countryside's negatives (PLAN.md section 11) */
+{ const B = cp(b); B.villages['hamlet-farm-k1'].farm.inCropHa = 1; B.villages['hamlet-farm-k2'].farm.inCropHa = 1; caught('two farming hamlets with a hectare each in crop', ISLE.hamletChecks(a, B), /land in crop/); }
+{ const B = cp(b), X = B.villages['hamlet-farm-v1']; X.landed['sweet-potato'] = a.villages['hamlet-farm-v1'].landed['sweet-potato'] || 0; X.goods['sweet-potato'].stock = 0; X.atSea['sweet-potato'] = 0; caught('a farming hamlet whose sweet potato never reached Valapo', ISLE.hamletChecks(a, B), /crop the countryside grows landed/); }
+{ const B = cp(b); B.towns.valapo.made['sweet-potato'] = (B.towns.valapo.made['sweet-potato'] || 0) + 500; caught('Valapo growing 500 servings of sweet potato itself', ISLE.hamletChecks(a, B), /grows none of its hamlets/); }
 /* the towns' goods from the villages put to use */
 const KA = SIM.econ('kautoa'), VA = SIM.econ('valapo');
 ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber; Valapo smelts the mine\'s ore with the charcoal the lakatoi brings',

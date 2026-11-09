@@ -840,7 +840,77 @@ every module under `core/` and CLAUDE.md's rules.
    `core/space`, and the whole engine onto `core/host`.
 6. **The site planner** runs on Voth's editor engine read in place (its LCG shim, Voth's textures): ROADMAP section 10.
 
-## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; not built)
+## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; built 2026-11-09)
+
+**Status (2026-11-09): steps 1 to 4 are built; step 5 is still planned.**
+- **Step 1:** Valapo's programme has no `farm` (`30`): its 49 parcels are gone, and the census check reads "no farm parcel
+  within the town" for both towns (`34`). The ground is the village's to build on (its spurs and camp read `fields`
+  empty); the builders put houses only on the plan's empty lots, so the freed ground is not yet lots (the Valapo plan's
+  frontage density is the dial: `30` `dens.res`).
+- **Step 2:** Kautoa's farm ring is untouched (`15` `ring`, 40 holdings).
+- **Step 3:** `openworld/isle-demo/src/48-world-hamlets.js` has eight farming specs: four farming hamlets for Kautoa, two
+  for Valapo, a plantation each (Kautoa's cloves and cacao, Valapo's cane, cotton and upland coffee). A farming spec names
+  no patch: the **hinterland survey** (`farmSite`) scores 500 m cells from 2 km beyond the town's square out to 14 km by
+  the share of dry, gentle, off-town ground that takes one of the hamlet's crops, takes the best less half its distance,
+  at least 3 km from every village and resource placed before it. Each hamlet is sized from the land estimate on its
+  town's census (`core/hamlet/14-hamlet-farmland.js` `KHAMLET.farmNeed`: 0.075 ha in crop a person, 0.75 ha a hand;
+  Kautoa 151 hands a hamlet, Valapo 105), and its **farmland** (`KHAMLET.farmland`, by `47h` `ISLE.farmlandOf`) is laid
+  round a centre 350 m beyond the village: 60 m parcels on the same ground rule, in blocks of nine that share a crop and
+  a rotation year, three years' fallow for each in crop (`KHAMLET.FARM.fallow`, the owner's open question), nearest the
+  centre first until the hands' land is in crop. The open world paints the parcels on the ground (crop tones, fallow the
+  dun of garden scrub), registers every parcel in core/tags under its farmland, and keeps the flora off the parcels in
+  crop (`88h`). On stand-in ground (the node test) the eight come to 611 ha in crop against the 610 ha estimate.
+- **Step 4:** in the sim (`47h`) a farming village's farmsteads each grow one of its town's crop rows (`15`
+  `hamlets.farming.crops`, dealt by weight), its granaries are stores, its farmland a site that regrows all its hands can
+  take (the governor's ceiling included), its road keeps a day of its own food back and carries the rest to its town.
+  A town counts the crops its hamlets bring as its own (`44`: Valapo's bread from their sweet potato, its sugar and cloth
+  from the plantation's cane and cotton) and Valapo drops its stand-in (`40` `standinOff`), so on the open world and in
+  the node test **Valapo grows none of its staples itself: they all come by road**. On the city page, which declares no
+  hamlets, Valapo's food stand-in is its programme's `farms` record beyond the village, declared as holdings as Kautoa's
+  ring is (`15` `farms`: 25 sites 200 to 1,200 m beyond the village, each on a track from its streets; sweet potato,
+  taro, banana, coconut, cane, cotton, coffee). The refugee camp and the spur lots open on a street, never on a holding's
+  track (`41` `door` `skip`): when the holdings first came within reach of Valapo's camp, its people took the track for
+  their door and stalled on it, the camp starving while the town ate. Valapo's farmhand posts inside
+  the village went with the fields; the hamlets' people are their own (about 275 each; Kautoa's about 375).
+- **Proofs** (each with a negative): `tests/test-isle-hamlets.js` (fourteen villages on stand-in ground, five days: the
+  countryside's land in crop within a fifth of the estimate; every crop landed in its town by road and booked imported;
+  Valapo grows none itself and ran short of none of them after the first day; the ring's holdings in Kautoa, none in
+  Valapo) and `openworld/isle-demo/verify.py` (six farming hamlets and two plantations in the hinterlands, their land in
+  crop within a fifth, every parcel dry; the same sim checks over two days on the map). `core/hamlet/test-hamlet.js`
+  holds the estimate and the parcels' rules.
+- **The holdings (the owner, 2026-11-09: "a rational road network going to each field and each field should have a
+  farmhouse"):** a farming village keeps its farmsteads out of its own layout (`KHAMLET.village` `worksOut`, 30's
+  `outWorks`) and the farmland divides among them, one HOLDING each (`KHAMLET.farmHoldings`): the farmhouse on a yard
+  parcel of its own, spread over the land on a sunflower spiral (a resting parcel preferred, 110 m apart at least), every
+  other parcel the nearest farmhouse's; the FARM TRACKS a tree from the village's works lane, each farmhouse joined by a
+  straight track to the nearest point already on the network (the root or another farmhouse's door), so the tracks
+  branch out through the holdings; a farmhouse faces its track. The records join the village's own (drawn, tagged, the
+  sim's places), the tracks its lanes (`kind: 'track'`). Kautoa's hamlets: 13 farmsteads each; Valapo's 9.
+- **The highway network (the owner, 2026-11-09: "the hamlets should all connect to the regional highway network as well
+  to facilitate cart travel"):** `openworld/isle-demo/bake.py roads` routes it once in a headless page (`48r`
+  `ISLE_ROADS.bake` over the world's own `ROADS.route`, the grade held to 8 %) to `data/roads.json`, which the page reads
+  as `WORLD_DATA.roads` (the ground shaped to it, the carriageway drawn, the flora off it, the probe's grade check now
+  applies). Heads: Kautoa's gate stubs (the plan's `highway` record), Valapo's avenue ends; then every village, nearest
+  its town first, joined by one road from its best lane end (a straight approach past its last house) to the nearest
+  point of the network so far, so the roads branch and share a trunk; a through road keeps off every village's ground.
+  Fourteen roads: Kautoa's farming hamlets 7-14 km by road, Valapo's 7-15; the mine 26 km; the ranch 72 km and the salt
+  village 101 km up the north trunk; **the lumber village 171 km**, round the gulf (20 km of sea 140 m deep lies between
+  it and Kautoa; a sea leg is the rational carrier there, KNOWN_ISSUES.md). The sim takes each village's road length
+  (`townKm`) as its cart time, and a far village opens with food for a round trip. The survey reads the land without
+  roads (`WORLD.Hland`), so a rebake gives the same network; `verify.py` fails when a village's lane end is no longer a
+  road's end (rebake after any change that moves a village).
+- **Names (the owner, 2026-11-09):** every hamlet is dealt a Sikau name at load from `core/hamlet/16-hamlet-names.js`
+  (116 names: English place names worn down by the tongues page's Islander rules, `tools/names/sikau.py`, a head and the
+  describing word after it: White Landing is *Laniñi Vai*), by a hash of the world and the hamlet's id, no two alike
+  (`18-hamlet-names.js`); a hamlet founded later draws its own. The drawing's tag, the sim's settlement and the verify
+  show it; the spec's role label stays beside it ("Kama Ema (Kautoa farming hamlet 1)").
+- **Step 5** (the hamlets growing, a work crew founding one) is not built: PLAN-POLITICS.md. **The owner (2026-11-09):
+  "highways are buildable when a farming camp converts to a farming hamlet"**: the road to a founded hamlet is a build
+  project (PLAN-POLITICS section 4's projects: a bill in labour a kilometre, timber for the causeways, the town's or the
+  hamlet's crews), routed live when the camp converts (`ROADS.route` takes milliseconds a road in the page) and drawn as
+  it is built; until it is, the hamlet's carts take the farm tracks and the bare land at the detour rate.
+- **Not yet:** orchard trees on the hamlets' orchards (the towns' orchards are drawn from the plan's tree records; the
+  parcels are ground colour only); the farm tracks are ribbons, not graded roads; the fallow dial is the owner's.
 
 **The owner (2026-11-04):** "we may also want to move agriculture into the country side ... based on historical figures, how
 much farmland would a population of this size really need? we may want to surround the cities in farming
@@ -866,7 +936,7 @@ arable a person (Clark; the northern European estimates). Hand cultivation works
 So the islands farm about a twentieth of what they eat today: the rest is the sim's governor raising the rates of a
 handful of parcels. A quarter of the islands' people should live in the countryside.
 
-**The plan (in order):**
+**The plan (in order; the status above says what is built):**
 1. **Remove the fields within the walls.** Valapo's 49 parcels inside the village (2.8 ha: banana, sweet potato, sugar
    cane, cotton, coconut) come out of its plan (`32`'s `R.fields`, the programme's farmland districts inside the zone);
    their ground goes to the town (more empty lots: the housing the refugees need). Kautoa has none inside its walls.

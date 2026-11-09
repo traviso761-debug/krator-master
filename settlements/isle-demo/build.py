@@ -278,7 +278,7 @@ def main():
 # tests run.
 CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
     'core/rand/08-core-rand.js', 'core/space/20-core-space.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js',
-    'core/terrain/38-core-relief.js', 'core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/30-hamlet-village.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
+    'core/terrain/38-core-relief.js', 'core/hamlet/10-hamlet-wood.js', 'core/hamlet/14-hamlet-farmland.js', 'core/hamlet/16-hamlet-names.js', 'core/hamlet/18-hamlet-names.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/30-hamlet-village.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
                                           os.path.join(WORLD, 'src', '43-world-isles.js')]
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
 # core/export (P6b, PLAN.md section 7): the container and its adapters, so the page exports and verify.py checks its profile

@@ -52,6 +52,19 @@ north (`core/hamlet/PLAN.md` section 4).
   fed; with negatives).
 - **The lanes and greens are wound to face up** (2026-10-26): facing down they were culled, so no village showed its
   lanes or its green (Longsong's square, the same fault). Their colours are converted to linear, as the page's others.
+- **The countryside (2026-11-09; settlements/isle-demo/PLAN.md section 11):** six farming hamlets (four Kautoa's, two
+  Valapo's) and a plantation each, sited by the hinterland survey in `48` (`farmSite`: the best dry, gentle, off-town
+  cell 2 to 14 km out that takes the hamlet's crops, 3 km apart), sized from each town's census (`KHAMLET.farmNeed`),
+  their farmland (`core/hamlet/14-hamlet-farmland.js`, parcels in crop and fallow) painted on the ground and tagged by
+  `88h`, the flora kept off the parcels in crop. In the sim they feed their towns by road; Valapo, its fields gone from
+  the village, eats wholly from them. `verify.py` checks the land in crop against the estimate, every parcel dry, and
+  the sim's countryside checks, each with a negative. A farmhouse stands on every holding with a farm track to it (the
+  tracks a tree from the village's works lane), and every village is named at load from the Sikau list (core/hamlet 16, 18).
+- **The highway network (2026-11-09):** `python3 bake.py roads` routes every village to its town's network in a headless
+  page (`src/48r-world-roads.js` over `src/world/42-world-roads.js`) and writes `data/roads.json`; `build.py` puts it in
+  the page as `WORLD_DATA.roads`, so the ground is shaped to the roads, the terrain draws them and the flora keeps off.
+  Rebake after anything that moves a village (`verify.py` says when a village's lane end is no longer a road's end). The
+  sim takes each road's length to the town as the village's cart time.
 
 ## The towns (M7, 2026-10-20)
 
