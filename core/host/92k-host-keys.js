@@ -26,7 +26,8 @@
 //   KHOST.keysCheck()            {std, clashes, words}: the standard buttons' words as the key map has them, and a build key that
 //                                takes a standard key for something else (tools/harness.py's `one-key-map` assert)
 //   KHOST.walkCheck()            {walk, floors, blocks, floor, block}: the walker set on a raised KWALK floor stands on it, and
-//                                walked 4 s at a wall from 3 m off it stops at it (tools/harness.py's `walk` assert); the camera
+//                                walked 4 s at a wall (a block whose face is 0.8 m wider than the walker: it slides round a
+//                                post) from 3 m off it stops at it (tools/harness.py's `walk` assert); the camera
 //                                is put back as it was
 (function(root){
 'use strict';
@@ -139,6 +140,8 @@ K.onTake(function walkTake(H){
    for(const b of E.blocks||[]){if(b.off)continue;const B=b.box;const x0=B[0],x1=B[1],z0=B[2],z1=B[3],y0=B[4],y1=B[5];
     const cx=(x0+x1)/2,cz=(z0+z1)/2,sides=[[x0-3,cz,1,0],[x1+3,cz,-1,0],[cx,z0-3,0,1],[cx,z1+3,0,-1]];let done=false;
     for(const s of sides){const sx=s[0],sz=s[1],st=C.standY(sx,sz,y0+.5);if(y1-st<1.5||st<y0-.5||W.blocked(sx,st,sz,WK.r,WK.h))continue;
+     /* a wall, not a post: its face as wide as the walker and 0.8 m more (the walker slides round a post, as it should) */
+     if((s[2]?z1-z0:x1-x0)<2*WK.r+.8)continue;
      /* nothing else in the way, and the ground level to the wall: the walk is a test of this wall only */
      let clear=true;for(let t=.5;t<3-WK.r-.05;t+=.25){const px=sx+s[2]*t,pz=sz+s[3]*t,py=C.standY(px,pz,st+WK.step);if(Math.abs(py-st)>.3||W.blocked(px,py,pz,WK.r,WK.h)){clear=false;break;}}
      if(!clear)continue;
