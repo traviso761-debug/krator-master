@@ -8,6 +8,8 @@ GSTEP.build=function(opt){opt=opt||{};const R=opt.R==null?4800:opt.R,q=opt.quali
  const out={R,quality:q,ms:{}},now=()=>performance.now();let t=now();
  GSTEP.PATH_PTS=opt.path||[];
  BIO.cur='godstep/ground';Object.assign(out,GSTEP.buildGround(R,q,opt.box));out.ms.ground=Math.round(now()-t);
+ /* a station's own passes (GSTEP.PASSES, 51-biome-godstep-stalk.js: the rille's stalk fields, the redlands' shrubs, the wall's forest) */
+ for(const P of GSTEP.PASSES){t=now();BIO.cur='godstep/'+P.name;Object.assign(out,P.fn(R,q,opt.box||[-R,-R,R,R])||{});out.ms[P.name]=Math.round(now()-t);}
  BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;return out;};
 GSTEP.dress=function(){return null;};   // nothing grows on a structure here
 GSTEP.tagsOf=function(label){const d=Object.keys(BIO.defs).map(k=>BIO.defs[k]).find(d=>d.label===label);

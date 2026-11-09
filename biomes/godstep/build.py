@@ -12,7 +12,7 @@ STATIONS (PLAN.md section 7). Station 1, the stair, is src/ itself (src/station.
   python3 build.py                     station 1, the stair: src/ -> dist/godstep.html
   python3 build.py --station <name>    stations/<name>/: its numbered fragments replace src/'s of the same name; its station.json
                                        names the page ("out"), its region, its bake, its water and its texture families
-                                       (stations 2-5 are later turns: none is built yet)
+                                       (rille, hearths, redlands, wall: PLAN.md section 7; NOTES.md says how each is made)
 
 Started from biomes/godthrone (the same rock, the same host: PLAN.md "Core adoption"). The core and the biome leaf never
 reference a host global except through BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a biome
@@ -67,6 +67,8 @@ FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BR
 NUM = lambda f: re.match(r'\d', f) and (f.endswith('.js') or f.endswith('.html'))
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if NUM(f)}
 if STATION:
+    # station 1's own fragments that are not every station's (station.json "drop", default its views and checks: a station brings its own 98)
+    for f in STN.get('drop', ['98-host-stair.js']): PATH.pop(f, None)
     for f in os.listdir(STN_DIR):
         if NUM(f): PATH[f] = os.path.join(STN_DIR, f)   # numbered fragments only (a station's bake script is not one)
 
@@ -144,6 +146,20 @@ if STN.get('bake'):
         print('baking %s (its inputs changed) ...' % bk['out'])
         if subprocess.call([node, os.path.join(STN_DIR, bk['script']), outp, hx]) != 0: sys.exit('build.py: the bake failed')
     VIRTUAL[bk.get('slot', '45a2-host-bake-data.js')] = '/* GENERATED from %s (do not edit) */\nconst %s=%s;\n' % (bk['out'], bk['name'], open(outp, encoding='utf-8').read().strip())
+# A SHARED KIT'S OWN PACK (station.json "packs": e.g. "biomes/sedesert", its library sets read as a second pack, as godthrone's build does;
+# ["biomes/sedesert", ["family", ...]] takes only those families, so a neighbour's whole pack does not ride on the page)
+for _i, _k in enumerate(STN.get('packs', [])):
+    _kp, _only = (_k, None) if isinstance(_k, str) else (_k[0], set(_k[1]))
+    _kd = J(*_kp.split('/')); _kj = os.path.join(_kd, 'tex', 'pack.json')
+    _kf = list(json.load(open(_kj, encoding='utf-8')).get('families', {})) if os.path.isfile(_kj) else []
+    VIRTUAL['44p%d-host-matlib-pack-%s.js' % (_i, os.path.basename(_kp))] = matlib_pack.fragment(_kd, os.path.basename(_kp), exclude=[f for f in _kf if _only is not None and f not in _only])
+# core/mask (KMASK: 25-core-mask.js, 27-core-mask-distance.js) is a station's read: the sites it paints as polygons (the rille's stalk fields,
+# the redlands' pan, the wall's terraces) rasterised as data, never a DOM canvas's pixels, and placement reads them there
+# A STATION'S READS (station.json "reads": {slot: path from the repo root}): the core pieces a station takes beyond station 1's (KCAVERN,
+# KTHERM, the basin, the stacks, the breath) and the neighbour kits' fragments it reads in place (the Hearths, the sedesert, the shighlands),
+# as godthrone's build reads them; the slot names their order
+for _slot, _p in STN.get('reads', {}).items():
+    PATH[_slot] = J(*_p.split('/'))
 for f in VIRTUAL: PATH[f] = None
 # core/atmos: its core, presets, particles (the spindrift), the weather and its selector, export, the sky's light, waves; bound by
 # 89a-host-atmos.js (ATMOS.bindHost, ATMOS.bindWeather); the shared sky (89-host-sky.js); height fog; snow that lies; the air's load

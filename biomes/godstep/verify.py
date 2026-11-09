@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Headless verification for the Krator Godstep kit (station 1, the stair; PLAN.md section 9).
+"""Headless verification for the Krator Godstep kit (every station: the stair, the rille, the hearths, the redlands, the wall;
+PLAN.md section 9). A station's own checks are its page's (STATION_CHECKS in its 98-host-*.js); its export box is its STN.exportBox.
 
 Usage:
   python verify.py dist/godstep.html [--views "The stair from the lip,A colonnade close"] [--all-views]
@@ -41,7 +42,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # over EXPORT_BOX (a 300 m cell at the front's toe: its talus, columns, stones and pioneers). Water: the playa's pond (outside the box)
 # and no buckets (the kit places only instanced items).
 EXPORT_BOX = [1100, -510, 1400, -210]          # godstep.html: a 300 m cell at the front's toe (its talus, columns, stones, pioneers)
-EXPORT_BOXES = {}
+EXPORT_BOXES = {}                              # a station's own box is its page's STN.exportBox (44a-host-station.js)
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -102,8 +103,9 @@ const R=[];
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 
-// 5a. the ground's texture units (84-host-ground.js, window._groundUnits): the GPUs link at most 16 in a fragment program;
-//     software GL allows more, so the count is checked against 16 here, not against this renderer's own limit
+// 5a. the ground's texture units (84-host-ground.js, window._groundUnits): the GPUs link at most 16 in a fragment program and the
+//     kit keeps one of them free (15: the shadow map's under ?shadow=1); software GL allows more, so the count is checked against
+//     the page's max (15) here, not against this renderer's own limit
 { const U=window._groundUnits;
   R.push({name:'ground-texture-units', ok:!!U&&U.n<=U.max,
           detail: U ? U.n+' of '+U.max+' units on the ground ('+U.layers+' KGROUND layers; dropped as unweighted: '
@@ -169,7 +171,8 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            box = EXPORT_BOXES.get(os.path.basename(a.html), EXPORT_BOX)
+            box = EXPORT_BOXES.get(os.path.basename(a.html)) or await pg.evaluate(
+                "()=>typeof STN!=='undefined'&&STN.exportBox||null") or EXPORT_BOX
             pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
