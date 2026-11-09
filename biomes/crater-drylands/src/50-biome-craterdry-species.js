@@ -442,7 +442,7 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 ['twigs','twigs1','twigs2','twigs3'].forEach(k=>BIO.def(k,G.tuft(),M[k],{label:'Charred shrubs'}));
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Pincushion heads'});
 BIO.def('plume',G.tuft(),M.plume,{label:'Flame plumes and broom'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',cap:550000,capWhy:'the bloom drifts are the point of the kit (the owner kept them, 2026-11-08): 488,234 at 2026-11-08 over the burn mosaic'});
 BIO.def('lily',G.tuft(),M.lily,{label:'Fire lilies'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass'});
 BIO.def('bunch',G.tuft(),M.bunch,{label:'Bunchgrass'});

@@ -23,6 +23,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **`KHOOK.EYE` (and `07-core-kwarp.js`'s `EYE`) start with a newline** (2026-11-08, the integration pass; the owner: "later"): crater-drylands spliced
+  `KHOOK.EYE` straight after `float cdM1,cdM2;`, so `#ifndef KHOOK_EYE` did not start a line and two Lambert programs failed to
+  compile (the info log names it; the verify printed it empty). The kit is fixed; a leading newline in core stops the next one. It moves every page.
+
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
