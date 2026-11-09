@@ -34,19 +34,23 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 `test-fire.js` (52, unchanged).
 
 **Not done this turn, and why** (PLAN-STATIONS.md says more):
-- [ ] **The N/S split and station `south`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim`. Savannarim is built on
-      `claude/hyperjungle-lands-cloud` (2026-11-09, not merged; no GPU verify yet): it vends the se rim's rust miombo and incense through
-      `SAVRIM.builders` (`make`/`grow`, so `BIO.kin` grows them) and has the rain rose; it reads this kit's `50` and `55` in place (this
-      turn's changes there are guarded: `BIO.host.seasons`, `BIO.host.treeScale`, the flare and impostors all optional). `south` can be built
-      on that branch once it merges (or on a merge of it here); the black mallee is still a proposal (PLAN-LANDS question 7).
+- [x] **The N/S split and station `south`** (2026-11-09; the owner: merge savannarim in, "black mallee is good"). `claude/hyperjungle-lands-cloud`
+      (savannarim, not yet GPU-verified) is merged into this branch. Station 2 `south` is built (`--station south`, `dist/crater-drylands-s.html`;
+      PLAN-STATIONS.md "Station 2, as built"); station 1 also writes `dist/crater-drylands-n.html`, and `dist/crater-drylands.html` stays as a
+      copy of it until its readers (the gallery, `verify.py`, the baseline) point at `-n`. Savannarim reads this kit's `50` and `55` in place:
+      this turn's changes there are optional switches (`BIO.host.seasons`, `BIO.host.treeScale`, the flare, the impostors, the spire's stalk).
+- [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); the Af gully
+      galleries on the north-western side; the Csa and Csb oak scrub on the topmost slopes; the `tibasalt` strata at the southern edge (the
+      flows' fronts are drawn by the ground, no KSTRATA bed shader on them); S's fields and hazards from the scale model's S polygon (the stage
+      is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are painted stand-ins: its PROMPTS-NEEDED entry).
 - [x] **KFIRE (H3), 2026-11-09 (the owner asked for the core test change):** `src/52` is an adapter onto core/biome's KFIRE, handing it
       the kit's own burnability (BIO fbm patch), edge warp and older fires (drawn as before, `old:0`), so the page keeps its fires. The
       original fragment is frozen as `core/biome/ref/craterdry-fire-52.js.txt`; `core/biome/test-fire.js` reads it as the reference and
       now proves the adapter gives its grids, lookups, shares and live fire bit for bit (33 pass). Moving to KFIRE's portable defaults
       (KRAND noise, hashed old fires: what Godot reproduces) would change the page once; not done.
 - [ ] **Wadi, talus, tibasalt strata**: the row's other kinds; the strata are S's (`south`). The mounds are on `edge`, the pans on `salt`.
-- [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
-      it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
+- [x] **A core finding (korona's too):** `core/terrain/43-core-ground.js` read the eye uniform three r128 leaves at 0 on a Lambert material.
+      Fixed in core on savannarim's branch (merged here 2026-11-09: the view matrix's eye); this page's own redirect (`KG_EYE`) is gone.
 
 **CPU checks run here:** `tools/build.py` (syntax OK), `check_core_use`, `check_assembly`, `check_port`, `check_source`, `check_cells --ratchet`,
 `check_vendor`: nothing new for this kit (`check_stale`'s four over the baseline are other builds', the same on the untouched branch tip);

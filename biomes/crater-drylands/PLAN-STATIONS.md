@@ -5,7 +5,8 @@ burn mosaic. The owner split the model's region into **crater drylands N** (`rmu
 to tell them apart. Each holds ground the kit does not draw. The page as built stays station 1. Stations follow the
 Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan; the split into N and S settled by the owner (2026-10-27).** Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
+**Status: built (2026-11-09): stations 2 (`south`, S's page), 3 (`edge`) and 4 (`salt`); the split into N and S settled by the owner
+(2026-10-27) and made (`crater-drylands-n.html`, `crater-drylands-s.html`).** Was: plan; Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
 5.3 (the swap); this plan adds the ground under it and two stations in N.
 
 ## The formal split: two lands, N and S (the owner, 2026-10-27)
@@ -139,3 +140,22 @@ older). **The kiln's scrub at its largest** in the dense air: the kit's trees a 
 the Steampits' geyser field reaching in (the geyser kit's run-off and sinter apron), nwbay's cinder pine as the row's upright, unsheared
 cousin (nwbay's builder has no such option), the dry season's dust (the air's load is on, with the storm on the panel, but no season
 drives it).
+
+## Station 2, as built (2026-11-09): the south, crater drylands S
+
+`python3 build.py --station south` -> `dist/crater-drylands-s.html` (the sky at px 572, 667). One slice of S's 2 km climb on the 5.2 km
+showcase: the plain rising ~260 m to the south, toward Godstep, with **old titanium-basalt flows** coming north out of the southern edge as
+four lobed tongues a few metres proud (the painted ground basalt-dark on them, the Throne's black sand as a KGROUND layer: its pack, the one
+family), four kopjes, the washes and the seep; the northern and eastern edges wetter (the se rim's air), the kiln's scrub lower in the cooler
+air (`BIO.host.treeScale` .85), the fire mosaic over the whole patch (six recent fires, seven older), the season and the copper flush on the
+clock. **The swap** (PLAN-LANDS.md 5.3), by hashed cell:
+- **the base**: this kit everywhere but the old flows (its mask);
+- **the black mallee** (`blackmallee`; the owner's yes): a kin of the prism mallee (`BIO.kin('craterdry.prismmallee')`), grown by its builder
+  with violet-black to bronze iridescence and smoky bark, on the old flows only; it burns and resprouts as the mallee does, on black ground;
+- **the se rim comes in** on the wet edges: savannarim's rust miombo and incense tree (`SAVRIM.builders`) on the open ground, its rain rose
+  (its cousin of sedesert's rose) on the kopjes there. Savannarim's species, trees and se rim (`50`, `55`, `56`) are read in place, with the
+  hyperjungle (its seven fragments: savannarim builds on its lands' geometry) and sedesert's species and trees (the rose's source), each in
+  its own registry; the hyperjungle's helpers are the stage's globals (its `41` would clash with them).
+`?black=0`, `?serim=0`, `?season=0`. Not taken (KNOWN_ISSUES.md, "Owed on south"): Godstep's red guyed stalk and lava pioneers (Godstep's kit
+is a plan), the Af gully galleries, the Csa and Csb oak scrub at the top, the tibasalt strata at the southern edge, S's fields from the
+scale model's polygon.
