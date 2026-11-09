@@ -1769,8 +1769,13 @@ function KCharFigure(body, sliders, load){
   var prM = new THREE.Matrix4(), prS = new THREE.Matrix4(), prV = new THREE.Vector3();
   function posedRests(c, m){
     if(!c.chains.some(function(ch){ return ch.bw; })){ c.chains.forEach(function(ch){ ch.r = ch.p; }); return; }
-    var saved = bones.map(function(b){ return b.quaternion.clone(); });
+    var saved = bones.map(function(b){ return b.quaternion.clone(); }), hipsAt = self.hips.position.clone();
     bones.forEach(function(b, i){ b.quaternion.fromArray(J[i].r); });
+    // and the hips at their rest, with the morph alone: left where the clip playing at dressing had them, the rests
+    // came out a few ulps apart from one page load to the next (the frame they are taken back into cancels a
+    // translation exactly on paper, not in floating point), and a run grew that into a shin through a skirt in one
+    // audit sweep and not the next (REVIEW-GARMENTS-2026-11-06.md, section 6)
+    self.hips.position.fromArray(J[byName.Hips].t); hipsMorph();
     self.group.updateMatrixWorld(true);
     posture(true);
     self.group.updateMatrixWorld(true);
@@ -1788,6 +1793,7 @@ function KCharFigure(body, sliders, load){
       });
     });
     bones.forEach(function(b, i){ b.quaternion.copy(saved[i]); });
+    self.hips.position.copy(hipsAt);
     self.group.updateMatrixWorld(true);
   }
   // the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there)

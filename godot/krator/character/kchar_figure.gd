@@ -1676,6 +1676,10 @@ func _posed_rests(c: Dictionary, pbind: Dictionary) -> void:
 	for i in skeleton.get_bone_count():
 		saved.append(skeleton.get_bone_pose_rotation(i))
 		skeleton.set_bone_pose_rotation(i, skeleton.get_bone_rest(i).basis.get_rotation_quaternion())
+	# and the hips at their rest with the morph alone (posedRests in 50-figure.js: left where the clip had them, the
+	# rests came out ulps apart from one load to the next, and a run grew that)
+	var hips_at := skeleton.get_bone_pose_position(_hips)
+	skeleton.set_bone_pose_position(_hips, morph["t"][_hips])
 	_posture(true)
 	for ch in c["chains"]:
 		if ch.get("bw") == null:
@@ -1697,6 +1701,7 @@ func _posed_rests(c: Dictionary, pbind: Dictionary) -> void:
 		ch["r"] = R
 	for i in skeleton.get_bone_count():
 		skeleton.set_bone_pose_rotation(i, saved[i])
+	skeleton.set_bone_pose_position(_hips, hips_at)
 
 
 # the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there); the ring's

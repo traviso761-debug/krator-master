@@ -266,3 +266,14 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   and names the first operation that differs (`tools/cloth_probe.py` and the session's `det_probe.py` are the
   harness). Until then a skin count under about a thousand pixels on the GPU is not evidence, and the baseline's
   `--check` should be read on "under" and "inside", which were stable in every run here.
+- **Found and fixed (2026-11-08, later).** A trace of every chain point after every stage of every substep in three
+  processes put the first difference in the length-keeping stage of the first substep, one ulp in a third of the
+  numbers, from a Verlet stage that agreed exactly; a full-precision dump then showed the chains' rests and lengths
+  themselves a few ulps apart between processes while the garment's vertices and targets agreed. `posedRests` puts
+  the skeleton in its bind pose and postures it, but reset only the rotations: the hips' position stayed where the
+  clip playing at dressing had them, different on every page load, and the parent frame the rest is taken back
+  into cancels that translation exactly on paper and not in floating point. Now the hips sit at their rest with the
+  morph alone for the measurement (both runtimes). Three GPU processes agree to the last digit; two cold audits of
+  the trade outfit are identical in all 28 shots. The trade skirt's shin in a run is a stable 2740 px on this build:
+  a real fault for Phase 1's hull work, no longer noise. (The no-clip rest shot still carries chain state between
+  shots, since `update` returns before the cloth pass without a clip; its pixels are the rigid rest either way.)
