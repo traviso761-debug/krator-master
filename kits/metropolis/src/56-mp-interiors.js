@@ -77,8 +77,8 @@ MP.drawStorey=function(F,k){const st=MP.storey(F,k),L=F.levels[k],B=MP.builder()
  const out=MP.furnish(F,st);let pieces=0;
  if(out.rooms){const Bf=KratorFurniture.batch({indexed:true});out.rooms.forEach(r=>r.placements.forEach(p=>{Bf.place(p.key,p.x,p.y+lift,p.z,p.ry,{variant:p.variant|0,seed:MP.idHash(p.room||'r')&0xffff,wealth:.6,setting:'indoor'});pieces++;}));
   const fg=Bf.flush(g);if(fg)fg.traverse(o=>{if(o.isMesh)KFURN.linearColours(o.geometry);});}
- /* a machine hall's runs past its furnished cluster: one dark box each (a run of racks, a bay), 12 triangles */
- if(out.far&&out.far.length){const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,.5,0),MP.mats().dark,out.far.length),m4=new THREE.Matrix4(),q4=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0);
+ /* a machine hall's runs past its furnished cluster: one steel-grey box each (a run of racks, a bay), 12 triangles */
+ if(out.far&&out.far.length){const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,.5,0),MP.farMat||(MP.farMat=new THREE.MeshStandardMaterial({color:0x4a4e55,roughness:.55,metalness:.35})),out.far.length),m4=new THREE.Matrix4(),q4=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0);
   out.far.forEach((b,i)=>{q4.setFromAxisAngle(Y,b.ry);m4.compose(new THREE.Vector3(b.x,b.y+lift,b.z),q4,new THREE.Vector3(b.w,b.h,b.d));im.setMatrixAt(i,m4);});im.name=F.id+'.storey'+k+'.far';g.add(im);}
  let tris=0;g.traverse(o=>{if(o.isMesh&&o.geometry){const c=o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count;tris+=c/3*(o.isInstancedMesh?o.count:1);}});
  g.userData={storey:k,rooms:st.rooms.length,pieces:pieces,tris:Math.round(tris),plan:st,furnished:out,blocks:blocks,leaves:leaves,stairs:stairs,landings:landings,outline:st.outline,outlines:st.parts?st.parts.map(p=>p.outline):null};return g;};

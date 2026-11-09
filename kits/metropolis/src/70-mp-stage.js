@@ -130,7 +130,7 @@ const VIEWS={
  'The atlas, zoom':[-156,75,70,-156,75,0],'The atlas, colour':[0,220,420,0,220,0],'The atlas, normal':[0,220,420,0,220,0],'The atlas, rough, metal, window':[0,220,420,0,220,0],
  'Tiers, the worst street':[110,1.7,110,-900,70,110],'Tiers, from a roof':[110,90,110,-900,60,-900],'Tiers, from the air':[1500,600,1500,0,0,0],'Shell close, 130 m':[0,1.7,130,0,75,0],'Hero close, 130 m':[0,1.7,130,0,75,0],
  ...MPS_RUINVIEWS.views,...MPS_DESIGNVIEWS.views,
- 'Inside the Vault, a server floor':[8,6.7,14,-12,6.2,-3],'Inside the Gantry Hall, the floor':[-8,1.7,16,-40,1.2,-3],'Inside the Spindle, a flat':outward(roomAt('spindle',8,'living'),1.4,1.6,2),'Inside the Spindle, the lobby':[0,3,-20,14,3,-34],'Inside the Spindle, an office floor':outward(roomAt('spindle',22,'office'),1.5,1.6,4),
+ 'Inside the Vault, a server floor':[14,6.7,4.2,-40,6.4,4.2],'Inside the Gantry Hall, the floor':[-8,1.7,16,-40,1.2,-3],'Inside the Spindle, a flat':outward(roomAt('spindle',8,'living'),1.4,1.6,2),'Inside the Spindle, the lobby':[0,3,-20,14,3,-34],'Inside the Spindle, an office floor':outward(roomAt('spindle',22,'office'),1.5,1.6,4),
  'Inside the Ledger, the council':(function(){const p=roomAt('ledger',11,'hall'),s=p[2]>0?1:-1;return [p[0]-7,p[1]+1.8,p[2]+s*-3,p[0]+6,p[1]+1.5,p[2]+s*3];})(),'Inside the Ledger, an office':[-12,MP.LEDGER.levels[6].y+1.6,-7,-3,MP.LEDGER.levels[6].y+1.5,-11]};
 // the buildings on the page, as records before anything is drawn
 ['spindle','ledger'].forEach(k=>{const F=MP.FAMILY[k];REGISTER({name:F.name,x:0,z:0,r:F.footprint.r||F.footprint.w/2,h:F.height.tip});});
