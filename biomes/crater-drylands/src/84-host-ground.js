@@ -1,4 +1,7 @@
 // ================================================================= HOST — the fire history, the ground, the water
+// A STATION'S OLD LAVA FLOWS (STATION.flowAt, 0..1: the south, crater drylands S, PLAN-LANDS 5.3): the painted ground goes basalt-dark over them
+// and, on KGROUND, the Throne's black sand (its pack, read by the station: station.json "packs") lies on them. No station: nothing here. Declared first: the painted ground (below) reads it
+const ST_FLOW=typeof STATION!=='undefined'&&STATION.flowAt?STATION.flowAt:null;
 // the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
 // carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
 function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('craterdry',n):null;if(!L)return fb;
@@ -91,9 +94,6 @@ const FIRE_GLSL='uniform sampler2D uFireTex;uniform float uFireT,uFireOn,uFireRT
 // ground, the granite, the carpet and the live fire are unchanged. ?kground=0 for the old mix; only with the pack (the procedural fallback keeps its paint).
 // KGROUND's distance comes from the view matrix (core/terrain/43, fixed in core 2026-11-09: three r128 leaves cameraPosition at 0 on a Lambert
 // material); this page's own redirect (KG_EYE, korona's) went with that fix
-// A STATION'S OLD LAVA FLOWS (STATION.flowAt, 0..1: the south, crater drylands S, PLAN-LANDS 5.3): the painted ground goes basalt-dark over them
-// and, on KGROUND, the Throne's black sand (its pack, read by the station: station.json "packs") lies on them. No station: nothing here
-const ST_FLOW=typeof STATION!=='undefined'&&STATION.flowAt?STATION.flowAt:null;
 const KG_LY=GLAY&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'?[
  KGROUND.layer('craterdry','ground.redsoil',{w:'vGL.y',amt:.55,tint:'diffuse*1.25',name:'red soil'}),
  KGROUND.layer('craterdry','ground.burn',{w:'vGL.x',tint:'diffuse*1.15*mix(0.5,1.25,smoothstep(0.2,0.8,cdM2))',name:'char'}),
