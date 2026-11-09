@@ -1,6 +1,8 @@
 # biomes/hearths: known issues
 
-The kit's one page is the Cave of Crystals (`python3 build.py`, `dist/hearths-crystals.html`; PLAN.md section 18). The life in `src/`
+The kit's pages are the Hearth hold's two stations: the Cave of Crystals (`python3 build.py`, `dist/hearths-crystals.html`; PLAN.md section 18)
+and the hold's active storey (`--station hold`, `dist/hearths-hold.html`; section 19). Both build the same cave, both storeys carved, and look at
+their own storey. The life in `src/`
 is read in place by `biomes/oidong` (its station 3) and has no page here.
 
 ## The Cave of Crystals (stations/crystals, 2026-11-03)
@@ -13,8 +15,17 @@ is read in place by `biomes/oidong` (its station 3) and has no page here.
   `CAVE.HOLD` (export: the panel's "export hold", or `_api.hold()`).
 - [ ] **Where the page lives.** Its planned host, `biomes/riftrim`, has no build. When it gets one the station moves there as
   `--station hearths-crystals`; its fragments read only the core.
-- [ ] **The approaches stop at the page.** The night road is carved to the box's edge 25 m under the shelf, and the way down to a
-  landing at the active storey's level, which this page does not carve (its maze is 4 m off: `continues` in each record).
+- [ ] **The night road stops at the page.** It is carved to the box's edge 25 m under the shelf; its run to the surface is recorded
+  (`continues`). The way down reaches the active storey: a stair to a landing (a rock platform, a monolith) 1.5 m over the water.
+- [ ] **The active storey's dark crops are not drawn.** The field shelves are reserved for them (PLAN.md section 19); the crops are the
+  hold's, as its structures are.
+- [ ] **The hearth trees' feet in the hold's roof and the night entrance** (section 11's first sketch) are not drawn: the surface is 40 m
+  over the active storey's crowns, and the crystal storey's night road is the way up.
+- **Both pages carry both storeys** (~450 k rock triangles, ~25 s of building in the browser: the network, two KSPELEO passes and the
+  hold's crystal tests). Each page's dress is the whole cave's.
+- **The pools' heat is KTHERM's, not KKARST's.** KKARST gives every pool the rising water's 55 degC; the station gives each its KTHERM
+  temperature over the feeders and makes only those at 45 or over a heat hazard (48: `pools`, `SITE.therm.scald`).
+- **KKARST's hazards are core/tags records, not inspector volumes** (`BIO.record`): a sump's drowning holds nothing drawn.
 - **No height fog.** `ATMOS.heightFog` reads the shared sky's uniforms and there is no sky underground: the haze is the scene's
   FogExp2, warm brown.
 - **The crystals' light is faked.** No refraction: a glow in the shader that grows with the grazing view (the path through the
