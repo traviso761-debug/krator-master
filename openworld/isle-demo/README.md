@@ -87,6 +87,11 @@ north (`core/hamlet/PLAN.md` section 4).
   and open posts from both towns' waiting refugees (47f `foundSettle`). At the real pace (a month's wait, a season's camp,
   up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
   survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
+- **Clay villages and Valapo's clove plantation overseas (2026-11-09; settlements/isle-demo/PLAN.md section 14):** a clay
+  village for each town (`src/48` `hamlet-clay-*`: the isles have no rivers, so its pit stands on dry flat ground within
+  300 m of the mangrove flats; the Islanders kit's `ie-claypit`), whose clay the towns' potters take; and Valapo's clove
+  plantation on the forest island west (`hamlet-plant-vw`, `islandSite`): coastal farmland with a sea route to Valapo's
+  landing, no road (the bake leaves it out), both its routes sea legs in the sim, growing its own staples beside the cloves.
 - **Ranches and herding bands (2026-11-09; settlements/isle-demo/PLAN.md section 13):** two more ranch hamlets (Kautoa's
   south ranch, Valapo's ranch) and a semi-nomadic herding band for each town (`src/48n-world-herders.js` hands the sim its
   range on the pasture survey's pick; the sim, settlements/isle-demo 47n, moves the band's whole camp with its herd as

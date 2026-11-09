@@ -72,7 +72,7 @@ function stations(r, N){const Q=r.pts,tk=r._tk==null?r.townKm:r._tk;let acc=0;fo
 const headNet=HD=>{const net={};for(const t in HD)net[t]=HD[t].map(h=>Object.assign({townKm:0,e:WORLD.Hland(h.x,h.z)},h));return net;};   /* a head's height: the town's ground there */
 function bake(){const HD=heads(),made=ISLE_HAMLETS.made,roads=[],errors=[],net=headNet(HD);
  if(!made)return{format:'krator-openworld-roads',version:1,grade:ROADS.G,roads,errors:['the hamlets are not made (48t)'],heads:HD};
- const V=made.villages.filter(E=>E.village&&E.village.site&&!E.village.error).map(E=>({E,town:E.spec.parent,d:Math.hypot(E.village.site.x-E.parent[0],E.village.site.z-E.parent[1])}))
+ const V=made.villages.filter(E=>E.village&&E.village.site&&!E.village.error&&!E.spec.overseas).map(E=>({E,town:E.spec.parent,d:Math.hypot(E.village.site.x-E.parent[0],E.village.site.z-E.parent[1])}))
   .sort((a,b)=>a.d-b.d||(a.E.spec.id<b.E.spec.id?-1:1));
  const G=grounds(V.map(v=>v.E.village));
  for(const v of V){const r=joinOne(v.E.village,v.town,net[v.town],G);if(r.error){errors.push(r.error);continue;}roads.push(r);stations(r,net[v.town]);}

@@ -214,6 +214,11 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   var R = HT.road, Wp = null, bd = Infinity;
   EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - W[0].x, P.z - W[0].z); if (d < bd) { bd = d; Wp = P; } });
   var roadM = sp.roadKm != null ? sp.roadKm * 1000 : bd * R.detour, mins = Math.max(60, Math.round(roadM / (R.kmh * 1000 / 60)));
+  /* AN OVERSEAS VILLAGE (the owner, 2026-11-09: Valapo's clove plantation on the forest island west): no road to its town;
+     both its routes go by sea, its quay to the town's canoe stop, at the sea leg's pace */
+  var SE = HT.sea, tstop = SIM.R.place[ps + '.stop'], over = !!(sp.overseas && quay && tstop && SE && sp.seaKm != null);
+  if (sp.overseas && !over) throw new Error(id + ': an overseas village needs a quay, its town\'s canoe stop and a sea route (seaKm)');
+  if (over) mins = Math.max(60, Math.round(sp.seaKm * 1000 / (SE.kmh * 1000 / 60)));
   var openDays = Math.max(HT.startDays, Math.ceil(2 * mins / 1440) + 1);
   var people = mine.length, need = people * I.meals * I.perMeal * openDays;
   foods.forEach(function (f, j) { var n = Math.round(need / foods.length); W[j % W.length].stock[f] = (W[j % W.length].stock[f] || 0) + n; });
@@ -246,14 +251,16 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   var gOut = {}, gIn = {}, eOut = {}, eIn = {}; gOut[id] = goodsOut; gOut[ps] = []; gIn[ps] = foods.filter(function (f) { return !makes[f]; }); gIn[id] = []; eOut[ps] = expect; eIn[id] = expIn;   /* not what it makes (the ranch's meat) */
   if (lots.length && GW && GW.goods) GW.goods.forEach(function (g) { if (!makes[g] && EP.goods[g] && gIn[ps].indexOf(g) < 0) gIn[ps].push(g); });   /* the lots' and the road's bill comes with the food (the lumber village's timber is its own) */
   var keepOut = FC ? ((HT.farming || {}).keep == null ? 1 : HT.farming.keep) : 0;   /* a farming village keeps a day of its own food back */
-  var Ro = SIM.trade({ id: id + ':out', stops: [{ settlement: id, place: W0.id }, { settlement: ps, place: Wp.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins,
+  var A0 = over ? quay : W0, B0 = over ? tstop : Wp, cap = over ? SE.cap : R.cap, stay = over ? SE.mins : R.mins;   /* overseas: quay to canoe stop */
+  var Ro = SIM.trade({ id: id + ':out', stops: [{ settlement: id, place: A0.id }, { settlement: ps, place: B0.id }], cap: cap, carriers: 1, minutes: mins, mins: stay,
     keep: keepOut, want: 1e6, goods: gOut, expect: eOut });
-  var Ri = SIM.trade({ id: id + ':in', stops: [{ settlement: ps, place: Wp.id }, { settlement: id, place: W0.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins,
+  var Ri = SIM.trade({ id: id + ':in', stops: [{ settlement: ps, place: B0.id }, { settlement: id, place: A0.id }], cap: cap, carriers: 1, minutes: mins, mins: stay,
     keep: R.keep, want: R.want, goods: gIn, expect: eIn });
   /* THE SEA LEG: the village's quay to its town's canoe stop, its goods only (the food comes by road), on the sea route the
      page found; a coastal village keeps the road too */
-  var SE = HT.sea, tstop = SIM.R.place[ps + '.stop'], sea = null;
-  if (quay && tstop && SE && sp.seaKm != null) {
+  var sea = null;
+  if (over) sea = { route: Ro.id, routeIn: Ri.id, quay: quay.id, km: sp.seaKm, minutes: mins, vessel: SE.vessel, overseas: true };   /* its two routes are its sea legs */
+  else if (quay && tstop && SE && sp.seaKm != null) {
     var smin = Math.max(60, Math.round(sp.seaKm * 1000 / (SE.kmh * 1000 / 60))), gS = {}, eS = {}; gS[id] = goodsOut; gS[ps] = []; eS[ps] = expect;
     var Rs = SIM.trade({ id: id + ':sea', stops: [{ settlement: id, place: quay.id }, { settlement: ps, place: tstop.id }], cap: SE.cap, carriers: SE.carriers == null ? 1 : SE.carriers, minutes: smin, mins: SE.mins,
       keep: SE.keep == null ? keepOut : SE.keep, want: 1e6, goods: gS, expect: eS });

@@ -37,7 +37,7 @@ negative):
   (`core/camp`'s pitch for the tents) is still to do.
 - **Next:** the `gather` tag on the other biome kits; fishing villages (H6's other half).
 
-A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
+A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching; a quarry and a clay pit since)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.
 The first case is the isle demo (`settlements/isle-demo/PLAN.md` section 8): four villages in the hinterland of
 Kautoa and Valapo. Nothing is built yet; this is the plan for the owner to settle.

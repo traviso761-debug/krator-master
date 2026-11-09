@@ -24,6 +24,10 @@ highway, no town tile). The isle's own checks:
   - the founding (settlements/isle-demo 47f, 48f): the sim's hooks installed, a farm site for a camp of each town on good
     ground apart from every village (the negative puts the site beside a village). A founding itself takes days of the
     sim: tests/test-isle-found.js runs it. The camp shelters: a stand-in camp pitched from the kit, every piece a proto.
+  - Valapo's clove plantation overseas (48 islandSite, 47h `overseas`): on the forest island west with a landing and no road,
+    cloves and its own staples, both its routes sea legs in the sim (the negative moves it 20 km off its island)
+  - the clay villages (48): one a town, its pit on dry flat ground beside the mangrove flats, its clay pits the kit's (the
+    negative moves a pit 20 km inland)
   - the herding bands (47n, 48n): one a town, its camp on dry pasture, named, drawn (the negative moves a camp off its
     pasture); in the sim's two days each band fed and its herd at work (the negative starves one).
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
@@ -93,7 +97,7 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    detail:bad.length?bad.join('; '):HM.villages.map(v=>(v.name||v.id)+' ('+v.focus+') '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  {const HM=window._hamlets,bad=[];let F=[],have=0,need=0,wet=0,n=0;if(!HM)bad.push('no hamlets on the page');else{
    F=HM.villages.filter(v=>v.focus==='farming'&&!v.error);const farms=F.filter(v=>v.farm&&!v.plantation&&!(neg==='farm'&&/k[12]$/.test(v.id))),pl=F.filter(v=>v.plantation);
-   if(farms.length<6)bad.push(farms.length+' farming hamlets');if(pl.length!==2)bad.push(pl.length+' plantations');
+   if(farms.length<6)bad.push(farms.length+' farming hamlets');if(pl.length!==3)bad.push(pl.length+' plantations');
    F.forEach(v=>{if(!v.farm||!(v.farm.parcels>0))bad.push(v.id+': no farmland');else if(v.farm.capped)bad.push(v.id+': short of land');if(v.census&&!(v.census.pop<=500))bad.push(v.id+': '+v.census.pop+' people');});
    const T=window._isleTowns;need=KHAMLET.farmNeed((T?T.towns:[]).reduce((q,t)=>q+(t.census?t.census.citizens:0),0)).inCrop;have=farms.reduce((q,v)=>q+v.farm.inCropHa,0);
    if(!(need>0&&have>=.8*need&&have<=1.2*need))bad.push(Math.round(have)+' ha in crop against the estimate\'s '+Math.round(need));
@@ -101,7 +105,7 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    /* a farmhouse on every holding, a track to each (the owner, 2026-11-09) */
    HM.resources.filter(r=>r.holdings).forEach(r=>{const V=HM.villages.find(v=>v.resource===r);if(!(r.holdings.length>=5&&r.records.length===r.holdings.length&&r.tracks.length===r.holdings.length))bad.push(r.id+': '+r.holdings.length+' holdings, '+r.records.length+' farmhouses, '+r.tracks.length+' tracks');
     if(r.holdings.some(h=>h.parcels<3))bad.push(r.id+': a holding of under three parcels');});}
-  R.push({name:"the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
+  R.push({name:"the countryside: six farming hamlets and three plantations (one overseas), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
    detail:bad.length?bad.join('; '):Math.round(have)+' ha in crop against '+Math.round(need)+' estimated; '+F.map(v=>v.id+' '+v.census.pop+' people, '+v.farm.inCropHa+' ha in crop of '+v.farm.farmedHa+' ('+v.farm.parcels+' parcels, fit '+(v.farm.fit==null?'-':v.farm.fit.toFixed(2))+')').join('; ')+'; '+n+' parcels sampled dry'});}
  {const HM=window._hamlets,bad=[],lines=[];if(!HM)bad.push('no hamlets on the page');else for(const v of HM.villages){if(v.error||!v.site)continue;
    const L=neg==='landing'&&v.id==='hamlet-lumber'?null:v.landing,sh=ISLE_HAMLETS.shoreOf(v.site,ISLE_HAMLETS.made.berths[v.parent]||null);   /* a shore with a sea route to the town's landing */
@@ -114,7 +118,7 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
  {const HM=window._hamlets,RD=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],bad=[],lines=[];if(!RD.length)bad.push('no baked roads (python3 bake.py roads)');
   const near=(p,q,r)=>Math.hypot(p[0]-q[0],p[1]-q[1])<=r,HD=WORLD_DATA.roads&&WORLD_DATA.roads.heads||{},heads=[].concat(...Object.keys(HD).map(t=>HD[t].map(h=>[h.x,h.z])));
   const onRoad=(p,r)=>RD.some(q=>q.pts.some((a,i)=>{if(!i)return false;const b=q.pts[i-1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1])<=r;}));
-  if(HM)for(const v of HM.villages){if(v.error||!v.site)continue;const M=ISLE_HAMLETS.made.villages.find(E=>E.spec.id===v.id),ends=(M.village.lanes||[]).filter(l=>!l.track).map(l=>l.pts[1].slice());if(!ends.length){bad.push(v.id+': no lane');continue;}
+  if(HM)for(const v of HM.villages){if(v.error||!v.site||v.overseas)continue;const M=ISLE_HAMLETS.made.villages.find(E=>E.spec.id===v.id),ends=(M.village.lanes||[]).filter(l=>!l.track).map(l=>l.pts[1].slice());if(!ends.length){bad.push(v.id+': no lane');continue;}
    if(neg==='road'&&v.id==='hamlet-farm-k1')ends.forEach(e=>{e[0]+=500;});const r=RD.find(q=>q.from===v.id);
    if(!r)bad.push(v.id+': no road');else{const a=r.pts[0],b=r.pts[r.pts.length-1],atA=ends.some(e=>near(a,e,5)),atB=ends.some(e=>near(b,e,5));if(!atA&&!atB)bad.push(v.id+': no lane end is its road\'s end');
     const far=atA?b:a;if(!heads.some(h=>near(far,h,5))&&!onRoad(far,12))bad.push(v.id+': its road ends in the open');lines.push(v.id+' '+Math.round(r.length_m/1000)+' km, '+r.townKm+' km to '+r.town);}
@@ -152,6 +156,34 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     lines.push(t+' '+kind+' -> '+S0.name+', '+S0.seaKm+' km by sea, the node '+Math.round(walk)+' m from the camp'+(fish!=null?', reef '+fish.toFixed(2):''));}
    if(!n)bad.push('no town has a '+kind+' camp\'s shore');}
   R.push({name:'the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* Valapo's clove plantation overseas (48 islandSite, 47h `overseas`; the owner, 2026-11-09): on the forest island west, on
+    its coast with a landing, no road; its crops cloves and its own staples; both its routes sea legs in the sim, and it
+    eats food it grew (the negative puts it 20 km off its island) */
+ {const HM=window._hamlets,bad=[];const v=HM?HM.villages.find(q=>q.overseas):null,lines=[];
+  if(!v)bad.push('no overseas village');else if(v.error)bad.push(v.id+': '+v.error);else{
+   const M=ISLE_HAMLETS.made.villages.find(E=>E.spec.id===v.id),sp=M.spec,site=neg==='overseas'?{x:v.site.x+20000,z:v.site.z}:v.site,d=Math.hypot(site.x-sp.island[0],site.z-sp.island[1]);
+   if(d>sp.look)bad.push(v.id+': '+Math.round(d)+' m from its island\'s point');if(!v.landing)bad.push(v.id+': no landing');
+   if((WORLD_DATA.roads&&WORLD_DATA.roads.roads||[]).some(r=>r.from===v.id))bad.push(v.id+': a highway baked to it');
+   const crops=new Set((v.farm&&M.resource&&M.resource.parcels||[]).map(p=>p.crop));if(!crops.has('cloves'))bad.push(v.id+': no cloves among its crops ('+[...crops].join(',')+')');
+   const X=ISLE.SIM&&ISLE.SIM.hamlets&&ISLE.SIM.hamlets.villages.find(Y=>Y.id===v.id);if(!X||!X.sea||!X.sea.overseas)bad.push(v.id+': its routes not sea legs in the sim');
+   else{const R1=SIM.TRADE.routes[X.sea.route],R2=SIM.TRADE.routes[X.sea.routeIn];if(!R1||!R2)bad.push(v.id+': a sea route missing');
+    /* its farmsteads' recipes (the check runs before the first harvest): cloves and its own staples, which its IN route does not bring */
+    const E=SIM.econ(v.id),by={};Object.keys(E.recipes).forEach(k=>(E.recipes[k].out||[]).forEach(g=>{by[g]=(by[g]||0)+1;}));const own=['sweet-potato','taro','banana'].filter(g=>by[g]>0);
+    if(!by.clove)bad.push(v.id+': no farmstead on cloves');if(own.length<2)bad.push(v.id+': grows '+own.length+' of its own staples');
+    const inG=(R2&&R2.goods&&R2.goods.valapo)||[];if(own.some(g=>inG.indexOf(g)>=0))bad.push(v.id+': its town ships it a staple it grows');
+    lines.push((v.name||v.id)+' ('+v.label+'): '+v.census.pop+' people '+Math.round(d)+' m from the island\'s point, '+X.sea.km+' km by sea ('+Math.round(X.sea.minutes/60)+' h), crops '+[...crops].join(', ')+'; farmsteads '+Object.keys(by).map(g=>g+' '+by[g]).join(', '));}}
+  R.push({name:'Valapo\'s clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* the clay villages (48: the potters' clay, 2026-11-09): one a town, its pit on dry flat ground beside the mangrove flats,
+    its clay pits the Islanders kit's (the negative moves a pit inland) */
+ {const HM=window._hamlets,bad=[],lines=[];const L=HM?HM.villages.filter(v=>v.focus==='clay'):[];
+  for(const t of ISLE.TOWNS){const v=L.find(q=>q.parent===t);if(!v){bad.push(t+': no clay village');continue;}if(v.error){bad.push(v.id+': '+v.error);continue;}
+   const r=v.resource||{},x=neg==='clay'?r.x+20000:r.x,z=r.z,H=(a,b)=>WORLD.Hland?WORLD.Hland(a,b):WORLD.H(a,b);let mud=false;
+   for(let a=0;a<8&&!mud;a++)for(let d=75;d<=300;d+=75)if(RINGISLES.zones(x+Math.cos(a*Math.PI/4)*d,z+Math.sin(a*Math.PI/4)*d).mangal>.4){mud=true;break;}
+   if(!mud)bad.push(v.id+': its pit not by the mangrove flats');if(WORLD.water(x,z)>H(x,z)-1.2)bad.push(v.id+': its pit in the water');
+   if(!(v.works||[]).includes('ie-claypit'))bad.push(v.id+': no clay pit among its works ('+(v.works||[]).join(',')+')');
+   if(typeof ISK==='undefined'||!ISK.DEFS||!ISK.DEFS['ie-claypit'])bad.push('the clay pit is not a kit proto');
+   lines.push((v.name||v.id)+' ('+t+'): '+v.census.pop+' people, the pit at '+Math.round(r.x)+','+Math.round(r.z)+(v.road?', '+v.road.townKm+' km by road':''));}
+  R.push({name:'the clay villages: one a town, its pit on dry ground beside the mangrove flats, its clay pits the kit\'s',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
  /* the herding bands (47n, 48n): one a town, its camp on dry pasture, named, drawn with its shelters and its herd */
  {const bad=[],HM=window._hamlets,L=HM&&HM.herders?HM.herders():[];if(L.length<ISLE.TOWNS.length)bad.push(L.length+' bands');
   for(const x of L){const c=neg==='herd'?[x.camp[0],x.camp[1]-60000]:x.camp;if(!c){bad.push(x.id+': no camp');continue;}if(!ISLE_HERDERS.pasture(c[0],c[1]))bad.push(x.id+': its camp on no pasture');if(!x.name)bad.push(x.id+': no name');if(!x.drawn)bad.push(x.id+': not drawn');}
@@ -244,14 +276,16 @@ async def run(a):
                 print('--- negative controls (each must fail) ---')
                 for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
                                 ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged'),
-                                ('farm', "the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
+                                ('farm', "the countryside: six farming hamlets and three plantations (one overseas), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
                                 ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway'),
                                 ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
                                 ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
                                 ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto"),
                                 ('shore', "the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village"),
                                 ('node', "the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef"),
-                                ('herd', "the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd")):
+                                ('herd', "the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd"),
+                                ('clay', "the clay villages: one a town, its pit on dry ground beside the mangrove flats, its clay pits the kit's"),
+                                ('overseas', "Valapo's clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

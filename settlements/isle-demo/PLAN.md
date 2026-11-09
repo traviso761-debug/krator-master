@@ -1143,8 +1143,9 @@ question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is
 
 **The owner (2026-11-09):** "Give Valapo cloves and add some ranch hamlets / semi nomadic herding camps on the map".
 
-- **Cloves for Valapo**: its plantation's cash crops (`15` `hamlets.farming.crops.valapo.cash`) and the city page's farms
-  stand-in grow cloves beside the sugar cane, cotton and coffee; Valapo's wet forest suits them as Kautoa's does (the
+- **Cloves for Valapo**: its plantation's cash crops (`15` `hamlets.farming.crops.valapo.cash`) grew cloves beside the
+  sugar cane, cotton and coffee (moved the same day to its plantation overseas, section 14; and out of the city page's
+  farms stand-in, where they took banana and coconut parcels and left Valapo too short for the polity's famine relief); Valapo's wet forest suits them as Kautoa's does (the
   crops kit: tropic, humid to wet), and the ships from beyond pay best for them (section 12's exports).
 - **Two ranch hamlets** on the existing ranch machinery (`openworld/isle-demo/src/48`): Kautoa's south ranch on the
   savanna 17 km south-west of the town, Valapo's ranch on its island's savanna 18 km south (the pasture survey's picks:
@@ -1163,3 +1164,32 @@ question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is
 - **Not yet:** the band's seasons (a wet-season and a dry-season range, the transhumance proper); the herd as animals
   the sim counts (the meat is a yield of the pasture, as the ranch's is); a band settling into a ranch hamlet, or a
   ranch sending out a band; the Beast Riders' own bands (core/camp's plan) meeting the islanders' herders.
+
+## 14. Clay for the potters; Valapo's clove plantation overseas (built 2026-11-09)
+
+**The owner (2026-11-09):** "do we have clay harvesting for pottery? If not, we should. Valapo can have a clove plantation
+on the west forest island. It should also try to feed itself by growing its own food."
+
+- **Clay.** There was none: the potters made pots from nothing. Now a `clay` focus in core/hamlet (`20-hamlet-cultures.js`:
+  the Islanders' `ie-claypit`, 24 jobs, the smallest works village) and a clay pit in the Islanders kit (`69-ie-hamlet.js`:
+  the pit cut to the grey clay, its spoil banked, the treading trough, the drying shed of racked blocks; the library's
+  clay set is fired, so raw clay is a tinted stand-in owed a texture: `core/materials/PROMPTS-NEEDED.md` 22). One clay
+  village a town (`48` `hamlet-clay-k`, `hamlet-clay-v`): the isles have no rivers, so the clay is the alluvial clay of the
+  low wet margins, a pit on dry flat ground within 300 m of the mangrove flats, the nearest beyond the town's ground
+  (Kautoa's 8 km east, 6.8 km by road, with a sea leg; Valapo's 9 km north-east, 20 km by road). The sim (`15`
+  `hamlets`): the clay diggers' works (`claypit`, half a lot a worker-hour), the clay bank a site that lasts fifty years,
+  and each town's potters take two lots of clay a pot (`hamlets.town[...].inputs`; the city page, without the villages,
+  makes its pots as before). tests/test-isle-hamlets.js checks the clay dug, landed and used two lots a pot;
+  `verify.py` each town's clay village by the mangrove flats with the kit's clay pits.
+- **Valapo's clove plantation overseas** (`48` `hamlet-plant-vw`, `islandSite`; `47h` `overseas`): a farming village
+  of 90 hands on the coast of the forest island west, its crops the town's `island` list (cloves four parts in seven,
+  sweet potato, taro and banana the rest), which its people eat first; the cloves leave its home plantation for it. It
+  has no road to its town: both its routes go by sea, its quay to Valapo's canoe stop (a lakatoi each way, 32 km and
+  about five hours in the node test's stand-in), the town's other foods coming back on the IN route. The survey
+  (`islandSite`) takes the best-fitting farmland within 9 km of the island's point with the sea within a kilometre
+  and a sea route from that shore to Valapo's landing, nearest the landing first. The road bake leaves it out.
+  tests/test-isle-hamlets.js: both routes sea legs, its cloves landed in Valapo, its staples grown and eaten;
+  `verify.py`: on the island with a landing and no road, cloves and its own staples, both routes by sea in the sim.
+- **Not yet:** the clay's other uses (bricks, the kilns' linings, a daub for the walls); fired-clay roof tiles for the
+  colonies; a clay village that fires its own pots and sells them; the overseas plantation's own boats drawn on its
+  IN route (only the OUT route's lakatoi is drawn); the plantation taking the island's forest down for its fields.

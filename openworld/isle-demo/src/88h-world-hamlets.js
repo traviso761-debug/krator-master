@@ -206,8 +206,8 @@ function update(){const P=camera.position;let nf=0;camps();herds();
  else if(LUM&&LUM.v.site&&Math.hypot(P.x-LUM.v.site.x,P.z-LUM.v.site.z)<FULL*2){buildStand();felling();}}
 HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
-const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,landing:X.v.landing||null,sea:X.E.sea||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,founded:X.E.founded||null,site:X.v.site,census:X.v.census,error:X.v.error||null,
- buildings:X.recs.length,resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null});
+const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,landing:X.v.landing||null,sea:X.E.sea||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,overseas:!!X.E.spec.overseas,founded:X.E.founded||null,site:X.v.site,census:X.v.census,error:X.v.error||null,
+ buildings:X.recs.length,works:[...new Set(X.recs.filter(r=>r.role==='works').map(r=>r.key))],resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null});
 /* a camp pitched for a look or a check (verify.py, a screenshot): a stand-in camp of `hh` households at (x, z), drawn as a
    founded one would be; -> its records with the kit each resolved to (null: a stand-in box) */
 function pitchTest(x,z,hh){hh=hh==null?6:hh;const C={id:'camp:test:'+Math.round(x)+','+Math.round(z),n:0,townName:'the test',site:{x,z},people:new Array(hh*5).fill(0),households:new Array(hh).fill(0),crop:'rice',farm:{parcels:[]}};

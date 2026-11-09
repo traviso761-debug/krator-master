@@ -40,7 +40,14 @@ function forestShore(townName,berth,used,tried){
   const x=sh.x-sh.ux*INLAND,z=sh.z-sh.uz*INLAND;r.site=[Math.round(x),Math.round(z)];if(!okSite(x,z,used)){r.why='wet, a town, or too near a village or camp';continue;}
   const f=forestAround(x,z);r.forest=Math.round(f*100)/100;if(f<FOREST_MIN){r.why='thin forest';continue;}
   return{x,z,shore:{x:sh.x,z:sh.z,ux:sh.ux,uz:sh.uz},seaKm:Math.round(sh.path.len/100)/10,forest,h:H,name:I.name};}
+ /* every candidate taken (a village on the beach: Valapo's clove plantation, 2026-11-09): rings round each island's first
+    point, RING_STEP m apart out to RING_MAX, RING_N bearings, on forested ground only, nearest first */
+ for(const I of ISLANDS[townName]||[]){const p=I.pts[0];for(let r=RING_STEP;r<=RING_MAX;r+=RING_STEP)for(let a=0;a<RING_N;a++){const px=p[0]+Math.cos(a/RING_N*2*Math.PI)*r,pz=p[1]+Math.sin(a/RING_N*2*Math.PI)*r;
+  if(!(forest(px,pz)>0))continue;const sh=ISLE_HAMLETS.shoreOf({x:px,z:pz},berth),q={island:I.name,ring:[Math.round(px),Math.round(pz)],route:!!(sh&&sh.path)};tried.push(q);if(!sh||!sh.path)continue;
+  const x=sh.x-sh.ux*INLAND,z=sh.z-sh.uz*INLAND;if(!okSite(x,z,used)){q.why='too near';continue;}const f=forestAround(x,z);if(f<FOREST_MIN){q.why='thin forest';continue;}
+  return{x,z,shore:{x:sh.x,z:sh.z,ux:sh.ux,uz:sh.uz},seaKm:Math.round(sh.path.len/100)/10,forest,h:H,name:I.name};}}
  return null;}
+const RING_STEP=2500,RING_MAX=7500,RING_N=12;
 /* the vents': a geyser vent of the isles off the town's own island (`VENT_OFF` m from the town at least), nearest the town's
    landing first; the camp on the routed shore nearest it (within VENT_WALK m), the diggers' node at the vent */
 const VENT_OFF=15000,VENT_WALK=5000;

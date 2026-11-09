@@ -42,10 +42,14 @@ const SPECS = [
   { id: 'hamlet-plant-k', name: 'Kautoa plantation', focus: 'farming', parent: 'Kautoa', crops: 'cash', plantation: true, hands: 60, near: farmAt('Kautoa', 5000, 5000) },
   { id: 'hamlet-farm-v1', name: 'Valapo farming hamlet 1', focus: 'farming', parent: 'Valapo', crops: 'staples', share: 1 / 2, near: farmAt('Valapo', 6000, 0) },
   { id: 'hamlet-farm-v2', name: 'Valapo farming hamlet 2', focus: 'farming', parent: 'Valapo', crops: 'staples', share: 1 / 2, near: farmAt('Valapo', -6000, 0) },
-  { id: 'hamlet-plant-v', name: 'Valapo plantation', focus: 'farming', parent: 'Valapo', crops: 'cash', plantation: true, hands: 60, near: farmAt('Valapo', 0, 6000) }];
+  { id: 'hamlet-plant-v', name: 'Valapo plantation', focus: 'farming', parent: 'Valapo', crops: 'cash', plantation: true, hands: 60, near: farmAt('Valapo', 0, 6000) },
+  { id: 'hamlet-plant-vw', name: 'Valapo clove plantation', focus: 'farming', parent: 'Valapo', crops: 'island', plantation: true, hands: 90, overseas: true,
+    near: [-24400, 33084], landing: { x: -24400 + 400, z: 33084, ux: 1, uz: 0 }, seaKm: 32 },   /* 2026-11-09: on the forest island west (stand-in: its shore 400 m east, 32 km by sea) */
+  { id: 'hamlet-clay-k', name: 'Kautoa clay pits', focus: 'clay', parent: 'Kautoa', near: farmAt('Kautoa', 8000, -2000) },   /* 2026-11-09: the potters' clay, by the mangrove flats */
+  { id: 'hamlet-clay-v', name: 'Valapo clay pits', focus: 'clay', parent: 'Valapo', near: farmAt('Valapo', 7000, 5000) }];
 ISLE.simDeclare(plans, null, { hamlets: SPECS });
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
-const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' }, 'hamlet-ranch-k2': { id: 'hamlet-ranch-k2:field', kind: 'pasture', grade: 'medium' }, 'hamlet-ranch-v': { id: 'hamlet-ranch-v:field', kind: 'pasture', grade: 'medium' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
+const STANDIN = { 'hamlet-clay-k': { id: 'hamlet-clay-k:bank', kind: 'clay', grade: 'medium' }, 'hamlet-clay-v': { id: 'hamlet-clay-v:bank', kind: 'clay', grade: 'medium' }, 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' }, 'hamlet-ranch-k2': { id: 'hamlet-ranch-k2:field', kind: 'pasture', grade: 'medium' }, 'hamlet-ranch-v': { id: 'hamlet-ranch-v:field', kind: 'pasture', grade: 'medium' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
 const hands = sp => sp.plantation ? sp.hands : Math.ceil(KHAMLET.farmNeed(people[sp.parent]).hands * sp.share);
 const villages = SPECS.map(sp => { const farm = sp.focus === 'farming', res = farm ? { x: sp.near[0] - 350, z: sp.near[1] } : { x: sp.near[0] - 200, z: sp.near[1] };
   const village = KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus, site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] },
@@ -107,6 +111,22 @@ ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber;
   const by = t => ((SIM.ITEMS.statsBy || {})[t] || {}).bought || {}, KB = by('kautoa'), VB = by('valapo');
   ok('the iron tools are their own line: made in Kautoa, bought there in place of stone, carried to Valapo', (IR.made.irontools || 0) > 0 && (KB['iron tool'] || 0) > 0 && (VA.imported.irontools || 0) > 0,
     'Kautoa made ' + (IR.made.irontools || 0) + ', its people bought ' + (KB['iron tool'] || 0) + ' iron and ' + (KB['stone tool'] || 0) + ' stone; Valapo landed ' + (VA.imported.irontools || 0) + ', bought ' + (VB['iron tool'] || 0) + ' iron and ' + (VB['stone tool'] || 0) + ' stone; short of iron tools: Kautoa ' + (IR.short.irontools || 0) + ', Valapo ' + (VA.short.irontools || 0)); }
+/* Valapo's clove plantation overseas (the owner, 2026-11-09): both its routes sea legs, its cloves landed in Valapo, and it
+   grows and eats its own staples */
+{ const X = ISLE.SIM.hamlets.villages.find(v => v.id === 'hamlet-plant-vw'), E = SIM.econ('hamlet-plant-vw'), RO = X && SIM.tradeReport(X.sea.route), RI = X && SIM.tradeReport(X.sea.routeIn);
+  const R0 = X && SIM.TRADE.routes[X.sea.route], R1 = X && SIM.TRADE.routes[X.sea.routeIn], quayEnds = R => R && R.stops.some(st => st.place === X.sea.quay) && R.stops.some(st => st.place === 'valapo.stop');
+  const own = ['sweet-potato', 'taro', 'banana'].filter(g => (E.made[g] || 0) > 0), ate = own.filter(g => (E.used[g] || 0) > 0), clove = (RO && RO.landed['hamlet-plant-vw>valapo'] || {}).clove || 0, atSea = RO ? RO.carriers.reduce((n, C) => n + C.cargo.filter(c => c.good === 'clove').reduce((k, c) => k + c.n, 0), 0) : 0;
+  ok('Valapo\'s clove plantation overseas: both its routes sea legs from its quay to the town\'s canoe stop (' + (X ? X.sea.km + ' km, ' + Math.round(X.sea.minutes / 60) + ' h' : '-') + '), its cloves to Valapo (' +
+     Math.round(E.made.clove || 0) + ' grown, ' + clove + ' landed, ' + atSea + ' at sea), its own staples grown and eaten (' + own.map(g => g + ' ' + Math.round(E.made[g]) + ' grown, ' + Math.round(E.used[g] || 0) + ' eaten').join('; ') + ')',
+    !!X && X.sea.overseas && quayEnds(R0) && quayEnds(R1) && (E.made.clove || 0) > 0 && clove + atSea > 0 && own.length >= 2 && ate.length >= 2, X ? JSON.stringify(X.sea) : 'no village'); }
+/* the clay (the owner, 2026-11-09): each town's potters make their pots of the clay its clay village digs and carts in,
+   two lots a pot (a town whose opening pots last the run makes none) */
+{ const C = t => SIM.econ(t), dug = id => SIM.econ(id) ? (SIM.econ(id).made.clay || 0) : 0, landed = t => C(t).imported.clay || 0;
+  const per = t => (C(t).made.pots || 0) === 0 || (C(t).used.clay || 0) >= 2 * (C(t).made.pots || 0) - 2;
+  ok('the potters make pots of the clay pits\' clay, two lots a pot (Kautoa: ' + dug('hamlet-clay-k') + ' dug, ' + landed('kautoa') + ' landed, ' + (C('kautoa').used.clay || 0) + ' used, ' +
+     (C('kautoa').made.pots || 0) + ' pots; Valapo: ' + dug('hamlet-clay-v') + ' dug, ' + landed('valapo') + ' landed, ' + (C('valapo').used.clay || 0) + ' used, ' + (C('valapo').made.pots || 0) + ' pots)',
+    dug('hamlet-clay-k') > 0 && dug('hamlet-clay-v') > 0 && landed('kautoa') > 0 && landed('valapo') > 0 && per('kautoa') && per('valapo') && ['kautoa', 'valapo'].some(t => (C(t).made.pots || 0) > 0),
+    JSON.stringify({ k: C('kautoa').inputs && C('kautoa').inputs.pots, v: C('valapo').inputs && C('valapo').inputs.pots })); }
 /* the felling crew moves camp (core/camp 40): its stand worked down to its seed trees, it strikes, marches and pitches at
    the next stand, its recipe held on the way, then felling there; the books balance across the move */
 { const c = ISLE.SIM.crews[0], W = c.W, E = SIM.econ(c.settlement), s0 = W.cur.stand, St = E.resSites[s0], P0 = SIM.R.place[c.place], x0 = P0.x, z0 = P0.z, L0 = SIM.ledgerSnap();

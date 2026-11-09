@@ -53,11 +53,21 @@ const SPECS=[
  {id:'hamlet-plant-k',name:'Kautoa plantation',focus:'farming',parent:'Kautoa',crops:'cash',plantation:true,hands:60},
  {id:'hamlet-farm-v1',name:'Valapo farming hamlet 1',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
  {id:'hamlet-farm-v2',name:'Valapo farming hamlet 2',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
- {id:'hamlet-plant-v',name:'Valapo plantation',focus:'farming',parent:'Valapo',crops:'cash',plantation:true,hands:60}];
+ {id:'hamlet-plant-v',name:'Valapo plantation',focus:'farming',parent:'Valapo',crops:'cash',plantation:true,hands:60},
+ /* VALAPO'S CLOVE PLANTATION OVERSEAS (the owner, 2026-11-09: "Valapo can have a clove plantation on the west forest island.
+    It should also try to feed itself by growing its own food"): a farming village on the island's coast (islandSite), its
+    crops the town's `island` list (cloves and its own staples), no highway: both its routes go by sea (47h `overseas`) */
+ {id:'hamlet-plant-vw',name:'Valapo clove plantation',focus:'farming',parent:'Valapo',crops:'island',plantation:true,hands:90,overseas:true,island:[-24400,33084],look:9000},
+ /* THE CLAY VILLAGES (the owner, 2026-11-09: "do we have clay harvesting for pottery? If not, we should"): the potters' clay.
+    The isles have no rivers (WORLD.water's river part is dry over both islands), so the clay is the alluvial clay of the
+    low wet margins: a pit on dry flat ground within CLAY_R of the mangrove flats, the nearest such beyond the town's
+    ground and its first fields, apart from the villages already sited (after the farming hamlets, above) */
+ {id:'hamlet-clay-k',name:'Kautoa clay pits',focus:'clay',parent:'Kautoa',look:11000},
+ {id:'hamlet-clay-v',name:'Valapo clay pits',focus:'clay',parent:'Valapo',look:11000}];
 const FARM={cell:500,rMin:2000,rMax:14000,apart:3000,subStep:150,minFit:.7,off:350};
 const SHORE_R=1000,SHORE_STEP=10,FOREST_MIN=.4,FOREST_R=1500;   /* a lumber village's stand: forest over two fifths of the crew's near range (the tune's range is 3 km) */
 const DEFAULT_PEOPLE={Kautoa:6040,Valapo:2095};   /* the plan's census (PLAN.md section 11) when the page hands none in */
-const CELL=150,SLOPE=.3,DRY=1.2;
+const CELL=150,SLOPE=.3,DRY=1.2,CLAY_R=300,CLAY_SLOPE=.12,CLAY_APART=1500;
 /* the land without the roads (WORLD.Hland): the highways are baked over the villages' lane ends (48r, bake.py), so the
    survey must read the same ground before and after the bake, or a baked road would miss a village that moved */
 const H=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>H(x,z)-DRY;
@@ -93,6 +103,16 @@ function farmSite(sp,P,out,crops){const half=typeof ISLE!=='undefined'&&ISLE.PRO
   if(!best||score>best.score+1e-9)best={x,z,d,fit,score};}
  return best;}
 
+/* an overseas village's site (above): the best-fitting cell within sp.look of its island's point with the sea within
+   SHORE_R and a sea route from that shore to its town's landing, nearest the landing first among the fit; or null */
+function islandSite(sp,out,crops,berth){const n=Math.ceil(sp.look/FARM.cell),C=[];
+ const taken=out.villages.filter(V=>V.village&&V.village.site).map(V=>V.village.site).concat(out.resources.filter(r=>r.x!=null).map(r=>({x:r.x,z:r.z})));
+ for(let j=-n;j<=n;j++)for(let i=-n;i<=n;i++){const x=sp.island[0]+i*FARM.cell,z=sp.island[1]+j*FARM.cell;if(i*i+j*j>n*n||!WORLD.inside(x,z))continue;
+  if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))continue;const fit=farmFit(x,z,crops);if(fit<FARM.minFit)continue;
+  const d=berth?Math.hypot(x-berth.x,z-berth.z):0;C.push({x,z,d,fit,score:fit-.5*d/(sp.look*4)});}
+ C.sort((a,b)=>b.score-a.score||a.x-b.x||a.z-b.z);
+ let k=0;for(const c of C){if(!nearSea(c.x,c.z))continue;if(++k>8)break;const sh=shoreOf({x:c.x,z:c.z},berth);if(sh&&sh.path)return c;}   /* the sea route tried on the first eight coastal cells */
+ return null;}
 /* the sea within SHORE_R of a point: a quick look along eight bearings (the siting of a lumber village) */
 function nearSea(x,z){for(let a=0;a<8;a++){const ux=Math.cos(a*Math.PI/4),uz=Math.sin(a*Math.PI/4);for(let r=150;r<=SHORE_R;r+=150){const px=x+ux*r,pz=z+uz*r;if(WORLD.water(px,pz)>H(px,pz)-.4&&WORLD.water(px+ux*200,pz+uz*200)>H(px+ux*200,pz+uz*200)+1)return true;}}return false;}
 /* the shore nearest a village's site (above): -> {x, z (the beach, the last dry point), ux, uz (seaward), d, path} or null */
@@ -131,6 +151,15 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    if(!seed){const Lf=L.filter(farOut);seed=near(coastal.length?coastal:Lf.length?Lf:L,P);}res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
     forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */
    if(coastal.length){const sh=shoreOf({x:seed.x,z:seed.z},opt.berths&&opt.berths[sp.parent]||null);if(sh){start=[sh.x-sh.ux*150,sh.z-sh.uz*150];shoreSite=true;}}}
+  else if(sp.focus==='clay'){
+   const half0=typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[sp.parent]?ISLE.PROG[sp.parent].half:4400,r0=half0+FARM.rMin;
+   const taken=out.villages.filter(V=>V.village&&V.village.site).map(V=>V.village.site).concat(out.resources.filter(r=>r.x!=null).map(r=>({x:r.x,z:r.z})));
+   const mud=(x,z)=>{for(let a=0;a<8;a++){const ux=Math.cos(a*Math.PI/4),uz=Math.sin(a*Math.PI/4);for(let r=75;r<=CLAY_R;r+=75)if(Z(x+ux*r,z+uz*r).mangal>.4)return true;}return false;};
+   const L=cells({near:P,look:sp.look},(x,z)=>{const d=Math.hypot(x-P[0],z-P[1]);if(d<r0||!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z)||slope(x,z)>CLAY_SLOPE)return 0;
+    const z0=Z(x,z);if(z0.pan>.3||z0.mangal>.3||z0.cliff>.3)return 0;if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<CLAY_APART))return 0;return mud(x,z)?d:0;});
+   if(!L.length){out.errors.push(sp.id+': no clay ground by the mangrove flats within '+sp.look+' m of '+sp.parent);continue;}
+   let best=L[0];for(const c of L)if(c.v<best.v)best=c;
+   res={id:sp.id+':bank',kind:'clay',grade:'medium',x:best.x,z:best.z,key:null,node:true};start=[best.x,best.z];out.siting[sp.id]={cells:L.length,d:Math.round(best.v)};}
   else if(sp.focus==='mine'||sp.focus==='quarry'){
    const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);   /* a quarry apart from the mine's hill */
    const L=cells(sp,(x,z)=>wet(x,z)||WORLD.townW(x,z)||!far(x,z)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch');continue;}
@@ -138,23 +167,25 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    res=sp.focus==='quarry'?{id:sp.id+':face',kind:'stone',grade:sp.grade,x:top.x,z:top.z,key:null,node:true}:{id:sp.id+':node',kind:sp.metal,grade:sp.grade,x:top.x,z:top.z,key:resNodeKey(sp.metal,sp.grade),node:true};start=[top.x,top.z];}
   else if(sp.focus==='farming'){
    const crops=cropRows(sp);if(!crops.length){out.errors.push(sp.id+': no crop rows for '+sp.parent);continue;}
-   const c=farmSite(sp,P,out,crops);if(!c){out.errors.push(sp.id+': no farmland site in the hinterland of '+sp.parent);continue;}
+   const c=sp.overseas?islandSite(sp,out,crops,opt.berths&&opt.berths[sp.parent]||null):farmSite(sp,P,out,crops);
+   if(!c){out.errors.push(sp.id+': no farmland site '+(sp.overseas?'on the island\'s coast with a sea route to '+sp.parent:'in the hinterland of '+sp.parent));continue;}
    const people=(opt.people||{})[sp.parent]||DEFAULT_PEOPLE[sp.parent]||2000;
    workers=sp.plantation?(sp.hands==null?60:sp.hands):Math.ceil(KHAMLET.farmNeed(people).hands*(sp.share==null?1:sp.share));
    start=[c.x,c.z];farmCrops=crops;farmFitAt=c.fit;}
   /* the village starts beside its resource, toward its town; siteFor finds dry flat ground from there. A farming hamlet
      stands on its survey cell, its farmland's centre FARM.off m beyond it (away from the town), its farmsteads toward it */
-  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=farmCrops||shoreSite?0:sp.focus==='mine'||sp.focus==='quarry'?180:sp.focus==='ranch'?0:260;
+  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=farmCrops||shoreSite?0:sp.focus==='mine'||sp.focus==='quarry'||sp.focus==='clay'?180:sp.focus==='ranch'?0:260;
   const site={x:start[0]+ux*off,z:start[1]+uz*off},rp=res?{x:res.x,z:res.z}:{x:start[0]-ux*FARM.off,z:start[1]-uz*FARM.off};
   const berth=opt.berths&&opt.berths[sp.parent]||null,vspec={id:sp.id,world:opt.world==null?4242:opt.world,culture:'islander_east',focus:sp.focus,site,
    link:{x:site.x+ux*400,z:site.z+uz*400},resource:{x:rp.x,z:rp.z,workers:workers==null?undefined:workers},dims,
-   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'?300:900,worksOut:farmCrops?['ie-farm']:undefined,   /* the farmsteads stand on their holdings (core/hamlet 14) */
+   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'||sp.focus==='clay'?300:900,worksOut:farmCrops?['ie-farm']:undefined,   /* the farmsteads stand on their holdings (core/hamlet 14) */
    vacant:typeof ISLE!=='undefined'&&ISLE.TUNE&&ISLE.TUNE.sim.hamlets.grow?ISLE.TUNE.sim.hamlets.grow.vacant:0};   /* the empty plots the village grows by (step 5) */
   /* the coast: the shore from the site the village settles on (laid again when siteFor moved it) */
   let ld=shoreOf(site,berth);if(ld)vspec.landing=ld;
   let v=KHAMLET.village(vspec);
   if(v.site&&Math.hypot(v.site.x-site.x,v.site.z-site.z)>50){const ld2=shoreOf(v.site,berth);if((ld2&&!ld)||(!ld2&&ld)||(ld2&&ld&&Math.hypot(ld2.x-ld.x,ld2.z-ld.z)>5)){ld=ld2;if(ld)vspec.landing=ld;else delete vspec.landing;v=KHAMLET.village(vspec);}}
   if(ld&&v.landing){sp.landing={x:ld.x,z:ld.z,ux:ld.ux,uz:ld.uz};if(ld.path)sp.seaKm=Math.round(ld.path.len/100)/10;}
+  if(sp.overseas&&!(ld&&v.landing&&ld.path))out.errors.push(sp.id+': an overseas village with no landing and sea route to '+sp.parent);
   if(v.error)out.errors.push(sp.id+': '+v.error);
   if(farmCrops&&!v.error){res=ISLE.farmlandOf(sp,v,{world:opt.world==null?4242:opt.world,centre:rp,ground:{ok:groundOk,h:H,slope}});res.fit=farmFitAt;
    if(res.capped)out.errors.push(sp.id+': only '+res.inCropHa+' ha of '+res.target+' in crop within '+KHAMLET.FARM.rMax+' m');}

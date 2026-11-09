@@ -84,3 +84,5 @@
       houses, and the upper galleries of the two halls (`iw-hall`, `ie-hall`) and `ip-tower`, which I have not read. `tools/walk_audit/registry_reach.py`
       asks the same of `core/walk` itself.
 
+- [ ] The clay pit (`ie-claypit`, 2026-11-09): the library's `clay` set is fired clay (red-brown), so the raw clay's blocks and heap are that set
+      tinted grey (`IE_RAWCLAY`), a stand-in. A raw-clay set (wet grey-ochre clay, cut faces, finger marks) is owed: `core/materials/PROMPTS-NEEDED.md`.

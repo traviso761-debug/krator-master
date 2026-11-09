@@ -81,3 +81,29 @@ defBuilding({key:'ie-bloomery',name:'Bloomery (Kautoa)',seed:6334,cut:true,w:18,
   door(4.4,0,0,0,3);
   isNoCut(()=>{isOrePile(-6.4,3.2,'iron',1.3);ieHeap(-3.2,4.4,1.1,.6,'charcoal',P('charcoal'));ieHeap(5.6,4.8,1.4,.8,'stone',P('slag'),1.2);
    for(let i=0;i<5;i++)box('iron',1.4+i*.34,0,4.4,.26,.12,.6,P('iron'));});}});
+
+/* ---------------------------------------------------------------- the clay pit (the clay village: the potters' clay) */
+/* The owner (2026-11-09): "do we have clay harvesting for pottery? If not, we should". The diggers' pit in the wet
+   ground by a stream: a shallow pit cut through the topsoil to the grey clay, standing water in its lowest corner, the
+   spoil banked round it; the clay trodden in a timber trough to work the grit out, cut into blocks and dried on racks
+   under a shed of thatch before the carts take it to the town's potters */
+/* raw clay: the library's clay set is fired (KNOWN_ISSUES.md), tinted toward the grey of the wet pit */
+const IE_RAWCLAY=0xa49e92;
+function ieClayBlocks(x,z,ry,nx,ny,nz){W(x,0,z,ry,()=>{for(let j=0;j<ny;j++)for(let i=0;i<nx;i++)for(let k=0;k<nz;k++)
+ box('clay',(i-(nx-1)/2)*.36,j*.2,(k-(nz-1)/2)*.26,.32,.18,.22,IE_RAWCLAY,rr(-.05,.05));});}
+defBuilding({key:'ie-claypit',name:'Clay pit (Kautoa)',seed:6335,cut:true,w:20,d:16,h:6,budget:80000,
+ tags:{types:['industry'],wealth:'poor',style:'east',role:'clay digger'},
+ note:'the clay diggers\' pit by a stream: a shallow pit cut through the brown topsoil to the grey clay, water standing in its low corner, the spoil banked round it, a timber trough where the clay is trodden clean of grit, blocks of it drying on racks under a shed of thatch, baskets and digging sticks, the carts\' blocks stacked by the track',
+ build(o){box('earth',0,0,0,19.4,.03,15.4,0xb89a70);
+  W(-3.2,0,-1.2,0,()=>{box('clay',0,.03,0,9.6,.02,7.2,0x7e7a6e);box('water',-3.0,.05,-2.2,3.0,.02,2.4,0x55605a);
+   for(let i=0;i<14;i++){const a=i/14*TAU,rx=5.4,rz=4.2;ellip('earth',Math.cos(a)*rx,0,Math.sin(a)*rz,1.4,.55,1.1,0x9a7c58,a,8);}
+   for(let i=0;i<6;i++)ellip('clay',rr(-3,3),.03,rr(-2,2.4),rr(.3,.5),.12,rr(.25,.4),0x8a8476,rr(0,TAU),7);
+   pole('wood',[1.4,0,.6],[1.6,1.5,.8],.03,P('woodD'),5);pole('wood',[2.2,0,-.4],[2.5,1.4,-.2],.03,P('woodD'),5);});
+  W(5.6,0,-3.2,0,()=>{for(const s of [-1,1])box('wood',0,0,s*.75,3.6,.5,.12,P('woodD'));for(const s of [-1,1])box('wood',s*1.75,0,0,.12,.5,1.5,P('woodD'));
+   box('clay',0,.05,0,3.4,.35,1.4,0x8a8476);});
+  W(4.6,0,2.4,0,()=>{ieShed({w:6,d:3.6,postH:2.3,walls:{back:'mat'},roof:{skirtH:1.0,towerH:2.2,towerS:.42,topSx:.26,patch:.2,finial:'none'}});
+   for(const z of [-.9,.6]){for(const s of [-1,1])box('wood',s*2.4,0,z,.08,1.2,.08,P('wood'));for(const y of [.4,.8,1.2])box('planks',0,y,z,5,.04,.5,P('woodL'));
+    for(const y of [.44,.84,1.24])for(let i=0;i<12;i++)box('clay',-2.2+i*.4,y,z,.3,.16,.2,IE_RAWCLAY,rr(-.05,.05));}});
+  door(4.6,0,4.2,0,4);
+  isNoCut(()=>{ieClayBlocks(-6.8,5.6,0,4,3,3);ieClayBlocks(-3.8,5.8,.1,4,2,3);
+   isFurn([['generic_basket',-1.2,0,5.4,0],['generic_basket',-.4,0,5.8,.4],['generic_sack',8.2,0,-.4,.3],['islander_common_stool',2.6,0,3.4,0]]);ieHeap(8.0,-6.2,1.3,.6,'clay',IE_RAWCLAY);});}});
