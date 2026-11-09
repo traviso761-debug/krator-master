@@ -82,7 +82,7 @@ def build(OUT='nsemiarid.html',overlay=None):
         if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
     PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
     PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
-    # core/shadow (KSHADOW): the sun's shadows, attached only on ?shadow=1 (89z-host-build.js; the owner, 2026-11-03: off by default)
+    # core/shadow (KSHADOW): the sun's shadows, attached always on core's switch, off at load (88-host-build.js: the button or ?shadow=1; the owner, 2026-11-03)
     PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
     PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
     # core/hazard (KHAZ): the air's dust reaches the walker through it (89b-host-atmos.js); KTRAPS.cycle, the clock its export reads

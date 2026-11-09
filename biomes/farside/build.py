@@ -93,7 +93,7 @@ for f in CORE_BIOME:
 CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,core('terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,core('terrain','host',f))
-# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable, OFF at page load): the panel's 'shadows' button attaches it (88); ?shadow=1 at load
+# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable, OFF at page load): attached off on core's own switch (88, 99); core's 'shadows' button or ?shadow=1 at load
 PATH.setdefault('10-core-shadow.js',core('shadow','10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js',core('shadow','host','12-core-shadow-host.js'))
 # core/rand and core/tags: with BIO.init({tags}) every item set, instance and registered volume is a core/tags record

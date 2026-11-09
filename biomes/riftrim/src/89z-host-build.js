@@ -55,10 +55,10 @@ const SHADOW_Q=new URLSearchParams(location.search).get('shadow');
  if(AIR.snow&&ATMOS.snowOnScene){scene.traverse(o=>{const m=o.material;if(!o.isMesh||!m||m.userData.noSnow||!o.geometry.attributes.aN||!m.userData.bio||m.userData.bio.kind!=='leaf'||(m.userData.bio.opts||{}).aN)return;
   ATMOS.snowOn(m,{twoSided:m.side===THREE.DoubleSide,aN:false});m.userData.noSnow=true;});ATMOS.snowOnScene(scene);}   /* the lying snow on every lit material, the flora's and the variants' included (89a) */
  /* THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03: every turn takes it, TOGGLEABLE AND OFF BY DEFAULT): one view-following box,
-    attached here and turned off at load; ?shadow=1 or the panel's button (99) turns it on. Core has no switch of its own yet: the handle's off()/on() */
- if(typeof KSHADOW!=='undefined'&&KSHADOW.attach){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
+    attached here, off at load, on core/shadow's own switch since 2026-11-08 (the Throne's way): core's panel button or ?shadow=1 turns it on, ?shadow=0 none of it */
+ if(typeof KSHADOW!=='undefined'&&KSHADOW.attach&&SHADOW_Q!=='0'){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(typeof FAR!=='undefined'&&FAR&&FAR.mesh)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;
-  if(SHADOW_Q!=='1')window._shadow.off();}catch(e){reportErr('shadow: '+e.stack);}}
+  }catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);
  /* the land's whole volume from its own ground (a station's stands 1-2 km up): its lowest point to its highest, on a 100 m lattice */
  {const R=LAND.region;if(R.y==null){let lo=1e9,hi=-1e9;for(let z=-TERR.R;z<=TERR.R;z+=100)for(let x=-TERR.R;x<=TERR.R;x+=100){const h=terrainH(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}R.y=Math.floor(lo-10);R.h=Math.ceil(hi-lo+60);}REGISTER(R);}

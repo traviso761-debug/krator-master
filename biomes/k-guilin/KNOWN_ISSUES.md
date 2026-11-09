@@ -61,7 +61,10 @@ rain cover on, the mirror switch made (off), KSHADOW not attached, `impTrees` it
 
 **For the coordinator's GPU verify (`verify.py dist/k-guilin.html --assert --all-views`):**
 - [ ] the impostors: `BIO.bakeImpostors` must finish (library maps decoded) and the far tiers read as trees, not cards; their light against
-      the near crowns (`?impgain=`), and the instance cap (no `capWhy` was added: if `impTrees` or a borrowed item trips it, say why or lower it)
+      the near crowns (`?impgain=`), and the instance cap (no `capWhy` was added: if `impTrees` or a borrowed item trips it, say why or lower it).
+      2026-11-08, checked against the owner's rule (dense foliage that is meant declares `{cap, capWhy}`): no cap is recorded as tripped, and
+      `impTrees` is one instance per far tree of five species (kit trees on 1.5 km of 5-70 m cells behind keep-clear pads; 6,973 trees stand on rock), far
+      under 250k, so no `capWhy` and no coarsening. The harness's `BIO.capReport` check on the GPU verify still confirms it.
 - [ ] the attach audit with nwbay's joints and holds on and the stems on the crowns: the borrowed species were drawn without them before
 - [ ] shader-programs and shader-errors: the ground now chains KGROUND, KHORIZON, cloudShade, the weather's wetting and the height fog on one
       Lambert material (four KGROUND samplers + the horizon's two); the rock walls chain KSTRATA, KHORIZON, cloudShade and the height fog
@@ -81,5 +84,6 @@ nwbay's 50/55/56 and pack and the hyperjungle's 41 are read in place), so its me
 - [ ] wet ground and puddles (R9): waits on the black-ground finding on a KGROUND floor (oidong, korona).
 - [ ] BACKPORT's karst springs (clear-water look), the wadi's confluence with the lake (`WATER.join`), tall falls, `BIO.bamboo` for the
       phoenix-tail bamboo (the owner's note: k-guilin takes a bamboo variant) and karst site 1's caverns: features for a later pass.
-- [ ] core findings, for core's owners: KGROUND's distance on a Lambert ground reads `cameraPosition` (0 there); this page redirects it to
+- [x] core findings, for core's owners: KGROUND's distance on a Lambert ground reads `cameraPosition` (0 there); this page redirects it to
       `kEye()` with a define, as korona does: `core/terrain/43-core-ground.js` should read `kEye` itself.
+      2026-11-08: closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix` (the page's define is now redundant but harmless).

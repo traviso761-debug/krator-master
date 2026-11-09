@@ -104,7 +104,7 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   the trenches' crest (4.38% with them; its pair-7 turn, not merged here yet). Each comes back when its vendor's turn holds it.
   (8) The trenches lacked `31b-core-leafset` and `33-core-fungoid`, which nhighlands' species need since the core pass (`G.disc` threw):
   `stations/trench/station.json` lists them now. (9) KGROUND reads the eye uniform r128 leaves at 0 on a Lambert ground; this floor
-  redirects it to `kEye` (`47`), the fix belongs in `core/terrain/43-core-ground.js` (necanyons' floor has the same read).
+  redirects it to `kEye` (`47`), the fix belongs in `core/terrain/43-core-ground.js` (necanyons' floor has the same read). (9) is closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix`.
 
 ## Closed
 

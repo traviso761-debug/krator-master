@@ -112,5 +112,5 @@ KHOST.take({build:'farside',title:'Krator biome — '+STAGE.name,
  biome:()=>window._biome}});
 if(LAG_DRAW&&WATER.mirrorSwitch){try{MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAG_DRAW.mesh.material],level:LAGOON.level,
  center:LAGOON.centre,radius:LAGOON.r*1.4,far:2600,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;}catch(e){reportErr('mirror: '+e.stack);}}
-// THE SUN'S SHADOWS (88: SHADOW_SW, core/shadow; the owner, 2026-11-03: off by default): the panel's button; ?shadow=1 turns them on at load
-SHADOW_SW.button(KHOST.ui);if(/[?&]shadow=1/.test(location.search))SHADOW_SW.set(true);
+// THE SUN'S SHADOWS (88: SHADOW_ATTACH, core/shadow's own switch; the owner, 2026-11-03: off by default): core's button on the panel; ?shadow=1 turns them on at load
+SHADOW_ATTACH(KHOST.ui);

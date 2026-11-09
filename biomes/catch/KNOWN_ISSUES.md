@@ -34,6 +34,8 @@
       yet (brine flies at the lake, a wading bird on the brine, the caravans' beasts: for `kits/fauna`).
 - [ ] **The dune shrub has no library card.** It is drawn as procedural geometry (green jointed twigs, red fruit), which
       reads; a card (`card.calligonum`) would be finer at the hero range. Not owed yet: say if wanted.
+- [x] **The lake drew core/water's breakers' foam** (station 3): `surf:false` stops only the lap; a shore grid's breakers are their own switch
+      (core/water 50, `breakers`). 2026-11-08: `breakers:false` beside it in `stations/lake/45b-host-stage.js` (a still brine lake). Not seen on the GPU.
 - [ ] **The lake's three other pans** (4.22: 497, 257 and 176 km2) are one playa on station 3; the others are the open
       world's.
 - [x] **Look pass** (2026-10-26, with the owner's note that the lake and soda bed read as a blank blob from far, middle and

@@ -44,7 +44,9 @@ ground past 16 texture units in some view's mode) does not reproduce on the curr
 - [ ] **The crossing's portal** is a cut face and a level apron with the Tungangs' lamps in a row (the lobelia's glow item), not a carved
   mouth; the waystation is not built (a settlement's).
 - [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11: `hearths`, `hearths-hold`, `hearths-walk`) are hosted here and not built.
-- [ ] **KSHADOW's switch** is the handle's `off()`/`on()` (89z, the panel's select in 99): replace it with core's own switch when it merges.
+- [x] **KSHADOW's switch** is the handle's `off()`/`on()` (89z, the panel's select in 99): replace it with core's own switch when it merges.
+  **Closed 2026-11-08:** 89z attaches off on core's own switch (no `off()` after attach); the panel's `shadowsel` select is gone for core's
+  `shadows` button; `?shadow=1` on at load, `?shadow=0` none.
 
 ## The look (for the owner's pass; nothing measured on a GPU yet)
 

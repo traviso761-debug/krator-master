@@ -93,7 +93,7 @@ for f in CORE_TERRAIN:
 for f,src in CORE_TERRAIN_HOST.items():
     if f not in PATH: PATH[f]=os.path.join(CORE,'terrain','host',src)
 # core/shadow (KSHADOW; BACKPORT.md's universal set, the owner 2026-11-03: toggleable and OFF by default): the sun's shadows in one view-following
-# box, attached only on ?shadow=1 (89zz-host-shadow.js). core/shader's KWARP (07; KHOOK.warp): the eigenweapon's bend, opt-in on ?bend=1 (89k-host-bend.js)
+# box, attached always on core's switch, off at load (89zz-host-shadow.js: the button or ?shadow=1). core/shader's KWARP (07; KHOOK.warp): the eigenweapon's bend, opt-in on ?bend=1 (89k-host-bend.js)
 PATH.setdefault('10-core-shadow.js',os.path.join(CORE,'shadow','10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js',os.path.join(CORE,'shadow','host','12-core-shadow-host.js'))
 PATH.setdefault('07-core-kwarp.js',os.path.join(CORE,'shader','07-core-kwarp.js'))

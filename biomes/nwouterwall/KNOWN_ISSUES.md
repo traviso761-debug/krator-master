@@ -115,5 +115,6 @@ low sun (`?hz=0`); height fog's mist over the alases at dawn (`?hfog=0`); KSHADO
 whether the sunk floors still want holing in the ground).
 
 - [ ] **The pair-11 turn's GPU verify** (above). Stays open (2026-11-09): the coordinator's run.
-- [ ] **core/terrain/43-core-ground.js reads the eye uniform r128 leaves at 0 on Lambert** (Korona's finding): this page redirects it to `kEye`
+- [x] **core/terrain/43-core-ground.js reads the eye uniform r128 leaves at 0 on Lambert** (Korona's finding): this page redirects it to `kEye`
       as Korona does. Stays open (2026-11-09): a core fix (`kEye` in place of the uniform) for whoever owns core/terrain.
+      2026-11-08: closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix`.

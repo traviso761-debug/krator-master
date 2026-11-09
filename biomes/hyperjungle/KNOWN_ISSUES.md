@@ -16,6 +16,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **Stand-in textures on the stations** (PROMPTS-NEEDED.md section 37): the sky lily's pads are a vertex-coloured disc
       (`card.lily.victoria` owed), the moriche crowns the kit's fern fronds (`card.palm.fan` owed), the termite cathedrals vertex
       colour (`earth.termite`, section 32).
+      2026-11-08: those section numbers are stale (no section 37 exists; the old 32 was pruned): all three sets, `card.lily.victoria`,
+      `card.palm.fan` and `earth.termite`, are in `core/materials/library` now, so no prompt is owed; what is left is wiring them here.
 - [x] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (fixed 2026-11-08 in the integration pass: `30-core-foliage.js` and KGROUND, `43-core-ground.js`, take the eye from `viewMatrix`, as `KHOOK.EYE`; the test hashes refrozen) (`core/biome/30-core-foliage.js`, the two-sided light's
       view vector and the back-light's): three r128 uploads it only to Phong, Toon, Standard, shader and env-mapped materials, so both
       read (0,0,0) on every page. The ground tint's fade had the same fault (every ground-tinted card more than ~700 m from the world's

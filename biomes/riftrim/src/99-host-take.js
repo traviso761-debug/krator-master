@@ -131,15 +131,13 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 /* the land in the tarn (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
 const MIRROR=BIG_DRAW&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[BIG_DRAW.mesh.material].concat(RIVER_DRAW?[RIVER_DRAW.mesh.material]:[]),
  level:BIG_LAKE.level,center:[BIG_LAKE.cx,BIG_LAKE.cz],radius:Math.max(800,BIG_LAKE.r*1.2),far:3500,tree:o=>o.name==='variant:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
-/* the sun's shadows (89z: KSHADOW, off at load): the panel's select turns them on; each view moves the box. The lantern lobelias' glow follows the night */
-const SHADOW_CONTROL=window._shadow?{select:[['off','shadows: off'],['on','shadows: on']],id:'shadowsel',on:v=>{if(v==='on')window._shadow.on();else window._shadow.off();}}:null;
-if(SHADOW_CONTROL&&SHADOW_Q==='1')SHADOW_CONTROL.select.reverse();
+/* the sun's shadows (89z: KSHADOW, off at load): core's own button on the panel turns them on; each view moves the box. The lantern lobelias' glow follows the night */
 KHOST.on(function shadowTick(){if(window._shadow)window._shadow.update();RRIM.night(1-smooth(.04,.35,sun.intensity));},'view');
 KHOST.take({build:LAND.build_id||'riftrim',title:LAND.title||'Krator biome — the rift rim',
  hint:LAND.hint||'The rift rim',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- controls:[AIR_CONTROL,SHADOW_CONTROL].filter(Boolean),   /* the air (89a-host-atmos.js), the sun's shadows (89z) */
+ controls:[AIR_CONTROL].filter(Boolean),   /* the air (89a-host-atmos.js); the sun's shadows are core/shadow's own button (89z) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

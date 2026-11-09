@@ -38,8 +38,9 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 - [ ] **KFIRE (H3).** `core/biome/test-fire.js` proves KFIRE against this kit's `52` loaded in place; the move needs that test changed
       first (a core change: the test would take a frozen copy of `52`, or its golden grids).
 - [ ] **Mounds, wadi, talus, polygon pans, tibasalt strata**: the row's kinds belong to the stations (`edge`, `salt`, `south`).
-- [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
+- [x] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
       it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
+      2026-11-08: closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix` (the page's redirect is now redundant but harmless).
 
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers

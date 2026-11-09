@@ -140,7 +140,7 @@ PATH['89-atmos-3d-dust.js']=os.path.normpath(os.path.join(HERE,'..','..','core',
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-airload.js','89-atmos-fx-snowcover.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
 # core/shadow (KSHADOW, 5b918f62c; BACKPORT.md's universal set, the owner 2026-11-03: toggleable and OFF by default): the data half and its host.
-# 89z attaches it and turns it off at load (?shadow=1 or the panel's button turns it on); core has no switch of its own yet
+# 89z attaches it, off at load on core's own switch (?shadow=1 or core's panel button turns it on)
 PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
 PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
 # the syntax check cannot see a core fragment that is simply absent

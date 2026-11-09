@@ -432,8 +432,9 @@ the rim's site and its flap's rock, the scarp drawn as a 600 m wall on a ~6 degr
 
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
-and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
-k-guilin, xanadu. A river meeting a lake or the sea takes `core/water` ext/61's `tintFlow` (a moving plume). Also new in core: `BIO.bakeImpostors` counts only
+and nwlowlands; ~~**owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
+k-guilin, xanadu~~ **done (checked 2026-11-08):** the Throne's glacier, the Cut, k-guilin and xanadu (its page and three stations) pass `breakers:false` in their
+`89w-host-water.js`; the Catch's lake took it on 2026-11-08 (`stations/lake/45b-host-stage.js`). A river meeting a lake or the sea takes `core/water` ext/61's `tintFlow` (a moving plume). Also new in core: `BIO.bakeImpostors` counts only
 visible frames (a page loaded in a hidden pane reported "textures not in after 180 s"); a plume's texture reads are at an explicit LOD (implicit gradients beside
 the water's discards drew the sea black over land on ANGLE D3D11, seen only in the browser pane, not in headless verify).
 
