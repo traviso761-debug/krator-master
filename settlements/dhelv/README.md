@@ -8,7 +8,8 @@ stone door, a braid of tubes climbing to the hub (a bottle-shaped great hall und
 hall and the funeral catacombs. Its buildings are the Zeijani kit's (`kits/zeijani`); the plan is `kits/zeijani/PLAN.md` (section 12
 is this layout; section 14 the phases).
 
-**State (2026-10-08): P6 and the owner's third review.** The layout carved and placed, both kits' flora, the cave's light,
+**State (2026-11-09): finished, P0 to P8** (`kits/zeijani/PLAN.md` section 14: P8, the docs and the wrap-up, 2026-11-09). On
+core/host since 2026-10-15 (`KNOWN_ISSUES.md`); the kit's doors and glass (core/door, 2026-11-03) reach the page since 2026-11-09. **As of 2026-10-08: P6 and the owner's third review.** The layout carved and placed, both kits' flora, the cave's light,
 what is drawn, the nav graph and the ramblers (P6); the owner's second review (the shelf, the flows by the model, the
 standardized grove, the stone door, the council's windows, the sky dome) and third (the spur's back merging into a steep
 slope, the weathered lip, the land to the horizon, the outpost's face solid with its mouths always open, the stream's fall and
@@ -34,6 +35,8 @@ stone door and the braid (1031 m against DHN's 1044 m). See `godot/README.md`.
 | `src/49-dhelv-grove.js` | the shelf's old growth, standardized: three hypertrees and three saplings grown once alone and drawn as instances in cells, each with a far level |
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield in tiles (`terrainH = DH.groundY`) and the far land, the spur's walls (`dhWalls`) and the west face (`dhWestFace`), the ways carved (`dhCarve`), the sites placed, the stream, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
+| `src/92-dhelv-camera.js` | the views (`VIEWS`) and the names the page and `verify.py` call (`ctl`, `setView`, `applyCam`, `WALK.on`, `toggleWalk`, `MARK.at`, `cutSet`), each a word to core/host's camera (the kit's sheet host is left out: `KIT_SKIP`) |
+| `src/99-start.js` | the core/host take: the floor (`camGroundY`), the walk on the page's core/walk floors, the draw (the sky's scene, then the city), the frame hooks, the sun and the atmosphere, the inspector's words, the buttons, the probe as `api` |
 | `src/72-dhelv-nav.js` | the nav graph (`DHN`) and its checks: data |
 | `src/74-dhelv-sim.js` | the ramblers' world declared into core/simulation (`DHS`) and their checks: data |
 | `src/95-dhelv-life.js` | the ramblers drawn: the clock, the bodies, the dots on the minimap, following a walker, the nav overlay (V) |
@@ -79,8 +82,8 @@ x east, z south, y up, metres; the hub's square is y 0, and the flank rises east
 
 ## The page
 
-The kit's code runs as it is: `build.py` takes `kits/zeijani/src/` (every def, the cavern host, the furnishing, the camera and
-dev tools) less the sheet's host, and adds the layout and Dhelv's host. Two options in the kit's cavern host serve Dhelv
+The kit's code runs as it is: `build.py` takes `kits/zeijani/src/` (every def, the cavern host, the furnishing, the lamps) less
+the sheet's host (its scene, probe, views and take: `KIT_SKIP`; the camera and the tools are core/host's), and adds the layout and Dhelv's host. Two options in the kit's cavern host serve Dhelv
 (`CV_OPTS` in `40-zj-cave.js`): `skipMass` (a def's block of rock is the world's rock here) and `wellDoor` (a kiva's hatch deep
 under the ground opens into its void as a doorway, not through the surface), `groundKeep` (the cavern's ground kept only
 round the wells, under the mouths' tops and behind the outpost's fronts: the page draws the rest) and `cutBoxes` (the

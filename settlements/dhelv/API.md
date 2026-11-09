@@ -141,5 +141,5 @@ walk, **G** go to the pin (double-click drops it), **Esc** lifts it; Dhelv's: **
 ```
 cd settlements/dhelv && python3 build.py
 python3 verify.py dist/dhelv.html --assert --out <scratch>/shots      # also --views, --all-views, --cut, --night, --cam, --eval, --only
-python3 tools/node_in_chromium.py settlements/dhelv/tests/test-layout.js   # the layout's checks (no node here)
+node settlements/dhelv/tests/test-layout.js   # the layout's checks (tools/node_in_chromium.py where no node is)
 ```

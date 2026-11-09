@@ -21,7 +21,8 @@ progress log at the end of the plan current.
 
 1. **`kits/zeijani`**, the Zeijani building kit: every building in the owner's manifest (section 6), carved,
    constructed and wooden, with its interiors planned and furnished, on a kit sheet like Scyvoi's. Bundled for worlds as
-   `KratorZeijani`.
+   `KratorZeijani`. *(2026-11-09, P8: never made; Dhelv reads the kit's `src/` in place, less its sheet's host. A
+   `kit_bundle.py` waits for a second world that takes the kit.)*
 2. **`core/terrain/39-core-cavern.js`**, a shared underground: voids as signed-distance primitives (tubes, halls,
    galleries, rooms, shafts, trenches), meshed in chunks, writing floors and blockers into `core/walk` as it carves.
    The kit sheet is its first consumer, Dhelv the second.
@@ -96,7 +97,7 @@ Two requirements run through everything (the owner): **`core/furnish`, `core/tag
 
 | Path | What |
 |---|---|
-| `kits/zeijani/` | the kit: `src/` (defs and void plans [G data], builders [draw], the sheet host [web]), `build.py`, `verify.py`, `kit_bundle.py` (`KratorZeijani`), `materials.json`, `tex/`, the docs, `PORT.md`. The README, the refs and this plan exist |
+| `kits/zeijani/` | the kit: `src/` (defs and void plans [G data], builders [draw], the sheet host [web]), `build.py`, `verify.py`, `kit_bundle.py` (`KratorZeijani`; never made, see section 1), `materials.json`, `tex/`, the docs, `PORT.md`. The README, the refs and this plan exist |
 | `kits/catalog/krator-master-furniture-zeijani.js` | the Zeijani culture file: their loose pieces |
 | `kits/interiors/sets/zeijani.js` | an interior item per kit key; the new room kinds go in `IX.PROGRAMS` |
 | `core/tags/52-core-tags-vocab.js` | `'zeijani': 'Zeijani'` in `CULTURE_NAMES`; new jobs in `CATALOG_JOBS` and the catalog's `FURN_JOBS`, together (they mirror each other) |
@@ -277,7 +278,8 @@ Tools: Inspector (T), Cut-away (C), Night (N), Polygon (P), and Walk (F), which 
 carved interiors. URL options: `?only=`, `?t=`, `?mat=proc`, `?furniture=0`.
 
 The sheet exports its defs, tags, void plans, interiors, furniture and walk floors. (GODOT-PLAN rule 10: a build
-without an export is not finished.)
+without an export is not finished.) *(2026-11-09, P8: only Dhelv's page exports (`verify.py --export`, P7); the sheet
+has no export of its own. The kit's defs reach Godot through Dhelv's.)*
 
 ### 6.6 The catalog culture file
 

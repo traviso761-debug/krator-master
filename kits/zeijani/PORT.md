@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 10 (4%) | 33 (13%) | 0 (0%) | 63 (25%) | 150 (58%) |
+| KB | 10 (4%) | 33 (13%) | 0 (0%) | 64 (25%) | 150 (58%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,7 +16,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-core.js` | 3.6 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/27-mat.js` | 12.3 | [G shader] | 18 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |  |
 | `src/30-geo.js` | 23.4 | [draw] | 46 | 1 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/36-def.js` | 6.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/36-def.js` | 6.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/37-zj-walk.js` | 3.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-zj-cave.js` | 20.5 | [G shader] | 10 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | the cave material (per-vertex weights over triplanar library sets) is the .gdshader; the rest is glue (local plans to world through CM; chunk arrays to BufferGeometry: Godot imports the exported meshes) |
 | `src/41-zj-block.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the void plan is data (the cavern carves it, core/walk takes its floors); three box() calls draw the lintel |
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/54-zj-square.js` | 7.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/55-zj-trades.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM: ZT_TRADES, the Voth census table |
 | `src/89-rows.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/90-scene.js` | 8.6 | [web] | 18 | 0 | 1 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/90-scene.js` | 9.2 | [web] | 18 | 0 | 1 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 26.7 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91f-furnish.js` | 12.6 | [web] | 4 | 1 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91n-night.js` | 2.6 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |

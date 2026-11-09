@@ -36,7 +36,10 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
  const subs=Object.keys(A.DEFS).filter(k=>A.DEFS[k].cls==='building'&&!['host','court','ministry','common','poor'].includes(A.DEFS[k].tags.style));R.push({name:'tier-styled',ok:!subs.length,detail:subs.length?'no style host|court|ministry|common|poor: '+subs.join(', '):'every building has a tier style'});
  const lifeRecs=A.REG.filter(r=>r.cls==='life');const nol=lifeRecs.filter(r=>!A.SV_LIFE.some(l=>l.id===r.tid));R.push({name:'life-records',ok:!nol.length,detail:nol.length?'no life data: '+nol.map(r=>r.key).join(', '):lifeRecs.length+' life records (the kit keeps no beasts)'});
  {const H=[].concat(...A.REG.map(r=>r.heads||[])),faces=H.filter(h=>h.kind!=='mask'&&!h.veiled),open=faces.filter(h=>h.eyes==='open').length,MT={};for(const h of H)MT[h.metal]=(MT[h.metal]||0)+1;
-  R.push({name:'closed-eyes',ok:faces.length>0&&open<faces.length*.1,detail:H.length+' heads, figures and masks; '+open+' of '+faces.length+' unveiled faces open-eyed ('+(100*open/Math.max(1,faces.length)).toFixed(1)+'%: the living, under a tenth); by metal: '+Object.keys(MT).sort().map(k=>k+' '+MT[k]).join(', ')});}
+  R.push({name:'closed-eyes',ok:faces.length>0&&open<faces.length*.1,detail:H.length+' heads, figures and masks; '+open+' of '+faces.length+' unveiled faces open-eyed ('+(100*open/Math.max(1,faces.length)).toFixed(1)+'%: the living, under a tenth); by metal: '+Object.keys(MT).sort().map(k=>k+' '+MT[k]).join(', ')});
+  /* PLAN.md section 2 (question 4, held as an invariant): the figures stand, sit, fold their hands or carry a lintel; never stride (the generator has no striding pose and no weapon) */
+  const FG=H.filter(h=>h.kind==='figure'),POSES=['stand','seat','lintel','folded'],bp=FG.filter(h=>!POSES.includes(h.pose)),PC={};for(const h of FG)PC[h.pose]=(PC[h.pose]||0)+1;
+  R.push({name:'statue-poses',ok:FG.length>0&&!bp.length,detail:bp.length?'figures in a pose outside '+POSES.join('|')+': '+bp.map(h=>h.pose).join(', '):FG.length+' figures, none striding: '+Object.keys(PC).sort().map(k=>k+' '+PC[k]).join(', ')});}
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});
  return R;}"""
 async def run(a):
