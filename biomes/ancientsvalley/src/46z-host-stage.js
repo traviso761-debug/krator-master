@@ -198,7 +198,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
       q.length=0;PADS.query(x,z,ahead,q);let ok=true,score=Math.hypot(x-cx,z-cz)/r;
       for(const T of q){if(T===P)continue;const ex=T.x-x,ez=T.z-z,d=Math.hypot(ex,ez);if(padD(T,x,z)<clear){ok=false;break;}if(d>ahead)continue;const c=(ex*fx+ez*fz)/d;if(c<Math.cos(35*Math.PI/180))continue;score+=(T.padR*2/d)*(1-d/ahead)*6;}
       if(!ok)continue;if(score<bs){bs=score;best=[x,z];}}}return best||[cx,cz];};
-   const o1=openSpot(140,460,400,18,c1.x*.6,c1.z*.6,420),o2=openSpot(NEAR.x-60,NEAR.z+170,300,14,NEAR.x-900,NEAR.z+620,120);
+   const o1=openSpot(140,460,400,18,c1.x*.6,c1.z*.6,420),o2r=openSpot(NEAR.x-60,NEAR.z+170,300,14,NEAR.x-900,NEAR.z+620,120);
+   /* the residential street's eye stood on a broken Cupola's plinth rim with the Cupola's rubble heap spilling 6 m in front of it, 60% of the frame
+      (2026-11-09): it steps 15 m across the street, to the left of its line of sight, where the first thing ahead is 75 m off */
+   const o2=(()=>{const dx=NEAR.x-900-o2r[0],dz=NEAR.z+620-o2r[1],l=Math.hypot(dx,dz)||1;return[o2r[0]+dz/l*15,o2r[1]-dx/l*15];})();
    return{
     'The Overlook: city1 and the lake':V(o1,9,[c1.x*.6,c1.z*.6],60),
     'A residential street':V(o2,1.8,[NEAR.x-900,NEAR.z+620],28),
