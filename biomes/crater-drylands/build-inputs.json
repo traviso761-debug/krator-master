@@ -568,7 +568,7 @@
     "biomes/crater-drylands/stations/south/47a9-host-hj-end.js": "78f3de172016efa539209c2d7f69c9f535bd1d25054f560ed0135216c5bab33e",
     "biomes/crater-drylands/stations/south/47b9-host-sed-end.js": "dc1fb6f3b69230cac064a0368df243f0e30ec8736efa21d54c1a2c631645f2fa",
     "biomes/crater-drylands/stations/south/48s9-host-savrim-end.js": "c2c4f7beb71f121cdc434c04c93b995de3fbef73fc1d52c67c04a693b461298d",
-    "biomes/crater-drylands/stations/south/86-host-south.js": "57578071e590e8d916a856999cf546dce013b03936c6b7fd72c6df97045372d2",
+    "biomes/crater-drylands/stations/south/86-host-south.js": "b9cf9f0557ea1abaee7e084b6f47209d4c679449605b5334c17920505b5d16dd",
     "biomes/crater-drylands/stations/south/99-host-zseason.js": "52f02121d4c436b48b46bb6df3720e9a344e86972616945c503fe46b903f54e8",
     "biomes/crater-drylands/stations/south/station.json": "340f21cd33a929105318e856195a0f4667574aa486a244b6007352f3a6267242",
     "biomes/crater-drylands/tex/bark.gum.albedo.webp": "8170b6c68f2aa2e15782fad8e2bc79f6a0434c03bbd13a2dd4aa56b18c28c8f4",
@@ -730,10 +730,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "1f303c1f1fde00554152f8b28b6c2fc8be02aa3bc8e58245977e69f949cae0cb"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "da3086f62972383c4063d1bce549c88610ac43476d90bf68550a266e02733fed"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "1f303c1f1fde00554152f8b28b6c2fc8be02aa3bc8e58245977e69f949cae0cb"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "da3086f62972383c4063d1bce549c88610ac43476d90bf68550a266e02733fed"
    }
   }
  }

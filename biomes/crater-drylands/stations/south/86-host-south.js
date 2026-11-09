@@ -12,7 +12,7 @@
 //   Csb oak scrub on the topmost slopes, the tibasalt strata at the southern edge. ?black=0 and ?serim=0 leave either out.
 const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E={black:[],serim:[]};
  const lava=(x,z)=>FIELD.lava(x,z),wedge=(x,z)=>FIELD.wetedge(x,z);
- const crMask=(x,z)=>1-smooth(.35,.65,lava(x,z));   /* the kit's base keeps off the flows */
+ const crMask=(x,z)=>1-smooth(.2,.5,lava(x,z));   /* the kit's base keeps off the flows (none past half a flow: the check counts trees over .6) */
  E.crMask=crMask;
  const LOD=()=>BIO.LOD();
  const clear=(x,z,pad,list)=>!CRATERDRY.blocked(x,z,pad)&&!list.some(T=>Math.hypot(T.x-x,T.z-z)<T.crownR*.7+pad);
