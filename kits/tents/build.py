@@ -81,7 +81,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 OUT = os.path.join(DIST, 'tents.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door',
-                                                                    'walk', 'space', 'camp')]
+                                                                    'walk', 'walk/box', 'space', 'camp')]   # walk/box: core/engine/37-wk-rec.js reads every box as floors and blocks
 # read in place from outside the core folders the build pools: the tent toolkit (kits/scyvoi's copy of the three vendored ones)
 # and the culture symbols (core/sockets: only this file; its packs need an engine this kit does not run)
 READ_IN_PLACE = {'40-tk-tentkit.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '40-tk-tentkit.js'),
@@ -95,7 +95,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 # the furniture cultures the dresses furnish from (src/41-tn-dress.js `furn`), their fallbacks, and the shared goods
