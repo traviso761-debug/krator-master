@@ -107,6 +107,7 @@ tree fern** (fronds longest and flattest toward the giant), on a floor of cloud 
 `card.epiphyte.garden`, commissioned for this belt; `card.treefern`, `card.fern`, `card.beard`, `card.bromeliad`, `card.moss`,
 `bark.mossy`, `ground.moss001`): no prompt is owed. **Not built:** the belts above (the mixed broadleaf belt, the montane conifers with
 nhighlands' spruces read in place, spruce-fir and krummholz under the crest); each would be a station of its own on this scarp.
+(Built the same day as stations 4-6, below.)
 
 **Station 3, the Lesser Throne (`--station lesser`, `dist/ehighlands-lesser.html`; new, not in the plan above).** The young volcano that
 buried the Order of Historians' first monastery (LORE.md). The page is 8.4 km: the summit caldera (5 km across), its rim high to the
@@ -119,3 +120,24 @@ and the shaded walls: **nothing lives but on the vents' warm ground**, where the
 then turf, cushions, woolbacks: the fumarole oases of the Andes' highest volcanoes), turned to the giant like the plateau's. The host's
 `warm` field lowers `cold`, and its `barren` field zeroes every zone elsewhere (a check holds it: 'life only on the vents' warm
 ground'). The Godthrone stands on the south-western horizon, 450 km off and 25 km high (a ridge in the sky's preset).
+
+**Stations 4-6, the rest of the wet face (2026-11-09, the owner: "add another station for krummholz etc", then "do mixed broadleaf and
+montane conifer stations too").** All three on station 2's transect, so the face reads as one climb: 1.05-1.95 km (station 2), 2.35-2.85
+(5), 3.1-3.6 (6), 4.56-5.12 (4). They share one land generator (`src/45f-host-wallface.js`, `WALLFACE`: a face climbing east, slump
+scarps with the stream falling at each lip, rocky ribs running down it with a gully between each pair, the stream in the middle one,
+height belts from the station's `belts`), so each station's `46-host-land.js` is its STAGE and its numbers. One cold scale for all three
+(`.6 + (h - 4800 m) x .00044`, 0 below ~3.4 km), which the fir reads for its form.
+
+| | Site (5.1 px [old]) | Page | Climate | Rain | Mean (warm/cold) | Air | Flora |
+|---|---|---|---|---|---|---|---|
+| 5, the mixed belt (`--station mixed`) | 1079,755 [807,425] | 2.35-2.85 km, two benches | Cfa | ~4,000 mm | +15 C (25/4) | 1.17 | the combed beech; the last laurels and tree ferns at the bottom edge, the first firs in patches at the top; the cloud bank's top at the foot |
+| 6, the montane belt (`--station montane`) | 1076,747 [804,417] | 3.1-3.6 km, one scarp | Dfb | ~2,070 mm | +9 C (21/-4) | 1.07 | fir and beech stands in a patchwork, the firs gaining with height |
+| 4, the treeline (`--station treeline`) | 1105,750 [833,420] | 4.56-5.12 km, to the crest's shoulder | Dfc | ~250 mm | 0 C (13/-13) | 0.88 | the combed fir upright, flagged, then krummholz; ragbark in the gullies; an avalanche chute's meadow; cushions and woolbacks over the crest; a tarn |
+
+**The "mixed broadleaf" belt is a rainforest on 5.1**, not the plan's ~940 mm: the model's face is wet to 3 km. The conifers are the kit's
+own (species 9, **the combed fir**), not nhighlands' read in place: a lean cannot be put on another kit's finished trees (core/biome's
+`BIO.leanTo` is a placement helper), and the fir's three forms (upright, flagged with its branches only on the giant side, a krummholz mat
+stretched toward the giant) are the point of the treeline. The broadleaf is species 10, **the combed beech** (a southern beech: flat tiers
+thrown out toward the giant). Textures from the library: `card.spruce`, `bark.spruce`, `ground.needles`, `card.broadleaf`,
+`bark.birch.lichen`; no prompt owed.
+

@@ -128,10 +128,24 @@ rebuilt (pages only).
 - [ ] **The crops entry is not changed** (`kits/crops/src/10-crop-core.js`: `ehighlands` `atm: 0` to `1`, and the `forest` and `cloud`
       zones, PLAN-STATIONS.md sections 2 and 4): it reaches five other builds (`tools/reach.py`), so it waits for a turn that rebuilds them.
       The station's one fruit, staple and medicine (section 4) are not chosen.
-- [ ] **Station 2's other belts** (mixed broadleaf at 2-3 km, montane conifers with nhighlands' read in place, spruce-fir and krummholz
-      under the crest): not built; the page is the foot's cloud forest only.
+- [x] **Station 2's other belts** (mixed broadleaf at 2-3 km, montane conifers with nhighlands' read in place, spruce-fir and krummholz
+      under the crest): not built; the page is the foot's cloud forest only. 2026-11-09: built as stations 4-6 (below).
 - [ ] **The buried archive (station 3):** the tube's skylight is a hole in the flow and a registered place; the vaults (`cav_monks_archive`,
       140 x 90 m) and any ruin of the first monastery are not drawn. The geyser kit's plan put a station at this vent (`biomes/geyser/
       PLAN-STATIONS.md`, "puna"); by the owner's rule of 2026-11-02 (a vent field goes to its host kit) this is it.
 - [ ] **The page's map is not the model's** on station 1 (its range in the south stands for the crest, which is west): an ideal type, as
       the kit was built.
+
+### Stations 4-6 (the treeline, the mixed and montane belts; 2026-11-09)
+
+`--station treeline`, `--station mixed`, `--station montane` (PLAN-STATIONS.md, "Stations 4-6"). New for readers: species 9 (`fir`) and 10
+(`beech`), appended after 8 with their passes after the old ones; items `needle`, `beech`; buckets `bark5`, `bark6`; zones `taiga` and
+`mixed` (fields of those names: 0 on every page that does not set them, so neither reader moves). Species 0-8 keep their keys and indices.
+
+- [ ] **The GPU verify of all three** (and of 1-3 again: the kit changed under them, by appended passes only). Look at: the fir's three forms
+      (a host check holds their order up the face), the flagged firs' one-sided crowns, the krummholz mats' stretch toward the giant;
+      the beech's tiers; the attach audit on the fir's needle clumps (on its branch rods at lv 2, on the trunk at lv 1) and the beech's.
+- [ ] **The look, the owner's:** each belt's density (fir cell 8 m, beech 13 m, both thinned with distance), the treeline's height on the
+      page (upright under ~4.8 km, flagged to ~5 km, krummholz above), the mixed belt's three-way mix.
+- [ ] **The far field** of the three is the generator's face carried on (rising east, falling west), not the model's own heights.
+
