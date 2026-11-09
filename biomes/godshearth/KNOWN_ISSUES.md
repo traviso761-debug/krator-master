@@ -18,8 +18,11 @@ Open items (`- [ ]`) are read by `build.py`'s closing line. The plan's open ques
       the benches and Xanadu's dry-country species up the spillway (PLAN.md section 4) are owed.
 - [ ] **The model's artifact is not republished.** `tools/scale-model/edit_512.py` wrote the vent records into `model/data` (and `30-vents.js` draws
       fumaroles and springs as steam); the published Krator Scale Model page is the owner's to republish (`tools/scale-model/README.md`).
-- [ ] **The model's test and edit 1 point at the retired little demo's regions** (`openworld/little-demo/source/regions.json`, now under `archive/`):
-      `tests/test_smodel.py` stops at its check 100 unless that path resolves (all 219 pass with it linked to the archive's copy, 2026-11-09).
+- [x] **The model's test and edit 1 point at the retired little demo's regions**: fixed on main (Firebliss's branch moved the test to
+      `archive/little-demo`); `tests/test_smodel.py` passes all 233 checks with Firebliss's edit 3 (2026-11-09, `claude/cloud-kits-verify`).
+- [ ] **A WebGL delete on another context under SwiftShader.** Software GL on Windows logs two `INVALID_OPERATION: delete: object does not
+      belong to this context` during `--all-views` (verify's shader-errors fails there); no cross-context delete is made at load (probed), and
+      on the GPU (the RTX lane) `verify.py --assert --all-views` passes (2026-11-09). Not traced further.
 
 ## Done (2026-11-09)
 

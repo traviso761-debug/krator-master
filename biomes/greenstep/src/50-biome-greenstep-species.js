@@ -29,7 +29,7 @@ const PK=(name,c,a,r,kp,items,hv)=>({name,items,tags:Object.assign(K(c,a,r,kp),{
 GSTEP.PLANTS={
  groundfern:PK('Ground fern','temperate','humid','no',['Cfa','Cfb','Dfb'],['fern'],HV('none',['fiddleheads'],false,'Waist-high fronds under the canopy on every bench; the young crosiers are eaten in spring.')),
  sprayMoss:PK('Spray moss','temperate','humid','yes',['Cfa','Cfb','Dfb','Dfc'],['mossC'],HV('none',[],false,'Cushions half a metre deep where the falls\' spray and the cloud sit; the basalt under them never dries.')),
- hangMoss:PK('Hanging moss','temperate','humid','both',['Cfa','Cfb','Dfb'],['mossH'],HV('stuffing, tinder',[],false,'Long green-gold tresses off the boulders and fallen columns in the wet.')),
+ hangMoss:PK('Hanging moss','temperate','humid','both',['Cfa','Cfb','Dfb'],['mossH'],HV('stuffing; fuel (tinder)',[],false,'Long green-gold tresses off the boulders and fallen columns in the wet.')),
  sedge:PK('Sedge and reed','temperate','humid','yes',['Cfa','Cfb','Dfb'],['sedge'],HV('thatch (the round-halls\' reed)',[],false,'The banks of the Clodosriba and the plunge basins.')),
  grass:PK('Bench grass','temperate','humid','no',['Cfa','Cfb','Dfb'],['grass'],HV('thatch',['seed'],false,'The open benches\' lush grass, grazed by the Free Giants\' millipedes.')),
  begonia:PK('Escargot begonia','temperate','humid','no',['Cfb','Dfb','Cfa'],['begonia'],HV('none',[],true,'Spiral-leaved begonias in the wet shade (the S highlands\' habit, PLAN.md section 3); a poultice for burns.')),

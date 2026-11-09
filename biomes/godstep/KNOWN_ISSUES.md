@@ -1,8 +1,7 @@
 # biomes/godstep: known issues
 
-- [ ] **Verified in software GL only** (2026-11-09, a cloud session with no GPU; the owner: no GPU verify from cloud sessions). Station 1
-  passes `verify.py --assert` on SwiftShader with one or two views; `--all-views` and the GPU's triangle and draw-call measures are
-  the integration session's.
+- [x] **Verified on the GPU** (2026-11-09, `claude/cloud-kits-verify`): `verify.py --assert --all-views` passes on the Arc lane, 16 of 16
+  ground units linking there.
 - [ ] **The ground uses all 16 texture units** (`window._groundUnits`: 16 of 16 with four KGROUND layers: black sand, snow, moss, the
   crusts). A fifth layer (palagonite, soil) needs one of these dropped or the paint to carry it, as the palagonite and soil do now.
 - [ ] **The front's beds from the bake (core's owed item 1) are wired but empty at station 1**: none of the head step's baked lobes

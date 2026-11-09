@@ -109,7 +109,10 @@ const LAND={name:'The Citadel Step (greenstep station 3)',station:'tallwalls',ti
  hint:'Station 3 of Greenstep: Terrace III between the Great Veil and the Upper Citadel Scarp, the Clodosriba and the Western Rille falling side by side at Tallwalls\' promontory (its site only: the settlement build\'s), the S highlands\' spiral flora and the SW lowlands\' oaks read in place (scale model 5.1, px 650,1268)',
  region:{name:'The Citadel Step (station 3)',x:0,z:0,r:TERR.R},wind:[.6,.8],sky:{px:650,py:1268},atm:1.25,cloud:.65,dust:false,
  fog:{falloff:1/650,sun:.3,sky:.5},climate:{cold:false,dry:false},wet:true,groundN:640,lod:{hero:450},kinLT:650,kinHero:440,   /* the kin's hero forms within 440 m of the spine (the SW lowlands' oak leaves stay under the 250k instance cap) */
- groundLayers:['grass','leafy','moss','redsoil','lichen'],
+ /* three layers, not five: this land is wet, and the wet ground's hollow map, the cloud noise (2) take the units the transect's count left free;
+    the GPU verify (2026-11-09) found 17 samplers on the ground, ANGLE links 15 at most (45). The forest litter is the paint's forest noise,
+    the lichen the strata's basalt */
+ groundLayers:['grass','moss','redsoil'],
  plants:['fern','grass','sedge','moss','begonia','rice'],
  riverLook:[0x3a7a6e,0x163e3a],
  talusPalette:[0x2e2c2e,0x3a3836,0x45403c,0x262426,0x524a44],talusMatrix:0x3a342e,   /* the risers' talus: titanium basalt, dark (riftrim's default is the rift's red scree) */

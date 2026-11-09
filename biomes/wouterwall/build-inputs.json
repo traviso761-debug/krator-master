@@ -53,12 +53,12 @@
     "biomes/nwouterwall/tex/stipa.albedo.webp": "2ed831a6a3855ed410304aec3622b1cc4785a94aa7a7ed492ecbdf4a76c6ef4e",
     "biomes/nwouterwall/tex/thorn.albedo.webp": "3f36037c7edbc25d298d07d532c51d7fe67ff8ab99850a093ccd52f173e96282",
     "biomes/nwouterwall/tex/willow.albedo.webp": "41a27860264df70d2c7bb20a15bb0c7b627f44ee9f65b873d749eb3e2a115e3e",
-    "biomes/wouterwall/KNOWN_ISSUES.md": "a9d0d52074798b6359e933f7ccab55d62a48748b92b20201e3fea82eabe6927f",
+    "biomes/wouterwall/KNOWN_ISSUES.md": "9e39a535af7c04460f25a1a7c13dae5db3005ce29800ab2914820e07844b87f8",
     "biomes/wouterwall/PORT.md": "3bee8105db4ad4ba5c1217888ce68e951be0714973216386eaed06646b80ea52",
     "biomes/wouterwall/build.py": "de8fe6605e70b721439ba83eda180654c5cfddfd42ea5d5fea1bd1ca9de70c10",
     "biomes/wouterwall/region/station-tablelands.json": "0f1c5f3a892b965ef36efd3194e3d719cb7b32b51b1dcc568f4d918bf933d1e6",
     "biomes/wouterwall/src/00-head.html": "758190c97cd305252548bdf77b8b792fc0cdb086eb1a5460ddb0240f18865978",
-    "biomes/wouterwall/src/44s-host-site.js": "d1b35bb5e508cf0ae19d7ac12e5d94d603d763d5c094ba1e5c803c9f3c58cd54",
+    "biomes/wouterwall/src/44s-host-site.js": "5b31eff8f53cf550b18986eeabd04bf47da2f1ab0842cea100940623d3ad83ee",
     "biomes/wouterwall/src/45-host-stage.js": "5326251828900e1097cd2e160cbbb1d9ca930fd458b7e34c26609e6d31110587",
     "biomes/wouterwall/src/46-biome-wow-layout.js": "b315b331a51c88e9c85120fa2482a1f676dbc599393bf9ef590f6b48cec8f99e",
     "biomes/wouterwall/src/47-host-land.js": "b7c0ba5ebd2c115479ef612b15e04902bf01fbadd2fb75da16dc457e2147d87e",
@@ -122,6 +122,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -153,7 +154,9 @@
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/wouterwall/src": "a8686fd9ffab960db6ba315fd7032ffc86c85e82388b4ac08c817122b1386578",
@@ -163,12 +166,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/wouterwall/dist/wouterwall.html": "29ed0c2e1f335b0435cf4bbac9a2dfac833c3ec9e252e10c1aef67e234b5e9ba",
+    "biomes/wouterwall/dist/wouterwall.html": "942cb8b9a61b9c2e8d97e21d0731f8f542a8a92b9b7f462c8650423fc181009e",
     "biomes/wouterwall/dist/wouterwall.tex.nwouterwall.js": "48bf410cc29ed0d60bc9d2dc429717f72d8ad5143e93436bcf8ed9ec02d029a2",
     "biomes/wouterwall/dist/wouterwall.tex.wouterwall.js": "a3fa28bdced63315b514786a228d8a7891c2d39f3603bb37231d823751b6a675"
    },
    "outputs_raw": {
-    "biomes/wouterwall/dist/wouterwall.html": "29ed0c2e1f335b0435cf4bbac9a2dfac833c3ec9e252e10c1aef67e234b5e9ba",
+    "biomes/wouterwall/dist/wouterwall.html": "942cb8b9a61b9c2e8d97e21d0731f8f542a8a92b9b7f462c8650423fc181009e",
     "biomes/wouterwall/dist/wouterwall.tex.nwouterwall.js": "48bf410cc29ed0d60bc9d2dc429717f72d8ad5143e93436bcf8ed9ec02d029a2",
     "biomes/wouterwall/dist/wouterwall.tex.wouterwall.js": "a3fa28bdced63315b514786a228d8a7891c2d39f3603bb37231d823751b6a675"
    }

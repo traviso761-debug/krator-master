@@ -1,8 +1,7 @@
 # biomes/twins: known issues
 
-- [ ] **Verified in the cloud only (software GL).** Station 1 passed `verify.py --assert` under SwiftShader on 2026-11-09; it has not been run
-  on the GPU lanes. SwiftShader allows more texture units than the GPUs' 16: `window._groundUnits` is asserted against 16 in any GL, but the
-  cavern's ShaderMaterial and the plumes have not been seen on real hardware.
+- [x] **Verified on the GPU** (2026-11-09, `claude/cloud-kits-verify`): `verify.py --assert --all-views` passes on the Arc lane (15 of 16
+  ground units, every program linked). The NW Twin's plume (below) was not judged by eye there.
 - [ ] **No life layer yet.** The resting caravan in tube A1, the guides, the Cloud-Yaks and Basalt-Mules, the cinder-vipers and the
   pyroduct swifts (`PLAN.md` section 5.3) are owed to `kits/fauna`, `core/camp` and `kits/catalog` (the caravan's goods); nothing stands in
   for them. The tubes' floors are KCAVERN's plan but no `core/walk` layer is on the page (`STATION_FLOOR` is the camera's guard).

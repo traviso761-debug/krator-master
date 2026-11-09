@@ -3,8 +3,12 @@
 Open items, each with what is owed. The kit and its first page were built in one cloud session (2026-11-09) with no GPU (the owner,
 2026-11-09: no GPU verify from cloud sessions): `verify.py --assert` ran in software GL (SwiftShader) only.
 
-- [ ] **GPU verify owed**: `python3 verify.py dist/greenstep.html --assert --all-views` on the Arc and the RTX (the integration session).
-  Software GL (2026-11-09, `--assert` at "The Great Veil from the basin" and "The brink at the prow"): every invariant and every
+- [x] **GPU verify** (2026-11-09, `claude/cloud-kits-verify`): on the GPU the ground's program did not link (17 samplers: five KGROUND
+  layers, the strata's five, the horizon's two, the paint, the grain, the rain cover, the wet ground's hollow map and the cloud noise;
+  ANGLE links 15). The land shows three layers now (grass, moss, red soil; `LAND.groundLayers`), and `verify.py --assert --all-views`
+  passes on the Arc lane. The forest litter and the lichen are owed back if a unit is freed (a `_groundUnits` count, as twins has, would
+  catch this in software GL too).
+- [x] **Software GL** run first (2026-11-09, `--assert` at "The Great Veil from the basin" and "The brink at the prow"): every invariant and every
   negative control passes; 12.7 M scene triangles (budget 24 M; `greenstep/kin` 8.9 M of its 20 M, `greenstep/floor` ~3.8 M), 8-10 M
   drawn at the views, ~120 draw calls, 15,734 kin trees (2,407 hero, 13,327 far form only), attach audit 0 of 9,366 cards, a ~60 s build.
   The SW lowlands' `oakleaf` item went over the 250k instance cap (328k) at the first full run: fewer cork oaks and red bays, and the

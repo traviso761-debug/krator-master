@@ -22,6 +22,11 @@
       their own caps: 250,000 and 350,000) reached 376k and 425k on five LOD-spine points with a 750 m floor band (verify's universal
       `instance-cap`; the first two commits were recorded as passing before that section of the run had been read). Fixed 2026-11-09:
       four spine points and a 600 m floor band, 242k and 275k. The caps stay nwouterwall's; this page places fewer.
+- [x] **A view under the mid ground** (GPU verify, 2026-11-09, `claude/cloud-kits-verify`). 'The brook below the spring' stood on the
+      trunk's floor at u .8, past the near box (`SITE.R`): the mid ground's 220 m cells do not hold a 150 m gully, so the eye was under
+      the drawn mid mesh. Its eye is now on the thalweg up to 260 m below the spring, 250 m inside the near box (`SITE_BELOW_SPRING`).
+      `verify.py --assert --all-views` then passes on the Arc lane (the RTX run before the fix failed on that eye alone). Under SwiftShader on Windows the page's Lambert programs
+      sometimes fail to link with an empty log (one run in three); not seen on either GPU.
 - [ ] **The flora is the NW outer wall's alone (W1).** The dust towers and the puya spikes (section 3, `card.puya` delivered) and the
       lowlands' species (crag pine, needle cypress, candle birch, tussock, saltbush; tier cedar, ember manzanita) are W3. The terraces
       carry no crop yet (section 6).

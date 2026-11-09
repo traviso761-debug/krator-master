@@ -31,10 +31,10 @@ const SITE={
  pillars:{n:12,seed:5211},
  snow:{autumn:[700,1200],winter:[-2000,-1900],spring:[-2000,-1900],summer:[2200,3000]},
  eye:30,
- views:V=>{const T=SITE_TRUNK_AT,P0=(typeof PILLARS!=='undefined'&&PILLARS[0])||null,a=T(.25),b=T(.45),s=SITE_SPRING||T(.65),c=T(.8);const o={
+ views:V=>{const T=SITE_TRUNK_AT,P0=(typeof PILLARS!=='undefined'&&PILLARS[0])||null,a=T(.25),b=T(.45),s=SITE_SPRING||T(.65),c=SITE_BELOW_SPRING(260);const o={
   'The gully from its rim':V(SITE_RIM(.3,-1,6),[b[0],b[1],0]),
   'Down the gully to the spring':V([b[0],b[1],5],[s[0],s[1],2]),
-  'The brook below the spring':V([c[0]+40,c[1]+30,5],[s[0],s[1],0]),
+  'The brook below the spring':V([c[0],c[1],5],[s[0],s[1],0]),
   'Larch on the shaded wall':V(SITE_RIM(.35,1,3),SITE_RIM(.38,-1,-40)),
   'Terraced knolls (mao)':V([150,600,30],[150,880,0]),
   'The yuan (feather-grass flat)':V([-600,-1100,2.2],[-100,-1500,0]),
@@ -63,6 +63,10 @@ function SITE_RIM(u,side,h){const L=SITE_RECS.trunk.lines[0].pts,i=Math.min(L.le
  return [a[0]-dz/n*side*(d+6),a[1]+dx/n*side*(d+6),h];}
 // a point at u (0 head .. 1 mouth) along the trunk's thalweg (the views)
 function SITE_TRUNK_AT(u){if(!SITE_RECS)return [0,0];const L=SITE_RECS.trunk.lines[0].pts,i=Math.min(L.length-1,Math.round(u*(L.length-1)));return [L[i][0],L[i][1]];}
+/* a point on the thalweg up to `d` m below the spring, kept 250 m inside the near box: past it the mid ground's 220 m cells do not hold the
+   gully, so an eye on the floor out there stands under the drawn mid mesh (GPU verify 2026-11-09: 'The brook below the spring' at u .8) */
+function SITE_BELOW_SPRING(d){if(!SITE_RECS||!SITE_SPRING)return SITE_TRUNK_AT(.7);const L=SITE_RECS.trunk.lines[0].pts,lim=SITE.R-250;let k=SITE_SPRING[2],run=0;
+ while(k+1<L.length&&run<d&&Math.max(Math.abs(L[k+1][0]),Math.abs(L[k+1][1]))<=lim){run+=Math.hypot(L[k+1][0]-L[k][0],L[k+1][1]-L[k][1]);k++;}return [L[k][0],L[k][1]];}
 // ---------------------------------------------------------------- one record a point (memo of the last): the height and each record's part
 // g0 the yuan (the model and its swells), then the trunk and the south system cut into it, then the terraces on what is left of the
 // knolls (never on a gully's floor, head or wall: the loess stands sheer there)
