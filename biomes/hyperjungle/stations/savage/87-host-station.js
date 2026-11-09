@@ -61,7 +61,7 @@ function stationBuild(){
     const x=B.x+(i+u(1))*cell,z=B.z+(j+u(2))*cell,k=baiK(x,z);if(k<.5||u(3)>k*.9||wallowK(x,z)>.1||lickK(x,z)>.2)continue;
     const T=L.bailawn.make(x,terrainH(x,z),z,h);BIO.range=Math.hypot(x-CEN[0],z-CEN[1])<((LD.floor==null?800:LD.floor))?LD.floor:LD.mid;try{L.bailawn.grow(T,2);}finally{BIO.range=null;}cnt('bailawn');}
    REGISTER({name:'A bai (a clearing the herds keep open: sedge lawn, wallows, salt licks)',key:'landform.bai',kind:'landform',x:B.x,z:B.z,y:terrainH(B.x,B.z),r:B.r,h:4});});
-  WALLOWS.forEach(Wl=>REGISTER({name:Wl.dry?'A wallow (a mud pan dried and cracked)':'A wallow (wet mud)',key:'landform.wallow',kind:'landform',x:Wl.x,z:Wl.z,y:terrainH(Wl.x,Wl.z),r:Wl.r,h:1}));
+  WALLOWS.forEach(Wl=>REGISTER({name:Wl.dry?'A wallow (a mud pan dried and cracked)':'A wallow (wet mud)',key:'landform.wallow',kind:'landform',x:Wl.x,z:Wl.z,y:terrainH(Wl.x,Wl.z),r:Wl.r,h:1,ground:true}));   /* the pan is painted on the ground mesh, which the probe skips: the record says so (as godthrone's throat) */
   LICKS.forEach(Lk=>REGISTER({name:'A salt lick (red clay chewed into the bank)',key:'landform.lick',kind:'landform',x:Lk.x,z:Lk.z,y:terrainH(Lk.x,Lk.z),r:Lk.r,h:3}));}
  catch(e){reportErr('station bai sedge: '+e.stack);}
  // ---- THE SKY PITCHERS: in the heroes' bough gardens (perches over 60 m), within the trees' near range
