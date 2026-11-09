@@ -84,7 +84,7 @@
 {"at_px": [1523.6, 920.8], "level_m": 6439, "km2": 112, "spill_m": 6515, "climate": "ET", "kind": "lake", "surplus_m3s": 0.0},
 {"at_px": [1057.0, 1117.1], "level_m": -1068, "km2": 112, "spill_m": -990, "climate": "BWh", "kind": "salt lake", "surplus_m3s": 0.0},
 {"at_px": [1647.8, 1215.3], "level_m": 642, "km2": 112, "spill_m": 649, "climate": "Cfa", "kind": "lake", "surplus_m3s": 0.0},
-{"at_px": [842.7, 1397.5], "level_m": 6419, "km2": 112, "spill_m": 6813, "climate": "ET", "kind": "lake", "surplus_m3s": 0.0},
+{"at_px": [876.0, 1440.0], "level_m": 6420, "km2": 116, "spill_m": 6768, "climate": "EF", "kind": "salt lake", "surplus_m3s": 0.0, "depth_m": 150},
 {"at_px": [414.2, 1297.4], "level_m": 2730, "km2": 112, "depth_m": 157, "kind": "through lake", "climate": "Csa"},
 {"at_px": [972.9, 494.2], "level_m": -1004, "km2": 96, "spill_m": -901, "climate": "Aw", "kind": "lake", "surplus_m3s": 0.0},
 {"at_px": [1161.1, 588.4], "level_m": -580, "km2": 96, "spill_m": -541, "climate": "Aw", "kind": "lake", "surplus_m3s": 0.0},

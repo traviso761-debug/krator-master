@@ -9653,6 +9653,30 @@
     1016
    ],
    [
+    1736,
+    1013
+   ],
+   [
+    1723,
+    1032
+   ],
+   [
+    1696,
+    1028
+   ],
+   [
+    1667,
+    1022
+   ],
+   [
+    1660,
+    1003
+   ],
+   [
+    1662,
+    998
+   ],
+   [
     1604,
     986
    ],
@@ -11108,7 +11132,7 @@
     1391
    ]
   ],
-  "notes": "",
+  "notes": "A caldera cut into the Godthrone's south flank: floor 3.6-3.75 km, walls 3-4 km high, the hot lake (3,642 m) and the spillway south. Climate (the owner, 2026-11-09): cools with height, 6 C per km from a floor of +7 C (warm month 15 C, days 24 / nights +6; cold month -2 C, days +7 / nights -10, to -18 C in the cold-air pools on clear nights): Cwb on the floor, Dwb on the benches, Dwc and ET on the rim. Rain 750-925 mm, about 70% of it in the warm half as afternoon storms, so the nights and the winters are clear (the model holds annual rain only). biomes/godshearth/PLAN.md.",
   "kind": "biome",
   "createdAt": "2026-11-06T11:43:36.010Z"
  },

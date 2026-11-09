@@ -467,4 +467,60 @@ for fb_lk_nm, fb_x, fb_y, fb_wl in [
 ]:
     check('Firebliss geothermal lake %s (%d, %d) is wet at %.0f m' % (fb_lk_nm, fb_x, fb_y, fb_wl),
           bool(whas[fb_y, fb_x]) and abs(float(wlev[fb_y, fb_x]) - fb_wl) <= 2.0)
+# ---- 14. 5.1 edit 1 (edit_511.py, 2026-11-09): the Portal Valley and the Epidote Cave, the brine lake, Godshearth's
+#          climate, The Gate and Region 99
+pv = {295: 5530.0, 298: 5750.0, 300: 5850.0, 302: 5900.0}
+for pv_y, pv_f in pv.items():
+    pv_x = int(round(1330 + (pv_y - 295) / 7.0))
+    check('Portal Valley floor (%d, %d) %.0f m within 40 m of %.0f m' % (pv_x, pv_y, E[pv_y, pv_x], pv_f),
+          abs(float(E[pv_y, pv_x]) - pv_f) <= 40.0)
+pv_line = [float(E[y, int(round(1330 + (y - 295) / 7.0))]) for y in range(295, 303)]
+check('Portal Valley floor climbs steadily south to the portal (%s)' % [round(v) for v in pv_line],
+      all(b > a for a, b in zip(pv_line, pv_line[1:])) and max(pv_line) <= 5950.0)
+check('Portal Valley is a trough: its walls stand 400 m over the floor at y 300-302',
+      all(min(float(E[y, int(round(1330 + (y - 295) / 7.0)) - 3]), float(E[y, int(round(1330 + (y - 295) / 7.0)) + 3]))
+          - float(E[y, int(round(1330 + (y - 295) / 7.0))]) >= 400.0 for y in (300, 301, 302)))
+ep = next((t for t in D['tubes'] if t['id'] == 'tube_epidote_16'), None)
+check('tube_epidote_16 (Epidote Cave) runs from the portal 1331,302 to the inner mouth 1340,336 in rmvymakpc0pft',
+      ep is not None and ep['px'][0] == [1331.0, 302.0] and ep['px'][-1] == [1340.0, 336.0]
+      and ep['region'] == 'rmvymakpc0pft' and ep['rock'] == 'skarn_marble' and ep['km'] == 71)
+yy_b, xx_b = np.mgrid[0:E.shape[0], 0:E.shape[1]]
+bl = np.hypot(xx_b - 876, yy_b - 1440) <= 3.0
+check('brine lake at 876,1440: 29 cells wet at 6,420 m',
+      int(bl.sum()) == 29 and bool(whas[bl].all()) and float(np.abs(wlev[bl] - 6420.0).max()) <= 2.0)
+bl_ring = (np.hypot(xx_b - 876, yy_b - 1440) > 3.0) & (np.hypot(xx_b - 876, yy_b - 1440) <= 4.5)
+check('brine lake is closed: its lip holds 6.7 km all round (min %.0f m)' % float(E[bl_ring].min()),
+      float(E[bl_ring].min()) >= 6700.0 and not bool(whas[bl_ring].any()))
+r442_t = next(r for r in D['rivers'] if r['id'] == 'r442')
+check('r442 (the bloodfalls) still rises at 864.8,1439.6, 5,318 m, 22 km below the lake',
+      r442_t['px'][0] == [864.8, 1439.6] and r442_t['source_m'] == 5318.0)
+check('the brine lake\'s basin record is at 876,1440 (6,420 m), the stale one at 842.7,1397.5 gone',
+      any(b['at_px'] == [876.0, 1440.0] and b['level_m'] == 6420 for b in D['basins'])
+      and not any(abs(b['at_px'][0] - 842.7) < .5 and abs(b['at_px'][1] - 1397.5) < .5 for b in D['basins']))
+cav_bt = next(c for t in D['tubes'] for c in t.get('caverns', []) if c['id'] == 'cav_god_brine_throat')
+check('cav_god_brine_throat no longer says 6,415 m under the ice', '6,415' not in cav_bt['notes'])
+gh_reg = next(r for r in R if r.get('id') == 'rmw4wou2y1hhc')
+gh_m = G.poly(gh_reg['points'], 1.0, 1.0, E.shape)
+temps_t = {k: P.raster(D, k, 'L').astype(float) - 90 for k in ('tm', 'tw', 'tc', 'th', 'tl')}
+gh_floor = gh_m & ~whas & (E > 3640) & (E < 3760)
+gh_med = {k: float(np.median(v[gh_floor])) for k, v in temps_t.items()}
+check('Godshearth floor: +7 C (15 / -2), days 24, nights -10 or colder (%s)' % {k: round(v) for k, v in gh_med.items()},
+      abs(gh_med['tm'] - 7) <= 1 and abs(gh_med['tw'] - 15) <= 1 and abs(gh_med['tc'] + 2) <= 1
+      and abs(gh_med['th'] - 24) <= 1 and gh_med['tl'] <= -10)
+gh_hi = gh_m & ~whas & (np.abs(E - 4500) < 150)
+check('Godshearth cools with height (4.5 km: %.0f C vs the floor\'s %.0f C)' % (np.median(temps_t['tm'][gh_hi]), gh_med['tm']),
+      float(np.median(temps_t['tm'][gh_hi])) <= gh_med['tm'] - 4)
+gh_cls = [codes_test[int(k)] for k in c_grid_full[gh_floor]]
+# the cold month crosses Koppen's -3 C at about 3,720 m: the floor's upper edge (3.72-3.76 km) is Dwb
+check('Godshearth floor is mostly Cwb, the rest Dwb (%.0f%% Cwb)' % (100.0 * gh_cls.count('Cwb') / len(gh_cls)),
+      gh_cls.count('Cwb') / len(gh_cls) >= .6 and gh_cls.count('Cwb') + gh_cls.count('Dwb') == len(gh_cls))
+s_src = open(os.path.join(TOOL, 'model', 'src', '60-settlements.js'), encoding='utf-8').read()
+check('The Gate (sthegate) stands at the Narrows, 1438,326 (ground %.0f m)' % E[326, 1438],
+      '"id": "sthegate", "name": "The Gate", "type": "outpost", "px": 1438, "py": 326' in s_src
+      and abs(float(E[326, 1438]) - 1423.0) <= 50.0)
+r99_t = next(r for r in R if r.get('id') == 'rmvraoas90co7')
+gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
+m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
+check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
+      bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
 print('%d checks passed' % ok)
