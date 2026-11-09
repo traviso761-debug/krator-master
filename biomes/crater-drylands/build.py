@@ -78,8 +78,9 @@ CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.join(ROOT,'core','terrain')
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit. The final rebuild adds 31b the leafset (BIO.leafOn and
 # BIO.leafQ, which 20's BIO.cards calls: check_assembly's MISSING), 31j a limb's joint to its parent (BIO.flareJoin), 32 the variant pools and kin
-# (the exchanges), 34 the octahedral impostors (the far living trees, 55), 41 the environmental fields (BIO.env), 44 the stage as data (the export)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js',
+# (the exchanges), 34 the octahedral impostors (the far living trees, 55), 38 KFIRE (the fire history: 52 is an adapter onto it, 2026-11-09),
+# 41 the environmental fields (BIO.env), 44 the stage as data (the export)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js','38-core-fire.js',
             '40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.join(ROOT,'core','biome')
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
@@ -144,7 +145,7 @@ for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js
 for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather (2026-10-26)
     PATH[f]=os.path.join(ROOT,'core','atmos','host',f)
 # the final rebuild's air (BACKPORT.md section 1, and the row's dust): height fog (R1), the rain occlusion map (R10), lightning, the air's load
-for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-airload.js']:
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-airload.js','89-atmos-fx-dustseason.js']:   # dustseason: the dry season drives the dust (2026-11-09)
     PATH[f]=os.path.join(ROOT,'core','atmos','fx',f)
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

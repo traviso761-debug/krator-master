@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 10 | the land (43); the climate fields (cached below; these are the  (75); the recent fires (the showcase's choice) (97); the host binding (105) |
 | `50-biome-craterdry-species.js` | 46 **big** | palettes (26); the tree species (58); harvest (biomes/FRUIT.md) (92); the small plants (the floor), tagged (113); leaf textures (135); bark, rock, wood textures (222); geometries local to this biome (263); materials (343); the library (core/materials/PLAN.md, Crater dryl (378); instanced items (436) |
-| `52-biome-craterdry-fire.js` | 11 |  |
+| `52-biome-craterdry-fire.js` | 4 |  |
 | `55-biome-craterdry-trees.js` | 43 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (99); impostors (the far canopy) (355); the pass (382); the passes (data: species, cell, acceptance from (427) |
 | `60-biome-craterdry-floor.js` | 15 | fields local to the floor (26); small plants (33); the zone planters (86); the pass (140) |
 | `70-biome-craterdry.js` | 1 |  |
@@ -37,7 +37,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `88-host-build.js` | 3 |  |
 | `89-host-fire.js` | 14 |  |
 | `89-host-sky.js` | 2 |  |
-| `89a-host-atmos.js` | 4 |  |
+| `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 1 |  |
 | `99-host-take.js` | 21 | the inspector's words (51); the probe's budgets and the kit's own checks (ve (68); the editor's world: fauna mode (core/host 98; se (152); the page, handed to the host (172) |
 | `99-tail.html` | <1 |  |
