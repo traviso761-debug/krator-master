@@ -587,7 +587,7 @@
     "biomes/abyssal-savannah/src/rim/50-biome-savrim-species.js": "d24d2f7955691b052313903f60be4d3a9b8f4c6aae2d4c6d9305a15f9d4a8859",
     "biomes/abyssal-savannah/src/rim/52-biome-savrim-east.js": "185fd61a8967b031d7f25d1f4902222edac598395bec70787e58dcaa81ec47ee",
     "biomes/abyssal-savannah/src/rim/55-biome-savrim-trees.js": "0156c6325bad33ff01f502a876eba7c97b6388f627bf18f30c326303de3534fb",
-    "biomes/abyssal-savannah/src/rim/56-biome-savrim-southeast.js": "17dd68deef7c4ee784c8f24955c141c661d28ac38006685eb61376e542f8dde3",
+    "biomes/abyssal-savannah/src/rim/56-biome-savrim-southeast.js": "7526a64058b7b2ef756307161c02112112527a84d7f5624c51b866bc45b25d97",
     "biomes/abyssal-savannah/src/rim/60-biome-savrim-floor.js": "21e8feabfacf07b5a9aafa5edd2ed59d94b052024bea68231b188e67b4f5b415",
     "biomes/abyssal-savannah/src/rim/70-biome-savrim.js": "1e314a5faed3d40fc78607c39676af8c0c794e9a38ee603c01d6a77ff3e7098e",
     "biomes/abyssal-savannah/src/rim/83-host-far.js": "241324224fcef8dee66948d5595a42f1b06dcdb18e806b029b2e7ec8534fa699",
@@ -769,10 +769,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-serim.html": "2a789973f57b4ab47624e128de80d7ac65d9b1667436fea8060e6622e7876bc9"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-serim.html": "515a1b5f412b4ac7a7eae819a3d23dfbdb035a2d77cdeff9e6978a8cf93cad9d"
    },
    "outputs_raw": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-serim.html": "2a789973f57b4ab47624e128de80d7ac65d9b1667436fea8060e6622e7876bc9"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-serim.html": "515a1b5f412b4ac7a7eae819a3d23dfbdb035a2d77cdeff9e6978a8cf93cad9d"
    }
   }
  }

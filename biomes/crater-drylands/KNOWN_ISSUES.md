@@ -34,20 +34,38 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 `test-fire.js` (52, unchanged).
 
 **Not done this turn, and why** (PLAN-STATIONS.md says more):
-- [ ] **The N/S split and station `south`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim`. Savannarim is built on
-      `claude/hyperjungle-lands-cloud` (2026-11-09, not merged; no GPU verify yet): it vends the se rim's rust miombo and incense through
-      `SAVRIM.builders` (`make`/`grow`, so `BIO.kin` grows them) and has the rain rose; it reads this kit's `50` and `55` in place (this
-      turn's changes there are guarded: `BIO.host.seasons`, `BIO.host.treeScale`, the flare and impostors all optional). `south` can be built
-      on that branch once it merges (or on a merge of it here); the black mallee is still a proposal (PLAN-LANDS question 7).
+- [x] **The N/S split and station `south`** (2026-11-09; the owner: merge savannarim in, "black mallee is good"). `claude/hyperjungle-lands-cloud`
+      (savannarim, not yet GPU-verified) is merged into this branch. Station 2 `south` is built (`--station south`, `dist/crater-drylands-s.html`;
+      PLAN-STATIONS.md "Station 2, as built"); station 1 also writes `dist/crater-drylands-n.html`, and `dist/crater-drylands.html` stays as a
+      copy of it until its readers (the gallery, `verify.py`, the baseline) point at `-n`. Savannarim reads this kit's `50` and `55` in place:
+      this turn's changes there are optional switches (`BIO.host.seasons`, `BIO.host.treeScale`, the flare, the impostors, the spire's stalk).
+- **Headless loads after `south` and the merge** (2026-11-09, software GL): all four pages clean. `south` passes all 37 checks and
+  negatives (4,111 black mallees, all on the old flows; rust miombo 222, incense 489, rain roses 9; 31,906 trees of the base, none on a flow;
+  attach audit .14%; the season and flush bound, the trees at .85); station 1 30, edge 34, salt 34, their fire mosaics unchanged. On the way:
+  `84`'s flow knob was read before its declaration (every page threw at load: fixed), and one base tree stood on a flow (the mask now
+  reaches zero by half a flow).
+- Done on `south` (2026-11-09): **the Af gallery** in a north-western gully (the hyperjungle's trees at .3-.5 of their size, read in place,
+  as savannarim's gallery forest; `?gallery=0`); **the tibasalt beds at the southern edge**: a 30 m lava step there (Godstep's first), its
+  face a mesh of its own coloured vertex by vertex from KSTRATA's `tibasalt` recipe (`KSTRATA.at`: no texture unit; the core strata shade
+  would take 3-5 and the ground reads 14 of the Arc's 16; `?step=0`); **the oak scrub** on the step's top (a kin of nhighlands' gnarled
+  oak, 3-6 m, dusty, no moss: EXCHANGES.md's row; `?oak=0`). Headless (software GL): all 42 checks and negatives pass (18 gallery trees, all in
+  the gully; 50,756 triangles of tibasalt face; 158 scrub oaks, all on the step's top; attach audit .10%).
+- [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); S's fields and
+      hazards from the scale model's S polygon (the stage is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are
+      painted stand-ins: its PROMPTS-NEEDED entry); the scrub oak does not resprout after a fire (nhighlands' builder knows no burn age).
+- **The incense tree's and the rust miombo's crowns** (the owner, 2026-11-09: "incense tree looks like texture glitch"): savannarim's painted
+  leaf card filled the square with five parallel leaves, flat panels of strips on the crown's crossed quads. Fixed at the source
+  (`biomes/savannarim/src/56`, its `pinnate` painter: a cluster of seven leaves fanning from the centre; savannarim's KNOWN_ISSUES.md says so).
 - [x] **KFIRE (H3), 2026-11-09 (the owner asked for the core test change):** `src/52` is an adapter onto core/biome's KFIRE, handing it
       the kit's own burnability (BIO fbm patch), edge warp and older fires (drawn as before, `old:0`), so the page keeps its fires. The
       original fragment is frozen as `core/biome/ref/craterdry-fire-52.js.txt`; `core/biome/test-fire.js` reads it as the reference and
       now proves the adapter gives its grids, lookups, shares and live fire bit for bit (33 pass). Moving to KFIRE's portable defaults
       (KRAND noise, hashed old fires: what Godot reproduces) would change the page once; not done.
-- [ ] **Wadi, talus, tibasalt strata**: the row's other kinds; the strata are S's (`south`). The mounds are on `edge`, the pans on `salt`.
-- [x] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
-      it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
-      2026-11-08: closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix` (the page's redirect is now redundant but harmless).
+- [ ] **Wadi and talus (KRELIEF's kinds), for the owner:** station 1 already has both as its own forms (the washes are wadis, sand floors
+      between banks; each kopje has a talus apron), so the row's kinds are not taken: drawing them by KRELIEF would reshape station 1's ground
+      and move every plant on it. Taking them is a look decision (the strata are done on `south`; the mounds on `edge`, the pans on `salt`).
+- [x] **A core finding (korona's too):** `core/terrain/43-core-ground.js` read the eye uniform three r128 leaves at 0 on a Lambert material.
+      Fixed in core on savannarim's branch (merged here 2026-11-09: the view matrix's eye); this page's own redirect (`KG_EYE`) is gone.
 
 **CPU checks run here:** `tools/build.py` (syntax OK), `check_core_use`, `check_assembly`, `check_port`, `check_source`, `check_cells --ratchet`,
 `check_vendor`: nothing new for this kit (`check_stale`'s four over the baseline are other builds', the same on the untouched branch tip);

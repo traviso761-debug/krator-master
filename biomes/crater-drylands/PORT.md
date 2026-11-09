@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 25 (13%) | 20 (11%) | 2 (1%) | 53 (28%) | 90 (47%) |
+| KB | 25 (13%) | 21 (11%) | 2 (1%) | 53 (28%) | 90 (47%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,7 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/55-biome-craterdry-trees.js` | 42.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-craterdry-floor.js` | 15.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-craterdry.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/84-host-ground.js` | 20.4 | [G shader] | 8 | 3 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 |  |
+| `src/84-host-ground.js` | 21.3 | [G shader] | 9 | 3 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 |  |
 | `src/87-host-far.js` | 3.1 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 2.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-fire.js` | 14.0 | [web] | 13 | 0 | 4 | 1 | 0 | 1 | 11 | 2 | 2 | 0 | 0 | split: the live fire's controls and sprite pool [web]; its shader text is [G shader]; the arrival map is 52's [G data] |
