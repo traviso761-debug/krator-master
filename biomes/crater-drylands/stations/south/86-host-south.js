@@ -82,3 +82,8 @@ const SOUTH=(function(){const Q=new URLSearchParams(location.search),W=0x5007,E=
   add('no se rim',CH.serim({miombo:0,incense:0,rainrose:0}));add('a gallery tree out on the plain',CH.gallery(E.gallery.concat([{x:0,z:0}])));
   {const below=E.oak.concat([{x:0,z:stepZ(0)-200}]);add('a scrub oak below the step',{ok:below.length>=30&&below.every(T=>T.z>stepZ(T.x)+10),detail:below.length+' scrub oaks with one below the step'});}add('a prism mallee on a flow',CH.base([{x:P[0],z:P[1],sp:0}]));};
  return E;})();
+/* the export profile's box (verify.py reads window.EXPORT_BOX_STATION): station 1's box lies off this land, so the densest 300 m cell of
+   what is placed here (core/host's probe points), read when the verify asks (2026-11-09) */
+window.EXPORT_BOX_STATION=()=>{const P=(typeof KHOST!=='undefined'&&KHOST.probe)?KHOST.probe.probePoints():[];const C={};let b=null,bn=0;
+ for(const p of P){const k=Math.floor(p[0]/300)+','+Math.floor(p[2]/300);C[k]=(C[k]||0)+1;if(C[k]>bn){bn=C[k];b=k;}}
+ if(!b)return null;const [i,j]=b.split(',').map(Number);return [i*300,j*300,i*300+300,j*300+300];};
