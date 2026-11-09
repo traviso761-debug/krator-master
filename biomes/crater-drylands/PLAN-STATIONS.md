@@ -81,3 +81,31 @@ in). The kiln's scrub at its largest in the dense air; dust in the dry season (`
 ## Order
 
 `south` first (PLAN-LANDS's order), then `edge`, then `salt`.
+
+## Core adoption (pair 12, the final rebuild; 2026-11-09)
+
+Station 1 (`dist/crater-drylands.html`) on the universal set (`BACKPORT.md` section 1) and what this turn takes of the kit's row (section 2).
+Every look change has a switch, for the owner's look pass.
+
+| Module | Taken | Where | Switch |
+|---|---|---|---|
+| core/biome 31b, 31j, 32, 34, 41, 44 | the leafset (`BIO.leafOn`/`leafQ`, which `BIO.cards` calls: `check_assembly`'s MISSING), `BIO.flareJoin` on the six limb tubes, the variant pools and kin, **octahedral impostors** for the far living trees (8 species over 7 m), the field contract (`BIO.env`), the stage as data | `build.py`, `55`, `88` | `?diet=0` (blobs) |
+| KGROUND | the five library layers (red soil, char, wash sand, granite grit, seep soil), hex-tiled, distance-scaled, height-blended at the old weights and strengths; the char's ash drifts and greying kept | `84` | `?kground=0` |
+| KFAR, KHORIZON | the crater floor to 12 km past the map; the horizon on the ground and on the flora | `87`, `88` | `?far=0`, `?hz=0` |
+| KSHADOW | **off by default** (the owner, 2026-11-03) | `88` | `?shadow=1` |
+| core/atmos | height fog, the rain cover, lightning; the wind's dust off the burnt plain and the washes; the air's load (KHAZ's dust and sight; a dust storm on the panel) | `89a` | `?hfog=0`, `?dust=0`, `?storm=1` |
+| core/water ext | 56 (breakup), 57 (the audit) | `build.py` | |
+| core/host | `khost.FULL` (the whole interface), `--station`, LF writes, the shared pack generator | `build.py` | |
+
+**Not taken, and why:**
+- **The N/S split and the stations** (`south`, `edge`, `salt`). The split is settled, but S's page is station `south`, which is
+  `biomes/hyperjungle/PLAN-LANDS.md`'s step J7: it takes the se rim's species (rust miombo, rain rose, incense) from `biomes/savannarim`,
+  which is not built (J4-J6), and the black mallee is still a proposal (PLAN-LANDS question 7). `edge` and `salt` come after `south`.
+  Renaming the page to `-n` with no `-s` beside it would split nothing, so the page keeps its name until `south` is built.
+- **KFIRE** (H3: the kit's fire onto `core/biome/38-core-fire.js`): `core/biome/test-fire.js` loads this kit's `52` in place as the
+  reference KFIRE is proved against, bit for bit. Moving the kit onto KFIRE needs that test changed first (core's, not this turn's).
+- **The reflections switch** (58) and **the water's fields** (60): the seep is 23 m across, drawn after the build; the kit's own seep
+  field already gives the flora and the ground their wet ring.
+- **Wet ground (R9)**: the climate is dry, and the ground's texture units go to KGROUND and the horizon.
+- **Mounds, wadi, talus, the polygon pans** (the row's terrain and ground kinds): no dry pan or termite country on station 1's showcase;
+  they belong to `edge` (mounds) and `salt` (the polygon crust).
