@@ -2,8 +2,9 @@
 // "Remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The kit
 // takes the Vernacular's openings (kits/iziz-vernacular 69e5, read in place: vnDoor a shut leaf registered in core/door's
 // KDOOR, vnWin glass from core/door's KGLASS over the room card) and draws its own the same way. Every Highlands body is
-// SOLID (the kit takes no 69e hollow walls: in Roketstad's ?interiors=1 the interiors kit's rooms stand inside the solid
-// boxes), so every door is a LOCKED leaf in KDOOR and every window glass in front of the room's dim back.
+// SOLID with the interiors off, so every door is a LOCKED leaf in KDOOR and every window glass in front of the room's dim
+// back; with them on (?interiors=1) the furnished defs' bodies are hollow (69e, 69e6: the end of this file; README.md
+// "Hollow walls") and their doors open into the planned rooms.
 //   hnDoorway(x,y,z,ry,w,h,o)   a doorway a builder drew as a dark plate: a shut leaf in it (two, mirrored, when w >= 1.8 or
 //                               o.double), registered in KDOOR through IZDOOR.leaf. (x,z) on the face, ry outward, y the sill;
 //                               o {c leaf colour, t thickness (.08), out: the leaf's back stands that far out of the face (.01)}
@@ -43,3 +44,9 @@ function hnRoom(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry,IZ_ROOMC);}
 function hnRoomQ(p,q,s){kput('vPlaster',p,q,s,IZ_ROOMC);}
 function hnPlate(x,y,z,w,h,d,ry){vB('vPlaster',x,y,z,w,h,d,ry,IZ_ROOMC);vB('vWinClear',x,y-.01,z,w+.02,h+.02,d+.04,ry);}
 function hnPlateQ(p,q,s){kput('vPlaster',p,q,s,IZ_ROOMC);kput('vWinClear',p,q,[s[0]+.02,s[1]+.02,s[2]+.04]);}
+// the hollow walls (2026-11-09): on a page that takes the Vernacular's auto bodies (69e6; Highlands and Roketstad with the
+// interiors on), a doorway, pane or unglazed opening on a face that was drawn hollow cuts it: the leaf stands in the middle of
+// the wall, UNLOCKED, opening into the planned room; the glass in the wall with no room card; an unglazed opening a clear hole.
+// Off a hollow face (or on a page without 69e6) each draws as above
+if(typeof vaWrapDoorway==='function'){hnDoorway=vaWrapDoorway(hnDoorway);hnPane=vaWrapPane(hnPane,{stained:'hStainedB',frosted:'hFrostedB'});
+ hnRoom=vaWrapRoom(hnRoom);hnPlate=(f0=>function(x,y,z,w,h,d,ry){if(vaOpen(x,y,z,ry,w,h,false)){const F=vnFaceOf(x,y,z,ry),g=loc(x,z,0,.05-(F?F.B.t:0)/2,ry);vB('vWinClear',g[0],y,g[1],w,h,.04,ry);return;}return f0.apply(this,arguments);})(hnPlate);}

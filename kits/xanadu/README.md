@@ -33,6 +33,21 @@ door is LOCKED, with an id from its def, its placement and its number. A door ke
 purpose, as they are not openings: wells, the mine shaft, ovens and kilns behind their embers (`vDarkB`). `kit_bundle.py` carries
 core/door's 10 and 20 and 69e5 into `XAK` (the kit's own KDOOR; no walk: a proto's doors are in `userData.doors`, locked).
 
+**Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:
+the dwellings, trades, farms, sacred buildings, guilds, military, baths, the Turkish and Andean houses; the open pieces
+skipped with their reasons). Its pages (`settlements/xanadu`: the sheet and Erewhon) take it with `?interiors=1`
+(`settlements/xanadu/src/89y-xa-interiors.js`): the rooms planned and furnished from the catalog (`xanadu`, its chain
+`eastabyss`, `generic`), their floors, walls and stairs in core/walk, and the bodies hollow through the Vernacular's auto
+bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`; `xanadu.py` `HOLLOW_VERN`): a battered block (`xnWall`) or
+a plain one that holds a storey of an item's body is four walls cut at the doors and windows, its doors unlocked leaves into
+the rooms. A battered or stepped stack is planned INSET (every storey on the footprint they all share), so its walls'
+lean never reaches a room. `kit_bundle.py`'s `XAK` (Longsong) does not take it.
+
+**HELD: the citadel** (the owner, 2026-11-09). The Sultan's Palace (`xa_palace`), both Pleasure Domes (`xa_pleasure_dome`,
+`xa_pleasure_dome_bay`), the Grand Vizier's palace (`xa_vizier`) and the palace gate (`xa_palace_gate`), the citadel of
+`settlements/xanadu/citadel/BLUEPRINT.md`, wait on the owner's visual references: their items are skips that say so, and
+their builders are unchanged.
+
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).
 

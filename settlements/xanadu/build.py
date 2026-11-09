@@ -105,6 +105,23 @@ CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edi
 # (kits/xanadu/src/71c-xa-openings.js) draw through them; src/90-xa-doors.js hands each leaf to the host after a bake
 DOOR_FILES = {f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR + ['90-core-door-host.js']}
 DOOR_FILES.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.OPENINGS_VERN})
+# the interiors (2026-11-09; kits/xanadu/README.md "Hollow walls and interiors"): the Vernacular's hollow and auto bodies (69e,
+# 69e6), core/furnish (the placement pass), core/walk (the floors, walls, stairs and door blocks) and, GENERATED at build time,
+# the catalog's furniture for the cultures below with the interiors core and its Xanadu set (69d, as Highlands takes it);
+# src/89y-xa-interiors.js is the glue (?interiors=1 turns them on)
+DOOR_FILES.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.HOLLOW_VERN})
+for _d in ('furnish', 'walk'):
+    _dd = os.path.join(ROOT, 'core', _d)
+    DOOR_FILES.update({f: os.path.join(_dd, f) for f in os.listdir(_dd) if f[0].isdigit() and f.endswith('.js')})
+FURN_CULTURES = ['xanadu', 'iziz', 'generic', 'scrap']
+VIRTUAL = {'69d-furniture-bundle.js'}
+
+
+def virtual_bodies():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['xanadu'])}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -162,7 +179,7 @@ DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no 
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
-DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
+DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js', '89y-xa-interiors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -175,7 +192,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
+    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST); the generated bundle
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -291,10 +308,13 @@ def build_one(target, do_checks):
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    order = sorted(paths)
+    vb = virtual_bodies()
+    order = sorted(list(paths) + list(vb))
 
-    bodies = {}
+    bodies = dict(vb)
     for f in order:
+        if f in vb:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))

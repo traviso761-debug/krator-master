@@ -27,6 +27,10 @@ VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js']                         
 # vWinClear items, kits/iziz-vernacular/src) and core/door's records and glass (KDOOR, KGLASS), read in place
 OPENINGS_VERN = ['69e5-iziz-openings.js']                                               # kits/iziz-vernacular/src
 DOOR = ['10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js']                  # core/door (30: the leaves' look, KDOORLEAF)
+# the hollow walls (2026-11-09): the Vernacular's hollow bodies (69e) and auto bodies (69e6: a solid block or battered mass that
+# matches a shell of the def's interior set item, kits/interiors/sets/xanadu.js, is drawn hollow), read in place by the kit's pages
+# that take the interiors (settlements/xanadu: the sheet and Erewhon, ?interiors=1); not in kit_bundle.py's XAK
+HOLLOW_VERN = ['69e-vern-hollow.js', '69e6-vern-autobody.js']                          # kits/iziz-vernacular/src
 
 
 def path(f):
