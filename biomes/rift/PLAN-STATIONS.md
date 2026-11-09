@@ -6,7 +6,9 @@
 2. **the rift jungle**;
 3. **the temperate highlands / cloud forest**, with at least three divergent families of upland plants, reflecting their
    status as **air-pressure and temperature islands**;
-4. **Cube's plateau** (added by the owner with the answers, 2026-10-27).
+4. **Cube's plateau** (added by the owner with the answers, 2026-10-27);
+5. **the gypsum maze under Cube's plateau**, a cave page (the owner's caverns in the Rift, 2026-11-03: `biomes/KARST-SITES-5.1.md` site 3;
+   built 2026-11-09, section 11).
 
 For station 3 the owner adds: draw the upland plants from `biomes/riftrim/PLAN.md` section 3 (its three rims' flora) and from
 this kit's own highland sketch (the cloud forest and ridgetop species in `src/`, `KNOWN_ISSUES.md`'s highland note), as
@@ -26,7 +28,7 @@ The single-page rebuild that was under way is parked, unmerged, on `claude/rift-
 | | |
 |---|---|
 | Folder | `biomes/rift/` as now, plus `stations/` (the Throne's way: `python3 build.py --station <name>`) |
-| Pages | `dist/rift-savannah.html`, `dist/rift-jungle.html`, `dist/rift-highland.html`, `dist/rift-plateau.html` (*proposed* names). The old ideal-type page (`dist/rift.html`) is **retired** (the owner) when station 2 lands |
+| Pages | `dist/rift-savannah.html`, `dist/rift-jungle.html`, `dist/rift-highland.html`, `dist/rift-plateau.html` (*proposed* names); `dist/rift-maze.html` (station 5, the cave page, section 11). The old ideal-type page (`dist/rift.html`) is **retired** (the owner) when station 2 lands |
 | Object | `RIFT` on the `BIOME-API.md` contract, unchanged for its readers: `RIFT.build`, `RIFT.make`, `RIFT.grow`, `RIFT.SPECIES`, the species **indices 0-33 kept** (ringisles plants the Rift's species by `RIFT.make(sp, ...)`; Hook and the open-world pages read the kit in place, `HANDOFF-REBUILD.md` section 5). New species are appended (34 on) |
 | Zones | the five climate fields stay the kit's interface (wet, salt, upland, flow, mist); each station binds them from the model's ground at its site instead of the ideal-type map, and adds two: **`air`** (the pressure, atm, from height) and **`island`** (which massif a point stands on, for the sky-island lineages: section 4) |
 | Read in place | `biomes/abyssal-savannah` (station 1's cousins, by `BIO.kin`), `biomes/riftrim` once it is built (station 3's ancestors; until then the Rift's own sketch species stand in: section 5) |
@@ -276,6 +278,9 @@ worked example), each with its `?…=0` switch for the owner's A/B:
 | `core/water` | W1/W2/W4: falls down station 3's gullies with `margin`, `lipK`, spray by drop; the jungle's stream mouths and the terminal sea's algal shore (`WATER.open` with its tint, as now); Gila's lake and its salt rim on station 1 (`WATER.still`, the `ext/54` brine and pan kinds); **wet ground and puddles** (`WATER.wetGround`, `WATER.hollows`); rain rings |
 | `core/hazard` | the floor's heat (the 1.9 atm, +29 °C air) as a walk-zone note, the shore's brine; taboo areas if the owner places Lizardmen sites |
 | `core/tags`, `core/rand`, `core/space`, `core/host`, `core/export`, `core/materials` | as now (`BIO.init({tags})`, `KRAND` seeding by cell, `KSPACE` keep-clear, `KHOST.take`, the export profile with atmos and water, `KMAT` and the pack) |
+| `core/terrain` **KKARST** (`39c-core-karst.js`) | station 5 only (section 11): the gypsum maze's plan, KARST-SITES-5.1 site 3's `kind:'maze'` call (three storeys on the rift's strike), its `water` (the perched table's flooded passages and the spring), its `hazards` (the drowning, the level shafts' falls) and its `relief` (the collapse dolines, through `KRELIEF.apply`, so `38-core-relief.js` comes with it). Why: the owner's caverns in the Rift (HANDOFF-REBUILD.md, 2026-11-03); KKARST is the one module that lays a cave out the way water does |
+| `core/terrain` **KCAVERN** (`39-core-cavern.js`, `39d-core-cavern-floor.js`, `host/39e-core-cavern-draw.js`) | station 5 only: the maze carved (`KKARST.build`), the Ancients' cut gallery (`C.room`, hewn) and the walled chamber's plugs (`C.monolith`) added to it; `floorFn` the eye's floor and the water's bed; `drawRock` the rock, on the page's KGROUND weights. A tile's own cavern (the same primitives near it) answers `sdf` for the dress, the floors and the probe at a twentieth of the cost (48, `CAVE.local`) |
+| `core/terrain` **KSPELEO** (`39b-core-speleo.js`) | station 5 only: the dry maze's dress, from its kinds (no gypsum-flower or crust kind exists: small chandeliers, gypsum druse and selenite blocks stand in, section 11), placed tile by tile and storey by storey; `KSPELEO.mesh` one draw |
 
 **The baseline the stations are measured against** (taken 2026-10-26 on the old single page, `dist/rift.html` as built from
 `claude/biome-rebuild`'s sources, before any change; three.js, **Intel Arc 140T**, ANGLE D3D11, 1024x768, the world pass alone by
@@ -382,3 +387,40 @@ names the terraces, not the people). The exchange stays the author's secret: not
 Still open:
 
 1. **The gallery**: four new station pages replace one; publish each as it lands, or the set when station 4 is done?
+
+## 11. Station 5, the gypsum maze under Cube's plateau (a cave page, 2026-11-09)
+
+**What it is.** `python3 build.py --station maze` builds `dist/rift-maze.html`: a whole underground page (as the Hearths' Cave of Crystals
+is), the maze in the rift fill's gypsum under the plateau's WEST SCARP, `biomes/KARST-SITES-5.1.md` site 3 (5.1 px 720,1570; G -260 m drawn as
+y 0). The owner asked for caverns in the Rift (HANDOFF-REBUILD.md, "limestone or gypsum caverns, maybe a new station") and approved the site
+(2026-11-03): the maze is where the rumoured lost Tungang loj lies, and where the Ancients' line joined natural caves.
+`stations/maze/station.json` `"page": "cave"` makes `build.py` assemble it from the station's fragments, the core the file names and the full
+`core/host` shell, with none of `src/` (no flora, no sky dome, no open map); every other Rift page is assembled exactly as before.
+
+**The page** (450 x 400 m; `44z` the site, `48` the records, `49`-`99` the host):
+- **The maze**: KKARST `kind:'maze'` on the site's call, three storeys at G - 35, G - 18 and G - 10 on a 28 m joint lattice along the rift's
+  strike (N-S here), computed on a 1.1 x 1.3 km box and cropped: 650 passages on the page (284, 239 and 127 a storey), 38 chambers, one level
+  shaft, 3 collapse dolines on the table (KKARST's cenotes over the top storey's chambers). Gypsum, carved in one KCAVERN at 1 m.
+- **The scarp**: the plateau's upper step, 36 m from the table's lip to a bench on the lake marl, in ledges (the beds); 21 mouths where the
+  scarp cut the maze (9, 7 and 5 a storey); the rest of the scarp, 1.2 km and more down to station 2, is off the page.
+- **The water**: a perched table on the marl 0.7 m over the lowest storey's floor at the scarp (the floors rise from it by .003), so the
+  lowest storey is wet in its western half only; six springs where its mouths open under the table (`WATER.karstSpring`, KKARST's resurgence
+  the first), running down the bench.
+- **The dress**: KSPELEO with the page's own kinds (a dry relict gypsum maze has almost no dripstone): small chandeliers for gypsum flowers,
+  gypsum druse for the crystal crusts, selenite blocks, a few small stalactites; 2,366 records.
+- **The sites, records only**: the Ancients' cut gallery (5 m by 5 m, vaulted, hewn) from the page's east edge to its breach in the middle
+  storey (`site:ancients:join`: a spur of the Rift line toward Cube, the hub, east); a middle-storey chamber walled off on its three passages
+  (`site:tungang:loj`: dry stone drawn as rock plugs, the rumoured loj's door). No lining, guideway, lamps, doors or loj architecture.
+- **Hazards** (core/tags records): KKARST's drowning in the perched water and the level shaft's fall; a fall over each doline and out of each
+  mouth high on the face.
+- **The light**: a Cfa afternoon on the scarp, reaching into the maze only through its openings (each vertex's share of the sky); the
+  visitor's lamp and a faint fill on the camera inside.
+
+**Where it differs from KARST-SITES' call** (each said in `44z`): the box (1.1 x 1.3 km, not 4 x 4 km: KKARST's level-shaft search is over
+every node pair); the table (a perched one, not G - 300, so the lowest storey has the doc's water near the scarp); the top storey at G - 10
+(at G - 8 its crowns broke the surface, the floors rising east); the storeys' p (.62, .56, .5: under .5 KKARST keeps a few passages);
+chambers' p .15; the passages 2-4 by 2.1-3.2 m (the walkable ones).
+
+**Owed** (KNOWN_ISSUES.md): a bedded gypsum texture (`rock.gypsum.bedded`, PROMPTS-NEEDED.md section 41; the Hearths' alabaster stands
+in); the join under Cube itself (the hub is 12-25 km east of this scarp: this page holds the line's join at the scarp end); the table's
+forest (the plateau station's); a gypsum-flower kind in KSPELEO; station 2's own springs at the true scarp foot.

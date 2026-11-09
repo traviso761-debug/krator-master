@@ -490,6 +490,34 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.
 ```
 
+## 41. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)
+
+`biomes/rift/PLAN-STATIONS.md` section 11; `biomes/KARST-SITES-5.1.md` site 3. The library has no bedded gypsum, the maze's whole rock (its
+walls, roofs and the scarp's face), so the Hearths' pack stands in, read in place: `crystal.selenite` (`stone.alabaster`, massive gypsum: it
+reads as veined marble up close) for the gypsum, `ground.gypsum` (`ground.gypsum.crust`) on the floors, `rock.limestone`
+(`rock.limestone.karst`) on the stromatolite beds. Wire the new set as a `rock.gypsum` family in `biomes/rift/materials.json`, run
+`python3 tools/textures/pack.py biomes/rift`, add `rock.gypsum` to `stations/maze/station.json` `own`, and point the base layer of
+`stations/maze/84-host-rock.js` at it in place of `crystal.selenite`. Full colour (the colour is the point). Reuse: any gypsum or evaporite
+wall (the Hearth hold's upper storey, Korona's gypsum rims, KARST-SITES site 7).
+
+`rock.gypsum.bedded` (2 m; up is the bedding's up):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: a dry cave wall cut in bedded gypsum rock, the
+beds running straight across the image from left to right: sugary
+fine-grained white to pale grey gypsum (#d8d4cc, #c9c4ba) in beds 10 to 40
+cm thick, thin darker grey-green marl partings between some beds (#8f948a),
+a few beds of larger interlocking clear-grey gypsum crystals with a faint
+glitter, short hairline cracks across the beds, small shallow solution
+pockets and smooth scalloped hollows, a light dusting of buff clay in the
+lowest hollows; matte, dry.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

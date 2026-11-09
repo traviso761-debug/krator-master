@@ -51,7 +51,8 @@ const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));
 const OBSTACLES=[];
 // THE MASK: the core's default (nothing rooted where the water is over the ground, a ramp over the first .7 m: a host's own mask replaces it, so it is
 // written out here) and nothing on a rock body (KSTACKS: a dome, a tor) or within a metre and a half of its foot
-const ROCK_MASK=(x,z)=>{const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;if(w<=0||!ROCK.length)return w;const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:w;};
+const ROCK_MASK=(x,z)=>{const d=terrainH(x,z)-waterH(x,z),w0=d<.15?0:d<.7?(d-.15)/.55:1,w=LAND.keep&&w0>0?w0*LAND.keep(x,z):w0;   /* LAND.keep (x, z) 0..1: a station's own keep-off (the Hearth field's warm ground) */
+ if(w<=0||!ROCK.length)return w;const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:w;};
 // the rim the page is (44w: RRIM.biome) is set before the kit builds; the sun the rosettes face (60) is the host's
 BIO.init({tags:'riftrim',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:ROCK_MASK,
  obstacles:OBSTACLES,ticks:tick,seed:13,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
@@ -69,7 +70,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
  const P={n:{low:K(0x5a6a3a),low2:K(0x6a7a44),for:K(0x34402c),for2:K(0x3e4a32),alp:K(0x6e7650),alp2:K(0x7e8460),rock:K(0x6e6c6a),rock2:K(0x5e5c5a)},
   s:{low:K(0x7a7458),low2:K(0x8a8062),for:K(0x4a4636),for2:K(0x564e3c),alp:K(0x4a4440),alp2:K(0x5e5048),rock:K(0x3e3a3c),rock2:K(0x56423a)},
   w:{low:K(0x5a7a34),low2:K(0x6e8a3e),for:K(0x4e5a30),for2:K(0x6a6234),alp:K(0x6a6a48),alp2:K(0x7a7052),rock:K(0x6a625a),rock2:K(0x5a524a)}}[RIM]||null;
- const SNOW=K(0xeef1f4),ICE=K(0xd0dee8),DAMP=K(0x3a3a2a),SILT=K(0x7a7660),FIELD1=K(0x9a8a44),FIELD2=K(0x6a8a3a),FIELD3=K(0x8a6a44),bed=new THREE.Color();
+ const SINTER=K(0xc8c2b4),SULPH=K(0xc8b04a),SNOW=K(0xeef1f4),ICE=K(0xd0dee8),DAMP=K(0x3a3a2a),SILT=K(0x7a7660),FIELD1=K(0x9a8a44),FIELD2=K(0x6a8a3a),FIELD3=K(0x8a6a44),bed=new THREE.Color();
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=fbm(x/24,y/24,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5);
   const wet=FC.at(FC.a.wet,wx,wz),flow=FC.at(FC.a.flow,wx,wz),rock=FC.at(FC.a.rock,wx,wz),cold=FC.at(FC.a.cold,wx,wz),sl=FC.at(FC.a.slope,wx,wz),
@@ -86,7 +87,12 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   t.copy(P.rock).lerp(P.rock2,clamp(.5+n*1.6,0,1));c.lerp(t,smooth(.35,.75,rock)*.85);
   if(FC.SF){bed.setRGB(FC.at(FC.SF.r,wx,wz),FC.at(FC.SF.g,wx,wz),FC.at(FC.SF.b,wx,wz));c.lerp(bed,smooth(.2,.6,str)*.75);}
   t.copy(P.rock2).lerp(SILT,clamp(.5+n2*1.2,0,1));c.lerp(t,tal*.6);
-  // the water's banks damp; snow, the glacier's ice
+  // THE HEAT (a station with vents, the Hearth field: geo is the ground's degrees over 100, KTHERM's): the warm disc's bare dark soil (the coal moss's own
+ // black-brown, so its thousands of small mats read as one turf, not as speckle), the sinter apron
+ // pale round each vent and sulphur on its lip. 0 on every other station
+ {const geo=LAND.geoAt?LAND.geoAt(wx,wz):FC.at(FC.a.geo,wx,wz);if(geo>.04){t.setHex(0x1c1917).lerp(K(0x2c241e),clamp(.5+n*2,0,1));c.lerp(t,smooth(.04,.2,geo)*.94);
+  t.copy(SINTER).lerp(SULPH,smooth(.8,.93,geo)*clamp(.5+n2*2.4,0,1));c.lerp(t,smooth(.55,.72,geo)*.9);}}
+ // the water's banks damp; snow, the glacier's ice
   c.lerp(DAMP,smooth(.6,.95,flow)*.55);
   t.copy(SNOW).lerp(ICE,clamp(.5+n*2,0,1)*Math.max(bar,ice));c.lerp(t,Math.max(snow*smooth(.8,.5,sl),bar*smooth(.95,.8,sl),ice)*.95);
   const k=1+n*.10+n2*.05;
@@ -178,7 +184,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
   FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));ck[k]=F.crack;rk[k]=F.strata*(1-F.snow);
   gm[k*4]=Math.max(F.pave,F.wash*.8);gm[k*4+1]=F.polyg;gm[k*4+3]=F.talus;
   if(GL){const wl=waterH(x,z);F.under=wl>-1e8&&y<wl?1:0;F.depth=F.under?wl-y:0;F.x=x;F.z=z;
-   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char);s+=v;return v;}),k1=s>1?1/s:1;   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash */
+   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char)*(1-smooth(.08,.3,F.geo));s+=v;return v;}),k1=s>1?1/s:1;   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash; nor the warm ground (geo: the Hearth field's heat) */
    for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}

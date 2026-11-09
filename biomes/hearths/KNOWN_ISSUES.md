@@ -3,7 +3,8 @@
 The kit's pages are the Hearth hold's two stations: the Cave of Crystals (`python3 build.py`, `dist/hearths-crystals.html`; PLAN.md section 18)
 and the hold's active storey (`--station hold`, `dist/hearths-hold.html`; section 19). Both build the same cave, both storeys carved, and look at
 their own storey. The life in `src/`
-is read in place by `biomes/oidong` (its station 3) and has no page here.
+is read in place by `biomes/oidong` (its station 3), `biomes/riftrim` (station 7, the Hearth field, 2026-11-09) and `biomes/geyser` (the Stills),
+and has no page here.
 
 ## The Cave of Crystals (stations/crystals, 2026-11-03)
 
@@ -13,8 +14,11 @@ is read in place by `biomes/oidong` (its station 3) and has no page here.
 - [ ] **The hold's massing is proposed.** Which chambers a loj takes (the three cooler ones round the feeders), the shelves, the night
   road and the way down are this station's proposal (PLAN.md section 18); the settlement kit and the owner decide. The records are
   `CAVE.HOLD` (export: the panel's "export hold", or `_api.hold()`).
-- [ ] **Where the page lives.** Its planned host, `biomes/riftrim`, has no build. When it gets one the station moves there as
-  `--station hearths-crystals`; its fragments read only the core.
+- [ ] **Where the page lives.** Its planned host, `biomes/riftrim`, has had a build since 2026-11-03 (six stations), and the Hearth field
+  above the hold is riftrim's station 7 since 2026-11-09 (`python3 build.py --station hearths` in `biomes/riftrim`, `dist/riftrim-hearths.html`,
+  reading this kit's `src/50` and `src/55` in place). The cave pages stay here for now: moving them to riftrim as `--station hearths-crystals`
+  and `hearths-hold` is owed (their fragments read only the core, so the move is a build-script change). The field and the hold share the vent
+  site (5.1 px 525,1400) but not yet coordinates: the field's Old Hearth is at the page's origin, the hold's box is its own.
 - [ ] **The night road stops at the page.** It is carved to the box's edge 25 m under the shelf; its run to the surface is recorded
   (`continues`). The way down reaches the active storey: a stair to a landing (a rock platform, a monolith) 1.5 m over the water.
 - [ ] **The active storey's dark crops are not drawn.** The field shelves are reserved for them (PLAN.md section 19); the crops are the
