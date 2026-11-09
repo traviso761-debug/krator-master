@@ -50,19 +50,18 @@
     "biomes/geyser/tex/sinter.albedo.webp": "add6b56cdbb35fa2ea0e87e5dba9d515159a33bb18f2af8e3294625fd8d3aa86",
     "biomes/geyser/tex/small.albedo.webp": "b7a34828a004ebeed966b9ca0c8795b250680b07480618780f6243c1779e1f43",
     "biomes/geyser/tex/st.cushion.albedo.webp": "6c744774da5a06c54aae9fc38847700e740c3cecf6f67c0fe96a6e719ba342e0",
-    "biomes/geyser/tex/st.ichu.albedo.webp": "ba3e421aab6473600b3e3fa7d7566e5ee0fa795300ca98630e2ffab866eb4d01",
     "biomes/geyser/tex/strap.albedo.webp": "430aa3766da7c02406d5fa3eded5a572eab69a31a84c85eb52266876c52bc7aa",
     "biomes/geyser/tex/streamer.albedo.webp": "32b2107a0c0302083a359dccaa8901e371ddca9b118ba8daecc888812b550214",
     "biomes/geyser/tex/wood.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
     "biomes/godshearth/KNOWN_ISSUES.md": "dbebbede31e6173c09c6bfff9d0c0e8d95b6c2a466ac76a9109cc2cca7030ef9",
     "biomes/godshearth/PORT.md": "af1bd3e30b5825be6af6575f83a189d41745b532176cddb53521865daba8ab81",
     "biomes/godshearth/build.py": "9bc1bda36290028a3f4bc48bb785f6393b6efe0bfe9256e106b96041179393c2",
-    "biomes/godshearth/stations/prismbasin/44s-host-site.js": "ec69fdf3988527374adab2591f1151e6bc0c83c53ca91de439dcdda7a6f7419e",
+    "biomes/godshearth/stations/prismbasin/44s-host-site.js": "559c5bbeff7ae8709a12ff404864f5811fe370ebe42b8f69c9c7f650bca27b1e",
     "biomes/godshearth/stations/prismbasin/47b-host-heat.js": "5be53cc81a544754b8f3e8817160aee838676088653c05ce0adae36f6093bd62",
-    "biomes/godshearth/stations/prismbasin/87-host-hearths.js": "608645122b48023916763fa39155da6a86f4a267ef51dad7a0b83fd2bd6d6a69",
+    "biomes/godshearth/stations/prismbasin/87-host-hearths.js": "cbb4195cdf8e7a60bf13c0f5b32897fea5e983a5702b62bed6eeef400adc404e",
     "biomes/godshearth/stations/prismbasin/89w-host-water.js": "7677670c6b9b36a5f02b49a147c61f96cc808973bc88dc04af7b483086c793d0",
     "biomes/godshearth/stations/prismbasin/89x-host-air.js": "a65b8b332bd60c74ef98af99404052cd6796e73d4c92bb9fcca991507ae2dec1",
-    "biomes/godshearth/stations/prismbasin/station.json": "9b5887b1bb0edbcc00a508924901fa4e4022e3afa6c71517b6a1944270be85d3",
+    "biomes/godshearth/stations/prismbasin/station.json": "7b5a64a72622530bc8547a47d93b0554189ff4f7c51cd78bb885eb61313d63c0",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
     "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
@@ -154,12 +153,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/godshearth/dist/godshearth.html": "ce2fa01bc6eefeba4b78e52f2630d840cc4570c4c039e91a97cbcc1e3b130727",
-    "biomes/godshearth/dist/godshearth.tex.geyser.js": "e98c3bbf1170e94a42c0be37c33c662f17f0b8ab00268c54cc81dcdd8d8de29d"
+    "biomes/godshearth/dist/godshearth.html": "603ef2a85ab2c2bd9572048a95768a6857f6046f644ac24579062fa79f9b2bfe",
+    "biomes/godshearth/dist/godshearth.tex.geyser.js": "65ef67c54ea29c8bf17a6dd73101ecd1ea2c7471c7e968115d203e923bf80da7"
    },
    "outputs_raw": {
-    "biomes/godshearth/dist/godshearth.html": "ce2fa01bc6eefeba4b78e52f2630d840cc4570c4c039e91a97cbcc1e3b130727",
-    "biomes/godshearth/dist/godshearth.tex.geyser.js": "e98c3bbf1170e94a42c0be37c33c662f17f0b8ab00268c54cc81dcdd8d8de29d"
+    "biomes/godshearth/dist/godshearth.html": "603ef2a85ab2c2bd9572048a95768a6857f6046f644ac24579062fa79f9b2bfe",
+    "biomes/godshearth/dist/godshearth.tex.geyser.js": "65ef67c54ea29c8bf17a6dd73101ecd1ea2c7471c7e968115d203e923bf80da7"
    }
   }
  }

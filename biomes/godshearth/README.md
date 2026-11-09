@@ -23,14 +23,17 @@ A change to the geyser kit's `src/` or field stage, or to the Hearths' `src/50` 
 The hot lake's east shore at 5.1 px 842,1394 (3,642 m; the page's datum is the lake's level): the lake in the west of the page (WATER.open, still), a
 geyser field on its sinter shore (the geyser kit: geysers, a great prismatic spring, hot pools, an acid field, the run-off's mats), and 500 m inland a
 vent line (KTHERM) with the Hearths' grove along it (`HEARTH.layout`, rim dress): hearth trees on 25-60 degC ground, the ember mat, coal moss, stokers,
-tallow, and rings of dead stalks round a dead spring. The fans open at night (`HEARTH.work`; try `#hour=22`).
+tallow, and rings of dead stalks round a dead spring. The fans open at night (`HEARTH.work`; try `#hour=22`). South of the field a spring's
+sinter mound steps down to the lake in eight rimstone pools (WATER.terraces); yareta cushions on the meadow's turf. The air is a KHAZ temperature
+field by season and hour (frost on winter nights, colder in the shore's cold-air pools), the lake steams with the cold, and lying snow (`?snow=1`)
+keeps off the warm ground.
 
 | Fragment | What |
 |---|---|
-| `44s-host-site.js` | the site: the land (`ghLand`, the shore), the lake's record, the vent line, the field's spec, the air, the take (views, checks), the ground's paint |
+| `44s-host-site.js` | the site: the land (`ghLand`, the shore, the terraces' mound), the lake's record, the vent line, the field's spec, the air, the take (views, checks), the ground's paint |
 | `47b-host-heat.js` | KTHERM: the floor's soil (+7 degC) and the vent line, baked once; the fumaroles and their heat hazards |
 | `87-host-hearths.js` | the grove and the ghost rings (`HEARTH.layout`), the checks (`GHC`) |
-| `89w-host-water.js` | the hot lake (WATER.open, WATER.draw) |
-| `89x-host-air.js` | the vent line's steam, the engine's state each frame |
+| `89w-host-water.js` | the hot lake (WATER.open, WATER.draw), the terraces (WATER.terraces, drawTerraces) |
+| `89x-host-air.js` | the air's temperature (KHAZ), the snow's bare mask, the steam groups (vents, lake), the engine's state each frame |
 
 Stations 2-4 (the Grove, the North Wall, the Spillway: PLAN.md section 7) are not written.

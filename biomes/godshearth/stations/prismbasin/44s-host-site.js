@@ -17,7 +17,7 @@
 //   THE DEAD      a dead spring south-east, its vent gone cold: rings of dead stalks standing where the heat was (the plan's ghost rings)
 //   THE TERRACES  south of the field, a spring's sinter mound with eight rimstone pools stepping down 6 m to the lake (WATER.terraces, 89w; the
 //                 plan's "terraces stepping down to the lake", Mammoth's and Pamukkale's travertine on Earth)
-//   THE MEADOW    the floor's frost-hardy turf between: bunch-grass tussocks and hard cushions (the geyser field stage's FIELDFLORA: ichu, yareta),
+//   THE MEADOW    the floor's frost-hardy turf between (the ground's paint) and hard cushions on it (the geyser field stage's FIELDFLORA: yareta),
 //                 off the warm ground, the sinter, the run-off and the beach
 const GH_LAKE={level:0,abs:3642,name:'The hot lake (Godshearth; its name is the owner\'s: PLAN.md section 9)'};
 // the shore: x of the waterline at z, wandering 90 m on a long wave and 40 m on core/rand's noise
@@ -68,7 +68,8 @@ const STATION_SITE={region:'Godshearth: the hot lake\'s sinter shore (station 1,
   springs:{n:14,r:[2.5,7.5],temp:[.4,1],big:38,minerals:['sinter','sinter','iron','sulfur'],names:['The great prismatic spring on the lake\'s shore (TBD)']},
   acid:{n:1,r:80,mud:6,fumaroles:10},fumaroles:{n:4},runLen:560}),
  passes:[],floor:false,
- flora:{ichu:{cell:3.2,R:1250,accept:(x,z)=>ghMeadow(x,z)*.42},yareta:{cell:9,R:1250,accept:(x,z)=>ghMeadow(x,z)*.16}},   /* none of the geyser kit's hot-country trees or floor: the floor is the high meadow's turf; its life is the Hearths' (87) */
+ /* the yareta cushions only: the geyser kit's ichu is pale straw on the library (st.ichu), white dots on this dark turf (KNOWN_ISSUES.md) */
+ flora:{yareta:{cell:7,R:1250,accept:(x,z)=>ghMeadow(x,z)*.22}},   /* none of the geyser kit's hot-country trees or floor: the floor is the high meadow's turf; its life is the Hearths' (87) */
  take:{build:'godshearth',hour:15,guards:false,title:'Krator biome — Godshearth: the hot lake (station 1)',
   types:{'hearths/field':'pass','field/flora':'pass'},
   exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','water'],
@@ -79,7 +80,7 @@ const STATION_SITE={region:'Godshearth: the hot lake\'s sinter shore (station 1,
    return{'The hot lake\'s shore':fieldView(40,120,.35,900,90,0),'The great prismatic spring':[s.x+s.r+70,s.level+80,s.z+s.r+60,s.x,s.level,s.z],
     'The shore geyser':fieldView(g.x,g.z,.9,g.H*3+60,6,g.H*.5),'The hearth grove on the vent line':fieldView(m[0],m[1],2.4,260,14,4),
     'A hearth tree':[near.x+9,near.y+2,near.z+7,near.x,near.y+near.H*.85,near.z],'Ghost rings round the dead spring':fieldView(GH_DEAD.x,GH_DEAD.z,2.6,170,5,1),
-    'The terraces down to the lake':fieldView((GH_TER.A[0]+GH_TER.B[0])/2,(GH_TER.A[1]+GH_TER.B[1])/2,1.25,130,18,2),
+    'The terraces down to the lake':(function(){const T=GH_TER,cx=T.A[0]+55,cz=T.A[1]-35,tx=T.A[0]+(T.B[0]-T.A[0])*.6,tz=T.A[1]+(T.B[1]-T.A[1])*.6;return[cx,terrainH(cx,cz)+26,cz,tx,T.lv(T.L*.6).y,tz];})(),
     'Across the lake':fieldView(shoreX(0)+40,0,0,60,4,-2),'From above':[1100,900,1300,100,0,-100]};},
   erupt:{'The shore geyser':'g0'},
   checks:(add,P)=>{const F=window._field||{trees:[],counts:{}};
@@ -88,13 +89,13 @@ const STATION_SITE={region:'Godshearth: the hot lake\'s sinter shore (station 1,
    add('the ember mat on 60-95 degC ground only',GHC.ember(P));
    add('no hearth tree in a spring, on the sinter or in the lake',GHC.wet(F.trees));
    add('the engine: open at night, shut at noon, open in an eclipse (HEARTH.work)',GHC.work());
-   add('the meadow\'s tussocks and cushions off the warm ground, the sinter, the springs and the beach',GHC.meadow(P));
+   add('the meadow\'s cushions off the warm ground, the sinter, the springs and the beach',GHC.meadow(P));
    add('the air: frost on a winter night, mild by day, the cold-air pools colder (KHAZ temperature)',GHC.air());
    add('the terraces: every pool on its tread, each lower than the last, the land holding it',GHC.terr());
    add('the hot lake drawn, its level the model\'s 3,642 m',{ok:!!(window._water&&window._water.lake),detail:window._water&&window._water.lake?'a still WATER.open at 3,642 m over the shore\'s west':'no lake'});},
   negatives:(add,P)=>{add('no stokers',GHC.field(Object.assign({},(window._field||{}).counts,{stoker:0})));
    add('a hearth tree on cold ground',GHC.trees([{x:-900,z:900,heat:7}]));add('an ember mat on cool ground',GHC.ember([[-900,0,900,'biome:hember']]));
-   add('a tussock on the vent line',GHC.meadow([[GH_VLINE[1][0],0,GH_VLINE[1][1],'biome:fichu']]));add('a terrace pool over its rim',GHC.terr(1.5));add('an air with no night',GHC.air(()=>12));
+   add('a cushion on the vent line',GHC.meadow([[GH_VLINE[1][0],0,GH_VLINE[1][1],'biome:fcushion']]));add('a terrace pool over its rim',GHC.terr(1.5));add('an air with no night',GHC.air(()=>12));
    const s=LAYOUT.springs[0];add('a hearth tree in the great spring',GHC.wet([{x:s.x,z:s.z}]));add('an engine open at noon',GHC.work(()=>1));}}};
 // THE GROUND (84, the field stage's STATION_GROUND): the floor's turf (the `grass` channel, everywhere the kit's paint leaves it), the washed glass-bead
 // sand of the shore (the `sand` channel: Pele's amber, ochre and black, PLAN.md section 2), the coal moss's dark ground on the warm discs (47b's heat),
