@@ -556,6 +556,10 @@
    "bytes": 1208278,
    "sha256": "b3618758c70692ecb2ceeba6fe4ae346b13fcadef27351a989e38495284f6e49"
   },
+  "biomes/twins/dist/twins.html": {
+   "bytes": 2253503,
+   "sha256": "4ecf09e10f31552312f35290418d8711789f2a45d3e2fe8f317da562ab33c46b"
+  },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "bytes": 8387583,
    "sha256": "9fe4dc1394ffc2355afbcc30f717c5e63eb072597a0f2527d69b1859340059ca"

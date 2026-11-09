@@ -1,0 +1,113 @@
+{
+ "build": "twins",
+ "note": "The Twins kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-twins-species.js, BIO.libSwap) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib). Every station (BASE_TEX in build.py): groundDetail a grey multiply on the ground (ground.cinder); rockFace the titanium basalt's grain on every face, grey under KSTRATA's tibasalt colours (rock.basalt.titanium, as the Godthrone's: the same rock); rock the talus blocks and stones (the same grain, grey under the instance colour); obsidian the obsidian boulders' glassy grain (stone.obsidian, grey under the near-black); snow the lying snow in the hollows and the lee (ground.snow.drift, full colour). Station 1 (the pyroduct, station.json \"tex\"): scree the frost-shattered cinder and scoria of the sprint's slope (ground.scoria, a KGROUND layer); lichenCrust the rock lichens on the scree's stones (ground.lichen.crust); fern the fumarole-ferns' frond card round the skylight (card.fern.green, the sheet's middle cell, grey: the instance colour greens it). Run python3 tools/textures/pack.py biomes/twins after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "groundDetail": {
+   "lib": "ground.cinder",
+   "scale": [
+    5,
+    5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.2
+   },
+   "size": 256,
+   "mapOnly": true
+  },
+  "rockFace": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "mapOnly": true
+  },
+  "rock": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "mapOnly": true
+  },
+  "obsidian": {
+   "lib": "stone.obsidian",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55,
+    "contrast": 1.2
+   },
+   "mapOnly": true
+  },
+  "snow": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "scree": {
+   "lib": "ground.scoria",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "lichenCrust": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  }
+ }
+}
