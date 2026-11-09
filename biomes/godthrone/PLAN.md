@@ -16,7 +16,8 @@ Owner's brief (2026-10-26):
 - **The bloodfalls**: an arctic highland in the Godthrone's ice belt where iron-rich rock meets glacial meltwater, and
   the blood river that flows down from it (section 4; the candidate is Qol Ḍrāi).
 
-**Status (2026-10-26): station 1 (the summit vent) built** on `claude/biome-rebuild`'s core, from this plan's proposals as
+**Status (2026-11-04): every planned station built** (the rebuild turn, in the cloud: stations 3-9 on map 5.1, section 7a; the universal
+set and the core adoption, section 9b; GPU verify owed to the coordinator). **Earlier status (2026-10-26): station 1 (the summit vent) built** on `claude/biome-rebuild`'s core, from this plan's proposals as
 written (the owner asked for it: section 9a has the core adoption, `PERF.md` the measurements, `KNOWN_ISSUES.md` what is
 left). Stations 2-6 and the rest of the plan still await the owner; the questions met on the way are added to section 10.
 
@@ -227,6 +228,39 @@ from the halos' edges by parties who climb on bottled air or Ancient breathing g
    meltwater channels on the glacier above, the rust terraces and the red pool, the blood river leaving down Qol Ḍrāi
    with the first riverweed in its rapids, the Vale of Xanadu far below.
 
+### 7a. The station list on map 5.1 (the rebuild turn, 2026-11-04; pushed before building, for the owner's review)
+
+The owner widened the turn (relayed 2026-11-04): build every planned, not-yet-built Godthrone station as a `--station` page on the
+universal set, the Gills' two Godthrone stations (`biomes/gills/PLAN.md` section 11, items 1-2) and the lava-tube link toward Godstep
+among them. Sites read from map 5.1's rasters (`tools/scale-model/model/data/h.png`, `c.png`, `p.png`; 2 km a px; air 1.6 atm x
+e^(-h/8 km)). **px are on the 5.1 canvas** (the old canvas + (272, 330)). Heights are the raster's cell, not the page's.
+
+| # | Station | Page (`build.py --station`) | 5.1 px | Height | Air | Class | State |
+|---|---|---|---|---|---|---|---|
+| 1 | the summit vent | `godthrone.html` (src/) | 849.9,1262.6 (the 4.23 vent) | 21.2 km (the pit) | 0.11 | O | built 2026-10-26; rebuilt this turn |
+| 1b | the caldera wall | `godthrone-wall.html` (`wall`) | the same frame, the wall 9.2 km off | 22-25 km | 0.07-0.1 | O | built 2026-10-27; rebuilt this turn |
+| 2 | the high flank | `godthrone-flank.html` (`flank`) | 988,1458 (4.22's flank vent; 5.1: 11,080 m) | 11.1 km | 0.40 | O | built 2026-10-27; rebuilt this turn |
+| 3 | the orange belt | `godthrone-orange.html` (`orange`) | 736,1325, 7 km south-west of Pluton (743,1328, 9,650 m) | 8.35 km | 0.56 | HF | **new** |
+| 4 | the basal escarpment | `godthrone-scarp.html` (`scarp`) | 752,1213, mid-scarp on the south-western bay side (9.5 km at 761,1217 to 4.8 km at 739,1206, ~45 km) | 7.07 km | 0.66 | HT | **new** |
+| 5 | the airless rim | `godthrone-rim.html` (`rim`) | 532,1285, the south-western Outer Wall's crest nearest the Godthrone (a crest cell: no higher ground within 8 km) | 10.86 km | 0.41 | O | **new**; see the note below |
+| 6 | the bloodfalls | `godthrone-blood.html` (`blood`) | 866,1442, the ice belt's southern edge at the head of Qol Drai (the closed lake 843,1398, 6,415 m, 23 km north-north-west) | 5.38 km | 0.82 | EF | **new** |
+| 7 | the Red Gill (gills 1) | `godthrone-gills.html` (`gills`) | 862,1438 (`biomes/gills/PLAN.md` section 5) | 5.44 km | 0.81 | EF | **new**; one frame with station 6 (the falls 11.3 km south-east, on the gill's skyline), as 1 and 1b share one |
+| 8 | the Red ladder (gills 2) | `godthrone-gills-ladder.html` (`gills-ladder`) | 900,1450 to 940,1450 (the page stands at 920,1450, 8.54 km) | 7.2-8.7 km | 0.65-0.54 | EF-HF | **new** |
+| 9 | the Ilmenite Pillar Vault (the tube) | `godthrone-tube.html` (`tube`) | 858,1182 (`tube_god_n_12`'s `cav_god_n_ilmenite`: 290 x 175 m, 54 m high, sealed), its West Godstep Rim Cross-Conduit leaving north-east toward Godstep's vent pit (892.8,1145.2, 2,700 m, 85 km) | 12.15 km at the surface, the vault 58 m down | 0.35 | O | **new**: the lava-tube link toward Godstep (`biomes/godstep/PLAN.md` "The tubes and the rilles") |
+
+Notes for the owner:
+- **The rim (5)**: no wall kit has a built or planned station within 200 km of a 10-12 km crest (nwouterwall's station 1 is 248 km
+  from the nearest, riftrim's 222 km), so section 7's "best where it stands over a station of a wall kit" cannot be met. The site is
+  the crest cell on the south-western Outer Wall nearest the Godthrone's airless body. A different crest is a one-line change.
+- **The scarp (4)**: on 5.1 the escarpment falls ~4.7 km over ~45 km (about 6 degrees on the raster's 2 km cells); the page draws its
+  steepest few kilometres as the cliff of stacked flows the plan describes, on the raster's mean slope.
+- **The bloodfalls (6) and the Red Gill (7)** share one frame, so each page shows the other on its skyline at the model's distance.
+- **The tube (9)** is sealed (`skylight_m` 0) and habitable on the record; the page is the vault and the first few hundred metres of
+  the conduit toward Godstep, lit by the explorer's lamps, with the surface over it as the arrival view. The deep link on to
+  Pluton (`tube_god_07`'s branch) stays lore, as Godstep's plan has it.
+- Not stations here: `tube_god_nw_11`'s Vacuum Glass Cathedral (13.8 km, a skylit gallery) and `tube_god_se_13`'s Sub-Glacial
+  Sulfide Dome are candidates for a later turn; the owner's call.
+
 ## 8. Textures
 
 Already in the library: `ground.lava.aa`, `ground.lava.crust`, `ground.lava.veins`, `ground.obsidian`,
@@ -293,6 +327,34 @@ list: `KRELIEF.meander`, `KRELIEF.rille` (the sinuous rille from the main old ve
 `KRELIEF.apply`. The flows: **core/terrain KLAVA.bake** (the lava-flow module, merged from `claude/klava`): four eruptions frozen at build time
 (`stations/flank/bake-flows.js`, committed as `flows.json`, re-baked when its inputs change), levees and central channels
 sculpted from their edges. No hazards of its own (the ambient bridge only: 0.39 atm, about -44 C).
+
+## 9b. The rebuild turn (2026-11-04, in the cloud): core adoption, the universal set, stations 3-9
+
+Written before the fragments, revised as built. Every page (`src/` plus each station's folder) takes:
+
+| Item | Taken | How, or why not |
+|---|---|---|
+| **KGROUND's relief** (`core/README.md`, "Adopting KGROUND's relief"; `core/terrain/GROUND.md`) | yes, every page | `84-host-ground.js`: `relief:{bump:.075, cavity:.8, mesh:1, strata:.45, strataW:<the steep>}` on the MeshStandard ground (HANDOFF-REBUILD.md's adoption list), `KGROUND.cavityMesh` on every ground mesh (base and insets). **`?kgrelief=0`** draws the old ground, byte for byte, for the owner's before-and-after. No `tri`: the faces already take KSTRATA's beds on their own plane |
+| **KSHADOW** (`core/shadow`) | yes, **off at page load** (the owner, 2026-11-03) | `src/89zz-host-shadow.js`: `?shadow=1` attaches it; the far field draws its own light. Not measured here (no GPU): the coordinator's GPU lane measures it |
+| **`rock.basalt.titanium`** (delivered 2026-10-27) | yes | `materials.json` `rockFace` and `rock` (the faces' grain, the talus and stones) in place of the `rock.basalt.flowbanded` stand-in |
+| **The tuff aprons** (`kits/resources/ROCK-PROPOSAL.md`, 3) | yes, downwind | `src/35t-godthrone-strata.js` adds `tibasalt-ash` (ash partings and ignimbrite benches between the flows; the ash altered with the beads under the line): the high flank (2), the Red Gill and the bloodfalls (6, 7), the Red ladder (8). The upwind stations keep `tibasalt` (the tube, 9) |
+| **The crater-wall megabreccia** (ROCK-PROPOSAL.md, 1) | yes, the rim (5) | core's `megabreccia` recipe under the overturned flap; KGROUND's `clast` kind on the regolith-thin ground |
+| **`BIO.flareJoin`** | no | nothing on these pages has a limb leaving a trunk (the Red Gills' rustwood is a trunk and caps) |
+| **`WATER.mirrorSwitch`** | no | the only still is the bloodfalls' pool, ~26 m across (BACKPORT.md: the kit's largest still where it is large) |
+| **The water's plume and foam fix** | no | no river meets a lake or the sea on any page; the blood river leaves the map |
+| **`KHOOK.warp`** | nothing to do | the empty slot rides on every KGROUND/KHOOK material already |
+| **KSTRATA, KFAR, KHORIZON** | yes | as stations 1-2; a new station's far country is **scale model 5.1's own relief** (`tools/region.py` writes `stations/<s>/region.json`, inlined as `REGION_DATA`; `src/45a5-host-region.js` blends the station's model into it past ~5.4 km): the Vale 3.7 km under the bloodfalls, the crater from the rim |
+| **The Gills' core pieces** (HANDOFF-REBUILD.md, "Taking it, the Gills") | yes, stations 7-8 | `biomes/gills/src/44-gills-life.js` read in place; `KSTACKS` chimneys (Red form: one mouth, a flare at the lip, 30-85 m), `KSTRATA.lamina` (the Red country, an eruption's glass band), `BIO.animMat` breath, `ATMOS.smokeGroups` steam, `KHAZ` pull and pool (the throats' in-breath, the sumps). The drawing is ported from xanadu's (`stations/gills/87-host-gills.js`) |
+| **KCAVERN** | yes, the tube (9) | the vault a `C.hall`, the two tubes `C.tube`s, cell 1.5 m; lit by lamps only (a sealed vault) |
+| **core/water ext/54** | yes, the bloodfalls (6) | `WATER.underIceFall` (the bloodfalls kind), `drawBloodFall`, the `bloodriver` look, `WATER.weed` / `drawWeed` |
+
+**Shared fragments changed** (every page): the field cache and `GODT.groundAt` take eight station classes (`palag`, `ice`, `rust`, `breccia`,
+`snow`, `tuff`, `pave`, `crust`; 0 where a model does not set them), the painter draws them and a station adds KGROUND layers on them
+(`STN.layers`); a station names the texture families it takes (`station.json` "tex": the others stay out of its page), its own reads
+(`"reads"`), a shared kit's pack (`"packs"`), its region (`"region"`); `STN.items`, `STN.counts`, `STN.sky`, `STN.viewHour`, `STN.rockFace`;
+`STATION_CHECKS` / `STATION_NEGATIVES` / `STATION_VIEWS` / `STATION_FLOOR` / `stationBuild` hooks in the take and the build. New items:
+split stones and the endolith band (from 9 km down), ventifacts (the rim). Station 1-2's draws are unchanged by them (the new passes are
+gated on fields that are 0 there).
 
 ## 10. Open questions
 

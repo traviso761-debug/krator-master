@@ -1,7 +1,8 @@
 # biomes/gills: the API (the shared life of the Red and the White Gills)
 
 `biomes/gills` has no page. Its fragment `src/44-gills-life.js` is read in place by the host kits' stations (`PLAN.md` sections 0, 11, 13):
-`biomes/xanadu --station gills` today (its `stations/gills/station.json` "reads"), the catch's three stations and the godthrone's two later.
+`biomes/xanadu --station gills` (its `stations/gills/station.json` "reads"), `biomes/godthrone --station gills` and `--station gills-ladder` (the Red
+dress, 2026-11-04: its drawing a port of xanadu's, `biomes/godthrone/stations/gills/87-host-gills.js`), and the catch's three stations later.
 The fragment is `[G data]`: plain records and pure functions on core/rand (`KRAND`), no THREE, no DOM; it runs in node as on a page.
 The drawing (meshes, materials, the breath's shaders, the steam, the hazards) is the host's: `biomes/xanadu/stations/gills/87-host-gills.js` is the
 worked example.
