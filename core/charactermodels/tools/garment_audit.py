@@ -1,7 +1,7 @@
 # The garment audit: every outfit, drawn in flat colours by what each pixel is, and the pixels counted, so a gap or a
 # layer through a layer is a number rather than a judgement on a shot (HANDOFF-GARMENT-DEFECTS.md).
 #   python3 tools/garment_audit.py <outdir> [--page dist/cosmetic-lab.html] [--clips idle:2,walk:0.3,...] [--bodies a,b]
-#       [--match substring] [--baseline] [--morph '{"height":1}'] [--shards n] [--shard i] [--pre 'javascript']
+#       [--match substring] [--known] [--morph '{"height":1}'] [--shards n] [--shard i] [--pre 'javascript']
 #   python3 tools/garment_audit.py --report <outdir>
 #   python3 tools/garment_audit.py --baseline <outdir>      write tests/garment-audit.json from a whole sweep
 #   python3 tools/garment_audit.py --check <outdir>         fail if a sweep is worse than it (HANDOFF-GARMENT-DEFECTS.md)
@@ -160,9 +160,10 @@ def outfits(bodies, match):
                 name = '%s-%s-%s' % (b.split('_')[1][0], p['id'], tier)
                 if not match or match in name or match in ' '.join(str(v) for v in o.values()):
                     out.append({'name': name, 'body': b, 'armour': o})
-    if '--baseline' in sys.argv:
+    if '--known' in sys.argv:
         # the outfits tests/garment-audit.json knows (66), not every outfit peoples.json has grown to (220 on 2026-11-08):
         # a change is judged against the baseline, and a sweep of 220 took four Chromiums past the machine's memory
+        # (--known, not --baseline: that is the flag that writes the baseline, and the clash once emptied it)
         base = json.load(open(os.path.join(HERE, 'tests', 'garment-audit.json'), encoding='utf-8'))
         out = [o for o in out if o['name'] in base]
     return sorted(out, key=lambda o: (o['body'], o['name']))
