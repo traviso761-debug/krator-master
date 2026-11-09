@@ -11,10 +11,6 @@ Built output (never open it; edit `src/` and rebuild): `dist/islanders.html`
 Build: `cd kits/islanders && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
-
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
-
 ## src/
 
 | Fragment | KB | Sections (line) |
@@ -23,7 +19,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `26k-kit.js` | 7 |  |
 | `28-is-paint.js` | 9 |  |
 | `31-alt-takes.js` | <1 |  |
-| `37-wk-rec.js` | 2 |  |
 | `40-is-kit.js` | 15 |  |
 | `41-is-roof.js` | 8 |  |
 | `42-is-dress.js` | 4 |  |

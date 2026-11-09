@@ -1,5 +1,6 @@
-// ---------------------------------------------------------------- probe (window._api): everything a headless check needs
-window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
+// ---------------------------------------------------------------- the set's probe fields: what a headless check needs, handed to core/host's probe
+// (95-host-probe.js puts them on window._api with its own: 99-host-take.js passes PA_API as the take's api; 2026-11-09)
+const PA_API={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
  // footprint: measured world-space bbox of each placed site against its declared w x d (rec.decl: the def, or its o.size variant; a site turned a quarter swaps w and d)
  footprints(){return REG.map(r=>{const D0=r.decl||DEFS[r.key];const q=Math.abs(Math.sin(r.ry||0))>.7;const D=q?Object.assign({},D0,{w:D0.d,d:D0.w}):D0;   /* a quarter-turned site (a compound slot) swaps w and d */const bw=r.bbox.mx[0]-r.bbox.mn[0],bd=r.bbox.mx[2]-r.bbox.mn[2],bh=r.bbox.mx[1]-r.bbox.mn[1];
   const cx=(r.bbox.mx[0]+r.bbox.mn[0])/2-r.x,cz=(r.bbox.mx[2]+r.bbox.mn[2])/2-r.z;
@@ -27,3 +28,4 @@ window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
  plants(){const by={};for(const p of PLANTS.list){const k=(p.key||'?')+' '+p.kind;by[k]=(by[k]||0)+1;}return {total:PLANTS.list.length,by};},
  tags(){return REG.map(r=>({key:r.key,cls:r.cls,tags:r.tags}));},
  kitCoverage(){const placed=new Set(REG.map(r=>r.key));return Object.keys(DEFS).filter(k=>!placed.has(k));}};
+window._api=PA_API;   /* 91f-furnish.js adds _api.furniture to it before the take (the bundles' copy of 91f writes the same) */

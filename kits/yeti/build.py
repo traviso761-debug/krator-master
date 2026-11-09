@@ -89,7 +89,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
 # The forest-steppe row's FLORA (PLAN.md section 9, Y6): biomes/nwouterwall's kit with core/space and core/biome, READ IN PLACE (as
 # settlements/highlands' Roketstad reads nhighlands) under slot names in the 93b-bio- band: after the scene (90) and the world's first
 # build (92), round the kit's own host binding (src/93b-bio-45-yt-init.js before the biome's fragments, src/93b-bio-80-yt-flora.js after

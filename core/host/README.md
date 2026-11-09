@@ -27,6 +27,7 @@ Godot (the clock it owns is `core/clock`, which is). A build's other fragments r
 | `97-host-minimap.js` | the minimap (M) filled from the records and the ground's relief, through core/minimap's `KMAP` (the panel stays in `core/minimap/88a` while Voth reads that folder) | `core/minimap/88a` |
 | `98-host-edit.js` | edit modes: select, place, plant, move, turn, remove (B; Delete, M, Q / E, Ctrl+Z), and with `o.edits.ways` a way mode (a street painted point by point, an ADD of an infrastructure way), every edit a `core/edits` op previewed through the build's world adapter; an op the build can only apply when it is made is marked and applies on reload; save to `<build>/edits.json`, export, import, a draft per browser | `58-vc-tools.js` 137-378, `59-vc-flora-edit.js` |
 | `99-host-cutaway.js` | the cutaway (X): five clipping planes on a unit's box above the storey cut, the storey bar (] [ PageUp PageDown, Shift + wheel); the planes are set on the first cut only; a build may pick the unit X opens (`pick`), word the bar (`bar`) and hand a unit that sets no box (`clip: false`, cut its own way in `show`); `KHOST.cut.ensure()`, `.box()`, `.paint()` | `56-vc-interiors-host.js` 222-318 |
+| `92k-host-keys.js` | opt-in (`host.KEYS`; it joins `SHELL` at the next all-builds rebuild): **the one key map** (below): `KHOST.KEYMAP`, `KHOST.std(id, on)`, `KHOST.standard(o)` (a build names its controls by id and gets the standard button, words and key), the keys card (? or the Keys button in the bar), L for the polygon tool, the modules' buttons renamed to the standard words | `kits/zeijani/src/92-camera.js` (retired 2026-10-18) and the conventions the takes had grown: N night, E door, X cut-away, F walk |
 | `host.py` | the file lists (`SHELL`, and `FULL`: the shell, 93 to 99, `core/edits`, `core/space`, `core/minimap`), `resolve(PATH)` for a `build.py` (it adds core/shader whatever the list), and `edits_js(dir, build)`: a page's `edits.json` (or a newer browser draft) as `KHOST_EDITS` | |
 | `example/` | the reference for the whole interface: a toy economy on core/simulation (its own test's world) in three.js, every piece above on it; `python3 build.py`, `python3 check.py` (14 checks, each with a negative) | |
 
@@ -148,6 +149,38 @@ when there is one), G fly to the pin, Esc lift the pin. Mouse: drag orbit (walki
 it). Each panel folds to its title, remembered per browser and build (`localStorage['khost-panels:<build>']`, wrapped in
 try/catch). `?chrome=0` hides every panel (a build's own element joins them with the class `khost-chrome`); `#errs` still
 shows an error. `KHOST.chrome(on)` does the same from a script.
+
+## The one key map (`92k-host-keys.js`; TODO.md, Viewers)
+
+Every viewer answers the same keys with the same words. A build takes `host.KEYS` beside the shell and hands its controls
+by id: `KHOST.take(KHOST.standard({..., std: {night: {on, state}, cutaway: fn, door: fn}}))`. The button is
+`KHOST.std(id)`'s (`Night (N)`, `Cut-away (X)`), the key is bound unless the build's own `keys` take it, and `state()`
+paints the button. The card (`?`, or the Keys button beside the title) lists what this page answers: the camera's keys, the
+modules on the page, the build's standard controls, then its own keys (`o.keyNames {key: words}` names them).
+
+| Key | Name | What | Who answers it |
+|---|---|---|---|
+| W A S D | Move | fly (walking: walk); Shift faster, Ctrl or Alt slower | the camera (90) |
+| Q / E | Down / up | fly down and up (Space up); E is the door where the page has doors | the camera |
+| F | Walk | first person on the ground and the `core/walk` floors, steps and stairs; blocks stop you (from the pin when there is one) | the camera, with `walk: KWALK` |
+| G, Esc | Fly to the pin, lift it | double-click the ground drops the pin | the camera |
+| X | Cut-away | the building nearest the view storey by storey where the page has units (99), else the build's own cut-away | 99, or `std.cutaway` |
+| [ ] | Storey | the cut-away a storey down or up (PageDown / PageUp, Shift + wheel) | 99 |
+| U | Interiors | plan and furnish every building that has an interior set (`kits/interiors`) | `std.interiors` (core/engine: reloads with `?interiors=1`) |
+| E | Door | open or shut the door in reach | `std.door` (core/door's `KDOORHOST.toggleNear`) |
+| N | Night | night: lamps, fires and windows lit | `std.night` |
+| (button) | Shadows, Labels | the sun's shadows; the names over the buildings | `std.shadows`, `std.labels` |
+| I | Inspect | the hover tip; a click names what is under the pointer | 93 (a click: every page) |
+| L | Polygon tool | Polygon, then Path, then back to Inspect | 94 polytool |
+| P, M, O, B | Marks, Minimap, Stocks, Editor | | 94 marks, 97, 93 stocks, 98 |
+| ? | Keys | the card | 92k |
+
+A build key that means something else on its page (Noah's Regret's C for its own cut cycle and T for the tip) is listed
+under "this page" on the card; record the clash in its `KNOWN_ISSUES.md`. **Adopted:** the building-kit engine
+(`core/engine`, every kit on it: Scyvoi, Ash and Desert Nomads, Eternian, Islanders, Lizardmen, Yeti, Resources). **To adopt:**
+every other take: list `khost.KEYS` and pass `std` for the controls it already has (the biome kits' Night buttons, Ys's N,
+Girder's and Mav's Refuge's E, Metropolis's X); the kit sheets that still carry their own camera (kits/ancients, kits/port and
+biomes/dambasins's copy, kits/post-apoc, kits/ringsea, the catalog engine's pages) move onto the host first.
 
 ## The verify contracts kept
 
