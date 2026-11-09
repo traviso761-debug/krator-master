@@ -34,10 +34,16 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 `test-fire.js` (52, unchanged).
 
 **Not done this turn, and why** (PLAN-STATIONS.md says more):
-- [ ] **The N/S split and station `south`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim` (J4-J6, not built) whose
-      se-rim species it takes; the black mallee is still a proposal. The page keeps its name until `south` exists.
-- [ ] **KFIRE (H3).** `core/biome/test-fire.js` proves KFIRE against this kit's `52` loaded in place; the move needs that test changed
-      first (a core change: the test would take a frozen copy of `52`, or its golden grids).
+- [ ] **The N/S split and station `south`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim`. Savannarim is built on
+      `claude/hyperjungle-lands-cloud` (2026-11-09, not merged; no GPU verify yet): it vends the se rim's rust miombo and incense through
+      `SAVRIM.builders` (`make`/`grow`, so `BIO.kin` grows them) and has the rain rose; it reads this kit's `50` and `55` in place (this
+      turn's changes there are guarded: `BIO.host.seasons`, `BIO.host.treeScale`, the flare and impostors all optional). `south` can be built
+      on that branch once it merges (or on a merge of it here); the black mallee is still a proposal (PLAN-LANDS question 7).
+- [x] **KFIRE (H3), 2026-11-09 (the owner asked for the core test change):** `src/52` is an adapter onto core/biome's KFIRE, handing it
+      the kit's own burnability (BIO fbm patch), edge warp and older fires (drawn as before, `old:0`), so the page keeps its fires. The
+      original fragment is frozen as `core/biome/ref/craterdry-fire-52.js.txt`; `core/biome/test-fire.js` reads it as the reference and
+      now proves the adapter gives its grids, lookups, shares and live fire bit for bit (33 pass). Moving to KFIRE's portable defaults
+      (KRAND noise, hashed old fires: what Godot reproduces) would change the page once; not done.
 - [ ] **Wadi, talus, tibasalt strata**: the row's other kinds; the strata are S's (`south`). The mounds are on `edge`, the pans on `salt`.
 - [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
       it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
@@ -81,8 +87,12 @@ with no station they are not taken, and station 1 runs as before.
       `edge`: k-guilin exports no `make`/`grow` for its trees and no function for one floor plant (k-guilin's turn); nwbay's **cinder pine**
       on `salt` as the row's cousin ("upright and unsheared"): its builder always leans and shears to the lee, so the cousin needs a habit
       option in nwbay's B[10] (nwbay's turn); the **Steampits' geyser field** reaching into `salt` (the geyser kit's run-off and sinter
-      apron: a station of its own size); **the dry season driving the dust** (core/atmos's air load takes a storm, not a season: a core
-      option).
+      apron: a station of its own size).
+- [x] **The dry season drives the dust** (2026-11-09; a new core file, `core/atmos/fx/89-atmos-fx-dustseason.js`, opt-in, with
+      `test-dustseason.js`): the season's share (a quarter in the wet, all at the height of the dry; core/clock's season at the page's day
+      and hour) scales the air's local dust every frame and the dust's mask at each sprite re-bake; a storm is not scaled. On all three
+      pages (`89a`, `?dustseason=0`). A new file rather than an option in `89-atmos-fx-airload.js`: that file reaches 34 pages, which would
+      all need rebuilding.
 
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
