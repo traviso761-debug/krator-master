@@ -2,6 +2,55 @@
 
 Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
+## The final rebuild (pair 12, 2026-11-09; a cloud session: built and linted, NOT verified on a GPU)
+
+Branch `claude/rebuild-crater-drylands-cloud`, from `claude/integration-b91c04` (b4edff31, the sky's `giant` from `SKY.legacy`, kept).
+`PLAN-STATIONS.md`, "Core adoption (pair 12)", has the table. Station 1 only; every change in `src/` and `build.py`.
+
+**What changed.**
+- `build.py` on the universal set's lists: core/biome 31b (the leafset: `check_assembly`'s MISSING `BIO.leafOn`/`leafQ` gone), 31j, 32, 34,
+  41, 44; core/terrain 43 KGROUND, 44 KFAR, 45 KHORIZON with their host halves; core/shadow; core/hazard; core/atmos's height fog, rain cover,
+  lightning, particles, the wind's dust and the air's load; core/water ext 56 and 57; `khost.FULL` (the whole interface and its edit layer);
+  `--station` (no station yet); LF writes; the pack from the shared `tools/textures/matlib_pack.py` (it keeps a card sheet's `cell`).
+- **Trees (55):** `BIO.flareJoin` on the six limb tubes (the mallee's limbs, the pines' and the gums' branches, the aloe's and the Joshua's
+  forks, the pincushion's arms; not the boles from the ground). **Octahedral impostors** for the far LIVING trees of the eight species over
+  7 m (mallee, pillar, frill, parasol pine, ghost gum, tree aloe, Joshua, pincushion), baked from the hero nearest the middle drawn unburnt
+  (its copy's age 20). A far tree the fire left bare or black keeps its charred pole and blob (the blob's own rule), so the mosaic still
+  reads from afar; the small four keep their blobs. `?diet=0` is the old far tier. `regTree` registers nothing during the bake.
+- **Ground (84):** the five library layers on KGROUND (hex tiling, distance scale, height blend) at the old weights, strengths and tints;
+  the char's ash drifts and greying kept as a pass after the layers; the carpet's macro noise sampled once (`cdM1`, `cdM2`) for the granite
+  patches and the char. `?kground=0` is the old hand-tiled mix. KGROUND's distance reads `kEye` (korona's redirect; see below).
+- **87 (new):** KFAR, the floor to 12 km in red soil, straw, olive and a few dark burns (`?far=0`); KHORIZON on the ground and, after the
+  bake, on the flora (`?hz=0`).
+- **88:** the field contract (`BIO.env`), the impostors' look and bake (`IMP_GAIN` 2.4, `?impgain=`), the horizon, **KSHADOW off by default**
+  (`?shadow=1`).
+- **89a:** height fog (`?hfog=0`), the rain cover, the wind's dust off the fresh char and the washes (none off the granite or the seep), the
+  air's load with a dust storm on the panel's air select (`?dust=0`, `?storm=1`).
+
+**Species for readers.** None changed: `CRATERDRY.SPECIES`, `PLANTS`, keys and indices as they were; no tree moved (the flare draws no
+random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `make` unchanged (a reader's far tree is still a blob).
+`CRATERDRY.IMPOSTOR_SPECIES` lists the species on impostors. `reach.py`: nothing reads this kit's fragments in place but core/biome's
+`test-fire.js` (52, unchanged).
+
+**Not done this turn, and why** (PLAN-STATIONS.md says more):
+- [ ] **The N/S split and stations `south`, `edge`, `salt`.** S is station `south`, PLAN-LANDS's J7, after `biomes/savannarim` (J4-J6, not
+      built) whose se-rim species it takes; the black mallee is still a proposal. The page keeps its name until `south` exists.
+- [ ] **KFIRE (H3).** `core/biome/test-fire.js` proves KFIRE against this kit's `52` loaded in place; the move needs that test changed
+      first (a core change: the test would take a frozen copy of `52`, or its golden grids).
+- [ ] **Mounds, wadi, talus, polygon pans, tibasalt strata**: the row's kinds belong to the stations (`edge`, `salt`, `south`).
+- [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
+      it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
+
+**What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
+- the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
+  beside the map, detail, two granites, carpet, fire map and the burn (for the live fire), plus the horizon: about 13 units, 14 with `?shadow=1`;
+- the ground's look against `?kground=0` (the char's darkness and ash, the soil's warmth, the washes, the tiling at 60-300 m);
+- the far trees on 'From afar' against `?diet=0` (their brightness: tune `IMP_GAIN` / `?impgain=`; a burnt far tree must still read black);
+- the far field's colour at the map's edge and the horizon's shadows by the kopjes; the height fog's density (falloff 1/700);
+- the dust: none at load in calm air, the storm on the air select; `?shadow=1` once for its cost;
+- the attach audit: the limbs' collars should take nothing away; any floater it reports is this kit's (no other kit is on the page);
+- the budgets: `showcase` (18.5M tris, 120 calls) was measured before the impostors and the far field.
+
 ## The region and the open world
 
 - [ ] **The Koppen classes are an estimate** (BSh .6, BWh .25, Aw .15). The scale model's climate rasters were not

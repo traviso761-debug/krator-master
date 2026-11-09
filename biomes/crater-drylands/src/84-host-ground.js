@@ -82,17 +82,37 @@ const FIRE_GLSL='uniform sampler2D uFireTex;uniform float uFireT,uFireOn,uFireRT
  'vec2 fireCell(vec2 xz){vec2 uv=((xz-uFireGrid.xy)/uFireGrid.z+0.5)/uFireGrid.w;vec2 g=texture2D(uFireTex,uv).rg;'+
  'g.x+=5.0*sin(xz.x*0.19+2.0*sin(xz.y*0.13))+4.0*sin(xz.y*0.23+1.7*sin(xz.x*0.11));return vec2(uFireOn>0.5?uFireT-g.x:-1e5,g.y);}'+
  'float fireHash(vec3 p){return fract(sin(dot(floor(p),vec3(12.9898,78.233,37.719)))*43758.5453);}\n';
+// THE LIBRARY LAYERS ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, pair 12, 2026-11-09; BACKPORT.md's ground row):
+// the five layers above (the red soil, the char, the washes' sand, the kopjes' grit, the seep's moss) come in hex-tiled (no repeat shows, in place of the
+// hand-written anti-tiling: two tiles, one turned 37 degrees), scaled with distance and blended by height, at the same weights (aGL, aSeep), strengths
+// and tints as before: the soil at .55 (half with the paint, as it was), the char whole with its macro darkening at ~164 m, the others at .7. The char's
+// grey-white ash drifts and its greying are kept, laid after the layers on the char's weight (cdM1, cdM2: the carpet's macro noise). The painted
+// ground, the granite, the carpet and the live fire are unchanged. ?kground=0 for the old mix; only with the pack (the procedural fallback keeps its paint).
+// three r128 uploads cameraPosition only to Phong and Standard materials, so on this Lambert ground KGROUND's distance is taken from the view matrix
+// (KHOOK.EYE's kEye), korona's redirect; the fix belongs in core/terrain/43-core-ground.js (a core finding, KNOWN_ISSUES.md)
+const KG_LY=GLAY&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'?[
+ KGROUND.layer('craterdry','ground.redsoil',{w:'vGL.y',amt:.55,tint:'diffuse*1.25',name:'red soil'}),
+ KGROUND.layer('craterdry','ground.burn',{w:'vGL.x',tint:'diffuse*1.15*mix(0.5,1.25,smoothstep(0.2,0.8,cdM2))',name:'char'}),
+ GLAY.wash?KGROUND.layer('craterdry','ground.wash',{w:'vGL.z',amt:.7,tint:'diffuse*1.3',name:'wash sand'}):null,
+ GLAY.grit?KGROUND.layer('craterdry','ground.grit',{w:'vGL.w*(1.0-vRock)',amt:.7,tint:'diffuse*1.3',name:'granite grit'}):null,
+ GLAY.seep?KGROUND.layer('craterdry','ground.seep',{w:'vSeep',amt:.7,tint:'diffuse*1.3',name:'seep soil'}):null].filter(Boolean):null;
+const KG_EYE='#define '+'camera'+'Position kEye()\n';
+const KG_GLSL='\n/*KGROUND*/\n'+
+ '{float cdA=smoothstep(0.62,0.85,cdM1*0.6+cdM2*0.5)*0.55*vGL.x;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(dot(diffuseColor.rgb,vec3(0.2126,0.7152,0.0722))),0.35*vGL.x);'+
+ 'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.36,0.35,0.33)*1.15,cdA);}';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};sh.uniforms.uGranB={value:CRATERDRY.GRANITE_B?CRATERDRY.GRANITE_B.map:(CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX)};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};if(GLAY.wash)sh.uniforms.uGWash={value:GLAY.wash};if(GLAY.grit)sh.uniforms.uGGrit={value:GLAY.grit};if(GLAY.seep)sh.uniforms.uGSeep={value:GLAY.seep};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec4 aGL;varying vec4 vGL;attribute float aSeep;varying float vSeep;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;vSeep=aSeep;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uGranB,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec4 vGL;varying float vSeep;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;'+(GLAY.wash?'uniform sampler2D uGWash;':'')+(GLAY.grit?'uniform sampler2D uGGrit;':'')+(GLAY.seep?'uniform sampler2D uGSeep;':''):'')+FIRE_GLSL)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uGranB,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec4 vGL;varying float vSeep;float cdM1,cdM2;'+(KG_LY?KHOOK.EYE+KG_EYE:'')+(GLAY?'uniform sampler2D uGBurn,uGSoil;'+(GLAY.wash?'uniform sampler2D uGWash;':'')+(GLAY.grit?'uniform sampler2D uGGrit;':'')+(GLAY.seep?'uniform sampler2D uGSeep;':''):'')+FIRE_GLSL)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // the granite's speckle on the kopjes (a custom sampler is not decoded from sRGB: pow 2.2 by hand)
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+
   // the second granite (stone.granite.b) in patches ~60 m across: the same brightness, a finer grain and more lichen
   'vec3 grb=pow(texture2D(uGranB,vGWP.xz*0.13+vGWP.y*0.03+vec2(0.41,0.23)).rgb,vec3(2.2));'+
-  'gr=mix(gr,grb*'+(CRATERDRY.GRANITE&&CRATERDRY.GRANITE_B?(Math.pow(CRATERDRY.GRANITE.mean/CRATERDRY.GRANITE_B.mean,2.2)).toFixed(3):'1.0')+',smoothstep(0.35,0.65,texture2D(uCarpet,vGWP.xz*0.0173+vec2(0.13,0.71)).b));'+
+  // the carpet's macro noise at ~58 m and ~164 m (its B channel, linear): the granite's patches, the layers' char (cdM1, cdM2)
+  'cdM1=texture2D(uCarpet,vGWP.xz*0.0173+vec2(0.13,0.71)).b;cdM2=texture2D(uCarpet,vGWP.xz*0.0061+vec2(0.57,0.29)).b;'+
+  'gr=mix(gr,grb*'+(CRATERDRY.GRANITE&&CRATERDRY.GRANITE_B?(Math.pow(CRATERDRY.GRANITE.mean/CRATERDRY.GRANITE_B.mean,2.2)).toFixed(3):'1.0')+',smoothstep(0.35,0.65,cdM1));'+
   'vec3 _pd=diffuseColor.rgb;'+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*'+(CRATERDRY.GRANITE?(.7/Math.pow(CRATERDRY.GRANITE.mean,2.2)).toFixed(3):'2.6')+',vRock*0.7);'+
   // the library ground: a custom sampler is not decoded from sRGB, so pow 2.2 by hand; the layers take the painted
@@ -100,7 +120,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
   // ANTI-TILING: each layer is sampled twice, on its own tile and on a larger one turned 37 degrees, blended by a macro
   // noise (the carpet's B channel at ~58 m and ~164 m), so the 3 m repeat never lines up into a grid. The char then
   // varies at that scale too: blacker where the fuel was heaviest, grey-white ash drifts, less of the red soil's warmth
-  (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;'+
+  (KG_LY?KG_GLSL:GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;'+
    'float m1=texture2D(uCarpet,p*0.0173+vec2(0.13,0.71)).b,m2=texture2D(uCarpet,p*0.0061+vec2(0.57,0.29)).b,mt=smoothstep(0.3,0.7,m1);'+
    'vec3 ts=mix(pow(texture2D(uGSoil,p*'+GLAY.soilK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGSoil,q*'+(GLAY.soilK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
    'vec3 tb=mix(pow(texture2D(uGBurn,p*'+GLAY.burnK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGBurn,q*'+(GLAY.burnK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
@@ -127,6 +147,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
    'float sm=step(0.0,tt)*(1.0-smoothstep(30.0,240.0,tt))*step(0.985,fireHash(vec3(vGWP.xz*1.6,0.0)));'+
    'gl_FragColor.rgb+=vec3(1.0,0.38,0.06)*(fr*fl*0.9+sm*0.55*(0.55+0.45*sin(uFireRT*2.3+vGWP.x*3.0)))*(1.0-vRock);}}');
  Object.assign(sh.uniforms,FIREU);};
+if(KG_LY&&KG_LY.length){KGROUND.hook(MAT_GROUND,{key:'craterdry-ground',layers:KG_LY,at:'/*KGROUND*/'});MAT_GROUND.userData.kgroundOn=true;}
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),bl=new Float32Array(nx*nx),old=new Float32Array(nx*nx),dr=new Float32Array(nx*nx*3);
  const gl=new Float32Array(nx*nx*4),se=new Float32Array(nx*nx);
