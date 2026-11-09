@@ -1,10 +1,10 @@
 {
  "00-head.html": "41fb8d0ed528",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "08-core-rand.js": "4a3aa47f25da",
  "09-lod.js": "e1f7db612b83",
- "10-core-door.js": "22190472180d",
+ "10-core-door.js": "b12eb3957235",
  "10-core.js": "54bdb5a92e85",
  "12-stats.js": "36c73fdcde3d",
  "20-core-clock.js": "5967f73401fa",

@@ -176,7 +176,7 @@ return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.tr
 async def run(a):
     from playwright.async_api import async_playwright
     os.makedirs(a.out, exist_ok=True)
-    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size) as V:
+    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size, query=('?' + a.query) if a.query else '') as V:
         pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
         if not V.ready:
             print("timed out waiting for the kit to build")
@@ -314,4 +314,5 @@ if __name__ == "__main__":
     ap.add_argument("--wait", type=int, default=0, help="ms to let the world run before the shots")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate and print (repeatable)")
     ap.add_argument("--size", default="1000x640")
+    ap.add_argument("--query", default="", help="the page's query string, without the ? (interiors=1: the interiors planned, the doors onto them unlocked)")
     sys.exit(asyncio.run(run(ap.parse_args())))

@@ -25,12 +25,12 @@ door's leaf open 75 degrees and glaze a window with a pale lambert pane. `src/75
 record (`<room id>.d<n>`, standing open as hung, posed by KDOORHOST: E within reach opens and shuts it, the tip shows near
 one) and each pane KGLASS 'clear'; build.py reads core/door's 10, 20, 90 into the page (not into the engine-neutral core).
 
-- [ ] **The leaves are matched to the shell's meshes by order** (the doors with a leaf, in `room.doors` order, against the
-      shell group's `part: 'door'` meshes). kits/interiors' shell should register its own leaves (a KDOOR record and a
-      `KDOORHOST.object`/`posed` per leaf) and use KGLASS; then this fragment goes. Listed for kits/interiors.
-- [ ] **No reachability audit**: the sheet's rooms are shells with no core/walk records (`IX.walk.register` takes a set
-      instance, not a `ROOM()` shell). Every hall and room has its one door on the open deck, so each is reached by
-      construction; a `KWALK` registration of the shells' floors and walls (kits/interiors) would let `KWALK.reach` prove it.
+- [x] (2026-11-09) **The leaves were matched to the shell's meshes by order.** kits/interiors' shell registers its own leaves
+      now (a KDOOR record and `KDOORHOST.posed` per leaf, its panes KGLASS 'clear', `50-shell.js`); `75-ai-doors.js` only hosts
+      them (the tick, E, the tip) and counts them.
+- [x] (2026-11-09) **No reachability audit.** The page takes core/walk (`20-core-walk.js`); every shell's floor and walls go in
+      through `IX.walk.room` and the leaves' blocks through `KDOOR.walk`, and `verify.py --assert` runs `KWALK.reach` from the
+      ground outside each room's street door: 48 of 48 rooms reached with the doors open, 0 with them shut (the negative).
 
 ## The Ancients kit's interiors (2026-10-07)
 

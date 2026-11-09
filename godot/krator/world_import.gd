@@ -358,8 +358,10 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 		return null
 	ids["materials_resolved"] += 1
 	var rec: Dictionary = mats[id]
-	var m: Material
-	if rec.get("kind") in ["standard", "basic", "shader"]:
+	var m: Material = KDoor.material_for_name(String(rec.get("name", "")))   # core/door's glass ('kglass:<kind>'): KGLASS.SPEC's kind (krator/kdoor.gd)
+	if m != null:
+		pass
+	elif rec.get("kind") in ["standard", "basic", "shader"]:
 		m = _standard(rec, tex, texrec, instanced, report)
 	else:
 		m = KratorBiome._material(rec, tex, texrec, true, report)

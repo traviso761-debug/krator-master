@@ -78,7 +78,7 @@ function tanGlaze(x,y,z,ry,w,hb,kind,r,rise,out,c){c=c||vC(TAPAL.white[0]);const
 // Returns the records (one)
 function tanDoorLeaves(x,y,z,ry,w,h,wood,cut,gate,glazed){const F=cut?vnOnHollow(x,y,z,ry):null,two=w>1.4;
  const m=loc(x,z,0,F?-F.B.t/2:.07,ry);
- return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.02)*(two?2:1),h-(F?.04:.02),F?.07:.08,wood,{locked:!F&&!gate,pair:two,style:glazed?'glazed':'panel'})];}
+ return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.02)*(two?2:1),h-(F?.04:.02),F?.07:.08,wood,{locked:!F&&!gate,pair:two,style:glazed?'glazed+pull':'panel+pull'})];}   /* a bar pull each face (core/door's hardware, 2026-11-09) */
 // a door in an arch (tanArch's DOOR fill): the leaves under a glazed fanlight in the head, a timber transom between
 function tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o){const cut=!o.gate&&o.cut!==false&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,true);
  const wood=o.leafC||vC(vPick(TAPAL.walnut));

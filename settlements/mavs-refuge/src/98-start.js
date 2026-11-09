@@ -69,6 +69,7 @@ window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){
 var MHOST = KHOST.take({
   build:'mavs-refuge', title:"Mav's Refuge", hint:'a Beast Rider refuge in the canopy of the hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
+  walk:(typeof MRWALK !== 'undefined' && MRWALK.on) ? KWALK : null,   /* core/walk: the units' walls and the shut doors block the walker (83-mr-walk.js) */
   views:mViews, start:VIEWS[0][0],
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own (21-sky.js, the slider): no host hour */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },

@@ -99,7 +99,7 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length, nd=(typeof 
   rec.furniture = (F && F.furniture) || [];
   if(LOCF.interiors && F){ var it=LOCF.item(key, F.variant|0);
     if(it){ var fi=LOCF.interior(it, x, z, ry||0, LOCF.adapter, { baseY:F.y, prefix:'lc.'+LOCF.buildings.length+'.' }), r=fi.result;
-      rec.interior=fi.summary; rec.interior.doors=locfDoorsIn(nd);
+      rec.interior=fi.summary; rec.interior.doors=locfDoorsIn(nd, r.inst);
       r.inst.rooms.forEach(function(R){ var P=r.plans[R.id]; (P&&P.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, l.intensity||0.7, l.distance||10, false); }); });
       Object.assign(LOCF.buildings[LOCF.buildings.length-1], { key:key, variant:F.variant|0 }); }
     else { var w=LOCF.why(key, F.variant|0), u=LOCF.unfurnished[w], k=key+((F.variant|0)?'#'+(F.variant|0):''); u[k]=(u[k]||0)+1; } }
@@ -109,11 +109,21 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length, nd=(typeof 
    plinth's step), or that an entry flight (a raised floor's steps from the ground) passes within a metre of, is unlocked as
    built, so the walker,
    E, an NPC or a quest opens it into the rooms (95-locus-doors.js; Highlands' 89y-hl-furnish.js is the pattern). The leaf opens
-   on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md) */
-function locfDoorsIn(nd){ if(typeof KDOOR==='undefined' || typeof KWALK==='undefined') return 0; var n=0;
+   on the solid body's face: the kit draws no hollow walls (KNOWN_ISSUES.md). Then the interiors' own street doors (inst.buildings[].doors
+   kind 'street', 46-planner.js): the planned entrance is not always the building's F.door (a warehouse hall's entry flight, the
+   refinery's still-house), so the placement's door nearest each one (within 4 m in plan, 2 m in height of its ground floor) is
+   unlocked too, unless one within that reach already is: every floor the interiors reach through a door is reached through an
+   unlocked one (2026-11-09: 32 floors were reached only through a locked door) */
+function locfDoorsIn(nd, inst){ if(typeof KDOOR==='undefined' || typeof KWALK==='undefined') return 0; var n=0;
   for(var i=nd;i<KDOOR.list.length;i++){ var D=KDOOR.list[i]; if(!D.locked) continue;
     for(var t=-1.0;t<=1.61;t+=0.3){ var ix=D.at[0]-Math.sin(D.yaw)*t, iz=D.at[2]-Math.cos(D.yaw)*t;
       if(KWALK.floorsAt(ix,iz).some(function(f){ return String(f[1].tag).indexOf('built:')===0 && (Math.abs(f[0]-D.at[1]) < 0.8 || /\.entry$/.test(f[1].name)); })){ KDOOR.lock(D, false, { asBuilt:true }); n++; break; } } }
+  ((inst && inst.buildings) || []).forEach(function(B){ var f0=(B.floors||[]).filter(function(F){ return F.level===0; })[0]; if(!f0) return;
+    (B.doors||[]).forEach(function(sd){ if(sd.kind!=='street') return; var best=null, bd=16, open=false;
+      for(var i=nd;i<KDOOR.list.length;i++){ var D=KDOOR.list[i]; if(Math.abs(D.at[1]-f0.y) > 2) continue;
+        var d=(D.at[0]-sd.at[0])*(D.at[0]-sd.at[0])+(D.at[2]-sd.at[1])*(D.at[2]-sd.at[1]); if(d>=16) continue;
+        if(!D.locked) open=true; else if(d<bd){ bd=d; best=D; } }
+      if(!open && best){ KDOOR.lock(best, false, { asBuilt:true }); n++; } }); });
   return n; }
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;

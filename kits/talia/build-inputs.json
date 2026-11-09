@@ -4,17 +4,15 @@
   "build.py": {
    "inputs": {
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
-    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
+    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
-    "core/door/30-core-door-leaf.js": "71649e5233fab80c5d4c8cae535f3417f6a872f2ff5ce7cc42eacf9b48bfb75f",
+    "core/door/30-core-door-leaf.js": "4d232b38441aa15f649bb9589721b71b8f30d9e05748dc190a30a6796836a94e",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/export/10-core-export-scene.js": "03619886c6bcc3426f0d261e9187cc06766b0bf1dca1ddcec33b6d56aff4814d",
@@ -32,7 +30,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
@@ -52,7 +49,6 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
-    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
@@ -60,7 +56,6 @@
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/catalog/krator-master-furniture-talia.js": "787d7995661567f6493aca06b2aed05c8973219410bb9b70eeb8825b5437bffe",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/iziz.js": "7d938ebe351335a66555704a71c5a371c30832bf0eb2f07809c837787c947101",
     "kits/interiors/sets/talia.js": "9a8b73f219891cf9d3dbba81e24c5f5701e2edf98e12ca66215892506932f9d8",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -77,7 +72,7 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e-vern-hollow.js": "c71a736c2a0a2cdba5775c39899013bda48be827690a6cc133cbb3cdb0d948a8",
-    "kits/iziz-vernacular/src/69e5-iziz-openings.js": "15c99a8088fddbf3253136d79e038f8ff13af19ee603c639b5dbf4449ccf9069",
+    "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
     "kits/iziz-vernacular/src/69f-iziz-fixtures.js": "051a517813ef02267e3075f08614c43867cefc7b60f5d76bda211388c887c643",
     "kits/iziz-vernacular/src/70-vern-dwellings.js": "02723e6fbbb67db30eca4a1b61c1f02a21b0a97b3ec991ec4591f409ab2af4c8",
     "kits/iziz-vernacular/src/71-vern-trade.js": "bc8a5541fee4c75e7ef45c05a35eee3e9a70834476f9ff31c5c48d8ecbf1b95a",
@@ -91,13 +86,12 @@
     "kits/iziz-vernacular/src/74-vern-guilds.js": "2f8db095e3d23f3767f43777bdb64a7a5d222ec7b1d1b0cdfaf70df3da966603",
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
-    "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
     "kits/talia/KNOWN_ISSUES.md": "39fdb937a691e817887394263f53e302865e5f3cc87b7c1cc601c1a37867d343",
     "kits/talia/PORT.md": "a377cd7c95338c56fedde04465a4c11fe5e55444074603bf0bfbbf05b63ffd0e",
     "kits/talia/build.py": "68849304ce9a00528e226992f0d8143fdba960f81301796403373c4c79e2856b",
     "kits/talia/kit.json": "c1c3a67904ca42bc955bd4e48c00650f77084711525e85cd15ac1282e16fc419",
     "kits/talia/src/69t-tal-mat.js": "57b46b747ab3c63c2c0f8e3d51ddf9dafd276076ef5c8157ba87e093a12e12ec",
-    "kits/talia/src/69u-tal-helpers.js": "976d5dd29d35c02e6b288a4ecd13ddd05f06a7d756c6d4e1bfdc1c2dd5e56a25",
+    "kits/talia/src/69u-tal-helpers.js": "c86d3b8eb17ec808aeafef18f8714e2317fdbd4f42c1808eb149fc5ba2b84520",
     "kits/talia/src/70t-tal-dwellings.js": "1bd39d2b75ced719ebc4f47e9671e5eed01b21faa23383d6ff6545a4723e44d4",
     "kits/talia/src/70u-tal-rich.js": "55d6f528c9f7d47a29036bce7297864a1f1653e91d86f7884b8113aea6844183",
     "kits/talia/src/71t-tal-trade.js": "f862904de627d706f96cfa1f1ff3dcf8c66663bb5e64e86184d6dbec09f58a5f",
@@ -419,9 +413,7 @@
     "settlements/iziz/tex/woodV.albedo.webp": "e6b9faf5e0afbfbaf73d91e4264572c8433b76281b011e08244b3eb8eb577e01",
     "settlements/iziz/tex/woodV.normal.webp": "190262f7d785a01c811cb78b9227591d3b0a10dcf0e9e1c71350ff41de60e7a6",
     "settlements/iziz/tex/woodV.rough.webp": "8df792868de730da67949922940e6e1ae855351c9d3d1ae092ed812b05e91d84",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
@@ -456,18 +448,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/talia/build-manifest-kit.json": "ea91709dcbcb08a55fc743bf6f826fce25cbf89b5edbf210c8224f750ea7fcfc",
+    "kits/talia/build-manifest-kit.json": "e1dc22dba5dde034bb5394308eb9774809279210d43cfd25b4b7d40386abaef8",
     "kits/talia/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/talia/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/talia/dist/iziz.tex.talia.js": "c00b89c380f4e3bc0345efb8a95f2ec8721fbf793b37bcbd33a390556ac23e34",
-    "kits/talia/dist/talia.html": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
+    "kits/talia/dist/talia.html": "e825df0a9e4f98d668fce878d4901597992f0f858ffbae84b6803d38e64b240d"
    },
    "outputs_raw": {
-    "kits/talia/build-manifest-kit.json": "34966ec18ded2d5767f9dcf856c2bd21173f04d0546b52784784c54e4f307458",
+    "kits/talia/build-manifest-kit.json": "e1dc22dba5dde034bb5394308eb9774809279210d43cfd25b4b7d40386abaef8",
     "kits/talia/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/talia/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/talia/dist/iziz.tex.talia.js": "c00b89c380f4e3bc0345efb8a95f2ec8721fbf793b37bcbd33a390556ac23e34",
-    "kits/talia/dist/talia.html": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
+    "kits/talia/dist/talia.html": "e825df0a9e4f98d668fce878d4901597992f0f858ffbae84b6803d38e64b240d"
    }
   }
  }

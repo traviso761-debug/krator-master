@@ -146,3 +146,8 @@ What follows is what the checks do not cover, or what the kit does not do yet.
       open sides (`open: [[x, z], ...]`, a point on each): no piece stands or hangs on them.
 - [x] **A cord of pennants was a 2.4 m fragment on a long wall.** A catalog piece marked `stretch` runs the free length of its
       wall (between its ends and its doors, up to 8 m, centred where the placer put it): the placement's `span`, which the builder draws to (`F.span`).
+- [x] (2026-11-09) **The shell's leaves and glass were nobody's records.** `src/50-shell.js` registers each leaf it hangs in core/door
+      where the page carries it (KDOOR '<room id>.d<n>', kind swing, style flat, standing open 75 degrees as hung; posed through
+      `KDOORHOST.posed`), its panes KGLASS 'clear', and `IX.walk.room` (in the same fragment, plain records) puts a shell's floor
+      and walls in core/walk gapped at its doors, so a sheet can run `KWALK.reach` (kits/ancients-interiors does;
+      `tests/test-walk.js` checks two shells and a door between them, shut and open). A page with no core/door draws as before.

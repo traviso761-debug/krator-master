@@ -15,8 +15,16 @@
 //        'slat'    horizontal slats (a roller shutter, an up-and-over door)
 //        'plate'   a heavy plate with a rim and ribs both sides (a blast door, a floodgate, a vault's)
 //        'disc'    a round plate (an iris)
-//   KDOORLEAF.meshes(THREE, style, {frame, glass}, n)   [frame InstancedMesh, glass InstancedMesh?] of n leaves in that style
-//   KDOORLEAF.STYLES                    the style names
+//      with HARDWARE (2026-11-09: the detail the plain leaves lost), a third part in metal, `hw`:
+//        'banded'  a panelled leaf with three brass bands across both faces, studded, and a ring pull (the ger's lacquered door)
+//        'scrolled' the half-glazed leaf with gilt scrolls on its lower panels and a brass knob (the vardo's)
+//        'panel+pull', 'glazed+pull', 'half+pull', 'plank+pull'   that leaf with a bar pull on both faces at the lock rail (Pylon's,
+//                  Talia's); '+ring' a ring pull instead (a plank door's iron ring)
+//   KDOORLEAF.geometry(...).hw          the hardware's geometry (null when the style has none), drawn in a metal (brass, gilt, iron)
+//   KDOORLEAF.meshes(THREE, style, {frame, glass, hw}, n)   [frame InstancedMesh, glass InstancedMesh?, hardware InstancedMesh?] of n
+//                                       leaves in that style (a part is left out when the style or mats lacks it); KDOORHOST.instanced
+//                                       poses every one at the same index
+//   KDOORLEAF.STYLES                    the style names; KDOORLEAF.HARDWARE the hardware sets ('bands', 'scrolls', 'pull', 'ring', 'knob')
 (function(root){
   var T=root.THREE;
   // ---- the leaf styles: boxes [cx, cy, cz, sx, sy, sz] in the unit leaf, merged into one geometry
@@ -48,12 +56,28 @@
       for(var y of[-.25,0,.25])b.push([0,y,0,.86,.035,.9]);for(var x of[-.22,.22])b.push([x,0,0,.03,.86,.9]);return{b:b};},
     slat:function(){var b=[],n=16,g=.006,h=(1-g*(n-1))/n;for(var i=0;i<n;i++)b.push([0,-.5+h/2+i*(h+g),0,1,h,.8]);return{b:b};},
     disc:function(Tt){return{b:[],x:[new Tt.CylinderGeometry(.5,.5,1,28).rotateX(Math.PI/2)]};}};
+  // ---- the hardware: boxes in the unit leaf, on both faces (z beyond the leaf's +-.5: they stand proud of it), merged as one part.
+  // A leaf is far thinner than it is wide, so a part's depth is given in the leaf's own thickness (the unit z) and kept small
+  var HW={
+    bands:function(){var b=[],ys=[-.34,.02,.36];ys.forEach(function(y){[-.62,.62].forEach(function(z){b.push([0,y,z,.98,.045,.3]);
+      for(var x=-.38;x<=.39;x+=.19)b.push([x,y,z*1.08,.035,.03,.3]);});});   /* three bands each face, five studs on each */
+      return b.concat(HW.ring());},
+    scrolls:function(){var b=[];[-.2,.2].forEach(function(x){[-.62,.62].forEach(function(z){var s=x<0?-1:1;
+      for(var k=0;k<7;k++){var a=k/6*Math.PI*1.5,r=.075*(1-k/9);b.push([x+s*Math.cos(a)*r,-.255+Math.sin(a)*r*1.6,z,.03,.03,.3]);}
+      b.push([x,-.36,z,.2,.02,.3],[x,-.15,z,.2,.02,.3]);});});   /* an S of gilt beads on each lower panel, a gilt rule over and under */
+      return b.concat(HW.knob());},
+    pull:function(){var b=[];[-.62,.62].forEach(function(z){var s=z<0?-1:1;b.push([.36,.02,z*1.3,.025,.2,.3],[.36,.1,z,.025,.025,.5],[.36,-.06,z,.025,.025,.5]);});return b;},
+    ring:function(){var b=[];[-.62,.62].forEach(function(z){b.push([.33,.04,z,.05,.05,.3]);for(var k=0;k<8;k++){var a=k/8*Math.PI*2;b.push([.33+Math.cos(a)*.045,-.02+Math.sin(a)*.06,z*1.25,.02,.02,.3]);}});return b;},
+    knob:function(){var b=[];[-.62,.62].forEach(function(z){b.push([.36,.02,z,.04,.04,.3],[.36,.02,z*1.35,.06,.06,.3]);});return b;}};
+  var COMPOSED={banded:['panel','bands'],scrolled:['half','scrolls']};
+  ['panel','glazed','half','plank'].forEach(function(st){COMPOSED[st+'+pull']=[st,'pull'];COMPOSED[st+'+ring']=[st,'ring'];});
   var GEO=new Map();
   function leafGeometry(Tt,style){Tt=Tt||T;var key=style||'flat',c=GEO.get(Tt);if(!c){c={};GEO.set(Tt,c);}if(c[key])return c[key];
-    var S=STYLES[key];if(!S)throw new Error('KDOORHOST.leafGeometry: no style '+key);var d=S(Tt);
-    return c[key]={frame:merge(Tt,d.b,d.x),glass:d.g?merge(Tt,d.g):null};}
-  function leafMeshes(Tt,style,mats,n){Tt=Tt||T;var G=leafGeometry(Tt,style),out=[new Tt.InstancedMesh(G.frame,mats.frame,n)];
-    if(G.glass&&mats.glass)out.push(new Tt.InstancedMesh(G.glass,mats.glass,n));
-    out.forEach(function(m,i){m.frustumCulled=false;m.castShadow=i===0;m.receiveShadow=true;m.name='door leaves '+(style||'flat')+(i?' glass':'');});return out;}
-  root.KDOORLEAF={geometry:leafGeometry,meshes:leafMeshes,STYLES:Object.keys(STYLES)};
+    var C=COMPOSED[key],S=STYLES[C?C[0]:key];if(!S)throw new Error('KDOORHOST.leafGeometry: no style '+key);var d=S(Tt);
+    return c[key]={frame:merge(Tt,d.b,d.x),glass:d.g?merge(Tt,d.g):null,hw:C?merge(Tt,HW[C[1]]()):null};}
+  function leafMeshes(Tt,style,mats,n){Tt=Tt||T;var G=leafGeometry(Tt,style),out=[new Tt.InstancedMesh(G.frame,mats.frame,n)],nm=[''];
+    if(G.glass&&mats.glass){out.push(new Tt.InstancedMesh(G.glass,mats.glass,n));nm.push(' glass');}
+    if(G.hw&&mats.hw){out.push(new Tt.InstancedMesh(G.hw,mats.hw,n));nm.push(' hardware');}
+    out.forEach(function(m,i){m.frustumCulled=false;m.castShadow=i===0;m.receiveShadow=true;m.name='door leaves '+(style||'flat')+nm[i];});return out;}
+  root.KDOORLEAF={geometry:leafGeometry,meshes:leafMeshes,STYLES:Object.keys(STYLES).concat(Object.keys(COMPOSED)),HARDWARE:Object.keys(HW)};
 })(typeof window!=='undefined'?window:globalThis);
