@@ -123,19 +123,25 @@
        o: id, ground (required), width (11), pavement (3.5), maxGrade, shift, radius (fillet, 40), above (0.06)
        o.drift (0..1 or a function of s: the road under sand, Rd.drifts), o.kind (a name: KTRANSIT.ROAD_KINDS), o.lines ('both' | 'edges' | 'none'),
        o.pins [{s, y}] (heights the alignment takes: a junction's level, KTRANSIT.network)
-       -> Rd {id, kind: 'road', path, width, pavement, yAt(s), levelAt(x, z) (the alignment, dipping by o.carve there), form (the depth of the formation under the surface, 0.45),
+       -> Rd {id, kind: 'road', path, width, pavement, yAt(s), levelAt(x, z) (the alignment, dipping by o.carve there), regrade(pins) (more pins, in place), form (the depth of the formation under the surface, 0.45),
              segs: [{s0, s1, x0, z0, y0, x1, z1, y1, fill (the surface over the ground at the middle: + a fill, - a cut)}],
              drifts: [{id, s0, s1, side, reach, depth}], L} */
   T.road = function (pts, o) {
     o = o || {};
     if (typeof o.ground !== 'function') throw new Error('KTRANSIT.road: o.ground(x, z) is required');
     var P = T.path(pts, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift }), Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30, pins: o.pins });
-    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', roadKind: o.kind == null ? 'road' : o.kind, lines: o.lines == null ? 'both' : o.lines, path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, yAt: Y.at, deckAt: Y.at, segs: [], pins: o.pins || [] };
+    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', roadKind: o.kind == null ? 'road' : o.kind, lines: o.lines == null ? 'both' : o.lines, path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, segs: [], pins: (o.pins || []).slice(), opts: o, Y: Y };
+    /* the heights read the LIVE profile (Rd.Y), so a road regraded in place (Rd.regrade: a junction joined later pins it) changes under every
+       holder of its yAt / levelAt (a street's ground, a war built on it) */
+    Rd.yAt = function (s) { return Rd.Y.at(s); }; Rd.deckAt = Rd.yAt;
     /* the surface anywhere: the alignment, taken down by what the host carved there (o.carve(x, z) <= 0: a crater, a sinkhole), so a road
        over a crater dips into it; it does NOT follow the ground into the dips it fills (the embankment is drawn under it) */
-    Rd.levelAt = function (x, z) { var pr = P.project(x, z), y = Y.at(pr.s); return o.carve ? y + Math.min(0, o.carve(x, z)) : y; };
-    var n = Math.max(1, Math.round(P.L / 12));
-    for (var i = 0; i < n; i++) { var s0 = i * P.L / n, s1 = (i + 1) * P.L / n, a = P.at(s0), b = P.at(s1), m = P.at((s0 + s1) / 2); Rd.segs.push({ s0: s0, s1: s1, x0: a.x, z0: a.z, y0: Y.at(s0), x1: b.x, z1: b.z, y1: Y.at(s1), fill: Y.at(m.s) - m.yG }); }
+    Rd.levelAt = function (x, z) { var pr = P.project(x, z), y = Rd.Y.at(pr.s); return o.carve ? y + Math.min(0, o.carve(x, z)) : y; };
+    var grade = function () { Rd.segs = []; var n = Math.max(1, Math.round(P.L / 12));
+      for (var i = 0; i < n; i++) { var s0 = i * P.L / n, s1 = (i + 1) * P.L / n, a = P.at(s0), b = P.at(s1), m = P.at((s0 + s1) / 2); Rd.segs.push({ s0: s0, s1: s1, x0: a.x, z0: a.z, y0: Rd.Y.at(s0), x1: b.x, z1: b.z, y1: Rd.Y.at(s1), fill: Rd.Y.at(m.s) - m.yG }); } };
+    grade();
+    /* regrade(pins): more heights the alignment must take (a junction's level), held with the ones it has; the profile is rebuilt in place */
+    Rd.regrade = function (pins) { Rd.pins = Rd.pins.concat(pins || []); Rd.Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30, pins: Rd.pins }); grade(); return Rd; };
     /* the drifts (the owner, 2026-11-09: a road covered in soil or sand): o.drift 0..1 or a function of s, the share of the road under sand; each
        drift a wedge from one kerb across `reach` of the carriageway, `depth` deep at the kerb, a run of 20 to 60 m; at 1 the drifts meet and cover it */
     var dr = typeof o.drift === 'function' ? o.drift : function () { return o.drift == null ? 0 : +o.drift; }, seed = KRAND.child(T.SEED, Rd.id + '.drift') >>> 0;

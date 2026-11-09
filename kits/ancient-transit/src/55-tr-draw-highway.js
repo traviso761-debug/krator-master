@@ -91,7 +91,7 @@
        each stretch between two cuts is a run of its own, ending exactly on the cut line, where the junction's patch takes over. A plain polyline
        (a street given as points, a ramp) is one run, resampled every `step` metres and carried by the shift */
     const runs = [];
-    if (rd) { const ranges = o.network && o.road != null ? T.cutsOf(o.network, o.road) : []; let s0 = 0;
+    if (rd) { const net = o.network || rd.network, ri = o.road != null ? o.road : rd.netIndex, ranges = net && ri != null ? T.cutsOf(net, ri) : []; let s0 = 0;
       /* the rows ADAPT: 4 steps apart (12 m) where the road is straight and its surface flat between them, split down to one step where the
          heading turns or the surface bends across the width (a crater, a scarp, a fillet), so a straight stretch costs a quarter of the rows */
       const levAt = (s, off) => { const p = rd.path.at(s), x = p.x + Math.cos(p.yaw) * off, z = p.z - Math.sin(p.yaw) * off; return lev(x, z); };

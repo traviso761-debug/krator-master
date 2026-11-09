@@ -13,17 +13,20 @@
 //
 //   KTRANSIT.ROAD_KINDS                      {avenue, road, street, lane}: width, pavement, lines
 //   KTRANSIT.network(defs, o) -> N           defs: [{id, pts, kind | width, pavement, drift, maxGrade}]; o.ground (required), o.shift, o.carve (what the host carves: the surfaces dip by it)
-//     N = {roads: [Rd...] (KTRANSIT.road records, in the defs' order), nodes: [J...] (every node), junctions: [J...] (the nodes of two arms or
-//          more), segments: [{id, road, s0, s1, from, to}] (from/to: node ids, null at a free end), ground}
-//     J = {id, x, z, y, n (the arms), kind: 'end' | 'corner' | 'tee' | 'cross' | 'six' | 'multi', r (the outline's radius about the centre),
-//          arms: [{road (index), id, s, yaw (outward), dir (+1 along the road's s, -1 against), width, pavement, end, cut (the distance from
-//          the centre to the arm's cut line)}] sorted by yaw,
+//     N = {roads: [Rd...] (KTRANSIT.road records, in the defs' order, each with network and netIndex), nodes: [J...] (every node), junctions: [J...]
+//          (the nodes of two arms or more), segments: [{id, road, s0, s1, from, to}] (from/to: node ids, null at a free end), ground, opts, defs}
+//     J = {id, x, z, y, n (the arms), kind: 'end' | 'corner' | 'tee' | 'cross' | 'six' | 'multi', ramp (an arm is a ramp's road), r (the outline's radius about the centre),
+//          arms: [{road (index), id, s, yaw (outward), dir (+1 along the road's s, -1 against), width, pavement, end, ramp, cut (the distance from
+//          the centre to the arm's cut line)}] sorted by yaw, raw: [[road, s]...] (the meetings it was built from),
 //          corners: [{between: [arm, arm], straight, sliver (arms under 30 degrees: the corner capped), apex: [x, z] | null (where the kerb lines meet), inner: [[x, z]...] (the kerb from the first
 //          arm's cut round the fillet to the next arm's cut), outer: [[x, z]...] (the pavement's outer edge), x, z, yaw (where a signal stands,
 //          facing the centre)}], patch: [[x, z]...] (the asphalt outline, star-shaped about the centre: cut lines and apexes),
 //          outline: [[x, z]...] (the whole junction: the pavements' outer edges), levelAt(x, z) (the junction's surface: its level, dipping by o.carve there, as the roads' levelAt)}
 //   KTRANSIT.junctionAt(N, x, z, pad)        the junction whose outline (grown by pad) holds (x, z), or null
 //   KTRANSIT.nearJunction(N, road, s, pad)   the junction a road's s lies within (an arm's cut + pad), or null
+//   KTRANSIT.join(N, d) -> index             a road added to a built network (d as a def, plus trim: stop at the first road crossed; pins): its nodes
+//                                            built, the roads it meets regraded in place; the record carries network and netIndex
+//   KTRANSIT.joinRamps(N, H) -> [index...]   a highway's ramps' landing roads joined (kind 'ramp', no pavement), each ramp's `road` replaced by the record
 //   KTRANSIT.cutsOf(N, road)                 [[s0, s1]...] the stretches of a road the junctions take, sorted and merged: the road is drawn between them
 //   KTRANSIT.resample(pts, m)                a polyline [[x, z]...] resampled to m points at equal fractions of its length
 (function () {
@@ -93,59 +96,109 @@
   }
   function inPoly(poly, x, z) { var c = false, n = poly.length; for (var i = 0, j = n - 1; i < n; j = i++) { var a = poly[i], b = poly[j]; if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
   function nearPoly(poly, x, z, pad) { var n = poly.length; for (var i = 0, j = n - 1; i < n; j = i++) { var a = poly[i], b = poly[j], dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz, t = l2 > 1e-9 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0; if (Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t) <= pad) return true; } return false; }
+  /* the meetings of road i with the roads `others`: every crossing, and every end of one within 1.5 m of the other (a T, a corner) */
+  function meetsOf(roads, i, others) {
+    var meets = [], A = roads[i];
+    others.forEach(function (j) { if (j === i) return; var B = roads[j];
+      T.intersections(A.path, B.path).forEach(function (c) { meets.push({ x: c.x, z: c.z, arms: [[i, c.sP], [j, c.sQ]] }); });
+      [[i, j], [j, i]].forEach(function (pr) { var P1 = roads[pr[0]], P2 = roads[pr[1]]; [0, P1.L].forEach(function (sEnd) { var e = P1.path.at(sEnd), q = P2.path.project(e.x, e.z); if (q.d <= 1.5 && !meets.some(function (m) { return Math.hypot(m.x - e.x, m.z - e.z) < 2 && m.arms.some(function (ar) { return ar[0] === pr[0] && Math.abs(ar[1] - sEnd) < 2; }); })) meets.push({ x: e.x, z: e.z, arms: [[pr[0], sEnd], [pr[1], q.s]] }); }); }); });
+    return meets;
+  }
+  /* a meeting into the nodes: a node within 2 m takes its arms (three roads through one point: six arms), else a new node */
+  function nodeOf(N, m) {
+    var J = N.nodes.filter(function (q) { return Math.hypot(q.x - m.x, q.z - m.z) < 2; })[0];
+    if (!J) { J = { id: 'j' + N.nodes.length, x: m.x, z: m.z, raw: [] }; N.nodes.push(J); }
+    m.arms.forEach(function (a) { if (!J.raw.some(function (b) { return b[0] === a[0] && Math.abs(b[1] - a[1]) < 2; })) J.raw.push(a); });
+    return J;
+  }
+  /* the free ends of the roads given: a node of one arm each */
+  function endNodes(N, idx) { idx.forEach(function (k) { var R = N.roads[k]; [0, R.L].forEach(function (sEnd) { var e = R.path.at(sEnd); if (!N.nodes.some(function (J) { return J.raw.some(function (a) { return a[0] === k && Math.abs(a[1] - sEnd) < 2; }); })) N.nodes.push({ id: 'j' + N.nodes.length, x: e.x, z: e.z, raw: [[k, sEnd]] }); }); }); }
+  /* a node from its raw arms: the arms (a road through it gives two, back and on; a road ending there one), sorted by yaw; the kind; the level
+     (the first road's at the meeting); the geometry. Returns the pins that hold each road flat between its cuts there */
+  function buildNode(N, J) {
+    var roads = N.roads, o = N.opts; J.arms = [];
+    J.raw.sort(function (a, b) { return a[0] - b[0]; });
+    J.raw.forEach(function (a) { var R = roads[a[0]], s = a[1], atEnd = s < 1 || s > R.L - 1, ramp = R.roadKind === 'ramp';
+      if (!atEnd) { [-1, 1].forEach(function (dir) { var p = R.path.at(s + dir * 3); J.arms.push({ road: a[0], id: R.id, s: s, dir: dir, yaw: Math.atan2(p.x - J.x, p.z - J.z), width: R.width, pavement: R.pavement, end: false, ramp: ramp }); }); }
+      else { var dir2 = s < 1 ? 1 : -1, p2 = R.path.at(s + dir2 * 3); J.arms.push({ road: a[0], id: R.id, s: s, dir: dir2, yaw: Math.atan2(p2.x - J.x, p2.z - J.z), width: R.width, pavement: R.pavement, end: true, ramp: ramp }); } });
+    J.arms.sort(function (a, b) { return norm(a.yaw) - norm(b.yaw); });
+    J.n = J.arms.length; J.kind = J.n < 2 ? 'end' : J.n === 2 ? 'corner' : J.n === 3 ? 'tee' : J.n === 4 ? 'cross' : J.n === 6 ? 'six' : 'multi'; J.ramp = J.arms.some(function (a) { return a.ramp; });
+    var first = J.raw[0]; J.level = { road: first[0], s: first[1] }; J.y = roads[first[0]].yAt(first[1]);
+    geometry(J, roads);
+    J.levelAt = function (x, z) { return o.carve ? J.y + Math.min(0, o.carve(x, z)) : J.y; };
+    var pins = {};
+    if (J.n >= 2) J.arms.forEach(function (a) { var R = roads[a.road], dq = R.path.L / Math.max(1, R.path.n - 1) * 0.5; for (var q = 0; q <= a.cut + 2 * dq; q += dq) (pins[a.road] || (pins[a.road] = [])).push({ s: Math.max(0, Math.min(R.L, a.s + a.dir * q)), y: J.y }); });
+    return pins;
+  }
+  /* the drifts keep off the junctions: a drift over a cut is trimmed to it, or split round it, and dropped when under 8 m remains */
+  function clipDrifts(N, k) {
+    var R = N.roads[k], cuts = T.cutsOf(N, k); if (!cuts.length || !R.drifts.length) return; var kept = [];
+    R.drifts.forEach(function (d) { var parts = [[d.s0, d.s1]]; cuts.forEach(function (c) { var next = []; parts.forEach(function (p) { if (p[1] <= c[0] - 2 || p[0] >= c[1] + 2) next.push(p); else { if (c[0] - 2 - p[0] > 8) next.push([p[0], c[0] - 2]); if (p[1] - (c[1] + 2) > 8) next.push([c[1] + 2, p[1]]); } }); parts = next; });
+      parts.forEach(function (p, i) { var e = {}; for (var key in d) e[key] = d[key]; e.id = d.id.replace(/b\d+$/, '') + (i ? 'b' + i : ''); e.s0 = p[0]; e.s1 = p[1]; kept.push(e); }); });
+    R.drifts = kept;
+  }
+  /* the segments: each road between its cuts, in order along it */
+  function segmentsOf(N) {
+    N.segments.length = 0;
+    N.roads.forEach(function (R, k) {
+      var cuts = T.cutsOf(N, k), s0 = 0, seg = 0, nodeAt = function (s) { var best = null; N.nodes.forEach(function (J) { J.arms.forEach(function (a) { if (a.road === k && Math.abs(a.s - s) < 2.5) best = J; }); }); return best; }, from = nodeAt(0);
+      var push = function (a, b, to) { if (b - a > 0.5) N.segments.push({ id: R.id + '.g' + seg++, road: k, s0: a, s1: b, from: from ? from.id : null, to: to ? to.id : null }); };
+      cuts.forEach(function (c) { var J = nodeAt(c[2]); push(s0, c[0], J); s0 = c[1]; from = J; });
+      push(s0, R.L, nodeAt(R.L));
+    });
+  }
+  /* the nodes given built (or rebuilt), the roads they pin regraded in place, the junction list, the drifts and the segments brought up to date */
+  function finishNodes(N, which, touched) {
+    var pinsAll = {};
+    which.forEach(function (J) { var p = buildNode(N, J); for (var k in p) pinsAll[k] = (pinsAll[k] || []).concat(p[k]); });
+    for (var k in pinsAll) N.roads[k].regrade(pinsAll[k]);
+    N.junctions.length = 0; N.nodes.forEach(function (J) { J.y = N.roads[J.level.road].yAt(J.level.s); if (J.n >= 2) N.junctions.push(J); });
+    touched.forEach(function (k) { clipDrifts(N, k); });
+    segmentsOf(N);
+  }
   T.network = function (defs, o) {
     o = o || {};
     if (typeof o.ground !== 'function') throw new Error('KTRANSIT.network: o.ground(x, z) is required');
     if (!Array.isArray(defs) || !defs.length) throw new Error('KTRANSIT.network: a list of road definitions, please');
-    var roads = [], nodes = [], junctions = [], segments = [], N = { roads: roads, nodes: nodes, junctions: junctions, segments: segments, ground: o.ground }, i, j;
-    /* the roads first without pins (their paths are what the meetings are found on), then again held flat through the junctions */
-    var make = function (d, pins) { var K = T.ROAD_KINDS[d.kind == null ? 'road' : d.kind] || T.ROAD_KINDS.road; return T.road(d.pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: pins }); };
-    defs.forEach(function (d) { roads.push(make(d, null)); });
-    /* the meetings: every crossing of two paths, every end of a road within 1.5 m of another road (a T or a corner), gathered by point (two
-       meetings within 2 m are one node: three roads through one point give six arms) */
-    var meets = [];
-    for (i = 0; i < roads.length; i++) for (j = i + 1; j < roads.length; j++) {
-      T.intersections(roads[i].path, roads[j].path).forEach(function (c) { meets.push({ x: c.x, z: c.z, arms: [[i, c.sP], [j, c.sQ]] }); });
-      [[i, j], [j, i]].forEach(function (pr) { var A = roads[pr[0]], B = roads[pr[1]]; [0, A.L].forEach(function (sEnd) { var e = A.path.at(sEnd), q = B.path.project(e.x, e.z); if (q.d <= 1.5 && !meets.some(function (m) { return Math.hypot(m.x - e.x, m.z - e.z) < 2 && m.arms.some(function (ar) { return ar[0] === pr[0] && Math.abs(ar[1] - sEnd) < 2; }); })) meets.push({ x: e.x, z: e.z, arms: [[pr[0], sEnd], [pr[1], q.s]] }); }); });
-    }
-    meets.forEach(function (m) {
-      var J = nodes.filter(function (q) { return Math.hypot(q.x - m.x, q.z - m.z) < 2; })[0];
-      if (!J) { J = { x: m.x, z: m.z, armsRaw: [] }; nodes.push(J); }
-      m.arms.forEach(function (a) { if (!J.armsRaw.some(function (b) { return b[0] === a[0] && Math.abs(b[1] - a[1]) < 2; })) J.armsRaw.push(a); });
-    });
-    /* the free ends: a node of one arm each */
-    roads.forEach(function (R, k) { [0, R.L].forEach(function (sEnd) { var e = R.path.at(sEnd); if (!nodes.some(function (J) { return J.armsRaw.some(function (a) { return a[0] === k && Math.abs(a[1] - sEnd) < 2; }); })) nodes.push({ x: e.x, z: e.z, armsRaw: [[k, sEnd]] }); }); });
-    /* each node's arms: a road through it gives two (back and on), a road ending there one; the level is the first road's at the meeting; then
-       the geometry, and the pins that hold every road flat between its cuts there */
-    var pinsFor = roads.map(function () { return []; });
-    nodes.forEach(function (J, k) {
-      J.id = 'j' + k; J.arms = [];
-      J.armsRaw.sort(function (a, b) { return a[0] - b[0]; });
-      J.armsRaw.forEach(function (a) { var R = roads[a[0]], s = a[1], atEnd = s < 1 || s > R.L - 1;
-        if (!atEnd) { [-1, 1].forEach(function (dir) { var p = R.path.at(s + dir * 3); J.arms.push({ road: a[0], id: R.id, s: s, dir: dir, yaw: Math.atan2(p.x - J.x, p.z - J.z), width: R.width, pavement: R.pavement, end: false }); }); }
-        else { var dir2 = s < 1 ? 1 : -1, p2 = R.path.at(s + dir2 * 3); J.arms.push({ road: a[0], id: R.id, s: s, dir: dir2, yaw: Math.atan2(p2.x - J.x, p2.z - J.z), width: R.width, pavement: R.pavement, end: true }); } });
-      J.arms.sort(function (a, b) { return norm(a.yaw) - norm(b.yaw); });
-      J.n = J.arms.length; J.kind = J.n < 2 ? 'end' : J.n === 2 ? 'corner' : J.n === 3 ? 'tee' : J.n === 4 ? 'cross' : J.n === 6 ? 'six' : 'multi';
-      var first = J.armsRaw[0]; J.level = { road: first[0], s: first[1] }; J.y = roads[first[0]].yAt(first[1]);
-      geometry(J, roads);
-      if (J.n >= 2) { junctions.push(J); J.arms.forEach(function (a) { var dq = roads[a.road].path.L / Math.max(1, roads[a.road].path.n - 1) * 0.5; for (var q = 0; q <= a.cut + 2 * dq; q += dq) pinsFor[a.road].push({ s: Math.max(0, Math.min(roads[a.road].L, a.s + a.dir * q)), y: J.y }); }); }
-      delete J.armsRaw;
-    });
-    defs.forEach(function (d, k) { if (pinsFor[k].length) roads[k] = make(d, pinsFor[k]); });
-    /* the drifts keep off the junctions: a drift over a cut is trimmed to it, or split round it, and dropped when under 8 m remains */
-    roads.forEach(function (R, k) { var cuts = T.cutsOf(N, k); if (!cuts.length || !R.drifts.length) return; var kept = [];
-      R.drifts.forEach(function (d) { var parts = [[d.s0, d.s1]]; cuts.forEach(function (c) { var next = []; parts.forEach(function (p) { if (p[1] <= c[0] - 2 || p[0] >= c[1] + 2) next.push(p); else { if (c[0] - 2 - p[0] > 8) next.push([p[0], c[0] - 2]); if (p[1] - (c[1] + 2) > 8) next.push([c[1] + 2, p[1]]); } }); parts = next; });
-        parts.forEach(function (p, i) { var e = {}; for (var key in d) e[key] = d[key]; e.id = d.id + (i ? 'b' + i : ''); e.s0 = p[0]; e.s1 = p[1]; kept.push(e); }); });
-      R.drifts = kept; });
-    nodes.forEach(function (J) { J.y = roads[J.level.road].yAt(J.level.s); var y = J.y; J.levelAt = function (x, z) { return o.carve ? y + Math.min(0, o.carve(x, z)) : y; }; });
-    /* the segments: each road between its cuts, in order along it */
-    roads.forEach(function (R, k) {
-      var cuts = T.cutsOf(N, k), s0 = 0, seg = 0, nodeAt = function (s) { var best = null; nodes.forEach(function (J) { J.arms.forEach(function (a) { if (a.road === k && Math.abs(a.s - s) < 2.5) best = J; }); }); return best; }, from = nodeAt(0);
-      var push = function (a, b, to) { if (b - a > 0.5) segments.push({ id: R.id + '.g' + seg++, road: k, s0: a, s1: b, from: from ? from.id : null, to: to ? to.id : null }); };
-      cuts.forEach(function (c) { var J = nodeAt(c[2]); push(s0, c[0], J); s0 = c[1]; from = J; });
-      push(s0, R.L, nodeAt(R.L));
-    });
+    var roads = [], N = { roads: roads, nodes: [], junctions: [], segments: [], ground: o.ground, opts: o, defs: defs.slice() }, i;
+    var make = function (d) { var K = T.ROAD_KINDS[d.kind == null ? 'road' : d.kind] || T.ROAD_KINDS.road; return T.road(d.pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins }); };
+    defs.forEach(function (d) { var R = make(d); R.network = N; R.netIndex = roads.length; roads.push(R); });
+    var all = roads.map(function (R, k) { return k; });
+    for (i = 0; i < roads.length; i++) meetsOf(roads, i, all.filter(function (j) { return j > i; })).forEach(function (m) { nodeOf(N, m); });
+    endNodes(N, all);
+    finishNodes(N, N.nodes.slice(), all);
     return N;
+  };
+  /* JOIN: a road added to a built network (a highway ramp's landing road: KTRANSIT.joinRamps). d.trim stops it at the first road it crosses (a
+     T, not a stub beyond); an end within a road's width and pavement plus 3 m is carried to that road's centre line (a T, not a road ending on a
+     carriageway). The new road's meetings become nodes (or join nodes within 2 m); those nodes are built, the roads they pin regraded in place
+     (every holder of a road's yAt or levelAt sees the new level), the segments redone. Returns the new road's index; the record carries
+     `network` and `netIndex`, so KTRANSIT.draw.road cuts it at its junctions without being told */
+  T.join = function (N, d) {
+    if (!N || !N.roads || !N.opts) throw new Error('KTRANSIT.join: a KTRANSIT.network, please');
+    if (!d || !Array.isArray(d.pts) || d.pts.length < 2) throw new Error('KTRANSIT.join: a road definition with pts, please');
+    var o = N.opts, pts = d.pts.map(function (p) { return Array.isArray(p) ? [p[0], p[1]] : [p.x, p.z]; }), K = T.ROAD_KINDS[d.kind] || { width: 7.5, pavement: 0, lines: 'edges' };
+    if (d.trim) { var P0 = T.path(pts, { ground: o.ground, radius: d.radius == null ? 20 : d.radius, step: 4 }), best = null;
+      N.roads.forEach(function (R) { T.intersections(P0, R.path).forEach(function (c) { if (c.sP > 4 && (!best || c.sP < best.sP)) best = c; }); });
+      if (best) { var kept = [pts[0]], acc = 0; for (var q = 1; q < pts.length; q++) { acc += Math.hypot(pts[q][0] - pts[q - 1][0], pts[q][1] - pts[q - 1][1]); if (acc < best.sP - 1) kept.push(pts[q]); else break; } kept.push([best.x, best.z]); pts = kept; } }
+    /* (an end is not carried onto a road its other end already meets, nor when the carried road would be under 10 m) */
+    [0, pts.length - 1].forEach(function (ei) { var e = pts[ei], far = pts[ei ? 0 : pts.length - 1], hit = null; N.roads.forEach(function (R) { var q = R.path.project(e[0], e[1]); if (q.d > 1.5 && q.d <= R.width / 2 + (R.pavement == null ? 0 : R.pavement) + 3 && q.s > 1 && q.s < R.L - 1 && R.path.project(far[0], far[1]).d > 1.5 && (!hit || q.d < hit.d)) hit = { d: q.d, s: q.s, R: R }; }); if (hit) { var c = hit.R.path.at(hit.s); if (Math.hypot(c.x - far[0], c.z - far[1]) >= 10) pts[ei] = [c.x, c.z]; } });
+    var Rd = T.road(pts, { id: d.id, ground: o.ground, carve: o.carve, shift: o.shift, width: num(d.width, K.width), pavement: num(d.pavement, K.pavement), lines: d.lines == null ? K.lines : d.lines, kind: d.kind == null ? 'road' : d.kind, drift: d.drift, maxGrade: d.maxGrade, radius: d.radius, pins: d.pins }), k = N.roads.length;
+    Rd.network = N; Rd.netIndex = k; N.roads.push(Rd); N.defs.push(d);
+    var others = N.roads.map(function (R, j) { return j; }).filter(function (j) { return j !== k; });
+    meetsOf(N.roads, k, others).forEach(function (m) { nodeOf(N, m); });
+    endNodes(N, [k]);
+    var which = N.nodes.filter(function (J) { return J.raw.some(function (a) { return a[0] === k; }); }), touched = {};
+    which.forEach(function (J) { J.raw.forEach(function (a) { touched[a[0]] = true; }); });
+    finishNodes(N, which, Object.keys(touched).map(Number));
+    return k;
+  };
+  /* a highway's ramps joined to the network: each landing road becomes a road of kind 'ramp' (its width, no pavement, edge lines), pinned at
+     its start to the ramp's deck end, trimmed to the first road it crosses or carried to the one it ends beside; the ramp's `road` is replaced
+     by the record, so KTRANSIT.draw.highway draws it cut at its junction. Returns the indices */
+  T.joinRamps = function (N, H) {
+    if (!H || !H.ramps) throw new Error('KTRANSIT.joinRamps: a KTRANSIT.highway, please');
+    return H.ramps.map(function (R) { var k = T.join(N, { id: R.road.id, pts: R.road.pts.map(function (p) { return [p.x, p.z]; }), width: R.road.width, pavement: 0, lines: 'edges', kind: 'ramp', trim: true, radius: 20, pins: [{ s: 0, y: R.deckAt(R.L) }] }); R.road = N.roads[k]; return k; });
   };
   T.cutsOf = function (N, road) {
     var out = [];

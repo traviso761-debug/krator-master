@@ -25,7 +25,7 @@ TRS.build=function(){if(TRS.ready)return true;if(window._texPending>0)return fal
  /* the block: every kind in every state it has */
  R.grid=KTRANSIT.dressGrid({ground:g,x:-760,z:110,seed:91});R.gridG=add(KTRANSIT.draw.dress(R.grid,{furn,shadow:sh,err:reportErr}),'The block: every kind in every state','block',{pieces:R.grid.pieces.length});
  /* the highway, its ramps, the interchange */
- R.H=KTRANSIT.highway([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{id:'h1',ground:g,ramps:[{s:520,side:-1,dir:'off'},{s:2500,side:-1,dir:'on'}],shift:TR_SHIFT,quake:TR_QUAKE,blockades:[1700]});
+ R.H=TR_H;   /* built in 45 with the data: its ramps' landing roads are roads of the network (KTRANSIT.joinRamps) */
  R.culled=KTRANSIT.cull(R.H,blocked);
  R.H2=KTRANSIT.highway([[1100,-1750],[1100,250]],{id:'h2',ground:g,over:[R.H],overgrowth:1});
  add(KTRANSIT.draw.highway(R.H,{furn,vehicles:veh,shadow:sh,err:reportErr}),'The highway h1 (two ramps)','highway',{spans:R.H.spans.length,culled:R.culled,blockades:R.H.blockades.length});
@@ -64,5 +64,5 @@ const VIEWS={
  'The cutting':[-980,18,-95,-900,8,-150],'A road under sand':[430,14,-560,400,2,-500],
  'A barricade of wrecks':(()=>{const b=TR_WAR[1].blockades[0];return b?[b.x+22,9,b.z+26,b.x,1.5,b.z]:[-300,20,40,-300,2,0];})(),
  'The highway blocked':(()=>{const P=KTRANSIT.path([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{ground:terrainH,radius:80,shift:TR_SHIFT}),p=P.at(1700),yD=terrainH(p.x,p.z)+9;return [p.x+40,yD+14,p.z+30,p.x,yD+1,p.z];})(),
- 'A six-arm junction':[850,26,60,800,1,0],'A T junction':[-60,16,50,-100,1,10],'A corner of two streets':[-660,12,600,-700,1,560],'A city street':[-560,7,575,-460,1,560],
+ 'A six-arm junction':[850,26,60,800,1,0],'A ramp foot':(()=>{const J=TR_NET.junctions.find(J=>J.ramp);return J?[J.x+34,J.y+16,J.z+40,J.x,J.y+1,J.z]:[-1020,16,-500,-1020,1,-540];})(),'A T junction':[-60,16,50,-100,1,10],'A corner of two streets':[-660,12,600,-700,1,560],'A city street':[-560,7,575,-460,1,560],
  'From the air':[0,950,1500,0,0,-200]};

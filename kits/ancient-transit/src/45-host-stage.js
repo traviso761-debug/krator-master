@@ -35,9 +35,9 @@ const TR_SUBWAY=KTRANSIT.subway([[-120,-1750],[-120,-700],[-60,-250],[-60,1750]]
    stand at the road's level. The second side street lies under drifts of sand along its south half */
 const TR_DEFS=[{id:'avenue',pts:[[-1500,0],[1500,0]],kind:'avenue'},{id:'st1',pts:[[-300,-900],[-300,900]],kind:'road'},{id:'st2',pts:[[400,-900],[400,900]],kind:'road',drift:s=>s<900?0.7:0.15},
  {id:'tee',pts:[[-100,0],[-100,620]],kind:'street'},{id:'c1',pts:[[-700,180],[-700,560]],kind:'street'},{id:'c2',pts:[[-700,560],[-420,560]],kind:'lane'},
- {id:'d1',pts:[[600,-400],[1000,400]],kind:'street'},{id:'d2',pts:[[1000,-400],[600,400]],kind:'street'}];
+ {id:'d1',pts:[[600,-400],[1000,400]],kind:'street'},{id:'d2',pts:[[1000,-400],[600,400]],kind:'street'},{id:'rs',pts:[[-1020,-700],[-1020,-250]],kind:'street'}];
 /* what the roads' surfaces dip into: the sinkholes and the craters (the war is built after the roads, on their surfaces, so it is read when called) */
-let TR_WAR=null;const TR_CARVE=(x,z)=>{let h=KTRANSIT.sinkholeH(TR_SUBWAY,x,z);if(TR_WAR)for(let i=0;i<TR_WAR.length;i++)h+=Math.min(0,KTRANSIT.craterH(TR_WAR[i],x,z));return h;};
+let TR_WAR=[];const TR_CARVE=(x,z)=>{let h=KTRANSIT.sinkholeH(TR_SUBWAY,x,z);if(TR_WAR)for(let i=0;i<TR_WAR.length;i++)h+=Math.min(0,KTRANSIT.craterH(TR_WAR[i],x,z));return h;};
 const TR_NET=KTRANSIT.network(TR_DEFS,{ground:TR_RELIEF,shift:TR_SHIFT,carve:TR_CARVE});
 const TR_ROADS=TR_NET.roads;
 const TR_STREETS=TR_DEFS.map((d,i)=>({id:d.id,pts:d.pts,width:TR_ROADS[i].width,pavement:TR_ROADS[i].pavement,shift:TR_SHIFT,ground:TR_ROADS[i].levelAt}));
@@ -45,11 +45,16 @@ const TR_STREETS=TR_DEFS.map((d,i)=>({id:d.id,pts:d.pts,width:TR_ROADS[i].width,
    the second a riot with a checkpoint (at the avenue's junction: just short of its cut); the small streets a riot, one of the diagonals with a position or two.
    Every war keeps its pieces off the junctions (network, road) */
 const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5,military:true,positions:[860],blockades:true,seed:902},{damage:0.18,military:0.5,positions:[860],seed:903},
- {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908}];
-TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,Object.assign({network:TR_NET,road:i},TR_WAR_O[i])));
+ {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908},{damage:0.2,seed:909}];
 /* the cargo line too comes before the ground: its cutting through the knoll is carved */
 const TR_CARGO=KTRANSIT.rail([[-1750,-150],[650,-150],[1750,-900]],{id:'cargo',ground:TR_RELIEF,streets:TR_STREETS.slice(1),catenary:true,shift:TR_SHIFT,quake:TR_QUAKE});
 const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});return h;},waterH=()=>-1e6;
+/* THE HIGHWAY is built here, with the data, not on the stage: its ramps' landing roads JOIN the network (KTRANSIT.joinRamps: the off ramp's lands on
+   the street rs, a T; the on ramp's ends beside st2 and is carried to it, a T), so those junctions exist before the wars and the dress. The wars
+   come after it (a crater is carved only once the war exists; the deck clears the ground without them) */
+const TR_H=KTRANSIT.highway([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{id:'h1',ground:terrainH,ramps:[{s:520,side:-1,dir:'off'},{s:2480,side:-1,dir:'on'}],shift:TR_SHIFT,quake:TR_QUAKE,blockades:[1700]});
+const TR_RAMP_ROADS=KTRANSIT.joinRamps(TR_NET,TR_H);
+TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,Object.assign({network:TR_NET,road:i},TR_WAR_O[i])));
 /* everything carved: where the ground mesh refines itself (47): the subway's holes, the craters, the fault's line, the cuttings */
 const TR_CARVED=[].concat(KTRANSIT.carved(TR_SUBWAY),...TR_WAR.map(W=>W.craters.map(c=>({x:c.x,z:c.z,r:c.r}))));
 for(let s=0;s<TR_QUAKE.L;s+=18){const p=TR_QUAKE.path.at(s);TR_CARVED.push({x:p.x,z:p.z,r:12,k:8});}
