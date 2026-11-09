@@ -39,6 +39,11 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
       PLAN-STATIONS.md "Station 2, as built"); station 1 also writes `dist/crater-drylands-n.html`, and `dist/crater-drylands.html` stays as a
       copy of it until its readers (the gallery, `verify.py`, the baseline) point at `-n`. Savannarim reads this kit's `50` and `55` in place:
       this turn's changes there are optional switches (`BIO.host.seasons`, `BIO.host.treeScale`, the flare, the impostors, the spire's stalk).
+- **Headless loads after `south` and the merge** (2026-11-09, software GL): all four pages clean. `south` passes all 37 checks and
+  negatives (4,111 black mallees, all on the old flows; rust miombo 222, incense 489, rain roses 9; 31,906 trees of the base, none on a flow;
+  attach audit .14%; the season and flush bound, the trees at .85); station 1 30, edge 34, salt 34, their fire mosaics unchanged. On the way:
+  `84`'s flow knob was read before its declaration (every page threw at load: fixed), and one base tree stood on a flow (the mask now
+  reaches zero by half a flow).
 - [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); the Af gully
       galleries on the north-western side; the Csa and Csb oak scrub on the topmost slopes; the `tibasalt` strata at the southern edge (the
       flows' fronts are drawn by the ground, no KSTRATA bed shader on them); S's fields and hazards from the scale model's S polygon (the stage
