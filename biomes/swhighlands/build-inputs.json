@@ -19,7 +19,7 @@
     "biomes/swhighlands/src/60-biome-swhighlands-floor.js": "82a2463e1b29e7d4de9d374eb665e4023b7377f2ba9f4d6c5b31898bbec32c5e",
     "biomes/swhighlands/src/70-biome-swhighlands.js": "97de0752fc4fc275522f80f6db18a98067c987cff006261dd9e637f9ab1ab8c6",
     "biomes/swhighlands/src/82-host-far.js": "c164a36058cc589e16f86e444f2144c3e3944255f639bcc49c2380fd6583bb9a",
-    "biomes/swhighlands/src/84-host-ground.js": "6bf6568b0c1b962c468c2029048542609d7475785bf668844a05cfd592a8063c",
+    "biomes/swhighlands/src/84-host-ground.js": "a0251ffc153522f1c94d87c08165d6779c77e8bda0a08c079b9973836564526a",
     "biomes/swhighlands/src/88-host-build.js": "9cd14d004718ed5e9a3506f50fa69f12a8a00bb5004332ab88fba11a4aefe01d",
     "biomes/swhighlands/src/89a-host-atmos.js": "e8a3ad6158cf0bf3e87a0113417066e5892f26d5f5d60ecf038feb35b6b99bf5",
     "biomes/swhighlands/src/89s-host-sky.js": "dc64e3f35ea474d2e993c30845d231cc8f27a2cb92a7db763dccd1b16cc78e47",
@@ -76,7 +76,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -116,7 +116,7 @@
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -138,10 +138,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands.html": "decf18584c5c408e5c6b0d59f7fcbb8b583f6c2848cd3f93819a3c6985edfe68"
+    "biomes/swhighlands/dist/swhighlands.html": "3e4cafbcc44ee35e167baa744ffa190340ccd041f7ca1487a76b33642c1b147f"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands.html": "decf18584c5c408e5c6b0d59f7fcbb8b583f6c2848cd3f93819a3c6985edfe68"
+    "biomes/swhighlands/dist/swhighlands.html": "3e4cafbcc44ee35e167baa744ffa190340ccd041f7ca1487a76b33642c1b147f"
    }
   },
   "build.py --station pillars": {
@@ -163,7 +163,7 @@
     "biomes/swhighlands/stations/pillars/45-host-stage.js": "c78b47ba95ef8f9fb4e745c48325fddec5403bd9e551638441eb6ad3f0b1ed10",
     "biomes/swhighlands/stations/pillars/47-host-land.js": "bc405837eead26cf4bb2623e3d4c3ff42a7c80d28d4e5d52794f109e6749be9b",
     "biomes/swhighlands/stations/pillars/82-host-far.js": "23bdba7a65ed3345caad23bbb03ad5aece8ecd74b102bf4db38b07dace1f7875",
-    "biomes/swhighlands/stations/pillars/84-host-ground.js": "e7a4c6450ac587041263f34397f8f55627086d1c1675bdb08d32cb3699d39cfc",
+    "biomes/swhighlands/stations/pillars/84-host-ground.js": "90572a19aca4367a96df5bd124294be74d6c2aeaae456aaa9b341fc831d70030",
     "biomes/swhighlands/stations/pillars/88-host-build.js": "87a14d722a9ad3a5638d194e184d6cb9b47b759471a136566104c4c17a15c622",
     "biomes/swhighlands/stations/pillars/89a-host-atmos.js": "36d0c6b31bd4af58283e857f4c0ef205c1c630d0e9a0de03f01509f066e3256a",
     "biomes/swhighlands/stations/pillars/89s-host-sky.js": "e3854ee02b37aabda73f6a72e6972051e09f5109828441c8b9b55b0a701a7e87",
@@ -219,7 +219,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -260,7 +260,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -283,10 +283,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "6036d684e3af37db070ee6ba8e578725907833cd1fcfe06e207fe65a25caf907"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "5d7080ddb6c53d7f9ecf14ff0d92c4c85d1372e20a257e3aaf9f2b4a9f396d33"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "6036d684e3af37db070ee6ba8e578725907833cd1fcfe06e207fe65a25caf907"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "5d7080ddb6c53d7f9ecf14ff0d92c4c85d1372e20a257e3aaf9f2b4a9f396d33"
    }
   },
   "build.py --station pillars --preview span": {
@@ -529,7 +529,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -569,7 +569,7 @@
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -592,10 +592,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "4c1b23421f412f17623dfd05d534a773ae7d0a22e92021a0bd4aaa653992e650"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "b8970cf2a50c19532353e95bf2f76f92a123280d62f14e841f588293d1237e1a"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "4c1b23421f412f17623dfd05d534a773ae7d0a22e92021a0bd4aaa653992e650"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "b8970cf2a50c19532353e95bf2f76f92a123280d62f14e841f588293d1237e1a"
    }
   }
  }

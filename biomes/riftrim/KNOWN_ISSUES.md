@@ -24,6 +24,10 @@ frozen lake's ice record in the water fields; three vendors' builders whose crow
 **Owed to the coordinator:** the GPU `--assert --all-views`; the lakes station's 15.9 M at the canes' view is under the 19.5 M
 budget but the heaviest, and worth a look on the Arc.
 
+**2026-11-08, `dist/riftrim-pass.html` on the GPU:** `verify.py --assert --all-views` passes on the Arc (and a link-hooked run on the
+RTX): all 34 programs link in every view, before and after the universal asserts. The earlier `shader-programs` failure (HANDOFF-REBUILD.md: the
+ground past 16 texture units in some view's mode) does not reproduce on the current core (with `KSHADOW.units`); no kit change was made.
+
 ## The look, seen in SwiftShader (for the owner's pass)
 
 - [ ] Station 1's cloud belt ground reads pale between the mist frills, and the fog-drip cards show as small square plates under the
