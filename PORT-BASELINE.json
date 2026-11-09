@@ -1,12 +1,24 @@
 {
  "pages": {
+  "biomes/copperglacier/dist/copperglacier-icefield.html": {
+   "bytes": 5113233,
+   "sha256": "5a6ed3a7427e4a801cf472b2ded2d686300ed6e599d9ce4e7acdabb91e9ff15c"
+  },
+  "biomes/copperglacier/dist/copperglacier-pass.html": {
+   "bytes": 5113958,
+   "sha256": "a245f4f94a943b757ce8c24b4d241f095b0e4620127586e5848d943527a9b9a5"
+  },
+  "biomes/copperglacier/dist/copperglacier.html": {
+   "bytes": 5113802,
+   "sha256": "5c2d5bc21d415555ee064cc2673e3c998496b1c3f6dc8d55c7a9e6cf683c8444"
+  },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"
   },
   "biomes/dambasins/dist/port.html": {
-   "bytes": 989760,
-   "sha256": "bd205bb7742ba1a693cc28be7087744b6847ec105ab052012373fe82637a23a8"
+   "bytes": 1118363,
+   "sha256": "b7265d2c667b9593f0631baea6e6d60ea814f2d601a37a14b711febe3377aa9b"
   },
   "biomes/eastabyss/dist/eastabyss-lakes.html": {
    "bytes": 8233687,
@@ -105,8 +117,8 @@
    "sha256": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
-   "bytes": 4190529,
-   "sha256": "0f6199c0d6fd6b47fa4e8249f13c255a503eef0f2383830c6ce5634db43f3017"
+   "bytes": 5672140,
+   "sha256": "6c9beb5d4b2f75135e2308f39096628858b5059c38303d7c33633ef78f91949a"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 7967514,
@@ -141,8 +153,8 @@
    "sha256": "04a9e0ee9e02fa0811c7327f389b919cc8e03e7440cc71c9d8816ce26e46b4d8"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 6091636,
-   "sha256": "834728e99ab725b2a5d4dcfa8ecf8fe1de4d3a06faa7a649213e78faaab009e5"
+   "bytes": 7573097,
+   "sha256": "f7af724268e330133d3d5d35120c46eca05a2a63451bdb838317648232fac9c4"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8223489,
@@ -221,8 +233,8 @@
    "sha256": "efe29beaef2ca820f5a6094a37b7e8140183e2564c4e46090bcf1cd5473cf92d"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1178601,
-   "sha256": "673ebfaed70c8e454182e8ab877f6adae0b8c67ea79137cac7acb9534afb2607"
+   "bytes": 1178770,
+   "sha256": "35cf31e6d43f34408f0b5e1c3c1540fe1c40ce69050d76accc19c1ae4155c8c2"
   },
   "biomes/throne/dist/throne-isle.html": {
    "bytes": 1208515,
@@ -265,8 +277,8 @@
    "sha256": "43f7188df05d73d44e8970ff83c027e958644c5d3d94a49a200f9a8313d5f9a1"
   },
   "biomes/xanadu/dist/xanadu-gills.html": {
-   "bytes": 7770038,
-   "sha256": "5705b00efd494806ee480af4eec5f8334068407149c9d5565ebefc805e1b89ab"
+   "bytes": 8141107,
+   "sha256": "4cb57a287f03bf495051cd38ded15606a816e1034641455627db3df13a3c573d"
   },
   "biomes/xanadu/dist/xanadu-ranges.html": {
    "bytes": 7657390,

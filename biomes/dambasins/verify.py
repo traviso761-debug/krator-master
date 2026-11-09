@@ -87,9 +87,9 @@ const fl=(F,lift)=>{const n={},run=PORT_LAYOUT.runs[0];let above=0,onPort=0,floa
 if(typeof DB_FLOTSAM!=='undefined')add('db-flotsam-half-buried',fl(DB_FLOTSAM,0),fl(DB_FLOTSAM,40));
 // the dust (core/atmos 3d-dust): the bed's mean lift, sampled over the drain band and the recession, none in a calm and
 // some in the bed's stiff wind; a mask of nothing must lift nothing
-const dust=(mask)=>{const sc=ATMOS.windScale,md=DB_WIND.mode,pts=[],run=PORT_LAYOUT.runs[0];for(let k=0;k<50;k++)pts.push([run.x0-800+k*53,dbShore(0)+300+(k%7)*400]);
- const at=m=>{DB_WIND.set(m);ATMOS.windScale=DB_WIND.SCALE[m];let a=0,c=0;for(let i=0;i<30;i++){for(const f of PORT_FRAME.slice())f(.15);if(i%3===2)for(const p of pts){a+=ATMOS.dustLift(p[0],p[1],mask(p[0],p[1]));c++;}}return a/c;};
- let calm,stiff;try{calm=at('calm');stiff=at('stiff');}finally{DB_WIND.set(md);ATMOS.windScale=sc;}
+const dust=(mask)=>{const sc=DB_WIND.k,md=DB_WIND.mode,pts=[],run=PORT_LAYOUT.runs[0];for(let k=0;k<50;k++)pts.push([run.x0-800+k*53,dbShore(0)+300+(k%7)*400]);
+ const at=m=>{DB_WIND.set(m);DB_WIND.k=DB_WIND.SCALE[m];DB_WIND.apply();let a=0,c=0;for(let i=0;i<30;i++){for(const f of PORT_FRAME.slice())f(.15);if(i%3===2)for(const p of pts){a+=ATMOS.dustLift(p[0],p[1],mask(p[0],p[1]));c++;}}return a/c;};
+ let calm,stiff;try{calm=at('calm');stiff=at('stiff');}finally{DB_WIND.set(md);DB_WIND.k=sc;DB_WIND.apply();}
  return{ok:calm===0&&stiff>.1,detail:'mean lift over the bed: '+calm.toFixed(3)+' in a calm, '+stiff.toFixed(3)+' in the stiff wind'};};
 if(typeof DB_WIND!=='undefined')add('db-dust-in-the-wind',dust(DB_DUST_MASK),dust(()=>0));
 return R;}"""

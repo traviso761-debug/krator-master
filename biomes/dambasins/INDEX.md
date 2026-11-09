@@ -25,7 +25,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89c-db-ground.js` | <1 |  |
 | `91a-db-wrecks.js` | 2 |  |
 | `91b-db-flotsam.js` | 2 |  |
-| `91c-db-dust.js` | 1 |  |
+| `91c-db-dust.js` | 2 |  |
+| `91d-db-weather.js` | <1 |  |
 | `92-camera.js` | 14 | camera control (3); DAY / NIGHT (4); SEGMENT BOUNDARIES (31); INSPECTOR (72) |
 
 ## targets/

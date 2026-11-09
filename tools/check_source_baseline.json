@@ -70,7 +70,7 @@
  "biomes/nhighlands/src/82-host-sky.js: RAWTEX": 1,
  "biomes/nhighlands/src/84-host-ground.js: RAWTEX": 2,
  "biomes/nsemiarid/src/45c-host-ground.js: CAMPOS": 1,
- "biomes/nsemiarid/src/45c-host-ground.js: RAWTEX": 2,
+ "biomes/nsemiarid/src/45c-host-ground.js: RAWTEX": 3,
  "biomes/nsemiarid/src/50-biome-nsemiarid-species.js: ORNUM": 1,
  "biomes/nsemiarid/src/55-biome-nsemiarid-trees.js: ORNUM": 3,
  "biomes/nsemiarid/src/86-host-variants.js: ORNUM": 1,

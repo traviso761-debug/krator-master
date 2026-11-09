@@ -43,7 +43,15 @@ const BUDGET={
 // where the stage's checks look: the lake the stream runs into, a ring of points round the old bed for the dust
 const LAKE_SKIP=(x,z)=>LAKE_W.contains(x,z);
 const DUST_PTS=Array.from({length:60},(_,k)=>{const a=k*2.39996,r=40+k*9;return[BED.x+Math.cos(a)*(BED.r*.7+r),BED.z+Math.sin(a)*(BED.r*.7+r)];});
+// the flora and the ground's wet band read the water's own shore (the review's third line; oidong's lines): the env fields in the contract, no tree
+// standing in the water, and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
+const EDGE_OWED={plant:0,wet:0};
+function edgeCheck(){if(typeof WATER_F==='undefined')return{ok:true,detail:'no water fields on this page'};const P=[];
+ for(const T of NSEMIARID.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:NSEMIARID.SPECIES[T.sp].key});if(P.length>8000)break;}
+ const bad=BIO.envCheck(ENV,[[0,0],[BED.x+400,BED.z+900],[POOL.x,POOL.z+80],[xS(1200)+40,1200]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('every species placed',HCHK.placed(NSEMIARID.COUNTS||[]));
  add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
  add('nothing rooted under the water',HCHK.dry(P));
@@ -91,11 +99,15 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (46: merge, fade, cull): each chunk mesh by its range */
+/* the land in the salt lake (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
+const MIRROR=WATER_DRAW.lake&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[WATER_DRAW.lake.mesh.material],
+ level:LAKE.level,center:[BED.x,BED.z],radius:BED.r*.7,far:4000,tree:o=>o.name==='variant:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
 KHOST.take({build:'nsemiarid',title:'Krator biome — the northern semiarid country',
  hint:'The walking steppe: an old lake bed with its strandlines and a remnant salt lake in the north, the hot steppe, the Mediterranean foothills and the feral fruit forest on the rainy upland in the south; everything here travels (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL],
+ inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL].concat(AIR_CONTROL?[AIR_CONTROL]:[]),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>(SEEDS?[SEEDS.points]:[]).concat(FLIGHT?FLIGHT.meshes:[])},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,

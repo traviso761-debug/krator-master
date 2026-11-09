@@ -65,10 +65,27 @@ const GTEX=['float gHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*4375
  'float gNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(gHash(i),gHash(i+vec2(1.0,0.0)),f.x),mix(gHash(i+vec2(0.0,1.0)),gHash(i+vec2(1.0,1.0)),f.x),f.y);}',
  'vec3 gTex(sampler2D s,vec2 p){float n=gNoise(p*0.13)*0.65+gNoise(p*0.41+7.3)*0.35;vec2 q=vec2(p.x*0.7986-p.y*0.6018,p.x*0.6018+p.y*0.7986)*1.37+vec2(0.37,0.71);',
  ' return mix(texture2D(s,p).rgb,texture2D(s,q).rgb,smoothstep(0.3,0.7,n));}'].join('\n');
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
+// THE LAYERS ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild 2026-11-03, pair 9): the same eight surfaces, now hex-tiled,
+// scaled with distance and blended by height over the paint, each on its documented mask (the review's first line; GL above: each layer's weight from
+// the stage's cached fields, the same as before):
+//   steppe, withered, grass   the rain's three bands (wet: under .3-.42, .3-.6, over .46), off the bed, the dunes and the rock
+//   silt                      the old bed (KBASIN's bed and silt) off the salt and the ring
+//   crust                     the bathtub ring and the salt's edge (KBASIN's ring and salt)
+//   sand                      the dune field (the stage's dune), off the pan's middle
+//   basalt                    the rock (slope and the basalt ridges: the stage's rock)
+//   soda                      the pan's middle (salt over .6-.85)
+// and two kinds with no map:
+//   pavement (clast)          the desert's gravel lag off the bed (deflation: wet under .3, not bed, not dune, not rock): aGL2.x
+//   polygons (polygon)        the dry bed's mud cracks (the old canvas net's weight, aCrack): aGL2.y; the canvas net stays for ?kground=0
+//   wet                       the water's wet band (aGL2.z): WATER.fieldAt's shore distance from the water the eye sees (88-host-build.js)
+// Standard under KGROUND (roughness high, as dry ground is): KGROUND scales by the eye's distance (cameraPosition), which three r128 never uploads to a
+// Lambert material. ?kground=0 for the old floor (Lambert, the hand-written layers)
+const USE_KG=!!GL&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
+const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xb0aaa2,roughness:.95,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};if(!USE_KG)sh.uniforms.uCrack={value:TEX_CRACK};
  let lay='';
- if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
+ if(USE_KG)lay='{vec3 nsPd=diffuseColor.rgb;\n/*KGROUND*/\nvGLs=clamp(dot(vGL0,vec4(1.0))+dot(vGL1,vec4(1.0))+vGL2.x,0.0,1.0);}';
+ else if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
   // a custom sampler is not decoded from sRGB for us: pow 2.2 by hand; a keep-0 layer is its relief, normalised by the
   // pack's mean brightness so the painted colour keeps its level
   // with distance a layer's grain fades toward the painted ground (from 60 m to 450 m): far off its crack nets and tufts
@@ -77,13 +94,22 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
    return 'if('+w+'>0.003){vec3 t=pow(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s*_fd,0.0,1.0));vGLs=_s*_fd;}';}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;'+(GL?'attribute vec4 aGL0,aGL1;varying vec4 vGL0,vGL1;':''))
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;'+(GL?'vGL0=aGL0;vGL1=aGL1;':''));
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;'+
-   (GL?'varying vec4 vGL0,vGL1;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join('')+GTEX:''))
-  .replace('#include <map_fragment>','#include <map_fragment>\n{float vGLs=0.0;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.11).rgb;'+lay+
-   // the procedural grain gives way where a library layer carries its own; the mud cracks stay (the bed's polygons are larger)
-   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85*(1.0-0.7*clamp(vGLs,0.0,1.0)))*mix(vec3(1.0),ck,vCrack);}');};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;'+(GL?'attribute vec4 aGL0,aGL1;varying vec4 vGL0,vGL1;':'')+(USE_KG?'attribute vec3 aGL2;varying vec3 vGL2;':''))
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;'+(GL?'vGL0=aGL0;vGL1=aGL1;':'')+(USE_KG?'vGL2=aGL2;':''));
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail'+(USE_KG?'':',uCrack')+';varying vec3 vGWP;varying float vCrack;'+
+   (GL?'varying vec4 vGL0,vGL1;'+(USE_KG?'varying vec3 vGL2;':GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join('')+GTEX):''))
+  .replace('#include <map_fragment>','#include <map_fragment>\n{float vGLs=0.0;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+(USE_KG?'':'vec3 ck=texture2D(uCrack,vGWP.xz*0.11).rgb;')+lay+
+   // the procedural grain gives way where a library layer carries its own; the mud cracks stay (the bed's polygons are larger; on KGROUND its polygon kind)
+   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85*(1.0-0.7*clamp(vGLs,0.0,1.0)))'+(USE_KG?';diffuseColor.rgb*=mix(vec3(1.0),vec3(0.66,0.64,0.6),vGL2.z);}':'*mix(vec3(1.0),ck,vCrack);}'));};
+// the KGROUND layers: GL's eight with their old colour rule as a tint (a keep-0 layer is the paint times its relief over the pack's mean, a keep-1 layer
+// its own colour), then the pavement and the polygons
+if(USE_KG){const w=i=>'vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
+ KGROUND.hook(MAT_GROUND,{key:'nsemiarid-ground',at:'/*KGROUND*/',layers:GL.map((l,i)=>({map:l.tex,k:1/l.scale,w:w(i),amt:1,gain:1,name:l.name,
+   tint:'mix(nsPd*'+(1/Math.pow(l.mean==null?.78:l.mean,2.2)).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')'})).concat([
+  /* the desert pavement: a gravel lag of basalt and tan pebbles packed in sand, where the wind has taken the fines (BWh off the bed) */
+  {kind:'clast',w:'vGL2.x',amt:.6,size:.16,proj:'xz',matrix:.16,matrixColor:0xb8a684,palette:[0x4e4844,0x5e5650,0x8a7a62,0xa89474,0x6a5e52],vary:.18,sub:.3,fleck:0,seed:KRAND.hash(17,4301)%997,name:'pavement'},
+  /* the dry bed's mud cracks (the old canvas net): polygons 1.6 m across, their troughs the paint darkened */
+  {kind:'polygon',w:'vGL2.y',amt:.85,size:1.6,width:.05,jitter:.85,vary:.06,edgeTint:'vec3(0.62,0.58,0.52)',warp:.15,seed:KRAND.hash(17,4302)%997,name:'mud polygons'}])});}
 // A CHANNEL'S ROWS (2026-10-23, the owner: "stream is not continuous"): a cell is ~13 m, a stream ~14 m wide, so a
 // triangle whose corners missed the channel bridged it and hid the water in long gaps. In every row a stage's channel
 // crosses (STAGE_GROUND.rows: its z range and x of z), the vertex nearest it moves onto its centreline and the next ones
@@ -91,7 +117,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
 // so the channel runs down the triangles instead of across them.
 const GROUND=(function(){const N=STAGE_GROUND.N,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),ck=new Float32Array(nx*nx);
- const g0=GL?new Float32Array(nx*nx*4):null,g1=GL?new Float32Array(nx*nx*4):null,F={};
+ const g0=GL?new Float32Array(nx*nx*4):null,g1=GL?new Float32Array(nx*nx*4):null,g2=GL?new Float32Array(nx*nx*3):null,F={};
  const R=STAGE_GROUND.rows,IC=new Int32Array(nx).fill(-99),XC=new Float32Array(nx);
  if(R)for(let j=0;j<nx;j++){const z=-S/2+j*cs;if(z>=R.z0-cs*2&&z<=R.z1+cs*2){XC[j]=R.x(z);IC[j]=Math.round((XC[j]+S/2)/cs);}}
  const KNOT=R?R.knots:[0];
@@ -100,12 +126,14 @@ const GROUND=(function(){const N=STAGE_GROUND.N,S=TERR.R*2.2,cs=S/N,nx=N+1;
   const y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   ck[k]=FC.at(FC.a.bed,x,z)*smooth(.15,.5,FC.at(FC.a.silt,x,z))*(1-smooth(.3,.7,FC.at(FC.a.dune,x,z)))*smooth(.05,.4,FC.at(FC.a.salt,x,z)+.1)*.85;
   if(GL){FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1);s+=v;return v;}),k1=s>1?1/s:1;
-   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=(w[q+4]||0)*k1;}}}
+   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=(w[q+4]||0)*k1;}
+   /* aGL2: the pavement (the dry ground off the bed, the dunes and the rock: the steppe layer's own mask, drier), the polygons (aCrack), the wet band (88 fills z) */
+   g2[k*3]=smooth(.3,.2,F.wet)*(1-F.bed)*(1-smooth(.1,.5,F.dune))*(1-smooth(.45,.85,F.rock))*(1-F.flow);g2[k*3+1]=ck[k];}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;
   if(Math.abs(i-IC[j])<=KNOT.length&&pos[a*3+1]+pos[c*3+1]<pos[b*3+1]+pos[d*3+1]){idx[t++]=a;idx[t++]=b;idx[t++]=c;idx[t++]=a;idx[t++]=c;idx[t++]=d;}   // the lower diagonal (a stream row)
   else{idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));
- if(GL){g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));}
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel=STAGE_GROUND.label;scene.add(m);return m;})();
+ if(GL){g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));g.setAttribute('aGL2',new THREE.BufferAttribute(g2,3));}
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=STAGE_GROUND.label;scene.add(m);return m;})();
