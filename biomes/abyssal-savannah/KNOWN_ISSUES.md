@@ -32,7 +32,25 @@ Read before changing anything here. `build.py` prints the open count.
       scatter from above; the stub-lycopsid colonies carry it. A denser short-grass card or a second floor layer is a look pass.
 - [ ] **Every view draws the whole scene** (~9.7M triangles, ~52 calls): the meshes are map-wide, so frustum culling
       saves nothing. The core's chunked LOD (`BIO.range`, as swbay's trees use) would cut it.
-- [ ] **Stations 2 and 3** (the floor's belt, the bench's edge with ebadlands read in place) are planned, not built.
+- [ ] **Stations 2 and 3, `belt` and `bench` (built 2026-11-09; PLAN.md section 15).** GPU-verified (`verify.py --assert --all-views`,
+      `KRATOR_GL=gpu`); not judged by eye yet: the look and the frame time are the owner's. What they leave:
+  - **The page-local changes to the kit** (the belt's `89z`): the umbrella trees' heights (12-28 m) and crowns, the old thatch tufts 1.3 x taller
+    through a wrap of `BIO.put` during the build, the umbrella pass at .7 of its share, the thatch's instance cap (500k, with its capWhy) set on
+    the kit's def. Take them into the kit as options (`ABSAV.build({look})`) at station 1's next re-baseline, when its bytes may move.
+  - **The plan's "jungle one side, salt the other" is the page's, not 5.1's** (as station 1's risers are): at px 1031,515 the XA basins lie
+    10-12 km away and the salt lake 6 km south; the belt's seep hollow and salt flat bring both edges onto the page. 5.1 reads ~800 mm here
+    (the plan has ~1,050 mm, 4.22's): the parkland is drawn as the plan's.
+  - **The bench compresses 5.1's climb** (px 1036-1038: 730 m in 4 km) into one 360 m cliff band, and the climb to the plateau into two
+    150 m fault steps; the far field blends onto the model's cells over 4 km.
+  - **The bench stream's fall is dry**: no `WATER.fall` over the cliffs (the dry season shown). A wet-season fall down the middle ravine
+    wants the ravine's head as a vertical step (a `stepcut` or a scarp `drop`) so the curtain clears the face.
+  - **The kit's caprock blocks are not on the bench** (their talus is thrown 30-190 m down station 1's gentle face; on a 360 m cliff they would
+    sit on the face): the rim's own block line along KRELIEF's lip is owed.
+  - **No fauna** (as station 1: `kits/fauna`).
+  - **The bench's triangles**: 12.7M at the opening view, its showcase budget raised to 13.5M (station 1's is 9M): the bench and the fault
+    blocks are steppe from the rim to the east edge (the bunchgrass 409k instances, its cap declared at 500k with its capWhy in `89z`).
+  - **The ground's detail maps are sampled raw** in both stations' ground shaders, as in station 1's (`check_source` RAWTEX, recorded in
+    `tools/check_source_baseline.json` with station 1's): decoding them is a look change for all three pages together.
 
 - [ ] **KSHADOW's cost is not measured** (the cloud turn had no GPU): the coordinator times `?shadow=0` against the default on
       the Arc. The Throne's isle and vents skipped it for its cost; oidong measured it within noise.

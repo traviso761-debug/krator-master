@@ -4,6 +4,7 @@
 Usage:
   python verify.py dist/abyssal-savannah.html [--views "Laboratory,Starport"] [--all-views]
   python verify.py dist/abyssal-savannah-<serim|erim|north>.html ...    (the savannah rims' stations, PLAN.md section 14)
+  python verify.py dist/abyssal-savannah-<belt|bench>.html ...          (stations 2 and 3, PLAN.md section 15)
                                           [--assert] [--baseline base.json]
                                           [--save-baseline base.json] [--out ./shots]
                                           [--cam cx,cy,cz,tx,ty,tz] [--eval "()=>..."]
@@ -48,7 +49,10 @@ EXPORT_BOX = [-900, 280, -600, 580]
 # cell on its river and gallery (stations/<name>/44l-host-land.js: LAND.river; the water section needs a surface in the box), by the page's name.
 # Their host checks and negatives (src/rim/99-host-take.js and each land's 44l) run under --assert through invariant 5 below, as the main page's do.
 EXPORT_BOXES = {'abyssal-savannah-serim.html': [150, -550, 450, -250], 'abyssal-savannah-erim.html': [450, 150, 750, 450],
-                'abyssal-savannah-north.html': [150, 50, 450, 350]}
+                'abyssal-savannah-north.html': [150, 50, 450, 350],
+                # stations 2 and 3 (PLAN.md section 15): the belt's stream at the parkland's middle (the main page's box holds it); the bench
+                # stream across the bench toward the middle ravine (stations/bench/45-host-stage.js: CH.top)
+                'abyssal-savannah-belt.html': [-900, 280, -600, 580], 'abyssal-savannah-bench.html': [100, 500, 400, 800]}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage
