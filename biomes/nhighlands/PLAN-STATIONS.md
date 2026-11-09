@@ -5,7 +5,7 @@ highlands`, 198,000 km² on 4.21) is mostly **dry in summer**: that forest fits 
 what the map holds and the kit does not draw. The page as built stays station 1. Stations follow the Throne's and
 Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status (2026-11-03, pair 7):** station 5 (the bog country) is built, `--station bogs`. Stations 2-4 are not built yet: station 2 falls to the queue after the pairs (`HANDOFF-REBUILD.md`, "After the pairs"), 3 and 4 wait on the owner. "Core adoption (pair 7)" at the end says what station 1 took.
+**Status (2026-11-09):** all four stations are built: 5 (the bog country, `--station bogs`, pair 7) and 2-4 (`--station montane`, `foothills`, `alpine`). "Core adoption (pair 7)" at the end says what station 1 took; each station's "as built" section what it is.
 
 ## The ground (surveyed 2026-10-23)
 
@@ -124,3 +124,27 @@ station 1.
   fog's cloud band at 1950-2100 m already is one), seasons (no deciduous drop is drawn yet: a later pass), ice on the tarn in frozen weather (`ext/54`,
   a later pass).
 - **The new flora stays off for Roketstad**: `NHL.build` passes `{flora:true}` itself; `NHL.buildTrees` called by a world still places none of it.
+
+## Stations 2-4, as built (2026-11-09)
+
+**One land for three** (`stations/montane/45-host-stage.js`): station 1's contract (the s/t axes, scarps, stream and its falls, tarn, the kit's fields) built
+from a `SITE` record in each station's `44z-host-site.js`: the ramp and the far country past the map (`STATION_FAR_RAMP`, a hook in `82-host-sky.js`), relief,
+domes, knolls, scarps, the stream and the tarn, the climate in the kit's terms (`cold`, `wet`, `rock`, `mist`) and the station's own fields, the LOD spine,
+the sky's place. Stations 3 and 4 name `montane` as their `base` (station.json; `build.py` takes a base's fragments and settings first) and replace its
+`44z`, `62-biome-nhighlands-station.js`, `83-host-station-ground.js` and `98-host-station-take.js` with their own. Each places its own forest and floor through
+the kit's hooks (`NHL.STATION_PASSES`, `NHL.STATION_PLANT`) and paints its own ground (`STATION_PAINT`, `STATION_GL`, three or four KGROUND layers from the
+library, packed into its page only). Sites from scale model 5.1's climate raster (the densest ground of each class near the plateau) and the geology bake.
+
+| Station | Site (5.1 px) | Rock (geology bake) | Built |
+|---|---|---|---|
+| 2 `montane` (Dsb, Csb) | 610,710, a few km from Roketstad | sedimentary | open park of **copper pines** and **white firs** over golden bunchgrass, **ember giants** (the sequoia's role) in the moist draws, **black oaks** low and at the meadows' edges, meadows of corn lilies, old burns (snags, fireweed), sandstone domes and a step the creek falls over, a meadow pond; the kit's trumpets thinned into the draws |
+| 3 `foothills` (Csa) | 590,630 | sedimentary | golden annual grass under **swlowlands' oaks read in place** (sprawl oak on the savanna, coast oak on the shaded slopes, a cork grove), chaparral of **manzanita** and **madrone** (swlowlands') and the kit's dark shrubs on the steep sunny slopes, a creek of **sycamore** (swlowlands') and the kit's alder and willow, a stock pond |
+| 4 `alpine` (Dsc, ET) | 610,810 | impact (the crater wall) | a cirque tarn under a **megabreccia** headwall (KGROUND `clast` with `rock.megabreccia`), a lower step the outflow falls over, **whitebark** and **foxtail pines** at the tree line, larch and frost fir below it, krummholz above, fell-field, talus under the steps, snowbeds in the shaded hollows |
+
+**New species** (appended to `NHL.SPECIES`, 31-36, every key and index before them kept; `S.station` names the station that places each, station 1's
+every-species check leaves them out): `copperpine`, `embergiant`, `whitefir`, `blackoak` (station 2: **the trees nsemiarid's station `high` takes kin of**, its
+PLAN-STATIONS.md), `whitebark`, `foxtail` (station 4). All on the kit's existing builders (conifer, broad, pine) and barks.
+
+**Decisions for the owner:** the plan's granite domes are **sandstone** on the 5.1 geology (station 2 is sedimentary); station 3's oaks are swlowlands' own
+species, grown in place, not cousins; no `KFIRE` (the plan's fire mosaic: the burns are a field of snags and fireweed, not a fire model); station 4's
+bristlecone role is the kit's own foxtail pine, not ebadlands' bristlecone read in place.

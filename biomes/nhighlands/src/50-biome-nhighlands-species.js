@@ -158,7 +158,25 @@ NHL.SPECIES=[
  /*29*/{key:'tablecedar',name:'Table cedar',habit:'table',H:[24,38],rb:[1.2,2.0],crownR:[12,18],bk:1,bark:[0x5a4a3a,0x4e4034,0x665446],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.3).getHex()),item:'needle',farShape:'umbrella',
   tags:TG('temperate','subhumid','no',HV('timber',[],true,'Fragrant rot-proof timber for halls; the resin burnt as incense.'))},
  /*30*/{key:'banyan',name:'Veil banyan',habit:'banyan',H:[22,34],rb:[2.2,3.4],crownR:[22,35],bk:2,bark:[0x66665a,0x5c5c50,0x707064],leaf:PAL.broad,item:'broad',farShape:'dome',
-  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))},
+  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))}, // THE STATIONS' TREES (PLAN-STATIONS.md; pair 7, 2026-11-09), appended so every key and index above is kept. `station` names the station that places
+ // each (station 1 places none of them: its every-species check leaves them out). Station 2, the dry-summer montane (Dsb, Csb), writes the trees nsemiarid's
+ // station `high` takes kin of (its PLAN-STATIONS.md: "whichever station is built first sets the trees"); station 4, the alpine (Dsc, ET), its two pines
+ /*31*/{key:'copperpine',name:'Copper pine',habit:'conifer',station:'montane',H:[34,56],rb:[.7,1.25],crownR:[4.5,7],bk:0,bark:[0xc8844e,0xb87644,0xd8945e],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x6a8a3a),.35).getHex()),item:'needle',
+  form:{clear:.5,crown:'open',step:2.8,droop:.05,L:1,buttress:.15,flutes:0,fluteA:0,top:'flat',moss:0,drape:0,sparse:true},
+  tags:TG('temperate','semiarid','no',HV('timber',['seeds (in good years)'],true,'The bark plates smell of vanilla in the sun; pitch for torches and boats; the big timber of the dry side.'))},
+ /*32*/{key:'embergiant',name:'Ember giant',habit:'conifer',station:'montane',H:[72,96],rb:[2.8,4.0],crownR:[8,12],bk:1,bark:[0xa8502e,0x984628,0xb85e38],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4e6a34),.3).getHex()),item:'needle',
+  form:{clear:.42,crown:'dome',step:3.2,droop:.15,L:.9,buttress:1.5,flutes:13,fluteA:.13,top:'flat',moss:.1,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'The red giants of the moist draws: a fire scars them and they grow on. The bark is a hand thick and does not burn; the felled wood shatters.'))},
+ /*33*/{key:'whitefir',name:'White fir',habit:'conifer',station:'montane',H:[30,52],rb:[.6,1.1],crownR:[3.5,5.5],bk:0,bark:[0x9a9890,0x8a8a82,0xa8a69e],leaf:PAL.coniferBlue.map(c=>C(c).lerp(C(0x7a9a8a),.25).getHex()),item:'needle',
+  form:{clear:.18,crown:'spire',step:1.8,droop:.3,L:1,buttress:.2,flutes:0,fluteA:0,top:'spire',moss:.05,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'Balsam from the blisters for cuts; soft white boards.'))},
+ /*34*/{key:'blackoak',name:'Black oak',habit:'broad',station:'montane',H:[12,22],rb:[.5,.9],crownR:[7,11],bk:4,bark:[0x3a3430,0x2e2a26,0x46403a],leaf:PAL.oak,item:'maple',
+  form:{hB:.3,boughs:[4,7],el:[.3,.85],L:[.9,1.25],wig:.28,curve:-.1,moss:.05,drape:0,bulbs:0,clump:[3.4,5],mast:'acorn'},
+  tags:TG('temperate','semiarid','no',HV('fuel',['acorns'],false,'Acorns leached and ground into meal: the staple of the dry side\'s people.','generic_fruit_mast'))},
+ /*35*/{key:'whitebark',name:'Whitebark pine',habit:'pine',station:'alpine',H:[6,14],rb:[.3,.6],crownR:[3,5],bk:6,bark:[0xd8d0c4,0xc8c0b4,0xe2dcd0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4a6a50),.3).getHex()),item:'needle',
+  tags:TG('cold','subhumid','no',HV('fuel',['pine nuts'],false,'The nuts are cached by the nutcrackers and dug up by bears and people alike.'))},
+ /*36*/{key:'foxtail',name:'Foxtail pine',habit:'pine',station:'alpine',H:[4,10],rb:[.5,1.1],crownR:[2,4],bk:4,bark:[0xc8b8a0,0xb8a890,0xd8c8b0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.45).getHex()),item:'needle',
+  tags:TG('cold','semiarid','no',HV('none',[],false,'Thousands of years old, mostly dead wood with one live strip of bark; never cut.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)

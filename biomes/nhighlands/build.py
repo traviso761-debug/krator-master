@@ -69,11 +69,24 @@ if STATION:
     _sj=os.path.join(_sd,'station.json')
     if os.path.isfile(_sj):
         with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
+# a station on another's ground names it as its "base" (oidong's form; stations 3 and 4 on station 2's land, `montane`): the base's fragments first,
+# then the station's own; the base's "drop", "core", "families" and "kin" join the station's
+_BD=None
+if STATION and SJ.get('base'):
+    _BD=os.path.join(HERE,'stations',SJ['base'])
+    _bj=os.path.join(_BD,'station.json');_B={}
+    if os.path.isfile(_bj):
+        with open(_bj,encoding='utf-8') as _fh: _B=_json.load(_fh)
+    SJ['drop']=sorted(set(_B.get('drop',[]))|set(SJ.get('drop',[])))
+    SJ['core']=dict(_B.get('core',{}),**SJ.get('core',{}))
+    SJ['families']=sorted(set(_B.get('families',[]))|set(SJ.get('families',[])))
+    SJ['kin']=dict(_B.get('kin',{}),**SJ.get('kin',{}))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in SJ.get('drop',[]): PATH.pop(f,None)
-    for f in os.listdir(_sd):
-        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+    for _d in ([_BD] if _BD else [])+[_sd]:
+        for f in os.listdir(_d):
+            if re.match(r'\d',f): PATH[f]=os.path.join(_d,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
 # core/terrain, opt-in by name (core/README.md "terrain/"): 43 KGROUND (the ground's library layers, 84-host-ground.js), 44 KFAR (the far country's lattice,
 # 82-host-sky.js), 45 KHORIZON (its terrain shadows); the final rebuild (pair 7, 2026-11-03): 35 KSTRATA, the crater wall's megabreccia on the crag steps and
@@ -133,6 +146,19 @@ if '87-host-cut.js' in PATH:
     if os.path.isfile(_cpj):
         with open(_cpj,encoding='utf-8') as _fh: _cex=[f for f in sorted(_json.load(_fh).get('families',{})) if f!='reed']
     VIRTUAL['44b-host-matlib-pack-cut.js']=matlib_pack.fragment(CUT_DIR,'cut',exclude=_cex)
+# THE NEIGHBOURS' KITS, read in place (oidong's and ebadlands' lines): a station names them in station.json ("kin": {"<kit>": [[fragments], "<API>", [pack families]]});
+# each kit's fragments slot after the host stage (45) and before this kit (50), in their own registry, closed by a one-line kitEnd (station 3: swlowlands' oaks)
+NEIGH={k:tuple(v) for k,v in SJ.get('kin',{}).items()}
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
+    _d=os.path.normpath(os.path.join(HERE,'..',_k.split('/')[0]));_c='abcdefgh'[_i];_kk=_k.replace('/','-')
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,os.path.basename(_f))]=os.path.join(_d,_f)
+    VIRTUAL['47%s-%s-open.js'%(_c,_kk)]=chr(10)+"BIO.kit('%s');   // its own registry"%_k.split('/')[0]+chr(10)
+    VIRTUAL['47%s9-%s-end.js'%(_c,_kk)]=chr(10)+"BIO.kit('%s');BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)"%(_k.split('/')[0],_api)+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    _fam=[]
+    if os.path.isfile(_pj):
+        with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{}))
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(chr(ord(_c)+2),_kk)]=matlib_pack.fragment(_d,_k.split('/')[0],exclude=[f for f in _fam if f not in _keep])
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md): its core, presets, export, the open-water wave field and the sky's light, bound once by 89a-host-atmos.js
 # (ATMOS.bindHost); the shared sky (SKY-PLAN.md section 9: its model, presets, shader, host and the biome call, 89-host-sky.js: ATMOS.skyBiome); the weather
@@ -156,7 +182,7 @@ out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f and 'core-water' not in f:
+    if 10<=n<80 and '-host-' not in f and 'core-water' not in f and not re.match(r'47[a-h]',f):   # the neighbours' kits are their own builds' to lint
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

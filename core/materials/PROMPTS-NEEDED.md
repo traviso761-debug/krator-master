@@ -5,6 +5,9 @@ as it is, one image per block. **Everything delivered lives in `PROMPTS-archived
 
 **Count: 0 prompts** (2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
 
+**Withdrawn 2026-11-09:** section 32 (nhighlands, pair 7) asked for `ground.peat.hag`, `card.dwarfbirch`, `card.sedge.fen` and `rock.megabreccia`,
+which were in the library already (the owner's fourth drop, 2026-10-26); they are wired into nhighlands now.
+
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
 `PLAN.md` "Delivered 2026-11-03": the ten are wired at their merge, and their entries are deleted on their branches then. Still owed from that
@@ -268,30 +271,6 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
-
-## 32. The northern highlands' bog country and the crater wall (`biomes/nhighlands`, station 5 and station 1's crags, 2026-11-03)
-
-Pair 7's turn (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)"). The bog station draws the library's `ground.sphagnum`, `ground.peat.black`,
-`card.cottongrass`, `card.cloudberry` and `card.cornlily`; what the mire still lacks, and what the crater wall's rock lacks, are four sets. Until they come:
-the peat hags are a flat procedural peat colour on the steep (`STATION_STEEP`), the dwarf birch is the kit's birch scaled to knee height (its aspen-leaf
-card), the fen sedge is the kit's grass card in sedge colours, and the megabreccia is KSTRATA's and KGROUND's procedural blocks (`clast`, no grain map).
-
-`ground.peat.hag` (the cut face of a peat bank, for a steep layer or a cliff material; vertical in use, so square and tileable both ways):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a vertical cut face of black-brown blanket peat seen straight on, the fibrous dark peat banded faintly in horizontal layers a few centimetres thick, pale bleached root threads and old sphagnum stems hanging out of it, a few wet glistening patches and small crumbled overhangs, the top tenth not special (it tiles); colours from near-black brown to dark umber with a faint red cast, no green except a few tiny moss specks.
-```
-`card.dwarfbirch` (Betula nana: knee-high shrubs on the hummocks):
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate low sprawling shrubs of dwarf birch, each a tangle of thin dark red-brown twigs spreading sideways from a short base, densely set with tiny round scalloped leaves about a centimetre across, glossy mid green with a few turning orange and red, each shrub drawn whole and wider than tall, with its base clearly at the bottom centre of its cell, all six the same scale, not touching, evenly spaced in a 3x2 grid.
-```
-`card.sedge.fen` (the fen's tussock sedge and the lagg's lawns):
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate tussocks of fen sedge, each a dense fountain of long narrow arching blades from one root, the blades yellow-green to olive with dry straw-brown tips and a few dead brown blades among them, three of the tussocks carrying slender brown flower spikes on stalks above the leaves, each tussock drawn whole with its base clearly at the bottom centre of its cell, all the same scale, not touching, in a 4x2 grid.
-```
-`rock.megabreccia` (the crater wall's rock: a grain map for KGROUND's `clast` blocks and KSTRATA's megabreccia on station 1's crag steps and pillars):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
-```
 
 ## Gaps with no prompt yet
 

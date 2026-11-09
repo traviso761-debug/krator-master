@@ -22,14 +22,23 @@
         it but the great trumpets; 387 pools each under its lip and over its floor; 319 hazard records, 318 `sink` and the lochan's `drown`; 25,650
         hummocks, 77,432 cotton-grass, 20,190 cloudberry, 6,258 corn lilies), the attach audit 0.09%, 8.87 M triangles held, 109-142 draw calls.
       Stays open: for the coordinator's GPU `--assert --all-views` and the owner's look (the megabreccia, station 5).
+- [ ] **Stations 2-4 (2026-11-09, cloud session, no GPU): the looks to judge and what they leave out** (`PLAN-STATIONS.md`, "Stations 2-4, as built").
+      Verified in software GL only (`verify.py --assert` on four or five views each; see the turn's handoff paragraph for the numbers). For the owner: station 2's
+      domes are sandstone (the 5.1 geology is sedimentary there, not granite); the dome's steep edge followed the ground mesh's 6.7 m triangles as a sawtooth
+      at first (now the slab's colour: may still show); white fir outnumbers copper pine (3.8k against 3.0k), which can be turned the other way; the old
+      burns are a field (snags, fireweed), not `KFIRE`. Station 3's oaks, sycamore, manzanita and madrone are swlowlands' own, grown in place: they move with
+      swlowlands' sources (`tools/reach.py`). Station 4's bristlecone role is the kit's own foxtail pine. Not built: seasons (the aspens' autumn, the
+      snowline's year), the fire mosaic, ice on the tarns (`ext/54`), people (the herders, the Republic's and the Clansmen's camps).
 - [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
       ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
-      (`kits/resources/ROCK-PROPOSAL.md`). The blocks have no grain map yet (`rock.megabreccia` in `core/materials/PROMPTS-NEEDED.md` 32): procedural
-      until it comes. `?strata=0` shows the old granite for comparison.
+      (`kits/resources/ROCK-PROPOSAL.md`). The pillars use a crag-scale copy of the recipe (8 m blocks, `nhl-crag-breccia`); the steep's blocks take the
+      library's `rock.megabreccia` as their grain (2026-11-09: it was in the library since 2026-10-26; pair 7 had asked for it as owed, wrongly). Station 4
+      (the alpine, on the impact province too) draws the same. `?strata=0` shows the old granite for comparison.
 - [ ] **Station 5, the bog country (pair 7): the look to judge, and what it does not have yet.** The pools are their own records, not `KFROST`'s polygons;
       no ice on the pools in winter (`ext/54`); no peat-cutters' camp, bog finds or bog iron (the plan's people and resources); the peat hags are a flat
-      procedural peat on the steep and the dwarf birch is the kit's birch scaled down (`PROMPTS-NEEDED.md` 32: `ground.peat.hag`, `card.dwarfbirch`,
-      `card.sedge.fen`). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
+      2026-11-09: the hags take the library's `ground.peat.hag` (their steep layer), the dwarf birch is the library's `card.dwarfbirch` on the hummocks
+      (the kit's birch scaled to knee height read as poles) and the sedge `card.sedge.fen` (all three in the library since 2026-10-26: pair 7 had asked for them
+      as owed, wrongly). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
       Seen in software GL on the first looks (2026-11-03), fixed: the mire painted orange (the library's sphagnum is full colour and was tinted by the
       paint: it is drawn untinted now), hummocks that read as red boulders (the kit's cushion, now low and mostly green and ochre), willows round every
       pool (a pool raised the riparian field), the crest drawn as striped spires (a nearer sky ridge: station 1's restored), pale grey pools (their

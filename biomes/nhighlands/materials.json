@@ -757,6 +757,33 @@
    "mapOnly": true
   },
   "ground.peat": {
+   "lib": "ground.peat.hag",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "rock.megabreccia": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "ground.peatflat": {
    "lib": "ground.peat.black",
    "scale": [
     2.0,
@@ -768,6 +795,154 @@
    },
    "roughLift": 0.2,
    "specular": 0.35,
+   "mapOnly": true
+  },
+  "dwarfbirch": {
+   "lib": "card.dwarfbirch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.345,
+    0.22,
+    0.655,
+    0.394
+   ]
+  },
+  "sedge": {
+   "lib": "card.sedge.fen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.495,
+    0.091,
+    0.993,
+    0.464
+   ]
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.goldgrass": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.slab": {
+   "lib": "ground.slickrock",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.chaparral": {
+   "lib": "ground.redsoil",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lush": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.fell": {
+   "lib": "ground.tundra",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.scree": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.snowbed": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
    "mapOnly": true
   }
  }
