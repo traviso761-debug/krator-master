@@ -6,23 +6,23 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 16 (21%) | 0 (0%) | 0 (0%) | 31 (41%) | 28 (38%) |
+| KB | 17 (20%) | 0 (0%) | 0 (0%) | 31 (37%) | 37 (43%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/44s-host-site.js` | 7.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station's site: the gullies, the relief, the terraces (plain functions) |
+| `src/44s-host-site.js` | 8.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station's site: the gullies, the relief, the terraces (plain functions) |
 | `src/45-host-stage.js` | 6.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/46-biome-wow-layout.js` | 7.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/47-host-land.js` | 26.2 | [draw] | 14 | 1 | 0 | 0 | 0 | 3 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/46-biome-wow-layout.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/47-host-land.js` | 34.8 | [draw] | 20 | 1 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/70-biome-wow.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89a-host-atmos.js` | 1.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos's bindings (bindHost, snowCover): host code |
-| `src/89s-host-sky.js` | 3.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky's host (ATMOS.sky, the far land's ridges, the fill light); its preset and ridges are data (region/far.py) |
+| `src/89s-host-sky.js` | 4.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky's host (ATMOS.sky, the far land's ridges, the fill light); its preset and ridges are data (region/far.py) |
 | `src/89w-host-water.js` | 2.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89z-host-build.js` | 7.5 | [web] | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | the build order, then the air on everything: host code |
-| `src/99-host-take.js` | 9.8 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
+| `src/99-host-take.js` | 10.0 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

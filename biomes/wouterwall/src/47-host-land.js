@@ -23,11 +23,37 @@ const STREAM=(function(){const S=SITE_STREAM,P=S?S.pts():[];if(P.length<2)return
  const near=(x,z,pad)=>{let best=1e18,by=0,bi=-1;idx.query(x,z,pad,[]).forEach(i=>{const a=pts[i],b=pts[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,
   t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),qx=a[0]+dx*t-x,qz=a[1]+dz*t-z,d2=qx*qx+qz*qz;if(d2<best){best=d2;by=L[i]+(L[i+1]-L[i])*t;bi=i;}});return {d:Math.sqrt(best),y:by,i:bi};};
  return {name:S.name,pts,level:L,w:S.width,near};})();
+// ---------------------------------------------------------------- the cave houses' mouths (core/terrain KCARVE alcoves; PLAN.md section 2)
+// A row of yaodong dug into the trunk gully's south wall at its foot (44s: SITE.caves): each an alcove whose mouth is on the wall's foot,
+// its floor the gully's, folded into the ground before the bake (KCARVE.fold), its hood meshed on the ground's material (below). The
+// ground round them is baked on a 1 m inset (KFIELD), finer than the alcove's pad, so the doors are drawn and no ramp of spikes is cut
+const CAVES=(function(){const C=SITE.caves;if(!C||typeof KCARVE==='undefined')return [];const L=SITE_RECS.trunk.lines[0].pts,out=[];
+ const i0=Math.round(C.u*(L.length-1)),a=L[i0],b=L[i0+1],dx=b[0]-a[0],dz=b[1]-a[1],n=Math.hypot(dx,dz),tx=dx/n,tz=dz/n,sx=-tz,sz=tx;   /* s: toward the south wall */
+ for(let k=0;k<C.n;k++){const off=(k-(C.n-1)/2)*C.gap,px=a[0]+tx*off,pz=a[1]+tz*off;
+  // the wall's foot: out from the thalweg till the floor ends
+  let d=0;for(;d<80;d+=.5){const P=sitePoint(px+sx*d,pz+sz*d);if(P.part!=='floor')break;}
+  const fy=sitePoint(px,pz).y,c=[px+sx*(d+.6),pz+sz*(d+.6)];
+  const Q=KCARVE.add({id:'yaodong'+k,kind:'alcove',c,n:[-sx,-sz],hw:C.hw,depth:C.depth,h:C.h,floorY:fy,base:(x,z)=>groundH(x,z),margin:4.5,pad:1.6,cell:.4,mouth:1.5,
+   name:'A cave house (a yaodong dug into the loess wall)'});out.push(Q);}
+ return out;})();
+const CAVE_STEEP=CAVES.length?Math.max(40,...CAVES.map(Q=>KCARVE.minSteep(Q)*1.2)):40;
+const CAVE_BOX=CAVES.length?(()=>{const R=SITE.caves.depth+SITE.caves.hw+8;let b=[1e9,1e9,-1e9,-1e9];CAVES.forEach(Q=>{b=[Math.min(b[0],Q.c[0]-R),Math.min(b[1],Q.c[1]-R),Math.max(b[2],Q.c[0]+R),Math.max(b[3],Q.c[1]+R)];});return b;})():null;
+WOW.CAVES=CAVES;
 // the ground with the brook's channel cut in: a bed ~0.5 m under the water across the brook's width, its banks eased
-function cutH(x,z){const h=groundH(x,z);if(!STREAM)return h;const n=STREAM.near(x,z,Math.max(STREAM.w*2.5,NEAR.step*2));if(n.i<0)return h;
+function cutH(x,z){let h=groundH(x,z);if(CAVES.length)h=KCARVE.fold(h,x,z,{steep:CAVE_STEEP});if(!STREAM)return h;const n=STREAM.near(x,z,Math.max(STREAM.w*2.5,NEAR.step*2));if(n.i<0)return h;
  const k=smooth(Math.max(STREAM.w*2.2,NEAR.step*1.7),Math.max(STREAM.w*.6,NEAR.step*.7),n.d);   /* at least the ground grid's cells: a narrower cut is not drawn */return k>0?Math.min(h,h+(n.y-.5-h)*k):h;}
 // THE BAKED GROUND: the near box on KFIELD (the mesh's grid); terrainH reads it there and the function beyond
-const FIELD=KFIELD.bake(cutH,NEAR.box,NEAR.step,{name:'wouterwall.'+SITE.name});
+// THE TERRACES' INSETS (KFIELD opt.insets): a finer grid over each terrace patch (44s: SITE.terraces.step, 2 m: it divides the base's 8 m,
+// so an inset's edge lies on the base's lattice lines); terrainH reads the inset there, so a plant's foot is on the drawn tread
+const TE_STEP=SITE.terraces&&SITE.terraces.step?SITE.terraces.step:0;
+const TE_BOX=TE_STEP?SITE.terraces.patches.map(c=>[c[0]-c[2]-NEAR.step,c[1]-c[2]-NEAR.step,c[0]+c[2]+NEAR.step,c[1]+c[2]+NEAR.step]):[];
+const INSETS=TE_BOX.map((b,i)=>({box:b,step:TE_STEP,name:'wouterwall.terraces.'+i})).concat(CAVE_BOX?[{box:CAVE_BOX,step:SITE.caves.step,name:'wouterwall.caves'}]:[]);
+const FIELD=KFIELD.bake(cutH,NEAR.box,NEAR.step,{name:'wouterwall.'+SITE.name,insets:INSETS});
+// each inset's edge pinned to the base's line between its lattice points (the base mesh's triangle edge there), so the two meshes meet
+// without a crack; the terraces have faded to nothing by the edge (their circle's rim), so nothing drawn moves
+FIELD.insets.forEach(g=>{const B=FIELD,lin=(x,z)=>{const u=(x-B.x0)/B.step,v=(z-B.z0)/B.step,i=Math.floor(u+1e-9),j=Math.floor(v+1e-9),fu=u-i,fv=v-j;
+  return fu>1e-6?B.at(i,j)+(B.at(i+1,j)-B.at(i,j))*fu:fv>1e-6?B.at(i,j)+(B.at(i,j+1)-B.at(i,j))*fv:B.at(i,j);};
+ for(let j=0;j<g.nz;j++)for(let i=0;i<g.nx;i++){if(i>0&&j>0&&i<g.nx-1&&j<g.nz-1)continue;g.heights[j*g.nx+i]=lin(g.x0+i*g.step,g.z0+j*g.step);}});
 _mark('bake-ground');
 const inNear=(x,z)=>x>=NEAR.box[0]&&x<=NEAR.box[2]&&z>=NEAR.box[1]&&z<=NEAR.box[3];
 function terrainH(x,z){return inNear(x,z)?FIELD.h(x,z):groundH(x,z);}
@@ -52,7 +78,7 @@ const PILLARS=(function(){const T=SITE.pillars;if(!T||typeof KSTACKS==='undefine
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<16;i++){const a=i/16*TAU;for(const k of [.5,1.1])m=Math.min(m,groundH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-1;};
  const F0=SITE_RECS.trunk.lines[0].pts,n0=F0.length;
  for(let t=0;t<900&&L.length<T.n;t++){const q=F0[Math.floor(s.range(.08,.6)*n0)],x=q[0]+s.range(-30,30),z=q[1]+s.range(-30,30),r=s.range(2.2,4.6),H=s.range(9,30);
-  const P=sitePoint(x,z);if(P.rec!=='trunk'||P.part!=='floor')continue;
+  const P=sitePoint(x,z);if(P.rec!=='trunk'||P.part!=='floor')continue;if(CAVES.some(Q=>Math.hypot(Q.c[0]-x,Q.c[1]-z)<Q.depth+r+12))continue;
   if(STREAM&&STREAM.near(x,z,40).d<14)continue;if(L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+r+9))continue;
   const G=COARSE.grade(x,z);if(G.g>.75)continue;
   const B=KSTACKS.make({id:'pillar'+L.length,kind:'balanced',x,z,y0:footY(x,z,r),seed:T.seed+L.length,H,r,e:s.range(1,1.35),ry:s.range(0,TAU),taper:s.range(.3,.5),lean:s.range(0,.04)});
@@ -61,19 +87,22 @@ const PILLARS=(function(){const T=SITE.pillars;if(!T||typeof KSTACKS==='undefine
 WOW.PILLARS=PILLARS;
 const pillarAt=PILLARS.length?(x,z)=>{const f=KSTACKS.foot(PILLARS,x,z);return f&&f.d<1.2?smooth(1.2,-.8,f.d):0;}:()=>0;
 PILLARS.forEach(B=>OBSTACLES.push({x:B.x,z:B.z,r:B.R+.5,y0:B.y0,y1:B.top}));
+CAVES.forEach(Q=>OBSTACLES.push({x:Q.c[0]-Q.n[0]*Q.depth*.5,z:Q.c[1]-Q.n[1]*Q.depth*.5,r:Q.depth*.55+Q.hw,y0:Q.floorY,y1:Q.floorY+Q.h+2}));   /* nothing grows in a room */
 
 // ---------------------------------------------------------------- the fields (biomes/WORLD.md; BIOME-API.md)
 // One record a point (memo of the last): the height, the grade and aspect off the baked field, the climate (the mean with the aspect's
 // degree and a half), the site's gullies, floor, yuan, terraces and cut, the loess's depth, the spring line, the brook's distance
 const _fm={x:NaN,z:NaN,F:null};
 function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
- const y=terrainH(x,z),e=inNear(x,z)?NEAR.step:20,hx=(terrainH(x+e,z)-terrainH(x-e,z))/(2*e),hz=(terrainH(x,z+e)-terrainH(x,z-e))/(2*e),g=Math.hypot(hx,hz);
+ const IG=inNear(x,z)?FIELD.insets.find(g=>x>=g.x0&&z>=g.z0&&x<=g.x0+(g.nx-1)*g.step&&z<=g.z0+(g.nz-1)*g.step):null;
+ const y=terrainH(x,z),e=inNear(x,z)?(IG?Math.max(2,IG.step):NEAR.step):20,hx=(terrainH(x+e,z)-terrainH(x-e,z))/(2*e),hz=(terrainH(x,z+e)-terrainH(x,z-e))/(2*e),g=Math.hypot(hx,hz);
  const sunny=g>.005?hz/g:0,slope=clamp(g/1.1,0,1),mean=meanAt(y)+1.5*sunny*smooth(.02,.15,g);
  const P=sitePoint(x,z),n=STREAM?STREAM.near(x,z,140):{d:1e9,i:-1},streamD=n.i>=0?n.d:1e9;
- const water=waterH(x,z)>y+.05,pil=pillarAt(x,z)>.5;
- const F={y,g,slope,sunny,mean,perma:WOW.climate(mean).perma,water,streamD,floor:siteFloor(x,z)>.5&&!water,pillar:pil,terrace:P.terrace&&P.part==='tread'&&g<.6,terrW:P.terrace?1:0,
+ const water=waterH(x,z)>y+.05,pil=pillarAt(x,z)>.5,cave=CAVES.length?KCARVE.recessD(x,z)<1:false;
+ const F={y,g,slope,sunny,mean,perma:WOW.climate(mean).perma,water,streamD,cave,floor:siteFloor(x,z)>.5&&!water,pillar:pil,terrace:P.terrace&&P.part==='tread'&&g<.6,terrW:P.terrace?1:0,
   yuan:siteYuan(x,z),gully:siteGully(x,z),cut:P.cut,loess:SITE.loess,part:P.part,
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
+  tp:P.terrace&&SITE.terraces?P.g2/SITE.terraces.rise:0,   /* the furrows' phase: the ground under the terraces over a step (level along a tread) */
   field:P.terrace,aufeis:false,pocket:false,rock:pil?1:smooth(.75,1.1,g)};
  F.spring=WOW.springAt(F);
  _fm.x=x;_fm.z=z;_fm.F=F;return F;}
@@ -94,11 +123,14 @@ const FIELDS={
 
 // ---------------------------------------------------------------- the host binding (before the meshes: their painters and records need it)
 const waterMask=(x,z)=>{const w=waterH(x,z);if(w<-1e8)return 1;const d=terrainH(x,z)-w;return d<.15?0:d<.7?(d-.15)/.55:1;};
-const SPINE=SITE.spine||[[0,0],SITE_TRUNK_AT(.3),SITE_SPRING?[SITE_SPRING[0],SITE_SPRING[1]]:SITE_TRUNK_AT(.7),[300,900],[-600,-1100]];
+// the LOD spine: the gully (its upper floor, the spring) and the terraced knolls; the floor's dense band round each point. Four points and
+// a 600 m floor band: the yuan is one wide steppe, and the NW outer wall's plumegrass and steppe grass (read in place) keep under their
+// caps (verify's instance-cap: 376k and 425k with five points and 750 m; plumegrass 274k with four and 650 m)
+const SPINE=SITE.spine||[SITE_TRUNK_AT(.3),SITE_SPRING?[SITE_SPRING[0],SITE_SPRING[1]]:SITE_TRUNK_AT(.7),[300,900],[-300,-500]];
 BIO.init({tags:'wouterwall',THREE:THREE,scene:scene,terrainH:terrainH,field:FIELD,waterH:waterH,mask:(x,z)=>waterMask(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:SITE.seed,origin:SPINE,center:[0,0],fields:FIELDS,register:REGISTER,err:reportErr,
  eye:()=>[camera.position.x,camera.position.y,camera.position.z],
- lod:{hero:400,mid:950,far:SITE.R*1.2,floor:[300,750]}});
+ lod:{hero:400,mid:950,far:SITE.R*1.2,floor:[260,600]}});
 BIO.setSun([sun.position.x,sun.position.y,sun.position.z]);
 _mark('init');
 
@@ -121,7 +153,7 @@ LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrappin
 // THE SEASON'S GROUND (sRGB tints over each layer's map): the steppe straw-gold in autumn, green-gold in summer; the larch litter fresh
 // gold under the autumn larch; the loess buff all year (a little darker wet in spring); the terraces' stubble in autumn, green in summer
 const TINT={
- autumn:{steppe:0xc8b690,needles:0xa48a66,gravel:0xb4ac9e,loess:0xe8d4b0,terrace:0xe0c49a,tundra:0xa09078,lichen:0xb0ac9c},
+ autumn:{steppe:0xc8b690,needles:0xa48a66,gravel:0xb4ac9e,loess:0xe8d4b0,terrace:0xf4dcb0,tundra:0xa09078,lichen:0xb0ac9c},
  summer:{steppe:0xaeb07a,needles:0x9a8466,gravel:0xb4aca0,loess:0xead8b6,terrace:0xc0c88a,tundra:0x8e9466,lichen:0xb4ae9c},
  winter:{steppe:0xbcb09a,needles:0x7a6a58,gravel:0xa4a09a,loess:0xd8c8ac,terrace:0xa08a70,tundra:0x8a8070,lichen:0xa4a29a},
  spring:{steppe:0xb2aa88,needles:0x8e7a62,gravel:0xa8a49c,loess:0xd4bc98,terrace:0x8a7458,tundra:0x8a8064,lichen:0xa8a494}}[SEASON];
@@ -142,21 +174,30 @@ const GROUND_DITHER=[
  'float nedge(float w,vec2 x,float sd){if(w<=0.001)return 0.0;if(w>=0.999)return 1.0;float n=0.55*nfbm(x*0.35+sd)+0.45*nfbm(x*1.7+sd*3.1);return smoothstep(n-0.12,n+0.12,w);}',
  ''].join('\n');
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
+// THE LOESS'S BEDS (core/terrain KSTRATA, its `loess` recipe: loess 3-14 m, paleosols 0.4-1.5 m, calcrete partings; PLAN.md section 2) on
+// the walls: the core strata path's strataColor, read as a tint over the loess layer's own colour (its ratio to the recipe's main loess),
+// so the buried soils run as darker bands along every wall and pillar. Flat beds (no KSTRATA.vary: its drape is CPU-only until the core's
+// baked offset texture, PLAN.md section 8); on a bench sloping ~2.5% the loess's beds lie near enough level for a station's few km
+const LOESS_SH=typeof KSTRATA!=='undefined'&&KSTRATA.shade?KSTRATA.shade(KSTRATA.create({seed:KRAND.hash(SITE.seed,0x10E5),formations:[{recipe:'loess'}],range:[-340,140]}),{}):null;
+const LOESS_REF=(()=>{const c=new THREE.Color(0xc9b48e).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
+const BEDS=LOESS_SH?'{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+LOESS_REF+',vec3(0.55),vec3(1.35)),vW2.w*0.85);}':
+ 'diffuseColor.rgb*=1.0-vW2.w*0.18*smoothstep(0.55,0.8,nvn(vec2(vGWP.y*0.11,0.5)+nfbm(vGWP.xz*0.01)*0.6));';
 {const U={},Ls=LAYERS.map(layer);LAYERS.forEach((k,i)=>U['uL'+i]={value:Ls[i].map});
  const T=Object.values(TINT).map(h=>{const c=new THREE.Color(h).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';});
  const tex=i=>'ndither(uL'+i+',p/'+Ls[i].s.toFixed(2)+')*'+(Ls[i].lib?'1.0':'0.75')+'*'+T[i];
  const over=(i,w,sd)=>'{float k=nedge('+w+',p,'+sd.toFixed(1)+');if(k>0.0)c=mix(c,'+tex(i)+',k);}';
  // the weights: aW [needles, gravel, loess, terrace], aW2 [tundra, lichen, brightness, the loess's old soils (the walls' dark bands)]
- MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D '+LAYERS.map((k,i)=>'uL'+i).join(',')+';varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;\n'+GROUND_DITHER)
+ MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);if(LOESS_SH)LOESS_SH.inject(sh);
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;attribute float aTP;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;varying float vTP;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;vTP=aTP;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D '+LAYERS.map((k,i)=>'uL'+i).join(',')+';varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;varying float vTP;\n'+GROUND_DITHER)
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;vec3 c='+tex(0)+';',
     over(4,'vW.w',1.3),over(1,'vW.x',2.9),over(5,'vW2.x',4.1),over(6,'vW2.y',5.7),over(2,'vW.y',6.3),
     '{vec2 p=vec2(vGWP.x+vGWP.z,vGWP.y*1.6);float k=nedge(vW.z,vGWP.xz,8.9);if(k>0.0)c=mix(c,'+tex(3)+',k);}',   /* the loess on the walls: read from the side */
     'float mv=nfbm(p*0.021+vec2(4.2,1.3)),mh=nfbm(p*0.0072+vec2(9.1,3.3));c*=(0.82+0.36*mv)*mix(vec3(0.95,0.93,0.9),vec3(1.04,1.03,0.98),mh);',
-    'c*=1.0-vW2.w*0.18*smoothstep(0.55,0.8,nvn(vec2(vGWP.y*0.11,0.5)+nfbm(vGWP.xz*0.01)*0.6));',   /* the buried soils: faint darker bands on the walls */
-    'diffuseColor.rgb*=c*vW2.z*1.25;}'].join('\n'));};
+    'diffuseColor.rgb*=c*vW2.z*1.25;}',
+    BEDS,   /* the buried soils: the loess's beds on the walls (KSTRATA) */
+    'if(vW.w>0.01){float fu=0.5+0.5*sin(vTP*6.2831853*6.0);diffuseColor.rgb*=1.0-0.16*vW.w*smoothstep(0.35,0.75,fu);}',   /* the furrows, along the contour */].join('\n'));};
  MAT_GROUND.customProgramCacheKey=()=>'wouterwall-ground-dither';
  /* THE GROUND ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js), as the NW outer wall's: the steppe's grass, the base, stays dithered
     (ndither), and the six layers over it come hex-tiled, scaled with distance and blended by height, each at its weight and the season's tint;
@@ -167,13 +208,14 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
  const KG_LY=KG_ON?[[4,'vW.w'],[1,'vW.x'],[5,'vW2.x'],[6,'vW2.y'],[2,'vW.y'],[3,'vW.z']].map(([i,w])=>KGROUND.layer('wouterwall',LAYERS[i],{w,tint:T[i],name:LAYERS[i]})):null;
  if(KG_LY&&KG_LY.every(Boolean)){
   const KG_EYE='#define '+'camera'+'Position kEye()\n';   /* joined so check_source's CAMPOS rule, which cannot tell a redirect from a read, does not count it */
-  MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uL0:U.uL0});
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;')
-    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL0;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;\n'+GROUND_DITHER+KHOOK.EYE+KG_EYE)
+  MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uL0:U.uL0});if(LOESS_SH)LOESS_SH.inject(sh);
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;attribute float aTP;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;varying float vTP;')
+    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;vTP=aTP;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL0;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;varying float vTP;\n'+GROUND_DITHER+KHOOK.EYE+KG_EYE)
     .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;diffuseColor.rgb='+tex(0)+';}','/*KGROUND*/',
      '{vec2 p=vGWP.xz;float mv=nfbm(p*0.021+vec2(4.2,1.3)),mh=nfbm(p*0.0072+vec2(9.1,3.3));diffuseColor.rgb*=(0.82+0.36*mv)*mix(vec3(0.95,0.93,0.9),vec3(1.04,1.03,0.98),mh)*vW2.z*1.25;',
-     ' diffuseColor.rgb*=1.0-vW2.w*0.18*smoothstep(0.55,0.8,nvn(vec2(vGWP.y*0.11,0.5)+nfbm(vGWP.xz*0.01)*0.6));}'].join('\n'));};
+     '}',BEDS,
+     'if(vW.w>0.01){float fu=0.5+0.5*sin(vTP*6.2831853*6.0);diffuseColor.rgb*=1.0-0.16*vW.w*smoothstep(0.35,0.75,fu);}',   /* the furrows, along the contour */].join('\n'));};
   MAT_GROUND.customProgramCacheKey=()=>'wouterwall-ground-kg';
   KGROUND.hook(MAT_GROUND,{key:'wouterwall-ground',layers:KG_LY,at:'/*KGROUND*/',tri:{from:.3,to:.65,far:400}});
   MAT_GROUND.userData.kgroundOn=true;}}
@@ -183,9 +225,10 @@ function groundW(F,x,z){const shade=WOW.shadeOf(F),warm=F.mean+WOW.AMP.warm,hi=s
  const gravel=Math.max(F.floor?.8:0,smooth(STREAM?STREAM.w*3:0,STREAM?STREAM.w:0,F.streamD),F.spring*.5);
  const steep=smooth(.7,1.05,F.g),hasL=F.loess>2;
  const loess=hasL?Math.max(steep,F.pillar?1:0,F.terrW>.5?smooth(.25,.5,F.g)*.9:0,F.cut>3?.3*smooth(.4,.75,F.g):0):0;   /* the walls, the risers, the gullies' bare slopes */
- const terr=F.terrW>.5?.95*(1-smooth(.25,.5,F.g)):0;
+ const terr=F.terrW>.5?.75*(1-smooth(.25,.5,F.g)):0;   /* the stubble's straw shows through the tilled soil */
  const tun=hi*.7,lich=Math.max(fell,hasL?0:steep*.9);
- const br=.8+.32*KRAND.fbm(x*.0045,z*.0045,0,3,5297)+.1*(KRAND.vnoise(x*.06,z*.06,0,5292)-.5)-.1*larch;
+ let br=.8+.32*KRAND.fbm(x*.0045,z*.0045,0,3,5297)+.1*(KRAND.vnoise(x*.06,z*.06,0,5292)-.5)-.1*larch;
+ if(F.cave)br*=KCARVE.floorOcc(x,z)*.8;   /* a room's floor sees little sky (KCARVE's own occlusion): the horizon's 2D bake cannot */
  return [[larch,gravel,loess,terr],[tun,lich,br,hasL?steep:0]];}
 
 // ---------------------------------------------------------------- the near ground: the baked field's own grid, one mesh
@@ -203,10 +246,36 @@ NWOW.zoneAt=(x,z)=>WOW.nwZone(WOW.zoneAt(x,z));
  {const WALL=ZONE_IDS.indexOf('wall'),WATER=ZONE_IDS.indexOf('water'),Z0=ZR.slice();
   for(let j=1;j<nz-1;j++)for(let i=1;i<nx-1;i++){const k=j*nx+i;if(Z0[k]===WALL||Z0[k]===WATER)continue;
    if(Z0[k-1]===WALL||Z0[k+1]===WALL||Z0[k-nx]===WALL||Z0[k+nx]===WALL||Z0[k-nx-1]===WALL||Z0[k-nx+1]===WALL||Z0[k+nx-1]===WALL||Z0[k+nx+1]===WALL)ZR[k]=WALL;}}
- for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,c,b,b,c,d);}
+ // the quads under a terrace inset are left out: the inset's own mesh draws them (below)
+ const under=(x,z)=>FIELD.insets.some(q=>x>=q.x0-1e-6&&z>=q.z0-1e-6&&x<=q.x0+(q.nx-1)*q.step+1e-6&&z<=q.z0+(q.nz-1)*q.step+1e-6);
+ for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;
+  if(FIELD.insets.length&&under(f.x0+(i+.5)*f.step,f.z0+(j+.5)*f.step))continue;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aW',new THREE.BufferAttribute(w1,4));g.setAttribute('aW2',new THREE.BufferAttribute(w2,4));
+ g.setAttribute('aTP',new THREE.BufferAttribute(new Float32Array(nx*nz),1));
  g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The ground (the scale model\'s with the station\'s gullies and terraces, baked: core/terrain KFIELD)';m.userData.host=true;m.name='ground:near';scene.add(m);})();
+// the terraces' insets: each its own grid, one mesh, the same material (the furrows' phase per vertex)
+(function(){if(!FIELD.insets.length)return;const pos=[],w1=[],w2=[],tp=[],idx=[];
+ FIELD.insets.forEach(q=>{const n0=pos.length/3;
+  for(let j=0;j<q.nz;j++)for(let i=0;i<q.nx;i++){const x=q.x0+i*q.step,z=q.z0+j*q.step,F=fieldsAt(x,z),W=groundW(F,x,z);
+   pos.push(x,q.heights[j*q.nx+i],z);w1.push(...W[0]);w2.push(...W[1]);tp.push(F.tp||0);}
+  for(let j=0;j<q.nz-1;j++)for(let i=0;i<q.nx-1;i++){const a=n0+j*q.nx+i,b=a+1,c=a+q.nx,d=c+1;idx.push(a,c,b,b,c,d);}});
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aW',new THREE.Float32BufferAttribute(w1,4));
+ g.setAttribute('aW2',new THREE.Float32BufferAttribute(w2,4));g.setAttribute('aTP',new THREE.Float32BufferAttribute(tp,1));g.setIndex(idx);g.computeVertexNormals();
+ const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.host=true;m.name='ground:terraces';
+ m.userData.inspectLabel='The terraced fields (KRELIEF.terraces on a '+TE_STEP+' m KFIELD inset: treads, risers, bunds)';scene.add(m);})();
+// the cave houses' hoods (KCARVE.mesh): the loess put back over each room's void, on the ground's own material (its weights: all loess,
+// the walls' soil bands), so the wall and the hood are one face
+// a hood vertex's brightness: dark inside a room by how far in it lies (KCARVE.local's q: 0 at the mouth, depth at the back) and under its
+// ceiling, as the room's floor (KCARVE.floorOcc); the open wall round the mouth keeps the ground's own
+function caveBr(x,y,z){let k=1;for(const Q of CAVES){const L=KCARVE.local(Q,x,z);if(L.q<-1.5||Math.abs(L.u)>Q.hw+1.5||y>Q.floorY+Q.h+1.5)continue;
+  k=Math.min(k,1-.8*smooth(-1,Q.depth*.6,L.q));}return .95*k;}
+const CAVE_MESHES=(function(){if(!CAVES.length)return [];let M=[];try{M=KCARVE.mesh(MAT_GROUND,{sun:[sun.position.x,sun.position.y,sun.position.z],ao:true,cast:'hood',gridNormals:true,
+  attrs:{aW:{size:4,fn:()=>[0,0,1,0]},aW2:{size:4,fn:(x,y,z)=>[0,0,caveBr(x,y,z),1]},aTP:{size:1,fn:()=>[0]}}});}catch(e){reportErr('caves: '+e.stack);return [];}
+ M.forEach((m,i)=>{const Q=CAVES[i];m.userData.host=true;m.userData.rock=true;m.name='rock:yaodong'+i;m.userData.inspectLabel=Q.name;
+  m.userData.probePoints=[Q.c[0]-Q.n[0]*Q.depth*.4,Q.floorY+Q.h*.5,Q.c[1]-Q.n[1]*Q.depth*.4];scene.add(m);
+  REGISTER({name:Q.name,key:'house.yaodong',x:Q.c[0]-Q.n[0]*Q.depth*.4,z:Q.c[1]-Q.n[1]*Q.depth*.4,y:Q.floorY-.5,r:Q.depth*.6,h:Q.h+3});});
+ return M;})();
 _mark('ground-near');
 
 // ---------------------------------------------------------------- the mid ground: the model's country to 20 km, the near box cut out
@@ -223,7 +292,7 @@ _mark('ground-near');
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-R2+(i+.5)*st,z=-R2+(j+.5)*st;if(Math.abs(x)<NEAR.S-st&&Math.abs(z)<NEAR.S-st)continue;
   const a=j*n1+i,b=a+1,c=a+n1,d=c+1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aW',new THREE.Float32BufferAttribute(w1,4));g.setAttribute('aW2',new THREE.Float32BufferAttribute(w2,4));
- g.setIndex(idx);g.computeVertexNormals();
+ g.setAttribute('aTP',new THREE.Float32BufferAttribute(new Float32Array(pos.length/3),1));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.host=true;m.name='ground:mid';
  m.userData.inspectLabel='The bench to 20 km (the scale model 5.1, 1 km a cell, with its slumps and its wadis)';scene.add(m);})();
 _mark('ground-mid');

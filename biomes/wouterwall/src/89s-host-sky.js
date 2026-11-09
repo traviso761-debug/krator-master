@@ -7,8 +7,8 @@
 // from the scale model at the site"): three bands of distance beyond the page's own ground (20 km), each the highest elevation
 // angle of the model's ground at 1024 azimuths, with the planet's curvature; its rock the bench's buff and grey, its forest the larch's
 // colour of the season below the tree line, its snow above the season's snow line (autumn's first snow on the upper bench, spring's
-// lower, summer's only on the crest). The cut stops at the region's box (px 270): the airless crest past it is not in the profile
-// (KNOWN_ISSUES.md).
+// lower, summer's only on the crest). The cut reaches px 190, past the airless crest (region/crest.json); from station 1 the crest
+// stands under the bench's own upper steps, the planet's curvature hiding it (KNOWN_ISSUES.md).
 // The page opens at 10:00 on the season's day (45: SEASON_DAY; #hour=, #day= and #time=run move it, as the host's slider does).
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):SEASON_DAY;return isFinite(d)?d:SEASON_DAY;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;

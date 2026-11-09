@@ -19,7 +19,7 @@
 //                          soaks up comes out on the rock under it: the box canyons' heads, the villages' wells)
 //   WOW.zoneOf(F)          the zone of a point from its fields F: {water, floor, pillar, terrace, yuan (0..1), gully (0..1), g (grade),
 //                          slope (0..1), sunny (-1 a south-facing, shaded slope .. 1 a north-facing, sunny one), mean, loess (m)}
-//                          -> 'water'|'floor'|'pillar'|'wall'|'scarp'|'terrace'|'fellfield'|'tundra'|'gully'|'larch'|'yuan'|'steppe'
+//                          -> 'water'|'cave'|'floor'|'pillar'|'wall'|'scarp'|'terrace'|'fellfield'|'tundra'|'gully'|'larch'|'yuan'|'steppe'
 //   WOW.ZONES              each zone's words, and the nwouterwall zone its flora is read as (section 3: the NW outer wall's larch, steppe
 //                          and floor, read in place; WOW.nwZone)
 //   WOW.lay(o)             the host's binding: {fields: (x,z)=>F, R, seed}; WOW.at(x,z) is then {zone, F, clim}
@@ -48,6 +48,7 @@ WOW.springAt=function(F){if(!(F.loess>5)||F.cut==null)return 0;const d=F.cut-F.l
 // woods there), the feather-grass steppe the SUNNY ones; the YUAN is the tableland's flat top
 WOW.zoneOf=function(F){
  if(F.water)return 'water';
+ if(F.cave)return 'cave';
  if(F.floor)return 'floor';
  if(F.pillar)return 'pillar';
  if(F.g>1.0)return F.loess>2?'wall':'scarp';
@@ -66,6 +67,7 @@ WOW.ZONES={
  water:{nw:'water',name:'water (the spring brook)'},
  floor:{nw:'floor',name:'a gully floor (silt and gravel, the brook\'s willows)'},
  pillar:{nw:'none',name:'an earth pillar (a loess column under its capstone)'},
+ cave:{nw:'none',name:'a cave house (a yaodong: a vaulted room dug into the loess)'},
  wall:{nw:'none',name:'a loess wall (buff silt standing sheer, its old soils faint dark bands)'},
  scarp:{nw:'rock',name:'a scarp in the crater\'s patchwork rock (megabreccia)'},
  terrace:{nw:'field',name:'terraced fields (contouring the slope, the Hayrant\'s)'},

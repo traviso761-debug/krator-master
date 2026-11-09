@@ -13,8 +13,9 @@ terraces, the long-runout rock avalanches (sturzstroms) and the edge. The refere
 **Status: W1 begun (2026-11-09).** The owner said to start the build. Station 1 (the loess tablelands, px 352,716) is on the
 biome core: the kit's layout (`WOW`), the station's ground on map 5.1 with its landforms on `KRELIEF.gully` (`yuan` and `mao`
 tops) and `KRELIEF.terraces`, earth pillars on `KSTACKS`, the spring brook on `core/water`, and the NW outer wall's flora read in
-place. Not yet: `KSTRATA.vary`/`drape` for the loess (the walls' soil bands are a shader stand-in), `KCARVE` cave-house mouths,
-the two native species, the lowlands' species, the crops entry, stations 2-4. The work log is at the end.
+place, `KCARVE` cave-house mouths in the gully wall and the loess's beds on `KSTRATA`'s shader. Not yet: `KSTRATA.vary`/`drape`
+(the core amendment of section 8), the two native species, the lowlands' species, the crops entry, stations 2-4. The work log is
+at the end.
 
 | | |
 |---|---|
@@ -425,3 +426,7 @@ To source or generate (generic ids; the prompts go into `core/materials/PROMPTS-
 - **The textures**: section 10's sets are delivered (`rock.loess`, `ground.terrace.field`, `rock.megabreccia`,
   `rock.rubble.sturzstrom`, `card.puya`); station 1 wires `rock.loess` (the walls, read from the side: `KGROUND`'s `tri`) and
   `ground.terrace.field`.
+
+**2026-11-09, the known issues.** The far land re-cut past the airless crest (`region/crest.json`; from station 1 the crest stands under
+the bench's own upper steps, so its sky did not change); the terraces on 2 m `KFIELD` insets with furrows along the contour; five cave-
+house mouths (`KCARVE` alcoves) in the trunk's sunny wall; the walls' soil bands on `KSTRATA.shade`'s `loess` recipe.

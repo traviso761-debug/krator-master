@@ -5,7 +5,10 @@
 
 The cut (2026-11-09, the model's 5.1 data in tools/scale-model/model/data; the regions and settlements from the page's defaults,
 model/src/51-region-store.js and 60-settlements.js, written out as JSON lists):
-    python3 tools/scale-model/extract_region.py tools/scale-model/model/data regions.json settlements.json "w outer wall" <out>
+    python3 tools/scale-model/extract_region.py tools/scale-model/model/data regions.json settlements.json "w outer wall" <out> \
+        --add biomes/wouterwall/region/crest.json
+(crest.json: a box from px 190 west of the polygon, so the far land holds the airless crest, 9.3 km at px 255 on the station's row;
+added 2026-11-09, KNOWN_ISSUES.md)
 then region.json, elev, wlev, temp, rain, clim, mask, biome, overlay and palaeo copied here (dist.png and the scarp rasters are
 not read by this kit and are left out). The height grid is Option C's, 1 km a cell (upsample 2); 5.1 map pixels (the plan's
 4.22 pixels + 272, + 330).

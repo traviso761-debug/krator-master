@@ -18,9 +18,9 @@ NWOW.AMP = WOW.AMP; NWOW.lay({fields, R, seed}); NWOW.zoneAt = (x,z)=>WOW.nwZone
 
 **The fields record F** (what 46 reads): `y` (the ground), `g` (grade), `slope` (0..1), `sunny` (-1 a south-facing, shaded slope .. 1 a
 north-facing, sunny one: Krator stands near 40 S), `mean` (the annual mean, °C, with the aspect's 1.5 °C), `perma` (0..1), `water`,
-`streamD` (metres to the brook), `floor` (a gully floor), `pillar`, `terrace` (a terraced field), `terrW` (0..1), `yuan` (0..1: the
+`streamD` (metres to the brook), `cave` (inside a cave house's recess), `floor` (a gully floor), `pillar`, `terrace` (a terraced field), `terrW` (0..1), `yuan` (0..1: the
 tableland's flat top), `gully` (0..1: a side gully), `cut` (metres under the yuan), `loess` (its depth, m), `spring` (0..1: the spring
-line, `WOW.springAt`). For the NW outer wall's passes: `field` (no tree there), `aufeis`, `pocket` (false), `rock`.
+line, `WOW.springAt`), `tp` (the terraces' furrow phase: the ground under them over a step). For the NW outer wall's passes: `field` (no tree there), `aufeis`, `pocket` (false), `rock`.
 
 The core's own fields are bound too (`BIO.field`): `wet`, `flow`, `cold`, `rock`, `upland`, `slope`, and this kit's `sunny`, `mean`,
 `loess`, `cut`, `spring`: any other kit on the page can read them.
@@ -40,6 +40,7 @@ The core's own fields are bound too (`BIO.field`): `wet`, `flow`, `cold`, `rock`
 |---|---|---|
 | `water` | the brook | none |
 | `floor` | a gully floor | `floor`: woolly willow, grass, stones |
+| `cave` | a cave house's room (a `KCARVE` alcove's recess) | none |
 | `pillar` | an earth pillar's foot | none |
 | `wall` | loess over ~45 degrees (it stands sheer) | none: bare buff loess |
 | `scarp` | the same where no loess lies (the patchwork rock) | `rock` |

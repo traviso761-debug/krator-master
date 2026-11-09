@@ -32,8 +32,8 @@ const HCHK={
   return{ok,detail:'loess '+a.loess.toFixed(0)+' m at 3.3 km, '+b.loess.toFixed(0)+' at 4.3; slump '+c.slump.toFixed(2)+' at 4.2 km; runout '+d.runout.toFixed(2)+' at 5.3 km; crest '+e.crest.toFixed(2)+' at 7.6 km'};},
  // the station's landforms, each where the zones say: the yuan, the gully's walls and floor, the terraces, the larch and the steppe,
  // drawn on the near ground's zone raster; the pillars registered
- zones(need,ZC,reg){const lack=need.filter(z=>!(ZC[z]>0)),pil=reg.filter(r=>r.key==='landform.pillar').length;
-  return{ok:!lack.length&&pil>=6,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+pil+' earth pillars'+(lack.length?'; missing '+lack.join(', '):'')};},
+ zones(need,ZC,reg){const lack=need.filter(z=>!(ZC[z]>0)),pil=reg.filter(r=>r.key==='landform.pillar').length,cav=reg.filter(r=>r.key==='house.yaodong').length;
+  return{ok:!lack.length&&pil>=6&&cav>=3,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+pil+' earth pillars, '+cav+' cave-house mouths'+(lack.length?'; missing '+lack.join(', '):'')};},
  // the spring line (WOW.springAt): the brook rises where the gully's cut reaches the foot of the loess, and nowhere is there water above it
  spring(S,F){if(!S)return{ok:false,detail:'no brook'};const p=S.pts[0],A=F(p[0],p[1]);const ok=A.spring>.5&&A.cut>SITE.loess-40;
   return{ok,detail:'the spring at '+p[0].toFixed(0)+', '+p[1].toFixed(0)+': '+A.cut.toFixed(0)+' m under the yuan, the loess '+A.loess.toFixed(0)+' m deep; spring line '+A.spring.toFixed(2)};},
@@ -70,6 +70,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the brook climbing',WATER_RECS&&WATER_RECS.stream?HCHK.water(Object.assign({},WATER_RECS,{stream:Object.assign({},WATER_RECS.stream,{pts:WATER_RECS.stream.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+60}):p)})}),WATER_DRAW):{ok:false,detail:'no brook'});
  add('the loess lying on the crest',HCHK.bench(h=>Object.assign({},WOW.bench(h),{loess:WOW.LOESS.deep})));
  add('no loess wall drawn',HCHK.zones(ZONES_NEED,Object.assign({},ZC,{wall:0}),REG));
+ add('no cave house cut',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='house.yaodong')));
  add('the spring above the loess\'s foot',HCHK.spring(STREAM,(x,z)=>Object.assign({},WOW.FIELDS(x,z),{cut:10,spring:0})));
  add('the larch on the sunny slopes',HCHK.aspect(NWOW.TREES,(x,z)=>{const F=WOW.FIELDS(x,z);return {sunny:-F.sunny};}));
  add('a tree in the brook',HCHK.roots(NWOW.TREES.concat(STREAM?[{x:STREAM.pts[20][0],z:STREAM.pts[20][1]}]:[])));

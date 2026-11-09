@@ -11,3 +11,9 @@
   than by `KRELIEF.apply`, because the terraces must skip a gully's floor, head, wall and rim, and the zones need each record's part.
   The records need the model's ground at construction, so `45-host-stage.js` calls `siteBuild` once `MODEL` exists. This kit is the
   first page on `KRELIEF.gully` and `KRELIEF.terraces`.
+- **Insets.** The ground is one `KFIELD` with finer insets: 2 m over each terrace patch, 1 m round the cave houses. Each inset's
+  step divides the base's 8 m, so its edge lies on the base's lattice lines; `47` pins the edge to the base's line between lattice
+  points and leaves the base mesh's cells under an inset out, so the two meshes meet without a crack. `fieldsAt` takes its gradient
+  at the inset's scale (at least 2 m) inside one.
+- **The far land.** `region/crest.json` widens the cut past the airless crest. From station 1 it changes nothing: the planet is small
+  (R 4,813 km), so the crest 194 km off drops ~3.9 km and sits under the bench's upper steps. Stations 2 and 3 will see it.

@@ -20,8 +20,13 @@ const SITE={
  // the knolls' gully system to the south: shallower, branchier, its tops mao
  south:{a:[-1300,820],b:[2700,1500],amp:80,wave:700,depth:85,w:10},
  // the terraces: a step of `rise` m on the knolls' flanks, in patches (a field system round a few knolls, not every slope: refs/03),
- // each patch a KRELIEF.terraces record with its own circle and the band (page y) it is cut in
- terraces:{rise:3.2,riser:.3,band:[-140,60],patches:[[-700,1050,260],[150,880,230],[650,1250,300],[1250,1000,220],[-150,1500,240]]},
+ // each patch a KRELIEF.terraces record with its own circle and the band (page y) it is cut in; step: the ground's finer grid over each
+ // patch (47: a KFIELD inset, so a 3.2 m step's riser is drawn, not smoothed into the 8 m grid's slope)
+ terraces:{rise:3.2,riser:.3,band:[-140,60],step:2,patches:[[-700,1050,260],[150,880,230],[650,1250,300],[1250,1000,220],[-150,1500,240]]},
+ // the cave houses' mouths (PLAN.md section 2, the Hayrant's yaodong; refs/07 for the turf cellars where the loess thins): a row of
+ // vaulted rooms dug into the trunk's south wall (it faces north, into the sun at 40 S), on its dry floor above the spring; KCARVE
+ // alcoves (47). u: where along the trunk (0 head .. 1 mouth); n rooms, gap m apart; hw, depth, h: each room's half-width, depth, height
+ caves:{u:.32,n:5,gap:7.5,hw:1.9,depth:9,h:3.6,step:1},
  // the earth pillars (refs/05): loess columns under a capstone, on the trunk gully's dry upper floor
  pillars:{n:12,seed:5211},
  snow:{autumn:[700,1200],winter:[-2000,-1900],spring:[-2000,-1900],summer:[2200,3000]},
@@ -35,6 +40,8 @@ const SITE={
   'The yuan (feather-grass flat)':V([-600,-1100,2.2],[-100,-1500,0]),
   'The tablelands from above':V([0,-1700,480],[0,300,0]),
   'West to the wall':V([800,700,40],[-6000,-400,600])};
+  if(typeof CAVES!=='undefined'&&CAVES.length){const C=CAVES[Math.floor(CAVES.length/2)];
+   o['Cave houses in the gully wall']=V([C.c[0]+C.n[0]*30+C.n[1]*8,C.c[1]+C.n[1]*30-C.n[0]*8,5],[C.c[0]-C.n[0]*2,C.c[1]-C.n[1]*2,3]);}
   if(P0)o['Earth pillars on the gully floor']=V([P0.x+P0.R*6,P0.z+P0.R*4,3],[P0.x,P0.z,(P0.top-P0.y0)*.5]);
   return o;}
 };
@@ -71,7 +78,7 @@ function sitePoint(x,z){if(x===_sp.x&&z===_sp.z)return _sp.P;const R=SITE_RECS,m
  const A=c1&&(!c2||g0-g1>=g1-g2)?{rec:'trunk',a:a1}:c2?{rec:'south',a:a2}:null;
  const top=a2&&a2.part==='mao'?'mao':'yuan';
  const ord=A?R[A.rec].lines[A.a.line].order:-1;
- const P={g0,y:g3,rel:g3-m,cut:Math.max(0,g0-g3),part:A?A.a.part:a3?a3.part:top,rec:A?A.rec:a3?'terr':null,order:ord,terrace:!!a3,top};
+ const P={g0,g2,y:g3,rel:g3-m,cut:Math.max(0,g0-g3),part:A?A.a.part:a3?a3.part:top,rec:A?A.rec:a3?'terr':null,order:ord,terrace:!!a3,top};
  _sp.x=x;_sp.z=z;_sp.P=P;return P;}
 // THE RELIEF (metres over the model)
 function siteRelief(x,z){return sitePoint(x,z).rel;}

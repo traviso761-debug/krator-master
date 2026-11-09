@@ -90,13 +90,15 @@ if STN_DIR:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
 # core/terrain: KFIELD (the baked ground the export carries), KSTACKS (the earth pillars: 'balanced', a column under its cap), KRELIEF and its
-# landforms (38, 38c: the station's gullies with their yuan and mao tops, and the terraces; PLAN.md section 2's table), KGROUND (the
+# landforms (38, 38c: the station's gullies with their yuan and mao tops, and the terraces; PLAN.md section 2's table), KCARVE (36: the cave
+# houses' mouths, alcoves in the gully wall), KSTRATA and its shader (35: the `loess` recipe's beds on the walls), KGROUND (the
 # ground's library layers hex-tiled and height-blended, with triplanar sides on the loess walls), KHORIZON (the terrain's shadows at a low
 # sun) with its shade. KFROST is not taken at station 1 (+7 °C: no permafrost; the upper bench's stations will: PLAN.md section 4)
-CORE_TERRAIN=['30-core-field.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','45-core-horizon.js']
+CORE_TERRAIN=['30-core-field.js','35-core-strata.js','36-core-carve.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','45-core-horizon.js']
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=J('core','terrain',f)
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
+PATH.setdefault('35z-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))   # KSTRATA.shade: the loess's beds on the walls (47); slotted after 35-core-strata.js, which it reads
 # the biome core from core/biome (core/README.md): one copy for every kit, as the NW outer wall takes it (31j the limbs' joints, 34 the
 # impostors, 41 the environmental fields, 44 KSTAGE)
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
