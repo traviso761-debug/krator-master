@@ -377,9 +377,10 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
 2. **Yes**: volcanic ash on beast-dunged soil is reason enough ("rule of cool, mostly").
 3. **Yes, as a rumour that is a complete red herring**: the Screamers' speech did not begin with the groves.
 4. **Yes**: the glass wand and Fridon's wormwick trade go in.
-5. **Open**: the owner places Talia on the **e** savannah rim (east-abyss flora), where dragon's blood would not belong; dragon's
-   blood is a **se** rim thing (the Bowl's lineage). Map 5.1 puts Talia (px 801,609) inside `se savannah rim`. Until the owner
-   settles where Talia stands, the incense and dragon's blood stay on the SE rim's flora, with no Talia trade written into LORE.
+5. **Talia is in the east rim's climate** (east-abyss flora): the owner will redraw `e savannah rim` on the map so it runs a
+   bit further south, taking Talia (px 801,609; inside `se savannah rim` on map 5.1). Incense and dragon's blood stay the
+   **SE** rim's (the Bowl's lineage), and Talia's trade is not in them: no incense or dragon's-blood trade for Talia in LORE.
+   The east rim's station sites and Talia's ground (Pylon and Talia read this ground) follow the redrawn polygon.
 6. **Yes**: the rust miombo is defined here, Godstep's redlands reads it; the red guyed stalk stays Godstep's.
 7. **Yes**: the black mallee is the drylands patch's one hybrid.
 
