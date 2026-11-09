@@ -302,3 +302,9 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   13408 px, the Chichani noble's "inside" 17416 to 23368) against 8 better. Turning the lower rows toward the feet folds
   a robe's hem against its own upper rows more than it spares the shins; not applied. The shin pinch of issue 8 wants
   its own shot first.
+- **Issue 12's lip constraint, measured: mixed, the owner's call.** An open part's two lips held to 1.2 x their rest
+  distance: on the 66, skin down 12 % (the Izani noble woman's open coat, 1912 px of skin at its seam, to none; the
+  Izani trade "under" 4761 to 3263 and 322 to 0) and the Free Giant chief's "inside" 68277 to 55142; against that six
+  outfits worse, the Beast Rider peasant man's "under" 4541 to 7523 and the Chichani noble man's "inside" 17416 to
+  22711 (lips held together fold some open parts over themselves). Not applied by count; the page copy
+  `dist/cosmetic-p1-lip.html` and `apply_p1.py lip` are there for a shot sheet of those ten outfits when the GPU is free.
