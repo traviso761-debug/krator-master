@@ -20,9 +20,11 @@ that make parallel agent work safe on the Ancients-lineage contract:
      the kdef()s naming them. Fragments are concatenated in filename order.
 
   4. VENDORING. Fragments taken from other builds are listed in VENDORED with
-     their upstream; VENDOR.json records their sha1 and `--vendor-check`
-     reports drift. ADAPTED names the ones edited on purpose (the drift is
-     expected there and recorded in KNOWN_ISSUES.md).
+     their upstream. Since 2026-11-09 every one but ADAPTED is READ IN PLACE
+     (INPLACE: no src/ copy); ADAPTED names the copies src/ keeps, edited on
+     purpose (recorded in KNOWN_ISSUES.md). VENDOR.json records the adapted
+     copies' sha1; `--vendor-check` says what is read in place and reports
+     the adapted copies' drift.
 
 TARGETS ARE DISCOVERED: every directory under targets/ that holds an
 `89z-rows.js` is a target and builds to dist/<name>.html (`city` builds to
@@ -204,10 +206,27 @@ ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', 
            '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
            '8al-alt-01-office-terrace.js', '8al-alt-06-library.js',
            '82-apartments.js', '42-offices.js', '66-office-c.js'}   # the Ys branch draws one building of each, holed for the ways in
+# READ IN PLACE (2026-11-09, MODULARITY-PLAN.md step 4; TODO.md "Port: next", item 6): every vendored fragment but the ADAPTED
+# ones is read from its upstream by path (VENDOR_RENAME and VENDOR_SUBST still apply, to the body only); src/ keeps the adapted
+# copies alone. Until then src/ held copies from before the doors-and-glass pass (the Vernacular's 70 and 71 before 69e5, the
+# Ancients' 64, 73, 75 and 89 before IZS_HOLLOW, the port's containers, the Highlands kit's friezes and openings, Iziz's
+# embassy and chapterhouse). The upstreams now draw their openings through the Vernacular's 69e5 (vnPlate, vnOpening,
+# IZDOOR, IZ_ROOMC) and the Highlands kit's 71c (hnDoorway, hnRoom, the arch's room and glass), on core/door's records and
+# glass (KDOOR, KGLASS, the leaf styles): the city target takes them with the foreign quarter. Ys hosts no door (no E, no
+# IZDOOR.step): every leaf is drawn shut, as on Verge and the isle demo.
+for _f in ('10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js'):
+    VENDORED[_f] = 'core/door'
+VENDORED['69e5-iziz-openings.js'] = 'kits/iziz-vernacular/src'
+VENDORED['71c-hl-openings.js'] = 'kits/highlands/src'
+VENDOR_SUBST['71c-hl-openings.js'] = list(VENDOR_SUBST['70-hl-tex.js'])   # the kit's renames (HPAL, MAT.rock, MAT.turf)
+for _f in ('10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '69e5-iziz-openings.js', '71c-hl-openings.js'):
+    TARGET_ONLY[_f] = ('city',)
+INPLACE = {f: os.path.join(ROOT, VENDORED[f], VENDOR_RENAME.get(f, f)) for f in VENDORED if f not in ADAPTED}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
     '69e-vern-hollow.js',   # the vernacular's hollow bodies (no rnd())
+    '10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '69e5-iziz-openings.js', '71c-hl-openings.js',   # core/door and the openings (no rnd())
     '00-head.html', '08-core-rand.js', '10-core.js', '69a-world-uv.js', '42-offices.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -327,6 +346,9 @@ def build_one(target, do_checks):
     if target == 'city':   # the biome, read in place (a src/ copy with the same name would win)
         for f, p in BIO_PATHS.items():
             src.setdefault(f, p)
+    for f, p in INPLACE.items():   # the vendored chain, read in place (2026-11-09; an adapted src/ copy is not in INPLACE)
+        if all(target in tg for pre, tg in TARGET_ONLY.items() if f.startswith(pre)):
+            src.setdefault(f, p)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
@@ -382,7 +404,7 @@ def build_one(target, do_checks):
 
 def vendor_manifest():
     out = {}
-    for f in sorted(VENDORED):
+    for f in sorted(ADAPTED):   # the copies src/ still keeps (the rest is read in place: INPLACE)
         p = srcpath(f)
         if os.path.exists(p):
             with open(p, 'rb') as fh:   # CRLF read as LF: a Windows checkout writes the same manifest (tools/port_baseline.py read_lf)
@@ -395,7 +417,11 @@ def vendor_manifest():
 
 def vendor_check():
     same, adapted, drift, missing = [], [], [], []
-    for f in sorted(VENDORED):
+    gone = [f for f, p in sorted(INPLACE.items()) if not os.path.exists(p)]
+    shadow = [f for f in sorted(INPLACE) if os.path.exists(os.path.join(SRC, f))]
+    print('vendor-check: %d fragments read in place from their upstreams%s%s' % (len(INPLACE),
+          ('; MISSING ' + ', '.join(gone)) if gone else '', ('; a src/ copy shadows ' + ', '.join(shadow)) if shadow else ''))
+    for f in sorted(ADAPTED):
         up = os.path.join(ROOT, VENDORED[f], VENDOR_RENAME.get(f, f))
         here = srcpath(f)
         if not os.path.exists(up):
