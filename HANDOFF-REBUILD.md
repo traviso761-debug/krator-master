@@ -1,5 +1,28 @@
 # Handoff: the all-builds rebuild
 
+## Triage of the 14 parallel merges (2026-11-09, `ccr-55bd6ee1-p1si44-triage`)
+
+`ccr-55bd6ee1-p1si44` (35e535bf) merges 14 agent branches, most "WIP (stopped before verification)", onto main's 2d530d40.
+`python3 tools/test_all.py --no-build` on both, in a cloud container without the LFS objects fetched:
+**main 16 failed, the merge 20.** The four new failures are fixed on this branch; the 16 shared ones were pre-existing.
+
+| Failure | On main | Cause | Now |
+|---|---|---|---|
+| dependencies run one way | pass | ac9d82ff: the Yuni, Locus and Eastern Abyssal kit sheets read the engine in place from `settlements/yuni`, `settlements/locus` (step 4b); 6c04e275 left three stale Ys `vendored` lines | the three edges allow-listed as intended (like `kits/pylon -> settlements/iziz`), the stale lines deleted |
+| Voth census tables | pass | 6c04e275 dropped Ys's copy of `76-port-chapterhouse.js` (read in place from Iziz) | `check_trades.py` `EXTRA_SRC`: Ys also looks in `settlements/iziz/src` |
+| source lints (ORNUM x19) | pass | 7ef9dae8, edf152dd, 6e8a81da, b5b36165, ac9d82ff, 5d10c87b: `x \|\| <number>` defaults | rewritten as `x == null ? d : x` (no baseline entry) |
+| vendored drift only shrinks | pass | 7ef9dae8 moved `37-wk-rec.js` to `core/engine` but left Eternian's identical copy; Yeti's own copy (it also walks `feature` records, its tunnels) now shadows core's | Eternian's deleted; Yeti's is the one new baseline entry (intended drift; folding it into core is the Yeti session's) |
+| `test_gpu_lanes.py` "its children are killed too" | fail | pre-existing: the container's PID 1 does not reap, the killed grandchild stays a zombie and `pid_alive` counted it | fixed: `pid_alive` counts state Z as dead |
+| ten `isle-demo/tests/test-isle-*.js` | fail | pre-existing here: `dist/isle-city.plan.js` is an LFS pointer in this checkout (not the doors merge, not water breakup) | pass with `git lfs pull --include=settlements/isle-demo/dist/isle-city.plan.js` (see below) |
+| `kits/interiors/tests/test-walk.js` | fail | pre-existing here: `dist/interiors-core.js` is an LFS pointer | passes once fetched |
+| `core/terrain/test-lava.js`, `test-scarp.js` (golden) | fail | pre-existing: the goldens were written in the same commit as their modules (14e684a4) and nothing changed since; last-bit float differences on this machine's Node 22.23 | open: rewrite the goldens (`--write`) only on the machine that owns them |
+| `core/water/test-gaps.js` "neutral by default" (draw.shore, draw.flow2 snapshots) | fail | pre-existing on main | open |
+| `check_stale` | fail (kits/port UNRECORDED) | the merge: 104 over the baseline, expected before the all-builds rebuild | the rebuild |
+
+Nothing was rebuilt and `PORT-BASELINE.json` is untouched. The ORNUM rewrites touch `core/engine/91i-interiors.js` and
+`core/furnish/50-core-furnish.js`; they change behaviour only when a 0 is passed. When the all-builds rebuild runs, check
+`python3 core/engine/fingerprint.py` and `python3 core/furnish/fingerprint.py` with it.
+
 ## The integration pass (2026-11-08 to 2026-11-09, `claude/integration-b91c04`; read first)
 
 **Merged, in order:**
