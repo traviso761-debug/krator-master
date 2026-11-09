@@ -2169,9 +2169,11 @@ function KCharFigure(body, sliders, load){
         '\t\t\t\tif(es.w <= 0.0) continue;\n' +
         '\t\t\t\tvec2 esp = es.xz - kcH.xz;\n' +
         '\t\t\t\tfloat esR = es.w + kcP + (ceo > 0.5 ? 0.020 : 0.022) + cflap * 0.035 + kcPO * max(kcM, 0.45);\n' +
+        // (a point's reach round its bearing 6 cm wider than its padded circle, 2026-11-08: at the circle alone a run's trailing
+        // shin came out through the trade skirt's back, 2740 px in the audit; widened, none, and the underskirt through less)
         '\t\t\t\tfloat erpad = esR + 0.055, eproj = dot(esp, eu), eperp2 = max(0.0, dot(esp, esp) - eproj * eproj);\n' +
-        '\t\t\t\tif(eperp2 >= erpad * erpad) continue;\n' +
-        '\t\t\t\tfloat ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, erpad * erpad, eperp2));\n' +
+        '\t\t\t\tif(eperp2 >= (erpad + 0.06) * (erpad + 0.06)) continue;\n' +
+        '\t\t\t\tfloat ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, (erpad + 0.06) * (erpad + 0.06), eperp2));\n' +
         '\t\t\t\tint ej = ei >= 12 ? ei - 12 : ei >= 6 ? ei - 6 : ei;\n' +
         '\t\t\t\tfloat eytop = ceo > 0.5 && ej == 0 ? es.y + 0.42 * es.w : es.y + (1.0 - ceo * cshort) * es.w;\n' +
         '\t\t\t\tfloat ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.14), transformed.y - eytop);\n' +

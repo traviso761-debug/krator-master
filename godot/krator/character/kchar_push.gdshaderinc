@@ -148,10 +148,10 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 					float erpad = esR + 0.055;
 					float eproj = dot(esp, eu);
 					float eperp2 = max(0.0, dot(esp, esp) - eproj * eproj);
-					if (eperp2 >= erpad * erpad) {
+					if (eperp2 >= (erpad + 0.06) * (erpad + 0.06)) {
 						continue;
 					}
-					float ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, erpad * erpad, eperp2));
+					float ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, (erpad + 0.06) * (erpad + 0.06), eperp2));
 					int ej = i >= 12 ? i - 12 : (i >= 6 ? i - 6 : i);
 					float eytop = ceo > 0.5 && ej == 0 ? es.y + 0.42 * es.w : es.y + (1.0 - ceo * cshort) * es.w;
 					float ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.14), kv.y - eytop);

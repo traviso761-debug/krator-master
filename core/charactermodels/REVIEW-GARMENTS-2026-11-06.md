@@ -277,3 +277,9 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   the trade outfit are identical in all 28 shots. The trade skirt's shin in a run is a stable 2740 px on this build:
   a real fault for Phase 1's hull work, no longer noise. (The no-clip rest shot still carries chain state between
   shots, since `update` returns before the cloth pass without a clip; its pixels are the rigid rest either way.)
+- **Phase 1, first fix (2026-11-08).** With the audit repeatable, five one-line hull variants on the trade outfit in a
+  minute each: a point's reach round its bearing 6 cm wider than its padded circle took the run's shin from 2740 px
+  to 0 and the underskirt from 4846 to 4022; more standoff also cleared the shin but cost "under"; the hull reaching
+  higher, a longer height fade and a lower hem gate did nothing for it. Applied in both runtimes: the whole Chichani
+  set on both bodies has no baseline outfit worse, no skin anywhere but 11 px on the man's trade outfit, holes as
+  before. Still Phase 1: the capsule squeeze to the seat (issue 1), the shin heading (8.1), the lip constraint (12).
