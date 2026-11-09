@@ -148,8 +148,9 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
    JSON.stringify(K.tower({id:'t',seed:10,x:0,z:0,H:150,R:60,y0:0}))===JSON.stringify(T));}
 
 // ---- the gridded top (opt.top {grid}: Korona's hoar pavement, 2026-10-26). Without it every mesh is as before (the hashes
-// below are the module's before the option); with it a relief top is a clipped grid, watertight with its wall
-{const H0={mesa:305465533,sp:3674188268,relief:3343314386};
+// below are the module's before the option, refrozen 2026-11-08 for the centre fan that closes a ringed top); with it a relief top is
+// a clipped grid, watertight with its wall
+{const H0={mesa:2719229404,sp:3424084641,relief:4222178254};
  ok('without opt.top the meshes are unchanged (default and the hoar\'s 150-ring options)',K.hash(K.mesh(mesa))===H0.mesa&&K.hash(K.mesh(sp))===H0.sp&&K.hash(K.mesh(mesa,{step:7,topRings:150,segMax:1200}))===H0.relief,
   K.hash(K.mesh(mesa,{top:{grid:5,cull:false}}))===H0.mesa);
  ok('a bed too narrow for the grid keeps its rings (a spire)',K.hash(K.mesh(sp,{top:{grid:5,cull:false}}))===H0.sp,K.hash(K.mesh(sp,{top:{grid:2,minCells:1}}))===H0.sp);

@@ -23,21 +23,9 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
-- **`KHOOK.EYE` (and `07-core-kwarp.js`'s `EYE`) start with a newline** (2026-11-08, the integration pass; the owner: "later"): crater-drylands spliced
-  `KHOOK.EYE` straight after `float cdM1,cdM2;`, so `#ifndef KHOOK_EYE` did not start a line and two Lambert programs failed to
-  compile (the info log names it; the verify printed it empty). The kit is fixed; a leading newline in core stops the next one. It moves every page.
-- **`KSHADOW.units` counts `sampler3D` too** (2026-11-08, found by the godthrone stations' fix): `core/shadow/host/12-core-shadow-host.js`
-  matches only `uniform sampler2D|samplerCube`, so it misses core/atmos's `uniform highp sampler3D uNoise` (the cloud shade) and
-  reads one unit short on every ground with it (blood: 16 counted, 17 linked). Godthrone's `84-host-ground.js` counts with its own
-  pattern until then. It moves every KSHADOW page.
-
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **Close a ringed KSTACKS top at its centre** (2026-10-27, found by `KSEAT`, `core/terrain/SEAT.md`): `KSTACKS.mesh`'s
-  top rings stop at `.08` of the radius (`rhos` in `core/terrain/37-core-stacks.js`), so every ringed top has an open
-  hole at its centre (about 13 m across on a 160 m mesa) that shows the ground under the body from above. Add a centre fan
-  on `topH`; it moves every page that draws a ringed top (about 13 builds), then drop the pinned check in `test-seat.js`.
 - **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
   anchors and `userData.anchorOn`, `krator-fauna-farm.js` the bison's variant 3 size, and the catalog a Bowl mantis and new model variants of the
   ant and the staghorn (a page without models draws those variants procedurally; check a page that picks a staghorn's variant at random). Since then: family models (`spider#gilded`, `rig/family.py`), six new entries and model variants on four more, all with procedural fallbacks: the variant counts of those entries changed, so a page that draws a variant at random will draw them. The pages that bundle the kit (Voth,
@@ -79,11 +67,9 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
   list `ext/56` in every build that takes core/water (the pooled `settlements/`/`kits/` lists and each biome's `CORE_WATER`), set
   `W.BREAKUP_AUTO=true` as the default in ext/56, rebuild them all, rewrite the baseline once, and look at a lake, a pool and a river
-  in a few of them (the eastabyss look). `node core/water/test-breakup.js` and `test-gaps.js` say what moves.
-- **The planetary nebula, smaller and with its white dwarf** (the owner, 2026-10-27; done in the sources on
-  `claude/core-atmos-planned-16a374`): `SKY.cluster.pn` radius 3 to 2 degrees (`core/atmos/sky/89-atmos-e-skymodel.js`) and a
-  blue-white central star a pixel or two wide with a faint glow (`89-atmos-g-sky.js`); the Godot include, `golden.json` and
-  `sky.json` carry it. Every page on the shared sky changes (its night sky only): rebuild them with the rest, no separate pass.
+  in a few of them (the eastabyss look). `node core/water/test-breakup.js` and `test-gaps.js` say what moves. **2026-11-08:** left out of
+  the core pass of the integration rebuild: 25 of the 43 builds that take core/water (by `51-core-water-kinds.js` in their `build.py`) do
+  not list ext/56, and those lists are the builds' own files; the default flip alone would turn it on only in the 18 that do.
 
 - **Backport the succulent columns' quality pass** (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
   `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
@@ -93,31 +79,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   `biomes/nsemiarid` and `biomes/throne` (their `50-*-species.js`, and their trees fragment where it has a column tree) and
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
   pages' hashes and their per-type triangle counts (the hero column doubles). **2026-11-02:** ebadlands' moonflower column is ported (its turn); nsemiarid, the Throne and Shade are left.
-- **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
-  (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
-  (`kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
-  piece among a thousand merged into one mesh, so a registered volume round each reads empty
-  (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
-  never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics
-  (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
-  sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
-  KNOWN_ISSUES items close.
-- **core/host: a broad phase for the probe's `regOccupancy`** (2026-10-23; the owner asked for it here). It tests every
-  registered volume against every probe point (every instance, every mesh's box centre): 118 s of Rift's verify, all of
-  its invariants (`EFFICIENCY.md`, "Rift's checks, profiled"). Index the volumes by their circle (x, z, r) on
-  `core/space` (KSPACE, not a new hash) and call `has` only on the candidates near each point; every build's `regHas`
-  found is the same cylinder test as `inCyl`, so the counts stay the same (if one is not, keep the full loop for that
-  build). Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) buckets by z for reference. Prove it: the
-  `registered-volumes-non-empty` lines (counts and thinnest) unchanged on Rift, Hyperjungle, Sedesert, Iziz, Girder and
-  Yuni, and their wall times before and after written into `EFFICIENCY.md`. Do it with the probe-points item above (same
-  file). With it, try a smaller sky in `tools/harness.py` `check_profile` (`sky` 64, not 256: the stage capture is 37 s
-  of Rift's verify), kept only if every export-profile check still passes.
-- **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
-  `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
-  arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
-  `releasePointerCapture`) in `try { } catch (e) { }`, as `core/host/98-host-edit.js` already does. About 138 builds take
-  core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
-  its first lines): take that out in the same change.
 
 - **The weapon racks** (`claude/weapon-racks`, 55c2913f7; `kits/yeti/PLAN.md` section 11). The waiting cultures were registered in
   the rebuild of 2026-11-04 (core/tags, core/catalog, the Jimjam and Dalab culture files, the missing fruit); the racks' branch

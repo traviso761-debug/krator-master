@@ -103,7 +103,9 @@ KSHADOW.attach = function (o) {
   return H;
 };
 /* KSHADOW.units(material, renderer): the texture units a material's fragment program reads, by a dry run of its onBeforeCompile on the
-   library shader (the Throne's samplersOf, 2026-11-03): its own maps plus every sampler its hooks declare. A failure counts as 99 */
+   library shader (the Throne's samplersOf, 2026-11-03): its own maps plus every sampler its hooks declare (2D, 3D, Cube and their
+   array, shadow and integer forms, with or without a precision qualifier: core/atmos's cloud shade declares `uniform highp sampler3D`,
+   which the first pattern missed, 2026-11-08). A failure counts as 99 */
 KSHADOW.units = function (M, r) {
   const LIB = { MeshLambertMaterial: 'lambert', MeshStandardMaterial: 'standard', MeshPhysicalMaterial: 'physical', MeshPhongMaterial: 'phong', MeshToonMaterial: 'toon' };
   try {
@@ -113,7 +115,7 @@ KSHADOW.units = function (M, r) {
     try { if (M.onBeforeCompile) M.onBeforeCompile(sh, r); } finally { if (typeof KHOOK !== 'undefined') KHOOK.failures.length = f0; }
     let n = 0;
     ['map', 'emissiveMap', 'alphaMap', 'lightMap', 'aoMap', 'normalMap', 'bumpMap', 'roughnessMap', 'metalnessMap', 'specularMap', 'envMap'].forEach(k => { if (M[k]) n++; });
-    sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g, (a, b) => { n += b.split(',').length; return a; });
+    sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g,(a, b) => { n += b.split(',').length; return a; });
     return n;
   } catch (e) { return 99; }
 };

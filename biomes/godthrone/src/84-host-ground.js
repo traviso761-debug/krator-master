@@ -138,12 +138,9 @@ function buildGround(){
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;
  /* the ground's texture units, counted by core/shadow's dry run of its hooks (KSHADOW.units), against the GPUs' 16 (above); counted
     when read, so the hooks core/atmos and core/water add after this (snow and rain cover, fog belts, the wet beds) are in it */
- /* KSHADOW.units' pattern (uniform sampler2D|samplerCube) misses a precision-qualified or 3D sampler: core/atmos's cloud shade on the
-    ground declares `uniform highp sampler3D uNoise`, so it read one short of what links (16 where the GPU linked 17 on the bloodfalls).
-    Its dry run is taken here with a pattern that sees every sampler (the core fix is owed: KNOWN_ISSUES.md) */
- const unitsOf=M=>{try{const L=THREE.ShaderLib.standard,sh={uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader},f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
-   try{if(M.onBeforeCompile)M.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}
-   let n=M.map?1:0;sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?(?:i|u)?sampler\w*\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n;}catch(e){return 99;}};
+ /* core's count sees every sampler since 2026-11-08 (precision-qualified and 3D: core/atmos's `uniform highp sampler3D uNoise`, which
+    the page counted with its own pattern until then) */
+ const unitsOf=M=>typeof KSHADOW!=='undefined'&&KSHADOW.units?KSHADOW.units(M,renderer):99;
  Object.defineProperty(window,'_groundUnits',{configurable:true,enumerable:true,get:()=>({n:unitsOf(MAT),max:16,layers:GLY_LIVE.length})});
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:o=>!o.userData.farField});
  REGISTER({name:STN.title.replace('Krator Godthrone: ','The ground of ')+' (the field as drawn)',x:TERR.cx,z:TERR.cz,y:GROUND_F.stats().min-50,r:TERR.R*1.42,h:GROUND_F.max-GROUND_F.min+100,ground:true});

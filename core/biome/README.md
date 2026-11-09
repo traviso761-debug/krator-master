@@ -49,6 +49,13 @@ warning by default: nhighlands' `needle` (632k) and `frond` (595k) are over the 
 turn. `BIO.CAP_ERR` (`BIO.init({capErr: true})`) makes it a `BIO.err` instead, which fails verify. `BIO.CAP_THROW`
 (`BIO.init({capThrow: true})`) throws; a session writing a new pass should set it. An item meant to be
 that many says so: `BIO.def(name, geo, mat, {cap: N, capWhy: '...'})` (a cap with no `capWhy` is itself reported).
+
+**The rule (the owner, 2026-11-08: "make it a rule"):** foliage that is dense on purpose declares it, `{cap, capWhy}`, with the
+cap a little over what it puts and the reason in `capWhy` (the look that needs the count: a sward, a bloom carpet). Precedents:
+hyperjungle's `tallgrass` (cap 650k) and crater-drylands' `bloom` (550k). Coarsening (a wider cell, fewer per cell) is for
+density that is accidental, an item over the cap that nobody meant; do not coarsen a declared carpet to get under 250k, and
+do not declare a cap to silence an accident.
+
 `BIO.capReport()` returns `[{kit, item, count, cap, pass, why}]`; `harness.verify_page` reads it as the universal `instance-cap` assert.
 
 **6. Probe points from the drawers.** The probe samples a merged mesh at its box centre, so a tree drawn into a bark

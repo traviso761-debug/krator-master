@@ -17,9 +17,15 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  W.KH=()=>{if(typeof KHOOK!=='undefined')return KHOOK;throw new Error('core/water: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');};
  W.vs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.v(sh,r[0],r[1],who);return sh;};
  W.fs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.f(sh,r[0],r[1],who);return sh;};
- // a water colour goes into the shader AS WRITTEN: a hex here was tuned as linear and is not decoded (KCOLOR.linArr with {linear:true} says so).
- // Decoding them would darken every page's water; a surface wanting a true display hex passes KCOLOR.lin(hex), a THREE.Color, which is linear
- W.colAsWritten=(T,c)=>{if(typeof KCOLOR==='undefined')throw new Error('core/water: core/shader is not on this page (KCOLOR): list core/shader/06b-core-kcolor.js (khost.resolve adds it)');return KCOLOR.linArr(new T.Color(c),{linear:true});};
+ // a water colour is DECODED into the shader (the owner, 2026-11-08): a hex (number, '#rrggbb', [r, g, b]) is a display (sRGB) colour and
+ // goes in linear, as core/shader's KCOLOR convention says and as the Godot importer has always read it (water_import.gd _lin); a THREE.Color
+ // is linear already and goes in as it is; any other CSS string three parses is decoded. Until 2026-11-08 the hexes went in as written (read
+ // as linear), so every page's water was paler than its hex: decoding darkens it. W.colAsWritten keeps the old reading, for a page that asks
+ const KC=()=>{if(typeof KCOLOR!=='undefined')return KCOLOR;throw new Error('core/water: core/shader is not on this page (KCOLOR): list core/shader/06b-core-kcolor.js (khost.resolve adds it)');};
+ W.colLin=(T,c)=>{const K=KC();if(c&&c.isColor)return[c.r,c.g,c.b];
+  if(typeof c==='number'||Array.isArray(c)||(typeof c==='string'&&/^\s*(#|0x)?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.test(c)))return K.linArr(c);
+  const q=new T.Color(c);return K.linArr([q.r,q.g,q.b]);};
+ W.colAsWritten=(T,c)=>KC().linArr(new T.Color(c),{linear:true});
  // the water's slice of KHOOK.checkPrograms: its programs that did not link and its anchors missed; [] when all is runnable
  W.checkPrograms=(r,scene)=>W.KH().checkPrograms(r,scene,/wtr/);
  const fr=x=>x-Math.floor(x),cl=(x,a,b)=>x<a?a:x>b?b:x,ss=(a,b,x)=>{const t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t);};

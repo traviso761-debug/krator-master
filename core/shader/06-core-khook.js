@@ -39,7 +39,7 @@
  var hash=function(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
 K.hash=hash;
 K.glf=function(x,d){if(typeof x!=='number'||!isFinite(x))throw new Error('KHOOK.glf: not a finite number: '+x);var s=d==null?String(x):x.toFixed(d);return/[.eE]/.test(s)?s:s+'.0';};
-K.EYE='#ifndef KHOOK_EYE\n#define KHOOK_EYE\nvec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n#endif\n';
+K.EYE='\n#ifndef KHOOK_EYE\n#define KHOOK_EYE\nvec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n#endif\n';
 K.watch=function(r){if(r&&K.renderers.indexOf(r)<0)K.renderers.push(r);return r;};
  var cur={layer:null,mat:null};
  var fail=function(who,find,stage){var m=cur.mat,rec={layer:who||cur.layer||'?',anchor:String(find),stage:stage||'?',material:m?(m.type||'')+(m.name?' '+m.name:''):'?'};

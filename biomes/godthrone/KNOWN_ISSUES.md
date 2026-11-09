@@ -54,7 +54,7 @@ The rebuild turn (2026-11-04, in the cloud: no GPU; software GL only, PLAN.md se
   as their content; the great gill's throat has none within 30 m: the record is the crack's floor (`ground:true`). (3) The flank's ash check
   read `RILLE.depth`, which KRELIEF.rille's record does not keep, so it sampled nothing: it now reads the wall's height per point (the plain
   over the floor) and samples across the rille's line (1304 samples, 14% ash and ignimbrite).
-- [ ] **core/shadow's `KSHADOW.units` undercounts**: its pattern (`uniform sampler2D|samplerCube`) misses `uniform highp sampler3D uNoise`
+- [x] **core/shadow's `KSHADOW.units` undercounts** (fixed in core 2026-11-08: it counts sampler3D and the array, shadow and integer forms; 84 now uses core's count): its pattern (`uniform sampler2D|samplerCube`) misses `uniform highp sampler3D uNoise`
   (core/atmos's cloud shade), one short on every ground that takes it, so its "fits" can pass a material that will not link. 84 counts with
   its own pattern until the core fix (outside this kit).
 - [ ] **Not GPU-verified**: every page passed its checks in SwiftShader (HANDOFF-REBUILD.md's turn paragraph lists what ran); the coordinator's

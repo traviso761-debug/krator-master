@@ -70,8 +70,8 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 Every water hook goes through `KHOOK` (`core/shader/README.md`), so a page needs `core/shader` (`khost.resolve` adds it). What wraps a
 material is a layer (`wtr-ride`, `wtr-wet`, `wtr-keep`, `wtr-rust`, `wtr-cf:<hash>`, `wtr-breakup`, `wtr-mirror`); a page hook runs first
 whenever it is assigned. A kind's own hook edits through `W.vs` and `W.fs`, which throw on a missing anchor. `WATER.checkPrograms(renderer?,
-scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. Colours go in as written (`WATER.colAsWritten`);
-`KCOLOR.lin(hex)` is how to pass a true display hex. The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
+scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. A colour hex is decoded (`WATER.colLin`, 2026-11-08: a display hex goes in
+linear, a `THREE.Color` as it is; `WATER.colAsWritten` is the old as-written reading). The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
 
 ## Taking it into a build
 
