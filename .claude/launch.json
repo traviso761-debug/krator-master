@@ -159,6 +159,20 @@
                                                    "biomes/ancientsvalley/dist"
                                                ],
                                "port":  8831
+                                                      },
+                           {
+                               "name":  "mechs",
+                               "runtimeExecutable":  "python",
+                               "runtimeArgs":  [
+                                                   "-m",
+                                                   "http.server",
+                                                   "8847",
+                                                   "--bind",
+                                                   "127.0.0.1",
+                                                   "--directory",
+                                                   "kits/mechs/dist"
+                                               ],
+                               "port":  8847
                            }
-                       ]
+]
 }

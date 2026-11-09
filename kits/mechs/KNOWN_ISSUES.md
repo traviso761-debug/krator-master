@@ -1,6 +1,6 @@
 # kits/mechs: known issues
 
-`verify.py --assert` passes with nothing deferred (19 mechs, 20 builds with the Castra's two variants, seeds 1..2), z-fighting included.
+`verify.py --assert` passes with nothing deferred (26 mechs, 32 builds with the Castra's two variants and the Ancients' feigners, seeds 1..2), z-fighting included.
 
 ## Open
 
@@ -40,8 +40,20 @@
 - [ ] **The Stalkers' shells use the shared maps, finer** (`detail: { tile: 3, mix: 0.35 }`). A set of their own, white
   enamel scoured by sand, would suit them better; none is in the library yet: `metal.enamel.scoured`, `core/materials/PROMPTS-NEEDED.md` section 7.
 
+- [ ] **The tripod's gait is the quadruped's maths on three legs** (2026-11-09): one leg swings at a time (offsets 0, 1/3,
+  2/3, duty 0.72) and the body's sway reads the hips' x sign, so the rear leg (x = 0) adds no sway; it walks, but a
+  true tripod rocks about the two planted feet. A gait with a `pivot` over the stance pair would read better.
+- [ ] **A feigner's tell is only as visible as its lamp.** The `tell` bone is a knob 3-6 cm across: at a hundred metres
+  the host should read the `call` event (kind `tell`) and flare its own light or sound; the head's turn is the far tell.
+- [ ] **The keepers' routines do not touch anything.** The porter's hook stops 0.8 m above the ground and the sweeper's
+  brushes clear nothing; a host that wants dust plays it on the `impact` events (the routines carry them).
+- [ ] **No buried or dormant pose for the Ancients** either: a hunter standing dead in a street until it wakes wants a
+  slumped idle and a rising clip, as the Stalkers do (above).
+
 ## Closed
 
+- 2026-11-09: the Catulus declared `weapon: ['none']` with `data.weapon` 'none: ...', which the per-variant rule of 2026-10-20
+  rejects (an unarmed mech is `weapon: []`); the kit's `--assert` had failed on it since. Fixed to `[]`.
 - 2026-10-20: tags per variant. An entry may declare `variantTags: [{}, { weapon: [...] }]`, keys replacing the mech's `tags` for that variant (`KratorMechs.tagsOf(key, v)`, `userData.tags`, and `list()[i].variantTags`). The Castra's Supply Train carries `weapon: []` (the Road Camp keeps its ballista), and `verify.py` accepts an empty weapon list only where the variant's `data.weapon` reads 'none'.
 - 2026-10-05: the texture gaps. The owner generated `metal.painted.chipped` (the livery: paint chipped to steel, which
   the shader shows as bare metal where the map is dark), `metal.joint.greasy` (joints and pistons), `hair.crest` (the

@@ -56,10 +56,13 @@
 /* the vocabularies a mech's tags are checked against (verify.py --assert) */
 const MECH_CLASSES = ['mech'];
 const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility', 'standard-bearer', 'scout', 'line', 'heavy'];
-const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
+const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped', 'tripod'];
+/* a feral machine's behaviour (biomes/ancientsvalley/PLAN.md section 6): a KEEPER at its thousand-year routine, a HUNTER that attacks on
+   sight, a FEIGNER that passes for a keeper until it turns (a keeper chassis with the attack clip and a tell). tags.role, per variant. */
+const MECH_ROLES = ['keeper', 'hunter', 'feigner'];
 const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle', 'none'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
-  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'none'];
+  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'lance', 'beam', 'cannon', 'gun', 'none'];
 
 /* a culture: its palette goes into the catalog core's FPAL (inside this closure only), so F.col('orange')
    resolves against the mech's own culture */

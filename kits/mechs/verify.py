@@ -159,6 +159,8 @@ for(const E of KM.list()){
     const VT=u.tags||{}, unarmed=/^none/.test(String((u.data||D).weapon));
     if(!Array.isArray(VT.weapon)||(!VT.weapon.length&&!unarmed)||(VT.weapon.length&&unarmed)||VT.weapon.some(x=>!inList(x,KM.WEAPONS)))r.fail.push('tags: weapon '+VT.weapon);
     if(KM.tagsOf(E.key,v).weapon.join()!==VT.weapon.join())r.fail.push('tags: tagsOf and userData disagree');
+    if(VT.role!=null&&!inList(VT.role,KM.ROLES))r.fail.push('tags: role '+VT.role);
+    if(VT.role==='feigner'&&!(A.events||[]).some(e=>e.type==='call'&&e.kind==='tell'))r.fail.push('feigner: no tell event (call, kind tell) in its clip');
     for(const k of ['height','mass','crew','pilot','weapon'])if(D[k]==null)r.fail.push('tags: data.'+k+' missing');
     if(!(D.speed>0))r.fail.push('tags: data.speed');
     if(u.key!==E.key||u.culture!==E.culture||!u.tags||u.tags.class!==T2.class)r.fail.push('tags: userData does not carry key/culture/tags');
