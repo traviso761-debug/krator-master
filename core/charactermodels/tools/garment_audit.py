@@ -90,9 +90,15 @@ VIEW = '''async ([yaw, at, dist]) => { var c = window._kchar.cam; c.yaw = yaw; c
 def classify(img):
     """the class index of each pixel, -1 where a pixel is a blend at an edge"""
     a = np.asarray(img.convert('RGB'), dtype=np.int16)
-    d = np.abs(a[:, :, None, :] - RGB[None, None, :, :]).sum(3)
-    lab = d.argmin(2).astype(np.int8)
-    lab[d.min(2) > 45] = -1
+    # class by class with a running minimum: the one (h, w, 12, 3) array was 65 MB a shot, and a loaded machine refused it
+    best = np.full(a.shape[:2], 32767, np.int16)
+    lab = np.zeros(a.shape[:2], np.int8)
+    for i in range(len(RGB)):
+        d = np.abs(a - RGB[i][None, None, :]).sum(2, dtype=np.int16)
+        m = d < best
+        best[m] = d[m]
+        lab[m] = i
+    lab[best > 45] = -1
     skin = (a[:, :, 0] > 200) & (a[:, :, 1] < 110) & (a[:, :, 2] < 110)
     lab[skin] = NAMES.index('skin')
     key = np.round(a[:, :, 1] / (255 * 0.012)).astype(np.int32) * 32 + np.round(a[:, :, 2] / (255 * 0.024)).astype(np.int32)
