@@ -48,6 +48,7 @@ const BUDGET={
  cls:{pass:6500000,host:600000},
  type:{'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','jungle/station':'pass','jungle/kin':'pass','host':'host'},
 };
+if(ST_TAKE&&ST_TAKE.budget)Object.assign(BUDGET.showcase,ST_TAKE.budget);   /* a station's own page budget (its 45: the savage land's taller old growth and its herds) */
 // species and plants that yield something edible the kit does not draw as a catalog fruit: named, not hidden
 const FRUIT_NOT_DRAWN=['treefern','ginger','bromeliad'];
 const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)n[M.name.replace(/^biome:/,'')]=(n[M.name.replace(/^biome:/,'')]||0)+M.count;});return n;};

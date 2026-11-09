@@ -4,6 +4,41 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **J2-J6 (2026-11-08): the lands, built in a cloud session on CPU checks only.** `PLAN-LANDS.md` section 13's J2-J6. Checked here:
+      every page builds (`tools/build.py`), the lints pass (`check_core_use`, `check_assembly`, `check_port`, `check_source`,
+      `check_cells --ratchet`), and each page was loaded in Chromium on SwiftShader (no GPU) with its host checks, negatives and the core
+      guards (the card guard, the attachment audit, one LOD key a tree) all passing. **Not checked: `verify.py --assert` on a GPU,
+      the look, the frame time, the draw calls past the default camera.** Station 1 is unchanged: its totals (triangles, instances, each
+      pass's triangles) are the same before and after on the CPU load; its page bytes change (the new fragments 54, 56 and 57 load,
+      lazily: nothing runs until a station asks), and `50`/`55`'s small opt-in (below) reaches the builds that read them in place
+      (geyser, necanyons, korona, pinnacle-rock, iziz, dhelv, ringisles: the same bytes change there, nothing drawn changes).
+  - **J2, the savage land** (`--station savage`, `dist/hyperjungle-savage.html`; `stations/savage/`, `src/54`, `src/56`):
+    - The old-growth habit is a kit option, off unless a station sets it: `HYPERJUNGLE_LOOK.habit` (50: `HYPERJUNGLE.HABIT`; 55:
+      `oldGrowth`): each tree's height times a factor hashed from its own seed (no draw: the stream is the plain habit's), the bole x1.25,
+      the crown x1.15, the stand shares (ghostwood and prism gum lead) and the heroes 230 m apart. The baobab x1.1-1.2 (the 150-200 m giant).
+      Measured: 52 heroes, median 328 m, the tallest 472 m.
+    - H6: the far impostors' reach set to the tallest crown (`BIO.defs.impTrees.reach`, 87) and their cell from `BIO.IMP.cellFor` (128 px);
+      the far roof past the map at 270 m (`STATION_FAR.h`). The page budget raised to 13M triangles and 560 calls (`STATION_TAKE.budget`, read
+      by 99): 430 calls at the default camera on SwiftShader.
+    - The 8 species are builders in `src/56` (records with harvest tags; the three traps carry `core/biome/37` records): cathedral fig (a
+      lattice of 18 root strands round a hollow, its crown on `BIO.clumpOn`, spider-rider silk), comb tree (`BIO.kin('hyperjungle.ghostwood')`,
+      400-490 m, combs hung under its high limbs from the logged spans), armour palm, elephant ear (broken along the trails), bai sedge,
+      sky pitcher (in the heroes' bough perches), carrion arum (rare: 20 on the map), snare liana. Traps 0.30% of the plants placed.
+    - The map (`stations/savage/45`): station 1's floor and brook, seven bais with wallows and salt licks, 14 trails on `KSPACE`, the
+      ash-dark floor. The herds (H8): `kits/fauna`'s `FAUNALANDS` land `hyperjungle.savage`, 422 animals planned and registered; the
+      herds, hunters and big flyers drawn (122, at most eight of a group), each only within 650 m of the camera (an animal is a dozen meshes).
+    - **For the GPU verify:** the 480 m crowns against the impostors' switch at 1200 m (do they pop?); the draw calls at "The bai" with a
+      herd in view; the cathedral fig's lattice and crown (view "A cathedral fig"); the combs under the comb trees; the bai sedge's
+      density; the ash tint.
+    - **Stand-ins** (PROMPTS-NEEDED.md section 37): the armour palm's trunk, the comb tree's bole (the ghostwood's bark), the combs
+      (organic.pod.honeycomb), the carrion arum, the sky pitcher and the elephant ear are vertex-coloured models; the library's
+      card.carnivore.monkeycup, organic.pitcher.giant and card.heartleaf are there to try on them at the GPU pass. The cathedral fig wears
+      bark.strangler (`figbark`). The two new families ride only on the savage page (`build.py` `LAND_FAMS`).
+    - **Owed:** `kits/fauna` has no longcrawler, wingclaw or nightwing yet (the plan lists them missing; the land names them). The kit's
+      own striders, sky rays and sloths are not made rarer (58 has no knob for it; the land's weights favour the Riders' beasts).
+    - Taken as proposed, owner to confirm: PLAN-LANDS.md section 14 question 2 (ash on dunged soil; the carnivores a canopy-and-shade
+      guild). LORE.md section 8 carries it as a proposal.
+
 - [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
       the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two
       tufts a 3 m cell near, two a 6 m cell mid, one a 13 m cell far, over the whole burn-aged savanna. So the item declares

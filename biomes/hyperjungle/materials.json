@@ -552,6 +552,36 @@
    "roughLift": 0.35,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "figbark": {
+   "lib": "bark.strangler",
+   "scale": [
+    10,
+    14
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "mapOnly": true,
+   "own": true,
+   "note": "the savage land's cathedral fig roots (src/56, J2 2026-11-08): grey, tinted by the bucket's vertex colour"
+  },
+  "comb": {
+   "lib": "organic.pod.honeycomb",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true,
+   "own": true,
+   "note": "the savage land's giant-bee combs under the comb trees' limbs (src/56, J2 2026-11-08); organic.comb.bee owed (PROMPTS-NEEDED.md section 37)"
   }
  }
 }

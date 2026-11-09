@@ -170,6 +170,7 @@
    }
   },
   "bract": {
+   "anchor": "center",
    "base": "centre",
    "breakup": null,
    "card": true,
@@ -179,6 +180,7 @@
    "lib": "card.bromeliad",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -194,6 +196,35 @@
     "keep": 0.0,
     "mean": 0.678,
     "sourceMean": 0.413
+   }
+  },
+  "comb": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "comb.albedo.webp"
+   },
+   "lib": "organic.pod.honeycomb",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.2,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3236decdd7be59310e01c4d1a800ca360595b5d6",
+    "normal": "2771048fb3b1500372cecd7267a15c9801859c18",
+    "roughness": "69e43d1be71b8543457da16079c6028de8115567"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5489956541861739,
+    "sourceMean": 0.549
    }
   },
   "fauna.fur": {
@@ -281,6 +312,7 @@
    }
   },
   "fauna.wing": {
+   "anchor": "tight",
    "breakup": null,
    "card": true,
    "files": {
@@ -289,6 +321,7 @@
    "lib": "wing.butterfly",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -306,7 +339,37 @@
     "sourceMean": 0.4458
    }
   },
+  "figbark": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "figbark.albedo.webp"
+   },
+   "lib": "bark.strangler",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.3,
+   "scale": [
+    10,
+    14
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a8ca2a122bf37e2a1656e9557fb7a5e69d5ec952",
+    "normal": "a9417687575d1eeed16b1193f290986133147efe",
+    "roughness": "97c95e63ba35e23234989ad521f437b660544832"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5513
+   }
+  },
   "frond": {
+   "anchor": "bottom",
    "base": "bottom",
    "breakup": null,
    "card": true,
@@ -322,6 +385,7 @@
    "lib": "card.fern",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -397,6 +461,7 @@
    }
   },
   "hang": {
+   "anchor": "top",
    "base": "top",
    "breakup": null,
    "card": true,
@@ -412,6 +477,7 @@
    "lib": "card.vine.hanging.0",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -430,6 +496,7 @@
    }
   },
   "hang1": {
+   "anchor": "top",
    "base": "top",
    "breakup": null,
    "card": true,
@@ -446,6 +513,7 @@
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -464,6 +532,7 @@
    }
   },
   "leaf0": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -472,6 +541,7 @@
    "lib": "card.ironbark",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -490,6 +560,7 @@
    }
   },
   "leaf1": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -498,6 +569,7 @@
    "lib": "card.ghostwood",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -516,6 +588,7 @@
    }
   },
   "leaf2": {
+   "anchor": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -524,6 +597,7 @@
    "lib": "card.prismgum",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -542,6 +616,7 @@
    }
   },
   "leaf3": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -550,6 +625,7 @@
    "lib": "card.baobab",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -568,6 +644,7 @@
    }
   },
   "leaf4": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -576,6 +653,7 @@
    "lib": "card.mahogany",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -594,6 +672,7 @@
    }
   },
   "leaf5": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -608,6 +687,7 @@
    "lib": "card.lobed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -655,6 +735,7 @@
    }
   },
   "moss": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -663,6 +744,7 @@
    "lib": "card.moss",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -681,6 +763,7 @@
    }
   },
   "raceme": {
+   "anchor": "top",
    "base": "top",
    "breakup": null,
    "card": true,
@@ -696,6 +779,7 @@
    "lib": "card.ghostwood-flower",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -804,6 +888,7 @@
    }
   },
   "under": {
+   "anchor": "bottom",
    "breakup": null,
    "card": true,
    "files": {
@@ -812,6 +897,7 @@
    "lib": "card.jungle.clump.0",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "rise": 1.25,
    "roughLift": 0.0,
    "scale": [
@@ -853,6 +939,7 @@
    }
   },
   "under1": {
+   "anchor": "bottom",
    "breakup": null,
    "card": true,
    "files": {
@@ -862,6 +949,7 @@
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
+   "plants": 1,
    "rise": 1.25,
    "roughLift": 0.0,
    "scale": [
@@ -903,6 +991,7 @@
    }
   },
   "under2": {
+   "anchor": "bottom",
    "breakup": null,
    "card": true,
    "files": {
@@ -912,6 +1001,7 @@
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
+   "plants": 1,
    "rise": 1.25,
    "roughLift": 0.0,
    "scale": [
@@ -953,6 +1043,7 @@
    }
   },
   "under3": {
+   "anchor": "bottom",
    "breakup": null,
    "card": true,
    "files": {
@@ -962,6 +1053,7 @@
    "metal": 0,
    "normalScale": 1.0,
    "own": true,
+   "plants": 1,
    "rise": 1.25,
    "roughLift": 0.0,
    "scale": [

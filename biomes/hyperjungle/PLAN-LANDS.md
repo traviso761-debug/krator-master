@@ -7,8 +7,14 @@ long stretch of savannah. The **savannah rims** each call back to the big biomes
 
 This plan replaces stations 2 and 3 of `PLAN-STATIONS.md`, which was written for the old polygons.
 
-**Status: plan, waiting for the owner.** Nothing is built yet. Wherever this file says *proposed*, the owner has not
-decided.
+**Status (2026-11-08): J0 and J1 done (with the core gaps H1-H8, H10); J2-J6 built in a cloud session on CPU checks only**
+(builds, the lints and a SwiftShader load of each page with its own checks; the GPU verify is the coordinator's, owed). Wherever this
+file says *proposed*, the owner has not decided; where a step took a proposal so it could be built, section 14 marks it **taken as
+proposed, owner to confirm**.
+
+| Step | Built | Page |
+|---|---|---|
+| J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 
@@ -371,8 +377,12 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
 ## 14. Open questions for the owner
 
 1. **One new savannah kit (`savannarim`)**, or the savannahs kept as stations of the hyperjungle kit?
+   *Answered:* the owner queued "the e savannah rim (`biomes/savannarim`, a new kit on the savannah base of section 4)"
+   (HANDOFF-REBUILD.md, 2026-10-27), and the core sessions built its gaps for it: one kit.
 2. **Why the savage jungle is savage**: is volcanic ash on beast-dunged soil acceptable as the reason, with its
    carnivores a guild of canopy and shade, not Korona's poor-soil bog?
+   **Taken as proposed, owner to confirm** (J2, 2026-11-08): the ash-dark floor, the herds' bais, the three traps under 1% of the
+   plants and in the shade and the boughs (`stations/savage`); LORE.md section 8 carries it as a proposal.
 3. **Screamer wood**: the theme of a forest that looks and sounds like people (howling bamboo, watchers, hand flowers,
    skull-pods, bone giants). And may the Screamers' speech be rumoured to have begun with the groves?
 4. **The east rim's story**: the abyss's lineages as fire-hardened relics, and the highlands' pull toward the giant fading

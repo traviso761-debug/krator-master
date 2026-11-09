@@ -947,6 +947,13 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **Eastern highlands**: the cushion plateau (the owner, Oct 2026): an altiplano at about 0.6 atm under a deep blue sky, snow-capped volcanoes on every horizon. **Everything grows toward the giant**: cushions rise on its side, spikes and towers tilt to it, the ragbark's crowns fan out toward it; a traveller can steer by the plants.
   - Poured cushions (a llareta grown to Krator's size), and **the Mother Cushion**, one plant over a whole hill; woolbacks (vegetable sheep), thorn cushions, vigil spikes (whole stands flower together, then stand as dead torches), ragbark woods in the gullies, glass towers, hoar cereus; a cushion bog, a frozen tarn, a geyser field.
   - **Pallidine** (a placeholder name): the glass towers' alkaloid. A fungus in the moth larvae that eat the towers' roots makes it a mild, prized tonic (**wormwick**); the wild bees that work the towers carry it whole into their honey (**tower honey**, the dangerous version).
+- **The savage hyperjungle** (*proposed*, `biomes/hyperjungle/PLAN-LANDS.md` section 2; built as the hyperjungle's station `savage`, 2026-11-08; the
+  owner to confirm): the same climate as the pure jungle to the south, set apart by its soil and its beasts. The volcano's ash, carried on the NW wind,
+  falls on ground the herds dung heavily: the richest soil in the crater, so the old growth stands 300-480 m (the height Mav's Refuge stands in) and
+  the herds are the biggest anywhere. The herds keep **bais** open (sedge lawns, wallows, salt licks of red clay) and wear straight **beast trails**
+  between them and the water. Its few carnivorous plants are a guild of the canopy and the shade, where the giants starve everything else (the sky
+  pitchers in the bough gardens, the carrion arum on the dark floor, the young snare liana), not Korona's poor-soil bog; the carrion arum is the one
+  thing there that can kill a child.
 - **Vale of Xanadu**: "as if somebody kept it". Untrimmed-bonsai habits, petrified-wood colours, fairy rings, cacao, lotus.
 - **Fauna in towns**: millipedes (draught), giant beetles (Voth), elephant bugs, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
 
