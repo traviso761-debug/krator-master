@@ -59,6 +59,10 @@ R('mahogany-nut', 'Mahogany nut', 'nut', [4, 4], [3, 4], {form: 'tree', card: 'c
 R('parasol-nut', 'Parasol pine nuts', 'nut', [4, 5], [0, 1], {form: 'tree', card: 'card.pine.b', src: 'crater-drylands', home: ['crater-drylands'], stores: ['dried']});
 R('fireseed', 'Frill-tree fireseed', 'nut', [4, 5], [0, 1], {form: 'tree', card: 'card.pods', src: 'crater-drylands', home: ['crater-drylands'], stores: ['ground']});
 R('fern-egg', 'Fern-egg', 'nut', [4, 4], [3, 4], {src: 'eastabyss', home: ['eastabyss'], stores: ['cured']});
+/* the north basin's nut trees (biomes/nsemiarid draws them; it is not a zone in CROPS.BIOMES yet, so no home): warm-temperate
+   dryland trees, frost-hardy in winter, irrigated a little way past their rain-fed range (2026-11-03, TODO.md "the missing fruit") */
+R('pistachio', 'Pistachios', 'nut', [2, 4], [0, 1], {form: 'tree', reach: 1, src: 'nsemiarid', stores: ['dried', 'roasted'], note: 'the catalog piece is generic_fruit_pistachio'});
+R('almond', 'Almonds', 'nut', [2, 4], [1, 2], {form: 'tree', reach: 1, src: 'nsemiarid', stores: ['dried'], note: 'sweet strains only (the wild are bitter); generic_fruit_almond'});
 R('coconut', 'Coconut', 'oil', [4, 5], [2, 4], {also: ['nut', 'starch-fruit'], form: 'tree', card: 'card.frond.coconut', src: 'throne', home: ['throne', 'ringisles'], stores: ['dried', 'pressed']});
 R('whorl-olive', 'Whorl olive', 'oil', [3, 3], [1, 2], {form: 'tree', card: 'card.orchard.small', src: 'xanadu', home: ['xanadu'], stores: ['pressed', 'brined']});
 R('avocado', 'Ashfall avocado', 'oil', [3, 4], [2, 3], {also: ['fruit'], form: 'tree', card: 'card.croptree.glossy', home: ['throne'], note: 'volcanic soil'});

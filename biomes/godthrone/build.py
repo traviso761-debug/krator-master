@@ -98,6 +98,10 @@ for f in CORE_SPACE:
 # (89d-host-overflow.js); the surface and the GPU stepper (checked against the CPU by the page's verify) by explicit path
 PATH.setdefault('46s-core-lava-draw.js', J('core', 'terrain', 'host', '46-core-lava-draw.js'))
 PATH.setdefault('46t-core-lava-gpu.js', J('core', 'terrain', 'host', '46-core-lava-gpu.js'))
+# core/shadow (KSHADOW, core/shadow/README.md "Taking it"; the owner, 2026-11-03: toggleable, OFF at page load): the sun's shadows in one
+# view-following box; src/89zz-host-shadow.js attaches it under ?shadow=1
+PATH.setdefault('10-core-shadow.js', J('core', 'shadow', '10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js', J('core', 'shadow', 'host', '12-core-shadow-host.js'))
 # core/hazard (core/hazard/README.md, "Adopting it"): the lava, the vents, the hot ground, the ambient bridge; its clock
 PATH.setdefault('20-core-hazard.js', J('core', 'hazard', '20-core-hazard.js'))
 PATH.setdefault('37-core-traps.js', J('core', 'biome', '37-core-traps.js'))
@@ -110,7 +114,28 @@ for f in ('23-mat-record.js', '25-matlib-host.js'):
     PATH.setdefault(f, J('core', 'materials', 'record', f))
 sys.path.insert(0, J('tools', 'textures'))
 import matlib_pack
-VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'godthrone'), khost.EDITS_JS: khost.edits_js(HERE, 'godthrone')}
+# THE PAGE'S TEXTURE SETS: the summit's eleven (station 1, 1b and 2 take only these) and what a station's station.json "tex" adds;
+# the other families in tex/pack.json are left out of the page (a station's sets do not ride on every page)
+BASE_TEX = ['beadsOrange', 'beadsBlack', 'glass', 'spatter', 'groundDetail', 'rockFace', 'rock', 'bomb', 'lavaCrust', 'hair', 'portal']
+_pj = os.path.join(HERE, 'tex', 'pack.json')
+_fams = list(json.load(open(_pj, encoding='utf-8')).get('families', {})) if os.path.isfile(_pj) else []
+_take = set(BASE_TEX) | set(STN.get('tex', []))
+VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'godthrone', exclude=[f for f in _fams if f not in _take]), khost.EDITS_JS: khost.edits_js(HERE, 'godthrone')}
+# A STATION'S REGION (station.json "region": "region.json", written by tools/region.py from scale model 5.1): its far country's
+# heights round the site, inlined as REGION_DATA (45b reads it past the map)
+if STATION and STN.get('region'):
+    VIRTUAL['45a3-host-region-data.js'] = '/* GENERATED from %s (tools/region.py; do not edit) */\nconst REGION_DATA=%s;\n' % (STN['region'], open(os.path.join(STN_DIR, STN['region']), encoding='utf-8').read().strip())
+    PATH['45a3-host-region-data.js'] = None
+# A SHARED KIT'S OWN PACK (station.json "packs": the Gills' library sets, biomes/gills/tex), read as a second pack as xanadu's build does
+for _i, _k in enumerate(STN.get('packs', [])):
+    VIRTUAL['44p%d-host-matlib-pack-%s.js' % (_i, os.path.basename(_k))] = matlib_pack.fragment(J(*_k.split('/')), os.path.basename(_k))
+    PATH['44p%d-host-matlib-pack-%s.js' % (_i, os.path.basename(_k))] = None
+# A STATION'S READS (station.json "reads": {slot: path from the repo root}): core pieces and shared kits' fragments it takes by path
+# (the Gills' shared life, core/terrain's lamina and cavern, core/hazard's flow), as xanadu's build reads them
+for _slot, _p in STN.get('reads', {}).items():
+    PATH[_slot] = J(*_p.split('/'))
+# core/water by path for a station that has water (station.json "water": paths under core/water); its own build order is the slot names'
+
 # A STATION'S BAKES (station.json "bake": {"script", "out", "inputs": [paths from the repo root], "block": [file, begin, end]}): a
 # deterministic node bake (the flank's frozen flows: KLAVA.bake) whose result is committed beside the station and inlined as a
 # generated fragment; re-run only when the hash of its inputs changes (the marked block of the model and the core files it runs)

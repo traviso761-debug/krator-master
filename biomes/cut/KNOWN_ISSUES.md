@@ -15,8 +15,10 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
   - **the bend** (KWARP, `?bend=1`, off at load): whether the field should be felt at all, and how strongly (`STAGE.bendA`, .45 m);
   - the **rowans** of exchange 5 (few: the four past the face's lip, in the plan's ring, with the stuck fruit; a station on the upper walls' gullies would
     show it properly) and the **great trumpets** in the wall's ravine (no organ-pipe ranks at s .2).
-- [ ] **The sun's shadows (KSHADOW) are attached off**: the owner wants them toggleable and off by default, and core/shadow has no off-at-load switch
+- [x] **The sun's shadows (KSHADOW) are attached off**: the owner wants them toggleable and off by default, and core/shadow has no off-at-load switch
   yet, so the page attaches them only on `?shadow=1`. When core gains the switch, move onto it. Their cost on these pages is not timed (no GPU).
+  **Closed 2026-11-08:** `89zz-host-shadow.js` attaches always on core/shadow's own switch (the Throne's way): off at load, core's panel button or
+  `?shadow=1` turns it on, `?shadow=0` none of it. Their cost is still not timed.
 - [ ] **KHORIZON darkens the face's ground** (the broken crest past the lip: a pixel 39 -> 16 in the start view, software GL) when the ground's material
   takes it, while the bake reads sky .93 and the sun unblocked there (a node replay of the face's bake) and station 1's and the wall's grounds shade
   normally. The face is the cold station (snow cover's hook on its ground), the likeliest difference. Until it is diagnosed on the GPU the face keeps

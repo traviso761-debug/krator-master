@@ -53,6 +53,11 @@ var gCut = TOWERS.map(function(T){ return { id:'tower-'+T.id, name:T.name, x:T.x
   .concat(HOUSES.map(function(Hs){ return { id:'house-'+Hs.id, name:'House '+(Hs.id+1)+' ('+Hs.kind+')', x:Hs.x, z:Hs.z, ry:Hs.ry||0, w:Hs.w+2, d:Hs.d+2, levels:[{ y:Hs.y, h:4 }] }; }))
   .concat([{ id:'hall', name:'The Assembly Hall', x:HALL.x, z:HALL.z, r:HALL.R+2, levels:[{ y:SETTLE_Y, h:8 }] }]);
 var gLast = performance.now(), gTmp = new THREE.Vector3();
+goHost();   /* each door leaf handed to core/door's host, which eases the moving ones on the frame (54-openings.js) */
+var gDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking);   /* "E: open the door" at the foot of the page */
+window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,
+  panes:NL_WINDOWS.length, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length, cards:window._panes ? window._panes.cards : 0, voids:0,
+  get cleared(){ return GOPEN.cleared; }, get blocks(){ return KDOOR.list.reduce(function(a,D){ return a+D.blocks.length; },0); } };
 var GHOST = KHOST.take({
   build:'girder', title:'Girder', hint:'an outlying Beast Rider village in the central-crater hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, walker:{ step:0.55, drop:1.4, r:0.28, h:1.75 }, clear:1.6, minR:4, maxR:5000,
@@ -68,6 +73,8 @@ var GHOST = KHOST.take({
   minimap:{ title:'Girder', relief:{ water:SETTLE_Y - 30 } },
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
+  /* E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 54-openings.js); flying, E still climbs as well */
+  keys:{ e:function(){ goToggleNear(); } },
   draw:function(sc, cam){   /* the sky's pass, then the world over it: as 80-camera.js's frame drew */
     renderer.info.autoReset = false; renderer.info.reset();
     renderer.autoClear = true; skyRender();
@@ -86,6 +93,7 @@ KHOST.on(function girderFrame(dtm, clock){
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
+  KDOORHOST.tick(real); gDoorTip();             /* the doors ease at real time (they still swing while the world is paused) */
   updateGlow(dt, hour, nk);
   for(var i=0;i<TICKS.length;i++){ try{ TICKS[i](dt, hour, nk); }catch(err){ if(!TICKS[i]._err){ TICKS[i]._err = 1; ERR('tick '+i+': '+(err&&err.stack||err)); } } }
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2200).add(gTmp.set(ctl.tx, ctl.ty, ctl.tz));

@@ -215,7 +215,9 @@ saying what fixed it.
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
       (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are in too (2026-10-06), and the darts are not textured by design
       (their wing and body share UVs). Not looked at in a real browser.
-- [ ] (2026-10-05) Tree tints (biome 55-trees, hand-copied into targets/city/86-bio-55-...): roots now take the trunk's tint at their height above the ground (carried into the limb tint, since roots stay in the limb bucket: the floor reads the bark bucket as the bole's profile, and roots there shrank the floor dress by 30k triangles); limbs,
+- [ ] (2026-10-05) Tree tints (biome 55-trees, hand-copied into targets/city/86-bio-55-...). 2026-11-03: the limbs' half is done upstream
+      and re-vendored (the entry below): roots, limbs and saplings wear the species' own bark ('limb'+sp, 'saptrunk'+sp), so the
+      texture on a limb matches the trunk's. The original note: roots now take the trunk's tint at their height above the ground (carried into the limb tint, since roots stay in the limb bucket: the floor reads the bark bucket as the bole's profile, and roots there shrank the floor dress by 30k triangles); limbs,
       boughs and twigs take the limb tint of the trunk's colour band where they leave it. The limbs still use the shared pale limb texture, not the species bark
       texture, so the texture on a limb differs from the trunk even when the colour matches. Not looked at.
 - [ ] (2026-10-05) Headless `verify.py dist/iziz.html` ends in `WebGL: CONTEXT_LOST_WEBGL` and FAILED even on the committed page (checked against
@@ -354,6 +356,12 @@ saying what fixed it.
       city now places 612 registered buildings (was 599) at 5.2 M tris. The page renders with a clean error
       panel; `verify.py --assert` was not run after the re-vendor.
       **Round 4:** `verify.py --assert` now passes on the round-4 build (see NOTES round 4).
+- [x] (2026-11-03) **The city reads the hyperjungle biome in place.** The twelve copies in `targets/city/86-bio-*` (the
+      biome kit's and `core/biome`'s fragments, closure-wrapped by `bio_wrap`) are gone: the build wraps the upstream as it
+      reads it (MODULARITY-PLAN.md step 6). `iziz.html`, both texture sidecars and the manifest byte-identical to the build
+      before; `--vendor-bio` is gone and `--vendor-check` says the biome is read in place. A fix to the biome or `core/biome`
+      now reaches the city at its next build; `bio_wrap` fails loudly (`expected one ...`) if an upstream change breaks the
+      wrap's anchors. The entries below that speak of copies and re-vendoring are history.
 - [x] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
       clobber the city's globals (`var BIO`, `BIO.setScene`). Upstream (biomes/hyperjungle) has since added
       fauna (58, `opt.fauna`); porting it means re-applying the closure wrap to the new fragments.
@@ -472,6 +480,16 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       54-mat-concrete, Jimjam 6; Xanadu and Reed Lake their 7 Ancients fragments from Highlands). Every copy was the same
       stale snapshot, no local edits. Brings the `tick()` frame hook, `apron(...,mat)`, `MAT.darkSurf` tubes and the
       `bodyGroup` fix (decay 3 stands full height). `--vendor-check`: Iziz 35, Highlands 13, Dalab 13 identical.
+- [x] (2026-11-03) The city's biome copies re-vendored (`build.py --vendor-bio`): seven were only behind `core/biome` and
+      `biomes/hyperjungle` (the biome core's frame ticks, culling flags and inspector labels; the trees and saplings on the
+      species' own bark; fauna and floor changes; the inspector's names for saplings and far trees). The jungle fauna now draws
+      its walkers' loops with `BIO.walkLoop`, so `core/biome/36-core-walker.js` joins `BIO_VENDORED` (the first after-run read
+      "jungle fauna: TypeError: BIO.walkLoop is not a function"). `verify.py dist/iziz.html --assert` before and after: error
+      panel clean, every assert the same, scene triangles 7,901,723 both, fauna counts the same; the biome's draw calls 36 -> 46
+      (a bark bucket a species), the city's at the Overview camera 912 -> 923 (already over its 900 budget before: a warning).
+      Overview and Palace hill: 0.06% and 0.05% of pixels differ, the limbs' bark. Only iziz.html takes the copies (Pylon,
+      Talia and the other targets do not read targets/city); the page waits for the all-builds rebuild (it was behind its
+      sources before this). `--vendor-check`: 42 identical, 12 biome fragments match.
 - [x] (2026-10-13) The Ancients re-vendor session (TODO.md item 3). `--vendor-check` before: all 35 Ancients fragments
       identical (the 2026-10-06 re-vendor holds; `kits/ancients/src` changed since only in files Iziz does not vendor), and
       BIOME DRIFT in 86-bio-10-core-head, 20-core-kit, 30-core-foliage, 40-core-place. Read: each copy was simply behind

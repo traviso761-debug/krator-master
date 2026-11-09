@@ -49,9 +49,11 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # THE STATIONS (PLAN-STATIONS.md, 2026-10-27, the final rebuild): `python3 build.py --station <name>` builds
 # dist/hyperjungle-<name>.html from src/ with the station's own fragments (stations/<name>/*) in place of src/'s of the same
-# name: `savanna` (station 2, the savanna edge) and `lake` (station 3, the lake and the flooded forest)
+# name: `savanna` (the savanna edge) and `lake` (the lake and the flooded forest), built 2026-10-27; `savage` (PLAN-LANDS.md section 9's
+# station 2, the savage hyperjungle: J2, 2026-11-08) and `north` (its station 3, Screamer wood: J3)
 _args=[a for a in sys.argv[1:] if a!='--no-checks']
 STATION=_args[_args.index('--station')+1] if '--station' in _args else None
 if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
@@ -78,7 +80,12 @@ if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 # what a station takes beyond the page's core (by path from the repo root, keyed by the fragment name it loads under)
+# the lands (J2-J3, 2026-11-08): core/biome's leafset (31b: BIO.clumpOn's held cards), its traps (37: the savage land's sky pitcher, carrion
+# arum and snare liana) and bamboo (33b, H5: the north's howl bamboo), core/tags' sound record (H9: the howl bamboo's groves), and the fauna by land (kits/fauna's fauna-lands.js and its host
+# half, H8; the bundle below)
 STATION_CORE={'savanna':{'37-core-stacks.js':'core/terrain/37-core-stacks.js'},
+              'savage':{'31b-core-leafset.js':'core/biome/31b-core-leafset.js','37-core-traps.js':'core/biome/37-core-traps.js','86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'},
+              'north':{'31b-core-leafset.js':'core/biome/31b-core-leafset.js','33b-core-bamboo.js':'core/biome/33b-core-bamboo.js','54-core-tags-sound.js':'core/tags/opt/54-core-tags-sound.js','86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'},
               'lake':{'55-core-water-confluence.js':'core/water/ext/55-core-water-confluence.js','55b-core-water-confluence-draw.js':'core/water/ext/55b-core-water-confluence-draw.js'}}
 for f,p in STATION_CORE.get(STATION,{}).items():
     PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..',p)))
@@ -113,7 +120,10 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'hyperjungle',own=True)}
+# the lands' own families (materials.json, "own": PLAN-LANDS.md J2-J3) ride only on their station's page: station 1 and the others
+# carry none of them (the pack's bytes are the page's)
+LAND_FAMS={'savage':['figbark','comb'],'north':['bonewood','howlculm','howlleaf']}
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'hyperjungle',own=True,exclude=[f for k,v in LAND_FAMS.items() if k!=STATION for f in v])}
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
@@ -146,10 +156,15 @@ for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
 # families those builders draw with
 import json as _json
 NEIGH={'lake':{'geyser':(['50-biome-geyser-species.js','55-biome-geyser-trees.js'],'GEYSER',['bark0','strap','rosette'])},
-       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})}}.get(STATION,{})
+       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})},
+       # Screamer wood's savannah gaps (J4, 2026-11-08): the savannah rims' blind grass, their species and grass passes read in place
+       'north':{'savannarim':(['50-biome-savrim-species.js','55-biome-savrim-trees.js','60-biome-savrim-floor.js'],'SAVRIM',['blind','grass'])}}.get(STATION,{})
+# where a neighbour's kit lives when it is not biomes/<its key>: the savannah rims (registry and pack key 'savannarim') are abyssal-savannah's
+# stations (PLAN-LANDS.md section 14, answer 1), their shared fragments in its src/rim/, their pack families in its tex/
+HOMES={'savannarim':('abyssal-savannah','src/rim')}
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
-    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
-    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    _hd,_sd=HOMES.get(_k,(_k,'src'));_d=os.path.normpath(os.path.join(HERE,'..',_hd));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,_sd,_f)
     VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
     if _k=='geyser':   # the geyser kit's namespace is made by its layout fragment (46), which this page does not take
         VIRTUAL['47%s-%s-ns.js'%(_c,_k)]=chr(10)+'var GEYSER={};   // the namespace its own page makes in 46-biome-geyser-layout.js'+chr(10);PATH['47%s-%s-ns.js'%(_c,_k)]=None
@@ -157,6 +172,13 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if (f in _keep['drop'] if isinstance(_keep,dict) else _keep is not None and f not in _keep)]   # a list keeps, {'drop': [...]} drops
     VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)
     PATH['44%s-host-matlib-pack-%s.js'%(_c,_k)]=None;PATH['47%s9-%s-end.js'%(_c,_k)]=None
+# THE FAUNA BUNDLE (kits/fauna, H8): the savage land's beasts (the Riders' four, the beetle, the spider, the flyers) and the kit's own
+# hyperjungle animals, as KratorFauna, vertex-coloured (no packed detail maps); placed and drawn by the station's 87 (FAUNALANDS)
+FAUNA_GROUPS={'savage':['riders','hyperjungle','crawlers','flyers','voth'],'north':['hyperjungle','crawlers']}.get(STATION)
+if FAUNA_GROUPS:
+    sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','kits','fauna')))
+    import fauna_bundle as _fb
+    VIRTUAL['86f-host-fauna-bundle.js']=_fb.bundle(FAUNA_GROUPS,tex=False);PATH['86f-host-fauna-bundle.js']=None
 PATH.pop('82-host-sky.js',None)   # the old dome stays in src/ for the builds that still read it in place; this page draws the shared sky
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
@@ -171,6 +193,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 # syntax check on the script body

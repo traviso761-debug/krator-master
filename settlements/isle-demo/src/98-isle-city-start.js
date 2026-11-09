@@ -73,7 +73,7 @@ setTimeout(function () {
     KTAGS.page = cur.tags;
     if (typeof EXPORT !== 'undefined') EXPORT.ground({ terrainH: function (x, z) { return cur.G.h(x, z); }, step: 4 });
     DRAW.stage(); DRAW.ground(cur.G, cur.R); DRAW.streets(cur.R, cur.G); DRAW.orchards(cur.R, cur.G); lap('ground');
-    DRAW.records(cur.R); DRAW.vessels(cur.R); lap('pieces');
+    DRAW.records(cur.R); DRAW.lots(cur.R); DRAW.vessels(cur.R); lap('pieces');
     CAM.bind(); ISLE.view('overview');
     var ui = document.getElementById('ui');
     ISLE.TOWNS.forEach(function (t) { var b = document.createElement('button'); b.textContent = t; if (t === town) b.className = 'on'; b.onclick = function () { location.search = '?town=' + t; }; ui.appendChild(b); });
@@ -81,7 +81,7 @@ setTimeout(function () {
     var hud = document.getElementById('hud');
     var hudAt = 0, simLine = '';
     var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); ISLE.canoes.tick(now); renderer.render(scene, camera);
-      if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); }
+      if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); DRAW.lotsTick(); }
       if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls' + (simLine ? ' · ' + simLine : ''); };
     loop();
     if (note) note.style.display = 'none';
@@ -103,6 +103,12 @@ setTimeout(function () {
           var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.otherG = O.G; window._city.holds = ISLE.simHolds(town);
           ISLE.simWatch(town);   /* P7d: the drawn town presented, the other abstract */
           ISLE.runUI(ui); lap('sim');
+          /* the thieves' guild on the map (47c): registered under its tavern in each town's registry, its sign and pin
+             drawn in the drawn town, a button to fly there */
+          var gm = window._city.guilds = ISLE.tagGuilds(function (t) { return t === town ? cur.tags : O.tags; });
+          gm.filter(function (m) { return m.town === town && m.at; }).forEach(function (m) { DRAW.guild(m);
+            var gb = document.createElement('button'); gb.textContent = "thieves' guild"; gb.title = m.name + ' (' + m.place + ')';
+            gb.onclick = function () { CAM.t = [m.at[0], 0, m.at[2]]; CAM.dist = 160; CAM.yaw = (m.ry || 0) + 0.5; CAM.pitch = 0.5; CAM.apply(); }; ui.appendChild(gb); });
         } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }
       /* ?simAt=minute: the sim run to that minute first (the export's case: 355, people on their way to work) */

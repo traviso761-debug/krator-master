@@ -1,0 +1,89 @@
+{
+ "name": "The south (station 2, crater drylands S): the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee, the se rim's rust miombo, incense and rain roses on the wet edges, the Af gallery in the north-western gully, the lava step in its tibasalt beds, scrub oak on the step's top",
+ "out": "crater-drylands-s.html",
+ "core": {
+  "30s-core-season-flush.js": "core/biome/30s-core-season-flush.js",
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "21-core-clock-flush.js": "core/clock/opt/21-core-clock-flush.js",
+  "35-core-strata.js": "core/terrain/35-core-strata.js"
+ },
+ "kits": {
+  "47a0-hj-50-biome-hyperjungle-species.js": "../hyperjungle/src/50-biome-hyperjungle-species.js",
+  "47a1-hj-52-biome-hyperjungle-library.js": "../hyperjungle/src/52-biome-hyperjungle-library.js",
+  "47a2-hj-54-biome-hyperjungle-lands.js": "../hyperjungle/src/54-biome-hyperjungle-lands.js",
+  "47a3-hj-55-biome-hyperjungle-trees.js": "../hyperjungle/src/55-biome-hyperjungle-trees.js",
+  "47a4-hj-56-biome-hyperjungle-savage.js": "../hyperjungle/src/56-biome-hyperjungle-savage.js",
+  "47a5-hj-57-biome-hyperjungle-north.js": "../hyperjungle/src/57-biome-hyperjungle-north.js",
+  "47a6-hj-60-biome-hyperjungle-floor.js": "../hyperjungle/src/60-biome-hyperjungle-floor.js",
+  "47b0-sed-50-biome-sedesert-species.js": "../sedesert/src/50-biome-sedesert-species.js",
+  "47b1-sed-55-biome-sedesert-trees.js": "../sedesert/src/55-biome-sedesert-trees.js",
+  "48s0-savrim-50-biome-savrim-species.js": "../abyssal-savannah/src/rim/50-biome-savrim-species.js",
+  "48s1-savrim-55-biome-savrim-trees.js": "../abyssal-savannah/src/rim/55-biome-savrim-trees.js",
+  "48s2-savrim-56-biome-savrim-southeast.js": "../abyssal-savannah/src/rim/56-biome-savrim-southeast.js",
+  "47c0-nhl-50-biome-nhighlands-species.js": "../nhighlands/src/50-biome-nhighlands-species.js",
+  "47c1-nhl-55-biome-nhighlands-trees.js": "../nhighlands/src/55-biome-nhighlands-trees.js",
+  "47c2-nhl-60-biome-nhighlands-floor.js": "../nhighlands/src/60-biome-nhighlands-floor.js",
+  "47c3-nhl-70-biome-nhighlands.js": "../nhighlands/src/70-biome-nhighlands.js"
+ },
+ "packs": {
+  "savannarim": "../abyssal-savannah",
+  "sedesert": "../sedesert",
+  "throne": "../throne",
+  "hyperjungle": "../hyperjungle",
+  "nhighlands": "../nhighlands"
+ },
+ "packOnly": {
+  "savannarim": [
+   "incensebark"
+  ],
+  "sedesert": [
+   "bark0",
+   "bark1",
+   "bark2",
+   "bark3",
+   "bark4",
+   "aloe",
+   "bloom",
+   "column",
+   "needle",
+   "paddle",
+   "small",
+   "strap",
+   "pods"
+  ],
+  "throne": [
+   "ground.sandblack"
+  ],
+  "hyperjungle": [
+   "bark0",
+   "bark1",
+   "bark2",
+   "bark3",
+   "bark4",
+   "bark5",
+   "leaf0",
+   "leaf1",
+   "leaf2",
+   "leaf3",
+   "leaf4",
+   "leaf5",
+   "limb",
+   "raceme",
+   "under",
+   "under1",
+   "under2",
+   "under3",
+   "frond",
+   "hang",
+   "hang1",
+   "moss",
+   "bract",
+   "wood"
+  ],
+  "nhighlands": [
+   "nbark4",
+   "small"
+  ]
+ }
+}

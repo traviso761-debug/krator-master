@@ -33,7 +33,7 @@ const rimN=(x,k)=>zR(x)-Wc(x)*(k==null?1.1:k),rimS=(x,k)=>zR(x)+Wc(x)*(k==null?1
 const VIEWS={
  'The linear oasis':look(400,rimN(400,1.15),10,900,zR(900),4),
  'Dragon trees on the rim':atTree(nearTree(0,-150,rimS(-150,1.1)),42,.6),
- 'Mesquite bosque':atTree(nearTree(6,1100,zR(1100)+10,10),46,2.2,5),
+ 'Mesquite bosque':(T=>atTree(T,46,2.2,T.H*1.1+2))(nearTree(6,1100,zR(1100)+10,10)),   /* over the crowns: at 5 m the eye stood in a neighbour's foliage (GPU --all-views, 2026-11-09) */
  'The wadi gorge':look(-2380,zR(-2380)+26,5,-2650,zR(-2650),12),
  'The rain-shadow pond':[POND.x-230,PL+22,POND.z-190,POND.x+20,PL+.5,POND.z+10],
  'The butte':look(BUTTE.x-1500,BUTTE.z-650,55,BUTTE.x,BUTTE.z,100),

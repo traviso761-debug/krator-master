@@ -1,0 +1,20 @@
+{
+ "legs": 8,
+ "contacts": 8,
+ "wings": 0,
+ "segments": 2,
+ "pedicel": true,
+ "jaw": 0.68,
+ "trunk": [
+  "thorax",
+  "abd"
+ ],
+ "budget": {
+  "thorax": 900,
+  "abd": 1100,
+  "jaw": 800,
+  "femur": 190,
+  "tibia": 190,
+  "tarsus": 100
+ }
+}

@@ -88,6 +88,14 @@ that differs, the hyperjungle's and the geyser's walking strider, moves between 
 - [ ] The sky is the geyser kit's (the Throne to the south-south-west over the sea, the jungle line to the north): close
   enough for an island of the isle demo, which lies on the Ring Sea's west ring; not re-baked for it.
   Stays open (2026-10-26): left to the shared sky rollout (core/atmos; the item below).
+- [x] 2026-11-09: **station 2 (the high isle) failed its first GPU verify.** (1) The ground did not compile: "FRAGMENT shader texture image units
+  count exceeds MAX_TEXTURE_IMAGE_UNITS(16)" (read with a linkProgram hook): ten library layers, uMacro, the strata's five (uKSCol, uKSBed, uKSAlt,
+  uKSNz, uKSBt), the fog belt's atmFogBeltT and the shore's wtrBed made 18 live samplers. Fixed by `STATION.shareLayers` (84: a layer reads another's
+  map, recoloured by luminance): wet sand reads the sand's, cured grass the grass's; 16 now (the shadow and rain cover stay skipped on this ground, as
+  before). (2) `api.hostChecks` threw "Maximum call stack size exceeded": the scale check spread 247,503 heights into `Math.max` (99: a reduce now).
+  (3) Three coffee and banana trees at the lee terraces' banks (-600,1612) read as cliff through the 16 m fields: a plot's trees skip what the zones
+  call a cliff (62 `gTree`). (4) The instance cap: this kit's fern 274,311 (cap 400,000 in 52) and the Throne's small plants 275,677 and tree fern
+  fronds 348,439 (cap and capWhy set from 88 on the Throne's registry, its files unchanged).
 
 ## Texture prompts
 
@@ -147,3 +155,4 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
   horizon. Thinning the morning mist fourfold (`89a`: .001 below 14 m to .00025 below 10 m, both pages) did not remove it, so the mist is not its cause;
   **not traced**. Suspects: the water's shallow colour or the shore grid's lap over the 600 m of fore reef between the far rim and the map's edge
   (the bed box ends there), or the sky's horizon haze at a 1.1 km eye. Check on the GPU with `?hfog=0` and from a lower eye first.
+- [x] **The high isle's forest load** (2026-11-09, station 2, `stations/high/87b-host-lod.js`): the Throne's far trees are octahedral impostors; mid trees 400 m or more from the spine and more than 600 m from every preset camera (`STATION.lodTrees.mute`, `.cam`), and hero or mid trees out of every view's reach (350 m from its sight line, 2 km from its camera: `.near`, `.far`), are built (their draws kept), then taken back and drawn as impostors (one item, `impHigh`). Measured on the GPU (`--assert --all-views`, every check passing): trees 41.1 M to 15.3 M, scene 52.1 M to 26.0 M, rendered 53.4 M to 27.0 M at the heaviest view, calls unchanged (811). Before and after shots in `shots-kground/ringisles-high-opt/` (not committed). Left: flying to a valley no preset view stands in shows impostors where heroes were (the impostors read darker and denser than the trees); the kit's own far blobs (2.2 M) stay, since 55's `buildFar` is not reachable from a station; muted trees still cost their build time. `?imp=0`, `?lodmute=<m>`, `?lodview=0` switch it.

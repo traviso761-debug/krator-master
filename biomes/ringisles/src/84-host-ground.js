@@ -56,8 +56,15 @@ TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.Li
 // key: the layer; [procedural colour (sRGB), how strongly the detail map shows, the pack ('ringisles' or 'geyser')]
 const GL_KEYS={litter:[0x3a3426,.6],sand:[0xd8ccae,.35],wetsand:[0xa89c7e,.35],grass:[0x5e6a34,.5],cured:[0xa89660,.5],burn:[0x24201c,.5],
  steppe:[0x8a5a3e,.45],salt:[0xece6da,.3],mud:[0x4a4032,.4],reef:[0x9a9482,.6],soil:[0x5a4630,.4],damp:[0xb8a98a,.35],shingle:[0x8c867a,.5],sinter:[0xdcd8cc,.35,'geyser']};
+// a station drops the layers its ground has nothing for (STATION.dropLayers: the high isle has no pan, no vent, no mangal, no damp lee sand), each then a
+// constant colour with no sampler, so its units go to what the station adds (its strata)
+const GL_DROP=new Set(typeof STATION!=='undefined'&&STATION.dropLayers||[]);
+// a station may also SHARE a layer's sampler (STATION.shareLayers {layer: the layer whose map it reads}): the layer reads that map's detail, recoloured
+// to its own procedural colour by luminance, and keeps no unit of its own (2026-11-09: the high isle's ground read 18 units with its strata, its fog belt
+// and the shore's bed: wet sand reads the sand's map, cured grass the grass's)
+const GL_SHARE=typeof STATION!=='undefined'&&STATION.shareLayers||{};
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
- for(const k in GL_KEYS){const P=KMAT.packed(GL_KEYS[k][2]||'ringisles','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
+ for(const k in GL_KEYS){if(GL_DROP.has(k)||GL_SHARE[k])continue;const P=KMAT.packed(GL_KEYS[k][2]||'ringisles','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uLight:{value:1}};
 // THE LIBRARY LAYERS ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild, pair 8): the Throne's way for a Lambert ground of many
 // layers (THRONE.layGLSL, the Throne read in place): each library layer is read through KGROUND's own sampler, Mikkelsen's hex tiling in place of the
@@ -68,12 +75,16 @@ const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},u
 // is left for the sun's shadow map (89zz-host-core.js counts them)
 const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
-MAT_GROUND.onBeforeCompile=sh=>{const lib=k=>GLAY&&GLAY[k],allLib=Object.keys(GL_KEYS).every(lib);if(!allLib)sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
+MAT_GROUND.onBeforeCompile=sh=>{const lib=k=>GLAY&&GLAY[k],shr=k=>!!(GL_SHARE[k]&&lib(GL_SHARE[k])),allLib=Object.keys(GL_KEYS).every(k=>lib(k)||shr(k)||GL_DROP.has(k)),STR=typeof STATION!=='undefined'&&STATION.strata?STATION.strata:null;if(STR)STR.inject(sh);   /* its uniforms, varyings and strataColor() (KSTRATA's three.js half) */if(!allLib)sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
  for(const k in GL_KEYS)if(lib(k))sh.uniforms['uG_'+k]={value:GLAY[k].map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aC,aT,aU,aW,aV;varying vec4 vC,vT,vU,vW,vV;varying vec3 vGWP;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vC=aC;vT=aT;vU=aU;vW=aW;vV=aV;');
  const libKeys=Object.keys(GL_KEYS).filter(lib);
+ const lum=c=>.2126*c.r+.7152*c.g+.0722*c.b;
  const L=k=>{const P=GL_KEYS[k];if(lib(k))return'_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt)';const c=new THREE.Color(P[0]).convertSRGBToLinear();
+  if(shr(k)){const s=GL_SHARE[k],cs=new THREE.Color(GL_KEYS[s][0]).convertSRGBToLinear();
+   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*(dot(_lay(uG_'+s+',p,q,'+GLAY[s].k.toFixed(4)+',mt),vec3(0.2126,0.7152,0.0722))*'+(1/Math.max(1e-4,lum(cs))).toFixed(4)+'))';}
+  if(GL_DROP.has(k))return'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*mix(1.0,dt.r*1.08,'+P[1].toFixed(2)+'))';};
  const decl='uniform sampler2D '+(allLib?'':'uDetail,')+'uMacro;uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW,vV;varying vec3 vGWP;'+
   (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+'\n'+(typeof KHOOK!=='undefined'?KHOOK.EYE:'vec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n')+(typeof THRONE!=='undefined'&&THRONE.layGLSL?THRONE.layGLSL(USE_KG,GEYSER.GLSL_LAY):GEYSER.GLSL_LAY)+
@@ -95,9 +106,11 @@ MAT_GROUND.onBeforeCompile=sh=>{const lib=k=>GLAY&&GLAY[k],allLib=Object.keys(GL
   'c=mix(c,'+L('sand')+',vT.x);'+
   'c=mix(c,'+L('damp')+',vT.x*(1.0-smoothstep(0.25,1.3,vGWP.y))*0.9);'+
   'c=mix(c,'+L('shingle')+',rock*(1.0-smoothstep(0.8,3.5,vGWP.y))*0.75);'+
+  /* a station's strata on the steep ground (STATION.strata, KSTRATA: the high isle's basalt flows on the valley walls), over the rock the slope makes */
+  (STR?'c=mix(c,strataColor(vSWP,vSWN)*(0.82+0.36*mt),smoothstep(0.15,0.6,rock)*(1.0-vT.x)*0.9);':'')+
   'c=mix(c,'+L('wetsand')+'*vec3(0.42,0.5,0.46),vT.y);'+
   // the seagrass meadows: blades combed by the current, dark green over the lagoon's sand; with the library's seagrass floor on the sand the painted meadow is only a third as strong (the floor has its own)
-  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')?'0.3':'0.9')+');}'+
+  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')||shr('wetsand')?'0.3':'0.9')+');}'+
   'c=mix(c,c*0.7+vec3(0.02,0.02,0.01),rock*0.3);'+
   // the vent's field (the geyser kit's record): sinter, its mats by the heat on the film, acid clay
   'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),vV.x);'+

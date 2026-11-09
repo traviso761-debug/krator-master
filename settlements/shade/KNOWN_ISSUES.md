@@ -101,7 +101,12 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The sheer faces are 1.25 m mesh cells: vertical enough to carve against. Where a
       patch meets them the heightfield's recess runs 2 m behind the void's wall, inside the
       patch's rock, so no ground triangle spikes into the void.
-- [ ] Vendored from `biomes/sedesert/src` with no local changes (`build.py --vendor-check`).
+- [x] (2026-11-03) **The biome is read in place**: `core/biome` (the placement core: 10, 20, 30, 40), `core/space`, and
+      `biomes/sedesert/src` (strata, flora, fauna, sky, tail); src/ keeps no copy and VENDOR.json is gone. The copies had fallen
+      behind the core's move and the kits' `BIO.kit` hooks and the biome's later passes. `verify.py --assert` before and
+      after: 85 pass, none fail; the scene gained 4 registered volumes (602 -> 606), 2.5k ground items (71.2k -> 73.7k),
+      9 draw calls at the showcase camera (48 -> 57) and 71k triangles (2.81 M -> 2.88 M). The market view looks the same.
+- [x] (superseded by the entry above) Vendored from `biomes/sedesert/src` with no local changes (`build.py --vendor-check`).
       The kit's budget note does not apply: Shade grows the biome over a 1.2 km radius,
       not 3.25 km.
       **Oct 2026:** the biome core moved to `core/biome/` (one copy for every kit) and the kits

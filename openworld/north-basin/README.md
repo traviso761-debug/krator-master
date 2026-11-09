@@ -8,7 +8,7 @@ The scale model's north basin, cut out for the open world that will test overlay
   round the trough (most of it in the NW lowlands). Box px 244..716 x 36..316, 2 km a pixel.
 - **The source:** scale model **4.21**; `source/regions.json` and `source/settlements.json` are the artifact's two
   collections read on 2026-10-20 (68 regions, 90 settlements). Jimjam is a settlement there now (px 474, 220).
-- **What `data/` holds:** what `tools/scale-model/extract_region.py` writes for every cut (`openworld/little-demo/README.md`),
+- **What `data/` holds:** what `tools/scale-model/extract_region.py` writes for every cut (`archive/little-demo/README.md`, the retired first open world),
   plus the two layers of the north basin:
   - `overlay.png` and `region.json` `overlays`: `dam`, `dam 2` (the dam basins overlay) and `floodzone` (the scablands),
     one bit each, as drawn. They are not in `biome.png`.

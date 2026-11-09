@@ -1,5 +1,80 @@
 # Handoff: the all-builds rebuild
 
+## The integration pass (2026-11-08 to 2026-11-09, `claude/integration-b91c04`; read first)
+
+**Merged, in order:**
+- origin/main, then busy-keller, with isle-demo's `verify.py` hand-merged (the shared `verify_page` plus the guild checks);
+- the core/shadow texture-unit guard 6be96a8cd, then PR 20 bc7c50606;
+- riftrim, godthrone, the ground catch-ups (east, west), throne-kground-wip and metropolis 6daa4e868.
+
+**Then the work that landed while this pass ran:**
+- the cloud turns for pairs 11-13 (catch, crater-drylands, k-guilin, nwouterwall, ehighlands, nhighlands, ringisles, shighlands) and hyperjungle J2-J6;
+- the geyser and crater-drylands cloud sessions' fixes;
+- fauna-meshy, the crystal-cavern work (KGEODE; hearths `--station hold`), and Gemini's map 5.1 round 3 with its Godshearth and Great Chasm plans;
+- savannarim, folded into `biomes/abyssal-savannah` (stations serim, erim, north; `src/rim/`).
+
+**Built once:** every build except the settlements, after `git lfs pull`; every station; Girder's hero page; interiors before ancients-interiors. Of the settlements only longsong (its interiors re-baked) and the isle demo (the sim work) were rebuilt.
+
+**Checked:**
+- The CPU checks: `tools/test_all.py` with the ratchets. The `check_source`, `check_vendor`, `check_cells` and `check_assembly` baselines were rewritten; the geyser stations' static `_shadow` clash is recorded as known.
+- The GPU tier 1: `verify.py --assert` on 238 pages, every page passing.
+- The GPU tier 2: `--all-views` on the 144 biome and new-station pages and the doors/stairs kits, every page passing.
+
+The pages not checked:
+- guilin, frozen (owner, 2026-11-09);
+- the two charactermodels labs (their generated `pieces/` are local only);
+- the post-apoc sockets example;
+- the isle demo's `.artifact.html` copy.
+
+**Fixed on the way:**
+- Texture units: units over 16 on swhighlands, godthrone, the Throne (`samplersOf`) and ringisles high (`STATION.shareLayers`).
+- Foliage held to its structure: sedesert, swbay, the rift and k-guilin.
+- Instance caps declared: hyperjungle tallgrass 650k, the crater-drylands bloom 550k, nwouterwall, the ringisles high species.
+- Core:
+  - the Lambert `cameraPosition` fix in `core/terrain/43` and `core/biome/30`;
+  - `KHOOK.EYE` and kwarp's `EYE` start on a new line;
+  - `KSHADOW.units` counts `sampler3D`;
+  - `W.colLin` decodes the water colours;
+  - the KSTACKS centre fan.
+- Kit-local load and check fixes:
+  - geyser, crater-drylands, ehighlands, shighlands, nsemiarid;
+  - the mechs' unarmed Catulus;
+  - `_texPending` as a getter in motor-vehicles and fauna;
+  - the interiors' verify modes.
+- The ringisles high isle's forest load (79d1b015a): trees 41.1 M to 15.3 M, scene 52.1 M to 26.0 M.
+- Tier 2's four camera and volume faults: the port kit's Panamax terraces radius (dambasins east), the sedesert and k-guilin cameras, and zeijani's eye-level views.
+
+**The owner's decisions in this pass:**
+- Settlements are rebuilt and verified individually later, except longsong and the isle demo; voth keeps its pre-swbay-fix page.
+- Intentionally dense foliage declares `{cap, capWhy}` (a rule).
+- The far impostors' gain is set per kit.
+- `BIO.LOD`'s chunk stays at 1200 m.
+- Copper Glacier's shadow casters are cut back to the corals.
+- The gallery is republished once this merge is done.
+- hyperjungle PLAN-LANDS section 14:
+  - the rims are on abyssal-savannah;
+  - Talia goes into the east rim, which the owner redraws;
+  - answers 2-4, 6 and 7 are yes.
+
+**Stale, owed with the settlements' own rebuilds:**
+- every settlement page except longsong and the isle demo. The shared changes in this pass reach several of them: Hook through the port kit's Panamax fix, Dhelv through zeijani's `90-scene.js`, the Ancients-lineage and catalog pages through core;
+- the `TODO.md` ride-alongs parked there:
+  - the interiors' food anchors `['floor','wall']` (about 60 pages);
+  - `regOccupancy`'s ground and far flags;
+  - `KSHADOW.units` to count only what links: ringisles high reports "19 of 16" while every program links, so it skips its shadows and rain cover.
+
+**The hash baseline** (`PORT-BASELINE.json`) is updated (`--update`) for 251 pages: every biome, kit, core, open-world, longsong and isle-demo page this pass rebuilt and checked.
+
+These entries are left as they were:
+- the settlements';
+- the 32 old `settlements/port` sheets (now `kits/port`, whose `dist/` is git-ignored) and the retired little demo's 2;
+- guilin (frozen);
+- `kits/interiors/dist/interiors-sets.html`. Its `--sets --assert` fails on the parked food-anchor item: the girder dwelling holds no food container. That item rides with the settlement rebuild;
+- the post-apoc sockets example, moved from `core/sockets/example` and not checked;
+- the isle demo's `.artifact.html` copy.
+
+**Not done here; they wait for the owner's word:** the push, the merge to main and the gallery republish.
+
 ## Owner's decisions, 2026-11-01 (read first)
 
 - **Order:** finish the core pass (below), then the three-ground diagnosis, then pair 4. Pair 4 is free of the map; pair 5 on wait for map 5.1.
@@ -36,7 +111,7 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
   page reads the varied rock on the CPU.
 - **The season's copper flush and its Godot twin** (H7: `core/biome/30s-core-season-flush.js`, `core/clock/opt/21-core-clock-flush.js`,
   `godot/shaders/lib/season.gdshaderinc`):
-  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on `savannarim`) takes the flush;
+  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on the savannah rims: `biomes/abyssal-savannah` station `serim`) takes the flush;
   - **Godstep's redlands** station reads the same species;
   - every kit on the monsoon season gets the Godot `season_dry` with it.
 - **The `sound` record** (H9, `core/tags/opt/54-core-tags-sound.js`, twin `ksound.gd`):
@@ -203,8 +278,76 @@ building engine is now named `core/engine`, not `core/kit`.
     ground to MeshStandard first (the light per pixel; their `?kground=0` fallbacks may keep Lambert), then `relief` as above:
     **eastabyss** (+ lakes), **hyperjungle** (+ lake, savanna), **necanyons** (+ benches, savanna), **nhighlands**, **nwbay**,
     **nwlowlands** (+ margins; two hooks, ground and marl), **sedesert**, **swbay**, **swhighlands**.
-  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **throne** (all thirteen stations;
-    Lambert), **scablands**.
+  - Reading the file but with no KGROUND ground yet (they take KGROUND first, then the above): **scablands**. **throne: done 2026-11-03**
+    (every station's ground but the tube's on `KGROUND.hook` through `THRONE.kgGround` and MeshStandard, `relief: {bump: .075, cavity: .8, mesh: 1}`, `cavityMesh`, `tri` on the cliff stations; `biomes/throne/PLAN.md`).
+  - **Adopted 2026-11-04 (the west catch-up, branch `claude/ground-catchup-west-cloud`): swlowlands, nwlowlands, swbay, sedesert**,
+    all eleven pages rebuilt (`tools/build.py`), `PORT-BASELINE.json` updated for them, their seven `check_stale` baseline entries
+    dropped. Settings, each in its ground's `KGROUND.hook`, and `KGROUND.cavityMesh(m, {rings: [3, 18], depth: [.5, 4]})` on every
+    ground mesh (the floor and each strip):
+    - **swlowlands** (+ delta, gorge): already MeshStandard; `relief: {bump: .075, cavity: .8, mesh: 1, strata: .45, strataW: 'vGM.x'}`;
+      `tri` on the gorge only (its stage's `groundTri`: the 620 m walls).
+    - **nwlowlands** (+ margins): the ground (and the marl strip's material) Lambert -> MeshStandard (roughness .96); ground and margins
+      hooks `relief: {bump: .075, cavity: .8, mesh: 1}`; the marl hook adds `strata: .45, strataW: 'vGL2.z'` and `tri` (the gorge's walls).
+    - **swbay**: Lambert -> MeshStandard; `relief: {bump: .075, cavity: .8, mesh: 1}`; no `tri` (no flank steep and near).
+    - **sedesert**: Lambert -> MeshStandard on the kit's ground (the vertex's sun share `vSun` now scales the direct light after
+      `lights_fragment_end`, as `getShadowMask()*vSun` did) and on the Bowl's (`stations/bowl/84-host-ground.js`, read by the Bowl, Mantis
+      and the steppe); `relief: {bump: .075, cavity: .8, mesh: 1, strata: .45}` with `strataW: 'vRock'` (kit) and `'vL2.y'` (the Bowl's
+      yardangs); no `tri` (the layers lie on the flat; the steep faces' detail is `GROUND_TRI`'s already).
+    - **Switches on every page:** `?kgrelief=0` the relief off (still MeshStandard); `?kgstd=0` the Lambert ground and no relief
+      (nwlowlands, swbay, sedesert and the Bowl; their `?kground=0` keeps Lambert too). The page's own `relief` wins over
+      `?kgrelief=1.5`; `?kgtri=1` still adds the side planes where the page set none.
+    - **Fixed on the way:** sedesert's carve material (`MAT_CARVE`) runs the ground's composed hook, so the sky's cloud shade and height fog,
+      added to each lit material, ran twice on its shader: the shade threw (on MeshStandard the page drew two calls; on Lambert, `?kgstd=0`, the error panel
+      showed it too) and the fog's varyings were declared twice. Their names are held on the carve by empty layers, in both materials. swbay and sedesert list `31b-core-leafset.js` (`check_assembly`:
+      `20-core-kit.js` calls `BIO.leafOn`).
+    - **Checks:** `check_core_use` no new finding; `check_assembly`, `check_stale` 0 over; `test_all --no-build` fails only steps outside
+      this pass (gpu lanes, test-lava and test-scarp goldens, the isle demo's missing `dist/isle-city.plan.js`, interiors test-walk).
+      `verify.py --assert` in software GL (SwiftShader, 12-28 min a page) on all ten pages: error panel clean and no shader error on every
+      one. swlowlands (all three) and nwlowlands (both) pass; swbay and the four sedesert pages fail only the core attach audit (foliage
+      floating, 7-18%) and Mantis and the steppe the instance cap (grass, bunchgrass): not the ground, owed by those kits' own turns.
+      **The GPU `--all-views` verify is the coordinator's.**
+    - **Judged** (`tools/ground_shots.py` in SwiftShader, 960x540, no GPU timing; the audit shows bump, occlusion, mesh cavities, side
+      planes and bed relief linked where set): the gorge's walls gain the most (each bed a lip and a shade line, the wall's foot and its
+      hollows darker), but the near slope's bed lines alias into fine stripes and the valley-scale cavity darkens the whole lower wall:
+      judge on the GPU, and lower `mesh` or the second ring's depth if it reads too dark. The plain's leaf litter and nwlowlands' lake shore
+      gain a fine stony grain near the eye (in SwiftShader, without anisotropy, it reads partly as noise). MeshStandard alone makes
+      nwlowlands' floor lighter and evener than Lambert's mottled per-vertex light: check it against the owner's "too uniformly bright".
+      One swbay frame showed its litter washed out on MeshStandard; a direct load shows the litter as on Lambert (the frame caught the
+      texture before it streamed). sedesert ("The wadi gorge"): the bed relief is left out by
+      itself (the kit's strata are the legacy column, not the core path: the audit shows `beds: false`). The shaded wall's foot and its
+      undercut go nearly black (the mesh cavity's mean is .23 on this floor, the highest of the four: in shade the sky is the only light and
+      the occlusion takes most of it); the sunlit walls gain faceted shading. **Likely wrong as set: judge on the GPU, and try `mesh: .5`
+      or `cavity: .55` here.** The Bowl ("The salt flat"): next to no change at any
+      distance (MeshStandard a shade more saturated than Lambert; the flat crust has little height to bump, mesh cavity mean .06); its
+      layers are procedural kinds with no map, so `kgtri` samples nothing, and its strata are the legacy column too (`beds: false`).
+      Mantis and the steppe read the same ground and were verified, not shot.
+  **Catch-up, the eastern and jungle kits (2026-11-04, cloud; branch `claude/ground-catchup-east-cloud`, not merged):** eastabyss
+  (+ lakes), hyperjungle (+ lake, savanna), necanyons (+ benches, savanna), swhighlands (+ pillars, treeline, the pillars' Span
+  preview): the KGROUND ground is MeshStandard (roughness .96; Lambert where there is no pack or on `?kground=0`) with
+  `relief: {bump: .075, cavity: .8, mesh: 1}` (swhighlands `mesh: .7`); `?kgrelief=0` on these pages drops the relief for the
+  before-and-after (once a page passes `relief`, `?kgrelief=1.5` changes nothing: the page's options win). Hollows: `cavityMesh` on
+  eastabyss and hyperjungle; necanyons computes `KGROUND.cavity` on the whole coarse grid before its cells are cut and the fine
+  patches read it bilinear (seamless); swhighlands bakes one 12 m field over the square that every ground piece and the cave hood
+  read, at `depth: [1.5, 30]` (the core's 4 m valley depth turned the pillars' cliff foot black over a 200 m band). **No `tri`
+  anywhere:** past its onset are 0% of the ground's vertices on eastabyss and hyperjungle, 2% on necanyons (the talus's top), 2-8%
+  on swhighlands, where the strata colour paints over KGROUND's layers on that steep ground anyway. Species, keys and indices
+  untouched; 13 pages rebuilt with `tools/build.py`. **Judged in software GL only** (`tools/ground_shots.py`, 960x540; the GPU
+  verify is the coordinator's): eastabyss's salt crust gains the most (the cracks cut and shaded near and mid); necanyons and
+  swhighlands read finer and a shade deeper in the hollows; hyperjungle's floor under the canopy changes little. What to look at on
+  the GPU: the grounds read a little paler at grazing angles on MeshStandard; the hollows by necanyons' creek (its fine patches'
+  cavity mean is .43-.49, against .10-.16 on the coarse floor); swhighlands' cliff feet. eastabyss's far camera falls on the lake
+  (no far judgement). `verify.py --assert` in software GL passed on eastabyss, hyperjungle, necanyons, swhighlands and the pillars (one view each;
+  the other eight pages loaded with no page error and their ground as above, not asserted). `PORT-BASELINE.json` not rewritten: after the GPU verify.
+  **A core bug this found (for the coordinator; not fixed here):** three.js r128 uploads `cameraPosition` only to ShaderMaterial,
+  Phong, Toon, Standard or an env-mapped material. On a **Lambert** ground, KGROUND's `kgD=length(kgWP-cameraPosition)` (and the
+  sand glint's view vector) therefore measure from the world origin: the layers' distance scale coarsens with distance from
+  (0, 0, 0), not from the camera. With only the material changed (new sources, Lambert against Standard), necanyons' litter near the
+  camera drew about 10x too coarse and eastabyss's crack layer vanished into smears. This is probably much of why GROUND.md saw
+  "next to nothing" on the Lambert grounds (nhighlands, eastabyss). Every Lambert KGROUND ground still has it (nhighlands, nwbay,
+  nwlowlands, sedesert, swbay and the others in the list above): either the move to MeshStandard at each turn, or a core fix
+  (KGROUND binds its own camera-position uniform, updated each frame, or derives the camera from `viewMatrix` in the shader) that would move every Lambert page.
+  pinnacle-rock reads necanyons' `47-host-land.js` in place but has no KGROUND, so this pass changes nothing there (its ground stays
+  Lambert); its committed page is behind its sources since 2026-10-20 for other reasons and was not rebuilt here.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
@@ -336,10 +479,37 @@ the kit's two sets the same day: `rock.gneiss.banded` (the walls of stations 2 a
 **Then (same day):** KGROUND's relief taken on all three pages (`relief: {bump: .075, cavity: .8, mesh: 1}`, `KGROUND.cavityMesh`; `tri` on the pass; `?relief=0`, `?tri=0`). The owner's two notes: the ice caves sat on the ground like bubbles, so each now has a levelled pad, an apron of ice into the ground, a sunk foot and a lower, narrower mouth facing down the glacier (`KGLACIER.drawer`'s new opt-ins `apron`, `skirt`, `mouthTop`, `fine`, `uvWorld`, `caveFloor`; off by default, so the Throne's caves are unchanged); and the frost coral's limbs were blunt, so they now taper to a point. The pages were re-verified on the GPU, 53, 53 and 50 checks.
 
 
+**The Godthrone's turn (2026-11-04, in the cloud, no GPU; branch `claude/rebuild-godthrone-cloud`, from `claude/biome-rebuild` at 0c4ad8f82 with
+the ground relief 4fd72d64f; `biomes/godthrone/PLAN.md` sections 7a and 9b, `KNOWN_ISSUES.md`):** the owner widened it (relayed 2026-11-04) to every
+planned station. **Ten pages:** stations 1, 1b and 2 rebuilt, and seven new `--station` pages on map 5.1 sites (7a has each px, height, air and class):
+`orange` (the dry-cold line near Pluton: palagonite cliff with tafoni, knife-edged ridges, debris-covered ice, the endoliths in split stones),
+`scarp` (the south-western basal escarpment, a 600 m wall of flows, colonnades below, ochre partings), `rim` (the SW Outer Wall's crest: core's
+megabreccia under an overturned flap, slump scarps, a cirque with relic ice, pavement, sand-wedge polygons, ventifacts), `blood` (core water's
+`WATER.underIceFall` out of the ice belt's cliff, the red pool, Qol Ḍrāi's `bloodriver` with 13k blades of riverweed), `gills` (the Red Gill,
+`biomes/gills` station 1: one 1.6 km x 60 m x 300 m radial crack, 382 tall single-mouthed red pipes, the ferromanganese collars, the breath, KHAZ
+pull and pool), `gills-ladder` (gills station 2's top rungs: iced pipes as fumarolic towers, frost jets with rime fans over the line), `tube`
+(the Ilmenite Pillar Vault on `tube_god_n_12`, KCAVERN, 494 ilmenite columns, the cross-conduit leaving toward Godstep's pit at 52 degrees).
+`blood` and `gills` share one frame, 11.3 km apart. A station's far country is map 5.1's own relief (`biomes/godthrone/tools/region.py`).
+**The universal set:** KGROUND's relief on every page (`relief:{bump:.075,cavity:.8,mesh:1,strata:.45}`, `cavityMesh`; `?kgrelief=0` the old ground),
+KSHADOW off at load (`?shadow=1`, not measured: no GPU), `rock.basalt.titanium` wired as the faces' and blocks' grain, the tuff aprons downwind
+(`tibasalt-ash`, a kit recipe: flank, gills, blood, ladder), the megabreccia on the rim. Dropped with reasons (9b): flareJoin (no limbs),
+mirrorSwitch (the only still is a 26 m pool), the plume (no river meets still water). Card cells: 0 faults. Textures newly wired: `rock.basalt.titanium`,
+`mineral.crust.ferromanganese` (the Red collars), and the library's palagonite, tafoni, megabreccia, debris ice, rust ice, rust terrace, red riverweed,
+pavement, lichen crust, columnar basalt, glacier ice (each page takes only its own: station.json "tex").
+**Species changed for readers:** none renamed or reindexed; `GODT.SPECIES` is still empty. New items `splitstone`, `endolith`, `ventifact`;
+`GODT.GROUND` and `groundAt` gain eight classes (0 on the old stations, so their draws are unchanged). **biomes/gills:** the Red dress is drawn by a
+port of xanadu's `87-host-gills.js` (lifting it into `biomes/gills` is owed).
+**Checks (software GL, SwiftShader, this container):** `verify.py --assert` with one or two views each passed on the summit, the wall, orange, scarp, rim, blood, the ladder and the tube; the last fixes (the flank's ash check sampled 96 faces against a floor of 100, now 40; one Red Gill side crack's throat volume caught no probe point, now widened) were built but not re-verified (the owner: stop verifying, 2026-11-09). The generic card negative is left out on pages with no cards (KNOWN_ISSUES). `check_core_use`: no new finding.
+`test_all --no-build`: not run (stopped with the verifies). **For the coordinator:** `verify.py --assert --all-views` on the GPU for all ten pages, KSHADOW's cost,
+the relief judged with and without `?kgrelief=0`, then the hash baseline for the pages (not rewritten here). **For the owner (look decisions):**
+the rim's site and its flap's rock, the scarp drawn as a 600 m wall on a ~6 degree raster slope, the bloodfalls' rust rate, the Red pipes' height
+(30-85 m), the ladder as its top rungs only, the vault's lamp-only light, and the bead sand's glints under the relief.
+
 **Still water takes no breakers; river mouths take the plume (the owner, 2026-11-02, from swlowlands' delta; `BACKPORT.md` section 1 and 5):** a lake or a
 sheltered arm drawn by `WATER.draw` passes `surf:false, breakers:false` (a shore grid's breakers drew white contour rings round islands). Fixed on swlowlands
-and nwlowlands; **owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
-k-guilin, xanadu. A river meeting a lake or the sea takes `core/water` ext/61's `tintFlow` (a moving plume). Also new in core: `BIO.bakeImpostors` counts only
+and nwlowlands; ~~**owed at their turns:** the Throne's glacier (`stations/glacier/89w-host-water.js`, the Throne's turn is under way), the Catch's lake, the Cut,
+k-guilin, xanadu~~ **done (checked 2026-11-08):** the Throne's glacier, the Cut, k-guilin and xanadu (its page and three stations) pass `breakers:false` in their
+`89w-host-water.js`; the Catch's lake took it on 2026-11-08 (`stations/lake/45b-host-stage.js`). A river meeting a lake or the sea takes `core/water` ext/61's `tintFlow` (a moving plume). Also new in core: `BIO.bakeImpostors` counts only
 visible frames (a page loaded in a hidden pane reported "textures not in after 180 s"); a plume's texture reads are at an explicit LOD (implicit gradients beside
 the water's discards drew the sea black over land on ANGLE D3D11, seen only in the browser pane, not in headless verify).
 
@@ -455,8 +625,8 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 4 | swlowlands (**merged 2026-11-02:** stations `gorge`, `delta`), nwlowlands (**merged 2026-11-02**) | their exchanges together; nwlowlands vends to the Cut and Farside |
   | 5 | throne (**merged 2026-11-03:** all fourteen pages, stations 12-14 new; `biomes/throne/PLAN.md`, "Core adoption" and "New stations"), ebadlands (**merged 2026-11-02:** the overview and stations `waste`, `canyons`, `montane`, `tundra`) | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
   | 6 | xanadu (**merged 2026-11-03:** stations `cloud`, `descent`, `ranges`, `gills`, `floor`), oidong (**merged 2026-11-03:** stations `passes`, `hearths`) | their five shared species together |
-  | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands (**pushed 2026-11-03, cloud session, for the coordinator's GPU verify and merge:** `claude/rebuild-nhighlands-cloud`; station 5 `bogs`, the Footfall bog country) | geyser before ringisles |
-  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1 and station 3 `lagoon`; built on geyser's 079716f3), abyssal-savannah (**pushed 2026-11-03, cloud:** `claude/rebuild-abyssal-cloud`, station 1 re-sited on 5.1; GPU verify and merge owed) | after all their sources |
+  | 7 | geyser (**built 2026-11-03 and 2026-11-09 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase, station `stills` and stations 2-5 `puna`, `basin`, `corona`, `ice`), nhighlands | geyser before ringisles |
+  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1, station 3 `lagoon` and (2026-11-09, unverified) station 2 `high`; built on geyser's 079716f3), abyssal-savannah | after all their sources |
   | 9 | korona (**merged 2026-11-04:** all six pages on the universal set; `biomes/korona/PLAN.md`, "Core adoption"), nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut (**pushed 2026-11-04, cloud session, for the coordinator's GPU verify and merge:** `claude/rebuild-cut-cloud`, on nhighlands' pair-7 branch; the universal set, exchanges 5 and 6), farside (**turn on `claude/rebuild-farside-cloud`, 2026-11-04, not merged:** station 1 rebuilt for the tsunami and Farport's move; software GL only, the GPU run is the coordinator's) | both read nwlowlands |
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
@@ -471,7 +641,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   **ringisles' turn, built 2026-11-03 (cloud; not merged: the coordinator GPU-verifies and merges)** (`biomes/ringisles/PLAN-STATIONS.md`, "Core adoption" and
   "Station 3, built"; `KNOWN_ISSUES.md`, "The final rebuild"). **Built on geyser's `079716f3`** (`origin/claude/rebuild-geyser-cloud`, merged here; its WIP commit bf85a338
   first, and the pages rebuilt on 079716f3 are byte for byte the same): if geyser's branch moves again before it merges, rebuild ringisles' two pages after it (`python3 tools/build.py biomes/ringisles` and
-  `--station lagoon`). The page reads eight kits in place; what changed is the page's own: `build.py` on the universal set's lists (31b, 31j, 32, 33, 34, 37,
+  `--station lagoon`, `--station high`). The page reads eight kits in place; what changed is the page's own: `build.py` on the universal set's lists (31b, 31j, 32, 33, 34, 37,
   39, 41, 44 of core/biome; KSTRATA from core/terrain, not sedesert's src/ copy; KGROUND, KHORIZON; core/hazard; KSHADOW; height fog, rain cover, lightning;
   water ext 57, 58, 60; `khost.FULL`; `--station`; LF writes), so the borrowed kits' far trees are their octahedral impostors at last (`check_assembly`'s
   MISSING `BIO.impostor*` and `BIO.leafOn` are gone). KGROUND's sampler under the fourteen ground layers by `THRONE.layGLSL` (the Throne's way for a Lambert
@@ -482,7 +652,11 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   SwiftShader (32 units) runs them: the cost on the GPU is therefore nil and was not measured. KFAR not taken (sea to 9 km). **Station 3, the lagoon**
   (`--station lagoon`, `dist/ringisles-lagoon.html`): the bank off the lee shore cut at 7.6 x 6.8 km (a rim with its pass, three motu, the fish camp, 140 patch
   reefs, the water on the rim's true bed so the swell breaks on it), its stage a fork of `src/45` and src/'s other fragments reading `STATION` knobs (none on
-  station 1: its page moves only by those lines). Station 2 (the high isle) stays a plan awaiting the owner. **Attach audit:** 24.0% before; 4.07% on the
+  station 1: its page moves only by those lines). **Station 2, the high isle** (`--station high`, `dist/ringisles-high.html`; added 2026-11-09 at the owner's ask, **not verified at all**: the owner
+  said to hand it over without one; one software-GL load without the bake was clean): a 1 km eroded shield with five amphitheatre valleys, their
+  streams, three tall falls (488-524 m) and the plumes at their mouths, the fog belt and the Throne's elfin tree in the cloud on the crest, `rift-volcanic`
+  strata on the valley walls (`biomes/ringisles/PLAN-STATIONS.md`, "Station 2, built"). The page's Throne pack now keeps the elfin's bark and moss
+  (every ringisles page's `ringisles.tex.throne.js` grows by them). **Attach audit:** 24.0% before; 4.07% on the
   first rebuilt page (software GL), with this kit's own floaters then fixed; the borrowed savanna trees' `leaflet` and `bloom` (the Rift's acacia, swbay's
   thorn and baobab: no structure near them) stay, so `guards.maxShare` is .016 with a KNOWN_ISSUES entry. **Verified, software GL only** (SwiftShader; `verify.py dist/ringisles.html --assert`, about 70 minutes): error panel clean, 777 calls,
   26.7 M triangles at the opening view; every invariant, host check and negative passes (34), the card guard, one LOD key a tree (.73%), the attach audit
@@ -508,8 +682,21 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   karst vents. **Station `stills`** (`--station stills`, `dist/geyser-stills.html`; `biomes/hearths/PLAN.md` 7b, 11 item 6): `biomes/hearths/src` gains the
   Stills (`50`: `still`, `stillglass`, `sailcup`, `spraymat`, `HEARTH.stillParts`; new `57-biome-hearths-stills.js`: `HEARTH.stills`, `sailTurn`,
   `sailFold`), read in place with `core/biome/35b-core-anim-turn.js`: still trees ringing every boiling spring and geyser, their sails across the wind,
-  turned toward edge-on to the sun by day, each geyser's ring folding on its warning and column. Stations 2-5 (`puna`, `basin`, `corona`, `ice`) are not
-  built (owed, each a session). **Verified in software GL only (SwiftShader, this container; no GPU):** `verify.py --assert` passes on `dist/geyser.html` (27.5 min; 110 draw calls, 4.95M triangles at the default camera; attach audit 0.98% of its 1% limit; export profile 9 of 9) and on `dist/geyser-stills.html` (124 draw calls, 5.58M triangles; 236 still trees, 1,178 sails, every Stills check and negative); `--all-views` was not run (a view shot takes ~7 min here). **Owed to the coordinator's GPU run:** `--assert --all-views` on both pages, KSHADOW's cost (`?shadow=0` against the default), and the look (`biomes/geyser/PLAN-STATIONS.md` lists the decisions for the owner). Also rebuilt: `oidong-hearths` (it reads `biomes/hearths/src/50`; its parts are unchanged, only text moved). `test_all --no-build`: 13 of 138 fail, none on this work once fixed: the six LFS-pointer steps, nwlowlands' two card cells, `test-lava` and `test-scarp` (golden files), and the Throne's three stale stations. **For readers (ringisles, the isle demo, the
+  turned toward edge-on to the sun by day, each geyser's ring folding on its warning and column. **Stations 2-5, built 2026-11-09** (the owner: "do 2-5";
+  `biomes/geyser/PLAN-STATIONS.md`, "Stations 2-5 as built"): `puna` (the high desert, 5.1 px 1574,1642, 3.9 km), `basin` (the mountain forest,
+  1454,1684, 3.2 km, lodgepole pine and bobby-sock stands), `corona` (a Korona trench floor at 2.03 atm, the field along a ring fault, a quilt of
+  chemistries, taboo ground and gas), `ice` (a flank vent at 7.4 km melted into the ice: ice towers and caves on core/terrain's KGLACIER drawer), on
+  one shared base (`stations/field/`, a site record per station); sites re-surveyed on map 5.1 (the plan's 4.23 sites went to the Hearths' hosts and
+  the Loom-Chasm kit). Their cold plants are in a registry of their own (`geyserfield`), so the kit's species, keys and indices are unchanged for
+  readers. **Core fixed on the way:** `WATER.plumeGLSL` (core/water/geyser `52b`) wrote `p.y--0.16` for a plume based under 0 (no compile): the
+  readers of 52b (ringisles, the Throne's three, xanadu's two, the isle demo) move by that text at their turns. puna and basin open at 13:00: the
+  owner's 11:00 is in the giant's eclipse at their longitudes (a decision for the owner). **Verified in software GL (SwiftShader), 2026-11-09:** `verify.py --assert`
+  passes on all four (`geyser-puna` 0.46M triangles, `geyser-basin` 6.2M with ~19,000 lodgepoles, `geyser-corona` 5.5M, `geyser-ice` 0.44M; each run
+  alone: two at once starved basin's texture decode past the harness's 120 s). The showcase and the Stills were not re-verified after this round's
+  shared edits (guarded hooks in 84 and 99, the 52b text, the merged core): their pages moved by text. **No GPU run from this session (the owner,
+  2026-11-09: the integration session takes it).** `test_all --no-build`: 140 steps, the failures none of this work's (the six LFS-pointer steps,
+  `test-lava` and `test-scarp` golden files, `test_gpu_lanes`); `tools/check_views.py` learnt `"baseOnly": true` for a station folder that is a shared
+  base (`stations/field/`), and `build.py` refuses to build one alone. **Verified in software GL only (SwiftShader, this container; no GPU):** `verify.py --assert` passes on `dist/geyser.html` (27.5 min; 110 draw calls, 4.95M triangles at the default camera; attach audit 0.98% of its 1% limit; export profile 9 of 9) and on `dist/geyser-stills.html` (124 draw calls, 5.58M triangles; 236 still trees, 1,178 sails, every Stills check and negative); `--all-views` was not run (a view shot takes ~7 min here). **Owed to the coordinator's GPU run:** `--assert --all-views` on both pages, KSHADOW's cost (`?shadow=0` against the default), and the look (`biomes/geyser/PLAN-STATIONS.md` lists the decisions for the owner). Also rebuilt: `oidong-hearths` (it reads `biomes/hearths/src/50`; its parts are unchanged, only text moved). `test_all --no-build`: 13 of 138 fail, none on this work once fixed: the six LFS-pointer steps, nwlowlands' two card cells, `test-lava` and `test-scarp` (golden files), and the Throne's three stale stations. **For readers (ringisles, the isle demo, the
   hyperjungle's lake station), keys and indices kept:** `55`'s limbs flare only where `31j` is on the page; `46` gains `GEYSER.hazard.crust`, `fumarole`,
   `mud` and `65` registers them (with a sulphur bead at each fumarole's mouth, hashed: no draw moves); `materials.json`'s `rosette` cell (the whole
   screwpine crown, not a quarter), `strap` (plain cell, base bottom) and `small` (stems) move the readers' packs. No reader page is rebuilt here.
@@ -545,6 +732,9 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   overflows or errors only in a later view's mode: a texture-unit pass, not a small fix), hyperjungle-savanna (tallgrass 555,500 over its 250,000 cap,
   no capWhy: the owner's budget call), the west catch-up (its own paragraph: swbay and sedesert fail the attach audit and two pages the instance cap,
   owed by those kits' turns), godthrone (its turn paragraph is a draft with its results unfilled; ten pages, seven new stations).
+  **nhighlands' turn (pair 7, 2026-11-03, a cloud session with no GPU; branch `claude/rebuild-nhighlands-cloud`, not merged)** (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)" and "Station 5, as built"; `KNOWN_ISSUES.md`'s first item): `build.py` on the shared lists with `--station`; station 5 `bogs` is built (the Footfall plateau's raised bogs, string fen, ~390 pools as one `WATER.drawPools` mesh, a peat stream, the mire's `sink`/`drown` hazards; cotton-grass, cloudberry and the owed `card.cornlily` wired; `ground.sphagnum`, `ground.peat.black`); stations 2-4 are not (station 2 falls to the queue after the pairs, as this file allows). The universal set: `BIO.flareJoin` in `limb()`; `KSHADOW` on (the ground reads 11 texture units; **cost not measured: no GPU**); `WATER.mirrorSwitch` on the tarn, off at load; the trees on `WATER.fields`' shore (`NHL.SHORE`) and the edge audit; `check_cells --fix` (14 faults the old `pack.json` hid, seen once `pack.py` wrote the plant counts); the crater wall's **megabreccia** where the geology bake puts the `impact` province (KSTRATA on the crag pillars, a crag-scale copy of swhighlands' recipe; KGROUND `clast` on the steep; `?strata=0` the old granite). **Verified in software GL only** (`verify.py --assert`, two or three views; not `--all-views`): station 1 passes every check, attach audit 3.89% -> 0.58%, 30.85 M of the 32 M triangle budget (+.45 M of rods), the water's fields bake 8.6 s of load under SwiftShader; station 5 passes every check (its own: the mire open, 387 pools under their lips, 319 hazard records, the mire's plants drawn), attach audit 0.09%, 8.87 M triangles, 109-142 draw calls. **The coordinator should:** run `--assert --all-views` on both pages on the GPU, time `?shadow=0` against the default, and judge the megabreccia and the bogs. **Species changed for readers** (Roketstad, nwlowlands; keys and indices kept, `NHL.SPECIES` unchanged): limbs flared at their joints where a page lists `31j` (guarded); the conifers' arms draw their rod further (to 80% past 4 m) and from 1.4 m; beard lichen hangs from the rod's end; the candelabra's and curtains' sprays sit on their rods; the birch draws rods at mid range; the willow's, gnarled oak's, laurel's and serpentwood's mid-range leaves sit on the rod drawn; the great trumpet's bulbs hang from the funnel's underside; `needle` and `frond` declare caps. **No reader's placement moves:** every change keeps the draws, and `NHL.SHORE`, `NHL.STATION_PASSES` and `NHL.STATION_PLANT` are hooks only a page sets. The new flora stays gated off for Roketstad. Readers' pages (Roketstad, highlands, nwlowlands and its margins) build with syntax OK on these sources and move at their own turns.
+  **nhighlands' stations 2-4 (2026-11-09, the same branch, a cloud session with no GPU; `origin/claude/biome-rebuild` merged in first)** (`biomes/nhighlands/PLAN-STATIONS.md`, "Stations 2-4, as built"; `KNOWN_ISSUES.md`'s first item): `--station montane` (2, Dsb/Csb, 5.1 px 610,710), `foothills` (3, Csa, 590,630), `alpine` (4, Dsc/ET, 610,810), on one shared land (`stations/montane/45-host-stage.js` driven by each station's `SITE`; `build.py` now takes a station `base` and neighbour kits, oidong's form). **Six new species** appended to `NHL.SPECIES` (31-36; every key and index before them kept): `copperpine`, `embergiant`, `whitefir`, `blackoak` (station 2) and `whitebark`, `foxtail` (station 4). **nsemiarid's station `high` takes kin of station 2's four** (its PLAN-STATIONS.md: whichever is built first sets the trees). Station 3 grows swlowlands' sprawl, coast and cork oaks, sycamore, manzanita and madrone in place (`SWLOW.make`/`grow`). Station 4 stands on the impact province: megabreccia on its cirque. **Corrected:** pair 7's four "owed" textures (`ground.peat.hag`, `card.dwarfbirch`, `card.sedge.fen`, `rock.megabreccia`) were in the library since 2026-10-26; they are wired (station 1's steep blocks, the bogs) and `PROMPTS-NEEDED.md` section 32 is withdrawn. **For readers** (Roketstad, nwlowlands; both build with syntax OK): the six new species are never placed by `NHL.buildTrees`' own passes, and the kit's new hooks (`NHL.STATION_PASSES`, `STATION_PLANT`, `STATION_LOGS`) are set only by a station's page, so no reader's placement moves. **Checked in software GL only** (`verify.py --assert`, two to five views each): station 2 OK (attach audit 0.32%; a park of one big tree per 42 m on the open slopes; 76 ember giants; 304 corn lilies), station 4 OK (0.00%; nothing over 4 m above the tree line; the tarn 136 m under its headwall), station 3 passed every check on the build before its last tuning (fewer cork oaks, logs off the grass); station 1 and the bogs were rebuilt for the wired textures and load clean. **The owner (2026-11-09): no GPU verify from this session; the integration session takes the pages as built.**
+  **nsemiarid's turn, merged 2026-11-03** (pair 9; `biomes/nsemiarid/PLAN.md` section 11, `KNOWN_ISSUES.md`; `biomes/scablands/PLAN.md` section 6): no new station (station 2, `high`, waits for nhighlands' station 2, as its plan says; map 5.1 asks nothing of this kit). `verify.py --assert --all-views` passes on the GPU for all three pages: nsemiarid (Arc; attach audit 0.00%, was 81.1%; 16.3 M triangles at worst), the scablands' coulee (Arc; 0.00%, was 66.5%), the dam basins' port (RTX lane). The universal set is in on the kit's two pages: `BIO.INDEX_ITEMS` and the LOD switches (`46-host-graphics.js`, its own fragment so the overlay's stage takes it; the floor sets no `BIO.range`, so the LOD options change nothing yet), the variants' far level on impostors (gain 2.4; ebadlands' stilt-pod expansion of welded items), KGROUND (the eight library layers on documented masks, kinds `clast` for the desert's pavement and `polygon` for the dry bed's mud cracks; the ground is Standard because KGROUND's distance scale reads `cameraPosition`, which r128 never uploads to Lambert), KFAR to 14 km and KHORIZON, height fog, the rain cover, the air's load with a dust-storm select, breakup, `WATER.mirrorSwitch` off at load (the salt lake; the coulee's plunge lake), the water as fields with the edge audit, `BIO.flareJoin` on the broadleaves' limbs. **KSHADOW** is attached on `?shadow=1` only: the off-by-default switch was on the Throne's branch, not here, when this turn was built. **Fixed on the way, a regression on three pages:** core/atmos's weather writes `ATMOS.windScale` every tick, so a page's own wind setting (n semiarid's calm/breeze/high, the dam basins' stiff wind) never took, and their dust and gale checks failed on the committed pages; the setting is now a factor on the weather's wind (`NSWIND.k`/`jump`, `DB_WIND.k`/`apply`, re-applied after the weather's hook on the dam basins). Any other page that sets `ATMOS.windScale` itself and also binds the weather has the same bug. **Species changed (keys and indices kept; read only by this kit and its overlays):** the solid bodies (strider barrels, bead chains, sail columns, maces, horn pipes) are `BIO.barkMat`, not a still leaf material (`?bodies=leaf`); the glider seeds are `free`; the kiting sail blades are a new item `kite` (`free`, defined last); the drift's back-row tumblers stand at most half a metre up. **Not taken:** KSTRATA (the texture units; the coulee has `KSCOUR.strata`), wadis, `WATER.pan`, the brine look (the salt lake keeps its teal: the owner's call), seasons and KFIRE (station 2's), R9, snow, `BIO.fung`. **Geology 5.1 checked:** basalt 58% and evaporite 27% round the region, the site on basalt and the bed on evaporite, as the plan draws; karst site 10 not taken (low gain, no station on a notch). **The dam basins** take no universal set (the Ancient Port kit's page; its flora is D2): their wind fix and verify only. **Open (the owner's eye):** the ground on KGROUND, the far trees, the far field's pale horizon band from afar, the bodies drawn as wood. **The attach audit cannot see the variants' trees** (as on ebadlands).
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).
@@ -553,7 +743,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   (their `PLAN-STATIONS.md`) as part of the turn; if one did not, it is built here.
   Then (the owner, 2026-10-27: "add hyperjungle N and E savannah rim to queue"): **hyperjungle N** (`biomes/hyperjungle/PLAN-LANDS.md`
   section 3 and station 3, `-north`: Screamer wood, the howl bamboo, watchers, bone giants) and **the e savannah rim** (section 5.1:
-  `biomes/savannarim`, a new kit on the savannah base of section 4, station 2 `-east` near Fridon). The rim is built after hyperjungle
+  `biomes/savannarim`, a new kit on the savannah base of section 4, station 2 `-east` near Fridon; the owner, 2026-11-08: no new kit, now `biomes/abyssal-savannah` station `erim`). The rim is built after hyperjungle
   N, as two sessions at most at once. The hyperjungle's turn in pair 2 rebuilds its built page and its `PLAN-STATIONS.md` stations,
   not the lands plan: the savage land, the rims and the rest of PLAN-LANDS stay for later turns the owner names.
   Then (the owner, 2026-10-27: "after these, w outer wall 1, then finish sw highlands"): **the W outer wall's station 1**, the loess
@@ -1028,7 +1218,7 @@ little-demo, isle-demo), eastabyss's (isle-demo, Locus, Mungo, Verge), swbay's s
 - **The ride-along fixes** (`TODO.md`, "Ride along with the next all-builds rebuild": do them in this change, rebuild once, rewrite the
   baseline once):
   - the probes read `userData.probePoints` (`core/host/95-host-probe.js` `_probePoints`, 24 builds, and the Ancient Port kit's
-    `settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed); then the dam bed's flotsam markers
+    `kits/port/src/91-probe.js`: port, Hook, Ys, the dam bed); then the dam bed's flotsam markers
     (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics (`biomes/scablands/src/87-host-erratics.js`) set it and
     drop their hidden markers;
   - guard `setPointerCapture` in `core/host/90-host-camera.js` (138 builds); remove the Iziz palace page-only guard
@@ -1062,7 +1252,7 @@ biome files change**; this stage comes last, after the biomes and kits they read
   `.claude/worktrees/inspiring-swanson-212800`, unpushed) edits the same files: replay the 17 `git mv` renames of
   `little-demo` -> `openworld/isle-demo/src/world/` there first, then its content edits.
 - **Hook**: missing `core/rand` and `core/tags` in `build.py` (`check_core_use`); it reads the Port kit's fragments and the scale
-  model (`KLAND`); rebuild with `settlements/port` and Ys's vendored copy.
+  model (`KLAND`); rebuild with `kits/port` and Ys's vendored copy.
 - **Pinnacle Rock**: no findings; rebuild and verify.
 - **Longsong**: no findings; its biome is the Oidong valley. Rebuild and verify; the core/city single-complex mode is separate.
 - The gallery: `gallery/build_gallery.py` labels little-demo deprecated; republish only after the owner's yes (the Throne, Korona and

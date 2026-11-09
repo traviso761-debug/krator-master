@@ -22,19 +22,20 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 16 | the lake, the rivers, the zones (43); terrain (68); the host binding (90); the ground (106); the water (164) |
+| `45-host-stage.js` | 16 | the lake, the rivers, the zones (43); terrain (68); the host binding (90); the ground (106); the water (169) |
 | `50-biome-eastabyss-species.js` | 48 **big** | THE LAKE COLOUR (20); the tree species (64); harvest (biomes/FRUIT.md) (142); leaf textures (173); an iridescent bark (316); bark textures (323); geometries local to this biome (372); materials (430); instanced items (488) |
 | `52-biome-eastabyss-library.js` | 2 |  |
-| `55-biome-eastabyss-trees.js` | 70 **big** | zones from the fields (20); colour (45); polyline helpers (Girder's) (66); keep-clear between trees (83); cauliflory (90); beard moss (99); foliage helpers (104); the builders (125); the coal-swamp set (316); impostors (the far canopy) (438) |
+| `55-biome-eastabyss-trees.js` | 72 **big** | zones from the fields (24); colour (49); polyline helpers (Girder's) (70); keep-clear between trees (87); cauliflory (94); beard moss (103); foliage helpers (108); the builders (130); the coal-swamp set (323); impostors (the far canopy) (449) |
 | `60-biome-eastabyss-floor.js` | 16 | fields local to the floor (31); small plants (39); the zone planters (108); the pass (146) |
 | `65-biome-eastabyss-dress.js` | 7 |  |
 | `70-biome-eastabyss.js` | 1 |  |
 | `75-biome-eastabyss-fauna.js` | 20 | walkers: a pose that is a function of the clock (24); geometries (vertex-coloured; bodies face +z, the (60); the pass (103) |
 | `83-host-far.js` | 6 |  |
 | `85-host-tower.js` | 5 |  |
+| `87-host-kin.js` | 4 |  |
 | `88-host-build.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
-| `89w-host-water.js` | 7 |  |
-| `99-host-take.js` | 10 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (65); the page, handed to the host (99) |
+| `89w-host-water.js` | 11 |  |
+| `99-host-take.js` | 11 | the inspector's words (58); the probe's budgets and the kit's own checks (ve (68); the page, handed to the host (103) |
 | `99-tail.html` | <1 |  |

@@ -40,6 +40,9 @@ useGroupXF endGroupXF`).
 
 ## The Vernacular set
 
+The files are `kits/iziz-vernacular/src` since 2026-11-03 (`kits/iziz-vernacular/README.md`); Iziz's page reads them in place, so
+the API below is unchanged.
+
 ### Registry — `69c-vern-helpers.js`
 
 ```js
@@ -473,7 +476,7 @@ Fragments, in build order (they sit between the shared `src/` fragments):
 |---|---|
 | `84-city-geo.js` | `CITY` constants (WORLD 1900, PLATEAU 18, CHASM −16, R 470, WALL_K √1.2, GATES, the three HILLS as mesas `{x,z,H,r0,E,ring,gate}`), `coreR(t)` (the round-3 wall line) and `wallR(t)` (the wall, WALL_K further out), `insideCore` beside `insideWall`, `hillProfile/hillH`, `cityFlat`, **`terrainH` reassigned** (plateau + hills + moat + causeways + spaceport pad), `insideWall`, `nearestHill`, `radial`, `FRAME_HOOKS_PRE` |
 | `85-city-paint.js` | the painted ground: `gcv` albedo / `mv` buildable mask / `kv` class canvases (2048 px), `KL` classes, `road(pts,w,cls,opt)` (paints + pushes to `ROADS`), `disc`, `footprint`, `annulus`, `precinct/inPrecinct`, `cityBakeMasks()` then `canBuild/klass/isRoad/walkable` samplers |
-| `86-bio-10…70` | the hyperjungle biome kit, vendored byte-identical (SCOPED in build.py; manifest in VENDOR.json) |
+| `86-bio-10…70` | the hyperjungle biome kit and `core/biome`, read in place and closure-wrapped as the city builds (`bio_wrap` in build.py; SCOPED). Not files in `targets/city` since 2026-11-03 |
 | `86-bio-45-init.js` | `BIO.init` against `terrainH` and the mask canvases; `bioMaskFn` (jungle outside the moat, undergrowth in parks at .85 and in ruined clusters at .28), `bioTreeMaskFn` (hypertrees stand back 130 m from the wall), `BIO_OBSTACLES`, `RUIN_RECTS` |
 | `87-city-layout.js` | the primary network: escarpment paint, ring roads (`roadInside` clips to the plateau), ramps, thoroughfares ring-to-ring, gate roads to the nearest ring, the spaceport causeway, hill-top courts/plazas, parks (`park()` re-strokes roads through it), amphitheatre pad, needle pad. `nearestRoadPt`, `connectRoad` |
 | `88-city-place.js` | occupancy (`OCC`, `obbOverlap`, `occFree`, `occAdd`, `obbCorners`, `groundOK`, `groundY`, `findSpot`); the ancient lattice `AG` (pitch 40, street 7, 12°), cluster growth to the ½-area target, reclaimed/ruined split by distance to a ring, streets + two connectors per cluster, slot tiling by wishlist (`QUOTA` per hill: 5 sky / 15 midrise reclaimed) |

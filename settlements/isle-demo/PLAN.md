@@ -746,8 +746,11 @@ watched town's mean happiness at 60 or more and no need but material above 70. *
 (2026-10-19):** tools by trade (stone, wood, nets, cooking pots; racks for the dockers and the soldiers), injuries and
 the healers' poultices, a war club for a quarter of the rich, sets by class, sarongs and sun hats (README.md); a
 week-test check holds the clothes (95% clad or buying) and the hurt (none past its healing days). Left: a carver's
-workshop for Valapo (its wooden and stone tools come by lakatoi), iron tools after the ingots, water vessels and the
-fishers' canoes.
+workshop for Valapo (its wooden and stone tools come by lakatoi), water vessels and the fishers' canoes. **Iron tools
+built (2026-11-02):** where the villages are declared, Kautoa's smithies work Valapo's iron into iron tools (3,000 worked
+hours), bought in place of a stone tool when the seller has one (core's tool `prefer`), worn out and replaced as stone
+(`base`); the town's stockpile ceilings hold the chain to what is bought. The field hands' iron hoe followed the same day:
+their digging stick is its own `hoe`, replaced by an iron tool where there is one, and back to a hoe when that wears out.
 
 **The rules taken from Voth (and where the isles differ).**
 - **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,
@@ -838,3 +841,60 @@ every module under `core/` and CLAUDE.md's rules.
    `tags:` passed to `BIO.init` (the flora in `core/tags`), `window.renderer` for the edit queue, the flora's buckets onto
    `core/space`, and the whole engine onto `core/host`.
 6. **The site planner** runs on Voth's editor engine read in place (its LCG shim, Voth's textures): ROADMAP section 10.
+
+## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; not built)
+
+**The owner (2026-11-04):** "we may also want to move agriculture into the country side ... based on historical figures, how
+much farmland would a population of this size really need? we may want to surround the cities in farming
+hamlets/plantations and agriculture"; then: "let's plan to remove within-walls fields, but leave farming ring alone; then
+add the requisite number of farming hamlets. don't execute this yet".
+
+**How much land (the estimate, 2026-11-04).** A person needs about 2,200 kcal a day, some 0.8 million a year. The isles'
+staples are roots and rice: taro about 6-15 t a hectare, sweet potato 10-15 t (Oceania field figures and trials), giant
+swamp taro on Yap about 8 million edible kcal a hectare a year; a paddy of rice about as much. So about 0.1 ha in crop
+feeds a person, and with fish a quarter of the diet (the isles' fishdocks) about 0.075 ha. Shifting gardens rest several
+years for each in crop: about three or four hectares farmed for each in crop, some 0.3 ha of farmed countryside a person,
+besides the coconut groves and the cash crops' plantations. For comparison, medieval wheat lands needed 0.5-1 ha of
+arable a person (Clark; the northern European estimates). Hand cultivation works 0.5-1 ha a farmer.
+
+| | Kautoa | Valapo | Both |
+|---|---|---|---|
+| People (the census; more with growth and the ships) | 6,040 | 2,095 | 8,135 |
+| In crop at 0.075 ha a person | 450 ha | 160 ha | 610 ha |
+| Farmed countryside with fallow (x4) | 1,800 ha | 630 ha | 2,430 ha (24 km2) |
+| What the plan has now | the farm ring, 40 holdings: 78 ha | 49 parcels in the village: 2.8 ha | 81 ha |
+| Farm workers at about 0.75 ha a hand (in crop) | about 500 | about 200 | about 700 (2,000 people with families) |
+
+So the islands farm about a twentieth of what they eat today: the rest is the sim's governor raising the rates of a
+handful of parcels. A quarter of the islands' people should live in the countryside.
+
+**The plan (in order):**
+1. **Remove the fields within the walls.** Valapo's 49 parcels inside the village (2.8 ha: banana, sweet potato, sugar
+   cane, cotton, coconut) come out of its plan (`32`'s `R.fields`, the programme's farmland districts inside the zone);
+   their ground goes to the town (more empty lots: the housing the refugees need). Kautoa has none inside its walls.
+2. **Leave the farm ring alone** (Kautoa's 40 holdings beyond the wall: `ISLE.TUNE.sim.ring`). It stays as it is: a
+   stand-in, worked from the town.
+3. **Add the farming hamlets the land needs** (core/hamlet's `farming` focus: `KHAMLET.village`, its fields from the
+   biome kits' `gather` tag; each a settlement of its town at the abstract level, shipping by road as the resource
+   villages do, `47h`). At about 140 farm hands a hamlet (the culture row's `focusJobs.farming`) and 0.75 ha a hand:
+   **about four for Kautoa and two for Valapo**, each some 300 people, each growing its town's staples by `8c` (Kautoa:
+   rice paddies, taro; Valapo: sweet potato, taro, banana), placed on dry, gentle ground within a day's walk of the town
+   (the survey as `48-world-hamlets.js` does it, by the zones and `gather`), apart from each other and from the other
+   villages. **And one plantation each** for the cash crops: Kautoa's cloves and cacao (Af), Valapo's sugar cane and
+   cotton (its savanna) and its upland coffee.
+4. **Then the town's food comes in by road,** the governor working the hamlets as it does the resource villages (their
+   town's stock counted with their own), and Valapo's farmhands go with their fields (its roles' posts move to the
+   hamlets). The open world draws the hamlets and their fields (`88h`); the city page, which has no hamlets, keeps the
+   ring and the town's own food stand-ins and says so.
+5. **The hamlets grow too** (the owner, 2026-11-04: up to double their first size by empty lots) and the work crews
+   (the governor drafting the unemployed to deposits the town lacks or sells) can found a new one: both planned, not
+   built (PLAN-POLITICS.md, the end).
+
+**To prove (each with a negative):** no field within a town's zone; the ring unchanged (its 40 holdings); the farming
+hamlets' land in crop within a fifth of the estimate (610 ha for both towns at the census); every hamlet on dry ground,
+staffed and fed, its food landed in its town and booked imported; the towns' week checks still hold (no food short, the
+stocks steady) with the food coming in by road; the open world's verify (the hamlets laid out and drawn).
+
+**Questions for the owner:** the fallow (shifting gardens with three fallow years, or permanent fields worked every
+year?); whether the farm ring should later become hamlets too (left alone for now, as asked); how many plantations, and
+whether they are worked by the town's people or by their own village.

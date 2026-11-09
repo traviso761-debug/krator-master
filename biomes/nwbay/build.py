@@ -48,6 +48,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # a STATION (PLAN.md, "The caverns station"; python3 build.py --station <name> -> dist/nwbay-<name>.html): stations/<name>/'s numbered
 # fragments are added to src/'s (a name in both is the station's), and its station.json may name more core ("core": {"<fragment name>":
 # "<path from the repo root>"}). The pattern is oidong's (biomes/oidong/build.py)
@@ -167,6 +168,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 # syntax check on the script body

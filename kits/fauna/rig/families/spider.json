@@ -1,0 +1,209 @@
+{
+ "group": "crawlers",
+ "unit": 0.42,
+ "tex": {
+  "long": 2048,
+  "stout": 1024,
+  "orb": 768,
+  "marked": 768
+ },
+ "nrmtex": 512,
+ "sources": {
+  "long": "spider-queen",
+  "stout": "spider-tarantula",
+  "orb": "spider-orb",
+  "marked": "spider-stout"
+ },
+ "eyes": {
+  "rows": [
+   [
+    0.2,
+    0.92,
+    0.04
+   ],
+   [
+    0.5,
+    0.86,
+    0.035
+   ],
+   [
+    0.24,
+    0.8,
+    0.03
+   ],
+   [
+    0.46,
+    0.74,
+    0.028
+   ]
+  ],
+  "hunter": [
+   [
+    0.26,
+    0.92,
+    0.05
+   ],
+   [
+    0.6,
+    0.84,
+    0.03
+   ],
+   [
+    0.34,
+    0.78,
+    0.03
+   ],
+   [
+    0.52,
+    0.68,
+    0.026
+   ]
+  ],
+  "lamps": [
+   [
+    0.3,
+    0.92,
+    0.07
+   ],
+   [
+    0.68,
+    0.82,
+    0.04
+   ],
+   [
+    0.42,
+    0.68,
+    0.035
+   ],
+   [
+    0.6,
+    0.54,
+    0.03
+   ]
+  ]
+ },
+ "picks": {
+  "gilded": {
+   "body": "long",
+   "abd": "orb",
+   "jaw": "orb",
+   "eyes": "rows",
+   "scale": 0.88,
+   "tint": {
+    "body": "0x2a241c",
+    "legs": "0x3a3024",
+    "abd": "0xc89a30"
+   }
+  },
+  "jade": {
+   "body": "long",
+   "abd": "orb",
+   "jaw": "orb",
+   "eyes": "rows",
+   "scale": 0.88,
+   "tint": {
+    "body": "0x3e6a48",
+    "legs": "0x4e7a58",
+    "abd": "0xb4c89a"
+   }
+  },
+  "crimson": {
+   "body": "long",
+   "abd": "long",
+   "abdScale": 0.72,
+   "jaw": "orb",
+   "eyes": "rows",
+   "scale": 0.88,
+   "tint": {
+    "body": "0x4a1820",
+    "legs": "0x5a2028",
+    "abd": "0xa83030"
+   }
+  },
+  "rider": {
+   "body": "long",
+   "abd": "long",
+   "abdScale": 0.62,
+   "jaw": "long",
+   "eyes": "hunter",
+   "scale": 4.75,
+   "tint": {
+    "body": "0x3c3026",
+    "legs": "0x4a3a2c",
+    "abd": "0x6a4a30"
+   }
+  },
+  "silk-matriarch": {
+   "body": "long",
+   "abd": "long",
+   "abdScale": 1.1,
+   "jaw": "orb",
+   "eyes": "rows",
+   "scale": 1.7,
+   "tint": {
+    "body": "0x8a6a30",
+    "legs": "0x9a7a44",
+    "abd": "0xd8a040"
+   }
+  },
+  "silk-rigger": {
+   "body": "long",
+   "abd": "long",
+   "abdScale": 0.5,
+   "jaw": "orb",
+   "eyes": "rows",
+   "scale": 1.25,
+   "tint": {
+    "body": "0x9a8a60",
+    "legs": "0xb0a074",
+    "abd": "0xd8c890"
+   }
+  },
+  "silk-packer": {
+   "body": "long",
+   "abd": "orb",
+   "abdScale": 0.5,
+   "jaw": "stout",
+   "eyes": "hunter",
+   "scale": 0.79,
+   "tint": {
+    "body": "0x7a6a44",
+    "legs": "0x8a7a54",
+    "abd": "0xb09a68"
+   }
+  },
+  "trapdoor": {
+   "body": "stout",
+   "abd": "marked",
+   "abdScale": 0.82,
+   "jaw": "marked",
+   "eyes": "rows",
+   "scale": 0.8,
+   "tint": {
+    "body": "0x4a3a28",
+    "legs": "0x54442e",
+    "abd": "0x6a5638"
+   }
+  },
+  "funnel-web": {
+   "body": "stout",
+   "abd": "long",
+   "abdScale": 0.62,
+   "jaw": "stout",
+   "eyes": "lamps",
+   "scale": 0.85,
+   "tint": {
+    "body": "0x1c1820",
+    "legs": "0x24202a",
+    "abd": "0x2c2632"
+   }
+  }
+ },
+ "bodies": [
+  "long",
+  "stout"
+ ],
+ "eyeShift": {
+  "stout": -0.16
+ }
+}

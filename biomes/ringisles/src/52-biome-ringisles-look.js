@@ -246,7 +246,7 @@ BIO.def('rubble',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Coral rubble'});
 BIO.def('anemone',G.tuft(),M.anemone,{label:'Anemones'});
 BIO.def('urchin',G.urchin(),M.solid,{label:'Sea urchins'});
 BIO.def('limpet',G.cone(),M.solid,{label:'Limpets'});
-BIO.def('fern',G.frond(),M.fern,{label:'Rainforest ferns'});
+BIO.def('fern',G.frond(),M.fern,{label:'Rainforest ferns',cap:400000,capWhy:'the rainforest floor of the high isle\'s windward shield, ~7 x 6 km of Af (station 2; the instance-cap rule, 2026-11-08): 274,311 on the high isle at 2026-11-09'});
 BIO.def('gingerleaf',G.frond(),M.paddle,{attrs:['aN'],label:'Ginger leaves'});
 BIO.def('gingerbloom',G.cone(),M.solid,{label:'Red ginger bracts'});
 BIO.def('aroid',G.card(),M.heart,{label:'Elephant ears'});

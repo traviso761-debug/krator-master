@@ -107,6 +107,9 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl exports it, then `src/87-host-kin.js` grows it on the wadis' bars),
   Korona's frost tank (Korona's turn, pair 9); as vendor, ebadlands' juniper to sedesert's main page and cottonwood to the Bowl's delta
   (sedesert's next turn: its `build.py` NEIGH and `87-host-kin.js`, then its pages' verifies), and the bristlecone to Korona (Korona's turn).
+  2026-11-08: checked: the mesquite is read in place (`BIO.kin('sedesert.mesquite')`, sedesert's own builder; ebadlands holds no copy of its
+  crown placement), so sedesert's crown fix (BIO.snapSeg/BIO.holdTo, under way in biomes/sedesert) reaches it for free. Nothing to change here;
+  once that fix lands, put sedesert's species fragment back on the page and re-run station 1's attach audit.
 - [ ] **The glacier is host ice** (station 4): the ground drawn as ice and firn (barren, snow), no ice kind in core/water; its surface has no
   crevasses or séracs.
 - [ ] **The overview's sky site** (old canvas 1043,508) lies in the abyss's rim on scale model 5.1 (-1,648 m): kept, since the sky reads only

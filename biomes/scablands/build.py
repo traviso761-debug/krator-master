@@ -14,6 +14,7 @@ import importlib.util, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 NS = os.path.join(ROOT, 'biomes', 'nsemiarid')
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 
 # the port lint for this build's own fragments (the kit's build lints the kit's when it loads)
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')

@@ -75,6 +75,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
 | `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
+| `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova`, `/sgra`, `/whitedwarf`, `/kilonova` | `deepsky.html` | Deep Sky: how stars end (two black holes, a pulsar, a supernova, a white dwarf, a merger) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
@@ -1943,20 +1944,138 @@ wireframe and menagerie menu every other page has.
 - **The sections are generated, not typed.** `SECT.lens` and `SECT.slabS` take a resolution and produce the
   profile, because a hand-listed one is only as smooth as the patience of whoever typed it — the original
   had three points across the whole top of a saucer, which is where the plateau came from.
-- **Galaxy class.** Cut to the published figures: 642.5 m long, 463.7 m across the saucer, 195.3 m from the
-  top of the bridge to the bottom of the engineering hull over 42 decks, and nacelles 248 m long, 57 m wide
-  and 32 m tall at their widest against 38 by 19 at the collector end (Rick Sternbach's blueprints). Three
-  of those corrected the model. The nacelles were 40 m too short, and because their caps have to land on
-  the stern, getting the length right pushes their collector ends *under* the saucer's aft quarter — which
-  is why the class looks so compact from above. A nacelle is wider than it is tall, 57 by 32, not the
-  upright tube it had been. And the engineering hull was 10 m too deep, so the ship stood taller than 195.
-  The saucer is a figure of revolution 464 m across, cut off square at x = -197 where the impulse engines
-  are: a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
-  recessed sensor groove between them — the upper is deck 9, which is Ten Forward and unusually tall, and
-  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim. The
-  engineering hull carries a blunt nose around the deflector, a dorsal spine running aft from the foot of
-  the neck with the upper shuttlebay let into it, three rows of windows and two strakes down each flank —
-  without those it is a featureless white egg, which is what it was.
+- **Galaxy class (rebuilt to measurements, 2026-10-30).** The first Galaxy was cut to the published figures
+  alone; this one is cut to numbers read off published orthographic drawings (a plan, a front view, the Fact
+  Files' five views, cross-checked against photographs of the six-foot studio model) by measuring their
+  silhouettes pixel by pixel. The drawings are not shipped: `src/enterprise/dims.js` holds only the numbers.
+  Three things the published figures alone get wrong: the saucer is an **ellipse**, 384 m long and 464
+  across, that pulls in to a tail over the impulse deck, not a circle cut off square; the engineering hull
+  starts under the middle of the saucer's after half and its nose **leans back about thirty degrees**, with
+  the deflector set into it looking forward and down; and the ship is **141 m** tall, not 195 — every drawing
+  and the studio model agree on it, so the drawings win.
+  - **Every part is a surface function** of (u, v) (`hull.js`): the saucer's top and underside in polar form
+    over its plan, its rim, and lofts of smoothed station tables for the engineering hull, the neck (levels
+    of a stadium whose leading edge leans forward as it rises), the nacelles (a superellipse, wider than
+    tall) and the pylons (a NACA section swept along the U of the front view). The tables are joined with a
+    monotone cubic, never straight lines: a loft through straight segments shows every station as a crease.
+  - **The textures are painted from the same functions** (`skin.js`), texel by texel, so the patterns are in
+    metres on the hull: the aztec plates (two or three close greys, each plate split into an L), panel lines
+    as a bump map, roughness, and the windows — on the saucer where each flat deck meets the sloping dish,
+    which gives rings that crowd where the dish is steep and stop where it is flat, as on the ship. Each part
+    has a colour canvas (so the registry is set with `fillText`) and a data texture: red height, green
+    roughness, blue lit windows, the emissive map patched to read blue only.
+    The canvas is the plan seen from below, so the top's registry is set mirrored to read right from above.
+  - **Light.** Physically based materials, the star casting shadows (a 4096 map over the ship), an
+    environment map of the planet's glow, and ACES tone mapping on the hull only: the backdrop is taken out
+    of it so it keeps the colours it has on Voyager's and DS9's pages. The bussards, grilles, deflector and
+    impulse engines are their own surfaces lifted a fraction off the hull, with sprite glows.
+  - **What looked wrong on the way:** a ray from the saucer's centre straight ahead never left the plan
+    (a zero half-width counted as inside), which put a 70 m needle on the bow; the dorsal plate's steep
+    sides read as a sunken rectangle until they were eased over 15 m; and with the panel lines at the
+    strength the drawings show them, the hull looked like brickwork — from a kilometre the aztec should be
+    a mottle, and close in a faint pattern.
+  - **Second pass on the details.** The bridge was a bump in the dish's height field, which shaded as a
+    smudge; it is now a module of its own (`bridgeSurf`): an egg in plan, longer aft where the observation
+    lounge is, a wall of windows round it and a low dome over, standing on the plate, with the two small
+    domes either side. The measured trailing edge had steps in it (the drawing's thrusters and hatches
+    standing proud) that the rim lofted through as corners: it is now a smooth curve through those points,
+    and the thrusters are blocks of their own on the rim. The underside's profile had a knee where the
+    dish meets the outer shelf; the neck now flares into the engineering hull as it does into the saucer,
+    instead of meeting it at a hard line; and the pylons thicken at both ends and run out forward along the
+    nacelle's underside as a fairing.
+  - **Markings, from photographs of a painted model** (Diamond Select's Starship Legends Enterprise-D, in a
+    review on figurefanzero.com): the phaser strips are dark grey and scored across, not copper; the escape
+    pods are tan hatches in twos to fours in rings across the dish; the registry is dark grey edged in red in a
+    wide face, with the name over it in red; a red pinstripe edged in white runs down the neck's back and the
+    engineering hull's spine, and along each nacelle's top behind a gold delta.
+  - **Third pass: more details.** The engineering hull ends in a flat transom with the main shuttlebay's door in
+    it, ribbed and lit round its frame; shuttlebays 2 and 3 are a pair of doors in the neck's back under the
+    impulse deck; the forward torpedo launcher is at the foot of the neck over the deflector and the aft one over
+    the main bay; the ventral phaser strip runs across the engineering hull's belly; the captain's yacht is a
+    seamed oval with its own windows under the saucer; and the neck has a top, seen when the saucer is away.
+  - **Flying it** (`flight.js`, the **Fly** button, or `#fly`). The page is a turntable round one object, so
+    the ship (`ROOT`) flies through a world split three ways: the sky (stars and far nebulae, at infinity, so
+    they ride with the camera and only turn; one sky for the whole chart), the place you are at with the target
+    rock, which stay put, and the effects. Past 20 km out everything is moved back by the ship's position, so a
+    long flight never meets a float's precision. Leaving the helm puts the ship back at the origin, level, by
+    moving and turning the world round it the other way, so every turntable view works again from where you are.
+    **How it handles**, for a ship of four million tonnes: turn rates build up and die away at a limited angular
+    acceleration (and turn harder with way on), with the reaction thrusters round the saucer's rim puffing while
+    they do; speed is a throttle you hold W or S on, the impulse engines pushing at about 26 g and their glow
+    answering the push, not the speed; the velocity does not swing round with the nose, and what is left sideways
+    after a turn is bled off by the dampers over a second or two, so a hard turn at speed slides; the ship
+    (a `BANK` group between `ROOT` and `G`) leans into a turn by itself and, left alone, rolls back level with the
+    galactic plane; the chase camera is pressed back under acceleration, thrown back as warp catches, and widens
+    its view with speed. Planets, stars and rocks are solid (the ship holds off them), and O near one puts the
+    ship in a standard orbit round it at the height it is at. Warp is the Cochrane scale (light speed times the
+    factor to the ten-thirds: warp 6 is 392 c) with time at warp run 20,000 times fast, said in the readout; a
+    thin field of dust shows the speed at impulse, and streaks at warp. On a touch screen a pad stands in for the
+    keys.
+  - **Places and courses** (`places.js`, `nav.js`, the **Course** button or C). Eight places (fourteen since the fifth pass) on a star chart
+    in light-years: home, a ringed gas giant with two moons, an ice world under a red dwarf, a comet near its sun
+    (its ion and dust tails streaming away from the sun in a shader), a binary star (an orange giant with a
+    boiling, limb-darkened surface being stripped by a hot blue companion, the gas curling into a disc round it),
+    an asteroid belt (instanced rock, metres to kilometres across), the inside of an emission nebula round a
+    young cluster, and a black hole (the shadow, a disc hotter inwards and brighter on the side coming towards
+    you, the far side of the disc bent up over the top and down under the bottom, and the photon ring: a picture
+    of what a ray tracer shows, not a ray tracer). Planets and nebulae come from the page's own sky builder
+    (`buildSky`, exported from `src/starship/page.js` for this); each place has its own light. The ship has a
+    position on the chart and moves across it along its heading at warp, so the bearings are real: setting a
+    course turns the ship onto the place's bearing at the helm's own rate, goes to warp at the chosen factor
+    when lined up, steers back to the bearing whenever you let go, and drops out on arrival, with the place
+    drawn ahead of you. Dropping out anywhere else puts you where you are: at a place within a third of a
+    light-year, or in interstellar space. For tests: `#at=giant` starts there, `#course=hole&warpf=9` sets a
+    course, `#keys=a,w` holds keys down.
+  - **Fourth pass: more to it.** V at the helm changes the camera: chase, a **flyby** (a fixed point ahead of the
+    ship and off to one side, which it sweeps past; then a new one) and the **bridge** (on top of the bridge dome,
+    looking ahead over the saucer, banking with the ship). The home world, the gas giant and the ice world have
+    **atmospheres** (`atmosphere` in `places.js`): a haze over the limb and a glow standing off it, lit on the day
+    side only and reddening at the terminator. Where no star is drawn, the **sun** is: a disc, its glare and a
+    thin horizontal streak, drawn at the sky's distance with depth so the ship and the planets pass in front of it.
+    The **engines** have a sound (a rumble rising with the throttle and swelling while they push, a deep beating
+    hum at warp; M mutes everything). G at the helm, or the **Tractor beam** event, pulls the target rock in from
+    up to ten kilometres and holds it under the ship. **Hostile contact** (`hostile.js`): a raider of this
+    project's own design (an arrowhead with flat swept wings, its engine pods riding on the tips, a fin under it)
+    drops out of warp, the ship goes to red alert, and it circles at two or three kilometres firing every few
+    seconds. Hits wear the shields down (they come back slowly, and fail at nothing) or, with them down, the hull.
+    Phasers track it and torpedoes home on it, taking its shields first and then its hull; badly hurt it may break
+    off and go to warp, or it is destroyed. For tests, `#foecam=az,el,d` points the turntable at it.
+  - **Fifth pass: everything else.** **Planets** are drawn in a shader now (`planets.js`): the surface is worked
+    out per pixel from 3D simplex noise on the sphere (Gustavson and McEwan's, MIT), so it holds up from a thousand
+    kilometres to a few. Terran worlds have seas graded by depth with the sun's glint on them, land from shore to
+    forest to desert to rock, snow on peaks and caps, city lights on the night side and a cloud deck warped into
+    weather; ice worlds are cracked into floes; gas giants have sheared bands and a great storm; moons have maria
+    and rayed craters; lava worlds glow through their cracks. Rings have ringlets, gaps and the planet's shadow.
+    **Six more places** (`exotic.js`, fourteen in all): a pulsar (its beams sweep round, and it flares when one
+    crosses you), a lava world beside a huge sun, a ringed water world, a young star in its dust disc (gaps where
+    planets are forming, one glowing, and jets), a planetary nebula round a white dwarf, and a rogue planet with no
+    sun, lit only by its aurora. **Full impulse is 20 km/s** (the throttle is squared on the way, so a third of it is
+    the old 2.5 km/s; the push grows with the gap to the speed asked for; the handling is reckoned from 2.5 km/s, so
+    turning is unchanged). **Other ships** (`factions.js`, all this project's own designs and peoples, not any
+    from a film or series): a Varr cruiser (a warrior people's: a stepped bronze wedge with drooping blade wings) that
+    decloaks close in, circles tight and fires in pairs and never runs; a Lattice ship (a hive's: a dark crusted
+    core inside two cages of violet struts, 1.1 km across) that is slow and heavy-hitting, drags at the ship with a
+    tractor and adapts to whichever weapon it takes most of, so the way to beat it is to change weapons; a Sere
+    survey ship (a quiet, exact people's) that keeps station alongside and fires on whatever is attacking you; a
+    trader convoy that crosses the bow; and a derelict, tumbling. **Battle** is now three waves: two raiders, then
+    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (`extras.js`, this project's own
+    design: a spindle, a habitat ring on four spokes, a lit docking arm, small craft looping round it): K, or
+    **Dock at the starbase**, hands the helm to approach control, which flies a curve out beyond the arm's end and
+    in along it to the clamps (any touch on the helm cancels; K again casts off). With the shields down, hull hits
+    can **breach** it: air vents from the hole as a plume of crystals over a flickering fire. **Abandon ship** (the
+    escape pods out of their hatches on the saucer), **Self-destruct** (ten seconds, cancelled by pressing again;
+    then a flash, a shock ring across the ship's plane, wreckage, and the ship again), a **torpedo spread**
+    (Shift+T), and a **Grand tour** (every place in turn, the flyby camera at each).
+  - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
+    and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
+    klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it
+    is struck, with a ripple out from the hit), phasers (the emitters run along the saucer's strip, above or
+    below, to the point nearest the target and meet, then the beam), a photon torpedo from the forward
+    launcher that blows the rock apart (it comes back), incoming fire (on the shields if they are up, on the
+    hull with a scorch and a shake if not), saucer separation and docking, and a shuttle out of the main bay.
+    Every sound is synthesised by the page (WebAudio). For tests, `#ev=phasers,torpedo&evt=2&evfreeze=1.2`
+    runs events a second apart from two seconds in and freezes their clock 1.2 s after the first, and
+    `#dbg` puts the ship's and the effects' state in the probe's report.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a
@@ -2090,6 +2209,35 @@ under `rama`; `src/rama/shape.js` turns them into the one profile and ground fun
 What the novel leaves open and this model chooses: the hull's thickness (2 km, from 20 km outside and a 16 km
 plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
 and the outside faces beyond the hub.
+
+### `/deepsky`: Deep Sky, how stars end
+
+Original work (`src/deepsky/`), on the starship page (`src/starship/page.js`); `data/cities/deepsky.json` holds the numbers,
+the cards and each object's distance. Six objects, one at a time: the Objects panel (nearest first) flies out over a scale
+of distances from the Earth and in to the next (`#object=<name>` opens at one; `#flyto=<name>` flies there after a second).
+An object's own buttons show only while it is on screen.
+
+- **M87\*** (`blackhole`): a shader follows each pixel's light back through Schwarzschild space: the disk's far side over and
+  under the shadow, the photon ring, Doppler beaming, gravitational redshift, the jet, the lensed stars. **Spin** adds frame
+  dragging in its weak-field form (not a Kerr trace: the card says so) and moves the disk in. **EHT view** is the trace from
+  M87\*'s real angle at about the telescope's resolution, blurred, in its orange scale. The trace is drawn into a target that
+  shrinks to a third of the screen when frames are slow (`#bhq=<0.3-1>` fixes it; `#eht`, `#spin` open in those modes).
+- **Sagittarius A\*** (`sgra`, `sgra.js`): the same tracer, dim disk, no jet, and the S-stars (S2, S38, S55, S1, S12, S14) on
+  Kepler orbits from the published fits, at true scale in its own radii, with a year clock.
+- **The Crab Pulsar** (`pulsar`): the tilted dipole, the beams, the light cylinder, the nebula fading in as you pull back. The
+  chart is the light reaching the camera: pulses only when a beam sweeps over it. **Listen** clicks each pulse (a buzz at the
+  real 29.6 a second; `#pulsar=real` starts there).
+- **A supernova** (`supernova`): the cut-away supergiant (labels follow the camera), collapse, shock, breakout, the ejecta in
+  Rayleigh-Taylor fingers, and a type II-P light curve in days (plateau, then the cobalt-56 tail) that the debris glows by.
+  `#snt=<seconds>` starts the 64-second loop part-way.
+- **A white dwarf** (`whitedwarf`, `whitedwarf.js`): drawn to scale beside the Earth, in the Ring Nebula (as the JWST saw it in
+  2023: the blue-green inside, the ring, the knots, the halo's arcs), the nebula drawn far smaller than it is.
+- **GW170817** (`merger`, `merger.js`): the inspiral in closed form, space as a sheet rippling with the quadrupole wave at the
+  retarded time, the merger, the gamma-ray burst 1.7 s later, the kilonova going blue to red, a black hole; the chart is the
+  strain a detector would record, and **Listen** plays the chirp. `#mgt=<seconds>` starts the 48-second loop part-way.
+
+Sound (`audio.js`) is synthesised, and starts only from a button. The golden's rows are each object's numbers (the page
+adds a model's `fingerprintRows()`), since most of what is drawn is glow and kept out of the mesh fingerprint.
 
 ### `/homeworld`: Homeworld, the Kharak system
 
@@ -2612,6 +2760,7 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   rama/     main.js shape.js rama.js interior.js events.js sound.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the hall of holograms, the bowls and the horns, the walker; the twelve scenes and the flyby; the sound
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
+  deepsky/ main.js model.js audio.js blackhole.js sgra.js pulsar.js supernova.js whitedwarf.js merger.js   Deep Sky: the switch, the kit and the flight; sound; the traced black holes and the S-stars; the Crab; the supernova; the Ring Nebula; GW170817
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls

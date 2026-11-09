@@ -1,0 +1,123 @@
+{
+ "note": "The models shipped before tests/test-models.js, as measured. A number here may only fall: see PLAN-MESHY.md. A new model gets no row.",
+ "models": {
+  "bison": {
+   "closure": 0.0395,
+   "pieces": 1,
+   "pivot": 0.0925,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "buffalo": {
+   "closure": 0.0169,
+   "pieces": 2,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "cat": {
+   "closure": 0.0398,
+   "pieces": 1,
+   "sides": 1.7672,
+   "pivot": 0.072,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "cow": {
+   "closure": 0.0303,
+   "pieces": 1,
+   "sides": 1.5804,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "dalab-lizard": {
+   "closure": 0.042,
+   "pieces": 1,
+   "sides": 2.5781,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "dog": {
+   "closure": 0.0295,
+   "pivot": 0.067,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "draught-millipede": {
+   "pieces": 3,
+   "slide": 16.4798,
+   "parts": 52,
+   "density": 91.187,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "duck": {
+   "closure": 0.0299,
+   "pivot": 0.1169,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "giant-archaeopteryx": {
+   "closure": 0.0261,
+   "density": 91.8047,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "giant-bat": {
+   "closure": 0.0391,
+   "density": 105.2681,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "giant-dragonfly": {
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "goat": {
+   "closure": 0.0256,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "hen": {
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "horse": {
+   "closure": 0.0602,
+   "pieces": 1,
+   "sides": 1.9135,
+   "below": 0.008,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "ox": {
+   "closure": 0.0497,
+   "pieces": 2,
+   "sides": 1.6601,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "pig": {
+   "closure": 0.0206,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "quetzalcoatlus": {
+   "closure": 0.0893,
+   "density": 118.7595,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "sheep": {
+   "closure": 0.0237,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  },
+  "yak": {
+   "closure": 0.0358,
+   "pivot": 0.0647,
+   "density": 135.6713,
+   "lossyNormal": 1,
+   "sourceLost": 1
+  }
+ }
+}

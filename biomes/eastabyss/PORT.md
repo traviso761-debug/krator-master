@@ -6,28 +6,29 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 7 (3%) | 7 (3%) | 2 (1%) | 35 (16%) | 167 (77%) |
+| KB | 7 (3%) | 11 (5%) | 2 (1%) | 41 (18%) | 168 (73%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/45-host-stage.js` | 15.6 | [web] | 17 | 3 | 3 | 1 | 0 | 1 | 4 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
+| `src/45-host-stage.js` | 16.3 | [web] | 17 | 3 | 3 | 1 | 0 | 1 | 4 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
 | `src/50-biome-eastabyss-species.js` | 47.6 | [draw] | 0 | 4 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/52-biome-eastabyss-library.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/55-biome-eastabyss-trees.js` | 70.3 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `EASTABYSS.buildTrees` (line 485); `mk` (line 489) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 532) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop; `EASTABYSS.buildReedBeds` (line 543) places and draws in one pass |
+| `src/55-biome-eastabyss-trees.js` | 72.1 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `EASTABYSS.buildTrees` (line 485); `mk` (line 489) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 532) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop; `EASTABYSS.buildReedBeds` (line 543) places and draws in one pass |
 | `src/60-biome-eastabyss-floor.js` | 16.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-eastabyss-dress.js` | 7.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-eastabyss.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-biome-eastabyss-fauna.js` | 19.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/83-host-far.js` | 5.6 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | the far field and the abyss wall (KFAR lattice, KSTRATA canyon beds on its faces, KHORIZON bake): the lattice is data (KFAR.grid), the material three.js |
+| `src/83-host-far.js` | 5.9 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | the far field and the abyss wall (KFAR lattice, KSTRATA canyon beds on its faces, KHORIZON bake): the lattice is data (KFAR.grid), the material three.js |
 | `src/85-host-tower.js` | 5.5 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
-| `src/88-host-build.js` | 2.5 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/87-host-kin.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88-host-build.js` | 2.7 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-sky.js` | 2.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky at the site (ATMOS.skyBiome preset): becomes the Godot sky preset |
 | `src/89a-host-atmos.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos bound on this page: wind, A2C, wet ground and puddles, the weather, height fog, the fog belt, rain cover |
-| `src/89w-host-water.js` | 7.2 | [G shader] | 5 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | the lake, the marsh pools and the rivers as core/water records (open, flow) and their draws |
-| `src/99-host-take.js` | 10.3 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
+| `src/89w-host-water.js` | 11.3 | [G shader] | 6 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | the lake, the marsh pools and the rivers as core/water records (open, flow) and their draws |
+| `src/99-host-take.js` | 11.1 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

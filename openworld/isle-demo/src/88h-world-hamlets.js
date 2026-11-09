@@ -9,6 +9,12 @@
 // core/hamlet 10) in the order KHAMLET.standOrder gives, on the world clock (HOST.clock: core/clock, 72-minute days):
 // KHAMLET.fellState says, for the hour, which are stumps (drawn here) and which saplings (the flora draws its kit's
 // sapling: FLORA.setState). Nothing is stored: the state is the function of the day (kept only while the game runs).
+// THE FELLING CREW (2026-11-02; core/camp 40-camp-work.js, settlements/isle-demo 47h): where the sim runs the lumber
+// village's crew as a work camp, the stumps follow it instead: each stand of its range the camp has worked, near the
+// camera, has its timber trees (the cell's, in the order KHAMLET.standOrder gives from the cell's centre) in the state
+// KCAMP.workTree gives for the sim's day and what the sim took from that stand. The camp itself is drawn where
+// KCAMP.workAt puts it (stand-in shelters and a log pile: the Islanders kit has no camp pieces yet), registered in
+// core/tags at each stand it pitches at, hidden on the march.
 // window._hamlets holds the counts and errors a check reads.
 var HAMLETS_DRAW;LATE.push(()=>{HAMLETS_DRAW=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,FULL=3500,FAR=30000;
@@ -87,13 +93,42 @@ const dayNow=()=>{const C=HOST.clock;return C?C.day+C.hour/24:0;};
 function felling(){if(!STAND)return;const d=dayNow();if(lastDay!=null&&Math.abs(d-lastDay)<.02)return;lastDay=d;let g=0,y=0;
  STAND.forEach((t,k)=>{const s=KHAMLET.fellState(SCH,k,d);if(s==='gone'){q.identity();stumps.setMatrixAt(g++,m4.compose(v3.set(t.x,H(t.x,t.z)-.05,t.z),q,new THREE.Vector3(t.rb*.9,.55,t.rb*.9)));}else if(s==='young')y++;});
  stumps.count=g;stumps.instanceMatrix.needsUpdate=true;S.gone=g;S.young=y;S.day=Math.round(d*100)/100;}
+/* ---------------------------------------------------------------- the felling crews' camps and stands (core/camp 40) */
+/* every lumber village's crew (Kautoa's, and Valapo's since 2026-11-04), each its camp and its stands' stumps; one flora
+   state over them all (a tree belongs to at most one crew's stand) */
+const CREWS=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews||[]).map(C=>({C,campG:null,cstumps:null,cLast:null})),CREW=CREWS.length?CREWS[0].C:null,CSTAND=new Map(),CIDX=new Map(),CTAG={};let flState=false;
+const simDay=()=>typeof SIM!=='undefined'&&SIM.minute?SIM.minute()/1440:dayNow();
+function crewTaken(K,s){const E=SIM.econ(K.settlement),W=K.W;if(!W.cur||W.cur.stand!==s)return undefined;const St=E&&E.resSites[s];return St?St.taken-K.taken0:0;}
+function crewTrees(K,St){if(CSTAND.has(St.id))return CSTAND.get(St.id);const c=K.W.cfg.cell,x0=St.x-c/2,z0=St.z-c/2,TS=FLORA.TS,trees=[];
+ for(let tz=Math.floor(z0/TS);tz<=Math.floor((z0+c)/TS);tz++)for(let tx=Math.floor(x0/TS);tx<=Math.floor((x0+c)/TS);tx++)
+  for(const r of FLORA.buildTile(tx,tz))if(!r.sap&&r.x>=x0&&r.x<x0+c&&r.z>=z0&&r.z<z0+c&&KHAMLET.woodWorks(woodOf(r)).indexOf('sawpit')>=0)trees.push({id:treeId(r),x:r.x,z:r.z,rb:r.rb||.4});
+ const L=KHAMLET.standOrder(trees,[St.x,St.z]);L.forEach((t,k)=>CIDX.set(t.id,{K,s:St.id,k,n:L.length}));CSTAND.set(St.id,L);return L;}
+function crewCamp(K){const n=Math.max(3,Math.round(K.posts/4)),G=new THREE.Group(),im=new THREE.InstancedMesh(boxG,pendM,n+1);
+ for(let i=0;i<n;i++){const a=i/n*Math.PI*2+.3,rr=14+(i%2)*4;q.setFromEuler(e.set(0,-a,0));im.setMatrixAt(i,m4.compose(v3.set(Math.cos(a)*rr,0,Math.sin(a)*rr),q,new THREE.Vector3(3.2,2.2,4)));}
+ q.identity();im.setMatrixAt(n,m4.compose(v3.set(0,0,0),q,new THREE.Vector3(6,1.4,2.5)));   /* the log pile */
+ G.add(im);G.name='felling camp '+K.id;scene.add(G);return G;}
+function crewDraw(X,P){if(typeof KCAMP==='undefined')return;const K=X.C,W=K.W,d=simDay();
+ if(X.cLast!=null&&Math.abs(d-X.cLast)<.02)return;X.cLast=d;
+ const at=KCAMP.workAt(W,d);if(!X.campG)X.campG=crewCamp(K);
+ if(at&&at.state!=='marching'){X.campG.visible=true;X.campG.position.set(at.x,H(at.x,at.z),at.z);
+  if(!CTAG[at.stand]){CTAG[at.stand]=TAGS.add({class:'landmark',kind:'camp',key:K.id,name:'Felling camp',at:[at.x,H(at.x,at.z),at.z],r:25,h:3,
+   tags:{culture:'islander',types:['industry'],role:'lumber'},note:'a lumber village\'s felling crew at '+at.stand});}}
+ else X.campG.visible=false;
+ (S.camps||(S.camps={}))[K.id]={state:at?at.state:null,stand:at?at.stand:null,moves:K.moves};if(X===CREWS[0])S.camp=S.camps[K.id];
+ const near=W.stands.filter(St=>(W.last[St.id]||(W.cur&&W.cur.stand===St.id))&&Math.hypot(St.x-P.x,St.z-P.z)<1500);
+ if(!flState){flState=true;FLORA.setState(r=>{if(r.sap)return null;const qq=CIDX.get(treeId(r));return qq?KCAMP.workTree(qq.K.W,qq.s,qq.k,qq.n,simDay(),crewTaken(qq.K,qq.s)):null;});}
+ if(!X.cstumps){X.cstumps=new THREE.InstancedMesh(new THREE.CylinderGeometry(.85,1,1,8).translate(0,.5,0),new THREE.MeshLambertMaterial({color:0x8a6a52}),6000);X.cstumps.count=0;X.cstumps.name='felled stumps '+K.id;X.cstumps.frustumCulled=false;scene.add(X.cstumps);}
+ let g=0,y=0,tot=0;for(const St of near){const L=crewTrees(K,St),tk=crewTaken(K,St.id);tot+=L.length;
+  L.forEach((t,k)=>{const st=KCAMP.workTree(W,St.id,k,L.length,d,tk);if(st==='gone'&&g<6000){q.identity();X.cstumps.setMatrixAt(g++,m4.compose(v3.set(t.x,H(t.x,t.z)-.05,t.z),q,new THREE.Vector3(t.rb*.9,.55,t.rb*.9)));}else if(st==='young')y++;});}
+ X.cstumps.count=g;X.cstumps.instanceMatrix.needsUpdate=true;if(X===CREWS[0]){S.stand=tot;S.gone=g;S.young=y;S.day=Math.round(d*100)/100;}}
 /* ---------------------------------------------------------------- each frame */
 function update(){const P=camera.position;let nf=0;
  for(const X of V){if(!X.v.site)continue;const d=Math.hypot(P.x-X.v.site.x,P.z-X.v.site.z),want=d<FULL?'full':d<FAR?'mass':'none';
   if(want==='full'&&!X.group){X.group=full(X);}
   if(want!=='none'&&!X.massG)X.massG=massing(X);
   if(X.group)X.group.visible=want==='full';if(X.massG)X.massG.visible=want==='mass';if(want==='full')nf++;}
- S.full=nf;if(LUM&&LUM.v.site&&Math.hypot(P.x-LUM.v.site.x,P.z-LUM.v.site.z)<FULL*2){buildStand();felling();}}
+ S.full=nf;if(CREWS.length){for(const X of CREWS){const W=X.C.W,c=W.cur?W.by[W.cur.stand]:null;if(c&&Math.hypot(P.x-c.x,P.z-c.z)<FULL*2)crewDraw(X,P);}}
+ else if(LUM&&LUM.v.site&&Math.hypot(P.x-LUM.v.site.x,P.z-LUM.v.site.z)<FULL*2){buildStand();felling();}}
 HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
 window._hamlets={stats:S,villages:V.map(X=>({id:X.v.id,focus:X.E.spec.focus,parent:X.E.spec.parent,site:X.v.site,census:X.v.census,error:X.v.error||null,

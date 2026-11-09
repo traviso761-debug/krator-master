@@ -3,26 +3,37 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "kits/catalog/KNOWN_ISSUES.md": "d095dffb1bc8c12047673bd1fa5fa3f66d2aec20300cb1ee8d05d59d9ea3aec4",
-    "kits/catalog/PORT.md": "85f094188c172e37203a2ca44d313649cef9d0e26a2cb9c42f39b05696005753",
-    "kits/catalog/build.py": "d3168c92c2199bbca911b9439312b4d53d25107aa6fd3f143b4723874f4023f1",
-    "kits/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
-    "kits/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
-    "kits/catalog/krator-furniture-core.js": "f3810ba604216f194de8fab7aa58d8991e18a99f31387e3acee5d879445e256f",
-    "kits/catalog/krator-furniture-kit.js": "cdb40849f12aabed723a669862cea5c9891d238f4e2e00f3b9d8b89fa7fa6674",
+    "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
+    "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
+    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
+    "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
+    "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
+    "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
+    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
+    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "kits/catalog/KNOWN_ISSUES.md": "7bfe38722c7b1d8ec972ce58296640eff156b6979193192cfcc35231a68f2536",
+    "kits/catalog/PORT.md": "3dd243fb709e9abe62970ff81f1d2d1d98628beeca760f8a9634ba81c7707a32",
+    "kits/catalog/build.py": "c820ad3e33201817d2df34ce9f8f6c2d7000dbf696470429af9ae7f0e9de3c36",
+    "kits/catalog/krator-master-furniture-arms.js": "5d1f2ee60bcfc1db0bc4d7ad69bdcc1d66c157e7dd2171521207e139cbe71ab3",
     "kits/catalog/krator-master-furniture-ashnomad.js": "d338c6b5e77d333e057b48727059bd4edbc17d8d6b3e0120d228dc97a8855ae7",
     "kits/catalog/krator-master-furniture-beast-rider.js": "923abce1ad13434b27377fd54cdbc349ffcaf79d818a7dae99e1d83133c6ad81",
+    "kits/catalog/krator-master-furniture-dalab.js": "b10c7416a46f718ecf6a394624e8d9183debef1368f47c3a9896293faa706e9a",
     "kits/catalog/krator-master-furniture-eastabyss.js": "c954ea72a5a724eda8543e81d2d49a6aed07bbc58e3e4ee7953c187e7a1fa5f1",
     "kits/catalog/krator-master-furniture-eternian.js": "bbbea71651baf5596b2d3ab3206e4d39383779ee44fc8de53755d7246473df07",
-    "kits/catalog/krator-master-furniture-generic-fruit.js": "7e8f640163e604d88b71c072ba40098f9f6c5e0025101a62d30c64937f036a4a",
-    "kits/catalog/krator-master-furniture-generic-goods.js": "4cd7461cfe5d086b2fef6cb04c5bd656a46fb5779e114a401637cbb2ed4fef82",
+    "kits/catalog/krator-master-furniture-fellgang.js": "1ee782b43dd12f1700744187dfb694da346600f4c38a749ad40d60d48308e475",
+    "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
+    "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-hykkousoi.js": "15490067ec02ea9f9e05ba2ef1b0ea88c51e89cd96199a2e098f951fd4d0583e",
     "kits/catalog/krator-master-furniture-islander.js": "4be0cc250e9da1c81c2eb016154555ffb50e2e54726b17fa483d09ff133c7e8f",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-izpalace-depot.js": "ff9ac025f884b078853cd26972a5951ba6363fb4737ae4f67c914327ed2188a6",
     "kits/catalog/krator-master-furniture-izpalace.js": "149fc75a4f7fc5450e22cc5da77c039adc05879d8687b1668a5e4aba61d73b7b",
+    "kits/catalog/krator-master-furniture-jimjam.js": "0e52670c0da3f5758fdc569fd0b01696856fd68a43286ffa62a80a3a499bcab6",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
+    "kits/catalog/krator-master-furniture-khaayken.js": "590ecb191d4f14d537fa0d711f10167fa7698dd960dc28fd333dd35bd97f386c",
     "kits/catalog/krator-master-furniture-lizardmen.js": "bdd8097b606d8db4ab79324b8c322e4ec3125bad412714ca48b101bd3a632a0d",
     "kits/catalog/krator-master-furniture-nomad.js": "c8f5118ac26481e0617e341bffd8378d2b8861f6ab0bbd1a0d528af017598420",
     "kits/catalog/krator-master-furniture-painted.js": "6810a6cd1e728f29058492ea3deee534daece6092d93552322567dc565734127",
@@ -35,32 +46,35 @@
     "kits/catalog/krator-master-furniture-screamer.js": "454e4f963eca4a6a15bc2f4f7310d251d9581c5faa03f3e6d9a037f2e0915697",
     "kits/catalog/krator-master-furniture-scyvoi.js": "29528a7dc2861760eb6103d5a3dd20a4fc9cc47d2709aa96908620e94b6f4227",
     "kits/catalog/krator-master-furniture-talia.js": "787d7995661567f6493aca06b2aed05c8973219410bb9b70eeb8825b5437bffe",
+    "kits/catalog/krator-master-furniture-talovolci.js": "fc3c2d0954bc12df8e9ecad9964cb8f7a53843e7048ed01919c22aa87ed5653b",
+    "kits/catalog/krator-master-furniture-tungang.js": "a8483b2d1194a05a77ac4af0581ea88f978014d533d834fc7f5ba6a3ecfee67e",
     "kits/catalog/krator-master-furniture-voth.js": "ecaaa8edd850358e6e121d114954cc9427cc87b76f437d680842ec39dc26cf1e",
     "kits/catalog/krator-master-furniture-xanadu.js": "ee233580d36e2fe88283f00556b3b9aa1d2a913edc29e875042e1e821158999b",
     "kits/catalog/krator-master-furniture-yuni-common.js": "83e51a44ed9323529bb3e2d312c1b5550523f6ff6bc44d0677b60cedc87b5cd7",
     "kits/catalog/krator-master-furniture-zeijani.js": "407280d6f0bf33842c9d8114d1435d795d7659fc800f8298adb2bdc75feebf2f",
-    "kits/catalog/krator-master-furniture.js": "62e4fa728ae1a37e66310d9c7507595e140513f8309c8fceef9ecde0b6244b80",
-    "kits/catalog/krator-symbols.js": "8fbd9a7487e06d800b69a081751f0b580cf75285b6c46e701549e1fbb50eceb4",
+    "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
     "kits/catalog/src/00-head.html": "d9e9d85686c150ca6b68f53cc77e49bf804c168fff8304e6d8346cd4c6129810",
-    "kits/catalog/src/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
-    "kits/catalog/src/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
     "kits/catalog/src/90-sheet.js": "3994b697bde55ecd744c24131926444bd74dc8a755d394452fc16f5c2291d37f",
     "kits/catalog/src/92-hover.js": "caf2efd0b8e1c16d53f072e89f0cbc4382093bfc94178a3e0fcb06b73d4458dd",
     "kits/catalog/src/93-polygon.js": "999d4f1f1dcc7b8fcf5b48631b6365c4b117c670dfbc35156732a0e88f5be2e1",
     "kits/catalog/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "kits/catalog": "846a00a21c49730df416fa3c057f609aad036bc23987298b977bf85798efefa2",
-    "kits/catalog/src": "e71f5b75eb3d7c283777ba45e3998da9c6242bbeb78f01d976014e9e4e9da244"
+    "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
+    "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
+    "kits/catalog": "532f8f17635e756e11616c735a7a96fbb403c97785849ae4b9015b50a4aff617",
+    "kits/catalog/src": "7b25856ff7f3f488ee7348c0e2d05df7e2a5925a636a1919d057a19556b47bb2",
+    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/catalog/build-manifest.json": "8431155d120f16baabb71d2dc32b963700b0ccb60050d18ecc9d8234d6d53ccb",
-    "kits/catalog/dist/catalog.html": "0744caa6515d0414ca1501386f3db9b57dee1c6422234e2eedf94192aed6e4ef"
+    "kits/catalog/build-manifest.json": "25c826409d14b9eeb6e86d4492287e10a827be6f25225f4e1a42f176404c5ed5",
+    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "64227f3b25e5547d9d7c85d2d7421dbd92d7db6db284ce78842b91c3cfadff0d",
-    "kits/catalog/dist/catalog.html": "0744caa6515d0414ca1501386f3db9b57dee1c6422234e2eedf94192aed6e4ef"
+    "kits/catalog/build-manifest.json": "9d197ad632aede808c5ecf2a6090cabfc9a06ee27151dff5dc12bdaf8c162581",
+    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
    }
   }
  }

@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `31-core-field-brush.js`, `36-core-carve.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
-| `45-host-stage.js` | 49 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (207); the ground (223); the water (403) |
+| `45-host-stage.js` | 50 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (207); the ground (223); the water (416) |
 | `50-biome-sedesert-species.js` | 36 **big** | THE WATER COLOUR (18); the tree species (71); harvest (biomes/FRUIT.md) (132); leaf textures (172); bark, rock, wood textures (248); geometries local to this biome (287); materials (352); instanced items (387) |
 | `55-biome-sedesert-trees.js` | 40 **big** | zones from the fields (19); colour (the maths is the core's, BIO.col) (40); polyline helpers (Girder's) (55); keep-clear between trees (63); foliage helpers (70); the builders (87); impostors (the far canopy) (267); the pass (319); the passes (data: species, cell, acceptance from (369); the builders' tools, for species a host or a sta (398) |
 | `60-biome-sedesert-floor.js` | 16 | fields local to the floor (29); small plants (39); the zone planters (101); the pass (148) |

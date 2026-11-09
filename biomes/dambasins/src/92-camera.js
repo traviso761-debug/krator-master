@@ -1,4 +1,4 @@
-// [dambasins] AN ADAPTED COPY of settlements/port/src/92-camera.js: one hook (marked), the camera's floor is the ground
+// [dambasins] AN ADAPTED COPY of kits/port/src/92-camera.js: one hook (marked), the camera's floor is the ground
 // only when the page is dry (DB_DRY: no sea at y = 0). It belongs upstream in the kit (KNOWN_ISSUES.md).
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT

@@ -38,16 +38,10 @@ const IMP_GAIN=1.6;   /* the impostors' light against the near crowns (the bake 
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:SR,h:700});
 })();
 // ================================================================= HOST — the sun's shadows (core/shadow, KSHADOW), OFF at page load
-// The owner (2026-11-03): KSHADOW toggleable and off by default. core/shadow has no switch of its own yet (its README, 5b918f62c), so this
-// page attaches it on the first turn-on (the panel's 'shadows' button, or ?shadow=1 at load) and turns it off and on with the handle's
-// off()/on() after that: until asked, nothing is attached and no material compiles a shadow variant. The flora and the works cast and
-// receive, the ground receives only; the water, the impostors and the far field draw their own light (KSHADOW skips shader materials).
-const SHADOW_SW=(function(){let H=null,on=false,btn=null;
- const attach=()=>{if(H||typeof KSHADOW==='undefined'||!KSHADOW.attach)return H;try{H=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});H.cast(scene);
-   GROUND.castShadow=false;GROUND.receiveShadow=true;if(FAR){FAR.castShadow=FAR.receiveShadow=false;}window._shadow=H;}catch(e){reportErr('shadow: '+e.stack);}return H;};
- const label=()=>{if(btn)btn.textContent='shadows: '+(on?'on':'off');};
- const Sw={on:()=>on,set(v){v=!!v;if(v&&!attach())return;on=v;if(H){if(v)H.on();else H.off();}label();},
-  button(ui){if(!ui||btn||typeof document==='undefined')return;btn=document.createElement('button');btn.id='shadow-btn';btn.title='the sun\'s shadows (core/shadow): cost a shadow pass when on';
-   btn.onclick=()=>Sw.set(!on);label();ui.appendChild(btn);}};
- return Sw;})();
-window.SHADOW_SW=SHADOW_SW;
+// The owner (2026-11-03): KSHADOW toggleable and off by default. Since 2026-11-08 the page takes core/shadow's own switch (the Throne's way):
+// SHADOW_ATTACH() runs once the page is built (99) and attaches it off; core's panel button ('shadows') or ?shadow=1 at load turns it on, ?shadow=0
+// none of it. While off no material compiles a shadow variant. The flora and the works cast and receive, the ground receives only; the water,
+// the impostors and the far field draw their own light (KSHADOW skips shader materials).
+const SHADOW_ATTACH=function(ui){if(typeof KSHADOW==='undefined'||!KSHADOW.attach||/[?&]shadow=0(&|$)/.test(location.search)){window._shadow='off';return null;}
+ try{const H=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH,ui});H.cast(scene);
+  GROUND.castShadow=false;GROUND.receiveShadow=true;if(FAR){FAR.castShadow=FAR.receiveShadow=false;}window._shadow=H;return H;}catch(e){reportErr('shadow: '+e.stack);return null;}};

@@ -29,6 +29,8 @@ Object.assign(BUDGET.type,{yvQuad:'medium',yvComb:'medium',yvTerr:'medium',yvDis
 Object.assign(BUDGET.type,{stumpA:'sky',stumpB:'sky',stumpC:'sky',stumpD:'sky',stumpE:'sky',stumpF:'sky',stumpG:'sky',stumpH:'sky',stumpI:'sky',stumpJ:'sky',stumpK:'sky'});
 // the Iziz spaceport (src/8ao-iz-spaceport.js, target spaceport)
 Object.assign(BUDGET.type,{izPort:'medium'});
+// Quintagon (src/8au-quintagon.js, target quintagon)
+Object.assign(BUDGET.type,{quintagon:'mega'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world

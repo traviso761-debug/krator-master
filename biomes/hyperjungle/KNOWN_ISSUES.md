@@ -4,6 +4,72 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **J2-J6 (2026-11-08): the lands, built in a cloud session on CPU checks only.** `PLAN-LANDS.md` section 13's J2-J6. Checked here:
+      every page builds (`tools/build.py`), the lints pass (`check_core_use`, `check_assembly`, `check_port`, `check_source`,
+      `check_cells --ratchet`), and each page was loaded in Chromium on SwiftShader (no GPU) with its host checks, negatives and the core
+      guards (the card guard, the attachment audit, one LOD key a tree) all passing. **Not checked: `verify.py --assert` on a GPU,
+      the look, the frame time, the draw calls past the default camera.** Station 1 is unchanged: its totals (triangles, instances, each
+      pass's triangles) are the same before and after on the CPU load; its page bytes change (the new fragments 54, 56 and 57 load,
+      lazily: nothing runs until a station asks), and `50`/`55`'s small opt-in (below) reaches the builds that read them in place
+      (geyser, necanyons, korona, pinnacle-rock, iziz, dhelv, ringisles: the same bytes change there, nothing drawn changes).
+  - **J2, the savage land** (`--station savage`, `dist/hyperjungle-savage.html`; `stations/savage/`, `src/54`, `src/56`):
+    - The old-growth habit is a kit option, off unless a station sets it: `HYPERJUNGLE_LOOK.habit` (50: `HYPERJUNGLE.HABIT`; 55:
+      `oldGrowth`): each tree's height times a factor hashed from its own seed (no draw: the stream is the plain habit's), the bole x1.25,
+      the crown x1.15, the stand shares (ghostwood and prism gum lead) and the heroes 230 m apart. The baobab x1.1-1.2 (the 150-200 m giant).
+      Measured: 52 heroes, median 328 m, the tallest 472 m.
+    - H6: the far impostors' reach set to the tallest crown (`BIO.defs.impTrees.reach`, 87) and their cell from `BIO.IMP.cellFor` (128 px);
+      the far roof past the map at 270 m (`STATION_FAR.h`). The page budget raised to 13M triangles and 560 calls (`STATION_TAKE.budget`, read
+      by 99): 430 calls at the default camera on SwiftShader.
+    - The 8 species are builders in `src/56` (records with harvest tags; the three traps carry `core/biome/37` records): cathedral fig (a
+      lattice of 18 root strands round a hollow, its crown on `BIO.clumpOn`, spider-rider silk), comb tree (`BIO.kin('hyperjungle.ghostwood')`,
+      400-490 m, combs hung under its high limbs from the logged spans), armour palm, elephant ear (broken along the trails), bai sedge,
+      sky pitcher (in the heroes' bough perches), carrion arum (rare: 20 on the map), snare liana. Traps 0.30% of the plants placed.
+    - The map (`stations/savage/45`): station 1's floor and brook, seven bais with wallows and salt licks, 14 trails on `KSPACE`, the
+      ash-dark floor. The herds (H8): `kits/fauna`'s `FAUNALANDS` land `hyperjungle.savage`, 422 animals planned and registered; the
+      herds, hunters and big flyers drawn (122, at most eight of a group), each only within 650 m of the camera (an animal is a dozen meshes).
+    - **For the GPU verify:** the 480 m crowns against the impostors' switch at 1200 m (do they pop?); the draw calls at "The bai" with a
+      herd in view; the cathedral fig's lattice and crown (view "A cathedral fig"); the combs under the comb trees; the bai sedge's
+      density; the ash tint.
+    - **Stand-ins** (PROMPTS-NEEDED.md section 40): the armour palm's trunk, the comb tree's bole (the ghostwood's bark), the combs
+      (organic.pod.honeycomb), the carrion arum, the sky pitcher and the elephant ear are vertex-coloured models; the library's
+      card.carnivore.monkeycup, organic.pitcher.giant and card.heartleaf are there to try on them at the GPU pass. The cathedral fig wears
+      bark.strangler (`figbark`). The two new families ride only on the savage page (`build.py` `LAND_FAMS`).
+    - **Owed:** `kits/fauna` has no longcrawler, wingclaw or nightwing yet (the plan lists them missing; the land names them). The kit's
+      own striders, sky rays and sloths are not made rarer (58 has no knob for it; the land's weights favour the Riders' beasts).
+    - Taken as proposed, owner to confirm: PLAN-LANDS.md section 14 question 2 (ash on dunged soil; the carnivores a canopy-and-shade
+      guild). LORE.md section 8 carries it as a proposal.
+  - **J3, Screamer wood** (`--station north`, `dist/hyperjungle-north.html`; `stations/north/`, `src/57`):
+    - The map (`stations/north/45`): a valley NW to SE with its stream (on `KSPACE`), the dryness rising to the south-east (`dryK`), savannah
+      gaps in the dry half (`gapK`), the bamboo along the valley floor (`groveK`). The habit: the pure scale, ironbark and ghostwood
+      leading, the prism gum rare (measured hero mix 18, 23, 8, 11, 5, 11), heroes 190 m apart, the kapoks and baobabs deciduous.
+    - H5: the howl bamboo on `BIO.bamboo` (33b): culms of 28/24/20 internodes, jittered and graded (outside the Cut's warp), two seeds
+      each, plain and bored (`holeSet`), with their mid and far tiers; groves from `groveCells` on the valley weight times the Cut's
+      reach (H1: `BIO.host.distance` from the Cut's south-east mouth 11 km off the map, reach 150 km; 0.985 at the centre); each grove's
+      cohort flowers by the clock's year (all green at year 0). 35 groves, 2,869 culms, 713 bored. H9: each grove with bored culms
+      registers a core/tags `sound` record (`bamboo-howl`; `core/tags/opt/54`).
+    - The other species are builders in `src/57` on the shared tree (`src/54` `G.tree`): bone giants (59, only where `dryK` > .25, hung
+      with 487 widow's-hair curtains), watchers, hand-flower trees, bloodwoods (the savannah rims read the builder: `biomes/abyssal-savannah`'s stations), skull-pods, ghost pipes and
+      devil's fingers (`BIO.fung`). The blind grass in the gaps is the savannah rims', read in place (J4; `biomes/abyssal-savannah/src/rim/`).
+    - The fauna (H8): land `hyperjungle.north` at half its densities (hunted thin), the big ones drawn within 650 m.
+    - **For the GPU verify:** the howl bamboo's culms and sprays (view "Howl bamboo"), the bored culms' stains, the bone giants' white
+      against the sky (view "Bone giants on the savannah"), the watchers' eyes, the triangle count (7.1M on the CPU load, the station's
+      pass 4.6M), the draw calls (391 at the default camera).
+    - **Stand-ins** (PROMPTS-NEEDED.md section 40): the watcher's and the bloodwood's bark are canvases painted in `src/57`; the culms wear
+      bark.bamboo.jade (`howlculm`) and the sprays card.bamboo.giant (`howlleaf`) until bark.bamboo.bored and card.bamboo.leaf come; the
+      bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models.
+    - Taken as proposed, owner to confirm: question 3 (Screamer wood's theme, and the rumour that the Screamers' speech began with the
+      groves: LORE.md section 6.7, a proposal).
+  - **J4** (the savannah rims: `biomes/abyssal-savannah`'s stations `serim`, `erim`, `north`, its KNOWN_ISSUES.md; built as
+    `biomes/savannarim` and folded in there on 2026-11-08): the station `north` now reads the rims' species and grass passes in place
+    (`build.py` NEIGH `north`, key `savannarim`, and HOMES: abyssal-savannah's `src/rim/` 50, 55, 60 and the `blind`/`grass` families of its `tex/`) and grows the blind grass in its savannah gaps, with the
+    raiders' lanes. The rim station pages read this kit's 41, 50, 52, 54-57 and 60 in place (the gallery forest, the outliers, the north's
+    bone giants and bloodwood), so a change here reaches them: rebuild `biomes/abyssal-savannah`'s stations (`--station serim`, `erim`, `north`) with this kit.
+
+- [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
+      the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two
+      tufts a 3 m cell near, two a 6 m cell mid, one a 13 m cell far, over the whole burn-aged savanna. So the item declares
+      `cap: 650000` with its `capWhy` (`stations/savanna/87-host-station.js`) instead of a coarser cell or a shorter reach.
+
 - [ ] **The final rebuild's turn (2026-10-27): looks for the owner's pass.** Station 1 and stations 2 and 3 (PLAN-STATIONS.md,
       "Core adoption") pass `verify.py --assert --all-views` on the GPU. To judge: the impostors' light (`IMP_GAIN` 1.6 in 88, against
       the near boles; `?impgain=`), the far canopy's roof past the map (83; `?far=0`), the diet's ranges (`?diet=0`); station 2's
@@ -11,7 +77,9 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **Stand-in textures on the stations** (PROMPTS-NEEDED.md section 37): the sky lily's pads are a vertex-coloured disc
       (`card.lily.victoria` owed), the moriche crowns the kit's fern fronds (`card.palm.fan` owed), the termite cathedrals vertex
       colour (`earth.termite`, section 32).
-- [ ] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (`core/biome/30-core-foliage.js`, the two-sided light's
+      2026-11-08: those section numbers are stale (no section 37 exists; the old 32 was pruned): all three sets, `card.lily.victoria`,
+      `card.palm.fan` and `earth.termite`, are in `core/materials/library` now, so no prompt is owed; what is left is wiring them here.
+- [x] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (fixed 2026-11-08 in the integration pass: `30-core-foliage.js` and KGROUND, `43-core-ground.js`, take the eye from `viewMatrix`, as `KHOOK.EYE`; the test hashes refrozen) (`core/biome/30-core-foliage.js`, the two-sided light's
       view vector and the back-light's): three r128 uploads it only to Phong, Toon, Standard, shader and env-mapped materials, so both
       read (0,0,0) on every page. The ground tint's fade had the same fault (every ground-tinted card more than ~700 m from the world's
       origin dissolved, wherever the camera stood: the savanna station's tall grass was invisible); that one is fixed here (the eye from
@@ -38,7 +106,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] (2026-10-16) Tree tints and bark: a hero's limbs, boughs, twigs and roots now wear its own bole's bark (buckets `limb0`..`limb5` on
       `MAT.bark[sp]`, with the bole tint; still out of the `bark`+sp buckets, which 60-floor's `boleProfile` reads). Before, they shared one `limb` map
       painted in ironbark's browns, whose tint clipped at white, so ghostwood and baobab grew brown limbs under pale boles. Young trees' trunks
-      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carries a hand-patched copy of the old fragment: re-vendor (`build.py --vendor-bio`) when its session allows.
+      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carried a copy of the old fragment until 2026-11-03; it reads the kit in place now (`settlements/iziz/build.py`, `bio_wrap`).
 
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
@@ -136,7 +204,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] **The hypertrees' limbs and the dead wood kept their painted canvases** beside the library's bark (the owner, from Dhelv:
       "branches not taking bark texture ... a recurring issue with biome imports"): their sets (`limb`, `wood`) were in
       materials.json but never bound. `50-biome-hyperjungle-species.js` binds them (and the small trunks take the limbs' map).
-      Iziz vendors this kit (`settlements/iziz/targets/city/86-bio-*`): its copy still has the gap until it is re-vendored.
+      Iziz read a copy of this kit until 2026-11-03 (re-vendored that day); it reads the kit in place now, so it takes every fix as it lands.
 
 ## Export profile: sections left out (2026-10-18)
 

@@ -1,0 +1,31 @@
+{
+ "name": "The savannah edge (station 3, crater drylands N): the Aw belt toward SW Bay, grass fires every year or two, SW Bay's umbrella thorns and baobabs as kin, termite mounds, nwbay's flame-crowns at the waterhole",
+ "out": "crater-drylands-edge.html",
+ "core": {
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "36-core-walker.js": "core/biome/36-core-walker.js",
+  "37-core-stacks.js": "core/terrain/37-core-stacks.js"
+ },
+ "kits": {
+  "49b1-swbay-species.js": "../swbay/src/50-biome-swbay-species.js",
+  "49b2-swbay-trees.js": "../swbay/src/55-biome-swbay-trees.js",
+  "49b3-swbay-floor.js": "../swbay/src/60-biome-swbay-floor.js",
+  "49b4-swbay-dress.js": "../swbay/src/65-biome-swbay-dress.js",
+  "49b5-swbay-build.js": "../swbay/src/70-biome-swbay.js",
+  "49b6-swbay-fauna.js": "../swbay/src/75-biome-swbay-fauna.js",
+  "48n1-nwbay-species.js": "../nwbay/src/50-biome-nwbay-species.js",
+  "48n2-nwbay-trees.js": "../nwbay/src/55-biome-nwbay-trees.js",
+  "48n3-nwbay-variants.js": "../nwbay/src/56-biome-nwbay-variants.js"
+ },
+ "packs": {
+  "swbay": "../swbay",
+  "nwbay": "../nwbay"
+ },
+ "packOnly": {
+  "nwbay": [
+   "bark3",
+   "fernleaf",
+   "bloom"
+  ]
+ }
+}

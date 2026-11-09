@@ -17,7 +17,7 @@
 (function(root){'use strict';
  var W={},K=function(){if(root.KHOOK)return root.KHOOK;throw new Error('KWARP: core/shader/06-core-khook.js is not on this page');};
  var VIEW='vec4 kWarpV(vec4 mv){vec3 w=transpose(mat3(viewMatrix))*(mv.xyz-viewMatrix[3].xyz);return viewMatrix*vec4(kWarp(w),mv.w);}\n';
- var EYE='#ifndef KHOOK_EYE\n#define KHOOK_EYE\nvec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n#endif\n';
+ var EYE='\n#ifndef KHOOK_EYE\n#define KHOOK_EYE\nvec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n#endif\n';
  var PROJ=/gl_Position\s*=\s*projectionMatrix\s*\*\s*([^;]+);/g;
  var CHUNK='#include <project_vertex>';
  W.text=function(vs,glsl){var head=EYE+glsl+'\n'+VIEW,fix='mvPosition=kWarpV(mvPosition);gl_Position=projectionMatrix*mvPosition;';

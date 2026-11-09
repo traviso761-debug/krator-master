@@ -103,6 +103,19 @@ def trades_check(build_dir, table=None, extra_src=()):
     return not bad, detail, rep
 
 
+# a build whose table names keys another folder defines (--all looks there too), with the reason
+EXTRA_SRC = {
+    # the Vernacular's table (74z) names two buildings of Iziz's foreign quarter, drawn on Iziz's page beside the
+    # Vernacular: the Voth embassy and the Order's chapterhouse (settlements/iziz/src/75-port-embassy.js, 76-port-chapterhouse.js;
+    # MODULARITY-PLAN.md step 4: they move with the foreign-quarter sets)
+    'kits/iziz-vernacular': ['settlements/iziz/src'],
+    # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
+    'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src', 'kits/yuni/src'],
+    # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)
+    'settlements/yuni': ['kits/yuni/src'],
+}
+
+
 def all_builds():
     out = []
     for pat in ('settlements/*', 'kits/*', 'biomes/*'):
@@ -115,8 +128,9 @@ def all_builds():
 if __name__ == '__main__' and '--all' in sys.argv:
     fails = 0
     for d in all_builds():
-        ok, detail, rep = trades_check(d)
-        print(('PASS ' if ok else 'FAIL ') + os.path.relpath(d, ROOT).replace(os.sep, '/') + ' - ' + detail)
+        rel = os.path.relpath(d, ROOT).replace(os.sep, '/')
+        ok, detail, rep = trades_check(d, extra_src=EXTRA_SRC.get(rel, ()))
+        print(('PASS ' if ok else 'FAIL ') + rel + ' - ' + detail)
         fails += not ok
     sys.exit(1 if fails else 0)
 

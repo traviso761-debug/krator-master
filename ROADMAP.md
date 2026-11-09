@@ -534,7 +534,7 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
   ADD, MOVE, SET and REMOVE operations with a cause and a thread status. `core/city`'s edits-as-overlay (section 8)
   should use the same operations, so the owner's edits, the player's builds and the simulation's changes are one log.
 
-**Naming:** `settlements/port` is the **Ancient Port kit**, not a settlement (it will build Hook). The geyser kit
+**Naming:** `kits/port` is the **Ancient Port kit**, not a settlement (it will build Hook). The geyser kit
 (`biomes/geyser`) is new; it draws its own sea and creek and is a first taker of `core/water`.
 
 ### The order from here (owner, 2026-10-13)

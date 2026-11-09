@@ -69,4 +69,36 @@ TT.add({'class':'feature',kind:'rock',name:'Rock',at:[0,0,0],r:1});
 const ZH=Zw.export({hazards:TT}).zones;
 ok('the hazards\' zones join the export: the acid avoided, the mud costly',ZH.length===2&&ZH[0].kind==='acid'&&ZH[0].avoid&&ZH[0].layer===2&&ZH[1].kind==='sink'&&ZH[1].travel===6&&!ZH[1].avoid,ZH.length!==2);
 ok('hazards:false leaves them out',Zw.export({hazards:false}).zones.length===0,Zw.export({hazards:TT}).zones.length===0);
+
+// reach: the reachability audit (the owner, 2026-11-03: every interior region and built floor reachable)
+{const R=KWALK.create();
+ R.floor({rect:[0,10,0,10],y:0,name:'hall'});                         // the hall, the start
+ R.floor({rect:[10,20,0,10],y:0,name:'room'});                        // through a door gap in the wall at x 10
+ R.block([9.9,10.1,0,4,0,3],'wall');R.block([9.9,10.1,6,10,0,3],'wall');
+ R.floor({rect:[30,40,0,10],y:0,name:'sealed'});                      // walls all round
+ R.block([29.9,30.1,0,10,0,3],'w');R.block([39.9,40.1,0,10,0,3],'w');R.block([30,40,-.1,.1,0,3],'w');R.block([30,40,9.9,10.1,0,3],'w');
+ R.floor({rect:[0,10,0,10],y:4,name:'gallery'});                      // above the hall, met by a stair
+ R.strip({a:[12,8.5,0],b:[18,8.5,4],w:1.4,name:'stair'});              // in the room, rising to 4
+ R.floor({rect:[18,20,7,10],y:4,name:'landing'});                     // the stair's head
+ R.strip({a:[18,9.5,4],b:[10,9.5,4],w:1,name:'bridge'});              // landing -> gallery
+ R.floor({rect:[0,4,12,16],y:2.5,name:'loft'});                       // a floor no stair meets
+ const res=R.reach([[2,0,2]]),names=a=>a.map(f=>f.name).sort().join();
+ ok('reach: through the door gap, up the stair, over the bridge to the gallery',names(res.reached)==='bridge,gallery,hall,landing,room,stair',res.reached.length<6);
+ ok('reach: the sealed room and the stairless loft are unreached',names(res.unreached)==='loft,sealed',res.unreached.length!==2);
+ const shut=R.block([9.9,10.1,4,6,0,3],'door:d');const r2=R.reach([[2,0,2]]);
+ ok('reach: a shut door keeps the room (and all above it) out; open, it is in',names(r2.reached)==='gallery,hall'||names(r2.reached)==='hall',names(r2.reached).indexOf('room')>=0);
+ R.setBlock(shut,false);
+ ok('reach: the door switched off, the room is back',names(R.reach([[2,0,2]]).reached).indexOf('room')>=0,false);
+ const r3=R.reach([[2,0,2]],{ground:(x,z)=>0});
+ ok('reach: with the ground walkable, the sealed room is still sealed (its walls), the loft still unreached',names(r3.unreached)==='loft,sealed',names(r3.unreached).indexOf('sealed')<0);
+ const r4=R.reach([[2,0,2]],{box:[0,12,0,12]});
+ ok('reach: a box bounds the audit to the floors in it',r4.unreached.every(f=>['sealed'].indexOf(f.name)<0),names(r4.unreached).indexOf('sealed')>=0);}
+// reach: a room's floor laid on a deck's floor at the same height (Girder's dwellings on the tower plates) is reached with it
+{const R=KWALK.create();R.floor({rect:[0,20,0,10],y:5,name:'deck'});R.floor({rect:[12,18,2,8],y:5,name:'room'});
+ R.block([11.9,12.1,2,4.4,5,8],'wall');R.block([11.9,12.1,5.6,8,5,8],'wall');R.block([17.9,18.1,2,8,5,8],'wall');
+ R.block([12,18,1.9,2.1,5,8],'wall');R.block([12,18,7.9,8.1,5,8],'wall');
+ const names=a=>a.map(f=>f.name).sort().join(),res=R.reach([[2,5,2]]);
+ const door=R.block([11.9,12.1,4.4,5.6,5,8],'door:shut'),shut=R.reach([[2,5,2]]);R.setBlock(door,false);
+ ok('reach: a room floor coplanar with the deck it stands on is reached through its door',names(res.reached)==='deck,room',names(shut.reached)!=='deck');
+ ok('reach: its door shut, the coplanar room is unreached',names(shut.unreached)==='room',names(R.reach([[2,5,2]]).unreached)==='room');}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

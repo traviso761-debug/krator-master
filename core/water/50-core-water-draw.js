@@ -162,7 +162,7 @@
    normalMap:o.normalMap||null,transparent:!!o.transparent,depthWrite:!o.transparent});
   if(o.normalMap)mat.normalScale.set(o.normalScale==null?.5:o.normalScale,o.normalScale==null?.5:o.normalScale);
   if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;
-  const U=W.uniformsOf(S),col=c=>v3(c),lin=c=>W.colAsWritten(T,c);
+  const U=W.uniformsOf(S),col=c=>v3(c),lin=c=>W.colLin(T,c);
   const per=W.period(),dc=o.detailCycles||[3,2],surf=o.surf==null?153:o.surf,RP=o.ramp||[0.5,9],SD=o.surfDepth==null?[0.1,1.4]:Array.isArray(o.surfDepth)?o.surfDepth:[0.1,o.surfDepth];
   // the options a page chose over the defaults, for the export (nothing is recorded for a default)
   {const dop={};if(o.surf===false)dop.surf=false;if(o.breakers===false)dop.breakers=false;if(o.surfDepth!=null)dop.surfDepth=o.surfDepth;if(o.ramp)dop.ramp=o.ramp;if(o.depthBias!=null)dop.depthBias=o.depthBias;if(Object.keys(dop).length)S.drawOpt=dop;}

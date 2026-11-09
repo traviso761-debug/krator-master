@@ -33,7 +33,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `53-mp-hero-ledger.js` | 14 |  |
 | `54-mp-hero-designs.js` | 39 **big** |  |
 | `55-mp-hero-ancients.js` | 24 |  |
-| `56-mp-interiors.js` | 23 |  |
+| `56-mp-interiors.js` | 24 |  |
 | `57-mp-debris.js` | 6 |  |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 18 |  |

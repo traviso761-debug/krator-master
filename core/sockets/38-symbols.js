@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------- CULTURE SYMBOLS (shared: core/sockets/38-symbols.js)
 // The emblem of every culture as a 2D canvas drawing: (g, cx, cy, R, ink, ink2) draws inside a box of half-size R. Pure canvas, no engine:
 // core/sockets/80-cultures.js draws them on banners, flags and plates; kits/catalog's furniture kit draws the same ones on tapestries,
-// banners, friezes and scrolls (vendored there as kits/catalog/krator-symbols.js, build.py --vendor-check), so a dressed building and the
+// banners, friezes and scrolls (it reads this file in place: kits/catalog/catalog.py resolves krator-symbols.js here), so a dressed building and the
 // furniture in it carry one emblem. A new culture adds one function here. SYMBOL_OF names each pack's symbol for anyone without a pack.
 const SYM_TAU = Math.PI * 2, SYM_PI = Math.PI;
 function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*SYM_TAU/3-SYM_PI/2;

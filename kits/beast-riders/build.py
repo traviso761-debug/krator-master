@@ -50,9 +50,12 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CAT = os.path.join(ROOT, 'kits', 'catalog')
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
 OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
           'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js', 'krator-master-furniture-generic-goods.js']
@@ -103,10 +106,10 @@ def main():
     import towns
     tjs, tfiles = towns.bundle()
     parts = [(f, read(os.path.join(ROOT, f))) for f in CORE_JS] + \
-            [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
+            [(kcat.rel(f), read(kcat.path(f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
             [(TOWNS, tjs)] + [('src/' + f, read(os.path.join(SRC, f))) for f in PORTS] + \
-            [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
-            [('kits/catalog/' + DETAIL, read(os.path.join(CAT, DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in TOOLS]
+            [(kcat.rel(f), read(kcat.path(f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
+            [(kcat.rel(DETAIL), read(kcat.path(DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [(kcat.rel(f) if '/' not in f else 'kits/catalog/' + f, read(kcat.path(f) if '/' not in f else os.path.join(CAT, f))) for f in TOOLS]
     if '--no-checks' not in sys.argv:
         errs, decl, keys = [], {}, {}
         for name, body in parts:
@@ -126,6 +129,7 @@ def main():
             print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     script = ''.join('/* ---------- %s ---------- */\n%s%s' % (n, b, '' if b.endswith('\n') else '\n') for n, b in parts)
     html = read(os.path.join(SRC, '00-head.html')) + '<script>\n' + script.replace('</script', '<\\/script') + read(os.path.join(SRC, '99-tail.html'))
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')
     with open(out, 'w', encoding='utf-8', newline='\n') as fh:

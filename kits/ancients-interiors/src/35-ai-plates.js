@@ -126,7 +126,7 @@
         const sideName = B.s > 0 ? 'left' : 'right';
         st.rooms.push({ id: rid, kind: o.kinds(i, n, sideName), poly, y, h, level: lv, doors: [{ at: da, w: dw, to: id + '.corr' }], windows: [], furnish: true, side: sideName });
         st.walls.push({ id: rid + '.cw', pts: inner, y, h, rooms: [rid, id + '.corr'], door: { at: da, w: dw }, broken: false });
-        if (i > 0) st.walls.push({ id: rid + '.x', pts: [inner[0], outer[m]], y, h, rooms: [rid, id + '.r' + (ri - 2)], door: null, broken: false });
+        if (i > 0) st.walls.push({ id: rid + '.x', pts: [inner[0], outer[0]], y, h, rooms: [rid, id + '.r' + (ri - 2)], door: null, broken: false });
       }
     });
     /* the corridor down the bar, and the end rooms across it */

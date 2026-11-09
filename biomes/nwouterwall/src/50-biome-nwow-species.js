@@ -168,14 +168,8 @@ const M=NWOW.MAT={
 {const Lp=n=>typeof KMAT!=='undefined'&&KMAT.packed?KMAT.packed('nwouterwall',n):null,warm=SEASON_K==='autumn'||SEASON_K==='winter',row=r=>[0.3333,r/3,0.6667,(r+1)/3];
  const Lb=Lp('birch');if(Lb&&Lb.cell)Lb.cell=row(warm?1:0);const Lc=Lp('cloud');if(Lc&&Lc.cell)Lc.cell=row(warm?2:0);}
 NWOW.LIB=BIO.libSwap('nwouterwall',M);
-// one texture per cell: KMAT.textures hands back ONE texture per library sheet, so libSwap's offset for the last slot of a sheet
-// won on every slot of it (the three crops all drew goldroot's cell; the larch's gold and green one cell). Each card slot with a
-// cell gets its own clone (the image is shared), its cell set again (KNOWN_ISSUES: a core/biome fix would do this in libSwap)
-(function(){if(typeof KMAT==='undefined'||!KMAT.packed)return;const one=(m,slot)=>{const L=m&&m.isMaterial&&m.map&&KMAT.packed('nwouterwall',slot);
-  if(!L||!L.cell)return;const c=L.cell,src=m.map,t=src.clone();t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);m.map=t;m.needsUpdate=true;
-  /* the sheet decodes later and lands on the cached texture only (KMAT's img.onload): copy it to the clone when it does */
-  const sync=()=>{if(!src.image)return false;t.image=src.image;t.needsUpdate=true;return true;};if(!sync()){const id=setInterval(()=>{if(sync())clearInterval(id);},50);}};
- for(const k in M){const v=M[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);else one(v,k);}})();
+// one texture per cell: BIO.libSwap clones a sheet's texture for each slot cut to a cell (core/biome 20, since 2026-10-27; this kit found the
+// fault, its workaround here is gone with the final rebuild, pair 11)
 const LIBWHITE=C(0xf4f2ec);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 const FULL=slot=>{if(!NWOW.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('nwouterwall',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
@@ -186,14 +180,14 @@ NWOW.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('larchspray',G.hung(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],label:'Fur larch shoots (hanging sprays of needle tufts: '+(SEASON_K==='winter'?'none: the larch stands bare in winter':SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
+BIO.def('larchspray',G.hung(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],cap:900000,capWhy:'the fur larch forest, its shoots hung in sprays every ~0.22 m along each bough (the 2026-10-26 fix for a sparse, floating larch; the instance-cap rule, 2026-11-08): 845,992 on the overview, 345,955 on the taiga at 2026-11-09',label:'Fur larch shoots (hanging sprays of needle tufts: '+(SEASON_K==='winter'?'none: the larch stands bare in winter':SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
 BIO.def('pineleaf',BIO.geo.clump(),M.pineleaf,{attrs:['aN'],label:'Stone pine needles'});
 BIO.def('thorn',BIO.geo.clump(),M.thorn,{attrs:['aN'],label:'Silverthorn (silver leaves, orange berries)'});
 BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Snow birch'});
 BIO.def('willow',BIO.geo.clump(),M.willow,{attrs:['aN'],label:'Woolly willow'});
 BIO.def('beard',G.hung(),M.beard,{label:'Larch beard (hanging lichen)'});
 BIO.def('stipa',G.tuft(),M.stipa,{label:'Plumegrass (feather grass)'});
-BIO.def('grass',G.tuft(),M.grass,{label:'Steppe grass'});
+BIO.def('grass',G.tuft(),M.grass,{label:'Steppe grass',cap:350000,capWhy:'the steppe floor of the open larch taiga and the meadows on the overview (the instance-cap rule, 2026-11-08): 319,554 at 2026-11-09'});
 BIO.def('pasque',G.tuft(),SEASON_K==='spring'?M.pasque:M.pasqueseed,{label:'Furflower (pasqueflower: '+(SEASON_K==='spring'?'in bloom after the melt':'its feathered seed heads')+')'});
 BIO.def('fireweed',G.tuft(),SEASON_K==='autumn'||SEASON_K==='winter'?M.fireweedfluff:M.fireweed,{label:'Ivan-chai (fireweed: '+(SEASON_K==='winter'?'dead stalks, the last fluff':SEASON_K==='autumn'?'gone to seed fluff':'in flower')+')'});
 BIO.def('cotton',G.tuft(),M.cotton,{label:'Cottongrass'});

@@ -18,6 +18,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `fauna-core.js` | 16 |  |
+| `fauna-lands-host.js` | 2 |  |
+| `fauna-lands.js` | 13 |  |
 | `krator-fauna-abyss.js` | 52 **big** | the salt-lake flamingo (114); the frilled lizard (202); the marsh emu (273); the pack lizard (358); the riding lizard (419); the dromedary (484) |
 | `krator-fauna-ash.js` | 11 |  |
 | `krator-fauna-bay.js` | 53 **big** |  |
@@ -32,7 +34,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-fauna-riders.js` | 42 **big** | the riding tiger (Tiger) (52); the riding raptor (Raptor) (121); the threehorn (Threehorn) (203); the hardshell (Hardshell) (267); the jungle mammoth (Mammoth) (333) |
 | `krator-fauna-ringsea.js` | 6 |  |
 | `krator-fauna-runtime.js` | 28 |  |
-| `krator-fauna-voth.js` | 64 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the silt strider (79c-strider-model.js 37-182, 4 (181); the arena tiger (78j-life-arena.js 187-223, 533- (273); the pit lizard (78j-life-arena.js 187-223, 533-5 (409); the giant beetle (65k-granary-mills-ranch.js 435 (473); the staghorn beetle (first drawn here, 2026-10-0 (554) |
+| `krator-fauna-voth.js` | 64 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the elephant bug (79c-strider-model.js 37-182, 4 (181); the arena tiger (78j-life-arena.js 187-223, 533- (273); the pit lizard (78j-life-arena.js 187-223, 533-5 (409); the giant beetle (65k-granary-mills-ranch.js 435 (473); the staghorn beetle (first drawn here, 2026-10-0 (554) |
 | `krator-fauna-wild.js` | 214 **big** |  |
 
 ## src/
@@ -40,8 +42,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `80-sky-hash.js` | <1 | h3 hash for KratorSky (1) |
-| `81-sky.js` | 10 |  |
 | `90-sheet.js` | 11 | Fauna kit sheet (1) |
 | `92-hover.js` | 3 | Hover inspector (1) |
 | `93-polygon.js` | 5 | Polygon tool (1) |

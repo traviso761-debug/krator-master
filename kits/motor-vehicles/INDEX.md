@@ -31,8 +31,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `80-sky-hash.js` | <1 | h3 hash for KratorSky (1) |
-| `81-sky.js` | 10 |  |
 | `90-sheet.js` | 9 | Motor vehicles kit sheet (1) |
 | `92-hover.js` | 3 | Hover inspector (1) |
 | `93-polygon.js` | 5 | Polygon tool (1) |

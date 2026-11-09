@@ -229,6 +229,14 @@ core/simulation/
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
     77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
+    PLAN-MONEY.md         money: research, the owner's answers, and what is built (M0-M2, stations, M6 to treason)
+    77-sim-6-money.js     money (2026-11-03, opt-in: SIM.money): currencies, accounts, mint, burn, pay, exchange (M0); wages,
+                          prices, the ration (M1), moving prices (M2), spending by savings, stations (rise and fall)
+    77-sim-6-build.js     building and upkeep (2026-11-03, opt-in: SIM.build): empty lots, projects drawing their bills of
+                          materials as the work goes, upkeep as a steady sink (PLAN-POLITICS.md section 4)
+    77-sim-6-unrest.js    unrest (2026-11-03, opt-in: SIM.unrest): the happiness pool's stages, grumbling, demands to the
+                          faction (a shipment, a new ruler), strikes, treason (PLAN-MONEY.md M6)
+    77-sim-6-crime.js     crime and punishment (2026-11-02, opt-in: SIM.crime): criminals, pickpockets, burglars, fights, witnesses, guards, arrest, jail
     77-sim-6-govern.js    the economy's opt-in rules: a production governor (order-up-to with its supply line), spoilage,
                           keeping (salt), seasoning (lifted from the isle demo 2026-10-26)
     77-sim-7-lod.js       tiers 0–2 (Phase 5+)
@@ -477,7 +485,7 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
   outside a `// anchor:` comment, populations reading `skyHour` directly,
   actors without faction/org/role/sched.
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
-  `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
+  `kits/post-apoc/sockets-example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
 - Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
   convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a
@@ -647,7 +655,8 @@ Locus is already closest to the target. Make it the mobility reference:
   {food: share})` has a town's households buy the named foods at their share (an imported food at its ration), the rest by
   the warehouses' stock. `SIM.items({stagger})` has each household buy its days of food times 1 +- stagger (a hash of the
   home), so the restocking rounds drift apart. The governor's `exported: false` and `pool: [settlements]` let a village work to
-  its town's need (the isle demo's hamlets, core/hamlet H5). A governed maker of
+  its town's need (the isle demo's hamlets, core/hamlet H5). `SIM.site` and `SIM.stockpile` (2026-11-02, SCHEMA.md "The books"): resource sites keyed
+  to world records, stockpile policies; `77-sim-7-ledger.js` the accounting contract. Batch recipes and `SIM.blockedReport` (2026-11-02, Phase 2's first slice); a tool kind's `prefer` and `base` (2026-11-02: the isles' iron tools over stone, falling back when the iron runs out). `SIM.recipeHold`, `SIM.recipeSite`, `SIM.siteRestore` and the ledger's batches in hand (2026-11-02: core/camp's work camps). A governed maker of
   several goods makes none over target while one is under; `cart.urgent` (opt-in) fetches a good its buyers went short of,
   the shelves holding under that many days of it, in any amount. They run as SIM.step's last
   act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as

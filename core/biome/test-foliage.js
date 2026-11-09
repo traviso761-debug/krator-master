@@ -30,8 +30,8 @@ function shaders(B){const T=B.host.THREE,tex=new T.Texture();tex.biomeMean=.5;co
  put('gloss',B.glossBarkMat(tex,'g',{alt:0x6a8a70,gloss:.06}));put('irid',B.iridBarkMat(tex,'i'));
  put('farIrid',B.farMat({rule:'irid'}));put('farGloss',B.farMat({}));put('hang',B.hangMat(new T.MeshLambertMaterial(),'h',{swayA:.05}));
  put('bark',B.barkMat(tex));put('solid',B.solidMat(tex));return out;}
-const FROZEN={"leaf0":"e275a1b4665e71f7","leaf1":"50e604d0f4f291c9","leaf2":"bf21d0bcfd4bd1ed","leaf3":"ad0db28886974d7d","leaf4":"358e3cd2814d8e9f","leaf5":"b25908e7d1f4ec1c","leaf6":"80a85d6c88b20c00",
- "gloss":"35fd7a8b68c8e8c4","irid":"bd20287e6de7375e","farIrid":"964e290fea43d03f","farGloss":"18574f02548922ea","hang":"4c16c90ae4a1b2c4","bark":"7af29f0f88af2368","solid":"7af29f0f88af2368","dither":"e8376d7ac984b5c8"};
+const FROZEN={"leaf0":"e275a1b4665e71f7","leaf1":"50e604d0f4f291c9","leaf2":"218f06314e33b0cc","leaf3":"33ef6b1c94c8cb6d","leaf4":"358e3cd2814d8e9f","leaf5":"b25908e7d1f4ec1c","leaf6":"80a85d6c88b20c00",
+ "gloss":"baf389c4e3fe754a","irid":"58c2ac9315781983","farIrid":"ad1e2676948f9463","farGloss":"100a3205ff858e86","hang":"4c16c90ae4a1b2c4","bark":"7af29f0f88af2368","solid":"7af29f0f88af2368","dither":"e8376d7ac984b5c8"};
 let fails=0;const check=(name,ok,detail)=>{console.log((ok?'ok   ':'FAIL ')+name+(detail?'  ('+detail+')':''));if(!ok)fails++;};
 if(require.main!==module){module.exports={load,compile,shaders,sha};return;}
 const SRC=read('30-core-foliage.js');

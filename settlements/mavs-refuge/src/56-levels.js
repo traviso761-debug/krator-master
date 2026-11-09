@@ -8,6 +8,12 @@
    are ~2000 rooms; instances are kept for ropes, lanterns and swaying cloth. */
 reseed(560001);
 (function(){
+/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
+   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
+   with windows is drawn whole */
+var mvLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
+  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
+var mvSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
 
 var LVL = { facades:[], rooms:{}, windows:0, lamps:0, webs:0, sacs:0, washing:0, hoists:0, forges:0, perches:0,
             trades:{}, facadeKinds:{}, tri:{}, inst:{} };
@@ -173,10 +179,26 @@ function lvlFront(fam,P,r0,r1,a0,a1,yb,yt,col,holes,faces){
   var rest = (faces||'').replace(/[oi]/g,'');
   if(rest) SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,{faces:rest,step:5});
 }
-function lvlDoor(P,r,a,y,w,h,col){
+function lvlDoor(P,r,a,y,w,h,col,holes){
   var fa=(w/2+0.14)/r, da=(w/2)/r;
-  SECTOR('timber',P,r,r+0.05,a-fa,a+fa,y,y+h+0.16,TIMBERC[0],{faces:'o',step:30});
-  SECTOR('plank',P,r,r+0.10,a-da,a+da,y,y+h,col,{faces:'o',step:30});
+  if(!holes){
+    SECTOR('timber',P,r,r+0.05,a-fa,a+fa,y,y+h+0.16,TIMBERC[0],{faces:'o',step:30});
+    SECTOR('plank',P,r,r+0.10,a-da,a+da,y,y+h,col,{faces:'o',step:30}); return;
+  }
+  /* the doorway is real (the owner's doors, 2026-11-03): a frame round the opening, the opening cut in the front wall drawn
+     after it (lvlFront, with `holes`: the doors' own list, not R.wins, which the interiors read as windows), and a door that
+     opens and shuts (54-openings.js, core/door), drawn shut in the wall as it was */
+  lvlDoorway(P,r,a,y,w,h,holes);
+  var c=platXZ(P,r-0.12,a), hg=platXZ(P,r-0.12,a-da);
+  mvLeaf([c[0],y,c[1]],platOutDir(P,a),w,h,{ hinge:hg, col:col, t:0.07 });
+}
+/* a doorway's frame (two jambs and a head round the opening) and its hole on `holes` (lvlFront cuts it) */
+function lvlDoorway(P,r,a,y,w,h,holes){
+  var fa=(w/2+0.14)/r, da=(w/2)/r;
+  SECTOR('timber',P,r,r+0.05,a-fa,a-da,y,y+h+0.16,TIMBERC[0],{faces:'os',step:30});
+  SECTOR('timber',P,r,r+0.05,a+da,a+fa,y,y+h+0.16,TIMBERC[0],{faces:'os',step:30});
+  SECTOR('timber',P,r,r+0.05,a-da,a+da,y+h,y+h+0.16,TIMBERC[0],{faces:'otb',step:30});
+  holes.push({ a:a, hw:w/2+0.01, y0:y-0.01, y1:y+h+0.01 });
 }
 
 /* --- washing line between the two gallery posts nearest angle a --- */
@@ -214,15 +236,16 @@ function lvlApt(P,R,Lv){
   R.use='apartment'; R.wcol=fam==='wall'?col:WALLC[1]; R.wins=holes;   /* a home: planned and furnished by 57-interiors.js */
   if(chance(0.4)) SECTOR('timber',P,r1,r1+0.06,R.a0+th,R.a1-th,y+H-0.42,y+H-0.14,chance(0.5)?shade(pick(CLOTHC),-0.15):TIMBERC[2],{faces:'o',step:5});
   /* door at the nav door node */
-  if(chance(0.12)){ SECTOR('timber',P,r1,r1+0.05,am-0.64/r1,am+0.64/r1,y,y+2.3,shade(TIMBERC[2],-0.5),{faces:'o',step:30});
+  var dHoles = [];                                            /* the doorway's opening, cut with the windows' (kept off R.wins) */
+  if(chance(0.12)){ lvlDoorway(P,r1,am,y,1.1,2.14,dHoles);   /* a curtained doorway: a real opening (it was a dark panel behind the cloth) */
     var fc=lvlFrame(P,r1+0.10,am,y); lvlFCloth(fc,0,0,2.25,1.1,2.1,pick(CLOTHC),true); }
-  else lvlDoor(P,r1,am,y,1.0,2.12, chance(0.3)?shade(pick(CLOTHC),-0.25):shade(pick(TIMBERC),chance(0.5)?-0.2:0.12));
+  else lvlDoor(P,r1,am,y,1.0,2.12, chance(0.3)?shade(pick(CLOTHC),-0.25):shade(pick(TIMBERC),chance(0.5)?-0.2:0.12),dHoles);
   /* windows */
   var nw = arc>7.2 ? (chance(0.2)?1:2) : 1, shut = chance(0.75) ? (chance(0.5)?shade(pick(AWNINGC),-0.2):shade(pick(PLANKC),-0.25)) : null;
   var side = chance(0.5)?1:-1, wpos=[];
   for(var w=0;w<nw;w++){ var wa = am + (w===0?side:-side)*arc*rr(0.26,0.32)/r1; wpos.push(wa);
     lvlWindow(P,r1,wa,y+1.15,rr(0.75,1.0),rr(0.9,1.15),false,shut,holes); }
-  lvlFront(fam,P,r1-0.25,r1,R.a0+th,R.a1-th,y,y+H,col,holes,'');
+  lvlFront(fam,P,r1-0.25,r1,R.a0+th,R.a1-th,y,y+H,col,holes.concat(dHoles),'');
   /* dressing */
   if(chance(0.33)){ var fl=lvlFrame(P,r1+0.38,am+side*-1.05/r1,y); lvlLamp(fl.x,y+2.45,fl.z,0.7,10,false,0); }
   if(chance(0.30)){ var fw=lvlFrame(P,r1+0.24,wpos[0],y); brfSkip(3); lvlFur('br_h_window_box',fw,0,0,0,lvlOut(fw)); }   /* furniture: a window box */
@@ -236,7 +259,7 @@ function lvlStore(P,R,Lv){
   var r1=R.r1, y=R.y, H=R.H, am=(R.a0+R.a1)/2, arc=(R.a1-R.a0)*r1, th=0.14/r1, rmid=(R.r0+R.r1)/2, ctr=platXZ(P,rmid,am);
   var col=pick(WALLDARKC), open=chance(0.36), dw=Math.min(3.4,arc*0.34), dh=3.5, da=(dw/2)/r1;
   var dcol=shade(pick(PLANKC),-0.3);
-  var holes = [], walls = [];                                 /* the front wall is drawn last, its window cut (lvlFront) */
+  var holes = [], walls = [], sHoles = [];                    /* the front wall is drawn last, its window (and doorway: sHoles) cut (lvlFront) */
   R.use='store'; R.open=open; R.wcol=col; R.wins=holes;      /* 57-interiors.js plans the rooms behind the loading floor */
   if(open){
     walls.push([R.a0+th,am-da,y,y+H,''], [am+da,R.a1-th,y,y+H,''], [am-da,am+da,y+dh,y+H,'b']);
@@ -252,10 +275,12 @@ function lvlStore(P,R,Lv){
       else { brfSkip(1); var two=chance(0.6); if(two) brfSkip(1); lvlFur('br_h_sack_pile',fi,u,v,0,fi.ry,{v:two?1:0,setting:'indoor'}); } }   /* furniture: sacks */
   }else{
     walls.push([R.a0+th,R.a1-th,y,y+H,'']);
-    SECTOR('timber',P,r1,r1+0.05,am-da-0.2/r1,am+da+0.2/r1,y,y+dh+0.22,TIMBERC[0],{faces:'o',step:30});
-    SECTOR('plank',P,r1,r1+0.10,am-da,am-0.03/r1,y,y+dh,dcol,{faces:'o',step:30});
-    SECTOR('plank',P,r1,r1+0.10,am+0.03/r1,am+da,y,y+dh,shade(dcol,0.06),{faces:'o',step:30});
-    [0.7,2.6].forEach(function(hh){ SECTOR('timber',P,r1,r1+0.15,am-da,am+da,y+hh,y+hh+0.16,shade(TIMBERC[2],-0.45),{faces:'o',step:30}); });
+    /* the doorway is real (the owner's doors, 2026-11-03): its opening cut in the front wall and a double door that opens and
+       shuts (54-openings.js, core/door), drawn shut in the wall as it was; its battens were drawn across both leaves, so they
+       are gone with the plate they were nailed to */
+    lvlDoorway(P,r1,am,y,dw,dh,sHoles);
+    [-1,1].forEach(function(sd){ var c=platXZ(P,r1-0.12,am+sd*da/2), hg=platXZ(P,r1-0.12,am+sd*da);
+      mvLeaf([c[0],y,c[1]],platOutDir(P,am+sd*da/2),dw/2,dh,{ hinge:hg, col:sd<0?dcol:shade(dcol,0.06), t:0.08 }); });
   }
   /* stencilled tally mark */
   var ma=am+(chance(0.5)?1:-1)*(da+(dw/2+1.2)/r1), mc=shade(WALLC[4],0.1);
@@ -267,7 +292,7 @@ function lvlStore(P,R,Lv){
     else { var fm=lvlFrame(P,r1+0.10,ma,y+2.55); lvlDiscV('timber',fm.x,fm.y,fm.z,fm.ox,fm.oz,0.28,shade(CLOTHC[2],-0.2),6); }
   }
   if(chance(0.3)) lvlWindow(P,r1,am-(da+(dw/2+1.4)/r1)*(ma>am?1:-1),y+3.7,0.8,0.42,false,null,holes);
-  walls.forEach(function(w){ lvlFront('wall',P,r1-0.25,r1,w[0],w[1],w[2],w[3],col,holes,w[4]); });
+  walls.forEach(function(w){ lvlFront('wall',P,r1-0.25,r1,w[0],w[1],w[2],w[3],col,holes.concat(sHoles),w[4]); });
   /* hoist beam + tackle over the gallery rim */
   if(chance(0.55)){
     var np=lvlPostCount(P,Lv), ah=Math.round(am/TAU*np)/np*TAU;
@@ -517,14 +542,14 @@ function lvlSatApt(P,R,Lv){
   gh = Math.min(gh, 1.2);
   var holes = [];                                             /* the front wall is drawn last, its windows cut (lvlFront) */
   SECTOR('timber',P,r1,r1+0.06,gapA+gh,gapA-gh+TAU,y+H-0.4,y+H-0.12,shade(pick(CLOTHC),-0.2),{faces:'o',step:3});
-  var circ=TAU*r1*(P.sx+P.sz)/2, n=clamp(Math.round(circ/6.5),3,7), a0=gapA+gh, span=TAU-2*gh, shut=shade(pick(AWNINGC),-0.2), doors=0;
+  var circ=TAU*r1*(P.sx+P.sz)/2, n=clamp(Math.round(circ/6.5),3,7), a0=gapA+gh, span=TAU-2*gh, shut=shade(pick(AWNINGC),-0.2), doors=0, dHoles=[];
   R.use='lodgings'; R.doorAngs=[]; R.gapA=gapA; R.gh=P.bays.length?gh:0; R.wcol=col; R.wins=holes;   /* one lodging per door (57-interiors.js) */
   for(var i=0;i<n;i++){ var a=a0+span*(i+0.5)/n;
-    if(i%2===0 && doors<3){ lvlDoor(P,r1,a,y,0.95,2.05,shade(pick(TIMBERC),0.1)); doors++; R.doorAngs.push(a);
+    if(i%2===0 && doors<3){ lvlDoor(P,r1,a,y,0.95,2.05,shade(pick(TIMBERC),0.1),dHoles); doors++; R.doorAngs.push(a);
       if(chance(0.5)){ var fl=lvlFrame(P,r1+0.35,a+0.9/r1,y); lvlLamp(fl.x,y+2.4,fl.z,0.6,9,P.leafOf&&P.leafOf.kind==='spider',0); } }
     else lvlWindow(P,r1,a,y+1.15,0.8,1.0,false,shut,holes); }
-  if(P.bays.length) lvlFront('wall',P,r1-0.2,r1,gapA+gh,gapA-gh+TAU,y,y+H,col,holes,'s');
-  else lvlFront('wall',P,r1-0.2,r1,0,TAU,y,y+H,col,holes,'');
+  if(P.bays.length) lvlFront('wall',P,r1-0.2,r1,gapA+gh,gapA-gh+TAU,y,y+H,col,holes.concat(dHoles),'s');
+  else lvlFront('wall',P,r1-0.2,r1,0,TAU,y,y+H,col,holes.concat(dHoles),'');
   if(chance(0.5)) lvlWashing(P,Lv,a0+span*rr(0.2,0.8));
   lvlReg({ name:P.name, kind:'apartment', label:'Bough-platform lodgings', plat:P.id, lvl:R.lvl, x:P.x, z:P.z, y:y, h:H, r:r1 });
 }
@@ -718,6 +743,10 @@ function gtFacade(S,T,F,a,y,kind,W,H,K,yCap){
   if(leaf){
     var dc = kind==='vault' ? shade(TIMBERC[2],-0.25) : shade(pick(PLANKC),-0.28);
     SECTOR('plank',F,rP+0.12,rP+0.17,ad-da,ad+da,y+0.05,y+dh,dc,{faces:'o',step:30});
+    /* a carved front on the trunk: nothing behind it, so its door is a LOCKED door (core/door; 54-openings.js), a record only:
+       the leaf stays as drawn and never opens */
+    var gc=gtP(T,rP+0.145,ad,y+0.05), gh=gtP(T,rP+0.145,ad-da,y+0.05);
+    mvLeaf(gc,[Math.cos(ad),Math.sin(ad)],dw,dh-0.05,{ hinge:[gh[0],gh[2]], locked:true, draw:false });
     if(kind==='storehouse'){
       SECTOR('timber',F,rP+0.17,rP+0.2,ad-0.04/r,ad+0.04/r,y+0.05,y+dh,shade(dc,-0.5),{faces:'o',step:30});
       [-1,1].forEach(function(sg){ lvlBeam('timber',gtP(T,rP+0.2,ad+sg*0.12/r,y+0.3),gtP(T,rP+0.2,ad+sg*(da-0.1/r),y+dh-0.3),0.06,0.16,TIMBERC[2],false);
@@ -728,8 +757,9 @@ function gtFacade(S,T,F,a,y,kind,W,H,K,yCap){
       if(kind==='vault'){ var lk=gtP(T,rP+0.22,ad+da*0.55,y+dh*0.5); lvlDiscV('timber',lk[0],lk[1],lk[2],ox,oz,0.13,gtIron(),6); }
     }
   }else{
-    /* open arch: the lit room behind reads as one tall pane */
-    SECTOR('wall',F,rP+0.005,rP+0.02,ad-da,ad+da,y+0.05,y+dh,shade(col,-0.85),{faces:'o',step:30});
+    /* open arch: a portal on a solid trunk, so the room it opens on is a card in the room's colour (core/door KGLASS 'room';
+       it was a near-black panel, a dark void), lit at night by the lamp in the arch */
+    SECTOR('wall',F,rP+0.005,rP+0.02,ad-da,ad+da,y+0.05,y+dh,typeof KGLASS!=='undefined'?KGLASS.SPEC.room.color:0x6e5a46,{faces:'o',step:30}); if(typeof GOPEN!=='undefined') GOPEN.cards=(GOPEN.cards||0)+1;
     var pp=gtP(T,rP+0.3,ad,y+dh-0.55); lvlLamp(pp[0],pp[1],pp[2],0.7,10,cool,0.35);
   }
 

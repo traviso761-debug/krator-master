@@ -46,8 +46,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # (add sim to see a stub fail).
 # Left out of the profile: atmos (see KNOWN_ISSUES.md).
 EXPORT_BOX = [-300, -900, 0, -600]
-# a station's box: the lagoon's on its north-east motu (the island's box is open lagoon there); picked by the page's name in run()
-STATION_EXPORT_BOX = {'lagoon': [2150, -2030, 2450, -1730]}
+# a station's box: the lagoon's on its north-east motu (the island's box is open lagoon there), the high isle's in its great valley; picked by the page's name in run()
+STATION_EXPORT_BOX = {'lagoon': [2150, -2030, 2450, -1730], 'high': [1980, -100, 2280, 200]}   # high: the great valley's floor
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage

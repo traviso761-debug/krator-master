@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 14 (11%) | 0 (0%) | 3 (2%) | 47 (37%) | 62 (49%) |
+| KB | 14 (11%) | 0 (0%) | 3 (2%) | 50 (40%) | 59 (47%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,15 +14,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-cut-field.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the bowl, the field, the warp: no three.js, no DOM (tests/test-cut.js) |
-| `src/45-host-stage.js` | 9.9 | [web] | 0 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | station 1's STAGE (its ground, zones and fields are data a port re-reads) |
-| `src/46-biome-cut-warp.js` | 10.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the warp laid on a read-in kit's stores at placement: the rules are 41's |
+| `src/45-host-stage.js` | 10.1 | [web] | 0 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | station 1's STAGE (its ground, zones and fields are data a port re-reads) |
+| `src/46-biome-cut-warp.js` | 10.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the warp laid on a read-in kit's stores at placement: the rules are 41's |
 | `src/47-host-land.js` | 11.5 | [web] | 16 | 2 | 1 | 0 | 0 | 2 | 4 | 0 | 0 | 0 | 0 | renderer, light, ground mesh, far ground, BIO.init |
 | `src/50-biome-cut-species.js` | 14.5 | [draw] | 0 | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the natives' records (data) and their geometries and materials |
 | `src/55-biome-cut-natives.js` | 12.3 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: CUT.plan (records, KRAND per cell) and CUT.draw |
 | `src/57-biome-cut-melon-lichen.js` | 9.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the melon and lichen planners (records) and their drawing |
 | `src/60-biome-cut-camp.js` | 6.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the camp's record and its drawing |
 | `src/70-biome-cut.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | CUT.build: the plan, then the draw |
-| `src/88-host-build.js` | 4.1 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | the build order |
+| `src/88-host-build.js` | 4.5 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | the build order |
 | `src/89a-host-atmos.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost |
 | `src/89s-host-sky.js` | 3.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky, the ridges cast from the bowl, the echoes' light |
 | `src/89t-host-weather.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindWeather, the wet hollows, the height fog (the dawn mist, the walls' cloud band), the rain cover |

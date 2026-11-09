@@ -23,17 +23,17 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 11 | the gorge floor (43); the rock (KSTACKS records: core/terrain/37-core- (58); the station's say: STAGE (47 reads it; the pitch (83) |
-| `47-host-land.js` | 33 **big** | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (69); the floor (one mesh: three layers by vertex weig (94); the rock (KSTACKS meshes): the walls and the top (147); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (218); THE ICEFALLS (the hoar table): the hanging garde (249); the water: the stream's ribbon, the rain pools,  (273) |
+| `47-host-land.js` | 34 **big** | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (69); the floor (one mesh: three layers by vertex weig (94); the rock (KSTACKS meshes): the walls and the top (151); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (224); THE ICEFALLS (the hoar table): the hanging garde (255); the water: the stream's ribbon, the rain pools,  (279) |
 | `50-biome-korona-species.js` | 42 **big** | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (62); harvest (biomes/FRUIT.md; kits/crops) (73); the small plants and the carnivores, tagged (82); leaf textures (procedural, greyscale: the fallba (110); geometries (the necanyons kit's, read in place)  (149); materials (155); THE PUNJI PIT: a buried pitcher with a membrane  (204); instanced items: the owner's sheets by cell, two (332) |
 | `55-biome-korona-trees.js` | 11 | the placement grid (the necanyons zones + Korona (12); keep-clear between trees (core/space) (30); the builders: (T, st, lv) with lv 2 near, 1 mid (42); impostors (the far trees) (67); the passes (data: species, cell, acceptance by z (81) |
 | `57-biome-korona-carnivores.js` | 22 | the plants (26); the passes (126) |
 | `60-biome-korona-floor.js` | 3 |  |
 | `70-biome-korona.js` | <1 |  |
-| `85-host-far.js` | 3 |  |
+| `85-host-far.js` | 4 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 4 |  |
 | `89w-host-water.js` | 5 |  |
-| `89z-host-build.js` | 8 |  |
+| `89z-host-build.js` | 11 |  |
 | `98z-host-mirror.js` | 1 |  |
 | `99-host-take.js` | 12 | the inspector's words: a plant names its species (34); the probe's budgets and the kit's own checks (ve (52); the page, handed to the host (100) |
 | `99-tail.html` | <1 |  |

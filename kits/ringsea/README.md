@@ -73,9 +73,9 @@ See `API.md` for the vessel frame and the builders.
 
 ## Files
 
-`src/00-30, 92, 93, 99` are vendored from `settlements/reedlake` (see `KNOWN_ISSUES.md`
-for the two deliberate changes). `verify.py`/`jscheck.py` come from the same place, with
-`_api.extra()` vessel invariants and a pre-installed-Chromium fallback.
+`src/10-core.js`, `12-stats.js`, `30-kit.js` and `99-tail.html` are vendored from `kits/ancients/src` (`build.py --vendor-check`;
+`KNOWN_ISSUES.md` for the drift). The viewer shell (`00-head.html`, `92-camera.js`, `93-labels.js`, `verify.py`, `jscheck.py`) began as
+Reed Lake's and is this kit's own until it moves onto `core/host` and the harness (`KNOWN_ISSUES.md`).
 
 ## Faction colours
 

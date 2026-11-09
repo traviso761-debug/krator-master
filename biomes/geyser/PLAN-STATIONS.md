@@ -5,10 +5,9 @@ and the Ring Sea's isles, where most of the model's vents are. But the model als
 forested, or in ice, where a geyser field looks nothing like the showcase; and Korona's plume is active. Four stations add them. The page as built stays station 1.
 Stations follow the Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status (2026-11-03, the rebuild turn, pair 7):** the showcase page (station 1) is rebuilt on the core (below, "Core adoption"), and the
-Hearths' station 6, **the Stills** (`--station stills`), is built on its ground. Stations 2-5 (`puna`, `basin`, `corona`, `ice`) are still a
-plan: the owner gave `puna`'s and `basin`'s Oidong, Godstep and rift-rim sites to the Hearths' hosts (2026-11-02; `biomes/hearths/PLAN.md`
-"Overlap, settled"), so each keeps only the sites the Hearths do not take, and none is built in this turn (below, "Owed").
+**Status:** the showcase page (station 1) is rebuilt on the core (2026-11-03, "Core adoption" below); the Hearths' station 6, **the Stills**
+(`--station stills`), is built on its ground; **stations 2-5 are built** (2026-11-09, below, "Stations 2-5 as built"), on map 5.1's sites, as four
+stations on one shared base (`stations/field/`). The sections between here and "Stations 2-5 as built" are the plan as written on map 4.23.
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `DATA.vents`, 79 in all)
 
@@ -158,6 +157,58 @@ The universal set (`BACKPORT.md` sections 1 and 5) and the kit's row, on both pa
 | Brine looks, karst-spring vents (the row) | **dropped**: the springs' colour is core/water's thermal ramp already; no karst here | |
 | `BIO.fung`, `BIO.bamboo` | the kit has no fungoid or bamboo part of its own; 33 is listed for the hyperjungle and the Stills | |
 
-**Owed:** stations 2-5 (each a session: `puna` first, at the e inner wall's, the east's and the Lesser Throne's vents); the hyperjungle's own
+**Owed:** (stations 2-5 are built: below) the hyperjungle's own
 universal set on this page (its `KGROUND` ground is not this page's: the basin's ground is the kit's); `WATER.audit` on the creek (57 is listed,
 no check reads it yet); the Godot side of the new pieces (the exporter carries the hazards and the stills' records; nothing judged in Godot).
+
+## Stations 2-5 as built (2026-11-09)
+
+**One base, four sites.** `stations/field/` is a geyser field on any ground (station.json `"base": "field"`): its stage (45), land and binding (47),
+far field (85), build (88), sky (89), air (89w) and take (98) read the station's **site record** (`44s-host-site.js`, `STATION_SITE`): the land as a
+function, the field's centre and reach, the air (mean, wind, pressure, haze, fog), the layout (`FIELD_SPEC`: the field's geysers, springs, acid ground,
+fumaroles and dead rings, each record from `KRAND.hash`, sized per site), which of the kit's tree passes and floor run, the station's own flora, its
+words, views and checks. The shared host fragments take a station's ground through `STATION_GROUND` (84: patches, paint, layers, the run-off's colour
+ramp) and its views and checks through `STATION_TAKE` (99). The cold stations' library sets are `materials.json` slots `st.*`, packed only into the pages
+whose `station.json` lists them (`"tex"`), so the showcase and the Stills carry none. **The cold grounds' plants** (a lodgepole pine on the library's
+needles and scaled bark, ichu bunch grass, yareta cushions) live in a registry of their own (`stations/field/75-biome-geyserfield-flora.js`,
+`FIELDFLORA`, kit `geyserfield`): the kit's species list (50/55/60) and its keys and indices are untouched for its readers.
+
+**The sites moved** from the 4.23 plan: the Hearths' hosts took the Oidong rim's, Godstep's and the rift rim's vents (the owner, 2026-11-02), and map 5.1
+gave the plan's "east" vent (px 1622,1166 on 5.1) to the Loom-Chasm kit as Mount Caelum. The new eastern vents of map 5.1 (kind `geyser`, 2.0-4.7 km)
+supplied the high desert and the mountain forest. Surveyed with `tools/scale-model` (`smodel.page`; heights, the monthly temperatures, rain, class):
+
+| Station | Page | 5.1 px (old canvas) | Height | Air | Mean (warm/cold) | Rain | Class | Earth basis |
+|---|---|---|---|---|---|---|---|---|
+| 2 `puna` | `dist/geyser-puna.html` | 1574,1642 (1302,1312) | 3,896 m | 0.98 atm | 0 (+13/-13) | 220 mm | ET | El Tatio |
+| 3 `basin` | `dist/geyser-basin.html` | 1454,1684 (1182,1354) | 3,249 m | 1.07 atm | +9 (+22/-4) | 345 mm | Dwc | Yellowstone |
+| 4 `corona` | `dist/geyser-corona.html` | 1123,517 (851,187) | -1,892 m | 2.03 atm | +36 (+41/+32) | 2,500-3,400 mm | WS (XA round it) | Yellowstone's ring faults, Haukadalur |
+| 5 `ice` | `dist/geyser-ice.html` | 1024,1485 (752,1155) | 7,385 m | 0.64 atm | -21 (-8/-34) | 0 | HF | Erebus, Kverkfjoll |
+
+- **`puna`**: a shallow basin on the altiplano, gravel fans, rims 150-400 m up within 3 km and a stratovolcano 9 km north-east (far field). Seven small
+  geysers (2-9 m, every 3-25 minutes), five spouters, sixteen springs (silica, sulphur, iron), an acid field; the run-off's crusts orange and black,
+  no greens; borate and salt crust on the flats (`st.salt`), the ash-grey gravel (`st.ash`); ichu and yareta only where the run-off warms the ground;
+  no tree. The page loads at 11:00, which at this longitude is in the giant's eclipse season's dark: the views are at day (13:00).
+- **`basin`**: a geyser basin a few metres into a forested shelf, the range rising south (4.5 km 10 km out); six geysers (10-45 m, one to ten hours),
+  a great prismatic spring (30 m) and twelve more, an acid field; the kit's warm-ground life on the floor (panic grass, moss); **lodgepole pine** round
+  it (75) on the library's needles (`st.needles`, `st.pine`, `st.pinebark`); three stands of **bobby-sock pines** (the kit's snags, sized as lodgepoles:
+  the page's copy of the snag's record); the mats in cooler colours. `?snow=1`: winter, the snow (`st.snow`) on all but the warm ground.
+- **`corona`**: a Korona trench floor in the hyperjungle (read in place as on the showcase), the field strung along a ring fault (a 24 m scarp, the
+  dome's side up): eight superheated geysers (25-75 m), four spouters, eighteen springs each of its own chemistry (sulphur, iron, copper, silica: the
+  quilt), two acid fields, drowned jungle on the fault; **the hazard is the point**: taboo ground over the four hottest springs' crusts and every
+  geyser's mound (`tags.taboo` with a hot-ground hazard), gas in the acid hollows (KHAZ `gasVent`). No model vent here: the field is placed from
+  Korona's own data, as the plan said.
+- **`ice`**: an icefield on the cone's flank (`st.ice`, the library's aufeis), the field melted into it as a hollow of warm ash (`st.ash`) under a 14 m
+  ice cliff; sixteen **ice towers** round it on the ice (KGLACIER's drawer, each a fumarole's gas), three **ice caves** melted into the cliff, lit blue
+  from within; four short geysers (4-14 m), meltwater pools; microbial films only; no plant.
+
+**Look decisions for the owner** (software GL shots only; none judged on a GPU):
+- The ichu, yareta and lodgepole are new plants of this kit's stations, not readers of another kit: no kit drew them (riftrim, which the plan named for
+  the basin's forest, has no source yet). The lodgepole is a bole and a narrow crown of needle clumps, no limbs: a far-reading tree.
+- The run-off's colour ramps per station: puna black to orange, basin olive and brown, ice pale green and brown; corona keeps the kit's ramp in its
+  run-off and puts the chemistry in each spring's own disc.
+- Corona's ring walls (20-40 km off) are out of the far field's 14 km: its horizon is jungle and haze. The basin's range is real far-field ground.
+- The geysers' times are each site's own, in real time (no demo times): puna's every few minutes, basin's and corona's hours, ice's under an hour.
+
+**Not built:** the frost and the ice round puna's pools in the morning (core/water's ice), the snow kept off the hot ground by KTHERM's mask (basin's
+winter is a paint switch), the hearths stations' sites (the Hearths' hosts'), the fauna, corona's link to Korona's own pages, the Godot export's check
+of the new records.

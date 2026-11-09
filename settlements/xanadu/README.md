@@ -8,6 +8,10 @@ detailing from **India** (jharokha bay windows on carved brackets, jali screens,
 arches and iwans, tile mosaics, bulbous turquoise domes, the baths and the chahar bagh gardens). Gold is on
 everything wealthy, religious or civic: the valley's mines pay for it.
 
+**The kit's files are `kits/xanadu/src` since 2026-11-03** (`kits/xanadu/README.md`; MODULARITY-PLAN.md step 4), with
+`kit_bundle.py`. This folder is the page that shows them (the `xanadu` target, the kit's sheet) and the city of Erewhon;
+its build reads the kit in place, so everything below holds.
+
 Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (vendored through `../highlands`), so
 the kit drops into a settlement target the same way the Highlands and Iziz sets do.
 
@@ -33,6 +37,14 @@ culled by range and view each frame (the runtime LOD), the biome's own chunk LOD
 python3 tools/erewhon-map.py <map.png> [--preview out.png]     # regenerate targets/erewhon/83-er-data.js
 python3 verify.py dist/erewhon.html --assert --views "Overview,The palace precinct" --out shots/er   # ~2 min a shot in SwiftShader
 ```
+
+## Doors and glass (core/door)
+
+The kit's doors are real leaves and its windows real glass (`kits/xanadu/README.md`, "Doors and glass"): the build reads
+core/door's `10`, `20` and `90` and the Vernacular's `69e5-iziz-openings.js` in place (`DOOR_FILES`), `src/90-xa-doors.js` hands
+each bake's leaves to `KDOORHOST` (Erewhon bakes chunk by chunk: `90b-er-build.js` calls `xaDoorsBind()` after each) with the
+frame tick, and `99-start.js` gives E and its tip. Every door is locked (the kit's bodies are solid; the pages have no core/walk
+and no interiors). `window._doors` counts the doors, the panes and the `vDarkB` left (wells, a shaft, ovens and kilns).
 
 ## Level of detail (core/lod)
 

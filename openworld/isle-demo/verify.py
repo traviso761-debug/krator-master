@@ -11,7 +11,7 @@ highway, no town tile). The isle's own checks:
   - the towns stand on land, the climate the assay found (Kautoa Af, Valapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
-  - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
+  - the hamlets (core/hamlet H4): the resource villages (five since 2026-11-04: Valapo's quarry) made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
@@ -76,7 +76,7 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     if(!(v.census&&v.census.pop>0&&v.census.pop<=500))bad.push(v.id+': population '+(v.census&&v.census.pop));
     if(v.site&&WORLD.water(v.site.x,v.site.z)>WORLD.H(v.site.x,v.site.z)-.5)bad.push(v.id+': its green is in the water');}
    HM.stats.errors.forEach(e=>bad.push(e));const A=HM.tags();if(A.unknown)bad.push(A.unknown+' unknown tag values');}
-  R.push({name:'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
+  R.push({name:'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
    detail:bad.length?bad.join('; '):HM.villages.map(v=>v.focus+' '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  return R;}"""
 
@@ -102,11 +102,22 @@ EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'b
 
 # the hamlets in the sim (47h): the villages this map lays out, declared with their towns (48t), run two days; the checks
 # of settlements/isle-demo 47h (ISLE.hamletChecks) and their negatives
+# the thieves' guilds on the open world (88t): each town's under its tavern in that town's registry, its sign and pin drawn
+# in the town's group over it, a diamond on the region map (MAP_MARKS) at the guild; the negative moves one mark 2 km
+GUILD_JS = r"""(neg)=>{const S=_isleTowns.stats,gm=S.guilds||[],MM=window.MAP_MARKS||[];if(neg==='moved'&&MM[0])MM[0].x+=2000;
+ const ok=gm.length===2&&gm.every(g=>{const P=SIM.R.place[g.place],tw=ISLE_TOWNS_W.plans.find(p=>p.town===g.town),R=tw&&tw.tags.get(g.record),m=MM.find(k=>k.label.endsWith(g.town));
+   return P&&P.guild&&P.kind==='tavern'&&R&&R.name==="Thieves' guild"&&m&&Math.hypot(m.x-P.x,m.z-P.z)<1;});
+ let signs=0;HOST.scene.traverse(o=>{if(o.name==="thieves' guild sign")signs++;});
+ if(neg==='moved'&&MM[0])MM[0].x-=2000;
+ return{name:"the thieves' guilds on the map: one a town, a landmark under its tavern, its sign drawn, a mark on the region map",ok:ok&&signs===2,
+  detail:gm.map(g=>g.town+' '+g.place+' record '+g.record).join('; ')+'; '+signs+' signs, '+MM.length+' map marks'};}"""
 HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
  const negs=[];let B=cp(b);B.villages['hamlet-mine'].goods.ore.made=a.villages['hamlet-mine'].goods.ore.made;negs.push(Object.assign({neg:'unmade'},pick(ISLE.hamletChecks(a,B),/makes its goods/)));
  B=cp(b);B.villages['hamlet-lumber'].landed.timber=(B.villages['hamlet-lumber'].landed.timber||0)-15;negs.push(Object.assign({neg:'lost'},pick(ISLE.hamletChecks(a,B),/landed in its town/)));
+ B=cp(b);B.villages['hamlet-mine'].site.id='elsewhere';negs.push(Object.assign({neg:'record'},pick(ISLE.hamletChecks(a,B),/its record from the map/)));
  B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
+ B=cp(b);{const K=B.ledger.towns.kautoa;(K.irontools||(K.irontools={total:0})).total+=500;}negs.push(Object.assign({neg:'iron pile'},pick(ISLE.hamletChecks(a,B),/ceiling/)));
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 
@@ -126,7 +137,11 @@ async def run(a):
         print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
         if a.assert_:
             has = await pg.evaluate(HAS)
-            print('--- the world\'s checks (src/world/91-world-probe.js) ---')
+            # the world's checks read the flora round the camera: the start view (little-demo's, west of a Shade this region
+            # does not have) falls back to (-6000, 2500), deep sea, where no tile holds a record; so over Kautoa first, settled
+            await pg.evaluate("(()=>{const K=WORLD_DATA.meta.settlements.find(s=>s.name==='Kautoa');CAM.setView(K.x+2500,K.z-2500,300,0,-.2);})()")
+            await pg.evaluate('_api.settle(240000)')
+            print('--- the world\'s checks (src/world/91-world-probe.js, over Kautoa) ---')
             for r in await pg.evaluate('_api.hostChecks()'):
                 need = APPLIES.get(r['name'])
                 if need and not has[need]:
@@ -139,10 +154,19 @@ async def run(a):
                 if not r['ok']: fails.append(r['name'])
             print('--- negative controls (each must fail) ---')
             for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
-                            ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
+                            ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged')):
                 r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                 print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                 if r['ok']: fails.append('negative ' + neg)
+            print("--- the thieves' guilds (settlements/isle-demo 47c) ---")
+            for neg in (None, 'moved'):
+                r = await pg.evaluate(GUILD_JS, neg)
+                if neg is None:
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                    if not r['ok']: fails.append(r['name'])
+                else:
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + " negative (a guild's map mark 2 km off) : " + r['detail'])
+                    if r['ok']: fails.append('negative guild')
             print('--- the camps (core/camp) ---')
             nm = 'the camps: pitched whole, a band of 40 to 70, no overlap, on good ground, inside the hedge, cleared, tagged'
             r = (await pg.evaluate('_camps.checks()'))[0]

@@ -98,7 +98,7 @@ function biomeChecks(){const R={};
  // the invariants of station 1's own features a station does not have (no tower, no falls on a mire stream...): verify.py passes them as 'not on this station'
  R.skip=typeof STATION_SKIP!=='undefined'?STATION_SKIP:[];
  // every species placed at least once
- R.missing=NHL.SPECIES.filter((S,i)=>!NHL.TREES.some(T=>T.sp===i)).map(S=>S.key);
+ R.missing=NHL.SPECIES.filter((S,i)=>!S.station&&!NHL.TREES.some(T=>T.sp===i)).map(S=>S.key);   /* a station's own species (S.station) are its own check's */
  R.bySpecies=NHL.SPECIES.map((S,i)=>S.key+':'+NHL.TREES.filter(T=>T.sp===i).length).join(' ');
  // the stream descends: its surface never climbs, its bed is always under its surface
  let mono=true,under=true;for(let i=1;i<STREAM.level.length;i++){if(STREAM.level[i]>STREAM.level[i-1]+1e-6)mono=false;if(STREAM.bed[i]>STREAM.level[i])under=false;}
@@ -124,7 +124,7 @@ function biomeChecks(){const R={};
 // THE HOST'S OWN CHECKS (verify.py runs them when present), each with a broken input that must fail
 // species and plants that yield something edible the kit does not draw as a catalog fruit (tips, sap, shoots...): named, not hidden
 const FRUIT_NOT_DRAWN=['greatspruce','shadowhemlock','mossmaple','greattrumpet','trumpet','normanspruce','mountainmaple','larch','birch','cragpine','frosttrumpet','forestlime',
- 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms','fanleaf','banyan'].concat(NHL.FRUIT_NOT_DRAWN_MORE||[]);   /* a station's own (stations/bogs: the cloudberry) */
+ 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms','fanleaf','banyan','copperpine','whitebark'].concat(NHL.FRUIT_NOT_DRAWN_MORE||[]);   /* a station's own (stations/bogs: the cloudberry) */
 const HCHK={
  // fruit: every fruiting species and plant names a catalog piece, and each kind of fruit is drawn on the stage
  // (N: instances of 'berry' = arils, rowan, bilberries; 'lantern' = lantern pods; 'mast' = beechmast and acorns)
@@ -153,7 +153,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=fruitN();
  if(WATER.edgeAudit)add('a tree in the middle of the tarn',edgeCheck([{x:TARN.x,z:TARN.z,sp:0,lv:2,rb:.5}]));
  add('a fruiting species with no catalog fruit',HCHK.fruit(NHL.SPECIES.map(S=>S.key==='rowan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),NHL.PLANTS,N));
- add('no '+FRUIT_DRAWN[FRUIT_DRAWN.length-1]+' drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{[FRUIT_DRAWN[FRUIT_DRAWN.length-1]]:0})));
+ if(FRUIT_DRAWN.length)add('no '+FRUIT_DRAWN[FRUIT_DRAWN.length-1]+' drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{[FRUIT_DRAWN[FRUIT_DRAWN.length-1]]:0})));
  if(typeof CUT!=='undefined'&&NHL.CUT_LICHEN){add('the lichen as the bowl draws it (nested circles)',CUT.checkLichenPlain(NHL.CUT_LICHEN.map(q=>Object.assign({},q,{nest:{r:q.r*.4,c:0,dx:0,dz:0}}))));
   add('the reeds in the bands the bowl gives them (heights on a 0.3 m step)',CUT.checkReedBed(NHL.CUT_REEDS.map(r=>Object.assign({},r,{h:Math.round(r.h/.3)*.3}))));}
  return R;}

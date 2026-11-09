@@ -45,8 +45,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   its dunes were left as they were. A later pass could give it the bench's ground.
 - [ ] **The front's pixel is 2,179 m** on 5.1 (Round 2 restored it), above the plan's band (~800-1,800 m). The page's ground is its own
   compressed function, so only the sky's air reads the pixel; re-site it if the owner wants the number in the band.
-- [ ] **KSHADOW is the page's own switch** (`88`: `SHADOW_SW`, the panel's `shadows` button, `?shadow=1`), off at load; core/shadow had
+- [x] **KSHADOW is the page's own switch** (`88`: `SHADOW_SW`, the panel's `shadows` button, `?shadow=1`), off at load; core/shadow had
   no switch when this turn ran. When core/shadow gains one, the page should take it. Its cost here is not measured (no GPU).
+  **Closed 2026-11-08:** `SHADOW_SW` is gone; `88`'s `SHADOW_ATTACH` (called from `99` once the page is built) attaches on core's own switch,
+  off at load (core's button or `?shadow=1` on, `?shadow=0` none). Still not timed.
 - [ ] **Station 1 is over its triangle budget**: 21.4M scene triangles against 16M (`farside/floor` 14.8M against 9M), measured in
   software GL on the rebuilt page (`verify.py --assert`; a warning, not a failure; the draw at a view is 10.8-11.9M, 93 calls). The bench's
   bare rock (`FIELD.rock`) brings the strand's floor (rock wrack, sea palms) onto ~700 m of bench where the kelp used to stand. A

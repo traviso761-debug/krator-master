@@ -45,6 +45,8 @@ const VIEWS={
  // the live fire (89): this view lights it, four minutes in, and frames its front from the side
  'A wildfire running':FIREFX.presetView(),
 };
+// A STATION (stations/<name>/45-host-stage.js: STATION) drops the views its ground has no place for and adds its own
+if(typeof STATION!=='undefined'){(STATION.dropViews||[]).forEach(k=>delete VIEWS[k]);if(STATION.views)Object.assign(VIEWS,STATION.views({look,across,atTree,nearTree,gh,burnOf,P}));}
 const VIEW_ACT={'A wildfire running':()=>FIREFX.preset()};
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -125,6 +127,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('a live fire runs downwind and stops at the refuges',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:FIRE_WIND,maxT:900})));
  add('every plant material carries the fire',HCHK.patched(FIREFX.patched()));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ /* a station's own checks, and the kit's it has no ground for (STATION.skipChecks: named, so the page says what it skipped) */
+ if(typeof STATION!=='undefined'){const sk=STATION.skipChecks||[];for(let i=R.length-1;i>=0;i--)if(sk.indexOf(R[i].name)>=0)R.splice(i,1);if(STATION.checks)STATION.checks(add,{HCHK,P});}
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  const C=(CRATERDRY.COUNTS||[]).slice();C[SPI('swordspire')]=0;add('a species never placed',HCHK.placed(C));
@@ -143,22 +147,47 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fire blown back on itself',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900})&&Object.assign(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900}),{wind:FIRE_WIND})));
  add('no plant material patched',HCHK.patched(0));
  add('a camera under the seep',HCHK.camerasOut([{view:'under',x:SEEP.x,y:SEEPL-5,z:SEEP.z}]));
+ if(typeof STATION!=='undefined'&&STATION.negatives)STATION.negatives(add,{HCHK,P});   /* each station check's broken input */
  return R;}
+// ---------------------------------------------------------------- the editor's world: fauna mode (core/host 98; sedesert's way)
+// kits/fauna's animals (39-host-fauna.js: the wild, ash, livestock and mounts groups), this biome's own first (tagged crater-drylands: the bison,
+// the ash runner, the salamander, the Scyvoi's mounts...), each put down drawn on its own (KratorFauna.build) and registered as a core/tags life
+// record; they idle and graze by KratorFauna.animate on the host's motion time. No ground brushes (sedesert's KFIELD): this ground is not a field.
+// Nothing is placed at load: the fauna kit's plan puts herds in a world, not on a showcase (KNOWN_ISSUES.md)
+const CD_KEY=typeof STATION!=='undefined'?'crater-drylands-'+STATION.key:'crater-drylands',CD_LIVE={};
+const CD_FAUNA=typeof KratorFauna==='undefined'?[]:KratorFauna.list().map(a=>{const E=KratorFauna.entry(a.key),here=(E.tags.biomes||[]).indexOf('crater-drylands')>=0;
+ return {key:a.key,name:a.name,family:here?'this biome':'the steppe and its riders',cls:'life',tags:{diet:E.tags.diet||null,biome:here?'crater-drylands':null}};})
+ .sort((p,q)=>p.family===q.family?(p.name<q.name?-1:1):(p.family==='this biome'?-1:1));
+const CD_WORLD={
+ find:(t,tol)=>KEDITS.match(t,KTAGS.page.records.filter(r=>!r.removed&&!r.set),tol),
+ add(rec){if(rec['class']!=='life'||typeof KratorFauna==='undefined')return null;const E=KratorFauna.entry(rec.key);if(!E)return null;const y=terrainH(rec.at[0],rec.at[2]);
+  const g=KratorFauna.build(rec.key,{variant:0,seed:1+(Math.abs(Math.round(rec.at[0]*7+rec.at[2]*13))%997)});g.position.set(rec.at[0],y,rec.at[2]);g.rotation.y=rec.ry||0;
+  g.userData.inspectLabel=E.name;scene.add(g);
+  const r=KTAGS.page.add({'class':'life',kind:rec.key,key:rec.key,name:E.name,at:[rec.at[0],y,rec.at[2]],ry:rec.ry||0,size:[E.w==null?1:E.w,E.d==null?1:E.d,E.h==null?1:E.h],
+   tags:{diet:E.tags.diet||null,biome:(E.tags.biomes||[]).indexOf('crater-drylands')>=0?'crater-drylands':null},frag:'99-host-take.js (edit)'});
+  CD_LIVE[r.id]={g,phase:(r.at[0]*.37+r.at[2]*.11)%6.283};return r;},
+ move(h,at,ry){const L=CD_LIVE[h.id];if(!L)return;const y=terrainH(at[0],at[2]);h.at=[at[0],y,at[2]];L.g.position.set(at[0],y,at[2]);if(ry!=null){h.ry=ry;L.g.rotation.y=ry;}},
+ set(h,path,value){h[path]=value;},
+ remove(h){const L=CD_LIVE[h.id];if(L){scene.remove(L.g);delete CD_LIVE[h.id];}KTAGS.page.remove(h.id);}};
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands',
- hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). F arms a fire: click the ground to light it",
+KHOST.take({build:typeof STATION!=='undefined'?'crater-drylands-'+STATION.key:'crater-drylands',title:typeof STATION!=='undefined'?STATION.title:'Krator biome — the crater drylands',
+ hint:typeof STATION!=='undefined'?STATION.hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). L arms a fire: click the ground to light it; F walks",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:k=>{if(VIEW_ACT[k])VIEW_ACT[k]();},                        // 'A wildfire running' lights the preset fire
- // the fire's controls (89-host-fire.js): its bar after the view select, F arms a click-to-light (it wins over walking),
+ // the fire's controls (89-host-fire.js): its bar after the view select, L arms a click-to-light (F walks, as on every page),
  // and an armed click lights a fire instead of inspecting
- controls:[FIREFX.bar],keys:{f:()=>FIREFX.arm(!FIREFX.armed())},click:(x,y)=>FIREFX.armed()?(FIREFX.click(x,y),true):false,
+ controls:[FIREFX.bar].concat(typeof AIR_CONTROL!=='undefined'&&AIR_CONTROL?[AIR_CONTROL]:[]),keys:{l:()=>FIREFX.arm(!FIREFX.armed())},click:(x,y)=>FIREFX.armed()?(FIREFX.click(x,y),true):false,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
+ palette:CD_FAUNA.length?{items:CD_FAUNA,build:key=>KratorFauna.build(key,{variant:0,seed:1})}:undefined,
+ edits:{world:CD_WORLD,log:typeof KHOST_EDITS!=='undefined'?KHOST_EDITS:null,
+  template:(it,at,ry)=>({'class':'life',kind:it.key,key:it.key,name:it.name,at,ry}),canEdit:r=>!!CD_LIVE[r.id]},
+ minimap:{title:typeof STATION!=='undefined'?STATION.title.replace(/^Krator biome — /,''):'The crater drylands'},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
@@ -167,3 +196,7 @@ KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands'
  fire:()=>({fires:FIRE.fires.map(f=>({ago:+f.ago.toFixed(2),x:f.x|0,z:f.z|0,frac:+f.frac.toFixed(3),cells:f.cells,failed:!!f.failed})),shares:FIRE.shares()}),
  // the climate at a point, for the probe and for --eval: the fields, the burn and the kit's zones
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),age:FIRE.ageAt(x,z),front:FIRE.frontAt(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=CRATERDRY.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});
+// the animals put down: idle and graze in turn, each on its own phase, on the host's motion time (the pause stops them)
+KHOST.on(function cdFauna(dt,clock){if(typeof KratorFauna==='undefined')return;for(const id in CD_LIVE){const L=CD_LIVE[id],t=clock.t+L.phase,mode=Math.floor(t/9)%3===2?'graze':'idle';KratorFauna.animate(L.g,t,mode,{phase:L.phase});}});
+// the edits the page was made with (edits.json or this browser's draft): applied once, now that the world is made
+if(typeof KHOST_EDITS!=='undefined'&&KHOST_EDITS&&KHOST_EDITS.ops)window._edits=KEDITS.apply(KHOST_EDITS,CD_WORLD,{});

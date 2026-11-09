@@ -60,6 +60,7 @@ A flyer or insect with legs walks by its leg count (2 biped, 4 quadruped, 6 hexa
 anchor walks hand over hand along its bough (the sheet hangs it from one). Every frame starts from the rest pose, so no mode leaves a turn behind.
 
 `KratorFauna.profile(key, breed, pose)` returns `{at(t) -> {z, y, hw, hh}, S, anchors}` or null (t from the tail tip, 0, to the snout, 1).
+A model variant's `userData.anchors` are fitted to its own body (`rig/fit_anchors.js`), so they differ from the procedural variant's; they are the rest pose. `userData.anchorOn[name] = {part, at}` gives the part that carries each anchor and the point on it in that part's frame: tack added there rides a body that moves, as a flyer's torso does when it pitches into flight.
 The anchor names in use: `saddle` (where a rider's hips sit), `bridle`, `chest`, `pack`, `lead`, `headRoot`, `tailRoot`; on the heavy
 beasts `howdah` (a platform's centre on the back), `harness` (the collar) and `trace` (where the traces meet a load); `grip` (a climber's
 hold), `spread<i>` (a glider's limbs in flight). A Beast Rider mount names its tribe as `data.tribe` (the `riders` group).

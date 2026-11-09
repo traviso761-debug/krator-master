@@ -5,6 +5,9 @@ Usage:
   python3 verify.py dist/interiors.html [--assert] [--seeds 3] [--out ./shots] [--rooms] [--eval "()=>..."] [--query lights=keep]
   python3 verify.py dist/interiors-sets.html --sets [--assert] [--seeds 2] [--query set=highlands&only=key] [--out ./shots] [--rooms] [--verbose]
 
+  python3 verify.py dist/interiors-walk.html [--assert]      the walk mockup: coverage, IX.audit per room, IX.auditBuilding, determinism
+The page's name picks the mode: interiors-sets*.html runs as --sets, interiors-walk*.html as the walk check.
+
 --sets: the building-sets sheet (src-sets/, sets/*.js). The same per-room checks (inside, height, overlap,
   door, clearance, reach, required, determinism, builds, measured-*), the planned-building checks and
   plan determinism, the light budget, plus:
@@ -81,12 +84,66 @@ SNAP_JS = ("()=>{const I=window._interiors;return JSON.stringify({plans:I.plans.
            "walkers:I.walkers.map(w=>[0,15,30,45,60,90,119].map(t=>w.at(t)))})}")
 
 
+WALK_SNAP_JS = ("()=>{const I=window._interiors;return JSON.stringify({plans:I.plans.map(p=>KratorInteriors.exportPlan(p)),"
+                "rooms:I.rooms.map(r=>[r.id,r.kind,r.y])})}")
+
+
+async def run_walk(pg, a, fails):
+    """the walk mockup (dist/interiors-walk.html): no walkers, no sheet audit of its own; every room through
+    IX.audit, every building through IX.auditBuilding, coverage, and seed-0 determinism after reseeding."""
+    cov = await pg.evaluate("""()=>{const I=window._interiors;return {items:I.items.length, real:I.items.filter(E=>E.real).length,
+        rooms:I.rooms.length, buildings:I.buildings.length,
+        empty:I.items.filter(E=>E.inst.rooms.length&&!E.inst.rooms.some(R=>(I.plansById[R.id]||{placements:[]}).placements.length)).map(E=>E.item.key),
+        pieces:I.rooms.reduce((s,R)=>s+((I.plansById[R.id]||{placements:[]}).placements.length),0)}}""")
+    print('\nwalk coverage: %d items (%d in real geometry), %d buildings, %d rooms, %d pieces placed' % (
+        cov['items'], cov['real'], cov['buildings'], cov['rooms'], cov['pieces']))
+    if not cov['items'] or not cov['rooms'] or not cov['pieces']:
+        fails.append('walk coverage: no items, rooms or pieces')
+    if cov['empty']:
+        print('  items with rooms but no piece placed:', ', '.join(cov['empty'])); fails.append('walk coverage: unfurnished items')
+    if not a.assert_:
+        return
+    snap0 = await pg.evaluate(WALK_SNAP_JS)
+    h0 = hashlib.sha1(snap0.encode()).hexdigest()[:12]
+    res = await pg.evaluate("""()=>{const I=window._interiors, IX=KratorInteriors, fails=[];
+        I.rooms.forEach(R=>{const P=I.plansById[R.id]; if(!P){fails.push({check:'builds',msg:R.id+': no plan'});return;}
+          IX.audit(R,P,I.catalog).fails.forEach(f=>fails.push(f));});
+        I.buildings.forEach(B=>{try{(IX.auditBuilding(B,I.plansById).fails||[]).forEach(f=>fails.push(f));}
+          catch(e){fails.push({check:'building',msg:(B.id||'?')+': '+e.message});}});
+        return fails;}""")
+    by = {}
+    for f in res:
+        by.setdefault(f['check'], []).append(f['msg'])
+    for c in sorted(by):
+        print('  %-16s FAIL x%d' % (c, len(by[c])))
+        for m in by[c][:6]:
+            print('      ' + m)
+    if not by:
+        print('  every room (IX.audit) and building (IX.auditBuilding): ok')
+    if res:
+        fails.append('%d assertion failures' % len(res))
+    await pg.evaluate("()=>{window._interiors.reseed(1);window._interiors.reseed(0);}")
+    snap1 = await pg.evaluate(WALK_SNAP_JS)
+    h1 = hashlib.sha1(snap1.encode()).hexdigest()[:12]
+    print('\nwalk determinism: seed 0 placements %s, again after seed 1 %s -> %s' % (h0, h1, 'same' if h0 == h1 else 'DIFFERENT'))
+    if h0 != h1:
+        fails.append('walk page not deterministic')
+    panel = await pg.evaluate("document.getElementById('errs').textContent")
+    if panel:
+        print('ERROR PANEL after audit:', repr(panel[:1500])); fails.append('error panel not clean after audit')
+
+
 async def run(a):
     path = os.path.abspath(a.html)
+    base = os.path.basename(path)
+    # the page names its mode: the sets sheet has no walkers (its checks are run_sets), the walk mockup neither
+    if base.startswith('interiors-sets') and not a.sets:
+        print('page is the sets sheet: running as --sets'); a.sets = True
+    walk = base.startswith('interiors-walk')
     if a.out:
         os.makedirs(a.out, exist_ok=True)
-    # serve kits/ (the page loads ../../catalog/*.js by path)
-    async with verify_page(a.html, here=HERE, size=a.size, query=('?' + a.query) if a.query else '', root=KITS, settle_ms=1000) as V:
+    # serve the repo root (the page loads core/catalog/*.js by path)
+    async with verify_page(a.html, here=HERE, size=a.size, query=('?' + a.query) if a.query else '', root=os.path.dirname(KITS), settle_ms=1000) as V:
         pg, errs, fails = V.page, V.errs, V.fails
         if not V.ready:
             print('timed out waiting for the demo to build'); fails.append('build timeout')
@@ -114,7 +171,9 @@ async def run(a):
                 fails.append('core test')
         if a.sets and info['ready']:
             await run_sets(pg, a, fails)
-        if a.assert_ and info['ready'] and not a.sets:
+        if walk and info['ready']:
+            await run_walk(pg, a, fails)
+        if a.assert_ and info['ready'] and not a.sets and not walk:
             snap0 = await pg.evaluate(SNAP_JS)
             h0 = hashlib.sha1(snap0.encode()).hexdigest()[:12]
             cov = await pg.evaluate("""()=>{const R=window._interiors.rooms;return {n:R.length,
@@ -200,7 +259,7 @@ async def run(a):
                     key = await pg.evaluate("(i)=>{const I=window._interiors;I.gotoItem(i,0);return I.items[i].set.set+'_'+I.items[i].item.key;}", i)
                     await sshot('item_%03d_%s' % (i, key))
             await pg.evaluate("()=>window._interiors.overview()")
-        if a.out and info['ready'] and not a.sets:
+        if a.out and info['ready'] and not a.sets and not walk:
             async def shot(name):
                 await pg.wait_for_timeout(400)
                 fn = os.path.join(a.out, name + '.png'); await V.shot(fn); print('shot:', fn)

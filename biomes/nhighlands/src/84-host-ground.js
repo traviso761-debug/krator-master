@@ -88,7 +88,8 @@ function buildGround(){
   /* THE CRATER WALL'S MEGABRECCIA on the steep (86-host-pillars.js, BRECCIA_ON; ?strata=0 the old granite bands): KGROUND's `clast` kind, 3D cells (no stretch
      on a scarp) of 7 m with a finer generation in the matrix and its glass flecks, in the recipe's rocks; no map, so no texture unit. Its weight is the old
      granite's (the steep), a little under the moss's reach */
-  if(BRECCIA_ON)L.push({kind:'clast',w:'smoothstep(0.42,0.75,1.0-clamp(normalize(vGWN).y,0.0,1.0))',amt:.88,gain:.82,size:7,matrix:.07,sub:.2,fleck:.05,fleckDensity:.25,
+  const BRG=BRECCIA_ON?KGROUND.layer('nhighlands','rock.megabreccia',{}):null;   /* the library's megabreccia (rock.megabreccia): each block's grain, turned per block; one texture unit */
+  if(BRECCIA_ON)L.push({map:BRG?BRG.map:undefined,k:BRG?BRG.k:undefined,kind:'clast',w:'smoothstep(0.42,0.75,1.0-clamp(normalize(vGWN).y,0.0,1.0))',amt:.88,gain:.82,size:7,matrix:.07,sub:.2,fleck:.05,fleckDensity:.25,
    palette:BRECCIA_KINDS.blocks,matrixColor:BRECCIA_KINDS.matrix,vary:.12,seed:KRAND.hash(86077,0,1,7)%997,name:'megabreccia (clast)'});
   return L;})();
  MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};

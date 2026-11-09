@@ -34,14 +34,16 @@
     if(SIM.levelOf(s)===lv) return lv;
     var minute=SIM.minute(), t=SIM.time();
     if(lv==='abstract'){ lower(s, minute); (SIM.ABSTRACT||(SIM.ABSTRACT={}))[s]=true; }
-    else { delete SIM.ABSTRACT[s]; raise(s, minute, t); }
+    else { if(SIM.NEED) mine(s).forEach(function(a){ if(!a.driven && a.nd) SIM.needsAbstract(a, minute); });   /* the meters lived to now, still abstract */
+      delete SIM.ABSTRACT[s]; raise(s, minute, t); }
     SIM.logEvent('level', { settlement:s, level:lv });
     return lv;
   };
   /* lowering: each actor's efficiency now; the town's households and their residents */
   function lower(s, minute){
     var res={};
-    mine(s).forEach(function(a){ var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
+    mine(s).forEach(function(a){ if(SIM.NEED && a.nd && !a.driven) SIM.needsOf(a, minute);   /* the meters to now as watched, before the abstract rule takes them */
+      var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
     HOMES[s]=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); })
       .map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
     HOMES[s].last=minute; HOMES[s].hr=Math.floor(minute/60);
@@ -63,8 +65,18 @@
     delete HOMES[s]; delete PEOPLE[s];
   }
   /* the economy's step for an abstract town (inside its turn): the households' hours */
+  /* the town's households and people again (each midnight while it is abstract): a home filled since it was lowered (a
+     household formed, a refugee camp pitched: 77-sim-6-build.js growth) is fed, and its people live their abstract day
+     (their meals' worth, their clothes, their errands); each home keeps its meal's carry */
+  function rehome(s){ var L=HOMES[s], res={}; if(!L) return;
+    mine(s).forEach(function(a){ if(a.home!=null && !a.transient && !a.driven) res[a.home]=(res[a.home]||0)+1; });
+    var N=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); }).map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
+    N.last=L.last; N.hr=L.hr; N.day=L.day; HOMES[s]=N;
+    var by=PEOPLE[s]=[]; for(var h=0;h<24;h++) by.push([]);   /* and its people by the hour of their abstract day: a newcomer lives it too */
+    mine(s).forEach(function(a){ if(!a.driven && !a.transient) by[Math.floor(SIM.itemHash(a.k|0, 0, 13)*24)].push(a); }); }
   SIM.lodHour = function(E, minute){
     var L=HOMES[E.settlement]; if(!L || !SIM.ITEMS) return;
+    var dd=Math.floor(minute/1440); if(L.day!==dd){ L.day=dd; rehome(E.settlement); L=HOMES[E.settlement]; }
     var hrs=(minute-L.last)/60; if(hrs<1) return; L.last=minute;
     L.forEach(function(h){ SIM.itemsAbstractHome(h.P, hrs, E.settlement, h.res); });
     var by=PEOPLE[E.settlement], H=Math.floor(minute/60);   /* each person's yesterday, at its hour */

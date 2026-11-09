@@ -13,4 +13,5 @@ const DB_WIND=(function(){const SCALE={calm:.4,breeze:1,stiff:1.6,high:2.6},ORDE
  addEventListener('keydown',e=>{if(e.key.toLowerCase()==='g'){W.cycle();const c=document.getElementById('cap');if(c)c.dataset.wind=mode;}});
  return W;})();
 const DB_DUST_MASK=(x,z)=>terrainH(x,z)>.5?.33:1;
-ATMOS.dust({color:[.76,.71,.62],mask:DB_DUST_MASK});
+/* a wet station's bed is forest, not silt (2026-11-08: the east bed in Korona's Af and Aw, DB_SITE.dust false): no dust off it */
+if(DB_SITE_DEF.dust!==false)ATMOS.dust({color:[.76,.71,.62],mask:DB_DUST_MASK});

@@ -4,6 +4,19 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] **The core attach audit: 16.6% of the foliage cards floated** (fixed 2026-11-08, the integration pass; `core/biome/README.md`, "What
+      held means"). Every tree builder now runs with its own span log (`BIO.segs`: each `BIO.tube` span and `BIO.beam`, and the bole's top
+      as a span for the leader's clumps, `treeTop`), and `clumpAt` brings each crown clump to the nearest span (`BIO.snapSeg`, `BIO.holdTo`):
+      a stem card (the library-fitted prism, needle, palmate, leaflet clumps) to within `.2*size+.3`, a centred one to `.55*size`. The crowns
+      were jittered round spots up to a bough's length off the wood, and the umbrella thorn's set at the crown's top whatever its boughs did.
+      Blooms: `{onLeaf:true}`; on the boles held to their rosette (.35 m), on the dragon trees to the fork's tip (.3 m). No draw moved (the
+      stream is the same), no new triangles (182 calls, 5.37M drawn, 10.18M held, as before); the crowns read tighter on their boughs.
+      The verify's audit (GPU, its 20k-card sample): 1877 of 11,285 floating (16.63%) -> 54 of 11,297 (0.48%). The full audit (every card,
+      260k): 42,888 floating (16.49%) before; 6,062 (2.33%) with the crowns held and before the blooms' fix, 5,419 of them blooms (4,700 on
+      the dragon trees); not rerun after it. **Left:** `cneedle` (nwbay's cinder pine, a kin: its far form keeps needles where no structure is drawn, 278 cards: nwbay's
+      builder, not this kit), `fernleaf` (a swhighlands kin, 158), moss mats (140), and blooms on the tower's and jetty's curtains, which hang
+      from host meshes the audit skips (`probeSkip`). Voth, ringisles, swlowlands and the isle demo grow these builders: their pages change
+      with the next rebuild of each.
 - [ ] **The final rebuild's looks (2026-10-27): for the owner's look pass.** `PLAN.md` "Core adoption" lists every module taken and its
       switch: the SW highlands' and nwbay's cousins in place of a share of the bay's trees (`?kin=0`), the fungoid parts on `BIO.fung`
       (`?fung=0`), the karst springs and the clear river (`?springs=0`, `?clearwater=0`), the fog belt on the rainforest's slope, the KGROUND

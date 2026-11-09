@@ -17,21 +17,21 @@ function shadeWords(hit){const p=hit.point,o=hit.object,at='\n'+p.x.toFixed(1)+'
  if(n&&n.d<SWB.bank)return 'The switchback\n[path]  grade '+SWB.grade.toFixed(3)+' · '+Math.round(SWB.len)+' m'+at;
  return shadeTerrainName(p.x,p.z)+'\n[terrain]'+(lab?'  ·  '+lab:'')+at;}
 // ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'shade',title:"Shade — the eastern nomads' basin",
  hint:"A sunken basin of the Eastern Nomads in the eastern high desert: the falls, the pool, the carved face, the switchback, the slot canyon, the Khan, the pueblos, the tents and the cliff dwellings round the rim (64 buildings, three alcoves; the life layer is data)",
  scene,camera,renderer,ground:terrainH,minR:2,maxR:6000,registry:REG,views:VIEWS,start:'The market and the Khan',ticks:TICKS,
  // the eye 1.7 m over the ground, and out of a carve patch's rock (on top of it), as 90-host-camera.js kept it
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.7;if(cp.y<g)cp.y=g;
   if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.7;},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},
-  objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  // what the inspector and the minimap read: every record but the places (a place's box would hold the Khan's own building,
  // and the smallest record wins); a point no record holds is worded here: its place, the switchback or the terrain
  records:()=>KTAGS.page.records.filter(r=>r.kind!=='place'),
  inspect:(hit,hits,rec)=>rec?null:shadeWords(hit),
  stats:()=>'inst '+window._instances,
  layers:{'places':{on:false,set:v=>{OVERLAY.places.visible=v;}},'routes (life layer)':{on:false,set:v=>{OVERLAY.routes.visible=v;}},
-  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'buildings':{match:o=>/^buildings:/.test(o.name||'')}},
+  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'buildings':{match:o=>/^buildings:/.test(o.name||'')},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{tags:()=>KTAGS.page.export()},
  minimap:{title:'Shade'},
  budget:BUDGET,types:()=>BIO.stats,api:window._api});

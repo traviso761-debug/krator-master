@@ -50,6 +50,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
@@ -81,7 +82,7 @@ def build(OUT='nsemiarid.html',overlay=None):
         if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
     PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
     PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
-    # core/shadow (KSHADOW): the sun's shadows, attached only on ?shadow=1 (89z-host-build.js; the owner, 2026-11-03: off by default)
+    # core/shadow (KSHADOW): the sun's shadows, attached always on core's switch, off at load (88-host-build.js: the button or ?shadow=1; the owner, 2026-11-03)
     PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
     PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
     # core/hazard (KHAZ): the air's dust reaches the walker through it (89b-host-atmos.js); KTRAPS.cycle, the clock its export reads
@@ -182,6 +183,7 @@ def build(OUT='nsemiarid.html',overlay=None):
         out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
     if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
     dist=overlay['dist'] if overlay else DIST
+    BSRC.report(PATH)   # --list-sources: what the page is made of (an overlay's too), then exit
     os.makedirs(dist,exist_ok=True)
     html=''.join(out)
     if overlay and overlay.get('title'):   # an overlay's own page title (the gallery lists a page by it)

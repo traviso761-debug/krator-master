@@ -41,7 +41,7 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | `63-et-faith.js` | et | the ancestors: `et_ancestor_gallery`, `et_shrine_niche`, `et_withdrawal_house`, `et_mask_house`, `et_historians_house` |
 | `91c-et-clock.js` | | the host side of the Clock: draws each `clock` record's figures and hands and runs them (`ET_CLOCKS`); browser only |
 | `89-rows.js` | | `FAMILIES`: the sheet's rows |
-| the rest | | VENDORED from `kits/scyvoi/src` (the sky from `settlements/iziz`) |
+| the rest | | the engine, read in place from `core/engine`; the sky from `core/atmos/placeholder` |
 
 ## Openings (`etWall`)
 

@@ -41,6 +41,8 @@ var UNDER_MESHES = [];
   DOORS.forEach(function(a,i){ var p=platXZ(PF,A.R-0.2,a), ry=Math.atan2(-Math.cos(a),-Math.sin(a));
     ARCHBAND('glowmat', p[0],p[1], ry, FY, 7.0, 10.5, 0.35, 0, BLU); ARCHBAND('metal', p[0]-Math.cos(a)*0.05,p[1]-Math.sin(a)*0.05, ry, FY, 7.7, 10.85, 0.9, 0, TARNC[0]);
     BOX(p[0]-Math.cos(a)*0.1, FY, p[1]-Math.sin(a)*0.1, 6.4, 8.2, 0.2, -a+Math.PI/2, GLASSC[i%4], 'glass');
+    yopenDoor({ id:'under.sealed.d'+i, at:[p[0], FY, p[1]], hinge:[p[0]+Math.sin(a)*3.2, FY, p[1]-Math.cos(a)*3.2], yaw:Math.atan2(-Math.cos(a),-Math.sin(a)), w:6.4, h:8.2, t:0.2,
+      locked:true, key:'underground', style:'sealed' }); YOPEN.leaves++;   /* sealed (core/door, locked): the wings behind are not built */
     REGISTER({ name:'Sealed door '+'ABCDEF'[i], kind:'underground', label:'future wing (not yet built)', x:p[0], y:FY, z:p[1], r:4.2, h:11 }); });
 
   /* ---- the dais: a relic plinth under a column of light, ringed by touch-consoles ---- */

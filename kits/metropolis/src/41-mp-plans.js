@@ -153,10 +153,6 @@
   function bar(F, L, roomW, kinds, o) {
     o = o || {}; var w = F.footprint.w, d = F.footprint.d - 0.9 - 2 * (o.inset || 0);
     var st = KratorAncientsInteriors.barPlate({ id: F.id + '.' + L.k, level: L.k, y: L.y, h: L.h, path: function (u) { return [-w / 2 + w * u, 0]; }, depth: d, side: 'both', cw: o.cw == null ? 2.4 : o.cw, roomW: roomW, kinds: kinds, door: o.door });
-    /* AI.barPlate draws a cross wall from the room's inner start to its OUTER END (outer[m]), a diagonal across the room; it should run straight across at the start
-       (the room's polygon ends there). Straightened here; the kit's fix waits for an all-builds rebuild (KNOWN_ISSUES.md) */
-    var byId = {}; st.rooms.forEach(function (Q) { byId[Q.id] = Q; });
-    st.walls.forEach(function (W) { var Q = /\.x$/.test(W.id) && byId[W.rooms[0]]; if (Q) W.pts = [W.pts[0], Q.poly[Q.poly.length - 1]]; });
     st.rooms.forEach(function (Q) { var src = Q.kind; Q.mpKind = src; Q.kind = kindOf(src); if (UNFURNISHED[src]) Q.furnish = false; });
     return cutShafts(F, st);
   }

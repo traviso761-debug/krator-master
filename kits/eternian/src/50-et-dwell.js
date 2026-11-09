@@ -21,8 +21,9 @@ defBuilding({key:'et_canal_house',name:'Canal house',seed:7001,cut:true,w:10,d:1
    right:[{x:-1.6,w:1.0,h:1.4,y:1.0},{x:1.6,w:1.0,h:1.4,y:1.0}],
    left:[{x:1.4,w:1.0,h:1.4,y:1.0}]});
   // the upper floor, with the stairwell left open along the left wall
-  box('timber',.6,G1,0,W-1.8,.2,D-.6,P('timber'));box('timber',-3.6,G1,-2.6,1.2,.2,2.2,P('timber'));
-  etStair(-3.6,G0,2.9,1.0,.2,-.25,16,P('timberL'));
+  /* the stair (core/engine svStair): one flight up the left wall from inside the door, its top meeting the landing at the back */
+  const SF=svStair(-3.6,2.9,G0,G1+.2,PI,{w:1.0,col:P('timberL'),scol:P('timber'),rail:'left'});
+  box('timber',.6,G1,0,W-1.8,.2,D-.6,P('timber'));box('timber',-3.6,G1,(-D/2+ET_T+SF.z0)/2,1.2,.2,SF.z0-(-D/2+ET_T),P('timber'));
   etWalls(W,D,G1,U1-G1,'lime',lime,{
    front:[{x:-2.6,w:1.1,h:1.7,y:1.1},{x:BC,w:BW-.6,h:2.6,y:.3,gap:true}],
    back:[{x:-2.0,w:1.0,h:1.4,y:1.1},{x:2.2,w:1.0,h:1.4,y:1.1}],
@@ -41,7 +42,7 @@ defBuilding({key:'et_canal_house',name:'Canal house',seed:7001,cut:true,w:10,d:1
   popM();
   box('stone',BC,0,D/2+.5,BW+.3,G0,1.3,P('stoneD'));                                    /* the plinth under the bay */
   for(const sx of [BX0+.15,BX1-.15])box('lime',sx,G0,D/2+.5,ET_T,U1+.6-G0,1.0,lime);     /* the bay's sides */
-  box('timber',BC,G1,D/2+.45,BW-.6,.2,.9,P('timber'));                                   /* its upper floor */
+  box('timber',BC,G1,D/2+.3,BW-.6,.2,1.2,P('timber'));                                   /* its upper floor, carried back over the gap in the front wall to the room's */
   box('lime',BC,U1+.6,D/2+.5,BW+.2,.2,1.25,ls);box('lime',BC,U1+.8,D/2+.55,BW-.6,.25,1.05,lime);box('lime',BC,U1+1.05,D/2+.6,BW-1.4,.3,.85,ls);
   // the kitchen behind, under a grey-tiled pent roof
   pushM(TF(-2.0,0,-D/2-1.5));
@@ -138,7 +139,9 @@ defBuilding({key:'et_canal_row',name:'Canal row',seed:7004,cut:true,w:13,d:9,h:8
   const gz=D/2+.65;box('timber',.6,G1-.18,gz,W+1.2,.18,1.3,tl);
   for(let k=0;k<5;k++){const x=-W/2+.2+k*(W+1.0)/4;box('timber',x,0,gz+.55,.14,G1-.18,.14,P('timber'));box('timber',x,G1,gz+.55,.08,1.0,.08,P('timber'));}
   box('timber',.6,G1+.95,gz+.55,W+1.2,.08,.1,P('timber'));box('timber',.6,G1+.45,gz+.55,W+1.2,.05,.06,P('timber'));
-  etStair(W/2+.75,G,-D/2+.4,1.0,.2,.33,15,tl);box('timber',W/2+.75,G1-.18,2.75,1.0,.18,1.3,tl);   /* the landing onto the gallery */
+  /* the stair from the street (its first step was 0.5 m off the ground: core/engine svStair rises from the ground in 0.18 m steps) */
+  const SF=svStair(W/2+.75,-D/2+.4,0,G1,0,{w:1.0,col:tl,scol:P('timber')});
+  box('timber',W/2+.75,G1-.18,(SF.z1+3.4)/2-.03,1.0,.18,3.4-SF.z1+.06,tl);   /* the landing onto the gallery */
   box('timber',W/2+1.22,G,0,.08,G1+1.0-G,.08,P('timber'));
   /* the flats: a mat and a hearth below, a mat and the dead above */
   FURNISH('eternian_poor_hearth',-U-.9,G,-D/2+.62,0);FURNISH('eternian_poor_reed_mat',-U+.7,G,-1.1,0);

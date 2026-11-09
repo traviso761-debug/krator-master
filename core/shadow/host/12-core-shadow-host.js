@@ -65,11 +65,23 @@ KSHADOW.attach = function (o) {
     });
     return root;
   };
-  /* the switch: the renderer's map and the sun together, then every lit material once (its shadow define and sampler come and go) */
+  /* the switch: the renderer's map and the sun together, then every lit material once (its shadow define and sampler come and go).
+     In r128 the map's sampler is declared in EVERY lit material once the renderer's map is on, so a material already at the texture-unit limit
+     (a ground of many layers) would fail to compile: switching on is refused while any lit material in the scene would not fit (H.state.skipped
+     says which; the button reads 'shadows: n/a') */
   let btn = null;
-  const label = () => { if (btn) btn.textContent = 'shadows: ' + (enabled ? 'on' : 'off'); };
+  const label = () => { if (btn) btn.textContent = 'shadows: ' + (H.state.skipped ? 'n/a' : enabled ? 'on' : 'off'); if (btn && H.state.skipped) btn.title = H.state.skipped; };
+  H.fits = function () {
+    const cap = r.capabilities || {}, max = cap.maxTextures == null ? 16 : cap.maxTextures, seen = new Set(); let worst = 0, who = '';
+    scene.traverse(m => { if (!m.isMesh || !m.material) return; (Array.isArray(m.material) ? m.material : [m.material]).forEach(M => {
+      if (!M || seen.has(M) || M.isShaderMaterial || M.isMeshBasicMaterial) return; seen.add(M);
+      const n = KSHADOW.units(M, r); if (n > worst) { worst = n; who = (M.name || M.type) + (m.name ? ' on ' + m.name : ''); } }); });
+    H.state.skipped = worst + 1 > max ? 'the ' + who + ' reads ' + worst + ' of ' + max + ' texture units' : null;
+    return !H.state.skipped;
+  };
   H.set = function (on) {
     on = !!on; if (on === enabled) return H;
+    if (on && !H.fits()) { label(); return H; }
     enabled = on; r.shadowMap.enabled = on; sun.castShadow = on && sun.intensity > 0.02; H.state.on = sun.castShadow;
     scene.traverse(m => { if (!m.material) return; (Array.isArray(m.material) ? m.material : [m.material]).forEach(M => { if (M && !M.isShaderMaterial) M.needsUpdate = true; }); });
     label(); return H;
@@ -86,6 +98,24 @@ KSHADOW.attach = function (o) {
     const ui = () => o.ui || (typeof KHOST !== 'undefined' && KHOST ? KHOST.ui : null);
     if (ui()) addBtn(ui()); else if (typeof setTimeout !== 'undefined') setTimeout(() => addBtn(ui()), 0);
   }
+  if (enabled && !H.fits()) { enabled = false; r.shadowMap.enabled = false; sun.castShadow = false; H.state.on = false; label(); }
   KSHADOW.host = H;
   return H;
+};
+/* KSHADOW.units(material, renderer): the texture units a material's fragment program reads, by a dry run of its onBeforeCompile on the
+   library shader (the Throne's samplersOf, 2026-11-03): its own maps plus every sampler its hooks declare (2D, 3D, Cube and their
+   array, shadow and integer forms, with or without a precision qualifier: core/atmos's cloud shade declares `uniform highp sampler3D`,
+   which the first pattern missed, 2026-11-08). A failure counts as 99 */
+KSHADOW.units = function (M, r) {
+  const LIB = { MeshLambertMaterial: 'lambert', MeshStandardMaterial: 'standard', MeshPhysicalMaterial: 'physical', MeshPhongMaterial: 'phong', MeshToonMaterial: 'toon' };
+  try {
+    const L = THREE.ShaderLib[LIB[M.type]]; if (!L) return 0;
+    const sh = { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader };
+    const f0 = typeof KHOOK !== 'undefined' ? KHOOK.failures.length : 0;
+    try { if (M.onBeforeCompile) M.onBeforeCompile(sh, r); } finally { if (typeof KHOOK !== 'undefined') KHOOK.failures.length = f0; }
+    let n = 0;
+    ['map', 'emissiveMap', 'alphaMap', 'lightMap', 'aoMap', 'normalMap', 'bumpMap', 'roughnessMap', 'metalnessMap', 'specularMap', 'envMap'].forEach(k => { if (M[k]) n++; });
+    sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g,(a, b) => { n += b.split(',').length; return a; });
+    return n;
+  } catch (e) { return 99; }
 };

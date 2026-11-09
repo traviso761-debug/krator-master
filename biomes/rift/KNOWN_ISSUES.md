@@ -189,6 +189,19 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] **2026-11-09: the attach audit's floating crowns and blooms, held** (`src/55`, `src/65`, `src/50`). The GPU verify failed the core
+      attach audit on four pages (jungle 3.43%, plateau 1.72%, savannah 15.55%, the main page 6.80%; highland passed at 0.47%). Causes:
+      the parasol and violet dome canopies jittered round their spots (the dome's lift took them up to 11 m off the boughs), the
+      dragon tree's and croton's urchins and the monkey-puzzle's blooms set above their tips, the trumpet's cup blooms drawn 1.5 m
+      over the cup's floor, the dress's curtain flowers hung far down the ribbons, the scum mats on the water not `free`. Fixed: each
+      hero is built in a span log (`logged()`: tubes, beams, every lathe's axis through `latheL`, the instanced trunks and lobes
+      through `putT`/`putL`), and `clumpAt` and the blooms (`holdP`) are brought to within reach of the nearest span (`BIO.snapSeg`,
+      `BIO.holdTo`; `.2*size+.3` a stem card, `.55*size` a centred one, plus the span's radius); the trumpet's blooms sit on the cup
+      floor (`cupY`); the curtain flowers are held to the curtain's head; `pad` is `{free:true}`. Positions only: no draw added or
+      moved, the same instance counts. After, `verify.py --assert` passes on the GPU (Intel Arc 140T) on all five pages: jungle
+      0.03% (4 of 14,576), plateau 0.06% (10 of 16,930), savannah 0.11% (6 of 5,600), the main page 0.14% (19 of 13,357), highland 0.02% (2 of 12,245). Caps with capWhy raised for the counts measured: pleat 600,000 (505,369 on the plateau), claw 450,000 (353,886 on the savannah).
+      The look moved: the violet dome's canopy sits lower and flatter, on its boughs. Readers rebuilt: riftrim (6), ringisles (3), xanadu floor.
+
 - [x] Runtime LOD (Oct 2026, xanadu's port): every hero tree drawn within `RIFT.LOD.tree` (1.2 km)
       of its chunk and as a stand-in impostor past it; the far trees per chunk against the view;
       the floor's bands, logs and dress by range, with a far band standing in for the spine's

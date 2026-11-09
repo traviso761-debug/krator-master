@@ -22,12 +22,17 @@ const TXB={
 const MB={
  cotton:BIO.leafMat(TXB.cotton,'nh-cotton',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.12,alphaTest:.4}),
  cloudberry:BIO.leafMat(TXB.cloud,'nh-cloudberry',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.04,alphaTest:.4}),
- cornlily:BIO.leafMat(TXB.corn,'nh-cornlily',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.06,alphaTest:.4})};
-Object.assign(NHL.LIB||{},BIO.libSwap('nhighlands',MB));   /* materials.json families cotton, cloudberry, cornlily (the pack carries them on this station's page only) */
+ cornlily:BIO.leafMat(TXB.corn,'nh-cornlily',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.06,alphaTest:.4}),
+ /* the library's fen sedge and dwarf birch (card.sedge.fen, card.dwarfbirch: in the library since 2026-10-26); without the pack, the cotton's and cloudberry's stand-ins */
+ sedge:BIO.leafMat(TXB.cotton,'nh-sedge',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.1,alphaTest:.4}),
+ dwarfbirch:BIO.leafMat(TXB.cloud,'nh-dwarfbirch',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.05,alphaTest:.4})};
+Object.assign(NHL.LIB||{},BIO.libSwap('nhighlands',MB));   /* materials.json families cotton, cloudberry, cornlily, sedge, dwarfbirch (the pack carries them on this station's page only) */
 const G=NHL.G||{};const tuftG=G.tuft?G.tuft():BIO.geo.cross?BIO.geo.cross():null;
 BIO.def('cotton',tuftG,MB.cotton,{label:'Cotton-grass'});
 BIO.def('cloudberry',tuftG,MB.cloudberry,{label:'Cloudberry'});
 BIO.def('cornlily',tuftG,MB.cornlily,{label:'Corn lily'});
+BIO.def('sedge',tuftG,MB.sedge,{label:'Fen sedge'});
+BIO.def('dwarfbirch',tuftG,MB.dwarfbirch,{label:'Dwarf birch'});
 const TG=NHL.TG,HVf=NHL.HV;
 NHL.PLANTS.push(
  {label:'Cotton-grass',name:'Cotton-grass (the mire\'s white heads)',tags:TG?TG('boreal','humid','yes',HVf('none',[],false,'the down was spun and stuffed into pillows and wicks')):{climate:'boreal',aridity:'humid',abyssal:false,riparian:'yes',harvest:{wood:'none',edible:[],medicinal:false,fruit:null,notes:'down for wicks and stuffing'}}},
@@ -54,7 +59,7 @@ NHL.STATION_PASSES=function(P){const {pass,o,BIG,SMALL}=P;
  // the open mire: stunted trees on the hummocks (a bog spruce a few metres tall, a larch like a tamarack, dwarf birch knee-high), scattered
  pass('spirespruce',30,(Z,x,z)=>smooth(.5,.75,B(x,z))*.16,o(SMALL,{far:true,pad:1.6,patch:.5,patchScale:.02,mod:dwarf(rr(.12,.22),.25,6.5)}));
  pass('larch',44,(Z,x,z)=>smooth(.45,.7,B(x,z))*.12,o(SMALL,{far:true,pad:1.8,patch:.5,patchScale:.02,mod:dwarf(rr(.15,.28),.3,7.5)}));
- pass('birch',14,(Z,x,z)=>smooth(.55,.8,B(x,z))*.22,o(SMALL,{pad:1,patch:.6,patchScale:.03,mod:dwarf(rr(.05,.09),.1,1.4)}));
+ /* (the knee-high dwarf birch is a floor plant on the hummocks now, the library's card: the kit's birch scaled to 1.4 m read as poles) */
  pass('windspruce',40,(Z,x,z)=>smooth(.7,.95,B(x,z))*.06,o(SMALL,{pad:1.2,patch:.4,mod:dwarf(.6,.6,5)}));
  // the great trumpets alone in the fen, holding their water (the kit's own), and their glow over the pools at night
  pass('greattrumpet',240,(Z,x,z)=>smooth(.45,.7,B(x,z))*.35,o(BIG,{hero:420,mid:820,pad:9,own:6,patch:0}));};
@@ -63,11 +68,12 @@ NHL.STATION_PASSES=function(P){const {pass,o,BIG,SMALL}=P;
 NHL.STATION_PLANT=function(x,y,z,Z,lv,st,F){const b=bogOf(x,z),t=rng();st.bog=st.bog||{hummock:0,cotton:0,cloud:0,corn:0,sedge:0};const S=st.bog;
  const hummock=(R)=>{R*=.6;const set=rng()<.3?SPH.red:rng()<.35?SPH.ochre:SPH.green;BIO.put('cushion',[x,y+R*.05,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.22,.34),R],col(set,set===SPH.red?.8:.95));S.hummock++;   /* low and soft: at full size the cushion read as a red boulder */
   if(lv===2&&rng()<.5)BIO.put('mossmat',[x+rr(-.6,.6),y+.05,z+rr(-.6,.6)],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[R*1.6,1,R*1.6],col(SPH.green,.95));
-  if(rng()<.35)F.heath(x,y+R*.4,z,lv);else if(rng()<.25)F.lichen(x,y+R*.4,z,lv);};
+  if(rng()<.35)F.heath(x,y+R*.4,z,lv);else if(rng()<.25)F.lichen(x,y+R*.4,z,lv);else if(rng()<.3)dwarf();};
  const cotton=(n)=>{for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.6),h=rr(.35,.6);F.tuft('cotton',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*.8,col([0xe8e6dc,0xf0eee6,0xdcd8c8]));}S.cotton++;};
  const cloud=(n)=>{for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.2),h=rr(.14,.24);F.tuft('cloudberry',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*1.6,col([0x5a7a34,0x6a8a3a]));}S.cloud++;};
  const corn=()=>{const h=rr(1.1,1.9);F.tuft('cornlily',x,y,z,h,h*.55,col([0x7aa048,0x88a850,0x6e9440]));S.corn++;};
- const sedge=(k)=>{F.grass(x,y,z,lv,[0x8a8a4a,0x9a9450,0x7a7a42,0xa08a52],k||1);S.sedge++;};
+ const sedge=(k)=>{const h=rr(.45,.8)*(k||1);F.tuft('sedge',x,y,z,h,h*1.2,col([0x9a9a5a,0xa8a060,0x8a8a50]));S.sedge++;};
+ const dwarf=()=>{const h=rr(.35,.7);F.tuft('dwarfbirch',x,y+.1,z,h,h*1.5,col([0x6a8a3a,0x7a8a3e,0x8a7a3a]));S.dwarf=(S.dwarf||0)+1;};
  if(lv===0){   // the far floor: what reads from a kilometre (the hummocks' colour, the cotton-grass's white)
   if(b>.5){if(t<.35)hummock(rr(.9,1.6));else if(t<.6)cotton(2);}else F.plantFar(x,y,z,Z,st);return true;}
  if(b>.62){   // the open mire: hummocks and lawns

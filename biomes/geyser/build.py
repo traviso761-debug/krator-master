@@ -51,6 +51,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # python3 build.py                    dist/geyser.html, the showcase basin in the Steampits (station 1)
 # python3 build.py --station <name>   dist/geyser-<name>.html: stations/<name>/ added to src/ (PLAN-STATIONS.md): stills
 _args=[a for a in sys.argv[1:] if not a.startswith('--') or a=='--station']
@@ -70,8 +71,16 @@ if STATION:
     _sj=os.path.join(_sd,'station.json')
     if os.path.isfile(_sj):
         with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
+    if SJ.get('baseOnly'): sys.exit('build.py: stations/'+STATION+'/ is a shared base, never built alone (its stations name it as their "base")')
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
+    # a station on another's ground names it as its "base" (stations 2-5 share stations/field: a geyser field on any ground, set by the station's site record);
+    # the base's fragments first, then the station's own (a name in both is the station's)
+    _base=SJ.get('base')
+    if _base:
+        _bd=os.path.join(HERE,'stations',_base)
+        for f in os.listdir(_bd):
+            if re.match(r'\d',f): PATH[f]=os.path.join(_bd,f)
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
@@ -93,7 +102,9 @@ KITS={'41-hyperjungle-globals.js':'src/41-hyperjungle-globals.js','48a-hj-specie
       '48b-hj-trees.js':'src/55-biome-hyperjungle-trees.js','48c-hj-fauna.js':'src/58-biome-hyperjungle-fauna.js',
       '48d-hj-floor.js':'src/60-biome-hyperjungle-floor.js','48e-hj-dress.js':'src/65-biome-hyperjungle-dress.js',
       '48f-hj-build.js':'src/70-biome-hyperjungle.js'}
-for slot,p in KITS.items(): PATH[slot]=os.path.join(HJ,p)
+for slot,p in KITS.items():
+    if SJ.get('nojungle') and slot!='41-hyperjungle-globals.js': continue   # a station with no jungle keeps only its globals (TAU, clamp, smooth, fbm...)
+    PATH[slot]=os.path.join(HJ,p)
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
 # core/rand and core/tags (core/tags/README.md): with BIO.init({tags}) every item set, instance and registered volume the kit places is a core/tags record
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
@@ -149,8 +160,13 @@ sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures
 import matlib_pack as _mp
 SIDE=None if '--inline-packs' in sys.argv else {}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
-VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'geyser',side=SIDE),
-         '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE)}
+# THE STATIONS' OWN SETS: materials.json slots keyed 'st.<name>' (the cold stations' snow, ice, needles, bunch grass...) go only into the pages of the stations
+# whose station.json lists them ("tex"), so the showcase and the Stills carry none of them
+_pjg=os.path.join(HERE,'tex','pack.json')
+with open(_pjg,encoding='utf-8') as _fh: _famg=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pjg) else []
+_stx=[f for f in _famg if f.startswith('st.') and f not in SJ.get('tex',[])]
+VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'geyser',exclude=_stx,side=SIDE),
+         **({} if SJ.get('nojungle') else {'44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE)})}
 # THE NEIGHBOURS' KITS a station reads in place (oidong's lines): station.json "kin": {"<kit>": [[fragments], "<API>", [pack families kept]]}; each kit's
 # fragments slot after the host stage (45) and the hyperjungle (48) and before this kit (50), in their own registry, closed by a one-line kitEnd
 NEIGH={k:tuple(v) for k,v in SJ.get('kin',{}).items()}
@@ -170,6 +186,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,OUT[:-5]+'.tex.js')

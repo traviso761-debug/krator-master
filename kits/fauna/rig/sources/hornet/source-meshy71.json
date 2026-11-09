@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant hornet, six legs, no wings, big head with strong jaws, narrow waist, banded abdomen, pale ivory-grey casting",
+ "task_ids": [
+  "01a19ef2-8ad4-7443-9ab2-ca447857c2f9",
+  "01a19ef4-8a45-77d8-b8af-e084321eacfa"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

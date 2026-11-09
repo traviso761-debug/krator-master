@@ -14,7 +14,7 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const S0=FIELD.shor
 {const a=GROUND.geometry.attributes.aWet,p=GROUND.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),w=waterH(x,z);a.setX(i,WET_SHORE(x,z)*(w>-1e8?smooth(2.5,.2,p.getY(i)-w):1)*(1-FC.at(FC.a.ice,x,z)));}a.needsUpdate=true;}
 window._biome=null;
 /* KSHADOW measured 2026-11-03 on the Arc 140T (D3D11; station 1, synced render + readPixels, the pane hidden): +23 to +56 ms a frame (100-117 ms off, 140-156 on,\n   +20-56%): not affordable, so OFF at page load and ?shadow=1 turns it on (KNOWN_ISSUES.md; the owner's call, as on the Throne's station 1) */
-const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
+const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;   /* attached always, off at load: core/shadow's switch (its button, ?shadow=1) turns it on; ?shadow=0 none of it (the owner, 2026-11-08) */
 (function(){
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it
@@ -31,9 +31,11 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof
  if(AIR.snow&&ATMOS.snowOnScene){scene.traverse(o=>{const m=o.material;if(!o.isMesh||!m||m.userData.noSnow||!o.geometry.attributes.aN||!m.userData.bio||m.userData.bio.kind!=='leaf'||(m.userData.bio.opts||{}).aN)return;
   ATMOS.snowOn(m,{twoSided:m.side===THREE.DoubleSide,aN:false});m.userData.noSnow=true;});ATMOS.snowOnScene(scene);}   /* the lying snow on every lit material (89a) */
  /* THE SUN'S SHADOWS (core/shadow, KSHADOW): one 4096 box following the view, 90-600 m by the eye's height; the flora, the seracs, the caves and the ground
-    cast and receive, the far field and the water draw their own light. ?shadow=1 on (its cost: KNOWN_ISSUES.md) */
+    receive, the far field and the water draw their own light. off at load, core's button or ?shadow=1 on (its cost: KNOWN_ISSUES.md). ONLY THE FROST CORALS CAST (the owner, 2026-11-08:
+    the whole scene casting cost +20-56% a frame): their limbs ('biome:coral') and tips ('biome:coraltip'); everything else only receives */
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
-  window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
+  window._shadow.cast(scene,{cast:false});let nc=0;scene.traverse(o=>{if(o.isMesh&&/^biome:coral(tip)?$/.test(o.name)&&o.receiveShadow){o.castShadow=true;nc++;}});
+  window._shadow.state.casters=nc;if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);
  /* the land's whole volume from its own ground: its lowest point to its highest, on a 100 m lattice */
  {let lo=1e9,hi=-1e9;for(let z=-TERR.R;z<=TERR.R;z+=100)for(let x=-TERR.R;x<=TERR.R;x+=100){const h=terrainH(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}

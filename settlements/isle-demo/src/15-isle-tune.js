@@ -34,7 +34,7 @@ ISLE.TUNE.sim = {
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
     Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
   },
-  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK'],
+  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK', 'PATROL'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
   home: { per: 5, acts: ['SLEEP', 'EAT', 'REST', 'IDLE', 'HOUSEWORK'] },
   kinds: {
@@ -88,8 +88,13 @@ ISLE.TUNE.sim = {
     farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
     craftsman: { kinds: ['weaver', 'potter', 'smithy', 'workshop', 'tannery', 'dockyard'] }, labourer: { kinds: ['quarry', 'saltworks'] },
-    groom: { kinds: ['stable', 'rookery'] }, soldier: { kinds: ['barracks', 'watchtower', 'canoeshed'], homes: ['barracks', 'home'], sched: 'watch' },
-    official: { kinds: ['hall', 'school', 'healer', 'temple', 'residence', 'square', 'shrine'] }
+    groom: { kinds: ['stable', 'rookery'] }, soldier: { kinds: ['barracks', 'watchtower', 'canoeshed'], homes: ['barracks', 'home'], sched: 'watch',
+      /* the watch (2026-11-02, for crime and punishment: 47c): `share` of the soldiers are watchmen, posted at the barracks as
+         the rest but walking the markets, greens and plazas by day (`at`, `cap` a place), moving on every `every` minutes */
+      patrol: { share: 1 / 3, role: 'watchman', sched: 'patrol', at: ['market', 'green', 'plaza'], cap: 2, every: 30 } },
+    official: { kinds: ['hall', 'school', 'healer', 'temple', 'residence', 'square', 'shrine'] },
+    /* the builders (2026-11-03, 47b): one a lot left empty (`build.posts`), sent to the town's projects */
+    builder: { kinds: ['lot'] }
   },
   /* the homes the kin fill, in order: whatever beds the roles leave, the residences and barracks too */
   homes: ['home', 'residence', 'barracks'],
@@ -107,6 +112,7 @@ ISLE.TUNE.sim = {
   sched: {
     work: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [17, 'SOCIALIZE'], [19, 'EAT'], [20, 'REST'], [22, 'SLEEP']],
     watch: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [21, 'SLEEP']],
+    patrol: [[0, 'SLEEP'], [6, 'EAT'], [7, 'PATROL'], [18, 'EAT'], [19, 'SOCIALIZE'], [21, 'SLEEP']],
     kin: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [10, 'SOCIALIZE'], [13, 'REST'], [15, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     pupil: [[0, 'SLEEP'], [6, 'EAT'], [7, 'STUDY'], [13, 'SOCIALIZE'], [15, 'HOUSEWORK'], [17, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     child: [[0, 'SLEEP'], [6, 'EAT'], [7, 'HOUSEWORK'], [11, 'SOCIALIZE'], [13, 'HOUSEWORK'], [16, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
@@ -131,16 +137,19 @@ ISLE.TUNE.sim = {
     fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 6 }, HAUL: { drink: 6 }, REST: { sleep: 6, relax: 10, drink: 8 },
       EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, SOCIALIZE: { socialize: 24, relax: 4, drink: 6 }, IDLE: { relax: 7, drink: 8 },
       WORSHIP: { contemplate: 45, socialize: 5 }, STUDY: { contemplate: 10, socialize: 4, drink: 4 }, HOUSEWORK: { drink: 6, socialize: 2, relax: 2 },
-      BUY: { socialize: 4, relax: 2 } },
+      BUY: { socialize: 4, relax: 2 }, PATROL: { drink: 6, socialize: 1 } },
     work: { drink: 4, eat: 1.5, relax: 1 },
-    labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
-    byTrade: { soldier: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
+    labour: { farmhand: 1, labourer: 1, builder: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, watchman: 0.7, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
+    byTrade: { soldier: { material: 0.5 }, watchman: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
     weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
     traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
       ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
     free: ['SOCIALIZE', 'REST', 'IDLE', 'WORSHIP'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
     bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
     loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
+    /* VITAL needs (2026-11-03, M6): hunger and thirst past 60 cap happiness, to nothing at a full meter: a weighted mean let
+       a starving town stay at 70, content on its other needs, and never riot */
+    vital: { eat: 60, drink: 60 },
     pain: 1.5, init: { material: [0, 55], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }
   },
   items: {
@@ -165,10 +174,10 @@ ISLE.TUNE.sim = {
        workplace's rack (the dockers' hooks, the soldiers' spears and shields), owning none; injuries: a worked day's
        `hurt` chance, healed by a healer's poultice bought on time off, or in `heal` days (Voth's 0.6%, 3 days) */
     setsBy: { poor: 2, middle: 3, rich: 4 }, sarong: { share: 0.5 }, hat: { share: 0.4, jobs: ['farmhand', 'fisher', 'labourer', 'docker', 'groom'] },
-    club: { share: 0.25 }, racks: ['docker', 'soldier'], hurt: 0.006, heal: 3,
+    club: { share: 0.25 }, racks: ['docker', 'soldier', 'watchman'], hurt: 0.006, heal: 3,
     medicine: { poultice: { cat: 'medicine', good: 'poultices' } },
     lack: 4,   /* the material meter a day for each set of clothes short (77-sim-6-items.js) */
-    sets: 2, armed: ['soldier'],
+    sets: 2, armed: ['soldier', 'watchman'],
     /* the household's cooking pot (owner, 2026-10-19): one a home with a store, kept by its houseworker (an elder or a
        child at home) else its first resident, cracked in `life` days and bought again from the town's pots */
     household: { pot: { cat: 'household', slot: 'lhand', life: 60, good: 'pots', material: 20 } },
@@ -181,9 +190,14 @@ ISLE.TUNE.sim = {
        herders' and grooms' goads, the weavers' shuttles, the potters' paddles and the officials' styluses are wood
        (Kautoa's dockyard; Valapo's by the lakatoi until it has a carver's workshop); the fishers' nets are corded
        cotton (the weavers). A stone tool blunts in a thousand worked hours (about three months;
-       Voth's iron ones last three to five thousand) */
-    tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', kinds: ['orchard', 'smithy', 'workshop', 'dockyard', 'tannery'], roles: ['labourer'] },
-      'wood tool': { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['field', 'pens', 'byre', 'weaver', 'potter'], roles: ['groom', 'official'] },
+       Voth's iron ones last three to five thousand). THE IRON TOOLS (PLAN.md 9b, 2026-11-02): where the villages are declared
+       (47h: the mine's ore smelted in Valapo, worked in Kautoa's smithies into `irontools`), a stone tool's errand buys an
+       iron one when its seller has it and the town holds the good (core's `prefer`), and a worn iron tool is replaced as
+       what it stood in for (core remembers it: a field hand's hoe, a smith's stone tool), so a town out of iron falls back; a page without the villages has no iron good and buys stone */
+    tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', kinds: ['orchard', 'smithy', 'workshop', 'dockyard', 'tannery'], roles: ['labourer'], prefer: ['iron tool'] },
+      'iron tool': { cat: 'tool', workLife: 3000, good: 'irontools', base: 'stone tool' },
+      'wood tool': { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['pens', 'byre', 'weaver', 'potter'], roles: ['groom', 'official'] },
+      hoe: { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['field'], prefer: ['iron tool'] },   /* the field hands' digging stick: an iron hoe where there is iron (2026-11-02) */
       net: { cat: 'tool', workLife: 1500, good: 'nets', kinds: ['fishdock'] },
       cookpot: { cat: 'tool', workLife: 1500, good: 'pots', roles: ['baker', 'keeper'] } },
     /* the treats (owner, 2026-10-19; Voth's `treat`): when a person's material meter reaches `treat.at`, it buys on its
@@ -193,12 +207,14 @@ ISLE.TUNE.sim = {
        person (`wealthSpread`), so the middle and the rich split between two treats */
     treats: { 'kava bowl': { cat: 'luxury', material: 25, good: 'kava' }, mat: { cat: 'household', material: 40, good: 'mats' },
       lamp: { cat: 'household', material: 45, good: 'lamps' }, necklace: { cat: 'luxury', material: 70, good: 'jewellery' } },
-    treat: { at: 55, items: [[0, 'kava bowl'], [0.3, 'mat'], [0.5, 'lamp'], [0.85, 'necklace']] },
+    treat: { at: 55, items: [[0, 'kava bowl'], [0.3, 'mat'], [0.5, 'lamp'], [0.85, 'necklace']], mix: true },
+    /* a kitchen without its pot: what it cooks is worth this (core's meal.pot) */
+    noPot: 0.7,
     wealthSpread: { poor: [0, 0.2], middle: [0.35, 0.65], rich: [0.8, 1] },
-    wares: { market: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
-      shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
+    wares: { market: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'hoe', 'mat', 'lamp', 'necklace'],
+      shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'hoe', 'mat', 'lamp', 'necklace'],
       weaver: ['shirt', 'wrap', 'mat', 'sarong', 'sun hat', 'net'], workshop: ['sandal', 'stone tool', 'necklace'], smithy: ['cuirass'], potter: ['pot', 'cookpot', 'lamp'], tavern: ['kava bowl'],
-      dockyard: ['wood tool', 'club'], fishdock: ['net'], healer: ['poultice'] },
+      dockyard: ['wood tool', 'hoe', 'club'], fishdock: ['net'], healer: ['poultice'] },
     meals: 2, perMeal: 2, low: 1, days: 3, stagger: 0.5, mins: 15, cool: 120, storeDays: [1, 3.5], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
@@ -222,7 +238,8 @@ ISLE.TUNE.sim = {
        good its buyers could not get is still made); `least` the shelf stock of the treats and the gear a town keeps with
        no demand (a town at the abstract level buys none: watched again, its people find them) */
     govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
-      least: { kava: 300, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
+      least: { kava: 600, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50,
+        cotton: 1000, stone: 300 } },   /* stone (2026-11-03): the builders' and the upkeep's draws and Valapo's by canoe on top of the tools'; the weavers draw cotton by the batch: a floor (2026-11-03: an unwatched town now buys its clothes at a watched one's pace, and Valapo's cotton swung) */
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
@@ -282,11 +299,120 @@ ISLE.TUNE.sim = {
     diet: { valapo: { rice: 0.05 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
-        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools'], valapo: ['sugar', 'garments', 'nets'] } },
+        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools', 'stone', 'timber'], valapo: ['sugar', 'garments', 'nets'] } },   /* stone and timber: Valapo's houses (47b); timber only where the lumber village is */
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]
   },
+  /* CRIME AND PUNISHMENT (47c; core/simulation 77-sim-6-crime.js; owner, 2026-11-02: start it on the isles, the Voth brief's
+     rules, 1.7): `share` of the adults (not the soldiers) are criminals, picked by a hash of the person: pickpockets in
+     their free hours at the markets, shops and greens by day, burglars of another household's food store at night; any
+     adult whose happiness is under `assault.below` may start a fight among company. A crime is seen by its witnesses (a
+     soldier among them counts much more), far less at night; seen, it fails and the nearest soldier on watch within
+     `arrest.reach` comes and arrests with `arrest.base` x (1 - d / reach) (a town nobody watches: by its soldiers on watch
+     a head against one in 150); the arrested sit a week in the nearest barracks (a month if they resist), out of work,
+     and lie low two days after. A share of 1 in 1,000 is the brief's */
+  crime: { share: 0.001, guards: ['soldier', 'watchman'], not: ['soldier', 'watchman', 'child', 'pupil', 'elder'], jails: ['barracks'], guardActs: ['WORK', 'PATROL'],
+    crimes: { pickpocket: { acts: ['BUY', 'SOCIALIZE', 'IDLE'], at: ['market', 'shop', 'butcher', 'green', 'plaza', 'tavern'], hours: [7, 20], chance: 0.25, loss: 15, gain: 15 },
+      burglary: { hours: [1, 4], chance: 0.1, share: 0.3 }, assault: { below: 30, acts: ['SOCIALIZE'], chance: 0.002 } },
+    seen: { base: 0.1, perWitness: 0.04, guard: 0.5, sleeper: 0.05, night: 0.4, max: 0.95, nightHours: [21, 5] },
+    arrest: { reach: 400, base: 0.7, ratio: 1 / 150, respond: 30 }, jail: { act: 'JAIL', days: 7, resist: 0.15, resistDays: 30, lieLow: 2 },
+    abstract: { atShare: 0.3, witnesses: 8 },
+    /* THE THIEVES' GUILD (owner, 2026-11-02): one a town, the tavern farthest from its barracks. A criminal seen within
+       `hideReach` m of it, nearer it than the soldier coming, hides there `hideMins` minutes (an unwatched town: `abstractHide`
+       of them) and is not arrested; a burglar takes `items` spare thing (clothes kept at home) besides the food, carries it all
+       to the guild in a free hour and fences it there (the food into the guild's store, the things on its shelf, the thief's
+       material meter down `perServing` a serving and `perItem` a thing); arrested first, the loot goes back */
+    guild: { kinds: ['tavern'], hideReach: 300, hideMins: 120, abstractHide: 0.5, items: 1, fence: { acts: ['SOCIALIZE', 'IDLE', 'BUY'], mins: 30, perServing: 0.2, perItem: 8 } } },
+  /* MONEY (47m; core/simulation 77-sim-6-money.js; core/simulation/PLAN-MONEY.md M0; the owner, 2026-11-03): each nation its
+     currency, the Izani Talent the trade's: the Islanders' is Kautoan shells (strung shell money), `talent` its value in
+     Talents. M0 opens the accounts and nothing moves yet (wages and prices are M1): every household in its town's currency
+     with `endow` shells by its home's class, every workplace (a recipe or wares) owned by its town's treasury (PLAN-MONEY
+     2a: the treasury owns them all to start), the treasury with `treasury` shells a person (three days' wages), the guild `guild`, the money
+     changers' reserves, the traders from beyond in Talents. The numbers are placeholders for M1's tuning */
+  money: { currencies: { talent: { name: 'Izani Talent', talent: 1, unit: 'talent' }, shell: { name: 'Kautoan shells', talent: 0.05, unit: 'shell' } },
+    spread: 0.03, nation: { islanders: 'shell' }, endow: { poor: 300, middle: 800, rich: 3000 }, treasury: 60, guild: 500,
+    changers: { shell: 20000, talent: 1000 }, foreign: { talent: 5000 },
+    /* M1 (PLAN-MONEY.md, 2026-11-03): every trade earns `wage` shells a rota hour (the same for all to start), paid at midnight
+       into its household (a barracks' soldiers into their mess); prices are each good's labour cost at `wage` an hour times a
+       markup, set after `calibrate` days of measuring (after a warm-up: the opening restock's waves would bias it) so that what the households spend is the wage bill (the officials,
+       soldiers and dockers make nothing a household buys: the markup carries them); a good nobody on the isles makes costs
+       `fallback`. THE CHIEF'S REDISTRIBUTION (`ration`): each night the treasury gives every household a day's keep for each
+       member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
+       keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
+       household cannot pay is fed on its treasury's dole */
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true,
+      /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
+         set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
+         higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
+         out only with money in hand (the dole feeds and clothes, it does not treat) */
+      spend: { days: 10, treatDrop: 15 },
+      /* STATIONS (M1's last part, the owner 2026-11-03: class follows profession; one rise a life, two in the fluid nations;
+         a fall a cause of unrest): the traders and keepers are merchants, the officials of the rich houses nobles, everyone
+         else a worker (a person's class changes only with a rise or a fall). A worker's household whose purse holds a
+         vacant shop's price (`cost` days of its wage bill) and `reserve` days of its keep for `hold` nights buys it from the
+         treasury, and the worker rises to merchant and runs it; the shop keeps `margin` of what it sells and pays the treasury
+         the rest wholesale, and its wages are the household's; a household that cannot cover them falls (the shop back to
+         the treasury, its merchant a worker again, its people `fall.unhappy` less happy, fading over `fall.days`). No
+         merchant princes on the isles yet: a trading house has no takings until trade by price (M3) */
+      stations: { merchants: ['trader', 'keeper'], nobles: ['official'], cls: { worker: 'poor', merchant: 'middle', prince: 'rich', noble: 'rich' },
+        rise: { merchant: { places: ['shop', 'butcher', 'tavern'], cost: 10, hold: 3 } }, perLife: 1, margin: 0.15, reserve: 5, fall: { unhappy: 25, days: 30 } } },
+    /* M2 (2026-11-03): prices move each night: a governed good by its scarcity, (target / supply line)^`k`, held to [lo, hi]
+       of its cost x markup and eased in over `smooth` days; the town's markup (its price level) toward what makes the
+       households' spending meet the wages and the full rations, at most `level.step` a night; the ration moves with it.
+       The wage stays flat (the owner: see how prices shake out first) */
+    m2: { k: 0.5, lo: 0.5, hi: 2, smooth: 3, level: false } },
+  /* UNREST (47u; core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6; the owner, 2026-11-03): each town's happiness pool,
+     collective and by class, eased over `smooth` days; under 50 the town grumbles (the watch's arrest odds times
+     `grumble.arrest`), under 40 it demands of the polity a shipment of what it lacked (the other towns and villages send what
+     they hold over `keep` days of their own use, up to `days` days of the asker's) or else a new ruler (refused: no political
+     system yet), under 30 a refused demand brings strikes (`share` of the strikers' workplaces held `days`), under 20
+     treason (an event: the revolution waits for the political system). A stage eases back `hyst` over its line. `smooth` 5
+     (the owner, 2026-11-03: a week to treason): a town whose food runs out grumbles in about two days and reaches treason
+     about six days later. Placeholders */
+  unrest: { smooth: 5, hyst: 5, stages: { grumble: 50, demand: 40, strike: 30, treason: 20 }, grumble: { arrest: 0.7 },
+    demand: { goods: 2, days: 5, keep: 2, every: 5, grant: 0.4, granted: { n: -10, days: 10 }, refused: { n: 5, days: 10 } }, strike: { after: 5, share: 0.5, days: 1 } },
+  /* BUILDING AND UPKEEP (47b; core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4; the owner, 2026-11-03: most
+     cities should show fillable empty lots while the player is there, adding demand for timber, stone and the other
+     building materials, and upkeep as a demand sink). `vacant` of each town's dwellings are left as empty lots in the
+     plan (32: a hash of the town and the lot; the census counts their households out); `crew` builders a town, sent to
+     its projects (at most `pace` at a time), waiting at the next lot when nothing is going up. A house is built of `kinds` (a dwelling of one household a
+     `house`, of three a `longhouse`): its bill (timber for the piles and frame, stone for the footings and hearth, mats
+     for the thatch and wall screens) and its worker-hours. Every standing home wears its bill over `life` days (the
+     thatch is the first to go; a house on piles needs little stone, its hearth and footing), drawn hourly from the warehouses; owed when they are out, shown on a share of the houses
+     after `grace` days. Timber is kept only where the lumber village is (the open world): on the city page a house's
+     timber is gathered on the spot and its upkeep skips it. Placeholders */
+  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6 }, pace: 1, crewPer: 12, grace: 30,
+    /* GROWTH (2026-11-04, the owner: building follows demand, and the lots must last more than a year): each town's people
+       grow by `rate` a year, a household of five at a time (two grown-ups, three children), which moves into a finished
+       house no one lives in; a town builds only while its houses ready or going up are fewer than `ahead` plus the
+       households waiting. At 2% Kautoa forms about 24 households a year (39 lots), Valapo about 9 (12 lots) */
+    growth: { rate: 0.02, per: 5, ahead: 2 },
+    /* THE STREETS OUTSIDE THE GATES (33, 2026-11-04, the owner: an experiment, hamlet-size): at most `max` a town, each a lane
+       `lane` m long branching off a gate's road `from` m out (a town with no gates: near an avenue's outer end), with up
+       to `lots` lots of `key` houses on dry, gentle ground (`drop` m at most across a lot), kept with `least`; laid out
+       with the plan, closed, opened one at a time when the town's empty lots run out */
+    spurs: { max: 2, lots: 8, least: 4, lane: 72, from: 40, drop: 3, key: 'ie-hut-garden' },
+    kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 },
+      /* every other roofed building (2026-11-04): a workplace, a hall, a temple, a barracks, kept over four years */
+      works: { bill: { timber: 30, stone: 4, mats: 20 }, hours: 900, life: 1460 } } },
+  /* REFUGEES (47r; the owner, 2026-11-04: "add a shipload of refugees once a week to see how things develop"; PLAN-POLITICS.md
+     section 4: to a camp first): a ship of `people` every `every` days from day `first`, to the towns in turn (the other
+     when one's camp is full at `cap`). They pitch at the camp's ground outside the town (33: a `camp.size` m square, found
+     ring by ring out from the town's edge), fed at its ration line from the town's warehouses (a mess), their own class in
+     the happiness pool (`refugee`), `unhappy` points down at landing, fading over `days`; a household of five moves into
+     a finished house no one lives in (before the town's own new households), and the camp's households count as the
+     demand the builders answer */
+  refugees: { every: 7, people: 30, first: 3, towns: ['kautoa', 'valapo'], cap: 400, per: 5, unhappy: { n: 10, days: 45 },
+    /* TO WORK (2026-11-04, the owner: after the first run): the grown-ups join the town's builders at landing, paid as
+       builders (into the camp's purse, then their household's); the town keeps a house going for every `build.crewPer` hands */
+    work: 'builder',
+    /* TENTS (2026-11-04, the owner: "work crew men are unhappier than people who don't have to live in a tent and will seek
+       housing. if they can't obtain it they may decide to move on"): anyone whose home is a tent camp (the refugee camps,
+       the work crews' camps) is `tent.n` less happy while there; a household of them `stay` days without a house whose
+       people are, on the mean, under `leave` happy moves on (leaves the isles) */
+    tent: { n: 12, stay: 45, leave: 70 },
+    camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
@@ -298,30 +424,64 @@ ISLE.TUNE.sim = {
        road        the carts between a village and its town: a convoy at `kmh` over the straight line times `detour`, a
                    stay of `mins`; `cap` a load. Two routes a village: OUT, all it makes but its own use (`keep` 0, the want
                    unbounded: the village works for its town); IN, the parent's foods it eats (its want, `want` days)
-       town        what the villages' goods feed in their towns: new `inputs` (the tannery's leather from hides, the
+       town        what the villages' goods feed in their towns (`stockpile`: the town's ceilings on the iron chain): new `inputs` (the tannery's leather from hides, the
                    dockyard's wooden tools from timber, the smithies' iron from ore and charcoal), `recipes` for a kind's
                    places that have none (Valapo's smithies, idle till now, smelt iron), `uses` a person a day drawn hourly (Kautoa builds with timber),
                    `expect` a day on the lakatoi (the charcoal Valapo's smelting wants before any has come) */
   hamlets: {
     kinds: {
       house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
-      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
+      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-quarry': ['quarry', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
       'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
       warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
     },
     producers: {
       saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
+      quarry: { out: ['stone'], rate: 0.25, cap: 1500 },   /* Valapo's quarry (2026-11-04, the owner: less productive than Kautoa's: 0.25 a worker-hour against its 0.4, and a third of the hands) */
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
       byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
     },
-    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
-    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools', 'logs', 'fuelwood'],
+    /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
+       sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it regrows a night (`regen`) and the `years` it
+       lasts worked flat out (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come
+       back, a pan and a pasture and a stand do. And, the same day: a resource a major settlement's village works lasts a
+       long time, at least five years). A site holds `years` x 365 x (its full day's draw - its regrowth), the full day being
+       every post of its works at work for the `sched.work` hours at its rate and the grade's yield (47h `ISLE.siteLife`),
+       and never under `minDays` of that draw; `years` by grade for an ore node. The governor and the ceilings keep the
+       real draw well under the full one, so it lasts longer still.
+       `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
+    gradeYield: { low: 0.5, medium: 1, high: 2 },
+    life: { years: 5, minDays: 30 },
+    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
+    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, stone: { max: 1500 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
+    /* THE FELLING CREW, a work camp that migrates (core/camp 40-camp-work.js; owner, 2026-11-02): the lumber village is the
+       yard (its sawpits saw logs into timber, its kilns burn fuelwood into charcoal) and `share` of its sawpits' posts go out
+       as a crew that camps at one stand of the forest at a time, fells it down to its seed trees, strikes and marches to the
+       next; the stands it left grow back. The range: the 400 m cells (`cfg.cell`) within `range` of the sawpit, each holding
+       its forest share (the host's `res.forest(x, z)`, 0..1, sampled `samples` x `samples`) x its hectares x `treesPerHa`
+       timber trees x `lotsPerTree`. A batch: `hours` worker-hours fell the logs, the tops and branches `by` as fuelwood.
+       A move: the crew's recipe held from the strike to the pitch (core's SIM.recipeHold), its place moved, its recipe
+       pointed at the new stand's site (a stand worked before is restored by its regrowth: SIM.siteRestore) */
+    crew: { focus: 'lumber', share: 0.5, range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40,
+      batch: { 'in': {}, out: { logs: 1 }, by: { fuelwood: 2 }, hours: 2 }, cap: 1500,
+      inputs: { timber: { logs: 1 }, charcoal: { fuelwood: 1 } }, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
+    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10, irontools: 5, logs: 20, fuelwood: 20 },
     carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
     town: {
-      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100 } },
-      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { out: ['iron'], rate: 0.5, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
+      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100, iron: 40 },
+        /* every `every`th smithy works the iron into iron tools, a batch (PLAN-ECONOMY.md Phase 2): Valapo smelts, Kautoa works the iron */
+        batches: { smithy: { every: 4, batch: { 'in': { iron: 1, charcoal: 1 }, out: { irontools: 2 }, hours: 8 }, cap: 200 } },
+        /* the iron chain's ceilings (SIM.stockpile, 2026-11-02): the governor never runs a maker under its floor, so without
+           them the smithies smelted and forged three to eight times what was bought, and the mine (which does not come
+           back) ran down for a pile. At `max` (the town's warehouses, sites, carts and what is at sea toward it) the makers stop */
+        stockpile: { irontools: { max: 80 } } },
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 },
+        stockpile: { iron: { max: 120 } } }
     },
-    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 } }
+    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } },
+    /* the iron tools' sellers in both towns (items.tools 'iron tool'): added to these kinds' wares once the villages are declared */
+    wares: { market: ['iron tool'], shop: ['iron tool'], smithy: ['iron tool'] }
   }
 };

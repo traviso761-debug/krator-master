@@ -29,7 +29,7 @@ Voth branch).
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
 `src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
 whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
-`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+`src/82-nr-water.js`); `kits/port`, the Ancient Port kit (the sea along the coast: a calm
 share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
 seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
 sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
@@ -70,8 +70,8 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 Every water hook goes through `KHOOK` (`core/shader/README.md`), so a page needs `core/shader` (`khost.resolve` adds it). What wraps a
 material is a layer (`wtr-ride`, `wtr-wet`, `wtr-keep`, `wtr-rust`, `wtr-cf:<hash>`, `wtr-breakup`, `wtr-mirror`); a page hook runs first
 whenever it is assigned. A kind's own hook edits through `W.vs` and `W.fs`, which throw on a missing anchor. `WATER.checkPrograms(renderer?,
-scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. Colours go in as written (`WATER.colAsWritten`);
-`KCOLOR.lin(hex)` is how to pass a true display hex. The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
+scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. A colour hex is decoded (`WATER.colLin`, 2026-11-08: a display hex goes in
+linear, a `THREE.Color` as it is; `WATER.colAsWritten` is the old as-written reading). The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
 
 ## Taking it into a build
 

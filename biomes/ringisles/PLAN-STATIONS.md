@@ -6,7 +6,8 @@ sea at -1,500 m), and a third of it is upland the showcase has no room for. One 
 station 1. Stations follow the Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
 **Status (2026-11-03, the rebuild turn, pair 8):** station 1 (the page as built) is rebuilt on the universal set ("Core adoption" below); **station 3, the
-lagoon, is built** (`python3 build.py --station lagoon`, `dist/ringisles-lagoon.html`; below); station 2, the high isle, stays a plan awaiting the owner.
+lagoon, is built** (`python3 build.py --station lagoon`, `dist/ringisles-lagoon.html`; below); **station 2, the high isle, is built** (2026-11-09, the owner
+asked for it; `--station high`, `dist/ringisles-high.html`; below), **not verified** (the owner: hand it over without a verify).
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `tools/scale-model/survey_biomes.py`, region `isle demo`)
 
@@ -139,3 +140,25 @@ wave field inside the rim, the wreck, the pearl beds, the ring shark (planned in
 - **Height fog and the lagoon's morning mist** (`?hfog=0`), **the wrack as one seaweed a pad** (it was the whole sheet of nine).
 - **The lagoon station** as a whole: its scale (a 6.4 x 5.6 km cut of the 8-10 km lagoon), the rim's surf on the true bed, the patch reefs' density, the
   motu's forest (XA: the kit's rainforest on sand, which an atoll's islets would carry thinner), the ridge for the lee shore's wall.
+
+## Station 2, built (2026-11-09; not verified)
+
+`stations/high/`: its own stage (`45-host-stage.js`: the shield, its valleys, the `STATION` knobs src/ reads), the cloud forest (`87-host-cloud.js`), the
+valleys' streams and falls (`89x-host-streams.js`), and core/water ext/61 by `station.json`. The map is 8.8 x 8 km: an eroded shield ~7 x 6.2 km at the
+coast, its summit 1,010 m a little west of the middle; five windward valleys cut into it, each with an amphitheatre head whose wall drops to a floor
+250-330 m up and runs down to the sea; the three middle valleys' streams fall 488-524 m off their headwalls (core/water's tall falls, `?falls=0`); every
+stream meets the sea with a plume of red-brown soil over the reef (ext/61, `?plume=0`). The climate: Af on the windward slopes, XA on the coastal flats,
+Am on the crest's lee, the savanna's burn mosaic down the lee, BSh and XS on the dry west coast (`dryAt`). **The cloud forest**: the fog belt on the
+crest (`ATMOS.fogBelt`, 560-1,100 m, thicker on the windward face) and the Throne's **elfin tree** borrowed into the belt (`FIELD.cloud`; a pass of its own
+that runs first; the lowland canopy thins and the tree ferns thicken as the cloud thickens), the kit's files unchanged (the host adds the borrowed
+species and its pass; the Throne's elfin bark and hanging moss join the page's Throne pack, so every page's `ringisles.tex.throne.js` grows by them).
+**KSTRATA on the valley walls**: the core's `rift-volcanic` recipe (basalt flows with ash partings and scoria) on the steep ground, through `strataColor`
+in the ground shader (`STATION.strata`). **Texture units**: the station drops the four ground layers it has nothing for (salt, sinter, mud, damp sand:
+`STATION.dropLayers`, each a constant colour with no sampler) to make room for the strata's three; with the fog belt's field the ground reads 16, so on
+the Arc the shadows, the rain cover and the ground's horizon are skipped, as on station 1. Gardens: the village's on the windward plain, the coffee and
+cloves terraced on the lee at ~350 m in the monsoon band. Checks it skips: `placed` (the island's mangrove has no mangal here), `mangal`, `thermal`.
+**Load-checked only**: one software-GL load without the bake (`?nobake=1`): error panel clean, the summit, valleys, falls, gardens and cloud field where
+designed. **Not verified**: no `--assert` run, no screenshot, no look; the flora's counts, the attach audit, the export profile (verify.py's box for it is
+the great valley's floor) and the universal asserts are the coordinator's GPU run's.
+**For the owner**: every look on it; the valleys' walls (steep: ~400 m over ~150 m, on a 10 m ground grid); the elfin trees' density in the belt; the fog
+belt's density (.0016); whether the lee wants the island's vent and salt pan back (left out).

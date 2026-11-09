@@ -5,6 +5,10 @@ The wooden architecture of the highland, temperate regions of the Inner Wall, in
 to the south: Norse + Alpine) and **Tribal** (the Painted Men: bamboo, raw logs, totems, cliff settlements) —
 carved and painted in a NW-coast formline palette, with a note of East-Asian dougong on civic eaves.
 
+**The kit's files are `kits/highlands/src` since 2026-11-03** (`kits/highlands/README.md`; MODULARITY-PLAN.md step 4). This
+folder is the page that shows them (the `highlands` target, the kit's sheet) and the town of Roketstad; its build reads
+the kit in place, so everything below holds.
+
 Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (vendored), so the kit drops into a
 settlement target (Raketstad is next) the same way the Iziz Vernacular set dropped into the Iziz city.
 
@@ -16,6 +20,16 @@ python verify.py dist/highlands.html --assert --views "Overview" --out shots
 * `DESIGN.md` — the brief: branches, shared vocabulary, lighting rule, tags, the building list.
 * `API.md` — the contract: registry, palette, kit items, helpers, rules for package work.
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open.
+
+## Doors and glass (core/door)
+
+The kit's doors are real leaves and its windows real glass (`kits/highlands/README.md`, "Doors and glass"): the build reads
+core/door's `10`, `20` and `90` and the Vernacular's `69e5-iziz-openings.js` in place (`DOOR_FILES`), `src/95-hl-doors.js`
+finishes the doors once the world is built (`IZDOOR.finish(KWALK)`, `KDOOR.clearDoorways(KWALK)`, each leaf to `KDOORHOST`, the
+frame tick) and `99-start.js` gives E (open or shut the door within reach) and its tip. The kit's bodies are solid, so its doors
+are locked; with `?interiors=1` a door that opens onto a furnished room is unlocked (`89y-hl-furnish.js`). `window._doors`
+counts the doors, the locked ones, their walk blocks, the panes and the `vDarkB` left (flues, fireboxes, wells, shafts: not
+openings).
 
 ## Level of detail (core/lod)
 
