@@ -104,7 +104,8 @@ KGROUND), `KFIRE`, seasons, the stations (`PLAN-STATIONS.md`, awaiting the owner
 Stations 1 and 2 of the plan and a third, the Lesser Throne, built in a cloud session: `python3 tools/build.py biomes/ehighlands`
 (`dist/ehighlands.html`), `--station face` (`dist/ehighlands-face.html`), `--station lesser` (`dist/ehighlands-lesser.html`). **Each page
 was smoke-loaded in software GL** (`tools/harness.py smoke`: it loads, the error panel stays empty; not `verify.py`): the GPU verify is
-owed for all three. Every station is `stations/<name>/46-host-land.js` (its STAGE record and land) and `96-host-views.js` (its views,
+owed for all three. At the opening view: the showcase 32 calls, 15.8 M triangles; the face 43 calls, 10.6 M (29.7 M before the forest was
+thinned: laurel cell 14 m, tree fern 9 m, both falling off with distance from the spine); the Lesser Throne 43 calls, 1.2 M. Every station is `stations/<name>/46-host-land.js` (its STAGE record and land) and `96-host-views.js` (its views,
 its negatives' points, its own check); the rest of `src/` is shared and reads the STAGE contract (`46-host-land.js` in src/ says it).
 
 **What moved on station 1 (the showcase), on purpose:** the sky's site (861,402) and air (0.86 atm), the giant's azimuth (66 to 60: every
