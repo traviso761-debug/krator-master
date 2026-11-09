@@ -447,7 +447,10 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
 
 **With step 4 (the settlement chains).**
 - ~~`useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js`~~: done (it is in `50-registry.js`; checked 2026-11-03).
-- Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).
+- ~~Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).~~
+  **Done 2026-11-09:** every vendored fragment but the 18 adapted copies is read in place (`settlements/ys/build.py` `INPLACE`;
+  51 src/ copies gone), with the Vernacular's `69e5`, the Highlands kit's `71c` and `core/door` (10, 20, 30) on the city page;
+  `settlements/voth/foreign.py` reads Ys's Treasury files where Ys does (`settlements/ys/KNOWN_ISSUES.md`).
 - ~~The open baseline rewrite from the Ancients re-vendor session~~: done (the five pages' entries match the committed
   pages; checked 2026-11-03).
 - The chain's re-vendors since that session, done 2026-11-03: Xanadu's `69-mat-salvage.js` and Reed Lake's `69-mat-salvage.js`,
@@ -459,9 +462,10 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
   hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
   **Iziz done 2026-11-03:** its twelve copies were the biome closure-wrapped by `bio_wrap` and matched upstream, so the
   city wraps the biome as it reads it and the copies are gone (`iziz.html`, sidecars and manifest byte-identical; Iziz's
-  two vendored pairs off the allow-list). **Dalab, Shade and Ys left:** their copies drift from `core/biome` and their
-  biomes (Dalab: the core's four and swlowlands' five; Shade: nine; Ys: its nwbay copies among others), so reading in
-  place changes their pages: each is a re-vendor to read diff by diff, with `verify.py --assert` and a screenshot.
+  two vendored pairs off the allow-list). ~~**Dalab, Shade and Ys left**~~: **done 2026-11-03** (each build's KNOWN_ISSUES.md: Dalab
+  reads core/biome's four and swlowlands' five in place, Shade sedesert's and core/biome's, Ys core/biome's and nwbay's; no
+  biome copy is left in any src/, and no biome pair is on the allow-list). Their pages were rebuilt and checked again on
+  2026-11-09 (`verify.py --assert`, one screenshot each; the results in their KNOWN_ISSUES.md).
 
 **With step 5 (backwards edges).** Nothing parked beyond the plan's own list.
 

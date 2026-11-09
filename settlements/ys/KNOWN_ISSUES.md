@@ -31,12 +31,12 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   and the walker's floor on the sea (YS_WALK). `n` noon/night is a take key (99-start.js). Back-port the compass to the
   standard pack once Ys is on `main`.
 
-- The Highlands kit (`70-hl-tex`, `71-hl-mat`, `71b-hl-motif`, `72-hl-helpers`, `73-hl-carve`, `74-rep-dwell`, from
-  `settlements/highlands/src`, Oct 5 2026) is byte-identical on disk but RENAMED AT BUILD TIME (`VENDOR_SUBST` in
+- The Highlands kit (`70-hl-tex`, `71-hl-mat`, `71b-hl-motif`, `71c-hl-openings` since 2026-11-09, `72-hl-helpers`, `73-hl-carve`,
+  `74-rep-dwell`, from `kits/highlands/src`, read in place since 2026-11-09) is RENAMED AT BUILD TIME (`VENDOR_SUBST` in
   build.py, applied to the body only): `HPAL` → `HLPAL` and `const hC=vC` dropped (Ys's `60-hyk-mat.js` declares both
   names, and 88b reads `HPAL`; the kit's hC is vC, exactly Ys's hC), `MAT.rock` → `MAT.hlRock` and `MAT.turf` →
   `MAT.hlTurf` (the kit overwrote core's `68-mat-v5` materials that `36-decor` and `64-houses-def` draw with). A
-  re-vendor is a plain copy; a new name clash shows up as the build's duplicate-name error.
+  new name clash upstream shows up as the build's duplicate-name error.
 
 ## Open
 - [x] (2026-11-03) **The biome is read in place** under the names `src/86-bio-*` had: `core/biome` (10, 20, 30, 40) and
