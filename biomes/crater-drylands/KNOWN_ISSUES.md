@@ -48,7 +48,8 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
   as savannarim's gallery forest; `?gallery=0`); **the tibasalt beds at the southern edge**: a 30 m lava step there (Godstep's first), its
   face a mesh of its own coloured vertex by vertex from KSTRATA's `tibasalt` recipe (`KSTRATA.at`: no texture unit; the core strata shade
   would take 3-5 and the ground reads 14 of the Arc's 16; `?step=0`); **the oak scrub** on the step's top (a kin of nhighlands' gnarled
-  oak, 3-6 m, dusty, no moss: EXCHANGES.md's row; `?oak=0`).
+  oak, 3-6 m, dusty, no moss: EXCHANGES.md's row; `?oak=0`). Headless (software GL): all 42 checks and negatives pass (18 gallery trees, all in
+  the gully; 50,756 triangles of tibasalt face; 158 scrub oaks, all on the step's top; attach audit .10%).
 - [ ] **Owed on `south`:** Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan: `biomes/godstep/PLAN.md`); S's fields and
       hazards from the scale model's S polygon (the stage is an ideal type, as N's); the copper flush's look (savannarim's miombo cards are
       painted stand-ins: its PROMPTS-NEEDED entry); the scrub oak does not resprout after a fire (nhighlands' builder knows no burn age).

@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "4be4aafb478b875dddf3a58f35b5b0eac96f979eb43e368892088ae3dd946ed5",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "5cda61a87c6a4da1a5416f1c9e5eb99438c0dec97104c3be074d5625ba5c9105",
     "biomes/crater-drylands/PORT.md": "5150fe2724f3f2d8083f0b78808c0d0b2cdcafdcf99f37be36d548d88c625954",
     "biomes/crater-drylands/build.py": "063a4cca92c60e682b8cc0a6a80ebcea61d5a2dc489dbaeef067b9b7829c7c98",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
@@ -156,7 +156,7 @@
   },
   "build.py --station edge": {
    "inputs": {
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "4be4aafb478b875dddf3a58f35b5b0eac96f979eb43e368892088ae3dd946ed5",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "5cda61a87c6a4da1a5416f1c9e5eb99438c0dec97104c3be074d5625ba5c9105",
     "biomes/crater-drylands/PORT.md": "5150fe2724f3f2d8083f0b78808c0d0b2cdcafdcf99f37be36d548d88c625954",
     "biomes/crater-drylands/build.py": "063a4cca92c60e682b8cc0a6a80ebcea61d5a2dc489dbaeef067b9b7829c7c98",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
@@ -386,7 +386,7 @@
     "biomes/abyssal-savannah/tex/thatch.albedo.webp": "1e934c5e230d47fbc5fdf0686bd4291d5a61c5395a21de727b9078e2ee14262a",
     "biomes/abyssal-savannah/tex/tongue.albedo.webp": "75f4121cd38450d40bf631389a185cff5c0ddd0bd4a66e84faa905002aabeeda",
     "biomes/abyssal-savannah/tex/vain.albedo.webp": "3e5ba926c501cf912665c625de20d1565065087dcafc3d99469e319a508ab29f",
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "4be4aafb478b875dddf3a58f35b5b0eac96f979eb43e368892088ae3dd946ed5",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "5cda61a87c6a4da1a5416f1c9e5eb99438c0dec97104c3be074d5625ba5c9105",
     "biomes/crater-drylands/PORT.md": "5150fe2724f3f2d8083f0b78808c0d0b2cdcafdcf99f37be36d548d88c625954",
     "biomes/crater-drylands/build.py": "063a4cca92c60e682b8cc0a6a80ebcea61d5a2dc489dbaeef067b9b7829c7c98",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
@@ -546,7 +546,7 @@
   },
   "build.py --station south": {
    "inputs": {
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "4be4aafb478b875dddf3a58f35b5b0eac96f979eb43e368892088ae3dd946ed5",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "5cda61a87c6a4da1a5416f1c9e5eb99438c0dec97104c3be074d5625ba5c9105",
     "biomes/crater-drylands/PORT.md": "5150fe2724f3f2d8083f0b78808c0d0b2cdcafdcf99f37be36d548d88c625954",
     "biomes/crater-drylands/build.py": "063a4cca92c60e682b8cc0a6a80ebcea61d5a2dc489dbaeef067b9b7829c7c98",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
