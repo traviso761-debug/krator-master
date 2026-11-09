@@ -62,7 +62,7 @@ var KFURN = (function(){
    if(rec.room) t.room = String(rec.room);
    if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
    if(rec.variant) t.variant = rec.variant;
-   const k = rec.scale || 1;
+   const k = rec.scale == null ? 1 : rec.scale;
    return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
      parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
      size: dm ? (k === 1 ? [dm.w, dm.d, dm.h] : [dm.w * k, dm.d * k, dm.h * k]) : undefined, tags: t, frag: 'core/furnish' });

@@ -9,4 +9,4 @@ const SHEET={title:'Xanadu Building Kit',build:'xanadu',ground:'xMeadow',groundR
  owns:k=>VERN.defs[k].kit==='xanadu',
  panes:['vWinClear','vWinLit','xStainedB','xFrostedB','xGlass'],
  budget:{showcase:{tris:6000000,calls:600}},   // every variant of everything: Xanadu's sheet's budget
- rows:XA.families().map(F=>({family:F.family,keys:[].concat(...F.keys.map(k=>{const n=VERN.defs[k].nv||3,out=[];for(let v=0;v<n;v++)out.push({key:k,o:{v}});return out;}))}))};
+ rows:XA.families().map(F=>({family:F.family,keys:[].concat(...F.keys.map(k=>{const n=VERN.defs[k].nv==null?3:VERN.defs[k].nv,out=[];for(let v=0;v<n;v++)out.push({key:k,o:{v}});return out;}))}))};

@@ -30,7 +30,7 @@ if(HLF.interiors&&typeof hnRCFlight==='function'){const f0=hnRCFlight;hnRCFlight
   KWALK.strip({a:W2(.3,y),b:W2(-run+.05,y+rise),w:Math.max(.6,w-.1),name:'hl flight',tag:'interior:hl-flight'});return r;};}
 function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
- const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
+ const s=c.o.scale==null?1:c.o.scale,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
  return HLF.place(key,p[0],(c.o.y||0)+ly*s,p[1],c.ry+(lry||0),o,[lx,ly,lz,lry||0],
   {building:c.D.key,wealth:hlfWealth(c.D),vern:c,listOf:()=>c.G.userData.furniture||(c.G.userData.furniture=[])});}
 // outside any builder (a town's own furniture, placed by its layout: Roketstad's market stalls), with {world: a name for
@@ -58,8 +58,8 @@ function hlfDoorsIn(nd,tag){let n=0;
 // the cutaway's units (core/host 99-host-cutaway, X; 2026-11-09): every furnished top-level building, its storeys from its set
 // item (the bodies' levels and the explicit rooms' floors, one storey per distinct floor more than a metre apart)
 function hlfUnits(F,defs){const U=[];for(const B of F.buildings){const it=KratorInteriors.sets.find(B.key);if(!it||it.skip||!B.interior)continue;
- const ys=[];for(const b of it.bodies||[]){let y=b.y||0;for(const l of(Array.isArray(b.levels)?b.levels:Array.from({length:b.levels||1},()=>({h:3})))){ys.push([y,l.h||3]);y+=l.h||3;}}
- for(const r of it.rooms||[])ys.push([r.y||0,Math.min(r.h||3,4.8)]);ys.sort((a,b)=>a[0]-b[0]);
+ const ys=[];for(const b of it.bodies||[]){let y=b.y||0;for(const l of(Array.isArray(b.levels)?b.levels:Array.from({length:b.levels==null?1:b.levels},()=>({h:3})))){const lh=l.h==null?3:l.h;ys.push([y,lh]);y+=lh;}}
+ for(const r of it.rooms||[])ys.push([r.y||0,Math.min(r.h==null?3:r.h,4.8)]);ys.sort((a,b)=>a[0]-b[0]);
  const lv=[];for(const [y,h] of ys)if(!lv.length||y-lv[lv.length-1].y0>1){lv.push({y:(B.baseY||0)+y,y0:y,h,name:lv.length?'storey '+(lv.length+1):'ground'});}
  const D=defs[B.key];U.push({id:'ix.'+U.length,name:(D&&D.name)||B.key,x:B.x,z:B.z,ry:B.ry,w:(D&&(D.fw||D.w))||20,d:(D&&(D.fd||D.d))||20,levels:lv.map(L=>({y:L.y,h:L.h,name:L.name}))});}
  return U;}
