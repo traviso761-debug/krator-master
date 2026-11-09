@@ -519,7 +519,7 @@
     "biomes/rift/tex/leaflet.albedo.webp": "7727416533e76ec5f925780d88529e27e3ae778271d4c32f088751a55a51c55a",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
     "biomes/rift/tex/rock.albedo.webp": "d36a24d378b1012efd3eb5ec89f39c6c6271351ecdc69b182f8548176f629d02",
-    "biomes/ringisles/KNOWN_ISSUES.md": "b6278f744f2816da8cfbc396ae5c8053d250c8a5632918e9f8259c878aa46c38",
+    "biomes/ringisles/KNOWN_ISSUES.md": "4b9a5adcf504bfc56c6fcfcb5e04e971deb9707404f1617fe980b76a8e4a9f78",
     "biomes/ringisles/PORT.md": "5d398e52a0b02022ec439358e3c93ea2d5a23c767d7ee2b438ca6f3a75e391cb",
     "biomes/ringisles/build.py": "85f2c1285c3f2618f4d30bf5e46bffb0c59e75d03fb6bafec15dce343a35ecff",
     "biomes/ringisles/src/00-head.html": "0165adae5c9f156061b302c2e455660c9fe63f3cf99d36d35f295f9f21581b8c",
@@ -546,6 +546,7 @@
     "biomes/ringisles/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ringisles/stations/high/45-host-stage.js": "e3f77baa4cc872e8877d8791b925439c7e82b9b69e24dc12ce65aee440f50d89",
     "biomes/ringisles/stations/high/87-host-cloud.js": "4404ee2bd96dde53508883fd0748ab47b1a60ddd8cc2e251174f18b3164d729b",
+    "biomes/ringisles/stations/high/87b-host-lod.js": "d6a3cd187e569853c3d83a9ebfa1004d6dd4a62b0c52513c8690603cd7cf7ad9",
     "biomes/ringisles/stations/high/89x-host-streams.js": "2bd9d56d692368ed68fcd06ce66a9cf06ab7e787fdd821367f8c3f3025b602a2",
     "biomes/ringisles/stations/high/station.json": "bcb73fca8831b89becdbdc85026b433864134b423419a3146fc2d6e75244f3a2",
     "biomes/ringisles/tex/bananaleaf.albedo.webp": "5097519c77259849d97fc0ef0969e40594d4b923bbeb8121db4eeacd9ae4f76d",
@@ -799,14 +800,14 @@
    "listings": {
     "biomes/ringisles/dist": "a7b608a7035dd94e2399455744d6abb5029d8b2d5465fc4695f74e9fbfb7c229",
     "biomes/ringisles/src": "6086fedf411fdcfff1964aae7a89dcd0e8c870b619332fbfc0ac8759e3b988f7",
-    "biomes/ringisles/stations/high": "63a48f96082fc6686fe84d91d36b7d20148765693fc38858a1165182419c6f48",
+    "biomes/ringisles/stations/high": "1118292b6564e43a22a2fd5c20246c4723aab14871b9a46592235885179ae44d",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ringisles/dist/ringisles-high.html": "f0a43b605c2763f5bce9e632f0c636c036bc54b14e7dfd6608b097dc751595d6",
+    "biomes/ringisles/dist/ringisles-high.html": "c46c6c89e10c950610725694bac86baf6851ca1ccaf7ec88e6c4bcbc1fffd698",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "c43f564e7528338244431de1746b9bb27de2af98c082e0f0d38b5f6ac7de8c2e",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "1158fc8baf2c5b8943bb2a2c587aed18555142cb6cf86514513d658f7ff24ede",
@@ -818,7 +819,7 @@
     "biomes/ringisles/dist/ringisles.tex.throne.js": "67137c994042e628939fab50050f07990b5672008bb9efa3bf4dcf01a75e219b"
    },
    "outputs_raw": {
-    "biomes/ringisles/dist/ringisles-high.html": "f0a43b605c2763f5bce9e632f0c636c036bc54b14e7dfd6608b097dc751595d6",
+    "biomes/ringisles/dist/ringisles-high.html": "c46c6c89e10c950610725694bac86baf6851ca1ccaf7ec88e6c4bcbc1fffd698",
     "biomes/ringisles/dist/ringisles.tex.eastabyss.js": "8a3a19ce623b1c9bd2bd1da0fac38496c098b7796c6eafe11061a42435f7f338",
     "biomes/ringisles/dist/ringisles.tex.geyser.js": "c43f564e7528338244431de1746b9bb27de2af98c082e0f0d38b5f6ac7de8c2e",
     "biomes/ringisles/dist/ringisles.tex.hyperjungle.js": "1158fc8baf2c5b8943bb2a2c587aed18555142cb6cf86514513d658f7ff24ede",
