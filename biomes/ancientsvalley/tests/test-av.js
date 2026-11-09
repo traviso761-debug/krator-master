@@ -25,6 +25,10 @@ ok('the scar is 1 at its centre and 0 far from it',F.scar(1500,-200)===1&&F.scar
 ok('nothing grows on the scar: feral 0, density 0 there',F.feral(1500,-200)===0&&F.density(1500,-200)===0);
 {const wet=G.water[0],x=G.x0+wet[0]*G.dx,z=G.z0+wet[1]*G.dz;ok('no density and no feral under the lake',ground(x,z)<LAKE+1?F.density(x,z)===0&&F.feral(x,z)===0:true);}
 ok('the taint is higher at a basin\'s rim than far from it',(()=>{const b=RG.basins[2];return F.taint(b.x+b.r*1.1,b.z)>F.taint(b.x+b.r*6,b.z);})());
+// the halves (the owner, 2026-11-08): about half the dry land wild (overgrown), the rest foul; the feral depth follows the wild field
+{const share=(FF)=>{let n=0,hi=0,fw=0,ff=0,nw=0,nf=0;for(let x=-2900;x<=2900;x+=100)for(let z=-2900;z<=2900;z+=100){if(Math.hypot(x,z)>3000||ground(x,z)<LAKE+.5)continue;n++;const w=FF.wild(x,z);if(w>.5){hi++;fw+=FF.feral(x,z);nw++;}else{ff+=FF.feral(x,z);nf++;}}return{s:hi/n,fw:nw?fw/nw:0,ff:nf?ff/nf:0};};
+ const a=share(F),a2=share(AV.fields({ground,base:BASE,lakeY:LAKE,cities:RG.cities,basins:RG.basins,scars:[{x:1500,z:-200,rx:520,rz:330,yaw:.5}],seed:1104,R:3000})),b=share(AV.fields({ground,base:BASE,lakeY:LAKE,cities:RG.cities,basins:RG.basins,scars:[{x:0,z:0,rx:9000,rz:9000,yaw:0}],seed:7}));
+ const good=r=>r.s>.4&&r.s<.65&&r.fw>r.ff*2;ok("the land is half wild, half foul for seed 7 and the page's ("+Math.round(a.s*100)+'% and '+Math.round(a2.s*100)+'% wild; feral '+a.fw.toFixed(2)+' there, '+a.ff.toFixed(2)+' in the foul)',good(a)&&good(a2),good(b));}
 // the plan: deterministic, keyed, on dry ground, spaced, the ruin shares
 const mk=seed=>AV.plan({R:3000,pitch:160,theta:.3,seed,ground,lakeY:LAKE,F,coreKeys:['spindle','ledger'],shelfKeys:['ledger'],near:{x:300,z:-150,r:400,keys:['terrace']},hero:['terrace']});
 const P=mk(5),P2=mk(5),P3=mk(6);

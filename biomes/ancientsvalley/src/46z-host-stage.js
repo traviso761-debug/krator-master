@@ -33,11 +33,13 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  // the fields (41-av-field.js) on the raw ground: the cities and basins from the record, one dead lobe on the ridge's east end, the craters
  const cities=RG.cities.map(c=>({n:c.n,x:c.x,z:c.z,h:c.h,theme:c.theme})),basins=RG.basins.map(b=>({n:b.n,x:b.x,z:b.z,r:b.r,kind:b.kind}));
  const scars=[{x:1500,z:-200,rx:520,rz:330,yaw:.5}].concat(CRATERS.map(c=>({x:c.x,z:c.z,rx:c.r*1.25,rz:c.r*1.25,yaw:0,k:.85})));
- const F=AV.fields({ground:rawGround,base:BASE,lakeY:LAKE_Y,cities,basins,scars,seed:SEED});
+ const F=AV.fields({ground:rawGround,base:BASE,lakeY:LAKE_Y,cities,basins,scars,seed:SEED,R});
  // THE VIADUCT: along the ridge's north flank from the east edge, west and out over the north inlet; its deck 16 m over the ridge, level over the water
- const VIA=[[2900,-520],[1400,-560],[300,-700],[-900,-1300],[-2900,-2300]];
+ /* two transit lines: the north flank's out over the inlet, and (the owner, 2026-11-08: the station's vision has a viaduct line across the view)
+    a second from the west, through the core and past the Overlook's line of sight 800 m out, to the south-east */
+ const VIA=[[2900,-520],[1400,-560],[300,-700],[-900,-1300],[-2900,-2300]],VIA2=[[-2750,-350],[-1500,500],[-600,1100],[300,2000],[1500,2850]],VIAS=[VIA,VIA2];
  const viaDeckY=(x,z,s)=>Math.max(rawGround(x,z)+16,LAKE_Y+38,-2);
- const viaD=(x,z)=>{let d=1e9;for(let k=0;k+1<VIA.length;k++){const a=VIA[k],b=VIA[k+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),px=a[0]+dx*t,pz=a[1]+dz*t;d=Math.min(d,Math.hypot(x-px,z-pz));}return d;};
+ const viaD=(x,z)=>{let d=1e9;for(const L of VIAS)for(let k=0;k+1<L.length;k++){const a=L[k],b=L[k+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),px=a[0]+dx*t,pz=a[1]+dz*t;d=Math.min(d,Math.hypot(x-px,z-pz));}return d;};
  // THE PLAN: the towers on a lattice turned 17 degrees, the skyscrapers on the floor (the Spindle three in ten, the Ledger, and the designs: the
  // Wedge, the Reed, the Telescope, the Stalk, the Swell, the Organ, the Yoke), the midrises on the shelf (the Ledger three in ten, the Terrace,
  // the Long Curve, the Cupola, the Arcades, the Pods, the Spiral, the Terrarium); nothing in the viaduct's corridor or at the eye's start
@@ -85,31 +87,38 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  /* the overgrowth is the rule, not the exception (PLAN.md section 5: wild overgrowth wherever the ground is not scarred): the forest takes
     every lot between the towers, thinner only where the core's pavement is thickest */
  const forest=(x,z)=>{const y=yOf(x,z);if(y<LAKE_Y+.6)return 0;const zn=F.zone(x,z),pk=F.park(x,z),sc=F.scar(x,z);
-  const open=zn==='floor'?.8+.2*pk:zn==='shelf'?.95+.05*pk:1;return clamp(open*(1-sc)*(1-.85*scorch(x,z)),0,1)*(1-.65*street(x,z))*(1-built(x,z));};
+  /* the owner, 2026-11-08: half the land scarred and polluted, half overgrown: the wild half takes every lot (the core's plazas too) and more of its
+     streets; the foul half keeps a tenth of the forest, a sick scrub (its wet falls under the rainforest zone's threshold: the kits' drier species) */
+  const w=F.wild(x,z),open=mix(zn==='floor'?.8+.2*pk:zn==='shelf'?.95+.05*pk:1,1,w);return clamp(open*(1-sc)*(1-.85*scorch(x,z))*(.08+.92*w),0,1)*(1-.65*street(x,z)*(1-.4*w))*(1-built(x,z));};
  return{key:'overlook',name:'The Ancient\'s Valley: the Overlook',title:'Krator biome — the Ancient\'s Valley: the Overlook',
-  hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk.',
-  R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIA,deckY:viaDeckY,d:viaD},near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
+  hint:'The ridge east of city1 over its drowned inlet (84 m, 1.58 atm, Af): the city on a normal day, no anomaly. Fly (W A S D, Q E, Shift), F to walk. R rides with a keeper robot (again for the next, Esc to let go).',
+  R,px:[RG.site.px,RG.site.py],base:BASE,lakeY:LAKE_Y,air:{pressure:RG.site.atm,humidity:.82},
+  /* the owner, 2026-11-08: dark, unnaturally turbulent, coloured cloudiness and a medium-distance smog, universal near the cities (this whole page is
+     city1): the sky's clouds low, heavy and fast, the air turbid and dust-coloured toward the taint's purple, the page's fog thick enough that 2 km is
+     half veiled and 4 km gone (it also hides the far tiers), the smog itself the height fog's mist on the floor (89v-host-smog.js) */
+  clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
+  smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.00042,above:110,depth:110,noise:.85},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
-  floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
+  floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';if(F.foul(x,z)>.6&&F.park(x,z)<.5)return 'polluted ground (the foul half)';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement
   // and the ridge's crest, brackish salt at the shore, upland by the height over the lake; no river on this page
   /* wet high everywhere: the kits' rainforest zone (swlowlands' `rain` needs wet over .86 and tropic over .86) is the valley's overgrowth; drier only on the pavement's edge */
-  fields:{wet:(x,z)=>clamp(.8+.12*smooth(12,2,yOf(x,z)-LAKE_Y)+.1*F.park(x,z)-.12*F.density(x,z)*(1-F.park(x,z)),0,.98),tropic:(x,z)=>.92,dry:(x,z)=>clamp(.1*F.density(x,z)+.5*F.scar(x,z)+.1*smooth(25,50,yOf(x,z)),0,1),
+  fields:{wet:(x,z)=>clamp(.8+.12*smooth(12,2,yOf(x,z)-LAKE_Y)+.1*F.park(x,z)-.12*F.density(x,z)*(1-F.park(x,z))+.08*F.wild(x,z)-.12*F.foul(x,z),0,.98),tropic:(x,z)=>.92,dry:(x,z)=>clamp(.1*F.density(x,z)+.5*F.scar(x,z)+.1*smooth(25,50,yOf(x,z))+.35*F.foul(x,z),0,1),
    flow:(x,z)=>0,upland:(x,z)=>clamp((yOf(x,z)-LAKE_Y)/300,0,1),salt:(x,z)=>.35*smooth(6,1,yOf(x,z)-LAKE_Y)},
   zone:(x,z)=>{const f=forest(x,z);return{sw:f,nw:f*.33,city:F.density(x,z)};},
   /* the north-west's species kept: the wet country's tall trees and the bamboo; not the grass tree (its lance cards are drawn apart from its
      trunk, so a grown tree left them floating: the core attach audit) nor the dry foothills' banksia */
-  swAllow:null,swKeep:['gum'],nwAllow:['kauri','towerash','skybamboo','treefern','ginkgo','glowwillow','meranti','mistpalm','pandan','paperbark'],swQ:1.5,nwQ:.9,
+  swAllow:null,swKeep:['gum'],nwAllow:['kauri','towerash','skybamboo','treefern','ginkgo','glowwillow','meranti','mistpalm','pandan','paperbark'],swQ:2.3,nwQ:1.35,
   // the ground's layers (materials.json; KGROUND in 47): a pave, b asphalt, c rubble, d glass; e rainfloor, f oak litter, g mud
   layers:['ground.pave','ground.asphalt','ground.rubble','ground.glass','ground.rainfloor','ground.oaklitter','ground.mud'],
   weights:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),st=street(x,z),b=built(x,z),wet=smooth(10,1.5,y-LAKE_Y),zn=F.zone(x,z),fo=forest(x,z);
-   const sco=scorch(x,z),pave=clamp(Math.max(b,(zn==='floor'?.3:.1)*d*(1-pk)*(1-.8*fo)*smooth(.3,.7,KRAND.fbm(x*.004+5,z*.004,0,2,SEED+8))),0,1)*(1-sc)*(1-st),rub=clamp(Math.max(.45*d*(1-pk)*(1-.6*fo)*smooth(.3,.65,KRAND.fbm(x*.02,z*.02,0,2,SEED+9)),.9*sco,.5*smooth(.15,.5,st)*(1-smooth(.6,.9,st))),0,1)*(1-sc)*(1-b);
+   const sco=scorch(x,z),fl=F.foul(x,z),pave=clamp(Math.max(b,(zn==='floor'?.3:.1)*d*(1-pk)*(1-.8*fo)*smooth(.3,.7,KRAND.fbm(x*.004+5,z*.004,0,2,SEED+8))),0,1)*(1-sc)*(1-st),rub=clamp(Math.max(.45*d*(1-pk)*(1-.6*fo)*smooth(.3,.65,KRAND.fbm(x*.02,z*.02,0,2,SEED+9)),.9*sco,.55*fl*(1-fo)*smooth(.35,.6,KRAND.fbm(x*.011+1,z*.011,0,2,SEED+10)),.5*smooth(.15,.5,st)*(1-smooth(.6,.9,st))),0,1)*(1-sc)*(1-b);
    const soilNW=clamp(.5*pk+.25,0,1)*(1-pave)*(1-sc),soilSW=clamp(.9-.5*pk,0,1)*(1-pave)*(1-sc);
    return[pave,st*(1-sc),rub,sc,soilNW*(1-wet),soilSW*(1-wet),wet*(1-sc)];},
   /* the paint is also the canopy seen from afar (the kits' trees stop at their LOD range): the forest's dark green where the mask is high */
   paint:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),sc=F.scar(x,z),pk=F.park(x,z),wet=smooth(10,1.5,y-LAKE_Y),t=F.taint(x,z),fo=forest(x,z),sco=scorch(x,z);let c=[.30,.33,.22];
-   c=c.map((v,i)=>mix(v,[.44,.42,.38][i],.35*d*(1-pk)));c=c.map((v,i)=>mix(v,[.15,.24,.12][i],.75*fo));c=c.map((v,i)=>mix(v,[.21,.21,.20][i],.7*street(x,z)));c=c.map((v,i)=>mix(v,[.22,.20,.16][i],wet));c=c.map((v,i)=>mix(v,[.09,.08,.07][i],.85*sco));c=c.map((v,i)=>mix(v,[.13,.12,.14][i],sc));
+   c=c.map((v,i)=>mix(v,[.44,.42,.38][i],.35*d*(1-pk)));c=c.map((v,i)=>mix(v,[.15,.24,.12][i],.75*fo));c=c.map((v,i)=>mix(v,[.11,.10,.09][i],.5*F.foul(x,z)*(1-fo)));c=c.map((v,i)=>mix(v,[.26,.18,.28][i],.3*F.foul(x,z)*t));c=c.map((v,i)=>mix(v,[.17,.20,.26][i],.3*fo*F.wild(x,z)*t));c=c.map((v,i)=>mix(v,[.21,.21,.20][i],.7*street(x,z)));c=c.map((v,i)=>mix(v,[.22,.20,.16][i],wet));c=c.map((v,i)=>mix(v,[.09,.08,.07][i],.85*sco));c=c.map((v,i)=>mix(v,[.13,.12,.14][i],sc));
    c=c.map((v,i)=>mix(v,[.30,.24,.30][i],.35*t*(1-sc)));return c;},
   views:()=>{const Y=(x,z)=>Math.max(ground(x,z),LAKE_Y),V=(c,cy,t,ty)=>[c[0],Y(c[0],c[1])+cy,c[1],t[0],Y(t[0],t[1])+ty,t[1]];
    const c1=cities.find(c=>c.n===1)||{x:-2000,z:2000};
@@ -132,16 +141,17 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'A residential street':V(o2,1.8,[NEAR.x-900,NEAR.z+620],28),
     'Among the towers':V(openSpot(NEAR.x+40,NEAR.z-20,200,10,NEAR.x-500,NEAR.z+300,60),1.8,[NEAR.x-500,NEAR.z+300],90),
     'The viaduct over the inlet':V([-400,-900],22,[-1500,-1700],30),
-    'The core from the water':V([-600,2300],6,[-1800,1500],120),
+    /* the eye on the water itself (the forest now takes the shore where it stood): the water cell nearest the old spot */
+    'The core from the water':(function(){let best=null,bd=1e9;for(let x=-1400;x<=200;x+=40)for(let z=1700;z<=2800;z+=40){if(Math.hypot(x,z)>R-60||ground(x,z)>LAKE_Y-1.5)continue;const d=Math.hypot(x+600,z-2300);if(d<bd){bd=d;best=[x,z];}}return V(best||[-600,2300],6,[-1800,1500],120);})(),
     'The dead lobe':V([900,-100],9,[1600,-250],4),
     /* the largest crater whose rim spot stands clear of every tower's pad and rubble (a fallen tower's heap reaches 120 m from its foot) */
     'A crater':(function(){const q=[];for(const c of CRATERS.slice().sort((a,b)=>b.r-a.r)){const ex=c.x+c.r*1.9,ez=c.z+c.r*1.4;if(ground(ex,ez)<LAKE_Y+3)continue;q.length=0;PADS.query(ex,ez,140,q);if(q.some(T=>Math.hypot(T.x-ex,T.z-ez)<T.padR+130))continue;return V([ex,ez],5,[c.x,c.z],-c.depth*.5);}const c=CRATERS[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
     'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.5,E.z-E.r*1.3],4,[E.x,E.z],E.h*.4);})(),
-    'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
+    'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(.3+.7*F.wild(x,z))*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
     'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};},
   start:'The Overlook: city1 and the lake',
   /* the LOD spine: a lattice over the whole page (the kits drop a species past its mid range from the spine unless it has an impostor; the
      overgrowth is everywhere, so the spine is), plus the eye's start */
   spine:(function(){const S=[[NEAR.x,NEAR.z]];for(let x=-2400;x<=2400;x+=800)for(let z=-2400;z<=2400;z+=800)S.push([x,z]);return S;})(),
-  budgetTris:9500000};})();
+  budgetTris:15000000,budgetCalls:900};})();   /* raised from 9.5 M on 2026-11-09 (the owner: "we can increase tri budget"): the overgrowth of the wild half; BUDGETS.json */

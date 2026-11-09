@@ -1,0 +1,11 @@
+{
+ "what": "The Ancient's Valley's ceilings (tools/check_budgets.py): the showcase registry past the page default for the overgrowth",
+ "pages": {
+  "ancientsvalley.html": {
+   "tris": 15000000,
+   "why": "the owner (2026-11-09) raised the triangle budget for the wild half's overgrowth: the feral forest at quality 2.3, trees on the ruins' tops and the creepers; the kits' chunk meshes take the park view to about 790 draw calls, so the per-view call ceiling is 900; measured on the RTX lane",
+   "raised": "2026-11-09",
+   "calls": 900
+  }
+ }
+}

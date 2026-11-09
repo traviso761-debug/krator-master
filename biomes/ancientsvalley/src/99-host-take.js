@@ -39,12 +39,21 @@ const HCHK={
  // overgrown by design (the owner, 2026-11-08: a destroyed, overgrown grid), so a tree on one is counted apart and allowed to a sixth of the forest
  clear(recs){let bad=0,st=0,n=0;for(const r of recs){if(r.kind!=='tree')continue;n++;if(STAGE.built(r.x,r.z)>.8||STAGE.F.scar(r.x,r.z)>.8)bad++;else if(STAGE.street(r.x,r.z)>.8)st++;}return{ok:n>50&&bad<=n*.02&&st<=n/6,detail:n+' trees, '+bad+' on a plinth or a scar, '+st+' on a street (overgrown)'};},
  // the lines: the viaduct's deck never dips under the lake and every pier reaches the ground
+ // the steam on the water, the keepers on their rounds (each round four corners on dry ground), the halves (the owner, 2026-11-08: about half
+ // the dry land wild, the forest mask far denser there than in the foul half)
+ steam(S){return{ok:S.banks>=20&&S.plumes>=1,detail:S.banks+' banks of mist, '+S.plumes+' plumes of steam'};},
+ keepers(K){let bad=0;for(const k of K){if(!k.route||k.route.length<4)bad++;else for(const p of k.route)if(terrainH(p[0],p[1])<STAGE.lakeY+2)bad++;}return{ok:K.length>=3&&!bad,detail:K.length+' keepers on their rounds, '+bad+' faults'};},
+ halves(F,forest){let n=0,hi=0,fw=0,ff=0,nw=0,nf=0;for(let x=-2900;x<=2900;x+=100)for(let z=-2900;z<=2900;z+=100){if(Math.hypot(x,z)>STAGE.R||terrainH(x,z)<STAGE.lakeY+.5)continue;n++;if(F.wild(x,z)>.5){hi++;fw+=forest(x,z);nw++;}else{ff+=forest(x,z);nf++;}}
+  const s=n?hi/n:0,a=nw?fw/nw:0,b=nf?ff/nf:0;return{ok:s>.4&&s<.78&&a>b*3,detail:Math.round(s*100)+'% of the dry land wild; the forest mask '+a.toFixed(2)+' there, '+b.toFixed(2)+' in the foul half'};},
+ // the overgrowth of the wild half (the owner, 2026-11-09: Midgar at the end of FF7): trees on the ruins' tops and creepers on the towers
+ overgrown(F,recs,CR){let roof=0,bad=0;for(const r of recs){if(r.kind!=='rooftree')continue;roof++;if(F.wild(r.x,r.z)<.5)bad++;}const c=CR?CR.curtains:0;return{ok:roof>=60&&bad<=roof*.03&&c>=1500,detail:roof+" ruins' tops with trees ("+bad+" outside the wild half), "+c+" curtains of creeper and moss on "+(CR?CR.towers:0)+" towers"};},
  lines(V){let low=0,short=0;for(const d of V.decks)if(d.y<STAGE.lakeY+20)low++;for(const p of V.piers)if(p.y1-p.y0<2)short++;return{ok:V.decks.length>50&&!low&&!short,detail:V.decks.length+' decks, '+V.piers.length+' piers; '+low+' low, '+short+' short'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the viaduct stands',HCHK.lines(AV_LINES.V));
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
  add('the grid runs between the buildings',HCHK.grid(T));add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
+ add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -57,6 +66,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
  add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
  add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
+ add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));
+ add('the whole land wild',HCHK.halves({wild:()=>1},STAGE.forest));
+ add('no tree on a ruin and no creeper',HCHK.overgrown(STAGE.F,REG.filter(r=>r.kind!=='rooftree'),{curtains:0,towers:0}));
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');

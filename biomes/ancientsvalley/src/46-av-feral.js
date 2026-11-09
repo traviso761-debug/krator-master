@@ -11,7 +11,7 @@
 //   AV.tint(scene, {strength}): the taint's tint on every baked kit material (a KHOOK layer: green pixels turn toward purple by a field of
 //     the world position; bark, ground and the towers are untouched). AV.TINTED the materials it reached
 (function(){
- const W=AV.FERAL={trees:0,inst:0,tris:0,floor:0,dropped:0,grown:0};
+ const W=AV.FERAL={trees:0,inst:0,tris:0,floor:0,dropped:0,grown:0,perched:0};
  const affine=(L,f)=>{const t=[f[0]-(L[0]*f[0]+L[1]*f[1]+L[2]*f[2]),f[1]-(L[3]*f[0]+L[4]*f[1]+L[5]*f[2]),f[2]-(L[6]*f[0]+L[7]*f[1]+L[8]*f[2])];
   return[L[0],L[3],L[6],0, L[1],L[4],L[7],0, L[2],L[5],L[8],0, t[0],t[1],t[2],1];};
  const mul4=(a,b,o)=>{for(let c=0;c<4;c++)for(let r=0;r<4;r++){let v=0;for(let k=0;k<4;k++)v+=a[k*4+r]*b[c*4+k];o[c*4+r]=v;}return o;};
@@ -34,12 +34,31 @@
    /* a tree whose span holds cards but no triangles draws its trunk later, outside the span (the cane palm): grown, its fronds would leave the trunk
       behind (the core attach audit); it keeps its size. W.kept counts them */
    if(!tris){W.kept=(W.kept||0)+1;return;}}
-  const f=[T.x,o.ground(T.x,T.z),T.z],fe=o.feral(T.x,T.z),u=KRAND.unit(KRAND.hash(o.seed|0,T.seed|0,41)),k=1+fe*(.3+.7*u),ky=k*(1+.15*fe*u);
+  /* the owner, 2026-11-09: "the trees shouldn't be taller than the buildings": grown to 1.7 x at most, and never past o.capH (40 m) */
+  const f=[T.x,o.ground(T.x,T.z),T.z],fe=o.feral(T.x,T.z),u=KRAND.unit(KRAND.hash(o.seed|0,T.seed|0,41)),capH=o.capH==null?40:o.capH;let k=1+fe*(.25+.45*u),ky=k*(1+.1*fe*u);
+  if(T.H&&T.H*ky>capH){const kk=Math.max(1,capH/T.H);ky=kk;k=Math.min(k,kk);}
   if(k>1.02)W.grown++;
   const L=diag(k,ky,k),A=affine(L,f);
   for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0;if(it.count>i0)moveInst(it,i0,it.count,A);}
   for(const fm in BIO.buckets){const K=BIO.buckets[fm],p0=sp.S.buckets[fm]||0;if(K.pos.length>p0)moveTris(K,p0,L,f);}
-  if(o.adjust)o.adjust(T,{dx:0,dz:0,h:T.H*ky,kx:k});W.trees++;}
+  if(o.adjust)o.adjust(T,{dx:0,dz:0,h:T.H*ky,kx:k});W.trees++;
+  /* the perches (the owner, 2026-11-09: overgrown like Midgar at the end of FF7): o.perch(T, h) -> [{x,y,z,yaw,k}] places on the ruins' tops
+     near this tree; the grown tree's span (its instances and its bucket triangles) is copied to each, turned and scaled, under a LOD key of
+     its own foot (one key per tree: the core's audit), so a ruin's roof carries the same species as the street below it */
+  if(o.perch){const P=o.perch(T,T.H*ky);if(P&&P.length){const i1={},p1={};for(const n in BIO.items)i1[n]=BIO.items[n].count;for(const fm in BIO.buckets)p1[fm]=BIO.buckets[fm].pos.length;
+   for(const pc of P){const c=Math.cos(pc.yaw),sn=Math.sin(pc.yaw),s=pc.k==null?1:pc.k,L=[c*s,0,sn*s, 0,s,0, -sn*s,0,c*s],A=affine(L,f);A[12]+=pc.x-f[0];A[13]+=pc.y-f[1];A[14]+=pc.z-f[2];
+    /* each copied row keeps its own key's range and minRange (a tree's impostor card is keyed far-only: drawn near it is a giant pale sheet) and
+       takes the perch's chunk: the key is 'cx,cz|range|minRange[|C]' (BIO._lodKey) */
+    const o0=BIO.owner;BIO.owner=[pc.x,pc.z];const key=BIO._lodKey(pc.x,pc.z);BIO.owner=o0;let tris=0,inst=0;const ck=new Map();
+    const rekey=k0=>{if(k0==null)return key;let m=ck.get(k0);if(m===undefined){const parts=String(k0).split('|'),C=parts.length>3?+parts[3]:(BIO.chunk==null?BIO.LOD.chunk:BIO.chunk),bar=String(k0).indexOf('|');m=Math.floor(pc.x/C)+','+Math.floor(pc.z/C)+(bar<0?'':String(k0).slice(bar));ck.set(k0,m);}return m;};
+    for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0,e=i1[n];if(e<=i0)continue;const m=it.m.a,def=BIO.defs[n];
+     for(let i=i0;i<e;i++){for(let q=0;q<16;q++)tmp[q]=m[i*16+q];mul4(A,tmp,out);for(let q=0;q<16;q++)it.m.push(out[q]);it.c.push(it.c.a[i*3],it.c.a[i*3+1],it.c.a[i*3+2]);
+      if(it.n.length){const nx=it.n.a[i*3],nz=it.n.a[i*3+2];it.n.push(c*nx+sn*nz,it.n.a[i*3+1],-sn*nx+c*nz);}if(it.c2.length)it.c2.push(it.c2.a[i*3],it.c2.a[i*3+1],it.c2.a[i*3+2]);
+      for(const a in it.x){const X=it.x[a];X.push(X.a[i*4],X.a[i*4+1],X.a[i*4+2],X.a[i*4+3]);}if(it.l)it.l.push(it.l[i]);it.k.push(rekey(it.k[i]));it.o.push(1);it.count++;tris+=def.tris;inst++;}}
+    for(const fm in BIO.buckets){const K=BIO.buckets[fm],p0=sp.S.buckets[fm]||0,e=p1[fm];if(e<=p0)continue;const P0=K.pos.a,N0=K.nor.a,C0=K.col.a,U0=K.uv.a;
+     for(let j=p0;j<e;j+=3){const x=P0[j]-f[0],y=P0[j+1]-f[1],z=P0[j+2]-f[2];K.pos.push(pc.x+L[0]*x+L[2]*z,pc.y+L[4]*y,pc.z+L[6]*x+L[8]*z);const nx=N0[j],nz=N0[j+2];K.nor.push(c*nx+sn*nz,N0[j+1],-sn*nx+c*nz);K.col.push(C0[j],C0[j+1],C0[j+2]);}
+     for(let j=p0/9*6;j<e/9*6;j++)K.uv.push(U0[j]);for(let j=p0/9;j<e/9;j++)K.k.push(rekey(K.k[j]));const t=(e-p0)/9;K.tris+=t;tris+=t;}
+    BIO.tally(tris,inst,0);W.perched=(W.perched||0)+1;if(o.perched)o.perched(T,pc,T.H*ky*s);}}}}
  function floorGrow(S0,o){for(const n in BIO.items){const it=BIO.items[n],i0=S0.items[n]||0;if(it.count<=i0)continue;const def=BIO.defs[n];
    if(def._upright==null){const g=def.geo;g.computeBoundingBox();const bb=g.boundingBox,h=bb.max.y-bb.min.y,w=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z);def._upright=h>w*.6;}
    /* not a bloom held on another plant's leaf (onLeaf) nor a free item (a raft, seed fluff): grown apart from what holds them, they would float */

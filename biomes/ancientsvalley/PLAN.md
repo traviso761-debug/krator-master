@@ -342,8 +342,10 @@ records until the streets want lots), `core/mask` (every field is a function), `
 2. **Station 0, the Overlook: no anomaly.** The look of the valley on a normal day: the city's tiers from a residential edge toward a core, a
    park district gone feral in purple-green, a dead lobe, a viaduct line across the view, the lake's steam, a keeper robot at its routine.
    **This is the test of the brief: the hand of man in every view, and the feel. Stop for the owner's eye.** It also measures the budget split.
-   *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake; not yet the steam
-   or the robot. Waiting on the owner's eye and the GPU verify.
+   *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake. *2026-11-08:* the
+   steam (banks of mist and plumes on the water, `89u`), the keepers (four kits/mechs walkers on avenue rounds, `72`), the second viaduct across
+   the Overlook's view, the land split half wild and half foul (`AV.fields` wild/foul), and the owner's smog (`89v`: the height fog's mist and
+   band, the sky's clouds low and turbulent, the air turbid). Waiting on the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
@@ -372,3 +374,37 @@ records until the streets want lots), `core/mask` (every field is a function), `
 12. ~~The fields' names~~ **Settled 2026-11-04:** `taint` and `scar`.
 
 **Every question of the plan is settled as of 2026-11-04**, except Carcosa's part (4) and which extraplanar figures come first (7). Station 0 can start.
+
+## 14. The transit pass (the owner, 2026-11-09): the real street grid, the highway, the lines, the war toward the lake
+
+The owner's words: "the transit kit has roads, streets, trains and subways basically ready to go. let's add this in, building a real street grid
+with these streets, placing buildings in relation to it, then applying a ton of damage to it. Wrecked vehicles and signs of violence (barricades,
+military posts, wrecked tanks and copters) will increase as we approach the lake, as will the height of the average building (nice lake front
+property values....) there will be an elevated highway that crosses the map and interfaces appropriately with the street grid, with at least 3
+on/off ramp placements. There will be a subway line build with subway stations leading to short stretched of tunnel, though most is blocked off.
+A cargo train line will also cross the map. if we need any special functionality for these new intersections, message the transit kit session."
+
+The kit is `kits/ancient-transit` (branch `claude/ancient-transit-2600a6`; its hand-over note `ancient-transit.md` in the shared notes folder,
+its `API.md`): road networks as node-and-segment graphs with kerb-line junctions, graded roads that cut and fill, the war along a street (riot to
+bombed: scorch, craters, barricades of wrecked vehicles, military positions), the highway with ramps and ruin states, rail at grade with level
+crossings and elevated with stations, the subway with stations, entrances and sinkholes, trains standing, derailed or fallen, the street
+furniture (replaces `AV_LAMPS`), and depressions the host adds to its own ground (`craterH`, `sinkholeH`, `lineH`).
+
+How the valley takes it (the plan; the work follows the overgrowth commit):
+- **The grid stays the lattice** (pitch 165 m, 17 degrees, an avenue every third line): every lattice line inside the page becomes a network def
+  (`avenue` 26 m, `road` 11 m) from edge to edge, so the kit's junctions fall at the lattice's crossings and the towers, already kept off the lines,
+  stand in relation to real streets with pavements and corners. The roadbed sinking in `ground()` goes; the kit's `lineH` and each road's `levelAt`
+  grade the surface instead, and the ground mesh (47) refines along the lines and the carvings as the kit's demo does.
+- **Toward the lake** (`lakeK(x,z)` 0..1 from the distance to the water): the family mix leans tall (the Spindle, the Ledger, the Organ, the Reed)
+  near the shore in `AV.plan`; the war's `damage(s)` climbs from a riot inland to bombed at the shore, with the military positions, the blockades
+  and the tanks and helicopters only in the lakeward half; the strewn wrecks (the wrecks session's records) follow the same gradient.
+- **The highway** replaces the second viaduct's boxes: waypoints across the page crossing the Overlook's sight 1.1 km out, at least three ramps
+  landing on avenues (the ramp's road at grade joining the network at a junction: special functionality if the kit lacks it, asked of the transit
+  session), `cull` against the plinths, the ruin shares by the scar and the lake, overgrowth by the feral field with the kits' species on
+  `span.growth.plants`.
+- **The lines**: the north viaduct becomes the elevated passenger line with two stations and a fallen train; a cargo line at grade crosses the page
+  with level crossings at every street it meets and a derailed freight train; the subway under one avenue with three stations, their entrances on
+  the pavements, short open stretches of tunnel between collapsed and silted sections (most of it blocked), sinkholes over the falls.
+- **The checks** (`99`): junctions at the lattice's crossings and no tower on a road; the highway's ramps (three or more) and its spans clear of
+  the streets; the cargo line's crossings; the subway's stations; the war's damage and the wrecks rising toward the lake (a correlation, with its
+  negative). The GPU verify on every view; the budgets (`BUDGETS.json`: 15 M, 900 calls) hold or are raised with a why.

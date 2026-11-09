@@ -59,12 +59,13 @@ AV.model=function(G){var H=G.h,nx=G.nx,nz=G.nz;
   cell:function(x,z){return[Math.round((x-G.x0)/G.dx),Math.round((z-G.z0)/G.dz)];},
   water:function(x,z){var c=this.cell(x,z),w=W[c[0]+','+c[1]];return w==null?null:w;},
   W:W};};
-// the fields. o: {ground(x,z): page y, base (the model's height at y 0), lakeY, cities:[{x,z,n}], basins:[{x,z,r,n}], scars:[{x,z,rx,rz,yaw}], seed}
+// the fields. o: {ground(x,z): page y, base (the model's height at y 0), lakeY, cities:[{x,z,n}], basins:[{x,z,r,n}], scars:[{x,z,rx,rz,yaw}], seed, R (the page's radius: the wild field's median is taken over it)}
 //   zone(x,z)    the band by the model's height ('floor' the core, 'shelf' the residential rings, 'terraces' parks and farmland, 'forest')
 //   density(x,z) 0..1 how built: the core 1 within 12 km of a city, the shelf .75, the terraces .2, the forest 0; nothing under the lake
 //   park(x,z)    0..1 the ruined parks and gardens: patches of the shelf and the terraces (core/rand's noise)
 //   scar(x,z)    0..1 dead ground: the scars' ellipses, and the basins' floors and rims (glass to 1.5 r)
 //   feral(x,z)   0..1 the depth of the old planting: deepest in the parks and on the terraces, nothing on a scar
+//   wild(x,z)    0..1 the overgrown half of the land (2 km lobes by core/rand's noise; nothing on a scar); foul(x,z) = 1 - wild on dry land
 //   taint(x,z)   0..1 the leak of what the weapons did: a slow field, plus the scars and the basins' rims
 AV.fields=function(o){var S=AV.smooth,seed=o.seed|0,scars=o.scars||[],basins=o.basins||[],cities=o.cities||[];
  var hAbs=function(x,z){return o.ground(x,z)+o.base;};
@@ -75,11 +76,19 @@ AV.fields=function(o){var S=AV.smooth,seed=o.seed|0,scars=o.scars||[],basins=o.b
  var park=function(x,z){var zn=AV.band(hAbs(x,z));if(zn==='floor'||zn==='forest')return 0;var n=KRAND.fbm(x*.0011+2.3,z*.0011-7.1,0,3,seed+11);return S(.56,.66,n)*(zn==='terraces'?1:.85);};
  var density=function(x,z){if(o.ground(x,z)<o.lakeY+1)return 0;var zn=AV.band(hAbs(x,z)),d=nearCity(x,z),k=S(24000,10000,d);
   var base=zn==='floor'?1:zn==='shelf'?.75:zn==='terraces'?.2:0;return base*(.55+.45*k)*(1-park(x,z))*(1-scar(x,z));};
- var feral=function(x,z){if(o.ground(x,z)<o.lakeY+.5)return 0;var zn=AV.band(hAbs(x,z)),n=KRAND.fbm(x*.0021-1.1,z*.0021+4.7,0,3,seed+17);
-  var base=zn==='floor'?.35:zn==='shelf'?.55:zn==='terraces'?.8:.45;return AV.clamp((base+.5*(n-.5)+.45*park(x,z))*(1-scar(x,z)),0,1);};
+ // the wild (the owner, 2026-11-08: the land half scarred and polluted, half overgrown and gone feral): a slow field in 2 km lobes, about half
+ // the dry land over a half, nothing on a scar; foul is the other half (the pollution: bare, oily ground, a sick scrub, the taint's colours)
+ // the split is by the noise's MEDIAN over the page's dry land (a 48 x 48 sample at the fields' making), so every seed and every page gets its half:
+ // at 1.4 km lobes a page is only a few lobes wide, and a fixed threshold gave one seed 18% wild and another 52%
+ var wn=function(x,z){return KRAND.fbm(x*.0007+3.7,z*.0007-1.9,0,3,seed+23);},wildMid=(function(){var R=o.R==null?3000:o.R,v=[];for(var i=0;i<48;i++)for(var j=0;j<48;j++){var x=(i/47*2-1)*R,z=(j/47*2-1)*R;if(x*x+z*z>R*R||o.ground(x,z)<o.lakeY+.5)continue;v.push(wn(x,z));}
+  if(!v.length)return .5;v.sort(function(a,b){return a-b;});return v[v.length>>1];})();
+ var wild=function(x,z){if(o.ground(x,z)<o.lakeY+.5)return 0;return S(wildMid-.09,wildMid+.09,wn(x,z))*(1-scar(x,z));};
+ var foul=function(x,z){if(o.ground(x,z)<o.lakeY+.5)return 0;return AV.clamp(1-wild(x,z),0,1);};
+ var feral=function(x,z){if(o.ground(x,z)<o.lakeY+.5)return 0;var zn=AV.band(hAbs(x,z)),n=KRAND.fbm(x*.0021-1.1,z*.0021+4.7,0,3,seed+17),w=wild(x,z);
+  var base=zn==='floor'?.35:zn==='shelf'?.55:zn==='terraces'?.8:.45;return AV.clamp((base+.5*(n-.5)+.45*park(x,z))*(1-scar(x,z))*(.3+.7*w)+.25*w,0,1);};
  var taint=function(x,z){var n=KRAND.fbm(x*.0007+9.2,z*.0007-3.3,0,4,seed+23),t=.15+.6*S(.35,.75,n);
   for(var b=0;b<basins.length;b++){var B=basins[b],rb=Math.hypot(x-B.x,z-B.z)/B.r;t+=.6*S(2.2,1.2,rb);}return AV.clamp(t+.5*scar(x,z),0,1);};
- return{zone:function(x,z){return AV.band(hAbs(x,z));},density:density,park:park,scar:scar,feral:feral,taint:taint,hAbs:hAbs};};
+ return{zone:function(x,z){return AV.band(hAbs(x,z));},density:density,park:park,scar:scar,feral:feral,taint:taint,wild:wild,foul:foul,hAbs:hAbs};};
 // the city's plan: the towers as records on a lattice turned by theta, a tower where the density says so, its family by the zone, its state by
 // the ruin shares, its yaw by hash; none under the lake, on a scar or in a park. o: {R, pitch, theta, seed, ground(x,z), lakeY, F (AV.fields),
 // coreKeys:[family...], shelfKeys:[...], near:{x,z,r,keys:[...]} (the designs that stand only as heroes: round the eye's start), skip(x,z)}

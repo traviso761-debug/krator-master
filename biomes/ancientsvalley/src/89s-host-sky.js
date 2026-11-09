@@ -8,8 +8,8 @@ const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.vie
  get t(){const c=skyHostClock();return c?c.t:0;}};
 const SKY_RIDGES=AV_REGION.ridges.slice().reverse().map((b,i)=>({profile:b.profile.slice(),dist:b.dist,
  snowH:99999,forestH:2600-(STAGE.base+AV_REGION.eye),haze:[.7,.55,.4][i]==null?.5:[.7,.55,.4][i],rock:[.46,.42,.38],forest:[.22,.30,.21],snow:[.92,.94,.97]}));
-const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:STAGE.px[0],py:STAGE.px[1]},air:{pressure:STAGE.air.pressure,humidity:STAGE.air.humidity},
- clouds:{cover:STAGE.cloudCover==null?.48:STAGE.cloudCover},fogDensity:STAGE.fogDensity==null?.000075:STAGE.fogDensity,ridges:SKY_RIDGES}),
+const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:STAGE.px[0],py:STAGE.px[1]},air:Object.assign({pressure:STAGE.air.pressure,humidity:STAGE.air.humidity},STAGE.airLook||{}),
+ clouds:Object.assign({cover:STAGE.cloudCover==null?.48:STAGE.cloudCover},STAGE.clouds||{}),fogDensity:STAGE.fogDensity==null?.000075:STAGE.fogDensity,ridges:SKY_RIDGES}),
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true});
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}

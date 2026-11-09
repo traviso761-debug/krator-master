@@ -13,7 +13,10 @@ const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
    48 of them; its impostor is 128 px a view */
 /* 2026-11-09, the owner's fourth eye: a shell seen onto its top (the eye over the tower's roof) smears whatever the range, so such a tower is a hero to
    AV_NEAR_STEEP; a design is a hero to 1 km, the nearest 64 (past 48 within 1.4 km the rest were cards at 900 m) */
-const AV_NEAR=360,AV_FAR=3200,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=24,AV_DNEAR=1000,AV_DHEROMAX=72;
+const AV_NEAR=360,AV_FAR=3200,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=40,AV_DNEAR=1000,AV_DHEROMAX=72;
+/* the owner, 2026-11-09 ("a shell at close range again"): a pierced or round design's box shell is a dotted sheet at 300 m, so those families keep
+   their heroes further out (their band is AV_NEAR times this), and a tower inside its band is a hero whatever the pool holds */
+const AV_NEARK={pods:2,organ:1.8,reed:1.6,arcades:1.6,spiral:1.6,terrarium:1.5,cupola:1.3,swell:1.3};
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
 /* THE FAR LOOKS (2026-11-09, the owner's fifth eye: floors hung in the air on the far impostors, shells drew over other models). A ruin at range
@@ -30,7 +33,7 @@ const avImpKey=t=>t.family+'.'+AV_LOOK[t.state];
    nothing a heightfield can hold) */
 MP.families().concat(Object.values(MP.FAMILY).filter(F=>F.design)).forEach(F=>{if(!F||F.shell)return;const fp=F.footprint||(F.footprint={});if(fp.w==null){fp.w=fp.d=(fp.r==null?30:fp.r)*2;}F.shell={mode:'box',inset:1.2,texel:1.0,ruinTexel:1.25,box:true};});
 const avCanShell=t=>!!t.skey&&t.state!=='skeleton';
-AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;});
+AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;t.nearR=AV_NEAR*(AV_NEARK[t.family]==null?1:AV_NEARK[t.family]);});
 AVC.skeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.skey)){seen.add(t.skey);AVC.skeys.push(t.skey);}});}
 /* a hero flattened for the shell's bake (KSHELL.bake reads a hero's direct children at identity): every mesh of the tree with its world transform
    baked into a geometry copy, an instanced mesh with its instance matrices premultiplied */
@@ -44,7 +47,7 @@ function avFlat(H){H.updateMatrixWorld(true);const G=new THREE.Group(),I=new THR
    uncut): a solid stub with a torn top. The heroes inside AV_NEAR are the real ruins; the switch at the band is from frame to skinned stub */
 function avStub(k){const p=k.split('.'),fam=p[0],look=p[1];if(look==='intact'){const H=AVC.hero[k];return H.userData.avFlat||(H.userData.avFlat=avFlat(H));}
  const F=MP.FAMILY[fam],ik=fam+'.intact',src=AVC.hero[ik]||(AVC.hero[ik]=heroOf(ik));let top=Infinity;
- if(look!=='gutted'){try{const R=MP.ruin(F,look);top=Math.max(8,R.cut==null?8:R.cut);}catch(e){top=20;}}
+ if(look!=='gutted'){try{const R=MP.ruin(F,look);top=Math.max(8,R.top!=null?R.top:(R.cut==null?8:R.cut));}catch(e){top=20;}}
  const G=avFlat(src);if(top===Infinity)return G;const out=new THREE.Group(),M=new THREE.Matrix4();
  G.children.forEach(m=>{if(m.isInstancedMesh){const keep=[];for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);if(M.elements[13]<=top)keep.push(i);}if(!keep.length)return;
    const k2=new THREE.InstancedMesh(m.geometry,m.material,keep.length),C=m.instanceColor?new Float32Array(keep.length*3):null,ca=C?m.instanceColor.array:null;
@@ -87,7 +90,17 @@ function avRust(H,key){if(H.userData.avRusted)return H;H.userData.avRusted=true;
   if(m.isInstancedMesh&&m.instanceColor){const c=m.instanceColor.array,a=m.instanceMatrix.array;for(let i=0;i<m.count;i++)at(a[i*16+12],a[i*16+13],a[i*16+14],c,i*3);m.instanceColor.needsUpdate=true;}
   else{const g=m.geometry,col=g.attributes.color,p=g.attributes.position;if(!col||g.userData.avRusted)return;g.userData.avRusted=true;const c=col.array,q=p.array,n=Math.min(col.count,p.count);for(let i=0;i<n;i++)at(q[i*3],q[i*3+1],q[i*3+2],c,i*col.itemSize);col.needsUpdate=true;}});
  return H;}
-const heroOf=(key,lite)=>{const p=key.split('.');return avRust(MP.hero(p[0],p[1],lite),key);};
+/* the design families' ruin heroes stand at their full height (MP.ruinDesign cuts glass and floors, not the frame: an Organ stump 240 m tall
+   against its record's 47), while their shell frames, impostors and the plan read the record (MP.ruin's top): the hero/shell switch popped by
+   the difference, the owner's "models appear and disappear at different zoom levels". Found 2026-11-09: a design's crown, broken and stump heroes
+   are cut at the record's top here, walls and slabs by triangle, panels by instance; the debris heaps are left as they lie */
+const AV_RUINY={crown:1,broken:1,stump:1},_cM=new THREE.Matrix4();
+function avClipHero(H,top){H.updateMatrixWorld(true);const kill=[];H.traverse(m=>{if(!m.isMesh||!m.geometry||/debris|rubble/.test(m.name||''))return;
+  if(m.isInstancedMesh){const keep=[];for(let i=0;i<m.count;i++){m.getMatrixAt(i,_cM);_cM.premultiply(m.matrixWorld);if(_cM.elements[13]<=top)keep.push(i);}if(keep.length===m.count)return;if(!keep.length){kill.push(m);return;}
+   const a=new Float32Array(keep.length*16),A0=m.instanceMatrix.array,C=m.instanceColor?new Float32Array(keep.length*3):null,C0=C?m.instanceColor.array:null;
+   keep.forEach((i,j)=>{for(let q=0;q<16;q++)a[j*16+q]=A0[i*16+q];if(C){C[j*3]=C0[i*3];C[j*3+1]=C0[i*3+1];C[j*3+2]=C0[i*3+2];}});m.instanceMatrix=new THREE.InstancedBufferAttribute(a,16);if(C)m.instanceColor=new THREE.InstancedBufferAttribute(C,3);m.count=keep.length;return;}
+  const g=clipGeoY(m.geometry,m,top);if(g===m.geometry)return;if(!g){kill.push(m);return;}m.geometry=g;});kill.forEach(m=>{if(m.parent)m.parent.remove(m);});return H;}
+const heroOf=(key,lite)=>{const p=key.split('.'),F=MP.FAMILY[p[0]];let H=MP.hero(p[0],p[1],lite);if(F&&F.design&&AV_RUINY[p[1]]){let top=null;try{top=MP.ruin(F,p[1]).top;}catch(e){}if(top!=null)avClipHero(H,top+.5);}return avRust(H,key);};
 // the towers as records before anything is drawn: the family's name, its footprint, the state
 AVC.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family];if(!F)return;const r=F.footprint?(F.footprint.r||Math.max(F.footprint.w||0,F.footprint.d||0)/2):30;
  REGISTER({name:F.name+' ('+T.state+')',kind:'tower',x:T.x,z:T.z,y:T.y,r:r,h:T.state==='intact'||T.state==='gutted'?F.height.tip:F.height.tip*.6,tags:{kind:'tower',family:T.family,state:T.state,zone:T.kind}});});
@@ -119,7 +132,7 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
     read at a texel while the piers between them do not): the impostor is baked without them, the skin and the frame alone */
  const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;let o=m,skip=false;while(o&&o!==H){if(/slab|floor|storey|plate/i.test(o.name||''))skip=true;o=o.parent;}if(!skip)out.push(m);});return out;};
  const impOf=(k,S)=>{const pk=k.split('.'),fam=pk[0],look=pk[1],solid=look!=='intact'&&look!=='gutted',F=MP.FAMILY[fam];let top=Infinity;
-  if(solid){try{const R=MP.ruin(F,look);top=Math.max(8,R.cut==null?8:R.cut);}catch(e){top=20;}}
+  if(solid){try{const R=MP.ruin(F,look);top=Math.max(8,R.top!=null?R.top:(R.cut==null?8:R.cut));}catch(e){top=20;}}
   const H=heroOf(look==='intact'?k:fam+'.intact',true),names=[];heroMeshes(H).forEach((m,i)=>{let g=m.geometry;if(solid&&!m.isInstancedMesh){g=clipGeoY(g,m,top);if(!g)return;}const n='av.'+k+'.'+i;BIO.def(n,g,m.material,{indexed:false});names.push([n,m]);});
   return BIO.impostor('av.'+k,function(){const M=new THREE.Matrix4(),W=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();
    names.forEach(function(e){const n=e[0],m=e[1];W.copy(m.matrixWorld);if(!m.isInstancedMesh){W.decompose(p,q,s);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],null);return;}
@@ -134,16 +147,16 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  AVC.bakeAllMs=Math.round(performance.now()-t0);AVC.impMs=0;AVC.ready=true;AVC.nextTier=0;return true;};
 AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const r=AVC.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;AVC.impMs+=Math.round(performance.now()-t0);};
 // a hero placed on the ground: a clone that shares the geometry
-function avHero(key,x,y,z,yaw,fade){const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key)),g=new THREE.Group();H.children.forEach(m=>{let c;if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;c.position.copy(m.position);c.quaternion.copy(m.quaternion);c.scale.copy(m.scale);c.userData=m.userData;}else c=m.clone();g.add(c);});
+function avHero(key,x,y,z,yaw,fade,nearR){const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key)),g=new THREE.Group();H.children.forEach(m=>{let c;if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;c.position.copy(m.position);c.quaternion.copy(m.quaternion);c.scale.copy(m.scale);c.userData=m.userData;}else c=m.clone();g.add(c);});
  /* fade: false, or the shell key whose frame the hero fades over (its own key, or the stump's for a skeleton) */
- g.position.set(x,y,z);g.rotation.y=yaw==null?0:yaw;if(MP.shadow)MP.shadow.cast(g);const fk=fade===true?key:fade;if(fk&&AVC.rec[fk])avFade(g,fk,x,y,z,yaw);g.userData.av={key,x,y,z,yaw:yaw==null?0:yaw};scene.add(g);AVC.live.push(g);return g;}
+ g.position.set(x,y,z);g.rotation.y=yaw==null?0:yaw;if(MP.shadow)MP.shadow.cast(g);const fk=fade===true?key:fade;if(fk&&AVC.rec[fk])avFade(g,fk,x,y,z,yaw,nearR);g.userData.av={key,x,y,z,yaw:yaw==null?0:yaw};scene.add(g);AVC.live.push(g);return g;}
 /* a broken tower's lean (AV.lean: up to 5 degrees, a direction by hash): one quaternion per tower, the heroes, the shells and the rubble share it */
 const avQuat=(T)=>{if(T.q)return T.q;const Y=new THREE.Vector3(0,1,0),q=new THREE.Quaternion().setFromAxisAngle(Y,T.yaw||0);if(T.lean){const ax=new THREE.Vector3(Math.cos(T.leanDir||0),0,Math.sin(T.leanDir||0)),t=new THREE.Quaternion().setFromAxisAngle(ax,T.lean*Math.PI/180);q.premultiply(t);}T.q=q;return q;};
 const avHalf=(key,yaw)=>{const r=AVC.rec[key];if(!r){const F=MP.FAMILY[key.split('.')[0]]||MP.DESIGNS[key.split('.')[0]],fp=F&&F.footprint||{},h=fp.r!=null?fp.r:Math.max(fp.w==null?40:fp.w,fp.d==null?40:fp.d)/2;return[h,h];}const f=r.frame,h=f.mode?[f.a,f.b]:[f.a*.6,f.a*.6];return Math.abs(Math.cos(yaw==null?0:yaw))<.5?[h[1],h[0]]:h;};
 const avH=key=>{const r=AVC.rec[key];if(r)return r.frame.H;const p=key.split('.'),F=MP.FAMILY[p[0]]||MP.DESIGNS[p[0]];if(F&&F.ruins&&p[1]&&p[1]!=='intact'){try{return MP.ruin(F,p[1]).top;}catch(e){}}return F?F.height.tip:60;};
 const avBoxDist=(T,e)=>{const h=avHalf(T.skey||T.key,T.yaw),dx=Math.max(Math.abs(e.x-T.x)-h[0],0),dz=Math.max(Math.abs(e.z-T.z)-h[1],0),dy=Math.max(e.y-T.y-avH(T.skey||T.key),Math.max(T.y-e.y,0),0);return Math.hypot(dx,dy,dz);};
-function avFade(g,key,x,y,z,yaw){const h=avHalf(key,yaw),H=AVC.rec[key].frame.H,a=new Float32Array(12);
- a.set([x-h[0],z-h[1],x+h[0],z+h[1],y,y+H,0,-AV_NEAR,1e9,1e9,1e9,1e9]);const cache=AVC.fadeMats||(AVC.fadeMats=new Map());
+function avFade(g,key,x,y,z,yaw,nearR){const h=avHalf(key,yaw),H=AVC.rec[key].frame.H,a=new Float32Array(12);
+ a.set([x-h[0],z-h[1],x+h[0],z+h[1],y,y+H,0,-(nearR==null?AV_NEAR:nearR),1e9,1e9,1e9,1e9]);const cache=AVC.fadeMats||(AVC.fadeMats=new Map());
  g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const S=m.geometry,G=new THREE.BufferGeometry(),buf=new THREE.InstancedInterleavedBuffer(a.slice(),12,Math.max(1,m.isInstancedMesh?m.count:1));for(const n in S.attributes)G.setAttribute(n,S.attributes[n]);G.setIndex(S.index);if(!S.boundingSphere)S.computeBoundingSphere();G.boundingSphere=S.boundingSphere;
   G.setAttribute('aLodA',new THREE.InterleavedBufferAttribute(buf,4,0));G.setAttribute('aLodB',new THREE.InterleavedBufferAttribute(buf,4,4));G.setAttribute('aLodC',new THREE.InterleavedBufferAttribute(buf,4,8));m.geometry=G;
   let k=cache.get(m.material);if(!k){k=m.material.clone();k.onBeforeCompile=m.material.onBeforeCompile;k.customProgramCacheKey=m.material.customProgramCacheKey;k.userData=Object.assign({},m.material.userData);delete k.userData._lodFade;BIO.lodFade(k);cache.set(m.material,k);}m.material=k;});BIO._lodU.f.value=BIO.LOD.fade;}
@@ -169,16 +182,19 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now
  for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),H=avH(t.skey||t.key),steep=(e.y-t.y-H*.5)>.7*Math.max(hz,1),above=e.y>t.y+H+25;t.d=d;t.shell=false;t.above=above;
   const shellable=avCanShell(t)&&!above;t.shellable=shellable;
   if(!shellable){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}
-  if(d<AV_NEAR)near.push(t);if(d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
- near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,AV_HEROMAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
+  const nr=t.nearR==null?AV_NEAR:t.nearR;if(d<nr)near.push(t);if(d>=nr*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+ near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);
+ /* every tower inside its band (before the dither) is a hero whatever the pool holds; the pool's cap falls on the band itself */
+ const must=near.filter(t=>t.d<(t.nearR==null?AV_NEAR:t.nearR)*.85),rest=near.filter(t=>t.d>=(t.nearR==null?AV_NEAR:t.nearR)*.85),room=Math.max(0,AV_HEROMAX-must.length);
+ const keep=must.concat(rest.slice(0,room)).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
  const fadeOf=t=>t.shellable;
  G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||g.userData.fade!==fadeOf(t)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
  /* a shellable hero fades over the band toward its shell's frame (the shell key's record); a skeleton's hero, whose shell is the stump's, fades to that */
- keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,f?t.skey:false);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
+ keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,f?t.skey:false,t.nearR);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
  /* a shellable tower past the hero pool's cap within 255 m stands as its shell (rare: the pool is the nearest 16 and shells begin at 255 m) */
- near.slice(AV_HEROMAX).forEach(t=>{if(!t.shell){mid.push(t);t.shell=true;}});
+ rest.slice(room).forEach(t=>{if(!t.shell){mid.push(t);t.shell=true;}});
  /* a hero the pool still holds past the dither band has no shell */
- {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&t.d>=AV_NEAR){t.shell=false;mid.splice(i,1);}}}
+ {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&t.d>=(t.nearR==null?AV_NEAR:t.nearR)){t.shell=false;mid.splice(i,1);}}}
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
  AVC.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>!t.shell&&!G.has(t.id)).length,towers:T.length,looks:AVC.impKeys,shellKeys:AVC.shellKeys.length,atlases:AVC.atlases.length,steep:steepEye};};
@@ -200,7 +216,7 @@ AVC.engines=function(){AV_ENGINES=STAGE.engines.map(E=>{const fn=window[E.fn];if
  if(MP.shadow)MP.shadow.cast(G);scene.add(G);return G;}).filter(Boolean);return AV_ENGINES;};
 // ---------------------------------------------------------------- the lines: the viaduct (AV.viaduct's records drawn as instanced piers and decks)
 let AV_LINES_GONE=0,AV_LAMPS=[];
-const AV_LINES=(function(){const V=AV.viaduct(STAGE.viaduct.pts,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});
+const AV_LINES=(function(){const V={piers:[],decks:[],length:0};STAGE.viaduct.pts.forEach(L=>{const v=AV.viaduct(L,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});V.piers.push(...v.piers);V.decks.push(...v.decks);V.length+=v.length||0;});
  const P=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('metropolis','concrete'):null,T=P?KMAT.textures(P,{aniso:8}):{};
  const mat=new THREE.MeshStandardMaterial({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,color:0x9a968c,roughness:.95,metalness:0});
  const rail=new THREE.MeshStandardMaterial({color:0x5a5248,roughness:.6,metalness:.6});
