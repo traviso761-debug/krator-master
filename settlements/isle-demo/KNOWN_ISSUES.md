@@ -246,9 +246,15 @@
             village ... any hamlets near the coast"):** the village stands on a coastal stand with a quay, and a SEA LEG
             (47h `sea`: a lakatoi of its own on `SIM.trade`, 25 km by sea) carries its timber to Kautoa's canoe stop; the
             road stays as the owner asked (every hamlet on the network) and carries the food back.
-      - [ ] **Valapo's lumber village has no landing** (2026-11-09): its bay is cut off from Valapo's trade landing by the
-            reef, so the sea router finds no route and `shoreOf` gives it none; its timber goes 17 km by road. A pass
-            through the reef, or a landing on the open coast with a track to it, would give it one.
+      - [x] **Valapo's lumber village has no landing** (2026-11-09). The owner asked for a reef passage; the depth map showed
+            the obstacle was not the reef: the village stood on the open EAST coast of Valapo's landmass, 35 km of land from
+            the harbour on the west, and no cut through a reef joins them. Fixed the same day by siting instead: the spec's
+            patch now covers the town's whole coast (`near` the town, `look` 16 km) and a lumber village prefers the
+            coastal stand nearest its town WHOSE SHORE HAS A SEA ROUTE to its landing (`48`: `shoreOf` tried on the nearest
+            forested coastal stands: the peninsula across the inlet had a sea route but a lone tree-cell for a stand, so the
+            crew's near range must be two fifths forest), so Valapo's stands on the north-west coast, 15 km by sea. The reef's passes
+            are the noise's (`43` `landHook`): a hand-cut pass is not needed anywhere yet; add one as a record there when a
+            sea leg is held to a long detour by the crest.
       - [ ] **The farm tracks are ribbons** on the ground (as the villages' lanes), not graded roads; the highways are.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track

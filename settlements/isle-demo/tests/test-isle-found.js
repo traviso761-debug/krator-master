@@ -3,7 +3,8 @@
 // declares both towns with one farming hamlet and one lumber village each on stand-in ground (as tests/test-isle-hamlets.js lays them), gives the
 // sim stand-in page hooks (ISLE.hooks: a farm site 6 km south-west of the town, core/hamlet's village and farmland on flat
 // dry ground, a straight road to the town's frame), runs `days` (default 45: the first ship lands on day 3, its households
-// wait 7 days, the camp farms 20 days, then the road is building) and checks ISLE.foundChecks, each with a negative; then
+// wait 7 days at the test's fast pace, the camp farms 20 days, then the road is building and refugees have moved in) and checks
+// ISLE.foundChecks, each with a negative; then
 // the hamlets' and the refugees' checks still hold. Build first (python3 build.py).
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const HERE = path.join(__dirname, '..'), PLAN = path.join(HERE, 'dist', 'isle-city.plan.js');
@@ -28,6 +29,8 @@ const SPECS = [
   { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993] },
   { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] }];
 ['10-camp-cultures.js', '40-camp-work.js'].forEach(f => vm.runInThisContext(fs.readFileSync(path.join(HERE, '..', '..', 'core', 'camp', f), 'utf8'), { filename: f }));   /* the felling crew's work camp */
+/* the fast pace for the test (15: the real pace is a month's wait and a season's camp) */
+T.found.waitDays = 7; T.found.days = 20;
 ISLE.simDeclare(plans, null, { hamlets: SPECS });
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
 const layFarming = (sp, site, hands) => { const res = { x: site.x - 350, z: site.z };
@@ -66,6 +69,8 @@ if (HB) { const founded = Object.keys(HB.villages).filter(id => /\.hamlet\d+$/.t
 { const B = cp(b); B.camps.forEach(C => { C.meals.none = 12; }); caught('a camp going without food', ISLE.foundChecks(a, B), /fed at its ration/); }
 { const B = cp(b); B.camps.forEach(C => { C.converted = null; }); caught('a camp past its days still a camp', ISLE.foundChecks(a, B), /converted to a hamlet/); }
 { const B = cp(b); B.roads.forEach(R => { R.done = 0; R.state = 'building'; }); caught('a road project no hand has touched', ISLE.foundChecks(a, B), /highway is a project/); }
+{ const B = cp(b); B.villages.forEach(V => { V.moved = 0; V.movedAtWork = 0; }); caught('a founded hamlet nobody moved to', ISLE.foundChecks(a, B), /draws the towns/); }
+{ const B = cp(b); B.villages.forEach(V => { V.people += 7; }); caught('seven settlers dealt from nowhere', ISLE.foundChecks(a, B), /draws the towns/); }
 /* the refugees' own checks still hold with the camps founded from them, and the hamlets' */
 if (ISLE.refugeeChecks) { const rb = ISLE.refugeeBooks(); ISLE.refugeeChecks(rb, rb).forEach(c => ok('(refugees) ' + c.name, c.ok, c.detail)); }
 console.log(bad ? 'FAILED ' + bad : 'ALL PASS');

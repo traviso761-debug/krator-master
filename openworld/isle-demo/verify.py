@@ -23,7 +23,7 @@ highway, no town tile). The isle's own checks:
     moves a village's lane end 500 m).
   - the founding (settlements/isle-demo 47f, 48f): the sim's hooks installed, a farm site for a camp of each town on good
     ground apart from every village (the negative puts the site beside a village). A founding itself takes days of the
-    sim: tests/test-isle-found.js runs it.
+    sim: tests/test-isle-found.js runs it. The camp shelters: a stand-in camp pitched from the kit, every piece a proto.
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
     ore made, timber lost on the road, meals without food);
@@ -127,6 +127,12 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     if(d<ISLE_HAMLETS.FARM.apart)bad.push(t+': the camp\'s site '+Math.round(d)+' m from a village');if(!ISLE_HAMLETS.groundOk(s.x,s.z))bad.push(t+': the camp\'s site on bad ground');
     lines.push(t+': a camp at '+Math.round(s.x)+','+Math.round(s.z)+', fit '+(s.fit==null?'-':s.fit.toFixed(2))+', '+(d/1000).toFixed(1)+' km from the nearest village');}}
   R.push({name:'the founding: the sim\'s hooks installed, a farm site for a camp of each town on good ground apart from every village',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* the camp's shelters (kits/islanders 70-ie-camp.js, pitched by 88h): a stand-in camp of six households pitched far off the map's
+    villages, every piece a kit proto (no stand-in box), the kitchen at its centre, the shelters round it */
+ {const bad=[],HM=window._hamlets;if(!HM||!HM.pitchTest)bad.push('no camp pitch (88h)');else{const F=ISLE_FOUND.farmSite(ISLE.TOWNS[0],7)||{x:0,z:0},recs=HM.pitchTest(F.x+1500,F.z+1500,6);
+   if(neg==='camp')recs[1].proto=false;const miss=recs.filter(r=>!r.proto);if(miss.length)bad.push(miss.length+' of '+recs.length+' pieces have no kit proto: '+miss.map(r=>r.key).join(', '));
+   if(recs.length<4||!recs.some(r=>/shelter/.test(r.key)))bad.push('only '+recs.length+' pieces for six households, or no shelter');   /* a long shelter and an A-frame hold six households */if(!recs.some(r=>r.key==='ie-camp-kitchen')||!recs.some(r=>r.key==='ie-camp-store'))bad.push('no kitchen or store');
+   R.push({name:'the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto',ok:!bad.length,detail:bad.length?bad.join('; '):recs.length+' pieces: '+recs.map(r=>r.key.replace('ie-','')).join(', ')});}}
  return R;}"""
 
 
@@ -215,7 +221,8 @@ async def run(a):
                                 ('farm', "the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
                                 ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway'),
                                 ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
-                                ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village")):
+                                ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
+                                ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

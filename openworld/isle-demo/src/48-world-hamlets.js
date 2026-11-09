@@ -41,7 +41,7 @@ const SPECS=[
  {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:15000},   /* the patch reaches the gulf shore 8 km west: a coastal stand (2026-11-09) */
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
  {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
- {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[0,58000],look:4000,apart:2500},   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
+ {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[-9000,53000],look:16000,apart:2500},   /* 2026-11-04: Valapo's own timber and felling crew, on its island; 2026-11-09: the patch widened to the town's whole coast, so the stand with a sea route to its harbour (the peninsula across its inlet) is found: the old patch's forest faced the open east sea, 35 km of land from the harbour */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
  /* the countryside (PLAN.md section 11): `crops` names the town's rows in the tune (settlements/isle-demo 15 hamlets.farming.crops),
     `share` the hamlet's share of its town's farm hands, a plantation its own `hands` */
  {id:'hamlet-farm-k1',name:'Kautoa farming hamlet 1',focus:'farming',parent:'Kautoa',crops:'staples',share:1/4},
@@ -53,7 +53,7 @@ const SPECS=[
  {id:'hamlet-farm-v2',name:'Valapo farming hamlet 2',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
  {id:'hamlet-plant-v',name:'Valapo plantation',focus:'farming',parent:'Valapo',crops:'cash',plantation:true,hands:60}];
 const FARM={cell:500,rMin:2000,rMax:14000,apart:3000,subStep:150,minFit:.7,off:350};
-const SHORE_R=1000,SHORE_STEP=10;
+const SHORE_R=1000,SHORE_STEP=10,FOREST_MIN=.4,FOREST_R=1500;   /* a lumber village's stand: forest over two fifths of the crew's near range (the tune's range is 3 km) */
 const DEFAULT_PEOPLE={Kautoa:6040,Valapo:2095};   /* the plan's census (PLAN.md section 11) when the page hands none in */
 const CELL=150,SLOPE=.3,DRY=1.2;
 /* the land without the roads (WORLD.Hland): the highways are baked over the villages' lane ends (48r, bake.py), so the
@@ -104,7 +104,7 @@ function shoreOf(site,berth){const C=[];
  for(const c of C.slice(0,8)){if(!berth)return c;const P=ISLE_TOWNS_W.seaPath([c.x+c.ux*40,c.z+c.uz*40],[berth.x,berth.z]);if(P&&P.ok){c.path=P;return c;}}
  return null;}
 
-function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[],berths:opt.berths||{}};   /* the towns' trade landings, kept for the checks */
+function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[],berths:opt.berths||{},siting:{}};   /* siting: how each lumber village's stand was chosen (the probe) */   /* the towns' trade landings, kept for the checks */
  for(const sp of SPECS){const P=parentOf(sp.parent);if(!P){out.errors.push(sp.id+': no parent '+sp.parent);continue;}
   let res=null,start=null,workers=null,farmCrops=null,farmFitAt=null,shoreSite=false;
   if(sp.focus==='salt'||sp.focus==='ranch'){
@@ -116,7 +116,17 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);
    const L=cells(sp,(x,z)=>{if(wet(x,z)||WORLD.townW(x,z)||!far(x,z))return 0;const z0=Z(x,z);return z0.forest>.6?z0.forest:0;});
    if(!L.length){out.errors.push(sp.id+': no forest in the patch');continue;}
-   const coastal=L.filter(c=>nearSea(c.x,c.z)),seed=near(coastal.length?coastal:L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
+   /* a coastal stand first: the nearest to the town whose shore has a sea route to the town's landing (the berth), else the
+      nearest coastal stand, else the nearest stand (the sea route is tried on a few: shoreOf runs the sea router) */
+   const half0=typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[sp.parent]?ISLE.PROG[sp.parent].half:4400,farOut=c=>Math.hypot(c.x-P[0],c.z-P[1])>=half0+FARM.rMin;   /* beyond the town's ground and its first fields, as a farming hamlet */
+   const berth0=opt.berths&&opt.berths[sp.parent]||null,Q=berth0?[berth0.x,berth0.z]:P,coastal=L.filter(c=>farOut(c)&&nearSea(c.x,c.z)).sort((a,b)=>Math.hypot(a.x-Q[0],a.z-Q[1])-Math.hypot(b.x-Q[0],b.z-Q[1]));   /* nearest the harbour first: the sea route's end */
+   /* and forest enough round it for the crew's range (a lone tree-cell on a shore is no stand: Valapo's inlet peninsula): the
+      share of FOREST_R round it that is forest, at least FOREST_MIN */
+   const forestAround=c=>{let n=0,k=0;for(let dz=-FOREST_R;dz<=FOREST_R;dz+=150)for(let dx=-FOREST_R;dx<=FOREST_R;dx+=150){if(dx*dx+dz*dz>FOREST_R*FOREST_R)continue;n++;const x=c.x+dx,z=c.z+dz;if(WORLD.inside(x,z)&&!wet(x,z)&&!WORLD.townW(x,z)&&Z(x,z).forest>.6)k++;}return n?k/n:0;};
+   let seed=null;const siting=out.siting[sp.id]={coastal:coastal.length,forested:0,routed:null,tried:0};
+   if(berth0){const seen=new Set();for(const c of coastal){if(forestAround(c)<FOREST_MIN)continue;siting.forested++;const k=Math.round(c.x/1500)+','+Math.round(c.z/1500);if(seen.has(k))continue;seen.add(k);siting.tried++;if(siting.tried>60)break;
+     if(shoreOf({x:c.x,z:c.z},berth0)){seed=c;siting.routed=[c.x,c.z];break;}}}   /* the sea route tried on the forested ones only (one a 1.5 km cell: the forest test first, or a bare cell would stand for a wooded one), nearest the harbour first */
+   if(!seed){const Lf=L.filter(farOut);seed=near(coastal.length?coastal:Lf.length?Lf:L,P);}res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
     forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */
    if(coastal.length){const sh=shoreOf({x:seed.x,z:seed.z},opt.berths&&opt.berths[sp.parent]||null);if(sh){start=[sh.x-sh.ux*150,sh.z-sh.uz*150];shoreSite=true;}}}
   else if(sp.focus==='mine'||sp.focus==='quarry'){

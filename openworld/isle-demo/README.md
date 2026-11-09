@@ -70,8 +70,10 @@ north (`core/hamlet/PLAN.md` section 4).
   LANDING (`48` `shoreOf`: the shore point found by marching across the shallows, the sea route by `ISLE_TOWNS_W.seaPath`;
   core/hamlet 30 puts the quay at the water's edge with a lane to it) and a SEA LEG in the sim (47h: a lakatoi of its own
   on `SIM.trade`, its goods landed at the town's canoe stop, drawn by `88c` with the canoe line). A lumber village is sited
-  on a coastal stand when its patch has one. Valapo's lumber village has no landing: its bay is cut off by the reef, so
-  `shoreOf` finds no sea route (KNOWN_ISSUES.md). `verify.py` checks every village within reach of a navigable sea has one.
+  on the coastal stand nearest its town whose shore has a sea route to the town's landing and forest over two fifths of the crew's near range
+  (Valapo's on the north-west coast, 15 km by sea; its first site faced the open east sea, 35 km of land from the harbour, which no reef
+  passage could join: settlements/isle-demo/KNOWN_ISSUES.md). `verify.py` checks every village within reach of a
+  navigable sea has one.
 - **The villages grow and are founded (2026-11-09; PLAN.md section 11 step 5):** every village lays empty plots (core/hamlet
   30 `vacant`), lots on core's building in the sim (47h): a house goes up on the first with the village's own hands and the
   bill its carts bring, and `88h` draws it when it is built. A town whose refugee households have waited for a house sends
@@ -80,8 +82,11 @@ north (`core/hamlet/PLAN.md` section 4).
   and farmland on the camp's site, one more road to the network as it stands by `ISLE_ROADS.join`); after its days the camp
   becomes a hamlet, named from the Sikau list, whose HIGHWAY its own hands build as a project (`found.road` in the tune);
   built, `WORLD.addRoad` puts it in the network and `TERRAIN.refresh` redraws the ground over it. `88h` draws the camp's
-  tents and its parcels while it stands and the new village when it is founded. A founding takes days of the sim, so
-  `verify.py` checks only the hooks and the survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through.
+  shelters (kits/islanders `70-ie-camp.js`: a ring of huts, lean-tos, A-frames and long shelters round the camp kitchen
+  and store) and its parcels while it stands and the new village when it is founded, which then fills its empty homes
+  and open posts from both towns' waiting refugees (47f `foundSettle`). At the real pace (a month's wait, a season's camp,
+  up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
+  survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
 
 ## The towns (M7, 2026-10-20)
 

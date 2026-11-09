@@ -924,15 +924,28 @@ every module under `core/` and CLAUDE.md's rules.
   `road:<id>` kind of `hoursPerKm` worker-hours and `timberPerKm` timber a kilometre on core's building; built, the page
   adds it to the world (`WORLD.addRoad`, the ground over it redrawn) and the hamlet's carts take it (their minutes retimed
   from the detour rate to the road). The camp's tents and parcels are drawn while it stands (`88h`). A page without the
-  hooks (the city page) founds nothing. `tests/test-isle-found.js` runs one through with stand-in hooks (45 days: the
-  ship lands on day 3, waits 7, farms 20, then the road is building), with negatives; the world's `verify.py` checks the
-  hooks and the survey. One camp a town so far (`found.maxPerTown`); a second waits for the first's road.
+  hooks (the city page) founds nothing. `tests/test-isle-found.js` runs one through with stand-in hooks at the test's
+  fast pace (45 days: the ship lands on day 3, waits 7, farms 20, then the road is building), with negatives; the world's
+  `verify.py` checks the hooks and the survey.
+- **The owner's second pass (2026-11-09):** the REAL PACE is a month's wait in the camp and a season's farming camp
+  (`found.waitDays` 30, `days` 45; tests set 7 and 20 themselves: "they'd spend longer before founding a new hamlet, at
+  least once we're out of functionality testing mode"); SEVERAL CAMPS a town (`maxPerTown` 3), one at a time, the next when
+  the last has converted. THE REFUGEES MOVE ON: a founded hamlet is declared with its founders only (no settlers dealt),
+  so its homes beyond theirs stand empty and its posts open, and every day (`found.settle.every`) each founded hamlet
+  with an open post and an empty bed takes the longest-waiting refugee households from EITHER town's camp (`47f`
+  `foundSettle`: a household to a home with beds enough, its grown-ups to the posts, the town's camp the lighter by it,
+  the refugees' books counting it "in the countryside"): the owner's incentive, "places with real open jobs, like a newly
+  founded, empty hamlet one town over". The camp's tents are the Islanders kit's new CAMP SHELTERS (`kits/islanders/src/
+  70-ie-camp.js`: a lean-to, a round hut, an A-frame, a long shelter, the camp kitchen and store), pitched in a ring round
+  the kitchen by `88h` and struck when the camp converts.
 - **The coast (built 2026-11-09; the owner: "a little port and cargo stop at lumber village, this would make sense for any
   hamlets near the coast"):** a village within reach of a navigable sea gets a landing (core/hamlet 30 `landing`: the
   Islanders' quay and cargo shed at the water's edge, a lane to it) and a SEA LEG (`47h` `sea`: a lakatoi of its own on
   `SIM.trade` between its quay and its town's canoe stop, 25 km for Kautoa's lumber village against 175 by road); the road
-  stays and carries the food back. Valapo's lumber village has no sea route through its reef and so no landing
-  (KNOWN_ISSUES.md). `openworld/isle-demo/src/48` sites a lumber village on a coastal stand when its patch has one.
+  stays and carries the food back. `openworld/isle-demo/src/48` sites a lumber village on the coastal stand nearest its
+  town whose shore has a sea route to the town's landing; Valapo's, first sited on the open east coast 35 km of land from
+  its harbour (the owner asked for a reef passage; the obstacle was the land, KNOWN_ISSUES.md), now stands on the north-west
+  coast with forest enough round it for its crew, 15 km by sea.
 - **Not yet:** orchard trees on the hamlets' orchards (the towns' orchards are drawn from the plan's tree records; the
   parcels are ground colour only); the farm tracks are ribbons, not graded roads; the fallow dial is the owner's.
 

@@ -425,7 +425,12 @@ ISLE.TUNE.sim = {
      minutes; after `days` the camp converts to a farming hamlet sized for `settlers` times its people, and its highway is
      a project of `road.hoursPerKm` worker-hours and `road.timberPerKm` timber a kilometre with `road.posts` of the hamlet's
      hands on it */
-  found: { every: 60, households: 6, waitDays: 7, days: 20, maxPerTown: 1, settlers: 2.5, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
+  /* FOUNDING (47f; the owner, 2026-11-09): households that waited `waitDays` in the camp go out as a farming camp of
+     `households`, which converts to a hamlet after `days`; up to `maxPerTown` camps a town, one at a time (the next
+     when the last has converted). The real pace: a month's wait, a season's camp (the owner: "they'd spend longer before
+     founding a new hamlet"); tests set the fast pace (waitDays 7, days 20) themselves. `settle`: a founded hamlet fills
+     its open homes and posts from the towns' waiting refugees (every `every` minutes), not from settlers dealt */
+  found: { every: 60, households: 6, waitDays: 30, days: 45, maxPerTown: 3, settlers: 2.5, settle: { every: 1440 }, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

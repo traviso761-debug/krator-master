@@ -94,3 +94,9 @@
       Checked on a real GPU in the browser pane: 14 vents, 43 geysers and 62 springs build, the world clock ticks (`GEYSER.SHOW.t`),
       a geyser in its column phase erupts with spray, the console has no errors. Headless `verify.py` fails with the same
       SwiftShader `trim` error as before the change (identical output), so no new failures.
+- [ ] **The jungle stands through a farming camp pitched live** (2026-11-09): a camp's shelters (88h, kits/islanders 70-ie-camp.js)
+      and a founded hamlet's buildings are drawn where the sim puts them, and the ground over the parcels is repainted
+      (TERRAIN.refresh), but the flora tiles already built there are not rebuilt, so the trees placed before the founding stay
+      among the shelters until the tile is dropped and rebuilt (leave and come back). The baked hamlets are clear because
+      `WORLD.clearHook` knew their ground before the tiles were built. A live clear needs the flora module to drop the tiles
+      over a box as the terrain does; the camp should also fell what stands on its site (the felling of core/hamlet 40).

@@ -152,12 +152,22 @@ const CAMPS=new Map();   /* camp id -> {group, keys} */
 const tentG=new THREE.BoxGeometry(1,1,1).translate(0,.5,0),tentM=new THREE.MeshLambertMaterial({color:0xa89a7c});
 function refreshBox(b){if(typeof TERRAIN!=='undefined'&&TERRAIN&&TERRAIN.refresh)TERRAIN.refresh(b[0],b[1],b[2],b[3]);}
 function parcelsBox(parcels,pad){let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;for(const p of parcels){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);z0=Math.min(z0,p.z);z1=Math.max(z1,p.z);}return[x0-pad,z0-pad,x1+pad,z1+pad];}
-function pitchCamp(C){const n=Math.max(2,Math.ceil(C.people.length/4)),im=new THREE.InstancedMesh(tentG,tentM,n),y=H(C.site.x,C.site.z);
- for(let i=0;i<n;i++){const a=i/n*Math.PI*2,r=22+6*((i*7)%3);m4.compose(v3.set(C.site.x+Math.cos(a)*r,y,C.site.z+Math.sin(a)*r),q.setFromEuler(e.set(0,-a,0)),new THREE.Vector3(5,3,4));im.setMatrixAt(i,m4);}
- im.instanceMatrix.needsUpdate=true;im.name='farming camp '+C.id;scene.add(im);
+/* the camp's pitch: the kitchen at the centre, the store beside it (where the sim put its store place), the shelters in
+   a ring round them facing in (kits/islanders 70-ie-camp.js: a long shelter for four households, an A-frame for two, a
+   hut or a lean-to for one), drawn as a village is (the kit's protos, instanced); stand-in boxes when the kit lacks a key */
+const CAMP_KEYS=['ie-shelter-hut','ie-shelter-leanto','ie-shelter-aframe','ie-shelter-hut'];
+function campRecs(C){const y=H(C.site.x,C.site.z),recs=[{key:'ie-camp-kitchen',x:C.site.x,z:C.site.z,ry:Math.PI,y},{key:'ie-camp-store',x:C.site.x+22,z:C.site.z,ry:-Math.PI/2,y}];
+ let hh=C.households.length,i=0;const n=Math.ceil(hh/2)+1;   /* a shelter a household or two, the store's bearing skipped */
+ for(let k=0;k<n+1&&hh>0;k++){const a=(k+.5)/(n+1)*Math.PI*2;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.5)continue;
+  const key=hh>=4&&k%3===0?'ie-shelter-long':hh>=2?'ie-shelter-aframe':CAMP_KEYS[i++%CAMP_KEYS.length],r=key==='ie-shelter-long'?34:28;
+  hh-=key==='ie-shelter-long'?4:key==='ie-shelter-aframe'?2:1;recs.push({key,x:C.site.x+Math.cos(a)*r,z:C.site.z+Math.sin(a)*r,ry:Math.atan2(-Math.cos(a),-Math.sin(a)),y});}
+ for(const r of recs){r.kit=kitOf(r.key);const d=dims(r.key)||{w:6,d:5,h:3};r.w=d.w;r.d=d.d;r.h=d.h;r.y=H(r.x,r.z)-.1;}return recs;}
+function pitchCamp(C){const recs=campRecs(C),X={v:{site:{x:C.site.x,z:C.site.z},id:C.id},recs},im=full(X);im.name='farming camp '+C.id;
+ const base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:'farming camp '+C.n+' of '+C.townName,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:60,h:8,tags:{culture:'islander',types:['civic'],role:'farming camp'},note:C.people.length+' people in '+C.households.length+' households, farming '+C.crop});
+ for(const r of recs)TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,r.y,r.z],ry:r.ry,size:[r.w,r.d,r.h],tags:{culture:'islander',types:['dwelling-single'],wealth:'poor',role:'shelter'}});
  const keys=[];for(const p of C.farm.parcels||[]){const k=fkey(p.x,p.z);if(VK.has(k))continue;FMAP[k]=p.state==="crop"?(CROPC[p.crop]||CROPC._):null;keys.push(k);}
  if(C.farm.parcels&&C.farm.parcels.length)refreshBox(parcelsBox(C.farm.parcels,120));
- CAMPS.set(C.id,{group:im,keys});S.camps=(S.camps||0)+1;}
+ CAMPS.set(C.id,{group:im,keys});S.pitched=(S.pitched||0)+1;}
 function strikeCamp(C){const K=CAMPS.get(C.id);if(!K)return;scene.remove(K.group);for(const k of K.keys)if(!VK.has(k))delete FMAP[k];CAMPS.delete(C.id);S.struck=(S.struck||0)+1;}
 function camps(){const F=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.found;if(!F)return;for(const C of F.camps){if(!C.converted&&!CAMPS.has(C.id))pitchCamp(C);else if(C.converted&&CAMPS.has(C.id))strikeCamp(C);}}
 if(typeof ISLE_FOUND!=='undefined')ISLE_FOUND.onAdd((E,X)=>{if(!E)return;const Xv=enter(E);V.push(Xv);S.villages=V.length;if(E.resource)addResource(E.resource);
@@ -177,6 +187,10 @@ HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
 const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,landing:X.v.landing||null,sea:X.E.sea||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,founded:X.E.founded||null,site:X.v.site,census:X.v.census,error:X.v.error||null,
  buildings:X.recs.length,resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null});
-window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
+/* a camp pitched for a look or a check (verify.py, a screenshot): a stand-in camp of `hh` households at (x, z), drawn as a
+   founded one would be; -> its records with the kit each resolved to (null: a stand-in box) */
+function pitchTest(x,z,hh){hh=hh==null?6:hh;const C={id:'camp:test:'+Math.round(x)+','+Math.round(z),n:0,townName:'the test',site:{x,z},people:new Array(hh*5).fill(0),households:new Array(hh).fill(0),crop:'rice',farm:{parcels:[]}};
+ if(CAMPS.has(C.id))strikeCamp({id:C.id});pitchCamp(C);return campRecs(C).map(r=>({key:r.key,kit:r.kit,x:Math.round(r.x),z:Math.round(r.z),proto:r.kit?!!isleProto(r.kit,r.key,0,CACHE):false}));}
+window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],pitchTest,found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
  resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
 return{update,stats:S,tags:TAGS};})();});

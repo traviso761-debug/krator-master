@@ -154,7 +154,8 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   var founders = o.people || [], fWork = 0;
   if (founders.length) {
     var homesF = places.filter(function (P) { return P.kind === 'home'; }).map(function (P) { return { P: P, left: P.activities.SLEEP || 0 }; }), hi = 0;
-    var postsF = places.filter(function (P) { return P.activities.WORK && P.kind !== 'home' && !P.tags.road; }).map(function (P) { return { P: P, left: P.activities.WORK }; }), pi = 0;
+    /* the producers' posts first (the farmsteads: the founders came to farm), then the rest; never a lot's */
+    var postsF = places.filter(function (P) { return P.activities.WORK && P.kind !== 'home' && P.kind !== 'lot'; }).sort(function (A, B) { return (HT.producers[B.kind] ? 1 : 0) - (HT.producers[A.kind] ? 1 : 0); }).map(function (P) { return { P: P, left: P.activities.WORK }; }), pi = 0;
     var byHh = {}; founders.forEach(function (a) { var k = a.refugee ? a.refugee.hh : a.id; (byHh[k] || (byHh[k] = [])).push(a); });
     Object.keys(byHh).sort().forEach(function (k) { var L = byHh[k];
       while (hi < homesF.length && homesF[hi].left < L.length) hi++;   /* a household under one roof */
@@ -164,9 +165,10 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
         if (g) { while (pi < postsF.length && postsF[pi].left <= 0) pi++; if (pi < postsF.length) { a.work = postsF[pi].P.id; postsF[pi].left--; a.status = 'employed'; a.job = postsF[pi].P.tags.trade || postsF[pi].P.kind; fWork++; } } });
       H.P.people = (H.P.people || 0) + L.length; });
   }
-  SIM.role({ id: id + '.worker', name: 'villager', org: id + '.folk', settlement: id, count: Math.max(0, Math.min(posts, beds) - fWork), homes: ['home'], prefers: prefers,
+  /* a founded hamlet (47f) deals no settlers: its open homes and posts draw the towns' waiting refugees (ISLE.foundSettle) */
+  SIM.role({ id: id + '.worker', name: 'villager', org: id + '.folk', settlement: id, count: founders.length ? 0 : Math.max(0, Math.min(posts, beds) - fWork), homes: ['home'], prefers: prefers,
     work: { kinds: Object.keys(wk), act: 'WORK', near: true }, sched: T.sched.work });
-  SIM.role({ id: id + '.kin', name: 'kin', org: id + '.folk', settlement: id, fill: true, homes: ['home'], prefers: prefers, sched: T.sched.kin });
+  SIM.role(Object.assign({ id: id + '.kin', name: 'kin', org: id + '.folk', settlement: id, homes: ['home'], prefers: prefers, sched: T.sched.kin }, founders.length ? { count: 0 } : { fill: true }));
   var pop = SIM.populate({ settlement: id, prefix: id + '.' });
   var mine = SIM.all('actor').filter(function (a) { return SIM.settlementOf(a) === id && !a.driven; });
   mine.forEach(function (a) { a.cls = 'poor'; a.wealth = 0; });
@@ -367,7 +369,8 @@ ISLE.simHamletBooks = function () {
       short: E.short[g] || 0, stock: stock(g) + SIM.all('place').reduce(function (n, P) { return n + (P.settlement === X.id && P.store ? P.store[g] || 0 : 0); }, 0) }; });
     var Si = X.crew ? ISLE.crewSite(X) : SIM.sitesReport(X.id)[0] || null;
     var RS = X.sea ? SIM.tradeReport(X.sea.route) : null, BR = X.lots && X.lots.length && SIM.buildReport ? (SIM.buildReport().towns[X.id] || null) : null;
-    out.villages[X.id] = { name: X.name, founded: X.founded == null ? null : X.founded, resource: X.resource, site: Si, life: X.life, siteGoods: X.siteGoods, farm: X.farm || null, plantation: !!X.plantation,
+    var live = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === X.id; });   /* the people as they are (a founded hamlet fills from the refugees: 47f) */
+    out.villages[X.id] = { name: X.name, founded: X.founded == null ? null : X.founded, people: live.length, workers: live.filter(function (a) { return a.work; }).length, posts: X.posts, resource: X.resource, site: Si, life: X.life, siteGoods: X.siteGoods, farm: X.farm || null, plantation: !!X.plantation,
       lots: X.lots || [], build: BR ? { lots: BR.lots, built: BR.built, building: BR.building, projects: (BR.projects || []).map(function (Pj) { return { lot: Pj.lot, state: Pj.state, done: Pj.done, hours: Pj.hours, got: Pj.got }; }) } : null,
       sea: RS ? { km: X.sea.km, shipped: RS.shipped[X.id + '>' + X.parent] || {}, landed: RS.landed[X.id + '>' + X.parent] || {}, atSea: RS.carriers.reduce(function (n, C) { C.cargo.forEach(function (c) { n[c.good] = (n[c.good] || 0) + c.n; }); return n; }, {}) } : null, policy: JSON.parse(JSON.stringify(E.policy || {})), parent: X.parent, people: X.people, workers: X.workers, posts: X.posts, makes: X.makes, foods: X.foods, meals: M, goods: rows,
       shipped: (R1.shipped[X.id + '>' + X.parent]) || {}, landed: (R1.landed[X.id + '>' + X.parent]) || {}, fed: (R2.landed[X.parent + '>' + X.id]) || {},

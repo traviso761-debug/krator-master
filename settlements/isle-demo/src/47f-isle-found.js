@@ -29,6 +29,7 @@ ISLE.foundStep = function (minute) {
   var S = ISLE.SIM, F = ISLE.TUNE.sim.found; if (!S.found || minute % F.every) return;
   S.order.forEach(function (s) {
     if ((S.found.n[s] || 0) >= F.maxPerTown) return;
+    if (S.found.camps.some(function (C) { return C.town === s && !C.converted; })) return;   /* one camp at a time: the next when the last has converted */
     if (S.found.noSite[s] != null && minute - S.found.noSite[s] < 1440) return;
     var camp = S.rf.camps[s]; if (!camp) return;
     /* the households in the camp that have waited long enough, longest first */
@@ -39,6 +40,7 @@ ISLE.foundStep = function (minute) {
     ISLE.foundCamp(s, hhs.slice(0, F.households), minute);
   });
   S.found.camps.forEach(function (C) { if (!C.converted && minute >= C.founded + F.days * 1440 && (C.retryAt == null || minute >= C.retryAt)) ISLE.foundConvert(C, minute); });
+  if (F.settle && minute % (F.settle.every || 1440) === 0) ISLE.foundSettle(minute);
 };
 /* the town's first staple row (15 hamlets.farming.crops) as the camp's crop */
 ISLE.foundCrop = function (s) {
@@ -69,7 +71,7 @@ ISLE.foundCamp = function (s, hhs, minute) {
   var townCamp = SIM.R.place[S.rf.camps[s]], posts = hands;
   people.forEach(function (a) {
     var g = a.ageBand !== 'child'; a.home = camp.id; a.role = g ? cid + '.worker' : cid + '.kin'; a.work = g && posts > 0 ? (posts--, farm.id) : null;
-    a.status = g ? 'employed' : 'housework'; a.job = g ? 'farmhand' : null; a.cls = 'refugee'; a.refugee.farmcamp = cid; a.refugee.camp = cid;
+    a.status = g ? 'employed' : 'housework'; a.job = g ? 'farmhand' : null; a.cls = 'refugee'; a.refugee.farmcamp = cid; a.refugee.camp = cid; a.refugee.country = cid;   /* in the countryside: the town's no more (47r's books) */
     if (a.hmods) a.hmods = a.hmods.filter(function (x) { return x.why !== 'camp'; });
   });
   if (townCamp) townCamp.people = Math.max(0, (townCamp.people || 0) - np);
@@ -129,6 +131,55 @@ ISLE.foundConvert = function (C, minute) {
   SIM.logEvent('farming camp converted', { camp: C.id, hamlet: vid, name: nm ? nm.name : null, people: people.length, road: C.road });
   return X;
 };
+/* THE REFUGEES MOVE ON (the owner, 2026-11-09: "refugees should have an incentive to move on to places with real open jobs,
+   like a newly founded, empty hamlet one town over"): a founded hamlet is declared with its founders only (47h `people`:
+   no settlers dealt), so its homes beyond theirs stand empty and its posts open. Every `settle.every` minutes each
+   founded hamlet with an open post and an empty bed takes the longest-waiting refugee households from EITHER town's camp,
+   a household to a home with beds enough, its grown-ups to the open posts (the rest keep house), children kin; the
+   household is housed (its wait over), the town's camp the lighter by it, and the refugees' books count it in the
+   countryside. -> the moves made */
+ISLE.foundSettle = function (minute) {
+  var S = ISLE.SIM, T = ISLE.TUNE.sim, moves = [];
+  if (!S.hamlets || !S.rf) return moves;
+  var waiting = [];
+  S.order.forEach(function (s) { var byHh = {}; ISLE.refugeesAt(s).forEach(function (a) { if (!a.refugee || a.refugee.country) return; var h = byHh[a.refugee.hh] || (byHh[a.refugee.hh] = { hh: a.refugee.hh, town: s, landed: a.refugee.landed, people: [] }); h.people.push(a); });
+    Object.keys(byHh).forEach(function (k) { waiting.push(byHh[k]); }); });
+  if (!waiting.length) return moves;
+  waiting.sort(function (p, q) { return p.landed - q.landed || (p.hh < q.hh ? -1 : 1); });
+  S.hamlets.villages.filter(function (X) { return X.founded != null; }).forEach(function (X) {
+    var homes = SIM.all('place').filter(function (P) { return P.settlement === X.id && P.kind === 'home' && (P.activities.SLEEP || 0) > 0; }), live = {};
+    SIM.all('actor').forEach(function (a) { if (a.home != null) live[a.home] = (live[a.home] || 0) + 1; if (a.work != null) live['w:' + a.work] = (live['w:' + a.work] || 0) + 1; });
+    /* the open posts: the project going up first (its road, else its next house: core's building gives a lot posts only for
+       the hands it has, so the lot's posts are the tune's less its hands), then the works */
+    var B = SIM.BUILD, lotIds = (X.lots || []).filter(function (lid) { return B && B.lots[lid] && B.lots[lid].state !== 'built'; }), builders = 0;
+    lotIds.forEach(function (lid) { builders += live['w:' + lid] || 0; });   /* core spreads the builders over the projects going up: one pool */
+    var capB = (X.roadProject && !X.roadProject.built ? T.found.road.posts : 0) + (lotIds.some(function (lid) { return lid !== (X.roadProject && X.roadProject.place); }) ? (T.hamlets.grow.posts == null ? 4 : T.hamlets.grow.posts) : 0);
+    var lotP = lotIds.length && capB > builders ? SIM.R.place[X.roadProject && !X.roadProject.built ? X.roadProject.place : lotIds[0]] : null;
+    var HP = T.hamlets.producers, posts = (lotP ? [{ P: lotP, left: capB - builders }] : [])
+      .concat(SIM.all('place').filter(function (P) { return P.settlement === X.id && P.activities.WORK && P.kind !== 'home' && P.kind !== 'lot'; }).sort(function (A, B2) { return (HP[B2.kind] ? 1 : 0) - (HP[A.kind] ? 1 : 0); }).map(function (P) { return { P: P, left: P.activities.WORK - (live['w:' + P.id] || 0) }; }).filter(function (p) { return p.left > 0; }));
+    var open = posts.reduce(function (n, p) { return n + p.left; }, 0); if (open <= 0) return;
+    var beds = homes.map(function (P) { return { P: P, left: (P.activities.SLEEP || 0) - (live[P.id] || 0) }; }).filter(function (h) { return h.left > 0; });
+    for (var i = 0; i < waiting.length && open > 0 && beds.length;) {
+      var H = waiting[i], grown = H.people.filter(function (a) { return a.ageBand !== 'child'; }).length; if (!grown) { i++; continue; }
+      var fit = null; beds.forEach(function (b) { if (b.left >= H.people.length && (!fit || b.left < fit.left)) fit = b; }); if (!fit) { i++; continue; }
+      var townCamp = SIM.R.place[S.rf.camps[H.town]];
+      H.people.forEach(function (a) {
+        var g = a.ageBand !== 'child'; a.home = fit.P.id; a.cls = fit.P.cls || 'poor'; a.refugee.housed = minute; a.refugee.hamlet = X.id; a.refugee.country = X.id; a.refugee.moved = minute;
+        a.role = g ? X.id + '.worker' : X.id + '.kin'; a.status = g ? 'home' : 'housework'; a.work = null; a.job = null;
+        if (a.hmods) a.hmods = a.hmods.filter(function (x) { return x.why !== 'camp'; });
+        if (g && open > 0) { var p = posts.filter(function (q) { return q.left > 0; })[0]; if (p) { a.work = p.P.id; p.left--; open--; a.status = 'employed'; a.job = p.P.kind === 'lot' ? 'builder' : (p.P.tags.trade || p.P.kind); if (a.mem) a.mem.WORK = p.P.id; if (p.P.kind === 'lot') p.P.activities.WORK = (p.P.activities.WORK || 0) + 1; } }
+      });
+      fit.left -= H.people.length; fit.P.people = (fit.P.people || 0) + H.people.length; if (fit.left <= 0) beds = beds.filter(function (b) { return b !== fit; });
+      if (townCamp) townCamp.people = Math.max(0, (townCamp.people || 0) - H.people.length);
+      if (SIM.MONEY && !SIM.acct('hh:' + fit.P.id)) SIM.account({ id: 'hh:' + fit.P.id, owner: fit.P.id, kind: 'household', currency: ISLE.currencyOf(X.parent), settlement: X.id });
+      moves.push({ hh: H.hh, from: H.town, to: X.id, people: H.people.length, home: fit.P.id });
+      waiting.splice(i, 1);
+    }
+  });
+  if (moves.length) { S.found.moves = (S.found.moves || []).concat(moves); if (SIM.placesChanged) SIM.placesChanged();
+    moves.forEach(function (m) { SIM.logEvent('refugees moved to a hamlet', m); }); }
+  return moves;
+};
 /* a hamlet's road built (47b onBuilt, a lot tagged `road`): the page takes it into the world; the hamlet's carts take it */
 ISLE.roadBuilt = function (P) {
   var S = ISLE.SIM, T = ISLE.TUNE.sim, X = S.hamlets && S.hamlets.villages.filter(function (v) { return v.id === P.settlement; })[0]; if (!X || !X.roadProject) return;
@@ -140,7 +191,7 @@ ISLE.roadBuilt = function (P) {
 };
 ISLE.foundBooks = function () {
   var S = ISLE.SIM, out = { minute: SIM.minute(), camps: [], villages: [], roads: [], log: S.found ? S.found.log.slice() : [] }; if (!S.found) return out;
-  var I = SIM.ITEMS;
+  var I = SIM.ITEMS; out.moves = (S.found.moves || []).slice();
   S.found.camps.forEach(function (C) {
     var E = SIM.econ(C.id), B = (I.statsBy || {})[C.id] || {}, M = Object.assign({ meal: 0, single: 0, none: 0, mess: 0, out: 0 }, B.meals || {});
     var here = C.people.filter(function (id) { var a = SIM.R.actor[id]; return a && a.home === C.places.camp; }).length;
@@ -152,7 +203,8 @@ ISLE.foundBooks = function () {
   });
   (S.hamlets ? S.hamlets.villages : []).filter(function (X) { return X.founded != null; }).forEach(function (X) {
     var BR = SIM.buildReport ? SIM.buildReport().towns[X.id] : null, Pj = BR && X.roadProject ? BR.projects.filter(function (p) { return p.lot === X.roadProject.place; })[0] : null;
-    out.villages.push({ id: X.id, name: X.name, people: X.people, workers: X.workers, posts: X.posts, converted: X.converted, camp: X.camp, level: SIM.levelOf(X.id) });
+    var mine = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === X.id; }), moved = mine.filter(function (a) { return a.refugee && a.refugee.moved != null; });
+    out.villages.push({ id: X.id, name: X.name, people: mine.length, workers: mine.filter(function (a) { return a.work; }).length, posts: X.posts, beds: X.beds, founders: mine.filter(function (a) { return a.refugee && a.refugee.farmcamp === X.camp; }).length, moved: moved.length, movedAtWork: moved.filter(function (a) { return a.work; }).length, converted: X.converted, camp: X.camp, level: SIM.levelOf(X.id) });
     if (X.roadProject) out.roads.push({ village: X.id, km: X.roadProject.km, townKm: X.roadProject.townKm, hours: X.roadProject.hours, done: Pj ? Pj.done : 0, state: Pj ? Pj.state : (X.roadProject.built ? 'built' : 'waiting'), got: Pj ? Pj.got : {}, built: X.roadProject.built || null, minutes: X.minutes });
   });
   return out;
@@ -167,6 +219,9 @@ ISLE.foundChecks = function (a, b) {
   var due = camps.filter(function (C) { return b.minute >= C.founded + F.days * 1440 + 1440; });
   if (due.length) ok('a camp of ' + F.days + ' days converted to a hamlet: the founders its first people, housed and at work there, the hamlet named and in the hamlets\' books', due.every(function (C) { return C.converted && C.village && C.inVillage === C.people && C.atWork > 0 && b.villages.some(function (V) { return V.id === C.village && V.name && V.level === 'abstract'; }); }),
     due.map(function (C) { var V = b.villages.filter(function (v) { return v.id === C.village; })[0]; return C.id + (C.converted ? ' -> ' + (V ? V.name : C.village) + ' at day ' + Math.round(C.converted / 1440) + ': ' + C.inVillage + ' of ' + C.people + ' there, ' + C.atWork + ' at work, ' + (V ? V.people + ' people in all' : '') : ' not converted' + (b.log.length ? ' (' + JSON.stringify(b.log.slice(-1)) + ')' : '')); }).join('; '));
+  var settled = b.villages.filter(function (V) { return V.converted != null && b.minute >= V.converted + 2 * 1440; });
+  if (settled.length) ok('a founded hamlet draws the towns\' waiting refugees to its empty homes and open posts (no settlers dealt): within two days of its founding households have moved in from a camp, its people its founders and the movers, the movers at its posts', settled.every(function (V) { return V.moved > 0 && V.movedAtWork > 0 && V.people === V.founders + V.moved && V.people <= V.beds; }) && b.moves.length > 0,
+    settled.map(function (V) { return V.id + ': ' + V.people + ' people = ' + V.founders + ' founders + ' + V.moved + ' moved (' + V.movedAtWork + ' at work), ' + V.workers + ' of ' + V.posts + ' posts, ' + V.beds + ' beds'; }).join('; ') + '; moves: ' + b.moves.map(function (m) { return m.people + ' from ' + m.from; }).join(', '));
   if (b.roads.length) ok('the hamlet\'s highway is a project of its own hands: routed, under way (hours done, its timber drawn) or built, the carts retimed to it', b.roads.every(function (R) { return R.km > 0 && (R.state === 'built' ? R.minutes > 0 : R.done > 0); }),
     b.roads.map(function (R) { return R.village + ': ' + R.km + ' km (' + R.townKm + ' km to the town), ' + R.state + ' ' + Math.round(R.done) + ' of ' + R.hours + ' h, timber got ' + (R.got.timber || 0) + (R.built ? ', built day ' + Math.round(R.built / 1440) + ', ' + R.minutes + ' min a way' : ''); }).join('; '));
   return res;
