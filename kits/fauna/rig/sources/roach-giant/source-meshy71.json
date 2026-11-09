@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant cockroach, six long spiny legs, long flat oval body, head shield, folded wing covers, pale ivory-grey casting",
+ "task_ids": [
+  "01a19b93-3004-744c-bf73-1e98be54c803",
+  "01a19b94-83aa-74aa-b2b0-646f93c66505"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

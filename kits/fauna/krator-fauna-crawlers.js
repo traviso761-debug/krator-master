@@ -154,10 +154,10 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
   yields: { silk: { amount: 2, note: 'dragline silk drawn from a kept nest spider: for the Silk Loft looms' }, hide: { amount: 1, hideM2: 4, note: 'a moulted or dead beast\'s chitin: lamellar plates, bowls, lamp shades; the dragline silk (the Silk Loft\'s, about 2 kg a year a nest spider) has no yield kind yet' } },
   life: { maturity: 4, lifespan: 25, litter: 300, gestation: 45, note: 'an egg sac of a few hundred in the Silk Loft; the handlers raise a few spiderlings, the rest are let go into the canopy' },
-  variants: 2, variantNames: ['adult (patrol and nest spiders)', 'juvenile (half size, paler)'],
+  variants: 3, variantNames: ['adult (patrol and nest spiders)', 'juvenile (half size, paler)', 'adult (model)'],
   w: 8.8, d: 9.4, h: 3.7,
-  variantDims: [{ w: 8.8, d: 9.4, h: 3.7 }, { w: 4.4, d: 4.7, h: 1.85 }],
-  data: { mass: [700, 90], legs: 8, legSpan: 8.7, silk: 'draglines and the Silk Loft\'s looms', speed: { walk: 2.8, run: 5.6 }, gait: { type: 'octopod', freq: 0.8, stride: 3.2 }, grazePitch: 0.12,
+  variantDims: [{ w: 8.8, d: 9.4, h: 3.7 }, { w: 4.4, d: 4.7, h: 1.85 }, { w: 7.55, d: 8.32, h: 3.69 }], models: { 2: 'spider#rider' }, modelData: { 2: { budget: 12000 } },
+  data: { mass: [700, 90, 700], legs: 8, legSpan: 8.7, silk: 'draglines and the Silk Loft\'s looms', speed: { walk: 2.8, run: 5.6 }, gait: { type: 'octopod', freq: 0.8, stride: 3.2 }, grazePitch: 0.12,
     herd: 'patrols of riders, one rider to a spider; nest spiders in a colony at the Silk Loft', fleeDistance: 0, aggression: 0.4, leap: 'ballistic leaps between limbs at g 7.4 m/s2, trailing a dragline',
     schedule: ['REST', 'REST', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'PATROL', 'IDLE', 'PATROL', 'PATROL', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'IDLE', 'PATROL', 'PATROL', 'HUNT', 'HUNT', 'REST', 'REST', 'REST'] },
   build: function (A) {

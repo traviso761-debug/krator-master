@@ -1,0 +1,159 @@
+<title>Krator Arthropod Bestiary</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* A specimen cabinet at night: the animal stands on a ruled metre grid under one lamp, the index runs down the side like a drawer of labels. One dark look, by choice. */
+:root {
+  --ground: #1f2826; --panel: #27312f; --rule: #3a4744; --ink: #ece7d8; --dim: #a3ada4; --amber: #dcaa4a;
+  --display: 'Alegreya', 'Iowan Old Style', Georgia, serif; --body: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.4; display: grid; grid-template-columns: minmax(0, 1fr) 340px; overflow: hidden; }
+#stage { position: relative; min-width: 0; min-height: 0; }
+#c { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#c:active { cursor: grabbing; }
+#plate { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); top: 14px; right: 16px; pointer-events: none; }
+#plate h1 { font: 700 clamp(26px, 3.6vw, 42px)/1.05 var(--display); margin: 0; text-wrap: balance; }
+#plate .sub { color: var(--dim); max-width: 60ch; }
+#facts { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+#facts b { color: var(--amber); font-weight: 500; }
+#tools { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: 14px; right: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#tools .note { color: var(--dim); font-size: 14px; margin-left: 6px; }
+button, select, input[type=color] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; }
+button { padding: 5px 12px; cursor: pointer; }
+button:hover { border-color: var(--dim); }
+button[aria-pressed=true] { background: var(--amber); border-color: var(--amber); color: #1f2826; font-weight: 700; }
+button:disabled { opacity: .4; cursor: default; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+#side { min-width: 0; min-height: 0; overflow-y: auto; background: var(--panel); border-left: 1px solid var(--rule); padding-block: 14px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 18px; }
+#side h2 { font: 700 19px/1.2 var(--display); margin: 0 0 6px; }
+.index { display: flex; flex-direction: column; }
+.index h3 { font: 500 13px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--amber); margin: 12px 0 2px; }
+.index h3:first-child { margin-top: 0; }
+.index button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 10px; text-align: left; border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; background: none; padding: 6px 2px; }
+.index button span { min-width: 0; }
+.index .v { grid-column: 1; color: var(--dim); font-size: 14px; }
+.index .len { grid-row: 1 / span 2; grid-column: 2; align-self: center; color: var(--dim); font-variant-numeric: tabular-nums; font-size: 14px; }
+.index button[aria-pressed=true] { background: none; color: var(--amber); font-weight: 500; }
+.index button[aria-pressed=true] .v, .index button[aria-pressed=true] .len { color: var(--amber); }
+#mix { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 7px 10px; align-items: center; }
+#mix label { color: var(--dim); font-size: 15px; }
+#mix select { width: 100%; padding: 4px; }
+#mix input[type=color] { width: 100%; height: 30px; padding: 2px; }
+#mix input[type=range] { width: 100%; accent-color: var(--amber); }
+#side p { margin: 0 0 8px; color: var(--dim); font-size: 15px; }
+@media (max-width: 760px) {
+  body { display: block; overflow: auto; }
+  #stage { height: 62vh; min-height: 340px; }
+  #plate .sub { display: none; }
+  #side { border-left: 0; border-top: 1px solid var(--rule); overflow: visible; padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
+</style>
+<div id="stage">
+  <canvas id="c" aria-label="The selected animal, drawn in 3D. Drag to turn it, scroll to zoom."></canvas>
+  <div id="plate"><h1 id="name"></h1><div class="sub" id="sub"></div><div id="facts"></div></div>
+  <div id="tools">
+    <button id="lineup">All together</button>
+    <button id="m-idle">Rest</button><button id="m-walk">Walk</button><button id="m-strike">Strike</button>
+    <span class="note">Grid squares are 1 m. The figure is 1.75 m tall.</span>
+  </div>
+</div>
+<aside id="side">
+  <section><h2>Specimens</h2><div class="index" id="index"></div></section>
+  <section id="mixer"><h2>Mix a spider</h2><p>Every spider here is one file of parts. Choose any combination.</p>
+    <div id="mix">
+      <label for="p-body">Legs</label><select id="p-body"></select>
+      <label for="p-abd">Abdomen</label><select id="p-abd"></select>
+      <label for="p-jaw">Fangs</label><select id="p-jaw"></select>
+      <label for="p-eyes">Eyes</label><select id="p-eyes"></select>
+      <label for="p-bodyc">Body</label><input type="color" id="p-bodyc" value="#2a241c">
+      <label for="p-legsc">Legs</label><input type="color" id="p-legsc" value="#3a3024">
+      <label for="p-abdc">Abdomen</label><input type="color" id="p-abdc" value="#c89a30">
+      <label for="p-size">Size</label><input type="range" id="p-size" min="0.4" max="4" step="0.05" value="1">
+    </div>
+  </section>
+</aside>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="models.js"></script>
+<script>var KratorFauna = (function () { const FA_TEX = null; const FA_MODELS = window.__MODELS;
+/*BUNDLE*/
+return KratorFaunaAPI; })();</script>
+<script>
+(function () {
+  const KF = KratorFauna, $ = id => document.getElementById(id), canvas = $('c'), stage = $('stage');
+  const R = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, preserveDrawingBuffer: true }); R.outputEncoding = THREE.sRGBEncoding; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
+  R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const S = new THREE.Scene(), GROUND = 0x1f2826; S.background = new THREE.Color(GROUND); S.fog = new THREE.Fog(GROUND, 40, 120);
+  const C = new THREE.PerspectiveCamera(30, 1, 0.05, 400);
+  { const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#f4ecd8'); g.addColorStop(0.5, '#9aa89e'); g.addColorStop(0.55, '#3a443e'); g.addColorStop(1, '#1a201e'); x.fillStyle = g; x.fillRect(0, 0, 256, 128);
+    const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.encoding = THREE.sRGBEncoding; const pm = new THREE.PMREMGenerator(R); S.environment = pm.fromEquirectangular(t).texture; pm.dispose(); }
+  const lamp = new THREE.DirectionalLight(0xfff0d8, 2.0); lamp.castShadow = true; lamp.shadow.mapSize.set(2048, 2048); lamp.shadow.bias = -0.0004; S.add(lamp, lamp.target); S.add(new THREE.HemisphereLight(0xdfe6dc, 0x2a2a22, 0.35));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.ShadowMaterial({ opacity: 0.45 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; S.add(floor);
+  const grid = new THREE.GridHelper(120, 120, 0x3b4845, 0x2e3936); grid.position.y = 0.002; S.add(grid);
+  const figure = new THREE.Group(); { const m = new THREE.MeshStandardMaterial({ color: 0x6d7570, roughness: 0.85 }), b = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.13, 1.54, 16), m), h = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), m); b.position.y = 0.77; h.position.y = 1.62; b.castShadow = h.castShadow = true; figure.add(b, h); S.add(figure); }
+
+  // what can be shown: every catalog variant whose model is in this page
+  const LINE = window.__NOTES, items = [];
+  for (const L of KF.list()) { const E = KF.entry(L.key); for (const v in (E.models || {})) { const base = String(E.models[v]).split('#')[0]; if (window.__MODELS[base]) items.push({ key: L.key, variant: +v, model: E.models[v], base: base, name: E.name, vname: (E.variantNames || [])[v] || '', life: LINE[base] || '' }); } }
+  // the skinned trial: one glTF with its own clips, not a catalog animal
+  const SK = window.__SKIN, SKS = 4, SKM = { idle: 'glide', walk: 'flap', strike: 'fold' }; let bat = null;
+  if (SK) { items.push({ skin: true, key: 'skin', base: 'skin', name: 'Giant bat', vname: SK.label, group: 'Skinned trial', w: SK.w * SKS, d: SK.d * SKS, h: SK.h * SKS }); }
+  const GROUP = { spider: 'Spiders', beetle: 'Beetles', 'staghorn-beetle': 'Beetles', 'bowl-mantis': 'Mantises', 'harvester-ant': 'Ants', hornet: 'Hornets', 'draught-millipede': 'Millipedes', 'elephant-bug': 'Elephant bugs' }, GROUPS = ['Elephant bugs', 'Millipedes', 'Hornets', 'Skinned trial', 'Spiders', 'Beetles', 'Mantises', 'Ants'], PART = { abd: 'abdomen', jaw: 'fangs', head: 'head' };
+  const widthOf = it => { if (it.skin) return it.w; const E = KF.entry(it.key); return E.variantDims ? E.variantDims[it.variant].w : E.w; };
+  items.forEach(it => { it.group = it.group || GROUP[it.base] || 'Others'; }); items.sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || widthOf(b) - widthOf(a) || a.variant - b.variant);
+  const F = window.__MODELS.spider;
+
+  let actors = [], mode = 'idle', az = 0.55, el = 0.3, dist = 10, tgt = new THREE.Vector3(0, 1, 0), spin = true, cur = null, together = true, mixN = 0;
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if (reduce) spin = false;
+  const build = it => { if (it.skin) { bat.visible = true; return bat; } const g = KF.build(it.key, { variant: it.variant, seed: 3 }); g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return g; };
+  const clear = () => { actors.forEach(a => S.remove(a.g)); actors = []; };
+  const place = (it, x, z, i) => { const g = build(it); g.position.set(x, 0, z); S.add(g); actors.push({ g: g, phase: i * 1.7 }); return g; };
+  const lit = r => { lamp.position.set(r * 0.8, r * 1.6, r * 0.9); const c = lamp.shadow.camera, q = r * 1.4; c.left = c.bottom = -q; c.right = c.top = q; c.near = 0.1; c.far = r * 5; c.updateProjectionMatrix(); };
+
+  function showAll() {
+    clear(); together = true; cur = null; const big = [], small = []; items.map(it => { const g = build(it), u = g.userData; return { it: it, w: u.w, d: u.d, h: u.h }; }).sort((a, b) => b.w - a.w).forEach(q => (q.w > 1.9 ? big : small).push(q));
+    const row = (list, z) => { const gap = 0.5, tot = list.reduce((s, q) => s + q.w + gap, -gap); let x = -tot / 2; list.forEach((q, i) => { place(q.it, x + q.w / 2, z, actors.length); x += q.w + gap; }); return tot; };
+    const a = row(big, -2.6), b = row(small, 2.2), wide = Math.max(a, b); figure.position.set(-wide / 2 - 0.9, 0, 2.2); figure.visible = true; tgt.set(0, 1.5, -0.5); dist = Math.max(16, wide * 1.45); el = 0.26; lit(wide * 0.75 + 6);
+    $('name').textContent = 'Krator Arthropod Bestiary'; $('sub').textContent = 'Generated with Meshy, cut into rigid parts along the exoskeleton\'s own joints, and animated with a planted-foot walk. All shown at true size.';
+    $('facts').innerHTML = '<span><b>' + items.length + '</b> animals</span><span><b>' + LINE.mb + ' MB</b> of models</span><span><b>' + LINE.credits + '</b> Meshy credits</span>';
+    tools(); index();
+  }
+  function showOne(it) {
+    clear(); together = false; cur = it; const g = place(it, 0, 0, 0), u = g.userData, big = Math.max(u.w, u.d, u.h); figure.position.set(u.w / 2 + 0.7, 0, 0); figure.visible = true;
+    tgt.set(0.2, Math.max(u.h, 1.75) * 0.45, 0); dist = Math.max(big, 1.75) * 3.1; el = 0.3; lit(big + 3); $('name').textContent = it.name; $('sub').textContent = it.vname;
+    const fam = window.__MODELS[it.base] || {}, recipe = fam.family ? fam.picks[String(u.model).split('#')[1]] : null, f = [['Span', u.w.toFixed(2) + ' m'], ['Length', u.d.toFixed(2) + ' m'], ['Height', u.h.toFixed(2) + ' m'], ['Triangles', u.tris.toLocaleString('en-US')]];
+    if (it.skin) f.push(['Membrane', 'one sheet, no cuts']);
+    if (recipe) f.push(['Parts', [recipe.body + ' body'].concat(fam.swap.map(n => recipe[n] + ' ' + PART[n]), recipe.eyes ? [recipe.eyes + ' eyes'] : []).join(', ')]);
+    $('facts').innerHTML = f.map(q => '<span>' + q[0] + ' <b>' + q[1] + '</b></span>').join(''); tools(); index();
+  }
+  function tools() { const sk = !together && cur && cur.skin; $('m-idle').textContent = sk ? 'Glide' : 'Rest'; $('m-walk').textContent = sk ? 'Flap' : 'Walk'; $('m-strike').textContent = sk ? 'Fold' : 'Strike'; const clips = actors[0] ? Object.keys(actors[0].g.userData._mx.clips) : []; $('lineup').setAttribute('aria-pressed', together); $('m-strike').disabled = !together && !clips.includes('strike');
+    if (mode === 'strike' && $('m-strike').disabled) mode = 'idle'; for (const m of ['idle', 'walk', 'strike']) $('m-' + m).setAttribute('aria-pressed', m === mode); }
+  function index() { const box = $('index'); box.textContent = ''; let was = null; items.forEach(it => { if (it.group !== was) { was = it.group; const h = document.createElement('h3'); h.textContent = was; box.appendChild(h); } const b = document.createElement('button'); b.setAttribute('aria-pressed', it === cur); b.innerHTML = '<span></span><span class="v"></span><span class="len"></span>'; b.children[0].textContent = it.name; b.children[1].textContent = it.skin ? it.vname : it.vname.split(':').pop().replace(' (model)', '').replace('(Meshy model)', '').trim() || it.vname; b.children[2].textContent = widthOf(it).toFixed(1) + ' m'; b.onclick = () => showOne(it); box.appendChild(b); }); }
+
+  // the mixer writes one more pick into the family and shows it on a spare catalog variant
+  const opts = (id, list, sel) => { const s = $(id); list.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; s.appendChild(o); }); s.value = sel; s.onchange = mix; s.oninput = mix; };
+  const hex = id => '0x' + $(id).value.slice(1);
+  function mix() { const name = 'mix' + (++mixN), scale = +$('p-size').value; F.picks[name] = { body: $('p-body').value, abd: $('p-abd').value, jaw: $('p-jaw').value, eyes: $('p-eyes').value, scale: scale, tint: { body: hex('p-bodyc'), legs: hex('p-legsc'), abd: hex('p-abdc') } };
+    const E = KF.entry('gilded-orb-spider'), B = F.bodies[$('p-body').value], w = B.rest.w * scale, d = B.rest.d * scale, h = B.rest.h * scale; E.models[3] = 'spider#' + name; E.variantDims[3] = { w: w, d: d, h: h }; showOne({ key: 'gilded-orb-spider', variant: 3, model: E.models[3], base: 'spider', name: 'Your spider', vname: 'mixed from the family\'s parts' }); E.models[3] = 'spider#gilded'; E.variantDims[3] = DIM3; }
+  const DIM3 = KF.entry('gilded-orb-spider').variantDims[3];
+  if (F) { opts('p-body', Object.keys(F.bodies), 'long'); opts('p-abd', F.opts.abd, 'orb'); opts('p-jaw', F.opts.jaw, 'orb'); opts('p-eyes', Object.keys(F.eyes), 'rows'); for (const id of ['p-bodyc', 'p-legsc', 'p-abdc', 'p-size']) { $(id).oninput = mix; } } else $('mixer').hidden = true;
+
+  $('lineup').onclick = showAll; for (const m of ['idle', 'walk', 'strike']) $('m-' + m).onclick = () => { mode = m; tools(); };
+  let px = 0, py = 0, down = false; canvas.onpointerdown = e => { down = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId); spin = false; };
+  canvas.onpointermove = e => { if (!down) return; az -= (e.clientX - px) * 0.008; el = Math.max(0.03, Math.min(1.45, el + (e.clientY - py) * 0.006)); px = e.clientX; py = e.clientY; };
+  canvas.onpointerup = () => { down = false; }; canvas.addEventListener('wheel', e => { e.preventDefault(); dist = Math.max(1, Math.min(120, dist * Math.exp(e.deltaY * 0.001))); }, { passive: false });
+  const size = () => { const w = stage.clientWidth, h = stage.clientHeight; R.setSize(w, h, false); C.aspect = w / Math.max(h, 1); C.updateProjectionMatrix(); }; new ResizeObserver(size).observe(stage); size();
+  let t = 0, last = performance.now();
+  function frame(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!reduce) t += dt; if (spin) az += dt * 0.12;
+    for (const a of actors) if (a.g === bat) { const c = bat.userData.acts, n = SKM[mode], cl = c[n]; if (bat.userData.cur !== n) { if (bat.userData.cur) c[bat.userData.cur].stop(); cl.reset().play(); bat.userData.cur = n; } cl.time = (t + a.phase) % cl.getClip().duration; bat.userData.mixer.update(0); } else KF.animate(a.g, t, mode === 'strike' && !a.g.userData._mx.clips.strike ? 'idle' : mode, { phase: a.phase });
+    C.position.set(tgt.x + dist * Math.cos(el) * Math.sin(az), tgt.y + dist * Math.sin(el), tgt.z + dist * Math.cos(el) * Math.cos(az)); C.lookAt(tgt); R.render(S, C); requestAnimationFrame(frame); }
+  window.__show = i => { spin = false; showOne(items[i]); }; window.__all = showAll; window.__mode = m => { mode = m; tools(); }; window.__view = (a, e, d) => { az = a; el = e; spin = false; if (d) dist = d; }; window.__items = items; window.__mix = mix;
+  const start = () => { showAll(); requestAnimationFrame(frame); };
+  if (SK) { const bin = atob(SK.glb), arr = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    new THREE.GLTFLoader().parse(arr.buffer, '', g => { bat = g.scene; bat.scale.setScalar(SKS); bat.traverse(o => { if (o.isMesh) { o.frustumCulled = false; o.castShadow = o.receiveShadow = true; if (o.material.alphaTest) o.material.side = THREE.DoubleSide; else { const q = o.material; q.normalMap = q.metalnessMap = q.roughnessMap = null; q.metalness = 0; q.roughness = .85; q.needsUpdate = true; } } });
+      const mixer = new THREE.AnimationMixer(bat), acts = {}; g.animations.forEach(c => { acts[c.name] = mixer.clipAction(c); }); const inner = new THREE.Group(); inner.add(bat.children[0]); while (bat.children.length) inner.add(bat.children[0]); bat.add(inner); inner.position.y = -SK.ground; bat.userData = { w: SK.w * SKS, d: SK.d * SKS, h: SK.h * SKS, tris: SK.tris, mixer: mixer, acts: acts, cur: null, _mx: { clips: { strike: 1 } } }; start(); }, () => start()); } else start();
+})();
+</script>

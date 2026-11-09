@@ -193,7 +193,7 @@ const FA_VO_STR_HIPZ = [6.0, 0.4, -5.6], FA_VO_STR_DOME = { c: [0, 14.6, 0.2], r
 function faVoStrCol(hex) { return faVoMul(hex, 0.88); }
 function faVoStrDomeTop(z) { const D = FA_VO_STR_DOME, q = (z - D.c[2]) / D.r[2]; return D.c[1] + D.r[1] * Math.sqrt(Math.max(0, 1 - q * q)); }
 ANIMAL({
-  key: 'silt-strider', name: 'Silt strider', group: 'voth',
+  key: 'elephant-bug', name: 'Elephant bug', group: 'voth',
   tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
     domestic: true, herdedBy: ['voth'], diet: 'omnivore', feeding: 'detritivore', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'shallows', 'marsh'], locomotion: ['walks', 'wades'] },
@@ -203,7 +203,10 @@ ANIMAL({
   yields: { meat: { amount: 6000, note: 'only when one dies: the guild sells the flesh in the cantons for a week' },
     hide: { amount: 1, hideM2: 450, note: 'the carapace chitin: armour plates, roof shells, a shell-house\'s hull' } },
   life: { maturity: 30, lifespan: 250, litter: 1, gestation: 540, note: 'invented: a strider is older than the guild that drives it' },
+  variants: 2, variantNames: ['the guild\'s convoys', 'the guild\'s convoys (model)'],
   w: 14.2, d: 25.6, h: 16.6,
+  variantDims: [{ w: 14.2, d: 25.6, h: 16.6 }, { w: 15.76, d: 18.93, h: 19.94 }],
+  models: { 1: 'elephant-bug' }, modelData: { 1: { budget: 14000 } },   /* the Meshy model variant (models/elephant-bug.json, rig/arthro.py) */
   data: { mass: 30000, legs: 6, speed: { walk: 2.4, run: 4.5 }, gait: { type: 'hexapod', freq: 0.22, stride: 4.5 }, idle: { headYaw: 0.07, headPitch: 0.02 }, grazePitch: 0.3,
     herd: 'kept singly by the strider guild; walked in convoys of two or three', fleeDistance: 0, aggression: 0.02,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
@@ -494,15 +497,17 @@ ANIMAL({
   yields: { meat: { amount: 150, note: 'pale, sweet; boiled in the shell' }, eggs: { amount: 40, note: 'laid in the byre\'s litter; eaten pickled' },
     hide: { amount: 1, hideM2: 5, note: 'the shell: chitin plates for armour, bowls and roofing' } },
   life: { maturity: 1.5, lifespan: 12, litter: 40, gestation: 18, note: 'eggs, then a grub a season in the byre\'s dung; gestation: incubation' },
-  variants: 3, variantNames: ['ranch: bark-brown', 'ranch: moss-green', 'arena: umber'],
+  variants: 6, variantNames: ['ranch: bark-brown', 'ranch: moss-green', 'arena: umber', 'ranch: bark-brown (model)', 'ranch: moss-green (model)', 'arena: umber (model)'],
   breeds: { ranch: { scale: 1, mass: 900, role: 'livestock and draught' }, pit: { scale: 1.15, mass: 1370, role: 'arena pit beetle' } },
   w: 3.4, d: 3.8, h: 1.45,
+  variantDims: [{ w: 3.4, d: 3.8, h: 1.45 }, { w: 3.4, d: 3.8, h: 1.45 }, { w: 3.4, d: 3.8, h: 1.45 }, { w: 3.41, d: 3.85, h: 1.9 }, { w: 3.41, d: 3.85, h: 1.9 }, { w: 3.9, d: 4.51, h: 2.82 }],
+  models: { 3: 'beetle#ranch-brown', 4: 'beetle#ranch-moss', 5: 'beetle#arena' }, modelData: { 3: { budget: 9000 }, 4: { budget: 9000 }, 5: { budget: 9000 } },   /* picks of one family (models/beetle.json, rig/family.py) */
   data: { mass: 900, legs: 6, speed: { walk: 0.8, run: 2.5 }, gait: { type: 'hexapod', freq: 1.2, stride: 0.45 }, grazePitch: 0.3,
     herd: 'a ranch herd of six to twelve in a corral; caravans keep one to a cart', fleeDistance: 1, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
     const K = FA_VO_U * A.S, P = p => [p[0] * K, p[1] * K, p[2] * K];
-    const shell = FA_VO_BEETLE_SHELL[A.variant] || FA_VO_BEETLE_SHELL[0], leg = faVoShade(shell, -0.24), under = faVoShade(shell, -0.4);
+    const shell = FA_VO_BEETLE_SHELL[A.variant % 3], leg = faVoShade(shell, -0.24), under = faVoShade(shell, -0.4);
     const LH = 0.95, bodyLen = 4.6;   /* the shell's rim: the source's 1.425 held the body high on stilts */
     const sheen = (hex, u, v, k) => { const c = new THREE.Color(hex), n = 1 + 0.18 * (faNoise(u * 6, v * 30, k) - 0.5) + 0.12 * Math.pow(Math.max(0, 1 - u * 1.6), 3); return [c.r * n, c.g * n, c.b * n]; };
     /* the abdomen, thorax and head domes on the leg-top plane; each has an underside */
@@ -577,9 +582,10 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
   yields: { chitin: { amount: 45, note: 'the cast skins of the grub\'s moults and the shell of a beetle that dies: elytra for shields and bowls, the mandibles for blades and tent poles; the Ash Nomads do not eat it' } },
   life: { maturity: 3, lifespan: 16, litter: 30, gestation: 30, note: 'eggs in rotten wood or dung; three years a grub, then a beetle broken to the saddle in its first season; gestation: incubation' },
-  variants: 4, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black', 'jungle staghorn: moss-green, gold sheen, rust-red mandibles (the Beast Riders\' Staghorn tribe)'],
+  variants: 5, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black', 'jungle staghorn: moss-green, gold sheen, rust-red mandibles (the Beast Riders\' Staghorn tribe)', 'jungle staghorn (Meshy model)'],
   breeds: { riding: { scale: 1, mass: 750, role: 'riding mount; light draught (a sledge, a travois)' }, war: { scale: 1.2, mass: 1300, role: 'war mount: bigger mandibles' } },
   w: 2.95, d: 4.0, h: 1.75,
+  variantDims: [{ w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.94, d: 4.71, h: 1.72 }], models: { 4: 'staghorn-beetle' }, modelData: { 4: { budget: 9000 } },   /* the Meshy model variant (models/staghorn-beetle.json, rig/arthro.py): it stands nose up, so taller than the procedural beetle */
   data: { mass: 750, legs: 6, speed: { walk: 1.4, run: 6 }, gait: { type: 'hexapod', freq: 1.3, stride: 0.5 }, grazePitch: 0.25,
     herd: 'one to a rider, picketed by the tent at night; a band\'s string of ten to forty grazes the scrub under a herder', fleeDistance: 0, aggression: 0.3,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },

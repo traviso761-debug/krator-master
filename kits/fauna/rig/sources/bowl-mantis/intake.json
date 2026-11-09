@@ -1,0 +1,72 @@
+{
+ "raw-hunyuan.glb": {
+  "tris": 40000,
+  "mb": 3.9,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base",
+  "ext": "",
+  "contacts": 4,
+  "want": 4,
+  "mirror": 0.67,
+  "pieces": 4,
+  "tiny": 2,
+  "debris": 0.1
+ },
+ "raw-meshy71.glb": {
+  "tris": 713096,
+  "mb": 27.4,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base+normal+mr",
+  "ext": "",
+  "contacts": 4,
+  "want": 4,
+  "mirror": 0.65,
+  "pieces": 1,
+  "tiny": 0,
+  "debris": 0
+ },
+ "raw-meshyt2.glb": {
+  "tris": 12869,
+  "mb": 6.4,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base+normal+mr",
+  "ext": "",
+  "contacts": 2,
+  "want": 4,
+  "mirror": 1.31,
+  "pieces": 43,
+  "tiny": 1,
+  "debris": 68.4
+ },
+ "raw-rodin.glb": {
+  "tris": 34595,
+  "mb": 6.7,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base+normal+mr",
+  "ext": "",
+  "contacts": 4,
+  "want": 4,
+  "mirror": 0.55,
+  "pieces": 1,
+  "tiny": 0,
+  "debris": 0
+ },
+ "raw-trellis.glb": {
+  "tris": 9086,
+  "mb": 1.6,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base",
+  "ext": "",
+  "contacts": 4,
+  "want": 4,
+  "mirror": 0.61,
+  "pieces": 3,
+  "tiny": 0,
+  "debris": 26.2
+ }
+}

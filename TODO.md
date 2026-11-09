@@ -30,6 +30,13 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   top rings stop at `.08` of the radius (`rhos` in `core/terrain/37-core-stacks.js`), so every ringed top has an open
   hole at its centre (about 13 m across on a 160 m mesa) that shows the ground under the body from above. Add a centre fan
   on `topH`; it moves every page that draws a ringed top (about 13 builds), then drop the pinned check in `test-seat.js`.
+- **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
+  anchors and `userData.anchorOn`, `krator-fauna-farm.js` the bison's variant 3 size, and the catalog a Bowl mantis and new model variants of the
+  ant and the staghorn (a page without models draws those variants procedurally; check a page that picks a staghorn's variant at random). Since then: family models (`spider#gilded`, `rig/family.py`), six new entries and model variants on four more, all with procedural fallbacks: the variant counts of those entries changed, so a page that draws a variant at random will draw them. The pages that bundle the kit (Voth,
+  isle-demo, ash-nomads, desert-nomads, islanders, lizardmen, scyvoi, ringisles, sedesert and its stations, longsong) were not
+  rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
+  far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
+  `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
 - **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the

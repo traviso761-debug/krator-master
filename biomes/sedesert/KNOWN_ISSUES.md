@@ -57,8 +57,8 @@ Read before changing anything here. `build.py` prints the open count.
       not built); the rim walls are the shared sky's ridges, not ground.
 - [ ] **Glasswort's colour follows the salt, not the season** (crimson where the salt is strongest). The saxaul's twigs borrow the
       glasswort card (`card.samphire`): no saxaul card exists.
-- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's Bowl mantis, brine flies,
-      wading bird and salt beetles are `kits/fauna`'s work.
+- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's brine flies, wading bird and salt
+      beetles are `kits/fauna`'s work. The Bowl mantis is built (`bowl-mantis`, 2026-11-02), in the kit's `hyperjungle` file: this page bundles only `desert`, so it needs that group, or the mantis moved.
 - [ ] **The station's `dist/sedesert-bowl.html` is not in `PORT-BASELINE.json`** (the baseline is rewritten on the merged branch).
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's

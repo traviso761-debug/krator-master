@@ -1,0 +1,12 @@
+{
+ "prompt": "Tarantula, thick hairy legs, big chelicerae, oval hairy abdomen, pale ivory-grey all over",
+ "task_ids": [
+  "01a19b4d-bcaf-7726-b984-9867c65e0334",
+  "01a19b50-509c-7374-94a5-bf55d2f648e6"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, front left back",
+ "rights": "generated on the owner's Meshy account"
+}
