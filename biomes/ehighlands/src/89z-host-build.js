@@ -23,7 +23,7 @@ window._biome=null;
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  if(Q.get('diet')==='0')EHIGH.IMPOSTORS=false;
  EHIGH.setGiant(GIANT_AZ);
- EHIGH.FLOWERING.push(FLOWERING);
+ if(FLOWERING)EHIGH.FLOWERING.push(FLOWERING);
  try{window._biome=EHIGH.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
@@ -34,5 +34,5 @@ window._biome=null;
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});window._shadow.cast(scene);
   if(typeof FAR!=='undefined'&&FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'The eastern highlands (ideal type)',x:0,z:0,r:TERR.R,h:900});
+ REGISTER({name:STAGE.name+' (ideal type)',x:0,z:0,r:TERR.R,h:STAGE.regH==null?900:STAGE.regH});
 })();

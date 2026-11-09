@@ -870,16 +870,24 @@
   },
   "build.py --station hoar": {
    "inputs": {
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "4f3f91939ecc97fbb70bdcd006319191cbba9d97924ffeb0c29c619c422fcb4d",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "474d525bfbfc127a15d09a3e1f50d77b25ebf5c9872decc31175cd3ef57e31b5",
-    "biomes/ehighlands/src/60-biome-ehigh-floor.js": "67813c17c0d71bd68808745a871d439d2ff42fec6ad5b5e2e86ade2661d63416",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "0a8ffb7d4edb4284b7455c7402e61d98f2ae730a26cbb4822d862ea4c5d07bd6",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fbcf04311c7011775e8728254571f5e631d678c96acf25cb976b87dbe216cb14",
+    "biomes/ehighlands/src/60-biome-ehigh-floor.js": "e4aec6ba8375e8956b64cd9e223e943a84024e5fdb21391a674d0e9106df207a",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
     "biomes/ehighlands/tex/bark.ragbark.albedo.webp": "3e4f2970f009e705b77ca357cd82ee8fb2b94658c10a9ed5bdd88b73ab3a15b2",
+    "biomes/ehighlands/tex/bark4.albedo.webp": "6a220daf212644e319a60782ea920aeb16e872321636730f0f53956710ebd2ec",
+    "biomes/ehighlands/tex/beard.albedo.webp": "f4b0a63f5269a2284358fec3e29d08e9aab017d3d9fc41d8c27cff4827cbc61e",
+    "biomes/ehighlands/tex/bigfrond.albedo.webp": "0585cd5882d17518473496f9a5556f064c167566b85ef717330549c507f34c76",
+    "biomes/ehighlands/tex/brom.albedo.webp": "77c76f3f074282231a1e941b4255693e49abe0d17b84d83491956b920c38cf28",
+    "biomes/ehighlands/tex/epi.albedo.webp": "93497683bfa01f82c34c53b8268ff1217dcd8430fab8b7b9c40ff3a619f35d10",
+    "biomes/ehighlands/tex/fern.albedo.webp": "83f3a28a0ca4289f2a05e2acae0242ad8580ac700b0950ca7c148dfe520ae88c",
+    "biomes/ehighlands/tex/laurel.albedo.webp": "6b85b819b24d24623420c4ef685a819108a06860e2a88e4a7d8341be9d6caecb",
     "biomes/ehighlands/tex/leaf.broad.albedo.webp": "4661f6a560ab8b8cd3a4661b7c1f414c1e55a6f595f399a8c4bc62921e32abd0",
     "biomes/ehighlands/tex/leaf.ichu.albedo.webp": "bbb76561f49a715339d83450aa33342b9b9bd4cef875562b740d06767fd42cf2",
     "biomes/ehighlands/tex/leaf.rag.albedo.webp": "e289ddd97c6322a1c0637117665459a798154a44ae5b2f279f46c3ad24203a57",
     "biomes/ehighlands/tex/lichen.albedo.webp": "286c559bbce9fe04e39e09cf38ba3feecdcb8a417f4294364aaaaa91fee61a48",
-    "biomes/ehighlands/tex/pack.json": "0a6bb46b8bc6da060411f080da8bc32d6970144b3b31f0fdd60ce24e26208b41",
+    "biomes/ehighlands/tex/moss.albedo.webp": "1a7740e750f30a4b4162f716b27b1c662ceb431eda89bd3782c27bf77ab74741",
+    "biomes/ehighlands/tex/pack.json": "503b2b293fe87b2637d4d355cedab775cfbb770d48c020ef57bf31251bcccd2c",
     "biomes/ehighlands/tex/skin.cushion.albedo.webp": "6cb57377980784f190b4b2a738c02cae27f506aa466e878888f2a9fe7f605bce",
     "biomes/ehighlands/tex/skin.fleece.albedo.webp": "0ab97d345b4193b4e43eb818bd1cf5ded0fb53d4161c9eadc8fe2c71c392e05a",
     "biomes/ehighlands/tex/stone.basalt.albedo.webp": "0058a7c75db23a735260b0c2f0627e87625469312879e58da9cd641148c54f60",
@@ -1132,15 +1140,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hoar.html": "2190461bcfeea640aba8ec7c88f19c65a18832dfca244c48600ddd6a93c9c025",
-    "biomes/korona/dist/korona.tex.ehigh.js": "9fb50aa9e7b7984adc3ad1fe031128e2c4cb4a834f8a48e1033a57b0a345c4f1",
+    "biomes/korona/dist/korona-hoar.html": "6594cabe89c54d05748e34e17ac019c9fd3b1ef35e91b5e833c5c0161ad2ddf7",
+    "biomes/korona/dist/korona.tex.ehigh.js": "cc89b29468bf7a422283fb53caae5a33e735e8e13abade9f6f1cc6386b650356",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hoar.html": "2190461bcfeea640aba8ec7c88f19c65a18832dfca244c48600ddd6a93c9c025",
-    "biomes/korona/dist/korona.tex.ehigh.js": "9fb50aa9e7b7984adc3ad1fe031128e2c4cb4a834f8a48e1033a57b0a345c4f1",
+    "biomes/korona/dist/korona-hoar.html": "6594cabe89c54d05748e34e17ac019c9fd3b1ef35e91b5e833c5c0161ad2ddf7",
+    "biomes/korona/dist/korona.tex.ehigh.js": "cc89b29468bf7a422283fb53caae5a33e735e8e13abade9f6f1cc6386b650356",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"

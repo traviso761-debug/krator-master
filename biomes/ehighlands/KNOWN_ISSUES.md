@@ -1,7 +1,9 @@
 # Eastern highlands — known issues
 
-- [ ] **Not placed on the scale model.** The region has no polygon yet (`biomes/WORLD.md`: "to be placed"); its
+- [x] **Not placed on the scale model.** The region has no polygon yet (`biomes/WORLD.md`: "to be placed"); its
       neighbours and its pressure (~0.6 atm assumed) wait for it. The Koppen weights (`EHIGH.KOPPEN`) are an estimate.
+      2026-11-09: placed. The polygon is `e inner wall` (PLAN-STATIONS.md); the three stations are sited on 5.1 and `EHIGH.KOPPEN` is the
+      survey's (rough shares). Station 1's air is 0.86 atm.
 - [x] **`ground.puna` not delivered.** Nine of the ten library sets are in (`materials.json`, `tex/`, 2026-10-06); the
       puna's own ground waits for `ground.puna` (`PROMPTS-ready.md` section 7) and keeps its painted colour until then.
       2026-11-09: it is delivered and packed (`tex/ground.puna.*`); the ground draws it (since the final rebuild, as a KGROUND layer).
@@ -97,3 +99,38 @@ KGROUND), `KFIRE`, seasons, the stations (`PLAN-STATIONS.md`, awaiting the owner
 - [ ] the sky's landmarks (the open item above), folded into this verify.
 - [ ] korona's hoar and swhighlands' treeline, rebuilt here: their own `--assert`.
 
+## The stations (2026-11-09; PLAN-STATIONS.md, "Built")
+
+Stations 1 and 2 of the plan and a third, the Lesser Throne, built in a cloud session: `python3 tools/build.py biomes/ehighlands`
+(`dist/ehighlands.html`), `--station face` (`dist/ehighlands-face.html`), `--station lesser` (`dist/ehighlands-lesser.html`). **Each page
+was smoke-loaded in software GL** (`tools/harness.py smoke`: it loads, the error panel stays empty; not `verify.py`): the GPU verify is
+owed for all three. Every station is `stations/<name>/46-host-land.js` (its STAGE record and land) and `96-host-views.js` (its views,
+its negatives' points, its own check); the rest of `src/` is shared and reads the STAGE contract (`46-host-land.js` in src/ says it).
+
+**What moved on station 1 (the showcase), on purpose:** the sky's site (861,402) and air (0.86 atm), the giant's azimuth (66 to 60: every
+plant leans 6 degrees further north, the Mother's crown with it), the geyser field gone (its vents, steam, sinter shield, the view; the
+floor's draws after the first sinter cell move with it), the page's title words. Its plants' places do not move otherwise.
+
+**For readers (korona's hoar, swhighlands' treeline):** species 0-6 keep their keys and indices; 7 (`laurel`) and 8 (`treefern`) are
+appended, with their passes after the old ones (a page with no `forest` field places none, and the old passes draw as they did); new
+items `laurel`, `bigfrond`, `fern`, `beard`, `epi`, `brom`, `moss`; the bucket `bark4`; zones `cloud` (field `forest`) and the `barren`
+field's cut, both 0 where the field is not set (neither reader sets them); `EHIGH.KOPPEN` and `EHIGH.ATM` changed. Both readers were
+rebuilt (pages only).
+
+- [ ] **The GPU verify, all three pages** (`verify.py --assert --all-views`; `verify.py` takes the stations' pages as it takes the
+      showcase's: check its EXPORT_PROFILE box falls on each station's ground). Look at: the attach audit on the laurels' crowns, gardens
+      and beards and the tree ferns' fronds (held by construction: spot clumps by `BIO.holdTo`, gardens on the limb's surface); the three
+      falls and the slot gorges (ground cells 10 m: the slot walls are coarse); the cloud bank's height; the caldera's walls (16.5 m cells)
+      and the frozen lake; the fumaroles' steam; the skylight.
+- [ ] **The look, the owner's:** the wet face's density (laurel cell 11 m at accept .5, tree fern 6 m: smoke-loaded at the default view
+      only), the combing toward the giant from below, the Lesser Throne's oases (about 26 ha of warm ground), its snow line.
+- [ ] **The crops entry is not changed** (`kits/crops/src/10-crop-core.js`: `ehighlands` `atm: 0` to `1`, and the `forest` and `cloud`
+      zones, PLAN-STATIONS.md sections 2 and 4): it reaches five other builds (`tools/reach.py`), so it waits for a turn that rebuilds them.
+      The station's one fruit, staple and medicine (section 4) are not chosen.
+- [ ] **Station 2's other belts** (mixed broadleaf at 2-3 km, montane conifers with nhighlands' read in place, spruce-fir and krummholz
+      under the crest): not built; the page is the foot's cloud forest only.
+- [ ] **The buried archive (station 3):** the tube's skylight is a hole in the flow and a registered place; the vaults (`cav_monks_archive`,
+      140 x 90 m) and any ruin of the first monastery are not drawn. The geyser kit's plan put a station at this vent (`biomes/geyser/
+      PLAN-STATIONS.md`, "puna"); by the owner's rule of 2026-11-02 (a vent field goes to its host kit) this is it.
+- [ ] **The page's map is not the model's** on station 1 (its range in the south stands for the crest, which is west): an ideal type, as
+      the kit was built.

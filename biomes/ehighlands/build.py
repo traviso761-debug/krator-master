@@ -163,7 +163,11 @@ def matlib_pack():
     pj=os.path.join(TEX_DIR,'pack.json')
     if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('ehigh', {});\n"
     pack=json.load(open(pj,encoding='utf-8'));out=[]
-    for fam in sorted(pack['families']):
+    # each page carries the families it draws (station.json "packSkip"; the showcase skips the stations' own). The ground's turf, sinter
+    # and puna stay on every page: 84-host-ground.js takes the library ground only with all three
+    S2=['laurel','bigfrond','fern','beard','epi','brom','moss','bark4','ground.moss'];S3=['ground.ash','ground.scoria']
+    skip=set(STN.get('packSkip',[])) if STATION else set(S2+S3)
+    for fam in sorted(f for f in pack['families'] if f not in skip):
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}

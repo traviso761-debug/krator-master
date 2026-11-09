@@ -6,8 +6,11 @@ The eastern highlands kit (`EHIGH`) is built on the shared biome core exactly as
 
 ## The region
 
-The eastern highlands: a cold high plateau at about 0.6 atm. Koppen BSk and ET, EF at the crests (`EHIGH.KOPPEN`; an
-ESTIMATE, the scale model's rasters were not read: `KNOWN_ISSUES.md`).
+The eastern highlands: the eastern Inner Wall (`e inner wall` on the scale model), three stations (`PLAN-STATIONS.md`): the dry side's cold
+cushion plateau near 5 km (station 1, ~0.86 atm on 5.1; the kit was written for ~0.6), the wet face's cloud forest at its foot (station 2,
+1.0-2.0 km, ~1.36 atm, Cfa), the Lesser Throne's caldera (station 3, 6.07-6.88 km, ~0.7 atm, EF). `EHIGH.KOPPEN` is the polygon's classes
+on 5.1 (surveyed 2026-11-09, rough shares). Species 0-6 are the plateau's, 7 and 8 (the combed laurel, the giant's tree fern) the wet
+face's: appended, so readers' indices hold.
 
 ## The fields it reads
 
@@ -22,6 +25,8 @@ ESTIMATE, the scale model's rasters were not read: `KNOWN_ISSUES.md`).
 | `geo` | the sinter of a geyser field | bare; mat algae |
 | `gully` | a quebrada's floor and walls | the ragbark woods |
 | `tarn` | a lake | nothing roots |
+| `forest` | a cloud forest (station 2) | the `cloud` zone: laurels, tree ferns, ferns, moss, bromeliads; it takes the ground from every other zone |
+| `barren` | ground nothing roots in (station 3's cold ash) | multiplies every zone to 0 (`live`) |
 
 A world without `mother` gets no Mother Cushion; one without `sun`, `bog`, `geo` or `gully` loses those zones (they
 read 0) and the plants fall back to the puna, the fell and the scree.
@@ -72,16 +77,24 @@ EHIGH.canopyH(x,z), COUNTS
 
 ```
 00-head.html                        page shell
-45-host-stage.js       (host)       the showcase: terrain (the Mother, the range, the gullies, the bog, the tarn, the tors, the sinter shield), fields, thin-air light, BIO.init
-50-biome-ehigh-species.js           palettes, 7 species (tagged), the giant, textures, geometries (lopsided domes, the glass tower, the comb), materials (the glass's backlight), items
+45-host-stage.js       (host)       the shell every station shares: renderer, light, the error panel, ticks, the registry
+46-host-land.js        (host)       station 1's land (STAGE: site, air, sky, what the checks expect; the Mother, the range, the gullies, the bog,
+                                    the tarn, the tors; fields' definitions; the LOD spine). stations/<name>/46-host-land.js replaces it
+47-host-fields.js      (host)       the fields cached on a grid (FNAMES + STAGE.fields) and BIO.init
+50-biome-ehigh-species.js           palettes, 9 species (tagged; 7 and 8 the wet face's), the giant, textures, geometries (lopsided domes, the glass tower, the comb), materials (the glass's backlight), items
 55-biome-ehigh-trees.js             zones; builders (each turns its plant to the giant); the Mother Cushion; impostors; PASSES; make/grow
 60-biome-ehigh-floor.js             the floor by zone; the bog's quilt; the tors' boulders; wormwick round the towers; tower honey on the cliffs
 70-biome-ehigh.js                   build / canopyH; BIO.kitEnd
-82-host-sky.js         (host)       the thin-air dome: deep blue, the volcanoes on the horizon; the gas giant
-84-host-ground.js      (host)       the ground painted by the fields, the turf's polygons in the shader; the bog's pools, the stream, the frozen tarn
-86-host-geysers.js     (host)       the vents' cones and their steam (one Points mesh); the Old Kettle's eruptions
-88-host-build.js       (host)       build order and bake
-99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
+84-host-ground.js      (host)       the ground painted by the fields (the stations' forest, ash, lava too), its library layers on KGROUND; the frozen tarn
+85-host-far.js         (host)       KFAR past the map (STAGE.farH) and the KHORIZON bake
+86-host-geysers.js     (host)       the vents (VENTS): cones and steam; station 3's fumaroles (station 1's geyser field is gone, 2026-11-09)
+89-host-sky.js         (host)       the shared sky at the station's site (STAGE.site, STAGE.sky)
+89a-host-atmos.js      (host)       core/atmos bound; the weather; height fog, a station's cloud bank, the rain cover
+89w-host-water.js      (host)       the water on core/water: the tarn, the pools, the stream (or a land's LAND_FLOWS, with their falls)
+89z-host-build.js      (host)       build order and bake (after the water); impostors, the horizon on the flora, KSHADOW (?shadow=1)
+95v-host-viewkit.js    (host)       the views' helpers
+96-host-views.js       (host)       station 1's preset views and the negatives' points (NEG); each station has its own
+99-host-take.js        (host)       the page handed to core/host (KHOST.take): the inspector's words, budgets and checks (what STAGE.expect names);
                                     the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`. The material library comes in through `materials.json` and

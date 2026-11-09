@@ -7,7 +7,7 @@
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>typeof KHOST!=='undefined'&&KHOST.host&&KHOST.host.clock?KHOST.host.clock.hour:13,seed:8110,viewH:()=>innerHeight});
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): cold: the high eastern highlands, rain below and snow that lies while it falls (ATMOS.snowCover, melting after: the air thaws). It starts clear, so the page looks as it did;
 // the Weather selector in the panel picks the rest.
-ATMOS.bindWeather({climate:{wet:true,cold:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});
+ATMOS.bindWeather({climate:STAGE.climate||{wet:true,cold:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});
 // ================================================================= the final rebuild's air (BACKPORT.md section 1; korona's lines; pair 13, 2026-11-09)
 // Each look change has its switch (KNOWN_ISSUES.md, "The final rebuild"):
 //   R8          the foliage sways in core/atmos's wind and its gust fronts (BIO.bindAtmosWind); cut-outs by alpha-to-coverage after the bake (89z)
@@ -15,12 +15,15 @@ ATMOS.bindWeather({climate:{wet:true,cold:true},sun,hemi:scene.children.find(o=>
 //   R10         the rain occlusion map: no rain or snow under an overhang (lightning rides with the weather's storm: fx/89-atmos-fx-lightning.js)
 //   R9          wet ground and puddles: NOT taken (oidong's finding: WATER.wetGround over a KGROUND floor drew the ground black in clear weather);
 //               the weather's own wetting (bindWeather's grounds) stays
-//   no fog belt: the dry side of the wall stands above its cloud (PLAN-STATIONS.md); the wet face, station 2, would take one
+//   ?belt=0     a station's cloud bank (STAGE.belt): the wet face's, at the forest's top; none on the dry side (it stands above its cloud)
 BIO.bindAtmosWind();
 const AIR=(function(){const Q=new URLSearchParams(location.search),out={hfog:false,raincover:false};
  if(Q.get('hfog')!=='0'&&ATMOS.heightFog){
-  const W0=Math.min(TARNL,...POOLS.map(p=>p.y));   /* the mist over the lowest water: the tarn's and the bog pools' level */
-  ATMOS.heightFog({falloff:1/900,sun:.3,sky:.35,mist:{density:.0008,y:W0+6,depth:10,noise:.7}});
+  const LV=POOLS.map(p=>p.y).concat(TARNL==null?[]:[TARNL]),W0=LV.length?Math.min(...LV):null,HF=STAGE.hfog||{};   /* the mist over the lowest water: the tarn's and the pools' level */
+  ATMOS.heightFog({falloff:HF.falloff==null?1/900:HF.falloff,sun:.3,sky:.35,mist:W0==null||!HF.mist?undefined:{density:HF.mist,y:W0+6,depth:10,noise:.7}});
+  /* a station's cloud bank (station 2: the cloud standing at the forest's top most mornings; ATMOS.fogBelt, korona's tepuis) */
+  if(STAGE.belt&&Q.get('belt')!=='0'&&ATMOS.fogBelt){const B=STAGE.belt;window._belt=ATMOS.fogBelt({y0:B.y0,y1:B.y1,windward:B.windward,density:B.density==null?.0008:B.density,depth:B.depth==null?60:B.depth,lee:.25,rise:.5,
+   extent:[-TERR.R*3,-TERR.R*3,TERR.R*3,TERR.R*3],res:128,steps:8});out.belt=true;}
   ATMOS.heightFogScene(scene);out.hfog=true;}
  if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
  return out;})();
