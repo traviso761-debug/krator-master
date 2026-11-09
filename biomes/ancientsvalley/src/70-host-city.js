@@ -11,7 +11,9 @@ const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
 /* the owner, 2026-11-08: the foreground towers looked low-res (a design's impostor, 96 px a view, stood where a hero should) and floors floated (the
    impostor's slabs seen apart from their skin at a near, steep angle): a design is a hero to 1.4 km, to 3.2 km seen steeply from above, the nearest
    48 of them; its impostor is 128 px a view */
-const AV_NEAR=300,AV_NEAR_STEEP=1000,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_HEROMAX_STEEP=40,AV_DNEAR=1400,AV_DHEROMAX=48;
+/* 2026-11-09, the owner's fourth eye: a shell seen onto its top (the eye over the tower's roof) smears whatever the range, so such a tower is a hero to
+   AV_NEAR_STEEP; a design is a hero to 1 km, the nearest 64 (past 48 within 1.4 km the rest were cards at 900 m) */
+const AV_NEAR=300,AV_NEAR_STEEP=1000,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_HEROMAX_STEEP=40,AV_DNEAR=1000,AV_DHEROMAX=64;
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
 const avImpKey=t=>t.shelled?t.key:t.family+'.'+(t.state==='intact'||t.state==='gutted'||t.state==='crown'?'intact':'broken');
@@ -68,7 +70,9 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  const S=BIO.impostorSet('av',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:AVC.keys.length});AVC.impSet=S;const savedKits=BIO.kits;BIO.kit('metro');
  AVC.imp={};
  /* a hero's meshes, wherever they sit in its tree (a design's ruin pass nests groups), each with its matrix in the hero's frame */
- const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(m.isMesh&&m.geometry&&m.material&&!m.userData.door)out.push(m);});return out;};
+ /* the owner, 2026-11-09: a ruin's impostor showed its floors as dashes hanging in the air (the slabs inside under the tear, and the storeys' plates,
+    read at a texel while the piers between them do not): the impostor is baked without them, the skin and the frame alone */
+ const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;let o=m,skip=false;while(o&&o!==H){if(/slab|floor|storey|plate/i.test(o.name||''))skip=true;o=o.parent;}if(!skip)out.push(m);});return out;};
  const impOf=(k,S)=>{const H=heroOf(k,true),names=[];heroMeshes(H).forEach((m,i)=>{const n='av.'+k+'.'+i;BIO.def(n,m.geometry,m.material,{indexed:false});names.push([n,m]);});
   return BIO.impostor('av.'+k,function(){const M=new THREE.Matrix4(),W=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();
    names.forEach(function(e){const n=e[0],m=e[1];W.copy(m.matrixWorld);if(!m.isInstancedMesh){W.decompose(p,q,s);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],null);return;}
@@ -110,15 +114,19 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now
     shells' top maps smeared from the air) a shelled tower is a hero to AV_NEAR_STEEP, unfaded, and its shell starts there; the hero pool is wider */
  /* the owner, 2026-11-08: heroes and shells drew on top of each other from the air. The dither band (the shell from .85 nearR, the hero fading out
     over it) is for the walker's view, where the hero fades; from above the heroes are unfaded, so a shell starts only where the heroes stop */
- const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>120,nearR=steepEye?AV_NEAR_STEEP:AV_NEAR,MAX=steepEye?AV_HEROMAX_STEEP:AV_HEROMAX,sh0=steepEye?nearR:nearR*.85;
- for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),steep=(e.y-t.y-avH(t.key)*.5)>.7*Math.max(hz,1),ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;
+ const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>60;let anyAbove=false;
+ for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),H=avH(t.key),steep=(e.y-t.y-H*.5)>.7*Math.max(hz,1),above=e.y>t.y+H+25,ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;t.above=above;
+  /* this tower's hero range: 300 m from the walker's level; 1 km when the eye looks onto its roof (its shell's top map would smear) */
+  const nearR=(steepEye||above)?AV_NEAR_STEEP:AV_NEAR,sh0=(steepEye||above)?nearR:nearR*.85;t.nearR=nearR;if(above)anyAbove=true;
   if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<nearR)near.push(t);if(!ns&&d>=sh0&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
- near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups,fadeNow=!steepEye;
- G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||(t.shelled&&g.userData.fade!==fadeNow)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
- keep.forEach(t=>{if(!G.has(t.id)){const g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled&&fadeNow);g.userData.fade=fadeNow;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
- near.slice(MAX).forEach(t=>{if(t.shelled&&t.d<sh0&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
+ const MAX=(steepEye||anyAbove)?AV_HEROMAX_STEEP:AV_HEROMAX;
+ near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
+ const fadeOf=t=>!(steepEye||t.above);
+ G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||(t.shelled&&g.userData.fade!==fadeOf(t))){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
+ keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled&&f);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
+ near.slice(MAX).forEach(t=>{if(t.shelled&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
  /* a hero that stays placed past the shell's start (the pool holds it until the set changes) must not have its shell too: the shell list drops the heroes' ids */
- {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--)if(held.has(mid[i].id)&&(steepEye||mid[i].d>=nearR)){mid[i].shell=false;mid.splice(i,1);}}
+ {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&(!fadeOf(t)||t.d>=t.nearR)){t.shell=false;mid.splice(i,1);}}}
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
  AVC.tierN={heroes:keep.length,designHeroes:Math.min(dnear.length,AV_DHEROMAX),shells:mid.length,impostors:T.filter(t=>(t.shelled&&t.d>=AV_FAR)||(!t.shelled&&!G.has(t.id))).length,towers:T.length,designs:T.filter(t=>!t.shelled).length,steep:steepEye};};
