@@ -125,10 +125,10 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
+    "core/shadow/host/12-core-shadow-host.js": "91e587b462ef47f79a22aea40a088844c87ba932465694a195801cf3ea4d16a5",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -141,13 +141,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
-    "core/water/ext/53b-core-water-terraces-draw.js": "b1560e23c663fc7b33262850c57ea1fb9bfb2d098f427ef13a322cb1dabd1fb7",
+    "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -164,10 +164,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift.html": "6bf31951193c6264fcb81b261a78123c50721deb2182a3e10d8907513c6e12a9"
+    "biomes/highrift/dist/highrift.html": "3da6e34187a5884f36a1377b9379a6aa28808386e39b0cd2076df9790cc587ad"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift.html": "6bf31951193c6264fcb81b261a78123c50721deb2182a3e10d8907513c6e12a9"
+    "biomes/highrift/dist/highrift.html": "3da6e34187a5884f36a1377b9379a6aa28808386e39b0cd2076df9790cc587ad"
    }
   },
   "build.py --station coulee": {
@@ -295,10 +295,10 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
+    "core/shadow/host/12-core-shadow-host.js": "91e587b462ef47f79a22aea40a088844c87ba932465694a195801cf3ea4d16a5",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -311,13 +311,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
-    "core/water/ext/53b-core-water-terraces-draw.js": "b1560e23c663fc7b33262850c57ea1fb9bfb2d098f427ef13a322cb1dabd1fb7",
+    "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -335,10 +335,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-coulee.html": "91881cf49c8140196fdd76f0aa3a7c59d36de5b93784072be855e72390d6d703"
+    "biomes/highrift/dist/highrift-coulee.html": "b8955d543d8a02ab7c025b870f9c846d2bda1ea6fcc90c0c44cef1f954bb068a"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-coulee.html": "91881cf49c8140196fdd76f0aa3a7c59d36de5b93784072be855e72390d6d703"
+    "biomes/highrift/dist/highrift-coulee.html": "b8955d543d8a02ab7c025b870f9c846d2bda1ea6fcc90c0c44cef1f954bb068a"
    }
   },
   "build.py --station gjar": {
@@ -466,10 +466,10 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
+    "core/shadow/host/12-core-shadow-host.js": "91e587b462ef47f79a22aea40a088844c87ba932465694a195801cf3ea4d16a5",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -482,13 +482,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
-    "core/water/ext/53b-core-water-terraces-draw.js": "b1560e23c663fc7b33262850c57ea1fb9bfb2d098f427ef13a322cb1dabd1fb7",
+    "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -506,10 +506,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-gjar.html": "f295c775d0aa01bb797bd8fa5ee12c20d5619d1b8407b0ec917c015d7adebd36"
+    "biomes/highrift/dist/highrift-gjar.html": "2912caef763aaace5213d65a08dfa98c317f61e17a45bf597d32b4d6c4978186"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-gjar.html": "f295c775d0aa01bb797bd8fa5ee12c20d5619d1b8407b0ec917c015d7adebd36"
+    "biomes/highrift/dist/highrift-gjar.html": "2912caef763aaace5213d65a08dfa98c317f61e17a45bf597d32b4d6c4978186"
    }
   },
   "build.py --station mirror": {
@@ -648,10 +648,10 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
+    "core/shadow/host/12-core-shadow-host.js": "91e587b462ef47f79a22aea40a088844c87ba932465694a195801cf3ea4d16a5",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -664,13 +664,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
-    "core/water/ext/53b-core-water-terraces-draw.js": "b1560e23c663fc7b33262850c57ea1fb9bfb2d098f427ef13a322cb1dabd1fb7",
+    "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -688,10 +688,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-mirror.html": "cff7c5669185c151500984788c8ccda2f5cb50ba35ec9e1279520ce6807a9e11"
+    "biomes/highrift/dist/highrift-mirror.html": "3b423e940e7cf9a65e0d4ffa48e60f608103cb51375327c056efdfd44ac228ed"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-mirror.html": "cff7c5669185c151500984788c8ccda2f5cb50ba35ec9e1279520ce6807a9e11"
+    "biomes/highrift/dist/highrift-mirror.html": "3b423e940e7cf9a65e0d4ffa48e60f608103cb51375327c056efdfd44ac228ed"
    }
   },
   "build.py --station wedge": {
@@ -819,10 +819,10 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
+    "core/shadow/host/12-core-shadow-host.js": "91e587b462ef47f79a22aea40a088844c87ba932465694a195801cf3ea4d16a5",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -835,13 +835,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/53-core-water-terraces.js": "d38e5ed04c4a239c8b16d687ba48cfbd81b8e65945d5104b63f0e79fc98d0b0d",
-    "core/water/ext/53b-core-water-terraces-draw.js": "b1560e23c663fc7b33262850c57ea1fb9bfb2d098f427ef13a322cb1dabd1fb7",
+    "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -859,10 +859,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-wedge.html": "775c03a680a741a7439a703ff79f871f84730b9f9b7cb0e697d9f600302531bc"
+    "biomes/highrift/dist/highrift-wedge.html": "a9e1373d09190542f9a5e25a9c71c592c6e78de46688298b446000a35dc303b3"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-wedge.html": "775c03a680a741a7439a703ff79f871f84730b9f9b7cb0e697d9f600302531bc"
+    "biomes/highrift/dist/highrift-wedge.html": "a9e1373d09190542f9a5e25a9c71c592c6e78de46688298b446000a35dc303b3"
    }
   }
  }

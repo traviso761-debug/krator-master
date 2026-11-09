@@ -1,6 +1,6 @@
 {
  "00-head.html": "f0c5179c44c7",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "07-core-export.js": "f0dd372fc7ed",
  "08-core-rand.js": "4a3aa47f25da",
@@ -104,7 +104,7 @@
  "88a-core-minimap-host.js": "1e442710c44f",
  "88y-iziz-matlib.js": "44e11aa056e3",
  "88yp-pyl-matlib.js": "ca3642cd68ee",
- "88z-iziz-furniture-bundle.js": "e546032116f1",
+ "88z-iziz-furniture-bundle.js": "4fd9b042d154",
  "89-lab.js": "26388c7cae1d",
  "89d-arcube.js": "8b3ee3a34131",
  "89d1-arcube-faces.js": "5fb8d82e5e10",

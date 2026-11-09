@@ -78,13 +78,13 @@
     "kits/beast-riders/towns/girder-ports.js": "8b218d26d03ac965fc77e9480959b629bca4f86223abc85a67acf1849825a775",
     "kits/beast-riders/towns/hook.js": "eee93bd4dcac7a25c6f34c1d8072ee45e6f1934287c6e8c17e4714c7bd822180",
     "kits/beast-riders/towns/mavs-ports.js": "5e372ea147014cfb1a44563adeed3c02ab1a992f6cd9d7ecc9a9c96a7e5f19b9",
-    "kits/catalog/furniture_bundle.py": "097c793f1dc6b698dfced59681b29ecf192d37377a70b85ee19834e37f7427ed",
+    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-beast-rider.js": "923abce1ad13434b27377fd54cdbc349ffcaf79d818a7dae99e1d83133c6ad81",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-lizardmen.js": "bdd8097b606d8db4ab79324b8c322e4ec3125bad412714ca48b101bd3a632a0d",
-    "kits/catalog/krator-master-furniture.js": "62e4fa728ae1a37e66310d9c7507595e140513f8309c8fceef9ecde0b6244b80",
+    "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
     "kits/catalog/src/92-hover.js": "caf2efd0b8e1c16d53f072e89f0cbc4382093bfc94178a3e0fcb06b73d4458dd",
     "kits/catalog/src/93-polygon.js": "999d4f1f1dcc7b8fcf5b48631b6365c4b117c670dfbc35156732a0e88f5be2e1",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
@@ -155,7 +155,7 @@
     "kits/interiors/sets/beast-rider.js": "88f45c32379f7bbf2a0695ee26b4e20157a6baedd7403c01e0f64e0cf44ebbcd",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "76300215583a57c60d4cde3e4cd1f848dea09f8474f8bac7dbe8f920be14ff37",
+    "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -297,19 +297,19 @@
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "kits/beast-riders/src": "412f8a15ae820ba9e10cfed89956d42d93a8ebe49f6460674b51399764284bc8",
-    "kits/catalog": "860ba1d1ab9aead229b718cf76f3d25c3e4b68ed50c1c339fd2ebb84fa331612",
+    "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "8601faf52d9185f777a2302548cc31885baa8c99b62113b20e6535c3a46ca360",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/beast-riders/build-manifest.json": "75f347eafe54c7a21416be84c1b405633393269baf71fac24f026785c2b4c07c",
-    "kits/beast-riders/dist/beast-riders.html": "e95ca9c014fe80f415184187ccaa5f45bc1502cb17c23220dceb8af75815fbac"
+    "kits/beast-riders/build-manifest.json": "d672215d1af82b2aaeab4c822123c1ac803ea8ea7a745df8ca05dde9bcdcebcd",
+    "kits/beast-riders/dist/beast-riders.html": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
    },
    "outputs_raw": {
-    "kits/beast-riders/build-manifest.json": "75f347eafe54c7a21416be84c1b405633393269baf71fac24f026785c2b4c07c",
-    "kits/beast-riders/dist/beast-riders.html": "e95ca9c014fe80f415184187ccaa5f45bc1502cb17c23220dceb8af75815fbac"
+    "kits/beast-riders/build-manifest.json": "d672215d1af82b2aaeab4c822123c1ac803ea8ea7a745df8ca05dde9bcdcebcd",
+    "kits/beast-riders/dist/beast-riders.html": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
    }
   }
  }

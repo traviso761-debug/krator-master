@@ -1,6 +1,6 @@
 {
  "00-head.html": "d167a84a665c",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "08-core-rand.js": "4a3aa47f25da",
  "09-lod.js": "e1f7db612b83",
@@ -156,7 +156,7 @@
  "8ap-host-d-stalks.js": "52a90143f6cc",
  "8ap-host-e-bellhall.js": "d474b6e27eda",
  "8zo-anc-open.js": "6acd49fcd37d",
- "8zy-interiors-bundle.js": "462a9c6c25a9",
+ "8zy-interiors-bundle.js": "083f31d4c19f",
  "8zz-interiors.js": "c6e02dfc73dc",
  "90-core-door-host.js": "647e103d16fa",
  "90-scene.js": "f846d30b2316",

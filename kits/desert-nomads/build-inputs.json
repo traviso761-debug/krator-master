@@ -58,14 +58,14 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
-    "core/shader/07-core-kwarp.js": "27e1014d2d75059016cb42523062a762ac26fb018516d0aa08e537a90358ced5",
+    "core/shader/07-core-kwarp.js": "caaf01bb29472ded2dc29999d708e77b933e7c747b37ce848527acaadfc84468",
     "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "kits/catalog/furniture_bundle.py": "097c793f1dc6b698dfced59681b29ecf192d37377a70b85ee19834e37f7427ed",
+    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-eastabyss.js": "c954ea72a5a724eda8543e81d2d49a6aed07bbc58e3e4ee7953c187e7a1fa5f1",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
@@ -242,18 +242,18 @@
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/shader": "4cde9d6d1fd8ecb088b14292257e62fb7ae4991d6c90172efa900ad30bec4f2d",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
-    "kits/catalog": "860ba1d1ab9aead229b718cf76f3d25c3e4b68ed50c1c339fd2ebb84fa331612",
+    "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/desert-nomads/src": "400c48fc2d31892111d905dbf2782c40a03f3fe3bf29a3a91f8eab723cba1e87",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/desert-nomads/build-manifest.json": "1514c9c0e34da7c32bc170a2f9de73bb065038c3174cd0be73f10d9c0b3177b6",
-    "kits/desert-nomads/dist/desert-nomads.html": "2e7cc7f8cb551996c473332f37812b9783a45d873f1cab94448cdf965ae7dbb8"
+    "kits/desert-nomads/build-manifest.json": "68285ca01f5e8d7e71cd9310795296bed457426d5186c60b4c985cc0fbf99920",
+    "kits/desert-nomads/dist/desert-nomads.html": "311b8c08abd819b343800c880e9441dcd7fa257b1784f83be95be760d4a2cae3"
    },
    "outputs_raw": {
-    "kits/desert-nomads/build-manifest.json": "1514c9c0e34da7c32bc170a2f9de73bb065038c3174cd0be73f10d9c0b3177b6",
-    "kits/desert-nomads/dist/desert-nomads.html": "2e7cc7f8cb551996c473332f37812b9783a45d873f1cab94448cdf965ae7dbb8"
+    "kits/desert-nomads/build-manifest.json": "68285ca01f5e8d7e71cd9310795296bed457426d5186c60b4c985cc0fbf99920",
+    "kits/desert-nomads/dist/desert-nomads.html": "311b8c08abd819b343800c880e9441dcd7fa257b1784f83be95be760d4a2cae3"
    }
   }
  }

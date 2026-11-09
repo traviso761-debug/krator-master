@@ -111,7 +111,7 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -121,11 +121,11 @@
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -137,10 +137,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift.html": "880c5d7959e987e09ee1cef0e42bbe604d3c545528d460a419503e87aeca31f4"
+    "biomes/rift/dist/rift.html": "023a4383166a4935c182836b84ae9e1464490fc0bcfcf8d83f362b90568dc878"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift.html": "dd7e65fdf1f84fb31ac833b6d96d789a907be4c549e5a2ca8b02a4f578770e21"
+    "biomes/rift/dist/rift.html": "397a614df38adcc5d4472186345ae9c9651c9134cb9a246b22950cd31e918245"
    }
   },
   "build.py --station highland": {
@@ -257,7 +257,7 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -267,11 +267,11 @@
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -284,10 +284,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-highland.html": "bd3b36ff9979de72d956888c98de795a9c5ce1cd793c8fcfce1da709ca92e151"
+    "biomes/rift/dist/rift-highland.html": "7aab193bd92f9daaeec916dfc4de51b1a99c9c9b1c97272417dd0133da69fc87"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-highland.html": "cbf3d20fc8d28f23d5c4f19525fe5bb89fd72c86373a990409a9bc446b5bf841"
+    "biomes/rift/dist/rift-highland.html": "ca89517ea470b3daf2ad3957e6933ff516afb712cd73eb9de1a22afc81a36e47"
    }
   },
   "build.py --station jungle": {
@@ -403,7 +403,7 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -413,11 +413,11 @@
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -430,10 +430,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-jungle.html": "0db64baf05433de7b27c2cdacecd5b15fff1d56763d3b0934f4fc4a937eb9d84"
+    "biomes/rift/dist/rift-jungle.html": "7e8c8d2eae96aeacde76bbeb518002988e4ceeb8e669fa95805c76581a31c0e0"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-jungle.html": "14e361a7051736f0167f637b5f49e7213fdb1e1739998f5c9f47c239af5e01ef"
+    "biomes/rift/dist/rift-jungle.html": "1b138a5a6710d216eb24721835c638da654980fef3af840a2bb66176ab1937ea"
    }
   },
   "build.py --station plateau": {
@@ -551,7 +551,7 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -561,11 +561,11 @@
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -578,10 +578,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-plateau.html": "059ebd749186b570a75bd03cdfb758ef51a5caae675e2631309c4694129c5f29"
+    "biomes/rift/dist/rift-plateau.html": "98529372df17f3be2bfd4d335fbf3d9755f7a6ca99288df00010151d6a04e55d"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-plateau.html": "4abb57f8e630efb711220b1836d400780cf4bebcefe348a0e50c91e93302c84e"
+    "biomes/rift/dist/rift-plateau.html": "0ea4d38a7e9db83d6978208e889f0d0bbbae5ec4b81a44bc5b7ee2f028e60041"
    }
   },
   "build.py --station savannah": {
@@ -706,7 +706,7 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -716,11 +716,11 @@
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -733,10 +733,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-savannah.html": "cdd888e666659c9603bbe9d1691171d67099c3848cdf0c4bc4affc386cdab67a"
+    "biomes/rift/dist/rift-savannah.html": "c5a8efe31eab1420277a965edc41d4379484094ef94283e28d89c9765c29d175"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-savannah.html": "85460afa1d3d6f693ad28cca6fd343adc60c6b24ca443154a42bdece2b45c9e7"
+    "biomes/rift/dist/rift-savannah.html": "580e56964e1e31e1277b6038922524ad1f231ac960eaf6a79eb499942446143a"
    }
   }
  }

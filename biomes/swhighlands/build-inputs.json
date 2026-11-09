@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/swhighlands/KNOWN_ISSUES.md": "e7a684a6a6b32bf5caacc179ba6d76bf205940a13ca162bebd73baccb28ace0d",
+    "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
     "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
@@ -105,7 +105,7 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -114,7 +114,7 @@
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
+    "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -122,13 +122,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
-    "core/water/ext/55b-core-water-confluence-draw.js": "ca563afe5dc1f87d6bd9d67d838f66e7f71c6646e1ebbd94cda75fbb6246de26",
+    "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -138,15 +138,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands.html": "3e4cafbcc44ee35e167baa744ffa190340ccd041f7ca1487a76b33642c1b147f"
+    "biomes/swhighlands/dist/swhighlands.html": "ea7dae92ee93ef5dc5770b7aaf6b525611a9e1788385fe3e2ae5574c723d9f42"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands.html": "3e4cafbcc44ee35e167baa744ffa190340ccd041f7ca1487a76b33642c1b147f"
+    "biomes/swhighlands/dist/swhighlands.html": "ea7dae92ee93ef5dc5770b7aaf6b525611a9e1788385fe3e2ae5574c723d9f42"
    }
   },
   "build.py --station pillars": {
    "inputs": {
-    "biomes/swhighlands/KNOWN_ISSUES.md": "e7a684a6a6b32bf5caacc179ba6d76bf205940a13ca162bebd73baccb28ace0d",
+    "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
     "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
@@ -248,7 +248,7 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -257,7 +257,7 @@
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
+    "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -266,13 +266,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
-    "core/water/ext/55b-core-water-confluence-draw.js": "ca563afe5dc1f87d6bd9d67d838f66e7f71c6646e1ebbd94cda75fbb6246de26",
+    "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -283,10 +283,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "5d7080ddb6c53d7f9ecf14ff0d92c4c85d1372e20a257e3aaf9f2b4a9f396d33"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "28e1f355214cec577497e486d686880a4b2e0d2e7d3a059f02508ae4c8f9f77d"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "5d7080ddb6c53d7f9ecf14ff0d92c4c85d1372e20a257e3aaf9f2b4a9f396d33"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "28e1f355214cec577497e486d686880a4b2e0d2e7d3a059f02508ae4c8f9f77d"
    }
   },
   "build.py --station pillars --preview span": {
@@ -558,7 +558,7 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
@@ -567,7 +567,7 @@
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
+    "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -575,13 +575,13 @@
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
-    "core/water/ext/55b-core-water-confluence-draw.js": "ca563afe5dc1f87d6bd9d67d838f66e7f71c6646e1ebbd94cda75fbb6246de26",
+    "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -592,10 +592,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "b8970cf2a50c19532353e95bf2f76f92a123280d62f14e841f588293d1237e1a"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "511cd9a8ad04b9f0f1decfd8d6340005c7292a8b23f32bd992d3bb5d20d27e75"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "b8970cf2a50c19532353e95bf2f76f92a123280d62f14e841f588293d1237e1a"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "511cd9a8ad04b9f0f1decfd8d6340005c7292a8b23f32bd992d3bb5d20d27e75"
    }
   }
  }
