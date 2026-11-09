@@ -138,7 +138,8 @@ rebuilt (pages only).
 
 ### Stations 4-6 (the treeline, the mixed and montane belts; 2026-11-09)
 
-`--station treeline`, `--station mixed`, `--station montane` (PLAN-STATIONS.md, "Stations 4-6"). New for readers: species 9 (`fir`) and 10
+`--station treeline`, `--station mixed`, `--station montane` (PLAN-STATIONS.md, "Stations 4-6"). Smoke-loaded in software GL with the other three (all six clean): at the opening view the treeline 39 calls, 14.8 M
+triangles; the mixed belt 39, 8.6 M; the montane belt 42, 12.2 M (stations 1-3 unchanged: 15.8 M, 10.6 M, 1.2 M). New for readers: species 9 (`fir`) and 10
 (`beech`), appended after 8 with their passes after the old ones; items `needle`, `beech`; buckets `bark5`, `bark6`; zones `taiga` and
 `mixed` (fields of those names: 0 on every page that does not set them, so neither reader moves). Species 0-8 keep their keys and indices.
 
