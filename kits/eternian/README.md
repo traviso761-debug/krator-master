@@ -7,7 +7,7 @@ Heirs' Sanctum are `kits/ancients/targets/sanctum` and `palace/BLUEPRINT.md`.
 ```
 cd kits/eternian && python3 build.py                 # dist/eternian.html, the kit sheet
 python3 build.py --vendor-check                      # the engine against kits/scyvoi (and the sky against Iziz)
-python3 verify.py dist/eternian.html --assert        # footprints, doors, tags (zero unknowns), furniture, tiers
+python3 verify.py dist/eternian.html --assert        # footprints, doors, tags (zero unknowns), furniture, tiers, closed eyes, poses, trades
 ```
 
 ## How it is built
@@ -114,8 +114,8 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
 
 ## P6 (2026-10-20)
 
-- **Every census trade** in `ET_TRADES` is carried (40 of 44; the palace and canton staffs are the Sanctum's, outside the
-  kit; three na). The owner asked for the hexagon to make the set distinct: the kiln works and the tile works are
+- **Every census trade** in `ET_TRADES` is carried (40 of 44 then; the palace and canton staffs were left to the Sanctum;
+  three na. 41 of 44 since the close-out, below). The owner asked for the hexagon to make the set distinct: the kiln works and the tile works are
   hexagonal courts round their kilns; the market hall, the granary, the warehouse (round windows, arch-34), the healer,
   the tea house, the farmstead and Farport's lighthouse are hexagonal; the shop trades (bakehouse, weaver, brewhouse,
   smithy, shophouse) and the inn come in the street's rectangle (v 0) and the hexagon (v 1).
@@ -139,8 +139,9 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   godot/data/world-eternian --box -30,-200,10,-165 --profile registry,buckets,materials,terrain`. The Godot case
   `godot/tests/export/eternian_test.gd` passes on Godot 4.7.2 (the meshes, their triangles and materials, every record's
   uid recomputed in GDScript, the cultures, the parents, the materials, the ground) and is in the nightly list.
-- **Not done:** the Krator Worlds gallery. A brand new kit goes to the gallery when it reaches `main` (CLAUDE.md,
-  "Publishing"), and this branch is not pushed: the owner's call.
+- **Not done then:** the Krator Worlds gallery. A brand new kit goes to the gallery when it reaches `main` (CLAUDE.md,
+  "Publishing"), and this branch was not pushed: the owner's call. It has since gone in (2026-10-20, KNOWN_ISSUES.md): its
+  own artifact, linked from a card in the parts (`gallery/build_gallery.py` `LINKED` and `ELSEWHERE`).
 
 ## The owner's review pass (2026-10-20)
 
@@ -152,6 +153,24 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   cloth in folds over a bare head (`etVeilGeo`, the Sanctum's too); the figures have hands; the gate's colossi hold
   closer (`spread`); the canals' water is rougher and reads deep; the flutes are thicker; the pier bundle has dark joints;
   the Sanctum is classed 'mega' for the per-type guide (between Plymouth's mass and Hexahedron's); the export carries the meshes.
+
+## The close-out (2026-11-09)
+
+- **The census complete:** the palace and canton staffs are carried by the court over water (`et_heir_pavilion`,
+  `et_heir_gallery`) and the ministries (`et_ministry`), the True Heirs' palace itself staying the Sanctum's: 41 of 44
+  carried, no gap, three na (`ET_TRADES`; `node kits/eternian/tests/test-trades.js`).
+- **Farside's works backported** (the owner, 2026-10-26): `src/69-et-coast.js` draws the coast's works as the kit's own
+  defs, a row of the sheet: the kelp kiln (`et_kelp_kiln`: the stone-lined trench, its ash and embers, its smoke, a heap
+  drying), the lime kiln (`et_lime_kiln`: whitewashed, a draw-arch, coral rubble), the wrack heap and the wrack cart, the
+  walled terraces (`et_terraces`), the goat fold (`et_goat_fold`: no goats, the kit keeps no beasts) and the kelp drying
+  rack (`et_kelp_rack`: kelp and wine weed). Their trades: the kelp kiln with the industrial workers, the lime kiln with
+  the quarrymen and masons, the terraces, heap and cart with the farmhands, the fold with the dairymen.
+  `biomes/farside` still draws its own (`86-host-works.js`) until it is moved onto these.
+- **The owner's buff brick wired:** `brick` takes `brick.buff` (delivered 2026-10-26, `core/materials/PROMPTS-NEEDED.md`
+  section 18) in place of the plain `brick` set the kit tinted. `card.tracery.bronze` is delivered too and not wired
+  (KNOWN_ISSUES.md).
+- **The statue rule held:** `verify.py --assert` `statue-poses` (no figure in a pose outside stand, seat, lintel and
+  folded: none strides), beside `closed-eyes` (PLAN.md section 12, question 4).
 
 Next: the capital's page (PLAN.md section 8) as its own plan; the second pass (KNOWN_ISSUES.md).
 
