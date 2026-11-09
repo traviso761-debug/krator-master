@@ -81,12 +81,13 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST + kengine.INTERIORS_HOST   # the polygon tool, the one key map, the cut-away storey by storey
+INTERIOR_SETS = ['eternian']   # kits/interiors/sets/eternian.js: core/engine plans and furnishes them (91i-interiors.js; ?interiors=1, U)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Eternians' pieces, the shared goods, the trades, scrap
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture',)
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
+BUNDLE_GLOBALS = ('KratorFurniture',) + kengine.INTERIORS_GLOBALS
 
 
 # the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
@@ -125,7 +126,8 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return dict({'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)},
+                **kengine.interiors(INTERIOR_SETS))
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)

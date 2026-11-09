@@ -1,10 +1,11 @@
 // prefix: wk
-// ================================================================= WALK RECORDS: what a building draws, as core/walk floors and blocks
+// ================================================================= WALK RECORDS: what a building draws, as core/walk floors and blocks (core/engine)
 // Nothing in this kit declares a floor, a stair or a wall to a walker: a house is boxes. So every box a BUILDING draws is read
 // by core/walk/box (KWALKBOX) as what it is to a walker: a flat box a floor (a deck, a slab, a stair tread, so a flight of
 // treads is a flight), a tall one a block (a wall segment, a post), a tilted one nothing; a door is a gap between wall boxes.
-// emit() is wrapped here, not edited, so 30-geo.js stays the vendored engine. Placed things that are not buildings (props,
-// flora, creatures) and dry placements record nothing. Ladders are poles and rungs: isLadder / isLogLadder call wkLadder.
+// emit() is wrapped here, not edited, so 30-geo.js draws the same. Placed things that are not buildings (props, flora,
+// creatures) and dry placements record nothing; a page without core/walk records nothing (every engine kit takes core/walk and
+// core/walk/box since 2026-11-09: engine.py CORE_DIRS; moved here from the identical copies in Islanders, Lizardmen and Eternian). Ladders are poles and rungs: isLadder / isLogLadder call wkLadder.
 const _wkM=new THREE.Matrix4(),_wkV=new THREE.Vector3(),_wkF=new THREE.Vector3();
 let WKOFF=0;   /* set while a helper draws solid masses it registers itself (ieSteps: a step is a block from the ground, but a walker stands on it) */
 const _wkEmit0=emit;

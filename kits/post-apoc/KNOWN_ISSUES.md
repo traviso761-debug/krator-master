@@ -43,10 +43,16 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 ## Walking (core/walk)
 
-- [x] The walk mode (F) stands on `KWALK` (`src/92-camera.js` `paMove`): the interiors' floors, stairs, entry flights and walls that `KFURN` writes as each building is
+- [x] The viewer is core/host's (2026-11-09; `src/99-host-take.js` replaced `src/92-camera.js`, and `src/91-pa-api.js` is the probe's fields, handed to the
+      host's probe): the one key map's controls, the host's walker on `KWALK`, the cut-away of `core/engine/91i-interiors.js` (read by path for its units).
+      E stays `35-pa-open.js`'s own listener (the bundles share that file), so the take binds E to nothing and the key map's Door button calls the same.
+- [x] Every building's colliders (36-def.js `rec.coll`: oriented solids, floors, ramps) are core/walk records since 2026-11-09 (`paWalk` in
+      `src/99-host-take.js`, through `KWALKBOX`), so the walker is stopped by walls and stands on decks without the interiors; KWALK is cleared and
+      refilled at each world build (a culture rebuilds it).
+- [x] The walk mode (F) stood on `KWALK` (`src/92-camera.js` `paMove`, now the host's walker): the interiors' floors, stairs, entry flights and walls that `KFURN` writes as each building is
       furnished (`cfg.walk`), over the terrain; up 0.7 m, no stepping off a deck's edge, a 0.3 m circle that slides round blocks. Checked headless: the 17 entry
       flights of the furnished buildings are all climbed.
-- [ ] Only buildings with an interiors set are in the registry. A building without one (a solid shell, the yards, the walls) is still walked through.
+- [x] Only buildings with an interiors set were in the registry (a solid shell, the yards, the walls were walked through): the colliders above cover them.
 
 ## Doors, glass and the dark voids (core/door, 2026-11-03)
 
