@@ -30,7 +30,9 @@ ISLE.simBuild = function () {
       waiting: function (s) { return ISLE.refugeeWaiting ? ISLE.refugeeWaiting(s) : 0; } } : null,
     onFull: ISLE.openSpur || null,
     onBuilt: function (Lt, Pj) {
-      var P = SIM.R.place[Lt.id], K = T.kinds[P.tags.key], hh = P.tags.hh || ISLE.households(P.tags.key), beds = hh * T.home.per;
+      var P = SIM.R.place[Lt.id];
+      if (P.tags && P.tags.road) { P.name = P.name.replace(', building', ''); delete P.activities.WORK; if (SIM.placesChanged) SIM.placesChanged(); if (ISLE.roadBuilt) ISLE.roadBuilt(P); return; }   /* a founded hamlet's highway (47f) */
+      var K = T.kinds[P.tags.key], hh = P.tags.hh || ISLE.households(P.tags.key), beds = hh * T.home.per;
       P.kind = K ? K[0] : 'home'; P.name = (ISLE_DIMS[P.tags.key] && ISLE_DIMS[P.tags.key].role) || P.tags.key; delete P.activities.WORK;
       T.home.acts.forEach(function (a) { P.activities[a] = beds; }); P.indoor = true; P.tags.vacant = false; P.tags.built = Pj.m1;
       if (SIM.placesChanged) SIM.placesChanged(); SIM.buildChanged(P.settlement);
@@ -46,10 +48,11 @@ ISLE.simBuild = function () {
 ISLE.settleHousehold = function (id, s) {
   var T = ISLE.TUNE.sim, P = SIM.R.place[id], NE = T.needs, A = T.ages, per = T.build.growth.per, n = (P.tags.hh || 1) * per, made = [];
   var TS = null; Object.keys(T.towns).forEach(function (k) { if (T.towns[k].id === s) TS = T.towns[k]; });
+  var prefix = TS ? TS.prefix : s + '.';   /* a village's (47h: the hamlets grow too) */
   var kin = SIM.R.role[s + '.kin'] ? s + '.kin' : null, child = SIM.R.role[s + '.child'] ? s + '.child' : kin; if (!kin) return made;
   var S = ISLE.SIM; S.grown = S.grown || 0;
   for (var i = 0; i < n; i++) {
-    var grown = i % per < 2, a = SIM.actor({ id: TS.prefix + 'g' + (S.grown++), role: grown ? kin : child, home: id });
+    var grown = i % per < 2, a = SIM.actor({ id: prefix + 'g' + (S.grown++), role: grown ? kin : child, home: id });
     var band = grown ? 'adult' : 'child', B0 = A.bands[band]; a.age = (grown ? 18 : B0[0]) + Math.floor(KRAND.unit(KRAND.hash(T.seed, 61, a.k)) * ((grown ? 30 : B0[1]) - (grown ? 18 : B0[0]) + 1));
     a.ageBand = band; a.status = grown ? 'home' : 'housework'; a.cls = P.cls || 'poor'; a.job = null;
     var WS = T.items.wealthSpread && T.items.wealthSpread[a.cls]; a.wealth = WS ? WS[0] : 0;

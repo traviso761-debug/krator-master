@@ -65,6 +65,23 @@ north (`core/hamlet/PLAN.md` section 4).
   the page as `WORLD_DATA.roads`, so the ground is shaped to the roads, the terrain draws them and the flora keeps off.
   Rebake after anything that moves a village (`verify.py` says when a village's lane end is no longer a road's end). The
   sim takes each road's length to the town as the village's cart time.
+- **The coast (2026-11-09; the owner: "a little port and cargo stop at lumber village, this would make sense for any hamlets
+  near the coast"):** a village within `SHORE_R` of the sea with a navigable route to its town's trade landing gets a
+  LANDING (`48` `shoreOf`: the shore point found by marching across the shallows, the sea route by `ISLE_TOWNS_W.seaPath`;
+  core/hamlet 30 puts the quay at the water's edge with a lane to it) and a SEA LEG in the sim (47h: a lakatoi of its own
+  on `SIM.trade`, its goods landed at the town's canoe stop, drawn by `88c` with the canoe line). A lumber village is sited
+  on a coastal stand when its patch has one. Valapo's lumber village has no landing: its bay is cut off by the reef, so
+  `shoreOf` finds no sea route (KNOWN_ISSUES.md). `verify.py` checks every village within reach of a navigable sea has one.
+- **The villages grow and are founded (2026-11-09; PLAN.md section 11 step 5):** every village lays empty plots (core/hamlet
+  30 `vacant`), lots on core's building in the sim (47h): a house goes up on the first with the village's own hands and the
+  bill its carts bring, and `88h` draws it when it is built. A town whose refugee households have waited for a house sends
+  them out as a FARMING CAMP (settlements/isle-demo 47f), which this page sites, lays out and roads through
+  `src/48f-world-found.js` (`ISLE.hooks`: the hinterland survey of 48 apart from every village and camp, core/hamlet's village
+  and farmland on the camp's site, one more road to the network as it stands by `ISLE_ROADS.join`); after its days the camp
+  becomes a hamlet, named from the Sikau list, whose HIGHWAY its own hands build as a project (`found.road` in the tune);
+  built, `WORLD.addRoad` puts it in the network and `TERRAIN.refresh` redraws the ground over it. `88h` draws the camp's
+  tents and its parcels while it stands and the new village when it is founded. A founding takes days of the sim, so
+  `verify.py` checks only the hooks and the survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through.
 
 ## The towns (M7, 2026-10-20)
 

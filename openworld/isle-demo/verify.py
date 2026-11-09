@@ -16,9 +16,14 @@ highway, no town tile). The isle's own checks:
   - the countryside (settlements/isle-demo PLAN.md section 11, 2026-11-09): six farming hamlets and two plantations laid out
     in the towns' hinterlands, their land in crop within a fifth of the estimate on the towns' census, every parcel dry,
     a farmhouse on every holding and a track to each (the negative drops two of Kautoa's hamlets' land).
+  - the coast (2026-11-09): every village with the sea within reach (ISLE_HAMLETS.shoreOf) has a landing (its quay at the
+    water's edge, a lane to it) and a sea leg to its town (the negative takes the lumber village's away).
   - the highway network (48r, bake.py): baked (WORLD_DATA.roads), every village's main lane end the end of a baked road,
     every road's far end on its town's head or on another road, no village building on a carriageway (the negative
     moves a village's lane end 500 m).
+  - the founding (settlements/isle-demo 47f, 48f): the sim's hooks installed, a farm site for a camp of each town on good
+    ground apart from every village (the negative puts the site beside a village). A founding itself takes days of the
+    sim: tests/test-isle-found.js runs it.
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
     ore made, timber lost on the road, meals without food);
@@ -96,6 +101,14 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     if(r.holdings.some(h=>h.parcels<3))bad.push(r.id+': a holding of under three parcels');});}
   R.push({name:"the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
    detail:bad.length?bad.join('; '):Math.round(have)+' ha in crop against '+Math.round(need)+' estimated; '+F.map(v=>v.id+' '+v.census.pop+' people, '+v.farm.inCropHa+' ha in crop of '+v.farm.farmedHa+' ('+v.farm.parcels+' parcels, fit '+(v.farm.fit==null?'-':v.farm.fit.toFixed(2))+')').join('; ')+'; '+n+' parcels sampled dry'});}
+ {const HM=window._hamlets,bad=[],lines=[];if(!HM)bad.push('no hamlets on the page');else for(const v of HM.villages){if(v.error||!v.site)continue;
+   const L=neg==='landing'&&v.id==='hamlet-lumber'?null:v.landing,sh=ISLE_HAMLETS.shoreOf(v.site,ISLE_HAMLETS.made.berths[v.parent]||null);   /* a shore with a sea route to the town's landing */
+   if(sh&&!L){bad.push(v.id+': the sea '+Math.round(sh.d)+' m off, a route to its town, and no landing');continue;}if(!L)continue;
+   const q=L.seaward,wx=L.x+q[0]*16,wz=L.z+q[1]*16,bx=L.x-q[0]*16,bz=L.z-q[1]*16;
+   if(!(WORLD.water(wx,wz)>WORLD.H(wx,wz)-.5))bad.push(v.id+': its quay\'s sea end is dry');if(WORLD.water(bx,bz)>WORLD.H(bx,bz))bad.push(v.id+': its quay\'s landward end is in the water');
+   const M=ISLE_HAMLETS.made.villages.find(E=>E.spec.id===v.id);if(!(M.village.lanes||[]).some(l=>l.landing))bad.push(v.id+': no lane to its quay');
+   if(!v.sea||!(v.sea.km>0))bad.push(v.id+': no sea leg');else{const X=ISLE.SIM.hamlets.villages.find(Y=>Y.id===v.id);if(!X||!X.sea)bad.push(v.id+': no sea line in the sim');lines.push((v.name||v.id)+' '+v.sea.km+' km by sea');}}
+  R.push({name:'the coast: every village within reach of the sea has a landing (its quay at the water\'s edge, a lane to it) and a sea leg to its town',ok:!bad.length&&lines.length>0,detail:bad.length?bad.join('; '):lines.join('; ')});}
  {const HM=window._hamlets,RD=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],bad=[],lines=[];if(!RD.length)bad.push('no baked roads (python3 bake.py roads)');
   const near=(p,q,r)=>Math.hypot(p[0]-q[0],p[1]-q[1])<=r,HD=WORLD_DATA.roads&&WORLD_DATA.roads.heads||{},heads=[].concat(...Object.keys(HD).map(t=>HD[t].map(h=>[h.x,h.z])));
   const onRoad=(p,r)=>RD.some(q=>q.pts.some((a,i)=>{if(!i)return false;const b=q.pts[i-1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1])<=r;}));
@@ -105,6 +118,15 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     const far=atA?b:a;if(!heads.some(h=>near(far,h,5))&&!onRoad(far,12))bad.push(v.id+': its road ends in the open');lines.push(v.id+' '+Math.round(r.length_m/1000)+' km, '+r.townKm+' km to '+r.town);}
    const hit=M.village.records.filter(b=>onRoad([b.x,b.z],Math.hypot(b.w,b.d)/2*.6+WORLD_DATA.roads.roads[0].hw)).length;if(hit)bad.push(v.id+': '+hit+' buildings on a carriageway');}
   R.push({name:'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway',ok:!bad.length,detail:bad.length?bad.join('; '):RD.length+' roads; '+lines.join('; ')});}
+ /* the founding (settlements/isle-demo 47f, 48f): the sim's hooks installed; the survey finds a farm site for a camp of each town
+    on dry ground that takes its staples, FARM.apart from every village (a founding itself takes days of the sim: tests/test-isle-found.js) */
+ {const bad=[],lines=[],F=typeof ISLE_FOUND!=='undefined'?ISLE_FOUND:null;if(!F)bad.push('no founding hooks (48f)');else{const hk=(typeof ISLE!=='undefined'&&ISLE.hooks)||{};
+   for(const k of ['farmSite','layVillage','routeRoad','roadBuilt','founded'])if(typeof hk[k]!=='function')bad.push('hook '+k+' not installed');
+   for(const t of ISLE.TOWNS){const s=F.farmSite(t,1);if(!s){bad.push(t+': no farm site for a camp');continue;}if(neg==='found'){const E=ISLE_HAMLETS.made.villages.find(E=>E.village&&E.village.site);s.x=E.village.site.x+100;s.z=E.village.site.z;}
+    const d=Math.min(...ISLE_HAMLETS.made.villages.filter(E=>E.village&&E.village.site).map(E=>Math.hypot(E.village.site.x-s.x,E.village.site.z-s.z)));
+    if(d<ISLE_HAMLETS.FARM.apart)bad.push(t+': the camp\'s site '+Math.round(d)+' m from a village');if(!ISLE_HAMLETS.groundOk(s.x,s.z))bad.push(t+': the camp\'s site on bad ground');
+    lines.push(t+': a camp at '+Math.round(s.x)+','+Math.round(s.z)+', fit '+(s.fit==null?'-':s.fit.toFixed(2))+', '+(d/1000).toFixed(1)+' km from the nearest village');}}
+  R.push({name:'the founding: the sim\'s hooks installed, a farm site for a camp of each town on good ground apart from every village',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
  return R;}"""
 
 
@@ -147,6 +169,7 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  B=cp(b);{const K=B.ledger.towns.kautoa;(K.irontools||(K.irontools={total:0})).total+=500;}negs.push(Object.assign({neg:'iron pile'},pick(ISLE.hamletChecks(a,B),/ceiling/)));
  B=cp(b);{const X=B.villages['hamlet-farm-v1'];X.landed['sweet-potato']=a.villages['hamlet-farm-v1'].landed['sweet-potato']||0;X.goods['sweet-potato'].stock=0;X.atSea['sweet-potato']=0;}negs.push(Object.assign({neg:'crops lost'},pick(ISLE.hamletChecks(a,B),/crop the countryside grows landed/)));
  B=cp(b);B.villages['hamlet-farm-k1'].farm.inCropHa=1;B.villages['hamlet-farm-k2'].farm.inCropHa=1;negs.push(Object.assign({neg:'land'},pick(ISLE.hamletChecks(a,B),/land in crop/)));
+ B=cp(b);{const C=Object.keys(B.villages).filter(k=>B.villages[k].sea);if(C.length){B.villages[C[0]].sea.landed={};B.villages[C[0]].sea.atSea={};negs.push(Object.assign({neg:'sea lost'},pick(ISLE.hamletChecks(a,B),/sea leg/)));}}
  return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 
@@ -190,7 +213,9 @@ async def run(a):
                 for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
                                 ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged'),
                                 ('farm', "the countryside: six farming hamlets and two plantations in the towns' hinterlands, their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
-                                ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway')):
+                                ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway'),
+                                ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
+                                ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

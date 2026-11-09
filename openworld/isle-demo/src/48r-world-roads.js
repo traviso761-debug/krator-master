@@ -20,6 +20,7 @@
 // baked; verify.py checks every village has a lane end that is a road's end.
 //   ISLE_ROADS.heads()   -> {town: [{name, x, z, r}]}
 //   ISLE_ROADS.bake()    -> the roads.json record: {format, version, grade, roads: [ROADS.route's + town, townKm, lane], errors, heads}
+//   ISLE_ROADS.join(village, town) -> one more road to the network as it stands (a founded hamlet's, 48f), or {error}
 var ISLE_ROADS=(function(){'use strict';
 const JOIN_R=20,END_R=15,APPROACH=150,JUNCTION_OFF=20;
 const dry=(x,z)=>WORLD.water(x,z)<WORLD.Hland(x,z)-1;
@@ -34,39 +35,54 @@ function heads(){const out={};
   out[P.town]=L;}
  return out;}
 /* a village's ways out: the far end of each of its lanes (not the farm tracks) and the lane's outward direction */
-function exits(v){const out=[];for(const l of v.lanes||[]){if(l.track)continue;const a=l.pts[0],b=l.pts[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<20)continue;out.push({x:b[0],z:b[1],ux:(b[0]-a[0])/L,uz:(b[1]-a[1])/L,lane:l.id});}
+function exits(v){const out=[];for(const l of v.lanes||[]){if(l.track||l.landing)continue;const a=l.pts[0],b=l.pts[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<20)continue;
+  const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L,ax=b[0]+ux*APPROACH,az=b[1]+uz*APPROACH;if(WORLD.water(ax,az)>WORLD.Hland(ax,az)-1)continue;   /* a lane that ends at the sea is no way out for a road */
+  out.push({x:b[0],z:b[1],ux,uz,lane:l.id});}
  if(!out.length)out.push({x:v.site.x,z:v.site.z,ux:1,uz:0,lane:null});return out;}
 /* a stored point's height held to the grade from its neighbour */
 const held=(h,e,d)=>Math.max(e-ROADS.G*d,Math.min(e+ROADS.G*d,h));
-function bake(){const HD=heads(),made=ISLE_HAMLETS.made,roads=[],errors=[],net={};
+/* the villages' own ground: each as a disc round its green reaching its farthest building (the farmsteads on their holdings
+   left out: a road may pass between fields), plus 40 m; a coastal village's quay its own disc; and every farmhouse on its
+   holding a small disc of its own, never open (a road may pass between the fields, not through a farmhouse) */
+function grounds(V){const GROUND=[],FARMS=[];
+ for(const v of V){const s=v.site;let r=60;for(const b of v.records){if(b.farm!=null||b.landing)continue;r=Math.max(r,Math.hypot(b.x-s.x,b.z-s.z)+Math.hypot(b.w,b.d)/2);}GROUND.push({x:s.x,z:s.z,r:r+40});
+  for(const b of v.records){if(b.landing)GROUND.push({x:b.x,z:b.z,r:Math.hypot(b.w,b.d)/2+60});if(b.farm!=null)FARMS.push({x:b.x,z:b.z,r:Math.hypot(b.w,b.d)/2+130});}}   /* a farmhouse's disc wide enough to hold a cell centre of the 200 m routing grid */
+ return{GROUND,FARMS};}
+/* one village joined to its town's network N (the heads and the stations so far): the lane end and the network point
+   nearest each other, the approach, the routed line; the record, or {error} */
+function joinOne(v, town, N, G){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+(pad||0)),id=v.id;
+ if(!N||!N.length)return{error:id+': no road head for '+town};
+ let best=null;for(const q of N){if(q.name.indexOf('junction:')===0&&nearFarm(q.x,q.z,JUNCTION_OFF))continue;for(const x of exits(v)){const d=Math.hypot(q.x-x.x,q.z-x.z);if(!best||d<best.d)best={d,q,x};}}
+ if(!best)return{error:id+': no network point clear of the farmhouses'};
+ const X=best.x,a0={x:X.x,z:X.z},a1={x:X.x+X.ux*APPROACH,z:X.z+X.uz*APPROACH},tgt={x:best.q.x,z:best.q.z};
+ const avoid=(x,z)=>nearFarm(x,z)||(Math.hypot(a1.x-x,a1.z-z)>=260&&Math.hypot(tgt.x-x,tgt.z-z)>=160&&G.GROUND.some(g=>Math.hypot(g.x-x,g.z-z)<g.r));   /* open round the road's own ends */
+ const r=ROADS.route({name:id,x:a1.x,z:a1.z,r:END_R},{name:best.q.name,x:tgt.x,z:tgt.z,r:best.q.r},{avoid});
+ if(r.error)return{error:id+' - '+best.q.name+': '+r.error};
+ /* the exact ends: the lane end, the approach's far point, the routed line, the network point; the far end's height is the
+    network's there (a trunk road's own finished height at the junction, a head's ground) */
+ const P=r.pts,h0=WORLD.Hland(a0.x,a0.z),h1=WORLD.Hland(a1.x,a1.z),hT=best.q.e==null?WORLD.Hland(tgt.x,tgt.z):best.q.e;
+ const e1=held(h1,P[0][2],Math.hypot(a1.x-P[0][0],a1.z-P[0][1])),e0=held(h0,e1,APPROACH),eT=held(hT,P[P.length-1][2],Math.hypot(tgt.x-P[P.length-1][0],tgt.z-P[P.length-1][1]));
+ r.pts=[[Math.round(a0.x*10)/10,Math.round(a0.z*10)/10,Math.round(e0*100)/100],[Math.round(a1.x*10)/10,Math.round(a1.z*10)/10,Math.round(e1*100)/100]].concat(P,[[Math.round(tgt.x*10)/10,Math.round(tgt.z*10)/10,Math.round(eT*100)/100]]);
+ let len=0;for(let i=1;i<r.pts.length;i++)len+=Math.hypot(r.pts[i][0]-r.pts[i-1][0],r.pts[i][1]-r.pts[i-1][1]);r.length_m=Math.round(len);r.lane=X.lane;
+ r.town=town;r.townKm=Math.round((r.length_m/1000+best.q.townKm)*100)/100;Object.defineProperty(r,'_tk',{value:r.length_m/1000+best.q.townKm,enumerable:false});return r;}   /* the unrounded km, for its stations (not written) */
+/* a road's stations join the network, each with its km to the town along it and its height; not the village's own lane end
+   and approach (another road meeting there would run in through the village) */
+function stations(r, N){const Q=r.pts,tk=r._tk==null?r.townKm:r._tk;let acc=0;for(let i=Q.length-1;i>=0;i--){if(i<Q.length-1)acc+=Math.hypot(Q[i][0]-Q[i+1][0],Q[i][1]-Q[i+1][1]);if(i<3)continue;
+  N.push({name:'junction:'+r.from+':'+i,x:Q[i][0],z:Q[i][1],r:JOIN_R,townKm:tk-(r.length_m-acc)/1000,e:Q[i][2]});}}
+const headNet=HD=>{const net={};for(const t in HD)net[t]=HD[t].map(h=>Object.assign({townKm:0,e:WORLD.Hland(h.x,h.z)},h));return net;};   /* a head's height: the town's ground there */
+function bake(){const HD=heads(),made=ISLE_HAMLETS.made,roads=[],errors=[],net=headNet(HD);
  if(!made)return{format:'krator-openworld-roads',version:1,grade:ROADS.G,roads,errors:['the hamlets are not made (48t)'],heads:HD};
- for(const t in HD)net[t]=HD[t].map(h=>Object.assign({townKm:0,e:WORLD.Hland(h.x,h.z)},h));   /* a head's height: the town's ground there */
- const V=made.villages.filter(E=>E.village&&E.village.site&&!E.village.error).map(E=>({E,exits:exits(E.village),town:E.spec.parent,d:Math.hypot(E.village.site.x-E.parent[0],E.village.site.z-E.parent[1])}))
+ const V=made.villages.filter(E=>E.village&&E.village.site&&!E.village.error).map(E=>({E,town:E.spec.parent,d:Math.hypot(E.village.site.x-E.parent[0],E.village.site.z-E.parent[1])}))
   .sort((a,b)=>a.d-b.d||(a.E.spec.id<b.E.spec.id?-1:1));
- /* the villages' own ground: each as a disc round its green reaching its farthest building (the farmsteads on their holdings
-    left out: a road may pass between fields), plus 40 m */
- const GROUND=V.map(v=>{const s=v.E.village.site;let r=60;for(const b of v.E.village.records){if(b.farm!=null)continue;r=Math.max(r,Math.hypot(b.x-s.x,b.z-s.z)+Math.hypot(b.w,b.d)/2);}return{x:s.x,z:s.z,r:r+40};});
- /* and every farmhouse on its holding, a small disc of its own, never open (a road may pass between the fields, not
-    through a farmhouse); nor does a road join another within JUNCTION_OFF of one */
- const FARMS=[];for(const v of V)for(const b of v.E.village.records)if(b.farm!=null)FARMS.push({x:b.x,z:b.z,r:Math.hypot(b.w,b.d)/2+130});   /* wide enough to hold a cell centre of the 200 m routing grid */
- const nearFarm=(x,z,pad)=>FARMS.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+(pad||0));
- for(const v of V){const N=net[v.town];if(!N||!N.length){errors.push(v.E.spec.id+': no road head for '+v.town);continue;}
-  /* the lane end and the network point nearest each other */
-  let best=null;for(const q of N){if(q.name.indexOf('junction:')===0&&nearFarm(q.x,q.z,JUNCTION_OFF))continue;for(const x of v.exits){const d=Math.hypot(q.x-x.x,q.z-x.z);if(!best||d<best.d)best={d,q,x};}}
-  if(!best){errors.push(v.E.spec.id+': no network point clear of the farmhouses');continue;}
-  const X=best.x,a0={x:X.x,z:X.z},a1={x:X.x+X.ux*APPROACH,z:X.z+X.uz*APPROACH},tgt={x:best.q.x,z:best.q.z};
-  const open=[a1,tgt],avoid=(x,z)=>nearFarm(x,z)||(!open.some(p=>Math.hypot(p.x-x,p.z-z)<160)&&GROUND.some(g=>Math.hypot(g.x-x,g.z-z)<g.r));
-  const r=ROADS.route({name:v.E.spec.id,x:a1.x,z:a1.z,r:END_R},{name:best.q.name,x:tgt.x,z:tgt.z,r:best.q.r},{avoid});
-  if(r.error){errors.push(v.E.spec.id+' - '+best.q.name+': '+r.error);continue;}
-  /* the exact ends: the lane end, the approach's far point, the routed line, the network point; the far end's height is the
-     network's there (a trunk road's own finished height at the junction, a head's ground) */
-  const P=r.pts,h0=WORLD.Hland(a0.x,a0.z),h1=WORLD.Hland(a1.x,a1.z),hT=best.q.e==null?WORLD.Hland(tgt.x,tgt.z):best.q.e;
-  const e1=held(h1,P[0][2],Math.hypot(a1.x-P[0][0],a1.z-P[0][1])),e0=held(h0,e1,APPROACH),eT=held(hT,P[P.length-1][2],Math.hypot(tgt.x-P[P.length-1][0],tgt.z-P[P.length-1][1]));
-  r.pts=[[Math.round(a0.x*10)/10,Math.round(a0.z*10)/10,Math.round(e0*100)/100],[Math.round(a1.x*10)/10,Math.round(a1.z*10)/10,Math.round(e1*100)/100]].concat(P,[[Math.round(tgt.x*10)/10,Math.round(tgt.z*10)/10,Math.round(eT*100)/100]]);
-  let len=0;for(let i=1;i<r.pts.length;i++)len+=Math.hypot(r.pts[i][0]-r.pts[i-1][0],r.pts[i][1]-r.pts[i-1][1]);r.length_m=Math.round(len);r.lane=X.lane;
-  r.town=v.town;r.townKm=Math.round((r.length_m/1000+best.q.townKm)*100)/100;roads.push(r);
-  /* the new road's stations join the network, each with its km to the town along it and its height; not the village's own
-     lane end and approach (another road meeting there would run in through the village) */
-  const Q=r.pts;let acc=0;for(let i=Q.length-1;i>=0;i--){if(i<Q.length-1)acc+=Math.hypot(Q[i][0]-Q[i+1][0],Q[i][1]-Q[i+1][1]);if(i<3)continue;N.push({name:'junction:'+v.E.spec.id+':'+i,x:Q[i][0],z:Q[i][1],r:JOIN_R,townKm:best.q.townKm+acc/1000,e:Q[i][2]});}}
+ const G=grounds(V.map(v=>v.E.village));
+ for(const v of V){const r=joinOne(v.E.village,v.town,net[v.town],G);if(r.error){errors.push(r.error);continue;}roads.push(r);stations(r,net[v.town]);}
  return{format:'krator-openworld-roads',version:1,grade:ROADS.G,roads,errors,heads:HD};}
-return{heads,bake,JOIN_R,END_R,APPROACH};})();
+/* A ROAD AFTER THE BAKE (48f: a founded hamlet's highway, routed live when its camp converts): the village joined to the
+   network as it stands (the heads, every baked and built road's stations; the villages' and farmhouses' ground as now),
+   the record as bake's, not yet in the world (the hamlet's hands build it first: WORLD.addRoad when done) */
+function join(village, town){const made=ISLE_HAMLETS.made;if(!made)return{error:'the hamlets are not made (48t)'};
+ const net=headNet(heads()),N=net[town]||[];
+ for(const r of (WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[])if(r.town===town&&r.townKm!=null)stations(r,N);
+ const G=grounds(made.villages.filter(E=>E.village&&E.village.site&&!E.village.error&&E.village!==village).map(E=>E.village));
+ return joinOne(village,town,N,G);}
+return{heads,bake,join,joinOne,grounds,JOIN_R,END_R,APPROACH};})();

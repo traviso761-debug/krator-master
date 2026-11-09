@@ -842,7 +842,7 @@ every module under `core/` and CLAUDE.md's rules.
 
 ## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; built 2026-11-09)
 
-**Status (2026-11-09): steps 1 to 4 are built; step 5 is still planned.**
+**Status (2026-11-09): steps 1 to 5 are built** (step 5 the same day as 1 to 4, with the coastal landings the owner asked for).
 - **Step 1:** Valapo's programme has no `farm` (`30`): its 49 parcels are gone, and the census check reads "no farm parcel
   within the town" for both towns (`34`). The ground is the village's to build on (its spurs and camp read `fields`
   empty); the builders put houses only on the plan's empty lots, so the freed ground is not yet lots (the Valapo plan's
@@ -904,11 +904,35 @@ every module under `core/` and CLAUDE.md's rules.
   describing word after it: White Landing is *Laniñi Vai*), by a hash of the world and the hamlet's id, no two alike
   (`18-hamlet-names.js`); a hamlet founded later draws its own. The drawing's tag, the sim's settlement and the verify
   show it; the spec's role label stays beside it ("Kama Ema (Kautoa farming hamlet 1)").
-- **Step 5** (the hamlets growing, a work crew founding one) is not built: PLAN-POLITICS.md. **The owner (2026-11-09):
-  "highways are buildable when a farming camp converts to a farming hamlet"**: the road to a founded hamlet is a build
-  project (PLAN-POLITICS section 4's projects: a bill in labour a kilometre, timber for the causeways, the town's or the
-  hamlet's crews), routed live when the camp converts (`ROADS.route` takes milliseconds a road in the page) and drawn as
-  it is built; until it is, the hamlet's carts take the farm tracks and the bare land at the detour rate.
+- **Step 5, the hamlets grow (built 2026-11-09):** every village lays empty plots (core/hamlet 30 `vacant`, a share of its
+  households: `hamlets.grow.vacant`); in the sim they are lots on core's building (`47h`, as the towns' are in `47b`): the
+  village's own hands (`grow.posts`, on the first lot only; core's rebalance moves them lot to lot) build a house of the
+  towns' kinds, its bill (timber, stone, mats) brought by the village's IN cart with its food, a day's worth at the
+  builders' pace expected ahead so a load is worth carrying (the builders' own draws alone book too little a tick);
+  built, the plot is a home with its beds, and `88h` draws the house. The hamlets test and the world's checks: every
+  village's first house under way or built, each plot a lot or a home (with a negative).
+- **Step 5, a farming camp founded, converting to a hamlet (built 2026-11-09; `47f`; the owner: "highways are buildable
+  when a farming camp converts to a farming hamlet"):** a town whose refugee camp holds `found.households` households that
+  have waited `found.waitDays` for a house sends them out as a FARMING CAMP, a settlement of the town's on farmland the
+  page finds beyond its villages (`ISLE.hooks.farmSite`: the hinterland survey of `48`, apart from every village and camp):
+  tents, a store opened with the town's food, the grown-ups on the town's first staple on a farmland site, carts to the
+  town at the detour rate. After `found.days` it CONVERTS: the page lays a farming village on the camp's site
+  (`ISLE.hooks.layVillage`), the sim declares it as the town's hamlet with the campers its first people (`47h` `people`:
+  housed household by household, at the posts first, settlers dealt for the rest), named from the Sikau list, and its
+  HIGHWAY is a PROJECT: routed live to the network as it stands (`ISLE.hooks.routeRoad`: `ISLE_ROADS.join`, the bake's
+  own router, milliseconds a road), a lot of the hamlet's at its lane's end with `found.road.posts` builders' posts and a
+  `road:<id>` kind of `hoursPerKm` worker-hours and `timberPerKm` timber a kilometre on core's building; built, the page
+  adds it to the world (`WORLD.addRoad`, the ground over it redrawn) and the hamlet's carts take it (their minutes retimed
+  from the detour rate to the road). The camp's tents and parcels are drawn while it stands (`88h`). A page without the
+  hooks (the city page) founds nothing. `tests/test-isle-found.js` runs one through with stand-in hooks (45 days: the
+  ship lands on day 3, waits 7, farms 20, then the road is building), with negatives; the world's `verify.py` checks the
+  hooks and the survey. One camp a town so far (`found.maxPerTown`); a second waits for the first's road.
+- **The coast (built 2026-11-09; the owner: "a little port and cargo stop at lumber village, this would make sense for any
+  hamlets near the coast"):** a village within reach of a navigable sea gets a landing (core/hamlet 30 `landing`: the
+  Islanders' quay and cargo shed at the water's edge, a lane to it) and a SEA LEG (`47h` `sea`: a lakatoi of its own on
+  `SIM.trade` between its quay and its town's canoe stop, 25 km for Kautoa's lumber village against 175 by road); the road
+  stays and carries the food back. Valapo's lumber village has no sea route through its reef and so no landing
+  (KNOWN_ISSUES.md). `openworld/isle-demo/src/48` sites a lumber village on a coastal stand when its patch has one.
 - **Not yet:** orchard trees on the hamlets' orchards (the towns' orchards are drawn from the plan's tree records; the
   parcels are ground colour only); the farm tracks are ribbons, not graded roads; the fallow dial is the owner's.
 

@@ -202,6 +202,14 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
     KHAMLET.hull(Fm.poly.concat([[9000, 9000]])).length !== Fm.poly.length);
 }
 
+// ---- the landing (30 spec.landing): a coastal village's quay on the shore, facing the sea, a lane to it
+{
+  const Lv = H.village(spec('lumber', { landing: { x: 520, z: 300, ux: 0.866, uz: 0.5 } })), q = Lv.records.find(r => r.role === 'landing'), ln = Lv.lanes.find(l => l.landing);
+  ok('a coastal village has a quay with its cargo shed on the shore, facing the sea, and a lane to it', !!q && q.key === 'ie-quay' && Math.abs(Math.atan2(0.866, 0.5) - q.ry) < 1e-6 && Math.hypot(q.x - 520, q.z - 300) < 20 && !!ln && Math.hypot(ln.pts[1][0] - q.x, ln.pts[1][1] - q.z) < 30 && Lv.landing && Lv.landing.quay === q.id && !Lv.error,
+    !V.lumber.records.some(r => r.role === 'landing') && !V.lumber.landing, Lv.error || '');
+  ok('the quay is on its own lane: no other lane runs out to it', Lv.lanes.filter(l => !l.landing).every(l => Math.hypot(l.pts[1][0] - l.pts[0][0], l.pts[1][1] - l.pts[0][1]) <= H.TUNE.laneMax + 1e-6), H.TUNE.laneMax < 500);
+}
+
 // ---- the names (16, 18): a long list from the tongue, dealt by hash, no two hamlets of a world alike
 {
   const L = H.NAMES.islander, ids = []; for (let i = 0; i < 14; i++) ids.push('hamlet-' + i);

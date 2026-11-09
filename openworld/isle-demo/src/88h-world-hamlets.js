@@ -35,7 +35,7 @@ S.errors=M.errors.slice();
 const H=(x,z)=>WORLD.H(x,z);
 /* ---------------------------------------------------------------- the records: heights, tags, keep-clear */
 const TAGS=KTAGS.create({build:'isle-demo'}),clear=KSPACE.create({cell:32});
-const V=M.villages.map(E=>{const v=E.village,recs=v.records||[];
+function enter(E){const v=E.village,recs=v.records||[];
 const base=TAGS.add({class:'landmark',kind:'hamlet',key:v.id,name:E.name||E.spec.name,at:[v.site?v.site.x:0,v.site?H(v.site.x,v.site.z):0,v.site?v.site.z:0],r:220,h:20,
   tags:{culture:'islander',types:['civic'],role:E.spec.focus},note:(E.name?E.name+' ("'+E.gloss+'"), ':'')+E.spec.name.toLowerCase()+': '+E.spec.focus+' village of '+E.spec.parent+', '+(v.census?v.census.pop:0)+' people'});
  for(const r of recs){r.y=H(r.x,r.z)-.15;r.kit=kitOf(r.key);const d=IDIMS[r.key]||{};
@@ -46,20 +46,23 @@ const base=TAGS.add({class:'landmark',kind:'hamlet',key:v.id,name:E.name||E.spec
   TAGS.child(base.id,{class:'infrastructure',kind:'lane',key:l.id,at:[(a[0]+b[0])/2,H((a[0]+b[0])/2,(a[1]+b[1])/2),(a[1]+b[1])/2],ry:Math.atan2(b[0]-a[0],b[1]-a[1]),size:[l.w,L,.1],tags:{types:['infrastructure']}});
   for(let t=0;t<=L;t+=6){const x=a[0]+(b[0]-a[0])*t/L,z=a[1]+(b[1]-a[1])*t/L;clear.insert({x,z,r:l.w/2+1.5},x,z,l.w/2+1.5);}}
  if(v.green){clear.insert({x:v.green.x,z:v.green.z,r:Math.hypot(v.green.w,v.green.d)/2+2},v.green.x,v.green.z,Math.hypot(v.green.w,v.green.d)/2+2);}
- S.buildings+=recs.length;S.lanes+=(v.lanes||[]).length;return{E,v,recs,base,state:null,group:null,mass:[]};});
+ S.buildings+=recs.length;S.lanes+=(v.lanes||[]).length;return{E,v,recs,base,state:null,group:null,mass:[]};}
+const V=M.villages.map(enter);
 /* the farmland's parcels: tagged under their farmland, painted on the ground (below), the ones in crop kept clear of the flora */
 const FMAP={},FP=KHAMLET.FARM.parcel,fkey=(x,z)=>Math.floor(x/FP)+','+Math.floor(z/FP);
 const CROPC=(()=>{try{return typeof ISLE_DRAW_FACTORY==='function'?ISLE_DRAW_FACTORY(new THREE.Group()).CROP:null;}catch(e){return null;}})()||{_:[.2,.25,.1]};
 const FALLOWC=[.3,.28,.13];
-for(const R of M.resources){const y=R.x!=null?H(R.x,R.z):0;S.resources++;
+const VK=new Set();   /* the villages' parcel cells (a struck camp's are cleared round them) */
+function addResource(R){const y=R.x!=null?H(R.x,R.z):0;S.resources++;
  const tag=TAGS.add({class:'feature',kind:R.node?'resource node':R.kind==='stand'?'timber stand':'resource field',key:R.key||R.id,name:R.id,at:[R.x,y,R.z],r:R.node?6:R.radius==null?300:R.radius,h:4,
   tags:{types:['infrastructure'],role:R.kind},note:R.node?R.kind+' node, '+R.grade:R.kind+(R.cap!=null?', '+R.cap+' km2'+(R.inCropHa!=null?' farmed, '+R.inCropHa+' ha in crop':' at full weight')+', grade '+R.grade:'')});
  if(R.parcels){S.farms++;for(const p of R.parcels){S.parcels++;const py=H(p.x,p.z);
   TAGS.child(tag.id,{class:'feature',kind:'field',key:'field:'+p.crop,at:[p.x,py,p.z],ry:0,size:[p.size,p.size,0],note:p.state+' '+p.kind+' of '+p.crop});
-  FMAP[fkey(p.x,p.z)]=p.state==='crop'?(CROPC[p.crop]||CROPC._):null;
+  FMAP[fkey(p.x,p.z)]=p.state==='crop'?(CROPC[p.crop]||CROPC._):null;VK.add(fkey(p.x,p.z));
   if(p.state==='crop'){S.inCrop++;clear.insert({x:p.x,z:p.z,r:p.size*.71},p.x,p.z,p.size*.71);}}}}
+for(const R of M.resources)addResource(R);
 WORLD.clearHook=(x,z)=>clear.some(x,z,0,it=>Math.hypot(x-it.x,z-it.z)<it.r);
-if(S.parcels){const ground0=WORLD.ground;
+{const ground0=WORLD.ground;
  WORLD.ground=function(x,z,Sm,out){ground0(x,z,Sm,out);if(Sm.depth>0)return out;const k=fkey(x,z);if(!(k in FMAP))return out;const c=FMAP[k];
   if(c){out[0]=out[0]*.35+c[0]*.65;out[1]=out[1]*.35+c[1]*.65;out[2]=out[2]*.35+c[2]*.65;}
   else{out[0]+=(FALLOWC[0]-out[0])*.45;out[1]+=(FALLOWC[1]-out[1])*.45;out[2]+=(FALLOWC[2]-out[2])*.45;}
@@ -80,13 +83,15 @@ const CACHE={protos:{},failed:{},built:0},m4=new THREE.Matrix4(),q=new THREE.Qua
 const boxG=new THREE.BoxGeometry(1,1,1).translate(0,.5,0),roofG=new THREE.ConeGeometry(.72,1,4,1).rotateY(Math.PI/4).translate(0,.5,0);
 const bodyM=new THREE.MeshLambertMaterial({color:0xb39a74}),roofM=new THREE.MeshLambertMaterial({color:0xc9ac6e}),pendM=new THREE.MeshLambertMaterial({color:0x8a7e6a});
 function local(X,r){q.setFromEuler(e.set(0,r.ry,0));return m4.compose(v3.set(r.x-X.v.site.x,r.y,r.z-X.v.site.z),q,one).clone();}
-function massing(X){const n=X.recs.length,b=new THREE.InstancedMesh(boxG,bodyM,n),rf=new THREE.InstancedMesh(roofG,roofM,n);
- X.recs.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));const wh=Math.max(2.5,r.h*.45);
+function massing(X){const R=X.recs.filter(standing),n=R.length,b=new THREE.InstancedMesh(boxG,bodyM,n),rf=new THREE.InstancedMesh(roofG,roofM,n);X.massN=n;
+ R.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));const wh=Math.max(2.5,r.h*.45);
   b.setMatrixAt(i,m4.compose(v3.set(r.x-X.v.site.x,r.y,r.z-X.v.site.z),q,new THREE.Vector3(r.w*.9,wh,r.d*.9)));
   rf.setMatrixAt(i,m4.compose(v3.set(r.x-X.v.site.x,r.y+wh,r.z-X.v.site.z),q,new THREE.Vector3(r.w*1.02,Math.max(1.5,r.h-wh),r.d*1.02)));});
  const G=new THREE.Group();G.add(b,rf);G.position.set(X.v.site.x,0,X.v.site.z);G.name='hamlet massing '+X.v.id;scene.add(G);return G;}
-function full(X){const G=new THREE.Group(),by={},missing=[];
- for(const r of X.recs){const P=r.kit?isleProto(r.kit,r.key,0,CACHE):null;if(!P){missing.push(r);continue;}(by[P.id]||(by[P.id]={P,L:[]})).L.push(r);}
+/* an empty plot (step 5: the village grows) draws nothing until its house is built (47b marks the record); then the village is drawn again */
+const standing=r=>!r.vacant||r.built;
+function full(X){const G=new THREE.Group(),by={},missing=[];X.builtN=X.recs.filter(r=>r.vacant&&r.built).length;
+ for(const r of X.recs){if(!standing(r))continue;const P=r.kit?isleProto(r.kit,r.key,0,CACHE):null;if(!P){missing.push(r);continue;}(by[P.id]||(by[P.id]={P,L:[]})).L.push(r);}
  for(const id in by){const B=by[id];for(const pt of B.P.parts){const im=new THREE.InstancedMesh(pt.geo,pt.mat,B.L.length);B.L.forEach((r,i)=>im.setMatrixAt(i,local(X,r)));im.name=id;im.userData.inspectLabel=id;G.add(im);}}
  if(missing.length){const im=new THREE.InstancedMesh(boxG,pendM,missing.length);missing.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));im.setMatrixAt(i,m4.compose(v3.set(r.x-X.v.site.x,r.y,r.z-X.v.site.z),q,new THREE.Vector3(r.w,r.h,r.d)));});G.add(im);}
  G.position.set(X.v.site.x,0,X.v.site.z);G.name='hamlet '+X.v.id;scene.add(G);S.protos=CACHE.built;return G;}
@@ -141,8 +146,28 @@ function crewDraw(X,P){if(typeof KCAMP==='undefined')return;const K=X.C,W=K.W,d=
   L.forEach((t,k)=>{const st=KCAMP.workTree(W,St.id,k,L.length,d,tk);if(st==='gone'&&g<6000){q.identity();X.cstumps.setMatrixAt(g++,m4.compose(v3.set(t.x,H(t.x,t.z)-.05,t.z),q,new THREE.Vector3(t.rb*.9,.55,t.rb*.9)));}else if(st==='young')y++;});}
  X.cstumps.count=g;X.cstumps.instanceMatrix.needsUpdate=true;if(X===CREWS[0]){S.stand=tot;S.gone=g;S.young=y;S.day=Math.round(d*100)/100;}}
 /* ---------------------------------------------------------------- each frame */
-function update(){const P=camera.position;let nf=0;
+/* FOUNDING (settlements/isle-demo 47f, 48f): a farming camp's tents and its parcels while it stands; the hamlet founded
+   from it enters the drawing when 48f names it (the camp's tents struck, its parcels cleared where the village's are not) */
+const CAMPS=new Map();   /* camp id -> {group, keys} */
+const tentG=new THREE.BoxGeometry(1,1,1).translate(0,.5,0),tentM=new THREE.MeshLambertMaterial({color:0xa89a7c});
+function refreshBox(b){if(typeof TERRAIN!=='undefined'&&TERRAIN&&TERRAIN.refresh)TERRAIN.refresh(b[0],b[1],b[2],b[3]);}
+function parcelsBox(parcels,pad){let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;for(const p of parcels){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);z0=Math.min(z0,p.z);z1=Math.max(z1,p.z);}return[x0-pad,z0-pad,x1+pad,z1+pad];}
+function pitchCamp(C){const n=Math.max(2,Math.ceil(C.people.length/4)),im=new THREE.InstancedMesh(tentG,tentM,n),y=H(C.site.x,C.site.z);
+ for(let i=0;i<n;i++){const a=i/n*Math.PI*2,r=22+6*((i*7)%3);m4.compose(v3.set(C.site.x+Math.cos(a)*r,y,C.site.z+Math.sin(a)*r),q.setFromEuler(e.set(0,-a,0)),new THREE.Vector3(5,3,4));im.setMatrixAt(i,m4);}
+ im.instanceMatrix.needsUpdate=true;im.name='farming camp '+C.id;scene.add(im);
+ const keys=[];for(const p of C.farm.parcels||[]){const k=fkey(p.x,p.z);if(VK.has(k))continue;FMAP[k]=p.state==="crop"?(CROPC[p.crop]||CROPC._):null;keys.push(k);}
+ if(C.farm.parcels&&C.farm.parcels.length)refreshBox(parcelsBox(C.farm.parcels,120));
+ CAMPS.set(C.id,{group:im,keys});S.camps=(S.camps||0)+1;}
+function strikeCamp(C){const K=CAMPS.get(C.id);if(!K)return;scene.remove(K.group);for(const k of K.keys)if(!VK.has(k))delete FMAP[k];CAMPS.delete(C.id);S.struck=(S.struck||0)+1;}
+function camps(){const F=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.found;if(!F)return;for(const C of F.camps){if(!C.converted&&!CAMPS.has(C.id))pitchCamp(C);else if(C.converted&&CAMPS.has(C.id))strikeCamp(C);}}
+if(typeof ISLE_FOUND!=='undefined')ISLE_FOUND.onAdd((E,X)=>{if(!E)return;const Xv=enter(E);V.push(Xv);S.villages=V.length;if(E.resource)addResource(E.resource);
+ const b=E.resource&&E.resource.parcels&&E.resource.parcels.length?parcelsBox(E.resource.parcels,160):[E.village.site.x-400,E.village.site.z-400,E.village.site.x+400,E.village.site.z+400];
+ refreshBox([Math.min(b[0],E.village.site.x-300),Math.min(b[1],E.village.site.z-300),Math.max(b[2],E.village.site.x+300),Math.max(b[3],E.village.site.z+300)]);
+ window._hamlets.villages.push(info(Xv));window._hamlets.views.push({id:Xv.v.id,x:Xv.v.site.x,z:Xv.v.site.z});S.founded=(S.founded||0)+1;});
+function update(){const P=camera.position;let nf=0;camps();
  for(const X of V){if(!X.v.site)continue;const d=Math.hypot(P.x-X.v.site.x,P.z-X.v.site.z),want=d<FULL?'full':d<FAR?'mass':'none';
+  const builtNow=X.recs.filter(r=>r.vacant&&r.built).length;   /* a house finished on an empty plot: the village drawn again */
+  if(X.group&&builtNow!==X.builtN){scene.remove(X.group);X.group=null;}if(X.massG&&X.recs.filter(standing).length!==X.massN){scene.remove(X.massG);X.massG=null;}
   if(want==='full'&&!X.group){X.group=full(X);}
   if(want!=='none'&&!X.massG)X.massG=massing(X);
   if(X.group)X.group.visible=want==='full';if(X.massG)X.massG.visible=want==='mass';if(want==='full')nf++;}
@@ -150,7 +175,8 @@ function update(){const P=camera.position;let nf=0;
  else if(LUM&&LUM.v.site&&Math.hypot(P.x-LUM.v.site.x,P.z-LUM.v.site.z)<FULL*2){buildStand();felling();}}
 HOST.TICKS.push(()=>update());
 S.ms=Math.round(performance.now()-t0);
-window._hamlets={stats:S,villages:V.map(X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,site:X.v.site,census:X.v.census,error:X.v.error||null,
- buildings:X.recs.length,resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null})),
+const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.spec.name,road:X.E.road||null,landing:X.v.landing||null,sea:X.E.sea||null,focus:X.E.spec.focus,parent:X.E.spec.parent,plantation:!!X.E.spec.plantation,founded:X.E.founded||null,site:X.v.site,census:X.v.census,error:X.v.error||null,
+ buildings:X.recs.length,resource:X.E.resource,farm:X.E.resource&&X.E.resource.kind==='farmland'?{inCropHa:X.E.resource.inCropHa,farmedHa:X.E.resource.farmedHa,parcels:X.E.resource.parcels.length,hands:X.E.resource.hands,capped:X.E.resource.capped,fit:X.E.resource.fit}:null});
+window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
  resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
 return{update,stats:S,tags:TAGS};})();});

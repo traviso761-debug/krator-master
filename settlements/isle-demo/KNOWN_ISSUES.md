@@ -240,11 +240,15 @@
             farmland's centre, the parcels are not fenced or pathed; the ground is not flattened under them.
       - [ ] **The freed ground in Valapo is not yet lots**: the builders take only the plan's empty lots (`47b`).
       - [ ] **The fallow is a dial** (`KHAMLET.FARM.fallow`: three years for each in crop) pending the owner's answer.
-      - [ ] **The lumber village is 171 km from Kautoa by road** (the baked highway network, 2026-11-09): 20 km of sea 140 m
+      - [x] **The lumber village is 171 km from Kautoa by road** (the baked highway network, 2026-11-09): 20 km of sea 140 m
             deep lies between them, so the road runs round the gulf by the north trunk (the ranch at 72 km and the salt
-            village at 101 km share it); its timber takes 43 hours a way by cart. A sea leg (a timber line on
-            `SIM.transport` between a landing by the village and Kautoa's harbour) is the rational carrier; the road stays
-            as the owner asked (every hamlet on the network).
+            village at 101 km share it). **Answered the same day (the owner: "a little port and cargo stop at lumber
+            village ... any hamlets near the coast"):** the village stands on a coastal stand with a quay, and a SEA LEG
+            (47h `sea`: a lakatoi of its own on `SIM.trade`, 25 km by sea) carries its timber to Kautoa's canoe stop; the
+            road stays as the owner asked (every hamlet on the network) and carries the food back.
+      - [ ] **Valapo's lumber village has no landing** (2026-11-09): its bay is cut off from Valapo's trade landing by the
+            reef, so the sea router finds no route and `shoreOf` gives it none; its timber goes 17 km by road. A pass
+            through the reef, or a landing on the open coast with a track to it, would give it one.
       - [ ] **The farm tracks are ribbons** on the ground (as the villages' lanes), not graded roads; the highways are.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track

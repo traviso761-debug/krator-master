@@ -420,6 +420,12 @@ ISLE.TUNE.sim = {
        people are, on the mean, under `leave` happy moves on (leaves the isles) */
     tent: { n: 12, stay: 45, leave: 70 },
     camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
+  /* FOUNDING (47f; PLAN.md section 11 step 5; the owner, 2026-11-09): a town whose refugee camp holds `households` households
+     that have waited `waitDays` sends them out as a farming camp (at most `maxPerTown` camps a town), looked at every `every`
+     minutes; after `days` the camp converts to a farming hamlet sized for `settlers` times its people, and its highway is
+     a project of `road.hoursPerKm` worker-hours and `road.timberPerKm` timber a kilometre with `road.posts` of the hamlet's
+     hands on it */
+  found: { every: 60, households: 6, waitDays: 7, days: 20, maxPerTown: 1, settlers: 2.5, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
@@ -500,6 +506,17 @@ ISLE.TUNE.sim = {
        food back for its people; its granaries open with `startDays` of each crop so the first loads roll before the first
        harvest is in. The towns' own stand-ins: Kautoa's farm ring stays; Valapo's farms (`farms` above) go when its
        hamlets are declared */
+    /* THE SEA LEG (the owner, 2026-11-09: "a little port and cargo stop at lumber village, this would make sense for any
+       hamlets near the coast"): a coastal village (core/hamlet 30 `landing`: its quay and cargo shed a canoe stop of its own)
+       sends its goods to its town's canoe stop by a lakatoi of its own on SIM.trade, `kmh` over the sea route the page found
+       (48: `seaKm`), a load every trip, keeping `keep` days of its own; the road stays beside it (the lumber village: 7 hours by
+       sea, 43 by road). Food still comes by road */
+    sea: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 1 },
+    /* THE HAMLETS GROW (PLAN.md section 11 step 5; the owner, 2026-11-04: up to double their first size by empty lots): a
+       village's plan has `vacant` of its households as empty plots (core/hamlet 30), each a lot of the village's on core's
+       building (47b's machinery: its bill of timber, stone and mats carted from its town, `posts` of the village's own hands
+       on the lot being built, growth's households moving in as the towns' do) */
+    grow: { vacant: 1, posts: 4, goods: ['timber', 'stone', 'mats'] },
     farming: { startDays: 6, keep: 1,
       crops: {
         kautoa: { staples: [{ crop: 'rice', kind: 'field', w: 3, maxSlope: 0.08 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }],

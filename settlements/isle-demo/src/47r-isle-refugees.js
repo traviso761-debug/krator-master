@@ -114,8 +114,9 @@ ISLE.refugeeSettle = function (lot, s) {
 };
 ISLE.refugeeBooks = function () {
   var R = ISLE.SIM.rf || { ships: [], camps: {} }, out = { minute: SIM.minute(), ships: JSON.parse(JSON.stringify(R.ships)), camps: {}, housed: {}, people: {}, pool: {}, left: R.left || 0, leftBy: Object.assign({}, R.leftBy || {}), ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
+  out.country = SIM.all('actor').filter(function (a) { return a.refugee && a.refugee.farmcamp; }).length;   /* founding a farming camp or its hamlet (47f): the town's no more */
   Object.keys(R.camps).forEach(function (s) {
-    var C = SIM.R.place[R.camps[s]], all = SIM.all('actor').filter(function (a) { return a.refugee && SIM.settlementOf(a) === s; });
+    var C = SIM.R.place[R.camps[s]], all = SIM.all('actor').filter(function (a) { return a.refugee && !a.refugee.farmcamp && SIM.settlementOf(a) === s; });
     out.camps[s] = { people: C.people || 0, here: all.filter(function (a) { return a.home === C.id; }).length, households: ISLE.refugeeWaiting(s) };
     out.housed[s] = all.filter(function (a) { return a.refugee.housed != null; }).length; out.people[s] = all.length;
     var hs = all.filter(function (a) { return a.home === C.id && a.nd; }).map(function (a) { return SIM.happiness(a, SIM.ABSTRACT && SIM.ABSTRACT[s] ? SIM.needsOf(a) : SIM.needsPeek(a)); });
@@ -130,10 +131,13 @@ ISLE.refugeeBooks = function () {
 };
 ISLE.refugeeChecks = function (a, b) {
   var out = [], ok = function (name, pass, detail) { out.push({ name: name, ok: !!pass, detail: detail || '' }); };
-  var landed = b.ships.reduce(function (n, x) { return n + x.people; }, 0), people = Object.keys(b.people).reduce(function (n, s) { return n + b.people[s]; }, 0);
-  ok('every ship\'s people landed and are here or have moved on (' + b.ships.length + ' ships, ' + landed + ' people, ' + b.left + ' moved on, ' + b.ships.reduce(function (n, x) { return n + x.turned; }, 0) + ' turned away)', landed === people + b.left && b.ships.length > 0, landed + ' landed, ' + people + ' here, ' + b.left + ' gone');
-  var lost = SIM.all('actor').filter(function (x) { if (!x.refugee) return false; var H = SIM.R.place[x.home], s = x.refugee.town; return !H || H.settlement !== s || !(H.kind === 'camp' || (H.kind === 'home' && H.activities.SLEEP > 0)); });
-  ok('every refugee in its town\'s camp or in a house of its town', !lost.length, lost.slice(0, 4).map(function (x) { return x.id + ' at ' + x.home; }).join(', '));
+  var landed = b.ships.reduce(function (n, x) { return n + x.people; }, 0), people = Object.keys(b.people).reduce(function (n, s) { return n + b.people[s]; }, 0), country = b.country || 0;
+  ok('every ship\'s people landed and are here, in the countryside or have moved on (' + b.ships.length + ' ships, ' + landed + ' people, ' + country + ' founding in the countryside, ' + b.left + ' moved on, ' + b.ships.reduce(function (n, x) { return n + x.turned; }, 0) + ' turned away)', landed === people + country + b.left && b.ships.length > 0, landed + ' landed, ' + people + ' here, ' + country + ' in the countryside, ' + b.left + ' gone');
+  /* a founder (47f) is in its farming camp's tents or a house of the hamlet founded from it */
+  var lost = SIM.all('actor').filter(function (x) { if (!x.refugee) return false; var H = SIM.R.place[x.home], s = x.refugee.town; if (!H) return true;
+    if (x.refugee.farmcamp) return !((H.settlement === x.refugee.farmcamp && H.kind === 'camp') || (x.refugee.hamlet && H.settlement === x.refugee.hamlet && H.kind === 'home'));
+    return H.settlement !== s || !(H.kind === 'camp' || (H.kind === 'home' && H.activities.SLEEP > 0)); });
+  ok('every refugee in its town\'s camp or in a house of its town (a founder in its farming camp or its hamlet)', !lost.length, lost.slice(0, 4).map(function (x) { return x.id + ' at ' + x.home; }).join(', '));
   var off = Object.keys(b.camps).filter(function (s) { return b.camps[s].people !== b.camps[s].here; });
   ok('each camp\'s count is its people', !off.length, off.map(function (s) { return s + ' ' + b.camps[s].people + ' for ' + b.camps[s].here; }).join(', '));
   var V = SIM.NEED && SIM.NEED.vital && SIM.NEED.vital.length ? SIM.NEED.vital[0].at : 100, desc = function (q) { return q ? 'median ' + Math.round(q.median) + ', nine in ten under ' + Math.round(q.p90) : '-'; };

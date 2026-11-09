@@ -39,6 +39,8 @@ KHAMLET.CULTURES.islander_east = {
   },
   focusJobs: {salt: 110, mine: 120, quarry: 48, lumber: 100, ranch: 70, fishing: 100, farming: 140},
   reach: {salt: 300, mine: 400, quarry: 300, lumber: 600, ranch: 900, fishing: 250, farming: 700},
+  /* the landing a coastal village gets (30: spec.landing; the owner, 2026-11-09): the Islanders' quay with its cargo shed, its dockers' jobs */
+  landing: {key: 'ie-quay', jobs: 3},
   /* boxes for keys a host may not load (the ranch's mounts are the Beast Riders kit's, kits/beast-riders: a host without
      that kit's boxes places these footprints and draws stand-ins). The Islanders' own hamlet works are in the kit since
      2026-10-19 (kits/islanders/src/69-ie-hamlet.js: ie-sawpit, ie-kiln, ie-corral, ie-store-food, ie-bloomery) */

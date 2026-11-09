@@ -24,11 +24,21 @@
 //                                        farming hamlets (the plan's figures when absent); opt.world the seed
 //   ISLE_HAMLETS.groundOk(x, z)         dry land, gentle, no cliff, not the salt crust, not a town's ground
 //   ISLE_HAMLETS.farmFit(x, z, crops)   the hinterland survey's score at a point, 0..1
+//   ISLE_HAMLETS.shoreOf(site, berth?)  the nearest sea shore within SHORE_R of a point (below), or null
+// THE COAST (the owner, 2026-11-09: "a little port and cargo stop at lumber village, this would make sense for any hamlets
+// near the coast"): a village whose site has the sea's edge within SHORE_R (a kilometre) gets a LANDING (core/hamlet 30: the quay with
+// its cargo shed on the shore point, a lane to it): the shore is found by marching out from the site in 36 directions
+// to the first water, kept when that water goes on as sea (a metre deep 200 m further) and a sea route from it to the
+// town's trade landing exists (ISLE_TOWNS_W.seaPath, the canoe line's search), the nearest such; the route's length is
+// the village's sea leg (`seaKm`, settlements/isle-demo 47h: a lakatoi of its own on SIM.trade). A LUMBER VILLAGE is
+// sited on a coastal stand when its patch has one (the forest cell nearest the town among those with the sea within
+// SHORE_R: its timber goes by sea, its felling crew ranges inland), the village itself 150 m inland of that stand's
+// shore, else on the stand nearest the town as before.
 var ISLE_HAMLETS=(function(){
 const SPECS=[
  {id:'hamlet-salt',name:'Salt village',focus:'salt',parent:'Kautoa',near:[-14776,-107820],look:7000},
  {id:'hamlet-mine',name:'Iron mine',focus:'mine',parent:'Valapo',near:[-18000,66000],look:6000,metal:'iron',grade:'medium'},
- {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:7000},
+ {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:15000},   /* the patch reaches the gulf shore 8 km west: a coastal stand (2026-11-09) */
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
  {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
  {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[0,58000],look:4000,apart:2500},   /* 2026-11-04: Valapo's own timber and felling crew, on its island */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
@@ -43,6 +53,7 @@ const SPECS=[
  {id:'hamlet-farm-v2',name:'Valapo farming hamlet 2',focus:'farming',parent:'Valapo',crops:'staples',share:1/2},
  {id:'hamlet-plant-v',name:'Valapo plantation',focus:'farming',parent:'Valapo',crops:'cash',plantation:true,hands:60}];
 const FARM={cell:500,rMin:2000,rMax:14000,apart:3000,subStep:150,minFit:.7,off:350};
+const SHORE_R=1000,SHORE_STEP=10;
 const DEFAULT_PEOPLE={Kautoa:6040,Valapo:2095};   /* the plan's census (PLAN.md section 11) when the page hands none in */
 const CELL=150,SLOPE=.3,DRY=1.2;
 /* the land without the roads (WORLD.Hland): the highways are baked over the villages' lane ends (48r, bake.py), so the
@@ -80,9 +91,22 @@ function farmSite(sp,P,out,crops){const half=typeof ISLE!=='undefined'&&ISLE.PRO
   if(!best||score>best.score+1e-9)best={x,z,d,fit,score};}
  return best;}
 
-function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[]};
+/* the sea within SHORE_R of a point: a quick look along eight bearings (the siting of a lumber village) */
+function nearSea(x,z){for(let a=0;a<8;a++){const ux=Math.cos(a*Math.PI/4),uz=Math.sin(a*Math.PI/4);for(let r=150;r<=SHORE_R;r+=150){const px=x+ux*r,pz=z+uz*r;if(WORLD.water(px,pz)>H(px,pz)-.4&&WORLD.water(px+ux*200,pz+uz*200)>H(px+ux*200,pz+uz*200)+1)return true;}}return false;}
+/* the shore nearest a village's site (above): -> {x, z (the beach, the last dry point), ux, uz (seaward), d, path} or null */
+function shoreOf(site,berth){const C=[];
+ for(let a=0;a<360;a+=10){const ux=Math.cos(a*Math.PI/180),uz=Math.sin(a*Math.PI/180);let last=null;
+  for(let r=40;r<=SHORE_R;r+=SHORE_STEP){const x=site.x+ux*r,z=site.z+uz*r;
+   if(WORLD.water(x,z)>H(x,z)-.4){/* water: the sea when it goes on a metre deep 200 m further; a tidal flat or a pool is marched across */
+    if(last&&WORLD.water(x+ux*200,z+uz*200)>H(x+ux*200,z+uz*200)+1){C.push({x:last[0],z:last[1],ux,uz,d:r});break;}continue;}
+   last=[x,z];}}
+ C.sort((p,q)=>p.d-q.d||p.ux-q.ux||p.uz-q.uz);
+ for(const c of C.slice(0,8)){if(!berth)return c;const P=ISLE_TOWNS_W.seaPath([c.x+c.ux*40,c.z+c.uz*40],[berth.x,berth.z]);if(P&&P.ok){c.path=P;return c;}}
+ return null;}
+
+function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[],berths:opt.berths||{}};   /* the towns' trade landings, kept for the checks */
  for(const sp of SPECS){const P=parentOf(sp.parent);if(!P){out.errors.push(sp.id+': no parent '+sp.parent);continue;}
-  let res=null,start=null,workers=null,farmCrops=null,farmFitAt=null;
+  let res=null,start=null,workers=null,farmCrops=null,farmFitAt=null,shoreSite=false;
   if(sp.focus==='salt'||sp.focus==='ranch'){
    const kind=sp.focus==='salt'?'salt':'pasture',L=cells(sp,(x,z)=>{if(wet(x,z))return 0;const g=G(x,z);return kind==='salt'?(g.salt||0):(g.pasture>.5?g.pasture:0);});
    if(!L.length){out.errors.push(sp.id+': no '+kind+' in the patch');continue;}
@@ -92,8 +116,9 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);
    const L=cells(sp,(x,z)=>{if(wet(x,z)||WORLD.townW(x,z)||!far(x,z))return 0;const z0=Z(x,z);return z0.forest>.6?z0.forest:0;});
    if(!L.length){out.errors.push(sp.id+': no forest in the patch');continue;}
-   const seed=near(L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
-    forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];}   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */
+   const coastal=L.filter(c=>nearSea(c.x,c.z)),seed=near(coastal.length?coastal:L,P);res={id:sp.id+':stand',kind:'stand',x:seed.x,z:seed.z,radius:600,
+    forest:(x,z)=>{if(!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z))return 0;const f=Z(x,z).forest;return f>.6?f:0;}};start=[seed.x,seed.z];   /* the felling crew's range (settlements/isle-demo 47h, core/camp 40): the forest's share where it stands */
+   if(coastal.length){const sh=shoreOf({x:seed.x,z:seed.z},opt.berths&&opt.berths[sp.parent]||null);if(sh){start=[sh.x-sh.ux*150,sh.z-sh.uz*150];shoreSite=true;}}}
   else if(sp.focus==='mine'||sp.focus==='quarry'){
    const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);   /* a quarry apart from the mine's hill */
    const L=cells(sp,(x,z)=>wet(x,z)||WORLD.townW(x,z)||!far(x,z)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch');continue;}
@@ -107,19 +132,25 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    start=[c.x,c.z];farmCrops=crops;farmFitAt=c.fit;}
   /* the village starts beside its resource, toward its town; siteFor finds dry flat ground from there. A farming hamlet
      stands on its survey cell, its farmland's centre FARM.off m beyond it (away from the town), its farmsteads toward it */
-  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=farmCrops?0:sp.focus==='mine'||sp.focus==='quarry'?180:sp.focus==='ranch'?0:260;
+  const dx=P[0]-start[0],dz=P[1]-start[1],L0=Math.hypot(dx,dz)||1,ux=dx/L0,uz=dz/L0,off=farmCrops||shoreSite?0:sp.focus==='mine'||sp.focus==='quarry'?180:sp.focus==='ranch'?0:260;
   const site={x:start[0]+ux*off,z:start[1]+uz*off},rp=res?{x:res.x,z:res.z}:{x:start[0]-ux*FARM.off,z:start[1]-uz*FARM.off};
-  const v=KHAMLET.village({id:sp.id,world:opt.world==null?4242:opt.world,culture:'islander_east',focus:sp.focus,site,
+  const berth=opt.berths&&opt.berths[sp.parent]||null,vspec={id:sp.id,world:opt.world==null?4242:opt.world,culture:'islander_east',focus:sp.focus,site,
    link:{x:site.x+ux*400,z:site.z+uz*400},resource:{x:rp.x,z:rp.z,workers:workers==null?undefined:workers},dims,
-   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'?300:900,worksOut:farmCrops?['ie-farm']:undefined});   /* the farmsteads stand on their holdings (core/hamlet 14) */
+   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'?300:900,worksOut:farmCrops?['ie-farm']:undefined,   /* the farmsteads stand on their holdings (core/hamlet 14) */
+   vacant:typeof ISLE!=='undefined'&&ISLE.TUNE&&ISLE.TUNE.sim.hamlets.grow?ISLE.TUNE.sim.hamlets.grow.vacant:0};   /* the empty plots the village grows by (step 5) */
+  /* the coast: the shore from the site the village settles on (laid again when siteFor moved it) */
+  let ld=shoreOf(site,berth);if(ld)vspec.landing=ld;
+  let v=KHAMLET.village(vspec);
+  if(v.site&&Math.hypot(v.site.x-site.x,v.site.z-site.z)>50){const ld2=shoreOf(v.site,berth);if((ld2&&!ld)||(!ld2&&ld)||(ld2&&ld&&Math.hypot(ld2.x-ld.x,ld2.z-ld.z)>5)){ld=ld2;if(ld)vspec.landing=ld;else delete vspec.landing;v=KHAMLET.village(vspec);}}
+  if(ld&&v.landing){sp.landing={x:ld.x,z:ld.z,ux:ld.ux,uz:ld.uz};if(ld.path)sp.seaKm=Math.round(ld.path.len/100)/10;}
   if(v.error)out.errors.push(sp.id+': '+v.error);
   if(farmCrops&&!v.error){res=ISLE.farmlandOf(sp,v,{world:opt.world==null?4242:opt.world,centre:rp,ground:{ok:groundOk,h:H,slope}});res.fit=farmFitAt;
    if(res.capped)out.errors.push(sp.id+': only '+res.inCropHa+' ha of '+res.target+' in crop within '+KHAMLET.FARM.rMax+' m');}
   /* the baked highway to the village (48r, data/roads.json): its length to the town sets the sim's road time (47h) */
   const rd=typeof WORLD_DATA!=='undefined'&&WORLD_DATA.roads&&WORLD_DATA.roads.roads?WORLD_DATA.roads.roads.find(r=>r.from===sp.id):null;
   if(rd&&rd.townKm!=null)sp.roadKm=rd.townKm;
-  out.villages.push({spec:sp,village:v,resource:res,parent:P,road:rd?{to:rd.to,km:rd.length_m/1000,townKm:rd.townKm}:null});if(res)out.resources.push(res);}
+  out.villages.push({spec:sp,village:v,resource:res,parent:P,road:rd?{to:rd.to,km:rd.length_m/1000,townKm:rd.townKm}:null,sea:ld&&v.landing?{km:sp.seaKm,shore:{x:ld.x,z:ld.z},path:ld.path?ld.path.pts:null}:null});if(res)out.resources.push(res);}
  /* the villages' names (core/hamlet 18: the Sikau list, dealt by a hash of the world and the village's id) */
  if(KHAMLET.dealNames){const D=KHAMLET.dealNames('islander',opt.world==null?4242:opt.world,out.villages.map(E=>E.spec.id));out.villages.forEach(E=>{const d=D[E.spec.id];if(d){E.name=d.name;E.gloss=d.gloss;}});}
  return out;}
-return{SPECS,make,groundOk,farmFit,CELL,FARM};})();
+return{SPECS,make,groundOk,farmFit,farmSite,cropRows,parentOf,shoreOf,H,slope,CELL,FARM,SHORE_R};})();

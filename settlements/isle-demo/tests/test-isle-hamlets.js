@@ -29,7 +29,7 @@ const farmAt = (town, dx, dz) => [frame(town).x + dx, frame(town).z + dz];
 const SPECS = [
   { id: 'hamlet-salt', name: 'Salt village', focus: 'salt', parent: 'Kautoa', near: [-14776, -107820] },
   { id: 'hamlet-mine', name: 'Iron mine', focus: 'mine', parent: 'Valapo', near: [-18000, 66000] },
-  { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993] },
+  { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993], landing: { x: 74697 + 450, z: -42993, ux: 1, uz: 0 }, seaKm: 41 },   /* on the coast (stand-in: the shore 450 m east, 41 km by sea to Kautoa) */
   { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] },
   { id: 'hamlet-quarry', name: 'Quarry', focus: 'quarry', parent: 'Valapo', near: [-12500, 61500] },   /* 2026-11-04: Valapo's stone */
   { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] },   /* and its timber, a felling crew of its own */
@@ -47,7 +47,7 @@ const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade:
 const hands = sp => sp.plantation ? sp.hands : Math.ceil(KHAMLET.farmNeed(people[sp.parent]).hands * sp.share);
 const villages = SPECS.map(sp => { const farm = sp.focus === 'farming', res = farm ? { x: sp.near[0] - 350, z: sp.near[1] } : { x: sp.near[0] - 200, z: sp.near[1] };
   const village = KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus, site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] },
-    resource: farm ? { x: res.x, z: res.z, workers: hands(sp) } : res, dims, ground: { ok: () => true }, worksOut: farm ? ['ie-farm'] : undefined });
+    resource: farm ? { x: res.x, z: res.z, workers: hands(sp) } : res, dims, ground: { ok: () => true }, worksOut: farm ? ['ie-farm'] : undefined, landing: sp.landing, vacant: ISLE.TUNE.sim.hamlets.grow.vacant });
   return { spec: sp, village, resource: farm ? (village.error ? null : ISLE.farmlandOf(sp, village, { centre: res, ground: {} })) : STANDIN[sp.id] }; });
 const NAMES = KHAMLET.dealNames('islander', 4242, SPECS.map(sp => sp.id)); villages.forEach(V => { V.name = NAMES[V.spec.id].name; });
 ok('every village dealt a Sikau name of its own (' + villages.slice(0, 4).map(V => V.name + ' the ' + V.spec.name.toLowerCase()).join('; ') + '...)', new Set(villages.map(V => V.name)).size === villages.length && villages.every(V => /^\S+ \S+$/.test(V.name)), '');
@@ -79,6 +79,17 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 /* the town fed by road: Valapo, its fields gone to the countryside, ran short of none of its staples after the first day */
 { const E = SIM.econ('valapo'), st = ISLE.SIM.towns.valapo.econ.brought.filter(g => ISLE.TUNE.sim.items.foods.indexOf(g) >= 0).map(g => g + ' ' + ((E.short[g] || 0) - (short1[g] || 0)));
   ok('Valapo, fed by road, ran short of none of the countryside\'s staples after the first day (' + st.join(', ') + ')', st.every(x => / 0$/.test(x)), 'bread short ' + ((E.short.bread || 0) - (short1.bread || 0))); }
+/* the villages grow (step 5): the plots laid, the lots on the building, a project under way with its hands and its town's timber */
+{ const V0 = villages.filter(V => !V.village.error), plots = V0.map(V => V.village.records.filter(r => r.vacant).length), BR = SIM.buildReport();
+  const under = ISLE.SIM.hamlets.villages.filter(X => { const T2 = BR.towns[X.id]; return T2 && T2.projects.some(Pj => Pj.state === 'building' && Pj.done > 0 || Pj.state === 'built'); });
+  ok('every village laid empty plots (' + plots.join(', ') + ' for ' + V0.map(V => V.village.census.households).join(', ') + ' households) and ' + under.length + ' of ' + V0.length + ' have a house under way or built after ' + days + ' days',
+    plots.every(n => n > 0) && under.length >= Math.floor(V0.length / 2), under.map(X => { const T2 = BR.towns[X.id], Pj = T2.projects[0]; return X.id + ' ' + (Pj ? Pj.state + ' ' + Math.round(Pj.done) + '/' + Pj.hours + ' h, timber got ' + (Pj.got.timber || 0) : ''); }).join('; '));
+  const B = cp(b); const g0 = Object.keys(B.villages).find(k => B.villages[k].lots.length); B.villages[g0].lots = B.villages[g0].lots.concat(['nowhere']); caught('a village plot that is neither a lot nor a home', ISLE.hamletChecks(a, B), /villages grow/); }
+/* the coast: the lumber village's quay and its sea leg (the owner, 2026-11-09) */
+{ const X = ISLE.SIM.hamlets.villages.find(v => v.id === 'hamlet-lumber'), Q = X && SIM.R.place[X.quayAt ? X.sea.quay : ''];
+  ok('the lumber village has a quay (a canoe stop of its own, a site store) and a sea leg to Kautoa\'s canoe stop', !!X.sea && !!Q && Q.kind === 'canoe stop' && SIM.R.place[X.sea.route] == null && !!SIM.TRADE.routes[X.sea.route] && SIM.TRADE.routes[X.sea.route].stops[1].place === 'kautoa.stop',
+    X.sea ? X.sea.km + ' km, ' + X.sea.minutes + ' minutes a passage, ' + X.sea.vessel : 'no sea leg');
+  const B = cp(b); B.villages['hamlet-lumber'].sea.landed = {}; B.villages['hamlet-lumber'].sea.atSea = {}; caught('a lumber village whose lakatoi landed nothing', ISLE.hamletChecks(a, B), /sea leg/); }
 /* the countryside's negatives (PLAN.md section 11) */
 { const B = cp(b); B.villages['hamlet-farm-k1'].farm.inCropHa = 1; B.villages['hamlet-farm-k2'].farm.inCropHa = 1; caught('two farming hamlets with a hectare each in crop', ISLE.hamletChecks(a, B), /land in crop/); }
 { const B = cp(b), X = B.villages['hamlet-farm-v1']; X.landed['sweet-potato'] = a.villages['hamlet-farm-v1'].landed['sweet-potato'] || 0; X.goods['sweet-potato'].stock = 0; X.atSea['sweet-potato'] = 0; caught('a farming hamlet whose sweet potato never reached Valapo', ISLE.hamletChecks(a, B), /crop the countryside grows landed/); }

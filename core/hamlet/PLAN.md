@@ -29,6 +29,12 @@ negative):
 - **H5 is done** (2026-10-26, settlements/isle-demo `47h`) and **H6's farming half** (2026-11-09): `14-hamlet-farmland.js`
   lays a farming village's farmland (parcels in crop and fallow, sized from the land estimate `KHAMLET.farmNeed`), and the
   isle demo's open world has six farming hamlets and two plantations on it (settlements/isle-demo/PLAN.md section 11).
+- **A village grows, lands and is founded** (2026-11-09, settlements/isle-demo/PLAN.md section 11 step 5): `30` lays empty
+  house plots (`spec.vacant`, the lots a village grows by on core's building) and a landing (`spec.landing`: the culture's
+  `landing` building at the water's edge with a lane to it; `islander_east`'s is the quay and cargo shed, the host finds
+  the shore); the sim founds a farming camp that converts to a village laid by `village` on the camp's site, its people
+  the campers first (`47f`, `47h` `people`). The founding is the isle demo's; the camp as a record kind of its own
+  (`core/camp`'s pitch for the tents) is still to do.
 - **Next:** the `gather` tag on the other biome kits; fishing villages (H6's other half).
 
 A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
