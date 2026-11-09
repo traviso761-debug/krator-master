@@ -19,7 +19,7 @@
     "kits/motor-vehicles/krator-vehicles-runtime.js": "2f9d9719d7b645cc5f3cbd033a1024f2802632ee309e7b37b939cdaacd78a4c0",
     "kits/motor-vehicles/materials.json": "475f9fb6996da94640a8b842cafc6735bc924daad8e982a7bf27523fa365464f",
     "kits/motor-vehicles/src/00-head.html": "fe513dd4dcbb6ad678f06c4cefd5bb783c0d13f86eb13b321a9bdaeed561b370",
-    "kits/motor-vehicles/src/90-sheet.js": "de37f7767fe7dee7c208b218910113c358e8b122ad6f7274e96ed1e280a51880",
+    "kits/motor-vehicles/src/90-sheet.js": "a413582b68d17bb1147c9c69388351dda7e22153c1079b96bd04946dad9d665b",
     "kits/motor-vehicles/src/92-hover.js": "6e6961a4a0b353ac2ee70fb8677e37e25c9e8ae57cc28ca7df8b49e03fdb4ff8",
     "kits/motor-vehicles/src/93-polygon.js": "a67795b37643006dd27274facb6d9eb2cddb80ed508a56a66ac5b78271ce1463",
     "kits/motor-vehicles/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
@@ -97,14 +97,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/motor-vehicles/build-manifest.json": "1a9b1ea18ce77cec63afea68b09c6a998f013538532322a7b2993976aa7a61cf",
+    "kits/motor-vehicles/build-manifest.json": "141136adea78fb7328413720e1647ddf14752f3cfd61daff6cb9134526f9c96a",
     "kits/motor-vehicles/dist/krator-vehicles.js": "a48a0d82a8028782f6f38805b750ff2fb69a473ddd407d98e887b39d717fb4d3",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "57770abcbb82773060efce0ab28590eb79b36c4934a56da8c3e707963c46855e"
+    "kits/motor-vehicles/dist/motor-vehicles.html": "9f6b2b8fac066129c9138f90d0a3e07aa61c38625e85495ec1cac055b196bb2c"
    },
    "outputs_raw": {
-    "kits/motor-vehicles/build-manifest.json": "f0eb463c01cab0ecd354a9bd3d783adff6af1a70e995e714b237b1e8336774be",
+    "kits/motor-vehicles/build-manifest.json": "93be88851ca50acd5ef1423bbc457553e6167c529e7a69109b2c8a4df48a17e5",
     "kits/motor-vehicles/dist/krator-vehicles.js": "a48a0d82a8028782f6f38805b750ff2fb69a473ddd407d98e887b39d717fb4d3",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "57770abcbb82773060efce0ab28590eb79b36c4934a56da8c3e707963c46855e"
+    "kits/motor-vehicles/dist/motor-vehicles.html": "9f6b2b8fac066129c9138f90d0a3e07aa61c38625e85495ec1cac055b196bb2c"
    }
   }
  }
