@@ -23,6 +23,11 @@
 - [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or
   without the feral wrap: the kits' own placement on this page's fields. The gum is kept at its own size (`swKeep`), the floor's plants are not
   grown (`AV.feralKit` takes `floor:true` to turn that on); the audit sits at its 1% limit. Find the gum's fault in the kit next.
+  *Closed on the way (2026-11-09, the owner: "floating flora on page open"):* the creepers (71) and the roof trees (88) hung and stood at the
+  family's FOOTPRINT, and a spindle's footprint is 46 m where its shaft is 15 m across at its break, so curtains hung 30 m off the ruin and trees
+  stood 40 m off a 15 m top; both now take the look's measured profile (`avProfile` in 70: the drawn hero's extent in 6 m bands) in the tower's
+  own frame, turned by its yaw and lean. The page checks every alpha map is tested (`HCHK.cardsCut`, the owner's "cards not cut out" audit:
+  no uncut card was found on this page; name a camera if one shows).
 - [ ] **The rust, the soot and the burns are in the vertex and instance colours** (`avRust`), so they are per panel and per instance, not a texture:
   a laser cut lands on whole panels, not as a clean line, and from the street the rust reads as staining. A rust layer in the heroes' materials
   would not reach the shells (the bake reads colours, not shaders): a rust and scorch map in the library (`PROMPTS-NEEDED.md`) blended by the
@@ -43,9 +48,11 @@
 - [ ] **The melt glass is a stand-in** (`ground.obsidian`): the basins' trinitite set is owed (`core/materials/PROMPTS-NEEDED.md`).
 - [ ] **The water on this page is at its corners:** the ridge is wider on the model than the plan read it (2 km cells), so the inlets lie just past the
   page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's.
-- [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists), no subway, no Soleri farmland (the terraces
-  are off this page). The keepers are kits/mechs' Iziz walkers of Ancient origin (the Hoist, the Fossor, the Catulus), rusted; the valley's own
-  chassis (the stilt tripod, the shrouded walker, the hunched trooper) are a kit file to come, and the hunters and feigners with them.
+- [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists; `kits/extraplanar` is being built in the
+  session valley-extraplanar, 2026-11-09), no Soleri farmland (the terraces are off this page). The keepers are kits/mechs' Ancients (culture
+  `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper and the gardener at their routines, the
+  tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other hunters (the shrouded walker, the trooper,
+  the wasp) are built and wait for the game to place them.
 - [x] **The smog is one page-wide setting** closed 2026-11-09: core/atmos (session atmos-smog) gave the mist a density field (the valley passes
   `F.density`: universal in the cores, thin on the terraces) and the clouds a mood (dark, the taint's tint, violent turbulence, the fires' glow at
   night, shifting episodes by `ATMOS.cloudMood`). From the air the floor lies under the pool and reads pale; judge it by eye.
@@ -55,8 +62,23 @@
   tree growing out of a broken storey (the perches are on the tops only), moss on the towers' surfaces themselves (the baked shells take no
   per-tower layer: a moss would need a wild variant of every look, or a hook reading a page-wide field texture), roots over the plinths, and the
   creepers hang 1.5 m off a box shell's face (the shell's inset) and are flat cards from near by.
-- [ ] **The viaducts are plain boxes** (piers, decks, two rails; two lines since 2026-11-08): the real guideway, ramps, trains and broken spans are
-  `kits/ancient-transit` (in its own session); the valley takes it when it lands.
+- [x] **The viaducts are plain boxes** closed 2026-11-09: `kits/ancient-transit` is on the page (`46z` the records, `74-host-transit.js` the
+  drawing; `PLAN.md` section 14): the lattice is a road network of 64 streets and 824 kerb-line junctions, the second viaduct the elevated highway
+  with three ramps, the north viaduct the elevated passenger line with two stations and a fallen train, a cargo line at grade with 37 level
+  crossings and a derailed train, the subway under an avenue with three stations and 44 sinkholes, the war along every street rising toward the
+  lake. The old boxes and lamps stay in the source for a station without the kit (`STAGE.transit` unset).
+- [ ] **The transit's furniture and war pop in at 750 m** (`74`, `AV_TR_NEAR`): 20,000 furniture pieces and 30,000 war pieces are records at the
+  boot (10 s) and are drawn by 400 m cell as the eye comes near, one cell a frame, one mesh a family a cell; past 750 m a street is its surface,
+  its junctions, its craters and scorch only. A far tier for the furniture (the lamp standards and signals as impostor cards) would hide the pop.
+- [ ] **The family mix does not yet lean tall toward the lake** (the owner's "nice lake front property values", `PLAN.md` 14): the war and the
+  wrecks rise toward the shore, the towers' heights do not; `AV.plan`'s family weights by `lakeK` are the next transit item, with the towers
+  placed to the kit's kerb lines rather than the lattice's bare lines.
+- [ ] **The ramps meet the avenues beside the network, not in it:** a ramp's foot lands on an avenue's surface (the kit's ramp record at grade),
+  but no junction record joins it to the grid, so there is no kerb corner or crosswalk where it lands. Asked of the transit session when the
+  junction kinds take a one-sided arm.
+- [ ] **A tower retiers at once only on a jump of 60 m or more** (`AVC.tiersTick`, 2026-11-09): a frame drawn with the last eye's tiers once
+  showed a far telescope's impostor, its 4 m stalk lost to the sheet's resolution, where its hero belonged ("floating structural elements"); a
+  walker crossing the 3.2 km shell boundary still sees a thin stalk thin out on the impostor sheet.
 - [ ] **The build takes about 50 s in the browser** (two kits' rainforest at R 2,740 and the bake): the lowlands' own pages take as long.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A

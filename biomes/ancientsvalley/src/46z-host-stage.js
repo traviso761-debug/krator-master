@@ -39,6 +39,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     a second from the west, through the core and past the Overlook's line of sight 800 m out, to the south-east */
  const VIA=[[2900,-520],[1400,-560],[300,-700],[-900,-1300],[-2900,-2300]],VIA2=[[-2750,-350],[-1500,500],[-600,1100],[300,2000],[1500,2850]],VIAS=[VIA,VIA2];
  const viaDeckY=(x,z,s)=>Math.max(rawGround(x,z)+16,LAKE_Y+38,-2);
+ /* the cargo line at grade (PLAN.md 14): across the page west to east between the lattice's lines, the towers kept off its corridor */
+ const CARGO_PTS=[[-2900,-980],[-900,-1120],[1100,-760],[2900,-640]];
+ const polyD=(LS,x,z)=>{let d=1e9;for(const L of LS)for(let k=0;k+1<L.length;k++){const a=L[k],b=L[k+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),px=a[0]+dx*t,pz=a[1]+dz*t;d=Math.min(d,Math.hypot(x-px,z-pz));}return d;};
+ const railD=(x,z)=>polyD([CARGO_PTS],x,z);
  const viaD=(x,z)=>{let d=1e9;for(const L of VIAS)for(let k=0;k+1<L.length;k++){const a=L[k],b=L[k+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),px=a[0]+dx*t,pz=a[1]+dz*t;d=Math.min(d,Math.hypot(x-px,z-pz));}return d;};
  // THE PLAN: the towers on a lattice turned 17 degrees, the skyscrapers on the floor (the Spindle three in ten, the Ledger, and the designs: the
  // Wedge, the Reed, the Telescope, the Stalk, the Swell, the Organ, the Yoke), the midrises on the shelf (the Ledger three in ten, the Terrace,
@@ -51,7 +55,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const PLAN=AV.plan({R:R+400,pitch:165,theta:17*Math.PI/180,seed:SEED+5,ground:rawGround,lakeY:LAKE_Y,F,
   coreKeys:['spindle','spindle','spindle','ledger','wedge','reed','telescope','stalk','swell','organ','yoke'],
   shelfKeys:['ledger','ledger','ledger','spindle','terrace','crescent','cupola','arcades','pods','spiral','terrarium'],
-  skip:(x,z)=>viaD(x,z)<34||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30)});
+  skip:(x,z)=>viaD(x,z)<34||railD(x,z)<30||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30)});
+ const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);   /* the lattice's turn, used by the transit below and the streets after it */
  // the towers' plinths: each stands on a level pad at its own height (a disc round a round tower, a slab round a slab, turned with it), eased
  // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The
  // engines take pads too, wide and eased over 60 m
@@ -59,15 +64,61 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w==null?60:fp.w)/2+6;T.rz=(fp.d==null?60:fp.d)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
  ENGINES.forEach(E=>{E.rx=E.rz=E.padR=E.r+20;E.c=1;E.s=0;E.ease=60;E.family='engine';PADS.insert(E,E.x,E.z,E.padR+64);});
  // THE DEBRIS: slabs thrown from the craters and lying in the streets (41: AV.debris), off the plinths, the viaduct and the water
- const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;const dq=[];PADS.query(x,z,0,dq);for(let i=0;i<dq.length;i++){const T=dq[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
+ const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||railD(x,z)<8||engineD(x,z)<40)return false;const dq=[];PADS.query(x,z,0,dq);for(let i=0;i<dq.length;i++){const T=dq[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
  const padD=(T,x,z)=>{const dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c,mn=Math.min(T.rx,T.rz);return Math.hypot(u*mn/T.rx,v*mn/T.rz)-mn;};
  const _q=[];
- function ground(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}
-  /* the roadbed: sunk 0.45 m behind a kerb where the city is dense enough for streets (the ground is finalised after the streets' functions below) */
-  if(typeof streetK==='function'&&h>LAKE_Y+2)h-=.45*streetK(x,z)*smooth(.1,.3,F.density(x,z));return h;}
+ /* the relief: the model's ground with every tower's plinth eased in. The roadbed sinking is gone (2026-11-09): the transit kit grades the roads */
+ function relief(x,z){let h=rawGround(x,z);_q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],d=padD(T,x,z);if(d<T.ease)h=mix(T.y,h,smooth(0,T.ease,d));}return h;}
+ /* THE TRANSIT (PLAN.md section 14; kits/ancient-transit read in place): the lattice's lines become the kit's road network (an avenue every third
+    line, 26 m; the rest roads of 11 m), each a graded alignment pinned flat through its junctions, the junctions read off the kerb lines; the war
+    along every street rises toward the lake (a riot inland, bombed at the shore, the military positions and the barricades of wrecks in the
+    lakeward half); the second viaduct's line becomes the elevated highway with three ramps landing at avenue crossings; the north viaduct the
+    elevated passenger line with two stations; a cargo line at grade crosses the page with a level crossing at every street; a subway runs under
+    an avenue with three stations, most of it blocked. The records come before the ground, because the ground takes their carving */
+ const AVT={};
+ {const p=PLAN.pitch,n=Math.ceil(R/p)+1,defs=[],ix=[{},{}],toXZ=(u,w)=>[u*ct-w*snt,u*snt+w*ct];
+  for(let axis=0;axis<2;axis++)for(let k=-n;k<=n;k++){const v=(k+.5)*p;if(Math.abs(v)>R-140)continue;const half=Math.sqrt((R-110)*(R-110)-v*v),av=((k%3)+3)%3===1;
+   const a=axis===0?toXZ(v,-half):toXZ(-half,v),b=axis===0?toXZ(v,half):toXZ(half,v);
+   defs.push({id:(axis?'w':'u')+(k<0?'m':'')+Math.abs(k),pts:[a,b],kind:av?'avenue':'road',axis,k,av});ix[axis][k]=defs.length-1;}
+  AVT.defs=defs;AVT.ix=ix;}
+ /* the lake's pull: the distance to the nearest water cell (a 120 m sample of the raw ground), 1 at the shore, 0 beyond 2.6 km */
+ {const W=KSPACE.create({cell:400}),pts=[];for(let x=-R-1200;x<=R+1200;x+=120)for(let z=-R-1200;z<=R+1200;z+=120){if(rawGround(x,z)<LAKE_Y-1){const q={x,z};pts.push(q);W.insert(q,x,z,1);}}
+  const wq=[];AVT.lakeD=(x,z)=>{wq.length=0;W.query(x,z,2800,wq);let d=4000;for(const q of wq)d=Math.min(d,Math.hypot(q.x-x,q.z-z));return d;};AVT.lakeK=(x,z)=>smooth(2600,250,AVT.lakeD(x,z));AVT.waterCells=pts.length;}
+ /* the subway under the avenue nearest the Overlook's line of sight (a w-line avenue through the core), three stations, most of it blocked */
+ {let best=null;for(const d of AVT.defs){if(!d.av||d.axis!==1)continue;const v=(d.k+.5)*PLAN.pitch;if(best==null||Math.abs(v-900)<Math.abs((best.k+.5)*PLAN.pitch-900))best=d;}
+  const a=best.pts[0],b=best.pts[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),f=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  AVT.subway=KTRANSIT.subway([f(.06),f(.35),f(.65),f(.94)],{id:'sw',ground:relief,stations:[Math.round(L*.2),Math.round(L*.5),Math.round(L*.78)],stationStates:['ruined','collapsed','ruined'],seed:SEED+71});AVT.subwayLine=best.id;}
+ /* the roads (graded on the relief, dipping into the carving), their war */
+ let AVT_WARS=null,CRX=null;const crq=[];const AVT_T0=performance.now();
+ /* the war's craters on one spatial index (KTRANSIT.craterH walks a street's whole list; the ground is sampled millions of times): the kit's own
+    bowl and rim, the deepest bowl and the highest rim winning, on the craters within reach */
+ const craterSum=(x,z)=>{if(!CRX)return 0;crq.length=0;CRX.query(x,z,0,crq);let h=0,rim=0;for(const c of crq){const d=Math.hypot(x-c.x,z-c.z);if(d>=c.r*1.6)continue;
+  if(d<c.r){const q=d/c.r,t=1-q*q,v=-c.depth*t*t;if(v<h)h=v;}const u=d<c.r?(d-c.r)/(.35*c.r):(d-c.r)/(.6*c.r),w=Math.max(0,1-u*u),b=.16*c.depth*w*w;if(b>rim)rim=b;}return h+rim;};
+ const carve=(x,z)=>KTRANSIT.sinkholeH(AVT.subway,x,z)+Math.min(0,craterSum(x,z));
+ AVT.net=KTRANSIT.network(AVT.defs,{ground:relief,carve});
+ AVT.streets=AVT.defs.map((d,i)=>{const Rd=AVT.net.roads[i];return{id:d.id,pts:d.pts,width:Rd.width,pavement:Rd.pavement,ground:Rd.levelAt,av:d.av,axis:d.axis,k:d.k};});
+ AVT_WARS=AVT.streets.map((st,i)=>{const Rd=AVT.net.roads[i],lk=s=>{const q=Rd.path.at(s);return AVT.lakeK(q.x,q.z);},hi=Math.max(lk(0),lk(Rd.L*.5),lk(Rd.L));
+  return KTRANSIT.war(st,{damage:s=>{const k=lk(s);return clamp(.1+.85*Math.pow(k,1.3),0,1);},military:hi>.55?true:(hi>.3?.5:false),blockades:st.av&&hi>.4?true:undefined,network:AVT.net,road:i,seed:KRAND.hash(SEED,73,i,0)});});
+ AVT.wars=AVT_WARS;CRX=KSPACE.create({cell:60});AVT_WARS.forEach(W=>W.craters.forEach(c=>CRX.insert(c,c.x,c.z,c.r*1.6)));AVT.craters=AVT_WARS.reduce((a,W)=>a+W.craters.length,0);
+ /* the cargo line at grade: level crossings at every street it meets, a cutting where the ground rises */
+ AVT.cargo=KTRANSIT.rail(CARGO_PTS,{id:'cargo',ground:relief,streets:AVT.streets,catenary:true,seed:SEED+75});
+ const lineHnear=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,ku=Math.round(lx/p-.5),kw=Math.round(lz/p-.5);let h=0;const iu=AVT.ix[0][ku],iw=AVT.ix[1][kw];
+  if(iu!=null)h+=KTRANSIT.lineH(AVT.net.roads[iu],x,z);if(iw!=null)h+=KTRANSIT.lineH(AVT.net.roads[iw],x,z);return h;};
+ /* the ground everything stands on: the relief, the subway's holes, the war's craters, the roads' and the cargo line's cuttings */
+ function ground(x,z){let h=relief(x,z);if(h<LAKE_Y+1.5)return h;h+=KTRANSIT.sinkholeH(AVT.subway,x,z)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return h;}
+ /* the highway on the second viaduct's line: three ramps, each landing at an avenue crossing (off, on, off), the ruin by the scar and the lake */
+ {const HP=KTRANSIT.path(VIA2,{ground:relief,radius:80}),xs=[];AVT.defs.forEach((d,i)=>{if(!d.av)return;KTRANSIT.intersections(HP,d.pts).forEach(c=>xs.push({s:c.sP,road:i}));});xs.sort((a,b)=>a.s-b.s);
+  const pick=f=>{let best=null;for(const c of xs){if(c.s<400||c.s>HP.L-400)continue;if(best==null||Math.abs(c.s-f*HP.L)<Math.abs(best.s-f*HP.L))best=c;}return best;};
+  const r1=pick(.25),r2=pick(.5),r3=pick(.75),ramps=[];[[r1,-1,'off'],[r2,1,'on'],[r3,-1,'off']].forEach(([c,side,dir])=>{if(c)ramps.push({s:Math.max(200,c.s-240),side,dir,road:c.road});});
+  AVT.highway=KTRANSIT.highway(VIA2,{id:'h1',ground:ground,clearance:9,ramps,ruin:s=>{const q=HP.at(s),k=AVT.lakeK(q.x,q.z),sc=F.scar(q.x,q.z);return sc>.3?{intact:0,cracked:.1,collapsed:.5,gone:.4}:k>.6?{intact:.1,cracked:.3,collapsed:.35,gone:.25}:{intact:.45,cracked:.35,collapsed:.12,gone:.08};},
+   overgrowth:s=>{const q=HP.at(s);return 2*F.feral(q.x,q.z)*F.wild(q.x,q.z);},blockades:[Math.round(HP.L*.62)],seed:SEED+77});AVT.rampCrossings=ramps;AVT.highwayPath=HP;}
+ /* the elevated passenger line on the north viaduct's line, two stations, overgrown where the land is wild */
+ {const PP=KTRANSIT.path(VIA,{ground:relief,radius:160});AVT.pax=KTRANSIT.rail(VIA,{id:'pax',ground:ground,elevated:true,stations:[1500,3400],overgrowth:s=>{const q=PP.at(Math.min(s,PP.L));return 2*F.feral(q.x,q.z)*F.wild(q.x,q.z);},seed:SEED+79});}
+ AVT.trains=[KTRANSIT.train(AVT.cargo,{id:'freight',s:Math.round(AVT.cargo.L*.42),kind:'freight',state:'derailed',from:2}),KTRANSIT.train(AVT.pax,{id:'pax1',s:2400,kind:'passenger',state:'fallen',from:2}),
+  KTRANSIT.train(AVT.subway,{id:'metro1',s:AVT.subway.stations[0].s+30,kind:'passenger',cars:4,state:'standing'}),KTRANSIT.train(AVT.subway,{id:'metro2',s:AVT.subway.stations[1].s-260,kind:'passenger',cars:4,state:'derailed',from:1})];
+ AVT.ms=Math.round(performance.now()-AVT_T0);
  const yOf=ground;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
- const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);
  /* THE STREET GRID (the owner, 2026-11-08: a clear Ancient grid, destroyed and overgrown): the lattice's lines are the streets, 11 m wide, and every
     third line an avenue of 26 m; drawn as asphalt with rubble at the kerbs, the forest thinned to a third on them (cracks and saplings), where the
     city is dense enough to have them */
@@ -101,7 +152,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022,dark:.8,tint:[.42,.33,.30],turbulence:.7,turbKind:'violent',glow:.5,glowColour:[1,.55,.2]},
   cloudMood:{period:300,glowColour:[1,.55,.2]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
   smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.0011,above:110,depth:110,noise:.85,day:1,field:true},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';if(F.foul(x,z)>.6&&F.park(x,z)<.5)return 'polluted ground (the foul half)';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement
@@ -150,11 +201,11 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     /* the largest crater whose rim spot stands clear of every tower's pad and rubble (a fallen tower's heap reaches 120 m from its foot) */
     'A crater':(function(){const q=[];for(const c of CRATERS.slice().sort((a,b)=>b.r-a.r)){const ex=c.x+c.r*1.9,ez=c.z+c.r*1.4;if(ground(ex,ez)<LAKE_Y+3)continue;q.length=0;PADS.query(ex,ez,140,q);if(q.some(T=>Math.hypot(T.x-ex,T.z-ez)<T.padR+130))continue;return V([ex,ez],5,[c.x,c.z],-c.depth*.5);}const c=CRATERS[0];return V([c.x+c.r*1.9,c.z+c.r*1.4],5,[c.x,c.z],-c.depth*.5);})(),
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
-    'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.5,E.z-E.r*1.3],4,[E.x,E.z],E.h*.4);})(),
+    'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.26,E.z-E.r*1.1],4,[E.x,E.z],E.h*.4);})(),   /* 1.5, 1.3 stood inside a Pods stump's 120 x 84 footprint (the eye check, 2026-11-09, once the tiers retiered at once) */
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(.3+.7*F.wild(x,z))*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
     'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};},
   start:'The Overlook: city1 and the lake',
   /* the LOD spine: a lattice over the whole page (the kits drop a species past its mid range from the spine unless it has an impostor; the
      overgrowth is everywhere, so the spine is), plus the eye's start */
   spine:(function(){const S=[[NEAR.x,NEAR.z]];for(let x=-2400;x<=2400;x+=800)for(let z=-2400;z<=2400;z+=800)S.push([x,z]);return S;})(),
-  budgetTris:15000000,budgetCalls:900};})();   /* raised from 9.5 M on 2026-11-09 (the owner: "we can increase tri budget"): the overgrowth of the wild half; BUDGETS.json */
+  budgetTris:20000000,budgetCalls:1200};})();   /* calls 900 -> 1200 on 2026-11-09 with the transit: the kit's chunked draws and the furniture cells near the eye (the park view 1,085 on the RTX lane) */   /* raised from 9.5 M on 2026-11-09 (the owner: "we can increase tri budget"): the overgrowth of the wild half; BUDGETS.json */

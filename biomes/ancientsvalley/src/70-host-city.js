@@ -13,10 +13,10 @@ const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
    48 of them; its impostor is 128 px a view */
 /* 2026-11-09, the owner's fourth eye: a shell seen onto its top (the eye over the tower's roof) smears whatever the range, so such a tower is a hero to
    AV_NEAR_STEEP; a design is a hero to 1 km, the nearest 64 (past 48 within 1.4 km the rest were cards at 900 m) */
-const AV_NEAR=360,AV_FAR=3200,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=40,AV_DNEAR=1000,AV_DHEROMAX=72;
+const AV_NEAR=600,AV_FAR=3200,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=64,AV_DNEAR=1000,AV_DHEROMAX=72;   /* the owner, 2026-11-09: a shell at 390 m still too close; the band to 600 m (510 with the dither), the budget 20 M */
 /* the owner, 2026-11-09 ("a shell at close range again"): a pierced or round design's box shell is a dotted sheet at 300 m, so those families keep
    their heroes further out (their band is AV_NEAR times this), and a tower inside its band is a hero whatever the pool holds */
-const AV_NEARK={pods:2,organ:1.8,reed:1.6,arcades:1.6,spiral:1.6,terrarium:1.5,cupola:1.3,swell:1.3};
+const AV_NEARK={pods:2,organ:1.8,reed:1.6,arcades:1.6,spiral:1.6,terrarium:1.5,cupola:1.3,swell:1.3,stalk:2,telescope:1.6,yoke:1.4};   /* the Stalk's and the Telescope's thin masts vanish in a 1 m texel: their crowns floated as shells (the owner, 2026-11-09) */
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
 /* THE FAR LOOKS (2026-11-09, the owner's fifth eye: floors hung in the air on the far impostors, shells drew over other models). A ruin at range
@@ -101,13 +101,25 @@ function avClipHero(H,top){H.updateMatrixWorld(true);const kill=[];H.traverse(m=
    keep.forEach((i,j)=>{for(let q=0;q<16;q++)a[j*16+q]=A0[i*16+q];if(C){C[j*3]=C0[i*3];C[j*3+1]=C0[i*3+1];C[j*3+2]=C0[i*3+2];}});m.instanceMatrix=new THREE.InstancedBufferAttribute(a,16);if(C)m.instanceColor=new THREE.InstancedBufferAttribute(C,3);m.count=keep.length;return;}
   const g=clipGeoY(m.geometry,m,top);if(g===m.geometry)return;if(!g){kill.push(m);return;}m.geometry=g;});kill.forEach(m=>{if(m.parent)m.parent.remove(m);});return H;}
 const heroOf=(key,lite)=>{const p=key.split('.'),F=MP.FAMILY[p[0]];let H=MP.hero(p[0],p[1],lite);if(F&&F.design&&AV_RUINY[p[1]]){let top=null;try{top=MP.ruin(F,p[1]).top;}catch(e){}if(top!=null)avClipHero(H,top+.5);}return avRust(H,key);};
+/* the measured shape of a look: the drawn hero's horizontal extent in 6 m bands up its height, in the tower's own frame (x, z about the axis,
+   y from the base). The creepers (71) hang and the roof trees (88) stand on THIS, not on the family's footprint: a spindle's footprint is 46 m
+   and its shaft 15 m across at its break, so a curtain hung at the footprint's radius 140 m up floated 30 m off the ruin (the owner,
+   2026-11-09: floating flora at the Overlook). A band holds its largest radius and its box; `at(h)` is the band at h or the nearest full one
+   below it; `top` the highest full band's ceiling (the hero is clipped at the record's top, so this is the drawn top) */
+const AV_PROF={};function avProfile(key){if(AV_PROF[key])return AV_PROF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);const BAND=6,B=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
+ const take=(x,y,z)=>{const i=Math.floor(y/BAND);if(i<0||i>150)return;const b=B[i]||(B[i]={y0:i*BAND,r:0,x0:1e9,x1:-1e9,z0:1e9,z1:-1e9,n:0});b.n++;const r=Math.hypot(x,z);if(r>b.r)b.r=r;if(x<b.x0)b.x0=x;if(x>b.x1)b.x1=x;if(z<b.z0)b.z0=z;if(z>b.z1)b.z1=z;};
+ H.traverse(m=>{if(!m.isMesh||!m.geometry||/debris|rubble/.test(m.name||''))return;const P=m.geometry.attributes.position;if(!P)return;
+  if(m.isInstancedMesh){for(let k=0;k<m.count;k++){m.getMatrixAt(k,M);M.premultiply(m.matrixWorld);take(M.elements[12],M.elements[13],M.elements[14]);}return;}
+  const st=Math.max(1,Math.floor(P.count/6000));for(let i=0;i<P.count;i+=st){v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);take(v.x,v.y,v.z);}});
+ let top=0;for(let i=B.length-1;i>=0;i--)if(B[i]&&B[i].n>=6){top=B[i].y0+BAND;break;}
+ const P={band:BAND,B,top,at(h){let i=Math.min(B.length-1,Math.floor(h/BAND));for(;i>=0;i--){const b=B[i];if(b&&b.n>=6)return b;}return null;}};return AV_PROF[key]=P;}
 // the towers as records before anything is drawn: the family's name, its footprint, the state
 AVC.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family];if(!F)return;const r=F.footprint?(F.footprint.r||Math.max(F.footprint.w||0,F.footprint.d||0)/2):30;
  REGISTER({name:F.name+' ('+T.state+')',kind:'tower',x:T.x,z:T.z,y:T.y,r:r,h:T.state==='intact'||T.state==='gutted'?F.height.tip:F.height.tip*.6,tags:{kind:'tower',family:T.family,state:T.state,zone:T.kind}});});
 AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return false;const t0=performance.now();
  try{AVC.engines();}catch(e){reportErr('engines: '+e.stack);}AVC.engineMs=Math.round(performance.now()-t0);
  /* the shell records: every look the plan uses (a skeleton's towers take the stump's); a family whose record fails has no shell (its towers are heroes then impostors) */
- AVC.shellKeys=[];AVC.stub={};AVC.skeys.forEach(k=>{const p=k.split('.'),F=MP.FAMILY[p[0]];if(!F||!F.shell)return;try{AVC.rec[k]=KSHELL.record(F,p[1]);AVC.hero[k]=heroOf(k);AVC.shellKeys.push(k);}catch(e){reportErr('shell record '+k+': '+(e.message||e));}});
+ AVC.shellKeys=[];AVC.stub={};AVC.skeys.forEach(k=>{const p=k.split('.'),F=MP.FAMILY[p[0]];if(!F||!F.shell)return;try{AVC.rec[k]=KSHELL.record(F,p[1]);AVC.hero[k]=AVC.hero[k]||heroOf(k);AVC.shellKeys.push(k);}catch(e){reportErr('shell record '+k+': '+(e.message||e));}});
  const size=/[?&]atlas=1024\b/.test(location.search)?1024:2048,steps=/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:32,pxOf=()=>2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);
  /* pack the records into atlases, each as full as it goes (KSHELL.pack throws when one does not fit: the rest start the next) */
  AVC.atlases=[];AVC.mats=[];AVC.atlasOf={};{let left=AVC.shellKeys.slice();while(left.length){let n=left.length,packed=null;while(n>0){try{packed=KSHELL.pack([].concat(...left.slice(0,n).map(k=>KSHELL.slots(AVC.rec[k]))),size);break;}catch(e){n=Math.floor(n*.7);packed=null;}}
@@ -167,8 +179,10 @@ function avDebris(list,far){const DB=far?AVC.debrisFar:AVC.debris,n={},M=new THR
  list.forEach(T=>{const D=DB[T.key];if(!D)return;const i=n[T.key]=(n[T.key]||0);M.compose(p.set(T.x,T.y,T.z),Q.setFromAxisAngle(Y,T.yaw||0),one);D.forEach(im=>im.setMatrixAt(i,M));n[T.key]++;});   /* the rubble lies on the ground: no lean */
  for(const k in DB)DB[k].forEach(im=>{im.count=n[k]||0;im.instanceMatrix.needsUpdate=true;});}
 // the tiers each 150 ms: the nearest towers heroes from a pool; 300 m to 1.4 km shells (to 3.2 km seen steeply); the rest impostors
-AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now<(AVC.nextTier||0))return;AVC.nextTier=now+150;
- const e=camera.position,T=AVC.towers,near=[],mid=[];
+AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now(),e=camera.position,L=AVC.lastEye;
+ /* a jump of the eye (a view picked, the follow mode) retiers at once: a frame drawn with the last eye's tiers showed a far tower's impostor, its stalk lost, where its hero belonged (the owner, 2026-11-09: "floating structural elements") */
+ const jumped=!L||Math.hypot(e.x-L[0],e.y-L[1],e.z-L[2])>60;if(!jumped&&now<(AVC.nextTier||0))return;AVC.nextTier=now+150;AVC.lastEye=[e.x,e.y,e.z];
+ const T=AVC.towers,near=[],mid=[];
  /* a design (no shell) is a hero to AV_DNEAR, the nearest AV_DHEROMAX of them, then its impostor. Seen steeply from above (the owner, 2026-11-08: the
     shells' top maps smeared from the air) a shelled tower is a hero to AV_NEAR_STEEP, unfaded, and its shell starts there; the hero pool is wider */
  /* the owner, 2026-11-08: heroes and shells drew on top of each other from the air. The dither band (the shell from .85 nearR, the hero fading out
@@ -216,7 +230,7 @@ AVC.engines=function(){AV_ENGINES=STAGE.engines.map(E=>{const fn=window[E.fn];if
  if(MP.shadow)MP.shadow.cast(G);scene.add(G);return G;}).filter(Boolean);return AV_ENGINES;};
 // ---------------------------------------------------------------- the lines: the viaduct (AV.viaduct's records drawn as instanced piers and decks)
 let AV_LINES_GONE=0,AV_LAMPS=[];
-const AV_LINES=(function(){const V={piers:[],decks:[],length:0};STAGE.viaduct.pts.forEach(L=>{const v=AV.viaduct(L,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});V.piers.push(...v.piers);V.decks.push(...v.decks);V.length+=v.length||0;});
+const AV_LINES=(function(){const V={piers:[],decks:[],length:0};(STAGE.transit?[]:STAGE.viaduct.pts).forEach(L=>{   /* the transit kit draws the lines now (74); the boxes stay for a station without it */const v=AV.viaduct(L,{step:36,ground:terrainH,deckY:STAGE.viaduct.deckY});V.piers.push(...v.piers);V.decks.push(...v.decks);V.length+=v.length||0;});
  const P=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('metropolis','concrete'):null,T=P?KMAT.textures(P,{aniso:8}):{};
  const mat=new THREE.MeshStandardMaterial({map:T.map||null,normalMap:T.normalMap||null,roughnessMap:T.roughnessMap||null,color:0x9a968c,roughness:.95,metalness:0});
  const rail=new THREE.MeshStandardMaterial({color:0x5a5248,roughness:.6,metalness:.6});
@@ -237,7 +251,7 @@ const AV_LINES=(function(){const V={piers:[],decks:[],length:0};STAGE.viaduct.pt
  /* THE LAMP STANDARDS (the owner, 2026-11-08: the grid carried by rows the eye follows): along both kerbs of every avenue, one every 30 m, 7 m tall, a
     bracket and a head; a third of them bent, a sixth fallen, by hash; none on a plinth, a scar, the water or the viaduct's corridor */
  const LT=STAGE.lattice,lamps=[],lampQ=[];const toW=(lx,lz)=>[lx*LT.c-lz*LT.s,lx*LT.s+lz*LT.c];
- STAGE.avenueLines().forEach((lv,li)=>{for(let s=-STAGE.R-300;s<=STAGE.R+300;s+=30){[[lv+LT.AW+1.5,s,0],[lv-LT.AW-1.5,s,0],[s,lv+LT.AW+1.5,1],[s,lv-LT.AW-1.5,1]].forEach((e,q)=>{const w=toW(e[0],e[1]),x=w[0],z=w[1];
+ (STAGE.transit?[]:STAGE.avenueLines()).forEach((lv,li)=>{for(let s=-STAGE.R-300;s<=STAGE.R+300;s+=30){   /* the kit's dress replaces these lamps */[[lv+LT.AW+1.5,s,0],[lv-LT.AW-1.5,s,0],[s,lv+LT.AW+1.5,1],[s,lv-LT.AW-1.5,1]].forEach((e,q)=>{const w=toW(e[0],e[1]),x=w[0],z=w[1];
    if(Math.hypot(x,z)>STAGE.R)return;if(STAGE.F.density(x,z)<.3||STAGE.F.scar(x,z)>.3||STAGE.built(x,z)>.05||STAGE.viaduct.d(x,z)<16)return;const g=terrainH(x,z);if(g<STAGE.lakeY+2)return;
    const h=KRAND.hash(STAGE.seed,li,Math.round(s/30),q+50),u=KRAND.unit(h);lamps.push({x,z,y:g,yaw:e[2]?Math.PI/2:0,state:u<.17?'fallen':u<.5?'bent':'up',u:KRAND.unit(KRAND.hash(h,3))});});}});
  const lampMat=new THREE.MeshStandardMaterial({color:0x4a4038,roughness:.9,metalness:.5}),LP=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),lampMat,lamps.length*2);
@@ -248,5 +262,5 @@ const AV_LINES=(function(){const V={piers:[],decks:[],length:0};STAGE.viaduct.pt
  if(lamps.length)REGISTER({name:'The avenues\' lamp standards',kind:'line',x:0,z:0,r:STAGE.R,h:8,tags:{kind:'line',line:'lamps',count:lamps.length}});
  AV_LAMPS=lamps;
  [piers,decks,rails].forEach(m=>{m.frustumCulled=false;m.userData.inspectLabel='the transit viaduct';m.userData.host=true;m.castShadow=m.receiveShadow=!!MP.shadow;scene.add(m);});
- REGISTER({name:'The transit viaduct',kind:'line',x:0,z:-800,r:3000,h:60,tags:{kind:'line',line:'viaduct',length:Math.round(V.length)}});
+ if(V.decks.length)REGISTER({name:'The transit viaduct',kind:'line',x:0,z:-800,r:3000,h:60,tags:{kind:'line',line:'viaduct',length:Math.round(V.length)}});
  return{V,piers,decks,rails,debris:deb,tris:(V.piers.length+V.decks.length*3+D.length)*12};})();

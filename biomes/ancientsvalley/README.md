@@ -94,7 +94,9 @@ paint with the taint's purple, the wild half's canopy paint toward purple-green.
 registry). The station's vision (`PLAN.md` section 12) is complete: a park gone feral, the dead lobe, **two viaduct lines** (the second from the
 west through the core, crossing the Overlook's line of sight 1.1 km out), **the lake's steam** (`89u`: banks of mist on every water cell of the
 page and the model's water to 7 km, plumes of steam among them, core/atmos sprites), and **the keepers** (`72`: kits/mechs read as a bundle,
-its Iziz walkers of Ancient origin, the Hoist, the Fossor and the Catulus, rusted, each walking a round of one avenue block near a view's eye and
+its Ancients, culture `ancient`, built by the session valley-robots on 2026-11-09 from the robo folder: the porter of the Hoist's lineage, the
+hovering watcher, the lamplighter, the sweeper, the gardener, and the stilt tripod hunting a round by the lake; rusted from the seed; each
+keeper playing its routine, the kit's keeper clip, at the corners of its round; before 2026-11-09 the Iziz Hoist, Fossor and Catulus, bare, each walking a round of one avenue block near a view's eye and
 stopping at the corners as if to work). **The smog** (the owner: "dark, unnaturally turbulent, coloured cloudiness and medium-distance smog,
 universal near cities; it should sell the LOD"; `89v`): the sky's clouds low, heavy and fast, the air turbid and dust-coloured toward the
 taint's purple, the page's fog thick (2 km half veiled, 4 km gone: the far tiers with it), the height fog's mist pooled on the floor and a broken
@@ -109,13 +111,25 @@ of itself (its instances and its bucket triangles, turned and scaled to a third 
 `rooftree`; the **creepers** (`71-host-creepers.js`): curtains of vine and hanging moss (two library cards, `card.creeper.beach` and
 `card.moss.hanging`, on crossed quads, one InstancedMesh each) down the faces of every standing tower of the wild half, hung from the broken top
 and the storeys below, more the deeper the feral field, tinted toward the taint's purple-green like the kits' foliage; the forest at quality 2.3 and 1.35.
+A curtain hangs and a roof tree stands on the DRAWN ruin: the look's measured profile (`avProfile` in `70`: the hero's horizontal extent in 6 m
+bands, in the tower's frame turned by its yaw and lean), never the family's footprint, which is the base of a shaft that tapers (a spindle: 46 m
+at the foot, 15 m at its break). A tree is never taller than the ruins about it: `capH` (0.6 of the tallest tower within 160 m, 12 to 32 m) caps
+the growth and shrinks a tree whose own height is past it (to .4 at the least), the species with no height in its record measured from its geometry.
 
-**Numbers (2026-11-09, `verify.py --assert --all-views` on the Arc 140T lane, 1280 x 800):** 787 towers, 3,735 read-in trees (631 copies on 131
-ruins' tops), 2,441 curtains, 575 banks of mist, four keepers; 11.9 M triangles in the registry (budget 15 M), the trees 6.7 M of their 7 M. Per
-view: the Overlook 6.46 M triangles in 682 calls, a residential street 4.57 M in 630, among the towers 4.36 M in 627, the viaduct 4.16 M in 542,
-the core from the water 3.94 M in 568, the dead lobe 4.80 M in 642, a crater 3.41 M in 555, the Gyre 5.12 M in 508, the Strider 5.02 M in 568, the
-park gone feral 5.73 M in 804 (the worst calls; the ceiling 900), from the air 4.74 M in 633; the shells bake in 3.4 s, the boot 4.2 s. **The
-camera rides with a keeper** on R (again for the next, Escape, a drag or the wheel to let go; `AV_FOLLOW.follow(i)`).
+**The transit (the owner, 2026-11-09; `PLAN.md` section 14; `kits/ancient-transit` read in place):** the lattice is a real road network (`46z`:
+64 streets, avenues of 26 m and roads of 11 m, 824 kerb-line junctions with pavement corners and crosswalks), the war along every street rising
+toward the lake (scorch, craters, barricades of the Ancients' wrecked vehicles, military positions; a riot inland, bombed at the shore), the
+elevated highway across the page with three ramps, the elevated passenger line (two stations, a fallen train), the cargo line at grade (37 level
+crossings, a derailed train), the subway under an avenue (three stations, sinkholes, two metro trains), the ground carved by the kit's craters,
+sinkholes and gradings. `74-host-transit.js` draws it: every surface in one builder in 1.5 km chunks (the kit's 400 m chunks a street were
+3,000 draw calls here), the junctions and the kit's own draws chunked the same, far chunks hidden past 3.6 km, and the furniture and the war
+(50,000 piece records at the boot) bucketed into 400 m cells and drawn as the eye comes within 750 m, one cell a frame, one mesh a family.
+
+**Numbers (2026-11-09, `verify.py --assert --all-views` on the Arc 140T lane, 1280 x 800, with the transit):** 824 junctions, the highway 222 spans
+and 3 ramps, the cargo line 37 crossings, the subway 3 stations, 4 trains; the war at mean damage 0.57 on 59 lakeward streets against 0.31 on 5 inland;
+129 ruins' tops with trees, 2,345 curtains, 6 keepers on their rounds; 12.5 M triangles in the registry (budget 20 M), the trees 7.3 M of their 8 M.
+Per view: the Overlook 8.87 M in 999, a residential street 7.50 M in 974, among the towers 7.06 M in 974, the viaduct 6.20 M in 758, the core from the water 6.34 M in 915, the dead lobe 6.17 M in 822, a crater 5.93 M in 846, the Gyre 5.72 M in 544, the Strider 7.04 M in 804, the park gone feral 8.46 M in 1101, from the air 6.47 M in 826 (the ceiling 1,200 calls). **The camera rides with a keeper** on R (again for the next, Escape, a drag or the wheel to let go;
+`AV_FOLLOW.follow(i)`).
 
 ## Read next
 

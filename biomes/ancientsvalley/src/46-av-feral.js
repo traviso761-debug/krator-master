@@ -18,9 +18,12 @@
  const diag=(x,y,z)=>[x,0,0,0,y,0,0,0,z];
  const snapAll=()=>{const S={items:{},buckets:{}};for(const n in BIO.items)S.items[n]=BIO.items[n].count;for(const f in BIO.buckets)S.buckets[f]=BIO.buckets[f].pos.length;return S;};
  const tmp=new Array(16),out=new Array(16);
- function moveInst(it,i0,i1,A){const m=it.m.a;for(let i=i0;i<i1;i++){for(let q=0;q<16;q++)tmp[q]=m[i*16+q];mul4(A,tmp,out);for(let q=0;q<16;q++)m[i*16+q]=out[q];}W.inst+=i1-i0;}
+ /* an instance or a triangle is grown ONCE: a span that closes again over rows already grown (the kits set BIO.owner once a row, and a tree's rows
+    come in several batches) skips them, or a madrone's cards were grown thirteen times over, to fifty metres, a hundred metres up (the owner,
+    2026-11-09: "no tree should outmass a skyscraper"; its registered radius had reached 444 m, 1.3 to the thirteenth) */
+ function moveInst(it,i0,i1,A){const m=it.m.a,s=Math.max(i0,it._grown||0);for(let i=s;i<i1;i++){for(let q=0;q<16;q++)tmp[q]=m[i*16+q];mul4(A,tmp,out);for(let q=0;q<16;q++)m[i*16+q]=out[q];}if(i1>s)W.inst+=i1-s;if(i1>(it._grown||0))it._grown=i1;}
  /* a pure scale about the foot: the normals keep their directions (anisotropy of 15% is left unrenormalised: it is under a degree) */
- function moveTris(K,p0,L,f){const P=K.pos.a,n=K.pos.length;for(let j=p0;j<n;j+=3){const x=P[j]-f[0],y=P[j+1]-f[1],z=P[j+2]-f[2];P[j]=f[0]+L[0]*x;P[j+1]=f[1]+L[4]*y;P[j+2]=f[2]+L[8]*z;}W.tris+=(n-p0)/9;}
+ function moveTris(K,p0,L,f){const P=K.pos.a,n=K.pos.length,s=Math.max(p0,K._grown||0);for(let j=s;j<n;j+=3){const x=P[j]-f[0],y=P[j+1]-f[1],z=P[j+2]-f[2];P[j]=f[0]+L[0]*x;P[j+1]=f[1]+L[4]*y;P[j+2]=f[2]+L[8]*z;}if(n>s)W.tris+=(n-s)/9;if(n>(K._grown||0))K._grown=n;}
  function drop(sp){let tris=0,inst=0;for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0;if(it.count<=i0)continue;inst+=it.count-i0;
    const stores=[[it.m,16],[it.c,3]];if(it.n.length)stores.push([it.n,3]);if(it.c2.length)stores.push([it.c2,3]);for(const a in it.x)stores.push([it.x[a],4]);
    for(const [S,w] of stores)if(S.length>=it.count*w)S.length=i0*w;tris+=(it.count-i0)*BIO.defs[n].tris;it.k.length=i0;it.o.length=i0;it.count=i0;}
@@ -28,20 +31,24 @@
    K.pos.length=p0;K.nor.length=p0;K.col.length=p0;K.uv.length=p0/9*6;K.k.length=p0/9;K.tris-=t;}
   BIO.tally(-tris,-inst,0);W.dropped++;}
  function close(sp,o){const T=sp.T;if(!T)return;const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}
-  if(o.keep&&o.keep.has(S.key)){W.kept=(W.kept||0)+1;return;}   /* a species kept at its own size (the gum: its foliage clumps float when it is grown) */
+  const kept=!!(o.keep&&o.keep.has(S.key));if(kept)W.kept=(W.kept||0)+1;   /* a species kept at its own size (the gum: its foliage clumps float when it is grown): not grown, but capped like the rest (the owner, 2026-11-09: the gum at 290 m outmassed the towers) */
   {let any=false,tris=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;tris=true;break;}
    if(!any){if(o.adjust)o.adjust(T,null);return;}
    /* a tree whose span holds cards but no triangles draws its trunk later, outside the span (the cane palm): grown, its fronds would leave the trunk
       behind (the core attach audit); it keeps its size. W.kept counts them */
    if(!tris){W.kept=(W.kept||0)+1;return;}}
-  /* the owner, 2026-11-09: "the trees shouldn't be taller than the buildings": grown to 1.7 x at most, and never past o.capH (40 m) */
-  const f=[T.x,o.ground(T.x,T.z),T.z],fe=o.feral(T.x,T.z),u=KRAND.unit(KRAND.hash(o.seed|0,T.seed|0,41)),capH=o.capH==null?40:o.capH;let k=1+fe*(.25+.45*u),ky=k*(1+.1*fe*u);
-  if(T.H&&T.H*ky>capH){const kk=Math.max(1,capH/T.H);ky=kk;k=Math.min(k,kk);}
+  /* the owner, 2026-11-09: "the trees shouldn't be taller than the buildings", "no tree should outmass a skyscraper": grown to 1.7 x at most, and never
+     past o.capH (40 m); a tree whose own height is past the cap is SHRUNK to it (to .4 of itself at the least), the impostor and the cards with it */
+  const f=[T.x,o.ground(T.x,T.z),T.z],fe=o.feral(T.x,T.z),u=KRAND.unit(KRAND.hash(o.seed|0,T.seed|0,41)),capH=o.capH==null?40:(typeof o.capH==='function'?o.capH(T.x,T.z):o.capH);let k=kept?1:1+fe*(.25+.45*u),ky=kept?1:k*(1+.1*fe*u);
+  /* a record with no height (some kits' species) is measured: the highest of its instances and its bucket triangles above its foot, before the growth */
+  let TH=T.H;if(!(TH>0)){let top=0;for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0,m=it.m.a;for(let i=i0;i<it.count;i++){const y=m[i*16+13]-f[1];if(y>top)top=y;}}
+   for(const fm in BIO.buckets){const K=BIO.buckets[fm],P0=K.pos.a,p0=sp.S.buckets[fm]||0;for(let j=p0+1;j<K.pos.length;j+=3){const y=P0[j]-f[1];if(y>top)top=y;}}TH=top;}
+  if(TH>0&&TH*ky>capH){const kk=Math.max(.4,capH/TH);ky=kk;k=Math.min(k,kk);}
   if(k>1.02)W.grown++;
   const L=diag(k,ky,k),A=affine(L,f);
   for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0;if(it.count>i0)moveInst(it,i0,it.count,A);}
   for(const fm in BIO.buckets){const K=BIO.buckets[fm],p0=sp.S.buckets[fm]||0;if(K.pos.length>p0)moveTris(K,p0,L,f);}
-  if(o.adjust)o.adjust(T,{dx:0,dz:0,h:T.H*ky,kx:k});W.trees++;
+  {const id=T.x+','+T.z;W.adj=W.adj||new Set();if(!W.adj.has(id)){W.adj.add(id);if(o.adjust)o.adjust(T,{dx:0,dz:0,h:T.H*ky,kx:k});W.trees++;}}   /* the record once a tree, not once a row */
   /* the perches (the owner, 2026-11-09: overgrown like Midgar at the end of FF7): o.perch(T, h) -> [{x,y,z,yaw,k}] places on the ruins' tops
      near this tree; the grown tree's span (its instances and its bucket triangles) is copied to each, turned and scaled, under a LOD key of
      its own foot (one key per tree: the core's audit), so a ruin's roof carries the same species as the street below it */

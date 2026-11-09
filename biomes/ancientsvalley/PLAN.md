@@ -408,3 +408,14 @@ How the valley takes it (the plan; the work follows the overgrowth commit):
 - **The checks** (`99`): junctions at the lattice's crossings and no tower on a road; the highway's ramps (three or more) and its spans clear of
   the streets; the cargo line's crossings; the subway's stations; the war's damage and the wrecks rising toward the lake (a correlation, with its
   negative). The GPU verify on every view; the budgets (`BUDGETS.json`: 15 M, 900 calls) hold or are raised with a why.
+
+**Built (2026-11-09, `46z-host-stage.js` the records, `74-host-transit.js` the drawing, `99` the checks):** the grid (64 streets on the lattice's
+lines, avenues and roads, 824 cross junctions with kerb corners and crosswalks), the war on every street with its damage `.1 + .85 lakeK^1.3`
+(the lakeward streets' mean damage 0.57 against 0.31 inland), the military positions and the blockades on the lakeward avenues, the highway on
+the second viaduct's line with three ramps (off, on, off) at avenue crossings, the elevated passenger line on the north viaduct (two stations, a
+fallen train), the cargo line at grade (37 crossings, a derailed train), the subway under the avenue nearest v = 900 (three stations, 44
+sinkholes, two metro trains), the ground carved by the kit's `craterH`, `sinkholeH` and `lineH`. The draw: every road's surface in one builder
+finished in 1.5 km chunks, the kit's own draws chunked the same (the kit's 400 m chunks a street were 3,000 draw calls here), the furniture and
+the war bucketed into 400 m cells and drawn as the eye comes within 750 m. The triangle budget is 20 M (`BUDGETS.json`), the call ceiling 900.
+**Not yet:** the family mix leaning tall toward the lake, the towers placed to the kit's kerb lines, a junction record where a ramp lands
+(`KNOWN_ISSUES.md`).

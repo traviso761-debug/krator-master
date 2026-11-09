@@ -54,6 +54,12 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
+# OWN rules a build's named fragment may break on purpose, with the reason (the only one so far: a verify-time audit that reads pixels to
+# CHECK the page, not to place anything on it; placement reads stay on core/mask).
+OWN_OK = {
+    'biomes/ancientsvalley': {('getImageData', 'src/99-host-take.js'): 'the cards-cut audit (HCHK.cardsCut, the owner 2026-11-09) reads a 32 x 32 downsample of each map for its alpha share at verify time; nothing is placed from it'},
+}
+
 ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
                'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
 
@@ -158,6 +164,8 @@ def scan(build):
             text = open(p, encoding='utf-8', errors='replace').read()
             for rule, rx in OWN.items():
                 if skip_sync and rule in BIOME_SYNC_RULES:
+                    continue
+                if (rule, rel) in OWN_OK.get(build, {}):
                     continue
                 n = len(rx.findall(text))
                 if n:
