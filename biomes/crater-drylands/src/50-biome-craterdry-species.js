@@ -438,7 +438,7 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 ['twigs','twigs1','twigs2','twigs3'].forEach(k=>BIO.def(k,G.tuft(),M[k],{label:'Charred shrubs'}));
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Pincushion heads'});
 BIO.def('plume',G.tuft(),M.plume,{label:'Flame plumes and broom'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   // held inside a leaf body (core/biome README, "What held means"): the sword spire's flowers sit on its spike, a leaf-material item the attach audit counts as a card, not wood (eastabyss's and ebadlands' blooms, the same)
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('lily',G.tuft(),M.lily,{label:'Fire lilies'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass'});
 BIO.def('bunch',G.tuft(),M.bunch,{label:'Bunchgrass'});
