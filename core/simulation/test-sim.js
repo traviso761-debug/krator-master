@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-build.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-build.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -1328,6 +1328,79 @@ function world(seed){
  const h=(e)=>S.happiness(a,[e,0,0,0]),N=S.NEED,v=N.vital;N.vital=[];const flat=h(90);N.vital=v;
  ok('a vital need past its line caps happiness (hunger 90: '+h(90).toFixed(0)+', 100: '+h(100).toFixed(0)+'; under the line, 50: '+h(50).toFixed(0)+'; without the rule, 90: '+flat.toFixed(0)+')',
    Math.abs(h(90)-25)<1e-9&&h(100)===0&&Math.abs(h(50)-(100-1.5*50/4.5))<1e-9,flat<=25);}
+// building (77-sim-6-build.js; PLAN-POLITICS.md section 4): a town with two empty lots and four builders; a house's bill
+// drawn from the warehouses as the work goes (booked used), the work never ahead of the bill delivered, the next lot
+// started and the hands moved when one is done; and upkeep, every standing house wearing its bill over its life, owed
+// when the warehouses are empty, the neglect shown on a hashed share of the houses, paid back when the goods return
+{const mk=(o)=>{o=o||{};const {S,clock}=world(229);
+   ['WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});
+   for(let i=0;i<10;i++) S.place({id:'kH'+i,kind:'house',x:20*i,z:40,activities:{SLEEP:5},settlement:'kautoa'});
+   S.place({id:'lot0',kind:'lot',x:0,z:80,activities:{WORK:4},settlement:'kautoa'});S.place({id:'lot1',kind:'lot',x:40,z:80,activities:{WORK:4},settlement:'kautoa'});
+   const EK=S.economy({goods:{stone:{},mats:{}},every:60,window:1},{settlement:'kautoa'});S.store('kShed',{kind:'warehouse'});
+   S.R.place.kShed.stock={stone:o.stone==null?500:o.stone,mats:o.mats==null?500:o.mats};
+   const built=[];S.build({kinds:{house:{bill:{stone:20,mats:10,timber:5},hours:96,life:o.life==null?100:o.life}},of:P=>P.kind==='house'?'house':null,pace:o.pace,grace:10,
+     onBuilt:(L,P)=>{const Q=S.R.place[L.id];Q.kind='house';built.push(L.id);S.buildChanged('kautoa');}});
+   S.buildLot({id:'lot0',kind:'house'});S.buildLot({id:'lot1',kind:'house'});
+   S.role({id:'builder',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});
+   const ps=[0,1,2,3].map(i=>S.actor({id:'b'+i,role:'builder',home:'kH0',work:'lot0'}));
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');
+   const run=(days,each)=>{for(let m=S._m||0,e=m+Math.round(days*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;if(each)each(m);}};
+   return {S,EK,ps,built,run};};
+ const A=mk(),L0=A.S.ledgerSnap();A.run(2.6);const RA=A.S.buildReport('kautoa').towns.kautoa,P0=RA.projects.find(p=>p.lot==='lot0');
+ ok('a house goes up on an empty lot: four builders, 96 worker-hours, two working days ('+(P0&&P0.state)+' on day '+(P0&&P0.m1/1440).toFixed(2)+'; stone '+(P0&&P0.got.stone)+', mats '+(P0&&P0.got.mats)+', timber gathered '+(P0&&P0.local&&P0.local.timber)+')',
+   P0&&P0.state==='built'&&P0.m1<2*1440&&P0.got.stone===20&&P0.got.mats===10&&P0.local.timber===5&&A.built[0]==='lot0',!(P0&&P0.state==='built'));
+ const P1=RA.projects.find(p=>p.lot==='lot1');
+ ok('the next lot started as it was done, its hands moved there ('+A.ps.map(a=>a.work).join(', ')+')',P1&&P1.state==='building'&&P1.m0===P0.m1&&A.ps.every(a=>a.work==='lot1'),A.ps.some(a=>a.work==='lot0'));
+ const LA=A.S.ledger(L0,A.S.ledgerSnap());ok('the materials booked used: the books hold ('+A.EK.used.stone+' stone used)',LA.ok&&A.EK.used.stone>=20,!LA.ok);
+ const B=mk({stone:8});B.run(3);const PB=B.S.buildReport('kautoa').towns.kautoa.projects[0];
+ ok('short of stone (the houses\' upkeep takes its share), the work waits on the bill delivered ('+(PB.done/PB.hours*100).toFixed(0)+'% done, '+PB.got.stone+' of 20 stone)',PB.state==='building'&&PB.done/PB.hours<=PB.got.stone/20+1e-9&&PB.got.stone<20&&PB.done>0,PB.state==='built');
+ B.S.R.place.kShed.stock.stone+=100;B.run(2);const PB2=B.S.buildReport('kautoa').towns.kautoa.projects[0];
+ ok('and goes on when the stone comes',PB2.state==='built',PB2.state!=='built');
+ const C=mk({pace:2});C.run(0.6);const RC=C.S.buildReport('kautoa').towns.kautoa;
+ ok('a town keeps `pace` projects going ('+RC.building+' at pace 2)',RC.building===2,RC.building!==2);
+ // upkeep: 10 houses, a bill of 20 stone and 10 mats over 100 days: 2 stone and 1 mat a day for the town
+ const U=mk({life:100});U.ps.forEach(a=>{a.work=null;});U.run(10);const RU=U.S.buildReport('kautoa').towns.kautoa;
+ ok('upkeep: ten houses wear their bills over their lives, drawn hourly ('+RU.upkeep.taken.stone+' stone, '+RU.upkeep.taken.mats+' mats in ten days; '+RU.buildings+' buildings)',
+   Math.abs(RU.upkeep.taken.stone-20)<=1&&Math.abs(RU.upkeep.taken.mats-10)<=1&&RU.buildings===10&&!RU.upkeep.taken.timber,!(RU.upkeep.taken.stone>0));
+ U.S.R.place.kShed.stock.stone=0;U.run(10);const q=U.S.buildReport('kautoa').towns.kautoa.upkeep,worn=['kH0','kH1','kH2','kH3','kH4','kH5','kH6','kH7','kH8','kH9'].filter(id=>U.S.buildWorn(id)>0);
+ ok('the stone out, the upkeep owed and the neglect shown on a share of the houses ('+q.owed.stone+' stone owed, neglect '+q.neglect.toFixed(2)+', '+worn.length+' houses worn)',q.owed.stone>=19&&q.neglect>0.9&&worn.length>=8,worn.length===0);
+ ok('the want booked short once, not each hour\'s retry ('+(U.EK.short.stone||0)+' short for '+q.owed.stone+' owed)',U.EK.short.stone===q.owed.stone,U.EK.short.stone>q.owed.stone);
+ U.S.R.place.kShed.stock.stone=100;U.run(1);const q2=U.S.buildReport('kautoa').towns.kautoa.upkeep,worn2=['kH0','kH1','kH2','kH3','kH4','kH5','kH6','kH7','kH8','kH9'].filter(id=>U.S.buildWorn(id)>0);
+ ok('the stone back, the debt repaid and the houses kept again ('+q2.owed.stone+' owed, '+worn2.length+' worn)',!q2.owed.stone&&worn2.length===0,worn2.length>0);
+ const LU=U.S.ledgerSnap();ok('the upkeep booked used: the books hold',U.S.ledger(LU,LU).ok,false);}
+// growth (77-sim-6-build.js `growth`): building follows demand. A town of 50 growing 365% a year (a household of 5 every
+// ten days, to keep the test short) keeps one house ahead: the first goes up at once, the next only when a household has
+// moved in; when the lots are out the host opens another (onFull)
+{const mk=(o)=>{o=o||{};const {S,clock}=world(233);
+   ['WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});S.place({id:'kHome',kind:'house',x:0,z:40,activities:{SLEEP:60},settlement:'kautoa'});
+   const lot=(i)=>S.place({id:'lot'+i,kind:'lot',x:40*i,z:80,activities:{WORK:1},settlement:'kautoa'});lot(0);lot(1);
+   const EK=S.economy({goods:{stone:{}},every:60,window:1},{settlement:'kautoa'});S.store('kShed',{kind:'warehouse'});S.R.place.kShed.stock={stone:900};
+   const settled=[],opened=[];
+   S.build({kinds:{house:{bill:{stone:5},hours:48}},pace:2,growth:o.noGrowth?null:{rate:3.65,per:5,ahead:1,settle:(L,s)=>settled.push([L.id,S.minute()])},
+     onBuilt:(L)=>{S.R.place[L.id].kind='house';S.R.place[L.id].activities={SLEEP:5};S.buildChanged('kautoa');},
+     onFull:(s)=>{if(opened.length>=1)return false;const P=lot(9);opened.push(P.id);S.buildLot({id:P.id,kind:'house'});return true;}});
+   S.buildLot({id:'lot0',kind:'house'});S.buildLot({id:'lot1',kind:'house'});
+   S.role({id:'builder',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});S.role({id:'kin',org:'folk',sched:[[0,'SLEEP']]});
+   for(let i=0;i<4;i++)S.actor({id:'b'+i,role:'builder',home:'kHome',work:'lot0'});for(let i=0;i<46;i++)S.actor({id:'k'+i,role:'kin',home:'kHome'});
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');
+   const run=(days)=>{for(let m=S._m||0,e=m+Math.round(days*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};
+   return {S,run,settled,opened};};
+ const A=mk();A.run(6);const R6=A.S.buildReport('kautoa').towns.kautoa;
+ ok('building follows demand: one house ahead goes up, then the builders wait ('+R6.built+' built, '+R6.building+' building, '+R6.empty+' lots empty on day 6)',R6.built===1&&R6.building===0&&R6.empty===1,R6.building>0||R6.built!==1);
+ const Z=mk({noGrowth:true});Z.run(6);const RZ=Z.S.buildReport('kautoa').towns.kautoa;
+ ok('without growth the town builds on every lot ('+RZ.built+' built by day 6)',RZ.built>=2,RZ.built<2);
+ A.run(30);const R36=A.S.buildReport('kautoa').towns.kautoa;
+ ok('a household moves in every ten days or so, and the next house goes up as it does ('+A.settled.map(x=>x[0]+' day '+(x[1]/1440).toFixed(0)).join(', ')+'; '+R36.built+' built)',
+   A.settled.length>=2&&A.settled[0][0]==='lot0'&&R36.built>=2,A.settled.length<2);
+ ok('the lots out, the host opens another (onFull: '+A.opened.join(', ')+')',A.opened.length===1&&A.S.BUILD.lots[A.opened[0]],!A.opened.length);
+ // a crew sized pace (crewPer): four builders at two a project keep two houses going; at four a project, one
+ const P2=mk({noGrowth:true});P2.S.BUILD.cfg.crewPer=2;P2.S.BUILD.cfg.pace=1;P2.run(0.3);const R2=P2.S.buildReport('kautoa').towns.kautoa;
+ const P1=mk({noGrowth:true});P1.S.BUILD.cfg.crewPer=4;P1.S.BUILD.cfg.pace=1;P1.run(0.3);const R1=P1.S.buildReport('kautoa').towns.kautoa;
+ ok('a town keeps a project for every crewPer hands ('+R2.hands+' hands at two a project: '+R2.building+' going up; at four: '+R1.building+')',R2.building===2&&R1.building===1,R1.building===2);}
 // unrest (77-sim-6-unrest.js; PLAN-MONEY.md M6): two towns of one faction, both unwatched; the workers' want rises a little
 // each day and nothing fills it, so their pool sinks and walks the stages (grumbling, demands, strikes, treason) while
 // the merchants stay content; Valapo, short of rice, asks the faction and Kautoa ships it from its spare; the ruler's

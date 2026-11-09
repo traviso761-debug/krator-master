@@ -230,6 +230,11 @@
       core/simulation on `claude/isle-p7a-rest` and merged here. The checks read each town's own meals
       (`SIM.ITEMS.statsBy[town].meals`), every role takes `work.near`, the 01:00 start is gone; `SIM.REACH` (6 km) stays
       as a walking limit (nobody looks for a place in the other town).
+- [ ] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11): about 81 ha in crop
+      for some 8,100 people, against about 610 ha in crop and 2,400 ha of farmed countryside on historical yields; the
+      governor raises a handful of parcels' rates instead. Valapo still has 49 fields inside the village. Planned (not
+      built): the fields within the walls removed, the farm ring left as it is, about four farming hamlets for Kautoa and
+      two for Valapo, and a plantation each for the cash crops.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track
       from the highways, until core/hamlet's farming villages (H6) take it. Valapo's farms beyond the village (its
@@ -260,6 +265,13 @@
       climb in order. And a riser keeps its home's class name for its household (only the riser's class moves).
 - [ ] **An unwatched town is a little happier than watched** (Valapo 86 unwatched, 80 watched, over twelve days): its people
       never find a temple shut or full and walk ten minutes at each change of activity; contemplation and sleep are the gap.
+- [ ] **Building:** a household cannot buy a lot yet; refugees are not modelled (growth is the only demand). On the city
+      page (no lumber village) a house's timber is gathered on the spot and the upkeep draws none. The Construction kit's
+      scaffold is sized from a piece's whole extent (an islanders house with its hearth and stairs: a little wide), its
+      piles and poles plain colours; the builders stand by the lot rather than on the scaffold.
+- [ ] **Refugees fill the lots and then the camps again** (the 180-day run with them at work: PLAN-POLITICS.md): every lot and
+      street is built by day 100, then the camps grow and the builders stand idle, paid (Valapo's treasury runs dry). Next
+      (the owner, 2026-11-04): work crews at deposits, housing sought or left, hamlets that grow.
 - [ ] **Treason does nothing yet**, a new ruler is never granted, and a demand is answered by the polity's stock alone, not
       its strength or will: all wait for the political system (PLAN-MONEY.md section 3). A starving town reaches treason about a
       week after its stores are eaten (`smooth` 5), and a strike holds workplaces that may already be idle.

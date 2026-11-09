@@ -73,7 +73,7 @@ setTimeout(function () {
     KTAGS.page = cur.tags;
     if (typeof EXPORT !== 'undefined') EXPORT.ground({ terrainH: function (x, z) { return cur.G.h(x, z); }, step: 4 });
     DRAW.stage(); DRAW.ground(cur.G, cur.R); DRAW.streets(cur.R, cur.G); DRAW.orchards(cur.R, cur.G); lap('ground');
-    DRAW.records(cur.R); DRAW.vessels(cur.R); lap('pieces');
+    DRAW.records(cur.R); DRAW.lots(cur.R); DRAW.vessels(cur.R); lap('pieces');
     CAM.bind(); ISLE.view('overview');
     var ui = document.getElementById('ui');
     ISLE.TOWNS.forEach(function (t) { var b = document.createElement('button'); b.textContent = t; if (t === town) b.className = 'on'; b.onclick = function () { location.search = '?town=' + t; }; ui.appendChild(b); });
@@ -81,7 +81,7 @@ setTimeout(function () {
     var hud = document.getElementById('hud');
     var hudAt = 0, simLine = '';
     var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); ISLE.canoes.tick(now); renderer.render(scene, camera);
-      if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); }
+      if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); DRAW.lotsTick(); }
       if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls' + (simLine ? ' · ' + simLine : ''); };
     loop();
     if (note) note.style.display = 'none';

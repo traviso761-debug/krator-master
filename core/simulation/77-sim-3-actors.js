@@ -318,6 +318,7 @@
     if(SIM.itemsRetry) SIM.itemsRetry(minute);                                      /* a failed tool errand asked again (77-sim-6-items.js) */
     if(SIM.CRIME) SIM.crimeStep(minute);                                            /* crime and punishment, hourly (77-sim-6-crime.js), opt-in */
     if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyStep(minute);                            /* wages at midnight (77-sim-6-money.js M1), opt-in */
+    if(SIM.BUILD) SIM.buildStep(minute);                                            /* building and upkeep, hourly (77-sim-6-build.js), opt-in */
     if(SIM.UNREST) SIM.unrestStep(minute);                                          /* unrest from the happiness pool, at midnight (77-sim-6-unrest.js), opt-in */
     return made;
   };

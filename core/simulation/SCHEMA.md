@@ -264,6 +264,19 @@ runner rises; an owned place pays `wholesale` to the treasury, its takings swept
 cannot cover them falls. `SIM.moneyStations()` -> rises and falls by settlement and station, and their events. Happiness modifiers:
 `SIM.happinessAdd(a, n, days, why)` (a.hmods, fading; a negative n a cheer), `SIM.happinessPool(s, classOf?)` (77-sim-6-needs.js).
 
+**Building and upkeep (77-sim-6-build.js, PLAN-POLITICS.md section 4, 2026-11-03).** A LOT {id (a place), kind, settlement, state: empty |
+building | built, project}; its recipe is `build` (the economy's worked hours at it go to its project, it makes nothing). A PROJECT {id, lot,
+kind, settlement, bill: {good: n}, got, miss, local (gathered on the spot: a good its town's economy does not keep), hours, done, m0, m1,
+state}: its materials drawn as the work goes (booked used; what is wanted anew and missing booked short once), `done` never past the share of
+its bill delivered. A town's UPKEEP: each standing building `of` a kind with a `life` wears its bill over it, drawn hourly (`taken`), the
+rest `owed` (drawn first when the good returns); the neglected share (owed over `grace` days of upkeep) shown on a hashed share of the
+buildings (`SIM.buildWorn`). `SIM.buildReport(s?)`, events start, built and settled. GROWTH (opt-in): a town's `due` households
+(people x rate / 365 / per a day) settle into finished lots no one lives in (`L.settled`, the host's `settle` makes their people), and a
+project starts only while the houses ready or going up are fewer than `ahead` plus the households waiting; `onFull(s)` asks the host for
+more lots when they are out (the isles' streets outside the gates). `waiting(s)`: households waiting outside the houses (a refugee camp's),
+counted as demand and housed first (`settle` returns 'moved'). At the abstract level a town's households and its people's abstract days are
+listed again each midnight (77-sim-7-lod.js), so a home filled or a person come since the town was lowered is fed and lives its day.
+
 **Unrest (77-sim-6-unrest.js, PLAN-MONEY.md M6, 2026-11-03).** Per settlement: `level` and `stage` by key (`all`, and each class), the stage one
 of calm, grumble, demand, strike, treason (the deepest line the level is under; eased back `hyst` over a line); `demands` [{id, m, key, keys,
 kind: goods | ruler, goods, due, answer: granted | refused, answered, asked, came, sent: {'<sender>><good>': n}, why}]; `strikes` [{m, key, keys,

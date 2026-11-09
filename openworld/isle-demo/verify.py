@@ -11,7 +11,7 @@ highway, no town tile). The isle's own checks:
   - the towns stand on land, the climate the assay found (Kautoa Af, Valapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
-  - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
+  - the hamlets (core/hamlet H4): the resource villages (five since 2026-11-04: Valapo's quarry) made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
@@ -76,7 +76,7 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     if(!(v.census&&v.census.pop>0&&v.census.pop<=500))bad.push(v.id+': population '+(v.census&&v.census.pop));
     if(v.site&&WORLD.water(v.site.x,v.site.z)>WORLD.H(v.site.x,v.site.z)-.5)bad.push(v.id+': its green is in the water');}
    HM.stats.errors.forEach(e=>bad.push(e));const A=HM.tags();if(A.unknown)bad.push(A.unknown+' unknown tag values');}
-  R.push({name:'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
+  R.push({name:'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
    detail:bad.length?bad.join('; '):HM.villages.map(v=>v.focus+' '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  return R;}"""
 
@@ -150,7 +150,7 @@ async def run(a):
                 if not r['ok']: fails.append(r['name'])
             print('--- negative controls (each must fail) ---')
             for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
-                            ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
+                            ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged')):
                 r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                 print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                 if r['ok']: fails.append('negative ' + neg)

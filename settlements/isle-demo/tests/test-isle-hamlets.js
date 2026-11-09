@@ -1,8 +1,8 @@
 // node settlements/isle-demo/tests/test-isle-hamlets.js [days] — the hamlets in the sim (core/hamlet H5, src/47h) without a
-// browser. Plans and declares both towns (src/40-49), lays out the four resource villages with core/hamlet's
+// browser. Plans and declares both towns (src/40-49), lays out the six resource villages with core/hamlet's
 // KHAMLET.village on STAND-IN ground (the open world's survey points, every place dry: the real layout needs the open
 // world's fields and the isles' zones, openworld/isle-demo 48; its verify.py checks the villages there), declares them
-// (ISLE.simHamlets), runs `days` with Kautoa watched and checks ISLE.hamletChecks: four villages, each its town's, at the
+// (ISLE.simHamlets), runs `days` with Kautoa watched and checks ISLE.hamletChecks: six villages, each its town's, at the
 // abstract level; staffed; making their goods; every load landed or on the road and booked imported in the town; each
 // village fed by its town. Each check with a negative. Then the towns' week checks still hold with the villages in.
 // Build first (python3 build.py).
@@ -20,14 +20,16 @@ const days = +(process.argv[2] || 5);
 const plans = ISLE.TOWNS.map(town => { const S0 = SITE_INIT.towns[town], G = ISLE.siteGround(S0, ISLE.PROG[town]);
   return { G, R: ISLE.city(town, { site: S0, ground: G, tags: KTAGS.create({ build: 'isle-demo:' + town }), dims: k => ISLE_DIMS[k] || null, vdims: k => ISLE_VDIMS[k] || null }) }; });
 ISLE.simDeclare(plans);
-/* the four villages of openworld/isle-demo 48 (ISLE_HAMLETS.SPECS), laid out at their survey points on stand-in ground */
+/* the six villages of openworld/isle-demo 48 (ISLE_HAMLETS.SPECS), laid out at their survey points on stand-in ground */
 const SPECS = [
   { id: 'hamlet-salt', name: 'Salt village', focus: 'salt', parent: 'Kautoa', near: [-14776, -107820] },
   { id: 'hamlet-mine', name: 'Iron mine', focus: 'mine', parent: 'Valapo', near: [-18000, 66000] },
   { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993] },
-  { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] }];
+  { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] },
+  { id: 'hamlet-quarry', name: 'Quarry', focus: 'quarry', parent: 'Valapo', near: [-12500, 61500] },   /* 2026-11-04: Valapo's stone */
+  { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] }];   /* and its timber, a felling crew of its own */
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
-const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' } };
+const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
 const villages = SPECS.map(sp => ({ spec: sp, resource: STANDIN[sp.id], village: KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus,
   site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] }, resource: { x: sp.near[0] - 200, z: sp.near[1] }, dims, ground: { ok: () => true } }) }));
 villages.forEach(V => ok('the ' + V.spec.name.toLowerCase() + ' laid out', !V.village.error && V.village.records.length > 10, V.village.error || V.village.census.pop + ' people, ' + V.village.records.length + ' buildings'));
@@ -79,4 +81,7 @@ ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber;
   ok('a mine emptied stops, and says why', gone === 40 && R.amount === 0 && BL > 0, gone + ' more ore, ' + R.amount + ' left, blocked ' + BL + ' times');
   const why = Object.values(SIM.blockedReport('valapo')).filter(w => w.reason === 'missing' && w.goods.indexOf('ore') >= 0).length, v0 = SIM.stockOf('ore', 'valapo');
   console.log('--- after the mine: Valapo holds ' + v0 + ' ore, ' + why + ' smithies say they miss it'); }
+/* the building's timber (47b): with the lumber village the towns keep timber, and their houses' upkeep and projects draw it */
+if (SIM.BUILD) { const BR = SIM.buildReport(), tw = ISLE.SIM.order.map(s2 => { const T = BR.towns[s2]; return T ? s2 + ' timber ' + (T.upkeep.taken.timber || 0) + ' drawn, ' + (T.upkeep.owed.timber || 0) + ' owed, ' + T.built + ' built' : s2 + ' -'; });
+  ok('with the lumber village the houses draw their timber (' + tw.join('; ') + ')', ISLE.SIM.order.every(s2 => BR.towns[s2] && BR.towns[s2].upkeep.taken.timber > 0), tw.join('; ')); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');

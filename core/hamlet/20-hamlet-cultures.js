@@ -30,14 +30,15 @@ KHAMLET.CULTURES.islander_east = {
   works: {
     salt: [{key: 'ie-saltworks', jobs: 12, share: 1}],
     mine: [{key: 'ie-mine', jobs: 20, share: 1}],
+    quarry: [{key: 'ie-quarry', jobs: 12, share: 1}],   /* a stone quarry (2026-11-04: Valapo's, the isle demo), smaller than a mine */
     lumber: [{key: 'ie-sawpit', jobs: 14, share: 0.7}, {key: 'ie-kiln', jobs: 6, share: 0.3}],
     ranch: [{key: 'ie-byre', jobs: 6, share: 0.35}, {key: 'ie-pens', jobs: 4, share: 0.15}, {key: 'ie-corral', jobs: 4, share: 0.2},
             {key: 'br_bldg_raptor_stable', jobs: 6, share: 0.2}, {key: 'br_bldg_rookery_tower', jobs: 6, share: 0.1}],
     fishing: [{key: 'ie-fishdock', jobs: 12, share: 0.7}, {key: 'ie-canoeshed', jobs: 8, share: 0.3}],
     farming: [{key: 'ie-farm', jobs: 10, share: 0.85}, {key: 'ie-granary', jobs: 2, share: 0.15}]
   },
-  focusJobs: {salt: 110, mine: 120, lumber: 100, ranch: 70, fishing: 100, farming: 140},
-  reach: {salt: 300, mine: 400, lumber: 600, ranch: 900, fishing: 250, farming: 700},
+  focusJobs: {salt: 110, mine: 120, quarry: 48, lumber: 100, ranch: 70, fishing: 100, farming: 140},
+  reach: {salt: 300, mine: 400, quarry: 300, lumber: 600, ranch: 900, fishing: 250, farming: 700},
   /* boxes for keys a host may not load (the ranch's mounts are the Beast Riders kit's, kits/beast-riders: a host without
      that kit's boxes places these footprints and draws stand-ins). The Islanders' own hamlet works are in the kit since
      2026-10-19 (kits/islanders/src/69-ie-hamlet.js: ie-sawpit, ie-kiln, ie-corral, ie-store-food, ie-bloomery) */
@@ -73,4 +74,4 @@ KHAMLET.CULTURES.xanadu = {
     'xa_dairy': {w: 10, d: 7, h: 4.6, what: 'a dairy (butter, cheese)'}
   }
 };
-KHAMLET.FOCI = ['salt', 'mine', 'lumber', 'ranch', 'fishing', 'farming'];
+KHAMLET.FOCI = ['salt', 'mine', 'quarry', 'lumber', 'ranch', 'fishing', 'farming'];

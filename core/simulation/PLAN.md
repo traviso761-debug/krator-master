@@ -232,6 +232,8 @@ core/simulation/
     PLAN-MONEY.md         money: research, the owner's answers, and what is built (M0-M2, stations, M6 to treason)
     77-sim-6-money.js     money (2026-11-03, opt-in: SIM.money): currencies, accounts, mint, burn, pay, exchange (M0); wages,
                           prices, the ration (M1), moving prices (M2), spending by savings, stations (rise and fall)
+    77-sim-6-build.js     building and upkeep (2026-11-03, opt-in: SIM.build): empty lots, projects drawing their bills of
+                          materials as the work goes, upkeep as a steady sink (PLAN-POLITICS.md section 4)
     77-sim-6-unrest.js    unrest (2026-11-03, opt-in: SIM.unrest): the happiness pool's stages, grumbling, demands to the
                           faction (a shipment, a new ruler), strikes, treason (PLAN-MONEY.md M6)
     77-sim-6-crime.js     crime and punishment (2026-11-02, opt-in: SIM.crime): criminals, pickpockets, burglars, fights, witnesses, guards, arrest, jail
