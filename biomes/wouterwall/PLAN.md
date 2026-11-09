@@ -10,9 +10,13 @@ Its theme is **a wall coming apart**:
 Owner's brief (2026-10-26): the landforms of the proposal, agreed "on all counts": the loess tablelands, the slump
 terraces, the long-runout rock avalanches (sturzstroms) and the edge. The references are in `refs/`.
 
-**Status: plan, awaiting the owner.** Nothing built. The owner put station 1 next after the SW highlands' turn
-(`HANDOFF-REBUILD.md`, 2026-10-27), but kits come after the rebuild's frozen integration pass. The 2026-11-09 pass
-re-read every number from map 5.1, which now carves this plan's landforms, and wrote the hazards and the core table.
+**Status: W1 begun (2026-11-09).** The owner said to start the build. Station 1 (the loess tablelands, px 352,716) is on the
+biome core: the kit's layout (`WOW`), the station's ground on map 5.1 with its landforms on `KRELIEF.gully` (`yuan` and `mao`
+tops) and `KRELIEF.terraces`, earth pillars on `KSTACKS`, the spring brook on `core/water`, and the NW outer wall's flora read in
+place, `KCARVE` cave-house mouths in the gully wall and the loess's beds on `KSTRATA`'s shader. Not yet: `KSTRATA.vary`/`drape`
+(the core amendment of section 8), the two native species, the lowlands' species, the crops entry, stations 2-4. The work log is
+at the end. (The 2026-11-09 pass re-read every number from map 5.1, which now carves this plan's landforms, and wrote
+the hazards and the core table.)
 
 | | |
 |---|---|
@@ -404,3 +408,26 @@ To source or generate (generic ids; the prompts go into `core/materials/PROMPTS-
 - `LORE.md` §4 (the Rift line), §6.1 (Dalab, Ledge, the Tungangs), §6.19 (the Eternal State, its dialects, the Yeti Kingdom);
 - `openworld/ANCIENT-ROADS.md`; `biomes/nwouterwall/PLAN.md`; `biomes/ancientsvalley/PLAN.md`; `kits/crops/src/10-crop-core.js`,
   `40-crop-query.js`, `API.md`, `PLAN.md`; `CROPS.at` run in node over section 3's bands (2026-11-09).
+
+## Work log
+
+**2026-11-09, W1 begun (station 1).** The owner: "start the W outer wall biome build".
+- **The region** (`region/`): `tools/scale-model/extract_region.py` on `model/data` (5.1) with the page's default regions and
+  settlements (`51-region-store.js`, `60-settlements.js`: no exported collection in the repo carried `w outer wall`); `far.py` cuts
+  station 1 at px 352,716 (3,664 m, 1.01 atm, Dsb, +7 °C, 518 mm). The height grid is Option C's, 1 km a cell.
+- **The layout** (`46-biome-wow-layout.js`, `[G data]`): `WOW.climate` (about +13/-13 round the mean), `WOW.bench(h)` (the loess's
+  depth and the slump, runout and crest bands by height, as sections 1-2 give them), `WOW.springAt(F)` (a cut reaching the loess's
+  foot), `WOW.zoneOf(F)` and each zone's nwouterwall zone. The zones are the draft's set (`yuan`, `wall`, `floor`, `terrace`, `gully`,
+  `larch`, `steppe`...); section 4's proposed `loess-sun`, `loess-shade` and the rest are a rename for W3.
+- **Station 1's ground** (`44s-host-site.js`): three records on the model: the trunk gully (`KRELIEF.gully`, tops `yuan`, 150 m at
+  its mouth, draining ESE toward Yut-Ma), the gully system to the south (tops `mao`, 85 m), and `KRELIEF.terraces` (3.2 m rise) on
+  the knolls, never on a gully's wall or floor. Twelve earth pillars (`KSTACKS` `balanced`) on the trunk's dry upper floor; the
+  spring where the trunk's floor lies 125 m (the loess here) under the yuan, its brook down the record's floor.
+- **The flora**: the NW outer wall's species, trees and floor read in place (`build.py`'s `NW_KIT`, its pack beside this kit's).
+- **The textures**: section 10's sets are delivered (`rock.loess`, `ground.terrace.field`, `rock.megabreccia`,
+  `rock.rubble.sturzstrom`, `card.puya`); station 1 wires `rock.loess` (the walls, read from the side: `KGROUND`'s `tri`) and
+  `ground.terrace.field`.
+
+**2026-11-09, the known issues.** The far land re-cut past the airless crest (`region/crest.json`; from station 1 the crest stands under
+the bench's own upper steps, so its sky did not change); the terraces on 2 m `KFIELD` insets with furrows along the contour; five cave-
+house mouths (`KCARVE` alcoves) in the trunk's sunny wall; the walls' soil bands on `KSTRATA.shade`'s `loess` recipe.
