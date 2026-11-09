@@ -249,9 +249,12 @@ async def main(outdir, page, clips, bodies, match, morph, shards, shard, pre, ex
 
 def report(outdir, top):
     import glob
-    rows = []
-    for f in glob.glob(os.path.join(outdir, 'audit-*.jsonl')):
-        rows += [json.loads(x) for x in open(f, encoding='utf-8')]
+    seen = {}
+    for f in sorted(glob.glob(os.path.join(outdir, 'audit-*.jsonl'))):
+        for x in open(f, encoding='utf-8'):
+            r = json.loads(x)
+            seen[(r['outfit'], r['clip'], r['t'], r['view'])] = r     # a resumed sweep appends: the last record of a shot counts (as check)
+    rows = list(seen.values())
     print(len(rows), 'shots', len({r['outfit'] for r in rows}), 'outfits')
     kinds = {}
     for r in rows:
