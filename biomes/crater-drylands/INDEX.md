@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/crater-drylands-edge.html`, `dist/crater-drylands-salt.html`, `dist/crater-drylands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/crater-drylands-edge.html`, `dist/crater-drylands-n.html`, `dist/crater-drylands-s.html`, `dist/crater-drylands-salt.html`, `dist/crater-drylands.html`
 
 Build: `cd biomes/crater-drylands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -32,7 +32,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `55-biome-craterdry-trees.js` | 43 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (99); impostors (the far canopy) (355); the pass (382); the passes (data: species, cell, acceptance from (427) |
 | `60-biome-craterdry-floor.js` | 15 | fields local to the floor (26); small plants (33); the zone planters (86); the pass (140) |
 | `70-biome-craterdry.js` | 1 |  |
-| `84-host-ground.js` | 20 | the ground (22); the water (the seep) (169) |
+| `84-host-ground.js` | 21 | the ground (22); the water (the seep) (174) |
 | `87-host-far.js` | 3 |  |
 | `88-host-build.js` | 3 |  |
 | `89-host-fire.js` | 14 |  |

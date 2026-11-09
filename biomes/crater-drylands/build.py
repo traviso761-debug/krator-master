@@ -169,7 +169,7 @@ def _mp_fams(d):
     return sorted(_j.load(open(pj,encoding='utf-8')).get('families',{})) if os.path.isfile(pj) else []
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'craterdry'),
          **{'44b-host-matlib-pack-%s.js'%_pn:_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=[f for f in _mp_fams(os.path.normpath(os.path.join(HERE,_pd)))
-             if f.startswith(('ground','tower','jetty')) or (_pn in STN.get('packOnly',{}) and f not in STN['packOnly'][_pn])])
+             if (f not in STN.get('packOnly',{}).get(_pn,[]) and f.startswith(('ground','tower','jetty'))) or (_pn in STN.get('packOnly',{}) and f not in STN['packOnly'][_pn])])
             for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers; "packOnly" {pack: [families]} keeps only those
          khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands'),   # the host's edit layer (core/host FULL)
          # kits/fauna's groups that hold this biome's animals (KratorFauna: the ash runner, the salamander, the burn-hawk, the hot-spring axolotl,
@@ -191,6 +191,9 @@ if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); 
 BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf-8',newline='\n').write(html)
+# THE N/S SPLIT (PLAN-STATIONS.md, the owner 2026-10-27): station 1 is crater drylands N's page, dist/crater-drylands-n.html; the old name is
+# kept as a copy of it until its readers (the gallery, verify.py, the baseline) point at -n. S's page is --station south (crater-drylands-s.html)
+if not STATION and OUT=='crater-drylands.html': open(os.path.join(DIST,'crater-drylands-n.html'),'w',encoding='utf-8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''
