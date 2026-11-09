@@ -75,7 +75,7 @@ const HCHK={
   for(const p of P){const K=RINGISLES.classAt(p[0],p[2]);for(const k in K)if(K[k]>.6)by[k]++;}
   const thin=RINGISLES.CLASSES.filter(k=>by[k]<400);return{ok:!thin.length,detail:thin.length?'thin: '+thin.map(k=>k+' '+by[k]).join(', '):RINGISLES.CLASSES.map(k=>k+' '+by[k]).join(' · ')};},
  // the trees are at an island's scale: no hyperjungle giants (savanna trees 6-20 m, baobabs to 40, the canopy to 35)
- scale(T){const big=T.filter(t=>t.H>42),tiny=T.filter(t=>!(t.H>.8));return{ok:!big.length&&!tiny.length&&T.length>200,detail:big.length?big.length+' trees over 42 m ('+big.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' '+t.H.toFixed(0)).join(', ')+')':tiny.length?tiny.length+' trees under a metre':T.length+' trees, the tallest '+Math.max(...T.map(t=>t.H)).toFixed(0)+' m'};},
+ scale(T){const big=T.filter(t=>t.H>42),tiny=T.filter(t=>!(t.H>.8));return{ok:!big.length&&!tiny.length&&T.length>200,detail:big.length?big.length+' trees over 42 m ('+big.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' '+t.H.toFixed(0)).join(', ')+')':tiny.length?tiny.length+' trees under a metre':T.length+' trees, the tallest '+T.reduce((m,t)=>t.H>m?t.H:m,0).toFixed(0)+' m'};},
  // no tree on a cliff, none in the water but the mangal's
  rooted(T){const bad=T.filter(t=>{const d=waterH(t.x,t.z)-terrainH(t.x,t.z),mg=MANGAL_KEYS.indexOf(t.borrow)>=0;return(!mg&&d>.15)||(mg&&d>1.3)||RINGISLES.zones(t.x,t.z).cliff>.7;});
   return{ok:!bad.length,detail:bad.length?bad.length+' trees in the water or on a cliff ('+bad.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' at '+t.x.toFixed(0)+','+t.z.toFixed(0)).join('; ')+')':T.length+' trees on dry ground (the mangal\'s in its water)'};},

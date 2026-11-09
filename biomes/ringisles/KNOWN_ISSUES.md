@@ -88,6 +88,14 @@ that differs, the hyperjungle's and the geyser's walking strider, moves between 
 - [ ] The sky is the geyser kit's (the Throne to the south-south-west over the sea, the jungle line to the north): close
   enough for an island of the isle demo, which lies on the Ring Sea's west ring; not re-baked for it.
   Stays open (2026-10-26): left to the shared sky rollout (core/atmos; the item below).
+- [x] 2026-11-09: **station 2 (the high isle) failed its first GPU verify.** (1) The ground did not compile: "FRAGMENT shader texture image units
+  count exceeds MAX_TEXTURE_IMAGE_UNITS(16)" (read with a linkProgram hook): ten library layers, uMacro, the strata's five (uKSCol, uKSBed, uKSAlt,
+  uKSNz, uKSBt), the fog belt's atmFogBeltT and the shore's wtrBed made 18 live samplers. Fixed by `STATION.shareLayers` (84: a layer reads another's
+  map, recoloured by luminance): wet sand reads the sand's, cured grass the grass's; 16 now (the shadow and rain cover stay skipped on this ground, as
+  before). (2) `api.hostChecks` threw "Maximum call stack size exceeded": the scale check spread 247,503 heights into `Math.max` (99: a reduce now).
+  (3) Three coffee and banana trees at the lee terraces' banks (-600,1612) read as cliff through the 16 m fields: a plot's trees skip what the zones
+  call a cliff (62 `gTree`). (4) The instance cap: this kit's fern 274,311 (cap 400,000 in 52) and the Throne's small plants 275,677 and tree fern
+  fronds 348,439 (cap and capWhy set from 88 on the Throne's registry, its files unchanged).
 
 ## Texture prompts
 

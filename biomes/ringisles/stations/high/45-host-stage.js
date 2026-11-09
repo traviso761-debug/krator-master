@@ -46,7 +46,10 @@ const WIND=[-.9,.2];
 const STATION={key:'high',groundCs:10,fieldCs:16,shoreCell:10,geyser:false,center:[0,0],
  lod:{hero:230,mid:620,far:3600,floor:[190,460]},
  region:{name:'The high isle (station 2: an eroded shield ~1 km high)',x:0,z:0,y:-40,r:4300,h:1150},
- dropLayers:['salt','sinter','mud','damp']};
+ dropLayers:['salt','sinter','mud','damp'],
+ /* (2026-11-09) two layers read another's map (84: STATION.shareLayers), so the ground keeps to 16 texture units with the strata's five, the fog belt's
+    field and the shore's bed (it read 18 and did not compile on the GPU) */
+ shareLayers:{wetsand:'sand',cured:'grass'}};
 const TERR={R:4300,X0:-4400,X1:4400,Z0:-4000,Z1:4000};
 const SEA=0;
 function ell(x,z,cx,cz,rx,rz,a){const c=Math.cos(a||0),s=Math.sin(a||0),dx=x-cx,dz=z-cz,u=(dx*c+dz*s)/rx,v=(-dx*s+dz*c)/rz;return 1-(u*u+v*v);}
