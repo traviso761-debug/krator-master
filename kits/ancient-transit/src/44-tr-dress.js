@@ -5,7 +5,8 @@
 //
 //   KTRANSIT.dress(street, o) -> D
 //     street {id, pts: [[x, z], ...], width, ground(x, z)}
-//     o.seed, o.space (a KSPACE index; made here when absent), o.blocked(x, z, r) -> bool, o.war (a KTRANSIT.war: its craters and pieces are
+//     o.seed, o.space (a KSPACE index; made here when absent), o.blocked(x, z, r) -> bool, o.network and o.road (a KTRANSIT.network and this
+//     street's index in it: the pieces keep off the junctions, signals stand on their pavement corners), o.war (a KTRANSIT.war: its craters and pieces are
 //     kept off), o.damage (0..1 or a function of s: the furniture's shares slide toward fallen, burnt and crushed), o.step (a slot every 8 m), o.ruin (furniture
 //     shares), o.kinds ({kind: weight} over KTRANSIT.KINDS' defaults), o.rubble (heaps per 100 m of street, 1.5), o.across (true: a gantry
 //     or a footbridge across the street every 120 m or so), o.pavement (the pavement's width, 3.5), o.only (a list of kinds to lay)
@@ -26,7 +27,8 @@
     var wsum = keys.reduce(function (a, k) { return a + weights[k]; }, 0);
     function free(x, z, r) {
       if (o.blocked && o.blocked(x, z, r)) return false;
-      if (o.war && (T.inCrater(o.war, x, z, r + 0.5) || o.war.pieces.some(function (q) { return Math.hypot(x - q.x, z - q.z) < r + q.r; }))) return false;
+      if (o.war && (T.inCrater(o.war, x, z, r + 0.5) || o.war.pieces.some(function (q) { return Math.hypot(x - q.x, z - q.z) < r + q.r; }) || (o.war.blockades || []).some(function (bk) { return Math.hypot(x - bk.x, z - bk.z) < r + bk.r; }))) return false;
+      if (o.network && T.junctionAt(o.network, x, z, r + 0.5)) return false;
       if (S && S.some(x, z, r, function (it) { var d = Math.hypot(x - it.x, z - it.z); return d < r + (it.r == null ? 0 : it.r); })) return false;
       return true;
     }
@@ -42,6 +44,7 @@
     var lampStep = T.KINDS.tr_lamp.step, k = 0;
     for (var s = step / 2; s < P.L; s += step, k++) {
       var side = k % 2 ? 1 : -1, kerb = side * (W / 2 + 0.9), u = T.u(seed, k, 1, 0);
+      if (o.network && o.road != null && T.nearJunction(o.network, o.road, s, 1)) continue;
       /* a lamp standard every lampStep, alternating sides, its arm (its +z) turned toward the carriageway: side +1 stands at (cos yaw, -sin yaw),
          so its front turns to -(cos yaw, -sin yaw), which is yaw - pi/2 */
       if (Math.floor(s / lampStep) !== Math.floor((s - step) / lampStep)) { lay('tr_lamp', null, s, side, kerb, side > 0 ? -Math.PI / 2 : Math.PI / 2, 1); continue; }
@@ -59,6 +62,12 @@
       if (o.only && o.only.indexOf(ak) < 0) continue;
       lay(ak, null, sa, 0, 0, 0, 3, Math.min(T.KINDS[ak].w, W + 2.4));
     }
+    /* the junctions' corners (o.network): a traffic signal on each pavement corner of a junction of three arms or more, facing the junction, and a
+       street sign on a corner of a smaller one */
+    if (o.network && o.road != null) o.network.junctions.forEach(function (J, ji) { if (!J.arms.some(function (a) { return a.road === o.road; })) return; var home = J.arms.filter(function (a) { return a.road === o.road; })[0];
+      J.corners.forEach(function (c, ci) { if (c.straight || Math.min(J.arms[c.between[0]].road, J.arms[c.between[1]].road) !== o.road) return; var am = c.yaw, x = c.x, z = c.z, kind = J.n >= 3 ? 'tr_signal' : 'tr_sign', K = T.KINDS[kind], pk = T.pick(KRAND.hash(seed, ji, 900 + ci), kind, null, sharesAt(home.s));
+        if (o.blocked && o.blocked(x, z, 1)) return;
+        var rec = { id: id + '.f' + n, kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, x: x, z: z, y: street.ground(x, z), yaw: am, side: 0, s: home.s, r: Math.max(K.w, K.d) / 2 + 0.3, junction: J.id }; n++; pieces.push(rec); if (S) S.insert(rec, x, z, rec.r); }); });
     /* the rubble heaps on the carriageway */
     var heaps = Math.round(num(o.rubble, 1.5) * P.L / 100);
     for (var h = 0; h < heaps; h++) { var hs = T.u(seed, h, 4, 0) * P.L, hoff = (T.u(seed, h, 4, 1) - 0.5) * (W - 3), hk = ['tr_rubble_pave', 'tr_rubble_pave', 'tr_rubble_glass', 'tr_rubble_cable'][Math.floor(T.u(seed, h, 4, 2) * 4) % 4];

@@ -4,7 +4,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), ROOT = pat
 const ctx = { console, Math }; ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
 const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), ctx, { filename: p });
 load('core/rand/08-core-rand.js'); load('core/space/20-core-space.js');
-for (const f of ['40-tr-records.js', '41-tr-path.js', '42-tr-highway.js', '43-tr-rail.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']) load('kits/ancient-transit/src/' + f);
+for (const f of ['40-tr-records.js', '41-tr-path.js', '42-tr-highway.js', '43-tr-rail.js', '41b-tr-network.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']) load('kits/ancient-transit/src/' + f);
 const T = vm.runInContext('KTRANSIT', ctx), KRAND = vm.runInContext('KRAND', ctx), KSPACE = vm.runInContext('KSPACE', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };
 const throws = (fn, m) => { let t = false; try { fn(); } catch (e) { t = true; } ok(t, 'negative: ' + m); };
@@ -162,6 +162,33 @@ const ground = (x, z) => 4 * Math.sin(x / 130) * Math.cos(z / 170) + (Math.hypot
   const Hq = T.highway([[-600, 100], [600, 100]], { id: 'hq', ground, quake: Q, shift: (x, z) => T.quakeShift(Q, x, z) });
   ok(Hq.spans.some(S => Math.abs(S.roll) > 0.02) && Hq.spans.filter(S => Math.abs(S.x0) > 300).every(S => Math.abs(S.roll) < 1e-3) && Hq.piers.some(p => Math.abs(p.roll) > 0.02), 'the spans and piers near the fault roll');
   throws(() => T.quake({ pts: [[0, 0]] }), 'a fault of one point throws'); }
+
+/* the network: junctions of 2, 3, 4 and 6 arms, one level each; the road kinds; the blockades */
+{ const defs = [{ id: 'av', pts: [[-1500, 0], [1500, 0]], kind: 'avenue' }, { id: 's1', pts: [[-300, -900], [-300, 900]], kind: 'road' }, { id: 't', pts: [[-100, 0], [-100, 600]], kind: 'street' },
+    { id: 'c1', pts: [[-700, 180], [-700, 560]], kind: 'street' }, { id: 'c2', pts: [[-700, 560], [-420, 560]], kind: 'lane' }, { id: 'd1', pts: [[600, -400], [1000, 400]], kind: 'street' }, { id: 'd2', pts: [[1000, -400], [600, 400]], kind: 'street' }];
+  const N = T.network(defs, { ground }), kinds = N.junctions.map(J => J.kind);
+  ok(N.roads.length === 7 && N.junctions.length === 4 && N.nodes.length === 15 && ['corner', 'tee', 'cross', 'six'].every(k => kinds.indexOf(k) >= 0), 'seven roads, four junctions and eleven ends: ' + kinds.join(', '));
+  const six = N.junctions.find(J => J.kind === 'six'), tee = N.junctions.find(J => J.kind === 'tee'), corner = N.junctions.find(J => J.kind === 'corner');
+  ok(six.n === 6 && Math.abs(six.x - 800) < 1 && Math.abs(six.z) < 1 && tee.n === 3 && tee.arms.filter(a => a.end).length === 1 && corner.n === 2 && corner.arms.every(a => a.end), 'six arms at (800, 0), a T with one ending road, a corner of two ends');
+  ok(N.junctions.every(J => J.arms.every(a => Math.abs(N.roads[a.road].yAt(a.s) - J.y) < 0.35)), 'every road through a junction meets its level');
+  ok(N.junctions.every(J => J.corners.length === J.n && J.corners.every(c => c.inner.length >= 2 && c.outer.length >= 2 && (c.straight || c.inner.length === 9))), 'a pavement corner between each pair of arms, filleted where the kerbs meet');
+  const cross = N.junctions.find(J => J.kind === 'cross'), avArm = cross.arms.find(a => a.road === 0), rdArm = cross.arms.find(a => a.road === 1);
+  ok(cross.corners.every(c => Math.abs(Math.abs(c.apex[0] + 300) - 5.5) < 0.02 && Math.abs(Math.abs(c.apex[1]) - 13) < 0.02), 'the cross: the kerb lines meet at the road\'s half width along the avenue and the avenue\'s along the road');
+  ok(avArm.cut > 5.5 && avArm.cut < 10 && rdArm.cut > 13 && rdArm.cut < 18, 'the avenue is cut just past the road\'s kerb, the road just past the avenue\'s: ' + avArm.cut.toFixed(1) + ', ' + rdArm.cut.toFixed(1));
+  ok(tee.corners.filter(c => c.straight).length === 1 && tee.corners.filter(c => !c.straight).length === 2, 'the T: two filleted corners, the far side straight across');
+  ok(N.junctions.every(J => J.arms.every(a => Math.abs(N.roads[a.road].yAt(a.s + a.dir * a.cut) - J.y) < 0.05)), 'every road is level with its junction at its cut');
+  ok(N.segments.length === 13 && N.segments.every(sg => sg.s1 > sg.s0) && N.segments.filter(sg => sg.road === 0).length === 4 && N.segments.filter(sg => sg.road === 0).every(sg => sg.from && sg.to), 'thirteen segments between the nodes, the avenue in four');
+  ok(T.cutsOf(N, 0).length === 3 && T.cutsOf(N, 0).every(c => c[1] - c[0] > 10 && c[1] - c[0] < 40), 'the avenue is cut three times, each 10 to 40 m');
+  ok(N.roads[2].width === 7.5 && N.roads[2].lines === 'edges' && N.roads[4].width === 5 && N.roads[4].lines === 'none' && N.roads[0].width === 26, 'the kinds: a street 7.5 m with edge lines, a lane 5 m with none, an avenue 26');
+  ok(T.junctionAt(N, 800, 2, 0) === six && T.junctionAt(N, 800, 60, 0) === null && T.nearJunction(N, 0, 2300, 0) === six && !T.nearJunction(N, 0, 2200, 0), 'junctionAt and nearJunction find them, and only them');
+  throws(() => T.network([], { ground }), 'an empty network throws'); throws(() => T.network(defs, {}), 'no ground throws');
+  const W = T.war({ id: 's1', pts: [[-300, -900], [-300, 900]], width: 11, ground }, { damage: 0.5, blockades: true, seed: 902 });
+  ok(W.blockades.length >= 3 && W.blockades.every(b => b.vehicles.length >= 2 && b.vehicles.every(v => T.VEHICLES[v.key] && Math.abs(v.lat) + v.ext <= b.wide / 2 + 0.5 && ['burnt', 'wreck', 'weathered'].indexOf(v.state) >= 0)), W.blockades.length + ' barricades of 2 or more wrecks, each inside the road');
+  let apart = true; W.blockades.forEach(b => { for (let i = 1; i < b.vehicles.length; i++) if (b.vehicles[i].row === b.vehicles[i - 1].row && b.vehicles[i].lat - b.vehicles[i].ext < b.vehicles[i - 1].lat + b.vehicles[i - 1].ext - 1e-6) apart = false; }); ok(apart, 'the wrecks stand nose to tail, none through another');
+  ok(W.pieces.some(p => p.role === 'barricade' && p.kind === 'tr_sandbags'), 'sandbags beside the barricades');
+  throws(() => T.war({ id: 's1', pts: [[-300, -900], [-300, 900]], width: 11, ground }, { blockades: [2] }), 'a barricade off the street throws');
+  const Hb = T.highway([[-1700, -560], [1700, -560]], { id: 'hb', ground, blockades: [1700] }); ok(Hb.blockades.length === 1 && Hb.blockades[0].rows === 2 && Hb.blockades[0].vehicles.length >= 4 && Hb.blockades[0].vehicles.every(v => Math.abs(v.y - Hb.deckAt(1700)) < 1e-6), 'a barricade of two rows on the deck, its wrecks at deck level');
+  throws(() => T.highway([[-1700, -560], [1700, -560]], { id: 'hb', ground, blockades: [2] }), 'a deck barricade off the deck throws'); }
 
 /* the dress */
 { const S = KSPACE.create({ cell: 12 }); S.insert({ x: 400, z: 0, r: 20 }, 400, 0, 20);

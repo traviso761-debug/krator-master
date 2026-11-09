@@ -8,6 +8,7 @@
 //     o.span (24), o.width (18: two lanes each way, a median, shoulders), o.lanes (4), o.maxGrade (0.05), o.radius (corner fillet, 80),
 //     o.ruin ({intact, cracked, collapsed, gone} summing to 1, or a function of s giving one; KTRANSIT.RUIN.span), o.lampStep (36),
 //     o.ramps [{s, side: 1 | -1, dir: 'off' | 'on', grade, tail}], o.over [H...] (the highways this one must clear where it crosses them),
+//     o.blockades [s...] (improvised barricades of wrecked vehicles across the deck: KTRANSIT.blockade; H.blockades),
 //     o.overgrowth (0..2 or a function of s: KTRANSIT.overgrow), o.shift (x, z) -> [dx, dz] (an earthquake's slip: KTRANSIT.quakeShift), o.quake (Q:
 //     the spans and piers near the fault roll by KTRANSIT.quakeRoll; span.roll, pier.roll)
 //     H = {id, kind: 'highway', seed, path, width, lanes, span, clearance, deckAt(s), spans, piers, rubble, ramps, roads, L}
@@ -115,6 +116,7 @@
     H.crossings = lift ? P.seg.length && T.intersections(P, o.over[0].path).map(function (c) { return { s: c.sP, x: c.x, z: c.z }; }) : [];
     if (o.overgrowth) T.overgrow(H, o.overgrowth, seed, 9);
     (o.ramps || []).forEach(function (r, k) { var R = ramp(H, r, k, o); H.ramps.push(R); H.roads.push(R.road); });
+    H.blockades = (o.blockades || []).map(function (s, k) { if (s < 10 || s > H.L - 10) throw new Error('KTRANSIT.highway: blockade ' + k + ' is off the deck'); var S = H.spans[Math.min(H.spans.length - 1, Math.floor(s / H.L * H.spans.length))]; return T.blockade(H.path, s, width - 1.8, deckAt(s), KRAND.hash(seed, k, 600) >>> 0, H.id + '.bk' + k, S.state === 'gone' || S.state === 'collapsed'); });
     return H;
   };
   T.spanToWorld = function (S, lat, up, along) {

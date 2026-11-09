@@ -99,9 +99,12 @@
          into a hill and fills a dip; o.above over the result. The host carves the cuttings (KTRANSIT.lineH), the kit draws the fills */
       var cw = Math.max(1, Math.round((o.window == null ? 24 : o.window) / P.step)), ab2 = o.above == null ? 0.45 : o.above;
       for (i = 0; i < n; i++) { var acc = 0, cnt = 0; for (j = Math.max(0, i - cw); j <= Math.min(n - 1, i + cw); j++) { acc += P.YG[j]; cnt++; } Y[i] = acc / cnt + ab2; }
-      for (var pass = 0; pass < 3; pass++) {
-        for (i = 1; i < n; i++) { var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); }
-        for (i = n - 2; i >= 0; i--) { var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } }
+      /* pins: heights the alignment must take (a junction's level, set by the first road through it); held through the passes */
+      var pins = (o.pins || []).map(function (pn) { return [Math.max(0, Math.min(n - 1, Math.round(pn.s / P.L * (n - 1)))), pn.y]; }), setPins = function () { pins.forEach(function (pn) { Y[pn[0]] = pn[1]; }); };
+      setPins();
+      for (var pass = 0; pass < 4; pass++) {
+        for (i = 1; i < n; i++) { var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); } setPins();
+        for (i = n - 2; i >= 0; i--) { var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } setPins(); }
       return { Y: Y, at: function (s) { s = Math.max(0, Math.min(P.L, s)); var f = s / P.L * (n - 1), a = Math.floor(f), t = f - a; return a >= n - 1 ? Y[n - 1] : Y[a] + (Y[a + 1] - Y[a]) * t; }, mode: mode };
     } else { var ab = o.above == null ? 0.45 : o.above; for (i = 0; i < n; i++) Y[i] = P.YG[i] + ab; }
     if (o.lift) for (i = 0; i < n; i++) { var lv = o.lift(P.S[i]); if (lv != null && lv > Y[i]) Y[i] = lv; }
@@ -118,16 +121,19 @@
   /* segment intersections between a path and another path or polyline (proper crossings only; touching ends count once) */
   /* a road at grade as a record: its graded alignment (KTRANSIT.profile 'cutfill': o.maxGrade 0.08), its level at any point, its cuts and fills.
        o: id, ground (required), width (11), pavement (3.5), maxGrade, shift, radius (fillet, 40), above (0.06)
-       o.drift (0..1 or a function of s: the road under sand, Rd.drifts)
-       -> Rd {id, kind: 'road', path, width, pavement, yAt(s), levelAt(x, z), form (the depth of the formation under the surface, 0.45),
+       o.drift (0..1 or a function of s: the road under sand, Rd.drifts), o.kind (a name: KTRANSIT.ROAD_KINDS), o.lines ('both' | 'edges' | 'none'),
+       o.pins [{s, y}] (heights the alignment takes: a junction's level, KTRANSIT.network)
+       -> Rd {id, kind: 'road', path, width, pavement, yAt(s), levelAt(x, z) (the alignment, dipping by o.carve there), form (the depth of the formation under the surface, 0.45),
              segs: [{s0, s1, x0, z0, y0, x1, z1, y1, fill (the surface over the ground at the middle: + a fill, - a cut)}],
              drifts: [{id, s0, s1, side, reach, depth}], L} */
   T.road = function (pts, o) {
     o = o || {};
     if (typeof o.ground !== 'function') throw new Error('KTRANSIT.road: o.ground(x, z) is required');
-    var P = T.path(pts, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift }), Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30 });
-    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, yAt: Y.at, deckAt: Y.at, segs: [] };
-    Rd.levelAt = function (x, z) { var pr = P.project(x, z), y = Y.at(pr.s), g = o.ground(x, z); return y + Math.min(0, g - (y - Rd.form)); };
+    var P = T.path(pts, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift }), Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30, pins: o.pins });
+    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', roadKind: o.kind == null ? 'road' : o.kind, lines: o.lines == null ? 'both' : o.lines, path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, yAt: Y.at, deckAt: Y.at, segs: [], pins: o.pins || [] };
+    /* the surface anywhere: the alignment, taken down by what the host carved there (o.carve(x, z) <= 0: a crater, a sinkhole), so a road
+       over a crater dips into it; it does NOT follow the ground into the dips it fills (the embankment is drawn under it) */
+    Rd.levelAt = function (x, z) { var pr = P.project(x, z), y = Y.at(pr.s); return o.carve ? y + Math.min(0, o.carve(x, z)) : y; };
     var n = Math.max(1, Math.round(P.L / 12));
     for (var i = 0; i < n; i++) { var s0 = i * P.L / n, s1 = (i + 1) * P.L / n, a = P.at(s0), b = P.at(s1), m = P.at((s0 + s1) / 2); Rd.segs.push({ s0: s0, s1: s1, x0: a.x, z0: a.z, y0: Y.at(s0), x1: b.x, z1: b.z, y1: Y.at(s1), fill: Y.at(m.s) - m.yG }); }
     /* the drifts (the owner, 2026-11-09: a road covered in soil or sand): o.drift 0..1 or a function of s, the share of the road under sand; each

@@ -5,7 +5,8 @@
 // A collapsed span is the same deck built in its own frame and laid where its record's fall says; a cracked one is narrowed on the
 // cracked side and its barrier there is gone; a gone span is nothing but its piers.
 //
-//   KTRANSIT.draw.highway(H, o) -> Group     o.furn: the furniture bundle (KratorTransitFurniture) for the lamps (none drawn without it),
+//   KTRANSIT.draw.highway(H, o) -> Group     o.furn: the furniture bundle (KratorTransitFurniture) for the lamps (none drawn without it), o.vehicles
+//                                            (KratorVehicles) for the blockades' wrecks (burnt hulks without it),
 //                                            o.shadow: a KSHADOW handle to cast; userData: {tris, spans, piers, lamps, rubble}
 //   KTRANSIT.draw.line(B, L, o)              the spans, piers and lamps of one deck (a highway or a ramp) into a builder
 //   KTRANSIT.draw.road(B, road, ground, o)   a road surface at grade along pts ([{x, z, y}] or [[x, z]]): asphalt in bands every 3 m, lines, o.pavement m of pave
@@ -84,35 +85,84 @@
     return lamps;
   };
   T.draw.road = function (B, road, ground, o) {
-    o = o || {}; const col = C(), w = road.width == null ? 11 : road.width, pave = o.pavement == null ? 0 : o.pavement, given = (road.pts || road.path.pts).map(p => Array.isArray(p) ? { x: p[0], z: p[1] } : { x: p.x, z: p.z });
-    if (given.length < 2) return;
-    /* resampled every o.step metres (3), so the surface follows the ground: its craters, its relief */
-    const step = o.step == null ? 3 : o.step, pts = [], rd = road.yAt ? road : null, shift = road.pts ? (road.shift || o.shift) : null;   /* a road record's path already carries its shift */
-    for (let i = 0; i + 1 < given.length; i++) { const a = given[i], b = given[i + 1], len = Math.hypot(b.x - a.x, b.z - a.z), n = Math.max(1, Math.round(len / step)); for (let k = 0; k < n; k++) pts.push({ x: a.x + (b.x - a.x) * k / n, z: a.z + (b.z - a.z) * k / n }); }
-    pts.push(given[given.length - 1]);
-    /* the land carried (an earthquake's slip): every point goes where the land went; the level: the road's graded alignment where it has one (its
-       surface still dips into a crater carved below its formation), the ground otherwise */
-    if (shift) pts.forEach(p => { const sh = shift(p.x, p.z); p.x += sh[0]; p.z += sh[1]; });
-    const lev = rd ? (x, z) => rd.levelAt(x, z) : (x, z) => ground(x, z);
-    const L = [], R = [], PL = [], PR = [], KL = [], KR = [], CL = [], CR = [], EL = [], ER = [], yl = 0.06, bands = Math.max(2, Math.round(w / 3)), lanesL = [], pb = Math.max(1, Math.round(pave / 1.2)), paveL = [], paveR = []; for (let b = 0; b <= bands; b++) lanesL.push([]); for (let b = 0; b <= pb; b++) { paveL.push([]); paveR.push([]); }
-    pts.forEach((p, i) => { const q = pts[Math.min(pts.length - 1, i + 1)], r = pts[Math.max(0, i - 1)], yaw = Math.atan2(q.x - r.x, q.z - r.z), cx = Math.cos(yaw), sz = -Math.sin(yaw), g = (x, z) => ground(x, z);
-      const at = (off, lift) => [p.x + cx * off, lev(p.x + cx * off, p.z + sz * off) + lift, p.z + sz * off];
-      L.push(at(-w / 2, yl)); R.push(at(w / 2, yl)); CL.push(at(-0.1, yl + 0.02)); CR.push(at(0.1, yl + 0.02));
-      for (let b = 0; b <= bands; b++) lanesL[b].push(at(-w / 2 + w * b / bands, yl));
-      /* a fill: the embankment's side from the formation's edge down to the ground at 1 : 1.5 */
-      if (rd) { const e = w / 2 + pave + 0.5; [-1, 1].forEach((sd, si) => { const top = at(sd * e, -0.02), gy = g(top[0], top[2]), fh = top[1] - gy; const foot = fh > 0.15 ? [top[0] + cx * sd * fh * 1.5, g(top[0] + cx * sd * fh * 1.5, top[2] + sz * sd * fh * 1.5), top[2] + sz * sd * fh * 1.5] : [top[0], top[1] - 0.05, top[2]]; (si ? ER : EL).push([top, foot]); }); }
-      if (pave > 0) { PL.push(at(-w / 2 - pave, 0.22)); PR.push(at(w / 2 + pave, 0.22)); KL.push(at(-w / 2 - 0.02, 0.22)); KR.push(at(w / 2 + 0.02, 0.22)); for (let b = 0; b <= pb; b++) { paveL[b].push(at(-w / 2 - 0.02 - (pave - 0.02) * b / pb, 0.22)); paveR[b].push(at(w / 2 + 0.02 + (pave - 0.02) * b / pb, 0.22)); } } });
-    for (let b = 0; b < bands; b++) B.strip('asphalt', lanesL[b], lanesL[b + 1], col.asphalt);
-    if (rd && EL.length) { B.strip('rubble', EL.map(e => e[1]), EL.map(e => e[0]), col.fill, { face: [0, 1, 0] }); B.strip('rubble', ER.map(e => e[0]), ER.map(e => e[1]), col.fill, { face: [0, 1, 0] }); }
+    o = o || {}; const col = C(), w = road.width == null ? 11 : road.width, pave = o.pavement == null ? 0 : o.pavement, rd = road.yAt ? road : null, step = o.step == null ? 3 : o.step;
+    const lev = rd ? (x, z) => rd.levelAt(x, z) : (x, z) => ground(x, z), lines = rd && rd.lines ? rd.lines : 'both', g = (x, z) => ground(x, z);
+    /* the samples. A road record runs along its path by s (the path carries the shift) and is CUT at its network's junctions (KTRANSIT.cutsOf):
+       each stretch between two cuts is a run of its own, ending exactly on the cut line, where the junction's patch takes over. A plain polyline
+       (a street given as points, a ramp) is one run, resampled every `step` metres and carried by the shift */
+    const runs = [];
+    if (rd) { const ranges = o.network && o.road != null ? T.cutsOf(o.network, o.road) : []; let s0 = 0;
+      const runFrom = (a, b) => { if (b - a < 0.5) return; const r = [], n = Math.max(1, Math.round((b - a) / step)); for (let k = 0; k <= n; k++) { const s = a + (b - a) * k / n, p = rd.path.at(s); r.push({ x: p.x, z: p.z, s: s, yaw: p.yaw }); } runs.push(r); };
+      ranges.forEach(rg => { runFrom(s0, rg[0]); s0 = rg[1]; }); runFrom(s0, rd.L); }
+    else { const given = (road.pts || road.path.pts).map(p => Array.isArray(p) ? { x: p[0], z: p[1] } : { x: p.x, z: p.z }); if (given.length < 2) return; const pts = [], shift = road.shift || o.shift;
+      for (let i = 0; i + 1 < given.length; i++) { const a = given[i], b = given[i + 1], len = Math.hypot(b.x - a.x, b.z - a.z), n = Math.max(1, Math.round(len / step)); for (let k = 0; k < n; k++) pts.push({ x: a.x + (b.x - a.x) * k / n, z: a.z + (b.z - a.z) * k / n }); }
+      pts.push({ x: given[given.length - 1].x, z: given[given.length - 1].z });
+      if (shift) pts.forEach(p => { const sh = shift(p.x, p.z); p.x += sh[0]; p.z += sh[1]; });
+      pts.forEach((p, i) => { const q = pts[Math.min(pts.length - 1, i + 1)], r = pts[Math.max(0, i - 1)]; p.yaw = Math.atan2(q.x - r.x, q.z - r.z); p.s = i ? pts[i - 1].s + Math.hypot(p.x - r.x, p.z - r.z) : 0; }); runs.push(pts); }
+    const yl = 0.06, bands = Math.max(2, Math.round(w / 3)), pb = Math.max(1, Math.round(pave / 1.2));
+    runs.forEach(pts => { if (pts.length < 2) return;
+      const L = [], R = [], PL = [], PR = [], KL = [], KR = [], CL = [], CR = [], EL = [], ER = [], lanesL = [], paveL = [], paveR = []; for (let b = 0; b <= bands; b++) lanesL.push([]); for (let b = 0; b <= pb; b++) { paveL.push([]); paveR.push([]); }
+      pts.forEach(p => { const cx = Math.cos(p.yaw), sz = -Math.sin(p.yaw);
+        const at = (off, lift) => [p.x + cx * off, lev(p.x + cx * off, p.z + sz * off) + lift, p.z + sz * off];
+        L.push(at(-w / 2, yl)); R.push(at(w / 2, yl)); CL.push(at(-0.1, yl + 0.02)); CR.push(at(0.1, yl + 0.02));
+        for (let b = 0; b <= bands; b++) lanesL[b].push(at(-w / 2 + w * b / bands, yl));
+        /* a fill: the embankment's side from the formation's edge down to the ground at 1 : 1.5 */
+        if (rd) { const e = w / 2 + pave + 0.5; [-1, 1].forEach((sd, si) => { const top = at(sd * e, -0.02), gy = g(top[0], top[2]), fh = top[1] - gy; const foot = fh > 0.15 ? [top[0] + cx * sd * fh * 1.5, g(top[0] + cx * sd * fh * 1.5, top[2] + sz * sd * fh * 1.5), top[2] + sz * sd * fh * 1.5] : [top[0], top[1] - 0.05, top[2]]; (si ? ER : EL).push([top, foot]); }); }
+        if (pave > 0) { PL.push(at(-w / 2 - pave, 0.22)); PR.push(at(w / 2 + pave, 0.22)); KL.push(at(-w / 2 - 0.02, 0.22)); KR.push(at(w / 2 + 0.02, 0.22)); for (let b = 0; b <= pb; b++) { paveL[b].push(at(-w / 2 - 0.02 - (pave - 0.02) * b / pb, 0.22)); paveR[b].push(at(w / 2 + 0.02 + (pave - 0.02) * b / pb, 0.22)); } } });
+      for (let b = 0; b < bands; b++) B.strip('asphalt', lanesL[b], lanesL[b + 1], col.asphalt);
+      if (rd && EL.length) { B.strip('rubble', EL.map(e => e[1]), EL.map(e => e[0]), col.fill, { face: [0, 1, 0] }); B.strip('rubble', ER.map(e => e[0]), ER.map(e => e[1]), col.fill, { face: [0, 1, 0] }); }
+      if (lines === 'both') B.strip('line', CL, CR, col.lineYellow);
+      if (lines !== 'none') [[L, -1], [R, 1]].forEach(e => { const edge = k => e[0].map((p, i) => { const q = e[0][Math.min(e[0].length - 1, i + 1)], r = e[0][Math.max(0, i - 1)], yaw = Math.atan2(q[0] - r[0], q[2] - r[2]); return [p[0] - Math.cos(yaw) * e[1] * k, p[1] + 0.02, p[2] + Math.sin(yaw) * e[1] * k]; }), A = edge(0.3), Bb = edge(0.45); if (e[1] < 0) B.strip('line', Bb, A, col.lineWhite); else B.strip('line', A, Bb, col.lineWhite); });
+      /* the pavements and kerbs */
+      if (pave > 0) { for (let b = 0; b < pb; b++) { B.strip('pave', paveL[b + 1], paveL[b], col.pave); B.strip('pave', paveR[b], paveR[b + 1], col.pave); } B.strip('concrete', KL, L, col.concDark); B.strip('concrete', R, KR, col.concDark); } });
     /* the drifts: a wedge of sand from a kerb across the carriageway, its crest at the kerb, rippled along, laid on the finished surface */
     if (rd && rd.drifts) rd.drifts.forEach(dft => { const n = Math.max(2, Math.round((dft.s1 - dft.s0) / 3)), rows = 5, grid = [];
       for (let i = 0; i <= n; i++) { const s = dft.s0 + (dft.s1 - dft.s0) * i / n, p = rd.path.at(s), cx = Math.cos(p.yaw), sz = -Math.sin(p.yaw), t = i / n, fade = Math.min(1, t * 4, (1 - t) * 4), row = [];
         for (let r = 0; r <= rows; r++) { const q = r / rows, off = dft.side * (w / 2 + 0.3 - dft.reach * q), x = p.x + cx * off, z = p.z + sz * off, hgt = dft.depth * fade * (1 - q) * (1 - q) * (1 + 0.15 * Math.sin(s / 2.1)) + 0.04; row.push([x, lev(x, z) + hgt, z]); }
         grid.push(row); }
       for (let r = 0; r < rows; r++) B.strip('soil', grid.map(row => row[dft.side > 0 ? r : rows - r]), grid.map(row => row[dft.side > 0 ? r + 1 : rows - r - 1]), col.sand, { face: [0, 1, 0] }); });
-    B.strip('line', CL, CR, col.lineYellow);
-    [[L, -1], [R, 1]].forEach(e => { const A = e[0].map((p, i) => { const q = e[0][Math.min(e[0].length - 1, i + 1)], r = e[0][Math.max(0, i - 1)], yaw = Math.atan2(q[0] - r[0], q[2] - r[2]); return [p[0] - Math.cos(yaw) * e[1] * 0.3, p[1] + 0.02, p[2] + Math.sin(yaw) * e[1] * 0.3]; }), Bb = e[0].map((p, i) => { const q = e[0][Math.min(e[0].length - 1, i + 1)], r = e[0][Math.max(0, i - 1)], yaw = Math.atan2(q[0] - r[0], q[2] - r[2]); return [p[0] - Math.cos(yaw) * e[1] * 0.45, p[1] + 0.02, p[2] + Math.sin(yaw) * e[1] * 0.45]; }); if (e[1] < 0) B.strip('line', Bb, A, col.lineWhite); else B.strip('line', A, Bb, col.lineWhite); });
-    if (pave > 0) { for (let b = 0; b < pb; b++) { B.strip('pave', paveL[b + 1], paveL[b], col.pave); B.strip('pave', paveR[b], paveR[b + 1], col.pave); } B.strip('concrete', KL, L.map(p => [p[0], p[1], p[2]]), col.concDark); B.strip('concrete', R.map(p => [p[0], p[1], p[2]]), KR, col.concDark); }
+  };
+  /* a blockade's vehicles: the host's vehicles bundle (KratorVehicles.build(key, {variant, seed, state}): its lowest point on y 0, +z forward) merged
+     into the builder's buckets by family (the body to paint or rust by state, the wheels to rust), or, without the bundle, a burnt hulk the size of
+     the record: a body, a cab, four wheel stubs */
+  T.draw.vehicles = function (B, list, o) {
+    o = o || {}; const col = C(), KV = o.vehicles; let real = 0, hulks = 0;
+    list.forEach(v => {
+      const m = T.frame(v.x, v.y, v.z, v.yaw, 0, v.roll == null ? 0 : v.roll);
+      let g = null;
+      if (KV && KV.build) { try { g = KV.build(v.key, { variant: v.variant, seed: v.seed, state: v.state }); } catch (e) { g = null; if (o.err) o.err('vehicle ' + v.key + ': ' + (e && e.message || e)); } }
+      if (g) { g.updateMatrixWorld(true); g.traverse(ch => { if (!ch.isMesh) return; const nm = ch.name || ''; const fam = /wheel|steer|belt/.test(nm) ? 'rust' : (v.state === 'burnt' || v.state === 'wreck') ? 'rust' : /metal/.test(nm) ? 'steel' : 'paint'; B.mesh(fam, ch, m.clone().multiply(ch.matrixWorld), { mul: v.state === 'burnt' ? 0.5 : 1 }); }); real++; return; }
+      const soot = v.state === 'burnt' ? 0.35 : 0.8, body = [col.rust[0] * soot, col.rust[1] * soot, col.rust[2] * soot];
+      B.box('rust', m.clone().multiply(T.frame(0, 0.45, 0, 0, 0, 0)), v.w, v.h * 0.5, v.d, body); B.box('rust', m.clone().multiply(T.frame(0, 0.45 + v.h * 0.5, v.d * 0.1, 0, 0, 0)), v.w * 0.9, v.h * 0.45, v.d * 0.45, body);
+      [[-1, 1], [1, 1], [-1, -1], [1, -1]].forEach(q => { const a = new THREE.Vector3(q[0] * (v.w / 2 - 0.1), 0.42, q[1] * (v.d / 2 - 0.9)).applyMatrix4(m), b = new THREE.Vector3(q[0] * (v.w / 2 + 0.1), 0.42, q[1] * (v.d / 2 - 0.9)).applyMatrix4(m); B.cyl('rust', [a.x, a.y, a.z], [b.x, b.y, b.z], 0.42, col.soot, 8); });
+      hulks++;
+    });
+    return { real: real, hulks: hulks };
+  };
+  /* the junctions of a network, from their kerb-line geometry (41b): the asphalt patch over the star-shaped outline (cut lines and apexes), in
+     three rings from the centre so it follows the ground; the pavement corners between the inner kerb (filleted) and the outer edge, with the
+     kerb face; a crosswalk and a stop line across each arm just beyond its cut (junctions of three arms or more) */
+  T.draw.junctions = function (B, N, ground) {
+    const col = C(); void ground;
+    N.junctions.forEach(J => {
+      const lev = J.levelAt, P3 = (q, lift) => [q[0], lev(q[0], q[1]) + lift, q[1]];
+      /* the patch: the outline sampled every 3 m, then rings at 1/3 and 2/3 of the way to the centre, strips between them, a fan at the heart */
+      const edge = []; J.patch.forEach((q, i) => { const r = J.patch[(i + 1) % J.patch.length], n = Math.max(1, Math.ceil(Math.hypot(r[0] - q[0], r[1] - q[1]) / 3)); for (let k = 0; k < n; k++) edge.push([q[0] + (r[0] - q[0]) * k / n, q[1] + (r[1] - q[1]) * k / n]); });
+      const ring = f => edge.map(q => P3([J.x + (q[0] - J.x) * f, J.z + (q[1] - J.z) * f], 0.085)), r1 = ring(1 / 3), r2 = ring(2 / 3), r3 = ring(1), close = r => r.concat([r[0]]), c = P3([J.x, J.z], 0.085);
+      B.strip('asphalt', close(r1), close(r2), col.asphalt, { face: [0, 1, 0] }); B.strip('asphalt', close(r2), close(r3), col.asphalt, { face: [0, 1, 0] });
+      for (let i = 0; i < r1.length; i++) B.tri('asphalt', c, r1[i], r1[(i + 1) % r1.length], col.asphalt, { face: [0, 1, 0] });
+      /* the corners */
+      J.corners.forEach(cr => { const A = J.arms[cr.between[0]], Bm = J.arms[cr.between[1]]; if (A.p + Bm.p <= 0) return;
+        const len = (pts) => { let l = 0; for (let i = 1; i < pts.length; i++) l += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return l; }, m = Math.max(3, Math.ceil(Math.max(len(cr.inner), len(cr.outer)) / 1.5) + 1), inner = T.resample(cr.inner, m), outer = T.resample(cr.outer, m);
+        B.strip('pave', inner.map(q => P3(q, 0.22)), outer.map(q => P3(q, 0.22)), col.pave, { face: [0, 1, 0] });
+        B.strip('concrete', inner.map(q => P3(q, 0.07)), inner.map(q => P3(q, 0.22)), col.concDark, { face: [J.x - cr.x, 0.3, J.z - cr.z] }); });
+      /* the crosswalks and stop lines */
+      if (J.n < 3) return;
+      J.arms.forEach(arm => { const yaw = arm.yaw, fx = Math.sin(yaw), fz = Math.cos(yaw), sx = Math.cos(yaw), sz = -Math.sin(yaw), d0 = arm.cut - 3.6, half = arm.width / 2 - 0.3, P = (dd, ll) => { const x = J.x + fx * dd + sx * ll, z = J.z + fz * dd + sz * ll; return [x, lev(x, z) + 0.09, z]; };
+        if (d0 < 0.5) return;
+        for (let q = -half + 0.3; q < half - 0.3; q += 1.2) B.quad('line', P(d0, q), P(d0, q + 0.6), P(d0 + 2.2, q + 0.6), P(d0 + 2.2, q), col.lineWhite, { face: [0, 1, 0] });
+        B.quad('line', P(d0 + 2.8, -half), P(d0 + 2.8, half), P(d0 + 3.2, half), P(d0 + 3.2, -half), col.lineWhite, { face: [0, 1, 0] }); });
+    });
   };
   T.draw.rubble = function (list, o) {
     if (!list || !list.length) return null;
@@ -128,7 +178,9 @@
   T.draw.highway = function (H, o) {
     o = o || {}; const B = T.builder(); let lamps = T.draw.line(B, H, o);
     H.ramps.forEach(R => { lamps += T.draw.line(B, R, o); T.draw.road(B, R.road, H.path.ground, { pavement: 0 }); });
+    const vk = T.draw.vehicles(B, [].concat(...(H.blockades || []).map(bk => bk.vehicles)), o);
     const G = B.finish('highway ' + H.id), rub = [].concat(H.rubble, ...H.ramps.map(R => R.rubble)), im = T.draw.rubble(rub, { seed: H.seed, name: 'highway ' + H.id + '.rubble' });
+    G.userData.vehicles = vk.real; G.userData.hulks = vk.hulks; G.userData.blockades = (H.blockades || []).length;
     if (im) { G.add(im); G.userData.tris += 12 * rub.length; }
     G.userData.spans = H.spans.length; G.userData.piers = H.piers.length; G.userData.lamps = lamps; G.userData.rubble = rub.length; G.userData.id = H.id;
     if (o.shadow) o.shadow.cast(G);

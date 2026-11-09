@@ -112,7 +112,8 @@ PORT, the commit, the hand-over note for the valley.
 
 ## 7. Not in this cut
 
-Walk floors on the decks and platforms; a subway; vehicles on the roads (the valley scatters `kits/motor-vehicles`'
-`ancient` wrecks itself); a Godot importer (the records are plain JSON, the meshes cross as meshes); `KRUBBLE` heaps
+Walk floors on the decks and platforms; vehicles on the roads beyond the blockades (the valley scatters `kits/motor-vehicles`'
+`ancient` wrecks itself; the barricades take them from the bundle); a street-layout generator (the network takes the host's definitions:
+the valley's grid comes from its own plan, or from `core/city`); a Godot importer (the records are plain JSON, the meshes cross as meshes); `KRUBBLE` heaps
 (not on `main`); the shells and impostors the metropolis has (a line is cheap enough to draw whole to a few kilometres;
 `KNOWN_ISSUES.md` says what a longer line wants).
