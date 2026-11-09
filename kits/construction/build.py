@@ -64,7 +64,7 @@ C = lambda *p: os.path.join(ROOT, 'core', *p)
 # the core modules, by path (README.md "CORE MODULES ARE NOT OPTIONAL")
 sys.path.insert(0, C('host'))
 import host as khost
-CORE_HOST = khost.SHELL + ['93-host-inspect.js', '94-host-polytool.js']
+CORE_HOST = khost.SHELL + khost.KEYS + ['93-host-inspect.js', '94-host-polytool.js']   # KEYS: the one key map (core/host/92k-host-keys.js)
 sys.path.insert(0, C('atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place; the page's core has no h3(), so SKY_H3
 CORE_JS = ([khost.path(f) for f in khost.SHADER] + [C('rand', '08-core-rand.js')] +
