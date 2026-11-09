@@ -17,16 +17,18 @@ TRS.build=function(){if(TRS.ready)return true;if(window._texPending>0)return fal
  {const B=KTRANSIT.builder();TRS.pads.forEach(p=>{const n=24,c=KTRANSIT.COL.concDark;for(let i=0;i<n;i++){const a=i/n*Math.PI*2,b=(i+1)/n*Math.PI*2,y=g(p.x,p.z)+.35;B.tri('concrete',[p.x,y,p.z],[p.x+Math.cos(a)*p.r,y,p.z+Math.sin(a)*p.r],[p.x+Math.cos(b)*p.r,y,p.z+Math.sin(b)*p.r],c,{face:[0,1,0]});}});add(B.finish('pads'),'The host\'s pads','pad',{count:TRS.pads.length});}
  /* the streets, dressed */
  R.war=TR_WAR;
- R.roads=TR_ROADS;R.quake=TR_QUAKE;
- R.dress=TRS.streets.map((st,i)=>{const S=st,Wr=TR_WAR[i],Rd=TR_ROADS[i],D=KTRANSIT.dress(S,{seed:KRAND.child(TR_SEED,st.id),space:space,blocked:blocked,war:Wr,damage:Wr.damageAt});add(KTRANSIT.draw.street(S,D,{furn,shadow:sh,err:reportErr,road:Rd,ground:g,tilt:Rd.levelAt}),'The street '+st.id+' and its furniture','street',{pieces:D.pieces.length,skipped:D.skipped,width:st.width});
-  add(KTRANSIT.draw.war(Wr,{furn,shadow:sh,err:reportErr,tilt:Rd.levelAt}),'The war along '+st.id,'war',{craters:Wr.craters.length,pieces:Wr.pieces.length,positions:Wr.positions.length});return D;});
+ R.roads=TR_ROADS;R.quake=TR_QUAKE;R.net=TR_NET;const veh=typeof KratorVehicles!=='undefined'?KratorVehicles:null;R.vehicles=!!veh;
+ R.dress=TRS.streets.map((st,i)=>{const S=st,Wr=TR_WAR[i],Rd=TR_ROADS[i],D=KTRANSIT.dress(S,{seed:KRAND.child(TR_SEED,st.id),space:space,blocked:blocked,war:Wr,damage:Wr.damageAt,network:TR_NET,road:i});add(KTRANSIT.draw.street(S,D,{furn,shadow:sh,err:reportErr,road:Rd,roadIndex:i,network:TR_NET,ground:g,tilt:Rd.levelAt}),'The street '+st.id+' and its furniture','street',{pieces:D.pieces.length,skipped:D.skipped,width:st.width,kind:Rd.roadKind});
+  add(KTRANSIT.draw.war(Wr,{furn,vehicles:veh,shadow:sh,err:reportErr,tilt:Rd.levelAt}),'The war along '+st.id,'war',{craters:Wr.craters.length,pieces:Wr.pieces.length,positions:Wr.positions.length,blockades:Wr.blockades.length});return D;});
+ /* the junctions: a patch, the pavement corners, the crosswalks */
+ {const JB=KTRANSIT.builder();KTRANSIT.draw.junctions(JB,TR_NET,g);add(JB.finish('junctions'),'The junctions','junction',{count:TR_NET.junctions.length,kinds:TR_NET.junctions.map(J=>J.kind).join(',')});}
  /* the block: every kind in every state it has */
  R.grid=KTRANSIT.dressGrid({ground:g,x:-760,z:110,seed:91});R.gridG=add(KTRANSIT.draw.dress(R.grid,{furn,shadow:sh,err:reportErr}),'The block: every kind in every state','block',{pieces:R.grid.pieces.length});
  /* the highway, its ramps, the interchange */
- R.H=KTRANSIT.highway([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{id:'h1',ground:g,ramps:[{s:520,side:-1,dir:'off'},{s:2500,side:-1,dir:'on'}],shift:TR_SHIFT,quake:TR_QUAKE});
+ R.H=KTRANSIT.highway([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{id:'h1',ground:g,ramps:[{s:520,side:-1,dir:'off'},{s:2500,side:-1,dir:'on'}],shift:TR_SHIFT,quake:TR_QUAKE,blockades:[1700]});
  R.culled=KTRANSIT.cull(R.H,blocked);
  R.H2=KTRANSIT.highway([[1100,-1750],[1100,250]],{id:'h2',ground:g,over:[R.H],overgrowth:1});
- add(KTRANSIT.draw.highway(R.H,{furn,shadow:sh}),'The highway h1 (two ramps)','highway',{spans:R.H.spans.length,culled:R.culled});
+ add(KTRANSIT.draw.highway(R.H,{furn,vehicles:veh,shadow:sh,err:reportErr}),'The highway h1 (two ramps)','highway',{spans:R.H.spans.length,culled:R.culled,blockades:R.H.blockades.length});
  add(KTRANSIT.draw.highway(R.H2,{furn,shadow:sh}),'The highway h2 (over h1)','highway',{spans:R.H2.spans.length});
  /* the cargo line at grade, its crossings, its wreck */
  R.R=TR_CARGO;
@@ -60,4 +62,7 @@ const VIEWS={
  'The fault, the avenue':(()=>{const c=KTRANSIT.intersections(TR_QUAKE.path,[[-1500,0],[1500,0]])[0];return c?[c.x+40,14,c.z+45,c.x,terrainH(c.x,c.z)+1,c.z]:[-520,20,40,-520,2,0];})(),
  'The fault, the cargo line':(()=>{const c=KTRANSIT.intersections(TR_QUAKE.path,[[-1750,-150],[650,-150]])[0];return c?[c.x-30,12,c.z+40,c.x,terrainH(c.x,c.z)+1,c.z]:[-535,20,-110,-535,2,-150];})(),
  'The cutting':[-980,18,-95,-900,8,-150],'A road under sand':[430,14,-560,400,2,-500],
+ 'A barricade of wrecks':(()=>{const b=TR_WAR[1].blockades[0];return b?[b.x+22,9,b.z+26,b.x,1.5,b.z]:[-300,20,40,-300,2,0];})(),
+ 'The highway blocked':(()=>{const P=KTRANSIT.path([[-1750,-560],[-700,-560],[250,-360],[1750,-360]],{ground:terrainH,radius:80,shift:TR_SHIFT}),p=P.at(1700),yD=terrainH(p.x,p.z)+9;return [p.x+40,yD+14,p.z+30,p.x,yD+1,p.z];})(),
+ 'A six-arm junction':[850,26,60,800,1,0],'A T junction':[-60,16,50,-100,1,10],'A corner of two streets':[-660,12,600,-700,1,560],'A city street':[-560,7,575,-460,1,560],
  'From the air':[0,950,1500,0,0,-200]};

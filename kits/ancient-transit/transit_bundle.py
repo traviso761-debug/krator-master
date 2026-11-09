@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
 PARTS = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'krator-transit-furniture.js'), (HERE, 'transit-furnish.js')]
 SRC = os.path.join(HERE, 'src')
-DATA = ['40-tr-records.js', '41-tr-path.js', '42-tr-highway.js', '43-tr-rail.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']
+DATA = ['40-tr-records.js', '41-tr-path.js', '41b-tr-network.js', '42-tr-highway.js', '43-tr-rail.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']
 DRAW = ['46-tr-mats.js', '55-tr-draw-highway.js', '56-tr-draw-rail.js', '56b-tr-draw-subway.js', '57-tr-draw-dress.js']
 
 

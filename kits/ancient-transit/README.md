@@ -24,9 +24,9 @@ polygon tool are core/host's.
 | | Where | What |
 |---|---|---|
 | **Street furniture** | `krator-transit-furniture.js`, `transit-furnish.js`, `transit_bundle.py` | twenty-three kinds as catalog `ASSET`s of culture `ancient` on the catalog core (`kits/catalog/krator-furniture-core.js`): lamp standards (one arm, two), traffic signals, overhead sign gantries, street signs, benches, bollards, bins, hydrants, planters, kiosks, tram shelters, utility and transformer cabinets, crash barriers, guardrails, pedestrian bridges, the wreckage: pavement rubble heaps, glass heaps, cable tangles, and the military: sandbag walls and emplacements, sentry huts and watchtowers, checkpoint booms, tank traps, razor wire. Each in the states it can have of `intact`, `bent`, `fallen`, `burnt`, `crushed` (`KTRANSIT.KINDS`), built by the assembler into one merged mesh a material family with vertex colours and planar metre UVs: `KratorTransitFurniture.build(kind, {state, variant, seed})`. One closure for a host (`transit_bundle.furniture()`), as the vehicles' |
-| **The records** | `src/40-44c` | `KTRANSIT`: the kinds and the shares; `path` (fillets, samples, `at(s)`, `project`), `profile` (a deck over the ground with its grade limited both ways, or a bed on fills); `highway` (spans, piers, ramps, the landing roads, an interchange with `o.over`, rubble; `cull` against a host's pads); `rail` (at grade: beds, sleepers, rail sections, level crossings where it meets the host's streets, signals, catenary; elevated: spans, piers, stations); `overgrow` (soil, plants and creepers on an elevated line's spans, patchy or a bed across: `o.overgrowth` 0..2 or a function of s); `subway` (a bored twin-track tunnel under the ground in sections with ruin states, cut-and-cover stations with platforms, furniture and stair entrances up to the street, vent heads, and the sinkholes, voids and pits the host carves into its ground: `sinkholeH`); `train` (standing, derailed, fallen); `dress` (a street's furniture on both kerbs, lamps' arms over the carriageway, gantries and footbridges across it pavement to pavement, `KSPACE` keeping the pieces apart and off the pads); `war` (the owner's "various levels of cratering and strewn wreckage" along a street by one number, from a riot to bombed to smithereens: scorch, heaps, strewn and barricaded furniture, craters the host carves with `craterH`; and abandoned military positions: checkpoints, emplacements, posts); `quake` (an earthquake's fault across the page: a scarp the host carves with `quakeH`, a strike-slip `shift` every path takes so roads and rails bend and break at it, buckled land beside it, spans and piers rolled by its twist) |
-| **The drawing** | `src/46`, `src/55-57` (`56b` the subway) | the library materials (`materials.json`, `tex/`) and a geometry builder with UVs in world metres (one mesh a family: a highway is a dozen draw calls); the decks, piers, embankments, ramps, roads and lamp standards; the beds, sleepers (one instanced mesh), rails, crossings, signals, masts, guideways, stations and trains; the street surface and its furniture |
-| **The demo page** | `src/45, 47, 70, 89, 99`, `build.py`, `verify.py` | on the biome core and core/host, as the metropolis test bed: a block with every kind in every state; an avenue and two side streets dressed; the highway with an off and an on ramp across the page, over the cargo line and a second highway (that one patchily overgrown); the cargo line with two level crossings, catenary and a derailed freight train; the passenger line with two stations and a train part fallen, bare for a third of its length, then half buried in soil and plants, then fully overgrown with creepers down its sides; the subway under the first side street with a ruined station and one fallen in (the ground open down to its hall), a train standing and one derailed; the avenue's war from a riot at its west end to smithereens at its east, the side streets shelled and rioted with military positions and a checkpoint at the avenue; a fault across the west of the page lifting its east side 3 m and carrying it 5 m north, through the avenue, the cargo line, the highway and the passenger line. The demo's ground refines its mesh round everything the kit carves (`47-host-land.js`) |
+| **The records** | `src/40-44c` | `KTRANSIT`: the kinds and the shares; `path` (fillets, samples, `at(s)`, `project`), `profile` (a deck over the ground with its grade limited both ways, or a bed on fills); `highway` (spans, piers, ramps, the landing roads, an interchange with `o.over`, rubble; `cull` against a host's pads); `rail` (at grade: beds, sleepers, rail sections, level crossings where it meets the host's streets, signals, catenary; elevated: spans, piers, stations); `overgrow` (soil, plants and creepers on an elevated line's spans, patchy or a bed across: `o.overgrowth` 0..2 or a function of s); `subway` (a bored twin-track tunnel under the ground in sections with ruin states, cut-and-cover stations with platforms, furniture and stair entrances up to the street, vent heads, and the sinkholes, voids and pits the host carves into its ground: `sinkholeH`); `train` (standing, derailed, fallen); `dress` (a street's furniture on both kerbs, lamps' arms over the carriageway, gantries and footbridges across it pavement to pavement, `KSPACE` keeping the pieces apart and off the pads); `war` (the owner's "various levels of cratering and strewn wreckage" along a street by one number, from a riot to bombed to smithereens: scorch, heaps, strewn and barricaded furniture, craters the host carves with `craterH`; and abandoned military positions: checkpoints, emplacements, posts); `quake` (an earthquake's fault across the page: a scarp the host carves with `quakeH`, a strike-slip `shift` every path takes so roads and rails bend and break at it, buckled land beside it, spans and piers rolled by its twist); `road` (a graded alignment at 8% that cuts a hill and fills a dip, its surface dipping only into what the host carves, under drifts of sand where asked); `network` (the owner's "roads that cross each other at 2, 3, 4 or 6 corner intersections" and "smaller paved roads for city streets": a graph of nodes and segments as the city builders keep one, four road kinds from a 26 m avenue to a 5 m lane, and each junction's geometry read off its arms' kerb lines: corners where the kerbs meet, filleted, each arm cut square just beyond them so road and junction never overlap, one level a junction); `blockade` (the owner's "improvised barricades made from vehicles and wreckage": the Ancient vehicles of `kits/motor-vehicles` nose to tail across a street or a deck, burnt or wrecked, sandbags and heaps round them) |
+| **The drawing** | `src/46`, `src/55-57` (`56b` the subway) | the library materials (`materials.json`, `tex/`) and a geometry builder with UVs in world metres (one mesh a family: a highway is a dozen draw calls); the decks, piers, embankments, ramps, roads (in runs between the junctions' cuts), the junctions (the patch, the filleted pavement corners, crosswalks and stop lines), the blockades' wrecks from the vehicles bundle, and lamp standards; the beds, sleepers (one instanced mesh), rails, crossings, signals, masts, guideways, stations and trains; the street surface and its furniture |
+| **The demo page** | `src/45, 47, 70, 89, 99`, `build.py`, `verify.py` | on the biome core and core/host, as the metropolis test bed: a block with every kind in every state; a road network of eight: the avenue and two side roads crossing it, a street ending on it (a T), two small streets meeting at a corner, two diagonal streets through one point of the avenue (six arms), all dressed, the second side road under drifts of sand; a barricade of wrecks on the avenue, three on the first side road and one on the highway's deck; the highway with an off and an on ramp across the page, over the cargo line and a second highway (that one patchily overgrown); the cargo line with two level crossings, catenary and a derailed freight train; the passenger line with two stations and a train part fallen, bare for a third of its length, then half buried in soil and plants, then fully overgrown with creepers down its sides; the subway under the first side street with a ruined station and one fallen in (the ground open down to its hall), a train standing and one derailed; the avenue's war from a riot at its west end to smithereens at its east, the side streets shelled and rioted with military positions and a checkpoint at the avenue; a fault across the west of the page lifting its east side 3 m and carrying it 5 m north, through the avenue, the cargo line, the highway and the passenger line. The demo's ground refines its mesh round everything the kit carves (`47-host-land.js`) |
 
 ## The ruin
 
@@ -40,27 +40,40 @@ a pole's `crushed` is a stump sheared at its foot. The shares are options with d
 gone), `collapsed` (the canopy down on the platform, a stair tower down); a car `ok`, `derailed`, `overturned`, `fallen`, and burnt. A host
 puts the war where it wants it: `o.ruin` may be a function of the distance along the line.
 
-## Numbers (the GPU verify, 2026-11-08, the RTX 5060 lane, 1280 x 800)
+## Numbers (the GPU verify, 2026-11-09, the RTX 5060 lane, 1280 x 800)
 
 `verify.py --assert` passes: every kit check with its negative and every universal assert (shaders, textures, NaN, the registered volumes,
-the eye of every view). The page builds in about 0.5 s in the browser (`tools/build.py`: 772 KB and a 4 MB pack sidecar).
+the eye of every view). The page builds in about 3 s in the browser (the eight roads' furniture and war; `tools/build.py`: 2.3 MB with the
+vehicles bundle, and a 4 MB pack sidecar). A view draws 1.7 to 2.2 M triangles: 1.37 M are the kit's groups (below), the rest the demo's
+ground refined round everything the kit carves (every graded road now) and the shadow pass.
 
 | Group | Triangles | Meshes | Group | Triangles | Meshes |
 |---|---|---|---|---|---|
-| the avenue, 3 km, with 345 pieces | 81 k | 5 | the highway h1: 147 spans over 3.4 km, two ramps, 3 piers culled | 29 k | 9 |
-| the side streets, 1.8 km, 206 and 201 pieces | 54 k, 49 k | 5 | the highway h2 (over h1, patchily overgrown) | 28 k | 10 |
-| the block: 62 pieces, every kind in every state | 18 k | 9 | the cargo line (rails every 6 m), two crossings | 88 k | 9 |
-| the freight wreck, 8 cars | 3.6 k | 5 | the passenger line, two stations, the overgrowth | 102 k | 12 |
+| the avenue, 3 km, and its war (a barricade of wrecks) | 108 k, 266 k | 6, 10 | the highway h1: 147 spans over 3.4 km, two ramps, a barricade on the deck | 43 k | 9 |
+| the side roads, 1.8 km, and their wars (three barricades, drifts) | 52 k + 201 k, 66 k + 68 k | 6, 11 | the highway h2 (over h1, patchily overgrown) | 28 k | 10 |
+| the T street, the corner's two, the two diagonals, with their wars | 16 k + 25 k, 14 k + 14 k, 8 k + 10 k, 26 k + 56 k, 21 k + 45 k | | the cargo line (rails every 6 m), four crossings | 89 k | 9 |
+| the junctions: two crosses, a T, a six, a corner | 1.9 k | 4 | the passenger line, two stations, the overgrowth | 102 k | 12 |
+| the block: every kind in every state | 23 k | 9 | the subway, two stations, three trains | 76 k + 6 k | 10 |
+| the freight wreck, 8 cars | 3.6 k | 5 | | | |
 
 | View | Calls | Triangles | View | Calls | Triangles |
 |---|---|---|---|---|---|
-| The block | 90 | 514 k | The freight wreck | 84 | 499 k |
-| The block, close | 89 | 513 k | The station | 52 | 393 k |
-| The avenue | 87 | 500 k | The fallen train | 86 | 489 k |
-| The highway | 81 | 496 k | The line, half buried | 86 | 489 k |
-| The off ramp | 60 | 421 k | The line, overgrown | 74 | 493 k |
-| The interchange | 61 | 442 k | From the air | 102 | 520 k |
-| The level crossing | 83 | 499 k | | | |
+| The block | 164 | 1.99 M | A riot broke out here | 219 | 2.15 M |
+| The block, close | 147 | 1.98 M | Shelled | 196 | 2.12 M |
+| The avenue | 196 | 2.12 M | Bombed to smithereens | 100 | 1.76 M |
+| The highway | 131 | 1.94 M | A checkpoint | 120 | 1.91 M |
+| The off ramp | 95 | 1.77 M | An emplacement | 78 | 1.74 M |
+| The interchange | 134 | 1.83 M | The fault, the avenue | 107 | 1.89 M |
+| The level crossing | 169 | 2.08 M | The fault, the cargo line | 132 | 1.94 M |
+| The freight wreck | 162 | 2.03 M | The cutting | 189 | 2.09 M |
+| The station | 76 | 1.74 M | A road under sand | 261 | 2.20 M |
+| The fallen train | 178 | 2.00 M | A barricade of wrecks | 79 | 1.74 M |
+| The line, half buried | 187 | 2.01 M | The highway blocked | 117 | 1.91 M |
+| The line, overgrown | 166 | 2.07 M | A six-arm junction | 185 | 2.09 M |
+| The subway station, fallen in | 178 | 2.01 M | A T junction | 140 | 1.95 M |
+| A subway entrance | 94 | 1.81 M | A corner of two streets | 126 | 1.81 M |
+| A sinkhole | 25 | 1.10 M | A city street | 228 | 2.15 M |
+| From the air | 277 | 2.20 M | | | |
 
 ## Taking the kit into a world
 

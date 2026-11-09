@@ -9,6 +9,9 @@
 // ruin states. The craters are records the host carves into its ground (KTRANSIT.craterH); the dress reads the war to keep off them.
 //
 //   KTRANSIT.war(street, o) -> W     street {id, pts, width, ground}; o.damage (0..1 or fn(s)), o.military (false | true | a share of the slots),
+//                                    o.blockades (true: every 250-400 m; or [s...]): barricades of wrecked vehicles across the road (W.blockades,
+//                                    KTRANSIT.blockade: {id, s, x, z, yaw, y, wide, r, rows, vehicles: [{id, key, variant, seed, state, x, z, y, yaw, roll, lat, ext (half its
+//                                    extent across the way), along, row, across (turned side-on), w, d, h}]}),
 //                                    o.positions [s...] (positions here, a checkpoint each: a crossing), o.seed, o.step (a slot every 10 m)
 //     W = {id, path, damageAt(s), craters: [{id, s, x, z, r, depth}], scorch: [{id, x, z, r}], pieces: [{id, kind, state, variant, seed, x, z,
 //          y, yaw, s, r, role}], rubble: [{id, x, z, y, yaw, w, h, d, tilt}], positions: [{id, kind, s, x, z, yaw, side, pieces: [ids]}]}
@@ -59,6 +62,16 @@
     var mil = o.military === true ? 1 : (o.military ? +o.military : 0), posAt = [];
     (o.positions || []).forEach(function (ps) { posAt.push([ps, 'checkpoint']); });
     if (mil > 0) for (var ms = 90 + 120 * u(0, 60, 0), mk = 0; ms < P.L - 40; ms += 180 + 120 * u(mk, 60, 1), mk++) { if (u(mk, 60, 2) > mil) continue; if (posAt.some(function (q) { return Math.abs(q[0] - ms) < 60; })) continue; var ku = u(mk, 60, 3); posAt.push([ms, ku < 0.4 ? 'checkpoint' : ku < 0.75 ? 'emplacement' : 'post']); }
+    /* the blockades (the owner, 2026-11-09): improvised barricades of wrecked vehicles across the road, where o.blockades says (s values), or, when
+       true, every 250 to 400 m by hash, each with heaps and sandbags round it */
+    out.blockades = [];
+    var bkAt = Array.isArray(o.blockades) ? o.blockades.slice() : [];
+    if (o.blockades === true) for (var bs = 120 + 200 * u(0, 62, 0), bk = 0; bs < P.L - 40; bs += 250 + 150 * u(bk, 62, 1), bk++) bkAt.push(bs);
+    bkAt.forEach(function (bs2, bi) { if (bs2 < 10 || bs2 > P.L - 10) throw new Error('KTRANSIT.war: blockade ' + bi + ' is off the street'); var B = T.blockade(P, bs2, W - 0.6, null, KRAND.hash(seed, bi, 600) >>> 0, id + '.bk' + bi, false);
+      B.vehicles.forEach(function (v) { v.y = ground(v.x, v.z); });
+      [-1, 1].forEach(function (sd) { piece('tr_sandbags', null, bs2 + sd * 4, sd * (W / 2 + 1.4), 0, 'barricade', 110 + bi * 2 + (sd > 0 ? 1 : 0), T.RUIN.military); piece('tr_rubble_pave', 'intact', bs2 + sd * 2.5, sd * (W / 2 - 2.5), u(bi, 63, sd + 1) * 3, 'heap', 112 + bi * 2 + (sd > 0 ? 1 : 0)); });
+      piece('tr_barrier', null, bs2 - 6, (u(bi, 63, 5) - 0.5) * W * 0.5, Math.PI / 2, 'barricade', 114 + bi, T.RUIN.military);
+      out.blockades.push(B); });
     posAt.forEach(function (q, pi) {
       var ps = q[0], kind = q[1], side = u(pi, 61, 0) < 0.5 ? -1 : 1, kerb = W / 2 + 1.6, ids = [], add = function (r) { if (r) ids.push(r.id); }, M = T.RUIN.military, pq = at(ps, 0);
       if (kind === 'checkpoint') {
@@ -80,6 +93,32 @@
       out.positions.push({ id: id + '.pos' + pi, kind: kind, s: ps, x: pq.x, z: pq.z, yaw: pq.yaw, side: side, pieces: ids });
     });
     return out;
+  };
+  /* THE ANCIENT VEHICLES the barricades are built from (kits/motor-vehicles, culture `ancient`): keys and footprints (w across, d along), so the
+     records lay them nose to tail without the bundle; the draw takes the bundle's own geometry when the host has it (KratorVehicles), a burnt hulk when not */
+  T.VEHICLES = { anc_pod: { w: 2.3, d: 3.3, h: 1.6 }, anc_saloon: { w: 2.6, d: 6.0, h: 1.5 }, anc_police: { w: 2.6, d: 6.0, h: 1.9 }, anc_van: { w: 2.7, d: 6.0, h: 2.6 }, anc_utility: { w: 2.8, d: 6.2, h: 2.4 }, anc_hauler: { w: 2.75, d: 9.2, h: 3.0 } };
+  T.VEHICLE_KEYS = Object.keys(T.VEHICLES);
+  /* an improvised barricade: wrecked vehicles nose to tail across a way at s (their +z along the way's lateral, turned a little each; one turned
+     side-on where only its width fits), the line broken by a gap where a vehicle burnt out or was dragged, a second row on a wide way (a deck),
+     sandbags and a barrier or two at its ends. wide: the width across; y: the surface's height (a deck's; null: the host's ground at each); fallen:
+     the way is down there, so the vehicles lie fallen with it (state 'wreck', rolled) */
+  T.blockade = function (P, s, wide, y, seed, id, fallen) {
+    var p = P.at(s), u = function (k, a) { return T.u(seed, k, 700, a); }, vehicles = [], k = 0, skew = (u(0, 0) - 0.5) * 0.5, rows = wide > 14 ? 2 : 1;
+    for (var row = 0; row < rows; row++) {
+      var lat = -wide / 2 + 0.6, base = (row - 0.5 * (rows - 1)) * 6.5 * (u(row, 11) < 0.5 ? 1 : -1);
+      while (lat < wide / 2 - 1.5 && k < 12) {
+        /* the room left across the way; a vehicle that fits it lengthwise (the first leaving room for a second), else one turned side-on */
+        var room = wide / 2 - 0.4 - lat, keysFit = T.VEHICLE_KEYS.filter(function (kk) { return T.VEHICLES[kk].d <= room - (lat < -wide / 2 + 1 ? 2.9 : 0); }), across = false, key, V, len;
+        if (keysFit.length) { key = keysFit[Math.floor(u(k, 1) * keysFit.length) % keysFit.length]; V = T.VEHICLES[key]; len = V.d; }
+        else { var side = T.VEHICLE_KEYS.filter(function (kk) { return T.VEHICLES[kk].w <= room; }); if (!side.length) break; key = side[Math.floor(u(k, 1) * side.length) % side.length]; V = T.VEHICLES[key]; len = V.w; across = true; }
+        var gap = u(k, 2) < 0.22 ? 2.5 + 3 * u(k, 3) : 0.4 + 0.6 * u(k, 3); if (gap > room - len - 3.3) gap = 0.4 + 0.6 * u(k, 3);
+        var c = lat + len / 2, along = base + (u(k, 5) - 0.5) * 2.2, yaw = p.yaw + (across ? (u(k, 6) < 0.5 ? 0 : Math.PI) : Math.PI / 2 * (u(k, 6) < 0.5 ? 1 : -1)) + skew + (u(k, 7) - 0.5) * 0.5, x = p.x + Math.cos(p.yaw) * c + Math.sin(p.yaw) * along, z = p.z - Math.sin(p.yaw) * c + Math.cos(p.yaw) * along;
+        var st = u(k, 8) < 0.55 ? 'burnt' : u(k, 8) < 0.85 ? 'wreck' : 'weathered';
+        vehicles.push({ id: id + '.v' + k, key: key, variant: Math.floor(u(k, 9) * 2), seed: KRAND.hash(seed, k, 701) >>> 0, state: fallen ? 'wreck' : st, x: x, z: z, y: y, yaw: yaw, roll: fallen ? (u(k, 10) - 0.5) * 1.2 : 0, lat: c, ext: len / 2, along: along, row: row, across: across, w: V.w, d: V.d, h: V.h });
+        lat += len + gap; k++;
+      }
+    }
+    return { id: id, s: s, x: p.x, z: p.z, yaw: p.yaw, y: y, wide: wide, r: wide / 2 + 2.5 + (rows - 1) * 3, vehicles: vehicles, fallen: !!fallen, rows: rows };
   };
   T.inCrater = function (W, x, z, pad) { pad = pad == null ? 0 : pad; var C = W.craters; for (var i = 0; i < C.length; i++) if (Math.hypot(x - C[i].x, z - C[i].z) < C[i].r + pad) return true; return false; };
   /* a bowl (1 - q^2)^2 deep inside the radius, and a rim: a smooth bump peaking AT the edge and dying out by 0.65 r inside and 1.6 r outside, so

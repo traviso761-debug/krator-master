@@ -40,14 +40,16 @@
     W.pieces.forEach(p => { const key = p.kind + '.' + p.state + '.' + p.variant + '.' + p.seed; let g = cache[key];
       if (g === undefined) { try { g = furn.build(p.kind, { state: p.state, variant: p.variant, seed: p.seed }); } catch (e) { g = null; if (o.err) o.err('war ' + key + ': ' + (e && e.message || e)); } cache[key] = g; }
       if (!g) { failed++; return; } const m = T.draw.pieceFrame(p, o.tilt); g.children.forEach(ch => B.mesh(null, ch, m)); n++; });
+    const vk = T.draw.vehicles(B, [].concat(...(W.blockades || []).map(bk => bk.vehicles)), o);
     const G = B.finish('war ' + W.id), im = T.draw.rubble(W.rubble, { seed: W.seed, name: 'war ' + W.id + '.rubble' }); if (im) { G.add(im); G.userData.tris += 12 * W.rubble.length; }
+    G.userData.vehicles = vk.real; G.userData.hulks = vk.hulks; G.userData.blockades = (W.blockades || []).length;
     G.userData.pieces = n; G.userData.failed = failed; G.userData.craters = W.craters.length; G.userData.positions = W.positions.length; G.userData.id = W.id;
     if (o.shadow) o.shadow.cast(G);
     return G;
   };
   T.draw.street = function (street, D, o) {
     o = o || {}; const B = T.builder();
-    T.draw.road(B, o.road || { pts: street.pts, width: street.width, shift: street.shift }, o.ground || street.ground, { pavement: o.pavement == null ? 3.5 : o.pavement });
+    T.draw.road(B, o.road || { pts: street.pts, width: street.width, shift: street.shift }, o.ground || street.ground, { pavement: o.pavement == null ? (o.road && o.road.pavement != null ? o.road.pavement : 3.5) : o.pavement, network: o.network, road: o.roadIndex });
     const G = B.finish('street ' + (street.id == null ? '' : street.id)); if (D) { const F = T.draw.dress(D, o); G.add(F); G.userData.tris += F.userData.tris; G.userData.pieces = F.userData.pieces; G.userData.failed = F.userData.failed; }
     if (o.shadow) o.shadow.cast(G);
     return G;

@@ -29,11 +29,23 @@ const TR_SUBWAY=KTRANSIT.subway([[-120,-1750],[-120,-700],[-60,-250],[-60,1750]]
 /* THE STREETS AND THEIR WAR (the owner, 2026-11-08: "various levels of cratering and strewn wreckage ... along the roads"): the avenue from a riot at
    its west end to bombed to smithereens at its east (damage 0.1 to 1 along it); the first side street shelled with military positions (a checkpoint
    at the avenue); the second a riot with a checkpoint. The craters carve the ground, so the records come before it */
-const TR_STREETS=[{id:'avenue',pts:[[-1500,0],[1500,0]],width:26,shift:TR_SHIFT},{id:'st1',pts:[[-300,-900],[-300,900]],width:11,shift:TR_SHIFT},{id:'st2',pts:[[400,-900],[400,900]],width:11,shift:TR_SHIFT}];
-/* the roads: graded alignments (8%), cut into the knoll and filled over the dips; the streets' pieces stand at the road's level */
-const TR_ROADS=TR_STREETS.map((st,i)=>KTRANSIT.road(st.pts,{id:st.id,ground:TR_RELIEF,width:st.width,shift:TR_SHIFT,maxGrade:0.08,drift:i===2?(s=>s<900?0.7:0.15):0,pavement:3.5}));
-TR_STREETS.forEach((st,i)=>{st.ground=TR_ROADS[i].levelAt;});
-const TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,i===0?{damage:s=>0.1+0.9*s/3000,seed:901}:i===1?{damage:0.5,military:true,positions:[900],seed:902}:{damage:0.18,military:0.5,positions:[900],seed:903}));
+/* THE ROAD NETWORK (the owner, 2026-11-09: junctions of 2, 3, 4 and 6 arms; smaller paved streets): the avenue and the two side streets (crosses), a
+   street ending on the avenue (a T), two small streets meeting end to end (a corner), two diagonal streets through one point of the avenue (six
+   arms). Each road a graded alignment (8%), cut into the knoll and filled over the dips, pinned to one level at each junction; the streets' pieces
+   stand at the road's level. The second side street lies under drifts of sand along its south half */
+const TR_DEFS=[{id:'avenue',pts:[[-1500,0],[1500,0]],kind:'avenue'},{id:'st1',pts:[[-300,-900],[-300,900]],kind:'road'},{id:'st2',pts:[[400,-900],[400,900]],kind:'road',drift:s=>s<900?0.7:0.15},
+ {id:'tee',pts:[[-100,0],[-100,620]],kind:'street'},{id:'c1',pts:[[-700,180],[-700,560]],kind:'street'},{id:'c2',pts:[[-700,560],[-420,560]],kind:'lane'},
+ {id:'d1',pts:[[600,-400],[1000,400]],kind:'street'},{id:'d2',pts:[[1000,-400],[600,400]],kind:'street'}];
+/* what the roads' surfaces dip into: the sinkholes and the craters (the war is built after the roads, on their surfaces, so it is read when called) */
+let TR_WAR=null;const TR_CARVE=(x,z)=>{let h=KTRANSIT.sinkholeH(TR_SUBWAY,x,z);if(TR_WAR)for(let i=0;i<TR_WAR.length;i++)h+=Math.min(0,KTRANSIT.craterH(TR_WAR[i],x,z));return h;};
+const TR_NET=KTRANSIT.network(TR_DEFS,{ground:TR_RELIEF,shift:TR_SHIFT,carve:TR_CARVE});
+const TR_ROADS=TR_NET.roads;
+const TR_STREETS=TR_DEFS.map((d,i)=>({id:d.id,pts:d.pts,width:TR_ROADS[i].width,pavement:TR_ROADS[i].pavement,shift:TR_SHIFT,ground:TR_ROADS[i].levelAt}));
+/* THE WAR on each: the avenue from a riot to smithereens with a barricade of wrecks at its east; the first side street shelled, military, barricaded;
+   the second a riot with a checkpoint; the small streets a riot, one of the diagonals with a position or two */
+const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5,military:true,positions:[900],blockades:true,seed:902},{damage:0.18,military:0.5,positions:[900],seed:903},
+ {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908}];
+TR_WAR=TR_STREETS.map((st,i)=>KTRANSIT.war(st,TR_WAR_O[i]));
 /* the cargo line too comes before the ground: its cutting through the knoll is carved */
 const TR_CARGO=KTRANSIT.rail([[-1750,-150],[650,-150],[1750,-900]],{id:'cargo',ground:TR_RELIEF,streets:TR_STREETS.slice(1),catenary:true,shift:TR_SHIFT,quake:TR_QUAKE});
 const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});return h;},waterH=()=>-1e6;

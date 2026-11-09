@@ -16,6 +16,16 @@
   every graded line (`47-host-land.js`; 0.7 M of the page's triangles are that ground); a host with a coarser ground sees them only as far as its
   mesh allows (the valley's KGROUND is 2 m cells: fine). The scorch rings and the road's bands follow the ground at 3 m. The owner saw the
   coarse ground lapping over a cut road before the lines were refined (2026-11-09): a host must refine its ground along a cutting too.
+- [ ] **A junction of arms at an acute angle is cut far back**: the kerb-line corner between two arms meeting under 30 degrees lies
+  `(w1 cos + w2) / sin` along each, so a lane meeting the avenue at 20 degrees is cut some 40 m from the centre (clamped there), and the
+  junction's patch is long and thin. The road tools widen such a junction or refuse the angle; the demo's shallowest is 53 degrees.
+- [ ] **No signal on the straight side of a T**: a signal stands on each filleted pavement corner, and the far side of a T has none (its
+  pavement runs straight across). A real T has a signal facing the stem there; one line in `44-tr-dress.js` once the owner wants it.
+- [ ] **A drift or a war's piece may lie across a junction**: the drifts are laid along the whole road (a drift's wedge may cross a junction's
+  patch), and the war's heaps and strewn pieces are laid by distance along the street, not kept off the junctions as the dress's pieces are.
+- [ ] **The vehicles kit's textures arrive as LFS pointers in a fresh worktree** (`kits/motor-vehicles/tex/`): `tools/build.py` refuses the
+  build until `git lfs checkout -- kits/motor-vehicles/tex` (or `git lfs pull --include="kits/motor-vehicles/tex/*"`). The blockades' wrecks
+  come from that kit's `ancient` culture (merged here from the vehicles session's branch, 2026-11-09); without its bundle the draw puts burnt hulks.
 - [ ] **The fault breaks a road as a sheared S-bend, not a torn edge**: the strike-slip is a smooth shift over the scarp's width, so a road or a
   rail bends through it in one piece (buckled rails, a kinked kerb); a true tear (two cut ends offset, a gap) wants the surface cut at the fault.
 - [ ] **The military kinds are plain**: sandbags are rows of rounded boxes in the rubble set's map (a burlap set would read better), the wire
