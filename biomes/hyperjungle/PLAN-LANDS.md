@@ -15,6 +15,7 @@ proposed, owner to confirm**.
 | Step | Built | Page |
 |---|---|---|
 | J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
+| J3 | Screamer wood: H5 (the howl bamboo on `BIO.bamboo`, the Cut's reach on H1), the bone giants, the 7 others (`src/57`), the habit thinned (ironbark and ghostwood leading), the groves' howl (H9 sound records), the fauna hunted thin (H8) | `dist/hyperjungle-north.html` (`--station north`) |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 
@@ -385,6 +386,8 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
    plants and in the shade and the boughs (`stations/savage`); LORE.md section 8 carries it as a proposal.
 3. **Screamer wood**: the theme of a forest that looks and sounds like people (howling bamboo, watchers, hand flowers,
    skull-pods, bone giants). And may the Screamers' speech be rumoured to have begun with the groves?
+   **Taken as proposed, owner to confirm** (J3, 2026-11-08): built as station `north`; the rumour is in LORE.md section 6.7 as a
+   proposal, and the hand-flowers' name "the elders" in the species' harvest note.
 4. **The east rim's story**: the abyss's lineages as fire-hardened relics, and the highlands' pull toward the giant fading
    westward. Should the glass wand and Fridon's wormwick trade go in?
 5. **The south-east rim's story**: is Talia's trade in incense and dragon's blood acceptable (an addition to `LORE.md`

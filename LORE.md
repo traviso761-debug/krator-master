@@ -367,6 +367,13 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Sign: the **skull**; painted dots.
 - Economy: millipede ranches, orchards.
 
+- **Screamer wood** (*proposed*, `biomes/hyperjungle/PLAN-LANDS.md` section 3; built as the hyperjungle's station `north`, 2026-11-08; the owner to
+  confirm): the Screamers' stomping grounds are a forest that looks and sounds like people. The howl bamboo come down from the Cut, their old culms bored
+  through by beetles, howl in the dusk wind; *rumour has it* the Screamers' speech began as an answer to the groves. The watchers' pale bark is covered
+  in eye-shaped scars (the Screamers carve them into masks), the hand-flower trees hold up red clawed hands (the Screamers call them "the elders"), the
+  skull-pods' dry seed pods are strung on skull poles, and the bloodwood's sap is the red of their painted dots. The north is drying out: hypertrees
+  stand dead as white **bone giants** hung with widow's hair.
+
 ### 6.8 The Eastern Nomads (eastern high desert; Shade)
 
 - **Shade**: a sunken sandstone basin of about 1,000 people.

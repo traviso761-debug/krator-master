@@ -38,6 +38,27 @@ Read before changing anything here. `build.py` prints the open count.
       own striders, sky rays and sloths are not made rarer (58 has no knob for it; the land's weights favour the Riders' beasts).
     - Taken as proposed, owner to confirm: PLAN-LANDS.md section 14 question 2 (ash on dunged soil; the carnivores a canopy-and-shade
       guild). LORE.md section 8 carries it as a proposal.
+  - **J3, Screamer wood** (`--station north`, `dist/hyperjungle-north.html`; `stations/north/`, `src/57`):
+    - The map (`stations/north/45`): a valley NW to SE with its stream (on `KSPACE`), the dryness rising to the south-east (`dryK`), savannah
+      gaps in the dry half (`gapK`), the bamboo along the valley floor (`groveK`). The habit: the pure scale, ironbark and ghostwood
+      leading, the prism gum rare (measured hero mix 18, 23, 8, 11, 5, 11), heroes 190 m apart, the kapoks and baobabs deciduous.
+    - H5: the howl bamboo on `BIO.bamboo` (33b): culms of 28/24/20 internodes, jittered and graded (outside the Cut's warp), two seeds
+      each, plain and bored (`holeSet`), with their mid and far tiers; groves from `groveCells` on the valley weight times the Cut's
+      reach (H1: `BIO.host.distance` from the Cut's south-east mouth 11 km off the map, reach 150 km; 0.985 at the centre); each grove's
+      cohort flowers by the clock's year (all green at year 0). 35 groves, 2,869 culms, 713 bored. H9: each grove with bored culms
+      registers a core/tags `sound` record (`bamboo-howl`; `core/tags/opt/54`).
+    - The other species are builders in `src/57` on the shared tree (`src/54` `G.tree`): bone giants (59, only where `dryK` > .25, hung
+      with 487 widow's-hair curtains), watchers, hand-flower trees, bloodwoods (savannarim reads the builder), skull-pods, ghost pipes and
+      devil's fingers (`BIO.fung`). The blind grass in the gaps is savannarim's, read in place (J4).
+    - The fauna (H8): land `hyperjungle.north` at half its densities (hunted thin), the big ones drawn within 650 m.
+    - **For the GPU verify:** the howl bamboo's culms and sprays (view "Howl bamboo"), the bored culms' stains, the bone giants' white
+      against the sky (view "Bone giants on the savannah"), the watchers' eyes, the triangle count (7.1M on the CPU load, the station's
+      pass 4.6M), the draw calls (391 at the default camera).
+    - **Stand-ins** (PROMPTS-NEEDED.md section 37): the watcher's and the bloodwood's bark are canvases painted in `src/57`; the culms wear
+      bark.bamboo.jade (`howlculm`) and the sprays card.bamboo.giant (`howlleaf`) until bark.bamboo.bored and card.bamboo.leaf come; the
+      bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models.
+    - Taken as proposed, owner to confirm: question 3 (Screamer wood's theme, and the rumour that the Screamers' speech began with the
+      groves: LORE.md section 6.7, a proposal).
 
 - [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
       the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two

@@ -81,11 +81,11 @@ if STATION:
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 # what a station takes beyond the page's core (by path from the repo root, keyed by the fragment name it loads under)
 # the lands (J2-J3, 2026-11-08): core/biome's leafset (31b: BIO.clumpOn's held cards), its traps (37: the savage land's sky pitcher, carrion
-# arum and snare liana) and bamboo (33b, H5: the north's howl bamboo), and the fauna by land (kits/fauna's fauna-lands.js and its host
+# arum and snare liana) and bamboo (33b, H5: the north's howl bamboo), core/tags' sound record (H9: the howl bamboo's groves), and the fauna by land (kits/fauna's fauna-lands.js and its host
 # half, H8; the bundle below)
 STATION_CORE={'savanna':{'37-core-stacks.js':'core/terrain/37-core-stacks.js'},
               'savage':{'31b-core-leafset.js':'core/biome/31b-core-leafset.js','37-core-traps.js':'core/biome/37-core-traps.js','86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'},
-              'north':{'31b-core-leafset.js':'core/biome/31b-core-leafset.js','33b-core-bamboo.js':'core/biome/33b-core-bamboo.js','86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'},
+              'north':{'31b-core-leafset.js':'core/biome/31b-core-leafset.js','33b-core-bamboo.js':'core/biome/33b-core-bamboo.js','54-core-tags-sound.js':'core/tags/opt/54-core-tags-sound.js','86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'},
               'lake':{'55-core-water-confluence.js':'core/water/ext/55-core-water-confluence.js','55b-core-water-confluence-draw.js':'core/water/ext/55b-core-water-confluence-draw.js'}}
 for f,p in STATION_CORE.get(STATION,{}).items():
     PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..',p)))
