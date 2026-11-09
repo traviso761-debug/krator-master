@@ -283,3 +283,9 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   higher, a longer height fade and a lower hem gate did nothing for it. Applied in both runtimes: the whole Chichani
   set on both bodies has no baseline outfit worse, no skin anywhere but 11 px on the man's trade outfit, holes as
   before. Still Phase 1: the capsule squeeze to the seat (issue 1), the shin heading (8.1), the lip constraint (12).
+- **The "thirteen vendored copies", measured (2026-11-08).** Eleven are wrappers that call the package (`bio.assemble_garment`
+  with the parts flattened, `bio.sleeve`, `bio.torso_tube` with a yoke option): a core fix reaches them. Four are real
+  divergences: `build_inspired_outfits.torso_tube` (an older reimplementation, 57 lines, called 44 times), the
+  `torso_tube` and `sleeve` of `build_true_heir_bodyguards` (19 and 15 lines), and `build_yuni_military.sleeve` (its own,
+  with a 9.5 cm shoulder reach and no ease or flare cap: issue 4's "bypass"). Stripping them changes those builders'
+  outfits (44, 3 + 8 and 7 calls), which still wants the before/after sheet; the other nine files need nothing.
