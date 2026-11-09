@@ -33,6 +33,12 @@
   would add its maps beside the page), so the larch, the grass and the shrubs are the kit's vertex colours, in autumn (the
   kit's default season off its own page). It is built once at load in the row's box (`?flora=0` skips it), its LOD ticked
   each frame; it is not part of the buildings' world, so a reseed or `?only=` without the row leaves it out.
+- [x] (2026-11-09) **The khoton's door lintel was a walk floor** (`66-yt-steppe.js`): its box registered a floor at 2.09 m over the
+  threshold, so the walker found no ground there and `walk-reach` failed (`yt_khoton(v1): outside`). It is drawn walk-off now
+  (`WKOFF`, as the stall rail is); `verify.py --assert` ends `OK` on SwiftShader, every check passing.
+- [ ] **The forest-steppe row stands on the sheet's snow** (2026-11-09, seen in the row's shot): the sheet has one ground, the
+  winter one, so the summer urasa and the byre's hay stand in drift snow, and the nwouterwall larches read bare (its autumn).
+  A ground of its own under the row (turf, the kit's `ground` family in summer) is the fix; awaiting the owner's eye-level review.
 - [ ] **Joints where a run turns** are covered by a junction-sized dome at every corner of an L and at each door's lead;
   the runs overlap under it rather than mitre. A house's passage meets its tunnel through a portal face (`ytPortal`)
   whose two sections differ, so the passage's outer vault shows a little inside the tunnel's end.
