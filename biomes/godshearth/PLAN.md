@@ -291,7 +291,7 @@ km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330).
 
 | Station | 5.1 px | Ground (the model) | What |
 |---|---|---|---|
-| 1 **The Hot Lake** (`prismbasin`) | 844,1394 | 3,645 m on the shore; the lake (3,642 m) from about 4 km west; 1.01 atm; model now Cfb 15 °C (22/8), 925 mm; **target +7 °C (15/-2), nights to -10 °C** | the lake's sinter shore: a hearth field round the shore vents, geysers and hot pools, terraces stepping down to the lake, the mats, the boil cups, ghost rings round a dead spring; on a winter night the lake steaming open in frost, the fans open black over the warm shore |
+| 1 **The Hot Lake** (`prismbasin`) | 844,1394 (**built** with its page's middle at 842,1394, on the shore, so the lake is on the 2.8 km page) | 3,645 m on the shore; the lake (3,642 m) from about 4 km west; 1.01 atm; model now Cfb 15 °C (22/8), 925 mm; **target +7 °C (15/-2), nights to -10 °C** | the lake's sinter shore: a hearth field round the shore vents, geysers and hot pools, terraces stepping down to the lake, the mats, the boil cups, ghost rings round a dead spring; on a winter night the lake steaming open in frost, the fans open black over the warm shore |
 | 2 **The Grove** (`climaxgrove`) | 836,1388 | 3,740 m; 1.00 atm; model now Cfb 15 °C (21/8), 910 mm; **target +6.5 °C (14.5/-2.5)** | where the discs merge into forest along a vent line: the caldera dress, the walk, a dormant cone in its rings of dead stalks; the west wall 3.6 km high behind; frost on the meadow between the discs at dawn, none on the moss |
 | 3 **The North Wall** (`amberheadwall`) | 848,1375 | 4,120 m on the slump bench; the wall rises to 7.6 km within 30 km; 0.96 atm; model now Csb 13 °C (20/6); **target +4 °C (12/-5), Dwb** | the wall: tibasalt flows, the orange bead horizons, gullies and talus, the Godthrone's ice above, meltwater falling to the floor; the katabatic flow's source |
 | 4 **The Spillway** (`xanaduspill`) | 845,1422 | 3,380 m in the gorge; 1.05 atm; model now Cfb 15 °C (22/8); **target +8.5 °C (16.5/-0.5)** | the outlet gorge between the benches, the river once it exists, Nazar's ruin on the bench about 30 km north-north-east, the drop to Xanadu ahead |
@@ -338,12 +338,12 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 1. **Geothermal surfaces:** mud pots, the fumarole kind (steam and run-off), sinter and mat decals. Owed in
    `core/water/README.md` ("Not here (yet)"). Firebliss, Mid Basin, twins, greatchasm and seouterwall want them too.
 2. **Hazard kinds:** a crust that breaks underfoot; gas that pools at night and in still air (a `cycle` bound to `core/clock`).
-3. **Cold-air and katabatic wind** in `core/atmos`: the walls' night drainage and the steam banks on the floor.
+3. **Cold-air and katabatic wind** in `core/atmos` (**the wind built**: `core/atmos/fx/89-atmos-fx-katabatic.js`, 2026-11-09; the cold-air pools are station 1's KHAZ temperature): the walls' night drainage and the steam banks on the floor.
 
 **Kit-side, not core:** the caldera dress in `biomes/hearths` (`HEARTH.DRESS`), and its scale.
 
 **Model amendments** (the scale model, the owner's to authorize):
-1. **Vent records** in `DATA.vents` for the caldera's vent lines (the lake's bed, the grove's line, the spillway's head). The
+1. **Vent records** (**applied**: scale model 5.1 edit 2, `tools/scale-model/edit_512.py`, the owner 2026-11-09) in `DATA.vents` for the caldera's vent lines (the lake's bed, the grove's line, the spillway's head). The
    Hearths' sites come from `DATA.vents`, and `KTHERM` bakes from them. Godshearth has none.
 2. **An outlet river** from the hot lake down the spillway. With 750-925 mm of rain on 8,600 km², the basin cannot be closed and
    dry. The spillway would join Rīfar al-Bihār or Gūlī al-Salsabīl below the tail (a hydro pass; `test_smodel.py`'s checks).
@@ -352,9 +352,9 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
      floor at ~3.6 km; the old reservoir emptied down it when the caldera fell";
    - the tube's name, which still says "Brine-Lake Siphon" (it can keep it, as history);
    - the region's empty `notes`.
-4. **The climate** (the owner, 2026-11-09): the reclimate in section 3 (floor +7 °C (15/-2), 6 °C per km above, the rain
+4. **The climate** (the owner, 2026-11-09; **applied** by scale model 5.1 edit 1, f1d1501cf, `edit_511.py`): the reclimate in section 3 (floor +7 °C (15/-2), 6 °C per km above, the rain
    moved to summer afternoons).
-5. **The new brine lake** (the owner, 2026-11-09): carve it as section 1a gives (centre 876,1440, 29 cells, level 6,420 m,
+5. **The new brine lake** (the owner, 2026-11-09; **applied** by the same edit: spill 6,768 m, the cavern's note rewritten): carve it as section 1a gives (centre 876,1440, 29 cells, level 6,420 m,
    lip 6.7-6.8 km on its west side, closed); `test_smodel.py`'s lake checks. r442 is unchanged.
 
 ## 9. For the owner
@@ -376,7 +376,7 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 - **Names:** "Godshearth" is Gemini's. The lake, the grove, the spillway and its cataract want Xanadui names (the rivers'
   tongue) or the Monks'.
 - **The pinned stations** are Gemini's sites. Keep them, or move station 1 onto vents once the vent records exist?
-- **Order:** after the integration pass, and after the Hearths kit's own next steps (`HEARTH.layout` is built; the boil cup,
+- **Order:** *started 2026-11-09 at the owner's request: station 1 is built (`README.md`, `KNOWN_ISSUES.md`).* After the integration pass, and after the Hearths kit's own next steps (`HEARTH.layout` is built; the boil cup,
   the shade cap, the walk and the animals are not). Godshearth is its biggest host, so it should not go first.
 
 ## Changes from Gemini's draft (2026-11-06)

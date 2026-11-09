@@ -599,6 +599,18 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
   6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
   and the sill.
 
+## 5.1 edit 2: `edit_512.py` (2026-11-09): Godshearth's vent records
+
+`python3 tools/scale-model/edit_512.py` adds six records to `model/data/vents.json` and writes `edit_512.report.json`; it refuses
+to run twice. The owner (2026-11-09): "vent records can go on the model" (`biomes/godshearth/PLAN.md` section 8, model
+amendment 1). Each is `region` Godshearth, its `floor` the model's ground under it (read from the heights): the hot lake's
+bed vents and shore vents (`spring`), the shore geyser field (`geyser`), the shore vent line and the grove's vent line
+(`fumarole`, with `line`: its points in 5.1 px; `px` is their middle) and the spillway's head (`fumarole`). New fields on these
+records only: `name`, `T` (the ground's temperature at the vent, C) and `reach_m` (where its heat falls to the soil's: KTHERM's
+reach). `model/src/30-vents.js` draws `fumarole` and `spring` as steam, as `geyser`. No raster moves. Godshearth's build reads
+the records (`biomes/godshearth/build.py`, `GH_MODEL_VENTS`). `tests/test_smodel.py` section 15 checks them. The published
+artifact is not republished by the script.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
