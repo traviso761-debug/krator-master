@@ -1,4 +1,4 @@
-﻿{
+{
     "version":  "0.0.1",
     "configurations":  [
                            {
@@ -173,6 +173,18 @@
                                                    "kits/mechs/dist"
                                                ],
                                "port":  8847
+                           },
+                           {
+                               "name": "extraplanar",
+                               "runtimeExecutable": "python",
+                               "runtimeArgs": [
+                                   "-m",
+                                   "http.server",
+                                   "8797",
+                                   "--directory",
+                                   "kits/extraplanar"
+                               ],
+                               "port": 8797
                            }
 ]
 }

@@ -496,6 +496,10 @@
    "bytes": 1035390,
    "sha256": "ec795bf4244793627a8cff40657b36255d026cbb4836ae7be8d76adc8218992f"
   },
+  "kits/extraplanar/dist/extraplanar.html": {
+   "bytes": 816835,
+   "sha256": "911fbe766de19d6ec1ac4864669c4135742f55958af20b8adad0f09e1150e4cf"
+  },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,
    "sha256": "d89b375b56b6c46c764588956625d1395433ca8604ded3b54ee5edfac08758ed"
