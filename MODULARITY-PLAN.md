@@ -299,6 +299,20 @@ leaves each settlement folder as its layout and page, building as it does today 
     shack's frame and height, the mat rack). Their working doors come with core/door's pass.
   - Left:
     Verge's `YKIT` reading Locus's world core (`10-core`, `50-structure`), which goes when Verge is rebuilt on the open world.
+  - **The three kits' own sheets, done 2026-11-09:** `kits/yuni/dist/yuni.html`, `kits/locus/dist/locus.html` and
+    `kits/eastern-abyssal/dist/eastern-abyssal.html`, each with its `build.py` and `verify.py --assert` (every asset and variant
+    builds and is registered, the core/tags vocabulary, the doors as KDOOR records, the library textures, the engine read in
+    place). The split: the engine is read in place from the world whose fork the kit was written on (Yuni's `settlements/yuni/src`
+    for kits/yuni; Locus's `settlements/locus/src`, with its `66-locus-furnish` and `95-locus-doors`, for the other two), never
+    copied; the page shell is core's (core/host, core/walk, core/door, core/atmos/placeholder, core/tags, core/rand,
+    core/materials/record, core/furnish on Locus's fork); the sheet's own layout, labels, emit and take are one shell for the three,
+    `kits/yuni/targets/sheet` (`kits/yuni/sheetbuild.py`, `sheetverify.py`). The library packs are the towns' (their palettes own
+    the families), read in place. Where it is not clean (each kit's README, "Its own sheet"): Yuni's `50-structure.js` reads
+    `BRIDGES` at load (the sheet gives the empty list); Yuni's doors are bound in the city's `76-doors.js` with its interiors
+    planner, so the shell binds them itself and the Yuni sheet has no interiors; Locus's fork registers buildings with no types
+    (the sheet copies the assets'), and the kits' cultures `abyssal-desert` and `geomancer` are not in core/tags' vocabulary (an
+    owner's decision, KNOWN_ISSUES.md). The towns' sheet targets (`yuni-assets.html`, `locus-kit.html`, `abyss-kit.html`) still
+    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).
