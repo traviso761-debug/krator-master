@@ -24,9 +24,16 @@
       Pylon's (settlements/iziz/KNOWN_ISSUES.md, 2026-10-05). The harness's teardown, not the page.
 - [ ] P4 (2026-10-18): the theatre's cavea stands on its own outer wall on flat ground; on the city's hill (PLAN.md 9b:
       "on the slope") the slope should carry the tiers and the outer arcade go into the ground.
-- [ ] P6 (2026-10-19) furnishes 32 of 45 items. Owed: the round hollow bodies (the library's well, the anatomy theatre's
-      tiers, the odeon's cavea), the caravanserai and stoa (their rooms open through arches with no cut), the hospital's
-      side and back ranges, the college and cloister ranges' doors (planner doors, not cut), the palace by its blueprint.
+- [ ] P6 (2026-10-19) furnishes 32 of 45 items. **2026-11-09: 35 of 45.** Done: the palace by its blueprint (below), the
+      caravanserai (its five ranges: the court gallery's doors and windows cut the hollow walls; walls shut off the corner
+      towers at the ranges' ends) and the stoa (the shops behind the colonnade, their fronts cut; a band closes the floor's
+      gap between its two hollow storeys). Still owed, each with its reason in `kits/interiors/sets/talia.js` `skip`: the
+      library's rotunda and the anatomy theatre (solid drums: the reading room, the gallery ring round the well and the
+      tiers want the drums hollow, as the palace pavilions now are with `talpRing` / `talpDisc` in 74t, which could move
+      to 69u for them; not done because the sheet is at 2.97M of its 3M triangles and the furniture counts), the
+      glasshouse (planting, no room kind), and the works with no rooms (the theatre, the memorial, the gate, the wall and
+      its towers, the fountain, the sky bridge). Also still owed from before: the odeon's cavea, the hospital's side and
+      back ranges, the college and cloister ranges' planner doors (not cut).
 - [ ] With an interior, the rounded whitewash cubes (cube house, hill stack, loggia house) draw square hollow bodies with
       round corner piers (69e draws four straight walls); without one they keep their rounded corners.
 - [ ] To keep the sheet inside its budgets (the cloister came to 288k of 250k triangles, the sheet to 2.85M of 3M), P4
@@ -35,11 +42,28 @@
 - [ ] P5 (2026-10-18): the governor's palace (`tal_governor_palace`) is the heaviest type on the sheet, 228k of its 250k
       triangles (the sheet 2.59M of 3M): the 130 columns of the pavilions and the loggia, and the front balustrades, carry
       most of it. The sides, the back and the light courts take coped parapets, not balustrades, to stay inside. A sixth
-      or seventh heavy type will want the pavilions' upper columns on a lower-poly lathe.
+      or seventh heavy type will want the pavilions' upper columns on a lower-poly lathe. **2026-11-09:** the civic dress
+      had already taken it to 271.5k (verify reports OVER: a warning, not a failure); with its rooms it is 276k (the
+      interior doors are plain leaves, the stairwells' rails parapets, only the vestibule gallery's rail a balustrade), and
+      the sheet 2.97M of 3M. The lower-poly upper columns are the next saving.
 - [ ] The palace's outside stair is one straight flight of 22 steps (0.30 m risers, as Pylon's): the blueprint's three
-      runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight. The
-      front pavilions' inner columns stand inside the hall block's corners, where the round pavilions overlap it (as
-      the sheets draw the pavilions as squares). Its rooms (the blueprint's B, G, U and L sheets) come with P6.
+      runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight.
+- [x] **The palace's rooms (2026-11-09).** The blueprint's sheets G and U are 49 explicit rooms in `kits/interiors/sets/talia.js`
+      (the item's `plan`: cells in the blueprint's (u, v), the edges between them, the doors, the pavilions); `talpInterior` (74t)
+      draws from the same table the partitions (doors cut, core/door leaves, marble frames, gilt round the state doors), the rails
+      round the hall's well and the stairwells, glass to the light courts, the upper floor (and its walk floors), the private and
+      back stairs (orange treads, walk strips), the dais and the hall's orange coffered ceiling; the doors through the block's
+      faces into the pavilions. The pavilions are hollow (a ring wall open at its arches, `talpRing`; the chhajja a disc less the
+      block's corner, `talpDisc`) with a terrace door on core/door; the columns and windows that stood inside the block's corners
+      are left out (fixes the old note that the front pavilions' inner columns stood in the block). The kitchen drum is hollow.
+- [ ] The palace's plan leaves the sheets where the builder's arcades or a stair's run forced it: the rear range runs from
+      u 17 (the side faces' last window there is gone), the customs and the clerk part at u 9.5 (a pilaster's line), the cabinet
+      is 4 m wide (v -2..2, clear of the rear windows) with the private stair beside it as one straight steep flight (17 risers
+      of .32 m: the 3 x 3 m stair box of the sheets holds no flight of 5.5 m), and the back stair runs along the servery's front
+      wall up to the governor's bath (the residence's service side) instead of the steward's room; the steward is not lodged.
+      The undercroft (sheet B: the archive, the treasury, the cells, the postern) and the signal room (sheet L) are not drawn;
+      the guard pavilion's upper storey (the garrison commander) has no stair and stays solid. The private stair's rail over
+      its well crosses the foot of one upper rear window.
 - [x] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
       the sheet (the mixed streets) drew the Vernacular's dark door recesses and dark glass where their walls were not hollow.
       **2026-11-03:** the Vernacular's openings are real (69e5: leaves in core/door, KGLASS glass over the room card) and come in
@@ -79,8 +103,10 @@
       arches (`tanPierBox`): the street gates open (`o.gate`), the court side is a clear arch (`o.open`). `tanWin` no longer lays a second pane
       over the Vernacular's; the jali's ground is the room card. The sheet before -> after: doors 96 -> 368 (locked 1 -> 135),
       panes 4631 (2291 of them opaque) -> 4521 (all transparent), room cards 38 -> 3014; `vWinGlass` 8 left (pools, basins).
-- [ ] Glazed double doors (2.4 m and wider) are plain timber leaves now: a `vDoorLeaf` is one box, so the glazing, the raised
-      panels and the brass pulls of the old static leaves are gone.
+- [x] Glazed double doors (2.4 m and wider) are plain timber leaves now: a `vDoorLeaf` is one box, so the glazing, the raised
+      panels and the brass pulls of the old static leaves are gone. **Resolved (checked 2026-11-09):** the page carries core/door's
+      leaf styles (`30-core-door-leaf.js`, KDOORLEAF), and `tanDoorLeaves` draws the 'glazed' leaf (frame, kick rail, bars, clear
+      glass) from 2.4 m wide and the 'panel' leaf below that.
 - [ ] Locked doors: 135, on the solid bodies of types the interiors set does not furnish (P6's owed list) and the walls' gates;
       they open once the type is furnished.
 - [ ] Reachability (core/walk `KWALK.reach` from four points round each plot, every unlocked door open; 2026-11-03): 946 of
