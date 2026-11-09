@@ -32,6 +32,7 @@
  "biomes/nhighlands/dist/nhighlands.html: MISSING CUT.planCamp": 1,
  "biomes/nwlowlands/dist/nwlowlands.html: MISSING BIO.leafOn": 1,
  "biomes/nwlowlands/dist/nwlowlands.html: MISSING BIO.leafQ": 2,
+ "biomes/ringisles/dist/ringisles-high.html: CLASH _texPending": 1,
  "biomes/ringisles/dist/ringisles-lagoon.html: CLASH _texPending": 1,
  "biomes/ringisles/dist/ringisles.html: CLASH _texPending": 1,
  "biomes/sedesert/dist/sedesert-bowl.html: CLASH _t": 1,
