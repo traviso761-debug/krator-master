@@ -1,8 +1,8 @@
 [
 {"px": [846.98, 834.22], "floor": 10260.0, "scale": 1.0, "radius": 9.0, "peak": 10916.0},
 {"px": [1130.0, 854.0], "floor": 6070.0, "scale": 0.42, "radius": 7.2, "peak": 6880.0},
-{"px": [988.0, 1458.0], "floor": 11080.0, "scale": 0.5, "radius": 7.2, "peak": 12180.0},
-{"px": [1042.0, 1498.0], "floor": 8535.2, "scale": 0.5, "radius": 7.2, "peak": 9340.0},
+{"px": [988.0, 1458.0], "floor": 5980.0, "scale": 0.5, "radius": 7.2, "peak": 6480.0},
+{"px": [1042.0, 1498.0], "floor": 5420.0, "scale": 0.5, "radius": 7.2, "peak": 5880.0},
 {"px": [871.0, 699.0], "floor": -1432.4036865234375, "scale": 0.16, "radius": 1.6},
 {"px": [893.0, 716.0], "floor": -1403.3416748046875, "scale": 0.16, "radius": 1.6},
 {"px": [887.0, 724.0], "floor": -1469.1990966796875, "scale": 0.16, "radius": 1.6},
@@ -91,8 +91,13 @@
 {"px": [1432.0, 1636.0], "floor": 2863.6, "scale": 0.24, "radius": 2.4, "kind": "geyser"},
 {"px": [1454.0, 1684.0], "floor": 3247.4, "scale": 0.24, "radius": 2.4, "kind": "geyser"},
 {"px": [1574.0, 1642.0], "floor": 3895.9, "scale": 0.25, "radius": 2.5, "kind": "geyser"},
-{"px": [1007.0, 1472.0], "floor": 9333.1, "peak": 9493.1, "scale": 0.18, "radius": 1.6},
-{"px": [1024.0, 1485.0], "floor": 7385.4, "peak": 7535.4, "scale": 0.18, "radius": 1.6},
+{"px": [1007.0, 1472.0], "floor": 4680.0, "peak": 4840.0, "scale": 0.18, "radius": 1.6},
+{"px": [1024.0, 1485.0], "floor": 4460.0, "peak": 4610.0, "scale": 0.18, "radius": 1.6},
 {"px": [176.0, 322.0], "floor": -680.0, "rim_m": 12.0, "r_km": 32.0, "name": "Arch Krakatoan Seamount (Main Caldera)", "kind": "submarine_caldera"},
-{"px": [166.0, 338.0], "floor": -540.0, "rim_m": -18.0, "r_km": 24.0, "name": "South-West Surtseyan Vent", "kind": "submarine_caldera"}
+{"px": [166.0, 338.0], "floor": -540.0, "rim_m": -18.0, "r_km": 24.0, "name": "South-West Surtseyan Vent", "kind": "submarine_caldera"},
+{"name": "Mount Pyre", "px": [104.0, 1304.0], "peak": 6650, "kind": "stratovolcano", "region": "Firebliss Range"},
+{"name": "Cinder-Crown", "px": [148.0, 1292.0], "peak": 5940, "kind": "stratovolcano", "region": "Firebliss Range"},
+{"name": "Firebliss Mons", "px": [206.0, 1284.0], "peak": 6380, "kind": "stratovolcano", "region": "Firebliss Range"},
+{"name": "Brimstone Spire", "px": [254.0, 1288.0], "peak": 5780, "kind": "stratovolcano", "region": "Firebliss Range"},
+{"name": "Copper-Fissure Vent", "px": [298.0, 1286.0], "peak": 5360, "kind": "stratovolcano", "region": "Firebliss Range"}
 ]

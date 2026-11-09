@@ -87,10 +87,6 @@ def apply_biome_boundary_transitions(Eo, En_in, whas, wlev, regs_list, settlemen
         * G.sstep(28.0, 44.0, np.hypot((px - 575.0) * 2.0, (py - 504.0) * 2.0)) # Throne
         * G.sstep(36.0, 56.0, np.hypot((px - 578.0) * 2.0, (py - 933.0) * 2.0)) # Godthrone
         * G.sstep(12.0, 20.0, np.hypot((px - 620.8) * 2.0, (py - 815.2) * 2.0)) # Godstep Head Vent
-        * G.sstep(20.0, 34.0, np.hypot((px - 716.0) * 2.0, (py - 1128.0) * 2.0)) # Twin Cone 1
-        * G.sstep(20.0, 34.0, np.hypot((px - 770.0) * 2.0, (py - 1168.0) * 2.0)) # Twin Cone 2
-        * G.sstep(10.0, 18.0, np.hypot((px - 735.0) * 2.0, (py - 1142.0) * 2.0)) # Parasitic Cone A
-        * G.sstep(10.0, 18.0, np.hypot((px - 752.0) * 2.0, (py - 1155.0) * 2.0)) # Parasitic Cone B
     )
     d_water = nd.distance_transform_edt(~whas)
     w_dry = G.sstep(1.5, 4.0, d_water) * (~whas) * sett_guard * volc_edifice_guard

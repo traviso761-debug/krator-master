@@ -204,6 +204,7 @@ TARGET_OUT = {
     'sanctum': 'sanctum.html',                 # the Eternal State's capital arcology: podium, stalk and hexagonal solid
     'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
+    'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
