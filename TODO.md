@@ -26,6 +26,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 - **`KHOOK.EYE` (and `07-core-kwarp.js`'s `EYE`) start with a newline** (2026-11-08, the integration pass; the owner: "later"): crater-drylands spliced
   `KHOOK.EYE` straight after `float cdM1,cdM2;`, so `#ifndef KHOOK_EYE` did not start a line and two Lambert programs failed to
   compile (the info log names it; the verify printed it empty). The kit is fixed; a leading newline in core stops the next one. It moves every page.
+- **`KSHADOW.units` counts `sampler3D` too** (2026-11-08, found by the godthrone stations' fix): `core/shadow/host/12-core-shadow-host.js`
+  matches only `uniform sampler2D|samplerCube`, so it misses core/atmos's `uniform highp sampler3D uNoise` (the cloud shade) and
+  reads one unit short on every ground with it (blood: 16 counted, 17 linked). Godthrone's `84-host-ground.js` counts with its own
+  pattern until then. It moves every KSHADOW page.
 
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
