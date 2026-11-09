@@ -51,5 +51,17 @@ their builders are unchanged.
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).
 
-**Its own sheet.** Not yet: the sheet is Xanadu's `xanadu` target, on Xanadu's page shell, and `verify.py dist/xanadu.html
---assert` in `settlements/xanadu` is its check.
+**Its own sheet** (done 2026-11-09): `python3 tools/build.py kits/xanadu` writes `dist/xanadu.html` (the library maps beside it,
+`dist/xanadu.tex.xanadu.js`); `python3 verify.py dist/xanadu.html --assert` checks it (as the Iziz Vernacular's sheet does, plus
+`XA_TRADES` against the Voth census through `tools/check_trades.py`). Every def at every variant, a row per family
+(`targets/sheet/89z-rows.js`): 414 sites, 692 registered volumes, 599 doors. The page is the kit sheet shared by the kits on the Vernacular's contract (`kits/iziz-vernacular/sheet.py`, `sheet_verify.py`):
+the shell (`kits/iziz-vernacular/src/*-vsheet-*`: scene, rows, doors, the take on core/host), the Ancients core read in place from
+`kits/ancients/src`, and core's modules: `core/rand`, `core/tags`, `core/walk`, `core/door` (KDOOR and its host: the E key and its
+tip), `core/host`, `core/atmos/placeholder`, `core/materials` (records, and the kit's own pack, `materials.json` -> `tex/`, in a
+sidecar beside the page). No settlement file is read.
+Beside it the kit draws through the Vernacular's `69b`, `69c` and openings (read in place). Not on the kit's sheet (Xanadu's page
+has them): the Vale's biome plants (`86b-xa-plants.js` falls back to the kit's shapes) and core/water's still water (the pools
+take `MAT.xWater`). Xanadu's `xanadu` target stays Xanadu's sheet; `kit_bundle.py` (`XAK`) is unchanged.
+**Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode goes in `targets/sheet/` once the kit's
+interiors and hollow walls land (`kits/interiors/sets/xanadu.js`; another session's work): it already has core/walk, core/door's
+host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be relaxed for that mode.
