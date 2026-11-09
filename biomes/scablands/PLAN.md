@@ -93,6 +93,13 @@ station 1 shows small amethyst geodes in the walls and on the talus, and one wal
   band; the block standing on the ground (its foot in the drawn ground all round, the ground under its pocket below the pocket's floor), its pocket and door open; the
   pocket's druse fixed to its rock.
 - **Views**: the walk-in geode from outside, inside it, the geodes in a wall's flow top.
+- **The minerals** (the owner's references, 2026-11-09): `KGEODE.MINERALS` names seven fillings, each a crust habit and a rind palette:
+  amethyst (white quartz at the rim, purple deepening inward: most of them), quartz, celestine (blue blades in a chalky rind),
+  chalcedony (blue botryoidal pillars in a green crust), watermelon (pink and green bands, tourmaline prisms green at the foot and pink at
+  the tip standing out of the face), and two no basalt grows, kept rare here: aura (a teal, blue and violet film) and bismuth (stepped
+  hopper crystals in a rainbow film). The coulee's palette: amethyst .55, quartz .12, chalcedony .1, watermelon .1, celestine .07, aura
+  .04, bismuth .02. Geodes are ovals, not balls; half the broken loose ones lie with their other half beside them; the walk-in geode's
+  lining grows longer and darker toward the back of its pocket.
 
 Core adoption for the geodes: `core/terrain/39-core-cavern.js` (KCAVERN),
 `39f-core-geode.js`, `host/39e-core-cavern-draw.js` and `host/39g-core-geode-draw.js`, added to this overlay's `CORE` in `build.py`.

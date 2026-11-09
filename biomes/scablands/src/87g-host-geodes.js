@@ -20,8 +20,11 @@ const GEODES=(function(){const t0=performance.now(),T=SC.strata.tops,B0=SC.strat
  const near=(x,z)=>{const L=SC.locate(x,z,{});if(L.k<0)return false;if(Math.abs(L.s-FALL.s)>2000)return false;const ad=Math.abs(L.d),u=L.s-(FALL.s+lipAt(L.d));
   return (ad>FLOOR.half-90&&ad<FLOOR.half+330)||Math.abs(u)<130;};
  const box=(function(){let b=[1e9,1e9,-1e9,-1e9];for(let s=FALL.s-2000;s<=FALL.s+2000;s+=100)for(const d of[-FLOOR.half-340,FLOOR.half+340]){const p=courseAt(s,d);b=[Math.min(b[0],p[0]),Math.min(b[1],p[1]),Math.max(b[2],p[0]),Math.max(b[3],p[1])];}return b;})();
+ /* MINERALS: the coulee's palette (PLAN.md, "Geodes"): mostly the flood basalts' amethyst, some quartz and blue chalcedony, a few celestine
+    and watermelon-banded ones, and rare aura and bismuth hoppers (no basalt grows those two: the owner's references, 2026-11-09) */
+ const MINERALS={amethyst:.55,quartz:.12,chalcedony:.1,watermelon:.1,celestine:.07,aura:.04,bismuth:.02};
  const R=KGEODE.scatter({box,world:211,cell:4,bands,ground:(x,z)=>drawn(x,z).y,normal:(x,z)=>drawn(x,z).n,near,
-  wall:{p:.06,steep:.45},loose:{p:.015,steep:.32,below:60},r:[.12,.42],split:.45,
+  wall:{p:.06,steep:.45},loose:{p:.015,steep:.32,below:60},r:[.12,.42],split:.45,minerals:MINERALS,
   accept:r=>waterH(r.x,r.z)<-1e8&&!ERRATICS.some(e=>Math.hypot(r.x-e.x,r.z-e.z)<Math.max(e.sx,e.sz)*.7+r.r)});
  // ---- the walk-in geode: a fallen block on the talus at the west wall's foot, 700 m below the falls, its broken face to the coulee
  const site=(function(){const s=FALL.s+700;let pick=null;for(let d=-FLOOR.half+40;d>-FLOOR.half-200;d-=4){const p=courseAt(s,d),D=drawn(p[0],p[1]);if(waterH(p[0],p[1])>-1e8)continue;
