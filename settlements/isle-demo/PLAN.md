@@ -1003,3 +1003,59 @@ stocks steady) with the food coming in by road; the open world's verify (the ham
 **Questions for the owner:** the fallow (shifting gardens with three fallow years, or permanent fields worked every
 year?); whether the farm ring should later become hamlets too (left alone for now, as asked); how many plantations, and
 whether they are worked by the town's people or by their own village.
+
+## 12. Camps by boat: the expedition camps on the other isles (planned 2026-11-09)
+
+**The owner (2026-11-09):** "can we arrange to have the cities deploy camps by boat to the other islands and collect
+resources? what do the other islands out there have that they'd want to import?"
+
+**What is out there (the survey of 2026-11-09, on the sea router's 500 m grid: 15 landmasses inside the region).**
+
+| Island (the survey's id) | km² | Forest | Of it hypertropic jungle (XA) | Savanna / steppe | Vents | Nearest shore by sea |
+|---|---|---|---|---|---|---|
+| Kautoa's (0) | 4,407 | 32 % | 22 % | 51 % / 16 % (the ranch's and the salt village's country) | 2 | home |
+| Valapo's (8) | 4,398 | 63 % | 29 % | 22 % / 15 % | 4 | home |
+| The forest island east (1) | 4,196 | 93 % | 34 % (rainforest 33 %, monsoon 26 %) | 7 % | 1 | 24.5 km from Kautoa (Kautoa's lumber village already stands on its near shore: its sea leg is the first boat line there; the road round the gulf is 172 km) |
+| The forest island west (9) | 1,234 | 93 % | 29 % (rainforest 52 %) | 6 % | 2 | 23.2 km from Valapo (a routed shore at -24400, 33084) |
+| The jungle island far west (10) | 599 | 99 % | 60 % | 0 | 1 | 50.6 km from Valapo (a routed shore at -59970, 48948) |
+| Islets (3, 4, 5, 6, 12, 13, 14) | 1 to 9 each | jungle or rainforest | | | 0 | 36 to 180 km |
+
+No other island has a salt pan (Kautoa's has the only one), and none has a town; the only pasture worth a herd is on
+Kautoa's own island. What the other isles hold that the towns do not is FOREST of the two kinds the Ring Sea isles kit
+grows and the hyperjungle kit's species (`biomes/hyperjungle/src/50`, `HARVEST`), and the VENTS' thermal ground.
+
+**What the towns would import (goods they have no maker for; each a new good in `15` `goods` with a consumer).**
+
+| Good | From | Used by | Why they want it |
+|---|---|---|---|
+| `mahogany` (the finest red timber) | the forest islands' mahogany stands | the dockyard (hulls, the lakatoi's planks: `woodtools` and a `canoe` batch), the rich houses' carving (a bill good for the wealthy kinds, `47b`) | the home islands' lumber villages cut common timber and charcoal; a hull or a chief's house wants hardwood |
+| `gum` (prism gum resin) | the jungle's prismgum trees | the dockyard (caulking: every hull's batch), the potters' lamps (torch resin) | hulls are sealed with it; the towns have no resin |
+| `kapok` (floss and seed oil) | the jungle's kapok | the potters' lamps (oil and wicks beside coconut), the weavers (stuffing: `mats`, bedding), tinder | Valapo's lamps ran short of coconut once already; kapok oil is a second source |
+| `medicinals` (ghostwood and mahogany bark, ginger) | the jungle's understorey | the healer's poultices (an input where today the healer makes them from nothing) | the only medicine the isles name |
+| `sulphur` | the vents' thermal ground (a `kits/resources` sulfur node dealt at each vent by hash) | the healer (a salve), the weavers (bleaching cloth), fire | a volcanic good no home village digs |
+| `pearls` / `shell` | the reefs (`gather.fish` zones: a diving camp) | the jewellers (beside stone) | a luxury the courts buy; the money chain's first export |
+
+**The mechanism (built on what stands):** an EXPEDITION CAMP is a work camp of `core/camp` (40: the crew that migrates
+through stands, the lumber village's machine) whose YARD is a town's quay, carried out and supplied BY BOAT. A town's
+dockyard sends a crew (`crew.share` of its dockers and unemployed, or a refugee household at the settle step) in a
+lakatoi to the nearest shore of a forest island with a sea route from its trade landing (`48` `shoreOf`, as the coastal
+hamlets'); the camp PITCHES with the Islanders kit's shelters (`70-ie-camp.js`, `88h` `pitchCamp`) on the shore, its
+stands the jungle round it (the flora's `harvest.wood` by species: mahogany and kapok for timber, prismgum tapped not
+felled), a `SIM.site` per stand; a SEA LEG (`47h` `sea`: `SIM.trade` between the camp's shore and the town's canoe stop)
+carries the goods back and the camp's food out; when its stands are down to their seed trees it STRIKES and marches
+along the shore to the next (`KCAMP.workDue`), and when the season turns or the hold is full it comes home. The first
+build: Kautoa's mahogany and gum camp on the forest island east beside its lumber village (24.5 km by sea; the crew
+and the boat line are there already), Valapo's on the forest island west (23 km).
+
+**The order of work.** (1) The goods and their consumers in `15` (mahogany, gum, kapok: the dockyard's hull batch, the
+lamps' second oil, the healer's input), with the week test's checks. (2) `47x-isle-expeditions.js` (`[G data]`): the camp
+declared from a town's crew (settlement kind `camp` as the farming camp's, `47f`), its stands from the island's trees
+(the page's hook: `ISLE.hooks.standsAt(shore)` over the flora's records, `core/hamlet` 40's felling), its sea leg, its
+strike and march, its return; a node test with stand-in hooks and negatives. (3) The world: the shore survey of the other
+isles (`48x`: the nearest routed shore of each island with jungle enough behind it), the camp pitched and struck (`88h`),
+the boats on the line (`88c`), the trees felled (`88h`'s stumps as the lumber village's), `verify.py` checks. (4) The
+politics: an island camp is a claim (PLAN-POLITICS.md: the Kautoa-Valapo rivalry over the forest islands; a camp's
+palisade when the other town's boats come).
+
+**Not this:** no colony yet (a camp strikes; a village on another island is the owner's "Voth and Hykkousoi colonies"
+question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is dealt where a camp digs, as the mine's).
