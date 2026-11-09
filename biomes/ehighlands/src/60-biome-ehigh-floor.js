@@ -9,6 +9,8 @@
 //   GULLY    turf, ferny shade under the ragbark, mossy stones, the stream's banks
 //   GEO      orange and green mat algae in the run-off; nothing else
 //   MOTHER   lichens and the odd flower on the Mother Cushion
+//   MIXED    stations 5 and 6's cool rainforest floor: moss, ferns, a little turf and stones, bromeliads low down (2026-11-09)
+//   TAIGA    station 4's spruce-fir floor: moss, lichens, stones, a little turf and fern (2026-11-09)
 //   CLOUD    station 2's cloud forest floor: ferns, cushion moss, tank bromeliads, mossy stones (2026-11-09)
 // Three LOD bands along the spine at 8 / 16 / 32 m cells; then the bog's quilt (a close grid near the spine), the tors'
 // boulders, and two passes tied to the glass towers: WORMWICK in the ground round each tower, and wild COMBS (tower
@@ -107,13 +109,27 @@ function plantCloud(x,y,z,Z,lv,st){const t=rng();
  else if(t<.78){brom(x,y,z);st.flowers++;}
  else if(t<.92){stone(x,y,z,lv,st,1.2);}
  else{moss(x,y,z,lv);fern(x,y,z,lv,.6);st.turf++;}}
+function plantMixed(x,y,z,Z,lv,st){const t=rng();
+ if(t<.34){fern(x,y,z,lv,.9);st.flowers++;}
+ else if(t<.62){moss(x,y,z,lv);st.turf++;}
+ else if(t<.76){stone(x,y,z,lv,st);}
+ else if(t<.88){turf(x,y,z,lv,true);st.turf++;}
+ else if(t<.94){lichen(x,y,z);st.lichen++;}
+ else{brom(x,y,z);st.flowers++;}}
+function plantTaiga(x,y,z,Z,lv,st){const t=rng();
+ if(t<.32){moss(x,y,z,lv);st.turf++;}
+ else if(t<.52){lichen(x,y,z);st.lichen++;}
+ else if(t<.7){stone(x,y,z,lv,st);}
+ else if(t<.84){turf(x,y,z,lv,true);st.turf++;}
+ else if(t<.93){fern(x,y,z,lv,.7);st.flowers++;}
+ else{smallCushion(x,y,z);st.cushions++;}}
 function plantMother(x,y,z,Z,lv,st){const t=rng(),m=BIO.field('mother',x,z),yy=y+m*1.6+.1;
  if(t<.5){lichen(x,yy,z);st.lichen++;}else if(t<.7){gentian(x,yy,z,lv);st.flowers++;}}
 
 // ---------------------------------------------------------------- the pass
-EHIGH.FLOOR_ZONES=['puna','fell','dry','scree','tor','bog','gully','geo','mother','cloud'];
-const PLANTERS=[plantPuna,plantFell,plantDry,plantScree,plantTor,plantBog,plantGully,plantGeo,plantMother,plantCloud];
-EHIGH.floorWeights=Z=>[Z.puna*1.3,Z.fell*1.2,Z.dry*1.0,Z.scree*.8,Z.tor*.9,Z.bog*1.0,Z.gully*1.1,Z.geo*.5,Z.mother*.05,(Z.cloud==null?0:Z.cloud)*1.5];
+EHIGH.FLOOR_ZONES=['puna','fell','dry','scree','tor','bog','gully','geo','mother','cloud','taiga','mixed'];
+const PLANTERS=[plantPuna,plantFell,plantDry,plantScree,plantTor,plantBog,plantGully,plantGeo,plantMother,plantCloud,plantTaiga,plantMixed];
+EHIGH.floorWeights=Z=>[Z.puna*1.3,Z.fell*1.2,Z.dry*1.0,Z.scree*.8,Z.tor*.9,Z.bog*1.0,Z.gully*1.1,Z.geo*.5,Z.mother*.05,(Z.cloud==null?0:Z.cloud)*1.5,(Z.taiga==null?0:Z.taiga)*1.3,(Z.mixed==null?0:Z.mixed)*1.4];
 EHIGH.buildFloor=function(R,q){
  reseed(600041);q=q==null?1:q;R=R||2500;means();
  const st={ichu:0,turf:0,tola:0,flowers:0,cushions:0,snowwool:0,lichen:0,stones:0,boulders:0,bogq:0,sinter:0,wick:0,combs:0};

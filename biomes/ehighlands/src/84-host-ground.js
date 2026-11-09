@@ -25,13 +25,13 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
  const SOIL=K(0x6e5c44),SOIL2=K(0x7c684c),ICHU=K(0xa88e50),ICHU2=K(0x957c44),TURF=K(0x6a663a),TURF2=K(0x5a6034),DRY=K(0x94805e),
   SCREE=K(0x76706a),SCREE2=K(0x8a6252),SNOW=K(0xeef2f6),BAS=K(0x4e4a48),BOGC=K(0x4a8a3a),BOG2=K(0x3a7432),MOTH=K(0x86b036),
   SINT=K(0xe6e2d6),SINO=K(0xd8782a),SING=K(0x5a8a3a),GUL=K(0x5a6a38),
-  LITTER=K(0x3c3222),LITTER2=K(0x2e3a1e),MOSS=K(0x4a6a2a),ASH=K(0x8a8278),ASH2=K(0xa0968a),LAVA=K(0x2c2826),LAVA2=K(0x4a3a34),SULF=K(0xd8c048);
+  LITTER=K(0x3c3222),LITTER2=K(0x2e3a1e),MOSS=K(0x4a6a2a),ASH=K(0x8a8278),ASH2=K(0xa0968a),LAVA=K(0x2c2826),LAVA2=K(0x4a3a34),SULF=K(0xd8c048),NEEDL=K(0x5a4632);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=fbm(x/24,y/24,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5),pav=fbm(x/70+5,y/70-2,.7,2);
   const A=k=>FC.at(FC.a[k],wx,wz);
   const rock=A('rock'),tor=A('tor'),cold=A('cold'),wet=A('wet'),bog=A('bog'),geo=A('geo'),gully=A('gully'),sunF=A('sun'),slope=A('slope'),flow=A('flow');
   /* the stations' own surfaces (a field the land does not name reads 0 and paints nothing: the showcase's paint is unchanged) */
-  const forest=FC.a.forest?A('forest'):0,ash=FC.a.ash?A('ash'):0,lava=FC.a.lava?A('lava'):0,warm=FC.a.warm?A('warm'):0;
+  const forest=Math.max(FC.a.forest?A('forest'):0,FC.a.mixed?A('mixed'):0),taiga=FC.a.taiga?A('taiga'):0,ash=FC.a.ash?A('ash'):0,lava=FC.a.lava?A('lava'):0,warm=FC.a.warm?A('warm'):0;
   // the puna: gold-brown grass over bare soil in patches; olive turf where it is wetter
   c.copy(SOIL).lerp(SOIL2,clamp(.5+n*1.8,0,1));
   t.copy(ICHU).lerp(ICHU2,clamp(.5+n*1.6,0,1));c.lerp(t,.45+.3*smooth(.35,.65,pav)+.15*smooth(.55,.75,BIO.fn.h3(x>>2,y>>2,5)));
@@ -52,6 +52,8 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the sinter: white, banded orange and green round the vents
   // the wet face's forest floor: dark litter, moss where it is wettest and on the giant-facing banks
   if(forest>0){t.copy(LITTER).lerp(LITTER2,clamp(.5+n*1.8,0,1)).lerp(MOSS,smooth(.45,.8,wet)*.6);c.lerp(t,smooth(.15,.55,forest)*(1-.75*smooth(.4,.8,rock)));}   /* bare rock keeps its own colour */
+  // the spruce-fir's floor: brown needle litter, moss in the wet
+  if(taiga>0){t.copy(NEEDL).lerp(MOSS,smooth(.5,.85,wet)*.4);c.lerp(t,smooth(.15,.55,taiga)*(1-.75*smooth(.4,.8,rock)));}
   // the Lesser Throne's young ground: grey-buff pumice and ash, dark lava flows, the sulphur round the vents
   if(ash>0){t.copy(ASH).lerp(ASH2,clamp(.5+n*1.6+(pav-.5)*.8,0,1));c.lerp(t,smooth(.1,.5,ash));}
   if(lava>0){t.copy(LAVA).lerp(LAVA2,smooth(.55,.75,fbm(wx*.01,wz*.01,79,2)));c.lerp(t,smooth(.2,.6,lava));}
@@ -100,6 +102,7 @@ const KG_LY=GLAY&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.sea
   sinter:()=>KGROUND.layer('ehigh','ground.sinter',{w:'vGeo*0.9',tint:'diffuse*1.2',name:'sinter'}),
   moss:()=>{const L=KGROUND.layer('ehigh','ground.moss',{w:'clamp(vG2.x*1.2,0.0,0.95)',tint:'diffuse*1.15',name:'moss'});if(L)L.g2=true;return L;},
   ash:()=>{const L=KGROUND.layer('ehigh','ground.ash',{w:'clamp(vG2.y*1.3,0.0,0.95)',tint:'diffuse*1.2',name:'ash'});if(L)L.g2=true;return L;},
+  needles:()=>{const L=KGROUND.layer('ehigh','ground.needles',{w:'clamp(vG2.w*1.2,0.0,0.95)',tint:'diffuse*1.15',name:'needles'});if(L)L.g2=true;return L;},
   scoria:()=>{const L=KGROUND.layer('ehigh','ground.scoria',{w:'clamp(vG2.z*1.3,0.0,0.95)',tint:'diffuse*0.75',name:'scoria'});if(L)L.g2=true;return L;}};
  const L=KG_WANT.map(n=>D[n]?D[n]():null);
  return L.length&&L.every((l,i)=>l||KG_WANT[i]==='verge')?L.filter(Boolean):null;})():null;
@@ -142,14 +145,14 @@ const GROUND=(function(){const N=STAGE.groundN==null?480:STAGE.groundN,S=TERR.R*
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),ag=new Float32Array(nx*nx*4),ag2=new Float32Array(nx*nx*4),agEo=new Float32Array(nx*nx);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   const rock=FC.at(FC.a.rock,x,z),cold=FC.at(FC.a.cold,x,z),wet=FC.at(FC.a.wet,x,z),bog=FC.at(FC.a.bog,x,z),geo=FC.at(FC.a.geo,x,z),mo=FIELD.mother(x,z);
-  const fo=FC.a.forest?FC.at(FC.a.forest,x,z):0,as=FC.a.ash?FC.at(FC.a.ash,x,z):0,lv=FC.a.lava?FC.at(FC.a.lava,x,z):0;
-  const open=(1-smooth(.3,.6,rock))*(1-smooth(.25,.6,bog))*(1-smooth(.3,.6,geo))*(1-smooth(.2,.5,mo))*(1-smooth(.15,.55,fo))*(1-smooth(.1,.5,as))*(1-smooth(.2,.6,lv));
+  const fo=Math.max(FC.a.forest?FC.at(FC.a.forest,x,z):0,FC.a.mixed?FC.at(FC.a.mixed,x,z):0),tg=FC.a.taiga?FC.at(FC.a.taiga,x,z):0,as=FC.a.ash?FC.at(FC.a.ash,x,z):0,lv=FC.a.lava?FC.at(FC.a.lava,x,z):0;
+  const open=(1-smooth(.3,.6,rock))*(1-smooth(.25,.6,bog))*(1-smooth(.3,.6,geo))*(1-smooth(.2,.5,mo))*(1-smooth(.15,.55,fo))*(1-smooth(.1,.5,as))*(1-smooth(.2,.6,lv))*(1-smooth(.15,.55,tg));
   const pav=fbm((x/S+.5)*1536/70+5,(z/S+.5)*1536/70-2,.7,2);   // the painter's own noise, at its pixel
   const snow=clamp(smooth(.78,.9,cold+.08*(pav-.5))+smooth(.62,.75,cold)*smooth(.62,.72,pav)*.8,0,1);
   ag[k*4]=smooth(.3,.65,rock);ag[k*4+1]=open*(1-smooth(.3,.46,wet))*(1-smooth(.55,.75,cold))*(1-snow);
   agEo[k]=smooth(.3,.6,geo)*(1-snow);
   ag[k*4+2]=open*smooth(.3,.46,wet)*(1-snow)*(.55+.45*smooth(.45,.6,fbm(x*.006,z*.006,991,2)));ag[k*4+3]=snow;
-  ag2[k*4]=smooth(.15,.55,fo)*(1-.75*smooth(.4,.8,rock))*(1-snow);ag2[k*4+1]=smooth(.1,.5,as)*(1-smooth(.2,.6,lv))*(1-snow);ag2[k*4+2]=smooth(.2,.6,lv)*(1-snow);ag2[k*4+3]=0;}
+  ag2[k*4]=smooth(.15,.55,fo)*(1-.75*smooth(.4,.8,rock))*(1-snow);ag2[k*4+1]=smooth(.1,.5,as)*(1-smooth(.2,.6,lv))*(1-snow);ag2[k*4+2]=smooth(.2,.6,lv)*(1-snow);ag2[k*4+3]=smooth(.15,.55,tg)*(1-.75*smooth(.4,.8,rock))*(1-snow);}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));

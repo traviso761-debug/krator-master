@@ -1,0 +1,19 @@
+{
+ "name": "The montane belt (station 6): fir and beech stands on the wet face, 3.1-3.6 km",
+ "out": "ehighlands-montane.html",
+ "packSkip": [
+  "ground.ash",
+  "ground.scoria",
+  "laurel",
+  "bigfrond",
+  "epi",
+  "brom",
+  "bark4",
+  "leaf.ichu",
+  "skin.fleece",
+  "leaf.broad",
+  "leaf.rag",
+  "bark.ragbark",
+  "ground.verge"
+ ]
+}

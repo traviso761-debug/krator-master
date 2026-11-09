@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ehighlands-face.html`, `dist/ehighlands-lesser.html`, `dist/ehighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ehighlands-face.html`, `dist/ehighlands-lesser.html`, `dist/ehighlands-mixed.html`, `dist/ehighlands-montane.html`, `dist/ehighlands-treeline.html`, `dist/ehighlands.html`
 
 Build: `cd biomes/ehighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -29,13 +29,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 3 |  |
+| `45f-host-wallface.js` | 5 |  |
 | `46-host-land.js` | 15 | the land (39); the climate fields (the definitions; 47-host-fie (131); the LOD spine and the kit's windows (149) |
 | `47-host-fields.js` | 2 | the host binding (21) |
-| `50-biome-ehigh-species.js` | 44 **big** | the giant (30); palettes (39); the tree species (65); harvest (biomes/FRUIT.md) (95); the small plants (the floor), tagged (112); leaf and surface textures (135); bark textures (185); geometries local to this biome (216); materials (317); the library (core/materials/PLAN.md, Eastern hig (348) |
-| `55-biome-ehigh-trees.js` | 36 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (47); the lean toward the giant (59); polyline helpers (Girder's) (66); keep-clear between plants (75); helpers (82); the builders (93); the Mother Cushion (259); impostors (the far plants) (284); the pass (313) |
-| `60-biome-ehigh-floor.js` | 14 | small plants (25); the zone planters (51); the pass (113) |
+| `50-biome-ehigh-species.js` | 49 **big** | the giant (30); palettes (39); the tree species (69); harvest (biomes/FRUIT.md) (107); the small plants (the floor), tagged (126); leaf and surface textures (149); bark textures (199); geometries local to this biome (230); materials (331); the library (core/materials/PLAN.md, Eastern hig (362) |
+| `55-biome-ehigh-trees.js` | 42 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (49); the lean toward the giant (61); polyline helpers (Girder's) (68); keep-clear between plants (77); helpers (84); the builders (95); the Mother Cushion (310); impostors (the far plants) (335); the pass (364) |
+| `60-biome-ehigh-floor.js` | 15 | small plants (27); the zone planters (53); the pass (129) |
 | `70-biome-ehigh.js` | <1 |  |
-| `84-host-ground.js` | 20 | the ground (22); the water (159) |
+| `84-host-ground.js` | 21 | the ground (22); the water (162) |
 | `85-host-far.js` | 3 |  |
 | `86-host-geysers.js` | 5 |  |
 | `89-host-sky.js` | 1 |  |

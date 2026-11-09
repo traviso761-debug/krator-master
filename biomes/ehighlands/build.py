@@ -165,8 +165,8 @@ def matlib_pack():
     pack=json.load(open(pj,encoding='utf-8'));out=[]
     # each page carries the families it draws (station.json "packSkip"; the showcase skips the stations' own). The ground's turf, sinter
     # and puna stay on every page: 84-host-ground.js takes the library ground only with all three
-    S2=['laurel','bigfrond','fern','beard','epi','brom','moss','bark4','ground.moss'];S3=['ground.ash','ground.scoria']
-    skip=set(STN.get('packSkip',[])) if STATION else set(S2+S3)
+    S2=['laurel','bigfrond','fern','beard','epi','brom','moss','bark4','ground.moss'];S3=['ground.ash','ground.scoria'];S4=['needle','bark5','beech','bark6','ground.needles']
+    skip=set(STN.get('packSkip',[])) if STATION else set(S2+S3+S4)
     for fam in sorted(f for f in pack['families'] if f not in skip):
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),

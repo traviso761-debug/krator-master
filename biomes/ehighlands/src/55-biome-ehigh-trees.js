@@ -23,6 +23,8 @@ EHIGH.TREES=[];
 //   puna     the open plain: ichu, turf, tola, poured cushions, the odd spike
 //   snow     the crest (nothing)
 //   cliff    a sheer rock face: nothing roots there (the owner's rule, Oct 2026: every zone is multiplied by 1-cliff)
+//   mixed    the wet face's cool rainforest (stations 5 and 6: the host's `mixed` field): combed beeches, firs among them, moss and ferns
+//   taiga    the wet face's spruce-fir under the crest (station 4: the host's `taiga` field): combed firs, moss and lichens under them
 //   (barren) the host's `barren` field: ground nothing roots in (station 3: the Lesser Throne's cold ash away from the vents' warmth)
 //   cloud    the wet face's cloud forest (station 2: the host's `forest` field; 2026-11-09): combed laurels, tree ferns, ferns and moss.
 //            It takes its ground from every other zone; a page with no `forest` field reads 0 and every zone is as it was
@@ -31,7 +33,7 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  const wet=F('wet'),flow=F('flow'),rock=F('rock'),slope=F('slope'),cold=F('cold'),bogF=F('bog'),motherF=F('mother'),geoF=F('geo'),gullyF=F('gully'),sun=F('sun'),tarn=F('tarn');
  const cliff=smooth(.8,.96,slope)*smooth(.3,.6,rock),live=(1-cliff)*(1-smooth(.5,.9,F('barren')));   /* barren (station 3's cold ash, 2026-11-09): nothing roots; 0 on every other page */
  const snow=smooth(.86,.95,cold);
- const cloud=smooth(.3,.6,F('forest'))*(1-snow)*live,nc=1-cloud;
+ const cloud=smooth(.3,.6,F('forest'))*(1-snow)*live,taiga=smooth(.3,.6,F('taiga'))*(1-snow)*live*(1-cloud),mixed=smooth(.3,.6,F('mixed'))*(1-snow)*live*(1-cloud)*(1-taiga),nc=(1-cloud)*(1-taiga)*(1-mixed);
  const tarnZ=smooth(.3,.6,tarn),mother=smooth(.25,.55,motherF)*live,geo=smooth(.3,.6,geoF)*live,bog=smooth(.3,.6,bogF)*(1-tarnZ)*(1-mother)*live*nc;
  const gully=smooth(.25,.6,gullyF)*smooth(.74,.58,cold)*(1-snow)*live*nc;
  const tor=smooth(.35,.65,rock)*smooth(.5,.34,cold)*(1-gully)*(1-mother)*live;
@@ -40,7 +42,7 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  const dry=open*(1-scree)*smooth(.2,.55,sun)*smooth(.12,.24,cold)*smooth(.7,.52,cold);
  const fell=open*(1-scree)*(1-dry)*smooth(.42,.6,cold);
  const puna=open*(1-scree)*(1-dry)*(1-fell);
- return{wet,flow,rock,slope,cold,sun,cliff,snow,tor,bog,mother,geo,gully,scree,dry,fell,puna,open,cloud,
+ return{wet,flow,rock,slope,cold,sun,cliff,snow,tor,bog,mother,geo,gully,scree,dry,fell,puna,open,cloud,taiga,mixed,
   turf:smooth(.3,.44,wet)*(puna+fell)};}
 EHIGH.zones=zones;
 
@@ -48,7 +50,7 @@ EHIGH.zones=zones;
 const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
 function means(){if(MEAN)return MEAN;MEAN={bark:EHIGH.BARKTEX.map(t=>texMean(t)),rock:texMean(EHIGH.ROCKTEX)};MEAN.mother=EHIGH.SKIN_MEAN;
- const lm=EHIGH.LIBMEAN||{},lin=v=>{const c=Math.pow(v,2.2);return[c,c,c];};if(lm.bark1!=null)MEAN.bark[1]=lin(lm.bark1);if(lm.bark4!=null&&MEAN.bark.length>4)MEAN.bark[4]=lin(lm.bark4);if(lm.rock!=null)MEAN.rock=lin(lm.rock);return MEAN;}
+ const lm=EHIGH.LIBMEAN||{},lin=v=>{const c=Math.pow(v,2.2);return[c,c,c];};if(lm.bark1!=null)MEAN.bark[1]=lin(lm.bark1);if(lm.bark4!=null&&MEAN.bark.length>4)MEAN.bark[4]=lin(lm.bark4);if(lm.bark5!=null&&MEAN.bark.length>5)MEAN.bark[5]=lin(lm.bark5);if(lm.bark6!=null&&MEAN.bark.length>6)MEAN.bark[6]=lin(lm.bark6);if(lm.rock!=null)MEAN.rock=lin(lm.rock);return MEAN;}
 Object.assign(EHIGH,{means,tint,bright,shade,vary});
 const BARKC={};
 const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK]));};
@@ -256,6 +258,55 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,dir=leanDir(T,S.lean*rr(.7,1.2),.2
  if(lv===2)for(let k=0,m=ri(3,6);k<m;k++){const a=rr(0,TAU),L=T.crownR*rr(.5,.8);BIO.put('bigfrond',[top.x,top.y-.25,top.z],qEuler(rr(-.1,.1),-a,rr(-1.2,-.8)),[L,L,L*1.1],leafCol(PAL.dead,1.0,.02,.05,.05));}
  regTree(T,S,T.crownR*1.1,H+1);};
 
+// 9 the COMBED FIR (station 4, the treeline under the crest; 2026-11-09): a spruce-fir whose form follows the cold (the host's field):
+// low on the page an upright tree, its whorls longer on the giant side and its top leaning to it; higher a FLAGGED tree, branches only on
+// the giant side; at the top a KRUMMHOLZ mat a metre high stretched toward the giant. T.form 0, 1, 2. Its needle clumps sit on the
+// branches (rods from the trunk, lv 2) or on the trunk itself (lv 1): held by construction.
+B[9]=function(T,st,lv){const S=SP[T.sp],tl=smooth(.5,.78,BIO.field('cold',T.x,T.z)),form=tl<.35?0:tl<.75?1:2;T.form=form;
+ const dir=leanDir(T,S.lean*(1+1.5*tl),.15),gl=Math.hypot(dir[0],dir[2])||1,ux=dir[0]/gl,uz=dir[2]/gl,gaz=Math.atan2(uz,ux);
+ const lc=C(pick(S.leaf)),hc=EHIGH.LIB.needle?bright(C(0xffffff),rr(.6,.78)):lc;
+ if(form===2){const R=T.crownR*rr(.55,.85),h=rr(.5,1.2);
+  BIO.put('lobe',[T.x+ux*R*.3,T.y0-.1,T.z+uz*R*.3],qEuler(0,EHIGH.GIANT_YAW+rr(-.2,.2),0),[R*1.6,h,R*.8],shade(lc,-.35));
+  for(let k=0,n=lv===2?8:3;k<n;k++){const u=rr(-.7,.9),v=rr(-.6,.6),x=T.x+ux*R*(.3+u*1.2)-uz*v*R*.6,z=T.z+uz*R*(.3+u*1.2)+ux*v*R*.6,d=Math.hypot(u,v)*.85;
+   clumpAt('needle',x,T.y0-.1+h*Math.sqrt(Math.max(0,1-d*d))*.9,z,R*rr(.5,.75),.45,hc,T.x,T.y0,T.z,R,h);st.clumps++;}
+  regTree(T,S,R*1.7,h+.3);return;}
+ const H=T.H*(form===1?rr(.32,.5):1),n=lv===2?6:3,pts=[];
+ for(let k=0;k<=n;k++){const t=k/n,b=Math.tan(S.lean*(1+1.5*tl))*H*t*t*.6;pts.push({x:T.x+ux*b,y:T.y0-.3+(H+.3)*t,z:T.z+uz*b,r:T.rb*(1-.85*Math.pow(t,.9))+.03,col:barkCol(S,k)});}
+ st.trunk+=BIO.tube('bark5',pts,pts[0].col,{seg:lv===2?7:5,cap:true});
+ const nw=lv===2?ri(7,10):4,Rb=T.crownR*(form===1?.8:1);
+ for(let w=0;w<nw;w++){const u=mix(form===1?.25:.15,.95,w/(nw-1)),c=along(pts,u),Rw=Rb*Math.pow(1-u,.8)+.25,nb=lv===2?5:2,tw=rr(0,TAU);
+  for(let b=0;b<nb;b++){const a=tw+b/nb*TAU,gc=Math.cos(a-gaz);if(form===1&&gc<-.15)continue;   /* flagged: nothing on the side away from the giant */
+   const L=Rw*(1+.45*gc)*rr(.85,1.1),sz=Math.max(.6,L*.85);
+   if(lv===2){const e=[c.x+Math.cos(a)*L,c.y-L*.18,c.z+Math.sin(a)*L];BIO.beam('rod',[c.x,c.y,c.z],e,Math.max(.03,c.r*.35),.02,rodCol(S.bark[0]));
+    clumpAt('needle',c.x+Math.cos(a)*L*.85,c.y-L*.15,c.z+Math.sin(a)*L*.85,sz,.42,hc,c.x,c.y,c.z,Rw+.5,H*.3);
+    if(L>1.2)clumpAt('needle',c.x+Math.cos(a)*L*.45,c.y-L*.08,c.z+Math.sin(a)*L*.45,sz*.8,.42,hc,c.x,c.y,c.z,Rw+.5,H*.3);st.clumps+=2;}
+   else{clumpAt('needle',c.x+Math.cos(a)*L*.4,c.y-L*.1,c.z+Math.sin(a)*L*.4,L*1.2,.45,hc,c.x,c.y,c.z,Rw+.5,H*.3);st.clumps++;}}}
+ /* the leader */
+ const tp=pts[n];clumpAt('needle',tp.x,tp.y-.2,tp.z,Math.max(.6,Rb*.3),.9,hc,tp.x,tp.y,tp.z,1,1);
+ regTree(T,S,Rb*1.5+.5,H+.5);};
+
+// 10 the COMBED BEECH (stations 5 and 6, the cool rainforest of the wet face; 2026-11-09): a southern beech, its bole leaning to the giant, its
+// limbs mostly on that side, its leaves in flat tiers on the limbs' ends (held to them), old man's beard where the air is wettest.
+B[10]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,dir=leanDir(T,S.lean,.2),gl=Math.hypot(dir[0],dir[2])||1,ux=dir[0]/gl,uz=dir[2]/gl,gaz=Math.atan2(uz,ux);
+ const n=lv===2?7:4,fh=H*rr(.4,.55),pts=[];
+ for(let k=0;k<=n;k++){const t=k/n,lean=Math.tan(S.lean)*fh*t*t;pts.push({x:T.x+ux*lean,y:T.y0-.4+(fh+.4)*t,z:T.z+uz*lean,r:T.rb*(1-.5*Math.pow(t,.8))*(t<.12?1.25:1),col:barkCol(S,k)});}
+ st.trunk+=BIO.tube('bark6',pts,pts[0].col,{seg:lv===2?9:6,cap:true});
+ const top=pts[n],spots=[],nL=lv===2?ri(6,9):4,wet=BIO.field('wet',T.x,T.z);let reach=R*.6,topY=top.y;
+ for(let k=0;k<nL;k++){const gs=k<nL*.7,la=gaz+(gs?rr(-1.1,1.1):Math.PI+rr(-1.1,1.1)),el=rr(.12,.5),L=(H-fh)*rr(.75,1.15)*(gs?1:.6),r0=top.r*rr(.45,.65);
+  const o=k<2?top:along(pts,rr(.5,.9)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.04,r0*.3),3,-.06,.18);
+  if(lv===2)st.limb+=BIO.tube('bark6',BIO.flareJoin?BIO.flareJoin(lp,{parentR:o.r==null?top.r:o.r}):lp,barkCol(S,k+2),{seg:5,cap:true});
+  else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],r0*2,r0*.7,rodCol(S.bark[0]));
+  spots.push({p:lp[3],s:L*.45,tip:true},{p:lp[2],s:L*.3},{p:lp[1],s:L*.25});
+  reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);topY=Math.max(topY,lp[3].y);
+  if(lv===2)for(let b=0,mb=Math.round(rr(0,2)*smooth(.5,.9,wet));b<mb;b++){const q=along(lp,rr(.3,.9));
+   BIO.put('beard',[q.x,q.y-q.r*.4,q.z],qEuler(0,rr(0,TAU),0),[rr(.4,.8),rr(.6,1.8),.6],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.2));}}
+ /* the tiers: flat clumps round each spot on the limb, held to it */
+ const hc=EHIGH.LIB.beech?bright(C(0xffffff),rr(.75,.92)):C(pick(S.leaf)),cx=T.x+ux*R*.3,cz=T.z+uz*R*.3,cy=T.y0+H*.75,sz0=R*.4*(lv===2?1:1.45);
+ for(const sp of spots){const nn=lv===2?(sp.tip?3:2):(sp.tip?2:0);
+  for(let c=0;c<nn;c++){const a=rr(0,TAU),d=sp.s*.5*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(-.05,.2)*sp.s,sz=sz0*rr(.8,1.2);
+   const h=BIO.holdTo?BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[x,y,z],sz*.55):[x,y,z];clumpAt('beech',h[0],h[1],h[2],sz,.35,hc,cx,cy,cz,R,H*.3);st.clumps++;}}
+ regTree(T,S,reach+1,topY-T.y0+R*.3+1);};
+
 // ---------------------------------------------------------------- the Mother Cushion
 // One plant over a whole hill (the owner: "one cushion, one hill"): the host's `mother` field says where it lies, its
 // window where to look; this drapes a skin of cushion over the ground there, 2 m a cell, bubbling into domes a few
@@ -338,8 +389,8 @@ EHIGH.buildTrees=function(R,q){
  // in 89z) keeps the blobs for all; a page without core/biome 34 keeps them too
  const IMPON=EHIGH.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
  if(IMPON){const set=BIO.impostorSet('ehigh.trees',{label:'Far ragbarks, flowering spikes and laurels'}),c=BIO.center?BIO.center():[0,0];
-  const want={4:T=>true,3:T=>EHIGH.vigilStage(T.x,T.z)==='flower',7:T=>true};
-  [4,3,7].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&want[sp](T)&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+  const want={4:T=>true,3:T=>EHIGH.vigilStage(T.x,T.z)==='flower',7:T=>true,10:T=>true,9:T=>T.form==null&&smooth(.5,.78,BIO.field('cold',T.x,T.z))<.35};
+  [4,3,7,9,10].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&want[sp](T)&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
    const T1=Object.assign({},T0),st1=newStats();
    const rec=BIO.impostor('ehigh.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
    if(rec)IMPS[sp]={rec,H:T1.H,ok:want[sp]};});
@@ -375,6 +426,10 @@ EHIGH.PASSES=[
  // laurels claim the ground, the tree ferns fill the gaps and the wetter hollows
  {sp:7,cell:14,accept:(Z)=>Z.cloud*.5,opt:{pad:1.6,patch:.5,patchScale:.012,lodK:.5}},
  {sp:8,cell:9,accept:(Z)=>Z.cloud*(.25+.35*Z.wet),opt:{pad:.9,patch:.6,patchScale:.02,small:true,lodK:.6,farK:.3}},   /* thinned 2026-11-09: the first smoke load drew 29.7 M triangles */
+ // station 4's firs: the forest under the crest, thinning to the treeline (the krummholz is the same pass, its form from the cold)
+ {sp:9,cell:8,accept:(Z)=>Z.taiga*.55+Z.mixed*.1,opt:{pad:1.2,patch:.55,patchScale:.014,lodK:.5}},
+ // stations 5 and 6: the beeches of the cool rainforest, a few up among the firs
+ {sp:10,cell:13,accept:(Z)=>Z.mixed*.5+Z.taiga*.06,opt:{pad:1.6,patch:.5,patchScale:.012,lodK:.5}},
 ];
 
 // ---------------------------------------------------------------- one plant alone (biomes/WORLD.md: trees as variants)

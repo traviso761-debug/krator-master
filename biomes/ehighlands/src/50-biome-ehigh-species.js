@@ -59,7 +59,11 @@ const PAL=EHIGH.PAL={
  /* station 2, the wet face's cloud forest (2026-11-09) */
  laurel:[0x2e4a26,0x365428,0x28421f,0x3e5a2c],laurelBark:[0x4a4438,0x3e3a30,0x544c3e],fernTrunk:[0x3a2a1e,0x2e2218,0x44301e],
  treefern:[0x4a7a2e,0x568636,0x3e6c28,0x62903c],fern:[0x4a7e30,0x3e6e2a,0x5a8a38],moss:[0x4e7a28,0x5a8a2e,0x426a22,0x6a9432],
- epi:[0x5a7a34,0x6a8a3c,0x4e6a2e],brom:[0x8a2a3a,0xa0503a,0x6a8a3a,0x7a9a40],mossPale:[0xb8c098,0xa8b088,0xc8cca8],
+ epi:[0x5a7a34,0x6a8a3c,0x4e6a2e],
+ /* station 4, the treeline (2026-11-09) */
+ fir:[0x2a4232,0x30483a,0x243a2c,0x38503e],firBark:[0x4a3e34,0x56483c,0x3e342c],
+ /* stations 5 and 6, the mixed and montane belts (2026-11-09) */
+ beech:[0x3e5a2a,0x4a6630,0x364e24,0x567238],beechBark:[0x6a6660,0x5e5a54,0x76726a],brom:[0x8a2a3a,0xa0503a,0x6a8a3a,0x7a9a40],mossPale:[0xb8c098,0xa8b088,0xc8cca8],
 };
 
 // ---------------------------------------------------------------- the tree species
@@ -89,6 +93,14 @@ EHIGH.SPECIES=[
   far:{poleU:.55,taper:.4,blobs:[[.74,.9,.3,'L0','L2',{off:.35}],[.52,.62,.2,'L1','L3',{off:.55}]]},tags:K('temperate','humid','both',['Cfa','Cfb'],'tree')},
  /*8*/{key:'treefern',name:"Giant's tree fern",H:[3,9],rb:[.14,.26],crownR:[2,3.6],barkK:4,bark:PAL.fernTrunk,leaf:PAL.treefern,lean:.2,
   far:{poleU:.9,taper:.2,blobs:[[.96,.85,.16,'L0','L1',{off:.3}]]},tags:K('temperate','humid','both',['Cfa','Cfb'],'fern')},
+ /* STATION 4, THE TREELINE (2026-11-09): the wet face's spruce-fir under the crest, a tree low on the page, flagged higher, a krummholz mat at
+    the top (its form from the host's cold: T.form). barkK 5: the spruce bark (bark.spruce) */
+ /*9*/{key:'fir',name:'Combed fir',H:[8,22],rb:[.2,.45],crownR:[1.6,3.2],barkK:5,bark:PAL.firBark,leaf:PAL.fir,lean:.12,
+  far:{poleU:.2,taper:.5,blobs:[[.55,.75,.5,'L0','L1',{off:.25}]]},tags:K('boreal','humid','both',['Dfc','Dfb'],'tree')},
+ /* STATIONS 5 AND 6, THE MIXED AND MONTANE BELTS (2026-11-09): a southern beech of the cool rainforest, its crown in flat tiers thrown out
+    toward the giant; barkK 6 (the beech's smooth grey bark: bark.birch.lichen, lichen-blotched) */
+ /*10*/{key:'beech',name:'Combed beech',H:[14,28],rb:[.3,.7],crownR:[4,7.5],barkK:6,bark:PAL.beechBark,leaf:PAL.beech,lean:.18,
+  far:{poleU:.5,taper:.4,blobs:[[.7,.95,.28,'L0','L2',{off:.35}]]},tags:K('temperate','humid','both',['Cfa','Cfb','Dfb'],'tree')},
 ];
 EHIGH.byKey={};EHIGH.SPECIES.forEach((S,i)=>{S.i=i;EHIGH.byKey[S.key]=S;});
 
@@ -105,6 +117,8 @@ EHIGH.HARVEST={
  glasstower:HV('none',['young stalk (peeled, bitter)'],true,'Makes pallidine in its bracts and roots. Moth larvae that feed on the roots store it; a fungus that infects them works most of it into a milder tonic (wormwick). The wild bees that work its hidden flowers carry it into their honey whole: tower honey, the dangerous version.','generic_fruit_tower_honey'),
  cereus:HV('none',['fruit'],false,'The white hair is the frost\'s; the red flowers open toward the giant.','generic_fruit_cereus'),
  laurel:HV('timber, fuel',[],true,'The wet face\'s canopy tree: a laurel heavy with moss, its crown combed toward the giant and its epiphyte gardens thickest on that side. The leaves are a fever tea; the wood, hard and dark, goes down to Iziz.'),
+ beech:HV('timber (the best on the wall: ships\' knees, the monks\' book boards), fuel',['beechmast (roasted)'],false,'The cool rainforest\'s tree on the wet face between the cloud and the firs: its tiers of small leaves thrown out toward the giant, its grey bark blotched with lichen.'),
+ fir:HV('timber, fuel, pitch',[],true,'The treeline\'s tree: straight in the forest under the crest, flagged higher up with its branches only on the giant side, and at the top a mat a hand high stretched toward the giant. Its pitch seals the herders\' boats on the tarns.'),
  treefern:HV('fibre (the trunk\'s root mantle: planters, walls, kindling)',['young croziers (cooked)'],false,'Its fronds fan toward the giant, longest on that side, so a slope of them looks combed. The croziers are eaten in spring, boiled twice.'),
 };
 EHIGH.SPECIES.forEach(S=>{S.tags.harvest=EHIGH.HARVEST[S.key]||HV('none');});
@@ -453,4 +467,37 @@ BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit and flower
  BIO.def('epi',SHEET(BIO.geo.clump(),'epi'),M.epi,{attrs:['aN'],label:'Epiphyte gardens'});
  BIO.def('brom',G.disc(),M.brom,{label:'Tank bromeliads'});
  BIO.def('moss',G.disc(),M.moss,{label:'Cushion moss'});}
+
+// ---------------------------------------------------------------- station 4's treeline (2026-11-09): the fir's needles and bark
+// Appended after station 2's block, on its own stream (KRAND.stream) for the same reason: nothing painted or placed after this file moves.
+{const RS=KRAND.stream(53072),r=()=>RS.next(),rq=(a,b)=>a+(b-a)*r();
+ /* a needle spray from above: short dark needles along a few twigs */
+ TX.needle=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';for(let k=0;k<9;k++){const a=rq(0,TAU),x0=S/2+Math.cos(a)*S*.05,y0=S/2+Math.sin(a)*S*.05,L=S*rq(.28,.44);
+  for(let t=0;t<1;t+=.04){const x=x0+Math.cos(a)*L*t,y=y0+Math.sin(a)*L*t;for(const sd of[-1,1]){const b=a+sd*1.1;g.strokeStyle=G2(lerp(100,230,r()));g.lineWidth=1.4;
+   g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*S*.04*(1-t*.5),y+Math.sin(b)*S*.04*(1-t*.5));g.stroke();}}}},[90,110,95]);
+ const bc=document.createElement('canvas');bc.width=bc.height=256;{const g=bc.getContext('2d');g.fillStyle='#5a4a3e';g.fillRect(0,0,256,256);
+  for(let i=0;i<700;i++){const x=r()*256,y=r()*256;g.fillStyle=r()<.5?'rgba(40,32,26,.5)':'rgba(120,104,90,.35)';g.fillRect(x,y,rq(6,18),rq(3,7));}}
+ const bt=new T3.CanvasTexture(bc);bt.wrapS=bt.wrapT=T3.RepeatWrapping;bt.encoding=T3.sRGBEncoding;EHIGH.BARKTEX.push(bt);
+ M.bark.push(BIO.barkMat(bt));
+ M.needle=BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.05});
+ const SW=BIO.libSwap('ehigh',{needle:M.needle,bark5:M.bark[5]});LIB.needle=!!SW.needle;
+ {const L=LIBP('bark5');if(L)EHIGH.LIBMEAN.bark5=L.mean>0?L.mean:.5;}
+ BIO.bucket('bark5',M.bark[5],{label:'Spruce bark (the combed fir)',uvScale:[1.2,1.8]});
+ BIO.def('needle',SW.needle&&BIO.geo.cells?BIO.geo.cells(BIO.geo.clump(),{n:3,scale:.75}):BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Fir needles'});}
+
+// ---------------------------------------------------------------- stations 5 and 6 (2026-11-09): the beech's leaves and bark
+{const RS=KRAND.stream(53073),r=()=>RS.next(),rq=(a,b)=>a+(b-a)*r();
+ /* a flat spray of small toothed leaves along twigs (the procedural stand-in for card.broadleaf) */
+ TX.beech=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';for(let k=0;k<7;k++){const a=rq(0,TAU),L=S*rq(.3,.44);
+  for(let t=.1;t<1;t+=.09){const x=S/2+Math.cos(a)*L*t,y=S/2+Math.sin(a)*L*t;for(const sd of[-1,1]){const b=a+sd*rq(.7,1.1);g.fillStyle=G2(lerp(110,235,r()));g.beginPath();
+   g.ellipse(x+Math.cos(b)*S*.03,y+Math.sin(b)*S*.03,S*.035,S*.02,b,0,TAU);g.fill();}}}},[110,130,95]);
+ const bc=document.createElement('canvas');bc.width=bc.height=256;{const g=bc.getContext('2d');g.fillStyle='#7a766e';g.fillRect(0,0,256,256);
+  for(let i=0;i<500;i++){const x=r()*256,y=r()*256,k=r();g.fillStyle=k<.4?'rgba(150,160,130,.45)':k<.7?'rgba(90,86,80,.4)':'rgba(200,200,180,.3)';g.beginPath();g.ellipse(x,y,rq(3,12),rq(2,8),0,0,TAU);g.fill();}}
+ const bt=new T3.CanvasTexture(bc);bt.wrapS=bt.wrapT=T3.RepeatWrapping;bt.encoding=T3.sRGBEncoding;EHIGH.BARKTEX.push(bt);
+ M.bark.push(BIO.barkMat(bt));
+ M.beech=BIO.leafMat(TX.beech,'beech',{aN:true,swayW:'1.0',swayA:.08});
+ const SW=BIO.libSwap('ehigh',{beech:M.beech,bark6:M.bark[6]});LIB.beech=!!SW.beech;
+ {const L=LIBP('bark6');if(L)EHIGH.LIBMEAN.bark6=L.mean>0?L.mean:.5;}
+ BIO.bucket('bark6',M.bark[6],{label:'Beech bark (lichened)',uvScale:[1.6,2]});
+ BIO.def('beech',SW.beech&&BIO.geo.cells?BIO.geo.cells(BIO.geo.clump(),{n:3,scale:.75}):BIO.geo.clump(),M.beech,{attrs:['aN'],label:'Combed beech leaves'});}
 })();
