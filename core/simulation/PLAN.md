@@ -647,7 +647,8 @@ Locus is already closest to the target. Make it the mobility reference:
   {food: share})` has a town's households buy the named foods at their share (an imported food at its ration), the rest by
   the warehouses' stock. `SIM.items({stagger})` has each household buy its days of food times 1 +- stagger (a hash of the
   home), so the restocking rounds drift apart. The governor's `exported: false` and `pool: [settlements]` let a village work to
-  its town's need (the isle demo's hamlets, core/hamlet H5). A governed maker of
+  its town's need (the isle demo's hamlets, core/hamlet H5). `SIM.site` and `SIM.stockpile` (2026-11-02, SCHEMA.md "The books"): resource sites keyed
+  to world records, stockpile policies; `77-sim-7-ledger.js` the accounting contract. Batch recipes and `SIM.blockedReport` (2026-11-02, Phase 2's first slice). A governed maker of
   several goods makes none over target while one is under; `cart.urgent` (opt-in) fetches a good its buyers went short of,
   the shelves holding under that many days of it, in any amount. They run as SIM.step's last
   act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as

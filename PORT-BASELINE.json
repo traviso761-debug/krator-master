@@ -489,12 +489,12 @@
    "sha256": "d97f6da704acfa3275efe886af974432c66101fe058450aebc529150f0a47da4"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 6330864,
-   "sha256": "eec120b34cfc3f9787418b0e49a0155287d843e889e4648f73ce42bc0b676dec"
+   "bytes": 6352637,
+   "sha256": "c4c63b86d39d122e3194bce55830d1649c115e751b64dfd9802f3b70619aa18d"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 6331122,
-   "sha256": "8916070151e7b679487fce8bcebc1322b9919e096e7fc5fffbf4f5907b50ad6b"
+   "bytes": 6352895,
+   "sha256": "70c8b86f6e248f8072300c1cb4bb4389ef39aeccbec10587fc4cf317f1883b68"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -513,8 +513,8 @@
    "sha256": "0e76ea1494937e483169b7dfe6b1b13a96d1dfc4cf401d1c2736559aa5f9b5e6"
   },
   "settlements/dhelv/dist/dhelv.html": {
-   "bytes": 2308647,
-   "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
+   "bytes": 2320552,
+   "sha256": "933cb04608dc167dc34d505cefffa5368da5cd13896d880da08aa15a3e1b5511"
   },
   "settlements/girder/girder-hero.html": {
    "bytes": 9885121,
@@ -537,8 +537,8 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 5802152,
-   "sha256": "f189eec06fa06f3a30e95e643d56b3f49b07497af9275f0debfd2dede9c78194"
+   "bytes": 5823919,
+   "sha256": "45be4df539e12a4caefdcafead22c53d78e973a129a394c40c3f395d7f85b46c"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1269445,
@@ -601,8 +601,8 @@
    "sha256": "53fa4de1d196cb410fea7d9376552b636555124e84c7e6b7d243225beafed0f6"
   },
   "settlements/mungo/dist/mungo.html": {
-   "bytes": 4110014,
-   "sha256": "51ba0e821635593d6e520805a8e87fa04f2623f89f431ecb526cfc46f22b1841"
+   "bytes": 4121919,
+   "sha256": "d7138d649f0dd2e9913d4adbc80df1379a84318f10ae1bd893f5333eda941471"
   },
   "settlements/noahs-regret/dist/noahs-regret.html": {
    "bytes": 12117800,
@@ -757,8 +757,8 @@
    "sha256": "73d1ca7691431ae8e1fafd3a7a7372cb281a41160ceb3b7e1746e255b992182c"
   },
   "settlements/shade/dist/shade.html": {
-   "bytes": 5103214,
-   "sha256": "e79eac17d4701fe350c741e0dcd4ba8a7dedbad8132a155abd2f7b5cfd000fc3"
+   "bytes": 5115163,
+   "sha256": "0fc1cc7e06e52f066441f5f4eb5d58e90b34eb0e5e162635aac3be5f3c8291d5"
   },
   "settlements/span/dist/span.html": {
    "bytes": 2150014,
@@ -769,8 +769,8 @@
    "sha256": "a4daa0698fb4a550c3cd4491ee9ac7ff1a9df9109b111a4bea16ba5332be658d"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 19548261,
-   "sha256": "a71ebf4fd50127a533bc6e0e3ebfa22924b8c856a3838a0a7af4eed783b12692"
+   "bytes": 19551305,
+   "sha256": "d156e595b2f8917759bd425ef0934e5baaf08202ca02702aa6ad99a18a7811bd"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3614742,

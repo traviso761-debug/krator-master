@@ -167,7 +167,7 @@
 - [ ] **Racks wear nothing:** the dockers' hooks and the soldiers' spears and shields are drawn from a rack (core's
       `toolRack`), so no smith or dockyard makes or replaces them; the fishers' nets last 1,500 worked hours, so the
       weavers' net places make almost nothing (the governor's floor, `minBy`).
-- [ ] **Core's treat is one item a wealth:** the last of `treat.items` whose least wealth a person has, so a class buys
+- [x] **Core's treat was one item a wealth** (2026-11-01: `treat.mix`, a person buys any treat its wealth reaches, by a hash of the person and the day): before, the last of `treat.items` whose least wealth a person has, so a class buys
       one treat; the isles spread each class's wealth a little a person (`items.wealthSpread`) so the middle splits
       between mats and lamps and the rich between lamps and jewellery. The poor drink kava and nothing else.
 - [x] **Core counted a good nobody could buy as never running out** (a producer of several goods picks the one with
@@ -200,11 +200,10 @@
       hours with mats and hats (12,000 of each by day 21: a governed maker makes nothing over target while one of its goods
       is under). Valapo opens with 1,000 cloth (the target is about 1,600); both towns keep a shelf of 400 lamps (`least`, and the opening lot).
 - [x] **The food supply-line check failed over 21 days** (before 2026-10-26): it passes since the abstract day.
-- [ ] **Three small shortfalls over 21 days** (2026-10-26; the 7-day week test passes): Kautoa 9 lamps on day 14, and
-      Valapo, unwatched, 31 and 49 kava on days 29-30. The treats are bought about 25% more unwatched than watched.
+- [x] **The small shortfalls over 21 days** (gone 2026-11-01): with the treats mixed and a kava shelf of 600, 21 days each way pass every week-test check.
 - [ ] **Contemplation settles near 60:** few choose worship in their free hours (the temples, shrines and squares are
       few and far for most).
-- [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),
+- [x] **A pot did not feed the cooking** (2026-11-01: core's `meal.pot`, `meal.noPot`; the isles 0.7, what a kitchen without its pot cooks is worth, booked `potless`): a household without its pot still cooks (core's meal does not look for one),
       and a cook without a cooking pot works at half pace like any tool. Once needs run, a pot-less kitchen should cook
       worse meals.
 - [x] **Core asked for a tool only when it broke** (the page asked again each hour, `ISLE.simToolRetry`): core's
@@ -238,12 +237,7 @@
 - [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
       core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
       until then so no other page moves.
-- [ ] **Food, clothes and soldiers' armour are items; tools, injuries and household goods are not yet** (PLAN.md 9b, the
-      wear plan). The clothes are one set count for everyone (Voth's rises with class) and wear out in 90-120 days
-      (Voth's owner rule is a year or more: the owner's call). The smithies make only leather armour until the iron mine
-      (a hinterland village, core/hamlet H5) brings ore; Kautoa's weavers make nothing (the cotton is Valapo's, and the
-      garments come by canoe).
-- [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
+- [x] **Tools, injuries, household goods and needs** were stale entries: all built on 2026-10-19 (PLAN.md 9b); the owner's call on the clothes' 90-120 day life stands open there.
 - [x] **The second morning's buying wave** (gone since 2026-10-26: the stores open with 1 to 3.5 days). Every house opened with 1.5 to 3 days of food, so on day 2 most of them bought at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.
@@ -256,10 +250,16 @@
       economies are as before.
 - [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
       open world draws the buildings (88h) but no villagers.
-- [ ] **The production and the map run apart:** the lumber village's felling (88h, on the world clock) is not its sim's
-      timber, and the mine's node and the salt field are not drawn down. PLAN.md section 5's resource records are next.
-- [ ] **Iron goes abroad:** Valapo smelts the mine's ore (two ore and one charcoal an iron) and the Hykkousoi buy it; Kautoa
-      does not yet work it into tools (the stone tools stay; iron tools are owed, PLAN.md 9b).
+- [ ] **The felling and the timber still run apart** (the rest closed 2026-11-02, PLAN-ECONOMY.md Phase 1): each village's
+      works now draw on its map record by that record's id, the grade setting the yield, and the sim reports what each gave
+      (`SIM.sitesReport`, the ledger reconciles it). They deplete (the owner, 2026-11-02, over the rule of 2026-10-18;
+      `ISLE.TUNE.sim.hamlets.sites`: an ore node does not come back, the rest regrow). But the stumps the stand shows (88h) are a pure function of the world
+      clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
+      forbids for now. Lot ages for perishables are not built: nothing needs them yet.
+- [ ] **Iron tools share the stone tools' good:** the chain runs to its end (2026-11-02, PLAN-ECONOMY.md Phase 2): Valapo smelts
+      the mine's ore in batches, the lakatoi carries the iron, and every fourth Kautoan smithy works it with charcoal into
+      `tools`, in place of the armour it made. The good is still sold as `stone tool` (PLAN.md 9b owes iron tools their own
+      line). A mine that empties ends Valapo's iron: nothing yet opens a new node or moves the village.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).
