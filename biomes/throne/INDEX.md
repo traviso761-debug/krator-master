@@ -45,3 +45,23 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `99-host-take.js` | 17 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (145) |
 | `99-host-tz-core.js` | 3 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| ashdesert | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-ash.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 45 |
+| blast | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-blast.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 45 |
+| caldera | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-caldera.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 63 |
+| cloudforest | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-mist.js, 86-host-cloud.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 59 |
+| delta | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-delta.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 50 |
+| frontier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-frontier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 59 |
+| glacier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-glacier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 63 |
+| isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 87 |
+| kipuka | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 49 |
+| penitentes | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-pen.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 39 |
+| savanna | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-savanna.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 40 |
+| tube | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-tube.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 58 |
+| vents | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-vents.js, 87g-host-bismuth.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 79 |

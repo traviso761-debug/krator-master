@@ -97,8 +97,12 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hearths/dist/hearths-crystals.html": {
-   "bytes": 1382210,
-   "sha256": "181659b00e7dc81af1ccc7d63c9a566ad2be7409648a6b7f578fa0747a451b4a"
+   "bytes": 1404235,
+   "sha256": "b963a8c9ac0d0fa88509944c6ae3bbb38e8a3551abebd2960acee66c587623e8"
+  },
+  "biomes/hearths/dist/hearths-hold.html": {
+   "bytes": 1404210,
+   "sha256": "d2a04e0bbd543c8c820f630c81187a0903d90e5862c794ee9ce65e13b7b69370"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
    "bytes": 5125745,
@@ -221,8 +225,8 @@
    "sha256": "bdf8f925d628b7cb94c58bce78129520bc7e5a26b997d2edb616341965804100"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 7584857,
-   "sha256": "ce10f40c5ee1574cf2dc123964e4a40cb643980889d0ae4fe790086e2660e241"
+   "bytes": 7851292,
+   "sha256": "5213c2ebb3093cf6d4122cc5f4beba18a4f317a781118370a7e622eb0a5488ac"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8335672,
@@ -325,8 +329,8 @@
    "sha256": "e20494466e216b835a4fa2ba296efd1dc479ace2600af38c669573fd9e2f48e6"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1261159,
-   "sha256": "44815abb8ad0e9de68c537967d84a1ec225675f047a90037606747838355e33f"
+   "bytes": 1351026,
+   "sha256": "ec81333ac64dad6aa6d696bb5a3f81a8544e16135acd8c2439dd69838be35d61"
   },
   "biomes/throne/dist/throne.html": {
    "bytes": 1188419,

@@ -19,4 +19,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-biome-scablands-pools.js` | 9 |  |
 | `87-host-erratics.js` | 5 |  |
 | `87a-host-pools.js` | 1 |  |
-| `99-host-take.js` | 15 | the budgets (the kit's) (28); the overlay's checks (30); the page, handed to the host (106) |
+| `87g-host-geodes.js` | 8 |  |
+| `99-host-take.js` | 19 | the budgets (the kit's) (34); the overlay's checks (36); the page, handed to the host (133) |

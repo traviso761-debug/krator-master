@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""Concatenate a station's fragments and the core (filename order) into dist/hearths-<station>.html (PLAN.md section 18).
+"""Concatenate a station's fragments and the core (filename order) into dist/hearths-<station>.html (PLAN.md sections 18, 19).
 
 The Hearths are a shared kit of life read in place by host kits (PLAN.md section 0); src/ is that life and is NOT on a page
 here (oidong's station reads it). This build is the one page the kit has while its host (biomes/riftrim) has no build:
-the Cave of Crystals, the Hearth hold's drained storey. When riftrim has a build the station moves there unchanged.
+the Hearth hold's two stations: the Cave of Crystals (its drained storey) and its active storey. When riftrim has a build they move there.
 
   stations/<name>/00-head.html     page shell, opens <script>
   10..47                           CORE (biome core, rand, tags, space, the cavern, KSPELEO, KKARST, KTHERM, KGROUND)
-  44z-host-site                    the station's site (scale model 5.1; the network's arguments)
-  46-hearths-hold                  the cave's records and the hold's massing ([G data])
-  47-host-stage                    HOST: renderer, light, the cavern built, BIO.init
-  84..98                           HOST (the rock, the crystals, the air, the water, the massing view)
+  44z-host-site                    the cave's site (scale model 5.1; the network's arguments, the hold's numbers) ([G data])
+  44zs-host-station                the station: which storey the page looks at (stations/hold replaces it)
+  48-hearths-hold                  the cave's records, both storeys, the dress and the hold's massing ([G data])
+  49-host-stage                    HOST: renderer, light, the floor under the eye (KCAVERN.floorFn), BIO.init
+  84..98                           HOST (the rock on KCAVERN.drawRock, the crystals, the hypogene dress, the massing view, the air, the water)
   99-host-take                     the views and the checks, KHOST.take
   99-tail.html                     closes <script>
 
-  python3 build.py                     dist/hearths-crystals.html (the one station)
+  python3 build.py                     dist/hearths-crystals.html (station 1, the Cave of Crystals)
   python3 build.py --station crystals  the same
+  python3 build.py --station hold      dist/hearths-hold.html (station 2, the hold's active storey: PLAN.md section 19)
 
 The station's fragments never reference a host global except through BIO.host; build.py greps for the forbidden names.
 """
@@ -67,11 +69,17 @@ import json as _json
 _sd=os.path.join(HERE,'stations',STATION)
 if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
 with open(os.path.join(_sd,'station.json'),encoding='utf-8') as _fh: SJ=_json.load(_fh)
-PATH={f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)}
+# "base": another station whose fragments this one starts from (the hold takes the crystals' cave and host), its own replacing them by name
+PATH={}
+if SJ.get('base'):
+    _bd=os.path.join(HERE,'stations',SJ['base'])
+    PATH.update({f:os.path.join(_bd,f) for f in os.listdir(_bd) if re.match(r'\d',f)})
+PATH.update({f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)})
 # core/terrain, opt-in by name (core/README.md "terrain/"): 39 KCAVERN (the voids, meshed by chunk), 39b KSPELEO (the crystals' records), 39c KKARST
 # (the hypogene network), 43 KGROUND (the rock's layers, triplanar on the walls), 47 KTHERM (the storey's warmth over the feeders) (PLAN.md 18a)
-CORE_TERRAIN=['39-core-cavern.js','39b-core-speleo.js','39c-core-karst.js','43-core-ground.js','47-core-therm.js']
+CORE_TERRAIN=['39-core-cavern.js','39b-core-speleo.js','39c-core-karst.js','39d-core-cavern-floor.js','43-core-ground.js','47-core-therm.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
+PATH.setdefault('39e-core-cavern-draw.js',J('core','terrain','host','39e-core-cavern-draw.js'))   # KCAVERN.drawRock (39d: the floor under the eye)
 # the biome core from core/biome: the host binding, the records, the export (no flora: nothing grows in the drained storey)
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))

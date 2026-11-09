@@ -12,14 +12,19 @@ const AIR=(function(){const out={cones:[],steam:null,water:[]};
  CAVE.throats.forEach(T=>{const len=T.ground-STOREY_Y+3,o={len,rad:T.r+len*.07,opacity:.06,on:0,off:40,color:GOLD?0xffd890:0xfff1da,glow:4};
   const c=ATMOS.spotCone(T.c[0],T.ground+1,T.c[1],[0,-1,0],o);c.userData.probeSkip=true;c.userData.inspectLabel='Daylight down the vent';out.cones.push({c,o});});
  tick(function ventLight(){const k=daylight(hourNow());out.cones.forEach(q=>{q.o.opacity=Math.max(1e-4,.06*k);});if(VENT_SUN)VENT_SUN.intensity=3.2*k;});
- // ---- the steam off the hot water and out of each well's mouth
- const E=[];CAVE.wells.forEach(W=>{E.push([W.c[0],W.level+.4,W.c[1],'steam'],[W.c[0],W.mouth-1,W.c[1],'steam'],[W.c[0],W.mouth+.5,W.c[1],'steam']);});
+ // ---- the steam: off the scalding pools (KTHERM over the feeders), up each feeder well to its mouth, and up the fumarole's shaft
+ const E=[],SC=SITE.therm.scald,WL=CAVE.water?CAVE.water.level:SITE.net.table;
+ (CAVE.water?CAVE.water.pools:[]).filter(p=>p.temp>=SC).forEach(p=>{for(let k=0;k<3;k++){const a=k*2.1;E.push([p.c[0]+Math.cos(a)*p.r*.4,WL+.3,p.c[1]+Math.sin(a)*p.r*.4,'steam']);}});
+ CAVE.wells.forEach(W=>{E.push([W.c[0],W.level+.4,W.c[1],'steam'],[W.c[0],W.mouth-1,W.c[1],'steam'],[W.c[0],W.mouth+.5,W.c[1],'steam']);});
+ if(CAVE.fumarole){const F=CAVE.fumarole;for(let y=F.y0+.5;y<F.ground;y+=6)E.push([F.c[0],y,F.c[1],'steam']);}
  if(E.length){out.steam=ATMOS.smoke(E,{n:22});if(out.steam){out.steam.userData.probeSkip=true;out.steam.userData.inspectLabel='Steam off the hot water';}}
- // ---- the hot water in each well
+ // ---- the water: the table over the active storey's floor, one still surface flooded from its pools (core/water's shore grid on the floor read
+ //      off the cavern: WATER_BED, 49), milky green-grey with sulphur
  const lin=c=>new THREE.Color(c).convertSRGBToLinear();
- CAVE.wells.forEach(W=>{const r=W.r+.8,box=[W.c[0]-r,W.c[1]-r,W.c[0]+r,W.c[1]+r];
-  const S=WATER.open({name:W.name,level:W.level,field:.04,bounds:box,bed:()=>W.level-6,bedBox:box});
-  const D=WATER.draw(S,{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:0,surf:false,breakers:false,pick:true,shallow:lin(0x9aa894),deep:lin(0x56685e)});
-  D.mesh.userData.inspectLabel=W.name;D.mesh.userData.probeSkip=true;out.water.push(D);});
+ if(CAVE.water&&WATER_BED){const Wt=CAVE.water,b=Wt.box;
+  const S=WATER.open({name:'The water table (the active storey, warm, sulphurous)',level:Wt.level,field:.04,bounds:b,bed:WATER_BED,bedBox:b,
+   shore:{cell:2,band:12,seeds:Wt.seeds.concat(CAVE.wells.map(w=>w.c)),land:(x,z)=>WATER_BED(x,z)>Wt.level+.2}});
+  const D=WATER.draw(S,{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:0,surf:false,breakers:false,pick:true,shallow:lin(0xa8b4a0),deep:lin(0x56685e)});
+  D.mesh.userData.inspectLabel=S.name;D.mesh.userData.probeSkip=true;out.water.push(D);}
  return out;})();
 window._air={cones:AIR.cones.length,steam:!!AIR.steam,water:AIR.water.length};

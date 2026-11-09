@@ -18,19 +18,23 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-**The station's fragments** (`stations/crystals/`, the one page this build writes: PLAN.md section 18). `tools/audit_port.py` and
+**The stations' fragments** (`stations/crystals/`, and `stations/hold/` which takes them as its base: PLAN.md sections 18, 19). `tools/audit_port.py` and
 `tools/check_port.py` read `src/` and `targets/` only, so these tags are kept here by hand; the two `[G data]` fragments were checked
 against `check_port.py`'s browser rules and its `||` rule on 2026-11-03 (none).
 
 | Fragment | Tag | Note |
 |---|---|---|
 | `stations/crystals/00-head.html`, `99-tail.html` | [web] | page shell |
-| `stations/crystals/44z-host-site.js` | [G data] | the site, the network's arguments, the crystal kinds, the hold's numbers |
-| `stations/crystals/48-hearths-hold.js` | [G data] | the cave (KKARST, KCAVERN, KSPELEO, KTHERM), the hold's massing (`HOLD`), the hazards' records |
+| `stations/crystals/44z-host-site.js` | [G data] | the site, the network's arguments, the crystal kinds, the hold's numbers (both storeys) |
+| `stations/crystals/44zs-host-station.js`, `stations/hold/44zs-host-station.js` | [G data] | the station: which storey the page looks at |
+| `stations/crystals/48-hearths-hold.js` | [G data] | the cave, both storeys (KKARST, KCAVERN, KSPELEO, KTHERM), the hold's massing (`HOLD`), the hazards' and the water's records |
+| `stations/crystals/85b-host-speleo.js` | [draw] | the active storey's hypogene dress (KSPELEO.mesh), one geometry |
 | `stations/crystals/49-host-stage.js` | [web] | renderer, lights, the floor the eye stands on, `BIO.init` |
 | `stations/crystals/84-host-rock.js` | [G shader] | the cavern's chunks on KGROUND's layers |
 | `stations/crystals/85-host-crystals.js` | [draw] | the crystals instanced; the fake scattering (KHOOK 'selenite') is [G shader] |
 | `stations/crystals/86-host-massing.js` | [draw] | the reserved volumes' outlines (`?massing=1`) |
 | `stations/crystals/89x-host-air.js` | [G native] | core/atmos and core/water bound: the vents' light, the steam, the hot water |
 | `stations/crystals/89z-host-build.js` | [web] | the registry, the hazards registered, the bake |
-| `stations/crystals/99-host-take.js` | [web] | the views, the inspector, the probe's checks |
+| `stations/crystals/98u-host-eye.js` | [web] | where a view may stand (eyeAt), the massing view's switch |
+| `stations/crystals/98v-host-views.js`, `stations/hold/98v-host-views.js` | [web] | each station's views |
+| `stations/crystals/99-host-take.js` | [web] | the inspector, the probe's checks |

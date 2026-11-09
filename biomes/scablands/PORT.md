@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 25 (54%) | 0 (0%) | 0 (0%) | 16 (35%) | 5 (11%) |
+| KB | 28 (49%) | 0 (0%) | 0 (0%) | 16 (28%) | 13 (23%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,7 +16,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/72-biome-scablands-pools.js` | 8.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87-host-erratics.js` | 5.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87a-host-pools.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/99-host-take.js` | 14.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/87g-host-geodes.js` | 7.9 | [draw] | 1 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | the geodes: records on core/terrain's KGEODE ([G data]), drawn by KGEODE.draw and KCAVERN.drawRock |
+| `src/99-host-take.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes
 

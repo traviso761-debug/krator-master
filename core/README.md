@@ -396,6 +396,25 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   `CALCITE` (Mississippi Valley: calcite, celestine) and `VUG` (thundereggs, rhyolite vugs). Beams and blocks block a walker.
   The old presets' records, meshes and blocks are byte-identical (`test-speleo.js` holds their digests). `KKARST`'s hypogene kind
   takes `crystal: {storeys, speleo}` to dress the storeys that grew megacrystals with a crystal preset.
+- **A cave page's floor and rock** (2026-11-09, lifted from the Hearths' Cave of Crystals for every cave page): `KCAVERN.floorFn(C, {from,
+  to, step, fallback})` (`39d-core-cavern-floor.js`, `[G data]`, `test-cavern-floor.js`): the lowest open point of a column read off the
+  cavern's `sdf` on a cached 1 m lattice, bilinear (a cave page's camera floor, its BIO ground, a water's bed); `KCAVERN.openAt(C, x, y, z,
+  pad)`. `KCAVERN.drawRock(C, {THREE, material, tile, attrs, weight, ground})` (`host/39e-core-cavern-draw.js`): the chunks merged into one
+  mesh per tile with the page's per-vertex weights (its KGROUND layers' masks) and the occlusion as vertex colour; `ground: 'drop'` leaves
+  out the ground's triangles inside an opening. *Adopting it:* list both after `39-core-cavern.js` (`tools/fragment_needs.json`), then
+  `const floorH = KCAVERN.floorFn(C, {from: <under the lowest floor>, to: <over the highest>, fallback})` and
+  `scene.add(KCAVERN.drawRock(C, {THREE, material, attrs: ['aA'], weight: (x, y, z, nx, ny, nz, ch, i, w) => { w[0] = ...; }}).group)`.
+- **Geodes** (`KGEODE`, 2026-11-09, the scablands' coulee first: `biomes/CRYSTAL-CAVES-5.1.md` site 3): `39f-core-geode.js` (`[G data]`,
+  `test-geode.js`): `KGEODE.scatter({box, world, cell, bands: [{y0, y1, id}], ground, normal, near, wall, loose, r, split, accept})` puts
+  geodes on a cell lattice hashed by (world, cell, salt): **wall** ones in a band where the ground is steep (broken open, the face out
+  along the ground's normal), **loose** ones on gentler ground under a band; `KGEODE.block(C, {id, x, z, ground, face, w, d, h, r, ph})`
+  adds a walk-in geode to a KCAVERN: a fallen block (a `mass`), its pocket (a `hall`) and the broken face's `opening`;
+  `KGEODE.line(C, block, {n, len})` lines the pocket with amethyst points marched from its centre to its rock (KSPELEO reads a void
+  inside a mass as under the sky, so it does not dress one). `host/39g-core-geode-draw.js`: `KGEODE.draw(recs, {THREE, points, maps,
+  lamp, tint, colors})`, instanced nodules, shells, rind faces, druse bowls and crystals (a KHOOK'd fake glow; a thin-film iridescence for
+  aura and bismuth). `KGEODE.MINERALS` (amethyst, quartz, celestine, chalcedony, watermelon, aura, bismuth): each a crust habit and a rind
+  palette; a host passes `minerals: {id: weight}` to `scatter` (its rock's palette). *Adopting it:* list both after
+  `39-core-cavern.js`; draw the block on `KCAVERN.drawRock` (the pocket's own primitive as the rind's weight).
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 

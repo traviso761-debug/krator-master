@@ -53,7 +53,7 @@ ABOUT = {
     'kits/scyvoi': "The Scyvoi kit: the salamander riders of the crater drylands, gers and Tibetan tents in polychrome and appliqué. Five small and five large tents (gers, a bell tent, goat-hair tents, a white appliqué tent and a gur, two Tibetan halls, an appliqué tent), the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished from the catalog's Scyvoi culture (core/furnish) with a cut-away; salamanders (riding, war, draught), goats, bison and cattle from kits/fauna with life data and their pens, chariots and carts, tethering; and the Baelu, a fitted-stone fire redoubt. Its engine (the KIT record, materials, tent kit, scene) is vendored by the Desert and Ash Nomads kits; a verified kit sheet.",
     'kits/desert-nomads': "The Desert Nomads kit (catalog culture nomad, the Eastern Nomads): the camel nomads of the eastern high desert and the eastern abyss. Black goat-hair tents, khaimas, square hair-cloth tents, white caidal tents, a Tuareg leather tent, the Saharan pavilion (austere outside: brown or white with simple contrasting bands; Moroccan and Arabian inside, muted), the sheikh's tent and guest pavilion, the seer's tent, the hookah tent, smithy, hidemaker and supply tents; camels (riding, war, pack), horses, riding and pack lizards with tack, a camel cart and litter, goats, sheep, cattle and emus in zaribas and folds; forked from kits/scyvoi; a verified kit sheet.",
     'biomes/dambasins': "The dam basins, an overlay (biomes/dambasins/PLAN.md): the north basin's drained dam-lake beds, on the Ancient Port kit read in place (Hook's pattern) and core/terrain's KBASIN. Station 1 (targets/port): the old port on the 900 m line, ruined, dry, the bathtub ring under it and the fast-drain slope below, its moored hulks grounded, pitched and listed in their berths. Adapted copies of the kit's terrain and camera (the hooks belong upstream). Verified: build.py, verify.py --assert.",
-    'biomes/hearths': "The Hearths, a shared kit of life read in place by host kits (src/: the hearth trees, read by biomes/oidong), and its one page while its host (biomes/riftrim) has no build: the Cave of Crystals (stations/crystals, dist/hearths-crystals.html; PLAN.md section 18), the Hearth hold's drained storey at 525,1400, a Naica on core/terrain's KKARST (hypogene), KCAVERN, KSPELEO (selenite beams and the bladed floor, instanced), KTHERM and KGROUND, lethal heat on core/hazard; the hold's chambers, shelves, galleries and approaches massed and empty as plain records (CAVE.HOLD; ?massing=1). Verified: build.py, verify.py --assert.",
+    'biomes/hearths': "The Hearths, a shared kit of life read in place by host kits (src/: the hearth trees, read by biomes/oidong), and its pages while its host (biomes/riftrim) has no build: the Hearth hold at 525,1400, one cave of two storeys on both: the Cave of Crystals (stations/crystals, dist/hearths-crystals.html; PLAN.md section 18), the drained storey, a Naica on core/terrain's KKARST (hypogene), KCAVERN, KSPELEO (selenite beams and the bladed floor, instanced), KTHERM and KGROUND, lethal heat on core/hazard; and the hold's active storey (stations/hold, dist/hearths-hold.html; section 19), warm water over every floor, scalding at the feeders, gypsum chandeliers, the fumarole; the hold's chambers, shelves, fields, galleries and approaches on both storeys massed and empty as plain records (CAVE.HOLD; ?massing=1). Verified: build.py, verify.py --assert.",
     'biomes/scablands': "The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's flood tore down, on the n semiarid kit read in place (its build(overlay=...)) and core/terrain's KSCOUR. Station 1 (dist/coulee.html): a coulee and dry falls on the west breach, its walls stepped by the basalt flows, a plunge-pool lake, potholes holding rain, bars with giant current ripples, streamlined loess islands.",
     'biomes/nsemiarid': "The northern semiarid country, the walking steppe (biomes/nsemiarid/PLAN.md): the north basin round the drained dam lakes, Central Asian in basis (pistachio parkland, crescent saxaul, spring planes, Judas trees and almonds, the feral fruit forest of apple, apricot, pear and walnut, golden poplar on the lake margins, dead on the salt behind) and Krator's own (the dandelion frill, the helicopter trumpet, the drift lantern); everything travels: tumblers and their drifts, crawlers, striders, bead chains, roll-eggs, seeds aloft downwind, and the owner's small and weird in dew gardens. The showcase: an old lake bed with KBASIN's strandlines and bathtub ring down to a salt lake, the steppe, the foothills, the rainy upland. Trees as variants. Verified: build.py, verify.py --assert.",
     'biomes/ringisles': "The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert.",
@@ -206,8 +206,9 @@ def build_index(build, write=True):
             lines.append('| `%s` | %s%s | %s |' % (f, kb(size), ' **big**' if size >= BIG else '',
                                                   '; '.join([t for t in sections(p) if not t.startswith('= (')][:10])))
         lines += ['']
-    lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
-    lines += frag_table(build, src, 'src')
+    if os.path.isdir(src):
+        lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
+        lines += frag_table(build, src, 'src')
     tdir = os.path.join(d, 'targets')
     if os.path.isdir(tdir):
         lines += ['', '## targets/', '',
@@ -219,10 +220,25 @@ def build_index(build, write=True):
                 fs = [f for f in os.listdir(td) if f[0].isdigit()]
                 lines.append('| `%s` | %s | %s |' % (t, ', '.join('`%s`' % f for f in sorted(fs)),
                                                     kb(sum(fsize(os.path.join(td, f)) for f in fs))))
+    sdir = os.path.join(d, 'stations')
+    if os.path.isdir(sdir):   # a station's fragments (python3 build.py --station <name>; biomes/hearths builds from them alone)
+        lines += ['', '## stations/', '',
+                  'Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.', '',
+                  '| Station | Fragments | KB |', '|---|---|---|']
+        for t in sorted(os.listdir(sdir)):
+            td = os.path.join(sdir, t)
+            if os.path.isdir(td):
+                fs = [f for f in os.listdir(td) if f[0].isdigit()]
+                lines.append('| %s | %s | %s |' % (t, ', '.join('%s' % f for f in sorted(fs)),
+                                                    kb(sum(fsize(os.path.join(td, f)) for f in fs))))
     if write:
         with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
             fh.write('\n'.join(lines) + '\n')
-    sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    if os.path.isdir(src):
+        sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    else:   # a build whose page is its stations' alone (no src/): their fragments count
+        sizes = [fsize(os.path.join(sdir, t, f)) for t in sorted(os.listdir(sdir)) if os.path.isdir(os.path.join(sdir, t))
+                 for f in os.listdir(os.path.join(sdir, t)) if f[0].isdigit()]
     sizes += [fsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes) if sizes else 0, outs   # a build whose fragments all live elsewhere (Hook on the Port kit)
 
@@ -236,13 +252,13 @@ def main(argv=()):
     for top in ('settlements', 'kits', 'biomes', 'openworld'):
         for name in sorted(os.listdir(os.path.join(ROOT, top))):
             b = '%s/%s' % (top, name)
-            if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and os.path.isdir(os.path.join(ROOT, b, 'src')):
+            if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and (os.path.isdir(os.path.join(ROOT, b, 'src')) or os.path.isdir(os.path.join(ROOT, b, 'stations'))):
                 builds.append(b)
     builds += CORE_BUILDS
     if only:
         bad = [b for b in only if b not in builds]
         if bad:
-            sys.exit('make_index: not a build with src/: ' + ', '.join(bad))
+            sys.exit('make_index: not a build with src/ or stations/: ' + ', '.join(bad))
         for b in only:
             build_index(b)
         if '--root' not in argv:

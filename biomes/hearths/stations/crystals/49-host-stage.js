@@ -28,18 +28,19 @@ const WELL_GLOW=CAVE.wells.map(W=>{const p=new THREE.PointLight(0xff9a50,1.6,34,
 /* the visitor's lamp: a warm white spot riding the camera (?lamp=0 off) */
 const LAMP=Q.get('lamp')==='0'?null:(function(){const s=new THREE.SpotLight(0xfff2e2,3.2,110,.5,.55,1.2);s.position.set(0,.25,0);camera.add(s);s.target.position.set(0,-.1,-1);camera.add(s.target);return s;})();
 
+/* the scalding pools' steam lit faintly from below (at most two: the hottest), the station's own light on the active storey */
+const POOL_GLOW=(CAVE.water?CAVE.water.pools:[]).filter(p=>p.temp>=SITE.therm.scald).sort((a,b)=>b.temp-a.temp).slice(0,2).map(p=>{
+ const l=new THREE.PointLight(0xffb070,1.1,40,1.6);l.position.set(p.c[0],p.level+2,p.c[1]);scene.add(l);return l;});
+
 // ---------------------------------------------------------------- the floor the eye stands on (and BIO's ground)
-// The lowest open point at (x, z) from just under the water table up through the drained storey, read off the cavern's sdf on a 1 m lattice (cached);
-// a column of solid rock answers the storey's floor. The water stands in the wells (waterH).
-const STOREY_Y=SITE.net.levels[0].y;
-const FLOOR=new Map();
-function floorAt(i,j){const k=i*131072+j;let h=FLOOR.get(k);if(h!==undefined)return h;const x=i,z=j;h=STOREY_Y;
- for(let y=SITE.net.table-3;y<-2;y+=.5)if(CAVE.C.sdf(x,y,z)>.05){let lo=y-.5;for(let s=0;s<4;s++){const m=(lo+y)/2;if(CAVE.C.sdf(x,m,z)>.05)y=m;else lo=m;}h=y;break;}
- FLOOR.set(k,h);return h;}
-function terrainH(x,z){const i=Math.floor(x),j=Math.floor(z),u=x-i,v=z-j;
- return mix(mix(floorAt(i,j),floorAt(i+1,j),u),mix(floorAt(i,j+1),floorAt(i+1,j+1),u),v);}
-function waterH(x,z){for(const W of CAVE.wells)if(Math.hypot(x-W.c[0],z-W.c[1])<W.r+.3)return W.level;return -1e9;}
-const groundEye=(x,z)=>Math.max(terrainH(x,z),waterH(x,z));
+// core/terrain's KCAVERN.floorFn: the lowest open point of the column from the station's own storey up (STATION.eye), read off the cavern's sdf on a
+// 1 m lattice (cached); a column of rock answers that storey's floor. The water's bed reads from under the table, rock high: the water stands
+// wherever the bed is under the table (waterH), which the eye stands on
+const STOREY_Y=STATION.storey===0?SITE.net.level:SITE.net.levels[STATION.storey-1].y;
+const terrainH=KCAVERN.floorFn(CAVE.C,{from:STATION.eye.from,to:STATION.eye.to,fallback:STOREY_Y});
+const WATER_BED=CAVE.water?KCAVERN.floorFn(CAVE.C,{from:CAVE.water.level-3,to:CAVE.water.level+.5,fallback:1e3}):null;
+function waterH(x,z){if(!WATER_BED||!CAVE.inB(x,z))return -1e9;return WATER_BED(x,z)<CAVE.water.level-.02?CAVE.water.level:-1e9;}
+const groundEye=(x,z)=>Math.max(terrainH(x,z),STATION.storey===0||terrainH(x,z)<CAVE.N.table+1?waterH(x,z):-1e9);
 
 BIO.init({tags:'hearths',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:()=>0,obstacles:[],ticks:tick,seed:52,
  origin:[CAVE.centre].concat(CAVE.chambers.map(c=>[c.c[0],c.c[2]])),center:CAVE.centre,fields:{},register:REGISTER,err:reportErr,
