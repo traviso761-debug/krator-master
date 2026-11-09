@@ -552,7 +552,7 @@
     "biomes/highrift/tex/rock.hematite.mirror.albedo.webp": "7ff3e102a20f2d01f07ea15e15797f6e6381cb37cc13bc2ee56db0dc534db3c4",
     "biomes/highrift/tex/rock.tuff.albedo.webp": "2ce71dd4caf500d22ee426e7617488b2c9cf0ad54b7c2249068c384b0206b1d4",
     "biomes/highrift/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
-    "biomes/nhighlands/src/50-biome-nhighlands-species.js": "7e52635bc5c6f0e197f6685680ff264774a9618df2344f3081ee36d66ff5341d",
+    "biomes/nhighlands/src/50-biome-nhighlands-species.js": "08240f0a3541c8d97d6a08851e5cebe524685ae4b8bc802682315be8977edce4",
     "biomes/nhighlands/src/55-biome-nhighlands-trees.js": "47a3370596618b9e8a8f1ccf94e2c4faa596936ba70988cce45887efd9b8872b",
     "biomes/nhighlands/tex/beard.albedo.webp": "d16898ef9f7cc6ca821b6034709b64e0ed23312162dd0104827fe78f3326443c",
     "biomes/nhighlands/tex/larch.albedo.webp": "fc3bf4b72716554dc86fcd297fafa0f3173837362f8a2b145b03e851cf234165",
@@ -560,7 +560,7 @@
     "biomes/nhighlands/tex/nbark0.albedo.webp": "d83f5db583f6c524f08c73666837d179e76c2343991abbcb700cd827940af095",
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "1388ee8d5233c66a83cdced1668b8101d9bb02aa32d1e162bfd8ce0f633b53d2",
+    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
     "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
@@ -688,10 +688,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-mirror.html": "3b423e940e7cf9a65e0d4ffa48e60f608103cb51375327c056efdfd44ac228ed"
+    "biomes/highrift/dist/highrift-mirror.html": "5473764d4c44d115dd54996ccf0dcd372d877531d9bef986cbdd374ddaa6d846"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-mirror.html": "3b423e940e7cf9a65e0d4ffa48e60f608103cb51375327c056efdfd44ac228ed"
+    "biomes/highrift/dist/highrift-mirror.html": "5473764d4c44d115dd54996ccf0dcd372d877531d9bef986cbdd374ddaa6d846"
    }
   },
   "build.py --station wedge": {
