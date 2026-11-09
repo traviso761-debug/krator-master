@@ -184,6 +184,10 @@
    "bytes": 1435970,
    "sha256": "bde19b15dd720c9580493f15f8b4c3b8b6f0606f74ee388a7b8457d1b5a1dfb4"
   },
+  "biomes/godstep/dist/godstep.html": {
+   "bytes": 2795037,
+   "sha256": "68821a59c82db267963bd365398f09dbbe1f2e8b27564c86b0ea187cad849033"
+  },
   "biomes/godthrone/dist/godthrone-blood.html": {
    "bytes": 3408108,
    "sha256": "70a53552fa3cf168a363714a507e8a3108fa6831c25608ecaf6037828177c99b"
@@ -223,6 +227,10 @@
   "biomes/godthrone/dist/godthrone.html": {
    "bytes": 2656607,
    "sha256": "b27afd37c8867067bf071f80cf3ccc420b0b1bcf9b040fe40d6b81cd9c43d1f0"
+  },
+  "biomes/greenstep/dist/greenstep.html": {
+   "bytes": 11922826,
+   "sha256": "917151081725ecf82cd14bd3108ee7d4c20d47c55f40b838c8729569755a2051"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,

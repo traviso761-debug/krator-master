@@ -24,7 +24,7 @@ const STATION=(function(){const R=3000;
  const R3RUN=200,T4=2560;
  const VEIL_K=x=>smooth(650,320,Math.abs(x+10));   /* the prow's sheer stretch of the Great Veil, between and round the two lips (x ~ -200 .. 180) */      /* the Upper Citadel Scarp: two tiers (the hanging ledge between) to Terrace IV */
  function bench(x,z){const zl=lipZ(x),z3=r3Z(x);
-  if(z<zl){const dj=18*(fbm(x*.011,z*.004,79,2)-.5),d=Math.max(0,zl-z+dj*smooth(0,30,zl-z)),top=H3(x,zl);/* each front jogs in and out (dj): the colonnade's buttresses and bays. AT THE PROW (VEIL_K) the three fronts are one sheer wall, the
+  if(z<zl){const dj=18*(fbm(x*.011,z*.004,79,2)-.5)*(1-VEIL_K(x)),d=Math.max(0,zl-z+dj*smooth(0,30,zl-z)),top=H3(x,zl);/* each front jogs in and out (dj): the colonnade's buttresses and bays. AT THE PROW (VEIL_K) the three fronts are one sheer wall, the
       Great Veil proper, the twin curtains falling free down it; the stair comes back either side */
    const vk=VEIL_K(x),s3=stair(d,R2RUN,3,.5+.12*(fbm(x*.004,d*.01,80,1)-.5)),s1=stair(d,R2RUN,1,.22);let h=top-R2DROP*mix(s3,s1,vk);
    if(d>R2RUN)h=top-R2DROP-(d-R2RUN)*.014+8*(fbm(x*.002,z*.002,72,2)-.5);   /* Terrace II, falling gently north */
@@ -64,7 +64,7 @@ const STATION=(function(){const R=3000;
   // THE CLODOSRIBA: a shallow channel on Terrace IV, the slot rille through Terrace III, its channel on Terrace II
   {const c=cx(z),q=Math.abs(x-c),lv=cLevel(z),hw=CHW(z);
    if(z>=ZLC&&z<=Z3C+T1){const top=Math.max(h,lv+8),fw=hw+14+10*smooth(ZLC,ZLC+600,z);if(q<fw+60)h=Math.min(h,rille(q,lv-3.2,top,fw));}
-   else if(q<hw*3.2&&!(z<ZLC-18&&z>POOL.z-POOL.r*.9)){const bed=lv-3-(z<ZLC?1.5:0);   /* not down the wall: the curtain falls free (a notch at the lip only) */h=q<hw?Math.min(h,bed+(q/hw)*2.6):mix(h,Math.min(h,lv+.7+(q-hw)*.3),smooth(hw*3.2,hw,q));}}
+   else if(q<hw*3.2&&!(z<ZLC&&z>POOL.z-POOL.r*.9)){const bed=lv-3-(z<ZLC?1.5:0);   /* not down the wall: the curtain falls free off the lip (the sheer wall has no jog at the prow) */h=q<hw?Math.min(h,bed+(q/hw)*2.6):mix(h,Math.min(h,lv+.7+(q-hw)*.3),smooth(hw*3.2,hw,q));}}
   // THE WESTERN RILLE (the Hollow Way's open, collapsed stretch) and its stream
   if(x<XW+40){const wz=wzOf(Math.min(x,XW)),q=Math.abs(z-wz),lv=wLevel(Math.min(x,XW)-1);
    if(x<=XW+4&&q<120){const top=Math.max(h,lv+8),fw=WHW(x)+16;h=Math.min(h,rille(q,lv-2.4,top,fw));}}
@@ -99,8 +99,8 @@ const STATION=(function(){const R=3000;
   strataK:(x,z,h,sl)=>smooth(.45,.8,sl),
   talus:(x,z)=>{const zl=lipZ(x),d=zl-z;return d>R2RUN-30&&d<R2RUN+80?smooth(R2RUN+80,R2RUN+10,d):0;},
   strata:BIO.strata({recipe:'tibasalt-ponded',seed:7103,range:[1200,2800],res:.5,private:true}),
-  spine:[[SITE.x,SITE.z],[XC+60,ZLC+200],[XW-120,ZLW+260],[0,POOL.z-260],[-300,POOL.z-700],[cx(800),800],[cx(Z3C)-140,Z3C-160],[-900,400],[900,-200],[300,-2400],[-1200,-2100],[600,2500]]});
- Object.assign(L,{H3c:H3(XC+430,lipZ(XC+430)),lipZ,r3Z,cx,wzOf,cLevel,wLevel,XC,XW,ZLC,ZLW,Z3C,POOL,SITE,BASIN,LEDGE,T4,T1,T2,R2RUN,R3RUN});return L;})();
+  spine:[[SITE.x,SITE.z],[-720,lipZ(-720)+60],[XC+60,ZLC+200],[XW-120,ZLW+260],[0,POOL.z-260],[-300,POOL.z-700],[cx(800),800],[cx(Z3C)-140,Z3C-160],[-900,400],[900,-200],[300,-2400],[-1200,-2100],[600,2500]]});
+ Object.assign(L,{H3c:H3(-720,lipZ(-720)),lipZ,r3Z,cx,wzOf,cLevel,wLevel,XC,XW,ZLC,ZLW,Z3C,POOL,SITE,BASIN,LEDGE,T4,T1,T2,R2RUN,R3RUN});return L;})();
 const TERR=STATION.TERR,LAKES=STATION.LAKES,RIVERS_SPEC=STATION.RIVERS_SPEC,FALLS=STATION.FALLS,SPINE=STATION.SPINE,STRATA=STATION.STRATA,ROCK=STATION.ROCK;
 function terrainH(x,z){return STATION.terrainH(x,z);}
 function waterH(x,z){return STATION.waterH(x,z);}
@@ -108,7 +108,7 @@ function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 const LAND={name:'The Citadel Step (greenstep station 3)',station:'tallwalls',title:'Krator biome — Greenstep: the Citadel Step and the Great Veil',
  hint:'Station 3 of Greenstep: Terrace III between the Great Veil and the Upper Citadel Scarp, the Clodosriba and the Western Rille falling side by side at Tallwalls\' promontory (its site only: the settlement build\'s), the S highlands\' spiral flora and the SW lowlands\' oaks read in place (scale model 5.1, px 650,1268)',
  region:{name:'The Citadel Step (station 3)',x:0,z:0,r:TERR.R},wind:[.6,.8],sky:{px:650,py:1268},atm:1.25,cloud:.65,dust:false,
- fog:{falloff:1/650,sun:.3,sky:.5},climate:{cold:false,dry:false},wet:true,groundN:640,lod:{hero:450},kinLT:650,
+ fog:{falloff:1/650,sun:.3,sky:.5},climate:{cold:false,dry:false},wet:true,groundN:640,lod:{hero:450},kinLT:650,kinHero:440,   /* the kin's hero forms within 440 m of the spine (the SW lowlands' oak leaves stay under the 250k instance cap) */
  groundLayers:['grass','leafy','moss','redsoil','lichen'],
  plants:['fern','grass','sedge','moss','begonia','rice'],
  riverLook:[0x3a7a6e,0x163e3a],
@@ -126,8 +126,8 @@ const LAND={name:'The Citadel Step (greenstep station 3)',station:'tallwalls',ti
  kin:[
   /* the lower benches (Terraces II and III's lower edge, Cfa): the SW lowlands' broadleaves */
   {ref:'swlowlands.sprawloak',key:'sprawloak',name:'Sprawl oak',cell:95,minR:14,accept:Z=>Z.tree*Z.gentle*(Z.lower*.55+Z.spiral*.12)*(1-Z.bank*.6)},
-  {ref:'swlowlands.corkoak',key:'corkoak',name:'Cork oak',cell:40,minR:4,accept:Z=>Z.tree*Z.gentle*Z.lower*.3*(1-Z.bank)},
-  {ref:'swlowlands.baylaurel',key:'redbay',name:'Red bay',cell:42,minR:4,accept:Z=>Z.tree*(Z.lower*.28+Z.spiral*.14)*(1-Z.bank*.5)},
+  {ref:'swlowlands.corkoak',key:'corkoak',name:'Cork oak',cell:50,minR:4,accept:Z=>Z.tree*Z.gentle*Z.lower*.3*(1-Z.bank)},
+  {ref:'swlowlands.baylaurel',key:'redbay',name:'Red bay',cell:56,minR:4,accept:Z=>Z.tree*(Z.lower*.28+Z.spiral*.14)*(1-Z.bank*.5)},
   {ref:'swlowlands.willow',key:'willow',name:'Veil willow',cell:26,minR:3,overWater:.55,accept:Z=>Z.tree*Z.bank*.45*(Z.lower+Z.spiral*.6)},
   /* OWED: swlowlands.cedar (the tier cedar, the murus gallicus' timber): riftrim's gorge found its pads off the limbs (attach audit, KNOWN_ISSUES.md); grown when swlowlands holds them */
   /* the Citadel Step and the rille gorges (Cfa/Cfb): the right-handed spiral flora, planted round Tallwalls (PLAN.md section 3) */
@@ -141,7 +141,7 @@ const LAND={name:'The Citadel Step (greenstep station 3)',station:'tallwalls',ti
  views:H=>{const {P,look,atTree,nearTree,gh}=H,S=STATION,Lc=[S.XC,S.ZLC],Lw=[S.XW,S.ZLW],Pz=S.POOL;
   return{
   'The Great Veil from the basin':[Pz.x-80,gh(Pz.x-80,Pz.z-520,3)+40,Pz.z-520,0,S.BASIN+240,S.ZLC],
-  'The brink at the prow':[S.XC+430,S.H3c+70,S.lipZ(S.XC+430)+25,S.XC-80,S.BASIN+190,S.ZLC-90],   /* from the east lip, along the brink: the Clodosriba's curtain, the prow beyond it, the basin below */
+  'The brink at the prow':[-720,S.H3c+45,S.lipZ(-720)+30,S.XW+20,S.BASIN+260,S.ZLW-30],   /* from Terrace III's edge west of the prow: the Western Rille's curtain, the Clodosriba's beyond it, the basin below */
   'Tallwalls\' promontory (its site)':[S.SITE.x+520,Math.max(S.SITE.y+90,gh(S.SITE.x+520,S.SITE.z+380,60)),S.SITE.z+380,S.SITE.x,S.SITE.y,S.SITE.z],
   'The Clodosriba\'s rille':[S.cx(600)+30,S.cLevel(600)+60,600,S.cx(-200),S.cLevel(-200)+10,-200],
   'The Upper Citadel Scarp':[S.cx(S.Z3C-700),gh(S.cx(S.Z3C-700),S.Z3C-700,30),S.Z3C-700,S.cx(S.Z3C),S.LEDGE,S.Z3C+80],
