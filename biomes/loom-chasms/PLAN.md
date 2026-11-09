@@ -87,9 +87,10 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
 - **Settlements** (`model/src/60-settlements.js`; old canvas px plus 272, 330):
   - **Spindle Fan** (`sloomspindle01`, Yuni village, 1561,1140, 2,150 m): "Yuni farming and spring outpost on the Weavers'
     Cradle piedmont fan: terraced crops supporting expeditions into the Loom-Chasms";
-  - **Mungo** (`s4xb8r0vmy`, village, old 1321,825 = 1593,1155, 1,764 m on the Weave-Step's foot, no notes);
-  - **Reed** (`sndrdffkyg`, village, old 1277,676 = 1549,1006) sits on the north edge on ground of 9,393 m. That is airless:
-    a village cannot stand there (section 9);
+  - ~~**Mungo** (`s4xb8r0vmy`, village, old 1321,825 = 1593,1155, 1,764 m on the Weave-Step's foot, no notes)~~ and
+    ~~**Reed** (`sndrdffkyg`, village, old 1277,676 = 1549,1006, on the north edge on airless ground)~~. **Corrected 2026-11-09:**
+    the pins' 1321,825 and 1277,676 are already 5.1 px (the shift was added twice). Both stand in the Eastern Abyss (e abyss,
+    Nomad Country), not here: Mungo at -1,807 m (WX), Reed at -2,342 m (XA). Neither is the Loom-Chasms';
   - **the Great Chasm's trade post** (planned, `biomes/greatchasm/PLAN.md` section 5) at the sill, 1697,1028, inside this
     polygon.
 
@@ -210,7 +211,8 @@ livestock: whatever the Yuni build uses.
 - **The Cradle's farmers.** The station record has turf-roofed stone longhouses and draft-ox teams. Whether they are Yuni
   colonists or an older people under Yuni rule is the owner's (section 9). Either way, the farms are NPC settlements
   (`core/hamlet`), not outposts.
-- **Mungo** (village, 1593,1155) stands at the Weave-Step's foot. It has no notes: its people are the owner's.
+- ~~**Mungo** (village, 1593,1155) stands at the Weave-Step's foot.~~ Corrected 2026-11-09: Mungo stands at 1321,825, in the
+  Eastern Abyss (section 1); no pin stands at the Weave-Step's foot.
 - **Caravans and expeditions:** caravans on the Yuni road and expeditions down to the floor and the playa make night camps
   (`core/camp`).
 - **The outlaws:** Mid Basin's Yuni outlaws (*proposed* there) roam north into the Loom's southern chasms.
@@ -249,7 +251,7 @@ summit and Lake Nim, 140 km apart; they are split here.
 | Station | 5.1 px | Ground (the model) | What |
 |---|---|---|---|
 | 1 **The Weavers' Cradle** (`cradle`) | 1555,1142 | 2,180 m (2,166-2,199 m within 3 px); 1.22 atm; Cwb, 11 °C (23/0), 439 mm; Spindle Fan 13 km north-east | the terraced loess fans, Aina Bruk off the fan, the Yuni farms, the road setting out east |
-| 2 **The Weave-Step** (`monocline`) | 1575,1163 | 1,479 m on a step; 978-1,900 m within 3 px; 1.33 atm; BSk, 15 °C (26/5), 125 mm; Mungo 39 km east-north-east | the basalt benches and box canyons, the talus skirts, a waystation on the road, the first view over the chasms |
+| 2 **The Weave-Step** (`monocline`) | 1575,1163 | 1,479 m on a step; 978-1,900 m within 3 px; 1.33 atm; BSk, 15 °C (26/5), 125 mm | the basalt benches and box canyons, the talus skirts, a waystation on the road, the first view over the chasms |
 | 3 **The Loom** (`loom`) | 1662,1162 | 748 m on a mesa's shoulder; the floor 264 m and the mesa top 1,592 m within 3 px; 1.46 atm; BWk, 19 °C (30/9), 78 mm | a slot on the mesa rim with its cable canopy in tiers, the cable-stryder, the great chasm opening below; Stara Bruk on the floor |
 | 4 **Mount Caelum** (`caelum`) | 1622,1166 | 4,431 m (pinned; 3,721-4,441 m within 3 px); 0.92 atm; ET, -2 °C (11/-15), 439 mm | the summit fumaroles, the parent colony, the chasm net spread out below |
 | 5 **The White Loom** (new, split from `caelum`) | about 1697,1176 | Lake Nim's shore at 243 m; the lake at 240 m; 1.55 atm; XS, 24 °C (36/13), 47 mm | the playa: salt polygons and crusts, the brine pools and their mats, the halite sifter, a salt-camp |
@@ -285,7 +287,7 @@ when they are built.
 | hazards | `core/hazard` (`KHAZ`) | section 6; every record in `core/tags` before it is drawn |
 | fauna | `kits/fauna` | the cable-stryder and the halite sifter, as `BIO.record` records |
 | the Stalkers | `kits/mechs` (`KratorMechs`, culture `stalker`) | placed as hazard records by this kit, drawn by the mechs kit |
-| camps, settlements | `core/camp`, `core/hamlet` | caravan and salt camps; the Cradle's farms and Mungo; Spindle Fan is a Yuni settlement (`settlements/yuni`'s pieces) |
+| camps, settlements | `core/camp`, `core/hamlet` | caravan and salt camps; the Cradle's farms; Spindle Fan is a Yuni settlement (`settlements/yuni`'s pieces) |
 | resources | `kits/resources` (`KRES`) | sulphur at Caelum; *proposed* saltpeter on the playa's margins (the Atacama's nitrates form in such basins); read the geology bake at the build |
 | shadows | `core/shadow` | off at load |
 | tags, space, mask, host, export, materials | as every kit | |
@@ -304,7 +306,7 @@ when they are built.
 - the rivers' stale lake destinations (593-666 m);
 - the water budget (section 1);
 - Caelum's vent `floor`;
-- Reed's height;
+- ~~Reed's height~~ (corrected 2026-11-09: Reed is not here, section 1);
 - the region's empty `notes`;
 - the overlaps with the Great Chasm (1,509 cells) and the Stalker Gate (3,426), if they are not meant.
 
@@ -312,8 +314,8 @@ when they are built.
 
 - **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (Mid Basin's plan questions its
   course), or grow Lake Nim to several thousand km² (a real terminal lake, as the Danakil's were)?
-- **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? Who lives at Mungo? Reed stands on airless
-  ground: move it, or remove it?
+- **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? ~~Who lives at Mungo? Reed stands on airless
+  ground~~ (corrected 2026-11-09: Mungo and Reed are the Eastern Abyss's, section 1).
 - **Namakiers:** keep the playa's salt as crust and pinnacles (proposed), or add a buried salt layer so salt glaciers can flow?
 - **The cables:** spans of 100-300 m across slots (proposed), with the great chasms open; or does the owner want longer spans?
   At 2-20 km the chasms are beyond any cable.

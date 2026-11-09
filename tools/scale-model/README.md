@@ -558,10 +558,10 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
    - **Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
      Sculpted along the `s highlands` north edge over `hyperjungle S` and `savage hyperjungle` as a sharp `4–5 cell` (`8–10 km`) step from the `210–420 m` talus foot through the `1,520–1,950 m` cloud-forest bench (`Cfb`) to the `3,320–3,780 m` paramo rim crest (`ET`), indented by 15 recessed V-ravines and projecting megabreccia buttresses while keeping **Spirladunon** (`px 800, 1017` at `1,398.2 m`), **Voth** (`px 742, 1018`), **Torus** (`px 774, 1007`), and **Pylon** (`px 869, 1002`) intact.
 
-## 5.1 edit 1: `edit_511.py` (2026-11-09): the owner's decisions on the biome plans
+## 5.1 edit 1: `history/edit_511.py` (2026-11-09): the owner's decisions on the biome plans
 
-`python3 tools/scale-model/edit_511.py` edits `model/data` (and the records below) in place and writes
-`edit_511.report.json`; it refuses to run twice (the cave record is its marker). Every number is the plans'.
+`python3 tools/scale-model/history/edit_511.py` edits `model/data` (and the records below) in place and writes
+`history/edit_511.report.json`; it refuses to run twice (the cave record is its marker). Every number is the plans'.
 
 - **The Epidote-Steam Tarn's way in** (`biomes/neouterwall/PLAN.md` 2a). The **Portal Valley**: a trough one to two cells
   wide cut into the NE outer wall's back from 1330,295 to 1331,302, floor 5,530 / 5,750 / 5,850 / 5,900 m at rows 295 /
@@ -598,6 +598,47 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 - `tests/test_smodel.py` section 14 checks the valley's floor and trough, the cave record, the lake (29 wet cells at
   6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
   and the sill.
+
+## 5.1 edit 2: `edit_512.py` (2026-11-09): the owner's decisions on the Firebliss Range
+
+`python3 tools/scale-model/edit_512.py` edits `model/data`, the page's default regions and `river-names-5.1.md` in place and
+writes `edit_512.report.json`; it refuses to run twice (Copper Glacier's trimmed edge is its marker). `biomes/firebliss/PLAN.md`
+section 9 is the plan's side.
+
+- **Copper Glacier** (`rmvcopperglacier`) trimmed to the Firebliss Range's north edge: it overlapped 15,868 cells (57% of
+  the range: Mount Pyre, Cinder-Crown, Firebliss Mons, West Bliss Cauldron, the Great Vale). The two share their edge's 113
+  cells; the airless strip west of Firebliss's west edge (806 cells, x 48-73) is left to neither. Firebliss's empty note is
+  written and Copper Glacier's says it was trimmed. A one-time reconcile (`krator.regMerged.5.1e2`) gives a browser holding a
+  saved copy the two new defaults. **The live artifact's database is not written**: its regions are still on the 4.23 canvas
+  (5.1 edit 1's note), so these two records wait for that migration.
+- **The Firebliss rivers** (Yan, Tlahn and Weyt Warra) were notched into the ground at their vertices only (step 9E carved
+  them, and the Labyrinth's pass rebuilt its mesas over them): between the vertices the ground rose 390-590 m, so the four
+  valley lakes had no outlet. Each is rerouted by the least-cut route from its lake (a step costs its length times 1 + its
+  cut over the lake's level per 100 m; the Tlahn through Solfatara Glen) to step 9E's own target, and carved: the bed at the
+  lake's level at the outlet, linear in length to the next lake (or the target's ground), never above the ground, never
+  rising; one cell wide, walls at 25 degrees, the ground beside lowered by no more than the course was. Cuts on the courses:
+  median 130-250 m, at most 470-655 m (a pass), 1,491 cells; every dry cell falls; no lake lowered (a rim cell taken under its
+  level is held at it). Lengths 169 / 341 / 218 km on the grid's steps (were 160 / 326 / 214); the records keep every cell of the course, since a line between cells further apart crosses ground the carve left. The old strokes are painted out of `st` and `t`
+  (`paint.inpaint`) and the new ones painted in with step 9E's strokes. The records carry the course, `bed_m`, `region` and
+  `to` (Yan Warra joins Fell-Block Beck; the others end in the Labyrinth's Lakes 3 and 6, which have no outlet).
+  **Left for the Labyrinth:** its four rivers have the same fault (they climb 320-535 m); 128 of the map's 893 courses climb
+  over 150 m somewhere (a map-wide pass).
+- **`th` and `tl`** (hottest afternoon, coldest night) set by 5.0's rule (`climate.extend_latitude_temps_and_wind`): `th = tw
+  + d`, `tl = tc - d`, `d = clip(6.2 (1 - .42 m) + 2.2, 2.2, 11)`, `m = exp(-px to water / 38)` (6.5-8.4 C here). Where they
+  were 0-coded on land (215,770 cells: the 5.0/5.1 blocks set `tm`, `tw`, `tc` only), in the Firebliss-Labyrinth block (20,606,
+  stale under the block's new months), and where they contradicted their own months (431,710: a hottest afternoon under the
+  warm month or a coldest night over the cold one, mostly the 5.0 expansion strips the later passes warmed). The 1,531,739
+  land cells whose `th` and `tl` agreed with their months keep them (7,121 of them have nights over 20 C under the cold month).
+- **The five Firebliss vent records** given `floor` (the crater's), `radius` (its rim, km) and `scale` .4: the page drew them
+  at NaN, and the resource bake's volcanic field reached 22 km round each (now 39-45 km, about each cone's base).
+- Temperatures lapsed with the carve; rain, class and zone re-derived where it moved (`climate.reclimate`: 2,648 cells, 1,410
+  changed class); the paints relit and retinted.
+- `river-names-5.1.md`: every row's length, source -> mouth and "Drains To" from the records (777 rows). The generator read
+  "Drains To" from `to.name` or `to.kind` only, so every river that ends in a lake or a basin said "sea";
+  `river_names.drains_to` now reads every form of `to`.
+- After it: the resource rebake (`geology.py`, the command in `kits/resources/GEOLOGY.md`), `test-res.js --ledger`, the Godot
+  field test, and the Resources and Copper Glacier pages rebuilt. `tests/test_smodel.py` reads `archive/little-demo/source`
+  (the open world's little demo moved there).
 
 ## Cutting a region out for the open world
 

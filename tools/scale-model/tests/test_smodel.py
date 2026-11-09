@@ -95,7 +95,7 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
+R = P.docs(os.path.join(TOOL, '..', '..', 'archive', 'little-demo', 'source', 'regions.json'))
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
@@ -202,8 +202,8 @@ import copy as _copy   # noqa: E402
 from smodel import river_names as RN   # noqa: E402
 r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
 check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
-regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
-setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
+regs_path = os.path.join(REPO_ROOT, 'archive', 'little-demo', 'source', 'regions.json')
+setts_path = os.path.join(REPO_ROOT, 'archive', 'little-demo', 'source', 'settlements.json')
 if os.path.exists(regs_path) and os.path.exists(setts_path):
     regs_doc = _json.load(open(regs_path, encoding='utf-8'))
     setts_doc = _json.load(open(setts_path, encoding='utf-8'))
@@ -359,7 +359,7 @@ for pol_id, pol_nm, pol_npts in [
           pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
 check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
       not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
-S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+S = P.docs(os.path.join(TOOL, '..', '..', 'archive', 'little-demo', 'source', 'settlements.json'))
 tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
 check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
 gv_t1_e = float(E[1212, 638])
@@ -523,4 +523,47 @@ gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
 m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
 check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
       bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
+# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-09): Copper Glacier trimmed to the Firebliss Range, the Firebliss rivers
+#          rerouted and carved, th and tl, the Firebliss vent records
+import re as _re   # noqa: E402
+defregs = _json.loads(_re.search(r'const defRegs = (\[.*?\]);\n', open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'),
+                                                                        encoding='utf-8').read(), _re.S).group(1))
+cg_t = next(r for r in defregs if r['id'] == 'rmvcopperglacier')
+fb_t = next(r for r in defregs if r['id'] == 'rmw8hj62nmugn')
+mcg_t, mfb_t = G.poly(cg_t['points'], 1.0, 1.0, E.shape) > .5, G.poly(fb_t['points'], 1.0, 1.0, E.shape) > .5
+check('Copper Glacier and Firebliss share only their edge (%d cells); the cones and valleys are Firebliss\'s' % int((mcg_t & mfb_t).sum()),
+      int((mcg_t & mfb_t).sum()) <= 150 and all(not mcg_t[y, x] and mfb_t[y, x] for x, y in
+                                                ((104, 1304), (148, 1292), (206, 1284), (126, 1344), (184, 1318)))
+      and bool(mcg_t[1148, 148]) and fb_t['notes'] != '')
+lab_t, _ = nd.label(whas, structure=np.ones((3, 3)))
+riv_t = {r['id']: r for r in D['rivers']}
+for rid_t, lake_t in (('r_fb_west', (125, 1343)), ('r_fb_central', (184, 1318)), ('r_fb_east', (284, 1318))):
+    r_t = riv_t[rid_t]
+    lv_t = float(np.nanmedian(wlev[lab_t == lab_t[lake_t[1], lake_t[0]]]))
+    # the record keeps every cell of its course, each a step (8-neighbour) from the last
+    cells_t = [(int(y_), int(x_)) for x_, y_ in r_t['px']]
+    check('%s: every vertex a cell, each a neighbour of the last (or across a lake)' % r_t['name'], all(
+        max(abs(a_[0] - b_[0]), abs(a_[1] - b_[1])) == 1 or (whas[a_] and whas[b_] and lab_t[a_] == lab_t[b_])
+        for a_, b_ in zip(cells_t[:-1], cells_t[1:])))
+    dry_t = [float(E[c]) for c in cells_t if not whas[c]]
+    climb_t = max([0.0] + [b - min(dry_t[:k + 1]) for k, b in enumerate(dry_t)])
+    check('%s leaves its lake (%.0f m) and falls the whole way (climbs %.1f m); region and mouth recorded'
+          % (r_t['name'], lv_t, climb_t),
+          bool(whas[int(r_t['px'][0][1]), int(r_t['px'][0][0])]) and abs(r_t['source_m'] - lv_t) <= 1.0 and climb_t <= 1.0
+          and r_t.get('region') == 'Firebliss Range' and r_t.get('to'))
+for lake_t in ((125, 1343), (184, 1318), (238, 1322), (284, 1318)):
+    lk_t = lab_t == lab_t[lake_t[1], lake_t[0]]
+    rim_t = nd.binary_dilation(lk_t, structure=np.ones((3, 3))) & ~whas
+    lv_t = float(np.nanmedian(wlev[lk_t]))
+    check('the lake at %d,%d (%.0f m) keeps its rim at its level (lowest %.1f m)' % (lake_t + (lv_t, float(E[rim_t].min()))),
+          float(E[rim_t].min()) >= lv_t - 1.0)
+T15 = {k: P.raster(D, k, 'L').astype(int) - 90 for k in ('tm', 'th', 'tl', 'tw', 'tc')}
+codes15 = [c['code'] for c in D['climate']['classes']]
+land15 = ~whas & (P.raster(D, 'c', 'L') != codes15.index('O')) & (T15['tm'] > -89)
+bad15 = land15 & ((T15['th'] <= -89) | (T15['tl'] <= -89) | (T15['th'] < T15['tw']) | (T15['tl'] > T15['tc']))
+check('th and tl on every land cell, the hottest afternoon over its warm month and the coldest night under its cold one '
+      '(%d cells not)' % int(bad15.sum()), int(bad15.sum()) == 0)
+fbv = [v for v in D['vents'] if v.get('region') == 'Firebliss Range']
+check('the five Firebliss vents have a crater floor and radius', len(fbv) == 5 and all(
+    v.get('floor') and v.get('radius') and v['floor'] < v['peak'] for v in fbv))
 print('%d checks passed' % ok)

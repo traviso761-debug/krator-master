@@ -1,0 +1,249 @@
+{
+ "edit": "5.1 edit 2",
+ "date": "2026-11-09",
+ "rivers": {
+  "r_fb_west": {
+   "name": "Yan Warra",
+   "length_km": 168.9,
+   "was_km": 159.5,
+   "source_m": 2639.8,
+   "mouth_m": 2533.2,
+   "to": {
+    "river": "r_lab_chaos_n",
+    "name": "Fell-Block Beck",
+    "at_px": [
+     181.0,
+     1403.0
+    ]
+   },
+   "deepest_cut_m": 577.8,
+   "course_cut_m_p50_p95_max": [
+    246.6,
+    491.2,
+    577.8
+   ],
+   "cells_cut_over_200m": 340,
+   "rise_after_m": 0.0
+  },
+  "r_fb_central": {
+   "name": "Tlahn Warra",
+   "length_km": 340.7,
+   "was_km": 325.7,
+   "source_m": 2279.8,
+   "mouth_m": 1979.9,
+   "to": {
+    "lake_m": 1980,
+    "through": false,
+    "at_px": [
+     236.0,
+     1421.0
+    ]
+   },
+   "deepest_cut_m": 469.5,
+   "course_cut_m_p50_p95_max": [
+    132.8,
+    418.2,
+    469.5
+   ],
+   "cells_cut_over_200m": 325,
+   "rise_after_m": 0.0
+  },
+  "r_fb_east": {
+   "name": "Weyt Warra",
+   "length_km": 217.7,
+   "was_km": 214.3,
+   "source_m": 1960.0,
+   "mouth_m": 1720.2,
+   "to": {
+    "lake_m": 1720,
+    "through": false,
+    "at_px": [
+     284.0,
+     1416.0
+    ]
+   },
+   "deepest_cut_m": 655.0,
+   "course_cut_m_p50_p95_max": [
+    181.8,
+    386.2,
+    655.0
+   ],
+   "cells_cut_over_200m": 177,
+   "rise_after_m": 0.0
+  }
+ },
+ "cells_carved": 1491,
+ "carve_max_m": 655.0,
+ "lakes": [
+  {
+   "level_m": 2280,
+   "cells": 60,
+   "rim_held_cells": 3,
+   "rim_under_level_before": 0
+  },
+  {
+   "level_m": 1960,
+   "cells": 33,
+   "rim_held_cells": 2,
+   "rim_under_level_before": 0
+  },
+  {
+   "level_m": 2120,
+   "cells": 35,
+   "rim_held_cells": 2,
+   "rim_under_level_before": 0
+  },
+  {
+   "level_m": 2640,
+   "cells": 35,
+   "rim_held_cells": 1,
+   "rim_under_level_before": 0
+  },
+  {
+   "level_m": 1720,
+   "cells": 54,
+   "rim_held_cells": 0,
+   "rim_under_level_before": 0
+  },
+  {
+   "level_m": 1980,
+   "cells": 66,
+   "rim_held_cells": 0,
+   "rim_under_level_before": 0
+  }
+ ],
+ "reclimate": {
+  "cells": 2648,
+  "class_changed": 1410,
+  "rain_mean_before_mm": 905.0,
+  "rain_mean_after_mm": 796.0,
+  "classes_now": {
+   "Csa": 247,
+   "Csb": 452,
+   "Csc": 9,
+   "Cfa": 166,
+   "Cfb": 231,
+   "Dsb": 38,
+   "Dsc": 8,
+   "Dfb": 384,
+   "Dfc": 486,
+   "ET": 465,
+   "EF": 162
+  }
+ },
+ "th_tl": {
+  "filled_missing_cells": 215770,
+  "reset_in_block_cells": 20606,
+  "reset_contradicting_cells": 431710,
+  "diurnal_half_swing_C": [
+   6.5,
+   8.0,
+   8.4
+  ],
+  "kept_cells": 1531739,
+  "kept_tc_minus_tl_over_20": 7121
+ },
+ "old_strokes_painted_out_px": 1156,
+ "cells_changed": {
+  "tm": 1187,
+  "tw": 1187,
+  "tc": 1187,
+  "th": 666910,
+  "tl": 667704,
+  "p": 2516,
+  "c": 1410,
+  "z": 98
+ },
+ "vents": [
+  {
+   "name": "Mount Pyre",
+   "px": [
+    104.0,
+    1304.0
+   ],
+   "peak": 6650,
+   "kind": "stratovolcano",
+   "region": "Firebliss Range",
+   "floor": 5820.0,
+   "scale": 0.4,
+   "radius": 7.2
+  },
+  {
+   "name": "Cinder-Crown",
+   "px": [
+    148.0,
+    1292.0
+   ],
+   "peak": 5940,
+   "kind": "stratovolcano",
+   "region": "Firebliss Range",
+   "floor": 5320.0,
+   "scale": 0.4,
+   "radius": 6.8
+  },
+  {
+   "name": "Firebliss Mons",
+   "px": [
+    206.0,
+    1284.0
+   ],
+   "peak": 6380,
+   "kind": "stratovolcano",
+   "region": "Firebliss Range",
+   "floor": 5480.0,
+   "scale": 0.4,
+   "radius": 8.8
+  },
+  {
+   "name": "Brimstone Spire",
+   "px": [
+    254.0,
+    1288.0
+   ],
+   "peak": 5780,
+   "kind": "stratovolcano",
+   "region": "Firebliss Range",
+   "floor": 5180.0,
+   "scale": 0.4,
+   "radius": 6.4
+  },
+  {
+   "name": "Copper-Fissure Vent",
+   "px": [
+    298.0,
+    1286.0
+   ],
+   "peak": 5360,
+   "kind": "stratovolcano",
+   "region": "Firebliss Range",
+   "floor": 4680.0,
+   "scale": 0.4,
+   "radius": 6.0
+  }
+ ],
+ "records": {
+  "cg_fb_overlap_cells": 113,
+  "cg_cells": 37747,
+  "Mount Pyre": {
+   "copper_glacier": false,
+   "firebliss": true
+  },
+  "Firebliss Mons": {
+   "copper_glacier": false,
+   "firebliss": true
+  },
+  "Great Firebliss Vale": {
+   "copper_glacier": false,
+   "firebliss": true
+  },
+  "West Bliss Cauldron": {
+   "copper_glacier": false,
+   "firebliss": true
+  },
+  "Copper Tarn": {
+   "copper_glacier": true,
+   "firebliss": false
+  }
+ },
+ "river_names_rows_changed": 777
+}

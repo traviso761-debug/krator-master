@@ -94,8 +94,9 @@ the climate at l. 4164, the paint at l. 4865. The numbers below were read from t
 - **The old reservoir.** The hot lake now on its site (839,1394) can carry the story: the caldera's fall drained the old
   brine lake down the tube (`tube_god_ssw_14`, still named "Brine-Lake Siphon"), and the new lake is the brine that the ice
   belt kept. The tube's cavern note is re-described (section 8).
-- **Settlements:** one. **Nazar** (ruin, `s3i61t95z5`, old px 582,1079 = 5.1 px 854,1409) stands inside, at 4,033 m on the
-  south-east bench above the spillway's head. It stood on the ice belt at about 6.4 km before the carving.
+- **Settlements:** none. ~~**Nazar** (ruin, `s3i61t95z5`, old px 582,1079 = 5.1 px 854,1409) stands inside, at 4,033 m on the
+  south-east bench.~~ **Corrected 2026-11-09:** the pin's 582,1079 is already 5.1 px (the shift was added twice). Nazar stands
+  in the SW lowlands, in its own region "Ruins of Nazar" inside the Vothic Kingdom, at 466 m (Csa), far from the caldera.
 
 ## 2. Geology and landforms
 
@@ -250,7 +251,8 @@ proposals. So does its winter sanctuary of highland grazers, which the frosty wi
 
 ## 5. People
 
-- **On the map:** nobody lives in the caldera. **Nazar** (ruin) stands on the south-east bench (854,1409). The lore's
+- **On the map:** nobody lives in the caldera. Nazar (ruin) is not here: it stands in the SW lowlands (582,1079; corrected
+  2026-11-09, section 1). The lore's
   **Nazarites** are a ruin tribe, enslaved on Voth's plantations (`LORE.md` §6.12). Whether Nazar is where they came from is
   the owner's (section 9).
 - **The Dalab genepriests** (canon, the owner, 2026-11-02): the hearth tree is "one of the things its genepriests come over the
@@ -329,7 +331,7 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 | hazards | `core/hazard` (`KHAZ`) | section 6, every record in `core/tags` before it is drawn |
 | fauna | `kits/fauna` | section 4, as `BIO.record` records |
 | resources | `kits/resources` (`KRES`) | sulphur and copper sulphide at the fumarole lines (the Hearths plan's); hearth wax (`kits/crops`, zone `hearths`); ilmenite sand as an iron node (*proposed*) |
-| settlements | `core/hamlet`, `core/camp` | only if the owner places the genepriests' post or a Xanadui summer camp; Nazar as an Ancients ruin (`KFAR` far, the ruin kit's pieces close) |
+| settlements | `core/hamlet`, `core/camp` | only if the owner places the genepriests' post or a Xanadui summer camp; no ruin (Nazar is in the SW lowlands) |
 | shadows | `core/shadow` | off at load, as every kit |
 | tags, space, mask, host, export, materials | `core/tags`, `core/space`, `core/mask`, `core/host`, `core/export`, `core/materials` | as every kit |
 | city | `core/city` | no |
@@ -370,8 +372,8 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
   reservoir, drained down the tube. The Godthrone plan's section 1 and section 4 ("The source") need the new px (old px
   604,1110); its `-blood` station is not built, so no page changes.
 - **The Hearths' scale:** a caldera dress at 8-18 m (proposed), or the draft's 22-38 m giants, which would outgrow the Stills?
-- **Nazar:** is it the Nazarites' origin? Did it stand on the ice (its old height) or on the caldera floor? What is it: an Ancient
-  ruin, or a later one?
+- ~~**Nazar:** is it the Nazarites' origin? Did it stand on the ice or on the caldera floor?~~ Corrected 2026-11-09: Nazar is
+  in the SW lowlands, not here (section 1).
 - **Who comes here:** the Dalab genepriests (and an observatory?), Xanadui herders, both, or no one?
 - **Names:** "Godshearth" is Gemini's. The lake, the grove, the spillway and its cataract want Xanadui names (the rivers'
   tongue) or the Monks'.
