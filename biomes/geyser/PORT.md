@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 41 (23%) | 36 (21%) | 3 (2%) | 44 (25%) | 52 (30%) |
+| KB | 41 (23%) | 38 (21%) | 3 (2%) | 45 (25%) | 52 (29%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,16 +20,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/55-biome-geyser-trees.js` | 18.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-biome-geyser-sinter.js` | 3.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-geyser-floor.js` | 6.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/65-biome-geyser-show.js` | 13.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 14 | 0 | 0 | 0 | 0 | the springs, mud pots, steam, eruptions: spatial shaders and GPUParticles3D; the cycle is GEYSER.cycle (46), the records GEYSER.records() |
+| `src/65-biome-geyser-show.js` | 13.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 14 | 0 | 0 | 0 | 0 | the springs, mud pots, steam, eruptions: spatial shaders and GPUParticles3D; the cycle is GEYSER.cycle (46), the records GEYSER.records() |
 | `src/70-biome-geyser.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 0.6 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/84-host-ground.js` | 23.2 | [G shader] | 11 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the thermal paint: the kit's record per vertex; the mats, the film and the Stair's pools in the fragment shader |
+| `src/84-host-ground.js` | 24.0 | [G shader] | 11 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the thermal paint: the kit's record per vertex; the mats, the film and the Stair's pools in the fragment shader |
 | `src/85-host-far.js` | 3.2 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 3.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-sky.js` | 2.2 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89w-host-sea.js` | 4.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89w-host-water.js` | 5.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the creek (WATER.flow) and the Stair's pools (WATER.still, drawPools) |
-| `src/99-host-take.js` | 20.5 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
+| `src/99-host-take.js` | 21.3 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

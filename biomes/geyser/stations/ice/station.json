@@ -1,0 +1,9 @@
+{
+ "base": "field",
+ "nojungle": true,
+ "tex": ["st.ash", "st.ice"],
+ "core": {
+  "44g-core-glacier.js": "core/terrain/44g-core-glacier.js",
+  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js"
+ }
+}
