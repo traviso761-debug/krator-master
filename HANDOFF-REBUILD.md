@@ -222,8 +222,8 @@ building engine is now named `core/engine`, not `core/kit`.
       (nwlowlands, swbay, sedesert and the Bowl; their `?kground=0` keeps Lambert too). The page's own `relief` wins over
       `?kgrelief=1.5`; `?kgtri=1` still adds the side planes where the page set none.
     - **Fixed on the way:** sedesert's carve material (`MAT_CARVE`) runs the ground's composed hook, so the sky's cloud shade and height fog,
-      added to each lit material, ran twice on its shader: on MeshStandard the shade threw (the page drew two calls) and the fog's varyings
-      were declared twice. Their names are held on the carve by empty layers. swbay and sedesert list `31b-core-leafset.js` (`check_assembly`:
+      added to each lit material, ran twice on its shader: the shade threw (on MeshStandard the page drew two calls; on Lambert, `?kgstd=0`, the error panel
+      showed it too) and the fog's varyings were declared twice. Their names are held on the carve by empty layers, in both materials. swbay and sedesert list `31b-core-leafset.js` (`check_assembly`:
       `20-core-kit.js` calls `BIO.leafOn`).
     - **Checks:** `check_core_use` no new finding; `check_assembly`, `check_stale` 0 over; `test_all --no-build` fails only steps outside
       this pass (gpu lanes, test-lava and test-scarp goldens, the isle demo's missing `dist/isle-city.plan.js`, interiors test-walk).
@@ -238,7 +238,14 @@ building engine is now named `core/engine`, not `core/kit`.
       gain a fine stony grain near the eye (in SwiftShader, without anisotropy, it reads partly as noise). MeshStandard alone makes
       nwlowlands' floor lighter and evener than Lambert's mottled per-vertex light: check it against the owner's "too uniformly bright".
       One swbay frame showed its litter washed out on MeshStandard; a direct load shows the litter as on Lambert (the frame caught the
-      texture before it streamed). sedesert and the Bowl: shots being taken (this paragraph is updated when they land).
+      texture before it streamed). sedesert ("The wadi gorge"): the bed relief is left out by
+      itself (the kit's strata are the legacy column, not the core path: the audit shows `beds: false`). The shaded wall's foot and its
+      undercut go nearly black (the mesh cavity's mean is .23 on this floor, the highest of the four: in shade the sky is the only light and
+      the occlusion takes most of it); the sunlit walls gain faceted shading. **Likely wrong as set: judge on the GPU, and try `mesh: .5`
+      or `cavity: .55` here.** The Bowl ("The salt flat"): next to no change at any
+      distance (MeshStandard a shade more saturated than Lambert; the flat crust has little height to bump, mesh cavity mean .06); its
+      layers are procedural kinds with no map, so `kgtri` samples nothing, and its strata are the legacy column too (`beds: false`).
+      Mantis and the steppe read the same ground and were verified, not shot.
 - **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
   the ground, breakup). Four points the practice lacks, to take:
   1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
