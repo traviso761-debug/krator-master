@@ -1,13 +1,30 @@
 {
  "name": "Station 1, the Hot Lake (prismbasin): the lake's sinter shore, a geyser field on it, a hearth grove along the vent line inland, ghost rings round a dead spring",
- "site": [842, 1394],
+ "site": [
+  842,
+  1394
+ ],
  "base": "field",
- "tex": [],
+ "tex": [
+  "st.ichu",
+  "st.cushion"
+ ],
  "core": {
   "39-core-lean.js": "core/biome/39-core-lean.js",
   "47-core-therm.js": "core/terrain/47-core-therm.js"
  },
  "kin": {
-  "hearths": [["src/50-biome-hearths-species.js", "src/55-biome-hearths-place.js"], "HEARTH", []]
- }
+  "hearths": [
+   [
+    "src/50-biome-hearths-species.js",
+    "src/55-biome-hearths-place.js"
+   ],
+   "HEARTH",
+   []
+  ]
+ },
+ "fx": [
+  "89-atmos-fx-smokegroups.js",
+  "89-atmos-fx-snowcover.js"
+ ]
 }

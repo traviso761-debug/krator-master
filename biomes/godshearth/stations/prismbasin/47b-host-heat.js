@@ -1,11 +1,11 @@
 // ================================================================= HOST — Godshearth's heat between the vents (core/terrain 47, KTHERM; PLAN.md sections 2, 4)
 // The floor's soil at the station's mean (+7 degC, the owner's climate) and one VENT LINE across it, 500 m inland of the geyser field: a crack in the
 // caldera's floor over the sill (the draft's "shallow lateral sill of the Godthrone plume"), its fumaroles at 92 degC, the ground's heat falling to the soil's
-// within 170 m. Baked once on a 4 m lattice over the line's box; the ground's paint (44s), the hearth grove (87), the hazards and the steam all read the
+// within 100 m (170 m drew ~4,500 hearth trees, 9.4 M triangles: KNOWN_ISSUES.md). Baked once on a 4 m lattice over the line's box; the ground's paint (44s), the hearth grove (87), the hazards and the steam all read the
 // one bake, so they cannot disagree. The geyser field's own heat is the geyser kit's (GEYSER.at): its springs' and geysers' ramps, not KTHERM's.
 // The model has no vent records here (PLAN.md section 8, model amendment 1): this line is the page's own, ideal type, until the model's vents exist.
 const GH_SOIL=STATION_SITE.amb;
-const GH_VENTS=[{id:'godshearth-line',kind:'line',pts:GH_VLINE,T:92,reach:170,decay:2.4,name:'The vent line (a crack in the caldera floor; fumaroles at 92 degC)'}];
+const GH_VENTS=[{id:'godshearth-line',kind:'line',pts:GH_VLINE,T:92,reach:100,decay:2.4,name:'The vent line (a crack in the caldera floor; fumaroles at 92 degC)'}];
 const THERM=KTHERM.create({soil:GH_SOIL,vents:GH_VENTS,detail:{amp:1.5,scale:.02,seed:8121},world:'godshearth-prismbasin'});
 const THERM_BOX=(function(){const xs=GH_VLINE.map(p=>p[0]),zs=GH_VLINE.map(p=>p[1]),m=200;return[Math.min(...xs)-m,Math.min(...zs)-m,Math.max(...xs)+m,Math.max(...zs)+m];})();
 const THERM_F=THERM.bake({box:THERM_BOX,cell:4});

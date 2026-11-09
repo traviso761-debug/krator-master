@@ -11,4 +11,8 @@ const LAKE_DRAW=(function(){const R=TERR.R*1.1,box=[-R,-R,Math.min(R,-120),R],se
    shallow:GH_LIN(0x5aa8a0),deep:GH_LIN(0x1e6670)});   /* clear, warm and mineral: blue-green over the bead sand */
   D.mesh.userData.inspectLabel=GH_LAKE.name;D.mesh.userData.probeSkip=true;return D;}
  catch(e){reportErr('lake: '+e.stack);return null;}})();
-window._water={creek:false,pools:0,poolMeshes:0,springs:LAYOUT.springs.length,lake:!!LAKE_DRAW};
+// THE TERRACES (44s: GH_TER): WATER.terraces on the spring's mound, the pools hot and blue at the centre, cream at the rims; thin curtains down the risers
+const TER_DRAW=(function(){try{const T=WATER.terraces({name:GH_TER.name,line:[GH_TER.A,GH_TER.B],levels:GH_TER.levels,riser:GH_TER.riser,width:GH_TER.w,speed:.9,spread:2});
+  return WATER.drawTerraces(T,{pool:{color:0xffffff,roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1,gradient:{centre:GH_LIN(0x58b4c0).getHex(),rim:GH_LIN(0xe6e2d2).getHex(),power:1.4}},
+   fall:{color:GH_LIN(0xeef2ee),opacity:.8,rowStep:1,cols:8,spray:false,plungeR:4,renderOrder:3}});}catch(e){reportErr('terraces: '+e.stack);return null;}})();
+window._water={terraces:!!TER_DRAW,creek:false,pools:0,poolMeshes:0,springs:LAYOUT.springs.length,lake:!!LAKE_DRAW};
