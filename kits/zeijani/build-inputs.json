@@ -101,7 +101,7 @@
     "kits/zeijani/src/54-zj-square.js": "52159c0924ac3755a6e09f3b92b97f58b13412bfe3b0c512833507d2612fbeb1",
     "kits/zeijani/src/55-zj-trades.js": "12698e500eb34324085c1656b8c910a0b8a946f87432d81d899b8ed6fb5d582c",
     "kits/zeijani/src/89-rows.js": "fb42ef2ad01f78bcc2624bade9541cb220c69b206ae86cd9950586120466b14a",
-    "kits/zeijani/src/90-scene.js": "3a1f22c9be41cfd05bdacc929922f11ec06d3e97729cc366ea6f0d8329b058cd",
+    "kits/zeijani/src/90-scene.js": "e31f5d82ae66ff7e632844e48bed8318165a6ae5b20bd38cfce443011120a8d3",
     "kits/zeijani/src/91-probe.js": "f3a46f392e79513694e0646313c7b15c3661f92efed1b6d74dfb4db479c2264d",
     "kits/zeijani/src/91f-furnish.js": "ab0f30560ee132c605f8054bc157fa8fb2e05d1eb93f5dbfcb1acbf5f3e11609",
     "kits/zeijani/src/91n-night.js": "e15b022c24cc9c55ce8f774db3b55ec304c147cfded0a4dc4890a5216cb474b5",
@@ -300,14 +300,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/zeijani/build-manifest.json": "e3b2a6e1057184efebab0f7f2ee5b7a25d183fe8baa20053adfaa42c4b01750a",
-    "kits/zeijani/dist/zeijani.html": "de80b73300a535e7198c72ac71286d4e939d1c20dc27a6a11aa8f23bf5b665a6",
+    "kits/zeijani/build-manifest.json": "da96e3f3df0a69d422ddbe9be3f79f6661675df9ecf7e3e447eff6ba55cdc3a5",
+    "kits/zeijani/dist/zeijani.html": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb",
     "kits/zeijani/dist/zeijani.tex.zeijani-2.js": "881e7a27f42349b5d442de90ce86cd9f4aa7fea57978a41474b1bca8c0ac7b05",
     "kits/zeijani/dist/zeijani.tex.zeijani.js": "0dc86061bed335851815799d84c9e7e5644f2fdab44311df7fc9d652f5c25816"
    },
    "outputs_raw": {
-    "kits/zeijani/build-manifest.json": "e3b2a6e1057184efebab0f7f2ee5b7a25d183fe8baa20053adfaa42c4b01750a",
-    "kits/zeijani/dist/zeijani.html": "de80b73300a535e7198c72ac71286d4e939d1c20dc27a6a11aa8f23bf5b665a6",
+    "kits/zeijani/build-manifest.json": "da96e3f3df0a69d422ddbe9be3f79f6661675df9ecf7e3e447eff6ba55cdc3a5",
+    "kits/zeijani/dist/zeijani.html": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb",
     "kits/zeijani/dist/zeijani.tex.zeijani-2.js": "881e7a27f42349b5d442de90ce86cd9f4aa7fea57978a41474b1bca8c0ac7b05",
     "kits/zeijani/dist/zeijani.tex.zeijani.js": "0dc86061bed335851815799d84c9e7e5644f2fdab44311df7fc9d652f5c25816"
    }
