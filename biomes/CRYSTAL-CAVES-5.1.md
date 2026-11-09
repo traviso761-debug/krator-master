@@ -71,6 +71,15 @@ At 0.75 g a crystal beam carries three-quarters of Earth's load, so beams longer
 
 ## 3. The flood basalts: amethyst geodes
 
+**Aura and bismuth** (2026-11-09: `KGEODE.MINERALS` has both, `natural: false`; the coulee keeps them rare, 6 per cent). Neither grows in a
+flood basalt's gas bubbles. Where they would belong (*proposed*):
+- **Aura: the Godthrone's titanium basalt**, Godstep's four ponded steps (`biomes/godstep/PLAN.md`). Aura quartz is quartz under a
+  titanium oxide film; geodes in a titanium-rich flow whose crystals took a film from the rock make that a place, not a trick. The
+  Rift ("iridescence is the rule", `LORE.md`) is the second choice. Not the Gills: their plan keeps iridescence out.
+- **Bismuth: the Throne's vents** (`biomes/throne`, `--station vents`). Hopper crystals grow only from a melt; a fumarole whose
+  sulphides break down to native bismuth (melting at 271 C) in pockets of a vent chimney, cooling to hoppers with an oxide film, is
+  the one natural setting. The lava delta and the caldera are the next choices; an Ancient foundry's slag (the metropolis) a third.
+
 - **Where.** The basalt province (`kits/resources/GEOLOGY.md`):
   - n semiarid's plateau (~800,470) and the scablands' coulee walls (station 1, the west breach, cuts through the stacked
     flows and shows their geode-bearing tops);

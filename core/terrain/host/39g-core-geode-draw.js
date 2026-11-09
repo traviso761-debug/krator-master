@@ -16,14 +16,15 @@
 // radius. Colours per mineral are this file's MC (the host may pass o.colors to override one).
 //
 //   const G = KGEODE.draw(recs, {THREE, points (KGEODE.line's), maps {skin, agate, amethyst} (THREE textures or null), lamp (a uniform
-//        {value} 0..1: a light near the eye's glow), tint (amethyst's colour, 0x8a5cc8), colors {mineral: {...MC row}}})
-//     -> {group (not added), counts {name: instances}, tris}
+//        {value} 0..1: a light near the eye's glow), tint (amethyst's colour, 0x8a5cc8), colors {mineral: {...MC row}}, chunk (240 m), range (1: a scale on the pieces'
+//        ranges: shells and nodules 240 m, faces 170, druse and tourmaline 90, the other crystals 60)})
+//     -> {group (not added), counts {name: instances}, tris, meshes, update(eye) (the host's tick: hides the chunks out of range)}
 (function(root){
   'use strict';
   var K=root.KGEODE;if(!K)throw new Error('host/39g-core-geode-draw: load core/terrain/39f-core-geode.js first');
   /* the minerals' colours: bowl (the druse), gem (the crystals' foot), tip (their tip), iri (thin film) */
   var MC={amethyst:{bowl:0x8a5cc8,gem:0x8a5fc8,tip:0x5a2a9a},quartz:{bowl:0xdfe3ea,gem:0xe8ecf2,tip:0xf6f8fb},
-    celestine:{bowl:0x6f9fd4,gem:0x7fb4e6,tip:0xa4ccf0},chalcedony:{bowl:0x5fa8cc,gem:0x74c0dc,tip:0xb0e0ec},
+    celestine:{bowl:0x5a88c0,gem:0xa8d0f4,tip:0xd8ecfa},chalcedony:{bowl:0x5fa8cc,gem:0x74c0dc,tip:0xb0e0ec},
     watermelon:{bowl:0xb49ad6,gem:0x2f8a52,tip:0xe0508a},aura:{bowl:0x2a3a8a,gem:0x3048a0,tip:0x3048a0,iri:2},bismuth:{bowl:0x707078,gem:0x9a9aa0,tip:0x9a9aa0,iri:1}};
   /* the rinds' bands, inner to outer: [r0, r1, rgb] on the unit face (the druse inside .66) */
   var RIND={
@@ -100,16 +101,19 @@
     var mGem=mk('kgeode-gem',{color:0xffffff,roughness:.12,metalness:0,map:M.amethyst||null,transparent:true,opacity:.86,flatShading:true},{along:true,glow:1});
     var mPillar=mk('kgeode-pillar',{color:0xffffff,roughness:.4,metalness:0,transparent:true,opacity:.9},{along:true,glow:.6});
     var mMetal=mk('kgeode-hopper',{color:0xffffff,roughness:.22,metalness:.85,flatShading:true,side:T.DoubleSide},{along:true});
-    // ---- the instances, in buckets (a piece and a material); each bucket's instance colour, second colour and film
+    // ---- the instances, in buckets (a piece and a material) split into chunks (o.chunk m square, 240): each chunk one mesh, shown while the eye
+    //      is within the bucket's range of it (update(eye), the host's tick); its instance colour, second colour and film
+    var CH=o.chunk==null?240:o.chunk,RS=o.range==null?1:o.range;
     var B={},m4=new T.Matrix4(),q=new T.Quaternion(),q2=new T.Quaternion(),up=new T.Vector3(0,1,0),v=new T.Vector3(),sc=new T.Vector3(),dn=new T.Vector3(),WH=new T.Color(1,1,1);
-    function bucket(key,geo,mat,label){return B[key]||(B[key]={geo:geo,mat:mat,label:label,M:[],C:[],C2:[],I:[]});}
+    function bucket(key,geo,mat,label,range){return B[key]||(B[key]={geo:geo,mat:mat,label:label,range:range*RS,ch:{}});}
     function rot(dir,spin){dn.set(dir[0],dir[1],dir[2]).normalize();q.setFromUnitVectors(up,dn);q2.setFromAxisAngle(dn,spin);return q.premultiply(q2);}
-    function put(b,x,y,z,qq,sx,sy,sz,c,c2,iri){m4.compose(v.set(x,y,z),qq,sc.set(sx,sy,sz));b.M.push(m4.toArray());c=c||WH;c2=c2||c;b.C.push(c.r,c.g,c.b);b.C2.push(c2.r,c2.g,c2.b);b.I.push(+iri||0);}
-    var faceB={};Object.keys(RIND).forEach(function(k){faceB[k]=bucket('face:'+k,face(RIND[k]),mFace,'A geode broken open (its rind: '+k+')');});
-    var bNod=bucket('nodules',gNod,mSkin,'A geode, whole (a knobbly nodule weathered out of the flow top)'),bShell=bucket('shells',gShell,mShell,'A geode broken open (its shell)');
-    var bDruse=bucket('druse',gDruse,mDruse,'A geode broken open (its druse)'),bBotry=bucket('botryoidal',gBotry,mBotry,'A geode broken open (botryoidal chalcedony)');
-    var bPoint=bucket('points',gPoint,mGem,'Crystal points'),bBlade=bucket('blades',gBlade,mGem,'Celestine blades'),bPrism=bucket('prisms',gPrism,mGem,'Watermelon tourmaline'),
-      bPillar=bucket('pillars',gPillar,mPillar,'Chalcedony pillars'),bHopper=bucket('hoppers',gHopper,mMetal,'Bismuth hoppers');
+    function put(b,x,y,z,qq,sx,sy,sz,c,c2,iri){var ci=Math.floor(x/CH),cj=Math.floor(z/CH),key=ci+','+cj,h=b.ch[key]||(b.ch[key]={i:ci,j:cj,M:[],C:[],C2:[],I:[]});
+      m4.compose(v.set(x,y,z),qq,sc.set(sx,sy,sz));h.M.push(m4.toArray());c=c||WH;c2=c2||c;h.C.push(c.r,c.g,c.b);h.C2.push(c2.r,c2.g,c2.b);h.I.push(+iri||0);}
+    var faceB={};Object.keys(RIND).forEach(function(k){faceB[k]=bucket('face:'+k,face(RIND[k]),mFace,'A geode broken open (its rind: '+k+')',170);});
+    var bNod=bucket('nodules',gNod,mSkin,'A geode, whole (a knobbly nodule weathered out of the flow top)',240),bShell=bucket('shells',gShell,mShell,'A geode broken open (its shell)',240);
+    var bDruse=bucket('druse',gDruse,mDruse,'A geode broken open (its druse)',90),bBotry=bucket('botryoidal',gBotry,mBotry,'A geode broken open (botryoidal chalcedony)',90);
+    var bPoint=bucket('points',gPoint,mGem,'Crystal points',60),bBlade=bucket('blades',gBlade,mGem,'Celestine blades',60),bPrism=bucket('prisms',gPrism,mGem,'Watermelon tourmaline',90),
+      bPillar=bucket('pillars',gPillar,mPillar,'Chalcedony pillars',60),bHopper=bucket('hoppers',gHopper,mMetal,'Bismuth hoppers',60);
     /* one broken half: its frame (centre, rotation, scales), its shell, face, druse and crystals */
     var lp=new T.Vector3(),ld=new T.Vector3(),gm=new T.Matrix4(),gq=new T.Quaternion();
     function half(r,id,cx,cy,cz,dir,spin){var min=K.MINERALS[r.mineral]?r.mineral:'amethyst',MI=K.MINERALS[min],mc=MC[min]||MC.amethyst,iri=mc.iri||0,sh=r.shape||[1,1];
@@ -121,10 +125,10 @@
         var w=wob(a)*RB;lp.set(Math.cos(a)*Math.sin(th)*w,-Math.cos(th)*RB*BY,Math.sin(a)*Math.sin(th)*w);
         var inward=[-lp.x,-lp.y*.6+.35,-lp.z];ld.set(inward[0],inward[1],inward[2]).normalize().applyQuaternion(gq);lp.multiplyScalar(.97).applyMatrix4(gm);
         var t=u(id,30+k),sp=u(id,40+k)*6.3;
-        if(MI.crust==='points'){var L=r.r*(.28+.3*t);put(bPoint,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),L*.32,L,L*.32,gem,tip,iri);}
-        else if(MI.crust==='blades'){if(k>=5)continue;var Lb=r.r*(.35+.35*t);put(bBlade,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),Lb*.55,Lb,Lb*.55,gem,tip,false);}
+        if(MI.crust==='points'){var L=r.r*(.36+.36*t);put(bPoint,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),L*.36,L,L*.36,gem,tip,iri);}
+        else if(MI.crust==='blades'){if(k>=5)continue;var Lb=r.r*(.45+.4*t);put(bBlade,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),Lb*.62,Lb,Lb*.62,gem,tip,false);}
         else if(MI.crust==='pillars'){var Lp=r.r*(.22+.3*t);put(bPillar,lp.x,lp.y,lp.z,rot([0,1,0],sp),r.r*.13,Lp,r.r*.13,gem,tip,false);}
-        else if(MI.crust==='prisms'){if(k>=6)continue;lp.set(Math.cos(a)*.22*t,-.42,Math.sin(a)*.22*t).applyMatrix4(gm);ld.set(Math.cos(a)*.14+.22,1,Math.sin(a)*.14).normalize().applyQuaternion(gq);
+        else if(MI.crust==='prisms'){if(k>=6)continue;lp.set(Math.cos(a)*.2*t,-.42,Math.sin(a)*.2*t).applyMatrix4(gm);ld.set(Math.cos(a)*.07+.2,1,Math.sin(a)*.07).normalize().applyQuaternion(gq);
           var Lt=r.r*(1.05+.55*t);put(bPrism,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),Lt*.11,Lt,Lt*.11,gem,tip,false);}
         else if(MI.crust==='hoppers'){var Lh=r.r*(.22+.22*t);put(bHopper,lp.x,lp.y,lp.z,rot([ld.x,ld.y,ld.z],sp),Lh,Lh,Lh,WH,WH,true);}}}
     recs.forEach(function(r){var n=r.n||[0,1,0],sh=r.shape||[1,1];
@@ -139,13 +143,16 @@
     /* the lining (KGEODE.line's): white quartz at the rim, the mineral's colour deepening to the back */
     pts.forEach(function(p){var min=MC[p.mineral]?p.mineral:'amethyst',dp=p.depth==null?.6:p.depth,g=new T.Color(0xe4e2ea).lerp(col(min,'gem'),Math.min(1,dp*2.4)).lerp(col(min,'tip'),Math.max(0,dp-.45)*1.4);
       put(bPoint,p.x-p.d[0]*.02,p.y-p.d[1]*.02,p.z-p.d[2]*.02,rot(p.d,p.spin),p.len*p.w,p.len,p.len*p.w,g,g.clone().multiplyScalar(.82),MC[min].iri||0);});
-    // ---- the meshes
-    var grp=new T.Group();grp.name='geodes';var tris=0,counts={};
-    Object.keys(B).forEach(function(key){var b=B[key],n=b.M.length;counts[key]=n;if(!n)return;var geo=b.geo.clone();
-      geo.setAttribute('aIri',new T.InstancedBufferAttribute(new Float32Array(b.I),1));geo.setAttribute('aCol2',new T.InstancedBufferAttribute(new Float32Array(b.C2),3));
-      var im=new T.InstancedMesh(geo,b.mat,n);for(var i=0;i<n;i++)im.instanceMatrix.array.set(b.M[i],i*16);im.instanceMatrix.needsUpdate=true;
-      im.instanceColor=new T.InstancedBufferAttribute(new Float32Array(b.C),3);if(im.computeBoundingSphere)im.computeBoundingSphere();
-      im.name='geodes:'+key;im.userData.host=true;im.userData.geode=true;im.userData.inspectLabel=b.label;if(b.mat.transparent)im.renderOrder=2;grp.add(im);
-      tris+=n*(geo.index?geo.index.count:geo.attributes.position.count)/3;});
-    return {group:grp,counts:counts,tris:Math.round(tris)};};
+    // ---- the meshes: one a bucket's chunk, its centre and reach kept for update()
+    var grp=new T.Group();grp.name='geodes';var tris=0,counts={},live=[];
+    Object.keys(B).forEach(function(key){var b=B[key];counts[key]=0;Object.keys(b.ch).sort().forEach(function(ck){var h=b.ch[ck],n=h.M.length;if(!n)return;counts[key]+=n;
+      var geo=b.geo.clone();geo.setAttribute('aIri',new T.InstancedBufferAttribute(new Float32Array(h.I),1));geo.setAttribute('aCol2',new T.InstancedBufferAttribute(new Float32Array(h.C2),3));
+      var im=new T.InstancedMesh(geo,b.mat,n);for(var i=0;i<n;i++)im.instanceMatrix.array.set(h.M[i],i*16);im.instanceMatrix.needsUpdate=true;
+      im.instanceColor=new T.InstancedBufferAttribute(new Float32Array(h.C),3);if(im.computeBoundingSphere)im.computeBoundingSphere();
+      im.name='geodes:'+key+'@'+ck;im.userData.host=true;im.userData.geode=true;im.userData.inspectLabel=b.label;if(b.mat.transparent)im.renderOrder=2;grp.add(im);
+      var cy=0;for(i=0;i<n;i++)cy+=h.M[i][13]/n;live.push({m:im,x:(h.i+.5)*CH,y:cy,z:(h.j+.5)*CH,r:b.range+CH*.75});
+      tris+=n*(geo.index?geo.index.count:geo.attributes.position.count)/3;});});
+    /* update(eye): each chunk shown while the eye is within its bucket's range of the chunk (a whole chunk at once: no pop inside one) */
+    function update(e){if(!e)return;for(var i=0;i<live.length;i++){var L=live[i],dx=e.x-L.x,dy=e.y-L.y,dz=e.z-L.z;L.m.visible=dx*dx+dy*dy+dz*dz<L.r*L.r;}}
+    return {group:grp,counts:counts,tris:Math.round(tris),meshes:live.length,update:update};};
 })(typeof window!=='undefined'?window:globalThis);

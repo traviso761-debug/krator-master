@@ -100,6 +100,9 @@ station 1 shows small amethyst geodes in the walls and on the talus, and one wal
   hopper crystals in a rainbow film). The coulee's palette: amethyst .55, quartz .12, chalcedony .1, watermelon .1, celestine .07, aura
   .04, bismuth .02. Geodes are ovals, not balls; half the broken loose ones lie with their other half beside them; the walk-in geode's
   lining grows longer and darker toward the back of its pocket.
+- **Drawn by distance** (2026-11-09): every piece is chunked (240 m squares) and a chunk shows only while the eye is within its piece's
+  range (shells and nodules 240 m, faces 170, druse and tourmaline 90, the other crystals 60: `KGEODE.draw`'s `update`, this page's tick).
+  The geodes hold about 0.85 M triangles in 729 meshes; standing by one, about 40 meshes and 43 k triangles are drawn.
 
 Core adoption for the geodes: `core/terrain/39-core-cavern.js` (KCAVERN),
 `39f-core-geode.js`, `host/39e-core-cavern-draw.js` and `host/39g-core-geode-draw.js`, added to this overlay's `CORE` in `build.py`.
