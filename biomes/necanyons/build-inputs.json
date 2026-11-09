@@ -49,7 +49,7 @@
     "biomes/necanyons/src/00-head.html": "5ac3e7776a2efd6866d6d3da74d83086900a65f2761fc429b1f2286db9363ae0",
     "biomes/necanyons/src/45-host-stage.js": "90f79aeb9ec237699166ef48550d5a5406fadc2b652c79f81304a5906a29d284",
     "biomes/necanyons/src/46-biome-necanyons-layout.js": "0600b23aceb94d6684abdaf7bc13a80f4e08db17e61eba83098ea5275d16a829",
-    "biomes/necanyons/src/47-host-land.js": "0eff6e1df9ea36a5ba74531df0aa90fe0381348c126d1c6cec94b9d23869182f",
+    "biomes/necanyons/src/47-host-land.js": "9bf4da2284c64034e7ba3d2692559e92af96fbedbc2eb1a5a8d04e0fbf8a0feb",
     "biomes/necanyons/src/50-biome-necanyons-species.js": "8e7d6956e8c37b729e4014008d4dcfad3e6fa8f2495815ac7e493bc182102ed0",
     "biomes/necanyons/src/55-biome-necanyons-trees.js": "e16713f21ac36534e6ccd58eede4d225cc69dc2c047aefa89a5652f3bdf5ac2d",
     "biomes/necanyons/src/57-biome-necanyons-carnivores.js": "d32bdfce1e07438581434e25a6c0b69ee113883952f7b58285e5b3e8c23a8d1d",
@@ -196,18 +196,18 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/necanyons/dist": "379307a5641cca885b9b5dc007346f4bd5d1ce8c4d808f7864752efc5fa89050",
+    "biomes/necanyons/dist": "d9ec7323cbd08282b8cbf343958ceb35d3296a86db2b4d0ee5613366d13456bd",
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons.html": "a5f34c76402bdd86ceadb03dbe1eff9fd7a702ce95866364ece1a6cc38493894",
+    "biomes/necanyons/dist/necanyons.html": "919f9f84bd22048b65aaef29129f3e7cc8058bbd6e3195e3a1f67037c7d3cd32",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "b91de95e389ad18d25546f7b3ca715f85d8b9e58ec33ad2c1d8b8b3689767032",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons.html": "a5f34c76402bdd86ceadb03dbe1eff9fd7a702ce95866364ece1a6cc38493894",
+    "biomes/necanyons/dist/necanyons.html": "919f9f84bd22048b65aaef29129f3e7cc8058bbd6e3195e3a1f67037c7d3cd32",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "b91de95e389ad18d25546f7b3ca715f85d8b9e58ec33ad2c1d8b8b3689767032",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    }
@@ -259,7 +259,7 @@
     "biomes/necanyons/build.py": "6ed3583dc690f99494613813a00a0596ff534c55753663afa393f30dd8fc074f",
     "biomes/necanyons/src/00-head.html": "5ac3e7776a2efd6866d6d3da74d83086900a65f2761fc429b1f2286db9363ae0",
     "biomes/necanyons/src/46-biome-necanyons-layout.js": "0600b23aceb94d6684abdaf7bc13a80f4e08db17e61eba83098ea5275d16a829",
-    "biomes/necanyons/src/47-host-land.js": "0eff6e1df9ea36a5ba74531df0aa90fe0381348c126d1c6cec94b9d23869182f",
+    "biomes/necanyons/src/47-host-land.js": "9bf4da2284c64034e7ba3d2692559e92af96fbedbc2eb1a5a8d04e0fbf8a0feb",
     "biomes/necanyons/src/50-biome-necanyons-species.js": "8e7d6956e8c37b729e4014008d4dcfad3e6fa8f2495815ac7e493bc182102ed0",
     "biomes/necanyons/src/55-biome-necanyons-trees.js": "e16713f21ac36534e6ccd58eede4d225cc69dc2c047aefa89a5652f3bdf5ac2d",
     "biomes/necanyons/src/57-biome-necanyons-carnivores.js": "d32bdfce1e07438581434e25a6c0b69ee113883952f7b58285e5b3e8c23a8d1d",
@@ -408,19 +408,19 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/necanyons/dist": "4e260faadabffeba67215c87f47cc11ee0d324a4fea0104769eebb596e74f08e",
+    "biomes/necanyons/dist": "1f8f549f83230a833a8129574d15c1bd056cc479c85b08f181067ea36833dd72",
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "biomes/necanyons/stations/benches": "87957a18d6f1573ea63a1deb2e118cfe681b9c2454996b84098cecfb4105de99",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons-benches.html": "bcfd620f45da70302e8d6d7028feb43a6a82295db47facb4e5d77be87e58da87",
+    "biomes/necanyons/dist/necanyons-benches.html": "a077901dac1b02e4ac74dcbbcbbc9cabbc7122a3505de0ac441d2f352cb94ddd",
     "biomes/necanyons/dist/necanyons-benches.tex.hyperjungle.js": "aef4872638dd4568f1f0f3ce44336de6ca04b6f1f0a4604215ff8a37947e0ab1",
     "biomes/necanyons/dist/necanyons-benches.tex.necanyons.js": "949e440ca95a53a5378feac73539cefb3f33fcbad3c8a84625b12361a73e03e9"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons-benches.html": "bcfd620f45da70302e8d6d7028feb43a6a82295db47facb4e5d77be87e58da87",
+    "biomes/necanyons/dist/necanyons-benches.html": "a077901dac1b02e4ac74dcbbcbbc9cabbc7122a3505de0ac441d2f352cb94ddd",
     "biomes/necanyons/dist/necanyons-benches.tex.hyperjungle.js": "aef4872638dd4568f1f0f3ce44336de6ca04b6f1f0a4604215ff8a37947e0ab1",
     "biomes/necanyons/dist/necanyons-benches.tex.necanyons.js": "949e440ca95a53a5378feac73539cefb3f33fcbad3c8a84625b12361a73e03e9"
    }
@@ -472,7 +472,7 @@
     "biomes/necanyons/build.py": "6ed3583dc690f99494613813a00a0596ff534c55753663afa393f30dd8fc074f",
     "biomes/necanyons/src/00-head.html": "5ac3e7776a2efd6866d6d3da74d83086900a65f2761fc429b1f2286db9363ae0",
     "biomes/necanyons/src/46-biome-necanyons-layout.js": "0600b23aceb94d6684abdaf7bc13a80f4e08db17e61eba83098ea5275d16a829",
-    "biomes/necanyons/src/47-host-land.js": "0eff6e1df9ea36a5ba74531df0aa90fe0381348c126d1c6cec94b9d23869182f",
+    "biomes/necanyons/src/47-host-land.js": "9bf4da2284c64034e7ba3d2692559e92af96fbedbc2eb1a5a8d04e0fbf8a0feb",
     "biomes/necanyons/src/50-biome-necanyons-species.js": "8e7d6956e8c37b729e4014008d4dcfad3e6fa8f2495815ac7e493bc182102ed0",
     "biomes/necanyons/src/55-biome-necanyons-trees.js": "e16713f21ac36534e6ccd58eede4d225cc69dc2c047aefa89a5652f3bdf5ac2d",
     "biomes/necanyons/src/57-biome-necanyons-carnivores.js": "d32bdfce1e07438581434e25a6c0b69ee113883952f7b58285e5b3e8c23a8d1d",
@@ -622,19 +622,19 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/necanyons/dist": "ec614b21fd8daf27577f98f83e08d3dadc0bad65187969a53b297a20ec2079d2",
+    "biomes/necanyons/dist": "63257aac302ec9d9f9ffb7442a3853b372fbd8dbd6cebcd9e1187f0d241ca039",
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "biomes/necanyons/stations/savanna": "060f83e94c94b85fe36ab3dae962b20c1af06c1eea8404d36624cceaa23edcab",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons-savanna.html": "fc3711776807e2a1e02a642a85dc711f0b4543d567fb3daae2085452f3ed4bae",
+    "biomes/necanyons/dist/necanyons-savanna.html": "4dda1a5f05dfc9d95df3520ba4373a5fe62739e5c63fbcb511612c57c8466464",
     "biomes/necanyons/dist/necanyons-savanna.tex.hyperjungle.js": "8af1fdf228ccef1ebc7597608cd0f3d21096e2cfbbc468a77f0dee60aae0f05f",
     "biomes/necanyons/dist/necanyons-savanna.tex.necanyons.js": "21fe9b018e4541c864f3eddfeac8c87d35223656df2aed02975716ac78ab56b7"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons-savanna.html": "fc3711776807e2a1e02a642a85dc711f0b4543d567fb3daae2085452f3ed4bae",
+    "biomes/necanyons/dist/necanyons-savanna.html": "4dda1a5f05dfc9d95df3520ba4373a5fe62739e5c63fbcb511612c57c8466464",
     "biomes/necanyons/dist/necanyons-savanna.tex.hyperjungle.js": "8af1fdf228ccef1ebc7597608cd0f3d21096e2cfbbc468a77f0dee60aae0f05f",
     "biomes/necanyons/dist/necanyons-savanna.tex.necanyons.js": "21fe9b018e4541c864f3eddfeac8c87d35223656df2aed02975716ac78ab56b7"
    }
