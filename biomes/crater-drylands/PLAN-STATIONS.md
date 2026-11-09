@@ -98,14 +98,44 @@ Every look change has a switch, for the owner's look pass.
 | core/host | `khost.FULL` (the whole interface), `--station`, LF writes, the shared pack generator | `build.py` | |
 
 **Not taken, and why:**
-- **The N/S split and the stations** (`south`, `edge`, `salt`). The split is settled, but S's page is station `south`, which is
+- **The N/S split and station `south`.** The split is settled, but S's page is station `south`, which is
   `biomes/hyperjungle/PLAN-LANDS.md`'s step J7: it takes the se rim's species (rust miombo, rain rose, incense) from `biomes/savannarim`,
-  which is not built (J4-J6), and the black mallee is still a proposal (PLAN-LANDS question 7). `edge` and `salt` come after `south`.
-  Renaming the page to `-n` with no `-s` beside it would split nothing, so the page keeps its name until `south` is built.
+  which is not built (J4-J6), and the black mallee is still a proposal (PLAN-LANDS question 7). Renaming the page to `-n` with no `-s`
+  beside it would split nothing, so the page keeps its name until `south` is built. `edge` and `salt` (N's) are built this turn, ahead of
+  `south` (below): the handoff builds each station at its kit's turn, and nothing they need waits on another kit.
 - **KFIRE** (H3: the kit's fire onto `core/biome/38-core-fire.js`): `core/biome/test-fire.js` loads this kit's `52` in place as the
   reference KFIRE is proved against, bit for bit. Moving the kit onto KFIRE needs that test changed first (core's, not this turn's).
 - **The reflections switch** (58) and **the water's fields** (60): the seep is 23 m across, drawn after the build; the kit's own seep
   field already gives the flora and the ground their wet ring.
 - **Wet ground (R9)**: the climate is dry, and the ground's texture units go to KGROUND and the horizon.
-- **Mounds, wadi, talus, the polygon pans** (the row's terrain and ground kinds): no dry pan or termite country on station 1's showcase;
-  they belong to `edge` (mounds) and `salt` (the polygon crust).
+- **Wadi, talus, tibasalt strata** (the row's other kinds): none on N's ground as built; the strata are S's. The mounds and the pans are
+  on `edge` and `salt` (below).
+
+## Stations 3 and 4, as built (pair 12, 2026-11-09)
+
+Both are N's, built from the kit's own `src/` with a forked stage (`stations/<name>/45-host-stage.js`) and the station's own fragments;
+`src/` reads a `STATION` object through guarded knobs (the sky's site, the count of older fires, the build call, the page's title, views
+and checks), so station 1 builds and runs exactly as before. `python3 build.py --station edge` and `--station salt`.
+
+**Station 3, the savannah edge** (`dist/crater-drylands-edge.html`; the sky at px 437, 457). The plain falls gently toward SW Bay, three
+lower kopjes (the waterhole kopje with the seep at its foot), the plain's wet doubled (.22), and **grass fires every year or two**: twelve
+recent fires (three weeks to four years) and four older ones, so the mosaic is finer and mostly bloom and regrowth. **SW Bay's umbrella
+thorn and gate baobab as kin** (`BIO.kin('swbay.thorn')`, `'swbay.baobab'`; EXCHANGES.md "swbay → crater"): grown by swbay's builders
+(its fragments read in place) with the kin's record, the thorn at .8 and the baobab at .65 of the bay's size, tagged Aw and BSh, by
+hashed cell on the open grass. **Termite mounds** (`KSTACKS.mounds`, the H10 mound kind): fluted clay spires on a skirt, 2.5-7 m,
+by 90 m cell on the open grass, in the plain's red soil, one merged mesh. **The season** on the clock: the grass straw and thinned in the
+dry, green in the wet (core/biome's season on the kit's grass, `BIO.bindSeason`; `?season=0`). **nwbay's flame-crown** planted round the
+waterhole (`BIO.kin('nwbay.flamecrown')`, nwbay read in place). `?mounds=0`, `?kin=0`. Not taken: k-guilin's banyan and silvergrass
+(k-guilin exports no `make`/`grow` or floor-plant function yet), the grass taller than the steppe's (the kit's floor is station 1's).
+
+**Station 4, the salt floor** (`dist/crater-drylands-salt.html`; px 485, 376). A flat floor (8 m swells), two low kopjes, **six salt
+pans** in its lows (core/water ext 54, `WATER.pan`: crust cracked in polygons, the cracks and low cells flooding with brine after rain;
+the ground flattened under each), **two brine pools** (`WATER.still` with the brine look: red-brown to turquoise to a salt rim), the
+washes and the seep. **Two kits share the floor** under their own placement masks: the kit's scrub on the salt steppe (XS), and the
+**abyssal savannah** (`biomes/abyssal-savannah`, read in place) on the fresher **XV islands** (a few metres proud of the floor) and on
+the pans' rims, where its pan zone puts its pan saltbush and blue pan-grass. Its zone bands are opened to the flat floor
+(`ABSAV.setZoneBands`) and its burn mosaic is this page's fire history, so one fire map runs over both. Few fires (four recent, five
+older). **The kiln's scrub at its largest** in the dense air: the kit's trees a fifth bigger (`BIO.host.treeScale`). `?absav=0`. Not taken:
+the Steampits' geyser field reaching in (the geyser kit's run-off and sinter apron), nwbay's cinder pine as the row's upright, unsheared
+cousin (nwbay's builder has no such option), the dry season's dust (the air's load is on, with the storm on the panel, but no season
+drives it).

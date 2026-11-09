@@ -7,7 +7,7 @@ function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='li
 // mesh is painted by the mosaic it made, so the burns read from any distance: black char with grey ash, the bloom's
 // green flush and its drifts of pink, orange, violet, yellow and crimson, red soil under young scrub, straw and olive
 // in the old scrub; pink-grey granite on the kopjes, pale sand in the washes, green at the seep.
-const FIRE=CRATERDRY.fireHistory({R:TERR.R,cell:20,wind:FIRE_WIND,fires:FIRES,old:9,seed:520031});
+const FIRE=CRATERDRY.fireHistory({R:TERR.R,cell:20,wind:FIRE_WIND,fires:FIRES,old:typeof STATION!=='undefined'&&STATION.oldFires!=null?STATION.oldFires:9,seed:520031});
 const ageLabel=a=>a<.15?Math.max(1,Math.round(a*52))+' weeks':a<1.5?Math.round(a*12)+' months':a.toFixed(1)+' years';
 // where each recent fire actually burned (its cells' centre and extent), registered so the inspector names a burn
 FIRE.fires.forEach((f,fi)=>{if(f.failed||f.ago>7)return;let sx=0,sz=0,n=0;
@@ -104,7 +104,7 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};sh.uniforms.uGranB={value:CRATERDRY.GRANITE_B?CRATERDRY.GRANITE_B.map:(CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX)};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};if(GLAY.wash)sh.uniforms.uGWash={value:GLAY.wash};if(GLAY.grit)sh.uniforms.uGGrit={value:GLAY.grit};if(GLAY.seep)sh.uniforms.uGSeep={value:GLAY.seep};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec4 aGL;varying vec4 vGL;attribute float aSeep;varying float vSeep;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;vSeep=aSeep;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uGranB,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec4 vGL;varying float vSeep;float cdM1,cdM2;'+(KG_LY?'\n'+KHOOK.EYE+KG_EYE:'')+(GLAY?'uniform sampler2D uGBurn,uGSoil;'+(GLAY.wash?'uniform sampler2D uGWash;':'')+(GLAY.grit?'uniform sampler2D uGGrit;':'')+(GLAY.seep?'uniform sampler2D uGSeep;':''):'')+FIRE_GLSL)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uGranB,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec4 vGL;varying float vSeep;float cdM1,cdM2;\n'+(KG_LY?KHOOK.EYE+KG_EYE:'')+(GLAY?'uniform sampler2D uGBurn,uGSoil;'+(GLAY.wash?'uniform sampler2D uGWash;':'')+(GLAY.grit?'uniform sampler2D uGGrit;':'')+(GLAY.seep?'uniform sampler2D uGSeep;':''):'')+FIRE_GLSL)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // the granite's speckle on the kopjes (a custom sampler is not decoded from sRGB: pow 2.2 by hand)
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+

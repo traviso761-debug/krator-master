@@ -115,17 +115,17 @@ const FIREFX=(function(){
  const px=-FIRE_WIND[1],pz=FIRE_WIND[0],ex=cx+px*170-FIRE_WIND[0]*70,ez=cz+pz*170-FIRE_WIND[1]*70;
  return[ex,terrainH(ex,ez)+26,ez,cx-FIRE_WIND[0]*20,terrainH(cx,cz)+5,cz-FIRE_WIND[1]*20];}
 
- // ---- the controls: a row of buttons, F to arm a click-to-light, the status
+ // ---- the controls: a row of buttons, L to arm a click-to-light, the status
  const bar=document.createElement('div');bar.id='firebar';bar.style.cssText='display:flex;gap:4px;align-items:center;flex-wrap:wrap';
  const btn=(t,f,ti)=>{const b=document.createElement('button');b.textContent=t;b.title=ti||'';b.onclick=f;bar.appendChild(b);return b;};
- const bArm=btn('Light a fire (F)',()=>arm(!st.armed),'then click the ground');
+ const bArm=btn('Light a fire (L)',()=>arm(!st.armed),'then click the ground');
  btn('×1',()=>{st.speed=1;status();},'real time');btn('×10',()=>{st.speed=10;status();});btn('×60',()=>{st.speed=60;status();});
  btn('Put it out',out);
  const lab=document.createElement('span');lab.style.cssText='font:12px ui-monospace,monospace;color:#f0dcc4;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:4px';bar.appendChild(lab);
  // the bar goes in the host's #ui (99-host-take.js hands it over as a control)
  function arm(on){st.armed=on;bArm.style.outline=on?'2px solid #ff8a30':'';renderer.domElement.style.cursor=on?'crosshair':'';status();}
  function status(){lab.textContent=st.armed?'click the ground to light a fire':!st.on?'no fire':'fire '+(st.t/60).toFixed(1)+' min · ×'+st.speed+' · '+(st.active||0)+' flames';}
- // F arms it: the host's key (99-host-take.js keys.f), so it does not also walk
+ // L arms it: the host's key (99-host-take.js keys.l; 2026-11-09: it was F, which took the host's walk off this page)
  const ray=new THREE.Raycaster();
  function click(cx,cy){ray.setFromCamera(new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1),camera);const h=ray.intersectObject(GROUND,false)[0];arm(false);
   if(!h)return null;const r=light(h.point.x,h.point.z,{t:0});if(!r.ok){lab.textContent='nothing burns there: '+r.why;}return r;}

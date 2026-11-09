@@ -3,7 +3,8 @@
 
   python3 build.py                     station 1, the burn mosaic (src/ as it is) -> dist/crater-drylands.html
   python3 build.py --station <name>    a station (stations/<name>/: its host fragments replace src/'s of the same name; its
-                                       station.json names the page, "out"). None is built yet (PLAN-STATIONS.md: south, edge, salt)
+                                       station.json names the page, "out"): edge (station 3, the savannah edge) and salt (station 4, the
+                                       salt floor); south (station 2) waits on biomes/savannarim (PLAN-STATIONS.md)
 
   00-head.html      page shell, opens <script>
   10..49            BIOME CORE  (biome-core: engine-independent kit)
@@ -55,7 +56,7 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # STATIONS (PLAN-STATIONS.md; the Throne's and Korona's pattern): python3 build.py --station <name> builds stations/<name>/, whose host
-# fragments replace src/'s of the same name; its station.json names the page ("out"). None is built yet: `south`, `edge` and `salt` are planned
+# fragments replace src/'s of the same name; its station.json names the page ("out"). Built: `edge`, `salt`; `south` waits (PLAN-STATIONS.md)
 STN_ROOT=os.path.join(HERE,'stations')
 if os.path.isdir(STN_ROOT):
     BSRC.variants([['--station',_s] for _s in sorted(os.listdir(STN_ROOT)) if os.path.isfile(os.path.join(STN_ROOT,_s,'station.json'))])   # every station's page
@@ -88,8 +89,11 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
-    for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
-    for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))   # another kit read in place
+    # station.json: "core" {fragment name: its path from the repo root} (more core modules), "kits" {slot: a fragment of another kit, from this
+    # folder} (a kit read in place: the salt floor's abyssal savannah, the edge's swbay trees), "packs" {pack: that kit's folder} (its library),
+    # "drop" [names] (a src/ fragment the station has no use for)
+    for f,p in STN.get('core',{}).items(): PATH[f]=os.path.join(ROOT,p)
+    for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f,h in (('44-core-farfield-draw.js','44-core-farfield-draw.js'),('45-core-horizon-shade.js','45-core-horizon-shade.js')):
@@ -158,9 +162,22 @@ for f in CORE_MAT:
 # Named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
 sys.path.insert(0,os.path.join(ROOT,'tools','textures'))
 import matlib_pack as _mp
+sys.path.insert(0,os.path.join(ROOT,'kits','fauna'))
+import fauna_bundle as _fb
+def _mp_fams(d):
+    import json as _j
+    pj=os.path.join(d,'tex','pack.json')
+    return sorted(_j.load(open(pj,encoding='utf-8')).get('families',{})) if os.path.isfile(pj) else []
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'craterdry'),
-         khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands')}   # the host's edit layer (core/host FULL)
+         **{'44b-host-matlib-pack-%s.js'%_pn:_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=[f for f in _mp_fams(os.path.normpath(os.path.join(HERE,_pd)))
+             if f.startswith(('ground','tower','jetty')) or (_pn in STN.get('packOnly',{}) and f not in STN['packOnly'][_pn])])
+            for _pn,_pd in STN.get('packs',{}).items()},   # a station's other kits' packs, without their ground layers; "packOnly" {pack: [families]} keeps only those
+         khost.EDITS_JS:khost.edits_js(HERE,'crater-drylands'),   # the host's edit layer (core/host FULL)
+         # kits/fauna's groups that hold this biome's animals (KratorFauna: the bison, the ash runner, the salamander, the Scyvoi's mounts and the
+         # wild steppe's), for the editor's fauna mode (99-host-take.js; sedesert's way); no texture pack, as sedesert's
+         '39-host-fauna.js':_fb.bundle(['wild','ash','livestock','mounts'],tex=False)}
 for f in VIRTUAL: PATH[f]=None
+for f in STN.get('drop',[]): PATH.pop(f,None)
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:

@@ -16,8 +16,11 @@ var CRATERDRY={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);CRATERDRY.C=C;
 CRATERDRY.TAGS={climate:'tropic',aridity:'arid..semiarid',abyssal:false,riparian:'both',koppen:['BSh','BWh','Aw']};
-// the classes of the region: an ESTIMATE (the scale model's climate rasters were not read for this kit: KNOWN_ISSUES)
-CRATERDRY.KOPPEN={BSh:.6,BWh:.25,Aw:.15};
+// the classes of the region, from the scale model (4.23, tools/scale-model/survey_biomes.py, 2026-10-26; PLAN-STATIONS.md "The ground"): each
+// land's share of its area by class, and the two lands together (N 51.5k km² surveyed, S 7.1k). 2026-11-09: the estimate (BSh .6, BWh .25,
+// Aw .15) replaced. Only the probe's tag check reads it (a species' Koppen tags must lie inside it): no placement moves
+CRATERDRY.KOPPEN_LANDS={n:{BSh:.69,Aw:.18,BWh:.04,Csa:.04,XS:.03,XV:.02},s:{BSh:.72,Aw:.17,XS:.07,Af:.03,XV:.01}};
+CRATERDRY.KOPPEN={BSh:.70,Aw:.18,XS:.04,BWh:.04,Csa:.03,XV:.01};
 CRATERDRY.BARREN=[];
 
 // ---------------------------------------------------------------- palettes
@@ -355,8 +358,10 @@ CRATERDRY.MAT={
  plume:BIO.leafMat(TX.plume,'plume',{swayW:'(position.y)',swayA:.06,alphaTest:.4}),
  bloom:BIO.leafMat(TX.bloom,'bloom',{swayW:'1.0',swayA:.05,alphaTest:.4}),
  lily:BIO.leafMat(TX.lily,'lily',{swayW:'(position.y)',swayA:.05,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
- bunch:BIO.leafMat(TX.bunch,'bunch',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
+ // THE SEASON on the grass where the host asks (BIO.host.seasons: the savannah edge, station 3): the dry season thins it and turns it straw,
+ // the rains bring it back green (core/biome's season, BIO.SEASON from core/clock by the host's BIO.bindSeason). No host asking: as before
+ grass:BIO.leafMat(TX.grass,'grass',Object.assign({swayW:'(position.y)',swayA:.12,alphaTest:.4},BIO.host.seasons?{season:{drop:.3,colour:0xc8b070,k:.65}}:{})),
+ bunch:BIO.leafMat(TX.bunch,'bunch',Object.assign({swayW:'(position.y)',swayA:.12,alphaTest:.4},BIO.host.seasons?{season:{drop:.25,colour:0xc0a868,k:.6}}:{})),
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
  spike:BIO.leafMat(TX.spike,'spike',{swayW:'(position.y)',swayA:.05,alphaTest:.42}),
  lupine:BIO.leafMat(TX.spike,'lupine',{swayW:'(position.y)',swayA:.05,alphaTest:.42}),

@@ -344,6 +344,9 @@ B[10]=function(T,st,lv){const S=SP[T.sp],R=T.crownR,H=T.H,a=T.age,flower=a>=.3&&
  BIO.put('rosette',[T.x,T.y0-.05,T.z],qEuler(0,rr(0,TAU),0),[R,R*.8,R],rc);
  if(flower||spent){const sh=H-R*.4,sw=R*rr(.45,.6);
   BIO.put('spire',[T.x,T.y0+R*.35,T.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[sw,sh,sw],spent?leafCol([0x7a5a3a,0x6a4a30],1.0):bright(C(0x7a9a5a).lerp(C(pick(PAL.swordSpike)),.3),1.2));
+  /* the spike's stalk (the final rebuild, pair 12): the spike is a leaf-material item, which the attach audit counts as a card, so its flowers
+     floated (20 on station 1, 123 on the savannah edge). A rod up its axis, inside it, as the yucca's spike has: no random number drawn */
+  if(flower&&lv===2)BIO.beam('rod',[T.x,T.y0+R*.35,T.z],[T.x,T.y0+R*.35+sh*.9,T.z],sw*.16,sw*.06,bright(C(0x7a9a5a),1.0));
   if(flower&&lv===2)for(let k=0,n=ri(16,26);k<n;k++){const u=rr(.1,.85),q=rr(0,TAU),r=sw*.5*Math.sin(Math.PI*Math.min(1,u*.92+.04))*1.05;
    BIO.put('bloom',[T.x+Math.cos(q)*r,T.y0+R*.35+sh*u,T.z+Math.sin(q)*r],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),rr(.14,.22),leafCol(PAL.swordSpike,1.35,.02,.06,.05));}
   st.spikes++;}
@@ -446,7 +449,9 @@ CRATERDRY.PASSES=[
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
 // make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed from the kit's stream, the age of the ground's
 // last burn from the fire history). grow(T,lv): build that one tree at level lv (2 hero, 1 mid, 0 the impostor).
-CRATERDRY.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
+// BIO.host.treeScale (a station's stage: the salt floor's dense air grows the kiln's scrub at its largest, 1.2): every size times it, after the
+// draws, so no random number moves. No host asking: 1, as before
+CRATERDRY.make=function(sp,x,y,z){const S=SP[sp],k=BIO.host.treeScale==null?1:BIO.host.treeScale;return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1])*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
 CRATERDRY.grow=function(T,lv){means();const st=newStats();
  T.lv=lv;if(lv===0){if(!SP[T.sp].far)return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();
