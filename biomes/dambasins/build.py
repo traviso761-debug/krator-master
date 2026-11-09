@@ -61,11 +61,59 @@ EXTRA_CORE = {'08-core-rand.js': os.path.join(ROOT, 'core', 'rand', '08-core-ran
               '52-core-tags-vocab.js': os.path.join(ROOT, 'core', 'tags', '52-core-tags-vocab.js'),
               '53-core-tags-host.js': os.path.join(ROOT, 'core', 'tags', '53-core-tags-host.js'),
               '40-core-basin.js': os.path.join(ROOT, 'core', 'terrain', '40-core-basin.js'),
+              '44-core-farfield.js': os.path.join(ROOT, 'core', 'terrain', '44-core-farfield.js'),   # KFAR: the land past the grid (91e, 2026-11-08)
+              '44-core-farfield-draw.js': os.path.join(ROOT, 'core', 'terrain', 'host', '44-core-farfield-draw.js'),
               '89-atmos-3d-dust.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-3d-dust.js'),   # the bed's dust (91c)
               '89-atmos-4-weather.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-4-weather.js'),   # the weather (91d, 2026-10-26)
               '89-atmos-9-host.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-9-host.js'),   # its selector
               '89-atmos-e-weatherhost.js': os.path.join(ROOT, 'core', 'atmos', 'host', '89-atmos-e-weatherhost.js')}   # ATMOS.bindWeather (91d)
-PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js', '52-db-flotsam.js', '91b-db-flotsam.js', '91c-db-dust.js', '91d-db-weather.js'}   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream
+PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js', '52-db-flotsam.js', '91b-db-flotsam.js', '91c-db-dust.js', '91d-db-weather.js',
+                   '79-db-site.js', '91y-db-dam.js', '91e-db-far.js', '44-core-farfield.js', '44-core-farfield-draw.js'}   # the stations' sites and the graveyard's dam (2026-11-08): KRAND hashes, no stream   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream
+
+
+# A STATION'S FLORA (PLAN.md, D2; 2026-11-08): the biome kits that own the ground a station lies over, read in place, the way
+# Ys reads the north-west bay's (settlements/ys/build.py, BIO_VENDORED): the shared biome core and the kit's fragments under a
+# '91m-bio-' prefix (after the scene and the wrecks, before the camera: the ground is final, and the first frame has them),
+# the kit's library pack beside them, and the station's own binding (its target's 91m-bio-45-*.js and 91m-bio-89-*.js). The
+# biome core and the kits are closure-scoped and keep their own PRNG, so the port lineage's rule check (its column-0 names,
+# its seeds) leaves them out (BIO_PREFIX).
+BIO_PREFIX = '91m-bio-'
+BIO_CORE = {'05-core-space.js': ('core', 'space', '20-core-space.js'), '10-core-head.js': ('core', 'biome', '10-core-head.js'),
+            '20-core-kit.js': ('core', 'biome', '20-core-kit.js'), '30-core-foliage.js': ('core', 'biome', '30-core-foliage.js'),
+            '31j-core-joint.js': ('core', 'biome', '31j-core-joint.js'), '40-core-place.js': ('core', 'biome', '40-core-place.js')}
+TARGET_KITS = {
+    # station 2: the n semiarid kit on the old bed (its overlay's flora, nsemiarid/PLAN.md section 5)
+    'graveyard': {'pack': ('nsemiarid', 'nsemiarid'),
+                  'files': {'50-ns-species.js': ('biomes', 'nsemiarid', 'src', '50-biome-nsemiarid-species.js'),
+                            '55-ns-trees.js': ('biomes', 'nsemiarid', 'src', '55-biome-nsemiarid-trees.js'),
+                            '60-ns-floor.js': ('biomes', 'nsemiarid', 'src', '60-biome-nsemiarid-floor.js'),
+                            '70-ns-build.js': ('biomes', 'nsemiarid', 'src', '70-biome-nsemiarid.js')}},
+    # station 3: the hyperjungle on the east bed (Korona's warm wet floor, biomes/korona/BIOME-API.md), read inside a closure of its
+    # own: its 41-globals declares the core's helpers at top level, which the port lineage declares too (open/close below)
+    'east': {'pack': ('hyperjungle', 'hyperjungle'),
+             'core': {'32-core-variants.js': ('core', 'biome', '32-core-variants.js'), '33-core-fungoid.js': ('core', 'biome', '33-core-fungoid.js'),
+                      '34-core-impostor.js': ('core', 'biome', '34-core-impostor.js'), '35-core-anim.js': ('core', 'biome', '35-core-anim.js'),
+                      '36-core-walker.js': ('core', 'biome', '36-core-walker.js'), '38-core-fire.js': ('core', 'biome', '38-core-fire.js')},
+             'files': {'47-hj-globals.js': ('biomes', 'hyperjungle', 'src', '41-hyperjungle-globals.js'),
+                       '50-hj-species.js': ('biomes', 'hyperjungle', 'src', '50-biome-hyperjungle-species.js'),
+                       '55-hj-trees.js': ('biomes', 'hyperjungle', 'src', '55-biome-hyperjungle-trees.js'),
+                       '60-hj-floor.js': ('biomes', 'hyperjungle', 'src', '60-biome-hyperjungle-floor.js'),
+                       '65-hj-dress.js': ('biomes', 'hyperjungle', 'src', '65-biome-hyperjungle-dress.js'),
+                       '70-hj-build.js': ('biomes', 'hyperjungle', 'src', '70-biome-hyperjungle.js')},
+             'virtual': {'46-hj-open.js': '\n(function(){   /* the hyperjungle closure (build.py TARGET_KITS) */\n',
+                         '71-hj-close.js': '\nwindow.HYPERJUNGLE=HYPERJUNGLE;})();   /* only the kit leaves its closure */\n'}},
+}
+
+
+def target_kits(target):
+    """{fragment name: path} of the biome core and the kits a station reads in place, or {}."""
+    T = TARGET_KITS.get(target)
+    if not T:
+        return {}
+    out = {BIO_PREFIX + f: os.path.join(ROOT, *p) for f, p in BIO_CORE.items()}
+    out.update({BIO_PREFIX + f: os.path.join(ROOT, *p) for f, p in T.get('core', {}).items()})
+    out.update({BIO_PREFIX + f: os.path.join(ROOT, *p) for f, p in T['files'].items()})
+    return out
 
 
 def discover():
@@ -103,6 +151,7 @@ def build_one(target, do_checks):
     if clash:
         sys.exit('target %s shadows a fragment: %s' % (target, ', '.join(sorted(clash))))
     paths.update(tgt)
+    paths.update(target_kits(target))                       # a station's flora: the biome core and its kits, in place
     order = sorted(paths)
 
     bodies = {}
@@ -116,9 +165,16 @@ def build_one(target, do_checks):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[PB.MATLIB_PACK] = matlib_pack.fragment(PORT, PACK_KEY, side=side)
     order = sorted(order + [PB.MATLIB_PACK])
+    if target in TARGET_KITS:                               # the kit's own pack, before its species read it
+        kd, key = TARGET_KITS[target]['pack']
+        bodies[BIO_PREFIX + '44-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', kd), key, side=side)
+        order = sorted(order + [BIO_PREFIX + '44-matlib-pack.js'])
+        for vf, text in TARGET_KITS[target].get('virtual', {}).items():   # a kit's closure, opened and closed
+            bodies[BIO_PREFIX + vf] = text
+            order = sorted(order + [BIO_PREFIX + vf])
 
     if do_checks:
-        errs = PB.check(order, bodies)
+        errs = PB.check([f for f in order if not f.startswith(BIO_PREFIX)], bodies)   # the biome's closure-scoped files keep their own rules
         if errs:
             print('BUILD RULES FAILED (%s):' % target)
             for e in errs:
