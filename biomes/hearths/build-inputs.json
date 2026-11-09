@@ -13,7 +13,7 @@
     "biomes/hearths/stations/crystals/48-hearths-hold.js": "a1374ae4955390e39ba4c3b295941227fdeda84dc02d4110f4a01506ea76a265",
     "biomes/hearths/stations/crystals/49-host-stage.js": "fbba4277e1f8d32886a7d21f12be6d1917c5b8bd8dc4b4c0f4b51861cbebda28",
     "biomes/hearths/stations/crystals/84-host-rock.js": "ee0f4d6fbd04bb7c7530c486e776de71d589e0eaa66d869dd5ab0eb7ce3d79fa",
-    "biomes/hearths/stations/crystals/85-host-crystals.js": "7208f0c056620e0832083a9bbabc648f3130a64966baf837fae806007b81e7e5",
+    "biomes/hearths/stations/crystals/85-host-crystals.js": "f365b41a41f16bcb1f7f4c1003371a5ab2378d28f992f1366126e4aaf5cec4a1",
     "biomes/hearths/stations/crystals/86-host-massing.js": "0e82b26329ba0d3784cf9b38d289cc67da063b0b6e6e5c26765cc319ef3d0e84",
     "biomes/hearths/stations/crystals/89x-host-air.js": "395f30497784f7c15a067d072fc4fcfc49730c841d27f853be208ab6fea394ee",
     "biomes/hearths/stations/crystals/89z-host-build.js": "53a377ef4c24119b4aa3d14578b49b7836825713e42a31d3ae22cb4378f48a4b",
@@ -93,10 +93,10 @@
     "tools/textures": "7e37dbe9b1a3c605bca4b92ea3378d577e3091fb2a562c9c04341a417cc5818c"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "181659b00e7dc81af1ccc7d63c9a566ad2be7409648a6b7f578fa0747a451b4a"
+    "biomes/hearths/dist/hearths-crystals.html": "1451afca3b9ea1fe448352f7862a8c59c1a5a87871d3aec67253e2f531ac54ff"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "181659b00e7dc81af1ccc7d63c9a566ad2be7409648a6b7f578fa0747a451b4a"
+    "biomes/hearths/dist/hearths-crystals.html": "1451afca3b9ea1fe448352f7862a8c59c1a5a87871d3aec67253e2f531ac54ff"
    }
   }
  }

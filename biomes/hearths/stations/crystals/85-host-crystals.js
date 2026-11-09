@@ -16,16 +16,25 @@ function crystalHook(mat,key,k){KHOOK.add(mat,'selenite',{uniforms:()=>Object.as
 const SEL_TEX=(function(){const e=KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('hearths','crystal.selenite');return e?KMAT.textures(e,{aniso:4}).map:null;})();
 const CRYSTALS=(function(){const t0=performance.now();
  // ---- the unit pieces: a flattened hexagonal prism with a chisel tip (y 0..1), and a thin bladed point (y 0..1)
- function prism(){const n=6,fl=.62,P=[],U=[];const ring=(y,s)=>{const r=[];for(let i=0;i<n;i++){const a=i/n*TAU;r.push([.5*s*Math.cos(a),y,.5*s*fl*Math.sin(a)]);}return r;};
-  const b=ring(0,1),m=ring(.86,1),tip=[[-.18,1,0],[.18,1,0]];
-  const tri=(a,b2,c,ua,ub,uc)=>{P.push(...a,...b2,...c);U.push(...ua,...ub,...uc);};
-  for(let i=0;i<n;i++){const j=(i+1)%n,u0=i/n,u1=(i+1)/n;tri(b[i],m[i],b[j],[u0,0],[u0,3.4],[u1,0]);tri(b[j],m[i],m[j],[u1,0],[u0,3.4],[u1,3.4]);
-   const T=Math.cos(i/n*TAU+.5/n*TAU)>0?tip[1]:tip[0];tri(m[i],T,m[j],[u0,3.4],[(u0+u1)/2,4],[u1,3.4]);tri(b[j],[0,0,0],b[i],[u1,0],[(u0+u1)/2,0],[u0,0]);}
-  tri(m[0],tip[1],tip[0],[0,3.4],[.1,4],[0,4]);tri(m[3],tip[0],tip[1],[.5,3.4],[.5,4],[.6,4]);
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.computeVertexNormals();return g;}
- function blade(){const w=.5,dp=.11,P=[[-w,0,0],[0,0,dp],[w,0,0],[0,0,-dp]],A=[0,1,0],T=[[0,1],[1,2],[2,3],[3,0]],pos=[],uv=[];
-  T.forEach(([i,j])=>{pos.push(...P[i],...P[j],...A);uv.push(i/4,0,j/4,0,.5,1);});pos.push(...P[0],...P[2],...P[1],...P[0],...P[3],...P[2]);uv.push(0,0,1,0,.5,0,0,0,.5,0,1,0);
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;}
+ /* a closed piece from triangles, each wound to face out from the axis point (0, mid, 0): a closed convex piece needs no other rule, and a
+    triangle wound inward would be culled (the tips went missing so, 2026-11-09) */
+ function piece(mid){const P=[],U=[];
+  const tri=(a,b,c,ua,ub,uc)=>{const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],nx=e1[1]*e2[2]-e1[2]*e2[1],ny=e1[2]*e2[0]-e1[0]*e2[2],nz=e1[0]*e2[1]-e1[1]*e2[0];
+   const ox=(a[0]+b[0]+c[0])/3,oy=(a[1]+b[1]+c[1])/3-mid,oz=(a[2]+b[2]+c[2])/3;
+   if(nx*ox+ny*oy+nz*oz<0){P.push(...a,...c,...b);U.push(...ua,...uc,...ub);}else{P.push(...a,...b,...c);U.push(...ua,...ub,...uc);}};
+  const geo=()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.computeVertexNormals();return g;};
+  return {tri,geo};}
+ /* the prism: six sides to a shoulder at 0.86, then a chisel tip on a short ridge along x: the shoulder's corners on +x close to the ridge's +x
+    end, those on -x to its -x end, and where a side's corners part, two triangles bridge to the ridge (the tip is closed all round) */
+ function prism(){const n=6,fl=.62,K=piece(.5);const ring=y=>{const r=[];for(let i=0;i<n;i++){const a=i/n*TAU;r.push([.5*Math.cos(a),y,.5*fl*Math.sin(a)]);}return r;};
+  const b=ring(0),m=ring(.86),tA=[-.18,1,0],tB=[.18,1,0],T=i=>m[i][0]>=0?tB:tA;
+  for(let i=0;i<n;i++){const j=(i+1)%n,u0=i/n,u1=(i+1)/n,um=(u0+u1)/2;
+   K.tri(b[i],m[i],b[j],[u0,0],[u0,3.4],[u1,0]);K.tri(b[j],m[i],m[j],[u1,0],[u0,3.4],[u1,3.4]);K.tri(b[j],[0,0,0],b[i],[u1,0],[um,0],[u0,0]);
+   K.tri(m[i],T(i),m[j],[u0,3.4],[um,4],[u1,3.4]);if(T(i)!==T(j))K.tri(m[j],T(i),T(j),[u1,3.4],[um,4],[u1,4]);}
+  return K.geo();}
+ function blade(){const w=.5,dp=.11,P=[[-w,0,0],[0,0,dp],[w,0,0],[0,0,-dp]],A=[0,1,0],K=piece(.45);
+  [[0,1],[1,2],[2,3],[3,0]].forEach(([i,j])=>K.tri(P[i],P[j],A,[i/4,0],[j/4,0],[.5,1]));K.tri(P[0],P[2],P[1],[0,0],[1,0],[.5,0]);K.tri(P[0],P[3],P[2],[0,0],[.5,0],[1,0]);
+  return K.geo();}
  // ---- where the light falls: the vents' daylight down each throat (a cone widening as it falls), the wells' glow round their mouths
  const glowAt=(x,y,z)=>{let g=0;for(const T of CAVE.throats){const d=Math.hypot(x-T.c[0],z-T.c[1]),fall=Math.max(0,T.ground-y);g=Math.max(g,smooth(3+fall*.32,.5,d)*smooth(-2,6,fall));}
   for(const W of CAVE.wells)g=Math.max(g,.45*smooth(14,1,Math.hypot(x-W.c[0],y-W.mouth,z-W.c[1])));return g;};
