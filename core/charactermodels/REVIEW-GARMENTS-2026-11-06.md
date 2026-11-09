@@ -308,3 +308,12 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   outfits worse, the Beast Rider peasant man's "under" 4541 to 7523 and the Chichani noble man's "inside" 17416 to
   22711 (lips held together fold some open parts over themselves). Not applied by count; the page copy
   `dist/cosmetic-p1-lip.html` and `apply_p1.py lip` are there for a shot sheet of those ten outfits when the GPU is free.
+- **The stride gate on the hull, rejected by measurement.** The hull on garments with chains gated by the stride again
+  (`ew *= max(kcM, ceo)`, as round 5 had it), to test whether the hull applying at rest explains the whole-set "under"
+  regressions against the round-4 baseline: on the 66, "under" up 3.3 % and "inside" up 3.6 %, 18 outfits worse (the
+  Hykkousoi trade man's "under" 7059 to 11517 px, the Beast Rider trade man's 1515 to 5856, the Republic festival
+  noble's 1896 to 5259) against 7 better (the Izani noble man's "under" 7031 to 1906, the Dalab trade 2626 to 504, the
+  Dalab noble 2012 to 30). The at-rest hull is not the one cause: it helps the Izani and Dalab tops and hurts the
+  Hykkousoi, Beast Rider and Republic ones. Not applied. The "under" regressions against the baseline (the Izani
+  peasant 0 to 3616 in motion, the Beast Rider trade 55 to 4341 at rest) want their own bisection over the round-5
+  commits, outfit by outfit, with the page copies the sweeps used.

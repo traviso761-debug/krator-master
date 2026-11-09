@@ -58,12 +58,16 @@ As the last handoff said (chains, the capsule push, the hull, chainless pieces o
 
 ## Where Phase 1 stands
 
-Measured on page copies against the whole baseline (the review, section 6, has the numbers as they land):
-- the trouser squeeze extended to the seat's capsules (issue 1, shader);
-- the chains' heading eased from the hips' to the feet's below the knee (issue 8.1, `rigidTargets`);
-- an open part's two lips held to 1.2 x their rest distance (issue 12).
-The session's `apply_p1.py seat|heading|lip` applies a winner to both runtimes; the audit, the verifier and Godot's
-test run after, then one commit per change.
+Four candidates were measured on page copies against the whole baseline (the review, section 6, has the numbers);
+none is applied:
+- the trouser squeeze extended to the seat's capsules (issue 1, shader): no measurable change;
+- the chains' heading eased from the hips' to the feet's below the knee (issue 8.1, `rigidTargets`): worse, rejected;
+- an open part's two lips held to 1.2 x their rest distance (issue 12): mixed (skin down 12 %, six outfits worse), the
+  owner's call on a shot sheet of the ten affected outfits;
+- the hull on chained garments gated by the stride again (round 5's gate): worse, rejected.
+The reference build is worse than the round-4 baseline on "under" for several outfits outside the Chichani (the Izani
+peasant 0 to 3616 px in motion, the Beast Rider trade 55 to 4341 at rest): the next step is a bisection over the
+round-5 commits, one page copy per commit, run through the audit with `--known` and compared outfit by outfit.
 
 ## Left after that
 
