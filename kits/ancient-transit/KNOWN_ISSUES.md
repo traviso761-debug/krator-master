@@ -38,8 +38,10 @@
   metropolis branch, not on `main` yet) is the right thing; the records are heaps' worth of chunk records already.
 - [ ] **A gone span's deck is nowhere**: its piers stand bare and nothing lies below. Half of them should lie as a collapsed span does; the
   share is one line in `spansOf` when the owner says which.
-- [ ] **The ramps' landing roads run 80 m and stop**: a host joins them to its street grid (the repo README: roads connect to the network).
-  The demo's ramp roads end in the plain.
+- [ ] **A joined road's trim and carry are measured without the quake's shift**: `KTRANSIT.join` finds the first road a landing road crosses and
+  the road its end lies beside on the unshifted line, while the network's roads carry the shift; where the fault's slip is large (the demo's
+  west, under 5 m) the T may land a few metres off the kerb-line centre. A landing road that lands clear of every road (over 12 m from any
+  centre line) stays a free end, as before.
 - [ ] **Lamps on a cracked span stand on both sides**: only the cracked side's are dropped; a lamp standing at a cracked edge should lean out.
 - [ ] **The rails are a sweep every 6 m with a six-point profile**, the sleepers one instanced mesh of six triangles each: the cargo line is
   49 k triangles over 3.4 km, half of it sleepers. A line of 10 km wants the sleepers dropped past a few hundred metres (a LOD), and the
