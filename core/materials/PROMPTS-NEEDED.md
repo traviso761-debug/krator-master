@@ -461,6 +461,23 @@ Square, 2048x2048. Orthographic view of a single cut-out object centred in the f
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a clump of ghost pipe plants (Monotropa uniflora): waxy translucent white stems with small scale leaves, each bent over at the top into a nodding white bell-shaped flower, a faint pink tinge at the bases, seen from the side. Full colour: not tinted.
 ```
 
+### The savannah's base (`biomes/savannarim`, J4)
+
+`card.grass.elephant` (the blind grass; now card.rankgrass):
+```
+Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single clump of elephant grass (Pennisetum purpureum) seen from the side, filling the frame top to bottom: tall cane-like culms with joints, long flat arching leaf blades 2 to 4 cm wide with a pale midrib, a few buff cylindrical bristly flower plumes at the tops, the base dense and upright, nothing touching the frame edges at the sides. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`card.grass.themeda` (the red oat grass; now card.grass.dry):
+```
+Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single tussock of red oat grass (Themeda triandra) seen from the side: a dense base of fine leaves, arching stems carrying drooping clusters of large rust-red to bronze awned spikelets with long twisted dark awns, the leaves turning from green at the base to red-bronze at the tips. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`ground.ironstone` (the laterite pavements; now the ground's paint only):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a laterite pavement seen from above: a hard red-brown iron crust broken into irregular plates, strewn with round pisolitic ironstone gravel 0.5 to 2 cm across, dark purple-brown to rust, glossy where weathered, fine red dust in the cracks, a few dry grass stems lying across. Full colour: not tinted.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

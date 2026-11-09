@@ -59,6 +59,10 @@ Read before changing anything here. `build.py` prints the open count.
       bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models.
     - Taken as proposed, owner to confirm: question 3 (Screamer wood's theme, and the rumour that the Screamers' speech began with the
       groves: LORE.md section 6.7, a proposal).
+  - **J4** (`biomes/savannarim`, its own KNOWN_ISSUES.md): the station `north` now reads savannarim's species and grass passes in place
+    (`build.py` NEIGH `north`: its 50, 55, 60 and the `blind`/`grass` families) and grows the blind grass in its savannah gaps, with the
+    raiders' lanes. The savannarim pages read this kit's 41, 50, 52, 54-57 and 60 in place (the gallery forest, the outliers, the north's
+    bone giants and bloodwood), so a change here reaches them: rebuild `biomes/savannarim` and its stations with this kit.
 
 - [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
       the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two

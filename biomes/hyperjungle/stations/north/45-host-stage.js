@@ -137,7 +137,7 @@ const STATION_TAKE={title:'Krator biome — the hyperjungle: Screamer wood',pand
  more(V){const st=window._station||{},at=(s,dx,dy,dz,ty)=>{if(!s)return;V[s.label]=[s.x+dx,terrainH(s.x+dx,s.z+dz)+dy,s.z+dz,s.x,terrainH(s.x,s.z)+ty,s.z];};
   at(st.groveAt,-35,3,-25,30);at(st.boneAt,-260,20,-200,120);at(st.watcherAt,-45,2.5,-30,25);at(st.handAt,-30,6,-22,25);at(st.pipeAt,-5,1.6,-4,.6);at(st.bloodAt,-30,3,-20,12);},
  checks(add){const st=window._station||{},n=st.n||{};
-  add('the north species drawn',(()=>{const need={howlbamboo:1500,bonegiant:15,watcher:40,handflower:15,bloodwood:20,skullpod:60,widowhair:60,ghostpipe:30,devilsfingers:30},bad=Object.keys(need).filter(k=>!(((n[k]==null?0:n[k]))>=need[k]));
+  add('the north species drawn',(()=>{const need=Object.assign({howlbamboo:1500,bonegiant:15,watcher:40,handflower:15,bloodwood:20,skullpod:60,widowhair:60,ghostpipe:30,devilsfingers:30},typeof SAVRIM!=='undefined'?{blindgrass:3000}:{}),bad=Object.keys(need).filter(k=>!(((n[k]==null?0:n[k]))>=need[k]));
    return{ok:!bad.length,detail:Object.keys(need).map(k=>k+' '+((n[k]==null?0:n[k]))).join(', ')+(bad.length?'; short: '+bad.join(', '):'')};})());
   add('the howl bamboo howls (old culms bored) and flowers by cohort',(()=>{const b=st.bamboo||{};return{ok:b.groves>0&&b.holed>0&&b.holed<b.culms&&b.states&&Object.keys(b.states).length>=1&&(typeof KTAGS==='undefined'||!KTAGS.sound||b.sounds>0),
    detail:((b.groves==null?0:b.groves))+' groves, '+((b.culms==null?0:b.culms))+' culms ('+((b.holed==null?0:b.holed))+' bored), '+((b.sprays==null?0:b.sprays))+' sprays; '+(b.sounds==null?0:b.sounds)+' howling (H9 sound records); states '+JSON.stringify(b.states||{})};})());

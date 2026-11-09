@@ -16,6 +16,7 @@ proposed, owner to confirm**.
 |---|---|---|
 | J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
 | J3 | Screamer wood: H5 (the howl bamboo on `BIO.bamboo`, the Cut's reach on H1), the bone giants, the 7 others (`src/57`), the habit thinned (ironbark and ghostwood leading), the groves' howl (H9 sound records), the fauna hunted thin (H8) | `dist/hyperjungle-north.html` (`--station north`) |
+| J4 | `biomes/savannarim`, a new kit (its `PLAN.md` holds the core adoption): H3 (KFIRE), H10 (KSTACKS.mounds), H7 (the seasons), the savannah's base (red oat grass, blind grass, fan palm, umbrella thorn; the gallery forest and the outliers read in place) and the north savannah (the bone giants and bloodwood read in place); the hyperjungle's station `north` reads its blind grass | `biomes/savannarim/dist/savannarim-north.html` (`--station north`) |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 

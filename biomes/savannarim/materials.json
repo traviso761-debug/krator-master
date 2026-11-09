@@ -1,0 +1,104 @@
+{
+ "build": "savannarim",
+ "note": "The savannah rims' adapter onto the material library (core/materials/PLAN.md; biomes/hyperjungle/PLAN-LANDS.md section 10). Keys are the kit's slots (src/50 SAVRIM.MAT, the ground in 45, the mounds in 87). grass: the red oat grass on one plant of card.grass.dry (as eastabyss and swbay take it); blind: the blind grass on card.rankgrass, a stand-in until card.grass.elephant (PROMPTS-NEEDED.md section 37); fan: the fan palm's fronds on card.palm (base bottom); palmbark: its trunk; termite: the termite cathedrals (KSTACKS' uv in metres); groundDetail: the savannah's litter as KGROUND's detail layer. Run python3 tools/textures/pack.py biomes/savannarim after any change, then python3 build.py (and --station east, --station north).",
+ "size": 512,
+ "families": {
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "blind": {
+   "lib": "card.rankgrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "fan": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "base": "bottom"
+  },
+  "palmbark": {
+   "lib": "bark.palm",
+   "scale": [
+    3,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "termite": {
+   "lib": "earth.termite",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "groundDetail": {
+   "lib": "ground.savanna.litter",
+   "scale": [
+    3,
+    3
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  }
+ }
+}

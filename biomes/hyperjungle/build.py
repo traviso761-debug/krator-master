@@ -156,7 +156,9 @@ for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
 # families those builders draw with
 import json as _json
 NEIGH={'lake':{'geyser':(['50-biome-geyser-species.js','55-biome-geyser-trees.js'],'GEYSER',['bark0','strap','rosette'])},
-       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})}}.get(STATION,{})
+       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})},
+       # Screamer wood's savannah gaps (J4, 2026-11-08): biomes/savannarim's blind grass, its species and grass passes read in place
+       'north':{'savannarim':(['50-biome-savrim-species.js','55-biome-savrim-trees.js','60-biome-savrim-floor.js'],'SAVRIM',['blind','grass'])}}.get(STATION,{})
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
