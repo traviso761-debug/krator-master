@@ -225,8 +225,8 @@
    "sha256": "bdf8f925d628b7cb94c58bce78129520bc7e5a26b997d2edb616341965804100"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 7849587,
-   "sha256": "a1562ed4b7aee6e39c566951e7c3911112063038dff69c83bb77d49a4e7bf4ea"
+   "bytes": 7851292,
+   "sha256": "5213c2ebb3093cf6d4122cc5f4beba18a4f317a781118370a7e622eb0a5488ac"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8223489,
@@ -329,8 +329,8 @@
    "sha256": "e20494466e216b835a4fa2ba296efd1dc479ace2600af38c669573fd9e2f48e6"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1261159,
-   "sha256": "44815abb8ad0e9de68c537967d84a1ec225675f047a90037606747838355e33f"
+   "bytes": 1351026,
+   "sha256": "ec81333ac64dad6aa6d696bb5a3f81a8544e16135acd8c2439dd69838be35d61"
   },
   "biomes/throne/dist/throne.html": {
    "bytes": 1188419,
