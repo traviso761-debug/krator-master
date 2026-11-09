@@ -151,14 +151,61 @@ TRADES_JS = r"""([census,neg])=>{let T=(typeof BR_TRADES!=='undefined'?BR_TRADES
  T.forEach(r=>{if(census.indexOf(r.trade)<0)bad.push(r.trade+': not a census trade');});
  const na=T.filter(r=>r.na).length;
  return {ok:bad.length===0,detail:bad.length?bad.slice(0,4).join('; '):census.length+' census trades: '+(census.length-na)+' carried, '+na+' na'};}"""
-PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn}))"
+PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn,doors:(b.doors||[]).filter(d=>d.leaf).map(d=>({id:d.id,at:d.at,w:d.w,h:d.h,locked:d.locked}))}))"
 TOWN_JS = """(defs)=>defs.map(d=>{ const P=window._ports; if(!P) return {err:'no window._ports'};
   const ms=P.find(d); if(!ms.length) return {err:'no mark '+d.kind+' '+d.id};
-  const b=P.box(d); return {box:{min:b.min,max:b.max},inst:b.inst,tris:b.tris,furn:P.furn(d)}; })"""
+  const b=P.box(d);
+  /* its doors: the KDOOR records whose leaves (54-openings.js: an instance of the doorleaf or doorlacq bucket, D.idx) the
+     mark drew, in its local frame, as built */
+  const T=window.GPORT||window.MPORT, F=d.frame||T.find(d)[0].frame, doors=[];
+  T.find(d).forEach(mk=>['doorleaf','doorlacq'].forEach(fam=>{const k='box|'+fam,a=mk.s.b[k]||0,z=mk.e.b[k]||0;
+    KDOOR.list.forEach(D=>{ if(D.fam!==fam||D.idx<a||D.idx>=z||!KPORT.keep(d,F,D.at[0],D.at[2])) return;
+      const l=KPORT.toLocal(F,D.at[0],D.at[2]); doors.push({id:D.id,at:[l[0],D.at[1]-(F.y||0),l[1]],w:D.w,h:D.h,locked:!!D.locked0}); }); }));
+  return {box:{min:b.min,max:b.max},inst:b.inst,tris:b.tris,furn:P.furn(d),doors:doors}; })"""
+
+# the openings (the faithful port, 2026-11-09): the towns' 54-openings.js, their glass and core/door sealed with them
+#  - every port door's leaf turns open and shut when its record is opened and shut (KDOORHOST.tick posing it): open, the
+#    leaf's middle stands off the doorway's line by half its width or more; shut, it stands in the doorway
+#  - every unlocked doorway and every cut window is a real opening: a short ray through its middle meets none of the
+#    building's fabric (the walls are hollow), and a cut window's ray meets its pane (KGLASS)
+#  - negative: the same rays moved along the wall past the opening must meet the fabric
+OPEN_JS = r"""(neg)=>{const K=_kit,G=K.portGroups||{},R=[],v=new THREE.Vector3(),ray=new THREE.Raycaster();
+ const leafDoors=KDOOR.list.filter(D=>D.mesh&&!D.locked);
+ const mid=m=>{m.updateMatrixWorld(true);m.geometry.computeBoundingBox();return m.geometry.boundingBox.getCenter(new THREE.Vector3()).applyMatrix4(m.matrixWorld);};
+ const off=D=>{const c=mid(D.mesh);return Math.abs((c.x-D.at[0])*Math.sin(D.yaw)+(c.z-D.at[2])*Math.cos(D.yaw));};
+ const was=new Map(leafDoors.map(D=>[D,D.target]));
+ const run=()=>{for(let i=0;i<80;i++)KDOORHOST.tick(0.05);};
+ leafDoors.forEach(D=>KDOOR.open(D,{by:'verify'}));run();
+ const notOpen=leafDoors.filter(D=>!(D.open===1&&off(D)>=D.w*0.45));
+ leafDoors.forEach(D=>KDOOR.close(D,{by:'verify'}));run();
+ const notShut=leafDoors.filter(D=>!(D.open===0&&off(D)<=Math.max(0.12,D.t)));
+ leafDoors.forEach(D=>{if(was.get(D)>0.5)KDOOR.open(D,{by:'verify'});});run();
+ R.push({name:'every port door opens and shuts (KDOOR records posed by KDOORHOST)',ok:leafDoors.length>0&&!notOpen.length&&!notShut.length,
+   detail:KDOOR.list.length+' records ('+KDOOR.list.filter(D=>D.locked).length+' locked, '+leafDoors.length+' leaves that open)'+(notOpen.length?'; not open: '+notOpen.slice(0,3).map(D=>D.id+' '+off(D).toFixed(2)).join(', '):'')+(notShut.length?'; not shut: '+notShut.slice(0,3).map(D=>D.id+' '+off(D).toFixed(2)).join(', '):'')});
+ const shift=neg?1:0;let nD=0,nW=0;const blocked=[],noGlass=[];
+ const hit=(g,o,dir,far,test)=>{ray.set(o,dir);ray.far=far;const ms=[];g.traverse(m=>{if(m.isMesh&&test(m))ms.push(m);});return ray.intersectObjects(ms,false).length>0;};
+ K.built.filter(b=>b.port).forEach(b=>{const g=G[b.key+'.v'+b.v];if(!g)return;g.updateMatrixWorld(true);
+  const ry=g.rotation.y,c=Math.cos(ry),s=Math.sin(ry),W=p=>new THREE.Vector3(g.position.x+p[0]*c+p[2]*s,g.position.y+p[1],g.position.z-p[0]*s+p[2]*c);
+  (b.doors||[]).filter(d=>!d.locked&&d.leaf).forEach(d=>{nD++;const nx=Math.sin(d.yaw+ry),nz=Math.cos(d.yaw+ry),ux=Math.cos(d.yaw+ry),uz=-Math.sin(d.yaw+ry);
+   const o=W(d.at);o.y+=Math.min(d.h*0.5,1.0);o.x+=nx*0.6+ux*shift*(d.w/2+0.5);o.z+=nz*0.6+uz*shift*(d.w/2+0.5);
+   if(hit(g,o,new THREE.Vector3(-nx,0,-nz),1.2,m=>m.userData.fabric))blocked.push(b.key+' v'+b.v+' '+d.id);});
+  (b.panes||[]).filter(p=>p.cut).forEach(p=>{nW++;const n=[p.n[0]*c+p.n[1]*s,-p.n[0]*s+p.n[1]*c],ux=n[1],uz=-n[0];
+   const o=W(p.at);o.x+=n[0]*0.35+ux*shift*(p.w/2+0.5);o.z+=n[1]*0.35+uz*shift*(p.w/2+0.5);const dir=new THREE.Vector3(-n[0],0,-n[1]);
+   if(hit(g,o,dir,0.6,m=>m.userData.fabric))blocked.push(b.key+' v'+b.v+' window @'+p.at.join(','));
+   else if(!shift&&!hit(g,o,dir,0.6,m=>m.userData.glass))noGlass.push(b.key+' v'+b.v+' @'+p.at.join(','));});});
+ R.push({name:'every unlocked doorway and every cut window is a real opening (no fabric in it), each cut window glazed (KGLASS)',
+   ok:nD>0&&nW>0&&!blocked.length&&!noGlass.length,blocked:blocked.length,n:nD+nW,
+   detail:nD+' doorways, '+nW+' cut windows'+(blocked.length?'; blocked '+blocked.length+': '+blocked.slice(0,4).join('; '):'')+(noGlass.length?'; no pane '+noGlass.length+': '+noGlass.slice(0,3).join('; '):'')});
+ return R;}"""
 
 
 def furn_key(r):
     return (r['key'], r['variant'], round(r['lx'], 2), round(r['ly'], 2), round(r['lz'], 2))
+
+
+def door_key(d):
+    """a door as both sides give it: its town id, its sill's middle in the local frame (1 cm), its size, locked as built"""
+    return (d['id'], round(d['at'][0], 2), round(d['at'][1], 2), round(d['at'][2], 2), round(d['w'], 2), round(d['h'], 2), bool(d['locked']))
 
 
 async def town_check(b, ports):
@@ -184,9 +231,12 @@ async def town_check(b, ports):
                 continue
             off = max(max(abs(p['fabric']['min'][i] - r['box']['min'][i]), abs(p['fabric']['max'][i] - r['box']['max'][i])) for i in range(3))
             fa, fb = sorted(map(furn_key, p['furn'])), sorted(map(furn_key, r['furn']))
-            ok = off <= TOL and fa == fb
-            lines.append('%s %s: box off %.3f m, %d furniture pieces%s' % ('ok  ' if ok else 'FAIL', tag, off, len(fb),
-                         '' if fa == fb else ' (the kit has %d, the town %d)' % (len(fa), len(fb))))
+            da, db = sorted(map(door_key, p['doors'])), sorted(map(door_key, r['doors']))
+            ok = off <= TOL and fa == fb and da == db
+            lines.append('%s %s: box off %.3f m, %d furniture pieces%s, %d doors%s' % ('ok  ' if ok else 'FAIL', tag, off, len(fb),
+                         '' if fa == fb else ' (the kit has %d, the town %d)' % (len(fa), len(fb)), len(db),
+                         '' if da == db else ' (the kit has %d, the town %d; first differing: %s)' % (
+                             len(da), len(db), next((str(x) for x in da if x not in db), next((str(x) for x in db if x not in da), '?')))))
             if not ok:
                 fails.append(tag)
     return fails, lines
@@ -249,6 +299,15 @@ async def run(a):
                 print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a census row %s) : ' % ('stripped of its buildings' if neg == 'strip' else 'dropped') + r['detail'])
                 if r['ok']:
                     fails.append('negative census ' + neg)
+            for r in await pg.evaluate(OPEN_JS, False):
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']:
+                    fails.append(r['name'])
+            r = (await pg.evaluate(OPEN_JS, True))[1]
+            caught = r['blocked'] >= r['n'] * 0.5
+            print(('  PASS  ' if caught else '  MISSED') + ' negative (the same rays moved along the wall past each opening meet the fabric) : %d of %d blocked' % (r['blocked'], r['n']))
+            if not caught:
+                fails.append('negative openings')
             ports = await pg.evaluate(PORTS_JS)
         if a.shots:
             os.makedirs(a.shots, exist_ok=True)

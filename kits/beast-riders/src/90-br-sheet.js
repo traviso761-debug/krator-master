@@ -6,7 +6,10 @@
      {ready, keys, built: [{key, v, own, port, w, d, h (measured), decl, min, missing, town?, def?, fabric?, furn?}],
       errors, rows, detail: {families attached}, tris}
    A port's entry carries what verify.py needs to find the same building in its town (def: the mark, its frame and
-   clip), its fabric's box measured here in its local frame (no furniture) and its furniture records.
+   clip), its fabric's box measured here in its local frame (no furniture; the leaves shut, as the town's marks count
+   them), its furniture records, its doors (local, as the town made them) and its panes.
+   The ports' doors open: each copy's are records in the page's KDOOR (BR_PORTS.host), eased on the frame by KDOORHOST,
+   and E (walking or flying, within reach) opens or shuts the nearest, with the tip at the foot of the page (core/door).
    ====================================================================== */
 (function () {
   if (/[?&]tex=0/.test(location.search)) KF_API.setTextures(false);
@@ -29,10 +32,13 @@
   const _v = new THREE.Vector3();
   function fabricBox(g) {                    /* the port's fabric (its town's kit meshes, not the furniture), local */
     const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+    const shut = {};
+    (g.userData.brDoors || []).forEach(function (L) { shut[L.id] = new THREE.Matrix4().makeRotationY(L.yaw).setPosition(L.p0[0], L.p0[1], L.p0[2]); });
     g.traverse(function (m) {
-      if (!m.isMesh || !m.userData.fabric) return;
+      const S = m.isMesh && m.userData.brDoorId != null ? shut[m.userData.brDoorId] : null;
+      if (!m.isMesh || !(m.userData.fabric || S)) return;
       const p = m.geometry.attributes.position;
-      for (let i = 0; i < p.count; i++) { _v.fromBufferAttribute(p, i);
+      for (let i = 0; i < p.count; i++) { _v.fromBufferAttribute(p, i); if (S) _v.applyMatrix4(S);
         lo[0] = Math.min(lo[0], _v.x); lo[1] = Math.min(lo[1], _v.y); lo[2] = Math.min(lo[2], _v.z);
         hi[0] = Math.max(hi[0], _v.x); hi[1] = Math.max(hi[1], _v.y); hi[2] = Math.max(hi[2], _v.z); }
     });
@@ -67,7 +73,9 @@
           if (A.port) {
             const V = BR_PORTS.built[A.key][v];
             e.town = A.port.town; e.name = V.name; e.def = V.def; e.fabric = fabricBox(V.group); e.tracker = { min: V.box.min, max: V.box.max, inst: V.box.inst, tris: V.box.tris };
-            e.furn = V.furn;
+            e.furn = V.furn; e.doors = V.doors; e.panes = V.panes;
+            e.doorRecs = BR_PORTS.host(g, A.key + '.v' + v).map(function (D) { return D.id; });
+            (out.portGroups = out.portGroups || {})[A.key + '.v' + v] = g;   /* the placed copy (verify.py: its openings) */
           }
           out.built.push(e);
         }
@@ -83,6 +91,16 @@
   out.tris = tris;
   out.detail = KF_API.textureInfo();
   out.ports = { girder: BR_GIRDER.info, mavs: BR_MAVS.info };
+  /* the doors (core/door): eased on the frame, E for the nearest within reach, the tip at the foot of the page */
+  out.doors = { n: KDOOR.list.length, locked: KDOOR.list.filter(function (D) { return D.locked; }).length,
+    leaves: KDOOR.list.filter(function (D) { return D.mesh; }).length, open: KDOOR.list.filter(function (D) { return D.open > 0; }).length };
+  let lastT = performance.now();
+  const tip = KDOORHOST.tip(function () { return camera.position; }, function () { return ctl.walk; });
+  (window._frameHooks = window._frameHooks || []).push(function (now) { const dt = Math.min(0.06, (now - lastT) / 1000); lastT = now; KDOORHOST.tick(dt); tip(); });
+  window.addEventListener('keydown', function (e) {
+    const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key === 'e' || e.key === 'E') KDOORHOST.toggleNear(camera.position, ctl.walk);   /* flying, E still climbs as well */
+  });
   out.ready = true;
   window._kit = out;
   document.getElementById('count').textContent = out.keys.length + ' buildings · ' + out.built.length + ' built';
