@@ -67,7 +67,7 @@
     "kits/iziz-vernacular/src/74-vern-guilds.js": "2f8db095e3d23f3767f43777bdb64a7a5d222ec7b1d1b0cdfaf70df3da966603",
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
-    "kits/iziz-vernacular/src/90-vsheet-scene.js": "b404063b617377b234596a12ad2adf24db2d0c5f7a6514e301e412fd2dfb01ef",
+    "kits/iziz-vernacular/src/90-vsheet-scene.js": "1989a5fb4f5e4924136dbb1850c11ac9c6f5c0eeb534ea4d6271f44c86f5343b",
     "kits/iziz-vernacular/src/95-vsheet-doors.js": "98b80832fa2390e2bcb9e53e924fc476afa8e7790ee89a0f4385e52775660fb2",
     "kits/iziz-vernacular/src/99-vsheet-start.js": "a407551d4ed4030bfd0bfb3e92f087008b480c0eecd35725dcf0b084f6c6fe92",
     "kits/iziz-vernacular/src/99-vsheet-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -145,13 +145,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/iziz-vernacular/build-manifest.json": "005f4e4be2558390646e878fcd746a60aa8f6f1168110b5da41d4b05c1cae7f0",
-    "kits/iziz-vernacular/dist/iziz-vernacular.html": "92d6fb3efbfed1bbf0573e91b522e353275662c72db274a5264cc6ff12155bab",
+    "kits/iziz-vernacular/build-manifest.json": "169a6d213743a15abba9329f42a3adbb61a440c74207efbd82ad5d4f2f100dfe",
+    "kits/iziz-vernacular/dist/iziz-vernacular.html": "1b6c49df5a6c234e7cc73f188e63e6c8b4b31eea99ae1c573175f0b2370428fe",
     "kits/iziz-vernacular/dist/iziz-vernacular.tex.iziz-vernacular.js": "13c8e8c3784448ef94af1f625733af66e1cbcb1b66adde8569a1c63e739402f2"
    },
    "outputs_raw": {
-    "kits/iziz-vernacular/build-manifest.json": "005f4e4be2558390646e878fcd746a60aa8f6f1168110b5da41d4b05c1cae7f0",
-    "kits/iziz-vernacular/dist/iziz-vernacular.html": "92d6fb3efbfed1bbf0573e91b522e353275662c72db274a5264cc6ff12155bab",
+    "kits/iziz-vernacular/build-manifest.json": "169a6d213743a15abba9329f42a3adbb61a440c74207efbd82ad5d4f2f100dfe",
+    "kits/iziz-vernacular/dist/iziz-vernacular.html": "1b6c49df5a6c234e7cc73f188e63e6c8b4b31eea99ae1c573175f0b2370428fe",
     "kits/iziz-vernacular/dist/iziz-vernacular.tex.iziz-vernacular.js": "13c8e8c3784448ef94af1f625733af66e1cbcb1b66adde8569a1c63e739402f2"
    }
   }

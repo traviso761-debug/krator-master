@@ -76,11 +76,11 @@
     "kits/locus/src/64-locus-power.js": "fddff975ffd8aa92d1fc47ed96ea4af8e1b96fe46dcaa5399c4a9f9c4998237f",
     "kits/yuni/targets/sheet/00-head.html": "c0aa38fac8c0e5d0adc329364de1ffeefa79ebde86eb31367fd9ec2d79683bcf",
     "kits/yuni/targets/sheet/20-ys-stage.js": "0f4bbad3802dd4aa138bed4067dc931d06be51a79039010d432eb0da69df778b",
-    "kits/yuni/targets/sheet/70-ys-sheet.js": "ecf71e274367d193d03f4f1d17c75dd787f00bfdf72b47431317df29989059d2",
+    "kits/yuni/targets/sheet/70-ys-sheet.js": "4ce931d4515b1a083ecedd60ebee4154c0c1a094438ec17b79b45726d2097e81",
     "kits/yuni/targets/sheet/75-ys-emit.js": "0c7ed266775465374163c574660bf455dbda791a1e1319311bb4599731abc148",
     "kits/yuni/targets/sheet/82-ys-sky.js": "12224cefb7eb3ca95b9550269a9b5ad5b1cbe789af2f0ef69b3eccd0b8397702",
     "kits/yuni/targets/sheet/89-ys-sheetui.js": "72c1b7f0e54ec9e76db7a5a6cb8b88f98d3b7b9920c0440bae238eb570cc86d5",
-    "kits/yuni/targets/sheet/98-ys-take.js": "db6b3ad8021b22b936260b7b1170cbdf5b5aca814521f72c3facdb85b62cfd27",
+    "kits/yuni/targets/sheet/98-ys-take.js": "b5628affc9147f7b666640aafda5b9fe8b3740c52a3fc52ddaeffba8f57ca5fd",
     "kits/yuni/targets/sheet/99-tail.html": "cf70092548bab2c35f91ad14cfdea97df6fb937a6872e35ad7275ff73b37bdb6",
     "settlements/locus/src/05-palette.js": "92f5e322e1f366f406a3e5eb3f4ebb215653898253518f29ea2e79b4b4936ea4",
     "settlements/locus/src/10-core.js": "2bc9a407cf070400438d2fb46ce1cdef8ddf5182056d75d07626c74002481ee8",
@@ -190,13 +190,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/locus/build-manifest.json": "130df3a73a727046081315ccf17e9e06b512e9f1ba0be0c72818797d6a097bfe",
-    "kits/locus/dist/locus.html": "a862e1341c628b372b81941c0fc0fb2ecf2423238c8c50f388a5e911a66fe1a1",
+    "kits/locus/build-manifest.json": "42cc68af350feb561cc8f19cec377813731a134df0b92cc32a35931b7ee26879",
+    "kits/locus/dist/locus.html": "232813a077cb3b2281bcefb7b51e35abf92bc2d3efe66e0c9587734c2938d4c7",
     "kits/locus/dist/locus.tex.locus.js": "e1d2481175aa51fdb4950c2739cfdc10e8f1dda399fe93d1dd878f06d452ec82"
    },
    "outputs_raw": {
-    "kits/locus/build-manifest.json": "130df3a73a727046081315ccf17e9e06b512e9f1ba0be0c72818797d6a097bfe",
-    "kits/locus/dist/locus.html": "a862e1341c628b372b81941c0fc0fb2ecf2423238c8c50f388a5e911a66fe1a1",
+    "kits/locus/build-manifest.json": "42cc68af350feb561cc8f19cec377813731a134df0b92cc32a35931b7ee26879",
+    "kits/locus/dist/locus.html": "232813a077cb3b2281bcefb7b51e35abf92bc2d3efe66e0c9587734c2938d4c7",
     "kits/locus/dist/locus.tex.locus.js": "e1d2481175aa51fdb4950c2739cfdc10e8f1dda399fe93d1dd878f06d452ec82"
    }
   }

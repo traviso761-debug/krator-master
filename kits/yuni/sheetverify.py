@@ -64,8 +64,9 @@ async def run(a, here, kit_files, engine):
         await pg.wait_for_timeout(600)
         e = (await pg.evaluate("(document.getElementById('errs')||{}).textContent||''")).strip()
         print('ERROR PANEL:', e or '(clean)')
-        for k in ('_sheet', '_openings', '_stats', '_furniture'):
-            print(k[1:] + ':', json.dumps(await pg.evaluate("window.%s||null" % k)))
+        for k in ('_sheet', '_openings', '_stats', '_furniture'):   # openings: Locus's fork's window._openings, or the Yuni branch's (98-ys-take.js)
+            js = "window._openings||(window._api&&window._api.doors&&window._api.doors().openings)||null" if k == '_openings' else "window.%s||null" % k
+            print(k[1:] + ':', json.dumps(await pg.evaluate(js)))
         for k, t in [c for c in getattr(pg, 'krator_console', []) if c[0] in ('error', 'warning')][:8]:
             print('console %s: %s' % (k, t[:300]))
         if e:

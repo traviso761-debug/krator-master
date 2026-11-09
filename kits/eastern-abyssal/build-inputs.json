@@ -76,11 +76,11 @@
     "kits/locus/src/64-locus-power.js": "fddff975ffd8aa92d1fc47ed96ea4af8e1b96fe46dcaa5399c4a9f9c4998237f",
     "kits/yuni/targets/sheet/00-head.html": "c0aa38fac8c0e5d0adc329364de1ffeefa79ebde86eb31367fd9ec2d79683bcf",
     "kits/yuni/targets/sheet/20-ys-stage.js": "0f4bbad3802dd4aa138bed4067dc931d06be51a79039010d432eb0da69df778b",
-    "kits/yuni/targets/sheet/70-ys-sheet.js": "ecf71e274367d193d03f4f1d17c75dd787f00bfdf72b47431317df29989059d2",
+    "kits/yuni/targets/sheet/70-ys-sheet.js": "4ce931d4515b1a083ecedd60ebee4154c0c1a094438ec17b79b45726d2097e81",
     "kits/yuni/targets/sheet/75-ys-emit.js": "0c7ed266775465374163c574660bf455dbda791a1e1319311bb4599731abc148",
     "kits/yuni/targets/sheet/82-ys-sky.js": "12224cefb7eb3ca95b9550269a9b5ad5b1cbe789af2f0ef69b3eccd0b8397702",
     "kits/yuni/targets/sheet/89-ys-sheetui.js": "72c1b7f0e54ec9e76db7a5a6cb8b88f98d3b7b9920c0440bae238eb570cc86d5",
-    "kits/yuni/targets/sheet/98-ys-take.js": "db6b3ad8021b22b936260b7b1170cbdf5b5aca814521f72c3facdb85b62cfd27",
+    "kits/yuni/targets/sheet/98-ys-take.js": "b5628affc9147f7b666640aafda5b9fe8b3740c52a3fc52ddaeffba8f57ca5fd",
     "kits/yuni/targets/sheet/99-tail.html": "cf70092548bab2c35f91ad14cfdea97df6fb937a6872e35ad7275ff73b37bdb6",
     "settlements/locus/src/05-palette.js": "92f5e322e1f366f406a3e5eb3f4ebb215653898253518f29ea2e79b4b4936ea4",
     "settlements/locus/src/10-core.js": "2bc9a407cf070400438d2fb46ce1cdef8ddf5182056d75d07626c74002481ee8",
@@ -190,13 +190,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/eastern-abyssal/build-manifest.json": "c193cde5b82747066c9e84b0d3ab3d763a4408eb50f1fcfd8496f6ef04dcb15d",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "3a7bc74d0f0e9700bc71044ba2d9985680317a2fee02325192aa1ee5be9e8d0a",
+    "kits/eastern-abyssal/build-manifest.json": "e4a39e151d6c42ade066b4377240185a84cf63288976a738697297d8174e3d7e",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "ca7257eefb55fa1ed83b65df6888d8586eac619db3ec8777ec9aec1cfcf0f0f7",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    },
    "outputs_raw": {
-    "kits/eastern-abyssal/build-manifest.json": "c193cde5b82747066c9e84b0d3ab3d763a4408eb50f1fcfd8496f6ef04dcb15d",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "3a7bc74d0f0e9700bc71044ba2d9985680317a2fee02325192aa1ee5be9e8d0a",
+    "kits/eastern-abyssal/build-manifest.json": "e4a39e151d6c42ade066b4377240185a84cf63288976a738697297d8174e3d7e",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "ca7257eefb55fa1ed83b65df6888d8586eac619db3ec8777ec9aec1cfcf0f0f7",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    }
   }

@@ -34,7 +34,7 @@
  "59a-civic-park.js": "4950cf6a4369",
  "59b-civic-library.js": "b6ff3627d665",
  "59c-civic-furniture.js": "e96a245eff47",
- "70-ys-sheet.js": "450b9b7c1142",
+ "70-ys-sheet.js": "0ba1ea1f2003",
  "72-lights.js": "0089fb7fe8d8",
  "75-ys-emit.js": "ec5911377f30",
  "80-sky-hash.js": "67919cbcd4fa",
@@ -50,6 +50,6 @@
  "93-host-inspect.js": "30374027dc5d",
  "94-host-marks.js": "66fcb2bedaf5",
  "95-host-probe.js": "4c60a9746384",
- "98-ys-take.js": "5ad6f7b0b9b9",
+ "98-ys-take.js": "bb18b88c5864",
  "99-tail.html": "c6a41a78d292"
 }

@@ -260,7 +260,7 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/iziz-vernacular/src/90-vsheet-scene.js": "b404063b617377b234596a12ad2adf24db2d0c5f7a6514e301e412fd2dfb01ef",
+    "kits/iziz-vernacular/src/90-vsheet-scene.js": "1989a5fb4f5e4924136dbb1850c11ac9c6f5c0eeb534ea4d6271f44c86f5343b",
     "kits/iziz-vernacular/src/95-vsheet-doors.js": "98b80832fa2390e2bcb9e53e924fc476afa8e7790ee89a0f4385e52775660fb2",
     "kits/iziz-vernacular/src/99-vsheet-start.js": "a407551d4ed4030bfd0bfb3e92f087008b480c0eecd35725dcf0b084f6c6fe92",
     "kits/iziz-vernacular/src/99-vsheet-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -283,14 +283,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/highlands/build-manifest.json": "bf366985bc78504cb59d1831a9fea6c5d283e547297085a0dd3e5d751edfd16d",
-    "kits/highlands/dist/highlands.html": "01c4222674ffd87e3ba681962b7cb08ab32531ade45e45afef228b913067c8f6",
+    "kits/highlands/build-manifest.json": "8ab94a8272b58f7769fe3cc697f1c3d850a9ae3d3fb55afe2244cead0157ea82",
+    "kits/highlands/dist/highlands.html": "4f15fe0170395a0f1acdbcb4f8ac2e6664a0713488ec59a0b8913ca53022d92f",
     "kits/highlands/dist/highlands.tex.highlands-2.js": "707642234ab07f68ea03205c5f7ececec2676936d36fa1dd415b7d490976c464",
     "kits/highlands/dist/highlands.tex.highlands.js": "54b43917fbd1d716ccf37f8e9e0b071f3439ebd152c622d44c947f537b123462"
    },
    "outputs_raw": {
-    "kits/highlands/build-manifest.json": "bf366985bc78504cb59d1831a9fea6c5d283e547297085a0dd3e5d751edfd16d",
-    "kits/highlands/dist/highlands.html": "01c4222674ffd87e3ba681962b7cb08ab32531ade45e45afef228b913067c8f6",
+    "kits/highlands/build-manifest.json": "8ab94a8272b58f7769fe3cc697f1c3d850a9ae3d3fb55afe2244cead0157ea82",
+    "kits/highlands/dist/highlands.html": "4f15fe0170395a0f1acdbcb4f8ac2e6664a0713488ec59a0b8913ca53022d92f",
     "kits/highlands/dist/highlands.tex.highlands-2.js": "707642234ab07f68ea03205c5f7ececec2676936d36fa1dd415b7d490976c464",
     "kits/highlands/dist/highlands.tex.highlands.js": "54b43917fbd1d716ccf37f8e9e0b071f3439ebd152c622d44c947f537b123462"
    }

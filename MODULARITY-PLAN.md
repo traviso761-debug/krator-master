@@ -318,7 +318,9 @@ leaves each settlement folder as its layout and page, building as it does today 
     planner, so the shell binds them itself and the Yuni sheet has no interiors; Locus's fork registers buildings with no types
     (the sheet copies the assets'), and the kits' cultures `abyssal-desert` and `geomancer` are not in core/tags' vocabulary (an
     owner's decision, KNOWN_ISSUES.md). The towns' sheet targets (`yuni-assets.html`, `locus-kit.html`, `abyss-kit.html`) still
-    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before.
+    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before. The reads of the engine in place are the
+    three backwards edges `tools/dep_allowlist.json` lists for this step (`kits/yuni -> settlements/yuni`, `kits/locus` and
+    `kits/eastern-abyssal -> settlements/locus`); they go when the engine has a home outside the towns.
   - **The Vernacular-contract kits' own sheets, done 2026-11-09:** `kits/iziz-vernacular/dist/iziz-vernacular.html`,
     `kits/highlands/dist/highlands.html` and `kits/xanadu/dist/xanadu.html`, each with its `build.py` (`tools/build_sources.py`
     `report()`; `python3 tools/build.py kits/<kit>`) and `verify.py --assert` on `tools/harness.py` (every def placed, built and

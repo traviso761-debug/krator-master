@@ -27,7 +27,7 @@ var YS_MINE = ASSETS.filter(function(A){ return YS_SUBKIT ? assetInKit(A, YS_SUB
       var cw = A.w+gap, cd = A.d+gap; if(x+cw > YS_LIM){ x = -YS_LIM; z += rowD; rowD = 0; }
       var cx = x+cw/2, cz = z+cd/2; rowD = Math.max(rowD, cd);
       var rec = build(A, v, cx, cz);
-      var it = { key:A.key, name:rec ? rec.name : A.name, x:cx, z:cz, w:A.w, d:A.d, h:A.h || 8, fam:fam, variant:v, bid:rec && rec.bid };
+      var it = { key:A.key, name:rec ? rec.name : A.name, x:cx, z:cz, w:A.w, d:A.d, h:A.h == null ? 8 : A.h, fam:fam, variant:v, bid:rec && rec.bid };
       SHEET_ITEMS.push(it); R.items.push(it);
       x += cw; } });
     z += rowD + (gap > 6 ? 26 : 8); R.z1 = z;

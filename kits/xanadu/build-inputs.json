@@ -50,7 +50,7 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/iziz-vernacular/src/90-vsheet-scene.js": "b404063b617377b234596a12ad2adf24db2d0c5f7a6514e301e412fd2dfb01ef",
+    "kits/iziz-vernacular/src/90-vsheet-scene.js": "1989a5fb4f5e4924136dbb1850c11ac9c6f5c0eeb534ea4d6271f44c86f5343b",
     "kits/iziz-vernacular/src/95-vsheet-doors.js": "98b80832fa2390e2bcb9e53e924fc476afa8e7790ee89a0f4385e52775660fb2",
     "kits/iziz-vernacular/src/99-vsheet-start.js": "a407551d4ed4030bfd0bfb3e92f087008b480c0eecd35725dcf0b084f6c6fe92",
     "kits/iziz-vernacular/src/99-vsheet-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -81,7 +81,7 @@
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/targets/sheet/88y-xasheet-matlib.js": "3a3c29556d4d9f604299c5f69399511ef027df1ec32a47e47a9b7b110eeb39ad",
-    "kits/xanadu/targets/sheet/89z-rows.js": "a186b177344b87523f5e94d62ac722ad719329de769beddcac7c6f620acce75e",
+    "kits/xanadu/targets/sheet/89z-rows.js": "6fa2582a3fd5e210db0c479fa7d740faacc1ef62c377ebba82e1828fc95590ec",
     "kits/xanadu/targets/sheet/91t-xasheet-tags.js": "935f8c65cefed46c5cea24a5ff5e4fb4a9c113d5763b565fe647a5b40e358769",
     "kits/xanadu/tex/brick.albedo.webp": "53082de37ff72e5737cb4c2033350174acf8be097c623f9e879b7a5e348cfffb",
     "kits/xanadu/tex/brick.normal.webp": "e455bcc1650918bb1c5118cefa1917f2a53bb99f02cea091c6baf62375a95651",
@@ -197,13 +197,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/xanadu/build-manifest.json": "46930271b5e58fedfda84e47346d8476c980c0d8b896c9adb1496cd4bfbcf726",
-    "kits/xanadu/dist/xanadu.html": "b361eab0e6b8040eb2d3ab9ef488e12f0ef3d5e4f1497e0e1c5a9002913c0a01",
+    "kits/xanadu/build-manifest.json": "2c3a1ec355527a6e003335915c119f5496ca1eb3ed49b9eb512fc0be0e41fa1c",
+    "kits/xanadu/dist/xanadu.html": "500d097291d6d5421ab56201da9f4bd4556859bb00a3e213e5d0fc2b28371c70",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    },
    "outputs_raw": {
-    "kits/xanadu/build-manifest.json": "46930271b5e58fedfda84e47346d8476c980c0d8b896c9adb1496cd4bfbcf726",
-    "kits/xanadu/dist/xanadu.html": "b361eab0e6b8040eb2d3ab9ef488e12f0ef3d5e4f1497e0e1c5a9002913c0a01",
+    "kits/xanadu/build-manifest.json": "2c3a1ec355527a6e003335915c119f5496ca1eb3ed49b9eb512fc0be0e41fa1c",
+    "kits/xanadu/dist/xanadu.html": "500d097291d6d5421ab56201da9f4bd4556859bb00a3e213e5d0fc2b28371c70",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    }
   }
