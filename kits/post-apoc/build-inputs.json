@@ -3,14 +3,13 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
-    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
+    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
-    "core/door/30-core-door-leaf.js": "71649e5233fab80c5d4c8cae535f3417f6a872f2ff5ce7cc42eacf9b48bfb75f",
+    "core/door/30-core-door-leaf.js": "4d232b38441aa15f649bb9589721b71b8f30d9e05748dc190a30a6796836a94e",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
     "core/furnish/50-core-furnish.js": "dbd7e1f0ab77a3f1489d87e8fabce7e17800025964c33f67346384e722bda269",
     "core/furnish/52-core-furnish-draw.js": "726a95d620342e433b3d7d80558ee0b0dd648b0a991b276127803d955d19d35e",
@@ -26,12 +25,10 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
-    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-post-apoc.js": "3c0e4921653baad9472be5a9f4480fc00252b49e8e2e98b16c322676e645c1da",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -122,9 +119,7 @@
     "kits/post-apoc/tex/wood.albedo.webp": "a8fe722155b7b5a72082343d032a6aa1985886f842a65c68709cbfbb23cd5d6d",
     "kits/post-apoc/tex/wood.normal.webp": "ec842d0c977fc76893bc294bef755796ebb19b4c1e62bae0a02e7a79f714e7aa",
     "kits/post-apoc/tex/wood.rough.webp": "b73f445b980ee3e7d6db16429aa2af673acd88f22a60808648c06861a3e58553",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
@@ -138,17 +133,18 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "8601faf52d9185f777a2302548cc31885baa8c99b62113b20e6535c3a46ca360",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
+    "kits/post-apoc": "0ec8020e60cc954729a885f0fb01aa77233f1ed2e5d01e11eb59e668d24869ad",
     "kits/post-apoc/src": "897db31aede74d53acb5150e2d180993eae2c1cb748bd1f84838bb94b0679470",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/post-apoc/build-manifest.json": "861b03e91a9661f115b78050b92953789ef8578e5b6932fbf15a4dc1271bd947",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "cf24b631cf007c672d26a9574f0c63671e88c22abd805d49e8a6fdfd24926f9d",
+    "kits/post-apoc/dist/post-apoc.html": "a5d1929d719c1f480c9d750d58dc2b9640a18229261a6c8b9110ec0c1e7059c6"
    },
    "outputs_raw": {
-    "kits/post-apoc/build-manifest.json": "3ceeadbe825b426b499544a1167aaeb02fed457b2f32fdfc48a7708e72f5e2f8",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "cf24b631cf007c672d26a9574f0c63671e88c22abd805d49e8a6fdfd24926f9d",
+    "kits/post-apoc/dist/post-apoc.html": "a5d1929d719c1f480c9d750d58dc2b9640a18229261a6c8b9110ec0c1e7059c6"
    }
   }
  }

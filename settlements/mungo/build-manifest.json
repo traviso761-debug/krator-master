@@ -21,7 +21,7 @@
  ],
  "06-core-khook.js": [
   "core/shader",
-  "4086274abd11"
+  "e6a2382acc0b"
  ],
  "06b-core-kcolor.js": [
   "core/shader",
@@ -29,7 +29,7 @@
  ],
  "07-core-kwarp.js": [
   "core/shader",
-  "f94bf5f60b6a"
+  "5995df925616"
  ],
  "08-core-rand.js": [
   "core/rand",
@@ -41,7 +41,7 @@
  ],
  "10-core-door.js": [
   "core/door",
-  "22190472180d"
+  "b12eb3957235"
  ],
  "10-core.js": [
   "mungo (overrides locus)",
@@ -69,7 +69,7 @@
  ],
  "20-core-water.js": [
   "core/water",
-  "96a8dcd7a691"
+  "0bb0df729de5"
  ],
  "20-stage.js": [
   "mungo (overrides locus)",
@@ -113,7 +113,7 @@
  ],
  "30-core-door-leaf.js": [
   "core/door",
-  "dc475fefea8f"
+  "b4bc21dc8a74"
  ],
  "30-layout.js": [
   "mungo (overrides locus)",
@@ -157,7 +157,7 @@
  ],
  "50-core-water-draw.js": [
   "core/water",
-  "988bae081cb5"
+  "f4225dded76d"
  ],
  "50-structure.js": [
   "locus",
@@ -165,7 +165,7 @@
  ],
  "51-core-water-kinds.js": [
   "core/water",
-  "7c9ef02c858e"
+  "49281a8dd3e8"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
@@ -313,11 +313,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "77add6fb1b7d"
+  "f54c52360c0b"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "13acf75856fa"
+  "8475badfea1f"
  ],
  "68-place.js": [
   "mungo (overrides locus)",

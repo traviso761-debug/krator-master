@@ -150,7 +150,6 @@
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
     "core/materials/22-materials.js": "8144ffe9a3a3330693f9def33d3a053e25668b52fda934ced0a9f9e0a5adae8d",
     "core/materials/68-mat-v5.js": "c1a3519d17542022794eb72184f189cac1f3de1bba6cf7348d58cde370cb587a",
@@ -175,7 +174,6 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
-    "kits/ancients-interiors/kit_bundle.py": "19b56aadbfe51408c26a2b9f9c9e05d87fcf95230eae281390d5c24ced43bcdd",
     "kits/ancients-interiors/src/10-ai-core.js": "2519e6621613167d6fb83ecfbffb8ed6f2488586848124210ff423c35c672b60",
     "kits/ancients-interiors/src/20-ai-dress.js": "c75e021e10465e5ee7f962c0c720a7646314cb58cae582e035e2f7569e0635c7",
     "kits/ancients-interiors/src/30-ai-recipes.js": "d8c55b1f00ede36393bdbedb219310496aa6c75adb6eac75a16da262e71eb4c3",
@@ -235,7 +233,6 @@
     "kits/ancients/tex/whiteWorn.normal.webp": "6ecfa7ca0abf0adad1ad60dd5c21f15b887262643b000021d6dab37993d2b141",
     "kits/ancients/tex/whiteWorn.rough.webp": "1edab8491d7bb602ec78b43d1568da5923b08354b0790184767d6c005b2722e8",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -291,10 +288,10 @@
     "kits/metropolis/tex/white.albedo.webp": "854775aa39b90dc00ea1fd3f4945b1f946b016473954ee362681ff2c29b0c9ca",
     "kits/metropolis/tex/white.normal.webp": "0c94c866ae0bbf1a5dec883120515fbe93a58787035ce660fb28b28d6e00fa3b",
     "kits/metropolis/tex/white.rough.webp": "6a4775fa662523129ef7a0d2c226e1ed29e9d69013add6a15b6a4bdd47bc6e11",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/ancientsvalley": "02f12fded14bb1ecc43f2307ec875ed649306058ad7a476391e29504b26bfd55",
     "biomes/ancientsvalley/src": "508f2a5ba4af5c6ac69a54d946179889e9f5cb97df3341407e50d441680f635b",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/ancients-interiors/src": "909eb0c4a1cb98caa84bc495cc9410b3ecd5c2a0ca2e36d4b1e59d7447d9f89d",

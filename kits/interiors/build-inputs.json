@@ -5,8 +5,6 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -91,7 +89,7 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
-    "kits/interiors/src/50-shell.js": "28752de703b85f34a80264e15b8a8152cda63c955b8d276ff569ada0f71b8d0b",
+    "kits/interiors/src/50-shell.js": "a1c3d43db79368d8df78da83870d247903528f2c5f64f6b1d11db2582eba73ee",
     "kits/interiors/src/51-building.js": "7a120be118bd60dc8382a0355df333ef8d36ddbc83223223beecff674da70ce2",
     "kits/interiors/src/52-outline.js": "d36203c5197eea73b048cdd0ea0900958ee6710fd74e583ba8ab2476226aa875",
     "kits/interiors/src/55-cutaway.js": "6ce670f34134740c43b54446f7d1b468c314868da3c0f1fb5c022d4766c5257a",
@@ -105,7 +103,6 @@
     "kits/interiors/walk/shells/highlands.js": "fb1225b4d9741b21137766e1432ef573703fcf264ba12b6ce27edb4b0783260b",
     "kits/interiors/walk/shells/locus.js": "04f17a6b7adfe42f41be63e4804b01f372e74c47e726d837167b30c7433f6b0f",
     "kits/interiors/walk/shells/post-apoc.js": "02eb5c875d44fd23d5907051e4a21c6448360416ae913b643e11ceba390401fd",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -120,18 +117,18 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/interiors/build-manifest.json": "e27c7ef9366f339450b4b713274259e6835258b3e65ff48286e98a457164915a",
+    "kits/interiors/build-manifest.json": "119f881d8aaf94d44540bee9f14b63180379bd8435e68b35397b620cc47fd023",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
-    "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
-    "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
+    "kits/interiors/dist/interiors-sets.html": "80766e108434771c5c468dce5f0958515cb714d61b05362d53313e1ae40a7e0b",
+    "kits/interiors/dist/interiors-walk.html": "017bf06bb9944aefddb8b7d88c75a4d632642229f1704e2d9e82b8a9799f17ab",
+    "kits/interiors/dist/interiors.html": "1ee9d8d4c66badf2e6cc51daca4327152ca92b363f26c0fce65b209512d482be"
    },
    "outputs_raw": {
-    "kits/interiors/build-manifest.json": "f9fc151619a6a6e58f5a4c79d99563a25566d16946a1f1f7c6a285492409f7f7",
+    "kits/interiors/build-manifest.json": "119f881d8aaf94d44540bee9f14b63180379bd8435e68b35397b620cc47fd023",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
-    "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
-    "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
+    "kits/interiors/dist/interiors-sets.html": "80766e108434771c5c468dce5f0958515cb714d61b05362d53313e1ae40a7e0b",
+    "kits/interiors/dist/interiors-walk.html": "017bf06bb9944aefddb8b7d88c75a4d632642229f1704e2d9e82b8a9799f17ab",
+    "kits/interiors/dist/interiors.html": "1ee9d8d4c66badf2e6cc51daca4327152ca92b363f26c0fce65b209512d482be"
    }
   }
  }

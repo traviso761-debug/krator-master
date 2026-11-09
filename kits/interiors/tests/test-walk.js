@@ -91,6 +91,26 @@ for (const S of IX.sets.list) for (const it of S.items) {
   if (miss.length) bad('climbs: ' + miss.length + ' of ' + climbs + ' stairs and ladders do not reach the floor at their top: ' + miss.slice(0, 6).join(', '));
   console.log('climbs: ' + climbs + ' stairs and ladders (' + ladders + ' ladders), ' + (climbs - miss.length) + ' reach the floor at their top');
 }
+/* IX.walk.room (50-shell.js, no THREE; read here from src/): two ROOM() shells side by side, a door between them and a street door into the first; with core/door's
+   KDOOR blocking the inner doorway, the second room is reached from the street only once that door is open (the negative:
+   shut, it is not), and the first is reached either way */
+{
+  const kdSrc = fs.readFileSync(path.resolve(__dirname, '../../../core/door/10-core-door.js'), 'utf8');
+  if (!IX.walk.room) (0, eval)(fs.readFileSync(path.resolve(__dirname, '../src/50-shell.js'), 'utf8').replace(/\}\)\(KratorInteriors\);\s*$/, '})(global.KratorInteriors);'));
+  const KDOOR = new Function('var root={};' + kdSrc.replace("typeof window!=='undefined'?window:globalThis", 'root') + ';return root.KDOOR;')().create();
+  const A = IX.normRoom({ id: 'wt.a', poly: [[0, 0], [5, 0], [5, 4], [0, 4]], y: 0, h: 3, doors: [{ at: [2.5, 0], w: 1, to: 'street' }, { at: [5, 2], w: 1, to: 'wt.b' }] });
+  const B = IX.normRoom({ id: 'wt.b', poly: [[5.22, 0], [9, 0], [9, 4], [5.22, 4]], y: 0, h: 3, doors: [{ at: [5.22, 2], w: 1, to: 'wt.a', leaf: false }] });
+  const W = KWALK.create(), r = IX.walk.room([A, B], W);
+  const d = A.doors[1], yaw = Math.atan2(-d.n[0], -d.n[1]);
+  const D = KDOOR.add({ id: 'wt.a.d1', at: [d.at[0] - d.n[0] * 0.11, 0, d.at[1] - d.n[1] * 0.11], yaw, w: d.w - 0.04, h: 2.1, t: 0.05 });
+  KDOOR.walk(W);
+  const start = [[2.5, 0, -1.5]], go = () => { const R = W.reach(start, { ground: () => 0, box: [-3, 12, -4, 7] }), n = R.reached.map(F => F.name); return { a: n.includes('wt.a'), b: n.includes('wt.b') }; };
+  const shut = go(); KDOOR.open(D); for (let i = 0; i < 40; i++) KDOOR.step(0.1); const open = go();
+  if (!(r.floors === 2 && r.doors === 3 && r.blocks > 20)) bad('IX.walk.room: ' + JSON.stringify(r));
+  if (!shut.a || shut.b) bad('IX.walk.room: door shut, reached ' + JSON.stringify(shut) + ' (want a only)');
+  if (!open.a || !open.b) bad('IX.walk.room: door open, reached ' + JSON.stringify(open) + ' (want both)');
+  console.log('IX.walk.room: ' + r.floors + ' floors, ' + r.blocks + ' wall blocks, ' + r.doors + ' doorways; shut ' + JSON.stringify(shut) + ', open ' + JSON.stringify(open));
+}
 console.log('elevated bodies (no flight: tower, ledge or crown; the host routes to them): ' + elevated.length + (process.argv[3] === '-v' ? ' ' + elevated.join(', ') : ''));
 console.log('items ' + items + ', raised ' + raised + ', entry flights ' + entries + ', failures ' + fails);
 process.exit(fails ? 1 : 0);

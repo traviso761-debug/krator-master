@@ -101,7 +101,7 @@ function pynDoorway(shape,x,y,z,ry,w,h,o){o=o||{};
  // the leaves: in the cut wall's middle (operable), or shut and locked in front of a solid face
  // (from 1.5 m wide a double door: one record, its pair of leaves swinging apart; timber panelled, steel plain: core/door's leaf styles)
  const two=w>1.5,t=.07,m=loc(x,z,0,F?-F.B.t/2:.01+t/2,ry);
- return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel'})];}
+ return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel+pull'})];}   /* panelled, a bar pull each face (core/door's hardware, 2026-11-09) */
 // a box (vB's arguments) with a doorway dw wide and dh high through the foot of its middle: two piers and a lintel (a gate's
 // block, pynDoorway's o.gate)
 function pynPierBox(item,x,y,z,w,h,d,ry,c,dw,dh){const pw=(w-dw)/2;

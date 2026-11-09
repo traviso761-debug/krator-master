@@ -50,6 +50,7 @@ function vergeInteriorsTick(){const F=VFURN;if(!F.interiorsOn||!F.queue.length)r
   try{const fi=F.interior(B.item,B.x,B.z,B.ry,F.adapter,{baseY:B.y,prefix:B.id+'.'}),r=fi.result;B.rec.interior=fi.summary;F.pieces+=fi.summary.pieces;
    r.inst.rooms.forEach(R=>{const P=r.plans[R.id];(P&&P.lights||[]).forEach(l=>F.lamps.push([l.x,l.y,l.z,l.intensity||.7,l.distance||10]));});}
   catch(e){reportErr('interior '+B.rec.key+': '+(e&&e.message||e));}
+  if(typeof vergeDoorsIn==='function')vergeDoorsIn(B.rec);   // a hollow building: its footprint block off, its doorways clear (95)
   F.done++;n++;}
  if(n)vfurnFlush(scene);
  window._interiors={planned:F.done,queued:F.queue.length,pieces:F.pieces,deferred:F.deferred,batches:F.groups.length};}

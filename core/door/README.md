@@ -70,8 +70,15 @@ leaves posed together. Two mirrored single records (`sign` 1 and -1) still make 
 `30-core-door-leaf.js` (KDOORLEAF, THREE, no DOM; load it ahead of the builders) gives a leaf in a style as a unit geometry,
 its frame and its glass apart: `flat`, `plank`, `panel`, `glazed` (French doors: a kick rail, glazing bars over one light),
 `half` (panels below, glazed above), `glass` (a thin frame round one light), `louvre`, `grille`, `slat`, `plate` (a heavy plate with a rim and ribs: blast doors, floodgates), `disc`.
-`KDOORLEAF.meshes(THREE, style, {frame, glass}, n)` makes the two InstancedMeshes; `KDOORHOST.instanced(D, [frame, glass],
-[i0, i1], q0)` poses both (the same index, every leaf of a pair its own). The record's `style` says which a door wears.
+`KDOORLEAF.meshes(THREE, style, {frame, glass, hw}, n)` makes the InstancedMeshes; `KDOORHOST.instanced(D, [frame, glass, hw],
+[i0, i1], q0)` poses them all (the same index, every leaf of a pair its own). The record's `style` says which a door wears.
+
+**Hardware** (2026-11-09: the detail the plain leaves lost): a third part, `hw`, in metal, proud of both faces. `banded` (a
+panelled leaf under three studded brass bands, a ring pull: the ger's), `scrolled` (the half-glazed leaf with gilt scrolls on its
+panels and a knob: the vardo's), and any of `panel`, `glazed`, `half`, `plank` with `+pull` (a bar pull each face: Pylon's and
+Talia's) or `+ring` (an iron ring). `KDOORLEAF.HARDWARE` names the sets. core/engine's `svLeaf` draws the metal in one polished
+material tinted by `o.hwCol`; the Vernacular's `IZDOOR.leaf` as the kit item `vDoorHw.<style>` in `MAT.izBrass`. A pull is drawn
+at the leaf's +x stile: on a leaf hung on the +x jamb (a pair's right leaf) it sits by the hinge (the geometry is not mirrored).
 The Vernacular's `IZDOOR.leaf` takes `style` and the kinds (`kits/iziz-vernacular/src/69e5-iziz-openings.js`): Talia's glazed
 double doors and panelled leaves, Pylon's panelled pairs.
 
@@ -81,6 +88,14 @@ double doors and panelled leaves, Pylon's panelled pairs.
 through), `frosted`, `smoked` (the Ancients' tinted curtain walls), `stained` (`{color}`), and `room`, the dim card a pane on a
 solid body stands in front of (opaque: the room you would see). `opt.emissive` gives a lit pane another glow (an electric lamp's). Every pane is transparent with depth writes off, so it sorts
 after the opaque scene. `KGLASS.SPEC` is the data the Godot side reads (a StandardMaterial3D with alpha transparency).
+
+## Godot
+
+`KDOOR.export()` (`krator-doors`) carries each record's kind, pair, style, swing, `p0` and open state; `godot/krator/kdoor.gd`
+(`KDoor`) rebuilds every leaf from the record alone (`KDoor.leaves`, the twin of `KDOOR.leaves`), builds a node per door and a
+leaf per leaf (`KDoor.build`, `KDoor.pose`), and makes the `kglass:<kind>` materials from `KGLASS.SPEC` (`KDoor.glass_material`;
+`krator/world_import.gd` takes a material by that name). `godot/tests/door/door_test.gd` checks it against
+`godot/tools/door_golden.js` (rerun after changing `10-core-door.js` or `20-core-glass.js`).
 
 ## The host
 
@@ -122,6 +137,11 @@ first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s, or swit
   doorways get operable leaves (`anLeaf`, from `8zz-interiors.js`). Its forks read the fragment in place: Screamers (its village's
   door panels, `src/8zp-scr-open.js`), the Ancient Port kit and through it Hook and the Dam Basins (the iron doors, `src/8zp-port-open.js`).
 - Noah's Regret: core/engine's `36o-open.js` read in place (`svLeaf`): the cabin doors and the deck buildings' leaves, cut with the decks.
-- kits/ancients-interiors' sheet: `src/75-ai-doors.js` makes kits/interiors' shell leaves KDOOR records (posed, `KDOORHOST.posed`) and
-  its panes KGLASS 'clear'.
+- kits/interiors' shell (`src/50-shell.js`, 2026-11-09): where the page carries core/door, each leaf it hangs is a KDOOR record
+  ('<room id>.d<n>', standing open 75 degrees as hung, posed through `KDOORHOST.posed`) and its panes KGLASS 'clear';
+  `IX.walk.room` puts a shell's floor and walls in core/walk. kits/ancients-interiors' sheet hosts them (`src/75-ai-doors.js`: the
+  tick, E, the tip, and `KWALK.reach` from each street door).
+- Verge (2026-11-09): the Vernacular's leaves hosted (`settlements/verge/src/95-verge-doors.js`), its bodies hollow with the
+  interiors on; Mav's Refuge's units and doors in core/walk (`src/83-mr-walk.js`); Yuni's streamed interiors' doors are records
+  while their building is live.
 - The other building kits come onto it in the doors-and-glass pass (TODO.md).

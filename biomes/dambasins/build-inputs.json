@@ -128,7 +128,7 @@
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
     "core/biome/38-core-fire.js": "68f8f39d6bc0df44550be02979b17e5e3eaafd56d652c718fe72bdf759c0622b",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
-    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
+    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
@@ -249,11 +249,10 @@
     "kits/port/tex/whiteWorn.albedo.webp": "4db9cf78c28a472cb2ceb844ab8f5e3c863d0b1890e0f3698267a4d8fb1ff725",
     "kits/port/tex/whiteWorn.normal.webp": "6ecfa7ca0abf0adad1ad60dd5c21f15b887262643b000021d6dab37993d2b141",
     "kits/port/tex/whiteWorn.rough.webp": "1edab8491d7bb602ec78b43d1568da5923b08354b0790184767d6c005b2722e8",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/dambasins": "e091d3d098848f6a5a5cc9393b478252fdb3ba022f6c59a666b6798d20902a4a",
     "biomes/dambasins/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "biomes/dambasins/src": "6d04693dc7248902367e45b79073a1e6c9228c949ac858514a3a4c5c9dd51f7b",
     "biomes/dambasins/targets": "10f0f174feebf2b3886315f33844c11d24709f0949ace50b1fe3b41c1de1454e",
@@ -267,29 +266,29 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/dambasins/build-manifest-east.json": "dba3e761bc54bfda1175534ba2f2a1a7df74dc12343ccba5dea3bbc9d62bcb2a",
-    "biomes/dambasins/build-manifest-graveyard.json": "50b878e2055680ce05c98e9cccb414a9266ffee0c59a36bf496d73785801436b",
-    "biomes/dambasins/build-manifest-port.json": "e41bfcc9949e537ef45cca8b78fc4ec17da524d98320db2ca658b20ea7e42eae",
-    "biomes/dambasins/dist/east.html": "b4ee4996153ad770b31fff6e265a03545d91830098ba92473fe9c5bf99c8de06",
+    "biomes/dambasins/build-manifest-east.json": "d7d51c25b3d24cffedbfeb6cfa6b23ba378cc2b9065a68e5c4308775504063ba",
+    "biomes/dambasins/build-manifest-graveyard.json": "6d702ebfc41ad5bf4963328cc60706cc516dffacdcfc7110cf055a9c7d53e059",
+    "biomes/dambasins/build-manifest-port.json": "fde41c8b3ed20a60eef3f46d5dc8da015fd5d89d6c2dfa240ae96f5c4f35ac8b",
+    "biomes/dambasins/dist/east.html": "34f619548effc36c28998a86bead41df0b412465db459c5ca07e763c74dd8410",
     "biomes/dambasins/dist/east.tex.hyperjungle.js": "0de8476f9030843590b620e7c5c2fa9d12484b1d2838f3bcc48fd297792c6451",
     "biomes/dambasins/dist/east.tex.port.js": "4806cbeda0bb4ebccffd962d6d25519f092942dd55892389a930539633e981bf",
-    "biomes/dambasins/dist/graveyard.html": "8a5645968d54b9f91c1b107fc3d33fa57b4f7ca159d6db18a476078dca4e7fd6",
+    "biomes/dambasins/dist/graveyard.html": "582142e457ff648f884b3420ecd18aab0b0f5e06e5251e6b4c0b931b1133bc24",
     "biomes/dambasins/dist/graveyard.tex.nsemiarid.js": "814bedae1c1f00f1f6b4289ba036865a7cc46e2d25d81dc47a8c9040f8fb459b",
     "biomes/dambasins/dist/graveyard.tex.port.js": "025139a3facd74bb11310786e2775c77072d75881baab29fb2e361e3f7c6b1d8",
-    "biomes/dambasins/dist/port.html": "a4a78d6877f36336f09e64aa76238bf2df70ade552d7eef14e8ddaa13c1f5ea1",
+    "biomes/dambasins/dist/port.html": "ee8e62c19b0dd5efe04925448fc259729d6f9f7a86d89dae42877fddf7ab09f8",
     "biomes/dambasins/dist/port.tex.port.js": "5be76ccf01e09d6531c159a579af7b9e9cc4b1f01e96b153278122e749e6e31b"
    },
    "outputs_raw": {
-    "biomes/dambasins/build-manifest-east.json": "dba3e761bc54bfda1175534ba2f2a1a7df74dc12343ccba5dea3bbc9d62bcb2a",
-    "biomes/dambasins/build-manifest-graveyard.json": "50b878e2055680ce05c98e9cccb414a9266ffee0c59a36bf496d73785801436b",
-    "biomes/dambasins/build-manifest-port.json": "e41bfcc9949e537ef45cca8b78fc4ec17da524d98320db2ca658b20ea7e42eae",
-    "biomes/dambasins/dist/east.html": "b4ee4996153ad770b31fff6e265a03545d91830098ba92473fe9c5bf99c8de06",
+    "biomes/dambasins/build-manifest-east.json": "d7d51c25b3d24cffedbfeb6cfa6b23ba378cc2b9065a68e5c4308775504063ba",
+    "biomes/dambasins/build-manifest-graveyard.json": "6d702ebfc41ad5bf4963328cc60706cc516dffacdcfc7110cf055a9c7d53e059",
+    "biomes/dambasins/build-manifest-port.json": "fde41c8b3ed20a60eef3f46d5dc8da015fd5d89d6c2dfa240ae96f5c4f35ac8b",
+    "biomes/dambasins/dist/east.html": "34f619548effc36c28998a86bead41df0b412465db459c5ca07e763c74dd8410",
     "biomes/dambasins/dist/east.tex.hyperjungle.js": "0de8476f9030843590b620e7c5c2fa9d12484b1d2838f3bcc48fd297792c6451",
     "biomes/dambasins/dist/east.tex.port.js": "4806cbeda0bb4ebccffd962d6d25519f092942dd55892389a930539633e981bf",
-    "biomes/dambasins/dist/graveyard.html": "8a5645968d54b9f91c1b107fc3d33fa57b4f7ca159d6db18a476078dca4e7fd6",
+    "biomes/dambasins/dist/graveyard.html": "582142e457ff648f884b3420ecd18aab0b0f5e06e5251e6b4c0b931b1133bc24",
     "biomes/dambasins/dist/graveyard.tex.nsemiarid.js": "814bedae1c1f00f1f6b4289ba036865a7cc46e2d25d81dc47a8c9040f8fb459b",
     "biomes/dambasins/dist/graveyard.tex.port.js": "025139a3facd74bb11310786e2775c77072d75881baab29fb2e361e3f7c6b1d8",
-    "biomes/dambasins/dist/port.html": "a4a78d6877f36336f09e64aa76238bf2df70ade552d7eef14e8ddaa13c1f5ea1",
+    "biomes/dambasins/dist/port.html": "ee8e62c19b0dd5efe04925448fc259729d6f9f7a86d89dae42877fddf7ab09f8",
     "biomes/dambasins/dist/port.tex.port.js": "5be76ccf01e09d6531c159a579af7b9e9cc4b1f01e96b153278122e749e6e31b"
    }
   }

@@ -68,5 +68,8 @@ KHOST.take({build:'verge',title:'Verge — the twin cities on the cataracts',
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)}},
  exporters:{tags:()=>KTAGS.page.export()},
  minimap:{title:'Verge'},
- api:window._api});
+ api:window._api,
+ // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 95-verge-doors.js); flying, E still climbs as well
+ keys:{e:()=>{if(VERGE_DOORS)KDOORHOST.toggleNear(camera.position,vergeWalking());}}});
+if(VERGE_DOORS)tick(KDOORHOST.tip(()=>camera.position,vergeWalking));   // "E: open the door" at the foot of the page
 KHOST.hover(true);   // the inspector's hover tip on, as Verge's 'Inspector (hover)' box was

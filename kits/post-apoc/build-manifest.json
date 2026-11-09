@@ -1,7 +1,7 @@
 {
  "00-head.html": "aab5b3c5423f",
  "08-core-rand.js": "4a3aa47f25da",
- "10-core-door.js": "22190472180d",
+ "10-core-door.js": "b12eb3957235",
  "10-core.js": "d97ba5f04088",
  "20-core-glass.js": "53ceb6333ccb",
  "20-core-walk.js": "c051841b6d9e",
@@ -12,7 +12,7 @@
  "26-matlib-bind.js": "23240bb0a0cb",
  "29x-matlib-pack.js": "0e0ff2514bd1",
  "29y-pa-matlib.js": "14b2c59e9ded",
- "30-core-door-leaf.js": "dc475fefea8f",
+ "30-core-door-leaf.js": "b4bc21dc8a74",
  "30-geo.js": "36ad714e7e76",
  "32-cores.js": "10e5f889d8ba",
  "34-adds.js": "9f09ba4ad2e7",
