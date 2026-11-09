@@ -4,8 +4,8 @@
   "build.py": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "5a962b702c20d84ccfaec57b43fb1bf9ffed5f96629b09eb5718f150f79058ba",
-    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "90bce49f95ff0eaeae0a28580ff0c97bbc3e66bd8ac35c437b82b617ee5997c1",
+    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
+    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "a1faa9a4ec91d9b8902caa361eca055eb47811dce7f37e2a8446f0b2cfa35bce",
     "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js": "3483578e15491419a5469ef5cd140d50ba746624fe360aee9c62f24d6ee0ad84",
     "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js": "de5c6665b79b782cd981e41a6b3f57ad0e148deadfa8cd50ed629b73f6851dba",
     "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js": "627611caa177c9abb2fd24d9cd3563507bc432ea11ba7f65ddeddd1030a28f8e",
@@ -32,7 +32,7 @@
     "biomes/hyperjungle/tex/leaf5.albedo.webp": "acc09687a40cbf9e99828523f1f2ffc69d35f2edf6260867f6f41b17acb6e715",
     "biomes/hyperjungle/tex/limb.albedo.webp": "67c45383a1ca7450940fb06ab8e70e781facffd57bb6cadf4a68e6fb6b4914a7",
     "biomes/hyperjungle/tex/moss.albedo.webp": "903d5828b63c1fba98304a23468a6ce7e5b25d0bfdf8c99bd3cc83aeefa24048",
-    "biomes/hyperjungle/tex/pack.json": "ec517d8c60ee2b6228487a8922b19012fdced1f57ba4bf7dc027f4c7ba90e9e7",
+    "biomes/hyperjungle/tex/pack.json": "2ce0fcc90c6129ab9703efc60ab03cafe7ff52b8aa7d184863b90b4c6009d065",
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/rock.albedo.webp": "6aa71713c488fb8ff5238b6a4aa4d8b7b1c4995b8d9fb31e2153a9602a91bb28",
     "biomes/hyperjungle/tex/towerConcrete.albedo.webp": "173b337c32701955c385f5e33d756ba00a12e711893f6f1e77471589de524106",
@@ -251,14 +251,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona.html": "7b8933b70bcea9bc7094592cc7886f8e3850544e83005d7f04db5bb236851910",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona.html": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona.html": "7b8933b70bcea9bc7094592cc7886f8e3850544e83005d7f04db5bb236851910",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona.html": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    }
@@ -266,8 +266,8 @@
   "build.py --station basin": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "5a962b702c20d84ccfaec57b43fb1bf9ffed5f96629b09eb5718f150f79058ba",
-    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "90bce49f95ff0eaeae0a28580ff0c97bbc3e66bd8ac35c437b82b617ee5997c1",
+    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
+    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "a1faa9a4ec91d9b8902caa361eca055eb47811dce7f37e2a8446f0b2cfa35bce",
     "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js": "3483578e15491419a5469ef5cd140d50ba746624fe360aee9c62f24d6ee0ad84",
     "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js": "de5c6665b79b782cd981e41a6b3f57ad0e148deadfa8cd50ed629b73f6851dba",
     "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js": "627611caa177c9abb2fd24d9cd3563507bc432ea11ba7f65ddeddd1030a28f8e",
@@ -294,7 +294,7 @@
     "biomes/hyperjungle/tex/leaf5.albedo.webp": "acc09687a40cbf9e99828523f1f2ffc69d35f2edf6260867f6f41b17acb6e715",
     "biomes/hyperjungle/tex/limb.albedo.webp": "67c45383a1ca7450940fb06ab8e70e781facffd57bb6cadf4a68e6fb6b4914a7",
     "biomes/hyperjungle/tex/moss.albedo.webp": "903d5828b63c1fba98304a23468a6ce7e5b25d0bfdf8c99bd3cc83aeefa24048",
-    "biomes/hyperjungle/tex/pack.json": "ec517d8c60ee2b6228487a8922b19012fdced1f57ba4bf7dc027f4c7ba90e9e7",
+    "biomes/hyperjungle/tex/pack.json": "2ce0fcc90c6129ab9703efc60ab03cafe7ff52b8aa7d184863b90b4c6009d065",
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/rock.albedo.webp": "6aa71713c488fb8ff5238b6a4aa4d8b7b1c4995b8d9fb31e2153a9602a91bb28",
     "biomes/hyperjungle/tex/towerConcrete.albedo.webp": "173b337c32701955c385f5e33d756ba00a12e711893f6f1e77471589de524106",
@@ -560,15 +560,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-basin.html": "5beb85b2aa5c550c05ef21c14552ae44392c518beb6c90c015e24034e3589d56",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-basin.html": "57854a70edd67cf4851f1a7365e2aab85ecfab5390196ed82ef73047a1f53534",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nwlowlands.js": "6ff797a895e555896c04b2159815a61ff373363f74b020118585d14ab9069914"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-basin.html": "5beb85b2aa5c550c05ef21c14552ae44392c518beb6c90c015e24034e3589d56",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-basin.html": "57854a70edd67cf4851f1a7365e2aab85ecfab5390196ed82ef73047a1f53534",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nwlowlands.js": "6ff797a895e555896c04b2159815a61ff373363f74b020118585d14ab9069914"
@@ -577,8 +577,8 @@
   "build.py --station gorge": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "5a962b702c20d84ccfaec57b43fb1bf9ffed5f96629b09eb5718f150f79058ba",
-    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "90bce49f95ff0eaeae0a28580ff0c97bbc3e66bd8ac35c437b82b617ee5997c1",
+    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
+    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "a1faa9a4ec91d9b8902caa361eca055eb47811dce7f37e2a8446f0b2cfa35bce",
     "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js": "3483578e15491419a5469ef5cd140d50ba746624fe360aee9c62f24d6ee0ad84",
     "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js": "de5c6665b79b782cd981e41a6b3f57ad0e148deadfa8cd50ed629b73f6851dba",
     "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js": "627611caa177c9abb2fd24d9cd3563507bc432ea11ba7f65ddeddd1030a28f8e",
@@ -605,7 +605,7 @@
     "biomes/hyperjungle/tex/leaf5.albedo.webp": "acc09687a40cbf9e99828523f1f2ffc69d35f2edf6260867f6f41b17acb6e715",
     "biomes/hyperjungle/tex/limb.albedo.webp": "67c45383a1ca7450940fb06ab8e70e781facffd57bb6cadf4a68e6fb6b4914a7",
     "biomes/hyperjungle/tex/moss.albedo.webp": "903d5828b63c1fba98304a23468a6ce7e5b25d0bfdf8c99bd3cc83aeefa24048",
-    "biomes/hyperjungle/tex/pack.json": "ec517d8c60ee2b6228487a8922b19012fdced1f57ba4bf7dc027f4c7ba90e9e7",
+    "biomes/hyperjungle/tex/pack.json": "2ce0fcc90c6129ab9703efc60ab03cafe7ff52b8aa7d184863b90b4c6009d065",
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/rock.albedo.webp": "6aa71713c488fb8ff5238b6a4aa4d8b7b1c4995b8d9fb31e2153a9602a91bb28",
     "biomes/hyperjungle/tex/towerConcrete.albedo.webp": "173b337c32701955c385f5e33d756ba00a12e711893f6f1e77471589de524106",
@@ -854,15 +854,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-gorge.html": "63f67f9c6c40298cd0b881421999f70383ac31a7631a68f23726ddefcc3b83d3",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-gorge.html": "6e7c87a20b0636a347e186cbb0dca555081c6220cf4d5982fdbf7d547bb275a7",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-gorge.html": "63f67f9c6c40298cd0b881421999f70383ac31a7631a68f23726ddefcc3b83d3",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-gorge.html": "6e7c87a20b0636a347e186cbb0dca555081c6220cf4d5982fdbf7d547bb275a7",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
@@ -1164,8 +1164,8 @@
   "build.py --station hollow": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "5a962b702c20d84ccfaec57b43fb1bf9ffed5f96629b09eb5718f150f79058ba",
-    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "90bce49f95ff0eaeae0a28580ff0c97bbc3e66bd8ac35c437b82b617ee5997c1",
+    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
+    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "a1faa9a4ec91d9b8902caa361eca055eb47811dce7f37e2a8446f0b2cfa35bce",
     "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js": "3483578e15491419a5469ef5cd140d50ba746624fe360aee9c62f24d6ee0ad84",
     "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js": "de5c6665b79b782cd981e41a6b3f57ad0e148deadfa8cd50ed629b73f6851dba",
     "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js": "627611caa177c9abb2fd24d9cd3563507bc432ea11ba7f65ddeddd1030a28f8e",
@@ -1192,7 +1192,7 @@
     "biomes/hyperjungle/tex/leaf5.albedo.webp": "acc09687a40cbf9e99828523f1f2ffc69d35f2edf6260867f6f41b17acb6e715",
     "biomes/hyperjungle/tex/limb.albedo.webp": "67c45383a1ca7450940fb06ab8e70e781facffd57bb6cadf4a68e6fb6b4914a7",
     "biomes/hyperjungle/tex/moss.albedo.webp": "903d5828b63c1fba98304a23468a6ce7e5b25d0bfdf8c99bd3cc83aeefa24048",
-    "biomes/hyperjungle/tex/pack.json": "ec517d8c60ee2b6228487a8922b19012fdced1f57ba4bf7dc027f4c7ba90e9e7",
+    "biomes/hyperjungle/tex/pack.json": "2ce0fcc90c6129ab9703efc60ab03cafe7ff52b8aa7d184863b90b4c6009d065",
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/rock.albedo.webp": "6aa71713c488fb8ff5238b6a4aa4d8b7b1c4995b8d9fb31e2153a9602a91bb28",
     "biomes/hyperjungle/tex/towerConcrete.albedo.webp": "173b337c32701955c385f5e33d756ba00a12e711893f6f1e77471589de524106",
@@ -1414,14 +1414,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hollow.html": "329af5aaf7df33ce885c79a11ec19faf91a2080c63e46321154aaddac402687d",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-hollow.html": "2602892b38f330c6cce62d003e099a659d41c4eeaf8a66084e3f89af4f02325d",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hollow.html": "329af5aaf7df33ce885c79a11ec19faf91a2080c63e46321154aaddac402687d",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-hollow.html": "2602892b38f330c6cce62d003e099a659d41c4eeaf8a66084e3f89af4f02325d",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    }
@@ -1429,8 +1429,8 @@
   "build.py --station trench": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "5a962b702c20d84ccfaec57b43fb1bf9ffed5f96629b09eb5718f150f79058ba",
-    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "90bce49f95ff0eaeae0a28580ff0c97bbc3e66bd8ac35c437b82b617ee5997c1",
+    "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
+    "biomes/hyperjungle/src/55-biome-hyperjungle-trees.js": "a1faa9a4ec91d9b8902caa361eca055eb47811dce7f37e2a8446f0b2cfa35bce",
     "biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js": "3483578e15491419a5469ef5cd140d50ba746624fe360aee9c62f24d6ee0ad84",
     "biomes/hyperjungle/src/60-biome-hyperjungle-floor.js": "de5c6665b79b782cd981e41a6b3f57ad0e148deadfa8cd50ed629b73f6851dba",
     "biomes/hyperjungle/src/65-biome-hyperjungle-dress.js": "627611caa177c9abb2fd24d9cd3563507bc432ea11ba7f65ddeddd1030a28f8e",
@@ -1457,7 +1457,7 @@
     "biomes/hyperjungle/tex/leaf5.albedo.webp": "acc09687a40cbf9e99828523f1f2ffc69d35f2edf6260867f6f41b17acb6e715",
     "biomes/hyperjungle/tex/limb.albedo.webp": "67c45383a1ca7450940fb06ab8e70e781facffd57bb6cadf4a68e6fb6b4914a7",
     "biomes/hyperjungle/tex/moss.albedo.webp": "903d5828b63c1fba98304a23468a6ce7e5b25d0bfdf8c99bd3cc83aeefa24048",
-    "biomes/hyperjungle/tex/pack.json": "ec517d8c60ee2b6228487a8922b19012fdced1f57ba4bf7dc027f4c7ba90e9e7",
+    "biomes/hyperjungle/tex/pack.json": "2ce0fcc90c6129ab9703efc60ab03cafe7ff52b8aa7d184863b90b4c6009d065",
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/rock.albedo.webp": "6aa71713c488fb8ff5238b6a4aa4d8b7b1c4995b8d9fb31e2153a9602a91bb28",
     "biomes/hyperjungle/tex/towerConcrete.albedo.webp": "173b337c32701955c385f5e33d756ba00a12e711893f6f1e77471589de524106",
@@ -1757,16 +1757,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-trench.html": "7cce9f5d525c6db510a75aa58fcc2e43554dc5942142148efc4a5c74d3f3465b",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-trench.html": "db553cd59833128faf34107a822ed40fec90da9e44afd13dadc59b25c0ee7003",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nhighlands.js": "a3254c3fd289a9f79d30f4a131106ef79a8ed9388c2749dd6b5f4fa8eb2ee525",
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-trench.html": "7cce9f5d525c6db510a75aa58fcc2e43554dc5942142148efc4a5c74d3f3465b",
-    "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
+    "biomes/korona/dist/korona-trench.html": "db553cd59833128faf34107a822ed40fec90da9e44afd13dadc59b25c0ee7003",
+    "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nhighlands.js": "a3254c3fd289a9f79d30f4a131106ef79a8ed9388c2749dd6b5f4fa8eb2ee525",
