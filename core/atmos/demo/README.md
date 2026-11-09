@@ -17,6 +17,14 @@ The readout gives the date in Jimjam's months and counts, and where the sun, the
 
 **URL hash** for repeatable shots: `#site=rim&view=winter&look=cluster&day=-88&hour=0&fov=50`.
 
+**The smog** (2026-11-09, `core/atmos/README.md` "The smog"): **Mood** picks the clouds' mood: none; smog (dark .6, a brown-purple
+tint, violent turbulence .7, the fires' orange glow at night); ash (dark .8, ash grey, unnaturally ordered rows, lightning under
+one patch at a time at night); sickly green (glitched: sectors of sky each on their own wind, an ethereal teal breathe at night);
+or the shifting episodes (`ATMOS.cloudMood`, a new episode each minute here: the three effects together or apart, the readout
+names the episode). **Smog mist** turns on a height fog whose mist has a field: a "city" 3 km to the north-west where the smog is
+universal, thinning to a tenth by 4 km out, all day (`#mood=smog&smog=1&az=325`, then `hour=22` for the glow). The ground and the
+test pieces take it; the sky pass does not (the far ridges stand clear of it, as they would behind a valley's smog).
+
 **Sites** are scale-model pixels through the site frame (`ATMOS.siteAt`): Voth (446,690, the reference), the
 hyperjungle at Pinnacle Rock (755,351), Korona (814,189), the Throne's glacier (545,560, 0.5 atm) and an Outer Wall crest
 (450,1040, 0.3 atm). The glacier and the rim pixels are approximate. **The ridges are demo stand-ins**, not any biome's.

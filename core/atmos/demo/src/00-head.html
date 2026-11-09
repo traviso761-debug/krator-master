@@ -28,6 +28,8 @@ canvas{display:block}
 <div class="row"><label>Pressure</label><input id="pres" type="range" min="0.2" max="2.2" step="0.05"><span class="val" id="presV"></span></div>
 <div class="row"><label>Clouds</label><input id="cover" type="range" min="0" max="1" step="0.02"><span class="val" id="coverV"></span></div>
 <div class="row"><label>Weather</label><select id="wx"><option value="clear">clear</option><option value="overcast">overcast</option><option value="rain">rain</option><option value="fog">fog</option></select></div>
+<div class="row"><label>Mood</label><select id="mood"><option value="none">none (the cloud as it was)</option><option value="smog">smog: dark, brown-purple, violent, fires' glow</option><option value="ash">ash: dark grey, ordered, lightning</option><option value="green">sickly green, glitched, ethereal glow</option><option value="shift">shifting episodes (ATMOS.cloudMood: a new one each minute)</option></select></div>
+<div class="row"><label>Smog mist</label><input id="smog" type="checkbox"><span id="moodV" style="flex:1;color:#9aa6b8"></span></div>
 <div class="sec">Views</div>
 <div><button data-v="start">Game start, 06:00</button><button data-v="dusk">Game start dusk</button><button data-v="winter">Winter midnight</button><button data-v="summer">Summer night</button><button data-v="eclipse">Next eclipse</button><button data-v="dd">Double Dark</button><button data-v="noon">Noon</button><button data-v="transit">Day's transit</button></div>
 <div class="sec">Look at</div>

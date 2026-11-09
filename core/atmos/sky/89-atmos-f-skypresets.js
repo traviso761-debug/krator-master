@@ -29,10 +29,27 @@
   // haze and teal colour the mid-level deck between the white belts, teal on the equator
   giant:{deep:[.07,.19,.55],mid:[.21,.44,.86],pale:[.52,.68,.94],cloud:[.94,.97,1],plank:[.70,1.12,.92],haze:[.40,.63,.96],teal:[.22,.68,.72],rim:[.55,.72,1],night:[.20,.30,.48],ring:[.88,.84,.76],
    shine:[.60,.72,.86],shineI:.42},          // giantshine: the night's key light from the giant, at full phase
+  // THE CLOUDS' MOOD (the Ancient's Valley's smog, the owner 2026-11-08: "dark, unnaturally turbulent, coloured, or softly glowing
+  // cloudiness"; opt-in, each key absent here so every page's cloud is the cloud it was): a biome adds to clouds
+  //   dark        0..1: the cloud's lit colour pulled toward a storm grey, its shadow side blacker
+  //   tint        display [r,g,b] the cloud is drawn toward, keeping its own light and shade (a smog brown-purple, a dull red, a
+  //               sickly green, an ash grey: ATMOS.MOOD_PALETTE); tintK 0..1 how far (default 1 when a tint is given)
+  //   turbulence  0..1, with turbKind 'violent' (a second, faster noise tears the shape and breaks the edges; the default),
+  //               'ordered' (unnaturally regular rows of identical clouds) or 'glitched' (sectors of sky each on their own wind)
+  //   glow        0..1 at night (nothing by day): the cloud base lit from below by glowColour (display RGB, default the fires'
+  //               orange), the city's fires or the taint; glowKind 'ethereal' (a slow, soft breathe over the whole sky) or
+  //               'lightning' (frequent flashes under one patch at a time) is read by ATMOS.cloudMood, which animates glow
+  //               and sets glowLocus [x, z, radius, spread] (a page may set them itself: spread 1 lights the whole sky alike)
+  //   mood        true: compile the mood's lines with everything at rest, for a page that drives them later (ATMOS.cloudMood:
+  //               the shifting episodes, the owner's "could all be together or separate", sky/89-atmos-k-cloudmood.js)
   clouds:{cover:.32,cumulus:1,cirrus:.55,bank:.35,height:1600,cirrusHeight:9000,scale:2600,drift:.004},
   night:{stars:1,nebula:1,galaxy:1,meteors:1},   // meteors: the shooting stars' rate (0 none; a shower 3 or more)
   fogDensity:.00011,                         // the air's own, x each key's fog
   ridges:[]}};
+ // the mood's vocabulary (the shader's uCloudY.x; the palette the episodes draw from: brown, dull red, sickly green, ash grey)
+ A.MOOD_TURB={violent:0,ordered:1,glitched:2};
+ A.MOOD_PALETTE=[[.42,.33,.30],[.48,.26,.24],[.42,.50,.30],[.46,.45,.44]];
+ A.MOOD_GLOW={ethereal:[.55,.78,.72],lightning:[.82,.86,1]};   // the glow colour by kind when the page names none: a pale teal breathe, a blue-white flash
  const clone=o=>JSON.parse(JSON.stringify(o));
  const merge=(a,b)=>{for(const k in b){const v=b[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))merge(a[k],v);else a[k]=clone(v);}return a;};
  A.skyPreset=(base,over)=>merge(clone(A.PRESETS.sky[base==null?'standard':base]),over||{});

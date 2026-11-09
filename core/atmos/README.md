@@ -92,6 +92,8 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `fx/raincover` (opt-in: `core/atmos/fx/89-atmos-fx-raincover.js`) | `rainCover({renderer, size, box, step, every, lift, depth, skip})`, `rainCoverGLSL()`, `rainCoverUniforms(u)`, GLSL `atmRainOpen(wp)` (1 open sky), `atmRainCover(wp)`, `atmRainOccY(xz)` | the rain occlusion map (2026-10-26, R10): a top-down depth map of a 160 m box round the eye, re-rendered every 20 m; rain streaks, flakes, cloudShade's wet darkening and the fresh snow stay off what is more than 1.2 m under cover (crowns, roofs, overhangs; grass shelters nothing). core/water's wetness takes it through `rainCoverGLSL` |
 | `sky/fog` + `host/heightfog` (opt-in: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`) | `heightFog(o)`, `heightFogOn(mat)`, `heightFogScene(scene)`, `fogGLSL()`, `fogAt(ro, P, F)`, `fogLayer/fogPool/fogSlab` | height fog (2026-10-26, R1): the page's fog (its colour and density, which the sky and the weather drive) up to the ground under the eye and thinning above it, graded toward the sky's zenith colour up the ray and the sun's in a forward lobe; dawn mist pooling under a level; a broken cloud band at mid-height; the patches drifting on the wind and its gusts. Exact closed-form integrals (Quilez), ~20 ops a fragment. A level view at the reference height is FogExp2's own fog (`test-fog.js`) |
 | `host/hostbind` | `windUniforms(u)`, `windGLSL()` | the gust field for any shader (R8): `atmWindV`, `atmGustAmp`, `atmTime` (the shared uniforms) and `atmGust`, `atmWind`, `atmGustHere(xz)`, `atmWindHere(xz)` |
+| `sky/fog` + `host/heightfog`, the mist field (opt-in, 2026-11-09) | `heightFog({mist:{field:{at, extent / centre + radius, res}, samples}})`, `fogMistFieldMake(o)`, `fogMistFieldAt(M, x, z)`, `fogMistField(at, lvl, b, ro, rd, L, n)` | the mist's density by place from a half-precision texture built once; the chunk's mist term times the field's density-weighted mean along the ray's crossing of the layer (below, "The smog") |
+| `sky/cloudmood` + the sky host (opt-in, 2026-11-09: `sky/89-atmos-k-cloudmood.js` for the data and the twin; the shader's lines are in `sky/89-atmos-g-sky.js`) | `cloudMood(S, o)`, `moodAt(t, o)`, `moodGlow(t, kind, seed, eye)`, `skyCloudAt(d, U)`, `skyCloudUniforms(P, L, st, o)`, `skyCloudField(xz, oct, U)`, `skyMoodWanted(P)`, `MOOD_PALETTE`, `MOOD_TURB`, `MOOD_GLOW`, `MOOD_DEFAULTS` | the clouds' `dark`, `tint`, `turbulence` (violent, ordered, glitched) and `glow` (ethereal, lightning), shifting in hashed episodes, together or apart, the tint by area; the layer's JS twin (below, "The smog") |
 | `host/skyhost` | `shaderHook(mat, key, fn)` | every core hook on a material's `onBeforeCompile` (cloudShade, heightFog, snowOn) goes through it: any number compose in any order, a page's own hook (set before or after) runs first, no hook can call itself, the program key carries each layer |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
@@ -272,6 +274,73 @@ page hook set after it replaces a core hook layered under it) and (done on the w
 when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms(sh.uniforms)`). `ATMOS.bindWeather`'s `o.wet` is passed
 to `WATER.wetGround(mat, o.wet)` (porosity, puddles, ripples). The terrain workstream's KHORIZON reads the sky's `uSunDir`: a stable name. core/biome's foliage and grass
 sway can read the travelling gusts with `ATMOS.windGLSL()` and `ATMOS.windUniforms(sh.uniforms)` (R8).
+
+### The smog: a mist field and the clouds' mood (the Ancient's Valley, 2026-11-09)
+
+The owner's ask (2026-11-08): "a frequent atmos effect of dark, unnaturally turbulent, coloured, or softly glowing cloudiness and
+medium distance smog/thick fog/haze; near cities this becomes universal. this should both enhance the atmosphere and help sell the
+LOD"; and (2026-11-09) "shifting so the glow, turbulence, or colour could all be together or separate; and some variations for
+each. colours could range brown to dull red to sickly green (may vary depending on area); glow could come from frequent lightning
+or an ethereal glow; clouds could be unnaturally violent or unnaturally regular and ordered or subtly glitched (clouds moving in
+different directions like they each feel their own wind)". Two opt-in pieces, both under the belt's rule: a page that does not
+ask gets the chunk text it had (`test-fog.js`, `test-sky.js` hold the identity), so no other page needs a rebuild.
+
+**The mist field** (`ATMOS.heightFog({mist:{..., field}})`, `sky/89-atmos-j-fog.js` "THE MIST FIELD"). The height fog's MIST
+layer had one density for the page; `field` scales it by place:
+
+```js
+ATMOS.heightFog({mist:{density:.006,y:40,depth:60,noise:.5,
+ field:{at:(x,z)=>F.density(x,z),          /* 0..1: universal in the cores, thin on the terraces */
+  centre:[0,0],radius:6000,res:128},       /* or extent:[x0,z0,x1,z1]; default 6 km round the camera */
+ samples:6}});                              /* the ray's samples of the field, at most 8 */
+ATMOS.heightFogScene(scene);
+```
+
+The field is built once from `at` into a `res` x `res` half-precision texture (R the field), as the belt's is; along a view ray the
+mist's exact pool integral is multiplied by the field's density-weighted mean over the ray's crossing of the layer (the part of
+the ray below `y + 3 depth`): `samples` midpoints, each weighted by the pool's density there, so a ray falling into the mist reads
+the field where the mist is. Within a few percent of a fine march on a smooth field (0.2% on the test's ramp), exact on a constant
+one. `F.field.at(x, z)` reads the texture's own halves (bilinear, as the GPU does), for a page's own checks; the twin
+`ATMOS.fogAt` takes `mist.field` as a function or as `ATMOS.fogMistFieldMake`'s record. Cost: up to `samples` texture reads a
+fragment on rays that enter the layer, none on a page without a field.
+
+**The clouds' mood** (`sky/89-atmos-g-sky.js` layer 7, the presets file, `sky/89-atmos-k-cloudmood.js`, `ATMOS.cloudMood` in
+the sky host). Four settings on the sky preset's `clouds`, each absent by default:
+
+| key | what |
+|---|---|
+| `dark` 0..1 | the cloud's lit colour pulled toward a storm grey (0.62 of its luminance), its shadow side blacker (0.22) |
+| `tint` [r,g,b], `tintK` 0..1 | drawn toward the tint's hue, keeping its own light and shade; `ATMOS.MOOD_PALETTE` is brown, dull red, sickly green, ash |
+| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (rows of identical clouds on the lattice), `glitched` (sectors of two cells each riding its own hashed wind: the seams are the point) |
+| `glow` 0..1, `glowColour`, `glowLocus` | at night only (`uNight`): the base lit from below by the colour, strongest where the cloud is thick; `glowLocus` [x, z, radius, spread] lights one patch (spread 0) or the whole sky (spread 1, the default) |
+| `mood` true | compile the lines with everything at rest, for a page that drives them later |
+
+The turbulence lives in the shared cloud field, so `ATMOS.cloudShade`'s shadows are torn, ordered or glitched with the cloud.
+The lines compile only when the preset asks (any of the four, or `mood`), decided in `ATMOS.sky` before the material compiles;
+`ATMOS.skyGLSL()` and `cloudShadeGLSL()` are otherwise the text they were (and the Godot include's digest holds).
+`ATMOS.skyCloudAt(d, U)` is the layer's JS twin on the same noise volume (`skyCloudUniforms(preset, look, state, {cam, wind,
+time, air})` builds `U`): `test-sky.js` holds that a dark cloud is darker, a tinted one nearer its tint and as bright, a violent
+field rougher, an ordered one periodic, a glitched one the plain field carried along each cell's heading, the glow zero by day and
+under one patch when its locus says so.
+
+**Shifting** (`ATMOS.cloudMood(S, o)`, right after `ATMOS.sky` and before the first render): episodes of `period` seconds (300),
+each drawn from a hash of (seed, episode): each of the three effects on or off on its own (`chance` {tint .6, glow .5,
+turbulence .6}: alone, together, or a quiet spell), the tint from the `palette` (or by area: `tintAt(x, z)` at the eye returns a
+colour or null), the turbulence in one of the three kinds, the glow in one of two, the dark riding whenever anything is on
+(`dark` [.35, .9]); neighbours blend over the last `blend` (.3) of the period. `glowKind` `ethereal` is a slow breathe over the
+whole sky (18 s value noise, .55..1); `lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of
+the eye, decaying in ~0.3 s, a dim floor between (in-cloud light only: a page that wants bolts has the weather's lightning,
+`fx/89-atmos-fx-lightning.js`). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
+`ATMOS.MOOD_GLOW`. All of it is `ATMOS.moodAt(t, o)` and `ATMOS.moodGlow(t, kind, seed, eye)`: plain numbers from the module
+clock, the same in Godot (`GODOT.md`); the host writes them into `preset.clouds` each frame and `S.mood` is the episode now.
+
+```js
+const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{clouds:{mood:true,cover:.5}}),{renderer,camera,scene,sun,hemi,fog:true});
+ATMOS.cloudMood(SKY,{seed:7,glowColour:[1,.55,.2],tintAt:(x,z)=>F.taint(x,z)});   /* the fires' orange; the taint's colour by place */
+```
+
+The demo (`demo/`, `#mood=smog|ash|green|shift`, `#smog=1`) shows a dark tinted turbulent sky, the shifting episodes and a mist
+with a field.
 
 ## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
 
