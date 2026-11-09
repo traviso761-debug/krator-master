@@ -5,6 +5,9 @@
   "core/atmos -> kits/ringsea",
   "kits/beast-riders -> settlements/girder",
   "kits/beast-riders -> settlements/mavs-refuge",
+  "kits/construction -> settlements/isle-demo",
+  "kits/construction -> settlements/iziz",
+  "kits/construction -> settlements/xanadu",
   "kits/pylon -> settlements/iziz",
   "kits/talia -> settlements/iziz"
  ],

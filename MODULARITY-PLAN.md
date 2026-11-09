@@ -58,6 +58,12 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 6. **Backwards edges to fix:** `kits/beast-riders -> settlements/isle-demo`, `kits/ringsea -> settlements/reedlake`,
    `kits/post-apoc <-> core/sockets`, `core/materials -> biomes/sedesert, kits/ancients, kits/ringsea` (the
    vendored-drift notes in `core/README.md`), `biomes/ringisles` and `biomes/dambasins -> settlements/*`.
+   **Added 2026-11-09 (allow-listed, to fix):** `kits/construction -> settlements/isle-demo, settlements/iziz,
+   settlements/xanadu`. The Construction kit's sheet draws three cultures' houses going up, and the only sealed bundles of
+   the Islanders kit and the Iziz Vernacular (ISK, IZV) and the kit-piece flattener (`isleFlatten`) live in the isle demo
+   (`bundles.py`, `src/58-isle-protos.js`), IZV takes Iziz's `88y-iziz-matlib.js`, and the Iziz and Xanadu texture packs are
+   still the settlements' `tex/`. The fix: `isleFlatten` to core/city beside `constructMesh`, the ISK and IZV seals to
+   `kits/islanders` and `kits/iziz-vernacular`, the packs to the kits (`kits/construction/KNOWN_ISSUES.md`).
 
 ## Plan, in order (each step is its own commit and leaves every hash baseline unchanged unless stated)
 
