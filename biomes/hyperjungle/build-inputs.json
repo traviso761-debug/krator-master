@@ -476,7 +476,7 @@
     "biomes/hyperjungle/src/99-host-take.js": "6377975fd397103157bb1621ee173fa62299ff41a29c81c6ad88733621bbb524",
     "biomes/hyperjungle/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/hyperjungle/stations/savage/45-host-stage.js": "9441026badbf67954c54e43af87e87a05aac0647469ca149d62771ab30231c86",
-    "biomes/hyperjungle/stations/savage/87-host-station.js": "1365a263642c74ac6f4b7dcca718c1140b22df6383b22b10faf4fe1912b89c40",
+    "biomes/hyperjungle/stations/savage/87-host-station.js": "4dde1126e2f8deca195b5625c57bd8f81acbc3ef7873a5866254e36f1eeb80c7",
     "biomes/hyperjungle/tex/bark0.albedo.webp": "2c97741a18b1916da9d1ba4e92b016f1b1dc95249073b1c8e9cb15b31cd0525c",
     "biomes/hyperjungle/tex/bark1.albedo.webp": "963cf4d15d7c494a30c730bb623ce6af29b14373ce0e04e33525033141958fa6",
     "biomes/hyperjungle/tex/bark2.albedo.webp": "398b718948721ff61f0474a3da76d944edb10bc5d0cc9316dd7c25ce08e6729b",
@@ -600,10 +600,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-savage.html": "f6832c7099f4d30a55555160f9326ac5e7dedeeb04fc73e6882a41115a64790f"
+    "biomes/hyperjungle/dist/hyperjungle-savage.html": "6847d36d410e0abe44096b49cc7b37bf44359af1a447540acb3111df3cc6a288"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savage.html": "351a4ac0eb6c17a0c9ae385828b5ce7144f2416cf74aa4c670a0f885427e5f50"
+    "biomes/hyperjungle/dist/hyperjungle-savage.html": "ea1fe02560e24417bef393196a9c062ce653d763076a7e272556b44d1286880d"
    }
   },
   "build.py --station savanna": {
