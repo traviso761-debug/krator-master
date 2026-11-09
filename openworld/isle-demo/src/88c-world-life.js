@@ -65,7 +65,15 @@ const boats=[];
  const R=SIM.TRADE&&SIM.TRADE.routes[X.sea.route];if(!R)return;
  R.carriers.forEach((C,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(X.sea.vessel):null;if(!r){st.errors.push('no '+X.sea.vessel+' build');return;}
   r.group.name=X.sea.route+' '+k;scene.add(r.group);boats.push({line:{id:X.sea.route,vessel:X.sea.vessel},R,k,key:X.sea.vessel,g:r.group,where:null,ends:[X.id,X.parent]});});});
-function canoes(){const m=S.clock.m+st.frac,dock={};
+/* the expeditions' sea legs (settlements/isle-demo 47x): a camp's boats appear when its crew sails, the goods boat and the food
+   boat each on the route between the camp's shore and the town's landing; their stop on the shore a boat's length out */
+const EXP=new Set();
+function expBoats(){const X=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.exp;if(!X)return;for(const C of X.camps){if(EXP.has(C.id))continue;EXP.add(C.id);
+ const sh=C.shore,l=Math.hypot(sh.ux,sh.uz)||1,ux=sh.ux/l,uz=sh.uz/l;stops[C.id]={town:C.id,sea:WORLD.water(sh.x+ux*22,sh.z+uz*22),berths:[{key:C.vessel,x:sh.x+ux*22,z:sh.z+uz*22,h:Math.atan2(ux,uz)}]};
+ for(const [rid,ends] of [[C.out,[C.id,C.town]],[C['in'],[C.town,C.id]]]){const R=SIM.TRADE&&SIM.TRADE.routes[rid];if(!R)continue;
+  R.carriers.forEach((K,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(C.vessel):null;if(!r){st.errors.push('no '+C.vessel+' build');return;}
+   r.group.name=rid+' '+k;scene.add(r.group);boats.push({line:{id:rid,vessel:C.vessel},R,k,key:C.vessel,g:r.group,where:null,ends});});}}}
+function canoes(){expBoats();const m=S.clock.m+st.frac,dock={};
  boats.forEach(b=>{const C=b.R.carriers[b.k],g=b.g;let x,z,h,y=null;
   if(C.phase==='sail'&&C.from!=null&&C.to!=null){const from=b.R.stops[C.from].settlement,P=routeOf(b);
    if(P){const f=Math.min(1,Math.max(0,(m-C.departs)/Math.max(1,C.eta-C.departs))),A=W.along(P,f,from!==(b.ends||order)[0]);x=A.x;z=A.z;h=A.h;y=stops[from].sea;

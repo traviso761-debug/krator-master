@@ -87,6 +87,14 @@ north (`core/hamlet/PLAN.md` section 4).
   and open posts from both towns' waiting refugees (47f `foundSettle`). At the real pace (a month's wait, a season's camp,
   up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
   survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
+- **Camps by boat (2026-11-09; settlements/isle-demo/PLAN.md section 12):** each town sends a crew of twelve by lakatoi to
+  a forest island on the first day: `src/48x-world-expeditions.js` finds the shore (the survey's candidate points tried
+  for a sea route from the town's landing, dry forested ground inland of it, apart from every village: Kautoa's on the
+  forest island east beside its lumber village, Valapo's on the forest island west, 23 to 24 km by sea), the sim (47x)
+  pitches the camp and works the jungle for mahogany, gum and kapok with the lumber village's migrating work camp,
+  the goods boat and the food boat run the line (`88c`), `88h` pitches the kit's shelters when the boat lands and strikes
+  them when the crew sails home after its season. The towns' canoe sheds build canoes of the mahogany and gum.
+  `verify.py` checks each town's shore and the sim's first check (the crews sailed and landed).
 
 ## The towns (M7, 2026-10-20)
 

@@ -1004,7 +1004,7 @@ stocks steady) with the food coming in by road; the open world's verify (the ham
 year?); whether the farm ring should later become hamlets too (left alone for now, as asked); how many plantations, and
 whether they are worked by the town's people or by their own village.
 
-## 12. Camps by boat: the expedition camps on the other isles (planned 2026-11-09)
+## 12. Camps by boat: the expedition camps on the other isles (planned and built 2026-11-09)
 
 **The owner (2026-11-09):** "can we arrange to have the cities deploy camps by boat to the other islands and collect
 resources? what do the other islands out there have that they'd want to import?"
@@ -1056,6 +1056,24 @@ isles (`48x`: the nearest routed shore of each island with jungle enough behind 
 the boats on the line (`88c`), the trees felled (`88h`'s stumps as the lumber village's), `verify.py` checks. (4) The
 politics: an island camp is a claim (PLAN-POLITICS.md: the Kautoa-Valapo rivalry over the forest islands; a camp's
 palisade when the other town's boats come).
+
+**Built (2026-11-09; the owner: "sounds good, go").** Steps 1 to 3 of the order above: `15` `goods` has `mahogany`,
+`gum`, `kapok` and `canoes`, both towns' canoe sheds build canoes of the mahogany and gum (`expeditions.yards`, a
+40-hour batch, a stockpile ceiling of ten; Kautoa's dockyard keeps its woodtools; kapok is stocked with a ceiling,
+its lamps' use the next step), and `expeditions`
+is the tune: a crew of 12 (the town's unemployed first, then its dockers, never a refugee or an elder) sails on `firstDay`
+for a season of `days` 90, then `rest`. `47x-isle-expeditions.js`: the camp a settlement of the town's (kind `camp`: a
+mess, a store on the shore that is the boat's stop) with the lumber village's work camp (47h `simCrewPlace` with the
+crew's own posts) ranging the island's forest, its recipe held "at sea" for the voyage; two sea legs (`boat`: the goods
+to the town's canoe stop, the town's food out); after the season or when the range is worked out the crew comes home to
+the places it left and the camp is struck. `tests/test-isle-expeditions.js` (40 days at a 30-day season): both crews
+sailed on day 1 and pitched, made mahogany with gum and kapok from their stands, the goods landed and were booked
+imported, the camps fed by the boat, canoes built, every hand home after the season; each with a negative. The world:
+`openworld/isle-demo/src/48x` finds each town's shore from the survey's candidate points (a sea route from the landing,
+dry forested ground inland of it, apart from every village): Kautoa's camp on the forest island east 3 km from its lumber
+village (24.3 km by sea), Valapo's on the forest island west (23.2 km); `88h` pitches the kit's shelters when the boat
+lands and strikes them when the crew sails home, and draws the crew's camp among the trees as the lumber village's;
+`88c` puts the goods boat and the food boat on the line; `verify.py` checks the shores and the sim's first check.
 
 **Not this:** no colony yet (a camp strikes; a village on another island is the owner's "Voth and Hykkousoi colonies"
 question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is dealt where a camp digs, as the mine's).

@@ -133,6 +133,14 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    if(neg==='camp')recs[1].proto=false;const miss=recs.filter(r=>!r.proto);if(miss.length)bad.push(miss.length+' of '+recs.length+' pieces have no kit proto: '+miss.map(r=>r.key).join(', '));
    if(recs.length<4||!recs.some(r=>/shelter/.test(r.key)))bad.push('only '+recs.length+' pieces for six households, or no shelter');   /* a long shelter and an A-frame hold six households */if(!recs.some(r=>r.key==='ie-camp-kitchen')||!recs.some(r=>r.key==='ie-camp-store'))bad.push('no kitchen or store');
    R.push({name:'the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto',ok:!bad.length,detail:bad.length?bad.join('; '):recs.length+' pieces: '+recs.map(r=>r.key.replace('ie-','')).join(', ')});}}
+ /* the expeditions' shores (48x; PLAN.md 12): each town finds a forest island shore with a sea route from its landing, the camp
+    inland of it on dry ground with forest enough round it, apart from every village */
+ {const bad=[],lines=[],EX=typeof ISLE_EXPEDITIONS!=='undefined'?ISLE_EXPEDITIONS:null;if(!EX)bad.push('no expeditions (48x)');else for(const t of ISLE.TOWNS){const L=EX.shores[t]||[],S0=L.find(x=>!x.none)||EX.shoreFor(t,1);
+   if(!S0){bad.push(t+': no shore ('+JSON.stringify((L[0]||{}).tried||[]).slice(0,200)+')');continue;}const f=neg==='shore'?0.1:EX.forestAround(S0.x,S0.z);
+   const near=ISLE_HAMLETS.made.villages.filter(E=>E.village&&E.village.site).map(E=>Math.hypot(E.village.site.x-S0.x,E.village.site.z-S0.z)).sort((a,b)=>a-b)[0];
+   if(!(S0.seaKm>0))bad.push(t+': no sea route');if(f<EX.FOREST_MIN)bad.push(t+': forest '+f.toFixed(2)+' round the camp');if(near<EX.APART)bad.push(t+': '+Math.round(near)+' m from a village');if(WORLD.water(S0.x,S0.z)>WORLD.H(S0.x,S0.z)-1)bad.push(t+': the camp in the water');
+   lines.push(t+' -> '+S0.name+' at '+Math.round(S0.x)+','+Math.round(S0.z)+', '+S0.seaKm+' km by sea, forest '+f.toFixed(2)+', nearest village '+(near/1000).toFixed(1)+' km');}
+  R.push({name:'the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
  return R;}"""
 
 
@@ -176,7 +184,9 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  B=cp(b);{const X=B.villages['hamlet-farm-v1'];X.landed['sweet-potato']=a.villages['hamlet-farm-v1'].landed['sweet-potato']||0;X.goods['sweet-potato'].stock=0;X.atSea['sweet-potato']=0;}negs.push(Object.assign({neg:'crops lost'},pick(ISLE.hamletChecks(a,B),/crop the countryside grows landed/)));
  B=cp(b);B.villages['hamlet-farm-k1'].farm.inCropHa=1;B.villages['hamlet-farm-k2'].farm.inCropHa=1;negs.push(Object.assign({neg:'land'},pick(ISLE.hamletChecks(a,B),/land in crop/)));
  B=cp(b);{const C=Object.keys(B.villages).filter(k=>B.villages[k].sea);if(C.length){B.villages[C[0]].sea.landed={};B.villages[C[0]].sea.atSea={};negs.push(Object.assign({neg:'sea lost'},pick(ISLE.hamletChecks(a,B),/sea leg/)));}}
- return{checks:ISLE.hamletChecks(a,b),negs};})()"""
+ /* the expeditions (47x): two days in, each town's crew has sailed and landed (firstDay 1): the first check, with a negative */
+ let checks=ISLE.hamletChecks(a,b);if(ISLE.expBooks){const eb=ISLE.expBooks();checks=checks.concat(ISLE.expChecks(eb,eb));const EB=cp(eb);EB.camps.forEach(C=>{C.here=0;});negs.push(Object.assign({neg:'no crew'},pick(ISLE.expChecks(eb,EB),/sent a crew/)));}
+ return{checks,negs};})()"""
 
 
 async def run(a):
@@ -222,7 +232,8 @@ async def run(a):
                                 ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway'),
                                 ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
                                 ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
-                                ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto")):
+                                ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto"),
+                                ('shore', "the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

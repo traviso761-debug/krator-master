@@ -225,7 +225,8 @@ ISLE.TUNE.sim = {
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
-      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats'],
+      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats',
+      'mahogany', 'gum', 'kapok', 'canoes'],   /* the forest islands' goods the expedition camps bring (47x, PLAN.md 12) and the hulls the dockyard builds of them */
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 }, nets: { cotton: 2 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40, urgent: 1 },
@@ -431,6 +432,19 @@ ISLE.TUNE.sim = {
      founding a new hamlet"); tests set the fast pace (waitDays 7, days 20) themselves. `settle`: a founded hamlet fills
      its open homes and posts from the towns' waiting refugees (every `every` minutes), not from settlers dealt */
   found: { every: 60, households: 6, waitDays: 30, days: 45, maxPerTown: 3, settlers: 2.5, settle: { every: 1440 }, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
+  /* EXPEDITIONS (47x; PLAN.md section 12; the owner, 2026-11-09: "have the cities deploy camps by boat to the other islands
+     and collect resources"): each town sends a crew of `hands` (its unemployed first, then its dockers) by lakatoi to the
+     nearest forest island shore with a sea route from its trade landing (the page's hook), on `firstDay`; the camp works
+     the jungle as the lumber village's crew works its stands (core/camp 40: `crew`, the batch mahogany with gum and kapok
+     by it), its goods home and its food out on a sea leg (`boat`); after `days` (a season) the crew comes home and the
+     camp is struck; `rest` days later the next sails */
+  expeditions: { hands: 12, firstDay: 1, days: 90, rest: 30, maxPerTown: 1, startDays: 6,
+    /* the canoe sheds build canoes of the islands' mahogany and gum (Kautoa three, Valapo one; the dockyard keeps its
+       woodtools), each town's ceilings on the goods and the hulls */
+    yards: { canoeshed: { batch: { 'in': { mahogany: 2, gum: 1 }, out: { canoes: 1 }, hours: 40 }, cap: 20 } },
+    stockpile: { canoes: { max: 10 }, mahogany: { max: 600 }, gum: { max: 300 }, kapok: { max: 600 } },
+    crew: { range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40, batch: { 'in': {}, out: { mahogany: 1 }, by: { gum: 0.3, kapok: 0.3 }, hours: 2 }, cap: 1500, share: 0, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
+    boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

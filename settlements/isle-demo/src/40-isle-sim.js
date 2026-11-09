@@ -167,6 +167,7 @@ ISLE.simDeclare = function (plans, clock, opts) {
   S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */
   S.refugees = ISLE.simRefugees ? ISLE.simRefugees() : null;   /* the camps and the weekly ship (47r), after the money's accounts */
   S.founding = ISLE.simFound ? ISLE.simFound() : null;   /* the farming camps the towns' refugees found, and the hamlets they become (47f) */
+  S.expeditions = ISLE.simExpeditions ? ISLE.simExpeditions() : null;   /* the camps by boat to the other isles (47x) */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

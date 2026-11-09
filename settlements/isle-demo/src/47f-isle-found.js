@@ -86,7 +86,7 @@ ISLE.foundCamp = function (s, hhs, minute) {
   var siteId = cid + ':farmland';
   SIM.site({ id: siteId, settlement: cid, kind: 'farmland', goods: [crop.good], grade: 'medium', amount: Math.ceil(30 * full), regen: Math.round(full * gmax), yield: 1 });
   SIM.recipe(farm.id, { out: [crop.good], rate: rate, cap: 3000, site: siteId });
-  var need = np * I.meals * I.perMeal * HT.startDays; foods.forEach(function (f) { store.stock[f] = (store.stock[f] || 0) + Math.round(need / foods.length); });
+  ISLE.carryFood(s, cid, store, foods, np * I.meals * I.perMeal * HT.startDays);   /* the town's food carried out (47x), booked out of the town and into the camp */
   var cart = SIM.actor({ id: cid + '.cart0', role: 'cart', org: cid + '.folk', home: store.id, cls: 'cart', job: 'carters' }); cart.pos = { x: store.x, y: store.y || 0, z: store.z }; SIM.cart(cart);
   var R = HT.road, Wp = null, bd = Infinity; EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - store.x, P.z - store.z); if (d < bd) { bd = d; Wp = P; } });
   var mins = Math.max(60, Math.round(bd * R.detour / (R.kmh * 1000 / 60))), gO = {}, gI = {}, eO = {}, eI = {}; gO[cid] = [crop.good]; gO[s] = []; gI[s] = foods.filter(function (f) { return f !== crop.good; }); gI[cid] = []; eO[s] = {}; eO[s][crop.good] = 1; eI[cid] = {};

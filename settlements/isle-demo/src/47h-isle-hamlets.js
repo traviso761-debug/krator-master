@@ -302,10 +302,11 @@ ISLE.simCrewPlace = function (id, sp, places, res, CR, h) {
   var W = KCAMP.workCamp({ id: id + ':crew', world: ISLE.TUNE.sim.seed, yard: yard, stands: stands, cfg: CR.cfg });
   var op = KCAMP.workStart(W, SIM.minute() / 1440); if (!op) throw new Error(id + ': no stand in the crew\'s range');
   var was = 0, now = 0; saw.forEach(function (P) { was += P.activities.WORK; P.activities.WORK = Math.max(1, Math.round(P.activities.WORK * (1 - CR.share))); now += P.activities.WORK; });
-  var y = h(op.x, op.z), P = SIM.place({ id: id + ':crew', name: sp.name + ': felling camp', kind: 'fellcamp', x: op.x, y: y, z: op.z, door: { x: op.x, y: y, z: op.z },
-    activities: { WORK: was - now }, indoor: false, settlement: id, tags: { role: 'camp', hamlet: id, focus: sp.focus } });
+  var posts = CR.posts != null ? CR.posts : was - now;   /* an expedition's crew (47x) brings its own hands: no sawpit to draw from */
+  var y = h(op.x, op.z), P = SIM.place({ id: id + ':crew', name: sp.name + (CR.posts != null ? ': the camp at work' : ': felling camp'), kind: 'fellcamp', x: op.x, y: y, z: op.z, door: { x: op.x, y: y, z: op.z },
+    activities: { WORK: posts }, indoor: false, settlement: id, tags: { role: 'camp', hamlet: id, focus: sp.focus } });
   places.push(P);
-  return { id: W.id, settlement: id, place: P.id, W: W, posts: was - now, goods: Object.keys(CR.batch.out), taken0: 0, moves: 0, h: h };
+  return { id: W.id, settlement: id, place: P.id, W: W, posts: posts, goods: Object.keys(CR.batch.out), taken0: 0, moves: 0, h: h };
 };
 ISLE.simCrewStart = function (crew, CR, id) {
   var W = crew.W, op = W.log[0], T = ISLE.TUNE.sim, w = T.sched.work, hours = 0;

@@ -344,3 +344,15 @@
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).
+
+## The expedition camps (PLAN.md 12, 2026-11-09)
+
+- [ ] **Kapok is stocked, not used** (2026-11-09): the camps bring it and the towns hold it to its ceiling; the lamps' second
+      oil and the weavers' stuffing (PLAN.md 12's table) need an input that may be either of two goods, which the economy's
+      `inputs` maps cannot say yet. Mahogany and gum are used (the canoe sheds' canoes).
+- [ ] **The canoes go nowhere** (2026-11-09): the canoe sheds' canoes pile to their ceiling of ten; the fleet that should take
+      them (the trade lines' vessels, the fishing docks' boats, a town's war canoes) is not a thing the sim counts yet.
+- [ ] **The jungle stands through an expedition camp** on the page as through a farming camp (openworld/isle-demo
+      KNOWN_ISSUES.md): the flora tiles built before the boat landed are not rebuilt; the crew's stumps are the lumber
+      village's drawing, read from the tiles near the camera only.
+- [ ] **No politics yet** (PLAN.md 12 step 4): the two towns' camps never meet; a camp on the other's island raises nothing.

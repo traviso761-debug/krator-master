@@ -157,19 +157,24 @@ function parcelsBox(parcels,pad){let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;for(const
    hut or a lean-to for one), drawn as a village is (the kit's protos, instanced); stand-in boxes when the kit lacks a key */
 const CAMP_KEYS=['ie-shelter-hut','ie-shelter-leanto','ie-shelter-aframe','ie-shelter-hut'];
 function campRecs(C){const y=H(C.site.x,C.site.z),recs=[{key:'ie-camp-kitchen',x:C.site.x,z:C.site.z,ry:Math.PI,y},{key:'ie-camp-store',x:C.site.x+22,z:C.site.z,ry:-Math.PI/2,y}];
- let hh=C.households.length,i=0;const n=Math.ceil(hh/2)+1;   /* a shelter a household or two, the store's bearing skipped */
+ let hh=C.households?C.households.length:Math.ceil(C.people.length/2),i=0;   /* an expedition's crew: two to a shelter's household */const n=Math.ceil(hh/2)+1;   /* a shelter a household or two, the store's bearing skipped */
  for(let k=0;k<n+1&&hh>0;k++){const a=(k+.5)/(n+1)*Math.PI*2;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.5)continue;
   const key=hh>=4&&k%3===0?'ie-shelter-long':hh>=2?'ie-shelter-aframe':CAMP_KEYS[i++%CAMP_KEYS.length],r=key==='ie-shelter-long'?34:28;
   hh-=key==='ie-shelter-long'?4:key==='ie-shelter-aframe'?2:1;recs.push({key,x:C.site.x+Math.cos(a)*r,z:C.site.z+Math.sin(a)*r,ry:Math.atan2(-Math.cos(a),-Math.sin(a)),y});}
  for(const r of recs){r.kit=kitOf(r.key);const d=dims(r.key)||{w:6,d:5,h:3};r.w=d.w;r.d=d.d;r.h=d.h;r.y=H(r.x,r.z)-.1;}return recs;}
 function pitchCamp(C){const recs=campRecs(C),X={v:{site:{x:C.site.x,z:C.site.z},id:C.id},recs},im=full(X);im.name='farming camp '+C.id;
- const base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:'farming camp '+C.n+' of '+C.townName,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:60,h:8,tags:{culture:'islander',types:['civic'],role:'farming camp'},note:C.people.length+' people in '+C.households.length+' households, farming '+C.crop});
+ const exp=!C.households,base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:(exp?'expedition camp ':'farming camp ')+C.n+' of '+C.townName,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:60,h:8,tags:{culture:'islander',types:['civic'],role:exp?'expedition camp':'farming camp'},note:exp?C.people.length+' hands by boat from '+C.townName+(C.site.name?' to '+C.site.name:'')+', '+C.seaKm+' km by sea, for the forest\'s mahogany, gum and kapok':C.people.length+' people in '+C.households.length+' households, farming '+C.crop});
  for(const r of recs)TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,r.y,r.z],ry:r.ry,size:[r.w,r.d,r.h],tags:{culture:'islander',types:['dwelling-single'],wealth:'poor',role:'shelter'}});
- const keys=[];for(const p of C.farm.parcels||[]){const k=fkey(p.x,p.z);if(VK.has(k))continue;FMAP[k]=p.state==="crop"?(CROPC[p.crop]||CROPC._):null;keys.push(k);}
- if(C.farm.parcels&&C.farm.parcels.length)refreshBox(parcelsBox(C.farm.parcels,120));
+ const keys=[];for(const p of (C.farm&&C.farm.parcels)||[]){const k=fkey(p.x,p.z);if(VK.has(k))continue;FMAP[k]=p.state==="crop"?(CROPC[p.crop]||CROPC._):null;keys.push(k);}
+ if(C.farm&&C.farm.parcels&&C.farm.parcels.length)refreshBox(parcelsBox(C.farm.parcels,120));
  CAMPS.set(C.id,{group:im,keys});S.pitched=(S.pitched||0)+1;}
 function strikeCamp(C){const K=CAMPS.get(C.id);if(!K)return;scene.remove(K.group);for(const k of K.keys)if(!VK.has(k))delete FMAP[k];CAMPS.delete(C.id);S.struck=(S.struck||0)+1;}
-function camps(){const F=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.found;if(!F)return;for(const C of F.camps){if(!C.converted&&!CAMPS.has(C.id))pitchCamp(C);else if(C.converted&&CAMPS.has(C.id))strikeCamp(C);}}
+function camps(){const F=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.found;if(F)for(const C of F.camps){if(!C.converted&&!CAMPS.has(C.id))pitchCamp(C);else if(C.converted&&CAMPS.has(C.id))strikeCamp(C);}
+ /* the expedition camps by boat (47x, 48x): pitched on the island's shore once the boat has landed, struck when the crew sails home */
+ const X=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.exp;if(X)for(const C of X.camps){const landed=typeof SIM!=='undefined'&&SIM.minute()>=C.lands;if(!C.struck&&landed&&!CAMPS.has(C.id))pitchCamp(C);else if(C.struck&&CAMPS.has(C.id))strikeCamp(C);}
+ /* a crew that appeared after the page loaded (an expedition's): drawn as the lumber village's */
+ const all=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews)||[];for(const K of all)if(!CREWS.some(X=>X.C===K))CREWS.push({C:K,campG:null,cstumps:null,cLast:null});
+ for(let i=CREWS.length-1;i>=0;i--){const X=CREWS[i];if(all.indexOf(X.C)<0){if(X.campG)scene.remove(X.campG);if(X.cstumps)scene.remove(X.cstumps);CREWS.splice(i,1);}}}
 if(typeof ISLE_FOUND!=='undefined')ISLE_FOUND.onAdd((E,X)=>{if(!E)return;const Xv=enter(E);V.push(Xv);S.villages=V.length;if(E.resource)addResource(E.resource);
  const b=E.resource&&E.resource.parcels&&E.resource.parcels.length?parcelsBox(E.resource.parcels,160):[E.village.site.x-400,E.village.site.z-400,E.village.site.x+400,E.village.site.z+400];
  refreshBox([Math.min(b[0],E.village.site.x-300),Math.min(b[1],E.village.site.z-300),Math.max(b[2],E.village.site.x+300),Math.max(b[3],E.village.site.z+300)]);
@@ -191,6 +196,6 @@ const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.sp
    founded one would be; -> its records with the kit each resolved to (null: a stand-in box) */
 function pitchTest(x,z,hh){hh=hh==null?6:hh;const C={id:'camp:test:'+Math.round(x)+','+Math.round(z),n:0,townName:'the test',site:{x,z},people:new Array(hh*5).fill(0),households:new Array(hh).fill(0),crop:'rice',farm:{parcels:[]}};
  if(CAMPS.has(C.id))strikeCamp({id:C.id});pitchCamp(C);return campRecs(C).map(r=>({key:r.key,kit:r.kit,x:Math.round(r.x),z:Math.round(r.z),proto:r.kit?!!isleProto(r.kit,r.key,0,CACHE):false}));}
-window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],pitchTest,found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
+window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],pitchTest,expeditions:()=>typeof ISLE_EXPEDITIONS!=='undefined'?{shores:ISLE_EXPEDITIONS.shores,camps:(ISLE.SIM&&ISLE.SIM.exp?ISLE.SIM.exp.camps:[]).map(C=>({id:C.id,to:C.site.name,seaKm:C.seaKm,people:C.people.length,sailed:C.sailed,lands:C.lands,struck:C.struck,drawn:CAMPS.has(C.id)}))}:null,found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
  resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
 return{update,stats:S,tags:TAGS};})();});
