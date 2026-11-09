@@ -12,7 +12,7 @@
     "biomes/nwouterwall/src/45-host-stage.js": "276dc8cad3e8c87e3dba16acb3b54d538e103b5bd770d19dfd841a2971b43e6b",
     "biomes/nwouterwall/src/46-biome-nwow-layout.js": "861b1b9ad5d742c907b93bf28c96a620f52500a5ec06e9386b8828910ffe1fff",
     "biomes/nwouterwall/src/47-host-land.js": "2678b14fcb1c3dd18b160fd328c38e27628d4508f815619456baad3ef6ad98f1",
-    "biomes/nwouterwall/src/50-biome-nwow-species.js": "18846024c87028844a0e4827bab236b5f111409877bf6b8b4e41784b9fd9db84",
+    "biomes/nwouterwall/src/50-biome-nwow-species.js": "227156a174e5518488e00913b99ba9b87abc47403a1ce94bc9aefde6e9222e62",
     "biomes/nwouterwall/src/55-biome-nwow-trees.js": "c8527aee6e1ed9028dd10b1bd9379e1e4cb3ba4a40aa8fe37bc5cabe7a478afe",
     "biomes/nwouterwall/src/60-biome-nwow-floor.js": "3fb4698f0fec67ffe9b3d303a4631b1df3fd7c7f3d59cafab6d6b32dd016a911",
     "biomes/nwouterwall/src/70-biome-nwow.js": "6b2a0491cd716e99bcc14f9d4fcd8583262ec25f850b7429ed6692108092d9e5",
@@ -155,11 +155,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall.html": "b27dc6f387890b07a74f7b8fdd7e8ffe3ba97baad2747f49de17c7d346710d1d",
+    "biomes/nwouterwall/dist/nwouterwall.html": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall.html": "b27dc6f387890b07a74f7b8fdd7e8ffe3ba97baad2747f49de17c7d346710d1d",
+    "biomes/nwouterwall/dist/nwouterwall.html": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    }
   },
@@ -174,7 +174,7 @@
     "biomes/nwouterwall/src/45-host-stage.js": "276dc8cad3e8c87e3dba16acb3b54d538e103b5bd770d19dfd841a2971b43e6b",
     "biomes/nwouterwall/src/46-biome-nwow-layout.js": "861b1b9ad5d742c907b93bf28c96a620f52500a5ec06e9386b8828910ffe1fff",
     "biomes/nwouterwall/src/47-host-land.js": "2678b14fcb1c3dd18b160fd328c38e27628d4508f815619456baad3ef6ad98f1",
-    "biomes/nwouterwall/src/50-biome-nwow-species.js": "18846024c87028844a0e4827bab236b5f111409877bf6b8b4e41784b9fd9db84",
+    "biomes/nwouterwall/src/50-biome-nwow-species.js": "227156a174e5518488e00913b99ba9b87abc47403a1ce94bc9aefde6e9222e62",
     "biomes/nwouterwall/src/55-biome-nwow-trees.js": "c8527aee6e1ed9028dd10b1bd9379e1e4cb3ba4a40aa8fe37bc5cabe7a478afe",
     "biomes/nwouterwall/src/60-biome-nwow-floor.js": "3fb4698f0fec67ffe9b3d303a4631b1df3fd7c7f3d59cafab6d6b32dd016a911",
     "biomes/nwouterwall/src/70-biome-nwow.js": "6b2a0491cd716e99bcc14f9d4fcd8583262ec25f850b7429ed6692108092d9e5",
@@ -320,11 +320,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "623ca00079f5010b1a48aad18c1cd59082a190748cc385607c437645c92b333d",
+    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "623ca00079f5010b1a48aad18c1cd59082a190748cc385607c437645c92b333d",
+    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    }
   },
@@ -339,7 +339,7 @@
     "biomes/nwouterwall/src/45-host-stage.js": "276dc8cad3e8c87e3dba16acb3b54d538e103b5bd770d19dfd841a2971b43e6b",
     "biomes/nwouterwall/src/46-biome-nwow-layout.js": "861b1b9ad5d742c907b93bf28c96a620f52500a5ec06e9386b8828910ffe1fff",
     "biomes/nwouterwall/src/47-host-land.js": "2678b14fcb1c3dd18b160fd328c38e27628d4508f815619456baad3ef6ad98f1",
-    "biomes/nwouterwall/src/50-biome-nwow-species.js": "18846024c87028844a0e4827bab236b5f111409877bf6b8b4e41784b9fd9db84",
+    "biomes/nwouterwall/src/50-biome-nwow-species.js": "227156a174e5518488e00913b99ba9b87abc47403a1ce94bc9aefde6e9222e62",
     "biomes/nwouterwall/src/55-biome-nwow-trees.js": "c8527aee6e1ed9028dd10b1bd9379e1e4cb3ba4a40aa8fe37bc5cabe7a478afe",
     "biomes/nwouterwall/src/60-biome-nwow-floor.js": "3fb4698f0fec67ffe9b3d303a4631b1df3fd7c7f3d59cafab6d6b32dd016a911",
     "biomes/nwouterwall/src/70-biome-nwow.js": "6b2a0491cd716e99bcc14f9d4fcd8583262ec25f850b7429ed6692108092d9e5",
@@ -656,13 +656,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "cfd54844c679207776c3c4eb0fff50157a5bc9ff0943981fc0453e7628d04caa",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "cfd54844c679207776c3c4eb0fff50157a5bc9ff0943981fc0453e7628d04caa",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"
