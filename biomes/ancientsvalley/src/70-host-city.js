@@ -13,11 +13,23 @@ const AVC={ready:false,keys:[].concat(...['spindle','ledger'].map(f=>MP.RUINS.ma
    48 of them; its impostor is 128 px a view */
 /* 2026-11-09, the owner's fourth eye: a shell seen onto its top (the eye over the tower's roof) smears whatever the range, so such a tower is a hero to
    AV_NEAR_STEEP; a design is a hero to 1 km, the nearest 64 (past 48 within 1.4 km the rest were cards at 900 m) */
-const AV_NEAR=300,AV_NEAR_STEEP=1000,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_HEROMAX_STEEP=40,AV_DNEAR=1000,AV_DHEROMAX=64;
+const AV_NEAR=300,AV_FAR=1400,AV_IMPFAR=3200,AV_RUBBLE=1000,AV_HEROMAX=16,AV_DNEAR=1000,AV_DHEROMAX=72;
 MP.NOSHELL=k=>/\.skeleton$/.test(k);
 MP.mats();
-const avImpKey=t=>t.shelled?t.key:t.family+'.'+(t.state==='intact'||t.state==='gutted'||t.state==='crown'?'intact':'broken');
+/* THE FAR LOOKS (2026-11-09, the owner's fifth eye: floors hung in the air on the far impostors, shells drew over other models). A ruin at range
+   is not its own hero baked to a card (the slabs read at a texel, the piers between them do not); it is the family's GUTTED hero cut at the
+   state's height: a solid stub with a torn top. Five looks a family: intact, gutted, crown, broken, stump (a skeleton and a fallen tower share the
+   stump's). Shells stand only for intact and gutted towers (the spike validated those), never for a tower whose roof the eye is above */
+const AV_LOOK={intact:'intact',gutted:'gutted',crown:'crown',broken:'broken',stump:'stump',skeleton:'stump',fallen:'stump'};
+const avImpKey=t=>t.family+'.'+AV_LOOK[t.state];
+const avCanShell=t=>t.shelled&&(t.state==='intact'||t.state==='gutted');
 AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);});
+/* a geometry's triangles whose every vertex (in the mesh's world frame) lies under `top`, as a new non-indexed geometry; null when nothing is left */
+function clipGeoY(g,m,top){const P=g.attributes.position,idx=g.index,n=idx?idx.count:P.count,v=new THREE.Vector3(),W=m.matrixWorld,keep=[];
+ for(let t=0;t<n;t+=3){let ok=true;for(let j=0;j<3&&ok;j++){const i=idx?idx.getX(t+j):t+j;v.set(P.getX(i),P.getY(i),P.getZ(i)).applyMatrix4(W);if(v.y>top)ok=false;}if(ok)keep.push(t);}
+ if(!keep.length)return null;if(keep.length*3===n&&!idx)return g;const out=new THREE.BufferGeometry();
+ for(const name in g.attributes){const A=g.attributes[name],sz=A.itemSize,arr=new Float32Array(keep.length*3*sz);let o=0;for(const t of keep)for(let j=0;j<3;j++){const i=idx?idx.getX(t+j):t+j;for(let c=0;c<sz;c++)arr[o++]=A.array[i*sz+c];}out.setAttribute(name,new THREE.BufferAttribute(arr,sz));}
+ return out;}
 // ---------------------------------------------------------------- the rust (the owner, 2026-11-04: more rust)
 // A thousand years of weather on the heroes' colours, once per hero key, before the shells and impostors are baked from them (the bake reads the
 // vertex and instance colours): rust streaks running down from the panels' joints and a grime that deepens with the state, by core/rand's noise
@@ -67,25 +79,25 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
   const Gf=MP.debris(MP.FAMILY[p[0]],p[1],true);AVC.debrisFar[k]=Gf.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,cap);im.count=0;im.frustumCulled=false;im.name=m.name+'.far';scene.add(im);return im;});});
  AVC.bakeMs=Math.round(performance.now()-t0);
  /* the impostors: one set, a slot a family and state, from the hero's own meshes; the bake runs on the metro kit alone (the valley's forest is baked already: 88) */
- const S=BIO.impostorSet('av',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:AVC.keys.length});AVC.impSet=S;const savedKits=BIO.kits;BIO.kit('metro');
+ const S=BIO.impostorSet('av',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:14});AVC.impSet=S;const savedKits=BIO.kits;BIO.kit('metro');
  AVC.imp={};
  /* a hero's meshes, wherever they sit in its tree (a design's ruin pass nests groups), each with its matrix in the hero's frame */
  /* the owner, 2026-11-09: a ruin's impostor showed its floors as dashes hanging in the air (the slabs inside under the tear, and the storeys' plates,
     read at a texel while the piers between them do not): the impostor is baked without them, the skin and the frame alone */
  const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;let o=m,skip=false;while(o&&o!==H){if(/slab|floor|storey|plate/i.test(o.name||''))skip=true;o=o.parent;}if(!skip)out.push(m);});return out;};
- const impOf=(k,S)=>{const H=heroOf(k,true),names=[];heroMeshes(H).forEach((m,i)=>{const n='av.'+k+'.'+i;BIO.def(n,m.geometry,m.material,{indexed:false});names.push([n,m]);});
+ const impOf=(k,S)=>{const pk=k.split('.'),fam=pk[0],look=pk[1],solid=look!=='intact'&&look!=='gutted',F=MP.FAMILY[fam];let top=Infinity;
+  if(solid){try{const R=MP.ruin(F,look);top=Math.max(8,R.cut==null?8:R.cut);}catch(e){top=20;}}
+  const H=heroOf(solid?fam+'.gutted':k,true),names=[];heroMeshes(H).forEach((m,i)=>{let g=m.geometry;if(solid&&!m.isInstancedMesh){g=clipGeoY(g,m,top);if(!g)return;}const n='av.'+k+'.'+i;BIO.def(n,g,m.material,{indexed:false});names.push([n,m]);});
   return BIO.impostor('av.'+k,function(){const M=new THREE.Matrix4(),W=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();
    names.forEach(function(e){const n=e[0],m=e[1];W.copy(m.matrixWorld);if(!m.isInstancedMesh){W.decompose(p,q,s);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],null);return;}
-    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W).decompose(p,q,s);if(m.instanceColor)m.getColorAt(i,c);else c.setRGB(1,1,1);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],c.clone().convertLinearToSRGB());}});},{set:S,label:k});};
- AVC.keys.forEach(k=>{AVC.imp[k]=impOf(k,S);});
- BIO.impostorItem('avImp',S,{label:'a far tower'});
- /* the designs' impostors: the keys the plan uses, two looks each (intact for intact, gutted and crown; broken for the rest), in sets of 14 */
- AVC.dkeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!t.shelled&&!seen.has(t.ikey)){seen.add(t.ikey);AVC.dkeys.push(t.ikey);}});}
- AVC.dsets=[];AVC.dset={};for(let i=0;i<AVC.dkeys.length;i+=14){const n=Math.min(14,AVC.dkeys.length-i),S2=BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:128,slots:n});
-  AVC.dkeys.slice(i,i+n).forEach(k=>{AVC.imp[k]=impOf(k,S2);AVC.dset[k]='avImpD'+AVC.dsets.length;});BIO.impostorItem('avImpD'+AVC.dsets.length,S2,{label:'a far tower'});AVC.dsets.push(S2);}
- BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(T.shelled?'avImp':AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],T.yaw,1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
+    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W).decompose(p,q,s);if(p.y>top)continue;if(m.instanceColor)m.getColorAt(i,c);else c.setRGB(1,1,1);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],c.clone().convertLinearToSRGB());}});},{set:S,label:k});};
+ /* every look the plan uses, shelled families and designs alike, in sets of 14 (a set is one atlas pair and one draw call a chunk) */
+ AVC.dkeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.ikey)){seen.add(t.ikey);AVC.dkeys.push(t.ikey);}});}
+ AVC.dsets=[S];AVC.dset={};let slotLeft=0,cur=null;AVC.dkeys.forEach(k=>{if(!slotLeft){cur=AVC.dsets.length===1&&!AVC.dsets[0].used?S:BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:128,slots:14});cur.used=true;if(cur!==S)AVC.dsets.push(cur);slotLeft=14;BIO.impostorItem('avImp'+(AVC.dsets.length-1),cur,{label:'a far tower'});}
+  AVC.imp[k]=impOf(k,cur);AVC.dset[k]='avImp'+(AVC.dsets.indexOf(cur));slotLeft--;});
+ BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],T.yaw,1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
  {const mine={metro:BIO.kits.metro};BIO.kits=mine;try{BIO.bake();}finally{BIO.kits=savedKits;}}BIO.kit('');AVC.impQ=BIO.IMP.list.slice();BIO.IMP.list.length=0;AVC.impN=0;
- AVC.impMeshes=[];scene.traverse(o=>{if(o.isInstancedMesh&&/avImp/.test(o.name||'')){AVC.impMeshes.push(o);o.userData.full=o.instanceMatrix.array.slice();}});
+ AVC.impMeshes=[];scene.traverse(o=>{if(o.isInstancedMesh&&/avImp/.test(o.name||'')){AVC.impMeshes.push(o);o.userData.full=o.instanceMatrix.array.slice();}});AVC.impKeys=AVC.dkeys.length;
  AVC.bakeAllMs=Math.round(performance.now()-t0);AVC.impMs=0;AVC.ready=true;AVC.mat.userData.U.uBand.value.set(AV_NEAR,0,.15);AVC.nextTier=0;return true;};
 AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const r=AVC.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;AVC.impMs+=Math.round(performance.now()-t0);};
 // a hero placed on the ground: a clone that shares the geometry
@@ -114,22 +126,26 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now();if(now
     shells' top maps smeared from the air) a shelled tower is a hero to AV_NEAR_STEEP, unfaded, and its shell starts there; the hero pool is wider */
  /* the owner, 2026-11-08: heroes and shells drew on top of each other from the air. The dither band (the shell from .85 nearR, the hero fading out
     over it) is for the walker's view, where the hero fades; from above the heroes are unfaded, so a shell starts only where the heroes stop */
- const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>60;let anyAbove=false;
- for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),H=avH(t.key),steep=(e.y-t.y-H*.5)>.7*Math.max(hz,1),above=e.y>t.y+H+25,ns=!t.shelled||MP.NOSHELL(t.key);t.d=d;t.shell=false;t.above=above;
-  /* this tower's hero range: 300 m from the walker's level; 1 km when the eye looks onto its roof (its shell's top map would smear) */
-  const nearR=(steepEye||above)?AV_NEAR_STEEP:AV_NEAR,sh0=(steepEye||above)?nearR:nearR*.85;t.nearR=nearR;if(above)anyAbove=true;
-  if(!t.shelled){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}if(d<nearR)near.push(t);if(!ns&&d>=sh0&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
- const MAX=(steepEye||anyAbove)?AV_HEROMAX_STEEP:AV_HEROMAX;
- near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,MAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
- const fadeOf=t=>!(steepEye||t.above);
- G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||(t.shelled&&g.userData.fade!==fadeOf(t))){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
- keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,t.shelled&&f);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
- near.slice(MAX).forEach(t=>{if(t.shelled&&!MP.NOSHELL(t.key)){mid.push(t);t.shell=true;}});
- /* a hero that stays placed past the shell's start (the pool holds it until the set changes) must not have its shell too: the shell list drops the heroes' ids */
- {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&(!fadeOf(t)||t.d>=t.nearR)){t.shell=false;mid.splice(i,1);}}}
+ /* THE TIERS, plainly. A tower is one of: a HERO (real), a SHELL (intact or gutted Spindles and Ledgers only, side-on, 255 m to 1.4 km from the walker's
+    level), or its IMPOSTOR (a solid look, past the heroes). Every other tower (the designs, every ruin state, any tower whose roof the eye is above) is
+    a hero to AV_DNEAR, to 3.2 km seen steeply, the nearest AV_DHEROMAX, then its impostor: no shell is ever drawn for it. A hero and a shell overlap
+    only in the walker's dither band (255-300 m), where the hero fades out; everywhere else exactly one stands */
+ const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>60;
+ for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),H=avH(t.key),steep=(e.y-t.y-H*.5)>.7*Math.max(hz,1),above=e.y>t.y+H+25;t.d=d;t.shell=false;t.above=above;
+  const shellable=avCanShell(t)&&!above&&!steepEye;t.shellable=shellable;
+  if(!shellable){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}
+  if(d<AV_NEAR)near.push(t);if(d>=AV_NEAR*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
+ near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);const keep=near.slice(0,AV_HEROMAX).concat(dnear.slice(0,AV_DHEROMAX)),G=AVC.tierGroups;
+ const fadeOf=t=>t.shellable;
+ G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||g.userData.fade!==fadeOf(t)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
+ keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,f);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
+ /* a shellable tower past the hero pool's cap within 255 m stands as its shell (rare: the pool is the nearest 16 and shells begin at 255 m) */
+ near.slice(AV_HEROMAX).forEach(t=>{if(!t.shell){mid.push(t);t.shell=true;}});
+ /* a hero the pool still holds past the dither band has no shell */
+ {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&t.d>=AV_NEAR){t.shell=false;mid.splice(i,1);}}}
  avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
- AVC.tierN={heroes:keep.length,designHeroes:Math.min(dnear.length,AV_DHEROMAX),shells:mid.length,impostors:T.filter(t=>(t.shelled&&t.d>=AV_FAR)||(!t.shelled&&!G.has(t.id))).length,towers:T.length,designs:T.filter(t=>!t.shelled).length,steep:steepEye};};
+ AVC.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>!t.shell&&!G.has(t.id)).length,towers:T.length,looks:AVC.impKeys,steep:steepEye};};
 tick(function(){if(!AVC.ready)AVC.boot();else{AVC.mat.userData.U.uPx.value=2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);AVC.impTick();AVC.tiersTick();}});
 // ---------------------------------------------------------------- the engines (kits/ancients 8ah, 8ai, read in place: the owner, 2026-11-04)
 // A builder run once into a group of its own at decay 1 (the machine coming apart), the kit's instanced detail baked into that group, its pieces
