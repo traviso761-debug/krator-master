@@ -49,6 +49,6 @@ if(ENV_ON&&WATER_FN){
    o.geometry.setAttribute('aTwWet',new THREE.BufferAttribute(a,1));meshes++;});
   if(!wet)return;
   mats.forEach(m=>KHOOK.add(m,'throne-wet',{
-   vertex:{head:'attribute float aTwWet;varying float vTwWet;',at:[{at:'project_vertex',after:'vTwWet=aTwWet;'}]},
-   fragment:{head:'varying float vTwWet;',at:[{at:'emissivemap_fragment',before:'diffuseColor.rgb*=mix(1.0,0.62,clamp(vTwWet,0.0,1.0));'}]}},{key:'throne-wet'}));
+   vertex:{head:'attribute float aTwWet;varying float vTwWet;\n',at:[{at:'project_vertex',after:'vTwWet=aTwWet;'}]},
+   fragment:{head:'varying float vTwWet;\n',at:[{at:'emissivemap_fragment',before:'diffuseColor.rgb*=mix(1.0,0.62,clamp(vTwWet,0.0,1.0));'}]}},{key:'throne-wet'}));
   window._wetBand={mats:mats.length,meshes,wet};})();}
