@@ -6,17 +6,17 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 39 (21%) | 0 (0%) | 3 (2%) | 113 (62%) | 27 (15%) |
+| KB | 44 (23%) | 0 (0%) | 3 (2%) | 114 (60%) | 29 (15%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/41-av-field.js` | 14.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-av-field.js` | 18.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41b-av-wrecks.js` | 9.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46-av-feral.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/46z-host-stage.js` | 29.9 | [web] | 0 | 0 | 2 | 1 | 3 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/46z-host-stage.js` | 30.9 | [web] | 0 | 0 | 2 | 1 | 3 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-host-land.js` | 8.5 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/70-host-city.js` | 40.7 | [web] | 32 | 0 | 0 | 0 | 6 | 9 | 2 | 21 | 0 | 0 | 0 |  |
 | `src/71-host-creepers.js` | 5.2 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 0 | 0 | 0 |  |
@@ -30,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89u-host-steam.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89v-host-smog.js` | 2.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89w-host-water.js` | 2.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 17.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 19.2 | [draw] | 0 | 1 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

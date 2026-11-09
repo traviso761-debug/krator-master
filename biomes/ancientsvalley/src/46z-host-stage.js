@@ -62,7 +62,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   tall:['spindle','organ','stalk','reed','swell','yoke','telescope','wedge'],short:['ledger','ledger','pods','terrace','crescent','cupola'],
   coreKeys:['spindle','spindle','spindle','ledger','wedge','reed','telescope','stalk','swell','organ','yoke'],
   shelfKeys:['ledger','ledger','ledger','spindle','terrace','crescent','cupola','arcades','pods','spiral','terrarium'],
-  skip:(x,z)=>viaD(x,z)<34||railD(x,z)<30||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30)});
+  skip:(x,z)=>viaD(x,z)<34||railD(x,z)<30||Math.hypot(x-NEAR.x,z-NEAR.z)<70||engineD(x,z)<90||CRATERS.some(c=>Math.hypot(x-c.x,z-c.z)<c.r+30),
+  /* the kerb lines (41, AV.kerbPlace): the roadway's half width plus its pavement, the kit's kinds (an avenue 26 m and 3.5, a road 11 and 3.5); the
+     plinth 3 m behind the pavement; the plinth's half extents as the PADS below make them (the footprint and 6 m); the network's disc and lines */
+  kerb:{avenue:13+3.5,road:5.5+3.5,gap:3,corner:.35,R:R-110,lineMax:R-140,extent:fam=>{const F=MP.FAMILY[fam]||MP.DESIGNS[fam]||{},fp=F.footprint||{};return fp.r?[fp.r+6,fp.r+6]:[(fp.w==null?60:fp.w)/2+6,(fp.d==null?60:fp.d)/2+6];}}});
  const th=PLAN.theta,ct=Math.cos(th),snt=Math.sin(th);   /* the lattice's turn, used by the transit below and the streets after it */
  // the towers' plinths: each stands on a level pad at its own height (a disc round a round tower, a slab round a slab, turned with it), eased
  // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The

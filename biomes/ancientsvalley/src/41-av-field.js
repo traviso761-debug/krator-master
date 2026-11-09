@@ -108,7 +108,35 @@ AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:
   if(o.hero&&o.hero.indexOf(fam)>=0&&(st==='skeleton'||st==='fallen'))st='broken';   /* a family named in o.hero keeps a shape its ruin pass draws */
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);
   P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind,lean:AV.lean(seed,i,j,st),leanDir:u(i,j,7)*Math.PI*2});}
- return{towers:P,pitch:pitch,theta:th};};
+ var dropped=o.kerb?AV.kerbPlace(P,o,u,pitch,c,s):0;
+ return{towers:P,pitch:pitch,theta:th,kerbDropped:dropped};};
+/* THE KERB LINES (the owner, 2026-11-09: "place the towers along the transit kit's kerb lines instead of the bare grid lines"). The streets run on
+   the lattice's half lines ((k + 1/2) pitch; every third, k % 3 == 1, an avenue), so a tower on its node stood alone in the middle of its 165 m
+   cell, 50 m of plinth from any street. Here each tower slides in its cell until its plinth stops o.kerb.gap metres behind the pavement of one
+   street (an avenue three times as often as a road), and one time in o.kerb.corner (.35) of a second street across it too (a corner lot); its
+   ground is read again where it lands. A street exists inside o.kerb.R (the network's disc) and its lines inside o.kerb.lineMax. A tower whose
+   landing o.skip refuses, or that would stand in the lake, tries the street alone, then stays on its node. o.kerb: {road, avenue (the half width of
+   the roadway plus its pavement), gap, corner, R, lineMax, extent(family) -> [rx, rz] (the plinth's half extents in the tower's frame)}. Each
+   tower keeps T.kerb = {axis, side, corner} or null */
+AV.kerbPlace=function(P,o,u,p,c,s){var K=o.kerb,gap=K.gap==null?3:K.gap,cp=K.corner==null?.35:K.corner,Rs=K.R==null?1e9:K.R,lm=K.lineMax==null?1e9:K.lineMax;
+ var isAv=function(k){return((k%3)+3)%3===1;},toXZ=function(a,b){return[a*c-b*s,a*s+b*c];};
+ P.forEach(function(T){var e=K.extent?K.extent(T.family):null;if(!e)return;var ang=T.yaw-Math.atan2(s,c),ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*e[0]+sa*e[1],sa*e[0]+ca*e[1]],node=[T.i*p,T.j*p];
+  /* the four streets round the cell: axis a, side sg; its half line index, whether it is an avenue, and the slide toward it */
+  var sides=[];for(var a=0;a<2;a++)for(var sg=-1;sg<=1;sg+=2){var idx=a===0?T.i:T.j,k=sg>0?idx:idx-1,v=(k+.5)*p;if(Math.abs(v)>lm)continue;var av=isAv(k),hw=av?K.avenue:K.road,sh=sg*(.5*p-hw-gap-ex[a]);if(sh*sg<=0)continue;sides.push({a:a,sg:sg,av:av,sh:sh});}
+  if(!sides.length){var l0=[node[0]+fit(0),node[1]+fit(1)],w0=toXZ(l0[0],l0[1]);if((l0[0]!==node[0]||l0[1]!==node[1])&&Math.hypot(w0[0],w0[1])<=Rs&&o.ground(w0[0],w0[1])>=o.lakeY+1.5&&!(o.skip&&o.skip(w0[0],w0[1]))){T.x=w0[0];T.z=w0[1];T.y=o.ground(w0[0],w0[1]);}T.kerb=null;return;}
+  var pick=function(L,r){var W=0;L.forEach(function(q){W+=q.av?3:1;});var t=r*W;for(var n=0;n<L.length;n++){t-=L[n].av?3:1;if(t<0)return L[n];}return L[L.length-1];};
+  var A=pick(sides,u(T.i,T.j,11)),cross=sides.filter(function(q){return q.a!==A.a;}),B=cross.length&&u(T.i,T.j,12)<cp?pick(cross,u(T.i,T.j,13)):null;
+  /* an axis the tower does not slide along keeps its plinth between that axis's two kerbs: a plinth wider than the node's room toward an avenue
+     (the Pods, 120 m) moves off it toward the road across, and one wider than the whole cell sits in the middle of it */
+  var fit=function(a){var idx=a===0?T.i:T.j,room=function(k){return Math.abs((k+.5)*p)>lm?.5*p:.5*p-(isAv(k)?K.avenue:K.road);},lo=-room(idx-1)+ex[a],hi=room(idx)-ex[a];return lo<=hi?Math.min(hi,Math.max(lo,0)):(lo+hi)/2;};
+  var land=function(B){var l=[node[0],node[1]];l[A.a]+=A.sh;if(B)l[B.a]+=B.sh;else l[1-A.a]+=fit(1-A.a);var w=toXZ(l[0],l[1]);if(Math.hypot(w[0],w[1])>Rs)return null;var y=o.ground(w[0],w[1]);if(y<o.lakeY+1.5)return null;if(o.skip&&o.skip(w[0],w[1]))return null;return{x:w[0],z:w[1],y:y};};
+  var L=land(B),corner=!!B;if(!L&&B){L=land(null);corner=false;}if(!L){var l1=[node[0]+fit(0),node[1]+fit(1)],w1=toXZ(l1[0],l1[1]);if(Math.hypot(w1[0],w1[1])<=Rs&&o.ground(w1[0],w1[1])>=o.lakeY+1.5&&!(o.skip&&o.skip(w1[0],w1[1]))){T.x=w1[0];T.z=w1[1];T.y=o.ground(w1[0],w1[1]);}T.kerb=null;return;}
+  T.x=L.x;T.z=L.z;T.y=L.y;T.kerb={axis:A.a,side:A.sg,avenue:A.av,corner:corner};});
+ /* a tower whose plinth still reaches into a roadway or a pavement after every try (each slide refused by the plan, a plinth wider than its cell)
+    is not built: a building does not stand in the street. Returns how many went */
+ var n0=P.length,keep=P.filter(function(T){var e=K.extent?K.extent(T.family):null;if(!e)return true;if(Math.hypot(T.x,T.z)>Rs)return true;var ang=T.yaw-Math.atan2(s,c),ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*e[0]+sa*e[1],sa*e[0]+ca*e[1]],l=[T.x*c+T.z*s,-T.x*s+T.z*c];
+  for(var a=0;a<2;a++){var k=Math.round(l[a]/p-.5);if(Math.abs((k+.5)*p)>lm)continue;if(Math.abs(l[a]-(k+.5)*p)-ex[a]-(isAv(k)?K.avenue:K.road)<-.5)return false;}return true;});
+ P.length=0;keep.forEach(function(T){P.push(T);});return n0-P.length;};
 // a transit line: piers every o.step along the polyline pts [[x,z],...] from the ground (o.ground, page y) up to the deck, whose height is
 // o.deckY(x,z,s) (s: the distance along the line); decks between piers. Pure records; 70-av-city.js draws them
 AV.viaduct=function(pts,o){var step=o.step==null?36:o.step,piers=[],decks=[],s=0;

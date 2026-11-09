@@ -77,7 +77,7 @@
   Yoke, the Telescope, the Wedge) with a chance rising to .7 at the water, inland to a short one (the Ledger twice, the Pods, the Terrace,
   the Crescent, the Cupola) with a chance rising to .4; the page checks the mean tip by the lake against inland (`HCHK.lakeFront`), the data
   test the shares. The residential quarter round the start (NEAR, 620 m) keeps its own mix: the lean there set fallen giants beside the
-  residential street. Still open: the towers placed to the kit's kerb lines rather than the lattice's bare lines.
+  residential street. The towers on the kit's kerb lines: closed the same day (`AV.kerbPlace`, the README's transit paragraph).
 - [x] **The ramps meet the avenues beside the network, not in it** closed 2026-11-09: the transit session answered the same day (kit commit
   49674696b, `KTRANSIT.joinRamps`): each landing road is a road of kind `ramp` in the network and its foot a T on the avenue it lands on, with
   the kerb corners, the cuts, the crosswalk and the signals, the avenue regraded flat through it in place; the valley's three ramps all join
