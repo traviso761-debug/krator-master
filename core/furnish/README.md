@@ -33,7 +33,7 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 
 ## The record
 
-`{ id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, setting, room, job }`
+`{ id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, setting, room, job, scale? }`
 
 - `id`: `furn_00001`, in placement order (deterministic, as Yuni's fixture ids are). A dry run's records get none.
 - `x y z ry`: the world transform; `ry` is three's rotation.y (the piece's front, +z, turns to (sin ry, cos ry)).
@@ -42,6 +42,15 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 - `job`: the catalog's (`FURN_JOBS`), or null.
 
 This is the shape `core/tags` will register as class `furniture` (Phase 2 item 3) and the exporter will write.
+
+## Scale (opt-in)
+
+`cfg.scale` (a number, or `function(key, entry, o, ctx)` returning one; `o.scale` overrides it for one call) draws a piece that many
+times its catalog size about its foot: a people larger than human furnishes its rooms with goods its own size (kits/yeti, the
+Khaayken's 1.15x: its `src/91g-yt-furn.js` scales every piece but its own culture's and the Eternian loot). A scaled record carries
+`scale`; a record at 1 carries no such field, so a build without `cfg.scale` writes the records it always did (`fingerprint.py`
+reads `same`). `KFURN.drawRec` scales the piece's group about (x, y, z) before the batch takes it, and moves its lights with it;
+the core/tags record's `size` is the drawn size. `test-furnish.js` checks it beside the digest, which it leaves unchanged.
 
 ## Tags
 
