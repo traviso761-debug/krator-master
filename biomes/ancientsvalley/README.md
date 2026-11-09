@@ -42,11 +42,19 @@ python3 tools/textures/pack.py biomes/ancientsvalley                 # after a c
 
 ## Numbers (2026-11-04, `verify.py --assert --all-views` on the GPU, 1280 x 800)
 
-826 towers (524 of them designs), two Engines, 2,823 read-in trees, 628k instances, 7.7 M triangles in the registry; every assert passes (the
-attach audit at 0.74%). Per view: the Overlook 2.67 M triangles in 397 calls, the dead lobe 5.48 M in 556, the park 4.71 M in 660 (the worst
-calls), the Strider 3.71 M in 469, from the air 2.45 M in 436. The shells bake in about 3 s, the heroes and shells together in 4 s, then 42
-impostors one a frame. Run on the RTX 5060 lane (the first cut, 2 families and no engines, measured the same views on the Arc 140T: the dead lobe
-5.67 M in 522 calls).
+814 towers (3% intact, 22% standing tall), two Engines, fourteen craters, 2,764 read-in trees, 7.7 M triangles in the registry; every assert
+passes. Per view: the Overlook 3.07 M triangles in 465 calls, the dead lobe 5.23 M in 559, the park 4.58 M in 665 (the worst calls), a crater
+4.07 M in 531, the Strider 3.69 M in 456, from the air 2.45 M in 451. The shells bake in about 3 s, the heroes and shells together in 4 s, then
+42 impostors one a frame. Run on the RTX 5060 lane (the first cut, 2 families and no engines, measured on the Arc 140T: the dead lobe 5.67 M in
+522 calls).
+
+**The war damage (the owner, 2026-11-07, "really fuck it up"):** the ruin shares (`AV.RUIN_CUTS`: 4% intact, 8% gutted, 10% crown gone, 22%
+broken, 22% stumps, 14% skeletons, 20% fallen); `avRust` (`70-host-city.js`): rust over everything with streaks to full rust, soot in patches
+and smeared upward from the burnt storeys, two or three laser cuts through each tower (planes in its frame, scorched black along a band), and
+every colour drawn half way to a rust-brown of its own brightness, so the city reads as one rust-shaded palette; `AV.craters` (`41-av-field.js`):
+fourteen strikes on the dry land, bowls with raised rims, each a scar of melt glass with nothing standing in it; the viaduct with a deck in
+fourteen down and lying tilted at the foot. Ruined vehicles in the streets are a kit's work (`kits/motor-vehicles`, an Ancients culture with
+ruin states: in its own session) and come to the valley when it exists.
 
 ## Read next
 

@@ -8,9 +8,14 @@
 - [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or
   without the feral wrap: the kits' own placement on this page's fields. The gum is kept at its own size (`swKeep`), the floor's plants are not
   grown (`AV.feralKit` takes `floor:true` to turn that on); the audit sits at its 1% limit. Find the gum's fault in the kit next.
-- [ ] **The rust is in the vertex and instance colours** (`avRust`), so it is per panel, not a streak texture: from the street it reads as staining
-  more than rust. A rust layer in the heroes' materials would not reach the shells (the bake reads colours, not shaders): a rust map in the
-  library (`PROMPTS-NEEDED.md`) blended by the same field is the next step.
+- [ ] **The rust, the soot and the burns are in the vertex and instance colours** (`avRust`), so they are per panel and per instance, not a texture:
+  a laser cut lands on whole panels, not as a clean line, and from the street the rust reads as staining. A rust layer in the heroes' materials
+  would not reach the shells (the bake reads colours, not shaders): a rust and scorch map in the library (`PROMPTS-NEEDED.md`) blended by the
+  same fields is the next step, and the burns want geometry (a notch cut from the hero's panels along the plane) in the metropolis kit.
+- [ ] **No ruined vehicles in the streets yet** (the owner, 2026-11-07): `kits/motor-vehicles` has no Ancients culture; one with ruin states is in
+  its own session. The valley then scatters them on the streets and plazas by KRAND (burnt and wrecked near the craters and the burns).
+- [ ] **The craters are bowls in the heightfield with a glass scar:** no ejecta, no broken slab edges, no rubble rim. `KRELIEF` has no crater kind;
+  a blast-crater landform in core/terrain (rim blocks, rays, a melt floor) would serve the seven basins' rims too.
 - [ ] **The forest stops at the kits' LOD range** (1.2 km from the eye): from the air the ground past it is the paint, greened where the forest mask is
   high. The far canopy wants the kits' impostor tiers or a far-floor pass of the valley's own.
 - [ ] **The page's registry is 7.6 M triangles** against the lowlands' 7.5 M ceiling (the rainforest zones on everywhere at quality 1.5): the worst view
