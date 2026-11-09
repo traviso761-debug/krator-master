@@ -31,6 +31,7 @@ const fill=new THREE.DirectionalLight(0xdce4ec,.2);fill.position.set(200,-120,-1
 const TERR={R:L_.R==null?2600:L_.R};
 const CLOUD_Y=-1e5;   /* no deck on the stage: 84's mist finds no deck edge, the root mask no deck floor */
 const rimZ=x=>-1e9,RAV=[],BOGS=[],POOLS=[];
+const FOG_BAND=[400,100],DECK_Z=-1e9;   /* src/45's names that 84 and 85 read: no cloud band, no deck edge on these stages */
 const ravX=(R,z)=>R.x0,ravAt=()=>({d:1e9,dep:0,R:null}),bogAt=()=>0;
 const TOR=L_.tors||[];
 function torAt(x,z){let h=0,rock=0,foot=0;

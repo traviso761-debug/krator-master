@@ -54,3 +54,5 @@ const STATION_FARCOL=(x,z,h,n,L)=>{const{smooth}=BIO.fn,a=L([48,62,46]),b=L([70,
 const STATION_MIRROR={key:'ropepine',score:(x,z)=>(1-FC.at(FC.a.meadow,x,z))*(1-FC.at(FC.a.exposed,x,z))*(1-FC.at(FC.a.snow,x,z)),box:[-2200,-2200,2200,2200]};
 // the air (stations/common/89z-host-atmos.js): the season's old snow on the lit materials, a dawn mist pooled in the north-west valley
 const STATION_AIR={snowBase:.25,mist:{density:.0007,y:3720,depth:30,noise:.7}};
+// the build's default quality (89zx): this station was tuned at 1
+const STATION_Q=1;

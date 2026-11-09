@@ -3,22 +3,22 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/shighlands/KNOWN_ISSUES.md": "33022a86fd63152f6fb9ca53f2574bbdd1a803eb464bf0f82b4a887d786d6862",
-    "biomes/shighlands/PORT.md": "d7d25a7a2a222f0405ad645bf602c13239f74b37c5d88e7bda8a49d11abee3e4",
+    "biomes/shighlands/KNOWN_ISSUES.md": "27b2eb2773a349e66c40b0d51bcf4a6c144f9decbcf439fedc1309892c4e08a8",
+    "biomes/shighlands/PORT.md": "a7ff8c036fdad30bceace3a49d6af0f1f72d7c7678e4d194fbc0616a779a383e",
     "biomes/shighlands/build.py": "5fc5656577d7fe945f9d89b0a7ebce612d21028c26234213cbf694a2d6c679cd",
     "biomes/shighlands/src/00-head.html": "81f310014bf0cd2f0db22006fc1700be25736e23b8b4bfc9628c43e8756f6303",
-    "biomes/shighlands/src/45-host-stage.js": "b8a1af72afe58071c354a1027b96e1820fe29363cacaaebfae15f47f1b137dca",
+    "biomes/shighlands/src/45-host-stage.js": "9d42d8c80c265aff58bb64633675af5e25386b610aa18eb72cddf9c032062ca5",
     "biomes/shighlands/src/50-biome-shigh-species.js": "90a5b968b6b8b9f176dd3d042cb51e6a5c6241e20ff3477e17b480922a481d28",
     "biomes/shighlands/src/55-biome-shigh-trees.js": "999f1d9b52432ae4c735b866681e14901bc029673d91deb05eafd4fb90f34cbc",
     "biomes/shighlands/src/60-biome-shigh-floor.js": "4029733db512fa74089574d762270ca8ca1a02a2e4bbd825c58dcc486c2bc57d",
     "biomes/shighlands/src/70-biome-shigh.js": "3f87a62550f735965fd907a2c84bc19a34456db27cec7c0a66ac5adfefb8439a",
-    "biomes/shighlands/src/84-host-ground.js": "85dbea701970f64f3c800f5748b9901a03a804bda38e3b18797f00efaa0e623c",
-    "biomes/shighlands/src/85-host-far.js": "fed7a6c9149ff0435de0f5cb9665a99438f43cfbbd4ecfe56cd0b37ce3309b9e",
-    "biomes/shighlands/src/89-host-sky.js": "e455c27f0e198cc3ce8050a2325bbd381717c5c6026e05763b396e2ea0e0d85c",
-    "biomes/shighlands/src/89z-host-atmos.js": "1b836488d457e53d851a79c1bbccd323ead8d90a9bc471e5b0a4f46e18bcef18",
-    "biomes/shighlands/src/89zw-host-water.js": "825b8b121b5ba46b3eedff99f0605f741322a19660ba7bf935da85b26d1efee9",
-    "biomes/shighlands/src/89zx-host-build.js": "36d31b550d7f4959895da50bb21e411ff02fa1cd16b7de5bf5558ee177d7c52a",
-    "biomes/shighlands/src/99-host-take.js": "179478b5e3132968e7b8f9caf3d87ee138945344d021736e5a3e2e671f16c901",
+    "biomes/shighlands/src/84-host-ground.js": "ddf5e7a5992d103217478b26260166410d9b9278e144d17ef679ba8cfe649690",
+    "biomes/shighlands/src/85-host-far.js": "80f985f9e827f13ce3b9135c5040f5bff73400383e6361b00f9ee1e4c7a9d736",
+    "biomes/shighlands/src/89-host-sky.js": "23f0a80baf5e25dbd0c78777f724f52cc53678ea307eff9d146c7f36c9d04495",
+    "biomes/shighlands/src/89z-host-atmos.js": "de37d468249b5102bb2b8dc57fc48a3045778f157b897b095de9e6ccf7474f87",
+    "biomes/shighlands/src/89zw-host-water.js": "e5c05eec0956d57a1e66d380654c4a0ee41e7710167f3c89d947d7b797b05bed",
+    "biomes/shighlands/src/89zx-host-build.js": "d196b8a13ffda8d2098a77906f4d327d77a76253385b9203de7054a3149f0ca9",
+    "biomes/shighlands/src/99-host-take.js": "f3e57e0a4578b2278358b775f198d322c856935d5f4c5f9d7555e6e9d269bd84",
     "biomes/shighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/shighlands/stations/conifers/station.json": "a82e023e86fc60624f9f09d5d893ff00a20920acba7efd9d0419b271dfefe2db",
     "biomes/shighlands/stations/fellfield/station.json": "8dca105152d3c37a54f91e72389dfacef89c37fe93cfd7103010e45244b4eb81",
@@ -125,31 +125,31 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands.html": "81096e80ed35896b079c8a1c4e6a084631d4271d151fc764e47a782bc51c459a"
+    "biomes/shighlands/dist/shighlands.html": "7f4888feb8d57f7f4d3cfb03a368299ef0d3bbfa2235467bcea7c7507af1729f"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands.html": "81096e80ed35896b079c8a1c4e6a084631d4271d151fc764e47a782bc51c459a"
+    "biomes/shighlands/dist/shighlands.html": "7f4888feb8d57f7f4d3cfb03a368299ef0d3bbfa2235467bcea7c7507af1729f"
    }
   },
   "build.py --station conifers": {
    "inputs": {
-    "biomes/shighlands/KNOWN_ISSUES.md": "33022a86fd63152f6fb9ca53f2574bbdd1a803eb464bf0f82b4a887d786d6862",
-    "biomes/shighlands/PORT.md": "d7d25a7a2a222f0405ad645bf602c13239f74b37c5d88e7bda8a49d11abee3e4",
+    "biomes/shighlands/KNOWN_ISSUES.md": "27b2eb2773a349e66c40b0d51bcf4a6c144f9decbcf439fedc1309892c4e08a8",
+    "biomes/shighlands/PORT.md": "a7ff8c036fdad30bceace3a49d6af0f1f72d7c7678e4d194fbc0616a779a383e",
     "biomes/shighlands/build.py": "5fc5656577d7fe945f9d89b0a7ebce612d21028c26234213cbf694a2d6c679cd",
     "biomes/shighlands/src/00-head.html": "81f310014bf0cd2f0db22006fc1700be25736e23b8b4bfc9628c43e8756f6303",
     "biomes/shighlands/src/50-biome-shigh-species.js": "90a5b968b6b8b9f176dd3d042cb51e6a5c6241e20ff3477e17b480922a481d28",
     "biomes/shighlands/src/55-biome-shigh-trees.js": "999f1d9b52432ae4c735b866681e14901bc029673d91deb05eafd4fb90f34cbc",
     "biomes/shighlands/src/60-biome-shigh-floor.js": "4029733db512fa74089574d762270ca8ca1a02a2e4bbd825c58dcc486c2bc57d",
     "biomes/shighlands/src/70-biome-shigh.js": "3f87a62550f735965fd907a2c84bc19a34456db27cec7c0a66ac5adfefb8439a",
-    "biomes/shighlands/src/84-host-ground.js": "85dbea701970f64f3c800f5748b9901a03a804bda38e3b18797f00efaa0e623c",
-    "biomes/shighlands/src/85-host-far.js": "fed7a6c9149ff0435de0f5cb9665a99438f43cfbbd4ecfe56cd0b37ce3309b9e",
-    "biomes/shighlands/src/89zw-host-water.js": "825b8b121b5ba46b3eedff99f0605f741322a19660ba7bf935da85b26d1efee9",
-    "biomes/shighlands/src/89zx-host-build.js": "36d31b550d7f4959895da50bb21e411ff02fa1cd16b7de5bf5558ee177d7c52a",
+    "biomes/shighlands/src/84-host-ground.js": "ddf5e7a5992d103217478b26260166410d9b9278e144d17ef679ba8cfe649690",
+    "biomes/shighlands/src/85-host-far.js": "80f985f9e827f13ce3b9135c5040f5bff73400383e6361b00f9ee1e4c7a9d736",
+    "biomes/shighlands/src/89zw-host-water.js": "e5c05eec0956d57a1e66d380654c4a0ee41e7710167f3c89d947d7b797b05bed",
+    "biomes/shighlands/src/89zx-host-build.js": "d196b8a13ffda8d2098a77906f4d327d77a76253385b9203de7054a3149f0ca9",
     "biomes/shighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/shighlands/stations/common/45-host-stage.js": "ca5bcbd1d3847502633deee588b4a9b54314e96383b467600f147139b2e4eb61",
+    "biomes/shighlands/stations/common/45-host-stage.js": "d906217b18eb37619bbceb36824ef75b11def0e430844ae7fe87d3a8bdbc97f2",
     "biomes/shighlands/stations/common/89z-host-atmos.js": "57c8f6b9f5811d846c3fef67cbf0721c0fe4fb18d90ad013d037ba2c8916fed3",
     "biomes/shighlands/stations/common/99-host-take.js": "ce6b827df7cd45fccb4acd5b214bc292fefcef118dcc3679bc9a42f1735f9d7d",
-    "biomes/shighlands/stations/conifers/44s-host-land.js": "d8c0761d60a5d39505385c7da014fe16ede053626c6c10cc0b518c2cff07a89e",
+    "biomes/shighlands/stations/conifers/44s-host-land.js": "c21d20505066ba1a659e178ab6080db5fc2ffbc275263a04688a22c38336927f",
     "biomes/shighlands/stations/conifers/62-biome-shigh-conifers.js": "de319639c965dc531529bf89bede226e7b84ed7a59f57aee18425894b42147a6",
     "biomes/shighlands/stations/conifers/89-host-sky.js": "5849f0f8d2cba8233976df890c4bd450d8ba239990e467803d9740523b200512",
     "biomes/shighlands/stations/conifers/98-host-views.js": "c1bfef890dd087a3a9e680644b7fc18d965a52b4acd5e6c543a6436f00f2ec7e",
@@ -268,32 +268,32 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-conifers.html": "29a40ab909b3c53edfb998c16b595e3147cb2a543352169381f7112b4d9df13f"
+    "biomes/shighlands/dist/shighlands-conifers.html": "51f1ef40252bfe6ac23231022d3f4784d8ce6c276f9e7c46b052d91c98536bf4"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-conifers.html": "29a40ab909b3c53edfb998c16b595e3147cb2a543352169381f7112b4d9df13f"
+    "biomes/shighlands/dist/shighlands-conifers.html": "51f1ef40252bfe6ac23231022d3f4784d8ce6c276f9e7c46b052d91c98536bf4"
    }
   },
   "build.py --station fellfield": {
    "inputs": {
-    "biomes/shighlands/KNOWN_ISSUES.md": "33022a86fd63152f6fb9ca53f2574bbdd1a803eb464bf0f82b4a887d786d6862",
-    "biomes/shighlands/PORT.md": "d7d25a7a2a222f0405ad645bf602c13239f74b37c5d88e7bda8a49d11abee3e4",
+    "biomes/shighlands/KNOWN_ISSUES.md": "27b2eb2773a349e66c40b0d51bcf4a6c144f9decbcf439fedc1309892c4e08a8",
+    "biomes/shighlands/PORT.md": "a7ff8c036fdad30bceace3a49d6af0f1f72d7c7678e4d194fbc0616a779a383e",
     "biomes/shighlands/build.py": "5fc5656577d7fe945f9d89b0a7ebce612d21028c26234213cbf694a2d6c679cd",
     "biomes/shighlands/src/00-head.html": "81f310014bf0cd2f0db22006fc1700be25736e23b8b4bfc9628c43e8756f6303",
     "biomes/shighlands/src/50-biome-shigh-species.js": "90a5b968b6b8b9f176dd3d042cb51e6a5c6241e20ff3477e17b480922a481d28",
     "biomes/shighlands/src/55-biome-shigh-trees.js": "999f1d9b52432ae4c735b866681e14901bc029673d91deb05eafd4fb90f34cbc",
     "biomes/shighlands/src/60-biome-shigh-floor.js": "4029733db512fa74089574d762270ca8ca1a02a2e4bbd825c58dcc486c2bc57d",
     "biomes/shighlands/src/70-biome-shigh.js": "3f87a62550f735965fd907a2c84bc19a34456db27cec7c0a66ac5adfefb8439a",
-    "biomes/shighlands/src/84-host-ground.js": "85dbea701970f64f3c800f5748b9901a03a804bda38e3b18797f00efaa0e623c",
-    "biomes/shighlands/src/85-host-far.js": "fed7a6c9149ff0435de0f5cb9665a99438f43cfbbd4ecfe56cd0b37ce3309b9e",
-    "biomes/shighlands/src/89zw-host-water.js": "825b8b121b5ba46b3eedff99f0605f741322a19660ba7bf935da85b26d1efee9",
-    "biomes/shighlands/src/89zx-host-build.js": "36d31b550d7f4959895da50bb21e411ff02fa1cd16b7de5bf5558ee177d7c52a",
+    "biomes/shighlands/src/84-host-ground.js": "ddf5e7a5992d103217478b26260166410d9b9278e144d17ef679ba8cfe649690",
+    "biomes/shighlands/src/85-host-far.js": "80f985f9e827f13ce3b9135c5040f5bff73400383e6361b00f9ee1e4c7a9d736",
+    "biomes/shighlands/src/89zw-host-water.js": "e5c05eec0956d57a1e66d380654c4a0ee41e7710167f3c89d947d7b797b05bed",
+    "biomes/shighlands/src/89zx-host-build.js": "d196b8a13ffda8d2098a77906f4d327d77a76253385b9203de7054a3149f0ca9",
     "biomes/shighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/shighlands/stations/common/45-host-stage.js": "ca5bcbd1d3847502633deee588b4a9b54314e96383b467600f147139b2e4eb61",
+    "biomes/shighlands/stations/common/45-host-stage.js": "d906217b18eb37619bbceb36824ef75b11def0e430844ae7fe87d3a8bdbc97f2",
     "biomes/shighlands/stations/common/89z-host-atmos.js": "57c8f6b9f5811d846c3fef67cbf0721c0fe4fb18d90ad013d037ba2c8916fed3",
     "biomes/shighlands/stations/common/99-host-take.js": "ce6b827df7cd45fccb4acd5b214bc292fefcef118dcc3679bc9a42f1735f9d7d",
     "biomes/shighlands/stations/conifers/station.json": "a82e023e86fc60624f9f09d5d893ff00a20920acba7efd9d0419b271dfefe2db",
-    "biomes/shighlands/stations/fellfield/44s-host-land.js": "294cb4090387eba1e94ae6f42fbb64d776d840573a5e43038d7babda204c7e70",
+    "biomes/shighlands/stations/fellfield/44s-host-land.js": "a7b7b095bbfabef386b2c06b370ea72e832367b5a55a9d08f80ba0b90fde62a5",
     "biomes/shighlands/stations/fellfield/62-biome-shigh-fell.js": "599d1fe08e2116293fc74fbf76b8d7ec47c7ffb456fb684bdb986e2624047f45",
     "biomes/shighlands/stations/fellfield/86-host-ice.js": "db11c38256c1e09199bde5bbba1d0e944b676ab25ea904fd10784e9cae9e8c61",
     "biomes/shighlands/stations/fellfield/89-host-sky.js": "d8a98bb966faa7d095a0ea6344a05b3aff6407a134f62a58cc00485949833022",
@@ -409,10 +409,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-fellfield.html": "09c1859848dd57db0a5550a97eb04943303e4003d4b5da4b7c2dd2efc2867fb6"
+    "biomes/shighlands/dist/shighlands-fellfield.html": "5208aa74d23688d480fe503db0a202de70de3db80597fe6cc2e1bed2bdbfee4e"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-fellfield.html": "09c1859848dd57db0a5550a97eb04943303e4003d4b5da4b7c2dd2efc2867fb6"
+    "biomes/shighlands/dist/shighlands-fellfield.html": "5208aa74d23688d480fe503db0a202de70de3db80597fe6cc2e1bed2bdbfee4e"
    }
   }
  }

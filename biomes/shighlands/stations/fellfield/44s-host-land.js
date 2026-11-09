@@ -67,3 +67,5 @@ const STATION_GROUND_GLSL='{vec2 cc=floor(vGWP.xz/8.0);vec2 dd=vGWP.xz-(cc+0.5)*
 const STATION_FARCOL=(x,z,h,n,L)=>{const{smooth}=BIO.fn,a=L([128,120,104]),b=L([110,106,96]),s=L([236,240,244]),m=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t,p[2]+(q[2]-p[2])*t];
  return m(m(a,b,n),s,smooth(5800,6200,h)*.9);};
 const STATION_MIRROR=null;   /* no trees up here */
+// the build's default quality (89zx): this station was tuned at 1
+const STATION_Q=1;

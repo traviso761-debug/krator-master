@@ -4,7 +4,7 @@
 // pools, ochre gravel on the dry side, grey granite on the tors. Then the tarn and the bog pools, and the mist that
 // drifts up the ravines and along the cloud deck's edge (the deck is core/atmos's: 89z-host-atmos.js).
 TOR.forEach(K=>REGISTER({name:K.name||'A granite tor',x:K.x,z:K.z,y:plateauH(K.x,K.z)-5,r:K.r*1.05,h:K.h+40}));
-RAV.forEach((R,i)=>REGISTER({name:'A ravine of the cloud forest',x:ravX(R,R.head-400),z:R.head-400,y:plateauH(ravX(R,R.head-400),R.head-400)-200,r:R.w*2.2,h:240}));
+RAV.forEach((R,i)=>{const z=(R.head+R.foot)/2,x=ravX(R,z);REGISTER({name:'A ravine of the cloud forest',x,z,y:terrainH(x,z)-200,r:R.w*2.2,h:400});});   /* down the face, its middle */
 
 // ---------------------------------------------------------------- the ground
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
@@ -125,7 +125,7 @@ const MIST=(function(){const c=document.createElement('canvas');c.width=c.height
  // along the deck's edge: where the ground stands just above CLOUD_Y
  let tries=0,n=0;while(n<44&&tries++<9000){const x=rr(-2700,2700),z=rr(-2800,0),h=FC.at(FC.a.h,x,z);if(Math.abs(h-CLOUD_Y-20)>40)continue;place('sprite',x,z,rr(6,30),rr(120,260));n++;}
  // up the ravines
- RAV.forEach(R=>{for(let z=rimZ(R.x0)+100;z<R.head;z+=rr(110,180))place('sprite',ravX(R,z)+rr(-30,30),z,rr(8,26),rr(70,160));});
+ RAV.forEach(R=>{for(let z=Math.max(R.foot,DECK_Z)+60;z<R.head-200;z+=rr(110,180))if(FC.at(FC.a.fog,ravX(R,z),z)>.3)place('sprite',ravX(R,z)+rr(-30,30),z,rr(8,26),rr(70,160));});   /* up the ravines while the cloud reaches them */
  // the bog hollows: low sheets
  BOGS.forEach(B=>{for(let k=0;k<3;k++)place('sheet',B.x+rr(-B.r*.4,B.r*.4),B.z+rr(-B.r*.4,B.r*.4),rr(2,6));});
  tick((dt,t)=>{for(const m of L){const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;m.o.position.x=x;m.o.position.z=z;m.o.position.y=Math.max(FC.at(FC.a.h,x,z),CLOUD_Y-10)+m.lift;}});

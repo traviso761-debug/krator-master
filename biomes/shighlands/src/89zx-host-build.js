@@ -17,7 +17,9 @@ window._shadow=null;
 (function(){
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it (for budgeting)
- const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ // the face (2026-11-09) holds far more forest than the old plateau did: the default quality is .76 so the page stays inside its 19.5 M budget
+ // (24.7 M at 1); a station sets STATION_Q. ?q=1 the full density
+ const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):(typeof STATION_Q!=='undefined'?STATION_Q:.76);
  // THE FAR BAND'S DIET (GRAPHIC-LOAD.md recommendation 2): the far trees as octahedral impostors (core/biome 34; 55); ?diet=0 the old blobs
  if(Q.get('diet')==='0')SHIGH.IMPOSTORS=false;
  // one mirror-handed coilbark where a camera finds it: the nearest to the deepest cloud forest on the spine

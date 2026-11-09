@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 13 | the land (48); the climate fields (cached below; these are the  (101); the host binding (134) |
+| `45-host-stage.js` | 16 | the land (48); the climate fields (cached below; these are the  (119); the host binding (152) |
 | `50-biome-shigh-species.js` | 52 **big** | palettes (26); the tree species (49); harvest (biomes/FRUIT.md) (92); the small plants (the floor), tagged (111); leaf textures (133); bark textures (197); geometries local to this biome (222); materials (402); the library (materials.json; core/materials/PLAN (427); instanced items (478) |
 | `55-biome-shigh-trees.js` | 35 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (34); spiral helpers (53); keep-clear between trees (86); foliage helpers (93); the builders (108); impostors (the far canopy) (280); the pass (305); the passes (data: species, cell, acceptance from (364); one tree alone (biomes/WORLD.md: trees as varian (382) |
 | `60-biome-shigh-floor.js` | 14 | small plants (23); the zone planters (66); the pass (126) |
@@ -39,5 +39,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-atmos.js` | 4 |  |
 | `89zw-host-water.js` | 4 |  |
 | `89zx-host-build.js` | 6 |  |
-| `99-host-take.js` | 17 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (61); the page, handed to the host (142) |
+| `99-host-take.js` | 17 | the inspector's words (47); the probe's budgets and the kit's own checks (ve (63); the page, handed to the host (144) |
 | `99-tail.html` | <1 |  |

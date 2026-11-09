@@ -51,7 +51,7 @@ No 1.4 km rim over a cloud deck is left anywhere in the polygon (the search for 
 850 m to the north finds only mid-face points, ~50 px east, with the face climbing on to 3 km behind them). The page's stage
 (a rim at ~1.4 km, the paramo at 1.4-1.6 km) is therefore an ideal type 5.1 does not have: on 5.1 the cloud forest is a band on
 the face and the paramo-like ground (ET, ~1.0 atm) is the rim's plateau at 3.5 km, which is where station 2 stands.
-**Not re-staged here** (the owner's call: re-staging the built page moves everything on it): either (a) station 1 keeps its
+**Re-staged 2026-11-09 on the owner's word, option (b)** (KNOWN_ISSUES.md, "Station 1 re-staged on the 3 km face"). The options were: either (a) station 1 keeps its
 ideal type and its sky site (old px 486,697) as a known divergence, or (b) its stage is rebuilt as a band of the 3 km face
 (the deck at ~1.1 km below, the face rising past the map's south edge) and the paramo moves up to the rim. KNOWN_ISSUES.md
 carries it.

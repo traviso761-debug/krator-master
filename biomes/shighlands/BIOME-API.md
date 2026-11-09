@@ -6,8 +6,9 @@ The southern highlands kit (`SHIGH`) is built on the shared biome core exactly a
 
 ## The region
 
-The Inner Wall's southern flank above the hyperjungle's scarp, ~1 atm: a cloud forest where the cloud sea laps against
-the Wall, a paramo of giant rosettes above it, drying to the south-east. Koppen Cfb, Cwb, ET and BSk (`SHIGH.KOPPEN`;
+The Inner Wall's southern face above the hyperjungle (map 5.1: one face ~3 km tall), 1.0-1.4 atm: a cloud forest on the face where
+the cloud sea laps against it, the elfin forest above it, and a paramo of giant rosettes on the plateau behind the rim, drying to the
+south-east. Koppen Cfb, Cwb, ET and BSk (`SHIGH.KOPPEN`;
 an ESTIMATE, the scale model's rasters were not read: `KNOWN_ISSUES.md`).
 
 ## The fields it reads
