@@ -639,6 +639,46 @@ BIO.init({..., terrainH, field: F});          // a biome kit: BIO.export's groun
 **Used by** `biomes/sedesert` (its ground, flora, camera and export; `biomes/sedesert/KNOWN_ISSUES.md` has the measured
 error). The other 41 `terrainH` closures are still closures.
 
+## The 2026-11-09 plans' pieces (cross-module)
+
+The biome plans written on 2026-11-09 (Labyrinth, Firebliss, Mid Basin, NE Outer Wall, Outland Gate, Painted Highlands, W
+Outer Wall, Loom-Chasms on `claude/biome-rebuild`; Great Chasm, Godshearth on the integration branch; Opal Valley, SE Outer
+Wall, the Twins, Greenstep on `gemini/scale-model-5.1-r3`) each list core amendments. These are built ahead of the kits, as
+the 2026-11-03 batch was: each piece in a new opt-in file that no build lists yet (or an option that defaults off in a file no
+build lists), plain data (`[G data]`) wherever it can be, node-tested with negatives (`tools/test_all.py` finds every
+`core/**/test-*.js`), and **no page's bytes move**. New files at the top of `core/atmos` and `core/water` would be swept in by
+the builds that list those folders, so they go in `fx/`, `ext/` and `geyser/`; `core/hazard`, `core/hamlet`, `core/camp`,
+`core/biome` and `core/terrain` are listed file by file.
+
+**PLAN** (the amendments de-duplicated and checked against core first):
+
+| # | Piece | File | Wanted by | Notes |
+|---|---|---|---|---|
+| 1 | Geothermal surfaces: mud pots, fumaroles (steam, run-off), sinter, travertine and mat aprons | `core/water/geyser/52c-core-water-thermal.js` (+ `52d` draw) | godshearth, twins, greatchasm, seouterwall, firebliss, midbasin, neouterwall | owed in `core/water/README.md`, "Not here (yet)"; aprons read `KTHERM` when it is there |
+| 2a | A crust that breaks underfoot | `core/hazard/22-core-hazard-env.js` | twins, opalvalley, firebliss, godshearth, neouterwall | checked: a `trigger` today makes a hazard harmful *until* tripped and then resets, so a crust cannot stay broken: a state function |
+| 2b | Gas that pools at night and in still air; the cold-air pool | same | neouterwall, godshearth, midbasin, greatchasm, firebliss, twins | a state function on the world hour and the wind; the pool is `21`'s `shape.pool` |
+| 2c | A front along a path: the gorge flood (the level rises) and the charge (a herd, bound to its fauna record) | same, and `core/water/ext/62-core-water-flood.js` (+ `62b` draw) | firebliss, midbasin, outlandgate, paintedhighlands, wouterwall, labyrinth | one front law, written in both and checked against each other |
+| 3 | A volcanic plume: ash fall, fog and shade along an azimuth from vents | `core/atmos/fx/89-atmos-fx-ashplume.js` | firebliss (the Throne, Godthrone could take it) | feeds `airLoad`'s `ashAt` and `KFAR.sprites` |
+| 4 | Katabatic, anabatic and gap wind; the cold-air pool's temperature | `core/atmos/fx/89-atmos-fx-slopewind.js` | seouterwall, twins, outlandgate, godshearth, wouterwall | extends `ATMOS.windAt`; gives 2b its stillness and `KHAZ` a temperature field |
+| 5 | A rock iridescence glaze | `core/terrain/35e-core-strata-skarn.js` | opalvalley, neouterwall | thin-film colour as data and GLSL text with a JS twin |
+| 6 | A skarn recipe: lensing epidote, garnet, magnetite and marble bands | same | neouterwall | checked: `KSTRATA.vary` moves contacts but makes no lenses; the recipe drives it |
+| 7 | Landforms: a tapered chasm head for `stepcut`; the three-trend graben net; giant flood ripples | `core/terrain/38c-core-landforms.js` (`head`, off by default; no build lists 38c) and `38d-core-landforms-net.js` | midbasin, loom-chasms; labyrinth, siphon-pits; outlandgate | |
+| 8 | A baked texture for `KSTRATA.vary`, so varied strata draw on the GPU | `core/terrain/35d-core-strata-bake.js` | wouterwall, midbasin | |
+| 9 | Animal sign: trails, wallows, dung, browse lines, trampled ground, bone yards from herd records | `core/biome/46-core-sign.js` | labyrinth (the open world wherever herds live) | masks for `KGROUND`, decal records |
+| 10 | `core/hamlet`: a defended platform village; a trade post shared by two cultures | `core/hamlet/32-hamlet-platform.js`, `34-hamlet-trade.js` | labyrinth, paintedhighlands; greatchasm | no Kimr, Yuni or Coyote row exists: their buildings come back `pending` |
+| 11 | `core/camp`: an outlaw band (its own size), a lookout and its siting rule | `core/camp/50-camp-outlaw.js` | midbasin | the camp's pieces stay a kit's |
+
+**Rejected or left to a kit** (and why):
+- **A dust hazard kind:** it exists, as the ambient `dust` row fed by `ATMOS.airLoad` (`core/hazard/README.md`, "The air and
+  the cold").
+- **A separate timed cold-air pool kind:** a `cold` record with `shape.pool` (21) on 2b's night state, and the temperature from 4.
+- **The season-keyed flower drift on a bed** (paintedhighlands): its plan makes it a kit-side mask until two kits want it.
+- **The outpost or player-settlement registry:** open world, not core (its own workstream).
+- **The wind-sounding rock** (outlandgate): proposed as a `core/audio` source; no audio module yet.
+- **Greenstep** asks for nothing core does not have.
+
+The "Adopting it" line for each piece is below, as it lands.
+
 ## `atmos/`
 
 The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
