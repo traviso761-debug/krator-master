@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
-    "biomes/k-guilin/KNOWN_ISSUES.md": "f7445aff3e5a3ae5deeda5e889eeee52860a9e6ba6c44ba8519d94bfeed5ec7b",
+    "biomes/k-guilin/KNOWN_ISSUES.md": "f5f97cf170c8247ac935c5df2eb1f3733a4993bf5822c40da7806a9d17e4a2ed",
     "biomes/k-guilin/PORT.md": "b356919bc9c392b6976a85626e440497118f703266ed23dfa78d9a26deae8d0f",
     "biomes/k-guilin/build.py": "1ecb770bfaed0f19384205be82478370071e58e88f104f2db8fd320a091f422d",
     "biomes/k-guilin/src/00-head.html": "1b9d2a42624e0c737ff0804a027d8a3e2790b2c1442ae2a920457e4552630698",
@@ -22,7 +22,7 @@
     "biomes/k-guilin/src/89a-host-atmos.js": "eeff45af04fcda676ad5d3da72435b3efc01d7132a0bf3efa97e36485f8d3b4b",
     "biomes/k-guilin/src/89s-host-sky.js": "9b5a77bf8167489e63d1001723b84c9a4065b446f1457f5c0b7ec13072240fc9",
     "biomes/k-guilin/src/89w-host-water.js": "e4f06c1027b9c0c06684b70fa7b5e8107674d741def14c5ee79b31ca6d5c8ee3",
-    "biomes/k-guilin/src/99-host-take.js": "30e704833e9c46913c7147c44ac0902cd61c466229c2846a27265e600ef41e7f",
+    "biomes/k-guilin/src/99-host-take.js": "d24545c52ca8a68c81d2d42d765db9a63f02f8caf629e6c86c1b50e8d6369cdb",
     "biomes/k-guilin/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/k-guilin/tex/bambooleaf.albedo.webp": "dc64b620f13f7c2fd53db6ff0ddea5cd56a01f597db7e43f35f9641ef3321d93",
     "biomes/k-guilin/tex/bark.bamboo.albedo.webp": "c3009105a38a497fc67da5bbfdc9a68873509aa80b7e1a9f50649729f5fb6d7d",
@@ -195,12 +195,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/k-guilin/dist/k-guilin.html": "288c472e3e724257adfab0263e72066667712d989593dbbe103bed3384edcefa",
+    "biomes/k-guilin/dist/k-guilin.html": "1b75d5291fc9be47ba1faf241599d3627e40f1b97b955f1b9fc15ce70bfc43be",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "8ad6dc81aa12c9397c2867f8404fd516ecbf9a62d8ff30890f4b82a112959776",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    },
    "outputs_raw": {
-    "biomes/k-guilin/dist/k-guilin.html": "288c472e3e724257adfab0263e72066667712d989593dbbe103bed3384edcefa",
+    "biomes/k-guilin/dist/k-guilin.html": "1b75d5291fc9be47ba1faf241599d3627e40f1b97b955f1b9fc15ce70bfc43be",
     "biomes/k-guilin/dist/k-guilin.tex.kguilin.js": "8ad6dc81aa12c9397c2867f8404fd516ecbf9a62d8ff30890f4b82a112959776",
     "biomes/k-guilin/dist/k-guilin.tex.nwbay.js": "8ea81ebd8fad7fe11a5df3d01081a09417b2de69ad9b07bf2a29da841f4c91f2"
    }
