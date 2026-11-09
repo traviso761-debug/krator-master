@@ -146,4 +146,10 @@ BIO.init({tags:'shighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wat
  obstacles:OBSTACLES,ticks:tick,seed:47,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:230,mid:560,far:2400,floor:[180,440]},
  windows:{water:[TARN.x-180,TARN.z-180,TARN.x+180,TARN.z+180]}});
+// THE GRAPHICS SET (BACKPORT.md's universal set, the final rebuild, pair 12; nhighlands' lines): the items' geometry welded and drawn by index
+// (core/biome BIO.INDEX_ITEMS; ?index=0 for the soup); one LOD mesh per chunk, small meshes merged up to 1500 triangles and a dithered
+// cross-fade over the last 15% of each range (B1/B2: ?lodmerge=0, ?lodfade=0); per-instance range culling for loose instances (?lodcull=0)
+{const Q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=Q.get('index')!=='0';
+ BIO.LOD.merge=Q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&Q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&Q.get('lodcull')!=='0';}
 BIO.setSun([-1000,900,-700]);
