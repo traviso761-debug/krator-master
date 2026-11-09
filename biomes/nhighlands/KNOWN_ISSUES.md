@@ -23,7 +23,7 @@
         hummocks, 77,432 cotton-grass, 20,190 cloudberry, 6,258 corn lilies), the attach audit 0.09%, 8.87 M triangles held, 109-142 draw calls.
       Stays open: for the coordinator's GPU `--assert --all-views` and the owner's look (the megabreccia, station 5).
 - [ ] **Stations 2-4 (2026-11-09, cloud session, no GPU): the looks to judge and what they leave out** (`PLAN-STATIONS.md`, "Stations 2-4, as built").
-      Verified in software GL only (`verify.py --assert` on four or five views each; see the turn's handoff paragraph for the numbers). For the owner: station 2's
+      Checked in software GL only (`verify.py --assert` on a few views; the handoff paragraph has the numbers); the owner (2026-11-09): no GPU verify from that session, the integration session takes the pages as built. For the owner: station 2's
       domes are sandstone (the 5.1 geology is sedimentary there, not granite); the dome's steep edge followed the ground mesh's 6.7 m triangles as a sawtooth
       at first (now the slab's colour: may still show); white fir outnumbers copper pine (3.8k against 3.0k), which can be turned the other way; the old
       burns are a field (snags, fireweed), not `KFIRE`. Station 3's oaks, sycamore, manzanita and madrone are swlowlands' own, grown in place: they move with

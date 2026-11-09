@@ -108,13 +108,25 @@
    "bytes": 1581053,
    "sha256": "8e606a222423320da0d497336f3398c4ef9e574e53328c351817479dbe2b8e04"
   },
+  "biomes/nhighlands/dist/nhighlands-alpine.html": {
+   "bytes": 8139169,
+   "sha256": "1d47e70bfafee98bf337eda8511bb602d036cf7c442c3f71a2d38dccc1056b62"
+  },
   "biomes/nhighlands/dist/nhighlands-bogs.html": {
-   "bytes": 8590131,
-   "sha256": "cb7997d7e4b5deffed6dd10c33f81a8d74aade4cdd68dbafec35c90b5a83ce28"
+   "bytes": 9151998,
+   "sha256": "124d99eff6d58addefafc979c9b37f17a56d5021020091e31f407963d8ba1560"
+  },
+  "biomes/nhighlands/dist/nhighlands-foothills.html": {
+   "bytes": 9788804,
+   "sha256": "a402bf427a199c925e2f33877427587361b032981c16a33969687c65b3ea3711"
+  },
+  "biomes/nhighlands/dist/nhighlands-montane.html": {
+   "bytes": 8143635,
+   "sha256": "3f63b530310682dbc5621095216b73f87b826121ad2fbf17a3340904a27e57e5"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 8530523,
-   "sha256": "bfa7df7e7d573c46cd2cd89bd0644ffcfda211a6bf4b4bd6ea6fd4014c9cbac6"
+   "bytes": 8686320,
+   "sha256": "75347a5784fc262725875baccdb73a74b0d20fda7eae4af8e371042e8576fcd9"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
    "bytes": 5672140,
