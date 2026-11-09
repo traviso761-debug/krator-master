@@ -99,6 +99,8 @@ PATH.setdefault('10-core-shadow.js',os.path.join(ROOT,'core','shadow','10-core-s
 PATH.setdefault('12-core-shadow-host.js',os.path.join(ROOT,'core','shadow','host','12-core-shadow-host.js'))
 # core/hazard (KHAZ): the air's dust reaches the walker through it (89a-host-atmos.js, the air's load)
 PATH.setdefault('20-core-hazard.js',os.path.join(ROOT,'core','hazard','20-core-hazard.js'))
+# core/hazard runs on the one clock (KTRAPS.cycle): without it the export's hazards section errors (2026-11-08, export-profile)
+PATH.setdefault('37-core-traps.js',os.path.join(ROOT,'core','biome','37-core-traps.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item

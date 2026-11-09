@@ -365,6 +365,10 @@ CRATERDRY.MAT={
  litter:BIO.leafMat(TX.litter,'litter',{swayW:'0.0',swayA:0,alphaTest:.35}),
  vcol:BIO.leafMat(null,'vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'vsway',{swayW:'(position.y)',swayA:.04,alphaTest:0,vertexColors:true}),
+ /* the flower spire is a solid body (an ellipsoid, no alpha, a stiff spike), so it is drawn as a solid with its vertex colours, not
+    as a sway card: the attach audit counts a solid as the structure that holds the sword spire's florets (2026-11-08: on vsway, a
+    leaf-kind card, 81 of 189 blooms read as floating on it). It no longer sways (vsway's .04 at its tip) */
+ spire:(()=>{const m=BIO.solidMat(null,0xffffff);m.vertexColors=true;return m;})(),
  solid:BIO.solidMat(null,0xffffff),
  rock:BIO.solidMat(CRATERDRY.ROCKTEX),
 };
@@ -456,7 +460,7 @@ BIO.def('gem',G.gem(),M.vcol,{label:'Pincushion trunk pods'});
 BIO.def('frill',G.frill(),M.vsway,{label:'Frill-tree crown pods'});
 BIO.def('protea',G.protea(),M.vsway,{label:'Protea heads'});
 BIO.def('crassula',G.crassula(),M.vcol,{label:'Propeller crassula'});
-BIO.def('spire',G.spire(),M.vsway,{label:'Flower spires (sword spire, aloe candles)'});
+BIO.def('spire',G.spire(),M.spire,{label:'Flower spires (sword spire, aloe candles)'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub masses and root crowns'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones'});
 BIO.def('rod',G.rod(),M.solid,{label:'Stems'});

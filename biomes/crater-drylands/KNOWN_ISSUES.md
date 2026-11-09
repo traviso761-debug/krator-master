@@ -51,6 +51,16 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 - the attach audit: the limbs' collars should take nothing away; any floater it reports is this kit's (no other kit is on the page);
 - the budgets: `showcase` (18.5M tris, 120 calls) was measured before the impostors and the far field.
 
+**The first GPU verify (2026-11-08, `--assert`, Arc and RTX).** Three fixes, each in this kit:
+- The ground's fragment shader did not compile ("'#' : invalid character", "'ifndef' : syntax error"): 84 spliced `KHOOK.EYE` (which opens
+  with `#ifndef KHOOK_EYE`) straight after `float cdM1,cdM2;` on the same line, and a preprocessor directive must start its own line.
+  A `\n` goes before it now. The ground draws; `shader-errors` and `shader-programs` pass.
+- `export-profile` failed on its hazards section (core/hazard needs `KTRAPS.cycle`): `build.py` now loads `core/biome/37-core-traps.js`.
+- The attach audit read 81 of 189 sword-spire florets floating (1.23%): the spire was drawn on `vsway`, a leaf-kind card material, so it
+  was no structure. It is a solid now (`M.spire`, vertex-coloured, no sway): 6 of 6545 float (0.09%).
+- [ ] **Still failing: `instance-cap`**, `craterdry/bloom` 488,234 > 250,000 with no `capWhy`. The bloom's drifts are the kit's point,
+      so the count is the owner's budget call: either a `cap`/`capWhy` on `BIO.def('bloom', ...)` (50) or a coarser drift cell (60).
+
 ## The region and the open world
 
 - [ ] **The Koppen classes are an estimate** (BSh .6, BWh .25, Aw .15). The scale model's climate rasters were not
