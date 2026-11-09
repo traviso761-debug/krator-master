@@ -54,7 +54,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  // into the ground over 14 m (core/space finds the ones in reach). padD: the distance from a pad's edge in metres (negative inside). The
  // engines take pads too, wide and eased over 60 m
  const PADS=KSPACE.create({cell:300});PLAN.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family]||{},fp=F.footprint||{};
-  if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w||60)/2+6;T.rz=(fp.d||60)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
+  if(fp.r){T.rx=T.rz=fp.r+6;}else{T.rx=(fp.w==null?60:fp.w)/2+6;T.rz=(fp.d==null?60:fp.d)/2+6;}T.padR=Math.max(T.rx,T.rz);T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.ease=14;PADS.insert(T,T.x,T.z,T.padR+16);});
  ENGINES.forEach(E=>{E.rx=E.rz=E.padR=E.r+20;E.c=1;E.s=0;E.ease=60;E.family='engine';PADS.insert(E,E.x,E.z,E.padR+64);});
  // THE DEBRIS: slabs thrown from the craters and lying in the streets (41: AV.debris), off the plinths, the viaduct and the water
  const DEBRIS=AV.debris({craters:CRATERS,R:R,n:420,seed:SEED+17,ok:(x,z)=>{if(rawGround(x,z)<LAKE_Y+2||viaD(x,z)<14||engineD(x,z)<40)return false;const dq=[];PADS.query(x,z,0,dq);for(let i=0;i<dq.length;i++){const T=dq[i],dx=x-T.x,dz=z-T.z,u=dx*T.c+dz*T.s,v=-dx*T.s+dz*T.c;if(Math.abs(u)<T.rx-4&&Math.abs(v)<T.rz-4)return false;}return true;}});
@@ -118,7 +118,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
    /* a spot to stand: on the EDGE OF A PLINTH near (cx, cz) (the plaza's rim: paved, nothing grows there, the ground falls away), the pad's own
       tower behind the eye, and the fewest other towers filling a 70-degree cone toward (tx, tz) out to `ahead` metres */
    /* the trees registered so far (the views are made after the build): no eye within 12 m of one */
-   const TR=KSPACE.create({cell:120});if(typeof REG!=='undefined')REG.forEach(rc=>{if(rc.kind==='tree')TR.insert(rc,rc.x,rc.z,Math.max(rc.r||4,4));});const tq=[];
+   const TR=KSPACE.create({cell:120});if(typeof REG!=='undefined')REG.forEach(rc=>{if(rc.kind==='tree')TR.insert(rc,rc.x,rc.z,Math.max(rc.r==null?4:rc.r,4));});const tq=[];
    const openSpot=(cx,cz,r,clear,tx,tz,ahead)=>{let best=null,bs=1e9;const near=[];PADS.query(cx,cz,r,near);const q=[];
     for(const P of near){if(P.family==='engine')continue;for(let k=0;k<24;k++){const a=k/24*TAU,x=P.x+Math.cos(a)*(P.padR-3),z=P.z+Math.sin(a)*(P.padR-3);if(ground(x,z)<LAKE_Y+3||padD(P,x,z)>0)continue;
       tq.length=0;TR.query(x,z,2,tq);if(tq.some(t=>Math.hypot(t.x-x,t.z-z)<12))continue;

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Concatenate src/* (filename order) into dist/<target>.html: the Ancient's Valley, the overlay on the two lowlands (PLAN.md).
 
 Stations, like the Cut's and the lowland kits': each is its own page from the same kit (PLAN.md section 12).

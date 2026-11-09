@@ -61,9 +61,14 @@ avenue of 26 m, asphalt with rubble at the kerbs, the forest thinned to a third 
 vehicles in the streets are a kit's work (`kits/motor-vehicles`, an Ancients culture with ruin states: in its own session) and come to the valley
 when it exists.
 
-**The designs' tiers** (the owner, 2026-11-08: the foreground towers looked low-res and floors floated): a design with no shell is a hero to
-1.4 km, to 3.2 km seen steeply from above, the nearest 48 of them; its impostor is 128 px a view. Per view after that: the Overlook 3.56 M
-triangles in 517 calls, the dead lobe 4.41 M in 571, the park 4.16 M in 682 (the worst calls), from the air 2.88 M in 511.
+**The tiers** (the owner, 2026-11-08, three passes: the foreground towers looked low-res and floors floated; shells drew over heroes; "make
+intermediate forms for the others"): every family and every look has a box shell now (KSHELL's box mode, 66 looks baked at the boot into two 2048
+atlases from the rusted heroes, `avFlat` flattening a design's nested groups for the bake), so one rule serves all towers (`70-host-city.js`, "THE
+TIERS, plainly"): a hero to 360 m (the nearest 24, fading out over the dither band toward its shell), its shell to 3.2 km side-on, its impostor past
+that; a skeleton and any tower whose roof the eye is above are heroes to 1 km (3.2 km seen steeply), the nearest 72, then impostors. Every baked
+form of a ruin (shell and impostor) is the family's intact hero cut at the state's height (`avStub`: a solid stub with a torn top), because a ruin's
+hero is an open frame of slabs and mullions once its glass is gone, and a frame baked to a box or a card is dashes in the air at range. Outside the
+dither band exactly one form stands for a tower.
 
 ## Read next
 

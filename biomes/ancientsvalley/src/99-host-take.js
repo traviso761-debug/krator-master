@@ -5,14 +5,14 @@
 const VIEWS=(function(){const V=STAGE.views?STAGE.views():{},out={};for(const k in V)out[k]=V[k].cam||V[k];return out;})();
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
- let best=null;for(const r of REG){if(r.r>1500)continue;const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-3&&p.y<=(r.y||0)+(r.h||40)+5){if(!best||r.r<best.r)best=r;}}
+ let best=null;for(const r of REG){if(r.r>1500)continue;const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y==null?0:r.y)-3&&p.y<=(r.y==null?0:r.y)+(r.h==null?40:r.h)+5){if(!best||r.r<best.r)best=r;}}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=lab==='ground'?STAGE.floorLabel(p.x,p.z,p.y):isItem?lab+(best?'  (in '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
  const F=STAGE.F,fe=F.feral(p.x,p.z),ta=F.taint(p.x,p.z),sc=F.scar(p.x,p.z),de=F.density(p.x,p.z);
  return name+'\nzone '+F.zone(p.x,p.z)+' · density '+de.toFixed(2)+' · feral '+fe.toFixed(2)+' · taint '+ta.toFixed(2)+(sc>0?' · scar '+sc.toFixed(2):'')+
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  ('+(p.y+STAGE.base).toFixed(0)+' m)  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // ---------------------------------------------------------------- the probe's budgets
-const BUDGET={showcase:{tris:STAGE.budgetTris||9000000,calls:STAGE.budgetCalls||700,rendered:7500000},
+const BUDGET={showcase:{tris:STAGE.budgetTris==null?9000000:STAGE.budgetTris,calls:STAGE.budgetCalls==null?700:STAGE.budgetCalls,rendered:7500000},
  cls:{pass:7000000,host:1200000},
  type:{'lowlands/trees':'pass','lowlands/floor':'pass','nwlow/trees':'pass','nwlow/floor':'pass','host':'host'}};
 // ---------------------------------------------------------------- the kit's own checks (verify.py --assert)

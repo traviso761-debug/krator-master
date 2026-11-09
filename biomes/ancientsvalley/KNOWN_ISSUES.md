@@ -1,12 +1,15 @@
 # biomes/ancientsvalley: known issues
 
-- [ ] **The tiers, after the owner's five passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** a shell stands only for an
-  intact or gutted Spindle or Ledger, side-on, from the walker's level (the shells' ruin states and their top maps smeared: brown blobs over
-  the other models from the air and at 560 m); every other tower is a hero to 1 km (3.2 km seen steeply), the nearest 72, then its impostor.
-  The impostor of a ruin is the family's gutted hero cut at the state's height (a solid stub with a torn top), because a ruin baked as it is
-  showed its floor slabs as dashes in the air. What remains: a hero past the pool's cap becomes a card inside 1 km in the densest views; a tower
-  pops at the hero/impostor switch (no middle tier for 15 of the 16 families); 66 looks bake one a frame at the boot (about a second and a half);
-  a solid stub has no skeleton look at range. The real cure is shells for every family and state from the test bed.
+- [ ] **The tiers, after the owner's six passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** every family and every look
+  has a box shell (KSHELL box mode, the test bed's prototype, 66 looks in two 2048 atlases baked at the boot from the rusted heroes), so one rule
+  serves all towers: a hero to 360 m (the nearest 24), its shell from 306 m to 3.2 km side-on, its impostor past that; a skeleton (an open frame
+  bakes to nothing a box can hold) and any tower whose roof the eye is above are heroes to 1 km (3.2 km seen steeply), the nearest 72, then
+  impostors, never shells. Every look but intact bakes (shell and impostor) from the family's intact hero cut at the state's height (`avStub`): a
+  ruin's hero is an open frame once its glass is gone (the Wedge's broken state is slabs and mullions), and a frame baked to a box or a card is
+  dashes in the air at range. What remains: the switch at the band is from the open frame to a skinned stub (gutted towers get their glass back
+  past 360 m); a box shell of a round or pierced design (the Organ, the Reed, the Pods) is a rusted box with the hero's sides on it, right at
+  300 m and plainly a box when the eye circles it closer than its shell starts; the ruins' shells have a flat top (the cut storey's plate); 66 bakes take about 4 s on the RTX at the boot (24 s in a background tab); a tower pops at the shell/impostor
+  switch at 3.2 km (small at that range). The cure for the first two is in `kits/metropolis`: ruin states that keep broken panes and spandrels (a frame that reads at range), and the shells' own geometry per family (its `KNOWN_ISSUES.md`).
 - [ ] **A leaning tower's impostor stands straight** (the lean is on the heroes and the shells only): the switch at 1.4 km or 3.2 km pops by up to
   5 degrees at the top. The impostor bake would need a slot per lean, or the lean kept under 2 degrees.
 - [ ] **The boot takes several seconds and the first half minute janks:** 14 shelled keys and 28 design keys build their heroes at the boot (about 4 s
@@ -33,3 +36,6 @@
   terraces are off this page), no lake steam (`core/atmos` particles, a later pass).
 - [ ] **The viaduct is plain boxes** (piers, decks, two rails): a real guideway, a train and a broken span are to come.
 - [ ] **The build takes about 50 s in the browser** (two kits' rainforest at R 2,740 and the bake): the lowlands' own pages take as long.
+- [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
+  `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
+  decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.
