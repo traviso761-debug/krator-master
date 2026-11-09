@@ -87,8 +87,12 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   - `kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
     and its glass in KGLASS (`kits/ancients-interiors/src/75-ai-doors.js` matches the shell's leaves by order meanwhile), and
     `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.
-  - Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
-    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.
+  - ~~Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
+    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.~~
+    Done (2026-11-09, with `?interiors=1`): the Vernacular's auto bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`) draw a
+    furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
+    (`kits/interiors/sets/xanadu.js`; the citadel held for the owner's references); the Hall of the Republic and the Fortress
+    are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
   - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
     building's `F.door`).
   - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.

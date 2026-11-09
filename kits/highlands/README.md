@@ -11,7 +11,7 @@ cultures' building kit, not a settlement's layout, and the open-world rebuild pl
 |---|---|
 | `src/70-hl-tex.js`, `71-hl-mat.js`, `71b-hl-motif.js` | the foundation: textures, materials and kit items, the motifs and shop signs |
 | `src/71c-hl-openings.js` | the real doors and glass: `hnDoorway`, `hnPane`, `hnRoom`, `hnPlate` (below, "Doors and glass") |
-| `src/72-hl-helpers.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, the carving (totems, posts, dougong), the timber frame |
+| `src/72-hl-helpers.js`, `72c-hl-plan.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, the carving (totems, posts, dougong), the timber frame |
 | `src/88-hl-dress.js`, `89-hl-trades.js`, `89y-hl-furnish.js`, `94-hl-anim.js` | the dress (reclaimed variants, clocks, glazed tiles), the trades table (`HL_TRADES`), the catalog furniture glue (`FURNISH`), the clocks' and orreries' animation |
 | `src/74-rep-dwell.js` ... `79f-rep-shipbreak.js` | the Republican set: dwellings, trade, civic, the capital, guilds, the grand, the land, salvage and scrap |
 | `src/80-rus-dwell.js`, `81-rus-village.js`, `81b-rus-salvage.js` | the Rustic set |
@@ -34,10 +34,24 @@ window clear glass, a lit pane or a stained fanlight (the grand halls' keel head
 (`hnRoom`), the keel recesses and the eyelid dormers' and the totem's voids that dim back too. Every body of the kit is solid
 (no 69e hollow walls), so every door is LOCKED: a real leaf, shut, with an id from its def, its placement and its number
 (`hl_rep_house_rich@12,-40.0`), that an NPC or a quest can name. A door keeps the kit's old threshold step (69c's), not 69e5's
-landing and flight, as the builders draw their own steps. Left dark on purpose, as they are not openings: flues, fireboxes and
+landing and flight, as the builders draw their own steps (with the interiors on, the furnished defs' bodies are hollow: "Hollow walls" below). Left dark on purpose, as they are not openings: flues, fireboxes and
 furnace mouths behind their embers, the mine shaft, the flame trench, scorch marks (`vDarkB`). A page that takes the kit takes
 `OPENINGS` and finishes the doors once the world is built (`settlements/highlands/src/95-hl-doors.js`: `IZDOOR.finish`,
 `KDOOR.clearDoorways`, the leaves to `KDOORHOST`) and gives the E key (`99-start.js`).
+
+**Hollow walls** (2026-11-09; TODO.md "Doors and glass: what is left"). With the interiors on (`?interiors=1`, Highlands and
+Roketstad), a page takes the Vernacular's hollow bodies and auto bodies (`kits/iziz-vernacular/src/69e-vern-hollow.js`,
+`69e6-vern-autobody.js`; `highlands.py` `HOLLOW`): while a def with an item in the interiors kit's set
+(`kits/interiors/sets/highlands.js`) is built, any block a builder draws (hnStucco, hnLogBox, hnFachBox, a plain vB) whose
+footprint matches a storey of the item's bodies, or one of its `shells`, is drawn as four walls of the plan's thickness, cut
+where the kit's doors and windows stand (`71c` wraps `hnDoorway hnPane hnRoom hnPlate`; the Vernacular's `vnDoor vnWin`
+cut it already), floored at the plan's floor; 69e draws the planned upper floors, partitions and stairs inside. A door on a
+hollow face is a leaf in the wall's middle, UNLOCKED, opening into the planned room; a planned door no builder drew is cut
+and hung (69e6 `vaPlanDoors`). Nothing changes with the interiors off. **The Hall of the Republic and the Fortress** are
+planned room by room on their blueprints (`hall/BLUEPRINT.md`, `fortress/BLUEPRINT.md`): explicit rooms, shells and
+stairs in their items, drawn by `src/72c-hl-plan.js` `hnPlan` (floors, shared partitions, balustrades, inner doors,
+stairs into core/walk); the Hall's chamber (the horseshoe's tiers, the dais, the members' benches) and the Fortress's bridge
+are their builders' (`78-rep-grand.js`). The cut-away (X) opens every furnished building storey by storey.
 
 **Who takes it.**
 - Read in place: `settlements/highlands` (its `highlands` target is the kit's sheet, `dist/highlands.html`; its `roketstad`

@@ -106,6 +106,7 @@ TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR, WALK_DIR) for 
 # and the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and
 # glass (kits/highlands/src/71c-hl-openings.js) draw through them; src/95-hl-doors.js finishes them once the world is built
 DOOR_FILES = dict(khl.OPENINGS)
+DOOR_FILES.update(khl.HOLLOW)   # the hollow walls (69e, 69e6): kits/highlands/README.md "Hollow walls"
 DOOR_FILES['90-core-door-host.js'] = os.path.join(ROOT, 'core', 'door', '90-core-door-host.js')
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
@@ -188,7 +189,7 @@ DETERMINISTIC = {
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',          # vendored from ../iziz/src (Iziz Vernacular helpers)
-    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',   # the Highlands vocabulary
+    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '72c-hl-plan.js', '73-hl-carve.js', '73b-hl-frame.js',   # the Highlands vocabulary
     '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook

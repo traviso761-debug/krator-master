@@ -256,6 +256,7 @@ for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
     if(Math.hypot(pa[0]-pb[0],pa[2]-pb[2])>34)continue;if(n%2)xnBasketLights(pa,pb,5);else xnUmbrellaLights(pa,pb,5);n++;}
    acc+=L;}}
  kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
+if(typeof xaIxWalk==='function')xaIxWalk();   // with the interiors on: the doors' walk blocks, once every chunk is built (89y-xa-interiors.js)
 // the runtime LOD: a chunk is drawn while it is in the view and within its range; the biome's own chunks tick beside it
 const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();_pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);const P=camera.position;let shown=0;
