@@ -11,7 +11,13 @@
    collectors for the causeways the owner draws, and Voth's own things (cantons, piers, districts) as empty lists.
    CANT stands in for Voth's canton plan (20-site-cantons.js, not on this page): no cantons, so no canton ends. */
 var ISLE = { TOWNS: ['Kautoa', 'Valapo'], F: null };
-ISLE.settlement = function (name) { return WORLD_DATA.meta.settlements.filter(function (s) { return s.name === name; })[0] || null; };
+/* the planner's towns: the two Islander towns and Nephtos, the Hykkousoi colony (PLAN.md section 15; the owner, 2026-11-09:
+   "i'm home so i can do a real layout"), whose drawing the colony takes once its programme is written (ISLE.TOWNS stays
+   the towns the pages plan from the site file) */
+ISLE.PLAN_TOWNS = ['Kautoa', 'Valapo', 'Nephtos'];
+/* settlements the region does not hold: Nephtos at the placeholder's agora (openworld/isle-demo 48p's site, 2026-11-09) */
+ISLE.EXTRA_SETTLEMENTS = [{ name: 'Nephtos', x: 81623, z: -96180 }];
+ISLE.settlement = function (name) { return WORLD_DATA.meta.settlements.concat(ISLE.EXTRA_SETTLEMENTS).filter(function (s) { return s.name === name; })[0] || null; };
 /* the water's level nearest (x, z): rings out from the point until one meets water (the Ring Sea is one level) */
 ISLE.seaNear = function (x, z) {
   for (var r = 0; r <= 12000; r += 250) {
