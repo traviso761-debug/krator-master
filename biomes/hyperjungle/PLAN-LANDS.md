@@ -370,6 +370,19 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
 
 ## 14. Open questions for the owner
 
+**The owner's answers (2026-11-08):**
+1. **No new kit: the rims go to the existing `biomes/abyssal-savannah`** (as `extract_region.py` already maps `e savannah rim`
+   and `se savannah rim`). Wherever this plan says `savannarim`, read abyssal-savannah: the savannah base, the north savannah,
+   the east rim and the south-east rim become its stations.
+2. **Yes**: volcanic ash on beast-dunged soil is reason enough ("rule of cool, mostly").
+3. **Yes, as a rumour that is a complete red herring**: the Screamers' speech did not begin with the groves.
+4. **Yes**: the glass wand and Fridon's wormwick trade go in.
+5. **Open**: the owner places Talia on the **e** savannah rim (east-abyss flora), where dragon's blood would not belong; dragon's
+   blood is a **se** rim thing (the Bowl's lineage). Map 5.1 puts Talia (px 801,609) inside `se savannah rim`. Until the owner
+   settles where Talia stands, the incense and dragon's blood stay on the SE rim's flora, with no Talia trade written into LORE.
+6. **Yes**: the rust miombo is defined here, Godstep's redlands reads it; the red guyed stalk stays Godstep's.
+7. **Yes**: the black mallee is the drylands patch's one hybrid.
+
 1. **One new savannah kit (`savannarim`)**, or the savannahs kept as stations of the hyperjungle kit?
 2. **Why the savage jungle is savage**: is volcanic ash on beast-dunged soil acceptable as the reason, with its
    carnivores a guild of canopy and shade, not Korona's poor-soil bog?
