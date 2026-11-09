@@ -17,15 +17,18 @@ const IMP_GAIN=2.2;   /* the impostors' gain: the Throne's (most of the borrowed
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
 })();
 if(typeof ATMOS!=='undefined'&&ATMOS.heightFog&&!ATMOS.fog&&CORE_Q.get('hfog')!=='0'){
- try{ATMOS.heightFog(ATMOS_AIR);ATMOS.heightFogScene(scene);}catch(e){reportErr('height fog: '+e.stack);}}
+ try{ATMOS.heightFog(ATMOS_AIR);if(typeof STATION!=='undefined'&&STATION.belt&&ATMOS.fogBelt)window._belt=ATMOS.fogBelt(STATION.belt());   /* a station's fog belt (the high isle's cloud on the crest) */
+  ATMOS.heightFogScene(scene);}catch(e){reportErr('height fog: '+e.stack);}}
 const GROUND_MATS_ALL=[MAT_GROUND];
 // a material's texture units, counted from a dry run of its onBeforeCompile on its ShaderLib (the Throne's samplersOf), +1 for the sun's shadow map once on
 const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong',MeshBasicMaterial:'basic',MeshToonMaterial:'toon'};
 let SHADOW_ON=false;
+// +1 for the fog belt's field (a station's fog belt: core/atmos's height fog adds its sampler to every fogged material at compile, which a dry run of
+// the material's own hook cannot see)
 const samplersOf=m=>{try{const L=THREE.ShaderLib[LIBOF[m.type]],sh=L?{uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader}:{uniforms:{},vertexShader:m.vertexShader||'',fragmentShader:m.fragmentShader||''};
   const f0=typeof KHOOK!=='undefined'?KHOOK.failures.length:0;
   try{if(m.onBeforeCompile)m.onBeforeCompile(sh,renderer);}finally{if(typeof KHOOK!=='undefined')KHOOK.failures.length=f0;}let n=(m.map?1:0)+(m.emissiveMap?1:0)+(m.alphaMap?1:0)+(m.lightMap?1:0)+(m.aoMap?1:0);
-  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);}catch(e){return 99;}};
+  sh.fragmentShader.replace(/uniform\s+sampler(?:2D|Cube)\s+([^;]+);/g,(a,b)=>{n+=b.split(',').length;return a;});return n+(SHADOW_ON&&!(m.isShaderMaterial)?1:0)+(typeof ATMOS!=='undefined'&&ATMOS.fogBeltOn&&m.fog!==false?1:0);}catch(e){return 99;}};
 const MAXT=renderer.capabilities.maxTextures==null?16:renderer.capabilities.maxTextures;
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 // THE SUN'S SHADOWS (core/shadow, KSHADOW): one box that follows the view, every placed mesh casting and receiving. r128 declares the shadow map's sampler

@@ -554,6 +554,10 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1 and station 3 `lagoon`; built on geyser's 079716f3), abyssal-savannah (**pushed 2026-11-03, cloud:** `claude/rebuild-abyssal-cloud`, station 1 re-sited on 5.1; GPU verify and merge owed) | after all their sources |
   | 9 | korona (**merged 2026-11-04:** all six pages on the universal set; `biomes/korona/PLAN.md`, "Core adoption"), nsemiarid (**merged 2026-11-03:** the page, the scablands' coulee and the dam basins' port; station `high` waits for nhighlands' station 2) (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut (**pushed 2026-11-04, cloud session, for the coordinator's GPU verify and merge:** `claude/rebuild-cut-cloud`, on nhighlands' pair-7 branch; the universal set, exchanges 5 and 6), farside (**turn on `claude/rebuild-farside-cloud`, 2026-11-04, not merged:** station 1 rebuilt for the tsunami and Farport's move; software GL only, the GPU run is the coordinator's) | both read nwlowlands |
+  | 7 | geyser (**built 2026-11-03 in a cloud session, `claude/rebuild-geyser-cloud`, for the coordinator's GPU verify:** the showcase and station `stills`), nhighlands | geyser before ringisles |
+  | 8 | ringisles (**built 2026-11-03 in a cloud session, `claude/rebuild-ringisles-cloud`, for the coordinator's GPU verify:** station 1, station 3 `lagoon` and (2026-11-09, unverified) station 2 `high`; built on geyser's 079716f3), abyssal-savannah | after all their sources |
+  | 9 | korona, nsemiarid (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
+  | 10 | cut, farside | both read nwlowlands |
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
   | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
@@ -566,7 +570,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   **ringisles' turn, built 2026-11-03 (cloud; not merged: the coordinator GPU-verifies and merges)** (`biomes/ringisles/PLAN-STATIONS.md`, "Core adoption" and
   "Station 3, built"; `KNOWN_ISSUES.md`, "The final rebuild"). **Built on geyser's `079716f3`** (`origin/claude/rebuild-geyser-cloud`, merged here; its WIP commit bf85a338
   first, and the pages rebuilt on 079716f3 are byte for byte the same): if geyser's branch moves again before it merges, rebuild ringisles' two pages after it (`python3 tools/build.py biomes/ringisles` and
-  `--station lagoon`). The page reads eight kits in place; what changed is the page's own: `build.py` on the universal set's lists (31b, 31j, 32, 33, 34, 37,
+  `--station lagoon`, `--station high`). The page reads eight kits in place; what changed is the page's own: `build.py` on the universal set's lists (31b, 31j, 32, 33, 34, 37,
   39, 41, 44 of core/biome; KSTRATA from core/terrain, not sedesert's src/ copy; KGROUND, KHORIZON; core/hazard; KSHADOW; height fog, rain cover, lightning;
   water ext 57, 58, 60; `khost.FULL`; `--station`; LF writes), so the borrowed kits' far trees are their octahedral impostors at last (`check_assembly`'s
   MISSING `BIO.impostor*` and `BIO.leafOn` are gone). KGROUND's sampler under the fourteen ground layers by `THRONE.layGLSL` (the Throne's way for a Lambert
@@ -577,7 +581,11 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   SwiftShader (32 units) runs them: the cost on the GPU is therefore nil and was not measured. KFAR not taken (sea to 9 km). **Station 3, the lagoon**
   (`--station lagoon`, `dist/ringisles-lagoon.html`): the bank off the lee shore cut at 7.6 x 6.8 km (a rim with its pass, three motu, the fish camp, 140 patch
   reefs, the water on the rim's true bed so the swell breaks on it), its stage a fork of `src/45` and src/'s other fragments reading `STATION` knobs (none on
-  station 1: its page moves only by those lines). Station 2 (the high isle) stays a plan awaiting the owner. **Attach audit:** 24.0% before; 4.07% on the
+  station 1: its page moves only by those lines). **Station 2, the high isle** (`--station high`, `dist/ringisles-high.html`; added 2026-11-09 at the owner's ask, **not verified at all**: the owner
+  said to hand it over without one; one software-GL load without the bake was clean): a 1 km eroded shield with five amphitheatre valleys, their
+  streams, three tall falls (488-524 m) and the plumes at their mouths, the fog belt and the Throne's elfin tree in the cloud on the crest, `rift-volcanic`
+  strata on the valley walls (`biomes/ringisles/PLAN-STATIONS.md`, "Station 2, built"). The page's Throne pack now keeps the elfin's bark and moss
+  (every ringisles page's `ringisles.tex.throne.js` grows by them). **Attach audit:** 24.0% before; 4.07% on the
   first rebuilt page (software GL), with this kit's own floaters then fixed; the borrowed savanna trees' `leaflet` and `bloom` (the Rift's acacia, swbay's
   thorn and baobab: no structure near them) stay, so `guards.maxShare` is .016 with a KNOWN_ISSUES entry. **Verified, software GL only** (SwiftShader; `verify.py dist/ringisles.html --assert`, about 70 minutes): error panel clean, 777 calls,
   26.7 M triangles at the opening view; every invariant, host check and negative passes (34), the card guard, one LOD key a tree (.73%), the attach audit

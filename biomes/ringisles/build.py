@@ -212,7 +212,8 @@ def _fams(kit):
     return sorted(_json.load(open(pj,encoding='utf8')).get('families',{})) if os.path.isfile(pj) else []
 # the Throne: only the isle's and the savanna's trees (lehua, tree fern, arch palm, palm frill, mangrove, coconut, star aloe,
 # gill-parasol) and the small plants this kit borrows from it
-THRONE_KEEP={'bark.armored','bark.palm','bark.mangrove','bark.twisted','bark.coir','card.frond.coconut','card.fractal',
+# (2026-11-09) and the elfin tree's bark and hanging moss for station 2's cloud forest (stations/high: the Throne's elfin read in place)
+THRONE_KEEP={'bark.elfin','card.mosshang','bark.armored','bark.palm','bark.mangrove','bark.twisted','bark.coir','card.frond.coconut','card.fractal',
  'card.treefern','card.aloeflower','card.ferngreen','card.bromeliad','card.mossclump','leaf.fern','cap.disc','cap.tier'}
 DROP=lambda k:k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
 EXCL={'throne':[f for f in _fams('throne') if f not in THRONE_KEEP],

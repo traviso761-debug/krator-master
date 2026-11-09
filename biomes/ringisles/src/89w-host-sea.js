@@ -22,7 +22,8 @@ const SEA_BED=typeof STATION!=='undefined'&&STATION.seaBed?(x,z)=>STATION.seaBed
 // No maskLand: the beaches and the reef are terrainH's own heights (the ground paints them from the same coastD / reefD), so the height decides what is dry.
 const SEA_SEEDS=[[TERR.X0+20,TERR.Z0+20],[TERR.X1-20,TERR.Z1-20],[TERR.X0+20,TERR.Z1-20],[TERR.X1-20,TERR.Z0+20]].filter(p=>terrainH(p[0],p[1])<-10);
 const SEA_WATER=WATER.open({name:'The Ring Sea',level:SEA,swell:'ringsea',field:.5,bounds:[-9000,-9000,9000,9000],bed:SEA_BED,bedBox:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],
- shore:{cell:typeof STATION!=='undefined'&&STATION.shoreCell?STATION.shoreCell:6,band:100,seeds:SEA_SEEDS}});
+ shore:{cell:typeof STATION!=='undefined'&&STATION.shoreCell?STATION.shoreCell:6,band:100,seeds:SEA_SEEDS},
+ ...(typeof STATION!=='undefined'&&STATION.seaOpts?STATION.seaOpts():{})});   /* a station's tint and its current (the high isle's streams' plumes: core/water ext/61) */
 WATER.wetGround(MAT_GROUND,{surface:SEA_WATER});   // the sand drinks the swash: dark where it reaches, the film glistening
 const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2,metalness:.1,envMapIntensity:.35,
  shallow:new THREE.Color(.2,.5,.46).convertSRGBToLinear(),deep:new THREE.Color(.04,.16,.22).convertSRGBToLinear()});
