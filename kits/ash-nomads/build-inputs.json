@@ -225,9 +225,9 @@
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
     "kits/fauna/krator-fauna-ash.js": "a86238b7017d847449cac13f0520a2dde6d0d3eadd1c9b174a0b8385841c6e8b",
-    "kits/fauna/krator-fauna-crawlers.js": "f450f38303763a5bb785ca83cb60b8c2568432f6ce631e85535fb5c770f7e70d",
-    "kits/fauna/krator-fauna-runtime.js": "dcadf40b8a0dc17412342d0c904f34621ca86db936a1f85d2fb93b31fbf87e91",
-    "kits/fauna/krator-fauna-voth.js": "a2adf87f254600543db806536e6d4d104147f7ce3d11baab7004a7f8f7750a13",
+    "kits/fauna/krator-fauna-crawlers.js": "7dd2a71c0e68cef2db23069fd15d1363ffccca6cb449e56128b1a2a2e4db2747",
+    "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
+    "kits/fauna/krator-fauna-voth.js": "a79bf22196a5943a26f1199bf03cf29d3d1c3774ef6af65386b36fb349e7373a",
     "kits/fauna/tex/chitin.albedo.webp": "a1b0fcbfcc9a0f2293442efff807fd1d58090b957c042adad8a0616a7b132db6",
     "kits/fauna/tex/coat.albedo.webp": "58466e43f0cfd9ef389d6cd31de73affdfcfb9a1e870d212a97c3d5724df624c",
     "kits/fauna/tex/feather.albedo.webp": "a99b194f367dfdaf4931adfb5538a2fa37b98c4bd51887358afbd2b507fb170e",
@@ -260,16 +260,16 @@
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "kits/ash-nomads/src": "6ece5be912436d486f097efa49e5f79c4bee9d4afc92abe3d10a1fae55ed139d",
     "kits/catalog": "860ba1d1ab9aead229b718cf76f3d25c3e4b68ed50c1c339fd2ebb84fa331612",
-    "kits/fauna": "48fbee377f9ee7cfec7f573fe62b8d919d153e60cf4dfe98187bdbea63544603",
+    "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/ash-nomads/build-manifest.json": "0e45625c736ca43dd28565c70666ef005afb235eeca146e8ec81e37c471a2a83",
-    "kits/ash-nomads/dist/ash-nomads.html": "d7ed713db496b8aea756ec1a031154d19b8c5b03112227ce6907d518a6576278"
+    "kits/ash-nomads/build-manifest.json": "a5a7346a43da2950cd87420bc8a412334495d446555e702c3764362f3649c916",
+    "kits/ash-nomads/dist/ash-nomads.html": "b043cfd5aa2bd9f85e25a8ea7cf57763b89bd985ffa8635b75ab02fa9b3c390f"
    },
    "outputs_raw": {
-    "kits/ash-nomads/build-manifest.json": "0e45625c736ca43dd28565c70666ef005afb235eeca146e8ec81e37c471a2a83",
-    "kits/ash-nomads/dist/ash-nomads.html": "d7ed713db496b8aea756ec1a031154d19b8c5b03112227ce6907d518a6576278"
+    "kits/ash-nomads/build-manifest.json": "a5a7346a43da2950cd87420bc8a412334495d446555e702c3764362f3649c916",
+    "kits/ash-nomads/dist/ash-nomads.html": "b043cfd5aa2bd9f85e25a8ea7cf57763b89bd985ffa8635b75ab02fa9b3c390f"
    }
   }
  }

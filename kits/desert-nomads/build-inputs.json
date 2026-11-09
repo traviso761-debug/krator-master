@@ -209,9 +209,9 @@
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
     "kits/fauna/krator-fauna-abyss.js": "ef83d21907dc43667de333094d27dcdf7565a94c7bd7757ce5f6d4aa48e27560",
-    "kits/fauna/krator-fauna-farm.js": "62127e413db63b62c45392d0800561d3e5e8679fd54170f441467fb624d2adce",
+    "kits/fauna/krator-fauna-farm.js": "e3a14105ae5f269d9025ff8783abbceef5c71b1d52af2cccbe9b81522ebb0477",
     "kits/fauna/krator-fauna-livestock.js": "72593629178ab8a4e86823e900506050eea0629c16735156b89a1566da0cc5a2",
-    "kits/fauna/krator-fauna-runtime.js": "dcadf40b8a0dc17412342d0c904f34621ca86db936a1f85d2fb93b31fbf87e91",
+    "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/tex/chitin.albedo.webp": "a1b0fcbfcc9a0f2293442efff807fd1d58090b957c042adad8a0616a7b132db6",
     "kits/fauna/tex/coat.albedo.webp": "58466e43f0cfd9ef389d6cd31de73affdfcfb9a1e870d212a97c3d5724df624c",
     "kits/fauna/tex/feather.albedo.webp": "a99b194f367dfdaf4931adfb5538a2fa37b98c4bd51887358afbd2b507fb170e",
@@ -244,16 +244,16 @@
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "kits/catalog": "860ba1d1ab9aead229b718cf76f3d25c3e4b68ed50c1c339fd2ebb84fa331612",
     "kits/desert-nomads/src": "400c48fc2d31892111d905dbf2782c40a03f3fe3bf29a3a91f8eab723cba1e87",
-    "kits/fauna": "48fbee377f9ee7cfec7f573fe62b8d919d153e60cf4dfe98187bdbea63544603",
+    "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/desert-nomads/build-manifest.json": "71e04403029e2b29182ee57f99b781cc6b3d766cf6b9eb8e321be9fb155f2958",
-    "kits/desert-nomads/dist/desert-nomads.html": "b2064d3dba0b3afb6c41570feaa6ab8294413db4ac7da0de5ea73809c474ca6d"
+    "kits/desert-nomads/build-manifest.json": "1514c9c0e34da7c32bc170a2f9de73bb065038c3174cd0be73f10d9c0b3177b6",
+    "kits/desert-nomads/dist/desert-nomads.html": "2e7cc7f8cb551996c473332f37812b9783a45d873f1cab94448cdf965ae7dbb8"
    },
    "outputs_raw": {
-    "kits/desert-nomads/build-manifest.json": "71e04403029e2b29182ee57f99b781cc6b3d766cf6b9eb8e321be9fb155f2958",
-    "kits/desert-nomads/dist/desert-nomads.html": "b2064d3dba0b3afb6c41570feaa6ab8294413db4ac7da0de5ea73809c474ca6d"
+    "kits/desert-nomads/build-manifest.json": "1514c9c0e34da7c32bc170a2f9de73bb065038c3174cd0be73f10d9c0b3177b6",
+    "kits/desert-nomads/dist/desert-nomads.html": "2e7cc7f8cb551996c473332f37812b9783a45d873f1cab94448cdf965ae7dbb8"
    }
   }
  }
