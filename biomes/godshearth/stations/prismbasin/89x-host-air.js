@@ -4,7 +4,8 @@
 // 6 degC a km over the floor, and on clear nights the COLD-AIR POOLS: the low ground away from the vents up to 7 degC colder (to -17 in winter). Near
 // the ground the warm ground wins (KTHERM's vent line, the geyser kit's springs and run-off). KHAZ.provide('temperature'): a walker freezes on a winter
 // night on the open floor and not on the coal moss.
-// THE SNOW THAT LIES (core/atmos fx/snowcover): every lit material holds snow in a snowfall, and the warm ground stays bare (ATMOS.snowBare): a mask of
+// THE SNOW THAT LIES (core/atmos fx/snowcover; the field stage's bindWeather lays the cover on a cold climate): every lit material holds snow in a
+// snowfall, and the warm ground stays bare (ATMOS.snowBare, set here before the first frame compiles the shaders): a mask of
 // the hotter of KTHERM's field and the geyser kit's ground, bare over the soil + 3 degC. ?snow=1 opens on a full cover (a winter view).
 // THE STEAM, in groups (fx/smokegroups): the vent line's fumaroles, steady; and STEAM BANKS on the hot lake along the shore, which thicken as the air
 // cools (the cold night over warm water: strongest at dawn in winter, nearly gone on a summer afternoon).
@@ -19,13 +20,12 @@ const GH_AIR=(function(){const q=new URLSearchParams(location.search),mean=STATI
   return m+8.5*day-6*Math.max(0,y)/1000-7*night*pool(x,z);};
  const at=(x,y,z,s,h)=>{const g=terrainH(x,z),a=air(x,y,z,s,h),warm=Math.max(GH_HEAT(x,z),GEYSER.at(x,z).T);return y-g<3?Math.max(a,mix(warm,a,smooth(0,3,y-g))):a;};
  if(typeof KHAZ!=='undefined'&&KHAZ.provide)KHAZ.provide('temperature',(x,y,z)=>at(x,y,z,season(),hour()));
- // the snow: the bare mask, then the cover, then every lit material (after the one bake: the field stage's 88)
+ // the snow: the bare mask
  let snow=null;
  if(q.get('snow')!=='0'&&ATMOS.snowCover&&ATMOS.snowBare){try{const S=TERR.R*1.1,cell=8,nx=Math.ceil(2*S/cell)+1,data=new Uint8Array(nx*nx),t0=STATION_SITE.amb+3,sf=3;
    for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const x=-S+i*cell,z=-S+j*cell,T=Math.max(GH_HEAT(x,z),GEYSER.at(x,z).T);data[j*nx+i]=Math.round(255*(1-smooth(t0,t0+sf,T)));}
-   ATMOS.snowBare({x0:-S,z0:-S,cell,nx,nz:nx,data});
-   snow=ATMOS.snowCover({line:[-60,-50],lee:.45,base:0,depth:q.get('snow')==='1'?1:0});
-   if(ATMOS.snowOnScene)ATMOS.snowOnScene(scene);}catch(e){reportErr('snow: '+e.stack);}}
+   ATMOS.snowBare({x0:-S,z0:-S,cell,nx,nz:nx,data});   /* the cover and its hooks are the field stage's (bindWeather on a cold climate); the shaders compile at the first frame, after this */
+   snow=ATMOS.snow||null;if(snow&&q.get('snow')==='1')snow.depth=1;}catch(e){reportErr('snow: '+e.stack);}}
  // the steam groups
  const lake=[];for(let z=-TERR.R+80;z<TERR.R;z+=70){const k=KRAND.unit(KRAND.hash(8140,Math.round(z),1)),x=shoreX(z)-30-140*k;lake.push([x,GH_LAKE.level+.3,z,'steam']);}
  let steam=null;try{steam=ATMOS.smokeGroups?ATMOS.smokeGroups({vents:{emitters:GH_FUM.map(f=>[f.x,terrainH(f.x,f.z)+.4,f.z,'steam']),n:16,k:.8},lake:{emitters:lake,n:22,k:.5}})

@@ -30,8 +30,8 @@ const GHC={field:c=>{const need=['hearth','fans','ember','coal','stoker','tallow
 GHC.meadow=P=>{const M=P.filter(p=>p[3]==='biome:fichu'||p[3]==='biome:fcushion'),bad=M.filter(p=>ghMeadow(p[0],p[2])<=0);
  return{ok:M.length>0&&!bad.length,detail:bad.length?bad.length+' of '+M.length+' on warm, wet or bare ground':M.length+' tussocks and cushions, all on the cool floor'};};
 GHC.air=f=>{const A=f||((x,y,z,s,h)=>GH_AIR.air(x,y,z,s,h)),x=shoreX(-1100)+60,Z=-1100,
- wd=A(x,3,Z,-1,15),wn=A(x,3,Z,-1,3),sd=A(x,3,Z,1,15),sn=A(x,3,Z,1,3),pool=A(x,1,Z,-1,3),open=A(800,15,600,-1,3);
- return{ok:wn<-8&&wd>3&&sd>20&&sn>3&&pool<=open,detail:'winter '+wd.toFixed(0)+' / '+wn.toFixed(0)+' degC, summer '+sd.toFixed(0)+' / '+sn.toFixed(0)+', a winter night in the shore\'s pool '+pool.toFixed(0)+' (inland '+open.toFixed(0)+')'};};
+ pool=A(x,1,Z,-1,3),wd=A(800,15,600,-1,15),wn=A(800,15,600,-1,3),sd=A(800,15,600,1,15),sn=A(800,15,600,1,3),spool=A(x,1,Z,1,3);
+ return{ok:wn<-8&&wd>3&&sd>20&&sn>3&&pool<wn-3&&spool<sn,detail:'the open floor: winter '+wd.toFixed(0)+' / '+wn.toFixed(0)+' degC, summer '+sd.toFixed(0)+' / '+sn.toFixed(0)+'; the shore\'s cold-air pool on a night: winter '+pool.toFixed(0)+', summer '+spool.toFixed(0)};};
 // the terraces (44s: GH_TER; 89w draws them): each tread's water at its level and over its own bed, each lower than the one above; up (m) lifts the
 // water for the negative control
 GHC.terr=up=>{const T=GH_TER,u=up||0,bad=[];for(let i=0;i<T.levels.length;i++){const s=i*(T.tl+T.riser)+T.tl/2,x=T.A[0]+(T.B[0]-T.A[0])*s/T.L,z=T.A[1]+(T.B[1]-T.A[1])*s/T.L;
