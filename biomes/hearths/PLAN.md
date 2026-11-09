@@ -822,7 +822,7 @@ pool the rising water's 55 degC.
 same host fragments where they agree (the rock, the massing, the build); a station's own fragments (its site, its dress, its
 views and checks) replace those by name (`station.json` `"base": "crystals"`). The cavern's drawing and its floor function
 move into core (`core/terrain/host/39e-core-cavern-draw.js`, `core/terrain/39d-core-cavern-floor.js`), since
-`biomes/nwbay-caves` draws the same way.
+every cave page draws the same way (nwbay's caverns station could take them).
 
 **Checks** (each with a negative): no speleothem in a reserved volume; every reserved volume open and its floor level **and
 above the water**; the water hot only near the feeders (KTHERM) and a `heat` hazard on every pool over 45 degC; gas on every

@@ -1,5 +1,5 @@
 // ================================================================= CORE — cavern: the floor under the eye, and the open air (KCAVERN.floorFn, openAt)  [G data]
-// Lifted 2026-11-09 from the Hearths' cave page (biomes/hearths, stations/crystals 49), which biomes/nwbay-caves needs as well: a cave page has no
+// Lifted 2026-11-09 from the Hearths' cave page (biomes/hearths, stations/crystals 49), for every cave page: a cave page has no
 // heightfield to stand on, so its camera, its BIO host and its views read the floor of the voids from the cavern's own sdf. Opt-in; needs
 // 39-core-cavern.js. No THREE, no DOM: plain maths, node-tested (test-cavern-floor.js). Axes: y up, metres.
 //

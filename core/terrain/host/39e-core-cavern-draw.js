@@ -1,5 +1,5 @@
 // ================================================================= CORE HOST — cavern: the chunks drawn (KCAVERN.drawRock)  [web]
-// Lifted 2026-11-09 from the Hearths' cave page (biomes/hearths, stations/crystals 84) for biomes/nwbay-caves: a built KCAVERN's chunks merged
+// Lifted 2026-11-09 from the Hearths' cave page (biomes/hearths, stations/crystals 84) for every cave page: a built KCAVERN's chunks merged
 // into one mesh per `tile` m square (a handful of draws, each culled by its box), with the page's own per-vertex weights (the masks its KGROUND
 // layers read) and the chunk's occlusion as the vertex colour. The page owns the material (its shader, its layers); this only makes geometry.
 //

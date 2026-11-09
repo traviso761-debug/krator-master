@@ -61,12 +61,12 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hearths/dist/hearths-crystals.html": {
-   "bytes": 1404257,
-   "sha256": "ba046c4daef072cad8dfc6701fee07967b04323820310b8c6ff7ba45e0ac440b"
+   "bytes": 1404235,
+   "sha256": "b963a8c9ac0d0fa88509944c6ae3bbb38e8a3551abebd2960acee66c587623e8"
   },
   "biomes/hearths/dist/hearths-hold.html": {
-   "bytes": 1404232,
-   "sha256": "29561b03c1132e1a059e29267c1dc1edb295c372e5d69fd13e9f0fefeebfcbc5"
+   "bytes": 1404210,
+   "sha256": "d2a04e0bbd543c8c820f630c81187a0903d90e5862c794ee9ce65e13b7b69370"
   },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
    "bytes": 5818133,
@@ -123,10 +123,6 @@
   "biomes/nsemiarid/dist/nsemiarid.html": {
    "bytes": 5683900,
    "sha256": "b90f84882767536838a62780c0f86d1a75cf226518aaf9f4ee0c934f27f0d860"
-  },
-  "biomes/nwbay-caves/dist/nwbay-caves-cenote.html": {
-   "bytes": 1288039,
-   "sha256": "397e124aa920915ebd6652f0bd7385389d21c9067ac4ef8bd52bf9456f85f3af"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 7967514,

@@ -80,10 +80,10 @@
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
     "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
-    "core/terrain/39d-core-cavern-floor.js": "d6abdcd0b7bf862237a7a2a722ce23e4df7ce549175dfb97377c67d861a3f0d2",
+    "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/47-core-therm.js": "909e3e77b25d648ac1511b847a7b7a5a629bfdeb4e6a90bf489de1a08a96359a",
-    "core/terrain/host/39e-core-cavern-draw.js": "4ef22021b20056d8af2404f9ceb426a237df728d800aed23812f90a2a59d9216",
+    "core/terrain/host/39e-core-cavern-draw.js": "f78779e717d386c236748329b58fc8587b33dfc24b718f3ea8899e3154f2156c",
     "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
@@ -99,10 +99,10 @@
     "tools/textures": "7e37dbe9b1a3c605bca4b92ea3378d577e3091fb2a562c9c04341a417cc5818c"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "ba046c4daef072cad8dfc6701fee07967b04323820310b8c6ff7ba45e0ac440b"
+    "biomes/hearths/dist/hearths-crystals.html": "b963a8c9ac0d0fa88509944c6ae3bbb38e8a3551abebd2960acee66c587623e8"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "ba046c4daef072cad8dfc6701fee07967b04323820310b8c6ff7ba45e0ac440b"
+    "biomes/hearths/dist/hearths-crystals.html": "b963a8c9ac0d0fa88509944c6ae3bbb38e8a3551abebd2960acee66c587623e8"
    }
   },
   "build.py --station hold": {
@@ -184,10 +184,10 @@
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
     "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
-    "core/terrain/39d-core-cavern-floor.js": "d6abdcd0b7bf862237a7a2a722ce23e4df7ce549175dfb97377c67d861a3f0d2",
+    "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/47-core-therm.js": "909e3e77b25d648ac1511b847a7b7a5a629bfdeb4e6a90bf489de1a08a96359a",
-    "core/terrain/host/39e-core-cavern-draw.js": "4ef22021b20056d8af2404f9ceb426a237df728d800aed23812f90a2a59d9216",
+    "core/terrain/host/39e-core-cavern-draw.js": "f78779e717d386c236748329b58fc8587b33dfc24b718f3ea8899e3154f2156c",
     "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
@@ -204,10 +204,10 @@
     "tools/textures": "7e37dbe9b1a3c605bca4b92ea3378d577e3091fb2a562c9c04341a417cc5818c"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-hold.html": "29561b03c1132e1a059e29267c1dc1edb295c372e5d69fd13e9f0fefeebfcbc5"
+    "biomes/hearths/dist/hearths-hold.html": "d2a04e0bbd543c8c820f630c81187a0903d90e5862c794ee9ce65e13b7b69370"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-hold.html": "29561b03c1132e1a059e29267c1dc1edb295c372e5d69fd13e9f0fefeebfcbc5"
+    "biomes/hearths/dist/hearths-hold.html": "d2a04e0bbd543c8c820f630c81187a0903d90e5862c794ee9ce65e13b7b69370"
    }
   }
  }
