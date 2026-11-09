@@ -13,13 +13,21 @@
 // Deterministic: the ground is a function of x and z (the kit's fbm with fixed seeds, KBASIN's own hashes); no draws.
 const DB_DRY=true;
 const dbSm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};   // smoothstep (the kit has none)
-const DB={full:900,sill:-200,ring:30,remnant:-981,drainZ:2800,wind:[1,.3]};   // levels in this frame: m over the full level
-// the bed's marks: one dam lake whose old basin is everything bedward of the old shore (KBASIN, core/terrain)
-const DB_BASIN=KBASIN.create({seed:903,wind:DB.wind,lakes:[{name:'the west lake',kind:'dam',level:0,sill:DB.sill,ring:DB.ring,remnant:DB.remnant,member:()=>1}]});
+// THE SITE (2026-11-08, stations 2 and 3): a station's target may define DB_SITE in a fragment that sorts before this one
+// (targets/<station>/79-db-site.js): its levels (over this frame's y = 0, the old full level), its lake's name, the ground's
+// shape (kind 'shore': this file's old shore, station 1; 'notch': the breach's approach, station 2; a station's own
+// base(x, z, zz) for the land above the line, station 3), its member (where the basin's marks lie) and the window its wrecks
+// and debris are laid in. Without one, station 1's numbers, as before.
+const DB_SITE_DEF=typeof DB_SITE!=='undefined'?DB_SITE:{};
+const DB=Object.assign({full:900,sill:-200,ring:30,remnant:-981,drainZ:2800,wind:[1,.3],lake:'the west lake',kind:'shore'},DB_SITE_DEF.levels||{});   // levels in this frame: m over the full level
+// the bed's marks: one dam lake whose old basin is everything bedward of the old shore (KBASIN, core/terrain); a site may
+// keep them off ground the lake never shaped (the notch's scoured channel)
+const DB_BASIN=KBASIN.create({seed:DB_SITE_DEF.seed==null?903:DB_SITE_DEF.seed,wind:DB.wind,lakes:[{name:DB.lake,kind:'dam',level:0,sill:DB.sill,ring:DB.ring,remnant:DB.remnant,member:DB_SITE_DEF.member||(()=>1)}]});
 // the old shore wanders along x (the port's own wander, so the kit's quay line sits on it)
 function dbShore(x){return -10+60*(fbm(x/1400+3.7,1.3,.7,3)-.5)+10*(fbm(x/170,4.1,2.2,2)-.5);}
-// the ground before the basin's marks: zz metres bedward of the old shore
-function dbBase(x,z){const zz=z-dbShore(x);
+// the ground before the basin's marks: zz metres bedward of the old shore (a site's own shape wins: DB_SITE.base)
+function dbBase(x,z){if(DB_SITE_DEF.base)return DB_SITE_DEF.base(x,z);return dbShoreBase(x,z);}
+function dbShoreBase(x,z){const zz=z-dbShore(x);
  if(zz<0){const t=-zz;   // the land: a gentle rise, the notch's scarp a stone's throw behind the beach, hills inland
   return 1.2*dbSm(0,12,t)+7*dbSm(18,46,t)+Math.max(0,t-46)*.02+(fbm(x/420,z/420,1.9,3)-.5)*18*dbSm(60,320,t)+(fbm(x/60,z/60,7.7,2)-.5)*1.4*dbSm(10,60,t);}
  // the bed: the fast drain falls to the sill over DB.drainZ (steeper past the ring), then the recession, gentler
@@ -55,4 +63,5 @@ function dbGroundTint(x,z,h,slope,c,paint){if(paint)return c;   // a stamp's own
   b=mix3(b,DB_GC.ring,s.ring*(.35+.5*streak)*(.6+.4*patch)*(1-foot*.7));
   col=mix3(col,b,s.bed);}
  if(slope>.6){const t=clamp((slope-.6)*2.2,0,1)*(1-s.ring*.6);col=mix3(col,DB_GC.rock,t);}
+ if(DB_SITE_DEF.tint)col=DB_SITE_DEF.tint(x,z,h,slope,col,s,n,n2,mix3);   /* a station's own palette over the bed's (the east bed's forest soil) */
  const k=.93+n2*.16;return col.map(v=>Math.pow(clamp(v*k,0,1),1.9));}
