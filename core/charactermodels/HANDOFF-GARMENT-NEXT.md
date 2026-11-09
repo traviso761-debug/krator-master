@@ -1,85 +1,87 @@
-# Handoff: garments, for the next session (2026-11-02)
+# Handoff: garments, for the next session (2026-11-08)
 
-For a fresh session (Gemini) taking over the garment clipping work. Read this first, then `HANDOFF-GARMENT-DEFECTS.md`
-rounds 4 and 3 (the history, with the reasons each rule exists), then the `pushOut` and `clothStep` comments in
-`src/50-figure.js`. The owner judges by eye on textured shots, not by counts: a fix is done when the shots look right.
+For a session (Claude, Gemini or ChatGPT) taking over the garment work. Read this, then `REVIEW-GARMENTS-2026-11-06.md`
+(the audit of the garment session, the reconciled plan in its section 5, and sections 6 on: everything that landed
+since, with the measurements), then `HANDOFF-GARMENT-DEFECTS.md` rounds 3 and 4 for the history of the hull and the
+chains. The owner judges by eye on textured shots, not by counts: a fix is done when the shots look right.
 
 ## Where the work is
 
-- **Worktree** `C:\Users\travi\Documents\krator-garments`, branch `claude/garment-defects` (branched from local
-  `claude/biome-rebuild`), not pushed. `b0477373b` is round 3 (bone fix, slits out); `644bea198` is rounds 4 and 5
-  (`src/50-figure.js`, `tools/garment_audit.py`, `tools/shots.py`, `tools/make_mpfb.py`, the Godot twin in
-  `godot/krator/character/`, `tests/garment-audit.json`, the docs, this handoff). `pieces/mpfb_male|female/mindfront_kimono.glb`
-  were reweighted in place (gitignored, so only in this worktree; originals in `C:\Users\travi\Tools\rb\kimono-before`; the
-  built `dist/pieces/*/mindfront_kimono.txt` carry them). Do not push, merge or publish without the owner's word.
-- **The live labs are not this branch.** Cosmetic Lab https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw (v75) and Animation
-  Lab https://claude.ai/artifact/WStXx16aNHT63stCoz331x (v55) carry the owner's posture work (review round 3), which this
-  branch lacks, so poses differ from `dist/`. They are updated by patching the diff of `src/50-figure.js` onto them, never
-  by publishing `dist/`. Copies are in `.garment-live/` (untracked; do not commit): `base/` is v74/v54 (before round 4),
-  `patched/` is base plus the current working source. `python .garment-live/scripts/patchwork.py` re-patches from the working
-  `src/50-figure.js` and copies `patched/cosmetic-live.html` to `dist/`, so `tools/shots.py ... --page dist/cosmetic-live.html`
-  shows what the owner sees. v75/v55 have round 4; round 5 (below) is not published.
+- **Worktree** `C:\Users\travi\Documents\krator-garments`, branch `claude/garment-defects`, not pushed. The commits since
+  the last handoff (`23a83693d`, round 5), oldest first:
+  - `dd244ac22` the checkpoint of Gemini's session (the Python garment pipeline `tools/garments/`, the batch outfits,
+    the lab's comments and filters), committed as it stood;
+  - `32b26f983` Tzintzun's six Meshy weapons as props (`tools/import_props.py`), a prop per hand in the Cosmetic Lab;
+  - `50de0f86b` Phase 0: `make_mpfb.write_kit` the one kit writer, `made_by` on every entry, `tests/check_kit.py` and
+    `tools/check_twin.py` in `build.py`, the UI inventory in `verify.py`, the scratch builders in
+    `tools/garments/cultures/`, ten legacy chain anchors rebound, the Godot push shader brought level;
+  - `d4db43dd0` the capsules hand over to the hull in a stride again, the hull's fourth point back at the ankle;
+  - `5c444d91f` no breeze on the page's clock, `fig.clothReset()` before every shot, a hash of the chains in every
+    audit record;
+  - `45ed84df5` `posedRests` measures with the hips at their rest: a shot is the same on every page load;
+  - `9573eff86` the hull's points reach 6 cm round their bearing: the run's shin stays inside the trade skirt;
+  - `e69da53d6` the merge of `origin/ccr-fa08b6b3-8w8hxm` (the therian heads and tails, the isle economy, the Menagerie).
+- **The live labs are not this branch** (Cosmetic Lab v75, Animation Lab v55): they carry the owner's posture work and
+  are updated by patching the diff of `src/50-figure.js` onto them, never by publishing `dist/`. Nothing since round 4
+  is on them. `.garment-live/` (untracked) has the copies and `patchwork.py`.
+- The pieces (`pieces/`) are gitignored. This checkout lacks the therian heads' and tails' pieces from the merge and the
+  nonhuman heads (`build-manifest.json` keeps their hashes, so `check_kit.py` allows them); the ten rebound anchors and
+  the kimono's reweighting live only here.
 
 ## How it works now (both runtimes)
 
-1. **Chains**: Verlet chains drive cloth bones (`clothStep`, `collide`, `layered`); feet are colliders too (`footEnds`).
-2. **Capsule push** in the vertex shader (`pushOut`, `kc_push`): vertices out of the leg and arm capsules; the legs' part
-   fades out as the stride grows (`1 - kcM`).
-3. **The hull** (round 4): twelve leg points (`kcE`) set how far out from the body's vertical axis the cloth must reach at
-   their bearing (rows below hang from them, rows above ramp to the waist). Smooth cube-root maximum with the rest radius
-   going in, so tiers keep their order. Every loose layer uses the lowest hem worn (`kcHm`); points within 12 cm of the
-   ground are ignored; a top over a skirt stands 6 cm further.
-4. **Chainless loose pieces** (the Kimono, `mindfront_kimono`, the man's default outfit): skinned to the hips alone
-   (`make_mpfb.py skirt_weights(rigid=True)`), hull at rest too (`kcEO`), and below the crotch turned by `kcTl`.
-5. **Trousers under a long top** are drawn in toward the legs (`kcS`), boots likewise (`kcSF`, wider, so boots stay outside).
+As the last handoff said (chains, the capsule push, the hull, chainless pieces on the hips, the squeeze), with:
+1. The legs' capsules fade out as the stride grows and the hull takes over (`1 - max(kcM, ceo)`); the hull's six points
+   a leg sit at mid-thigh, knee, mid-shin, ankle, heel, toes, and each reaches 6 cm round its bearing.
+2. The chains' posed rest is measured with the hips at their rest and the morph alone (`posedRests`).
+3. `fig.clothReset()`: the chains at their rigid rest, the clock and the step accumulator at zero. `shots.py` and
+   `garment_audit.py` call it before every shot; a shot is then the same on every page load, and the audit records
+   carry a hash of the chains (`cloth`) so two sweeps can be told apart in their records.
+4. Every change to the push goes into both `src/50-figure.js` and `kchar_push.gdshaderinc` / `kchar_figure.gd`;
+   `tools/check_twin.py` (in `build.py`) holds the two copies' literals to `tests/twin-baseline.json`.
 
-## Round 5 (uncommitted, unpublished): the owner's last report
+## The audit, and how to use it
 
-- *"kimono seems to turn too much with body and underlying legs clip thru during idle pose"*; the owner's screenshot was
-  from behind in a wide-stance idle, the back hem lifted and swung aside, both shins and boots out. Cause: the kimono hangs
-  rigid from the hips, and `kcTl` only undid a tilt read from a vector (hips joint to between the hip joints), missing the
-  pelvis's roll and twist. Now: standing, `kcTl` undoes the hips' whole rotation from rest and re-turns to where the feet
-  face, capped at 0.35 rad (`TILT_MAX`); in a stride it eases back to the vector tilt, gated by how far apart the two
-  thighs are fore and aft (not `kcM`: a wide stance's thighs set that). Full undo in a run folded the cloth over itself or
-  drew the front off the leading knee. The idle (`idle` at 2.5 s) is covered in shots; one run frame has a thin sliver.
-- *"note also how the boots seem to clip thru the overlying pants"*: the squeeze reach was 15 cm, so a harem pants' bulge
-  was left while the boot top was drawn in to its own (wider) radius. Reach is now 30 cm (`sb < 0.3` / `best < 0.3`). **Not
-  confirmed by a shot**: the frame the owner saw is not reproduced on the current build (`01_kimono_side_in_a_run.jpg` shows legs covered).
-- Not swept, not verified by `verify.py`, and Godot gives its one known failure (the giant on the ladder) with no shader errors.
+- `tools/garment_audit.py <out> [--match s] [--bodies b] --page dist/cosmetic-lab.html` with `AUDIT_GL=d3d11`; `--check`
+  against `tests/garment-audit.json` (66 outfits, round 4's tools). One outfit takes a minute on the GPU, the 66 about
+  ten; the records are repeatable now, so a one-line variant is measured by packing it into a copy of the built page
+  (the fragment source is in the page verbatim) and running the outfit it concerns. Read "under" and "inside" as the
+  gated classes; "hole" is not gated.
+- `tools/cloth_probe.py dist/cosmetic-lab.html [base,no-wind,rigid,skirt-only]`: verify.py's court-skirt check taken
+  apart, per chain, against the thigh's median and tapered radius.
+- `verify.py dist/cosmetic-lab.html --assert`: the page's checks, the UI inventory (`tests/ui-inventory.json`,
+  `--ui-baseline` rewrites it), the court skirt's chains against the tapered thigh.
+- Godot: `C:\Users\travi\Downloads\Godot_v4.7.2-stable_win64_console.exe --path godot --gpu-index 1 --script
+  res://tests/character/kchar_test.gd` (not headless); its one known failure is the giant on the ladder.
 
-## What is broken now (shots in `handoff-shots/`, current working build, live page copy)
+## Where Phase 1 stands
 
-`00_sheet.jpg` has all twelve. Each name says the fault; numbers match the files.
-- **02** Kimono in a run: a thin sliver of trousers at the side seam.
-- **03** Kimono: its pale inner front panel shows through the outer one (two panels of one mesh, z-order).
-- **04** Chichani woman (`voth_f_noble_gown` over `voth_f_noble_skirt`): flecks of the crimson underskirt through the purple at the back.
-- **05** Izani court robe (`iziz_m_noble_robe`): the teal robe through the orange cape at the back. Its rest shape is not cleanly outside the robe.
-- **06** Republic festive coat over a skirt: dark skirt patches through the coat, and coats stand wide in a stride.
-- **07** Tall body (`height` 0.75, `weight` -0.8) in a crouch: layers through each other; tall crouch is the one clip that got worse in round 4.
-- **08** Yuni grand boubou: the slipper at the back in a run, near the hem.
-- **09** Grand boubou: white patches at the shoulders (a layer under the boubou; the hull does not reach that high).
-- **10** Order novice skirt: a small tear in a run.
-- **11** Long robes bell out wide in a walk; the price of the hull. The owner may find it too much.
-- **12** Chichani man's court cape (`voth_m_noble_robe_cloak`): its diamond border smears; not yet worked on.
+Measured on page copies against the whole baseline (the review, section 6, has the numbers as they land):
+- the trouser squeeze extended to the seat's capsules (issue 1, shader);
+- the chains' heading eased from the hips' to the feet's below the knee (issue 8.1, `rigidTargets`);
+- an open part's two lips held to 1.2 x their rest distance (issue 12).
+The session's `apply_p1.py seat|heading|lip` applies a winner to both runtimes; the audit, the verifier and Godot's
+test run after, then one commit per change.
 
-## Tools
+## Left after that
 
-- `python tools/shots.py <outdir> <spec.json> --page dist/<page>.html`: spec `[{name, body, armour, clip, t, yaw, pitch, dist, at, morph?}]`.
-  **Keep `t` inside the clip's length.** Round 4 fixed a bug where cloth and pose came from different moments; every count
-  and shot before it is suspect.
-- `tools/garment_audit.py`: flat-colour fault counts over all 66 outfits (`--shards 3 --shard i`, `AUDIT_GL=d3d11`,
-  `--morph '{"height":1}'`, `--page`); `--report`, `--check` against `tests/garment-audit.json`. It takes the GPU lock
-  `C:\Users\travi\AppData\Local\Temp\claude\krator-verify-gpu.lock` (a directory; mkdir to take, remove to release; other
-  sessions use it). `.garment-live/scripts/cmpf.py <dir> <sweepA> <sweepB>` compares two sweeps by clip and class.
-- `python verify.py dist/cosmetic-lab.html --assert`; the Animation Lab page times out there (it waits on a hook it has not got): load it instead.
-- Godot: `python godot/tools/sync_core.py`, then `C:\Users\travi\Downloads\Godot_v4.7.2-stable_win64_console.exe --path godot --gpu-index 1 --script res://tests/character/kchar_test.gd` (not headless: headless does not compile shaders). Godot's picture has never been compared with the page.
-- Blender through MCP, as Claude has it: `HANDOFF-BLENDER-MCP.md`.
-- Library pieces cannot be re-exported with `tools/rebuild.sh --only` (`merged 0 items`); a whole rebuild takes about 75 minutes with Blender at `C:\Users\travi\Tools\blender-4.5`.
+- The thirteen vendored copies of core functions in `tools/garments/cultures/` (strip them with a before/after sheet
+  of every outfit they build: it rebuilds half the kit).
+- `Part.role` on every part and the rules dispatching on it, not on names (the review, section 3, point 6).
+- Phase 2 (belts and medallions, one cloth grid per garment, the hide margin by standoff, trousers from body slices,
+  the painted strips in metres, sleeves, hats, hair tails on chains).
+- The giant's four-armed coat's seven dead chains (`tests/kit-known-bad.json`): a Blender rebuild with the split
+  before the chains.
+- The no-clip rest shot keeps chain state between shots (`update` returns before the cloth pass without a clip); its
+  pixels are the rigid rest either way.
 
 ## Rules that bit
 
-- Every change to the push goes into both `src/50-figure.js` and `kchar_push.gdshaderinc` / `kchar_figure.gd`.
+- Every change to the push goes into both runtimes; `check_twin.py` fails the build when the literals drift.
 - Fragments pack many statements a line: no trailing `//` comments inside shader strings.
-- `make_mpfb.py` writes CRLF kit.json on Windows: normalise before committing.
-- Sweep both height ends and shoot before trusting a rule; a partial sweep looks better than a whole one.
+- A dump rounded to a micron hides an ulp bug: dump full precision when two runs disagree.
+- Only `make_mpfb.write_kit` writes a kit; `tools/garments` entries are `made_by: garments` and the Blender tools keep
+  them unless `--force-replace` names them.
+- The Bash tool mangles backslashes in heredocs: write a patch script to a file and run it.
+- Sweep both bodies and both height ends before trusting a rule; a partial sweep looks better than a whole one.
 - The owner prefers PowerShell for commands given to them.
