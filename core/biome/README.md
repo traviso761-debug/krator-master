@@ -543,14 +543,16 @@ kapok) `season:{drop:.9,colour:0x9a7040,k:.5}`, the bolster `season:{colour:0xd8
 ## Fire: `KFIRE` (`38-core-fire.js`; hyperjungle PLAN-LANDS.md section 11, H3; opt-in)
 
 crater-drylands' fire history (`CRATERDRY.fireHistory`, `fireRun`, `ageAt`, `frontAt`: `biomes/crater-drylands/src/52-biome-craterdry-fire.js`)
-lifted into core for every savannah's burn mosaic (the cycad flush and the ember spikes key on burn age). `[G data]`: no BIO, THREE or
+lifted into core for every savannah's burn mosaic; since 2026-11-09 that fragment is an adapter onto KFIRE, and its original is frozen as
+`ref/craterdry-fire-52.js.txt`, the test's reference (the cycad flush and the ember spikes key on burn age). `[G data]`: no BIO, THREE or
 DOM; the host hands it its ground (`height(x,z)`) and its burnability (`burn(x,z)`). The API is in the fragment's header.
 
 **crater-drylands' output must match KFIRE's.** The spread, the fuel curve, the ignition search, the live fire and the lookups are the
 kit's arithmetic, operation for operation: from the same ground, burnability and fires, `KFIRE.history` gives the kit's `last`, `id`,
 `front`, `base` and `H` grids bit for bit, and `KFIRE.run` the kit's `arrive` and `order`. `node core/biome/test-fire.js` proves it
-against the kit's own function, loaded in place (its negatives: a reversed wind and one fire 30% larger are seen). A change to either
-side that breaks the match fails that test; change both, or neither.
+against the kit's original function (the frozen `ref/craterdry-fire-52.js.txt`; its negatives: a reversed wind and one fire 30% larger
+are seen), and proves the kit's adapter (its `src/52` now) gives that reference's grids, lookups and live fire. A change to KFIRE that
+breaks the match fails that test. The reference is never edited: it is the arithmetic KFIRE keeps.
 
 Two inputs differ from the kit on purpose, and a host chooses them:
 
@@ -571,9 +573,10 @@ const FIRE=KFIRE.history({R:TERR.R,cell:20,seed:520031,wind:FIRE_WIND,fires:FIRE
 // then KFIRE.ageAt(x,z) / FIRE.ageAt, KFIRE.stages(age), FIRE.frontAt, KFIRE.run(FIRE,{x,z}) for a live fire
 ```
 
-**crater-drylands, at its rebuild:** to keep its page, pass the kit's own inputs: `burn` from its formula with its BIO `fbm` patch,
-`warp` its BIO `fbm` warp, and its fires as it lit them (`old:0` and the list; `test-fire.js` builds exactly these). To move to the
-portable defaults (what Godot can reproduce), drop those three and the page changes once: a rebuild with a screenshot set.
+**crater-drylands, at its rebuild (done, pair 12, 2026-11-09):** its `src/52` passes the kit's own inputs, so its page kept its fires:
+`burn` from its formula with its BIO `fbm` patch (`CRATERDRY.firePatch`), `warp` its BIO `fbm` warp (`CRATERDRY.fireWarp`), and its
+fires as it lit them (`old:0` and the list). To move to the portable defaults (what Godot can reproduce), drop those three and the page
+changes once: a rebuild with a screenshot set.
 
 ### Godot
 
