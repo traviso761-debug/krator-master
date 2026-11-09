@@ -523,4 +523,16 @@ gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
 m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
 check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
       bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
+# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-09): Godshearth's vent records (biomes/godshearth/PLAN.md section 8, model amendment 1)
+gh_v = [v for v in D['vents'] if v.get('region') == 'rmw4wou2y1hhc']
+check('Godshearth has its six vent records, kinds spring, geyser and fumarole (%d: %s)' % (len(gh_v), sorted({v.get('kind') for v in gh_v})),
+      len(gh_v) == 6 and {v.get('kind') for v in gh_v} == {'spring', 'geyser', 'fumarole'})
+gh_bad = [v['name'] for v in gh_v if not all(gh_m[int(round(p[1])), int(round(p[0]))] for p in (v.get('line') or [v['px']]))]
+check('every Godshearth vent (and every point of its line) inside the caldera\'s polygon%s' % (': ' + ', '.join(gh_bad) if gh_bad else ''), not gh_bad)
+gh_fl = [(v['name'], v['floor'], float(E[int(round(v['px'][1])), int(round(v['px'][0]))])) for v in gh_v]
+check('every Godshearth vent\'s floor is the ground under it, within 60 m (%s)' % ', '.join('%.0f/%.0f' % (f, e) for _, f, e in gh_fl),
+      all(abs(f - e) <= 60 for _, f, e in gh_fl))
+check('every Godshearth vent carries T (60-100 C) and reach_m', all(60 <= v.get('T', 0) <= 100 and v.get('reach_m', 0) > 0 for v in gh_v))
+v_src = open(os.path.join(TOOL, 'model', 'src', '30-vents.js'), encoding='utf-8').read()
+check('the model draws fumaroles and springs as steam (30-vents.js)', "v.kind==='fumarole'" in v_src and "v.kind==='spring'" in v_src)
 print('%d checks passed' % ok)

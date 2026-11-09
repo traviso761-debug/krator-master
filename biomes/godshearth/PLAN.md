@@ -338,12 +338,12 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 1. **Geothermal surfaces:** mud pots, the fumarole kind (steam and run-off), sinter and mat decals. Owed in
    `core/water/README.md` ("Not here (yet)"). Firebliss, Mid Basin, twins, greatchasm and seouterwall want them too.
 2. **Hazard kinds:** a crust that breaks underfoot; gas that pools at night and in still air (a `cycle` bound to `core/clock`).
-3. **Cold-air and katabatic wind** in `core/atmos`: the walls' night drainage and the steam banks on the floor.
+3. **Cold-air and katabatic wind** in `core/atmos` (**the wind built**: `core/atmos/fx/89-atmos-fx-katabatic.js`, 2026-11-09; the cold-air pools are station 1's KHAZ temperature): the walls' night drainage and the steam banks on the floor.
 
 **Kit-side, not core:** the caldera dress in `biomes/hearths` (`HEARTH.DRESS`), and its scale.
 
 **Model amendments** (the scale model, the owner's to authorize):
-1. **Vent records** in `DATA.vents` for the caldera's vent lines (the lake's bed, the grove's line, the spillway's head). The
+1. **Vent records** (**applied**: scale model 5.1 edit 2, `tools/scale-model/edit_512.py`, the owner 2026-11-09) in `DATA.vents` for the caldera's vent lines (the lake's bed, the grove's line, the spillway's head). The
    Hearths' sites come from `DATA.vents`, and `KTHERM` bakes from them. Godshearth has none.
 2. **An outlet river** from the hot lake down the spillway. With 750-925 mm of rain on 8,600 km², the basin cannot be closed and
    dry. The spillway would join Rīfar al-Bihār or Gūlī al-Salsabīl below the tail (a hydro pass; `test_smodel.py`'s checks).

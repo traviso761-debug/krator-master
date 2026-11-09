@@ -24,6 +24,7 @@
  },
  "fx": [
   "89-atmos-fx-smokegroups.js",
-  "89-atmos-fx-snowcover.js"
+  "89-atmos-fx-snowcover.js",
+  "89-atmos-fx-katabatic.js"
  ]
 }

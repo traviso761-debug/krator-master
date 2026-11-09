@@ -4,25 +4,37 @@ Open items (`- [ ]`) are read by `build.py`'s closing line. The plan's open ques
 
 ## Station 1, the Hot Lake (`stations/prismbasin`, `dist/godshearth.html`; 2026-11-09)
 
-- [ ] **No vent records on the model** (PLAN.md section 8, model amendment 1: the owner's to authorize). The vent line (`47b`) and the geyser field's
-      vents are the page's own, ideal type. When the model's vents exist, `47b`'s `GH_VENTS` and the field's centre should come from `DATA.vents`, and
-      station 1 may move onto them (PLAN.md section 9, "The pinned stations").
 - [ ] **The rim dress stands in for the caldera dress** (PLAN.md section 4: 8-18 m stalks, 2-3 m fans; the Hearths kit's own work and the owner's to scale).
       The grove draws `HEARTH.layout` in the rim dress (4-11 m, 1.2-2 m fans).
 - [ ] **The Hearths' species are tagged for ET, Dsc and Dfc** (`biomes/hearths/src/50`); Godshearth's floor is Cwb/Dwb. The Hearths kit's records.
 - [ ] **The boil cup, the shade cap and the animals are not built** (the Hearths kit's next steps): the lake's warm margins carry none of the plan's boil
       cups, and no fin-mouse, fin-owl or hearth-stalker walks the grove.
-- [ ] **The hot lake's vents** (WATER.spring's thermal ramp at its bed) and the katabatic night wind (core/atmos, the shared amendment) are owed. The
-      lake is a plain still WATER.open; its steam banks (89x) thicken with the cold.
-- [ ] **The walls are out of sight.** The caldera's walls stand 40-90 km off; the far field reaches 14 km and the camera 16 km (the geyser field
-      stage's). A clear high basin would show them: a painted ring, or a far field past 14 km on the field stage, is a later pass.
-- [ ] **The meadow's turf is paint only.** The floor's frost-hardy turf is the ground's `grass` layer; the yareta cushions stand on it. The geyser kit's
-      ichu was tried and dropped: its library set (`st.ichu`) is pale straw (mean 211,204,190), white dots on this dark turf. A turf plant of its own,
-      Oidong's cushions and snow lotus on the benches and Xanadu's dry-country species up the spillway (PLAN.md section 4) are owed.
-- [ ] **No frost on the ground.** The night's cold is a KHAZ field (89x) and the snow lies off the warm ground in a snowfall (`?snow=1`), but no hoar
-      frost whitens the meadow on a clear night.
+
+- [ ] **The walls are a backdrop.** The ring (89y) is the model's heights at 2 km cells, so a wall is a few hundred metres of relief a cell: no gullies
+      or slump treads of its own (`KRELIEF` at 40-100 km would be lost in the haze), and its haze is the ring's own, not the scene's fog. It follows the
+      camera over the ground (a kilometre's walk moves a wall 50 km off by about a degree, not drawn).
+- [ ] **Turf and frost are one value each.** The turf (75b) is one plant (a sedge-and-grass sward); the frost is the snow cover's base, one value over
+      the page, so the shore's cold-air pools frost no sooner than the open floor (their air is 7 degC colder: 89x). Oidong's cushions and snow lotus on
+      the benches and Xanadu's dry-country species up the spillway (PLAN.md section 4) are owed.
+- [ ] **The model's artifact is not republished.** `tools/scale-model/edit_512.py` wrote the vent records into `model/data` (and `30-vents.js` draws
+      fumaroles and springs as steam); the published Krator Scale Model page is the owner's to republish (`tools/scale-model/README.md`).
+- [ ] **The model's test and edit 1 point at the retired little demo's regions** (`openworld/little-demo/source/regions.json`, now under `archive/`):
+      `tests/test_smodel.py` stops at its check 100 unless that path resolves (all 219 pass with it linked to the archive's copy, 2026-11-09).
 
 ## Done (2026-11-09)
+
+- **Vent records on the model** (scale model 5.1 edit 2, `tools/scale-model/edit_512.py`; the owner: "vent records can go on the model"): six
+  records in Godshearth (the lake's bed and shore vents, the shore geyser field, the shore vent line, station 2's grove line, the spillway's head);
+  the build reads them (`model_site.py` -> `GH_MODEL`), so the grove's line, the field's centre and the lake's vents are the model's.
+- **The lake's vents**: the shore vents 400 m out heat the water (KTHERM), tint it paler and greener (WATER.open's tint), steam, and scald (KHAZ heat);
+  the bed vents 6 km out stand as a steam column over the lake.
+- **The night wind** (core/atmos `fx/89-atmos-fx-katabatic.js`, new, `test-katabatic.js`): on a clear night the cold air drains to the lake, west,
+  strongest before dawn; by day the lake breeze blows back east; an overcast night barely drains. Every plume drifts with it.
+- **Turf**: the floor's frost turf (75b, Godshearth's own registry, the library's grass set tinted), on the meadow's ground.
+- **Frost**: hoar frost on a clear night under 1 degC (the snow cover's base), thickest before dawn, gone by mid-morning, the warm ground bare.
+- **The caldera's walls** (89y): the model's heights from 14 to 110 km as a ring at the edge of the camera's reach, true in elevation angle, coloured
+  by height (turf, scree, tibasalt with its orange bead horizons, ice over ~6.2 km) and hazed by distance; the far field past 5 km is the model's too.
+  The basin's haze thinned (fog .00007) so they show.
 
 - **The grove's weight.** The vent line's two western segments and a 100 m reach: 1,775 hearth trees, 3.7 M triangles (it was ~4,500 and 9.4 M);
   the scene 5.1 M (verify.py --assert, SwiftShader).

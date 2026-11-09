@@ -9,7 +9,8 @@ is this kit's). PLAN.md section 8 has the core adoption.
   biomes/geyser/src/*               the geyser kit (its species, layout, sinter, show, ground, sky, take)
   biomes/geyser/stations/field/*    the field stage: a geyser field on any ground, set by STATION_SITE (replaces the showcase's 45, 47, 85, 88, 89...)
   49m*                              the Hearths, read in place in their own registry (station.json "kin")
-  stations/<name>/*                 the station: its site (44s), the heat and the hearth field (87), the lake and the air (89w, 89x)
+  44r-host-model                    generated: the scale model round the site (model_site.py): its vent records and heights
+  stations/<name>/*                 the station: its site (44s), the heat and the hearth field (87), the lake and the air (89w, 89x), the walls (89y)
   core/*                            by path, as the geyser kit lists them, plus the station's "core" (KTHERM, the lean, the snow cover)
 
   python3 build.py                     dist/godshearth.html, station 1: the Hot Lake (stations/prismbasin)
@@ -53,7 +54,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); DIST=os.path.join(HERE,'dist')
-sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); sys.path.insert(0,HERE); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
 J=lambda *p:os.path.normpath(os.path.join(ROOT,*p))
 GEY=J('biomes','geyser'); SRC=os.path.join(GEY,'src')   # the geyser kit, read in place
@@ -130,6 +131,11 @@ _pjg=os.path.join(GEY,'tex','pack.json')
 with open(_pjg,encoding='utf-8') as _fh: _famg=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pjg) else []
 _stx=[f for f in _famg if f.startswith('st.') and f not in SJ.get('tex',[])]
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(GEY,'geyser',exclude=_stx,side=SIDE),khost.EDITS_JS:khost.edits_js(HERE,'godshearth-'+STATION)}
+# THE MODEL round the site (model_site.py, read at build time from tools/scale-model/model/data): the vent records (5.1 edit 2) in the page's metres and the
+# heights over +-112 km at 2 km cells, as GH_MODEL (44r: before the site, 44s, which reads them). The far field and the caldera's walls are the model's
+import model_site as _ms
+_px,_py=SJ['site']
+VIRTUAL['44r-host-model.js']='\n// the scale model round this station (model_site.py, build time)\nconst GH_MODEL='+_json.dumps(_ms.site(_px,_py),separators=(',',':'))+';\n'
 # THE NEIGHBOURS' KITS read in place (the geyser kit's lines): station.json "kin": {"<kit>": [[fragments], "<API>", [pack families kept]]}; each kit's
 # fragments slot after the host stage (45, 47) and before the geyser kit (50), in their own registry, closed by a one-line kitEnd
 NEIGH={k:tuple(v) for k,v in SJ.get('kin',{}).items()}

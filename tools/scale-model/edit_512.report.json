@@ -1,0 +1,119 @@
+{
+ "edit": "5.1 edit 2",
+ "date": "2026-11-09",
+ "vents_added": [
+  {
+   "px": [
+    839.0,
+    1394.0
+   ],
+   "floor": 3637.1,
+   "scale": 0.3,
+   "radius": 1.4,
+   "kind": "spring",
+   "name": "Godshearth: the hot lake's bed vents",
+   "region": "rmw4wou2y1hhc",
+   "T": 88,
+   "reach_m": 900
+  },
+  {
+   "px": [
+    841.62,
+    1393.78
+   ],
+   "floor": 3643.2,
+   "scale": 0.15,
+   "radius": 0.8,
+   "kind": "spring",
+   "name": "Godshearth: the hot lake's shore vents",
+   "region": "rmw4wou2y1hhc",
+   "T": 80,
+   "reach_m": 250
+  },
+  {
+   "px": [
+    842.02,
+    1394.06
+   ],
+   "floor": 3642.6,
+   "scale": 0.2,
+   "radius": 1.0,
+   "kind": "geyser",
+   "name": "Godshearth: the shore geyser field",
+   "region": "rmw4wou2y1hhc",
+   "T": 94,
+   "reach_m": 430
+  },
+  {
+   "px": [
+    842.34,
+    1393.77
+   ],
+   "floor": 3646.7,
+   "scale": 0.12,
+   "radius": 0.6,
+   "kind": "fumarole",
+   "name": "Godshearth: the shore vent line (station 1's hearth grove)",
+   "region": "rmw4wou2y1hhc",
+   "T": 92,
+   "reach_m": 100,
+   "line": [
+    [
+     842.19,
+     1393.62
+    ],
+    [
+     842.35,
+     1393.765
+    ],
+    [
+     842.48,
+     1393.925
+    ]
+   ]
+  },
+  {
+   "px": [
+    836.033,
+    1388.033
+   ],
+   "floor": 3739.7,
+   "scale": 0.15,
+   "radius": 0.7,
+   "kind": "fumarole",
+   "name": "Godshearth: the grove's vent line (station 2)",
+   "region": "rmw4wou2y1hhc",
+   "T": 92,
+   "reach_m": 140,
+   "line": [
+    [
+     835.4,
+     1387.4
+    ],
+    [
+     836.0,
+     1388.0
+    ],
+    [
+     836.7,
+     1388.7
+    ]
+   ]
+  },
+  {
+   "px": [
+    845.0,
+    1396.5
+   ],
+   "floor": 3619.0,
+   "scale": 0.12,
+   "radius": 0.6,
+   "kind": "fumarole",
+   "name": "Godshearth: the spillway's head",
+   "region": "rmw4wou2y1hhc",
+   "T": 90,
+   "reach_m": 120
+  }
+ ],
+ "vents_total": 107
+}

@@ -26,7 +26,9 @@ vent line (KTHERM) with the Hearths' grove along it (`HEARTH.layout`, rim dress)
 tallow, and rings of dead stalks round a dead spring. The fans open at night (`HEARTH.work`; try `#hour=22`). South of the field a spring's
 sinter mound steps down to the lake in eight rimstone pools (WATER.terraces); yareta cushions on the meadow's turf. The air is a KHAZ temperature
 field by season and hour (frost on winter nights, colder in the shore's cold-air pools), the lake steams with the cold, and lying snow (`?snow=1`)
-keeps off the warm ground.
+keeps off the warm ground. Its vents are the scale model's records (5.1 edit 2), read at build time with the model's heights round the site
+(`model_site.py` -> the generated `44r-host-model.js`): the far field past 5 km and the caldera's walls 14-110 km off (89y) are the model's. The
+night wind drains to the lake (core/atmos `fx/katabatic`), frost whitens the meadow on clear nights, and the lake's shore vents steam and scald.
 
 | Fragment | What |
 |---|---|
@@ -34,6 +36,8 @@ keeps off the warm ground.
 | `47b-host-heat.js` | KTHERM: the floor's soil (+7 degC) and the vent line, baked once; the fumaroles and their heat hazards |
 | `87-host-hearths.js` | the grove and the ghost rings (`HEARTH.layout`), the checks (`GHC`) |
 | `89w-host-water.js` | the hot lake (WATER.open, WATER.draw), the terraces (WATER.terraces, drawTerraces) |
-| `89x-host-air.js` | the air's temperature (KHAZ), the snow's bare mask, the steam groups (vents, lake), the engine's state each frame |
+| `75b-biome-godshearth-turf.js` | the floor's frost turf (`GHTURF`, its own registry) |
+| `89y-host-walls.js` | the caldera's walls: the model's heights 14-110 km off as a ring at the camera's reach |
+| `89x-host-air.js` | the air's temperature (KHAZ), the snow's bare mask, the frost, the night wind, the steam groups (vents, lake, its vents), the engine's state each frame |
 
 Stations 2-4 (the Grove, the North Wall, the Spillway: PLAN.md section 7) are not written.
