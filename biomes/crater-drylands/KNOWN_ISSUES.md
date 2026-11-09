@@ -41,6 +41,12 @@ random numbers, and a living far tree's blob drew none). `CRATERDRY.grow` and `m
 - [ ] **A core finding (korona's too):** `core/terrain/43-core-ground.js` reads the eye uniform three r128 leaves at 0 on a Lambert material;
       it should use `kEye` (KHOOK.EYE). This page redirects the name in its own header (`KG_EYE`, 84) until then.
 
+**CPU checks run here:** `tools/build.py` (syntax OK), `check_core_use`, `check_assembly`, `check_port`, `check_source`, `check_cells --ratchet`,
+`check_vendor`: nothing new for this kit (`check_stale`'s four over the baseline are other builds', the same on the untouched branch tip);
+`node core/biome/test-fire.js` passes. One headless load, software GL (`tools/harness.py smoke`, not the verify): the first caught the ground's
+shader failing to compile (`KHOOK.EYE`'s `#ifndef` spliced mid-line: fixed); the second loads with a clean error panel, 50 calls, 18.8 M
+triangles at the opening view (the budget's 18.5 M was measured before the far field: `showcase-triangle-budget` may want its number moved).
+
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
   beside the map, detail, two granites, carpet, fire map and the burn (for the live fire), plus the horizon: about 13 units, 14 with `?shadow=1`;
