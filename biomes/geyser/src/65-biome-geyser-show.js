@@ -27,7 +27,7 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
  const WOPT={THREE:T3,scene:null,uniforms:U,fog:scene.fog,wind:[wind[0],wind[1]],mats:new Map(),onMaterial:m=>SH.mats.push(m)},WORLD=650631;
  SH.springs=[];SH.pools=[];
  function disc(S,label){const D=WATER.drawSpring(S,WOPT);D.mesh.userData.inspectLabel=label;scene.add(D.mesh);st.springs++;BIO.tally(D.tris,0,1);return D.mesh;}
- R.springs.forEach(s=>{const S=WATER.spring({key:s.key,name:s.name,x:s.x,z:s.z,r:s.r,level:s.level,temp:s.temp,milky:s.milky,kind:s.kind});SH.springs.push(S);disc(S,s.name);BIO.register({name:s.name,spring:s.key,x:s.x,z:s.z,y:s.level-4,r:s.r*1.4,h:10,tags:{hazard:GEYSER.hazard.spring(s)}});});
+ R.springs.forEach(s=>{const S=WATER.spring(Object.assign({key:s.key,name:s.name,x:s.x,z:s.z,r:s.r,level:s.level,temp:s.temp,milky:s.milky,kind:s.kind},s.mineral!=null?{mineral:s.mineral}:{},s.tint!=null?{tint:s.tint}:{}));   /* a station's chemistry (corona's quilt): the spring's mineral ramp and tint */SH.springs.push(S);disc(S,s.name);BIO.register({name:s.name,spring:s.key,x:s.x,z:s.z,y:s.level-4,r:s.r*1.4,h:10,tags:{hazard:GEYSER.hazard.spring(s)}});});
  R.geysers.forEach(g=>{if(g.kind!=='cone'){const nm=g.name.replace(/ \(.*/,'')+"'s pool";SH.pools.push(disc(WATER.spring({key:g.key+':pool',name:nm,x:g.x,z:g.z,r:g.pool||2,level:g.level,temp:1,boil:1,steam:0}),nm));}});
  // ---------------------------------------------------------------- the run-off's water
  const RUN_MAT=mk({transparent:true,depthWrite:false,side:T3.DoubleSide,uniforms:{uT:U.uT,uSun:U.uSun,uSky:U.uSky,uLight:U.uLight},
