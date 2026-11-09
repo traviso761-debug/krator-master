@@ -95,6 +95,8 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `sky/fog` + `host/heightfog` (opt-in: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`) | `heightFog(o)`, `heightFogOn(mat)`, `heightFogScene(scene)`, `fogGLSL()`, `fogAt(ro, P, F)`, `fogLayer/fogPool/fogSlab` | height fog (2026-10-26, R1): the page's fog (its colour and density, which the sky and the weather drive) up to the ground under the eye and thinning above it, graded toward the sky's zenith colour up the ray and the sun's in a forward lobe; dawn mist pooling under a level; a broken cloud band at mid-height; the patches drifting on the wind and its gusts. Exact closed-form integrals (Quilez), ~20 ops a fragment. A level view at the reference height is FogExp2's own fog (`test-fog.js`) |
 | `host/hostbind` | `windUniforms(u)`, `windGLSL()` | the gust field for any shader (R8): `atmWindV`, `atmGustAmp`, `atmTime` (the shared uniforms) and `atmGust`, `atmWind`, `atmGustHere(xz)`, `atmWindHere(xz)` |
 | `host/skyhost` | `shaderHook(mat, key, fn)` | every core hook on a material's `onBeforeCompile` (cloudShade, heightFog, snowOn) goes through it: any number compose in any order, a page's own hook (set before or after) runs first, no hook can call itself, the program key carries each layer |
+| `fx/slopewind` (opt-in, [G data]: `core/atmos/fx/89-atmos-fx-slopewind.js`) | `slopeWind(o)` -> `W.windAt(x,z,hour)`, `coldAt(x,z,hour,y)`, `still(x,z,hour)`, `bake()`, `export()`, `attach(ATMOS,hourFn)`/`detach()`, `provide(KHAZ,base,hourFn)`; `slopeWindLoad(rec)` | the wind the ground makes (2026-11-09): katabatic downslope by night, anabatic upslope by day (weaker), gap winds along an axis reversing day and night, cold pools in hollows by night, all on one bake of the host's ground. `attach` adds it to `ATMOS.windAt` (CPU only) and `provide` takes the pools off KHAZ's `temperature`. `test-slopewind.js` |
+| `fx/ashplume` (opt-in, [G data]: `core/atmos/fx/89-atmos-fx-ashplume.js`) | `ashPlume(o)` -> `P.fog(x,y,z)`, `under(x,z)`, `shade(x,z,sun,y)`, `deposit(x,z)`, `sources(o)`, `aim(a)`, `update(t)`, `provide(KHAZ,o)`, `export()`; `ashPlumeLoad(rec)` | a volcanic plume as a weather source (2026-11-09): a Gaussian plume from each vent, the column leaning to an umbrella that drifts along an azimuth, a wind vector or `ATMOS.windAt`; the ash fall (airLoad's `ashAt`), the sun's shade, a deposit for a KGROUND mask and KFAR.sprites sources. `test-ashplume.js` |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
 `(sin ry, cos ry)`. A *bearing* is the angle from `+x` toward `+z`.
@@ -301,6 +303,49 @@ one); `ATMOS.deckDay(deck, o)` writes it into a `cloudDeck`'s `uY` each frame; `
 the cloud; `ATMOS.provideDeck(KHAZ, {level, base})` registers `visibility` (25 m deep in it, the page's own elsewhere), the field the
 deck gave none of. The deck's ground-clearance window is fixed when it is made: make it at `o.y` and keep `lap` and `burn` within about
 60 m. **Godot:** `deckLevel` is arithmetic on the clock; the deck's shader takes the level as a uniform, as here.
+
+## The wind the ground makes: katabatic, anabatic, gap wind and cold pools (`fx/89-atmos-fx-slopewind.js`, opt-in, 2026-11-09; `fx/test-slopewind.js`)
+
+`ATMOS.windAt` is one base vector times travelling gusts; walls and basins make their own wind. `ATMOS.slopeWind({ground, box, cell,
+katabatic, anabatic, gaps, pool})` bakes the host's ground once (heights, their gradient, and each node's hollow: how far it lies under
+the mean ground within `pool.reach`) and answers from the bake: `W.windAt(x, z, hour)` m/s runs down the fall line by night (4 m/s at a
+20 degree slope, the root of the slope's sine below it: Mahrt 1982) and up it by day (2.5 m/s), a gap's axis carries its own (10 m/s
+down by night, half that up by day, whole within `w/2`, nothing past `w`), `W.coldAt(x, z, hour, y)` is the cold a hollow pools by
+night (8 C at full, filling through the evening; Whiteman, "Mountain Meteorology"), `W.still(x, z, hour)` where the air lies still.
+Level ground has none. The magnitudes are the gentle valley's; the God-Bore's density winds are a kit's `max`.
+
+*Adopting it:*
+- List `fx/89-atmos-fx-slopewind.js` (station.json `"fx/89-atmos-fx-slopewind.js"`); it needs only the ATMOS object.
+- `const W = ATMOS.slopeWind({ground: terrainH, box: [x0, z0, x1, z1], cell: 20, katabatic: {max: 30, from: 18.5, lag: 2}, gaps: [{id:
+  'bellows', pts, w: 400, max: 25}], pool: {reach: 600, drop: 30, depth: 80}})` (seouterwall's God-Bore, twins' sink behind the moraine,
+  outlandgate's Bellows; `lag` holds the low ground back: hours per 1000 m under the bake's top).
+- `W.attach(ATMOS)` after `ATMOS.init` so the CPU readers of `windAt` (the dust lift's twin, seeds, a probe) feel it; the shaders' `atmWind`
+  does not (sway and dust sprites keep the base wind). `W.detach()` undoes it bit for bit.
+- With core/hazard: `W.provide(KHAZ, (x, y, z, t) => baseC, () => hour)` registers `temperature` = base minus the pool. The hazard
+  builder's night gas reads `W.still`.
+- **Godot:** `W.export()` (the options and the grids as plain arrays) loads with `ATMOS.slopeWindLoad`, which answers identically; the
+  twin is the same bilinear arithmetic.
+
+## A volcanic plume as a weather source (`fx/89-atmos-fx-ashplume.js`, opt-in, 2026-11-09; `fx/test-ashplume.js`)
+
+One record of vents and a wind gives every field a plume puts on a world. `ATMOS.ashPlume({vents: [{id, x, z, y, top, rate}], azimuth
+| wind: [vx, vz] | wind: 'atmos', speed, spread, reach, settle})`: the air is a Gaussian plume (the column rises from each vent, leaning
+downwind, and spreads at its top as an umbrella that thins as 1 / (sy sz) while it widens); `P.under(x, z)` is the ash-fall share at the
+ground, a lobe peaking `speed x top / settle` downwind (a taller column, or finer ash, lands farther), the plume's width across, nothing
+upwind and nothing past `reach`; `P.shade(x, z, sunDir, y)` the sun it blocks (the fog along the ray to the sun); `P.deposit(x, z)` a
+relative ash depth (the coarse fall round the vent and the lobe); `P.sources()` KFAR.sprites' sources along each centreline. The azimuth
+is the downwind bearing, clockwise from north (`[sin a, -cos a]`). Not core/water's river plume.
+
+*Adopting it:*
+- List `fx/89-atmos-fx-ashplume.js` (station.json `"fx/89-atmos-fx-ashplume.js"`), and core/rand for `P.sources`.
+- `const PL = ATMOS.ashPlume({vents: [{id: 'firebliss', x, z, y: terrainH(x, z), top: 3000, rate: 1}], azimuth: 2.4, reach: 25000})`;
+  `ATMOS.airLoad({ashAt: PL.under})` makes the ash in the air, the page's fog and core/hazard's `ash` (or, without airLoad,
+  `PL.provide(KHAZ, {mg: 120})`).
+- The ground: `PL.deposit` as a KGROUND mask; the sun: `PL.shade(x, z, sunDir)` where a probe or a bake wants the plume's shadow.
+- Far off: `KFAR.sprites({world, sources: PL.sources(), kind: 'cloud', shape})`, scaled by the eruption's k (a weak k shows the column).
+- `wind: 'atmos'` follows `ATMOS.windAt` at each vent; call `PL.update(t)` now and then (it re-derives the footprint). `PL.aim(a)` turns it.
+- **Godot:** `PL.export()` loads with `ATMOS.ashPlumeLoad` (the winds as resolved), identical answers; the twin is exp and smoothstep on a
+  dot product a vent.
 
 ## Tags
 
