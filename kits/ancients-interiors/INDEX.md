@@ -6,7 +6,7 @@ Ancients interiors: the Ancients' ship interiors backported from Noah's Regret, 
 
 Docs: `API.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancients-interiors.html`
+Built output (never open it; edit `src/` and rebuild): `dist/_before.html`, `dist/ancients-interiors.html`
 
 Build: `cd kits/ancients-interiors && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -25,4 +25,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `37c-ai-kit-works.js` | 16 | Ancients interiors: the works (factory, robotics (1) |
 | `40-ai-audit.js` | 2 | Ancients interiors: the audit (1) |
 | `70-ai-demo.js` | 9 | Demo sheet: the Ancients' ship interiors (1) |
+| `75-ai-doors.js` | 4 | Demo sheet: real doors and real glass (core/door (1) |
 | `99-tail.html` | <1 |  |

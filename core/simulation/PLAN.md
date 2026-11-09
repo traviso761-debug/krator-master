@@ -485,7 +485,7 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
   outside a `// anchor:` comment, populations reading `skyHour` directly,
   actors without faction/org/role/sched.
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
-  `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
+  `kits/post-apoc/sockets-example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
 - Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
   convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a

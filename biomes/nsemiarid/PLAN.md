@@ -141,7 +141,7 @@ Old shorelines ~1,630 km (west) and ~1,530 km (east).
   salt crusts and pans growing downward, mud cracks; yardangs (wind-cut ridges in the lake silt) aligned on the wind,
   lunette dunes on the pans' downwind shores; salt flats at the bottom, the golden poplar forests (section 7) on the
   remnant lakes' shores.
-- **Rusted docks:** the Ancient Port kit (`settlements/port`, its `CONTRACT.md`) lays its segments along a coastline;
+- **Rusted docks:** the Ancient Port kit (`kits/port`, its `CONTRACT.md`) lays its segments along a coastline;
   give it the full-pool contour as the coast and a derelict dress (no water, rust, missing deck plates, the port's
   salvage pass). The docks stand high on their piles over the falling slope; ferry ramps run down into dust; a
   lighthouse stands on a knoll that was an island.

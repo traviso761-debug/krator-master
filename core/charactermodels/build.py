@@ -24,6 +24,7 @@ import base64, gzip, hashlib, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
@@ -56,7 +57,7 @@ PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01
 
 
 def main():
-    if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
     data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'),
@@ -76,6 +77,7 @@ def main():
         t = read(os.path.join(SRC, f))
         inputs['src/' + f] = t.encode()
         js.append('/* src/%s */\n%s' % (f, t))
+    BSRC.report()   # --list-sources: every file read so far (the data, core/rand, src/) is what the page is made of; then exit
     # the pieces go beside the page as base64 text (the artifact host serves no binary type a GLB fits), fetched
     # when a record needs them: dist/pieces/<body>/<name>.txt
     if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built

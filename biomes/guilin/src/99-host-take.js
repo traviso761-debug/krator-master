@@ -45,7 +45,7 @@ const BUDGET={
  type:{'guilin/trees':'pass','guilin/cliffs':'pass','guilin/floor':'pass','host':'host'},
 };
 // edible plants the catalog has no piece for (named, not hidden: FRUIT.md)
-const FRUIT_NOT_DRAWN=['bamboo','osmanthus','pomelo','cliffoak','rice'];
+const FRUIT_NOT_DRAWN=['cliffoak','rice'];   // the pomelo, osmanthus flowers and bamboo shoots are the catalog's since 2026-11-03
 const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome){const k=M.name.replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;}});return n;};
 const SMALLK={spire:1,fin:1,balanced:1},isBlade=B=>!!SMALLK[B.kind]&&!B.tower;
 const HCHK={

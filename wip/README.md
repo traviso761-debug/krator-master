@@ -6,7 +6,7 @@ excluded) against the base commit named below. Resume with
 (base commits are pre-purge and no longer on the remote; apply with `git apply --3way` onto the current tree, paths remapped) `git checkout -b resume-X <base> && git apply voth/wip/<file>.patch`, then merge
 into the working branch (the patches use the pre-flatten paths, `voth/ancients/...` and `voth/port/...`;
 apply them at their base commit exactly as written and let the merge carry them to `kits/ancients/` and
-`settlements/port/`), rebuild, jscheck and verify before trusting any of it.
+`kits/port/`), rebuild, jscheck and verify before trusting any of it.
 
 | patch | work | base | state when stopped |
 |---|---|---|---|

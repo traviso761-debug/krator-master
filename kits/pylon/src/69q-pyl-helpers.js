@@ -31,21 +31,41 @@ function pynColumn(x,y,z,h,r,white,orange,bands){bands=bands||4;vB('vPlaster',x,
 // round ends) and the POINTED HEXAGON (a rectangle under a gable point, or pointed at both ends). Each is a slab on a
 // face: (x, z) on the face, ry its outward yaw, y the bottom of the outline, w x h the outline, `out` how far its
 // front stands proud of the face, d its depth (it runs back from its front by d). `kind` picks the material:
-// P render, C concrete, G dark glass, D a dark opening, R rust, L lit glass (rich, civic, the Ancients' amber). A round end is a disc 2 cm thinner than the slab, so
-// where the two overlap the slab's face wins cleanly and no faces share a plane.
-const PY_KIND={P:['vPlaster','pyDisc','vGablePl'],C:['pyConc','pyDiscC','pyGableC'],G:['pyPaneB','pyDiscG','pyGableG'],D:['vDarkB','pyDiscD','pyGableD'],W:['vWood','pyDiscW','pyGableW'],M:['vIron','pyDiscM','pyGableM'],R:['vRustB','pyDiscR','vGableP'],L:['vWinLit','pyDiscL','pyGableL']};
+// P render, C concrete, G glass, D the room's dim back (an unglazed opening), R rust, L lit glass (rich, civic, the Ancients'
+// amber), W timber, M steel. A round end is a disc 2 cm thinner than the slab, so where the two overlap the slab's face wins
+// cleanly and no faces share a plane.
+// Real glass (the owner, 2026-11-03: "make all windows ... actual windows that have transparency"; core/door's KGLASS): a
+// glazed kind (G, L) is the ROOM CARD (the D kind: the dim plaster back a window on a solid mass shows, 69e5's IZ_ROOMC) from
+// the slab's back to 14 mm short of its front, and the PANE in the front 12 mm; a round head's pane is a half disc over the
+// rectangle (pynEndK's roll), so no two panes lie over one another. The profiles stand proud of a face (or of the rims of a
+// pynFrame), so the card is what shows through the glass, never the wall behind it.
+const PY_KIND={P:['vPlaster','pyDisc','vGablePl'],C:['pyConc','pyDiscC','pyGableC'],G:['pyPaneB','pyDiscG','pyGableG','pyHalfG'],D:['pyRoomB','pyDiscD','pyGableD','pyHalfD'],W:['vWood','pyDiscW','pyGableW'],M:['vIron','pyDiscM','pyGableM'],R:['vRustB','pyDiscR','vGableP'],L:['vWinLit','pyDiscL','pyGableL','pyHalfL']};
+const PY_GLAZED={G:1,L:1};
 function pynSlab(item,x,yc,z,ry,w,h,out,d,c){const f=loc(x,z,0,out-d/2,ry);vBq(item,f[0],yc,f[1],w,h,d,vQ(ry,0,0),c);}
 function pynEnd(item,x,yc,z,ry,r,out,d,c){const f=loc(x,z,0,out-d/2,ry);kput(item,[f[0],yc,f[1]],vQ(ry,0,0),[r,r,Math.max(.02,d-.02)],c||null);}
-function pynTomb(x,y,z,ry,w,h,out,d,kind,c){const K=PY_KIND[kind||'P'],r=w/2,hb=Math.max(.05,h-r);
- pynSlab(K[0],x,y+hb/2,z,ry,w,hb,out,d,c);pynEnd(K[1],x,y+hb,z,ry,r,out,d,c);}
-function pynStadium(x,y,z,ry,w,h,out,d,kind,c){const K=PY_KIND[kind||'P'],r=Math.min(w,h)/2;
- if(h>=w){const hb=h-w;if(hb>.02)pynSlab(K[0],x,y+r+hb/2,z,ry,w,hb,out,d,c);pynEnd(K[1],x,y+r,z,ry,r,out,d,c);pynEnd(K[1],x,y+h-r,z,ry,r,out,d,c);}
- else{const wb=w-h;pynSlab(K[0],x,y+r,z,ry,wb,h,out,d,c);for(const s of[-1,1]){const p=loc(x,z,s*wb/2,0,ry);pynEnd(K[1],p[0],y+r,p[1],ry,r,out,d,c);}}}
+// a profile's rectangle, round end and point in a kind: glazed, the card behind the pane (above); else the kind's slab as before
+function pynSlabK(kind,x,yc,z,ry,w,h,out,d,c){const K=PY_KIND[kind];if(!PY_GLAZED[kind]){pynSlab(K[0],x,yc,z,ry,w,h,out,d,c);return;}
+ pynSlab('pyRoomB',x,yc,z,ry,w,h,out-.014,Math.max(.01,d-.014),null);pynSlab(K[0],x,yc,z,ry,w,h,out,.012,c);}
+// roll: the half disc's turn about the face's normal (0 the head over a rectangle, PI a foot, -PI/2 the +x end, PI/2 the -x
+// end); null: a full disc (a porthole, a ring of lit holes: no rectangle beside it)
+function pynEndK(kind,x,yc,z,ry,r,out,d,c,roll){const K=PY_KIND[kind];if(!PY_GLAZED[kind]){pynEnd(K[1],x,yc,z,ry,r,out,d,c);return;}
+ {const dd=Math.max(.01,d-.018),f=loc(x,z,0,out-.016-dd/2,ry);kput('pyDiscD',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,dd],null);}
+ const f=loc(x,z,0,out-.006,ry);if(roll==null)kput(K[1],[f[0],yc,f[1]],vQ(ry,0,0),[r,r,.012],c||null);
+ else kput(K[3],[f[0],yc,f[1]],vQ(ry,0,roll),[r,r,.012],c||null);}
+// a point: the gable wedge whose foot is at y, rising `rise` over the width w (down: hanging below y, a hexagon's foot)
+function pynWedgeK(kind,x,y,z,ry,w,rise,out,d,c,down){const K=PY_KIND[kind],q=()=>{const v=vQ(ry+Math.PI/2,0,0);return down?v.multiply(qEuler(0,0,Math.PI)):v;};
+ if(!PY_GLAZED[kind]){const f=loc(x,z,0,out-d/2,ry);kput(K[2],[f[0],y,f[1]],q(),[d-.02,rise,w],c||null);return;}
+ {const dd=Math.max(.01,d-.034),f=loc(x,z,0,out-.016-dd/2,ry);kput('pyGableD',[f[0],y,f[1]],q(),[dd,rise,w],null);}
+ const f=loc(x,z,0,out-.006,ry);kput(K[2],[f[0],y,f[1]],q(),[.012,rise,w],c||null);}
+function pynTomb(x,y,z,ry,w,h,out,d,kind,c){kind=kind||'P';const r=w/2,hb=Math.max(.05,h-r);
+ pynSlabK(kind,x,y+hb/2,z,ry,w,hb,out,d,c);pynEndK(kind,x,y+hb,z,ry,r,out,d,c,0);}
+function pynStadium(x,y,z,ry,w,h,out,d,kind,c){kind=kind||'P';const r=Math.min(w,h)/2;
+ if(h>=w){const hb=h-w;if(hb>.02)pynSlabK(kind,x,y+r+hb/2,z,ry,w,hb,out,d,c);pynEndK(kind,x,y+r,z,ry,r,out,d,c,Math.PI);pynEndK(kind,x,y+h-r,z,ry,r,out,d,c,0);}
+ else{const wb=w-h;pynSlabK(kind,x,y+r,z,ry,wb,h,out,d,c);for(const s of[-1,1]){const p=loc(x,z,s*wb/2,0,ry);pynEndK(kind,p[0],y+r,p[1],ry,r,out,d,c,-s*Math.PI/2);}}}
 // rise: the point's height; both: pointed at the foot too (the elongated hexagon)
-function pynPointed(x,y,z,ry,w,h,out,d,kind,c,rise,both){const K=PY_KIND[kind||'P'];rise=rise==null?w*.45:rise;const y0=both?y+rise:y,hb=Math.max(.05,h-rise*(both?2:1));
- pynSlab(K[0],x,y0+hb/2,z,ry,w,hb,out,d,c);const f=loc(x,z,0,out-d/2,ry);
- kput(K[2],[f[0],y0+hb,f[1]],vQ(ry+Math.PI/2,0,0),[d-.02,rise,w],c||null);
- if(both)kput(K[2],[f[0],y0,f[1]],vQ(ry+Math.PI/2,0,0).multiply(qEuler(0,0,Math.PI)),[d-.02,rise,w],c||null);}
+function pynPointed(x,y,z,ry,w,h,out,d,kind,c,rise,both){kind=kind||'P';rise=rise==null?w*.45:rise;const y0=both?y+rise:y,hb=Math.max(.05,h-rise*(both?2:1));
+ pynSlabK(kind,x,y0+hb/2,z,ry,w,hb,out,d,c);pynWedgeK(kind,x,y0+hb,z,ry,w,rise,out,d,c,false);
+ if(both)pynWedgeK(kind,x,y0,z,ry,w,rise,out,d,c,true);}
 const PY_SHAPE={tomb:pynTomb,stadium:pynStadium,point:pynPointed,hex:(x,y,z,ry,w,h,out,d,k,c)=>pynPointed(x,y,z,ry,w,h,out,d,k,c,w*.42,true)};
 // a framed opening: n rims round a fill, each rim `rim` wide, the outermost nearest the wall and each inner one standing
 // further out, so the frame steps toward the viewer (the nested portals); the fill stands proudest
@@ -54,16 +74,42 @@ const PY_SHAPE={tomb:pynTomb,stadium:pynStadium,point:pynPointed,hex:(x,y,z,ry,w
 function pynFrame(shape,x,y,z,ry,w,h,o){o=o||{};const F=PY_SHAPE[shape],n=o.n==null?1:o.n,rim=o.rim==null?.16:o.rim,st=o.out==null?.06:o.out,d=o.d==null?.12:o.d;
  for(let k=0;k<n;k++){const g=rim*(n-k);F(x,y-g,z,ry,w+2*g,h+2*g,st*(k+1),d+st*k,o.kind||'P',o.cs?o.cs[k%o.cs.length]:o.c);}
  F(x,y,z,ry,w,h,st*(n+.4),d,o.fill||'G',o.fc||null);}
-// a doorway in a profile: the wall cut (hollow bodies), the frame's rims as pynFrame, a timber leaf (o.metal: steel) in the
-// profile's shape, a seam down a leaf wider than 1.5 m, and a pull at hand height. o as pynFrame (n: 0 for a bare leaf).
-function pynDoorway(shape,x,y,z,ry,w,h,o){o=o||{};if(typeof vnHole==='function')vnHole(x,y,z,ry,w,Math.min(h,2.6),true);
- const n=o.n==null?1:o.n,st=o.out==null?.06:o.out,fo=st*(n+.4),d=o.d==null?.12:o.d,fc=o.fc||vC(o.metal?PYPAL.gunmetal[0]:PYPAL.walnut[0]);
- pynFrame(shape,x,y,z,ry,w,h,Object.assign({},o,{n,fill:o.metal?'M':'W',fc}));const gun=vC(PYPAL.gunmetal[1]);
- if(w>1.5){const s=loc(x,z,0,fo+.01,ry);vB('vIron',s[0],y,s[1],.05,h*.78,.04,ry,gun);}
- for(const u of w>1.5?[-.18,.18]:[w*.32]){const p=loc(x,z,u,fo+.04,ry);vB('vIron',p[0],y+.95,p[1],.05,.32,.06,ry,gun);}}
+// a doorway in a profile (the owner, 2026-11-03: doors that open and shut; core/door). The profile's rectangle is the doorway:
+// cut through a hollow body's wall (vnHole) and hung with real leaves (69e5's IZDOOR.leaf: a pair from 1.5 m wide),
+// which open on a hollow body (the leaf in the wall's middle) and stand shut and locked on a solid one (nothing behind it); the
+// head over it (the tombstone's half disc, the point) is a glazed fanlight over the room card behind a timber transom. The
+// frame's rims are drawn round the doorway, not across it: for each rim its two jambs, and its head. A pointed hexagon's foot
+// cannot take a door, so a 'hex' doorway is pointed at the head only (its point w*.42 as the hexagon's). o as pynFrame (n: 0
+// for a bare doorway; fc: the leaves' colour, o.metal: steel; o.gate: a gate through a solid wall or block the builder leaves
+// open behind it (pynPierBox), a court beyond: its leaves stand at the face and open, not locked); returns the leaves' records.
+function pynDoorway(shape,x,y,z,ry,w,h,o){o=o||{};
+ const n=o.n==null?1:o.n,rim=o.rim==null?.16:o.rim,st=o.out==null?.06:o.out,d=o.d==null?.12:o.d,fo=st*(n+.4),fc=o.fc||vC(o.metal?PYPAL.gunmetal[0]:PYPAL.walnut[0]);
+ const tomb=shape==='tomb',rise=tomb?w/2:w*(shape==='hex'?.42:.45),lh=Math.max(1.8,h-rise),yh=y+lh;
+ const cut=!o.gate&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,lh,true),F=cut?vnOnHollow(x,y,z,ry):null;
+ // the rims: two jambs and a head each, the outermost nearest the wall, each inner one standing further out
+ for(let k=0;k<n;k++){const g=rim*(n-k),out=st*(k+1),dd=d+st*k,c=o.cs?o.cs[k%o.cs.length]:o.c,it=o.kind==='C'?'pyConc':'vPlaster';
+  for(const s of[-1,1]){const p=loc(x,z,s*(w/2+g/2),out-dd/2,ry);vB(it,p[0],y-g,p[1],g,lh+g,dd,ry,c);}
+  const f=loc(x,z,0,out-dd/2,ry);
+  if(tomb)kput(o.kind==='C'?'pyHalfC':'pyHalf',[f[0],yh,f[1]],vQ(ry,0,0),[w/2+g,w/2+g,Math.max(.02,dd-.02)],c||null);
+  else kput(o.kind==='C'?'pyGableC':'vGablePl',[f[0],yh,f[1]],vQ(ry+Math.PI/2,0,0),[dd-.02,rise+g*.9,w+2*g],c||null);}
+ // the fanlight in the head, over its room card, and the transom under it
+ const ff=Math.max(fo,st*n+.03),hd=ff-st*n+.04;   /* the fanlight's front, in front of the innermost rim (or of the wall) */
+ if(tomb){{const f=loc(x,z,0,ff-.016-(hd-.018)/2,ry);kput('pyHalfD',[f[0],yh,f[1]],vQ(ry,0,0),[w/2,w/2,hd-.018],null);}
+  const f=loc(x,z,0,ff-.006,ry);kput('pyHalfG',[f[0],yh,f[1]],vQ(ry,0,0),[w/2,w/2,.012],null);}
+ else pynWedgeK('G',x,yh,z,ry,w,rise,ff,hd,null,false);
+ {const p=loc(x,z,0,ff-.05,ry);vB(o.metal?'vIron':'vWood',p[0],yh-.06,p[1],w+.04,.12,.1,ry,fc);}
+ // the leaves: in the cut wall's middle (operable), or shut and locked in front of a solid face
+ // (from 1.5 m wide a double door: one record, its pair of leaves swinging apart; timber panelled, steel plain: core/door's leaf styles)
+ const two=w>1.5,t=.07,m=loc(x,z,0,F?-F.B.t/2:.01+t/2,ry);
+ return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel'})];}
+// a box (vB's arguments) with a doorway dw wide and dh high through the foot of its middle: two piers and a lintel (a gate's
+// block, pynDoorway's o.gate)
+function pynPierBox(item,x,y,z,w,h,d,ry,c,dw,dh){const pw=(w-dw)/2;
+ for(const s of[-1,1]){const p=loc(x,z,s*(dw/2+pw/2),0,ry);vB(item,p[0],y,p[1],pw,h,d,ry,c);}
+ if(h>dh)vB(item,x,y+dh,z,dw+.02,h-dh,d,ry,c);}
 // a porthole: a bezel ring of radius r (its tube 12% of r), a fill disc, and a grille of `bars` radial bars (0: none)
 function pynPorthole(x,yc,z,ry,r,ringC,fill,bars,barC){const f=loc(x,z,0,.06,ry);kput('pyRing',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,r*.9],ringC||null);
- pynEnd(PY_KIND[fill||'G'][1],x,yc,z,ry,r*.94,.05,.06,null);
+ pynEndK(fill||'G',x,yc,z,ry,r*.94,.05,.06,null);
  if(bars==='hex'){if(PYL_MATLIB.pyGrille){const g=loc(x,z,0,.1,ry);kput('pyGrilleD',[g[0],yc,g[1]],vQ(ry,0,0),[r*.94,r*.94,1],null);return;}bars=6;}
  for(let k=0;k<(bars||0);k++){const a=k*Math.PI/bars,g=loc(x,z,0,.09,ry);vBq('vIron',g[0],yc,g[1],r*1.86,.05,.04,vQ(ry,0,a),barC||null);}}
 // a cluster of portholes on a face rectangle (cx at the middle, y0..y0+h, width w): graded, big low and small high,
@@ -87,7 +133,12 @@ function pynVault(x,y,z,w,len,rise,ry,item,c){kput(item||'pyHalf',[x,y,z],vQ(ry,
 // a hex pod: a hexagonal prism of radius r running `len` out of a face along its outward axis, its front at the face
 // plus `out`, a dark (or glazed) hexagon set into its front
 function pynHexPod(x,yc,z,ry,r,len,out,c,fill,item){const f=loc(x,z,0,out-len/2,ry);kput(item||'pyHex',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,len],c||null);
- const g=loc(x,z,0,out+.02,ry);kput(fill==='G'?'pyHexG':'pyHexL',[g[0],yc,g[1]],vQ(ry,0,0),[r*.8,r*.8,.06],null);}
+ {const g=loc(x,z,0,out+.019,ry);kput('pyHexD',[g[0],yc,g[1]],vQ(ry,0,0),[r*.8,r*.8,.034],null);}   // the room card, the pane in front of it
+ const g=loc(x,z,0,out+.044,ry);kput(fill==='G'?'pyHexG':'pyHexL',[g[0],yc,g[1]],vQ(ry,0,0),[r*.8,r*.8,.012],null);}
+// a pane a builder puts as a plate on a solid mass (kput's p, q, s: a drum's lancets, a skylight, a strip of slot windows):
+// the room card the plate stood for, inside a pane 1 cm larger all round (69e5's vnPlate). item: 'pyPaneB' clear (the
+// default), 'vWinLit' lit; card: the card's item for a disc or a wedge plate ('pyDiscD', 'pyGableD'; default the box)
+function pynPane(item,p,q,s,card){kput(card||'pyRoomB',p,q,s,null);kput(item||'pyPaneB',p,q,[s[0]+.02,s[1]+.02,s[2]+.04],null);}
 // a capsule tank standing on the ground: a cylinder of radius r and height h with a dome cap (rust unless item given)
 function pynTank(x,y,z,r,h,c,cap){vPst('vTankR',x,y,z,r,h,c);kput(cap||'pyDomeR',[x,y+h,z],null,[r,r*.75,r],c||null);}
 // a stepped (multifoil-stepped) arch outline over an opening w wide whose springing is at y: `steps` boxes each side

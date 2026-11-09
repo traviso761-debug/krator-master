@@ -17,13 +17,19 @@ const NR_CUT_UNITS=(function(){const U=[],W=(x,y,z)=>nrH2W(x,y,z);
  U.push({id:'bridgehouse',name:'The bridge house',x:c[0],z:c[2],ry:NR_YAW,w:2*S0.a+2,d:2*S0.b+2,
   levels:BH.storeys.map(S=>({y:W(S.xc,S.y0,0)[1],h:S.y1-S.y0,name:nm[S.k]})).concat([{y:W(BH.bridge.xc,BH.bridge.y0,0)[1],h:BH.bridge.y1-BH.bridge.y0,name:'the bridge'}])});
  return U;})();
+/* the doors (core/door; core/engine's 36o-open.js draws the leaves): E opens or shuts the one within reach, else (walking) climbs
+   a level as before; the leaves ease each frame and the "E: open the door" tip shows near one */
+const nrDoorWalking=()=>!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);
+function nrDoorKey(){return KDOORHOST.toggleNear(camera.position,nrDoorWalking());}
+FRAME_HOOKS.push(dt=>{KDOORHOST.tick(dt);});
+FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,nrDoorWalking));
 const NR_HOST=KHOST.take({
  build:'noahs-regret',title:TITLE,
- hint:'I (or T) hovers the inspector, a click inspects, C cuts the decks (or pick a level), X a building storey by storey, N night, F walks (Q / E a level down or up), P marks, M the map',
+ hint:'I (or T) hovers the inspector, a click inspects, C cuts the decks (or pick a level), X a building storey by storey, N night, F walks (Q / E a level down or up), E by a door opens or shuts it, P marks, M the map',
  scene,camera,renderer,ground:terrainH,clampCam:nrClampCam,minR:1,maxR:2500,walk:NR_WALK,walker:{step:1.95,drop:1e9},
  views:VIEWS,onView:name=>{const v=VIEWS[name];nrViewOpt(v&&v[6]);},
  inspect:(hit,hits)=>nrInspect(hits),
- keys:{c:()=>cutCycle(),n:()=>nrNight(),t:()=>KHOST.hover(),q:()=>nrWalkStep(-1),e:()=>nrWalkStep(1)},
+ keys:{c:()=>cutCycle(),n:()=>nrNight(),t:()=>KHOST.hover(),q:()=>nrWalkStep(-1),e:()=>{if(!nrDoorKey())nrWalkStep(1);}},
  stats:()=>'records '+REG.length+'  furniture '+SVF.placed.length+(CUT.y!=null?'  CUT '+lvlSel.value:'')+'\n'+nrWhere(KHOST.cam.ctl.target),
  cutaway:{units:NR_CUT_UNITS,cutAt:1.4},
  minimap:{title:TITLE},

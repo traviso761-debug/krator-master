@@ -146,7 +146,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8ap-host-c-arcades.js` | 10.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_ARCADES and hacPlan are data (the Ys host record) |
 | `src/8ap-host-d-stalks.js` | 8.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_STALKS, hstSockets and hstRAt are data (the Ys host record and its sockets) |
 | `src/8ap-host-e-bellhall.js` | 12.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_BELLHALL and hbhRAt are data (the Ys host record) |
-| `src/8zz-interiors.js` | 11.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/8zo-anc-open.js` | 14.0 | [web] | 11 | 0 | 0 | 1 | 3 | 6 | 0 | 0 | 0 | 0 | 0 | split: the openings (panes, room cards, the doors' KDOOR records: data) and their host (the tick, E, the tip) |
+| `src/8zz-interiors.js` | 11.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/90-scene.js` | 8.9 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.7 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |

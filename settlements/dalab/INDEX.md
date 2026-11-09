@@ -54,16 +54,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `76-port-chapterhouse.js` | 17 |  |
 | `77-dalab-trades.js` | 5 |  |
 | `81-sky.js` | 10 |  |
-| `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `86-bio-20-core-kit.js` | 15 | merged buckets (46); indexed buckets (140); bake (163) |
-| `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 2 |  |
-| `86-bio-50-biome-swlowlands-species.js` | 50 **big** | the climate this biome reads (23); palettes (33); the tree species (102); leaf textures (165); TWO-TONE BARK (279); geometries local to this biome (403); materials (443); instanced items (505) |
-| `86-bio-55-biome-swlowlands-trees.js` | 57 **big** | zones from the fields (16); colour (35); keep-clear between trees (56); the LIMB (67); foliage and epiphytes (84); the crown, ON its branches (105); the builders (142); impostors (the far canopy) (456); the pass (495) |
-| `86-bio-60-biome-swlowlands-floor.js` | 24 | small plants (31); the understorey (under the crowns) (108); the zone planters (130); the pass (198) |
-| `86-bio-65-biome-swlowlands-dress.js` | 8 |  |
-| `86-bio-70-biome-swlowlands.js` | <1 |  |
 | `88y-dalab-matlib.js` | 2 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |

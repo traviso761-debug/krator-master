@@ -56,12 +56,18 @@ var yuniCut = FIX.buildings.map(function(b){
   var n = Math.max(1, Math.round((b.h||8)/3.4)), hh = (b.h||8)/n, lv = [];
   for(var k=0;k<n;k++) lv.push({ y:b.y+k*hh, h:hh, name:n > 1 ? 'storey '+(k+1) : null });
   return { id:b.id, name:b.name, x:b.x, z:b.z, ry:b.yaw||0, w:b.w+1, d:b.d+1, levels:lv }; });
+/* E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 76-doors.js): walking, from the walker's feet (the
+   camera may stand behind it), else from the camera; flying, E still climbs as well. The "E: open the door" line follows it */
+DOORS.records.forEach(function(R){ KDOORHOST.posed(R, DOORS.pose); });   /* each door's leaves posed as KDOOR eases it (76-doors.js) */
+function yuniDoorEye(){ return WALK.on ? { x:WALK.x, y:WALK.y+1.7, z:WALK.z } : camera.position; }
+var yuniDoorTip = KDOORHOST.tip(yuniDoorEye, function(){ return WALK.on; });
+TICKS.push(function(){ yuniDoorTip(); });
 var YHOST = KHOST.take({
   build:CAM_BUILD, title:document.title, hint:CAM_HINT,
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clampCam:camClamp, minR:0.12, maxR:9000,
   views:yuniViews, start:VIEWS.length ? VIEWS[0][0] : 'Start',
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own clock (YCLOCK, 21-sky.js): no host hour */
-  keys:Object.assign({ f:function(){ DOORS.walk(); } }, SHEET ? { p:function(){} } : {}),   /* F: Yuni's own walk; on a sheet P steps back (89-sheetui.js) */
+  keys:Object.assign({ f:function(){ DOORS.walk(); }, e:function(){ KDOORHOST.toggleNear(yuniDoorEye(), WALK.on); } }, SHEET ? { p:function(){} } : {}),   /* F: Yuni's own walk; E: the door within reach; on a sheet P steps back (89-sheetui.js) */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:yuniPal, build:function(key){ var it = yuniPal.filter(function(q){ return q.key === key; })[0]; return yuniPiece(it ? it.cls : 'furniture', key, 0, [0, 0, 0], 0); } },
   edits:SHEET ? undefined : { world:YWORLD, log:YEDIT.log,

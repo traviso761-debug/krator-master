@@ -25,6 +25,8 @@ function push(shape, fam, rec){
   var k = shape+'|'+fam;
   (BUCKET[k] || (BUCKET[k] = { shape:shape, fam:fam, list:[] })).list.push(rec);
 }
+/* the index the NEXT record pushed to (shape, fam) will take: a handle for re-posing it after emit (a door leaf, 53-assets.js) */
+function kitIndex(shape, fam){ var B=BUCKET[shape+'|'+fam]; return { key:shape+'|'+fam, i:B?B.list.length:0 }; }
 function BOX (x,y,z,w,h,d,rot,c,f){ push('box',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }
 function FR8 (x,y,z,w,h,d,rot,c,f){ push('fr8',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* gentle batter */
 function FR5 (x,y,z,w,h,d,rot,c,f){ push('fr5',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* strong taper */
@@ -85,7 +87,10 @@ var SHAPES = {
   cone: function(){ return new THREE.ConeGeometry(1,1,10).translate(0,0.5,0); },
   dome: function(){ return new THREE.SphereGeometry(1,12,6,0,Math.PI*2,0,Math.PI*0.5); },
   blob: function(){ return new THREE.SphereGeometry(1,7,4,0,Math.PI*2,0,Math.PI*0.5); },
-  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); }
+  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); },
+  /* a door leaf hung from its HINGE edge: x 0..1 from the hinge, y 0..1 up, z centred (Yuni's 45-kit.js): its own bucket,
+     so a door swings by rewriting one instance (53-assets.js F.door, 98-start.js) */
+  leaf: function(){ return new THREE.BoxGeometry(1,1,1).translate(0.5,0.5,0); }
 };
 
 /* world-unit texture tiling for instanced primitives (see Voth 45-kit.js) */
@@ -278,6 +283,7 @@ function emitBuckets(){
     if(im.instanceColor) im.instanceColor.needsUpdate = true;
     im.instanceMatrix.needsUpdate = true;
     im.frustumCulled = false;
+    B.mesh = im;   /* the handle a moving instance is re-posed through (a door leaf: 98-start.js) */
     scene.add(im);
     total += B.list.length; meshes++;
   }
@@ -289,6 +295,25 @@ function shade(hex, f){
   if(f>=0) c.lerp(new THREE.Color(0xffffff), f); else c.lerp(new THREE.Color(0x120f0a), -f);
   return c.getHex();
 }
+
+/* ------------------------------------------------------------------ openings on core/door (53-assets.js has the drawing:
+   F.door, F.window, F.card, F.paneBox, F.pane, F.doorway): the room card's colour, the counts, the stable door ids */
+var ROOMC = (typeof KGLASS!=='undefined') ? KGLASS.SPEC.room.color : PAL.roomCard;
+/* the card behind a pane of glass: the room in its shade, as a sunlit street sees it through the glass (the clear pane lightens
+   what is behind it; the room's own colour reads as a grey plate there). Open portals, hatches and vents keep ROOMC */
+var ROOMC_GLASS = new THREE.Color(ROOMC).lerp(new THREE.Color(0x120f0a), 0.45).getHex();
+function yopenIsCard(c){ return c===ROOMC || c===ROOMC_GLASS; }
+var YOPEN = { panes:0, cards:0, leaves:0, glass:[], perKey:{} };
+function yopenLive(){ return !(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK); }
+/* the next door id of the asset being built (a sub-asset counts as its own key) */
+function yopenId(F){ if(F._dbase==null){ var k=F.asset ? F.asset.key : 'free', pk=YOPEN.perKey; pk[k] = pk[k]==null ? 0 : pk[k]+1; F._dbase=k+'.'+pk[k]; F._dn=0; }
+  return F._dbase+'.d'+(F._dn++); }
+/* a box laid on a face (F.box's local lx,lz,w,d,r): its thin axis, turned to point out (o.out, else away from the centre) */
+function yopenFace(lx,lz,w,d,r,o){ r = (typeof r==='number') ? r : 0; var thinZ = d<=w, n = thinZ ? [Math.sin(r), Math.cos(r)] : [Math.cos(r), -Math.sin(r)];
+  var ref = (o && o.out) ? o.out : [lx, lz]; if(n[0]*ref[0]+n[1]*ref[1] < 0){ n[0]=-n[0]; n[1]=-n[1]; }
+  return { n:n, thick:thinZ ? d : w, wide:thinZ ? w : d }; }
+function yopenGlass(x,y,z,nx,nz,w,h,o){ if(!yopenLive()) return; YOPEN.glass.push([x,y,z,nx,nz,w,h,(o&&o.kind)||'clear',(o&&o.color!=null)?o.color:null]); YOPEN.panes++; }
+function yopenDoor(r){ if(!yopenLive() || typeof KDOOR==='undefined') return null; return KDOOR.add(r); }
 
 /* ------------------------------------------------------------------ B. merged meshes */
 var MBK = {};                         /* family -> { pos:[], nor:[], uv:[], col:[] } */

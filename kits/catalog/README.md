@@ -20,15 +20,20 @@ are in Mav's Refuge and Girder. The catalog is the furniture sheet, one row per 
 The Beast Rider buildings place their furniture as catalog pieces with `F.furn` (2026-10; see
 "Furniture in a kit build").
 
+**The engine is in `core/catalog`** (since 2026-11-03, MODULARITY-PLAN.md step 3; its README): the files below marked
+`core/catalog/`. A build names them as before and resolves each name through `core/catalog/catalog.py` (`kcat.path`), which
+sends a culture file's name here. This folder keeps the content: one file per culture, the harvested registry, the buildings,
+the plants, three.js r128.
+
 | File | What |
 |---|---|
-| `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
-| `krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
-| `krator-furniture-detail.js`, `materials.json`, `tex/` | the material library on catalog furniture, opt-in: `furniture_bundle.bundle(cultures, tex=True)` inlines `KF_TEX` (47 families, about 1 MB) and the detail pass; a batch's `flush` then gives each family's mesh its set as a triplanar detail map keyed by texture family, then render family. `KF.setTextures(false)` turns it off, `KF.textureInfo()` reports. Default off: the bundle is byte-identical without it. Re-pack with `python3 tools/textures/pack.py kits/catalog` after editing `materials.json`; a host's own rows win by using its own adapter |
-| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build"; `plants=True` adds `krator-master-plants.js` with every plant joining `FURN_BY_KEY` as a piece (type `plant`), so a batch places a palm as it places a chair (the Iziz palace's orangery and roof gardens, 2026-10-19; default off, byte-identical) |
-| `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, the soft furnishings `F.pillow` (a stuffed cushion: domed faces, rounded corners, an optional boxed wall; returns its top height and its seams for piping) and `F.bolster` (gathered ends; banded by sections), `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
-| `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
-| `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
+| `krator-symbols.js` (a name) | resolves to `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
+| `core/catalog/krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
+| `core/catalog/krator-furniture-detail.js`, `materials.json`, `tex/` | the material library on catalog furniture, opt-in: `furniture_bundle.bundle(cultures, tex=True)` inlines `KF_TEX` (47 families, about 1 MB) and the detail pass; a batch's `flush` then gives each family's mesh its set as a triplanar detail map keyed by texture family, then render family. `KF.setTextures(false)` turns it off, `KF.textureInfo()` reports. Default off: the bundle is byte-identical without it. Re-pack with `python3 tools/textures/pack.py kits/catalog` after editing `materials.json`; a host's own rows win by using its own adapter |
+| `core/catalog/krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build"; `plants=True` adds `krator-master-plants.js` with every plant joining `FURN_BY_KEY` as a piece (type `plant`), so a batch places a palm as it places a chair (the Iziz palace's orangery and roof gardens, 2026-10-19; default off, byte-identical) |
+| `core/catalog/krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, the soft furnishings `F.pillow` (a stuffed cushion: domed faces, rounded corners, an optional boxed wall; returns its top height and its seams for piping) and `F.bolster` (gathered ends; banded by sections), `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
+| `core/catalog/krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
+| `core/catalog/inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 128 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 64, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette and fourteen shell-grown bespoke pieces (lathes and tubes, ported from Ys). See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (60, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
@@ -46,7 +51,7 @@ the inspector from here by path.
 
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
-python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
+python3 build.py --vendor-check                     # nothing is vendored: no src/ copy of the placeholder sky
 python3 verify.py dist/catalog.html --assert        # the gate: each page in turn (indoor, outdoor, both, rugs, jobs); exit 0 = pass
 python3 verify.py dist/catalog.html --assert --page outdoor   # one page (indoor | outdoor | both | rugs | jobs)
 python3 verify.py dist/catalog.html --page jobs --out shots --rows   # one page's rows
@@ -102,7 +107,8 @@ smaller than they declare.
 
 ## Using catalog pieces in another build
 
-Load, in order, three.js r128, `krator-furniture-core.js`, `krator-asset-engine.js`, `krator-symbols.js`, then any of the
+Load, in order, three.js r128, `core/catalog/krator-furniture-core.js`, `core/catalog/krator-asset-engine.js`,
+`core/sockets/38-symbols.js`, then any of the
 registry files, as `<script>`s or concatenated into one script (the build does
 the latter). The engine needs a `<div id="app">` for its renderer. Then:
 
@@ -450,8 +456,7 @@ each canonical name lands on, the bridge `core/README.md` "Planned: a material r
 
 **Socket packs and emblems.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
 `core/sockets/80-cultures.js`, and the hangings carry the pack's own emblem: the packs' canvas
-`SYMBOLS` live in `core/sockets/38-symbols.js`, vendored here as `krator-symbols.js`
-(`build.py --vendor-check`), and `F.decal` paints them onto a plane. `FK.symbolOf(S, culture)`
+`SYMBOLS` live in `core/sockets/38-symbols.js` (read in place under the name `krator-symbols.js`), and `F.decal` paints them onto a plane. `FK.symbolOf(S, culture)`
 picks the symbol (the sheet's `sym`, else the pack's through `SYMBOL_OF`, else the culture's own:
 the symbols file gained `serpent star horns fir raven fish skull gear` for the cultures without a
 pack); the sheet's `emblem: { field, edge, band, disc?, ink, ink2? }` keys are the pack's banner

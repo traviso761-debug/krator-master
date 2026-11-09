@@ -72,8 +72,10 @@ function ytDwellDome(D,season,o){o=o||{};const stone=D.stone,AE={hw:D.hw+D.tv,hv
   prism('muskox',ytSegment(D.Rr-.25,D.zPlat-.12,24),D.yPlat,D.yPlat+.07,P('ice'));
   W(-.6,D.yPlat+.07,-1.1,.4,()=>box('caribou',0,0,0,1.5*D.S,.05,1.1*D.S,P('ice')));
   wkPad(0,(D.zPlat-D.Rr)/2+.1,D.Rr*1.5,D.Rr+D.zPlat-.2,D.yPlat+.07);   /* to the platform's front edge: the step meets it */
-  /* the step up onto the platform: a slab block at its front (the platform stands 0.9 m over the floor) */
-  WKOFF=1;box('slab',0,D.yFl,D.zPlat+.22,1.0,(D.yPlat-D.yFl)/2,.44,P('slab'));WKOFF=0;wkPad(0,D.zPlat+.22,1.0,.44,(D.yFl+D.yPlat)/2);
+  /* the steps up onto the platform: two slab blocks at its front (the platform stands about 1 m over the floor; one step of half that
+     was more than a walker's 0.45 m: the reachability audit, 2026-11-03), each a third of the rise */
+  {const rs=(D.yPlat+.07-D.yFl)/3;WKOFF=1;box('slab',0,D.yFl,D.zPlat+.22,1.0,2*rs,.44,P('slab'));box('slab',0,D.yFl,D.zPlat+.66,1.0,rs,.44,P('slab'));WKOFF=0;
+   wkPad(0,D.zPlat+.22,1.0,.44,D.yFl+2*rs);wkPad(0,D.zPlat+.66,1.0,.44,D.yFl+rs);}
   ytWalkTarget('platform',0,D.yPlat+.07,(D.zPlat-D.Rr)/2);
   wkPad(0,(D.zPlat+D.Rr)/2,D.Rr*1.2,D.Rr-D.zPlat-.2,D.yFl);
   /* the lamp at the platform's edge; the ice lens on the north side over the platform */

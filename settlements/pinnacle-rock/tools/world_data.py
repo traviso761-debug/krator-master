@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The surroundings as a page fragment: region/data (tools/scale-model/extract_region.py's cut round the site) decoded
-here, at build time, into the typed arrays the open world's fields take (openworld/little-demo/src/41-world-fields.js:
+here, at build time, into the typed arrays the open world's fields take (openworld/isle-demo/src/world/41-world-fields.js:
 WORLD.init(R)), so the page builds its land at once and never reads a canvas's pixels.
 
     fragment(region_dir) -> the JavaScript text of the generated fragment (WORLD_DATA, WORLD_R, WORLD_KITS)

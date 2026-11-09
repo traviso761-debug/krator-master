@@ -124,21 +124,21 @@ NSEMIARID.byKey={};NSEMIARID.SPECIES.forEach((S,i)=>{S.i=i;NSEMIARID.byKey[S.key
 // owed to biomes/FRUIT.md), so `fruit` is null and the probe names them as drawn without a catalog piece.
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 NSEMIARID.HARVEST={
- pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.'),
+ pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.','generic_fruit_pistachio'),
  saxaul:HV('fuel (the hardest in the steppe), charcoal',[],false,'Burns like coal; the caravans carry it.'),
  plane:HV('timber, carving',[],true,'The great tree of the springs: a village gathers under it.'),
  judas:HV('none',['flowers (raw, pickled)','buds'],false,'The magenta flowers break straight out of the bark and the trunk.'),
- almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.'),
- apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.'),
- walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.'),
- apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.'),
- pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.'),
+ almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.','generic_fruit_almond'),
+ apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.','generic_fruit_wild_apple'),
+ walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.','generic_fruit_walnut'),
+ apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.','generic_fruit_apricot'),
+ pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.','generic_fruit_wild_pear'),
  samara:HV('poles, tool handles',[],false,'Its seeds come down as half-metre helicopters; children race them.'),
  poplar:HV('timber, fuel',['catkins'],true,'Gold in its season; it sheds cotton in drifts like snow.'),
  frill:HV('none',['seed (roasted)'],false,'Each fin is a seed on a plume; the seeds are knocked out of the shed fins and roasted.'),
  trumpet:HV('none',['nectar'],false,'The funnel spins in the wind and flings its winged seeds over its rim.'),
  lantern:HV('none',[],true,'The bulbs lift away at dusk; a crushed bulb is a cooling salve.'),
- pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.'),
+ pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.','generic_fruit_pomegranate'),
  foxtail:HV('none',['young roots (cooked)'],false,'The spike opens from the bottom up; bees work it all day.'),
  dandelion:HV('none',['leaves','root (roasted)'],true,'The clock sheds its seeds downwind first.'),
 };

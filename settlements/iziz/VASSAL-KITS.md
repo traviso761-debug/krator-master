@@ -12,7 +12,8 @@ planned from the skill's palace notes (`painting-to-3d-world`, section 5h and `r
 
 ## 1. One engine: the Vernacular's
 
-Both kits are written on the Iziz Vernacular contract (`API.md`, "The Vernacular set"), not on a new engine:
+Both kits are written on the Iziz Vernacular contract (`API.md`, "The Vernacular set"), not on a new engine. The
+Vernacular's files are their own kit since 2026-11-03, `kits/iziz-vernacular` (MODULARITY-PLAN.md step 4); Iziz's page reads it:
 
 - **Defs go through `VERN.def`**, with `tags.culture` set to `'pylon'` or `'talia'` (`VERN.def` already lets a def's
   own `culture` win over `'iziz-vernacular'`). Keys are prefixed `pyl_` and `tal_`. Then every placer that takes the

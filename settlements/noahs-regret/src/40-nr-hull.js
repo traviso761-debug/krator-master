@@ -216,7 +216,7 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
     Two hatches in the deck with a ladder down to it; the chains of the anchors heaped on its floor. 70 furnishes it. */
  for(const t of NR.FORE.hatches){const y=NR.foreY(t),s=WD.MAIN+3,c=NR.at(t,s),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
   W(c[0],y,c[1],ry,()=>{for(const [x,z,w,d] of [[0,1.1,2.4,.2],[0,-1.1,2.4,.2],[1.1,0,.2,2.0],[-1.1,0,.2,2.0]])box('white',x,0,z,w,.45,d,P('white'));
-   box('dark',0,.02,0,2.0,.02,2.0,hc(0x0c0e10));
+   box('grate',0,.02,0,2.0,.02,2.0,WHITE);   /* the hatch: a grating over the locker (no black plate: the owner's no dark voids) */
    for(const x of [-.35,.35])beam('rust',[x,.4,.95],[x,L.D[0]-y,.95],.05,hc(0x4a4a48));
    for(let yy=L.D[0]-y+.3;yy<.3;yy+=.32)beam('rust',[-.35,yy,.95],[.35,yy,.95],.04,hc(0x4a4a48));});}
  for(const sg of [1,-1])for(let k=0;k<5;k++){const t=sg*(12+k*.9),c=NR.at(t,WD.MAIN+3.6);ring('rust',c[0],L.D[0]+.12+k*.16,c[1],.9-k*.12,.09,hc(0x4a3424),k*.7,0,0,12);}

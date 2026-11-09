@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Concatenate src/* + targets/<t>/* into dist/<t>.html (Ys, the half-drowned capital).
 
-Adapted from settlements/iziz/build.py and settlements/port/build.py. The rules
+Adapted from settlements/iziz/build.py and kits/port/build.py. The rules
 that make parallel agent work safe on the Ancients-lineage contract:
 
   1. SEED DISCIPLINE. The PRNG is one global stream. Every builder opens with
@@ -48,6 +48,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -145,9 +146,12 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
         + VENDORED_DROWNED:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
-    VENDORED[_f] = 'settlements/port/src'
-for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
+    VENDORED[_f] = 'kits/port/src'
+for _f in ['92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js']:
+    VENDORED[_f] = 'kits/iziz-vernacular/src'   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
+VENDORED['81-sky.js'] = 'core/atmos/placeholder'   # KratorSky left Iziz's src/ on 2026-11-02; read in place with MODULARITY-PLAN.md step 4
 # the foreign quarter (phase 3, DESIGN §2 and §6; NOTES.md "The foreign quarter"): the Iziz Vernacular dwellings and
 # trade, the Voth embassy and the Historians' chapterhouse (the Yuni-set ports) from Iziz; the Highlands kit's
 # Republican dwellings with the textures, materials, motifs, helpers and carving they need. Byte-identical copies
@@ -157,9 +161,9 @@ for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js'
 VENDORED_IZIZ_FQ = ['69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']   # 69e: vnBody/vnBand, which 70 and 71 call (solid here: Ys never turns VERN.interiors on)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
 for _f in VENDORED_IZIZ_FQ:
-    VENDORED[_f] = 'settlements/iziz/src'
+    VENDORED.setdefault(_f, 'settlements/iziz/src')   # the embassy and the chapterhouse; the Vernacular's three are the kit's (above)
 for _f in VENDORED_HL:
-    VENDORED[_f] = 'settlements/highlands/src'
+    VENDORED[_f] = 'kits/highlands/src'   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 # Build-time renames in a vendored fragment's body (the file on disk stays byte-identical to its upstream, so
 # --vendor-check stays clean and a re-vendor is a plain copy). Only for collisions in the shared scope that cannot be
 # avoided: Ys's 60-hyk-mat.js already declares `HPAL` (the Hykkousoi palette, read by 88b) and `hC`, both `const`, and
@@ -182,14 +186,14 @@ VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', '
 for _f in VENDOR_RENAME:
     VENDORED[_f] = 'kits/ancients/src'
 # the biome (phase 3, DESIGN §8): the shared biome core from core/biome and the north-west bay kit from biomes/nwbay/src,
-# byte-identical, as src/86-bio-*.js (the dalab pattern). Only the city target takes them (TARGET_ONLY); the city's host
+# READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/
+# held copies, behind core/biome and the fauna's move onto BIO.dynamic). Only the city target takes them; the city's host
 # binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
-                '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
-for _b in BIO_VENDORED:
-    VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'
-    VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
+BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+               '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
+               '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
+BIO_PATHS = {'86-bio-%s.js' % b: os.path.join(ROOT, *(('core', 'biome') if '-core-' in b else ('biomes', 'nwbay', 'src')), b + '.js')
+             for b in BIO_INPLACE}
 # src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
 # foreign kits.
 TARGET_ONLY = {'86-bio-': ('city',), '89x-ys-trades': ('city',)}   # the Voth census table (89x-ys-trades.js) is the city page's only
@@ -320,6 +324,9 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s' % target)
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()
            and all(target in tg for pre, tg in TARGET_ONLY.items() if f.startswith(pre))}
+    if target == 'city':   # the biome, read in place (a src/ copy with the same name would win)
+        for f, p in BIO_PATHS.items():
+            src.setdefault(f, p)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
@@ -362,6 +369,8 @@ def build_one(target, do_checks):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, TARGET_OUT.get(target, target + '.html'))
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     html = _mp.write_sidecar(SIDE, html, DIST, 'ys.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
@@ -409,7 +418,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
     if '--target' in sys.argv:
@@ -420,6 +430,8 @@ def main():
             sys.exit('no targets found under targets/*/89z-rows.js')
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
         with open(chk, 'w', encoding='utf-8', newline='\n') as fh:
@@ -439,6 +451,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

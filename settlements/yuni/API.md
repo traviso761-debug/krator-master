@@ -11,6 +11,10 @@ must export. Two targets are built from the same source:
 * `yuni-assets.html` — the INSPECTION SHEET (`SHEET === true`): flat ground at y = 0, every registered ASSET laid out
   in family rows, each variant once, with a name label and a 1.75 m figure. This is what you are judged on.
 
+The building fragments (`55-mid-example.js` to `59c-civic-furniture.js`) are the Yuni kit's now, `kits/yuni/src` (2026-11-03,
+MODULARITY-PLAN.md step 4b); the build reads them in place, in the same filename order. A new asset fragment for the city's
+building culture goes there.
+
 **Units are metres.** x east, z SOUTH, y up. A person is 1.75 m, a door 2.0-2.3 m, a storey 3.0-3.6 m.
 
 ## Loop
@@ -29,7 +33,7 @@ lists item positions: `_api.SHEET_ITEMS` = `[{key,name,x,z,w,d,h,fam}]`; aim `--
 The error panel must be clean. `build.py` fails on: a generative fragment without `reseed(N)`, a colour array
 (`var X = [0x...`) outside `05-palette.js`, a column-0 name declared in two fragments, or a syntax error.
 
-## What an asset is  (53-assets.js — read it, and 55-mid-example.js, the reference asset)
+## What an asset is  (53-assets.js — read it, and kits/yuni/src/55-mid-example.js, the reference asset)
 
 ```js
 ASSET({ key:'poor_musgum', name:'Musgum shell house', family:'poor', districts:['poor'], wealth:[0,0.3],

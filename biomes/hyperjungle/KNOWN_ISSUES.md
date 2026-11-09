@@ -38,7 +38,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] (2026-10-16) Tree tints and bark: a hero's limbs, boughs, twigs and roots now wear its own bole's bark (buckets `limb0`..`limb5` on
       `MAT.bark[sp]`, with the bole tint; still out of the `bark`+sp buckets, which 60-floor's `boleProfile` reads). Before, they shared one `limb` map
       painted in ironbark's browns, whose tint clipped at white, so ghostwood and baobab grew brown limbs under pale boles. Young trees' trunks
-      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carries a hand-patched copy of the old fragment: re-vendor (`build.py --vendor-bio`) when its session allows.
+      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carried a copy of the old fragment until 2026-11-03; it reads the kit in place now (`settlements/iziz/build.py`, `bio_wrap`).
 
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
@@ -136,7 +136,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] **The hypertrees' limbs and the dead wood kept their painted canvases** beside the library's bark (the owner, from Dhelv:
       "branches not taking bark texture ... a recurring issue with biome imports"): their sets (`limb`, `wood`) were in
       materials.json but never bound. `50-biome-hyperjungle-species.js` binds them (and the small trunks take the limbs' map).
-      Iziz vendors this kit (`settlements/iziz/targets/city/86-bio-*`): its copy still has the gap until it is re-vendored.
+      Iziz read a copy of this kit until 2026-11-03 (re-vendored that day); it reads the kit in place now, so it takes every fix as it lands.
 
 ## Export profile: sections left out (2026-10-18)
 

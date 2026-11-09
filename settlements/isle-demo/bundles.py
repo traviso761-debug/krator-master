@@ -68,7 +68,11 @@ ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-p
 
 
 def isk_files():
-    fs = {f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP}
+    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them
+    sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+    import engine as kengine
+    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in ISK_SKIP}
+    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP})
     for f in ('42r-res-ore.js', '44r-res-nodes.js'):      # kits/resources, read in place (kits/islanders/build.py RESOURCES)
         fs[f] = os.path.join(ROOT, 'kits', 'resources', 'src', f)
     return [fs[f] for f in sorted(fs)]
@@ -147,28 +151,16 @@ def isk_bundle():
 
 # ---------------------------------------------------------------- the Iziz Vernacular
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
-    """settlements/verge/build.py izv_files() and every vernacular fragment Iziz has added since (one shared copy is a
-    follow-up: KNOWN_ISSUES.md)"""
-    def iz(f):   # a local copy in settlements/iziz/src wins over core/materials (its build's srcpath rule)
-        p = os.path.join(IZIZ, f)
-        if os.path.exists(p):
-            return p
-        q = os.path.join(MATS, f)
-        return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
-    names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
-             '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']   # 69e5: real doors and glass (vnPlate, vnHole, IZDOOR), which the vernacular fragments call since 2026-10-19
-    out = [iz(f) for f in names]
-    # every vernacular building fragment in its file order: Verge's list stops at 74, and Iziz has since added 71a-c, 73b-c
-    out += sorted(glob.glob(os.path.join(IZIZ, '7[0-4]*-vern-*.js')))
-    # Iziz's own library bind (its aliases and tiles) and its material records for the export (KMAT.adapter('iziz'))
-    out.append(os.path.join(IZIZ, '88y-iziz-matlib.js'))
-    return out
-
+    """The Vernacular kit's one bundle list (kits/iziz-vernacular/vernacular.py bundle_files(): the Ancients core, the kit's
+    foundation, every building fragment), and Iziz's own library bind and material records for the export
+    (88y-iziz-matlib.js, KMAT.adapter('iziz'); it moves to core/materials with MODULARITY-PLAN.md step 4's matlib item)."""
+    return kvern.bundle_files() + [os.path.join(IZIZ, '88y-iziz-matlib.js')]
 
 IZV_HEAD = r'''
 var IZV_ERRS = [];
@@ -210,7 +202,7 @@ def izv_bundle():
 # kits/beast-riders/towns.py, registered by src/60-br-ports.js), on the catalog's core. The catalog's hand-made copies
 # (krator-master-buildings-beast-rider.js) are no longer taken.
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
-CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
+CAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 # the kit's tent set (src/70-75: the bands' tents, pens and boundaries), for a page that pitches camps (core/camp): the
 # open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
@@ -223,7 +215,7 @@ CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-te
 # page when side is given), the detail code with a stand-in for the furniture batch it extends (CAT draws no furniture),
 # and catProto details every non-port building as the kit's sheet does; each detailed material is tagged
 # userData.courtTri {tile, detail, gain}, the triplanar hook core/export already carries to Godot (Iziz's court finishes).
-CAT_DETAIL = os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-detail.js')
+CAT_DETAIL = os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-detail.js')
 CAT_TAIL = r'''
 function catDetail(g) {
   if (!KF_TEX) return g;

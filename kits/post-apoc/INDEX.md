@@ -21,8 +21,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (43); animated materials (shader-side only: geometry a (59) |
 | `29y-pa-matlib.js` | <1 | the material library (core/materials/PLAN.md) (1) |
 | `30-geo.js` | 20 | geometry engine (1) |
-| `32-cores.js` | 11 | the reclaimed large objects (1) |
-| `34-adds.js` | 23 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (151); TYRE FURNITURE (stools, chairs, tables): stacked (179) |
+| `32-cores.js` | 12 | the reclaimed large objects (1) |
+| `34-adds.js` | 25 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (166); TYRE FURNITURE (stools, chairs, tables): stacked (194) |
+| `35-pa-open.js` | 7 | OPENINGS: real doors and real glass on core/door (1) |
 | `36-def.js` | 22 | registry, placement, cultural sockets (1); COLLISION: per-building colliders, walkable surf (40); NAV GRID: a coarse 2.5-D walk grid for the whole (112) |
 | `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (96); dw-bus: a wrecked school bus as the home (148); dw-tank: a storage tank as a pod (lying, or stan (199); dw-bottle: the pretty one, a timber-framed cotta (267); dw-stilt: a plank-and-sheet box up on tall poles (313) |
 | `42-lg-dwell.js` | 32 **big** | large dwellings: container stack, twin silo hall (2) |

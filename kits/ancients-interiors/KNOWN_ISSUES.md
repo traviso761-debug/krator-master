@@ -15,6 +15,20 @@
 - [ ] **The Ancients' own set is thin.** The `ancient` dress borrows the salvage lords' chairs, tables, carpets,
   divans, bookcases, statues and banners where the Ancients have no piece of their own (`20-ai-dress.js`).
 
+## Real doors and real glass on the sheet (2026-11-03, core/door)
+
+The sheet's halls, ship's rooms and cabins stand in kits/interiors' shells (`50-shell.js`, read in place), which hang each
+door's leaf open 75 degrees and glaze a window with a pale lambert pane. `src/75-ai-doors.js` makes each leaf a KDOOR
+record (`<room id>.d<n>`, standing open as hung, posed by KDOORHOST: E within reach opens and shuts it, the tip shows near
+one) and each pane KGLASS 'clear'; build.py reads core/door's 10, 20, 90 into the page (not into the engine-neutral core).
+
+- [ ] **The leaves are matched to the shell's meshes by order** (the doors with a leaf, in `room.doors` order, against the
+      shell group's `part: 'door'` meshes). kits/interiors' shell should register its own leaves (a KDOOR record and a
+      `KDOORHOST.object`/`posed` per leaf) and use KGLASS; then this fragment goes. Listed for kits/interiors.
+- [ ] **No reachability audit**: the sheet's rooms are shells with no core/walk records (`IX.walk.register` takes a set
+      instance, not a `ROOM()` shell). Every hall and room has its one door on the open deck, so each is reached by
+      construction; a `KWALK` registration of the shells' floors and walls (kits/interiors) would let `KWALK.reach` prove it.
+
 ## The Ancients kit's interiors (2026-10-07)
 
 - [ ] **Skyscrapers have no plans yet.** The user asked for rooms in them but no furniture; their storeys follow each

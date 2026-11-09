@@ -65,7 +65,7 @@ core/host's (since 2026-10-15; `src/99-start.js` is the take).
 ```
 cd settlements/noahs-regret
 python3 build.py                                         # -> dist/noahs-regret.html (node --check when node exists)
-python3 build.py --vendor-check                          # 81-sky.js (iziz), 30-geo.js (kits/scyvoi)
+python3 build.py --vendor-check                          # 30-geo.js (kits/scyvoi); the sky is read from core/atmos/placeholder
 python3 verify.py dist/noahs-regret.html --assert --all-views --out /tmp/nr-shots
 python3 ../../tools/textures/pack.py settlements/noahs-regret   # (from the repo root) after a change to materials.json
 ```

@@ -6,7 +6,7 @@ proves each step. Nothing in `src/` exists yet. Read the repo `README.md`, `CLAU
 
 ## 0. The decisions that shape everything else
 
-1. **Engine: the Ancients-lineage fragment contract** (`kits/ancients` → `settlements/port` →
+1. **Engine: the Ancients-lineage fragment contract** (`kits/ancients` → `kits/port` →
    `settlements/iziz` city target), not the Voth/Yuni/Mav's engine. Reasons: the drowned quarter IS the
    Ancients kit; the port kit already has declarative terrain stamps, a water plane with an underwater
    material fade, quays and piers; the foreign quarter's buildings (Iziz Vernacular, the Republic from
@@ -23,7 +23,7 @@ proves each step. Nothing in `src/` exists yet. Read the repo `README.md`, `CLAU
 4. **One folder, three targets**: `settlements/ys/` with `targets/mock` (the gate sheet), `targets/kit`
    (every builder on one sheet, rows by family, presets generated: the Jimjam pattern) and `targets/city`.
 5. **Vendor, don't copy by hand.** `build.py` resolves `core/materials/` through `srcpath()` and keeps a
-   `VENDOR.json` for every fragment taken from `kits/ancients`, `settlements/port`, `settlements/iziz`,
+   `VENDOR.json` for every fragment taken from `kits/ancients`, `kits/port`, `settlements/iziz`,
    `settlements/highlands`, `kits/ringsea`, `core/sockets` and `biomes/nwbay`; `--vendor-check` reports
    drift. Deliberate drift goes in `KNOWN_ISSUES.md`.
 
@@ -51,7 +51,7 @@ their own (ancients 9xxx, port 19990–20699); `build.py`'s overlap check covers
 |---|---|
 | `kits/ancients` | `00-head 10-core 12-stats 30-kit 32-surfaces 34-kitdefs 36-decor 38-helpers2 50-registry 69-mat-salvage 99-tail`; **adapted**: `54-mat-concrete` (`bodyGroup` takes a per-site cut at decay 1: a standing stump with full-size storeys, optional fallen body); the builders used as hosts: `52-sky-abc 56-sky-d 57-sky-e 58-sky-f 70-sky-g 71-sky-h 89k-sky-i 89l-sky-j 89m-sky-k 82-apartments 42-offices 66-office-c 75-hotel 74-hospital 79-government 48-library 83-amphitheater 66b-flatiron 64-houses-def 81-houses-abc 73-police` |
 | `core/materials` | `20-textures 22-materials 68-mat-v5` via the resolver |
-| `settlements/port` | `70-port-core 72-port-kit 73-port-edges 74-port-dress 80-pq-quay 81-pp-pier 82-dd-yard 82-dd-dock 85-hb-1-fish 85-hb-3-haven 87-sl-d-pen 89y-sp-1-yard 83-cg-store`; **adapted**: `71-port-terrain` (the stamp system, water plane, `portUnderwaterPatch`, ground painter kept; `portNatH` replaced by the Ys coast, karst and travertine) |
+| `kits/port` | `70-port-core 72-port-kit 73-port-edges 74-port-dress 80-pq-quay 81-pp-pier 82-dd-yard 82-dd-dock 85-hb-1-fish 85-hb-3-haven 87-sl-d-pen 89y-sp-1-yard 83-cg-store`; **adapted**: `71-port-terrain` (the stamp system, water plane, `portUnderwaterPatch`, ground painter kept; `portNatH` replaced by the Ys coast, karst and travertine) |
 | `settlements/iziz` | `69b-vern-mat 69c-vern-helpers 70-vern-dwellings 71-vern-trade 72-vern-civic 75-port-embassy 76-port-chapterhouse 78-transplant 81-sky 92-camera 93-labels`; `92-camera` **adapted** (compass, the Below-the-tide view; the ground clamp reads the water) |
 | `settlements/xanadu` | **adapted**: `85-xa-water` (the tiling 8 m water modules: rill, basin, cascade, fall; re-skinned to shell and travertine for the Amphitriton's ringed pools and the terraces' lips) |
 | `settlements/highlands` | `70-hl-tex 71-hl-mat 71b-hl-motif 72-hl-helpers 73-hl-carve 73b-hl-frame 74-rep-dwell 75-rep-trade 76-rep-civic`; for the land quarter's post-apoc dwellings and the optional hulk strand: `79b-rep-salvage 79c-rep-apoc 79d-rep-scrap2 79e-rep-arco 79f-rep-shipbreak` |

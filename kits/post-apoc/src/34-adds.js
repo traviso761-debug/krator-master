@@ -8,23 +8,38 @@ function doorNote(x,y,z,w,h){const p=new THREE.Vector3(x,y,z+.03).applyMatrix4(C
 /* an entrance with no leaf (an open container front or service counter, a gate gap in a fence, a roll-up door opening, a doorway with a curtain):
    draws nothing, leaves the same record as door(), so place() can pick it as the building's FRONT DOOR. Same frame: on a surface facing +z, y = threshold */
 function entry(x,y,z,w,h){doorNote(x,y,z,w,h||2.0);}
+/* the door is a core/door record (35-pa-open.js): drawn in an opening its wall left (wallOpen), it opens onto what is behind it and is an
+   operable leaf that swings (its inset panels and handle are the drawn leaf's, so an operable one is a plain painted leaf); on a solid face it
+   is LOCKED and keeps the leaf drawn here. o.ajar (radians): drawn standing that far open, as a builder drew it; E shuts it */
 function door(x,y,z,w,h,o){o=o||{};doorNote(x,y,z,w,h);const c=o.col===undefined?jc(pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0x8a5a30,0xc99a2e,0x4d6f3c]),.06):jc(o.col,.05);const fr=jc(o.frame||0x4a3a2c,.05);
  const dk=c.clone().multiplyScalar(.7);   /* leaf in unweathered paint (plank would be rusted toward the wall colour), with inset panels and a dark surround so it reads as a door, not as more wall */
- box('plain',x,y,z+.03,w-.1,h-.05,.06,c);
- for(const py of [.1,.56])for(const sx of [-1,1])box('plain',x+sx*(w/4-.01),y+h*py+.06,z+.065,w/2-.16,h*.4,.02,dk);
+ const live=poInOpening(x,y+h/2,z)?poLeaf(x,y,z+.03,w-.06,h-.05,{col:c,t:.06,ajar:o.ajar}):(poLeaf(x,y,z+.03,w-.06,h-.05,{locked:true,record:true}),null);
+ if(!live){box('plain',x,y,z+.03,w-.1,h-.05,.06,c);
+  for(const py of [.1,.56])for(const sx of [-1,1])box('plain',x+sx*(w/4-.01),y+h*py+.06,z+.065,w/2-.16,h*.4,.02,dk);}
  box('iron',x,y+h-.06,z+.06,w+.24,.14,.12,fr);for(const sx of [-1,1])box('iron',x+sx*(w/2+.04),y,z+.06,.14,h,.12,fr);
- box('iron',x+w/2-.16,y+h*.45,z+.08,.05,.05,.06,jc(0xb8a060,.05));if(o.step!==false)box('conc',x,y-.02,z+.28,w+.3,.06,.5,jc(0x8a8478,.05));}
+ const hc0=jc(0xb8a060,.05);if(!live)box('iron',x+w/2-.16,y+h*.45,z+.08,.05,.05,.06,hc0);   /* the handle's colour still drawn: the stream stays the builder's */if(o.step!==false)box('conc',x,y-.02,z+.28,w+.3,.06,.5,jc(0x8a8478,.05));}
+/* a window: real glass (KGLASS 'frosted', salvaged panes: 22-mat.js). In an opening its wall left (wallOpen) the room shows through it; on a solid
+   face the room card (KGLASS 'room', 35-pa-open.js) stands behind the glass, so a window is never a dark plate. o.lit: the room behind is lit (a
+   lamp-lit room: the glow card behind the glass, which keeps its halo) */
 function win(x,y,z,w,h,o){o=o||{};const fr=jc(o.frame||0x4a3a2c,.05);const lit=o.lit;
  box('iron',x,y-.06,z+.05,w+.2,.08,.16,fr);box('iron',x,y+h,z+.05,w+.2,.08,.12,fr);for(const sx of [-1,1])box('iron',x+sx*(w/2+.05),y,z+.05,.08,h,.1,fr);
- box(lit?'glow':'glass',x,y,z+.03,w,h,.04,lit?jc(0xf2c26a,.05):jc(pick(PAL.glass),.06));
+ if(poLive()){if(poInOpening(x,y+h/2,z))PO.cut++;else if(!lit)poCard(x,y,z+.005,w,h);PO.panes++;}
+ if(lit){box('glow',x,y,z+.005,w,h,.02,jc(0xf2c26a,.05));PO.cards+=poLive()?1:0;box('glass',x,y,z+.03,w,h,.04,PO_LITGLASS);}   /* a fixed tint: no rr() drawn, the stream stays the builder's */
+ else box('glass',x,y,z+.03,w,h,.04,jc(pick(PAL.glass),.06));
  if(o.bars){for(let k=1;k<4;k++)box('iron',x-w/2+k*w/4,y,z+.09,.03,h,.03,jc(0x2a2826,.03));}
  else if(o.mullion!==false){box('iron',x,y,z+.08,.04,h,.04,fr);box('iron',x,y+h/2,z+.08,w,.04,.04,fr);}
  if(o.shutters){for(const sx of [-1,1])box('plank',x+sx*(w/2+.32),y,z+.08,.6,h,.05,jc(pick(PAL.wood),.06),sx*.25*(o.open||0));}}
 function porthole(x,y,z,r,o){o=o||{};tire(x,y,z+.06,r+.06,.06,jc(0x4a4038,.05),0,PI/2,0);cylH('glass',x,y,z+.03,r,.05,jc(pick(PAL.glass),.06),'z',12);}
 // ---- wall builders. ry turns them about (x,z). All are boxes of a recycled material.
 // patchwork wall: planks with sheet-metal patches nailed over the gaps
-function patchWall(x,y,z,w,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{box('plank',0,0,0,w,h,.1,o.col===undefined?P('wood'):jc(o.col,.05));
- const n=Math.max(1,Math.round(w*h/3.2));for(let k=0;k<n;k++){const pw=rr(.5,1.4),ph=rr(.4,1.1);const px=rr(-w/2+pw/2,w/2-pw/2),py=rr(0,Math.max(0,h-ph));box(pick(['sheet','corr','cont']),px,py,.07,pw,ph,.03,pick([P('galv'),P('rust'),P('paint')]),0,0,rr(-.06,.06));}});}
+/* o.holes [{x0,x1,y0,y1}] in the wall's own frame (x along it from its middle, y up from its foot): openings cut through it (recorded for
+   35-pa-open.js, so a door drawn in one is real); a patch that would cover one is not nailed on (its random numbers are still drawn) */
+function patchWall(x,y,z,w,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const col=o.col===undefined?P('wood'):jc(o.col,.05),H=(o.holes||[]).slice().sort((a,b)=>a.x0-b.x0);
+ if(!H.length)box('plank',0,0,0,w,h,.1,col);
+ else{let cur=-w/2;const seg=(a,b,y0,y1)=>{if(b-a>.02&&y1-y0>.02)box('plank',(a+b)/2,y0,0,b-a,y1-y0,.1,col);};
+  for(const q of H){seg(cur,q.x0,0,h);seg(q.x0,q.x1,0,q.y0);seg(q.x0,q.x1,q.y1,h);cur=q.x1;poOpening(q.x0,q.x1,q.y0,q.y1,.1);}seg(cur,w/2,0,h);}
+ const n=Math.max(1,Math.round(w*h/3.2));for(let k=0;k<n;k++){const pw=rr(.5,1.4),ph=rr(.4,1.1);const px=rr(-w/2+pw/2,w/2-pw/2),py=rr(0,Math.max(0,h-ph));const mk=pick(['sheet','corr','cont']),pc=pick([P('galv'),P('rust'),P('paint')]),tw=rr(-.06,.06);
+  if(!H.some(q=>px+pw/2>q.x0&&px-pw/2<q.x1&&py+ph>q.y0&&py<q.y1))box(mk,px,py,.07,pw,ph,.03,pc,0,0,tw);}});}
 function plankWall(x,y,z,w,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{box('plank',0,0,0,w,h,o.th||.12,o.col===undefined?P('wood'):jc(o.col,.05));
  if(o.posts!==false){const n=Math.max(1,Math.round(w/2));for(let k=0;k<=n;k++)box('plank',-w/2+k*w/n,0,.02,.12,h,.16,jc(0x5c4630,.06));}});}
 function sheetWall(x,y,z,w,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const c=o.col===undefined?pick([P('galv'),P('rust'),P('paint')]):jc(o.col,.05);box(o.mat||'corr',0,0,0,w,h,o.th||.06,c);

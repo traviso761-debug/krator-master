@@ -51,6 +51,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # python3 build.py                    dist/geyser.html, the showcase basin in the Steampits (station 1)
 # python3 build.py --station <name>   dist/geyser-<name>.html: stations/<name>/ added to src/ (PLAN-STATIONS.md): stills
 _args=[a for a in sys.argv[1:] if not a.startswith('--') or a=='--station']
@@ -170,6 +171,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,OUT[:-5]+'.tex.js')

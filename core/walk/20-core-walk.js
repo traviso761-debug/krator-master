@@ -23,6 +23,8 @@
 //                                 slides round them instead of stopping
 //   W.setBlock(rec, on)           switch a block (or an array of them) off or on: a door that opens and shuts. rec is what block() returned;
 //                                 off, blocked() and push() skip it and export() marks it off:true
+//   W.reach(starts, o)            which floors a walker gets to from starts ([[x,y,z],...]), flooding a sample grid:
+//                                 {reached, unreached, nodes, capped} (the reachability audit; see the function)
 //   W.bounds()                    [x0,x1,z0,z1] over everything registered, or null
 //   W.zone({id, kind, shape:{type, at, ry, r, h, w, d, pts}, travel, enter, avoid, layer})   a navigation zone by hand (a
 //                                 hazard with no core/tags record); the hazards' own come from core/hazard (below)
@@ -137,6 +139,39 @@
         if(!moved)break;}
       return [x,z];
     }
+    // reach(starts, o): which floors a walker gets to from the starts ([[x,y,z], ...]: a doorstep, a spawn), flooding a grid of
+    // o.cell (0.4 m) sample points four ways: a step goes to the next cell's floor within o.step (0.45) of the walker's, where
+    // a walker (radius o.r 0.25, height o.h 1.7) is not blocked. With o.ground(x,z) -> y, open ground where no floor is
+    // registered is walkable too (the street between two doors). o.box [x0,x1,z0,z1] bounds the flood (default: every
+    // floor's bounds, grown by o.margin, 6 m); o.limit caps the samples (3e6). Blocks switched off (an open door) do not stop
+    // it, so open the doors first. Returns {reached, unreached: [floor records], nodes, capped}: a floor is reached when a
+    // sample on it was; one in the box that no sample stood on is unreached (a sealed room, a floor no stair meets). Two
+    // floors at one height over one sample (a room's floor laid on a deck's) are both reached when the sample is.
+    function reach(starts,o){
+      o=o||{};var C=o.cell==null?0.4:o.cell,S=o.step==null?0.45:o.step,R=o.r==null?0.25:o.r,H=o.h==null?1.7:o.h,G=o.ground||null,M=o.margin==null?6:o.margin,LIM=o.limit==null?3e6:o.limit;
+      var bb=o.box||bounds();if(!bb)return{reached:[],unreached:[],nodes:0,capped:false};
+      var X0=o.box?bb[0]:bb[0]-M,X1=o.box?bb[1]:bb[1]+M,Z0=o.box?bb[2]:bb[2]-M,Z1=o.box?bb[3]:bb[3]+M;
+      var NI=Math.floor((X1-X0)/C),NJ=Math.floor((Z1-Z0)/C),seen=new Map(),hit=new Set(),Q=[],head=0,capped=false;
+      function standAt(x,z,y){var out=[],fs=floorsAt(x,z),i;
+        for(i=0;i<fs.length;i++)if(Math.abs(fs[i][0]-y)<=S)out.push(fs[i]);
+        if(!out.length&&G){var gy=G(x,z),under=false;for(i=0;i<fs.length;i++)if(fs[i][0]<=gy+S&&fs[i][0]>=gy-S)under=true;
+          if(gy!=null&&!under&&Math.abs(gy-y)<=S)out.push([gy,null]);}
+        return out;}
+      function visit(i,j,y,f){if(i<0||j<0||i>NI||j>NJ)return;var k=i+','+j+','+Math.round(y*10),was=seen.get(k);
+        if(was!==undefined){if(was&&f)hit.add(f);return;}   // the sample is known: a second floor at its height is stood on too
+        var ok=!blocked(X0+i*C,y+0.05,Z0+j*C,R,H-0.05);seen.set(k,ok);if(!ok)return;if(f)hit.add(f);Q.push([i,j,y]);}
+      for(var s=0;s<starts.length;s++){var p=starts[s],si=Math.round((p[0]-X0)/C),sj=Math.round((p[2]-Z0)/C),st=standAt(X0+si*C,Z0+sj*C,p[1]);
+        for(var t=0;t<st.length;t++)visit(si,sj,st[t][0],st[t][1]);}
+      var D=[[1,0],[-1,0],[0,1],[0,-1]];
+      while(head<Q.length){if(head>=LIM){capped=true;break;}var q=Q[head++];
+        for(var d=0;d<4;d++){var i=q[0]+D[d][0],j=q[1]+D[d][1],x=X0+i*C,z=Z0+j*C,st2=standAt(x,z,q[2]);
+          for(var u=0;u<st2.length;u++)visit(i,j,st2[u][0],st2[u][1]);}}
+      var reached=[],unreached=[];
+      for(var f=0;f<floors.length;f++){var F=floors[f],hw=F.w/2,b=F.kind==='rect'?F.rect:F.kind==='strip'?
+          [Math.min(F.a[0],F.b[0])-hw,Math.max(F.a[0],F.b[0])+hw,Math.min(F.a[1],F.b[1])-hw,Math.max(F.a[1],F.b[1])+hw]:F.bbox;if(!b)continue;
+        if(b[1]<X0||b[0]>X1||b[3]<Z0||b[2]>Z1)continue;(hit.has(F)?reached:unreached).push(F);}
+      return{reached:reached,unreached:unreached,nodes:Q.length,capped:capped};
+    }
     function bounds(){
       var b=null;function grow(x0,x1,z0,z1){if(!b)b=[x0,x1,z0,z1];else{b[0]=Math.min(b[0],x0);b[1]=Math.max(b[1],x1);b[2]=Math.min(b[2],z0);b[3]=Math.max(b[3],z1);}}
       floors.forEach(function(f){if(f.kind==='rect')grow.apply(null,f.rect);else if(f.kind==='poly')grow.apply(null,f.bbox);
@@ -171,7 +206,7 @@
     function setBlock(r,on){var L=Array.isArray(r)?r:[r];for(var i=0;i<L.length;i++){if(!L[i]||!L[i].box)throw new Error('KWALK.setBlock: not a block record');L[i].off=!on;}return on;}
     function clear(){floors.length=0;blocks.length=0;zoneL.length=0;grid.clear();seq=0;}
     return {floor:floor,strip:strip,poly:poly,block:block,setBlock:setBlock,zone:zone,zones:zoneL,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
-      bounds:bounds,export:exp,clear:clear,floors:floors,blocks:blocks,heightOn:heightOn};
+      bounds:bounds,export:exp,clear:clear,floors:floors,blocks:blocks,heightOn:heightOn,reach:reach};
   }
   var W=create();W.create=create;
   root.KWALK=W;

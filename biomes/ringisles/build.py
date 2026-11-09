@@ -66,6 +66,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
 _args=sys.argv[1:]
 STATION=_args[_args.index('--station')+1] if '--station' in _args else None
@@ -244,6 +245,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 # a station's page shares the main page's sidecars (the same kits, the same packs): it writes them again, identical, and prunes nothing

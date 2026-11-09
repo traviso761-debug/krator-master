@@ -26,9 +26,11 @@ the detail maps. Without optin the bundle is byte-identical to what it was.
     'ancient-bath'   krator-optin-furniture-ancient-bath.js: the Ancients' bath fixtures and the `bath` room programme
                      (KratorFurniture.ancientBath.install(KratorInteriors) before furnishing)
 """
-import base64, json, os
+import base64, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'))
+import catalog as kcat   # the engine's names resolve to core/catalog, the culture files' to this folder
 CORE = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js']
 RUNTIME = 'krator-furniture-runtime.js'
 DETAIL = 'krator-furniture-detail.js'      # joins only with tex=True
@@ -40,7 +42,7 @@ def culture_files():
 
 
 def read(f):
-    with open(os.path.join(HERE, f), encoding='utf-8') as fh:
+    with open(kcat.path(f), encoding='utf-8') as fh:
         return fh.read()
 
 
@@ -101,11 +103,11 @@ def bundle(cultures=None, harvested=False, tex=False, plants=False, optin=None):
             raise ValueError('furniture_bundle: no opt-in set %r (have: %s)' % (n, ', '.join(sorted(OPT_IN))))
         if OPT_IN[n] not in fs:
             fs = fs + [OPT_IN[n]]
-    body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
+    body = ''.join('/* ---- %s ---- */\n%s\n' % (kcat.rel(f), read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]
         body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures()
-        body += '/* ---- kits/catalog/%s ---- */\n%s\n' % (DETAIL, read(DETAIL))
+        body += '/* ---- %s ---- */\n%s\n' % (kcat.rel(DETAIL), read(DETAIL))
     return safe('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
             'var KratorFurniture = (function () {\n%s\nreturn KF_API;\n})();\n' % (', '.join(fs), body))
 

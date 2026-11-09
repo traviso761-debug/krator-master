@@ -83,7 +83,8 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
   const g=off=>(u,v)=>{const z=hz2-2*hz2*u,b=yb(u),t=yt(u);return [gx+off,lerp(b,t,v),z];};
   psurf(gmk,g(0),48,4,gcol,{flip:s<0});psurf(gmk,g(-s*.3),48,4,gcol,{flip:s>0});
   for(const d of doors){const dh=lzDoorH(d.c),dw=dh*.62;for(const k of [-1,1]){const p0=[gx,y0,d.z+k*dw/2],p1=[gx,y0+dh,d.z],p2=[gx-s*.3,y0,d.z+k*dw/2];plane4(gmk,p0,p1,p2,.02,gcol);}
-   door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
+   door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);{let hh=dh,n=0;while(hh>=1.15&&n<7){hh/=LZ_RATIO;n++;}const hi=dh/Math.pow(LZ_RATIO,Math.max(0,n-1)),dz=Math.max(0,n-1)*.14+.08;   /* the leaf behind the portal's innermost frame, its size */
+    lzLeaf(gx-s*(dz-.02),y0,d.z,s>0?PI/2:-PI/2,hi*.62,hi);}lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
   if(s>0)for(const [ez,ey] of o.eyes||[])lzNoCut(()=>lzEye(gx+.02,ey,ez,PI/2,.45,{mk:'bronze'}));}}
 /* a domed cell: a lathe of `prof` ([[r, y], ...] from the foot up) with an INNER shell, and real triangular doorways
    cut through both: o.door (one, facing +z of a frame turned o.ry) or o.doors [{dh, ry}] (several, ry the way each faces,
@@ -111,7 +112,7 @@ function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth')
    for(const d of doors)panel(d.ac-d.aw,d.ac+d.aw,a=>d.yAt(Math.abs(a-d.ac)),sc,ysc,inw);}
   /* the reveals along each door's straight slanted edges, between the two shells */
   for(const d of doors){for(const kk of [-1,1])psurf(mk,(u,v)=>{const y=d.dh*u,a=d.ac+kk*d.ha(y),rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y*lerp(.97,1,v),Math.sin(a)*rr0];},6,2,col,{flip:kk<0});
-   W(0,0,0,d.ry,()=>door(0,0,r0*.94,0,d.dw));}});}
+   W(0,0,0,d.ry,()=>{door(0,0,r0*.94,0,d.dw);lzLeaf(0,0,r0*.94,0,d.dw,d.dh);});}});}
 /* an eye on a dome's slope: at height y on the +z face of a dome of profile prof, the disc laid on the surface (tilted to its slope) */
 function lzDomeEye(prof,y,R,o){const Rf=yy=>{for(let i=1;i<prof.length;i++)if(yy<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(yy-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
  const r=Rf(y),dr=Rf(y+.05)-Rf(y-.05),slope=Math.atan2(-dr,.1);   /* the surface leans back by `slope` above the vertical */
@@ -134,14 +135,15 @@ function lzWall(B0,B1,T0,T1,y0,h,mk,col,opens,o){o=o||{};const L=Math.hypot(B1[0
  const sheet=(u0,u1,ybot)=>{if(u1-u0<1e-3)return;const f=off=>(u,v)=>{const uu=u0+(u1-u0)*u,yb=ybot?ybot(uu):0,vv=yb/h+(1-yb/h)*v;return at(uu,vv,off);};
   const nv=ybot?3:2,nu=ybot?6:Math.max(1,Math.round((u1-u0)*L/2));psurf(mk,f(0),nu,nv,col,{});if(o.inner!==false)psurf(mk,f(-LZ_T),nu,nv,o.innerCol||col,{flip:true});};
  const ops=(opens||[]).filter(q=>q.door).sort((a,b)=>a.s-b.s);let u=0;
- /* a vent (an opening with a sill y) is not cut: it is a dark triangle set a little proud of the face, high under the eave */
- for(const q of (opens||[]).filter(q=>!q.door)){const uc=q.s/L,yv=(q.y||h*.6)/h;const p0=at(uc-q.w/2/L,yv,.03),p1=at(uc+q.w/2/L,yv,.03),p2=at(uc,Math.min(1,yv+q.h/h),.03);poly('plain',[p0,p1,p2],P('black'),false);}
+ /* a vent (an opening with a sill y) is not cut: the room card (core/door: the room's dim back, not a dark void) set a little
+    proud of the face, high under the eave */
+ for(const q of (opens||[]).filter(q=>!q.door)){const uc=q.s/L,yv=(q.y||h*.6)/h;const p0=at(uc-q.w/2/L,yv,.03),p1=at(uc+q.w/2/L,yv,.03),p2=at(uc,Math.min(1,yv+q.h/h),.03);svPanePoly([p0,p1,p2],{glass:false,depth:0});}
  for(const q of ops){const ua=(q.s-q.w/2)/L,ub=(q.s+q.w/2)/L,uc=q.s/L;sheet(u,ua);
   /* over the triangle: the bottom edge rises to the apex and falls again */
   sheet(ua,ub,uu=>q.h*(1-Math.abs(uu-uc)/(ub-uc)));
   /* the reveal: two slabs along the slanted sides */
   for(const [ux,uy] of [[ua,ub],[ub,ua]]){const p0=at(ux,0,0),p1=at(uy>ux?uc:uc,q.h/h,0),p2=at(ux,0,-LZ_T);plane4(mk,p0,p1,p2,.02,o.revealCol||col);}
-  if(q.door){const p=at(uc,0,-LZ_T/2);door(p[0],p[1],p[2],Math.atan2(nx,nz),q.w);}
+  if(q.door){const p=at(uc,0,-LZ_T/2);door(p[0],p[1],p[2],Math.atan2(nx,nz),q.w);lzLeaf(p[0],p[1],p[2],Math.atan2(nx,nz),q.w,q.h);}
   u=ub;}
  sheet(u,1);}
 /* a room of four leaning walls: w (x) by d (z) at the ground, y0 up h. o.lean {front, back, left, right}: metres the top
@@ -161,6 +163,10 @@ function lzCourseRing(T,y,th,wide,mk,col){const xl=T.fl[0],xr=T.fr[0],zf=T.fl[1]
 function lzSlab(T,y,th,mk,col,ov){ov=ov||0;/* prism wants its outline anticlockwise seen from above: back-left, back-right, front-right, front-left */
  const pts=[[T.bl[0]-ov,T.bl[1]-ov],[T.br[0]+ov,T.br[1]-ov],[T.fr[0]+ov,T.fr[1]+ov],[T.fl[0]-ov,T.fl[1]+ov]];prism(mk,pts,y,y+th,col);}
 /* ---------------------------------------------------------------- openings: triangles, sized by caste, nested on shared buildings */
+/* a caste door's leaf (core/door, the owner's 2026-11-03 doors): a lacquered triangle in the opening, pivoting on the line
+   through its apex so it never meets the slanted reveals; it opens on E or an NPC (KDOOR). (x,y,z) the opening's foot in the
+   wall's middle, ry the way out, w x h the triangle */
+function lzLeaf(x,y,z,ry,w,h){return svLeaf(x,y,z,ry,w*.9,h*.92,{shape:'tri',pivot:true,split:false,mk:'lacq',col:P('lacq'),t:.06,name:'caste door'});}
 /* the door of caste c, as an lzWall opening at s along the wall: a triangle doorH(c) high, 0.62 of that wide at the floor */
 function lzDoor(c,s){const h=lzDoorH(c);return {s,w:+(h*.62).toFixed(2),h,door:true};}
 /* a slit vent for caste c (no window at a human's eye height: the vents sit high, under the eave) */

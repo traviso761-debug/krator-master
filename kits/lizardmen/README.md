@@ -56,3 +56,9 @@ for the jade (`materials.json`, 42 families with the furniture detail maps). The
 geometry: the three pattern sheets that would replace them at a distance (a leiwen block, a glyph band, the spiral eye) are
 prompted in `core/materials/PLAN.md` under "Lizardmen" (paste-ready in `PROMPTS-ready.md`) and declared `optional: true`
 in `materials.json` (`leiwenS`, `glyphS`, `eyeS`), so `pack.py` skips them and nothing stands in until the owner delivers them.
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. Where the page has `core/walk`, each door's doorway is blocked while it is shut and clear while open (`KDOOR.walk`), and any wall box standing in an unlocked doorway is switched off (`svOpenWalk`).
+
+What it changed here: every caste door (gable, dome and wall) has its leaf: a lacquered triangle that pivots on the line through its apex, so it never meets the slanted reveals; the uncut vents are the room card instead of black. The reliquary's great portal stays an open passage mouth.

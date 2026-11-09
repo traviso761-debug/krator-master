@@ -4,7 +4,7 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
-**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+**Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the published gallery is not republished for that, so the live page keeps it until the next publish.
 ## The Krator System in the top list (2026-10-26)
 
 The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
@@ -201,7 +201,7 @@ the console.
 
 ## The Ancients and the Port: their own artifact (2026-10-07)
 
-The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`settlements/port`)
+The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`kits/port`)
 are published as their own artifact, https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1 ("The Ancients and the Port":
 61 pages, 103 MB with their two shared library packs), which the Krator Worlds index links to under the Throne. With them
 Krator Worlds hit the artifact's 256 MiB a version once Locus and Mungo took the material library.
@@ -211,7 +211,7 @@ build them for it) and keeps them in any other `--out` site (the LAN host's). Th
 `ENTRIES`. To update:
 
 ```
-python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and settlements/port, writes gallery/ancients-site/
+python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and kits/port, writes gallery/ancients-site/
 ```
 
 Then publish `gallery/ancients-site/index.html` to the URL above with every file in `gallery/ancients-site/worlds/`, in

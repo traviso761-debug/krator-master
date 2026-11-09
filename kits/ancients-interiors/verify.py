@@ -63,8 +63,8 @@ def core_node():
 async def run(a):
     if a.out:
         os.makedirs(a.out, exist_ok=True)
-    # serve kits/ (the page loads ../../catalog/*.js by path)
-    async with verify_page(a.html, here=HERE, size=a.size, root=KITS, settle_ms=1000) as V:
+    # serve the repo root (the page loads core/catalog/*.js by path)
+    async with verify_page(a.html, here=HERE, size=a.size, root=os.path.dirname(KITS), settle_ms=1000) as V:
         pg, errs, fails = V.page, V.errs, V.fails
         if not V.ready:
             print('timed out waiting for the sheet to build'); fails.append('build timeout')

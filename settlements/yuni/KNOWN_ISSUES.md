@@ -105,7 +105,8 @@
       the merged mesh has no per-instance phase.
 - [ ] The Library of Yuni is over its triangle budget (~18k est.), most of it shelving. The interior only reads
       from on or near the entrance axis; from an oblique angle you see the facade, not the books.
-- [ ] The watch tower's bell reads to about 55 m and goes to a dark hole beyond that.
+- [ ] The watch tower's bell reads to about 55 m and goes to a dark hole beyond that. 2026-11-03: the belfry's ceiling, floor and
+      core are the room card's colour now, not black; the bell's reach is unchanged.
 - [ ] Djenné town house variant A reads weakest of the three; the Musgum door surround is still a flat slab.
 - [ ] Underground rooms are lit by the sun in FAST/headless mode (no shadows there); on a real GPU the butte should
       shadow them. Not yet checked on real hardware.
@@ -434,3 +435,53 @@ monkeyflower and columbine, grape curtains, moss and lichen, ledge plants).
 The table is `src/67-yu-trades.js` (`YU_TRADES`, on the world page; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 15 trades carried, 2 partly, 15 gaps, 12 na (landlocked valley, no embassies, no beetles, elephant bugs or mushroom cellars).
 - [ ] Gaps (a later session builds them): bakery, butcher, brewhouse, tannery, temple or mosque hall, wayside shrine, warehouse, power house (the Vault feeds the cable; no engine hall), barracks, customs house, funerary court, olive and date grove with farmhouse, mine head, quarry, dairy.
 - [ ] Partly carried: granary keepers and millers (granary; no mill), swineherds and duck keepers (stock pen; no duck coops).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency",
+doors that open "with a keypress nearby or by an NPC", and "real glass". `build.py` takes `core/door` and `core/walk`; the
+engine's frame calls are in `src/53-assets.js` (helpers in `45-kit.js`; `kits/yuni/README.md`, "Openings").
+Counts (`window._openings`, `verify.py yuni.html --assert --eval "()=>window._openings"`), before -> after:
+- [x] Doors: 1,836 FIX doors, their leaves swung by 76-doors.js's own loop and in no registry -> 2,253 KDOOR records with stable
+      ids (`<asset key>.<placement>.d<n>`; 2,258 leaves): every leaf F.door draws (989 locked as built, their building has no
+      interior plan), the builders' panel doorways made locked leaves (`F.doorway`), the city wall's tower doors
+      (`walltower.<n>.d0/1`), the Vault's (`vault.d0`) and the six sealed doors underground (`under.sealed.d<n>`). KDOOR holds
+      open and shut and eases them (KDOORHOST.tick); the walker still opens a door it reaches, an NPC's DOORS.touch opens one
+      for its seconds and it shuts itself, E toggles the door within reach ("E: open the door"), a quest calls KDOOR.open / close.
+- [x] Glass: 6,804 windows were an opaque plate (MeshBasic, `windowDark` by day) on a black reveal -> each a KGLASS pane (clear,
+      and the lit kind on the evening schedule; the Vault's electric windows a cool glow: KGLASS `opt.emissive`), each over
+      the room card in shade (`ROOMC_GLASS`), plus the Archive's glazing bands and the loggia and tower windows (`F.paneBox`,
+      `F.pane`; `_openings.panes`, 6,860, counts the frame's windows and that glass). Draw calls (verify's budget) 149 -> 150 of 190 on the world page, 116 -> 117 on the sheet.
+- [x] Voids: about 9,900 instances of the `dark` family, all near black -> 9,630 room cards (`ROOMC`, KGLASS's room colour: hut
+      mouths, a shop within its front, reveals, vents, slits, the belfry) and 290 left dark on purpose: smoke holes and the cone
+      houses' open crowns, flue tops, wells, pots' mouths, a trough, a shaded floor, furniture's own sockets (61e) and the
+      round windows' spokes' backing (none of them an opening). The Ancients' blue `glass` family stays opaque where it is
+      water or lit (troughs, basins, the Vault's crown, rose windows, the sealed doors' leaves): it is lit from behind or not glass.
+- [x] The sheet (`yuni-assets.html`): 362 FIX doors -> 520 KDOOR records (205 locked, 528 leaves), 1,189 windows glazed (1,245
+      panes counted), 1,406 cards, 13 voids. `verify.py --assert` passes on both pages before and after, the same invariants.
+- [ ] Windows are panes on a solid face: the streamed interiors are seen through doorways (the portal), not through windows.
+      A window of a live interior shows the card, not the room.
+- [ ] The interiors' own doors (64-interiors.js, streamed with the rooms) keep 76-doors.js's proximity loop and are not KDOOR
+      records: they are built and dropped as you walk, and a record per streamed door would need adding and pruning by id.
+- [ ] Leaves swing Yuni's 1.4 rad (OPEN_ANG), not KDOOR.SWING (1.75): KDOOR.export() reports the registry's swing.
+
+The audit: `_doors.reach()` (76-doors.js) writes every planned interior into a KWALK registry of its own, as Yuni's walker sees it
+(the rooms of each level, every wall as blocks gapped at its doorways, each stair rising from its foot to its top, each street door
+a step from 1.8 m outside to 1.6 m inside, a hand-written plan's court doorways too), and floods it from the steps (0.15 m cells,
+0.1 where a ladder is, a 0.45 m step, a 0.15 m walker).
+- [x] Before the fixes 3,482 of 3,578 rooms in 1,323 planned buildings reached; after 3,512 (51 sealed buildings, 66 rooms).
+      Fixed: a hut's mouth wider than its ten-sided room's short face got no doorway in the shell (87 doors without one -> 51):
+      it takes the whole face now (64-interiors.js addShell); a door's doorway is never walled up for an overlapping window.
+      The caravanserai's court-level doorways stand open onto INTERIOR_CUSTOM's cells (room cards, not locked leaves).
+- [ ] 66 rooms unreached: 60 hut rooms (36 `poor_musgum`, 15 `poor_cone_cluster`, 9 `poor_egg_hut`) and 6 `rich_tower_house`
+      living rooms, all round or lathe bodies whose room is sized at the top of its taper, so it lies more than the door's
+      1.6 m corridor inside the door: neither the walker nor the audit gets in, and the shell is drawn there with no doorway.
+      A fix sizes the room at the floor (and keeps the wall inside the taper) or lengthens the corridor to the room.
+- [x] (the stairs pass, 2026-11-03) The corridor is lengthened: a street door's corridor runs on to 0.3 m inside the room behind it
+      when the room starts deeper than 1.6 m (`doorIn` in 76-doors.js, cached on the fixture), for the walker (`walkable()`) and the
+      audit alike, and the audit's walls are clear of such a corridor as the walker passes them (the taper's inner face, drawn across
+      it with no doorway of its own). `_doors.reach()`: 3,512 -> 3,563 of 3,578 rooms reached, sealed buildings 51 -> 0; the musgums,
+      the egg huts and the tower houses' living rooms are reached.
+- [ ] 15 rooms unreached, all `poor_cone_cluster` huts: a cluster's hut whose door faces a neighbouring hut, so its street step
+      starts inside the neighbour's room and the corridor meets the neighbour's wall. The plan's door, not the walk.
+

@@ -8,7 +8,7 @@ function cylH(mk,x,y,z,r,L,col,axis,seg,wrap){seg=seg||14;const tl=TILE[mk]||1;c
 // wall with rectangular openings, in the local frame: along x centred at x, from y to y+h, thickness th (along z at z). ops: [{x0,x1,y0,y1}] with local x/y, not overlapping in x
 function wallOpen(mk,x,y,z,w,h,th,ops,col,ry){W(x,0,z,ry||0,()=>{const L=-w/2;let cur=L;const o=ops.slice().sort((a,b)=>a.x0-b.x0);
  const seg=(a,b,y0,y1)=>{if(b-a>.02&&y1-y0>.02)box(mk,(a+b)/2,y0,0,b-a,y1-y0,th,jc(col,.03));};
- for(const p of o){seg(cur,p.x0-x,y,y+h);seg(p.x0-x,p.x1-x,y,p.y0);seg(p.x0-x,p.x1-x,p.y1,y+h);cur=p.x1-x;}seg(cur,w/2,y,y+h);});}
+ for(const p of o){seg(cur,p.x0-x,y,y+h);seg(p.x0-x,p.x1-x,y,p.y0);seg(p.x0-x,p.x1-x,p.y1,y+h);cur=p.x1-x;poOpening(p.x0-x,p.x1-x,p.y0,p.y1,th);}seg(cur,w/2,y,y+h);});}   /* each opening recorded (35-pa-open.js): a door or a pane in it is real */
 // ---- shipping container. Long axis x; the +z long side is the "front"; door end at +x. o:{len,hi,col,open:'front'|'end'|'',wear,doorEnd:false}
 function container(o){o=o||{};const L=o.len||CT.L20,Wd=CT.W,H=o.hi?2.9:CT.H;const c=o.col===undefined?PAINT():(typeof o.col==='number'?jc(o.col,.05):o.col);
  const dark=jc(0x3a3532,.05),rail=jc(0x4a4038,.05),t=.07;
