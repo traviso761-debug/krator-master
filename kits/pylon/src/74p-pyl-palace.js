@@ -25,6 +25,33 @@ function pypPavilion(G,u,v,R,storeys,cap,lit,wh,or,sf){const [x,z]=PYP(u,v),T=1.
  else{kput('vDomeP',[x,Htop,z],null,[R*.96,R*.55,R*.96],wh);if(cap==='vent'){vPst('vPostS',x,Htop+R*.5,z,.5,1.6,wh);kput('pyRing',[x,Htop+R*.5+1.6,z],qEuler(Math.PI/2,0,0),[.55,.55,.3],or);}}
  return Htop;}
 
+// the hall block's interior from the interior set's plan (kits/interiors/sets/pylon.js, pyl_governor_palace: the blueprint's
+// rooms, cells [id, level, kind, name, u0, u1, v0, v1], the upper storey's open wells, the doors [level, u, v, w, a, b]):
+// 0.2 m partitions on every line a room's edge runs along (the block's own walls excepted), open where a door stands on them
+// (a lintel over it); the upper floor over the block less the wells and the private stair's square; the doors through the
+// block's walls (the loggia's back, the outside stair's landing: a leaf); the private stair, a spiral round a newel in its
+// 3 m square. Draws from no stream (fixed picks).
+function pypInterior(X,wh,cr){const P=PYP,T=X.T,R1=X.R1,R2=X.R2,LV=[[T,R1-T],[R1,R2-R1]],ext=(ax,c)=>ax==='u'?(c===-4||c===24):Math.abs(c)===18;
+ const pc=vC(0xece6da),fl=vC(PYPAL.stoneGrey[0]);
+ for(let L=0;L<2;L++){const [y,h]=LV[L],lines={};
+  const add=(ax,c,a,b)=>{if(ext(ax,c))return;const k=ax+':'+c.toFixed(2);(lines[k]=lines[k]||{ax,c,iv:[]}).iv.push([Math.min(a,b),Math.max(a,b)]);};
+  const rects=X.cells.filter(c=>c[1]===L).map(c=>[c[4],c[5],c[6],c[7]]).concat(L?X.voids:[]);
+  for(const [u0,u1,v0,v1] of rects){add('u',u0,v0,v1);add('u',u1,v0,v1);add('v',v0,u0,u1);add('v',v1,u0,u1);}
+  for(const k of Object.keys(lines).sort()){const Ln=lines[k],iv=Ln.iv.sort((p,q)=>p[0]-q[0]),runs=[];
+   for(const r of iv){const t=runs[runs.length-1];if(t&&r[0]<=t[1]+.01)t[1]=Math.max(t[1],r[1]);else runs.push(r.slice());}
+   const gaps=X.doors.filter(d=>d[0]===L&&(Ln.ax==='u'?Math.abs(d[1]-Ln.c)<.01:Math.abs(d[2]-Ln.c)<.01)).map(d=>{const m=Ln.ax==='u'?d[2]:d[1];return[m-d[3]/2,m+d[3]/2,d[3]>=1.6?3.4:2.4];});
+   const seg=(a,b,y0,hh)=>{if(b-a<.02||hh<.02)return;const m=(a+b)/2;if(Ln.ax==='u'){const [x,z]=P(Ln.c,m);vB('vPlaster',x,y0,z,b-a,hh,.2,0,pc);}else{const [x,z]=P(m,Ln.c);vB('vPlaster',x,y0,z,.2,hh,b-a,0,pc);}};
+   for(const [a0,b0] of runs){let a=a0;for(const g of gaps.filter(g=>g[1]>a0&&g[0]<b0).sort((p,q)=>p[0]-q[0])){seg(a,g[0],y,h);seg(Math.max(a,g[0]),Math.min(b0,g[1]),y+g[2],h-g[2]);a=Math.max(a,g[1]);}seg(a,b0,y,h);}}}
+ // the upper floor: the block inside its walls, less the wells and the stair's square (x = -v, z = 1 - u)
+ const R=(u0,u1,v0,v1)=>[[-v1,1-u1],[-v0,1-u1],[-v0,1-u0],[-v1,1-u0]];
+ vnRectFill(R(-3.6,23.6,-17.6,17.6),X.voids.concat([X.stair]).map(r=>R(r[0],r[1],r[2],r[3])),(a,b,e,f)=>vB('vStone',(a+b)/2,R1-.3,(e+f)/2,b-a,.3,f-e,0,fl));
+ // the doors through the bodies' walls: the loggia's back (both storeys), the outside stair's landing (a leaf, at the stair's head)
+ for(const d of X.doors){if(d[5]==='loggia'||d[5]==='gallery'){const [x,z]=P(-4,d[2]);vnHole(x,LV[d[0]][0],z,Math.PI,d[3],d[0]?2.6:3.4,true);}
+  else if(d[5]==='street'){const [x,z]=P(d[1],d[2]);vnOpening(x,LV[d[0]][0],z,d[2]<0?Math.PI/2:-Math.PI/2,d[3],2.4,'door',vC(PYPAL.walnut[0]));}}
+ // the private stair: a spiral of 28 treads round a newel, twelve to the turn, from the ground storey's floor to the upper's
+ {const [u0,u1,v0,v1]=X.stair,[x,z]=P((u0+u1)/2,(v0+v1)/2),n=28,rise=(R1-T)/n;vPst('vPostS',x,T,z,.14,R1-T+1,pc);
+  for(let i=0;i<n;i++){const a=i*TAU/12,p=loc(x,z,0,.78,a);vB('vPlaster',p[0],T+(i+1)*rise-.1,p[1],.5,.1,1.3,a,pc);}}}
+
 function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=4.5,R1=T+G1,R2=R1+U1;
  const wh=vC(vPick(PYPAL.white)),cr=vC(vPick(PYPAL.cream)),or=vC(vPick(PYPAL.orange)),sf=vC(PYA.saffron),conc=vC(vPick(PYPAL.formwork)),gun=vC(vPick(PYPAL.gunmetal)),anc=vC(PYA.white);
  const P=PYP,box=(item,u0,u1,v0,v1,y,h,c)=>{const [x,z]=P((u0+u1)/2,(v0+v1)/2);vB(item,x,y,z,Math.abs(v1-v0),h,Math.abs(u1-u0),0,c);};
@@ -43,11 +70,18 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
  for(let k=0;k<26;k++){const v=rr(-25,25),u=Math.abs(v)>12?-14.35:-8.55,[x,z]=P(u,v);kput('pyDiscM',[x,rr(.2,1),z+.02],null,[rr(.05,.12),rr(.05,.12),.04],null);}
  {const [x,z]=P(-10.3,0);vnStairs(x,0,z,0,11,T,6,'vPanelB',anc);}
  // ---- the hall block: two storeys behind the front arcade, the light courts cut as voids in the roof
- box('vPlaster',-4,24,-18,18,T,G1+U1,wh);
+ // With the interiors (the kit's interior set, kits/interiors/sets/pylon.js: the blueprint's rooms) the block and the loggia
+ // behind the screen are hollow bodies, and the rooms' partitions, the upper floor and the private stair are drawn from the
+ // item's plan (pypInterior); without, the solid block as before.
+ const ix=VERN.cur&&VERN.cur.hollow&&VERN.cur.ixItem&&VERN.cur.ixItem.plan?VERN.cur.ixItem.plan:null;
+ if(ix){const [bx,bz]=P(10,0),[lx,lz]=P(-6.45,0);vnBody('vPlaster',bx,T,bz,36,G1+U1,28,0,wh,{t:.4,floor:'vStone',floorC:vC(PYPAL.stoneGrey[0])});
+  vnBody('vPlaster',lx,T,lz,23.4,G1+U1,4.9,0,wh,{t:.6,floor:'vStone',floorC:vC(PYPAL.stoneGrey[0])});}
+ else box('vPlaster',-4,24,-18,18,T,G1+U1,wh);
  box('vPlaster',-4.5,24.5,-18.5,18.5,R2,.35,or);box('vPlaster',-4,24,-18,18,R2+.35,.6,wh);
  // the front arcade: a rendered screen at u -8.5 across v -11.7..11.7, two storeys of tombstone bays on a 4 m bay,
  // orange reveals over the deep gallery's shade; the middle bay of the ground storey is the nested portal
- box('vPlaster',-8.9,-8.3,-11.7,11.7,T,G1+U1,wh);box('vPlaster',-8.3,-4,-11.7,11.7,R1-.3,.3,cr);
+ if(!ix)box('vPlaster',-8.9,-8.3,-11.7,11.7,T,G1+U1,wh);box('vPlaster',-8.3,-4,-11.7,11.7,R1-.3,.3,cr);
+ if(ix){box('vPlaster',-8.1,-4.5,-11.7,11.7,R2,.35,wh);pypInterior(ix,wh,cr);}
  const NB=6,BW=23.4/NB;for(let s=0;s<2;s++)for(let k=0;k<NB;k++){const v=-11.7+(k+.5)*BW,[x,z]=P(-8.9,v),y=s?R1+.3:T;
   if(s===0&&(k===2||k===3))continue;pynFrame('tomb',x,y,z,0,BW-1.1,(s?U1:G1)-1.1,{rim:.18,c:or,fill:s?'G':'L',out:.05});}
  {const [x,z]=P(-8.9,0);pynDoorway('tomb',x,T,z,0,3.2,G1-.9,{rim:.24,n:3,cs:[wh,or],out:.06});vnLamp(x-2.6,4.6,z+.02,0);vnLamp(x+2.6,4.6,z+.02,0);}

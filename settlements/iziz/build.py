@@ -126,6 +126,7 @@ MATLIB_PACK = '69d-matlib-pack.js'
 # set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Both are closures, so the build rules do not
 # apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
 FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
+APOC_BUNDLE = '88z5-kit-apoc-bundle.js'   # GENERATED for a kit with "postApoc" in kit.json (build_one): the Post-Apoc closure
 INTERIOR_TARGETS = {'vernacular', 'palace', 'city', 'ixtest'}   # the city since 2026-10-19: every building hollow, the civic and Ancient ones furnished (95i)
 FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
 INTERIOR_SETS = ['iziz', 'iziz-ancient']   # iziz-ancient: the city's Ancient civic buildings (the temple, the arena...)
@@ -244,7 +245,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '10-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '10-core-export', '94-city-export', FURN_BUNDLE, APOC_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
@@ -458,6 +459,15 @@ def build_one(target, do_checks, assert_origin):
         cults, ftex, fplants = (TARGET_FURN.get(target, (FURN_CULTURES, False)) + (False,))[:3]
         bodies[FURN_BUNDLE] = furniture_bundle.bundle(cults, tex=ftex, plants=fplants) + kit_bundle.bundle(INTERIOR_SETS)
         order = sorted(order + [FURN_BUNDLE])
+    # a kit that takes the Post-Apoc set (kit.json "postApoc": {"targets": [...], "defs": [kits/post-apoc building fragments],
+    # "extra": [repo-relative fragments run inside its closure: the kit's culture pack]): the closure KratorPostApoc, as
+    # Screamers takes it (kits/post-apoc/apoc_bundle.py), after the furniture and interiors bundle it furnishes through
+    if KIT and KIT.get('postApoc') and target in KIT['postApoc'].get('targets', []):
+        sys.path.insert(0, os.path.join(ROOT, 'kits', 'post-apoc'))
+        import apoc_bundle
+        _pa = KIT['postApoc']
+        bodies[APOC_BUNDLE] = apoc_bundle.bundle(_pa['defs'], extra=[os.path.join(ROOT, p) for p in _pa.get('extra', [])])
+        order = sorted(order + [APOC_BUNDLE])
     tside = None
     if target in TARGET_PACKS:   # the target's own pack, its own sidecar
         tdir_, tname, tfrag, tfile = TARGET_PACKS[target]
