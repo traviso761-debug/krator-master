@@ -115,9 +115,10 @@
    },
    "specular": 0.15,
    "tint": {
+    "colour": "#bea776",
     "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.5322439944517846,
+    "keep": 0.0,
+    "mean": 0.6,
     "sourceMean": 0.5322
    }
   },
@@ -145,9 +146,10 @@
    },
    "specular": 0.2,
    "tint": {
+    "colour": "#b8a27e",
     "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.5335816527721928,
+    "keep": 0.0,
+    "mean": 0.55,
     "sourceMean": 0.5336
    }
   },

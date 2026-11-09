@@ -1,6 +1,6 @@
 {
  "build": "construction",
- "note": "The Construction kit's adapter onto the material library (core/materials/PLAN.md): a building site's gear in the sets' own colours (tint keep 1, own brightness; KCONS.libMats sets a bound material's colour white). The families are KCONS.PALETTE's keys; a key with no family of its own borrows one (KCONS.LIB_ALIAS: stake -> crate, log -> pole, string -> rope). Scales are metres per tile on the kit's world-unit UVs (10-cons-site.js). The ground is the kit sheet's own backdrop (own: a host that reads the kit does not carry it).",
+ "note": "The Construction kit's adapter onto the material library (core/materials/PLAN.md): a building site's gear in the sets' own colours (tint keep 1, own brightness, except the two neutral sets, reed.bundle and cloth.tarp, which are grey by design and take a hue: tint keep 0 with a colour, straw and weathered canvas; KCONS.libMats sets a bound material's colour white). The families are KCONS.PALETTE's keys; a key with no family of its own borrows one (KCONS.LIB_ALIAS: stake -> crate, log -> pole, string -> rope). Scales are metres per tile on the kit's world-unit UVs (10-cons-site.js). The ground is the kit sheet's own backdrop (own: a host that reads the kit does not carry it).",
  "size": 256,
  "families": {
   "earth": {"lib": "ground.dirt", "scale": [3.0, 3.0], "size": 512, "tint": {"keep": 1, "mean": null}, "roughLift": 0.4, "specular": 0.15},
@@ -9,9 +9,9 @@
   "crate": {"lib": "wood.timber", "scale": [1.0, 1.0], "tint": {"keep": 1, "mean": null}, "roughLift": 0.3, "specular": 0.25},
   "block": {"lib": "stone.cut", "scale": [1.6, 1.6], "tint": {"keep": 1, "mean": null}, "roughLift": 0.3, "specular": 0.2},
   "brick": {"lib": "brick.red", "scale": [1.2, 1.2], "tint": {"keep": 1, "mean": null}, "roughLift": 0.3, "specular": 0.2},
-  "bundle": {"lib": "reed.bundle", "scale": [1.0, 1.0], "tint": {"keep": 1, "mean": null}, "roughLift": 0.35, "specular": 0.15},
+  "bundle": {"lib": "reed.bundle", "scale": [1.0, 1.0], "tint": {"keep": 0, "mean": 0.6, "colour": "#bea776"}, "roughLift": 0.35, "specular": 0.15},
   "rope": {"lib": "fibre.rope", "scale": [0.5, 0.5], "tint": {"keep": 1, "mean": null}, "roughLift": 0.35, "specular": 0.15},
-  "canvas": {"lib": "cloth.tarp", "scale": [2.0, 2.0], "tint": {"keep": 1, "mean": null}, "roughLift": 0.35, "specular": 0.2},
+  "canvas": {"lib": "cloth.tarp", "scale": [2.0, 2.0], "tint": {"keep": 0, "mean": 0.55, "colour": "#b8a27e"}, "roughLift": 0.35, "specular": 0.2},
   "sand": {"lib": "ground.park_sand", "scale": [1.5, 1.5], "tint": {"keep": 1, "mean": null}, "roughLift": 0.4, "specular": 0.1},
   "ground": {"lib": "ground.sparse_grass", "scale": [4.0, 4.0], "size": 512, "own": true, "tint": {"keep": 1, "mean": null}, "roughLift": 0.4, "specular": 0.12,
              "breakup": {"mix": 0.5, "macro": 0.08, "cell": 9}}
