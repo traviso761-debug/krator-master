@@ -111,7 +111,9 @@ def files(defs):
     return sorted(set(shared()) | set(ENGINE) | set(defs))
 
 
-def bundle(defs=('40-dw-small.js', '42-lg-dwell.js')):
+def bundle(defs=('40-dw-small.js', '42-lg-dwell.js'), extra=()):
+    """extra: paths of a host's own fragments to run inside the closure after the kit's (a culture pack: mkCulture and its
+    symbol, as a vassal kit's page takes it without an edit to core/sockets; kits/pylon/apoc/). None: the text as before."""
     defs = list(defs)
     for f in defs:
         if not re.match(r'[4-7]\d-', f) or not os.path.isfile(os.path.join(SRC, f)):
@@ -121,6 +123,10 @@ def bundle(defs=('40-dw-small.js', '42-lg-dwell.js')):
         parts.append('/* ---- kits/post-apoc/%s ---- */\n%s\n' % (
             os.path.relpath(path(f), HERE).replace(os.sep, '/'),
             core_body() if f == '10-core.js' else read(f)))
+    for p in extra:
+        with open(p, encoding='utf-8', newline='') as fh:
+            parts.append('/* ---- %s (the host\'s) ---- */\n%s\n' % (
+                os.path.relpath(p, os.path.dirname(os.path.dirname(HERE))).replace(os.sep, '/'), fh.read()))
     parts.append(SHIM_SCENE)
     parts.append('/* ---- kits/post-apoc/src/%s ---- */\n%s\n' % (GLUE, read(GLUE)))
     parts.append(SHIM_TAIL)
