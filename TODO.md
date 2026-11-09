@@ -116,8 +116,11 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
     (`kits/interiors/sets/xanadu.js`; the citadel held for the owner's references); the Hall of the Republic and the Fortress
     are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
-  - ~~Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
-    building's `F.door`).~~ Done (2026-11-09): the planned street doors unlock the placement's nearest door (`66-locus-furnish.js`).
+  - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
+    building's `F.door`). **2026-11-09: tried, not fixed.** `66-locus-furnish.js` `locfDoorsIn` now also unlocks the placement's
+    door nearest each planned street door, but `LDOOR.reach()` still reads 146 starts, 390 of 510 floors reached (422 with every
+    door open), as before: it unlocked nothing more. Find why (the planned doors' `at` and `floors[].y` against the placement's
+    KDOOR records) before trusting it (`settlements/locus/KNOWN_ISSUES.md`).
   - ~~Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.~~ Done
     (2026-11-09): `src/83-mr-walk.js` (the units' plans in core/walk, the doors' blocks, `MRWALK.reach`); decks and bridges not yet.
   - ~~Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.~~

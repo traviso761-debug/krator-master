@@ -116,6 +116,13 @@ failed on every page: the keys moved to the kits; fixed here) and after:
 The audit (`LDOOR.reach()`, `?interiors=1`; core/walk's defaults, one flood per placement over its doors' box, from each unlocked
 door's step and the street 1 to 7 m out): 145 placements, 510 interior floors. With every door open (`LDOOR.reach({all:true})`, the
 page as it was, its leaves in no walk) 422 reached; with the locked ones shut 390 (146 doors unlocked onto a planned room).
+- [ ] (2026-11-09) **The fix for the 32 floors below does nothing yet.** `locfDoorsIn` (`66-locus-furnish.js`) also unlocks the
+      placement's KDOOR record nearest each of the interiors' planned street doors (within 4 m in plan, 2 m of the ground
+      floor's y), unless one there is unlocked already. Measured on `?interiors=1` (`verify.py --eval` with `LDOOR.reach()`, the
+      core/biome `bk` bug patched locally to get a page): 146 starts, 390 of 510 floors reached, 422 with every door open:
+      the same numbers as before it, so it unlocked nothing. Not yet known whether the planned doors' coordinates, the floors'
+      `y` or the "one already unlocked within reach" test is why. `verify.py locus.html --assert --query interiors=1` fails only
+      on the draw-call budget (222 of 190: the interiors' furniture batches).
 - [ ] 32 floors are reached only through a locked door: a door that leads into a planned room but meets no floor of it within
       1.6 m of its sill (the warehouse hall's entry flight, the refinery's still-house): the interiors kit's entrance and the
       building's F.door do not coincide. A fix unlocks by the set's own street doors (`kits/interiors/sets/locus.js`).
