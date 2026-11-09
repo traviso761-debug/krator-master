@@ -34,5 +34,13 @@ ok('the lining: amethyst points on the wall of the pocket, aimed in ('+D.length+
 ok('no point grows out of the broken face (every one inside the plan of the block)',D.every(q=>q.x>-12-4.1),false);
 ok('the same pocket, the same lining',JSON.stringify(KGEODE.line(C,Bk,{world:5,n:600}))===JSON.stringify(D),false);
 ok('refuses a built cavern or no ground',throws(()=>KGEODE.block(null,{x:0,z:0,ground}))&&throws(()=>KGEODE.block(KCAVERN.create({ground,cell:1}),{x:0,z:0})),false);
+ok('one mineral unless a palette is given; shapes are ovals',R.every(r=>r.mineral==='amethyst'&&r.shape[0]===1&&r.shape[1]>=.62&&r.shape[1]<=1),false);
+{const pal={amethyst:3,celestine:1,watermelon:1},M=KGEODE.scatter(Object.assign({},o,{minerals:pal})),c={};M.forEach(r=>c[r.mineral]=(c[r.mineral]||0)+1);
+ ok('a palette draws only its minerals, the heavier more often ('+JSON.stringify(c)+')',M.every(r=>pal[r.mineral])&&c.amethyst>c.celestine&&c.celestine>0&&c.watermelon>0,M.some(r=>!pal[r.mineral]));
+ ok('a palette changes the mineral, not the place',M.length===R.length&&M.every((r,i)=>r.id===R[i].id&&r.x===R[i].x&&r.r===R[i].r),false);
+ ok('refuses a mineral it does not know',throws(()=>KGEODE.scatter(Object.assign({},o,{minerals:{ruby:1}}))),false);
+ ok('every mineral has a crust and a rind, and ORDER lists them all',KGEODE.ORDER.length===Object.keys(KGEODE.MINERALS).length&&KGEODE.ORDER.every(k=>KGEODE.MINERALS[k].crust&&KGEODE.MINERALS[k].rind),false);}
+ok('the lining grows deeper inward: depth 0..1, the deep points longer than at the rim',D.every(q=>q.depth>=0&&q.depth<=1)&&(()=>{const a=D.filter(q=>q.depth<.3),b=D.filter(q=>q.depth>.7),m=x=>x.reduce((s,q)=>s+q.len,0)/x.length;return a.length&&b.length&&m(b)>m(a);})(),false);
+ok('some broken loose geodes lie with their other half beside them, on the ground',L.some(r=>r.pair)&&L.filter(r=>r.pair).every(r=>r.split&&Math.abs(r.pair.y-ground(r.pair.x,r.pair.z))<1e-9&&Math.hypot(r.pair.x-r.x,r.pair.z-r.z)>r.r*2),false);
 ok('the export is plain JSON',KGEODE.export(R).records.length===R.length&&KGEODE.export(R).format==='krator-geodes',false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

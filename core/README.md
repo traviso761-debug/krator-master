@@ -411,7 +411,9 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   adds a walk-in geode to a KCAVERN: a fallen block (a `mass`), its pocket (a `hall`) and the broken face's `opening`;
   `KGEODE.line(C, block, {n, len})` lines the pocket with amethyst points marched from its centre to its rock (KSPELEO reads a void
   inside a mass as under the sky, so it does not dress one). `host/39g-core-geode-draw.js`: `KGEODE.draw(recs, {THREE, points, maps,
-  lamp, tint})`, instanced nodules, shells, agate faces, druse cavities and points (a KHOOK'd fake glow). *Adopting it:* list both after
+  lamp, tint, colors})`, instanced nodules, shells, rind faces, druse bowls and crystals (a KHOOK'd fake glow; a thin-film iridescence for
+  aura and bismuth). `KGEODE.MINERALS` (amethyst, quartz, celestine, chalcedony, watermelon, aura, bismuth): each a crust habit and a rind
+  palette; a host passes `minerals: {id: weight}` to `scatter` (its rock's palette). *Adopting it:* list both after
   `39-core-cavern.js`; draw the block on `KCAVERN.drawRock` (the pocket's own primitive as the rind's weight).
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
