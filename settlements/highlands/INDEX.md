@@ -42,6 +42,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `91h-hl-tags.js` | 3 | CORE TAGS: HIGHLANDS' REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
+| `95-hl-doors.js` | 2 |  |
 | `99-start.js` | 2 | 99. the take: Highlands on core/host (1) |
 | `99-tail.html` | <1 |  |
 
@@ -52,4 +53,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `highlands` | `89z-rows.js`, `91z-views.js` | <1 |
-| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-45-init.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 186 |
+| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-45-init.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `8zn-rk-open-guest.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 187 |

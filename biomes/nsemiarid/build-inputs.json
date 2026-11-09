@@ -3,15 +3,15 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/nsemiarid/KNOWN_ISSUES.md": "e29b3c3a149d4cdea0c0b5239fc0076e2f0ef71211f0acf2e89edf435425219e",
-    "biomes/nsemiarid/PORT.md": "4794a936c1cefc75a9c24827a7dac3fb9eed01e47c12bf529b4e7f0570aba694",
-    "biomes/nsemiarid/build.py": "3a53d91418e420e3604a3647efa303478ffb66b00dcf945f3d53310f494af986",
+    "biomes/nsemiarid/KNOWN_ISSUES.md": "3e470a08ba93fff54802b123958d97f964d5227dd48c370f85be09e39a239c3f",
+    "biomes/nsemiarid/PORT.md": "b637a33d34a19ea5edd746d50f37f3166c9c252c9a8527edd6f09880fbf11135",
+    "biomes/nsemiarid/build.py": "ff3a1d65594b50530ff12ed5473217f125cd2ae815ebdfccddbcfc537e9bda15",
     "biomes/nsemiarid/src/00-head.html": "bbcd8a810a84dcb11b165552181c6a1cf5a078f6c2cd6c48d54ce957c22a5a88",
     "biomes/nsemiarid/src/45-host-scene.js": "29dd8ca0268ebdfa3154a333a983807ce42ea69da8df344405a205e74925466f",
     "biomes/nsemiarid/src/45b-host-stage.js": "9ff69bae46b8d708527b41f8d41af7fcff31a94e1f4b3d7af28aea8960547250",
     "biomes/nsemiarid/src/45c-host-ground.js": "86075c9c5b83976f95656396d5f1085b695bea28d0e420c903c216f48eeeae38",
     "biomes/nsemiarid/src/46-host-graphics.js": "42f4f48cab9c69f5d8b65ba1e9b8b3e90ad4817e5bd29146d7379b192cff1ebc",
-    "biomes/nsemiarid/src/50-biome-nsemiarid-species.js": "c828f45ed7b1011ccc6895b45d5650a89fad1e5cb10f53e93deccff3e3ba2d4b",
+    "biomes/nsemiarid/src/50-biome-nsemiarid-species.js": "c83ec8d63a1e5ad4fd54a8bacea7244bf3a2b58dc993a0734753526dbf197eb1",
     "biomes/nsemiarid/src/55-biome-nsemiarid-trees.js": "68ee47a19843e9bacb26fa5da2ad7cc6f682c6ddf0460e28547f7007c5e3f7f6",
     "biomes/nsemiarid/src/60-biome-nsemiarid-floor.js": "576399e928dcc897282a9299d08dc96f350774940edfd69a424962a074cfdf70",
     "biomes/nsemiarid/src/70-biome-nsemiarid.js": "7fd233ff843885d19133072ed3af5ef04628b36177c9d2c1275c8c17a62721d4",
@@ -21,7 +21,7 @@
     "biomes/nsemiarid/src/89-host-sky.js": "11ef01f706b30115842cac6382582d98111cb4c08f2447debd5fe6d2121b7506",
     "biomes/nsemiarid/src/89b-host-atmos.js": "84a0bfc690148d78ee19ccfb2554269bf82a462ee91531f94190b892288c0d5f",
     "biomes/nsemiarid/src/89c-host-seeds.js": "f3247d6cb02dd46b64872f87b932858d618c144480db537c6f8ab7359fddbb20",
-    "biomes/nsemiarid/src/98-host-checks.js": "82d61fec09332e29284b0b4d6e4cb04d94a6d32a2b9feb87407ab3c12aa39c03",
+    "biomes/nsemiarid/src/98-host-checks.js": "d92671d0e5e84417d21dc0f6357b121ce0e649e474d3d1dea2f0fb4b7af90f54",
     "biomes/nsemiarid/src/99-host-take.js": "c68fcf89404ecc91793ad2ea668258d4677c7aa75b4caa08a499d72a35d719ac",
     "biomes/nsemiarid/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/nsemiarid/tex/bark.alien.albedo.webp": "4869d989fca0d5bfb81014c015ca8ccbbdf21661777afffda3397420acd15391",
@@ -116,10 +116,10 @@
     "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
-    "core/shadow/host/12-core-shadow-host.js": "b32bae47d943e420fb3b2a4d356855a365952879c0fedcc39fca5b6e03f0dee4",
+    "core/shadow/host/12-core-shadow-host.js": "c169418138b0d0c4be188171c1d9ae4d789ef0863dfc6fdaabeb2682ecdc2ff9",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "ad882d6dc96ad881fb8ddf10f3264e11314b0a69225c3203c78978795354cbd4",
+    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/40-core-basin.js": "6eaba1db0a0268dc8db6503901077649234d2dfb14f415127aa4fcd6c2da8650",
     "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
@@ -138,17 +138,19 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "biomes/nsemiarid/src": "173e5867262fc2c4f83ebbbda13dbac2133fb9f4aa188ffb045de92fc885b6fb",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861"
+    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/nsemiarid/dist/nsemiarid.html": "b90f84882767536838a62780c0f86d1a75cf226518aaf9f4ee0c934f27f0d860"
+    "biomes/nsemiarid/dist/nsemiarid.html": "f4af8c133afcea3b52dedf9cda8517c56534a57b94ad3fafd1d09d39bbacdc8d"
    },
    "outputs_raw": {
-    "biomes/nsemiarid/dist/nsemiarid.html": "b90f84882767536838a62780c0f86d1a75cf226518aaf9f4ee0c934f27f0d860"
+    "biomes/nsemiarid/dist/nsemiarid.html": "f4af8c133afcea3b52dedf9cda8517c56534a57b94ad3fafd1d09d39bbacdc8d"
    }
   }
  }

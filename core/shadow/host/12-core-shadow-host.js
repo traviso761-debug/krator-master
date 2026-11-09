@@ -72,7 +72,7 @@ KSHADOW.attach = function (o) {
   let btn = null;
   const label = () => { if (btn) btn.textContent = 'shadows: ' + (H.state.skipped ? 'n/a' : enabled ? 'on' : 'off'); if (btn && H.state.skipped) btn.title = H.state.skipped; };
   H.fits = function () {
-    const max = r.capabilities.maxTextures == null ? 16 : r.capabilities.maxTextures, seen = new Set(); let worst = 0, who = '';
+    const cap = r.capabilities || {}, max = cap.maxTextures == null ? 16 : cap.maxTextures, seen = new Set(); let worst = 0, who = '';
     scene.traverse(m => { if (!m.isMesh || !m.material) return; (Array.isArray(m.material) ? m.material : [m.material]).forEach(M => {
       if (!M || seen.has(M) || M.isShaderMaterial || M.isMeshBasicMaterial) return; seen.add(M);
       const n = KSHADOW.units(M, r); if (n > worst) { worst = n; who = (M.name || M.type) + (m.name ? ' on ' + m.name : ''); } }); });

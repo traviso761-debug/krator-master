@@ -21,8 +21,8 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
-| `31-alt-takes.js` | <1 | ALTERNATIVE TAKES: the tables core/engine's emit reads |
-| `40-tk-tentkit.js` | 21 |  |
+| `31-alt-takes.js` | <1 |  |
+| `40-tk-tentkit.js` | 20 |  |
 | `40d-dk-desert.js` | 10 |  |
 | `41-tk-dress.js` | 4 |  |
 | `42-ds-small.js` | 7 |  |

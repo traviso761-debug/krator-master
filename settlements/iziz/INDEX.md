@@ -82,7 +82,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `95i-iziz-interiors.js` | 22 | the court's pictures and finishes (the owner, 20 (20) |
-| `95j-iziz-doors.js` | 2 |  |
+| `95j-iziz-doors.js` | 1 |  |
 | `99-start.js` | 3 | 99. the take: Iziz on core/host (1) |
 | `99-tail.html` | <1 |  |
 

@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `39-core-cavern.js`, `39b-core-speleo.js`, `39c-core-karst.js`, `43-core-ground.js`, `47-core-therm.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -25,9 +25,18 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 
 From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
+## Top-level sources
+
+Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.
+
+| File | KB | Sections (line) |
+|---|---|---|
+| `hold_export.js` | 1 |  |
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `50-biome-hearths-species.js` | 7 |  |
+| `50-biome-hearths-species.js` | 12 |  |
 | `55-biome-hearths-place.js` | 6 |  |
+| `57-biome-hearths-stills.js` | 8 |  |

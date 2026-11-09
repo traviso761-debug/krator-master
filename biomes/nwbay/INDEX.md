@@ -4,14 +4,14 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/nwbay.html`
+Built output (never open it; edit `src/` and rebuild): `dist/nwbay-caverns.html`, `dist/nwbay.html`
 
 Build: `cd biomes/nwbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
 From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -22,10 +22,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 76 **big** | the bay, the river, the rise (61); the igneous shore (91); the karst (106); the sinkholes (134); the tsingy (159); terrain (215); the host binding (261); the ground (288); the karst stacks (meshes: KSTACKS.mesh, guilin's (415); the tsingy (meshes) (480) |
+| `44n-host-geology.js` | 3 |  |
+| `45-host-stage.js` | 82 **big** | the bay, the river, the rise (61); the igneous shore (91); the karst (106); the sinkholes (134); the tsingy (159); terrain (215); the host binding (267); the ground (295); the karst stacks (meshes: KSTACKS.mesh, guilin's (454); the tsingy (meshes) (519) |
 | `50-biome-nwbay-species.js` | 53 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (96); harvest (biomes/FRUIT.md) (168); leaf textures (198); bark textures (322); geometries local to this biome (392); materials (458); instanced items (513) |
 | `52-biome-nwbay-library.js` | 2 |  |
-| `55-biome-nwbay-trees.js` | 76 **big** | zones from the fields (15); colour (40); polyline helpers (Girder's) (62); keep-clear between trees (71); the karst's edge (78); epiphytes, lianas (90); foliage helpers (109); the builders (123); the Madagascarene flora (Bemaraha, the Spiny For (501); impostors (the far canopy) (576) |
+| `55-biome-nwbay-trees.js` | 78 **big** | zones from the fields (15); colour (40); a limb's joint to its parent (62); a card held by its structure (70); polyline helpers (Girder's) (78); keep-clear between trees (87); the karst's edge (94); epiphytes, lianas (106); foliage helpers (125); the builders (139) |
 | `56-biome-nwbay-variants.js` | 13 | one tree alone (the open world's contract) (23); capture: what a grow wrote, taken out of the sto (31); the nursery (47); placement (72) |
 | `57-biome-nwbay-cliffs.js` | 6 |  |
 | `60-biome-nwbay-floor.js` | 21 | fields local to the floor (31); small plants (36); the zone planters (114); the pass (186) |
@@ -34,9 +35,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `75-biome-nwbay-fauna.js` | 12 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (58) |
 | `85-host-tower.js` | 6 |  |
 | `86-host-jetty.js` | 4 |  |
-| `88-host-build.js` | 5 |  |
+| `88-host-build.js` | 6 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 2 |  |
-| `89w-host-water.js` | 8 |  |
-| `99-host-take.js` | 14 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (126) |
+| `89w-host-water.js` | 10 |  |
+| `99-host-take.js` | 15 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (127) |
 | `99-tail.html` | <1 |  |

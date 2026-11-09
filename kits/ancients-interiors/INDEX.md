@@ -6,7 +6,7 @@ Ancients interiors: the Ancients' ship interiors backported from Noah's Regret, 
 
 Docs: `API.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/_before.html`, `dist/ancients-interiors.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancients-interiors.html`
 
 Build: `cd kits/ancients-interiors && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.

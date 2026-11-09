@@ -33,7 +33,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `81-sky.js` | 10 |  |
@@ -49,6 +49,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `86-bio-70-biome-xanadu.js` | <1 |  |
 | `88y-xanadu-matlib.js` | 1 |  |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
+| `90-xa-doors.js` | 2 |  |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91t-xanadu-tags.js` | 3 | CORE TAGS: XANADU'S REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |

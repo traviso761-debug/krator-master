@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "core/atmos/89-atmos-0-core.js": "de82c4bdbd3859ce733aa5496fdc6aec549f318b68aa53be59e5d28de0d31686",
+    "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
@@ -13,13 +13,17 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
-    "core/water/20-core-water.js": "924892ce6c254e651fc07fd3a149efc9c5e12a1de9bce1b26fa2d57fc780bb16",
-    "core/water/50-core-water-draw.js": "5f94b9c8daa6a9bb678677487d205fadf0e85d0135f2cc0a1a2f7a8c949eed72",
-    "kits/ringsea/KNOWN_ISSUES.md": "d1c8ea201a2e220602fe8be350d8db2fb928296ef7aa663a7c802947467fe245",
-    "kits/ringsea/PORT.md": "31658ceea2b0f72cf58f61922c47e61b5cb68cfba533bc61e7ab87d6b185685c",
-    "kits/ringsea/build.py": "1f04147243ec49184b4dc4b1e5d63a9fed93d99a395775c24bbb14054979ff8f",
+    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
+    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
+    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "kits/ringsea/KNOWN_ISSUES.md": "1755b188747836c4bb99942713a3906a70f2a8fd85ab8e793e280a685ad97e27",
+    "kits/ringsea/PORT.md": "d2f81a34c1bcce121bc6a5bad65c6826fe751aa6b5cf30ed779a5cc2ee2df7d7",
+    "kits/ringsea/build.py": "4d5c9351c1cad2bb932d6ade9db123d9d6c6cdc6a842f1277831fd9057cb9e84",
     "kits/ringsea/src/00-head.html": "3c3bc4894f147593ea5e8a914e240098c44e6df322ae753a706d4c3933132d6e",
-    "kits/ringsea/src/10-core.js": "781a533365a446e7c2fa4c1b8b3a630bc5f42ff17db65058435d86a2b12cf290",
+    "kits/ringsea/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ringsea/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
     "kits/ringsea/src/30-kit.js": "8ee3b80e8e193d25f98b21c2c3e75724dba596160e589f43c77df0f2fde7db96",
     "kits/ringsea/src/40-rs-core.js": "09abc4f21bb9e3864133d37de1d20d38c6c94e68329b1b67136d6caf026df451",
@@ -94,21 +98,23 @@
     "kits/ringsea/tex/wood.albedo.webp": "e338ce05cdb287219dc9e4b00ad5f646e91dc3888b9e735c6cf90d1915baf8a1",
     "kits/ringsea/tex/wood.normal.webp": "e82688ef6e445f828250b4768e7ba2e943bf43a2d0ecbbfe13e6949853310c37",
     "kits/ringsea/tex/wood.rough.webp": "57c012b483efd2b1a4c7459d010adc5611ebb734539112acb46eeecf88c153e7",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
-    "tools/textures/matlib_pack.py": "f9ed6d7e61f0313208bb9486ec298b8dd3a4bea3da3da5c2cc154b4c08da8078"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/ringsea/src": "9c604de245f3cd53453da2e564607005ded59f6771846a68a0c9a7037da3a5a3",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ringsea/build-manifest.json": "917bb101e954feff4d0d0d4fa9c7c916e0ce2d45dae73e7f99a28539eddfbc23",
-    "kits/ringsea/dist/ringsea.html": "7ff77445c44f8d53ba0d99661b7bf451cd56e067f718f0157126d573a1b4938a"
+    "kits/ringsea/build-manifest.json": "bb147d4d9b6a0f86ace85d5abc69b5f87fa814f314432807ca550aee20a9fe5f",
+    "kits/ringsea/dist/ringsea.html": "9f639723fb2c846bb096ee06bcd12b4dfe384433daa99209088f58bf941537e9"
    },
    "outputs_raw": {
-    "kits/ringsea/build-manifest.json": "6f4d9b2093c4bbed49ea173740d4cc820fab4030a6ff00d53382a3ec750f11a3",
-    "kits/ringsea/dist/ringsea.html": "7ff77445c44f8d53ba0d99661b7bf451cd56e067f718f0157126d573a1b4938a"
+    "kits/ringsea/build-manifest.json": "3986c9f6ae478e02d82b4c27801647cfd21492bbc4db4810eff37d19a23470b7",
+    "kits/ringsea/dist/ringsea.html": "9f639723fb2c846bb096ee06bcd12b4dfe384433daa99209088f58bf941537e9"
    }
   }
  }

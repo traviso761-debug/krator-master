@@ -1,6 +1,8 @@
 {
  "_note": "Edges that exist today (tools/dep_graph.py): backwards, settlement -> settlement (lateral) and vendored copies. Delete a line when the edge is removed; never add one without a reason in MODULARITY-PLAN.md.",
  "backwards": [
+  "core/atmos -> kits/ancients",
+  "core/atmos -> kits/ringsea",
   "kits/beast-riders -> settlements/girder",
   "kits/beast-riders -> settlements/mavs-refuge",
   "kits/pylon -> settlements/iziz",
@@ -30,6 +32,7 @@
   "settlements/pinnacle-rock -> settlements/isle-demo",
   "settlements/pinnacle-rock -> settlements/mavs-refuge",
   "settlements/reedlake -> settlements/highlands",
+  "settlements/span -> settlements/dalab",
   "settlements/verge -> settlements/iziz",
   "settlements/verge -> settlements/locus",
   "settlements/voth -> settlements/dalab",

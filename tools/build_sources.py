@@ -117,8 +117,11 @@ def _hook(event, args):
             _stop('%s on %s' % (event, _rel(args[0])))
     elif event == 'subprocess.Popen':
         argv = args[1] if len(args) > 1 else None
-        if isinstance(argv, (str, bytes)) or argv is None:
-            argv = [argv] if argv is not None else []
+        if isinstance(argv, (str, bytes)):   # on Windows the event carries the command line as one string
+            import shlex
+            argv = shlex.split(os.fsdecode(argv).replace('\\', '/'))
+        elif argv is None:
+            argv = []
         argv = [os.fsdecode(a) if isinstance(a, bytes) else str(a) for a in argv]
         if FLAG not in argv and not any(a.replace('\\', '/').endswith('tools/check_port.py') for a in argv):
             _stop('a subprocess (%s)' % ' '.join(argv[:3]))

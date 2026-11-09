@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -28,21 +28,21 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44v-host-landlib.js` | 8 |  |
-| `44w-host-land.js` | 21 | the climate fields (cached by 45; these are the  (109); the LOD spine: the transect's showplaces (137); the bodies (KSTACKS): slickrock domes on the pla (141); the page's words, views and test points (151) |
-| `45-host-stage.js` | 25 | the climate fields, cached (the land's fieldsAt: (32); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (196); the water (218) |
+| `44v-host-landlib.js` | 9 |  |
+| `44w-host-land.js` | 21 | the climate fields (cached by 45; these are the  (111); the LOD spine: the transect's showplaces (139); the bodies (KSTACKS): slickrock domes on the pla (143); the page's words, views and test points (153) |
+| `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (32); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (210); the water (232) |
 | `50-biome-ebadlands-species.js` | 55 **big** | palettes (22); the tree species (60); harvest (biomes/FRUIT.md) (105); the small plants (the floor and the dressing), t (130); leaf textures (158); bark, rock, wood textures (265); geometries local to this biome (307); the library cards (core/materials/PLAN.md, Easte (439); materials (458); instanced items (511) |
-| `55-biome-ebadlands-trees.js` | 44 **big** | zones from the fields (14); colour (the maths is the core's, BIO.col) (55); polyline helpers (Girder's) (70); keep-clear between trees (81); foliage helpers (88); the builders (117); impostors (the far canopy) (335); the pass (371); the passes (data: species, cell, acceptance from (405); one tree alone (biomes/WORLD.md: trees as varian (438) |
+| `55-biome-ebadlands-trees.js` | 45 **big** | zones from the fields (14); colour (the maths is the core's, BIO.col) (55); polyline helpers (Girder's) (70); keep-clear between trees (85); foliage helpers (92); the builders (123); impostors (the far canopy) (343); the pass (379); the passes (data: species, cell, acceptance from (413); one tree alone (biomes/WORLD.md: trees as varian (446) |
 | `60-biome-ebadlands-floor.js` | 24 | fields local to the floor (31); small plants (36); the zone planters (116); the pass (202); the sulphur life (the Throne's, at the sulphur p (233) |
-| `65-biome-ebadlands-dress.js` | 6 |  |
+| `65-biome-ebadlands-dress.js` | 7 |  |
 | `70-biome-ebadlands.js` | 1 |  |
 | `83-host-far.js` | 3 |  |
 | `85-host-arcade.js` | 5 |  |
-| `86-host-variants.js` | 15 | materials for instancing (the open world's) (24); harvest: what the kit wrote, one geometry per ma (48); growing the variants (71); drawing: one pool of instances per prototype (88); the far level as octahedral impostors (VARIANTS. (113) |
+| `86-host-variants.js` | 15 | materials for instancing (the open world's) (24); harvest: what the kit wrote, one geometry per ma (48); growing the variants (74); drawing: one pool of instances per prototype (91); the far level as octahedral impostors (VARIANTS. (116) |
 | `87-host-kin.js` | 4 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 3 |  |
-| `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 17 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (44); the page, handed to the host (130) |
+| `89z-host-build.js` | 7 |  |
+| `99-host-take.js` | 19 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (44); the page, handed to the host (138) |
 | `99-tail.html` | <1 |  |

@@ -41,7 +41,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `84-host-ground.js` | 16 | the paint (per vertex) (21); the layers (the library, or procedural without i (49); the meshes (114); the small waters: the tide pools and the brine p (154) |
 | `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
-| `89a-host-atmos.js` | 1 |  |
+| `89a-host-atmos.js` | 2 |  |
 | `89f-host-fauna.js` | 4 |  |
 | `89w-host-sea.js` | 5 |  |
 | `89zz-host-core.js` | 6 |  |

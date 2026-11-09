@@ -37,7 +37,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
 | `69d-dalab-mat.js` | 24 | textures (39); materials (179); geometry (216); kit items (223) |
-| `69e-dalab-helpers.js` | 27 | The God's light (night) and hearth fire (night) (16); relief, murals, banners, gates, steles (34); the sacred deco (round 4) (64); the round house (79); the earth mound (99); people (177); furniture (197); fauna (round 6) (223) |
+| `69e-dalab-helpers.js` | 27 | The God's light (night) and hearth fire (night) (16); relief, murals, banners, gates, steles (34); the sacred deco (round 4) (64); the round house (79); the earth mound (99); people (178); furniture (198); fauna (round 6) (224) |
 | `70-dalab-dwellings.js` | 12 | PEASANT (8); NOBLE (56) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
 | `71-dalab-trade.js` | 18 |  |
@@ -46,6 +46,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `71c-dalab-town.js` | 18 | TERRACE ROW: three joined earth cells under one  (8); STACKED HOUSE: two storeys of rammed earth, an o (26); WELL COURT: a paved court round a stone well-dru (45); BATH HOUSE: a stone drum under a low dome, a ste (55); SCRIBES' HALL: a long timber hall on a stone pli (74); TRAVELLERS' INN: an earth-walled court with liza (91); EARTH YARD: where the walls come from — block st (115); ORCHARD PLOT: a fenced plot of manzanita and ski (132); WATCH TOWER: a tall battered earth tower with a  (143) |
 | `72-dalab-civic.js` | 21 |  |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
+| `72b-dalab-marks.js` | 4 |  |
 | `73-dalab-sacred.js` | 20 |  |
 | `73-hl-carve.js` | 30 | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (30); dougong (painted bracket sets under eaves) (74); bargeboards, gable finials, horns (94); windows, porches, balconies (119); towers (Peles, clocktowers, wall towers) (152); bamboo (tribal and the poorest Republican/Rustic (181); cliff walkways (tribal cliff settlements) (194); yard furniture of the highlands (218); round 4: fitting murals and bracket rows (hlFlus (228) |
 | `74-dalab-ranch.js` | 5 |  |

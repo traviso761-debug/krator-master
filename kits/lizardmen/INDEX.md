@@ -19,9 +19,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 6 |  |
-| `31-alt-takes.js` | <1 | ALTERNATIVE TAKES: the tables core/engine's emit reads |
+| `31-alt-takes.js` | <1 |  |
 | `37-wk-rec.js` | 2 |  |
-| `40-lz-kit.js` | 30 |  |
+| `40-lz-kit.js` | 31 **big** |  |
 | `42-lz-dress.js` | 3 |  |
 | `50-lz-dwell.js` | 10 |  |
 | `52-lz-nest.js` | 5 |  |

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 32 (13%) | 15 (6%) | 2 (1%) | 56 (23%) | 139 (57%) |
+| KB | 31 (13%) | 15 (6%) | 2 (1%) | 57 (23%) | 139 (57%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,9 +15,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-scene.js` | 1.9 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/45b-host-stage.js` | 12.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45c-host-ground.js` | 14.8 | [G shader] | 6 | 3 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
+| `src/45c-host-ground.js` | 15.3 | [G shader] | 6 | 3 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
 | `src/46-host-graphics.js` | 1.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's graphics switches (the query) set on BIO before the kit: host code |
-| `src/50-biome-nsemiarid-species.js` | 64.4 | [draw] | 0 | 5 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-nsemiarid-species.js` | 64.6 | [draw] | 0 | 5 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-nsemiarid-trees.js` | 36.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-nsemiarid-floor.js` | 30.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-nsemiarid.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

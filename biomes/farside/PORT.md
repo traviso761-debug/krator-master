@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 3 (2%) | 0 (0%) | 0 (0%) | 40 (30%) | 89 (68%) |
+| KB | 1 (1%) | 0 (0%) | 0 (0%) | 42 (31%) | 89 (68%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -26,13 +26,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89a-host-atmos.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost |
 | `src/89s-host-sky.js` | 2.8 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.sky at the station's pixel |
 | `src/89t-host-air.js` | 1.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the final rebuild's air: wind, A2C, height fog, the fog belt, the rain cover (core/atmos calls) |
-| `src/89w-host-water.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | core/water records and draws |
+| `src/89w-host-water.js` | 7.6 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | core/water records and draws |
 | `src/89x-host-weather.js` | 0.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindWeather |
-| `src/99-host-take.js` | 13.0 | [web] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | the views, the inspector, the checks |
+| `src/99-host-take.js` | 13.3 | [web] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | the views, the inspector, the checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `stations/strand/45-host-stage.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | as src/45 |
-| `stations/front/45-host-stage.js` | 3.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | as src/45 |
-| `stations/cloud/45-host-stage.js` | 3.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | as src/45 |
 
 ## Notes
 

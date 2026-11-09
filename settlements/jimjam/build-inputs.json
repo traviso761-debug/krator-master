@@ -10,12 +10,12 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "73a96143f8235b8ee32bc22d59c3e16f83095b64da1d6f39e2c6c8172de3875b",
+    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "43abedd30d9e2daa77945cd74af1c38b15bfeb52ed99dfa61b5db2ce6bec37bd",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
@@ -27,12 +27,14 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
-    "core/tags/52-core-tags-vocab.js": "ad882d6dc96ad881fb8ddf10f3264e11314b0a69225c3203c78978795354cbd4",
+    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "settlements/jimjam/PORT.md": "08d07d4253f1316e8f68afd7f45407248ab9f693415f6b1b65201fc947631c26",
-    "settlements/jimjam/build.py": "52b915ab7cc0ccca3b5bcb0073f8e896834ba90e209432d09edba5b3dc055930",
+    "settlements/jimjam/PORT.md": "b51b5921811f6d45c90b74d6c6d0b7b0938ddeffc04434e80fe6c76b0861effe",
+    "settlements/jimjam/build.py": "2a89a916938f25a89ad7265294610c10b1039b3f3f81edd48f926d74dcdb6a9d",
     "settlements/jimjam/src/00-head.html": "0451fecaa606f8b8bf0e05eecdc54213c947dc43658f921494286d4785d77e0e",
     "settlements/jimjam/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/jimjam/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -138,26 +140,28 @@
     "settlements/jimjam/tex/white.normal.webp": "993b50129d72da67df9db097ae3d313ae2a5082f5920541dc9fde9abc7946d15",
     "settlements/jimjam/tex/white.rough.webp": "f37b360b881a590c030870f69a1da83031e7aaa8301284ff6e239357bd3e6299",
     "settlements/jimjam/three.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "core/host": "42de374c3dfaebcf970ae52ef00ba29012869532c4228e8371715cff95ea6b0b",
+    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
-    "core/tags": "fad9660e6ae68d96bab011b1a69b5df0207cd315c163f70bcdf1e3bd1f5ed4bc",
+    "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "settlements/jimjam/src": "2ed4c32a2df05baa2061d098e8c63e91070663193d3810b66e45f1d61a844e54",
     "settlements/jimjam/targets": "cbc8a597a67c465497550c4a4a7eebdb138442c06be06a78cc1ee8715658ff44",
-    "settlements/jimjam/targets/kit": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4"
+    "settlements/jimjam/targets/kit": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
+    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
     "settlements/jimjam/VENDOR.json": "0deb21032d5bdba31a9cec357bbddaf48f0bd72fee63f27f473976b9aab6bc3a",
-    "settlements/jimjam/build-manifest.json": "c4a297824d348facfa70926fda05ab4021da2008bea0b16c03617e73333dc89e",
-    "settlements/jimjam/dist/jimjam-kit.html": "4aba090cfcae0e94e98b75c18c49e963ed9464f4a8368d506bf0e9e7cadbd13b"
+    "settlements/jimjam/build-manifest.json": "a030d35844b197e5b3004c8b3dbd53d725c4487fd29bb1f7fc51ab504d618f72",
+    "settlements/jimjam/dist/jimjam-kit.html": "fd989ac851fd4499dcde6e96dccefd80edb886fca6c8a04c6ce3c66eb7f9b85d"
    },
    "outputs_raw": {
     "settlements/jimjam/VENDOR.json": "8b7acec5aa1b1be5e243ab12a8a3633e3a2f9e5e18df3492fb37308e28e1b9f5",
-    "settlements/jimjam/build-manifest.json": "0cafe7aedda1878eb3c8ce456c9d2a129720247e331e46355aa6224561aa9fc1",
-    "settlements/jimjam/dist/jimjam-kit.html": "4aba090cfcae0e94e98b75c18c49e963ed9464f4a8368d506bf0e9e7cadbd13b"
+    "settlements/jimjam/build-manifest.json": "1e59fa1ae28e0d6a911aa6e3f081f08e494e4ce9622a4bb51c0a80b1e6b64ac3",
+    "settlements/jimjam/dist/jimjam-kit.html": "fd989ac851fd4499dcde6e96dccefd80edb886fca6c8a04c6ce3c66eb7f9b85d"
    }
   }
  }

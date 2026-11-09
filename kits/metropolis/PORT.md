@@ -30,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/53-mp-hero-ledger.js` | 13.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-mp-hero-designs.js` | 38.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/55-mp-hero-ancients.js` | 24.0 | [draw] | 15 | 0 | 0 | 0 | 0 | 6 | 0 | 8 | 4 | 0 | 0 |  |
-| `src/56-mp-interiors.js` | 23.4 | [draw] | 10 | 0 | 0 | 0 | 5 | 18 | 0 | 3 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/56-mp-interiors.js` | 23.5 | [draw] | 10 | 0 | 0 | 0 | 5 | 18 | 0 | 3 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/57-mp-debris.js` | 5.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/58-mp-cutaway.js` | 3.8 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 |  |
 | `src/59-mp-floors.js` | 17.6 | [draw] | 6 | 0 | 0 | 0 | 0 | 8 | 0 | 2 | 0 | 0 | 0 |  |

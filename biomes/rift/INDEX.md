@@ -4,12 +4,12 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/rift-savannah.html`, `dist/rift.html`
+Built output (never open it; edit `src/` and rebuild): `dist/rift-highland.html`, `dist/rift-jungle.html`, `dist/rift-plateau.html`, `dist/rift-savannah.html`, `dist/rift.html`
 
 Build: `cd biomes/rift && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`
+From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `44-core-farfield.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
@@ -25,17 +25,18 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `44s-host-station.js` | 1 |  |
 | `45-host-stage.js` | 3 |  |
 | `45m-host-map.js` | 5 | the lake, the ridge, the streams (4); terrain (33) |
-| `45s-host-field.js` | 12 | the field cache (2); the host binding (14); the ground (30); the water (107) |
-| `50-biome-rift-species.js` | 62 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (202); leaf textures (258); an iridescent bark (411); bark textures (429); geometries local to this biome (465); materials (563); instanced items (623) |
+| `45s-host-field.js` | 14 | the field cache (2); the host binding (14); the ground (31); the water (117) |
+| `50-biome-rift-species.js` | 63 **big** | THE LAKE COLOUR (17); the tree species (81); harvest (biomes/FRUIT.md) (203); leaf textures (259); an iridescent bark (412); bark textures (430); geometries local to this biome (466); materials (564); instanced items (625) |
 | `52-biome-rift-library.js` | 2 |  |
-| `55-biome-rift-trees.js` | 80 **big** | zones from the fields (20); colour (35); polyline helpers (Girder's) (65); keep-clear between trees (73); foliage helpers (80); the builders (97); the feral three (from Xanadu's flora, gone wild: (457); impostors (the far canopy) (519); the pass (601); one tree alone (biomes/WORLD.md: trees as varian (699) |
-| `60-biome-rift-floor.js` | 25 | fields local to the floor (32); small plants (37); the zone planters (141); the pass (211) |
+| `55-biome-rift-trees.js` | 82 **big** | zones from the fields (20); colour (35); polyline helpers (Girder's) (65); keep-clear between trees (73); foliage helpers (80); the builders (97); the feral three (from Xanadu's flora, gone wild: (467); impostors (the far canopy) (529); the pass (611); one tree alone (biomes/WORLD.md: trees as varian (709) |
+| `60-biome-rift-floor.js` | 25 | fields local to the floor (32); small plants (37); the zone planters (141); the pass (214) |
 | `65-biome-rift-dress.js` | 7 |  |
 | `70-biome-rift.js` | <1 |  |
-| `85-host-tower.js` | 5 |  |
+| `85-host-tower.js` | 6 |  |
 | `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
+| `89f-host-far.js` | 5 |  |
 | `89w-host-water.js` | 7 |  |
 | `99-host-take.js` | 6 | the inspector's words (6); the probe's budgets and the kit's own checks (ve (18); fruit (biomes/FRUIT.md) (26); the page, handed to the host (48) |
 | `99-tail.html` | <1 |  |

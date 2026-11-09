@@ -15,7 +15,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `69p-pyl-mat.js` | 7 | materials and kit items (prefix py) (19); the owner's delivery of 2026-10-18 (materials.js (54); doors in the profiles (the owner, 2026-10-18: no (65); real glass (the owner, 2026-11-03; core/door's K (71) |
+| `69p-pyl-mat.js` | 7 | materials and kit items (prefix py) (19); the owner's delivery of 2026-10-18 (materials.js (53); doors in the profiles (the owner, 2026-10-18: no (64); real glass (the owner, 2026-11-03; core/door's K (70) |
 | `69q-pyl-helpers.js` | 16 | the neo-Ancient profiles (PLAN.md section 2) (29) |
 | `70p-pyl-dwellings.js` | 12 | MIDDLE (5) |
 | `70q-pyl-poor.js` | 8 |  |

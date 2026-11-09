@@ -9,7 +9,8 @@
   45-host-stage         HOST: renderer, fields, flora mask, BIO.init, ground, water
   50..75                BIOME LEAVES    read in place from biomes/sedesert/src (flora and fauna)
   77-sim-*              the simulation records (SIM), read from core/simulation (CORE_MODULES)
-  82-host-sky           HOST: the standard Krator sky (read in place from biomes/sedesert/src)
+  89-atmos-*            core/atmos: its core and presets, the shared sky (sky/) and its host (host/) (CORE_ATMOS)
+  89-host-sky           HOST: the shared sky, ATMOS.skyBiome at the south-east desert's place (as sedesert's own)
   83-host-world-json    generated: settlements/shade/world/*.json inlined as SHADE_WORLD_JSON for SIM.load
   84-host-life          HOST: the life layer declared into SIM (places, ports, the walkable grid as its
                         'pedestrian' layer, the population) and Shade's own audits
@@ -60,11 +61,16 @@ MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
 # copies that had fallen behind core/biome's move and the kits' BIO.kit hooks): the biome core from core/biome as the
 # biome's own build lists it (CORE_BIOME, less its export and stage), core/space for its keep-clear and scatter grids,
 # and the biome's flora, fauna, sky and tail from biomes/sedesert/src. A src/ copy with the same name still wins.
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js']
+CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '31b-core-leafset.js', '34-core-impostor.js', '35-core-anim.js',
+              '40-core-place.js']   # 31b, 34, 35-anim: what the kit and sedesert's leaves now call (BIO.leafOn, BIO.impostor*, BIO.animMat)
 CORE_B = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'biome'))
 CORE_SPACE = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'space', '20-core-space.js'))
 BIOME = ['35-core-strata.js', '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
-         '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js', '82-host-sky.js', '99-tail.html']
+         '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js', '99-tail.html']
+# the shared sky (core/atmos/SKY-PLAN.md section 9; 2026-11-08): sedesert's painted dome (its 82-host-sky.js) is gone, so this page
+# takes core/atmos's core, presets, sky and its host by path, as biomes/sedesert/build.py does; src/89-host-sky.js calls ATMOS.skyBiome
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', 'sky/89-atmos-e-skymodel.js', 'sky/89-atmos-f-skypresets.js',
+              'sky/89-atmos-g-sky.js', 'host/89-atmos-h-skyhost.js', 'host/89-atmos-i-skybiome.js']
 VENDORED = []
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'PLACES', 'SWB.', 'LIFE.', 'POOL.', 'BASIN.']
 
@@ -107,6 +113,8 @@ def main():
         path.setdefault(f, os.path.join(UP, f))
     for f in CORE_TERRAIN:
         if f not in path: path[f] = os.path.join(CORE_T, f)
+    for f in CORE_ATMOS:
+        path.setdefault(os.path.basename(f), os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'atmos', f)))
     for mod in CORE_MODULES:
         d = os.path.normpath(os.path.join(HERE, '..', '..', 'core', mod))
         for f in sorted(os.listdir(d)):
@@ -129,7 +137,7 @@ def main():
              else matlib_pack.fragment(os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert')), 'sedesert') if f == '44-host-biome-pack.js'
              else open(path[f], encoding='utf8').read())
         n = int(re.match(r'(\d+)', f).group(1))
-        if 10 <= n < 80 and '-host-' not in f:
+        if 10 <= n < 80 and '-host-' not in f and not f.startswith('77-sim-'):   # core/simulation is no biome fragment (77-sim-6's comment says "THE POOL.")
             for w in FORBID:
                 if w in s: bad.append('%s: uses %s' % (f, w))
         out.append('\n// ==================== %s\n' % f if f.endswith('.js') else ''); out.append(s)

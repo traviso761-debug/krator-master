@@ -4,7 +4,7 @@
 
 The rift rim: the high country round the Rift, three biomes on one kit (RRIM.biome n | s | w): the glass rim (N: frost frills and bell firs over algal lakes, glass canes in the shallows), the black rim (S: sun rosettes, sailwort, cushion anemones, lantern lobelias, iris lichen, a frozen lake), the veiled rim (W: mist frills, veil thread and mist cups in the cloud belt, Dalab's planted lowland stands); the staircase of lakes from the great lake at 297 m to the tarns. Six stations on scale model 5.1 (Ledge and the great lake, the north rim's lakes, the cold lake, the gorge, the crossing, the black barrens); the Rift's, the SW lowlands' and the S highlands' species read in place.
 
-Docs: `BIOME-API.md`, `PLAN.md`, `PORT.md`
+Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/riftrim-barrens.html`, `dist/riftrim-gorge.html`, `dist/riftrim-ice.html`, `dist/riftrim-lakes.html`, `dist/riftrim-pass.html`, `dist/riftrim.html`
 
@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -31,7 +31,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44v-host-landlib.js` | 6 |  |
-| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (62); the rock bodies (KSTACKS, 44w: the plateau's sli (195); the water (217) |
+| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (62); the rock bodies (KSTACKS, 44w: the plateau's sli (199); the water (221) |
 | `50-biome-riftrim-species.js` | 26 | palettes (23); the tree species (46); harvest (biomes/FRUIT.md; plan section 7: the fr (65); the small plants (60-floor places them), tagged  (76); procedural cards (the fallback when the page car (102); bark textures (near grey, tinted from SPECIES.ba (135); geometries local to this kit (146); materials (the slots are materials.json's famili (175); instanced items (230) |
 | `55-biome-riftrim-trees.js` | 19 | zones from the fields (10); colour (the maths is the core's, BIO.col) (34); helpers (46); the builders: (T, st, lv), T={x,z,y0,sp,H,rb,cro (67); impostors (the far canopy): ebadlands' recipe (132); the pass (160); the passes (data: species, cell, acceptance from (183); one tree alone (biomes/WORLD.md: trees as varian (198) |
 | `60-biome-riftrim-floor.js` | 11 | small plants (23); the zone planters, by rim: (x,z,Z,lv,st) (49); the pass (80) |
@@ -42,6 +42,6 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 4 |  |
-| `89z-host-build.js` | 7 |  |
-| `99-host-take.js` | 17 | the inspector's words (27); the probe's budgets and the kit's own checks (ve (43); the page, handed to the host (126) |
+| `89z-host-build.js` | 8 |  |
+| `99-host-take.js` | 18 | the inspector's words (27); the probe's budgets and the kit's own checks (ve (43); the page, handed to the host (126) |
 | `99-tail.html` | <1 |  |

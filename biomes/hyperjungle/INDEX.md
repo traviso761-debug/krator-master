@@ -23,12 +23,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `41-hyperjungle-globals.js` | <1 |  |
-| `45-host-stage.js` | 8 | terrain (23); the host binding (33) |
+| `45-host-stage.js` | 10 | terrain (23); the host binding (33) |
 | `50-biome-hyperjungle-species.js` | 33 **big** | harvest (biomes/FRUIT.md) (57); leaf textures (91); bark textures (162); materials (226); the material library (core/materials/PLAN.md) (257); instanced items (292) |
 | `52-biome-hyperjungle-library.js` | 2 |  |
-| `55-biome-hyperjungle-trees.js` | 33 **big** | trunk profile (24); colour (33); polyline helpers (Girder) (68); one hero hypertree (97); an immature hypertree (240); the far forest: impostors (273); the pass (307); one tree alone (biomes/WORLD.md: trees as varian (362) |
+| `55-biome-hyperjungle-trees.js` | 34 **big** | trunk profile (24); colour (33); polyline helpers (Girder) (68); one hero hypertree (97); an immature hypertree (242); the far forest: impostors (278); the pass (312); one tree alone (biomes/WORLD.md: trees as varian (367) |
 | `58-biome-hyperjungle-fauna.js` | 16 | bodies (26); textures, materials, items (68); placement helpers (95); the herds (a pose from the clock) (104); the pass (125) |
-| `60-biome-hyperjungle-floor.js` | 35 **big** | colour (22); keep-clear (62); bole profiles (76); fields (96); the plants (102); the belt's own understorey (170); fallen hypertrees (216); lianas (267); the pass (275) |
+| `60-biome-hyperjungle-floor.js` | 36 **big** | colour (22); keep-clear (62); bole profiles (76); fields (96); the plants (102); the belt's own understorey (171); fallen hypertrees (217); lianas (268); the pass (276) |
 | `65-biome-hyperjungle-dress.js` | 7 |  |
 | `70-biome-hyperjungle.js` | 1 |  |
 | `82-host-sky.js` | 12 |  |

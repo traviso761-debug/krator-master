@@ -21,13 +21,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
-| `40-tk-tentkit.js` | 21 |  |
+| `40-tk-tentkit.js` | 20 |  |
 | `41-tk-dress.js` | 3 |  |
 | `42-ts-small.js` | 9 |  |
 | `44-tl-large.js` | 9 |  |
 | `46-tc-chief.js` | 7 |  |
 | `48-tt-trade.js` | 10 |  |
-| `54-bl-baelu.js` | 15 |  |
+| `54-bl-baelu.js` | 16 |  |
 | `56-sa-beasts.js` | 13 |  |
 | `58-cv-wheels.js` | 6 |  |
 | `58v-cv-vardo.js` | 10 |  |

@@ -33,7 +33,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 11 | the fog (7); the far country (17); light modes (109) |
-| `84-host-ground.js` | 20 | the water (135); the mist (139) |
+| `84-host-ground.js` | 21 | the water (139); the mist (143) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 6 |  |
 | `87-host-cut.js` | 4 |  |

@@ -12,8 +12,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/69p-pyl-mat.js` | 7.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69q-pyl-helpers.js` | 16.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69p-pyl-mat.js` | 7.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69q-pyl-helpers.js` | 16.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70p-pyl-dwellings.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70q-pyl-poor.js` | 8.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70r-pyl-rich.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
