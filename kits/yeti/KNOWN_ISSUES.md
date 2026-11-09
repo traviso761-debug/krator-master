@@ -39,6 +39,13 @@
 - [ ] **The forest-steppe row stands on the sheet's snow** (2026-11-09, seen in the row's shot): the sheet has one ground, the
   winter one, so the summer urasa and the byre's hay stand in drift snow, and the nwouterwall larches read bare (its autumn).
   A ground of its own under the row (turf, the kit's `ground` family in summer) is the fix; awaiting the owner's eye-level review.
+- [ ] **`src/37-wk-rec.js` is an adapted copy** of `core/engine/37-wk-rec.js` (the walk records, moved into core/engine on
+  2026-11-09): this kit's copy records a `feature`'s boxes as well as a building's, because the winter street's and the
+  networks' tunnels are walked. `build.py`'s `ADAPTED` names it, so `--vendor-check` reports it as deliberate. Upstreaming it as
+  an opt-in (the record classes as a setting) would let the kit drop the copy; that changes core/engine and every kit on it.
+- [x] (2026-11-09) **The flora band lacked two core/biome files** the nwouterwall fragments call (`tools/check_assembly.py`
+  MISSING `BIO.leafOn`, `BIO.leafQ`, `BIO.impostor*`): `31b-core-leafset.js` and `34-core-impostor.js` are read in place in the
+  93b-bio- band now. The impostors stay off here (`NWOW.IMPOSTORS=false`), so nothing drawn changes.
 - [ ] **Joints where a run turns** are covered by a junction-sized dome at every corner of an L and at each door's lead;
   the runs overlap under it rather than mitre. A house's passage meets its tunnel through a portal face (`ytPortal`)
   whose two sections differ, so the passage's outer vault shows a little inside the tunnel's end.
