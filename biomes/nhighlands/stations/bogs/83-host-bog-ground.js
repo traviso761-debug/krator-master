@@ -16,7 +16,7 @@ const STATION_PAINT=(function(){const SG=new THREE.Color(0x5e7a34),SG2=new THREE
   if(poolAt(x,z,1.5))c.lerp(PEAT,.9);};})();   /* the pools' floors black peat (a pale floor showed through the shallow water as grey) */
 const STATION_GL=(x,z)=>{const b=FIELD.bog(x,z),s=FC.at(FC.a.slope,x,z);return[smooth(.4,.75,b)*(1-smooth(.2,.4,s)),smooth(.18,.4,s),smooth(.2,.4,b)*(1-smooth(.45,.7,b))];};
 const STATION_GLY=()=>{const A=KGROUND.layer('nhighlands','ground.sphagnum',{w:'vGL.x',amt:.8,gain:.95}),
-  B=KGROUND.layer('nhighlands','ground.peat',{w:'vGL.y',amt:.9,gain:1.0}),Cm=KGROUND.layer('nhighlands','ground.meadow',{w:'vGL.z',amt:.6,gain:1.1,tint:'diffuse'});
+  B=KGROUND.layer('nhighlands','ground.peat',{w:'vGL.y',amt:.9,gain:1.0})   /* ground.peat.hag, the cut face (in the library since 2026-10-26) */,Cm=KGROUND.layer('nhighlands','ground.meadow',{w:'vGL.z',amt:.6,gain:1.1,tint:'diffuse'});
  return [A,B,Cm].filter(Boolean);};
 // the steep on the mire is cut peat (the hags, the pools' lips), not station 1's granite: a GLSL colour (linear) for 84's steep faces
 const STATION_STEEP='vec3(0.020,0.014,0.009)*(0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r)';

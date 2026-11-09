@@ -204,7 +204,7 @@ NHL.buildFloor=function(R,q,box){
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;
  // the fallen giants: across the temperate and montane slopes, more in the old wood
- BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
+ BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q*(NHL.STATION_LOGS?NHL.STATION_LOGS(x,z):1);},   /* a station scales them where no wood stands (NHL.STATION_LOGS; station 1: none) */(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
  BIO.range=null;
  return{under:st};};
 
