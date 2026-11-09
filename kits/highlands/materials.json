@@ -1,0 +1,815 @@
+{
+ "build": "highlands",
+ "note": "The Highlands kit's adapter onto the material library (core/materials/PLAN.md), for the kit's own sheet (build.py, 2026-11-09): settlements/highlands/materials.json's rows copied unchanged (every family is the kit's: the vernacular MAT keys of 69b-vern-mat.js, the shared Ancients MAT and the kit's own families of 70-hl-tex.js and 71-hl-mat.js). targets/sheet/88y-hlsheet-matlib.js binds them (KMAT.bindMat). Keep it in step with Highlands' until the matlib item (MODULARITY-PLAN.md step 4) gives the kit one adapter.",
+ "size": 512,
+ "families": {
+  "wood": {
+   "lib": "wood.siding",
+   "scale": [
+    2.0,
+    1.7
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "woodV": {
+   "lib": "wood.lamppost",
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.57
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "shingle": {
+   "lib": "roof.shingle",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas.striped",
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.73,
+    "contrast": 2.2
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concreteR": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "paving": {
+   "lib": "concrete.ancient.b",
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.455
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "corrugate": {
+   "lib": "metal.corrugated_iron_02",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.527
+   },
+   "metal": 0.3,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.428
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "tarp": {
+   "lib": "cloth.tarp",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.524
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "whiteWorn": {
+   "lib": "metal.worn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.8
+   },
+   "metal": 0.3,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "logs": {
+   "lib": "wood.log.carved",
+   "scale": [
+    2.0,
+    1.77
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.588,
+    "colour": "#a49480"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "scale": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.5,
+    1.61
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.591
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleW": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bamboo": {
+   "lib": "wood.bamboo_wall",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.678,
+    "colour": "#b5af7c"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bmat": {
+   "lib": "fibre.reedmat",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.685,
+    "colour": "#c1ae80"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "hTileD": {
+   "lib": "patterns/highlands/tile-d",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.08,
+   "normalScale": 0.5
+  },
+  "hTileS": {
+   "lib": "patterns/highlands/tile-s",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.08,
+   "normalScale": 0.5
+  },
+  "hTileT": {
+   "lib": "patterns/highlands/tile-t",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.08,
+   "normalScale": 0.5
+  },
+  "hTileW": {
+   "lib": "patterns/highlands/tile-w",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.08,
+   "normalScale": 0.5
+  },
+  "hHarlG": {
+   "lib": "patterns/highlands/harlequin",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.1,
+   "normalScale": 0.5
+  },
+  "hMaze": {
+   "lib": "patterns/highlands/maze-weathered",
+   "scale": [
+    11.1,
+    11.1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.7
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.581,
+    "colour": "#83a146"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "hHarlR": {
+   "lib": "patterns/highlands/harlequin-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hHarlGt": {
+   "lib": "patterns/highlands/harlequin-dark",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hCaihua": {
+   "lib": "patterns/highlands/caihua",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4,
+   "size": [
+    1024,
+    167
+   ]
+  },
+  "formF": {
+   "lib": "patterns/tribal/formline",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "meadow": {
+   "lib": "ground.ground013",
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.42
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rbDirt": {
+   "lib": "ground.ground108",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "cobble": {
+   "lib": "rock.rock_wall_12",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ashlarP": {
+   "lib": "rock.rock_wall_11",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "hLattG": {
+   "lib": "patterns/highlands/lattice-grid",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattF": {
+   "lib": "patterns/highlands/lattice-fret",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattL": {
+   "lib": "patterns/highlands/lattice-lantern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattT": {
+   "lib": "patterns/highlands/lattice-triskelion",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzA": {
+   "lib": "patterns/highlands/frieze-asian-nw",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzL": {
+   "lib": "patterns/highlands/frieze-cloud-lotus",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzT": {
+   "lib": "patterns/highlands/frieze-nw-totemic",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzG": {
+   "lib": "patterns/highlands/frieze-teal-gold",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_d_crane": {
+   "lib": "patterns/highlands/crane-floral",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkA": {
+   "lib": "patterns/republic/folk-formline-a",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkB": {
+   "lib": "patterns/republic/folk-formline-b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkP": {
+   "lib": "patterns/republic/folk-painted",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
+  }
+ }
+}

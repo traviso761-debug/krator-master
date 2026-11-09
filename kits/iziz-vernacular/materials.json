@@ -1,0 +1,357 @@
+{
+ "build": "iziz-vernacular",
+ "note": "The Iziz Vernacular kit's adapter onto the material library (core/materials/PLAN.md), for the kit's own sheet (build.py, 2026-11-09). Iziz's rows (settlements/iziz/materials.json) for what the kit draws: the vernacular MAT keys of 69b-vern-mat.js (wood, woodV, stone, plaster, thatch, shingle, cloth, clothR) and the shared Ancients MAT the kit draws through (white, verdigris, concrete, concreteR, paving, brick, corrugate, timber, tarp, rubbleK, whiteWorn), copied unchanged; Iziz's own families (the city's, the court's, the embassy's, the fauna sheets) stay Iziz's. targets/sheet/88y-vsheet-matlib.js binds them (KMAT.bindMat). Keep the shared rows in step with Iziz's until the matlib item (MODULARITY-PLAN.md step 4) gives the Vernacular one adapter.",
+ "size": 512,
+ "families": {
+  "wood": {
+   "lib": "wood.siding",
+   "scale": [
+    2.0,
+    1.7
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "woodV": {
+   "lib": "wood.lamppost",
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.57
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "shingle": {
+   "lib": "roof.shingle.neutral",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas.striped",
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.73,
+    "contrast": 2.2
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concreteR": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "paving": {
+   "lib": "concrete.ancient.b",
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.455
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "corrugate": {
+   "lib": "metal.corrugated_iron_02",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.527
+   },
+   "metal": 0.3,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.428
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "tarp": {
+   "lib": "cloth.tarp",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.524
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "whiteWorn": {
+   "lib": "metal.worn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.8
+   },
+   "metal": 0.3,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
+  }
+ }
+}
