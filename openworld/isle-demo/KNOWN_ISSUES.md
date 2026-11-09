@@ -1,5 +1,12 @@
 # openworld/isle-demo: known issues
 
+- [x] **2026-11-09: the GPU verify's flora checks read empty** (seeding "tile -14,2: empty", 0 records rooted, spaced, clear).
+      No kit was at fault. The world's checks (`_api.hostChecks`) read the tiles round the camera, and the camera was
+      still at the start view. That view comes from little-demo: "west of Shade". This region has no Shade, so it falls back
+      to (-6000, 2500), 1.6 km deep in the Ring Sea. `verify.py` now sets the view over Kautoa and settles before
+      the world's checks. Checked there: 269,676 records, seeding identical in three orders, 25,313 trees spaced. The page
+      still opens over that sea: an isle start view in `src/world/98-world-start.js` is owed.
+
 - [x] **The towns' buildings read washed out next to their kits** (the owner, 2026-10-20, on the Governor's House). Two
       losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them
       too: the kits' per-instance colours were dropped (the fix from origin/main c31288c2f, taken here: every part

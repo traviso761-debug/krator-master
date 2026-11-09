@@ -137,7 +137,11 @@ async def run(a):
         print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
         if a.assert_:
             has = await pg.evaluate(HAS)
-            print('--- the world\'s checks (src/world/91-world-probe.js) ---')
+            # the world's checks read the flora round the camera: the start view (little-demo's, west of a Shade this region
+            # does not have) falls back to (-6000, 2500), deep sea, where no tile holds a record; so over Kautoa first, settled
+            await pg.evaluate("(()=>{const K=WORLD_DATA.meta.settlements.find(s=>s.name==='Kautoa');CAM.setView(K.x+2500,K.z-2500,300,0,-.2);})()")
+            await pg.evaluate('_api.settle(240000)')
+            print('--- the world\'s checks (src/world/91-world-probe.js, over Kautoa) ---')
             for r in await pg.evaluate('_api.hostChecks()'):
                 need = APPLIES.get(r['name'])
                 if need and not has[need]:
