@@ -41,7 +41,12 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
     if(lv>0)REGISTER({name:k.K.record.name,key:k.K.record.key,x,z,y:y-1,r:T.crownR*1.1,h:T.H+2});}}
   return out;}
  E.build=function(q){const out=CRATERDRY.build({R:TERR.R-150,quality:q});
-  BIO.cur='edge/mounds';out.mounds=mounds();BIO.cur='edge/kin';out.kin=kinTrees(q);BIO.cur=null;return out;};
+  BIO.cur='edge/mounds';out.mounds=mounds();BIO.cur='edge/kin';out.kin=kinTrees(q);BIO.cur=null;
+  /* OWED TO SWBAY'S TURN (KNOWN_ISSUES.md; korona's way): the bay's `leaflet` and `bloom` cards float on the thorn and the baobab for want of a
+     structure near them in swbay's own builders (221 of 351 and 121 of 206 here on software GL; ringisles found the same on these two trees), so
+     this page's attach audit leaves them to that turn rather than raise its cap. Marked free here only: drawn as they are. ?owed=0 audits them */
+  if(Q.get('owed')!=='0'){window._auditOwed=[];[['swbay','leaflet'],['swbay','bloom']].forEach(([k,n])=>{const R=BIO.kits[k],d=R&&R.defs[n];if(d){d.free=true;window._auditOwed.push(k+'.'+n);}});}
+  return out;};
  // the views: the grass under the thorns, a baobab, the mounds, the edge from above
  const nearKin=(n,x,z)=>{let b=null,bd=1e9;for(const T of E.trees){if(T.kin!==n||T.lv<2)continue;const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;};
  E.views=function(h){const V={},c=BIO.center?BIO.center():[0,0],t=nearKin('thorn',c[0],c[1]),b=nearKin('baobab',c[0],c[1]);

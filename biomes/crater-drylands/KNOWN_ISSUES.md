@@ -57,6 +57,14 @@ with no station they are not taken, and station 1 runs as before.
 - `salt`: abyssal-savannah's four fragments read in place and built (`ABSAV.build`) under its own mask; its burn is this page's fire history
   (`ABSAV.burn` replaced on the page), its parkland band opened to the flat floor; core/biome 33, 35, 39 for its species; water ext 54/54b
   for the pans and the brine look.
+- [ ] **Owed to swbay's turn:** its `leaflet` and `bloom` cards float on the umbrella thorn and the baobab (221 of 351 and 121 of 206 on
+      `edge`, software GL: 7.3% of the page's cards; ringisles saw the same on these trees). `edge` marks the two free on its page only
+      (`window._auditOwed`, korona's way; `?owed=0` audits them); the fix is `BIO.holdTo` in swbay's thorn and baobab builders.
+- **Headless loads of the stations** (software GL, `tools/harness.py`'s launcher; the page's own host checks and negatives run, not the
+  verify): `salt` clean, every check and negative passes (34), the two kits on their own ground (77,113 and 9,739 sampled instances, 1 off),
+  nothing on a pan, attach audit .24%; `edge` clean, its checks pass (873 umbrella thorns and 57 baobabs as kin, 362 mounds, none in a wash)
+  but the attach audit failed on swbay's cards (above), so it is rerun with them owed. The first load of both failed the "sheer face"
+  negative (their first kopjes too gentle to have one): made steeper.
 - [ ] **Owed on the stations** (PLAN-STATIONS.md): seasons on `edge` (straw and flush) and its other exchange rows (k-guilin's banyan and
       silvergrass, nwbay's flame-crown); on `salt` the Steampits' geyser field reaching in, nwbay's cinder pine on basalt, the kiln's scrub
       at its largest, the dry season driving the dust.
