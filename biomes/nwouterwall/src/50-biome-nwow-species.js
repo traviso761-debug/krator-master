@@ -180,7 +180,7 @@ NWOW.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('larchspray',G.hung(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],label:'Fur larch shoots (hanging sprays of needle tufts: '+(SEASON_K==='winter'?'none: the larch stands bare in winter':SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
+BIO.def('larchspray',G.hung(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],cap:400000,capWhy:'the taiga station is a fur-larch forest, its shoots hung in sprays along every bough (the instance-cap rule, 2026-11-08): 345,955 on the taiga at 2026-11-09',label:'Fur larch shoots (hanging sprays of needle tufts: '+(SEASON_K==='winter'?'none: the larch stands bare in winter':SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
 BIO.def('pineleaf',BIO.geo.clump(),M.pineleaf,{attrs:['aN'],label:'Stone pine needles'});
 BIO.def('thorn',BIO.geo.clump(),M.thorn,{attrs:['aN'],label:'Silverthorn (silver leaves, orange berries)'});
 BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Snow birch'});
