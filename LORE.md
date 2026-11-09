@@ -961,7 +961,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   between them and the water. Its few carnivorous plants are a guild of the canopy and the shade, where the giants starve everything else (the sky
   pitchers in the bough gardens, the carrion arum on the dark floor, the young snare liana), not Korona's poor-soil bog; the carrion arum is the one
   thing there that can kill a child.
-- **The e savannah rim, the old lines** (*proposed*, `biomes/hyperjungle/PLAN-LANDS.md` section 5.1; built as savannarim's station `east`,
+- **The e savannah rim, the old lines** (*proposed*, `biomes/hyperjungle/PLAN-LANDS.md` section 5.1; built as savannarim's station `east`, now `biomes/abyssal-savannah`'s station `erim`,
   2026-11-08; the owner to confirm): the eastern abyss's Palaeozoic lineages came down to the monsoon savannah as fire-hardened relics, as cycads
   and grass-trees hold Australia's fire savannahs: fire scale-trees charred on the fire's side, monsoon cycads flushing green out of the char
   (their sago leached a week, like the salt-cone kernels), ember spikes flowering after the burn. The e highlands' pull toward the giant shows in

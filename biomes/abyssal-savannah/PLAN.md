@@ -176,6 +176,10 @@ the page's own detail on it, not survey:
    XV to Am to Af in 34 km), where the rim breaks as cliffs and the bench steppe meets the plateau's `e badlands` flora
    (`biomes/ebadlands` read in place: pinyon, juniper, chaparral yucca).
 
+The savannah rims are stations of this kit too (section 14; the owner, 2026-11-08, `biomes/hyperjungle/PLAN-LANDS.md` section 14,
+answer 1): `--station serim` (the se rim, the incense country), `--station erim` (the e rim near Fridon) and `--station north`
+(hyperjungle N's savannah). Section 8 reserved no names for them; `belt` and `bench` above stay planned and unbuilt.
+
 ## 9. Crops (`kits/crops`)
 
 An `abyssal-savannah` biome entry (atm 2, dense): zones `parkland` (warmth [4, 4], arid [1, 2]), `steppe` (warmth [4, 4],
@@ -268,3 +272,76 @@ air and the water follow; `89z-host-build.js` (was 88) places the flora last, on
 - **S7**: the ground on KLAND (the scale model's own heights) when it reaches this checkout.
 - **S8**: stations 2 (the floor's belt) and 3 (the bench's edge, with ebadlands read in place); fauna from `kits/fauna`.
 - **S9**: the gallery (a new biome), `PORT.md` audited by `tools/audit_port.py`, the index.
+
+## 14. The savannah rims (from PLAN-LANDS J4-J6)
+
+The owner (2026-11-08, `biomes/hyperjungle/PLAN-LANDS.md` section 14, answer 1): no new kit; the savannah rims go to this kit (the scale
+model's `extract_region.py` already maps `e savannah rim` and `se savannah rim` to abyssal-savannah). A cloud session had built them as a
+kit of their own, `biomes/savannarim` (J4-J6, 2026-11-08); it was folded in here the same day, page for page (each station page differs
+from its savannarim page only in the edit layer's key). The plan for the rims is PLAN-LANDS.md (sections 1, 4, 5, 9 to 13): one base
+for the three monsoon savannahs, 0.6 to 1 km above the hyperjungle's floor at 1.7-1.9 atm, each land re-tinting and re-weighting it.
+
+| Station | Page | Where | What |
+|---|---|---|---|
+| 1 `serim` | `dist/abyssal-savannah-serim.html` | the se rim, between Talia (px 801,609) and the laterite, ~1,290 mm, Aw/Am/Cfa, 1.68 atm | the incense country: the Bowl's cousins (rain dragon, rain rose, rain bottle), incense, cloud avocado, the leaning tree fern (H4), the rust miombo and its copper flush (H7; read by Godstep's redlands) |
+| 2 `erim` | `dist/abyssal-savannah-erim.html` | the e rim near Fridon (px 755,601), ~1,490 mm, Am/Aw, 1.77 atm | the old lines: seven cousins by BIO.kin of eastabyss's and the e highlands' builders, the pull toward the giant fading west (H4), the savage land's comb tree and elephant ear by reach |
+| 3 `north` | `dist/abyssal-savannah-north.html` | hyperjungle N's XV/Aw/BSh part, east of the Hexahedron (px 555,338), ~1,035 mm, 1.88 atm | the blind grass under the bone giants, bloodwood at the jungle's edge |
+
+```
+python3 tools/build.py biomes/abyssal-savannah --station serim    # station 1
+python3 tools/build.py biomes/abyssal-savannah --station erim     # station 2
+python3 tools/build.py biomes/abyssal-savannah --station north    # station 3
+```
+
+**Layout.** `build.py` `build_station()`: `src/rim/` is the rims' shared base (the main page never reads it), `stations/<name>/` adds a
+station's own fragments (a name in both is the station's) and its `station.json` (`out`, `note`, `neigh`; `core`, `kits` and `paths` as
+the crater-drylands pattern has them). Every station has its own land, `44l-host-land.js` (the map and its weights, fires, views and
+checks as one record); `erim` has its own passes, `87e-host-own.js` (`src/rim/87e-host-own.js` is the se rim's and does nothing on
+another land).
+
+- **One stage for every land.** `src/rim/45-host-stage.js` draws the map from `LAND`: the rise, the river, the forest's edge, kopjes,
+  laterite, dambos, the fires. `src/rim/87-host-land.js` places the base on it, and a land's own species in its `landOwn` (87e).
+- **The rims' kit** (`src/rim/50`, `52`, `55`, `56`, `60`, `70`: `SAVRIM`, registry, tags and pack key `savannarim`): the species
+  records, the builders (`SAVRIM.<key>.make/grow`, `SAVRIM.builders`, `BIO.kitBuilder('savannarim', key)`) and the grass passes
+  (`SAVRIM.grass`, `SAVRIM.blindGrass`). The hyperjungle's station `north` reads `src/rim/50`, `55` and `60` and the `blind` and `grass`
+  families in place for its gaps (`biomes/hyperjungle/build.py` HOMES). The key was kept so that page, the records' kit ids and Godstep's
+  `kitBuilder` call did not move; renaming it is a later, deliberate change.
+- **The neighbours are read in place**, never copied (`build_station()` NEIGH): the hyperjungle on every page (its globals 41, its six
+  hypertrees for the gallery forest and the outliers, its lands' builders: the bone giants, the bloodwood, the comb tree, the elephant
+  ear), and per station the cousins' kits (`neigh`: serim sedesert and crater-drylands, erim eastabyss and ehighlands).
+- **Textures.** The rims' families are in this kit's `materials.json` and `tex/` (`build.py` `RIM_PACK`: grass, blind, fan, palmbark,
+  termite, incensebark), packed under the key `savannarim` on the station pages and left out of the main page; the rims take this kit's
+  `groundDetail` as it is (the same set, ground.savanna.litter, with the same settings).
+- Switches: `?land=0` (none of the land's passes), `?fire=0`, `?season=0`, `?kground=0`, `?far=0`, `?hz=0`, `?groundtint=0`;
+  `?shadow=1` turns the sun's shadows on.
+
+### Core adoption (PLAN-LANDS.md section 12)
+
+Started from the nearest finished kit, **crater-drylands** (its `build.py`: the core list, the station pattern with `station.json`, the
+full core/host interface), and for the host fragments from the **hyperjungle's savanna station** (the nearest finished savannah: its
+stage, river, burn mosaic and mounds).
+
+| Module | Taken | Where |
+|---|---|---|
+| core/biome | 10, 20, 30, 31b, 31j, 32 (kin), 33 (fung, for the hyperjungle read in place), 34, **38 KFIRE (H3)**, **39 the lean (H4)**, 40 (reach), 41, 42-44; **30s the copper flush (H7)** | `build_station()` CORE_BIOME |
+| core/rand | every placement a `KRAND.hash(world, i, j, salt)` lattice cell; the builders' numbers from `KRAND.hash(seed, k, salt)` | 55, 60, 87 |
+| core/mask | no canvas read for placement (the ground's paint is drawn, never read back) | 45 |
+| core/tags | `BIO.init({tags:'savannarim'})`; every tree, grove and landform `REGISTER`ed before the bake draws it | 87 |
+| core/space | the river's spans, the land's keep-clear (`KSPACE`) | 45, 87 |
+| core/terrain | 37 **KSTACKS.mounds (H10)**, 43 KGROUND, 44 KFAR, 45 KHORIZON | 45, 83, 87 |
+| core/water | the river (`WATER.flow`), wet ground and hollows | 89w, 89a |
+| core/atmos | the shared sky at the land's place, the wind, the weather, height fog, rain cover, the air's load | 89, 89a |
+| core/clock | **the season (H7)**: `BIO.bindSeason` (the grass bleaches, the monsoon kapoks drop); the flush (`21-core-clock-flush`) | 99 |
+| core/hazard | the air's dust reaches the walker (KHAZ) | 89a |
+| core/shadow | KSHADOW, off by default | 88 |
+| core/host | `khost.FULL` (the whole interface) | `build_station()` |
+| core/materials | `materials.json`, `tools/textures/pack.py` -> `tex/` | 50, 45, 87 |
+
+### Order (PLAN-LANDS.md section 13)
+
+| Step | What | Page |
+|---|---|---|
+| J4 (2026-11-08) | the base (red oat grass, blind grass, fan palm, umbrella thorn; gallery forest, kapok and baobab outliers read in place; KFIRE, mounds, seasons) and the north savannah | `north` (and the base on the se rim's map, `serim`) |
+| J5 (2026-11-08) | the e rim (H4 lands here) | `erim` |
+| J6 (2026-11-08) | the se rim (the rust miombo defined here, read by Godstep's redlands; the red guyed stalk Godstep's) | `serim` |
+| fold-in (2026-11-08) | `biomes/savannarim` folded into this kit as stations `serim`, `erim`, `north` | the three above |

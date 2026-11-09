@@ -4,10 +4,12 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/abyssal-savannah.html`
+Built output (never open it; edit `src/` and rebuild): `dist/abyssal-savannah-erim.html`, `dist/abyssal-savannah-north.html`, `dist/abyssal-savannah-serim.html`, `dist/abyssal-savannah.html`
 
 Build: `cd biomes/abyssal-savannah && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
+
+From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
 From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 

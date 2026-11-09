@@ -48,8 +48,8 @@ Read before changing anything here. `build.py` prints the open count.
       cohort flowers by the clock's year (all green at year 0). 35 groves, 2,869 culms, 713 bored. H9: each grove with bored culms
       registers a core/tags `sound` record (`bamboo-howl`; `core/tags/opt/54`).
     - The other species are builders in `src/57` on the shared tree (`src/54` `G.tree`): bone giants (59, only where `dryK` > .25, hung
-      with 487 widow's-hair curtains), watchers, hand-flower trees, bloodwoods (savannarim reads the builder), skull-pods, ghost pipes and
-      devil's fingers (`BIO.fung`). The blind grass in the gaps is savannarim's, read in place (J4).
+      with 487 widow's-hair curtains), watchers, hand-flower trees, bloodwoods (the savannah rims read the builder: `biomes/abyssal-savannah`'s stations), skull-pods, ghost pipes and
+      devil's fingers (`BIO.fung`). The blind grass in the gaps is the savannah rims', read in place (J4; `biomes/abyssal-savannah/src/rim/`).
     - The fauna (H8): land `hyperjungle.north` at half its densities (hunted thin), the big ones drawn within 650 m.
     - **For the GPU verify:** the howl bamboo's culms and sprays (view "Howl bamboo"), the bored culms' stains, the bone giants' white
       against the sky (view "Bone giants on the savannah"), the watchers' eyes, the triangle count (7.1M on the CPU load, the station's
@@ -59,10 +59,11 @@ Read before changing anything here. `build.py` prints the open count.
       bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models.
     - Taken as proposed, owner to confirm: question 3 (Screamer wood's theme, and the rumour that the Screamers' speech began with the
       groves: LORE.md section 6.7, a proposal).
-  - **J4** (`biomes/savannarim`, its own KNOWN_ISSUES.md): the station `north` now reads savannarim's species and grass passes in place
-    (`build.py` NEIGH `north`: its 50, 55, 60 and the `blind`/`grass` families) and grows the blind grass in its savannah gaps, with the
-    raiders' lanes. The savannarim pages read this kit's 41, 50, 52, 54-57 and 60 in place (the gallery forest, the outliers, the north's
-    bone giants and bloodwood), so a change here reaches them: rebuild `biomes/savannarim` and its stations with this kit.
+  - **J4** (the savannah rims: `biomes/abyssal-savannah`'s stations `serim`, `erim`, `north`, its KNOWN_ISSUES.md; built as
+    `biomes/savannarim` and folded in there on 2026-11-08): the station `north` now reads the rims' species and grass passes in place
+    (`build.py` NEIGH `north`, key `savannarim`, and HOMES: abyssal-savannah's `src/rim/` 50, 55, 60 and the `blind`/`grass` families of its `tex/`) and grows the blind grass in its savannah gaps, with the
+    raiders' lanes. The rim station pages read this kit's 41, 50, 52, 54-57 and 60 in place (the gallery forest, the outliers, the north's
+    bone giants and bloodwood), so a change here reaches them: rebuild `biomes/abyssal-savannah`'s stations (`--station serim`, `erim`, `north`) with this kit.
 
 - [x] **The savanna's tall grass over the instance cap (2026-11-08, the integration pass).** `tallgrass` counted 555,500 against
       the core's 250,000 default (the east catch-up's `instance-cap` failure). The owner keeps the grass: it is the station, two

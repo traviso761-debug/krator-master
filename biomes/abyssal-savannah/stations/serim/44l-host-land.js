@@ -1,6 +1,6 @@
 // ================================================================= HOST — THE LAND (station 1: the se savannah rim, the incense country)
 // biomes/hyperjungle/PLAN-LANDS.md sections 5.2 and 9: station 1, between Talia (px 801,609) and the laterite, ~1,290 mm, Aw/Am/Cfa,
-// 1.68 atm. A station replaces this fragment with its own land (stations/north, stations/east). The stage (45) reads LAND for its map:
+// 1.68 atm. Each station has its own land in this fragment (stations/serim, stations/erim, stations/north). The stage (45) reads LAND for its map:
 // the rise (metres over the map along a bearing), the river (a line, its width), the forest's edge (the jungle or the wet face's foot:
 // gallery country past it), kopjes (granite domes), the laterite (a share, by noise), the dambos (seasonal wetlands at the valley heads),
 // the fires; and the land's passes (87) read its weights. J4 (2026-11-08) built the savannah's base here; J6 (2026-11-08) the incense

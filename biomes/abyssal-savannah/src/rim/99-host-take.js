@@ -44,7 +44,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');
-KHOST.take({build:'savannarim',title:LAND.title,hint:LAND.hint,
+KHOST.take({build:'abyssal-savannah-rim',title:LAND.title,hint:LAND.hint,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances,

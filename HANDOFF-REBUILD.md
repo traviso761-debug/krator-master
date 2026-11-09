@@ -36,7 +36,7 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
   page reads the varied rock on the CPU.
 - **The season's copper flush and its Godot twin** (H7: `core/biome/30s-core-season-flush.js`, `core/clock/opt/21-core-clock-flush.js`,
   `godot/shaders/lib/season.gdshaderinc`):
-  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on `savannarim`) takes the flush;
+  - the SE savannah rim's **rust miombo** (`hyperjungle` land `southeast`, on the savannah rims: `biomes/abyssal-savannah` station `serim`) takes the flush;
   - **Godstep's redlands** station reads the same species;
   - every kit on the monsoon season gets the Godot `season_dry` with it.
 - **The `sound` record** (H9, `core/tags/opt/54-core-tags-sound.js`, twin `ksound.gd`):
@@ -659,7 +659,7 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   (their `PLAN-STATIONS.md`) as part of the turn; if one did not, it is built here.
   Then (the owner, 2026-10-27: "add hyperjungle N and E savannah rim to queue"): **hyperjungle N** (`biomes/hyperjungle/PLAN-LANDS.md`
   section 3 and station 3, `-north`: Screamer wood, the howl bamboo, watchers, bone giants) and **the e savannah rim** (section 5.1:
-  `biomes/savannarim`, a new kit on the savannah base of section 4, station 2 `-east` near Fridon). The rim is built after hyperjungle
+  `biomes/savannarim`, a new kit on the savannah base of section 4, station 2 `-east` near Fridon; the owner, 2026-11-08: no new kit, now `biomes/abyssal-savannah` station `erim`). The rim is built after hyperjungle
   N, as two sessions at most at once. The hyperjungle's turn in pair 2 rebuilds its built page and its `PLAN-STATIONS.md` stations,
   not the lands plan: the savage land, the rims and the rest of PLAN-LANDS stay for later turns the owner names.
   Then (the owner, 2026-10-27: "after these, w outer wall 1, then finish sw highlands"): **the W outer wall's station 1**, the loess

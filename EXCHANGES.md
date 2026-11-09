@@ -439,7 +439,7 @@ on a floor at 400-1,000 m (BWk, 16 mm). **Neither side has a plant that lives on
 - **hyperjungle→crater-drylands: yes, a cousin.** The `prismmallee` is "a much smaller relative of the hyperjungle's
   prism gum" (`crater-drylands/NOTES.md:30,46`; `src/50-biome-craterdry-species.js:11`).
 - **crater-drylands→hyperjungle: none.** `hyperjungle/PLAN-LANDS.md` §5.3 sends the prism mallee and the frill-tree out
-  of the patch, but to the se savannah rim (`biomes/savannarim`), not to the hyperjungle kit.
+  of the patch, but to the se savannah rim (`biomes/abyssal-savannah` station `serim`; built as `biomes/savannarim`), not to the hyperjungle kit.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|

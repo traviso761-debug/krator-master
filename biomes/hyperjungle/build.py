@@ -157,11 +157,14 @@ for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
 import json as _json
 NEIGH={'lake':{'geyser':(['50-biome-geyser-species.js','55-biome-geyser-trees.js'],'GEYSER',['bark0','strap','rosette'])},
        'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})},
-       # Screamer wood's savannah gaps (J4, 2026-11-08): biomes/savannarim's blind grass, its species and grass passes read in place
+       # Screamer wood's savannah gaps (J4, 2026-11-08): the savannah rims' blind grass, their species and grass passes read in place
        'north':{'savannarim':(['50-biome-savrim-species.js','55-biome-savrim-trees.js','60-biome-savrim-floor.js'],'SAVRIM',['blind','grass'])}}.get(STATION,{})
+# where a neighbour's kit lives when it is not biomes/<its key>: the savannah rims (registry and pack key 'savannarim') are abyssal-savannah's
+# stations (PLAN-LANDS.md section 14, answer 1), their shared fragments in its src/rim/, their pack families in its tex/
+HOMES={'savannarim':('abyssal-savannah','src/rim')}
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
-    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
-    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    _hd,_sd=HOMES.get(_k,(_k,'src'));_d=os.path.normpath(os.path.join(HERE,'..',_hd));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,_sd,_f)
     VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
     if _k=='geyser':   # the geyser kit's namespace is made by its layout fragment (46), which this page does not take
         VIRTUAL['47%s-%s-ns.js'%(_c,_k)]=chr(10)+'var GEYSER={};   // the namespace its own page makes in 46-biome-geyser-layout.js'+chr(10);PATH['47%s-%s-ns.js'%(_c,_k)]=None

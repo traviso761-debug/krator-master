@@ -8,7 +8,7 @@
 //     are Godstep's (not built: none drawn)
 //   4 the Cfa foot of the wet face (s > 1.3 km): the cloud avocado, the leaning tree ferns in the ravines (H4), the gallery forest (87)
 // Near Pylon at the western end, the drylands' frill-tree and prism mallee by reach (H1, LAND.home.drylands). Cousins by BIO.kin of the
-// sedesert's builders (src/56: SAVRIM.LANDS.southeast.cousins()), read in place (build.py STATION1_NEIGH); every place a KRAND cell.
+// sedesert's builders (src/56: SAVRIM.LANDS.southeast.cousins()), read in place (stations/serim/station.json "neigh"); every place a KRAND cell.
 function landOwn(c){if(LAND.key!=='southeast')return;
  const L=SAVRIM.LANDS.southeast,K=L.cousins(),out=c.out;L.def();out.kin=out.kin.concat(Object.keys(K).filter(k=>K[k]).map(k=>K[k].record));
  const RD0=RD,sAt=(x,z)=>x*RD0[0]+z*RD0[1]+150*KN(x,z,.0012,850,2)*2,dry=(x,z)=>smooth(-1000,-1600,sAt(x,z)),savZ=(x,z)=>smooth(-1600,-1000,sAt(x,z))*smooth(200,-200,sAt(x,z)),
