@@ -56,11 +56,11 @@ const HCHK={
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0;});
   return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none drowned'};},
  // no plant on a sheer rock face (the gullies' walls, the tors' risers)
- cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
+ cliffs(T,F){F=F||FIELD;const bad=T.filter(t=>F.slope(t.x,t.z)>.97&&F.rock(t.x,t.z)>.6);   /* F: the fields read (the negative's stand-in on a land with no sheer face) */
   return{ok:!bad.length,detail:bad.length?bad.length+' plants on sheer rock (first '+EHIGH.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' plants, none on a sheer face'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.3);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 /* species and plants that yield something edible the kit has no catalog fruit for: named, not hidden (biomes/FRUIT.md); none since 2026-10-20 */
-const FRUIT_NOT_DRAWN=['thorn'];   /* the thorn cushion's edible part is its flowers (tea), not a fruit: no catalog piece wanted */
+const FRUIT_NOT_DRAWN=['thorn','treefern','beech'];   /* the thorn cushion's edible part is its flowers (tea), the tree fern's its croziers (a cooked green), the beech's its mast (a nut, roasted): none a fruit, no catalog piece wanted (2026-11-08) */
 /* fruit: every edible species and plant names a catalog piece (the pieces are catalogued, not drawn on the stage) */
 HCHK.fruit=(SP,PL)=>{const id=x=>x.key||x.name,miss=SP.concat(PL).filter(x=>x.tags.harvest&&x.tags.harvest.edible.length&&!x.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(id(x))<0).map(id),untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id);
  return{ok:!miss.length&&!untagged.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+'catalog keys: '+EHIGH.FRUIT_KEYS.join(', ')};};
@@ -97,7 +97,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  (STAGE.negatives||[]).forEach(f=>{const r=f();add(r.name,r);});   /* a station's own */
  add('a fruiting species with no catalog fruit',HCHK.fruit(EHIGH.SPECIES.map(S=>S.key==='cereus'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),Object.values(EHIGH.PLANTS)));
  add('a plant under the water',HCHK.dry([[NEG.wet[0],NEG.wet[1],NEG.wet[2],'test']]));
- add('a plant on a sheer rock face (the steepest found)',HCHK.cliffs([{x:NEG.cliff[0],z:NEG.cliff[1],sp:4}]));
+ /* a land with no face past the rule (the treeline: its steepest .967, 2026-11-08) cannot feed the negative a real point: it is fed a made-up sheer face there */
+ {const sheer=FIELD.slope(NEG.cliff[0],NEG.cliff[1])>.97&&FIELD.rock(NEG.cliff[0],NEG.cliff[1])>.6;
+  add('a plant on a sheer rock face (the steepest found)',HCHK.cliffs([{x:NEG.cliff[0],z:NEG.cliff[1],sp:4}],sheer?null:{slope:()=>1,rock:()=>1}));}
  add('a camera under the water',HCHK.camerasOut([{view:'under',x:NEG.wet[0],y:NEG.wet[1]-5,z:NEG.wet[2]}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

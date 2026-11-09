@@ -13,7 +13,7 @@ const VIEWS={
  'The cloud bank on the face':look(-2300,zr(-2300)-500,30,1500,zr(1500),300),
  'From afar':look(-2500,-2500,320,600,500,120),
 };
-const NEG={wet:[-600,bedH(-600)-.4,zr(-600)],
+const NEG={wet:[-600,bedH(-600)-1.2,zr(-600)],   /* 1.8 m under the stream's level (bedH + .6): HCHK.dry wants more than 1 m (it read exactly 1 m at -.4: the negative passed, 2026-11-08) */
  cliff:(function(){let bx=0,bz=0,bs=-1;for(let z=-2400;z<=2400;z+=12)for(let x=-2400;x<=2400;x+=12){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}return[bx,bz];})(),
  env:[[0,0],[-600,zr(-600)+200],[1000,zr(1000)-400]]};
 /* the station's own check: the stream leaves each bench over a fall (89w: WATER.fallsOf on its flow), each drawn */

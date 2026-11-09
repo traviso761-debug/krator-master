@@ -23,6 +23,7 @@ window._biome=null;
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  if(Q.get('diet')==='0')EHIGH.IMPOSTORS=false;
  EHIGH.setGiant(GIANT_AZ);
+ EHIGH.SHORE=WATER_FN&&WATER_FN.shore?WATER_FN.shore:null;   /* the trees keep off the water's drawn shore (55's pass; the edge audit in 99) */
  if(FLOWERING)EHIGH.FLOWERING.push(FLOWERING);
  try{window._biome=EHIGH.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}

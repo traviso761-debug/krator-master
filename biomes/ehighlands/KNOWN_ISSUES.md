@@ -150,3 +150,31 @@ triangles; the mixed belt 39, 8.6 M; the montane belt 42, 12.2 M (stations 1-3 u
       page (upright under ~4.8 km, flagged to ~5 km, krummholz above), the mixed belt's three-way mix.
 - [ ] **The far field** of the three is the generator's face carried on (rising east, falling west), not the model's own heights.
 
+## 2026-11-08: the GPU verify's two failures on `ehighlands.html` (fixed)
+
+- [x] **Plants in the water** (`plant-in-water: 3`, WATER.edgeAudit on the drawn shore): the trees' pass placed by the kit's own masks,
+      which do not see the stream's drawn banks. 89z hands the pass the water fields' shore (`EHIGH.SHORE`, `WATER.fieldFns(WATER_F).shore`)
+      and 55 drops a tree whose root (its widest, at most 0.6 m, plus 0.4 m) would reach the water, before any random draw. Every station
+      takes the same 55 and 89z.
+- [x] **Edible but no catalog fruit: treefern, beech** (the five new stations' species): the tree fern's croziers are a cooked green and the
+      beech's mast a nut, not fruit, so both are named in `FRUIT_NOT_DRAWN` (99) beside the thorn; kits/catalog unchanged.
+- [x] **The stations' own verify failures** (same day): face, `registered-volumes-non-empty` on its three falls (the curtain arcs out past the
+      14 m volume, and core/water's meshes are probeSkip: 89w adds a marker with a probe point at each lip's middle, halfway down; mixed has the
+      same, one fall) and the negative `a plant under the water` passing on face, mixed, montane and treeline (NEG.wet sat 0.8-1 m under the
+      stream and HCHK.dry wants more than 1 m; now 1.7-1.8 m). Lesser: its three named places on bare ash
+      empty (84 adds one ground probe point per `STAGE.places` entry: the ground mesh is probeSkip); 3 trees on cold ash (the warmth is finer
+      than the 22 m field cache: 47 now takes `STAGE.exact`, and the station reads `warm` and `barren` at full resolution); the export profile's
+      box on cold ash (verify.py takes `STAGE.exportBox`; lesser's is the densest 300 m cell of its plants).
+- [x] **Lesser: `foliage held by its structure`** (23 of 296 `bloom` cards floating, d null): the flowers on the tall vent cushions (H 2-2.5 m)
+      stand over 2 m up, so the audit judges them, and the cushion's skin (a solid dome drawn with `BIO.leafMat`) counted as a card, not
+      structure. 50 marks `M.cushion` kind `solid` (farside's way); the export records the cushion as solid. In the browser after the change:
+      0 of 501 floating, every host check passing.
+- [x] **Montane** (same day): one fir needle clump `rooted under the water` (a low branch over the stream: 55's `clumpAt` now skips a clump
+      more than 1 m under `BIO.waterH`, after its draws); `instance-cap` on `needle` (699,018) and `rod` (287,737): caps 760,000 and 320,000
+      with a `capWhy` (nhighlands holds its conifers at 700,000); the export box (buckets empty in the main page's box: `STAGE.exportBox`, the
+      densest 300 m cell of its trees).
+- [x] **Treeline: the negative `a plant on a sheer rock face` passed**: the land has no face past the rule (steepest .967 against .97), so no
+      real point can feed it; 99's `HCHK.cliffs` takes a fields reader, and on a land with no sheer face the negative is fed a made-up one
+      (slope 1, rock 1) at the steepest point (2026-11-08).
+- [x] **Two view names not file-safe** (`tools/check_views.py`, the colon): lesser's "A fumarole oasis - cushions turned to the giant" and
+      treeline's "Over the crest - the cushions come" now take a dash (2026-11-08); check_views 0 over the baseline.

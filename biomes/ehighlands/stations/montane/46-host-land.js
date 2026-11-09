@@ -35,3 +35,7 @@ const OBSTACLES=[];
 const SPINE=[[0,0],[-1500,WF.zs(-1500)+200],[1400,WF.zs(1400)-200],[0,WF.zs(0)]];
 STAGE.windows={water:[-TERR.R,-TERR.R,TERR.R,TERR.R]};
 STAGE.farH=WF.farH;
+/* the export profile's box (verify.py reads STAGE.exportBox; 2026-11-08): the main page's [900,1200,1200,1500] holds no trunk here (buckets empty),
+   so the densest 300 m cell of the belt's trees, found after the build */
+STAGE.exportBox=()=>{const C={};let b=null,bn=0;for(const T of EHIGH.TREES){if(T.lv<1)continue;const k=Math.floor(T.x/300)+','+Math.floor(T.z/300);C[k]=(C[k]||0)+1;if(C[k]>bn){bn=C[k];b=k;}}
+ if(!b)return null;const p=b.split(',').map(Number);return[p[0]*300,p[1]*300,p[0]*300+300,p[1]*300+300];};

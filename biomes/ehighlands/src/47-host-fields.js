@@ -17,6 +17,8 @@ const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Fl
 const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));
 // the Mother's own field is read at full resolution (the kit drapes its cushion over it, 2 m a cell)
 if(MOTHER)FIELD.mother=(x,z)=>{const M=motherAt(x,z);if(M.m<=0)return 0;return M.m*smooth(2.5,6,rillD(x,z));};
+/* a station's fields too fine for the cache, read at full resolution (STAGE.exact {name: (x, z) -> value}; the Lesser Throne's warmth, 2026-11-08) */
+if(STAGE.exact)for(const n in STAGE.exact)FIELD[n]=STAGE.exact[n];
 
 // ---------------------------------------------------------------- the host binding
 BIO.init({tags:'ehighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,

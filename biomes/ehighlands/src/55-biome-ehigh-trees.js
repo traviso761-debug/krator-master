@@ -86,7 +86,11 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+ const qe=qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3));
+ /* a clump a low branch or a krummholz mat dips more than a metre under the stream is not drawn (montane's verify, 2026-11-08: one fir needle
+    'rooted under the water'); its draws are taken first, so nothing else moves */
+ if(BIO.waterH(x,z)>y+1)return;
+ BIO.put(item,[x,y,z],qe,[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing (korona's guard) */
 const regTree=(T,S,r,h)=>{if(!BAKING)BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});};
 // the height of the unit dome (G.cushion's body) at radius r along the giant axis component ca: for things set on it
@@ -373,6 +377,9 @@ EHIGH.buildTrees=function(R,q){
   BIO.grid(P.cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=P.accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
    (x,y,z,d)=>{if(blocked(x,z,pad))return;
+    /* off the water's drawn shore (2026-11-08): EHIGH.SHORE (the host's WATER.fieldFns shore, m, under 0 in the water; 89z) keeps a root out of the
+       water by its widest root and a margin, before any draw, so nothing else in the pass moves. The edge audit (99) found 3 by the stream's banks */
+    if(EHIGH.SHORE&&EHIGH.SHORE(x,z)<Math.min(S.rb[1],.6)+.4)return;
     const T=EHIGH.make(sp,x,y,z);
     const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
     if(T.lv===0&&!S.far)return;

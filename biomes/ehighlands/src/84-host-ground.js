@@ -18,6 +18,9 @@ GULLY.forEach(G=>{const z=zF(G.x0)+420;REGISTER({name:G.name,x:xg(G,z),z,y:terra
 if(BOG)REGISTER({name:'The bofedal',x:BOG.x,z:BOG.z,y:BOG.y-10,r:BOG.rx*1.05,h:40});
 if(GEO)REGISTER({name:GEO.name||'The geyser field',x:GEO.x,z:GEO.z,y:terrainH(GEO.x,GEO.z)-10,r:GEO.r*1.1,h:60});
 (STAGE.places||[]).forEach(P=>REGISTER({name:P.name,x:P.x,z:P.z,y:terrainH(P.x,P.z)-(P.dy==null?20:P.dy),r:P.r,h:P.h}));
+/* a station's places are landforms the ground draws (a breach, a skylight, a rim), and the ground mesh is probeSkip: one probe point on the ground
+   at each place's middle stands for it (registered-volumes-non-empty on the Lesser Throne's bare caldera, 2026-11-08) */
+if((STAGE.places||[]).length){const o=new THREE.Object3D();o.userData.probePoints=[].concat(...STAGE.places.map(P=>[P.x,terrainH(P.x,P.z)+.5,P.z]));o.userData.inspectLabel='The named places (probe points)';scene.add(o);}
 
 // ---------------------------------------------------------------- the ground
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;

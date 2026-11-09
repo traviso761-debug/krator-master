@@ -37,5 +37,8 @@ if(STREAM_FLOWS.length&&WATER.breakupFlows)WATER.breakupFlows();   /* core/water
 // the falls (a land's flows only): each slope break a curtain that arcs from the lip, its plunge and its spray
 const FALLS=typeof LAND_FLOWS!=='undefined'&&WATER.fallsOf?[].concat(...STREAM_FLOWS.map(f=>WATER.fallsOf(f.F,{steep:.5,minDrop:6,fit:true}).map(o=>WATER.fall(o)))).map((F,k)=>{
  const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:30,cols:6,margin:1.2,lipK:.85,spray:'drop',envMapIntensity:.25,renderOrder:3});
- if(D&&D.mesh)D.mesh.userData.inspectLabel=F.name||('A fall '+(k+1));REGISTER({name:'A fall ('+Math.round(F.drop)+' m)',x:(F.lip[0][0]+F.lip[1][0])/2,z:(F.lip[0][1]+F.lip[1][1])/2,y:F.lip[0][2]-F.drop-4,r:14,h:F.drop+8});return{F,D};}):[];
+ if(D&&D.mesh)D.mesh.userData.inspectLabel=F.name||('A fall '+(k+1));
+ /* the curtain arcs out past the volume's 14 m on a tall fall, so its box centre lands outside it (registered-volumes-non-empty, face, 2026-11-08):
+    the lip's middle, halfway down, is the probe's point for it, on a marker of its own (core/water's meshes are probeSkip) */
+ if(D&&D.mesh){const pm=new THREE.Object3D();pm.userData.probePoints=[(F.lip[0][0]+F.lip[1][0])/2,F.lip[0][2]-F.drop/2,(F.lip[0][1]+F.lip[1][1])/2];scene.add(pm);}REGISTER({name:'A fall ('+Math.round(F.drop)+' m)',x:(F.lip[0][0]+F.lip[1][0])/2,z:(F.lip[0][1]+F.lip[1][1])/2,y:F.lip[0][2]-F.drop-4,r:14,h:F.drop+8});return{F,D};}):[];
 window._water={tarn:!!TARN_DRAW,pools:BOG_STILLS.length,streams:STREAM_FLOWS.length,falls:FALLS.length};

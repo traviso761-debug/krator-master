@@ -9,7 +9,7 @@ const VIEWS={
  'The scarp\'s fall':(function(){const x=LIP-200,z=WF.zs(LIP)+40;return[x,gh(x,z,6),z,LIP+30,WF.bedH(LIP+20)-20,WF.zs(LIP+30)];})(),
  'From afar':look(-2500,-2500,260,600,400,100),
 };
-const NEG={wet:(function(){const x=-600,z=WF.zs(x);return[x,WF.bedH(x)-.3,z];})(),
+const NEG={wet:(function(){const x=-600,z=WF.zs(x);return[x,WF.bedH(x)-1.2,z];})(),   /* 1.7 m under the stream (bedH + .5): HCHK.dry wants more than 1 m (at -.3 the negative passed, 2026-11-08) */
  cliff:(function(){let bx=0,bz=0,bs=-1;for(let z=-2400;z<=2400;z+=12)for(let x=-2400;x<=2400;x+=12){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}return[bx,bz];})(),
  env:[[0,0],[-1500,WF.zs(-1500)+300],[1400,WF.zs(1400)-300]]};
 const FALLS_CHK=n=>({name:'the stream falls at each scarp (WATER.fallsOf, drawn)',ok:n>=NSCARP,detail:n+' falls drawn ('+NSCARP+' scarps on the page)'});

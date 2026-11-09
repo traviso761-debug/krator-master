@@ -104,3 +104,10 @@ STAGE.places=[{name:'The caldera of the Lesser Throne',x:0,z:0,r:2700,h:1000,dy:
  {name:'The high rim (6,880 m)',x:Math.sin(A_HI)*rimR(A_HI),z:-Math.cos(A_HI)*rimR(A_HI),r:500,h:200,dy:40}];
 // the far field (85): the flanks falling away past the square
 STAGE.farH=(x,z)=>calderaH(x,z);
+/* 2026-11-08 (the GPU verify): the vents' warmth is 50-190 m across and the fields' cache is 22 m a cell here, so the cached `barren` let 3 trees
+   root on cold ash at an oasis's edge. 47 reads these two at full resolution (STAGE.exact), as it does the Mother */
+STAGE.exact={warm:(x,z)=>warmAt(x,z),barren:(x,z)=>clamp(1-smooth(.12,.3,warmAt(x,z)),0,1)};
+/* the export profile's box (verify.py reads STAGE.exportBox): the main page's [900,1200,1200,1500] is cold ash here, so the densest 300 m cell
+   of the oases' plants, found after the build */
+STAGE.exportBox=()=>{const C={};let b=null,bn=0;for(const T of EHIGH.TREES){const k=Math.floor(T.x/300)+','+Math.floor(T.z/300);C[k]=(C[k]||0)+1;if(C[k]>bn){bn=C[k];b=k;}}
+ if(!b)return null;const p=b.split(',').map(Number);return[p[0]*300,p[1]*300,p[0]*300+300,p[1]*300+300];};

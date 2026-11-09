@@ -402,6 +402,9 @@ BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichens and mat algae'});
 BIO.def('sinter',BIO.geo.mat(),M.lichen,{label:'Mat algae (the geysers\' run-off)'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers',onLeaf:true});   /* onLeaf (the final rebuild): a flower in a bush may be held in its leaf card's body (core/biome/README.md) */
 BIO.def('broad',G.leafquad(),M.broad,{attrs:['aN'],label:'Glass-tower leaves'});
+/* the cushion's skin is a solid dome drawn with the leaf shader (no sway, no cut-out), not a card: kind 'solid' (farside's way), so the attach audit
+   takes it as the structure its flowers sit on (the Lesser Throne's tall vent cushions: 23 of 296 blooms 'floating', 2026-11-08) */
+M.cushion.userData.bio.kind='solid';
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Poured cushions'});
 BIO.def('bogq',G.bogq(),M.cushion,{label:'Bog cushions'});
 BIO.def('wool',G.wool(),M.wool,{label:'Woolbacks'});
@@ -416,7 +419,7 @@ BIO.def('tower',G.tower(),M.glass,{label:'Glass towers'});
 BIO.def('comb',G.comb(),M.vcol,{label:'Wild honeycomb (tower honey)'});
 BIO.def('wick',G.wick(),M.vcol,{label:'Wormwick'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub masses'});
-BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
+BIO.def('rod',G.rod(),M.solid,{label:'Stems',cap:320000,capWhy:'the branch rods of the fir whorls on the montane belt (station 6): 287,737 at 2026-11-08, one a needle pair'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Basalt boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit and flower eyes'});
@@ -483,7 +486,7 @@ BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit and flower
  const SW=BIO.libSwap('ehigh',{needle:M.needle,bark5:M.bark[5]});LIB.needle=!!SW.needle;
  {const L=LIBP('bark5');if(L)EHIGH.LIBMEAN.bark5=L.mean>0?L.mean:.5;}
  BIO.bucket('bark5',M.bark[5],{label:'Spruce bark (the combed fir)',uvScale:[1.2,1.8]});
- BIO.def('needle',SW.needle&&BIO.geo.cells?BIO.geo.cells(BIO.geo.clump(),{n:3,scale:.75}):BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Fir needles'});}
+ BIO.def('needle',SW.needle&&BIO.geo.cells?BIO.geo.cells(BIO.geo.clump(),{n:3,scale:.75}):BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Fir needles',cap:760000,capWhy:'the fir forest of the montane belt (station 6): 699,018 needle clumps at 2026-11-08, the whorls of every fir; nhighlands holds its conifers at 700,000'});}
 
 // ---------------------------------------------------------------- stations 5 and 6 (2026-11-09): the beech's leaves and bark
 {const RS=KRAND.stream(53073),r=()=>RS.next(),rq=(a,b)=>a+(b-a)*r();

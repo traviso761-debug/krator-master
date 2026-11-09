@@ -3,28 +3,28 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "cedcf3d98e6c681204ca1b6bd2b272f7849a8d7ed283dbdb13bb3c6dde82f486",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ehighlands/tex/bark.ragbark.albedo.webp": "3e4f2970f009e705b77ca357cd82ee8fb2b94658c10a9ed5bdd88b73ab3a15b2",
     "biomes/ehighlands/tex/ground.puna.albedo.webp": "232a7a73408353ac660ced4a7c129ad59968c33209e9a2682def748f49f778dc",
@@ -125,39 +125,39 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands.html": "d5cff623e0aa0ade8d040b17bdd6523cab05919888d5716b7f7f3dac59a3126c"
+    "biomes/ehighlands/dist/ehighlands.html": "058b9c06ded2ca25f906f43fa6e4c09e8162d11495b5a6a5ce61930fa810e513"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands.html": "d5cff623e0aa0ade8d040b17bdd6523cab05919888d5716b7f7f3dac59a3126c"
+    "biomes/ehighlands/dist/ehighlands.html": "058b9c06ded2ca25f906f43fa6e4c09e8162d11495b5a6a5ce61930fa810e513"
    }
   },
   "build.py --station face": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "cedcf3d98e6c681204ca1b6bd2b272f7849a8d7ed283dbdb13bb3c6dde82f486",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ehighlands/stations/face/46-host-land.js": "8bb55f1c22db36ae3cf6d950ca22bcdb4793772f3d460e30487466bb9df7e018",
-    "biomes/ehighlands/stations/face/96-host-views.js": "e56dadb4f89a9d8bb629cb9d77d87f9ad770a803a595c18df77b52ccff55c8b6",
+    "biomes/ehighlands/stations/face/96-host-views.js": "497667858e55d98d54f5e2a70296926258ad53ec8230b7c3b0939f158fdfdb33",
     "biomes/ehighlands/stations/face/station.json": "1ec5aae2c7d7c03656024e5b304bc51fce1df226e94c973a89c51f4f564dbc17",
     "biomes/ehighlands/tex/bark4.albedo.webp": "6a220daf212644e319a60782ea920aeb16e872321636730f0f53956710ebd2ec",
     "biomes/ehighlands/tex/beard.albedo.webp": "f4b0a63f5269a2284358fec3e29d08e9aab017d3d9fc41d8c27cff4827cbc61e",
@@ -263,39 +263,39 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "4a0b1ab35b7c7e9c091a1621595a8bb1c8f953b50cc50acaa5f84a174a9527df"
+    "biomes/ehighlands/dist/ehighlands-face.html": "587b790123cfac84f32643f7e71d963c85625ec4c73972ad4941d6826203f691"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "4a0b1ab35b7c7e9c091a1621595a8bb1c8f953b50cc50acaa5f84a174a9527df"
+    "biomes/ehighlands/dist/ehighlands-face.html": "587b790123cfac84f32643f7e71d963c85625ec4c73972ad4941d6826203f691"
    }
   },
   "build.py --station lesser": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "86862438796a7f0e80f73a9b59b97d2f9174a56f8d8b7ffe2d45894cca5f1956",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/ehighlands/stations/lesser/46-host-land.js": "45bb206f3a461c33eb806ac55d04ed78fb35c36cfcd2865356a53db87b3b6dd9",
-    "biomes/ehighlands/stations/lesser/96-host-views.js": "43d1f5b8a1e5e97e04414a517fa026f5bc05d7883aed022656bff8ca6bc39382",
+    "biomes/ehighlands/stations/lesser/46-host-land.js": "5b48e00cb2db66ffa22cae72b787a6555f7b1f4f87325cdf3303f77c55e85b9b",
+    "biomes/ehighlands/stations/lesser/96-host-views.js": "e3caa7633e8000239434d95afd9c966004b3f56df5a0fd8514defdefc18e5a96",
     "biomes/ehighlands/stations/lesser/station.json": "8950ac87da3b02dd60085905c814f3ec3e68e8ae1491913ece1f7be2aef6f4a4",
     "biomes/ehighlands/tex/ground.ash.albedo.webp": "583a66d7ea6b9cff5df783580ff76dcf924e708fabe478842570c817f8623dc6",
     "biomes/ehighlands/tex/ground.puna.albedo.webp": "232a7a73408353ac660ced4a7c129ad59968c33209e9a2682def748f49f778dc",
@@ -397,39 +397,39 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "3b49a1b5b5de3bcb4a0a5bec23e58096166c27ff3db549959c57a47e123f43f5"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "548c0aefa99a6ce7a6482e9ac9bdbd0de81427c67663586b64d60103e0deccc9"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "3b49a1b5b5de3bcb4a0a5bec23e58096166c27ff3db549959c57a47e123f43f5"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "548c0aefa99a6ce7a6482e9ac9bdbd0de81427c67663586b64d60103e0deccc9"
    }
   },
   "build.py --station mixed": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "cedcf3d98e6c681204ca1b6bd2b272f7849a8d7ed283dbdb13bb3c6dde82f486",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ehighlands/stations/mixed/46-host-land.js": "7c3c072971104c9862b1a0563ab038d6e9b41f3181056f762304da8c0f698127",
-    "biomes/ehighlands/stations/mixed/96-host-views.js": "2ddaded7ec17fe3a7b0e9a402d63b57407d92726257076805821f8c3baeee7ec",
+    "biomes/ehighlands/stations/mixed/96-host-views.js": "70e775e59369e7ecec5acf1bac3e4bcba41ff24a4e9fb4196ea65feece58aab5",
     "biomes/ehighlands/stations/mixed/station.json": "261f94eb7b8da6313337c7ae77e85d65e2ccabe2c37c94f926c4334aa63098a2",
     "biomes/ehighlands/tex/bark4.albedo.webp": "6a220daf212644e319a60782ea920aeb16e872321636730f0f53956710ebd2ec",
     "biomes/ehighlands/tex/bark5.albedo.webp": "e627f5dd3c45c4c18ed04f907b8229a48ffbadc9a73a47067769e3f51ab5eb7c",
@@ -538,39 +538,39 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "d8cf358ed7011a0de11fe357245289d98cc7cfa39b72e013f4c223030948aafb"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "9cfa676d27b2ec4fe2232a256b2b8c29f1d9d960303f8348196041ace90caf7d"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "d8cf358ed7011a0de11fe357245289d98cc7cfa39b72e013f4c223030948aafb"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "9cfa676d27b2ec4fe2232a256b2b8c29f1d9d960303f8348196041ace90caf7d"
    }
   },
   "build.py --station montane": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "cedcf3d98e6c681204ca1b6bd2b272f7849a8d7ed283dbdb13bb3c6dde82f486",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/ehighlands/stations/montane/46-host-land.js": "ef05829ee6e62708b3f5b241279d54ce768f428b7ca27e411e75faae6096e9b0",
-    "biomes/ehighlands/stations/montane/96-host-views.js": "72d5b6cda48373b99b71c9abe561a51b93f408d481e87020135999a5d37dc111",
+    "biomes/ehighlands/stations/montane/46-host-land.js": "0756b4794d3b8123f55ee7e6123b1144670fc64ba5ec2fb2f148f42d9fbba0e2",
+    "biomes/ehighlands/stations/montane/96-host-views.js": "957e3771e9298b50017e27fb85213cfa26c5e60f59aae342dfb6c325421af6d6",
     "biomes/ehighlands/stations/montane/station.json": "1b6b685d40b6ebbd90145e40e8311ab910204487c1ae2c2e0536a6e0dc2597d8",
     "biomes/ehighlands/tex/bark5.albedo.webp": "e627f5dd3c45c4c18ed04f907b8229a48ffbadc9a73a47067769e3f51ab5eb7c",
     "biomes/ehighlands/tex/bark6.albedo.webp": "a6d036e7d323ce471091a32306f478e2de9b800518746919c76cf11de5173e27",
@@ -675,39 +675,39 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "458f19fd255a9ec4f30f8a6026a7ffcf0d71d3aced05f17f130e494ffcab929e"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "c719c89be8c4025602e068c98bd6cdd5bc4b860ed1d9a69f97d4cf7cdb42f270"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "458f19fd255a9ec4f30f8a6026a7ffcf0d71d3aced05f17f130e494ffcab929e"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "c719c89be8c4025602e068c98bd6cdd5bc4b860ed1d9a69f97d4cf7cdb42f270"
    }
   },
   "build.py --station treeline": {
    "inputs": {
-    "biomes/ehighlands/KNOWN_ISSUES.md": "ab844bad6cefe5f19172135e785ed11623a3fb7cc03138e2f73ad0886ca0a5db",
+    "biomes/ehighlands/KNOWN_ISSUES.md": "86862438796a7f0e80f73a9b59b97d2f9174a56f8d8b7ffe2d45894cca5f1956",
     "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
     "biomes/ehighlands/src/45f-host-wallface.js": "70822ffcd9580ce782b42359dffe70b00ea07a7ff50ee4e4d4be23d7c2dd367b",
     "biomes/ehighlands/src/46-host-land.js": "a6889ff01c223d48a4918d50fad2f777c57f7ae3a614771cbfaf1478796933b5",
-    "biomes/ehighlands/src/47-host-fields.js": "b786a84eaa9fd367e7e8dd62e64a834143babc8c73797ee03d71075ed2746cc6",
-    "biomes/ehighlands/src/50-biome-ehigh-species.js": "58b828b370ff2019aa84198157c8a51384ce656ad584f71859b3b8c556c7722a",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "f0a4e71160b3066763e912cdcf38d635272eefe4e7fe4ff15e19d848c1835dcf",
+    "biomes/ehighlands/src/47-host-fields.js": "0f589729f1bc81e08f55278f523cbfad0cd787e61e41757e3bcb82fea2d2211a",
+    "biomes/ehighlands/src/50-biome-ehigh-species.js": "6be854c09fc6682a8a1f41c1886af0cb3bd25da6445cd505529fb14d508af82f",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fc23262542ecc018526228da3a95bbbf11822b6ba112914c2bf2372fbd3af06b",
     "biomes/ehighlands/src/60-biome-ehigh-floor.js": "1cb3a6fd656ccd78aec8ff87bc30b206f01079c53135c560d358a3d76387eb9c",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
-    "biomes/ehighlands/src/84-host-ground.js": "5c4ec7cca1f944746f4063b513f50c7ffc69addfa4b267404b08a3c826005759",
+    "biomes/ehighlands/src/84-host-ground.js": "cf233b518837cf433cbf1daa019983c7c77868f60c00ddb292b7b3a8ce4f9092",
     "biomes/ehighlands/src/85-host-far.js": "fcddc76c788bb272af4e5b614cae1798b4bb01b9ff8d59d9c970f30185ba631e",
     "biomes/ehighlands/src/86-host-geysers.js": "f397e8520543a6e8e24ff3041b5c8cbfc6233bb6fe56f1d2d59f2037585b783d",
     "biomes/ehighlands/src/89-host-sky.js": "d37c6e6d4175d889ce239ce8046d9a529b170c21bce9fd29993165e56d30b681",
     "biomes/ehighlands/src/89a-host-atmos.js": "b28f9e871ab2ed18ee27cd325bcf788173eefcf0dfbc7cc7255ad732396f13a4",
-    "biomes/ehighlands/src/89w-host-water.js": "df6732b6478835bd62da00ef54d21b45d32089045f15ea6a7e6f027a654040e8",
-    "biomes/ehighlands/src/89z-host-build.js": "5417c4c6f222b278e3a9278dd3eee71eec0dfa698d3336eafb320ca86afb19e6",
+    "biomes/ehighlands/src/89w-host-water.js": "50ec2e4ec06b407c3002127e78a7e947e0ad572db3bf44165a17ba395188613d",
+    "biomes/ehighlands/src/89z-host-build.js": "e40b70a7b22244e713060d0702e9c2db56db4e2af9daefaed5f834f0631fdc20",
     "biomes/ehighlands/src/95v-host-viewkit.js": "c8d34e41fdae2aadb4acec223ac8dc1f8bf0e18e6f9db92bd14329eabc433898",
     "biomes/ehighlands/src/96-host-views.js": "fc6a4e818b2a1e130c01e7b4f0fe2b990cc5f074e81f3a676a1219be88d7552d",
-    "biomes/ehighlands/src/99-host-take.js": "c90a727b56e933edd6505eaa9d4289223f0f70920871cb342bba7a879dfb9936",
+    "biomes/ehighlands/src/99-host-take.js": "5f861baa4fb27266802ffd177cdef9ca6738c92bfb0d39f9a7a038475b9db9a8",
     "biomes/ehighlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ehighlands/stations/treeline/46-host-land.js": "ec35e4e6ac13e4f09494d1f6f2c2b0cf598b5eadf5f1e0b0c85101876009d8e6",
-    "biomes/ehighlands/stations/treeline/96-host-views.js": "f053416c094da35833fdc3549dddaa05bcdacfb28f31d8ec73f6eaa714887d6e",
+    "biomes/ehighlands/stations/treeline/96-host-views.js": "d270af4113b63d02b0da840d47dc02eddbab6b9d12edb02c8ba9d69ad02e0154",
     "biomes/ehighlands/stations/treeline/station.json": "1cb287db9b4dfa300540d97d84ba775894842afd020d4078f6775f5b39986c0a",
     "biomes/ehighlands/tex/bark.ragbark.albedo.webp": "3e4f2970f009e705b77ca357cd82ee8fb2b94658c10a9ed5bdd88b73ab3a15b2",
     "biomes/ehighlands/tex/bark5.albedo.webp": "e627f5dd3c45c4c18ed04f907b8229a48ffbadc9a73a47067769e3f51ab5eb7c",
@@ -815,10 +815,10 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "c5e7e184f3dd23606dcd51e37c205b97e24fe99f3f78df16db6fd2d9ab05082e"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "5a5cbae9a13ddcf41f2ab72c9440c07961f3c6a288426468ad156e16d94ef045"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "c5e7e184f3dd23606dcd51e37c205b97e24fe99f3f78df16db6fd2d9ab05082e"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "5a5cbae9a13ddcf41f2ab72c9440c07961f3c6a288426468ad156e16d94ef045"
    }
   }
  }
