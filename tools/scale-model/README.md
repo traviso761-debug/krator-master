@@ -25,8 +25,12 @@ rasters", "How each map mode gets its picture").
 1. A new script `edit_4xx.py` in this folder: `D = smodel.page.load()`, change `D` with smodel, `smodel.page.save(D)`.
    It edits `model/data/` in place, so the git diff shows what moved; the script and its report are the record (move
    them to `history/` when the next edit lands).
-2. `python3 tools/scale-model/model/build.py`, look at the page, publish `model/dist/scale-model.html` to the artifact's
-   URL, and commit `model/data/`, `model/src/` (if the page's code changed), the script and a section here.
+2. `python3 tools/scale-model/model/build.py`, look at the page, publish it to the artifact's URL, and commit
+   `model/data/`, `model/src/` (if the page's code changed), the script and a section here. Since 5.1 the page is
+   20.8 MB, over the artifact's 16 MB page cap, so publish the split copy: `build.py --split` writes `model/dist/split/`
+   (`index.html` with `const DATA = {}`, and `data-1.js`, `data-2.js` that fill it, each under 12 MB). Publish
+   `index.html` with the two data files beside it; version 91 (2026-11-09) was the first. The single-file
+   `dist/scale-model.html` stays the build's reference, byte for byte.
 3. A change to the page's code is an edit to `model/src/`: rebuild, and the data is untouched.
 
 Heights decode with the data's own `lo`/`hi` (`smodel.page.heights`). The history scripts hard-code `LO, HI` = -2,600,
