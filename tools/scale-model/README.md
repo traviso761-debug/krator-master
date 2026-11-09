@@ -517,7 +517,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
      `0.0 m` sea level (`mouth_m = 0.0`).
 3. **Volcanoes, Lava Tubes, & Remodeled Interior Biomes (`smodel/volcanoes.py`, `east_abyss.py`, `tier1_biomes.py`,
    `tranche2_biomes.py`, `tranche3_biomes.py`, `biome_transitions.py`)**:
-   - **Volcanic Edifices**: Preserves and sharpens **Throne** (`px 1060, 854`, rim `7,220 m`, floor `6,340 m`),
+   - **Volcanic Edifices**: Preserves and sharpens **Throne** (`px 847, 834`, rim `7,220 m`, floor `6,340 m`),
      **Lesser Throne** (`px 1130, 854`, WNW rim `6,880 m`, crater floor `6,070 m`), **Godthrone** (`px 968, 1012`, peak
      `25,000 m`, floor `21,194 m`), **Godstep Head Vent** (`px 892.8, 1145.2`, peak `2,850 m`, floor `2,700 m`), and the
      **Catch–Xanadu Twin Stratovolcanoes & Parasitic Cones** (`px 988, 1458` at `12,480 m`, `px 1042, 1498` at `11,920 m`,

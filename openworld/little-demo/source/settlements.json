@@ -1026,6 +1026,15 @@
   "createdAt": "2026-10-28T12:55:00.000Z"
  },
  {
+  "id": "stallwalls01",
+  "name": "Tallwalls",
+  "type": "city",
+  "px": 650,
+  "py": 1268,
+  "notes": "The greatest haven and fortress of the Free Giants (the Vrivolci, LORE.md 6.17, 6.21) and a sanctuary for escaped slaves of every people fleeing the Vothic Kingdom and the Realm of Dalab. Built of cyclopean columnar basalt and tier-cedar murus gallicus on the middle flood-basalt lava terrace of Greenstep (+1,980 m, Cfa/Cfb) above the confluence of the Clodosriba lava-tube rilles. Called Talodunon in their borrowed Talovolci Gaulish and Da-Talwal in Vrivolci creole. biomes/greenstep/PLAN.md.",
+  "createdAt": "2026-11-06T20:00:00.000Z"
+ },
+ {
   "id": "szjsurpu01",
   "name": "\u0160urpu-Dhelv",
   "type": "cavern",
