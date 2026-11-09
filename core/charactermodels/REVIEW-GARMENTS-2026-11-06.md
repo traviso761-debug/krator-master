@@ -297,3 +297,8 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   the Yuni peasant 10 to 1731) and at rest (the Izani noble 586 to 5278, the Dalab trade 0 to 2122, the Hykkousoi
   trade 216 to 2148): the Chichani-only runs could not see this. "Under" at rest points at the hull applying at rest
   to chained garments (round 5 gated it by the stride); a gated variant is queued behind the heading and lip sweeps.
+- **Issue 8.1's fix, rejected by measurement.** The chains' heading eased from the hips' to the feet's below the knee
+  (`rigidTargets`): on the 66, "under" up 5 % and "inside" up 7.5 %, 31 outfits worse (the Izani noble's "under" 7031 to
+  13408 px, the Chichani noble's "inside" 17416 to 23368) against 8 better. Turning the lower rows toward the feet folds
+  a robe's hem against its own upper rows more than it spares the shins; not applied. The shin pinch of issue 8 wants
+  its own shot first.
