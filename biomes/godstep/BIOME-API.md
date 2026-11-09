@@ -12,7 +12,9 @@ biome kit; its leaves (`src/50`-`70`) reach the world only through `BIO.host` (`
 | `GSTEP.groundAt(x, z, o)` | the ground's class weights 0..1 from the host's fields: `skin`, `palag`, `soil`, `lichen`, `sand`, `moss`, `snow`, `playa`, `path`, `cone` (the old basalt shows where none does) |
 | `GSTEP.GROUND` | each class's colour (sRGB) and name; `GSTEP.CLASSES` their order |
 | `GSTEP.PAL` | the items' tints |
-| `GSTEP.SPECIES` | the pioneers: `cushion`, `crust`, `mossmat` (the kit's own flora at station 1, `PLAN.md` section 3) |
+| `GSTEP.SPECIES` | the pioneers: `cushion`, `crust`, `mossmat` (the kit's own flora at station 1, `PLAN.md` section 3), and `redstalk`, the red guyed stalk (stations 2 and 5) |
+| `GSTEP.stalks({box, q, wet, min, rows, h, cell})` | the red guyed stalks over a box, only where `wet(x, z)` (a spring's or a stream's field) is over `min` (.55); `rows` `{a, sp, at(x, z), only}` a farmed field's rows. Returns `{stalks}` (`src/51-biome-godstep-stalk.js`) |
+| `GSTEP.PASSES` | a station's own passes, `{name, fn(R, q, box) -> counts}`, pushed by its leaf fragments; `GSTEP.build` runs them after the ground's, each its own budget type `godstep/<name>` |
 | `GSTEP.tagsOf(label)` | the inspector's words for an item |
 | `GSTEP.TAGS` | `{climate: 'cold-steppe', aridity: 'arid', koppen: ['BSk', 'Dsb', 'Dsc']}` |
 | `GSTEP.dress()` | `null`: nothing grows on a structure here |
@@ -20,7 +22,9 @@ biome kit; its leaves (`src/50`-`70`) reach the world only through `BIO.host` (`
 ## The items (`BIO.def`, core/tags class in brackets)
 
 `boulder` (feature), `column` (feature: a whole hexagonal prism fallen from a colonnade, 1 long), `stone` (feature), `cairn` (feature:
-the procession's), `cushion`, `crust`, `mossmat` (plant: `BIO.fung` cap and crust parts, vertex-shaded).
+the procession's), `cushion`, `crust`, `mossmat` (plant: `BIO.fung` cap and crust parts, vertex-shaded), `redstalk` (crop: the stalk, three
+guy-roots and three red cups, `BIO.fung` parts merged, vertex-shaded, 1 tall). A station's own items are in its `stations/<name>/` leaf
+fragments (`PLAN.md`, each station's "as built").
 
 ## What the host must give (`BIO.host.fields`)
 
