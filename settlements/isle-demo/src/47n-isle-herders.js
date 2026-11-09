@@ -93,19 +93,19 @@ ISLE.herdBooks = function () {
   return out;
 };
 ISLE.herdChecks = function (a, b) {
-  var res = [], ok = function (name, pass, detail) { res.push({ name: 'herders: ' + name, ok: !!pass, detail: detail }); }, B = b.bands, HB = ISLE.TUNE.sim.herders;
-  ok('each town has its herding band, its households in their camp beside the herd', B.length >= 2 && B.every(function (x) { return x.people >= HB.households * 3 && x.here === x.people && Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1]) < 100; }),
-    B.map(function (x) { return (x.name ? x.name + ', ' : '') + x.id + ': ' + x.people + ' people, ' + x.here + ' in the camp, the herd ' + Math.round(Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1])) + ' m off'; }).join('; '));
-  var fed = B.filter(function (x) { return b.minute >= 1440; });
+  var res = [], ok = function (name, pass, detail) { res.push({ name: 'herders: ' + name, ok: !!pass, detail: detail }); }, L = b.bands, HB = ISLE.TUNE.sim.herders;
+  ok('each town has its herding band, its households in their camp beside the herd', L.length >= 2 && L.every(function (x) { return x.people >= HB.households * 3 && x.here === x.people && Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1]) < 100; }),
+    L.map(function (x) { return (x.name ? x.name + ', ' : '') + x.id + ': ' + x.people + ' people, ' + x.here + ' in the camp, the herd ' + Math.round(Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1])) + ' m off'; }).join('; '));
+  var fed = L.filter(function (x) { return b.minute >= 1440; });
   if (fed.length) ok('every band fed (its own meat first, its town\'s staples by cart): no meal without food', fed.every(function (x) { return x.meals.none === 0 && x.meals.mess > 0; }),
     fed.map(function (x) { return x.id + ' ' + x.meals.mess + ' mess meals, ' + x.meals.none + ' without food'; }).join('; '));
-  var work = B.filter(function (x) { return b.minute >= 2 * 1440; });
+  var work = L.filter(function (x) { return b.minute >= 2 * 1440; });
   if (work.length) ok('the herd grazes its range: meat and hides made from the pasture cell it stands on', work.every(function (x) { return x.made.meat > 0 && x.taken > 0 && x.stands > 1; }),
     work.map(function (x) { return x.id + ': meat ' + Math.round(x.made.meat) + ', hides ' + Math.round(x.made.hides || 0) + ', ' + Math.round(x.taken) + ' taken of ' + x.stands + ' cells'; }).join('; '));
-  var sent = B.filter(function (x) { return b.minute >= 4 * 1440; });
+  var sent = L.filter(function (x) { return b.minute >= 4 * 1440; });
   if (sent.length) ok('its meat reached its town by cart and was booked imported', sent.every(function (x) { return (x.landed.meat || 0) > 0; }),
     sent.map(function (x) { return x.id + ': ' + Math.round(x.landed.meat || 0) + ' meat landed in ' + x.town + ' (' + x.minutes + ' min a way)'; }).join('; '));
-  var moved = B.filter(function (x) { return x.moves > 0; });
+  var moved = L.filter(function (x) { return x.moves > 0; });
   if (moved.length) ok('a band that grazed a cell down moved its whole camp with its herd to the next', moved.every(function (x) { return x.moved >= 1 && Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1]) < 100; }),
     moved.map(function (x) { return x.id + ': ' + x.moves + ' moves, the camp moved ' + x.moved + ' times, now at ' + x.campAt.join(','); }).join('; '));
   return res;
