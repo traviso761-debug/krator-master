@@ -90,9 +90,15 @@ if (IDOORS.on) {
    and shuts; a locked one does not open. neg 'origin': the records placed as the piece's frame (the bug this fixes) */
 IDOORS.check = function (neg) {
   if (!IDOORS.on || !window._doors) return { ok: false, detail: 'no door host' };
-  var near = [], bad = [], n0 = KDOOR.list.length;
-  for (var id in IDOORS.lots) IDOORS.lots[id].forEach(function (D) { if (D.draw) near.push(D); });
-  if (!near.length) return { ok: false, detail: window._doors.doors + ' doors, none near' };
+  var near = [], bad = [], n0, gather = function () { near = []; for (var id in IDOORS.lots) IDOORS.lots[id].forEach(function (D) { if (D.draw) near.push(D); }); };
+  gather();
+  if (!near.length) {   /* none near the view: go to the first Vernacular lot of the town (Valapo's overview has none in reach) */
+    var V = (DRAW.recs || []).filter(function (L) { return L.kit === 'izv' && !L.vacant && L.cls !== 'wall'; });
+    if (!V.length) return { ok: neg !== 'origin', detail: 'no Vernacular piece in this town: no doors to host' };
+    CAM.t = [V[0].x, 0, V[0].z]; DRAW.at = null; DRAW.near([CAM.t[0], CAM.t[2]], true); gather();
+  }
+  n0 = KDOOR.list.length;
+  if (!near.length) return { ok: false, detail: window._doors.doors + ' doors, none near a Vernacular lot' };
   var lotOf = {}; (DRAW.nearSet || []).forEach(function (L) { lotOf[L.id] = L; });
   near.forEach(function (D) {
     var L = lotOf[D.lot], at = neg === 'origin' ? [D.at[0] - (L ? L.x : 0), D.at[1], D.at[2] - (L ? L.z : 0)] : D.at; if (!L) { bad.push(D.id + ': no lot'); return; }
