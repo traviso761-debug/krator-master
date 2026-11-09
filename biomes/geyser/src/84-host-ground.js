@@ -11,7 +11,7 @@
 // cools, in streamers drawn out along the flow (and fanned out round the springs). The film shines and ripples down the
 // flow; on the Stair each vertex carries its pool's level, which darkens the floor under the pool (the water itself is
 // core/water's: 89w-host-water.js) and the water sheets down the curtains between them.
-REGISTER({name:BASIN.name,x:BASIN.x,z:BASIN.z,y:20,r:Math.max(BASIN.rx,BASIN.rz),h:120});
+REGISTER({name:BASIN.name,x:BASIN.x,z:BASIN.z,y:typeof STATION_GROUND!=='undefined'?landH(BASIN.x,BASIN.z)-20:20,r:Math.max(BASIN.rx,BASIN.rz),h:120});   /* a station's field on its own ground */
 LAYOUT.flats.forEach(f=>{if(f.key==='neck'||f.key==='acidflat')return;REGISTER({name:f.name,x:f.x,z:f.z,y:landH(f.x,f.z)-6,r:Math.max(f.rx,f.rz)*.9,h:80,flat:f.key});});
 LAYOUT.dead.forEach(d=>REGISTER({name:d.name,x:d.x,z:d.z,y:landH(d.x,d.z)-6,r:d.r*.8,h:60,dead:d.key}));
 // A STATION ON OTHER GROUND (stations/field, PLAN-STATIONS.md stations 2-5) hands this fragment STATION_GROUND: {patches (the fine meshes, in place of the

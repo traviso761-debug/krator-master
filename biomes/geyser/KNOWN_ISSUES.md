@@ -116,7 +116,7 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
   (`99-host-take.js`). Moved.
 - [ ] **puna and basin open at 13:00, not the owner's 11:00**: at their longitudes 11:00 falls in the giant's eclipse (09:30-11:30 and 09:30-11:00 on day 1;
   `ATMOS.sunHidden`), and the page opened in the dark. A station names its hour (`STATION_TAKE.hour`). The owner's call whether to keep the eclipse instead.
-- [ ] **basin draws ~19,000 lodgepoles** (4M triangles at its default camera, 59 draw calls; budget 26M): the forest has no impostor or far tier yet (a
+- [ ] **basin draws ~19,000 lodgepoles** (6.2M triangles at its default camera, 59 draw calls; budget 26M): the forest has no impostor or far tier yet (a
   bole and needle clumps, a cheaper ring past 750 m). Measure on the GPU; give it `BIO.impostor` if it is heavy.
 - [ ] **`check_cells` does not read a station's fragments for a build with `src/`**, so the `st.*` card slots' geometry is unseen by it: `st.pine`'s
   stems were written from the tool's own proposal by hand (the clump guard asked for them at load).

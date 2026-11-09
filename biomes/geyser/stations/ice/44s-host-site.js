@@ -21,7 +21,8 @@ const STATION_SITE={region:'The ice field on Xanadu\'s south-eastern wall (stati
   geysers:{n:4,H:[4,14],period:[600,3600],dur:[20,120],kinds:['cone','fountain'],names:['The Smoker (a cone geyser)']},spouters:3,
   springs:{n:10,r:[2,6],temp:[.35,.95],minerals:['sinter','sulfur']},acid:{n:1,r:55,mud:3,fumaroles:8},fumaroles:{n:4},dead:null,runLen:280}),
  passes:[],floor:false,
- take:{build:'geyser-ice',title:'Krator biome — the ice field on Xanadu\'s wall (station 5)',
+ take:{build:'geyser-ice',guards:false,   /* no plant, so no card: the foliage guards have nothing to hold (the Godthrone's way) */
+title:'Krator biome — the ice field on Xanadu\'s wall (station 5)',
   hint:"Station 5, the ice field: a vent field melted into the icefield on a cone's flank at 7,400 m (0.64 atm, no rain, a mean of -21 °C; water boils at ~88 °C). A hollow of bare, warm ash under an ice cliff, short geysers steaming into frozen air, meltwater pools rimmed with ice, ice towers frozen round the fumaroles on the ice, ice caves melted into the cliff and lit blue from within, microbial films on the warm ground and no plants (ideal type)",
   views:()=>{const g=biggest(LAYOUT.geysers.filter(q=>q.kind!=='spouter'),'H'),T=(window._ice&&window._ice.towers)||[],C=(window._ice&&window._ice.caves)||[],t=T[0]||{x:ICE_R,z:0},c=C[0]||{x:0,z:ICE_R,face:0,R:12};
    return{'The hollow in the ice':fieldView(ICE_C[0],ICE_C[1],1.9,620,60,0),'The Smoker':fieldView(g.x,g.z,.8,g.H*4+40,5,g.H*.5),'Ice towers':fieldView(t.x,t.z,Math.atan2(ICE_C[1]-t.z,ICE_C[0]-t.x)+.4,40,4,4),

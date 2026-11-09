@@ -37,10 +37,11 @@ function lodgepole(x,z,i,seed,lv,st){const U=s=>KRAND.unit(KRAND.hash(seed,i,s))
  BIO.register({name:'A lodgepole pine',key:'lodgepole',kit:'geyserfield',x,z,y:y-.5,r:2.6,h:H+1});
  const n=lv?6:3,pts=[];for(let k=0;k<=n;k++){const t=k/n;pts.push({x:x+Math.cos(la)*lean*H*t*t,y:y-.3+(H+.3)*t,z:z+Math.sin(la)*lean*H*t*t,r:rb*mix(1,.18,Math.pow(t,.9))});}
  st.tris+=BIO.tube('fbark',pts,libCol('st.pinebark',C(0x6a5a4a)),{seg:lv?6:4,cap:true});
- const nw=lv?Math.round(mix(7,10,U(5))):4,c0=C(0x3e5a32).lerp(C(0x56703a),U(6));
- for(let k=0;k<nw;k++){const t=mix(.45,.99,k/(nw-1)),p=pts[Math.min(n,Math.round(t*n))],sz=mix(2.1,.7,k/(nw-1))*mix(.85,1.15,U(10+k)),a=U(30+k)*TAU,o=sz*.18;
+ /* the crown: whorls of needle clumps on the upper half, two or three to a whorl round the bole (a lodgepole's crown is narrow: ~3 m across) */
+ const nw=lv?Math.round(mix(10,14,U(5))):6,c0=C(0x3e5a32).lerp(C(0x56703a),U(6));
+ for(let kk=0;kk<nw*(lv?2:1);kk++){const k=lv?kk>>1:kk,t=mix(.42,.99,k/(nw-1)),p=pts[Math.min(n,Math.round(t*n))],sz=mix(3.4,1.2,k/(nw-1))*mix(.85,1.15,U(10+kk)),a=U(30+kk)*TAU+(kk&1)*Math.PI,o=sz*.3;
   const px=x+Math.cos(la)*lean*H*t*t+Math.cos(a)*o,pz=z+Math.sin(la)*lean*H*t*t+Math.sin(a)*o,py=y+H*t;
-  BIO.put('fneedle',[px,py,pz],qEuler((U(50+k)-.5)*.3,a,(U(70+k)-.5)*.3),[sz,sz*.85,sz],libCol('st.pine',c0.clone().multiplyScalar(mix(.85,1.1,t))),{n:[Math.cos(a)*.4,.85,Math.sin(a)*.4]});st.clumps++;}
+  BIO.put('fneedle',[px,py,pz],qEuler((U(50+kk)-.5)*.3,a,(U(70+kk)-.5)*.3),[sz,sz*.85,sz],libCol('st.pine',c0.clone().multiplyScalar(mix(.85,1.1,t))),{n:[Math.cos(a)*.4,.85,Math.sin(a)*.4]});st.clumps++;}
  st.trees++;}
 // ---------------------------------------------------------------- the pass
 function cells(o,cell,salt,R,fn){const at=o.at||[0,0],N=Math.ceil(R*2/cell),seed=(o.seed==null?7310:o.seed)+salt;

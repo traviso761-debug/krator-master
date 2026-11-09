@@ -29,7 +29,7 @@ const STATION_SITE={region:'The corona field in a Korona trench (station 4, idea
   exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','water'],
   hint:"Station 4, the corona field: a geyser field strung along a ring fault on a Korona trench floor (-1,890 m, 2.03 atm, +36 °C, 2,500-3,400 mm; water boils at ~121 °C), in the hypertropic jungle. Superheated, violent geysers, hot springs each of its own chemistry (sulphur, iron, copper, silica: the run-off's mats change pool to pool), fumaroles and mud pots, the fault's low scarp. The hazard is the point: the thin crusts over boiling water are taboo ground, gas lies in the acid hollows (the hazards layer shows them). Watch your step (ideal type)",
   views:()=>{const g=biggest(LAYOUT.geysers.filter(q=>q.kind!=='spouter'),'H'),s=biggest(LAYOUT.springs,'r');
-   return{'The field along the fault':fieldView(-80,-90,1.75,780,60,0),'The Plume\'s Throat':fieldView(g.x,g.z,1.2,g.H*2.6+60,6,g.H*.5),'The quilt from above':[s.x+120,s.level+140,s.z+160,s.x,s.level,s.z],
+   return{'The field along the fault':fieldView(-80,-90,1.75,560,170,0),'The Plume\'s Throat':fieldView(g.x,g.z,1.2,g.H*2.6+60,6,g.H*.5),'The quilt from above':[s.x+120,s.level+140,s.z+160,s.x,s.level,s.z],
     'The fault scarp':fieldView(260,-120,.4,160,3,4),'The jungle edge':fieldView(0,-180,-1.2,520,8,10),'From above':[-900,1100,1300,0,0,-160]};},
   erupt:{'The Plume\'s Throat':'g0'},
   checks:(add,P)=>{const far=LAYOUT.geysers.concat(LAYOUT.springs).filter(o=>ringD(o.x,o.z).d>300),M=new Set(LAYOUT.springs.map(s=>s.mineral||'sinter')),Tb=window._corona||{taboo:0,gas:0};

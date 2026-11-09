@@ -145,7 +145,7 @@ function hostChecks(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseChecks)||ST_TAKE
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  if(ST_TAKE&&ST_TAKE.checks)ST_TAKE.checks((name,r)=>R.push(Object.assign({name},r)),P);
  return R;}
-function hostNegatives(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseNegatives)||ST_TAKE.baseNegatives.indexOf(n)>=0,add=(name,r)=>{if(keep(name))R.push({name,failed:!r.ok,detail:r.detail});},s=LAYOUT.springs[0],T=GEYSER.TREES||[];
+function hostNegatives(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseNegatives)||ST_TAKE.baseNegatives.indexOf(n)>=0,add=(name,r)=>{if(keep(name))R.push({name,failed:!r.ok,detail:r.detail});},s=LAYOUT.springs.reduce((a,b)=>b.temp>a.temp?b:a,LAYOUT.springs[0]),T=GEYSER.TREES||[];   /* the hottest spring (the showcase's first, the Great Prism) */
  add('a fern in the Great Prism',HCHK.scald([[s.x,terrainH(s.x,s.z),s.z,'biome:fern','geyser']],[]));
  add('a channel that warms as it runs',HCHK.runoff(LAYOUT.runoff.map((c,i)=>i?c:Object.assign({},c,{T0:20}))));
  add('a geyser with no column',HCHK.cycles(LAYOUT.geysers.map((g,i)=>i?g:Object.assign({},g,{dur:0,_c:null}))));
@@ -173,7 +173,8 @@ HOSTED=KHOST.take({build:ST_TAKE&&ST_TAKE.build||'geyser',title:ST_TAKE&&ST_TAKE
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night'),
   r:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
  clock:{hour:ST_TAKE&&ST_TAKE.hour!=null?ST_TAKE.hour:ATMOS.SKY.viewHour},   /* a station whose 11:00 is in the giant's eclipse opens later (puna) */draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- inspect:describe,stats:()=>'inst '+window._instances,
+ inspect:describe,...(ST_TAKE&&ST_TAKE.guards!=null?{guards:ST_TAKE.guards}:{}),   /* a station with no cards turns the foliage guards off (ice) */
+stats:()=>'inst '+window._instances,
  layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,

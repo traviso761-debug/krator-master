@@ -52,13 +52,29 @@
    "bytes": 2012185,
    "sha256": "373f650e50fb1f5da0ea096b42f5a67e0eca6a5de2edbbf04a337fcfc5b0079b"
   },
+  "biomes/geyser/dist/geyser-basin.html": {
+   "bytes": 1292806,
+   "sha256": "063ebf9a6381c6b3718e9b8932d7cdfa247d6ee94f4924af542c1d934fa438ff"
+  },
+  "biomes/geyser/dist/geyser-corona.html": {
+   "bytes": 1423535,
+   "sha256": "1575674e6087a8128f9ba0591f8d0b9d7ba3d8d6ac92760fb89db1d69664430e"
+  },
+  "biomes/geyser/dist/geyser-ice.html": {
+   "bytes": 1316313,
+   "sha256": "5e92b76f40f4a96b8c90168251fbcc8313ea842df7fe29ed1b2d7ef4853de6cf"
+  },
+  "biomes/geyser/dist/geyser-puna.html": {
+   "bytes": 1291856,
+   "sha256": "b201544cf5f677e58a801d7dfb7236277a39923bc96a22ab6105c48fa52565e7"
+  },
   "biomes/geyser/dist/geyser-stills.html": {
-   "bytes": 1442849,
-   "sha256": "7f1ba4e8a75b412dc7a7f432cf0a160c0890f7e57abc182e2603a86c98f6be76"
+   "bytes": 1456347,
+   "sha256": "f8121e8a9a0515869ad5e7cf96142071ec6f315478d7d1361ca6de189cf507bb"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 1412188,
-   "sha256": "ac8852a3cfa59bb3a02d55ece18b42a977ef44305abadf32e30c12fe54abaf87"
+   "bytes": 1425686,
+   "sha256": "f79ce640e6be70c761b455f577e6a5f9bf564d628a315534a8c1f430db97f399"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
