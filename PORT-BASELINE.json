@@ -380,6 +380,10 @@
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
+  "biomes/outlands/dist/outlands.html": {
+   "bytes": 1828556,
+   "sha256": "6142c9668a7ce6260c2fdcbda09fc926f2f50dfcbb9b675f76672993d0761341"
+  },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
    "sha256": "54b0bacf791b170faab3ecbb8fcd3d7f131ba66b73a9218a356875fdaebb4ddb"

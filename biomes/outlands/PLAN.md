@@ -7,7 +7,7 @@ gone its own way for millions of years. It is **the one place the fungoid lineag
 hillside is one organism. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
 **Tierhounds** keeps the threshold. Exports: **emeralds, turquoise, ostrich feathers**.
 
-**Status: plan, awaiting the owner's yes.** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. Nothing
+**Status: station 1 built (2026-11-09).** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. **Station 1, the Fog Wall** (`dist/outlands.html`, section 9) is built on the colony rule (section 4): `BIOME-API.md`, `KNOWN_ISSUES.md`. Nothing
 is built. Settled points carry the owner's date; *proposed* marks this plan's own suggestions.
 
 ## 0. What the kit is
@@ -15,7 +15,7 @@ is built. Settled points carry the owner's date; *proposed* marks this plan's ow
 | | |
 |---|---|
 | Folder | `biomes/outlands/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `refs/`) |
-| Pages | stations, as Korona's and the Throne's (`build.py --station <name>`): `dist/outlands.html` (station 1, the Fog Rim) and `dist/outlands-<name>.html` (section 9) |
+| Pages | stations, as Korona's and the Throne's (`build.py --station <name>`): `dist/outlands.html` (station 1, the Fog Wall) and `dist/outlands-<name>.html` (section 9) |
 | Regions on the model | `N Outlands` and `S Outlands` (biome), `Tiers` (biome, its own kit), `Coyote Kingdom` (political); markers **Trickster's House** (ruined arcology, px 1240,330) and **The Gate** (outpost, px 1136,84) |
 | Object | `OUTL` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `plantOfItem`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape) |
 | Core | `biome`, `rand`, `tags`, `space`, `host`, `atmos`, `water`, `mask`, `terrain` (`KFIELD`, `KCARVE`, `KSTACKS`, `KRELIEF`, `KBASIN`), the shared sky; section 13 |
@@ -356,9 +356,9 @@ Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and 
 
 | # | Station | Site (`SURVEY.md` section 6) | What it shows |
 |---|---|---|---|
-| 1 | **The Fog Rim** (`dist/outlands.html`) | S1, px 1337,393, Dfb 3.9 km, 1,176 mm | the fog belt on the windward wall, veil caps and comb masts, fog pelt, lantern stalks, seeps and curtain weed; the showcase, built first |
+| 1 | **The Fog Wall** (`dist/outlands.html`; **built** 2026-11-09) | S1 down to S4 (legacy px 1337,393 to 1352,391: Dfb 3.9 km to BWk 2.3 km), on ONE page (the owner, 2026-11-09: "make the slope fit one page"; 4.4x steeper than the model, KNOWN_ISSUES.md) | the slope chosen to test the colony rule first: the fog belt on the wall (veil colonies: veil caps, lantern stalks, fog pelt, and their pleat-column runners on the dry ledges below), the wet band under it (mast colonies: deck caps, curtain weed, cap-shrubs, comb-mast wardens on the seams), the gem shoulder (copper colonies: green fans, drums, turquoise shelves, lace-crust miners on the strata's copper beds and the open-cast pit), the wadis (wadi colonies: ribbon mats, bell pools, stilt-mound runners); seams between unlike types; buttes, the pit, three ravines running on as wadis |
 | 2 | **The River** (`-river`) | S2 px 1369,346 (Cfa 2.9 km) down to S3 px 1384,389 (BSh 1.1 km) | the Valley tribe's terraced fields on the perennial river, deck caps on the slopes, pipe reeds, mire pads on the 705 m lake; the Earth-like three |
-| 3 | **The Gem Hills** (`-gems`) | S4, px 1352,391, BWk 2.3 km | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
+| 3 | **The Gem Hills** (`-gems`; its shoulder is on station 1) | S4, px 1352,391, BWk 2.3 km | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
 | 4 | **The Plains of Runners** (`-plains`) | N1, px 1344,209, BSk 3.7 km | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
 | 5 | **The Nursery Plateau** (`-nursery`) | N2, px 1269,130, BWk 3.8 km | pod towers, brood pads and gall stacks on desert pavement, yardangs; the strangest page |
 | 6 | **The Gate** (`-gate`) | px 1136,84, 7.7 km | the defile, snow, the toll fort and shrine, cairns, the god's road; frozen lakes and patterned ground near |
@@ -444,7 +444,7 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 | **O1** | **Lore**: `LORE.md` §6 entry (the Coyote Men, the Hum dialect, the four tribes, the Tierhounds and their kingdom, the two gods, the Gate, the god's road, Trickster's House, the trade); `biomes/README.md`, `WORLD.md`, `INDEX.md` rows | the owner approves the names |
 | **O2** | **Textures**: the 13 new sets and the five owed ones delivered and processed; `materials.json`; `pack.py` | the contact sheet passes in the demo kit |
 | **O3** | **Core amendments C1 and C2** (fog belt; fungoid parts), each with its node test; `port_baseline.py` reads `same` for every build that did not ask to move | tests pass |
-| **O4** | **Station 1, the Fog Rim** (the owner's reference images arrive at build time, into `refs/`, before each station's flora): the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
+| **O4** | **Station 1, the Fog Wall** (built 2026-11-09, on the slope from the Fog Rim to the Gem Hills' shoulder) (the owner's reference images arrive at build time, into `refs/`, before each station's flora): the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
 | **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery); the fauna and resource additions | each verified |
 | **O6** | **C5**; **station 2, the River** (fields as records, the Earth-like three, the lake) | verified |
 | **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II), **station 6, the Gate** | verified |
