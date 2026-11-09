@@ -96,8 +96,8 @@ How the new sites were chosen: station 6 is the flattest ET ground at 4.7-5.4 km
 (5-px relief 308 m, 4.2 km of drop within 20 km; the other candidate, 428,1501 at 5,199 m, is flatter but wetter, 408 mm, and far
 from the trough's edge). Station 5 is the road's south portal, where it falls back under 8 km. Station 4's centre is the notch where
 the river leaves the plain. The **Hearths' stations** (`biomes/hearths/PLAN.md` section 11: `--station hearths` at 525,1400, 3,736 m;
-`hearths-hold` under it; `hearths-walk` at 430,1388) are the Hearths kit's, hosted by this kit: they are **not built in this turn**
-(see "Core adoption", "Not taken").
+`hearths-hold` under it; `hearths-walk` at 430,1388) are the Hearths kit's, hosted by this kit. **`hearths` is built** (2026-11-09: station 7,
+section 9 and "Station 7, the Hearth field" below); the hold's two cave pages are still `biomes/hearths`' own, and `hearths-walk` is owed.
 
 ### Caverns on 5.1 (`biomes/KARST-SITES-5.1.md`)
 
@@ -476,6 +476,7 @@ name). The page's first stations carry birds, insects over the lakes and grazing
 6. **The black barrens** (S; `-barrens`): a high plateau of the S rim at ~5 km, sun rosettes all facing one way, a slope of
    sailwort swinging in the wind, iris lichen on the boulders, snowblood on the summer snow, one lantern lobelia standing
    over it all at dusk, the Rift's trough falling away at the edge.
+7. **The Hearth field** (N; `-hearths`; built 2026-11-09): the Hearths' showcase on the N rim's shelf, 5.1 px 525,1400 (below).
 
 ## 10. Textures
 
@@ -534,7 +535,7 @@ plan recommends none. None of them is hard to reverse: each is a name or a site 
 
 **Other choices made in the build** (the plan left them open; listed here so nothing is decided silently):
 
-- **The Hearths' stations are not built in this turn.** `biomes/hearths/PLAN.md` hosts three stations here (`hearths`, `hearths-hold`,
+- **The Hearths' stations were not built in this turn** (station 7, `hearths`, was built 2026-11-09: "Station 7, the Hearth field"). `biomes/hearths/PLAN.md` hosts three stations here (`hearths`, `hearths-hold`,
   `hearths-walk`); oidong built its own in pair 6. They need the Hearths' species read in place, KTHERM's bake and `KKARST`'s hypogene
   mode on the hold: a turn of their own on this kit, after the owner's look pass on the rims.
 - **Ledge's cliff springs' cave (karst site 6)** is not laid out this turn (`KKARST` owed: "Core adoption").
@@ -588,10 +589,41 @@ its ground layers (five of twelve: `LAND.groundLayers`).
   fragments until they are drawn.
 - **The crossing's portal** is a cut face with the Tungangs' lamps in a row before it (the lobelia's glow item), not a carved mouth; the
   waystation is a level apron (its build is a settlement's).
-- **The Hearths' stations** (`hearths`, `hearths-hold`, `hearths-walk`: `biomes/hearths/PLAN.md` section 11) are not built.
+- **The Hearths' stations** (`hearths`, `hearths-hold`, `hearths-walk`: `biomes/hearths/PLAN.md` section 11): `hearths` is built (2026-11-09, below);
+  the hold stays on `biomes/hearths`' own pages, `hearths-walk` is owed.
 - **The tier cedar** (the SW lowlands', the W list's timber) is not grown yet: its builder's pads float off its limbs past the attach
   audit's limit (`KNOWN_ISSUES.md`); the other seven borrowed W species are.
 - **`PORT.md`** is written by `tools/audit_port.py`; the Godot twin is not started.
+
+## Station 7, the Hearth field (`python3 build.py --station hearths`, `dist/riftrim-hearths.html`; 2026-11-09)
+
+`biomes/hearths/PLAN.md` section 11 item 1 on this kit's stage: the showcase vent (5.1 px 525,1400; 3,737 m, 1.00 atm, Dsc, +2 degC; night low -17) on
+the N rim's shelf, set in winter, opening at dusk (`LAND.hour` 16.9: the fans half open as the sun goes; `#hour=12` for the shut silver field).
+
+- **The heat** is one `KTHERM` (core/terrain 47, slotted `44t` by the station's `station.json` "core", so the land's fields read it): four point vents on
+  a WSW-ENE fissure line (the Old Hearth 96 degC reaching 300 m; the west 94/230; the east 92/170; the young 90/115) and the fissure itself as a line
+  vent (15 degC, 20 m), over a winter soil of -4 degC, baked once on a 4 m lattice. Every placement, the paint, the KGROUND layers, the snow and the
+  checks read that bake.
+- **The field** is `biomes/hearths` read in place (`src/50`, `src/55` in their own registry: `station.json` "kin"): one `HEARTH.layout` per disc in the
+  **rim** dress (broad fans, few, on 4-11 m stalks), q x .5 for the budget, the dead rings at 1.1-2.1 disc radii (the heat has wandered). About 1,400
+  hearth trees, 14,000 fans, 1,400 ember mats, 7,700 coal moss, 2,000 stokers, 1,200 tallow beads; the dead stalks a few hundred.
+- **The engine** is `HEARTH.work` on the page's sun, the eclipse (`ATMOS.sunHidden`) and the cloud, written each frame to `BIO.breathState('hearths')`
+  (core/biome 35, the fold); the stalks lean to the sun's mean bearing (core/biome 39).
+- **The ground**: the land's `geo` (the heat / 100, `44v`) paints the warm disc the coal moss's black-brown, a sinter apron round each vent, sulphur on
+  the lips (45's painter, at the bake's resolution through `LAND.geoAt`); the KGROUND layers fade off from 7 degC (45). The winter's snow is the lying
+  snow (`snowBase` .82, `frozen`) made bare over 0 degC by `ATMOS.snowBare(THERM.snowMask(...))` (89b); the bare mask is one more texture unit on the
+  ground, so this station shows four ground layers, not five.
+- **The pools**: three `WATER.spring` (core/water/geyser 52, 52b) on the three larger vents' aprons (the Old Hearth's boiling, the west's sulphur, the
+  east's iron mats), in `waterH` through the land's `pools` (44v) so nothing roots in them; the floor's shallows plants keep out of them (60: `geo`).
+- **The steam**: `ATMOS.smokeGroups` (core/atmos fx): the fumaroles and pools steady, a thin column over each disc thickening with the night's work.
+- **The rest of the page**: the frozen lake (`kind:'frozen'`) in the glass forest to the north-west; the forest kept off the warm ground and back
+  450-1,000 m from the fissure (`LAND.keep`, 45's mask: an open wind-scoured shelf round the field); the shelf's shoulder falling south toward the
+  trough, the far field snowy over 3.35 km (`farBands`).
+- **Hazards** (core/tags records before anything is drawn): each vent's heat (radiant), each pool's scald.
+- **Checks** (`LAND.checks` / `LAND.negatives`, 99): the field placed; hearth trees on 25-60 degC only; the ember mat on 60-95 only; the glass forest
+  off ground over 6 degC; three pools each over its vent; the engine open at night, shut at noon, open in an eclipse; each with a broken input that fails.
+- **Owed**: `hearths-walk` (the western vent's walked field, PLAN.md section 11 item 4); the hold's pages moving here as stations; the field and the hold
+  on one frame of coordinates; the fin-owl and the hearth animals (`kits/fauna`); `ATMOS.shimmer` over the warm ground (a post pass: oidong's reason).
 
 ## Core changes to take (reconciled 2026-10-27)
 

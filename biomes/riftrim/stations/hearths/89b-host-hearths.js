@@ -15,7 +15,7 @@ const HSPRINGS=STATION.POOLS.map(P=>{try{const S=WATER.spring({key:'hearths-'+P.
   return S;}catch(e){reportErr('pool '+P.name+': '+e.stack);return null;}}).filter(Boolean);
 // THE VENTS' HAZARDS (core/tags records before anything is drawn; KHAZ reads them): the fumaroles' heat at each pit, steady
 HVENTS.filter(v=>v.kind==='point').forEach(v=>REGISTER({name:v.name+' (fumaroles at '+v.T+' degC; the ground over 25 degC is the hearth trees\')',x:v.x,z:v.z,y:terrainH(v.x,v.z)-2,r:20,h:8,
- tags:{hazard:{kind:'heat',danger:.6,falloff:'linear',shape:{type:'cyl',r:12,h:6},radiant:{reach:6}}}}));
+ tags:{hazard:{kind:'heat',danger:.6,falloff:'linear',shape:{type:'cyl',r:12,h:6},radiant:{reach:6,dose:.4,danger:.4}}}}));
 // THE STEAM (core/atmos fx/smokegroups): the fumaroles round each pit and over each pool steady; a thin column over each disc that thickens with the night's work.
 // The heat shimmer (fx/shimmer) is not taken: a post pass in the draw slot the sky and the reflections switch share (oidong's reason, the same here)
 const HSTEAM=(function(){const vents=[],disc=[];

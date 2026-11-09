@@ -518,6 +518,31 @@ pockets and smooth scalloped hollows, a light dusting of buff clay in the
 lowest hollows; matte, dry.
 ```
 
+## 42. The Hearth field's warm ground (`biomes/riftrim --station hearths`, 2026-11-09)
+
+`biomes/riftrim/PLAN.md`, "Station 7, the Hearth field". Inside each disc the snow never lies and the library has no warm bare soil, so the
+ground there is the kit's paint (black-brown, 4 m texels: soft up close). Wire the set as a `ground.warmsoil` family in
+`biomes/riftrim/materials.json`, run `python3 tools/textures/pack.py biomes/riftrim`, add it to `GLW` in `src/45-host-stage.js` on the mask
+`smooth(.06,.2,F.geo)*smooth(.6,.45,F.geo)` (the disc, not the sinter apron) and name it in the station's `groundLayers` in place of `lenswort`
+(the station has four layers: the bare-snow mask holds the fifth unit). Full colour. Reuse: the Cold Hearths (oidong), Godstep's hearth, any
+geothermal ground off the sinter (the Throne's vent country's warm flats).
+
+`ground.warmsoil` (3 m):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: warm geothermal ground on a cold plateau: damp
+fine black-brown volcanic soil (#2a2420, #1e1a17) with a low dark fleshy
+turf in irregular cushions over a third of it (#23211f, #34302a), scattered
+pale grey-white sinter crumbs and flakes (#c8c2b4), a few small rust and
+dull sulphur-yellow stains (#8a5a34, #b8a046), fine cracks; no snow, no
+grass, no leaves; matte, slightly moist.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

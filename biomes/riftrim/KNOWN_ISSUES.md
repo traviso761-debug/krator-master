@@ -43,7 +43,25 @@ ground past 16 texture units in some view's mode) does not reproduce on the curr
   goes into the cave. The springs are not drawn.
 - [ ] **The crossing's portal** is a cut face and a level apron with the Tungangs' lamps in a row (the lobelia's glow item), not a carved
   mouth; the waystation is not built (a settlement's).
-- [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11: `hearths`, `hearths-hold`, `hearths-walk`) are hosted here and not built.
+- [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11): `hearths` is built (station 7, 2026-11-09: below). `hearths-walk` (the
+  western vent's walked field) is owed; the hold's two cave pages are still `biomes/hearths`' own.
+
+## Station 7, the Hearth field (2026-11-09; `PLAN.md`, "Station 7, the Hearth field")
+
+- [ ] **`ATMOS.snowBare` uploads its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover): a mask whose rows are not a
+  multiple of 4 bytes (this one's 701) shears, and the discs came out snowed. The station sets `unpackAlignment = 1` on the texture snowBare returns
+  (89b); the fix belongs in core (one line in `A.snowBare`), and oidong's Cold Hearths (`stations/hearths/89b`) should be checked for the same.
+- [ ] **Oidong's Cold Hearths carries a vent hazard with `radiant:{reach:6}` and no `dose`**, which `KHAZ.make` rejects, so its export's hazards
+  section errors when its export box takes the vent (this station had the same record, fixed here with a dose).
+- [ ] **The glass forest is the N rim's frost frills and bell firs at full density** round the open shelf: ~39,000 trees, ~10.7 M floor
+  triangles; the page draws 14-15.4 M triangles a view (under the 19.5 M budget). A winter look (the bell firs' closed bells, `?season=winter`)
+  is not switched on by the station.
+- [ ] **No fin-owl, no hearth animals** (`kits/fauna`); no heat shimmer (`ATMOS.shimmer` is a post pass in the draw slot the sky and the
+  reflections switch share).
+- [ ] **The disc floor is paint** where the library layers fade off (from 7 degC): close up it is the paint's 4 m texel, not a surface; a
+  `ground.ash.warm` or bare-soil library set would serve the warm ground (none in the library yet; `core/materials/PROMPTS-NEEDED.md` section 42 has the prompt).
+- **The four ground layers**: the bare-snow mask is a texture unit of the ground's, so this station names four (`needles`, `tundra`, `lenswort`,
+  `lichen`); the reindeer lichen (`clad`) is off.
 - [x] **KSHADOW's switch** is the handle's `off()`/`on()` (89z, the panel's select in 99): replace it with core's own switch when it merges.
   **Closed 2026-11-08:** 89z attaches off on core's own switch (no `off()` after attach); the panel's `shadowsel` select is gone for core's
   `shadows` button; `?shadow=1` on at load, `?shadow=0` none.
