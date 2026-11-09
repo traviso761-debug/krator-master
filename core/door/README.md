@@ -141,6 +141,9 @@ first (`KDOOR.list.forEach(d => KDOOR.open(d))` and a few `KDOOR.step`s, or swit
   ('<room id>.d<n>', standing open 75 degrees as hung, posed through `KDOORHOST.posed`) and its panes KGLASS 'clear';
   `IX.walk.room` puts a shell's floor and walls in core/walk. kits/ancients-interiors' sheet hosts them (`src/75-ai-doors.js`: the
   tick, E, the tip, and `KWALK.reach` from each street door).
+- The isle demo's city page (2026-11-09, `settlements/isle-demo/src/63-isle-doors.js`): `IZV.proto(key, v, w, {doors:true})` hands a
+  piece's doors out as templates in its frame (their leaves not baked, their origin records taken back out of KDOOR); each lot
+  drawn in full registers them in the world ('<lot id>.d<n>') and its leaves are `KDOORLEAF.meshes` posed by `KDOORHOST.instanced`.
 - Verge (2026-11-09): the Vernacular's leaves hosted (`settlements/verge/src/95-verge-doors.js`), its bodies hollow with the
   interiors on; Mav's Refuge's units and doors in core/walk (`src/83-mr-walk.js`); Yuni's streamed interiors' doors are records
   while their building is live.

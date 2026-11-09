@@ -100,29 +100,38 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
 
 - **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
   the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).
-  - Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
-    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).
-  - `kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
+  - ~~Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
+    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).~~
+    Done (2026-11-09): Verge (`settlements/verge/src/95-verge-doors.js`: posed, the tick, E, walk blocks; its Vernacular bodies hollow
+    with the interiors on); the isle demo's city page (`settlements/isle-demo/src/63-isle-doors.js`: each near Vernacular lot's doors
+    registered in the world under the lot's id, the leaves posed, the tick, E at the view's target; no walk blocks, the page has no
+    core/walk, and the kit locks the doors of its solid bodies). Left: the open world's hamlets still bake their leaves shut.
+  - ~~`kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
     and its glass in KGLASS (`kits/ancients-interiors/src/75-ai-doors.js` matches the shell's leaves by order meanwhile), and
-    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.
+    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.~~
+    Done (2026-11-09): `IX.walk.room`; Ancients-interiors' sheet reaches 48 of 48 rooms with the doors open, 0 shut.
   - ~~Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
     unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.~~
     Done (2026-11-09, with `?interiors=1`): the Vernacular's auto bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`) draw a
     furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
     (`kits/interiors/sets/xanadu.js`; the citadel held for the owner's references); the Hall of the Republic and the Fortress
     are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
-  - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
-    building's `F.door`).
-  - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.
-  - Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.
+  - ~~Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
+    building's `F.door`).~~ Done (2026-11-09): the planned street doors unlock the placement's nearest door (`66-locus-furnish.js`).
+  - ~~Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.~~ Done
+    (2026-11-09): `src/83-mr-walk.js` (the units' plans in core/walk, the doors' blocks, `MRWALK.reach`); decks and bridges not yet.
+  - ~~Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.~~
+    Done (2026-11-09): KDOOR records while live, pruned by id. The swing stays 1.4 rad, recorded on each record (`R.swing`) so the
+    export gives what the page draws; whether to move it to 1.75 is the owner's call (`settlements/yuni/KNOWN_ISSUES.md`).
   - Beast Riders (`kits/beast-riders`): its town copies draw Girder's and Mav's leaves shut and their walls whole (fallbacks in
     their `55-arch.js` / `56-levels.js`); the faithful port bundles `54-openings.js`, the glass of `81-glow.js` and core/door.
-  - Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
-    hardware, or a socket on the leaf).
+  - ~~Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
+    hardware, or a socket on the leaf).~~ Done (2026-11-09): `KDOORLEAF` hardware styles (`banded`, `scrolled`, `+pull`, `+ring`).
   - The arcologies' painted windows (canvas glazing, Crescent, Monolith, Hill, ...) stay painted: real panes would be tens
     of thousands of instances a building.
-  - Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
-    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).
+  - ~~Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
+    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).~~ Done (2026-11-09):
+    `godot/krator/kdoor.gd`; `godot/tests/door/door_test.gd` passes on 4.7.2. The isle demo's export does not carry its doors yet.
 
 ## With the final biome rebuild *(the owner, 2026-10-26)*
 

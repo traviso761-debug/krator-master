@@ -3,7 +3,8 @@
    geometry per material, ready to draw as InstancedMeshes. The city page (60-isle-draw.js DRAW) and the open world's
    hamlets (openworld/isle-demo/src/88h-world-hamlets.js) both read this file in place.
    isleProto(kit, key, v, C) -> {id, parts: [{geo, mat, tris}], tris, ms, w, d, h, fixtures} or null; C is the caller's cache
-   {protos, failed, built}. */
+   {protos, failed, built, doors}; doors true: a Vernacular piece's door leaves are left out of its parts and handed back as
+   templates (P.doors), for a page that hosts them on core/door (the city page, 63-isle-doors.js). */
 function isleDenorm(a) {
   if (!a.normalized) return 1;
   var r = a.array;
@@ -110,12 +111,13 @@ function isleMatPack(G, pack) {
 function isleProto(kit, key, v, C) {
   var id = kit + ':' + key + '#' + (v | 0); if (C.protos[id] !== undefined) return C.protos[id];
   var G = null, t0 = performance.now();
-  try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { C.failed[id] = String(e && e.message || e); }
+  try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1, C.doors ? { doors: true } : null) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { C.failed[id] = String(e && e.message || e); }
   if (!G) { C.failed[id] = C.failed[id] || 'no build'; return (C.protos[id] = null); }
   if (G.userData.port) islePortMats(G);
   isleMatPack(G, kit === 'isk' ? 'islanders' : kit === 'izv' ? 'iziz' : G.userData.port ? ISLE_PORT_PACK[G.userData.port.town] || null : null);
   var parts = isleFlatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
   C.built++;
   return (C.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h,
-    fixtures: G.userData.fixtures || null });   /* the Islanders kit's doors, windows and lamps in the piece's frame (ISK.proto) */
+    fixtures: G.userData.fixtures || null,   /* the Islanders kit's doors, windows and lamps in the piece's frame (ISK.proto) */
+    doors: G.userData.doors || null });   /* C.doors: the Vernacular's doors as templates, their leaves not baked (IZV.proto o.doors; 63-isle-doors.js) */
 }

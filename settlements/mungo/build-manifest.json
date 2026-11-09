@@ -149,7 +149,7 @@
  ],
  "50-core-furnish.js": [
   "core/furnish",
-  "3474c3c8d39a"
+  "2bd26bf99a15"
  ],
  "50-core-tags.js": [
   "core/tags",
@@ -169,7 +169,7 @@
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
-  "949213456277"
+  "1baf4b1363ee"
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
@@ -313,7 +313,7 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "f54c52360c0b"
+  "2e308e32ac7c"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -637,7 +637,7 @@
  ],
  "95-host-probe.js": [
   "core/host",
-  "111c9ae5768a"
+  "4c60a9746384"
  ],
  "95-locus-doors.js": [
   "locus",

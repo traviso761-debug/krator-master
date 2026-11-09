@@ -29,7 +29,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-verge-views.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the preset cameras, derived from the layout; two find their subject in the sim when picked |
 | `src/88-verge-build.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91-verge-probe.js` | 13.5 | [web] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | window._api: the checks (each with a negative control) and the Godot export |
-| `src/95-verge-doors.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/95-verge-doors.js` | 3.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Vernacular's doors hosted (KDOORHOST: posed, the tick, E); the records and walk blocks are core/door's |
 | `src/99-start.js` | 8.0 | [web] | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host; replaced 90-verge-camera.js); CLOCK reads the host's clock |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
