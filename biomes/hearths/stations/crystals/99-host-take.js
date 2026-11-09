@@ -1,30 +1,5 @@
-// ================================================================= HOST — the views, the inspector's words and the probe's checks, handed to core/host
-// The views stand in the open (a camera is moved off a beam and out of the rock to the nearest clear point: eyeAt). 'The hold's massing' looks down
-// on the storey from above the shelf with the outlines shown and the haze thinned; every other view restores both.
-const F0=CAVE.focus,FX=F0.c[0],FZ=F0.c[2],FY=F0.c[1];
-const beamNear=(x,y,z,pad)=>CAVE.beams.concat(CAVE.floor).some(r=>{if(r.kind!=='beam')return false;const dx=Math.cos(r.el)*Math.cos(r.az),dy=Math.sin(r.el),dz=Math.cos(r.el)*Math.sin(r.az),
- px=x-r.x,py=y-(r.y+r.r*.5),pz=z-r.z,t=Math.max(0,Math.min(r.len,px*dx+py*dy+pz*dz));return Math.hypot(px-dx*t,py-dy*t,pz-dz*t)<r.r+pad;});
-/* the nearest clear eye to (x, y, z): in the open by .8 m and 1.2 m off any beam, searched on rings out to 12 m */
-function eyeAt(x,y,z){const ok=(a,b,c)=>CAVE.C.sdf(a,b,c)>.8&&!beamNear(a,b,c,1.2);if(ok(x,y,z))return[x,y,z];
- for(let r=1;r<=12;r+=1)for(let k=0;k<12;k++){const a=k/12*TAU,px=x+r*Math.cos(a),pz=z+r*Math.sin(a);for(const dy of[0,1,-.6,2])if(ok(px,y+dy,pz))return[px,y+dy,pz];}return[x,y,z];}
-const at=(c,u,d,up)=>[c[0]+u[0]*d,up,c[2]+u[1]*d];
-const unit=(a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return[dx/l,dz/l];};
-const VIEWS=(function(){const V={},HC=SITE.hold.chambers,north=CAVE.chambers.find(c=>c.id===Object.keys(HC)[0]);
- const toN=unit([FX,FZ],[north.c[0],north.c[2]]),R=F0.rx;
- {const e=eyeAt(FX+toN[0]*R*.78,FY+2.2,FZ+toN[1]*R*.78);V['The Cave of Crystals']=[e[0],e[1],e[2],FX-toN[0]*R*.3,FY+7,FZ-toN[1]*R*.3];}
- {const W=CAVE.wells.find(w=>Math.hypot(w.c[0]-FX,w.c[1]-FZ)<20)||CAVE.wells[0],e=eyeAt(W.c[0]+toN[1]*14,FY+1.7,W.c[1]-toN[0]*14);
-  V['Among the beams']=[e[0],e[1],e[2],W.c[0]-toN[1]*10,FY+9,W.c[1]+toN[0]*10];
-  const e2=eyeAt(W.c[0]+W.r+2.2,W.mouth+2.4,W.c[1]+.5);V['The feeder well (55 degC water below)']=[e2[0],e2[1],e2[2],W.c[0],W.level,W.c[1]];}
- if(CAVE.throats.length){const T=CAVE.throats[0],e=eyeAt(T.c[0]+9,FY+1.8,T.c[1]+7);V['Daylight down the vent']=[e[0],e[1],e[2],T.c[0],T.ground,T.c[1]];}
- {const e=eyeAt(FX-toN[0]*R*.45+3,FY+1.5,FZ-toN[1]*R*.45);V['The bladed floor']=[e[0],e[1],e[2],e[0]+toN[0]*7,FY+.2,e[2]+toN[1]*7];}
- {const W2=CAVE.hot.find(c=>c.id!==F0.id);if(W2){const u=unit([W2.c[0],W2.c[2]],[FX,FZ]),e=eyeAt(W2.c[0]+u[0]*W2.rx*.75,W2.c[1]+2,W2.c[2]+u[1]*W2.rz*.75);
-  V['The west crystal chamber']=[e[0],e[1],e[2],W2.c[0],W2.c[1]+5,W2.c[2]];}}
- {const u=unit([north.c[0],north.c[2]],[FX,FZ]),e=eyeAt(north.c[0]+u[0]*north.rx*.6,north.c[1]+1.7,north.c[2]+u[1]*north.rz*.6);
-  V['The hold\'s hall (reserved, empty)']=[e[0],e[1],e[2],north.c[0]-u[0]*north.rx,north.c[1]+4,north.c[2]-u[1]*north.rz];}
- V['The hold\'s massing (from above)']=[FX+40,SITE.ground(FX,FZ)+150,FZ+170,FX-40,FY,FZ-30];
- return V;})();
-const MASSING_VIEW='The hold\'s massing (from above)';
-function onView(name){const m=name===MASSING_VIEW;MASSING.group.visible=m||Q.get('massing')==='1';scene.fog.density=m?.0015:.014;}
+// ================================================================= HOST — the inspector's words and the probe's checks, handed to core/host
+// The views are 98v's (each station's own), the eye's helpers 98u's.
 // ---------------------------------------------------------------- the inspector
 function hazardWords(p){return typeof KTAGS!=='undefined'&&KTAGS.hazardAt?'\n'+KTAGS.hazardAt(p.x,p.y,p.z):'';}
 function describe(hit){const p=hit.point,o=hit.object,t=Math.round(CAVE.temp(p.x,p.z)),V=CAVE.HOLD.at(p.x,p.y+.5,p.z,.5);
@@ -37,7 +12,7 @@ function describe(hit){const p=hit.point,o=hit.object,t=Math.round(CAVE.temp(p.x
   (V?'\nreserved for the hold: '+V.name+' ('+V.kind+', floor '+V.floor.toFixed(1)+', '+V.temp+' degC)':'')+hazardWords(p)+
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(1)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // ---------------------------------------------------------------- the probe's checks (each with a negative below)
-const BUDGET={showcase:{tris:2500000,calls:80},cls:{rock:700000,crystal:1200000,host:400000},type:{cavern:'rock',selenite:'crystal',blades:'crystal'}};
+const BUDGET={showcase:{tris:2500000,calls:80},cls:{rock:900000,crystal:1200000,host:400000},type:{cavern:'rock',hypogene:'crystal',selenite:'crystal',blades:'crystal'}};
 const instAxes=M=>{const out=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),d=new THREE.Vector3();if(!M)return out;
  for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,s);d.set(0,1,0).applyQuaternion(q);out.push({p:[p.x,p.y,p.z],d:[d.x,d.y,d.z],len:s.y,r:s.x/2});}return out;};
 const HCHK={
@@ -54,20 +29,34 @@ const HCHK={
    const shut=P.filter(p=>CAVE.C.sdf(p[0],(p[2]==null?V.floor:p[2])+1.5,p[1])<=.2);if(shut.length)bad.push(V.id+' ('+shut.length+'/'+P.length+')');});
   return{ok:!bad.length&&L.length>0,detail:bad.length?'rock in: '+bad.join(', '):L.length+' volumes open at their floors'};},
  /* the chambers' and shelves' floors are level: the floor under five points within 0.8 m of the record's */
- massingLevel(L){const bad=[];L.forEach(V=>{const s=V.shape;if(s.type==='capsule')return;let P;
+ massingLevel(L){const bad=[];L.forEach(V=>{const s=V.shape;if(s.type==='capsule'||V.water)return;let P;   /* a chamber that is a warm pool: its floor is the water's */
    if(s.type==='ellipse')P=[[s.c[0],s.c[1]]].concat([0,1,2,3].map(k=>[s.c[0]+s.rx*.5*Math.cos(k*TAU/4+.4),s.c[1]+s.rz*.5*Math.sin(k*TAU/4+.4)]));
-   else{/* a shelf over its rock: between its edge on the chamber's wall and its back, the corners kept off */const E=V.edge,B=[s.pts[1],s.pts[2]],L=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+   else if(V.edge){/* a shelf over its rock: between its edge on the chamber's wall and its back, the corners kept off */const E=V.edge,B=[s.pts[1],s.pts[2]],L=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
     P=[];for(const t of[.35,.8])for(const u of[.25,.5,.75])P.push(L(L(E[0],B[0],t),L(E[1],B[1],t),u));}
+   else{const c=s.pts.reduce((a,p)=>[a[0]+p[0]/s.pts.length,a[1]+p[1]/s.pts.length],[0,0]);P=[c].concat(s.pts.map(p=>[c[0]+(p[0]-c[0])*.4,c[1]+(p[1]-c[1])*.4]));}   /* a landing: its middle and round it */
    const off=P.map(p=>{let y=V.floor+.5;for(let k=0;k<12&&CAVE.C.sdf(p[0],y-.25,p[1])>.05;k++)y-=.25;return Math.abs(y-V.floor);});const m=Math.max(...off);if(m>.8)bad.push(V.id+' '+m.toFixed(1)+' m');});
   return{ok:!bad.length,detail:bad.length?'not level: '+bad.join(', '):'every chamber and shelf floor level to 0.8 m'};},
  /* the beams stand only in the hot chambers (the megacrystals grew over the feeders) */
- beamsHot(R){const bad=R.filter(r=>r.kind==='beam'&&!CAVE.hot.some(c=>Math.hypot((r.x-c.c[0])/(c.rx+2),(r.z-c.c[2])/(c.rz+2))<=1));
+ beamsHot(R){const bad=R.filter(r=>r.kind==='beam'&&!CAVE.hotOf(1).some(c=>Math.hypot((r.x-c.c[0])/(c.rx+2),(r.z-c.c[2])/(c.rz+2))<=1));
   return{ok:!bad.length&&R.some(r=>r.kind==='beam'),detail:bad.length?bad.length+' beams outside the feeder chambers (first '+bad[0].id+')':R.filter(r=>r.kind==='beam').length+' beams, all in the feeder chambers'};},
  /* the heat is a hazard with soak over every hot chamber, and the beams are slippery */
- heat(L){const H=L.filter(r=>r.kind==='heat'&&r.soak&&r.danger>=1),S=L.filter(r=>r.kind==='slip');
-  return{ok:H.length>=CAVE.hot.length&&S.length>=CAVE.hot.length&&CAVE.hot.length>0,detail:H.length+' lethal heat hazards with soak, '+S.length+' slip, for '+CAVE.hot.length+' hot chambers'};},
+ heat(L){const n=CAVE.hotOf(1).length,H=L.filter(r=>r.kind==='heat'&&r.soak&&r.danger>=1),S=L.filter(r=>r.kind==='slip');
+  return{ok:H.length>=n&&S.length>=n&&n>0,detail:H.length+' lethal heat hazards with soak, '+S.length+' slip, for '+n+' hot chambers of the drained storey'};},
+ /* the water is scalding only near the feeders (KTHERM): every pool at SITE.therm.scald or over has a heat hazard, none under it does */
+ poolHeat(P,L){const hz=new Set(L.filter(r=>/:heat$/.test(r.id)).map(r=>r.id.replace(/:heat$/,''))),hot=P.filter(p=>p.temp>=SITE.therm.scald),miss=hot.filter(p=>!hz.has(p.id)),extra=P.filter(p=>p.temp<SITE.therm.scald&&hz.has(p.id));
+  return{ok:P.length>0&&hot.length>0&&!miss.length&&!extra.length&&P.some(p=>p.temp<SITE.therm.scald),detail:miss.length?miss.length+' scalding pools without a heat hazard (first '+miss[0].id+')':extra.length?extra.length+' warm pools marked scalding':
+   P.length+' pools: '+hot.length+' scalding ('+hot.map(p=>p.temp).join(', ')+' degC), the rest '+P.filter(p=>p.temp<SITE.therm.scald).map(p=>p.temp).join(', ')+' degC'};},
+ /* bad air pooled on every active chamber's floor (KKARST's gas, shape.pool) */
+ gas(L){const n=CAVE.chambers.filter(c=>c.storey===0).length,G=L.filter(r=>r.kind==='gas'&&r.shape&&r.shape.pool);return{ok:n>0&&G.length>=n,detail:G.length+' pooled gas hazards for '+n+' chambers of the active storey'};},
+ /* the active storey's shelves, fields and landing stand dry over the water, on rock: their floors 1 m or more over the table, rock under them */
+ dry(L){const T=CAVE.water?CAVE.water.level:-1e9,bad=L.filter(V=>V.storey===0&&V.shape.type==='poly').filter(V=>{const P=V.shape.pts,c=[P.reduce((a,p)=>a+p[0],0)/P.length,P.reduce((a,p)=>a+p[1],0)/P.length];
+   const q=V.edge?[(V.edge[0][0]+V.edge[1][0])/2*.3+c[0]*.7,(V.edge[0][1]+V.edge[1][1])/2*.3+c[1]*.7]:c;return V.floor<T+1||CAVE.C.sdf(q[0],V.floor-.4,q[1])>0;});
+  const n=L.filter(V=>V.storey===0&&V.shape.type==='poly').length;return{ok:n>0&&!bad.length,detail:bad.length?'wet or hanging: '+bad.map(V=>V.id).join(', '):n+' shelves, fields and the landing dry over the water, on rock'};},
  /* every view's eye stands in the open (the massing view is over the shelf, in the sky) */
- eyes(Cm){const bad=Cm.filter(c=>c.view!==MASSING_VIEW&&CAVE.C.sdf(c.x,c.y,c.z)<.3);return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):Cm.length+' view cameras in the open'};}};
+ eyes(Cm){const bad=Cm.filter(c=>c.view!==MASSING_VIEW&&(CAVE.C.sdf(c.x,c.y,c.z)<.3||c.y<WL+.3));return{ok:!bad.length,detail:bad.length?'in the rock or the water: '+bad.map(c=>c.view).join(', '):Cm.length+' view cameras in the open air'};},
+ /* the active storey's dress keeps off the hold (the hypogene records by their foot and their tip) */
+ dressClear(R){const H=CAVE.HOLD;let bad=null;R.forEach(r=>{if(bad)return;const down=r.kind==='stalactite'||r.kind==='chandelier',tip=r.y+(down?-1:1)*(r.len==null?0:r.len);
+   const V=H.at(r.x,r.y,r.z,0)||H.at(r.x,tip,r.z,0);if(V)bad=[V.id,r.id];});return{ok:!bad,detail:bad?bad[1]+' in '+bad[0]:R.length+' hypogene pieces, none in a reserved volume'};}};
 const hazList=()=>typeof KHAZ!=='undefined'?KHAZ.list().map(r=>KHAZ.of(r)||r).filter(Boolean):[];
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('no crystal stands in the hold\'s reserved volumes',HCHK.massingClear(instAxes(CRYSTALS.sel),instAxes(CRYSTALS.blades)));
@@ -75,20 +64,29 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the reserved chambers and shelves have level floors',HCHK.massingLevel(CAVE.HOLD.volumes));
  add('the selenite beams stand in the feeder chambers only',HCHK.beamsHot(CAVE.beams.concat(CAVE.floor)));
  add('the hot chambers are lethal heat (soak) and slippery (core/hazard)',HCHK.heat(hazList()));
+ add('the active storey\'s dress keeps off the hold',HCHK.dressClear(CAVE.hypo));
+ add('the water scalds only near the feeders (KTHERM; a heat hazard on each scalding pool)',HCHK.poolHeat(CAVE.water?CAVE.water.pools:[],CAVE.hazards));
+ add('bad air pooled on every active chamber\'s floor',HCHK.gas(hazList()));
+ add('the active storey\'s shelves, fields and landing stand dry over the water, on rock',HCHK.dry(CAVE.HOLD.volumes));
  add('the views\' cameras stand in the open',HCHK.eyes(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
- const N=CAVE.HOLD.volumes.find(v=>v.kind==='chamber'),c=N.shape.c;
+ const N=CAVE.HOLD.volumes.find(v=>v.kind==='chamber'&&!v.water),c=N.shape.c;   /* a dry chamber (the drained storey's): a warm pool's floor is its water */
  add('a beam through the hold\'s hall',HCHK.massingClear([{p:[c[0]-6,N.floor+.5,c[1]],d:[1,0,0],len:12,r:.6}],[]));
  add('a reserved volume in the rock',HCHK.massingOpen([Object.assign({},N,{id:'fake',shape:Object.assign({},N.shape,{c:[c[0]+SITE.half*3,c[1]]})})]));
  add('a reserved floor 3 m off',HCHK.massingLevel([Object.assign({},N,{id:'fake',floor:N.floor+3})]));
  add('a beam in the hold\'s hall',HCHK.beamsHot([{kind:'beam',id:'fake',x:c[0],z:c[1]}]));
  add('no heat hazard',HCHK.heat([]));
  add('a camera in the rock',HCHK.eyes([{view:'rock',x:c[0],y:N.floor-5,z:c[1]}]));
+ {const P=(CAVE.water?CAVE.water.pools:[]).map(p=>Object.assign({},p));const h=P.find(p=>p.temp>=SITE.therm.scald);add('a scalding pool with no hazard',HCHK.poolHeat(P,CAVE.hazards.filter(r=>!h||r.id!==h.id+':heat')));}
+ add('no pooled gas',HCHK.gas([]));
+ {const S=CAVE.HOLD.volumes.find(v=>v.storey===0&&v.kind==='shelf');add('a shelf under the water',HCHK.dry([Object.assign({},S,{id:'fake',floor:(CAVE.water?CAVE.water.level:0)-.5})]));}
+ {const Vh=CAVE.HOLD.volumes.find(v=>v.storey===0&&v.kind==='shelf'),m=Vh.shape.pts[0];add('a chandelier on a shelf',HCHK.dressClear([{id:'fake',kind:'chandelier',x:m[0]*.5+Vh.shape.pts[2][0]*.5,y:Vh.floor+3,z:m[1]*.5+Vh.shape.pts[2][1]*.5,len:2}]));}
  return R;}
-const EXPORT_BOX=[FX-60,FZ-60,FX+60,FZ+60].map(Math.round);
-KHOST.take({build:'hearths-crystals',title:'Krator biome — the Hearths: '+SITE.name,
- hint:SITE.region+': '+(SITE.G-40)+' m, 40 m under the shelf; the Naica of the Hearth hold (KKARST hypogene, KSPELEO selenite, KTHERM '+Math.round(CAVE.temp(FX,FZ))+' degC); '+
+const EXPORT_BOX=(STATION.key==='hold'?(()=>{const c=CAVE.chambers.find(q=>q.id==='ch:n0:-14,-5');return [c.c[0]-60,c.c[2]-60,c.c[0]+60,c.c[2]+60];})():[FX-60,FZ-60,FX+60,FZ+60]).map(Math.round);
+KHOST.take({build:'hearths-'+STATION.key,title:'Krator biome — the Hearths: '+STATION.name,
+ hint:STATION.key==='hold'?'The Hearth hold, the active storey (rift rim N): '+(SITE.G+SITE.net.level)+' m, 70 m under the shelf, under a metre of warm water (scalding at the feeders, KTHERM); gypsum chandeliers (KSPELEO hypogene), the fumarole, bad air on the water; the hold\'s lower storey massed on shelves over the water, empty (?massing=1); scale model 5.1 px '+SITE.px+','+SITE.py+' (PLAN.md section 19)':
+  SITE.region+': '+(SITE.G-40)+' m, 40 m under the shelf; the Naica of the Hearth hold (KKARST hypogene, KSPELEO selenite, KTHERM '+Math.round(CAVE.temp(FX,FZ))+' degC); '+
   'the hold\'s spaces massed and empty (?massing=1); scale model 5.1 px '+SITE.px+','+SITE.py+' (PLAN.md section 18)',
  scene,camera,renderer,ground:groundEye,clear:1.5,registry:REG,regHas,views:VIEWS,onView,ticks:TICKS,
  clock:{hour:12},inspect:describe,stats:()=>'beams '+CRYSTALS.beams+' · blades '+CRYSTALS.points+' · rock '+ROCK.tris+' tris',
@@ -97,10 +95,10 @@ KHOST.take({build:'hearths-crystals',title:'Krator biome — the Hearths: '+SITE
  exporters:{biome:()=>BIO.export(),cave:()=>CAVE.export(),hold:()=>CAVE.HOLD.export()},
  minimap:{title:SITE.name},
  guards:false,   /* the biome core's card guards: no foliage on this page, so their negatives could not fail */
- budget:BUDGET,types:()=>({cavern:{tris:ROCK.tris,inst:0,meshes:ROCK.meshes},selenite:{tris:CRYSTALS.tris.selenite,inst:CRYSTALS.sel?CRYSTALS.sel.count:0,meshes:1},
+ budget:BUDGET,types:()=>({cavern:{tris:ROCK.tris,inst:0,meshes:ROCK.meshes},hypogene:{tris:HYPO.tris,inst:0,meshes:HYPO.mesh?1:0},selenite:{tris:CRYSTALS.tris.selenite,inst:CRYSTALS.sel?CRYSTALS.sel.count:0,meshes:1},
   blades:{tris:CRYSTALS.tris.blades,inst:CRYSTALS.blades?CRYSTALS.blades.count:0,meshes:1}}),
  api:{hostChecks,hostNegatives,
-  get totals(){return {tris:ROCK.tris+CRYSTALS.tris.selenite+CRYSTALS.tris.blades,inst:window._instances,meshes:ROCK.meshes+2,registered:REG.length,types:3};},
+  get totals(){return {tris:ROCK.tris+HYPO.tris+CRYSTALS.tris.selenite+CRYSTALS.tris.blades,inst:window._instances,meshes:ROCK.meshes+3,registered:REG.length,types:4};},
   hold:()=>CAVE.HOLD.export(),cave:()=>({chambers:CAVE.chambers.length,passages:CAVE.passages.length,hot:CAVE.hot.map(c=>c.id),beams:CRYSTALS.beams,blocks:CRYSTALS.blocks,points:CRYSTALS.points}),
   exportProfile:['registry','hazards','terrain','stage','atmos','water'],   /* no flora: no items, buckets or BIO materials */
   exportBox:EXPORT_BOX,

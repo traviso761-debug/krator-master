@@ -92,6 +92,11 @@ def extra_builds():
     for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
         name = os.path.basename(os.path.dirname(st))
         out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
+    # the Hearths' stations past its default one (build.py writes the crystals' page; the hold is --station hold)
+    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'hearths', 'stations', '*', 'station.json'))):
+        name = os.path.basename(os.path.dirname(st))
+        if name != 'crystals':
+            out.append(('build biomes/hearths --station ' + name, [PY, 'build.py', '--station', name], 'biomes/hearths'))
     if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
         out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
     return out

@@ -97,8 +97,12 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hearths/dist/hearths-crystals.html": {
-   "bytes": 1382210,
-   "sha256": "181659b00e7dc81af1ccc7d63c9a566ad2be7409648a6b7f578fa0747a451b4a"
+   "bytes": 1404235,
+   "sha256": "b963a8c9ac0d0fa88509944c6ae3bbb38e8a3551abebd2960acee66c587623e8"
+  },
+  "biomes/hearths/dist/hearths-hold.html": {
+   "bytes": 1404210,
+   "sha256": "d2a04e0bbd543c8c820f630c81187a0903d90e5862c794ee9ce65e13b7b69370"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
    "bytes": 5125745,

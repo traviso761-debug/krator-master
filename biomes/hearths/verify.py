@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless verification for biomes/hearths: the Cave of Crystals (stations/crystals; its harness began as Copper Glacier's).
+"""Headless verification for biomes/hearths: its stations, the Cave of Crystals and the hold's active storey (stations/crystals, stations/hold; its harness began as Copper Glacier's).
 
 Usage:
   python verify.py dist/hearths-crystals.html [--views "The Cave of Crystals"] [--all-views]

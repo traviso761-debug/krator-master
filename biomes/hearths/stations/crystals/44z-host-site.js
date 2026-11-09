@@ -17,18 +17,26 @@ const SITE={key:'crystals',name:'The Cave of Crystals',region:'The Hearth hold, 
  focus:'ch:n1:-11,-3',half:180,          /* the page: 360 m round the drained storey's largest feeder chamber */
  cell:1,chunk:16,                        /* KCAVERN's lattice: 1 m (the chambers are 60-110 m across) */
  /* the drained storey's warmth (KTHERM): the rock's own over the feeders' rising heat */
- therm:{soil:24,T:52,reach:170,decay:2.2},
+ therm:{soil:24,T:52,reach:170,decay:2.2,scald:45},       /* scald: a pool this hot or over is a heat hazard */
  /* THE CRYSTALS (KSPELEO kinds). beams: the megacrystals in the feeder chambers; floor: the bladed gypsum floor ("shark teeth") and blocks
     elsewhere in the storey; cell in metres */
  crystals:{
   beams:{cell:3,kinds:{beam:{p:.3,len:[6,18],r:[.5,1.25],el:[.05,1.1],minGap:4,mineral:'selenite'},
    block:{p:.22,len:[.5,2.2],r:[.4,1.4],n:[2,6],mineral:'selenite'},druse:{p:.55,len:[.3,1.3],r:[1,2.8],n:[26,48],mineral:'gypsum'}}},
   floor:{cell:3,kinds:{block:{p:.06,len:[.3,1.2],r:[.3,.9],n:[2,4],mineral:'selenite'},druse:{p:.4,len:[.15,.7],r:[.8,2.2],n:[12,28],mineral:'gypsum'}}}},
- /* THE HOLD'S MASSING (proposed; PLAN.md section 18): the cooler chambers, a shelf cut in each, the night road up and the way down */
- hold:{chambers:{'ch:n1:-11,-2':'The north chamber (the hold\'s hall)','ch:n1:-10,-3':'The east chamber','ch:n1:-13,-4':'The south chamber'},
-  shelf:{up:4,depth:8,half:9,h:4.5,rise:1.2},
+ /* THE HOLD'S MASSING (proposed; PLAN.md sections 18 and 19): on the drained storey the cooler chambers (their floors levelled) with a shelf cut in
+    each; on the active storey the cooler chambers (warm pools) with a shelf and a field over the water in each; the night road up, the way down */
+ hold:{storeys:{
+   1:{chambers:{'ch:n1:-11,-2':'The north chamber (the hold\'s hall)','ch:n1:-10,-3':'The east chamber','ch:n1:-13,-4':'The south chamber'},level:true,
+      shelves:[{kind:'shelf',up:4}]},
+   0:{chambers:{'ch:n0:-14,-5':'The landing pool (the way down comes in)','ch:n0:-15,-5':'The west pool','ch:n0:-9,-3':'The east pool'},level:false,
+      shelves:[{kind:'shelf',above:1.5},{kind:'field',above:1.5}]}},
+  shelf:{depth:8,half:9,h:4.5,rise:1.2},
   road:{from:'ch:n1:-11,-2',w:4.5,h:4,grade:.14},       /* the night road: a rising gallery toward the shelf's surface */
-  down:{from:'ch:n1:-13,-4',w:3,h:3.2,pitch:.55},        /* the way down: a stair toward the active storey (pitch: rise over run) */
+  down:{from:'ch:n1:-13,-4',w:3,h:3.2,pitch:.55,above:1.5,landing:3.5},   /* the way down: a stair (pitch: rise over run) to a landing 1.5 m over the active storey's water */
   clear:3},                                              /* m of headroom a volume's record promises over its floor at least */
+ storeys:[0,1],                                          /* both storeys carved, on both stations' pages: one cave */
+ fumarole:{chamber:'ch:n0:-14,-2',off:[14,-8],r:1.6,T:96},   /* the station's shaft of steam from the active storey's west feeder chamber to the shelf */
+ hypogene:{cell:4},                                      /* KSPELEO.HYPOGENE's cell over the active storey's crust records */
  heat:{danger:1,soak:{full:1500,from:0,out:2400}},       /* Naica's air: 50 degC at 100% humidity kills an unprotected visitor in tens of minutes */
  vent:{r:1.6,r1:2.6}};                                    /* the vent's throat from a cupola's crown up through the shelf */

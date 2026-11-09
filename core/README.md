@@ -396,6 +396,14 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   `CALCITE` (Mississippi Valley: calcite, celestine) and `VUG` (thundereggs, rhyolite vugs). Beams and blocks block a walker.
   The old presets' records, meshes and blocks are byte-identical (`test-speleo.js` holds their digests). `KKARST`'s hypogene kind
   takes `crystal: {storeys, speleo}` to dress the storeys that grew megacrystals with a crystal preset.
+- **A cave page's floor and rock** (2026-11-09, lifted from the Hearths' Cave of Crystals for every cave page): `KCAVERN.floorFn(C, {from,
+  to, step, fallback})` (`39d-core-cavern-floor.js`, `[G data]`, `test-cavern-floor.js`): the lowest open point of a column read off the
+  cavern's `sdf` on a cached 1 m lattice, bilinear (a cave page's camera floor, its BIO ground, a water's bed); `KCAVERN.openAt(C, x, y, z,
+  pad)`. `KCAVERN.drawRock(C, {THREE, material, tile, attrs, weight, ground})` (`host/39e-core-cavern-draw.js`): the chunks merged into one
+  mesh per tile with the page's per-vertex weights (its KGROUND layers' masks) and the occlusion as vertex colour; `ground: 'drop'` leaves
+  out the ground's triangles inside an opening. *Adopting it:* list both after `39-core-cavern.js` (`tools/fragment_needs.json`), then
+  `const floorH = KCAVERN.floorFn(C, {from: <under the lowest floor>, to: <over the highest>, fallback})` and
+  `scene.add(KCAVERN.drawRock(C, {THREE, material, attrs: ['aA'], weight: (x, y, z, nx, ny, nz, ch, i, w) => { w[0] = ...; }}).group)`.
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 
