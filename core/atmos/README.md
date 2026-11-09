@@ -311,8 +311,10 @@ the sky host). Four settings on the sky preset's `clouds`, each absent by defaul
 |---|---|
 | `dark` 0..1 | the cloud's lit colour pulled toward a storm grey (0.62 of its luminance), its shadow side blacker (0.22) |
 | `tint` [r,g,b], `tintK` 0..1 | drawn toward the tint's hue, keeping its own light and shade; `ATMOS.MOOD_PALETTE` is brown, dull red, sickly green, ash, ghostly purple, jaundice yellow |
-| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (rows of identical clouds on the lattice), `glitched` (two more sheets of cloud under the first, one across the page's wind at 1.6x its speed and finer, one 120 degrees round at 0.7x and coarser, the three unioned: clouds slide through each other as if each felt its own wind; `ATMOS.MOOD_SHEETS`), `ripple` (rings spreading from `turbAt` [x, z] as from a stone dropped in water, in slow motion: a 1.2 km wave at 40 m/s pushing the cloud's shape to and fro along the radius and its density with the crest, dying over 8 km) |
+| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (parallel rows of cloud a lattice cell apart, gently waved: unnaturally regular cloud streets), `glitched` (two more sheets of cloud under the first, one across the page's wind at 1.6x its speed and finer, one 120 degrees round at 0.7x and coarser, the three unioned: clouds slide through each other as if each felt its own wind; each sheet's wind is a random walk whose heading is held 30-90 s of real time and then turns abruptly, `ATMOS.skyMoodWalk`, its speed by the pace, `ATMOS.MOOD_SHEETS`; `sheetTint` 0..1 colours the sheets where they show through in the tint's complement and its hue-rotated twin), `ripple` (rings spreading from `turbAt` [x, z] as from a stone dropped in water, in slow motion: a 1.2 km wave at 40 m/s pushing the cloud's shape to and fro along the radius and its density with the crest, dying over 8 km) |
+| `pace` (default 3) | how much faster than the page's wind the pattern's own motions run (the warp's drift, the sheets' walks, the rings' speed, the rows' slide), so they read at 1x; the plain cloud's drift is untouched |
 | `glow` 0..1, `glowColour`, `glowLocus`, `glowLocus2` | at night only (`uNight`): the base lit from below by the colour, strongest where the cloud is thick; `glowLocus` [x, z, radius, spread] lights one patch (spread 0) or the whole sky (spread 1, the default); `glowLocus2` [x, z, radius, on] a second light (the orbs' pair) |
+| `event` | a sky event now (`ATMOS.moodEvent`'s record with `x`, `z`, `ground`): `pillar` (a brief flashing pillar of light from the ground to its top, 60 m wide) or `ascent` (a point of light climbing from the ground to the top over 14 s with a faint trail), drawn under the clouds in the glow's colour, hazed with distance; `cloudMood` writes one when its hashed minute says so |
 | `mood` true | compile the lines with everything at rest, for a page that drives them later |
 
 The turbulence lives in the shared cloud field, so `ATMOS.cloudShade`'s shadows are torn, ordered or glitched with the cloud.
@@ -327,11 +329,18 @@ under one patch when its locus says so.
 each drawn from a hash of (seed, episode): each of the three effects on or off on its own (`chance` {tint .6, glow .5,
 turbulence .6}: alone, together, or a quiet spell), the tint from the `palette` (or by area: `tintAt(x, z)` at the eye returns a
 colour or null), the turbulence in one of the four kinds (a ripple's epicentre latched near the eye when the episode comes,
-`turbOffset`), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours blend over the
+`turbOffset`; a glitched episode's `sheetTint` on or off by a coin), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours blend over the
 last `blend` (.3) of the period. `glowKind` `ethereal` is a slow breathe over the whole sky (18 s value noise, .55..1);
 `lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of the eye, decaying in ~0.3 s, a dim floor
-between (in-cloud light only: a page that wants bolts has the weather's lightning, `fx/89-atmos-fx-lightning.js`); `orbs` are two
-small bright lights (300-600 m across) wandering on value-noise paths within 3 km of the eye, ball lightning or something flying. `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
+between; with `fx/89-atmos-fx-lightning.js` on the page each flash strikes a visible branched bolt from the cloud plane to the
+ground at its locus (`ATMOS.moodBolt`, through the fx's `boltFx` and `A.boltGlow`), with the fx's thunder event, else the light
+alone; `orbs` are two
+small bright lights (300-600 m across) wandering on value-noise paths within 3 km of the eye, ball lightning or something flying.
+The **sky events** (the owner, 2026-11-09: "a light ascending to the heavens in the distance or a brief distant flashing pillar of
+light") run beside the episodes: `ATMOS.moodEvent(t, seed, {kinds, chance, range})` gives at most one event a 60 s slot (chance .5),
+3-8 km off at a hashed bearing, a pillar flickering out in about a second or an ascent climbing for 14 s; the host places it where
+the eye stood when it began and on the ground there (`ATMOS.moodEventAt`), `events: false` turns them off, `eventOpts` tunes them;
+`ATMOS.skyBeamAt(d, U)` is the twin of the shader's `atmSkyBeam`. `S.moodPaused = true` holds the driver while a page sets the clouds itself (the demo's toggles). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
 `ATMOS.MOOD_GLOW`. All of it is `ATMOS.moodAt(t, o)` and `ATMOS.moodGlow(t, kind, seed, eye)`: plain numbers from the module
 clock, the same in Godot (`GODOT.md`); the host writes them into `preset.clouds` each frame and `S.mood` is the episode now.
 

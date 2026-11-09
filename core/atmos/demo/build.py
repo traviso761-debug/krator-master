@@ -29,6 +29,7 @@ FRAGMENTS = [
     os.path.join(ATMOS, 'sky', '89-atmos-k-cloudmood.js'),    # the clouds' mood: the shifting episodes (#mood=)
     os.path.join(ATMOS, 'host', '89-atmos-h-skyhost.js'),
     os.path.join(ATMOS, 'host', '89-atmos-j-heightfog.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-lightning.js'),    # the mood's lightning strikes its bolts through this
     os.path.join(HERE, 'src', '10-demo.js'),
 ]
 

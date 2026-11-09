@@ -21,7 +21,10 @@ The readout gives the date in Jimjam's months and counts, and where the sun, the
 smog brown-purple, dull red, sickly green, ash grey, ghostly purple, jaundice yellow), **Pattern** (none; violent: torn, broken
 edges; ordered: regular rows; glitched: two more sheets of cloud sliding on their own winds; ripple: rings spreading from an
 epicentre 2.5 km north, slow), **Glow** at night (none; an ethereal breathe over the whole sky; lightning under one patch at a
-time; orbs: two small bright lights wandering under the cloud) and **Dark** (0..1). **Shifting** hands them to `ATMOS.cloudMood` (a new episode each minute
+time, each flash striking a visible bolt from the cloud to the ground; orbs: two small bright lights wandering under the cloud), **Sky events** (none; flashing pillars of light; lights ascending to the heavens; both: one a minute here, 3-8 km off, in the glow's
+colour), **Dark** (0..1), **Pace** (how much faster than the page's wind
+the pattern's own motions run, x3 by default, so they read at 1x) and **Sheet tints** (the glitched sheets in the tint's
+complement and its hue-rotated twin). **Shifting** hands them to `ATMOS.cloudMood` (a new episode each minute
 here: the three effects together or apart, the readout names the episode). **Smog mist** turns on a height fog whose mist has a
 field: a "city" 3 km to the north-west where the smog is universal, thinning to a tenth by 4 km out, all day. The ground and the
 test pieces take it; the sky pass does not (the far ridges stand clear of it, as they would behind a valley's smog). URL hash:
