@@ -1,5 +1,5 @@
 {
- "name": "The south (station 2, crater drylands S): the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee, the se rim's rust miombo, incense and rain roses on the wet edges, the Af gallery in the north-western gully, the lava step in its tibasalt beds",
+ "name": "The south (station 2, crater drylands S): the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee, the se rim's rust miombo, incense and rain roses on the wet edges, the Af gallery in the north-western gully, the lava step in its tibasalt beds, scrub oak on the step's top",
  "out": "crater-drylands-s.html",
  "core": {
   "30s-core-season-flush.js": "core/biome/30s-core-season-flush.js",
@@ -20,13 +20,18 @@
   "47b1-sed-55-biome-sedesert-trees.js": "../sedesert/src/55-biome-sedesert-trees.js",
   "48s0-savrim-50-biome-savrim-species.js": "../savannarim/src/50-biome-savrim-species.js",
   "48s1-savrim-55-biome-savrim-trees.js": "../savannarim/src/55-biome-savrim-trees.js",
-  "48s2-savrim-56-biome-savrim-southeast.js": "../savannarim/src/56-biome-savrim-southeast.js"
+  "48s2-savrim-56-biome-savrim-southeast.js": "../savannarim/src/56-biome-savrim-southeast.js",
+  "47c0-nhl-50-biome-nhighlands-species.js": "../nhighlands/src/50-biome-nhighlands-species.js",
+  "47c1-nhl-55-biome-nhighlands-trees.js": "../nhighlands/src/55-biome-nhighlands-trees.js",
+  "47c2-nhl-60-biome-nhighlands-floor.js": "../nhighlands/src/60-biome-nhighlands-floor.js",
+  "47c3-nhl-70-biome-nhighlands.js": "../nhighlands/src/70-biome-nhighlands.js"
  },
  "packs": {
   "savannarim": "../savannarim",
   "sedesert": "../sedesert",
   "throne": "../throne",
-  "hyperjungle": "../hyperjungle"
+  "hyperjungle": "../hyperjungle",
+  "nhighlands": "../nhighlands"
  },
  "packOnly": {
   "savannarim": [
@@ -75,6 +80,10 @@
    "moss",
    "bract",
    "wood"
+  ],
+  "nhighlands": [
+   "nbark4",
+   "small"
   ]
  }
 }

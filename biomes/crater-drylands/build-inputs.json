@@ -569,9 +569,9 @@
     "biomes/crater-drylands/stations/south/47b9-host-sed-end.js": "dc1fb6f3b69230cac064a0368df243f0e30ec8736efa21d54c1a2c631645f2fa",
     "biomes/crater-drylands/stations/south/48s9-host-savrim-end.js": "c2c4f7beb71f121cdc434c04c93b995de3fbef73fc1d52c67c04a693b461298d",
     "biomes/crater-drylands/stations/south/85-host-step.js": "7425cc9c2430ef000e75c5b406e2e855625183bf2fe83b27d2160d6f7b755398",
-    "biomes/crater-drylands/stations/south/86-host-south.js": "aea97c7715f12620b1cbf59ae90f7e4d5379f98ecbfce2987ed7a9bba104f25c",
+    "biomes/crater-drylands/stations/south/86-host-south.js": "4c3a8094c7c157fb6281a349fcd4bc2ba779a4c4cf93e0f798402e90d0f6bfea",
     "biomes/crater-drylands/stations/south/99-host-zseason.js": "52f02121d4c436b48b46bb6df3720e9a344e86972616945c503fe46b903f54e8",
-    "biomes/crater-drylands/stations/south/station.json": "c4a8f20d3bd0a36d7cd6235fcd0f06474f982bba37e4b6137bd85bd6093a56b2",
+    "biomes/crater-drylands/stations/south/station.json": "bcaca21908371c991a688d688b6f0195595e474dadb5bdadee5b27b9fd43fbb3",
     "biomes/crater-drylands/tex/bark.gum.albedo.webp": "8170b6c68f2aa2e15782fad8e2bc79f6a0434c03bbd13a2dd4aa56b18c28c8f4",
     "biomes/crater-drylands/tex/bark.mallee.albedo.webp": "ef7e8d4a649e41ce81ddbde6f67ef729119dc1c8d1884014c0c4e559cff0ca4d",
     "biomes/crater-drylands/tex/bark.pillar.albedo.webp": "5ae7545c0b0beec40e3db75b505831e19bd01012c562f9c828796c70cc1a0519",
@@ -628,6 +628,13 @@
     "biomes/hyperjungle/tex/raceme.albedo.webp": "da869a4ce579ce67db844fa2118052a3244916b450ad36f57b1058c61ab79583",
     "biomes/hyperjungle/tex/under.albedo.webp": "7884f46fba888504ecf0087b7415aa8680fae3d3961a6afd62a5992002617b11",
     "biomes/hyperjungle/tex/wood.albedo.webp": "3610e134252bf8faaa5f8cc9932c13808694f728521f15fc06370841bca54045",
+    "biomes/nhighlands/src/50-biome-nhighlands-species.js": "7e52635bc5c6f0e197f6685680ff264774a9618df2344f3081ee36d66ff5341d",
+    "biomes/nhighlands/src/55-biome-nhighlands-trees.js": "47a3370596618b9e8a8f1ccf94e2c4faa596936ba70988cce45887efd9b8872b",
+    "biomes/nhighlands/src/60-biome-nhighlands-floor.js": "3f635545b6ef064b8fb5299846cdc613cce1bc1b231c1f23e79d55d5c90719a1",
+    "biomes/nhighlands/src/70-biome-nhighlands.js": "ede9e879b99d3946e4b304176b57969ef49e52d16b9f0ec1dd7fc6b30e60ccad",
+    "biomes/nhighlands/tex/nbark4.albedo.webp": "e10487757d5bf4765adac4fd0842f48f11ae14356a93b8c8c6af56d7c2e9216f",
+    "biomes/nhighlands/tex/pack.json": "1388ee8d5233c66a83cdced1668b8101d9bb02aa32d1e162bfd8ce0f633b53d2",
+    "biomes/nhighlands/tex/small.albedo.webp": "37ef0c8c677a5e655702b2e2e9dde61ce1078c0a3228fa4ddccf812201b9001d",
     "biomes/savannarim/src/50-biome-savrim-species.js": "d24d2f7955691b052313903f60be4d3a9b8f4c6aae2d4c6d9305a15f9d4a8859",
     "biomes/savannarim/src/55-biome-savrim-trees.js": "0156c6325bad33ff01f502a876eba7c97b6388f627bf18f30c326303de3534fb",
     "biomes/savannarim/src/56-biome-savrim-southeast.js": "17dd68deef7c4ee784c8f24955c141c661d28ac38006685eb61376e542f8dde3",
@@ -753,10 +760,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "2844540f11280f61ff4657bd533e41b395b8655f92fae67b5b1f27ed6018cf4a"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "917f19053f5b76ab3b1fa82f7982f310dda388adeb39826f83fa98f3a6554433"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "2844540f11280f61ff4657bd533e41b395b8655f92fae67b5b1f27ed6018cf4a"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "917f19053f5b76ab3b1fa82f7982f310dda388adeb39826f83fa98f3a6554433"
    }
   }
  }
