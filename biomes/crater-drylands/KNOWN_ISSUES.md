@@ -93,6 +93,10 @@ with no station they are not taken, and station 1 runs as before.
       and hour) scales the air's local dust every frame and the dust's mask at each sprite re-bake; a storm is not scaled. On all three
       pages (`89a`, `?dustseason=0`). A new file rather than an option in `89-atmos-fx-airload.js`: that file reaches 34 pages, which would
       all need rebuilding.
+      Headless (software GL): at the page's opening day the share is .61, the local dust 30 -> 18.2 mg/m3. Its first build read
+      `window.ATMOS`, which core/atmos's top-level `const` is not: it never attached until it read `ATMOS` as the fx files do.
+- **The KFIRE move on the pages** (headless, software GL): every page's fire mosaic is the one before the move, share for share
+  (station 1 char 9.7%, bloom 12.8%, regrow 12.0%, mature 29.9%; edge and salt likewise), and the trees and kin counts unchanged.
 
 **What the GPU verify should look at** (`verify.py dist/crater-drylands.html --assert --all-views`; nothing here ran on a GPU):
 - the error panel and `KHOOK.checkPrograms` on the ground: its program is the hand-written hook plus KGROUND's layer, five KGROUND samplers
