@@ -13,14 +13,14 @@
     "biomes/nwbay/tex/fernleaf.albedo.webp": "8b3cb6204b542abacb2833aad6bf3227b32688dc4e6a386e700854cb00e61cff",
     "biomes/nwbay/tex/moss.albedo.webp": "1cd5e9575f2e58608bc0c03849ad932e3beba419d8dbffc28bc4c03569659aaa",
     "biomes/nwbay/tex/pack.json": "396a7182a948a85d9cb21e86bd1a9750c9f8a158185252f261ae750260856887",
-    "biomes/swbay/KNOWN_ISSUES.md": "7234d1567409582e23291bd7e32b036189003f405592daaf8acf365ba1ad560d",
+    "biomes/swbay/KNOWN_ISSUES.md": "c915153ea2e2e54f80867aac88c971e1c5fef38c21ed982bfb732cf97b4cc0f8",
     "biomes/swbay/PORT.md": "016f2487c757d5ae6642082bf08dad04afdd710adfa3aa387d78be3dae9e0c38",
     "biomes/swbay/build.py": "85b1dce543ece8646a9552b0da74fd5e7b3a8d7f9a30e07993a88f596b805477",
     "biomes/swbay/src/00-head.html": "c66b1bf104327e658c7a24c248b6631aa248f9477b1bb6ee85705d86207eabbf",
     "biomes/swbay/src/45-host-stage.js": "945626a05b73d928ff6f3a3495e55b645b322fdee360b5c7feb0cface8ac92a9",
-    "biomes/swbay/src/50-biome-swbay-species.js": "c3e87aff737a52718556257604148b1816d2c50a4f0bd09f860891f33196cde4",
+    "biomes/swbay/src/50-biome-swbay-species.js": "153d864833b8189e553218e0a8354d42f25f09578ecdeb3df8cbe6a30ae94536",
     "biomes/swbay/src/52-biome-swbay-library.js": "d92d30e0a0de3a3eaa5aa5ce4c50d9be9bffc3f12b1c5ef5ef0be17d48f11a07",
-    "biomes/swbay/src/55-biome-swbay-trees.js": "945a272707add51a67ed191c3c8ffc0ca4ac0f7eff4dc7927aea5bb73152aa36",
+    "biomes/swbay/src/55-biome-swbay-trees.js": "44072906054451099d05fbc15b42351be0dbabc9c51bec4e14e9e38186a23ec6",
     "biomes/swbay/src/60-biome-swbay-floor.js": "a89714c766c778094a843cbc49648ac0b5dc1f680f35107c3173918e7a0b31d6",
     "biomes/swbay/src/65-biome-swbay-dress.js": "32e3eca60c6ca9cb819175b7595dc1dce57b96b9309dfeac11e5dc18e16eb1dd",
     "biomes/swbay/src/70-biome-swbay.js": "eba90e7f1c93c8a67bf5660c515861da24ccf28945ff0815cc09908244106007",
@@ -114,7 +114,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -142,7 +142,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -167,10 +167,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swbay/dist/swbay.html": "9a9175968a8dec50232d7cd05c49a8873333dadc57822445b56ac333c9eb7f67"
+    "biomes/swbay/dist/swbay.html": "9077c86423a603a2046788d94336d744199dbfb849e9661d4c01485c35fed3fa"
    },
    "outputs_raw": {
-    "biomes/swbay/dist/swbay.html": "9974f0ee8dfc9e99bb12557771fc96826721983244da8fbfd2384179ba054ba1"
+    "biomes/swbay/dist/swbay.html": "a96e3ddd894232d63e34a28057e72f9a12c153229e08b2501767ade2226e521b"
    }
   }
  }
