@@ -289,3 +289,11 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   `torso_tube` and `sleeve` of `build_true_heir_bodyguards` (19 and 15 lines), and `build_yuni_military.sleeve` (its own,
   with a 9.5 cm shoulder reach and no ease or flare cap: issue 4's "bypass"). Stripping them changes those builders'
   outfits (44, 3 + 8 and 7 calls), which still wants the before/after sheet; the other nine files need nothing.
+- **Phase 1, measured on the whole baseline (2026-11-08, later).** `garment_audit.py --known` sweeps the 66 baseline
+  outfits (`peoples.json` has 220 now); one sweep at a time, the records deduped by shot where a sweep resumed. The
+  trouser squeeze extended to the seat's capsules changes nothing measurable (skin, under and hole identical to the
+  reference, inside within 0.1 %): not applied. The reference build itself against the round-4 baseline is worse on
+  "under" for several non-Chichani outfits, in motion (the Izani peasant 0 to 3616 px, the Republic noble 0 to 2752,
+  the Yuni peasant 10 to 1731) and at rest (the Izani noble 586 to 5278, the Dalab trade 0 to 2122, the Hykkousoi
+  trade 216 to 2148): the Chichani-only runs could not see this. "Under" at rest points at the hull applying at rest
+  to chained garments (round 5 gated it by the stride); a gated variant is queued behind the heading and lip sweeps.
