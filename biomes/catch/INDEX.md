@@ -9,30 +9,30 @@ Built output (never open it; edit `src/` and rebuild): `dist/catch-fan.html`, `d
 Build: `cd biomes/catch && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `40-core-basin.js`
-
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `37-core-traps.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `40-core-basin.js`, `43-core-ground.js`, `45-core-horizon.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-scene.js` | 11 | helpers every stage uses (26) |
+| `45-host-scene.js` | 10 | helpers every stage uses (26) |
 | `45b-host-stage.js` | 11 | the fields (FNAMES, 45-host-scene.js) (58); the station's say: STAGE (88, 89s, 89w, 99 read  (73) |
-| `45c-host-ground.js` | 7 |  |
+| `45c-host-ground.js` | 9 |  |
 | `46-host-rock.js` | 3 |  |
 | `49z-host-sed-end.js` | <1 |  |
 | `50-biome-catch-species.js` | 15 | the five oases of the crossing (PLAN.md section  (22); palettes (sRGB; a library card carries its own c (38); the tree-scale species (47); the small plants and the floor, tagged (61); the fallback textures (procedural, without the p (72); materials (92); geometries (112); instanced items: the owner's sheets by cell (148) |
-| `55-biome-catch-trees.js` | 10 | keep-clear between trees (core/space) (24); the builders: (T, st, lv) with lv 2 near, 1 mid (35); impostors (the far trees) (67); the passes (data: species, cell, acceptance by f (81) |
+| `55-biome-catch-trees.js` | 12 | keep-clear between trees (core/space) (24); the builders: (T, st, lv) with lv 2 near, 1 mid (40); impostors (the far trees) (72); the passes (data: species, cell, acceptance by f (86) |
 | `60-biome-catch-floor.js` | 4 |  |
 | `70-biome-catch.js` | <1 |  |
 | `80-host-stalkers.js` | 2 |  |
-| `88-host-build.js` | 2 |  |
+| `88-host-build.js` | 4 |  |
 | `89a-host-atmos.js` | 1 |  |
-| `89s-host-sky.js` | 4 |  |
+| `89s-host-sky.js` | 3 |  |
 | `89w-host-water.js` | 2 |  |
 | `89x-host-weather.js` | <1 |  |
 | `89y-host-storm.js` | 2 |  |
+| `89zz-host-core.js` | 8 |  |
+| `98z-host-mirror.js` | 1 |  |
 | `99-host-take.js` | 10 | the inspector's words (7); the probe's budgets and the kit's own checks (ve (23); the page, handed to the host (74) |
 | `99-tail.html` | <1 |  |

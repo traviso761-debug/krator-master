@@ -114,7 +114,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -150,7 +150,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/35b-core-lamina.js": "6bcb3c5bab1c34fe567413c45e32abaf24a62b986f1770a12677cc859c74f5c7",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35b-core-lamina-shade.js": "6f80ba1935ca6d6fb44237deccbe4730388112b1a3e68af30494340769436025",
@@ -179,12 +179,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser.html": "b7b2ad8948f526928d8442e3f2acbf4d939a049f3821a3d840b7b110352242bd",
+    "biomes/geyser/dist/geyser.html": "5399c47f0a84cbe978c884eb7a9537752a2d688633af3ba2be6a3794ba90fb67",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "d94e9944dc3ae96026655fd16490d12a64f51d8975c0006d48d513e255f2fbf7"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser.html": "b7b2ad8948f526928d8442e3f2acbf4d939a049f3821a3d840b7b110352242bd",
+    "biomes/geyser/dist/geyser.html": "5399c47f0a84cbe978c884eb7a9537752a2d688633af3ba2be6a3794ba90fb67",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "d94e9944dc3ae96026655fd16490d12a64f51d8975c0006d48d513e255f2fbf7"
    }
@@ -306,7 +306,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -343,7 +343,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/35b-core-lamina.js": "6bcb3c5bab1c34fe567413c45e32abaf24a62b986f1770a12677cc859c74f5c7",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35b-core-lamina-shade.js": "6f80ba1935ca6d6fb44237deccbe4730388112b1a3e68af30494340769436025",
@@ -373,12 +373,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-stills.html": "5ceb4a134e5a22643889ad84a3024e72c063f5a0880cd16ec8f7b57c307258f3",
+    "biomes/geyser/dist/geyser-stills.html": "7f98ee5daedab8d7bfee978202d08232fe28594b4f73fa89c8499a71232ac401",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "f22226b8cab826d3a6ea6bbdc6c6efb695bd2b3bf5dd587e3b3256696cccbb7c"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-stills.html": "5ceb4a134e5a22643889ad84a3024e72c063f5a0880cd16ec8f7b57c307258f3",
+    "biomes/geyser/dist/geyser-stills.html": "7f98ee5daedab8d7bfee978202d08232fe28594b4f73fa89c8499a71232ac401",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "f22226b8cab826d3a6ea6bbdc6c6efb695bd2b3bf5dd587e3b3256696cccbb7c"
    }

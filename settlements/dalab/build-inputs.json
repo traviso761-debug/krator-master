@@ -58,7 +58,7 @@
     "biomes/swlowlands/tex/wood.albedo.webp": "47876a18c2e45b40586c34ddd80ff9a142fa03246e1ba7f86e7200cc9a2482f3",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
@@ -316,19 +316,19 @@
    },
    "outputs": {
     "settlements/dalab/VENDOR.json": "2a9df97ac011ded3e210c29872e1321c2cd292be0a79f7a533ce49be381278a4",
-    "settlements/dalab/build-manifest-city.json": "30c31151b4c0e9a3fbfb4ea261ee0ae1ea3257805fd85723d4c7ce4f60dfaeda",
-    "settlements/dalab/build-manifest-set.json": "10a662b930069a73a6b061b90f54fe8bd7eb9f2a2f11e9b3ae716290731abec8",
-    "settlements/dalab/dist/dalab-set.html": "2b70d9ffb3152a12103299fae1d5d3480d8bc8e9b8ffc24bfb9fbb09fd3110b6",
-    "settlements/dalab/dist/dalab.html": "8e88e914a5724d868470b0db54f39d20ec922589be41071e1af0f1aa0ef6088c",
+    "settlements/dalab/build-manifest-city.json": "65a53918d6483c864fb666b0e64dd7b382ebf353048769050bf803de97528fa9",
+    "settlements/dalab/build-manifest-set.json": "00c6a6abc16b339a3d1ac75845bfd572d7184fc852204d2246df41ad9e6cd319",
+    "settlements/dalab/dist/dalab-set.html": "f84626494e793b70d934cf1dcf2a2dd5a2cf448f783c3362fa1a8646503b7b3a",
+    "settlements/dalab/dist/dalab.html": "f35f9a40f8f7d599c28ac5894a6382a9b9d6aa2301123af6a8e011806440c777",
     "settlements/dalab/dist/dalab.tex.dalab-2.js": "0dd58fb387c0b4ed9b3d326212975f9ce64a5f07fdd703c2bec9d739ee4ef3b1",
     "settlements/dalab/dist/dalab.tex.dalab.js": "bfb63528b8c4344aecee2684d1939859b436f90e1264d354846e16daa3bd2241"
    },
    "outputs_raw": {
     "settlements/dalab/VENDOR.json": "135d5a4e17814b6a1194187a9b4c76a334a11f96955c2e7042aace5b102bd534",
-    "settlements/dalab/build-manifest-city.json": "fb150500338ba8c6027106dbe90afdf9aff766ff994358a1bf3bc3acd8d73559",
-    "settlements/dalab/build-manifest-set.json": "dbf7a6d8fb6e9a43f37078d2ec5c06b221c950355c10fa0c780087b1a5ce883c",
-    "settlements/dalab/dist/dalab-set.html": "2b70d9ffb3152a12103299fae1d5d3480d8bc8e9b8ffc24bfb9fbb09fd3110b6",
-    "settlements/dalab/dist/dalab.html": "8e88e914a5724d868470b0db54f39d20ec922589be41071e1af0f1aa0ef6088c",
+    "settlements/dalab/build-manifest-city.json": "7dac33e4cb0e148fc450def0492d16d8ad5215bf7d0509d2535df2d6797ebe11",
+    "settlements/dalab/build-manifest-set.json": "906f24d5deb017b244e3545fb75a2307a5d1cf726168eb4bf54822ba401fdab4",
+    "settlements/dalab/dist/dalab-set.html": "f84626494e793b70d934cf1dcf2a2dd5a2cf448f783c3362fa1a8646503b7b3a",
+    "settlements/dalab/dist/dalab.html": "f35f9a40f8f7d599c28ac5894a6382a9b9d6aa2301123af6a8e011806440c777",
     "settlements/dalab/dist/dalab.tex.dalab-2.js": "0dd58fb387c0b4ed9b3d326212975f9ce64a5f07fdd703c2bec9d739ee4ef3b1",
     "settlements/dalab/dist/dalab.tex.dalab.js": "bfb63528b8c4344aecee2684d1939859b436f90e1264d354846e16daa3bd2241"
    }

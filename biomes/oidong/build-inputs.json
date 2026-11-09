@@ -67,7 +67,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -112,7 +112,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -139,10 +139,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong.html": "513e6045ba502b3547d6858180625b50a56903fa551b4c4084a3455418f67e4c"
+    "biomes/oidong/dist/oidong.html": "954fae3741905c2bddf60e84fac40a965ba39f8a872a1b3cf0b8a39a11ea5ce6"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong.html": "513e6045ba502b3547d6858180625b50a56903fa551b4c4084a3455418f67e4c"
+    "biomes/oidong/dist/oidong.html": "954fae3741905c2bddf60e84fac40a965ba39f8a872a1b3cf0b8a39a11ea5ce6"
    }
   },
   "build.py --station hearths": {
@@ -220,7 +220,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -266,7 +266,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/47-core-therm.js": "909e3e77b25d648ac1511b847a7b7a5a629bfdeb4e6a90bf489de1a08a96359a",
@@ -296,10 +296,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "2435ceff099b6d9b4195879ad05f4aa0791e61d03e127e7f9fb1d828503c8a6c"
+    "biomes/oidong/dist/oidong-hearths.html": "cf7f94c4bc83667700f8850443960912788a3e03a3b816a2f693fe32d805f765"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "2435ceff099b6d9b4195879ad05f4aa0791e61d03e127e7f9fb1d828503c8a6c"
+    "biomes/oidong/dist/oidong-hearths.html": "cf7f94c4bc83667700f8850443960912788a3e03a3b816a2f693fe32d805f765"
    }
   },
   "build.py --station passes": {
@@ -369,7 +369,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -414,7 +414,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
@@ -442,10 +442,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-passes.html": "f764cf71341f141e6b77c275ed50a34409667a7e8fa8d1b2578402a2bedb71d0"
+    "biomes/oidong/dist/oidong-passes.html": "35c90bf8cfae6982db1be1b2da0bfea6cb42abdabe6eae41a22f31c91409b538"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-passes.html": "f764cf71341f141e6b77c275ed50a34409667a7e8fa8d1b2578402a2bedb71d0"
+    "biomes/oidong/dist/oidong-passes.html": "35c90bf8cfae6982db1be1b2da0bfea6cb42abdabe6eae41a22f31c91409b538"
    }
   }
  }

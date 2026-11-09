@@ -196,7 +196,7 @@
           'kgH=clamp(kgH+(kgRh-0.5)*0.3*kgRf,0.02,1.0);}');}
       if(gs>0)s.push('{vec2 kgGc=kgWP.xz/'+f(gs)+';vec2 kgGi=floor(kgGc);vec3 kgGh=kgHash3(vec3(kgGi,'+sd+'+3.7)),kgGh2=kgHash3(vec3(kgGi.yx,'+sd+'+8.9));'+
           'float kgGd=length(fract(kgGc)-0.25-0.5*kgGh.xy);vec3 kgGn=normalize(vec3((kgGh2.x-0.5)*'+f(L.spread==null?2:L.spread)+',1.0,(kgGh2.y-0.5)*'+f(L.spread==null?2:L.spread)+'));'+
-          'float kgGl=pow(max(dot(reflect(-normalize(cameraPosition-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
+          'float kgGl=pow(max(dot(reflect(-normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
           'kgC+='+lin3(L.glintColor==null?0xffffff:L.glintColor)+'*kgGl*'+f(L.sparkle==null?4:L.sparkle)+'*step(kgGh.z,'+f(L.glintDensity==null?.2:L.glintDensity)+')*(1.0-smoothstep(0.15,0.3,kgGd))*(1.0-smoothstep('+f(.5*gs)+','+f(1.5*gs)+',kgFp));}');}
     else{
       // polygons on the plane (sand-wedge and ice-wedge polygons, patterned ground, a mare's pressure plates): Voronoi cells of
@@ -220,7 +220,7 @@
   // ---------------------------------------------------------------- the hook
   function code(o,LY){var far=o.far===false?null:(o.far||{}),d0=far?(far.d==null?60:far.d):0,lv=far?(far.levels==null?3:far.levels):0,bl=o.blend==null?.18:o.blend,f=function(v){return (+v).toFixed(4);};
     var tri=triOf(o),rl=reliefOf(o);
-    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-cameraPosition);',
+    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-(-(viewMatrix[3].xyz*mat3(viewMatrix))));',
       ' float kgLv='+(far?'min('+f(lv)+',max(0.0,log2(max(kgD/'+f(d0)+',1.0))))':'0.0')+';float kgHc='+(o.baseH||'0.5')+';'];
     if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y))*(1.0-smoothstep('+f(tri.far*.7)+','+f(tri.far)+',kgD));');
     var smp=function(i,k){return tri?'kgTS(uKG'+i+',kgWP,kgDx,kgDy,kgN,'+k+',kgLv,kgSt)':'kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv)';};

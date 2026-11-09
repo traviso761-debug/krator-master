@@ -47,9 +47,16 @@ function buildGround(){
    const sh=sat(u,v);c.multiplyScalar(1-.6*sh*(1-fm));
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);g0.imageSmoothingEnabled=true;g0.imageSmoothingQuality='high';g0.drawImage(cv,0,0,W0,H0);});
- const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(KRAND.fbm(x/9,.4,y/9,2,5)-.5)*40+(KRAND.h3(x,y,9,6)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
-  g.putImageData(id,0,0);});
+ /* THE GROUND'S DETAIL IS COMPUTED, NOT SAMPLED (2026-11-08): the 256 px detail canvas (uDetail) was the seventeenth texture unit
+    on the ground's MeshStandard program (KGROUND's four layers, KSTRATA's five, KHORIZON's two, the rain cover, the water's hollows,
+    the cloud noise, the map, the rock grain), past MAX_TEXTURE_IMAGE_UNITS 16 on ANGLE/D3D11 (Arc 140T, RTX 5060): the program
+    failed to link ("FRAGMENT shader texture image units count exceeds") and the ground went undrawn. SWH_DET is the same grey
+    (232 +- an fbm at 9 texels over 5 octaves +- a per-texel grain, /255) as value noise in the canvas's texel units, each octave
+    faded out as it nears the pixel (fwidth), where the canvas's mips blurred it */
+ const SWH_DET='float swhH(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}'+
+  'float swhN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(swhH(i),swhH(i+vec2(1.0,0.0)),f.x),mix(swhH(i+vec2(0.0,1.0)),swhH(i+vec2(1.0,1.0)),f.x),f.y);}'+
+  'float swhDet(vec2 q){float fw=max(length(fwidth(q)),1e-4),s=0.0,a=0.5;vec2 p=q/9.0;for(int o=0;o<5;o++){s+=a*(swhN(p)-0.5)*(1.0-smoothstep(0.25,0.5,fw*exp2(float(o))/9.0));p*=2.0;a*=0.5;}'+
+  'return 0.9098+s*0.157+(swhN(q+17.0)-0.5)*0.094*(1.0-smoothstep(0.25,0.5,fw));}';
  // the library's ground sets by zone (KGROUND, core/terrain 43): the native moss under the forest, the turf on the crests and
  // the bald and the pasture, the gravel on the banks, the tilled soil on the arable; hex-tiled, scaled with distance
  const GLY=(function(){const A=KGROUND.layer('swhighlands','ground.moss',{w:'vGL.x',amt:.55,gain:.95,tint:'diffuse'}),Bq=KGROUND.layer('swhighlands','ground.turf',{w:'vGL.y',amt:.55,gain:1.0,tint:'diffuse'});
@@ -71,11 +78,11 @@ function buildGround(){
    return (A[k]*(1-fu)+A[k+1]*fu)*(1-fv)+(A[k+W]*(1-fu)+A[k+W+1]*fu)*fv;};})():null;
  const kgCav=mesh=>{if(!KGCAV)return mesh;const p=mesh.geometry.attributes.position,a=new Float32Array(p.count);for(let i=0;i<p.count;i++)a[i]=KGCAV(p.getX(i),p.getZ(i));
   mesh.geometry.setAttribute('aKGAO',new THREE.BufferAttribute(a,1));return mesh;};
- MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DET};sh.uniforms.uRG={value:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN};sh.uniforms.uRGs={value:ROCK_LIB?1/(ROCK_LIB.scale||[6,6])[0]:1/6};
+ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uRG={value:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN};sh.uniforms.uRGs={value:ROCK_LIB?1/(ROCK_LIB.scale||[6,6])[0]:1/6};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aGL;varying vec4 vGL;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGL=aGL;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRG;uniform float uRGs;varying vec4 vGL;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+SWH_DET+'uniform sampler2D uRG;uniform float uRGs;varying vec4 vGL;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
-    '{vec3 dt=texture2D(uDetail,vSWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vSWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
+    '{float dt=swhDet(vSWP.xz*43.52),dt2=swhDet(vSWP.xz*5.888+94.72);diffuseColor.rgb*=mix(vec3(1.0),vec3(dt*dt2*1.12),0.85);',
     '/*KGROUND*/',
     // the folds' beds on the steep (strataColor is linear, as the paint is once decoded)
     ' float steep=1.0-clamp(normalize(vSWN).y,0.0,1.0);',

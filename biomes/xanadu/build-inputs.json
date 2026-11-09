@@ -98,7 +98,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -143,7 +143,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -176,10 +176,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu.html": "d3dca57bf17d248d14fd4173c61614919120f62ae20803c08d965915054f8581"
+    "biomes/xanadu/dist/xanadu.html": "0e77d84b92f4ad3333bf1f2ce9e64598399ecc6803b8ec3b81619ca8e544fdff"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu.html": "d3dca57bf17d248d14fd4173c61614919120f62ae20803c08d965915054f8581"
+    "biomes/xanadu/dist/xanadu.html": "0e77d84b92f4ad3333bf1f2ce9e64598399ecc6803b8ec3b81619ca8e544fdff"
    }
   },
   "build.py --station cloud": {
@@ -290,7 +290,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -335,7 +335,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -369,10 +369,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "39b1c1adbee6799f002a329e4fbf0c15d1dc2942245ab9a067290a863bd3c858"
+    "biomes/xanadu/dist/xanadu-cloud.html": "08b190bfdbce9c9244064d18d5ebca74aa48447216140dc36e2e71c02e4ccd63"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "39b1c1adbee6799f002a329e4fbf0c15d1dc2942245ab9a067290a863bd3c858"
+    "biomes/xanadu/dist/xanadu-cloud.html": "08b190bfdbce9c9244064d18d5ebca74aa48447216140dc36e2e71c02e4ccd63"
    }
   },
   "build.py --station descent": {
@@ -475,7 +475,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -520,7 +520,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -554,10 +554,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-descent.html": "03df2295c4a61517a16fd2d54afe5d2c7b2464c4abc698504d2f1d68f39bfc62"
+    "biomes/xanadu/dist/xanadu-descent.html": "dcc66ffaae60fdeb3b5359f9ae4b289772d11691779e3eadde8c7d861094ac2d"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-descent.html": "03df2295c4a61517a16fd2d54afe5d2c7b2464c4abc698504d2f1d68f39bfc62"
+    "biomes/xanadu/dist/xanadu-descent.html": "dcc66ffaae60fdeb3b5359f9ae4b289772d11691779e3eadde8c7d861094ac2d"
    }
   },
   "build.py --station floor": {
@@ -693,7 +693,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -738,7 +738,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -772,10 +772,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-floor.html": "6550889ec4178e141da44d18e59678dd1a93b60d7f7f3ce8bdfc91b11065582e"
+    "biomes/xanadu/dist/xanadu-floor.html": "02cba929d8be4137d45acd52be03049d18052aa86937091d4e4a15f7178fa818"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-floor.html": "6550889ec4178e141da44d18e59678dd1a93b60d7f7f3ce8bdfc91b11065582e"
+    "biomes/xanadu/dist/xanadu-floor.html": "02cba929d8be4137d45acd52be03049d18052aa86937091d4e4a15f7178fa818"
    }
   },
   "build.py --station gills": {
@@ -886,7 +886,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -936,7 +936,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -971,10 +971,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-gills.html": "78d1dded1b37c2c5ff73cde9101c54e51bcac60358c7d2a2685c8281805f965b"
+    "biomes/xanadu/dist/xanadu-gills.html": "856c7a495ffc933376cc094f8f92d510d746585c3180105aa17dd85d8b66819c"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-gills.html": "78d1dded1b37c2c5ff73cde9101c54e51bcac60358c7d2a2685c8281805f965b"
+    "biomes/xanadu/dist/xanadu-gills.html": "856c7a495ffc933376cc094f8f92d510d746585c3180105aa17dd85d8b66819c"
    }
   },
   "build.py --station ranges": {
@@ -1076,7 +1076,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -1121,7 +1121,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -1155,10 +1155,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "a7983d1308fbafa3df52e1daaaa0c9f44be50e61a2b5eb3519f64ffb5c047f1f"
+    "biomes/xanadu/dist/xanadu-ranges.html": "d17eef09b02d43bfa976dc0b9fcc4a2e4673edf3adaef6b38bf60462dc020ab0"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "a7983d1308fbafa3df52e1daaaa0c9f44be50e61a2b5eb3519f64ffb5c047f1f"
+    "biomes/xanadu/dist/xanadu-ranges.html": "d17eef09b02d43bfa976dc0b9fcc4a2e4673edf3adaef6b38bf60462dc020ab0"
    }
   }
  }

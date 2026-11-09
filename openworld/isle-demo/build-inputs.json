@@ -119,7 +119,7 @@
     "biomes/ringisles/tex/wrack.albedo.webp": "209196a28095fde208d0fbddf64747b171a55dc42036f27f2d2a3574842dc680",
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "c2da12045d85482bba41d0b3b397aaf63f2215d2c39f67e1629df299f6967b3f",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -207,7 +207,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -1164,8 +1164,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "903abe0dc8444ef24971acb75e740801071f8ef2635ab13031bea53ea112a9e7",
-    "openworld/isle-demo/dist/isle-demo.html": "a5333ad91aed92083e5c78eee672a01968e61086cf779f844b2600c8ee50d5d2",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "61ffa99436b8253a66768f12c323f63be49325478dffa06371a4c95d0be99e21",
+    "openworld/isle-demo/dist/isle-demo.html": "c5e6acb230a0a6dbcadc8f3d0633355391e9512b1421a95067352d10fdca14a0",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "5b75eede09bcb2944396c9fd15de91b0a0fb5bcf30bb93a7d7df50c175afbddc",
@@ -1180,8 +1180,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.throne.js": "29c079af3b475e1e1cfc8a9189ab96bacb679fa91dbc8f9e45f6705a99313f56"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "903abe0dc8444ef24971acb75e740801071f8ef2635ab13031bea53ea112a9e7",
-    "openworld/isle-demo/dist/isle-demo.html": "a5333ad91aed92083e5c78eee672a01968e61086cf779f844b2600c8ee50d5d2",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "61ffa99436b8253a66768f12c323f63be49325478dffa06371a4c95d0be99e21",
+    "openworld/isle-demo/dist/isle-demo.html": "c5e6acb230a0a6dbcadc8f3d0633355391e9512b1421a95067352d10fdca14a0",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "5b75eede09bcb2944396c9fd15de91b0a0fb5bcf30bb93a7d7df50c175afbddc",

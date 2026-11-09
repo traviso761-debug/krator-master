@@ -36,7 +36,7 @@
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/37-core-traps.js": "50e90f6c662ee4e92a19d48f8c2ed66497dd27574e3b81f02372f969f846b2d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -77,7 +77,7 @@
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
     "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/47-core-therm.js": "909e3e77b25d648ac1511b847a7b7a5a629bfdeb4e6a90bf489de1a08a96359a",
     "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
@@ -94,10 +94,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "3b8e294d07abc2b14c8915ab0e0dc20f95120d2fc3c699249318d90bd3005087"
+    "biomes/hearths/dist/hearths-crystals.html": "53d6ca84604f3d7142ae131148a210d23ee097cfc94cca8abcc45f49244542cc"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "3b8e294d07abc2b14c8915ab0e0dc20f95120d2fc3c699249318d90bd3005087"
+    "biomes/hearths/dist/hearths-crystals.html": "53d6ca84604f3d7142ae131148a210d23ee097cfc94cca8abcc45f49244542cc"
    }
   },
   "build.py --station crystals": {
@@ -135,7 +135,7 @@
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/37-core-traps.js": "50e90f6c662ee4e92a19d48f8c2ed66497dd27574e3b81f02372f969f846b2d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -176,7 +176,7 @@
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
     "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/47-core-therm.js": "909e3e77b25d648ac1511b847a7b7a5a629bfdeb4e6a90bf489de1a08a96359a",
     "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
@@ -193,10 +193,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "3b8e294d07abc2b14c8915ab0e0dc20f95120d2fc3c699249318d90bd3005087"
+    "biomes/hearths/dist/hearths-crystals.html": "53d6ca84604f3d7142ae131148a210d23ee097cfc94cca8abcc45f49244542cc"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "3b8e294d07abc2b14c8915ab0e0dc20f95120d2fc3c699249318d90bd3005087"
+    "biomes/hearths/dist/hearths-crystals.html": "53d6ca84604f3d7142ae131148a210d23ee097cfc94cca8abcc45f49244542cc"
    }
   }
  }

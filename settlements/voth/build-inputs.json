@@ -19,7 +19,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -434,11 +434,11 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "settlements/voth/dist/voth-city.html": "7b7e087b78412800ccfada0bce0e3f1b19554bc0f186ab7430c651ff3aa7834f",
+    "settlements/voth/dist/voth-city.html": "512603c16295f53a6812a90e94155452e47382480dc675c9c8b051e89fd79280",
     "settlements/voth/dist/voth-site.html": "25abf9ee36006f5600701c0dac2aed6acdb884aed82336a0a68dc885dd5295c4"
    },
    "outputs_raw": {
-    "settlements/voth/dist/voth-city.html": "7b7e087b78412800ccfada0bce0e3f1b19554bc0f186ab7430c651ff3aa7834f",
+    "settlements/voth/dist/voth-city.html": "512603c16295f53a6812a90e94155452e47382480dc675c9c8b051e89fd79280",
     "settlements/voth/dist/voth-site.html": "25abf9ee36006f5600701c0dac2aed6acdb884aed82336a0a68dc885dd5295c4"
    }
   }

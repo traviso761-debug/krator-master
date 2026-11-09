@@ -188,7 +188,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -224,7 +224,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -251,13 +251,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona.html": "e288104689c214709e9118177b0b62c713e37265593e0fba4193a05f9373ac96",
+    "biomes/korona/dist/korona.html": "d4ba7949a08f30887fb61db10cb5c78a8664e01fb51422d270aaef074f4e44bd",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona.html": "e288104689c214709e9118177b0b62c713e37265593e0fba4193a05f9373ac96",
+    "biomes/korona/dist/korona.html": "d4ba7949a08f30887fb61db10cb5c78a8664e01fb51422d270aaef074f4e44bd",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
@@ -496,7 +496,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -532,7 +532,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -560,14 +560,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-basin.html": "62b0111f09c0d9122aebb278c693e5a2df09cddddbc6581985b6469553a3710a",
+    "biomes/korona/dist/korona-basin.html": "949da04953bd25fea98082a061db04891fc25672785c7f5f242dc2d319b10b84",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nwlowlands.js": "6ff797a895e555896c04b2159815a61ff373363f74b020118585d14ab9069914"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-basin.html": "62b0111f09c0d9122aebb278c693e5a2df09cddddbc6581985b6469553a3710a",
+    "biomes/korona/dist/korona-basin.html": "949da04953bd25fea98082a061db04891fc25672785c7f5f242dc2d319b10b84",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -790,7 +790,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -826,7 +826,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -854,14 +854,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-gorge.html": "7e654ca89e3358fb79aa78773f5339308a01366e84ec91511de848b81b0c5e24",
+    "biomes/korona/dist/korona-gorge.html": "b0640d82ebfd691da56fe89f972db9a177583300d1fc4ad0dc6980ff17cca1fe",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-gorge.html": "7e654ca89e3358fb79aa78773f5339308a01366e84ec91511de848b81b0c5e24",
+    "biomes/korona/dist/korona-gorge.html": "b0640d82ebfd691da56fe89f972db9a177583300d1fc4ad0dc6980ff17cca1fe",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -1071,7 +1071,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -1107,7 +1107,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -1135,14 +1135,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hoar.html": "6107f47e059a41b4c4fa9937a9d210100663cd2771f56bad3cbab4a46b581db4",
+    "biomes/korona/dist/korona-hoar.html": "a30ac7a187b4178ff559530680f37deaf8140314f4ea22083f66c4b7c86983b0",
     "biomes/korona/dist/korona.tex.ehigh.js": "9fb50aa9e7b7984adc3ad1fe031128e2c4cb4a834f8a48e1033a57b0a345c4f1",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hoar.html": "6107f47e059a41b4c4fa9937a9d210100663cd2771f56bad3cbab4a46b581db4",
+    "biomes/korona/dist/korona-hoar.html": "a30ac7a187b4178ff559530680f37deaf8140314f4ea22083f66c4b7c86983b0",
     "biomes/korona/dist/korona.tex.ehigh.js": "9fb50aa9e7b7984adc3ad1fe031128e2c4cb4a834f8a48e1033a57b0a345c4f1",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
@@ -1338,7 +1338,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -1374,7 +1374,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -1402,13 +1402,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hollow.html": "381afc04759a0dc0c3de7e4e02838b9f992e1a7eed4f705238d214d9904fc7ce",
+    "biomes/korona/dist/korona-hollow.html": "df4397810c7858d2a9ed61c67574640cbdea1f80b301a0748e0d2fd66f701e02",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hollow.html": "381afc04759a0dc0c3de7e4e02838b9f992e1a7eed4f705238d214d9904fc7ce",
+    "biomes/korona/dist/korona-hollow.html": "df4397810c7858d2a9ed61c67574640cbdea1f80b301a0748e0d2fd66f701e02",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
@@ -1676,7 +1676,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -1714,7 +1714,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/37b-core-stacks-contour.js": "285dd431740ae97e7a6e3c53cdfeca1d01274325fd8116bd40e3b1806c91caa9",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -1742,7 +1742,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-trench.html": "9e1ce01da311ed2c3240b8068e5de190014e331d2cdf9a7ec837625eb0044322",
+    "biomes/korona/dist/korona-trench.html": "e824d58fa9cefc128006a7758bf3cb1c8fb3e0c99fb7c3eed8a8839c6dea2e9e",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -1750,7 +1750,7 @@
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-trench.html": "9e1ce01da311ed2c3240b8068e5de190014e331d2cdf9a7ec837625eb0044322",
+    "biomes/korona/dist/korona-trench.html": "e824d58fa9cefc128006a7758bf3cb1c8fb3e0c99fb7c3eed8a8839c6dea2e9e",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",

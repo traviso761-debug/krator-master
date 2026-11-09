@@ -10,7 +10,7 @@
     "biomes/ebadlands/src/70-biome-ebadlands.js": "9601338d93e1afe0dadfaceb209e8514b73fe151efea5c05407c200307b5170b",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
@@ -211,23 +211,23 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/yuni/build-manifest.json": "b06e5fab556f4533a5cd399bcc77c39c12c42d2a2afc6b33c4099c8400687f3b",
-    "settlements/yuni/publish/yuni-building-kit.html": "073a5a9bc56681897830b84797f2607cd3fd04ca4ddff7cbc59e20d62825e1eb",
-    "settlements/yuni/publish/yuni-plants.html": "74da2985519f475478b29cd8f018b2e04070f712b16d3ed0173ef193613ccc4b",
-    "settlements/yuni/publish/yuni.html": "7f73c855dc1ff1f5359353cd857579282fa1e4e0e7389c216040b70b3b8c76ee",
-    "settlements/yuni/yuni-assets.html": "27aefc68643e94c3d6edcdb685d24705e9a1c1d2ce4afc0828aca0114f4dca2f",
-    "settlements/yuni/yuni-plants.html": "7691d80d56e141db2181e6d1389318d6d67a49f41588e2cb07c5989bf14ec0c7",
-    "settlements/yuni/yuni.html": "ec1f4890b048909e6ec00df1d466b2bdf93ca1316e618341cee71b5c43598106",
+    "settlements/yuni/build-manifest.json": "79dc6a12bd0e7bfbf1c2b6d13ad0da8fa826d9ecd391239b0b978c4fe964ee29",
+    "settlements/yuni/publish/yuni-building-kit.html": "b64913755965736f6a3a65f6685ee9647bfb7319aeaca1c7a9879243aa274791",
+    "settlements/yuni/publish/yuni-plants.html": "1193b83216177fde07518aa92196307fc91ec886ff5158253d0098b9c10a2425",
+    "settlements/yuni/publish/yuni.html": "ae8db10648d5f019b9c7fb6664773dd9b09f1376d944cd505477a92f18dc8d17",
+    "settlements/yuni/yuni-assets.html": "56216a8aa877957605a15f79767918c887542a386ff028ee8b0b290316b957b1",
+    "settlements/yuni/yuni-plants.html": "f631d2d09f1dd574aeb409f02019e7467c8cf8eb755e19609e5ffe57f93ef9ba",
+    "settlements/yuni/yuni.html": "23882393e73ee2a0c0bd935c197bd6813371fcd4a787bb20bb37a6843a675502",
     "settlements/yuni/yuni.tex.yuni.js": "c453c51f51aa91a9081e19036725f5f87ea1577a24dde315f221c8b43ef30a8f"
    },
    "outputs_raw": {
-    "settlements/yuni/build-manifest.json": "60f4420289f2022bb1d11ad8648b9d63e91cc8674207516140b11dcda9b0e5a7",
-    "settlements/yuni/publish/yuni-building-kit.html": "550659ea98b07bc6c9b3b96359afe938c26e4efb2ba7aa84da37d648aed12c28",
-    "settlements/yuni/publish/yuni-plants.html": "54a642534c67ce6b8cf98a04c29e1ff973efb07e92d065e3997a94b44fdfdbe4",
-    "settlements/yuni/publish/yuni.html": "ce6a088994a344fb17127747fec106d503b4c525204d066a955a922a5cf89aed",
-    "settlements/yuni/yuni-assets.html": "ca4fd5c8ed30730505bf77fc3286b4ac4909a6f0c82a3fec5e8eee6a89aae8f5",
-    "settlements/yuni/yuni-plants.html": "e99516cb8cd0e1c0a76ac4d49e1a194feecff969736a77abaafaa97741586d94",
-    "settlements/yuni/yuni.html": "9e8fd6f814d96adb18839565b6c5aa0bd8218a8de132719a764c836fb040e8f0",
+    "settlements/yuni/build-manifest.json": "5f91d3c626f62e6fd3e7d28cf236573c920f5cccb4e1d438e03de85d631781e1",
+    "settlements/yuni/publish/yuni-building-kit.html": "9b04d8a3f053266bbd40a0a2fd3db202cbaea0666c94b2fc01338a2bc96b12e9",
+    "settlements/yuni/publish/yuni-plants.html": "3a0fb65b59e560c7af0bb56c7a3c8f6e1761ddeca70376b459967cef27d2afef",
+    "settlements/yuni/publish/yuni.html": "07306e72ce92b399e131a3d8bf45d717d2b9650415147f228d7b90eedf1789c9",
+    "settlements/yuni/yuni-assets.html": "9af93c3675d186ccf8adad7db784b2030ce66b57e4df007767412dfe4de24542",
+    "settlements/yuni/yuni-plants.html": "ce9355f5d317753e5419220593bc17a17594cc5a9b1c39895d3eed688da139dc",
+    "settlements/yuni/yuni.html": "1b38364005885e80f9fa07e8d37a5533fe7431c83416d625feeb438575cfd245",
     "settlements/yuni/yuni.tex.yuni.js": "c453c51f51aa91a9081e19036725f5f87ea1577a24dde315f221c8b43ef30a8f"
    }
   }

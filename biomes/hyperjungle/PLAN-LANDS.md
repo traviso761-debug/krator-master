@@ -7,8 +7,18 @@ long stretch of savannah. The **savannah rims** each call back to the big biomes
 
 This plan replaces stations 2 and 3 of `PLAN-STATIONS.md`, which was written for the old polygons.
 
-**Status: plan, waiting for the owner.** Nothing is built yet. Wherever this file says *proposed*, the owner has not
-decided.
+**Status (2026-11-08): J0 and J1 done (with the core gaps H1-H8, H10); J2-J6 built in a cloud session on CPU checks only; J7-J9 not started**
+(builds, the lints and a SwiftShader load of each page with its own checks; the GPU verify is the coordinator's, owed). Wherever this
+file says *proposed*, the owner has not decided; where a step took a proposal so it could be built, section 14 marks it **taken as
+proposed, owner to confirm**.
+
+| Step | Built | Page |
+|---|---|---|
+| J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
+| J3 | Screamer wood: H5 (the howl bamboo on `BIO.bamboo`, the Cut's reach on H1), the bone giants, the 7 others (`src/57`), the habit thinned (ironbark and ghostwood leading), the groves' howl (H9 sound records), the fauna hunted thin (H8) | `dist/hyperjungle-north.html` (`--station north`) |
+| J4 | `biomes/savannarim`, a new kit (its `PLAN.md` holds the core adoption): H3 (KFIRE), H10 (KSTACKS.mounds), H7 (the seasons), the savannah's base (red oat grass, blind grass, fan palm, umbrella thorn; the gallery forest and the outliers read in place) and the north savannah (the bone giants and bloodwood read in place); the hyperjungle's station `north` reads its blind grass | `biomes/savannarim/dist/savannarim-north.html` (`--station north`) |
+| J5 | the e rim: seven cousins by BIO.kin of eastabyss's and the e highlands' builders read in place, H4 (`BIO.setGiant`, the pull fading west), the savage land's comb tree and elephant ear by reach (H1) | `biomes/savannarim/dist/savannarim-east.html` (`--station east`) |
+| J6 | the se rim, the incense country: its zones, the Bowl's cousins (rain dragon, rain rose, rain bottle), incense, cloud avocado, leaning tree fern (H4), the rust miombo defined here with its copper flush (H7; read by Godstep's redlands), the red guyed stalk left to Godstep (not built there yet), the Bowl's and the drylands' species by reach | `biomes/savannarim/dist/savannarim.html` |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 
@@ -371,14 +381,26 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
 ## 14. Open questions for the owner
 
 1. **One new savannah kit (`savannarim`)**, or the savannahs kept as stations of the hyperjungle kit?
+   *Answered:* the owner queued "the e savannah rim (`biomes/savannarim`, a new kit on the savannah base of section 4)"
+   (HANDOFF-REBUILD.md, 2026-10-27), and the core sessions built its gaps for it: one kit.
 2. **Why the savage jungle is savage**: is volcanic ash on beast-dunged soil acceptable as the reason, with its
    carnivores a guild of canopy and shade, not Korona's poor-soil bog?
+   **Taken as proposed, owner to confirm** (J2, 2026-11-08): the ash-dark floor, the herds' bais, the three traps under 1% of the
+   plants and in the shade and the boughs (`stations/savage`); LORE.md section 8 carries it as a proposal.
 3. **Screamer wood**: the theme of a forest that looks and sounds like people (howling bamboo, watchers, hand flowers,
    skull-pods, bone giants). And may the Screamers' speech be rumoured to have begun with the groves?
+   **Taken as proposed, owner to confirm** (J3, 2026-11-08): built as station `north`; the rumour is in LORE.md section 6.7 as a
+   proposal, and the hand-flowers' name "the elders" in the species' harvest note.
 4. **The east rim's story**: the abyss's lineages as fire-hardened relics, and the highlands' pull toward the giant fading
    westward. Should the glass wand and Fridon's wormwick trade go in?
+   **Taken as proposed, owner to confirm** (J5, 2026-11-08): built as savannarim's station `east`, the glass wand in (on the
+   ironstone pavements); Fridon's wormwick trade is in LORE.md section 8 as a proposal.
 5. **The south-east rim's story**: is Talia's trade in incense and dragon's blood acceptable (an addition to `LORE.md`
    §6.2)?
+   **Taken as proposed, owner to confirm** (J6, 2026-11-08): built as savannarim's station 1; LORE.md section 6.2 carries the trade as a
+   proposal.
 6. **Godstep's shared species**: the rust miombo to be defined here and read by Godstep's redlands station; the red guyed
    stalk to stay Godstep's.
+   **Taken as proposed, owner to confirm** (J6, 2026-11-08): `SAVRIM.builders.rustmiombo` (`BIO.kitBuilder('savannarim', 'rustmiombo')`);
+   the red guyed stalk is a reference row only until Godstep's kit builds it.
 7. **The black mallee** as the drylands patch's one hybrid.

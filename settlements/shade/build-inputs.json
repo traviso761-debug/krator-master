@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "485eab97efbe3671932e0e822081bb0fc3d132ad973c9d73c1fc5d49c3243e19",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -53,7 +53,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -156,10 +156,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "262e2d6797027fe29897a0352d29ed8ecdabda7b7dcddca645d934748c486f43"
+    "settlements/shade/dist/shade.html": "e4c98a6702e1ad7e506911772bd7ad0c6a8aa9bf26aff66cec52dd188f92a424"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "8c8b84fecda3dcd10e8343eba730df3adb20d01ae737c37a5ae270b2487cc67e"
+    "settlements/shade/dist/shade.html": "2a1b3a7585d0fedcb06e0ceaf3173dcb8bfad0e9e4d80ac2a90e1828841456ef"
    }
   }
  }

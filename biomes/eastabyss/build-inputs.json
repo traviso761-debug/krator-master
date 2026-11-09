@@ -79,7 +79,7 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "387bc0535c110ef35145c38ae050459aad205f5ab2a02a4b404068f4e5f9353d",
     "biomes/sedesert/tex/bark2.albedo.webp": "e8bba0bcb8cafaa6aedd2d3afd35124102ab8c83524302c03b193d610f8e461e",
     "biomes/sedesert/tex/pack.json": "3efdafd7a3ba52ae03ba06c6e5f5851d7fb81dd6d9fbd46b2485ed11100e89c5",
     "biomes/sedesert/tex/strap.albedo.webp": "200edf7b8332a80eef6db9f1257af6019b8be47143a53897e4872749d6bc9dac",
@@ -104,7 +104,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -130,7 +130,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -158,10 +158,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/eastabyss/dist/eastabyss.html": "73a460e8c772b69379aef7f74f7465d93b6b3116ac0879496e56493d8cda8d21"
+    "biomes/eastabyss/dist/eastabyss.html": "07fba2bc1dee4c7aac231b3cf0ebce88383498d4355726824cac7ff7143c0827"
    },
    "outputs_raw": {
-    "biomes/eastabyss/dist/eastabyss.html": "73a460e8c772b69379aef7f74f7465d93b6b3116ac0879496e56493d8cda8d21"
+    "biomes/eastabyss/dist/eastabyss.html": "07fba2bc1dee4c7aac231b3cf0ebce88383498d4355726824cac7ff7143c0827"
    }
   },
   "build.py --station lakes": {
@@ -267,7 +267,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -293,7 +293,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
-    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
+    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -322,10 +322,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/eastabyss/dist/eastabyss-lakes.html": "9b09f289bcf622c13cb23b0253cb6079001302544a920d15e4e3f05897c26f4f"
+    "biomes/eastabyss/dist/eastabyss-lakes.html": "aaca3fe36a96fef59139a8840a2901760af16a2100fc7ec6f8b56bed7374f778"
    },
    "outputs_raw": {
-    "biomes/eastabyss/dist/eastabyss-lakes.html": "9b09f289bcf622c13cb23b0253cb6079001302544a920d15e4e3f05897c26f4f"
+    "biomes/eastabyss/dist/eastabyss-lakes.html": "aaca3fe36a96fef59139a8840a2901760af16a2100fc7ec6f8b56bed7374f778"
    }
   }
  }

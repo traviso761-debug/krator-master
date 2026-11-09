@@ -138,7 +138,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
@@ -461,16 +461,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/dhelv/build-manifest.json": "515e017df315464abf1785cd9f134fc133e8533ebc64e44516d1d55010b5d421",
-    "settlements/dhelv/dist/dhelv.html": "017f4bf4abf6b1cc8efc12d9fcd32ba3ec2d4311f67a3a245ab541c815323b0e",
+    "settlements/dhelv/build-manifest.json": "5e6e69eada921d48764d360634b18328229ad667b21edf7d47e556a4e2d25b5d",
+    "settlements/dhelv/dist/dhelv.html": "7073326fb1d204195a26f18a3dafbc6714d727267a01059f39ef1c1ed33eea23",
     "settlements/dhelv/dist/dhelv.tex.hyperjungle.js": "6ef83534a2c272ad08144b69c48960e40d8ab201a5ed8059d36d5cb98a87af76",
     "settlements/dhelv/dist/dhelv.tex.throne.js": "970b447cd7abc1b7042267ad5bfc8b45666e5290a8045bd9ea39912d2c626989",
     "settlements/dhelv/dist/dhelv.tex.zeijani-2.js": "01dea3f0d86fd8f1faf9109f1d8a88d731095bfb2bd0db75050b870b662afd2b",
     "settlements/dhelv/dist/dhelv.tex.zeijani.js": "f511e1f9ca3e719c26073d42af1044407b4d428e07cc50eb65dbf1ecc809eee0"
    },
    "outputs_raw": {
-    "settlements/dhelv/build-manifest.json": "515e017df315464abf1785cd9f134fc133e8533ebc64e44516d1d55010b5d421",
-    "settlements/dhelv/dist/dhelv.html": "017f4bf4abf6b1cc8efc12d9fcd32ba3ec2d4311f67a3a245ab541c815323b0e",
+    "settlements/dhelv/build-manifest.json": "5e6e69eada921d48764d360634b18328229ad667b21edf7d47e556a4e2d25b5d",
+    "settlements/dhelv/dist/dhelv.html": "7073326fb1d204195a26f18a3dafbc6714d727267a01059f39ef1c1ed33eea23",
     "settlements/dhelv/dist/dhelv.tex.hyperjungle.js": "6ef83534a2c272ad08144b69c48960e40d8ab201a5ed8059d36d5cb98a87af76",
     "settlements/dhelv/dist/dhelv.tex.throne.js": "970b447cd7abc1b7042267ad5bfc8b45666e5290a8045bd9ea39912d2c626989",
     "settlements/dhelv/dist/dhelv.tex.zeijani-2.js": "01dea3f0d86fd8f1faf9109f1d8a88d731095bfb2bd0db75050b870b662afd2b",

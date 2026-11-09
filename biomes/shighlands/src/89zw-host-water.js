@@ -29,3 +29,6 @@ const STREAM_FLOWS=RAV.map((R,i)=>{const pts=[],W=[];let y=1e9,s=0,px=0,pz=0;
  const D=WATER.drawFlow(F,{shallow:lin(0x4a5a44),deep:lin(0x223430),color:0xffffff,roughness:.12,metalness:.05,envMapIntensity:.45,step:10,across:5,margin:1.2,depthBias:1.5,renderOrder:2,pick:true});
  D.mesh.userData.inspectLabel='A ravine stream';return{F,D};}).filter(Boolean);
 window._water={tarn:!!TARN_DRAW,pools:BOG_STILLS.length,streams:STREAM_FLOWS.length};
+// ---- the breakup (core/water ext/56; the final rebuild, pair 12): the tarn's and the bog pools' glint broken into patches of ripples, not
+// the still water's regular stripes (the streams keep their own ripples, advected along the current). ?breakup=0 none
+if(WATER.breakupAll&&new URLSearchParams(location.search).get('breakup')!=='0'){try{WATER.breakupAll();}catch(e){reportErr('breakup: '+e.stack);}}

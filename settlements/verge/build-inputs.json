@@ -53,7 +53,7 @@
     "biomes/eastabyss/tex/wood.albedo.webp": "795145ca323cf91bb2d05c131c700a66903a1c5df927836aaa8b99553049ea11",
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "e9c28fe50ed11f5d6ecf1d86eab7f386241b74b5c1e990460dd6fe9c5fa274fc",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "485eab97efbe3671932e0e822081bb0fc3d132ad973c9d73c1fc5d49c3243e19",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -93,7 +93,7 @@
     "biomes/sedesert/tex/wood.albedo.webp": "d6262fbd50ca60efb74a8d0b79c70c7e7956c0a0c48be762c6f880c48ccb935f",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
+    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
@@ -542,8 +542,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/verge/build-manifest.json": "84fe0440f8ad4a9ce8ec194f7ec5b5977b46f424d7b51d8b5f28d2980903fc8c",
-    "settlements/verge/dist/verge.html": "cfe8bb5e168e93dbf27d5019dfa94d80127cb1ff7f2f4a98a9e03b5aae24ad95",
+    "settlements/verge/build-manifest.json": "cc8b57c3cd7f217248a1e71b0cc3d198d7da4ba5314d7189b98f68ef0572e7ea",
+    "settlements/verge/dist/verge.html": "964977fb5f63ee665371eddf7ae48cdbfb8b0459402978b1c4d492c526b7c3b0",
     "settlements/verge/dist/verge.tex.eastabyss.js": "4a4b46edc96c221d958e8da3a49cc72e940ee4536ad0fd4148d76327e5399253",
     "settlements/verge/dist/verge.tex.iziz-2.js": "f92aff02705e9b781270b964c67e39a933a129f4e0ca36cb62f9b6f69a362438",
     "settlements/verge/dist/verge.tex.iziz.js": "df5a7a3382e5e2861e0f6e67ba890c40d56dbd396e1f6a48cb78f802bf58e712",
@@ -551,8 +551,8 @@
     "settlements/verge/dist/verge.tex.sedesert.js": "e9b19c082894aa70d99db0d8e51167108fdb92038cf1506cf38946928120e5bf"
    },
    "outputs_raw": {
-    "settlements/verge/build-manifest.json": "84fe0440f8ad4a9ce8ec194f7ec5b5977b46f424d7b51d8b5f28d2980903fc8c",
-    "settlements/verge/dist/verge.html": "a2594389e02624394114035f070ecdc6dbd25be8b48228f8bfa445892f257e0c",
+    "settlements/verge/build-manifest.json": "cc8b57c3cd7f217248a1e71b0cc3d198d7da4ba5314d7189b98f68ef0572e7ea",
+    "settlements/verge/dist/verge.html": "c7961bfa7b35d448b2f17566ec6de6641260e784fa695e0e236d92435c426998",
     "settlements/verge/dist/verge.tex.eastabyss.js": "4a4b46edc96c221d958e8da3a49cc72e940ee4536ad0fd4148d76327e5399253",
     "settlements/verge/dist/verge.tex.iziz-2.js": "f92aff02705e9b781270b964c67e39a933a129f4e0ca36cb62f9b6f69a362438",
     "settlements/verge/dist/verge.tex.iziz.js": "df5a7a3382e5e2861e0f6e67ba890c40d56dbd396e1f6a48cb78f802bf58e712",
