@@ -194,7 +194,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
       for(const T of q){if(T===P)continue;const ex=T.x-x,ez=T.z-z,d=Math.hypot(ex,ez);if(padD(T,x,z)<clear){ok=false;break;}if(d>ahead)continue;const c=(ex*fx+ez*fz)/d;if(c<Math.cos(35*Math.PI/180))continue;score+=(T.padR*2/d)*(1-d/ahead)*6;}
       if(!ok)continue;if(score<bs){bs=score;best=[x,z];}}}return best||[cx,cz];};
    const o1=openSpot(140,460,400,18,c1.x*.6,c1.z*.6,420),o2=openSpot(NEAR.x-60,NEAR.z+170,300,14,NEAR.x-900,NEAR.z+620,120);
-   return{
+   const V0={
     'The Overlook: city1 and the lake':V(o1,9,[c1.x*.6,c1.z*.6],60),
     'A residential street':V(o2,1.8,[NEAR.x-900,NEAR.z+620],28),
     'Among the towers':V(openSpot(NEAR.x+40,NEAR.z-20,200,10,NEAR.x-500,NEAR.z+300,60),1.8,[NEAR.x-500,NEAR.z+300],90),
@@ -207,7 +207,9 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'The Gyre':(function(){const E=ENGINES[0];return V([E.x+E.r*1.6,E.z+E.r*1.1],6,[E.x,E.z],E.h*.35);})(),
     'The Strider':(function(){const E=ENGINES[1];return V([E.x-E.r*1.26,E.z-E.r*1.1],4,[E.x,E.z],E.h*.4);})(),   /* 1.5, 1.3 stood inside a Pods stump's 120 x 84 footprint (the eye check, 2026-11-09, once the tiers retiered at once) */
     'A park gone feral':(function(){let best=null,bw=0;for(let x=-2400;x<=2400;x+=60)for(let z=-2400;z<=2400;z+=60){const w=F.park(x,z)*(.3+.7*F.wild(x,z))*(ground(x,z)>LAKE_Y+3?1:0)*(1-Math.hypot(x,z)/5000);if(w>bw){bw=w;best=[x,z];}}best=best||[0,0];return V([best[0]+120,best[1]+90],3,best,14);})(),
-    'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};},
+    'From the air':V([600,-300],520,[c1.x*.5,c1.z*.5],0)};
+   /* the views a later host fragment adds (75: the extraplanars' drowned hall, void and solid), absolute eyes it stood on dry ground itself */
+   return Object.assign(V0,STAGE.extraViews||{});},
   start:'The Overlook: city1 and the lake',
   /* the LOD spine: a lattice over the whole page (the kits drop a species past its mid range from the spine unless it has an impostor; the
      overgrowth is everywhere, so the spine is), plus the eye's start */

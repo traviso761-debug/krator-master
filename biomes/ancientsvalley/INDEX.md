@@ -32,6 +32,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `72-host-keepers.js` | 6 |  |
 | `73-host-wrecks.js` | 7 |  |
 | `74-host-transit.js` | 10 |  |
+| `75-host-extraplanar.js` | 15 |  |
 | `88-host-build.js` | 7 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |
@@ -39,5 +40,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89u-host-steam.js` | 2 |  |
 | `89v-host-smog.js` | 2 |  |
 | `89w-host-water.js` | 3 |  |
-| `99-host-take.js` | 17 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (97) |
+| `89x-host-xp-weather.js` | <1 |  |
+| `99-host-take.js` | 22 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (121) |
 | `99-tail.html` | <1 |  |

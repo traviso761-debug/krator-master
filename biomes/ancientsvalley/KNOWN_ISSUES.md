@@ -47,12 +47,29 @@
   draws 2.3 M. Measure on the Arc before cutting; the forest is the brief.
 - [ ] **The melt glass is a stand-in** (`ground.obsidian`): the basins' trinitite set is owed (`core/materials/PROMPTS-NEEDED.md`).
 - [ ] **The water on this page is at its corners:** the ridge is wider on the model than the plan read it (2 km cells), so the inlets lie just past the
-  page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's.
-- [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists; `kits/extraplanar` is being built in the
-  session valley-extraplanar, 2026-11-09), no Soleri farmland (the terraces are off this page). The keepers are kits/mechs' Ancients (culture
-  `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper and the gardener at their routines, the
-  tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other hunters (the shrouded walker, the trooper,
-  the wasp) are built and wait for the game to place them.
+  page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's. *2026-11-09:* the near lake's flood had
+  one seed, the fallback on dry ground (no model water cell lies inside the page), so it flooded nothing and every hollow of the page's own relief
+  under the lake's level was drawn dry; `89w` now seeds it from that ground too (a 120 m lattice, 264 seeds), which floods 95% of it. The stage's
+  view "The core from the water" still stands outside the flood: its eye is in a pocket the lattice misses.
+- [ ] **The renderer sits near V8's 4 GB heap** (2026-11-09, found wiring the extraplanars): 3.85 GB of 4.19 GB used in the browser pane after the
+  boot and six views, and every view keeps what it built (the transit's furniture and war cells, the wreck looks). A fourteen-view `--all-views`
+  tour ran out of heap at the thirteenth view on the Arc lane (Chrome's 0xe0000008 in the event log, "Connection closed while reading from the
+  driver" in the verify); the eleven-view tour passed. So the station lists twelve views (the extraplanars' drowned hall the only new one) and
+  keeps the void's and the solid's views in `AV_XP.views`. The extraplanars' own geometry is 2.4 MB. Owed: a heap diet (free a transit cell and
+  a wreck look when the eye leaves; measure what the boot holds with the sampling heap profiler) before the next view or pass is added.
+- [ ] **No mutants or Cyberliches yet** (`PLAN.md` section 6: each when its kit exists), no Soleri farmland (the terraces are off this page). The
+  keepers are kits/mechs' Ancients (culture `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper
+  and the gardener at their routines, the tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other
+  hunters (the shrouded walker, the trooper, the wasp) are built and wait for the game to place them. **The extraplanars are in** since
+  2026-11-09 (`kits/extraplanar`, session valley-extraplanar; `75-host-extraplanar.js`): three hunters on rounds, three phenomena, four portals.
+  Owed from the kit's own list (`kits/extraplanar/KNOWN_ISSUES.md`): no dormant pose (a hunter hunts or is absent; none stands dead until it
+  wakes); the robots' and the mutants' far tiers do not draw the shared silhouette cards yet, and this page draws no far card for its three
+  hunters either (they are inside the page's fog at every view); the gaze is a rod the host flies, with no hit test; a solid's or presence's
+  glow sits at the record's `at` (the glow layer is static) while its mist and plume follow it; the hunters wear vertex colours (the mechs'
+  detail maps are not passed); no bone texture set for the Stilter and the drowned arch (nothing added to PROMPTS-NEEDED.md without the owner's
+  word). On this page: the portals' `leads` point at `city3`'s frame by offsets chosen here (its centre and two halls), since Dorado's page is
+  not cut yet; the drowned portals stand where the shore lies 2 to 3.5 m under the lake within 150 m of a plinth, so the "hall" is the shore under
+  a tower, not a drawn interior.
 - [x] **The smog is one page-wide setting** closed 2026-11-09: core/atmos (session atmos-smog) gave the mist a density field (the valley passes
   `F.density`: universal in the cores, thin on the terraces) and the clouds a mood (dark, the taint's tint, violent turbulence, the fires' glow at
   night, shifting episodes by `ATMOS.cloudMood`). From the air the floor lies under the pool and reads pale; judge it by eye.

@@ -33,12 +33,13 @@ const AV_KEEPERS=(function(){if(typeof KratorMechs==='undefined')return [];const
     const sp=KratorMechs.speed(g)*Math.max(0,Math.cos(a));g.position.x+=Math.sin(g.rotation.y)*sp*dt;g.position.z+=Math.cos(g.rotation.y)*sp*dt;}
    g.position.y=terrainH(g.position.x,g.position.z);KratorMechs.update(g,dt,{ground:terrainH});}
   /* the follow mode (the owner, 2026-11-09): the camera rides behind and above the chosen keeper, through the host's own view setter */
-  const F=AV_FOLLOW;if(F.i!=null&&out[F.i]&&typeof KHOST!=='undefined'&&KHOST.setView){const g=out[F.i].g,h=g.userData.h==null?6:g.userData.h,back=Math.max(14,h*3.2),up=h*1.3+3;
+  const F=AV_FOLLOW,rd=F.i!=null?F.riders()[F.i]:null;if(rd&&typeof KHOST!=='undefined'&&KHOST.setView){const g=rd.g,h=g.userData.h==null?6:g.userData.h,back=Math.max(14,h*3.2),up=h*1.3+3;
    const tx=g.position.x,ty=g.position.y+h*.55,tz=g.position.z,wx=tx-Math.sin(g.rotation.y)*back,wy=g.position.y+up,wz=tz-Math.cos(g.rotation.y)*back;
    if(!F.cam)F.cam=[wx,wy,wz];const k=Math.min(1,dt*2.5);F.cam[0]+=(wx-F.cam[0])*k;F.cam[1]+=(wy-F.cam[1])*k;F.cam[2]+=(wz-F.cam[2])*k;
    const gy=terrainH(F.cam[0],F.cam[2])+2;if(F.cam[1]<gy)F.cam[1]=gy;KHOST.setView(F.cam[0],F.cam[1],F.cam[2],tx,ty,tz);}});
  return out;})();
-/* R rides with the next keeper (the first on the first press, none after the last); Escape, a drag or the wheel lets go. AV_FOLLOW.follow(i|null) does the same */
-const AV_FOLLOW={i:null,cam:null,follow(i){this.i=(i==null||!AV_KEEPERS[i])?null:i;this.cam=null;const el=document.getElementById('errs');if(this.i!=null&&AV_KEEPERS[this.i])console.log('riding with '+AV_KEEPERS[this.i].g.userData.name);return this.i;}};
-window.addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='r'||e.key==='R'){const n=AV_KEEPERS.length;if(!n)return;AV_FOLLOW.follow(AV_FOLLOW.i==null?0:(AV_FOLLOW.i+1<n?AV_FOLLOW.i+1:null));}else if(e.key==='Escape')AV_FOLLOW.follow(null);});
+/* R rides with the next keeper (the first on the first press, none after the last); Escape, a drag or the wheel lets go. AV_FOLLOW.follow(i|null) does the same.
+   The riders are the keepers, then whatever a later fragment pushes to AV_FOLLOW.more (75: the extraplanar hunters), each a {g} walking on the page */
+const AV_FOLLOW={i:null,cam:null,more:[],riders(){return AV_KEEPERS.concat(this.more);},follow(i){const rd=this.riders();this.i=(i==null||!rd[i])?null:i;this.cam=null;if(this.i!=null)console.log('riding with '+rd[this.i].g.userData.name);return this.i;}};
+window.addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='r'||e.key==='R'){const n=AV_FOLLOW.riders().length;if(!n)return;AV_FOLLOW.follow(AV_FOLLOW.i==null?0:(AV_FOLLOW.i+1<n?AV_FOLLOW.i+1:null));}else if(e.key==='Escape')AV_FOLLOW.follow(null);});
 ['pointerdown','wheel'].forEach(ev=>window.addEventListener(ev,e=>{if(AV_FOLLOW.i!=null&&e.target&&e.target.tagName==='CANVAS')AV_FOLLOW.follow(null);},{passive:true}));
