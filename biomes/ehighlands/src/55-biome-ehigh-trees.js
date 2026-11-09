@@ -373,8 +373,8 @@ EHIGH.PASSES=[
  {sp:6,cell:20,accept:(Z)=>Z.dry*.24+Z.tor*.12,opt:{pad:1,patch:.7,patchScale:.012,small:true}},
  // station 2's cloud forest (appended: on a page with no `forest` field these place nothing, and the passes above draw as they did): the
  // laurels claim the ground, the tree ferns fill the gaps and the wetter hollows
- {sp:7,cell:11,accept:(Z)=>Z.cloud*.5,opt:{pad:1.6,patch:.5,patchScale:.012}},
- {sp:8,cell:6,accept:(Z)=>Z.cloud*(.25+.35*Z.wet),opt:{pad:.9,patch:.6,patchScale:.02,small:true}},
+ {sp:7,cell:14,accept:(Z)=>Z.cloud*.5,opt:{pad:1.6,patch:.5,patchScale:.012,lodK:.5}},
+ {sp:8,cell:9,accept:(Z)=>Z.cloud*(.25+.35*Z.wet),opt:{pad:.9,patch:.6,patchScale:.02,small:true,lodK:.6,farK:.3}},   /* thinned 2026-11-09: the first smoke load drew 29.7 M triangles */
 ];
 
 // ---------------------------------------------------------------- one plant alone (biomes/WORLD.md: trees as variants)

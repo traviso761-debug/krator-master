@@ -97,7 +97,7 @@ function plantGully(x,y,z,Z,lv,st){const t=rng();
  else{gentian(x,y,z,lv);st.flowers++;}}
 function plantGeo(x,y,z,Z,lv,st){if(rng()<.7){sinter(x,y,z);st.sinter++;}}
 // the cloud forest's floor (station 2): its own stream of plants, drawn only where the zone is (a page without it never calls it)
-function fern(x,y,z,lv,k){const n=lv===2?ri(3,6):2,R=rr(.5,1.1)*(k==null?1:k)*(lv===0?1.4:1),a0=rr(0,TAU);
+function fern(x,y,z,lv,k){const n=lv===2?ri(2,4):1,R=rr(.5,1.1)*(k==null?1:k)*(lv===0?1.4:1),a0=rr(0,TAU);
  for(let i=0;i<n;i++){const a=a0+i/n*TAU+rr(-.25,.25);BIO.put('fern',[x,y-.02,z],qEuler(rr(-.1,.1),-a,rr(.35,.8)),[R,R*rr(.85,1.05),R*rr(1,1.3)],leafCol(PAL.fern,1.2,.02,.07,.05));}}
 function moss(x,y,z,lv){const R=rr(.6,1.6)*(lv===0?1.5:1);BIO.put('moss',[x,y+.03,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[R,1,R],leafCol(PAL.moss,1.15,.02,.06,.05));}
 function brom(x,y,z){const R=rr(.25,.5);BIO.put('brom',[x,y+.05,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,1,R],leafCol(PAL.brom,1.15,.02,.06,.05));}

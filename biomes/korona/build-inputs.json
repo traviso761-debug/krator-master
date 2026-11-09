@@ -871,8 +871,8 @@
   "build.py --station hoar": {
    "inputs": {
     "biomes/ehighlands/src/50-biome-ehigh-species.js": "0a8ffb7d4edb4284b7455c7402e61d98f2ae730a26cbb4822d862ea4c5d07bd6",
-    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "fbcf04311c7011775e8728254571f5e631d678c96acf25cb976b87dbe216cb14",
-    "biomes/ehighlands/src/60-biome-ehigh-floor.js": "e4aec6ba8375e8956b64cd9e223e943a84024e5fdb21391a674d0e9106df207a",
+    "biomes/ehighlands/src/55-biome-ehigh-trees.js": "7e92ab27fbbb63b3a25e9f8e5f4c92d0a721d6c7011bd4c069533365f01b5f4a",
+    "biomes/ehighlands/src/60-biome-ehigh-floor.js": "d7e25779277302a85afac9e9dc64c47a1335aaa7445abd90c38e456b3362bcfe",
     "biomes/ehighlands/src/70-biome-ehigh.js": "dde6ad2d9203c8d2f75249bdca5d2ea61a9d54b4f08cea6546c65671bcbbe3b6",
     "biomes/ehighlands/tex/bark.ragbark.albedo.webp": "3e4f2970f009e705b77ca357cd82ee8fb2b94658c10a9ed5bdd88b73ab3a15b2",
     "biomes/ehighlands/tex/bark4.albedo.webp": "6a220daf212644e319a60782ea920aeb16e872321636730f0f53956710ebd2ec",
@@ -1140,14 +1140,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hoar.html": "6594cabe89c54d05748e34e17ac019c9fd3b1ef35e91b5e833c5c0161ad2ddf7",
+    "biomes/korona/dist/korona-hoar.html": "170ef049f0d26c92ece8d44035941105a07860d5cf5157df7e1d837b40612ab9",
     "biomes/korona/dist/korona.tex.ehigh.js": "cc89b29468bf7a422283fb53caae5a33e735e8e13abade9f6f1cc6386b650356",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hoar.html": "6594cabe89c54d05748e34e17ac019c9fd3b1ef35e91b5e833c5c0161ad2ddf7",
+    "biomes/korona/dist/korona-hoar.html": "170ef049f0d26c92ece8d44035941105a07860d5cf5157df7e1d837b40612ab9",
     "biomes/korona/dist/korona.tex.ehigh.js": "cc89b29468bf7a422283fb53caae5a33e735e8e13abade9f6f1cc6386b650356",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "a416af1e3679a39587afbf5d5e341d7c7d7ed8776cd4a650316ef1723736656d",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",

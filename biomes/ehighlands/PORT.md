@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 37 (21%) | 20 (12%) | 6 (4%) | 27 (15%) | 86 (48%) |
+| KB | 37 (21%) | 20 (12%) | 6 (4%) | 27 (15%) | 86 (49%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,7 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/46-host-land.js` | 14.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-host-fields.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-biome-ehigh-species.js` | 44.3 | [draw] | 0 | 9 | 0 | 0 | 0 | 7 | 4 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-biome-ehigh-trees.js` | 36.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/55-biome-ehigh-trees.js` | 36.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-ehigh-floor.js` | 13.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-ehigh.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/84-host-ground.js` | 20.3 | [G shader] | 11 | 3 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 | the ground painter and the ice; the turf polygons are a shader |
