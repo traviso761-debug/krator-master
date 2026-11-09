@@ -31,7 +31,7 @@ const TA_GLZ={G:1,L:1,C:1},TA_GLZD={taWinDisc:'G',taDiscG:'G',taDiscL:'L',taDisc
 // fc: fill colour, band: the archivolt's colour (none: no band), bw: the band's width (.14), out: its stand-off (.06),
 // jambs: true (default) draws the band down the sides too, key: a keystone colour, sill: a sill colour, rail: an iron
 // rail's colour across the foot (a loggia), rev: the reveal (the fill set back into the wall), lobes: cusps (3),
-// gilt: the band in gilt}. Returns the top y.
+// gilt: the band in gilt, card: false lays no room card behind a pane (the wall behind is open: a round hollow drum)}. Returns the top y.
 // No dark voids (the owner, 2026-10-19): an opening asked for as 'D' (or with no fill) is a DOOR when it is door-shaped
 // (2 m or more, taller than wide, no sill or rail; o.door overrides) and a WINDOW (fill 'G', the clear pane) otherwise.
 // A door is timber leaves under a glazed fanlight: real leaves (core/door, 69e5's IZDOOR.leaf: a pair over 1.4 m wide, glazed from 2.4 m)
@@ -46,7 +46,7 @@ function tanArch(x,y,z,ry,w,h,o){o=o||{};const kind=o.kind||'round',bw=o.bw==nul
  if(o.open){}   /* o.open: a clear arch, no fill (a gate passage's far face, the builder's block opened by tanPierBox) */
  else if(fill==='DOOR')tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o);
  else{const F=TA_FILL[fill],glz=TA_GLZ[fill],cut=o.cut!==false&&fill!=='W'&&fill!=='M'&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,false);
-  if(glz){if(!cut)tanSlab('taRoomB',x,yc,z,ry,w,hb,.016-rev,.086,null);tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.012,fc);}
+  if(glz){if(!cut&&o.card!==false)tanSlab('taRoomB',x,yc,z,ry,w,hb,.016-rev,.086,null);tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.012,fc);}
   else tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.1,fc);
   if(kind==='round'||kind==='cusp')tanDiscAt(F[1],x,y+hb,z,ry,r,.03-rev,.1,fc,true);
   else if(kind==='point')tanWedgeAt(fill,x,y+hb,z,ry,w,rise,.02-rev,.08,fc);
@@ -116,9 +116,9 @@ function tanPierBox(item,x,y,z,w,h,d,ry,c,dw,dh){const pw=(w-dw)/2;
 // second pane Talia laid over the Vernacular's dark glass (2026-10-19) is gone
 function tanWin(x,y,z,ry,w,h,kind,frameItem,c,shutters){if(kind==='open')kind='glass';vnWin(x,y,z,ry,w,h,kind,frameItem,c,shutters);}
 // an arcade along a face centred at (x, z): n arches of span w with piers `pier` wide between and at the ends (or
-// columns of order o.col at the piers' places, radius pier*.4, standing o.colOut in front); o passes to tanArch.
-// Returns the run's length
-function tanArcade(x,y,z,ry,n,w,h,pier,o){o=o||{};const len=n*w+(n+1)*pier;for(let k=0;k<n;k++){const u=-len/2+pier+w/2+k*(w+pier);const p=loc(x,z,u,0,ry);tanArch(p[0],y,p[1],ry,w,h,o);}
+// columns of order o.col at the piers' places, radius pier*.4, standing o.colOut in front); o passes to tanArch;
+// o.skip: the arches (0 at -x of the face) left for the builder to draw (a door in the run). Returns the run's length
+function tanArcade(x,y,z,ry,n,w,h,pier,o){o=o||{};const len=n*w+(n+1)*pier;for(let k=0;k<n;k++){if(o.skip&&o.skip.indexOf(k)>=0)continue;const u=-len/2+pier+w/2+k*(w+pier);const p=loc(x,z,u,0,ry);tanArch(p[0],y,p[1],ry,w,h,o);}
  if(o.col)for(let k=0;k<=n;k++){const u=-len/2+pier/2+k*(w+pier);const p=loc(x,z,u,o.colOut==null?.3:o.colOut,ry);tanColumn(p[0],y,p[1],h,pier*.4,o.col,o.cc,o.capC);}
  return len;}
 
