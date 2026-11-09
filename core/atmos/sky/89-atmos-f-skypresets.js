@@ -35,11 +35,14 @@
   //   tint        display [r,g,b] the cloud is drawn toward, keeping its own light and shade (a smog brown-purple, a dull red, a
   //               sickly green, an ash grey: ATMOS.MOOD_PALETTE); tintK 0..1 how far (default 1 when a tint is given)
   //   turbulence  0..1, with turbKind 'violent' (a second, faster noise tears the shape and breaks the edges; the default),
-  //               'ordered' (unnaturally regular rows of identical clouds) or 'glitched' (sectors of sky each on their own wind)
+  //               'ordered' (unnaturally regular rows of identical clouds), 'glitched' (two more sheets of cloud sliding on
+  //               their own winds through the first) or 'ripple' (rings spreading from an epicentre, turbAt [x, z], as from a
+  //               stone dropped in water in slow motion)
   //   glow        0..1 at night (nothing by day): the cloud base lit from below by glowColour (display RGB, default the fires'
-  //               orange), the city's fires or the taint; glowKind 'ethereal' (a slow, soft breathe over the whole sky) or
-  //               'lightning' (frequent flashes under one patch at a time) is read by ATMOS.cloudMood, which animates glow
-  //               and sets glowLocus [x, z, radius, spread] (a page may set them itself: spread 1 lights the whole sky alike)
+  //               orange), the city's fires or the taint; glowKind 'ethereal' (a slow, soft breathe over the whole sky),
+  //               'lightning' (frequent flashes under one patch at a time) or 'orbs' (two small bright lights wandering under the
+  //               cloud: ball lightning, or something flying) is read by ATMOS.cloudMood, which animates glow and sets glowLocus
+  //               [x, z, radius, spread] and glowLocus2 [x, z, radius, on] (a page may set them itself: spread 1 lights the whole sky alike)
   //   mood        true: compile the mood's lines with everything at rest, for a page that drives them later (ATMOS.cloudMood:
   //               the shifting episodes, the owner's "could all be together or separate", sky/89-atmos-k-cloudmood.js)
   clouds:{cover:.32,cumulus:1,cirrus:.55,bank:.35,height:1600,cirrusHeight:9000,scale:2600,drift:.004},
@@ -47,9 +50,9 @@
   fogDensity:.00011,                         // the air's own, x each key's fog
   ridges:[]}};
  // the mood's vocabulary (the shader's uCloudY.x; the palette the episodes draw from: brown, dull red, sickly green, ash grey)
- A.MOOD_TURB={violent:0,ordered:1,glitched:2};
- A.MOOD_PALETTE=[[.42,.33,.30],[.48,.26,.24],[.42,.50,.30],[.46,.45,.44]];
- A.MOOD_GLOW={ethereal:[.55,.78,.72],lightning:[.82,.86,1]};   // the glow colour by kind when the page names none: a pale teal breathe, a blue-white flash
+ A.MOOD_TURB={violent:0,ordered:1,glitched:2,ripple:3};
+ A.MOOD_PALETTE=[[.42,.33,.30],[.48,.26,.24],[.42,.50,.30],[.46,.45,.44],[.52,.44,.66],[.62,.56,.28]];   // brown, dull red, sickly green, ash, ghostly purple, jaundice yellow
+ A.MOOD_GLOW={ethereal:[.55,.78,.72],lightning:[.82,.86,1],orbs:[.90,.96,1]};   // the glow colour by kind when the page names none: a pale teal breathe, a blue-white flash, white lights
  const clone=o=>JSON.parse(JSON.stringify(o));
  const merge=(a,b)=>{for(const k in b){const v=b[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))merge(a[k],v);else a[k]=clone(v);}return a;};
  A.skyPreset=(base,over)=>merge(clone(A.PRESETS.sky[base==null?'standard':base]),over||{});

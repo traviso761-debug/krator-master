@@ -310,9 +310,9 @@ the sky host). Four settings on the sky preset's `clouds`, each absent by defaul
 | key | what |
 |---|---|
 | `dark` 0..1 | the cloud's lit colour pulled toward a storm grey (0.62 of its luminance), its shadow side blacker (0.22) |
-| `tint` [r,g,b], `tintK` 0..1 | drawn toward the tint's hue, keeping its own light and shade; `ATMOS.MOOD_PALETTE` is brown, dull red, sickly green, ash |
-| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (rows of identical clouds on the lattice), `glitched` (sectors of two cells each riding its own hashed wind: the seams are the point) |
-| `glow` 0..1, `glowColour`, `glowLocus` | at night only (`uNight`): the base lit from below by the colour, strongest where the cloud is thick; `glowLocus` [x, z, radius, spread] lights one patch (spread 0) or the whole sky (spread 1, the default) |
+| `tint` [r,g,b], `tintK` 0..1 | drawn toward the tint's hue, keeping its own light and shade; `ATMOS.MOOD_PALETTE` is brown, dull red, sickly green, ash, ghostly purple, jaundice yellow |
+| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (rows of identical clouds on the lattice), `glitched` (two more sheets of cloud under the first, one across the page's wind at 1.6x its speed and finer, one 120 degrees round at 0.7x and coarser, the three unioned: clouds slide through each other as if each felt its own wind; `ATMOS.MOOD_SHEETS`), `ripple` (rings spreading from `turbAt` [x, z] as from a stone dropped in water, in slow motion: a 1.2 km wave at 40 m/s pushing the cloud's shape to and fro along the radius and its density with the crest, dying over 8 km) |
+| `glow` 0..1, `glowColour`, `glowLocus`, `glowLocus2` | at night only (`uNight`): the base lit from below by the colour, strongest where the cloud is thick; `glowLocus` [x, z, radius, spread] lights one patch (spread 0) or the whole sky (spread 1, the default); `glowLocus2` [x, z, radius, on] a second light (the orbs' pair) |
 | `mood` true | compile the lines with everything at rest, for a page that drives them later |
 
 The turbulence lives in the shared cloud field, so `ATMOS.cloudShade`'s shadows are torn, ordered or glitched with the cloud.
@@ -320,17 +320,18 @@ The lines compile only when the preset asks (any of the four, or `mood`), decide
 `ATMOS.skyGLSL()` and `cloudShadeGLSL()` are otherwise the text they were (and the Godot include's digest holds).
 `ATMOS.skyCloudAt(d, U)` is the layer's JS twin on the same noise volume (`skyCloudUniforms(preset, look, state, {cam, wind,
 time, air})` builds `U`): `test-sky.js` holds that a dark cloud is darker, a tinted one nearer its tint and as bright, a violent
-field rougher, an ordered one periodic, a glitched one the plain field carried along each cell's heading, the glow zero by day and
+field rougher, an ordered one periodic, a glitched one a union of sheets the page's wind alone does not carry, a rippling one changed near its epicentre and plain 60 km out, the glow zero by day and
 under one patch when its locus says so.
 
 **Shifting** (`ATMOS.cloudMood(S, o)`, right after `ATMOS.sky` and before the first render): episodes of `period` seconds (300),
 each drawn from a hash of (seed, episode): each of the three effects on or off on its own (`chance` {tint .6, glow .5,
 turbulence .6}: alone, together, or a quiet spell), the tint from the `palette` (or by area: `tintAt(x, z)` at the eye returns a
-colour or null), the turbulence in one of the three kinds, the glow in one of two, the dark riding whenever anything is on
-(`dark` [.35, .9]); neighbours blend over the last `blend` (.3) of the period. `glowKind` `ethereal` is a slow breathe over the
-whole sky (18 s value noise, .55..1); `lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of
-the eye, decaying in ~0.3 s, a dim floor between (in-cloud light only: a page that wants bolts has the weather's lightning,
-`fx/89-atmos-fx-lightning.js`). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
+colour or null), the turbulence in one of the four kinds (a ripple's epicentre latched near the eye when the episode comes,
+`turbOffset`), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours blend over the
+last `blend` (.3) of the period. `glowKind` `ethereal` is a slow breathe over the whole sky (18 s value noise, .55..1);
+`lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of the eye, decaying in ~0.3 s, a dim floor
+between (in-cloud light only: a page that wants bolts has the weather's lightning, `fx/89-atmos-fx-lightning.js`); `orbs` are two
+small bright lights (300-600 m across) wandering on value-noise paths within 3 km of the eye, ball lightning or something flying. `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
 `ATMOS.MOOD_GLOW`. All of it is `ATMOS.moodAt(t, o)` and `ATMOS.moodGlow(t, kind, seed, eye)`: plain numbers from the module
 clock, the same in Godot (`GODOT.md`); the host writes them into `preset.clouds` each frame and `S.mood` is the episode now.
 
@@ -339,8 +340,8 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{clouds:{mood:true,cover:.5}}),{r
 ATMOS.cloudMood(SKY,{seed:7,glowColour:[1,.55,.2],tintAt:(x,z)=>F.taint(x,z)});   /* the fires' orange; the taint's colour by place */
 ```
 
-The demo (`demo/`, `#mood=smog|ash|green|shift`, `#smog=1`) shows a dark tinted turbulent sky, the shifting episodes and a mist
-with a field.
+The demo (`demo/`: Colour, Pattern, Glow and Dark toggles, a Shifting switch, Smog mist; `#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1`)
+shows a dark tinted turbulent sky, the shifting episodes and a mist with a field.
 
 ## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
 

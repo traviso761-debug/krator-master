@@ -176,9 +176,15 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  const per=U=>pairs.reduce((s,p)=>s+Math.abs(A.skyCloudField(p[0],5,U)-A.skyCloudField([p[0][0]+U.scale,p[0][1]],5,U)),0)/pairs.length;
  const p0=per(U0),po=per(with_(U0,{turbulence:1,turbKind:'ordered'}));
  ok('an ordered field repeats every lattice cell: a point and the next cell\'s differ by '+po.toFixed(4)+' against '+p0.toFixed(4)+' in the default',po<.35*p0,po>=p0);
- const Ug=with_(U0,{turbulence:1,turbKind:'glitched'}),h1=A.skyMoodCellHeading(0,0),h2=A.skyMoodCellHeading(1,0),h3=A.skyMoodCellHeading(0,1);
- const cellP=xz=>{const p=[xz[0]/U0.scale,xz[1]/U0.scale],h=A.skyMoodCellHeading(Math.floor(p[0]*.5),Math.floor(p[1]*.5)),k=U0.time*U0.drift*2;return[xz[0]+Math.cos(h)*k*U0.scale,xz[1]+Math.sin(h)*k*U0.scale];};
- ok('a glitched field: neighbouring cells ride different headings, each cell the default field carried along its own wind',Math.abs(h1-h2)>.3&&Math.abs(h1-h3)>.3&&pairs.every(p=>near(A.skyCloudField(p[0],5,Ug),A.skyCloudField(cellP(p[0]),5,U0),1e-9)),near(h1,h2,1e-9));
+ const Ug=with_(U0,{turbulence:1,turbKind:'glitched'}),dt=400,shift=[U0.wind[0]*dt*U0.drift*U0.scale,U0.wind[1]*dt*U0.drift*U0.scale];
+ const carried=(U,p)=>Math.abs(A.skyCloudField(p,5,with_(U,{time:U.time+dt}))-A.skyCloudField([p[0]+shift[0],p[1]+shift[1]],5,U));
+ const plainC=pairs.reduce((s,p)=>s+carried(U0,p[0]),0)/pairs.length,glC=pairs.reduce((s,p)=>s+carried(Ug,p[0]),0)/pairs.length;
+ ok('a glitched field is a union of sheets (never under the first by more than .05) that the page\'s wind alone does not carry: the plain field rides with it ('+plainC.toExponential(1)+'), the glitched one changes under it ('+glC.toFixed(3)+')',
+  pairs.every(p=>A.skyCloudField(p[0],5,Ug)>=A.skyCloudField(p[0],5,U0)-.05-1e-9)&&plainC<1e-6&&glC>.01&&A.MOOD_SHEETS.length===2,glC<=plainC);
+ const Ur=with_(U0,{turbulence:1,turbKind:'ripple',turbAt:[0,0]}),nearE=pairs.filter(p=>Math.hypot(p[0][0],p[0][1])<3000),farR=[[60000,0],[0,70000],[-65000,5000]];
+ ok('a rippling field differs from the plain one within a few km of its epicentre and is the plain one again 60 km out (the rings die over 8 km)',nearE.length>3&&nearE.every(p=>Math.abs(A.skyCloudField(p[0],5,Ur)-A.skyCloudField(p[0],5,U0))>1e-4)&&farR.every(p=>near(A.skyCloudField(p,5,Ur),A.skyCloudField(p,5,U0),1e-3)),nearE.every(p=>near(A.skyCloudField(p[0],5,Ur),A.skyCloudField(p[0],5,U0),1e-4)));
+ {const r1=A.skyCloudField([2000,0],5,Ur),r2=A.skyCloudField([2000,0],5,with_(Ur,{time:U0.time+15})),r0=A.skyCloudField([2000,0],5,with_(U0,{time:U0.time+15}));
+  ok('...and the rings move: 15 s on, the field at a fixed point has changed by more than the wind alone moved it',Math.abs(r2-r1)>1.5*Math.abs(r0-A.skyCloudField([2000,0],5,U0)),false);}
  // the glow: nothing by day, the base lit at night, only near the locus unless spread
  const Um=A.skyCloudUniforms(P,Lm,mid,base),ndirs=[];for(let az=0;az<360&&ndirs.length<6;az+=7){const d=V.fromAltAz(20,az);if(A.skyCloudAt(d,Um).a>.4)ndirs.push(d);}
  const nmean=(U,f)=>ndirs.reduce((s,d)=>s+f(A.skyCloudAt(d,U)),0)/ndirs.length,gcol=[1,.55,.2];
@@ -197,7 +203,8 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  const on=m=>(m.tintK>0?1:0)+(m.glow>0?1:0)+(m.turbulence>0?1:0),alone=eps.filter(m=>on(m)===1).length,together=eps.filter(m=>on(m)>=2).length,quiet=eps.filter(m=>on(m)===0).length;
  ok('over 80 episodes the effects come alone ('+alone+'), together ('+together+') and not at all ('+quiet+')',alone>10&&together>10&&quiet>2&&alone+together+quiet===80,alone===0||together===0);
  const inPal=eps.every(m=>m.tintK===0||A.MOOD_PALETTE.some(c=>c.every((v,i)=>near(v,m.tint[i],1e-9))));
- ok('every tint is from the palette, the dark rides with any effect (0.35..0.9) and rests at 0 in a quiet spell, every kind named',inPal&&eps.every(m=>on(m)?m.dark>=.35&&m.dark<=.9:m.dark===0)&&eps.every(m=>A.MOOD_DEFAULTS.turbKinds.includes(m.turbKind)&&A.MOOD_DEFAULTS.glowKinds.includes(m.glowKind)),!inPal);
+ ok('every tint is from the palette, the dark rides with any effect (0.35..0.9) and rests at 0 in a quiet spell, every kind named, a ripple epicentre within 2.5 km',inPal&&eps.every(m=>on(m)?m.dark>=.35&&m.dark<=.9:m.dark===0)&&eps.every(m=>A.MOOD_DEFAULTS.turbKinds.includes(m.turbKind)&&A.MOOD_DEFAULTS.glowKinds.includes(m.glowKind)&&Math.abs(m.turbOffset[0])<=2500&&Math.abs(m.turbOffset[1])<=2500),!inPal);
+ ok('the palette holds six: brown, dull red, sickly green, ash, ghostly purple, jaundice yellow; four patterns, three glows',A.MOOD_PALETTE.length===6&&A.MOOD_DEFAULTS.turbKinds.length===4&&A.MOOD_DEFAULTS.glowKinds.length===3&&A.MOOD_TURB.ripple===3&&eps.some(m=>m.turbKind==='ripple')&&eps.some(m=>m.glowKind==='orbs'),false);
  ok('the same seed gives the same episodes, another seed others',JSON.stringify(A.moodAt(1234,{seed:3}))===JSON.stringify(A.moodAt(1234,{seed:3}))&&JSON.stringify(A.moodAt(1234,{seed:3}))!==JSON.stringify(A.moodAt(1234,{seed:4})),JSON.stringify(A.moodAt(1234,{seed:3}))===JSON.stringify(A.moodAt(1234,{seed:4})));
  const e0=A.moodAt(300*5+10,{seed:3}),e1=A.moodAt(300*5+200,{seed:3}),e2=A.moodAt(300*5+299.9,{seed:3}),nx=A.moodAt(300*6+10,{seed:3});
  ok('an episode holds for 70% of its period and blends into the next over the last 30%',JSON.stringify(e0)===JSON.stringify(e1)&&e2.blend>.99&&near(e2.dark,nx.dark,.01)&&near(e2.turbulence,nx.turbulence,.01),e0.blend>0);
@@ -211,5 +218,10 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  ok('ethereal: a slow breathe between .55 and 1 (seen '+minE.toFixed(2)+'..'+maxE.toFixed(2)+'), never jumping more than .02 a twentieth of a second',jumpE<.02&&minE>=.55&&maxE<=1&&maxE-minE>.2,jumpE>=.3);
  const lf=A.moodGlow(3.3,'lightning',1,[500,-200]).locus,le=A.moodGlow(3.3,'ethereal',1,[500,-200]).locus;
  ok('a flash lights one patch (a locus within 6 km of the eye, 2-4.5 km across, spread .12); the breathe the whole sky (spread 1)',Math.abs(lf[0]-500)<=6000&&Math.abs(lf[1]+200)<=6000&&lf[2]>=2000&&lf[2]<=4500&&lf[3]===.12&&le[3]===1,lf[3]===1);
+ {const o1=A.moodGlow(10,'orbs',1,[500,-200]),o2=A.moodGlow(15,'orbs',1,[500,-200]),d=Math.hypot(o1.locus[0]-o2.locus[0],o1.locus[1]-o2.locus[1]);
+  ok('orbs: two small bright lights (300-600 m, k above 1.6, the second on) within 3 km of the eye, wandering ('+d.toFixed(0)+' m in 5 s)',o1.locus[2]>=300&&o1.locus[2]<=600&&o1.locus[3]===0&&o1.locus2[3]===1&&o1.k>=1.6&&Math.abs(o1.locus[0]-500)<=3000&&Math.abs(o1.locus2[1]+200)<=3000&&d>20&&le.length===4&&A.moodGlow(3.3,'ethereal',1,[0,0]).locus2[3]===0,d===0);
+  const d0=ndirs[0],hx=Um.cam[0]+d0[0]/d0[1]*(Um.height-Um.cam[1]),hz=Um.cam[2]+d0[2]/d0[1]*(Um.height-Um.cam[1]);   /* where that view ray meets the cloud plane */
+  const Uo=with_(Um,{glow:1,glowColour:gcol,glowLocus:[0,0,500,0],glowLocus2:[40000,0,500,1]}),Uo2=with_(Uo,{glowLocus2:[hx,hz,600,1]});
+  ok('...the second light lights the base too: moved from 40 km off to under a view ray it lights that cloud',lum(A.skyCloudAt(d0,Uo2).rgb)>lum(A.skyCloudAt(d0,Uo).rgb)+.05,lum(A.skyCloudAt(d0,with_(Uo2,{glowLocus2:[hx,hz,600,0]})).rgb)>lum(A.skyCloudAt(d0,Uo).rgb)+.05);}
  ok('the noise twin reads the shader\'s volume: in -1..1, the same for the same point, smooth',(()=>{let okk=true,p=0;for(let i=0;i<200;i++){const x=[i*.37,i*.11,i*.05],n=A.skyNoiseAt(x,100);if(!(n>=-1&&n<=1)||n!==A.skyNoiseAt(x,100)||Math.abs(n-p)>.6)okk=false;p=n;}return okk;})(),false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
