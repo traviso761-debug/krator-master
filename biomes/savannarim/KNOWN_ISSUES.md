@@ -7,8 +7,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **J2-J6 (2026-11-08): the kit, built in a cloud session on CPU checks only** (`biomes/hyperjungle/PLAN-LANDS.md` section 13). Checked
       here: every page builds (`tools/build.py`), the lints pass (`check_core_use`, `check_assembly`, `check_port`, `check_source`,
       `check_cells`), and each page was loaded in Chromium on SwiftShader (no GPU) with its host checks, negatives and the core guards (the
-      card guard, the attachment audit, one LOD key a tree) all passing. **Not checked: `verify.py` (none is written yet: the next session
-      writes it on the shared harness, `tools/harness.py`), the look, the frame time, the draw calls past the default camera.**
+      card guard, the attachment audit, one LOD key a tree) all passing. **Not checked: `verify.py --assert` (written: crater-drylands' on the shared harness, each
+      station's export box on its river; not run here), the look, the frame time, the draw calls past the default camera.**
   - **J4, the base and the north savannah** (`--station north`; the base also on station 1's map):
     - The base: red oat grass (`SAVRIM.grass`, by the burn's age: none on this season's ash, full from three years), blind grass
       (`SAVRIM.blindGrass`, with the raiders' lanes), the fan palm, the umbrella thorn, the gallery forest (the hyperjungle's six at 0.3-0.5
@@ -30,7 +30,7 @@ Read before changing anything here. `build.py` prints the open count.
       stems), its bark vertex colour.
     - **Not built here:** fauna (the savannah's herds: a later step with kits/fauna's lands, as the hyperjungle's stations have), the
       laterite pavements' ironstone as a KFIELD/C4 `pavement` (only the ground's paint; `ground.ironstone` owed), crops (`kits/crops`
-      `savannarim`: PLAN-LANDS.md section 8), a `verify.py`.
+      `savannarim`: PLAN-LANDS.md section 8).
   - **J5, the e rim** (`--station east`; `src/52`, `stations/east/`): the old lines, seven cousins by BIO.kin of eastabyss's and the e
     highlands' builders read in place (the e highlands' registry is `ehigh`, so `ehigh.vigil` etc.): fire scale-trees on the old burns,
     the monsoon cycads flushing on burns 1-5 years old (brighter the younger), dambo horsetails, ember spikes (flowering on this season's and
