@@ -249,7 +249,7 @@
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.55,
-   "km2": 1199164
+   "km2": 1199124
   },
   {
    "code": "WS",
@@ -262,15 +262,15 @@
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 6.17,
-   "km2": 773836
+   "pct": 6.15,
+   "km2": 771356
   },
   {
    "code": "HF",
    "name": "hyperalpine ice",
    "color": "#eef0f7",
    "pct": 5.64,
-   "km2": 708136
+   "km2": 708076
   },
   {
    "code": "Csa",
@@ -290,15 +290,15 @@
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
-   "pct": 3.37,
-   "km2": 422776
+   "pct": 3.36,
+   "km2": 421092
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 408376
+   "km2": 407804
   },
   {
    "code": "BSh",
@@ -333,14 +333,14 @@
    "name": "warm-summer continental",
    "color": "#37c8ff",
    "pct": 2.19,
-   "km2": 274848
+   "km2": 274920
   },
   {
    "code": "HT",
    "name": "hyperalpine tundra (<0.6 atm)",
    "color": "#d8dbe8",
    "pct": 2.04,
-   "km2": 256244
+   "km2": 256164
   },
   {
    "code": "Aw",
@@ -367,8 +367,8 @@
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 1.49,
-   "km2": 187504
+   "pct": 1.43,
+   "km2": 179576
   },
   {
    "code": "Af",
@@ -381,8 +381,8 @@
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
-   "pct": 0.75,
-   "km2": 93912
+   "pct": 0.72,
+   "km2": 89992
   },
   {
    "code": "XV",
@@ -396,7 +396,7 @@
    "name": "highland lake",
    "color": "#5c9ea8",
    "pct": 0.51,
-   "km2": 64128
+   "km2": 64244
   },
   {
    "code": "WX",
@@ -437,29 +437,29 @@
    "code": "Cwb",
    "name": "subtropical highland",
    "color": "#64c864",
-   "pct": 0.09,
-   "km2": 10828
+   "pct": 0.12,
+   "km2": 15180
   },
   {
    "code": "Dwc",
    "name": "dry-winter subarctic",
    "color": "#4b50b4",
-   "pct": 0.04,
-   "km2": 4940
+   "pct": 0.05,
+   "km2": 6044
   },
   {
    "code": "Cwa",
    "name": "monsoon subtropical",
    "color": "#96ff96",
    "pct": 0.03,
-   "km2": 4000
+   "km2": 4372
   },
   {
    "code": "Dwb",
    "name": "dry-winter warm continental",
    "color": "#5a78dc",
-   "pct": 0.01,
-   "km2": 1084
+   "pct": 0.09,
+   "km2": 11832
   },
   {
    "code": "Cwc",

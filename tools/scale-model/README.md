@@ -553,6 +553,47 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
    - **Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
      Sculpted along the `s highlands` north edge over `hyperjungle S` and `savage hyperjungle` as a sharp `4–5 cell` (`8–10 km`) step from the `210–420 m` talus foot through the `1,520–1,950 m` cloud-forest bench (`Cfb`) to the `3,320–3,780 m` paramo rim crest (`ET`), indented by 15 recessed V-ravines and projecting megabreccia buttresses while keeping **Spirladunon** (`px 800, 1017` at `1,398.2 m`), **Voth** (`px 742, 1018`), **Torus** (`px 774, 1007`), and **Pylon** (`px 869, 1002`) intact.
 
+## 5.1 edit 1: `edit_511.py` (2026-11-09): the owner's decisions on the biome plans
+
+`python3 tools/scale-model/edit_511.py` edits `model/data` (and the records below) in place and writes
+`edit_511.report.json`; it refuses to run twice (the cave record is its marker). Every number is the plans'.
+
+- **The Epidote-Steam Tarn's way in** (`biomes/neouterwall/PLAN.md` 2a). The **Portal Valley**: a trough one to two cells
+  wide cut into the NE outer wall's back from 1330,295 to 1331,302, floor 5,530 / 5,750 / 5,850 / 5,900 m at rows 295 /
+  298 / 300 / 302, cut 0 to 1,314 m, 28 cells, draining north (no pit made). The **Epidote Cave** (`tube_epidote_16`): a
+  hypogene marble cave on the Outland Gate fault, portal 1331,302 by 1333,312, 1335,322, 1337,330 to the inner mouth
+  1340,336 (~2,700 m), 71 km, with the Portal, the Marble Hall and the Inner Mouth as caverns. A record only: nothing is
+  carved; its floors are in its `notes` (its `depth_m` is 0, as it cannot describe a passage 6 km down).
+- **The Godthrone's brine lake** (`biomes/godshearth/PLAN.md` 1a), relocated from the caldera (where 5.0 cleared it) to
+  **876,1440**: 29 cells (116 km²) at 6,420 m, bed 6,270-6,380 m (a carve of up to 560 m on the east), behind a lip
+  held at 6,750-6,800 m (a fill of up to 983 m on the west, where the ground fell to 5.8 km), spill 6,768 m: closed,
+  22 km above r442's head (the bloodfalls; r442 unchanged). The stale basin record at 842.7,1397.5 moved to it (`salt
+  lake`); `cav_god_brine_throat`'s note (6,415 m under the ice) rewritten as the drained lake's throat.
+- **Godshearth's climate** (the same plan, section 3). `build_425_master.py` (l. 4164) forced a Cfb oasis in as
+  `old = native (1 - w) + target w`, `w` reaching 24 px past the polygon onto the walls; the edit swaps the old target for
+  the new one under the same weight (rebuilt without the 5.0 build's noise terms), so the walls keep their seam with the
+  flank: warm month 15 C and cold month -2 C at 3,640 m, 6 C per km (signed: the spillway is warmer), mean their middle;
+  hottest afternoon 9 C over the warm month (24 C), coldest night 8 C under the cold month (-10 C), to -18 C in the cold-air
+  pools (the bowl's lowest floor, under 3,650 m, away from the hot lake: 46 cells). Floor +7 C (15/-2, 24/-10), benches
+  +4 C (12/-5, 21/-13), spillway +9 C, 5 km -1 C. Classes from the temperatures (rain 750-925 mm, never B, always `w`):
+  Cwb on the floor (Dwb on its upper edge: the cold month crosses -3 C at about 3,720 m), Dwb on the benches, Dwc and ET above, where the old block set them (w > 0.2, under 6,250 m). The
+  rain totals are kept; their season (about 70% in summer afternoons) is in the region's note, as the model holds annual
+  rain only. The Godthrone's native field round the caldera is warm for its height (+5 to +22 C at 7-8 km): untouched.
+- **The Gate** (`sthegate`) moved from 1408,414 (8,002 m) to the Outland Gate's Narrows, **1438,326** (1,423 m), its note
+  the toll fort and the long wall (`biomes/outlandgate/PLAN.md` 5).
+- **Region 99** (`rmvraoas90co7`): its north edge rerouted along the Great Chasm's south edge (1736,1013 by 1723,1032,
+  1696,1028, 1667,1022, 1660,1003 to 1662,998), so the sill and the trade post (1697,1028) are the Great Chasm's; the
+  overlap falls from 1,544 cells to 57 shared edge cells.
+- **Where the records live.** The page's defaults (`model/src/60-settlements.js`, `51-region-store.js`, with one-time
+  reconciles `krator.settMoved.5.1e1` and `krator.regMerged.5.1e1` for browsers holding a saved copy) and
+  `openworld/little-demo/source/regions.json` are edited by the script. **The live artifact's database is on the old
+  canvas:** 110 of its 112 settlements and 93 of its 99 regions are the 4.2x coordinates, exactly (-272, -330) from the
+  defaults, and the page draws them unshifted over the 5.1 defaults. The edit wrote only its two records there, on the 5.1
+  canvas and marked `canvas: "5.1 (1821x1723)"` (`sthegate` v2, `rmvraoas90co7` v2); the rest wants a migration.
+- `tests/test_smodel.py` section 14 checks the valley's floor and trough, the cave record, the lake (29 wet cells at
+  6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
+  and the sill.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
