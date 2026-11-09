@@ -42,9 +42,11 @@ As the last handoff said (chains, the capsule push, the hull, chainless pieces o
 
 ## The audit, and how to use it
 
-- `tools/garment_audit.py <out> [--match s] [--bodies b] --page dist/cosmetic-lab.html` with `AUDIT_GL=d3d11`; `--check`
-  against `tests/garment-audit.json` (66 outfits, round 4's tools). One outfit takes a minute on the GPU, the 66 about
-  ten; the records are repeatable now, so a one-line variant is measured by packing it into a copy of the built page
+- `tools/garment_audit.py <out> [--match s] [--bodies b] [--known] --page dist/cosmetic-lab.html` with `AUDIT_GL=d3d11`;
+  `--check` against `tests/garment-audit.json` (66 outfits, round 4's tools; `--known` sweeps those alone, where
+  `peoples.json` has grown to 220, and `--baseline <dir>` *writes* the baseline: never confuse the two). One outfit
+  takes a minute on the GPU, the 66 about ten alone; run one sweep at a time on a loaded machine, four at once ran
+  out of memory; the records are repeatable now, so a one-line variant is measured by packing it into a copy of the built page
   (the fragment source is in the page verbatim) and running the outfit it concerns. Read "under" and "inside" as the
   gated classes; "hole" is not gated.
 - `tools/cloth_probe.py dist/cosmetic-lab.html [base,no-wind,rigid,skirt-only]`: verify.py's court-skirt check taken
