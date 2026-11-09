@@ -108,13 +108,16 @@ with no station they are not taken, and station 1 runs as before.
   hash of the tree so no other tree moved; the yucca and the Joshua tree take the shared roasted-stalk piece
   (`generic_fruit_yucca`, its flowers drawn as before). The probe checks it (`fruit tagged, catalogued and drawn`).
   Nectar (mallee, tree aloe, pincushion), the pillar's pith and the jade's leaves are named in the tags, not catalogued.
-- [x] **Fauna** (2026-11-09; sedesert's way): `kits/fauna`'s wild, ash, livestock and mounts groups are on every page of this kit
-  (`39-host-fauna.js`, no texture pack), for the editor's fauna mode: the palette lists this biome's animals first (the bison, the ash
-  runner, the salamander, the Scyvoi's mounts...), each put down is drawn, registered as a core/tags life record and idles and grazes on
-  the host's clock (99-host-take.js, `CD_WORLD`). Nothing is placed at load: herds belong to a world.
-- [ ] **Fauna still owed:** the burn-hawk and the hot-spring axolotl (`kits/fauna/BIOME-FAUNA-PLAN.md`: not built yet); the char beetle
-  (the fauna kit's hyperjungle group) and the farm group's crater animal are not bundled (120 KB and 80 KB more for one each). A Scyvoi camp
-  on a kopje is a settlement, not part of a biome.
+- [x] **Fauna** (2026-11-09; sedesert's way): `kits/fauna`'s wild, ash, livestock, mounts and hyperjungle groups are on every page of this
+  kit (`39-host-fauna.js`, no texture pack; 153 animals), for the editor's fauna mode: the palette lists this biome's animals first (the
+  ash runner, the salamander, the burn-hawk, the hot-spring axolotl, the char beetle, the goat, the donkey, the Bactrian camel, the cinder
+  crawler, the Scyvoi's mounts...), each put down is drawn, registered as a core/tags life record and idles and grazes on the host's clock
+  (99-host-take.js, `CD_WORLD`). Nothing is placed at load: herds belong to a world. The farm group's crater animal is not bundled (80 KB
+  for one). A Scyvoi camp on a kopje is a settlement, not part of a biome.
+- [ ] **A kits/fauna finding:** `fauna_bundle.bundle(groups)` takes no group's dependencies: the wild group calls the hyperjungle group's
+  `faHiMix` while it registers, so a bundle of `wild` without `hyperjungle` throws at load (it took this page down before `BIO.init`; caught
+  by a headless load). The bundler should add a group's needs, or the helper move to `fauna-core.js` (kits/fauna's, not this turn's).
+  `kits/fauna/BIOME-FAUNA-PLAN.md` still marks the burn-hawk and the axolotl unbuilt; both are in the hyperjungle group.
 
 ## The fire
 

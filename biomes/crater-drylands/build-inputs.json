@@ -3,9 +3,9 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "2354465f42bde4731e64b388f7097e45bfbb71987dd070c810e7864023153bab",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "870303ea11eea5379798d55735081a50aa4205e081f88c71a3df42ae2328ac92",
     "biomes/crater-drylands/PORT.md": "4fb9087eb6add3980d38dea24881f6af7d6196dee708e420a19ed1b1cd310587",
-    "biomes/crater-drylands/build.py": "245e5a1e6810ec926ef0b3beb6a38a011e402961edf50dc8d8c8a6c55b455eec",
+    "biomes/crater-drylands/build.py": "da0348884328621e0540bd5a423eef8fcdad51c6c12226f02ff8239e7ca526ca",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
     "biomes/crater-drylands/src/45-host-stage.js": "7fe587d7e0c8375e8c024379a3866f425605dde9237789ef8a38b932e39ad3dd",
     "biomes/crater-drylands/src/50-biome-craterdry-species.js": "90ed4eb4040e12b77207ea7fedfd6a7265c6488b5c984535a34b60b7e60ad100",
@@ -128,6 +128,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-ash.js": "a86238b7017d847449cac13f0520a2dde6d0d3eadd1c9b174a0b8385841c6e8b",
+    "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-livestock.js": "72593629178ab8a4e86823e900506050eea0629c16735156b89a1566da0cc5a2",
     "kits/fauna/krator-fauna-mounts.js": "972ea764173a7ac9c6390d37ba8c8c86e63a5cd08a254c7e798afb20420dae7a",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -143,17 +144,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands.html": "51e53ed369aa1716e65786e929ee41e0c69a57ce0ac6ce8eb10ae2a57815a477"
+    "biomes/crater-drylands/dist/crater-drylands.html": "f4ce331626c51ba79e38fab4278ef9045ecfa8fc7fdfdeb607179e89a9918c4d"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands.html": "51e53ed369aa1716e65786e929ee41e0c69a57ce0ac6ce8eb10ae2a57815a477"
+    "biomes/crater-drylands/dist/crater-drylands.html": "f4ce331626c51ba79e38fab4278ef9045ecfa8fc7fdfdeb607179e89a9918c4d"
    }
   },
   "build.py --station edge": {
    "inputs": {
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "2354465f42bde4731e64b388f7097e45bfbb71987dd070c810e7864023153bab",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "870303ea11eea5379798d55735081a50aa4205e081f88c71a3df42ae2328ac92",
     "biomes/crater-drylands/PORT.md": "4fb9087eb6add3980d38dea24881f6af7d6196dee708e420a19ed1b1cd310587",
-    "biomes/crater-drylands/build.py": "245e5a1e6810ec926ef0b3beb6a38a011e402961edf50dc8d8c8a6c55b455eec",
+    "biomes/crater-drylands/build.py": "da0348884328621e0540bd5a423eef8fcdad51c6c12226f02ff8239e7ca526ca",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
     "biomes/crater-drylands/src/50-biome-craterdry-species.js": "90ed4eb4040e12b77207ea7fedfd6a7265c6488b5c984535a34b60b7e60ad100",
     "biomes/crater-drylands/src/52-biome-craterdry-fire.js": "36ae895edad2ca7a1ffb450765b1e8ec2d15f4801a68813f3415bc07fecefc1e",
@@ -325,6 +326,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-ash.js": "a86238b7017d847449cac13f0520a2dde6d0d3eadd1c9b174a0b8385841c6e8b",
+    "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-livestock.js": "72593629178ab8a4e86823e900506050eea0629c16735156b89a1566da0cc5a2",
     "kits/fauna/krator-fauna-mounts.js": "972ea764173a7ac9c6390d37ba8c8c86e63a5cd08a254c7e798afb20420dae7a",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -341,10 +343,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "c068b62845f1c5c8ed6f952ea18c390921ed28ef7e876ba4d1482257aef22fb2"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "a078b895b34e3f79ecec3a2f5133cc3f704b81bb28eb8df5330f0d9b0daba459"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "c068b62845f1c5c8ed6f952ea18c390921ed28ef7e876ba4d1482257aef22fb2"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "a078b895b34e3f79ecec3a2f5133cc3f704b81bb28eb8df5330f0d9b0daba459"
    }
   },
   "build.py --station salt": {
@@ -378,9 +380,9 @@
     "biomes/abyssal-savannah/tex/thatch.albedo.webp": "1e934c5e230d47fbc5fdf0686bd4291d5a61c5395a21de727b9078e2ee14262a",
     "biomes/abyssal-savannah/tex/tongue.albedo.webp": "75f4121cd38450d40bf631389a185cff5c0ddd0bd4a66e84faa905002aabeeda",
     "biomes/abyssal-savannah/tex/vain.albedo.webp": "3e5ba926c501cf912665c625de20d1565065087dcafc3d99469e319a508ab29f",
-    "biomes/crater-drylands/KNOWN_ISSUES.md": "2354465f42bde4731e64b388f7097e45bfbb71987dd070c810e7864023153bab",
+    "biomes/crater-drylands/KNOWN_ISSUES.md": "870303ea11eea5379798d55735081a50aa4205e081f88c71a3df42ae2328ac92",
     "biomes/crater-drylands/PORT.md": "4fb9087eb6add3980d38dea24881f6af7d6196dee708e420a19ed1b1cd310587",
-    "biomes/crater-drylands/build.py": "245e5a1e6810ec926ef0b3beb6a38a011e402961edf50dc8d8c8a6c55b455eec",
+    "biomes/crater-drylands/build.py": "da0348884328621e0540bd5a423eef8fcdad51c6c12226f02ff8239e7ca526ca",
     "biomes/crater-drylands/src/00-head.html": "4fc0b06b6364dbf95830a0d07b2a46cc3532aeb35701052cb3fac64ae7ea07ca",
     "biomes/crater-drylands/src/50-biome-craterdry-species.js": "90ed4eb4040e12b77207ea7fedfd6a7265c6488b5c984535a34b60b7e60ad100",
     "biomes/crater-drylands/src/52-biome-craterdry-fire.js": "36ae895edad2ca7a1ffb450765b1e8ec2d15f4801a68813f3415bc07fecefc1e",
@@ -511,6 +513,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-ash.js": "a86238b7017d847449cac13f0520a2dde6d0d3eadd1c9b174a0b8385841c6e8b",
+    "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-livestock.js": "72593629178ab8a4e86823e900506050eea0629c16735156b89a1566da0cc5a2",
     "kits/fauna/krator-fauna-mounts.js": "972ea764173a7ac9c6390d37ba8c8c86e63a5cd08a254c7e798afb20420dae7a",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -527,10 +530,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "784cd00e630eb1d1dd422056b383ab336ef26e2e1d14fd173a733473fbb1d9f6"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "afcf4bc0ea4e9e177eb9cd09552d570c0c586daaef5e6749f0871e5935678f82"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "784cd00e630eb1d1dd422056b383ab336ef26e2e1d14fd173a733473fbb1d9f6"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "afcf4bc0ea4e9e177eb9cd09552d570c0c586daaef5e6749f0871e5935678f82"
    }
   }
  }
