@@ -24,6 +24,8 @@ highway, no town tile). The isle's own checks:
   - the founding (settlements/isle-demo 47f, 48f): the sim's hooks installed, a farm site for a camp of each town on good
     ground apart from every village (the negative puts the site beside a village). A founding itself takes days of the
     sim: tests/test-isle-found.js runs it. The camp shelters: a stand-in camp pitched from the kit, every piece a proto.
+  - the herding bands (47n, 48n): one a town, its camp on dry pasture, named, drawn (the negative moves a camp off its
+    pasture); in the sim's two days each band fed and its herd at work (the negative starves one).
   - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
     days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
     ore made, timber lost on the road, meals without food);
@@ -150,6 +152,10 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     lines.push(t+' '+kind+' -> '+S0.name+', '+S0.seaKm+' km by sea, the node '+Math.round(walk)+' m from the camp'+(fish!=null?', reef '+fish.toFixed(2):''));}
    if(!n)bad.push('no town has a '+kind+' camp\'s shore');}
   R.push({name:'the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* the herding bands (47n, 48n): one a town, its camp on dry pasture, named, drawn with its shelters and its herd */
+ {const bad=[],HM=window._hamlets,L=HM&&HM.herders?HM.herders():[];if(L.length<ISLE.TOWNS.length)bad.push(L.length+' bands');
+  for(const x of L){const c=neg==='herd'?[x.camp[0],x.camp[1]-60000]:x.camp;if(!c){bad.push(x.id+': no camp');continue;}if(!ISLE_HERDERS.pasture(c[0],c[1]))bad.push(x.id+': its camp on no pasture');if(!x.name)bad.push(x.id+': no name');if(!x.drawn)bad.push(x.id+': not drawn');}
+  R.push({name:'the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd',ok:!bad.length,detail:bad.length?bad.join('; '):L.map(x=>x.name+' ('+x.town+'): '+x.people+' people at '+x.camp.join(',')+(x.buffalo?', the kit\'s buffalo':', a herd of stand-ins')).join('; ')});}
  return R;}"""
 
 
@@ -194,7 +200,8 @@ HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISL
  B=cp(b);B.villages['hamlet-farm-k1'].farm.inCropHa=1;B.villages['hamlet-farm-k2'].farm.inCropHa=1;negs.push(Object.assign({neg:'land'},pick(ISLE.hamletChecks(a,B),/land in crop/)));
  B=cp(b);{const C=Object.keys(B.villages).filter(k=>B.villages[k].sea);if(C.length){B.villages[C[0]].sea.landed={};B.villages[C[0]].sea.atSea={};negs.push(Object.assign({neg:'sea lost'},pick(ISLE.hamletChecks(a,B),/sea leg/)));}}
  /* the expeditions (47x): two days in, each town's crew has sailed and landed (firstDay 1): the first check, with a negative */
- let checks=ISLE.hamletChecks(a,b);if(ISLE.expBooks){const eb=ISLE.expBooks();checks=checks.concat(ISLE.expChecks(eb,eb));const EB=cp(eb);EB.camps.forEach(C=>{C.here=0;});negs.push(Object.assign({neg:'no crew'},pick(ISLE.expChecks(eb,EB),/sent a crew/)));}
+ let checks=ISLE.hamletChecks(a,b);if(ISLE.herdBooks&&ISLE.SIM.herders){const hb=ISLE.herdBooks();checks=checks.concat(ISLE.herdChecks(hb,hb));const HB=cp(hb);HB.bands.forEach(x=>{x.meals.none+=4;});negs.push(Object.assign({neg:'herders unfed'},pick(ISLE.herdChecks(hb,HB),/every band fed/)));}
+ if(ISLE.expBooks){const eb=ISLE.expBooks();checks=checks.concat(ISLE.expChecks(eb,eb));const EB=cp(eb);EB.camps.forEach(C=>{C.here=0;});negs.push(Object.assign({neg:'no crew'},pick(ISLE.expChecks(eb,EB),/sent a crew/)));}
  return{checks,negs};})()"""
 
 
@@ -243,7 +250,8 @@ async def run(a):
                                 ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
                                 ('camp', "the camp shelters: a farming camp pitched from the Islanders kit (kitchen, store, a shelter a household or two), every piece a kit proto"),
                                 ('shore', "the expeditions: each town has a forest island shore with a sea route from its landing, the camp on dry forested ground apart from every village"),
-                                ('node', "the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef")):
+                                ('node', "the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef"),
+                                ('herd', "the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

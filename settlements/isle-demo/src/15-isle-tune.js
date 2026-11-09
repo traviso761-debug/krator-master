@@ -89,7 +89,7 @@ ISLE.TUNE.sim = {
       { crop: 'cloves', kind: 'orchard', w: 2 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
   farms: { kind: 'farms', size: 140, posts: { field: 12, orchard: 8 }, unlessHamlets: true,
     crops: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1 },
-      { crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1 }] },   /* coconut: the potters' lamp oil (economy.inputs) */
+      { crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1 }, { crop: 'cloves', kind: 'orchard', w: 1 }] },   /* coconut: the potters' lamp oil (economy.inputs); cloves (2026-11-09) */
   jobs: {
     farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
@@ -435,6 +435,16 @@ ISLE.TUNE.sim = {
      founding a new hamlet"); tests set the fast pace (waitDays 7, days 20) themselves. `settle`: a founded hamlet fills
      its open homes and posts from the towns' waiting refugees (every `every` minutes), not from settlers dealt */
   found: { every: 60, households: 6, waitDays: 30, days: 45, maxPerTown: 3, settlers: 2.5, settle: { every: 1440 }, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
+  /* THE HERDING BANDS (47n; the owner, 2026-11-09: "add some ranch hamlets / semi nomadic herding camps on the map"):
+     each town's band of `households` (a camp of the kit's shelters, 88h) drives its herd over a RANGE of pasture `range` m
+     round its home ground: core/camp's work camp (47h's machine) on `cfg.cell` m cells of the isles kit's pasture, each
+     holding its pasture share x its hectares x `headPerHa` head x `lotsPerHead` meat lots; the herd grazes a cell down to
+     `strikeAt`, then the band strikes and moves its whole camp to the next (the grass back in `regrowDays`). Its herders
+     (`hands`) work the herd (`batch`: meat, hides by it); its meat and hides go to its town by cart at the detour rate,
+     the town's staples back; it eats its own meat first */
+  herders: { households: 6, hands: 14, startDays: 6, carts: 1,
+    crew: { range: 8000, samples: 3, treesPerHa: 1.5, lotsPerTree: 6, batch: { 'in': {}, out: { meat: 1 }, by: { hides: 0.08 }, hours: 3 }, cap: 1500,
+      cfg: { cell: 800, regrowDays: 45, strikeAt: 0.35, marchKmh: 3 } } },
   /* EXPEDITIONS (47x; PLAN.md section 12; the owner, 2026-11-09: "have the cities deploy camps by boat to the other islands
      and collect resources"): each town sends a crew of `hands` (its unemployed first, then its dockers) by lakatoi to the
      nearest forest island shore with a sea route from its trade landing (the page's hook), on `firstDay`; the camp works
@@ -575,7 +585,7 @@ ISLE.TUNE.sim = {
         kautoa: { staples: [{ crop: 'rice', kind: 'field', w: 3, maxSlope: 0.08 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }],
           cash: [{ crop: 'cloves', kind: 'orchard', w: 1 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
         valapo: { staples: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 }],
-          cash: [{ crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1, minH: 180 }] }
+          cash: [{ crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1, minH: 180 }, { crop: 'cloves', kind: 'orchard', w: 2 }] }   /* cloves (the owner, 2026-11-09): Valapo's wet forest grows them as Kautoa's does, and the ships from beyond pay best for them */
       } },
     /* the iron tools' sellers in both towns (items.tools 'iron tool'): added to these kinds' wares once the villages are declared */
     wares: { market: ['iron tool'], shop: ['iron tool'], smithy: ['iron tool'] }

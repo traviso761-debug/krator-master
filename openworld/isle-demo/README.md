@@ -87,6 +87,10 @@ north (`core/hamlet/PLAN.md` section 4).
   and open posts from both towns' waiting refugees (47f `foundSettle`). At the real pace (a month's wait, a season's camp,
   up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
   survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
+- **Ranches and herding bands (2026-11-09; settlements/isle-demo/PLAN.md section 13):** two more ranch hamlets (Kautoa's
+  south ranch, Valapo's ranch) and a semi-nomadic herding band for each town (`src/48n-world-herders.js` hands the sim its
+  range on the pasture survey's pick; the sim, settlements/isle-demo 47n, moves the band's whole camp with its herd as
+  it grazes the pasture down). `88h` draws the band's shelters and a herd of the Islanders kit's water buffalo.
 - **Camps by boat (2026-11-09; settlements/isle-demo/PLAN.md section 12):** each town sends a crew of twelve by lakatoi to
   a forest island on the first day: `src/48x-world-expeditions.js` finds the shore (the survey's candidate points tried
   for a sea route from the town's landing, dry forested ground inland of it, apart from every village: Kautoa's on the

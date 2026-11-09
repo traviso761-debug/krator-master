@@ -120,7 +120,7 @@ function felling(){if(!STAND)return;const d=dayNow();if(lastDay!=null&&Math.abs(
 /* ---------------------------------------------------------------- the felling crews' camps and stands (core/camp 40) */
 /* every lumber village's crew (Kautoa's, and Valapo's since 2026-11-04), each its camp and its stands' stumps; one flora
    state over them all (a tree belongs to at most one crew's stand) */
-const CREWS=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews||[]).map(C=>({C,campG:null,cstumps:null,cLast:null})),CREW=CREWS.length?CREWS[0].C:null,CSTAND=new Map(),CIDX=new Map(),CTAG={};let flState=false;
+const CREWS=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews||[]).filter(C=>!C.herd).map(C=>({C,campG:null,cstumps:null,cLast:null})),CREW=CREWS.length?CREWS[0].C:null,CSTAND=new Map(),CIDX=new Map(),CTAG={};let flState=false;
 const simDay=()=>typeof SIM!=='undefined'&&SIM.minute?SIM.minute()/1440:dayNow();
 function crewTaken(K,s){const E=SIM.econ(K.settlement),W=K.W;if(!W.cur||W.cur.stand!==s)return undefined;const St=E&&E.resSites[s];return St?St.taken-K.taken0:0;}
 function crewTrees(K,St){if(CSTAND.has(St.id))return CSTAND.get(St.id);const c=K.W.cfg.cell,x0=St.x-c/2,z0=St.z-c/2,TS=FLORA.TS,trees=[];
@@ -163,7 +163,7 @@ function campRecs(C){const y=H(C.site.x,C.site.z),recs=[{key:'ie-camp-kitchen',x
   hh-=key==='ie-shelter-long'?4:key==='ie-shelter-aframe'?2:1;recs.push({key,x:C.site.x+Math.cos(a)*r,z:C.site.z+Math.sin(a)*r,ry:Math.atan2(-Math.cos(a),-Math.sin(a)),y});}
  for(const r of recs){r.kit=kitOf(r.key);const d=dims(r.key)||{w:6,d:5,h:3};r.w=d.w;r.d=d.d;r.h=d.h;r.y=H(r.x,r.z)-.1;}return recs;}
 function pitchCamp(C){const recs=campRecs(C),X={v:{site:{x:C.site.x,z:C.site.z},id:C.id},recs},im=full(X);im.name='farming camp '+C.id;
- const exp=!C.households,base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:(exp?'expedition camp ':'farming camp ')+C.n+' of '+C.townName,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:60,h:8,tags:{culture:'islander',types:['civic'],role:exp?'expedition camp':'farming camp'},note:exp?C.people.length+' hands by boat from '+C.townName+(C.site.name?' to '+C.site.name:'')+', '+C.seaKm+' km by sea, for the forest\'s mahogany, gum and kapok':C.people.length+' people in '+C.households.length+' households, farming '+C.crop});
+ const exp=!C.households,role=C.herders?'herding camp':exp?'expedition camp':'farming camp',base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:C.herders?(C.name?C.name+', ':'')+'the herding band of '+C.townName:role+' '+C.n+' of '+C.townName,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:60,h:8,tags:{culture:'islander',types:['civic'],role},note:C.herders?C.people.length+' people of '+C.townName+' with their herd, moving camp as the pasture is grazed down':exp?C.people.length+' hands by boat from '+C.townName+(C.site.name?' to '+C.site.name:'')+', '+C.seaKm+' km by sea, for the forest\'s mahogany, gum and kapok':C.people.length+' people in '+C.households.length+' households, farming '+C.crop});
  for(const r of recs)TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,r.y,r.z],ry:r.ry,size:[r.w,r.d,r.h],tags:{culture:'islander',types:['dwelling-single'],wealth:'poor',role:'shelter'}});
  const keys=[];for(const p of (C.farm&&C.farm.parcels)||[]){const k=fkey(p.x,p.z);if(VK.has(k))continue;FMAP[k]=p.state==="crop"?(CROPC[p.crop]||CROPC._):null;keys.push(k);}
  if(C.farm&&C.farm.parcels&&C.farm.parcels.length)refreshBox(parcelsBox(C.farm.parcels,120));
@@ -173,13 +173,29 @@ function camps(){const F=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.found;if(
  /* the expedition camps by boat (47x, 48x): pitched on the island's shore once the boat has landed, struck when the crew sails home */
  const X=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.exp;if(X)for(const C of X.camps){const landed=typeof SIM!=='undefined'&&SIM.minute()>=C.lands;if(!C.struck&&landed&&!CAMPS.has(C.id))pitchCamp(C);else if(C.struck&&CAMPS.has(C.id))strikeCamp(C);}
  /* a crew that appeared after the page loaded (an expedition's): drawn as the lumber village's */
- const all=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews)||[];for(const K of all)if(!CREWS.some(X=>X.C===K))CREWS.push({C:K,campG:null,cstumps:null,cLast:null});
+ const all=((typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.crews)||[]).filter(K=>!K.herd);for(const K of all)if(!CREWS.some(X=>X.C===K))CREWS.push({C:K,campG:null,cstumps:null,cLast:null});   /* a herding band's herd is drawn by herds() below, not felled */
  for(let i=CREWS.length-1;i>=0;i--){const X=CREWS[i];if(all.indexOf(X.C)<0){if(X.campG)scene.remove(X.campG);if(X.cstumps)scene.remove(X.cstumps);CREWS.splice(i,1);}}}
 if(typeof ISLE_FOUND!=='undefined')ISLE_FOUND.onAdd((E,X)=>{if(!E)return;const Xv=enter(E);V.push(Xv);S.villages=V.length;if(E.resource)addResource(E.resource);
  const b=E.resource&&E.resource.parcels&&E.resource.parcels.length?parcelsBox(E.resource.parcels,160):[E.village.site.x-400,E.village.site.z-400,E.village.site.x+400,E.village.site.z+400];
  refreshBox([Math.min(b[0],E.village.site.x-300),Math.min(b[1],E.village.site.z-300),Math.max(b[2],E.village.site.x+300),Math.max(b[3],E.village.site.z+300)]);
  window._hamlets.villages.push(info(Xv));window._hamlets.views.push({id:Xv.v.id,x:Xv.v.site.x,z:Xv.v.site.z});S.founded=(S.founded||0)+1;});
-function update(){const P=camera.position;let nf=0;camps();
+/* THE HERDING BANDS (settlements/isle-demo 47n, 48n): the band's shelters pitched round its kitchen where its camp stands,
+   and its herd, the kit's water buffalo (a box where the kit has none), grazing round the herd's place; pitched again
+   when the band moves */
+const HERDS=new Map(),HERD_N=14;
+const HERD_KEY='buffalo',herdProto=()=>(ISK&&ISK.DEFS&&ISK.DEFS[HERD_KEY])?isleProto('isk',HERD_KEY,0,CACHE):null;   /* the kit's water buffalo: a life def (kits/islanders 56-sa-beasts.js), not among the buildings' boxes */
+function herdGroup(X,P){const G=new THREE.Group(),Pr=herdProto();
+ const n=HERD_N;for(let i=0;i<n;i++){const a=i*2.399,r=12+18*Math.sqrt((i+.5)/n),x=P.x+Math.cos(a)*r,z=P.z+Math.sin(a)*r,y=H(x,z);
+  if(Pr){for(const pt of Pr.parts){const m=new THREE.Mesh(pt.geo,pt.mat);m.position.set(x,y,z);m.rotation.y=a*1.7;G.add(m);}}
+  else{const m=new THREE.Mesh(boxG,pendM);m.position.set(x,y,z);m.scale.set(1.2,1.3,2.4);m.rotation.y=a*1.7;G.add(m);}}
+ G.name='herd '+X.id;scene.add(G);return G;}
+function herds(){const L=(typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.herders)||[];
+ for(const X of L){const K=HERDS.get(X.id);if(K&&K.moved===X.moved)continue;
+  if(K){strikeCamp({id:X.id});scene.remove(K.herd);}
+  const Pc=SIM.R.place[X.places.camp],Ph=SIM.R.place[X.places.herd];if(!Pc||!Ph)continue;
+  pitchCamp({id:X.id,n:0,townName:X.townName,name:X.name,herders:true,site:{x:Pc.x,z:Pc.z},people:new Array(X.people).fill(0),households:new Array(X.households).fill(0),crop:null,farm:{parcels:[]}});
+  HERDS.set(X.id,{moved:X.moved,herd:herdGroup(X,Ph)});S.herdCamps=HERDS.size;}}
+function update(){const P=camera.position;let nf=0;camps();herds();
  for(const X of V){if(!X.v.site)continue;const d=Math.hypot(P.x-X.v.site.x,P.z-X.v.site.z),want=d<FULL?'full':d<FAR?'mass':'none';
   const builtNow=X.recs.filter(r=>r.vacant&&r.built).length;   /* a house finished on an empty plot: the village drawn again */
   if(X.group&&builtNow!==X.builtN){scene.remove(X.group);X.group=null;}if(X.massG&&X.recs.filter(standing).length!==X.massN){scene.remove(X.massG);X.massG=null;}
@@ -196,6 +212,6 @@ const info=X=>({id:X.v.id,name:X.E.name||null,gloss:X.E.gloss||null,label:X.E.sp
    founded one would be; -> its records with the kit each resolved to (null: a stand-in box) */
 function pitchTest(x,z,hh){hh=hh==null?6:hh;const C={id:'camp:test:'+Math.round(x)+','+Math.round(z),n:0,townName:'the test',site:{x,z},people:new Array(hh*5).fill(0),households:new Array(hh).fill(0),crop:'rice',farm:{parcels:[]}};
  if(CAMPS.has(C.id))strikeCamp({id:C.id});pitchCamp(C);return campRecs(C).map(r=>({key:r.key,kit:r.kit,x:Math.round(r.x),z:Math.round(r.z),proto:r.kit?!!isleProto(r.kit,r.key,0,CACHE):false}));}
-window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],pitchTest,expeditions:()=>typeof ISLE_EXPEDITIONS!=='undefined'?{shores:ISLE_EXPEDITIONS.shores,camps:(ISLE.SIM&&ISLE.SIM.exp?ISLE.SIM.exp.camps:[]).map(C=>({id:C.id,to:C.site.name,seaKm:C.seaKm,people:C.people.length,sailed:C.sailed,lands:C.lands,struck:C.struck,drawn:CAMPS.has(C.id)}))}:null,found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
+window._hamlets={stats:S,villages:V.map(info),camps:()=>[...CAMPS.keys()],pitchTest,herders:()=>((typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.herders)||[]).map(X=>({id:X.id,name:X.name,town:X.town,people:X.people,camp:(p=>p?[Math.round(p.x),Math.round(p.z)]:null)(SIM.R.place[X.places.camp]),moved:X.moved,drawn:HERDS.has(X.id)&&CAMPS.has(X.id),buffalo:!!herdProto()})),expeditions:()=>typeof ISLE_EXPEDITIONS!=='undefined'?{shores:ISLE_EXPEDITIONS.shores,camps:(ISLE.SIM&&ISLE.SIM.exp?ISLE.SIM.exp.camps:[]).map(C=>({id:C.id,to:C.site.name,seaKm:C.seaKm,people:C.people.length,sailed:C.sailed,lands:C.lands,struck:C.struck,drawn:CAMPS.has(C.id)}))}:null,found:()=>typeof ISLE_FOUND!=='undefined'?ISLE_FOUND.log:[],
  resources:M.resources,tags:()=>TAGS.audit(),views:V.filter(X=>X.v.site).map(X=>({id:X.v.id,x:X.v.site.x,z:X.v.site.z}))};
 return{update,stats:S,tags:TAGS};})();});

@@ -31,6 +31,8 @@ const SPECS = [
   { id: 'hamlet-mine', name: 'Iron mine', focus: 'mine', parent: 'Valapo', near: [-18000, 66000] },
   { id: 'hamlet-lumber', name: 'Lumber village', focus: 'lumber', parent: 'Kautoa', near: [74697, -42993], landing: { x: 74697 + 450, z: -42993, ux: 1, uz: 0 }, seaKm: 41 },   /* on the coast (stand-in: the shore 450 m east, 41 km by sea to Kautoa) */
   { id: 'hamlet-ranch', name: 'Ranch', focus: 'ranch', parent: 'Kautoa', near: [20093, -117084] },
+  { id: 'hamlet-ranch-k2', name: 'Kautoa south ranch', focus: 'ranch', parent: 'Kautoa', near: [26000, -72000] },   /* 2026-11-09 */
+  { id: 'hamlet-ranch-v', name: 'Valapo ranch', focus: 'ranch', parent: 'Valapo', near: [2000, 41000] },
   { id: 'hamlet-quarry', name: 'Quarry', focus: 'quarry', parent: 'Valapo', near: [-12500, 61500] },   /* 2026-11-04: Valapo's stone */
   { id: 'hamlet-lumber-v', name: 'Valapo lumber village', focus: 'lumber', parent: 'Valapo', near: [-4000, 56900] },   /* and its timber, a felling crew of its own */
   { id: 'hamlet-farm-k1', name: 'Kautoa farming hamlet 1', focus: 'farming', parent: 'Kautoa', crops: 'staples', share: 1 / 4, near: farmAt('Kautoa', 6500, 0) },
@@ -43,7 +45,7 @@ const SPECS = [
   { id: 'hamlet-plant-v', name: 'Valapo plantation', focus: 'farming', parent: 'Valapo', crops: 'cash', plantation: true, hands: 60, near: farmAt('Valapo', 0, 6000) }];
 ISLE.simDeclare(plans, null, { hamlets: SPECS });
 const dims = k => ISLE_DIMS[k] ? { w: ISLE_DIMS[k].w, d: ISLE_DIMS[k].d, h: ISLE_DIMS[k].h } : /^br_bldg/.test(k) ? { w: 16, d: 14, h: 10 } : null;
-const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
+const STANDIN = { 'hamlet-salt': { id: 'hamlet-salt:field', kind: 'salt', grade: 'high' }, 'hamlet-mine': { id: 'hamlet-mine:node', kind: 'iron', grade: 'medium' }, 'hamlet-lumber': { id: 'hamlet-lumber:stand', kind: 'stand', forest: () => 0.85 }, 'hamlet-ranch': { id: 'hamlet-ranch:field', kind: 'pasture', grade: 'high' }, 'hamlet-ranch-k2': { id: 'hamlet-ranch-k2:field', kind: 'pasture', grade: 'medium' }, 'hamlet-ranch-v': { id: 'hamlet-ranch-v:field', kind: 'pasture', grade: 'medium' } , 'hamlet-quarry': { id: 'hamlet-quarry:face', kind: 'stone', grade: 'medium' }, 'hamlet-lumber-v': { id: 'hamlet-lumber-v:stand', kind: 'stand', forest: () => 0.85 }};
 const hands = sp => sp.plantation ? sp.hands : Math.ceil(KHAMLET.farmNeed(people[sp.parent]).hands * sp.share);
 const villages = SPECS.map(sp => { const farm = sp.focus === 'farming', res = farm ? { x: sp.near[0] - 350, z: sp.near[1] } : { x: sp.near[0] - 200, z: sp.near[1] };
   const village = KHAMLET.village({ id: sp.id, world: 4242, culture: 'islander_east', focus: sp.focus, site: { x: sp.near[0], z: sp.near[1] }, link: { x: sp.near[0] + 300, z: sp.near[1] },

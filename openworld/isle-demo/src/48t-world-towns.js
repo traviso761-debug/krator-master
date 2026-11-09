@@ -47,7 +47,8 @@ function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.ini
  if(S.sim&&typeof ISLE_HAMLETS!=='undefined'){try{const IDIMS=ISK.dims(),CATK=(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY)||{};
    const dims=k=>{const d=IDIMS[k];if(d)return{w:d.w,d:d.d,h:d.h};const a=CATK[k];return a?{w:a.w,d:a.d,h:a.h}:null;};
    const people={},berths={};plans.forEach(P=>{people[P.town]=P.census.citizens;const L=(P.R.landings||[])[0],B=L&&(L.berths||[])[0];if(B)berths[P.town]={x:B.x+P.G.frame.x,z:B.z+P.G.frame.z,h:B.heading};});   /* each town's trade landing: the coastal villages' sea legs end there */
-   ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims,{people,berths});S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);}
+   ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims,{people,berths});S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);
+   if(typeof ISLE_HERDERS!=='undefined'&&ISLE.simHerders)S.herders=ISLE.simHerders(ISLE_HERDERS.make());}   /* the herding bands (47n, 48n) */
   catch(e){S.hamletError=String(e&&e.stack?e.stack:e);}}
  if(plans.length)select(plans[0].town);
  return plans;}

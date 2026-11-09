@@ -1138,3 +1138,28 @@ villages are declared, in two passes (the villages' first, then the towns' again
 
 **Not this:** no colony yet (a camp strikes; a village on another island is the owner's "Voth and Hykkousoi colonies"
 question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is dealt where a camp digs, as the mine's).
+
+## 13. The herding bands and more ranches (built 2026-11-09)
+
+**The owner (2026-11-09):** "Give Valapo cloves and add some ranch hamlets / semi nomadic herding camps on the map".
+
+- **Cloves for Valapo**: its plantation's cash crops (`15` `hamlets.farming.crops.valapo.cash`) and the city page's farms
+  stand-in grow cloves beside the sugar cane, cotton and coffee; Valapo's wet forest suits them as Kautoa's does (the
+  crops kit: tropic, humid to wet), and the ships from beyond pay best for them (section 12's exports).
+- **Two ranch hamlets** on the existing ranch machinery (`openworld/isle-demo/src/48`): Kautoa's south ranch on the
+  savanna 17 km south-west of the town, Valapo's ranch on its island's savanna 18 km south (the pasture survey's picks:
+  the isles kit's `gather` pasture, 5 km from every village), both on the highway network (16 roads).
+- **The herding bands** (`47n-isle-herders.js`; `openworld/isle-demo/src/48n-world-herders.js`): each town's band of six
+  households (about 30 people) lives in a camp of the kit's camp shelters and drives its herd over a pasture range
+  (`herders` in the tune): core/camp 40's work camp on 800 m cells of pasture (head a hectare, meat a head); the herd
+  grazes a cell down to a third and the band moves its whole camp, store and herd to the next, the grass back in 45
+  days. The herders' meat and hides go to the town by cart from wherever the camp stands (the road's minutes follow
+  it), the town's staples back; it eats its own meat first; its money comes from its town's treasury. Kautoa's band
+  ranges the savanna 30 km south-west between its ranches, Valapo's the open grassland 46 km north; each is named from
+  the Sikau list. `88h` draws its shelters round its kitchen and a herd of the kit's water buffalo, pitched again
+  where the band moves. tests/test-isle-herders.js (20 days, stand-in pasture): every band in its camp beside its herd,
+  fed, grazing, its meat in its town, its camp moving with its herd (Valapo's moved four times), each with a negative;
+  `verify.py` checks each band's camp on dry pasture, named and drawn, and in two days of the sim fed and at work.
+- **Not yet:** the band's seasons (a wet-season and a dry-season range, the transhumance proper); the herd as animals
+  the sim counts (the meat is a yield of the pasture, as the ranch's is); a band settling into a ranch hamlet, or a
+  ranch sending out a band; the Beast Riders' own bands (core/camp's plan) meeting the islanders' herders.

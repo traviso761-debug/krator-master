@@ -40,6 +40,8 @@ const SPECS=[
  {id:'hamlet-mine',name:'Iron mine',focus:'mine',parent:'Valapo',near:[-18000,66000],look:6000,metal:'iron',grade:'medium'},
  {id:'hamlet-lumber',name:'Lumber village',focus:'lumber',parent:'Kautoa',near:[74697,-42993],look:15000},   /* the patch reaches the gulf shore 8 km west: a coastal stand (2026-11-09) */
  {id:'hamlet-ranch',name:'Ranch',focus:'ranch',parent:'Kautoa',near:[20093,-117084],look:7000},
+ {id:'hamlet-ranch-k2',name:'Kautoa south ranch',focus:'ranch',parent:'Kautoa',near:[26000,-72000],look:7000},   /* 2026-11-09: the pasture survey's pick 17 km south-west of the town */
+ {id:'hamlet-ranch-v',name:'Valapo ranch',focus:'ranch',parent:'Valapo',near:[2000,41000],look:7000},   /* 2026-11-09: Valapo's savanna 18 km south of the town */
  {id:'hamlet-quarry',name:'Quarry',focus:'quarry',parent:'Valapo',near:[-8000,56000],look:6000,grade:'medium',apart:2500},
  {id:'hamlet-lumber-v',name:'Valapo lumber village',focus:'lumber',parent:'Valapo',near:[-9000,53000],look:16000,apart:2500},   /* 2026-11-04: Valapo's own timber and felling crew, on its island; 2026-11-09: the patch widened to the town's whole coast, so the stand with a sea route to its harbour (the peninsula across its inlet) is found: the old patch's forest faced the open east sea, 35 km of land from the harbour */   /* 2026-11-04: Valapo's own stone, on its island (the highest dry ground round the town, apart from the mine) */
  /* the countryside (PLAN.md section 11): `crops` names the town's rows in the tune (settlements/isle-demo 15 hamlets.farming.crops),

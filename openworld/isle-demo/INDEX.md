@@ -18,15 +18,16 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `43-world-isles.js` | 9 | the ground's colour (WORLD.ground, wrapped) (64); the coast as terrain (WORLD.landHook) (86) |
 | `46-world-config.js` | 1 |  |
 | `47-world-kits.js` | 2 |  |
-| `48-world-hamlets.js` | 19 |  |
+| `48-world-hamlets.js` | 20 |  |
 | `48f-world-found.js` | 6 |  |
 | `48k-world-camps.js` | 10 |  |
+| `48n-world-herders.js` | 2 |  |
 | `48r-world-roads.js` | 10 |  |
 | `48t-world-towns.js` | 9 |  |
 | `48x-world-expeditions.js` | 8 |  |
 | `88a-world-atlas.js` | 10 |  |
 | `88c-world-life.js` | 15 |  |
-| `88h-world-hamlets.js` | 25 |  |
+| `88h-world-hamlets.js` | 27 |  |
 | `88k-world-camps.js` | 12 |  |
 | `88t-world-towns.js` | 26 |  |
 | `89-world-geysers.js` | 6 |  |
