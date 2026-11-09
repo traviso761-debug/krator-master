@@ -1,0 +1,16 @@
+{
+ "name": "The treeline (station 4): spruce-fir thinning to flagged trees and krummholz under the eastern Inner Wall's crest, 4.56-5.12 km",
+ "out": "ehighlands-treeline.html",
+ "packSkip": [
+  "ground.ash",
+  "ground.scoria",
+  "laurel",
+  "bigfrond",
+  "epi",
+  "brom",
+  "bark4",
+  "beech",
+  "bark6",
+  "ground.moss"
+ ]
+}
