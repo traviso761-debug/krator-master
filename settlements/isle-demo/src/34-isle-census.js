@@ -26,7 +26,7 @@ ISLE.EXPECT = {
 /* a dwelling's households by its declared types: a multi-family house three, a single house one, else none (the sim's
    homes take five people a household from here: 40-isle-sim.js) */
 ISLE.households = function (key) {
-  var D = ISLE_DIMS[key] || {}, types = D.types || [];
+  var D = ISLE_DIMS[key] || (ISLE.COLONY_DIMS && ISLE.COLONY_DIMS[key]) || {}, types = D.types || [];   /* a colony's stand-in's (47k) */
   return types.indexOf('dwelling-multi') >= 0 ? 3 : (types.indexOf('dwelling-single') >= 0 || D.family === 'dwelling') ? 1 : 0;
 };
 ISLE.census = function (R) {

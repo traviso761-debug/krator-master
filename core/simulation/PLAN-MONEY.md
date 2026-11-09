@@ -37,6 +37,10 @@ merchant house chartered from its treasury, which buys the provisions and sells 
 live price over the markup) each night, pays the crew through the camp's workplaces it owns, and decides to sail on the
 expected margin: a trade with takings, so a house that can fail (it recalls its crew on a thin purse) and pays its head a
 dividend. Not yet M3: the towns' own lakatoi still sails by want; the house's trade is the first priced one.
+**A third currency (2026-11-09, the isles' Nephtos):** the Hykkousoi colony keeps its books in Tethyan drachmae (the
+isles' `money.extra`: near the shells' worth, so the money's costs and wages, which are numbers without a currency, read
+alike; changed through the Talent at its own rate). Declared only where a town keeping it is declared, so a page without
+the colony keeps two currencies. Its merchant house (the house of Pherekles of Tethys) is chartered in drachmae.
 **The isles' houses, wider (2026-11-09):** the houses also sell the plantations' cash crops to the ships from beyond for
 Talents (M3's faucet, a weekly purse) and settle every load of the canoe line at the two towns' wholesale prices (the
 goods still sail by want). **A core quirk found on the way:** a cost table first computed while a settlement it buys

@@ -16,7 +16,9 @@
                                 below zero; each settlement's money balanced to its books (the ledger) */
 ISLE.simMoney = function () {
   var T = ISLE.TUNE.sim, K = T.money, S = ISLE.SIM; if (!K || !SIM.money) return null;
-  var M1 = K.m1; SIM.money({ currencies: K.currencies, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback && typeof M1.fallback === 'object' ? function (g) { var v = M1.fallback[g]; return v == null ? M1.fallback._ : v; } : M1.fallback, ration: M1.ration !== false,
+  /* a colony's currency (47k: the Tethyan drachma) only where a town that keeps it is declared, so a page without one keeps its money as it was */
+  var CUR = Object.assign({}, K.currencies); S.order.forEach(function (s) { var c = ISLE.currencyOf(s); if (!CUR[c] && K.extra && K.extra[c]) CUR[c] = K.extra[c]; });
+  var M1 = K.m1; SIM.money({ currencies: CUR, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback && typeof M1.fallback === 'object' ? function (g) { var v = M1.fallback[g]; return v == null ? M1.fallback._ : v; } : M1.fallback, ration: M1.ration !== false,
     spend: M1.spend ? { bands: T.items.wealthSpread, days: M1.spend.days, treatDrop: M1.spend.treatDrop } : null,
     stations: M1.stations ? { of: ISLE.stationOf, cls: M1.stations.cls, rise: M1.stations.rise, perLife: M1.stations.perLife, margin: M1.stations.margin, reserve: M1.stations.reserve, fall: M1.stations.fall } : null } : null,
     m2: K.m2 || null });

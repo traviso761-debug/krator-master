@@ -42,11 +42,11 @@ ISLE.simHouses = function () {
     SIM.all('actor').forEach(function (a) { if (a.home != null && a.cls) cls[a.home] = a.cls; });
     var rank = function (A) { var k = cls[A.owner]; return k === 'rich' ? 2 : k === 'middle' ? 1 : 0; };
     hh.sort(function (p, q) { return rank(q) - rank(p) || q.balance - p.balance || (p.id < q.id ? -1 : 1); });
-    var head = hh[0] || null, id = 'house:' + s, org = s + '.house', name = 'the merchant house of ' + TSp.name;
+    var head = hh[0] || null, id = 'house:' + s, org = s + '.house', name = TSp.colony && TSp.colony.family ? TSp.colony.family + ' of ' + TSp.colony.polisName : 'the merchant house of ' + TSp.name;   /* a colony's: its merchant family (47k) */
     SIM.org({ id: org, faction: TSp.faction, name: name });
     SIM.account({ id: id, owner: head ? head.owner : s, kind: 'house', currency: c, settlement: s, name: name });
     S.houses[s] = { id: id, org: org, name: name, town: s, head: head ? head.id : null, capital: 0, decisions: [], seasons: [], settled: [], camps: {}, flows: { 'in': {}, out: {} } };
-    S.houses[s].capital = ISLE.housePay(S.houses[s], tre, id, HS.capital, 'charter capital');
+    S.houses[s].capital = ISLE.housePay(S.houses[s], tre, id, TSp.colony && TSp.colony.capital != null ? TSp.colony.capital : HS.capital, 'charter capital');
     if (HS.exports && SIM.MONEY.cur.talent) { S.houses[s].talent = id + ':talent'; SIM.account({ id: S.houses[s].talent, owner: head ? head.owner : s, kind: 'house', currency: 'talent', settlement: s, name: name + ' (its Talents)' }); }
     S.houses[s].exports = []; S.houses[s].carried = [];
   });

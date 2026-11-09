@@ -372,3 +372,7 @@
       tables in turn; the fix belongs in core's `costs`.
 - [ ] **The vent and reef works are not drawn**: the camp's shelters are, the diggers' pit and the divers' bed are records
       with no piece yet (the Resources kit's sulfur node would do for the pit).
+- [ ] Nephtos (47k, PLAN.md section 15, 2026-11-09) is a PLACEHOLDER: a radial plan of stand-in boxes, not the owner's layout
+      nor the Ys kit's Hykkousoi buildings (`settlements/ys`, not bundled into the world). Only 12 % of its people have a post
+      in the town (its countryside does the work); its pearl ships camp ashore like the Islanders' reef crews; the Tethyan,
+      Ysian and Pontic ships are tallied, not drawn sailing (two Hykkousoi vessels stand moored at its quay).

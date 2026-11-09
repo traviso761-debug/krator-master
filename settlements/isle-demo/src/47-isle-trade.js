@@ -69,6 +69,7 @@ ISLE.simBuyers = function (minute) {
     var t = tally[sh.id] || (tally[sh.id] = { calls: 0, bought: {} }); t.calls++;
     sh.calls.forEach(function (s) {
       if (!SIM.econ(s)) return;
+      var at = S.shipsAt || (S.shipsAt = {}); at[sh.id + '|' + s] = (at[sh.id + '|' + s] || 0) + 1;   /* the calls by town (47k: the poleis' fleets) */
       SIM.withEcon(s, function () { Object.keys(sh.buys).forEach(function (g) {
         if (!SIM.ECON.goods[g] || !(S.towns[s].econ.goods[g] > 0)) return;   /* only what the town makes, never its imports */
         var n = Math.min(sh.buys[g], Math.floor(SIM.stockOf(g) - (B.floor[g] || 0))); if (n <= 0) return; var got = SIM.economyTake(g, n); if (got <= 0) return;

@@ -26,6 +26,10 @@ highway, no town tile). The isle's own checks:
     sim: tests/test-isle-found.js runs it. The camp shelters: a stand-in camp pitched from the kit, every piece a proto.
   - Valapo's clove plantation overseas (48 islandSite, 47h `overseas`): on the forest island west with a landing and no road,
     cloves and its own staples, both its routes sea legs in the sim (the negative moves it 20 km off its island)
+  - Nephtos (48p, 88p; settlements/isle-demo 47k, PLAN.md section 15): the Hykkousoi colony on the forest island east's coast,
+    half Valapo's people, every lot dry and off the towns and villages, tagged, drawn with its quay's Hykkousoi ships, its
+    villages its own (the negative puts a lot out to sea); in the sim after the hamlets' two days: declared, housed,
+    staffed and fed, its villages at work, Tethys's merchantmen calling (negatives: meals without food, no Tethyan call)
   - the clay villages (48): one a town, its pit on dry flat ground beside the mangrove flats, its clay pits the kit's (the
     negative moves a pit 20 km inland)
   - the herding bands (47n, 48n): one a town, its camp on dry pasture, named, drawn (the negative moves a camp off its
@@ -97,15 +101,15 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    detail:bad.length?bad.join('; '):HM.villages.map(v=>(v.name||v.id)+' ('+v.focus+') '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  {const HM=window._hamlets,bad=[];let F=[],have=0,need=0,wet=0,n=0;if(!HM)bad.push('no hamlets on the page');else{
    F=HM.villages.filter(v=>v.focus==='farming'&&!v.error);const farms=F.filter(v=>v.farm&&!v.plantation&&!(neg==='farm'&&/k[12]$/.test(v.id))),pl=F.filter(v=>v.plantation);
-   if(farms.length<6)bad.push(farms.length+' farming hamlets');if(pl.length!==3)bad.push(pl.length+' plantations');
+   if(farms.length<8)bad.push(farms.length+' farming hamlets');if(pl.length!==4)bad.push(pl.length+' plantations');
    F.forEach(v=>{if(!v.farm||!(v.farm.parcels>0))bad.push(v.id+': no farmland');else if(v.farm.capped)bad.push(v.id+': short of land');if(v.census&&!(v.census.pop<=500))bad.push(v.id+': '+v.census.pop+' people');});
-   const T=window._isleTowns;need=KHAMLET.farmNeed((T?T.towns:[]).reduce((q,t)=>q+(t.census?t.census.citizens:0),0)).inCrop;have=farms.reduce((q,v)=>q+v.farm.inCropHa,0);
+   const T=window._isleTowns,CO=ISLE_TOWNS_W.stats.colony;need=KHAMLET.farmNeed((T?T.towns:[]).reduce((q,t)=>q+(t.census?t.census.citizens:0),0)+(CO&&!CO.error?CO.census.citizens:0)).inCrop;   /* Nephtos's people too (48p) */have=farms.reduce((q,v)=>q+v.farm.inCropHa,0);
    if(!(need>0&&have>=.8*need&&have<=1.2*need))bad.push(Math.round(have)+' ha in crop against the estimate\'s '+Math.round(need));
    HM.resources.filter(r=>r.parcels).forEach(r=>r.parcels.forEach((p,i)=>{if(i%5)return;n++;if(WORLD.water(p.x,p.z)>WORLD.H(p.x,p.z)-.5)wet++;}));if(wet)bad.push(wet+' of '+n+' parcels in the water');
    /* a farmhouse on every holding, a track to each (the owner, 2026-11-09) */
    HM.resources.filter(r=>r.holdings).forEach(r=>{const V=HM.villages.find(v=>v.resource===r);if(!(r.holdings.length>=5&&r.records.length===r.holdings.length&&r.tracks.length===r.holdings.length))bad.push(r.id+': '+r.holdings.length+' holdings, '+r.records.length+' farmhouses, '+r.tracks.length+' tracks');
     if(r.holdings.some(h=>h.parcels<3))bad.push(r.id+': a holding of under three parcels');});}
-  R.push({name:"the countryside: six farming hamlets and three plantations (one overseas), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
+  R.push({name:"the countryside: eight farming hamlets and four plantations (one overseas, one Nephtos's), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding",ok:!bad.length,
    detail:bad.length?bad.join('; '):Math.round(have)+' ha in crop against '+Math.round(need)+' estimated; '+F.map(v=>v.id+' '+v.census.pop+' people, '+v.farm.inCropHa+' ha in crop of '+v.farm.farmedHa+' ('+v.farm.parcels+' parcels, fit '+(v.farm.fit==null?'-':v.farm.fit.toFixed(2))+')').join('; ')+'; '+n+' parcels sampled dry'});}
  {const HM=window._hamlets,bad=[],lines=[];if(!HM)bad.push('no hamlets on the page');else for(const v of HM.villages){if(v.error||!v.site)continue;
    const L=neg==='landing'&&v.id==='hamlet-lumber'?null:v.landing,sh=ISLE_HAMLETS.shoreOf(v.site,ISLE_HAMLETS.made.berths[v.parent]||null);   /* a shore with a sea route to the town's landing */
@@ -173,6 +177,23 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     const inG=(R2&&R2.goods&&R2.goods.valapo)||[];if(own.some(g=>inG.indexOf(g)>=0))bad.push(v.id+': its town ships it a staple it grows');
     lines.push((v.name||v.id)+' ('+v.label+'): '+v.census.pop+' people '+Math.round(d)+' m from the island\'s point, '+X.sea.km+' km by sea ('+Math.round(X.sea.minutes/60)+' h), crops '+[...crops].join(', ')+'; farmsteads '+Object.keys(by).map(g=>g+' '+by[g]).join(', '));}}
   R.push({name:'Valapo\'s clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
+ /* Nephtos (48p, 88p; settlements/isle-demo 47k): on the forest island east's coast, about half Valapo's people, every lot
+    on dry ground and none on a town or a village, its records clean in core/tags, drawn with the Hykkousoi vessels at its
+    quay; its villages its own (the negative puts a lot 300 m out to sea) */
+ {const CO=ISLE_TOWNS_W.stats.colony,DC=window._colony,bad=[];let line='';
+  if(!CO||CO.error)bad.push('no colony: '+(CO?CO.error:'not made'));else{
+   const F=CO.frame,c=CO.centre,V=(window._isleTowns&&window._isleTowns.towns||[]).find(t=>t.town==='Valapo'),vp=V&&V.census?V.census.citizens:2095,pp=CO.census.citizens;
+   if(!(c[0]>56000&&c[0]<128000&&c[1]>-109000&&c[1]<-22000))bad.push('the colony at '+c.map(Math.round).join(',')+', off the forest island east');
+   if(!(pp>=.4*vp&&pp<=.6*vp))bad.push(pp+' people against Valapo\'s '+vp);
+   const lots=CO.R.lots.map(l=>({x:F.x+l.x+(neg==='colony'&&l===CO.R.lots[0]?-CO.site.sea[0]*-300:0),z:F.z+l.z,key:l.key})),HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z);
+   const wetL=lots.filter(l=>WORLD.water(l.x,l.z)>HL(l.x,l.z)-.5);if(wetL.length)bad.push(wetL.length+' lots in the water');
+   const inT=lots.filter(l=>ISLE_TOWNS_W.at(l.x,l.z));if(inT.length)bad.push(inT.length+' lots in a town');
+   const HM=window._hamlets,nearV=HM?HM.villages.filter(v=>v.site&&Math.hypot(v.site.x-c[0],v.site.z-c[1])<CO.reach+200):[];if(nearV.length)bad.push(nearV.map(v=>v.id).join(',')+' on its ground');
+   if(!DC||DC.error)bad.push('not drawn: '+(DC?DC.error:'no 88p'));else{if(DC.lots!==CO.R.lots.length)bad.push(DC.lots+' of '+CO.R.lots.length+' lots drawn');const A=DC.tags();if(A.problems&&A.problems.length)bad.push('tags: '+A.problems.slice(0,2).join('; '));
+    if(DC.ships.indexOf('hykCorbita')<0||DC.ships.indexOf('hykPearl')<0)bad.push('its berths hold '+DC.ships.join(','));}
+   const own=HM?HM.villages.filter(v=>v.parent==='Nephtos').map(v=>v.focus):[];['farming','fishing','lumber','mine'].forEach(f=>{if(own.indexOf(f)<0)bad.push('no '+f+' village of its own');});
+   line=CO.town+' at '+c.map(Math.round).join(',')+' (its beach facing '+CO.site.sea.map(v=>v.toFixed(2)).join(',')+', '+Math.round(CO.site.share*100)+' % of its ground dry): '+pp+' people (Valapo '+vp+'), '+CO.R.lots.length+' lots, '+(DC?DC.domes+' domes, '+DC.streets+' streets, at its quay '+DC.ships.join(' and '):'')+'; its villages '+own.join(', ');}
+  R.push({name:'Nephtos: the Hykkousoi colony on the forest island east\'s coast, half Valapo\'s size, every lot dry and off the towns and villages, tagged, drawn with its quay\'s ships, its villages its own',ok:!bad.length,detail:bad.length?bad.join('; '):line});}
  /* the clay villages (48: the potters' clay, 2026-11-09): one a town, its pit on dry flat ground beside the mangrove flats,
     its clay pits the Islanders kit's (the negative moves a pit inland) */
  {const HM=window._hamlets,bad=[],lines=[];const L=HM?HM.villages.filter(v=>v.focus==='clay'):[];
@@ -214,13 +235,30 @@ EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'b
 # of settlements/isle-demo 47h (ISLE.hamletChecks) and their negatives
 # the thieves' guilds on the open world (88t): each town's under its tavern in that town's registry, its sign and pin drawn
 # in the town's group over it, a diamond on the region map (MAP_MARKS) at the guild; the negative moves one mark 2 km
-GUILD_JS = r"""(neg)=>{const S=_isleTowns.stats,gm=S.guilds||[],MM=window.MAP_MARKS||[];if(neg==='moved'&&MM[0])MM[0].x+=2000;
+GUILD_JS = r"""(neg)=>{const S=_isleTowns.stats,gm=(S.guilds||[]).filter(g=>ISLE.TOWNS.indexOf(g.town)>=0),MM=window.MAP_MARKS||[];   /* the drawn towns' (Nephtos's guild runs in the sim; its tavern is a stand-in: KNOWN_ISSUES) */if(neg==='moved'&&MM[0])MM[0].x+=2000;
  const ok=gm.length===2&&gm.every(g=>{const P=SIM.R.place[g.place],tw=ISLE_TOWNS_W.plans.find(p=>p.town===g.town),R=tw&&tw.tags.get(g.record),m=MM.find(k=>k.label.endsWith(g.town));
    return P&&P.guild&&P.kind==='tavern'&&R&&R.name==="Thieves' guild"&&m&&Math.hypot(m.x-P.x,m.z-P.z)<1;});
  let signs=0;HOST.scene.traverse(o=>{if(o.name==="thieves' guild sign")signs++;});
  if(neg==='moved'&&MM[0])MM[0].x-=2000;
  return{name:"the thieves' guilds on the map: one a town, a landmark under its tavern, its sign drawn, a mark on the region map",ok:ok&&signs===2,
   detail:gm.map(g=>g.town+' '+g.place+' record '+g.record).join('; ')+'; '+signs+' signs, '+MM.length+' map marks'};}"""
+# Nephtos on the sim (47k), after HAMLETS_SIM_JS's two days: declared the Hykkousoi of Tethys in drachmae, fed, its villages
+# at work for it, the poleis' ships calling; `neg` breaks one ('unfed': five meals without food; 'unvisited': no Tethyan call)
+COLONY_SIM_JS = r"""(neg)=>{const R=[],S=ISLE.SIM,X=S&&S.towns.nephtos,St=SIM.R.settlement.nephtos,ok=(name,pass,detail,n)=>R.push({name,ok:!!pass,detail,neg:n||null});
+ if(!X||!St){R.push({name:'Nephtos in the sim',ok:false,detail:'not declared: '+(ISLE_TOWNS_W.stats.simError||'')});return R;}
+ const B=ISLE.simBooks('nephtos'),meals=Object.assign({},B.meals);if(neg==='unfed')meals.none+=5;
+ /* housed: its residents (the town's roles) and its crews at sea (its pearl ships' divers, 47x) are its census; staffed: 45's check */
+ const CR=ISLE_TOWNS_W.stats.colony,cen=CR.census.citizens,res=SIM.all('actor').filter(a=>{const Rr=SIM.R.role[a.role];return !a.driven&&Rr&&Rr.settlement==='nephtos';}),
+  crews=S.exp.camps.filter(c=>c.town==='nephtos'&&!c.struck).reduce((n,c)=>n+c.people.length,0),homeless=res.filter(a=>{const P=SIM.R.place[a.home];return !P||P.settlement!=='nephtos'||!(P.activities.SLEEP>0);});
+ const SC=[{name:'every resident has a home in the town, its crews at sea counted',ok:homeless.length===0&&res.length+crews===cen,detail:res.length+' residents and '+crews+' at sea for a census of '+cen+(homeless.length?', '+homeless.length+' homeless':'')}]
+  .concat(ISLE.simChecks(CR.R).filter(c=>/has a job/.test(c.name))),bad=SC.filter(c=>!c.ok);
+ ok('Nephtos declared: the Hykkousoi of Tethys in drachmae, every resident housed, every post filled; fed ('+meals.meal+' meals at home, '+meals.none+' without)',St.faction==='hykkousoi'&&ISLE.currencyOf('nephtos')==='drachma'&&SC.length===2&&!bad.length&&meals.meal>0&&meals.none===0,
+  (bad.length?bad.map(c=>c.name+': '+c.detail).join('; ')+'; ':'')+SC.length+' checks; '+JSON.stringify(meals),neg==='unfed'?'unfed':null);
+ const V=S.hamlets.villages.filter(v=>v.parent==='nephtos'),made={};V.forEach(v=>{const E=SIM.econ(v.id);Object.keys(E.made).forEach(g=>{if(E.made[g]>0)made[g]=(made[g]||0)+Math.round(E.made[g]);});});
+ ok('its villages at work for it: its staples, its plantations\' clove, cacao, indigo, annatto and tobacco, fish, timber and copper ('+Object.keys(made).map(g=>g+' '+made[g]).join(', ')+')',V.length===6&&['taro','indigo','annatto','tobacco','fish','copper'].every(g=>made[g]>0),V.map(v=>v.id).join(','));
+ const at=Object.assign({},S.shipsAt||{});if(neg==='unvisited')delete at['tethys|nephtos'];
+ ok('the poleis\' fleets: Tethys\'s merchantmen call at its colony (Tethys '+(at['tethys|nephtos']||0)+', Ys '+(at['hykkousoi|nephtos']||0)+', Pontus '+(at['pontus|nephtos']||0)+' calls at Nephtos so far)',(at['tethys|nephtos']||0)>0,JSON.stringify((S.ships||{}).tethys||{}),neg==='unvisited'?'unvisited':null);
+ return R;}"""
 HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
  const negs=[];let B=cp(b);B.villages['hamlet-mine'].goods.ore.made=a.villages['hamlet-mine'].goods.ore.made;negs.push(Object.assign({neg:'unmade'},pick(ISLE.hamletChecks(a,B),/makes its goods/)));
@@ -276,7 +314,7 @@ async def run(a):
                 print('--- negative controls (each must fail) ---')
                 for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
                                 ('hamlet', 'the hamlets: the resource villages, each on dry ground, at most 500 people, tagged'),
-                                ('farm', "the countryside: six farming hamlets and three plantations (one overseas), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
+                                ('farm', "the countryside: eight farming hamlets and four plantations (one overseas, one Nephtos's), their land in crop within a fifth of the estimate, every parcel dry, a farmhouse and a track on every holding"),
                                 ('road', 'the highway network: every village joined by a baked road to its town or another road, no building on a carriageway'),
                                 ('landing', "the coast: every village within reach of the sea has a landing (its quay at the water's edge, a lane to it) and a sea leg to its town"),
                                 ('found', "the founding: the sim's hooks installed, a farm site for a camp of each town on good ground apart from every village"),
@@ -285,7 +323,8 @@ async def run(a):
                                 ('node', "the expeditions: a vents camp and a reef camp within reach by sea (some town each), the node a walk from the camp, the reef a fishing reef"),
                                 ('herd', "the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd"),
                                 ('clay', "the clay villages: one a town, its pit on dry ground beside the mangrove flats, its clay pits the kit's"),
-                                ('overseas', "Valapo's clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea")):
+                                ('overseas', "Valapo's clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea"),
+                                ('colony', "Nephtos: the Hykkousoi colony on the forest island east's coast, half Valapo's size, every lot dry and off the towns and villages, tagged, drawn with its quay's ships, its villages its own")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)
@@ -354,6 +393,16 @@ async def run(a):
                 for r in hs['negs']:
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + r['neg'] + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative hamlets ' + r['neg'])
+                # Nephtos on the sim (settlements/isle-demo 47k), after the same two days
+                print('--- Nephtos in the sim (47k) ---')
+                for neg in (None, 'unfed', 'unvisited'):
+                    for r in await pg.evaluate(COLONY_SIM_JS, neg):
+                        if neg is None:
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                            if not r['ok']: fails.append(r['name'])
+                        elif r.get('neg') == neg:
+                            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
+                            if r['ok']: fails.append('negative colony ' + neg)
             for v in [int(t) for t in a.views.split(',') if t.strip()]:
                 await pg.evaluate('_api.go(%d)' % v)
                 s = await pg.evaluate('_api.settle(240000)')

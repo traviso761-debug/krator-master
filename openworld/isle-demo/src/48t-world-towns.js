@@ -41,12 +41,16 @@ function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.ini
  /* the sim declared with the villages' specs (settlements/isle-demo 40: Valapo drops its farms stand-in, both towns count
     the countryside's crops as their own, PLAN.md section 11) */
  const HSPECS=typeof ISLE_HAMLETS!=='undefined'?ISLE_HAMLETS.SPECS:[];
- try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})),null,{hamlets:HSPECS});}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
+ /* Nephtos, the Hykkousoi colony (48p, settlements/isle-demo 47k: PLAN.md section 15), declared after the two towns */
+ let COL=null;if(typeof ISLE_COLONY!=='undefined'){try{COL=ISLE_COLONY.make();if(COL.error)S.errors.push('Nephtos: '+COL.error);}catch(e){S.errors.push('Nephtos: '+(e&&e.stack?e.stack:e));COL=null;}}
+ S.colony=COL;const colonies=COL&&!COL.error?[COL.plan]:[];
+ try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})),null,{hamlets:HSPECS,colonies});}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
  /* the hamlets on the map (48: ISLE_HAMLETS.make, here once; 88h draws the same villages) join the sim as their towns'
     settlements (settlements/isle-demo 47h: core/hamlet H5); the farming hamlets sized from each town's census */
  if(S.sim&&typeof ISLE_HAMLETS!=='undefined'){try{const IDIMS=ISK.dims(),CATK=(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY)||{};
    const dims=k=>{const d=IDIMS[k];if(d)return{w:d.w,d:d.d,h:d.h};const a=CATK[k];return a?{w:a.w,d:a.d,h:a.h}:null;};
    const people={},berths={};plans.forEach(P=>{people[P.town]=P.census.citizens;const L=(P.R.landings||[])[0],B=L&&(L.berths||[])[0];if(B)berths[P.town]={x:B.x+P.G.frame.x,z:B.z+P.G.frame.z,h:B.heading};});   /* each town's trade landing: the coastal villages' sea legs end there */
+   if(COL&&!COL.error){people[COL.town]=COL.census.citizens;if(COL.berth)berths[COL.town]=COL.berth;}   /* the colony's: its quay's first berth */
    ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims,{people,berths});S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);
    if(typeof ISLE_HERDERS!=='undefined'&&ISLE.simHerders)S.herders=ISLE.simHerders(ISLE_HERDERS.make());}   /* the herding bands (47n, 48n) */
   catch(e){S.hamletError=String(e&&e.stack?e.stack:e);}}

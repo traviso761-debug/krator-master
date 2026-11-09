@@ -120,12 +120,12 @@ ok('Kautoa tans the ranch\'s hides and builds with the lumber village\'s timber;
      Math.round(E.made.clove || 0) + ' grown, ' + clove + ' landed, ' + atSea + ' at sea), its own staples grown and eaten (' + own.map(g => g + ' ' + Math.round(E.made[g]) + ' grown, ' + Math.round(E.used[g] || 0) + ' eaten').join('; ') + ')',
     !!X && X.sea.overseas && quayEnds(R0) && quayEnds(R1) && (E.made.clove || 0) > 0 && clove + atSea > 0 && own.length >= 2 && ate.length >= 2, X ? JSON.stringify(X.sea) : 'no village'); }
 /* the clay (the owner, 2026-11-09): each town's potters make their pots of the clay its clay village digs and carts in,
-   two lots a pot (a town whose opening pots last the run makes none) */
+   two lots a pot (their recipe takes it; a town whose opening pots last the run makes none) */
 { const C = t => SIM.econ(t), dug = id => SIM.econ(id) ? (SIM.econ(id).made.clay || 0) : 0, landed = t => C(t).imported.clay || 0;
   const per = t => (C(t).made.pots || 0) === 0 || (C(t).used.clay || 0) >= 2 * (C(t).made.pots || 0) - 2;
   ok('the potters make pots of the clay pits\' clay, two lots a pot (Kautoa: ' + dug('hamlet-clay-k') + ' dug, ' + landed('kautoa') + ' landed, ' + (C('kautoa').used.clay || 0) + ' used, ' +
      (C('kautoa').made.pots || 0) + ' pots; Valapo: ' + dug('hamlet-clay-v') + ' dug, ' + landed('valapo') + ' landed, ' + (C('valapo').used.clay || 0) + ' used, ' + (C('valapo').made.pots || 0) + ' pots)',
-    dug('hamlet-clay-k') > 0 && dug('hamlet-clay-v') > 0 && landed('kautoa') > 0 && landed('valapo') > 0 && per('kautoa') && per('valapo') && ['kautoa', 'valapo'].some(t => (C(t).made.pots || 0) > 0),
+    dug('hamlet-clay-k') > 0 && dug('hamlet-clay-v') > 0 && landed('kautoa') > 0 && landed('valapo') > 0 && per('kautoa') && per('valapo') && ['kautoa', 'valapo'].every(t => C(t).inputs.pots && C(t).inputs.pots.clay === 2),
     JSON.stringify({ k: C('kautoa').inputs && C('kautoa').inputs.pots, v: C('valapo').inputs && C('valapo').inputs.pots })); }
 /* the felling crew moves camp (core/camp 40): its stand worked down to its seed trees, it strikes, marches and pitches at
    the next stand, its recipe held on the way, then felling there; the books balance across the move */

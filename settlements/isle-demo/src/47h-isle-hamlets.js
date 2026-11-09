@@ -76,7 +76,8 @@ ISLE.simHamletTowns = function () {
         SIM.recipe(P.id, R0);
         Object.keys(R0.batch.out).forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });
     Object.keys(TW.batches || {}).forEach(function (kind) { var R1 = TW.batches[kind], n = 0;
-      X.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (n++ % R1.every)) return; SIM.recipe(P.id, { batch: R1.batch, cap: R1.cap }); }); });
+      X.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (n++ % R1.every)) return; SIM.recipe(P.id, { batch: R1.batch, cap: R1.cap });
+        Object.keys(R1.batch.out).forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });   /* the town makes it (the buyers take what a town makes: Nephtos's hulls, 47k) */
     var W = E.warehouses[0]; if (W) Object.keys(TW.startLots || {}).forEach(function (g) { W.stock[g] = (W.stock[g] || 0) + TW.startLots[g]; });
     if (TW.stockpile) SIM.stockpile(s, TW.stockpile);   /* the town's ceilings on the villages' chain (Kautoa's iron tools, Valapo's iron) */
     /* the iron tools on sale where the villages' goods reach (`wares`: the markets, the shops, the smithies) */
@@ -111,7 +112,7 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   if (FC) FC.forEach(function (Cr) { var g = T.economy.crops[Cr.crop]; if (g && FG.indexOf(g) < 0) FG.push(g); });
   var cropOf = function (k, n) { var tot = 0, i; for (i = 0; i < FC.length; i++) tot += FC[i].w == null ? 1 : FC[i].w;
     var r = (k + 0.5) / n * tot; for (i = 0; i < FC.length; i++) { r -= FC[i].w == null ? 1 : FC[i].w; if (r <= 0) return FC[i]; } return FC[FC.length - 1]; };
-  var outsOf = function (Pr, k, n) { if (Pr.out !== 'crops') return Pr.out.slice(); if (!FC || !FC.length) return null; var g = T.economy.crops[cropOf(k, n).crop]; return g ? [g] : null; };
+  var outsOf = function (Pr, k, n) { if (Pr.out !== 'crops') { var mt = HT.metals && res && HT.metals[res.kind]; return mt && Pr.out.length === 1 && Pr.out[0] === 'ore' ? [mt] : Pr.out.slice(); }   /* a copper mine's copper (47k) */ if (!FC || !FC.length) return null; var g = T.economy.crops[cropOf(k, n).crop]; return g ? [g] : null; };
   SIM.settlement({ id: id, faction: TSp.faction, name: label, parent: ps });
   if (!SIM.R.org[id + '.folk']) SIM.org({ id: id + '.folk', faction: TSp.faction, name: 'The people of ' + (name || 'the ' + sp.name.toLowerCase()) });
   /* the places */
@@ -189,7 +190,7 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
      lot's settlement's economy: declared before it, it is lost and the lot never gets an hour) */
   lots.forEach(function (Pl) { SIM.buildLot({ id: Pl.id, kind: Pl.tags.road ? roadProject.kind : (Pl.tags.hh || 1) >= 3 ? 'longhouse' : 'house' }); });
   /* the resource it works, by the map record's own id: its grade the yield (nothing runs out: the owner's rule) */
-  var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) (Pr.out === 'crops' ? FG : Pr.out).forEach(function (g) { outs[g] = 1; }); });
+  var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) (Pr.out === 'crops' ? FG : outsOf(Pr, 0, 1)).forEach(function (g) { outs[g] = 1; }); });
   var siteId = res && res.id && !crew ? res.id : null;   /* a crew's range is its stands' sites (below) */
   var SK = (HT.sites || {})[res && res.kind] || {};
   if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: null, regen: typeof SK.regen === 'number' ? SK.regen : 0,
@@ -207,6 +208,8 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   if (siteId) { life = ISLE.siteLife(places, res, SK);
     SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: life.amount, regen: SK.regen,
       yield: life.yield, capacity: res.cap == null ? null : res.cap }); }
+  /* the town makes what its countryside makes (the buyers from beyond take what a town makes, 47: Nephtos's crops and copper) */
+  Object.keys(makes).forEach(function (g) { if (Xp.econ.goods[g] == null) Xp.econ.goods[g] = 0; Xp.econ.goods[g] += 1; });
   var pol = {}; Object.keys(makes).concat(crew ? crew.goods.concat(Object.keys(CR.batch.by || {})) : []).forEach(function (g) { if (HT.stockpile && HT.stockpile[g]) pol[g] = HT.stockpile[g]; }); SIM.stockpile(id, pol);
   var W = E.warehouses; if (!W.length) throw new Error('no warehouse');
   /* the road's time (below: the baked highway's length where the page has it) sets how many days of its town's food a

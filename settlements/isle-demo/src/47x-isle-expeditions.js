@@ -43,9 +43,12 @@ ISLE.expYards = function () {
       Xs.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (E.recipes[P.id] && E.recipes[P.id].batch && kind !== 'canoeshed')) return; if ((i++ % ev) !== from) return;
         SIM.recipe(P.id, { batch: Y.batch, cap: Y.cap }); out[s]++;
         Object.keys(Y.batch.out).forEach(function (g) { Xs.econ.goods[g] = (Xs.econ.goods[g] || 0) + 1; }); }); });
-    if (X.stockpile) SIM.stockpile(s, X.stockpile); });
+    var XS = X.towns && X.towns[s] && X.towns[s].stockpile; if (X.stockpile || XS) SIM.stockpile(s, Object.assign({}, X.stockpile, XS || {})); });   /* a town's own ceilings over the rest (47k: Nephtos's pearls) */
   S.yards = out; return out;
 };
+/* may town s send kind k (47k): a kind with `only` goes from those towns; a town with its own list (`towns[s].kinds`) sends those */
+ISLE.expKindOk = function (s, k) { var X = ISLE.TUNE.sim.expeditions, K = X.kinds[k], L = X.towns && X.towns[s] && X.towns[s].kinds;
+  return !!K && (K.only ? K.only.indexOf(s) >= 0 : true) && (L ? L.indexOf(k) >= 0 : !K.only); };
 ISLE.expStep = function (minute) {
   var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions; if (!S.exp || minute % 60) return;
   if (ISLE.hooks.expeditionShore) S.order.forEach(function (s) {
@@ -55,8 +58,8 @@ ISLE.expStep = function (minute) {
     if ((S.exp.n[s] || 0) >= X.maxPerTown) return;
     if (S.exp.rest[s] != null && minute < S.exp.rest[s]) return;   /* a house that declined tries again later */
     /* the kinds it may send: none of that kind out, rested since the last came home, a shore found (or not yet asked) */
-    var free = Object.keys(X.kinds).filter(function (k) { var rk = s + '|' + k; return outK.indexOf(k) < 0 && !(S.exp.rest[rk] != null && minute < S.exp.rest[rk]) && !(S.exp.noShore[rk] != null && minute - S.exp.noShore[rk] < 1440 * 7); });
-    if (!H) free = free.filter(function (k) { return k === 'forest'; });
+    var free = Object.keys(X.kinds).filter(function (k) { var rk = s + '|' + k; return ISLE.expKindOk(s, k) && outK.indexOf(k) < 0 && !(S.exp.rest[rk] != null && minute < S.exp.rest[rk]) && !(S.exp.noShore[rk] != null && minute - S.exp.noShore[rk] < 1440 * 7); });
+    if (!H) free = free.filter(function (k) { return k === 'forest'; });   /* a town without a house: the forest */
     if (!free.length) return;
     /* the town's merchant house decides (47y): the kind with the best expected margin, with the purse to pay for it */
     var kind = free[0];
@@ -81,7 +84,7 @@ ISLE.expSail = function (s, minute, kind) {
   var S = ISLE.SIM, T = ISLE.TUNE.sim, X = T.expeditions, HT = T.hamlets, I = T.items, TSp = null; kind = kind || 'forest';
   var K = X.kinds[kind], rk = s + '|' + kind;
   Object.keys(T.towns).forEach(function (k) { if (T.towns[k].id === s) TSp = T.towns[k]; });
-  var n = (S.exp.n[s] || 0) + 1, site = ISLE.hooks.expeditionShore(TSp.name, n, kind);
+  var n = (S.exp.n[s] || 0) + 1, site = ISLE.hooks.expeditionShore(TSp.name, n, K.shore || kind);   /* the pearl ships work a reef's shore (47k) */
   if (!site || !site.shore || !(site.seaKm > 0)) { S.exp.noShore[rk] = minute; S.exp.log.push({ op: 'no shore', town: s, kind: kind, minute: minute }); return null; }
   var crew = ISLE.expCrew(s, K.hands); if (crew.length < Math.ceil(K.hands / 2)) { S.exp.log.push({ op: 'no crew', town: s, kind: kind, found: crew.length, minute: minute }); S.exp.noShore[rk] = minute; return null; }
   var cid = s + '.exp' + n, h = site.h || function () { return site.y == null ? 0 : site.y; }, y = h(site.x, site.z), np = crew.length;
@@ -125,7 +128,7 @@ ISLE.expSail = function (s, minute, kind) {
   /* a hand-cart (as a hamlet's, 47h): the crew's felled goods from its camp among the trees to the store on the shore, where
      the boat loads; without it the goods stay where they were made */
   var cart = SIM.actor({ id: cid + '.cart0', role: 'cart', org: cid + '.folk', home: store.id, cls: 'cart', job: 'carters' }); cart.pos = { x: store.x, y: store.y || 0, z: store.z }; SIM.cart(cart);
-  var B = X.boat, smin = Math.max(60, Math.round(site.seaKm * 1000 / (B.kmh * 1000 / 60)));
+  var B = Object.assign({}, X.boat, K.boat || {}), smin = Math.max(60, Math.round(site.seaKm * 1000 / (B.kmh * 1000 / 60)));
   SIM.recipeHold(cr.place, 'at sea', minute + smin);
   /* the sea legs: the camp's goods to the town's canoe stop; the town's food to the camp's store */
   var by = Object.keys(((K.crew || K.node).batch.by) || {}), ship = cr.goods.concat(by.filter(function (g) { return cr.goods.indexOf(g) < 0; }));   /* the main good and what comes by it (the forest's gum, kapok and bark) */

@@ -51,6 +51,8 @@ function pose(){const t=poseT();if(CIT.t===t)return;CIT.t=t;
 const stops={};
 W.plans.forEach(P=>{const L=(P.R.landings||[])[0],F=P.G.frame;if(!L)return;
  stops[TS.towns[P.town].id]={town:P.town,sea:F.sea,berths:(L.berths||[]).map(B=>({key:B.key,x:B.x+F.x,z:B.z+F.z,h:B.heading}))};});
+{const CO=W.stats.colony;if(CO&&!CO.error){const L=CO.R.landings[0],F=CO.frame;   /* Nephtos's quay (48p): its villages' boats and its pearl ships end there */
+  if(L)stops[TS.towns[CO.town].id]={town:CO.town,sea:F.sea,berths:L.berths.map(B=>({key:B.key,x:B.x+F.x,z:B.z+F.z,h:B.heading}))};}}
 const order=W.plans.map(P=>TS.towns[P.town].id);   /* ISLE.TOWNS order: a route is found from the first town's stop to the second's */
 const berthOf=(s,key)=>{const X=stops[s];return X?X.berths.find(B=>B.key===key)||X.berths[0]||null:null;};
 const routeOf=b=>{const e=b.ends||order,a=berthOf(e[0],b.key),c=berthOf(e[1],b.key);return a&&c?W.seaPath([a.x,a.z],[c.x,c.z]):null;};
@@ -60,8 +62,10 @@ const boats=[];
   r.group.name=L.id+' '+k;scene.add(r.group);boats.push({line:L,R,k,key:L.vessel,g:r.group,where:null,ends:order});});});
 /* the coastal hamlets' sea legs (settlements/isle-demo 47h `sea`; the owner, 2026-11-09): a lakatoi each, berthed off the quay
    (a boat's length seaward of it) or under way on the route from the quay to its town's trade landing */
-((S.hamlets&&S.hamlets.villages)||[]).filter(X=>X.sea&&X.quayAt).forEach(X=>{const q=X.quayAt,ql=Math.hypot(q.ux,q.uz)||1,ux=q.ux/ql,uz=q.uz/ql;
- stops[X.id]={town:X.id,sea:WORLD.water(q.x+ux*22,q.z+uz*22),berths:[{key:X.sea.vessel,x:q.x+ux*22,z:q.z+uz*22,h:Math.atan2(ux,uz)}]};
+/* moored where the water is MOOR_DEEP m deep, MOOR_MIN to MOOR_MAX m off the quay (a sandbar off Nephtos's fishing village, 2026-11-09) */
+const MOOR_MIN=22,MOOR_MAX=300,MOOR_DEEP=2,moorAt=(q,ux,uz)=>{for(let r=MOOR_MIN;r<=MOOR_MAX;r+=6){const x=q.x+ux*r,z=q.z+uz*r;if(WORLD.lakeWater(x,z)-WORLD.H(x,z)>=MOOR_DEEP)return r;}return MOOR_MIN;};
+((S.hamlets&&S.hamlets.villages)||[]).filter(X=>X.sea&&X.quayAt).forEach(X=>{const q=X.quayAt,ql=Math.hypot(q.ux,q.uz)||1,ux=q.ux/ql,uz=q.uz/ql,mr=moorAt(q,ux,uz);
+ stops[X.id]={town:X.id,sea:WORLD.water(q.x+ux*mr,q.z+uz*mr),berths:[{key:X.sea.vessel,x:q.x+ux*mr,z:q.z+uz*mr,h:Math.atan2(ux,uz)}]};
  const R=SIM.TRADE&&SIM.TRADE.routes[X.sea.route];if(!R)return;
  R.carriers.forEach((C,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(X.sea.vessel):null;if(!r){st.errors.push('no '+X.sea.vessel+' build');return;}
   r.group.name=X.sea.route+' '+k;scene.add(r.group);boats.push({line:{id:X.sea.route,vessel:X.sea.vessel},R,k,key:X.sea.vessel,g:r.group,where:null,ends:[X.id,X.parent]});});});

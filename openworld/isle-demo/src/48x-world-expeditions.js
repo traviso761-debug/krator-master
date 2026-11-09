@@ -19,7 +19,9 @@ const ISLANDS={
  Kautoa:[{name:'the forest island east',pts:[[60800,-53000],[61800,-57000],[63200,-61000],[59200,-45500],[64500,-65000]]},   /* 4,196 km2, 93 % forest; Kautoa's lumber village on its near shore */
          {name:'the islet north-east',pts:[[62000,-82500]]}],
  Valapo:[{name:'the forest island west',pts:[[-24400,33084],[-26500,30000],[-22500,36500],[-29000,27000]]},   /* 1,234 km2, 93 % forest, half rainforest */
-         {name:'the jungle island far west',pts:[[-59970,48948],[-61500,45000]]}]};   /* 599 km2, 99 % forest, 60 % hypertropic */
+         {name:'the jungle island far west',pts:[[-59970,48948],[-61500,45000]]}],   /* 599 km2, 99 % forest, 60 % hypertropic */
+ /* Nephtos's pearl ships (48p, settlements/isle-demo 47k `pearl`: a reef's shore): the islet north-east and its own island's west coast */
+ Nephtos:[{name:'the forest island east',pts:[[78000,-99000],[75563,-69723],[66513,-76749],[64500,-65000]]},{name:'the islet north-east',pts:[[62000,-82500]]}]};   /* its own coast first */
 const FOREST_MIN=.5,FOREST_R=1500,APART=3000,INLAND=150;
 const shores={},pitchL=[],strikeL=[];
 const H=(x,z)=>WORLD.H(x,z),HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>HL(x,z)-1.2;
@@ -60,7 +62,11 @@ function ventShore(townName,berth,used,tried){const P=ISLE_HAMLETS.parentOf(town
    `fish`, REEF_MIN at least) within REEF_R m of the beach, seaward */
 const REEF_MIN=.5,REEF_R=1500;
 function reefShore(townName,berth,used,tried){
- for(const I of ISLANDS[townName]||[])for(const p of I.pts){const sh=ISLE_HAMLETS.shoreOf({x:p[0],z:p[1]},berth);const r={island:I.name,at:p,route:!!(sh&&sh.path)};tried.push(r);if(!sh||!sh.path)continue;
+ /* the candidate points, then (every one taken or reefless: Nephtos's pearl ships and Kautoa's divers share these waters,
+    2026-11-09) rings round each island's first point, as the forest's */
+ const P=[];for(const I of ISLANDS[townName]||[])for(const p of I.pts)P.push({I,p});
+ for(const I of ISLANDS[townName]||[])for(let r=RING_STEP;r<=RING_MAX;r+=RING_STEP)for(let a=0;a<RING_N;a++){const p=[I.pts[0][0]+Math.cos(a/RING_N*2*Math.PI)*r,I.pts[0][1]+Math.sin(a/RING_N*2*Math.PI)*r];if(!wet(p[0],p[1]))P.push({I,p,ring:true});}
+ for(const {I,p,ring} of P){const sh=ISLE_HAMLETS.shoreOf({x:p[0],z:p[1]},berth);const r={island:I.name,at:p.map(Math.round),ring:!!ring,route:!!(sh&&sh.path)};tried.push(r);if(!sh||!sh.path)continue;
   const x=sh.x-sh.ux*INLAND,z=sh.z-sh.uz*INLAND;if(!okSite(x,z,used)){r.why='too near';continue;}
   let best=null;for(let d=100;d<=REEF_R;d+=100)for(const a of [-.6,-.3,0,.3,.6]){const c=Math.cos(a),s2=Math.sin(a),ux=sh.ux*c-sh.uz*s2,uz=sh.ux*s2+sh.uz*c,px=sh.x+ux*d,pz=sh.z+uz*d;
    if(!WORLD.inside(px,pz))continue;const g=RINGISLES.gather(px,pz).fish||0;if(g>=REEF_MIN&&(!best||g>best.g))best={x:px,z:pz,g};}

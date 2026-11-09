@@ -100,3 +100,7 @@
       among the shelters until the tile is dropped and rebuilt (leave and come back). The baked hamlets are clear because
       `WORLD.clearHook` knew their ground before the tiles were built. A live clear needs the flora module to drop the tiles
       over a box as the terrain does; the camp should also fell what stands on its site (the felling of core/hamlet 40).
+- [ ] Nephtos (48p, 88p, 2026-11-09): stand-in boxes on a placeholder radial plan, on the natural ground (no terraces, no
+      land hook: its lots stand where the slope allows); its whole reach is cleared of flora, gardens and streets alike.
+      Its thieves' guild (settlements/isle-demo 47c) runs in the sim and has a mark on the region map, but no landmark or sign:
+      its tavern is a stand-in with no registry record in the towns' sense (verify checks the two Islander towns' guilds).

@@ -49,7 +49,7 @@ ISLE.hamletCrops = function (townId, sp) {
 /* the census trade a key carries (the first IS_TRADES row naming it), or null */
 ISLE.tradeOf = function (key) {
   if (!ISLE._trade) { ISLE._trade = {}; (typeof ISLE_TRADES !== 'undefined' ? ISLE_TRADES : []).forEach(function (r) { (r.east || []).concat(r.west || []).forEach(function (k) { if (!ISLE._trade[k]) ISLE._trade[k] = r.trade; }); }); }
-  return ISLE._trade[key] || null;
+  return ISLE._trade[key] || (ISLE.COLONY_AS && ISLE.COLONY_AS[key] ? ISLE.tradeOf(ISLE.COLONY_AS[key]) : null);   /* a colony's stand-in: its Islander counterpart's trade (47k) */
 };
 ISLE.simPlaces = function (TS, R, G, nav) {
   var T = ISLE.TUNE.sim, F = G.frame, s = TS.id, out = { places: [], homes: 0, beds: 0, posts: 0, byKind: {}, unmapped: {}, far: 0 };
@@ -137,9 +137,11 @@ ISLE.simDeclare = function (plans, clock, opts) {
   var S = ISLE.simInit(clock), T = ISLE.TUNE.sim, t0 = Date.now();
   if (opts && opts.hamlets) S.hamletSpecs = opts.hamlets.slice();
   plans = plans.slice().sort(function (a, b) { return ISLE.TOWNS.indexOf(a.R.town) - ISLE.TOWNS.indexOf(b.R.town); });
+  if (opts && opts.colonies) plans = plans.concat(opts.colonies);   /* the colonies' plans (47k: Nephtos), after the towns, in the order given */
   var navs = plans.map(function (p) { var TS = T.towns[p.R.town]; return ISLE.navOf(p.R, p.G, TS.prefix + 'n'); });
   plans.forEach(function (p, i) {
     var TS = T.towns[p.R.town], t1 = Date.now(); if (S.towns[TS.id]) return;
+    if (!SIM.R.faction[TS.faction]) SIM.faction({ id: TS.faction, name: TS.factionName || TS.faction });   /* a colony's (47k) */
     SIM.settlement({ id: TS.id, faction: TS.faction, name: TS.name });
     if (!SIM.R.org[TS.id + '.folk']) SIM.org({ id: TS.id + '.folk', faction: TS.faction, name: 'The people of ' + TS.name });
     var PL = ISLE.simPlaces(TS, p.R, p.G, navs[i]);

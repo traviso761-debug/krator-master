@@ -113,5 +113,7 @@ R('coffee', 'Coffee', 'beverage', [3, 4], [3, 4], {form: 'shrub', card: 'card.cr
 R('tea', 'Mist tea', 'beverage', [1, 3], [3, 4], {atm: [0, 2], form: 'shrub', card: 'card.crop.tea', home: ['xanadu', 'oidong'], stores: ['dried']});
 R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'xanadu', home: ['xanadu'], stores: ['dried', 'ground']});
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
+R('tobacco', 'Tobacco', 'herb', [3, 4], [2, 3], {also: ['medicine'], form: 'plant', card: 'card.broadleaf', src: 'proposed', reach: 1, stores: ['dried'],
+  note: 'the broad leaf cured and smoked or chewed; the Hykkousoi colony Nephtos grows it for Tethys (settlements/isle-demo, 2026-11-09)'});
 R('rattlepod', 'Rattle coffee', 'beverage', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands'], stores: ['dried']});
 R('alecap', 'Alecap', 'beverage', [0, 5], [0, 4], {also: ['vegetable', 'dye'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.alecap', colour: 'purple', src: 'zeijani', home: ['throne'], stores: ['fermented', 'fresh'], note: 'fermented to a passable beer; the Zeijani beds (zj_farm_alecap)'});

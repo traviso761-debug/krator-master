@@ -21,7 +21,7 @@
        by the warehouses' stock, as ever. Returns the setup: producers by kind and good, warehouses, carts. */
 ISLE.simEconomy = function (TS, places) {
   var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
-  T.goods.forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; goods[g].unit = I.foods.indexOf(g) >= 0 ? 'serving' : 'lot'; });   /* servings of food, lots of the rest (SCHEMA.md, The books) */
+  T.goods.concat(TS.goods || []).forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; goods[g].unit = I.foods.indexOf(g) >= 0 ? 'serving' : 'lot'; });   /* a colony's own goods too (47k: Nephtos's) */   /* servings of food, lots of the rest (SCHEMA.md, The books) */
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
   var inputs = Object.assign({}, T.inputs, TS.inputs || {}), listed = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
     return Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
@@ -64,7 +64,7 @@ ISLE.simEconomy = function (TS, places) {
   var need = pop * I.meals * I.perMeal * T.startDays;
   var brought = {}, TR = ISLE.TUNE.sim.trade;
   if (TR) TR.lines.forEach(function (L) { Object.keys(L.goods).forEach(function (o) { if (o !== s) L.goods[o].forEach(function (x) { brought[x] = 1; }); }); });
-  if (W.length) T.goods.forEach(function (g) {
+  if (W.length) T.goods.concat(TS.goods || []).forEach(function (g) {
     var n = Math.round(foods.indexOf(g) >= 0 ? need * open(g) : made[g] || brought[g] ? (T.startLots[g] || 0) : 0);
     W.forEach(function (P, j) { P.stock[g] = Math.floor(n / W.length) + (j < n % W.length ? 1 : 0); });
   });

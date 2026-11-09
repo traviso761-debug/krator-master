@@ -33,6 +33,7 @@ function heads(){const out={};
    ways.forEach((w,i)=>{const a=w.pts[0],b=w.pts[w.pts.length-1],e=Math.hypot(a[0]-cx,a[1]-cz)>=Math.hypot(b[0]-cx,b[1]-cz)?a:b,x=F.x+e[0],z=F.z+e[1];
     if(dry(x,z))L.push({name:P.town+':avenue '+(w.id==null?i:w.id),x,z,r:JOIN_R});});}
   out[P.town]=L;}
+ if(typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.made&&!ISLE_COLONY.made.error)out[ISLE_COLONY.made.town]=ISLE_COLONY.heads().map(h=>Object.assign({r:JOIN_R},h));   /* Nephtos's spokes (48p) */
  return out;}
 /* a village's ways out: the far end of each of its lanes (not the farm tracks) and the lane's outward direction */
 function exits(v){const out=[];for(const l of v.lanes||[]){if(l.track||l.landing)continue;const a=l.pts[0],b=l.pts[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<20)continue;
@@ -50,6 +51,7 @@ function grounds(V){const GROUND=[],FARMS=[];
  return{GROUND,FARMS};}
 /* one village joined to its town's network N (the heads and the stations so far): the lane end and the network point
    nearest each other, the approach, the routed line; the record, or {error} */
+const LOOP=15,LOOP_GRADE=.08;
 function joinOne(v, town, N, G){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+(pad||0)),id=v.id;
  if(!N||!N.length)return{error:id+': no road head for '+town};
  let best=null;for(const q of N){if(q.name.indexOf('junction:')===0&&nearFarm(q.x,q.z,JUNCTION_OFF))continue;for(const x of exits(v)){const d=Math.hypot(q.x-x.x,q.z-x.z);if(!best||d<best.d)best={d,q,x};}}
@@ -63,6 +65,11 @@ function joinOne(v, town, N, G){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.h
  const P=r.pts,h0=WORLD.Hland(a0.x,a0.z),h1=WORLD.Hland(a1.x,a1.z),hT=best.q.e==null?WORLD.Hland(tgt.x,tgt.z):best.q.e;
  const e1=held(h1,P[0][2],Math.hypot(a1.x-P[0][0],a1.z-P[0][1])),e0=held(h0,e1,APPROACH),eT=held(hT,P[P.length-1][2],Math.hypot(tgt.x-P[P.length-1][0],tgt.z-P[P.length-1][1]));
  r.pts=[[Math.round(a0.x*10)/10,Math.round(a0.z*10)/10,Math.round(e0*100)/100],[Math.round(a1.x*10)/10,Math.round(a1.z*10)/10,Math.round(e1*100)/100]].concat(P,[[Math.round(tgt.x*10)/10,Math.round(tgt.z*10)/10,Math.round(eT*100)/100]]);
+ /* a road that crosses itself (2026-11-09: Nephtos's fishing village, whose route turned back over its own approach) is cut at
+    the crossing: the loop between two points LOOP m apart dropped, the road going on from the first to the point after the
+    second, where that keeps the grade (LOOP_GRADE); the ground cannot lie under two heights at once */
+ for(let i=0;i<r.pts.length-3;i++)for(let j=r.pts.length-2;j>i+1;j--){const A=r.pts[i],B=r.pts[j],C=r.pts[j+1];if(Math.hypot(A[0]-B[0],A[1]-B[1])>=LOOP)continue;
+  const dC=Math.hypot(A[0]-C[0],A[1]-C[1]);if(dC>0&&Math.abs(C[2]-A[2])/dC<=LOOP_GRADE){r.pts.splice(i+1,j-i);r.loops=(r.loops||0)+1;break;}}
  let len=0;for(let i=1;i<r.pts.length;i++)len+=Math.hypot(r.pts[i][0]-r.pts[i-1][0],r.pts[i][1]-r.pts[i-1][1]);r.length_m=Math.round(len);r.lane=X.lane;
  r.town=town;r.townKm=Math.round((r.length_m/1000+best.q.townKm)*100)/100;Object.defineProperty(r,'_tk',{value:r.length_m/1000+best.q.townKm,enumerable:false});return r;}   /* the unrounded km, for its stations (not written) */
 /* a road's stations join the network, each with its km to the town along it and its height; not the village's own lane end

@@ -1193,3 +1193,60 @@ on the west forest island. It should also try to feed itself by growing its own 
 - **Not yet:** the clay's other uses (bricks, the kilns' linings, a daub for the walls); fired-clay roof tiles for the
   colonies; a clay village that fires its own pots and sells them; the overseas plantation's own boats drawn on its
   IN route (only the OUT route's lakatoi is drawn); the plantation taking the island's forest down for its fields.
+
+## 15. Nephtos, the Hykkousoi colony of Tethys (built 2026-11-09; a placeholder plan)
+
+**The owner (2026-11-09):** "Forest island east will have a new element: a Hykkousoi colony. Since im not at computer I
+can't lay it out, so for now we'll use a place holder radial layout. This colony, Nephtos, will be a port colony of Tethys
+run by its merchant family. It will be about 1/2 the size of Valapo and have dependent clove, cacao, Indigo, anatto, and
+tobacco plantations, in addition to having farming, fishing, and lumber hamlet/camps. We can add a copper deposit which
+will also be worked for export. The Hykkoussoi merchants also will deploy pearl diving ships with much higher yield than
+the Islanders' (breathing water and all). There will be ships from Tethys that stop at the colony and new ships built
+there count as Tethys; other poleis (Ys, Pontus) will have seperate fleets that can visit here or the Islander
+settlements; their off map commerce will be abstracted for now."
+
+- **The plan** (`47k-isle-colony.js`, `ISLE.colonyPlan`; a PLACEHOLDER for the owner's layout): in the shape of a core/city
+  plan, so the town goes through the same declaration as Kautoa and Valapo. The agora 150 m inland of the harbour's beach;
+  eight spokes from it (one an avenue down to the beach), six ring streets 58 m apart; the harbour's customs house,
+  warehouses, fish market, shipyard and the marines' barracks along the harbour spoke; the merchant family's palazzo, the
+  council hall, the temple of the sea, the market, shops, taverns, the bakehouse, healer and school on the first ring;
+  villas on the second, houses outward until 210 households are housed; the potters, weavers and the coppersmith on the
+  outer rings; every lot on dry ground. 1,065 people in 213 households (Valapo: 2,095). The buildings are stand-ins
+  (`ISLE.COLONY_DIMS`, each carrying its Islander counterpart's census trade): the Ys kit's Hykkousoi buildings
+  (`settlements/ys`) are a 2 MB engine of their own, not bundled into the world for a placeholder.
+- **On the world** (`openworld/isle-demo` `48p`, `88p`): sited on the forest island east's north-west coast, facing the
+  Hykkousoi homeland: the survey's pick (81.5, -90.5 km) and round it the beach with the open sea off it and the most dry,
+  gentle ground behind it (it stands at 81.5, -96.1 km, 86 % of its ground dry). Drawn as white-limed walls under sea-green
+  roofs, the civic four domed, streets of pale stone, a stone quay with the Ring Sea kit's Hykkousoi corbita and pearl ship
+  at its berths. Its ground is kept from the flora and the villages; its spokes are road heads (the bake routes its
+  villages to them).
+- **On the sim**: `ISLE.simDeclare(..., {colonies})` declares it after the two towns: the Hykkousoi of Tethys (a faction of
+  its own), its books in Tethyan drachmae (`money.extra`, near the shells' worth, changed through the Talent; added only
+  where a town keeps them), its own goods (`towns.Nephtos.goods`: indigo, annatto, tobacco, copper, hulls). Its merchant
+  house is the house of Pherekles of Tethys (47y), chartered from its treasury like the Islanders' houses.
+- **Its countryside** (48 `hamlet-*-n`; tune `hamlets.farming.crops.nephtos`): two farming hamlets (taro, sweet potato,
+  banana, coconut), the plantations (clove, cacao, indigo, annatto, tobacco), a fishing village on the nearest coast with
+  a sea leg (core/hamlet's fishing focus: its landing stage and canoe shed, `fishery` grounds that restock), a lumber
+  village in the island's forest, and the copper mine on the high ground inland (a `copper` node of kits/resources' grades;
+  `hamlets.metals` makes its works' good copper, not iron ore). Their hands are hired Islanders under the colony's
+  overseers: the Hykkousoi wither if they stay long in dry places (settlements/ys/DESIGN.md), so the island's interior is
+  worked by others. Tobacco joins the Crops kit (`kits/crops`, a herb-bucket leaf crop that fits the ring isles' wet zone).
+- **The pearl ships** (47x `pearl`, Nephtos's only: `only`, `towns.nephtos.kinds`): its house sends ten divers in a
+  Hykkousoi pearl ship (faster than a lakatoi) to a reef's shore; they work the bed without coming up for air, a pearl in
+  four hours against the Islanders' twenty (in the node test, 0.74 pearls a diver a day against the Islanders' best 0.4).
+  Its pearl ceiling is a few calls of Tethys's (600).
+- **The poleis' fleets** (`trade.buyers`): Tethys's merchantmen call every four days and take the colony's crops, copper,
+  pearls and every hull its shipyard has finished (`hamlets.town.nephtos.batches`: a hull of 40 timber and 240 worker-hours;
+  `ships`, carted one at a time): those hulls are Tethys's fleet. Ys's traders (the "Hykkousoi traders" of 2026-10-19)
+  call at Kautoa, Valapo and Nephtos; Pontus's at Valapo and Nephtos. Their commerce off the map is abstracted: they buy and
+  leave. A call at a town the page has not declared is skipped (the city page has no Nephtos). The lore names Ys, Tethys and
+  Trigon as the major poleis; Pontus is the owner's addition.
+- **Checked**: tests/test-isle-colony.js (ten days on stand-in ground): the plan's size, lots dry and apart, the harbour;
+  declared, housed, staffed, fed; its villages' goods landed; its house and pearl ships; Tethys's calls taking crops,
+  copper and hulls; Ys and Pontus calling; each with a negative. The world's `verify.py`: the colony on the island's coast,
+  half Valapo's size, lots dry and off the towns and villages, tagged, drawn with its ships, its villages its own; after two
+  days of the sim, housed, staffed, fed, its villages at work, Tethys calling (negatives for each).
+- **Not yet:** the owner's layout and the Ys kit's buildings in place of the stand-ins (and the drowned streets, canals and
+  water doors a Hykkousoi town would have); its people seen walking its streets (not yet
+  looked at: its nav is the placeholder's); the Tethyan ships drawn coming and going (they are moored at the quay); the hulls sailing away; the
+  colony's trade with the Islander towns (a line of its own); the merchant family as people of the house; Trigon's fleet.
