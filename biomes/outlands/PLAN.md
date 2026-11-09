@@ -1,8 +1,10 @@
-# outlands: the plan (2026-10-26)
+# outlands: the plan (2026-10-26; the colonies, 2026-11-09)
 
-The **Outlands**: the walled basin east of the main crater, outside the Outer Wall, reached only over **the Gate**, a
-7.7 km pass in Korona's corner. The most isolated ground on Krator and its **Socotra**: a native flora cut off for millions
-of years. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
+The **Outlands**: the walled basin east of the main crater, outside the Outer Wall, reached over **the Gate** (on map 5.1
+a wind-scoured gorge through the rim) or up **the Great Chasm** from the south. The most out-of-the-way ground on Krator
+and its **Socotra**: both ways in are hostile enough that almost nothing living crosses them, and the native flora has
+gone its own way for millions of years. It is **the one place the fungoid lineage became colonial** (section 4): a
+hillside is one organism. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
 **Tierhounds** keeps the threshold. Exports: **emeralds, turquoise, ostrich feathers**.
 
 **Status: plan, awaiting the owner's yes.** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. Nothing
@@ -27,8 +29,13 @@ A new biome: it goes in the gallery when it first reaches `main`.
 
 - **Outside the Outer Wall** (the owner, 2026-10-26). The basin floors stand mostly at **3.2-3.9 km (1.0-1.07 atm)**; valleys
   run down to **289 m (1.54 atm)**. The rim and plateau round them are ET tundra, ice and the airless crest: 82% of the
-  N polygon and 75% of the S polygon stand over 4.5 km. **The barrier is the Gate: 7,724 m, 0.60 atm**, the one crossing;
-  a pressure-adapted lowland lineage cannot cross it, which is why the flora is alone.
+  N polygon and 75% of the S polygon stand over 4.5 km. On 4.22 the barrier was the Gate at **7,724 m, 0.60 atm**.
+- **Isolation by distance and hostility, not a wall** (the owner, 2026-11-09). Map 5.1 moved the Gate down to the Outland
+  Gate's Narrows (1,423 m, `biomes/outlandgate/PLAN.md`) and cut the Great Chasm (`biomes/greatchasm/PLAN.md`) to the south.
+  Neither is a wall, but both are filters: the Gate is a gorge planed by 60-110 km/h katabatic winds, the Chasm a dry trough
+  with a 38 °C floor and no water in 468 km. Both lie far from anywhere. Little crosses either way, and nothing that crosses
+  competes with colonies that have held the ground for an age (section 4). This plan's numbers are still 4.22's (`SURVEY.md`);
+  `biomes/STATIONS-MAP-5.1.md` has the stations' drift on 5.1 (station 5 must be re-sited; the rest move under 320 m).
 - **Two basins, two climates** (the climate histogram, `SURVEY.md` section 6): **N Outlands is dry and open** (cold steppe
   BSk 34% and cold desert BWk 31% of its basin ground, median 235 mm, the driest cells 31 mm); **S Outlands is wet and
   wooded** (Dfb 43%, Cfa 13%, ~1,000-1,300 mm) with a hot valley floor (BSh, 21 °C mean) and a cold-desert shoulder.
@@ -52,6 +59,8 @@ A new biome: it goes in the gallery when it first reaches `main`.
   **photosynthetic partner** in caps, fringes and pads, as a lichen does: green, teal, violet and rust on top, pale and fleshy
   beneath; true decomposers keep to dead wood, carrion and nests. **No leaves, no flowers, no wood grain**: spores, pods,
   sealed skins.
+- **Here, and only here, the lineage is colonial** (the owner, 2026-11-09; section 4): a buried mycelium bundle kilometres
+  across raises three or four kinds of body, each with its own job. Elsewhere on Krator the lineage's bodies are solitary.
 - **Colour carries it**: violet and teal in the fog woods, copper blue-green on the gem hills, rust and bone on the steppe,
   white salt, the red of the basalt rim.
 - **Hexapods and plants evolved together**: they graze, tend, nest in and carry the spores of the native flora (the nursery
@@ -74,13 +83,86 @@ derives from height, rain and the fog belt; every zone is a `core/tags` area.
 | **Z7 Wadis** | all | (follows) | | episodic | ~60 dry channels, fans at every wall's foot | all |
 | **Z8 Plateau and rim** | 4.5-7.5 km; crest over 9 km | Dfc, ET, EF; O | 0.9-0.6; none | 0-450 mm, 2 to -15 °C | the frozen lakes, patterned ground, the Gate | the Gate |
 
-## 4. The plant list (34 native, 3 Earth-like: 92% native)
+## 4. The flora: nine colony types, 32 forms (plus 3 decomposers and 3 Earth-like)
+
+### The colony rule (the owner, 2026-11-09)
+
+The Outlands' native plants are **not species of individuals**. Each stand is one **colony**: a bundle of mycelial cords
+buried under the ground, from a few hundred metres to tens of kilometres across, that raises **three or four kinds of
+body** (forms), each serving the colony. **Outlands only**: everywhere else the fungoid lineage's bodies are solitary
+(read as the colonial lineage's distant, broken-off relatives).
+
+**Why here.** The Outlands packs its gradients close: a fog wall at 3.5-4.4 km above a 235 mm steppe, wet south against dry
+north, copper rock beside barren rock. A solitary body is stuck with its spot's conditions; a colony spanning the gradient
+**pipes water down from the fog and minerals up from the ore** through its cords (real cord-forming fungi move water and
+nutrients this way). The colonies live on the transitions, and the Outlands is made of transitions.
+
+**The roles.** Every colony has the first three, sometimes two in one form; the fourth is **fixed by the colony's type**:
+
+| Role | Job |
+|---|---|
+| **Collector** | carries the photosynthetic partner; feeds the colony |
+| **Drinker** | catches water (fog, runoff, brine) and stores it |
+| **Breeder** | makes spores and pods; pays animals, wind or water to carry them |
+| 4th: **Runner** | stands at the far end of the cords, on ground the colony cannot feed on, holding what the cords carry there |
+| 4th: **Warden** | stands on the colony's seam (below), sealing it against the neighbour |
+| 4th: **Miner** | grows on ore and draws metal from it |
+| 4th: **Nurse** | feeds the hexapods' young, which spread the colony's spores and graze its rivals |
+| 4th: **Pump** | draws brine and sheds the salt as crust |
+
+### The colony types
+
+Keys are the forms in the tables below; each form belongs to exactly one type.
+
+| Type | Zone | Collector | Drinker | Breeder | 4th role | Note |
+|---|---|---|---|---|---|---|
+| **Veil colony** | Z3, cords to Z2/Z5 | `fogpelt` | `veilcap` | `lantern` | **Runner**: `pleatcol` | the showcase; one organism from the fog wall at 4.4 km down to dry ledges at 2.5 km. The pleat columns are the cords' cisterns, which is why the tribes find water where no fog falls |
+| **Mast colony** | Z2, seeps | `deckcap` | `curtain` | `capshrub` | **Warden**: `combmast` | the wet valleys' woodland; comb masts stand in lines along its seams, bleeding gum that seals its cords against the neighbour's (the caravans' incense) |
+| **Copper colony** | S4 gem hills | `greenfan` | `drums` | `tqshelf` (first onto new rock and spoil) | **Miner**: `lacecrust` | copper is a cofactor its partner needs; the green bands on the rock are where it has fed. The Peak tribe follow it to the ore |
+| **Nursery colony** | N2, Z5 | `rosette` | `gallstack` (sealed galls over a nest) | `podtower` | **Nurse**: `broodpad` | pays the nursery-tender hexapods in food; they spread it and crop its rivals |
+| **Steppe colony** | Z4 | `needlefur` | `greycush` | `sacbrush` (sacs burst under hooves) | **Warden**: `ember` | scarlet ember hedges along its seams; the red is a warning (bitter), and the tribes' red dye |
+| **Wadi colony** | Z7 | `ribbon` (collector and breeder: spores ride the runoff) | `bellpool` (the pools a flood leaves) | | **Runner**: `stilt` | its cords cross live gravel on the stilt mounds' rock-gripping roots |
+| **Salt colony** | Z6 | `brinefilm` (*new*: the pink of the brine itself) | `glasstube` (fresh water behind a crystal skin) | `saltfan` (spores shed with the crust) | **Pump**: `saltfan` | a desalinating organism; the pans' pink is the colony |
+| **River colony** | Z1, the 705 m lake | `mirepad` | `pipereed` (its intakes) | `glowbell` (lit at night over the shallows; fog moths carry its spores) | none | three forms; the warm valley needs no specialist |
+| **Rim colony** | Z8 | `icecrust` | `frostpuff` (drinker and breeder) | | **Runner**: `pebblemat` | slow and old; living pebble plates carry its cords across the fellfield |
+
+### Territories and seams (the owner, 2026-11-09: the seams are a feature)
+
+Colonies do not merge. Where two meet they wall each other off, as rival mycelia do in wood (the dark "zone lines" of
+spalted timber). On the ground that reads as:
+
+- **territories**: each colony holds one patch of ground with one palette and one set of forms. From a height the steppe
+  reads as a **cracked mosaic**;
+- **seams**: a strip 2-8 m wide between two territories, bare or crusted dark (`seam`, a ground-cover class: a dark crust
+  line on bare ground). Wardens stand in lines along their colony's side of it;
+- **fairy rings** at a young colony's growing edge: a ring of collectors round bare, exhausted ground;
+- **age as size**: young colonies are rings 50-300 m across; old ones fill a valley wall. Two colonies of one type meeting
+  still seam.
+
+**Placement** (kit code, on core; no core amendment, as no other kit is colonial):
+
+1. **Colony records** per zone: seeds from `KRAND` on a cell hash (world, cell, `colony` salt), each `{id, type, age,
+   centre, weight}`; the type from the zone masks; the weight from age. Registered in `core/tags` as areas (`colony:<id>`)
+   before anything is drawn.
+2. **Territories**: a weighted (power) Voronoi of the seeds, clipped to the type's zone mask, with the edges jittered by
+   `KFIELD` noise so seams wander. Neighbour lookups go through `KSPACE`, not a new grid.
+3. **Seams**: where the two nearest territories' weighted distances differ by under the seam width; written into the
+   cover grid as `seam` and kept clear of every form except the wardens.
+4. **Forms** placed inside a territory by role, each from a stream seeded by (colony id, cell, form): collectors spread
+   through it; drinkers to the wet side (up into the fog belt, along the water); breeders toward the centre; runners at the
+   cords' far end, downslope or across the dry ground; wardens on the seam; miners on ore beds (`S.at` from the strata,
+   C3); nurses by the hexapods' nests.
+5. Each form instance carries its `colony` id in its tag record, so an inspector, the tribes' water rights and a quest can
+   ask "which colony is this".
+
+### The forms
 
 Working names; keys in brackets. **Build** names the parts the builder draws (section 12's fungoid helpers); **Tex** names
-the library set or the new set (section 11). Every plant is a record registered in `core/tags` before it is drawn,
-placed by `KRAND` from a cell hash and `core/mask` rasters, cleared by `BIO.clearOf`.
+the library set or the new set (section 11). Every form is a record registered in `core/tags` (with its `colony` id) before
+it is drawn, placed by `KRAND` and `core/mask` rasters as above, cleared by `BIO.clearOf`. The tables keep the old grouping
+by size; the colony type of each is in the table above.
 
-### Trees and tall forms
+#### Trees and tall forms
 
 | Key | Name | Zone | Form, size | Build | Colour | Harvest | Tex |
 |---|---|---|---|---|---|---|---|
@@ -92,7 +174,7 @@ placed by `KRAND` from a cell hash and `core/mask` rasters, cleared by `BIO.clea
 | `podtower` | **Pod tower** | Z5 (N2), Z4 | a spongy tapering tower riddled with egg chambers the hexapods tend; 3-6 m | bladder stack, holes (decals) | ochre-orange, dark chambers | food (grub-bread, *proposed*), wax | `organic.pod.honeycomb` |
 | `pipereed` | **Pipe reed** | Z1 | stands of hollow orange tubes in the river shallows and the lake's edge; 2-4 m | tube clusters | orange, black rims | fibre, roofing | `card.fungus.drip` (tinted) |
 
-### Shrubs and cushions
+#### Shrubs and cushions
 
 | Key | Name | Zone | Form, size | Build | Colour | Harvest | Tex |
 |---|---|---|---|---|---|---|---|
@@ -105,7 +187,7 @@ placed by `KRAND` from a cell hash and `core/mask` rasters, cleared by `BIO.clea
 | `broodpad` | **Brood pad** | Z5 (N2) | a flat orange pad where a hexapod lays and its young feed; 1-3 m across | flat pad, egg decals | orange, white eggs | none (taboo to strip: it feeds the herds' grazers) | `organic.cap.orange` |
 | `gallstack` | **Gall stack** | Z5 (N2) | stacked galls grown over a buried nest; 1-2.5 m | bladder stack | bone and violet | none | `organic.flesh.cells` (tinted) |
 
-### Ground, rock and water
+#### Ground, rock and water
 
 | Key | Name | Zone | Form | Build | Colour | Harvest | Tex |
 |---|---|---|---|---|---|---|---|
@@ -118,15 +200,19 @@ placed by `KRAND` from a cell hash and `core/mask` rasters, cleared by `BIO.clea
 | `greenfan` | **Green fan** | gem hills, mine tailings | upright fans on spoil heaps | fans (cards) | copper green | none | `organic.lace.copper` |
 | `saltfan` | **Salt fan** | Z6 | a pale fan standing in the brine's edge, crusted white | fans | white, pink | salt (scraped) | `card.outlands.crust` |
 | `glasstube` | **Glass tube** | Z6 | crystal-crusted tubes standing on the pan | tube clusters | glassy white | none | `ground.efflorescence` (tinted) |
+| `brinefilm` | **Brine film** (*new*) | Z6 | the salt colony's collector: a pink film on and in the brine; the pans' colour | a brine tint (`WATER.open` with C5's ramp) and a pink crust class at the rim | pink to rose | none | C5's brine ramp; `ground.salt` (tinted) |
 | `ribbon` | **Ribbon mat** | Z7, Z1-Z2 | green ribbons streaming in spring runoff | water cards | green | fodder | `card.outlands.wadi` |
-| `bellpool` | **Bell pool** | Z1-Z2 springs | hanging bell bladders on a pool's lip | bladders | teal, pale | water | `card.outlands.wadi` |
+| `bellpool` | **Bell pool** | Z7 wadi pools, Z1-Z2 springs | hanging bell bladders on a pool's lip | bladders | teal, pale | water | `card.outlands.wadi` |
 | `curtain` | **Curtain weed** | Z1-Z3 seeps | a trailing veil over wet rock | hanging cards | dark green, violet | fibre | `card.outlands.wadi` |
-| `glowbell` | **Glow bell** | Z2-Z3, the cursed shelf | a bell of tubes lit at night | tube cluster, emissive | blue-green glow | none | `card.outlands.wadi` |
+| `glowbell` | **Glow bell** | Z1-Z2 water's edges, the cursed shelf | a bell of tubes lit at night | tube cluster, emissive | blue-green glow | none | `card.outlands.wadi` |
 | `mirepad` | **Mire pad** | Z1 (the 705 m lake) | big floating pads round the lake's shallows | floating discs | olive, rust rims | food (*proposed*) | `organic.cap.glossy` (tinted) |
 | `frostpuff` | **Frost puff** | Z8 | white woolly spheres in fellfield; 0.1-0.4 m | spheres | white | none | `organic.mossball` (tinted white) |
 | `icecrust` | **Ice crust** | Z8 | black crust on stones by the frozen lakes | rock cover | black, green | none | `ground.lichen.crust` (tinted) |
 
-### The decay layer (shared with the SW highlands and swbay, defined here first)
+### The decay layer: solitary (shared with the SW highlands and swbay, defined here first)
+
+The true decomposers are **not colonial**: solitary bodies on dead wood, carrion and nests, as elsewhere on Krator. They
+are the one native flora in the Outlands that belongs to no colony.
 
 | Key | Name | Where | Tex |
 |---|---|---|---|
@@ -145,11 +231,40 @@ species code.
 
 - **Fog, not rain, places the tall forms**: the fog belt (section 12) on the S basin's windward wall at ~3.5-4.4 km holds the
   veil caps and comb masts; outside it they thin to deck caps and pleat columns.
-- **The cursed city** (Trickster's House) carries the most untouched stand: glow bells and glow tubes in the dark shelf,
-  pleat columns on the terraces, lace crust on the panels, brood pads in the rooms.
+- **The cursed city** (Trickster's House) carries the most untouched stand: **the House colony** (below) through the ruin,
+  a River colony's glow bells on the lake's edge below the quay, glow tubes (solitary) in the dark rooms.
+- **A colony is an individual** to the people who live with it (section 6): water taken from a pleat column or a drum is
+  taken from *that* colony.
 - **Harvests** feed `core/hamlet` and the culture kit: fibre (veil threads, pipe reed, curtain weed), gum (comb mast), dye
   (ember red, lace blue-green), water (pleat column, bell pool, drums), fodder (cushions, sac brush, needle fur), food
   (*proposed*: drums, pod-tower grub-bread, mire pads). **The tribes tap where no spring runs.**
+
+### The House colony (the owner, 2026-11-09)
+
+One colony in the Outlands is **aware**, after a fashion: the one that holds Trickster's House. Its exposure to the Ancients'
+technology over the ages since the arcology fell has given it an **inchoate awareness**: no language, no plan anyone could
+follow, but attention, memory of patterns and a wish to be answered.
+
+- **What it is** (*proposed*): a **copper colony** (Miner) that took the arcology's metal as its ore. Its lace crust grew
+  along the conduits, panels and still-live circuits of Arcoindian II, and its cords run through the building's ducts and the
+  340 m shaft to the quay. The awareness came from what it grew into. Its forms are the copper type's (lace crust on the
+  panels tracing the conduits, turquoise shelves, green fans on the terraces, drums in the wet rooms), far older and larger
+  than any in the gem hills, and **out of pattern**: crust that traces circuit diagrams, glow where no copper colony glows.
+- **It is not the luck field.** The misfortune that grows the longer one stays in the keep-out ring (section 6, C6) is the
+  god's, or the ruin's; its cause is separate from the colony and is not settled here. The two overlap in place, so the
+  Coyote Men cannot tell them apart and call both the trickster's work.
+- **The pranks are its attempts to communicate.** Some of what the Coyote Men tell of the House is the colony, reaching out
+  in the only ways it has. *Proposed* repertoire, each obscure enough to read as mockery:
+  - **writing**: lace crust grows overnight on a camp's stones in shapes like the Coyote **contour carvings** of the
+    milestones, garbled: it imitates the one script it has seen;
+  - **echoing**: glow in the dark shelf pulses back the rhythm of a howl, or the cadence of the arcology's old signals;
+  - **gifts and refusals**: a drum swells shut across a doorway, then a cistern is found full where none was; pods burst
+    on someone who speaks in the halls;
+  - **following**: a visitor who stays finds crust on their gear, a fairy ring round their sleeping place, their path
+    traced by a line of shelves the next morning.
+- **In play** (*proposed*): a quest to answer it (copying its marks back, a cadence on a drum) rather than to fight it;
+  the colony's forms tagged `colony:house` with a `prank` record kind so `core/tags` can hold the events. Whether the
+  colony can learn to answer clearly is the owner's.
 
 ## 5. Landforms
 
@@ -188,7 +303,12 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
   cartoon Road Runner, drawn as the Outlands' own bird, not a copy). **The god's road** runs from the Sleeping City through the
   Gate to Trickster's House, where **the god lives**: the Coyote Men **shun the ruin** as cursed, and misfortune is a **real
   luck hazard** that grows the longer one stays in its keep-out ring (a `core/tags` area; section 12). **A boy is a man when he
-  has caught a runner bird**; the surest place to find one is the road's end.
+  has caught a runner bird**; the surest place to find one is the road's end. The ruin's **colony is aware** and plays
+  **pranks** that are its attempts to talk (section 4, "The House colony"); it is not the luck field's cause, but the
+  Coyote Men lay both to the trickster.
+- **Colonies are individuals** (*proposed*): the tribes know the colonies on their ground and name them; a well is a
+  pleat column or a drum of a named colony, and **water rights are agreements with an organism**. A seam is a natural
+  boundary: herders' grazing runs and the tribes' borders follow seams, and the boundary stones stand on them.
 - **The phoenix** is the other god: it dies at the end of every age and rises more glorious. Its living form, **the golden
   bird** (an Earth-like great raptor, the owner, 2026-10-26), is wholly sacred: **anyone known to have killed one is attacked on sight**; *proposed* in play: carrying its
   feathers makes every Coyote tribe and the Tierhounds hostile.
@@ -207,7 +327,7 @@ About 14 species: **8 native, 6 Earth-like**.
 | Key | Animal | Kind | Where | Note |
 |---|---|---|---|---|
 | `plaingrazer` | plains grazing hexapod | native, herds | N1 | on `faWdHex` with the `amb` anatomy (hide, vertebrate eyes, padded feet: not insects) |
-| `nurser` | nursery-tender | native | N2 | keeps the pod towers and brood pads |
+| `nurser` | nursery-tender | native | N2 | keeps the nursery colony's pod towers and brood pads: fed by the colony, it spreads its spores and crops its rivals' forms at the seams |
 | `fogdrinker` | fog-drinker | native | S1 | drinks at the veil caps' drip |
 | `rockgrazer` | rock-grazer | native | S4 | scrapes lace crust off the copper rock |
 | `pandigger` | pan-digger | native | Z6 | digs brine shrimp-analogues from the salt |
@@ -242,7 +362,7 @@ Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and 
 | 4 | **The Plains of Runners** (`-plains`) | N1, px 1344,209, BSk 3.7 km | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
 | 5 | **The Nursery Plateau** (`-nursery`) | N2, px 1269,130, BWk 3.8 km | pod towers, brood pads and gall stacks on desert pavement, yardangs; the strangest page |
 | 6 | **The Gate** (`-gate`) | px 1136,84, 7.7 km | the defile, snow, the toll fort and shrine, cairns, the god's road; frozen lakes and patterned ground near |
-| 7 | **Trickster's House** (`-house`) | px 1240,330 | the ruined half-cave arcology over its lake, overgrown; the keep-out ring of turned-away stones (*proposed*); the luck hazard |
+| 7 | **Trickster's House** (`-house`) | px 1240,330 | the ruined half-cave arcology over its lake, held by the aware House colony (crust tracing the conduits, glow in the dark shelf, its pranks); the keep-out ring of turned-away stones (*proposed*); the luck hazard |
 | 8 | **The Mires** (`-mires`; asked for by the owner, 2026-11-02) | S Outlands, the boreal plateau at 5.1 px ~1605-1625 by 669-762 (legacy ~1333-1353 by 339-432): three flats of 540-1,530 km2 at 3,850-3,930 m, 0.98 atm, 1,130-1,190 mm, +4 to +6 degC (17-19/-7 to -9), Dfb; the wettest flat cold ground on the whole model | the Outlands' **muskeg**: a boreal bog country of sphagnum, sedge and black spruce-like fog-combers (the kit's own at their smallest: the comb mast as a bog pine), string bogs and pool-and-ridge patterns (`KFROST`), palsas with ice cores on the plateau's cold side, peat faces at the streams, the frost puff and mire pad (section 4) at home, the Coyote Men's winter trapping camps (a published site); hazards `sink` (the quaking mire by `move` and `weight`), `cold`, the fog; peat and bog iron as the tribes' fuel and the smiths' ore; the 705 m lake's warm oasis is N3 below, this is the cold one |
 
 Optional later: N3, the 705 m lake shore (a warm oasis page), if station 2 cannot hold it.
@@ -292,7 +412,13 @@ Ranked by when they block. Each follows its module's README and lands with its o
 | C7 | *Later*: **an ice kind** in `core/water` (frozen lakes with salt rims, snow drifts on the ice); until then the plateau lakes are ground cover | `core/water` | the plateau | station 6 (optional) |
 
 **Kit additions, not core**: `kits/fauna` (the ostrich, the runner bird, the golden bird, the eight hexapods), `kits/resources`
-(emerald and turquoise nodes), `kits/crops` (the `outlands` entry and four native records).
+(emerald and turquoise nodes), `kits/crops` (the `outlands` entry and four native records). **The colony pass** (section 4:
+colony records, the weighted Voronoi of territories, the `seam` cover class, placement by role) is kit code on `core/rand`,
+`core/space`, `core/tags` and `KFIELD`'s cover grid: no other kit is colonial, so it stays in the kit; a node test
+(`test-colony.js`: the same seeds give the same territories, seams and forms; every form inside its colony's territory;
+wardens only on seams; no two colonies overlap).
+The `seam` cover tries `ground.lichen.crust` darkened first; if it does not read as a zone line, a prompt goes into
+`core/materials/PROMPTS-NEEDED.md`.
 
 ## 13. Core adoption (written first, as the working rules ask)
 
@@ -334,6 +460,11 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 5. ~~The golden bird~~ Earth-like (the owner, 2026-10-26): a great golden raptor.
 6. **Names still open**: the Kingdom's capital, the pass's own name (beyond "the Gate"), the rivers and lakes in Coyote speech.
 7. **Station count**: seven, or fold the Gate into the Tiers' build?
+8. ~~Colonial flora~~ Settled (the owner, 2026-11-09): the native flora is colonial, **Outlands only**; **the seams are a
+   feature**; **the fourth role is fixed by colony type** (section 4).
+9. ~~The House colony~~ Settled (the owner, 2026-11-09): aware after a fashion through the Ancients' technology; not the
+   luck field's cause; the source of some of the pranks, as attempts to communicate. Open: what the luck field's cause is,
+   and whether the colony can learn to answer.
 
 ## Core changes to take (reconciled 2026-10-27)
 
