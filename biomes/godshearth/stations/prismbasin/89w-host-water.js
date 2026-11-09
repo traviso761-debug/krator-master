@@ -17,7 +17,14 @@ const LAKE_DRAW=(function(){const R=TERR.R*1.1,box=[-R,-R,Math.min(R,-120),R],se
 const TER_DRAW=(function(){try{const T=WATER.terraces({name:GH_TER.name,line:[GH_TER.A,GH_TER.B],levels:GH_TER.levels,riser:GH_TER.riser,width:GH_TER.w,speed:.9,spread:2});
   return WATER.drawTerraces(T,{pool:{color:0xffffff,roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1,gradient:{centre:GH_LIN(0x58b4c0).getHex(),rim:GH_LIN(0xe6e2d2).getHex(),power:1.4}},
    fall:{color:GH_LIN(0xeef2ee),opacity:.8,rowStep:1,cols:8,spray:false,plungeR:4,renderOrder:3}});}catch(e){reportErr('terraces: '+e.stack);return null;}})();
-// the scalding water over the shore vents: a heat hazard on the one bake (KHAZ), where the water is over 45 degC
-REGISTER({name:'The hot lake\'s shore vents (scalding water over them)',x:GH_SHORE_V.x,z:GH_SHORE_V.z,y:GH_LAKE.level-6,r:60,h:8,
+// THE SPIRES: the vents' sinter chimneys standing up from the bed under the water (Yellowstone Lake's hydrothermal spires), one host mesh, each spire
+// placed by its own hash round the vent; and the scalding water over them, a heat hazard on the one bake (KHAZ), where the water is over 45 degC
+const GH_SPIRES=(function(){const geos=[],U=(i,k)=>KRAND.unit(KRAND.hash(8160,i,k));
+ for(let i=0;i<7;i++){const a=U(i,1)*TAU,r=i?8+34*U(i,2):0,x=GH_SHORE_V.x+Math.cos(a)*r,z=GH_SHORE_V.z+Math.sin(a)*r,b=terrainH(x,z),h=2.5+4.5*U(i,3),rb=1.2+1.6*U(i,4);
+  const g=new THREE.CylinderGeometry(rb*.35,rb,h,9,3);g.translate(x,b+h/2-.3,z);geos.push(g);}
+ const pos=[],nor=[];geos.forEach(g=>{const G=g.toNonIndexed();pos.push(...G.attributes.position.array);nor.push(...G.attributes.normal.array);});
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
+ const mesh=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:0xcfc6b0}));mesh.userData.inspectLabel='Sinter spires on the lake\'s bed (the shore vents\' chimneys, under the water)';scene.add(mesh);return mesh;})();
+REGISTER({name:'The hot lake\'s shore vents (sinter spires under scalding water)',x:GH_SHORE_V.x,z:GH_SHORE_V.z,y:terrainH(GH_SHORE_V.x,GH_SHORE_V.z)-1,r:48,h:10,
  tags:{hazard:{kind:'heat',danger:.5,falloff:'linear',shape:{type:'cyl',r:45,h:7}}}});
 window._water={lakeVents:GH_HEAT(GH_SHORE_V.x,GH_SHORE_V.z),terraces:!!TER_DRAW,creek:false,pools:0,poolMeshes:0,springs:LAYOUT.springs.length,lake:!!LAKE_DRAW};
