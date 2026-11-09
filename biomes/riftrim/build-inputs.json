@@ -3,9 +3,9 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/fan.albedo.webp": "48893ba0417e8601f8c05b4b283a357bd6240ae5170f6e48bdef54aeb94dca17",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
@@ -187,17 +187,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim.html": "6e47d76da4ac173eb830cf8ea4dba474ba454488bcd38ca2e7ee805556adee7d"
+    "biomes/riftrim/dist/riftrim.html": "494e705a7b6dc59c77e2810e313ae01456302351d0cb670ecc7462d2a965f5f1"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim.html": "6e47d76da4ac173eb830cf8ea4dba474ba454488bcd38ca2e7ee805556adee7d"
+    "biomes/riftrim/dist/riftrim.html": "494e705a7b6dc59c77e2810e313ae01456302351d0cb670ecc7462d2a965f5f1"
    }
   },
   "build.py --station barrens": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/candle.albedo.webp": "c85f5e5ff088866d2216d722004cbb6ee984cc7ef6a613561678d42dd7b3fa06",
     "biomes/rift/tex/hang.albedo.webp": "acba982d72c5b9c6b9f5f9ccf35d45588441bd6469a9803ec743a08384e1d61c",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
@@ -363,17 +363,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-barrens.html": "3e27176f914931959a2b1674843788c148c65ccfaa2272726db588f596719d6f"
+    "biomes/riftrim/dist/riftrim-barrens.html": "0d3c452f4f0f1cb4b0d88a3f160f7d07485a6b475dac6025344e4e70d5e02775"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-barrens.html": "3e27176f914931959a2b1674843788c148c65ccfaa2272726db588f596719d6f"
+    "biomes/riftrim/dist/riftrim-barrens.html": "0d3c452f4f0f1cb4b0d88a3f160f7d07485a6b475dac6025344e4e70d5e02775"
    }
   },
   "build.py --station gorge": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/fan.albedo.webp": "48893ba0417e8601f8c05b4b283a357bd6240ae5170f6e48bdef54aeb94dca17",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
@@ -548,17 +548,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-gorge.html": "ca09609b94b13b4319adf05ea4b6f27bc44d0772ab479e3e24770405a68ab6ab"
+    "biomes/riftrim/dist/riftrim-gorge.html": "5525e45e177816b29c8a0765fe3a01380e7361d99c08b9e81c1e697812df09e3"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-gorge.html": "ca09609b94b13b4319adf05ea4b6f27bc44d0772ab479e3e24770405a68ab6ab"
+    "biomes/riftrim/dist/riftrim-gorge.html": "5525e45e177816b29c8a0765fe3a01380e7361d99c08b9e81c1e697812df09e3"
    }
   },
   "build.py --station ice": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/candle.albedo.webp": "c85f5e5ff088866d2216d722004cbb6ee984cc7ef6a613561678d42dd7b3fa06",
     "biomes/rift/tex/hang.albedo.webp": "acba982d72c5b9c6b9f5f9ccf35d45588441bd6469a9803ec743a08384e1d61c",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
@@ -724,17 +724,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-ice.html": "9585c614c7c66a7d6a1917ca3ee7293d25b6413138c1eb19f7d19b18e1e0fc9a"
+    "biomes/riftrim/dist/riftrim-ice.html": "d3aaf1cc56e1c7d93f64bc073ce6a9c5eebc5153e341de4a01a0115b173d261f"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-ice.html": "9585c614c7c66a7d6a1917ca3ee7293d25b6413138c1eb19f7d19b18e1e0fc9a"
+    "biomes/riftrim/dist/riftrim-ice.html": "d3aaf1cc56e1c7d93f64bc073ce6a9c5eebc5153e341de4a01a0115b173d261f"
    }
   },
   "build.py --station lakes": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/anemone.albedo.webp": "3b5798891a21edc3a610ce9e3aa660795d5f367289a89b34dc9298fb0060da72",
     "biomes/rift/tex/bark1.albedo.webp": "94caaaed2fe303d9d0f77347b2f3916dadde8881f6fada12b9d722526c86a68e",
     "biomes/rift/tex/bark3.albedo.webp": "14a79bcad4dbc490a3ca02709e45f3327fcacf267af5de3001d662f3783fa1cd",
@@ -909,17 +909,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "7b0f5b19e8e4b98ba68d45edea70a5f56ca4eef67179eaa37cdbb92ee6d1836a"
+    "biomes/riftrim/dist/riftrim-lakes.html": "4f527cd25b6676e90daa80fd509169e967d2a918cfb7efef932e58432d405192"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-lakes.html": "7b0f5b19e8e4b98ba68d45edea70a5f56ca4eef67179eaa37cdbb92ee6d1836a"
+    "biomes/riftrim/dist/riftrim-lakes.html": "4f527cd25b6676e90daa80fd509169e967d2a918cfb7efef932e58432d405192"
    }
   },
   "build.py --station ledge": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/fan.albedo.webp": "48893ba0417e8601f8c05b4b283a357bd6240ae5170f6e48bdef54aeb94dca17",
     "biomes/rift/tex/needle.albedo.webp": "37878b3ba7954fe166762e894b0477bc5edecbb2f076f727a62d79fcc67bc22e",
     "biomes/rift/tex/pack.json": "37c38b68976e4c0f2551bec34b053ec9496b43d23929f664704a4fe24c50fe7b",
@@ -1101,10 +1101,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim.html": "6e47d76da4ac173eb830cf8ea4dba474ba454488bcd38ca2e7ee805556adee7d"
+    "biomes/riftrim/dist/riftrim.html": "494e705a7b6dc59c77e2810e313ae01456302351d0cb670ecc7462d2a965f5f1"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim.html": "6e47d76da4ac173eb830cf8ea4dba474ba454488bcd38ca2e7ee805556adee7d"
+    "biomes/riftrim/dist/riftrim.html": "494e705a7b6dc59c77e2810e313ae01456302351d0cb670ecc7462d2a965f5f1"
    }
   },
   "build.py --station pass": {

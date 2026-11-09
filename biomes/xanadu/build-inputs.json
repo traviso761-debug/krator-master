@@ -562,8 +562,8 @@
   },
   "build.py --station floor": {
    "inputs": {
-    "biomes/rift/src/50-biome-rift-species.js": "5b0ca89274b53ecbc1bdfb02533fccfaaf158cb56ce7b1d058a1e5299ac38e46",
-    "biomes/rift/src/55-biome-rift-trees.js": "794a245d13962b3d9c17d18934c8ca82673a7fed3c8895306bd1113ac0c8236d",
+    "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
+    "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
     "biomes/rift/tex/anemone.albedo.webp": "3b5798891a21edc3a610ce9e3aa660795d5f367289a89b34dc9298fb0060da72",
     "biomes/rift/tex/bark0.albedo.webp": "fb7458e55b22d38c251162ebe3511250c2343152abd1370aa99d4c9ec616e891",
     "biomes/rift/tex/bark1.albedo.webp": "94caaaed2fe303d9d0f77347b2f3916dadde8881f6fada12b9d722526c86a68e",
@@ -759,7 +759,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
-    "core/water/geyser/52b-core-water-geyser-draw.js": "877c86a97336aeafee4db088bf76676e39b7b9a7d1e76b18766a7a034db5edb1",
+    "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -772,10 +772,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-floor.html": "1f35b41e7858b509a7a9bab4528881bb3618c5e6dcd19b264b4e394706ac4367"
+    "biomes/xanadu/dist/xanadu-floor.html": "45deff973b9d8d7cf265beb0457f5975df567fa9053ebbd606290f119253c8af"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-floor.html": "1f35b41e7858b509a7a9bab4528881bb3618c5e6dcd19b264b4e394706ac4367"
+    "biomes/xanadu/dist/xanadu-floor.html": "45deff973b9d8d7cf265beb0457f5975df567fa9053ebbd606290f119253c8af"
    }
   },
   "build.py --station gills": {
