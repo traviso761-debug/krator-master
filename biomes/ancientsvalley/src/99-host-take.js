@@ -32,6 +32,9 @@ const HCHK={
  // the grid runs between the buildings (the owner, 2026-11-08): no plinth's centre on a street, and the street under no plinth
  grid(T){let on=0;for(const t of T)if(STAGE.streetK(t.x,t.z)>.05)on++;return{ok:T.length>60&&!on,detail:T.length+' towers, '+on+' standing on a street'};},
  lamps(L){const up=L.filter(l=>l.state==='up').length;return{ok:L.length>100&&up>L.length*.3&&up<L.length*.7,detail:L.length+' lamp standards, '+up+' standing'};},
+ // the ruined vehicles (41b, 73): at least 150 records, none on a plinth or under the lake, most of those on scorched ground burnt
+ wrecks(W){let plinth=0,wet=0,hot=0,burnt=0;for(const w of W){if(STAGE.built(w.x,w.z)>.5)plinth++;if(w.y<STAGE.lakeY+1)wet++;if(STAGE.scorch(w.x,w.z)>.6){hot++;if(w.state==='burnt')burnt++;}}
+  return{ok:W.length>=150&&!plinth&&!wet&&(hot<8||burnt>hot*.6),detail:W.length+' wrecks, '+plinth+' on a plinth, '+wet+' under the lake; '+burnt+' of '+hot+' on scorched ground burnt'};},
  // the forest went feral: the read-in trees were grown, and the taint's tint reached the baked foliage
  feral(W,tinted){return{ok:W.trees>50&&W.grown>20&&tinted>0,detail:W.trees+' read-in trees wrapped, '+W.grown+' grown, '+W.floor+' floor plants grown, '+W.dropped+' not this station\'s; '+tinted+' materials tinted'};},
  // no tree stands on a street, a plinth or dead ground
@@ -54,6 +57,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
  add('the grid runs between the buildings',HCHK.grid(T));add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
+ add('the ruined vehicles stand in the streets',HCHK.wrecks(AVW.records));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -69,6 +73,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));
  add('the whole land wild',HCHK.halves({wild:()=>1},STAGE.forest));
  add('no tree on a ruin and no creeper',HCHK.overgrown(STAGE.F,REG.filter(r=>r.kind!=='rooftree'),{curtains:0,towers:0}));
+ add('a wreck under the lake',HCHK.wrecks(AVW.records.map((w,i)=>i?w:Object.assign({},w,{y:STAGE.lakeY-3}))));
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');
@@ -76,11 +81,11 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.take({build:'ancientsvalley-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
  ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>SKY.render(),
- inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+(AVC.ready?'\ntowers '+AVC.towers.length+(AVC.tierN?': heroes '+AVC.tierN.heroes+', shells '+AVC.tierN.shells+', impostors '+AVC.tierN.impostors:'')+'\nshell bake '+AVC.bakeMs+' ms, all '+AVC.bakeAllMs+' ms':'\nbaking the towers'),
+ inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+(AVC.ready?'\ntowers '+AVC.towers.length+(AVC.tierN?': heroes '+AVC.tierN.heroes+', shells '+AVC.tierN.shells+', impostors '+AVC.tierN.impostors:'')+'\nshell bake '+AVC.bakeMs+' ms, all '+AVC.bakeAllMs+' ms':'\nbaking the towers')+(typeof AVW!=='undefined'&&AVW.ok?'\nwrecks '+AVW.drawn+'/'+AVW.records.length+', '+AVW.built+' looks built in '+AVW.buildMs+' ms':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'water':{match:o=>!!(o.userData&&o.userData.water)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return{rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   get exportBox(){return[-300,-300,300,300];},
-  biome:()=>({sw:window._swlow,nw:window._nwlow}),valley:()=>({feral:AV.FERAL,tinted:window._tinted,towers:STAGE.plan.towers.length,tier:AVC.tierN,bakeMs:AVC.bakeMs,bakeAllMs:AVC.bakeAllMs,imp:AVC.impN,site:STAGE.px,base:STAGE.base,lakeY:STAGE.lakeY})}});
+  biome:()=>({sw:window._swlow,nw:window._nwlow}),valley:()=>({feral:AV.FERAL,tinted:window._tinted,towers:STAGE.plan.towers.length,wrecks:AVW.records.length,wrecksDrawn:AVW.drawn,wreckLooks:AVW.built,tier:AVC.tierN,bakeMs:AVC.bakeMs,bakeAllMs:AVC.bakeAllMs,imp:AVC.impN,site:STAGE.px,base:STAGE.base,lakeY:STAGE.lakeY})}});

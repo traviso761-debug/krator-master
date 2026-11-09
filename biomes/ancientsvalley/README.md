@@ -57,9 +57,23 @@ palette; the Wedge's black glass and dark piers swapped for the others' grey bef
 `AV.scorch` (`41-av-field.js`): 24 strikes on the dry land, bowls with raised rims, each a scar of melt glass with the ground blackened to 2.6 r
 and nothing standing in it; `AV.debris`: slabs thrown from the craters and lying in the streets (one instanced mesh); the viaduct with a deck in
 seven down and lying tilted at the foot. **The street grid** (the owner, 2026-11-08): the lattice's lines are 11 m streets and every third an
-avenue of 26 m, asphalt with rubble at the kerbs, the forest thinned to a third on them: a clear Ancient grid, destroyed and overgrown. Ruined
-vehicles in the streets are a kit's work (`kits/motor-vehicles`, an Ancients culture with ruin states: in its own session) and come to the valley
-when it exists.
+avenue of 26 m, asphalt with rubble at the kerbs, the forest thinned to a third on them: a clear Ancient grid, destroyed and overgrown.
+
+**The ruined vehicles** (the owner, 2026-11-07; `41b-av-wrecks.js` the records, `73-host-wrecks.js` the drawing, 2026-11-09): the Motor Vehicles
+kit's Ancients culture with its ruin states (`kits/motor-vehicles`, `KratorVehicles.build(key, {variant, seed, state})`, bundled by `build.py` as
+`39v-mp-vehicles-bundle.js`, about 1 MB) stands in the streets as records first (`AV.wrecks`, `[G data]`, `tests/test-av.js`): along every street
+line of the lattice, a wreck every so many metres by a hash of (seed, axis, line, step), more on the avenues (a wreck every 30 m at a quarter
+chance; the streets every 40 m at a tenth), in a lane inside the roadway, facing along the street with the side of the road deciding the way, a
+fifth skewed and a twelfth crosswise; pods and saloons the most common, then vans, utilities, haulers and the watch's police saloons, a tank or
+two within 2.6 r of a crater; the state by the scorch field (`burnt` where the ground is burnt, else `wreck` or `weathered` by hash); none within
+a crossing's width plus 7 m of a crossing (the junctions stay clear for the transit kit's work), none on a plinth, in a crater's bowl or rim, on
+the scar, under the viaduct, on an engine's pad or under the lake, none inside a disc the stage lists in `STAGE.wreckAvoid` (the transit kit's
+blockades, when the valley takes them: `kits/ancient-transit`); the count capped at 700 by a priority hash, so a cap thins the page evenly. An
+airliner lies skidded down an avenue (its furrow 30 m behind the tail on open roadway) and two helicopters on the plazas near the eye's start
+(the lattice's empty nodes). Every record is registered as kind `wreck` with the inspector's words. The drawing keeps a pool: the nearest 48
+records inside 450 m of the eye are in the scene (core/space, refreshed every quarter second), one prototype per (key, variant, state, seed)
+built when first wanted and cloned (geometry and materials shared), no shadows; the rest stand as records only. The check: at least 150 records,
+none on a plinth or under the lake, most of those on scorched ground burnt.
 
 **The tiers** (the owner, 2026-11-08, three passes: the foreground towers looked low-res and floors floated; shells drew over heroes; "make
 intermediate forms for the others"): every family and every look has a box shell now (KSHELL's box mode, 66 looks baked at the boot into two 2048

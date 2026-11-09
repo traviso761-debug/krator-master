@@ -517,12 +517,12 @@
    "sha256": "cfb75ddd8dce1ef88a818e69dbbcf15fac5204195b8e2d930596c24870bdc7ed"
   },
   "kits/mechs/dist/mechs.html": {
-   "bytes": 1712855,
-   "sha256": "4e3487c5813c352ec880974f03231ccbdafb6aabe4bb6110c7945f33598693f9"
+   "bytes": 1720002,
+   "sha256": "588cc939ff49aa7097a2ef4455f1928c25f9ca1cffad32585bfe70ad07351760"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
-   "bytes": 1583803,
-   "sha256": "2f08a8e654a65332a73c134e90a25916a58bffc1aa908a3b94ee0d7b01db3d11"
+   "bytes": 2289813,
+   "sha256": "bd07a8f119a8263135fb403f20c670314fcbfcfd7217846d21969eea5ce6c344"
   },
   "kits/post-apoc/dist/post-apoc.html": {
    "bytes": 8027185,

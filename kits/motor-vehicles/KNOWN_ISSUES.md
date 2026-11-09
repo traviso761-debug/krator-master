@@ -29,11 +29,52 @@
   and idlers are round discs in the static body, so it does not show from outside.
 - [ ] **No exporter yet** (`core/export`, GODOT-PLAN.md rule 10). The data is exportable as is (`KratorVehicles.list()`);
   the meshes need the shared exporter when it exists (`PORT.md` says what crosses: the slot per vertex, the belt loops).
+- [ ] **No scorched-metal set** (2026-11-08). The ruin pass paints charred surfaces (burnt bodies, exploded wrecks)
+  with `char`, the library's charred bark (`bark.char`) as a low-contrast grey detail, because the library has no
+  burnt paint or heat-blued steel; `scorched` (`metal.scorched`) is wired in `materials.json` as optional and its
+  prompt is in `core/materials/PROMPTS-NEEDED.md` (section 36). When it lands: pack, and the pass takes it by itself
+  (`krator-vehicles-runtime.js` `ruinColour`: `charS`).
+- [ ] **The Ancients' cabins are hollow but their hulls are single-sided.** A liner (`F.tub` `inside`) gives the
+  interior its walls; the canopy glass is single-sided too, so through the near pane the far pane is not drawn (it
+  reads as clear glass). The running gear is a beam axle, a knuckle, an upright and a trailing link per wheel, not a
+  modelled suspension: like every other vehicle's, it does not move with `roll()` or `steer()`.
+- [ ] **The aircraft are ground props.** The helicopter and the jet are `VEHICLE`s on their landing gear (the kit has
+  no airframe kind): `speed` is their flying speed but `roll()` only turns the wheels, the rotor and the fans do not
+  turn, and nothing flies. Their boxes are large (the rotor 10.6 m, the span 26 m): a host placing them in a street
+  checks the box against the buildings. The tank's lance and turret are static (a wreck's turn is baked by the build).
+  A `skidded` wreck's furrow is drawn geometry (a trough and berms on y = 0), not a cut in the host's terrain: on a
+  slope it floats or sinks; the host's ground should be flat under the trail (the settled box runs a vehicle's length
+  behind the tail).
+- [ ] **A castoring nose wheel does not steer.** The aircraft's nose wheels are `steer: false` with `maxSteer` 0
+  because a steered single wheel has no room for a fork that clears its swing (the clearance check).
+- [ ] **A ruin is a prop.** After a tilt or an overturn a wheel's `rotation.x` spin is no longer about its axle (the
+  holder carries the settle as a quaternion and three.js composes the Euler on top); `steer()` turns the pivots the
+  same way; a tracked ruin's belts do not run (`roll()` leaves them). A host drives intact vehicles and places ruins.
+- [ ] **The ruin pass does not tear the belts, the wheels or the lamps' records apart.** A torn wreck cuts the body
+  buckets at the cut plane; its wheels and lamps follow the half they stand in whole, and a tracked vehicle's belts
+  only settle. A belt crossing the cut would show as one piece.
+- [ ] **The Ancients' sills are boxy for the clearance check.** A superellipse of n 4 and over at the sill, with locks
+  of 0.3 to 0.38 rad, keeps a shrouded steered wheel 2 cm clear of the skin at full lock (`krator-vehicles-ancient.js`,
+  the header's formula). A rounder sill wants wheel arches, which `F.tub` cannot cut.
+- [ ] **The ruin pass is per vehicle, not per fleet.** Each build runs the noise and the deformation over every vertex
+  (a 5 000-triangle vehicle: a few milliseconds); a street of a hundred ruins built at once wants them spread over
+  frames, or built once per (key, variant, seed, state) and cloned.
 
 ## By design
 
 - **The abyssal lamps are lanterns on the shared lamp material.** The abyssal people have nothing electric, so the
   truck's "headlamps" are oil lanterns (warm lenses, `data.lamps: 'oil lanterns'`); `lights()` lights them the same way.
+
+## Fixed 2026-11-08
+
+- **The atlas stopped at 16 slots while `materials.json` listed 20.** `vehicles-detail.js` sized its shader tables
+  and `vehicle_bundle.py` the atlas at 16 cells, so slots 16 to 19 (`rustB`, `rustC`, `whitePaint`, `bluePlate`: the
+  hab's other rusts, the Republic's and the Empire's cream, the Empire's teal) sampled off the atlas (clamped to its
+  edge). Both take 32 now (eight rows of four, only the rows the bundled cultures need), and the Ancients' families
+  and the ruin families are slots 20 to 24.
+- **`window._texPending` was a function**, which the harness's `textures-decoded` wait (`!window._texPending`) never
+  saw clear: the universal assert failed on every run. It is a flag now (`src/90-sheet.js`), cleared when the atlas
+  has decoded.
 
 ## Fixed 2026-10-06
 

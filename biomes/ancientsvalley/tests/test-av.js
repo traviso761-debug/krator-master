@@ -4,7 +4,7 @@
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const ROOT=path.join(__dirname,'..','..','..');
 const ctx={console,Math,JSON};vm.createContext(ctx);
-for(const f of ['core/rand/08-core-rand.js','biomes/ancientsvalley/src/41-av-field.js'])vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),ctx,{filename:f});
+for(const f of ['core/rand/08-core-rand.js','biomes/ancientsvalley/src/41-av-field.js','biomes/ancientsvalley/src/41b-av-wrecks.js'])vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),ctx,{filename:f});
 const RG=JSON.parse(fs.readFileSync(path.join(__dirname,'..','region','station-overlook.json'),'utf8'));
 const AV=ctx.AV,KRAND=ctx.KRAND;
 /* ok(name, c, neg): c the check on the real input (must hold); neg the same check on a broken input (must be false) */
@@ -54,4 +54,28 @@ ok('the designs stand only round the eye',P.towers.every(t=>t.family!=='terrace'
 const V=AV.viaduct([[2900,-520],[1400,-560],[300,-700]],{step:36,ground,deckY:(x,z,s)=>Math.max(ground(x,z)+16,LAKE+38)});
 ok('the viaduct runs its length in decks and piers ('+V.decks.length+' decks)',V.decks.length>60&&V.piers.length===V.decks.length+1&&Math.abs(V.length-(1500.5+1109))<20);
 ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d.y>ground(d.x,d.z)+10)&&V.piers.every(p=>p.y1>p.y0));
+// the wrecks (41b-av-wrecks.js): on the street lines of the lattice, in the roadway, clear of the crossings, where ok says, burnt where the ground is
+{const th=17*Math.PI/180,LT={c:Math.cos(th),s:Math.sin(th),pitch:165,AW:14,SW:6},C=AV.craters({R:3000,n:24,seed:3,rMin:35,rMax:150,ok:(x,z,r)=>ground(x,z)>LAKE+10});
+ const dens=(x,z)=>ground(x,z)>LAKE+2?1:0,okAt=(x,z)=>ground(x,z)>LAKE+1.5&&!C.some(c=>Math.hypot(x-c.x,z-c.z)<c.r*1.3+6);
+ const forms={},formOf=(st,sd,k)=>({form:st==='wreck'?['crushed','skidded','nosedived'][(sd+k.length)%3]:null});
+ const lake=(x,z)=>AV.smooth(2800,-2800,x);   /* the test's lake lies to the west: 1 at x -2800, 0 at x 2800 */
+ const mkW=(seed,more)=>AV.wrecks(Object.assign({R:2800,lattice:LT,seed,scorch:(x,z)=>AV.scorch(C,x,z,seed),density:dens,lake,craters:C,ok:okAt,max:700,formOf},more||{}));
+ const W=mkW(11),W2=mkW(11),W3=mkW(12);
+ ok('the wrecks are the same for the same seed and differ for another ('+W.length+')',W.length>=150&&JSON.stringify(W)===JSON.stringify(W2)&&JSON.stringify(W.map(r=>r.id))!==JSON.stringify(W3.map(r=>r.id)));
+ ok('the cap holds and is even (a smaller cap keeps a subset)',W.length<=700&&mkW(11,{max:200}).length===200&&mkW(11,{max:200}).every(r=>W.some(s=>s.id===r.id)),mkW(11,{max:200}).length===700);
+ const lineOf=(v,p)=>{const k=Math.round(v/p-.5);return{k,d:Math.abs(v-(k+.5)*p),av:((k%3)+3)%3===1};};
+ const inRoad=r=>{const lx=r.x*LT.c+r.z*LT.s,lz=-r.x*LT.s+r.z*LT.c,A=lineOf(lx,LT.pitch),B=lineOf(lz,LT.pitch),L=r.axis===0?A:B,X=r.axis===0?B:A;return L.d<=(L.av?LT.AW:LT.SW)-r.w/2+.01&&X.d>=(X.av?LT.AW:LT.SW)+7-.01;};
+ ok('every street wreck lies in its roadway, clear of the crossings',W.filter(r=>!r.air).every(inRoad),inRoad(Object.assign({},W[0],{x:W[0].x+LT.pitch/2*LT.c,z:W[0].z+LT.pitch/2*LT.s})));
+ ok('none where ok says no (the lake, a crater), nose or tail',W.every(r=>okAt(r.x,r.z)&&okAt(r.x+Math.sin(r.yaw)*r.d/2,r.z+Math.cos(r.yaw)*r.d/2)),mkW(11,{ok:()=>true}).every(r=>okAt(r.x,r.z)));
+ ok('nothing in an avoid disc (the transit kit\'s blockades)',(()=>{const a={x:W[0].x,z:W[0].z,r:40};return mkW(11,{avoid:[a]}).every(r=>Math.hypot(r.x-a.x,r.z-a.z)>=a.r);})(),W.every(r=>Math.hypot(r.x-W[0].x,r.z-W[0].z)>=40));
+ {const hot=W.filter(r=>AV.scorch(C,r.x,r.z,11)>.6),cold=W.filter(r=>AV.scorch(C,r.x,r.z,11)<.1),bh=hot.filter(r=>r.state==='burnt').length/Math.max(1,hot.length),bc=cold.filter(r=>r.state==='burnt').length/Math.max(1,cold.length);
+  ok('most wrecks on scorched ground are burnt, few elsewhere ('+Math.round(bh*100)+'% of '+hot.length+' vs '+Math.round(bc*100)+'%)',hot.length>10&&bh>.7&&bc<.35,bc>.7);}
+ ok('every record has a key, a variant, a state, a seed and a heading',W.every(r=>/^anc_\w+$/.test(r.key)&&r.variant>=0&&/^(weathered|burnt|wreck)$/.test(r.state)&&r.seed>=1&&isFinite(r.yaw)&&r.w>0&&r.d>0));
+ ok('more wrecks on the avenues than on the streets, pods and saloons the most common',W.filter(r=>r.av).length>W.length/2&&W.filter(r=>/pod|saloon/.test(r.key)).length>W.length/2);
+ {const tanks=W.filter(r=>r.key==='anc_tank');ok('the tanks are few and in the lakeward half ('+tanks.length+')',tanks.length>0&&tanks.length<W.length*.05&&tanks.every(t=>lake(t.x,t.z)>.5),mkW(11,{lake:(x,z)=>1-lake(x,z)}).filter(r=>r.key==='anc_tank').every(t=>lake(t.x,t.z)>.5));}
+ {const ratio=L=>{const U=mkW(11,{max:5000,lake:L}),near=U.filter(r=>lake(r.x,r.z)>.5).length;return near/Math.max(1,U.length-near);},rl=ratio(lake),r0=ratio(null);
+  ok('more wrecks toward the lake than away from it ('+rl.toFixed(2)+' lakeward to one, against '+r0.toFixed(2)+' with no lake)',rl>r0*1.5,ratio((x,z)=>1-lake(x,z))>r0*1.5);}
+ ok('a wreck\'s form is the kit\'s when formOf is given, null without',W.filter(r=>r.state==='wreck').every(r=>r.form)&&mkW(11,{formOf:null}).every(r=>r.form===null));
+ {const plazas=[{x:300,z:-150},{x:-500,z:100},{x:-200,z:300},{x:-900,z:-400}].filter(p=>okAt(p.x,p.z)),A=mkW(11,{air:{jet:true,helis:2,plazas}}),jet=A.find(r=>r.key==='anc_jet'),helis=A.filter(r=>r.key==='anc_heli');
+  ok('an airliner skidded down an avenue and helicopters on the lakeward plazas ('+(jet?1:0)+' jet, '+helis.length+' helicopters)',!!jet&&jet.av&&jet.form==='skidded'&&helis.length===2&&helis.every(h=>plazas.some(p=>p.x===h.x&&p.z===h.z)&&lake(h.x,h.z)>.5),W.some(r=>r.air));}}
 console.log(fails?fails+' FAILED of '+n:'all '+n+' passed');process.exit(fails?1:0);
