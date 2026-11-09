@@ -160,9 +160,10 @@
    'uniform vec4 atmFogMistE;uniform vec2 atmFogMistK;uniform sampler2D atmFogMistT;',
    /* atmFogMistE: x0, z0, 1/(x1-x0), 1/(z1-z0); atmFogMistK: res, samples; atmFogMistT: R the field 0..1 */
    'float atmFogMistAt(vec2 xz){vec2 uv=(clamp((xz-atmFogMistE.xy)*atmFogMistE.zw,0.0,1.0)*(atmFogMistK.x-1.0)+0.5)/atmFogMistK.x;return textureLod(atmFogMistT,uv,0.0).r;}',
-   'float atmFogMistField(vec3 ro,vec3 rd,float L){float top=atmFogMist.y+3.0/atmFogMist.z;vec2 q=atmFogSlab(top-1e7,top,ro.y,rd.y,L);if(q.x<=0.0)return atmFogMistAt(ro.xz+rd.xz*L);',
-   ' float st=q.x/atmFogMistK.y,lo=q.y-0.5*q.x,s=0.0,sw=0.0;for(int i=0;i<8;i++){if(float(i)>=atmFogMistK.y)break;vec3 p=ro+rd*(lo+st*(float(i)+0.5));float w=p.y<atmFogMist.y?1.0:exp(-(p.y-atmFogMist.y)*atmFogMist.z);s+=w*atmFogMistAt(p.xz);sw+=w;}',
-   ' return sw>0.0?s/sw:1.0;}');
+   /* one return: ANGLE's HLSL warned "potentially uninitialized variable" on an early return out of the loop's function */
+   'float atmFogMistField(vec3 ro,vec3 rd,float L){float top=atmFogMist.y+3.0/atmFogMist.z;vec2 q=atmFogSlab(top-1e7,top,ro.y,rd.y,L);float r=1.0;if(q.x<=0.0)r=atmFogMistAt(ro.xz+rd.xz*L);',
+   ' else{float st=q.x/atmFogMistK.y,lo=q.y-0.5*q.x,s=0.0,sw=0.0;for(int i=0;i<8;i++){if(float(i)>=atmFogMistK.y)break;vec3 p=ro+rd*(lo+st*(float(i)+0.5));float w=p.y<atmFogMist.y?1.0:exp(-(p.y-atmFogMist.y)*atmFogMist.z);s+=w*atmFogMistAt(p.xz);sw+=w;}',
+   '  r=sw>0.0?s/sw:1.0;}return r;}');
    const i=G.findIndex(l=>l.indexOf(' vec3 P=ro+rd*L;float tM=0.0;')===0);G[i]=G[i].replace('atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);','atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);tM*=atmFogMistField(ro,rd,L);');}
   return G.join('\n');};
 })();

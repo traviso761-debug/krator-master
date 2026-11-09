@@ -35,9 +35,11 @@
   //   tint        display [r,g,b] the cloud is drawn toward, keeping its own light and shade (a smog brown-purple, a dull red, a
   //               sickly green, an ash grey: ATMOS.MOOD_PALETTE); tintK 0..1 how far (default 1 when a tint is given)
   //   turbulence  0..1, with turbKind 'violent' (a second, faster noise tears the shape and breaks the edges; the default),
-  //               'ordered' (unnaturally regular rows of identical clouds), 'glitched' (two more sheets of cloud sliding on
-  //               their own winds through the first) or 'ripple' (rings spreading from an epicentre, turbAt [x, z], as from a
-  //               stone dropped in water in slow motion)
+  //               'ordered' (unnaturally regular parallel rows of cloud), 'glitched' (two more sheets of cloud sliding on
+  //               their own random-walk winds through the first, turning abruptly every few seconds; sheetTint 0..1 colours them
+  //               in the tint's complement and its hue-rotated twin) or 'ripple' (rings spreading from an epicentre, turbAt
+  //               [x, z], as from a stone dropped in water in slow motion); pace (default 3) is how much faster than the page's
+  //               wind the pattern's own motions run, so they read at 1x
   //   glow        0..1 at night (nothing by day): the cloud base lit from below by glowColour (display RGB, default the fires'
   //               orange), the city's fires or the taint; glowKind 'ethereal' (a slow, soft breathe over the whole sky),
   //               'lightning' (frequent flashes under one patch at a time) or 'orbs' (two small bright lights wandering under the

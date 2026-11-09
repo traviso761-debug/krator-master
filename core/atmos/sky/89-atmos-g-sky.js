@@ -38,29 +38,42 @@
  // With a mood (A.skyMoodOn) the field takes the turbulence: uCloudX.y its strength, uCloudY.x its kind (ATMOS.MOOD_TURB):
  //   0 violent   a second, faster-drifting noise warps the cloud's shape (0.35 of a cell at full) and a fine one breaks its
  //               edges; the whole field drifts up to 2.5x faster
- //   1 ordered   the field is drawn toward rows of identical clouds on the lattice (unnaturally regular)
+ //   1 ordered   the field is drawn toward parallel rows of cloud a lattice cell apart, gently waved (unnaturally regular cloud
+ //               streets; the first cut's cos x cos y grid read as squares: the owner, 2026-11-09)
  //   2 glitched  two more sheets of cloud under the first, each on its own wind (one across the page's wind at 1.6x its speed
  //               and 1.3x finer, one 120 degrees round at 0.7x and 0.8x coarser), the three unioned: clouds slide through each
- //               other as if each felt a different wind (the owner, 2026-11-09; the first cut's cells drew a crosshatch of seams)
+ //               other as if each felt a different wind (the owner, 2026-11-09; the first cut's cells drew a crosshatch of seams);
+ //               each sheet's wind is a RANDOM WALK (atmMoodWalk: six hashed headings held 30-90 s each in real time, repeating,
+ //               the position continuous), so a sheet turns abruptly every half minute or so, at the pace's speed (the owner,
+ //               2026-11-09, third cut); with uCloudZ.x the
+ //               sheets take the tint's complement and its hue-rotated twin where they show through (atmSheetW)
  //   3 ripple    rings spread from an epicentre (uCloudY.yz) as from a stone dropped in water, in slow motion: a 1.2 km wave at
  //               40 m/s, the cloud's shape pushed to and fro along the radius and its density rising and falling with the crest,
  //               dying out over 8 km
  // The shade (atmCloudShade) reads the same field, so a torn or glitched cloud and its shadow are still the same cloud
- const MOODU=['uniform vec4 uCloudX;uniform vec4 uCloudY;uniform vec3 uCloudTint;uniform vec3 uCloudGlow;uniform vec4 uCloudGlowP;uniform vec4 uCloudGlowQ;'];
- /* uCloudX: dark, turbulence, glow, tintK; uCloudY: turbKind (0 violent, 1 ordered, 2 glitched, 3 ripple), the ripple's epicentre x, z (world), 0;
+ const MOODU=['uniform vec4 uCloudX;uniform vec4 uCloudY;uniform vec4 uCloudZ;uniform vec3 uCloudTint;uniform vec3 uCloudGlow;uniform vec4 uCloudGlowP;uniform vec4 uCloudGlowQ;uniform vec4 uCloudBeam;uniform vec4 uCloudBeamP;'];
+ /* uCloudX: dark, turbulence, glow, tintK; uCloudY: turbKind (0 violent, 1 ordered, 2 glitched, 3 ripple), the ripple's epicentre x, z (world), pace (the
+    mood's motions x this: the warp's drift, the sheets' walks, the rings' speed, the rows' slide; 1 the page's own wind); uCloudZ: sheetTint (0..1: the
+    glitched sheets in the tint's complement and its hue-rotated twin), 0, 0, 0;
     uCloudTint and uCloudGlow display RGB; uCloudGlowP: the glow's locus x, z (world, on the cloud plane), its radius (m), its spread (1: the
-    whole sky lit alike); uCloudGlowQ: a second light x, z, radius, on (the orbs' pair) */
+    whole sky lit alike); uCloudGlowQ: a second light x, z, radius, on (the orbs' pair); uCloudBeam: a SKY EVENT (the owner, 2026-11-09:
+    "a light ascending to the heavens in the distance or a brief distant flashing pillar of light"): x, z (world), kind (0 none, 1 a pillar,
+    2 an ascent), its brightness; uCloudBeamP: its top (m), its width (m), the ascending light's height now (m), the ground at its foot (m) */
  const CLOUDF=()=>(A.skyMoodOn?[
-  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;float tb=uCloudX.y;float kd=uCloudY.x;vec2 p=xz/uCloudH.z;',
-  ' if(tb>0.0&&kd<0.5)w*=1.0+1.5*tb;p+=w;',
-  ' float rp=0.0,ra=0.0;if(tb>0.0&&kd>2.5){vec2 dd=xz-uCloudY.yz;float r=length(dd);rp=(r-uTime*40.0)*0.005236;ra=tb*exp(-r/8000.0);p+=dd/max(r,1.0)*(0.18*ra*sin(rp));}',
-  ' if(tb>0.0&&kd<0.5){vec3 q=vec3(p*1.9+w*1.6,5.0);p+=tb*0.35*vec2(atmSkyNoise(q,120u),atmSkyNoise(q+vec3(31.0,17.0,0.0),121u));}',
+  'vec2 atmSheetW=vec2(0.0);',
+  'vec2 atmMoodWalk(float t,uint s){float L[6];float T=0.0;for(int i=0;i<6;i++){L[i]=30.0+60.0*atmSkyU(uvec3(uint(i),s,4u),151u);T+=L[i];}float c=floor(t/T),tc=t-c*T,st=0.0;vec2 o=vec2(0.0),D=vec2(0.0);',
+  ' for(int i=0;i<6;i++){float h=atmSkyU(uvec3(uint(i),s,3u),150u)*6.2831853;vec2 d=vec2(cos(h),sin(h));D+=d*L[i];o+=d*clamp(tc-st,0.0,L[i]);st+=L[i];}return o+D*c;}',
+  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;float tb=uCloudX.y;float kd=uCloudY.x;float pc=uCloudY.w;vec2 p=xz/uCloudH.z;atmSheetW=vec2(0.0);',
+  ' if(tb>0.0&&kd<0.5)w*=1.0+1.5*tb*pc;p+=w;',
+  ' float rp=0.0,ra=0.0;if(tb>0.0&&kd>2.5){vec2 dd=xz-uCloudY.yz;float r=length(dd);rp=(r-uTime*40.0*pc)*0.005236;ra=tb*exp(-r/8000.0);p+=dd/max(r,1.0)*(0.18*ra*sin(rp));}',
+  ' if(tb>0.0&&kd<0.5){vec3 q=vec3(p*1.9+w*1.6*pc,5.0);p+=tb*0.35*vec2(atmSkyNoise(q,120u),atmSkyNoise(q+vec3(31.0,17.0,0.0),121u));}',
   ' float n=atmSkyFbm(vec3(p,0.0),oct,100u)*0.5+0.5;',
-  ' if(tb>0.0&&kd<0.5)n+=tb*0.2*atmSkyNoise(vec3(p*9.0+w*2.5,9.0),122u);',
+  ' if(tb>0.0&&kd<0.5)n+=tb*0.2*atmSkyNoise(vec3(p*9.0+w*2.5*pc,9.0),122u);',
   ' if(ra>0.0)n+=0.08*ra*cos(rp);',
-  ' if(tb>0.0&&kd>0.5&&kd<1.5){float r=0.5+0.5*cos(p.x*6.2831853)*cos(p.y*6.2831853);n=mix(n,0.25+0.75*r,tb*0.85);}',
-  ' if(tb>0.0&&kd>1.5){vec2 p0=xz/uCloudH.z;float n1=atmSkyFbm(vec3(p0*1.3+vec2(w.y,-w.x)*1.6+vec2(7.0,3.0),0.0),oct,100u)*0.5+0.5;',
-  '  float n2=atmSkyFbm(vec3(p0*0.8+vec2(-0.5*w.x-0.87*w.y,0.87*w.x-0.5*w.y)*0.7+vec2(2.0,11.0),0.0),oct,100u)*0.5+0.5;n=mix(n,max(n,max(n1,n2)-0.05),tb);}',
+  ' if(tb>0.0&&kd>0.5&&kd<1.5){vec2 pl=p+w*(pc-1.0);float r=0.5+0.5*cos(pl.y*6.2831853+0.6*sin(pl.x*6.2831853));n=mix(n,0.25+0.75*r,tb*0.85);}',
+  ' if(tb>0.0&&kd>1.5&&kd<2.5){vec2 p0=xz/uCloudH.z;float ws=length(uWind)*uCloudH.w*pc;',
+  '  float n1=atmSkyFbm(vec3(p0*1.3+atmMoodWalk(uTime,1u)*(ws*1.6)+vec2(7.0,3.0),0.0),oct,100u)*0.5+0.5,n2=atmSkyFbm(vec3(p0*0.8+atmMoodWalk(uTime,2u)*(ws*0.7)+vec2(2.0,11.0),0.0),oct,100u)*0.5+0.5;',
+  '  atmSheetW=vec2(clamp((n1-0.05-n)*10.0,0.0,1.0),clamp((n2-0.05-max(n,n1-0.05))*10.0,0.0,1.0))*tb;n=mix(n,max(n,max(n1,n2)-0.05),tb);}',
   ' return n;}']:[
   'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;return atmSkyFbm(vec3(xz/uCloudH.z+w,0.0),oct,100u)*0.5+0.5;}']).concat([
   'float atmCloudCover(float n){return smoothstep(1.0-uCloud.x,1.0-uCloud.x+0.22,n);}']);
@@ -68,11 +81,19 @@
  // tint keeps its luminance and takes the tint's hue, glow adds the page's colour from below at night (uNight), strongest where
  // the cloud is thick (cov), near the glow's locus unless its spread is 1
  const MOODC=[
-  'vec3 atmCloudMood(vec3 c,float sh,float cov,vec2 xz){const vec3 LW=vec3(0.3,0.55,0.15);float dk=uCloudX.x;if(dk>0.0){float l=dot(c,LW);c=mix(c,vec3(l)*(0.22+0.40*sh),dk);}',
-  ' if(uCloudX.w>0.0){float l=dot(c,LW),lt=max(dot(uCloudTint,LW),1e-3);c=mix(c,uCloudTint*(l/lt),uCloudX.w);}',
+  'vec3 atmCloudMood(vec3 c,float sh,float cov,vec2 xz,vec2 sw){const vec3 LW=vec3(0.3,0.55,0.15);float dk=uCloudX.x;if(dk>0.0){float l=dot(c,LW);c=mix(c,vec3(l)*(0.22+0.40*sh),dk);}',
+  ' if(uCloudX.w>0.0){float l=dot(c,LW);vec3 T=uCloudTint;if(uCloudZ.x>0.0){T=mix(T,1.0-uCloudTint,sw.x*uCloudZ.x);T=mix(T,uCloudTint.gbr,sw.y*uCloudZ.x);}float lt=max(dot(T,LW),1e-3);c=mix(c,T*(l/lt),uCloudX.w);}',
   ' if(uCloudX.z>0.0&&uNight>0.0){vec2 dp=xz-uCloudGlowP.xy;float rr=max(uCloudGlowP.z,1.0);float loc=mix(exp(-dot(dp,dp)/(rr*rr)),1.0,uCloudGlowP.w);',
   '  vec2 dq=xz-uCloudGlowQ.xy;float rq=max(uCloudGlowQ.z,1.0);loc+=uCloudGlowQ.w*exp(-dot(dq,dq)/(rq*rq));c+=uCloudGlow*(uCloudX.z*uNight*loc*(0.15+0.35*cov));}',
-  ' return c;}'];
+  ' return c;}',
+  // the sky event: a vertical pillar of light at (x, z) from the ground to its top, or a point of light climbing from the ground to
+  // the top with a faint trail under it; in the glow's colour, hazed with distance; drawn under the clouds, so the cloud base covers it
+  'vec3 atmSkyBeam(vec3 d){if(uCloudBeam.z<0.5||uCloudBeam.w<=0.0)return vec3(0.0);vec2 rel=uCloudBeam.xy-uCamPos.xz;float D=max(length(rel),50.0);float hl=length(d.xz);if(hl<1e-4)return vec3(0.0);',
+  ' float az=acos(clamp(dot(d.xz/hl,rel/D),-1.0,1.0)),aw=max(uCloudBeamP.y/D,uPixAng*1.5);float g=exp(-az*az/(aw*aw));if(g<1e-3)return vec3(0.0);',
+  ' float el=atan(d.y,hl),fe=atan((uCloudBeamP.w-uCamPos.y)/D),te=atan((uCloudBeamP.x-uCamPos.y)/D),v;',
+  ' if(uCloudBeam.z<1.5)v=smoothstep(fe,fe+0.004,el)*(1.0-smoothstep(te-0.5*(te-fe),te,el));',
+  ' else{float ea=atan((uCloudBeamP.z-uCamPos.y)/D),q=(el-ea)/(aw*2.5);v=3.0*exp(-q*q)+0.2*smoothstep(fe,fe+0.004,el)*(1.0-smoothstep(ea-0.03,ea,el));}',
+  ' return uCloudGlow*(uCloudBeam.w*g*v*exp(-D/25000.0));}'];
  A.skyMoodOn=false;
  // does a preset ask for the mood's lines? any of the four set, or clouds.mood true (a page that will drive them later: ATMOS.cloudMood)
  A.skyMoodWanted=P=>{const C=P&&P.clouds;return !!(C&&(C.mood||C.dark>0||C.turbulence>0||C.glow>0||C.tint));};
@@ -322,13 +343,13 @@
   ' vec4 o=vec4(0.0);',
   ' if(uCloud.z>0.0&&(uCloudH.y-uCamPos.y)/d.y>0.0){vec2 p=(uCamPos.xz+d.xz/d.y*(uCloudH.y-uCamPos.y))/uCloudH.z;vec3 q=vec3(p.x*0.35+w.x*0.5,p.y*1.6+w.y*0.5,3.0);',
   '  float n=atmSkyFbm(q,4,90u)*0.5+0.5;float a=smoothstep(0.58,0.86,n)*uCloud.z*0.5*smoothstep(0.004,0.08,d.y)*exp(-uCloudH.y/max(d.y,0.004)/160000.0);',
-  '  vec3 c=sunL*0.42*(0.75+0.5*pow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;'+(A.skyMoodOn?'c=atmCloudMood(c,1.0,0.0,p*uCloudH.z);':'')+'o=vec4(c,a);}',
+  '  vec3 c=sunL*0.42*(0.75+0.5*pow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;'+(A.skyMoodOn?'c=atmCloudMood(c,1.0,0.0,p*uCloudH.z,vec2(0.0));':'')+'o=vec4(c,a);}',
   ' float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0){vec2 xz=uCamPos.xz+d.xz/d.y*hc;',
-  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;',
+  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;'+(A.skyMoodOn?'vec2 sw=atmSheetW;':''),
   '  float cov=atmCloudCover(n);',
   '  float n2=atmCloudField(xz+s2*0.18*uCloudH.z,5)+bank*0.35;float sh=clamp(0.62+(n-n2)*3.2,0.0,1.0);',
   '  float dist=abs(hc/max(abs(d.y),0.004));float a=cov*smoothstep(0.004,0.05,d.y)*exp(-dist/60000.0);',
-  '  vec3 c=sunL*0.40*(0.35+0.65*sh)*(1.0+0.6*pow(cs,10.0)*(1.0-cov))+amb*(0.75-0.25*cov)+uShineC*uShineI*0.35*sh;'+(A.skyMoodOn?'c=atmCloudMood(c,sh,cov,xz);':''),
+  '  vec3 c=sunL*0.40*(0.35+0.65*sh)*(1.0+0.6*pow(cs,10.0)*(1.0-cov))+amb*(0.75-0.25*cov)+uShineC*uShineI*0.35*sh;'+(A.skyMoodOn?'c=atmCloudMood(c,sh,cov,xz,sw);':''),
   '  c=mix(c,air,1.0-exp(-dist/45000.0));o.rgb=mix(o.rgb,c,a);o.a=o.a+a*(1.0-o.a);}',
   ' return o;}',
   // ---- 8 the ridges: elevation (degrees) of layer i at azimuth fraction u, interpolated between two texels
@@ -454,7 +475,7 @@
   ' col+=deb*T*(1.0-0.9*uHazeFloor);',
   ' col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);',
   ' vec4 lm=uLmN>0?atmSkyLandmarks(d,air,false):vec4(0.0);col=mix(col,lm.rgb,lm.a);',
-  ' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
+  (A.skyMoodOn?' col+=atmSkyBeam(d);':'')+' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
   ' vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);',
   ' vec4 lo=uLmN>0?atmSkyLandmarks(d,air,true):vec4(0.0);col=mix(col,lo.rgb,lo.a);',
   ' if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a)*(1.0-lm.a)*(1.0-lo.a));',

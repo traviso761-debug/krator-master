@@ -9,6 +9,8 @@
 //   ATMOS.thunder       the pending events [{at (module clock s), dist, power}]; ATMOS.onThunder(fn(ev)): fn is called when
 //                       one is due (the host plays its sound: power 1 near, falling with distance; a far one rumbles)
 //   PRESETS.lightning   {depth, rough, fork, width (m at the base of the main channel), colour, ashColour, cloud}
+//   ATMOS.boltFx(s)     a strike drawn now: s = {x, z, top, base, dist, t, ash}; its brightness is the weather's flash (ATMOS.W.flash)
+//                       or ATMOS.boltGlow (the clouds' mood's lightning, host/89-atmos-h-skyhost.js cloudMood), whichever is higher
 // The bolt is drawn as camera-facing ribbons (one mesh, rebuilt at each strike: under 1k triangles), additive, at the
 // weather's flash. Recorded as {type:'lightning'} for the export. Godot: an ImmediateMesh from the same segments and an
 // OmniLight3D pulse at the cloud; the thunder an AudioStreamPlayer3D started at the event (GODOT.md, "Lightning").
@@ -37,7 +39,7 @@
    geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setIndex(idx);geo.computeBoundingSphere();
    mat.color.setHex(s.ash?P.ashColour:P.colour);cm.color.setHex(s.ash?P.ashColour:P.colour);cloud.position.set(s.x,s.top+20,s.z);cloud.scale.setScalar(s.dist*.5);
    A.thunder.push({at:s.t+A.thunderDelay(s.dist),dist:s.dist,power:Math.min(1,600/Math.max(1,s.dist))});A.stats.lightning=segs.length;};
-  A.hook(t=>{const W=A.W,fl=W?W.flash||0:0;mesh.visible=fl>.01;mat.opacity=Math.min(1,fl*1.5);cloud.visible=fl>.01;cm.opacity=Math.min(1,fl*P.cloud);
+  A.hook(t=>{const W=A.W,fl=Math.max(W?W.flash||0:0,A.boltGlow||0);mesh.visible=fl>.01;   /* A.boltGlow: the clouds' mood lightning (ATMOS.cloudMood), when it strikes */mat.opacity=Math.min(1,fl*1.5);cloud.visible=fl>.01;cm.opacity=Math.min(1,fl*P.cloud);
    for(let i=A.thunder.length-1;i>=0;i--){const e=A.thunder[i];if(t>=e.at){A.thunder.splice(i,1);for(const fn of TL){try{fn(e);}catch(x){A.err('thunder: '+x.message);}}}}});
   A.rec('lightning',{preset:'lightning',note:'each strike: boltPath(seed, cloud, ground) segments (midpoint displacement with forks); thunder at strike + dist/343 s'});});
 })();

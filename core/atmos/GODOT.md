@@ -136,14 +136,15 @@ res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|station|up -
 page whose preset asks (`ATMOS.skyMoodOn`), so the generated include and its golden digest are unchanged until the generator
 sets `ATMOS.skyMoodOn = true` before `skyGLSL()`: then the include gains `uCloudX` (dark, turbulence, glow, tintK), `uCloudY`
 (the turbulence kind: 0 violent, 1 ordered, 2 glitched: two more sheets on their own winds, `ATMOS.MOOD_SHEETS`; 3 ripple, with the
-epicentre in `.yz`), `uCloudTint`, `uCloudGlow` (`source_color`), `uCloudGlowP` (the glow's locus x, z, radius, spread) and
-`uCloudGlowQ` (a second light x, z, radius, on), `atmCloudMood` on both cloud layers and the turbulence inside `atmCloudField` (so the ground
+epicentre in `.yz` and the pace in `.w`), `uCloudZ` (sheetTint), `uCloudTint`, `uCloudGlow` (`source_color`), `uCloudGlowP` (the glow's locus x, z, radius, spread) and
+`uCloudGlowQ` (a second light x, z, radius, on), `uCloudBeam` and `uCloudBeamP` (a sky event: place, kind, brightness; top, width, the ascending light's height, the ground), with `atmSkyBeam` under the clouds, `atmCloudMood` on both cloud layers and the turbulence inside `atmCloudField` (so the ground
 shade's include takes it too). A world that uses them sets the uniforms on the Sky material from the preset's `clouds`, as
 `sky.gd` sets the rest; a world that never does leaves them at zero and draws the cloud it drew. `ATMOS.moodAt(t, o)` and
 `ATMOS.moodGlow(t, kind, seed, eye)` are arithmetic on the hash and the clock (lowbias32 through `skyHash`, a 1D value noise in
 time), for `sky_model.gd`; the `cloudmood` record carries the seed, period, blend, chances, palette and kinds. The cloud layer's
 JS twin (`skyCloudAt`, on the noise volume by the texture's own trilinear read) is the vector source for a GDScript twin when one
-is wanted; none exists yet.
+is wanted; none exists yet. The mood's lightning strikes the same `boltPath` bolt as the weather's (an ImmediateMesh, "Lightning"),
+its brightness the flash's envelope `e` from `moodGlow`.
 
 The broken station (`station` in each golden state) and the shooting stars came on 2026-10-26: `sky.gd` sets `uStaDir`,
 `uStaAx`, `uStaV` and `uStaK` from the model's `station`, `uMeteor` from the preset's `night.meteors`, and `uRealT` from
