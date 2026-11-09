@@ -77,7 +77,7 @@
     "kits/interiors/src-sets/75-sets-audit.js": "fcfcc70b7ad98945c0ee79d75a4508f22e422b6a5ce1013c5f812c6ebe6c1c8f",
     "kits/interiors/src-sets/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
     "kits/interiors/src-walk/00-head.html": "b9063f1d3ecb278c6f628c8b19f8c24d755bf9bac3bbe6a4633e36c851852257",
-    "kits/interiors/src-walk/70-walk.js": "4cf3d7f6791ba8ffa6f36b61600b6bdd1009dcf654b4f155c08dc65d3e265aba",
+    "kits/interiors/src-walk/70-walk.js": "1f3f81cf087933ddf09a4bf00cd9fd524dfbb1e59a38e6d23d14027b36335bbc",
     "kits/interiors/src-walk/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
     "kits/interiors/src/00-head.html": "3a6458df029985ff388896bca66a61cdb77783cff4501e0a0e022f905dc896d3",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -120,17 +120,17 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/interiors/build-manifest.json": "f331734fdc9587487ccfea6efb0dd28c09876387e39bea3e1fa9869c11432178",
+    "kits/interiors/build-manifest.json": "e27c7ef9366f339450b4b713274259e6835258b3e65ff48286e98a457164915a",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
     "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "e503947bc80cb43418215042c7589663c3b8a8967c031827e44220d99d029567",
+    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
     "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
    },
    "outputs_raw": {
-    "kits/interiors/build-manifest.json": "d5729c363422950d3f87b724850169c7f0a8accae3ef2fba83c473baeda14aad",
+    "kits/interiors/build-manifest.json": "f9fc151619a6a6e58f5a4c79d99563a25566d16946a1f1f7c6a285492409f7f7",
     "kits/interiors/dist/interiors-core.js": "25ca64574c5bef2c4ff4ac376982823e17bc890850bbad473a3f56d668875cda",
     "kits/interiors/dist/interiors-sets.html": "ea1f7b3440cb9501241a42a07c76f3341975aa3b877d69f45ba1889f2ff270d0",
-    "kits/interiors/dist/interiors-walk.html": "e503947bc80cb43418215042c7589663c3b8a8967c031827e44220d99d029567",
+    "kits/interiors/dist/interiors-walk.html": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7",
     "kits/interiors/dist/interiors.html": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
    }
   }

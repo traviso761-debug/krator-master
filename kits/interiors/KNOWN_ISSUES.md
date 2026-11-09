@@ -7,6 +7,18 @@ pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with n
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [x] **`verify.py dist/interiors-sets.html --assert` and `dist/interiors-walk.html --assert` threw in the snapshot (2026-11-09).**
+  Both ran the demo's checks: the demo's snapshot reads `window._interiors.walkers`, which neither page has (the sets sheet needs
+  `--sets`; the walk mockup had no verify, only `tools/walkshots.py`). `verify.py` now takes the mode from the page's name
+  (`interiors-sets*` runs as `--sets`; `interiors-walk*` gets its own check: coverage, `IX.audit` on every room, `IX.auditBuilding`
+  on every building, and seed 0 hashing the same after seed 1, through the page's new `reseed`). Nothing in the kit's output was wrong.
+- [ ] **A living room's food slot can be filled by a surface piece, which the residence rule does not count (2026-11-09).** With
+  `--sets --assert` at the default three seeds, seed 2 fails one residence: `beast-rider.br_bldg_girder_dwelling` (at x 138, z -984 on
+  the full sheet; alone, `?set=beast-rider`, it passes, the 0.2 m grid falling differently) places `br_h_stall_goods` (stack, role
+  store) on its low table as the `food` need, and `IX.sets.auditResidence` skips surface pieces. The fix is `anchors: ['floor', 'wall']`
+  on the food require of `cottage`, `living` and `kitchen` in `src/30-programs.js` (as sets/zeijani.js's `cell` has it), but that
+  fragment reaches Dhelv, Girder (both pages), Highlands, Roketstad and the isle demo (`tools/reach.py`): it waits for a pass that
+  rebuilds them.
 - [x] **Ladders and low plinths the walk could not climb (the stairs pass, 2026-11-03).** `IX.walk.register` wrote a ladder as one strip
   (about 2.7 m of rise a metre): core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) never got up one, so every
   storey a planner served with a ladder was unreached; it is rung floors 0.4 m apart now (`rungs()`, a flight steeper than 1.1 too).

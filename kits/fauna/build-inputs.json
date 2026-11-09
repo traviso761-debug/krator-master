@@ -55,7 +55,7 @@
     "kits/fauna/models/staghorn-beetle.json": "fba0c9ada4bd0c1fe8bb0eed5ac5970d8734ed259da26e7186d12d4761ee01d0",
     "kits/fauna/models/yak.json": "dafa96ca39c75209c1b0d043d2e1cba81e1fea68746295cc49437dfb5d5ccf7a",
     "kits/fauna/src/00-head.html": "b20fdb279ca1c25fbd92d242ff1e0e1776ed92e67b077c86da4ae90f4dbcf423",
-    "kits/fauna/src/90-sheet.js": "aee53e59475d0ee9390d07a3ed28161c8fc794f207062d1942750f077266e5eb",
+    "kits/fauna/src/90-sheet.js": "33b42e991411b6a4ff15712979f582010ac27fc2fb9af1383aefc0f97f674a8b",
     "kits/fauna/src/92-hover.js": "48ca847a8b389aaeb4cc7ae40fb72e11e46c741a312beefddcff941bbd04ca5f",
     "kits/fauna/src/93-polygon.js": "8ad3ff94a2db0a3457950d61b849ad9fdfa3c8b06066588c35c11675d653c11d",
     "kits/fauna/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
@@ -87,15 +87,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/fauna/build-manifest.json": "f702b6122689da7f18ce4b256e28b42a1345b42fd088874e111abdc823722bff",
-    "kits/fauna/dist/fauna.html": "dfeb512ef76af0e6525d619c0944d8efdb5daf219a787cade4f3ecc0f803d48c",
+    "kits/fauna/build-manifest.json": "4bb34392b37fecf4161bf4f554f631c7b47ec9f8db8f22725bf2753056d180ee",
+    "kits/fauna/dist/fauna.html": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2",
     "kits/fauna/dist/fauna.tex.models-2.js": "0feebe9a2fc05eec1d7f6140f07b483caf5c9e28a45275e7d538d49581625dca",
     "kits/fauna/dist/fauna.tex.models.js": "f16de0d117e49ce2465f7c31709ef02a86d02ec08862d10da41d503c1725d000",
     "kits/fauna/dist/krator-fauna.js": "b996d4384d39966d15cc599f4e1fbf41e09238517130dc3626f39c718670da54"
    },
    "outputs_raw": {
-    "kits/fauna/build-manifest.json": "12cc7908e15e8cea014d77261e5435db695b37d36b1a33145e876ac6cfc0fd85",
-    "kits/fauna/dist/fauna.html": "dfeb512ef76af0e6525d619c0944d8efdb5daf219a787cade4f3ecc0f803d48c",
+    "kits/fauna/build-manifest.json": "0919c426071008d475cdec8bfa3822a6643d7d9d20e4a2b98a7324314404bdda",
+    "kits/fauna/dist/fauna.html": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2",
     "kits/fauna/dist/fauna.tex.models-2.js": "0feebe9a2fc05eec1d7f6140f07b483caf5c9e28a45275e7d538d49581625dca",
     "kits/fauna/dist/fauna.tex.models.js": "f16de0d117e49ce2465f7c31709ef02a86d02ec08862d10da41d503c1725d000",
     "kits/fauna/dist/krator-fauna.js": "b996d4384d39966d15cc599f4e1fbf41e09238517130dc3626f39c718670da54"

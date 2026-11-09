@@ -120,11 +120,12 @@ const INSTANCES = [], FIGS = [];
   function showAll() { for (const g of INSTANCES) show(g, true); for (const f of FIGS) f.visible = true; }
   function gotoRow(i) {
     const r = rows[i]; if (!r) return;
-    showAll(); if (ctl.walk) window._setWalk(false); camera.near = 0.1; camera.updateProjectionMatrix();
+    showAll(); if (ctl.walk) window._setWalk(false); camera.near = 0.1; camera.fov = FOV0; camera.updateProjectionMatrix();
     ctl.target.set(r.width / 2 - GAP / 2, 0.6, r.z); ctl.dist = Math.max(5, r.width * 0.85); ctl.az = 0.5; ctl.el = 0.3;
     updateCamera();
   }
   /* one animal, close and alone: kind = front34 | side | rear34 | front | top */
+  const FOV0 = camera.fov;
   const VIEWS = { front34: [0.75, 0.2, 3.2], side: [Math.PI / 2, 0.1, 3.4], rear34: [Math.PI - 0.75, 0.25, 3.2], front: [0, 0.12, 3.0], top: [0.3, 1.3, 3.6] };
   function view(i, kind) {
     const g = INSTANCES[i], V = VIEWS[kind] || VIEWS.front34; if (!g) return null;
@@ -135,8 +136,12 @@ const INSTANCES = [], FIGS = [];
     const sh = g.userData.alt && g.userData.alt.visible ? g.userData.alt : g;
     sh.updateMatrixWorld(true); const bx = new THREE.Box3().setFromObject(sh), c = bx.getCenter(new THREE.Vector3()), sz = bx.getSize(new THREE.Vector3());
     const k = Math.max(0.04, Math.max(sz.x, sz.y, sz.z) / 1.3);
-    ctl.target.copy(c); ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2] * k;
-    camera.near = Math.min(0.1, ctl.dist / 20); camera.updateProjectionMatrix();
+    /* a small animal is framed from at least 1.15 m beyond its bounding radius, with the lens narrowed to keep its size
+       in the frame: the eye check (tools/harness.py, EYE_NEAR 1 m) fails a camera nearer than 1 m to the surface it faces */
+    const d0 = V[2] * k, d = Math.max(d0, 1.15 + sz.length() / 2);
+    ctl.target.copy(c); ctl.az = V[0]; ctl.el = V[1]; ctl.dist = d;
+    camera.fov = 2 * Math.atan(Math.tan(FOV0 * Math.PI / 360) * d0 / d) * 180 / Math.PI;
+    camera.near = Math.min(0.1, d0 / 20); camera.updateProjectionMatrix();
     updateCamera();
     return g.userData.key + ' #' + (g.userData.variant + 1);
   }
@@ -144,6 +149,8 @@ const INSTANCES = [], FIGS = [];
   if (rows.length) gotoRow(0);
   window._sheet = { rows: rows, instances: INSTANCES, width: maxW, gotoRow: gotoRow, view: view, showAll: showAll, views: Object.keys(VIEWS),
     setMode: setMode, setNight: setNight };
-  window._texPending = function () { return KF.textures().pending; };
+  /* the harness waits on !window._texPending (a count, as KMAT keeps it): a getter, so it reads the live count
+     (a function here was always truthy: textures-decoded failed after 120 s with every texture decoded) */
+  Object.defineProperty(window, '_texPending', { configurable: true, get: function () { return KF.textures().pending; } });
   (function wait() { if (KF.textures().pending > 0) return setTimeout(wait, 50); window._ready = true; })();
 })();

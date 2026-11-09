@@ -2,6 +2,12 @@
 
 `build.py` prints the open ones (`- [ ]`) after every build.
 
+- [x] The GPU verify's `textures-decoded` and small animals' eye checks (2026-11-09). `window._texPending` was a function, always
+      truthy, so the harness's `!window._texPending` wait never cleared (every texture had decoded): it is a getter on the live
+      count now (kits/motor-vehicles' sheet has the same function and fails the same way). And `_sheet.view` framed a small
+      animal from 3.2 of its size, under 1 m away, which the eye check (1 m) fails (bloom glint, wadi swift, rock lizard, hen,
+      salt, char and boring beetles, sparkle hummer, lantern fly, homing pigeon: the animals under about 0.6 m): the camera stands at least 1.15 m beyond the animal's bounding radius and the lens
+      narrows to keep its size in the frame (`gotoRow` puts the 48 degree lens back; walking straight from a view keeps the narrow one).
 - [ ] Every animal is here (48 species, 2026-10-06), but the builds still draw their own copies (each entry's `source` says
       where): point the biome kits and settlements at the bundle, one build at a time, and check each still reads the same.
 - [ ] Wings are rigid: a perched bird's wing is turned back, shortened and rolled down the flank (`flap.sweep`, `foldScale`,
