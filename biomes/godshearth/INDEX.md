@@ -24,4 +24,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| prismbasin | 44s-host-site.js, 47b-host-heat.js, 87-host-hearths.js, 89w-host-water.js, 89x-host-air.js | 19 |
+| prismbasin | 44s-host-site.js, 47b-host-heat.js, 75b-biome-godshearth-turf.js, 87-host-hearths.js, 89w-host-water.js, 89x-host-air.js, 89y-host-walls.js | 45 |
