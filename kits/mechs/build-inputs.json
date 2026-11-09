@@ -15,7 +15,7 @@
     "kits/mechs/krator-mechs-iziz-aquilifer.js": "789bbd5673b7d05b5fd6ffe033fe174f022b26a95f4f49b35e53bab0c6dfce6f",
     "kits/mechs/krator-mechs-iziz-baiulus.js": "d185f2fcb022088ac66238fe1bd5f3b06f0a4786bed8326941adbdee438ce3e6",
     "kits/mechs/krator-mechs-iziz-castra.js": "887d13c5af2c2555c077d19cc94c66ed6edd521d89f18168b5e3cbc8daa7ec13",
-    "kits/mechs/krator-mechs-iziz-catulus.js": "24a4d0004dd9c0ff6105d59ec56d070f4d19ddd63930c9e9a0da419fe9eb844c",
+    "kits/mechs/krator-mechs-iziz-catulus.js": "3699e8b89ae2a53613d8828b348d130df393a4ccb263873eadbbcca028d6fffd",
     "kits/mechs/krator-mechs-iziz-centurion.js": "808060bb91174dce9c98f14f80dc5a4ea1384dbae9b0a4b2b6a1939b0dc8a3df",
     "kits/mechs/krator-mechs-iziz-clipeus.js": "6a4b588902b2fa0cf5c77d3ae59e98067db56e81b775ab8229dbe8aa6140d631",
     "kits/mechs/krator-mechs-iziz-fabrica.js": "f405baa86087d253f8b6ddd1f9381cbb58fa908b1c88fe90061bffc076038384",
@@ -62,14 +62,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "3aeb61fa042696572e4ff1ffc93fa435b6b4135e900d25a5cdc5b77f64c7884c",
-    "kits/mechs/dist/krator-mechs.js": "3699a3cf36c8df595a8da9258cacb9917bdc78faa5eeeea7f134526166ec4c5a",
-    "kits/mechs/dist/mechs.html": "b79f19db44c2e02b17803317f44a69fb08f5f24b67c3f29b775942df2e8a0b4c"
+    "kits/mechs/build-manifest.json": "d765510d05ffc395c5c9edce39c5be1739f9c110d1818a67881e19ecb3f1f7f0",
+    "kits/mechs/dist/krator-mechs.js": "b7cc2868d0600764077eddad96293e05621c16fc069df9d7827033bc5c954f1b",
+    "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "2fb0415c3ca7e82354249628d66df0bcacaad8d2e48d82801b06ce5202f993c6",
-    "kits/mechs/dist/krator-mechs.js": "3699a3cf36c8df595a8da9258cacb9917bdc78faa5eeeea7f134526166ec4c5a",
-    "kits/mechs/dist/mechs.html": "b79f19db44c2e02b17803317f44a69fb08f5f24b67c3f29b775942df2e8a0b4c"
+    "kits/mechs/build-manifest.json": "e46665007e90443d0615299b06e84cbadf18d8423012666d24e6270dd1d345ab",
+    "kits/mechs/dist/krator-mechs.js": "b7cc2868d0600764077eddad96293e05621c16fc069df9d7827033bc5c954f1b",
+    "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
    }
   }
  }
