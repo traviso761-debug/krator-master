@@ -1,5 +1,80 @@
 # Handoff: the all-builds rebuild
 
+## The integration pass (2026-11-08 to 2026-11-09, `claude/integration-b91c04`; read first)
+
+**Merged, in order:**
+- origin/main, then busy-keller, with isle-demo's `verify.py` hand-merged (the shared `verify_page` plus the guild checks);
+- the core/shadow texture-unit guard 6be96a8cd, then PR 20 bc7c50606;
+- riftrim, godthrone, the ground catch-ups (east, west), throne-kground-wip and metropolis 6daa4e868.
+
+**Then the work that landed while this pass ran:**
+- the cloud turns for pairs 11-13 (catch, crater-drylands, k-guilin, nwouterwall, ehighlands, nhighlands, ringisles, shighlands) and hyperjungle J2-J6;
+- the geyser and crater-drylands cloud sessions' fixes;
+- fauna-meshy, the crystal-cavern work (KGEODE; hearths `--station hold`), and Gemini's map 5.1 round 3 with its Godshearth and Great Chasm plans;
+- savannarim, folded into `biomes/abyssal-savannah` (stations serim, erim, north; `src/rim/`).
+
+**Built once:** every build except the settlements, after `git lfs pull`; every station; Girder's hero page; interiors before ancients-interiors. Of the settlements only longsong (its interiors re-baked) and the isle demo (the sim work) were rebuilt.
+
+**Checked:**
+- The CPU checks: `tools/test_all.py` with the ratchets. The `check_source`, `check_vendor`, `check_cells` and `check_assembly` baselines were rewritten; the geyser stations' static `_shadow` clash is recorded as known.
+- The GPU tier 1: `verify.py --assert` on 238 pages, every page passing.
+- The GPU tier 2: `--all-views` on the 144 biome and new-station pages and the doors/stairs kits, every page passing.
+
+The pages not checked:
+- guilin, frozen (owner, 2026-11-09);
+- the two charactermodels labs (their generated `pieces/` are local only);
+- the post-apoc sockets example;
+- the isle demo's `.artifact.html` copy.
+
+**Fixed on the way:**
+- Texture units: units over 16 on swhighlands, godthrone, the Throne (`samplersOf`) and ringisles high (`STATION.shareLayers`).
+- Foliage held to its structure: sedesert, swbay, the rift and k-guilin.
+- Instance caps declared: hyperjungle tallgrass 650k, the crater-drylands bloom 550k, nwouterwall, the ringisles high species.
+- Core:
+  - the Lambert `cameraPosition` fix in `core/terrain/43` and `core/biome/30`;
+  - `KHOOK.EYE` and kwarp's `EYE` start on a new line;
+  - `KSHADOW.units` counts `sampler3D`;
+  - `W.colLin` decodes the water colours;
+  - the KSTACKS centre fan.
+- Kit-local load and check fixes:
+  - geyser, crater-drylands, ehighlands, shighlands, nsemiarid;
+  - the mechs' unarmed Catulus;
+  - `_texPending` as a getter in motor-vehicles and fauna;
+  - the interiors' verify modes.
+- The ringisles high isle's forest load (79d1b015a): trees 41.1 M to 15.3 M, scene 52.1 M to 26.0 M.
+- Tier 2's four camera and volume faults: the port kit's Panamax terraces radius (dambasins east), the sedesert and k-guilin cameras, and zeijani's eye-level views.
+
+**The owner's decisions in this pass:**
+- Settlements are rebuilt and verified individually later, except longsong and the isle demo; voth keeps its pre-swbay-fix page.
+- Intentionally dense foliage declares `{cap, capWhy}` (a rule).
+- The far impostors' gain is set per kit.
+- `BIO.LOD`'s chunk stays at 1200 m.
+- Copper Glacier's shadow casters are cut back to the corals.
+- The gallery is republished once this merge is done.
+- hyperjungle PLAN-LANDS section 14:
+  - the rims are on abyssal-savannah;
+  - Talia goes into the east rim, which the owner redraws;
+  - answers 2-4, 6 and 7 are yes.
+
+**Stale, owed with the settlements' own rebuilds:**
+- every settlement page except longsong and the isle demo. The shared changes in this pass reach several of them: Hook through the port kit's Panamax fix, Dhelv through zeijani's `90-scene.js`, the Ancients-lineage and catalog pages through core;
+- the `TODO.md` ride-alongs parked there:
+  - the interiors' food anchors `['floor','wall']` (about 60 pages);
+  - `regOccupancy`'s ground and far flags;
+  - `KSHADOW.units` to count only what links: ringisles high reports "19 of 16" while every program links, so it skips its shadows and rain cover.
+
+**The hash baseline** (`PORT-BASELINE.json`) is updated (`--update`) for 251 pages: every biome, kit, core, open-world, longsong and isle-demo page this pass rebuilt and checked.
+
+These entries are left as they were:
+- the settlements';
+- the 32 old `settlements/port` sheets (now `kits/port`, whose `dist/` is git-ignored) and the retired little demo's 2;
+- guilin (frozen);
+- `kits/interiors/dist/interiors-sets.html`. Its `--sets --assert` fails on the parked food-anchor item: the girder dwelling holds no food container. That item rides with the settlement rebuild;
+- the post-apoc sockets example, moved from `core/sockets/example` and not checked;
+- the isle demo's `.artifact.html` copy.
+
+**Not done here; they wait for the owner's word:** the push, the merge to main and the gallery republish.
+
 ## Owner's decisions, 2026-11-01 (read first)
 
 - **Order:** finish the core pass (below), then the three-ground diagnosis, then pair 4. Pair 4 is free of the map; pair 5 on wait for map 5.1.
