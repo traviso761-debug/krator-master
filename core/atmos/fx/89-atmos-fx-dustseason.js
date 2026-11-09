@@ -13,8 +13,8 @@
 //                                      The dust's sprites read their mask when they re-bake their height map (the camera moved ~15% of their
 //                                      box, about 50 m): a sprite field follows the season then, not every frame. D.base the load it scales
 // It only adds: a page that does not list it, or does not call it, is as before. Godot: k is the same arithmetic on the season's dry.
-(function(root){'use strict';
- var A=root.ATMOS;if(!A)return;
+(function(){'use strict';
+ if(typeof ATMOS==='undefined')return;var A=ATMOS;   /* core/atmos's top-level const (not on window), as every fx file reads it */
  function smooth(a,b,x){var t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);}
  A.dustSeasonK=function(dry,o){o=o||{};var wet=o.wet==null?.25:o.wet,from=o.from==null?.2:o.from,to=o.to==null?.8:o.to,d=+dry;
   if(!(d===d))d=0;return wet+(1-wet)*smooth(from,to,Math.min(1,Math.max(0,d)));};
@@ -25,4 +25,4 @@
   D.tick=function(){D.k=A.dustSeasonK(dry(),o);if(D.air&&D.base!=null)D.air.dust=D.base*D.k;return D.k;};
   D.tick();if(A.hook)A.hook(function(){D.tick();});
   A.dustSeasonNow=D;return D;};
-})(typeof window!=='undefined'?window:globalThis);
+})();
