@@ -7,7 +7,7 @@
 // (median slope 0.8 deg), 1.01 atm. The walls stand 40-90 km off (west 7.9 km high, north 7.6 km, the east rim 5.9 km): out of the far field's 14 km.
 // THE AIR: the owner's climate (2026-11-09; PLAN.md section 3), not the model's forced Cfb: the floor's mean +7 degC (warm month +15, cold -2), 16-18 degC
 // between day and night, nights to -10 degC in the cold month; 750-925 mm, most of it in summer afternoon storms, so the nights are clear. Cwb (Lhasa's).
-// The model still holds the forced Cfb (+15 degC): that is a model amendment (PLAN.md section 8, model amendment 4), not this page's.
+// The model holds it since scale model 5.1 edit 1 (f1d1501cf, tools/scale-model/edit_511.py: the floor 7.0 degC, 15/-2, days 24, nights -10).
 // THE PAGE (x east, z south, y up in metres over the LAKE'S LEVEL, 3,642 m; TERR.R 1400, the field stage's):
 //   THE LAKE      west of a wandering shore at x ~ -350, shelving to 9 m in 500 m; past the square the far field carries it 10 km west, flat and painted
 //   THE FIELD     the lake's sinter shore: a geyser field in an ellipse just inland (geysers, a great prismatic spring, hot pools, an acid field, the

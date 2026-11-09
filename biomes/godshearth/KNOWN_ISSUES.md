@@ -9,10 +9,10 @@ Open items (`- [ ]`) are read by `build.py`'s closing line. The plan's open ques
       (PLAN.md section 9, "The pinned stations").
 - [ ] **The page's middle is 4 km west of the plan's pin** (842,1394, not 844,1394), so the lake is on the page: the pin stands about 4 km from the shore and
       the field stage's square is 2.8 km. PLAN.md section 7's table still gives 844,1394.
-- [ ] **The climate is the owner's, not the model's.** The page's air (mean +7 degC, `amb`, KTHERM's soil) is PLAN.md section 3's target; the model still holds
-      the forced Cfb (+15 degC) at l. 4164 of `build_425_master.py` (model amendment 4). The page has no day/night temperature of its own yet: the frost
-      on the floor at night (`KHAZ.provide('temperature')` on the night low) and the snow that lies (KTHERM's snow mask: `89-atmos-fx-snowcover.js` and
-      `ATMOS.snowBare`, as Oidong's Cold Hearths do) are owed.
+- [ ] **The day and the night.** The page's air (mean +7 degC: `amb`, KTHERM's soil) is the model's since scale model 5.1 edit 1 (f1d1501cf,
+      `tools/scale-model/edit_511.py`: the floor 7.0 degC, 15/-2, days 24, nights -10; Cwb and Dwb). The page has no day/night temperature of its own
+      yet: the frost on the floor at night (`KHAZ.provide('temperature')` on the night low) and the snow that lies (KTHERM's snow mask:
+      `89-atmos-fx-snowcover.js` and `ATMOS.snowBare`, as Oidong's Cold Hearths do) are owed.
 - [ ] **The rim dress stands in for the caldera dress** (PLAN.md section 4: 8-18 m stalks, 2-3 m fans; the Hearths kit's own work and the owner's to scale).
       The grove draws `HEARTH.layout` in the rim dress (4-11 m, 1.2-2 m fans).
 - [ ] **The Hearths' species are tagged for ET, Dsc and Dfc** (`biomes/hearths/src/50`); Godshearth's floor is Cwb/Dwb. The Hearths kit's records, not
@@ -27,3 +27,6 @@ Open items (`- [ ]`) are read by `build.py`'s closing line. The plan's open ques
       show them: a painted ring, or a far field past 14 km on the field stage, is a later pass.
 - [ ] **Nothing of the floor's own flora** but the turf in the ground's paint: the frost-hardy turf, Oidong's cushions and snow lotus, and Xanadu's
       dry-country species up the spillway (PLAN.md section 4) are not placed.
+- [ ] **The grove is heavy.** Along a 1.4 km vent line with a 170 m reach, `HEARTH.layout` places ~4,500 hearth trees and ~45,000 fans: 9.4 M of
+      the scene's 9.5 M triangles (`hearths/field`, under its 16 M budget; verify.py --assert, SwiftShader, 2026-11-09). Not measured on the GPU lanes.
+      A shorter reach, `?q=` below 1, or impostors for the far fans would cut it.

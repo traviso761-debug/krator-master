@@ -352,9 +352,9 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
      floor at ~3.6 km; the old reservoir emptied down it when the caldera fell";
    - the tube's name, which still says "Brine-Lake Siphon" (it can keep it, as history);
    - the region's empty `notes`.
-4. **The climate** (the owner, 2026-11-09): the reclimate in section 3 (floor +7 °C (15/-2), 6 °C per km above, the rain
+4. **The climate** (the owner, 2026-11-09; **applied** by scale model 5.1 edit 1, f1d1501cf, `edit_511.py`): the reclimate in section 3 (floor +7 °C (15/-2), 6 °C per km above, the rain
    moved to summer afternoons).
-5. **The new brine lake** (the owner, 2026-11-09): carve it as section 1a gives (centre 876,1440, 29 cells, level 6,420 m,
+5. **The new brine lake** (the owner, 2026-11-09; **applied** by the same edit: spill 6,768 m, the cavern's note rewritten): carve it as section 1a gives (centre 876,1440, 29 cells, level 6,420 m,
    lip 6.7-6.8 km on its west side, closed); `test_smodel.py`'s lake checks. r442 is unchanged.
 
 ## 9. For the owner
@@ -376,7 +376,7 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 - **Names:** "Godshearth" is Gemini's. The lake, the grove, the spillway and its cataract want Xanadui names (the rivers'
   tongue) or the Monks'.
 - **The pinned stations** are Gemini's sites. Keep them, or move station 1 onto vents once the vent records exist?
-- **Order:** after the integration pass, and after the Hearths kit's own next steps (`HEARTH.layout` is built; the boil cup,
+- **Order:** *started 2026-11-09 at the owner's request: station 1 is built (`README.md`, `KNOWN_ISSUES.md`).* After the integration pass, and after the Hearths kit's own next steps (`HEARTH.layout` is built; the boil cup,
   the shade cap, the walk and the animals are not). Godshearth is its biggest host, so it should not go first.
 
 ## Changes from Gemini's draft (2026-11-06)
