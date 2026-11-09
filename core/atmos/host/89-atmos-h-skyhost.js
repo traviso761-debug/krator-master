@@ -113,6 +113,12 @@
  let boltId=null;A.moodBolt=function(S,g,night,t){if(!A.boltFx)return;const f=g.flash;
   if(f&&night>0&&f.id!==boltId){boltId=f.id;const cam=A.h&&A.h.camera,d=cam?Math.hypot(f.x-cam.position.x,f.z-cam.position.z):1000;A.boltFx({x:f.x,z:f.z,top:S.preset.clouds.height,base:A.ground(f.x,f.z),dist:d,t});}
   A.boltGlow=f&&night>0?Math.min(1,f.e*1.2)*night:0;};
+ // what the sky did, for a listener (core/audio/24-core-audio-sky.js hears it): ATMOS.onSky(fn(ev)); ATMOS.skyTrack(S, now) is called
+ // each frame by cloudMood (or by a page that sets the clouds itself) with moodGlow's flash, the sky event, the episode and the glow,
+ // diffs it against the last frame (ATMOS.skyDiff) and keeps ATMOS.skyLevel (the orbs' and the breathe's strength) current
+ A.skyListeners=[];A.onSky=fn=>{A.skyListeners.push(fn);return fn;};A.skyLevel={orbs:0,breathe:0};
+ A.skyTrack=function(S,now){const r=A.skyDiff(S.skyPrev,now);S.skyPrev=r.prev;A.skyLevel=A.skyLevels(now);
+  for(const ev of r.events)for(const fn of A.skyListeners){try{fn(ev);}catch(x){A.err('sky: '+x.message);}}return r.events;};
  // the sky events, placed where the eye stood when each began (the record's dx, dz from moodEvent), the ground under their foot
  let evId=null,evAt=null;A.moodEventAt=function(t,seed,eye,o){const ev=A.moodEvent(t,seed,o);if(!ev)return null;
   if(ev.id!==evId){evId=ev.id;evAt=[eye[0]+ev.dx,eye[1]+ev.dz];evAt.push(A.ground(evAt[0],evAt[1]));}
@@ -122,8 +128,9 @@
   let ep=null;const step=()=>{if(S.moodPaused)return;const C=S.preset.clouds,t=A.clock?A.clock.t:(S.clock.t||0),eye=   /* S.moodPaused: a page holding the clouds itself for a while (the demo's toggles) */   /* S.preset each frame: a page may set another preset (S.setPreset) */cam?[cam.position.x,cam.position.z]:[0,0],m=A.moodAt(t,Object.assign({eye},o)),g=A.moodGlow(t,m.glowKind,seed,eye);
    if(m.episode!==ep||!C.turbAt){ep=m.episode;C.turbAt=[eye[0]+m.turbOffset[0],eye[1]+m.turbOffset[1]];}   /* the ripple's epicentre: latched where the eye was when the episode came */
    C.dark=m.dark;C.tint=m.tintK>0?m.tint:null;C.tintK=m.tintK;C.turbulence=m.turbulence;C.turbKind=m.turbKind;C.sheetTint=m.sheetTint;C.glow=m.glow*g.k;C.glowColour=m.glowColour;C.glowLocus=g.locus;C.glowLocus2=g.locus2;S.mood=m;
-   A.moodBolt(S,g,m.glow*(A.skyUniforms?A.skyUniforms.uNight.value:1),t);
-   C.event=o.events===false?null:A.moodEventAt(t,seed,eye,o.eventOpts);};
+   const night=A.skyUniforms?A.skyUniforms.uNight.value:1;A.moodBolt(S,g,m.glow*night,t);
+   C.event=o.events===false?null:A.moodEventAt(t,seed,eye,o.eventOpts);
+   A.skyTrack(S,{flash:g.flash,event:C.event,episode:m.episode,glowKind:m.glowKind,turbKind:m.turbKind,glow:C.glow,night,t});};
   step();A.hook(step);S.moodStep=step;
   const D=A.MOOD_DEFAULTS;A.rec('cloudmood',{seed,period:o.period==null?D.period:o.period,blend:o.blend==null?D.blend:o.blend,chance:Object.assign({},D.chance,o.chance||{}),dark:o.dark||D.dark,
    palette:o.palette||A.MOOD_PALETTE,turbKinds:o.turbKinds||D.turbKinds,glowKinds:o.glowKinds||D.glowKinds,area:!!o.tintAt,glowColour:o.glowColour||null,

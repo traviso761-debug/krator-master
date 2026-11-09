@@ -57,7 +57,11 @@
  const moodFrame=()=>{if(MOOD.shift)return;const C=S.preset.clouds,g=A.moodGlow(A.clock?A.clock.t:0,MOOD.glow,1,[camera.position.x,camera.position.z]);
   C.dark=MOOD.dark;C.tint=COLOURS[MOOD.colour]||null;C.tintK=C.tint?1:0;C.turbulence=MOOD.pattern==='none'?0:.75;C.turbKind=MOOD.pattern==='none'?'violent':MOOD.pattern;
   C.glow=MOOD.glow==='none'?0:.6*g.k;C.glowColour=GLOWC[MOOD.glow]||[1,.55,.2];C.glowLocus=g.locus;C.glowLocus2=g.locus2;C.turbAt=[0,-2500];C.pace=MOOD.pace;C.sheetTint=MOOD.sheets?1:0;A.moodBolt(S,g,MOOD.glow==='lightning'?S.look.night:0,A.clock?A.clock.t:0);
-  C.event=MOOD.events==='none'?null:A.moodEventAt(A.clock?A.clock.t:0,1,[camera.position.x,camera.position.z],{chance:1,kinds:MOOD.events==='both'?['pillar','ascent']:[MOOD.events]});};   /* the ripple's epicentre: 2.5 km north */
+  C.event=MOOD.events==='none'?null:A.moodEventAt(A.clock?A.clock.t:0,1,[camera.position.x,camera.position.z],{chance:1,kinds:MOOD.events==='both'?['pillar','ascent']:[MOOD.events]});
+  A.skyTrack(S,{flash:MOOD.glow==='lightning'?g.flash:null,event:C.event,episode:null,glowKind:MOOD.glow,glow:C.glow,night:S.look.night,t:A.clock?A.clock.t:0});};
+ /* the light effects heard (core/audio/24-core-audio-sky.js): off until the Sound box is ticked (the click is the browser's gesture) */
+ const SND=typeof KSKYSOUND!=='undefined'?KSKYSOUND.bind({master:.7}):null;window._snd=SND;
+ $('sound').onchange=e=>{if(SND)SND.mute(!e.target.checked);};   /* the ripple's epicentre: 2.5 km north */
  const setMood=o=>{Object.assign(MOOD,o);$('colour').value=MOOD.colour;$('pattern').value=MOOD.pattern;$('glow').value=MOOD.glow;$('dark').value=MOOD.dark;$('darkV').textContent=(+MOOD.dark).toFixed(2);$('shift').checked=MOOD.shift;$('pace').value=MOOD.pace;$('paceV').textContent='x'+(+MOOD.pace).toFixed(1);$('sheets').checked=MOOD.sheets;$('events').value=MOOD.events;S.moodPaused=!MOOD.shift;if(MOOD.shift)S.preset.clouds.pace=MOOD.pace;};
  $('colour').onchange=e=>setMood({colour:e.target.value});$('pattern').onchange=e=>setMood({pattern:e.target.value});$('glow').onchange=e=>setMood({glow:e.target.value});
  $('dark').oninput=e=>setMood({dark:+e.target.value});$('shift').onchange=e=>setMood({shift:e.target.checked});
