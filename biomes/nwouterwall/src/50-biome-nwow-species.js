@@ -168,14 +168,8 @@ const M=NWOW.MAT={
 {const Lp=n=>typeof KMAT!=='undefined'&&KMAT.packed?KMAT.packed('nwouterwall',n):null,warm=SEASON_K==='autumn'||SEASON_K==='winter',row=r=>[0.3333,r/3,0.6667,(r+1)/3];
  const Lb=Lp('birch');if(Lb&&Lb.cell)Lb.cell=row(warm?1:0);const Lc=Lp('cloud');if(Lc&&Lc.cell)Lc.cell=row(warm?2:0);}
 NWOW.LIB=BIO.libSwap('nwouterwall',M);
-// one texture per cell: KMAT.textures hands back ONE texture per library sheet, so libSwap's offset for the last slot of a sheet
-// won on every slot of it (the three crops all drew goldroot's cell; the larch's gold and green one cell). Each card slot with a
-// cell gets its own clone (the image is shared), its cell set again (KNOWN_ISSUES: a core/biome fix would do this in libSwap)
-(function(){if(typeof KMAT==='undefined'||!KMAT.packed)return;const one=(m,slot)=>{const L=m&&m.isMaterial&&m.map&&KMAT.packed('nwouterwall',slot);
-  if(!L||!L.cell)return;const c=L.cell,src=m.map,t=src.clone();t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);m.map=t;m.needsUpdate=true;
-  /* the sheet decodes later and lands on the cached texture only (KMAT's img.onload): copy it to the clone when it does */
-  const sync=()=>{if(!src.image)return false;t.image=src.image;t.needsUpdate=true;return true;};if(!sync()){const id=setInterval(()=>{if(sync())clearInterval(id);},50);}};
- for(const k in M){const v=M[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);else one(v,k);}})();
+// one texture per cell: BIO.libSwap clones a sheet's texture for each slot cut to a cell (core/biome 20, since 2026-10-27; this kit found the
+// fault, its workaround here is gone with the final rebuild, pair 11)
 const LIBWHITE=C(0xf4f2ec);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 const FULL=slot=>{if(!NWOW.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('nwouterwall',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
