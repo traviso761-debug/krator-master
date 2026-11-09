@@ -21,8 +21,13 @@
   a laser cut lands on whole panels, not as a clean line, and from the street the rust reads as staining. A rust layer in the heroes' materials
   would not reach the shells (the bake reads colours, not shaders): a rust and scorch map in the library (`PROMPTS-NEEDED.md`) blended by the
   same fields is the next step, and the burns want geometry (a notch cut from the hero's panels along the plane) in the metropolis kit.
-- [ ] **No ruined vehicles in the streets yet** (the owner, 2026-11-07): `kits/motor-vehicles` has no Ancients culture; one with ruin states is in
-  its own session. The valley then scatters them on the streets and plazas by KRAND (burnt and wrecked near the craters and the burns).
+- [ ] **The ruined vehicles have no far tier** (`73-host-wrecks.js`, 2026-11-09): the nearest 48 records inside 450 m of the eye are drawn (3 to
+  13 draw calls each), the other records of about 700 stand only in the registry, so from the Overlook and from the air the streets past 450 m are
+  empty of them; a wreck pops in as the eye nears. The cure is the kit's: a baked card or a box impostor per (key, state) that an instanced mesh
+  could carry for every record. Each look is built when first wanted (a few ms), so the first walk down a new street builds its prototypes over a
+  few ticks. A wreck sits on the ground sampled at its nose, tail and sides, so one astride a kerb tilts rather than floats, but a long hauler
+  across a crater's rim can still bridge it. The transit kit's blockades (`kits/ancient-transit`, its own session) will stand at the same kerbs:
+  the stage passes their discs as `STAGE.wreckAvoid` when the valley takes them, and the junctions are left clear for its patches already.
 - [ ] **The craters are bowls in the heightfield with a glass scar:** no ejecta, no broken slab edges, no rubble rim. `KRELIEF` has no crater kind;
   a blast-crater landform in core/terrain (rim blocks, rays, a melt floor) would serve the seven basins' rims too.
 - [ ] **The forest stops at the kits' LOD range** (1.2 km from the eye): from the air the ground past it is the paint, greened where the forest mask is
