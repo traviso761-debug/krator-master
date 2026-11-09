@@ -10,7 +10,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -143,7 +143,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -169,16 +169,15 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/xanadu": "b05092eab5075817230e42345c841e1828b349162a30819aa397a508a58ab866",
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu.html": "2ff067e805bbc23b73d0d7e19114bddc799672c41997afe40267397fe7b1c176"
+    "biomes/xanadu/dist/xanadu.html": "df198d626067d0a5af04127b0ebc69f5620cbb7eb6af8e15225767d5f511d40b"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu.html": "2ff067e805bbc23b73d0d7e19114bddc799672c41997afe40267397fe7b1c176"
+    "biomes/xanadu/dist/xanadu.html": "df198d626067d0a5af04127b0ebc69f5620cbb7eb6af8e15225767d5f511d40b"
    }
   },
   "build.py --station cloud": {
@@ -198,7 +197,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -334,7 +333,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -363,13 +362,13 @@
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "biomes/xanadu/stations/cloud": "ea776b477a771c28850fe765b3206c913cbe161f2f8538b023ca5d5eab9607d8",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "80dba2ea9989ef59d109520b10a9a596f4dc6cc78ec051577ffc2db8e9e51892"
+    "biomes/xanadu/dist/xanadu-cloud.html": "b866e6d1aefeacdd3edbca50afb6b17f7adfb6ff83bbba0f1f50f8a35be5e7cc"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-cloud.html": "80dba2ea9989ef59d109520b10a9a596f4dc6cc78ec051577ffc2db8e9e51892"
+    "biomes/xanadu/dist/xanadu-cloud.html": "b866e6d1aefeacdd3edbca50afb6b17f7adfb6ff83bbba0f1f50f8a35be5e7cc"
    }
   },
   "build.py --station descent": {
@@ -381,7 +380,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -517,7 +516,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -546,13 +545,13 @@
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "biomes/xanadu/stations/descent": "678a4a388cd5f4155779b1feddb94f886332d30ad86c591d01f978f1cb0dd6ab",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-descent.html": "56b2c8cddeec6c6cf5489c3f5a1040e968146b7e95d3e891dc74c2f2c885f54a"
+    "biomes/xanadu/dist/xanadu-descent.html": "3ced180ab5cf4029749f018afe67e866412847b2a2eaf7b1326441516fc810e3"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-descent.html": "56b2c8cddeec6c6cf5489c3f5a1040e968146b7e95d3e891dc74c2f2c885f54a"
+    "biomes/xanadu/dist/xanadu-descent.html": "3ced180ab5cf4029749f018afe67e866412847b2a2eaf7b1326441516fc810e3"
    }
   },
   "build.py --station floor": {
@@ -598,7 +597,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -733,7 +732,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -762,13 +761,13 @@
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "biomes/xanadu/stations/floor": "f5d4655a7ae41ac3b131e211f690eea8137aa80ab39c0598d0e03bade587a07a",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-floor.html": "c1ea9d7506872471860acc2a37d69f08e1592846ac285363c1bd2fb64a1813bf"
+    "biomes/xanadu/dist/xanadu-floor.html": "36b5cd4e58c20843d5e04517f2fc13cb9a998e03cc332431522f20ab92162931"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-floor.html": "c1ea9d7506872471860acc2a37d69f08e1592846ac285363c1bd2fb64a1813bf"
+    "biomes/xanadu/dist/xanadu-floor.html": "36b5cd4e58c20843d5e04517f2fc13cb9a998e03cc332431522f20ab92162931"
    }
   },
   "build.py --station gills": {
@@ -786,7 +785,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -929,7 +928,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -959,13 +958,13 @@
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "biomes/xanadu/stations/gills": "dcbdb8f859ea554ea36a87914046f6b4a73361c9fd019aa083ae5e9dcb082965",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "7eca9742f9a4d69a82241daa020dca8503b46d43e30ad147618d9ebc97506f85"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-gills.html": "2ae12265c1fc73f49632fe31772b4e06dae9e0c9a642a0710aa1b4ceb8dafb55"
+    "biomes/xanadu/dist/xanadu-gills.html": "4541cd2564a47ce5c3e2612c712b2a5f2dd3c2a6efc85d66c7b10b96732c15eb"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-gills.html": "2ae12265c1fc73f49632fe31772b4e06dae9e0c9a642a0710aa1b4ceb8dafb55"
+    "biomes/xanadu/dist/xanadu-gills.html": "4541cd2564a47ce5c3e2612c712b2a5f2dd3c2a6efc85d66c7b10b96732c15eb"
    }
   },
   "build.py --station ranges": {
@@ -977,7 +976,7 @@
     "biomes/xanadu/src/45-host-stage.js": "c37ea16f84f1fc8995fbce51cb183089f2b7a5b000f98a2de816be34c5f10bdf",
     "biomes/xanadu/src/45b-host-land.js": "a114364b89b3ef46f8f9abdac8cc0703b2b28ba9a16151703cef5610f8f66e6b",
     "biomes/xanadu/src/45c-host-bind.js": "45e4a3504e56b0e133fa61b30bb9552fcbed85e8d7874c5f2060d91ac0b064a2",
-    "biomes/xanadu/src/46-host-ground.js": "8c73fb18b7aaa6710a9de41be4d25a09be087618e5c16d4c1a27a7bf23596ae9",
+    "biomes/xanadu/src/46-host-ground.js": "2473e61f69d0e642a6684cfa1346ebf6272455f4065ce8403477e574678e686e",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
     "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
     "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
@@ -1112,7 +1111,7 @@
     "core/terrain/37-core-stacks.js": "5cad2c051938da78aff7ac486c14a1b52d196d107d4ed3b15ea3683d6208f2a9",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38a-core-seat.js": "4db9092f5267e1ca93e12d5d7c7866f30797c1cbd4aedb23044cdcf61a8e9b05",
-    "core/terrain/43-core-ground.js": "d86c0e397aed4686bf9cbca7c8d7cb3432f484f092fbf32b6d22cb0f223c9d35",
+    "core/terrain/43-core-ground.js": "a9688c6da4a9d0fe8353f8960452f305de84f4d2ecd33c21990383a381241010",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
@@ -1141,13 +1140,13 @@
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "biomes/xanadu/stations/ranges": "dace9c25fbc80a2a61416f75fc98afdc3df784be53473da75273b1e07ded2046",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
+    "tools/textures": "8fabda151163ba5f6a7f1b92e06fb861c01a627db68cea79c95f1a0d25ef8ae7"
    },
    "outputs": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "3ea5f7177747e79c86dba8c4ea0ebf9ff22fd0a7e8c86c836876fca265c40f18"
+    "biomes/xanadu/dist/xanadu-ranges.html": "7b496b0dcd6b0cfd9dbfd227419628947408cf714064a8896a936bead7b1c661"
    },
    "outputs_raw": {
-    "biomes/xanadu/dist/xanadu-ranges.html": "3ea5f7177747e79c86dba8c4ea0ebf9ff22fd0a7e8c86c836876fca265c40f18"
+    "biomes/xanadu/dist/xanadu-ranges.html": "7b496b0dcd6b0cfd9dbfd227419628947408cf714064a8896a936bead7b1c661"
    }
   }
  }

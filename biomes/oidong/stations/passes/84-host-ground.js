@@ -35,7 +35,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 _gP=diffuseColor.rgb;'+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=dt*dt2*1.12;diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
 const KG_PAVE=GQ.get('pave')!=='0',KG_POLY=GQ.get('polygon')!=='0';
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-passes-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',layers:[
+// THE RELIEF (KGROUND's opt-in relief, core/terrain/GROUND.md; the ground catch-up 2026-11-04): the layers' height bumps the lit normal near the eye,
+// the low of it and the mesh's hollows (aKGAO, KGROUND.cavityMesh on the mesh below) lose sky light. No side planes (tri): ?relief=0 none
+const KG_REL=GQ.get('relief')!=='0'?{bump:.075,cavity:.8,mesh:1}:null;
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'oidong-passes-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',relief:KG_REL,layers:[
  KGROUND.layer('oidong','stone.granite',{w:'vRock',amt:.85,gain:1.0,tint:'_gP*1.6',name:'granite'}),
  KG_PAVE?{kind:'clast',w:'(1.0-vRock)*(1.0-vFlat)*(1.0-vWet)',amt:.5,proj:'xz',size:.07,matrix:.26,matrixColor:0x7a7064,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x4a4642,0x5e5850,0x6e665a,0x3e3a36,0x7a6e5e,0x58524a],seed:331,name:'pavement'}:null,
@@ -49,4 +52,4 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aFlat',new THREE.BufferAttribute(fl,1));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel='The high passes';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel='The high passes';if(USE_KG&&KG_REL)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* aKGAO: relief.mesh */scene.add(m);return m;})();
