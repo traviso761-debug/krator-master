@@ -208,7 +208,7 @@
     "settlements/longsong/KNOWN_ISSUES.md": "ebe0060cd3a83b13b5269db6f109ecc05c9ce95975eb1d246767f1a77a4f2509",
     "settlements/longsong/PORT.md": "07a61e72c147da838d19aef24c63787bb175e03efcfc9579249872a901d5d524",
     "settlements/longsong/build.py": "5029acb22419b66b18f05a0cfd5035405b9550d279cf14be845638e037241141",
-    "settlements/longsong/interiors-bake.json": "29873862be79d3cf5ca2e77ab896c0f335aa0feae0f46ca36bd0d7e204b75d30",
+    "settlements/longsong/interiors-bake.json": "359e49e06de0a922df6fc976656af4187040783a766fac84313593c670556d24",
     "settlements/longsong/region/data/biome.png": "c6cbf0a116b45a63fa6f46426da86fe7cda3ff65f473fb1822cf898f181d1d5a",
     "settlements/longsong/region/data/clim.png": "608522b613fa54dcef952b60efc31db79be01987a21d7dee9c34906198e6e915",
     "settlements/longsong/region/data/elev.png": "3bdbca9da0d9d759856f2dce1893763722230634745cc1df851882ad00f03d9b",
@@ -429,14 +429,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/longsong/dist/longsong.html": "25c7801e3d9b06e2a4a78294b8690b6728c1956c60672a65e91278c21c7c8355",
+    "settlements/longsong/dist/longsong.html": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
     "settlements/longsong/dist/longsong.tex.xanadu.js": "ab86b56cf863dd8b19fbabdef7c70d83302cff8c1fc3f4caff86f367f7f7f945"
    },
    "outputs_raw": {
-    "settlements/longsong/dist/longsong.html": "25c7801e3d9b06e2a4a78294b8690b6728c1956c60672a65e91278c21c7c8355",
+    "settlements/longsong/dist/longsong.html": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
