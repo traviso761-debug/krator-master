@@ -107,3 +107,51 @@ ports to Godot for free. At close range a shading line at the top of each hard b
 - **S5.** Godot: `strataColor` in a `godot/shaders/lib` include, the column from the same records; a twin test.
 - **S6.** Per build (section 7): ebadlands and sedesert first, each rebuilt, checked by eye, its baseline row rewritten
   on purpose (`python3 tools/port_baseline.py`); then the painted highlands' P1.
+
+## 9. Varied contacts on the GPU (`35d-core-strata-bake.js`, 2026-11-09)
+
+`KSTRATA.vary` (`35c`) moved contacts on the CPU only; the shaders drew the flat column, so a draped loess's soil bands
+did not follow the drape (the W outer wall, Mid Basin). `KSTRATA.varyBake(V, {box, step})` bakes the moved contacts over a
+box into an RGBA8 texture (two contacts a texel at 16 bits; only the contacts that move get a channel), `KSTRATA.varyGLSL(B)`
+writes `ksVaryYY(xz, v)` (bilinear by hand, V's fix-up, the piecewise-linear remap), and `KSTRATA.varyBakedYY(B, x, y, z)`
+is its JS twin on the same bytes. `KSTRATA.varyPatch(fragmentShader, B)` rewrites the strata shader's yy line after
+`M.inject`, so the shared shader is not edited. The twin's error against `V.yy` is the bake's contact error (`B.err`,
+measured at every cell's centre and edge midpoints) times the local stretch; exact to the 16-bit step for `d`, `plane` and
+a `grid` on the bake's lattice; clamped to the edge outside the box. `test-strata-bake.js` runs the GLSL text in
+`core/water/glsl-interp.js` against the twin (equal to the last bit), alone and patched into `KSTRATA.GLSL`.
+
+Adopting it:
+1. List `35c-core-strata-vary.js` and `35d-core-strata-bake.js` after `35-core-strata.js` (read in place, or `CORE_TERRAIN`).
+2. Build the shade from the flat stack (`KSTRATA.shade(V.stack, o)`) and `const B = KSTRATA.varyBake(V, {box, step})` over the
+   land the page draws; pick `step` until `B.err` is under the tolerance (a drape's own lattice gives the 16-bit step).
+3. In the rock's `onBeforeCompile`: `M.inject(sh); sh.fragmentShader = KSTRATA.varyPatch(sh.fragmentShader, B);
+   sh.uniforms.uKSVary = {value: tex}` (a `DataTexture(B.data, B.W, B.H)`, RGBA, NEAREST, no mipmaps), and
+   `customProgramCacheKey` with `KSTRATA.varyKey(B)`.
+4. Not done: GPU-judged by eye (the GLSL is checked as text only); Godot's `KStrataVary.bake` and `ks_vary_yy` in
+   `strata.gdshaderinc` (the twin's arithmetic is the contract).
+
+## 10. Skarn lenses and the rock glaze (`35e-core-strata-skarn.js`, 2026-11-09)
+
+**Skarn** (the NE outer wall's Glass-Skarn Bastion). The plan asked whether `KSTRATA.vary` is enough: it is. Five recipes
+are added through `KSTRATA.add` (`skarn`, the mixed column as flat beds; `skarn-marble` the host; `skarn-garnet`,
+`skarn-epidote`, `skarn-magnetite` the lenses). `KSTRATA.skarn({seed, base, top, front, lenses, scale})` lays lens horizons
+in host marble, each a formation of zero varied thickness except under `pts` bumps at its pods, its two contacts roughened
+by `noise` on two channels: each pod pinches out exactly at its rim and swells and necks inside. Pods are zoned from the
+front (the intrusion contact, a line or polyline): garnet and magnetite near it, epidote further out. It returns a varied
+stack (`V.skarn` lists the lenses and pods as data). Limits: lenses run parallel to the bedding (stratabound), never across
+it; a pod's tip tapers smoothly.
+
+**The rock glaze** (Opal Valley's opaline glaze, copper-rose to teal with the sun; the NE wall's pseudotachylite mirrors and
+the magnetite's sheen). `KSTRATA.glaze(o)` says which rock glazes (kinds, formations, and faults' bared faces within
+`faults` m), in what patches and how thick a film; `KSTRATA.glazeAt(S, G, x, y, z)` gives `{k, thick}`;
+`KSTRATA.glazeColour(cosT, thick, ior, sub)` is a thin film's interference tint (Airy, three wavelengths) and
+`KSTRATA.glazeGLSL()` the same arithmetic as GLSL. The bark's iridescence (`BIO.iridBarkMat`, the rift's `IRIDBARK`,
+`PAL.psyPair`) is a two-colour fresnel mix, so the film is new.
+
+Adopting it:
+1. List `35e-core-strata-skarn.js` after `35c-core-strata-vary.js` (the recipes alone need only `35-core-strata.js`).
+2. Skarn: `const V = KSTRATA.skarn({seed, base, top, front: {pts}, lenses: 6, scale: 120})`; read it as any varied stack;
+   for the GPU, `KSTRATA.varyBake(V, ...)` (section 9). Register the magnetite pods as ore (`V.skarn.lenses`).
+3. Glaze: per vertex of the cliff, `KSTRATA.glazeAt(S, G, x, y, z)` into an attribute (k, thick); in the shader
+   `c = mix(c, c * (0.35 + 1.3 * ksGlazeColour(dot(N, V), thick, ior, sub)), k)` and a lower roughness where k is high.
+4. Not done: judged on a GPU; Godot's `ks_glaze_colour` and a GDScript `glazeAt` (plain data on the stack's export).
