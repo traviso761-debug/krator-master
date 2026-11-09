@@ -24,7 +24,7 @@
   the snout 117 -> 140 ms, a frost coral 100 -> 156 ms, from afar 105 -> 144 ms (+20-56%). Not affordable, as on the Throne's station 1. The owner's call:
   on, off, or casters cut to the corals. The pane was hidden while measuring, so the timings may run high; the ratio is the reading.
   2026-11-08, the owner's call: casters cut to the corals. `89z` now casts only the frost corals' limbs and tips (`biome:coral`, `biome:coraltip`;
-  `window._shadow.state.casters` counts them); everything else only receives. Still off at load (`?shadow=1`). The new cost is not timed (no GPU run).
+  `window._shadow.state.casters` counts them); everything else only receives. Still off at load; since 2026-11-08 (the owner: "yes, move it") on core/shadow's own switch like the other kits: core's button or `?shadow=1` turns it on, `?shadow=0` none of it. The new cost is not timed (no GPU run).
 - [ ] **Ice worms** are points that glow from dusk to dawn (`86`): no motion, no daytime look. Animals belong to the fauna kit; this is the
   glacier's one native animal as a placeholder.
 
