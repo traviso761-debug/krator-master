@@ -70,6 +70,8 @@ BIO.init({tags:'savannarim',THREE:THREE,scene:scene,terrainH:terrainH,
  waterH:(x,z)=>{const r=riverQ(x,z);return r.d<RIVER.w*.6?riverY(r.t):-1e9;},
  obstacles:OBSTACLES,ticks:tick,seed:11,origin:[0,0],err:reportErr});
 BIO.setSun([-1200,900,-600]);
+// H1: the reach's distance (metres) from a borrowed species' home polygon: the land's own (LAND.home, by x), null where it has none
+BIO.host.distance=(from,x,z)=>LAND.home&&LAND.home[from]?LAND.home[from](x,z):null;
 {const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
  BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
  BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}

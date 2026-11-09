@@ -31,3 +31,18 @@ Read before changing anything here. `build.py` prints the open count.
     - **Not built here:** fauna (the savannah's herds: a later step with kits/fauna's lands, as the hyperjungle's stations have), the
       laterite pavements' ironstone as a KFIELD/C4 `pavement` (only the ground's paint; `ground.ironstone` owed), crops (`kits/crops`
       `savannarim`: PLAN-LANDS.md section 8), a `verify.py`.
+  - **J5, the e rim** (`--station east`; `src/52`, `stations/east/`): the old lines, seven cousins by BIO.kin of eastabyss's and the e
+    highlands' builders read in place (the e highlands' registry is `ehigh`, so `ehigh.vigil` etc.): fire scale-trees on the old burns,
+    the monsoon cycads flushing on burns 1-5 years old (brighter the younger), dambo horsetails, ember spikes (flowering on this season's and
+    last year's burns, spent torches to three years: `EHIGH.vigilStage` wrapped on this page), monsoon ragbarks (deciduous), bolsters and
+    glass wands on the ironstone; the comb tree and the elephant ear from the savage land by reach (H1, `LAND.home`), the abyss's horsetails
+    and cycads thicker eastward. H4: `BIO.setGiant(66)` with `EHIGH.setGiant(BIO.GIANT_AZ)`, the pull a share of each cousin's lean fading
+    west (measured: the ember spikes' mean lean east 2-3 times the west's). 8.1M triangles, 288 calls at the default camera on the CPU load.
+    - **Page-local changes to a neighbour's items** (the source pages unchanged): ehighlands' `rag` and `cushion` materials take the season
+      (H7: the ragbark drops, the bolster turns orange; `turn()` in `87e`), its `spire` item draws on a solid (the hyperjungle's `G.smat`)
+      so the attachment audit sees what holds the florets (on its own leaf material the florets read as floating: 6% of the cards), and
+      `EHIGH.vigilStage` keys the flowering to the burns. Worth taking back into ehighlands at its next turn (its spire as structure).
+    - **For the GPU verify:** the lean of the spikes and ragbarks (view "Toward the giant"), the cycad flush's green against the char, the
+      bolsters' orange in the dry season (`#day=`), the ragbark's drop, the page's size (7.6 MB: eastabyss's and the e highlands' packs).
+    - Taken as proposed, owner to confirm: PLAN-LANDS.md section 14 question 4 (the abyss's lineages as fire-hardened relics; the
+      highlands' pull fading west; the glass wand and Fridon's wormwick trade: LORE.md section 8, a proposal).

@@ -17,6 +17,7 @@ proposed, owner to confirm**.
 | J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
 | J3 | Screamer wood: H5 (the howl bamboo on `BIO.bamboo`, the Cut's reach on H1), the bone giants, the 7 others (`src/57`), the habit thinned (ironbark and ghostwood leading), the groves' howl (H9 sound records), the fauna hunted thin (H8) | `dist/hyperjungle-north.html` (`--station north`) |
 | J4 | `biomes/savannarim`, a new kit (its `PLAN.md` holds the core adoption): H3 (KFIRE), H10 (KSTACKS.mounds), H7 (the seasons), the savannah's base (red oat grass, blind grass, fan palm, umbrella thorn; the gallery forest and the outliers read in place) and the north savannah (the bone giants and bloodwood read in place); the hyperjungle's station `north` reads its blind grass | `biomes/savannarim/dist/savannarim-north.html` (`--station north`) |
+| J5 | the e rim: seven cousins by BIO.kin of eastabyss's and the e highlands' builders read in place, H4 (`BIO.setGiant`, the pull fading west), the savage land's comb tree and elephant ear by reach (H1) | `biomes/savannarim/dist/savannarim-east.html` (`--station east`) |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 
@@ -391,6 +392,8 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
    proposal, and the hand-flowers' name "the elders" in the species' harvest note.
 4. **The east rim's story**: the abyss's lineages as fire-hardened relics, and the highlands' pull toward the giant fading
    westward. Should the glass wand and Fridon's wormwick trade go in?
+   **Taken as proposed, owner to confirm** (J5, 2026-11-08): built as savannarim's station `east`, the glass wand in (on the
+   ironstone pavements); Fridon's wormwick trade is in LORE.md section 8 as a proposal.
 5. **The south-east rim's story**: is Talia's trade in incense and dragon's blood acceptable (an addition to `LORE.md`
    §6.2)?
 6. **Godstep's shared species**: the rust miombo to be defined here and read by Godstep's redlands station; the red guyed
