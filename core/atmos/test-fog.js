@@ -161,6 +161,34 @@ const rampW=(x,z)=>3000+.4*x,rampL=(x,z)=>3000-.4*x;
  A.fog.off=true;A._frame(.1);ok('...and the A/B switch (A.fog.off) turns it off',A.U.fogBelt.value.x===0,A.U.fogBelt.value.x>0);A.fog.off=false;
  A.fogBeltOn=false;A.h.ground=g_;}
 
+// ---------------------------------------------------------------- the mist field (the valley's smog, 2026-11-09): the mist's density by place
+{const F0={density:0,colour:[.6,.65,.7],falloff:1/900,ref:0,shape:'exp2'},mist={density:.004,y:30,depth:40,noise:0};
+ const tM=(F,ro,P)=>-Math.log(1-A.fogAt(ro,P,F).amount);   /* no air: the amount is the mist's optical depth alone */
+ const Fm=Object.assign({},F0,{mist}),Fz=Object.assign({},F0,{mist:Object.assign({},mist,{field:()=>0})}),F1=Object.assign({},F0,{mist:Object.assign({},mist,{field:()=>1})});
+ const ro=[0,10,0],P=[3000,10,0];
+ ok('a ray through a 0 region of the field sees no mist, through a 1 region the full mist (the page\'s own)',A.fogAt(ro,P,Fz).amount===0&&near(tM(F1,ro,P),tM(Fm,ro,P),1e-12)&&tM(Fm,ro,P)>.5,A.fogAt(ro,P,Fz).amount>0);
+ // a smooth field (a smoothstep ramp over 2 km) against a fine march of density x field along the ray, level and falling into the pool
+ const ramp=(x,z)=>A.ss(300,1900,x),Fr=Object.assign({},F0,{mist:Object.assign({},mist,{field:ramp})});
+ const march=(ro,P)=>{const L=Math.hypot(P[0]-ro[0],P[1]-ro[1],P[2]-ro[2]),N=40000;let s=0;for(let i=0;i<N;i++){const t=L*(i+.5)/N,x=ro[0]+(P[0]-ro[0])*t/L,y=ro[1]+(P[1]-ro[1])*t/L,z=ro[2]+(P[2]-ro[2])*t/L;
+   s+=mist.density*(y<mist.y?1:Math.exp(-(y-mist.y)/mist.depth))*ramp(x,z)*L/N;}return s;};
+ const e1=Math.abs(tM(Fr,ro,P)-march(ro,P))/march(ro,P),ro2=[0,140,0],P2=[3000,-10,0],e2=Math.abs(tM(Fr,ro2,P2)-march(ro2,P2))/march(ro2,P2);
+ const F1s=Object.assign({},F0,{mist:Object.assign({},mist,{field:ramp,samples:1})}),e3=Math.abs(tM(F1s,ro2,P2)-march(ro2,P2))/march(ro2,P2);
+ ok('its integral is the fine march within a few percent (level '+(e1*100).toFixed(2)+'%, falling into the pool '+(e2*100).toFixed(2)+'%), the density-weighted samples reading the field where the mist is',e1<.04&&e2<.04,e3<.04);
+ ok('a ray that never comes near the layer reads the field at its end (nothing to weight)',near(tM(Object.assign({},F0,{mist:Object.assign({},mist,{field:(x)=>x>2000?1:0})}),[0,900,0],[3000,900,0]),tM(Fm,[0,900,0],[3000,900,0]),1e-12),false);
+ // the record: a grid at half precision, bilinear between its nodes, clamped at its edge
+ const M=A.fogMistFieldMake({at:ramp,extent:[-4000,-4000,4000,4000],res:65});
+ ok('fogMistFieldMake: a res x res grid of halves over the extent, its at() the function within half precision, 1 at a texel\'s centre',M.n===65&&M.half.length===65*65*4&&Math.abs(M.at(1500,0)-ramp(1500,0))<2e-3&&M.at(3000,0)===1&&M.at(-3000,0)===0&&M.v[0]===A.fromHalf(A.toHalf(M.v[0]))&&M.half[3]===15360,Math.abs(M.at(1500,0)-ramp(1500,0))>=2e-3);
+ ok('...clamped outside the extent, a record the twin takes as it takes a function',M.at(9000,0)===1&&M.at(-9000,0)===0&&near(tM(Object.assign({},F0,{mist:Object.assign({},mist,{field:M})}),ro,P),tM(Fr,ro,P),.01),false);
+ // the chunk: the same text as before on every page without a field
+ A.fogMistFieldOn=false;const g0=A.fogGLSL();A.fogMistFieldOn=true;const g1=A.fogGLSL();A.fogMistFieldOn=false;
+ ok('the chunk without a field is the chunk it was; with one it scales the mist\'s pool term by the field\'s weighted mean (a loop of at most 8, as the belt\'s)',g0===A.fogGLSL()&&!/atmFogMistT|atmFogMistField/.test(g0)&&/float atmFogMistField\(/.test(g1)&&g1.indexOf('ro.y,rd.y,L);tM*=atmFogMistField(ro,rd,L);')>0&&/for\(int i=0;i<8;i\+\+\)\{if\(float\(i\)>=atmFogMistK\.y\)break;/.test(g1)&&!/sin\(/.test(g1),/atmFogMistField/.test(g0));
+ // the host: the texture, its uniforms, the hook binds them, the record carries the grid and not the function
+ Object.assign(T,{Vector2:T.Vector2||V2});
+ const HF=A.heightFog({mist:{density:.004,y:30,depth:40,noise:0,field:{at:ramp,centre:[0,0],radius:4000,res:64},samples:5}});A._frame(.1);
+ const m=new Material();A.heightFogOn(m);const sh=compile(m),rec=A.fx.filter(r=>r.type==='heightfog').pop();
+ ok('ATMOS.heightFog({mist:{field}}): its texture is the field\'s halves (64 x 64 over 8 km), 5 samples, the hook binds it, the record keeps the grid',HF.field.texture.image.data===HF.field.half&&HF.field.texture.type===T.HalfFloatType&&A.U.fogMistK.value.x===64&&A.U.fogMistK.value.y===5&&near(A.U.fogMistE.value.z,1/8000,1e-15)&&sh.uniforms.atmFogMistT===A.U.fogMistT&&/atmFogMistField/.test(sh.fragmentShader)&&rec.mist.field.res===64&&!rec.mist.field.at&&typeof HF.field.at==='function'&&near(HF.field.at(1500,0),ramp(1500,0),1e-2),!sh.uniforms.atmFogMistT);   /* 1e-2: the bilinear's error between nodes 127 m apart on a 1.6 km ramp */
+ A.fogMistFieldOn=false;}
+
 // ---------------------------------------------------------------- the SW highlands' rain wall (fx/89-atmos-fx-rainwall.js)
 const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
 {const R=A.rainWallMake({y0:1700,y1:2600,windward:[-1,0]});

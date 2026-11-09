@@ -132,6 +132,19 @@ numbers (`godot/tests/sky/golden.json`: 24 states over four sites, the colour sc
 digest; vectors agree to 1e-6, Godot's `Vector3` being single precision). `godot --path godot --script
 res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|station|up --hour= --day= --fov=` renders it (needs a GPU; first run
 2026-10-25 on Vulkan, Forward+). Rerun the generator after any change to `core/atmos/sky`, then the test.
+**The clouds' mood** (2026-11-09; `sky/89-atmos-g-sky.js` layer 7, `sky/89-atmos-k-cloudmood.js`). Its lines compile only on a
+page whose preset asks (`ATMOS.skyMoodOn`), so the generated include and its golden digest are unchanged until the generator
+sets `ATMOS.skyMoodOn = true` before `skyGLSL()`: then the include gains `uCloudX` (dark, turbulence, glow, tintK), `uCloudY`
+(the turbulence kind: 0 violent, 1 ordered, 2 glitched: two more sheets on their own winds, `ATMOS.MOOD_SHEETS`; 3 ripple, with the
+epicentre in `.yz`), `uCloudTint`, `uCloudGlow` (`source_color`), `uCloudGlowP` (the glow's locus x, z, radius, spread) and
+`uCloudGlowQ` (a second light x, z, radius, on), `atmCloudMood` on both cloud layers and the turbulence inside `atmCloudField` (so the ground
+shade's include takes it too). A world that uses them sets the uniforms on the Sky material from the preset's `clouds`, as
+`sky.gd` sets the rest; a world that never does leaves them at zero and draws the cloud it drew. `ATMOS.moodAt(t, o)` and
+`ATMOS.moodGlow(t, kind, seed, eye)` are arithmetic on the hash and the clock (lowbias32 through `skyHash`, a 1D value noise in
+time), for `sky_model.gd`; the `cloudmood` record carries the seed, period, blend, chances, palette and kinds. The cloud layer's
+JS twin (`skyCloudAt`, on the noise volume by the texture's own trilinear read) is the vector source for a GDScript twin when one
+is wanted; none exists yet.
+
 The broken station (`station` in each golden state) and the shooting stars came on 2026-10-26: `sky.gd` sets `uStaDir`,
 `uStaAx`, `uStaV` and `uStaK` from the model's `station`, `uMeteor` from the preset's `night.meteors`, and `uRealT` from
 `Time.get_ticks_msec()`: the meteors keep wall-clock time, not the game clock.
@@ -218,6 +231,16 @@ fog include as a global `sampler2D atm_fog_belt_tex` with `atm_fog_belt` (densit
 noise, steps, res) and `atm_fog_belt_e` (x0, z0, 1/width, 1/depth); `atm_fog_belt_depth(ro, rd, L)` is `atmFogBeltDepth`
 line for line (`textureLod`, the same texel-centre mapping), added to the band's optical depth. Placement in GDScript reads
 the same field (`fogBeltCover`), not the texture.
+
+**The mist field** (`ATMOS.heightFog({mist:{field}})`, 2026-11-09). The `heightfog` record's `mist.field` carries `extent`
+[x0, z0, x1, z1], `res` and `samples` (the function stays on the page: Godot rebuilds the grid from its own density field, as the
+belt's ground is rebuilt). It is a texture the fog include reads: `res` x `res` `Image.FORMAT_RH` (or RGBAH, R the field 0..1),
+LINEAR filter, CLAMP, given as a global `sampler2D atm_fog_mist_tex` with `atm_fog_mist_e` (x0, z0, 1/width, 1/depth) and
+`atm_fog_mist_k` (res, samples); `atm_fog_mist_at(xz)` is `atmFogMistAt` (the same texel-centre mapping, `textureLod`) and
+`atm_fog_mist_field(ro, rd, L)` is `atmFogMistField` line for line: the ray's crossing of the layer below `level + 3 depth`
+(`atmFogSlab`), `samples` midpoints each weighted by the pool's density, their weighted mean multiplying the mist's pool term.
+With `FogVolume`s instead, the mist box's density texture is this same grid. The GDScript twin for placement and checks is
+`fogMistFieldAt` (bilinear on the halves), never the texture.
 
 **Thin air** (`preset.air.thin`). `krator/sky.gd` passes the camera's height to its `sky_look` port as the fourth argument
 and applies the same lines: the pressure by `air_pressure_at`, then (only with `thin`) `hemiI`, `sunC`, `sunI`, `hazeFloor`

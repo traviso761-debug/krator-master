@@ -43,11 +43,30 @@
    {kind:'sea',top:-1.2,win:[300,90,.8],bump:.5,lit:[1,1,1],shade:[.70,.74,.82]},{kind:'band',win:[150,40,2],el:[-.35,-.1],lit:[1.2,1.2,1.15],alpha:.7}],
   2:[{kind:'ceiling',el:6,soft:10,gap:[225,53,26],lit:[.62,.56,.50],belly:[.33,.30,.27],alpha:.92,lump:.4},{kind:'plume',from:[315,6.6],via:[318,60],to:[135,10],width:[1.6,30],lit:[.70,.64,.58],belly:[.35,.31,.28],alpha:.85,drift:.01}]};
  const lmSet=()=>{const m=/[?&#]lm=(\d)/.exec(location.search+location.hash);return m&&LMSETS[m[1]]?LMSETS[m[1]]:[];};
- const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges,landmarks:lmSet()});};
+ const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges,landmarks:lmSet(),clouds:{mood:true}});};   /* mood: the clouds' mood lines compiled, at rest until the Mood control asks */
  const S=A.sky(preset(site),{renderer,camera,scene,sun,hemi,clock,weather:()=>WX[wx],skylight:true,moonAtlas:typeof SKY_MOON_ATLAS!=='undefined'?SKY_MOON_ATLAS:null});
  window._sky=S;
  /* the clouds' shadows and the rain on the ground and the test pieces (SKY-PLAN.md 11.1): the same field as the sky's clouds */
  A.cloudShade(groundMat,{porosity:1});scene.traverse(m=>{if(m.isMesh&&m!==ground&&m.material.isMeshStandardMaterial)A.cloudShade(m.material,{porosity:m.material.metalness>0.5?0:0.6});});
+ /* THE SMOG (the Ancient's Valley's ask, 2026-11-08/09; core/atmos/README.md "The smog"): the clouds' mood as four toggles (the
+    colour, the pattern, the glow, the dark), the shifting episodes over them (ATMOS.cloudMood, a new episode each minute here), and a
+    mist with a field: a "city" 3 km to the north-west where the smog is universal, thinning to a tenth by 4 km out, all day (mist.day 1) */
+ const COLOURS={brown:[.42,.33,.30],red:[.48,.26,.24],green:[.42,.50,.30],ash:[.46,.45,.44],purple:[.52,.44,.66],yellow:[.62,.56,.28]},GLOWC={ethereal:[1,.55,.2],lightning:[.82,.86,1],orbs:[.90,.96,1]};
+ const MOOD={colour:'none',pattern:'none',glow:'none',dark:0,shift:false};
+ A.cloudMood(S,{seed:7,period:60,glowColours:GLOWC});
+ const moodFrame=()=>{if(MOOD.shift)return;const C=S.preset.clouds,g=A.moodGlow(A.clock?A.clock.t:0,MOOD.glow,1,[camera.position.x,camera.position.z]);
+  C.dark=MOOD.dark;C.tint=COLOURS[MOOD.colour]||null;C.tintK=C.tint?1:0;C.turbulence=MOOD.pattern==='none'?0:.75;C.turbKind=MOOD.pattern==='none'?'violent':MOOD.pattern;
+  C.glow=MOOD.glow==='none'?0:.6*g.k;C.glowColour=GLOWC[MOOD.glow]||[1,.55,.2];C.glowLocus=g.locus;C.glowLocus2=g.locus2;C.turbAt=[0,-2500];};   /* the ripple's epicentre: 2.5 km north */
+ const setMood=o=>{Object.assign(MOOD,o);$('colour').value=MOOD.colour;$('pattern').value=MOOD.pattern;$('glow').value=MOOD.glow;$('dark').value=MOOD.dark;$('darkV').textContent=(+MOOD.dark).toFixed(2);$('shift').checked=MOOD.shift;};
+ $('colour').onchange=e=>setMood({colour:e.target.value});$('pattern').onchange=e=>setMood({pattern:e.target.value});$('glow').onchange=e=>setMood({glow:e.target.value});
+ $('dark').oninput=e=>setMood({dark:+e.target.value});$('shift').onchange=e=>setMood({shift:e.target.checked});
+ const LOOKS={smog:{colour:'brown',pattern:'violent',glow:'ethereal',dark:.6},ash:{colour:'ash',pattern:'ordered',glow:'lightning',dark:.8},green:{colour:'green',pattern:'glitched',glow:'ethereal',dark:.5},shift:{shift:true}};   /* #mood= shortcuts */
+ setMood({});
+ const CITY=[-1800,-2600],smogAt=(x,z)=>.1+.9*(1-A.ss(1200,4000,Math.hypot(x-CITY[0],z-CITY[1])));
+ const FOG=A.heightFog({falloff:1/900,mist:{density:.0035,y:40,depth:60,noise:.5,day:1,field:{at:smogAt,centre:[0,0],radius:6000,res:128},samples:6}});
+ A.heightFogScene(scene);FOG.off=true;
+ const setSmog=on=>{FOG.off=!on;$('smog').checked=!!on;};
+ $('smog').onchange=e=>setSmog(e.target.checked);
  // ---- looking about: drag, wheel
  let yaw=-Math.PI/2,pitch=.05,drag=null;
  const look=d=>{yaw=Math.atan2(-d[0],-d[2]);pitch=Math.max(-1.4,Math.min(1.55,Math.asin(d[1])));};
@@ -92,16 +111,19 @@
    s.moons.map(m=>m.name+' '+aa(m.dir)+', '+Math.round(m.lit*100)+'% lit').join('\n')+'\n'+
    'Pleiades '+aa(s.clusterDir);
   $('hour').value=clock.hour;$('hourV').textContent=hm(clock.hour);$('day').value=clock.day;$('dayV').textContent=(clock.day>=0?'+':'')+clock.day;
-  $('presV').textContent=P.air.pressure.toFixed(2);$('coverV').textContent=P.clouds.cover.toFixed(2);};
+  $('presV').textContent=P.air.pressure.toFixed(2);$('coverV').textContent=P.clouds.cover.toFixed(2);
+  const C=P.clouds,m=S.mood;if(MOOD.shift&&m)$('moodV').textContent='episode '+m.episode+': '+([C.tintK>0?'tint':'',C.turbulence>0?C.turbKind:'',m.glow>0?m.glowKind+' glow':''].filter(Boolean).join(', ')||'quiet')+', dark '+C.dark.toFixed(2);else if(!MOOD.shift)$('moodV').textContent='episodes each minute (ATMOS.cloudMood)';};
  // ---- the frame
  setSite(site);
  const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));else if(q.has('lm'))setSite(site);
+  if(q.has('mood')&&LOOKS[q.get('mood')])setMood(LOOKS[q.get('mood')]);for(const k of['colour','pattern','glow'])if(q.has(k))setMood({[k]:q.get(k)});if(q.has('dark'))setMood({dark:+q.get('dark')});if(q.has('shift'))setMood({shift:q.get('shift')!=='0'});
+  if(q.has('smog'))setSmog(q.get('smog')!=='0');
   if(q.has('day'))clock.day=+q.get('day');if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('hour'))clock.set(+q.get('hour'));
   if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}if(q.has('alt'))camera.position.y=+q.get('alt');if(q.has('pitch'))pitch=+q.get('pitch');ground.visible=q.get('ground')!=='0';scene.traverse(m=>{if(m.isMesh&&m.userData.demoPiece!==false&&m!==ground&&q.get('ground')==='0')m.visible=false;});if(q.has('az'))look(A.skyVec.fromAltAz(q.has('el')?+q.get('el'):8,+q.get('az')));};
  hashView();addEventListener('hashchange',hashView);
  let last=null,frames=0;
  const frame=now=>{const dt=last==null?1/60:Math.min(.1,(now-last)/1000);last=now;
-  clock.step(dt);camera.rotation.set(pitch,yaw,0);S.update(dt);for(const f of hooks)f(dt);S.render();
+  clock.step(dt);camera.rotation.set(pitch,yaw,0);moodFrame();S.update(dt);for(const f of hooks)f(dt);S.render();
   if(frames%6===0)readout();if(++frames===3)window._ready=true;requestAnimationFrame(frame);};
  requestAnimationFrame(frame);
 })();

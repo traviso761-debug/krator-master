@@ -25,7 +25,10 @@ FRAGMENTS = [
     os.path.join(ATMOS, 'sky', '89-atmos-e-skymodel.js'),
     os.path.join(ATMOS, 'sky', '89-atmos-f-skypresets.js'),
     os.path.join(ATMOS, 'sky', '89-atmos-g-sky.js'),
+    os.path.join(ATMOS, 'sky', '89-atmos-j-fog.js'),          # the height fog and its mist field (#smog=1)
+    os.path.join(ATMOS, 'sky', '89-atmos-k-cloudmood.js'),    # the clouds' mood: the shifting episodes (#mood=)
     os.path.join(ATMOS, 'host', '89-atmos-h-skyhost.js'),
+    os.path.join(ATMOS, 'host', '89-atmos-j-heightfog.js'),
     os.path.join(HERE, 'src', '10-demo.js'),
 ]
 
