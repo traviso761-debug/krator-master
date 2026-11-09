@@ -4,6 +4,10 @@
 // pools, ochre gravel on the dry side, grey granite on the tors. Then the tarn and the bog pools, and the mist that
 // drifts up the ravines and along the cloud deck's edge (the deck is core/atmos's: 89z-host-atmos.js).
 TOR.forEach(K=>REGISTER({name:K.name||'A granite tor',x:K.x,z:K.z,y:plateauH(K.x,K.z)-5,r:K.r*1.05,h:K.h+40}));
+/* the tors are the ground mesh's own rock (probeSkip), so a bare tor's volume held no sample: one probe point a tor, in the drawn rock at its
+   centre (halfway from the plateau to the ground's top there), read by core/host's probe (userData.probePoints) */
+{const P=[];TOR.forEach(K=>{const b=plateauH(K.x,K.z),t=terrainH(K.x,K.z),y=Math.min(b+K.h+30,Math.max(b,(b+t)/2));P.push(K.x,y,K.z);});
+ const o=new THREE.Object3D();o.name='tor probe points';o.userData.probePoints=P;scene.add(o);}
 RAV.forEach((R,i)=>{const z=(R.head+R.foot)/2,x=ravX(R,z);REGISTER({name:'A ravine of the cloud forest',x,z,y:terrainH(x,z)-200,r:R.w*2.2,h:400});});   /* down the face, its middle */
 
 // ---------------------------------------------------------------- the ground

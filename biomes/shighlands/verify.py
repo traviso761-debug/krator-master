@@ -47,6 +47,9 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # Left out of the profile: water (see KNOWN_ISSUES.md).
 EXPORT_BOX = [-1800, -900, -1500, -600]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']   # water: the export box holds none of this page's water (the adapter filters surfaces to the box)
+# The stations' profiles by page name (2026-11-09): the fellfield grows no tree, so its page draws no merged mesh (every plant is instanced,
+# the icefall is the page's own mesh): buckets are left out of its profile, not failed.
+EXPORT_PROFILES = {'shighlands-fellfield.html': [s for s in EXPORT_PROFILE if s != 'buckets']}
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -160,7 +163,7 @@ async def run(a):
                          "   OVER" if v["over"] else ""))
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
+            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILES.get(os.path.basename(a.html), EXPORT_PROFILE)
             pok, lines = await check_profile(pg, EXPORT_BOX, prof)
             for ln in lines:
                 print("  " + ln)

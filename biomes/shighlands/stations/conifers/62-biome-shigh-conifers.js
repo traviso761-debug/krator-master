@@ -37,7 +37,7 @@ const bcol=(S,k,bk)=>tint(S.bark[k%S.bark.length],BARKS[bk].mean,rr(.9,1.08));
 const NM={};
 [['npine','needle.pine','Rope pine needle tufts'],['nspruce','needle.spruce','Helix fir needle sprays'],['njuniper','needle.juniper','Coil juniper scale sprays']].forEach(([it,fam,lab])=>{
  const t=card(fam),m=t?BIO.leafMat(t,it,{aN:true,swayW:'1.0',swayA:.04,alphaTest:.42}):SHIGH.MAT.small;NM[it]=m;
- BIO.def(it,t?BIO.geo.cells(BIO.geo.clump(),{n:3}):BIO.geo.clump(),m,{attrs:['aN'],label:lab});});
+ BIO.def(it,t?BIO.geo.cells(BIO.geo.clump(),{n:3}):BIO.geo.clump(),m,Object.assign({attrs:['aN'],label:lab},it==='nspruce'?{cap:340000,capWhy:'the helix firs needle sprays, the spiral-conifer forest of station 2 (14,291 firs): 289,784 at 2026-11-09, a spray a whorl tip'}:{}));});
 // THE SPIRAL CONE: an ovoid of woody scales set at the golden angle (the two crossing spiral families, 8 and 13, as in a real cone), right-handed;
 // vertex-coloured (a base colour per instance tints it: dark at each scale's root, pale at its lip). n scales; `lo` for the mid distance
 function coneGeo(n,sides){const pos=[],col=[],uv=[];const tri=(a,b,c,ca,cb,cc)=>{pos.push(...a,...b,...c);col.push(...ca,...cb,...cc);uv.push(0,0,1,0,.5,1);};

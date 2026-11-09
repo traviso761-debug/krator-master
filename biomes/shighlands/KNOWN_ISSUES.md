@@ -157,6 +157,14 @@ Station 2: 21,261 trees (rope pine 6,474, helix fir 14,291, coil juniper 496; 3 
 attach audit 0.23% (the cones). Station 3: no trees, 46k instances, 3.6 M triangles, 1,133 m of ice with 38 crevasses, 5,764 stones on 347
 sorted-spiral cells.
 
+- [x] **Both stations failed the GPU verify** (fixed 2026-11-09): the region record (`89zx`) was a band at the cloud deck
+      (`CLOUD_Y-80`, 700 m), and a station's stage sets no deck, so on both stations it held nothing; it now spans the deck band
+      widened to the ground's sampled height range over the disc (on a station, the ground's range alone). The helix fir's needle
+      sprays (`nspruce`, 289,784 on station 2) were over the 250,000 instance cap: they declare `cap: 340000` with a `capWhy`
+      (`stations/conifers/62`). The fellfield draws no merged mesh (no trees), so `verify.py` leaves `buckets` out of its export
+      profile (`EXPORT_PROFILES`) instead of failing it. On the main page two bare tors' volumes were empty (the tors are the
+      ground mesh's rock, which the probe skips): `84` adds one probe point a tor in the drawn rock (`userData.probePoints`).
+
 - [x] **Station 1 no longer matches map 5.1** (re-staged 2026-11-09, the owner: "rebuild as band on the 3 km face and move paramo up the
       rim"; the next section) (the re-survey): its site is now the hyperjungle's floor (550 m, Af) under a ~3 km scarp whose
       top is a 3.5-3.9 km ET plateau; no 1.4 km rim over a cloud deck is left. The owner's call: keep the page as an ideal type with its old

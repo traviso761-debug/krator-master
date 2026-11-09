@@ -39,7 +39,11 @@ window._shadow=null;
  /* the terrain's horizon on what stands on the land (85-host-far.js baked it; the ground has it already) */
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'The southern highlands (ideal type)',x:0,z:0,y:CLOUD_Y-80,r:TERR.R,h:700});
+ /* the region's volume holds the land on every page: the cloud-deck band (the main page) widened to the ground's sampled range over the disc
+    (a station's stage has no deck, CLOUD_Y far below, and its land stands thousands of metres up) */
+ {let lo=Infinity,hi=-Infinity;const N=48,R0=TERR.R*.7;for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const x=(i/N*2-1)*R0,z=(j/N*2-1)*R0;if(x*x+z*z>R0*R0)continue;const h=terrainH(x,z);if(isFinite(h)){if(h<lo)lo=h;if(h>hi)hi=h;}}
+  const b0=CLOUD_Y-80,b1=CLOUD_Y+620,y0=CLOUD_Y>-1e4&&isFinite(lo)?Math.min(b0,lo):isFinite(lo)?lo:b0,y1=CLOUD_Y>-1e4&&isFinite(hi)?Math.max(b1,hi):isFinite(hi)?hi:b1;
+  REGISTER({name:'The southern highlands (ideal type)',x:0,z:0,y:Math.floor(y0),r:TERR.R,h:Math.ceil(y1-y0)});}
  /* the sun's shadows, attached off (the guard first: a dry run of the ground's shader counts its texture units) */
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach){window._shadow='off: no core/shadow';return;}
  const LIBOF={MeshLambertMaterial:'lambert',MeshStandardMaterial:'standard',MeshPhysicalMaterial:'physical',MeshPhongMaterial:'phong'};
