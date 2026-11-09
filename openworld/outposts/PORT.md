@@ -7,4 +7,4 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` · `[G native]` 
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/10-outposts-registry.js` | 21.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the outpost registry (KOUTPOST): records, the op log, the founding rule, candidates; reads KRAND and KSPACE; GDScript twin to come (PLAN.md section 11) |
+| `src/10-outposts-registry.js` | 23.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the player's settlements (KOUTPOST): records, the op log, the founding rule, refs across to the NPC world, candidates; reads KRAND and KSPACE; GDScript twin to come (PLAN.md section 11) |

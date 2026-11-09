@@ -1,53 +1,64 @@
-// ================================================================= OPEN WORLD — the outpost registry (KOUTPOST)
-// [G data] openworld/outposts/PLAN.md. The world's list of outposts (the player's and everyone's): plain records keyed by
-// stable ids, edited only through an operation log by id (ADD, SET, MOVE, REMOVE), with the rules as plain functions on
-// records. No three.js, no DOM, no simulation calls: it links to core/simulation, core/camp, core/hamlet and core/city
-// by id. Reads core/rand (KRAND) and core/space (KSPACE) in place.
+// ================================================================= OPEN WORLD — the player's settlements (KOUTPOST)
+// [G data] openworld/outposts/PLAN.md. "Outpost" is the owner's shorthand for ANY settlement the player founds, from a
+// camp to a town (owner, 2026-11-09). NPC outposts and settlements are NOT here: they stay in the scale model's
+// settlements, core/hamlet, core/camp, core/city and core/simulation. This registry never holds, seeds from or edits
+// them; a player settlement points at them only through `refs` (read-only references across the boundary).
+// Plain records keyed by stable ids ('ps-...'), edited only through an operation log by id (ADD, SET, MOVE, REMOVE),
+// rules as plain functions. No three.js, no DOM, no simulation calls. Reads core/rand (KRAND), core/space (KSPACE).
 //
-//   KOUTPOST.KINDS, OWNERS, STATES, LIVE, MOVES, MAPS, M_PER_PX      the vocabulary and the tables
-//   KOUTPOST.at(px, py, ver)              -> {x, z} world metres on that map version
-//   KOUTPOST.place(px, py, ver, r)        -> a place record {map, px, py, x, z, y:null, r}
-//   KOUTPOST.toMap(place, ver)            -> the same place on another map version
-//   KOUTPOST.toRegion(place, frame)       -> {x, z} in an open-world region's frame (region.json `frame`)
-//   KOUTPOST.fromRegion(x, z, frame, ver) -> a place from a region's local metres
+//   KOUTPOST.KINDS, SIZES, STATES, LIVE, MOVES, REF_KINDS, RELS, MAPS, M_PER_PX   the vocabulary and the tables
+//   KOUTPOST.at(px, py, ver) / place(px, py, ver, r) / toMap(place, ver)          map pixels and world metres
+//   KOUTPOST.toRegion(place, frame) / fromRegion(x, z, frame, ver, r)             an open-world region's frame
 //   KOUTPOST.check(rec)                   -> [errors] (empty: a valid record)
-//   KOUTPOST.create(opt)                  -> an empty registry {format, world, seed, map, recs, order, gone, log}
-//   KOUTPOST.seed(list, ver)              -> records from the scale model's outpost-typed settlements
+//   KOUTPOST.create(opt)                  -> an empty registry {format, world, player, map, seedId, recs, order, gone, log}
 //   KOUTPOST.apply(reg, op)               -> {ok, why}; a refused op leaves reg as it was
-//   KOUTPOST.fold(file)                   -> {reg, errors}: the base file (seed + ops) folded, stopping at the first refusal
-//   KOUTPOST.save(reg)                    -> the base file {format, world, map, seedId, seed, ops}
-//   KOUTPOST.newId(reg, spec)             -> 'op-' + base36 of KRAND.hash(seed, day, x, z, n): stable, never reused
-//   KOUTPOST.canFound(reg, spec, opt)     -> {ok, why}: the founding rule (claims apart by opt.gap; opt.ground)
-//   KOUTPOST.found(reg, spec, opt)        -> {ok, why, op, id}: founds an outpost (on a candidate, if spec.candidate)
+//   KOUTPOST.fold(save)                   -> {reg, errors}: the player's save (its ops) folded, stopping at the first refusal
+//   KOUTPOST.save(reg)                    -> the player's save {format, world, player, map, seedId, ops}
+//   KOUTPOST.newId(reg, spec)             -> 'ps-' + base36 of KRAND.hash(seed, day, x, z, n): stable, never reused
+//   KOUTPOST.canFound(reg, spec, opt)     -> {ok, why}: apart from the player's own; opt.ground; opt.clear (the world's
+//                                            NPC keep-clears, answered by the page)
+//   KOUTPOST.found(reg, spec, opt)        -> {ok, why, op, id}   (on a candidate, if spec.candidate)
 //   KOUTPOST.abandon(reg, id, day, cause) -> {ok, why, op}
-//   KOUTPOST.get / list / live / ofOwner / near(reg, x, z, r) / inRegion(reg, frame, box)
-//   KOUTPOST.simSpec(rec)                 -> the spec SIM.settlement takes ({id, faction, name})
+//   KOUTPOST.get / list / live / near(reg, x, z, r) / inRegion(reg, frame, box)
+//   KOUTPOST.layout(rec)                  -> {module, id}: which core module draws it at its size
+//   KOUTPOST.simSpec(rec)                 -> the spec SIM.settlement takes; tradeWith(rec) -> NPC settlement ids
+//   KOUTPOST.nearWorld(place, settlements, r) -> refs to the NPC places (scale model list) within r, nearest first
+//   KOUTPOST.keepClear(reg)               -> [{id, x, z, r}]: the discs the world's own placement keeps off
 //   KOUTPOST.offer(kit, list)             -> {kept, errors}: a biome kit's candidate sites (hints; nothing drawn)
 //   KOUTPOST.candidates(), checkCandidate(c), candidatesNear(reg, x, z, r, opt), clearCandidates()
 var KOUTPOST = (function () {
   'use strict';
-  var KINDS = ['post', 'trade', 'hunt', 'mine', 'works', 'farm', 'waystation', 'fort'];
-  var OWNERS = ['player', 'people', 'faction', 'org', 'none', 'unknown'];
-  var STATES = ['claimed', 'active', 'abandoned', 'ruined', 'destroyed'];
+  /* what it is for */
+  var KINDS = ['home', 'post', 'trade', 'hunt', 'mine', 'works', 'farm', 'waystation', 'fort'];
+  /* how big it is: each size is laid out by one core module (layout()) */
+  var SIZES = ['camp', 'hamlet', 'village', 'town'];
+  var LAYOUT = { camp: 'core/camp', hamlet: 'core/hamlet', village: 'core/hamlet', town: 'core/city' };
+  var LAYOUT_LINK = { 'core/camp': 'camp', 'core/hamlet': 'hamlet', 'core/city': 'city' };
+  var STATES = ['claimed', 'active', 'abandoned', 'ruined', 'lost', 'destroyed'];
   var LIVE = { claimed: true, active: true };
-  /* the moves a state may make (PLAN.md section 3); destroyed is final */
+  /* the moves a state may make (PLAN.md section 4); destroyed is final */
   var MOVES = {
     claimed: ['active', 'abandoned'],
-    active: ['abandoned', 'destroyed'],
-    abandoned: ['active', 'ruined'],
+    active: ['abandoned', 'lost', 'destroyed'],
+    abandoned: ['active', 'ruined', 'lost'],
     ruined: ['active'],
+    lost: ['active', 'destroyed'],
     destroyed: []
   };
-  /* each map version's offset from the old canvas the open worlds' region.json use (5.1: +272, +330) */
+  /* references across the boundary: what a player settlement may point at in the NPC world */
+  var REF_KINDS = ['scale', 'sim', 'camp', 'hamlet', 'city', 'faction', 'people', 'region'];
+  var RELS = ['near', 'trade', 'ally', 'rival', 'supply', 'took'];
+  var TAKER_KINDS = ['faction', 'org', 'people'];
   var MAPS = { '4': { dx: 0, dy: 0 }, '5.1': { dx: 272, dy: 330 } };
   var M_PER_PX = 2000;
   var R_DEFAULT = 100, GAP_DEFAULT = 200, SEED_DEFAULT = 20261109;
-  var FIELDS = ['name', 'kind', 'owner', 'state', 'founded', 'abandoned', 'links', 'tags', '_note'];
-  var LINKS = ['scale', 'settlement', 'camp', 'hamlet', 'city', 'candidate'];
+  var FIELDS = ['name', 'kind', 'size', 'state', 'left', 'lostTo', 'links', 'refs', 'tags', '_note'];
+  var LINKS = ['settlement', 'camp', 'hamlet', 'city', 'candidate'];
   var HAS = ['water', 'warmth', 'ground', 'resource', 'shelter'];
+  var ID = /^ps-[a-z0-9-]+$/;
 
   var fin = function (v) { return typeof v === 'number' && isFinite(v); };
-  var isDay = function (v) { return v === null || (fin(v) && Math.floor(v) === v); };
+  var isDay = function (v) { return fin(v) && Math.floor(v) === v; };
   var copy = function (o) { return o == null ? o : JSON.parse(JSON.stringify(o)); };
   var has = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
   function mapOf(ver) { var m = MAPS[ver]; if (!m) throw new Error('KOUTPOST: unknown map version ' + ver); return m; }
@@ -60,8 +71,7 @@ var KOUTPOST = (function () {
   }
   function toMap(p, ver) {
     var a = mapOf(p.map), b = mapOf(ver);
-    var px = p.px - a.dx + b.dx, py = p.py - a.dy + b.dy;
-    var w = at(px, py, ver);
+    var px = p.px - a.dx + b.dx, py = p.py - a.dy + b.dy, w = at(px, py, ver);
     return { map: ver, px: px, py: py, x: w.x, z: w.z, y: p.y == null ? null : p.y, r: p.r };
   }
   /* a region's frame is on the old canvas: origin_px is its (0, 0) */
@@ -75,13 +85,6 @@ var KOUTPOST = (function () {
   }
 
   /* ---------------------------------------------------------------- the record */
-  function checkOwner(o, state, out) {
-    if (!o || typeof o !== 'object' || OWNERS.indexOf(o.kind) < 0) { out.push('owner: kind not one of ' + OWNERS.join(' ')); return; }
-    var named = o.kind !== 'none' && o.kind !== 'unknown';
-    if (named && !(typeof o.id === 'string' && o.id)) out.push('owner: a ' + o.kind + ' needs an id');
-    if (state && LIVE[state] && o.kind === 'none') out.push('owner: a live outpost (' + state + ') has an owner');
-    if (state && !LIVE[state] && o.kind !== 'none') out.push('owner: a dead outpost (' + state + ') has owner none');
-  }
   function checkPlace(p, out) {
     if (!p || typeof p !== 'object') { out.push('place: missing'); return; }
     if (!MAPS[p.map]) { out.push('place: unknown map version ' + p.map); return; }
@@ -91,38 +94,52 @@ var KOUTPOST = (function () {
     if (!(fin(p.r) && p.r > 0)) out.push('place: r must be a positive number');
     if (p.y != null && !fin(p.y)) out.push('place: y must be a number or null');
   }
+  function checkRef(f, out) {
+    if (!f || typeof f !== 'object') { out.push('refs: an entry is not an object'); return; }
+    if (REF_KINDS.indexOf(f.kind) < 0) out.push('refs: kind ' + f.kind + ' not one of ' + REF_KINDS.join(' '));
+    if (!(typeof f.id === 'string' && f.id)) out.push('refs: no id');
+    else if (/^ps-/.test(f.id)) out.push('refs: ' + f.id + ' is a player settlement; refs only cross to the NPC world');
+    if (RELS.indexOf(f.rel) < 0) out.push('refs: rel ' + f.rel + ' not one of ' + RELS.join(' '));
+  }
   function check(rec) {
     var out = [];
     if (!rec || typeof rec !== 'object') return ['not a record'];
-    if (!(typeof rec.id === 'string' && /^op-[a-z0-9-]+$/.test(rec.id))) out.push('id: must be op-<lowercase letters, digits, ->');
+    if (!(typeof rec.id === 'string' && ID.test(rec.id))) out.push('id: must be ps-<lowercase letters, digits, ->');
+    if (!(typeof rec.player === 'string' && rec.player)) out.push('player: the player\'s faction id');
     if (!(typeof rec.name === 'string' && rec.name)) out.push('name: missing');
     if (KINDS.indexOf(rec.kind) < 0) out.push('kind: not one of ' + KINDS.join(' '));
+    if (SIZES.indexOf(rec.size) < 0) out.push('size: not one of ' + SIZES.join(' '));
     if (STATES.indexOf(rec.state) < 0) out.push('state: not one of ' + STATES.join(' '));
-    checkOwner(rec.owner, STATES.indexOf(rec.state) >= 0 ? rec.state : null, out);
     checkPlace(rec.place, out);
-    if (!isDay(rec.founded)) out.push('founded: a whole world day or null');
-    if (!isDay(rec.abandoned)) out.push('abandoned: a whole world day or null');
-    if (LIVE[rec.state] && rec.abandoned != null) out.push('abandoned: set on a live outpost');
-    if (fin(rec.founded) && fin(rec.abandoned) && rec.abandoned < rec.founded) out.push('abandoned: before founded');
+    if (!isDay(rec.founded)) out.push('founded: a whole world day (a player settlement is always founded in play)');
+    if (rec.left != null && !isDay(rec.left)) out.push('left: a whole world day or null');
+    if (LIVE[rec.state] && rec.left != null) out.push('left: set on a live settlement');
+    if (!LIVE[rec.state] && STATES.indexOf(rec.state) >= 0 && rec.left == null) out.push('left: a ' + rec.state + ' settlement says when it left the player');
+    if (isDay(rec.founded) && isDay(rec.left) && rec.left < rec.founded) out.push('left: before founded');
+    if (rec.state === 'lost') {
+      var t = rec.lostTo;
+      if (!t || TAKER_KINDS.indexOf(t.kind) < 0 || !(typeof t.id === 'string' && t.id)) out.push('lostTo: {kind: faction | org | people, id} for a lost settlement');
+    } else if (rec.lostTo != null) out.push('lostTo: only on a lost settlement');
     if (!rec.links || typeof rec.links !== 'object') out.push('links: missing');
     else for (var k in rec.links) {
       if (LINKS.indexOf(k) < 0) out.push('links: unknown link ' + k);
       else if (rec.links[k] != null && typeof rec.links[k] !== 'string') out.push('links.' + k + ': an id string or null');
     }
+    if (!Array.isArray(rec.refs)) out.push('refs: a list');
+    else for (var i = 0; i < rec.refs.length; i++) checkRef(rec.refs[i], out);
     if (!Array.isArray(rec.tags)) out.push('tags: a list');
     return out;
   }
-  function blankLinks() { var l = {}; for (var i = 0; i < LINKS.length; i++) l[LINKS[i]] = null; return l; }
   function record(spec) {
-    var links = blankLinks();
+    var links = {};
+    for (var i = 0; i < LINKS.length; i++) links[LINKS[i]] = null;
     if (spec.links) for (var k in spec.links) links[k] = spec.links[k];
     var r = {
-      id: spec.id, name: spec.name, kind: spec.kind == null ? 'post' : spec.kind,
-      owner: copy(spec.owner), place: copy(spec.place),
-      state: spec.state == null ? 'active' : spec.state,
-      founded: spec.founded === undefined ? null : spec.founded,
-      abandoned: spec.abandoned === undefined ? null : spec.abandoned,
-      links: links, tags: spec.tags ? spec.tags.slice() : []
+      id: spec.id, player: spec.player, name: spec.name,
+      kind: spec.kind == null ? 'post' : spec.kind, size: spec.size == null ? 'camp' : spec.size,
+      place: copy(spec.place), state: spec.state == null ? 'claimed' : spec.state,
+      founded: spec.founded, left: spec.left == null ? null : spec.left, lostTo: spec.lostTo == null ? null : copy(spec.lostTo),
+      links: links, refs: spec.refs ? copy(spec.refs) : [], tags: spec.tags ? spec.tags.slice() : []
     };
     if (spec._note != null) r._note = spec._note;
     return r;
@@ -132,17 +149,14 @@ var KOUTPOST = (function () {
   function create(opt) {
     opt = opt || {};
     return {
-      format: 'krator-outposts/1', world: opt.world == null ? 'krator' : opt.world,
-      map: opt.map == null ? '5.1' : opt.map, seedId: opt.seed == null ? SEED_DEFAULT : opt.seed,
-      seed: [], recs: {}, order: [], gone: {}, log: [], index: null
+      format: 'krator-player-settlements/1', world: opt.world == null ? 'krator' : opt.world,
+      player: opt.player == null ? 'player' : opt.player, map: opt.map == null ? '5.1' : opt.map,
+      seedId: opt.seed == null ? SEED_DEFAULT : opt.seed, recs: {}, order: [], gone: {}, log: [], index: null
     };
   }
   function get(reg, id) { return has(reg.recs, id) ? reg.recs[id] : null; }
   function list(reg) { return reg.order.map(function (id) { return reg.recs[id]; }); }
   function live(reg) { return list(reg).filter(function (r) { return LIVE[r.state]; }); }
-  function ofOwner(reg, kind, id) {
-    return list(reg).filter(function (r) { return r.owner.kind === kind && (id == null || r.owner.id === id); });
-  }
   function put(reg, rec) {
     if (!has(reg.recs, rec.id)) reg.order.push(rec.id);
     reg.recs[rec.id] = rec; reg.index = null;
@@ -164,72 +178,44 @@ var KOUTPOST = (function () {
     });
   }
 
-  /* ---------------------------------------------------------------- seeding from the scale model */
-  /* what the names and notes say; everything else is 'post' until the owner types it (PLAN.md section 12) */
-  var SEED_HINTS = {
-    sthegate: { kind: 'waystation', owner: { kind: 'people', id: 'tierhounds' },
-      _note: 'the scale model notes: the Tierhounds\' toll fort on the one way into the Outlands' },
-    se4hiep1n7: { kind: 'fort', _note: 'a fort by its name; owner to confirm' },
-    sjqk469u0k: { kind: 'fort', _note: 'a fort by its name; owner to confirm' },
-    sxan7r1sln: { kind: 'fort', _note: 'a fort by its name; owner to confirm' }
-  };
-  function seed(L, ver) {
-    var out = [];
-    for (var i = 0; i < L.length; i++) {
-      var s = L[i];
-      if (s.type !== 'outpost') continue;
-      var h = SEED_HINTS[s.id] || {};
-      out.push(record({
-        id: 'op-' + String(s.id).toLowerCase(), name: s.name, kind: h.kind == null ? 'post' : h.kind,
-        owner: h.owner ? h.owner : { kind: 'unknown' }, place: place(s.px, s.py, ver), state: 'active',
-        founded: null, links: { scale: s.id },
-        _note: h._note == null ? 'seeded from the scale model; kind and owner not yet given' : h._note
-      }));
-    }
-    out.sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
-    return out;
-  }
-
   /* ---------------------------------------------------------------- operations */
   var OPS = ['ADD', 'SET', 'MOVE', 'REMOVE'];
   function refuse(why) { return { ok: false, why: why }; }
   function trial(reg, id, fn) {
     var cur = get(reg, id);
-    if (!cur) return refuse('no outpost ' + id);
+    if (!cur) return refuse('no player settlement ' + id);
     var next = copy(cur), why = fn(next, cur);
     if (why) return refuse(why);
     var errs = check(next);
     if (errs.length) return refuse(id + ': ' + errs.join('; '));
     return { ok: true, rec: next };
   }
-  /* a SET of state: a move of the table, with its dates and owner */
+  /* a SET of state: a move of the table, with its date and its taker */
   function setState(next, cur, op) {
     var to = op.set.state;
     if (MOVES[cur.state].indexOf(to) < 0) return 'state: ' + cur.state + ' cannot become ' + to;
-    if (LIVE[cur.state] && !LIVE[to]) {
-      next.abandoned = op.set.abandoned === undefined ? op.day : op.set.abandoned;
-      if (!has(op.set, 'owner')) next.owner = { kind: 'none' };
-    } else if (!LIVE[cur.state] && LIVE[to]) {
-      next.abandoned = null;
-      if (!has(op.set, 'owner')) return 'state: retaking ' + cur.id + ' names its new owner in the same op';
-    }
+    if (LIVE[cur.state] && !LIVE[to]) next.left = has(op.set, 'left') ? op.set.left : op.day;
+    if (!LIVE[cur.state] && LIVE[to]) next.left = null;
+    if (cur.state === 'lost' && to !== 'lost' && !has(op.set, 'lostTo')) next.lostTo = null;
     return null;
   }
   function apply(reg, op) {
     if (!op || OPS.indexOf(op.op) < 0) return refuse('op: not one of ' + OPS.join(' '));
     if (!(typeof op.id === 'string' && op.id)) return refuse('op: no id');
-    if (op.day !== undefined && !isDay(op.day)) return refuse('op: day must be a whole world day');
+    if (op.day != null && !isDay(op.day)) return refuse('op: day must be a whole world day');
     var t;
     if (op.op === 'ADD') {
+      if (!ID.test(op.id)) return refuse('ADD: ' + op.id + ' is not a player settlement id (ps-...); NPC places are not registered here');
       if (get(reg, op.id)) return refuse('ADD: ' + op.id + ' exists');
       if (reg.gone[op.id]) return refuse('ADD: ' + op.id + ' was removed; ids are never reused');
       if (!op.rec || op.rec.id !== op.id) return refuse('ADD: rec.id must be the op id');
+      if (op.rec.player !== reg.player) return refuse('ADD: ' + op.id + ' belongs to ' + op.rec.player + ', not this registry\'s player ' + reg.player);
       var rec = record(op.rec), errs = check(rec);
       if (errs.length) return refuse('ADD ' + op.id + ': ' + errs.join('; '));
       put(reg, rec);
     } else if (op.op === 'SET') {
       if (!op.set || typeof op.set !== 'object') return refuse('SET: no set');
-      for (var k in op.set) if (FIELDS.indexOf(k) < 0) return refuse('SET: ' + k + ' is not settable (MOVE moves, ids never change)');
+      for (var k in op.set) if (FIELDS.indexOf(k) < 0) return refuse('SET: ' + k + ' is not settable (MOVE moves; ids, player and founded never change)');
       t = trial(reg, op.id, function (next, cur) {
         for (var f in op.set) {
           if (f === 'links') { for (var l in op.set.links) next.links[l] = op.set.links[l]; }
@@ -245,23 +231,17 @@ var KOUTPOST = (function () {
       if (!t.ok) return t;
       put(reg, t.rec);
     } else {
-      if (!get(reg, op.id)) return refuse('REMOVE: no outpost ' + op.id);
+      if (!get(reg, op.id)) return refuse('REMOVE: no player settlement ' + op.id);
       delete reg.recs[op.id]; reg.order.splice(reg.order.indexOf(op.id), 1);
       reg.gone[op.id] = true; reg.index = null;
     }
     reg.log.push(copy(op));
     return { ok: true };
   }
-  function fold(file) {
-    var reg = create({ world: file.world, map: file.map, seed: file.seedId }), errors = [];
-    var S = file.seed || [];
-    for (var i = 0; i < S.length; i++) {
-      var e = check(S[i]);
-      if (e.length) { errors.push('seed ' + (S[i] && S[i].id) + ': ' + e.join('; ')); return { reg: reg, errors: errors }; }
-      if (get(reg, S[i].id)) { errors.push('seed: ' + S[i].id + ' twice'); return { reg: reg, errors: errors }; }
-      reg.seed.push(copy(S[i])); put(reg, copy(S[i]));
-    }
-    var O = file.ops || [];
+  function fold(sv) {
+    var reg = create({ world: sv.world, player: sv.player, map: sv.map, seed: sv.seedId }), errors = [];
+    if (sv.seed != null) { errors.push('save: a player save has no seed (NPC places are not registered here)'); return { reg: reg, errors: errors }; }
+    var O = sv.ops || [];
     for (var j = 0; j < O.length; j++) {
       var r = apply(reg, O[j]);
       if (!r.ok) { errors.push('op ' + j + ': ' + r.why); break; }
@@ -269,14 +249,14 @@ var KOUTPOST = (function () {
     return { reg: reg, errors: errors };
   }
   function save(reg) {
-    return { format: reg.format, world: reg.world, map: reg.map, seedId: reg.seedId, seed: copy(reg.seed), ops: copy(reg.log) };
+    return { format: reg.format, world: reg.world, player: reg.player, map: reg.map, seedId: reg.seedId, ops: copy(reg.log) };
   }
 
   /* ---------------------------------------------------------------- founding */
   function newId(reg, spec) {
     var p = spec.place;
     for (var n = 0; n < 1000; n++) {
-      var id = 'op-' + KRAND.hash(reg.seedId, spec.day == null ? 0 : spec.day, Math.floor(p.x), Math.floor(p.z), n).toString(36);
+      var id = 'ps-' + KRAND.hash(reg.seedId, spec.day == null ? 0 : spec.day, Math.floor(p.x), Math.floor(p.z), n).toString(36);
       if (!get(reg, id) && !reg.gone[id]) return id;
     }
     throw new Error('KOUTPOST.newId: no free id');
@@ -288,13 +268,15 @@ var KOUTPOST = (function () {
     var r = p.r == null ? R_DEFAULT : p.r;
     if (!(fin(r) && r > 0)) return refuse('place: r must be a positive number');
     if (KINDS.indexOf(spec.kind) < 0) return refuse('kind: not one of ' + KINDS.join(' '));
-    var e = []; checkOwner(spec.owner, 'claimed', e);
-    if (e.length) return refuse(e.join('; '));
+    if (spec.size != null && SIZES.indexOf(spec.size) < 0) return refuse('size: not one of ' + SIZES.join(' '));
+    if (!isDay(spec.day)) return refuse('day: the world day it is founded on');
     var hit = near(reg, p.x, p.z, r + gap).filter(function (o) {
       return LIVE[o.state] && Math.hypot(o.place.x - p.x, o.place.z - p.z) < o.place.r + r + gap;
     });
-    if (hit.length) return refuse('too close to ' + hit[0].id + ' (' + hit[0].name + ')');
+    if (hit.length) return refuse('too close to the player\'s ' + hit[0].id + ' (' + hit[0].name + ')');
     if (opt.ground && !opt.ground(p.x, p.z)) return refuse('ground: the page says no');
+    var c = opt.clear ? opt.clear(p.x, p.z, r) : null;
+    if (c) return refuse('the world keeps this clear: ' + c);
     return { ok: true };
   }
   function found(reg, spec, opt) {
@@ -311,9 +293,8 @@ var KOUTPOST = (function () {
     var id = spec.id == null ? newId(reg, spec) : spec.id, links = spec.links ? copy(spec.links) : {};
     if (spec.candidate != null) links.candidate = spec.candidate;
     var op = { op: 'ADD', id: id, day: spec.day, cause: spec.cause == null ? 'founded' : spec.cause,
-      rec: { id: id, name: spec.name, kind: spec.kind, owner: spec.owner, place: spec.place,
-        state: spec.state == null ? 'claimed' : spec.state, founded: spec.day == null ? null : spec.day, links: links,
-        tags: spec.tags, _note: spec._note } };
+      rec: { id: id, player: reg.player, name: spec.name, kind: spec.kind, size: spec.size, place: spec.place,
+        state: 'claimed', founded: spec.day, links: links, refs: spec.refs, tags: spec.tags, _note: spec._note } };
     var r = apply(reg, op);
     return r.ok ? { ok: true, op: op, id: id } : r;
   }
@@ -323,10 +304,30 @@ var KOUTPOST = (function () {
     return r.ok ? { ok: true, op: op } : r;
   }
 
-  /* ---------------------------------------------------------------- the simulation */
+  /* ---------------------------------------------------------------- where it touches the rest of the world */
+  function layout(rec) { var m = LAYOUT[rec.size]; return { module: m, id: rec.links[LAYOUT_LINK[m]] }; }
   function simSpec(rec) {
-    var o = rec.owner, f = o.kind === 'faction' || o.kind === 'player' ? (o.id == null ? 'player' : o.id) : null;
-    return { id: rec.links.settlement == null ? rec.id : rec.links.settlement, faction: f, name: rec.name, kind: 'outpost', outpost: rec.id };
+    return { id: rec.links.settlement == null ? rec.id : rec.links.settlement, faction: rec.player, name: rec.name,
+      kind: 'player', size: rec.size, outpost: rec.id };
+  }
+  function tradeWith(rec) {
+    return rec.refs.filter(function (f) { return f.rel === 'trade' && f.kind === 'sim'; }).map(function (f) { return f.id; });
+  }
+  /* the NPC places (a scale model settlement list, read, never kept) within r of a place: refs, nearest first */
+  function nearWorld(p, L, r) {
+    var out = [];
+    for (var i = 0; i < L.length; i++) {
+      var s = L[i], ver = s.map == null ? p.map : s.map;
+      var q = toMap({ map: ver, px: s.px, py: s.py, r: 1 }, p.map), d = Math.hypot(q.x - p.x, q.z - p.z);
+      if (d <= r) out.push({ kind: 'scale', id: s.id, rel: 'near', name: s.name, type: s.type, d: d });
+    }
+    out.sort(function (a, b) { return a.d - b.d || (a.id < b.id ? -1 : 1); });
+    return out;
+  }
+  /* what the world's own placement (flora, NPC camps and villages) keeps off: everything still standing */
+  function keepClear(reg) {
+    return list(reg).filter(function (o) { return o.state !== 'destroyed'; })
+      .map(function (o) { return { id: o.id, x: o.place.x, z: o.place.z, r: o.place.r }; });
   }
 
   /* ---------------------------------------------------------------- candidate sites (hints from the kits) */
@@ -382,12 +383,13 @@ var KOUTPOST = (function () {
   }
 
   return {
-    KINDS: KINDS, OWNERS: OWNERS, STATES: STATES, LIVE: LIVE, MOVES: MOVES, MAPS: MAPS, M_PER_PX: M_PER_PX,
-    R_DEFAULT: R_DEFAULT, GAP_DEFAULT: GAP_DEFAULT, SEED_HINTS: SEED_HINTS,
+    KINDS: KINDS, SIZES: SIZES, STATES: STATES, LIVE: LIVE, MOVES: MOVES, REF_KINDS: REF_KINDS, RELS: RELS,
+    MAPS: MAPS, M_PER_PX: M_PER_PX, R_DEFAULT: R_DEFAULT, GAP_DEFAULT: GAP_DEFAULT,
     at: at, place: place, toMap: toMap, toRegion: toRegion, fromRegion: fromRegion,
-    check: check, create: create, seed: seed, apply: apply, fold: fold, save: save,
-    get: get, list: list, live: live, ofOwner: ofOwner, near: near, inRegion: inRegion,
-    newId: newId, canFound: canFound, found: found, abandon: abandon, simSpec: simSpec,
+    check: check, create: create, apply: apply, fold: fold, save: save,
+    get: get, list: list, live: live, near: near, inRegion: inRegion,
+    newId: newId, canFound: canFound, found: found, abandon: abandon,
+    layout: layout, simSpec: simSpec, tradeWith: tradeWith, nearWorld: nearWorld, keepClear: keepClear,
     offer: offer, candidates: candidates, clearCandidates: clearCandidates, checkCandidate: checkCandidate,
     candidatesNear: candidatesNear
   };
