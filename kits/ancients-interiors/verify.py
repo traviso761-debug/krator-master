@@ -53,9 +53,9 @@ def core_node():
     ixc = os.path.join(KITS, 'interiors', 'dist', 'interiors-core.js')
     aic = os.path.join(HERE, 'dist', 'ancients-interiors-core.js')
     js = ('global.KratorInteriors=require(process.argv[1]);const IX=KratorInteriors,AI=require(process.argv[2]);'
-          'const before=Object.keys(IX.PROGRAMS).length;AI.install(IX);AI.install(IX);'
+          'const before=Object.keys(IX.PROGRAMS).length,fresh=AI.SHIP_KINDS.filter(k=>!IX.PROGRAMS[k]).length;AI.install(IX);AI.install(IX);'
           'const add=Object.keys(IX.PROGRAMS).length-before;const miss=AI.SHIP_KINDS.filter(k=>!IX.PROGRAMS[k]||!IX.KIND_ALIAS[k]);'
-          'console.log("programmes added "+add+", missing "+miss.length);process.exit(add===AI.SHIP_KINDS.length&&!miss.length?0:1);')
+          'console.log("programmes added "+add+", missing "+miss.length);process.exit(add===fresh&&!miss.length?0:1);')
     r = subprocess.run(['node', '-e', js, ixc, aic], capture_output=True, text=True)
     return r.returncode == 0, (r.stdout + r.stderr).strip()
 

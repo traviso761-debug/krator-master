@@ -37,13 +37,13 @@
     "core/engine/37-wk-rec.js": "bf39a3a82cfd8b9f24d528aeacd44d332d3d23751f4ff2a14b21b72f4b95ea91",
     "core/engine/90-scene.js": "7ad278f7c04c8fad78a4897de8922b7272ba2e9d5b6357bda393bd481bc5c002",
     "core/engine/91f-furnish.js": "bb209bd5dcd246ec2d018079a5427c3515d90896b36dce8d1e543b9f819e9b1e",
-    "core/engine/91i-interiors.js": "e8f5b982f30b1b9f3470267382810113c4b8902b3732ad4a84d28e4f43db0df4",
+    "core/engine/91i-interiors.js": "5b580ae54cd8726ccfde1b9ce1cd0579057e089a3b1703c87e7380f6e6b1348e",
     "core/engine/91n-night.js": "e15b022c24cc9c55ce8f774db3b55ec304c147cfded0a4dc4890a5216cb474b5",
     "core/engine/92-world.js": "4eef4a2cfc61a81e442f6729b351fcd6dce0ec3663dc9f2c4980d0476b0e1be2",
     "core/engine/93-anim.js": "a55c92af37244e4be8a691d465ae7bae010d2ff21be66a9bc91fa3dce78d73bb",
     "core/engine/99-host-take.js": "545a2bf1d19dea2343b961e7f60bd60e5a30674507a464edf4180237386bd37e",
     "core/engine/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "core/furnish/50-core-furnish.js": "6519283a13a25711e4acff7f03356f5e0d41f3437f19835bad02cdcd1a6cfb18",
+    "core/furnish/50-core-furnish.js": "2c81c2c24d3f2c26a5d67cfcbe2ff1398a0884ab0032dd3596d589c2bd15756b",
     "core/furnish/52-core-furnish-draw.js": "e87c79babef49dedde3f5dc4fa0daae11aaae6a3976955d6c51cabd49ca92146",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
@@ -346,14 +346,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/islanders/build-manifest.json": "598979cb993bdc72e0ddcaef48a82422d96ee223e1ea9f17b82ed63f558eb9cd",
-    "kits/islanders/dist/islanders.html": "02ed33651dacbfa89d631b885e0a49d62976909ff89f9a511dd94dc203b12f83",
+    "kits/islanders/build-manifest.json": "932249cd617397820ed83b071413168a4ee602537a37f9a9da61f5b0198889a8",
+    "kits/islanders/dist/islanders.html": "06b179e13983ec4df5c446d573a2b25d6a583bbd7de1ebbfe0659b7f8e30fba1",
     "kits/islanders/dist/islanders.tex.islanders-2.js": "26c0e90661ed9cc1b2ba1ea5d58a5cb8b8a222a12d1971619f1364858dbed605",
     "kits/islanders/dist/islanders.tex.islanders.js": "8d5ef2e0357e31b27dfe18d43477277130fde6a4940738320abf666cbad7416e"
    },
    "outputs_raw": {
-    "kits/islanders/build-manifest.json": "598979cb993bdc72e0ddcaef48a82422d96ee223e1ea9f17b82ed63f558eb9cd",
-    "kits/islanders/dist/islanders.html": "02ed33651dacbfa89d631b885e0a49d62976909ff89f9a511dd94dc203b12f83",
+    "kits/islanders/build-manifest.json": "932249cd617397820ed83b071413168a4ee602537a37f9a9da61f5b0198889a8",
+    "kits/islanders/dist/islanders.html": "06b179e13983ec4df5c446d573a2b25d6a583bbd7de1ebbfe0659b7f8e30fba1",
     "kits/islanders/dist/islanders.tex.islanders-2.js": "26c0e90661ed9cc1b2ba1ea5d58a5cb8b8a222a12d1971619f1364858dbed605",
     "kits/islanders/dist/islanders.tex.islanders.js": "8d5ef2e0357e31b27dfe18d43477277130fde6a4940738320abf666cbad7416e"
    }

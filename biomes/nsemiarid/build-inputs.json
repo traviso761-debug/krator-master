@@ -140,6 +140,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/nsemiarid": "45dd381ffc6da5255ba892ffcf173edbd3d8a2ec9a55b53a5de4b61e57c220c3",
     "biomes/nsemiarid/src": "173e5867262fc2c4f83ebbbda13dbac2133fb9f4aa188ffb045de92fc885b6fb",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"

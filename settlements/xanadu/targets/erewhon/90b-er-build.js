@@ -11,19 +11,25 @@ const gy=(x,z)=>terrainBase(x,z);
 // every other cell, retaining walls wherever two cells step; every piece is an obstacle to the biome, which grows the
 // park in the band the tiles leave along the wall
 const CIT_TILES=[];
-function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.key,B.x,B.z,0,{v:B.v,y:B.y,ppad:0,noFlat:true});
+function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.key,B.x,B.z,0,{v:B.v,y:B.y,ppad:0,noFlat:true,o:B.o});
  const courts=['xa_star_court','xa_plunge_pool','xa_lily_pond','xa_cactus_court','xa_pergola','xa_kiosk','xa_brick_court','xa_bath_pool','xa_vault_pavilion','xa_rill_jets'];let ci=0;
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c]||G.used[r][c])continue;const x=G.X(c),z=G.Z(r),y=G.Q[r][c];let key,ry;
   if(avoidLm&&PLAN.some(P=>{if(!P.landmark||!P.obb)return false;const o=P.obb,dx=x-o.x,dz=z-o.z,cc=Math.cos(o.ry),sn=Math.sin(o.ry);return Math.abs(dx*cc-dz*sn)<o.hx+6&&Math.abs(dx*sn+dz*cc)<o.hz+6;}))continue;   // a landmark stands here
   if((r+c)%3===0){key=courts[ci%courts.length];ci++;ry=[0,Math.PI/2,Math.PI,-Math.PI/2][(r*3+c)%4];}else{key='xa_parterre';ry=[0,Math.PI/2][(r+c)%2];}
   const T=plan(key,x,z,ry,{v:(r+c)%3,y},{h:6,garden:true});T.y=y;TL.push(T);BIO_OBSTACLES.push({x,z,r:5.7});}
- const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
+ // no retaining wall across the Golden Way (87-er-layout GOLDEN_WAY.built): the palace's and the Dome's blocks meet there, 18 m apart,
+ // and the Way's own masonry is the step
+ const GWC=typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY?GOLDEN_WAY.built:null;
+ const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{if(GWC&&x+w/2>GWC[0]&&x-w/2<GWC[1]&&z+d/2>GWC[2]&&z-d/2<GWC[3])return;vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c])continue;const x=G.X(c),z=G.Z(r),q=G.Q[r][c];
   if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];wall(x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
   if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];wall(x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
 }
 // the citadel's grounds, then the gridded gardens (GRID_GARDENS: tiles only)
 placeTileGround(CIT_G,CIT_TILES);
+// the Golden Way (kits/xanadu 78o): the descending court from the Pleasure Dome's North Door to the palace's gate iwan and postern,
+// on the palace's block, its top the Dome's floor (87-er-layout GOLDEN_WAY: its ground is cut to the palace's level)
+if(GOLDEN_WAY)planLandmark(XGW.key,GOLDEN_WAY.x,GOLDEN_WAY.z,0,{y:GOLDEN_WAY.y,ppad:0,noFlat:true,o:{top:GOLDEN_WAY.top}});
 window._citTiles=CIT_TILES.length;window._citBlocks=CIT_G.blocks.map(B=>B.key);
 {const g=GATES.find(g=>g.kind==='palace');if(g)planLandmark('xa_palace_gate',g.x,g.z,g.ry+Math.PI,{apron:8,rk:.7});}
 // the plaza before the palace gate: a fountain garden tile and the mustering ground beside the military district

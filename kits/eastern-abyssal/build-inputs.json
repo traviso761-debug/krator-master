@@ -14,7 +14,7 @@
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
     "core/door/30-core-door-leaf.js": "4d232b38441aa15f649bb9589721b71b8f30d9e05748dc190a30a6796836a94e",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
-    "core/furnish/50-core-furnish.js": "6519283a13a25711e4acff7f03356f5e0d41f3437f19835bad02cdcd1a6cfb18",
+    "core/furnish/50-core-furnish.js": "2c81c2c24d3f2c26a5d67cfcbe2ff1398a0884ab0032dd3596d589c2bd15756b",
     "core/furnish/52-core-furnish-draw.js": "e87c79babef49dedde3f5dc4fa0daae11aaae6a3976955d6c51cabd49ca92146",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
@@ -22,7 +22,7 @@
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -57,7 +57,7 @@
     "kits/interiors/sets/locus.js": "5169f8c2b10d0c819634ecfafbb67e65ea46cce94ec79860df22032ddd09d613",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
+    "kits/interiors/src/30-programs.js": "1993bfbcf3e14c59003c3ec58af0ad8dc8e9304cca67d83fac842684c08616cb",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -74,6 +74,7 @@
     "kits/locus/src/64-locus-petroleum.js": "7800471918dc527fc4006c11a2a39b927c4dddf9235b5eb36a5da93cfc4c5b89",
     "kits/locus/src/64-locus-plants.js": "67ecf3ee161274ad4093b1b51359a58cb45fdce25c2fdc29886c4df2283b6f4b",
     "kits/locus/src/64-locus-power.js": "fddff975ffd8aa92d1fc47ed96ea4af8e1b96fe46dcaa5399c4a9f9c4998237f",
+    "kits/yuni/sheetbuild.py": "f7951a7be34bcbb8b33ee003ca05a783a9b94775ba0550af3bd490eab7827b9a",
     "kits/yuni/targets/sheet/00-head.html": "c0aa38fac8c0e5d0adc329364de1ffeefa79ebde86eb31367fd9ec2d79683bcf",
     "kits/yuni/targets/sheet/20-ys-stage.js": "0f4bbad3802dd4aa138bed4067dc931d06be51a79039010d432eb0da69df778b",
     "kits/yuni/targets/sheet/70-ys-sheet.js": "4ce931d4515b1a083ecedd60ebee4154c0c1a094438ec17b79b45726d2097e81",
@@ -181,7 +182,7 @@
     "kits/eastern-abyssal/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/eastern-abyssal/src": "e9391cb31c0fa8eb98ec34023270a9b992c2830f94fc2ff95bec44eadd7663e4",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "1bdefc8c84d12d89305c3191a37cb67874320bdf687403427b51b5eaff9c5b17",
+    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/locus": "def117585c2c9fcfd579c370b33e79a91b1442f8b0755a7402311e3cfb05b782",
     "kits/locus/src": "8795515269e5f23e5418f30f422e7d1d66882ad23b81dce7d27e7c8a2379d813",
@@ -190,13 +191,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/eastern-abyssal/build-manifest.json": "e4a39e151d6c42ade066b4377240185a84cf63288976a738697297d8174e3d7e",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "ca7257eefb55fa1ed83b65df6888d8586eac619db3ec8777ec9aec1cfcf0f0f7",
+    "kits/eastern-abyssal/build-manifest.json": "bf42c11eac848235bd7ce632646b32b51cd2f5e7c5165cfb26a199cf74809bb1",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "918887f44298391270f1a86ac306b6fabbfe58c35ec1d09e9673739c2b4ad24b",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    },
    "outputs_raw": {
-    "kits/eastern-abyssal/build-manifest.json": "e4a39e151d6c42ade066b4377240185a84cf63288976a738697297d8174e3d7e",
-    "kits/eastern-abyssal/dist/eastern-abyssal.html": "ca7257eefb55fa1ed83b65df6888d8586eac619db3ec8777ec9aec1cfcf0f0f7",
+    "kits/eastern-abyssal/build-manifest.json": "bf42c11eac848235bd7ce632646b32b51cd2f5e7c5165cfb26a199cf74809bb1",
+    "kits/eastern-abyssal/dist/eastern-abyssal.html": "918887f44298391270f1a86ac306b6fabbfe58c35ec1d09e9673739c2b4ad24b",
     "kits/eastern-abyssal/dist/eastern-abyssal.tex.locus.js": "62f14adbe9d2fcb1af99e6e72a51e2e87f28d01496f9cd6b2025841083965741"
    }
   }

@@ -98,7 +98,16 @@ const R=[];
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
           detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
 
-// 5. the registry and the instance bake both ran.
+// 5. the Golden Way (kits/xanadu 78o, Erewhon only): the descending court walked from inside the Pleasure Dome's North Door, every
+//    floor and flight of it reached, and the palace's door strips at the gate iwan and the Harem Postern reached
+{ const S=window._xaGoldenWay;
+  if(S&&S.erewhon&&typeof xgwReach==='function'){const g=xgwReach();
+    R.push({name:'golden-way-descent', ok:!!g&&g.floors>0&&!g.unreached.length&&g.gate&&g.postern&&!g.capped,
+            detail:g?(g.reached+' of '+g.floors+' floors and flights reached from the North Door ('+S.N+' risers of '+S.riser+' m, '+S.gates+' gates); the gate iwan '
+                      +(g.gate?'reached':'NOT reached')+', the postern '+(g.postern?'reached':'NOT reached')+(g.unreached.length?'; unreached: '+g.unreached.slice(0,6).join(' | '):''))
+                    :'core/walk missing'}); } }
+
+// 6. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 return R;}"""

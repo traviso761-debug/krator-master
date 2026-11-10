@@ -34,10 +34,13 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  // inside the citadel (2026-11-09; kits/xanadu/src/78n-xa-citadel.js): the Sultan's Hall of Audience toward the dais under its
  // star ceiling, the Divan in the Vizier's palace, the Treasurer's court with its fountain, the palace's gate iwan from the Golden
- // Way under it (from inside the iwan's recess, 2026-11-10: the Dome's terrace stands 0.3 m before its face, 18 m up). Each from its building's block (CIT_G; the citadel's buildings stand unturned), local + the block's level
+ // Way's gate court before it (2026-11-10, the Golden Way built: from 4 m before the iwan's face, under the North Door's balcony, the
+// hood framed again), and the Golden Way itself down its lower flights from the turn (kits/xanadu 78o: the Way's frame is the
+// palace's moved XGW.IW south). Each from its building's block (CIT_G; the citadel's buildings stand unturned), local + the block's level
  {const cb=k=>CIT_G.blocks.find(B=>B.key===k),at=(B,c,t)=>[B.x+c[0],B.y+c[1],B.z+c[2],B.x+t[0],B.y+t[1],B.z+t[2]];
   const P=cb('xa_cit_palace'),Vz=cb('xa_cit_vizier'),T=cb('xa_cit_treasurer');
-  if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,7.5,48.8],[0,15.5,45.2]);}
+  if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,2.15,XGW.IW+4],[0,10.6,XGW.IW-3.4]);
+   if(typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY){const m=xgwPlan(GOLDEN_WAY.top).mid,zl=XGW.IW+(XGW.Z.foot+XGW.Z.low)/2;V['Citadel — the Golden Way']=at(P,[XGW.X.turn0+1.6,m+1.75,zl],[XGW.X.bridge+2,2.4,zl]);}}
   if(Vz)V['Citadel — the Divan']=at(Vz,[3.5,2.1,-15.2],[-19,3.9,-38]);
   if(T)V['Citadel — the Treasurer\'s court']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);}
  return V;})();

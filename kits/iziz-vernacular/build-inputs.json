@@ -15,7 +15,7 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -53,7 +53,7 @@
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e-vern-hollow.js": "c71a736c2a0a2cdba5775c39899013bda48be827690a6cc133cbb3cdb0d948a8",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/iziz-vernacular/src/69e6-vern-autobody.js": "407df5e3d0c45e60db73c9ef07ee59da9dec194ca5a1e66975fe0164ed68b751",
+    "kits/iziz-vernacular/src/69e6-vern-autobody.js": "ba991e7c043acb9565a598b88ad117f685b367c01579477236e87042d5a17d86",
     "kits/iziz-vernacular/src/69f-iziz-fixtures.js": "051a517813ef02267e3075f08614c43867cefc7b60f5d76bda211388c887c643",
     "kits/iziz-vernacular/src/70-vern-dwellings.js": "02723e6fbbb67db30eca4a1b61c1f02a21b0a97b3ec991ec4591f409ab2af4c8",
     "kits/iziz-vernacular/src/71-vern-trade.js": "bc8a5541fee4c75e7ef45c05a35eee3e9a70834476f9ff31c5c48d8ecbf1b95a",
@@ -137,6 +137,7 @@
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "kits/iziz-vernacular": "39cd34f0aedc4bfd6257b51c30de2f4c03a6e6fe52148aee456be32b8535914a",
     "kits/iziz-vernacular/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/iziz-vernacular/src": "4add7a31b18bd16063818ad685970c0660bd99fccbc27c50037561a45189976d",
     "kits/iziz-vernacular/targets": "78af7bdb5626eb0a046772b3edda705ca9e60ba7af0960eea89f7fa201d685a8",
@@ -145,13 +146,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/iziz-vernacular/build-manifest.json": "169a6d213743a15abba9329f42a3adbb61a440c74207efbd82ad5d4f2f100dfe",
-    "kits/iziz-vernacular/dist/iziz-vernacular.html": "1b6c49df5a6c234e7cc73f188e63e6c8b4b31eea99ae1c573175f0b2370428fe",
+    "kits/iziz-vernacular/build-manifest.json": "0b6ea50c6209ee996dacddc7878e1384884bb12abecff907a29889c5eccee584",
+    "kits/iziz-vernacular/dist/iziz-vernacular.html": "950c82aec7e84b90353c20c5247553ba2de66eb8212c56977d83fd46bf61fdca",
     "kits/iziz-vernacular/dist/iziz-vernacular.tex.iziz-vernacular.js": "13c8e8c3784448ef94af1f625733af66e1cbcb1b66adde8569a1c63e739402f2"
    },
    "outputs_raw": {
-    "kits/iziz-vernacular/build-manifest.json": "169a6d213743a15abba9329f42a3adbb61a440c74207efbd82ad5d4f2f100dfe",
-    "kits/iziz-vernacular/dist/iziz-vernacular.html": "1b6c49df5a6c234e7cc73f188e63e6c8b4b31eea99ae1c573175f0b2370428fe",
+    "kits/iziz-vernacular/build-manifest.json": "0b6ea50c6209ee996dacddc7878e1384884bb12abecff907a29889c5eccee584",
+    "kits/iziz-vernacular/dist/iziz-vernacular.html": "950c82aec7e84b90353c20c5247553ba2de66eb8212c56977d83fd46bf61fdca",
     "kits/iziz-vernacular/dist/iziz-vernacular.tex.iziz-vernacular.js": "13c8e8c3784448ef94af1f625733af66e1cbcb1b66adde8569a1c63e739402f2"
    }
   }
