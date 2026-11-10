@@ -10,7 +10,7 @@
    MRWALK.reach(o): the reachability audit (KWALK.reach): each unit flooded from the step outside each of its unlocked doors (on
    a plane at the door's sill: the deck or the ground it stands on) over the unit's box, with its doors open; returns the floors
    no walker gets to. o.shut: the doors left shut (the negative: a shut door's floors are not reached through it). */
-var MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'undefined' && !!(KratorInteriors.walk && KratorInteriors.walk.register) && typeof MIX !== 'undefined' && MIX.on };
+var MRWALK = window.MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'undefined' && !!(KratorInteriors.walk && KratorInteriors.walk.register) && typeof MIX !== 'undefined' && MIX.on };
 (function(){
   if(!MRWALK.on) return;
   var t0 = performance.now(), IX = KratorInteriors, out = { units:0, floors:0, blocks:0, strips:0, failed:0 };
