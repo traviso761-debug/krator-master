@@ -278,6 +278,9 @@ var TUNE = {
           voth_mustering_grounds: null,
           /* the citizen simulation's buildings (kits/catalog/krator-master-buildings-voth.js, each with its own `ix` shell) */
           voth_bldg_watchhouse: [['guardroom', 'armoury'], ['guardroom', 'dormitory']],
+          /* the Ordinators' citadel (owner, 2026-10-15): the guard hall, the training hall and the armoury on the ground storey,
+             the barracks and their mess above, the offices on top */
+          voth_bldg_citadel: [['guardroom', 'drillhall', 'armoury'], ['barracks', 'barracks', 'mess'], ['office', 'office', 'counting']],
           voth_bldg_caravanserai: [['alehouse', 'kitchen', 'stable'], ['chamber', 'chamber', 'chamber', 'chamber']],
           voth_bldg_coastguard_berth: [['guardroom', 'armoury', 'store'], ['guardroom', 'office']],
           voth_bldg_weaver: [['weaving', 'store'], ['living', 'chamber']],
@@ -288,7 +291,8 @@ var TUNE = {
         },
         /* the kit models no lot draws yet, planned as [key, lot class] so the report shows what each holds (VC.ixKitCheck) */
         kitCheck: [['voth_bldg_watchhouse', 'civic'], ['voth_bldg_caravanserai', 'tavern'], ['voth_bldg_coastguard_berth', 'civic'], ['voth_bldg_weaver', 'craft'],
-                   ['voth_bldg_tannery', 'industrial'], ['voth_bldg_brewery', 'industrial'], ['voth_bldg_butcher', 'shop'], ['voth_bldg_bakery', 'shop']],
+                   ['voth_bldg_tannery', 'industrial'], ['voth_bldg_brewery', 'industrial'], ['voth_bldg_butcher', 'shop'], ['voth_bldg_bakery', 'shop'],
+                   ['voth_bldg_citadel', 'landmark']],   /* the Ordinators' citadel: not placed in Voth (2026-10-15), planned here */
         home: ['cottage', 'bedroom', 'chamber', 'living', 'dormitory', 'hall', 'kitchen'],
         /* a work post (the job table's posts): a piece of these kinds in a work room, and these in rooms of a kind (a store's shelves,
            a ward's cots, a shrine's altar, a tomb's sarcophagus) */
