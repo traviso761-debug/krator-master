@@ -57,7 +57,7 @@ TAGS = {}
 
 
 def chromium():
-    c = sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
+    c = sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux*/chrome"))   # chrome-linux64 in newer builds
     return os.environ.get("KRATOR_CHROME") or (c[-1] if c else None)
 
 
