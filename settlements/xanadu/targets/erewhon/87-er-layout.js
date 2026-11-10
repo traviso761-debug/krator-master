@@ -144,13 +144,14 @@ CIT.bath=GRAND_BATH;
 // the buildings on the grid: key, its plot (w × d m, from the def), the variant, and where it wants to stand
 const CIT_SITES=[
  // the Pleasure Dome on its blueprint precinct (105 x 110, kits/xanadu 78c), pinned on the palace's axis between the Vizier's
- // palace (east edge x -401) and the guard (west edge -286), the palace (south edge z -207, where the Golden Way's door
+ // palace (east edge x -401) and the guard (west edge -286), the palace (south edge z -209, where the Golden Way's door
  // stands) and the court temple (north edge -97)
  {key:'xa_pleasure_dome',w:106,d:112,v:0,t:[-344,-152],at:[-344,-152]},
  // the rest of the citadel on its blueprint (settlements/xanadu/citadel/BLUEPRINT.md, E0; 2026-11-09): the hollow Moorish and
  // Mughal buildings of kits/xanadu/src/78n-xa-citadel.js at their enlarged sizes, each wanting the blueprint's place
  // (world x = u, z = -v)
- {key:'xa_cit_palace',w:112,d:98,v:0,t:[-344,-256],at:[-344,-256]},
+ // the palace 2 m north of the blueprint's place (the owner, 2026-11-10) so its lot clears the Pleasure Dome's (z -208)
+ {key:'xa_cit_palace',w:112,d:98,v:0,t:[-344,-258],at:[-344,-258]},
  // the rest pinned too (`at`): the citadel is full, and the grid's nearest-free search moved them about whenever one grew.
  // Each checked against the wall and the others (2026-11-09): the Vizier west of the Dome, the court temple south, the guard
  // and the Treasurer in the east lobe, the Master of Mines and the kitchens west, the Chancellor between the Vizier and the
