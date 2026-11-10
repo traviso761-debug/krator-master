@@ -117,7 +117,7 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.~~
     Done (2026-11-09, with `?interiors=1`): the Vernacular's auto bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`) draw a
     furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
-    (`kits/interiors/sets/xanadu.js`; the citadel held for the owner's references); the Hall of the Republic and the Fortress
+    (`kits/interiors/sets/xanadu.js`; the citadel's defs skipped: the citadel sessions build them); the Hall of the Republic and the Fortress
     are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
     Finished and verified 2026-11-10 (the audit, `verify.py --interiors`: every floor of the Hall and the Fortress reached; the
     furniture textured): what is left is in `settlements/highlands/KNOWN_ISSUES.md` and `settlements/xanadu/KNOWN_ISSUES.md`.

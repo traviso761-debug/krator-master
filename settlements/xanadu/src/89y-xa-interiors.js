@@ -21,7 +21,7 @@ KFURN.useBatch(XAF,KratorFurniture,KratorInteriors,{indexed:true});
 VERN.interiors=XAF.interiors;
 function xafWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // a top-level placement with an item in the set: its rooms planned and furnished where it stands (plain data on the group)
-// HELD (the owner, 2026-11-09): the citadel waits on the owner's visual references, so on Erewhon every placement inside its
+// THE CITADEL (2026-11-09): built by the citadel sessions (-pleasuredome, -citadel), so on Erewhon every placement inside its
 // wall (CIT_POLY, targets/erewhon/87-er-layout.js: what settlements/xanadu/citadel/BLUEPRINT.md covers, the officers' and
 // envoys' houses, the guard's barracks and the court temple with the palace) is built as it always was: no hollow walls, no rooms
 XAF.held=0;

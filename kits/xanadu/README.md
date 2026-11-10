@@ -43,10 +43,10 @@ a plain one that holds a storey of an item's body is four walls cut at the doors
 the rooms. A battered or stepped stack is planned INSET (every storey on the footprint they all share), so its walls'
 lean never reaches a room. `kit_bundle.py`'s `XAK` (Longsong) does not take it.
 
-**HELD: the citadel** (the owner, 2026-11-09). The Sultan's Palace (`xa_palace`), both Pleasure Domes (`xa_pleasure_dome`,
+**The citadel: built by the citadel sessions** (2026-11-09; the Pleasure Domes `-pleasuredome`, the rest `-citadel`). The Sultan's Palace (`xa_palace`), both Pleasure Domes (`xa_pleasure_dome`,
 `xa_pleasure_dome_bay`), the Grand Vizier's palace (`xa_vizier`) and the palace gate (`xa_palace_gate`), the citadel of
-`settlements/xanadu/citadel/BLUEPRINT.md`, wait on the owner's visual references: their items are skips that say so, and
-their builders are unchanged.
+`settlements/xanadu/citadel/BLUEPRINT.md`, are not planned by this set: their items are skips that say so, and this work
+left their builders unchanged.
 
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).

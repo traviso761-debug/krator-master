@@ -12,9 +12,10 @@ Open items are `- [ ]` lines; build.py prints them.
       konaks (`xa_rich_b`, `xa_rich_c`, their `_palopo`), the shop rows (`xa_shops`, `xa_shop_turk_a`), the monastery's hall,
       the grand temple (its door 7.2 m up its flights), the fortress's keep, the baths' rooms, the granary, the farmhouse: in
       each the builder's door is on a block the set's body does not match, or a raised door with no flight in core/walk. Erewhon
-      (`verify.py dist/erewhon.html --assert --interiors`, 2026-11-10: OK): 52,321 of 54,062 floors reached (47,538 on the WIP),
-      3,644 slivers apart, 236 buildings with a gap, 401 placements held inside the citadel. The citadel is HELD (the owner, 2026-11-09): every placement inside its wall (CIT_POLY) builds as before, with
-      no hollow walls and no rooms (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`) but for the
+      (`verify.py dist/erewhon.html --assert --interiors`, 2026-11-10, a local build not committed: Erewhon is rebuilt once
+      after the citadel sessions merge; OK): 52,321 of 54,062 floors reached (47,538 on the WIP),
+      3,644 slivers apart, 236 buildings with a gap, 401 placements held inside the citadel. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
+      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`) but for the
       `tile` family, which the catalog's maps lack (TODO.md, ride-along).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
