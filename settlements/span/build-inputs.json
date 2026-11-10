@@ -29,7 +29,7 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -110,7 +110,7 @@
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
+    "kits/interiors/src/30-programs.js": "57d48386287197707ed694545e22fa7b76aeb52e6e7110dc5193bddcb38087bc",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -325,14 +325,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/span/dist/span.html": "1b23bc5bbe737cb08b316305a7b055c1d4d2bd9d8803ceee7a770caaeb031e56",
+    "settlements/span/dist/span.html": "86643a041c2ee55dd87465a8220d86ee44c3b4ba92f922549d48812f00dd34ae",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",
     "settlements/span/dist/span.tex.span.js": "f71dd7d64211262fd6d14d8e71013c888ed706cb5419b4df8555c5552bb402b8"
    },
    "outputs_raw": {
-    "settlements/span/dist/span.html": "1b23bc5bbe737cb08b316305a7b055c1d4d2bd9d8803ceee7a770caaeb031e56",
+    "settlements/span/dist/span.html": "86643a041c2ee55dd87465a8220d86ee44c3b4ba92f922549d48812f00dd34ae",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",

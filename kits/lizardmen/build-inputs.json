@@ -24,15 +24,15 @@
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
-    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
+    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
-    "core/door/30-core-door-leaf.js": "4d232b38441aa15f649bb9589721b71b8f30d9e05748dc190a30a6796836a94e",
+    "core/door/30-core-door-leaf.js": "71649e5233fab80c5d4c8cae535f3417f6a872f2ff5ce7cc42eacf9b48bfb75f",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
     "core/engine/10-core.js": "79df9468fc7cf23e7b95060a5654bc9b62941cda24bd2434115e39568ebe0142",
     "core/engine/27-mat.js": "7212c5010b692c7bd6ebaf99c1525fdb64348b44745a0a50c55f0ff2e9f12f71",
     "core/engine/30-geo.js": "6da8ea5653844490e9a10a464afdfa68fc3bebda0767ea04096569bc5fa5082d",
     "core/engine/36-def.js": "5479088bdba91414994281ac4dd74d7459744bb844b6101fad3c207578e0e703",
-    "core/engine/36o-open.js": "3099a2be44910e6737fb8e827abad230fca8393b286839764136516d225ed31f",
+    "core/engine/36o-open.js": "4666936d6976937f41aae44b2d65091015f02520ee264c601605c1eb2724f448",
     "core/engine/36s-stair.js": "f254687a185b86dc7a3f6ee1d82289527e93ae76c46fc75bd7c97825a5c8af9f",
     "core/engine/90-scene.js": "7ad278f7c04c8fad78a4897de8922b7272ba2e9d5b6357bda393bd481bc5c002",
     "core/engine/91f-furnish.js": "bb209bd5dcd246ec2d018079a5427c3515d90896b36dce8d1e543b9f819e9b1e",
@@ -48,7 +48,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -291,14 +291,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/lizardmen/build-manifest.json": "a5491e41ab008d61fdc29dba352e7d5efa31d0483b6bcdd5c6aa061bd1c58919",
-    "kits/lizardmen/dist/lizardmen.html": "7002c3437330592932a94356f63c24aeeda8f5d5007c9850385da9404efd34e3",
+    "kits/lizardmen/build-manifest.json": "d5af7cc95a9974be77a98c6c363218835cbc3d4e385aa5480ba3268c79068ccc",
+    "kits/lizardmen/dist/lizardmen.html": "9fb88efa92339fb47eab1ea1eab4607c16c50f3b3d23502d306fb4441444d17b",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen-2.js": "5efd77b529bc5b2d6280a0a72433f0e11ccbbcba9411b5537dab61ef44b771e2",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen.js": "0d8e4a8ad1a1bcf22091cc72194f20ca35b618a5370595a8aa2e72e85b11c260"
    },
    "outputs_raw": {
-    "kits/lizardmen/build-manifest.json": "a5491e41ab008d61fdc29dba352e7d5efa31d0483b6bcdd5c6aa061bd1c58919",
-    "kits/lizardmen/dist/lizardmen.html": "7002c3437330592932a94356f63c24aeeda8f5d5007c9850385da9404efd34e3",
+    "kits/lizardmen/build-manifest.json": "d5af7cc95a9974be77a98c6c363218835cbc3d4e385aa5480ba3268c79068ccc",
+    "kits/lizardmen/dist/lizardmen.html": "9fb88efa92339fb47eab1ea1eab4607c16c50f3b3d23502d306fb4441444d17b",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen-2.js": "5efd77b529bc5b2d6280a0a72433f0e11ccbbcba9411b5537dab61ef44b771e2",
     "kits/lizardmen/dist/lizardmen.tex.lizardmen.js": "0d8e4a8ad1a1bcf22091cc72194f20ca35b618a5370595a8aa2e72e85b11c260"
    }

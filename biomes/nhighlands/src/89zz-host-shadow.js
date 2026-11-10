@@ -9,8 +9,8 @@
 window._shadow=null;
 const SHADOW=(function(){const Q=new URLSearchParams(location.search);
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach||typeof sun==='undefined'||!sun||!sun.isDirectionalLight||Q.get('shadow')==='0'||(typeof STATION_SHADOW!=='undefined'&&STATION_SHADOW===false)){window._shadow='off';return null;}
- /* a material's texture units: a dry run of its onBeforeCompile (KSHADOW.units), against min(16, GL) (KSHADOW.maxUnits) */
- const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+ /* a dry run of a material's onBeforeCompile on its ShaderLib text: the samplers its fragment shader declares (the Throne's samplersOf) */
+ const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
  const GM=[GROUND&&GROUND.material].concat(typeof STATION_GROUNDS!=='undefined'?STATION_GROUNDS:[]).filter(Boolean);
  const MAXT=KSHADOW.maxUnits(renderer),worst=GM.length?Math.max(...GM.map(samplersOf)):0;
  if(worst+1>MAXT){window._shadow='skipped: the ground reads '+worst+' of '+MAXT+' texture units';return null;}

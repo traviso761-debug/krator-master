@@ -28,7 +28,7 @@ if(typeof ATMOS!=='undefined'&&ATMOS.heightFog&&!ATMOS.fog&&CORE_Q.get('hfog')!=
 const GROUND_MATS_ALL=[MAT_GROUND];
 // a material's texture units, counted from a dry run of its onBeforeCompile on its ShaderLib (the Throne's samplersOf), +1 for the sun's shadow map once on
 let SHADOW_ON=false;
-const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
 const MAXT=KSHADOW.maxUnits(renderer);
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 // THE SUN'S SHADOWS (core/shadow, KSHADOW): one box that follows the view, every placed mesh casting and receiving, not the far apron (45c). Off unless

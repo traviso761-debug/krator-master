@@ -24,7 +24,7 @@ const GROUND_MATS_ALL=[MAT_GROUND];
 let SHADOW_ON=false;
 // +1 for the fog belt's field (a station's fog belt: core/atmos's height fog adds its sampler to every fogged material at compile, which a dry run of
 // the material's own hook cannot see)
-const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0)+(typeof ATMOS!=='undefined'&&ATMOS.fogBeltOn&&m.fog!==false?1:0);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0)+(typeof ATMOS!=='undefined'&&ATMOS.fogBeltOn&&m.fog!==false?1:0);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
 const MAXT=KSHADOW.maxUnits(renderer);
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 // THE SUN'S SHADOWS (core/shadow, KSHADOW): one box that follows the view, every placed mesh casting and receiving. r128 declares the shadow map's sampler

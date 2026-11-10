@@ -41,7 +41,7 @@
  ],
  "10-core-door.js": [
   "core/door",
-  "b12eb3957235"
+  "22190472180d"
  ],
  "10-core.js": [
   "mungo (overrides locus)",
@@ -113,7 +113,7 @@
  ],
  "30-core-door-leaf.js": [
   "core/door",
-  "b4bc21dc8a74"
+  "dc475fefea8f"
  ],
  "30-layout.js": [
   "mungo (overrides locus)",
@@ -313,11 +313,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "f54c52360c0b"
+  "33551114ed5d"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "8475badfea1f"
+  "13acf75856fa"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -337,7 +337,7 @@
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "2c4da8ac56aa"
+  "7c297f752e6d"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -637,7 +637,7 @@
  ],
  "95-host-probe.js": [
   "core/host",
-  "111c9ae5768a"
+  "4abec5c5a961"
  ],
  "95-locus-doors.js": [
   "locus",

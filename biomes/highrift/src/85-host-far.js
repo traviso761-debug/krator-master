@@ -23,7 +23,7 @@ const FAR=(function(){
 // THE GROUND'S TEXTURE UNITS (the Throne's, ringisles' and geyser's samplersOf): the Mirror's six layers, the horizon, the rain cover and the weather passed
 // SwiftShader's 32 units but not the 16 both GPU lanes allow (the GPU verify, 2026-11-04). Counted from a dry run of its onBeforeCompile; window._units
 // says what the ground reads (final: at the end of the build, 89z).
-const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
 const MAXT=KSHADOW.maxUnits(renderer);
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
 /* what the ground takes after the horizon, measured on the Mirror (2026-11-04): 89a's snow cover and the weather's wetting 4 units, the rain cover 1.

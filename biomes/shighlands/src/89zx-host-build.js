@@ -46,7 +46,7 @@ window._shadow=null;
   REGISTER({name:'The southern highlands (ideal type)',x:0,z:0,y:Math.floor(y0),r:TERR.R,h:Math.ceil(y1-y0)});}
  /* the sun's shadows, attached off (the guard first: a dry run of the ground's shader counts its texture units) */
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach){window._shadow='off: no core/shadow';return;}
- const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+ const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
  const MAXT=KSHADOW.maxUnits(renderer),worst=samplersOf(MAT_GROUND);
  if(worst+1>MAXT){window._shadow='skipped: the ground reads '+worst+' of '+MAXT+' texture units';return;}
  try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});   /* off until switched on (?shadow=1 or the panel's button) */

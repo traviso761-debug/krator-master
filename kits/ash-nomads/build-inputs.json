@@ -24,15 +24,15 @@
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
-    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
+    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
-    "core/door/30-core-door-leaf.js": "4d232b38441aa15f649bb9589721b71b8f30d9e05748dc190a30a6796836a94e",
+    "core/door/30-core-door-leaf.js": "71649e5233fab80c5d4c8cae535f3417f6a872f2ff5ce7cc42eacf9b48bfb75f",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
     "core/engine/10-core.js": "79df9468fc7cf23e7b95060a5654bc9b62941cda24bd2434115e39568ebe0142",
     "core/engine/27-mat.js": "7212c5010b692c7bd6ebaf99c1525fdb64348b44745a0a50c55f0ff2e9f12f71",
     "core/engine/30-geo.js": "6da8ea5653844490e9a10a464afdfa68fc3bebda0767ea04096569bc5fa5082d",
     "core/engine/36-def.js": "5479088bdba91414994281ac4dd74d7459744bb844b6101fad3c207578e0e703",
-    "core/engine/36o-open.js": "3099a2be44910e6737fb8e827abad230fca8393b286839764136516d225ed31f",
+    "core/engine/36o-open.js": "4666936d6976937f41aae44b2d65091015f02520ee264c601605c1eb2724f448",
     "core/engine/36s-stair.js": "f254687a185b86dc7a3f6ee1d82289527e93ae76c46fc75bd7c97825a5c8af9f",
     "core/engine/90-scene.js": "7ad278f7c04c8fad78a4897de8922b7272ba2e9d5b6357bda393bd481bc5c002",
     "core/engine/91f-furnish.js": "bb209bd5dcd246ec2d018079a5427c3515d90896b36dce8d1e543b9f819e9b1e",
@@ -41,7 +41,6 @@
     "core/engine/93-anim.js": "a55c92af37244e4be8a691d465ae7bae010d2ff21be66a9bc91fa3dce78d73bb",
     "core/engine/99-host-take.js": "84c1e0b4c6550d834897c98f30fe79e5a740fc5d8e3d0ae1b9846a0c3055f5e0",
     "core/engine/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "core/engine/engine.py": "b50cee3c7410b2a7ecd2ce43ce4586cf5718937e8501f2e4ce7a78f102f3ce9a",
     "core/furnish/50-core-furnish.js": "dbd7e1f0ab77a3f1489d87e8fabce7e17800025964c33f67346384e722bda269",
     "core/furnish/52-core-furnish-draw.js": "726a95d620342e433b3d7d80558ee0b0dd648b0a991b276127803d955d19d35e",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
@@ -49,7 +48,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -68,7 +67,7 @@
     "kits/ash-nomads/src/00-head.html": "cb60c560d83b60877b6913d63a32a96d1f8aef5c4b6d4c975fe3081ce92dee72",
     "kits/ash-nomads/src/26k-kit.js": "e9821cd1dbe79c95d3030e69ebe12199777e697220162c2786de58c43ee141b4",
     "kits/ash-nomads/src/31-alt-takes.js": "73b4d895ff4e5236d5469a87f86adf66e4480bdd00c0903b055f7377c7dd0815",
-    "kits/ash-nomads/src/40-tk-tentkit.js": "3e889f0a53217c64ee1c6b23711c32ddb140dfd9593f1babd5a29a74b57750ee",
+    "kits/ash-nomads/src/40-tk-tentkit.js": "44cdd60ea39bd50727bb10b81946f522c062674534c4e0f69f658b7fa1486345",
     "kits/ash-nomads/src/40a-ak-ash.js": "586212de13313b31df0b531db8615fb9b6b65ec1f4b515ce36cdad5a5d5ed121",
     "kits/ash-nomads/src/41-tk-dress.js": "5877de1ad44b3ffd84877dbce81c678ddb6f766dbb85619947629da3500fc5a2",
     "kits/ash-nomads/src/42-as-small.js": "0c1857847390006a04edd8d1d54d807e814f98a075e9fa63a090ebe699ad6a0d",
@@ -219,7 +218,6 @@
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
-    "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
     "kits/fauna/krator-fauna-ash.js": "a86238b7017d847449cac13f0520a2dde6d0d3eadd1c9b174a0b8385841c6e8b",
     "kits/fauna/krator-fauna-crawlers.js": "7dd2a71c0e68cef2db23069fd15d1363ffccca6cb449e56128b1a2a2e4db2747",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -259,12 +257,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/ash-nomads/build-manifest.json": "1bf3f0cbf85d1a7adce6736f481ad506f35e8b8eb56404d5e019c424dcdb9b97",
-    "kits/ash-nomads/dist/ash-nomads.html": "1a40bbfe4696d59628c38216e61ab92b8f25d2b641e608ceb5e3d2d65809b3e6"
+    "kits/ash-nomads/build-manifest.json": "5b6380f34f121639fa8a26a6a614351945976288eeb04a6b8ed60400b90b9fbe",
+    "kits/ash-nomads/dist/ash-nomads.html": "d049cbf6b7cc3d48efd13e9a0e6f2dc8f32de9d85edccb29ea594d15df665692"
    },
    "outputs_raw": {
-    "kits/ash-nomads/build-manifest.json": "1bf3f0cbf85d1a7adce6736f481ad506f35e8b8eb56404d5e019c424dcdb9b97",
-    "kits/ash-nomads/dist/ash-nomads.html": "1a40bbfe4696d59628c38216e61ab92b8f25d2b641e608ceb5e3d2d65809b3e6"
+    "kits/ash-nomads/build-manifest.json": "5b6380f34f121639fa8a26a6a614351945976288eeb04a6b8ed60400b90b9fbe",
+    "kits/ash-nomads/dist/ash-nomads.html": "d049cbf6b7cc3d48efd13e9a0e6f2dc8f32de9d85edccb29ea594d15df665692"
    }
   }
  }
