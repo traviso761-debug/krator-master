@@ -49,7 +49,20 @@ water (troughs, pools, the mill race) and the wrecked robot's eye (`74`).
 - Vendored, checked against this kit (`--vendor-check`): Highlands and Dalab (`69b`, `69c`), Ys (`69b`, `69c`, `69e`, `70`, `71`);
   Xanadu and Reed Lake take Highlands' copies.
 
-**Its own sheet.** Not yet: the kit's sheet is Iziz's `vernacular` target (`dist/iziz-vernacular.html`), and
-`verify.py dist/iziz-vernacular.html --assert` in `settlements/iziz` is its check. A `build.py` of its own (the sheet, Pylon's
-and Talia's mixed streets) waits: the sheet runs on Iziz's page shell (its scene, rows and views, `targets/vernacular`), so
-the kit building it today would read the settlement, as Pylon and Talia do (MODULARITY-PLAN.md step 4).
+**Its own sheet** (done 2026-11-09): `python3 tools/build.py kits/iziz-vernacular` writes `dist/iziz-vernacular.html` (the library
+maps beside it, `dist/iziz-vernacular.tex.iziz-vernacular.js`); `python3 verify.py dist/iziz-vernacular.html --assert` checks it
+(every def placed, built and registered; every registered volume holds geometry; no NaN; the core/tags vocabulary; the doors as
+KDOOR records with walk blocks; the library textures; the trades table). 55 defs, 57 sites in 19 rows (`targets/sheet/89z-rows.js`),
+102 doors. The page is the kit sheet shared by the kits on the Vernacular's contract (`kits/iziz-vernacular/sheet.py`, `sheet_verify.py`):
+the shell (`kits/iziz-vernacular/src/*-vsheet-*`: scene, rows, doors, the take on core/host), the Ancients core read in place from
+`kits/ancients/src`, and core's modules: `core/rand`, `core/tags`, `core/walk`, `core/door` (KDOOR and its host: the E key and its
+tip), `core/host`, `core/atmos/placeholder`, `core/materials` (records, and the kit's own pack, `materials.json` -> `tex/`, in a
+sidecar beside the page). No settlement file is read.
+The two foreign-quarter trades the kit's table names (the Voth embassy, the Order's chapterhouse) are Iziz's buildings, not the
+kit's: `verify.py` reports them and does not fail on them. Iziz's `vernacular` target stays Iziz's sheet (with its hollow bodies
+and furnished interiors, Iziz's `95i`), checked by `settlements/iziz/verify.py`.
+**Interiors:** the kit's sheet builds the bodies solid (`VERN.interiors=false`), so every door is drawn locked. A `?interiors=1`
+mode is a pass in `targets/sheet/` that sets `VERN.interiors`, takes `kits/interiors` and `core/furnish` and unlocks the doors
+that open onto a planned room; the doors are already KDOOR records with core/walk blocks handed to core/door's host, and
+`KDOOR.clearDoorways` (`95-vsheet-doors.js`) already opens a room wall standing in a doorway. The `doors` assert expects every
+door locked: an interiors mode must relax it to "locked unless a room is behind it".

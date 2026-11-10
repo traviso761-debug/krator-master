@@ -14,7 +14,7 @@ triangle budget; no NaN; every building typed; the core/tags vocabulary; a front
 every enclosed tent's interior furnished (3+ pieces, no required piece missing, the residence rule kept); every door opens
 and shuts (core/door: the leaf moves, its core/walk blocks switch); every interior reachable from outside its door with the
 doors open (KWALK.reach); no floating stake; the page deterministic (a second build has the same fingerprint); every dress
-placed and an unknown culture falling back to 'generic'; the pennants painted; both camps pitched whole by core/camp (no
+placed and an unknown culture falling back to 'generic'; every core/camp culture row x role furnished off the sheet; the pennants painted; both camps pitched whole by core/camp (no
 overlap, nothing short, every record placed; the band's census); the material records.
 """
 import argparse, asyncio, json, os, sys
@@ -31,7 +31,8 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();const
  const hh=F.filter(f=>f.eh>1.5);R.push({name:'inside-declared-height',ok:!hh.length,detail:hh.length?hh.map(f=>`${f.key} h ${f.bh} vs ${f.h}`).join(' | '):'ok'});
  R.push({name:'no-nan',ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()});
  const bad=Object.keys(A.DEFS).filter(k=>A.DEFS[k].cls==='building'&&!(A.DEFS[k].tags.types||[]).length);R.push({name:'buildings-typed',ok:!bad.length,detail:bad.length?bad.join(', '):'every building has a culture and types'});
- const TA=A.tags().audit;R.push({name:'tags-vocabulary',ok:TA.unknown===0&&TA.missingCulture===0&&TA.missingTypes===0,detail:TA.records+' records ('+Object.entries(TA.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+TA.unknown+(TA.unknown?' '+JSON.stringify(TA.unknownValues)+JSON.stringify(TA.unknownKeys):'')});
+ const TA=A.tags().audit,GEN=SVTAGS.query({'class':'building'}).filter(r=>!r.tags.culture&&r.tags.set==='generic').length;
+ R.push({name:'tags-vocabulary',ok:TA.unknown===0&&TA.missingCulture===GEN&&TA.missingTypes===0,detail:TA.records+' records ('+Object.entries(TA.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+TA.unknown+(TA.unknown?' '+JSON.stringify(TA.unknownValues)+JSON.stringify(TA.unknownKeys):'')+'; '+GEN+' tents in the generic dress carry the set, no culture (a host passes its people\'s)'+(TA.missingCulture!==GEN?'; '+(TA.missingCulture-GEN)+' other buildings lack a culture':'')});
  R.push({name:'every-def-builds',ok:A.kitCoverage().length===0&&Object.keys(A.DEFS).length>=27,detail:A.kitCoverage().join(', ')||Object.keys(A.DEFS).length+' defs, every one placed'});
  const heavy=F.filter(f=>f.tris>(f.budget||120000));R.push({name:'triangle-budget',ok:!heavy.length,detail:heavy.length?heavy.map(f=>f.key+' '+f.tris+' > '+f.budget).join(' | '):'heaviest '+Math.max(...F.map(f=>f.tris))});
  const nf=A.doors().filter(d=>!d.front||![d.front.local.x,d.front.local.z,d.front.local.yaw].every(isFinite)||d.front.source==='default');R.push({name:'front-door',ok:!nf.length,detail:nf.length?nf.map(d=>d.key+' ('+(d.front&&d.front.source)+')').join(', '):A.doors().length+' sites carry a front'});
@@ -44,6 +45,7 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();const
  const RA=A.reachAudit();R.push({name:'interiors-reachable',ok:!RA.bad.length&&RA.tents>=40,detail:RA.bad.length?RA.bad.slice(0,10).map(b=>b.key+'('+b.dress+') reached '+b.reached+' unreached '+b.unreached+(b.why?' '+b.why:'')).join(', '):RA.tents+' tents: every floor reached from outside its door, doors open'});
  const S=A.stakes();R.push({name:'no-floating-stakes',ok:S.floating===0&&S.n>200,detail:S.floating?S.bad.map(s=>s.key+' foot '+s.foot+' ground '+s.ground).join(', '):S.n+' stakes and pegs, every foot in the ground'});
  const f1=A.fingerprint(),f2=A.rebuild();R.push({name:'deterministic',ok:f1===f2,detail:f1+' then '+f2});
+ const CB=A.combos();R.push({name:'every-culture-and-role-furnished',ok:!CB.bad.length&&CB.combos>=80,detail:CB.bad.length?CB.bad.join(', '):CB.combos+' culture x role tents furnished off the sheet: every required piece, every family tent a residence'});
  const dr=new Set(T.filter(t=>!t.parent).map(t=>t.dress)),want=TN_DRESS_ORDER.filter(d=>!dr.has(d)),fb=tnDress('nonesuch');
  R.push({name:'every-dress',ok:!want.length&&fb.key==='generic'&&fb.fallback==='nonesuch'&&tnDress('nomad').key==='desert',detail:want.length?'not placed: '+want.join(', '):dr.size+' dresses placed; an unknown culture falls back to generic, culture keys alias'});
  const pn=TN_EMBLEMS.filter(k=>TN_DRESS[k].emblem&&!(MAT['emb_'+k]&&MAT['emb_'+k].map));R.push({name:'pennants-painted',ok:!pn.length,detail:pn.length?pn.join(', '):TN_EMBLEMS.length+' pennants from core/sockets symbols'});
@@ -85,9 +87,9 @@ async def run(a):
         e2 = await pg.evaluate("document.getElementById('errs').textContent")
         if e2.strip() and e2 != e: print('ERROR PANEL after views:', e2); bad = True
         if bad: fails.append('kit checks (error panel, page errors or an assert)')
-    sys.exit(V.exit())
+    return V.exit()
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('html'); ap.add_argument('--views'); ap.add_argument('--all-views', action='store_true'); ap.add_argument('--only')
     ap.add_argument('--cut', action='store_true'); ap.add_argument('--night', action='store_true')
     ap.add_argument('--cam'); ap.add_argument('--eval'); ap.add_argument('--assert', dest='assert_', action='store_true'); ap.add_argument('--out', default='shots'); ap.add_argument('--size', default='1280x800')
-    asyncio.run(run(ap.parse_args()))
+    sys.exit(asyncio.run(run(ap.parse_args())))

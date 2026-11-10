@@ -15,7 +15,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
 
 ## src/
 
@@ -43,7 +43,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `62-yt-stores.js` | 4 |  |
 | `63-yt-land.js` | 7 |  |
 | `64-yt-war.js` | 7 |  |
-| `65-yt-leng.js` | 10 |  |
+| `65-yt-leng.js` | 11 |  |
 | `66-yt-steppe.js` | 8 |  |
 | `68-yt-trades.js` | 5 |  |
 | `89-rows.js` | 2 |  |

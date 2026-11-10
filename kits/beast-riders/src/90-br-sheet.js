@@ -74,8 +74,10 @@
             const V = BR_PORTS.built[A.key][v];
             e.town = A.port.town; e.name = V.name; e.def = V.def; e.fabric = fabricBox(V.group); e.tracker = { min: V.box.min, max: V.box.max, inst: V.box.inst, tris: V.box.tris };
             e.furn = V.furn; e.doors = V.doors; e.panes = V.panes;
-            e.doorRecs = BR_PORTS.host(g, A.key + '.v' + v).map(function (D) { return D.id; });
-            (out.portGroups = out.portGroups || {})[A.key + '.v' + v] = g;   /* the placed copy (verify.py: its openings) */
+            /* the placed copy is the child the ASSET's build added (buildAsset's own group is a holder at the origin) */
+            const pc = g.children.find(function (c) { return c.userData.port; }) || g;
+            e.doorRecs = BR_PORTS.host(pc, A.key + '.v' + v).map(function (D) { return D.id; });
+            (out.portGroups = out.portGroups || {})[A.key + '.v' + v] = pc;   /* the placed copy (verify.py: its openings) */
           }
           out.built.push(e);
         }

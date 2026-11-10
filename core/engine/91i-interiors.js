@@ -23,9 +23,9 @@ function svixItem(rec){if(!SVIX||!rec)return null;const IXS=KratorInteriors.sets
 function svixPolys(it){return (it.bodies||[]).map(b=>({poly:b.poly,y:b.y||0})).concat((it.rooms||[]).map(r=>({poly:r.poly,y:r.y||0})));}
 /* the storeys from the data: a body's levels (a count at its h, default 3 m, or [{h}]), a room's level and y; the lowest floor of each */
 function svixLevels(it,baseY){const L=[];const put=(k,y,h)=>{if(!L[k])L[k]={y,h};else{L[k].y=Math.min(L[k].y,y);L[k].h=Math.max(L[k].h,h);}};
- for(const b of it.bodies||[]){let y=baseY+(b.y||0);const lv=Array.isArray(b.levels)?b.levels:Array.from({length:Math.max(1,b.levels|0||1)},()=>({h:b.h||3}));
-  lv.forEach((l,k)=>{const h=l.h||b.h||3;put(k,y,h);y+=h;});}
- for(const r of it.rooms||[])put(r.level|0,baseY+(r.y||0),r.h||3);
+ for(const b of it.bodies||[]){let y=baseY+(b.y||0);const lv=Array.isArray(b.levels)?b.levels:Array.from({length:Math.max(1,b.levels|0)},()=>({h:b.h==null?3:b.h}));
+  lv.forEach((l,k)=>{const h=l.h!=null?l.h:b.h!=null?b.h:3;put(k,y,h);y+=h;});}
+ for(const r of it.rooms||[])put(r.level|0,baseY+(r.y||0),r.h==null?3:r.h);
  return L.filter(Boolean).sort((a,b)=>a.y-b.y).map((l,i)=>({y:l.y,h:l.h,name:i?'storey '+(i+1):'ground'}));}
 /* the units for the host's cut-away: the footprint's box in the building's frame, its middle placed in the world. svixUnitsFor
    reads only {key, name, x, y, z, ry, tid?} and an item for each, so a page on another fork of this engine (kits/post-apoc) lists

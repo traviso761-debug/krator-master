@@ -13,7 +13,8 @@ const XANADU_HOST=KHOST.take({
   return(o===groundM||(o.userData&&o.userData.isGround)?'ground':'unregistered '+(o.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);},
  minimap:{title:TITLE},
  // with the interiors on (?interiors=1, 89y-xa-interiors.js): the walk on core/walk's floors, and X the cutaway of the furnished buildings
- walk:XAF.interiors?KWALK:undefined,cutaway:XAF.interiors?{units:xafUnits(XAF,VERN.defs)}:undefined,
+ walk:XAF.interiors?KWALK:undefined,cutaway:(XAF.interiors||XA_CUT.length)?{units:(XAF.interiors?xafUnits(XAF,VERN.defs):[]).concat(XA_CUT)}:undefined,   // XA_CUT: the Pleasure Dome, hollow with or without the interiors (kits/xanadu 78d)
+ 
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
  // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 90-xa-doors.js); flying, E still climbs as well

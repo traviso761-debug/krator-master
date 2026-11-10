@@ -47,7 +47,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 12 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `54-openings.js` | 7 | 13d. OPENINGS: real doors and real glass on core (1) |
-| `55-arch.js` | 59 **big** | 14. ARCHITECTURE — GIRDER (1) |
+| `55-arch.js` | 58 **big** | 14. ARCHITECTURE — GIRDER (1) |
 | `56-interiors.js` | 19 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
 | `58-overgrowth.js` | 14 | 15. OVERGROWTH — GIRDER (1) |
 | `60-trees.js` | 41 **big** | 14. TREES (1) |

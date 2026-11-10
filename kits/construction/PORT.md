@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 0.8 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-cons-site.js` | 12.1 | [draw] | 17 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/20-cons-lib.js` | 2.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/80-cons-sheet.js` | 18.9 | [web] | 19 | 2 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/80-cons-sheet.js` | 19.1 | [web] | 19 | 2 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

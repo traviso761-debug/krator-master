@@ -24,7 +24,7 @@ if(typeof FIX === 'undefined') SITES.forEach(function(S){ if(S.kind !== 'asset' 
 function ysDoorWalking(){ return !!(window.KHOST && KHOST.cam && KHOST.cam.ctl && KHOST.cam.ctl.walk); }
 
 /* ---- the doors and the walk */
-var YS_DOORS = { records:[], locked:0, posed:0 };
+var YS_DOORS = { records:[], locked:0, posed:0, openings:null };   /* Yuni's fork: its counts (Locus's fork writes window._openings, 95-locus-doors.js) */
 var YS_INTERIORS = typeof LOCF !== 'undefined' && !!LOCF.interiors;   /* Locus's fork plans interiors with ?interiors=1 (66-locus-furnish.js) */
 (function(){
   var E = YS_EXT; KWALK.floor({ rect:[E.x0, E.x1, E.z0, E.z1], y:0, name:'sheet ground', tag:'ground' });
@@ -42,7 +42,7 @@ var YS_INTERIORS = typeof LOCF !== 'undefined' && !!LOCF.interiors;   /* Locus's
     else { YS_DOORS.posed++; KDOORHOST.posed(R, function(R2){ var e = R2.open*R2.open*(3-2*R2.open); (R2.fixD._leaves||[]).forEach(function(L){ poseLeaf(L, e); }); }); } });
   KDOOR.walk(KWALK); YS_DOORS.cleared = KDOOR.clearDoorways(KWALK);
   var voids = 0, cards = 0; for(var k in BUCKET){ var B = BUCKET[k]; if(B.fam !== 'dark') continue; B.list.forEach(function(r){ if(yopenIsCard(r[7])) cards++; else voids++; }); }
-  window._openings = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(R){ return R.locked; }).length, leaves:YOPEN.leaves,
+  YS_DOORS.openings = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(R){ return R.locked; }).length, leaves:YOPEN.leaves,
     panes:YOPEN.panes, cards:cards, voids:voids, fixDoors:FIX.doors.length, opens:FIX.doors.filter(function(D){ return !D._kd; }).length };
   var tip = KDOORHOST.tip(function(){ return camera.position; }, ysDoorWalking);
   TICKS.push(function(dt){ KDOORHOST.tick(dt); tip(); });
@@ -75,7 +75,7 @@ var YHOST = KHOST.take({
   api:{ TARGET:TARGET, SITES:SITES, ASSETS:YS_MINE, FURNS:FURNS, SHEET_ITEMS:SHEET_ITEMS, SHEET_ROWS:SHEET_ROWS, BUDGET:BUDGET,
     FIX:typeof FIX !== 'undefined' ? FIX : null, allKeys:Object.keys(ASSET_BY_KEY), kit:YS_KIT, subkit:YS_SUBKIT, interiors:YS_INTERIORS, tagFix:YS_TAGS,
     tag:function(id){ return KTAGS.page.get(id); }, tags:function(){ return { audit:KTAGS.page.audit(), records:KTAGS.page.records.length }; },
-    doors:function(){ return { openings:window._openings, list:KDOOR.list.map(function(R){ return { id:R.id, key:R.key, locked:!!R.locked, style:R.style }; }) }; },
+    doors:function(){ return { openings:YS_DOORS.openings || window._openings, list:KDOOR.list.map(function(R){ return { id:R.id, key:R.key, locked:!!R.locked, style:R.style }; }) }; },
     materials:function(){ var F = Object.keys(FAMMAT); return { mode:KMAT.mode, families:F.length, lib:F.filter(function(f){ return FAMMAT[f].lib; }), proc:F.filter(function(f){ return !FAMMAT[f].lib; }) }; },
     nanSweep:function(){ var bad = 0; scene.traverse(function(m){ if(m.geometry && m.geometry.attributes.position){ var a = m.geometry.attributes.position.array; for(var i=0;i<a.length;i++) if(!isFinite(a[i])){ bad++; break; } } }); return bad; } },
   draw:ysDraw

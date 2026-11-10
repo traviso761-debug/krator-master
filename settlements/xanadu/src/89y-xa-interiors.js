@@ -23,7 +23,7 @@ function xafWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='ri
 // a top-level placement with an item in the set: its rooms planned and furnished where it stands (plain data on the group)
 {const place0=VERN.place;
  VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=place0.call(VERN,sc,key,x,z,ry,o);
-  if(top&&G&&XAF.interiors&&(!o||(o.scale||1)===1)){const it=KratorInteriors.sets.find(key);
+  if(top&&G&&XAF.interiors&&(!o||(o.scale==null?1:o.scale)===1)){const it=KratorInteriors.sets.find(key);
    if(it&&!it.skip){const pre='xa.'+XAF.buildings.length+'.';
     try{const r=XAF.interior(it,x,z,ry||0,XAF.adapter,{baseY:(o&&o.y)||0,prefix:pre}).summary;
      G.userData.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};Object.assign(XAF.buildings[XAF.buildings.length-1],{key,interior:G.userData.interior});}
@@ -47,8 +47,8 @@ function xaIxWalk(){if(!XAF.interiors)return 0;KDOOR.walk(KWALK);window._doorway
 // the cutaway's units (core/host 99-host-cutaway, X; 2026-11-09): every furnished top-level building, its storeys from its set
 // item (the bodies' levels and the explicit rooms' floors, one storey per distinct floor more than a metre apart)
 function xafUnits(F,defs){const U=[];for(const B of F.buildings){const it=KratorInteriors.sets.find(B.key);if(!it||it.skip||!B.interior)continue;
- const ys=[];for(const b of it.bodies||[]){let y=b.y||0;for(const l of(Array.isArray(b.levels)?b.levels:Array.from({length:b.levels||1},()=>({h:3})))){ys.push([y,l.h||3]);y+=l.h||3;}}
- for(const r of it.rooms||[])ys.push([r.y||0,Math.min(r.h||3,4.8)]);ys.sort((a,b)=>a[0]-b[0]);
+ const ys=[];for(const b of it.bodies||[]){let y=b.y||0;for(const l of(Array.isArray(b.levels)?b.levels:Array.from({length:b.levels==null?1:b.levels},()=>({h:3})))){const lh=l.h==null?3:l.h;ys.push([y,lh]);y+=lh;}}
+ for(const r of it.rooms||[])ys.push([r.y||0,Math.min(r.h==null?3:r.h,4.8)]);ys.sort((a,b)=>a[0]-b[0]);
  const lv=[];for(const [y,h] of ys)if(!lv.length||y-lv[lv.length-1].y0>1){lv.push({y:(B.baseY||0)+y,y0:y,h,name:lv.length?'storey '+(lv.length+1):'ground'});}
  const D=defs[B.key];U.push({id:'ix.'+U.length,name:(D&&D.name)||B.key,x:B.x,z:B.z,ry:B.ry,w:(D&&(D.fw||D.w))||20,d:(D&&(D.fd||D.d))||20,levels:lv.map(L=>({y:L.y,h:L.h,name:L.name}))});}
  return U;}

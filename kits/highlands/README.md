@@ -60,5 +60,18 @@ are their builders' (`78-rep-grand.js`). The cut-away (X) opens every furnished 
   before the catalog-furniture conversion), Dalab and Ys (the foundation's five and `74-rep-dwell.js`, for their embassies'
   Republican dwellings).
 
-**Its own sheet.** Not yet: the sheet is Highlands' `highlands` target, on Highlands' page shell (scene, probe, labels,
-`99-start.js`), and `verify.py dist/highlands.html --assert` in `settlements/highlands` is its check.
+**Its own sheet** (done 2026-11-09): `python3 tools/build.py kits/highlands` writes `dist/highlands.html` (the library maps beside
+it, `dist/highlands.tex.highlands.js` and `-2.js`); `python3 verify.py dist/highlands.html --assert` checks it (as the Iziz
+Vernacular's sheet does, plus `HL_TRADES` against the Voth census through `tools/check_trades.py`). The Republican, Rustic and
+Tribal sets, a row per family (`targets/sheet/89z-rows.js`): 172 sites, 237 registered volumes, 325 doors. The page is the kit sheet shared by the kits on the Vernacular's contract (`kits/iziz-vernacular/sheet.py`, `sheet_verify.py`):
+the shell (`kits/iziz-vernacular/src/*-vsheet-*`: scene, rows, doors, the take on core/host), the Ancients core read in place from
+`kits/ancients/src`, and core's modules: `core/rand`, `core/tags`, `core/walk`, `core/door` (KDOOR and its host: the E key and its
+tip), `core/host`, `core/atmos/placeholder`, `core/materials` (records, and the kit's own pack, `materials.json` -> `tex/`, in a
+sidecar beside the page). No settlement file is read.
+Beside it the kit draws through the Vernacular's `69b`, `69c` and `69e5` (read in place from `kits/iziz-vernacular/src`) and
+places catalog furniture through `core/furnish` (the GENERATED `69d-furniture-bundle.js`: the catalog cultures and the
+interiors core, as Highlands' page bundles them). Highlands' `highlands` target stays Highlands' sheet.
+**Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode (Highlands' page has one) goes in
+`targets/sheet/` once the kit's interiors and hollow walls land (`kits/interiors/sets/highlands.js`; another session's work):
+it already has core/walk, core/door's host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be
+relaxed for that mode.

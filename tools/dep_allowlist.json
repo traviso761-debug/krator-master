@@ -8,8 +8,11 @@
   "kits/construction -> settlements/isle-demo",
   "kits/construction -> settlements/iziz",
   "kits/construction -> settlements/xanadu",
+  "kits/eastern-abyssal -> settlements/locus",
+  "kits/locus -> settlements/locus",
   "kits/pylon -> settlements/iziz",
-  "kits/talia -> settlements/iziz"
+  "kits/talia -> settlements/iziz",
+  "kits/yuni -> settlements/yuni"
  ],
  "lateral": [
   "openworld/isle-demo -> settlements/girder",

@@ -11,9 +11,9 @@
     "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
-    "kits/ancients-interiors/KNOWN_ISSUES.md": "0c1fc5d682a500c41f2c4b425ee98c8735bf23275354f8cdbe3beefac8310458",
+    "kits/ancients-interiors/KNOWN_ISSUES.md": "057f4c622971fdb0783324b65f967f4e6b90fad822bf1294803e3a267eac1a8d",
     "kits/ancients-interiors/PORT.md": "213d56d8b09f2bdae111dc0a8b241d4c7f23cdb08ff7266e3727735baa7118b6",
     "kits/ancients-interiors/build.py": "9cde96e767e61dbe2ca485bbb93687d56428d5b8ca55a97ae30edfd982685677",
     "kits/ancients-interiors/src/00-head.html": "08e62626975a8ad0aee4a29169ee50cedbfddab4570d003ece402f93f557db31",
@@ -70,7 +70,7 @@
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
+    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -88,17 +88,17 @@
     "kits/ancients-interiors/src": "909eb0c4a1cb98caa84bc495cc9410b3ecd5c2a0ca2e36d4b1e59d7447d9f89d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "kits/ancients-interiors/build-manifest.json": "f451603350f981992776b0e8fccc95f57a57b010e6efc4cd6065bd8a070eeabe",
+    "kits/ancients-interiors/build-manifest.json": "7e1629feb72bc2d999e91104e97befde8dfff17a13ae678f45a91ba37bf818ec",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "0f794ca833edf39de57a577ba80d4dad3382b66be9a3c4633722689032f6b423"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "98b4b03bdf45e0052a62ba5efbf9648f30ac39cda8475600938e03face5b2420"
    },
    "outputs_raw": {
-    "kits/ancients-interiors/build-manifest.json": "f451603350f981992776b0e8fccc95f57a57b010e6efc4cd6065bd8a070eeabe",
+    "kits/ancients-interiors/build-manifest.json": "7e1629feb72bc2d999e91104e97befde8dfff17a13ae678f45a91ba37bf818ec",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "0f794ca833edf39de57a577ba80d4dad3382b66be9a3c4633722689032f6b423"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "98b4b03bdf45e0052a62ba5efbf9648f30ac39cda8475600938e03face5b2420"
    }
   }
  }

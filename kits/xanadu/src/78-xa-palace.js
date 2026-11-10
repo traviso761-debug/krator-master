@@ -53,41 +53,34 @@ function buildXaPalace(G,o){reseed(31001+(o.v|0));const V=xV(o),CW=52,CD=42,CH=7
  if(xLit()){for(const s of[-1,1]){vnLampPost(s*4,0,PZ+D/2+5,3.6);vnLampPost(s*6,0,cz-7,3.6);vnLampPost(s*4,0,cz+5,3.8);}}
  vnFolk(0,10,4,5);vnFolk(0,cz+6,4,3);}
 // ---------------------------------------------------------------- the Pleasure Dome and its grounds
-function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=88,lit=xLit()?'lit':'glass';
- const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(XPAL.turquoise),trim=xC(xPick(XPAL.trim));
- vnReg('Pleasure Dome',0,-12,15,30);vnReg('Pleasure Dome — gardens',0,20,20,3);vnReg('Pleasure Dome — baths',-30,-24,9,9);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
- // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the corners
- for(const s of[-1,1]){vB('xWashB',s*(GW/2-.3),0,0,.6,2.6,GD,0,wash);vB('xTilesB',s*(GW/2-.3),2.6,0,.9,.22,GD+.3,0,tile);vB('xWashB',0,0,s*(GD/2-.3),GW,2.6,.6,0,wash);vB('xTilesB',0,2.6,s*(GD/2-.3),GW+.3,.22,.9,0,tile);}
+// The harem palace of the citadel (settlements/xanadu/citadel/BLUEPRINT.md, E3 and E4), enlarged to the blueprint's 105 x 110 m
+// precinct (the owner, 2026-11-09): the Hall of Feasts under the great dome at the head of the chahar bagh, the wings down
+// both sides of the garden (the Valide's court, the consorts and the hospital west; the eunuchs, the school, the concubines
+// and the baths east), the north range with the Golden Way's door. Outside it keeps the kit's look: whitewash under a gold
+// frieze, the mosaic drum, the great dome and its four turrets, the baths' domes with gold oculus bosses, the tiled garden
+// wall, its gate and kiosks. Inside it is hollow and walkable, in the black-and-white pattern system (78a-78d: xdomeBuild).
+function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=XPDOME.GW,GD=XPDOME.GD;
+ const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(XPAL.turquoise);
+ vnReg('Pleasure Dome',0,-20,22,44);vnReg('Pleasure Dome — gardens',0,26,20,3);vnReg('Pleasure Dome — baths',35,32,16,20);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
+ // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the front corners
+ // (the north range and the Golden Way's door stand through the north wall: it stops either side of them)
+ for(const s of[-1,1]){vB('xWashB',s*(GW/2-.3),0,0,.6,2.6,GD,0,wash);vB('xTilesB',s*(GW/2-.3),2.6,0,.9,.22,GD+.3,0,tile);}
+ vB('xWashB',0,0,GD/2-.3,GW,2.6,.6,0,wash);vB('xTilesB',0,2.6,GD/2-.3,GW+.3,.22,.9,0,tile);
+ for(const q of[[-GW/2,-20.3],[7.3,GW/2]]){vB('xWashB',(q[0]+q[1])/2,0,-GD/2+.3,q[1]-q[0],2.6,.6,0,wash);vB('xTilesB',(q[0]+q[1])/2,2.6,-GD/2+.3,q[1]-q[0]+.3,.22,.9,0,tile);}
  xnDoorway(0,0,GD/2,0,4.4,2.6);xnArch('xArchS',0,0,GD/2+.1,0,6.2,3.4,.8,stone,{open:true});for(const s of[-1,1])vPst('xColS',s*3.4,0,GD/2-.3,.35,3.8,stone);
- for(const sx of[-1,1])for(const sz of[-1,1])xnChhatri(sx*(GW/2-4),0,sz*(GD/2-4),1.6,3.6,stone,tile,6);
- // the dome pavilion: a square hall with pointed arcades on all four faces, a mosaic drum and the great dome, four turrets
- const HZ=-12,HW=22;xnWall(0,0,HZ,HW+3,1.2,HW+3,0,stone,'dressed');vB('vStone',0,1.06,HZ,HW+3.3,.14,HW+3.3,0,stone.clone().multiplyScalar(1.08));
- vB('xWashB',0,1.2,HZ,HW,9,HW,0,wash);
- for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(0,HZ,0,HW/2,a);xnArcade(p[0],1.2,p[1],a,HW-2,7.4,5,'xArchM',null,.8,{open:false});
-  const f=loc(0,HZ,0,HW/2+.9,a);xvFr(f[0],1.2+7.6,f[1],HW-1.6,.8,.14,a);}
- xnFlight(0,0,HZ+HW/2+1.5+1.4,0,10,1.2,'vStone',stone);
- xnFlatRoof(0,10.2,HZ,HW,HW,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
- const top=xnDome(0,10.5,HZ,9.2,['T','G','M'][V],{drum:4.2,drumItem:'xDrumM',drumC:null,c:V?null:tile,fin:3.2});
- vB('xGoldB',0,10.5+4.2-.3,HZ,17.6,.3,17.6,0,gold);
- for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(HW/2-1.6),tz=HZ+sz*(HW/2-1.6),th=V===1?9:5;vPst('xColS',tx,10.2,tz,1.1,th,stone);kput('xDrumW',[tx,10.2+th,tz],null,[1.3,1.2,1.3],wash);kput('xBulbT',[tx,11.4+th,tz],null,[1.5,1.8,1.5],V===1?gold:tile);vBall('xGold',tx,13.3+th,tz,.16,gold);}
- // the chahar bagh in front: a long reflecting pool on the axis between two parterre gardens, fountains at the ends
- if(V===2){xnPool(0,.02,17,34,22,0,stone);for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*19,4+k*3.8,rr(6,8));for(const s of[-1,1])xnChhatri(s*21,0,17,1.6,3.6,stone,tile,6);}   // v2: one great reflecting pool
- else{xnPool(0,.02,17,7,22,0,stone);xnChannel([0,2.1],[0,5.7],1.1,stone);
- for(const s of[-1,1])xnCharBagh(s*24,0,14,32,30,0,{channel:1.1,r:2.0});
- for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*5.2,2+k*4.2,rr(6,8));}
- xnFountain(0,0,32,2.8,stone);
- xnPave(0,37,18,8,0,stone,2.2);
- // the baths at the back-left: a hall under one large and four small domes with oculus bosses, a boiler house
- {const BX=-30,BZ=-24,BW=16,BD=13;vB('xWashB',BX,0,BZ,BW,5.2,BD,0,wash);vB('vStone',BX,0,BZ,BW+.4,.5,BD+.4,0,stone);
-  xnIwan(BX,0,BZ+BD/2,0,5,5,1,wash,{});for(const u of[-5.5,5.5])xnJharokha(BX+u,2.4,BZ+BD/2,0,2,1.8,stone,{dome:'T',jaliC:xC(XPAL.white)});
-  xnFlatRoof(BX,5.2,BZ,BW,BD,0,wash,{parapet:.5});xnDome(BX,5.5,BZ,3.6,'M',{drum:1.4,fin:1.2});
-  for(const sx of[-1,1])for(const sz of[-1,1]){const dx=BX+sx*5.2,dz=BZ+sz*3.8;kput('xDomeW',[dx,5.5,dz],null,[2.0,2.2,2.0],wash);for(let k=0;k<5;k++){const a=k/5*TAU;vBall('xGold',dx+Math.sin(a)*1.1,5.5+1.5,dz+Math.cos(a)*1.1,.14,gold);}}
-  vB('xRubB',BX-BW/2-2.6,0,BZ-3,4,3.2,5,0,xC(xPick(XPAL.rubble)));vnChimney(BX-BW/2-2.6,3.2,BZ-4,4.5,.3,true);vB('xWaterB',BX,.1,BZ+BD/2+5,6,.15,3,0,xC(XPAL.water));vB('vStone',BX,0,BZ+BD/2+5,6.6,.35,3.6,0,stone);}
- // the eastern grove: a kiosk on a knoll, fruit trees, a rill from the pavilion to the pool
- {const KX=30,KZ=-24;xnTerrace(KX,0,KZ,14,14,0,1.4,xC(xPick(XPAL.rubble)));xnPavilion(KX,1.4,KZ,5,5,3.2,0,{c:xC(XPAL.red),tileC:tile});
-  for(let k=0;k<8;k++)xnTree(KX+rr(-6,6),KZ+rr(-6,6),rr(3.5,5),null,1.4);for(let k=0;k<6;k++)xnTree(KX+rr(-13,13),KZ+rr(-13,-8)+(k%2?21:0),rr(3.5,5));}
- if(xLit()){for(const s of[-1,1]){vnLampPost(s*4.5,0,HZ+HW/2+4.5,3.6);vnLampPost(s*4.5,0,34,3.6);vnLampPost(s*3.6,0,GD/2-4,3.6);}}
- vnFolk(0,38,5,4);vnFolk(0,HZ+HW/2+5,3,2);}
+ for(const sx of[-1,1])xnChhatri(sx*(GW/2-3.2),0,GD/2-3,1.5,3.6,stone,tile,6);
+ // the palace: its rooms, walls, stairs and domes
+ xdomeBuild(o,{stone,wash,tim,gold,tile});
+ // kiosks on the wings' roofs (the roof terraces, E4.15)
+ for(const p of[[-44,-45],[-44,43],[44,-45],[44,-2]])xnChhatri(p[0],XPDOME.Y2+.5,p[1],1.5,3.4,stone,tile,6);
+ // the chahar bagh between the wings: the long reflecting pool on the axis, parterres and cypress walks either side
+ if(V===2){xnPool(0,.02,27,22,36,0,stone);for(const s of[-1,1])for(let k=0;k<8;k++)xnCypress(s*14.5,8+k*5.2,rr(6,8));}   // v2: one great reflecting pool
+ else{xnPool(0,.02,28,8,36,0,stone);
+  for(const s of[-1,1])xnCharBagh(s*12.6,0,28,12.4,36,0,{channel:1,r:1.5});
+  for(const s of[-1,1])for(let k=0;k<8;k++)xnCypress(s*5.4,11+k*4.8,rr(6,8));}
+ xnFountain(0,0,50.5,2.2,stone);xnPave(0,5,9,6,0,stone,2.2);
+ if(xLit()){for(const s of[-1,1]){vnLampPost(s*4.5,0,4.5,3.6);vnLampPost(s*4.5,0,47,3.6);vnLampPost(s*3.6,0,GD/2-4,3.6);}}
+ vnFolk(0,49,5,4);vnFolk(0,5,3,2);}
 
 XA.def({key:'xa_palace',name:"Sultan's Palace",family:'The Sultan',tags:{type:['civic','military','single-family dwelling'],wealth:'civic',lit:true,landmark:true},w:60,d:56,h:40,fw:52,fd:42,build:buildXaPalace});
-XA.def({key:'xa_pleasure_dome',name:'Garden Pleasure Dome',family:'The Sultan',tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},w:94,d:94,h:32,fw:88,fd:88,build:buildXaPleasureDome});
+XA.def({key:'xa_pleasure_dome',name:'Garden Pleasure Dome',family:'The Sultan',tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},w:106,d:112,h:50,fw:105,fd:110,build:buildXaPleasureDome});

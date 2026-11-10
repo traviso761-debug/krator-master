@@ -143,14 +143,27 @@ CIT.bath=GRAND_BATH;
 {let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of GRAND_BATH_LOT){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}PRECINCTS.push({x:(x0+x1)/2,z:(z0+z1)/2,rect:{x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0},name:'The Grand Baths'});}
 // the buildings on the grid: key, its plot (w × d m, from the def), the variant, and where it wants to stand
 const CIT_SITES=[
- {key:'xa_pleasure_dome',w:94,d:94,v:0,t:[-345,-150]},
- {key:'xa_palace',w:60,d:56,v:1,t:[-330,-268]},
- {key:'xa_temple_ortakoy',w:60,d:44,v:0,t:[-470,-108]},
- {key:'xa_vizier',w:44,d:56,v:0,t:[-420,-245]},
- {key:'xa_barracks',w:36,d:34,v:0,t:[-350,-60]},
- {key:'xa_rich_a',w:26,d:30,v:0,t:[-262,-250]},
- {key:'xa_rich_b',w:32,d:26,v:1,t:[-262,-190]},
- {key:'xa_rich_c',w:32,d:18,v:2,t:[-300,-60]}];
+ // the Pleasure Dome on its blueprint precinct (105 x 110, kits/xanadu 78c), pinned on the palace's axis between the Vizier's
+ // palace (east edge x -401) and the guard (west edge -286), the palace (south edge z -209, where the Golden Way's door
+ // stands) and the court temple (north edge -97)
+ {key:'xa_pleasure_dome',w:106,d:112,v:0,t:[-344,-152],at:[-344,-152]},
+ // the rest of the citadel on its blueprint (settlements/xanadu/citadel/BLUEPRINT.md, E0; 2026-11-09): the hollow Moorish and
+ // Mughal buildings of kits/xanadu/src/78n-xa-citadel.js at their enlarged sizes, each wanting the blueprint's place
+ // (world x = u, z = -v)
+ // the palace 2 m north of the blueprint's place (the owner, 2026-11-10) so its lot clears the Pleasure Dome's (z -208)
+ {key:'xa_cit_palace',w:112,d:98,v:0,t:[-344,-258],at:[-344,-258]},
+ // the rest pinned too (`at`): the citadel is full, and the grid's nearest-free search moved them about whenever one grew.
+ // Each checked against the wall and the others (2026-11-09): the Vizier west of the Dome, the court temple south, the guard
+ // and the Treasurer in the east lobe, the Master of Mines and the kitchens west, the Chancellor between the Vizier and the
+ // palace, the envoys south-east of the temple
+ {key:'xa_cit_vizier',w:46,d:94,v:0,t:[-424,-145],at:[-424,-145]},
+ {key:'xa_cit_temple',w:62,d:56,v:0,t:[-360,-69],at:[-360,-69]},
+ {key:'xa_cit_barracks',w:44,d:42,v:0,t:[-264,-169],at:[-264,-169]},
+ {key:'xa_cit_mines',w:42,d:42,v:0,t:[-480,-105],at:[-480,-105]},
+ {key:'xa_cit_treasurer',w:40,d:44,v:0,t:[-260,-225],at:[-260,-225]},
+ {key:'xa_cit_chancellor',w:34,d:44,v:0,t:[-419,-224],at:[-419,-224]},
+ {key:'xa_cit_envoys',w:30,d:42,v:0,t:[-305,-70],at:[-305,-70]},
+ {key:'xa_cit_kitchens',w:28,d:42,v:0,t:[-466,-150],at:[-466,-150]}];
 // a gridded garden over a polygon: cells of CIT_UNIT inside it at least CLEAR from its edge (and not where skip says),
 // SITES squared to it on whole cells, levels stepped as the garden's; at(x,z) the level at a point (null where skipped)
 function tileGround(CP,SITES,CLEAR,skip){const U=CIT_UNIT;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of CP){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}
@@ -159,19 +172,22 @@ function tileGround(CP,SITES,CLEAR,skip){const U=CIT_UNIT;let x0=1e9,x1=-1e9,z0=
  const ok=[];for(let r=0;r<NR;r++){ok.push([]);for(let c=0;c<NC;c++){const x=X(c),z=Z(r);ok[r].push([[-H,-H],[H,-H],[H,H],[-H,H]].every(d=>inPoly(CP,x+d[0],z+d[1]))&&distToLoop(CP,x,z)>=CLEAR&&!(skip&&skip(x,z))&&!inGarden(x,z,12));}}
  const used=ok.map(row=>row.map(()=>null)),blocks=[];
  for(const S of SITES){const nc=Math.ceil(S.w/U),nr=Math.ceil(S.d/U);let best=null,bd=1e9;
-  for(let r0=0;r0+nr<=NR;r0++)for(let c0=0;c0+nc<=NC;c0++){const bx=X(c0)+(nc-1)*H,bz=Z(r0)+(nr-1)*H,d=Math.hypot(bx-S.t[0],bz-S.t[1]);if(d>=bd)continue;let fit=true;
+  // a site pinned where its plan puts it (S.at: the Sultan's palace on the Pleasure Dome's axis, its back on the citadel wall
+  // as the blueprint draws it): the cells under it are its own whether the grid kept them or not
+  if(S.at){const c0=Math.round((S.at[0]-ox)/U-(nc-1)/2),r0=Math.round((S.at[1]-oz)/U-(nr-1)/2);best={r0,c0,nc,nr,x:S.at[0],z:S.at[1]};}
+  else for(let r0=0;r0+nr<=NR;r0++)for(let c0=0;c0+nc<=NC;c0++){const bx=X(c0)+(nc-1)*H,bz=Z(r0)+(nr-1)*H,d=Math.hypot(bx-S.t[0],bz-S.t[1]);if(d>=bd)continue;let fit=true;
    for(let r=r0-1;r<=r0+nr&&fit;r++)for(let c=c0-1;c<=c0+nc;c++){const inner=r>=r0&&r<r0+nr&&c>=c0&&c<c0+nc;if(r<0||c<0||r>=NR||c>=NC){if(inner){fit=false;break;}continue;}
     if(used[r][c]||(inner&&!ok[r][c])){fit=false;break;}}
    if(fit){best={r0,c0,nc,nr,x:bx,z:bz};bd=d;}}
   if(!best){reportErr('citadel: no room for '+S.key);continue;}
-  const B=Object.assign({},S,best);blocks.push(B);for(let r=best.r0;r<best.r0+nr;r++)for(let c=best.c0;c<best.c0+nc;c++)used[r][c]=B;}
+  const B=Object.assign({},S,best);blocks.push(B);for(let r=Math.max(0,best.r0);r<Math.min(NR,best.r0+nr);r++)for(let c=Math.max(0,best.c0);c<Math.min(NC,best.c0+nc);c++){used[r][c]=B;ok[r][c]=true;}}
  // the levels, as the garden's: quantised ground; the midpoint of a lowered and a raised relaxation (no neighbour more
  // than 3 m apart); each building's cells at their mean; then a two-sided clamp round them
  const Q=[];for(let r=0;r<NR;r++){Q.push([]);for(let c=0;c<NC;c++)Q[r].push(ok[r][c]?Math.round(terrainBase(X(c),Z(r))/1.5)*1.5:null);}
  const NB=[[0,1],[1,0],[0,-1],[-1,0]],nb=(r,c,f)=>{for(const [a,b] of NB){const rr2=r+a,cc=c+b;if(rr2>=0&&cc>=0&&rr2<NR&&cc<NC&&ok[rr2][cc])f(rr2,cc);}};
  const relax=(A,dir)=>{for(let it=0;it<120;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!ok[r][c])continue;nb(r,c,(rr2,cc)=>{if(dir<0&&A[r][c]>A[rr2][cc]+3){A[r][c]=A[rr2][cc]+3;ch=true;}if(dir>0&&A[r][c]<A[rr2][cc]-3){A[r][c]=A[rr2][cc]-3;ch=true;}});}if(!ch)break;}return A;};
  {const lo=relax(Q.map(row=>row.slice()),-1),hi=relax(Q.map(row=>row.slice()),1);for(let r=0;r<NR;r++)for(let c=0;c<NC;c++)if(ok[r][c])Q[r][c]=Math.round((lo[r][c]+hi[r][c])/2/1.5)*1.5;}
- for(const B of blocks){let sm=0;for(let r=B.r0;r<B.r0+B.nr;r++)for(let c=B.c0;c<B.c0+B.nc;c++)sm+=Q[r][c];B.y=Math.round(sm/(B.nr*B.nc)/1.5)*1.5;for(let r=B.r0;r<B.r0+B.nr;r++)for(let c=B.c0;c<B.c0+B.nc;c++)Q[r][c]=B.y;}
+ for(const B of blocks){let sm=0,n=0;const R0=Math.max(0,B.r0),R1=Math.min(NR,B.r0+B.nr),C0=Math.max(0,B.c0),C1=Math.min(NC,B.c0+B.nc);for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++){sm+=Q[r][c];n++;}B.y=Math.round(sm/n/1.5)*1.5;for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++)Q[r][c]=B.y;}
  for(let it=0;it<300;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!ok[r][c]||used[r][c])continue;let mx=-1e9,mn=1e9;nb(r,c,(rr2,cc)=>{mx=Math.max(mx,Q[rr2][cc]);mn=Math.min(mn,Q[rr2][cc]);});if(mn===1e9)continue;
    const a=mx-3,b2=mn+3;const v=a<=b2?clamp(Q[r][c],a,b2):Math.round((a+b2)/2/1.5)*1.5;if(v!==Q[r][c]){Q[r][c]=v;ch=true;}}if(!ch)break;}
  // the level at a point: its cell's, or the nearest cell's (the band along the wall)

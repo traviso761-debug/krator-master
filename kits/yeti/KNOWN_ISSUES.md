@@ -33,6 +33,19 @@
   would add its maps beside the page), so the larch, the grass and the shrubs are the kit's vertex colours, in autumn (the
   kit's default season off its own page). It is built once at load in the row's box (`?flora=0` skips it), its LOD ticked
   each frame; it is not part of the buildings' world, so a reseed or `?only=` without the row leaves it out.
+- [x] (2026-11-09) **The khoton's door lintel was a walk floor** (`66-yt-steppe.js`): its box registered a floor at 2.09 m over the
+  threshold, so the walker found no ground there and `walk-reach` failed (`yt_khoton(v1): outside`). It is drawn walk-off now
+  (`WKOFF`, as the stall rail is); `verify.py --assert` ends `OK` on SwiftShader, every check passing.
+- [ ] **The forest-steppe row stands on the sheet's snow** (2026-11-09, seen in the row's shot): the sheet has one ground, the
+  winter one, so the summer urasa and the byre's hay stand in drift snow, and the nwouterwall larches read bare (its autumn).
+  A ground of its own under the row (turf, the kit's `ground` family in summer) is the fix; awaiting the owner's eye-level review.
+- [ ] **`src/37-wk-rec.js` is an adapted copy** of `core/engine/37-wk-rec.js` (the walk records, moved into core/engine on
+  2026-11-09): this kit's copy records a `feature`'s boxes as well as a building's, because the winter street's and the
+  networks' tunnels are walked. `build.py`'s `ADAPTED` names it, so `--vendor-check` reports it as deliberate. Upstreaming it as
+  an opt-in (the record classes as a setting) would let the kit drop the copy; that changes core/engine and every kit on it.
+- [x] (2026-11-09) **The flora band lacked two core/biome files** the nwouterwall fragments call (`tools/check_assembly.py`
+  MISSING `BIO.leafOn`, `BIO.leafQ`, `BIO.impostor*`): `31b-core-leafset.js` and `34-core-impostor.js` are read in place in the
+  93b-bio- band now. The impostors stay off here (`NWOW.IMPOSTORS=false`), so nothing drawn changes.
 - [ ] **Joints where a run turns** are covered by a junction-sized dome at every corner of an L and at each door's lead;
   the runs overlap under it rather than mitre. A house's passage meets its tunnel through a portal face (`ytPortal`)
   whose two sections differ, so the passage's outer vault shows a little inside the tunnel's end.
@@ -67,8 +80,8 @@
 - **`src/10-core.js` on core/rand.** The Scyvoi engine's `10-core.js` writes its own mulberry32 stream, a `Math.sin`
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
-  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
-  (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is one of the two engine files this kit keeps in
+  `src/` (it shadows `core/engine/10-core.js`; the other is `37-wk-rec.js`, above). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
   Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)

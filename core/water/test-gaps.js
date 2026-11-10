@@ -46,7 +46,12 @@ const geo=g=>{const o={idx:g.index};for(const k of Object.keys(g.attributes).sor
 const meshInfo=m=>({name:m.name,ro:m.renderOrder,ud:Object.keys(m.userData).sort().filter(k=>k!=='water'),rc:String(m.raycast).slice(0,40),pos:[m.position.x,m.position.y,m.position.z],
  mat:{t:m.material.transparent,dw:m.material.depthWrite,po:m.material.polygonOffset,pf:m.material.polygonOffsetFactor,pu:m.material.polygonOffsetUnits,r:m.material.roughness,me:m.material.metalness,sd:m.material.side||0},
  c:compiled(m.material)});
-const H=x=>crypto.createHash('sha256').update(JSON.stringify(x,(k,v)=>typeof v==='number'&&!isFinite(v)?String(v):v)).digest('hex').slice(0,16);
+// every decimal (in the arrays and inside the shaders' text) to 12 significant digits before hashing: the golden is written on one machine and
+// read on others, and V8's Math (pow in KCOLOR's decode, sin, exp) differs in the last bit between Node versions (2026-11-09: Node 24 wrote
+// draw.shore, draw.flow2, Node 22, CI's, read them one ulp off); a change to a default still moves the 12 digits. A program cache key's own
+// hash (wtr-open:xxxxxxxx, of the full-precision text) is masked: the text it hashes is in the snapshot, rounded
+const R12=t=>t.replace(/("key":"[a-z0-9-]+:)[0-9a-f]{8}"/g,'$1#"').replace(/-?\d+\.\d{7,}(?:e[-+]?\d+)?/gi,m=>String(parseFloat((+m).toPrecision(12))));
+const H=x=>crypto.createHash('sha256').update(R12(JSON.stringify(x,(k,v)=>typeof v==='number'&&!isFinite(v)?String(v):v))).digest('hex').slice(0,16);
 
 // ---------------------------------------------------------------- the snapshot (every default the pages take)
 const SNAP=()=>{const out={},put=(k,v)=>{out[k]=H(v);};

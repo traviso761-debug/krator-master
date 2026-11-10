@@ -252,8 +252,7 @@ leaves each settlement folder as its layout and page, building as it does today 
   from the kit, and Highlands', Dalab's and Ys's `--vendor-check` compares their copies with it (Highlands identical; Dalab's
   and Ys's drift as it did against Iziz). Proof: Iziz's seven pages, Pylon's and Talia's, 32 outputs in all, byte-identical
   to the build before; Verge's page and both `IZV` bundles differ only in the moved files' path labels. Next for the kit:
-  a `build.py` of its own (its sheet, from Iziz's `vernacular` target: it runs on Iziz's page shell, so the kit would read the
-  settlement as Pylon and Talia do; it waits for that shell to be core's), and `88y-iziz-matlib` with the matlib item.
+  ~~a `build.py` of its own~~ (done 2026-11-09 on a core shell, see the kits' own sheets under (4b)), and `88y-iziz-matlib` with the matlib item.
   **One bundle list, done 2026-11-03:** `vernacular.py bundle_files()` (the Ancients core from `kits/ancients` and
   `core/materials`, the foundation, every building fragment); Verge and the isle demo take it, plus the funicular and `88y`
   respectively. The isle demo's bundle changes only in nine core labels; Verge's gains the five building fragments it lacked
@@ -319,7 +318,26 @@ leaves each settlement folder as its layout and page, building as it does today 
     planner, so the shell binds them itself and the Yuni sheet has no interiors; Locus's fork registers buildings with no types
     (the sheet copies the assets'), and the kits' cultures `abyssal-desert` and `geomancer` are not in core/tags' vocabulary (an
     owner's decision, KNOWN_ISSUES.md). The towns' sheet targets (`yuni-assets.html`, `locus-kit.html`, `abyss-kit.html`) still
-    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before.
+    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before. The reads of the engine in place are the
+    three backwards edges `tools/dep_allowlist.json` lists for this step (`kits/yuni -> settlements/yuni`, `kits/locus` and
+    `kits/eastern-abyssal -> settlements/locus`); they go when the engine has a home outside the towns.
+  - **The Vernacular-contract kits' own sheets, done 2026-11-09:** `kits/iziz-vernacular/dist/iziz-vernacular.html`,
+    `kits/highlands/dist/highlands.html` and `kits/xanadu/dist/xanadu.html`, each with its `build.py` (`tools/build_sources.py`
+    `report()`; `python3 tools/build.py kits/<kit>`) and `verify.py --assert` on `tools/harness.py` (every def placed, built and
+    registered, no empty volume, no NaN, the core/tags vocabulary, the doors as KDOOR records with core/walk blocks, the kit's
+    library pack, the Voth census: the Vernacular's table in the page, Highlands' and Xanadu's through `tools/check_trades.py`).
+    One sheet for the three, `kits/iziz-vernacular/sheet.py` and `sheet_verify.py`: the shell in `src/*-vsheet-*`, the Ancients
+    core read in place from `kits/ancients/src`, core/rand, core/tags, core/walk, core/door (and its host), core/host,
+    core/atmos/placeholder, core/materials; each kit's rows, library bind and tags in its `targets/sheet/`, its own pack
+    (`materials.json` -> `tex/`). No settlement is read. The bodies are solid and every door locked; a `?interiors=1` mode goes in
+    each kit's `targets/sheet/` when the kits' interiors land (the hook is there: KDOOR records, core/walk, core/door's host,
+    `KDOOR.clearDoorways`; the `doors` assert then relaxes to "locked unless a room is behind it"). The settlements' own sheet
+    targets (Iziz's `vernacular`, Highlands' `highlands`, Xanadu's `xanadu`) stay. All six kit sheets (with Yuni's, Locus's and
+    the Eastern Abyssal's) pass `--assert` headless on SwiftShader and `tools/check_core_use.py`. The settlements read none of the
+    sheets' files (their `build-inputs.json`; Verge, which lists the Vernacular's `src/`, rebuilds byte-identical with the
+    `*-vsheet-*` files moved away). Their pages do differ from `PORT-BASELINE.json`, from core changes merged since the
+    baseline (core/door, core/furnish, core/host's probe, the Vernacular's `69e5`, the biome packs), not from this step: the
+    baseline waits for the all-builds rebuild.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).
