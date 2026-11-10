@@ -112,6 +112,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/guilin": "146875a97733dba0cdaecd4a5904eff3fe28dda1ff4baf18731ccd6200a145ee",
     "biomes/guilin/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "biomes/guilin/src": "5cb814932b07b8b3bd38fc54999404c88595a9a5d797f4c657895aa4d5ca7687",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",

@@ -10,7 +10,7 @@
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "kits/catalog/KNOWN_ISSUES.md": "7bfe38722c7b1d8ec972ce58296640eff156b6979193192cfcc35231a68f2536",
     "kits/catalog/PORT.md": "3dd243fb709e9abe62970ff81f1d2d1d98628beeca760f8a9634ba81c7707a32",
     "kits/catalog/build.py": "c820ad3e33201817d2df34ce9f8f6c2d7000dbf696470429af9ae7f0e9de3c36",
@@ -63,15 +63,15 @@
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "kits/catalog": "532f8f17635e756e11616c735a7a96fbb403c97785849ae4b9015b50a4aff617",
     "kits/catalog/src": "7b25856ff7f3f488ee7348c0e2d05df7e2a5925a636a1919d057a19556b47bb2",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "kits/catalog/build-manifest.json": "25c826409d14b9eeb6e86d4492287e10a827be6f25225f4e1a42f176404c5ed5",
-    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+    "kits/catalog/build-manifest.json": "cfc220e05f949a2e31b3bdb2f610f37fd5e06502b466e342be847c399ea43370",
+    "kits/catalog/dist/catalog.html": "60563658d0282d7aabf9c31475d6b22abcf46347d383ef987a3c1c7c658025c6"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "25c826409d14b9eeb6e86d4492287e10a827be6f25225f4e1a42f176404c5ed5",
-    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+    "kits/catalog/build-manifest.json": "cfc220e05f949a2e31b3bdb2f610f37fd5e06502b466e342be847c399ea43370",
+    "kits/catalog/dist/catalog.html": "60563658d0282d7aabf9c31475d6b22abcf46347d383ef987a3c1c7c658025c6"
    }
   }
  }

@@ -59,6 +59,8 @@ VC.intPrograms = function () {
   A.armoury = ['barracks', 'smithy', 'shop', 'store']; A.mess = ['hall', 'tavern', 'barracks', 'kitchen']; A.office = ['study']; A.guildhall = ['hall', 'court'];
   A.reception = ['hall', 'antechamber', 'court']; A.bakery = ['kitchen']; A.granary = ['store', 'kitchen']; A.warehouse = ['store', 'shop', 'market'];
   A.training = ['barracks', 'yard', 'court']; A.cell = ['jail', 'barracks', 'dormitory', 'bedroom']; A.catacomb = ['tomb', 'shrine']; A.tomb = ['catacomb', 'shrine'];
+  /* armoury and cell came with no weight before kits/interiors took the Republic's kinds (2026-11-10): keep theirs */
+  IX.KIND_WEIGHT.armoury = IX.KIND_WEIGHT.cell = 1.4;
   Object.keys(P).forEach(function (k) { if (IX.KIND_WEIGHT[k] == null) IX.KIND_WEIGHT[k] = 1.4; });
   return IX;
 };
