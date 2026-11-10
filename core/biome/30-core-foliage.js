@@ -154,7 +154,7 @@ function clipRect(P,c){const edges=[[0,c[0],1],[0,c[2],-1],[1,c[1],1],[1,c[3],-1
  return P;}
 BIO.geo.stemClump=function(S,o){o=o||{};const pos=[],uv=[],nor=[],e=o.rise==null?.65:+o.rise,ce=Math.cos(e),se=Math.sin(e),LEN=o.len==null?.85:+o.len;
  for(let k=0;k<3;k++){const P=S[k%S.length],az=k/3*Math.PI*2+.3,ca=Math.cos(az),sa=Math.sin(az),d=[ce*ca,se,ce*sa],t=[-sa,0,ca],n=[-ca*se,ce,-sa*se];
-  const s=P.stem,ax=[P.tip[0]-s[0],P.tip[1]-s[1]],L=Math.hypot(ax[0],ax[1])||1,e1=[ax[0]/L,ax[1]/L],e2=[-e1[1],e1[0]],w=P.w||[-L*.3,L*.3];
+  const s=P.stem,ax=[P.tip[0]-s[0],P.tip[1]-s[1]],L=Math.hypot(ax[0],ax[1])||1,e1=[ax[0]/L,ax[1]/L],e2=[-e1[1],e1[0]],w=P.w||[-L*.3,L*.3],
   bk=-(P.back||0),box=[[bk,w[0]],[L,w[0]],[L,w[1]],[bk,w[1]]].map(q=>[s[0]+e1[0]*q[0]+e2[0]*q[1],s[1]+e1[1]*q[0]+e2[1]*q[1]]),poly=clipRect(box,P.cell||[0,0,1,1]),kk=LEN/(L-bk);
   const loc=poly.map(p=>{const dx=p[0]-s[0],dy=p[1]-s[1];return[(dx*e2[0]+dy*e2[1])*kk,(dx*e1[0]+dy*e1[1])*kk];});
   for(let i=1;i+1<poly.length;i++)[0,i,i+1].forEach(j=>{const x=loc[j][0],y=loc[j][1];
