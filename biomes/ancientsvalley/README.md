@@ -261,9 +261,11 @@ the Overlook's extraplanars, House and distortions (`75`, `89y`).
 (176 residential on the flanks after 25 dropped by the kerb and the street filter, 12 industrial), 41 shell looks in one atlas, 658 junctions
 (58 tees), 8 sidings, 52 wagons in the yard, 22 pieces (277 tanks, 976 rack bents, 9 dishes, 5 chimneys, 2 conveyors, a turntable, 3 gantries,
 5 pools), 3 Engines (122 meshes merged), 5 keepers, 95 wrecks, 7,316 read-in trees (5,677 grown); 18.16 M triangles in the registry (budget
-20 M). Per view: the north flank 4.15 M in 860 calls, the rail yard 3.46 M in 838, the turntable 2.96 M in 653, among the halls 5.92 M in
-905, the tank farm 6.92 M in 677, the foundry 4.15 M in 574, the dish array 5.88 M in 700, the Hive 2.86 M in 613, the Star 4.64 M in 725,
-the Iris 8.14 M in 698 (the worst triangles), a spill ground 4.52 M in 924 (the worst calls), from the air 4.95 M in 816 (ceiling 1,200).
+20 M). Per view: the north flank 4.15 M in 860 calls, the rail yard 3.46 M in 838, the turntable 2.81 M in 663, among the halls 5.92 M in
+905 (the worst calls), the tank farm 6.92 M in 677, the foundry 4.15 M in 574, the dish array 7.49 M in 694, the Hive 2.86 M in 613, the
+Star 4.64 M in 725, the Iris 8.14 M in 698 (the worst triangles), a spill ground 4.24 M in 832, from the air (over the Foundry, under the
+worst of the smog) 3.32 M in 618 (ceiling 1,200). The views were reframed after the first look (the turntable from above its fan, the dishes
+from their pad's edge, the spill ground on its oil-crusted rubble with the pools black on it, the air view low over the Foundry).
 The shells bake in about 4.8 s, everything at the boot in 6.3 s.
 
 ## Read next

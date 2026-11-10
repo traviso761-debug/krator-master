@@ -218,25 +218,28 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
    const pave=clamp(Math.max(b,.1*d*(1-pk)*(1-.8*fo)*smooth(.3,.7,KRAND.fbm(x*.004+5,z*.004,0,2,SEED+8)),.35*ik*smooth(.4,.7,KRAND.fbm(x*.006+2,z*.006,0,2,SEED+18))),0,1)*(1-sc)*(1-st)*(1-sl)*(1-yd);
    const rub=clamp(Math.max(.45*d*(1-pk)*(1-.6*fo)*smooth(.3,.65,KRAND.fbm(x*.02,z*.02,0,2,SEED+9)),.9*sco,.7*fl*(1-fo),sl,yd*.85,.5*smooth(.15,.5,st)*(1-smooth(.6,.9,st))),0,1)*(1-sc)*(1-b);
    const soilNW=clamp(.5*pk+.25,0,1)*(1-pave)*(1-sc)*(1-ik),soilSW=clamp(.9-.5*pk,0,1)*(1-pave)*(1-sc)*(1-ik);
-   return[pave,st*(1-sc),rub,craterSc,soilNW,soilSW,Math.max(spillSc,.3*ik*(1-b)*(1-st)*(1-sl))];},
+   /* a spill takes the rubble layer (dry crust over old oil, under the ochre paint), not the mud: wet mud under the oily rain read black, and the black pools vanished into it */
+   return[pave,st*(1-sc),Math.max(rub,.9*spillSc),craterSc,soilNW,soilSW,Math.max(.1*spillSc,.3*ik*(1-b)*(1-st)*(1-sl))];},
   paint:(x,z)=>{const y=yOf(x,z),d=F.density(x,z),ik=indK(x,z),sc=F.scar(x,z),pk=F.park(x,z),t=F.taint(x,z),fo=forest(x,z),sco=scorch(x,z),sl=slagK(x,z);let c=[.30,.33,.22];
    c=c.map((v,i)=>mix(v,[.44,.42,.38][i],.35*d*(1-pk)));c=c.map((v,i)=>mix(v,[.15,.24,.12][i],.75*fo));c=c.map((v,i)=>mix(v,[.11,.10,.09][i],.6*F.foul(x,z)*(1-fo)));
    c=c.map((v,i)=>mix(v,[.09,.085,.08][i],.6*ik));c=c.map((v,i)=>mix(v,[.26,.18,.28][i],.25*F.foul(x,z)*t));c=c.map((v,i)=>mix(v,[.21,.21,.20][i],.7*street(x,z)));
-   c=c.map((v,i)=>mix(v,[.07,.065,.06][i],.9*sl));c=c.map((v,i)=>mix(v,[.09,.08,.07][i],.85*sco));c=c.map((v,i)=>mix(v,[.05,.06,.05][i],sc));return c;},
+   c=c.map((v,i)=>mix(v,[.07,.065,.06][i],.9*sl));c=c.map((v,i)=>mix(v,[.09,.08,.07][i],.85*sco));
+   /* the dead ground: a crater's melt glass dark, a spill stained the ochre of old oil (the pools, black, read against it) */
+   const crK=CRATERS.some(q=>Math.hypot(x-q.x,z-q.z)<q.r*1.25)?1:0;c=c.map((v,i)=>mix(v,crK?[.05,.06,.05][i]:[.26,.20,.09][i],sc));return c;},
   views:()=>{const Y=(x,z)=>ground(x,z),V=(c,cy,t,ty)=>[c[0],Y(c[0],c[1])+cy,c[1],t[0],Y(t[0],t[1])+ty,t[1]];
    const V0={
     'The Yards from the north flank':V([-1237.5,-760],70,[-300,250],0),
     'The rail yard':V([-40,-88],8,[-900,-130],1),
-    'The turntable and the roundhouse':V([-60,95],10,[60,-10],2),
+    'The turntable and the roundhouse':V([60,125],22,[60,-30],2),
     'Among the halls':V([-742.5,-1000],1.8,[-742.5,600],40),
     'The tank farm':V([-1237.5,-247.5],16,[-1485,-520],6),
     'The foundry and its stacks':V([-1200,247.5],2,[-1500,470],60),
-    'The dish array':V([1485,-742.5],2,[1485,-495],14),
+    'The dish array':V([1310,-420],12,[1485,-500],10),
     'The Hive':V([742.5,-247.5],3,[495,-495],140),
     'The Star':V([247.5,247.5],3,[0,495],100),
     'The Iris':V([1237.5,247.5],3,[1485,495],90),
-    'A spill ground':V([-2227.5,40],2,[-1950,20],0),
-    'From the air':V([-300,950],280,[-300,-300],0)};
+    'A spill ground':V([-2160,-80],12,[-1990,10],0),
+    'From the air':V([-1150,520],110,[-1460,280],40)};
    return Object.assign(V0,STAGE.extraViews||{});},
   start:'The Yards from the north flank',
   spine:(function(){const S=[[NEAR.x,NEAR.z]];for(let x=-2400;x<=2400;x+=800)for(let z=-2400;z<=2400;z+=800)S.push([x,z]);return S;})(),
