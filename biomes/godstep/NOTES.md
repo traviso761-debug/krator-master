@@ -22,3 +22,16 @@
 - **The rock** is the valley's own recipes (`src/35g-godstep-strata.js`): core's `tibasalt-ponded` and `tibasalt` with the bead
   partings already palagonite, because one formation a flow would give one alteration a formation and `KSTRATA.shade` takes four.
 - **The tumuli** (`KRELIEF.tumuli` on the bake) are filed in `KSPACE` so the ground reads only those over a point.
+
+## How stations 2-5 are made (2026-11-10, a cloud session)
+
+- Built in parallel, one station a worker, each in its own `stations/<name>/` over the shared hooks written first in `src/` (`PLAN.md`,
+  "Stations 2-5: how they are made"). Each region was written with `python3 biomes/godthrone/tools/region.py <name> <px> <py> --kit biomes/godstep`.
+- **The neighbours read in place**: the Hearths' `50` and `55` (station 3), the sedesert's `50`, `55`, `60` (station 4) and the shighlands' `50`
+  and `55` (station 5) as `reads` slots, wrapped by small open/end fragments that register them as their own kits (`BIO.kit`/`BIO.kitEnd`, as
+  greenstep reads its neighbours); their textures through `packs` narrowed to the families they draw.
+- **core/mask without pixel reads**: every station's polygons (the rille's fields, the older crater's fields, the playa, the terraces) are
+  painted on a `KMASK.canvas` and read back through `KMASK.distance` (inside and outside both), so no fragment says `getImageData`
+  (`tools/check_core_use.py` flags the word itself).
+- Software GL ran slowly with four Chromiums on four CPUs (25-30 min a verify). The GPU verify is the local session's.
+

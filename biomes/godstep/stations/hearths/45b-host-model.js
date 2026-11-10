@@ -109,7 +109,7 @@ const MODEL={fieldsAt(x,z,sl,hollow,o,y,north){const c=KRELIEF.at(WALL,x,z,0),pa
   o.warm=warm*(1-o.lawn)*(1-o.stream);o.heat=heat;
   o.skin=0;o.sand=0;o.moss=0;o.cone=0;o.playa=0;
   o.palag=clamp(smooth(.6,.8,fb(x*.009,z*.009,2,WORLD+62))*smooth(.6,.2,sl)*(1-o.scoria)*(1-o.lawn)*(1-o.farm),0,1)*.6;
-  o.soil=clamp((.12+.5*hollow)*smooth(.5,.15,sl)*(1-o.scoria*.6)*(1-o.lawn)*(1-warm),0,1)*(1-o.lake);
+  o.soil=clamp((.06+.4*hollow)*smooth(.5,.15,sl)*(1-o.scoria*.6)*(1-o.lawn)*(1-warm),0,1)*(1-o.lake);
   o.lichen=clamp(smooth(.55,.25,sl)*smooth(.35,.7,vn(x*.012,z*.012,WORLD+63))*(1-o.lawn)*(1-o.farm)*(1-warm),0,1)*.4;
   /* a winter night: snow on the plain and the lip, patchy on the floor (a warm pit), none on ground over 0 C (KTHERM's snow mask), none on the
      water; the wall's ledges hold it */

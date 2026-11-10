@@ -35,7 +35,7 @@ function stationBuild(){const t0=performance.now(),q=new URLSearchParams(locatio
   [1,-1].forEach(sg=>C.monolith({id:'reach-'+M.key+(sg>0?'-r':'-l'),owner:'godstep',poly:half(sg),y0:M.floorY-6,y1:top+1,block:false}));
   CAV.tubes.push({key:M.key,pts,name:M.name,M});});
  C.build();
- const rockM=new THREE.MeshStandardMaterial({color:0x2e2a28,roughness:.9,metalness:.05,vertexColors:true});rockM.userData.noHorizon=true;
+ const rockM=new THREE.MeshStandardMaterial({color:0x161412,roughness:.92,metalness:.05,vertexColors:true});rockM.userData.noHorizon=true;
  let tris=0;C.meshAll().forEach(ch=>{if(!ch.idx.length)return;const g=new THREE.BufferGeometry(),n=ch.pos.length/3,col=new Float32Array(n*3);
   for(let i=0;i<n;i++){const o=.25+.75*ch.occ[i],red=ch.ground[i]?1:0;col[i*3]=o*(1+.25*red);col[i*3+1]=o;col[i*3+2]=o*(1-.1*red);}
   g.setAttribute('position',new THREE.BufferAttribute(ch.pos,3));g.setAttribute('normal',new THREE.BufferAttribute(ch.nrm,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
