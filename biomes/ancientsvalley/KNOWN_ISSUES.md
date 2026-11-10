@@ -47,18 +47,38 @@
   draws 2.3 M. Measure on the Arc before cutting; the forest is the brief.
 - [ ] **The melt glass is a stand-in** (`ground.obsidian`): the basins' trinitite set is owed (`core/materials/PROMPTS-NEEDED.md`).
 - [ ] **The water on this page is at its corners:** the ridge is wider on the model than the plan read it (2 km cells), so the inlets lie just past the
-  page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's.
+  page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's. *2026-11-09:* the near lake's flood had
+  one seed, the fallback on dry ground (no model water cell lies inside the page), so it flooded nothing and every hollow of the page's own relief
+  under the lake's level was drawn dry; `89w` now seeds it from that ground too (a 120 m lattice, 264 seeds), which floods 95% of it. The stage's
+  view "The core from the water" still stands outside the flood: its eye is in a pocket the lattice misses.
 - [ ] **The House is bare** (`41c`, `75`, 2026-11-09): ash-grey boxes with dim strips, no furniture, no sound (the growl at a fixed distance
   the plan wants is `core/audio`'s), no NPC can follow the walker through a threshold (the paths need teleport edges), and rewiring opens one of
   three fixed rooms. Flying (not walking) through a door also crosses it. The visit count is this browser's (localStorage).
 - [ ] **The distortions' known limits** (`89y`, 2026-11-09): the warp bends vertices, so the coarse far country and a long flat mesh bend in
   steps; three.js culls on unbent bounds, so near the Gyre a chunk lifted into view can vanish early; the lens turns a shell's cage but not the
   trace inside it, so a shell right behind the lens shears; the warp installs once the city is built, recompiling every material once.
-- [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists; `kits/extraplanar` is being built in the
-  session valley-extraplanar, 2026-11-09), no Soleri farmland (the terraces are off this page). The keepers are kits/mechs' Ancients (culture
-  `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper and the gardener at their routines, the
-  tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other hunters (the shrouded walker, the trooper,
-  the wasp) are built and wait for the game to place them.
+- [x] **The renderer ran near V8's 4 GB heap** (2026-11-09, found wiring the extraplanars; closed the same day): a fourteen-view `--all-views` tour
+  ran out of heap at the thirteenth view on the Arc lane (Chrome's 0xe0000008 in the event log, "Connection closed while reading from the driver"
+  in the verify). V8's sampling heap profiler from before the page loads, and a census of the geometry by owner, found two causes. The boot held
+  400 MB of the transit builder's plain arrays (eight bytes a number), which a closure kept after `finish`; the valley's builder wrapper (74)
+  now drops them. And every view kept what it built, the transit's furniture and war cells and the wreck looks, about 130 MB a view. A cell
+  is now freed 450 m past its near range and built again on the way back (74 `AVTR.freeCell`), the furniture pieces go with each cell, and the
+  wreck looks are capped at 72 with the oldest unworn ones freed (73). On software GL the boot fell from 1,974 to 1,451 MB, and twelve views
+  from 3,589 to 1,704 MB, flat at 1.4 to 1.8 GB; the fourteen-view tour stands again. Not freed: a cell's shadow casters under `?shadow=1`
+  (KSHADOW keeps its list); the towers' heroes and the kits' chunks are the census's other large holders (the forest 258 MB, the streets 169 MB).
+- [ ] **No mutants or Cyberliches yet** (`PLAN.md` section 6: each when its kit exists), no Soleri farmland (the terraces are off this page). The
+  keepers are kits/mechs' Ancients (culture `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper
+  and the gardener at their routines, the tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other
+  hunters (the shrouded walker, the trooper, the wasp) are built and wait for the game to place them. **The extraplanars are in** since
+  2026-11-09 (`kits/extraplanar`, session valley-extraplanar; `75-host-extraplanar.js`): three hunters on rounds, three phenomena, four portals.
+  Owed from the kit's own list (`kits/extraplanar/KNOWN_ISSUES.md`): no dormant pose (a hunter hunts or is absent; none stands dead until it
+  wakes); the robots' and the mutants' far tiers do not draw the shared silhouette cards yet, and this page draws no far card for its three
+  hunters either (they are inside the page's fog at every view); the gaze is a rod the host flies, with no hit test; a solid's or presence's
+  glow sits at the record's `at` (the glow layer is static) while its mist and plume follow it; the hunters wear vertex colours (the mechs'
+  detail maps are not passed); no bone texture set for the Stilter and the drowned arch (nothing added to PROMPTS-NEEDED.md without the owner's
+  word). On this page: the portals' `leads` point at `city3`'s frame by offsets chosen here (its centre and two halls), since Dorado's page is
+  not cut yet; the drowned portals stand where the shore lies 2 to 3.5 m under the lake within 150 m of a plinth, so the "hall" is the shore under
+  a tower, not a drawn interior.
 - [x] **The smog is one page-wide setting** closed 2026-11-09: core/atmos (session atmos-smog) gave the mist a density field (the valley passes
   `F.density`: universal in the cores, thin on the terraces) and the clouds a mood (dark, the taint's tint, violent turbulence, the fires' glow at
   night, shifting episodes by `ATMOS.cloudMood`). From the air the floor lies under the pool and reads pale; judge it by eye.

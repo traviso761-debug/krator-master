@@ -211,7 +211,15 @@ All *proposed* until the owner settles them; the lore is in LORE.md 4 (l.149), 6
   figures, voids with eyes, a sun-headed giant, geometric solids with their own weather. `kits/extraplanar`, because they are neither fauna nor
   characters: the **hunters** on the fauna kit's gaits with the `centaur` and stilt builders, and the **phenomena** (a void that drifts, a solid
   that hums, a haloed presence) as anomaly records. Where they come through: **portals**, an anomaly kind (`PLAN-ANOMALIES.md` 4), thickest at
-  `city3`. Their far-tier silhouettes are shared with the mutants' and the robots' (section 9).
+  `city3`. Their far-tier silhouettes are shared with the mutants' and the robots' (section 9). *Built 2026-11-09* (`kits/extraplanar`, the session
+  valley-extraplanar: four hunters on the mechs machinery, the phenomena and portals as records, the shared silhouette set; `README.md`, `API.md`)
+  and **on station 0 the same day** (`75-host-extraplanar.js`, the bundle `39x`): three hunters on avenue-block rounds like the keepers (the Stilter
+  toward the lake to the south, the Haloed over the drowned inlet, the Crawler deep in the wild half; the tell, then the blow, at the corners; R
+  rides with them), the three phenomena where the themes table puts them (the void over the water of the inlet, the solid humming in a plaza of
+  the foul half, the presence in the park gone feral; their weather on the page's core/atmos, the solid's tint in the clouds' mood), three
+  drowned-hall portals on the shore under the towers with the lake's line across the arch, each leading to `city3`, and a tear standing alone on
+  the dead lobe. Not yet: a dormant pose (a hunter is awake or absent), the robots' and mutants' far tiers on the shared cards, a hit test for the
+  gaze (the kit's `KNOWN_ISSUES.md`).
 - **The Lizardmen** (settled 2026-11-04). The war loosed them **here**: they came through in the Valley and crossed the Outer Wall to the Rift
   floor, where LORE 6.20 has them now. A few remnants stay in the Valley, and Thera's stair (`city6`) is the way they went. LORE 6.20 gets a
   line to say so when the valley's lore is written up.
@@ -330,10 +338,12 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 | `kits/metropolis` | records, plans, facades, shells, designs, heroes, rubble, floors, ruins, the shell bake and draw; not its stage, land, sky, take, interiors, cut-away or the Ancients builders | the towers |
 | `kits/interiors`, `kits/ancients-interiors` | bundled | the plans the heroes' windows come from |
 | `biomes/swlowlands`, `biomes/nwlowlands` | 50/55/60/70 in place, wrapped by `AV.feralKit` | the forest |
+| `kits/mechs` | bundled (`39k`, culture `ancient`) | the keepers (`72`) |
+| `kits/extraplanar` | bundled (`39x`: `KratorExtraplanar`, the mechs machinery in its own closure) | the hunters, the phenomena and the portals (`75`), their weather (`89x`) |
 
 Not taken yet: `core/anomaly` (none on station 0), `core/hazard`, `core/clock` beyond the host's, `core/city` (the plan is a lattice on
 records until the streets want lots), `core/mask` (every field is a function), `core/furnish`, `core/hamlet`, `core/camp`, `core/charactermodels`,
-`kits/fauna`, `kits/mechs`, `kits/crops`.
+`kits/fauna`, `kits/crops`.
 
 ## 12. Order of work
 
@@ -345,12 +355,16 @@ records until the streets want lots), `core/mask` (every field is a function), `
    *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake. *2026-11-08:* the
    steam (banks of mist and plumes on the water, `89u`), the keepers (four kits/mechs walkers on avenue rounds, `72`), the second viaduct across
    the Overlook's view, the land split half wild and half foul (`AV.fields` wild/foul), and the owner's smog (`89v`: the height fog's mist and
-   band, the sky's clouds low and turbulent, the air turbid). Waiting on the owner's eye.
+   band, the sky's clouds low and turbulent, the air turbid). *2026-11-09:* the transit pass (section 14), the Ancients' keepers (kits/mechs
+   culture `ancient`), the wrecks, and the extraplanars from `kits/extraplanar` (`75`: three hunters on rounds, the void over the inlet, the
+   solid in a foul plaza, the presence in the park, three drowned-hall portals on the shore and a tear on the dead lobe; section 6). Waiting on
+   the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
 6. The Broken Country.
-7. The people: mutants, the augmented, the robots, the extraplanars, each when its kit exists.
+7. The people: mutants, the augmented, the robots, the extraplanars, each when its kit exists. *The robots (keepers) and the extraplanars are on
+   station 0 since 2026-11-09 (section 6).*
 8. Streaming into the open world, after the stations have shown what the valley's language is (the owner, 2026-11-04: stations first).
 
 ## 13. Open questions for the owner

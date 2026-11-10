@@ -1,4 +1,4 @@
-﻿# biomes/ancientsvalley: the Ancient's Valley
+# biomes/ancientsvalley: the Ancient's Valley
 
 The overlay on the two lowlands where the Ancients' war left the land weird and hazardous, and the Ancients' capital stands as a megalopolis in
 ruin (`PLAN.md`: the owner's brief, the valley on the model, the city's zones, the scars, the feral forest, the people; `PLAN-ANOMALIES.md`: the
@@ -178,6 +178,32 @@ North, a corridor in 12 m segments that never ends (crossing the fourth moves yo
 hall too large to see across or the descent, by the visit; the descent's ramp has no bottom (its foot leads to the same place on the slope higher
 up, and a level is counted); west, a dead-end hallway 4 cm longer each visit, which the readout's tape reports without comment. Back out through
 the foyer's door, you step out of the hut. The House's floors and walls are the walker's registry (core/walk `KWALK`, now handed to the host).
+
+**The extraplanars (2026-11-09; `75-host-extraplanar.js`, `89x-host-xp-weather.js`; `kits/extraplanar` bundled as `39x`, `KratorExtraplanar`):**
+`PLAN.md` section 6 and the themes table of section 9 put them at `city3` Dorado, the drowned city, and this page is the lake's near shore, so a
+few have come through. **Three hunters** on rounds of one avenue block like the keepers (the kit's gait on the page's ground, the attack at the
+corners with the shared tell first; the Haloed's gaze flown as a rod): the Stilter where the lake's pull (`STAGE.transit.lakeK`) is strongest to
+the south, the Haloed over the drowned inlet to the north-west, the Crawler deep in the wild half, each block chosen by a want over the lattice
+and 500 m from the last; R rides with them after the keepers. **Three phenomena** as records on the kit's registry (the page's core/tags through
+`BIO.tagReg()`, a core/space grid) before they are drawn: a void with seven eyes drifting over the water of the inlet (its `at` on the water
+surface, `h` 3.5 m its hover, water under its whole 24 m drift), a solid humming in orbit in a plaza of the foul half's floor (off every plinth
+and street), a haloed presence in the park gone feral; their weather on the page's core/atmos after the binding (`89x`: a pool of mist round the
+void, the solid's chimney plume and steam ring, the presence's breath, a glow each; `ATMOS.finish` now runs once, for the glow layer), and the
+solid's tint in the clouds' mood over it. **Four portals:** three drowned-hall portals on the shore under the towers (the floor 2 to 3.5 m under
+the lake within 150 m of a plinth, 400 m apart, the densest shore first), the lake's line across the arch, each facing Dorado and leading to
+`city3` (two open, one flickering); and a tear standing alone on the dead lobe's melt glass, 160 m before the dead lobe's eye. Three views
+are added to the station's list: the drowned hall and the void over the inlet, their eyes on the water, and the solid in its plaza. The checks: the hunters on
+their rounds with four dry corners and the Stilter among them, every record registered before it was drawn with its weather bound, the void on
+the water and the drowned arches cut by the lake with the near lake drawn under them (`LAKE.contains`), nothing else under it; six negatives.
+Placing them found the near lake flooding nothing on the page (its one seed was on dry ground): `89w` now seeds the flood from the page's own
+ground under the lake's level, so the drowned inlets are water. **Numbers (2026-11-09, `verify.py --assert --all-views` on the Arc
+140T lane):** every assert and negative passes; the extraplanars' geometry 2.4 MB; the registry 12.54 M triangles (budget 20 M, unchanged); per view
+550 to 1,156 calls (ceiling 1,200, unchanged) and 4.81 to 8.88 M triangles, the drowned hall 4.81 M in 608.
+
+**The heap (2026-11-09):** the page's renderer ran out of V8's 4 GB heap on a fourteen-view tour, because the transit builder's arrays outlived
+the boot (400 MB) and every view kept the transit cells and wreck looks it built (about 130 MB a view). The builder's arrays now go at `finish`,
+a transit cell is freed 450 m past its near range and built again on the way back, and the wreck looks are capped at 72. On software GL the boot
+holds 1,451 MB (from 1,974) and the heap stays at 1.4 to 1.8 GB through every view (from 3.6 GB after twelve).
 
 ## Read next
 

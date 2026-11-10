@@ -6,8 +6,8 @@
 // only (the inspector and the checks see them). A PROTOTYPE per (key, variant, state, seed) is built once, when first wanted, a few a tick (the
 // kit's ruin pass is a few ms), and every wreck of that look is a clone of it (geometry and materials shared). No shadows: the wrecks sit under
 // the towers' and the forest's. Nothing here decides where a wreck stands: it draws the record.
-const AVW_R=450,AVW_MAX=48,AVW_BUILDS=3;
-const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicles:null,out={records:[],live:new Map(),protos:new Map(),built:0,buildMs:0,drawn:0,ok:!!kit,tick(){}};
+const AVW_R=450,AVW_MAX=48,AVW_BUILDS=3,AVW_PROTOS=72;
+const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicles:null,out={records:[],live:new Map(),protos:new Map(),byId:new Map(),evicted:0,built:0,buildMs:0,drawn:0,ok:!!kit,tick(){}};
  if(!kit){reportErr('wrecks: KratorVehicles is not on the page (39v-mp-vehicles-bundle.js)');return out;}
  const sizes={};kit.list().forEach(v=>{sizes[v.key]={w:v.w,d:v.d,h:v.h,name:v.name};});
  /* where none may stand: the lake, a plinth, a crater's bowl and rim, the viaduct's corridor, an engine's pad, the scar, off the page */
@@ -34,7 +34,7 @@ const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicl
     from any other view (the page's own check, HCHK.wrecks, reads the full record list) */
  {const cells=new Map();W.forEach(r=>{const k=Math.floor(r.x/600)+','+Math.floor(r.z/600);let c=cells.get(k);if(!c){c={n:0,sx:0,sz:0,y0:1e9,burnt:0};cells.set(k,c);}c.n++;c.sx+=r.x;c.sz+=r.z;c.y0=Math.min(c.y0,r.y);if(r.state==='burnt')c.burnt++;});
   cells.forEach((c,k)=>REGISTER({name:'ruined Ancient vehicles in the streets ('+c.n+', '+c.burnt+' burnt)',kind:'wreck',x:c.sx/c.n,z:c.sz/c.n,y:c.y0-1,r:440,h:16,tags:{kind:'wreck',cell:k,n:c.n,burnt:c.burnt}}));}
- out.records=W;out.planMs=Math.round(performance.now()-t0);out.plazas=plazas.length;
+ out.records=W;W.forEach(r=>out.byId.set(r.id,r));out.planMs=Math.round(performance.now()-t0);out.plazas=plazas.length;
  /* the prototypes: one group per look, built when first wanted; its meshes are the host's, unshadowed, named for the inspector */
  const protoOf=r=>{const k=r.key+'/'+r.variant+'/'+r.state+'/'+r.seed;let g=out.protos.get(k);if(g)return g;const t=performance.now();
   try{g=kit.build(r.key,{variant:r.variant,seed:r.seed,state:r.state});}catch(e){reportErr('wreck '+k+': '+(e.stack||e));g=null;}
@@ -42,13 +42,17 @@ const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicl
  const Y=new THREE.Vector3(0,1,0),E=new THREE.Euler();
  const place=r=>{const g=protoOf(r);if(!g)return null;const c=g.clone();c.traverse(m=>{if(m.isMesh){m.userData.host=true;m.userData.inspectLabel=r.label;}});
   c.position.set(r.x,r.y,r.z);c.rotation.set(0,0,0);c.rotateOnAxis(Y,r.yaw);c.rotateX(r.pitch);c.rotateZ(r.roll);c.userData.wreck=r.id;c.userData.host=true;c.name='wreck:'+r.id;scene.add(c);return c;};
- /* the pool, each quarter second: the nearest AVW_MAX records inside AVW_R of the eye; what left the pool leaves the scene (the prototypes stay) */
+ /* the pool, each quarter second: the nearest AVW_MAX records inside AVW_R of the eye; what left the pool leaves the scene (the looks stay, up to AVW_PROTOS) */
  const q=[];let next=0;
  out.tick=function(){const now=performance.now();if(now<next)return;next=now+250;const e=camera.position;q.length=0;SP.query(e.x,e.z,AVW_R,q);
   const want=q.filter(r=>{r.dist=Math.hypot(r.x-e.x,r.z-e.z);return r.dist<AVW_R+r.d/2;}).sort((a,b)=>a.dist-b.dist).slice(0,AVW_MAX),ids=new Set(want.map(r=>r.id));
   out.live.forEach((g,id)=>{if(!ids.has(id)){scene.remove(g);out.live.delete(id);}});
   let builds=0;for(const r of want){if(out.live.has(r.id))continue;const k=r.key+'/'+r.variant+'/'+r.state+'/'+r.seed;if(!out.protos.has(k)){if(builds>=AVW_BUILDS)continue;builds++;}
    const g=place(r);if(g)out.live.set(r.id,g);}
-  out.drawn=out.live.size;};
+  out.drawn=out.live.size;
+  /* the looks kept (the heap, 2026-11-09: a look is keyed by its seed, so nearly every wreck is its own, and every view kept the ones it built): past
+     AVW_PROTOS, the oldest looks no live wreck wears go, their geometry freed; a look is built again if its wreck comes back */
+  if(out.protos.size>AVW_PROTOS){const used=new Set();out.live.forEach((g,id)=>{const r=out.byId.get(id);if(r)used.add(r.key+'/'+r.variant+'/'+r.state+'/'+r.seed);});
+   for(const [k,g] of out.protos){if(out.protos.size<=AVW_PROTOS)break;if(used.has(k))continue;out.protos.delete(k);g.traverse(m=>{if(m.geometry)m.geometry.dispose();});out.evicted++;}}};
  return out;})();
 tick(function(){if(AVW.ok)AVW.tick();});
