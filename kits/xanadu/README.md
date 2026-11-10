@@ -66,6 +66,8 @@ per instance: white, black or gold by the instance colour, `xpInk`). Any builder
 is a banded block wherever it stands. The veining of both stones is one library set (`materials.json` family `xMarble`); the
 two proper marbles are owed (`core/materials/PROMPTS-NEEDED.md`, section 41). The furniture is the set item's
 (`kits/interiors/sets/xanadu.js`: explicit rooms, with `?interiors=1`), still in the court set's own colours.
+Its doors are the kit's only UNLOCKED ones: the builder declares them (`window._hollowDoors`), and the sheet's `doors` check
+(`kits/iziz-vernacular/sheet_verify.py`) asks every other door to be locked.
 
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).

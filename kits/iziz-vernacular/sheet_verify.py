@@ -49,8 +49,9 @@ ASSERT_JS = r"""(o)=>{const A=window._api,R=[];if(!A)return [{name:'probe',ok:fa
   detail:T.records+' records ('+Object.entries(T.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+T.unknown+(T.unknown?' '+JSON.stringify(T.unknownValues).slice(0,300)+JSON.stringify(T.unknownKeys).slice(0,200):'')+', missing culture '+T.missingCulture+', missing types '+T.missingTypes});}
  {const T=A.tagAudit();R.push({name:'reg-tags',ok:T.bad===0,detail:T.bad?T.bad+' volumes lack class/culture/type/wealth: '+T.first.join(' | '):'every volume classed and tagged'});}
  {const D=A.doors(),X=A.doorExport().doors||[],ids=new Set(X.map(d=>d.id)),bad=X.filter(d=>!(d.at||[]).every(isFinite));
-  const ok=D.doors>0&&D.locked===D.doors&&ids.size===X.length&&X.length===D.doors&&!bad.length&&D.blocks>0;
-  R.push({name:'doors',ok,detail:D.doors+' doors in KDOOR ('+D.locked+' locked, '+ids.size+' unique ids, '+D.blocks+' walk blocks'+(bad.length?', '+bad.length+' at no finite point':'')+'), '+D.panes+' glass panes, '+D.voids+' dark voids left (not openings)'});}
+  const hol=window._hollowDoors|0;   // a def a builder draws hollow declares its unlocked leaves (kits/xanadu 78d: the Pleasure Dome); every other door is locked
+  const ok=D.doors>0&&D.locked===D.doors-hol&&ids.size===X.length&&X.length===D.doors&&!bad.length&&D.blocks>0;
+  R.push({name:'doors',ok,detail:D.doors+' doors in KDOOR ('+D.locked+' locked, '+(hol?hol+' unlocked in hollow defs, ':'')+ids.size+' unique ids, '+D.blocks+' walk blocks'+(bad.length?', '+bad.length+' at no finite point':'')+'), '+D.panes+' glass panes, '+D.voids+' dark voids left (not openings)'});}
  {const M=A.materials(),recs=M&&M.records||[],lib=recs.filter(r=>r.lib),side=window.KMAT_SIDE&&window.KMAT_SIDE[o.pack],nf=side?Object.keys(side).length:0;
   R.push({name:'textures-load',ok:nf>0&&A.texPending()===0&&lib.length>0,detail:'pack '+o.pack+': '+nf+' families loaded from the sidecar, '+A.texPending()+' maps still decoding; '+recs.length+' material records, '+lib.length+' bound to a library set'});}
  {const T=A.trades();if(T){const bad=T.bad.filter(b=>!o.foreign.some(f=>b.indexOf(f)===0));

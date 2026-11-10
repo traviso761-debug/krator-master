@@ -2,6 +2,12 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-10) **The Pleasure Dome's interior: what is not there yet.** Built hollow in the black-and-white pattern system
+      (`citadel/PLEASURE-DOME.md` has the record and the table against the owner's twelve references). Open: the catalog
+      furniture is still the court set's colours (a tint in core/furnish's draw is owed) and comes only with `?interiors=1`; both
+      stones are one grey library marble (the two marbles are owed: `core/materials/PROMPTS-NEEDED.md` section 41); no pierced
+      plaster ceilings, round windows, rib vaults or pierced balustrades; the Sultan's lattice box and the Golden Way are not
+      drawn; two stair halls are additions to the blueprint. The Dome of the Bay is untouched (a question for the owner).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark

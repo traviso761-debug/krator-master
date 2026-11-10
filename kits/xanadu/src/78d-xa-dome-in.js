@@ -78,7 +78,8 @@ function xdomeBuild(o,cols){const D=XPDOME,P=xdomePlan(),T=D.T,Y0=D.Y0,Y1=D.Y1,Y
  wFloor([-20,20,0,D.GD/2],0,'Chahar Bagh');wFloor([-D.GW/2,D.GW/2,50,D.GD/2],0,'Chahar Bagh');
  if(C){const w=IZDOOR._w(0,0,0);XA_CUT.push({id:'xa-dome.'+XA_CUT.length,name:'Pleasure Dome',x:w[0],z:w[2],ry:C.ry==null?0:C.ry,w:D.GW,d:D.GD,gate:IZDOOR._w(0,0,D.GD/2-4),
   levels:[{y:w[1]+Y0,h:Y1-Y0,name:'ground: the harem palace (E3)'},{y:w[1]+Y1,h:Y2-Y1,name:'upper: the galleries and the favourites (E4)'},{y:w[1]+D.HALL.top,h:8,name:'the clerestory and the drum'}]});}
- ST.rooms=P.rooms.filter(r=>!r.void).length;ST.segs=P.segs.length;ST.unplaced=(D.unplaced||[]).length;ST.lib=XP_T.bound||null;ST.walk=!!WK;window._xaDome=ST;}
+ ST.rooms=P.rooms.filter(r=>!r.void).length;ST.segs=P.segs.length;ST.unplaced=(D.unplaced||[]).length;ST.lib=XP_T.bound||null;ST.walk=!!WK;window._xaDome=ST;
+ window._hollowDoors=(window._hollowDoors|0)+ST.doors;}   // the unlocked leaves of a hollow def, declared (the kit sheet's doors check counts them: kits/iziz-vernacular/sheet_verify.py)
 // the reachability audit (core/walk's KWALK.reach): from inside the garden gate, over the Dome's own floors and stairs, with
 // the doors open (their blocks off): {floors, reached, unreached: [names]}. xdomeReach(i) audits the i-th placement
 function xdomeReach(i){const U=XA_CUT[i==null?0:i];if(!U||typeof KWALK==='undefined')return null;

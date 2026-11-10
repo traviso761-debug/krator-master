@@ -183,9 +183,9 @@
     "kits/xanadu/src/77-xa-sacred.js": "fe56cdaba04b195a45374aa24f5e982fddf973e5931fadfe71ec98a735a94b4e",
     "kits/xanadu/src/78-xa-palace.js": "9649a6bbd142e5b0555be7a170ef6b827ba1b19e18deaf3de2d5419240795521",
     "kits/xanadu/src/78a-xa-pattern-data.js": "3adbb048f3ddbc77e3d763bcde69665347c4d839e93931c7757cd69e2a9ee192",
-    "kits/xanadu/src/78b-xa-pattern.js": "131a97d8c0e556d2910247684c2b2d7e92caf95a50cecf2b41b0296b3d60652a",
+    "kits/xanadu/src/78b-xa-pattern.js": "d1186ab5c67969de7962aacbac544a7d6347e7b07a1fbeffc13057e5e337fe2a",
     "kits/xanadu/src/78c-xa-dome-plan.js": "c5732c3c261cbe9fa6324aa629fc6f0955af58699858812225b28ff134c33d58",
-    "kits/xanadu/src/78d-xa-dome-in.js": "40d63e2c6ee52fffb1360b95c0b90409fa4d11d079d928c25c5f15b938961f59",
+    "kits/xanadu/src/78d-xa-dome-in.js": "6799bce483345de2d1a11687370e396c4168357e0e2389f89f8ce983f9274f69",
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
@@ -424,14 +424,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/longsong/dist/longsong.html": "14a3676e1b580e69e7eeae3a3b27ed0eaff9a8dfb252f3b023cbf3d1a1d1862e",
+    "settlements/longsong/dist/longsong.html": "958d486efee5fecdc09aba6bde6e6e083599020f4fded44c74e94d6826071274",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
     "settlements/longsong/dist/longsong.tex.xanadu.js": "ab86b56cf863dd8b19fbabdef7c70d83302cff8c1fc3f4caff86f367f7f7f945"
    },
    "outputs_raw": {
-    "settlements/longsong/dist/longsong.html": "14a3676e1b580e69e7eeae3a3b27ed0eaff9a8dfb252f3b023cbf3d1a1d1862e",
+    "settlements/longsong/dist/longsong.html": "958d486efee5fecdc09aba6bde6e6e083599020f4fded44c74e94d6826071274",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",

@@ -66,9 +66,9 @@
     "kits/xanadu/src/77-xa-sacred.js": "fe56cdaba04b195a45374aa24f5e982fddf973e5931fadfe71ec98a735a94b4e",
     "kits/xanadu/src/78-xa-palace.js": "9649a6bbd142e5b0555be7a170ef6b827ba1b19e18deaf3de2d5419240795521",
     "kits/xanadu/src/78a-xa-pattern-data.js": "3adbb048f3ddbc77e3d763bcde69665347c4d839e93931c7757cd69e2a9ee192",
-    "kits/xanadu/src/78b-xa-pattern.js": "131a97d8c0e556d2910247684c2b2d7e92caf95a50cecf2b41b0296b3d60652a",
+    "kits/xanadu/src/78b-xa-pattern.js": "d1186ab5c67969de7962aacbac544a7d6347e7b07a1fbeffc13057e5e337fe2a",
     "kits/xanadu/src/78c-xa-dome-plan.js": "c5732c3c261cbe9fa6324aa629fc6f0955af58699858812225b28ff134c33d58",
-    "kits/xanadu/src/78d-xa-dome-in.js": "40d63e2c6ee52fffb1360b95c0b90409fa4d11d079d928c25c5f15b938961f59",
+    "kits/xanadu/src/78d-xa-dome-in.js": "6799bce483345de2d1a11687370e396c4168357e0e2389f89f8ce983f9274f69",
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
@@ -202,14 +202,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/xanadu/build-manifest.json": "5c1e5a32ea73774fcd581e33d31e52291344c92eff2b3d9477796098e841e4dc",
-    "kits/xanadu/dist/xanadu.html": "329d47393291b58d394fdd7be70d2ca7a6b173b74bc2c1a8f29335578b2b42c3",
+    "kits/xanadu/build-manifest.json": "053cee58801e0b13c4adeb060f3159eb20644303c5d9ce833b61d8f899c4a1b0",
+    "kits/xanadu/dist/xanadu.html": "8f1e41dfaf5aa6c1d11a09fd20095b11e96c0d19cf3f7ebba35bc6c4d9e88cca",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "eb7ddac3bf4628d2310775a80d9a152a1692b5d33e1c468dcc9eea86b64f8faa",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "1db0ce487d60d16318477d63e9b92f1089ab74041947933be7dc9ae5a197a586"
    },
    "outputs_raw": {
-    "kits/xanadu/build-manifest.json": "5c1e5a32ea73774fcd581e33d31e52291344c92eff2b3d9477796098e841e4dc",
-    "kits/xanadu/dist/xanadu.html": "329d47393291b58d394fdd7be70d2ca7a6b173b74bc2c1a8f29335578b2b42c3",
+    "kits/xanadu/build-manifest.json": "053cee58801e0b13c4adeb060f3159eb20644303c5d9ce833b61d8f899c4a1b0",
+    "kits/xanadu/dist/xanadu.html": "8f1e41dfaf5aa6c1d11a09fd20095b11e96c0d19cf3f7ebba35bc6c4d9e88cca",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "eb7ddac3bf4628d2310775a80d9a152a1692b5d33e1c468dcc9eea86b64f8faa",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "1db0ce487d60d16318477d63e9b92f1089ab74041947933be7dc9ae5a197a586"
    }

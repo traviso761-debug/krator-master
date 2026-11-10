@@ -65,8 +65,8 @@ function xpHook(sh,name){const P=XPAT.pat[name],S=XPAT.stone;
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+XP_GLSL.vpars).replace('#include <begin_vertex>','#include <begin_vertex>\n'+XP_GLSL.vmain);
  const body='{vec3 an=abs(normalize(vXpN));vec2 q=(an.y>.5)?vXpW.xz:((an.x>an.z)?vec2(vXpW.z,vXpW.y):vec2(vXpW.x,vXpW.y));float w=1.0,g=0.0,sh=1.0;vec2 vo=vec2(0.);\n'+
   XP_GLSL.kind[P.kind](P)+
-  'float vl=dot(mapTexelToLinear(texture2D(map,(q+vo)*.31+vec2(w*.37,g*.11))).rgb,vec3(.3333));float vn=smoothstep(.0,.14,.30-vl)*'+S.vein.toFixed(2)+';\n'+
-  'vec3 cw='+xpLin(S.white)+'*(1.0-.24*vn);vec3 cb=mix('+xpLin(S.black)+',vec3(.30),vn*.34);vec3 cg='+xpLin(S.gold)+';\n'+
+  'float vl=dot(mapTexelToLinear(texture2D(map,(q+vo)*.31+vec2(w*.37,g*.11))).rgb,vec3(.3333));float vn=smoothstep(.05,.17,.27-vl)*'+S.vein.toFixed(2)+';\n'+
+  'vec3 cw='+xpLin(S.white)+'*(1.0-.24*vn);vec3 cb=mix('+xpLin(S.black)+',vec3(.34),vn*.3);vec3 cg='+xpLin(S.gold)+';\n'+
   'diffuseColor.rgb*=mix(mix(cb,cw,w),cg,g)*sh;}\n';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+XP_GLSL.fpars).replace('#include <map_fragment>',body).replace('#include <color_fragment>','')
   .replace('#include <roughnessmap_fragment>','float roughnessFactor=roughness;').replace('#include <metalnessmap_fragment>','float metalnessFactor=metalness;');}
@@ -102,6 +102,7 @@ kdef('xp_solid',VBOX,xpMat('solid'));kdef('xpCol_solid',XCOL,xpMat('solid'));kde
 kdef('xpOct_solid',XOCT,xpMat('solid'));kdef('xpDisc',XP_DISC,xpMat('solid'));kdef('xpGore',XP_GORE,xpMat('solid'));kdef('xpRib',XP_RIB,MAT.xGoldDS);kdef('xpRibO',XP_RIBO,MAT.xGoldDS);kdef('xpBall',VBALL,xpMat('solid'));
 kdef('xpHole_chevron',XP_SQHOLE,xpMat('chevron'));kdef('xpHole_band',XP_SQHOLE,xpMat('band'));kdef('xpHole_wash',XP_SQHOLE,MAT.xWash);
 kdef('xpKey',XP_RUN,xpMat('key'));
+kdef('xpBal',new THREE.CylinderGeometry(1,1,1,6).translate(0,.5,0),xpMat('solid'));   // a baluster: six sides are enough at 11 cm
 kdef('xpShellT',XP_SHELL,MAT.xTiles);kdef('xpShellG',XP_SHELL,MAT.xGold);kdef('xpShellM',XP_SHELL,MAT.xMosB);kdef('xpShellW',XP_SHELL,MAT.xWash);
 kdef('xpGlassDisc',XDISC,KGLASS.material(THREE,'clear'));kdef('xpCrystal',new THREE.OctahedronGeometry(1,0),KGLASS.material(THREE,'lit'));
 // ---------------------------------------------------------------- helpers (local frame; y = the BASE of a piece, as the kit's)
@@ -150,7 +151,7 @@ function xpRings(x,y,z,r,n,dy){xpLib();dy=dy==null?.012:dy;for(let k=0;k<n;k++){
 function xpRunner(x,y,z,w,len,ry){xpLib();kput('xpKey',[x,y,z],qEuler(0,ry||0,0),[w,1,len]);}
 function xpSqHole(pat,x,y,z,w,h,d){xpLib();kput('xpHole_'+pat,[x,y,z],null,[w,h,d],pat==='wash'?(XP_INK.wash||(XP_INK.wash=xC(XPAL.wash[2]))):null);}
 function xpBalustrade(a,b,ya,yb,o){xpLib();o=o||{};const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),n=Math.max(1,Math.round(L/(o.pitch==null?.45:o.pitch))),h=o.h==null?.95:o.h,ry=Math.atan2(dx,dz);
- for(let i=0;i<=n;i++){const t=i/n;kput('xpCol_solid',[a[0]+dx*t,ya+(yb-ya)*t,a[1]+dz*t],null,[.055,h,.055],xpInk('W'));}
+ for(let i=0;i<=n;i++){const t=i/n;kput('xpBal',[a[0]+dx*t,ya+(yb-ya)*t,a[1]+dz*t],null,[.055,h,.055],xpInk('W'));}
  const pit=Math.atan2(yb-ya,L);kput('xGoldB',[(a[0]+b[0])/2,(ya+yb)/2+h+.04,(a[1]+b[1])/2],qEuler(0,ry,0).multiply(qEuler(-pit,0,0)),[.12,.08,Math.hypot(L,yb-ya)+.1],xpGold());}
 function xpChandelier(x,y,z,r,drop){xpLib();const g=xpGold();vB('xGoldB',x,y-drop,z,.05,drop,.05,0,g);
  for(let t=0;t<3;t++){const rr2=r*(1-t*.3),yy=y-drop-.25-t*.5,n=Math.round(22-t*6);kput('xDiscG',[x,yy+.34,z],null,[rr2*.3,.03,rr2*.3],g);for(let k=0;k<n;k+=2){const a=k/n*TAU;vB('xGoldB',x+Math.sin(a)*rr2*.65,yy+.3,z+Math.cos(a)*rr2*.65,.03,.03,rr2*.7,a,g);}
