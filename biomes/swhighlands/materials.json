@@ -186,6 +186,34 @@
    },
    "size": 512
   },
+  "caveRock": {
+   "lib": "rock.limestone.karst",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.2,
+   "own": true
+  },
+  "ground.sand": {
+   "lib": "ground.coast_sand_01",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "own": true
+  },
   "rockDetail": {
    "lib": "rock.limestone.karst",
    "scale": [

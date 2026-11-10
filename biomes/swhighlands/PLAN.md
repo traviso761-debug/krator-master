@@ -11,8 +11,10 @@ the landslide lake, the sandstone tableland at Span, its pillar rim (the paintin
 Ring Sea's level has not changed, so **no raised reef terraces**. The flora is alien and fungoid, the native highland
 counterpart of the bay; the references are in `refs/`. Some of it is backfilled into the bay (`biomes/swbay/PLAN-FLORA.md`).
 
-**Status: station 1 built (2026-10-26, branch `claude/swhighlands-s1-04f512`)** on the owner's go-ahead for station 1; the plan's
-open questions stay open (section 10, and the station's own in `KNOWN_ISSUES.md`). Stations 2-5 are not built.
+**Status (2026-11-09, branch `claude/swhighlands-rest-f8a7ee`):** every station is built: 1 (the ring folds), 2 (the rain wall,
+`-rainwall`), 3 (Span's tableland, `-span`), 4 (the pillar rim, `-pillars`), 5 (the fan coast, `-coast`), 6 (the treeline, `-treeline`)
+and 7 (the ridge karst, `-caverns`: the owner's limestone caverns, section 7). The plan's open questions stay open (section 10, and the
+stations' own in `KNOWN_ISSUES.md`).
 
 ## 0. What the kit is
 
@@ -66,6 +68,30 @@ moves) and `KSTACKS.weather`; KSTRATA's `pillar` recipe laid level; `core/water`
 **It is the biome only** (the owner, 2026-10-27: Span the asset, Span the settlement and station 4 the biome strictly apart): it
 reads nothing of `settlements/span` and draws nothing of it. What a settlement may build on it publishes as plain data
 (`SWHI_PILLARS_SITE`, the page's `site` exporter: BIOME-API.md "Station 4's site"); it holds the watch pillar's top bare for one.
+
+**The stations built on 2026-11-09** (`--station rainwall`, `span`, `caverns`) take station 1's modules, and:
+- **all three: `core/shadow`** (`KSHADOW`, BACKPORT.md's universal set: toggleable, OFF at load; `stations/shared/89zz-host-shadow.js`
+  attaches it only where the ground has a texture unit to spare, so the caverns, on station 1's 16-unit ground, report it skipped).
+- **The rain wall (station 2)**: core/terrain's **`38c-core-landforms.js`** (`KRELIEF.runout`: the rock avalanche that dams the lake, its
+  hummocks and megablocks), `37b-core-stacks-contour.js` and `KSTACKS.weather` (the fluted pinnacles), `KRELIEF.range` and `river`;
+  `core/water` (the lake a still, the seep a flow, its falls, wet ground and puddles) with **`ext/58-core-water-mirror.js`**
+  (`WATER.mirrorSwitch` on the lake, off at load); its own stage (`stations/rainwall/`). Not taken: `KCARVE` (no cave), `core/mask`
+  (nothing placed from a canvas). The drowned trees are a kit pass shipped with the station (`58b`, KRAND by cell).
+- **Span's tableland (station 3)** stands on station 4's ground whole (`stations/span/INHERIT`: the table, its eroded joints,
+  `KRELIEF.tableland`, `KSTACKS.pillars`, Span's canyon and reservoir, Pan Riba) and adds its fields (table, dome, swamp, pool), the
+  seep pools (core/water stills) and the twin falls (flows and falls) in `48-host-tableland.js`; **swlowlands read in place**
+  (`station.json` `kin`: its 50 and 55, the flayed madrone by `SWLOW.make`/`grow`; the tier cedar held back, `KNOWN_ISSUES.md`). Not taken: `38c` (no landform it owes).
+- **The fan coast (station 5)**: its own stage (`stations/coast/`) on `KRELIEF.range` (the scarp's spurs) and **`KRELIEF.wadi` with its
+  fan** (the wadis' floors and their cones, run on under the sea), `KSTACKS` (the sea arches, `KSTACKS.archRound`, and the stacks),
+  **core/water's open water** (`WATER.open`: the Ring Sea with its swell and the shared wave field, the bed from the ground, the shore
+  flooded from out at sea; a flat outer sea for the far country) and `ATMOS.skylight`; **the crater drylands read in place**
+  (`kin`: its 50, 52 and 55, the yucca and the sword spire by `CRATERDRY.make`/`grow`); its beach's sand is this kit's own family
+  (`ground.sand`, `own`). Not taken: `KCARVE` (the sea caves are owed), `38c` (a fan delta's foreset is no core form yet).
+- **The ridge karst (station 7, the limestone caverns)** is station 1's ground with **`KKARST`** (`39c-core-karst.js`: the branchwork's
+  plan, its dolines through KRELIEF), **`KCAVERN`** (`39-core-cavern.js`: the voids meshed in 16 m chunks) and **`KSPELEO`**
+  (`39b-core-speleo.js`, `LIMESTONE`), and `core/hazard` (the sumps' drowning, the shafts' falls); `src/45` and `src/99` hand a station
+  their hooks (`SWHI_STATION_GROUND`, `STATION_VIEWS`, `STATION_TAKE`, `STATION_CHECKS`), which change nothing on station 1's page.
+  Not taken: KKARST's `hypogene` kind (this is a meteoric branchwork: the rain wall's water sinking on the ridge's up-dip side), `KGEODE`.
 
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26)
 
@@ -269,10 +295,14 @@ scarp's foot.
    bridges a short walk up the gorge.
 2. **The rain wall and the landslide lake** (`-rainwall`, ~2-2.9 km, in cloud): the lake behind its hummocky dam, drowned
    trees, a fresh scar with stilt pod trees and shelf coral, weeping wisps, glow tubes and bearded triplets, a fishing
-   bridge over the outlet seep, fluted pinnacles on the ridge above.
+   bridge over the outlet seep, fluted pinnacles on the ridge above. Built 2026-11-09 (`stations/rainwall/`): a 4.8 km map, the
+   valley floor at 2,780 m; the rock avalanche (`KRELIEF.runout`, 55 m thick) off the shaded north wall dams it, the lake at ~2,890 m
+   (model: 2,878 m) with 12 m of freeboard to the dam's lowest crest; the seep from the dam's toe falls ~170 m over the valley's
+   hanging lip into a plunge gorge (the thread of falls, `refs/34`, at a station's scale); nine fluted pinnacles on the north wall.
 3. **Span's tableland** (`-span`, ~2.5-3 km): slot canyons, a hanging swamp with cell lamps, wing reeds and bulb
    trumpets, beehive domes, torch spikes, the twin falls at the rim; **Span's canyon** with the arcology's ruin down its
-   walls and across it, the lake upstream.
+   walls and across it, the lake upstream. Built 2026-11-09 on station 4's map (`stations/span/`, `INHERIT`): the canyon and the
+   reservoir are station 4's; the ruin is `settlements/span`'s and not drawn (the biome strictly apart, as station 4).
 4. **The pillar rim** (`-pillars`, the tableland's south-west edge, ~2.3-2.6 km): the painting: red and white towers in mist,
    anemone trees on their tops, the green floor and Pan Riba's meanders. Built 2026-10-27 (`stations/pillars/`): a 3.2 km map,
    the table's top 270 m over the floor, its cliff wandering east-west, 40 towers in a 430 m band beyond it (the joints 64-130 m
@@ -286,7 +316,18 @@ scarp's foot.
    Station 1's rules carry over (KRAND by cell, KFIELD ground, impostors past 800 m); the cirque is the kit's own bowl on the field
    (no core cirque form yet).
 5. **The fan coast** (`-coast`, optional, the ecotone): the dry scarp with the star-fruit caudex, arrowheads and coral
-   melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore.
+   melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore. Built 2026-11-09
+   (`stations/coast/`): a 4.8 km map at the sea's level, the scarp rising west to ~1.7 km, three wadis and their fan deltas, two sea
+   arches and four stacks on the beach, two flysch platforms in the wave-cut band; the crater drylands' yucca and its sword spire
+   (a glaucous cousin) with 59c's flora. Owed: the sea caves, and Drum's lights (the city is `settlements/drum`'s).
+7. **The ridge karst** (`-caverns`; the owner, 2026-11-03: limestone caverns, "maybe a new station"; `biomes/KARST-SITES-5.1.md`
+   site 2): station 1's ground with the cave under its limestone ridge (`KKARST` branchwork, `KCAVERN`, `KSPELEO`). The river cave
+   is the system's spring (a sump riser under its alcove's floor); sinks and dolines on the ridge's up-dip side and in the east
+   strike valley; the gorge's sink drains in by a shaft; keyhole passages carry the streams down to the spring; an older dry level
+   55 m up under the ridge (its passages kept only under 12 m of rock or more) is joined by a shaft and dressed most; two skylit
+   chambers under the east valley open to the sky through wells cut in the ground. The site's call is taken but for its gradient
+   (.008, not .02: at .02 the main level broke out under the east valley's floor). The Cube link the owner approved (2026-11-03)
+   belongs to site 3 (the rift's gypsum maze), not this cave.
 
 ## 8. Textures
 

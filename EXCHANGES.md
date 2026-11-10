@@ -166,6 +166,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### crater drylands N ↔ swhighlands
 
 - **Existing exchanges: none.** `swhighlands/PLAN.md:98` only names the crater drylands as a neighbour.
+- **Taken (2026-11-09, `claude/swhighlands-rest-f8a7ee`):** swhighlands' station 5 (`-coast`) grows the crater drylands' `yucca` in place and its`n  `swordspire` as the glaucous cousin (`stations/coast/87-host-kin.js`: `CRATERDRY.make`/`grow`).
 - **Shared ground:** swhighlands' dry east scarp and its fan deltas are station 5, `-coast`, in the rain shadow
   (~400 mm). Its low Csa is at about 1.8 km (+15 °C).
 
@@ -339,7 +340,9 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### swhighlands ↔ swlowlands
 
 - **swlowlands → swhighlands: exists (plan).** `swhighlands/PLAN.md` section 3: the sprawl oak (as the derived sprawl cap),
-  `cedar`, `madrone` and `manzanita`.
+  `cedar`, `madrone` and `manzanita`. **Built in part (2026-11-09):** the flayed madrone grows on swhighlands' station 3
+  (`-span`) in place (`stations/span/87-host-kin.js`); the tier cedar is held back (the core attach audit), the sprawl cap and the
+  manzanita are still owed.
 - **swhighlands → swlowlands: exists (plan).** `swlowlands/PLAN-FLORA.md`: `fishingbridge`, a red lattice sprawl derived
   from `latticeoak`, `coralmelon`, and bead coral.
 - No proposals needed.

@@ -65,6 +65,15 @@ if STATION:
     SD = os.path.join(HERE, 'stations', STATION)
     if not os.path.isdir(SD):
         sys.exit('build.py: no station ' + STATION)
+    # a station may stand on another's ground: stations/<name>/INHERIT names it (station 3, Span's tableland, on the pillar rim's map:
+    # the table, its slots, Span's canyon and reservoir are one ground); the other's fragments go first, this station's win
+    ih = os.path.join(SD, 'INHERIT')
+    if os.path.isfile(ih):
+        with open(ih, encoding='utf-8') as fh:
+            base = [ln.strip() for ln in fh if ln.strip() and not ln.startswith('#')][0]
+        for f in os.listdir(os.path.join(HERE, 'stations', base)):
+            if f.endswith(('.js', '.html')):
+                PATH[f] = os.path.join(HERE, 'stations', base, f)
     for f in os.listdir(SD):
         if f.endswith(('.js', '.html')):
             PATH[f] = os.path.join(SD, f)
@@ -128,8 +137,32 @@ if STATION == 'treeline':
     PATH['89-atmos-fx-snowcover.js'] = core('atmos', 'fx', '89-atmos-fx-snowcover.js')
 # THE PILLAR RIM contours its towers with core/terrain's opt-in companion (KSTACKS.contour: the profile thinning in and out, joints,
 # a split crown), listed here only, so no other station's page moves
-if STATION == 'pillars':
+if STATION in ('pillars', 'span', 'coast'):
     PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
+# THE CAVERNS (station 7, the karst under station 1's limestone ridge: biomes/KARST-SITES-5.1.md site 2) take core/terrain's cavern
+# (KCAVERN), speleothems (KSPELEO) and karst (KKARST, which adds the 'doline' kind to KRELIEF), and core/hazard for the drowning and the falls
+if STATION == 'caverns':
+    for f in ('39-core-cavern.js', '39b-core-speleo.js', '39c-core-karst.js'):
+        PATH[f] = core('terrain', f)
+    PATH['20-core-hazard.js'] = core('hazard', '20-core-hazard.js')
+    PATH['37-core-traps.js'] = core('biome', '37-core-traps.js')   # core/hazard's one clock (KTRAPS.cycle), as nwbay's caverns take it
+# THE RAIN WALL (station 2) lays its landslide dam with core/terrain's landforms (KRELIEF.runout: the sturzstrom, its hummocks and
+# megablocks, the lake behind it) and its fluted pinnacles with KSTACKS' contour
+if STATION == 'rainwall':
+    PATH['38c-core-landforms.js'] = core('terrain', '38c-core-landforms.js')
+    PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
+    PATH['58-core-water-mirror.js'] = core('water', 'ext', '58-core-water-mirror.js')   # the lake's reflections switch, off at load
+# THE FAN COAST reads the crater drylands' kit in place (stations/coast/station.json "kin"), and with it the biome core's pieces that kit's
+# builders take and this kit's own page does not: KFIRE (its 52 is an adapter onto it), the limb joints and the variants
+if STATION == 'coast':
+    for f in ('31j-core-joint.js', '32-core-variants.js', '38-core-fire.js'):
+        PATH[f] = core('biome', f)
+# THE SUN'S SHADOWS (core/shadow, KSHADOW: BACKPORT.md's universal set; the owner, 2026-11-03: toggleable and OFF at load) on the stations
+# built since the rebuild; stations/shared/89zz-host-shadow.js attaches it where the ground has a texture unit to spare (station 1's has none)
+if STATION in ('rainwall', 'span', 'caverns', 'coast'):
+    PATH['10-core-shadow.js'] = core('shadow', '10-core-shadow.js')
+    PATH['12-core-shadow-host.js'] = core('shadow', 'host', '12-core-shadow-host.js')
+    PATH['89zz-host-shadow.js'] = os.path.join(HERE, 'stations', 'shared', '89zz-host-shadow.js')
 if PREVIEW:
     PV = os.path.join(HERE, 'stations', STATION or '', 'preview')
     if STATION != 'pillars' or PREVIEW != 'span' or not os.path.isfile(os.path.join(PV, 'span-watch.frozen.json')):
@@ -141,6 +174,36 @@ if PREVIEW:
         with open(mp, encoding='utf-8') as fh:
             VIRTUAL['89x-preview-span-data.js'] += "// FROZEN: Span's layout parts as volumes (freeze_span.py --massing)\nconst SPAN_MASSING=" + fh.read().strip() + ";\n"
     PATH['89y-preview-span.js'] = os.path.join(PV, '89y-preview-span.js')
+# A STATION'S station.json (stations 3 and 5, 2026-11-09):
+#   "kin": {"<kit>": [[fragments], "<API>", [pack families]]}  THE NEIGHBOURS' KITS, read in place (nhighlands' build.py, its foothills
+#       station): each kit's fragments slot after the host stage (45) and before this kit (50), in their own registry, closed by a
+#       one-line kitEnd; its pack carries only the families named. Station 3 grows swlowlands' cedar and madrone, station 5 the crater
+#       drylands' yucca and sword spire, with their own builders (SWLOW / CRATERDRY .make and .grow)
+#   "own": [families]  this kit's `own` families (materials.json "own": true: a set only that station uses, kept off every other page's
+#       pack so they keep their bytes), packed under the key 'swhighlands-own'
+SJ = {}
+if STATION and os.path.isfile(os.path.join(HERE, 'stations', STATION, 'station.json')):
+    import json as _json
+    with open(os.path.join(HERE, 'stations', STATION, 'station.json'), encoding='utf-8') as fh:
+        SJ = _json.load(fh)
+    for _i, (_k, _v) in enumerate(sorted(SJ.get('kin', {}).items())):
+        _fs, _api, _keep = _v[:3]
+        _nm = _v[3] if len(_v) > 3 else _k   # the kit's registry and pack name when it is not its folder's (crater-drylands: 'craterdry')
+        _d = os.path.normpath(os.path.join(HERE, '..', _k)); _c = 'defgh'[_i]
+        for _j, _f in enumerate(_fs):
+            PATH['47%s%d-%s' % (_c, _j, os.path.basename(_f))] = os.path.join(_d, _f)
+        VIRTUAL['47%s-%s-open.js' % (_c, _k)] = "\nBIO.kit('%s');   // its own registry\n" % _nm
+        VIRTUAL['47%s9-%s-end.js' % (_c, _k)] = "\nBIO.kit('%s');BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)\n" % (_nm, _api)
+        _fam = []
+        _pj = os.path.join(_d, 'tex', 'pack.json')
+        if os.path.isfile(_pj):
+            with open(_pj, encoding='utf-8') as fh:
+                _fam = sorted(_json.load(fh).get('families', {}))
+        VIRTUAL['44%s-host-matlib-pack-%s.js' % (_c, _k)] = matlib_pack.fragment(_d, _nm, exclude=[f for f in _fam if f not in _keep])
+    if SJ.get('own'):
+        with open(os.path.join(HERE, 'tex', 'pack.json'), encoding='utf-8') as fh:
+            _all = sorted(_json.load(fh).get('families', {}))
+        VIRTUAL['44o-host-matlib-pack-own.js'] = matlib_pack.fragment(HERE, 'swhighlands-own', exclude=[f for f in _all if f not in SJ['own']], own=True)
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos: its core, presets, weather, export, the wave field and the sky's light, bound by 89a-host-atmos.js
