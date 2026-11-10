@@ -313,7 +313,7 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "2e308e32ac7c"
+  "4ed1a939f4cc"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -337,7 +337,7 @@
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "2c4da8ac56aa"
+  "7c297f752e6d"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -641,7 +641,7 @@
  ],
  "95-host-probe.js": [
   "core/host",
-  "4c60a9746384"
+  "4abec5c5a961"
  ],
  "95-locus-doors.js": [
   "locus",
