@@ -5,7 +5,12 @@
  "reads": {
   "39-core-cavern.js": "core/terrain/39-core-cavern.js",
   "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
-  "89-atmos-fx-lava.js": "core/atmos/fx/89-atmos-fx-lava.js"
+  "89-atmos-fx-lava.js": "core/atmos/fx/89-atmos-fx-lava.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
  },
- "tex": ["scree", "lavaCrust", "lichenCrust"]
+ "tex": [
+  "scree",
+  "lavaCrust",
+  "lichenCrust"
+ ]
 }

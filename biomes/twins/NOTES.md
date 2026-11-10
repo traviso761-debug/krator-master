@@ -71,9 +71,10 @@ two pixels are 8.9 km apart; the plan's 2 km pixels are coarser than its sprint)
   the oases' mats and mud read the sinter's or the travertine's grain; the ringisles high isle's way).
 - **The oasis** (`45a7-host-oasis.js`: `OASIS_MODEL`, data; `89c-host-oasis.js`: drawn): KTHERM's heat from a fault line vent and each spring,
   geyser, mud pot, fumarole and rill; the relief (sinter mounds with their pools sunk in them, cone mounds, mud pits, rills); the classes by
-  the heat (the plan's section 5 zones); the pools and mud pots as `WATER.spring`, the geysers as `WATER.geyser`; the steam (`oasisSmoke`, in
-  89b's one smoke call with the station's own: `STATION_SMOKE`); the hazards (scald, gas vents, hot ground, and the CO2 that pools in the
-  fissure at night: `TWINS.nightPool`, kit-side); the oasis's air (`oasisTemp`). The oasis pass (`60`: `TWINS.buildOasis`) puts the sedge,
+  the heat (the plan's section 5 zones); the pools as `WATER.spring`, the mud pots as `WATER.mudpot`, the geysers as `WATER.geyser`, the fumaroles' steam
+  as `WATER.fumarole` (core/water/geyser 52c, 52d); the other steam (`oasisSmoke`, in 89b's one smoke call with the station's own:
+  `STATION_SMOKE`); the hazards (scald, gas vents, hot ground, and the CO2 that pools in the fissure at night in still air: core/hazard's
+  `KHAZ.ENV.nightGas`, 22-core-hazard-env.js; 89c binds it the host clock and core/atmos's wind); crusts through `twinsCrust` (`KHAZ.ENV.crust`); the oasis's air (`oasisTemp`). The oasis pass (`60`: `TWINS.buildOasis`) puts the sedge,
   ferns, cushions, dwarf agate-pines and brimstone needles by the heat.
 - **A Twin under the station** (`89b`: within 6 km) is not drawn as a far plume: the station draws its own steam.
 - **The kit's new items** (`50`): sedge (the library's sedge card), the dwarf agate-pine's bole and flagged crown, brimstone needles, a sinter
@@ -109,8 +110,8 @@ runs 600 m at 6 degrees from a portal in a collapsed trench, seventeen counterfe
 a blind amphitheatre open to the sky (66 m walls): the pond, 90 m across at 4,890 m, is core/atmos's lava (`ATMOS.lavaMaterial`, the
 library's lava crust for the grain), its glow on the glow layer; round it the silvery blister crust 0.23 m over the lava and the ash-dusted
 ramp from the tube's mouth onto it. Hazards (records first): the pond (`KHAZ.GROUND.lavaLake`) and its SO2 (`gasVent`), the crust (a heat
-record with a weight trigger and the kit's own state `TWINS.crust`: it breaks underfoot), the CO2 that pools in the amphitheatre at night
-(`shape.pool`, `TWINS.nightPool`), steady gas in the tube's lower end. Ten abandoned strongboxes and wreck planks and wheels on the rim
+crust and the lava under it, core/hazard's `KHAZ.ENV.crust`: a walker crosses, a laden mule breaks it, a new skin in ten minutes), the CO2
+that pools in the amphitheatre at night in still air (core/hazard's `KHAZ.ENV.nightGas`), steady gas in the tube's lower end. Ten abandoned strongboxes and wreck planks and wheels on the rim
 (`TWINS.putLeavings`, the station's kit fragment `55`). The NW Twin 16 km north-north-west.
 
 ## Station 4, the Valley of the Iron Shroud (Trap F1)
@@ -121,7 +122,7 @@ Open Sprint 1), eased back into the map past 4.4 km. At the mouth the lie: a luk
 KTHERM vent: 16 C ground, +12 C air, no snow on it). Four kilometres in, the reverse-sloped terminal moraine (its crest 45 m over the basin
 behind it); the basin sealed (its lowest way out 42 m over its floor), blue ice on its floor, the rimed wreckage of forty caravans (the kit's
 planks, wheels and strongboxes), ~400 blocks of spalled ice under the headwall, KGLACIER's seracs (158) along the hanging glacier's lip. The
-cold sink: -7 C by day, -34 C on the floor at night (a cold-pool record with `shape.pool` and the kit's night state). The Guide's Needle: a
+cold sink: -7 C by day, -34 C on the floor at night (core/hazard's cold-air pool, `KHAZ.ENV.coldPool`, on the host clock and the wind). The Guide's Needle: a
 0.7 m chimney slot up the east wall with 1,324 iron rungs from the talus to the rim (5,322 m).
 
 ## Station 5, the Rime Twin (the SE Twin's summit)
@@ -130,7 +131,7 @@ Site px 1042, 1498 (5,420 m, 0.81 atm, -18 C mean: `STN.tempBias`). The station 
 summit caldera 3.9 km across under a basalt wall 320-490 m high (its highest point 5,882 m: the map's rim), the flank eased into the map past
 4.4 km; an ice cap up to 30 m thick over the floor, melted back round the inner vent (a pit 150 m across, 55 m deep, sulphur and ash, bare
 warm ground on KTHERM, its own steam column); 24 fumarolic ice towers 6-12 m (KGLACIER's `icetower`), each on a KTHERM fumarole with its gas;
-four steam caves melted into the ice margin, lit blue (KGLACIER's caves), thin ice over them (a fall hazard); tube 10's upper mouth an ice
+four steam caves melted into the ice margin, lit blue (KGLACIER's caves), thin ice over them (core/hazard's crust over the drop, as each crevasse's snow bridge); tube 10's upper mouth an ice
 cave at the south-east wall's foot; three boiling slush cauldrons (86 C); seracs and 22 crevasses along the margin. The heat, the cauldrons
 and the fumaroles go through `OASIS_MODEL` and 89c. At this site the gas giant hides the sun from about 9:30 to 12:00, so the day views
 are set to 13:36 (`STN.viewHour`).

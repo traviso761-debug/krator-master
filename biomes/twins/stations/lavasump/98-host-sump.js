@@ -32,10 +32,10 @@ const LCHK={
  grade(deg,len){const ok=deg>5&&deg<7&&len>500&&len<1200;return{ok,detail:deg.toFixed(2)+' degrees over '+len.toFixed(0)+' m'};},
  // the pond: 70-110 m across (the plan's 90 m), 1,100 C or more, open to the sky, in walls 50-80 m high
  pond(w,T,sky,walls){const ok=w>70&&w<110&&T>=1100&&sky&&walls>50&&walls<80;return{ok,detail:w.toFixed(0)+' m across, '+T+' C, the sky '+(sky?'over it':'NOT over it')+', its walls '+walls.toFixed(0)+' m'};},
- // the crust: a hand over the lava (under 1 m), a weight trigger; whole it hides the lava (k under .2, hidden), broken the lava is open (k 1)
- crust(trig,over,whole,broken){const ok=!!(trig&&trig.by==='weight'&&over>0&&over<1&&whole.k<.2&&whole.hidden&&broken.k>=1);
-  return{ok,detail:'trigger '+(trig?trig.by+' '+trig.mass+' kg':'none')+'; '+over.toFixed(2)+' m over the lava; whole k '+whole.k+(whole.hidden?' (hidden)':'')+', broken k '+broken.k};},
- // the gas pools in the amphitheatre at night, gone by noon; the tube's lower end always gassed
+ // the crust (core/hazard's, 89c's twinsCrustTest): a hand over the lava (under 1 m); a walker (80 kg) crosses, the lava held; a laden beast (400 kg) breaks it, the lava open
+ crust(T,over){const ok=over>0&&over<1&&T.walker===false&&T.heldK===0&&T.beast===true&&T.openK>=1;
+  return{ok,detail:over.toFixed(2)+' m over the lava; a walker '+(T.walker?'BREAKS IT':'crosses')+' (the lava under it k '+T.heldK+'), a laden beast '+(T.beast?'breaks it':'does not')+' (k '+T.openK+')'};},
+ // the gas pools in the amphitheatre at night in still air, gone by noon (core/hazard's night air: twinsNightK asks it); the tube's lower end always gassed
  gas(night,noon,tube){const ok=night>.9&&noon<.02&&tube>0;return{ok,detail:'the amphitheatre\'s CO2 at 23:00 '+night.toFixed(2)+', at noon '+noon.toFixed(2)+'; the tube\'s lower end '+tube.toFixed(2)};},
  // the portal: its trench open to the sky, the mouth open, the tube roofed 60 m in; its lower mouth open into the amphitheatre
  portal(trenchSky,mouthOpen,inRoof,lowOpen){const ok=trenchSky&&mouthOpen&&inRoof&&lowOpen;return{ok,detail:'the trench '+(trenchSky?'open':'roofed')+', the mouth '+(mouthOpen?'open':'shut')+', 60 m in '+(inRoof?'under rock':'OPEN TO THE SKY')+', the lower mouth '+(lowOpen?'open':'shut')};},
@@ -48,9 +48,8 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  {const t=sumpTubeSamples();add('the decoy tube: open, roofed',LCHK.tubes(t.open,t.roof,t.n));}
  {const L=TUBE.s1-80,deg=Math.atan((floorT(TUBE.s1)-floorT(80))/L)*180/Math.PI;add('the downgrade: 6 degrees, 500-1,200 m',LCHK.grade(deg,L));}
  add('the pond: 90 m of lava open to the sky in its walls',LCHK.pond(POND.r*2,POND.T,C.ceilingAt(0,0,POND.level+2)===null,PIT.rimY-POND.level));
- {const h=KHAZ.of(CAVE.crustRec)||CAVE.crustRec.tags.hazard,r={id:'probe-crust'};TWINS_CRUST.broken={};const whole=TWINS_CRUST.state(r,10);TWINS_CRUST.broken[r.id]=20;const br=TWINS_CRUST.state(r,30);TWINS_CRUST.broken={};
-  add('the blister crust: thin, it breaks under weight',LCHK.crust(h.trigger,PIT.apronY-POND.level,whole,br));}
- add('the gas: pooling at night in the amphitheatre, always in the tube\'s end',LCHK.gas(twinsNightK(23),twinsNightK(12),(KHAZ.of(CAVE.tubeGas)||{}).danger||0));
+ add('the blister crust: thin, a walker crosses, a laden beast breaks it (core/hazard)',LCHK.crust(twinsCrustTest(CAVE.crust),PIT.apronY-POND.level));
+ add('the gas: pooling at night in the amphitheatre, always in the tube\'s end (core/hazard)',LCHK.gas(twinsNightK(CAVE.poolRec,23),twinsNightK(CAVE.poolRec,12),(KHAZ.of(CAVE.tubeGas)||{}).danger||0));
  {const a=pAt(-30,0),b=pAt(4,0),c=pAt(60,0),d=sAt(70,0);
   add('the portal and the lower mouth',LCHK.portal(C.ceilingAt(a[0],a[1],terrainH(a[0],a[1])+1)===null,C.sdf(b[0],PORT.floor+3,b[1])>0,C.ceilingAt(c[0],c[1],floorT(TUBE.s1-60)+3)!==null,C.sdf(d[0],floorT(70)+3,d[1])>0));}
  add('the strongboxes on the rim',LCHK.boxes(CAVE.boxes||[]));
@@ -60,8 +59,9 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('the decoy choked',LCHK.tubes(t.open-4,t.roof,t.n));
  add('a 20-degree chute',LCHK.grade(20,600));
  add('a pond 300 m across',LCHK.pond(300,POND.T,true,66));
- add('a crust a metre and a half thick that never breaks',LCHK.crust({by:'weight',mass:120},1.5,{k:.1,hidden:true},{k:.1}));
- add('the gas there at noon',LCHK.gas(twinsNightK(23),twinsNightK(22),.5));
+ add('a crust a metre and a half thick that never breaks',LCHK.crust(twinsCrustTest(CAVE.crust,80,100),1.5));
+ add('a crust that breaks under a walker',LCHK.crust(twinsCrustTest(CAVE.crust,130,400),PIT.apronY-POND.level));
+ add('the gas there at noon',LCHK.gas(twinsNightK(CAVE.poolRec,23),twinsNightK(CAVE.poolRec,22),.5));
  add('the tube open to the sky 60 m in',LCHK.portal(true,true,false,true));
  add('the strongboxes in the pond',LCHK.boxes((CAVE.boxes||[]).map(b=>[b[0]*.2,b[1],b[2]*.2])));
  add('the NW Twin due east',LCHK.twin(16000,90,5980));

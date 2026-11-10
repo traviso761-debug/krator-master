@@ -43,7 +43,7 @@ const RIME=(function(){const K=KRAND,U=(i,s)=>K.unit(K.hash(WORLD,5,i,s));
 // THE HEAT (OASIS_MODEL, 45a7: KTHERM over the frozen ground; its springs the cauldrons, its fumaroles the vent's and the towers')
 const OASIS=OASIS_MODEL({name:'The Rime Twin',c:RIME.V,soil:-18,air:12,
  springs:RIME.cauldrons,geysers:[],mudpots:[],rills:[],
- fumaroles:[{x:RIME.V[0],z:RIME.V[1],T:95,reach:430}].concat(RIME.pitVents,RIME.towers.map(t=>({x:t.x,z:t.z,T:70,reach:14}))),
+ fumaroles:[{x:RIME.V[0],z:RIME.V[1],T:95,reach:430}].concat(RIME.pitVents,RIME.towers.map(t=>({x:t.x,z:t.z,T:70,reach:14,h:t.h,r:t.r*.6,name:'An ice tower\'s fumarole (its steam out of the chimney\'s top)'}))),
  box:[-2700,-2700,2700,2700]});
 // ---------------------------------------------------------------- the rock and the ice
 const STRATA=KSTRATA.create({seed:KR.hash(WORLD,0,5,0x57A7),formations:[{recipe:'tibasalt'}],range:[4600,6200],

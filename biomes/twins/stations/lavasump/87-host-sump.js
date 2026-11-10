@@ -7,19 +7,13 @@
 //                 cut in it. Cell 1.5 m. The rock's light is station 1's shader (stations/pyroduct/87-host-tube.js), the torches out and the
 //                 pond's red glow in; the counterfeit tally-marks cut over the arch
 //   THE CISTERN   the records (core/tags) before anything is drawn: the amphitheatre, the pond (KHAZ.GROUND.lavaLake), the blister crust (a heat
-//                 hazard with a weight trigger on the kit's own state 'TWINS.crust': it breaks under a laden mule and the lava is under it;
-//                 core/hazard's version is owed, KNOWN_ISSUES.md), the SO2 over the pond (KHAZ.GROUND.gasVent), the CO2 and SO2 pooling in
-//                 the amphitheatre at night (shape.pool, 'TWINS.nightPool') and always in the tube's lower end; then the strongboxes and the
+//                 crust that breaks underfoot: core/hazard's KHAZ.ENV.crust through 89c's twinsCrust: a walker crosses it, a laden mule
+//                 breaks it and the lava under it is open), the SO2 over the pond (KHAZ.GROUND.gasVent), the CO2 and SO2 pooling in the
+//                 amphitheatre at night in still air (core/hazard's KHAZ.ENV.nightGas) and always in the tube's lower end; then the strongboxes and the
 //                 wreck on the rim (the kit's items, TWINS.putLeavings), the pond's glow (core/atmos's glow layer: STATION_SMOKE adds it, once ATMOS exists)
 // The pond itself is drawn once the atmosphere is bound (89d-host-sump.js: core/atmos fx lava). STATION_TEMP: +22 C in the tube's air, hotter
 // toward the pond; the amphitheatre's air scorching near the lava.
 const CAVE={meshes:[],counts:{},C:null,marks:0};
-// THE CRUST'S STATE (kit-side; core/hazard's crust that breaks underfoot is owed): whole, it hides the lava (k .1: the heat through it, hidden);
-// a weight over its trigger's mass breaks it (TWINS_CRUST.step) and the lava is open (k 1) until a new skin forms (reform s)
-const TWINS_CRUST={broken:{},reform:600,
- step(rec,t,mass){const h=KHAZ.of(rec);if(h&&h.trigger&&mass>=h.trigger.mass){this.broken[rec.id||rec.name]=t;return true;}return false;},
- state(rec,t){const b=this.broken[rec.id||rec.name];if(b!=null&&t>=b&&t-b<this.reform)return{state:'broken',k:1,on:true,left:this.reform-(t-b)};return{state:'crusted',k:.1,on:true,hidden:true};}};
-if(KHAZ.STATES&&!KHAZ.STATES['TWINS.crust'])KHAZ.STATES['TWINS.crust']=(rec,h,t)=>TWINS_CRUST.state(rec,t);
 const sAt=(s,l)=>[TD[0]*s+TN[0]*(l||0),TD[1]*s+TN[1]*(l||0)];
 const FORK={s:TUBE.s1-400,len:70,a:.7,name:'The fork 400 m in (a blind side gallery) and the guide\'s raised bench (+4 m: where he steps up "to check the torch-draft ahead")'};
 function STATION_TEMP(x,y,z){const C=CAVE.C,g=terrainH(x,z),r=Math.hypot(x,z);
@@ -100,14 +94,17 @@ function stationBuild(){const t0=performance.now(),C=KCAVERN.create({ground:(x,z
  REGISTER({name:PORT.name,x:CAVE.mouth[0],z:CAVE.mouth[1],y:PORT.floor-1,r:PORT.r+PORT.rim,h:TUBE.h+24,kind:'feature',tags:{culture:'xanadui'}});
  {const f=sAt(FORK.s,-2);REGISTER({name:FORK.name,x:f[0],z:f[1],y:fT(FORK.s)-2,r:40,h:surfT(FORK.s)-fT(FORK.s)+8,kind:'feature'});}
  REGISTER({name:PIT.name,x:0,z:0,y:POND.level-3,r:PIT.rim,h:PIT.rimY-POND.level+8,kind:'feature',tags:{trap:'L1'}});
- const HZ=(name,x,z,y,r,h,hz)=>{const o={name,x,z,y,r,h,kind:'hazard',tags:{hazard:hz}};REGISTER(o);return o;};
+ const HZ=(name,x,z,y,r,h,hz)=>REGISTER({name,x,z,y,r,h,kind:'hazard',tags:{hazard:hz}});   /* the core/tags record back (core/hazard's queries take it) */
  CAVE.pondRec=HZ(POND.name,0,0,POND.level-3,POND.r,6,KHAZ.GROUND.lavaLake(POND.r,{}));
- CAVE.crustRec=HZ('The blister crust (paper-thin pahoehoe, dusted with ash: it looks like rock floor and breaks under a laden mule)',0,0,POND.level-1,POND.crust[1],4,
-  {kind:'heat',effect:'burn',danger:1,falloff:'none',shape:{type:'cyl',r:POND.crust[1],h:3,y0:0,y1:3},trigger:{by:'weight',mass:120,reset:0},stateFn:'TWINS.crust',
-   nav:{travel:6,enter:40,avoid:true},tell:{colour:'#ff5a1a',sign:'a red line in a crack at night; the ash warm to the hand'}});
+ /* the blister crust over the pond's margin (core/hazard 22): a 120 kg load breaks it (a laden mule; a walker crosses), the lava under it; a new skin in ten minutes */
+ CAVE.crust=twinsCrust({name:'The blister crust (paper-thin pahoehoe, dusted with ash: it looks like rock floor and breaks under a laden mule)',below:'The lava under the blister crust',
+  x:0,z:0,y:PIT.apronY,r:POND.crust[1],env:{mass:120,heal:600,below:'heat',depth:PIT.apronY-POND.level+1,
+   crust:{tell:{colour:'#ff5a1a',sound:'hollow',sign:'a red line in a crack at night; the ash warm to the hand'},nav:{travel:6,enter:40,avoid:true}},under:{effect:'burn',danger:1,falloff:'none'}}});
+ CAVE.crustRec=CAVE.crust.crust;
  CAVE.so2Rec=HZ('SO2 over the pond (the lava degassing)',0,0,POND.level-1,POND.r,14,KHAZ.GROUND.gasVent(POND.r,{danger:.7}));
+ /* the amphitheatre's night gas (core/hazard 22: KHAZ.ENV.nightGas): sheltered in its walls, it lies unless a strong wind reaches down (still 3, calm 7 m/s) */
  CAVE.poolRec=HZ('CO2 and SO2 pooling in the amphitheatre at night (dense, invisible: it fills the low after dusk)',0,0,POND.level-2,PIT.rim-6,14,
-  {kind:'gas',effect:'suffocate',danger:.9,falloff:'smooth',shape:{type:'cyl',r:PIT.rim-6,h:10,y0:0,y1:10,pool:3},stateFn:'TWINS.nightPool',nav:{travel:3,enter:8,avoid:false},tell:{colour:'#a0a070',sign:'the torch gutters low down'}});
+  KHAZ.ENV.nightGas(PIT.rim-6,{h:10,pool:3,from:19,to:7,ramp:2,still:3,calm:7,effect:'suffocate',danger:.9,nav:{travel:3,enter:8,avoid:false},tell:{colour:'#a0a070',sign:'the torch gutters low down'}}));
  {const p=sAt(115,0);CAVE.tubeGas=HZ('CO2 and SO2 in the tube\'s lower end (always: the gas the pond breathes drains back down the floor)',p[0],p[1],fT(115)-1,45,14,
   {kind:'gas',effect:'suffocate',danger:.55,falloff:'smooth',shape:{type:'cyl',r:40,h:12,y0:0,y1:12,pool:2},nav:{travel:2,enter:4,avoid:false},tell:{colour:'#a0a070',sign:'a sulphur smell, the lichens bright gold'}});}
  // ---- the leavings on the rim: strongboxes, a wagon's planks and wheels (betrayed caravans), each by its hash; their records first

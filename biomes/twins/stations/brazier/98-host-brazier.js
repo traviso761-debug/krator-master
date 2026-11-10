@@ -47,8 +47,8 @@ const BCHK={
  // the geysers: a cone that spouts 1.5-3 m every 20 minutes, a spouter that never stops
  geysers(G){const c=G.find(g=>g.style==='cone'),s=G.find(g=>g.style==='spouter');const ok=!!(c&&s&&c.H>=1.5&&c.H<=3.2&&Math.abs(c.period-1200)<1&&s.H<=3);
   return{ok,detail:G.map(g=>g.key+' '+g.style+' '+g.H+' m every '+g.period+' s').join('; ')};},
- // the gas pools in the fissure at night and is gone by noon (the kit's clock: twinsNightK)
- gas(night,noon){const ok=night>.9&&noon<.02;return{ok,detail:'the trough\'s CO2 at 23:00 '+night.toFixed(2)+', at noon '+noon.toFixed(2)};},
+ // the gas pools in the fissure at night in still air and is gone by noon, and a gale stirs it out (core/hazard's night air: twinsNightK asks it)
+ gas(night,noon,windy){const ok=night>.9&&noon<.02&&windy<.1;return{ok,detail:'the trough\'s CO2 at 23:00 '+night.toFixed(2)+' (still), at noon '+noon.toFixed(2)+', at 23:00 in a 6 m/s wind '+windy.toFixed(2)};},
  // the shrine stands on the ground, by Route B
  shrine(dy,dRoute){const ok=Math.abs(dy)<.6&&dRoute<70;return{ok,detail:'its plinth '+dy.toFixed(2)+' m off the ground, '+dRoute.toFixed(0)+' m from Route B'};},
  // the route: crosses the square, cairned every ~110 m
@@ -66,7 +66,7 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  add('the sedge on the warm turf only',BCHK.sedge(itemPositions('sedge',1),O.heatAt));
  {const T=STN_BUILT.hearths?STN_BUILT.hearths.trees:[];add('the pocket-hearths on 25-60 C (the Hearths read in place)',BCHK.hearths(T,O.heatAt,O.wet));}
  add('the geysers: a cone every 20 minutes, a spouter',BCHK.geysers(O.geysers));
- add('the fissure\'s CO2 pools at night',BCHK.gas(twinsNightK(23),twinsNightK(12)));
+ add('the fissure\'s CO2 pools at night in still air (core/hazard)',BCHK.gas(twinsNightK(O.gasRec,23),twinsNightK(O.gasRec,12),twinsNightK(O.gasRec,23,6)));
  add('the Shrine of the Split Horn stands by Route B',BCHK.shrine(SHRINE.y-terrainH(SHRINE.x,SHRINE.z),routeDist(SHRINE.x,SHRINE.z)));
  add('Route B: across the col, cairned',BCHK.route(ROUTE.len,B.cairns||0));
  return R;}
@@ -77,7 +77,8 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('sedge in the frost',BCHK.sedge(itemPositions('sedge',1).map(p=>[p[0]+1800,p[1],p[2],p[3]]),O.heatAt));
  {const T=STN_BUILT.hearths?STN_BUILT.hearths.trees:[];add('the hearths moved onto the cold col',BCHK.hearths(T.map(t=>Object.assign({},t,{x:t.x+1500})),O.heatAt,O.wet));}
  add('a geyser every hour',BCHK.geysers(O.geysers.map(g=>Object.assign({},g,{period:g.style==='cone'?3600:g.period}))));
- add('the gas there at noon',BCHK.gas(twinsNightK(23),twinsNightK(22)));
+ add('the gas there at noon',BCHK.gas(twinsNightK(OASIS.gasRec,23),twinsNightK(OASIS.gasRec,22),0));
+ add('the gas lying in a gale',BCHK.gas(twinsNightK(OASIS.gasRec,23),0,twinsNightK(OASIS.gasRec,23,0)));
  add('the shrine floating 3 m up',BCHK.shrine(3,routeDist(SHRINE.x,SHRINE.z)));
  add('a route with no cairns',BCHK.route(ROUTE.len,0));
  return R;}

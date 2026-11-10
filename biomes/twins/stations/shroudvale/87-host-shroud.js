@@ -7,20 +7,20 @@
 //                   material), leaning out over the lip; their spall and the fallen seracs on the basin's floor under the headwall
 //   THE NEEDLE      the Guide's Needle (PLAN.md section 4.2): a 0.7 m fissure chimney up the east wall, its iron rungs every 45 cm from the
 //                   basin's floor to the plateau's rim (a host mesh: the chimney's dark slot on the face, the rungs instanced)
-//   THE HAZARDS     the cold sink (kind cold, shape.pool: core/hazard/21-core-hazard-flow.js; its night clock the kit's 'TWINS.nightPool',
-//                   src/89c: a cold pool that fills at night is owed to core/hazard), the serac fall under the headwall (crush)
+//   THE HAZARDS     the cold sink (core/hazard's cold-air pool, 22-core-hazard-env.js: KHAZ.ENV.coldPool, stateFn 'KHAZ.night' on the host
+//                   clock and core/atmos's wind, 21's shape.pool), the serac fall under the headwall (crush)
 // STATION_TEMP: the seep's breath (+12 C a metre over it) and the sink (PLAN.md section 4.2: -8 C by day; after dusk the summit ice's air
 // pours over the headwall and pools behind the moraine, an inversion 50 m deep: -34 C on the floor by night).
 const STN_BUILT={wrecks:[],rungs:[],seracs:0,spall:0};
-const SINK={y0:BASIN_Y,top:CREST_Y+50,cold:-34};
-// the sink's air at height y on a night share n (0 day .. 1 night), the ambient amb there: pure, for the checks
+const SINK={y0:BASIN_Y,top:CREST_Y+50,cold:-34,rec:null};
+// the sink's air at height y on a night share n (0 day .. 1 night: the cold pool's own k, core/hazard's night law), the ambient amb there: pure, for the checks
 const sinkT=(amb,n,y)=>amb+(SINK.cold-amb)*n*smooth(SINK.top,SINK.y0+4,y);
 const ambAt=y=>{const s=SKY.state&&SKY.state.sunDir,e=s?(s.y==null?s[1]:s.y):0;return tempMean(y)+3.5*clamp(e*2.2,-1,1);};
 const _t={};
 function inSink(x,z){const V=valeAt(x,z,_t);return V.u>MOR.u&&V.d<.86&&V.head<.6;}
 function STATION_TEMP(x,y,z){const g=terrainH(x,z),dy=y-g;if(dy<-3)return null;
  const h=heatAt(x,z);if(h>1&&dy<5){const amb=ambAt(y);return amb+(12-amb)*smooth(1,10,h)*smooth(5,1,dy);}
- if(inSink(x,z)&&y<SINK.top){const hr=SKY.clock?SKY.clock.hour:12;return sinkT(ambAt(y),twinsNightK(hr),y);}
+ if(inSink(x,z)&&y<SINK.top){const n=SINK.rec&&KHAZ.state?KHAZ.state(SINK.rec,ATMOS.clock&&ATMOS.clock.t||0).k:0;return sinkT(ambAt(y),n,y);}
  return null;}
 // the face of a wall at u: p where the ground crosses height y, between the floor's edge and the rim (side +1 east, -1 west)
 function faceP(u,y,side){let a=.7,b=1.02;const W=halfW(u),c=pc(u),h=t=>{const q=vAt(u,c+side*t*W);return terrainH(q[0],q[1]);};
@@ -58,9 +58,11 @@ function stationBuild(){const t0=performance.now(),K=KRAND,u=(h,k)=>K.unit(K.has
  }finally{BIO.cur=null;BIO.range=null;BIO.kit(prevKit);}
  // ---- the hazards (records before anything is drawn)
  {const c=vAt((MOR.inn+VALE.u1)/2,pc((MOR.inn+VALE.u1)/2));
-  REGISTER({name:'The cold sink (behind the moraine: the summit ice\'s air pools here after dusk, -34 C by dawn)',x:c[0],z:c[1],y:SINK.y0-2,r:(VALE.u1-MOR.inn)/2+60,h:SINK.top-SINK.y0+2,kind:'hazard',
-   tags:{hazard:{kind:'cold',effect:'freeze',danger:1,falloff:'smooth',shape:{type:'cyl',r:(VALE.u1-MOR.inn)/2+60,h:SINK.top-SINK.y0,y0:0,y1:SINK.top-SINK.y0,pool:SINK.top-SINK.y0},
-    stateFn:'TWINS.nightPool',nav:{travel:3,enter:6,avoid:false},tell:{colour:'#9ab4d0',sign:'rime-fog filling the basin after dusk; the wreckage'}}}});
+  /* the cold-air pool (core/hazard 22): it fills from dusk (19:00, over 3 hours) and drains after dawn (07:00); sealed behind the moraine it
+     lies in any wind the vale's walls let down to its floor (still 6, calm 14 m/s) */
+  SINK.rec=REGISTER({name:'The cold sink (behind the moraine: the summit ice\'s air pools here after dusk, -34 C by dawn)',x:c[0],z:c[1],y:SINK.y0-2,r:(VALE.u1-MOR.inn)/2+60,h:SINK.top-SINK.y0+2,kind:'hazard',
+   tags:{hazard:KHAZ.ENV.coldPool((VALE.u1-MOR.inn)/2+60,{h:SINK.top-SINK.y0,pool:SINK.top-SINK.y0,from:19,to:7,ramp:3,still:6,calm:14,effect:'freeze',danger:1,falloff:'smooth',
+    nav:{travel:3,enter:6,avoid:false},tell:{colour:'#9ab4d0',sign:'rime-fog filling the basin after dusk; the wreckage'}})}});
   const f=vAt(VALE.u1-90,pc(VALE.u1-90));
   REGISTER({name:'Serac fall under the headwall (the hanging glacier calves)',x:f[0],z:f[1],y:terrainH(f[0],f[1])-2,r:halfW(VALE.u1)*.8,h:30,kind:'hazard',
    tags:{hazard:{kind:'crush',danger:.7,falloff:'linear',shape:{type:'cyl',r:halfW(VALE.u1)*.8,h:30}}}});}

@@ -5,9 +5,9 @@
 //                   the tower is the structure round it); their steam is 89b's (STATION_SMOKE: the fumaroles rise through the towers' tops)
 //   THE STEAM CAVES four melted into the ice's margin by the vent's breath, their mouths toward it, lit blue through the ice from within
 //                   (the drawer's cave: an outer shell and an inner face whose blue deepens away from the mouth); the thin ice over each
-//                   gives way under a laden beast (a 'fall' hazard with a weight trigger, kit-side)
+//                   gives way under a laden beast (core/hazard's crust, 22-core-hazard-env.js: twinsCrust in 89c)
 //   TUBE 10         its upper mouth under the south-east wall, the same drawer's cave, larger and deeper
-//   THE MARGIN      seracs spalled off the ice's front (the drawer's 'serac'), crevasses opened along it (each a 'fall' hazard)
+//   THE MARGIN      seracs spalled off the ice's front (the drawer's 'serac'), crevasses opened along it (each a snow bridge: core/hazard's crust over the fall)
 //   THE PLUME       the vent's steam column over the summit (a smoke kind of the station's own, 'pitsteam', added to core/atmos's smoke
 //                   preset when 89b asks STATION_SMOKE: one smoke call a page)
 // STATION_TEMP: +14 C inside a steam cave and tube 10's mouth, +10 C in a tower's breath, the warm ground's air by its heat; else the ice's.
@@ -29,12 +29,14 @@ function stationBuild(){const t0=performance.now(),out={towers:0,caves:0,seracs:
   BIO.range=2400;BIO.put('icetower',[t.x,t.y-.4,t.z],BIO.fn.qEuler((U(k,1)-.5)*.1,U(k,2)*TAU,(U(k,3)-.5)*.1),[t.r,t.h+.4,t.r],C3(ICEC[k%ICEC.length]).multiplyScalar(.95+.1*U(k,4)));out.towers++;});
  // ---- the margin: seracs and crevasses (each crevasse a fall: the snow bridges over them)
  RIME.seracs.forEach((r,k)=>{r.y=terrainH(r.x,r.z)-r.s*.35;BIO.range=900;GD.putSerac(r,C3(ICEC[(k+1)%ICEC.length]),r.y);out.seracs++;});
- RIME.crevs.forEach(c=>{const y=terrainH(c.x,c.z);REGISTER({name:'A crevasse (snow-bridged: it opens under a laden beast)',x:c.x,z:c.z,y:y-6,r:c.len/2,h:7,kind:'hazard',
-  tags:{hazard:{kind:'fall',danger:.8,falloff:'none',shape:{type:'cyl',r:Math.max(1,c.w),h:7},trigger:{by:'weight',mass:200,reset:0}}}});RIME_PROBE.push(c.x,y-1,c.z);});
+ /* each crevasse's snow bridge a crust (core/hazard 22: KHAZ.ENV.crust): it holds a walker and breaks under a laden beast (200 kg), the fall under it */
+ RIME.crevs.forEach(c=>{const y=terrainH(c.x,c.z),P=twinsCrust({name:'A crevasse\'s snow bridge (it holds a walker, it breaks under a laden beast)',below:'A crevasse (the drop under its snow bridge)',
+   x:c.x,z:c.z,y,r:Math.max(1,c.w),env:{mass:200,below:'fall',depth:6,under:{danger:.8,falloff:'none'}}});(RIME.crevRecs=RIME.crevRecs||[]).push(P);RIME_PROBE.push(c.x,y-1,c.z);});
  if(RIME.crevs.length){GD.crevasses(RIME.crevs,terrainH);out.crevasses=RIME.crevs.length;}
  // ---- the steam caves and tube 10's mouth (their records are the drawer's), the thin ice over each a fall
- RIME.caves.forEach(C=>{REGISTER({name:'Thin ice over a steam cave (it breaks under a laden beast)',x:C.x,z:C.z,y:C.floor+C.H-3,r:C.R*.8,h:6,kind:'hazard',
-   tags:{hazard:{kind:'fall',danger:.9,falloff:'none',shape:{type:'cyl',r:C.R*.8,h:5},trigger:{by:'weight',mass:250,reset:0}}}});RIME_PROBE.push(C.x,C.floor+C.H,C.z);
+ /* the thin ice over each a crust (core/hazard 22): it breaks under a laden beast (250 kg) and drops it into the cave */
+ RIME.caves.forEach(C=>{const P=twinsCrust({name:'Thin ice over a steam cave (it breaks under a laden beast)',below:'The steam cave under the thin ice (the drop)',x:C.x,z:C.z,y:C.floor+C.H,r:C.R*.8,
+   env:{mass:250,below:'fall',depth:C.H*.8,under:{danger:.9,falloff:'none'}}});(RIME.iceRecs=RIME.iceRecs||[]).push(P);RIME_PROBE.push(C.x,C.floor+C.H,C.z);
   GD.cave(C);out.caves++;});
  GD.cave(RIME.tube);
  BIO.cur=null;BIO.range=null;

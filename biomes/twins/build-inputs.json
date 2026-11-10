@@ -7,7 +7,7 @@
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -20,7 +20,7 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
@@ -116,10 +116,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins.html": "a6d9595f7b751f42bfa75883613f13471805104ea59cb97745694cbb352627f7"
+    "biomes/twins/dist/twins.html": "864d9e4acfacb98a314f007116b1e0e3d965c947a31fb1e6fedd5e685cb9377e"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins.html": "a6d9595f7b751f42bfa75883613f13471805104ea59cb97745694cbb352627f7"
+    "biomes/twins/dist/twins.html": "864d9e4acfacb98a314f007116b1e0e3d965c947a31fb1e6fedd5e685cb9377e"
    }
   },
   "build.py --station brazier": {
@@ -130,7 +130,7 @@
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -143,16 +143,16 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/twins/stations/brazier/44a-host-station.js": "05a598315492c350ede2cacb2a929d826d8abc0989623d913838e2120eb7c400",
     "biomes/twins/stations/brazier/45b-host-model.js": "2486fb092fdf1f6223ef0652405163988139d2b296303c8b8f0828405a398a01",
     "biomes/twins/stations/brazier/87-host-brazier.js": "b3f3dda36bb21702807a89b2861f92f07ba82ecb16256b21628a51bd4a23b9b3",
-    "biomes/twins/stations/brazier/98-host-brazier.js": "06b535b0fe32647ca0146eac43eed6df6f4d23de65625256f866793272c31489",
+    "biomes/twins/stations/brazier/98-host-brazier.js": "7c60ff921469555ee1ad85854f15710558be901c4a8f3e5d2c50a78a4690ff37",
     "biomes/twins/stations/brazier/region.json": "83fee4061f2403fea116d1b56287d7521a6ec0f214f4e2cca4f7904763ac92f9",
-    "biomes/twins/stations/brazier/station.json": "5aba8b863c4041d6bd9781fc6451ae87ca7aa0a65902456094c4feb16ba6ac79",
+    "biomes/twins/stations/brazier/station.json": "3be819f8a582c475fd6b080519db3c2f10b62b6d4a29c7791c0a7a03a0bf4050",
     "biomes/twins/tex/fern.albedo.webp": "76099989c6972f5531d648d15e7ed0a62acc7f26761d64cbbbdeb41a6992b91d",
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
@@ -199,6 +199,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
+    "core/hazard/22-core-hazard-env.js": "1a1268910123daffeffa30af01a378f20c067400c236a29f7d1b85d9bb3f613a",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -241,6 +242,8 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
+    "core/water/geyser/52c-core-water-thermal.js": "4d8efcd8c428fbb30d501de7d3902c2388a4d8e7723bfb5803335753588f6562",
+    "core/water/geyser/52d-core-water-thermal-draw.js": "a4fc70641f1693efaca913fef43a740616e7d5b6bd8a57f88d52fd8685d00d3b",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -252,19 +255,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-brazier.html": "c42bc6f67f04c012e0fb62af52ce5463fe798edf897cdbf0510b17e255419999"
+    "biomes/twins/dist/twins-brazier.html": "89030881e48c72bc10352aed64453715fa6d2a5f9069ac6551e852c30e57fcb6"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-brazier.html": "c42bc6f67f04c012e0fb62af52ce5463fe798edf897cdbf0510b17e255419999"
+    "biomes/twins/dist/twins-brazier.html": "89030881e48c72bc10352aed64453715fa6d2a5f9069ac6551e852c30e57fcb6"
    }
   },
   "build.py --station catchlookout": {
    "inputs": {
-    "biomes/twins/KNOWN_ISSUES.md": "32ace1293f82e36716950449cd771bae8dd8802754853700d0745f14e66c9530",
+    "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -277,7 +280,7 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
@@ -287,7 +290,7 @@
     "biomes/twins/stations/catchlookout/89d-host-terraces.js": "4c36654ae66febc4e93e0d33217c9a44e0e4d6a2f278e5548a2258250486263a",
     "biomes/twins/stations/catchlookout/98-host-lookout.js": "1feb37bc91dd721f199f3811aaead3a19372040adcac76c33251d314810191f1",
     "biomes/twins/stations/catchlookout/region.json": "032690c604e17a015140b234453ecc3607f2c40e79d10efb406f01cd3daab5f4",
-    "biomes/twins/stations/catchlookout/station.json": "9bf05aea155b278e7fac0e96f972943a1efe62f89a24d23529904b71da24caa5",
+    "biomes/twins/stations/catchlookout/station.json": "1f3e576843ce3f3b594fd9516a6d29cc49810c152b7729d34b18060afeedd293",
     "biomes/twins/tex/fern.albedo.webp": "76099989c6972f5531d648d15e7ed0a62acc7f26761d64cbbbdeb41a6992b91d",
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
@@ -331,6 +334,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
+    "core/hazard/22-core-hazard-env.js": "1a1268910123daffeffa30af01a378f20c067400c236a29f7d1b85d9bb3f613a",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -375,6 +379,8 @@
     "core/water/ext/53b-core-water-terraces-draw.js": "78f8318bc3edbb3765ca5120c81f89d991a4ae02b8c6dc5243025b269133b12f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
+    "core/water/geyser/52c-core-water-thermal.js": "4d8efcd8c428fbb30d501de7d3902c2388a4d8e7723bfb5803335753588f6562",
+    "core/water/geyser/52d-core-water-thermal-draw.js": "a4fc70641f1693efaca913fef43a740616e7d5b6bd8a57f88d52fd8685d00d3b",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -386,10 +392,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-catchlookout.html": "f535e3e81807b3d7256d70e26127ab0e6236d4f152edf654c44b048dbe632e04"
+    "biomes/twins/dist/twins-catchlookout.html": "128bf56e0ce2de714c54169bef909f68943bd982de95a3872721670ae150fbb8"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-catchlookout.html": "f535e3e81807b3d7256d70e26127ab0e6236d4f152edf654c44b048dbe632e04"
+    "biomes/twins/dist/twins-catchlookout.html": "128bf56e0ce2de714c54169bef909f68943bd982de95a3872721670ae150fbb8"
    }
   },
   "build.py --station erebustwin": {
@@ -398,7 +404,7 @@
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -411,16 +417,16 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/twins/stations/erebustwin/44a-host-station.js": "859b3446bdba41bf95239f86864fd3494e3b8b9eef2e6078ebe6c7a203c44f70",
-    "biomes/twins/stations/erebustwin/45b-host-model.js": "a45f0de0ba01570176891afc07eae805fcf512b6972998507c18dd5e66a59c43",
-    "biomes/twins/stations/erebustwin/87-host-rime.js": "92e925c62f356be74653a8b93f5a2ff214696e012deb4503791222661fbfd092",
-    "biomes/twins/stations/erebustwin/98-host-rime.js": "ae10f4074061dd9b16f53c7c7542c0e6ffc58a7268bacce2ddf40d3ac419fc68",
+    "biomes/twins/stations/erebustwin/45b-host-model.js": "d634d7b5f109a45df06baed746fab498f74de477a3f10c03f1d684ca5f6e83bc",
+    "biomes/twins/stations/erebustwin/87-host-rime.js": "90d8ba5c1a51398bf38b5ed45dd39750e6b6fe3c6f62205812bf851f088fd96a",
+    "biomes/twins/stations/erebustwin/98-host-rime.js": "a116870e2743b95722a6e826925f51df17de507a083a4363006863ed3fd53d9a",
     "biomes/twins/stations/erebustwin/region.json": "d5e76780856068ac24eddeee47987e0e7cd5a7f38ebedbfb9de528dac9be5725",
-    "biomes/twins/stations/erebustwin/station.json": "be65d53f23099a82a3e9d6bada66b526a3b2de60957b9d66ab09f2b56cd35469",
+    "biomes/twins/stations/erebustwin/station.json": "8d81a6ce6df7c94a64c6fdee4320003834a390f63f195aa45979bfc6ce9a3c91",
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/ice.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
@@ -462,6 +468,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
+    "core/hazard/22-core-hazard-env.js": "1a1268910123daffeffa30af01a378f20c067400c236a29f7d1b85d9bb3f613a",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -506,6 +513,8 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
+    "core/water/geyser/52c-core-water-thermal.js": "4d8efcd8c428fbb30d501de7d3902c2388a4d8e7723bfb5803335753588f6562",
+    "core/water/geyser/52d-core-water-thermal-draw.js": "a4fc70641f1693efaca913fef43a740616e7d5b6bd8a57f88d52fd8685d00d3b",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -517,10 +526,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-erebustwin.html": "5d01b2c0350510925e1faf0f932a24e1ce3d713d1a58a7374ab3b6ec5ba39ec8"
+    "biomes/twins/dist/twins-erebustwin.html": "5dfc5f8725f7d233389f7dbdfb7df1bb49c28ec4a78d6ee729ca75ec33d66ac8"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-erebustwin.html": "5d01b2c0350510925e1faf0f932a24e1ce3d713d1a58a7374ab3b6ec5ba39ec8"
+    "biomes/twins/dist/twins-erebustwin.html": "5dfc5f8725f7d233389f7dbdfb7df1bb49c28ec4a78d6ee729ca75ec33d66ac8"
    }
   },
   "build.py --station lavasump": {
@@ -529,7 +538,7 @@
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -542,18 +551,18 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/twins/stations/lavasump/44a-host-station.js": "7f7c7a3779da9e5d69c0776d0d66322585f7940e510efa623cde418faffea47a",
     "biomes/twins/stations/lavasump/45b-host-model.js": "3dcbde5c7a21a1b331320d4eb46a76793f9bd1555737671be335a066f7d56aef",
     "biomes/twins/stations/lavasump/55-biome-twins-sump.js": "38ff43959f520af432d9619a01d316c960283b81f8c8e2ad30137d4279a5ba6d",
-    "biomes/twins/stations/lavasump/87-host-sump.js": "034d213a74041d40412838404dd023abba2035cc51d882bfcc7a48a979015212",
+    "biomes/twins/stations/lavasump/87-host-sump.js": "86dad77eadc4e25c1ea108345a54b0f49ef47573ccdbfc2faeea22accb4920c5",
     "biomes/twins/stations/lavasump/89d-host-sump.js": "be7848e26752b695fa490af663ab07fc0d7cfff9dee0a040bd58a376d9b97920",
-    "biomes/twins/stations/lavasump/98-host-sump.js": "54b24f469a618e5f46f282ac317cbbd370f4b261b087c7e022be107fe7b789a4",
+    "biomes/twins/stations/lavasump/98-host-sump.js": "daee85ae35135e45684884a2690b3f55b4805704fd02024aca232059c645eed4",
     "biomes/twins/stations/lavasump/region.json": "8d6dc49ba8ba1eb65a52a23368b85b7b012b2f94f1f3640753fb7359409f8225",
-    "biomes/twins/stations/lavasump/station.json": "11d0d1ba0d061d89afe4d8bff65e05f99a8b4daf8c6997b26983c51dc64ef0d0",
+    "biomes/twins/stations/lavasump/station.json": "c3b38f0a18374a59e5be57a15d719f6f310598d0a7c88de360b76ee08b794c15",
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lavaCrust.albedo.webp": "91702a42e2eba2fd77753834e88c74091e0261a8b490bd73d0d978c5c62cfa5d",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
@@ -596,6 +605,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
+    "core/hazard/22-core-hazard-env.js": "1a1268910123daffeffa30af01a378f20c067400c236a29f7d1b85d9bb3f613a",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -642,10 +652,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-lavasump.html": "655dc09935224b4faf76b02fe9be934cad4b5b845c56b1973068ba8d3f9ba866"
+    "biomes/twins/dist/twins-lavasump.html": "06fa6461f995910ced43ce06a92b0b7c7a8cc83307caf2386a333799f165b57d"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-lavasump.html": "655dc09935224b4faf76b02fe9be934cad4b5b845c56b1973068ba8d3f9ba866"
+    "biomes/twins/dist/twins-lavasump.html": "06fa6461f995910ced43ce06a92b0b7c7a8cc83307caf2386a333799f165b57d"
    }
   },
   "build.py --station shroudvale": {
@@ -654,7 +664,7 @@
     "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
-    "biomes/twins/src/45-host-stage.js": "76b838d28b28922e3ec866a78a4766976f0443135810255b94dc8f2aae0d2716",
+    "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
     "biomes/twins/src/45a5-host-region.js": "a8bc1ab888047594f85689f867125116612cf7d0e5f79b8185fac58a92532cc3",
     "biomes/twins/src/45a7-host-oasis.js": "f50a947bdedb7df9cebf6d87a5961bdb61fb0b99b050047a79cdcd14e23ca4a1",
     "biomes/twins/src/45c-host-field.js": "e5b000070fb4e2680cfa13cf2012bd1a062a75e4903fe711262d3ba9b9aa9871",
@@ -667,17 +677,17 @@
     "biomes/twins/src/89-host-sky.js": "3b1e72c937d74c448dee4cf5538a575c9c6692f089e02df2daa527ede2a7bc17",
     "biomes/twins/src/89a-host-atmos.js": "59e9c73decff38861ec4a44c9741e227eecec3bb332aa741cc9c5862a52eff0a",
     "biomes/twins/src/89b-host-twins.js": "7ffcd6a1646d4d1a00391e5d0592f5050e94874fa0c37dba55cecfe78f975813",
-    "biomes/twins/src/89c-host-oasis.js": "ffc5f44be0654b580e7d49261a714662236662ea1776768435c268fa8ca7910b",
+    "biomes/twins/src/89c-host-oasis.js": "4b257ff690be46549c581f889b085a39e3334b77c03875075db05db6b63782ef",
     "biomes/twins/src/89zz-host-shadow.js": "f22e8f63bc80948cff472616972f2db8a9f86e798a4c94910650bdcfc7021379",
     "biomes/twins/src/99-host-take.js": "642fa1912f176591e50858d73c6c4cc9c207a0472656c1959d6ec4436fc864d9",
     "biomes/twins/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/twins/stations/shroudvale/44a-host-station.js": "4f9205bbfc2cd136e01d317c2158e245633b19072db380d4a4ca1e16cbf9a2df",
     "biomes/twins/stations/shroudvale/45b-host-model.js": "5c536c7ada27a42938f94e5a58646aeb90d3bb873b247448439dfa492a649029",
-    "biomes/twins/stations/shroudvale/87-host-shroud.js": "866814f4431e781a4a0731c8860e1ce4dcf1b0d2a85c3510e6f22ecc352e1d32",
+    "biomes/twins/stations/shroudvale/87-host-shroud.js": "49415956c39d581a9c2d42934a3fbb9fc223967f9b3a334938378c52f7d07476",
     "biomes/twins/stations/shroudvale/89d-host-shroud-water.js": "28a2ed9df7793b92decf3f9e120e98beb7a4d25bc6e85cdb2b06d7f359f23edd",
-    "biomes/twins/stations/shroudvale/98-host-shroud.js": "3f57fb5fa58f661c2af72a51fc479e38a9972129784f4b0285e27ed073bdaaf6",
+    "biomes/twins/stations/shroudvale/98-host-shroud.js": "60e48becbbc8ecdde558ab2e2a77d21faebff6bb2e7dd05fbae525cfa5aec3ca",
     "biomes/twins/stations/shroudvale/region.json": "cc4f355ff6fcecdcaeb3065cb24c13ee17d750c7a20d6f615b01eba6e36b306c",
-    "biomes/twins/stations/shroudvale/station.json": "148c3248ae538f04043f9451708f63df53ee7c0644d09a96d7f234b3969356b3",
+    "biomes/twins/stations/shroudvale/station.json": "c24834a4a0f2f07fd9ed88db2ddd104870cb6074984214d0528d60bfe04aebac",
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/ice.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
@@ -719,6 +729,7 @@
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
     "core/hazard/21-core-hazard-flow.js": "7fcd020514737f68c2152f463ac93a2ac51d9fe364f493a249e04df0216251b2",
+    "core/hazard/22-core-hazard-env.js": "1a1268910123daffeffa30af01a378f20c067400c236a29f7d1b85d9bb3f613a",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
@@ -763,6 +774,8 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
+    "core/water/geyser/52c-core-water-thermal.js": "4d8efcd8c428fbb30d501de7d3902c2388a4d8e7723bfb5803335753588f6562",
+    "core/water/geyser/52d-core-water-thermal-draw.js": "a4fc70641f1693efaca913fef43a740616e7d5b6bd8a57f88d52fd8685d00d3b",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -774,10 +787,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-shroudvale.html": "88e243af2827d9dac8332531cc44725f748cea6ccf88284abdbdaa52fce7c7dd"
+    "biomes/twins/dist/twins-shroudvale.html": "aba5d2c31dd55a0b32632aec0d8c2c19a57b2e16cd933ec59b0cd35674595c30"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-shroudvale.html": "88e243af2827d9dac8332531cc44725f748cea6ccf88284abdbdaa52fce7c7dd"
+    "biomes/twins/dist/twins-shroudvale.html": "aba5d2c31dd55a0b32632aec0d8c2c19a57b2e16cd933ec59b0cd35674595c30"
    }
   }
  }

@@ -17,7 +17,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
+const REG=[];function REGISTER(o){REG.push(o);return BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js); its record back (core/hazard's crusts name it by id)
 const WORLD=0x7A15;   // the kit's world seed: every draw is KRAND.hash(WORLD, cell, index, salt)
 const KR=KRAND,vn=(x,z,sd)=>KR.vnoise(x,0,z,sd),fb=(x,z,o,sd)=>KR.fbm(x,0,z,o,sd);
 const pxXZ=(px,py)=>[(px-STN.site.px)*2000,(py-STN.site.py)*2000];

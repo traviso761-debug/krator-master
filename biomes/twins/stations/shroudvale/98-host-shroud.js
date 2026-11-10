@@ -55,7 +55,7 @@ function moraineMeasure(){const A=(u,p)=>vAt(u,pc(u)+(p||0));let crest=-1e9,spil
 function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r));
  {const m=valeMeasure();add('the vale: 5-7 km, walled 450 m and more',VCHK.vale(m.len,m.wallMin));}
  {const m=moraineMeasure();add('the moraine lip: ~35 m, a reverse slope',VCHK.moraine(m.crest,m.basin,m.before));add('the sink is sealed (no outlet but over the lip)',VCHK.sealed(m.spill,m.basin));}
- {const y=BASIN_Y+1,mo=vAt(-2300,pc(-2300)),my=terrainH(mo[0],mo[1])+1;add('the cold sink: -34 C at night',VCHK.sink(sinkT(tempMean(y)-3.5,1,y),sinkT(tempMean(y),0,y),tempMean(my)-3.5));}
+ {const y=BASIN_Y+1,mo=vAt(-2300,pc(-2300)),my=terrainH(mo[0],mo[1])+1;add('the cold sink: -34 C at night (core/hazard\'s cold pool at 03:00 and noon)',VCHK.sink(sinkT(tempMean(y)-3.5,twinsNightK(SINK.rec,3),y),sinkT(tempMean(y),twinsNightK(SINK.rec,12),y),tempMean(my)-3.5));}
  add('the iron seep at the mouth (+12 C)',VCHK.seep(heatAt(SEEP.x,SEEP.z),STATION_TEMP(SEEP.x,SEEP.y+1,SEEP.z)||-99,FIELD.snow(SEEP.x,SEEP.z)));
  {const N=STN_BUILT.needle||{};add('the Guide\'s Needle: from the floor to the rim',VCHK.needle((STN_BUILT.rungs[0]||[0,0])[1]-.5,N.foot||0,BASIN_Y,N.top,N.rim||0,STN_BUILT.rungs.length));}
  add('the wreckage: forty caravans in the sink',VCHK.wrecks(STN_BUILT.wrecks,inSink));
@@ -64,6 +64,7 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  {const m=valeMeasure();add('a vale 2 km long',VCHK.vale(2000,m.wallMin));add('walls 100 m high',VCHK.vale(m.len,100));}
  {const m=moraineMeasure();add('no moraine (the floor runs on level)',VCHK.moraine(m.basin+2,m.basin,m.before));add('a breach in the moraine',VCHK.sealed(m.basin+3,m.basin));}
  {const y=BASIN_Y+1;add('a mild night in the sink',VCHK.sink(sinkT(tempMean(y)-3.5,.2,y),sinkT(tempMean(y),0,y),tempMean(y)-3.5));}
+ {const y=BASIN_Y+1,mo=vAt(-2300,pc(-2300)),my=terrainH(mo[0],mo[1])+1;add('the sink stirred out by a 20 m/s gale',VCHK.sink(sinkT(tempMean(y)-3.5,twinsNightK(SINK.rec,3,20),y),sinkT(tempMean(y),twinsNightK(SINK.rec,12),y),tempMean(my)-3.5));}
  add('the seep frozen',VCHK.seep(-8,-8,.6));
  {const N=STN_BUILT.needle||{};add('the Needle stopping 40 m short of the rim',VCHK.needle((STN_BUILT.rungs[0]||[0,0])[1]-.5,N.foot||0,BASIN_Y,(N.rim||0)-40,N.rim||0,STN_BUILT.rungs.length));
  add('the Needle\'s foot hanging 20 m up the wall',VCHK.needle((STN_BUILT.rungs[0]||[0,0])[1]+19.5,N.foot||0,BASIN_Y,N.top,N.rim||0,STN_BUILT.rungs.length));}

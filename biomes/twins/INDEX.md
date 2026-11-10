@@ -18,7 +18,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 3 | the frame (35) |
+| `45-host-stage.js` | 4 | the frame (35) |
 | `45a5-host-region.js` | 1 |  |
 | `45a7-host-oasis.js` | 7 |  |
 | `45c-host-field.js` | 9 | the fields (cached on a 20 m lattice) (31); the host binding (76) |
@@ -31,7 +31,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89b-host-twins.js` | 3 |  |
-| `89c-host-oasis.js` | 8 |  |
+| `89c-host-oasis.js` | 10 |  |
 | `89zz-host-shadow.js` | 1 |  |
 | `99-host-take.js` | 10 | the inspector's words (9); the probe's budgets and the kit's own checks (ve (29); the page, handed to the host (72) |
 | `99-tail.html` | <1 |  |
@@ -44,7 +44,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | brazier | 44a-host-station.js, 45b-host-model.js, 87-host-brazier.js, 98-host-brazier.js | 26 |
 | catchlookout | 44a-host-station.js, 45b-host-model.js, 87-host-lookout.js, 89d-host-terraces.js, 98-host-lookout.js | 23 |
-| erebustwin | 44a-host-station.js, 45b-host-model.js, 87-host-rime.js, 98-host-rime.js | 25 |
-| lavasump | 44a-host-station.js, 45b-host-model.js, 55-biome-twins-sump.js, 87-host-sump.js, 89d-host-sump.js, 98-host-sump.js | 37 |
+| erebustwin | 44a-host-station.js, 45b-host-model.js, 87-host-rime.js, 98-host-rime.js | 26 |
+| lavasump | 44a-host-station.js, 45b-host-model.js, 55-biome-twins-sump.js, 87-host-sump.js, 89d-host-sump.js, 98-host-sump.js | 36 |
 | pyroduct | 44a-host-station.js, 45b-host-model.js, 87-host-tube.js, 98-host-pyroduct.js | 38 |
-| shroudvale | 44a-host-station.js, 45b-host-model.js, 87-host-shroud.js, 89d-host-shroud-water.js, 98-host-shroud.js | 31 |
+| shroudvale | 44a-host-station.js, 45b-host-model.js, 87-host-shroud.js, 89d-host-shroud-water.js, 98-host-shroud.js | 32 |

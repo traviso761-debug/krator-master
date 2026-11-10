@@ -26,17 +26,28 @@
   `verify.py --assert` in software GL only; `KRATOR_GL=gpu` (`harness.py lock`, either lane) is owed for all five and again for station 1,
   whose page changed with the shared fragments (the hash in `PORT-BASELINE.json` is the old page's: rewrite it after the GPU run, with the new
   pages added).
-- [ ] **Core versions owed of what the stations draw kit-side** (the opt-in core files on `claude/core-plan-features-229d2a` are not pushed):
-  - *mud pots*: each is a `WATER.spring` with a grey-rose kaolinite ramp, boiling (`89c-host-oasis.js`); core/water has no mud-pot kind (the
-    plop, the mud's thickness, the spatter ring);
-  - *fumaroles*: the steam is core/atmos's smoke (a `fumarole` kind added to the page's preset in `89b`), the gas `KHAZ.GROUND.gasVent`, the
-    sulphur a ground class and the kit's brimstone needles; no core fumarole record ties them together;
-  - *gas that pools at night*: `shape.pool` (core/hazard/21) with the kit's own state `TWINS.nightPool` (`89c`: off by day, full 21:00-05:00
-    on the host clock), registered in `KHAZ.STATES` by the page;
-  - *a crust that breaks underfoot* (the Red Cistern), *thin ice over the steam caves* and *the crevasses* (the Rime Twin): hazard records
-    with a weight trigger and the stations' own states;
-  - *the cold-air sink* (the Iron Shroud): a cold record with `shape.pool` on the kit's night state, its temperature the page's
-    `STATION_TEMP` (-34 C on the basin's floor at night); core has no katabatic pooling for a hazard or the ambient bridge.
+- [x] **Moved onto core** (2026-11-10, from `claude/core-plan-features-229d2a`, merged): what stations 2-5 drew kit-side now runs on the core pieces:
+  - *mud pots*: `WATER.mudpot` and `WATER.drawMudpot` (core/water/geyser 52c, 52d: the grey-rose kaolinite swelling, its bubbles popping and
+    ringing out), in place of a boiling `WATER.spring` on a mud ramp (`89c-host-oasis.js`; the Brazier's three);
+  - *fumaroles*: each a `WATER.fumarole` drawn by `WATER.drawFumarole` (its steam puffing on its own period), in place of the page's own
+    `fumarole` smoke kind on the oasis's vents; a vent inside a Rime Twin ice tower breathes from the tower's top (`f.h`). The gas is still
+    `KHAZ.GROUND.gasVent`, the sulphur the kit's ground class and needles; the `fumarole` smoke kind stays in `89b` for the Red Cistern's
+    degassing pond, which is not a fumarole;
+  - *a crust that breaks underfoot*: `KHAZ.ENV.crust` (core/hazard 22: `KHAZ.crust` over `KHAZ.under`) through `twinsCrust` in 89c, in place of
+    the kit's `TWINS.crust`: the Red Cistern's blister crust (120 kg breaks it, a new skin in 600 s, the lava under it), and on the Rime Twin
+    each crevasse's snow bridge (200 kg) and the thin ice over each steam cave (250 kg), in place of their bare weight triggers. The checks load
+    each crust with a walker (80 kg: it holds) and a laden beast (400 kg: it breaks), then mend it (`twinsCrustTest`);
+  - *gas that pools at night*: `KHAZ.ENV.nightGas` (stateFn `KHAZ.night`, 21's `shape.pool`) in place of the kit's `TWINS.nightPool`: the
+    Brazier's fissure trough and the Red Cistern's amphitheatre; the Iron Shroud's cold sink is `KHAZ.ENV.coldPool` the same way, its
+    `STATION_TEMP` reading the pool's own k. 89c binds the host clock's hour and core/atmos's wind (`KHAZ.bindClock`, `KHAZ.bindWind`), so the
+    pooling now also fails in wind (each record's still/calm: the Brazier's open trough 1/4 m/s, the amphitheatre 3/7, the sealed vale 6/14);
+    `twinsNightK(rec, hour, wind)` asks the core law for the checks.
+- [ ] **Core pieces on the same branch not yet taken**: `WATER.thermalAprons` (the sinter, travertine, mat, sulfur and clay aprons from the
+  sources themselves, and travertine terraces handed to `WATER.terraces`) would replace the oasis's own classes (`45a7-host-oasis.js`) and
+  Catch-Lookout's hand-cut basins; the fumaroles' run-off (`S.runoff`, off here) is not drawn; `ATMOS.slopeWind` (katabatic and gap winds,
+  cold-air pools for the ambient temperature) would give the Iron Shroud's sink its air from core rather than the page's `sinkT`;
+  `ATMOS.ashPlume` would suit the NW Twin. None was asked for in this pass.
+
 - [ ] **The oases' neighbours are endemic variants, not reads in place** (but the Hearths, which are read in place on the Brazier): the dwarf
   agate-pine is the kit's own (a bole in the agate palette under a flagged crown), not Xanadu's agate tree drawn small; the bobby-sock sedge
   is the library's sedge card, not the geyser kit's puna turf; the mats are ground classes and core/water's spring ramps, not the geyser kit's

@@ -6,9 +6,23 @@
   "45a-core-therm.js": "core/terrain/47-core-therm.js",
   "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
   "44g-core-glacier.js": "core/terrain/44g-core-glacier.js",
-  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js"
+  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
  },
- "water": ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js",
-           "geyser/52-core-water-geyser.js", "geyser/52b-core-water-geyser-draw.js"],
- "tex": ["scree", "ice", "lichenCrust"]
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js",
+  "geyser/52c-core-water-thermal.js",
+  "geyser/52d-core-water-thermal-draw.js"
+ ],
+ "tex": [
+  "scree",
+  "ice",
+  "lichenCrust"
+ ]
 }

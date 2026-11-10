@@ -1,5 +1,12 @@
 # Handoff: the all-builds rebuild
 
+## Twins onto the core plan features (2026-11-10, `claude/twins-finish-cloud`)
+
+`claude/core-plan-features-229d2a` (pushed by the owner's word) is merged in. The Twins stations' mud pots (`WATER.mudpot`), fumaroles'
+steam (`WATER.fumarole`), breaking crusts (`KHAZ.ENV.crust`: the Red Cistern's blister crust, the Rime Twin's snow bridges and thin ice) and
+night-pooling gas and cold (`KHAZ.ENV.nightGas`, `coldPool`, on `KHAZ.bindClock` and `KHAZ.bindWind`) now run on it; nothing kit-side is
+left of those (`biomes/twins/KNOWN_ISSUES.md`). The thermal aprons, run-off, slope wind and ash plume on the same branch are not yet taken.
+
 ## Twins stations 2-6 (2026-11-10, `claude/twins-finish-cloud`, from `claude/cloud-kits-verify` 6546a3eee; a cloud session, no GPU)
 
 **Built** (`biomes/twins`, `NOTES.md` has each): station 2 the Brazier (`dist/twins-brazier.html`: Oasis 3 on the col, KTHERM heat, core/water
@@ -11,8 +18,7 @@ the decoy tube on KCAVERN, a lava pond on `ATMOS.lavaMaterial`, the breaking cru
 included): the ground's station layers and `STN.shareLayers` (`84`), the station ground classes (`45c`, `50`), the oasis model and drawing
 (`45a7`, `89c`), the oasis pass (`60`), the kit's new items, `build.py`'s `"kin"`. Each page passes `verify.py --assert` in software GL.
 **Owed:** the GPU verify of all six (`KRATOR_GL=gpu`; station 1's page changed with the shared fragments) and then `PORT-BASELINE.json` for
-`biomes/twins/dist/` (not rewritten here); the core versions of the mud pots, fumaroles, breaking crust, night-pooling gas and cold sink (drawn
-kit-side; `claude/core-plan-features-229d2a` is not pushed); the life layer; the rest in `biomes/twins/KNOWN_ISSUES.md`.
+`biomes/twins/dist/` (not rewritten here); the life layer; the rest in `biomes/twins/KNOWN_ISSUES.md`.
 
 ## The cloud kits merged and GPU-verified (2026-11-09, `claude/cloud-kits-verify`, from `claude/biome-rebuild` 0e2f6649d; not pushed)
 

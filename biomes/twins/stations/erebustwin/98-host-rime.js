@@ -27,6 +27,10 @@ function STATION_VIEWS(VIEWS){const G=(x,z)=>terrainH(x,z),add=(k,v,mode,o)=>{if
 STN.coldProbe=()=>{let best=null,bd=-1;for(const p of [[-900,700],[-700,-900],[900,800],[-1200,0]]){const d=Math.min(...RIME.towers.map(t=>Math.hypot(t.x-p[0],t.z-p[1])));if(d>bd){bd=d;best=p;}}
  const C=RIME.caves[0];return{out:[best[0],terrainH(best[0],best[1])+1.6,best[1]],inn:[C.x,C.floor+1.6,C.z]};};
 STN.counts=B=>B.stones>100&&B.blocks>50&&B.blocks+B.stones+B.obsidian<320000;
+// THE CRUSTS (core/hazard 22, 89c's twinsCrustTest): every snow bridge and every sheet of thin ice holds a walker and breaks under a laden beast
+const crustOk=T=>T.walker===false&&T.heldK===0&&T.beast===true&&T.openK>0;
+function crustCheck(P){const all=P.map(p=>twinsCrustTest(p)),bad=all.filter(t=>!crustOk(t));
+ return{ok:P.length>0&&!bad.length,detail:P.length+' crusts (snow bridges and thin ice): '+bad.length+' that do not hold a walker or do not break under a beast'};}
 const RCHK={
  // the towers: 6-12 m, each on a warm vent (its ground over 20 C where the frozen cap is -18)
  towers(T,heat){const bad=T.filter(t=>t.h<6||t.h>12||heat(t.x,t.z)<20);return{ok:T.length>=18&&!bad.length,detail:T.length+' ice towers ('+T.filter(t=>t.flank).length+' past the rim), '+bad.length+' off 6-12 m or off a vent'};},
@@ -50,6 +54,7 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  add('the ice cap over the floor',RCHK.ice(iceFrac()));
  add('the rim at the map\'s 5,880 m',RCHK.rim(RIME.rimTop));
  {const T=TWIN_CONES.cones[0];add('the NW Twin on the horizon',RCHK.twin(Math.hypot(T.x,T.z),(Math.atan2(T.x,-T.z)*180/Math.PI+360)%360));}
+ add('the snow bridges and the thin ice hold a walker, break under a laden beast (core/hazard)',crustCheck((RIME.crevRecs||[]).concat(RIME.iceRecs||[])));
  return R;}
 function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail}),p=ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},SITE_Y);
  add('the towers moved off their vents',RCHK.towers(RIME.towers.map(t=>Object.assign({},t,{x:t.x+300})),OASIS.heatAt));
@@ -59,4 +64,5 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('the floor bare of ice',RCHK.ice(0));
  add('the rim 400 m low',RCHK.rim(RIME.rimTop-400));
  add('the NW Twin due east',RCHK.twin(134000,90));
+ {const P=(RIME.iceRecs||[]).slice(0,2),T=P.map(p=>twinsCrustTest(p,400,400)),bad=T.filter(t=>!crustOk(t));R.push({name:'thin ice that breaks under a walker',failed:!(P.length>0&&!bad.length),detail:bad.length+' of '+P.length+' break under 400 kg as a "walker"'});}
  return R;}

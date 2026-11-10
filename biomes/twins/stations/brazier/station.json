@@ -7,12 +7,34 @@
   "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
   "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
   "35-core-anim.js": "core/biome/35-core-anim.js",
-  "39-core-lean.js": "core/biome/39-core-lean.js"
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
  },
- "water": ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js",
-           "geyser/52-core-water-geyser.js", "geyser/52b-core-water-geyser-draw.js"],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js",
+  "geyser/52c-core-water-thermal.js",
+  "geyser/52d-core-water-thermal-draw.js"
+ ],
  "kin": {
-  "hearths": [["src/50-biome-hearths-species.js", "src/55-biome-hearths-place.js"], "HEARTH"]
+  "hearths": [
+   [
+    "src/50-biome-hearths-species.js",
+    "src/55-biome-hearths-place.js"
+   ],
+   "HEARTH"
+  ]
  },
- "tex": ["scree", "sinter", "sedge", "fern", "lichenCrust"]
+ "tex": [
+  "scree",
+  "sinter",
+  "sedge",
+  "fern",
+  "lichenCrust"
+ ]
 }
