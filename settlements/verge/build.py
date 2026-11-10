@@ -76,6 +76,7 @@ CORE = {
     '20-core-clock.js': 'core/clock/20-core-clock.js', '20-core-sched.js': 'core/sched/20-core-sched.js',
     '20-core-walk.js': 'core/walk/20-core-walk.js', '25-core-mask.js': 'core/mask/25-core-mask.js',
     '20-core-space.js': 'core/space/20-core-space.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat: the sedesert fauna's birds (2026-11-10: the page threw without it)
     '35-core-strata.js': 'biomes/sedesert/src/35-core-strata.js',
     '50-core-tags.js': 'core/tags/50-core-tags.js', '52-core-tags-vocab.js': 'core/tags/52-core-tags-vocab.js',
     '53-core-tags-host.js': 'core/tags/53-core-tags-host.js',
