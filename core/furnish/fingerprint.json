@@ -2,24 +2,24 @@
  "abyss-kit": {
   "interiors-off": {
    "batchTris": 174730,
-   "geometry": "40eaf48f",
+   "geometry": "58f0e2f",
    "groupTris": 174730,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 23,
+   "meshes": 25,
    "missing": {},
    "placed": 611,
    "records": "de5aebd9"
   },
   "interiors-on": {
-   "batchTris": 760125,
-   "geometry": "7b16b7ff",
-   "groupTris": 760125,
-   "interiorPieces": 1415,
+   "batchTris": 765779,
+   "geometry": "b1d58145",
+   "groupTris": 765779,
+   "interiorPieces": 1416,
    "interiors": 54,
    "lights": 0,
-   "meshes": 56,
+   "meshes": 58,
    "missing": {},
    "placed": 611,
    "records": "93687d9d"
@@ -28,24 +28,24 @@
  "girder": {
   "interiors-off": {
    "batchTris": 101204,
-   "geometry": "eeeccbf",
+   "geometry": "3a6bd7e9",
    "groupTris": 101204,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 21,
+   "meshes": 22,
    "missing": {},
    "placed": 1331,
    "records": "c0a5e129"
   },
   "interiors-on": {
    "batchTris": 101204,
-   "geometry": "eeeccbf",
+   "geometry": "3a6bd7e9",
    "groupTris": 101204,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 21,
+   "meshes": 22,
    "missing": {},
    "placed": 1331,
    "records": "c0a5e129"
@@ -54,27 +54,27 @@
  "highlands": {
   "interiors-off": {
    "batchTris": 771082,
-   "geometry": "58805b44",
+   "geometry": "83dbec3f",
    "groupTris": 771082,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 23,
+   "meshes": 24,
    "missing": {},
    "placed": 1126,
    "records": "c56e9bdd"
   },
   "interiors-on": {
-   "batchTris": 4230995,
-   "geometry": "8bb4e243",
-   "groupTris": 4230995,
-   "interiorPieces": 5317,
+   "batchTris": 4555522,
+   "geometry": "2fe1f519",
+   "groupTris": 4555522,
+   "interiorPieces": 5543,
    "interiors": 146,
    "lights": 0,
-   "meshes": 118,
+   "meshes": 122,
    "missing": {},
-   "placed": 1126,
-   "records": "c56e9bdd"
+   "placed": 1265,
+   "records": "fe6b2902"
   }
  },
  "locus": {
@@ -91,9 +91,9 @@
    "records": "baf0c842"
   },
   "interiors-on": {
-   "batchTris": 997982,
-   "geometry": "11a2235e",
-   "groupTris": 997982,
+   "batchTris": 996385,
+   "geometry": "c3e93f1b",
+   "groupTris": 996385,
    "interiorPieces": 2386,
    "interiors": 147,
    "lights": 0,
@@ -117,13 +117,13 @@
    "records": "96cbfc60"
   },
   "interiors-on": {
-   "batchTris": 97032,
-   "geometry": "ead574d0",
-   "groupTris": 97032,
+   "batchTris": 97244,
+   "geometry": "1a4bfec",
+   "groupTris": 97244,
    "interiorPieces": 217,
    "interiors": 16,
    "lights": 0,
-   "meshes": 34,
+   "meshes": 35,
    "missing": {},
    "placed": 148,
    "records": "214c0f12"
@@ -132,24 +132,24 @@
  "mavs-refuge": {
   "interiors-off": {
    "batchTris": 1218198,
-   "geometry": "6f039090",
+   "geometry": "a28bae5",
    "groupTris": 1218198,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 2612,
-   "meshes": 19,
+   "meshes": 20,
    "missing": {},
    "placed": 10991,
    "records": "e94658af"
   },
   "interiors-on": {
    "batchTris": 1218198,
-   "geometry": "6f039090",
+   "geometry": "a28bae5",
    "groupTris": 1218198,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 2612,
-   "meshes": 19,
+   "meshes": 20,
    "missing": {},
    "placed": 10991,
    "records": "e94658af"
@@ -157,54 +157,54 @@
  },
  "post-apoc": {
   "interiors-off": {
-   "batchTris": 319034,
-   "geometry": "c49ae680",
-   "groupTris": 319034,
+   "batchTris": 319438,
+   "geometry": "d02f9a18",
+   "groupTris": 319438,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 20,
+   "meshes": 21,
    "missing": {},
-   "placed": 903,
-   "records": "c029aff6"
+   "placed": 907,
+   "records": "c4adc884"
   },
   "interiors-on": {
-   "batchTris": 443816,
-   "geometry": "9555527c",
-   "groupTris": 443816,
+   "batchTris": 444220,
+   "geometry": "1c7ced5f",
+   "groupTris": 444220,
    "interiorPieces": 582,
    "interiors": 31,
    "lights": 0,
-   "meshes": 38,
+   "meshes": 39,
    "missing": {},
-   "placed": 903,
-   "records": "c029aff6"
+   "placed": 907,
+   "records": "c4adc884"
   }
  },
  "roketstad": {
   "interiors-off": {
-   "batchTris": 3166936,
-   "geometry": "7f4faf6f",
-   "groupTris": 3166936,
+   "batchTris": 3267892,
+   "geometry": "182a8349",
+   "groupTris": 3267892,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
-   "meshes": 20,
+   "meshes": 21,
    "missing": {},
-   "placed": 5738,
-   "records": "cff60f2f"
+   "placed": 5775,
+   "records": "647220d6"
   },
   "interiors-on": {
-   "batchTris": 20108475,
-   "geometry": "dc40a8f",
-   "groupTris": 20108475,
-   "interiorPieces": 48009,
-   "interiors": 1666,
+   "batchTris": 19622577,
+   "geometry": "e1e237fb",
+   "groupTris": 19622577,
+   "interiorPieces": 45471,
+   "interiors": 1676,
    "lights": 0,
-   "meshes": 68,
+   "meshes": 69,
    "missing": {},
-   "placed": 5738,
-   "records": "cff60f2f"
+   "placed": 5914,
+   "records": "cc02246f"
   }
  }
 }
