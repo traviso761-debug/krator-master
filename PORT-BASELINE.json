@@ -883,6 +883,10 @@
   "settlements/yuni/yuni.html": {
    "bytes": 1616319,
    "sha256": "02b9ae6e59e5f9734a62f0b9d73713ba7ef3fe647a3282442fed0e7e53aaedd2"
+  },
+  "kits/ancient-transit/dist/ancient-transit.html": {
+   "bytes": 2373600,
+   "sha256": "9e201e901ee0cf89d2742ed60f932048c48dcc04090ed248be77bc8d1a00d973"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

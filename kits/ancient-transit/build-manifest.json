@@ -1,11 +1,11 @@
 {
 "core/atmos/89-atmos-0-core.js": "586e2898148d05d96a6152036186deabdb45f572",
 "core/atmos/89-atmos-0p-presets.js": "a669eaffc30284c0f93e8ff073fdde4452b9cd85",
-"core/atmos/host/89-atmos-h-skyhost.js": "b25edbb795ac0ed82e0e9d451c66eb490deccf98",
+"core/atmos/host/89-atmos-h-skyhost.js": "eb8145b2697b0ed9889027dde3d0463f31028147",
 "core/atmos/host/89-atmos-i-skybiome.js": "3378d84c56cf24c9fc102da647ec3234188166e1",
 "core/atmos/sky/89-atmos-e-skymodel.js": "5ab924b3944b81a3c34cc014b5eb1f6eacb7a9bd",
-"core/atmos/sky/89-atmos-f-skypresets.js": "5ae286658b41e8fad6d72252ab84d2d06dc321b5",
-"core/atmos/sky/89-atmos-g-sky.js": "228eb7daf6cdac9ce6e0394eb92d2b06570184be",
+"core/atmos/sky/89-atmos-f-skypresets.js": "da4d91527c56636ce1ebcae4b043f93a0bf102e7",
+"core/atmos/sky/89-atmos-g-sky.js": "66cc5cdeb08ad78a21f64afd126954d983f2b918",
 "core/biome/10-core-head.js": "26885abe50232869c0fbcc39355f00c97c6894b7",
 "core/biome/20-core-kit.js": "454a2792c69f466ad1824a7be6677a4c2edb2667",
 "core/biome/30-core-foliage.js": "afa83d88360166be43566a3d53e93586ca9be530",
@@ -56,6 +56,6 @@
 "kits/ancient-transit/src/89-host-sky.js": "c5ca00b001b6ced809ca30a8e67f3eda19d3b753",
 "kits/ancient-transit/src/99-host-take.js": "f682d8cc267824259ee68f97bc4bfc80764dcfe3",
 "kits/ancient-transit/src/99-tail.html": "bf3a2481959e0704504a05c734e71eaf4baab04f",
-"kits/ancient-transit/transit-furnish.js": "c9cc2d86094b62d6cddce6f644902c721b79df1f",
+"kits/ancient-transit/transit-furnish.js": "1907132ca1e1f2d35e2c290d9eaadee319072b86",
 "kits/catalog/krator-furniture-core.js": "58c63e9e7b6e9c2107a96a6cf9fbf17f0a1c50c4"
 }

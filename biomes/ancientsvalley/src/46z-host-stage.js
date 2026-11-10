@@ -113,7 +113,12 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const lineHnear=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,ku=Math.round(lx/p-.5),kw=Math.round(lz/p-.5);let h=0;const iu=AVT.ix[0][ku],iw=AVT.ix[1][kw];
   if(iu!=null)h+=KTRANSIT.lineH(AVT.net.roads[iu],x,z);if(iw!=null)h+=KTRANSIT.lineH(AVT.net.roads[iw],x,z);return h;};
  /* the ground everything stands on: the relief, the subway's holes, the war's craters, the roads' and the cargo line's cuttings */
- function ground(x,z){let h=relief(x,z);if(h<LAKE_Y+1.5)return h;h+=KTRANSIT.sinkholeH(AVT.subway,x,z)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return h;}
+ function ground(x,z){let h=relief(x,z);if(h<LAKE_Y+1.5)return h;h+=KTRANSIT.sinkholeH(AVT.subway,x,z)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return LOBQ?lobbyH(x,z,h):h;}
+ /* the lobbies' approaches (PLAN.md section 15; 41c AV.lobbies, made below once the streets are graded): the ground takes the plane of each flight
+    across its width, blended over 1.5 m at its sides, so the bank between the pavement and the plinth is cut or filled where the steps are */
+ let LOBQ=null;const lobq=[];
+ function lobbyH(x,z,h){lobq.length=0;LOBQ.query(x,z,0,lobq);for(let i=0;i<lobq.length;i++){const A=lobq[i],dx=x-A.a[0],dz=z-A.a[1],t=(dx*A.ux+dz*A.uz)/A.L,s=Math.abs(-dx*A.uz+dz*A.ux);
+  if(t<0||t>1||s>A.w/2+1.5)continue;const y=A.a[2]+(A.b[2]-A.a[2])*t-.03,k=s<=A.w/2?1:1-smooth(A.w/2,A.w/2+1.5,s);h=mix(h,y,k);}return h;}
  /* the highway on the second viaduct's line: three ramps, each landing at an avenue crossing (off, on, off), the ruin by the scar and the lake */
  {const HP=KTRANSIT.path(VIA2,{ground:relief,radius:80}),xs=[];AVT.defs.forEach((d,i)=>{if(!d.av)return;KTRANSIT.intersections(HP,d.pts).forEach(c=>xs.push({s:c.sP,road:i}));});xs.sort((a,b)=>a.s-b.s);
   const pick=f=>{let best=null;for(const c of xs){if(c.s<400||c.s>HP.L-400)continue;if(best==null||Math.abs(c.s-f*HP.L)<Math.abs(best.s-f*HP.L))best=c;}return best;};
@@ -129,6 +134,16 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  AVT.trains=[KTRANSIT.train(AVT.cargo,{id:'freight',s:Math.round(AVT.cargo.L*.42),kind:'freight',state:'derailed',from:2}),KTRANSIT.train(AVT.pax,{id:'pax1',s:2400,kind:'passenger',state:'fallen',from:2}),
   KTRANSIT.train(AVT.subway,{id:'metro1',s:AVT.subway.stations[0].s+30,kind:'passenger',cars:4,state:'standing'}),KTRANSIT.train(AVT.subway,{id:'metro2',s:AVT.subway.stations[1].s-260,kind:'passenger',cars:4,state:'derailed',from:1})];
  AVT.ms=Math.round(performance.now()-AVT_T0);
+ /* THE LOBBIES (PLAN.md section 15; 41c): every kerb tower's door, its approach from the pavement (steps, a ramp, or a rubble ramp where the rise
+    is too great), open (a climb to what the ruin leaves) or blocked by rubble at the door or on the stair; the records, then the ground takes the
+    approaches. The pavement's level is the graded road's plus its kerb */
+ const LOB=AV.lobbies({towers:PLAN.towers,family:k=>MP.FAMILY[k]||null,ruin:(Fm,s)=>MP.ruin(Fm,s),seed:SEED+91,near:NEAR,kerbH:.15,lattice:{c:ct,s:snt,pitch:PLAN.pitch},
+  ground,fallen:AV.fallenBlocks(PLAN.towers,k=>MP.FAMILY[k]||null,(Fm,s)=>MP.debrisPlan(Fm,s)),
+  skin:(Fm,y)=>{const fp=Fm.footprint||{};if(y<.25&&fp.shape==='rect')return{hw:fp.w/2,hd:fp.d/2};if(Fm.envR)return{r:Fm.envR(y)};if(Fm.id==='spindle')return{r:MP.spindleR(y)};return fp.r?{r:fp.r}:{hw:(fp.w==null?60:fp.w)/2,hd:(fp.d==null?60:fp.d)/2};},
+  street:(axis,k)=>{const i=AVT.ix[axis][k];if(i==null)return null;const Rd=AVT.net.roads[i];return{levelAt:Rd.levelAt,half:Rd.width/2,pave:Rd.pavement==null?3.5:Rd.pavement};}});
+ /* each flight's plane, and the level path on the plinth from its head to the door (unless the plinth is cut deeper than 2.5 m there) */
+ LOBQ=KSPACE.create({cell:60});const lobPut=(a,b,w)=>{const L=Math.max(.1,Math.hypot(b[0]-a[0],b[1]-a[1])),q={a,b,w,L,ux:(b[0]-a[0])/L,uz:(b[1]-a[1])/L};LOBQ.insert(q,(a[0]+b[0])/2,(a[1]+b[1])/2,L/2+w/2+2);};
+ LOB.doors.forEach(D=>{const A=D.approach;if(A.kind!=='steps'&&A.kind!=='ramp')return;lobPut(A.a,A.b,A.w);if(D.cut!=='ground'&&Math.hypot(D.path.b[0]-D.path.a[0],D.path.b[1]-D.path.a[1])>.3)lobPut(D.path.a,D.path.b,A.w);});   /* a path of no length would level a disc */
  const yOf=ground;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
  /* THE STREET GRID (the owner, 2026-11-08: a clear Ancient grid, destroyed and overgrown): the lattice's lines are the streets, 11 m wide, and every
@@ -162,9 +177,14 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   /* core/atmos's smog additions (2026-11-09, session atmos-smog): the cloud's mood (dark, the taint's brown-purple tint, violent turbulence, the
      fires' glow at night, shifting episodes) and the mist's density field: F.density, universal in the cores, thin on the terraces */
   clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022,dark:.8,tint:[.42,.33,.30],turbulence:.7,turbKind:'violent',glow:.5,glowColour:[1,.55,.2]},
-  cloudMood:{period:300,glowColour:[1,.55,.2]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
+  cloudMood:{period:300,glowColour:[1,.55,.2],
+   /* the valley's own palette (the owner, 2026-11-09, again: "still getting the green shader during storms"): core/atmos's MOOD_PALETTE holds a sickly
+      green and a jaundice yellow, which tinted the whole cloud deck (cover .74) pale green in a clear spell, and in a storm the air (89v, AV_AIR: the fog
+      drawn toward the clouds' colour) carried that green onto the far towers, the mist and the sky light, the storm's dark and its lightning making it
+      olive. The valley's clouds keep the taint's hues: brown, dull red, ash grey, ghostly purple */
+   palette:[[.42,.33,.30],[.48,.26,.24],[.46,.45,.44],[.52,.44,.66]]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
   smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.0011,above:110,depth:110,noise:.85,day:1,field:true},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,scars,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,lobbies:LOB,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';if(F.foul(x,z)>.6&&F.park(x,z)<.5)return 'polluted ground (the foul half)';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement

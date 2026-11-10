@@ -103,4 +103,42 @@ ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d
  ok('a wreck\'s form is the kit\'s when formOf is given, null without',W.filter(r=>r.state==='wreck').every(r=>r.form)&&mkW(11,{formOf:null}).every(r=>r.form===null));
  {const plazas=[{x:300,z:-150},{x:-500,z:100},{x:-200,z:300},{x:-900,z:-400}].filter(p=>okAt(p.x,p.z)),A=mkW(11,{air:{jet:true,helis:2,plazas}}),jet=A.find(r=>r.key==='anc_jet'),helis=A.filter(r=>r.key==='anc_heli');
   ok('an airliner skidded down an avenue and helicopters on the lakeward plazas ('+(jet?1:0)+' jet, '+helis.length+' helicopters)',!!jet&&jet.av&&jet.form==='skidded'&&helis.length===2&&helis.every(h=>plazas.some(p=>p.x===h.x&&p.z===h.z)&&lake(h.x,h.z)>.5),W.some(r=>r.air));}}
+// the lobbies and climbs (41c, PLAN.md section 15): towers along streets of a flat lattice, the metropolis kit's families (46c loads as far as it can
+// without its draw side: thirteen families), core/walk for the routes
+{for(const f of ['core/walk/20-core-walk.js','kits/metropolis/src/40-mp-records.js','kits/metropolis/src/46-mp-designs.js','kits/metropolis/src/46c-mp-planned.js','biomes/ancientsvalley/src/41c-av-lobbies.js']){
+  try{vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),ctx,{filename:f});}catch(e){if(!/46c/.test(f))throw e;}}
+ vm.runInContext('this.__MP=MP;this.__KWALK=KWALK;',ctx);const MP=ctx.__MP,KWALK=ctx.__KWALK;
+ const fams=['spindle','ledger','telescope','reed','stalk','organ','cupola','terrace'].filter(k=>MP.FAMILY[k]);
+ const states=['stump','intact','broken','skeleton','crown','gutted','stump','fallen'];
+ const skin=(F,y)=>{const fp=F.footprint||{};if(y<.25&&fp.shape==='rect')return{hw:fp.w/2,hd:fp.d/2};if(F.envR)return{r:F.envR(y)};if(F.id==='spindle')return{r:MP.spindleR(y)};return fp.r?{r:fp.r}:{hw:fp.w/2,hd:fp.d/2};};
+ const ext=F=>{const fp=F.footprint||{};return fp.r?fp.r+6:fp.w/2+6;};
+ const P=165,dB=13+3.5,TW=[];
+ for(let i=0;i<96;i++){const fam=fams[i%fams.length],st=states[(i*5+Math.floor(i/8))%states.length],F=MP.FAMILY[fam],line=(i+1.5)*P,D0=dB+3+ext(F);
+  TW.push({id:'t'+i,family:fam,state:st,x:line-D0,z:(i%3)*400,y:0,yaw:0,kerb:{axis:0,side:1,avenue:true}});}
+ const street=(a,k)=>a===0?{levelAt:()=>-1.15,half:13,pave:3.5}:null;
+ const mk=o=>AV.lobbies(Object.assign({towers:TW,family:k=>MP.FAMILY[k],ruin:(F,s)=>MP.ruin(F,s),skin,lattice:{c:1,s:0,pitch:P},street,seed:31,near:{x:TW[0].x,z:TW[0].z},fallen:AV.fallenBlocks(TW,k=>MP.FAMILY[k],(F,s)=>MP.debrisPlan(F,s))},o||{}));
+ const LB=mk(),W=KWALK.create(),reg=AV.lobbyWalk(W,LB,TW);
+ /* the ground: the street's level out to the pavement's back, then the plinth's; the approach's strip is a floor over it */
+ /* the ground: the street's level out to the pavement's back, then the plinth's; under an approach its plane (46z folds them into ground()) */
+ const ground=(x,z)=>{const ap=W.floorsAt(x,z).find(f=>f[1].tag==='approach');if(ap)return ap[0]-.03;const line=(Math.floor(x/P-.5)+1.5)*P;return line-x<dB?-1.15:0;};
+ const D=LB.doors,byMode=m=>D.filter(d=>d.mode===m&&!d.cut);
+ ok('every standing kerb tower has a door; the fallen none ('+D.length+' doors of '+TW.length+' towers)',D.length===TW.filter(t=>t.state!=='fallen').length&&!D.some(d=>d.state==='fallen'));
+ ok('the approaches: foot on the pavement, head on the plinth, a slope under 0.6',D.every(d=>{const A=d.approach;return Math.abs(A.a[2]+1)<.25&&Math.abs(A.b[2]-d.y)<.01&&Math.abs(A.b[2]-A.a[2])/Math.max(.1,A.run)<.6;}));
+ ok('open, door-blocked and stair-blocked all present ('+byMode('open').length+', '+byMode('door').length+', '+byMode('stair').length+')',byMode('open').length>=3&&byMode('door').length>=3&&byMode('stair').length>=1);
+ const st=LB.counts.byState,sh=s=>st[s]?st[s].open/st[s].n:0;
+ ok('stumps open the most (stump '+sh('stump').toFixed(2)+' against intact '+sh('intact').toFixed(2)+')',sh('stump')>sh('intact'));
+ const walk=(d,Wx)=>AV.walkRoute(Wx||W,ground,d.route);
+ {const bad=byMode('open').map(d=>[d,walk(d)]).filter(q=>!q[1].ok||q[1].y<q[0].y+q[0].climb.top-.75);
+  ok('every open tower\'s route reaches its top from the pavement ('+byMode('open').length+' towers'+(bad.length?'; '+bad[0][0].id+' '+bad[0][0].family+' '+bad[0][0].state+': '+bad[0][1].why+' at '+bad[0][1].i:'')+')',!bad.length);}
+ {const d=byMode('open')[0],W2=KWALK.create();AV.lobbyWalk(W2,LB,TW);const S=d.climb.stair,T=TW[d.ti],q=AV.doorWorld(T,S.su,S.sv);W2.block([q[0]-2,q[0]+2,q[1]-2,q[1]+2,T.y+d.climb.floors[1].y-1,T.y+d.climb.floors[1].y+3],'test');
+  ok('a heap in an open tower\'s stair cuts its route',walk(d).ok&&!walk(d,W2).ok);}
+ {const cut=(Wx,ds)=>ds.every(d=>!walk(d,Wx).ok),d=byMode('door')[0],W3=KWALK.create();AV.lobbyWalk(W3,{doors:LB.doors.map(x=>x===d?Object.assign({},x,{blocks:[]}):x)},TW);
+  ok('every door-blocked tower\'s route stops at its rubble ('+byMode('door').length+'; the negative: one with its rubble taken away)',cut(W,byMode('door')),cut(W3,[d]));}
+ {const S=byMode('stair'),res=S.map(d=>walk(d));ok('every stair-blocked tower\'s route stops on its stair, past the door ('+S.length+')',S.length&&res.every((r,i)=>!r.ok&&r.y>S[i].y+.5));}
+ {const weakOK=ds=>ds.filter(d=>d.climb&&d.climb.weak).every(d=>AV.WEAK_STATES[d.state]),weak=D.filter(d=>d.climb&&d.climb.weak);
+  ok('weak floors only in broken, crown-gone and skeleton towers ('+weak.length+' towers, '+reg.weak.length+' weak floors; the negative: one in an intact tower)',weak.length>0&&weakOK(D),weakOK(D.concat([{state:'intact',climb:{weak:1}}])));}
+ {const mid=b=>[(b[0]+b[1])/2,(b[2]+b[3])/2,b[4]+1],shut=Wx=>LB.fallen.every(b=>{const m=mid(b);return !!Wx.blocked(m[0],m[2],m[1],.35,1.7);});
+  ok('every fallen tower\'s shaft is blocked ('+LB.fallen.length+' boxes; the negative: a walk without them)',LB.fallen.length>0&&shut(W),shut(KWALK.create()));}
+ ok('the same seed, the same doors; another seed, others',JSON.stringify(mk().doors.map(d=>d.mode))===JSON.stringify(D.map(d=>d.mode))&&JSON.stringify(mk({seed:32}).doors.map(d=>d.mode))!==JSON.stringify(D.map(d=>d.mode)));
+}
 console.log(fails?fails+' FAILED of '+n:'all '+n+' passed');process.exit(fails?1:0);

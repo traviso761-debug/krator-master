@@ -1,5 +1,26 @@
 # biomes/ancientsvalley: known issues
 
+- [ ] **The lobbies and climbs (2026-11-10, PLAN.md section 15; `41c`, `76`) are drawn by the page, not read off the heroes.** A climb's plates
+  are discs of 0.8 of the family's skin radius (`envR`, the Spindle's lathe) and its stair is a 3 by 7.2 m switchback in the family's first stair
+  shaft: where a design's drawn shape departs from its `envR` (the Wedge's lean, the Organ's pipes, the Yoke's frame, the Reed's twist) a plate can
+  stand proud of the hero or short of it, and the stair stands in the hero's drawn core where it has one. A door on a family without portals is
+  at the middle of the frontage, which may meet a wall of the hero: the heroes' own lobby doors (`userData.walk`, kits/metropolis 54) are not read.
+  Nothing stops a walker at a tower's wall yet (the walker's collision with the heroes is another session's, on `claude/sad-mcclintock-f211c2`):
+  a blocked tower is blocked at its door and stair only, so a walker can still step through its skin beside the rubble. The cure is the hero's own
+  floors and doors as records (kits/metropolis `MP.floors` reads them off the drawn geometry; its outlines would serve the walk too).
+- [x] **The slab towers are drawn turned 34 degrees against their plinths and the street grid** (found 2026-11-10 by the lobbies' checks): `70`
+  draws a hero with `rotation.y = yaw`, which takes its local x to world (cos yaw, -sin yaw), while the plinth (`46z` `padD`), the DEBRIS check,
+  `AV.kerbPlace`'s extents and `HCHK.kerb` take it to (cos yaw, sin yaw). Measured: a Ledger's long axis at -17.2 degrees, its pad and the lattice at
+  +17. Round towers hide it; every slab family stands askew to its street, its walls past its plinth here and there (part of "no proper ramp to get
+  into lobby"). The lobbies cope (a door outside its plinth gets its steps to the door and a level path 4 m through it). **Fixed on the drawing
+  side** by the session that owns 70 (`claude/sad-mcclintock-f211c2`, 2026-11-10: every drawn form turned by -yaw, so the plan's frame wins); the
+  lobbies read the plan's frame since (`AV.doorWorld`). Merged here from 39f93125d.
+- [ ] **Smaller things in the lobbies:** a weak floor that has fallen stays fallen until the page is reloaded (its record keeps `gone`); the towers
+  without a kerb (about one in twenty, left on their nodes by `AV.kerbPlace`) have no door; an open tower is set plumb (its lean cleared), so the
+  ruin shares' lean count falls by the open ones; the approach's steps are solid blocks on a ground that takes their plane, but the ground mesh is
+  coarser than a tread, so its triangles can show between the cheeks on a steep flight; a rise over 6.3 m has a rubble ramp, not steps, and its
+  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0).
+
 - [ ] **The tiers, after the owner's six passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** every family and every look
   has a box shell (KSHELL box mode, the test bed's prototype, 66 looks in two 2048 atlases baked at the boot from the rusted heroes), so one rule
   serves all towers: a hero to 360 m (every tower inside the band, then the nearest 40; the pierced designs, Pods, Organ, Reed, Arcades, Spiral,
@@ -20,6 +41,29 @@
   5 degrees at the top. The impostor bake would need a slot per lean, or the lean kept under 2 degrees.
 - [ ] **The boot takes several seconds and the first half minute janks:** 14 shelled keys and 28 design keys build their heroes at the boot (about 4 s
   on the Arc), then 42 impostors bake one a frame. A later pass bakes the designs' impostors at build time or shows a loading note.
+- [x] **The owner's reports of 2026-11-09 and 10, closed on `claude/sad-mcclintock-f211c2`:**
+  *The green in the storms:* core/atmos's cloud-mood palette holds a sickly green and a jaundice yellow; with the deck at .74 cover a green episode
+  turned the whole sky pale green, and in a storm the air (89v, AV_AIR) carried the clouds' colour onto the far towers, the mist and the sky
+  light, the dark and the lightning making it olive. The valley passes its own palette (46z `STAGE.cloudMood.palette`: brown, dull red, ash,
+  ghostly purple) and the extraplanar solid's tint is bruise purple; a check samples 200 episodes for a green-leaning tint, its negative core's
+  whole palette. *Floating flora:* a probe through the floating crowns found roof oaks on a broken Wedge and on the Pods' crown, stood on 4 m roof
+  cells that a rim or a beam fills; every roof tree's footing (five rays: the trunk and four points 1.5 m round it) and every curtain's head is
+  now found by rays at the drawn hero (70 `avSurface`), and a check holds both with a 6 m lift as its negative. Seven bearings in ten met the drawn
+  wall more than 1.5 m inside the profile's radius, so a curtain hangs where its ray meets the wall, and a tower tries up to three bearings a
+  curtain (1,860 curtains, 493 roof trees, all held). The rays read a per-look triangle index bucketed by 3 m band and 4 m cell, freed after the
+  boot: three's raycaster on the whole heroes took the boot from 100 s to 350 s; the index brings it to about 165 s. *The creepers' cut-out:* the library card's transparent texels were near
+  black, so its mipmaps fringed every leaf; the curtains take `BIO.leafMat` on the card refilled with its leaf colour (`BIO.alphaTex`).
+  *The street lamps:* every furniture piece is dead (`KratorTransitFurniture.dead`: dark lenses, rusted metal), the highway's lamps too.
+  *The walkers:* the keepers and the hunters steer round the piers, the fallen decks, the train cars, the Engines, the wrecks and the plinths
+  (72 `AV_AVOID`) and give up a corner they cannot reach in 25 s; a check with a negative on a pier. *The towers' turn:* every drawn form turned
+  by +yaw where the plan, the plinths and the kerbs read (cos yaw, sin yaw) (found by the lobbies session): the slab families stood 34 degrees
+  askew to their streets; now -yaw throughout 70.
+- [ ] **The library cards' black fringe is core-wide:** `BIO.libSwap` (core/biome 20) hands a kit the library card as packed, and a card's
+  transparent texels are near black, so any library card's mipmaps fringe its leaves at range (found on the creepers, 2026-11-10). The
+  valley refills its own curtains (71); the fix for every kit is a fill in `libSwap` or in `tools/textures/pack.py` (a dilation of the
+  colour into the transparent texels), which reaches every build that takes a library card.
+- [ ] **The walkers steer locally:** `AV_AVOID` bends a heading away from what is ahead and pushes a walker out of what it entered; there is no
+  path search, so a corner behind a long obstacle is given up after 25 s rather than walked round.
 - [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or
   without the feral wrap: the kits' own placement on this page's fields. The gum is kept at its own size (`swKeep`), the floor's plants are not
   grown (`AV.feralKit` takes `floor:true` to turn that on); the audit sits at its 1% limit. Find the gum's fault in the kit next.

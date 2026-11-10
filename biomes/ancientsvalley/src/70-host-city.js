@@ -137,6 +137,31 @@ const AV_PROF={},AV_PROF_N=36;function avProfile(key){if(AV_PROF[key])return AV_
      const st=Math.max(2,Math.ceil(Math.max(a.distanceTo(b2),b2.distanceTo(c),c.distanceTo(a))/C));for(let u=0;u<=st;u++)for(let w=0;w+u<=st;w++){const p=u/st,q=w/st,x=a.x+(b2.x-a.x)*p+(c.x-a.x)*q,z=a.z+(b2.z-a.z)*p+(c.z-a.z)*q;S.add(Math.floor(x/C)+','+Math.floor(z/C));}}});
    S.cell=C;return roofs[key]=S;},
   onRoof(h,x,z){const S=this.roofAt(h),C=S.cell;return S.has(Math.floor(x/C)+','+Math.floor(z/C));}};return AV_PROF[key]=P;}
+/* THE DRAWN SURFACE, BY RAYS (the owner, 2026-11-10: "still seeing a fair amount of floating foliage"): the profile's bearings and roof cells place
+   the creepers and the roof trees, and a ray at the hero itself confirms each one, in the tower's own frame. The roof cells are 4 m and take any
+   upward face, so a tree stood on a rim or a beam and hung over the drop (the probe found the floating crowns roof oaks on a broken Wedge and on the
+   Pods' crown). side(h, a, r0): the first face a ray in from r0 m out on the bearing a meets at the height h, its distance from the axis, or null;
+   down(x, z, y0, y1): the first surface a ray down from y0 meets above y1, its height, or null. Debris and rubble are left out, as avProfile does */
+/* The merged walls and slabs only (the instanced detail, windows and mullions in their thousands, holds no creeper or tree; the roof finder in 88
+   skips it too), as triangles in the tower's frame bucketed by 3 m band (the sideways rays) and 4 m cell (the downward ones), so a ray tests its
+   bucket and not the whole hero: three's raycaster on the whole heroes took the boot from 100 s to 350 s. avSurfaceFree() lets the buckets go
+   after the boot (the check builds them again as it asks) */
+const AV_SURF={},AV_SB=3,AV_SC=4;function avSurfaceFree(){for(const k in AV_SURF)delete AV_SURF[k];}
+function avSurface(key){if(AV_SURF[key])return AV_SURF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);
+ const T=[],v=new THREE.Vector3();H.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||!m.geometry||/debris|rubble/.test(m.name||''))return;const P=m.geometry.attributes.position,I=m.geometry.index,n=I?I.count:P.count;
+  for(let k=0;k+2<n;k+=3)for(let j=0;j<3;j++){v.fromBufferAttribute(P,I?I.getX(k+j):k+j).applyMatrix4(m.matrixWorld);T.push(v.x,v.y,v.z);}});
+ const TA=new Float32Array(T),nt=TA.length/9,band=new Map(),cell=new Map(),put=(M,k,t)=>{let a=M.get(k);if(!a)M.set(k,a=[]);a.push(t);};
+ for(let t=0;t<nt;t++){const q=t*9,x0=Math.min(TA[q],TA[q+3],TA[q+6]),x1=Math.max(TA[q],TA[q+3],TA[q+6]),y0=Math.min(TA[q+1],TA[q+4],TA[q+7]),y1=Math.max(TA[q+1],TA[q+4],TA[q+7]),z0=Math.min(TA[q+2],TA[q+5],TA[q+8]),z1=Math.max(TA[q+2],TA[q+5],TA[q+8]);
+  for(let b=Math.floor(y0/AV_SB);b<=Math.floor(y1/AV_SB);b++)put(band,b,t);
+  for(let i=Math.floor(x0/AV_SC);i<=Math.floor(x1/AV_SC);i++)for(let j=Math.floor(z0/AV_SC);j<=Math.floor(z1/AV_SC);j++)put(cell,i+','+j,t);}
+ /* Moller-Trumbore: the distance along (dx, dy, dz) from (ox, oy, oz) to triangle t, or -1 */
+ const hit=(t,ox,oy,oz,dx,dy,dz)=>{const q=t*9,ax=TA[q],ay=TA[q+1],az=TA[q+2],e1x=TA[q+3]-ax,e1y=TA[q+4]-ay,e1z=TA[q+5]-az,e2x=TA[q+6]-ax,e2y=TA[q+7]-ay,e2z=TA[q+8]-az;
+  const px=dy*e2z-dz*e2y,py=dz*e2x-dx*e2z,pz=dx*e2y-dy*e2x,det=e1x*px+e1y*py+e1z*pz;if(Math.abs(det)<1e-9)return -1;const inv=1/det,tx=ox-ax,ty=oy-ay,tz=oz-az,u=(tx*px+ty*py+tz*pz)*inv;if(u<0||u>1)return -1;
+  const qx=ty*e1z-tz*e1y,qy=tz*e1x-tx*e1z,qz=tx*e1y-ty*e1x,w=(dx*qx+dy*qy+dz*qz)*inv;if(w<0||u+w>1)return -1;const s=(e2x*qx+e2y*qy+e2z*qz)*inv;return s>1e-4?s:-1;};
+ return AV_SURF[key]={tris:nt,side(h,a,r0){const c=Math.cos(a),s=Math.sin(a),L=band.get(Math.floor(h/AV_SB));if(!L)return null;let best=1e9;for(const t of L){const d=hit(t,c*r0,h,s*r0,-c,0,-s);if(d>=0&&d<best)best=d;}return best<r0?r0-best:null;},
+  down(x,z,y0,y1){const L=cell.get(Math.floor(x/AV_SC)+','+Math.floor(z/AV_SC));if(!L)return null;let best=1e9;for(const t of L){const d=hit(t,x,y0,z,0,-1,0);if(d>=0&&d<best)best=d;}return best<=y0-y1?y0-best:null;},
+  /* a tree's footing: the centre and four points 1.5 m round it all meet a surface within 1.2 m of one another: a slab under the trunk, not a beam */
+  footing(x,z,y0,y1){const yc=this.down(x,z,y0,y1);if(yc==null)return null;for(let k=0;k<4;k++){const a=k*Math.PI/2,y=this.down(x+Math.cos(a)*1.5,z+Math.sin(a)*1.5,y0,y1);if(y==null||Math.abs(y-yc)>1.2)return null;}return yc;}};}
 // the towers as records before anything is drawn: the family's name, its footprint, the state
 AVC.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family];if(!F)return;const r=F.footprint?(F.footprint.r||Math.max(F.footprint.w||0,F.footprint.d||0)/2):30;
  REGISTER({name:F.name+' ('+T.state+')',kind:'tower',x:T.x,z:T.z,y:T.y,r:r,h:T.state==='intact'||T.state==='gutted'?F.height.tip:F.height.tip*.6,tags:{kind:'tower',family:T.family,state:T.state,zone:T.kind}});});
@@ -182,7 +207,7 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  AVC.dkeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.ikey)){seen.add(t.ikey);AVC.dkeys.push(t.ikey);}});}
  AVC.dsets=[S];AVC.dset={};let slotLeft=0,cur=null;AVC.dkeys.forEach(k=>{if(!slotLeft){cur=AVC.dsets.length===1&&!AVC.dsets[0].used?S:BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:128,slots:14});cur.used=true;if(cur!==S)AVC.dsets.push(cur);slotLeft=14;BIO.impostorItem('avImp'+(AVC.dsets.length-1),cur,{label:'a far tower'});}
   AVC.imp[k]=impOf(k,cur);AVC.dset[k]='avImp'+(AVC.dsets.indexOf(cur));slotLeft--;});
- BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],T.yaw,1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
+ BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],-(T.yaw||0),1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
  {const mine={metro:BIO.kits.metro};BIO.kits=mine;try{BIO.bake();}finally{BIO.kits=savedKits;}}BIO.kit('');AVC.impQ=BIO.IMP.list.slice();BIO.IMP.list.length=0;AVC.impN=0;
  AVC.impMeshes=[];scene.traverse(o=>{if(o.isInstancedMesh&&/avImp/.test(o.name||'')){AVC.impMeshes.push(o);o.userData.full=o.instanceMatrix.array.slice();}});AVC.impKeys=AVC.dkeys.length;
  AVC.bakeAllMs=Math.round(performance.now()-t0);AVC.impMs=0;AVC.ready=true;AVC.nextTier=0;return true;};
@@ -190,9 +215,13 @@ AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const r=AVC.impQ.sh
 // a hero placed on the ground: a clone that shares the geometry
 function avHero(key,x,y,z,yaw,fade,nearR){const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key)),g=new THREE.Group();H.children.forEach(m=>{let c;if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;c.position.copy(m.position);c.quaternion.copy(m.quaternion);c.scale.copy(m.scale);c.userData=m.userData;}else c=m.clone();g.add(c);});
  /* fade: false, or the shell key whose frame the hero fades over (its own key, or the stump's for a skeleton) */
- g.position.set(x,y,z);g.rotation.y=yaw==null?0:yaw;if(MP.shadow)MP.shadow.cast(g);const fk=fade===true?key:fade;if(fk&&AVC.rec[fk])avFade(g,fk,x,y,z,yaw,nearR);g.userData.av={key,x,y,z,yaw:yaw==null?0:yaw};scene.add(g);AVC.live.push(g);return g;}
-/* a broken tower's lean (AV.lean: up to 5 degrees, a direction by hash): one quaternion per tower, the heroes, the shells and the rubble share it */
-const avQuat=(T)=>{if(T.q)return T.q;const Y=new THREE.Vector3(0,1,0),q=new THREE.Quaternion().setFromAxisAngle(Y,T.yaw||0);if(T.lean){const ax=new THREE.Vector3(Math.cos(T.leanDir||0),0,Math.sin(T.leanDir||0)),t=new THREE.Quaternion().setFromAxisAngle(ax,T.lean*Math.PI/180);q.premultiply(t);}T.q=q;return q;};
+ g.position.set(x,y,z);g.rotation.y=-(yaw==null?0:yaw);if(MP.shadow)MP.shadow.cast(g);const fk=fade===true?key:fade;if(fk&&AVC.rec[fk])avFade(g,fk,x,y,z,yaw,nearR);g.userData.av={key,x,y,z,yaw:yaw==null?0:yaw};scene.add(g);AVC.live.push(g);return g;}
+/* a broken tower's lean (AV.lean: up to 5 degrees, a direction by hash): one quaternion per tower, the heroes, the shells and the rubble share it.
+   THE YAW'S SIGN (found by the lobbies session, 2026-11-10): a tower's yaw is the plan's, which turns its local x to (cos yaw, sin yaw) as the lattice,
+   the plinth (46z padD) and the kerb placement read it; three.js's rotation.y turns local x to (cos, -sin), so every drawn form (the hero, its fade,
+   the shells, the debris, the impostors, the creepers and the roof trees through this quaternion) turns by -yaw. Before, every slab family stood 34
+   degrees askew to its street and plinth (17 degrees the lattice's turn, drawn the other way) */
+const avQuat=(T)=>{if(T.q)return T.q;const Y=new THREE.Vector3(0,1,0),q=new THREE.Quaternion().setFromAxisAngle(Y,-(T.yaw||0));if(T.lean){const ax=new THREE.Vector3(Math.cos(T.leanDir||0),0,Math.sin(T.leanDir||0)),t=new THREE.Quaternion().setFromAxisAngle(ax,T.lean*Math.PI/180);q.premultiply(t);}T.q=q;return q;};
 const avHalf=(key,yaw)=>{const r=AVC.rec[key];if(!r){const F=MP.FAMILY[key.split('.')[0]]||MP.DESIGNS[key.split('.')[0]],fp=F&&F.footprint||{},h=fp.r!=null?fp.r:Math.max(fp.w==null?40:fp.w,fp.d==null?40:fp.d)/2;return[h,h];}const f=r.frame,h=f.mode?[f.a,f.b]:[f.a*.6,f.a*.6];return Math.abs(Math.cos(yaw==null?0:yaw))<.5?[h[1],h[0]]:h;};
 const avH=key=>{const r=AVC.rec[key];if(r)return r.frame.H;const p=key.split('.'),F=MP.FAMILY[p[0]]||MP.DESIGNS[p[0]];if(F&&F.ruins&&p[1]&&p[1]!=='intact'){try{return MP.ruin(F,p[1]).top;}catch(e){}}return F?F.height.tip:60;};
 const avBoxDist=(T,e)=>{const h=avHalf(T.skey||T.key,T.yaw),dx=Math.max(Math.abs(e.x-T.x)-h[0],0),dz=Math.max(Math.abs(e.z-T.z)-h[1],0),dy=Math.max(e.y-T.y-avH(T.skey||T.key),Math.max(T.y-e.y,0),0);return Math.hypot(dx,dy,dz);};
@@ -208,7 +237,7 @@ function avShells(list,held){const n={};AVC.shellKeys.forEach(k=>n[k]=0);const M
   const B=im.geometry.attributes.aBand;if(B&&i<B.count)B.setX(i,held&&held.has(T.id)?(T.nearR==null?AV_NEAR:T.nearR):-1);});
  AVC.shellKeys.forEach(k=>{const im=AVC.mesh[k];if(!im)return;im.count=n[k];im.instanceMatrix.needsUpdate=true;if(im.geometry.attributes.aBand)im.geometry.attributes.aBand.needsUpdate=true;});}
 function avDebris(list,far){const DB=far?AVC.debrisFar:AVC.debris,n={},M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
- list.forEach(T=>{const D=DB[T.key];if(!D)return;const i=n[T.key]=(n[T.key]||0);M.compose(p.set(T.x,T.y,T.z),Q.setFromAxisAngle(Y,T.yaw||0),one);D.forEach(im=>im.setMatrixAt(i,M));n[T.key]++;});   /* the rubble lies on the ground: no lean */
+ list.forEach(T=>{const D=DB[T.key];if(!D)return;const i=n[T.key]=(n[T.key]||0);M.compose(p.set(T.x,T.y,T.z),Q.setFromAxisAngle(Y,-(T.yaw||0)),one);D.forEach(im=>im.setMatrixAt(i,M));n[T.key]++;});   /* the rubble lies on the ground: no lean */
  for(const k in DB)DB[k].forEach(im=>{im.count=n[k]||0;im.instanceMatrix.needsUpdate=true;});}
 // the tiers each 150 ms: the nearest towers heroes from a pool; 300 m to 1.4 km shells (to 3.2 km seen steeply); the rest impostors
 AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now(),e=camera.position,L=AVC.lastEye;

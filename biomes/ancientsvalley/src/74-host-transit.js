@@ -15,6 +15,9 @@
 // legs, sentry posts) is a dark post in ONE InstancedMesh from the boot, its instances zeroed in a cell while the cell's real pieces are
 // drawn, so a street keeps its lamps to the fog's edge.
 const AV_TR_NEAR=750,AV_TR_CELL=400,AV_TR_CHUNK=1500,AV_TR_FAR=3600,AV_TR_FREE=450;
+/* the city is dead (the owner, 2026-11-09: "streetlights should be dead and rusted, not on at night"): every furniture piece built on this page, the
+   highway's lamps among them, has dark lenses and rusted metal, standing or not (kits/ancient-transit's furniture assembler, KTF.dead) */
+if(typeof KratorTransitFurniture!=='undefined')KratorTransitFurniture.dead=true;
 const AVTR={ready:false,groups:[],cells:{},cellList:[],ms:0,n:{},built:0,cache:{},far:null};
 const AV_TR_FAR_H=3;   /* a piece this tall and standing (not fallen or crushed) has a far post */
 AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return false;if(typeof KTRANSIT==='undefined'||!STAGE.transit)return AVTR.ready=true;

@@ -107,6 +107,22 @@ const HCHK={
     before it was drawn (the kit's registry says so) and each phenomenon's weather bound on core/atmos (a void's mist, a solid's plume, a presence's glow);
     the void on the water (its `at` on the surface, water under its whole drift), the solid and the presence on dry ground, every drowned portal's floor
     under the lake and its arch above it (the lake's line cuts the arch), the tear on dry ground: nothing under the lake that should not be */
+ /* the walkers keep clear (the owner, 2026-11-09: "robots need to respect collision with things eg highway pillars"): no keeper or hunter stands
+    within half its body of a pier, a fallen deck, a train car, an Engine, a wreck or a tower's plinth (72, AV_AVOID), and the obstacle set is there */
+ /* no green sky (the owner, 2026-11-09: "still getting the green shader during storms"): the clouds' mood over 200 episodes with the page's own
+    palette (46z STAGE.cloudMood) tints nothing green-dominant; the air (89v) carries the clouds' colour onto the far towers in a storm */
+ /* the flora held by the drawn ruins (the owner, 2026-11-10: "still seeing a fair amount of floating foliage"): every roof tree's foot (88) has the
+    hero's surface under it within 0.6 m, and every creeper's head (71) a wall within 1.5 m, by rays at the hero in the tower's frame (70, avSurface) */
+ floraHeld(TOPS,TW,lift){if(typeof avSurface==='undefined')return{ok:false,detail:'no avSurface'};let feet=0,fbad=0,cur=0,cbad=0;const dy=lift||0;
+  for(const P of TOPS||[]){const sf=avSurface(P.t.key);for(const f of P.feet||[]){feet++;const y=sf.down(f[0],f[2],f[1]+dy+1,f[1]+dy-1.5);if(y==null||Math.abs(y-f[1]-dy)>.6)fbad++;}}
+  for(const t of TW||[]){if(!t.curtains)continue;const sf=avSurface(t.key);for(const c of t.curtains){cur++;const r=Math.hypot(c[0],c[2])-.35,rw=sf.side(c[1]+dy,c[3],r+12);if(rw==null||Math.abs(rw-r)>1.5)cbad++;}}
+  return{ok:feet>=40&&cur>=500&&!fbad&&!cbad,detail:feet+' roof trees, '+fbad+' with no roof under the foot; '+cur+' curtains, '+cbad+' with no wall behind the head'};},
+ moodHues(o){if(typeof ATMOS==='undefined'||!ATMOS.moodAt)return{ok:false,detail:'no ATMOS.moodAt'};let worst=-1,n=0;
+  for(let k=0;k<200;k++){const m=ATMOS.moodAt(k*(o.period==null?300:o.period)+1,o);if(!(m.tintK>0))continue;n++;const t=m.tint,g=t[1]-Math.max(t[0],t[2]);if(g>worst)worst=g;}
+  return{ok:n>=40&&worst<=.02,detail:n+' tinted episodes of 200; the greenest leans '+worst.toFixed(2)+' to green (0.02 at most)'};},
+ clearOf(W){if(typeof AV_AVOID==='undefined')return{ok:false,detail:'no AV_AVOID'};AV_AVOID.index();let bad=[];const acc=[];
+  for(const k of W){const x=k.g.position.x,z=k.g.position.z,R=k.R==null?3:k.R;AV_AVOID.near(x,z,R+2,acc);for(const [px,pz,r] of acc)if(Math.hypot(x-px,z-pz)-r<R*.5){bad.push(k.key);break;}}
+  return{ok:W.length>=4&&AV_AVOID.discs>=50&&!bad.length,detail:W.length+' walkers, '+AV_AVOID.discs+' obstacles (piers, fallen decks, cars, Engines, wrecks) and the plinths; '+(bad.length?'inside one: '+bad.join(', '):'none inside one')};},
  hunters(H){let bad=0;for(const k of H){if(!k.route||k.route.length<4)bad++;else for(const p of k.route)if(terrainH(p[0],p[1])<STAGE.lakeY+2)bad++;
    const p=k.g&&k.g.position;if(!p||!isFinite(p.x)||!isFinite(p.y)||!isFinite(p.z))bad++;else if(typeof KratorExtraplanar!=='undefined'){const s=KratorExtraplanar.state(k.g);if(!s||!(s.mode==='walk'||s.mode==='idle'||s.attacking))bad++;}}
   return{ok:H.length>=2&&H.some(k=>k.key==='xp_stilter')&&!bad,detail:H.length+' hunters on their rounds ('+H.map(k=>k.key.replace('xp_','')).join(', ')+'), '+bad+' faults'};},
@@ -126,7 +142,8 @@ if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the
  add('the grid runs between the buildings',HCHK.grid(T));if(!STAGE.transit)add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
  add('the ruined vehicles stand in the streets',HCHK.wrecks(AVW.records));
- add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
+ add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the walkers keep clear of the piers, the plinths and the wrecks',HCHK.clearOf(AV_KEEPERS.concat(AV_XP.hunters)));add('the roof trees and the creepers are held by the drawn ruins',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw));add('no green in the clouds\' mood',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{})));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
+ if(typeof AVL!=='undefined')AVL.checks(add);   /* the lobbies and climbs (76, PLAN.md section 15) */
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -146,20 +163,26 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('no tree on a ruin and no creeper',HCHK.overgrown(STAGE.F,REG.filter(r=>r.kind!=='rooftree'),{curtains:0,towers:0}));
  add('a wreck under the lake',HCHK.wrecks(AVW.records.map((w,i)=>i?w:Object.assign({},w,{y:STAGE.lakeY-3}))));
  add('no extraplanar hunter on a round',HCHK.hunters([]));
+ add('every roof tree and curtain lifted 6 m off the ruin',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw,6));
+ if(typeof ATMOS!=='undefined'&&ATMOS.MOOD_PALETTE)add('the clouds\' mood on core/atmos\'s whole palette (its sickly green and jaundice)',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{},{palette:ATMOS.MOOD_PALETTE})));
+ {const W=AV_KEEPERS.concat(AV_XP.hunters);let pier=null;if(STAGE.transit&&STAGE.transit.highway)pier=(STAGE.transit.highway.piers||[]).find(p=>p.state!=='none');
+  if(pier&&W.length)add('a walker standing on a highway pier',HCHK.clearOf(W.map((k,i)=>i?k:Object.assign({},k,{g:{position:{x:pier.x,z:pier.z}}}))));}
  if(AV_XP.hunters.length&&AV_XP.spots.void)add("a hunter's corner under the lake",HCHK.hunters(AV_XP.hunters.map((k,i)=>i?k:Object.assign({},k,{route:k.route.map((p,j)=>j?p:AV_XP.spots.void)}))));
  if(AV_XP.registry){const RG=AV_XP.registry,fake=o=>Object.assign({},AV_XP,{registry:Object.assign({check:RG.check.bind(RG),phenomena:RG.phenomena.bind(RG),portals:RG.portals.bind(RG)},o)});
   add('a phenomenon drawn before it was registered',HCHK.extraplanar(fake({check:()=>({ok:false,fails:['a void drawn unregistered'],records:1,drawn:0})})));
   add('the void hanging over dry ground',HCHK.extraplanar(fake({phenomena:()=>RG.phenomena().map(r=>r.key==='void'?Object.assign({},r,{at:[STAGE.near.x,STAGE.lakeY,STAGE.near.z]}):r)})));
   add('a drowned portal on dry land',HCHK.extraplanar(fake({portals:()=>RG.portals().map(r=>r.key==='drowned'?Object.assign({},r,{at:[r.at[0],STAGE.lakeY+5,r.at[2]]}):r)})));
   add("a phenomenon without its weather",HCHK.extraplanar(Object.assign({},AV_XP,{drawn:AV_XP.drawn.map((g,i)=>i?g:{userData:Object.assign({},g.userData,{weather:null})})})));}
+ if(typeof AVL!=='undefined')AVL.negatives(add);
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');if(window.AV_AIR)KHOST.on(AV_AIR.view,'view');   /* the colour of the air after the sky's own update (89v) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'ancientsvalley-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?((x,z)=>{const g=AV_HOUSE.groundAt(x,z);return g==null?terrainH(x,z):g;}):terrainH,clear:1.8,registry:REG,
- walk:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?KWALK:undefined,   /* the House's floors and walls (75); the walker stands on the valley's ground everywhere else */
-views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
+ /* the walk: AVL.walk (76) is core/walk less the lobbies' fallen floors, the same registry the House's floors and walls (75) are on */
+ walk:typeof AVL!=='undefined'?AVL.walk:((typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?KWALK:undefined),
+ views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
  ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+(AVC.ready?'\ntowers '+AVC.towers.length+(AVC.tierN?': heroes '+AVC.tierN.heroes+', shells '+AVC.tierN.shells+', impostors '+AVC.tierN.impostors:'')+'\nshell bake '+AVC.bakeMs+' ms, all '+AVC.bakeAllMs+' ms':'\nbaking the towers')+(typeof AVW!=='undefined'&&AVW.ok?'\nwrecks '+AVW.drawn+'/'+AVW.records.length+', '+AVW.built+' looks built in '+AVW.buildMs+' ms':'')+(AV_XP.ok?'\nextraplanar: '+AV_XP.hunters.length+' hunters, '+AV_XP.drawn.length+' drawn, hum here '+AV_XP.hum.toFixed(2):''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'water':{match:o=>!!(o.userData&&o.userData.water)},'sky':{objects:()=>[SKY.mesh]}},
