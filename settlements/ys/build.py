@@ -192,7 +192,7 @@ for _f in VENDOR_RENAME:
 # READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/
 # held copies, behind core/biome and the fauna's move onto BIO.dynamic). Only the city target takes them; the city's host
 # binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
-BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '40-core-place',   # 35: BIO.phaseAnimMat, which nwbay's fauna calls
                '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
                '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
 BIO_PATHS = {'86-bio-%s.js' % b: os.path.join(ROOT, *(('core', 'biome') if '-core-' in b else ('biomes', 'nwbay', 'src')), b + '.js')
