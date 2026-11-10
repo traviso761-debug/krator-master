@@ -124,9 +124,11 @@ for f in ['52-core-water-geyser.js','52b-core-water-geyser-draw.js']: PATH.setde
 # THE BRANCH'S PIECES (the docstring): core/hazard 22 (KHAZ.crust, under, night, front) and core/atmos fx/ashplume (ATMOS.ashPlume)
 BRANCH='origin/claude/core-plan-features-229d2a'
 OWED={'22-core-hazard-env.js':'core/hazard/22-core-hazard-env.js','89-atmos-fx-ashplume.js':'core/atmos/fx/89-atmos-fx-ashplume.js'}
+LISTING='--list-sources' in sys.argv   # tools/build_sources.py: no subprocess may run before report(); the files those read are named instead
 VIRTUAL={}
 for f,rel in OWED.items():
     if os.path.isfile(J(rel)): PATH[f]=J(rel); continue
+    if LISTING: continue
     _g=subprocess.run(['git','show',BRANCH+':'+rel],cwd=ROOT,capture_output=True,text=True,encoding='utf-8')
     if _g.returncode: sys.exit('build.py: %s is neither in the working tree nor on %s (git fetch origin, or merge that branch first): KNOWN_ISSUES.md'%(rel,BRANCH))
     VIRTUAL[f]=_g.stdout.replace('\r\n','\n')
@@ -176,10 +178,11 @@ _px,_py=SJ['site']
 VIRTUAL['44m-host-model.js']=_ms.fragment(_px,_py,SJ.get('key','vale'))
 # THE RESOURCE DATA round the site (kits/resources, read in place by Copper Glacier's res_site.js): the nodes in the square, as FB_RES
 _node=find_node()
-if not _node: sys.exit('build.py: node is needed to read the resource data (res_site.js)')
+if not _node and not LISTING: sys.exit('build.py: node is needed to read the resource data (res_site.js)')
 for _f in [J('biomes','copperglacier','res_site.js'),J('kits','resources','src','45r-res-field.js'),J('kits','resources','data','geology.json')]:
     with open(_f,'rb') as _fh: _fh.read()
-_r=subprocess.run([_node,J('biomes','copperglacier','res_site.js'),str(_px),str(_py),'2700'],capture_output=True,text=True,encoding='utf-8')
+if LISTING: _r=type('R',(),{'returncode':0,'stdout':'{}'})()
+else: _r=subprocess.run([_node,J('biomes','copperglacier','res_site.js'),str(_px),str(_py),'2700'],capture_output=True,text=True,encoding='utf-8')
 if _r.returncode: sys.exit('build.py: res_site.js failed\n'+_r.stderr[:800])
 VIRTUAL['44r-host-res.js']='\n// the resource data round this station (biomes/copperglacier/res_site.js, read in place, from kits/resources/data/geology.json; build time)\nconst FB_RES='+_r.stdout+';\n'
 for f in VIRTUAL: PATH[f]=None
