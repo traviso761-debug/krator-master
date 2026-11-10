@@ -7,7 +7,7 @@
 // That number times the zone's strength is ADDED to the pixel in the zone's colour: nothing is ever darkened or hidden, a wall
 // inside the zone stops the sum at the wall (so near things glow less than the air behind them), and from far off the whole
 // chord shows: a soft warm dome on the land. The shimmer is a slow wavering of the glow itself, rising, in bands a few to a zone.
-//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35), pulse (.3: the zone breathes IN AND OUT: its glow swells and ebbs by this share and its edge moves out and back by half of it, a breath of about 6 s with a slower one under it, each zone out of step; the shimmer's rings swing out and in with it, nothing travels upward)}] (at most 4), colour (display [1, .62, .25])}) -> R
+//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35), pulse (.3: the glow swells and ebbs by this share, a slow breath of about 11 s with a slower one under it, each zone out of step; the zone's edge holds still and the shimmer's rings only expand)}] (at most 4), colour (display [1, .62, .25])}) -> R
 //       R.zones (edit a zone and call R.set()), R.k (a master strength, 1: fade it in and out), R.on(material), R.off
 //   ATMOS.radiationScene(scene)   every lit material with fog on takes the glow, once (as heightFogScene): its fragments add the
 //                                 chord up to themselves. The sky behind a zone takes it from a shell the call draws at the far
@@ -17,7 +17,7 @@
 //   ATMOS.radAt(zones, x, y, z)       the density at a point (0..1, the largest zone's): placement, a meter, core/hazard
 //   ATMOS.radiationHeat(zones, o)     the zones as a raster of degrees {x0, z0, cell, nx, nz, T} for ATMOS.shimmer (fx/89-atmos-fx-
 //                                     shimmer.js): a page with that post pass bends the light over the zone too (true heat haze)
-//   ATMOS.radiationHaze({renderer, amp (.006 of the screen's height at full), speed (1.2), scale (38: the waver's cells across the
+//   ATMOS.radiationHaze({renderer, amp (.006 of the screen's height at full), speed (.6), scale (38: the waver's cells across the
 //                         screen)}) -> H   TRUE HEAT HAZE (the owner, 2026-11-10: "try it like a true bent light heat haze"): a
 //       post pass. H.draw(render, camera, dt): `render` draws the page's frame as usual (it lands in H's target, with depth); each
 //       pixel then takes its colour from a little beside itself, the offset swinging to and fro and swelling with the breath, by how much zone air its ray
@@ -35,7 +35,7 @@
   const h=Math.sqrt(R2-d2),s0=Math.max(-b-h,0)+b,s1=Math.min(-b+h,L)+b;if(s1<=s0)return 0;return((1-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3*R2))/(4/3*z.r);};
  A.radGlow=(ro,rd,L,zones)=>zones.reduce((s,z)=>s+(z.strength==null?.16:z.strength)*A.radChord(ro,rd,L,z),0);
  A.radHazeK=(ro,rd,L,zones)=>Math.min(1,zones.reduce((s,z)=>s+(z.shimmer==null?.35:z.shimmer)*A.radChord(ro,rd,L,z),0)*2);
- A.radPulse=(t,pulse,i)=>1+(pulse==null?.3:pulse)*(.65*Math.sin(t*1.1+i*2.1)+.35*Math.sin(t*.43+i*2.1*2.3));   /* the twin of the chunk's pulse: zone i's factor at t seconds */
+ A.radPulse=(t,pulse,i)=>1+(pulse==null?.3:pulse)*(.65*Math.sin(t*.55+i*2.1)+.35*Math.sin(t*.215+i*2.1*2.3));   /* the twin of the chunk's pulse: zone i's factor at t seconds */
  A.radAt=(zones,x,y,z)=>zones.reduce((m,q)=>{const dx=x-q.x,dy=y-(q.y==null?0:q.y),dz=z-q.z;return Math.max(m,q.r>0?Math.max(0,1-(dx*dx+dy*dy+dz*dz)/(q.r*q.r)):0);},0);
  A.radiationHeat=(zones,o)=>{o=o||{};const cell=o.cell==null?8:o.cell,t0=o.t0==null?25:o.t0,t1=o.t1==null?70:o.t1;let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;
   for(const q of zones){x0=Math.min(x0,q.x-q.r);z0=Math.min(z0,q.z-q.r);x1=Math.max(x1,q.x+q.r);z1=Math.max(z1,q.z+q.r);}
@@ -48,9 +48,9 @@
   /* atmRadZ: a zone's centre and radius (0: none); atmRadK: its strength, its shimmer, its pulse (0..1 of the strength), the pulse's phase; atmRadC: the glow, display RGB; atmRadT: seconds */
   'float atmRadChord(vec3 ro,vec3 rd,float L,vec4 z){vec3 oc=ro-z.xyz;float b=dot(oc,rd),d2=dot(oc,oc)-b*b,R2=z.w*z.w;if(z.w<=0.0||d2>=R2)return 0.0;',
   ' float h=sqrt(R2-d2),s0=max(-b-h,0.0)+b,s1=min(-b+h,L)+b;if(s1<=s0)return 0.0;return ((1.0-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3.0*R2))/(1.3333333*z.w);}',
-  /* the shimmer: rings about the zone's centre that swell out and draw back in (their phase swings, it does not travel), broken round the compass */
-  'float atmRadShim(vec3 q,float t,float ph){float r=length(q);return sin(r*11.0-2.6*sin(t*0.9+ph))*(0.6+0.4*sin(q.x*4.0+q.z*3.3+q.y*2.1));}',
-  'float atmRadOne(vec3 ro,vec3 rd,float L,int i){vec4 z=atmRadZ[i];float pw=0.65*sin(atmRadT*1.1+atmRadK[i].w)+0.35*sin(atmRadT*0.43+atmRadK[i].w*2.3);z.w*=1.0+0.5*atmRadK[i].z*pw;float c=atmRadChord(ro,rd,L,z);if(c<=0.0)return 0.0;',
+  /* the shimmer: concentric rings about the zone's centre that EXPAND, always outward, never drawing back (the owner, 2026-11-10), a ring taking about 5 s to cross its own width; broken round the compass */
+  'float atmRadShim(vec3 q,float t,float ph){float r=length(q);return sin(r*11.0-t*1.2+ph)*(0.6+0.4*sin(q.x*4.0+q.z*3.3+q.y*2.1));}',
+  'float atmRadOne(vec3 ro,vec3 rd,float L,int i){vec4 z=atmRadZ[i];float pw=0.65*sin(atmRadT*0.55+atmRadK[i].w)+0.35*sin(atmRadT*0.215+atmRadK[i].w*2.3);float c=atmRadChord(ro,rd,L,z);if(c<=0.0)return 0.0;',
   ' vec3 pm=ro+rd*clamp(-dot(ro-z.xyz,rd),0.0,L);float pu=1.0+atmRadK[i].z*pw;return atmRadK[i].x*pu*c*(1.0+atmRadK[i].y*atmRadShim((pm-z.xyz)/z.w,atmRadT,atmRadK[i].w));}',
   'vec3 atmRad(vec3 ro,vec3 rd,float L){float g=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)g+=atmRadOne(ro,rd,L,i);return atmRadC*g;}',
   'float atmRadHazeK(vec3 ro,vec3 rd,float L){float k=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)k+=atmRadK[i].y*atmRadChord(ro,rd,L,atmRadZ[i]);return min(1.0,k*2.0);}',
@@ -59,7 +59,7 @@
   U.radZ={value:Array.from({length:N},()=>new T.Vector4())};U.radK={value:Array.from({length:N},()=>new T.Vector4())};U.radC={value:new T.Vector3()};U.radT={value:0};
   const R=A.rad={zones:(o.zones||[]).slice(0,N).map(z=>Object.assign({y:0,strength:.16,shimmer:.35,pulse:.3},z)),colour:o.colour||[1,.62,.25],k:1,off:false,shells:[]};
   R.set=()=>{for(let i=0;i<N;i++){const z=R.zones[i],on=z&&!R.off;U.radZ.value[i].set(on?z.x:0,on?z.y:0,on?z.z:0,on?z.r:0);U.radK.value[i].set(on?z.strength*R.k:0,on?z.shimmer:0,on?z.pulse:0,i*2.1);
-    const s=R.shells[i];if(s){s.visible=!!on;if(on){s.position.set(z.x,z.y,z.z);s.scale.setScalar(z.r*(1+.5*z.pulse)+1);}}}
+    const s=R.shells[i];if(s){s.visible=!!on;if(on){s.position.set(z.x,z.y,z.z);s.scale.setScalar(z.r+1);}}}
    U.radC.value.set(R.colour[0],R.colour[1],R.colour[2]);return R;};
   R.on=m=>A.radiationOn(m);
   /* the sky's share: a shell a zone at the far plane, drawn after the world, so it shows only where nothing else was drawn */
@@ -76,7 +76,7 @@
   const sz=R.getDrawingBufferSize(new T.Vector2()),rt=new T.WebGLRenderTarget(sz.x,sz.y,{depthBuffer:true});rt.depthTexture=new T.DepthTexture(sz.x,sz.y);rt.depthTexture.type=T.UnsignedIntType;
   rt.texture.encoding=R.outputEncoding;   /* the frame lands in the target as it would on the screen (r128 tone-maps and encodes into it); the pass only moves pixels */
   const HU={tC:{value:rt.texture},tD:{value:rt.depthTexture},uInvP:{value:new T.Matrix4()},uCam:{value:new T.Matrix4()},uEye:{value:new T.Vector3()},
-   uAmp:{value:new T.Vector4(o.amp==null?.006:o.amp,o.speed==null?1.2:o.speed,o.scale==null?38:o.scale,sz.x/sz.y)},uT:{value:0},uK:{value:1},atmRadZ:U.radZ,atmRadK:U.radK,atmRadC:U.radC,atmRadT:U.radT};
+   uAmp:{value:new T.Vector4(o.amp==null?.006:o.amp,o.speed==null?.6:o.speed,o.scale==null?38:o.scale,sz.x/sz.y)},uT:{value:0},uK:{value:1},atmRadZ:U.radZ,atmRadK:U.radK,atmRadC:U.radC,atmRadT:U.radT};
   const m=new T.ShaderMaterial({uniforms:HU,depthTest:false,depthWrite:false,toneMapped:false,
    vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',
    fragmentShader:[A.radGLSL(),'uniform sampler2D tC;uniform sampler2D tD;uniform mat4 uInvP;uniform mat4 uCam;uniform vec3 uEye;uniform vec4 uAmp;uniform float uT;uniform float uK;varying vec2 vUv;',

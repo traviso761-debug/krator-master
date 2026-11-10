@@ -370,9 +370,9 @@ radius; density `1 - d^2 / r^2`). Each pixel takes, ADDED in the zone's colour, 
 its view ray's chord through the ball, in closed form, over the chord through the centre: 1 through the heart, 0 at the limb.
 Nothing is dimmed or hidden. A surface inside the zone stops the sum at itself, so near things glow less than the air behind
 them; from far off the whole chord shows and the zone reads as a soft warm dome. The shimmer is a slow rising waver of the glow
-itself (`shimmer`, 0..1 of the strength), rings about the zone's centre, and the whole zone breathes in and out (the owner's eye, 2026-11-10: not a steady rise):
-`pulse` (default .3) swells and ebbs the glow and moves the zone's edge out and back by half as much, over about 6 s with a slower
-swell under it, each zone out of step; the rings swing out and in with it (`ATMOS.radPulse` is the twin).
+itself (`shimmer`, 0..1 of the strength), concentric rings about the zone's centre that expand, always outward and never drawing back (the owner's eye, 2026-11-10), a ring
+taking about 5 s to cross its own width; and the glow breathes: `pulse` (default .3) swells and ebbs it over about 11 s with a
+slower swell under it, each zone out of step, the zone's edge holding still (`ATMOS.radPulse` is the twin).
 
 ```js
 const RAD=ATMOS.radiation({zones:[{x,y,z,r:300,strength:.16,shimmer:.35}],colour:[1,.62,.25]});   /* at most 4 zones */
