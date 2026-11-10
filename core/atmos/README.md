@@ -422,6 +422,18 @@ the cloud; `ATMOS.provideDeck(KHAZ, {level, base})` registers `visibility` (25 m
 deck gave none of. The deck's ground-clearance window is fixed when it is made: make it at `o.y` and keep `lap` and `burn` within about
 60 m. **Godot:** `deckLevel` is arithmetic on the clock; the deck's shader takes the level as a uniform, as here.
 
+## Local time and gravity (`fx/89-atmos-fx-localtime.js`, opt-in, 2026-11-10; `fx/test-localtime.js`)
+
+The Ancient's Valley's Stilled Ground and Press (`biomes/ancientsvalley/PLAN-ANOMALIES.md` 14). `ATMOS.localFx(emitters, {rate,
+g, seed, reach, fade})` draws particles that read two numbers at their home when the set is built: the time field's rate there and
+the gravity there (`core/anomaly`'s `KANOM.at(...).time` and `.g`, or any function). A particle's place is a pure function of its
+seeds and `time x rate`, so at rate 1e-4 it hangs and nothing shears (one particle's rate never changes). Kinds: `drops` (a rain
+field: beads hanging, streaks falling), `motes` (dust; flat under heavy gravity), `steam`, `curtain` (a fall from a lip, WATER.fall's
+arc: stopped in the air, or under 3 g short and hard), `burst` (an explosion held at its phase), `birds` (a flock on a circle: the
+field is read on the circle, so a flock round a zone runs while one inside hangs), `pall` (the Press's flat dust). The data
+(`localFxData`) and the motion's JS twin (`localFxAt`) are plain arithmetic, seeded on `KRAND.hash(seed, emitter, particle, salt)`;
+the test holds them to it and `core/atmos/fxdemo` shows them on the GPU. The handle frees its geometry (`dispose()`) and hides
+past `reach`.
 ## Tags
 
 The module registers nothing itself, because a host's registry is its own. The Iziz city adds REG entries for what it

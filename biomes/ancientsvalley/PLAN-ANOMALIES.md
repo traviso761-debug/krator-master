@@ -273,3 +273,23 @@ Near-range cost depends on how many towers a player can stand close to, so stree
 **Core adoption:** adds `KSHELL` (new) and `core/terrain`'s `KFAR` to section 8's table, plus `kits/ancients` read in place, `core/city` for the street layout (read `core/city/README.md`, "Porting a settlement", first), and `core/lod` if `BIO.LOD` doesn't fit
 buildings. It's independent of `core/anomaly`, so either can go first.
 
+
+## 14. The effects for stations 1 and 2, the Stilled Ground and the Press (the owner, 2026-11-10)
+
+The owner, 2026-11-10: "work on effects we're gonna need for stations 1 and 2", then "both pairs": these two (section 6's stations 1 and 2)
+and the Yards and the Terraces (`PLAN.md` 15). The effects first, as shared pieces a station page then places; the stations' own stages,
+sites and views come after. **Built 2026-11-10 on `claude/wizardly-cerf-605ac6`** (below: what each is and where it lives).
+
+| Piece | Where | What |
+|---|---|---|
+| `KANOM` | `core/anomaly/20-core-anomaly.js` (`[G data]`) | section 4's module: records (`gravity`, `time`, `bend`, `space`, `portal`) with a circle or a polygon, a rim ramp, a strength; `KANOM.at` (gravity, time rate, bend, ids; overlaps combined in id order, gravity and time multiplied in log scale); `KANOM.walk` (the heavy walk's speed, eye, step and bob; time slows the walk too, never below a floor, so a walker can always leave); `KANOM.squash` (the Press's placement: stunted, spread, sunk, storeys pancaked); `KANOM.owed` (the world's time owed on leaving a slow zone, capped at a day); each hurting record registers its hazard on `core/hazard` (`time` for the Stilled Ground, the new `crushing` row for the Press, fatal at the core) |
+| the hazard rows | `core/anomaly` (`KANOM.HAZARD_KINDS`) | `crushing`, `aging` and `lift`, put into `KTAGS.VOCAB.hazardKinds` when `core/anomaly` loads, so a page without the module is byte-identical (section 8 had them in core/tags; moving them there would rebuild every page for rows only the valley reads) |
+| the heavy walk | `core/anomaly/host/90-anomaly-walker.js` (`[web]`) | `KANOM.bindWalker(C)`: the host camera's walking speed and eye follow `KANOM.walk` at the walker each frame; the time owed is counted while inside |
+| local time and gravity | `core/atmos/fx/89-atmos-fx-localtime.js` | `ATMOS.localFx(emitters, {rate, g})`: particles whose clock runs at the rate of the time field at their home and fall at its gravity: hanging **drops** (a rain field stopped), **motes** of dust (hanging, or flat and sunk under heavy gravity), **steam** that does not move, a **curtain** (a waterfall stopped in the air, or under 3 g hitting hard and short), a **burst** (an Ancient machine mid-explosion, held at its phase) and **birds** (hanging mid-beat at the core, slowing at the rim); the **pall**, the Press's flat dust that will not rise |
+| the tells | records on each `KANOM` record (`tell`: colour, fx, sound) | the Stilled Ground: dust hanging, birds still, silence; the Press: the flat pall, stunted growth, a pressure hum (sounds named for `core/audio`, not wired) |
+| the demo | `core/atmos/fxdemo/` | every piece on one page (`#scene=stilled`, `#scene=press`), with its `verify.py` |
+
+**Verified 2026-11-10** (`core/atmos/fxdemo/verify.py --assert`, the RTX 5060 lane): the zones in core/tags before anything is drawn, the stasis and the crushing where they are and nowhere else, the core's particles moving under 5 cm in 10 s on the CPU twin, and on the GPU the stopped fall changing 0.13% of its pixels in a second against 5.6% for the running one outside; walking into the Press, speed x0.44 and the eye at 1.30 m, both back on walking out; the tower in the zone keeps 3 of its 10 storeys.
+
+Not in this pass: the walker's vertical state (`vy`, the lift), `KCLOCK`'s jump on leaving (the owed time is counted; the jump is the host's),
+fast time's age bands, the Godot twin of `KANOM` (it is plain data: a GDScript port and a golden vector set when a Godot station wants it).
