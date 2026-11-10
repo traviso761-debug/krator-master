@@ -257,7 +257,7 @@ cliffs, the cold up top and the floods in the canyons.
   | Place | Px | Ground | On | What (*proposed*) |
   |---|---|---|---|---|
   | **Coyote Canyon** (the model's village; **the capital**, the owner, 2026-11-10) | 1265,500 | 1,603 m, 1.31 atm, BSh 282 mm, 20 °C (28 / 11); 947-3,380 m within 8 km | `core/city` | **the Kingdom's seat**: a stepped town built down the walls of a box canyon cut into the great riser, the king's house at the canyon head over the spring, terraced gardens on every ledge, the trickster's shrine, contour carvings on the walls |
-  | **Howl** (the owner, 2026-11-10; the site *proposed*, question 9) | **1393,283**, where the Hounds' Road comes down into the gap, 130 km by road north of the Gate | 1,745 m, 1.29 atm, Cfa 1,129 mm, 18 °C (28 / 8), extremes 24 / -5; 1,579-2,254 m within 8 km | `core/hamlet` (`KHAMLET.village`) | the Kingdom's last village before the Gate: the road station and the fort's larder, pack-ostrich pens, a runners' post, the trickster's shrine at the road's foot; outside the Tiers' polygon (in the Outland Gate's), as the fort is |
+  | **Howl** (the owner, 2026-11-10, the site too) | **1393,283**, where the Hounds' Road comes down into the gap, 130 km by road north of the Gate | 1,745 m, 1.29 atm, Cfa 1,129 mm, 18 °C (28 / 8), extremes 24 / -5; 1,579-2,254 m within 8 km | `core/hamlet` (`KHAMLET.village`) | the Kingdom's last village before the Gate: the road station and the fort's larder, pack-ostrich pens, a runners' post, the trickster's shrine at the road's foot; outside the Tiers' polygon (in the Outland Gate's), as the fort is |
   | lake towns and fishing villages | the upper lake's north and east shores (1262,512; 1272,522) | 1,150-1,320 m, Csa and Cfa | `core/hamlet` (`KHAMLET.village`, fishing and farming) | reed boats, fish weirs, the shelf-oak woods, terraced fields up the riser |
   | terrace villages | the canyons (Yūt-Hām, Lām-Kē, Kū-Kē, Wūn-Gèl, Tsēk-Gèl's upper reach) | 0.8-2.2 km | `core/hamlet` (farming) | spring-fed terraces, step-moss channels, olive and apricot |
   | herders' camps | the great tread and the high steps (summer), the middle steps (winter) | 2.7-5 km | `core/camp` (`KCAMP`) | goat, sheep and ostrich herds; seasonal camps that move with the treads |
@@ -339,7 +339,7 @@ every raster checked unchanged at the end, refuses to run twice), then writes th
    class follow (`reclimate`).
 3. **The markers.** **Coyote Canyon** (`soksvzt1h9`): type `village` becomes `city`, with a note ("The capital of the Coyote
    Kingdom, the Tierhounds' seat, in a box canyon over the Lake of the Tiers; biomes/tiers/PLAN.md"). **Howl**, new: a
-   village at 1393,283 (question 9), note "The Coyote Kingdom's last village before the Gate, where the Hounds' Road comes
+   village at 1393,283 (the owner, 2026-11-10), note "The Coyote Kingdom's last village before the Gate, where the Hounds' Road comes
    down into the gap".
 4. **The road.** The Hounds' Road as a route record beside the god's road (`openworld/gods-road.json`'s shape, written by a
    `god_road.py`-like script): the line of section 8, with its legs.
@@ -455,11 +455,10 @@ The trims are a scale-model session's work (section 8a, item 5).
 7. ~~The air curve~~ **Copper Glacier's.**
 8. ~~Which station first~~ **Station 1, the Lake of the Tiers.**
 
+9. ~~Howl's site~~ **In the gap, at 1393,283**, where the Hounds' Road comes down (1,745 m, Cfa, 18 °C, 130 km by road
+   north of the Gate): the fort's larder and the road's last stop. The Vitreous Hollow stays a road station, not a village.
+
 **Still open:**
-9. **Howl's site.** *Recommended:* 1393,283, where the Hounds' Road comes down into the gap (1,745 m, Cfa, 18 °C, 130 km
-   by road north of the Gate): the fort's larder and the road's last stop. The other place on the road with water and
-   shelter is the Vitreous Hollow (1256,322, 3,467 m, Dfb, 7 °C), halfway, in the NE outer wall's cauldron, which that plan
-   leaves empty.
 10. **The Cut.** *Recommended:* make it (16 cells, up to 418 m, the road's top from 6.5 to 6.0 km). Without it the road
     still works at 6.5 km.
 11. **Names:** the Hounds' Road, the lakes, the steps, the capital (in Hum), the king's line. The English names are working
@@ -469,7 +468,7 @@ The trims are a scale-model session's work (section 8a, item 5).
 
 | Phase | What | Done when |
 |---|---|---|
-| **T0** | this plan; the owner's answers (2026-11-10: done but questions 9-11) | the owner's yes |
+| **T0** | this plan; the owner's answers (2026-11-10: done but questions 10-11) | the owner's yes |
 | **T1** | the map edit at the next model pass (section 8a: the sill, the Cut, Coyote Canyon and Howl, the Hounds' Road, the trims); `LORE.md` (the Kingdom, with the Outlands' O1 entry); `biomes/README.md`, `WORLD.md`, `INDEX.md` rows | the edit's report checks every other cell unchanged |
 | **T2** | textures: the three new sets; `materials.json`; `pack.py` | the contact sheet passes in the demo kit |
 | **T3** | **station 1, the Lake of the Tiers**: the kit's fields and zones, the strata recipe, the natives of the lake tread, the lake, the village as records | `verify.py --assert`, `check_core_use.py` |

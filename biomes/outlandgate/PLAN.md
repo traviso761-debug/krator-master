@@ -147,7 +147,7 @@ side is the same open question.
   - **Reaching it** (corrected 2026-11-10, `biomes/tiers/PLAN.md` section 8): the 3.9 km crest was the Tiers' centre's own
     height, and the way under it runs ~1,430 km round by Spider Lake. The owner chose an easier road (2026-11-10): the
     **Hounds' Road**, 898 km from the Tierhounds' capital (Coyote Canyon) by the Vitreous Hollow and the Outer Wall's back,
-    top 6.0 km after one cut, coming down into the gap at the village of **Howl** (*proposed* 1393,283) and up the floor to
+    top 6.0 km after one cut, coming down into the gap at the village of **Howl** (1393,283, the owner, 2026-11-10; in this polygon, north of the long wall) and up the floor to
     the fort. The Gate is the Kingdom's frontier post.
   - **The old pass** at 1408,414 (8,002 m) loses the fort. *Proposed*: it keeps a cairn and a trickster's shrine as the
     "old gate" of the stories, crossed by nobody but pilgrims.
