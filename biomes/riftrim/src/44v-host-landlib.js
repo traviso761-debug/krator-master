@@ -30,7 +30,8 @@ function landBoulders(k,o){const cell=o.cell==null?20:o.cell,R=TERR.R-150,N=Math
 //          level), inside(x,z) (default: inside poly), colour}]; river {pts [[x,z,y]] (the water's line and level, downstream), width, name,
 //          speed, look [shallow, deep]} | null; falls [{name, lip:[x,y,z], foot:[x,y,z], width}]
 //   tm(x,z,h) mean temperature (degC), wet(x,z,h), fog(x,z,h), barren(x,z,h), farm(x,z), rockAt(x,z,h,slope), snowAt(x,z,h,slope),
-//   strataK(x,z,h,slope), talus(x,z), polyg(x,z,F) (patterned ground), ice(x,z) (a glacier: nothing roots), strata (a KSTRATA stack)
+//   strataK(x,z,h,slope), talus(x,z), polyg(x,z,F) (patterned ground), ice(x,z) (a glacier: nothing roots), strata (a KSTRATA stack),
+//   geo(x,z,h) (the ground's heat, 0..1: the Hearth field's KTHERM degrees / 100), pools [{x, z, r, level}] (hot springs, in waterH)
 //   rock() -> KSTACKS bodies; spine [[x,z]]
 function rimLand(o){
  const R=o.R==null?3000:o.R,LK=(o.lakes||[]).map((L,i)=>Object.assign({i,kind:'deep'},L)),RIV=o.river||null;
@@ -40,13 +41,14 @@ function rimLand(o){
  const _tm={x:NaN,z:NaN,h:0};
  function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=o.ground(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
  function riverAt(x,z){if(!RIV)return null;const n=nearLine(RP,x,z),hw=RIV.half?RIV.half(x,z):RIV.width*.5;if(n.d>hw*1.05)return null;   /* river.half(x, z): its half-width where it changes (the gorge narrows) */const a=RIV.pts[n.i],b=RIV.pts[Math.min(RIV.pts.length-1,n.i+1)];return mix(a[2],b[2],n.u);}
- function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
+ function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);if(o.pools)for(const q of o.pools)if(Math.hypot(x-q.x,z-q.z)<q.r)w=Math.max(w,q.level);   /* o.pools [{x, z, r, level}]: hot springs (the Hearth field's: WATER.spring draws them) */
+ const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
  const RIVER_SPEC=RIV?{name:RIV.name||'The river',pts:RIV.pts,width:RIV.width==null?24:RIV.width,speed:RIV.speed==null?1.4:RIV.speed}:null;
  function fieldsAt(x,z,h,slope){const wd=waterH(x,z),under=wd>-1e8&&h<wd;
   const tm=o.tm(x,z,h),cold=coldOf(tm),fog=o.fog?clamp(o.fog(x,z,h),0,1):0;
   let wet=clamp(o.wet(x,z,h),0,1);if(RIV){const n=nearLine(RP,x,z);wet=Math.max(wet,smooth(80,RIV.width*.5,n.d)*.9);}
   const barren=clamp(Math.max(o.barren?o.barren(x,z,h):0,o.ice?o.ice(x,z):0),0,1),rk=o.rockAt?o.rockAt(x,z,h,slope):smooth(.45,.8,slope),tal=o.talus?o.talus(x,z)*smooth(.1,.3,slope):0;
-  const F={wet,flow:under?1:0,upland:clamp((h+500)/6000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:0,barren,
+  const F={wet,flow:under?1:0,upland:clamp((h+500)/6000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:o.geo?clamp(o.geo(x,z,h),0,1):0,barren,
    strata:o.strataK?o.strataK(x,z,h,slope):0,crack:0,snow:clamp(Math.max(barren*.9,o.snowAt?o.snowAt(x,z,h,slope):0),0,1),pave:0,polyg:0,talus:tal,wash:0,char:0,
    fog,farm:o.farm?clamp(o.farm(x,z),0,1):0,ice:o.ice?o.ice(x,z):0};
   if(o.polyg)F.polyg=o.polyg(x,z,F);return F;}

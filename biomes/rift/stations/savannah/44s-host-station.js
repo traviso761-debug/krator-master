@@ -1,7 +1,10 @@
 // ================================================================= HOST — station 1, THE RIFT SAVANNAH (PLAN-STATIONS.md)
 // The sky at the station's pixel on the scale model; the views over the apron, the plain, the tors, the wash and the pan;
 // no ballmelons or hanging pods on the savannah (the jungle's), so the probe's fruit check expects none drawn here.
-const STATION_PAGE={name:'savannah',title:'Krator biome — the Rift: the savannah (station 1)',
+const STATION_PAGE={name:'savannah',
+ /* the far country's palette (89f): the default 'sav' was a pale gold the ground never is, so the map's square showed its edge on every high view (the
+    quality pass, 2026-11-09); now the olive and straw of the page's own grass, sampled off its views */
+ farPal:{sav:[150,142,78],sav2:[128,124,64],aw:[112,116,62]},title:'Krator biome — the Rift: the savannah (station 1)',
  hint:'Station 1: the abyssal savannah on the apron below the central island (scale model px 369,1166; -1,523 m, 1.94 atm)',
  site:{px:369,py:1166},fruitMin:{balls:0,pods:0,halves:0},
  // the apron thinned toward the island's lee (to 30% at its top) and the monkey-puzzles thinned everywhere: an open savannah,

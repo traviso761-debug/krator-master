@@ -127,7 +127,9 @@
         var ref=Math.abs(ax[1])<.9?[0,1,0]:[1,0,0],e1=[ax[1]*ref[2]-ax[2]*ref[1],ax[2]*ref[0]-ax[0]*ref[2],ax[0]*ref[1]-ax[1]*ref[0]],el=Math.hypot(e1[0],e1[1],e1[2]);e1=[e1[0]/el,e1[1]/el,e1[2]/el];
         var e2=[ax[1]*e1[2]-ax[2]*e1[1],ax[2]*e1[0]-ax[0]*e1[2],ax[0]*e1[1]-ax[1]*e1[0]];
         for(var s=0;s<seg;s++){var t=s/seg*2*Math.PI,cn=Math.cos(t),sn=Math.sin(t),nn=[e1[0]*cn+e2[0]*sn,e1[1]*cn+e2[1]*sn,e1[2]*cn+e2[2]*sn];v([c[0]+nn[0]*c[3],c[1]+nn[1]*c[3],c[2]+nn[2]*c[3]],nn,k);}}
-      for(a=0;a<n-1;a++)for(s=0;s<seg;s++){var p0=base+a*seg+s,p1=base+a*seg+(s+1)%seg,q0=p0+seg,q1=p1+seg;I.push(p0,q0,p1,p1,q0,q1);}}
+      /* counter-clockwise about the outward normal (three's front face): the ring turns e1 to e2, so (ring s, ring s+1, next ring s) faces out
+         (2026-11-09: wound the other way, every prism drew its inside, black; found in the rift's gypsum maze) */
+      for(a=0;a<n-1;a++)for(s=0;s<seg;s++){var p0=base+a*seg+s,p1=base+a*seg+(s+1)%seg,q0=p0+seg,q1=p1+seg;I.push(p0,p1,q0,p1,q1,q0);}}
     R.forEach(function(r){var k=KINDS.indexOf(r.kind);if(k<0)throw new Error('KSPELEO.mesh: unknown kind '+r.kind);var x=r.x,z=r.z,eps=.01;
       if(r.kind==='stalactite')tube([[x,r.y+.05,z,r.r],[x,r.y-r.len*.5,z,r.r*.45],[x,r.y-r.len,z,eps]],k);
       else if(r.kind==='stalagmite')tube([[x,r.y-.05,z,r.r],[x,r.y+r.len*.6,z,r.r*.55],[x,r.y+r.len,z,r.r*.2]],k);
@@ -142,7 +144,7 @@
           for(var iu=0;iu<=nu;iu++){var tu=iu/nu,s=(tu-.5)*r.r,ph=tu*r.folds*2*Math.PI,off=Math.sin(ph)*r.amp,dn=Math.cos(ph);
             for(var iv=0;iv<=nv;iv++){var tv=iv/nv,drop=r.len*tv*(.75+.25*Math.sin(tu*Math.PI));
               v([x+ca*s-sa*off*(1+tv),r.y+.03-drop,z+sa*s+ca*off*(1+tv)],[-sa*sg*(1-.5*Math.abs(dn)),0,ca*sg*(1-.5*Math.abs(dn))],k);}}
-          for(iu=0;iu<nu;iu++)for(iv=0;iv<nv;iv++){var p0=sb+iu*(nv+1)+iv,p1=p0+nv+1;if(side)I.push(p0,p0+1,p1,p1,p0+1,p1+1);else I.push(p0,p1,p0+1,p0+1,p1,p1+1);}}
+          for(iu=0;iu<nu;iu++)for(iv=0;iv<nv;iv++){var p0=sb+iu*(nv+1)+iv,p1=p0+nv+1;if(side)I.push(p0,p1,p0+1,p0+1,p1,p1+1);else I.push(p0,p0+1,p1,p1,p0+1,p1+1);}}   /* each side counter-clockwise about its own normal (2026-11-09, as the tubes) */
         }
       else if(r.kind==='beam'){/* a four-sided prism (a selenite blade's section), its foot sunk in the floor, its end a low point */
         var bx=Math.cos(r.el)*Math.cos(r.az),by=Math.sin(r.el),bz=Math.cos(r.el)*Math.sin(r.az),y0=r.y+r.r*.5,sv3=seg;seg=4;

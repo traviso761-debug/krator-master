@@ -35,3 +35,18 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 ## Notes
 
 **Hand pass (2026-10-03): the kit's own copies.** PRNG and noise: none of its own. `reseed`/`rng` (mulberry32), `h3` (a sin hash), `vnoise` and `fbm` are the one copy in `core/biome/10-core-head.js` (`BIO.fn`); its `rng` already equals `KRAND.stream` (`core/PORT.md`), and the sin-based `h3`, `vnoise` and `fbm` move to `core/rand` in the biome reseeding event. Terrain: its own `terrainH` (line 70) in `src/45-host-stage.js` and the climate-field bake `FC`, which is the data `core/terrain` replaces. Palette: its own `RIFT.PAL`, built in `src/50-biome-rift-species.js` (line 27).
+
+**The cave station's fragments** (`stations/maze/`, PLAN-STATIONS.md section 11; 2026-11-09). `tools/audit_port.py` and `tools/check_port.py` read `src/`
+and `targets/` only, so these tags are kept here by hand; the two `[G data]` fragments hold to `check_port.py`'s browser rules and its `||` rule.
+
+| Fragment | Tag | Note |
+|---|---|---|
+| `stations/maze/00-head.html`, `99-tail.html` | [web] | page shell (the Hearths' Cave of Crystals') |
+| `stations/maze/44z-host-site.js` | [G data] | the site: the table, the scarp, KARST-SITES site 3's network call, the crop, the dress's kinds, the two sites' numbers |
+| `stations/maze/48-rift-maze.js` | [G data] | the cave (KKARST maze cropped, KCAVERN, the mouths, the Ancients' gallery and the walled chamber as records, KSPELEO by tile, KKARST's water and hazards); `CAVE.export()` is the Godot handoff |
+| `stations/maze/49-host-stage.js` | [web] | renderer, the two airs, sun, lamp, the floors (KCAVERN.floorFn), BIO.init |
+| `stations/maze/84-host-rock.js` | [draw] [G shader] | KCAVERN.drawRock with the page's weights; the ground grids; the sky's share (a hook on three's lights chunk) and KGROUND's layers |
+| `stations/maze/85-host-speleo.js` | [draw] | KSPELEO.mesh, one geometry |
+| `stations/maze/89x-host-air.js` | [web] | core/atmos bound; core/water's perched table (WATER.open) and the springs (WATER.karstSpring) |
+| `stations/maze/89z-host-build.js` | [web] | the registry and the hazards' core/tags records |
+| `stations/maze/98v-host-views.js`, `99-host-take.js` | [web] | the views, the checks and their negatives, KHOST.take |

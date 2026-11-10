@@ -43,7 +43,42 @@ ground past 16 texture units in some view's mode) does not reproduce on the curr
   goes into the cave. The springs are not drawn.
 - [ ] **The crossing's portal** is a cut face and a level apron with the Tungangs' lamps in a row (the lobelia's glow item), not a carved
   mouth; the waystation is not built (a settlement's).
-- [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11: `hearths`, `hearths-hold`, `hearths-walk`) are hosted here and not built.
+- [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11): `hearths` is built (station 7, 2026-11-09: below). `hearths-walk` (the
+  western vent's walked field) is owed; the hold's two cave pages are still `biomes/hearths`' own.
+
+## The look pass of 2026-11-09 (every station's views on the GPU, before and after)
+
+Fixed:
+- **The frozen lakes' drifts** (89w; the cold lake, station 3, and the Hearth field's lake): short slabs on a 14 m lattice tiled the ice with white
+  rectangles from any height, and their wind was passed in radians where `WATER.ice` takes degrees. Now long thin streaks down the wind, fewer.
+- **Ledge's great lake past the map** (83 `LAND.farWater`, `stations/ledge`): the far field held the lake at its level but coloured it by height,
+  and below 300 m that is the pink waste colour: from the cliff top the lake ended at the map's edge in a pink plain. It is the lake's blue now.
+
+Seen and left for the owner (each a look decision or a larger piece of work):
+- [ ] **Ledge's cloud belt reads pale**: the rift fill's beds (KSTRATA `rift`) on the W walls are pale grey and white, so the slopes behind the mist
+  frills read as snow from below (item above, "Station 1's cloud belt ground reads pale").
+- [ ] **Ledge's basin plain** reads as a flat lime lawn from its outlet view (the `grass` layer at full weight on the flat), and its cliff face is
+  a dark corrugated wall close up.
+- [ ] **The cold lake's glacier** reads as a brown ridge in its own view (no lying snow on it: `snowBase` 0 on that station).
+- [ ] **The far fields round every station are flat vertex colour** past the map, and the shared sky's snow ridges stand as a pale scalloped wall
+  over them on the high stations.
+
+## Station 7, the Hearth field (2026-11-09; `PLAN.md`, "Station 7, the Hearth field")
+
+- [x] **`ATMOS.snowBare` uploaded its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover; fixed in core 2026-11-09): a
+  mask whose rows are not a multiple of 4 bytes (this one's 701) sheared, and the discs came out snowed. `A.snowBare` now sets `unpackAlignment = 1`
+  and the station's own setting (89b) is gone; every page that takes the snow cover was rebuilt with it.
+- [x] **Oidong's Cold Hearths carried a vent hazard with `radiant:{reach:6}` and no `dose`**, which `KHAZ.make` rejects (its export's hazards
+  section errored when its export box took the vent). Fixed 2026-11-09 with this station's dose (`radiant:{reach:6,dose:.4,danger:.4}`).
+- [ ] **The glass forest is the N rim's frost frills and bell firs at full density** round the open shelf: ~39,000 trees, ~10.7 M floor
+  triangles; the page draws 14-15.4 M triangles a view (under the 19.5 M budget). A winter look (the bell firs' closed bells, `?season=winter`)
+  is not switched on by the station.
+- [ ] **No fin-owl, no hearth animals** (`kits/fauna`); no heat shimmer (`ATMOS.shimmer` is a post pass in the draw slot the sky and the
+  reflections switch share).
+- [ ] **The disc floor is paint** where the library layers fade off (from 7 degC): close up it is the paint's 4 m texel, not a surface; a
+  `ground.ash.warm` or bare-soil library set would serve the warm ground (none in the library yet; `core/materials/PROMPTS-NEEDED.md` section 44 has the prompt).
+- **The four ground layers**: the bare-snow mask is a texture unit of the ground's, so this station names four (`needles`, `tundra`, `lenswort`,
+  `lichen`); the reindeer lichen (`clad`) is off.
 - [x] **KSHADOW's switch** is the handle's `off()`/`on()` (89z, the panel's select in 99): replace it with core's own switch when it merges.
   **Closed 2026-11-08:** 89z attaches off on core's own switch (no `off()` after attach); the panel's `shadowsel` select is gone for core's
   `shadows` button; `?shadow=1` on at load, `?shadow=0` none.

@@ -144,6 +144,28 @@ for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherho
 PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+# a CAVE station (stations/<name>/station.json "page": "cave"; stations/maze, 2026-11-09): a whole underground page, as the Hearths' Cave of
+# Crystals is. None of the above: the station's numbered fragments, the core its station.json names ("core": {name: path from the repo root}),
+# core/host's shell ("host": a list name in core/host/host.py), and the material packs: this kit's own families named in "own", and other kits'
+# read in place ("packs", as read.json's). Every other page is assembled exactly as before.
+_cj=os.path.join(HERE,'stations',STATION,'station.json') if STATION else None
+if _cj and os.path.isfile(_cj):
+    import json as _json
+    with open(_cj,encoding='utf-8') as _fh: _cs=_json.load(_fh)
+    if _cs.get('page')=='cave':
+        _sd=os.path.join(HERE,'stations',STATION)
+        PATH={f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)}
+        for _k,_p in _cs.get('core',{}).items(): PATH.setdefault(_k,os.path.normpath(os.path.join(HERE,'..','..',_p)))
+        khost.resolve(PATH,getattr(khost,_cs.get('host','FULL')))
+        _pj=os.path.join(HERE,'tex','pack.json')
+        _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+        VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'rift',exclude=[f for f in _all if f not in _cs.get('own',[])],own=True),
+                 khost.EDITS_JS:khost.edits_js(HERE,'rift-'+STATION)}
+        for _k,(_d,_key,_take) in _cs.get('packs',{}).items():
+            _dd=os.path.normpath(os.path.join(HERE,_d)); _pj=os.path.join(_dd,'tex','pack.json')
+            _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+            VIRTUAL[_k]=matlib_pack.fragment(_dd,_key,exclude=[f for f in _all if f not in _take])
+        for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

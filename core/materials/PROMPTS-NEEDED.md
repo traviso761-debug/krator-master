@@ -570,6 +570,59 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved and painted Moorish cedar wood seen straight on: shallow-carved interlaced eight-pointed star and polygon panels framed by raised strapwork, the strapwork natural honey-brown cedar with visible grain, the sunken panels painted in faded red, deep green, ochre and blue with small white and gold floral sprigs, the paint worn at the high points to show the wood; strong relief readable for a normal map.
 ```
 
+## 43. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)
+
+`biomes/rift/PLAN-STATIONS.md` section 11; `biomes/KARST-SITES-5.1.md` site 3. The library has no bedded gypsum, the maze's whole rock (its
+walls, roofs and the scarp's face), so the Hearths' pack stands in, read in place: `crystal.selenite` (`stone.alabaster`, massive gypsum: it
+reads as veined marble up close) for the gypsum, `ground.gypsum` (`ground.gypsum.crust`) on the floors, `rock.limestone`
+(`rock.limestone.karst`) on the stromatolite beds. Wire the new set as a `rock.gypsum` family in `biomes/rift/materials.json`, run
+`python3 tools/textures/pack.py biomes/rift`, add `rock.gypsum` to `stations/maze/station.json` `own`, and point the base layer of
+`stations/maze/84-host-rock.js` at it in place of `crystal.selenite`. Full colour (the colour is the point). Reuse: any gypsum or evaporite
+wall (the Hearth hold's upper storey, Korona's gypsum rims, KARST-SITES site 7).
+
+`rock.gypsum.bedded` (2 m; up is the bedding's up):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: a dry cave wall cut in bedded gypsum rock, the
+beds running straight across the image from left to right: sugary
+fine-grained white to pale grey gypsum (#d8d4cc, #c9c4ba) in beds 10 to 40
+cm thick, thin darker grey-green marl partings between some beds (#8f948a),
+a few beds of larger interlocking clear-grey gypsum crystals with a faint
+glitter, short hairline cracks across the beds, small shallow solution
+pockets and smooth scalloped hollows, a light dusting of buff clay in the
+lowest hollows; matte, dry.
+```
+
+## 44. The Hearth field's warm ground (`biomes/riftrim --station hearths`, 2026-11-09)
+
+`biomes/riftrim/PLAN.md`, "Station 7, the Hearth field". Inside each disc the snow never lies and the library has no warm bare soil, so the
+ground there is the kit's paint (black-brown, 4 m texels: soft up close). Wire the set as a `ground.warmsoil` family in
+`biomes/riftrim/materials.json`, run `python3 tools/textures/pack.py biomes/riftrim`, add it to `GLW` in `src/45-host-stage.js` on the mask
+`smooth(.06,.2,F.geo)*smooth(.6,.45,F.geo)` (the disc, not the sinter apron) and name it in the station's `groundLayers` in place of `lenswort`
+(the station has four layers: the bare-snow mask holds the fifth unit). Full colour. Reuse: the Cold Hearths (oidong), Godstep's hearth, any
+geothermal ground off the sinter (the Throne's vent country's warm flats).
+
+`ground.warmsoil` (3 m):
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: warm geothermal ground on a cold plateau: damp
+fine black-brown volcanic soil (#2a2420, #1e1a17) with a low dark fleshy
+turf in irregular cushions over a third of it (#23211f, #34302a), scattered
+pale grey-white sinter crumbs and flakes (#c8c2b4), a few small rust and
+dull sulphur-yellow stains (#8a5a34, #b8a046), fine cracks; no snow, no
+grass, no leaves; matte, slightly moist.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

@@ -10,7 +10,7 @@
 
   python3 build.py                     dist/riftrim.html: station 1, Ledge and the great lake (stations/ledge/)
   python3 build.py --station <name>    dist/riftrim-<name>.html: stations/<name>/ added to src/ (PLAN.md section 9 and
-                                       "On scale model 5.1"): lakes, ice, gorge, pass, barrens
+                                       "On scale model 5.1"): lakes, ice, gorge, pass, barrens, hearths (the Hearth field)
   python3 build.py --all               every station
 
 The core and the biome leaf never reference a host global except through
@@ -53,7 +53,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-STATIONS=['ledge','lakes','ice','gorge','pass','barrens']
+STATIONS=['ledge','lakes','ice','gorge','pass','barrens','hearths']
 if '--all' in sys.argv:
     _rc=0
     for _s in STATIONS:
@@ -166,7 +166,11 @@ NEIGH={}
 if STATION:
     _sj=os.path.join(HERE,'stations',STATION,'station.json')
     if os.path.isfile(_sj):
-        with open(_sj,encoding='utf-8') as _fh: NEIGH={k:tuple(v) for k,v in _json.load(_fh).get('kin',{}).items()}
+        with open(_sj,encoding='utf-8') as _fh: _SJ=_json.load(_fh)
+        NEIGH={k:tuple(v) for k,v in _SJ.get('kin',{}).items()}
+        # a station's own core (the Hearth field, 2026-11-09): "core": {"<fragment name>": "<path from the repo root>"}, oidong's way; the name sets its slot
+        # (KTHERM keyed 44t so the land's fields read the heat; 35 the breath, 39 the lean, the hot springs, the steam's groups)
+        for _f,_p in _SJ.get('core',{}).items(): PATH.setdefault(_f,os.path.normpath(os.path.join(HERE,'..','..',*_p.split('/'))))
 for _i,(_k,_row) in enumerate(sorted(NEIGH.items())):
     _fs,_api,_keep=_row[:3];_reg=_row[3] if len(_row)>3 else _k.split('/')[0]   # a 4th entry: the kit's registry name when it differs from its folder (shighlands' is 'shigh')
     _d=os.path.normpath(os.path.join(HERE,'..',_k.split('/')[0]));_c='abcdefgh'[_i];_kk=_k.replace('/','-')
