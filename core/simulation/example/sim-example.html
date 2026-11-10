@@ -97,6 +97,21 @@ canvas{display:block;width:100vw;height:100vh}
 //   C.t, C.dt, C.hour, C.day, C.running, C.scale, C.dayLength   read them directly
 //   C.rate()        world hours per real hour (20 for a 72-minute day)
 //   C.state() / C.load(s)   the clock as plain data (a saved game, the export) and back
+//
+// THE SEASON (biomes/hyperjungle/PLAN-LANDS.md, core gap H7): where the clock's day falls in the sky model's year
+// (core/atmos/sky/89-atmos-e-skymodel.js: yearD, startDay, solsticeDay; day 0 is game start's date, as skyState's
+// dayCount). Plain numbers, no THREE; the GDScript twin is kseason.gd beside this file (golden-season.json).
+//   KCLOCK.YEAR                             {yearD:365, startDay:259, solsticeDay:350}: ATMOS.SKY's (test-clock.js checks)
+//   KCLOCK.season(day, hour, o) -> {yearDay, phase, summer, wet, dry, quarter, name}
+//   C.season(o)                             the same at the clock's day and hour
+//     yearDay  0..yearD, fractional       phase  0..1 of the local year, 0 at midsummer
+//     summer   -1..1, cos(phase): +1 at midsummer, -1 at midwinter (astronomical, no lag)
+//     wet      0..1, how far into the wet season (the monsoon follows the sun: wet in summer); dry = 1 - wet
+//     quarter  0..3 and name 'summer' | 'autumn' | 'winter' | 'spring', each centred on its solstice or equinox
+//   o: {latitude (deg; > 0 north, which turns the year half round; omitted: south, as Krator's sites), lagD (days the
+//       wet runs behind the sun: a river's flood after the rains; 0), sharp (> 0 squares the wet toward two seasons,
+//       wet = 0.5 + 0.5 tanh(sharp summer) / tanh(sharp); 0 the plain cosine), wetIn ('summer' or 'winter': a
+//       Mediterranean year rains in winter), year ({yearD, startDay, solsticeDay}: KCLOCK.YEAR)}
 (function(root){
   var DAY=72*60;
   function wrap(h){h=h%24;return h<0?h+24:h;}
@@ -115,8 +130,18 @@ canvas{display:block;width:100vw;height:100vh}
     C.rate=function(){return 24*3600/C.dayLength;};
     C.state=function(){return{t:C.t,hour:C.hour,day:C.day,dayLength:C.dayLength,running:C.running,scale:C.scale};};
     C.load=function(s){for(var k in s)if(k in C&&typeof C[k]!=='function')C[k]=s[k];C.hour=wrap(C.hour);return C;};
+    C.season=function(o){return season(C.day,C.hour,o);};
     return C;}
-  root.KCLOCK={DAY_SECONDS:DAY,make:make};
+  var YEAR={yearD:365,startDay:259,solsticeDay:350},NAMES=['summer','autumn','winter','spring'],TAU=2*Math.PI;
+  function frac(x){return x-Math.floor(x);}
+  function season(day,hour,o){
+    o=o||{};var Y=o.year||YEAR,yD=Y.yearD,t=(+day||0)+(hour==null?0:+hour)/24;
+    var yd=yD*frac((Y.startDay+t)/yD),north=o.latitude!=null&&o.latitude>0,lag=o.lagD==null?0:+o.lagD,sh=o.sharp==null?0:+o.sharp;
+    var ph=frac((yd-Y.solsticeDay)/yD+(north?.5:0)),lw=Math.cos(TAU*frac((yd-Y.solsticeDay-lag)/yD+(north?.5:0)));
+    if(o.wetIn==='winter')lw=-lw;
+    var wet=sh>0?.5+.5*Math.tanh(sh*lw)/Math.tanh(sh):.5+.5*lw,q=Math.floor(frac(ph+.125)*4)%4;
+    return{yearDay:yd,phase:ph,summer:Math.cos(TAU*ph),wet:wet,dry:1-wet,quarter:q,name:NAMES[q]};}
+  root.KCLOCK={DAY_SECONDS:DAY,YEAR:YEAR,make:make,season:season};
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/77-sim-0-core.js
@@ -721,6 +746,10 @@ canvas{display:block;width:100vw;height:100vh}
     for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     if(SIM.economyRules && SIM.ECON) SIM.economyRules(minute);                       /* the economies' governor, spoilage, seasoning (77-sim-6-govern.js) */
     if(SIM.itemsRetry) SIM.itemsRetry(minute);                                      /* a failed tool errand asked again (77-sim-6-items.js) */
+    if(SIM.CRIME) SIM.crimeStep(minute);                                            /* crime and punishment, hourly (77-sim-6-crime.js), opt-in */
+    if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyStep(minute);                            /* wages at midnight (77-sim-6-money.js M1), opt-in */
+    if(SIM.BUILD) SIM.buildStep(minute);                                            /* building and upkeep, hourly (77-sim-6-build.js), opt-in */
+    if(SIM.UNREST) SIM.unrestStep(minute);                                          /* unrest from the happiness pool, at midnight (77-sim-6-unrest.js), opt-in */
     return made;
   };
   /* THE WAKE (SIM.WAKE, opt-in): an actor is asked again only at the soonest minute anything it wants could change: the
@@ -1105,6 +1134,377 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.stopsServing = function(stop){ return SIM.all('transport').filter(function(R){ return R.stops.indexOf(stop) >= 0; }).map(function(R){ return R.id; }); };
 })(typeof window!=='undefined'?window:globalThis);
 
+// ==================== simulation/77-sim-6-build.js
+// ================================================================= CORE — simulation 6: building on empty lots, and upkeep
+// core/simulation/PLAN-POLITICS.md section 4 (the owner, 2026-11-03: "most cities [should] have some fillable empty lots
+// even while [the] player is [there], it adds demand for timber, stone, and other construction materials. We could also
+// add building maintenance as a demand sink"). Opt-in: nothing here runs until a world calls SIM.build(config), on a
+// world with keyed economies (77-sim-6-economy.js). It draws nothing.
+//
+//   SIM.build({ kinds:{kind: {bill:{good: n}, hours, life? (days a building of it lasts on its bill: its upkeep)}},
+//               of?(P) -> the kind a standing building wears as (null: it does not wear), pace? (projects a settlement
+//               keeps going at once: 1), crewPer? (then one project for every crewPer builders, at least `pace`),
+//               grace? (days of upkeep owed before the first building shows its wear: 30),
+//               onBuilt?(lot, project) (the host turns the lot into its building), onStart?(lot, project),
+//               growth?:{rate (a year: 0.02), per (people a household: 5), ahead (houses ready or going up beyond the
+//               households waiting: 2), settle(lot, s) (the host makes the new household's people, or moves in one
+//               waiting elsewhere and returns 'moved'), people?(s), waiting?(s) (households waiting outside the houses: a
+//               refugee camp's, counted as demand and housed first)},
+//               onFull?(s) -> true when the host opened more lots (a street outside the gate) }) -> SIM.BUILD
+//   SIM.buildLot({id, kind, settlement?})   an empty lot: a place of the settlement's (its builders' WORK posts), the
+//               kind of building the plan allows there; its recipe is made (`build`: its worked hours are its project's)
+//   SIM.buildStep(minute)                   SIM.step's: each hour the upkeep drawn, the projects started (`pace`)
+//   SIM.buildWork(lot, hours, minute)       the economy's tick (a lot's builders' worker-hours): the project's work
+//   SIM.buildReport(s?) -> {towns: {s: {lots, building, built, projects, upkeep: {day: {good: n}, taken, owed, neglect}}}, events}
+//   SIM.buildWorn(place) -> 0 (kept) .. 1 (as worn as off-screen neglect lets a building get: shabby, never a ruin)
+//   SIM.buildChanged(s)                     a town's buildings changed (a place's kind): its upkeep counted again
+// A good of a bill its town's economy does not keep (timber on a page without the lumber village) is gathered on the spot:
+// the project has it, unbooked (`local`), and upkeep skips it.
+//
+// A PROJECT is a record {id, lot, kind, settlement, bill, got, hours, done, m0, m1, state: building | built}. Its
+// materials come out of its town's warehouses as the work goes (booked used, so the books hold; what is wanted anew and
+// not there booked short once, the town's want the canoes and the governor answer, not each hour's retry): before each stretch of
+// work, what the bill wants for the work so far is drawn; the work done never runs ahead of the share of the bill
+// delivered, so a project short of stone waits. Its workers are whoever's work is the lot (the host deals them, a trade
+// of builders, one a lot); whenever a project starts or ends the town's builders are spread over its projects evenly (or
+// stay, idle, if none is left), and a lot's WORK posts follow its hands (none at a lot waiting its turn); done, the host's onBuilt turns the lot into its building, and the next lot's project starts.
+// UPKEEP is a steady sink: every standing building `of` a kind with a `life` wears its whole bill over its life; each hour
+// a town draws its buildings' wear a good at a time (the fractions carried), booked used. What it cannot draw is OWED and
+// drawn first when the good comes back; while it is owed, the town's buildings show it: a building's wear is whether
+// its place falls in the neglected share (owed over `grace` days of upkeep), by a hash of the place, the same buildings
+// first every time, and never more than shabby (PLAN-POLITICS.md: no surprise ruins).
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.BUILD = null;
+  function hash(){ var h=0x2545F491; for(var i=0;i<arguments.length;i++){ h=Math.imul(h^(arguments[i]|0), 0x85EBCA6B); h^=h>>>13; h=Math.imul(h, 0xC2B2AE35); h^=h>>>16; } return (h>>>0)/4294967296; }
+  function strHash(s){ var h=0; s=String(s); for(var i=0;i<s.length;i++) h=Math.imul(h^s.charCodeAt(i), 0x01000193); return h|0; }
+  function bump(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
+  SIM.build = function(o){ o=o||{};
+    var Gr=o.growth||null;
+    SIM.BUILD={ cfg:{ kinds:o.kinds||{}, of:o.of||null, pace:o.pace==null?1:o.pace, crewPer:o.crewPer||null, grace:o.grace==null?30:o.grace, onBuilt:o.onBuilt||null, onStart:o.onStart||null,
+        growth:Gr ? { rate:Gr.rate==null?0.02:Gr.rate, per:Gr.per==null?5:Gr.per, ahead:Gr.ahead==null?2:Gr.ahead, settle:Gr.settle||null, people:Gr.people||null, waiting:Gr.waiting||null } : null, onFull:o.onFull||null },
+      lots:{}, order:[], projects:{}, towns:{}, events:[], n:0 };
+    return SIM.BUILD;
+  };
+  function town(s){ var B=SIM.BUILD, T=B.towns[s]; if(!T) T=B.towns[s]={ lots:[], active:[], built:0, carry:{}, owed:{}, day:{}, taken:{}, short:{}, rate:null, due:0, settled:0, waiting:0 }; return T; }
+  /* GROWTH (opt-in `growth`): the town's people grow by `rate` a year, a new household of `per` at a time; it moves into a
+     finished house no one lives in (the host's `settle(lot, s)` makes its people); a project starts only while the houses
+     ready or going up are fewer than `ahead` plus the households waiting, so building follows demand */
+  function ready(s){ var B=SIM.BUILD; return town(s).lots.filter(function(id){ var L=B.lots[id]; return L.state==='built' && !L.settled; }); }
+  /* a town's projects at once: `pace`, or one for every `crewPer` of its builders when more have come (2026-11-04: the
+     refugees join the crews) */
+  function paceOf(s){ var B=SIM.BUILD, T=town(s); return B.cfg.crewPer ? Math.max(B.cfg.pace, Math.floor((T.hands||0)/B.cfg.crewPer)) : B.cfg.pace; }
+  function elsewhere(s){ var G=SIM.BUILD.cfg.growth; return G && G.waiting ? Math.max(0, G.waiting(s)|0) : 0; }   /* households waiting outside the houses (a refugee camp) */
+  function needMore(s){ var B=SIM.BUILD, G=B.cfg.growth, T=town(s); if(!G) return true; return T.active.length+ready(s).length < G.ahead+Math.floor(T.due)+elsewhere(s); }
+  function event(kind, o){ var B=SIM.BUILD, e=Object.assign({ m:SIM.minute(), kind:kind }, o); B.events.push(e); if(B.events.length>5000) B.events.shift(); SIM.logEvent('build '+kind, o); return e; }
+  SIM.buildLot = function(o){ var B=SIM.BUILD, P=SIM.R.place[o.id]; if(!B || !P) return null; var s=o.settlement!=null ? o.settlement : P.settlement;
+    if(!B.cfg.kinds[o.kind]) throw new Error('SIM.buildLot '+o.id+': unknown kind '+o.kind);
+    var L={ id:o.id, kind:o.kind, settlement:s, state:'empty', project:null };
+    B.lots[o.id]=L; B.order.push(o.id); town(s).lots.push(o.id); town(s).rate=null;
+    SIM.withEcon(s, function(){ SIM.recipe(o.id, { out:[], rate:0, build:true }); });
+    return L; };
+  function start(s, minute){ var B=SIM.BUILD, T=town(s), id=null;
+    for(var i=0;i<T.lots.length;i++){ var L=B.lots[T.lots[i]]; if(L.state==='empty'){ id=L.id; break; } } if(id==null) return null;
+    var L2=B.lots[id], K=B.cfg.kinds[L2.kind], P={ id:s+':project:'+(B.n++), lot:id, kind:L2.kind, settlement:s, bill:Object.assign({}, K.bill), got:{}, hours:K.hours||1, done:0, m0:minute, m1:null, state:'building' };
+    P.miss={}; Object.keys(P.bill).forEach(function(g){ P.got[g]=0; });
+    B.projects[P.id]=P; L2.state='building'; L2.project=P.id; T.active.push(P.id);
+    if(B.cfg.onStart) B.cfg.onStart(L2, P);
+    event('start', { settlement:s, lot:id, project:P.id, building:P.kind }); return P; }
+  /* the share of its bill a project holds (the least of its goods) */
+  function held(P){ var f=1; Object.keys(P.bill).forEach(function(g){ if(P.bill[g]>0) f=Math.min(f, P.got[g]/P.bill[g]); }); return f; }
+  SIM.buildWork = function(id, h, minute){ var B=SIM.BUILD, L=B && B.lots[id]; if(!L || L.state!=='building' || !(h>0)) return;
+    var P=B.projects[L.project], s=L.settlement, f=Math.min(1, (P.done+h)/P.hours);
+    SIM.withEcon(s, function(){ Object.keys(P.bill).forEach(function(g){ var want=Math.ceil(P.bill[g]*f)-P.got[g]; if(want<=0) return;
+      if(!SIM.ECON.goods[g]){ P.got[g]+=want; bump(P.local||(P.local={}), g, want); return; }   /* a good its town's economy does not keep: gathered on the spot (not booked) */
+      var mi=P.miss[g]||0, old=Math.min(mi, want), k1=old>0 ? SIM.economyTake(g, old) : 0; if(k1>0) SIM.economyBook('used', g, k1);
+      var k2=want>old ? SIM.supply(g, want-old) : 0;   /* what it wants anew: a draw the economy books (used, and short when unmet: its town's want) */
+      P.got[g]+=k1+k2; P.miss[g]=want-k1-k2; if(P.miss[g]>0) bump(town(s).short, g, P.miss[g]); }); });
+    P.done=Math.min(P.done+h, held(P)*P.hours);
+    if(P.done>=P.hours-1e-9) finish(L, P, minute); };
+  function finish(L, P, minute){ var B=SIM.BUILD, T=town(L.settlement);
+    P.state='built'; P.m1=minute; P.done=P.hours; L.state='built'; T.built++; T.rate=null; T.active=T.active.filter(function(x){ return x!==P.id; });
+    if(B.cfg.onBuilt) B.cfg.onBuilt(L, P);
+    var hands=SIM.all('actor').filter(function(a){ return a.work===L.id; }).length;
+    var next=needMore(L.settlement) ? start(L.settlement, minute) : null; rebalance(L.settlement);
+    event('built', { settlement:L.settlement, lot:L.id, project:P.id, building:P.kind, days:Math.round((minute-P.m0)/144)/10, hands:hands, next:next ? next.lot : null }); }
+  /* THE HANDS: every builder of the town (whose work is one of its lots) at a project, the projects' hands kept even
+     (a builder at a lot with no project goes to the one with the fewest; nobody moves off a project that has no more than
+     its share) */
+  function rebalance(s){ var B=SIM.BUILD, T=town(s);
+    var mine=SIM.all('actor').filter(function(a){ return a.work!=null && B.lots[a.work] && B.lots[a.work].settlement===s; }), on={}, act={};
+    T.active.forEach(function(pid){ var lot=B.projects[pid].lot; act[lot]=1; on[lot]=[]; });
+    if(!T.active.length){ var wait=T.lots.filter(function(id){ return B.lots[id].state==='empty'; })[0]; if(wait==null) return; act[wait]=1; on[wait]=[]; }   /* nothing going up: they wait at the next lot */
+    var idle=[]; mine.forEach(function(a){ if(act[a.work]) on[a.work].push(a); else idle.push(a); });
+    T.hands=mine.length; var share=Math.ceil(mine.length/Math.max(1, Object.keys(on).length));
+    Object.keys(on).sort().forEach(function(lot){ while(on[lot].length>share) idle.push(on[lot].pop()); });
+    idle.forEach(function(a){ var best=null; Object.keys(on).sort().forEach(function(lot){ if(best==null || on[lot].length<on[best].length) best=lot; });
+      on[best].push(a); a.work=best; if(a.mem) a.mem.WORK=best; });
+    /* a lot's WORK posts follow its hands (a project's crew, none at a lot waiting its turn), so every post is filled */
+    T.lots.forEach(function(id){ var P=SIM.R.place[id], L=B.lots[id]; if(!P || L.state==='built') return; var n=on[id] ? on[id].length : 0;
+      if(n) P.activities.WORK=n; else delete P.activities.WORK; });
+    if(SIM.placesChanged) SIM.placesChanged(); }
+  /* a town's upkeep a day by good: its standing buildings' bills over their lives (counted once, then on a place change) */
+  function rate(s){ var B=SIM.BUILD, T=town(s); if(T.rate) return T.rate; var r={}, n=0;
+    if(B.cfg.of) SIM.all('place').forEach(function(P){ if(P.settlement!==s || (B.lots[P.id] && B.lots[P.id].state!=='built')) return; var k=B.cfg.of(P), K=k && B.cfg.kinds[k]; if(!K || !(K.life>0)) return;
+      n++; Object.keys(K.bill).forEach(function(g){ r[g]=(r[g]||0)+K.bill[g]/K.life; }); });
+    T.rate=r; T.buildings=n; return r; }
+  SIM.buildStep = function(minute){ var B=SIM.BUILD; if(!B || minute%60) return;
+    Object.keys(SIM.R.settlement||{}).sort().forEach(function(s){ var E=SIM.econ(s); if(!E) return; var T=town(s), G=B.cfg.growth;
+      if(G && minute>0 && minute%1440===0 && T.lots.length){   /* the day's growth, and the households waiting moved in */
+        var n=G.people ? G.people(s) : SIM.all('actor').filter(function(a){ return !a.driven && SIM.settlementOf(a)===s; }).length;
+        T.due+=n*G.rate/365/G.per;
+        while(T.due>=1 || elsewhere(s)>0){ var R=ready(s); if(!R.length) break; var L=B.lots[R[0]]; L.settled=minute; T.settled++;
+          var how=G.settle ? G.settle(L, s) : null; if(how!=='moved') T.due-=1;   /* a household waiting elsewhere moved in first (the host says 'moved'), else a new one */
+          event('settled', { settlement:s, lot:L.id, from:how==='moved' ? 'elsewhere' : 'growth' }); }
+        T.waiting=Math.floor(T.due)+elsewhere(s); }
+      var st=0; while(T.active.length<paceOf(s) && needMore(s)){ if(!start(s, minute)){ if(B.cfg.onFull && T.fullDay!==Math.floor(minute/1440)){ T.fullDay=Math.floor(minute/1440); if(B.cfg.onFull(s)) continue; } break; } st++; }   /* the projects kept going (to demand); the lots out, the host may open more */
+      if(st || T.first==null || minute%1440===0){ T.first=minute; rebalance(s); }   /* and daily: a builder who left (a rise, a cell) leaves no empty post */
+      var R=rate(s), d=Math.floor(minute/1440); if(T.dayN!==d){ T.dayN=d; T.day={}; }
+      SIM.withEcon(s, function(){ Object.keys(R).sort().forEach(function(g){ if(!E.goods[g]) return;
+        var c=(T.carry[g]||0)+R[g]/24, n=Math.floor(c); T.carry[g]=c-n; var ow=T.owed[g]||0; if(n+ow<=0) return;
+        var k1=ow>0 ? SIM.economyTake(g, ow) : 0; if(k1>0) SIM.economyBook('used', g, k1);   /* the debt first, already counted as want */
+        var k2=n>0 ? SIM.supply(g, n) : 0;   /* this hour's wear: a draw the economy books (used, short when unmet) */
+        var k=k1+k2; if(k>0){ bump(T.taken, g, k); bump(T.day, g, k); }
+        T.owed[g]=ow+n-k; }); }); });
+  };
+  /* the neglected share of a town's buildings: what it owes over `grace` days of its upkeep, the least of its goods' */
+  function neglect(s){ var B=SIM.BUILD, T=town(s), R=rate(s), q=0; Object.keys(T.owed).forEach(function(g){ if(R[g]>0) q=Math.max(q, T.owed[g]/(R[g]*B.cfg.grace)); }); return Math.min(1, q); }
+  SIM.buildWorn = function(id){ var B=SIM.BUILD, P=SIM.R.place[id]; if(!B || !P || !B.cfg.of || !B.cfg.of(P)) return 0; var q=neglect(P.settlement); if(!(q>0)) return 0;
+    var r=hash(strHash(id), 4111); return r<q ? Math.min(1, (q-r)/Math.max(1e-9, q)+0.25) : 0; };
+  SIM.buildChanged = function(s){ if(SIM.BUILD) town(s).rate=null; };
+  SIM.buildReport = function(s){ var B=SIM.BUILD; if(!B) return null; var out={ towns:{}, events:B.events.slice() };
+    Object.keys(B.towns).sort().forEach(function(k){ if(s!=null && k!==s) return; var T=B.towns[k], R=rate(k);
+      out.towns[k]={ lots:T.lots.length, building:T.active.length, built:T.built, buildings:T.buildings||0, hands:T.hands||0, pace:paceOf(k), settled:T.settled, waiting:T.waiting, due:T.due, ready:ready(k).length,
+        empty:T.lots.filter(function(id){ return B.lots[id].state==='empty'; }).length, idle:T.lots.every(function(id){ return B.lots[id].state==='built'; }),
+        projects:Object.keys(B.projects).map(function(id){ return B.projects[id]; }).filter(function(P){ return P.settlement===k; }).map(function(P){ return Object.assign({}, P, { bill:Object.assign({}, P.bill), got:Object.assign({}, P.got), share:P.done/P.hours }); }),
+        upkeep:{ day:Object.assign({}, R), taken:Object.assign({}, T.taken), owed:Object.assign({}, T.owed), neglect:neglect(k) }, short:Object.assign({}, T.short) }; });
+    return out; };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-crime.js
+// ================================================================= CORE — simulation 6: crime and punishment
+// The Voth brief (settlements/voth/SIM-ROADMAP.md 1.7, phase F item 1): "1 in 1000 citizens is a criminal (burglary,
+// pickpocketing at markets); better odds unobserved, much better at night. Caught: the victim shouts, guards converge,
+// the criminal flees; arrested: the nearest watchhouse, garrison or fortress, one week. Assault: fights from unhappy
+// citizens; guards arrest the instigator (complies: 1 week; resists: 1 month)." Proved first on the isle demo (owner,
+// 2026-11-02: get the isle demo right, then backport). Opt-in: nothing here runs until a world calls SIM.crime(config);
+// it draws nothing from SIM.rng (every roll is a hash of the world's seed, the person and the hour), so a page that
+// turns it on moves no other taker's trace.
+//
+//   SIM.crime({ seed, share, who(a)?, guard(a), jails:[place kinds], guardActs:[acts], crimes:{...}, seen:{...},
+//               arrest:{...}, jail:{...}, abstract:{...} }) -> SIM.CRIME
+//     share        the criminals among those `who` allows (default: every present, undriven actor not a guard): picked by
+//                  a hash of the person, so the same people at every load
+//     crimes       by kind, each opt-in by its key:
+//       pickpocket {acts, at:[place kinds], hours:[from, to], chance, loss, gain}  a criminal in a free hour at a market
+//                  (presented: at a place of `at` with someone else there; abstract: `abstract.atShare` of its hours in
+//                  `acts`) tries `chance` an hour; done, the victim's material meter rises `loss`, the thief's falls `gain`
+//       burglary   {hours, chance, share}  at night a criminal breaks into another household of its town (a hash picks it)
+//                  and carries off `share` of each food in its store to its own home's
+//       assault    {below, acts, chance}  anyone (criminal or not) whose happiness is under `below`, in an hour of `acts`
+//                  among company, starts a fight `chance` an hour: the victim is hurt (the items' hurt: a poultice, or
+//                  `heal` days); never unseen, so its instigator is arrested if a guard comes
+//     seen         {base, perWitness, guard, night, max, nightHours:[from, to]}: the odds a crime is seen: base +
+//                  perWitness a witness (+ guard a guard among them), times `night` in the night hours, at most max. A
+//                  burglary's witnesses are the household asleep, each counted `sleeper`. Seen, it fails (the victim
+//                  shouts) and the alarm goes up; unseen, it is done
+//     arrest       {reach, base, ratio, respond}: on an alarm the nearest guard on duty (`guard(a)`, its activity in
+//                  `guardActs`) within `reach` m arrests with base x (1 - d / reach) (presented; it is sent there for
+//                  `respond` minutes); abstract: base x min(1, guards on duty a head / `ratio`)
+//     jail         {act, days, resist, resistDays, lieLow}: the arrested are held at the nearest place of `jails` in their town
+//                  for `days` (`resist` of them resist: `resistDays`), by SIM.command (act `act`, registered if new): they
+//                  do not work, at either level; let go, a criminal lies low `lieLow` days (2) before it tries again
+//     abstract     {atShare, witnesses}: the odds for a town nobody watches (no places held): the share of a free hour
+//                  spent where pickpockets work, the witnesses assumed there
+//     guild        {kinds, hideReach, hideMins, abstractHide, items, fence:{acts, mins, perServing, perItem}} (opt-in; owner,
+//                  2026-11-02): THE THIEVES' GUILD, one a town: the place of `kinds` (a tavern) farthest from the town's
+//                  nearest jail. HIDING: on an alarm, a criminal nearer the guild (within `hideReach` m) than the guard is to
+//                  it runs there and hides `hideMins` (abstract: `abstractHide` of them); nobody is arrested while hidden,
+//                  and nobody works a pocket inside the guild. LOOT: a burglary takes, besides the food (into the thief's
+//                  home store, still the town's), `items` spare things from the household (clothes kept at home); a
+//                  thief carrying loot goes to the guild in a free hour (`fence.acts`; presented: SIM.command there for
+//                  `fence.mins` past the next hour) and FENCES it: the food into the guild's store (its stash), the things into its `stash`,
+//                  the thief's material meter down `perServing` a serving and `perItem` a thing. Arrested, a thief's
+//                  unfenced loot goes back to the household it came from
+//   SIM.crimeStep(minute)        SIM.step's, hourly: every criminal's chances, then the unhappy's fights
+//   SIM.crimeReport(s?) -> {criminals, jailed:[{actor, place, until, crime}], stats:{attempts, done, seen, arrested,
+//                         resisted, escaped, by kind; stolen (servings), hurt, served}}
+//   SIM.jailed(a, minute?) -> true while an actor is held          SIM.hidden(a, minute?) -> true while hidden at the guild
+//   SIM.guildOf(settlement) -> the guild's place                    SIM.crimeHide(a) -> hides it if within reach of its guild
+//   SIM.crimeFence(a) -> fences its loot if it is at its guild       SIM.crimeLoot(a, {from, food, items}) adds a lot it carries
+//   SIM.crimeAlarm(a, kind, at) -> a crime of the world's own (the player's) seen: the alarm, the hiding, perhaps an arrest
+//   SIM.crimeEvents(since?) -> the crime's own events (crime, alarm, arrest) since a minute: SIM.LOG is trimmed, these are kept
+(function(G){
+  'use strict';
+  var SIM=G.SIM;
+  function hash(){ var h=0x2545F491; for(var i=0;i<arguments.length;i++){ h=Math.imul(h^(arguments[i]|0), 0x85EBCA6B); h^=h>>>13; h=Math.imul(h, 0xC2B2AE35); h^=h>>>16; } return (h>>>0)/4294967296; }
+  var KIND={ pickpocket:1, burglary:2, assault:3 };
+  function inHours(h, H){ if(!H) return true; return H[0]<=H[1] ? (h>=H[0] && h<H[1]) : (h>=H[0] || h<H[1]); }
+  function bump(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
+  /* an event: into the sim's log, and the crime's own (SIM.LOG is trimmed; this keeps the last 20,000) */
+  function note(kind, d){ var e=SIM.logEvent(kind, d), E=SIM.CRIME.events; E.push(e); if(E.length>25000) E.splice(0, E.length-20000); return e; }
+
+  SIM.crime = function(o){
+    var C={ cfg:o, seed:o.seed==null?0:o.seed, crooks:[], isCrook:{}, stats:{}, held:{}, quiet:{}, towns:{}, guards:{}, events:[], guild:{}, hiding:{} };
+    [(o.jail&&o.jail.act)||'JAIL', 'HIDE', 'FENCE'].forEach(function(act){ if(SIM.R.activity && !SIM.R.activity[act]) SIM.activity({ id:act }); });
+    var guard=o.guard||function(){ return false; }, who=o.who||function(){ return true; };
+    SIM.all('actor').slice().sort(function(a, b){ return a.k-b.k; }).forEach(function(a){
+      if(a.driven || guard(a) || !who(a)) return;
+      if(hash(C.seed, 911, a.k)<(o.share==null?0.001:o.share)){ C.crooks.push(a.id); C.isCrook[a.id]=1; } });
+    SIM.CRIME=C;
+    if(o.guild){ var towns={}; SIM.all('place').forEach(function(P){ towns[SIM.R.settlement ? SIM.settlementOf(P.id) : '']=1; });
+      Object.keys(towns).sort().forEach(function(k){ var s=k==='' || k==='null' || k==='undefined' ? null : k, best=null, bd=-1;
+        SIM.all('place').forEach(function(P){ if(o.guild.kinds.indexOf(P.kind)<0 || (s!=null && SIM.settlementOf(P.id)!==s)) return;
+          var J=jailFor(s, P), d=J ? Math.hypot(J.x-P.x, J.z-P.z) : 0; if(d>bd || (d===bd && P.id<best.id)){ bd=d; best=P; } });   /* the den farthest from the law */
+        if(best){ C.guild[s==null ? '' : s]=best.id; best.guild=true; } }); }
+    return C;
+  };
+  function statsOf(s){ var C=SIM.CRIME, k=s==null?'':s; return C.stats[k]||(C.stats[k]={ attempts:{}, done:{}, seen:{}, arrested:{}, escaped:{}, hid:{}, resisted:0, stolen:0, taken:0, hurt:0, served:0, fenced:0, fencedItems:0, recovered:0, recoveredItems:0 }); }
+  function town(a){ return SIM.R.settlement ? SIM.settlementOf(a) : null; }
+  function abstractTown(s){ return !!(SIM.ABSTRACT && s!=null && SIM.ABSTRACT[s]); }
+  function people(s){ var C=SIM.CRIME, k=s==null?'':s; if(C.towns[k]) return C.towns[k];
+    var L=SIM.all('actor').filter(function(a){ return !a.driven && (s==null || SIM.settlementOf(a)===s); }).sort(function(a, b){ return a.k-b.k; });
+    return (C.towns[k]=L); }
+  function guardsOf(s){ var C=SIM.CRIME, k=s==null?'':s; if(C.guards[k]) return C.guards[k]; var g=C.cfg.guard||function(){ return false; };
+    return (C.guards[k]=people(s).filter(function(a){ return g(a); })); }
+  SIM.jailed = function(a, minute){ var m=minute==null?SIM.minute():minute, C=SIM.CRIME; return !!(C && a.cmd && a.cmd.by==='jail' && m<a.cmd.until); };
+  SIM.hidden = function(a, minute){ var m=minute==null?SIM.minute():minute, C=SIM.CRIME; return !!(C && C.hiding[a.id]!=null && m<C.hiding[a.id]); };
+  SIM.guildOf = function(s){ var C=SIM.CRIME; if(!C) return null; var id=C.guild[s==null ? '' : s]; return id!=null ? SIM.R.place[id] : null; };
+  function actNow(a, minute){ if(!abstractTown(town(a))) return a.activity; var s=SIM.schedOf(a, minute); return s ? s[Math.floor((minute%1440)/60)] : null; }
+
+  /* the odds it is seen, by the witnesses where it happens */
+  function seenOdds(w, g, hour, sleepers){ var S=SIM.CRIME.cfg.seen||{};
+    var p=(S.base==null?0.05:S.base)+(S.perWitness==null?0.03:S.perWitness)*w+(S.guard==null?0.5:S.guard)*g+(S.sleeper==null?0.02:S.sleeper)*(sleepers||0);
+    if(inHours(hour, S.nightHours||[21, 5])) p*=(S.night==null?0.4:S.night);
+    return Math.min(S.max==null?0.95:S.max, p); }
+  function witnesses(P, a, v){ var w=0, g=0, gd=SIM.CRIME.cfg.guard||function(){ return false; };
+    Object.keys(P.who||{}).forEach(function(id){ if(id===a.id || (v && id===v.id)) return; var x=SIM.R.actor[id]; if(!x) return; if(gd(x)) g++; else w++; }); return { w:w, g:g }; }
+  /* the alarm: the nearest guard on duty comes (presented), or the town's guards a head (abstract) */
+  function arrestOdds(a, at, s, minute){ var C=SIM.CRIME, A=C.cfg.arrest||{}, acts=C.cfg.guardActs||['WORK'], base=(A.base==null?0.6:A.base)*(SIM.UNREST ? SIM.unrestArrest(s) : 1);   /* a grumbling town hides its own (77-sim-6-unrest.js) */
+    if(abstractTown(s)){ var on=0, h=Math.floor((minute%1440)/60); guardsOf(s).forEach(function(x){ var sc=SIM.schedOf(x, minute); if(sc && acts.indexOf(sc[h])>=0 && !SIM.jailed(x, minute)) on++; });
+      var pop=people(s).length||1; return { p:base*Math.min(1, (on/pop)/(A.ratio==null?1/150:A.ratio)), guard:null, d:null }; }
+    var best=null, bd=Infinity, reach=A.reach==null?300:A.reach;
+    guardsOf(s).forEach(function(x){ if(!x.present || acts.indexOf(x.activity)<0 || SIM.jailed(x, minute)) return; var p=SIM.pose(x, SIM.time(), { cheap:true }), d=Math.hypot(p.x-at.x, p.z-at.z); if(d<bd){ bd=d; best=x; } });
+    if(!best || bd>reach) return { p:0, guard:null, d:best ? Math.round(bd) : null };
+    return { p:base*(1-bd/reach), guard:best, d:Math.round(bd) }; }
+  function jailFor(s, at){ var kinds=SIM.CRIME.cfg.jails||[], best=null, bd=Infinity;
+    SIM.all('place').forEach(function(P){ if(kinds.indexOf(P.kind)<0 || (s!=null && SIM.settlementOf(P.id)!==s)) return; var d=Math.hypot(P.x-at.x, P.z-at.z); if(d<bd){ bd=d; best=P; } });
+    return best; }
+  /* seen: the alarm, perhaps an arrest */
+  function alarm(a, kind, at, s, minute, st){ var C=SIM.CRIME, J=C.cfg.jail||{}, R=arrestOdds(a, at, s, minute);
+    bump(st.seen, kind); note('alarm', { actor:a.id, crime:kind, guard:R.guard ? R.guard.id : null, d:R.d });
+    if(R.guard && !abstractTown(s)) SIM.command(R.guard, { act:R.guard.activity, place:at.place || null, mins:(C.cfg.arrest||{}).respond==null ? 30 : C.cfg.arrest.respond, by:'alarm' });
+    if(hide(a, s, minute, R.d, kind)){ bump(st.hid, kind); bump(st.escaped, kind); return false; }   /* into the guild: out of reach */
+    if(!(hash(C.seed, 917, a.k, minute, KIND[kind])<R.p)){ bump(st.escaped, kind); return false; }
+    var P=jailFor(s, at); if(!P){ bump(st.escaped, kind); return false; }
+    var res=hash(C.seed, 919, a.k, minute)<(J.resist==null?0.15:J.resist), days=res ? (J.resistDays==null?30:J.resistDays) : (J.days==null?7:J.days);
+    if(res) st.resisted++; bump(st.arrested, kind); recover(a, st);
+    SIM.command(a, { act:J.act||'JAIL', place:P.id, until:minute+days*1440, by:'jail' });
+    C.held[a.id]={ place:P.id, until:minute+days*1440, crime:kind, since:minute, resisted:res };
+    note('arrest', { actor:a.id, crime:kind, jail:P.id, days:days, guard:R.guard ? R.guard.id : null });
+    return true; }
+  /* THE GUILD: hiding there; the loot carried, fenced there or recovered on arrest */
+  function hide(a, s, minute, guardD, kind){ var C=SIM.CRIME, Gc=C.cfg.guild, P=SIM.guildOf(s); if(!Gc || !P) return false;
+    if(abstractTown(s)){ if(!(hash(C.seed, 951, a.k, minute)<(Gc.abstractHide==null?0.5:Gc.abstractHide))) return false; }
+    else { var q=SIM.pose(a, SIM.time(), { cheap:true }), d=Math.hypot(q.x-P.x, q.z-P.z); if(d>(Gc.hideReach==null?300:Gc.hideReach) || (guardD!=null && guardD<=d)) return false; }
+    var until=minute+(Gc.hideMins==null?120:Gc.hideMins); C.hiding[a.id]=until;
+    SIM.command(a, { act:'HIDE', place:P.id, until:until, by:'hide' }); note('hide', { actor:a.id, crime:kind || null, guild:P.id, until:until }); return true; }
+  function lotsOf(a){ return a.loot && a.loot.length ? a.loot : null; }
+  function recover(a, st){ var L=lotsOf(a); if(!L) return; var Mine=SIM.R.place[a.home];
+    L.forEach(function(lot){ var H=SIM.R.place[lot.from]; Object.keys(lot.food||{}).sort().forEach(function(f){ var n=Math.min(lot.food[f], Mine && Mine.store ? Mine.store[f]||0 : 0);
+        if(n>0 && H){ Mine.store[f]-=n; H.store=H.store||{}; H.store[f]=(H.store[f]||0)+n; st.recovered+=n; } });
+      (lot.items||[]).forEach(function(t){ var o=SIM.R.actor[t.owner]; if(o){ SIM.give(o, t.item, 1); st.recoveredItems++; } }); });
+    a.loot=null; note('recovered', { actor:a.id }); }
+  function fenceNow(a, minute, st){ var C=SIM.CRIME, F=(C.cfg.guild||{}).fence||{}, L=lotsOf(a), P=SIM.guildOf(town(a)); if(!L || !P) return null;
+    var Mine=SIM.R.place[a.home], n=0, k=0; P.store=P.store||{}; P.stash=P.stash||{};
+    L.forEach(function(lot){ Object.keys(lot.food||{}).sort().forEach(function(f){ var q=Math.min(lot.food[f], Mine && Mine.store ? Mine.store[f]||0 : 0);   /* what the household has not eaten */
+        if(q>0){ Mine.store[f]-=q; P.store[f]=(P.store[f]||0)+q; n+=q; } });
+      (lot.items||[]).forEach(function(t){ P.stash[t.item]=(P.stash[t.item]||0)+1; k++; }); });
+    a.loot=null; st.fenced+=n; st.fencedItems+=k;
+    meter(a, -((F.perServing==null?0.2:F.perServing)*n+(F.perItem==null?8:F.perItem)*k), minute);
+    note('fence', { actor:a.id, guild:P.id, servings:n, items:k }); return { servings:n, items:k }; }
+  function fenceStep(a, minute, st){ var C=SIM.CRIME, F=(C.cfg.guild||{}).fence||{}, P=SIM.guildOf(town(a)); if(!lotsOf(a) || !P) return;
+    if(abstractTown(town(a))){ var act=actNow(a, minute); if(act && (F.acts||['SOCIALIZE', 'IDLE', 'BUY']).indexOf(act)>=0) fenceNow(a, minute, st); return; }
+    if(a.place===P.id && a.task && SIM.time()>=a.task.arrive){ fenceNow(a, minute, st); return; }   /* there (hiding, or come to sell) */
+    if(a.cmd && minute<a.cmd.until) return;
+    if((F.acts||['SOCIALIZE', 'IDLE', 'BUY']).indexOf(a.activity)>=0) SIM.command(a, { act:'FENCE', place:P.id, until:minute+60+(F.mins==null?30:F.mins), by:'fence' }); }   /* there past the next hour's look, when it sells */
+  function meter(a, n, minute){ if(!SIM.NEED || SIM.NEED.idx.material==null) return; SIM.needsOf(a, minute); var i=SIM.NEED.idx.material; a.nd[i]=Math.max(0, Math.min(100, a.nd[i]+n)); }
+
+  /* ---------------------------------------------------------------- the crimes */
+  function pickpocket(a, minute, hour, cfg, st){ var s=town(a), abs=abstractTown(s), A=SIM.CRIME.cfg.abstract||{}, C=SIM.CRIME;
+    var act=actNow(a, minute); if(!act || (cfg.acts||['BUY', 'SOCIALIZE', 'IDLE']).indexOf(act)<0 || !inHours(hour, cfg.hours)) return;
+    var P=null, v=null, W;
+    if(abs){ if(!(hash(C.seed, 921, a.k, minute)<(A.atShare==null?0.3:A.atShare))) return;
+      var L=people(s); v=L[Math.floor(hash(C.seed, 923, a.k, minute)*L.length)]; if(!v || v===a) return; W={ w:A.witnesses==null?6:A.witnesses, g:0 }; }
+    else { P=SIM.R.place[a.place]; if(!P || P.guild || (cfg.at && cfg.at.indexOf(P.kind)<0) || !a.task || SIM.time()<a.task.arrive) return;   /* never in the guild: its own rule */
+      var ids=Object.keys(P.who||{}).filter(function(id){ return id!==a.id; }).sort(); if(!ids.length) return;
+      v=SIM.R.actor[ids[Math.floor(hash(C.seed, 923, a.k, minute)*ids.length)]]; if(!v || (C.cfg.guard && C.cfg.guard(v))) return; W=witnesses(P, a, v); }
+    if(!(hash(C.seed, 925, a.k, minute)<(cfg.chance==null?0.05:cfg.chance))) return;
+    bump(st.attempts, 'pickpocket');
+    var at=P ? { x:P.x, z:P.z, place:P.id } : SIM.pose(v, SIM.time(), { cheap:true });
+    if(hash(C.seed, 927, a.k, minute)<seenOdds(W.w, W.g, hour)){ alarm(a, 'pickpocket', at, s, minute, st); return; }
+    bump(st.done, 'pickpocket'); meter(v, cfg.loss==null?15:cfg.loss, minute); meter(a, -(cfg.gain==null?15:cfg.gain), minute);
+    note('crime', { actor:a.id, crime:'pickpocket', victim:v.id, place:P ? P.id : null }); }
+  function burglary(a, minute, hour, cfg, st){ var s=town(a), C=SIM.CRIME;
+    if(!inHours(hour, cfg.hours||[1, 4])) return;
+    if(!(hash(C.seed, 931, a.k, minute)<(cfg.chance==null?0.02:cfg.chance))) return;
+    var homes=people(s).map(function(x){ return x.home; }).filter(function(h, i, L){ return h!=null && h!==a.home && L.indexOf(h)===i; }).sort();
+    if(!homes.length) return; var H=SIM.R.place[homes[Math.floor(hash(C.seed, 933, a.k, minute)*homes.length)]]; if(!H || !H.store) return;
+    bump(st.attempts, 'burglary');
+    var sl=abstractTown(s) ? (H.people||0) : Object.keys(H.who||{}).length, at={ x:H.x, z:H.z, place:H.id };
+    if(hash(C.seed, 935, a.k, minute)<seenOdds(0, 0, hour, sl)){ alarm(a, 'burglary', at, s, minute, st); return; }
+    var Mine=SIM.R.place[a.home], n=0; if(!Mine) return; Mine.store=Mine.store||{};
+    var lot={ from:H.id, food:{}, items:[] };
+    Object.keys(H.store).sort().forEach(function(f){ var k=Math.floor((H.store[f]||0)*(cfg.share==null?0.3:cfg.share)); if(k>0){ H.store[f]-=k; Mine.store[f]=(Mine.store[f]||0)+k; n+=k; lot.food[f]=k; } });
+    var G=C.cfg.guild, ni=G ? (G.items==null?1:G.items) : 0;   /* and the spare things kept at home (with a guild to fence them) */
+    if(ni) people(s).filter(function(x){ return x.home===H.id && x.inv; }).forEach(function(x){ Object.keys(x.inv).sort().forEach(function(it){ while(lot.items.length<ni && x.inv[it]>0){ x.inv[it]--; lot.items.push({ item:it, owner:x.id }); } }); });
+    if(G) (a.loot||(a.loot=[])).push(lot);
+    bump(st.done, 'burglary'); st.stolen+=n; st.taken+=lot.items.length; note('crime', { actor:a.id, crime:'burglary', home:H.id, servings:n, items:lot.items.length }); }
+  function assault(a, minute, hour, cfg, st){ var s=town(a), C=SIM.CRIME; if(!SIM.NEED || a.driven || !a.present || SIM.jailed(a, minute)) return;
+    if(C.cfg.guard && C.cfg.guard(a)) return;
+    var act=actNow(a, minute); if(!act || (cfg.acts||['SOCIALIZE']).indexOf(act)<0) return;
+    if(!(hash(C.seed, 941, a.k, minute)<(cfg.chance==null?0.01:cfg.chance))) return;   /* the cheap roll first: the happiness only for the few */
+    var h=SIM.happiness(a); if(h==null || h>=(cfg.below==null?30:cfg.below)) return;
+    var v=null, P=null, abs=abstractTown(s), W;
+    if(abs){ var L=people(s); v=L[Math.floor(hash(C.seed, 943, a.k, minute)*L.length)]; W={ w:(C.cfg.abstract||{}).witnesses==null?6:C.cfg.abstract.witnesses, g:0 }; }
+    else { P=SIM.R.place[a.place]; if(!P) return; var ids=Object.keys(P.who||{}).filter(function(id){ return id!==a.id; }).sort(); if(!ids.length) return;
+      v=SIM.R.actor[ids[Math.floor(hash(C.seed, 943, a.k, minute)*ids.length)]]; W=witnesses(P, a, v); }
+    if(!v || v===a) return; bump(st.attempts, 'assault'); bump(st.done, 'assault');
+    if(SIM.ITEMS && v.hurt==null){ v.hurt=Math.floor(minute/1440); SIM.ITEMS.stats.hurt++; st.hurt++; }
+    note('crime', { actor:a.id, crime:'assault', victim:v.id, place:P ? P.id : null });
+    alarm(a, 'assault', P ? { x:P.x, z:P.z, place:P.id } : SIM.pose(v, SIM.time(), { cheap:true }), s, minute, st); }   /* a fight is always seen */
+
+  SIM.crimeStep = function(minute){ var C=SIM.CRIME; if(!C || minute%60) return; var hour=Math.floor((minute%1440)/60), K=C.cfg.crimes||{};
+    Object.keys(C.held).forEach(function(id){ var J=C.held[id]; if(minute>=J.until){ statsOf(SIM.settlementOf(SIM.R.actor[id]||id)).served++; delete C.held[id];
+      C.quiet[id]=J.until+1440*((C.cfg.jail||{}).lieLow==null ? 2 : C.cfg.jail.lieLow); } });   /* let go: it lies low a while */
+    C.crooks.forEach(function(id){ var a=SIM.R.actor[id]; if(!a || !a.present || a.driven || SIM.jailed(a, minute) || (C.quiet[id]!=null && minute<C.quiet[id])) return; var st=statsOf(town(a));
+      if(C.cfg.guild) fenceStep(a, minute, st);
+      if(SIM.hidden(a, minute)) return;   /* lying hidden at the guild */
+      if(K.pickpocket) pickpocket(a, minute, hour, K.pickpocket, st);
+      if(K.burglary && !SIM.jailed(a, minute)) burglary(a, minute, hour, K.burglary, st); });
+    Object.keys(C.hiding).forEach(function(id){ if(minute>=C.hiding[id]) delete C.hiding[id]; });
+    if(K.assault) SIM.all('actor').forEach(function(a){ assault(a, minute, hour, K.assault, statsOf(town(a))); });   /* anyone unhappy, criminal or not */
+  };
+  /* for the world's own actors (the player): hide, fence, carry loot, raise an alarm on a crime the world saw */
+  SIM.crimeHide = function(a){ var C=SIM.CRIME; if(!C || !C.cfg.guild) return false; var m=SIM.minute(), s=town(a), P=SIM.guildOf(s); if(!P) return false;
+    var q=SIM.pose(a, SIM.time(), { cheap:true }); if(Math.hypot(q.x-P.x, q.z-P.z)>(C.cfg.guild.hideReach==null?300:C.cfg.guild.hideReach)) return false;
+    return hide(a, s, m, null, null); };
+  SIM.crimeFence = function(a){ var C=SIM.CRIME, P=C && SIM.guildOf(town(a)); if(!P || !lotsOf(a)) return null; var q=SIM.pose(a, SIM.time(), { cheap:true });
+    if(!abstractTown(town(a)) && Math.hypot(q.x-P.x, q.z-P.z)>(P.r||0)+30) return null; return fenceNow(a, SIM.minute(), statsOf(town(a))); };
+  SIM.crimeLoot = function(a, lot){ (a.loot||(a.loot=[])).push({ from:lot.from, food:Object.assign({}, lot.food||{}), items:(lot.items||[]).slice() }); return a.loot; };
+  SIM.crimeAlarm = function(a, kind, at){ var C=SIM.CRIME; if(!C) return null; var m=SIM.minute(), s=town(a), where=at || SIM.pose(a, SIM.time(), { cheap:true });
+    return alarm(a, kind || 'crime', where, s, m, statsOf(s)); };
+  SIM.crimeEvents = function(since){ var C=SIM.CRIME; if(!C) return []; return C.events.filter(function(e){ return since==null || e.m>=since; }).map(function(e){ return Object.assign({}, e); }); };
+  SIM.crimeReport = function(s){ var C=SIM.CRIME; if(!C) return null; var crooks=C.crooks.filter(function(id){ var a=SIM.R.actor[id]; return a && (s==null || SIM.settlementOf(a)===s); });
+    var jailed=Object.keys(C.held).filter(function(id){ return s==null || SIM.settlementOf(SIM.R.actor[id])===s; }).sort().map(function(id){ var J=C.held[id]; return { actor:id, place:J.place, until:J.until, crime:J.crime, resisted:J.resisted }; });
+    var st=s==null ? C.stats : C.stats[s], m=SIM.minute(), G=SIM.guildOf(s);
+    var hiding=Object.keys(C.hiding).filter(function(id){ return m<C.hiding[id] && (s==null || SIM.settlementOf(SIM.R.actor[id])===s); }).sort();
+    var carrying=crooks.filter(function(id){ return lotsOf(SIM.R.actor[id]); });
+    return JSON.parse(JSON.stringify({ criminals:crooks.length, crooks:crooks, jailed:jailed, stats:st||statsOf(s), guild:G ? { place:G.id, kind:G.kind, store:G.store||{}, stash:G.stash||{} } : null,
+      hiding:hiding, carrying:carrying })); };
+})(typeof window!=='undefined'?window:globalThis);
+
 // ==================== simulation/77-sim-6-economy.js
 // ================================================================= CORE — simulation 6: production, stores, carts, imports
 // PLAN.md's reserved economy slot; the Voth brief (settlements/voth/SIM-ROADMAP.md 1.6, 2.6: phase E). Opt-in:
@@ -1127,7 +1527,17 @@ canvas{display:block;width:100vw;height:100vh}
 //                                                           a number depletes by a unit made, `regen` back a night up to the start;
 //                                                           a recipe's `site` draws on it; an emptied site blocks ('depleted: id')
 //   SIM.stockpile(settlement|null, {good: {min, target, max, reserve}})   the policy on a good: see 77-sim-6-govern.js
-//   SIM.sitesReport(settlement?) -> [{id, kind, grade, yield, amount, start, taken, capacity}]
+//   SIM.sitesReport(settlement?) -> [{id, kind, grade, yield, amount, start, taken, capacity, regrown}]
+//   SIM.siteRestore(id, amount, settlement?)               a site grown back while nobody worked it (a work camp's stand, core/camp
+//                                                           40): its amount raised to `amount`, booked `regrown` (the ledger allows it)
+//   SIM.recipeHold(place, reason|null, until?)             a recipe stopped (its crew on the march: core/camp 40) until the minute
+//                                                           `until` (or released with null); the blocked report says `reason`
+//   SIM.recipeSite(place, siteId)                          a recipe pointed at another site (the stand the camp moved to)
+//   SIM.recipe(place, {batch:{in, out, by?, hours}, cap, site?})   a BATCH recipe (PLAN-ECONOMY.md Phase 2): `hours` worker-hours make
+//                                                           one batch; its `in` are claimed once when it starts (own store first, then the
+//                                                           warehouses, booked used: never claimed twice), its `out` and byproducts `by`
+//                                                           landed when it ends. Its `rate` is batches a worker-hour, so the governor sets it as any
+//   SIM.blockedReport(s?) -> {place: {reason:'missing'|'full'|'depleted'|'no workers', goods?}}   why a batch recipe is not running
 //   SIM.cart(actor)                                        an actor the economy drives (SIM.step leaves it alone)
 //   SIM.supply(good, n, whole?) -> n had                   a draw on the warehouses (`whole`: all of n or nothing)
 //   SIM.produce(place, good, n) -> n stored                a one-off yield (a slaughter's meat) into a place's store
@@ -1179,13 +1589,25 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.recipe = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; if(!E.stores[id]) SIM.store(id, { kind:'site', cap:o.cap });
     var outs=(o.out||[]).concat(o.herd ? o.herd.out : []); outs.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
     E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null };
+    if(o.batch){ var B=o.batch, Rb=E.recipes[id]; if(!(B.hours>0)) throw new Error('SIM.recipe '+id+': a batch needs its hours');
+      var bo=Object.keys(B.out||{}).concat(Object.keys(B.by||{})); bo.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
+      Rb.batch={ 'in':Object.assign({}, B['in']||{}), out:Object.assign({}, B.out||{}), by:Object.assign({}, B.by||{}), hours:B.hours }; Rb.out=Object.keys(B.out||{}); Rb.rate=1/B.hours;
+      Rb.out.forEach(function(g){ if(!E.inputs[g]){ var q={}; Object.keys(Rb.batch['in']).forEach(function(i){ q[i]=Rb.batch['in'][i]/B.out[g]; }); if(Object.keys(q).length) E.inputs[g]=q; } }); }
+    if(o.build) E.recipes[id].build=true;   /* a building lot: its worked hours go to its project (77-sim-6-build.js), it makes nothing */
     if(o.site!=null){ if(!E.resSites || !E.resSites[o.site]) throw new Error('SIM.recipe '+id+': unknown site '+o.site); E.recipes[id].site=o.site; } return P; };
   /* a resource site (opt-in): see the head of this file */
   SIM.site = function(o){ var E=o.settlement!=null ? SIM.econ(o.settlement) : SIM.ECON; if(!E) return null; if(!o.id) throw new Error('SIM.site: an id');
     var S=(E.resSites||(E.resSites={}))[o.id]={ id:o.id, kind:o.kind||null, goods:(o.goods||[]).slice(), grade:o.grade==null ? null : o.grade, yield:o.yield==null ? 1 : o.yield,
-      amount:o.amount==null ? null : o.amount, start:o.amount==null ? null : o.amount, regen:o.regen==null ? 0 : o.regen, capacity:o.capacity==null ? null : o.capacity, taken:0 }; return S; };
+      amount:o.amount==null ? null : o.amount, start:o.amount==null ? null : o.amount, regen:o.regen==null ? 0 : o.regen, capacity:o.capacity==null ? null : o.capacity, taken:0, regrown:0 }; return S; };
+  function econOfPlace(id){ return SIM.ECONS ? SIM.econ(SIM.settlementOf(id)) : SIM.ECON; }
+  SIM.siteRestore = function(id, amount, s){ var E=s!=null ? SIM.econ(s) : SIM.ECON, S=E && E.resSites && E.resSites[id]; if(!S || S.amount==null) return null;
+    var up=Math.max(0, amount-S.amount); S.amount+=up; S.regrown+=up; if(S.amount>S.start) S.start=S.amount; return S; };
+  SIM.recipeHold = function(id, reason, until){ var E=econOfPlace(id), R=E && E.recipes[id]; if(!R) return null;
+    if(reason==null){ delete R.hold; if(E.why) delete E.why[id]; } else R.hold={ reason:reason, until:until==null ? null : until }; return R; };
+  SIM.recipeSite = function(id, site){ var E=econOfPlace(id), R=E && E.recipes[id]; if(!R) return null;
+    if(site!=null && !(E.resSites && E.resSites[site])) throw new Error('SIM.recipeSite '+id+': unknown site '+site); R.site=site; return R; };
   SIM.sitesReport = function(s){ var E=s!=null ? SIM.econ(s) : SIM.ECON, out=[]; if(!E || !E.resSites) return out;
-    Object.keys(E.resSites).forEach(function(id){ var S=E.resSites[id]; out.push({ id:id, kind:S.kind, goods:S.goods.slice(), grade:S.grade, yield:S.yield, amount:S.amount, start:S.start, taken:S.taken, capacity:S.capacity }); }); return out; };
+    Object.keys(E.resSites).forEach(function(id){ var S=E.resSites[id]; out.push({ id:id, kind:S.kind, goods:S.goods.slice(), grade:S.grade, yield:S.yield, amount:S.amount, start:S.start, taken:S.taken, capacity:S.capacity, regrown:S.regrown||0 }); }); return out; };
   SIM.stockpile = function(s, policy){ var E=s!=null ? SIM.econ(s) : SIM.ECON; if(!E) return null; var P=E.policy||(E.policy={}); Object.keys(policy).forEach(function(g){ P[g]=Object.assign(P[g]||{}, policy[g]); }); return P; };
   /* a one-off yield (a slaughter's meat): into the place's store, up to its cap; -> what went in */
   SIM.produce = function(id, g, n){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P || !E.goods[g] || !(n>0)) return 0; if(!E.stores[id]) SIM.store(id, { kind:'site' });
@@ -1252,13 +1674,34 @@ canvas{display:block;width:100vw;height:100vh}
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
   }
+  /* a batch recipe's work: `units` batches' worth of labour. A place holds one batch in hand (P.order): it starts when the
+     store has room, the site is not empty and every input is there, claiming them at once; it ends when its labour is
+     done. What stops it is said, by place (E.why), and cleared when it runs */
+  function batchWork(E, P, R, units, site){
+    var B=R.batch, left=units, why=null;
+    while(left>0){
+      if(!P.order){ var yld=0, size=0, g; for(g in B.out) yld+=B.out[g]; size=yld; for(g in B.by) size+=B.by[g];
+        if(held(P)+size>P.cap){ why={ reason:'full' }; stat(E.blocked, 'full: '+P.kind); break; }
+        if(site && site.amount!=null && site.amount<yld){ why={ reason:'depleted', site:site.id }; stat(E.blocked, 'depleted: '+site.id); break; }
+        var lack=Object.keys(B['in']).filter(function(i){ return (P.stock[i]||0)+SIM.stockOf(i) < B['in'][i]; });
+        if(lack.length){ why={ reason:'missing', goods:lack }; stat(E.blocked, 'inputs: '+P.kind); break; }
+        Object.keys(B['in']).forEach(function(i){ var n=B['in'][i], t=Math.min(n, P.stock[i]||0); P.stock[i]=(P.stock[i]||0)-t; if(t) dayStat('used', i, t); if(n-t>0) SIM.supply(i, n-t); });
+        if(site){ site.taken+=yld; if(site.amount!=null) site.amount-=yld; }
+        P.order={ done:0 }; }
+      var u=Math.min(left, 1-P.order.done); P.order.done+=u; left-=u;
+      if(P.order.done>=1-1e-9){ P.order=null; [B.out, B.by].forEach(function(O){ Object.keys(O).forEach(function(g){ P.stock[g]=(P.stock[g]||0)+O[g]; dayStat('made', g, O[g]); }); }); }
+    }
+    var W=E.why||(E.why={}); if(why) W[P.id]=why; else delete W[P.id];
+  }
+  SIM.blockedReport = function(s){ var E=s!=null ? SIM.econ(s) : SIM.ECON; return E ? JSON.parse(JSON.stringify(E.why||{})) : {}; };
   /* THE ABSTRACT LEVEL (77-sim-7-lod.js, SIM.level): in a town nobody watches, a worker counts at its job in every hour
      its schedule says WORK, an animal at home, each at the efficiency it had when the town was lowered (absEff); a cart's
      trip takes the straight line times SIM.ABSTRACT_DETOUR at its speed, with no route, and it is where it went */
   function absTown(E){ return !!(SIM.ABSTRACT && E.settlement!=null && SIM.ABSTRACT[E.settlement]); }
   function absWork(E, a, minute, W, H){ var eff=a.absEff==null ? 1 : a.absEff;
     if(a.herd!=null){ if((a.grownAt!=null && a.grownAt>minute) || !a.present) return; if(E.recipes[a.herd] && E.recipes[a.herd].herd) H[a.herd]=(H[a.herd]||0)+eff; return; }
-    if(!a.present || a.driven) return; var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
+    if(!a.present || a.driven) return; if(a.cmd && minute<a.cmd.until) return;   /* commanded elsewhere (jailed: 77-sim-6-crime.js) */
+    var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
     var w=a.work!=null ? a.work : (a.mem && a.mem.WORK); if(w==null || !E.recipes[w]) return; W[w]=(W[w]||0)+eff; }
   function cartAt(a, t){ if(!absTown(SIM.ECON)) return SIM.pose(a, t, { cheap:true }); var P=SIM.R.place[a.place] || SIM.R.place[a.home]; return P ? { x:P.x, y:P.y||0, z:P.z } : { x:0, y:0, z:0 }; }
   function tick(minute, t){
@@ -1274,7 +1717,14 @@ canvas{display:block;width:100vw;height:100vh}
     Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
       if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
       else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
-    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null; if(R.out.length && R.rate) make(SIM.R.place[id], R.out, W[id]*R.rate*(St ? St.yield : 1)*hrs, 'carry', St); });
+    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null;
+      if(R.build){ if(R.hold && !(R.hold.until!=null && minute>=R.hold.until)) return; if(SIM.BUILD) SIM.buildWork(id, W[id]*hrs, minute); return; }   /* a lot's builders at work (77-sim-6-build.js) */
+      if(!R.out.length || !R.rate) return;
+      if(R.hold){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else { (E.why||(E.why={}))[id]={ reason:R.hold.reason }; return; } }   /* held (SIM.recipeHold): its hours lost */
+      var u=W[id]*R.rate*(St ? St.yield : 1)*hrs;
+      if(R.batch) batchWork(E, SIM.R.place[id], R, u, St); else make(SIM.R.place[id], R.out, u, 'carry', St); });
+    Object.keys(E.recipes).forEach(function(id){ var R=E.recipes[id]; if(R.hold && !W[id]){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else (E.why||(E.why={}))[id]={ reason:R.hold.reason }; }
+      if(R.batch && !W[id] && R.rate>0 && !(E.why||(E.why={}))[id]) E.why[id]={ reason:'no workers' }; });
   }
   /* ---------------------------------------------------------------- the imports: sent for, delivered */
   function emptiest(g){ return SIM.ECON.warehouses.slice().sort(function(p, q){ return (p.stock[g]||0)-(q.stock[g]||0) || (p.id<q.id?-1:1); })[0]; }
@@ -1583,7 +2033,7 @@ canvas{display:block;width:100vw;height:100vh}
     each(function(E){ if(E.govern) govern(E, minute); });
     each(function(E){ if(E.spoil) spoil(E, minute); });
     each(function(E){ if(E.season) season(E, minute); });
-    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0) S.amount=Math.min(S.start, S.amount+S.regen); }); });   /* a site's nightly regrowth */
+    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0){ var a0=S.amount; S.amount=Math.min(S.start, S.amount+S.regen); S.regrown=(S.regrown||0)+S.amount-a0; } }); });   /* a site's nightly regrowth */
   };
   SIM.economyGoverned = function(s){ var E = s!=null ? SIM.econ(s) : SIM.ECON; return E && E.govern ? E.govern.view : null; };
 })(typeof window!=='undefined'?window:globalThis);
@@ -1593,7 +2043,7 @@ canvas{display:block;width:100vw;height:100vh}
 // The Voth brief (settlements/voth/SIM-ROADMAP.md 1.5, 2.5: phase D). Opt-in: nothing here runs until a world calls
 // SIM.items(config); a world without it decides exactly as before.
 //
-//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
+//   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?, prefer?, base?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich, pot?, noPot?}, lack, hurt, heal, low, days, meals, perMeal,
 //               treat:{at, items:[[least wealth, item], ...], mix?}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
@@ -1612,6 +2062,12 @@ canvas{display:block;width:100vw;height:100vh}
 // fewer sets of a clothing item than the actor keeps, it buys one on its time off, and the material meter (77-sim-6-
 // needs.js) rises by `lack` a day for each set missing. A worked day carries a `hurt` chance (a hash of the actor and
 // the day): hurt, it buys a poultice on its time off (or heals in `heal` days).
+// BETTER TOOLS (opt-in, by kind): a tool kind's `prefer` lists better kinds (an iron tool over a stone one); its errand
+// buys the first of them its seller sells and its settlement's economy holds (that good declared and in stock), else
+// itself, and a miss is booked short of the better good (the town's want of it: the governor and the trade read it).
+// A better tool bought in place of another remembers it, and worn out is sought as that one again (a field hand's iron
+// tool as its hoe, a smith's as its stone tool), so a town out of iron falls back; a kind's `base` is the fallback for a
+// better tool given at the start. Without either, a tool is replaced by its own kind, as before.
 // ERRANDS: one at a time; `when` 'work' (in an hour of WORK) or 'free' (in an hour of one of `free`, once a seller is
 // open and within reach: looked at once an hour); its place the
 // nearest within reach that sells the item and has room (BUY); `mins` minutes there complete it (the item bought, the
@@ -1648,7 +2104,7 @@ canvas{display:block;width:100vw;height:100vh}
     SIM.ITEMS = I; return I;
   };
   SIM.shop = function(placeId, items){ var I=SIM.ITEMS; if(!I) return; I.sells[placeId]=items.slice();
-    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); (I.sellers[k]||(I.sellers[k]=[])).push(placeId); }); I._food=null; };
+    items.forEach(function(k){ if(!I.kinds[k]) throw new Error('SIM.shop '+placeId+': unknown item '+k); var L=I.sellers[k]||(I.sellers[k]=[]); if(L.indexOf(placeId)<0) L.push(placeId); }); I._food=null; };   /* called again, a place's list is replaced and it is a seller once */
   function sellersOf(item){ var I=SIM.ITEMS; if(item!=='food') return I.sellers[item]||[];
     if(!I._food){ var s={}; I.foods.forEach(function(f){ (I.sellers[f]||[]).forEach(function(id){ s[id]=1; }); }); I._food=Object.keys(s); } return I._food; }
   SIM.sellersOf = sellersOf;
@@ -1689,9 +2145,10 @@ canvas{display:block;width:100vw;height:100vh}
     if(short && I.lack && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, d*1440); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.min(100, a.nd[mi]+I.lack*short); }
     if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
       /* a treat: the material meter high, the best luxury or household good its wealth reaches */
-      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
+      else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at-(SIM.moneyTreatDrop ? SIM.moneyTreatDrop(a) : 0)){   /* savings lower the bar (77-sim-6-money.js `spend`) */
         var best=null, can=[]; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]){ best=t[1]; can.push(t[1]); } });
         if(I.treat.mix && can.length) best=can[Math.floor(hash(a.k, d, 23)*can.length)];   /* `mix` (opt-in): any treat its wealth reaches, by a hash of the person and the day; else the dearest */
+        if(best && SIM.moneyCan){ var Kb=I.kinds[best]; if(Kb && Kb.good && !SIM.moneyCan(a, Kb.good, Kb.per==null?1:Kb.per)) best=null; }   /* a treat only with money in hand */
         if(best) errand(a, best, 'free', d*1440); } }
   }
   function errand(a, item, when, minute){
@@ -1731,7 +2188,7 @@ canvas{display:block;width:100vw;height:100vh}
     var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
     if(E.item==='food'){
       var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*daysOf(H));
-      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; cum(a, 'bought', f, n); stat(bs, f, n); };
+      if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; cum(a, 'bought', f, n); stat(bs, f, n); if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyBuy(a.home, E.place, f, n, SIM.settlementOf(E.place)); };   /* paid for (77-sim-6-money.js M1) */
         var share=split(foods, SIM.ECON && SIM.ECON.settlement, need);   /* by what is on the shelf (the warehouses' stock), or the town's diet */
         foods.forEach(function(f, i){ var n=share[i];
           if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n){ cum(a, 'outOf', f, n-got); lack+=n-got; } n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
@@ -1739,11 +2196,17 @@ canvas{display:block;width:100vw;height:100vh}
         for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } } }   /* one food out: more of the others it sells */
       if(H && H.shopper===a.id) H.shopper=null;
     } else {
-      if(SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
+      var it=E.item;
+      if(K.cat==='tool' && K.prefer && SIM.ECON){ for(var pi=0; pi<K.prefer.length; pi++){ var pk=K.prefer[pi], PK=I.kinds[pk];   /* `prefer`: a better tool, when this seller has it and the town holds its good */
+        if(!PK || !PK.good || !SIM.ECON.goods[PK.good] || sold.indexOf(pk)<0) continue;
+        if(SIM.supply(PK.good, PK.per==null?1:PK.per, true)){ it=pk; K=PK; stat(I.stats.preferred||(I.stats.preferred={}), pk); break; } } }   /* missed, it is booked short of the better good: the town's want of it */
+      if(SIM.moneyCan && I.treat && K.good && I.treat.items.some(function(t){ return t[1]===E.item; }) && !SIM.moneyCan(a, K.good, K.per==null?1:K.per)){   /* a treat the purse cannot pay at the counter: not bought (77-sim-6-money.js `spend`) */
+        stat(I.stats.failed, E.item); stat(I.stats.cantAfford||(I.stats.cantAfford={}), E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
+      if(it===E.item && SIM.ECON && K.good && !SIM.supply(K.good, K.per==null?1:K.per, true)){   /* out of what it is made of: the errand fails, tried again later */
         cum(a, 'outOf', E.item); stat(I.stats.failed, E.item); a.errand=null; a.errCool=minute+I.cool; a.wanted=null; return; }
-      cum(a, 'bought', E.item); stat(bs, E.item);
+      cum(a, 'bought', it); stat(bs, it); if(SIM.MONEY && SIM.MONEY.m1 && K.good && a.home!=null) SIM.moneyBuy(a.home, E.place, K.good, K.per==null?1:K.per, SIM.settlementOf(E.place));
       if(K.cat==='medicine'){ a.hurt=null; a.owesP=false; I.stats.poultice++; I.stats.healed++; }
-      else if(K.cat==='tool'){ a.tool={ k:E.item, w:0 }; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }
+      else if(K.cat==='tool'){ a.tool={ k:it, w:0 }; if(it!==E.item) a.tool.base=E.item; a.toolNeed=null; if(E.when==='work') I.stats.replacedAtWork++; }   /* a better tool remembers what it stood in for */
       else if(K.slot){ var p=pos(K); if(!a.eq || !a.eq[p]) SIM.equip(a, E.item, 0); else SIM.give(a, E.item, 1); }
       else SIM.give(a, E.item, 1);
       if(K.material && SIM.NEED && SIM.NEED.idx.material!=null){ SIM.needsOf(a, minute); var mi=SIM.NEED.idx.material; a.nd[mi]=Math.max(0, a.nd[mi]-K.material); }
@@ -1761,7 +2224,7 @@ canvas{display:block;width:100vw;height:100vh}
       if(act==='WORK' && a.activity==='WORK' && a.arrM!=null && minute>=a.arrM){ a.workedDay=d;
         if(a.tool){ var K=I.kinds[a.tool.k], dw=a.wkT==null ? 0 : minute-a.wkT; if(dw<0 || dw>90) dw=0;   /* minutes at work since last asked (the step's wake: at most an hour), not a gap */
           if(K.workLife) a.tool.w += dw/60/K.workLife;
-          if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', minute); } }
+          if(a.tool.w>=1){ var k=a.tool.k, kn=a.tool.base||K.base||k; a.tool=null; a.toolNeed=kn; I.stats.broken++; cum(a, 'brokenBy', k); I.stats.brokenAtWork++; if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, kn, 'work', minute); } }
         a.wkT=minute; }
       else a.wkT=null;
       var E=a.errand;
@@ -1776,7 +2239,7 @@ canvas{display:block;width:100vw;height:100vh}
          cannot make a meal; at a seller of 'meal' (a tavern, a stall) */
       if(!a.errand && act==='EAT' && a.activity!=='EAT' && I.eatOut && sellersOf('meal').length){ var Hm=SIM.R.place[a.home];
         if(Hm && !Hm.mess && a.mealH!==hr){ a.mealH=hr; var st0=Hm.store||{}, kinds=0; for(var f0 in st0) if(st0[f0]>0) kinds++;
-          if(kinds<2 || hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0)){ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
+          if(kinds<2 || (hash(a.k, hr, 11) < I.eatOut.base + I.eatOut.wealth*(a.wealth||0) && (!SIM.moneyCan || SIM.moneyCan(a, 'meal', 1)))){   /* out by choice only with money in hand; for want of food at home, always */ a.errand={ act:'EAT', item:'meal', when:'EAT', since:minute }; stat(I.stats.errands, 'meal'); a.errOkH=null; } } }
       if(!a.errand && (I.free[act]) && I.foods.length && a.foodH!==hr){ a.foodH=hr; var H=SIM.R.place[a.home];   /* the store looked at once an hour */
         if(H && !H.mess && H.store && H.people && (!H.shopper || !SIM.R.actor[H.shopper] || !SIM.R.actor[H.shopper].errand)){
           var tot=0; for(var f in H.store) tot+=H.store[f];
@@ -1824,7 +2287,7 @@ canvas{display:block;width:100vw;height:100vh}
     var I=SIM.ITEMS, M=I.meal;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
     if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ mealStat(a, 'out'); return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
-    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); if(SIM.MONEY && SIM.MONEY.m1 && a.home!=null) SIM.moneyBuy(a.home, P.id, 'meal', 1, SIM.settlementOf(P.id)); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
     if(P.mess){ mealStat(a, 'mess'); return M.mess; }
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
@@ -1846,20 +2309,21 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.itemsAbstractHome = function(P, hrs, town, res){
     var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
     var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
-    var st=P.store||(P.store={});
+    var st=P.store||(P.store={}), M=I.meal, Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; }, bs=0;
     for(var i=0;i<n;i++){
-      if(P.mess){ mealBook(town, SIM.ECON && !SIM.economyMeal() ? 'out' : 'mess'); continue; }
+      if(P.mess){ var out=SIM.ECON && !SIM.economyMeal(); mealBook(town, out ? 'out' : 'mess'); bs+=out ? M.none : M.mess; continue; }
       var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
-      if(have.length>=2){ st[have[0]]--; st[have[1]]--; book(town, 'eaten', have[0], 1); book(town, 'eaten', have[1], 1); mealBook(town, 'meal'); }
-      else if(have.length===1){ st[have[0]]--; book(town, 'eaten', have[0], 1); mealBook(town, 'single'); }
-      else mealBook(town, 'none'); }
+      if(have.length>=2){ st[have[0]]--; st[have[1]]--; book(town, 'eaten', have[0], 1); book(town, 'eaten', have[1], 1); mealBook(town, 'meal'); bs+=M.mult*(Q(have[0])+Q(have[1]))/2; }
+      else if(have.length===1){ st[have[0]]--; book(town, 'eaten', have[0], 1); mealBook(town, 'single'); bs+=M.single*Q(have[0]); }
+      else { mealBook(town, 'none'); bs+=M.none; } }
+    if(n) P.absBoost=bs/n;   /* what its meals were worth: its people's EAT at the abstract level (SIM.needsAbstract) */
     if(P.mess || !SIM.ECON) return;
     var tot=0; for(var f in st) tot+=st[f]; if(tot >= ppl*I.meals*I.perMeal*I.low) return;
     var sold=I.townFoods && I.townFoods[town]; if(!sold){ var u={}; Object.keys(I.sells).forEach(function(id){ if(SIM.settlementOf(id)!==town) return; I.sells[id].forEach(function(k){ if(I.kinds[k] && I.kinds[k].food) u[k]=1; }); });
       sold=(I.townFoods||(I.townFoods={}))[town]=I.foods.filter(function(f){ return u[f]; }); }
     var foods=sold.length ? sold : I.foods, need=Math.ceil(ppl*I.meals*I.perMeal*daysOf(P)), lack=0;
     var share=split(foods, town, need);
-    var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
+    var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); if(SIM.MONEY && SIM.MONEY.m1) SIM.moneyBuy(P.id, null, f, k, town); };   /* paid to the town's shops (its treasury) */
     foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
     for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
   };
@@ -1871,24 +2335,309 @@ canvas{display:block;width:100vw;height:100vh}
      Food and meals out stay the household's (SIM.itemsAbstractHome) */
   SIM.itemsAbstractDay = function(a, d, town){
     var I=SIM.ITEMS; if(!I || !a.present || a.driven || a.plan) return; if(a.itDay==null) a.itDay=d-1; if(a.itDay>=d) return;   /* lowered before it ever decided: from yesterday */
-    var s=SIM.schedOf(a, (d-1)*1440), hw=0; if(s) for(var h=0;h<24;h++) if(s[h]==='WORK') hw++;
+    var s=SIM.schedOf(a, (d-1)*1440), hw=0; if(s && !(a.cmd && a.cmd.until>(d-1)*1440)) for(var h=0;h<24;h++) if(s[h]==='WORK') hw++;   /* commanded away (jailed) yesterday: no wear at work */
     var job=a.work!=null ? a.work : (a.mem && a.mem.WORK);
     if(hw && job!=null){ a.workedDay=d-1;
       if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
-        if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', d*1440); } }
+        if(a.tool.w>=1){ var k=a.tool.k, kn=a.tool.base||K.base||k; a.tool=null; a.toolNeed=kn; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, kn, 'work', d*1440); } }
       else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
-    if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
+    if(SIM.NEED){ var Hb=SIM.R.place[a.home]; if(Hb && Hb.absBoost!=null){ a.boost=a.boost||{}; a.boost.EAT=Hb.absBoost; } SIM.needsOf(a, d*1440); }   /* every meter lived to midnight by its schedule (SIM.needsAbstract), the material meter with them */
     if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;
-    day(a, d);
-    var E=a.errand; if(!E) return;
-    if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
-    var H=anchor(a), best=null, bd=Infinity;
-    sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
-    if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
-    E.place=best; E.trip=0; complete(a, E, d*1440);
+    for(var k=0; k<SIM.ITEMS_ABSTRACT_ERRANDS; k++){   /* a day's errands: a tool at work, a set of clothes, a treat in its free hours (one a day), as a watched day has room for */
+      day(a, d);
+      var E=a.errand; if(!E) return;
+      if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
+      var H=anchor(a), best=null, bd=Infinity;
+      sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
+      if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
+      E.place=best; E.trip=0; complete(a, E, d*1440);
+      if(a.errand || (I.treat && I.treat.items.some(function(t){ return t[1]===E.item; }))) return; }   /* one treat a day */
   };
+  SIM.ITEMS_ABSTRACT_ERRANDS = 3;
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-money.js
+// ================================================================= CORE — simulation 6: money (accounts and the books)
+// core/simulation/PLAN-MONEY.md, M0 (the owner's answers of 2026-11-03: each nation its own currency, the Izani Talent the
+// trade's money; an account and an owner for every workplace). Opt-in: nothing here runs until a world calls
+// SIM.money(config), and nothing here draws a number or changes a record but the accounts, so a world that does not
+// call it runs exactly as before.
+//
+// MONEY IS A BOOK ENTRY (the lesson of Dwarf Fortress's coins carried about): an account holds an integer balance in its
+// currency's smallest unit. Every movement is one of four, each booked by its `why`:
+//   SIM.mint(acct, n, why)            a FAUCET: money made (an opening endowment, a mint, a foreign buyer's coin)
+//   SIM.burn(acct, n, why, whole?)    a SINK: money gone (lost, offered, paid off the map) -> what left
+//   SIM.pay(from, to, n, why, whole?) a TRANSFER within one currency: neither made nor lost -> what moved. `whole`: all of
+//                                     n or nothing; else as much as `from` holds. An account never goes below zero
+//   SIM.exchange(from, to, n, why)    between currencies, through the money changers: `from` pays n to the changer of its
+//                                     currency, the changer of `to`'s pays the value at the rates to the Talent, less
+//                                     the `spread` (the changers' living) -> what `to` got. Two transfers, so each
+//                                     currency is conserved; refused whole when the changer cannot pay
+// Only mint and burn change a currency's supply (the faucets and sinks of PLAN-MONEY.md section 1; the closed loop with
+// no drain was Ultima Online's failure).
+//
+//   SIM.money({currencies: {id: {name, talent (its value in Talents), unit?}}, spread? (0.03), changers? (true)}) -> SIM.MONEY
+//   SIM.account({id, owner, kind, currency, settlement?, ownedBy?, name?}) -> the account (balance 0: SIM.mint gives it
+//                                     money). kind: household, workplace, treasury, guild, changer, foreign, player, other.
+//                                     ownedBy: the account of a workplace's owner (the treasury to start: PLAN-MONEY 2a)
+//   SIM.acct(id) -> the account       SIM.accounts(q?) -> those matching {kind, settlement, currency, ownedBy}
+//   SIM.moneyReport(settlement?) -> {currencies: {id: {supply, accounts, minted: {why}, burned: {why}, paid: {why}}},
+//                                     towns: {s: {id: {total, minted, burned, in, out}}}}: the monthly report's numbers
+//   SIM.moneySnap() -> plain data for the ledger (77-sim-7-ledger.js: SIM.ledgerSnap carries it as `money`)
+// WAGES, PRICES AND PURCHASES (PLAN-MONEY.md M1, opt-in by SIM.money's `m1`): money is measured, not yet a limit on
+// anything (a household that cannot pay is fed on its treasury's dole, booked), so the goods' economy runs as before.
+//   m1: {wage(a) -> money an hour (the rota's hours, paid at midnight), priceWage (the wage prices are costed at),
+//        fallback (a good no settlement of the currency makes), calibrate (n days, true 1, or {after, days}: a warm-up of
+//        `after` days, then `days` days that measure; none of them pay a purchase, then each settlement's markup is set so its households' spending at cost x markup equals its wage
+//        bill over them, and prices are fixed),
+//        ration (true: THE CHIEF'S REDISTRIBUTION: the treasury pays each household, at midnight, after the wages, a day's
+//        keep for each member with no work (the calibration's cost of a person's day, at the markup), or the same share of it
+//        for every household when the treasury holds less (it shares out what it holds over `keep` days of wages, 1: `rationShare`), and the markup is set so the wage bill
+//        buys the earners' own keep: so a wage keeps its earner, the ration the rest, and the treasury balances),
+//        household(homeId), seller(placeId), treasury(s) -> account ids (default 'hh:', 'wp:', 'treasury:' + id)}
+//   SIM.moneyPrices(s) -> {good: price}: each good's LABOUR COST (its makers' worker-hours a unit at `priceWage`, the
+//                          mean over its makers, plus its inputs' costs, down the chain), times the settlement's markup,
+//                          whole and at least 1; a meal out is its `perMeal` servings at the mean food price
+//   SIM.moneyBuy(home, sellerPlace, good, n, s)  a household's purchase: paid to the seller (else the treasury), whole;
+//                          what it cannot pay the treasury pays (`dole`; from its own shelves, given: counted, no money
+//                          moves). The items call it (77-sim-6-items.js)
+//   SIM.moneyStep(minute)  SIM.step's, at midnight: the calibration; the day's takings swept to the workplaces' owners;
+//                          the payroll (each employed person's rota hours of the day before, not while held; from its
+//                          workplace's account, its owner covering what the till lacks); the rations
+//   SIM.moneyM1(s) -> {markup, live, wages, spent, dole, atCost} the day's numbers by settlement
+//   m2: {k, lo, hi, smooth, level: {gain, step} | false} (opt-in, PLAN-MONEY.md M2): prices that move, each night (m2Day below)
+//   m1.spend: {bands: {cls: [lo, hi]}, days, treatDrop} (opt-in): spending that follows savings (spendDay below); a luxury
+//        bought only with money in hand (SIM.moneyCan, called by the items before a treat or a meal out)
+//   ration: on by default with m1 (the owner, 2026-11-03: the chief's redistribution everywhere until households are true
+//        households); `ration: false` turns it off
+// THE BOOKS, per settlement and currency: opening + minted - burned + in - out = closing, where in and out are payments
+// between accounts of two settlements (an account with no settlement is the crater's: '' in the books). Across the
+// settlements of a currency, what went out is what came in.
+(function(G){
+  'use strict';
+  var SIM=G.SIM;
+  function int(n, what){ if(!(typeof n==='number' && isFinite(n) && Math.floor(n)===n && n>=0)) throw new Error('SIM money: '+what+' must be a whole number >= 0, not '+n); return n; }
+  function bump(o, k, n){ o[k]=(o[k]||0)+n; }
+  function key(s){ return s==null ? '' : s; }
+  function book(s, c){ var M=SIM.MONEY, T=M.books[key(s)]||(M.books[key(s)]={}); return T[c]||(T[c]={ minted:0, burned:0, 'in':0, out:0 }); }
+  function flows(c){ var M=SIM.MONEY; return M.flows[c]||(M.flows[c]={ minted:{}, burned:{}, paid:{} }); }
+
+  SIM.money = function(o){
+    var M={ cur:{}, acc:{}, order:[], books:{}, flows:{}, spread:o.spread==null ? 0.03 : o.spread };
+    if(o.m1) M.m1={ wage:o.m1.wage||null, priceWage:o.m1.priceWage==null ? 1 : o.m1.priceWage, fallback:o.m1.fallback, calibrate:o.m1.calibrate===true ? 1 : typeof o.m1.calibrate==='object' && o.m1.calibrate ? (o.m1.calibrate.days|0) : (o.m1.calibrate|0), calAfter:o.m1.calibrate && typeof o.m1.calibrate==='object' ? (o.m1.calibrate.after|0) : 0, live:!o.m1.calibrate, cal:{}, sweep:o.m1.sweep,
+      household:o.m1.household, seller:o.m1.seller, treasury:o.m1.treasury, cost:{}, price:{}, markup:{}, day:{}, history:{}, busyTown:{}, ration:{}, rationOn:o.m1.ration!==false, keep:o.m1.keep, perKeep:{}, rel:{}, cpi:{}, stations:o.m1.stations ? Object.assign({ order:['worker', 'merchant', 'prince', 'noble'], cls:{}, rise:{}, perLife:1, margin:0.15, reserve:5, dayHours:11, fall:{ unhappy:25, days:30 } }, o.m1.stations) : null, rises:{}, falls:{}, events:[],
+      spend:o.m1.spend ? { bands:o.m1.spend.bands||{}, days:o.m1.spend.days==null ? 10 : o.m1.spend.days, treatDrop:o.m1.spend.treatDrop==null ? 0 : o.m1.spend.treatDrop } : null, fill:{},
+      m2:o.m2 ? { k:o.m2.k==null ? 0.5 : o.m2.k, lo:o.m2.lo==null ? 0.5 : o.m2.lo, hi:o.m2.hi==null ? 2 : o.m2.hi, smooth:o.m2.smooth==null ? 3 : o.m2.smooth,
+        gain:(o.m2.level||{}).gain==null ? 0.5 : o.m2.level.gain, step:(o.m2.level||{}).step==null ? 0.05 : o.m2.level.step, level:o.m2.level!==false } : null };
+    Object.keys(o.currencies||{}).forEach(function(c){ var C=o.currencies[c]; if(!(C.talent>0)) throw new Error('SIM.money: currency '+c+' needs its value in Talents');
+      M.cur[c]={ id:c, name:C.name||c, talent:C.talent, unit:C.unit||c }; });
+    SIM.MONEY=M;
+    if(o.changers!==false) Object.keys(M.cur).forEach(function(c){ SIM.account({ id:'changer:'+c, owner:'changers', kind:'changer', currency:c, name:'the money changers ('+M.cur[c].name+')' }); });
+    return M;
+  };
+  SIM.account = function(o){
+    var M=SIM.MONEY; if(!M) throw new Error('SIM.account: call SIM.money first'); if(!o.id) throw new Error('SIM.account: an id');
+    if(!M.cur[o.currency]) throw new Error('SIM.account '+o.id+': unknown currency '+o.currency);
+    if(M.acc[o.id]) throw new Error('SIM.account: duplicate id '+o.id);
+    var A={ id:o.id, owner:o.owner==null ? null : o.owner, kind:o.kind||'other', currency:o.currency, settlement:o.settlement==null ? null : o.settlement,
+      ownedBy:o.ownedBy==null ? null : o.ownedBy, name:o.name||null, balance:0 };
+    M.acc[o.id]=A; M.order.push(o.id); return A;
+  };
+  SIM.acct = function(id){ var M=SIM.MONEY; return M ? M.acc[id]||null : null; };
+  SIM.accounts = function(q){ var M=SIM.MONEY; if(!M) return []; q=q||{};
+    return M.order.map(function(id){ return M.acc[id]; }).filter(function(A){
+      return (q.kind==null || A.kind===q.kind) && (q.settlement===undefined || A.settlement===q.settlement) && (q.currency==null || A.currency===q.currency) && (q.ownedBy==null || A.ownedBy===q.ownedBy); }); };
+  function get(id){ var A=SIM.MONEY && SIM.MONEY.acc[id]; if(!A) throw new Error('SIM money: unknown account '+id); return A; }
+
+  SIM.mint = function(id, n, why){ var A=get(id); int(n, 'a mint'); if(!n) return 0; A.balance+=n; book(A.settlement, A.currency).minted+=n; bump(flows(A.currency).minted, why||'minted', n); return n; };
+  SIM.burn = function(id, n, why, whole){ var A=get(id); int(n, 'a burn'); var k=whole ? (A.balance>=n ? n : 0) : Math.min(n, A.balance); if(!k) return 0;
+    A.balance-=k; book(A.settlement, A.currency).burned+=k; bump(flows(A.currency).burned, why||'burned', k); return k; };
+  SIM.pay = function(from, to, n, why, whole){ var F=get(from), T=get(to); int(n, 'a payment');
+    if(F.currency!==T.currency) throw new Error('SIM.pay '+from+' > '+to+': '+F.currency+' to '+T.currency+' (use SIM.exchange)');
+    var k=whole ? (F.balance>=n ? n : 0) : Math.min(n, F.balance); if(!k || from===to) return 0;
+    F.balance-=k; T.balance+=k; bump(flows(F.currency).paid, why||'paid', k);
+    if(key(F.settlement)!==key(T.settlement)){ book(F.settlement, F.currency).out+=k; book(T.settlement, T.currency)['in']+=k; }
+    return k; };
+  SIM.exchange = function(from, to, n, why){ var M=SIM.MONEY, F=get(from), T=get(to); int(n, 'an exchange');
+    if(F.currency===T.currency) return SIM.pay(from, to, n, why, true);
+    var CF=M.acc['changer:'+F.currency], CT=M.acc['changer:'+T.currency]; if(!CF || !CT) throw new Error('SIM.exchange: no money changers for '+F.currency+' and '+T.currency);
+    var got=Math.floor(n*M.cur[F.currency].talent/M.cur[T.currency].talent*(1-M.spread));
+    if(!n || F.balance<n || CT.balance<got || !got) return 0;   /* whole, or not at all */
+    SIM.pay(from, CF.id, n, (why||'exchange')+' (in)', true); SIM.pay(CT.id, to, got, (why||'exchange')+' (out)', true);
+    return got; };
+
+  /* ---------------------------------------------------------------- M1: prices, wages, purchases */
+  function m1(){ var M=SIM.MONEY; return M && M.m1; }
+  function ids(s){ var C=m1(); return { hh:C.household || function(h){ return 'hh:'+h; }, wp:C.seller || function(p){ return 'wp:'+p; }, tre:C.treasury || function(t){ return 'treasury:'+t; } }; }
+  function day1(s){ var C=m1(), k=key(s); return C.day[k]||(C.day[k]={ wages:0, ration:0, rationDue:0, rationShare:null, spent:0, dole:0, atCost:0, paid:0, hours:0, unpaid:0 }); }
+  function econKey(s){ return SIM.ECONS ? SIM.econ(s) : SIM.ECON; }
+  function costIn(o, g){ var C=m1(), k=key(o); if(C.cost[k]) return C.cost[k][g]; if(C.busyTown[k]) return null; C.busyTown[k]=1; var c=costs(o); C.busyTown[k]=0; C.cost[k]=c; return c[g]; }
+  function makes(o, g){ var E=econKey(o); return !!E && Object.keys(E.recipes).some(function(id){ var R=E.recipes[id]; return R && !R.herd && R.out && R.out.indexOf(g)>=0; }); }
+  function costs(s){ var C=m1(), E=econKey(s), memo={}, busy={}, hrs={};
+    if(!E) return {};
+    Object.keys(E.recipes).forEach(function(id){ var R=E.recipes[id]; if(!R || R.herd || !R.out || !R.out.length) return;
+      var base=(E.govern && E.govern.rates && E.govern.rates[id]!=null) ? E.govern.rates[id] : R.rate, St=R.site!=null && E.resSites ? E.resSites[R.site] : null, y=St ? St.yield : 1;
+      if(!(base>0)) return;
+      R.out.forEach(function(g){ var per=R.batch ? base*(R.batch.out[g]||0)*y : base*y; if(per>0) (hrs[g]||(hrs[g]=[])).push(1/per); }); });
+    function cost(g){ if(memo[g]!=null) return memo[g]; if(busy[g]) return 0; busy[g]=1;
+      var H=hrs[g], c;
+      if(!H){ c=null; (SIM.ECON_ORDER||[]).forEach(function(o){ if(c==null && o!==s && makes(o, g)){ var x=costIn(o, g); if(x>0) c=x; } });   /* made elsewhere: its cost where it is made */
+        if(c==null) c=typeof C.fallback==='function' ? C.fallback(g) : (C.fallback==null ? 10 : C.fallback); }
+      else { var h=H.reduce(function(a, b){ return a+b; }, 0)/H.length, In=E.inputs[g]||{}; c=C.priceWage*h; Object.keys(In).forEach(function(i){ c+=In[i]*cost(i); }); }
+      busy[g]=0; return (memo[g]=c); }
+    var out={}; Object.keys(E.goods).forEach(function(g){ out[g]=cost(g); });
+    var F=(E.meal && E.meal.foods) || [], per=(E.meal && E.meal.per) || 2;
+    if(F.length) out.meal=per*F.reduce(function(a, f){ return a+(out[f]||0); }, 0)/F.length;
+    return out; }
+  SIM.moneyPrices = function(s){ var C=m1(); if(!C) return null; var k=key(s); if(!C.cost[k]) costIn(s, null); var c=C.cost[k], mk=C.markup[k]==null ? 1 : C.markup[k], P=C.price[k]={};
+    var R=C.rel[k]||{}; Object.keys(c).forEach(function(g){ P[g]=Math.max(1, Math.round(c[g]*mk*(R[g]==null ? 1 : R[g]))); }); return P; };   /* M2: times its scarcity (rel) */
+  function priceOf(s, g){ var C=m1(), k=key(s); if(!C.price[k]) SIM.moneyPrices(s); var p=C.price[k][g]; return p==null ? null : p; }
+  SIM.moneyBuy = function(home, place, g, n, s){ var C=m1(); if(!C || !(n>0)) return 0; var M=SIM.MONEY, I=ids(s), D=day1(s), k=key(s);
+    if(!C.cost[k]) costIn(s, null); var cst=C.cost[k][g]; if(cst!=null) D.atCost+=cst*n;
+    if(!C.live) return 0;   /* the calibration day: measured, not paid */
+    var p=priceOf(s, g); if(p==null) return 0; var due=p*n, buyer=I.hh(home);
+    if(place==null && C.stations) place=shopFor(s, g, home);   /* a town nobody watches buys at its shops too, once shops have owners */
+    var seller=place!=null && M.acc[I.wp(place)] ? I.wp(place) : I.tre(s);
+    if(!M.acc[buyer] || !M.acc[seller]) return 0;
+    var got=SIM.pay(buyer, seller, due, 'purchase'); D.spent+=got; if(got) wholesale(seller, s, got); var rest=due-got; if(!rest) return got;   /* what it holds, then the dole for the rest */
+    var DB=D.doleBy||(D.doleBy={}); DB[g]=(DB[g]||0)+rest;   /* the dole by good: a luxury should never be on it */
+    if(seller===I.tre(s)){ D.dole+=rest; return got; }   /* the treasury's own shelves: the rest given, no money moves */
+    var dole=SIM.pay(I.tre(s), seller, rest, 'dole', true); if(dole){ D.dole+=dole; wholesale(seller, s, dole); } else D.unpaid+=rest; return got; };
+  SIM.moneyM1 = function(s){ var C=m1(); if(!C) return null; var out={}; Object.keys(C.history).forEach(function(k){ if(s===undefined || k===key(s)) out[k]=C.history[k].slice(); });
+    return { markup:Object.assign({}, C.markup), ration:Object.assign({}, C.ration), live:C.live, days:out, today:JSON.parse(JSON.stringify(C.day)) }; };
+  /* the payroll and the calibration, at midnight */
+  SIM.moneyStep = function(minute){ var C=m1(); if(!C || minute%1440 || minute===0) return; var M=SIM.MONEY, prev=minute-1440;
+    if(!C.live && C.calibrate){   /* the calibration days measured: the markup that makes the households' spending the wage bill */
+      if(Math.floor(prev/1440)>=C.calAfter) Object.keys(C.day).forEach(function(k){   /* after the warm-up (the opening restock's waves) */ var D=C.day[k], A=C.cal[k]||(C.cal[k]={ wb:0, atCost:0, people:0, earners:0 }), wb=0;
+        SIM.all('actor').forEach(function(a){ if(a.driven || a.work==null || !a.present || key(SIM.R.settlement ? SIM.settlementOf(a) : null)!==k) return; var sc=SIM.schedOf(a, prev), h=0; if(sc) for(var i=0;i<24;i++) if(sc[i]==='WORK') h++; wb+=h*(C.wage ? C.wage(a) : 1); });
+        var n=0, e=0; SIM.all('actor').forEach(function(a){ if(a.driven || !a.present || a.home==null || key(SIM.R.settlement ? SIM.settlementOf(a) : null)!==k) return; n++; if(a.work!=null) e++; });
+        A.wb+=wb; A.atCost+=D.atCost; A.people+=n; A.earners+=e; A.days=(A.days||0)+1; });
+      if(Math.floor(minute/1440)>=C.calAfter+C.calibrate){ Object.keys(C.cal).forEach(function(k){ var A=C.cal[k], per=A.people>0 ? A.atCost/A.people : 0;   /* a person's day at cost */
+          var base=C.rationOn ? per*A.earners : A.atCost;   /* with the ration: the wage bill buys the earners' own keep; the treasury the rest */
+          C.markup[k]=base>0 ? Math.max(1, A.wb/base) : 1; C.perKeep[k]=per; if(C.rationOn) C.ration[k]=Math.round(per*C.markup[k]); SIM.moneyPrices(k==='' ? null : k); }); C.live=true; C.opened=Math.floor(minute/1440); if(C.stations) stationsOpen(); } }   /* the market opens: the last measured day's wages and rations are paid now */
+    if(C.sweep!==false) Object.keys(M.acc).forEach(function(id){ var A=M.acc[id]; if(A.kind==='workplace' && A.ownedBy && A.balance>0 && M.acc[A.ownedBy]){ var n=SIM.pay(id, A.ownedBy, A.balance, 'takings'); if(M.acc[A.ownedBy].kind==='household'){ var Dt=day1(A.settlement); Dt.takings=(Dt.takings||0)+n; } } });   /* the day's takings to their owners first: they pay the day's wages */
+    if(C.live) SIM.all('actor').forEach(function(a){ if(a.driven || a.work==null || !a.present) return; var s=SIM.R.settlement ? SIM.settlementOf(a) : null; if(s!=null && !M.acc[ids(s).tre(s)]) return;
+      if(a.cmd && a.cmd.by==='jail' && a.cmd.until>prev) return;   /* held: no wage */
+      var sc=SIM.schedOf(a, prev), h=0; if(sc) for(var i=0;i<24;i++) if(sc[i]==='WORK') h++; if(!h) return;
+      var w=Math.round(h*(C.wage ? C.wage(a) : 1)); if(!(w>0)) return;
+      var I=ids(s), payer=M.acc[I.wp(a.work)] ? I.wp(a.work) : I.tre(s), to=I.hh(a.home); if(!M.acc[to]) return;
+      var P=M.acc[payer]; if(P.balance<w && P.ownedBy && M.acc[P.ownedBy]){ var cv=SIM.pay(P.ownedBy, payer, w-P.balance, 'cover', true); if(cv && M.acc[P.ownedBy].kind==='household'){ var Dc=day1(s); Dc.cover=(Dc.cover||0)+cv; }
+        if(!cv && C.stations && P.ownedBy!==I.tre(s)){ fall(P, s, minute); SIM.pay(P.ownedBy, payer, w-P.balance, 'cover', true); } }   /* its owner cannot cover the wages: the house falls, the treasury takes the shop */
+      var paid=SIM.pay(payer, to, w, 'wage', true), D=day1(s); D.wages+=paid; D.hours+=h; if(!paid) D.unpaid+=w; });
+    if(C.live && C.rationOn){ var dep={}; SIM.all('actor').forEach(function(a){ if(a.driven || !a.present || a.home==null || a.work!=null) return; if(a.cmd && a.cmd.by==='jail' && a.cmd.until>prev) return; dep[a.home]=(dep[a.home]||0)+1; });
+      var due={}; Object.keys(dep).forEach(function(h){ var s=SIM.R.settlement ? SIM.settlementOf(h) : null, k=key(s); if(C.ration[k]>0) due[k]=(due[k]||0)+C.ration[k]*dep[h]; });
+      var share={}; Object.keys(due).forEach(function(k){ var T=M.acc[ids(k==='' ? null : k).tre(k==='' ? null : k)], keep=(C.keep==null ? 1 : C.keep)*(day1(k==='' ? null : k).wages||0);   /* a day's wages kept in hand */
+        share[k]=T && due[k]>0 ? Math.max(0, Math.min(1, (T.balance-keep)/due[k])) : 0;   /* what the treasury holds over that, shared out */
+        var D=day1(k==='' ? null : k); D.rationDue=(D.rationDue||0)+due[k]; D.rationShare=share[k]; });
+      Object.keys(dep).sort().forEach(function(h){ var s=SIM.R.settlement ? SIM.settlementOf(h) : null, k=key(s), r=C.ration[k], I=ids(s); if(!(r>0) || !M.acc[I.hh(h)] || !M.acc[I.tre(s)]) return;
+        var n=Math.floor(r*dep[h]*share[k]); if(n>0){ var paid=SIM.pay(I.tre(s), I.hh(h), n, 'ration', true), D=day1(s); D.ration=(D.ration||0)+paid; } }); }   /* the chief's redistribution: each member with no work its keep */
+    Object.keys(C.day).forEach(function(k){ (C.history[k]||(C.history[k]=[])).push(Object.assign({ day:Math.floor(prev/1440), markup:C.markup[k]==null ? 1 : C.markup[k] }, C.day[k])); });
+    if(C.live && C.m2) Object.keys(C.day).forEach(function(k){ m2Day(k, C.day[k]); });
+    if(C.live && C.spend) spendDay();
+    if(C.live && C.stations) risesDay(minute);
+    C.day={}; };
+  /* M2: PRICES THAT MOVE, at midnight after the payroll and the rations (PLAN-MONEY.md M2):
+     - a good's SCARCITY: rel = (target / position)^k, clamped to [lo, hi], eased in over `smooth` days, from the governor's
+       view of the good (77-sim-6-govern.js: its target, days of cover of its demand, and its whole supply line); a good the
+       town does not govern keeps 1;
+     - the PRICE LEVEL: the town's markup moves toward what makes its takings (the households' spending) meet its wage bill
+       and the full rations due, both smoothed over `smooth` days (a town restocks in lumps): x(1 + gain x (owed - took) / owed), at most `step` a day; the ration a dependant, a
+       day's keep, moves with it (the wages do not: a flat wage, the owner's call of 2026-11-03).
+     Prices are whole, at least 1. The households buy what they need whatever the price (no elasticity yet), so the goods'
+     economy runs as before; a dearer good makes its seller's takings larger, not the town hungrier */
+  /* SPENDING THAT FOLLOWS SAVINGS (PLAN-MONEY.md M1, second part; `m1.spend`): each night a household's savings in days of its own
+     keep (a person's day at cost x markup, the calibration's) give it a fill, savings / `days`, held to [0, 1]; its people's
+     wealth is their class's band at that fill (`bands[cls]: [lo, hi]`: the class stays, the household sits higher or lower
+     in it), which steers what the items buy (the treats a wealth reaches, how often a meal is eaten out); and the treat's
+     threshold on the material meter falls by `treatDrop` at a full fill (SIM.moneyTreatDrop), so saved money is spent */
+  function spendDay(){ var C=m1(), M=SIM.MONEY, Sp=C.spend, I0=null, ppl={};
+    SIM.all('actor').forEach(function(a){ if(a.home!=null && !a.driven) ppl[a.home]=(ppl[a.home]||0)+1; });
+    Object.keys(M.acc).forEach(function(id){ var A=M.acc[id]; if(A.kind!=='household' || A.owner==null) return; var k=key(A.settlement), keep=(C.perKeep[k]||0)*(C.markup[k]||1), n=ppl[A.owner]||0;
+      var days=keep>0 && n>0 ? A.balance/(keep*n) : 0; A.savingsDays=days; C.fill[A.owner]=Math.max(0, Math.min(1, days/Math.max(1e-9, Sp.days))); });
+    SIM.all('actor').forEach(function(a){ var f=C.fill[a.home], B=Sp.bands[a.cls]; if(f==null || !B) return; a.wealth=B[0]+(B[1]-B[0])*f; }); }
+  /* a person whose class changed (a rise, a fall): its wealth in the new class's band at once, by its household's purse */
+  function rewealth(a){ var C=m1(), B=C && C.spend && C.spend.bands[a.cls]; if(!B) return; var f=C.fill[a.home]; a.wealth=B[0]+(B[1]-B[0])*(f==null ? 0 : f); }
+  SIM.moneyFill = function(home){ var C=m1(); return C && C.fill[home]!=null ? C.fill[home] : null; };
+  SIM.moneyTreatDrop = function(a){ var C=m1(); if(!C || !C.live || !C.spend || !C.spend.treatDrop) return 0; var f=C.fill[a.home]; return f==null ? 0 : C.spend.treatDrop*f; };
+  /* a luxury (a treat, a meal out) is bought only with money in hand: the dole feeds and clothes, it does not treat */
+  SIM.moneyCan = function(a, g, n){ var C=m1(); if(!C || !C.live || !C.spend || a.home==null) return true; var s=SIM.R.settlement ? SIM.settlementOf(a) : null, A=SIM.MONEY.acc[ids(s).hh(a.home)];
+    if(!A) return true; var p=priceOf(s, g); return p==null || A.balance>=p*(n||1); };
+  /* STATIONS (PLAN-MONEY.md M1, its last part; the owner, 2026-11-03): class follows profession; a person may rise a station
+     (worker, merchant, merchant prince, noble: `order`) when its household's means are adequate, `perLife` times a life (a
+     nation's: two in the fluid ones), and a household that cannot cover its shop's wages falls back a station.
+       stations: {of(a) -> its station at the opening (by its trade), order, cls {station: class}, perLife (a number or
+                  a function of the person), rise {station: {places: [kinds] | null, cost (days of the place's wage bill), fee
+                  (shells, a title), hold (nights the purse stays enough)}}, margin (what an owned shop keeps of a sale; the
+                  rest it pays the treasury wholesale), reserve (days of the household's keep it keeps over the price),
+                  dayHours (a post's hours a day, for a place's wage bill), fall {unhappy, days} (the fallen household's
+                  happiness modifier: 77-sim-6-needs.js SIM.happinessAdd)}
+     A RISE: each night, a household (in id order) whose purse has held the price of the next station's place and `reserve`
+     days of its keep for `hold` nights buys it from the treasury: the nearest vacant place of its kinds (owned by the
+     treasury, in its town) at `cost` days of that place's wage bill, or a title's `fee`; one of its working people (the
+     first by key of the lowest station that may still rise) takes the station, its class, and (with a place) runs the
+     place: the place's account is now the household's (its takings swept to it, its wages covered from it).
+     A FALL: at the payroll, a household's place whose till and owner cannot cover the wages goes back to the treasury (the
+     wages paid), its runner back one station and its class; everyone of the household takes `fall.unhappy` off their
+     happiness, fading over `fall.days`, and the fall is counted by settlement and station (the happiness pool, M6). */
+  function stationOf(a){ var St=m1().stations; if(a.station==null) a.station=St.of ? St.of(a) : St.order[0]; return a.station; }
+  function stationsOpen(){ var St=m1().stations; SIM.all('actor').forEach(function(a){ if(a.driven) return; stationOf(a); if(a.rises==null) a.rises=0; }); }
+  function perLife(a){ var St=m1().stations; return typeof St.perLife==='function' ? St.perLife(a) : St.perLife; }
+  function bump2(o, k, j){ var T=o[k]||(o[k]={}); T[j]=(T[j]||0)+1; }
+  function wholesale(seller, s, n){ var C=m1(), A=SIM.MONEY.acc[seller], I=ids(s); if(!C.stations || !A || A.kind!=='workplace' || !A.ownedBy || A.ownedBy===I.tre(s)) return;
+    var w=Math.floor(n*(1-C.stations.margin)); if(w>0) SIM.pay(seller, I.tre(s), w, 'wholesale'); }
+  function shopFor(s, g, home){ var I=SIM.ITEMS; if(!I || !I.sellers[g]) return null; var L=I.sellers[g].filter(function(id){ return SIM.settlementOf(id)===s; }).sort(); if(!L.length) return null;
+    var h=0, t=String(home); for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return L[(h+(SIM.minute()/1440|0))%L.length]; }   /* by the home and the day: the town's custom spread over its shops */
+  function fall(P, s, minute){ var C=m1(), St=C.stations, M=SIM.MONEY, I=ids(s), H=M.acc[P.ownedBy], a=P.merchant!=null ? SIM.R.actor[P.merchant] : null, k=key(s);
+    P.ownedBy=I.tre(s); P.merchant=null; var from=a ? a.station : null;
+    if(a){ var j=St.order.indexOf(a.station); if(j>0){ a.station=St.order[j-1]; if(St.cls[a.station]){ a.cls=St.cls[a.station]; rewealth(a); } } }
+    if(H && SIM.happinessAdd) SIM.all('actor').forEach(function(x){ if(x.home===H.owner && !x.driven) SIM.happinessAdd(x, St.fall.unhappy, St.fall.days, 'fall'); });
+    bump2(C.falls, k, from || 'unknown'); C.events.push({ m:minute, kind:'fall', settlement:s, household:H ? H.id : null, place:P.owner, actor:a ? a.id : null, from:from, to:a ? a.station : null });
+    SIM.logEvent('fall', { household:H ? H.id : null, place:P.owner, actor:a ? a.id : null, from:from }); }
+  function risesDay(minute){ var C=m1(), St=C.stations, M=SIM.MONEY, ppl={};
+    SIM.all('actor').forEach(function(a){ if(a.home!=null && !a.driven && a.present) (ppl[a.home]||(ppl[a.home]=[])).push(a); });
+    Object.keys(M.acc).sort().forEach(function(id){ var H=M.acc[id]; if(H.kind!=='household' || H.owner==null) return; var L=(ppl[H.owner]||[]).slice().sort(function(p, q){ return p.k-q.k; }); if(!L.length) return;
+      var s=H.settlement, k=key(s), I=ids(s), keep=(C.perKeep[k]||0)*(C.markup[k]||1)*L.length;
+      var who=null; L.forEach(function(a){ if(a.work==null || (a.cmd && minute<a.cmd.until)) return; var j=St.order.indexOf(stationOf(a)); if(j<0 || j>=St.order.length-1 || (a.rises||0)>=perLife(a)) return;
+        if(!who || j<St.order.indexOf(who.station)) who=a; });
+      if(!who){ H.ready=0; return; }
+      var next=St.order[St.order.indexOf(who.station)+1], R=St.rise[next]; if(!R){ H.ready=0; return; }
+      var place=null, price=R.fee||0;
+      if(R.places){ var home=SIM.R.place[H.owner], bd=Infinity; SIM.all('place').forEach(function(P){ if(R.places.indexOf(P.kind)<0 || SIM.settlementOf(P.id)!==s) return; var A=M.acc[I.wp(P.id)];
+          if(!A || A.ownedBy!==I.tre(s)) return; var d=home ? Math.hypot(P.x-home.x, P.z-home.z) : 0; if(d<bd || (d===bd && P.id<place.id)){ bd=d; place=P; } });
+        if(!place){ H.ready=0; return; } price=Math.round((R.cost||0)*(place.activities.WORK||1)*C.priceWage*St.dayHours); }
+      if(H.balance<price+St.reserve*keep){ H.ready=0; return; }
+      H.ready=(H.ready||0)+1; if(H.ready<(R.hold||1)) return;
+      if(!SIM.pay(H.id, I.tre(s), price, 'a '+next+"'s place", true) && price>0) return; var Hr=C.history[k], Dr=Hr && Hr.length ? Hr[Hr.length-1] : day1(s); Dr.placeBought=(Dr.placeBought||0)+price;   /* on the day the night closed (its books are written before the rises) */
+      if(place){ var A=M.acc[I.wp(place.id)]; A.ownedBy=H.id; A.merchant=who.id; who.work=place.id; }
+      var from=who.station; who.station=next; who.rises=(who.rises||0)+1; if(St.cls[next]){ who.cls=St.cls[next]; rewealth(who); } H.ready=0;
+      bump2(C.rises, k, next); C.events.push({ m:minute, kind:'rise', settlement:s, household:H.id, actor:who.id, from:from, to:next, place:place ? place.id : null, price:price });
+      SIM.logEvent('rise', { household:H.id, actor:who.id, from:from, to:next, place:place ? place.id : null }); }); }
+  SIM.moneyStations = function(){ var C=m1(); if(!C || !C.stations) return null; return JSON.parse(JSON.stringify({ rises:C.rises, falls:C.falls, events:C.events })); };
+  function m2Day(k, D){ var C=m1(), Z=C.m2, s=k==='' ? null : k, E=econKey(s), R=C.rel[k]||(C.rel[k]={});
+    var V=E && E.govern && E.govern.view; if(V) Object.keys(V).forEach(function(g){ var v=V[g]; if(!(v && v.target>0)) return;
+      var r=Math.pow(v.target/Math.max(v.pos, 1e-6), Z.k), want=Math.max(Z.lo, Math.min(Z.hi, r)), cur=R[g]==null ? 1 : R[g]; R[g]=cur+(want-cur)/Math.max(1, Z.smooth); });
+    if(Z.level){ var A=(C.ema||(C.ema={}))[k]||(C.ema[k]={ owed:null, took:null }), o0=(D.wages||0)+(D.rationDue||0), t0=D.spent||0;   /* smoothed over `smooth` days: a town restocks in lumps */
+      A.owed=A.owed==null ? o0 : A.owed+(o0-A.owed)/Math.max(1, Z.smooth); A.took=A.took==null ? t0 : A.took+(t0-A.took)/Math.max(1, Z.smooth);
+      var owed=A.owed, took=A.took;
+      if(owed>0){ var f=1+Math.max(-Z.step, Math.min(Z.step, Z.gain*(owed-took)/owed)); C.markup[k]=Math.max(1, (C.markup[k]==null ? 1 : C.markup[k])*f);
+        if(C.rationOn && C.perKeep[k]!=null) C.ration[k]=Math.round(C.perKeep[k]*C.markup[k]); } }
+    SIM.moneyPrices(s);
+    var F=(E && E.meal && E.meal.foods) || [], P=C.price[k]||{}, c=C.cost[k]||{}, n=0, d=0; F.forEach(function(f){ if(P[f]!=null && c[f]>0){ n+=P[f]; d+=c[f]; } });
+    var H=C.history[k]; if(H && H.length){ H[H.length-1].cpi=d>0 ? n/d : null; H[H.length-1].markupAfter=C.markup[k]; H[H.length-1].rationAfter=C.ration[k]; } }
+
+  SIM.moneyReport = function(s){ var M=SIM.MONEY; if(!M) return null; var out={ currencies:{}, towns:{} };
+    Object.keys(M.cur).forEach(function(c){ var F=flows(c), sup=0, n=0; M.order.forEach(function(id){ var A=M.acc[id]; if(A.currency!==c || (s!==undefined && A.settlement!==s)) return; sup+=A.balance; n++; });
+      out.currencies[c]={ name:M.cur[c].name, talent:M.cur[c].talent, supply:sup, accounts:n, minted:Object.assign({}, F.minted), burned:Object.assign({}, F.burned), paid:Object.assign({}, F.paid) }; });
+    Object.keys(M.books).forEach(function(k){ if(s!==undefined && k!==key(s)) return; out.towns[k]={}; Object.keys(M.books[k]).forEach(function(c){ var B=M.books[k][c], t=0;
+      M.order.forEach(function(id){ var A=M.acc[id]; if(A.currency===c && key(A.settlement)===k) t+=A.balance; }); out.towns[k][c]=Object.assign({ total:t }, B); }); });
+    return out; };
+  SIM.moneySnap = function(){ var M=SIM.MONEY; if(!M) return null; var acc={}, towns={};
+    M.order.forEach(function(id){ var A=M.acc[id]; acc[id]=A.balance; var T=towns[key(A.settlement)]||(towns[key(A.settlement)]={}), r=T[A.currency]||(T[A.currency]={ total:0, minted:0, burned:0, 'in':0, out:0 }); r.total+=A.balance; });
+    Object.keys(M.books).forEach(function(k){ Object.keys(M.books[k]).forEach(function(c){ var T=towns[k]||(towns[k]={}), r=T[c]||(T[c]={ total:0, minted:0, burned:0, 'in':0, out:0 }), B=M.books[k][c];
+      r.minted=B.minted; r.burned=B.burned; r['in']=B['in']; r.out=B.out; }); });
+    return { accounts:acc, towns:towns }; };
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/77-sim-6-needs.js
@@ -1899,7 +2648,7 @@ canvas{display:block;width:100vw;height:100vh}
 //   SIM.needs({ list:[names], rate:{need: per world hour}, fill:{ACT:{need: per hour}}, work:{need: per hour},
 //               weight:{need: w}, traits:{name:{need: w multiplier}}, cultures:{name:{fill:{ACT:{..}}}},
 //               free:[ACT..] (a role's needs.free its own: an animal's), dwell, jitter, keep, done, interrupt:{need:{at, act, until, max, cool}},
-//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain })
+//               bands:[{label, min, eff}], loyalty:{tau, bands:[{label, min}]}, init, secPerMinute, pain, vital?:{need: line} })
 //   role.needs = { rate:{need: multiplier}, labour: 0..1 }        actor.trait, actor.culture, actor.nd (meters),
 //   actor.boost {ACT: multiplier of that activity's fills} (a meal of two foods against one: 77-sim-6-items.js)
 //   SIM.needsPeek(a, minute) -> the meters then, the actor untouched; SIM.happiness(a, nd?) of those meters
@@ -1909,7 +2658,9 @@ canvas{display:block;width:100vw;height:100vh}
 // (heavy labour: thirst, a little hunger). The meters are advanced lazily: only when the actor decides, or something
 // asks (SIM.needsOf), over the stretch since: first the trip (the task's duration over `secPerMinute` motion seconds a
 // world minute: nothing fills on the way), then the activity. HAPPINESS is 100 less the weighted mean pain of the
-// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones); the trait multiplies a
+// meters (pain = 100 (m/100)^pain: a meter near full hurts more than two half-full ones), and a VITAL need (opt-in: hunger,
+// thirst) past its line caps it, from 100 at the line to 0 at a full meter (a weighted mean would let a starving man stay
+// content on his other needs: PLAN-MONEY.md M6); the trait multiplies a
 // need's weight (about +-33%: "more happiness from some needs, less unhappiness when they go unmet"). EFFICIENCY is the
 // happiness band's `eff` (8.2: a score with bands); LOYALTY drifts toward happiness with time constant `tau` minutes.
 //
@@ -1925,7 +2676,7 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.needs = function(o){
     var N = { list:o.list.slice(), idx:{}, rate:[], fill:{}, work:[], weight:[], traits:{}, cultures:{}, free:(o.free||[]).slice(), freeSet:{},
               dwell:o.dwell==null?60:o.dwell, jitter:o.jitter|0, keep:o.keep==null?1.25:o.keep, done:o.done==null?15:o.done, interrupt:[], bands:o.bands||[{ label:'content', min:0, eff:1 }],
-              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain };
+              loyalty:o.loyalty||null, init:o.init==null?25:o.init, secPerMinute:o.secPerMinute==null?60:o.secPerMinute, pain:o.pain==null?1.5:o.pain, vital:[] };
     var vec = function(t, d){ return N.list.map(function(n){ return t && t[n]!=null ? t[n] : d; }); };
     N.list.forEach(function(n, i){ N.idx[n]=i; });
     N.rate = vec(o.rate, 0); N.work = vec(o.work, 0); N.weight = vec(o.weight, 1);
@@ -1933,6 +2684,7 @@ canvas{display:block;width:100vw;height:100vh}
     Object.keys(o.traits||{}).forEach(function(t){ N.traits[t]=vec(o.traits[t], 1); });
     Object.keys(o.cultures||{}).forEach(function(c){ var F={}; Object.keys((o.cultures[c]||{}).fill||{}).forEach(function(act){ F[act]=vec(o.cultures[c].fill[act], 0); }); N.cultures[c]={ fill:F }; });
     N.free.forEach(function(a){ N.freeSet[a]=1; });
+    Object.keys(o.vital||{}).forEach(function(n){ if(N.idx[n]==null) throw new Error('SIM.needs: vital on an unknown need '+n); N.vital.push({ i:N.idx[n], at:o.vital[n] }); });
     Object.keys(o.interrupt||{}).forEach(function(n){ var I=o.interrupt[n]; if(N.idx[n]==null) throw new Error('SIM.needs: interrupt on an unknown need '+n);
       N.interrupt.push({ need:n, i:N.idx[n], at:I.at, act:I.act, until:I.until==null?20:I.until, max:I.max==null?45:I.max, cool:I.cool==null?60:I.cool }); });
     N.bands.sort(function(a,b){ return b.min-a.min; });
@@ -1957,6 +2709,7 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.needsOf = function(a, minute){
     var N=SIM.NEED; if(!N) return null; minute = minute==null ? SIM.minute() : minute; ensure(a, minute);
     var dt=minute-a.ndT; if(dt<=0) return a.nd;
+    if(SIM.ABSTRACT && SIM.ABSTRACT[SIM.settlementOf(a)]) return SIM.needsAbstract(a, minute);   /* a town nobody watches: lived by the schedule */
     var from=a.ndFrom==null?a.ndT:a.ndFrom, trip=Math.max(0, Math.min(minute, from)-a.ndT);
     run(a, null, trip); run(a, a.activity, dt-trip);
     if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-dt/(N.loyalty.tau||4320))); }
@@ -1973,8 +2726,24 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.happiness = function(a, nd){
     var N=SIM.NEED; nd = nd || a.nd; if(!N || !nd) return null; var T=a.trait && N.traits[a.trait], s=0, w=0;
     for(var i=0;i<nd.length;i++){ var wi=N.weight[i]*(T?T[i]:1); if(!wi) continue; s+=wi*100*Math.pow(nd[i]/100, N.pain); w+=wi; }
-    return w ? 100 - s/w : 100;
+    var h = w ? 100 - s/w : 100;
+    for(var v=0;v<N.vital.length;v++){ var V=N.vital[v], m=nd[V.i]; if(m>V.at) h=Math.min(h, 100*(1-(m-V.at)/(100-V.at))); }   /* a vital need past its line caps the rest: starving, nothing else consoles */
+    return a.hmods && a.hmods.length ? Math.max(0, Math.min(100, h - SIM.happinessMod(a))) : h;
   };
+  /* HAPPINESS MODIFIERS (opt-in, by whoever pushes one: a household's fall, 77-sim-6-money.js): a.hmods [{n, t (minute),
+     days, why}], each n points off happiness at first (a negative n: points on, a cheer), fading to nothing over its days; spent ones dropped */
+  SIM.happinessMod = function(a, minute){ var m=minute==null ? SIM.minute() : minute, L=a.hmods||[], t=0;
+    for(var i=L.length-1;i>=0;i--){ var f=1-(m-L[i].t)/(L[i].days*1440); if(f<=0){ L.splice(i, 1); continue; } if(f<1 || m>=L[i].t) t+=L[i].n*Math.min(1, f); }
+    return t; };
+  SIM.happinessAdd = function(a, n, days, why){ (a.hmods||(a.hmods=[])).push({ n:n, t:SIM.minute(), days:days, why:why||null }); };
+  /* THE HAPPINESS POOL (PLAN-MONEY.md M6; the owner, 2026-11-03): a settlement's people's mean happiness, collective and by
+     class (`classOf(a)`, default a.cls) -> {all: {mean, n}, byClass: {cls: {mean, n}}}; unrest is how far it falls below 50 */
+  SIM.happinessPool = function(s, classOf){ var out={ all:{ mean:null, n:0 }, byClass:{} }, sum=0, by={};
+    if(!SIM.NEED) return out;
+    SIM.all('actor').forEach(function(a){ if(a.driven || a.animal || a.transient) return; var t=SIM.settlementOf(a); if(s!=null && t!==s) return; var ab=SIM.ABSTRACT && SIM.ABSTRACT[t]; if(!a.nd && !ab) return;
+      var h=SIM.happiness(a, ab ? SIM.needsOf(a) : SIM.needsPeek(a)); if(h==null) return;   /* the meters now: a watched town's read, an abstract one's lived */
+      sum+=h; out.all.n++; var c=classOf ? classOf(a) : a.cls; if(c==null) return; var B=by[c]||(by[c]={ s:0, n:0 }); B.s+=h; B.n++; });
+    out.all.mean=out.all.n ? sum/out.all.n : null; Object.keys(by).sort().forEach(function(c){ out.byClass[c]={ mean:by[c].s/by[c].n, n:by[c].n }; }); return out; };
   function bandOf(list, v){ for(var i=0;i<list.length;i++) if(v>=list[i].min) return list[i]; return list[list.length-1]; }
   SIM.mood = function(a){ var h=SIM.happiness(a); if(h==null) return null; var B=bandOf(SIM.NEED.bands, h), L=SIM.NEED.loyalty;
     return { happiness:h, band:B.label, eff:(B.eff==null?1:B.eff)*(SIM.ITEMS ? SIM.itemsEff(a) : 1), loyal:a.loyal,   /* a broken tool, a hurt (77-sim-6-items.js) */ loyalty:L && L.bands && a.loyal!=null ? bandOf(L.bands, a.loyal).label : null }; };
@@ -2036,7 +2805,49 @@ canvas{display:block;width:100vw;height:100vh}
      risen `mins` minutes at their rate (the role's multiplier, no activity), the actor's clock untouched */
   SIM.needsDrift = function(a, names, mins){ var N=SIM.NEED; if(!N || !(mins>0)) return; if(!a.nd) ensure(a, SIM.minute());
     names.forEach(function(n){ var i=N.idx[n]; if(i==null) return; var v=a.nd[i]+slope(a, null, i)*mins/60; a.nd[i]= v<0?0:v>100?100:v; }); };
-  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
+  /* THE ABSTRACT LEVEL'S NEEDS (77-sim-7-lod.js; PLAN-MONEY.md M6: the happiness pool of a town nobody watches): the
+     meters lived from the actor's clock to `minute` as the watched town lives them, without a step, in `ABSTRACT_STEP`
+     minute steps: the activity its schedule gives the hour (its lag kept); a free hour the free activity whose fills
+     times the meters is highest (the resolver's score, `keep` favouring the scheduled one) of those offered within its reach
+     of its home (the resolver's rule); a labourer's interrupt (the well trip) as the watched one takes it; `ABSTRACT_TRIP` minutes on the way
+     (nothing fills) each time the activity changes; EAT at the boost its household's last meals gave
+     (SIM.itemsAbstractHome). Deterministic, draws nothing. A commanded actor (jailed) does its command. */
+  SIM.ABSTRACT_STEP = 15; SIM.ABSTRACT_TRIP = 10;
+  var OFFERS = {};
+  /* whether a place within the actor's reach of its home offers `act` (the resolver's `available`), kept by role, home,
+     activity and hour */
+  function reachOffers(a, act, h){ var key=a.role+'|'+a.home+'|'+act+'|'+h; if(OFFERS[key]==null){ var R=SIM.R.role[a.role], pref=(R && R.prefers && R.prefers[act])||{}, H=SIM.R.place[a.home];
+      if(pref.pin==='home') OFFERS[key]=H && SIM.offers(H, act) ? 1 : 0;
+      else OFFERS[key]=SIM.placesFor(act, a, h, { near:H ? [H.x, H.z] : (a.at||[0,0]), kinds:pref.kinds, limit:1, maxR:pref.reach!=null?pref.reach:SIM.REACH }).length ? 1 : 0; }
+    return OFFERS[key]; }
+  function absPick(a, act, h){
+    var N=SIM.NEED, FR=freeOf(a); if(!FR.freeSet[act]) return act;
+    var T=a.trait && N.traits[a.trait], best=null, bs=-1;
+    FR.free.forEach(function(opt){ var F=fillOf(a, opt), sc=0; for(var i=0;i<F.length;i++) if(F[i]>0 && a.nd[i]>N.done) sc+=F[i]*a.nd[i]*N.weight[i]*(T?T[i]:1);
+      if(opt===act) sc=sc*N.keep+1e-6; if(sc>bs && (opt===act || reachOffers(a, opt, h))){ bs=sc; best=opt; } });
+    return best || act;
+  }
+  SIM.needsAbstract = function(a, minute){
+    var N=SIM.NEED; if(!N) return null; ensure(a, minute); var t=a.ndT, t0=t; if(minute<=t) return a.nd;
+    if(minute-t>3*1440) t=minute-3*1440;   /* a long gap: its last three days (the meters settle well within them) */
+    var lab=labour(a), st=SIM.ABSTRACT_STEP, prev=a.absAct||null, I=a.absIntr||null;
+    while(t<minute){
+      var dt=Math.min(st, minute-t), act;
+      if(a.cmd && t<a.cmd.until) act=a.cmd.act;
+      else { var ml=t-SIM.lagOf(a), sc=SIM.schedOf(a, ml); act=sc ? sc[Math.floor((((ml%1440)+1440)%1440)/60)] : 'IDLE'; }
+      if(act==='WORK' && lab>0 && N.interrupt.length){
+        if(I && (a.nd[I.i]<=I.until || t-a.absIntrT>=I.max)){ a.absCool=t+I.cool; I=null; }
+        if(!I && t>=(a.absCool||0)) for(var k=0;k<N.interrupt.length;k++) if(a.nd[N.interrupt[k].i]>=N.interrupt[k].at){ I=N.interrupt[k]; a.absIntrT=t; break; }
+        if(I) act=I.act;
+      } else { if(I) a.absCool=t+I.cool; I=null; act=absPick(a, act, Math.floor((((t%1440)+1440)%1440)/60)); }
+      var trip=0; if(act!==prev && prev!=null){ trip=Math.min(dt, SIM.ABSTRACT_TRIP); run(a, null, trip); }
+      run(a, act, dt-trip); prev=act; t+=dt;
+    }
+    a.absAct=prev; a.absIntr=I;
+    if(N.loyalty){ var h=SIM.happiness(a); a.loyal = a.loyal==null ? h : a.loyal + (h-a.loyal)*(1-Math.exp(-(minute-t0)/(N.loyalty.tau||4320))); }
+    a.ndT=minute; a.ndFrom=minute; return a.nd;
+  };
+  SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; a.absAct=null; a.absIntr=null; };
 
   /* ---------------------------------------------------------------- the census of needs */
   /* by `key(actor)` (or all): how many, mean happiness, mean efficiency, the band counts, each need's mean and how many
@@ -2266,6 +3077,136 @@ canvas{display:block;width:100vw;height:100vh}
   };
 })(typeof window!=='undefined'?window:globalThis);
 
+// ==================== simulation/77-sim-6-unrest.js
+// ================================================================= CORE — simulation 6: unrest from the happiness pool
+// PLAN-MONEY.md M6 (the owner, 2026-11-03, answers 9 and 14): "each fallen household should acquire an unhappiness
+// modifier feeding into a collective and per-class happiness pool that is affected by other things (needs not being
+// met); the farther below 50% this pool is the more serious unrest becomes ... less serious forms of unrest could demand
+// a new ruler or a shipment of needed goods from the faction authorities, leading up to full treason". Opt-in: nothing
+// here runs until a world calls SIM.unrest(config), on a world with needs (77-sim-6-needs.js). It draws nothing.
+//
+//   SIM.unrest({ classOf?(a) (a.cls), smooth? (days: 3), hyst? (points: 5), stages?:{grumble, demand, strike, treason}
+//                (the pool below which each begins: 50, 40, 30, 20), byFaction?:{faction: {stages}} (a nation's own),
+//                grumble?:{arrest} (0.7), demand?:{goods (2), days (5), keep (3), every (5), grant (0.4), granted:{n, days}, refused:{n, days}},
+//                strike?:{after, share, days}, ruler?(s, demand) -> true when the faction grants a new ruler,
+//                onTreason?(s, key, event) }) -> SIM.UNREST
+//   SIM.unrestStep(minute)       SIM.step's, at midnight
+//   SIM.unrestArrest(s)          the arrest odds' multiplier in settlement s (77-sim-6-crime.js reads it)
+//   SIM.unrestSpare(s, g)        what s's faction's other settlements could send it of g (over their keep)
+//   SIM.unrestReport(s?) -> {towns: {s: {level: {key: pool}, stage: {key: stage}, demands, strikes, treason}}, events}
+//
+// THE POOL. Each midnight a settlement's happiness pool (SIM.happinessPool: its people's mean happiness, collective `all`
+// and by class) is eased into its LEVEL (an average over `smooth` days), and each key's (all, or a class's) STAGE is the
+// deepest whose line its level is under: calm, grumble, demand, strike, treason. A stage eases back only once the level
+// is `hyst` points above its line. One class may rise while another is content.
+// GRUMBLING (a key at grumble or worse): the watch's arrest odds in the town times `grumble.arrest` (people hide their own).
+// Assault already grows with unhappiness (77-sim-6-crime.js `assault.below`).
+// DEMANDS (one a town at a time, on behalf of every key at demand or worse, none made in the last `demand.every` days):
+// to the faction's authorities, for a SHIPMENT of the goods the town fell short of yesterday (the economy's `short`: of the
+// goods it lacked, the `goods` the faction could spare most of), else for A NEW RULER. Answered the next midnight: a
+// shipment from the faction's other settlements, each sending what it holds over `keep` days of its own use, up to `days`
+// days of the asker's normal use (the most it used in a day over the last month; its short draws count every retry), booked
+// exported by the sender and imported by the asker, so the books hold; granted when `grant` of what was asked came (two
+// days of the five). A new
+// ruler is the faction's `ruler` hook's to grant (none yet: refused, there is no political system: PLAN-MONEY.md section
+// 3). Granted, the people of the asking keys are cheered (`granted.n` points, a negative modifier, fading over its days);
+// refused, they are angrier.
+// STRIKES (once a day, by every key at strike or worse, after a demand refused in the last `strike.after` days): the
+// workplaces where most of the strikers work (`share` of them) are held for `days` (SIM.recipeHold, reason 'strike'):
+// their hours are lost.
+// TREASON (a key at treason): an event, once each time the stage is reached, and the world's `onTreason`. A revolution
+// (which faction the town turns to, or none) needs the political system: core/simulation PLAN.md Phase 4.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.UNREST = null;
+  var ORDER = ['calm', 'grumble', 'demand', 'strike', 'treason'];
+  SIM.unrest = function(o){ o=o||{};
+    var d=function(x, v){ return x==null ? v : x; }, D=o.demand||{}, K=o.strike||{};
+    SIM.UNREST = { cfg:{ classOf:o.classOf||null, smooth:d(o.smooth, 3), hyst:d(o.hyst, 5),
+        stages:Object.assign({ grumble:50, demand:40, strike:30, treason:20 }, o.stages||{}), byFaction:o.byFaction||{},
+        grumble:Object.assign({ arrest:0.7 }, o.grumble||{}),
+        demand:{ goods:d(D.goods, 2), days:d(D.days, 5), keep:d(D.keep, 3), every:d(D.every, 5), grant:d(D.grant, 0.4), granted:Object.assign({ n:-10, days:10 }, D.granted||{}), refused:Object.assign({ n:5, days:10 }, D.refused||{}) },
+        strike:{ after:d(K.after, 5), share:d(K.share, 0.5), days:d(K.days, 1) }, ruler:o.ruler||null, onTreason:o.onTreason||null },
+      towns:{}, events:[], n:0 };
+    return SIM.UNREST;
+  };
+  function town(s){ var T=SIM.UNREST.towns[s]; if(!T) T=SIM.UNREST.towns[s]={ level:{}, stage:{}, demands:[], strikes:[], treason:[] }; return T; }
+  function stagesOf(s){ var U=SIM.UNREST, S=SIM.R.settlement && SIM.R.settlement[s], F=S && U.cfg.byFaction[S.faction]; return F ? Object.assign({}, U.cfg.stages, F) : U.cfg.stages; }
+  function event(kind, o){ var U=SIM.UNREST, e=Object.assign({ m:SIM.minute(), kind:kind }, o); U.events.push(e); if(U.events.length>5000) U.events.shift(); SIM.logEvent('unrest '+kind, o); return e; }
+  function members(s, key){ var U=SIM.UNREST; return SIM.all('actor').filter(function(a){ if(a.driven || !a.nd || SIM.settlementOf(a)!==s) return false;
+    return key==='all' || (U.cfg.classOf ? U.cfg.classOf(a) : a.cls)===key; }); }
+  function cheer(s, key, C, why){ if(!C || !C.n) return; members(s, key).forEach(function(a){ SIM.happinessAdd(a, C.n, C.days, why); }); }
+  /* the stage of a level: the deepest line it is under; easing back a stage at a time, each `hyst` over its line */
+  function stageOf(lv, was, L, hyst){ var k=0; for(var i=1;i<ORDER.length;i++) if(lv<L[ORDER[i]]) k=i;
+    var w=ORDER.indexOf(was||'calm'); if(k>=w) return ORDER[k];
+    while(w>k && lv>=L[ORDER[w]]+hyst) w--;
+    return ORDER[w]; }
+  SIM.unrestArrest = function(s){ var U=SIM.UNREST; if(!U || s==null) return 1; var T=U.towns[s]; if(!T) return 1;
+    for(var k in T.stage) if(ORDER.indexOf(T.stage[k])>=1) return U.cfg.grumble.arrest; return 1; };
+  function yesterday(s){ var E=SIM.econ(s); return (E && E.day[Math.floor(SIM.minute()/1440)-1]) || {}; }
+  /* a town's use of a good a day (its stock over its days of it) */
+  function useOf(s, g){ return SIM.withEcon(s, function(){ var r=SIM.economyDays(g), st=SIM.stockOf(g); return r>0 && r<Infinity ? st/r : 0; }); }
+  /* a town's normal use of g a day: the most it used in a day over the last month (a town in want uses nothing; its short
+     draws count every retry, so they measure the want's persistence, not its size) */
+  function normalUse(s, g){ var E=SIM.econ(s), d=Math.floor(SIM.minute()/1440), m=0; if(!E) return 0;
+    for(var k=d-30;k<d;k++){ var D=E.day[k]; if(D && D.used && D.used[g]>m) m=D.used[g]; } return Math.max(m, useOf(s, g)); }
+  /* what the faction's other settlements could spare of g (over `keep` days of their own use) */
+  function spareOf(s, g){ var S=SIM.R.settlement[s], C=SIM.UNREST.cfg.demand, n=0;
+    Object.keys(SIM.R.settlement).forEach(function(f){ var E=SIM.econ(f); if(f===s || SIM.R.settlement[f].faction!==S.faction || !E || !E.goods[g]) return;
+      n+=Math.max(0, SIM.withEcon(f, function(){ return Math.floor(SIM.stockOf(g)-C.keep*useOf(f, g)); })); }); return n; }
+  SIM.unrestSpare = function(s, g){ return SIM.UNREST && SIM.R.settlement && SIM.R.settlement[s] ? spareOf(s, g) : 0; };
+  /* the goods the town lacked most yesterday (its economy's short draws), those the faction could spare first: the town
+     asks for what its masters hold (bread when its own yams failed) */
+  function shortOf(s, n){ var E=SIM.econ(s); if(!E) return []; var sh=yesterday(s).short||{};
+    var L=Object.keys(sh).filter(function(g){ return sh[g]>0 && E.goods[g]; }).map(function(g){ return { g:g, n:sh[g], sp:spareOf(s, g) }; });
+    return L.sort(function(x, y){ return y.sp-x.sp || y.n-x.n || (x.g<y.g?-1:1); }).slice(0, n).map(function(x){ return x.g; }); }
+  function ship(s, D){ var U=SIM.UNREST, C=U.cfg.demand, S=SIM.R.settlement[s], asked=0, came=0; D.sent={};
+    D.goods.forEach(function(g){ var need=Math.max(1, Math.ceil(C.days*normalUse(s, g))); asked+=need;
+      Object.keys(SIM.R.settlement).sort().forEach(function(f){ if(need<=0 || f===s || SIM.R.settlement[f].faction!==S.faction || !SIM.econ(f)) return;
+        var n=SIM.withEcon(f, function(){ var spare=Math.floor(SIM.stockOf(g)-C.keep*useOf(f, g)); if(spare<=0) return 0; var k=SIM.economyTake(g, Math.min(spare, need)); if(k>0) SIM.economyBook('exported', g, k); return k; });
+        if(!(n>0)) return; SIM.withEcon(s, function(){ SIM.economyLand(g, n, null); SIM.economyBook('imported', g, n); });
+        need-=n; came+=n; D.sent[f+'>'+g]=n; }); });
+    D.asked=asked; D.came=came; return came>0 && came>=C.grant*asked; }
+  function answer(s, T, D){ var U=SIM.UNREST, ok;
+    if(D.kind==='goods') ok=ship(s, D); else { ok=!!(U.cfg.ruler && U.cfg.ruler(s, D)); if(!ok && !U.cfg.ruler) D.why='no political system yet'; }
+    D.answer=ok ? 'granted' : 'refused'; D.answered=SIM.minute();
+    D.keys.forEach(function(k){ if(k==='all' || D.keys.indexOf('all')<0) cheer(s, k, ok ? U.cfg.demand.granted : U.cfg.demand.refused, 'demand '+D.answer); });
+    event('answer', { settlement:s, key:D.key, keys:D.keys, demand:D.id, kind:D.kind, answer:D.answer, goods:D.goods, sent:D.sent||null, why:D.why||null }); }
+  function strike(s, T, keys, minute){ var U=SIM.UNREST, C=U.cfg.strike, E=SIM.econ(s), by={}, key=keys.indexOf('all')>=0 ? 'all' : keys.join('+'); if(!E) return;
+    var who=keys.indexOf('all')>=0 ? members(s, 'all') : [].concat.apply([], keys.map(function(k){ return members(s, k); }));
+    who.forEach(function(a){ var w=a.work; if(w!=null && E.recipes[w]) by[w]=(by[w]||0)+1; });
+    var ids=Object.keys(by).sort(function(x, y){ return by[y]-by[x] || (x<y?-1:1); }), n=Math.ceil(ids.length*C.share), held=[];
+    ids.slice(0, n).forEach(function(id){ if(E.recipes[id].hold) return; SIM.recipeHold(id, 'strike', minute+C.days*1440); held.push(id); });
+    if(!held.length) return; var e={ m:minute, key:key, keys:keys, held:held, until:minute+C.days*1440 }; T.strikes.push(e); event('strike', { settlement:s, key:key, held:held.length, until:e.until }); }
+  SIM.unrestStep = function(minute){ var U=SIM.UNREST; if(!U || !SIM.NEED || minute<=0 || minute%1440) return;
+    var a=1-Math.exp(-1/Math.max(1e-9, U.cfg.smooth));
+    Object.keys(SIM.R.settlement||{}).sort().forEach(function(s){ var P=SIM.happinessPool(s, U.cfg.classOf), T=town(s), L=stagesOf(s);
+      if(!P.all.n) return;
+      var keys={ all:P.all.mean }; Object.keys(P.byClass).forEach(function(c){ keys[c]=P.byClass[c].mean; });
+      T.demands.forEach(function(D){ if(D.answer==null && D.due<=minute) answer(s, T, D); });   /* yesterday's demands, answered */
+      Object.keys(keys).sort().forEach(function(k){ var x=keys[k]; if(x==null) return;
+        var lv=T.level[k]=T.level[k]==null ? x : T.level[k]+(x-T.level[k])*a, was=T.stage[k]||'calm', st=stageOf(lv, was, L, U.cfg.hyst);
+        T.stage[k]=st; if(st!==was){ event('stage', { settlement:s, key:k, from:was, to:st, level:Math.round(lv*10)/10 });
+          if(st==='treason'){ var e={ m:minute, key:k, level:lv }; T.treason.push(e); event('treason', { settlement:s, key:k }); if(U.cfg.onTreason) U.cfg.onTreason(s, k, e); } }
+      });
+      /* one demand a town at a time, for every key at demand or worse (the deepest first); one strike a day, by every key at
+         strike or worse, after a refused demand */
+      var keysAt=function(i){ return Object.keys(T.stage).filter(function(k){ return ORDER.indexOf(T.stage[k])>=i; }).sort(function(x, y){ return T.level[x]-T.level[y] || (x<y?-1:1); }); };
+      var dk=keysAt(2), last=T.demands[T.demands.length-1];
+      if(dk.length && (!last || (last.answer!=null && minute-last.m>=U.cfg.demand.every*1440))){ var g=shortOf(s, U.cfg.demand.goods);
+        var D={ id:s+':demand:'+(U.n++), m:minute, key:dk[0], keys:dk, kind:g.length ? 'goods' : 'ruler', goods:g, due:minute+1440, answer:null };
+        T.demands.push(D); event('demand', { settlement:s, key:D.key, keys:dk, demand:D.id, kind:D.kind, goods:g }); }
+      var sk=keysAt(3);
+      if(sk.length && T.demands.some(function(D){ return D.answer==='refused' && minute-D.answered<=U.cfg.strike.after*1440; })) strike(s, T, sk, minute);
+    });
+  };
+  SIM.unrestReport = function(s){ var U=SIM.UNREST; if(!U) return null; var out={ towns:{}, events:U.events.slice() };
+    Object.keys(U.towns).sort().forEach(function(k){ if(s!=null && k!==s) return; var T=U.towns[k];
+      out.towns[k]={ level:Object.assign({}, T.level), stage:Object.assign({}, T.stage), demands:T.demands.map(function(D){ return Object.assign({}, D); }), strikes:T.strikes.slice(), treason:T.treason.slice() }; });
+    return out; };
+})(typeof window!=='undefined'?window:globalThis);
+
 // ==================== simulation/77-sim-7-ledger.js
 // ================================================================= CORE — simulation 7: the ledger (the accounting contract)
 // settlements/isle-demo/PLAN-ECONOMY.md, Phase 0; the contract is SCHEMA.md, "The books". Read only: nothing here changes
@@ -2279,6 +3220,8 @@ canvas{display:block;width:100vw;height:100vh}
 //                       storage), ordered, inbound, outbound; the running flows made, imported, exported, used, bought,
 //                       eaten, spoiled, short
 //   SIM.ledger(a, b, opt) -> {ok, problems:[strings], towns:{key: {good: statement}}, routes:{route: {'a>b': {good: leg}}}, sites:{id: {taken, made, amount}}}
+//   money (77-sim-6-money.js): the snapshot's `money`, the statement's `money: {towns: {s: {currency: {opening, minted, burned, in, out, closing, residual}}}, currencies}`
+//   a site's take less the batches in hand on it (`wip`: taken when the batch starts, made when it ends) is held to what was made
 //                       the statement between two snapshots. opt.tol: the residual allowed (0.5: the stocks round to
 //                       hundredths). A statement: {unit, owner, opening, made, imported, consumed, spoiled, exported,
 //                       closing, residual, abroadOut, abroadIn, inbound, outbound, ordered}. A leg: {shipped, landed,
@@ -2310,11 +3253,14 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.ledgerSnap = function(){
     var out={ version:SIM.LEDGER_VERSION, minute:SIM.minute(), towns:{}, sea:{}, routes:{} }, T=SIM.TRADE;
     keys().forEach(function(k){ out.towns[k]=snapTown(k); var E=econOf(k), R=E.resSites;
-      if(R) Object.keys(R).forEach(function(id){ var S=R[id]; (out.sites||(out.sites={}))[id]={ settlement:k, goods:S.goods.slice(), taken:S.taken, amount:S.amount, regen:S.regen }; }); });
+      if(R) Object.keys(R).forEach(function(id){ var S=R[id]; (out.sites||(out.sites={}))[id]={ settlement:k, goods:S.goods.slice(), taken:S.taken, amount:S.amount, regen:S.regen, regrown:S.regrown||0, wip:0 }; });
+        Object.keys(E.recipes||{}).forEach(function(pid){ var Rc=E.recipes[pid], Pp=SIM.R.place[pid], Ws=Rc.site!=null && out.sites && out.sites[Rc.site];   /* a batch in hand: its take booked, its out not yet made */
+          if(Ws && Rc.batch && Pp && Pp.order) Object.keys(Rc.batch.out).forEach(function(g){ Ws.wip+=Rc.batch.out[g]; }); }); });
     if(T) T.order.forEach(function(id){ var R=T.routes[id], sea=out.sea[id]={};
       R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
       out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
+    if(SIM.MONEY && SIM.moneySnap) out.money=SIM.moneySnap();   /* money's accounts and books (77-sim-6-money.js), when a world keeps money */
     return out;
   };
   function v(o, k, g){ return ((o||{})[k]||{})[g]||0; }
@@ -2341,10 +3287,21 @@ canvas{display:block;width:100vw;height:100vh}
         if(st.abroadIn<-tol) bad(k+' '+g+': '+(-st.abroadIn)+' landed by route but never booked imported');
         if(spoiled>d('used')+tol) bad(k+' '+g+': more spoiled than was booked used'); }); });
     /* a site: what it gave, against what its settlement made of its goods; a finite site's amount by what it gave and regrew */
-    Object.keys(b.sites||{}).forEach(function(id){ var S=b.sites[id], A=(a.sites||{})[id], d=S.taken-(A ? A.taken : 0), made=0, st=out.towns[S.settlement]||{};
+    Object.keys(b.sites||{}).forEach(function(id){ var S=b.sites[id], A=(a.sites||{})[id], d=S.taken-(A ? A.taken : 0)-((S.wip||0)-(A ? A.wip||0 : 0)), made=0, st=out.towns[S.settlement]||{};   /* less the batches in hand */
       S.goods.forEach(function(g){ made+=(st[g]||{}).made||0; }); (out.sites||(out.sites={}))[id]={ taken:d, made:made, amount:S.amount };
       if(d>made+tol) bad(id+': gave '+d+' but its settlement made '+made+' of '+S.goods.join(', '));
-      if(S.amount!=null && A && S.amount>A.amount-d+tol+S.regen*Math.ceil((b.minute-a.minute)/1440+1)) bad(id+': holds more than it gave and regrew'); });
+      if(S.amount!=null && A && S.amount>A.amount-d+tol+Math.max(S.regen*Math.ceil((b.minute-a.minute)/1440+1), (S.regrown||0)-(A.regrown||0))) bad(id+': holds more than it gave and regrew'); });   /* `regrown`: what grew back (nightly, or restored: SIM.siteRestore) */
+    /* MONEY (77-sim-6-money.js, PLAN-MONEY.md M0): per settlement and currency, opening + minted - burned + in - out = closing,
+       exactly (integers); across a currency's settlements, what went out came in; no account below zero; none lost */
+    if(b.money && a.money){ var mo=out.money={ towns:{}, currencies:{} };
+      Object.keys(b.money.towns).forEach(function(k){ Object.keys(b.money.towns[k]).forEach(function(c){ var B=b.money.towns[k][c], A0=(a.money.towns[k]||{})[c]||{ total:0, minted:0, burned:0, 'in':0, out:0 };
+        var st={ opening:A0.total, minted:B.minted-A0.minted, burned:B.burned-A0.burned, 'in':B['in']-A0['in'], out:B.out-A0.out, closing:B.total };
+        st.residual=st.closing-(st.opening+st.minted-st.burned+st['in']-st.out); (mo.towns[k]||(mo.towns[k]={}))[c]=st;
+        var C=mo.currencies[c]||(mo.currencies[c]={ 'in':0, out:0, minted:0, burned:0 }); C['in']+=st['in']; C.out+=st.out; C.minted+=st.minted; C.burned+=st.burned;
+        if(st.residual!==0) bad('money '+(k||'(no settlement)')+' '+c+': '+st.opening+' + '+st.minted+' minted - '+st.burned+' burned + '+st['in']+' in - '+st.out+' out is not the '+st.closing+' held (off by '+st.residual+')'); }); });
+      Object.keys(mo.currencies).forEach(function(c){ var C=mo.currencies[c]; if(C['in']!==C.out) bad('money '+c+': '+C.out+' paid out of settlements but '+C['in']+' paid in'); });
+      Object.keys(b.money.accounts).forEach(function(id){ if(b.money.accounts[id]<0) bad('money: account '+id+' below zero ('+b.money.accounts[id]+')'); });
+      Object.keys(a.money.accounts).forEach(function(id){ if(b.money.accounts[id]==null) bad('money: account '+id+' is gone'); }); }
     return out;
   };
 })(typeof window!=='undefined'?window:globalThis);
@@ -2386,14 +3343,16 @@ canvas{display:block;width:100vw;height:100vh}
     if(SIM.levelOf(s)===lv) return lv;
     var minute=SIM.minute(), t=SIM.time();
     if(lv==='abstract'){ lower(s, minute); (SIM.ABSTRACT||(SIM.ABSTRACT={}))[s]=true; }
-    else { delete SIM.ABSTRACT[s]; raise(s, minute, t); }
+    else { if(SIM.NEED) mine(s).forEach(function(a){ if(!a.driven && a.nd) SIM.needsAbstract(a, minute); });   /* the meters lived to now, still abstract */
+      delete SIM.ABSTRACT[s]; raise(s, minute, t); }
     SIM.logEvent('level', { settlement:s, level:lv });
     return lv;
   };
   /* lowering: each actor's efficiency now; the town's households and their residents */
   function lower(s, minute){
     var res={};
-    mine(s).forEach(function(a){ var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
+    mine(s).forEach(function(a){ if(SIM.NEED && a.nd && !a.driven) SIM.needsOf(a, minute);   /* the meters to now as watched, before the abstract rule takes them */
+      var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
     HOMES[s]=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); })
       .map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
     HOMES[s].last=minute; HOMES[s].hr=Math.floor(minute/60);
@@ -2415,8 +3374,18 @@ canvas{display:block;width:100vw;height:100vh}
     delete HOMES[s]; delete PEOPLE[s];
   }
   /* the economy's step for an abstract town (inside its turn): the households' hours */
+  /* the town's households and people again (each midnight while it is abstract): a home filled since it was lowered (a
+     household formed, a refugee camp pitched: 77-sim-6-build.js growth) is fed, and its people live their abstract day
+     (their meals' worth, their clothes, their errands); each home keeps its meal's carry */
+  function rehome(s){ var L=HOMES[s], res={}; if(!L) return;
+    mine(s).forEach(function(a){ if(a.home!=null && !a.transient && !a.driven) res[a.home]=(res[a.home]||0)+1; });
+    var N=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); }).map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
+    N.last=L.last; N.hr=L.hr; N.day=L.day; HOMES[s]=N;
+    var by=PEOPLE[s]=[]; for(var h=0;h<24;h++) by.push([]);   /* and its people by the hour of their abstract day: a newcomer lives it too */
+    mine(s).forEach(function(a){ if(!a.driven && !a.transient) by[Math.floor(SIM.itemHash(a.k|0, 0, 13)*24)].push(a); }); }
   SIM.lodHour = function(E, minute){
     var L=HOMES[E.settlement]; if(!L || !SIM.ITEMS) return;
+    var dd=Math.floor(minute/1440); if(L.day!==dd){ L.day=dd; rehome(E.settlement); L=HOMES[E.settlement]; }
     var hrs=(minute-L.last)/60; if(hrs<1) return; L.last=minute;
     L.forEach(function(h){ SIM.itemsAbstractHome(h.P, hrs, E.settlement, h.res); });
     var by=PEOPLE[E.settlement], H=Math.floor(minute/60);   /* each person's yesterday, at its hour */

@@ -1,0 +1,50 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
+    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/simulation/77-sim-0-core.js": "31d97155bb301076456f9efacc265f9c124cbde85103630214be874ce4134341",
+    "core/simulation/77-sim-1-world.js": "9cd27ca489746cd6bb3ea7fbcfa605d335237167e27b1781f07dd6d7d3b200a7",
+    "core/simulation/77-sim-2-places.js": "1205793017dcab2796fd734829690a1f2fba8bb0b7829fcf68a93fbb89016aaf",
+    "core/simulation/77-sim-3-actors.js": "e4e712c91ef67e1b216ce3fd5d8601ae14c3e8f1ba87cf56b172678321dfb169",
+    "core/simulation/77-sim-4-nav.js": "6df968f7431980a4e8d9d84948765e61b6fb3888b94f499f00641041b1880d26",
+    "core/simulation/77-sim-5-motion.js": "3d4fa00f7741695851926bb241a7f3593090d76721269aa31caea003d931c6ee",
+    "core/simulation/77-sim-5r-routes.js": "1b9aa6be405b573d53d38a99be3c3117bd5b34f47fa53737d38cb388f6259e7f",
+    "core/simulation/77-sim-6-build.js": "0465f6b5e20233c913672becce42edadd97ede8724ee28872ae7c1c4c8d268da",
+    "core/simulation/77-sim-6-crime.js": "84d17c14a369af25144217c3993ec67966ecf8d43044f02f088e9cc5830e5781",
+    "core/simulation/77-sim-6-economy.js": "16f318e46c1293f6bd20e611c8ee257e888ea7eac83fbe40fe104eb8da995015",
+    "core/simulation/77-sim-6-govern.js": "ac852b2df0dc57c5aad1c5830fb71d9a59f3ecc28d992be70ac30eb34ddcfe77",
+    "core/simulation/77-sim-6-items.js": "3d5628edd4be0f7e320676ee57e1e74b101186f2f9609a84b52b9a2f4ccd3109",
+    "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
+    "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
+    "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
+    "core/simulation/77-sim-6-trade.js": "ced320edc16f0388fcf2f2b0c70a65d24ccbe34d20b7a9668fbe362346ceb77c",
+    "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
+    "core/simulation/77-sim-7-ledger.js": "d1c50086205d8c33d76636edd86a58e07fa93428e38a2c5bf5ce273107e34bc7",
+    "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
+    "core/simulation/77-sim-7-stocks.js": "3ab7ea6dd2094b2df6883d241c40e7bd9fe8c9d8cdf7bb711e167a8146606cde",
+    "core/simulation/77-sim-8-export.js": "a8d9da5e4624472ad638978581b2d64be72c82ab3ddda49385a3041ae99d4dea",
+    "core/simulation/77-sim-9-debug.js": "bcdd3a1b1f79736f608fa2695a92cda9ce35234b3468217368c03ee30030f196",
+    "core/simulation/example/00-head.html": "35267d6bd3e571c769cadd168215aae8533266e73ff1c9531bf670d25c36cb91",
+    "core/simulation/example/40-world.js": "e280dcfdb46782366bc7a143eb8d75992942f67b7d3f5df4e3238b92cc48fea3",
+    "core/simulation/example/80-draw.js": "f0f976709dddc44d747c4e5667bfb1351106edaa6ca75be916ca5f12f42575fb",
+    "core/simulation/example/90-checks.js": "4346ec1bf744f513bb80a375a7776d32e19645d3923901dbc9255f8eff8895e5",
+    "core/simulation/example/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
+    "core/simulation/example/build.py": "3d96acf54a86ff89ff747bc19906e3facbcb2b251e7c772908a903284c3b9942",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2"
+   },
+   "listings": {
+    "core/simulation": "a429621b2f5b2cdf16b6d3f505963304911fe3861e53f427941037249be4722e",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
+   },
+   "outputs": {
+    "core/simulation/example/sim-example.html": "7c63e2e3bc03efba28a62a1803fdeffa4adac202af5e250cdfb8fc82dcc93f49"
+   },
+   "outputs_raw": {
+    "core/simulation/example/sim-example.html": "7c63e2e3bc03efba28a62a1803fdeffa4adac202af5e250cdfb8fc82dcc93f49"
+   }
+  }
+ }
+}
