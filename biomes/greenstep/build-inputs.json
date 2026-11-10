@@ -14,7 +14,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -211,10 +211,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep.html": "7aadd497cd3cf5b5fbedf9a4f0d8649628ea83d8edce0f6f27282ecd85329088"
+    "biomes/greenstep/dist/greenstep.html": "4335f7b99efcc0b0c654e2cbd73cfbb37e2fcb83b3dcaca0106759efa16e7b96"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep.html": "7aadd497cd3cf5b5fbedf9a4f0d8649628ea83d8edce0f6f27282ecd85329088"
+    "biomes/greenstep/dist/greenstep.html": "4335f7b99efcc0b0c654e2cbd73cfbb37e2fcb83b3dcaca0106759efa16e7b96"
    }
   },
   "build.py --station cloudstep": {
@@ -230,7 +230,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -378,10 +378,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-cloudstep.html": "fb9fef7d6cd141c2c6cedcf97d2de80a9ae2ed743a4c68faf8e72f25d658e310"
+    "biomes/greenstep/dist/greenstep-cloudstep.html": "3039761dce435627409b8c227a98aa9e4d397a84a781f635255634878bd1a43b"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-cloudstep.html": "fb9fef7d6cd141c2c6cedcf97d2de80a9ae2ed743a4c68faf8e72f25d658e310"
+    "biomes/greenstep/dist/greenstep-cloudstep.html": "3039761dce435627409b8c227a98aa9e4d397a84a781f635255634878bd1a43b"
    }
   },
   "build.py --station gatestep": {
@@ -397,7 +397,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -594,10 +594,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-gatestep.html": "a5da2b3ada7afbfb5af79ebff16996d1f1ffadaf24f5aa0b55c7bb2f143a9326"
+    "biomes/greenstep/dist/greenstep-gatestep.html": "4971a5322d6bf3bf24931bd0178af9c61c4d9f47abeb7ae261d78eadff2926ab"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-gatestep.html": "a5da2b3ada7afbfb5af79ebff16996d1f1ffadaf24f5aa0b55c7bb2f143a9326"
+    "biomes/greenstep/dist/greenstep-gatestep.html": "4971a5322d6bf3bf24931bd0178af9c61c4d9f47abeb7ae261d78eadff2926ab"
    }
   },
   "build.py --station headvent": {
@@ -613,7 +613,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -622,7 +622,7 @@
     "biomes/greenstep/src/99-host-take.js": "9827957e5b5684802c8f5184445ff1443c96d4b00404234181239c17bd68686b",
     "biomes/greenstep/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/greenstep/stations/headvent/44w-host-land.js": "f0baaa275b11abf16a5c83355b06da55bcaad8efca9b2da1d65d249d8606d2b6",
-    "biomes/greenstep/stations/headvent/89x-host-springs.js": "30da14c4f133f087f268a7f33346be634fa64d57e348ecd037f47e2d90617eb4",
+    "biomes/greenstep/stations/headvent/89x-host-springs.js": "4032f0a7db96431e3b7ce466292b8ce8b63e41ca14c56c678c6efbc5797be1d3",
     "biomes/greenstep/stations/headvent/station.json": "c0215ad175e3b2c62b2d7100885dcee18acc56c4b5285dcb603c5c63e897f47e",
     "biomes/greenstep/tex/begonia.albedo.webp": "21ee3bc2941551367ccd17efde3c91c0b7381ac37410b386a753fd4eeec63802",
     "biomes/greenstep/tex/fern.albedo.webp": "76099989c6972f5531d648d15e7ed0a62acc7f26761d64cbbbdeb41a6992b91d",
@@ -763,10 +763,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-headvent.html": "bfbcc99295888c152ff9827229adf69d599b00a745c42c0f40b60ba24c65fc75"
+    "biomes/greenstep/dist/greenstep-headvent.html": "64134cb3f714b345c98faa0ab014f7f82f7f950c2488bd4f0f7a69af4d502af0"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-headvent.html": "bfbcc99295888c152ff9827229adf69d599b00a745c42c0f40b60ba24c65fc75"
+    "biomes/greenstep/dist/greenstep-headvent.html": "64134cb3f714b345c98faa0ab014f7f82f7f950c2488bd4f0f7a69af4d502af0"
    }
   },
   "build.py --station loamstep": {
@@ -782,7 +782,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -979,10 +979,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-loamstep.html": "4c1c2b41d7c452580b0fe494b7b8e85786362e232daa9972f858294682010d4d"
+    "biomes/greenstep/dist/greenstep-loamstep.html": "198b302e5bf9860e2d9045173b1f1f637ee890602b531243f2d072eec6d004c0"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-loamstep.html": "4c1c2b41d7c452580b0fe494b7b8e85786362e232daa9972f858294682010d4d"
+    "biomes/greenstep/dist/greenstep-loamstep.html": "198b302e5bf9860e2d9045173b1f1f637ee890602b531243f2d072eec6d004c0"
    }
   },
   "build.py --station rilleforge": {
@@ -998,7 +998,7 @@
     "biomes/greenstep/src/60-biome-greenstep-floor.js": "d15b79e7a67c647daeaa208a18b4c03e8b695a0482dcaa6a0f0df641db7e0803",
     "biomes/greenstep/src/70-biome-greenstep.js": "6fb2f227c85f3132ae999e890bf3036eede57454fe7cccea929d24147fa84ce0",
     "biomes/greenstep/src/83-host-far.js": "320831cc3a20e7edd7f8d80761ce669fe60cf2af8c7cb1c3aa11c0ca7d015f12",
-    "biomes/greenstep/src/86-host-cavern.js": "5376bb3e82fd829cf7402f020fa23cdbd9e8e5403d658886fcae5321394b300f",
+    "biomes/greenstep/src/86-host-cavern.js": "4b179c3c7d26d5ad38deee123c0c287d8999aeff81d15f81182d79405fd9db8c",
     "biomes/greenstep/src/87-host-kin.js": "85973693bec01698db413469ecae302856f3a1003393bd7c887bd7a535a92e53",
     "biomes/greenstep/src/89-host-sky.js": "379d6b1070c0dd0306aada58a0905c9c88554ea8cdb0959e956f5ae3c704e8d9",
     "biomes/greenstep/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
@@ -1197,10 +1197,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-rilleforge.html": "e36edce3aa3e89236c0f705b5603211dd7e2a2ca29905b7814a57fe2e6c10659"
+    "biomes/greenstep/dist/greenstep-rilleforge.html": "22802bc2e3325e9e965c93a4e0f7c0683621c6cadacab3817dbc27dae5da24d8"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-rilleforge.html": "e36edce3aa3e89236c0f705b5603211dd7e2a2ca29905b7814a57fe2e6c10659"
+    "biomes/greenstep/dist/greenstep-rilleforge.html": "22802bc2e3325e9e965c93a4e0f7c0683621c6cadacab3817dbc27dae5da24d8"
    }
   }
  }

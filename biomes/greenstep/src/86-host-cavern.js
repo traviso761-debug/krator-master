@@ -21,11 +21,11 @@ const CAVERN_DRAW=(function(){const C=typeof STATION!=='undefined'?STATION.CAVER
   const cellTest=PO.length?'vec2 _gc=-'+(GS/2).toFixed(3)+'+(floor((vCWP+'+(GS/2).toFixed(3)+')/'+GC.toFixed(5)+')+0.5)*'+GC.toFixed(5)+';bool _in=false;'+
    PO.map(o=>'if(distance(_gc,vec2('+o.c[0].toFixed(2)+','+o.c[1].toFixed(2)+'))<'+(o.r+o.rim*.5).toFixed(2)+')_in=true;').join('')+'if(vCG>0.5&&!_in)discard;':'if(vCG>0.5)discard;';
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vCG;varying float vOcc;varying vec2 vCWP;')
-   .replace('#include <clipping_planes_fragment>','#include <clipping_planes_fragment>\n'+cellTest)
+   .replace('#include <clipping_planes_fragment>','#include <clipping_planes_fragment>\n'+cellTest+'float _g=step(0.5,vCG);')   /* a hard switch, ground or rock: a blend between them drew pale fringes */
    /* the ground's paint where the cavern meshes the ground (aCG 1), the basalt's vertex colour elsewhere; the whole darkened by the openness */
-   .replace('#include <map_fragment>','vec4 texelColor=mapTexelToLinear(texture2D(map,vUv));diffuseColor.rgb*=mix(vec3(1.0),texelColor.rgb*vec3(0.66,0.64,0.6),vCG);')
-   .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,vec3(1.0),vCG);')
-   .replace('#include <envmap_fragment>','outgoingLight*=mix(0.04+0.96*pow(clamp(vOcc,0.0,1.0),1.4),1.0,vCG);\n#include <envmap_fragment>');};
+   .replace('#include <map_fragment>','vec4 texelColor=mapTexelToLinear(texture2D(map,vUv));diffuseColor.rgb*=mix(vec3(1.0),texelColor.rgb*vec3(0.66,0.64,0.6),_g);')
+   .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,vec3(1.0),_g);')
+   .replace('#include <envmap_fragment>','outgoingLight*=mix(0.04+0.96*pow(clamp(vOcc,0.0,1.0),1.4),1.0,_g);\n#include <envmap_fragment>');};
  mat.customProgramCacheKey=()=>'gstep-cavern';mat.userData.cavern=true;
  const L=h=>new THREE.Color(h).convertSRGBToLinear(),base=L(0x3a3839),glaze=L(0x4a3a32),brk=L(0x55524e),c=new THREE.Color();   /* linear: the vertex colours are not decoded */
  let tris=0;const BIN=160,bins=new Map();
