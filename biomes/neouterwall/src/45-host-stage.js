@@ -52,8 +52,9 @@ function farRough(x,z){const m=MODEL(x,z),k=smooth(30,250,m);if(k<=0)return 0;co
  const r=1-Math.abs(2*KRAND.fbm(x*.0011+3.7,z*.0011-9.1,0,4,4790)-1);
  return k*(30+700*Math.min(.6,st))*(r-.45);}
 // THE TARN'S BED: the model's water cells lie 1-10 m under the level (a 1 km grid's flat lake); a cauldron's tarn is deep, so its bed
-// sinks a further 60 m under its middle (the depth the water's colour reads: 89w)
-function tarnBed(m){return m<-.5?m-60*smooth(-.5,-9,m):m;}
+// sinks a further 60 m under its middle (the depth the water's colour reads: 89w), from the shoreline down: a cell only a metre under the
+// level is deepened too (the bicubic ground bulged over the water there: station 2's verify drew islands in the tarn)
+function tarnBed(m){return m<.5?m-60*smooth(.5,-3,m):m;}
 // groundH: model + relief (44s: the apron, the stair, the talus). The site's relief runs on past the near box: the apron runs on west
 // along the shore past it, so the mid ground near the box is the same country. Memo of the last point.
 const _tm={x:NaN,z:NaN,h:0};

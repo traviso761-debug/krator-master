@@ -93,7 +93,7 @@ function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
   talus:P.talus,apron:siteApron(x,z),part:P.part,cave:CAVES.length?KCARVE.recessD(x,z)<1:false,mirror:P.part==='head'&&g>.55,shoreD:MODEL_LAKE?y:1e9,   /* the shore: height over the tarn (no tarn, no shore: station 3) */
  
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
-  field:g>.95,aufeis:false,pocket:false,floor:false,   /* field: the NW outer wall's tree passes skip it: here a wall's face (no tree there) */
+  field:g>.95||P.dikeD<2,aufeis:false,pocket:false,floor:false,   /* field: the NW outer wall's tree passes skip it: here a wall's face or within 2 m of a fin (no tree there; a 3 m rib is under the zone raster's 8 m) */
  gully:P.part==='floor'||P.part==='head'?1:0,rock:P.part==='dike'?1:smooth(.75,1.1,g)};
  _fm.x=x;_fm.z=z;_fm.F=F;return F;}
 if(SITE.amp)NEOW.AMP=SITE.amp;
