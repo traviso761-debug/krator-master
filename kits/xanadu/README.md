@@ -46,7 +46,7 @@ lean never reaches a room. `kit_bundle.py`'s `XAK` (Longsong) does not take it.
 **HELD: the citadel** (the owner, 2026-11-09). The Sultan's Palace (`xa_palace`), the Pleasure Dome of the Bay
 (`xa_pleasure_dome_bay`), the Grand Vizier's palace (`xa_vizier`) and the palace gate (`xa_palace_gate`), the citadel of
 `settlements/xanadu/citadel/BLUEPRINT.md`, wait on the owner's visual references: their items are skips that say so, and
-their builders are unchanged. The Garden Pleasure Dome's hold is lifted (below).
+their builders are unchanged. Both Pleasure Domes' holds are lifted (below).
 
 **The Pleasure Dome and the black-and-white pattern system** (the owner's references, 2026-11-09:
 `settlements/xanadu/citadel/refs/pleasure-dome/STYLE.md`; the build's record is `settlements/xanadu/citadel/PLEASURE-DOME.md`).
@@ -66,7 +66,9 @@ per instance: white, black or gold by the instance colour, `xpInk`). Any builder
 is a banded block wherever it stands. The veining of both stones is one library set (`materials.json` family `xMarble`); the
 two proper marbles are owed (`core/materials/PROMPTS-NEEDED.md`, section 41). The furniture is the set item's
 (`kits/interiors/sets/xanadu.js`: explicit rooms, with `?interiors=1`), still in the court set's own colours.
-Its doors are the kit's only UNLOCKED ones: the builder declares them (`window._hollowDoors`), and the sheet's `doors` check
+`xpBalance(b)` sets the share of black a builder draws with (`XPAT.balance`: the citadel's Dome 0.667, black over white; the
+Dome of the Bay 0.34, white over black: `xbayBuild` in 78d makes its drum a hollow rotunda under a dome of turquoise and
+glass gores). The Domes' doors are the kit's only UNLOCKED ones: the builder declares them (`window._hollowDoors`), and the sheet's `doors` check
 (`kits/iziz-vernacular/sheet_verify.py`) asks every other door to be locked.
 
 **Erewhon's citadel, Moorish and Mughal** (2026-11-09; `settlements/xanadu/citadel/refs/citadel/STYLE.md`, the owner's five

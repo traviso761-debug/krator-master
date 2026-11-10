@@ -174,7 +174,7 @@
       { id: 'rest', kind: 'living', poly: rect(29.36, 14.36, 35, 22.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [47.5, 15.32], w: 1.4, swing: 'none' }] },   // E4.9 Baths: rest rooms
     ],
     note: 'the harem palace of Erewhon\'s citadel (BLUEPRINT.md E3, E4), drawn hollow by its own builder in the black-and-white pattern system; the rooms here are for the furniture (FURNITURE.md), which is still the court set\'s own colours' });
-  skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], HELD);
+  skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], 'one rotunda round a pool, drawn hollow by its own builder (kits/xanadu 78d xbayBuild): its few objects are the builder\'s, no catalog furniture');
   skip('xa_vizier', "Grand Vizier's palace", ['civic', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_vizier (sets/xanadu-citadel.js)');
   skip('xa_palace_gate', 'Palace gate', ['military', 'civic'], HELD);
   skip('xa_barge', "Sultan's pleasure barge", ['civic'], 'a barge: an open deck pavilion on the water');

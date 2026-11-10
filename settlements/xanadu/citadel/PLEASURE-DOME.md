@@ -1,4 +1,11 @@
-# The Pleasure Dome, built (2026-11-09 and 10)
+# The Pleasure Domes, built (2026-11-09 and 10)
+
+**Read this first (2026-11-10, after the merge with the citadel).** Three sessions changed Xanadu and Erewhon, and the owner
+asked for ONE rebuild after their merge, so this branch carries sources, docs and pictures only: no built page. The checks
+below were run on local builds; "What the combined rebuild must verify" at the end is the list for the session that
+rebuilds. Since the first record: both domes take the style with a BALANCE (the citadel's black over white, the Bay's white
+over black); the Dome of the Bay is hollow too; the domes outside are the kit's turquoise again (the owner); the Dome's
+site is pinned among the citadel's new buildings.
 
 The interior of `xa_pleasure_dome` ("Garden Pleasure Dome", `kits/xanadu/src/78-xa-palace.js`), in Erewhon's citadel. The
 brief is `refs/pleasure-dome/STYLE.md` (the owner's twelve references: 01 to 07 on 2026-11-09, 08 to 12 on 2026-11-10); the
@@ -47,9 +54,25 @@ garden gate). Floors: ground 0.3 m, upper 8.3 m, the wings' ceilings 14.8 m, the
   (four flights round a banded pier); the treasury; above, the musicians' box and the confectionery stores, each with an
   open balcony onto the hall.
 - **Outside**: whitewash under a gold frieze and parapet, the mosaic drum, the turrets, the kiosks on the roofs. Since
-  reference 08 the domes of variant 0 (Erewhon's) are black gores under gold ribs (`XPAT.dome = 'B'`; `null` gives the
-  kit's turquoise, gilt and mosaic kinds back), every window has a black glazing bar, and black spheres on white fluted
+  reference 08 every window has a black glazing bar (the reference's black gored domes under gold ribs were built and then
+  put back to the kit's turquoise at the owner's word, 2026-11-10: `XPAT.dome = 'B'` brings them back), and black spheres on white fluted
   pedestals flank the hall's garden door. Variants 1 and 2 keep the kit's gilt and mosaic domes.
+- **The balance** (the owner, 2026-11-09): the citadel's Dome is black over white, about two to one (`XPAT.balance.citadel`
+  0.667): black courses twice the white ones' height, more black pieces in the paving, the private floors black with white
+  diamonds, voussoirs, rings and gores two black to one white. The checker stays even, and the checkered door keeps its
+  one-to-one checks.
+
+## The Dome of the Bay
+
+`xa_pleasure_dome_bay` (`87c-xa-erewhon.js`; `xbayBuild` in 78d), on Erewhon's island: the same helpers, WHITE over black
+(`XPAT.balance.bay` 0.34), under its own skylight. The pavilion keeps its stepped platform, colonnade, gilt architrave and
+turquoise dome; the solid drum is now a rotunda 27 m across and 8 m to the springing: 24 banded panels, eleven arched
+windows with black bars, the black lacquer door to the dock (unlocked); a floor of 14 rings round a white-rimmed pool; a
+Greek-key runner from the door; eight black columns under gold capitals; four trees in white planters; black orbs on white
+pedestals outside the door. The dome is 32 gores: turquoise tile and GLASS by turns, the tile gores white inside with a
+black one in four, gold ribs inside and out. The "caves of ice" sky sphere that stood inside the old drum is gone. The
+platform, the flight and the rotunda are in core/walk; its cutaway unit and three views ("Pleasure Dome of the Bay — the
+rotunda / under the dome / from the dock") are on `XA_CUT`. No catalog furniture: its set item is a skip that says so.
 
 ## The pattern system
 
@@ -131,5 +154,35 @@ checkered door), `spiral.jpg` (the rotunda), `baths.jpg` (the great pool), `gall
   (`core/materials/PROMPTS-NEEDED.md`, section 41).
 - **Water.** The pools are the kit's own water boxes (`xWaterB`, as every Xanadu pool), not `core/water`.
 - **Trees indoors** are the Vale's whorl olive through `xaPlant`, about 3.5 m: its trunk is stout for a planter.
-- **A question for the owner: the Dome of the Bay** (`xa_pleasure_dome_bay`, `87c-xa-erewhon.js`) is untouched and still
-  held. The pattern helpers are in the kit and would dress it the same way; say if it should follow.
+- **The site among the citadel's buildings.** The citadel session pinned its palaces round a 94 m Dome. The Dome is now
+  pinned too, 106 x 112 at [-344, -152] on the palace's axis: its garden wall stands 4.5 m off the Vizier's lot (east edge
+  x -401) and 5 m off the guard's (west edge -286); north and south there is NO spare: the Dome's 112 m block overlaps the
+  palace's lot (south edge z -207) and the court temple's (north edge -97) by a metre each, and the North Door stands on
+  the palace's line at z -209. The combined rebuild must look at that seam; if it clashes, the cure is the palace 2 m north
+  or the Dome's chahar bagh 2 m shorter (`XPDOME.GD` and the rooms' south edge).
+
+## Textures asked for
+
+`core/materials/PROMPTS-NEEDED.md` section 41 (the trunk's list): **`stone.marble.black`** and **`stone.marble.calacatta`**
+(the two stones) and **`patterns/xanadu/op-art-arcs`** (the private rooms' wallcovering). Wired as optional families
+`xMarbleB`, `xMarbleW` and `xOpArt` in both Xanadu `materials.json` files: `xpLib` takes the two marbles in place of
+`xMarble` (`rock.marble012`, lifted and inverted) as soon as both are packed; the op-art sheet is not read yet (the
+wallcovering is the shader's). No further surface was needed: the gold is the kit's gilt, the patterns are geometry or
+shader. (My own two prompts, `stone.marble.nero` and `stone.marble.statuario`, were dropped for the trunk's.)
+
+## What the combined rebuild must verify
+
+1. `python3 tools/build.py settlements/xanadu` and `kits/xanadu` after `git lfs pull` of the `tex/` folders (the trunk's
+   `dist/xanadu.tex.xanadu.js` was once built from LFS pointers: 27 KB means black surfaces).
+2. `verify.py dist/erewhon.html --assert`: error panel clean, no `citadel: no room for ...`; the views "Pleasure Dome — the
+   Hall of Feasts / the checkered door / the hall from its gallery / the Valide's court / the baths / the stair hall / the
+   sweeping stair / from the garden" and "Pleasure Dome of the Bay — the rotunda / under the dome / from the dock", every
+   eye check clear.
+3. `--eval "()=>XA_CUT.map((u,i)=>[u.id,xdomeReach(i)])"`: the citadel's Dome 78 of 78 floors reached, the Bay's 4 of 4.
+4. `window._xaDome`: rooms 31, segs 125, doors 29, unplaced 0, `lib` set; `window._xaBay`: doors 1.
+5. The seam with the palace and the temple (above), and the Golden Way's door against the palace gate.
+6. Budgets: the Dome under 250,000 triangles a variant on the sheets, and Xanadu's sheet target under its 6,000,000 (it
+   stood at 5.99M with the first Dome alone; the spandrels are coarser and the small rooms' windows lost their voussoirs
+   to pay for the Bay's interior: see the numbers in "Checked").
+7. `kits/xanadu`: `verify.py dist/xanadu.html --assert` (its `doors` check: the unlocked leaves equal `window._hollowDoors`).
+8. Compare with `refs/pleasure-dome/built/*.jpg` (the first Dome, even balance, before the merge) and the references.

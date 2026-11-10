@@ -165,11 +165,11 @@ function buildXaPleasureDomeBay(G,o){reseed(32941+(o.v|0));const V=xV(o),R=22,li
  const NC=20,CR=R-1.2,CH=11;for(let i=0;i<NC;i++){const a=i/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnCol(x,y0,z,CH,.36,-a,stone,gold);}
  for(let i=0;i<NC;i++){const a=(i+.5)/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnArch('xArchP',x,y0+CH-3.6,z,Math.atan2(x,z),TAU*CR/NC-.4,4.2,.6,stone,{open:true});}
  kput('xDiscG',[0,y0+CH+.5,0],null,[CR+1.4,.4,CR+1.4],gold);xvFr(0,y0+CH+.1,0,.1,.1,.1,0);   // the gilt architrave ring
- const DR=R*.62,DH=8;kput('xDrumW',[0,y0,0],null,[DR,DH,DR],xC(xPick(XPAL.wash)));for(let i=0;i<12;i++){const a=i/12*TAU,x=Math.cos(a)*DR,z=Math.sin(a)*DR;xnXTArchWin(x,y0+1.4,z,Math.atan2(x,z),2.2,4.8,xC(XPAL.lapis),'xMosAB',lit);}
- vB('xBandB',0,y0+DH-.9,0,DR*2+.4,.7,DR*2+.4,0,xC(xPick(XPAL.maroon)));kput('xDiscS',[0,y0+DH,0],null,[DR+.6,.4,DR+.6],stone);
- xnDome(0,y0+DH+.4,0,DR-.6,'T',{c:turq,fin:2.6});for(let k=0;k<12;k++){const a=k/12*TAU;vB('xGoldB',Math.cos(a)*(DR-.4),y0+DH+.4,Math.sin(a)*(DR-.4),.5,.5,.5,-a,gold);}
- {const g=new THREE.Mesh(new THREE.SphereGeometry(DR-1.6,32,16,0,TAU,0,Math.PI/2),new THREE.MeshBasicMaterial({color:0xcfe6f0,side:THREE.BackSide,fog:false}));g.position.set(0,y0+DH+.4,0);g.userData.inspectLabel='The caves of ice (the dome, inside)';g.userData.probeSkip=true;G.add(g);}
- vnDoor(0,y0,DR-.2,0,3,5,'xPaint',xC(XPAL.maroon[0]),xC(0x2a1a10),false);xnFlight(0,0,R+7+.9,0,8,2.0,'vStone',stone);
+ // the drum is a hollow rotunda in the black-and-white pattern system, white over black (the owner, 2026-11-09; 78d xbayBuild)
+ const DR=R*.62,DH=8;xbayBuild(o,{y0,DR,DH,R,turq,wash:xC(xPick(XPAL.wash)),gold,stone,band:xC(xPick(XPAL.maroon))});
+ // (the twig band and the cornice are rings round the hollow drum now: xbayBuild draws them)
+ for(let k=0;k<12;k++){const a=k/12*TAU;vB('xGoldB',Math.cos(a)*(DR-.4),y0+DH+.4,Math.sin(a)*(DR-.4),.5,.5,.5,-a,gold);}
+ xnFlight(0,0,R+7+.9,0,8,2.0,'vStone',stone);
  for(let k=0;k<10;k++){const a=k/10*TAU+.3;xnXPPot(Math.cos(a)*(R-4),y0,Math.sin(a)*(R-4),.4,XGP.turq);}for(let k=0;k<6;k++){const a=k/6*TAU;xnTree(Math.cos(a)*(R+9),Math.sin(a)*(R+9),rr(3.5,5));}
  if(lit)for(let k=0;k<8;k++){const a=k/8*TAU+.2;vnLampPost(Math.cos(a)*(R+4.5),0,Math.sin(a)*(R+4.5),3.4);}
  xnXTQuay(0,R+12,24,8);xnSub('xa_barge',0,0,R+22,Math.PI/2,{v:V});vnFolk(0,R+9,4,4);}

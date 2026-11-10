@@ -9,7 +9,7 @@
 //   xdomeBuild(o,cols)    called by buildXaPleasureDome (78-xa-palace.js); window._xaDome = what it drew
 //   XA_CUT                the cutaway's units (core/host 99-host-cutaway): one per placement, its two storeys and the dome
 const XA_CUT=[];
-function xdomeBuild(o,cols){const D=XPDOME,P=xdomePlan(),T=D.T,Y0=D.Y0,Y1=D.Y1,Y2=D.Y2,V=xV(o),C=VERN.cur;
+function xdomeBuild(o,cols){xpBalance(XPAT.balance.citadel);const D=XPDOME,P=xdomePlan(),T=D.T,Y0=D.Y0,Y1=D.Y1,Y2=D.Y2,V=xV(o),C=VERN.cur;
  const gold=xpGold(),lacq=xC(0x17171b),wash=cols.wash,ST={walls:0,ops:0,doors:0,panes:0,floors:0,blocks:0,strips:0};
  const WK=(typeof KWALK!=='undefined'&&typeof IZDOOR!=='undefined'&&C&&(C.o.scale==null||C.o.scale===1))?KWALK:null;
  const W3=(x,y,z)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];};
@@ -28,7 +28,7 @@ function xdomeBuild(o,cols){const D=XPDOME,P=xdomePlan(),T=D.T,Y0=D.Y0,Y1=D.Y1,Y
    for(let i=0;i<g.ops.length;i++){const q=g.ops[i],lim=i+1<g.ops.length?Math.min(yt,g.ops[i+1].y0):yt;if(q.type==='void'){yy=yt;break;}
     box(g.s-g.w/2,g.s+g.w/2,yy,Math.max(yy,q.y0));const px=X?L.c+off:g.s,pz=X?g.s:L.c+off;
     if(q.ys<lim-.05){xpSpandrel(pat,px,q.ys,pz,ry,q.w,q.arch,th,lim);
-     if(pat!=='wash')xpVoussoirs(px,q.ys,pz,ry,q.w,q.arch,th+.05,{vd:q.w>2.2?.4:.28,len:q.w>2.2?.48:.34});}
+     if(pat!=='wash'&&!(q.auto&&(pat==='op'||pat==='bandFine')))xpVoussoirs(px,q.ys,pz,ry,q.w,q.arch,th+.05,{vd:q.w>2.2?.4:.28,len:q.w>2.2?.48:.34});}   // (the small rooms' own windows go without: the budget)
     yy=lim;}
    box(g.s-g.w/2,g.s+g.w/2,yy,yt);}
   box(cur,L.b+e,yb,yt);ST.walls++;}
@@ -76,16 +76,16 @@ function xdomeBuild(o,cols){const D=XPDOME,P=xdomePlan(),T=D.T,Y0=D.Y0,Y1=D.Y1,Y
  xdomeRooms(o,cols,{glass,wFloor,wStrip,wBlock});
  // the garden between the wings is ground a walker crosses (the gate to the hall's door, the wings' garden doors)
  wFloor([-20,20,0,D.GD/2],0,'Chahar Bagh');wFloor([-D.GW/2,D.GW/2,50,D.GD/2],0,'Chahar Bagh');
- if(C){const w=IZDOOR._w(0,0,0);XA_CUT.push({id:'xa-dome.'+XA_CUT.length,name:'Pleasure Dome',x:w[0],z:w[2],ry:C.ry==null?0:C.ry,w:D.GW,d:D.GD,gate:IZDOOR._w(0,0,D.GD/2-4),
+ if(C){const w=IZDOOR._w(0,0,0);XA_CUT.push({id:'xa-dome.'+XA_CUT.length,name:'Pleasure Dome',x:w[0],z:w[2],ry:C.ry==null?0:C.ry,w:D.GW,d:D.GD,key:'xa_pleasure_dome',tag:'interior:xa-dome',gate:IZDOOR._w(0,0,D.GD/2-4),
   levels:[{y:w[1]+Y0,h:Y1-Y0,name:'ground: the harem palace (E3)'},{y:w[1]+Y1,h:Y2-Y1,name:'upper: the galleries and the favourites (E4)'},{y:w[1]+D.HALL.top,h:8,name:'the clerestory and the drum'}]});}
  ST.rooms=P.rooms.filter(r=>!r.void).length;ST.segs=P.segs.length;ST.unplaced=(D.unplaced||[]).length;ST.lib=XP_T.bound||null;ST.walk=!!WK;window._xaDome=ST;
- window._hollowDoors=(window._hollowDoors|0)+ST.doors;}   // the unlocked leaves of a hollow def, declared (the kit sheet's doors check counts them: kits/iziz-vernacular/sheet_verify.py)
+ window._hollowDoors=(window._hollowDoors|0)+ST.doors;xpBalance(null);}   // the unlocked leaves of a hollow def, declared (the kit sheet's doors check counts them: kits/iziz-vernacular/sheet_verify.py)
 // the reachability audit (core/walk's KWALK.reach): from inside the garden gate, over the Dome's own floors and stairs, with
 // the doors open (their blocks off): {floors, reached, unreached: [names]}. xdomeReach(i) audits the i-th placement
 function xdomeReach(i){const U=XA_CUT[i==null?0:i];if(!U||typeof KWALK==='undefined')return null;
- for(const d of KDOOR.list)if(!d.locked&&d.key==='xa_pleasure_dome')KDOOR.open(d.id,{by:'audit'});for(let k=0;k<40;k++)KDOOR.step(.25);
- const m=Math.max(U.w,U.d)/2+4,R=KWALK.reach([[U.gate[0],U.gate[1],U.gate[2]]],{box:[U.x-m,U.x+m,U.z-m,U.z+m],cell:.4});
- const mine=f=>String(f.tag||'').indexOf('interior:xa-dome')===0,un=R.unreached.filter(mine),re=R.reached.filter(mine);
+ for(const d of KDOOR.list)if(!d.locked&&d.key===U.key)KDOOR.open(d.id,{by:'audit'});for(let k=0;k<40;k++)KDOOR.step(.25);
+ const m=(U.r!=null?U.r:Math.max(U.w,U.d)/2)+4,R=KWALK.reach([[U.gate[0],U.gate[1],U.gate[2]]],{box:[U.x-m,U.x+m,U.z-m,U.z+m],cell:.4});
+ const mine=f=>String(f.tag||'').indexOf(U.tag)===0,un=R.unreached.filter(mine),re=R.reached.filter(mine);
  return{floors:un.length+re.length,reached:re.length,unreached:un.map(f=>f.name+' @'+(f.y!=null?f.y:f.a?f.a[2]:f.pts[0][2]).toFixed(1)),nodes:R.nodes,capped:!!R.capped};}
 // ---------------------------------------------------------------- the Hall of Feasts
 function xdomeHall(o,cols,K){const D=XPDOME,H=D.HALL,Y0=D.Y0,Y1=D.Y1,T=D.T,V=xV(o),gold=xpGold(),cx=H.c[0],cz=H.c[1],hf=H.half,bay=2*hf/H.bays,pw=H.pier,sp=bay-pw;
@@ -206,3 +206,47 @@ function xdomeRooms(o,cols,K){const D=XPDOME,Y0=D.Y0,Y1=D.Y1,Y2=D.Y2,gold=xpGold
  // a little crystal in the private rooms
  for(const p of[[-35,-40],[-35.5,9],[35,-17.5],[35,-3.5],[-24,-14]])xpChandelier(p[0],Y1-D.SLAB,p[1],.8,2.2);
  for(const p of[[-35,-40],[-28,9],[-35,41],[35,-17.5],[35,-3.5],[35,22.5],[-24,-14]])xpChandelier(p[0],Y2,p[1],.8,2.0);}
+// ---------------------------------------------------------------- the Pleasure Dome of the Bay (xa_pleasure_dome_bay, 87c)
+// The round pavilion on Erewhon's island, hollow: the drum a rotunda of banded panels (WHITE over black: XPAT.balance.bay),
+// eleven arched windows and the door to the dock, a floor of rings round a pool, eight black columns under gold capitals, and
+// the dome in gores of turquoise tile and of glass by turns (white inside, a black gore in four), so the room stands under
+// its own skylight. P: {y0 the floor, DR the drum's radius, DH its height, R the colonnade's, turq, wash, gold}
+function xbayBuild(o,P){xpBalance(XPAT.balance.bay);const y0=P.y0,DR=P.DR,DH=P.DH,gold=xpGold(),C=VERN.cur,lacq=xC(0x17171b),ST={doors:0,panes:0,floors:0,blocks:0};
+ const WK=(typeof KWALK!=='undefined'&&typeof IZDOOR!=='undefined'&&C&&(C.o.scale==null||C.o.scale===1))?KWALK:null,TAG='interior:xa-bay';
+ const W3=(x,y,z)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];};
+ const ring=(r,y,name,n)=>{if(!WK)return;const pts=[];for(let k=0;k<n;k++){const a=k/n*TAU;pts.push(W3(Math.cos(a)*r,y,Math.sin(a)*r));}WK.poly({pts,name:'Pleasure Dome of the Bay: '+name,tag:TAG});ST.floors++;};
+ const blk=(x,z,h,y,hh)=>{if(!WK)return;const a=IZDOOR._w(x-h,y,z-h),b=IZDOOR._w(x+h,y+hh,z+h);WK.block([Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[2],b[2]),Math.max(a[2],b[2]),Math.min(a[1],b[1]),Math.max(a[1],b[1])],TAG);ST.blocks++;};
+ // the drum: 24 panels, a window in every other one, the door on the dock's side
+ const N=24,rw=DR-.25,pw=TAU*rw/N+.06,ro=DR+.08,po=TAU*ro/N+.06;
+ for(let k=0;k<N;k++){const th=k/N*TAU,cx=Math.cos(th),cz=Math.sin(th),x=cx*rw,z=cz*rw,xo=cx*ro,zo=cz*ro,ry=Math.atan2(cx,cz);
+  if(k===6){xpSpandrel('band',x,y0+4.2,z,ry,pw,'round',.4,y0+DH);xpSpandrel('wash',xo,y0+4.2,zo,ry,po,'round',.3,y0+DH);xpVoussoirs(x,y0+4.2,z,ry,pw,'round',.46,{vd:.36,len:.4});
+   IZDOOR.leaf(0,y0,DR-.1,0,pw*.82,4.2,.08,lacq,{locked:false,pair:true});ST.doors++;vB('vWinClear',0,y0+4.2,DR-.1,pw*.9,pw/2,.05,0);vB('xGoldB',0,y0+4.16,DR-.1,pw,.08,.14,0,gold);continue;}
+  if(k%2){xpBox('band',x,y0,z,pw,1.2,.4,ry);vB('xWashB',xo,y0,zo,po,1.2,.3,ry,P.wash);xpSpandrel('band',x,y0+4.6,z,ry,pw,'round',.4,y0+DH);xpSpandrel('wash',xo,y0+4.6,zo,ry,po,'round',.3,y0+DH);
+   xpVoussoirs(x,y0+4.6,z,ry,pw,'round',.46,{vd:.34,len:.4});vB('vWinClear',cx*(DR-.1),y0+1.2,cz*(DR-.1),pw*.94,3.4+pw/2,.05,ry);ST.panes++;
+   vB('xp_solid',cx*(DR-.1),y0+1.2,cz*(DR-.1),.07,3.4+pw/2-.05,.07,ry,xpInk('B'));vB('xGoldB',cx*(DR-.1),y0+4.56,cz*(DR-.1),pw*.94,.06,.1,ry,gold);}
+  else{xpBox('band',x,y0,z,pw,DH,.4,ry);vB('xWashB',xo,y0,zo,po,DH,.3,ry,P.wash);}
+  vB('xGoldB',cx*(rw-.24),y0+DH-.22,cz*(rw-.24),pw,.22,.06,ry,gold);
+  vB('xBandB',cx*(ro+.2),y0+DH-.9,cz*(ro+.2),po+.1,.7,.12,ry,P.band);vB('vStone',cx*(ro+.15),y0+DH-.2,cz*(ro+.15),po+.2,.4,.9,ry,P.stone);   // the twig band and the cornice, outside
+  blk(cx*DR,cz*DR,k===6?0:pw*.36,y0,DH);}
+ // the floor of rings, the pool at its heart, the runner from the door; black columns under gold capitals; trees in white planters
+ xpRings(0,y0,0,DR-.5,14,.008);ring(DR-.5,y0,'the rotunda',20);
+ kput('xpDisc',[0,y0+.2,0],null,[4.4,.5,4.4],xpInk('W'));kput('xDiscWater',[0,y0+.46,0],null,[3.9,.06,3.9],xC(XPAL.water));blk(0,0,3.6,y0,.9);
+ xpRunner(0,y0+.03,(DR+4.4)/2-.3,2.4,DR-5.4,0);
+ for(let k=0;k<8;k++){const a=(k+.5)/8*TAU,x=Math.cos(a)*8.4,z=Math.sin(a)*8.4;xpBlackCol(x,y0,z,.32,DH+.4);blk(x,z,.36,y0,DH);}
+ for(let k=0;k<4;k++){const a=k/4*TAU+Math.PI/4,x=Math.cos(a)*11,z=Math.sin(a)*11;xpPlanter(x,y0,z,.8,.75,3.2,'W');blk(x,z,.8,y0,2);}
+ for(const s of[-1,1])xpOrb(s*3.2,y0,DR+1.5,.45,1.1);
+ // the dome: turquoise tile and glass by turns, the tile gores white inside (a black one in four), gold ribs, a gilt finial
+ {const yd=y0+DH+.4,r=DR-.6;for(let k=0;k<XP_NGORE;k++){const q=qEuler(0,k/XP_NGORE*TAU,0);
+   if(k%2){kput('xpGoreGlass',[0,yd,0],q,[r,r,r]);continue;}
+   kput('xpGoreT',[0,yd,0],q,[r,r,r],P.turq);kput('xpGore',[0,yd,0],q,[r-.25,r-.25,r-.25],xpInk(k%8===0?'B':'W'));kput('xpRibO',[0,yd,0],q,[r,r,r],gold);kput('xpRib',[0,yd,0],q,[r-.25,r-.25,r-.25],gold);}
+  kput('xpGlassDisc',[0,yd+r*.99,0],null,[r*.14,.04,r*.14]);vPst('xColG',0,yd+r-.1,0,.06,1.6,xC(XPAL.gold[0]));vBall('xGold',0,yd+r+1.3,0,.7,xC(XPAL.gold[0]));kput('xConeG',[0,yd+r+1.4,0],null,[.08,1.3,.08],xC(XPAL.gold[0]));}
+ // core/walk: the platform and its flight; the cutaway's unit and the views' points (world), kept on it
+ ring(P.R+1,y0-.1,'the platform',20);
+ if(WK){WK.strip({a:W3(0,0,P.R+8.2),b:W3(0,y0-.1,P.R-.6),w:7,name:'Pleasure Dome of the Bay: the flight',tag:TAG});
+  WK.strip({a:W3(0,y0-.1,DR+1.2),b:W3(0,y0,DR-.8),w:pw*.8,name:'Pleasure Dome of the Bay: the threshold',tag:TAG});}
+ if(C){const w=IZDOOR._w(0,0,0),V6=(a,b)=>IZDOOR._w(a[0],a[1],a[2]).concat(IZDOOR._w(b[0],b[1],b[2]));
+  XA_CUT.push({id:'xa-bay.'+XA_CUT.length,name:'Pleasure Dome of the Bay',x:w[0],z:w[2],r:P.R+9,key:'xa_pleasure_dome_bay',tag:TAG,gate:IZDOOR._w(0,y0-.1,DR+4),
+   levels:[{y:w[1]+y0,h:DH,name:'the rotunda'},{y:w[1]+y0+DH,h:DR,name:'the dome'}],
+   views:{'the rotunda':V6([0,y0+1.8,DR-2.6],[0,y0+6.5,-8]),'under the dome':V6([2.5,y0+1.7,7],[0,y0+DH+9,-1]),'from the dock':V6([0,y0+3,P.R+16],[0,y0+9,0])}});}
+ vnReg('Pleasure Dome of the Bay — the rotunda',0,0,DR,DH+DR);
+ window._xaBay=ST;window._hollowDoors=(window._hollowDoors|0)+ST.doors;xpBalance(null);}

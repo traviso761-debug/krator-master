@@ -28,6 +28,7 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
   L('the Hall of Feasts',0,2.3,-2.5,0,8,-36);L('the checkered door',0,2.1,-27,0,4.2,-46);L('the hall from its gallery',0,10.3,-1.6,0,10,-36);
   L("the Valide's court",-38,2.2,-1.2,-38,5.5,-27);L('the baths',21.5,2.6,48.6,42,5.5,35);
   L('the stair hall',-44.6,2.1,30.6,-45.2,9.5,21);L('the sweeping stair',22,2.2,9,44,7,9);L('from the garden',0,9,52,0,14,-20);}}
+ {const U=XA_CUT.find(u=>u.key==='xa_pleasure_dome_bay');if(U)for(const n in U.views)V['Pleasure Dome of the Bay — '+n]=U.views[n];}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  // inside the citadel (2026-11-09; kits/xanadu/src/78n-xa-citadel.js): the Sultan's Hall of Audience toward the dais under its

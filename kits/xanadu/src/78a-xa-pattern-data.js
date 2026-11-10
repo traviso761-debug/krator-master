@@ -22,6 +22,7 @@
 //                                   white, black or gold: XPAT.ink)
 //   XPAT.room[kind]        the dress of a kind of room (STYLE.md rule 4): wall, floor and ceiling patterns, the arch curve
 //   XPAT.arch[kind]        an arch curve's shape; xpArchCurve(kind, n) gives the intrados (span 1, springs at y 0)
+//   XPAT.balance           the share of black, by dome (the pattern materials read it per block)
 //   XPAT.fret              the Greek key as a bitmap (rows top to bottom, '1' gold), tiled along the border
 const XPAT={
  stone:{black:0x121214,white:0xf2efe8,gold:0xd6a640,vein:.8},
@@ -51,7 +52,11 @@ const XPAT={
  arch:{round:{rise:.5},pointed:{rise:.62},horseshoe:{rise:.66,r:.46,c:.2}},
  fret:['111110','100010','101010','101000','101111'],
  exterior:'wash',   // the outside keeps the kit's whitewash and gold frieze
- dome:'B',          // the domes outside (ref 08): black gores under gold ribs ('B'); null gives each variant the kit's own kind back
+ dome:null,         // the domes outside: the kit's own kinds (turquoise on variant 0: the owner, 2026-11-10, for both domes); 'B' is ref 08's black gores under gold ribs
+ // the balance (the owner, 2026-11-09): how much of a pattern is black. The citadel's Dome favours black (the ground black, the
+ // figure white, about two to one); the Dome of the Bay favours white, under more skylight. A builder sets it (xpBalance)
+ // and every block it draws carries it; band, chevron, pave, op and diamond read it, and the alternating pieces follow
+ balance:{citadel:.667,bay:.34,even:.5},
 };
 // the intrados of an arch of span 1 springing at y = 0, from the left spring over the crown to the right: n+1 points [x, y]
 function xpArchCurve(kind,n){const A=XPAT.arch[kind]||XPAT.arch.round,P=[];n=n==null?16:n;
