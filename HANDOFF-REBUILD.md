@@ -1,5 +1,19 @@
 # Handoff: the all-builds rebuild
 
+## Twins stations 2-6 (2026-11-10, `claude/twins-finish-cloud`, from `claude/cloud-kits-verify` 6546a3eee; a cloud session, no GPU)
+
+**Built** (`biomes/twins`, `NOTES.md` has each): station 2 the Brazier (`dist/twins-brazier.html`: Oasis 3 on the col, KTHERM heat, core/water
+springs, geysers and mud pots, the Hearths' pocket-hearths read in place, the Shrine of the Split Horn); 3 the Red Cistern (`twins-lavasump.html`:
+the decoy tube on KCAVERN, a lava pond on `ATMOS.lavaMaterial`, the breaking crust and the night gas); 4 the Valley of the Iron Shroud
+(`twins-shroudvale.html`: the box vale, the moraine, the -34 C sink, KGLACIER's seracs, the Guide's Needle); 5 the Rime Twin
+(`twins-erebustwin.html`: the summit caldera, KGLACIER's ice towers and caves, tube 10's mouth, slush cauldrons); 6 Catch-Lookout Spring
+(`twins-catchlookout.html`: `WATER.terraces` soaking basins, krummholz, the scarp and the Catch below). **Shared** (every Twins page, station 1's
+included): the ground's station layers and `STN.shareLayers` (`84`), the station ground classes (`45c`, `50`), the oasis model and drawing
+(`45a7`, `89c`), the oasis pass (`60`), the kit's new items, `build.py`'s `"kin"`. Each page passes `verify.py --assert` in software GL.
+**Owed:** the GPU verify of all six (`KRATOR_GL=gpu`; station 1's page changed with the shared fragments) and then `PORT-BASELINE.json` for
+`biomes/twins/dist/` (not rewritten here); the core versions of the mud pots, fumaroles, breaking crust, night-pooling gas and cold sink (drawn
+kit-side; `claude/core-plan-features-229d2a` is not pushed); the life layer; the rest in `biomes/twins/KNOWN_ISSUES.md`.
+
 ## The cloud kits merged and GPU-verified (2026-11-09, `claude/cloud-kits-verify`, from `claude/biome-rebuild` 0e2f6649d; not pushed)
 
 **Merged** (sources; pages and the baseline rebuilt here): twins (`ccr-906e567d`), godshearth (`ccr-b9d1a178`), godstep and greenstep

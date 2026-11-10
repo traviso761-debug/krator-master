@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/twins.html`
+Built output (never open it; edit `src/` and rebuild): `dist/twins-brazier.html`, `dist/twins-catchlookout.html`, `dist/twins-erebustwin.html`, `dist/twins-lavasump.html`, `dist/twins-shroudvale.html`, `dist/twins.html`
 
 Build: `cd biomes/twins && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -20,16 +20,18 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 3 | the frame (35) |
 | `45a5-host-region.js` | 1 |  |
-| `45c-host-field.js` | 8 | the fields (cached on a 20 m lattice) (31); the host binding (72) |
-| `50-biome-twins-species.js` | 7 | the species (PLAN.md section 5): the warm collar (13); the ground classes (sRGB; PLAN.md sections 1, 3  (17); the items (35) |
-| `60-biome-twins-ground.js` | 6 |  |
+| `45a7-host-oasis.js` | 7 |  |
+| `45c-host-field.js` | 9 | the fields (cached on a 20 m lattice) (31); the host binding (76) |
+| `50-biome-twins-species.js` | 13 | the species (PLAN.md section 5): the warm collar (13); the ground classes (sRGB; PLAN.md sections 1, 3  (22); the items (57) |
+| `60-biome-twins-ground.js` | 10 | THE OASES (stations 2 and 6: PLAN.md section 5's (56) |
 | `70-biome-twins.js` | 2 |  |
 | `82-host-far.js` | 4 | light modes (35) |
-| `84-host-ground.js` | 14 |  |
-| `88-host-build.js` | 1 |  |
+| `84-host-ground.js` | 17 |  |
+| `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89b-host-twins.js` | 3 |  |
+| `89c-host-oasis.js` | 8 |  |
 | `89zz-host-shadow.js` | 1 |  |
 | `99-host-take.js` | 10 | the inspector's words (9); the probe's budgets and the kit's own checks (ve (29); the page, handed to the host (72) |
 | `99-tail.html` | <1 |  |
@@ -40,4 +42,9 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| brazier | 44a-host-station.js, 45b-host-model.js, 87-host-brazier.js, 98-host-brazier.js | 26 |
+| catchlookout | 44a-host-station.js, 45b-host-model.js, 87-host-lookout.js, 89d-host-terraces.js, 98-host-lookout.js | 23 |
+| erebustwin | 44a-host-station.js, 45b-host-model.js, 87-host-rime.js, 98-host-rime.js | 25 |
+| lavasump | 44a-host-station.js, 45b-host-model.js, 55-biome-twins-sump.js, 87-host-sump.js, 89d-host-sump.js, 98-host-sump.js | 37 |
 | pyroduct | 44a-host-station.js, 45b-host-model.js, 87-host-tube.js, 98-host-pyroduct.js | 38 |
+| shroudvale | 44a-host-station.js, 45b-host-model.js, 87-host-shroud.js, 89d-host-shroud-water.js, 98-host-shroud.js | 31 |

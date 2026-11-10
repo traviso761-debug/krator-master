@@ -56,7 +56,7 @@ const OASIS_DRAW=(typeof OASIS==='undefined'||typeof WATER==='undefined'||!WATER
   const d=WATER.drawSpring(W,{THREE,scene,fog:scene.fog,mats:MATS,renderOrder:1});d.mesh.userData.inspectLabel='A mud pot (grey-rose kaolinite, plopping at '+(m.T==null?78:m.T)+' C)';m.W=W;out.mudpots++;});
  // ---- the geysers: the cone's mouth their vent, the host clock theirs
  const GU={uScale:{value:900}},GM=new Map();tick(()=>{GU.uScale.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));});
- O.geysers.forEach(G=>{const top=G.y+(G.cone==null?2.2:G.cone)-.2,P=G.period||1200;
+ O.geysers.forEach(G=>{const top=G.y+(G.cone==null?2.2:G.cone)-.2,P=G.period==null?1200:G.period;
   const W=WATER.geyser({key:G.key,name:G.name,vents:[[G.x,G.z]],top,H:G.H,style:G.style||'cone',period:P,pre:P*.12,dur:Math.min(P*.15,90),steam:Math.min(P*.2,120),pool:1.2,world:WORLD});
   const D=WATER.drawGeyser(W,{THREE,scene,uniforms:GU,fog:scene.fog,wind:[.6,-.3],gravity:9.8,mats:GM});D.points.userData.inspectLabel=G.name;G.W=W;out.geysers++;});
  out.surfaces=WATER.surfaces.length;twinsWater(out);return out;})();

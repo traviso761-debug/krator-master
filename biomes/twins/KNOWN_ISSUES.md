@@ -56,3 +56,9 @@
   (core/atmos/host's heightfog is not taken); the weather's blizzard is the only fog there.
 - [ ] **The Rime Twin's ice cliffs are kept under ~30 degrees**: the ice margin is drawn as ground, and the faces' strata paint (now kept
   off the ice: `gRockW *= 1 - vGP.x` in `84`) was the reason; a true serac cliff is KGLACIER's seracs, not the ground.
+- [ ] **The Red Cistern's glow lights only the cavern's rock**, not the host's ground round the pond (the ground shader has no point light);
+  the well where the tube opens into the amphitheatre's wall is the cavern's mesh and reads as a lighter grey column against the host's
+  dark walls (station 1's "rim of a well" issue, larger here); the crust apron reads red-brown because the library's lava crust is reddish
+  under the tint.
+- [ ] **Sun hidden by the gas giant**: at the Rime Twin's site the giant covers the sun from about 9:30 to 12:00 on the host clock (the
+  shared sky's real eclipse); its day views are set to 13:36. A station whose views open at 11:00 elsewhere on the range should check.

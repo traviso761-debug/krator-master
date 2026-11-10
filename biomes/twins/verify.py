@@ -45,6 +45,7 @@ EXPORT_BOX = [-1716, 632, -1416, 932]          # twins.html: round the First Sky
 EXPORT_BOXES = {
     'twins-brazier.html': [-150, -150, 150, 150],          # the Brazier: its pools, cones, sedge and hearths
     'twins-catchlookout.html': [-180, -150, 120, 150],     # Catch-Lookout Spring: the spring, the basins, the pines
+    'twins-lavasump.html': [-150, -150, 150, 150],         # the Red Cistern: the pond, its crust apron, the strongboxes
     'twins-shroudvale.html': [-937, -1880, -637, -1580],   # the Iron Shroud: the cold sink's wreckage
     'twins-erebustwin.html': [50, -500, 350, -200],        # the Rime Twin: a steam cave, a cauldron, the vent's rim
 }

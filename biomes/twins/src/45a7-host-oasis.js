@@ -15,7 +15,7 @@
 //        geysers: [{key, name, x, z, H, style, period, T, mound}], mudpots: [{key, x, z, r, T}], fumaroles: [{x, z, T, reach, name}],
 //        rills: [[[x, z], ...], ...] (each from a spring downhill), box: [x0, z0, x1, z1] (the bake's), air (C: the oasis's air at 1 m)}
 function OASIS_MODEL(S){const K=KRAND,W=WORLD,O={spec:S,springs:S.springs||[],geysers:S.geysers||[],mudpots:S.mudpots||[],fumaroles:S.fumaroles||[],rills:S.rills||[]};
- const segD=(P,x,z)=>{let b=1e9,t0=0,acc=0,tb=0;for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i],ex=c[0]-a[0],ez=c[1]-a[1],L=Math.hypot(ex,ez),t=clamp(((x-a[0])*ex+(z-a[1])*ez)/(L*L||1),0,1),d=Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t);
+ const segD=(P,x,z)=>{let b=1e9,t0=0,acc=0,tb=0;for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i],ex=c[0]-a[0],ez=c[1]-a[1],L=Math.hypot(ex,ez),t=clamp(((x-a[0])*ex+(z-a[1])*ez)/Math.max(L*L,1e-9),0,1),d=Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t);
    if(d<b){b=d;tb=(acc+t*L);}acc+=L;}return{d:b,s:tb,L:acc};};
  O.segD=segD;
  /* the vents as KTHERM records (core/terrain/47-core-therm.js): every heat the oasis has, one field */

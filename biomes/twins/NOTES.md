@@ -27,7 +27,7 @@ A station's far country is the map's: `python3 biomes/godthrone/tools/region.py 
 |---|---|---|---|
 | 1 | `pyroduct` | `dist/twins.html` | built: the First Breath (Route A's tube A1 at its skylight, the sprint, the dive into A2) |
 | 2 | `brazier` | `dist/twins-brazier.html` | built: the Brazier, Oasis 3 on the col (Route B) |
-| 3 | `lavasump` | | to build: the Red Cistern, the active lava-pool trap (Trap L1) |
+| 3 | `lavasump` | `dist/twins-lavasump.html` | built: the Red Cistern, the active lava-pool trap (Trap L1) |
 | 4 | `shroudvale` | `dist/twins-shroudvale.html` | built: the Valley of the Iron Shroud, Trap F1 |
 | 5 | `erebustwin` | `dist/twins-erebustwin.html` | built: the Rime Twin's ice towers and tube 10 |
 | 6 | `catchlookout` | `dist/twins-catchlookout.html` | built: Catch-Lookout Spring, Oasis 5 above Stair |
@@ -98,6 +98,20 @@ ramp: Route B's way down), the lower bench beyond. The Lookout Spring (70 C, alk
 eight travertine soaking basins stepping east down the bench (`WATER.terraces`, the ground cut to hold them); the dwarf agate-pines on the
 warm margins (8-18 C), sedge, cushions; the lookout cairn on the lip. No snow lies at this height (the field's snow starts at 4,000 m), so
 the snow layer drops out (14 units).
+
+## Station 3, the Red Cistern (Trap L1)
+
+Site px 992, 1465 (4,890 m, 0.87 atm). Map 5.1 pins the trap 1 km down into the NW Twin's south apron (the pin's dent, ~2 km across at its
+lattice); the page reads the dent as the collapse amphitheatre's great bowl, a lava shelf inside it and a shallow valley along the tube's
+line. The decoy tube (KCAVERN, 16 x 12 m with curb-ledges, station 1's cavern rock shader without the torches and with the pond's red glow)
+runs 600 m at 6 degrees from a portal in a collapsed trench, seventeen counterfeit tally-marks cut over the arch and ferns in its warm breath
+(+22 C); 400 m in, the fork into a blind side gallery and the guide's bench 4 m up the opposite wall. Its lower mouth opens in the wall of
+a blind amphitheatre open to the sky (66 m walls): the pond, 90 m across at 4,890 m, is core/atmos's lava (`ATMOS.lavaMaterial`, the
+library's lava crust for the grain), its glow on the glow layer; round it the silvery blister crust 0.23 m over the lava and the ash-dusted
+ramp from the tube's mouth onto it. Hazards (records first): the pond (`KHAZ.GROUND.lavaLake`) and its SO2 (`gasVent`), the crust (a heat
+record with a weight trigger and the kit's own state `TWINS.crust`: it breaks underfoot), the CO2 that pools in the amphitheatre at night
+(`shape.pool`, `TWINS.nightPool`), steady gas in the tube's lower end. Ten abandoned strongboxes and wreck planks and wheels on the rim
+(`TWINS.putLeavings`, the station's kit fragment `55`). The NW Twin 16 km north-north-west.
 
 ## Station 4, the Valley of the Iron Shroud (Trap F1)
 
