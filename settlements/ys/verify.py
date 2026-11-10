@@ -145,7 +145,7 @@ async def run(a):
                 if not r["ok"] and not soft:
                     fails.append("assert " + r["name"])
             from check_trades import trades_check
-            t_ok, t_detail, _t = trades_check(here)
+            t_ok, t_detail, _t = trades_check(here, extra_src=('settlements/iziz/src',))   # the embassy and the chapterhouse are read in place from Iziz (build.py VENDORED_IZIZ_FQ)
             print(("  PASS  " if t_ok else "  FAIL  ") + "voth-trades : " + t_detail)
             if not t_ok:
                 fails.append("assert voth-trades")
