@@ -102,10 +102,10 @@ Read before changing anything here. `build.py` prints the open count.
       - **No gypsum-flower or crust kind in KSPELEO.** The dress is KSPELEO's kinds standing in: small chandeliers for the gypsum flowers,
         druse (mineral gypsum) for the crusts, selenite blocks, a few stalactites. A `gypsum` kind set (flowers curling off the walls, crusts,
         the wall's own big crystals) is a core addition, not made here.
-      - **KSPELEO.mesh's winding** (core): every triangle of its prisms is wound clockwise about the normal it gives, so three's front face is the
-        inside and the outside draws black (found here: druse and blocks were black shards). `85-host-speleo.js` rewinds each triangle that
-        disagrees with its normals (all 275 k here). The Hearths' and nwbay's dress take the same mesh unwound: worth a look there, and a fix in
-        `39b` (with `test-speleo.js`'s digests) is the core's call.
+      - [x] **KSPELEO.mesh's winding** (core; fixed in core 2026-11-09): every triangle of its prisms (and both sides of a curtain) was wound
+        clockwise about the normal it gives, so three's front face was the inside and the outside drew black (found here: druse and blocks were
+        black shards). `39b` now winds every kind counter-clockwise (`test-speleo.js` checks each kind, with a negative; its mesh digests moved on
+        purpose), and `85-host-speleo.js`'s rewinding is gone. The Hearths' crystals and hold and nwbay's caverns took the fix with it.
       - **The scarp is the page's step, not the whole scarp**: 36 m from the table's lip to a bench on the lake marl; the springs come out at
         that step's foot, on a perched table. The plateau's scarp falls 1.2 km and more on to station 2, whose own scarp-foot springs (the doc's
         `KKARST.water(N).spring` at station 2) are not made.

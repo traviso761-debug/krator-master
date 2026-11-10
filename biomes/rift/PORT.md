@@ -46,7 +46,7 @@ and `targets/` only, so these tags are kept here by hand; the two `[G data]` fra
 | `stations/maze/48-rift-maze.js` | [G data] | the cave (KKARST maze cropped, KCAVERN, the mouths, the Ancients' gallery and the walled chamber as records, KSPELEO by tile, KKARST's water and hazards); `CAVE.export()` is the Godot handoff |
 | `stations/maze/49-host-stage.js` | [web] | renderer, the two airs, sun, lamp, the floors (KCAVERN.floorFn), BIO.init |
 | `stations/maze/84-host-rock.js` | [draw] [G shader] | KCAVERN.drawRock with the page's weights; the ground grids; the sky's share (a hook on three's lights chunk) and KGROUND's layers |
-| `stations/maze/85-host-speleo.js` | [draw] | KSPELEO.mesh, one geometry (rewound: KNOWN_ISSUES.md) |
+| `stations/maze/85-host-speleo.js` | [draw] | KSPELEO.mesh, one geometry |
 | `stations/maze/89x-host-air.js` | [web] | core/atmos bound; core/water's perched table (WATER.open) and the springs (WATER.karstSpring) |
 | `stations/maze/89z-host-build.js` | [web] | the registry and the hazards' core/tags records |
 | `stations/maze/98v-host-views.js`, `99-host-take.js` | [web] | the views, the checks and their negatives, KHOST.take |

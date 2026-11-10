@@ -2,9 +2,7 @@
 // the engine, the field's placement (LAND.build, which 89z runs before the bake) and the station's checks (biomes/hearths/PLAN.md sections 6, 11 item 1, 12)
 // THE SNOW: the winter's lying snow (89a: LAND.snowBase) never lies on ground over 0 degC (KTHERM's snow mask: ATMOS.snowBare), so the discs and the fissure's
 // seam stay bare and dark in a white country, their edge the 0 degree contour. Before the materials compile (the bake and snowOnScene are in 89z).
-/* the mask's rows are nx bytes (701 here) and three.js uploads with a 4-byte row alignment by default: a row that is not a multiple of 4 shears the mask
-   (the discs came out snowed). core/atmos's snowBare does not set it (KNOWN_ISSUES.md: owed to core); the station sets it on the texture snowBare returns */
-if(ATMOS.snowBare){try{const t=ATMOS.snowBare(THERM.snowMask({box:THERM_BOX,cell:4,t0:0,soft:3}));if(t){t.unpackAlignment=1;t.needsUpdate=true;}}catch(e){reportErr('snow bare: '+e.stack);}}
+if(ATMOS.snowBare){try{ATMOS.snowBare(THERM.snowMask({box:THERM_BOX,cell:4,t0:0,soft:3}));}catch(e){reportErr('snow bare: '+e.stack);}}
 // THE HOT POOLS (core/water/geyser 52, 52b): one WATER.spring on each of the three larger vents' aprons, banded from the middle out by its temperature
 // (the Old Hearth's boils: deep blue; the west's sulphur-yellow rim; the east's cooler, its iron mats reaching in). The clock and light are the module's
 // (ATMOS.hook, bound in 89a). Each a still surface, so WATER.fields (89z) gives the flora its shore

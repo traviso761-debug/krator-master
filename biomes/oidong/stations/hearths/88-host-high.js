@@ -6,7 +6,7 @@ const THERM=KTHERM.create({soil:-3,vents:[VENT],detail:{amp:1.5,scale:.02,seed:7
 const THERM_BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],THERM_F=THERM.bake({box:[-400,-400,400,400],cell:4});
 const heatAt=(x,z)=>Math.abs(x)<398&&Math.abs(z)<398?KTHERM.fieldAt(THERM_F,x,z):-3;
 REGISTER({name:VENT.name+' (fumaroles at '+VENT.T+' degC; the ground over 25 degC is the hearth trees\')',x:VENT.x,z:VENT.z,y:terrainH(VENT.x,VENT.z)-2,r:20,h:8,
- tags:{hazard:{kind:'heat',danger:.6,falloff:'linear',shape:{type:'cyl',r:14,h:6},radiant:{reach:6}}}});
+ tags:{hazard:{kind:'heat',danger:.6,falloff:'linear',shape:{type:'cyl',r:14,h:6},radiant:{reach:6,dose:.4,danger:.4}}}});
 const STATION_BUILD=function(){const q=new URLSearchParams(location.search),Q=q.has('q')?+q.get('q'):1;
  HEARTH.parts('cold');
  BIO.cur='hearths/field';const F=HEARTH.layout({therm:THERM_F,at:[VENT.x,VENT.z],R:240,dress:'cold',seed:KRAND.hash(7120,1186,1591),toward:{az:0,alt:40},

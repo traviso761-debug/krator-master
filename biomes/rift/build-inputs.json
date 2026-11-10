@@ -145,8 +145,8 @@
   },
   "build.py --station highland": {
    "inputs": {
-    "biomes/rift/KNOWN_ISSUES.md": "995d01092b6051bc1d5af45d35ab418bac1dd835935dbe1ac4db712afccf4eb9",
-    "biomes/rift/PORT.md": "2c997f355c575596d53a9ed1a66dc7ae046bb3606ca056f6bfdc7410cd0066e3",
+    "biomes/rift/KNOWN_ISSUES.md": "8c0ddb8016b63919423c2f7b69c67cfef16a3efc6650f50612add051b697fb76",
+    "biomes/rift/PORT.md": "dc855c76e706914c152f73d8ec847d7aac76e32f3a32441622fb1d0c8e7048e4",
     "biomes/rift/build.py": "d87fcce0f110a0dcac6300510eb3ffa4e625d1359f0e02ce41e9da8bd1a98671",
     "biomes/rift/src/00-head.html": "89bb8eca860ab757eac21abed4ac5b5cb76fe2ca28d120eb822981e2166856fb",
     "biomes/rift/src/44s-host-station.js": "c10251d62aa7912ec4f711d1f3b1e10b1f72983c2cf2c57d77541b32ddcc38ca",
@@ -292,8 +292,8 @@
   },
   "build.py --station jungle": {
    "inputs": {
-    "biomes/rift/KNOWN_ISSUES.md": "995d01092b6051bc1d5af45d35ab418bac1dd835935dbe1ac4db712afccf4eb9",
-    "biomes/rift/PORT.md": "2c997f355c575596d53a9ed1a66dc7ae046bb3606ca056f6bfdc7410cd0066e3",
+    "biomes/rift/KNOWN_ISSUES.md": "8c0ddb8016b63919423c2f7b69c67cfef16a3efc6650f50612add051b697fb76",
+    "biomes/rift/PORT.md": "dc855c76e706914c152f73d8ec847d7aac76e32f3a32441622fb1d0c8e7048e4",
     "biomes/rift/build.py": "d87fcce0f110a0dcac6300510eb3ffa4e625d1359f0e02ce41e9da8bd1a98671",
     "biomes/rift/src/00-head.html": "89bb8eca860ab757eac21abed4ac5b5cb76fe2ca28d120eb822981e2166856fb",
     "biomes/rift/src/44s-host-station.js": "c10251d62aa7912ec4f711d1f3b1e10b1f72983c2cf2c57d77541b32ddcc38ca",
@@ -442,8 +442,8 @@
     "biomes/hearths/tex/ground.gypsum.albedo.webp": "b5a1e90655b4b6102eec4e890621baa3c2c9504d0f37cc583edb9d7b50ec9720",
     "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
     "biomes/hearths/tex/rock.limestone.albedo.webp": "cf9eb03a8fe2a4f5b1f14ffcfde4b04770754eb1bb91bd90f3b6c450cba4a481",
-    "biomes/rift/KNOWN_ISSUES.md": "995d01092b6051bc1d5af45d35ab418bac1dd835935dbe1ac4db712afccf4eb9",
-    "biomes/rift/PORT.md": "2c997f355c575596d53a9ed1a66dc7ae046bb3606ca056f6bfdc7410cd0066e3",
+    "biomes/rift/KNOWN_ISSUES.md": "8c0ddb8016b63919423c2f7b69c67cfef16a3efc6650f50612add051b697fb76",
+    "biomes/rift/PORT.md": "dc855c76e706914c152f73d8ec847d7aac76e32f3a32441622fb1d0c8e7048e4",
     "biomes/rift/build.py": "d87fcce0f110a0dcac6300510eb3ffa4e625d1359f0e02ce41e9da8bd1a98671",
     "biomes/rift/src/44s-host-station.js": "c10251d62aa7912ec4f711d1f3b1e10b1f72983c2cf2c57d77541b32ddcc38ca",
     "biomes/rift/src/45m-host-map.js": "ed82beea0bc892edb32df8c5be30a5e0c490aa520b00977de169ed45f090256b",
@@ -455,7 +455,7 @@
     "biomes/rift/stations/maze/48-rift-maze.js": "41c6f1d7c9029a73f3b35183375285013f46e2b0771dd7ab77ed0154822f879b",
     "biomes/rift/stations/maze/49-host-stage.js": "b07e7ed8ae7dce936c7d51c650b622c687f181f84655e2c5e1d4048558003b66",
     "biomes/rift/stations/maze/84-host-rock.js": "1de5fa1b12a3444e3e720357ce8a8c10146e2ef8d67dcc97efe323f8013e53d2",
-    "biomes/rift/stations/maze/85-host-speleo.js": "b7f7b0b706f0841149cd8e83be9f3122a65d4c7d16be4654c7a08fde88b6a4c9",
+    "biomes/rift/stations/maze/85-host-speleo.js": "9a591201e0f9068e5124b781493dfba9f78e3e08113e0d1af2af3b8ed5cff7c8",
     "biomes/rift/stations/maze/89x-host-air.js": "8aabeb097383a118eec54566edfc59e616d84c12e47d29dbb0cb6f7853e47c98",
     "biomes/rift/stations/maze/89z-host-build.js": "5c93e01a20c854d5191831df94be2671a9b5e9aae11e94153404aca30e8f4fb1",
     "biomes/rift/stations/maze/98v-host-views.js": "44022e28d7b5763f1705eb1a483bd19edcba9312b7e4e2df394d71de64c0bb63",
@@ -554,7 +554,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -577,16 +577,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-maze.html": "52ff2186b58dd5924d770fd2c2c6d6577a967d9051f29ebb963e4acad59b7a56"
+    "biomes/rift/dist/rift-maze.html": "285fdf037aabd6e2da46282e5a4b6b2855c18f73e5b63397ea8348f96ba6a232"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-maze.html": "78b090540211d887288fdbdd3db47fce7db370ff90fe17bb75a9415930b8e02c"
+    "biomes/rift/dist/rift-maze.html": "91b6c8cd562338aabef3ba8157c6957111533f0af18f5fb44e6ce50a739b3b16"
    }
   },
   "build.py --station plateau": {
    "inputs": {
-    "biomes/rift/KNOWN_ISSUES.md": "995d01092b6051bc1d5af45d35ab418bac1dd835935dbe1ac4db712afccf4eb9",
-    "biomes/rift/PORT.md": "2c997f355c575596d53a9ed1a66dc7ae046bb3606ca056f6bfdc7410cd0066e3",
+    "biomes/rift/KNOWN_ISSUES.md": "8c0ddb8016b63919423c2f7b69c67cfef16a3efc6650f50612add051b697fb76",
+    "biomes/rift/PORT.md": "dc855c76e706914c152f73d8ec847d7aac76e32f3a32441622fb1d0c8e7048e4",
     "biomes/rift/build.py": "d87fcce0f110a0dcac6300510eb3ffa4e625d1359f0e02ce41e9da8bd1a98671",
     "biomes/rift/src/00-head.html": "89bb8eca860ab757eac21abed4ac5b5cb76fe2ca28d120eb822981e2166856fb",
     "biomes/rift/src/44s-host-station.js": "c10251d62aa7912ec4f711d1f3b1e10b1f72983c2cf2c57d77541b32ddcc38ca",
@@ -740,8 +740,8 @@
     "biomes/abyssal-savannah/tex/lily.albedo.webp": "9034cb7576e11a6b23713e109f8f48b53215a99360120345a5c34bf0475b39d5",
     "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
     "biomes/abyssal-savannah/tex/thatch.albedo.webp": "1e934c5e230d47fbc5fdf0686bd4291d5a61c5395a21de727b9078e2ee14262a",
-    "biomes/rift/KNOWN_ISSUES.md": "995d01092b6051bc1d5af45d35ab418bac1dd835935dbe1ac4db712afccf4eb9",
-    "biomes/rift/PORT.md": "2c997f355c575596d53a9ed1a66dc7ae046bb3606ca056f6bfdc7410cd0066e3",
+    "biomes/rift/KNOWN_ISSUES.md": "8c0ddb8016b63919423c2f7b69c67cfef16a3efc6650f50612add051b697fb76",
+    "biomes/rift/PORT.md": "dc855c76e706914c152f73d8ec847d7aac76e32f3a32441622fb1d0c8e7048e4",
     "biomes/rift/build.py": "d87fcce0f110a0dcac6300510eb3ffa4e625d1359f0e02ce41e9da8bd1a98671",
     "biomes/rift/src/00-head.html": "89bb8eca860ab757eac21abed4ac5b5cb76fe2ca28d120eb822981e2166856fb",
     "biomes/rift/src/44s-host-station.js": "c10251d62aa7912ec4f711d1f3b1e10b1f72983c2cf2c57d77541b32ddcc38ca",

@@ -55,7 +55,12 @@ ok('the hypogene preset holds none of them',S.place(C,{box,y:1,world:9}).every(r
 // ---- the crystal caves (2026-11-03): the old presets are byte-identical to the module before them
 const fnv=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
 const mstr=x=>{const M=S.mesh(x);return [Array.from(M.pos).map(v=>v.toFixed(5)).join(','),Array.from(M.idx).join(','),Array.from(M.kind).join(',')].join('|');};
-ok('the hypogene and limestone presets are unchanged (records, meshes, blocks)',fnv(JSON.stringify(R))==='402d7320'&&fnv(JSON.stringify(RL))==='8550bf20'&&fnv(mstr(R))==='73da9a65'&&fnv(mstr(RL))==='3729dbb8'&&fnv(JSON.stringify(S.blocks(R).concat(S.blocks(RL))))==='a2ddd66',false);
+/* the mesh digests moved on purpose 2026-11-09 (73da9a65, 3729dbb8 before): the same vertices, every triangle rewound to face out (the test below) */
+ok('the hypogene and limestone presets are unchanged (records, meshes, blocks)',fnv(JSON.stringify(R))==='402d7320'&&fnv(JSON.stringify(RL))==='8550bf20'&&fnv(mstr(R))==='d6345499'&&fnv(mstr(RL))==='4c83942a'&&fnv(JSON.stringify(S.blocks(R).concat(S.blocks(RL))))==='a2ddd66',false);
+/* every triangle counter-clockwise about its own vertices' normals (three's front face): each kind drew its inside, black, before 2026-11-09 */
+const wound=M=>{const P=M.pos,Nn=M.nrm,I=M.idx;let back=0;for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3,ux=P[b]-P[a],uy=P[b+1]-P[a+1],uz=P[b+2]-P[a+2],vx=P[c]-P[a],vy=P[c+1]-P[a+1],vz=P[c+2]-P[a+2];
+  if((uy*vz-uz*vy)*(Nn[a]+Nn[b]+Nn[c])+(uz*vx-ux*vz)*(Nn[a+1]+Nn[b+1]+Nn[c+1])+(ux*vy-uy*vx)*(Nn[a+2]+Nn[b+2]+Nn[c+2])<0)back++;}return back;};
+const flipM=M=>{const I=M.idx.slice();for(let t=0;t<I.length;t+=3){const q=I[t+1];I[t+1]=I[t+2];I[t+2]=q;}return {pos:M.pos,nrm:M.nrm,idx:I};};
 ok('and they hold no crystal kind',R.concat(RL).every(r=>['beam','block','druse'].indexOf(r.kind)<0),false);
 // a Naica: a hall 60 x 40 m, 18 m high, 60 m down, dressed with SELENITE
 const N=KCAVERN.create({ground:()=>60,cell:1,chunk:16,seed:6});N.hall({id:'naica',c:[0,0,0],rx:30,rz:20,h:18,belly:0});N.build();
@@ -69,6 +74,7 @@ kn('block').forEach(r=>r.parts.forEach(B=>{if(!(N.sdf(r.x+B.dx,B.y-.1,r.z+B.dz)<
 ok('druse points stand on their own floor or hang from their own roof; block crystals stand on theirs',dok,false);
 const MN=S.mesh(RN);let f3=true;for(const v of MN.pos)if(!isFinite(v))f3=false;
 ok('the crystal mesh is finite triangles of the new kinds ('+(MN.idx.length/3)+')',f3&&MN.idx.length>0&&[8,9,10].every(q=>Array.from(MN.kind).indexOf(q)>=0),false);
+ok('every kind\'s triangles face out, by its own normals (hypogene, limestone, selenite)',wound(M)===0&&wound(ML)===0&&wound(MN)===0,wound(flipM(ML))===0);
 const BN=S.blocks(RN);ok('beams and blocks block a walker; druse does not',BN.length===kn('beam').length+kn('block').length&&BN.every(b=>b.box[0]<b.box[1]&&b.box[4]<b.box[5]),BN.length===RN.length);
 const TN=S.place(N,{box:[0,0,16,16],y:2,world:5,cell:2,kinds:S.SELENITE}),cN=RN.filter(r=>r.x>=0&&r.x<16&&r.z>=0&&r.z<16);
 ok('a crystal tile placed alone gets what the whole cave has there',JSON.stringify(TN)===JSON.stringify(cN)&&TN.length>0,false);

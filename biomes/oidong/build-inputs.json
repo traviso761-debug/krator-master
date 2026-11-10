@@ -55,7 +55,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -133,16 +133,17 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/oidong": "d00e1171a0e1b06383c0aef4a90f16e925658f5d68a2cb251b299f76e7fb32f5",
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong.html": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
+    "biomes/oidong/dist/oidong.html": "0f82e85f066c5699c12db905e5d2e78390ed82847c1826d4a6ad77c3c02cae94"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong.html": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
+    "biomes/oidong/dist/oidong.html": "0f82e85f066c5699c12db905e5d2e78390ed82847c1826d4a6ad77c3c02cae94"
    }
   },
   "build.py --station hearths": {
@@ -163,7 +164,7 @@
     "biomes/oidong/src/89z-host-build.js": "15e4abcf2996cebb1b0f66a8eed45979f55e520a80facf3c3461fc6e50e8555a",
     "biomes/oidong/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/oidong/stations/hearths/44z-host-site.js": "c1341ad1bb31da48795f37382e32760c83421a1abb133d308e7d54d0b2832f8e",
-    "biomes/oidong/stations/hearths/88-host-high.js": "8d88d58841cfc474696cabfdc43beaa64cc0e3d8c6802d1b73bf85e8ac41ff20",
+    "biomes/oidong/stations/hearths/88-host-high.js": "f2524f5e9dd82b5861a417225fecb6451d717faaa9e74dc3e882138fda6b897f",
     "biomes/oidong/stations/hearths/89-host-sky.js": "2d9eacf50d43bc54981cb5b797018ad8243d489f702f40dbffc71b56abbdf000",
     "biomes/oidong/stations/hearths/89b-host-hearths.js": "923b2fb7a7e526224f1a81ee441e6ffbc6f78f56782c7653104462f7bf749f63",
     "biomes/oidong/stations/hearths/98-host-hearths-take.js": "1fdad3b38fb0128c759ce43e3c578403be7f2704dfb2a12df93c95f3129c15d1",
@@ -208,7 +209,7 @@
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/fx/89-atmos-fx-smokegroups.js": "670a0312d20917534a1afe44cd457b34df28e4e98bae6059a3be4974c6bedc16",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -296,10 +297,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+    "biomes/oidong/dist/oidong-hearths.html": "a6d96119eddf44b73a8608a3f6c3bb20ab5bd55c68020e5b973d2fe03954cd43"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+    "biomes/oidong/dist/oidong-hearths.html": "a6d96119eddf44b73a8608a3f6c3bb20ab5bd55c68020e5b973d2fe03954cd43"
    }
   },
   "build.py --station passes": {
@@ -357,7 +358,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -442,10 +443,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-passes.html": "29d275673bc7ab41ca73f2ee47a252c5f7ba2df07946e470f88d7cff350ab6a7"
+    "biomes/oidong/dist/oidong-passes.html": "f15217dcd420594ae689c66c0f5dd9902c41b3463cf642f16478c1687493114a"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-passes.html": "29d275673bc7ab41ca73f2ee47a252c5f7ba2df07946e470f88d7cff350ab6a7"
+    "biomes/oidong/dist/oidong-passes.html": "f15217dcd420594ae689c66c0f5dd9902c41b3463cf642f16478c1687493114a"
    }
   }
  }

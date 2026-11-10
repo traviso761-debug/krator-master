@@ -65,11 +65,11 @@ Seen and left for the owner (each a look decision or a larger piece of work):
 
 ## Station 7, the Hearth field (2026-11-09; `PLAN.md`, "Station 7, the Hearth field")
 
-- [ ] **`ATMOS.snowBare` uploads its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover): a mask whose rows are not a
-  multiple of 4 bytes (this one's 701) shears, and the discs came out snowed. The station sets `unpackAlignment = 1` on the texture snowBare returns
-  (89b); the fix belongs in core (one line in `A.snowBare`), and oidong's Cold Hearths (`stations/hearths/89b`) should be checked for the same.
-- [ ] **Oidong's Cold Hearths carries a vent hazard with `radiant:{reach:6}` and no `dose`**, which `KHAZ.make` rejects, so its export's hazards
-  section errors when its export box takes the vent (this station had the same record, fixed here with a dose).
+- [x] **`ATMOS.snowBare` uploaded its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover; fixed in core 2026-11-09): a
+  mask whose rows are not a multiple of 4 bytes (this one's 701) sheared, and the discs came out snowed. `A.snowBare` now sets `unpackAlignment = 1`
+  and the station's own setting (89b) is gone; every page that takes the snow cover was rebuilt with it.
+- [x] **Oidong's Cold Hearths carried a vent hazard with `radiant:{reach:6}` and no `dose`**, which `KHAZ.make` rejects (its export's hazards
+  section errored when its export box took the vent). Fixed 2026-11-09 with this station's dose (`radiant:{reach:6,dose:.4,danger:.4}`).
 - [ ] **The glass forest is the N rim's frost frills and bell firs at full density** round the open shelf: ~39,000 trees, ~10.7 M floor
   triangles; the page draws 14-15.4 M triangles a view (under the 19.5 M budget). A winter look (the bell firs' closed bells, `?season=winter`)
   is not switched on by the station.

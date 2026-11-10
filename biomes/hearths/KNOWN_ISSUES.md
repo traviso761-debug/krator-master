@@ -25,6 +25,9 @@ and has no page here.
   hold's, as its structures are.
 - [ ] **The hearth trees' feet in the hold's roof and the night entrance** (section 11's first sketch) are not drawn: the surface is 40 m
   over the active storey's crowns, and the crystal storey's night road is the way up.
+- [x] **The KSPELEO dress drew its inside** until 2026-11-09: `KSPELEO.mesh` (core/terrain 39b) wound every prism clockwise about its own
+  normals, so the gypsum chandeliers, beams, blocks and druse showed their back faces. Fixed in core (found in the rift's gypsum maze);
+  both pages rebuilt with it.
 - **Both pages carry both storeys** (~450 k rock triangles, ~25 s of building in the browser: the network, two KSPELEO passes and the
   hold's crystal tests). Each page's dress is the whole cave's.
 - **The pools' heat is KTHERM's, not KKARST's.** KKARST gives every pool the rising water's 55 degC; the station gives each its KTHERM

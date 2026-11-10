@@ -92,7 +92,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -159,17 +159,18 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/cut": "ddb9cf7157c521a23afc83af8c22e23125278b95b9e31e3d1d15033553038c31",
     "biomes/cut/src": "939ce2ef1e9edc0566c7e8e5d4645d5ede7b87bde3347f4560b2ff5675f4eb63",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut.html": "4f71febcc9fa68c52f0916b829f33da79bf40bf66a9dd5f46faa601e809e4eb8",
+    "biomes/cut/dist/cut.html": "6d1f4d15cf46047b8c99eb310cd037e93266776eac5c32b34ff203d2b6384c17",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut.html": "4f71febcc9fa68c52f0916b829f33da79bf40bf66a9dd5f46faa601e809e4eb8",
+    "biomes/cut/dist/cut.html": "6d1f4d15cf46047b8c99eb310cd037e93266776eac5c32b34ff203d2b6384c17",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    }
@@ -316,7 +317,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -389,13 +390,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut-face.html": "d834af0f97cba127be8768e370eecb6258d638241d031ecf86d13a1de1a88e09",
+    "biomes/cut/dist/cut-face.html": "79943496a01fb1079ade27f57759dec7a7f6949de094980a320078dc6e70a4d3",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut-face.html": "d834af0f97cba127be8768e370eecb6258d638241d031ecf86d13a1de1a88e09",
+    "biomes/cut/dist/cut-face.html": "79943496a01fb1079ade27f57759dec7a7f6949de094980a320078dc6e70a4d3",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
@@ -542,7 +543,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -615,13 +616,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut-wall.html": "52687cf9f300c04933a268cbbefc82fe3cb960520a9b3e78eb7fa4085a756977",
+    "biomes/cut/dist/cut-wall.html": "49e1419975fe45d9d8a02d154fd66d7441e3a1a1a6f462f9f9ad507a2ea11138",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut-wall.html": "52687cf9f300c04933a268cbbefc82fe3cb960520a9b3e78eb7fa4085a756977",
+    "biomes/cut/dist/cut-wall.html": "49e1419975fe45d9d8a02d154fd66d7441e3a1a1a6f462f9f9ad507a2ea11138",
     "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"

@@ -176,7 +176,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -244,6 +244,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/korona": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/korona/src": "43c5b6b08790100fc4bd16a5c8adaed0458b03fc38e161b3b7d5fee292a42786",
     "biomes/korona/stations": "13e11120b1265d22bd0b470ae92f4205b32b3bf11117975470ea216cc40cab9e",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
@@ -251,13 +252,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona.html": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0",
+    "biomes/korona/dist/korona.html": "b7a0ad7cae99952d382c595d08e7c1b09fc5f806153fc68f69be1ffe6428dfae",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona.html": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0",
+    "biomes/korona/dist/korona.html": "b7a0ad7cae99952d382c595d08e7c1b09fc5f806153fc68f69be1ffe6428dfae",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
@@ -484,7 +485,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -560,14 +561,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-basin.html": "57854a70edd67cf4851f1a7365e2aab85ecfab5390196ed82ef73047a1f53534",
+    "biomes/korona/dist/korona-basin.html": "b473bea73a3601290b235f268ed598e5b62d6df1e585b5d1b4279139dca29ab6",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.nwlowlands.js": "6ff797a895e555896c04b2159815a61ff373363f74b020118585d14ab9069914"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-basin.html": "57854a70edd67cf4851f1a7365e2aab85ecfab5390196ed82ef73047a1f53534",
+    "biomes/korona/dist/korona-basin.html": "b473bea73a3601290b235f268ed598e5b62d6df1e585b5d1b4279139dca29ab6",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -778,7 +779,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -854,14 +855,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-gorge.html": "6e7c87a20b0636a347e186cbb0dca555081c6220cf4d5982fdbf7d547bb275a7",
+    "biomes/korona/dist/korona-gorge.html": "a800ab638f26f81d104bb8b74173d5f05341659bf99ba666cf46144a8465d676",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-gorge.html": "6e7c87a20b0636a347e186cbb0dca555081c6220cf4d5982fdbf7d547bb275a7",
+    "biomes/korona/dist/korona-gorge.html": "a800ab638f26f81d104bb8b74173d5f05341659bf99ba666cf46144a8465d676",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -1071,7 +1072,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -1147,14 +1148,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hoar.html": "a72f7784c5f72ea11a57335bf9c18f82f3a612c611e7415fc5acf5a9dff09474",
+    "biomes/korona/dist/korona-hoar.html": "14f5da9e4a850a2a548f6c5b1c8409f3c081e426fb303097f418f7a94cd73aae",
     "biomes/korona/dist/korona.tex.ehigh.js": "4ad128c077c7f18162f7172da5223227a986d00a767013e15e2e2e39d2320e27",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hoar.html": "a72f7784c5f72ea11a57335bf9c18f82f3a612c611e7415fc5acf5a9dff09474",
+    "biomes/korona/dist/korona-hoar.html": "14f5da9e4a850a2a548f6c5b1c8409f3c081e426fb303097f418f7a94cd73aae",
     "biomes/korona/dist/korona.tex.ehigh.js": "4ad128c077c7f18162f7172da5223227a986d00a767013e15e2e2e39d2320e27",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
@@ -1338,7 +1339,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -1414,13 +1415,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-hollow.html": "2602892b38f330c6cce62d003e099a659d41c4eeaf8a66084e3f89af4f02325d",
+    "biomes/korona/dist/korona-hollow.html": "ea45bcc0c6771f4227512846887f38365bd001bc1572cc948754ee645fef33fc",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-hollow.html": "2602892b38f330c6cce62d003e099a659d41c4eeaf8a66084e3f89af4f02325d",
+    "biomes/korona/dist/korona-hollow.html": "ea45bcc0c6771f4227512846887f38365bd001bc1572cc948754ee645fef33fc",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4"
@@ -1679,7 +1680,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -1757,7 +1758,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/korona/dist/korona-trench.html": "db553cd59833128faf34107a822ed40fec90da9e44afd13dadc59b25c0ee7003",
+    "biomes/korona/dist/korona-trench.html": "7558115a7d2e0084464fd98da7e6ad28d81f3c5de343fb61d6fd1d4333bca552",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",
@@ -1765,7 +1766,7 @@
     "biomes/korona/dist/korona.tex.sedesert.js": "d2569bfd6b3d36ed54aeda431787bd1716e818563449226be22e1e48fd3a9090"
    },
    "outputs_raw": {
-    "biomes/korona/dist/korona-trench.html": "db553cd59833128faf34107a822ed40fec90da9e44afd13dadc59b25c0ee7003",
+    "biomes/korona/dist/korona-trench.html": "7558115a7d2e0084464fd98da7e6ad28d81f3c5de343fb61d6fd1d4333bca552",
     "biomes/korona/dist/korona.tex.hyperjungle.js": "cbf9f0fe4bd2e184308d253819b8f332edaf461907e1631a6d52032855a18bde",
     "biomes/korona/dist/korona.tex.korona.js": "058163fa5496d85a678f5683909b3e1ea8aae9e2c1b514bf67d52467a187607a",
     "biomes/korona/dist/korona.tex.necanyons.js": "e74657e527a988c40776bbb531cd541d4b9f2aa261ba4af05b5adcc67801c8c4",

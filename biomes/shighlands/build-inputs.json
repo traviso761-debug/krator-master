@@ -332,7 +332,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
@@ -400,6 +400,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/shighlands": "dee2e1d6ce53c56f6e2b5461ac3ac92de06aea21e917bf1eac15f167af2c79ef",
     "biomes/shighlands/src": "164fe8b8885a4e28424dd0d6be7fb95c152aa3cc032b3c76ee6d5ff161e69d04",
     "biomes/shighlands/stations": "efa85cf13fc59495fcf720b5682430bfcbddde33412bb07ff7d57519cfc238f4",
     "biomes/shighlands/stations/conifers": "56e13cfe2465a7d8948dcc0c9e7f6b8eff4a678134d108afdc902c558b5209bf",
@@ -408,10 +409,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-conifers.html": "cc504645a32009b42a88a3d659723b15800878aeca4f5163648670da16e697f3"
+    "biomes/shighlands/dist/shighlands-conifers.html": "51f3ded423b6b19b610941f70eedd9c7200acd75e2aff15fe95a1bb1991f3d60"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-conifers.html": "cc504645a32009b42a88a3d659723b15800878aeca4f5163648670da16e697f3"
+    "biomes/shighlands/dist/shighlands-conifers.html": "51f3ded423b6b19b610941f70eedd9c7200acd75e2aff15fe95a1bb1991f3d60"
    }
   },
   "build.py --station fellfield": {
@@ -476,7 +477,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
@@ -552,10 +553,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/shighlands/dist/shighlands-fellfield.html": "1ce53a9b58a89f7f40c19d4e1e8ee6c5168d3f03afbcb17c57dce6b62eb1b9a8"
+    "biomes/shighlands/dist/shighlands-fellfield.html": "b4edcf674f7711f7750ec2e23b2692d339730b59292e1c0d329ae99004b60565"
    },
    "outputs_raw": {
-    "biomes/shighlands/dist/shighlands-fellfield.html": "1ce53a9b58a89f7f40c19d4e1e8ee6c5168d3f03afbcb17c57dce6b62eb1b9a8"
+    "biomes/shighlands/dist/shighlands-fellfield.html": "b4edcf674f7711f7750ec2e23b2692d339730b59292e1c0d329ae99004b60565"
    }
   }
  }

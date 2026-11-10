@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "2fbeb8f5fc7efc0ec0a03c6e5ae476130408a0059259c67ab570ac9127a293cd",
+    "biomes/hearths/KNOWN_ISSUES.md": "c7f135325141c80938a43e393a4044e521e133fcf468f923e369643effae8a05",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -79,7 +79,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -94,22 +94,21 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/hearths": "1f48f4ce420d897f96d7ec5e02202170ea200a3117fcaeae2585a6c15b7f8755",
     "biomes/hearths/src": "b88fd745b772d7d8594ad47ea2204313248463871ab6d19b7873d95fb7ac5627",
     "biomes/hearths/stations/crystals": "14d1aab11cc74bd44568b4e815c6360483b6f0a49449295032ec3de25b449ddf",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "ad8849879a30046152f16dd31413373c5a3b423d160c28f18a69c86dfb33eba0"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "ad8849879a30046152f16dd31413373c5a3b423d160c28f18a69c86dfb33eba0"
    }
   },
   "build.py --station crystals": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "2fbeb8f5fc7efc0ec0a03c6e5ae476130408a0059259c67ab570ac9127a293cd",
+    "biomes/hearths/KNOWN_ISSUES.md": "c7f135325141c80938a43e393a4044e521e133fcf468f923e369643effae8a05",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -185,7 +184,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -206,15 +205,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "ad8849879a30046152f16dd31413373c5a3b423d160c28f18a69c86dfb33eba0"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "ad8849879a30046152f16dd31413373c5a3b423d160c28f18a69c86dfb33eba0"
    }
   },
   "build.py --station hold": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "2fbeb8f5fc7efc0ec0a03c6e5ae476130408a0059259c67ab570ac9127a293cd",
+    "biomes/hearths/KNOWN_ISSUES.md": "c7f135325141c80938a43e393a4044e521e133fcf468f923e369643effae8a05",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -290,7 +289,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/39d-core-cavern-floor.js": "4b3ad59ef362a7204cb470c5875e783b6a6144f98b67df44622fb1e6ec3d1c5b",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -312,10 +311,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-hold.html": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
+    "biomes/hearths/dist/hearths-hold.html": "5c84da5c3fd3c1d520a0b8038a94274d4e083ec7e4072be5ec130f15202b4c58"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-hold.html": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
+    "biomes/hearths/dist/hearths-hold.html": "5c84da5c3fd3c1d520a0b8038a94274d4e083ec7e4072be5ec130f15202b4c58"
    }
   }
  }

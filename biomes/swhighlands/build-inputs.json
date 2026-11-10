@@ -533,7 +533,7 @@
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -602,16 +602,17 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/swhighlands": "4f4d5344eaaea58a1d764ee1ca78ed1d8108775c7bc3920ae9ece133c38c310a",
     "biomes/swhighlands/src": "60442b12b7a1ddab7f9b3086ef8fee642a99572a17d81b2310698306edc604f2",
     "biomes/swhighlands/stations/treeline": "28496528f101eb7c97ff44e904f6e1888ac84dea6e2e2753547260b3e822b3bd",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "0e727a68eeb08f7ebea7b7fee8ab8a9a02c83bb55dfa0fd689a7d01807130340"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "cbdf985bc4701ce2ee9b8d2f450eaf1301cc04d8b71dbe0a836e3d6ac622bf25"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "0e727a68eeb08f7ebea7b7fee8ab8a9a02c83bb55dfa0fd689a7d01807130340"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "cbdf985bc4701ce2ee9b8d2f450eaf1301cc04d8b71dbe0a836e3d6ac622bf25"
    }
   }
  }

@@ -311,7 +311,7 @@
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -336,6 +336,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/nwbay": "089978572050d96c530ac4013a9900d45f53188b47842ab1ab38ad859ad3e07e",
     "biomes/nwbay/src": "3521c2f6e959c0e2a209611563676db7cdbb5b6c7f8f4887fd04af1a3f4f8996",
     "biomes/nwbay/stations/caverns": "61199bf64d95c07bb0676b5b7347e9316ac3778cb7925c7f86c5336c8b05c403",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
@@ -343,10 +344,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "1b45d44e031f80c05dc6686134add0c9f02372576333aee897f328f7413b37c5"
+    "biomes/nwbay/dist/nwbay-caverns.html": "33eb9ec313d91f6a764f10ba9833ad552c2df7d0f64b69b685295e7b6fb7c2f9"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "9889a0b8489c79200e3c922e9f84d20a5d2ac3393fff510f97a8c80e1ca2ccef"
+    "biomes/nwbay/dist/nwbay-caverns.html": "6f5118fc3dbaa65f82a95a9add69b28b3e6fa8a7e84eb137a7695561b5688dce"
    }
   }
  }
