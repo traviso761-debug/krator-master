@@ -4,7 +4,7 @@ The brief (`refs/citadel/STYLE.md`): everything in the citadel but the two Pleas
 its own way. What is built (`kits/xanadu/src/78l-xa-moorish-data.js`, `78m-xa-moorish.js`, `78n-xa-citadel.js`; the rooms in
 `kits/interiors/sets/xanadu-citadel.js`; the sites in `targets/erewhon/87-er-layout.js` CIT_SITES), what each view shows and how
 it compares with the five references. Screenshots at deviceScaleFactor 2 (2560 x 1600, Chromium with SwiftShader, no GPU),
-`?interiors=1` so the rooms are furnished, the page's panels hidden: `shots/` next to this file. The textures are the library
+`?interiors=1` so the rooms are furnished, the page's panels hidden: `views/` next to this file. The textures are the library
 stand-ins for the sets owed in `core/materials/PROMPTS-NEEDED.md` section 41 (`../KNOWN_ISSUES.md`), so the patterns are
 the right kind in the wrong hand: judge the geometry and the colour plan, not the motifs.
 
@@ -28,7 +28,7 @@ runs, 33 star ceilings, 20 painted or tiled vaults, about 2,000 muqarnas cells.
 
 ## The views (Erewhon's presets)
 
-### The Hall of Audience (`shots/Citadel_-_the_Hall_of_Audience.jpg`) against 01 (Akbar's gilt ceiling)
+### The Hall of Audience (`views/Citadel_-_the_Hall_of_Audience.jpg`) against 01 (Akbar's gilt ceiling)
 
 Follows: the Mughal state room's plan of the rule. A star-polygon ceiling of eight points modelled in relief (the star hangs
 lowest, the darts and the outer kites step up to the field), its panels framed in raised red-brown ribs as in 01, a gilt field
@@ -40,7 +40,7 @@ opus-sectile tile (the darts), so the ceiling reads as tile, not paint and gildi
 `pietra-dura` arrive. 01's ceiling is a vault rising to the star; ours is flat with the star hung under it. The room has no
 dais and no Great Divan (not in the catalog); no jharokha balcony over it from the day room.
 
-### The gate iwan (`shots/Citadel_-_the_gate_iwan.jpg`) against 04 (the turquoise muqarnas portal)
+### The gate iwan (`views/Citadel_-_the_gate_iwan.jpg`) against 04 (the turquoise muqarnas portal)
 
 Follows: the iwan as 04 frames it: a pishtaq in tile panels and borders, a pointed opening with a gold ring, and a muqarnas
 hood modelled in tiers of cells (six tiers, staggered, alternate tiers in gilt, each cell a niche facing the middle of the
@@ -51,7 +51,7 @@ larger rounded hoods, fewer, and the crown has a boss, not a star. The stand-in 
 for the frame) is busier and less turquoise than 04's. The view is from the six-metre gap between the gate and the Pleasure
 Dome's wall, so it looks almost straight up into the hood.
 
-### The Divan (`shots/Citadel_-_the_Divan.jpg`) against 01 and 05
+### The Divan (`views/Citadel_-_the_Divan.jpg`) against 01 and 05
 
 Follows: the council hall in the state manner: the same star ceiling over a long room (two stars along it), red sandstone
 dado, the pietra-dura field, jali windows with cusped heads down the outer wall, the catalog's table, benches and seats for
@@ -60,7 +60,7 @@ the council.
 Not yet: as the Audience, the textures. The windows' reveals show the house's cobalt outer wall (the wall's core) at the jamb;
 a reveal lining in sandstone is owed.
 
-### The Treasurer's court (`shots/Citadel_-_the_Treasurers_court.jpg`) against 03 (the Moroccan court)
+### The Treasurer's court (`views/Citadel_-_the_Treasurers_court.jpg`) against 03 (the Moroccan court)
 
 Follows: the closest of the four. Horseshoe arches carried on slender paired marble columns with gilt capitals and stucco
 imposts, the arcades' heads in a band; a fountain on the axis in an octagonal turquoise basin with a marble bowl, the rill
