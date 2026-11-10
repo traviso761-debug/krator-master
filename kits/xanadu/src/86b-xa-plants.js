@@ -12,7 +12,14 @@ function xaPlant(kind,x,y,z,h,opt){if(typeof XANADU==='undefined'||!XANADU.treeA
  const list=XAPLANT[kind]||XAPLANT.tree;const sp=opt.sp!=null?opt.sp:list[Math.floor(rng()*list.length)];const S=XANADU.SPECIES[sp];if(!S)return false;
  const v=new THREE.Vector3(x,y,z);if(KXF)v.applyMatrix4(KXF.m);const sc=(KXF&&KXF.s)||1;
  const H=h?Math.max(S.H[0]*.55,Math.min(S.H[1]*1.15,h*sc*(opt.hk||1.15))):undefined;
- const T=XANADU.treeAt(v.x,v.y,v.z,sp,{H,lv:2});if(!T)return false;
+ // the crown fitted to the def's lot (2026-11-10; xaRoom, 72-xa-helpers.js; opt.r overrides): XANADU.treeAt draws the tree's
+ // height, bole and crown radius first, from the biome's own stream; that stream is set to a seed from the kit's, the three
+ // draws read, then set back, so the crown the call will draw is known, and a scale shrinks the whole tree to the room
+ const room=(opt.r!=null?opt.r:xaRoom(x,z))*sc;let scale;
+ if(isFinite(room)&&BIO.fn&&BIO.fn.reseed){const s=Math.floor(rng()*4294967296),r=BIO.fn.rr;BIO.fn.reseed(s);
+  const tH=r(S.H[0],S.H[1]);r(S.rb[0],S.rb[1]);let cr=r(S.crownR[0],S.crownR[1]);if(H)cr*=Math.min(1.6,H/tH);if(cr>room)scale=room/cr;BIO.fn.reseed(s);}
+ const T=XANADU.treeAt(v.x,v.y,v.z,sp,{H,lv:2,scale});if(!T)return false;
+ if(isFinite(room)&&T.crownR>room*1.01)reportErr('xaPlant: '+S.key+' crown '+T.crownR.toFixed(2)+' m past its room '+room.toFixed(2)+' m (XANADU.treeAt no longer draws H, rb, crownR first?)');
  XA_PLANT_STATS.n++;XA_PLANT_STATS.by[S.key]=(XA_PLANT_STATS.by[S.key]||0)+1;
  if(VERN.cur&&VERN.cur.plants)VERN.cur.plants.push(T);return true;}
 window._plants=XA_PLANT_STATS;

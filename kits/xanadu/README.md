@@ -63,6 +63,18 @@ jali and KGLASS's clear pane, floors, ceilings, courts, flights and the Ramp of 
 them with `kxa.paths(kxa.CITADEL)` and the interior set `xanadu-citadel`. The style per room is the item's `style` and `ceil`
 (the set file's header). Screenshots and how they compare to the references: `settlements/xanadu/citadel/PALACES.md`.
 
+**Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
+A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m
+tiles side by side by it, and `XAK.dims()` hands it to another world. `fw x fd` is only the slope footing under the body.
+Everything a def draws stays on its lot, foliage included: a plant's crown is fitted to the room between its trunk and the
+lot line (`xaRoom`, `72-xa-helpers.js`): the kit's own crowns (`xnTree`, `xnCypress`, the garden palm `xnXPPalm`) shrink to
+it, and `xaPlant` (`86b-xa-plants.js`) reads the crown the Vale biome is about to draw (its first three draws, replayed from a
+seed set on the biome's own stream) and scales the whole tree to fit, reporting an error if the biome ever draws past it.
+`node kits/xanadu/tests/test-footprints.js` (a `tools/test_all.py` step) seals the kit as `XAK`, builds every def and variant
+alone and measures every instance's box against its lot (0.25 m tolerance, townsfolk left out): a garden or water piece
+past it fails; any other def past it must be listed in the test's `KNOWN` with its overhang (`KNOWN_ISSUES.md`, "Defs past
+their lot") and must not grow.
+
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).
 

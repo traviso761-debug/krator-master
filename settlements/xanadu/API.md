@@ -60,7 +60,8 @@ XA.keys() · XA.families()
 ```
 
 Keys: `xa_*`. `family` is the showcase row (rows appear in definition order). `w,d,h` must be honest — the
-showcase spaces sites by `w` and rows by `d`; `fw,fd` is the footing footprint for slope siting (default 92% of
+showcase spaces sites by `w` and rows by `d`, and everything a builder draws stays inside `w x d`
+(`kits/xanadu/tests/test-footprints.js`); `fw,fd` is the footing footprint for slope siting (default 92% of
 `w,d` — give the house's own footprint when `w,d` include a yard). A builder is a **named**
 `function buildXa<Thing>(G,o){reseed(N+(o.v|0)); …}` that builds in the local frame (origin at the plot centre on
 the ground, **+z is the front**) and calls `vnReg(name, lx, lz, r, h)` for its inspector volume(s).
@@ -105,6 +106,7 @@ xnFlight(x,y,z,ry,w,rise,item,c) -> run                    solid stone stair ris
 xnCrenel(x,y,z,w,d,ry,h,c,{item,pointed})
 xnFooting(x,z,w,d,ry,drop,c) · xnTerrace(x,y,z,w,d,ry,h,c,topC)
 xnTree(x,z,h,c,y) · xnCypress(x,z,h,y) · xnFolk(x,y,z,n,spread) · xnYak(x,z,ry,y) · xnFodder
+xaRoom(x,z) -> m                                          crown room to the def's lot line (crowns fit it: kits/xanadu/README.md, "Footprints")
 xnPool(x,y,z,w,d,ry,c) · xnChannel(a,b,w,c,y) · xnFountain(x,y,z,r,c) · xnCharBagh(x,y,z,w,d,ry,{channel,r,fountain}) · xnPave(x,z,w,d,ry,c,cell)
 ```
 

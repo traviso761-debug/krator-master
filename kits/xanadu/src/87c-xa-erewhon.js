@@ -89,7 +89,7 @@ function buildXaTeahouse(G,o){reseed(32901+(o.v|0));const V=xV(o),stone=xC(xPick
  for(const s of[-1,1])for(const z of[-3.2,0,3.2]){vB('vWood',s*3.6,.5,z,1.4,.35,1.0,0,xC(0x5a3a1a));for(const q of[-1,1])vB('xPaint',s*3.6+q*1.2,.5,z,.7,.25,.7,0,xC(xPick([0xd04a8a,0xf2c12e,0x2a9ad8,0x8a3aa8,0xc9442a])));
   vPst('xDrumS',s*3.6,.85,z,.12,.4,xC(0xd8b070));vPst('xGold',s*3.6,1.25,z,.05,.2,gold);}
  for(const s of[-1,1])for(const z of[-3.5,3.5]){vBeam([s*3.6,3.7,z],[s*3.6,3.1,z],.012,xC(0x2e2a26),'vRope');kput('vBarrel',[s*3.6,2.8,z],qEuler(Math.PI,0,0),[.28,.5,.28],xC(0xd8b070));if(lit)vBall('vBulb',s*3.6,2.55,z,.07);}
- for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]])xnXPPot(s[0]*7,0,s[1]*7,.34,XGP.turq);for(const s of[-1,1])xnTree(s*7.2,-7,3.6);
+ for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]])xnXPPot(s[0]*7,0,s[1]*7,.34,XGP.turq);for(const s of[-1,1])xnTree(s*6.2,-6.2,3.6);   // the shade trees inside the 16 m tile (their crowns fitted to it)
  vnFolk(-3.6,0,3,2);vnFolk(3.6,0,2,2);}
 XA.def({key:'xa_teahouse',name:'Teahouse',family:'Garden tiles',tags:{type:['tavern/inn'],wealth:'middle',lit:true},w:16,d:16,h:8,fw:16,fd:16,snap:8,build:buildXaTeahouse});
 
