@@ -1,0 +1,9 @@
+{
+ "base": "main",
+ "out": "abyssal-savannah-bench.html",
+ "note": "Station 3, the bench's edge (PLAN.md section 8): row 414, px 1038 on map 5.1 (-280 m, 1.66 atm), the rim breaking as cliffs (KRELIEF.scarp), the bench steppe and the faulted climb (KRELIEF.relay) into ebadlands' pinyon-juniper country, read in place. Station 1's src/ with this folder's stage, ground, water, build and take (build.py build_main)",
+ "core": ["31b-core-leafset.js"],
+ "terrain": ["38-core-relief.js", "38c-core-landforms.js"],
+ "pack": [],
+ "neigh": ["ebadlands"]
+}

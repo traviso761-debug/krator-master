@@ -1,5 +1,13 @@
 {
  "pages": {
+  "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": {
+   "bytes": 11464076,
+   "sha256": "41f9cc9b01e2769452bb63b18b51f2d448ffcd2303b808b41a23287a7ba94cf6"
+  },
+  "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": {
+   "bytes": 12027617,
+   "sha256": "5395211ea8029e22e219c28335dbc2a583f5631a715ae3b4765124b3ad6ef618"
+  },
   "biomes/abyssal-savannah/dist/abyssal-savannah-erim.html": {
    "bytes": 7920158,
    "sha256": "6883fb4251b107747174b2a1f1f069eece84e46727d4941e159bc2b2b0240f88"

@@ -1,5 +1,7 @@
 {
  "biomes/abyssal-savannah/src/45-host-stage.js: RAWTEX": 2,
+ "biomes/abyssal-savannah/stations/belt/45-host-stage.js: RAWTEX": 2,
+ "biomes/abyssal-savannah/stations/bench/45-host-stage.js: RAWTEX": 2,
  "biomes/abyssal-savannah/src/55-biome-absav-trees.js: ORNUM": 2,
  "biomes/ancientsvalley/src/46z-host-stage.js: ORNUM": 3,
  "biomes/ancientsvalley/src/47-host-land.js: RAWTEX": 1,

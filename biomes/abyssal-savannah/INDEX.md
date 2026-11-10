@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/abyssal-savannah-erim.html`, `dist/abyssal-savannah-north.html`, `dist/abyssal-savannah-serim.html`, `dist/abyssal-savannah.html`
+Built output (never open it; edit `src/` and rebuild): `dist/abyssal-savannah-belt.html`, `dist/abyssal-savannah-bench.html`, `dist/abyssal-savannah-erim.html`, `dist/abyssal-savannah-north.html`, `dist/abyssal-savannah-serim.html`, `dist/abyssal-savannah.html`
 
 Build: `cd biomes/abyssal-savannah && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -41,3 +41,15 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 5 |  |
 | `99-host-take.js` | 10 | the inspector's words (24); the probe's budgets and the kit's own checks (ve (34); the page, handed to the host (80) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| belt | 45-host-stage.js, 80-host-ground.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 54 |
+| bench | 45-host-stage.js, 80-host-ground.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 55 |
+| erim | 44l-host-land.js, 87e-host-own.js | 14 |
+| north | 44l-host-land.js | 3 |
+| serim | 44l-host-land.js | 3 |

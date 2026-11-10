@@ -6,7 +6,7 @@ and the high country above its rim. The owner, 2026-10-26: "do e abyss savannah"
 smooth ramp under the shelf, the climb into the highlands not designed) and asked for it to be a kit of its own. This
 is that kit.
 
-**Status: plan written and station 1 built (2026-10-26).** Every choice the owner has not made is a default, marked
+**Status: plan written and station 1 built (2026-10-26); stations 2 and 3 built (2026-11-09: section 15).** Every choice the owner has not made is a default, marked
 **(default)** and listed in section 12.
 
 ## 0. What the kit is
@@ -14,7 +14,7 @@ is that kit.
 | | |
 |---|---|
 | Folder | `biomes/abyssal-savannah/` (`src/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `INDEX.md`) |
-| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope, px 1026,350 on map 5.1); stations 2 and 3 (section 8) to follow as `python3 build.py --station <name>`, the Throne's way |
+| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope, px 1026,350 on map 5.1); `dist/abyssal-savannah-belt.html` and `dist/abyssal-savannah-bench.html` (stations 2 and 3, `python3 build.py --station belt` / `bench`: section 15); the savannah rims (section 14) |
 | Object | `ABSAV` (`build`, `zones`, `burn`, `make`, `grow`, `SPECIES`, `HARVEST`, `PASSES`), on the biome contract (`biomes/eastabyss/BIOME-API.md`) |
 | Its own | the savannah's species (section 5), its zones and burn mosaic (sections 4 and 6), the rim slope's ground (section 7) |
 | Read in place | `biomes/eastabyss` (its jungle species at the slope's foot and in the gullies, by `EASTABYSS.make` / `grow`) |
@@ -168,17 +168,17 @@ the page's own detail on it, not survey:
 1. **The rim slope** (`dist/abyssal-savannah.html`, built): the climb at px ~1021,350 from the jungle's foot to the
    bench, the gully galleries, the parkland and its kopjes, the caprock rim, the bench's stub-lycopsid steppe and the pan,
    the burn mosaic over all of it; the floor and its lake below to the west.
-2. **The floor's belt** (`--station belt`, planned): the XV clump at px 1031,515 (-1,870 m, 2.0 atm, ~1,050 mm, +34 °C),
+2. **The floor's belt** (`--station belt`, built 2026-11-09: section 15): the XV clump at px 1031,515 (-1,870 m, 2.0 atm, ~1,050 mm, +34 °C),
    between the lake jungle (eastabyss, read in place) and the salt steppe: the parkland at its tallest (the umbrella trees
    to ~28 m, the grass over 3 m), rope araucarias, termite-like spire mounds of the floor's clay ants, the jungle's edge
    one side and the salt's the other.
-3. **The bench's edge** (`--station bench`, planned): the top of the climb on a steeper transect (row 414, px 1024-1041:
+3. **The bench's edge** (`--station bench`, built 2026-11-09: section 15): the top of the climb on a steeper transect (row 414, px 1024-1041:
    XV to Am to Af in 34 km), where the rim breaks as cliffs and the bench steppe meets the plateau's `e badlands` flora
    (`biomes/ebadlands` read in place: pinyon, juniper, chaparral yucca).
 
 The savannah rims are stations of this kit too (section 14; the owner, 2026-11-08, `biomes/hyperjungle/PLAN-LANDS.md` section 14,
 answer 1): `--station serim` (the se rim, the incense country), `--station erim` (the e rim near Fridon) and `--station north`
-(hyperjungle N's savannah). Section 8 reserved no names for them; `belt` and `bench` above stay planned and unbuilt.
+(hyperjungle N's savannah). Section 8 reserved no names for them; `belt` and `bench` above were built on 2026-11-09 (section 15).
 
 ## 9. Crops (`kits/crops`)
 
@@ -270,7 +270,7 @@ air and the water follow; `89z-host-build.js` (was 88) places the flora last, on
   `plantSav` call `ABSAV.grow`), with eastabyss's baseline rewritten on purpose; the crops entries (section 9).
 - **S6**: a fire model (fronts that move with the wind, smoke, people who set them), on `core/atmos` weather.
 - **S7**: the ground on KLAND (the scale model's own heights) when it reaches this checkout.
-- **S8**: stations 2 (the floor's belt) and 3 (the bench's edge, with ebadlands read in place); fauna from `kits/fauna`.
+- **S8** (done 2026-11-09, but the fauna): stations 2 (the floor's belt) and 3 (the bench's edge, with ebadlands read in place); fauna from `kits/fauna` still owed.
 - **S9**: the gallery (a new biome), `PORT.md` audited by `tools/audit_port.py`, the index.
 
 ## 14. The savannah rims (from PLAN-LANDS J4-J6)
@@ -345,3 +345,70 @@ stage, river, burn mosaic and mounds).
 | J5 (2026-11-08) | the e rim (H4 lands here) | `erim` |
 | J6 (2026-11-08) | the se rim (the rust miombo defined here, read by Godstep's redlands; the red guyed stalk Godstep's) | `serim` |
 | fold-in (2026-11-08) | `biomes/savannarim` folded into this kit as stations `serim`, `erim`, `north` | the three above |
+
+## 15. Stations 2 and 3: the floor's belt and the bench's edge (2026-11-09)
+
+Built in one session after the biome rebuild's audit found them planned and unbuilt (worktree `abyssal-savannah-rest-240d14`).
+
+```
+python3 tools/build.py biomes/abyssal-savannah --station belt     # station 2 -> dist/abyssal-savannah-belt.html
+python3 tools/build.py biomes/abyssal-savannah --station bench    # station 3 -> dist/abyssal-savannah-bench.html
+```
+
+**Layout.** Both are station 1's lineage, not the rims': a `station.json` with `"base": "main"` makes `build.py` (`build_main()`) take the main
+page's `src/` (its cores, the eastern abyss read in place, the kit `50`-`70`, the sky `89s`, the air `89a`) and add `stations/<name>/`, a
+name in both being the station's. Each station has its own stage (`45`), ground and far field (`80`), water (`89w`), build (`89z`) and
+take (`99`). `station.json` also names `terrain` (more core/terrain fragments), `pack` (rim families packed under this kit's key) and
+`neigh` (kits read in place: `BASE_NEIGH` in `build.py`). The main page is byte for byte as before (its hash unchanged).
+
+**The sites on map 5.1** (surveyed 2026-11-09 from `tools/scale-model/model/data`; old-canvas px). Each stage carries `GRID51`, the model's
+heights and classes on its 2 km cells, 41 x 41 round the site: the far field (KFAR) runs on them, the belt's ground too.
+
+| Station | px | Model | What the page makes of it |
+|---|---|---|---|
+| 2 `belt` | 1031,515 | -1,878 m, XV, ~800 mm, +35 degC, 2.0 atm | the ground is the model's grid (Catmull-Rom) with the page's detail: a seasonal stream south-west across the belt into a salt flat (the salt lake, WX at -2,474 m, lies in its pit 6 km south: a far still); a seep-fed hollow in the north-east corner as the jungle's edge (5.1's XA basins are 10-12 km north-east and south-east: the page brings the edge in, as the plan asks) |
+| 3 `bench` | 1038,414 | -282 m, BSh, ~1,240 mm, +28 degC, 1.66 atm | 5.1's climb breaks at px 1036-1038 (-1,015 to -282 m in 4 km); the page puts it in one cliff band (360 m) and puts the climb to the plateau (px 1040-1041, Cfa) in two en-echelon fault steps. The far field blends the page onto the grid over 4 km |
+
+**What each page has.**
+- **The belt:** the parkland at its tallest (the umbrella trees 12-28 m on this page, `BELT.umbrellaH`; the old thatch tufts drawn 1.3 x
+  taller, to ~4 m, by a page-local wrap of `BIO.put`), rope araucarias through it (eastabyss's, a pass added to `ABSAV.PASSES` here), the
+  clay ants' fluted spires (KSTACKS.mounds, 5-14 m, on `earth.termite`), the jungle's edge (eastabyss's bell-barks, crown ferns, palmettos)
+  in the hollow and along the stream, the salt steppe's stub lycopsids and the salt flat's pan-grass and saltbush toward the lake, the burn
+  mosaic over all of it. Water: the stream (`WATER.flow`), the salt flat's brine and the seep pool (`WATER.drawStill`), the model's salt
+  lakes in the far country (still boxes on their cells).
+- **The bench:** the lower slope (Aw) with the eastern abyss's jungle at its foot and up the ravines, the cliffs (KRELIEF.scarp: one
+  bench, three ravines, buttresses, talus, a lipped rim; KSTRATA's beds on the faces), the BSh steppe on the bench (stubs, bunchgrass,
+  low umbrella trees, granite kopjes with their figs), two en-echelon fault scarps with a relay ramp (KRELIEF.relay, 38c) and a sag pond at
+  the north fault's foot, and ebadlands' pinyon, juniper and chaparral yucca on the fault blocks, the ramp and the cliffs' rim (read in
+  place, `EBADLANDS.make` / `grow`, on `ABSAV.cells`). Every tree pass is gated off sheer faces. Water: the bench stream into the middle
+  ravine's head and the stream below its fan (two `WATER.flow`s; the ravine between is dry in the season shown), the sag pond.
+
+### Core adoption (stations 2 and 3)
+
+| Module | Taken | Where |
+|---|---|---|
+| core/biome | as station 1 (`CORE_BIOME`), the kit's builders and passes unchanged; BIO.env (41) on each page's fields | `build.py`, `89z` |
+| core/rand | every placement a `KRAND.hash` cell (`ABSAV.cells`); the ground's noise `KRAND.fbm`; KSTACKS' and KRELIEF's records hashed | `45`, `89z` |
+| core/tags | `BIO.init({tags:'abyssal-savannah'})`; every tree, mound, kopje and landform registered before the bake | `45`, `89z` |
+| core/space | the mounds' footprints (the mask, the trees' obstacles), the channels' beds, the ebadlands pass's keep-clear | `45`, `89z` |
+| core/terrain | 43 KGROUND (station 1's four layers on each page's masks), 44 KFAR (on GRID51), 45 KHORIZON, 35 KSTRATA (the bench's faces); **37 KSTACKS.mounds** (the belt); **38 KRELIEF.scarp** and **38c KRELIEF.relay** (the bench) | `45`, `80` |
+| core/water | flows, stills (no shore grid: no breakers), breakup, the audit (`WATER.edgeAudit` in the checks), the fields (60), the reflections switch off at load | `89w`, `89z`, `99` |
+| core/atmos | the shared sky at each site's px, height fog, the rain cover, lightning, the weather (station 1's `89a`, `89s`) | `src/` |
+| core/shadow | KSHADOW, **off at load** (`?shadow=1` on) | `89z` |
+| core/host | `khost.FULL`, each page its own edit layer (`abyssal-savannah-belt`, `-bench`) | `build.py`, `99` |
+| core/materials | the kit's pack; the belt adds `termite` (station.json `pack`); ebadlands' `bark.juniper`, `leaf.needle`, `leaf.scale` | `build.py` |
+| not taken | **core/mask**: no placement raster (no canvas is read; the ground's paint is drawn, never read back). **38c on the belt**: none of its kinds fits a savanna floor (no slump, runout, loess gully, terraces, maar, fault or cut). **KFIRE**: the burn mosaic stays `ABSAV.burn` (S6). **WATER.fall**: the bench stream's fall is dry in the season shown. **core/lod, core/minimap**: station pages, as station 1 | |
+
+**Checked (2026-11-09, `KRATOR_GL=gpu`, the Arc lane, `verify.py --assert --all-views --no-cache`):** both pages pass every view, every host
+check and its negative, the attach audit (0.00%), the card guard, the instance caps and the export profile (each page's own box in
+`verify.py` `EXPORT_BOXES`).
+
+| | belt | bench |
+|---|---|---|
+| scene triangles at the opening view (budget) | 9.6M (11M) | 12.7M (13.5M) |
+| draw calls (worst view) | 51 | 57 |
+| trees | 6,704 umbrella (1,412 over 24 m, to 28 m), 241 rope araucarias, 593 eastern abyss at the jungle's edge and the stream | 2,760 ebadlands (pinyon 698, juniper 896, yucca 1,166), 1,998 eastern abyss (31 just over the rim), none on a face over 48 degrees |
+| landforms | 815 clay ants' spires | cliffs 327-329 m, fault steps 187 and 197 m, the relay ramp at 1900,0 |
+| page size | 11.5 MB | 12.0 MB |
+
+Switches as station 1: `?kground=0`, `?far=0`, `?hz=0`, `?fields=0`, `?diet=0`, `?strata=0` (the bench), `?mirror=probe|live`; `?shadow=1`.
