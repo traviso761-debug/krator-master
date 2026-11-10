@@ -71,10 +71,7 @@
   "settlements/xanadu -> kits/ancients",
   "settlements/xanadu -> kits/iziz-vernacular",
   "settlements/xanadu -> settlements/highlands",
-  "settlements/ys -> core/atmos",
   "settlements/ys -> kits/ancients",
-  "settlements/ys -> kits/highlands",
-  "settlements/ys -> kits/iziz-vernacular",
   "settlements/ys -> settlements/iziz",
   "settlements/ys -> kits/port"
  ]
