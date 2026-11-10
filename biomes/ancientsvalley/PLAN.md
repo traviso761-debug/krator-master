@@ -359,6 +359,22 @@ records until the streets want lots), `core/mask` (every field is a function), `
    culture `ancient`), the wrecks, and the extraplanars from `kits/extraplanar` (`75`: three hunters on rounds, the void over the inlet, the
    solid in a foul plaza, the presence in the park, three drowned-hall portals on the shore and a tear on the dead lobe; section 6). Waiting on
    the owner's eye.
+2a. **The Yards: the industrial district, a station of its own** (the owner, 2026-11-10: "we need an industrial district ... these may need
+   to be separate stations"; station 0 stays the Overlook as it is). On the shelf (100-300 m), where the plan's industrial ring lies, a
+   site on the cargo line inside the subway's reach, upwind of nothing: it is where the foul ground comes from. What stands there: the
+   twelve industrial buildings `kits/metropolis` already has and the Overlook never places (`46b`, `46e`: the Vault, the Perforated Stacks,
+   the Assembler, the Rig, the Foundry, the Pilotis Works, the Well, the Tank Yard, the Cooling Towers, the Gantry Hall, the Furnace Stacks, the
+   Spheres) with their ruin states, shells and impostors; a rail yard on the cargo line (sidings fanning from it, wagons standing and
+   overturned from the transit kit's trains, a turntable, loading gantries); and **new** pieces (section 3's table): tank farms in bunds,
+   pipe racks between the halls, the dish arrays of the references, chimneys and conveyors. The ground: the spill grounds and toxic pools
+   as dead ground (`scar`, section 9), slag heaps, the oily rain over it on most days (`89x`'s mode, here the default), the smog thickest.
+   The keepers here are the robots' factory kinds (`kits/mechs` culture `ancient`). Its own stage (`stations/yards/`), site and views.
+2b. **The Terraces: the Soleri farm belt, a station of its own** (the owner, 2026-11-10). On the terraces (300-600 m), past station 0's
+   edge: Soleri's planned developments, hexagonal and terraced growing pods round a civic hub town (reference *landscape* 8), aqueducts on
+   arches and pump houses, pylon lines, the crop rows and orchards gone to thicket (`kits/crops`, `CROPS.forBiome` on the Cfa/Af climate,
+   run wild), the city's skyline below toward the lake. Needs the farm families in `kits/metropolis` first (settled 2026-11-04, section 13
+   question 9): the pods, the terrace stacks, the hub's civic buildings, the aqueduct and the pump house, each with ruin states, shells
+   and impostors by the towers' machinery. Its own stage (`stations/terraces/`), site and views.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
