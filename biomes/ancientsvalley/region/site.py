@@ -2,6 +2,7 @@
 """The stations' ground and horizon, read from the scale model (tools/scale-model/model/data, 5.1) at each station's pixel.
 
     python3 biomes/ancientsvalley/region/site.py            # writes region/station-<name>.json for every station in SITES
+    python3 biomes/ancientsvalley/region/site.py terraces   # that station's alone
 
 Not run by build.py (it needs numpy and the model's page module); its output is committed and build.py embeds it as the
 virtual fragment 44n-host-region.js (const AV_REGION=...). Rerun it after the model moves. The shape is nwouterwall's
@@ -38,6 +39,10 @@ import smodel.page as page   # noqa: E402
 SITES = {
     'overlook': {'px': 457, 'py': 907, 'title': 'The Overlook: the city on a normal day'},
     'yards': {'px': 470, 'py': 921, 'title': 'The Yards: the industrial district on the freight line'},
+    # the Terraces (PLAN.md section 12, 2b; 2026-11-10): the Soleri farm belt on the south face of the ridge north of city1, 330 m (the terraces
+    # band, 300-600 m), the land falling ~370 to 190 m across the page, the shelf and the drowned inlet below, city1 and the Overlook's ridge
+    # 16-18 km due south; the House's basin 11.7 km to the west-north-west, outside its 1.5 r
+    'terraces': {'px': 455, 'py': 899, 'title': 'The Terraces: the Soleri farm belt'},
 }
 EYE = 30.0
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)
@@ -144,7 +149,10 @@ def places_of(S, rows):
 
 
 def main():
+    only = [a for a in sys.argv[1:] if not a.startswith('-')]   # site.py terraces: that station's record alone
     for name, S in SITES.items():
+        if only and name not in only:
+            continue
         site = site_of(name, S)
         base = site['base']
         rec = {'format': 'ancientsvalley-station', 'version': 1, 'source': 'Krator Scale Model 5.1 (model/data, %s)' % page.version(page.DATA_DIR),

@@ -300,6 +300,53 @@ worst of the smog) 3.32 M in 618 (ceiling 1,200). The views were reframed after 
 from their pad's edge, the spill ground on its oil-crusted rubble with the pools black on it, the air view low over the Foundry).
 The shells bake in about 4.8 s, everything at the boot in 6.3 s.
 
+## The Terraces: the Soleri farm belt (a station, 2026-11-10)
+
+```
+python3 build.py --station terraces                                 # dist/ancientsvalley-terraces.html (+ the crops kit's pack, dist/ancientsvalley.tex.crops.js)
+node biomes/ancientsvalley/tests/test-farm.js                        # the farm's plan on the station's record, each check with a negative
+python3 biomes/ancientsvalley/verify.py biomes/ancientsvalley/dist/ancientsvalley-terraces.html --assert --all-views --out shots
+python3 biomes/ancientsvalley/region/site.py terraces                # its record alone, after the model moves
+```
+
+`PLAN.md` section 12, 2b. **The site** is px 455,899 (`region/station-terraces.json`): 330 m, 1.53 atm, Cfa, +23 degC, 1,694 mm, on the south face
+of the ridge north of city1, the terraces band. The page falls about 180 m from its north edge to its south; below it the shelf, the drowned inlet,
+and 16-18 km due south city1 and the Overlook's ridge. **The station's own fragments** (`stations/terraces/`, replacing `src/`'s of the same name or
+added): `46z-host-stage.js` (its STAGE), `41d-av-farm.js` ([G data]: the plan, `AV.farm`, and its land, `AV.farmLand`, and crops, `AV.farmCrops`),
+`70t-host-farm.js` (the pylon lines and their wires, the city below, the station's checks), `87t-host-thicket.js` (the fields gone to thicket),
+and one-line stubs for what is the Overlook's alone (`72` keepers, `73` wrecks, `75` the extraplanars and the House, `89y` the distortions).
+`station.json` reads the metropolis kit's farm families (`46f`, `54f`) and the crops kit (`10`, `20`, `22`, `40`) in place, and the crops kit's pack.
+
+- **The plan** (`AV.farm`, records first, every placement a `KRAND` hash, the pads, roads and fields on `KSPACE`): **the hub town** on the flattest
+  ground near the page's middle (the Hub Hall, the Market along the contour, a ring road); **the aqueduct** traced along the contour 320 m upslope of
+  the hub in modules of the kit's joint (66 m, at most 5 degrees a joint, level but for 3 cm a module), the pump house and the water tower beside it
+  on the hub's side; **36 clusters** on rings round the hub (honeycombs of pods on a hex lattice, rows of vault houses along the contour, growing stacks
+  facing down the steeper ground), a spoke road to each; **the roads**, a road meeting the aqueduct moved to an arch's middle and squared to the line
+  (a spoke laid nearly along it is not built); **two pylon lines** down the slope, a pylon every 280 m nudged off every pad, road and pier; **the
+  fields**, parcels along the contour within 420 m of a cluster or 650 m of the hub (the wood took back the rest), a crop or an orchard each.
+- **The buildings** are the city stage's towers (`70-host-city.js` unchanged): heroes to 600 m, box shells to 3.2 km, impostors past that, rusted,
+  their ruins by the farm belt's shares (`AV.FARM_CUTS`: 4% whole, 30% gutted, 18% crown gone, 18% broken, 12% stumps, 6% skeletons, 12% fallen;
+  the aqueduct's own, mostly standing). The creepers (`71`) and the roof trees (`88`) reach them in the wild half as they reach the towers.
+- **The ground**: the model and the Overlook's relief (`AV.farmLand`), the fields terraced into the slope (2.5 m risers along the contour, fading at
+  each hedge), every plinth eased in (an aqueduct module's bed over 20 m); the roads asphalt, the hub paved, the fields tilled soil, the wood's floor.
+- **The thicket** (`87t`): what the south-west lowlands' zones grow rain-fed with a card (`kits/crops`, `CROPS.forBiome('swlowlands')`: twelve,
+  annatto to indigo, four of them tree crops; the measure melon waits on its card in the crops kit's pack), each field's rows of clumps (one plant a cell of the card's sheet, three crossed quads) broken
+  by noise and grown wild about their feet, each orchard's trees on an 11 m grid with suckers between, grown feral by the valley's wrap and capped at
+  14 m; the lowland kits' wild wood everywhere else, thin in the fields.
+- **The city below** (`70t`): the shelf's and the floor's towers as rusted prisms 3 to 16 km out on the model's ground, under the page's fog, the
+  mist pooled over the shelf (STAGE.smog: no band of cloud here).
+- **The checks** (`STAGE.shared`: the hand of man, dry ground, the impostors hidden, the feral forest, no tree on a road or plinth, the cards cut;
+  and the station's own, each with a negative): every farm building on its plinth (the drawn ground level under its box), nothing in a road (a
+  building's box, an aqueduct's piers, a pylon), the aqueduct continuous on its bed, every road under an arch, the wires clear of the ground, the city
+  below off the page and above the lake, the fields gone to thicket (plants, trees, crops, every card mapped and inside one cell, none on a road),
+  the farm belt ruined.
+
+**Numbers (2026-11-10, `verify.py --assert --all-views` on the GPU, 1280 x 800):** 46 farm buildings and 25 aqueduct modules (the tiers: 71
+towers), 33 roads and 9 crossings under arches, 36 pylons (120 wires), 2,621 towers in the city below, 1,956 fields: 180,729 crop clumps and 24,877
+orchard trees, every one grown by the feral wrap; 14.97 M scene triangles (budget 20 M), the lowland trees 6.59 M of their 8 M (the wood's quality
+held at .9 and .7: at 1.6 and 1.1 it was 13.9 M and two items passed the 250k instance cap). Per view 530 to 695 calls (ceiling 1,200) and 3.1 to
+5.2 M triangles, the hub town the worst. Every assert and negative passes.
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.

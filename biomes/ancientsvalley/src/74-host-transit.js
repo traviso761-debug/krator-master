@@ -82,7 +82,7 @@ AVTR.buildCell=function(C){const T=STAGE.transit,KT=KTRANSIT,B=KT.builder(),col=
    view kept every cell it built, 130 MB a view, and a fourteen-view tour ran the renderer out of V8's 4 GB); it is built again when the eye comes
    back, one cell a frame as before. Its geometry is its own (the builder's merge and the rubble's box); the materials are the kit's, shared, kept */
 AVTR.freed=0;AVTR.freeCell=function(C){const G=C.g;if(!G)return;scene.remove(G);G.traverse(m=>{if(m.isInstancedMesh&&m.dispose)m.dispose();if(m.geometry)m.geometry.dispose();});C.g=null;C.built=false;AVTR.freed++;};
-AVTR.frame=0;AVTR.farTick=function(){const e=camera.position,R=AV_TR_FAR+AV_TR_CHUNK*.71;for(const m of AVTR.chunked){const a=m.userData.chunkAt;m.visible=Math.hypot(a[0]-e.x,a[1]-e.z)<R;}};
+AVTR.frame=0;AVTR.farTick=function(){if(!AVTR.chunked)return;   /* a station without the transit (the Terraces) builds no chunks: AVTR.build is ready at once */const e=camera.position,R=AV_TR_FAR+AV_TR_CHUNK*.71;for(const m of AVTR.chunked){const a=m.userData.chunkAt;m.visible=Math.hypot(a[0]-e.x,a[1]-e.z)<R;}};
 AVTR.dressTick=function(){if(!AVTR.ready)return;if(!(AVTR.frame++%15))AVTR.farTick();if(!AVTR.cellList.length)return;const e=camera.position;let builtOne=false;
  for(const C of AVTR.cellList){const near=Math.hypot(C.cx-e.x,C.cz-e.z)<AV_TR_NEAR;
   if(near&&!C.built&&!builtOne){builtOne=true;C.built=true;try{C.g=AVTR.buildCell(C);AVTR.built++;}catch(err){reportErr('transit cell '+C.key+': '+(err.message||err));}}

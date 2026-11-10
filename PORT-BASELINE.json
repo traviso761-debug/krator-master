@@ -891,6 +891,10 @@
   "biomes/ancientsvalley/dist/ancientsvalley-yards.html": {
    "bytes": 4973049,
    "sha256": "3a1e1f879db3fb1fb5dbbab76a9a0cd15a4d704e09f599624b17e8c5f736c773"
+  },
+  "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": {
+   "bytes": 4842559,
+   "sha256": "0758872dd58f55d887c0124cc63a4cb349047279d7b94070af24cf7b38f49c1d"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

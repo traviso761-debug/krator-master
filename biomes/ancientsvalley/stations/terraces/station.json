@@ -1,0 +1,16 @@
+{
+ "out": "ancientsvalley-terraces.html",
+ "region": "terraces",
+ "note": "The Terraces (PLAN.md section 12, 2b): the Soleri farm belt at px 455,899. Read in place: the metropolis kit's farm families (46f the records, 54f the heroes) and the crops kit (its four data fragments, after core/rand); the crops kit's texture pack for the thicket's cards.",
+ "kits": {
+  "46f-mp-farm.js": "../../kits/metropolis/src/46f-mp-farm.js",
+  "54f-mp-hero-farm.js": "../../kits/metropolis/src/54f-mp-hero-farm.js",
+  "38a-crop-core.js": "../../kits/crops/src/10-crop-core.js",
+  "38b-crop-records.js": "../../kits/crops/src/20-crop-records.js",
+  "38c-crop-material.js": "../../kits/crops/src/22-crop-material.js",
+  "38d-crop-query.js": "../../kits/crops/src/40-crop-query.js"
+ },
+ "packs": {
+  "crops": "../../kits/crops"
+ }
+}
