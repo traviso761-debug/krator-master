@@ -6,7 +6,7 @@ settlement, so a settlement's empty lots and works are drawn without its own bui
 rather than a part of the islander kit").
 
 **What it draws** (`src/10-cons-site.js`, `[web]`, three.js; `API.md`): the cleared plot with its stakes and string line,
-the bill's materials piled beside it (logs, stone blocks, rolled bundles, crates: one pile a good, shrinking as the
+the bill's materials piled beside it (logs, stone blocks, rolled bundles, loose heaps, stacked slabs, crates: one pile a good, shrinking as the
 materials are built in), and the scaffold round the building (poles, ledgers, board walks, a ladder) rising with the
 walls to the eaves while the work is under way.
 

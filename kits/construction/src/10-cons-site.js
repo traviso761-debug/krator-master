@@ -9,16 +9,17 @@
                      ground's size, the box and a metre round)
                      (origin at the footprint's centre, +z its front): a CLEARED PLOT (levelled earth a little past the
                      footprint) with corner STAKES and a string line; the MATERIALS beside it, one pile a good of the bill
-                     (KCONS.PILES: timber a stack of logs, stone a heap of blocks, mats and thatch rolled bundles, anything
-                     else crates), each shown by what is still on site (onSite: {good: share 0..1}, default all of it); the
+                     (KCONS.PILES: timber a stack of logs, stone a heap of blocks, mats and thatch rolled bundles, shells, sand and
+                     gravel a loose heap, nacre, tiles and slate a stack of slabs, anything else crates), each shown by what is still on site (onSite: {good: share 0..1}, default all of it); the
                      SCAFFOLD round the building a metre out (poles, ledgers every 2 m, a board walk and a ladder), rising
                      with the walls to the eaves, shown while the work is under way (0 < f < 1); set(f) moves it. Plain materials (the
                      palette's colours): a host may swap them for its library's
-     KCONS.PILES      good -> pile kind ('logs', 'blocks', 'bundles', 'crates'); a host adds its goods */
+     KCONS.PILES      good -> pile kind ('logs', 'blocks', 'bundles', 'heap', 'slabs', 'crates'); a host adds its goods */
 var KCONS = (function () {
   'use strict';
-  var PILES = { timber: 'logs', logs: 'logs', planks: 'logs', stone: 'blocks', brick: 'blocks', bricks: 'blocks', mats: 'bundles', thatch: 'bundles', reeds: 'bundles', cloth: 'bundles', rope: 'bundles' };
-  var PAL = { earth: 0x6e5a40, stake: 0x8a6a48, string: 0xe8e0c8, pole: 0x8c6c48, board: 0xa88a5e, log: 0x7a5a3a, block: 0x8a8478, bundle: 0xc2a868, crate: 0x9a7a50 };
+  var PILES = { timber: 'logs', logs: 'logs', planks: 'logs', stone: 'blocks', brick: 'blocks', bricks: 'blocks', mats: 'bundles', thatch: 'bundles', reeds: 'bundles', cloth: 'bundles', rope: 'bundles',
+    shells: 'heap', sand: 'heap', gravel: 'heap', lime: 'heap', nacre: 'slabs', tiles: 'slabs', slate: 'slabs' };
+  var PAL = { earth: 0x6e5a40, stake: 0x8a6a48, string: 0xe8e0c8, pole: 0x8c6c48, board: 0xa88a5e, log: 0x7a5a3a, block: 0x8a8478, bundle: 0xc2a868, crate: 0x9a7a50, heap: 0xd6ccb4, slab: 0xe2ded6 };
   function mats(pal) { var o = {}; for (var k in pal) o[k] = new THREE.MeshLambertMaterial({ color: pal[k] }); return o; }
   function box(w, h, d, m, x, y, z, ry) { var k = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); k.position.set(x, y, z); if (ry) k.rotation.y = ry; return k; }
   function cyl(r, len, m, x, y, z, axis) { var g = new THREE.CylinderGeometry(r, r, len, 7); if (axis === 'x') g.rotateZ(Math.PI / 2); else if (axis === 'z') g.rotateX(Math.PI / 2); var k = new THREE.Mesh(g, m); k.position.set(x, y, z); return k; }
@@ -27,6 +28,8 @@ var KCONS = (function () {
     if (kind === 'logs') { for (var r = 0; r < 3; r++) for (var i = 0; i < 4 - r; i++) g.add(cyl(0.16 * s, 3.2 * s, M.log, 0, 0.17 * s + r * 0.28 * s, (i - (3 - r) / 2) * 0.33 * s, 'x')); }
     else if (kind === 'blocks') { for (var j = 0; j < 7; j++) { var lv = j < 4 ? 0 : j < 6 ? 1 : 2, at = j < 4 ? j : j < 6 ? j - 4 : 0; g.add(box(0.5 * s, 0.32 * s, 0.4 * s, M.block, (at - (lv === 0 ? 1.5 : lv === 1 ? 0.5 : 0)) * 0.52 * s, 0.16 * s + lv * 0.33 * s, 0)); } }
     else if (kind === 'bundles') { for (var b = 0; b < 3; b++) g.add(cyl(0.3 * s, 1.2 * s, M.bundle, 0, 0.3 * s + (b === 2 ? 0.52 * s : 0), (b === 2 ? 0 : b - 0.5) * 0.62 * s, 'z')); }
+    else if (kind === 'heap') { var cg = new THREE.ConeGeometry(0.9 * s, 0.7 * s, 9, 1); cg.translate(0, 0.35 * s, 0); g.add(new THREE.Mesh(cg, M.heap)); }   /* a mound of loose stuff */
+    else if (kind === 'slabs') { for (var q = 0; q < 6; q++) g.add(box(0.9 * s, 0.07 * s, 0.6 * s, M.slab, 0, 0.04 * s + q * 0.08 * s, 0, (q % 2 ? 0.08 : -0.05))); }   /* plates stacked, a little askew */
     else { g.add(box(0.8 * s, 0.6 * s, 0.8 * s, M.crate, 0, 0.3 * s, 0)); g.add(box(0.6 * s, 0.5 * s, 0.6 * s, M.crate, 0.1 * s, 0.85 * s, 0.05 * s)); }
     return g;
   }

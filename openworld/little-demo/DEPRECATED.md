@@ -32,5 +32,8 @@ built pages, and the two fragments only this build used: `src/46-world-config.js
 accepted because the world is deprecated. To rebuild it anyway, check out the commit before the move (or `git mv` the
 fragments back). `bake.py` and `publish.py` need a built page, and `dist/` still holds the last one.
 
+Longsong and Pinnacle Rock (`settlements/longsong`, `settlements/pinnacle-rock`) read `41-world-fields.js` in place; their
+`build.py` pointed at the old path until 2026-11-10 and failed, and now read `openworld/isle-demo/src/world/`.
+
 Mentions of little-demo elsewhere (comments in biome and core fragments that are embedded in built pages, history in
 plans and known-issue notes) were left as they are: editing an embedded comment changes a built page's bytes.

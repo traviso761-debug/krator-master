@@ -265,13 +265,13 @@ ISLE.TUNE.sim = {
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
       'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats',
-      'mahogany', 'gum', 'kapok', 'canoes', 'medicinals', 'sulphur', 'pearls'],   /* the other isles' goods the expedition camps bring (47x, PLAN.md 12: the forest's timber, gum, kapok and medicinal bark, the vents' sulphur, the reefs' pearls) and the hulls the canoe sheds build */
+      'mahogany', 'gum', 'kapok', 'canoes', 'medicinals', 'sulphur', 'pearls', 'nacre', 'shells'],   /* nacre and building shells (2026-11-10): the Hykkousoi's building stuff, up with the pearl ships' catch (expeditions.kinds.pearl, build.byKit); the other isles' goods the expedition camps bring (47x, PLAN.md 12: the forest's timber, gum, kapok and medicinal bark, the vents' sulphur, the reefs' pearls) and the hulls the canoe sheds build */
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 }, nets: { cotton: 2 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40, urgent: 1 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { ships: 1, pearls: 2, medicinals: 10, sulphur: 20, clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
+    minLoad: { ships: 1, pearls: 2, nacre: 5, shells: 20, medicinals: 10, sulphur: 20, clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
     /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
        below holds the rest to what is wanted */
     cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1, indigo: 0.2, annatto: 0.2, tobacco: 0.3 },
@@ -343,7 +343,7 @@ ISLE.TUNE.sim = {
            Ys's (the Hykkousoi traders of 2026-10-19) and Pontus's call at the Islander towns and at Nephtos. A ship's call at
            a town the page has not declared is skipped (the city page has no Nephtos) */
         { id: 'tethys', name: 'Tethyan merchantmen', vessel: 'hykCorbita', every: 4, phase: 1, calls: ['nephtos'], polis: 'tethys',
-          buys: { clove: 600, cacao: 600, indigo: 300, annatto: 300, tobacco: 400, copper: 400, pearls: 150, ships: 4 } },
+          buys: { clove: 600, cacao: 600, indigo: 300, annatto: 300, tobacco: 400, copper: 400, pearls: 150, nacre: 200, ships: 4 } },
         { id: 'hykkousoi', name: 'Ys traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo', 'nephtos'], polis: 'ys', buys: { clove: 800, sugar: 200, iron: 300, tobacco: 200, indigo: 100 } },
         { id: 'pontus', name: 'Pontic traders', vessel: 'hykGalley', every: 6, phase: 4, calls: ['valapo', 'nephtos'], polis: 'pontus', buys: { sugar: 200, coffee: 100, copper: 200, annatto: 100, cacao: 200 } },
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
@@ -403,7 +403,7 @@ ISLE.TUNE.sim = {
     m1: { wage: 6, calibrate: { after: 2, days: 3 }, ration: true,
       /* a good no settlement makes: its labour cost (`_` the rest); the forest islands' goods at what a crew's hours make them
          (the expeditions of 2026-11-09: about 10 crew-hours a load of mahogany, the gum and the kapok by it) */
-      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30, medicinals: 40, sulphur: 80, pearls: 320 },   /* the vents' and the reefs' at a digger's and a diver's hours (a load of sulphur a hand a day, a pearl in four) and a little over */
+      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30, medicinals: 40, sulphur: 80, pearls: 320, nacre: 40, shells: 6 },   /* the vents' and the reefs' at a digger's and a diver's hours (a load of sulphur a hand a day, a pearl in four) and a little over */
       /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
          set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
          higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
@@ -444,7 +444,7 @@ ISLE.TUNE.sim = {
      thatch is the first to go; a house on piles needs little stone, its hearth and footing), drawn hourly from the warehouses; owed when they are out, shown on a share of the houses
      after `grace` days. Timber is kept only where the lumber village is (the open world): on the city page a house's
      timber is gathered on the spot and its upkeep skips it. Placeholders */
-  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6 }, pace: 1, crewPer: 12, grace: 30,
+  build: { vacant: 0.03, crew: { kautoa: 12, valapo: 6, nephtos: 5 }, pace: 1, crewPer: 12, grace: 30,
     /* GROWTH (2026-11-04, the owner: building follows demand, and the lots must last more than a year): each town's people
        grow by `rate` a year, a household of five at a time (two grown-ups, three children), which moves into a finished
        house no one lives in; a town builds only while its houses ready or going up are fewer than `ahead` plus the
@@ -454,10 +454,18 @@ ISLE.TUNE.sim = {
        `lane` m long branching off a gate's road `from` m out (a town with no gates: near an avenue's outer end), with up
        to `lots` lots of `key` houses on dry, gentle ground (`drop` m at most across a lot), kept with `least`; laid out
        with the plan, closed, opened one at a time when the town's empty lots run out */
-    spurs: { max: 2, lots: 8, least: 4, lane: 72, from: 40, drop: 3, key: 'ie-hut-garden' },
+    spurs: { max: 2, lots: 8, least: 4, lane: 72, from: 40, drop: 3, key: 'ie-hut-garden', keys: { Nephtos: 'hyk_house_poor_1' } },
     kinds: { house: { bill: { timber: 40, stone: 2, mats: 30 }, hours: 1200, life: 1095 }, longhouse: { bill: { timber: 100, stone: 5, mats: 70 }, hours: 3000, life: 1095 },
       /* every other roofed building (2026-11-04): a workplace, a hall, a temple, a barracks, kept over four years */
-      works: { bill: { timber: 30, stone: 4, mats: 20 }, hours: 900, life: 1460 } } },
+      works: { bill: { timber: 30, stone: 4, mats: 20 }, hours: 900, life: 1460 },
+      /* THE HYKKOUSOI'S (the owner, 2026-11-10: "the Hykkousoi houses are built with and cost maintenance in pearls, nacre,
+         and shells, with only minimal wood"): a Ys piece's walls are shell grown and laid in lime, faced in nacre, pearls set
+         in its doors and lamps, a little timber in its doors and shutters; the same lives as the Islanders' */
+      'hyk-house': { bill: { shells: 60, nacre: 12, pearls: 1, timber: 4 }, hours: 1400, life: 1095 },
+      'hyk-great': { bill: { shells: 150, nacre: 30, pearls: 3, timber: 10 }, hours: 3500, life: 1095 },
+      'hyk-works': { bill: { shells: 50, nacre: 8, pearls: 1, timber: 3 }, hours: 1000, life: 1460 } },
+    /* a kit's own kinds for the Islanders' three (ISLE.buildKind, ISLE.lotKind): the Hykkousoi pieces (kit hyk) */
+    byKit: { hyk: { house: 'hyk-house', longhouse: 'hyk-great', works: 'hyk-works' } } },
   /* REFUGEES (47r; the owner, 2026-11-04: "add a shipload of refugees once a week to see how things develop"; PLAN-POLITICS.md
      section 4: to a camp first): a ship of `people` every `every` days from day `first`, to the towns in turn (the other
      when one's camp is full at `cap`). They pitch at the camp's ground outside the town (33: a `camp.size` m square, found
@@ -527,10 +535,10 @@ ISLE.TUNE.sim = {
          shore as the Islanders' (`shore`), in the Ring Sea kit's Hykkousoi pearl ship (`boat`, faster than a lakatoi);
          its divers work the bed without coming up for air, a pearl in four hours against the Islanders' twenty */
       pearl: { hands: 10, main: 'pearls', prior: { pearls: 1.25 }, only: ['nephtos'], shore: 'reef', boat: { vessel: 'hykPearl', kmh: 9 },
-        node: { place: 'pearl bed', kind: 'pearl bed', batch: { 'in': {}, out: { pearls: 1 }, hours: 4 }, cap: 400, amount: 5000, regen: 2 } } },
+        node: { place: 'pearl bed', kind: 'pearl bed', batch: { 'in': {}, out: { pearls: 1 }, by: { nacre: 1, shells: 4 }, hours: 4 }, cap: 400, amount: 5000, regen: 2 } } },   /* the oysters' nacre and the bed's shell by it (2026-11-10: the colony's building stuff) */
     /* a town's own kinds (47k): the colony sends its pearl ships only (the Islanders' kinds take no `only`, so every town
        but one listed here may send them) */
-    towns: { nephtos: { kinds: ['pearl'], stockpile: { pearls: { max: 600 } } } },   /* its pearls go to Tethys: its ceiling a few calls' worth */
+    towns: { nephtos: { kinds: ['pearl'], stockpile: { pearls: { max: 600 }, nacre: { max: 600 }, shells: { max: 3000 } } } },   /* its pearls go to Tethys: its ceiling a few calls' worth */
     boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 },
     /* THE MERCHANT HOUSE (47y; the owner, 2026-11-09: "make each city's long distance expeditions organized by a merchant
        house"): each town charters one from its treasury with `capital` shells, headed by its richest household. It runs

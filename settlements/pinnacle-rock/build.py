@@ -7,7 +7,7 @@
   39-pr-world-data    GENERATED (tools/world_data.py): the scale model round the site (region/data, cut by
                       tools/scale-model/extract_region.py), decoded at build time
   40-pr-layout        THE PLAN as data (the settled layout, PLAN.md section 1)
-  41-world-fields     the open world's fields, read in place (openworld/little-demo/src): WORLD.H, the land at 1:1
+  41-world-fields     the open world's fields, read in place (openworld/isle-demo/src/world): WORLD.H, the land at 1:1
   42-pr-world         HOST: WORLD.init, the knoll's height at the south foot
   45-host-stage       HOST: renderer, light, the floor (the model's), the rock (KSTACKS records from the plan), LAND
   46, 47, 50..70      the NECANYONS kit and its land fragment, read in place (biomes/necanyons/src)
@@ -88,8 +88,8 @@ NC=os.path.normpath(os.path.join(HERE,'..','..','biomes','necanyons'))
 for f in ('46-biome-necanyons-layout.js','47-host-land.js','50-biome-necanyons-species.js','55-biome-necanyons-trees.js',
           '57-biome-necanyons-carnivores.js','60-biome-necanyons-floor.js','70-biome-necanyons.js','89n-host-night.js'):
     PATH[f]=os.path.join(NC,'src',f)
-# the open world's fields (openworld/little-demo/src/41-world-fields.js), read in place: the land round the site at 1:1
-PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','openworld','little-demo','src','41-world-fields.js'))
+# the open world's fields (openworld/isle-demo/src/world/41-world-fields.js), read in place: the land round the site at 1:1
+PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','openworld','isle-demo','src','world','41-world-fields.js'))   # moved from openworld/little-demo/src (deprecated, 2026-10-20)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
