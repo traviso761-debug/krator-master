@@ -53,7 +53,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -62,10 +62,11 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -105,9 +106,9 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "settlements/shade/KNOWN_ISSUES.md": "31b7be0d242e888468a7b38dfd00834922fe87a3ed4945b571d355aabbce719f",
+    "settlements/shade/KNOWN_ISSUES.md": "5d6ef49c43de6ad5e9977f0a4ea3a34c3dcaee261640b912acec19ff0d9220bc",
     "settlements/shade/PORT.md": "4d54710b0df100a4c3446f2866090f89aa7c0ce644a001bb086d735d6eaaac97",
-    "settlements/shade/build.py": "7539e65b5d3fd78d16308dfe49a5cee8e15b57891835cba00dc9fc94962b964e",
+    "settlements/shade/build.py": "ced7fd8f45a904ff03e7d23d7e8b1861111c3c6847f664aadb820361e89fb126",
     "settlements/shade/src/00-head.html": "95644831964f8bb0145376b84ab76f95b7db78b6ec3a6b1072d951478200eaa5",
     "settlements/shade/src/44-host-layout.js": "e0eabcd95b04038ff8426434ae4a8b4bcb91dba3550c7d593166e4f9d1cf5e9a",
     "settlements/shade/src/45-host-stage.js": "d70c318600880606201efc50d78748831395102759903a2c32cde9791045fa76",
@@ -142,21 +143,21 @@
    },
    "listings": {
     "core/clock": "b07ae9730377660ded8e58d297fc2ac9eeba90b828569bba349a69121745c9f4",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/sched": "a2fbc91d2344c14e84e74c6d0f1d22208ffaa3273ee19e34c81937b6f43d6763",
     "core/simulation": "5ca73e409403b2090d1cbdd18ab97599fc8e24b76b25997e58bc2d7e67fc1aae",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "settlements/shade/src": "007f7988b030872f22ef6b8571f153d6a2e1af58a0f01b556a17e1c44bb6f788",
     "settlements/shade/world": "451457ef10f68b3136be829a2576e01092745db084da738b8bf1cf3123d14a34",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "63952ba0ef617ef792dbaa0213e6972c91b9ca26c7b7844de9d4d862b982426a"
+    "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "63952ba0ef617ef792dbaa0213e6972c91b9ca26c7b7844de9d4d862b982426a"
+    "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
    }
   }
  }

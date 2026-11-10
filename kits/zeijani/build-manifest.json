@@ -24,7 +24,7 @@
  "38-furniture-bundle.js": "cad212ff4a7d",
  "38-symbols.js": "c45206be6750",
  "39-core-cavern.js": "36c7498029ba",
- "39-interiors-bundle.js": "21a82316300a",
+ "39-interiors-bundle.js": "6868d97b838a",
  "40-zj-cave.js": "f6f859fa2ad9",
  "41-zj-block.js": "34ba892957ca",
  "42-zj-forms.js": "c7fc88266876",
@@ -77,7 +77,7 @@
  "92k-host-keys.js": "95f7538e4448",
  "93-anim.js": "8ff9058a9d96",
  "94-host-polytool.js": "0a9e4cea5b82",
- "95-host-probe.js": "4c60a9746384",
+ "95-host-probe.js": "4abec5c5a961",
  "99-host-take.js": "6d19cef1a0ac",
  "99-tail.html": "bf3a2481959e"
 }

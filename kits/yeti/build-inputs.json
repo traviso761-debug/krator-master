@@ -60,9 +60,9 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
-    "core/host/92k-host-keys.js": "368527337f64d23c5019a85a0ba929062671b8f3f138c53944d728ff26a491a7",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -285,14 +285,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/yeti/build-manifest.json": "78a867346815dc310b738497017e608aabb0d152e3d1757acb747d7b6b81f088",
-    "kits/yeti/dist/yeti.html": "49ae1f613d319a0a1d641f0802726a4a91a696d8eae987b88b71f3fef4624038",
+    "kits/yeti/build-manifest.json": "8cb95ca702267628278463b88b4d9fbaf8824e1d8422caef2ebb943aef66e1a1",
+    "kits/yeti/dist/yeti.html": "08e791cdc7b0a257daf2e655705df4f127fe673e3c71cf7292b209dabf49624f",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "6b575bf9f85f6ddfe13ac9d5a2e17b0b273344e2698beec16d52b4e18d02cf7d",
     "kits/yeti/dist/yeti.tex.yeti.js": "699f4898963a578c3fc5a7b32b3b5d5ac82b48a8f66768bc43a022c361cf45b5"
    },
    "outputs_raw": {
-    "kits/yeti/build-manifest.json": "78a867346815dc310b738497017e608aabb0d152e3d1757acb747d7b6b81f088",
-    "kits/yeti/dist/yeti.html": "49ae1f613d319a0a1d641f0802726a4a91a696d8eae987b88b71f3fef4624038",
+    "kits/yeti/build-manifest.json": "8cb95ca702267628278463b88b4d9fbaf8824e1d8422caef2ebb943aef66e1a1",
+    "kits/yeti/dist/yeti.html": "08e791cdc7b0a257daf2e655705df4f127fe673e3c71cf7292b209dabf49624f",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "6b575bf9f85f6ddfe13ac9d5a2e17b0b273344e2698beec16d52b4e18d02cf7d",
     "kits/yeti/dist/yeti.tex.yeti.js": "699f4898963a578c3fc5a7b32b3b5d5ac82b48a8f66768bc43a022c361cf45b5"
    }

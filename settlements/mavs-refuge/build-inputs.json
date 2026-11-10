@@ -19,10 +19,11 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -51,7 +52,7 @@
     "kits/interiors/sets/beast-rider.js": "88f45c32379f7bbf2a0695ee26b4e20157a6baedd7403c01e0f64e0cf44ebbcd",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
+    "kits/interiors/src/30-programs.js": "57d48386287197707ed694545e22fa7b76aeb52e6e7110dc5193bddcb38087bc",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -62,7 +63,7 @@
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "settlements/mavs-refuge/KNOWN_ISSUES.md": "327153ecaf9ca9f4e9bcb43e28a8514cddfce77182cbdb48c2965f61de2695ec",
     "settlements/mavs-refuge/PORT.md": "166c05c79c898877ad03533ecb512af3897103265f96b15e8be11d6da774ed76",
-    "settlements/mavs-refuge/build.py": "aa57b511488e638c94ab022b7db9b3196afb0ce4f54690ea1214e951e31c8a1c",
+    "settlements/mavs-refuge/build.py": "00ca99d654fb7956ec67466b720e88d68bf06d953350b472d3e0da2f82920bbe",
     "settlements/mavs-refuge/interiors-bake.json": "87110bf38440396e6ea8bb04c3a320b6b5825ae87e8d978d00ea689fa682a707",
     "settlements/mavs-refuge/src/00-head.html": "bd9c12b1ebe8f79aed5f4bff7ec080f7b8b645e94b40f5c6dcda7a9b7b7d8ed5",
     "settlements/mavs-refuge/src/05-palette.js": "36c75cf94065f32bbe9c5b23b61c2039c1987f3b0a3b37a66501a8e7bc5fc0c8",
@@ -91,7 +92,7 @@
     "settlements/mavs-refuge/src/80-camera.js": "8386abf72e3a61a82e3bac6e7f91e0c22ce9f7d7d9996334c07e54d0644f093c",
     "settlements/mavs-refuge/src/81-glow.js": "e74ae5e0a8e8a624dd2f2041be3632ce09ea11f9b9289a72ae1ff960d803113c",
     "settlements/mavs-refuge/src/82-daynight.js": "eed7319f071186b3007aa8e174bc347227c2c9167eefefb3533cc685eabc8d4d",
-    "settlements/mavs-refuge/src/83-mr-walk.js": "86956cd4c3fc7bfeaed703f76f271832ff49cfba7a00dfe232afb42c5d8e1722",
+    "settlements/mavs-refuge/src/83-mr-walk.js": "de2636bdcf9b1a50de94393bec2fbca236d841891a0ac336ea9794db96f37b06",
     "settlements/mavs-refuge/src/84-flyers.js": "7fc497669f3536f3ebdc8c673dd3774a692161e3445d00faeaf7b803f4016e8b",
     "settlements/mavs-refuge/src/84a-flyers-routes.js": "fa46c6d3a3f7c812276567e6bf687728d0b232018fa4be3a89f6e668bc165cfd",
     "settlements/mavs-refuge/src/84b-flyers-animals.js": "216665d231f68c34fc1a9497a394f7f83ebf32e2fdd2c5e050c328ad42153f3f",
@@ -100,7 +101,7 @@
     "settlements/mavs-refuge/src/85-probe.js": "c46516a44cca43be5d7e7047252f1b23d10f769874739e283a2f3ba32a548b2c",
     "settlements/mavs-refuge/src/86-inspect.js": "ba695a3ccb238f06ad59ef5c0b23dd4261086fc4d4dc6e5e0740e027fbfa0316",
     "settlements/mavs-refuge/src/87-pathviz.js": "853595ea8ff6cf1bb8fe0e4db072cbb43e2e232311d924508646e44b7d78baa1",
-    "settlements/mavs-refuge/src/98-start.js": "4227c60fd2963490c6aacc1ca4778cd263465e78f23fe7182ed3fdbbc11dec39",
+    "settlements/mavs-refuge/src/98-start.js": "f00ef8558f0a3727bde3fd6a57f126cb859529e15d503059907ece95d851fc8b",
     "settlements/mavs-refuge/src/99-tail.html": "bd191ecbf9d3f474bcb4d19cabdc9f63fa5f97cbebc9fe551cb33b536b1e6c66",
     "settlements/mavs-refuge/tex/bark0.albedo.webp": "a1a3770208265ebdeb4845ff654ba199c1c56dc93b2235d8dcccc7a6d33f6baa",
     "settlements/mavs-refuge/tex/bark0.normal.webp": "27c6deacedd0fbbf5a0bd86f6f2a0854e66eaccce6f96503ceb73fe257d212f3",
@@ -157,17 +158,16 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "1bdefc8c84d12d89305c3191a37cb67874320bdf687403427b51b5eaff9c5b17",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "settlements/mavs-refuge": "451f32662aedf6b3ce475682ad6daec32f214bbca93795165dcc739085a68075",
     "settlements/mavs-refuge/src": "73084f9bdc086ca68371ce6600d3837e70c2256938a0f421838be53f45e29b76",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "settlements/mavs-refuge/build-manifest.json": "b8940d7acd00d66e462be7477859ea44080a386e6baac8e7cb07beeafabe4501",
-    "settlements/mavs-refuge/mavs-refuge.html": "a92cec7bc9d81e89636e581e3fc0ef24ff2d117081306aca2d3a55dd9fada96e"
+    "settlements/mavs-refuge/build-manifest.json": "71cfadc4c86e4f9ebebf759b26d664fefb0294b3081822c6e0804e6f29f8d873",
+    "settlements/mavs-refuge/mavs-refuge.html": "ff14c4eed241f1e0e0ab77be6ce2165145a59818c88a7d17d40b1e6704433840"
    },
    "outputs_raw": {
-    "settlements/mavs-refuge/build-manifest.json": "b8940d7acd00d66e462be7477859ea44080a386e6baac8e7cb07beeafabe4501",
-    "settlements/mavs-refuge/mavs-refuge.html": "a92cec7bc9d81e89636e581e3fc0ef24ff2d117081306aca2d3a55dd9fada96e"
+    "settlements/mavs-refuge/build-manifest.json": "71cfadc4c86e4f9ebebf759b26d664fefb0294b3081822c6e0804e6f29f8d873",
+    "settlements/mavs-refuge/mavs-refuge.html": "ff14c4eed241f1e0e0ab77be6ce2165145a59818c88a7d17d40b1e6704433840"
    }
   }
  }
