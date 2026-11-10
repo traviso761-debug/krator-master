@@ -40,8 +40,8 @@ out of its files, or ask.
 **Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
 their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
 `kits/catalog/` or a kit other builds vendor, rebuild every build that takes it and commit those pages too. The
-Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
-are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
+Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and every station kit's other stations
+(`--station <name>`) are separate build commands (Girder's hero page is retired to `archive/girder-hero`, 2026-11-10); `kits/interiors` builds before `kits/ancients-interiors` (which loads its
 `dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
 on purpose and checked. A change that rebuilds every build (or most of them) takes the items parked in `TODO.md`, "Ride along with the
 next all-builds rebuild", with it.

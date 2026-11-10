@@ -1028,10 +1028,6 @@
    "bytes": 2308647,
    "sha256": "ff55123b7c5b9407569f8adb584db31648458bd78f5662d35da7d081866e7c15"
   },
-  "settlements/girder/girder-hero.html": {
-   "bytes": 9885121,
-   "sha256": "fdce4e77085e369698f7374d699e2689018bffd81a6bee37ef2233b5796cd3ed"
-  },
   "settlements/girder/girder.html": {
    "bytes": 1826928,
    "sha256": "603a87848b6feeca306a9be2ada3de1650dc89a0a2f103134ecd1028d77c9df6"

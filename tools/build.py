@@ -3,7 +3,7 @@
 
     python3 tools/build.py biomes/rift                      # = cd biomes/rift && python3 build.py, plus build-inputs.json
     python3 tools/build.py biomes/throne --station kipuka   # arguments after the build go to build.py
-    python3 tools/build.py settlements/girder --script build_hero.py
+    python3 tools/build.py settlements/girder --script <other>.py    # a build's second script (see test_all.extra_builds)
     python3 tools/build.py --all [-j 4]                     # every build and the extra pages (test_all's rebuild list)
 
 It is the same build: build.py runs unchanged in its own folder. What it adds:

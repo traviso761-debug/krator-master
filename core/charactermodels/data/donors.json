@@ -2,7 +2,7 @@
  {
   "id": "styv",
   "name": "Styv's robes",
-  "glb": "../../settlements/girder/hero/styv.glb",
+  "glb": "donors/styv.glb",
   "body": "male",
   "head": "bald",
   "head_name": "Styv",
@@ -11,7 +11,7 @@
  {
   "id": "phil",
   "name": "Phil's coat",
-  "glb": "../../settlements/girder/hero/phil.glb",
+  "glb": "donors/phil.glb",
   "body": "male",
   "head": "hair",
   "head_name": "Phil",

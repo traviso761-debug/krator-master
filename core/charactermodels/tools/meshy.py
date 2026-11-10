@@ -8,7 +8,7 @@ The key comes from MESHY_API_KEY (or a file named by MESHY_API_KEY_FILE); it is 
   python3 tools/meshy.py balance
 
 The prompt is the fixed template DONOR_PROMPT with the outfit words put in, so every donor comes out the same build,
-in the same A-pose as Styv (hero/styv.glb), with no cape, weapon or shield (those cross the slot cuts). Cost per donor:
+in the same A-pose as Styv (donors/styv.glb), with no cape, weapon or shield (those cross the slot cuts). Cost per donor:
 20 (preview) + 10 (refine) + 5 (rig) credits. The json keeps the task ids, so a rerun resumes rather than repaying.
 """
 import json, os, sys, time, urllib.request

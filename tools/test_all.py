@@ -90,21 +90,27 @@ def builds():
 
 
 def extra_builds():
-    """Pages a build writes only when asked: the Throne's stations (build.py --station <name>) and Girder's hero
-    page (build_hero.py). The baseline hashes them, so they are rebuilt too."""
+    """Pages a build writes only when asked: every station kit's stations (build.py --station <name>; the plain build.py
+    writes station 1 only, or none). The baseline hashes them, so they are rebuilt too. A station folder marked
+    "baseOnly" is a shared stage, never built alone; a kit with stations but no build.py is a plan (2026-11-10: the
+    second integration pass found --all had skipped about a hundred station pages; Girder's hero page is retired to
+    archive/girder-hero)."""
+    import json
     out = []
-    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
-        name = os.path.basename(os.path.dirname(st))
-        out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
-    # the Hearths' stations past its default one (build.py writes the crystals' page; the hold is --station hold)
-    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'hearths', 'stations', '*', 'station.json'))):
-        name = os.path.basename(os.path.dirname(st))
-        if name != 'crystals':
-            out.append(('build biomes/hearths --station ' + name, [PY, 'build.py', '--station', name], 'biomes/hearths'))
-    if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
-        out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
+    for sj in sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'stations', '*', 'station.json'))):
+        kit = os.path.dirname(os.path.dirname(os.path.dirname(sj)))
+        b = os.path.relpath(kit, ROOT).replace(os.sep, '/')
+        name = os.path.basename(os.path.dirname(sj))
+        if not os.path.isfile(os.path.join(kit, 'build.py')) or (b == 'biomes/hearths' and name == 'crystals'):
+            continue   # a plan with no build yet; the Hearths' default page is the crystals'
+        try:
+            with open(sj, encoding='utf-8') as fh:
+                if json.load(fh).get('baseOnly'):
+                    continue
+        except ValueError:
+            pass
+        out.append(('build %s --station %s' % (b, name), [PY, 'build.py', '--station', name], b))
     return out
-
 
 def node():
     return shutil.which('node') or next(iter(sorted(glob.glob('/opt/node*/bin/node'), reverse=True)), None)

@@ -6,7 +6,7 @@ Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `girder-hero.html`, `girder.html`
+Built output (never open it; edit `src/` and rebuild): `girder.html`
 
 Build: `cd settlements/girder && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.

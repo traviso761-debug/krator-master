@@ -8,7 +8,7 @@
 A donor is a rigged humanoid GLB (a Meshy export: the web app's mixamorig names or the API's Spine02/neck/head_end
 names; NAME_MAP folds them together). For each donor:
 
-1. FIT. The donor's bind pose is moved onto the canonical one (Styv's, hero/styv.glb). Each bone gets an affine map:
+1. FIT. The donor's bind pose is moved onto the canonical one (Styv's, donors/styv.glb; Girder's retired hero page brought him). Each bone gets an affine map:
    uniform scale k (the donor's head-to-feet height onto the canonical one), a stretch along the bone so its length
    matches, a rotation turning the bone onto the canonical bone's direction, and the move onto the canonical joint.
    Vertices go through the weighted blend of those maps (skinning from the donor's rest to the canonical rest), so a
@@ -38,7 +38,7 @@ import glbio
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-CANON = os.path.join(ROOT, 'settlements', 'girder', 'hero', 'styv.glb')
+CANON = os.path.join(ROOT, 'core', 'charactermodels', 'donors', 'styv.glb')
 
 NAME_MAP = {'Spine02': 'Spine', 'Spine01': 'Spine1', 'neck': 'Neck', 'head_end': 'HeadTop_End'}
 # the Unreal-style mannequin Quaternius's Universal Animation Libraries use (CC0 clips, data/clips.json 'ual')
