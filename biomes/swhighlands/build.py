@@ -65,6 +65,15 @@ if STATION:
     SD = os.path.join(HERE, 'stations', STATION)
     if not os.path.isdir(SD):
         sys.exit('build.py: no station ' + STATION)
+    # a station may stand on another's ground: stations/<name>/INHERIT names it (station 3, Span's tableland, on the pillar rim's map:
+    # the table, its slots, Span's canyon and reservoir are one ground); the other's fragments go first, this station's win
+    ih = os.path.join(SD, 'INHERIT')
+    if os.path.isfile(ih):
+        with open(ih, encoding='utf-8') as fh:
+            base = [ln.strip() for ln in fh if ln.strip() and not ln.startswith('#')][0]
+        for f in os.listdir(os.path.join(HERE, 'stations', base)):
+            if f.endswith(('.js', '.html')):
+                PATH[f] = os.path.join(HERE, 'stations', base, f)
     for f in os.listdir(SD):
         if f.endswith(('.js', '.html')):
             PATH[f] = os.path.join(SD, f)
@@ -128,8 +137,27 @@ if STATION == 'treeline':
     PATH['89-atmos-fx-snowcover.js'] = core('atmos', 'fx', '89-atmos-fx-snowcover.js')
 # THE PILLAR RIM contours its towers with core/terrain's opt-in companion (KSTACKS.contour: the profile thinning in and out, joints,
 # a split crown), listed here only, so no other station's page moves
-if STATION == 'pillars':
+if STATION in ('pillars', 'span'):
     PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
+# THE CAVERNS (station 7, the karst under station 1's limestone ridge: biomes/KARST-SITES-5.1.md site 2) take core/terrain's cavern
+# (KCAVERN), speleothems (KSPELEO) and karst (KKARST, which adds the 'doline' kind to KRELIEF), and core/hazard for the drowning and the falls
+if STATION == 'caverns':
+    for f in ('39-core-cavern.js', '39b-core-speleo.js', '39c-core-karst.js'):
+        PATH[f] = core('terrain', f)
+    PATH['20-core-hazard.js'] = core('hazard', '20-core-hazard.js')
+    PATH['37-core-traps.js'] = core('biome', '37-core-traps.js')   # core/hazard's one clock (KTRAPS.cycle), as nwbay's caverns take it
+# THE RAIN WALL (station 2) lays its landslide dam with core/terrain's landforms (KRELIEF.runout: the sturzstrom, its hummocks and
+# megablocks, the lake behind it) and its fluted pinnacles with KSTACKS' contour
+if STATION == 'rainwall':
+    PATH['38c-core-landforms.js'] = core('terrain', '38c-core-landforms.js')
+    PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
+    PATH['58-core-water-mirror.js'] = core('water', 'ext', '58-core-water-mirror.js')   # the lake's reflections switch, off at load
+# THE SUN'S SHADOWS (core/shadow, KSHADOW: BACKPORT.md's universal set; the owner, 2026-11-03: toggleable and OFF at load) on the stations
+# built since the rebuild; stations/shared/89zz-host-shadow.js attaches it where the ground has a texture unit to spare (station 1's has none)
+if STATION in ('rainwall', 'span', 'caverns'):
+    PATH['10-core-shadow.js'] = core('shadow', '10-core-shadow.js')
+    PATH['12-core-shadow-host.js'] = core('shadow', 'host', '12-core-shadow-host.js')
+    PATH['89zz-host-shadow.js'] = os.path.join(HERE, 'stations', 'shared', '89zz-host-shadow.js')
 if PREVIEW:
     PV = os.path.join(HERE, 'stations', STATION or '', 'preview')
     if STATION != 'pillars' or PREVIEW != 'span' or not os.path.isfile(os.path.join(PV, 'span-watch.frozen.json')):

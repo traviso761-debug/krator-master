@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `LESSONS.md`, `NOTES.md`, `PERF.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/swhighlands-pillars-span.html`, `dist/swhighlands-pillars.html`, `dist/swhighlands-treeline.html`, `dist/swhighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/swhighlands-caverns.html`, `dist/swhighlands-pillars-span.html`, `dist/swhighlands-pillars.html`, `dist/swhighlands-rainwall.html`, `dist/swhighlands-span.html`, `dist/swhighlands-treeline.html`, `dist/swhighlands.html`
 
 Build: `cd biomes/swhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -24,7 +24,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 24 | the map (39); the water courses (106); the farm (the Iron Republic's last, at the valle (187); the climate fields (194); the host binding (225) |
+| `45-host-stage.js` | 25 | the map (39); the water courses (106); the farm (the Iron Republic's last, at the valle (191); the climate fields (198); the host binding (229) |
 | `47-host-land.js` | 6 |  |
 | `50-biome-swhighlands-species.js` | 29 | palettes (26); the tree species (56); textures (procedural; the library replaces them: (99); materials (123); geometries local to this kit (161) |
 | `55-biome-swhighlands-trees.js` | 14 | zones from the fields (14); the trees' keep-clear (core/space) (20); the builders (27); placement by cell (core/rand) (89); the pass (99) |
@@ -36,10 +36,23 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `60-biome-swhighlands-floor.js` | 4 |  |
 | `70-biome-swhighlands.js` | 3 |  |
 | `82-host-far.js` | 8 | the fog (7); the far country (KFAR) (14); the farm's walls (53); light modes (73) |
-| `84-host-ground.js` | 19 | the mist (128) |
+| `84-host-ground.js` | 20 | the mist (135) |
 | `88-host-build.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 1 |  |
 | `89w-host-water.js` | 3 |  |
-| `99-host-take.js` | 13 | the inspector's words (50); the probe's budgets and the kit's own checks (ve (66); the page, handed to the host (107) |
+| `99-host-take.js` | 14 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (114) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| caverns | 44k-host-karst.js, 89x-host-caverns.js | 37 |
+| pillars | 45-host-stage.js, 47-host-land.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 72 |
+| rainwall | 45-host-stage.js, 47-host-land.js, 58b-biome-swhighlands-snags.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 54 |
+| shared | 89zz-host-shadow.js | 3 |
+| span | 48-host-tableland.js, 88-host-build.js, 89wb-host-tableland-water.js, 99-host-take.js | 22 |
+| treeline | 45-host-stage.js, 47-host-land.js, 47c-host-ehigh-end.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 37 |

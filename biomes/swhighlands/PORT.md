@@ -39,4 +39,17 @@ Station 6 (the treeline) overlays `stations/treeline/*.js` on `src/` (`build.py 
 
 Station 4 (the pillar rim) overlays `stations/pillars/*.js` the same way (`build.py --station pillars`): 45 [web], 47 [draw] (the towers' meshes; its `SWHI_PILLARS_SITE` record is plain data), 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w [web].
 
+Station 2 (the rain wall, `--station rainwall`) overlays `stations/rainwall/*.js` the same way: 45 [web] (the valley, the runout, the lake
+and the seep are KRELIEF and core/water records baked into KFIELD), 47 [draw] (the pinnacles' KSTACKS meshes), 58b [draw] (the drowned
+trees: a kit pass, placement by KRAND cell then BIO.tube, split as 58), 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w [draw].
+
+Station 3 (Span's tableland, `--station span`) lays station 4's fragments first (`stations/span/INHERIT`), then its own: 48 [web] (the
+tableland's fields on a lattice and the seep pools and twin falls as core/water records: split, the records could move to [G data]),
+88/99 [web], 89wb [draw].
+
+Station 7 (the ridge karst, `--station caverns`) is `src/` plus `stations/caverns/`: 44k [G data] in all but name (KKARST records only,
+no THREE; it reads `performance.now` for its timing), 89x [draw] (KCAVERN's chunks and KSPELEO's mesh drawn; the network, the
+chambers and the hazards are records: KKARST's and KCAVERN's exports cross over). `stations/shared/89zz-host-shadow.js` [web]
+(KSHADOW's switch) goes on stations 2, 3 and 7.
+
 (none yet: the split lists and the overrides go here)

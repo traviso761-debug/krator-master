@@ -44,6 +44,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 EXPORT_BOX = [380, -320, 680, -20]   # the cove's east edge and the fold river (2026-10-26)
 EXPORT_BOX_TREELINE = [-700, -250, -400, 50]   # station 6: the woods on the lower ramp
 EXPORT_BOX_PILLARS = [-500, -1100, -200, -800]   # station 4: a stretch of the table with its anemone trees and slots (no water in it; the watch pillar is held bare)
+EXPORT_BOX_RAINWALL = [-700, -150, -400, 150]   # station 2: the seep below the dam and the rain forest on the valley's floor
+EXPORT_BOX_SPAN = [-1490, -2800, -1190, -2500]   # station 3: a hanging swamp's ledges and the slickrock round them (the floor fills only near the LOD spine)
 EXPORT_PROFILE_TREELINE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']   # no water drawn there
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
@@ -121,6 +123,17 @@ else if(window._biome&&window._biome.station==='treeline'){ const B=A.biomeCheck
   R.push({name:'nothing-on-the-cliffs-or-snow', ok:B.treesOnCliffs===0&&B.treesOnSnow===0, detail:B.treesOnCliffs+' hero trees on ground steeper than 1.2, '+B.treesOnSnow+' trees on snow'});
   R.push({name:'the-floor-and-the-glass-towers-drawn', ok:B.floor.glassleaf>500&&B.floor.stones>500&&B.floor.whorls>1000&&B.floor.brush>200&&B.glassTowers>10,
           detail:JSON.stringify(B.floor)+' glass towers '+B.glassTowers}); }
+else if(window._biome&&window._biome.station==='rainwall'){ const B=A.biomeChecks();
+  R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
+  R.push({name:'nothing-rooted-in-the-water-or-on-the-cliffs', ok:B.treesInWater===0&&B.treesOnCliffs===0, detail:B.treesInWater+' trees in the water (the fishing bridge and the drowned trees aside), '+B.treesOnCliffs+' on ground steeper than 1.25'});
+  R.push({name:'pioneers-on-the-fresh-ground', ok:B.stiltOnScar>.3&&B.shelfByBoulders>.2, detail:'stilt pod trees\' mean scar '+B.stiltOnScar.toFixed(2)+', shelf corals\' mean boulder '+B.shelfByBoulders.toFixed(2)});
+  R.push({name:'the-floor-the-snags-and-the-pinnacles-drawn', ok:B.floor.glow>2000&&B.floor.triplets>2000&&B.floor.moss>5000&&B.snags>=20&&B.pinnacles>=5,
+          detail:JSON.stringify(B.floor)+' drowned trees '+B.snags+' pinnacles '+B.pinnacles}); }
+else if(window._biome&&window._biome.station==='tableland'){ const B=A.biomeChecks();
+  R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
+  R.push({name:'nothing-on-the-cliffs', ok:B.treesOnCliffs===0, detail:B.treesOnCliffs+' hero trees on ground steeper than 1.2 (off the towers\' tops)'});
+  R.push({name:'the-swamps-and-the-slickrock-drawn', ok:B.floor.lamp>=15&&B.floor.reed>200&&B.floor.trumpets>50&&B.floor.torch>1000&&B.pools>=5&&B.falls>=2,
+          detail:JSON.stringify(B.floor)+' seep pools '+B.pools+' falls '+B.falls}); }
 else { const B=A.biomeChecks();
   R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
   R.push({name:'nothing-rooted-in-the-water', ok:B.treesInWater===0&&B.floorInWater.wet<=Math.max(2,B.floorInWater.of*.001),
@@ -183,9 +196,11 @@ async def run(a):
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
             tl = 'treeline' in os.path.basename(a.html)
             pl = 'pillars' in os.path.basename(a.html)
-            if (tl or pl) and not a.profile:
+            rw = 'rainwall' in os.path.basename(a.html)
+            sp = 'span' in os.path.basename(a.html) and not pl
+            if (tl or pl or sp) and not a.profile:
                 prof = EXPORT_PROFILE_TREELINE
-            box = EXPORT_BOX_TREELINE if tl else EXPORT_BOX_PILLARS if pl else EXPORT_BOX
+            box = EXPORT_BOX_TREELINE if tl else EXPORT_BOX_PILLARS if pl else EXPORT_BOX_RAINWALL if rw else EXPORT_BOX_SPAN if sp else EXPORT_BOX
             pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)

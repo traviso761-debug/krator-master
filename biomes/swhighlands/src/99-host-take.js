@@ -46,7 +46,12 @@ const VIEWS={};
  {const i=Math.floor(RIVER.pts.length*.35),p=RIVER.pts[i],q=RIVER.pts[i+8];add('The fold river',[p[0]+6,RIVER.y[i]+2.2,p[1],q[0],RIVER.y[i+8]+1.5,q[1]]);}
  // dawn: the mist in the strike valley from the limestone ridge's flank
  add('Dawn: mist in the valley',[1050,G(1050,-150)+30,-150,200,10,-700],'dawn');
+ /* a station over this ground (stations/<name>/) adds its own views: STATION_VIEWS {name: [camera xyz, target xyz] | {v, mode}} */
+ if(typeof STATION_VIEWS!=='undefined'&&STATION_VIEWS)for(const k in STATION_VIEWS){const s=STATION_VIEWS[k];add(k,Array.isArray(s)?s:s.v,Array.isArray(s)?'day':s.mode);}
 })();
+/* the station's hand-over (STATION_TAKE {build, title, hint, map, clampCam}) and its checks (STATION_CHECKS, STATION_NEGATIVES: each a
+   function returning [{name, ok, detail}] and [{name, failed, detail}]); none of them on station 1's own page */
+const ST_TAKE=typeof STATION_TAKE!=='undefined'&&STATION_TAKE?STATION_TAKE:{};
 // ---------------------------------------------------------------- the inspector's words
 function tagText(t){if(!t)return'';const g=t.tags,h=g.harvest||{};return '\n'+t.cls+'  ·  '+g.climate+' / '+g.aridity+' / '+(g.abyssal?'abyssal':'non-abyssal')+' / riparian: '+g.riparian+
  '\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.medicinal?' · medicinal':'')+(h.notes?'\n'+h.notes:'');}
@@ -86,11 +91,13 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('every water course descends',HCHK.descend(COURSES));
  add('the bald holds one pillar cap',HCHK.bald(SWHI.TREES,BALD));
  add('a natural bridge over each of the gorge\'s falls',HCHK.bridges(GORGE.falls,BODIES));
+ if(typeof STATION_CHECKS==='function')STATION_CHECKS().forEach(r=>R.push(r));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('a course whose surface climbs',HCHK.descend(COURSES.map((C,k)=>k?C:Object.assign({},C,{y:C.y.map((y,i)=>i===5?y+3:y)}))));
  add('a lattice oak planted on the bald',HCHK.bald(SWHI.TREES.concat([{sp:SWHI.KEY.latticeoak,x:BALD.x+5,z:BALD.z}]),BALD));
  add('a fall with no bridge',HCHK.bridges(GORGE.falls,BODIES.filter(B=>B.fall!==GORGE.falls[1])));
+ if(typeof STATION_NEGATIVES==='function')STATION_NEGATIVES().forEach(r=>R.push(r));
  return R;}
 function biomeChecks(){const R={};
  /* this station's species (station 1: the ring folds) */
@@ -107,16 +114,16 @@ function biomeChecks(){const R={};
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
-KHOST.take({build:'swhighlands',title:'Krator SW Highlands: the ring folds',
- hint:'The SW highlands, station 1: the ring folds. Native fungoid life on long even ridges: lattice oaks and bead cones in the cove, one pillar cap on its bald, an arch in a wind gap, a water gap, the river cave under a chevron fold, a gorge falling through natural bridges, the Iron Republic\'s last farm. N for night',
- scene,camera,renderer,ground:terrainH,clear:1.6,minR:2,maxR:9000,registry:REG,views:HOST_VIEWS,ticks:TICKS,
+KHOST.take({build:ST_TAKE.build||'swhighlands',title:ST_TAKE.title||'Krator SW Highlands: the ring folds',
+ hint:ST_TAKE.hint||'The SW highlands, station 1: the ring folds. Native fungoid life on long even ridges: lattice oaks and bead cones in the cove, one pillar cap on its bald, an arch in a wind gap, a water gap, the river cave under a chevron fold, a gorge falling through natural bridges, the Iron Republic\'s last farm. N for night',
+ scene,camera,renderer,ground:terrainH,clear:1.6,minR:2,maxR:9000,registry:REG,views:HOST_VIEWS,ticks:TICKS,clampCam:ST_TAKE.clampCam,
  onView:k=>lightMode(VIEWS[k].mode),controls:LCTL,
  keys:{n:()=>lightMode((typeof LIGHT_MODE!=='undefined'&&LIGHT_MODE==='night')?'day':'night')},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'rock and structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
- minimap:{title:'The ring folds'},
+ minimap:{title:ST_TAKE.map||'The ring folds'},
  budget:BUDGET,types:()=>BIO.stats,
  probeSample:4000,
  api:{hostChecks,hostNegatives,
