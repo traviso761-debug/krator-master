@@ -55,7 +55,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -98,6 +98,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -127,7 +128,9 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/oidong": "d00e1171a0e1b06383c0aef4a90f16e925658f5d68a2cb251b299f76e7fb32f5",
@@ -137,17 +140,17 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong.html": "2dc4ef874c37c9f348a3dd1605233cef64732120a665bfa13f42d784fe328fe3"
+    "biomes/oidong/dist/oidong.html": "3e0a6b29d612a8da24e228196f1a60a0cc050c9085228263ac12c0a73dbbb8f7"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong.html": "2dc4ef874c37c9f348a3dd1605233cef64732120a665bfa13f42d784fe328fe3"
+    "biomes/oidong/dist/oidong.html": "3e0a6b29d612a8da24e228196f1a60a0cc050c9085228263ac12c0a73dbbb8f7"
    }
   },
   "build.py --station hearths": {
    "inputs": {
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
     "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
-    "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
+    "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
     "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
     "biomes/oidong/PORT.md": "b064be911ed3f3b893b5ce80314afff9af5e3cea1e7726d8b05b215bf603744c",
     "biomes/oidong/build.py": "1e9b48d88cd5066d77033821884d3d9b28233c569a161759ff25386bc8de545f",
@@ -161,7 +164,7 @@
     "biomes/oidong/src/89z-host-build.js": "15e4abcf2996cebb1b0f66a8eed45979f55e520a80facf3c3461fc6e50e8555a",
     "biomes/oidong/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/oidong/stations/hearths/44z-host-site.js": "c1341ad1bb31da48795f37382e32760c83421a1abb133d308e7d54d0b2832f8e",
-    "biomes/oidong/stations/hearths/88-host-high.js": "8d88d58841cfc474696cabfdc43beaa64cc0e3d8c6802d1b73bf85e8ac41ff20",
+    "biomes/oidong/stations/hearths/88-host-high.js": "f2524f5e9dd82b5861a417225fecb6451d717faaa9e74dc3e882138fda6b897f",
     "biomes/oidong/stations/hearths/89-host-sky.js": "2d9eacf50d43bc54981cb5b797018ad8243d489f702f40dbffc71b56abbdf000",
     "biomes/oidong/stations/hearths/89b-host-hearths.js": "923b2fb7a7e526224f1a81ee441e6ffbc6f78f56782c7653104462f7bf749f63",
     "biomes/oidong/stations/hearths/98-host-hearths-take.js": "1fdad3b38fb0128c759ce43e3c578403be7f2704dfb2a12df93c95f3129c15d1",
@@ -206,7 +209,7 @@
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/fx/89-atmos-fx-smokegroups.js": "670a0312d20917534a1afe44cd457b34df28e4e98bae6059a3be4974c6bedc16",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -250,6 +253,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -280,7 +284,9 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
@@ -291,10 +297,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/oidong/dist/oidong-hearths.html": "9382a0447c0ff6eb138c0ba7786148d25aaf90d8814af319f4e2faa169bc2fc8"
+    "biomes/oidong/dist/oidong-hearths.html": "a615f36ca12e5e3366b64663321a75a3e69f588215ee5b3e066c415018834ae7"
    },
    "outputs_raw": {
-    "biomes/oidong/dist/oidong-hearths.html": "9382a0447c0ff6eb138c0ba7786148d25aaf90d8814af319f4e2faa169bc2fc8"
+    "biomes/oidong/dist/oidong-hearths.html": "a615f36ca12e5e3366b64663321a75a3e69f588215ee5b3e066c415018834ae7"
    }
   },
   "build.py --station passes": {

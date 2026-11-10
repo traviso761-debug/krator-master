@@ -121,6 +121,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -153,7 +154,9 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/nwbay": "089978572050d96c530ac4013a9900d45f53188b47842ab1ab38ad859ad3e07e",
@@ -166,7 +169,7 @@
     "biomes/nwbay/dist/nwbay.html": "b90ae90f7745eb541bd4b132d7a1270408cff49e383137810db812266a88eb79"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay.html": "b90ae90f7745eb541bd4b132d7a1270408cff49e383137810db812266a88eb79"
+    "biomes/nwbay/dist/nwbay.html": "feacdb0ef3de8a057236f9ead6becaa7824245b8d25af1af020684d9f74b6d08"
    }
   },
   "build.py --station caverns": {
@@ -294,6 +297,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -309,7 +313,7 @@
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
-    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
     "core/terrain/39c-core-karst.js": "36d2729de3b7299f65d9b06ca3db75fae6281e4e678376aa8c2711426bd54097",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -330,7 +334,9 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/nwbay/src": "3521c2f6e959c0e2a209611563676db7cdbb5b6c7f8f4887fd04af1a3f4f8996",
@@ -340,10 +346,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "66a2bd889fdcf990867c7927de61c04014a01accf960a8e37e75bbab53610873"
+    "biomes/nwbay/dist/nwbay-caverns.html": "d08baa8cbcf659a5c7eb3dbdcad5a1827eaa28b055f94bd725a8ebb08c0d31cd"
    },
    "outputs_raw": {
-    "biomes/nwbay/dist/nwbay-caverns.html": "66a2bd889fdcf990867c7927de61c04014a01accf960a8e37e75bbab53610873"
+    "biomes/nwbay/dist/nwbay-caverns.html": "ab8ebe038d763ac76025bc669b5fbf2461eeff41198ad83d65008afb5648b559"
    }
   }
  }

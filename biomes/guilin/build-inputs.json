@@ -91,6 +91,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -109,7 +110,9 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/guilin": "146875a97733dba0cdaecd4a5904eff3fe28dda1ff4baf18731ccd6200a145ee",
@@ -124,7 +127,7 @@
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    },
    "outputs_raw": {
-    "biomes/guilin/dist/guilin.html": "b4cd45d44baba51da95d8472e2580410d348d5abe541b7f38fc476f45a4e6ebc",
+    "biomes/guilin/dist/guilin.html": "151762324f6818cdc84abd44b446fa9f0330eee014472e91a10931f5af5f70c7",
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    }
   }

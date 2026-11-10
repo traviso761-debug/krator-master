@@ -93,7 +93,7 @@
     "biomes/swhighlands/tex/eggs.albedo.webp": "012b3b00f2ae8cce4270e68b49201f2867cf3d74bce09f6b1d88183a514f9ee0",
     "biomes/swhighlands/tex/heath.albedo.webp": "9640e1470743b74f39b022a95fa50daf441a7c518cb5e7da3ce092b5d7f81856",
     "biomes/swhighlands/tex/moss.albedo.webp": "419ddc4f29dd0f32d3f62e7501c1cf4708c89c034f81a4b264682210c94c9251",
-    "biomes/swhighlands/tex/pack.json": "ea67f1d64379a2df889aa1f74a62bc23afd2311f1576c61a59a479bdea121932",
+    "biomes/swhighlands/tex/pack.json": "60c96699dd744d0e95f40056106982ea41f03246d5f20475a46f4de540683093",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-3-particles.js": "ed08034d9740cf17939d83d56750b7e7b6746cff370e002fd99cdd9525e1d9a4",
@@ -132,6 +132,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -156,7 +157,9 @@
     "core/water/ext/54-core-water-kinds-ext.js": "a7b5d500a917cb481a1d61d73e88c8236c57288bfad4726a9ae9635c49e2dcdf",
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/swbay": "66f73054fea516ffea47479b56823696e5c20b1d3df1a46a62c1881b01278957",
@@ -169,7 +172,7 @@
     "biomes/swbay/dist/swbay.html": "792684c5b93d9648789ae2e16a139ddb6d76af6db9922bb0c65b40aca1104d69"
    },
    "outputs_raw": {
-    "biomes/swbay/dist/swbay.html": "792684c5b93d9648789ae2e16a139ddb6d76af6db9922bb0c65b40aca1104d69"
+    "biomes/swbay/dist/swbay.html": "f3e03fff27a1c7aa1ba5e890cc5600df3e7399306a1dd2a90978ca630b0d8c1e"
    }
   }
  }

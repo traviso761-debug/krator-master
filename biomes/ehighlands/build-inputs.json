@@ -48,7 +48,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -86,6 +86,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -114,6 +115,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -124,10 +126,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands.html": "48151ed537a88a098554c1840fd81168f396190f223e577d65c1568f710f1383"
+    "biomes/ehighlands/dist/ehighlands.html": "8eb1ede94f7733ee319068bdd63ead576c7463a3d92dac89ee6d5ecc6118e529"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands.html": "48151ed537a88a098554c1840fd81168f396190f223e577d65c1568f710f1383"
+    "biomes/ehighlands/dist/ehighlands.html": "8eb1ede94f7733ee319068bdd63ead576c7463a3d92dac89ee6d5ecc6118e529"
    }
   },
   "build.py --station face": {
@@ -184,7 +186,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -222,6 +224,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -250,6 +253,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -260,10 +264,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "20d6a219a8300564546e9ebd0d47a9a17ca7ca581b5a34b1bc8b56830650fc11"
+    "biomes/ehighlands/dist/ehighlands-face.html": "6f0bff320597ac7b3c61a6e83bcbbf76847a2a1d22d5fabd8ac9af85d16d35f2"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "20d6a219a8300564546e9ebd0d47a9a17ca7ca581b5a34b1bc8b56830650fc11"
+    "biomes/ehighlands/dist/ehighlands-face.html": "6f0bff320597ac7b3c61a6e83bcbbf76847a2a1d22d5fabd8ac9af85d16d35f2"
    }
   },
   "build.py --station lesser": {
@@ -316,7 +320,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -354,6 +358,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -382,6 +387,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -392,10 +398,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "879123f0deda687a1ac559b66f48d4d3007b236024e00a1424f3f75b4199deca"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "adc0df6e83ed08aaf3032e9334a37f3aeb77add4944ff2827a58e522bd9c762c"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "879123f0deda687a1ac559b66f48d4d3007b236024e00a1424f3f75b4199deca"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "adc0df6e83ed08aaf3032e9334a37f3aeb77add4944ff2827a58e522bd9c762c"
    }
   },
   "build.py --station mixed": {
@@ -455,7 +461,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -493,6 +499,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -521,6 +528,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -531,10 +539,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "0828fb49965525b94f84641682cda95f2d3b76dcf3779bcacd68c4578fc52014"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "3d459675e5693c2dd73e9d8e38d60aa332aa6bfaebc55c79a631ecec45af0574"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "0828fb49965525b94f84641682cda95f2d3b76dcf3779bcacd68c4578fc52014"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "3d459675e5693c2dd73e9d8e38d60aa332aa6bfaebc55c79a631ecec45af0574"
    }
   },
   "build.py --station montane": {
@@ -590,7 +598,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -628,6 +636,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -656,6 +665,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -666,10 +676,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "486d64fd47be570ac1ef6ce899905d811fabc6af77e9a828d0e317fd6b431854"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "b68f06cfa593c9d1eba6b962e70c7c54256455acb357c387100c61e01ee6bf5c"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "486d64fd47be570ac1ef6ce899905d811fabc6af77e9a828d0e317fd6b431854"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "b68f06cfa593c9d1eba6b962e70c7c54256455acb357c387100c61e01ee6bf5c"
    }
   },
   "build.py --station treeline": {
@@ -728,7 +738,7 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -766,6 +776,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -794,6 +805,7 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -804,10 +816,10 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "6658b17e7d385595fe5372e54f90cabe824a44323e8d72b5c86fc7308aa23c23"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "00fd57e4e71e20740cc601ccdef8df6ef8e34d38222574b938a25778c52d147f"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "6658b17e7d385595fe5372e54f90cabe824a44323e8d72b5c86fc7308aa23c23"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "00fd57e4e71e20740cc601ccdef8df6ef8e34d38222574b938a25778c52d147f"
    }
   }
  }

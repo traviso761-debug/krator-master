@@ -74,7 +74,7 @@
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/fx/89-atmos-fx-smokegroups.js": "670a0312d20917534a1afe44cd457b34df28e4e98bae6059a3be4974c6bedc16",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -119,6 +119,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -154,7 +155,8 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/highrift": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
@@ -163,10 +165,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift.html": "1c7874346495586bd682a714275d5c571e91d86409d57f424770252ad54bec85"
+    "biomes/highrift/dist/highrift.html": "c107061d908effde6c712cb6f6040edbd364bda5d5212ed5c0d45dd896112f14"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift.html": "1c7874346495586bd682a714275d5c571e91d86409d57f424770252ad54bec85"
+    "biomes/highrift/dist/highrift.html": "c107061d908effde6c712cb6f6040edbd364bda5d5212ed5c0d45dd896112f14"
    }
   },
   "build.py --station coulee": {
@@ -592,7 +594,7 @@
     "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/fx/89-atmos-fx-smokegroups.js": "670a0312d20917534a1afe44cd457b34df28e4e98bae6059a3be4974c6bedc16",
-    "core/atmos/fx/89-atmos-fx-snowcover.js": "ed36897b8ad83658904d9415ffe6a0db97711cc0c1c640970cc05bc1922b74a2",
+    "core/atmos/fx/89-atmos-fx-snowcover.js": "ff67dc9f439bcc866244989e532c7b8a2ba02b6c87c220ab5b5b584ac1814d3d",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
     "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
@@ -637,6 +639,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -672,20 +675,20 @@
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/highrift": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/highrift/src": "740676022ed38f47a0a5c9ac471fe95e95912851a05e65463a1a13f788a18a39",
     "biomes/highrift/stations/mirror": "bed3e64e39feedcd4cee4287d4f663b0699319a71d76531b6b7c7d05a1ea7d90",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-mirror.html": "10b607b8cdf408fc0c3a81295014988ae873794ac1be56a80e5ca13e0e1cad57"
+    "biomes/highrift/dist/highrift-mirror.html": "b9e44cb532693cccadeafe48914684f67bbe92d4eac857fb14c6a0570be68a56"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-mirror.html": "10b607b8cdf408fc0c3a81295014988ae873794ac1be56a80e5ca13e0e1cad57"
+    "biomes/highrift/dist/highrift-mirror.html": "b9e44cb532693cccadeafe48914684f67bbe92d4eac857fb14c6a0570be68a56"
    }
   },
   "build.py --station wedge": {
