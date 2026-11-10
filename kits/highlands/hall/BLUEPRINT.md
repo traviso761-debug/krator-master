@@ -155,3 +155,11 @@ shell wall cut and hung (core/door, unlocked); four stairs in core/walk; the hor
 members' benches (catalog benches on the tiers), the Speaker's chair, the clerks' table, the banners. The cut-away (X)
 opens the Hall storey by storey. Catalog pieces the Hall would want and the catalog lacks: a curved members' bench with a
 desk front, a rostrum, the mace and its table, the division clerks' desks (settlements/highlands/KNOWN_ISSUES.md).
+
+**2026-11-10 (the WIP finished).** The public and the press could not reach their lobbies or galleries: the vestibule's
+walk wall (8.5 m) and the chamber's (12.9 m) stood across the upper doors on their lines, and no floor bridged the far side
+of the two shells' walls at the landings' doors. The set gives those tall rooms a walk-only `gap` at each such door and
+`../src/72c-hl-plan.js` lays the sill's floor on both sides of an upper door through back-to-back walls. Every flight is two
+fixtures derived from `stairs` (turned along it, a clear front), the hand-written ones gone. All 52 floors are reached from
+the doors and every room is furnished (the committee rooms and party rooms 11 pieces each, the galleries 12); the
+furniture carries the library's detail maps (`tex=True`).

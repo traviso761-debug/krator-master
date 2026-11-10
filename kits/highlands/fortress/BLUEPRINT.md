@@ -49,7 +49,8 @@ the residence and the kitchens' fires.
 Frame: the builder's; origin at the plot centre, +z the front (the gate), the bailey at y 0.
 
 **The keep** (inner 12.8 x 12.8 m, x -20.4 to -7.6, z -20.4 to -7.6; a straight flight up each storey along a wall,
-turning a quarter at each)
+turning at each; on the two split storeys the flight rises inside the room it reaches, along the partition, north to south:
+into intelligence, and into the signals room, the partition's door south of its head)
 
 | Storey | Floor | Room | Kind | Notes |
 |---|---|---|---|---|
@@ -105,3 +106,13 @@ The 27 explicit rooms and the barracks' planned rooms, furnished from the Republ
 armoury magazine audience signals guard cell` in `kits/interiors/sets/highlands.js`); the keep, its loft, the palace, the
 bridge and the two back towers drawn hollow (69e6); seven stairs in core/walk; every inner door hung (core/door, unlocked).
 The cut-away (X) opens the Fortress storey by storey.
+
+**2026-11-10 (the WIP finished).** The war room's **map table** is the building's own (`../src/78-rep-grand.js`
+`hnMapTable`: oak, 3.6 x 2.2 m, the Republic's map on it with the corps' and the batteries' markers; the catalog has no map
+table), and the set keeps its floor clear (fixture `map_table`). The keep's first and third flights were moved (they ran
+under the cipher room's and the command's partitions, which stood at head height over them) and the residence's doors to
+the state dining room and the family room moved north of its stair (the flight ran across them). Every flight is two
+fixtures in the set, turned along it with a clear front, so the placer keeps the way on and off it: before, the keep's
+upper rooms went unfurnished. Every room is furnished (the war room and the command 12 pieces each, the map store 12,
+intelligence, signals, the cipher room and the loft 7) and the reachability audit reaches all 33 floors from the doors
+(`settlements/highlands/verify.py --interiors`). The furniture carries the library's detail maps (`tex=True`).
