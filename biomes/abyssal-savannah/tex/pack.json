@@ -888,22 +888,16 @@
    }
   },
   "plate": {
-   "anchor": "center",
+   "anchor": "none",
    "breakup": null,
    "card": true,
-   "cell": [
-    0.343,
-    0.345,
-    0.663,
-    0.655
-   ],
    "files": {
     "map": "plate.albedo.webp"
    },
-   "lib": "card.acacia",
+   "lib": "card.umbrella.plate",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 9,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -911,14 +905,14 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "e7eb4b5f89acf99dad91a7f0ee4807c40c9ac6a3"
+    "albedo": "8285f88ee5a9ec7547e376bd466ce0ddb5cd9132"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.62,
-    "sourceMean": 0.4059
+    "mean": 0.7,
+    "sourceMean": 0.4311
    }
   },
   "rock": {

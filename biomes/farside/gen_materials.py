@@ -51,6 +51,7 @@ FAM = {
     'ground.burn': surf('ground.burn', 2.5),
     'ground.turf': surf('ground.grass.lush', 1.8),
     'ground.floor': surf('ground.moss002', 2.6),
+    'ground.bench': surf('ground.bench', 3.0),                          # the tsunami's scour bench, over the rock (delivered 2026-11-10)
     # THE HOST (86-host-works.js): the works' surfaces
     'works.stone': surf('rock.old_stone_wall', 2.0, map_only=False),
     'works.lime': surf('plaster.white_stucco_02', 2.0, map_only=False),
@@ -59,7 +60,8 @@ FAM = {
 NOTE = ("Farside's adapter onto the material library (core/materials/PLAN.md), written by gen_materials.py. The kit's slots are "
         "FARSIDE.MAT's keys (src/50-biome-farside-species.js, BIO.libSwap); the ground's layers are 47-host-land.js's; the works' "
         "86-host-works.js's. Cards keep their own colour unless a slot says otherwise (wrack, eelgrass and the coral are tinted by the "
-        "instance). The Farside sets delivered 2026-10-26: bark.kelp.stipe, ground.wrack, organic.sponge, card.wineweed. Run "
+        "instance). The Farside sets delivered 2026-10-26: bark.kelp.stipe, ground.wrack, organic.sponge, card.wineweed; 2026-11-10: "
+        "ground.bench (the tsunami's scour bench, the ground's eighth layer, its weight FIELD.bench times the rock's). Run "
         "python3 tools/textures/pack.py biomes/farside after any change, then python3 build.py --all.")
 json.dump({'build': 'farside', 'note': NOTE, 'size': 512, 'families': FAM},
           open(os.path.join(HERE, 'materials.json'), 'w', encoding='utf-8', newline='\n'), indent=1)

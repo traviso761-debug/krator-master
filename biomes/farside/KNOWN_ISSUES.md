@@ -55,3 +55,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   lighter far band for the floor (the item above) or a thinner bench pass would bring it down; left for the GPU measurement.
 - [ ] **Not GPU-verified** in this turn (a cloud session, software GL only): `verify.py --assert --all-views` on the GPU is the
   coordinator's (HANDOFF-REBUILD.md, pair 10).
+
+## Textures (2026-11-10)
+
+- [ ] **The scour bench's grooves wander** (`ground.bench`, the ground's eighth layer, `47-host-land.js`): the set's grooves all run one
+  way across the tile, but KGROUND turns every hex tile by up to 0.6 rad (one `hex.rot` for the whole hook), so at a few metres they
+  read as a planed surface, not one direction. A per-layer `rot` in core/terrain 43 would keep them aligned to the tsunami's run (onshore,
+  the north-wester); not taken here (a core change). The procedural salt-white tint on the bench (`SALT`) is drawn only without the set.

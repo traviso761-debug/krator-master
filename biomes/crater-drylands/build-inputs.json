@@ -390,10 +390,10 @@
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
     "biomes/abyssal-savannah/tex/leaflet.albedo.webp": "3d4db5c92e00db01794c2cce3c1362bd4e3472e11266b9817c198a6a095406ab",
     "biomes/abyssal-savannah/tex/lily.albedo.webp": "9034cb7576e11a6b23713e109f8f48b53215a99360120345a5c34bf0475b39d5",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/palmbark.albedo.webp": "c3dd614882aca85505c40ca8cd1d0bc3fe59d259eb9ec21247351637266bb8a5",
     "biomes/abyssal-savannah/tex/pangrass.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
-    "biomes/abyssal-savannah/tex/plate.albedo.webp": "47b008680c925214abbda6b7e887e80d5c62db7e74f7f9b031125fae2917e595",
+    "biomes/abyssal-savannah/tex/plate.albedo.webp": "244c60f1e2c0304dad9d85122439d68b1334234688e5e641c62bd73b84c0c0bb",
     "biomes/abyssal-savannah/tex/rock.albedo.webp": "1225012895dd734166c2ba9a24bae888f20680cae6ae98a1fe43b253b0a9972a",
     "biomes/abyssal-savannah/tex/saltbush.albedo.webp": "a0ddf83546f1def5d337393ff7b04b15331247da5f8933b40b1a8b25639ce3b2",
     "biomes/abyssal-savannah/tex/stubbark.albedo.webp": "76c78b97289e346fe1781c378816204654665fe78dc7227cf71559292c1eef50",
@@ -550,6 +550,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/crater-drylands": "d5d4bb6f917070f186082deb135dc2da77ccf205a06c710ddddf354ec6d90b2f",
     "biomes/crater-drylands/src": "6e70d9890572cf80882241fcf3650f88bc9ca7d1f777ef30651e6a126c019c93",
     "biomes/crater-drylands/stations": "71afee8c4086661fb59f114a5adbbe49e1a9fff07fce2695338f920d5191d40f",
     "biomes/crater-drylands/stations/salt": "f942c792aec615dbab06f4c99c7cbc0a205cf2294c7a49423e00c58c2628aac9",
@@ -559,10 +560,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "f9b2d0966b4b2c321440637a8466f12712573a6b882325ff945579a46dd3def5"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "e5c49226b14a03b5ac038c6127529645fc2224ab3f951648485310a481089502"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "f9b2d0966b4b2c321440637a8466f12712573a6b882325ff945579a46dd3def5"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "e5c49226b14a03b5ac038c6127529645fc2224ab3f951648485310a481089502"
    }
   },
   "build.py --station south": {
@@ -571,7 +572,7 @@
     "biomes/abyssal-savannah/src/rim/55-biome-savrim-trees.js": "0156c6325bad33ff01f502a876eba7c97b6388f627bf18f30c326303de3534fb",
     "biomes/abyssal-savannah/src/rim/56-biome-savrim-southeast.js": "7526a64058b7b2ef756307161c02112112527a84d7f5624c51b866bc45b25d97",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/crater-drylands/KNOWN_ISSUES.md": "41c29cb68a7e42ab6ae6eb81f9be62552a502228e5d786adee90e2939a19f288",
     "biomes/crater-drylands/PORT.md": "65849c105bfb82a580ff7a8d2e683ad1ee44cf62f731a36a8d6a3bb0d3ad6e5b",
     "biomes/crater-drylands/build.py": "32c8513d796b6fb3a043d09490cabdb3d7f6f8602476033bf02b531e1f3f9b73",

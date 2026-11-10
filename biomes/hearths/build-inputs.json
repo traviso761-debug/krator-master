@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "1eab7591b5734ee54bedad47a3a29aba28b19373c0ae8bfb2c106375cdb30ba1",
+    "biomes/hearths/KNOWN_ISSUES.md": "e7eb717d346b772178b61004258df455dc6e5dbfae3a074a709578b39b112e72",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -25,10 +25,10 @@
     "biomes/hearths/stations/crystals/99-host-take.js": "fe0705afadc71cbd0b0921254b37caa7e5d197413db4afd1d7a8d1f77d5f6698",
     "biomes/hearths/stations/crystals/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/hearths/stations/crystals/station.json": "79dc6e0a49549bf3183b8edd1501f168fdc99874a1b7f03f07f5253a8d75595c",
-    "biomes/hearths/tex/crystal.selenite.albedo.webp": "43f673ebc628086bc9217cd2e14dac77c60ba5a4c37c96e644ca219e1f44689c",
+    "biomes/hearths/tex/crystal.selenite.albedo.webp": "74d25d0b2a027f2d756213a5e15a7eb6f21920ca4b656e32a23e8aab2c769ac3",
     "biomes/hearths/tex/ground.gypsum.albedo.webp": "b5a1e90655b4b6102eec4e890621baa3c2c9504d0f37cc583edb9d7b50ec9720",
-    "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
-    "biomes/hearths/tex/rock.ironstain.albedo.webp": "1414a2d703d3760afcb4ffda7308b21ec4520ea0df0d5229d1029c0b5c0a1ee4",
+    "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
+    "biomes/hearths/tex/rock.ironstain.albedo.webp": "d7c1f05961dc12c7534eebea24a3730318c517911c8cec5fa4a39e19ad378d13",
     "biomes/hearths/tex/rock.limestone.albedo.webp": "cf9eb03a8fe2a4f5b1f14ffcfde4b04770754eb1bb91bd90f3b6c450cba4a481",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
@@ -100,15 +100,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "7f6f3726238c2c664fbc798ebb7ef7b598c8eaaf846f9928975b03c6d1663ab4"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "7f6f3726238c2c664fbc798ebb7ef7b598c8eaaf846f9928975b03c6d1663ab4"
    }
   },
   "build.py --station crystals": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "1eab7591b5734ee54bedad47a3a29aba28b19373c0ae8bfb2c106375cdb30ba1",
+    "biomes/hearths/KNOWN_ISSUES.md": "e7eb717d346b772178b61004258df455dc6e5dbfae3a074a709578b39b112e72",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -130,10 +130,10 @@
     "biomes/hearths/stations/crystals/99-host-take.js": "fe0705afadc71cbd0b0921254b37caa7e5d197413db4afd1d7a8d1f77d5f6698",
     "biomes/hearths/stations/crystals/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/hearths/stations/crystals/station.json": "79dc6e0a49549bf3183b8edd1501f168fdc99874a1b7f03f07f5253a8d75595c",
-    "biomes/hearths/tex/crystal.selenite.albedo.webp": "43f673ebc628086bc9217cd2e14dac77c60ba5a4c37c96e644ca219e1f44689c",
+    "biomes/hearths/tex/crystal.selenite.albedo.webp": "74d25d0b2a027f2d756213a5e15a7eb6f21920ca4b656e32a23e8aab2c769ac3",
     "biomes/hearths/tex/ground.gypsum.albedo.webp": "b5a1e90655b4b6102eec4e890621baa3c2c9504d0f37cc583edb9d7b50ec9720",
-    "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
-    "biomes/hearths/tex/rock.ironstain.albedo.webp": "1414a2d703d3760afcb4ffda7308b21ec4520ea0df0d5229d1029c0b5c0a1ee4",
+    "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
+    "biomes/hearths/tex/rock.ironstain.albedo.webp": "d7c1f05961dc12c7534eebea24a3730318c517911c8cec5fa4a39e19ad378d13",
     "biomes/hearths/tex/rock.limestone.albedo.webp": "cf9eb03a8fe2a4f5b1f14ffcfde4b04770754eb1bb91bd90f3b6c450cba4a481",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
@@ -205,15 +205,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "7f6f3726238c2c664fbc798ebb7ef7b598c8eaaf846f9928975b03c6d1663ab4"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-crystals.html": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+    "biomes/hearths/dist/hearths-crystals.html": "7f6f3726238c2c664fbc798ebb7ef7b598c8eaaf846f9928975b03c6d1663ab4"
    }
   },
   "build.py --station hold": {
    "inputs": {
-    "biomes/hearths/KNOWN_ISSUES.md": "1eab7591b5734ee54bedad47a3a29aba28b19373c0ae8bfb2c106375cdb30ba1",
+    "biomes/hearths/KNOWN_ISSUES.md": "e7eb717d346b772178b61004258df455dc6e5dbfae3a074a709578b39b112e72",
     "biomes/hearths/PORT.md": "a782098ba5f2a494c63f43a35096a7ae3b2cbfb289ab524ae80755e004133ea6",
     "biomes/hearths/build.py": "f1eea0190f592dfc332437bb59903104c10bd58dbce46d0a879deb51f6f96330",
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
@@ -235,10 +235,10 @@
     "biomes/hearths/stations/hold/44zs-host-station.js": "0b20b8bf9e292e588d14b98d7f6404f81966f6798f0027296a2376e66e6221d5",
     "biomes/hearths/stations/hold/98v-host-views.js": "9d2aa5f716ca942e137b944876c48f8f868aff52049451db28c86b245fc9656f",
     "biomes/hearths/stations/hold/station.json": "b142d6af1e5033335e9503d98346ad21b34a2d832bec24d813742e65a6081b4a",
-    "biomes/hearths/tex/crystal.selenite.albedo.webp": "43f673ebc628086bc9217cd2e14dac77c60ba5a4c37c96e644ca219e1f44689c",
+    "biomes/hearths/tex/crystal.selenite.albedo.webp": "74d25d0b2a027f2d756213a5e15a7eb6f21920ca4b656e32a23e8aab2c769ac3",
     "biomes/hearths/tex/ground.gypsum.albedo.webp": "b5a1e90655b4b6102eec4e890621baa3c2c9504d0f37cc583edb9d7b50ec9720",
-    "biomes/hearths/tex/pack.json": "dfe2d46d7c0f7c7341c4c81b95950de89589bf8e09255415d0280bbe43108f20",
-    "biomes/hearths/tex/rock.ironstain.albedo.webp": "1414a2d703d3760afcb4ffda7308b21ec4520ea0df0d5229d1029c0b5c0a1ee4",
+    "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
+    "biomes/hearths/tex/rock.ironstain.albedo.webp": "d7c1f05961dc12c7534eebea24a3730318c517911c8cec5fa4a39e19ad378d13",
     "biomes/hearths/tex/rock.limestone.albedo.webp": "cf9eb03a8fe2a4f5b1f14ffcfde4b04770754eb1bb91bd90f3b6c450cba4a481",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
@@ -311,10 +311,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hearths/dist/hearths-hold.html": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
+    "biomes/hearths/dist/hearths-hold.html": "14f50a38c604518513c5b62264113895b049aa6a1cc44b32efb6da7e539468f5"
    },
    "outputs_raw": {
-    "biomes/hearths/dist/hearths-hold.html": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
+    "biomes/hearths/dist/hearths-hold.html": "14f50a38c604518513c5b62264113895b049aa6a1cc44b32efb6da7e539468f5"
    }
   }
  }
